@@ -17,37 +17,46 @@ package com.jgalgo.graph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Iterator;
 import java.util.Random;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class ImmutableGraphViewTest extends TestBase {
 
 	private static final String VerticesWeightsKey = "vWeights";
 	private static final String EdgesWeightsKey = "eWeights";
 
-	private static IntGraph createGraph(boolean directed) {
+	private static Graph<Integer, Integer> createGraph(boolean directed, boolean intGraph) {
 		final long seed = 0x97dc96ffefd7165bL;
 		final Random rand = new Random(seed);
 		final int n = 47, m = 1345;
-		IntGraph g = IntGraphFactory.newUndirected().setDirected(directed).newGraph();
 
-		IWeightsInt vWeights = g.addVerticesWeights(VerticesWeightsKey, int.class);
+		Graph<Integer, Integer> g;
+		if (intGraph) {
+			g = IntGraphFactory.newUndirected().setDirected(directed).newGraph();
+		} else {
+			g = GraphFactory.<Integer, Integer>newUndirected().setDirected(directed).newGraph();
+		}
+
+		WeightsInt<Integer> vWeights = g.addVerticesWeights(VerticesWeightsKey, int.class);
 		for (int i = 0; i < n; i++) {
-			int v = g.addVertex();
+			Integer v = Integer.valueOf(i + 1);
+			g.addVertex(v);
 			vWeights.set(v, rand.nextInt(10000));
 		}
 
-		IWeightsInt eWeights = g.addEdgesWeights(EdgesWeightsKey, int.class);
+		WeightsInt<Integer> eWeights = g.addEdgesWeights(EdgesWeightsKey, int.class);
 		for (int i = 0; i < m; i++) {
-			int e = g.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand));
+			Integer e = Integer.valueOf(i + 1);
+			g.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand), e);
 			eWeights.set(e, rand.nextInt(10000));
 		}
 		return g;
@@ -56,14 +65,16 @@ public class ImmutableGraphViewTest extends TestBase {
 	@Test
 	public void testVertices() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			IntGraph gOrig0 = createGraph(directed);
-			IntGraph gImmutable0 = gOrig0.immutableView();
-			for (boolean index : BooleanList.of(false, true)) {
-				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				IntGraph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+				Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+					Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
 
-				assertEquals(gOrig.vertices().size(), gImmutable.vertices().size());
-				assertEquals(gOrig.vertices(), gImmutable.vertices());
+					assertEquals(gOrig.vertices().size(), gImmutable.vertices().size());
+					assertEquals(gOrig.vertices(), gImmutable.vertices());
+				}
 			}
 		}
 	}
@@ -71,13 +82,15 @@ public class ImmutableGraphViewTest extends TestBase {
 	@Test
 	public void testEdges() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			IntGraph gOrig0 = createGraph(directed);
-			IntGraph gImmutable0 = gOrig0.immutableView();
-			for (boolean index : BooleanList.of(false, true)) {
-				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				IntGraph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
-				assertEquals(gOrig.edges().size(), gImmutable.edges().size());
-				assertEquals(gOrig.edges(), gImmutable.edges());
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+				Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+					Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+					assertEquals(gOrig.edges().size(), gImmutable.edges().size());
+					assertEquals(gOrig.edges(), gImmutable.edges());
+				}
 			}
 		}
 	}
@@ -85,24 +98,27 @@ public class ImmutableGraphViewTest extends TestBase {
 	@Test
 	public void testAddRemoveVertex() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			IntGraph gOrig0 = createGraph(directed);
-			IntGraph gImmutable0 = gOrig0.immutableView();
-			for (boolean index : BooleanList.of(false, true)) {
-				IntGraph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+				Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
 
-				int nonExistingVertex;
-				for (int v = 0;; v++) {
-					if (!gImmutable.vertices().contains(v)) {
-						nonExistingVertex = v;
-						break;
+					Integer nonExistingVertex;
+					for (int v = 0;; v++) {
+						if (!gImmutable.vertices().contains(Integer.valueOf(v))) {
+							nonExistingVertex = Integer.valueOf(v);
+							break;
+						}
 					}
+
+					if (gImmutable instanceof IntGraph)
+						assertThrows(UnsupportedOperationException.class, () -> ((IntGraph) gImmutable).addVertex());
+					assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertex(nonExistingVertex));
+
+					Integer vertexToRemove = gImmutable.vertices().iterator().next();
+					assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeVertex(vertexToRemove));
 				}
-
-				assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertex());
-				assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertex(nonExistingVertex));
-
-				int vertexToRemove = gImmutable.vertices().iterator().nextInt();
-				assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeVertex(vertexToRemove));
 			}
 		}
 	}
@@ -110,28 +126,31 @@ public class ImmutableGraphViewTest extends TestBase {
 	@Test
 	public void testAddRemoveEdge() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			IntGraph gOrig0 = createGraph(directed);
-			IntGraph gImmutable0 = gOrig0.immutableView();
-			for (boolean index : BooleanList.of(false, true)) {
-				IntGraph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+				Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
 
-				IntIterator vit = gImmutable.vertices().iterator();
-				int u = vit.nextInt();
-				int v = vit.nextInt();
+					Iterator<Integer> vit = gImmutable.vertices().iterator();
+					Integer u = vit.next();
+					Integer v = vit.next();
 
-				int nonExistingEdge;
-				for (int e = 0;; e++) {
-					if (!gImmutable.edges().contains(e)) {
-						nonExistingEdge = e;
-						break;
+					Integer nonExistingEdge;
+					for (int e = 0;; e++) {
+						if (!gImmutable.edges().contains(Integer.valueOf(e))) {
+							nonExistingEdge = Integer.valueOf(e);
+							break;
+						}
 					}
+
+					if (gImmutable instanceof IntGraph)
+						assertThrows(UnsupportedOperationException.class, () -> ((IntGraph) gImmutable).addEdge(u.intValue(), v.intValue()));
+					assertThrows(UnsupportedOperationException.class, () -> gImmutable.addEdge(u, v, nonExistingEdge));
+
+					Integer edgeToRemove = gImmutable.edges().iterator().next();
+					assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeEdge(edgeToRemove));
 				}
-
-				assertThrows(UnsupportedOperationException.class, () -> gImmutable.addEdge(u, v));
-				assertThrows(UnsupportedOperationException.class, () -> gImmutable.addEdge(u, v, nonExistingEdge));
-
-				int edgeToRemove = gImmutable.edges().iterator().nextInt();
-				assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeEdge(edgeToRemove));
 			}
 		}
 	}
@@ -139,65 +158,67 @@ public class ImmutableGraphViewTest extends TestBase {
 	@Test
 	public void testEdgesOutIn() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			IntGraph gOrig0 = createGraph(directed);
-			IntGraph gImmutable0 = gOrig0.immutableView();
-			for (boolean index : BooleanList.of(false, true)) {
-				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				IntGraph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+				Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+					Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
 
-				for (int u : gImmutable.vertices()) {
-					IEdgeSet edges = gImmutable.outEdges(u);
-					assertEquals(gOrig.outEdges(u).size(), edges.size());
-					assertEquals(gOrig.outEdges(u), edges);
+					for (Integer u : gImmutable.vertices()) {
+						EdgeSet<Integer, Integer> edges = gImmutable.outEdges(u);
+						assertEquals(gOrig.outEdges(u).size(), edges.size());
+						assertEquals(gOrig.outEdges(u), edges);
 
-					IntSet iteratedEdges = new IntOpenHashSet();
-					for (IEdgeIter eit = edges.iterator(); eit.hasNext();) {
-						int peekNext = eit.peekNextInt();
-						int e = eit.nextInt();
-						assertEquals(e, peekNext);
+						Set<Integer> iteratedEdges = new IntOpenHashSet();
+						for (EdgeIter<Integer, Integer> eit = edges.iterator(); eit.hasNext();) {
+							Integer peekNext = eit.peekNext();
+							Integer e = eit.next();
+							assertEquals(e, peekNext);
 
-						assertEquals(u, eit.sourceInt());
-						assertEquals(gOrig.edgeEndpoint(e, u), eit.targetInt());
-						assertEquals(gImmutable.edgeEndpoint(e, u), eit.targetInt());
-						assertEquals(u, gImmutable.edgeEndpoint(e, eit.targetInt()));
+							assertEquals(u, eit.source());
+							assertEquals(gOrig.edgeEndpoint(e, u), eit.target());
+							assertEquals(gImmutable.edgeEndpoint(e, u), eit.target());
+							assertEquals(u, gImmutable.edgeEndpoint(e, eit.target()));
 
-						iteratedEdges.add(e);
-					}
+							iteratedEdges.add(e);
+						}
 
-					assertEquals(edges.size(), iteratedEdges.size());
-					for (int e : gOrig.edges()) {
-						if (iteratedEdges.contains(e)) {
-							assertTrue(edges.contains(e));
-						} else {
-							assertFalse(edges.contains(e));
+						assertEquals(edges.size(), iteratedEdges.size());
+						for (Integer e : gOrig.edges()) {
+							if (iteratedEdges.contains(e)) {
+								assertTrue(edges.contains(e));
+							} else {
+								assertFalse(edges.contains(e));
+							}
 						}
 					}
-				}
-				for (int v : gImmutable.vertices()) {
-					IEdgeSet edges = gImmutable.inEdges(v);
-					assertEquals(gOrig.inEdges(v).size(), edges.size());
-					assertEquals(gOrig.inEdges(v), edges);
+					for (Integer v : gImmutable.vertices()) {
+						EdgeSet<Integer, Integer> edges = gImmutable.inEdges(v);
+						assertEquals(gOrig.inEdges(v).size(), edges.size());
+						assertEquals(gOrig.inEdges(v), edges);
 
-					IntSet iteratedEdges = new IntOpenHashSet();
-					for (IEdgeIter eit = edges.iterator(); eit.hasNext();) {
-						int peekNext = eit.peekNextInt();
-						int e = eit.nextInt();
-						assertEquals(e, peekNext);
+						Set<Integer> iteratedEdges = new IntOpenHashSet();
+						for (EdgeIter<Integer, Integer> eit = edges.iterator(); eit.hasNext();) {
+							Integer peekNext = eit.peekNext();
+							Integer e = eit.next();
+							assertEquals(e, peekNext);
 
-						assertEquals(v, eit.targetInt());
-						assertEquals(gOrig.edgeEndpoint(e, v), eit.sourceInt());
-						assertEquals(gImmutable.edgeEndpoint(e, v), eit.sourceInt());
-						assertEquals(v, gImmutable.edgeEndpoint(e, eit.sourceInt()));
+							assertEquals(v, eit.target());
+							assertEquals(gOrig.edgeEndpoint(e, v), eit.source());
+							assertEquals(gImmutable.edgeEndpoint(e, v), eit.source());
+							assertEquals(v, gImmutable.edgeEndpoint(e, eit.source()));
 
-						iteratedEdges.add(e);
-					}
+							iteratedEdges.add(e);
+						}
 
-					assertEquals(edges.size(), iteratedEdges.size());
-					for (int e : gOrig.edges()) {
-						if (iteratedEdges.contains(e)) {
-							assertTrue(edges.contains(e));
-						} else {
-							assertFalse(edges.contains(e));
+						assertEquals(edges.size(), iteratedEdges.size());
+						for (Integer e : gOrig.edges()) {
+							if (iteratedEdges.contains(e)) {
+								assertTrue(edges.contains(e));
+							} else {
+								assertFalse(edges.contains(e));
+							}
 						}
 					}
 				}
@@ -208,37 +229,39 @@ public class ImmutableGraphViewTest extends TestBase {
 	@Test
 	public void testEdgesSourceTarget() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			IntGraph gOrig0 = createGraph(directed);
-			IntGraph gImmutable0 = gOrig0.immutableView();
-			for (boolean index : BooleanList.of(false, true)) {
-				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				IntGraph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+				Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+					Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
 
-				for (int u : gImmutable.vertices()) {
-					for (int v : gImmutable.vertices()) {
-						IEdgeSet edges = gImmutable.getEdges(u, v);
-						assertEquals(gOrig.getEdges(u, v).size(), edges.size());
-						assertEquals(gOrig.getEdges(u, v), edges);
+					for (Integer u : gImmutable.vertices()) {
+						for (Integer v : gImmutable.vertices()) {
+							EdgeSet<Integer, Integer> edges = gImmutable.getEdges(u, v);
+							assertEquals(gOrig.getEdges(u, v).size(), edges.size());
+							assertEquals(gOrig.getEdges(u, v), edges);
 
-						if (edges.isEmpty()) {
-							assertEquals(-1, gImmutable.getEdge(u, v));
-						} else {
-							int e = gImmutable.getEdge(u, v);
-							assertNotEquals(-1, e);
-							assertTrue(edges.contains(e));
-						}
+							if (edges.isEmpty()) {
+								assertNull(gImmutable.getEdge(u, v));
+							} else {
+								Integer e = gImmutable.getEdge(u, v);
+								assertNotNull(e);
+								assertTrue(edges.contains(e));
+							}
 
-						for (IEdgeIter eit = edges.iterator(); eit.hasNext();) {
-							int peekNext = eit.peekNextInt();
-							int e = eit.nextInt();
-							assertEquals(e, peekNext);
+							for (EdgeIter<Integer, Integer> eit = edges.iterator(); eit.hasNext();) {
+								Integer peekNext = eit.peekNext();
+								Integer e = eit.next();
+								assertEquals(e, peekNext);
 
-							assertEquals(u, eit.sourceInt());
-							assertEquals(v, eit.targetInt());
-							assertEquals(gOrig.edgeEndpoint(e, u), v);
-							assertEquals(gOrig.edgeEndpoint(e, v), u);
-							assertEquals(u, gImmutable.edgeEndpoint(e, v));
-							assertEquals(v, gImmutable.edgeEndpoint(e, u));
+								assertEquals(u, eit.source());
+								assertEquals(v, eit.target());
+								assertEquals(gOrig.edgeEndpoint(e, u), v);
+								assertEquals(gOrig.edgeEndpoint(e, v), u);
+								assertEquals(u, gImmutable.edgeEndpoint(e, v));
+								assertEquals(v, gImmutable.edgeEndpoint(e, u));
+							}
 						}
 					}
 				}
@@ -249,14 +272,16 @@ public class ImmutableGraphViewTest extends TestBase {
 	@Test
 	public void testRemoveEdgesOf() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			IntGraph gOrig0 = createGraph(directed);
-			IntGraph gImmutable0 = gOrig0.immutableView();
-			for (boolean index : BooleanList.of(false, true)) {
-				IntGraph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
-				int v = gImmutable.vertices().iterator().nextInt();
-				assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeEdgesOf(v));
-				assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeOutEdgesOf(v));
-				assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeInEdgesOf(v));
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+				Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+					Integer v = gImmutable.vertices().iterator().next();
+					assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeEdgesOf(v));
+					assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeOutEdgesOf(v));
+					assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeInEdgesOf(v));
+				}
 			}
 		}
 	}
@@ -264,12 +289,14 @@ public class ImmutableGraphViewTest extends TestBase {
 	@Test
 	public void testReverseEdge() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			IntGraph gOrig0 = createGraph(directed);
-			IntGraph gImmutable0 = gOrig0.immutableView();
-			for (boolean index : BooleanList.of(false, true)) {
-				IntGraph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
-				int e = gImmutable.edges().iterator().nextInt();
-				assertThrows(UnsupportedOperationException.class, () -> gImmutable.reverseEdge(e));
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+				Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+					Integer e = gImmutable.edges().iterator().next();
+					assertThrows(UnsupportedOperationException.class, () -> gImmutable.reverseEdge(e));
+				}
 			}
 		}
 	}
@@ -277,14 +304,16 @@ public class ImmutableGraphViewTest extends TestBase {
 	@Test
 	public void testEdgeGetSourceTarget() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			IntGraph gOrig0 = createGraph(directed);
-			IntGraph gImmutable0 = gOrig0.immutableView();
-			for (boolean index : BooleanList.of(false, true)) {
-				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				IntGraph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
-				for (int e : gImmutable.edges()) {
-					assertEquals(gOrig.edgeSource(e), gImmutable.edgeSource(e));
-					assertEquals(gOrig.edgeTarget(e), gImmutable.edgeTarget(e));
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+				Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+					Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+					for (Integer e : gImmutable.edges()) {
+						assertEquals(gOrig.edgeSource(e), gImmutable.edgeSource(e));
+						assertEquals(gOrig.edgeTarget(e), gImmutable.edgeTarget(e));
+					}
 				}
 			}
 		}
@@ -293,12 +322,14 @@ public class ImmutableGraphViewTest extends TestBase {
 	@Test
 	public void testClear() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			IntGraph gOrig0 = createGraph(directed);
-			IntGraph gImmutable0 = gOrig0.immutableView();
-			for (boolean index : BooleanList.of(false, true)) {
-				IntGraph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
-				assertThrows(UnsupportedOperationException.class, () -> gImmutable.clear());
-				assertThrows(UnsupportedOperationException.class, () -> gImmutable.clearEdges());
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+				Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+					assertThrows(UnsupportedOperationException.class, () -> gImmutable.clear());
+					assertThrows(UnsupportedOperationException.class, () -> gImmutable.clearEdges());
+				}
 			}
 		}
 	}
@@ -306,26 +337,28 @@ public class ImmutableGraphViewTest extends TestBase {
 	@Test
 	public void testVerticesWeights() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			IntGraph gOrig0 = createGraph(directed);
-			IntGraph gImmutable0 = gOrig0.immutableView();
-			for (boolean index : BooleanList.of(false, true)) {
-				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				IntGraph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+				Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+					Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
 
-				assertEquals(gOrig.getVerticesWeightsKeys(), gImmutable.getVerticesWeightsKeys());
-				IWeightsInt wOrig = gOrig.getVerticesWeights(VerticesWeightsKey);
-				IWeightsInt wImmutable = gImmutable.getVerticesWeights(VerticesWeightsKey);
+					assertEquals(gOrig.getVerticesWeightsKeys(), gImmutable.getVerticesWeightsKeys());
+					WeightsInt<Integer> wOrig = gOrig.getVerticesWeights(VerticesWeightsKey);
+					WeightsInt<Integer> wImmutable = gImmutable.getVerticesWeights(VerticesWeightsKey);
 
-				for (int v : gImmutable.vertices())
-					assertEquals(wOrig.get(v), wImmutable.get(v));
-				assertEquals(wOrig.defaultWeight(), wImmutable.defaultWeight());
+					for (Integer v : gImmutable.vertices())
+						assertEquals(wOrig.get(v), wImmutable.get(v));
+					assertEquals(wOrig.defaultWeight(), wImmutable.defaultWeight());
 
-				int vertex = gImmutable.vertices().iterator().nextInt();
-				assertThrows(UnsupportedOperationException.class, () -> wImmutable.set(vertex, 42));
-				assertThrows(UnsupportedOperationException.class,
-						() -> gImmutable.removeVerticesWeights(VerticesWeightsKey));
-				assertThrows(UnsupportedOperationException.class,
-						() -> gImmutable.addVerticesWeights("key", Object.class));
+					Integer vertex = gImmutable.vertices().iterator().next();
+					assertThrows(UnsupportedOperationException.class, () -> wImmutable.set(vertex, 42));
+					assertThrows(UnsupportedOperationException.class,
+							() -> gImmutable.removeVerticesWeights(VerticesWeightsKey));
+					assertThrows(UnsupportedOperationException.class,
+							() -> gImmutable.addVerticesWeights("key", Object.class));
+				}
 			}
 		}
 	}
@@ -333,42 +366,47 @@ public class ImmutableGraphViewTest extends TestBase {
 	@Test
 	public void testEdgesWeights() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			IntGraph gOrig0 = createGraph(directed);
-			IntGraph gImmutable0 = gOrig0.immutableView();
-			for (boolean index : BooleanList.of(false, true)) {
-				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				IntGraph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+				Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+					Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
 
-				assertEquals(gOrig.getEdgesWeightsKeys(), gImmutable.getEdgesWeightsKeys());
-				IWeightsInt wOrig = gOrig.getEdgesWeights(EdgesWeightsKey);
-				IWeightsInt wImmutable = gImmutable.getEdgesWeights(EdgesWeightsKey);
+					assertEquals(gOrig.getEdgesWeightsKeys(), gImmutable.getEdgesWeightsKeys());
+					WeightsInt<Integer> wOrig = gOrig.getEdgesWeights(EdgesWeightsKey);
+					WeightsInt<Integer> wImmutable = gImmutable.getEdgesWeights(EdgesWeightsKey);
 
-				for (int e : gImmutable.edges())
-					assertEquals(wOrig.get(e), wImmutable.get(e));
-				assertEquals(wOrig.defaultWeight(), wImmutable.defaultWeight());
+					for (Integer e : gImmutable.edges())
+						assertEquals(wOrig.get(e), wImmutable.get(e));
+					assertEquals(wOrig.defaultWeight(), wImmutable.defaultWeight());
 
-				int edge = gImmutable.edges().iterator().nextInt();
-				assertThrows(UnsupportedOperationException.class, () -> wImmutable.set(edge, 42));
-				assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeEdgesWeights(EdgesWeightsKey));
-				assertThrows(UnsupportedOperationException.class,
-						() -> gImmutable.addEdgesWeights("key", Object.class));
+					Integer edge = gImmutable.edges().iterator().next();
+					assertThrows(UnsupportedOperationException.class, () -> wImmutable.set(edge, 42));
+					assertThrows(UnsupportedOperationException.class,
+							() -> gImmutable.removeEdgesWeights(EdgesWeightsKey));
+					assertThrows(UnsupportedOperationException.class,
+							() -> gImmutable.addEdgesWeights("key", Object.class));
+				}
 			}
 		}
 	}
 
-	@SuppressWarnings("boxing")
+	 @SuppressWarnings("boxing")
 	@Test
 	public void testGraphCapabilities() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			IntGraph gOrig0 = createGraph(directed);
-			IntGraph gImmutable0 = gOrig0.immutableView();
-			for (boolean index : BooleanList.of(false, true)) {
-				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				IntGraph gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+				Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+					Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
 
-				assertEquals(gOrig.isAllowParallelEdges(), gImmutable.isAllowParallelEdges());
-				assertEquals(gOrig.isAllowSelfEdges(), gImmutable.isAllowSelfEdges());
-				assertEquals(gOrig.isDirected(), gImmutable.isDirected());
+					assertEquals(gOrig.isAllowParallelEdges(), gImmutable.isAllowParallelEdges());
+					assertEquals(gOrig.isAllowSelfEdges(), gImmutable.isAllowSelfEdges());
+					assertEquals(gOrig.isDirected(), gImmutable.isDirected());
+				}
 			}
 		}
 	}
@@ -376,12 +414,14 @@ public class ImmutableGraphViewTest extends TestBase {
 	@Test
 	public void testImmutableViewOfImmutableView() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean index : BooleanList.of(false, true)) {
-				IntGraph gOrig0 = createGraph(directed);
-				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
-				IntGraph gImmutable = gOrig.immutableView();
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+					Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+					Graph<Integer, Integer> gImmutable = gOrig.immutableView();
 
-				assertTrue(gImmutable == gImmutable.immutableView());
+					assertTrue(gImmutable == gImmutable.immutableView());
+				}
 			}
 		}
 	}

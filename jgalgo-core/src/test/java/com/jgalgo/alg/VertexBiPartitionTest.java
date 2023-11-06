@@ -139,7 +139,6 @@ public class VertexBiPartitionTest extends TestBase {
 		});
 	}
 
-	@SuppressWarnings("boxing")
 	@Test
 	public void testIsPartition() {
 		final long seed = 0x6a861644d20a2822L;

@@ -96,7 +96,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 			assertFalse(matching.containsEdge(e));
 
 		boolean isPerfect = g.vertices().stream().allMatch(matched::containsKey);
-		assertEquals(isPerfect, matching.isPerfect());
+		assertEquals(Boolean.valueOf(isPerfect), Boolean.valueOf(matching.isPerfect()));
 
 		assertTrue(Matching.isMatching(g, matching.edges()));
 	}
