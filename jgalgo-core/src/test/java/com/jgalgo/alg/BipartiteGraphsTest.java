@@ -59,6 +59,7 @@ public class BipartiteGraphsTest extends TestBase {
 			for (boolean directed : BooleanList.of(false, true)) {
 				for (boolean index : BooleanList.of(false, true)) {
 					Graph<Integer, Integer> g = randBipartiteGraph(sn, tn, m, directed, index, seedGen.nextSeed());
+					g.removeVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 
 					assertTrue(BipartiteGraphs.isBipartite(g));
 					assertEquals(Optional.empty(), BipartiteGraphs.getExistingPartition(g));
@@ -78,8 +79,8 @@ public class BipartiteGraphsTest extends TestBase {
 
 	private static Graph<Integer, Integer> randBipartiteGraph(int sn, int tn, int m, boolean directed, boolean index,
 			long seed) {
-		Graph<Integer, Integer> g = new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(directed)
-				.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+		Graph<Integer, Integer> g = new RandomGraphBuilder(seed).bipartite(true).sn(sn).tn(tn).m(m).directed(directed)
+				.parallelEdges(true).selfEdges(false).cycles(true).connected(false).build();
 		return index ? g.indexGraph() : g;
 	}
 

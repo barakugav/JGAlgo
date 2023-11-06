@@ -143,7 +143,7 @@ public class BipartiteGraphs {
 				while (!queue.isEmpty()) {
 					final int u = queue.dequeueInt();
 					final boolean uSide = partition.get(u);
-					for (IEdgeIter eit = g.outEdges(start).iterator(); eit.hasNext();) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						eit.nextInt();
 						int v = eit.targetInt();
 						if (visited.get(v)) {
@@ -156,7 +156,7 @@ public class BipartiteGraphs {
 						queue.enqueue(v);
 					}
 					if (g.isDirected()) {
-						for (IEdgeIter eit = g.inEdges(start).iterator(); eit.hasNext();) {
+						for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
 							eit.nextInt();
 							int v = eit.sourceInt();
 							if (visited.get(v)) {
@@ -176,7 +176,7 @@ public class BipartiteGraphs {
 	}
 
 	private static IWeightsBool getOrCreateBoolWeights(IndexGraph g, boolean addPartitionWeight) {
-		if (addPartitionWeight)
+		if (!addPartitionWeight)
 			return IWeights.createExternalEdgesWeights(g, boolean.class);
 		Object existingPartition = g.getVerticesWeights(VertexBiPartitionWeightKey);
 		if (existingPartition == null)
@@ -213,7 +213,7 @@ public class BipartiteGraphs {
 	@SuppressWarnings("unchecked")
 	public static <V, E> Optional<VertexBiPartition<V, E>> getExistingPartition(Graph<V, E> g) {
 		IndexGraph ig = g instanceof IndexGraph ? (IndexGraph) g : g.indexGraph();
-		Object existingPartition = g.getVerticesWeights(VertexBiPartitionWeightKey);
+		Object existingPartition = ig.getVerticesWeights(VertexBiPartitionWeightKey);
 		if (existingPartition == null)
 			return Optional.empty();
 		if (!(existingPartition instanceof IWeightsBool))

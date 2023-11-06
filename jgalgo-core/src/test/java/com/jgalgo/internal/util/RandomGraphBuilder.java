@@ -15,6 +15,7 @@
  */
 package com.jgalgo.internal.util;
 
+import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 import com.jgalgo.alg.BipartiteGraphs;
@@ -22,7 +23,6 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Graphs;
-import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsBool;
@@ -32,7 +32,6 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -127,7 +126,7 @@ public class RandomGraphBuilder {
 	public Graph<Integer, Integer> build() {
 		IntList vertices = new IntArrayList();
 		final Graph<Integer, Integer> g;
-		IWeightsBool partition = null;
+		WeightsBool<Integer> partition = null;
 		if (!bipartite) {
 			if (n < 0 || m < 0)
 				throw new IllegalStateException();
@@ -151,11 +150,11 @@ public class RandomGraphBuilder {
 			}
 			partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);
 
-			IntIterator vit = vertices.iterator();
+			Iterator<Integer> vit = vertices.iterator();
 			for (int u = 0; u < sn; u++)
-				partition.set(vit.nextInt(), true);
+				partition.set(vit.next(), true);
 			for (int u = 0; u < tn; u++)
-				partition.set(vit.nextInt(), false);
+				partition.set(vit.next(), false);
 		}
 		if (n == 0)
 			return g;
@@ -226,7 +225,7 @@ public class RandomGraphBuilder {
 				do {
 					u = Graphs.randVertex(g, rand).intValue();
 					v = Graphs.randVertex(g, rand).intValue();
-				} while (partition.get(u) == partition.get(v));
+				} while (partition.get(Integer.valueOf(u)) == partition.get(Integer.valueOf(v)));
 			}
 
 			// avoid self edges
