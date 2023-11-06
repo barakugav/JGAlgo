@@ -114,50 +114,6 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 					capacities[e] = net.getCapacity(e);
 			}
 
-			double constructResult(double[] flow) {
-				for (int m = g.edges().size(), e = 0; e < m; e++)
-					net.setFlow(e, flow[e]);
-
-				double totalFlow = 0;
-				if (directed) {
-					for (int e : g.outEdges(source))
-						totalFlow += flow[e];
-					for (int e : g.inEdges(source))
-						totalFlow -= flow[e];
-				} else {
-					for (int e : g.outEdges(source)) {
-						if (source != g.edgeTarget(e)) {
-							totalFlow += flow[e];
-						} else if (source != g.edgeSource(e)) {
-							totalFlow -= flow[e];
-						}
-					}
-				}
-				return totalFlow;
-			}
-
-			int constructResult(int[] flow) {
-				for (int m = g.edges().size(), e = 0; e < m; e++)
-					net.setFlow(e, flow[e]);
-
-				int totalFlow = 0;
-				if (directed) {
-					for (int e : g.outEdges(source))
-						totalFlow += flow[e];
-					for (int e : g.inEdges(source))
-						totalFlow -= flow[e];
-				} else {
-					for (int e : g.outEdges(source)) {
-						if (source != g.edgeTarget(e)) {
-							totalFlow += flow[e];
-						} else if (source != g.edgeSource(e)) {
-							totalFlow -= flow[e];
-						}
-					}
-				}
-				return totalFlow;
-			}
-
 			double constructResult(double[] capacity, double[] residualCapacity) {
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					net.setFlow(e, capacity[e] - residualCapacity[e]);
@@ -509,55 +465,6 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 						for (int e : g.outEdges(s))
 							if (g.edgeTarget(e) != source)
 								totalFlow += flow[e];
-				}
-				return totalFlow;
-			}
-
-			double constructResult(double[] capacity, double[] residualCapacity) {
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
-					if (isOriginalEdge(e))
-						/* The flow of e might be negative if the original graph is undirected, which is fine */
-						net.setFlow(edgeRef[e], capacity[e] - residualCapacity[e]);
-				}
-
-				double totalFlow = 0;
-				if (gOrig.isDirected()) {
-					for (int s : sources) {
-						for (int e : gOrig.outEdges(s))
-							totalFlow += net.getFlow(e);
-						for (int e : gOrig.inEdges(s))
-							totalFlow -= net.getFlow(e);
-					}
-				} else {
-					for (int s : sources)
-						for (int e : g.outEdges(s))
-							if (g.edgeTarget(e) != source)
-								totalFlow += capacity[e] - residualCapacity[e];
-				}
-				return totalFlow;
-			}
-
-			int constructResult(int[] capacity, int[] residualCapacity) {
-				IFlowNetworkInt net = (IFlowNetworkInt) this.net;
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
-					if (isOriginalEdge(e))
-						/* The flow of e might be negative if the original graph is undirected, which is fine */
-						net.setFlow(edgeRef[e], capacity[e] - residualCapacity[e]);
-				}
-
-				int totalFlow = 0;
-				if (gOrig.isDirected()) {
-					for (int s : sources) {
-						for (int e : gOrig.outEdges(s))
-							totalFlow += net.getFlowInt(e);
-						for (int e : gOrig.inEdges(s))
-							totalFlow -= net.getFlowInt(e);
-					}
-				} else {
-					for (int s : sources)
-						for (int e : g.outEdges(s))
-							if (g.edgeTarget(e) != source)
-								totalFlow += capacity[e] - residualCapacity[e];
 				}
 				return totalFlow;
 			}
