@@ -35,7 +35,7 @@ import com.jgalgo.graph.WeightFunction;
  * @see    <a href= "https://en.wikipedia.org/wiki/Travelling_salesman_problem">Wikipedia</a>
  * @author Barak Ugav
  */
-public interface Tsp2Metric {
+public interface TspMetric {
 
 	/**
 	 * Compute the shortest tour that visit all vertices.
