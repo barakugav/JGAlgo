@@ -20,8 +20,10 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
+import java.util.function.IntPredicate;
 import java.util.function.IntSupplier;
 import java.util.function.IntUnaryOperator;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
@@ -181,6 +183,14 @@ public class IntAdapters {
 			return c.retainAll(c2);
 		}
 
+	}
+
+	public static IntPredicate asIntPredicate(Predicate<Integer> pred) {
+		if (pred instanceof IntPredicate) {
+			return (IntPredicate) pred;
+		} else {
+			return v -> pred.test(Integer.valueOf(v));
+		}
 	}
 
 	public static IntUnaryOperator asIntUnaryOperator(ToIntFunction<Integer> op) {

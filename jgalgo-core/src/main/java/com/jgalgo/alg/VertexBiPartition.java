@@ -16,6 +16,14 @@
 package com.jgalgo.alg;
 
 import java.util.Set;
+import java.util.function.IntPredicate;
+import java.util.function.Predicate;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 
 /**
  * A partition of the vertices of a graph into two blocks.
@@ -127,6 +135,87 @@ public interface VertexBiPartition<V, E> extends VertexPartition<V, E> {
 	 */
 	default Set<E> crossEdges() {
 		return crossEdges(0, 1);
+	}
+
+	/**
+	 * Create a new vertex bi-partition from a vertex-side map.
+	 *
+	 * <p>
+	 * Note that this function does not validate the input. For that, see {@link #isPartition(IntGraph, IntPredicate)}.
+	 *
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   the graph
+	 * @param  map a map from vertex to either {@code true} or {@code false}
+	 * @return     a new vertex bi-partition
+	 */
+	static <V, E> VertexBiPartition<V, E> fromMap(Graph<V, E> g, Object2BooleanMap<V> map) {
+		return fromMapping(g, map::getBoolean);
+	}
+
+	/**
+	 * Create a new vertex bi-partition from a vertex-side mapping function.
+	 *
+	 * <p>
+	 * Note that this function does not validate the input. For that, see {@link #isPartition(IntGraph, IntPredicate)}.
+	 *
+	 * @param  <V>     the vertices type
+	 * @param  <E>     the edges type
+	 * @param  g       the graph
+	 * @param  mapping a mapping function that maps from a vertex to either {@code true} or {@code false}
+	 * @return         a new vertex bi-partition
+	 */
+	@SuppressWarnings("unchecked")
+	static <V, E> VertexBiPartition<V, E> fromMapping(Graph<V, E> g, Predicate<V> mapping) {
+		if (g instanceof IntGraph) {
+			IntPredicate mapping0 = IntAdapters.asIntPredicate((Predicate<Integer>) mapping);
+			return (VertexBiPartition<V, E>) IVertexBiPartition.fromMapping((IntGraph) g, mapping0);
+		} else {
+			final int n = g.vertices().size();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			Bitmap vertexToBlock = new Bitmap(n, vIdx -> mapping.test(viMap.indexToId(vIdx)));
+			IVertexBiPartition indexPartition = new VertexBiPartitions.FromBitmap(g.indexGraph(), vertexToBlock);
+			return new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition<>(g, indexPartition);
+		}
+	}
+
+	/**
+	 * Check if a mapping is a valid bi-partition of the vertices of a graph.
+	 *
+	 * <p>
+	 * A valid vertex bi-partition is a mapping from each vertex to either {@code true} or {@code false}, in which there
+	 * are not 'empty blocks', namely at least one vertex is mapped to {@code true} and another one is mapped to
+	 * {@code true}.
+	 *
+	 * @param  <V>     the vertices type
+	 * @param  <E>     the edges type
+	 * @param  g       the graph
+	 * @param  mapping a mapping function that maps from a vertex to either {@code true} or {@code false}
+	 * @return         {@code true} if the mapping is a valid bi-partition of the vertices of the graph, {@code false}
+	 *                 otherwise
+	 */
+	@SuppressWarnings("unchecked")
+	static <V, E> boolean isPartition(Graph<V, E> g, Predicate<V> mapping) {
+		if (g instanceof IntGraph) {
+			IntPredicate mapping0 = IntAdapters.asIntPredicate((Predicate<Integer>) mapping);
+			return IVertexBiPartition.isPartition((IntGraph) g, mapping0);
+		}
+		final int n = g.vertices().size();
+		if (n < 2)
+			return false;
+
+		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+		Bitmap vertexToBlock = new Bitmap(n, vIdx -> mapping.test(viMap.indexToId(vIdx)));
+		if (vertexToBlock.get(0)) {
+			for (int v = 1; v < n; v++)
+				if (!vertexToBlock.get(v))
+					return true;
+		} else {
+			for (int v = 1; v < n; v++)
+				if (vertexToBlock.get(v))
+					return true;
+		}
+		return false;
 	}
 
 }

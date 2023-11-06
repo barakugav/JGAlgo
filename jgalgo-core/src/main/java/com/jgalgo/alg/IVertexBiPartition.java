@@ -15,7 +15,12 @@
  */
 package com.jgalgo.alg;
 
+import java.util.function.IntPredicate;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Bitmap;
+import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -87,6 +92,78 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition<
 	@Override
 	default IntSet crossEdges() {
 		return (IntSet) VertexBiPartition.super.crossEdges();
+	}
+
+	/**
+	 * Create a new vertex bi-partition from a vertex-side map.
+	 *
+	 * <p>
+	 * Note that this function does not validate the input. For that, see {@link #isPartition(IntGraph, IntPredicate)}.
+	 *
+	 * @param  g   the graph
+	 * @param  map a map from vertex to either {@code true} or {@code false}
+	 * @return     a new vertex bi-partition
+	 */
+	static IVertexBiPartition fromMap(IntGraph g, Int2BooleanMap map) {
+		return fromMapping(g, map::get);
+	}
+
+	/**
+	 * Create a new vertex bi-partition from a vertex-side mapping function.
+	 *
+	 * <p>
+	 * Note that this function does not validate the input. For that, see {@link #isPartition(IntGraph, IntPredicate)}.
+	 *
+	 * @param  g       the graph
+	 * @param  mapping a mapping function that maps from a vertex to either {@code true} or {@code false}
+	 * @return         a new vertex bi-partition
+	 */
+	static IVertexBiPartition fromMapping(IntGraph g, IntPredicate mapping) {
+		final int n = g.vertices().size();
+		if (g instanceof IndexGraph) {
+			return new VertexBiPartitions.FromBitmap((IndexGraph) g, new Bitmap(n, mapping));
+		} else {
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			Bitmap vertexToBlock = new Bitmap(n, vIdx -> mapping.test(viMap.indexToIdInt(vIdx)));
+			IVertexBiPartition indexPartition = new VertexBiPartitions.FromBitmap(g.indexGraph(), vertexToBlock);
+			return new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, indexPartition);
+		}
+	}
+
+	/**
+	 * Check if a mapping is a valid bi-partition of the vertices of a graph.
+	 *
+	 * <p>
+	 * A valid vertex bi-partition is a mapping from each vertex to either {@code true} or {@code false}, in which there
+	 * are not 'empty blocks', namely at least one vertex is mapped to {@code true} and another one is mapped to
+	 * {@code true}.
+	 *
+	 * @param  g       the graph
+	 * @param  mapping a mapping function that maps from a vertex to either {@code true} or {@code false}
+	 * @return         {@code true} if the mapping is a valid bi-partition of the vertices of the graph, {@code false}
+	 *                 otherwise
+	 */
+	static boolean isPartition(IntGraph g, IntPredicate mapping) {
+		final int n = g.vertices().size();
+		if (n < 2)
+			return false;
+		Bitmap vertexToBlock;
+		if (g instanceof IndexGraph) {
+			vertexToBlock = new Bitmap(n, mapping);
+		} else {
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			vertexToBlock = new Bitmap(n, vIdx -> mapping.test(viMap.indexToIdInt(vIdx)));
+		}
+		if (vertexToBlock.get(0)) {
+			for (int v = 1; v < n; v++)
+				if (!vertexToBlock.get(v))
+					return true;
+		} else {
+			for (int v = 1; v < n; v++)
+				if (vertexToBlock.get(v))
+					return true;
+		}
+		return false;
 	}
 
 }

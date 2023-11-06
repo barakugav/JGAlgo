@@ -16,6 +16,8 @@
 package com.jgalgo.internal.util;
 
 import java.util.Arrays;
+import java.util.Objects;
+import java.util.function.IntPredicate;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -47,6 +49,27 @@ public class Bitmap implements IntIterable {
 			throw new IllegalArgumentException("Negative size: " + size);
 		words = new long[(size + WordSize - 1) / WordSize];
 		this.size = size;
+	}
+
+	/**
+	 * Creates a new bitmap of the specified size, with the specified initial value provided from a predicate.
+	 *
+	 * @param size          the number of bits
+	 * @param initialValues a provider that determine the initial value of each bit
+	 */
+	public Bitmap(int size, IntPredicate initialValues) {
+		if (size < 0)
+			throw new IllegalArgumentException("Negative size: " + size);
+		Objects.requireNonNull(initialValues);
+		words = new long[(size + WordSize - 1) / WordSize];
+		this.size = size;
+		for (int idx = 0; idx < size; idx++) {
+			if (initialValues.test(idx)) {
+				words[word(idx)] |= bit(idx);
+			} else {
+				words[word(idx)] &= ~bit(idx);
+			}
+		}
 	}
 
 	/**
