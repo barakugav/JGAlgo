@@ -226,12 +226,12 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	default E getEdge(V source, V target) {
-<span class="nc bnc" id="L229" title="All 2 branches missed.">		for (EdgeIter&lt;V, E&gt; it = outEdges(source).iterator(); it.hasNext();) {</span>
-<span class="nc" id="L230">			E e = it.next();</span>
-<span class="nc bnc" id="L231" title="All 2 branches missed.">			if (target.equals(it.target()))</span>
-<span class="nc" id="L232">				return e;</span>
-<span class="nc" id="L233">		}</span>
-<span class="nc" id="L234">		return null;</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">		for (EdgeIter&lt;V, E&gt; it = outEdges(source).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L230">			E e = it.next();</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">			if (target.equals(it.target()))</span>
+<span class="fc" id="L232">				return e;</span>
+<span class="fc" id="L233">		}</span>
+<span class="fc" id="L234">		return null;</span>
 	}
 
 	/**
@@ -276,9 +276,9 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier
 	 */
 	default void removeEdgesOf(V vertex) {
-<span class="nc" id="L279">		removeOutEdgesOf(vertex);</span>
-<span class="nc" id="L280">		removeInEdgesOf(vertex);</span>
-<span class="nc" id="L281">	}</span>
+<span class="fc" id="L279">		removeOutEdgesOf(vertex);</span>
+<span class="fc" id="L280">		removeInEdgesOf(vertex);</span>
+<span class="fc" id="L281">	}</span>
 
 	/**
 	 * Remove all edges whose source is {@code source}.
@@ -287,11 +287,11 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
 	 */
 	default void removeOutEdgesOf(V source) {
-<span class="nc bnc" id="L290" title="All 2 branches missed.">		for (EdgeIter&lt;V, E&gt; eit = outEdges(source).iterator(); eit.hasNext();) {</span>
-<span class="nc" id="L291">			eit.next();</span>
-<span class="nc" id="L292">			eit.remove();</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">		for (EdgeIter&lt;V, E&gt; eit = outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L291">			eit.next();</span>
+<span class="fc" id="L292">			eit.remove();</span>
 		}
-<span class="nc" id="L294">	}</span>
+<span class="fc" id="L294">	}</span>
 
 	/**
 	 * Remove all edges whose target is {@code target}.
@@ -300,11 +300,11 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
 	 */
 	default void removeInEdgesOf(V target) {
-<span class="nc bnc" id="L303" title="All 2 branches missed.">		for (EdgeIter&lt;V, E&gt; eit = inEdges(target).iterator(); eit.hasNext();) {</span>
-<span class="nc" id="L304">			eit.next();</span>
-<span class="nc" id="L305">			eit.remove();</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">		for (EdgeIter&lt;V, E&gt; eit = inEdges(target).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L304">			eit.next();</span>
+<span class="fc" id="L305">			eit.remove();</span>
 		}
-<span class="nc" id="L307">	}</span>
+<span class="fc" id="L307">	}</span>
 
 	/**
 	 * Reverse an edge by switching its source and target.
@@ -358,12 +358,12 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws IllegalArgumentException  if {@code endpoint} is not an endpoint of the edge
 	 */
 	default V edgeEndpoint(E edge, V endpoint) {
-<span class="nc" id="L361">		V u = edgeSource(edge);</span>
-<span class="nc" id="L362">		V v = edgeTarget(edge);</span>
-<span class="nc bnc" id="L363" title="All 2 branches missed.">		if (endpoint.equals(u)) {</span>
-<span class="nc" id="L364">			return v;</span>
-<span class="nc bnc" id="L365" title="All 2 branches missed.">		} else if (endpoint.equals(v)) {</span>
-<span class="nc" id="L366">			return u;</span>
+<span class="fc" id="L361">		V u = edgeSource(edge);</span>
+<span class="fc" id="L362">		V v = edgeTarget(edge);</span>
+<span class="fc bfc" id="L363" title="All 2 branches covered.">		if (endpoint.equals(u)) {</span>
+<span class="fc" id="L364">			return v;</span>
+<span class="pc bpc" id="L365" title="1 of 2 branches missed.">		} else if (endpoint.equals(v)) {</span>
+<span class="fc" id="L366">			return u;</span>
 		} else {
 <span class="nc" id="L368">			throw new IllegalArgumentException(</span>
 					&quot;The given vertex (&quot; + endpoint + &quot;) is not an endpoint of the edge (&quot; + u + &quot;, &quot; + v + &quot;)&quot;);

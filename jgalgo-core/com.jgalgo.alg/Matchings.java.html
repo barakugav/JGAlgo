@@ -55,28 +55,28 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 		@Override
 		public boolean isVertexMatched(int vertex) {
-<span class="nc bnc" id="L58" title="All 2 branches missed.">			return getMatchedEdge(vertex) != -1;</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">			return getMatchedEdge(vertex) != -1;</span>
 		}
 
 		@Override
 		public IntSet matchedVertices() {
-<span class="nc bnc" id="L63" title="All 2 branches missed.">			if (matchedVertices == null) {</span>
-<span class="nc" id="L64">				int matchedCount = 0;</span>
-<span class="nc bnc" id="L65" title="All 2 branches missed.">				for (int v = 0; v &lt; matched.length; v++)</span>
-<span class="nc bnc" id="L66" title="All 2 branches missed.">					if (matched[v] != -1)</span>
-<span class="nc" id="L67">						matchedCount++;</span>
-<span class="nc" id="L68">				int[] matchedVertices0 = new int[matchedCount];</span>
-<span class="nc bnc" id="L69" title="All 2 branches missed.">				for (int i = 0, v = 0; v &lt; matched.length; v++)</span>
-<span class="nc bnc" id="L70" title="All 2 branches missed.">					if (matched[v] != -1)</span>
-<span class="nc" id="L71">						matchedVertices0[i++] = v;</span>
-<span class="nc" id="L72">				matchedVertices = new ImmutableIntArraySet(matchedVertices0) {</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">			if (matchedVertices == null) {</span>
+<span class="fc" id="L64">				int matchedCount = 0;</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">				for (int v = 0; v &lt; matched.length; v++)</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">					if (matched[v] != -1)</span>
+<span class="fc" id="L67">						matchedCount++;</span>
+<span class="fc" id="L68">				int[] matchedVertices0 = new int[matchedCount];</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">				for (int i = 0, v = 0; v &lt; matched.length; v++)</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">					if (matched[v] != -1)</span>
+<span class="fc" id="L71">						matchedVertices0[i++] = v;</span>
+<span class="fc" id="L72">				matchedVertices = new ImmutableIntArraySet(matchedVertices0) {</span>
 					@Override
 					public boolean contains(int v) {
 <span class="nc bnc" id="L75" title="All 6 branches missed.">						return 0 &lt;= v &amp;&amp; v &lt; matched.length &amp;&amp; matched[v] != -1;</span>
 					}
 				};
 			}
-<span class="nc" id="L79">			return matchedVertices;</span>
+<span class="fc" id="L79">			return matchedVertices;</span>
 		}
 
 		@Override
@@ -151,10 +151,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 		@Override
 		public boolean isPerfect() {
-<span class="nc bnc" id="L154" title="All 2 branches missed.">			for (int e : matched)</span>
-<span class="nc bnc" id="L155" title="All 2 branches missed.">				if (e == -1)</span>
-<span class="nc" id="L156">					return false;</span>
-<span class="nc" id="L157">			return true;</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">			for (int e : matched)</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">				if (e == -1)</span>
+<span class="fc" id="L156">					return false;</span>
+<span class="fc" id="L157">			return true;</span>
 		}
 
 	}
@@ -452,12 +452,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 		@Override
 		public boolean isVertexMatched(int vertex) {
-<span class="nc" id="L455">			return match.isVertexMatched(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L455">			return match.isVertexMatched(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public IntSet matchedVertices() {
-<span class="nc" id="L460">			return IndexIdMaps.indexToIdSet(match.matchedVertices(), viMap);</span>
+<span class="fc" id="L460">			return IndexIdMaps.indexToIdSet(match.matchedVertices(), viMap);</span>
 		}
 
 		@Override
@@ -467,13 +467,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 		@Override
 		public int getMatchedEdge(int vertex) {
-<span class="nc" id="L470">			int e = match.getMatchedEdge(viMap.idToIndex(vertex));</span>
-<span class="nc bnc" id="L471" title="All 2 branches missed.">			return e == -1 ? -1 : eiMap.indexToIdInt(e);</span>
+<span class="fc" id="L470">			int e = match.getMatchedEdge(viMap.idToIndex(vertex));</span>
+<span class="fc bfc" id="L471" title="All 2 branches covered.">			return e == -1 ? -1 : eiMap.indexToIdInt(e);</span>
 		}
 
 		@Override
 		public boolean containsEdge(int edge) {
-<span class="nc" id="L476">			return match.containsEdge(eiMap.idToIndex(edge));</span>
+<span class="fc" id="L476">			return match.containsEdge(eiMap.idToIndex(edge));</span>
 		}
 
 		@Override
@@ -488,7 +488,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 		@Override
 		public boolean isPerfect() {
-<span class="nc" id="L491">			return match.isPerfect();</span>
+<span class="fc" id="L491">			return match.isPerfect();</span>
 		}
 	}
 

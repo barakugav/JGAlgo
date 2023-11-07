@@ -653,9 +653,9 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 		int nextID() {
 			for (;;) {
 <span class="fc" id="L655">				int id = counter++;</span>
-<span class="pc bpc" id="L656" title="1 of 2 branches missed.">				if (!idSet().contains(id))</span>
+<span class="fc bfc" id="L656" title="All 2 branches covered.">				if (!idSet().contains(id))</span>
 <span class="fc" id="L657">					return id;</span>
-<span class="nc" id="L658">			}</span>
+<span class="fc" id="L658">			}</span>
 		}
 	}
 

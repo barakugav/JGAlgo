@@ -15,12 +15,7 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.Bitmap;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -51,7 +46,7 @@ public interface IMatching extends Matching&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default boolean isVertexMatched(Integer vertex) {
-<span class="nc" id="L54">		return isVertexMatched(vertex.intValue());</span>
+<span class="fc" id="L49">		return isVertexMatched(vertex.intValue());</span>
 	}
 
 	/**
@@ -66,7 +61,8 @@ public interface IMatching extends Matching&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer getMatchedEdge(Integer vertex) {
-<span class="nc" id="L69">		return Integer.valueOf(getMatchedEdge(vertex.intValue()));</span>
+<span class="fc" id="L64">		int e = getMatchedEdge(vertex.intValue());</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		return e == -1 ? null : Integer.valueOf(e);</span>
 	}
 
 	@Override
@@ -90,63 +86,11 @@ public interface IMatching extends Matching&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default boolean containsEdge(Integer edge) {
-<span class="nc" id="L93">		return containsEdge(edge.intValue());</span>
+<span class="fc" id="L89">		return containsEdge(edge.intValue());</span>
 	}
 
 	@Override
 	IntSet edges();
-
-	/**
-	 * Check whether the given collection of edges form a valid matching in the graph.
-	 *
-	 * &lt;p&gt;
-	 * A matching \(M\) is a sub set of \(E\), the edge set of the graph, in which for each vertex of the graph, no more
-	 * than one adjacent edge is in \(M\). This method check whether a given collection of edges form a valid matching.
-	 *
-	 * @param  g     a graph
-	 * @param  edges a collection of edges
-	 * @return       {@code true} if {@code edges} form a valid matching in {@code g}, else {@code false}
-	 */
-	static boolean isMatching(IntGraph g, IntCollection edges) {
-		IndexGraph ig;
-<span class="nc bnc" id="L112" title="All 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L113">			ig = (IndexGraph) g;</span>
-		} else {
-<span class="nc" id="L115">			ig = g.indexGraph();</span>
-<span class="nc" id="L116">			edges = IndexIdMaps.idToIndexCollection(edges, g.indexGraphEdgesMap());</span>
-		}
-<span class="nc" id="L118">		final int n = ig.vertices().size();</span>
-
-<span class="nc bnc" id="L120" title="All 2 branches missed.">		if (edges.size() &gt; n / 2)</span>
-<span class="nc" id="L121">			return false;</span>
-
-<span class="nc bnc" id="L123" title="All 2 branches missed.">		if (edges.size() * 4 &gt; n / 8) {</span>
-			/* matching is big, use Bitmap */
-<span class="nc" id="L125">			Bitmap matched = new Bitmap(n);</span>
-<span class="nc bnc" id="L126" title="All 2 branches missed.">			for (int e : edges) {</span>
-<span class="nc" id="L127">				int u = ig.edgeSource(e), v = ig.edgeTarget(e);</span>
-<span class="nc bnc" id="L128" title="All 2 branches missed.">				if (matched.get(u))</span>
-<span class="nc" id="L129">					return false;</span>
-<span class="nc" id="L130">				matched.set(u);</span>
-<span class="nc bnc" id="L131" title="All 2 branches missed.">				if (matched.get(v))</span>
-<span class="nc" id="L132">					return false;</span>
-<span class="nc" id="L133">				matched.set(v);</span>
-<span class="nc" id="L134">			}</span>
-
-<span class="nc" id="L136">		} else {</span>
-			/* matching is small, use hashtable */
-<span class="nc" id="L138">			IntSet matched = new IntOpenHashSet(edges.size() * 2);</span>
-<span class="nc bnc" id="L139" title="All 2 branches missed.">			for (int e : edges) {</span>
-<span class="nc" id="L140">				int u = ig.edgeSource(e), v = ig.edgeTarget(e);</span>
-<span class="nc bnc" id="L141" title="All 2 branches missed.">				if (!matched.add(u))</span>
-<span class="nc" id="L142">					return false;</span>
-<span class="nc bnc" id="L143" title="All 2 branches missed.">				if (!matched.add(v))</span>
-<span class="nc" id="L144">					return false;</span>
-<span class="nc" id="L145">			}</span>
-
-		}
-<span class="nc" id="L148">		return true;</span>
-	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

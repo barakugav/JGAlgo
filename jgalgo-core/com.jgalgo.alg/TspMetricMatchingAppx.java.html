@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TSPMetricMatchingAppx.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">TSPMetricMatchingAppx.java</span></div><h1>TSPMetricMatchingAppx.java</h1><pre class="source lang-java linenums">/*-
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TspMetricMatchingAppx.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">TspMetricMatchingAppx.java</span></div><h1>TspMetricMatchingAppx.java</h1><pre class="source lang-java linenums">/*-
  * Copyright 2023 Barak Ugav
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L36">public class TSPMetricMatchingAppx extends TSPMetricUtils.AbstractImpl {</span>
+<span class="fc" id="L36">public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {</span>
 
 <span class="fc" id="L38">	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();</span>
 <span class="fc" id="L39">	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();</span>
@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	/**
 	 * Create a new TSP \(3/2\)-approximation algorithm.
 	 */
-<span class="fc" id="L44">	public TSPMetricMatchingAppx() {}</span>
+<span class="fc" id="L44">	public TspMetricMatchingAppx() {}</span>
 
 	@Override
 	IPath computeShortestTour(IndexGraph g, IWeightFunction w) {
@@ -106,7 +106,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L106">		}</span>
 <span class="fc" id="L107">		IndexGraph g1 = g1Builder.build();</span>
 
-<span class="fc" id="L109">		IPath cycle = TSPMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);</span>
+<span class="fc" id="L109">		IPath cycle = TspMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);</span>
 
 		/* Convert cycle of edges to list of vertices */
 <span class="fc" id="L112">		return cycle;</span>

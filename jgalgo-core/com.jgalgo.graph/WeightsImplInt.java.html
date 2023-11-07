@@ -206,27 +206,27 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 
 	static class ObjImmutableView&lt;K &gt; extends WeightsImpl.ObjImmutableView&lt;K, Integer&gt; implements WeightsInt &lt;K &gt; {
 		ObjImmutableView(WeightsInt &lt;K &gt; w) {
-<span class="nc" id="L209">			super(w);</span>
-<span class="nc" id="L210">		}</span>
+<span class="fc" id="L209">			super(w);</span>
+<span class="fc" id="L210">		}</span>
 
 		@Override
 		WeightsInt &lt;K &gt; weights() {
-<span class="nc" id="L214">			return (WeightsInt &lt;K &gt;) super.weights();</span>
+<span class="fc" id="L214">			return (WeightsInt &lt;K &gt;) super.weights();</span>
 		}
 
 		@Override
 		public int get(K id) {
-<span class="nc" id="L219">			return weights().get(id);</span>
+<span class="fc" id="L219">			return weights().get(id);</span>
 		}
 
 		@Override
 		public void set(K id, int weight) {
-<span class="nc" id="L224">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+<span class="fc" id="L224">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
 		}
 
 		@Override
 		public int defaultWeight() {
-<span class="nc" id="L229">			return weights().defaultWeight();</span>
+<span class="fc" id="L229">			return weights().defaultWeight();</span>
 		}
 	}
 

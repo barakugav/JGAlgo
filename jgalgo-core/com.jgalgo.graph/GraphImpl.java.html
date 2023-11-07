@@ -110,10 +110,10 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
 	@Override
 	public E getEdge(V source, V target) {
-<span class="nc" id="L113">		int uIdx = viMap.idToIndex(source);</span>
-<span class="nc" id="L114">		int vIdx = viMap.idToIndex(target);</span>
-<span class="nc" id="L115">		int eIdx = indexGraph.getEdge(uIdx, vIdx);</span>
-<span class="nc bnc" id="L116" title="All 2 branches missed.">		return eIdx == -1 ? null : eiMap.indexToId(eIdx);</span>
+<span class="fc" id="L113">		int uIdx = viMap.idToIndex(source);</span>
+<span class="fc" id="L114">		int vIdx = viMap.idToIndex(target);</span>
+<span class="fc" id="L115">		int eIdx = indexGraph.getEdge(uIdx, vIdx);</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		return eIdx == -1 ? null : eiMap.indexToId(eIdx);</span>
 	}
 
 	@Override
@@ -191,13 +191,13 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
 	@Override
 	public void clear() {
-<span class="nc" id="L194">		indexGraph.clear();</span>
-<span class="nc" id="L195">	}</span>
+<span class="fc" id="L194">		indexGraph.clear();</span>
+<span class="fc" id="L195">	}</span>
 
 	@Override
 	public void clearEdges() {
-<span class="nc" id="L199">		indexGraph.clearEdges();</span>
-<span class="nc" id="L200">	}</span>
+<span class="fc" id="L199">		indexGraph.clearEdges();</span>
+<span class="fc" id="L200">	}</span>
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
@@ -218,15 +218,15 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
 	@Override
 	public void removeVerticesWeights(String key) {
-<span class="nc" id="L221">		indexGraph.removeVerticesWeights(key);</span>
-<span class="nc" id="L222">		proneRemovedVerticesWeights();</span>
-<span class="nc" id="L223">	}</span>
+<span class="fc" id="L221">		indexGraph.removeVerticesWeights(key);</span>
+<span class="fc" id="L222">		proneRemovedVerticesWeights();</span>
+<span class="fc" id="L223">	}</span>
 
 	private void proneRemovedVerticesWeights() {
 <span class="fc" id="L226">		List&lt;IWeights&lt;?&gt;&gt; indexWeights = new ReferenceArrayList&lt;&gt;();</span>
 <span class="fc bfc" id="L227" title="All 2 branches covered.">		for (String key : indexGraph.getVerticesWeightsKeys())</span>
 <span class="fc" id="L228">			indexWeights.add(indexGraph.getVerticesIWeights(key));</span>
-<span class="pc bpc" id="L229" title="1 of 2 branches missed.">		verticesWeights.keySet().removeIf(w -&gt; !indexWeights.contains(w));</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">		verticesWeights.keySet().removeIf(w -&gt; !indexWeights.contains(w));</span>
 <span class="fc" id="L230">	}</span>
 
 	@Override
@@ -263,15 +263,15 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
 	@Override
 	public void removeEdgesWeights(String key) {
-<span class="nc" id="L266">		indexGraph.removeEdgesWeights(key);</span>
-<span class="nc" id="L267">		proneRemovedEdgesWeights();</span>
-<span class="nc" id="L268">	}</span>
+<span class="fc" id="L266">		indexGraph.removeEdgesWeights(key);</span>
+<span class="fc" id="L267">		proneRemovedEdgesWeights();</span>
+<span class="fc" id="L268">	}</span>
 
 	private void proneRemovedEdgesWeights() {
 <span class="fc" id="L271">		List&lt;IWeights&lt;?&gt;&gt; indexWeights = new ReferenceArrayList&lt;&gt;();</span>
 <span class="fc bfc" id="L272" title="All 2 branches covered.">		for (String key : indexGraph.getEdgesWeightsKeys())</span>
 <span class="fc" id="L273">			indexWeights.add(indexGraph.getEdgesIWeights(key));</span>
-<span class="pc bpc" id="L274" title="1 of 2 branches missed.">		edgesWeights.keySet().removeIf(w -&gt; !indexWeights.contains(w));</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">		edgesWeights.keySet().removeIf(w -&gt; !indexWeights.contains(w));</span>
 <span class="fc" id="L275">	}</span>
 
 	class EdgeSetMapped extends AbstractSet&lt;E&gt; implements EdgeSet&lt;V, E&gt; {
@@ -292,8 +292,8 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public boolean contains(Object edge) {
-<span class="nc" id="L295">			int eIdx = eiMap.idToIndex((E) edge);</span>
-<span class="nc" id="L296">			return set.contains(eIdx);</span>
+<span class="fc" id="L295">			int eIdx = eiMap.idToIndex((E) edge);</span>
+<span class="fc" id="L296">			return set.contains(eIdx);</span>
 		}
 
 		@Override
@@ -333,14 +333,14 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
 		@Override
 		public E peekNext() {
-<span class="nc" id="L336">			int eIdx = it.peekNextInt();</span>
-<span class="nc" id="L337">			return eiMap.indexToId(eIdx);</span>
+<span class="fc" id="L336">			int eIdx = it.peekNextInt();</span>
+<span class="fc" id="L337">			return eiMap.indexToId(eIdx);</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="nc" id="L342">			it.remove();</span>
-<span class="nc" id="L343">		}</span>
+<span class="fc" id="L342">			it.remove();</span>
+<span class="fc" id="L343">		}</span>
 
 		@Override
 		public V target() {
@@ -362,12 +362,12 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
 	@Override
 	public boolean isAllowSelfEdges() {
-<span class="nc" id="L365">		return indexGraph.isAllowSelfEdges();</span>
+<span class="fc" id="L365">		return indexGraph.isAllowSelfEdges();</span>
 	}
 
 	@Override
 	public boolean isAllowParallelEdges() {
-<span class="nc" id="L370">		return indexGraph.isAllowParallelEdges();</span>
+<span class="fc" id="L370">		return indexGraph.isAllowParallelEdges();</span>
 	}
 
 	static class Directed&lt;V, E&gt; extends GraphImpl&lt;V, E&gt; {
@@ -391,9 +391,9 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
 		@Override
 		public void reverseEdge(E edge) {
-<span class="nc" id="L394">			int eIdx = eiMap.idToIndex(edge);</span>
-<span class="nc" id="L395">			indexGraph.reverseEdge(eIdx);</span>
-<span class="nc" id="L396">		}</span>
+<span class="fc" id="L394">			int eIdx = eiMap.idToIndex(edge);</span>
+<span class="fc" id="L395">			indexGraph.reverseEdge(eIdx);</span>
+<span class="fc" id="L396">		}</span>
 	}
 
 	static class Undirected&lt;V, E&gt; extends GraphImpl&lt;V, E&gt; {
@@ -521,9 +521,9 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
 				@Override
 				public void idsClear() {
-<span class="nc" id="L524">					idToIndex.clear();</span>
-<span class="nc" id="L525">					indexToId().clear();</span>
-<span class="nc" id="L526">				}</span>
+<span class="fc" id="L524">					idToIndex.clear();</span>
+<span class="fc" id="L525">					indexToId().clear();</span>
+<span class="fc" id="L526">				}</span>
 			});
 <span class="fc" id="L528">		}</span>
 

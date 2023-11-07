@@ -596,19 +596,19 @@ interface WeightsImpl {
 	abstract static class ObjImmutableView&lt;K, T&gt; extends ImmutableView&lt;K, T&gt; implements Weights&lt;K, T&gt; {
 
 		ObjImmutableView(Weights&lt;K, T&gt; weights) {
-<span class="nc" id="L599">			super(weights);</span>
-<span class="nc" id="L600">		}</span>
+<span class="fc" id="L599">			super(weights);</span>
+<span class="fc" id="L600">		}</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		static &lt;K, T&gt; Weights&lt;K, T&gt; newInstance(Weights&lt;K, T&gt; weights) {
-<span class="nc bnc" id="L604" title="All 2 branches missed.">			if (weights instanceof ImmutableView)</span>
+<span class="pc bpc" id="L604" title="1 of 2 branches missed.">			if (weights instanceof ImmutableView)</span>
 <span class="nc" id="L605">				return weights;</span>
-<span class="nc bnc" id="L606" title="All 2 branches missed.">			if (weights instanceof WeightsByte)</span>
+<span class="pc bpc" id="L606" title="1 of 2 branches missed.">			if (weights instanceof WeightsByte)</span>
 <span class="nc" id="L607">				return (Weights&lt;K, T&gt;) new WeightsImplByte.ObjImmutableView&lt;&gt;((WeightsByte&lt;K&gt;) weights);</span>
-<span class="nc bnc" id="L608" title="All 2 branches missed.">			if (weights instanceof WeightsShort)</span>
+<span class="pc bpc" id="L608" title="1 of 2 branches missed.">			if (weights instanceof WeightsShort)</span>
 <span class="nc" id="L609">				return (Weights&lt;K, T&gt;) new WeightsImplShort.ObjImmutableView&lt;&gt;((WeightsShort&lt;K&gt;) weights);</span>
-<span class="nc bnc" id="L610" title="All 2 branches missed.">			if (weights instanceof WeightsInt)</span>
-<span class="nc" id="L611">				return (Weights&lt;K, T&gt;) new WeightsImplInt.ObjImmutableView&lt;&gt;((WeightsInt&lt;K&gt;) weights);</span>
+<span class="pc bpc" id="L610" title="1 of 2 branches missed.">			if (weights instanceof WeightsInt)</span>
+<span class="fc" id="L611">				return (Weights&lt;K, T&gt;) new WeightsImplInt.ObjImmutableView&lt;&gt;((WeightsInt&lt;K&gt;) weights);</span>
 <span class="nc bnc" id="L612" title="All 2 branches missed.">			if (weights instanceof WeightsLong)</span>
 <span class="nc" id="L613">				return (Weights&lt;K, T&gt;) new WeightsImplLong.ObjImmutableView&lt;&gt;((WeightsLong&lt;K&gt;) weights);</span>
 <span class="nc bnc" id="L614" title="All 2 branches missed.">			if (weights instanceof WeightsFloat)</span>
