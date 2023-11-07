@@ -17,6 +17,7 @@ package com.jgalgo.graph;
 
 import java.util.AbstractCollection;
 import java.util.AbstractList;
+import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -25,6 +26,7 @@ import java.util.Set;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -316,15 +318,19 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K> Collection<K> indexToIdCollection(IntCollection indexCollection, IndexIdMap<K> map) {
-		if (map instanceof IndexIntIdMap) {
-			return (Collection<K>) indexToIdCollection(indexCollection, (IndexIntIdMap) map);
+		if (indexCollection instanceof IntSet) {
+			return indexToIdSet((IntSet) indexCollection, map);
+		} else if (indexCollection instanceof IntList) {
+			return indexToIdList((IntList) indexCollection, map);
+		} else if (map instanceof IndexIntIdMap) {
+			return (Collection<K>) new IndexToIntIdCollection(indexCollection, (IndexIntIdMap) map);
 		} else {
 			return new IndexToIdCollection<>(indexCollection, map);
 		}
 	}
 
 	/**
-	 * Create an IDs collection from a collection of indices.
+	 * Create an int IDs collection from a collection of indices.
 	 *
 	 * @param  indexCollection a collection of indices
 	 * @param  map             index-id mapping
@@ -332,10 +338,9 @@ public class IndexIdMaps {
 	 *                         index-collection
 	 */
 	public static IntCollection indexToIdCollection(IntCollection indexCollection, IndexIntIdMap map) {
-		return new IndexToIntIdCollection(indexCollection, map);
+		return (IntCollection) indexToIdCollection(indexCollection, (IndexIdMap<Integer>) map);
 	}
 
-	@SuppressWarnings("unchecked")
 	private static class IndexToIdCollection<K> extends AbstractCollection<K> {
 
 		final IntCollection indexC;
@@ -366,11 +371,13 @@ public class IndexIdMaps {
 			return new IndexToIdIterator<>(indexC.iterator(), map);
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public boolean contains(Object key) {
 			return indexC.contains(map.idToIndex((K) key));
 		}
 
+		@SuppressWarnings("unchecked")
 		@Override
 		public boolean remove(Object key) {
 			return indexC.rem(map.idToIndex((K) key));
@@ -446,27 +453,82 @@ public class IndexIdMaps {
 		return new IndexToIntIdSet(indexSet, map);
 	}
 
-	private static class IndexToIdSet<K> extends IndexToIdCollection<K> implements Set<K> {
-		IndexToIdSet(IntSet indexSet, IndexIdMap<K> map) {
-			super(indexSet, map);
+	private static class IndexToIdSet<K> extends AbstractSet<K> {
+
+		final IntCollection idxSet;
+		final IndexIdMap<K> map;
+
+		IndexToIdSet(IntSet idxSet, IndexIdMap<K> map) {
+			this.idxSet = Objects.requireNonNull(idxSet);
+			this.map = Objects.requireNonNull(map);
+		}
+
+		@Override
+		public int size() {
+			return idxSet.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return idxSet.isEmpty();
+		}
+
+		@Override
+		public void clear() {
+			idxSet.clear();
+		}
+
+		@Override
+		public Iterator<K> iterator() {
+			return new IndexToIdIterator<>(idxSet.iterator(), map);
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean contains(Object key) {
+			return idxSet.contains(map.idToIndex((K) key));
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean remove(Object key) {
+			return idxSet.rem(map.idToIndex((K) key));
 		}
 	}
 
-	private static class IndexToIntIdSet extends IndexToIntIdCollection implements IntSet {
-		IndexToIntIdSet(IntSet indexSet, IndexIntIdMap map) {
-			super(indexSet, map);
+	private static class IndexToIntIdSet extends AbstractIntSet {
+
+		final IntCollection idxSet;
+		final IndexIntIdMap map;
+
+		IndexToIntIdSet(IntSet idxSet, IndexIntIdMap map) {
+			this.idxSet = Objects.requireNonNull(idxSet);
+			this.map = Objects.requireNonNull(map);
 		}
 
-		@Deprecated
 		@Override
-		public boolean remove(int k) {
-			return ((IntSet) indexC).remove(map.idToIndex(k));
+		public int size() {
+			return idxSet.size();
 		}
 
-		@Deprecated
 		@Override
-		public boolean rem(int key) {
-			return super.rem(key);
+		public boolean isEmpty() {
+			return idxSet.isEmpty();
+		}
+
+		@Override
+		public void clear() {
+			idxSet.clear();
+		}
+
+		@Override
+		public IntIterator iterator() {
+			return new IndexToIntIdIterator(idxSet.iterator(), map);
+		}
+
+		@Override
+		public boolean contains(int key) {
+			return idxSet.contains(map.idToIndex(key));
 		}
 	}
 
@@ -480,7 +542,17 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K> IntCollection idToIndexCollection(Collection<K> idCollection, IndexIdMap<K> map) {
-		if (map instanceof IndexIntIdMap) {
+		if (idCollection instanceof Set) {
+			// TODO
+			// return new IdToIndexSet<>((Set<K>) idCollection, map);
+			return new IdToIndexCollection<>(idCollection, map);
+
+		} else if (idCollection instanceof List) {
+			// TODO
+			// return new IdToIndexList<>((List<K>) idCollection, map);
+			return new IdToIndexCollection<>(idCollection, map);
+
+		} else if (map instanceof IndexIntIdMap) {
 			return new IntIdToIndexCollection(IntAdapters.asIntCollection((Collection<Integer>) idCollection),
 					(IndexIntIdMap) map);
 		} else {
