@@ -407,17 +407,20 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		}
 
 		long get(String key) {
-			if ("runCount".equals(key))
-				return runCount;
-			if ("scalingIterations".equals(key))
-				return scalingIterations;
-			if ("potentialIterations".equals(key))
-				return potentialIterations;
-			if ("bigLayer".equals(key))
-				return bigLayer;
-			if ("longPath".equals(key))
-				return longPath;
-			throw new IllegalArgumentException("unknown diagnostic key: " + key);
+			switch (key) {
+				case "runCount":
+					return runCount;
+				case "scalingIterations":
+					return scalingIterations;
+				case "potentialIterations":
+					return potentialIterations;
+				case "bigLayer":
+					return bigLayer;
+				case "longPath":
+					return longPath;
+				default:
+					throw new IllegalArgumentException("unknown diagnostic key: " + key);
+			}
 		}
 
 	}
