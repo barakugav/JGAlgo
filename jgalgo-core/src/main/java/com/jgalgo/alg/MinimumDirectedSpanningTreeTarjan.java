@@ -20,11 +20,13 @@ import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.UnionFindValue;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
 /**
@@ -59,70 +61,97 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
 	}
 
-	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyDirected(g);
-		if (g.vertices().size() == 0 || g.edges().size() == 0)
-			return MinimumSpanningTreeUtils.ResultImpl.Empty;
-		g = g.copy(); // we must copy because we add new vertices and edges
-		final int artificialEdgesThreshold = g.edges().size();
-
-		// Connect new root to all vertices
-		int n = g.vertices().size(), r = g.addVertex();
-		for (int v = 0; v < n; v++) {
-			int e = g.addEdge(r, v);
-			assert e >= artificialEdgesThreshold;
-		}
-
-		IVertexPartition connectivityRes = (IVertexPartition) sccAlg.findStronglyConnectedComponents(g);
-		if (connectivityRes.numberOfBlocks() > 1)
-			addEdgesUntilStronglyConnected(g, connectivityRes, artificialEdgesThreshold);
-
-		// Calc MST on new graph
-		ContractedGraph contractedGraph = contract(g, w, artificialEdgesThreshold);
-		return expand(g, contractedGraph, r, artificialEdgesThreshold);
-	}
-
 	@Override
 	MinimumSpanningTree.IResult computeMinimumDirectedSpanningTree(IndexGraph g, IWeightFunction w, int root) {
 		Assertions.Graphs.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return MinimumSpanningTreeUtils.ResultImpl.Empty;
-		final int artificialEdgesThreshold = g.edges().size();
 
-		IVertexPartition connectivityRes = (IVertexPartition) sccAlg.findStronglyConnectedComponents(g);
-		if (connectivityRes.numberOfBlocks() > 1) {
-			g = g.copy(); // we must copy because we add new vertices and edges
-			addEdgesUntilStronglyConnected(g, connectivityRes, artificialEdgesThreshold);
+		IntSet vertices = IPath.reachableVertices(g, root);
+		if (vertices.size() == g.vertices().size()) {
+			/* all vertices are reachable from the root */
+			final int artificialEdgesThreshold = g.edges().size();
+			IVertexPartition connectivityRes = (IVertexPartition) sccAlg.findStronglyConnectedComponents(g);
+			if (connectivityRes.numberOfBlocks() > 1) {
+				g = g.copy(); // we must copy because we add new edges
+				addEdgesUntilStronglyConnected(g, root, connectivityRes, artificialEdgesThreshold);
+			}
+			ContractedGraph contractedGraph = contract(g, null, w, artificialEdgesThreshold);
+			int[] mdstEdges = expand(g, contractedGraph, root, artificialEdgesThreshold);
+			return new MinimumSpanningTreeUtils.ResultImpl(mdstEdges);
+
+		} else {
+			/* not all vertices are reachable from the root, operate on the subgraph of these vertices */
+			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
+
+			builder.expectedVerticesNum(vertices.size());
+			int[] vRefToOrig = vertices.toIntArray();
+			int[] vOrigToRef = new int[g.vertices().size()];
+			Arrays.fill(vOrigToRef, -1);
+			for (int v : vRefToOrig)
+				vOrigToRef[v] = builder.addVertex();
+			root = vOrigToRef[root];
+
+			int subGraphEdgesNum = 0;
+			for (int m = g.edges().size(), e = 0; e < m; e++)
+				if (vertices.contains(g.edgeSource(e)) && vertices.contains(g.edgeTarget(e)))
+					subGraphEdgesNum++;
+			int[] edgeRef = new int[subGraphEdgesNum];
+			builder.expectedEdgesNum(subGraphEdgesNum);
+			for (int m = g.edges().size(), e = 0; e < m; e++) {
+				int u = g.edgeSource(e), v = g.edgeTarget(e);
+				if (vertices.contains(u) && vertices.contains(v))
+					edgeRef[builder.addEdge(vOrigToRef[u], vOrigToRef[v])] = e;
+			}
+
+			g = builder.buildMutable();
+
+			final int artificialEdgesThreshold = g.edges().size();
+			IVertexPartition connectivityRes = (IVertexPartition) sccAlg.findStronglyConnectedComponents(g);
+			if (connectivityRes.numberOfBlocks() > 1)
+				addEdgesUntilStronglyConnected(g, root, connectivityRes, artificialEdgesThreshold);
+
+			ContractedGraph contractedGraph = contract(g, edgeRef, w, artificialEdgesThreshold);
+			int[] mdstEdges = expand(g, contractedGraph, root, artificialEdgesThreshold);
+			for (int i = 0; i < mdstEdges.length; i++)
+				mdstEdges[i] = edgeRef[mdstEdges[i]];
+			return new MinimumSpanningTreeUtils.ResultImpl(mdstEdges);
 		}
-		ContractedGraph contractedGraph = contract(g, w, artificialEdgesThreshold);
-
-		return expand(g, contractedGraph, root, artificialEdgesThreshold);
 	}
 
-	private static MinimumSpanningTree.IResult expand(IndexGraph g, ContractedGraph cg, int root,
-			int artificialEdgesThreshold) {
+	private static int[] expand(IndexGraph g, ContractedGraph cg, int root, int artificialEdgesThreshold) {
 		int[] inEdge = new int[cg.n];
+		Arrays.fill(inEdge, -1);
 
-		IntStack roots = new IntArrayList();
-		roots.push(root);
-
-		while (!roots.isEmpty()) {
-			int r = roots.popInt();
+		IntStack stack = new IntArrayList();
+		assert cg.child[root] == -1;
+		for (int v = cg.parent[root], prevChild = root; v != -1; v = cg.parent[prevChild = v]) {
+			for (int child = cg.child[v], c = child;;) {
+				assert c != -1;
+				if (c != prevChild)
+					stack.push(c);
+				c = cg.brother[c];
+				if (c == child)
+					break;
+			}
+		}
+		while (!stack.isEmpty()) {
+			int r = stack.popInt();
 			int e = cg.inEdge[r];
-			int v = g.edgeTarget(e);
-			inEdge[v] = e;
+			int u = g.edgeTarget(e);
+			inEdge[u] = e;
 
-			int upTo = r != root ? cg.parent[r] : -1;
-			for (int prevChild = -1; v != upTo; v = cg.parent[prevChild = v]) {
-				int child = cg.child[v];
-				if (child == -1)
-					continue;
-				for (int c = child;;) {
-					if (c != prevChild)
-						roots.push(c);
-					c = cg.brother[c];
-					if (c == -1 || c == child)
-						break;
+			assert cg.child[u] == -1;
+			for (int v = cg.parent[u], prevChild = u; v != cg.parent[r]; v = cg.parent[prevChild = v]) {
+				if (cg.child[v] != -1) {
+					for (int child = cg.child[v], c = child;;) {
+						assert c != -1;
+						if (c != prevChild)
+							stack.push(c);
+						c = cg.brother[c];
+						if (c == child)
+							break;
+					}
 				}
 			}
 		}
@@ -135,37 +164,39 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		for (int e, i = 0, v = 0; v < cg.n; v++)
 			if (v != root && (e = inEdge[v]) < artificialEdgesThreshold)
 				mst[i++] = e;
-		return new MinimumSpanningTreeUtils.ResultImpl(mst);
+		return mst;
 	}
 
-	private static void addEdgesUntilStronglyConnected(IndexGraph g, IVertexPartition connectivityRes,
+	private static void addEdgesUntilStronglyConnected(IndexGraph g, int root, IVertexPartition connectivityRes,
 			int artificialEdgesThreshold) {
-		int N = connectivityRes.numberOfBlocks();
-		if (N <= 1)
-			return;
+		/*
+		 * All the vertices in the graph are assumed to be reachable from the root, so we add a single edge from each
+		 * strongly connected component (except the one containing the root) to the root.
+		 */
 
-		int[] V2v = new int[N];
-		Arrays.fill(V2v, -1);
+		int blockNum = connectivityRes.numberOfBlocks();
+		int[] blockToV = new int[blockNum];
+		Arrays.fill(blockToV, -1);
 		int n = g.vertices().size();
-		for (int v = 0; v < n; v++) {
-			int V = connectivityRes.vertexBlock(v);
-			if (V2v[V] == -1)
-				V2v[V] = v;
-		}
+		for (int b, v = 0; v < n; v++)
+			if (blockToV[b = connectivityRes.vertexBlock(v)] == -1)
+				blockToV[b] = v;
 
-		ccLoop: for (int V = 0; V < N; V++) {
-			int vNext = V < N - 1 ? V + 1 : 0;
-			for (IEdgeIter eit = g.outEdges(V2v[V]).iterator(); eit.hasNext();) {
+		int rootBlock = connectivityRes.vertexBlock(root);
+		blockLoop: for (int b = 0; b < blockNum; b++) {
+			if (b == rootBlock)
+				continue; /* avoid self edges */
+			for (IEdgeIter eit = g.outEdges(blockToV[b]).iterator(); eit.hasNext();) {
 				eit.nextInt();
-				if (connectivityRes.vertexBlock(eit.targetInt()) == vNext)
-					continue ccLoop; /* V already connected to vNext */
+				if (connectivityRes.vertexBlock(eit.targetInt()) == rootBlock)
+					continue blockLoop; /* V already connected to root, avoid parallel edges */
 			}
-			int e = g.addEdge(V2v[V], V2v[vNext]);
+			int e = g.addEdge(blockToV[b], root);
 			assert e >= artificialEdgesThreshold;
 		}
 	}
 
-	private ContractedGraph contract(IndexGraph g, IWeightFunction wOrig, int artificialEdgesThreshold) {
+	private ContractedGraph contract(IndexGraph g, int[] edgeRef, IWeightFunction wOrig, int artificialEdgesThreshold) {
 		assert sccAlg.isStronglyConnected(g);
 
 		int n = g.vertices().size();
@@ -176,15 +207,21 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		for (int v = 0; v < n; v++)
 			ufIdxToV[uf.make()] = v;
 
-		IWeightFunction w =
-				e -> (e < artificialEdgesThreshold ? wOrig.weight(e) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));
+		IWeightFunction w;
+		if (edgeRef == null) {
+			w = e -> (e < artificialEdgesThreshold ? wOrig.weight(e) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));
+		} else {
+			w = e -> (e < artificialEdgesThreshold ? wOrig.weight(edgeRef[e]) : HeavyEdgeWeight)
+					+ uf.getValue(g.edgeTarget(e));
+		}
 		@SuppressWarnings("unchecked")
 		HeapReferenceable<Integer, Void>[] heap = new HeapReferenceable[VMaxNum];
 		for (int v = 0; v < n; v++)
 			heap[v] = heapBuilder.build(w);
 		for (int v = 0; v < n; v++)
 			for (int e : g.inEdges(v))
-				heap[v].insert(Integer.valueOf(e));
+				if (g.edgeSource(e) != g.edgeTarget(e))
+					heap[v].insert(Integer.valueOf(e));
 
 		int[] parent = new int[VMaxNum];
 		int[] child = new int[VMaxNum];

@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Iterator;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
@@ -38,11 +39,11 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 
-	private static class MDSTUndirectedWrapper implements MinimumSpanningTree {
+	private static class MdstUndirectedWrapper implements MinimumSpanningTree {
 
 		private final MinimumDirectedSpanningTree algo;
 
-		MDSTUndirectedWrapper(MinimumDirectedSpanningTree algo) {
+		MdstUndirectedWrapper(MinimumDirectedSpanningTree algo) {
 			this.algo = algo;
 		}
 
@@ -74,14 +75,25 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 					edgeRef.set(dg.addEdge(gToDg.getInt(v), gToDg.getInt(u)), e);
 				}
 			}
-			int root = dg.vertices().iterator().nextInt();
 			IWeightFunction w0 = e -> w.weight(edgeRef.get(e));
-			MinimumSpanningTree.IResult mst0 = (MinimumSpanningTree.IResult) algo.computeMinimumDirectedSpanningTree(dg,
-					w0, Integer.valueOf(root));
-			IntCollection mst = new IntArrayList(mst0.edges().size());
-			for (int e : mst0.edges())
-				mst.add(g.indexGraphEdgesMap().idToIndex(edgeRef.get(e)));
-			MinimumSpanningTree.IResult indexRes = new MinimumSpanningTreeUtils.ResultImpl(mst);
+
+			/*
+			 * MDST algorithm compute the directed spanning tree of the vertices reachable from the root, not the full
+			 * forest of the graph, so we compute MDST for each weak connected component independently.
+			 */
+			WeaklyConnectedComponentsAlgo wccAlgo = WeaklyConnectedComponentsAlgo.newInstance();
+			VertexPartition<V, E> wccs = wccAlgo.findWeaklyConnectedComponents(g);
+			IntCollection mst = new IntArrayList();
+			for (int wcc = 0; wcc < wccs.numberOfBlocks(); wcc++) {
+				int root = gToDg.getInt(wccs.blockVertices(wcc).iterator().next());
+				MinimumSpanningTree.IResult wccMst = (MinimumSpanningTree.IResult) algo
+						.computeMinimumDirectedSpanningTree(dg, w0, Integer.valueOf(root));
+				mst.addAll(wccMst.edges());
+			}
+
+			int[] mstIndex = mst.intStream().map(e -> g.indexGraphEdgesMap().idToIndex(edgeRef.get(e))).toArray();
+			MinimumSpanningTree.IResult indexRes = new MinimumSpanningTreeUtils.ResultImpl(mstIndex);
+
 			if (g instanceof IntGraph) {
 				return (MinimumSpanningTree.Result<V, E>) new MinimumSpanningTreeUtils.IntResultFromIndexResult(
 						(IntGraph) g, indexRes);
@@ -94,7 +106,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 	@Test
 	public void testRandGraphUndirected() {
 		final long seed = 0x9234356819f0ea1dL;
-		MinimumSpanningTreeTestUtils.testRandGraph(new MDSTUndirectedWrapper(new MinimumDirectedSpanningTreeTarjan()),
+		MinimumSpanningTreeTestUtils.testRandGraph(new MdstUndirectedWrapper(new MinimumDirectedSpanningTreeTarjan()),
 				seed);
 	}
 
@@ -125,9 +137,10 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 
 	private static <V, E> void testRandGraph(MinimumDirectedSpanningTree algo, Graph<V, E> g, WeightFunction<E> w) {
 		V root = g.vertices().iterator().next();
-		@SuppressWarnings("unused")
-		MinimumSpanningTree.Result<V, E> mst = algo.computeMinimumDirectedSpanningTree(g, w, root);
-		// TODO verify the result
+		MinimumSpanningTree.Result<V, E> mstRes = algo.computeMinimumDirectedSpanningTree(g, w, root);
+		Graph<V, E> mst = g.subGraphCopy(g.vertices(), mstRes.edges());
+
+		assertEquals(Path.reachableVertices(g, root), Path.reachableVertices(mst, root));
 	}
 
 }

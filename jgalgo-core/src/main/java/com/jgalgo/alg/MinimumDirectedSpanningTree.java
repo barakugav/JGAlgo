@@ -26,7 +26,9 @@ import com.jgalgo.graph.WeightFunction;
  *
  * <p>
  * A spanning tree in directed graph is defined similarly to a spanning tree in undirected graph, but the 'spanning
- * tree' does not yield a strongly connected graph, but a weakly connected tree rooted at some vertex.
+ * tree' does not yield a strongly connected graph, rather a tree in which all the vertices are reachable from the root.
+ * Note that differing from the undirected {@link MinimumSpanningTree}, the root is given as part of the input, and the
+ * result spanning tree will span only the vertices reachable from the root with a single tree, and not a forest.
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
@@ -38,6 +40,10 @@ public interface MinimumDirectedSpanningTree {
 
 	/**
 	 * Compute a minimum directed spanning tree (MDST) in a directed graph, rooted at the given vertex.
+	 *
+	 * <p>
+	 * Note that the returned spanning tree is a single tree that span only the vertices reachable from the root, and
+	 * not a forest that span the whole graph.
 	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link MinimumSpanningTree.IResult} object will be returned. In that case,
