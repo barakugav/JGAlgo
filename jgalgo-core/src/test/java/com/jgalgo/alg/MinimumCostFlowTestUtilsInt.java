@@ -56,6 +56,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
 
 			FlowNetworkInt<Integer, Integer> net = randNetwork(g, rand);
 			WeightFunctionInt<Integer> cost = randCost(g, rand);
@@ -77,6 +78,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
 
 			FlowNetworkInt<Integer, Integer> net = randNetwork(g, rand);
 			Pair<Integer, Integer> sourceSink = MaximumFlowTestUtils.chooseSourceSink(g, rand);
@@ -101,6 +103,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
 
 			FlowNetworkInt<Integer, Integer> net = randNetwork(g, rand);
 			WeightFunctionInt<Integer> cost = randCost(g, rand);
@@ -123,6 +126,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
 
 			FlowNetworkInt<Integer, Integer> net = randNetwork(g, rand);
 			Pair<Collection<Integer>, Collection<Integer>> sourcesSinks =
@@ -148,6 +152,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
 
 			FlowNetworkInt<Integer, Integer> net = randNetwork(g, rand);
 			WeightFunctionInt<Integer> cost = randCost(g, rand);
@@ -169,6 +174,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
 
 			FlowNetworkInt<Integer, Integer> net = randNetwork(g, rand);
 			WeightFunctionInt<Integer> supply = FlowCirculationTestUtils.randSupplyInt(g, net, rand);

@@ -41,6 +41,7 @@ public class VertexPartitionTest extends TestBase {
 	public void testBlockVertices() {
 		final long seed = 0xa8f42d4a6c48995dL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
 
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32, 3).repeat(128);
@@ -62,6 +63,17 @@ public class VertexPartitionTest extends TestBase {
 								.collect(Collectors.toSet());
 						Set<Integer> actual = partition.blockVertices(b);
 						assertEquals(expected, actual);
+
+						/* test .contains() */
+						for (Integer v : g.vertices())
+							assertEqualsBool(expected.contains(v), actual.contains(v));
+						for (int i = 0; i < 5; i++) {
+							Integer nonVertex;
+							do {
+								nonVertex = Integer.valueOf(rand.nextInt());
+							} while (g.vertices().contains(nonVertex));
+							assertFalse(actual.contains(nonVertex));
+						}
 					}
 				}
 			}
@@ -86,6 +98,7 @@ public class VertexPartitionTest extends TestBase {
 				for (boolean index : BooleanList.of(false, true)) {
 					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
 					VertexPartition<Integer, Integer> partition = randPartition(g, k, seedGen.nextSeed());
+					final Random rand = new Random(seedGen.nextSeed());
 
 					Graph<Integer, Integer> blocksGraph = partition.blocksGraph(true, true);
 					Graph<Integer, Integer> blocksGraphNonSelf = partition.blocksGraph(true, false);
@@ -100,6 +113,18 @@ public class VertexPartitionTest extends TestBase {
 						Set<Integer> actual = partition.blockEdges(b);
 						assertEquals(expected, actual);
 
+						/* test .contains() */
+						for (Integer e : g.edges())
+							assertEqualsBool(expected.contains(e), actual.contains(e));
+						for (int i = 0; i < 5; i++) {
+							Integer nonEdge;
+							do {
+								nonEdge = Integer.valueOf(rand.nextInt());
+							} while (g.edges().contains(nonEdge));
+							assertFalse(actual.contains(nonEdge));
+						}
+
+						/* test blocksGraph */
 						assertEquals(expected, blocksGraph.getEdges(Integer.valueOf(b), Integer.valueOf(b)));
 						assertNull(blocksGraphNonSelf.getEdge(Integer.valueOf(b), Integer.valueOf(b)));
 						assertEquals(0, blocksGraphNonSelf.getEdges(Integer.valueOf(b), Integer.valueOf(b)).size());

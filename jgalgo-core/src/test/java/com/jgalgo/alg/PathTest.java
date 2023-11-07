@@ -67,7 +67,7 @@ public class PathTest extends TestBase {
 			assertTrue(Path.isPath(g, source, target, actual.edges()));
 
 			boolean isSimpleExpected = actual.vertices().stream().distinct().count() == actual.vertices().size();
-			assertEquals(Boolean.valueOf(isSimpleExpected), Boolean.valueOf(actual.isSimple()));
+			assertEqualsBool(isSimpleExpected, actual.isSimple());
 		}
 	}
 

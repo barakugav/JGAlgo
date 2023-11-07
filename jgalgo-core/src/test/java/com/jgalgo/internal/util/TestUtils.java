@@ -22,6 +22,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
+import org.junit.jupiter.api.Assertions;
+import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -170,6 +172,14 @@ public class TestUtils {
 
 	public static int randElement(IntList list, Random rand) {
 		return list.getInt(rand.nextInt(list.size()));
+	}
+
+	public static Graph<Integer, Integer> maybeIndexGraph(Graph<Integer, Integer> g, Random rand) {
+		return rand.nextInt(3) == 0 ? g.indexGraph() : g;
+	}
+
+	public static void assertEqualsBool(boolean expected, boolean actual) {
+		Assertions.assertEquals(Boolean.valueOf(expected), Boolean.valueOf(actual));
 	}
 
 }
