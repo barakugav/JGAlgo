@@ -146,7 +146,7 @@ class VertexPartitions {
 						@Override
 						public boolean contains(int e) {
 							return 0 <= e && e < m && vertexToBlock[g.edgeSource(e)] == b0
-									&& vertexToBlock[g.edgeSource(e)] == b0;
+									&& vertexToBlock[g.edgeTarget(e)] == b0;
 						}
 					};
 				}
