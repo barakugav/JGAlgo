@@ -374,13 +374,13 @@ public class IndexIdMaps {
 		@SuppressWarnings("unchecked")
 		@Override
 		public boolean contains(Object key) {
-			return indexC.contains(map.idToIndex((K) key));
+			return indexC.contains(map.idToIndexIfExist((K) key));
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public boolean remove(Object key) {
-			return indexC.rem(map.idToIndex((K) key));
+			return indexC.rem(map.idToIndexIfExist((K) key));
 		}
 	}
 
@@ -416,12 +416,12 @@ public class IndexIdMaps {
 
 		@Override
 		public boolean contains(int key) {
-			return indexC.contains(map.idToIndex(key));
+			return indexC.contains(map.idToIndexIfExist(key));
 		}
 
 		@Override
 		public boolean rem(int key) {
-			return indexC.rem(map.idToIndex(key));
+			return indexC.rem(map.idToIndexIfExist(key));
 		}
 	}
 
@@ -486,13 +486,13 @@ public class IndexIdMaps {
 		@SuppressWarnings("unchecked")
 		@Override
 		public boolean contains(Object key) {
-			return idxSet.contains(map.idToIndex((K) key));
+			return idxSet.contains(map.idToIndexIfExist((K) key));
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public boolean remove(Object key) {
-			return idxSet.rem(map.idToIndex((K) key));
+			return idxSet.rem(map.idToIndexIfExist((K) key));
 		}
 	}
 
@@ -528,7 +528,7 @@ public class IndexIdMaps {
 
 		@Override
 		public boolean contains(int key) {
-			return idxSet.contains(map.idToIndex(key));
+			return idxSet.contains(map.idToIndexIfExist(key));
 		}
 	}
 
@@ -698,12 +698,12 @@ public class IndexIdMaps {
 
 		@Override
 		public boolean contains(Object key) {
-			return indexList.contains(map.idToIndex((K) key));
+			return indexList.contains(map.idToIndexIfExist((K) key));
 		}
 
 		@Override
 		public boolean remove(Object key) {
-			return indexList.rem(map.idToIndex((K) key));
+			return indexList.rem(map.idToIndexIfExist((K) key));
 		}
 
 		@Override
@@ -754,12 +754,12 @@ public class IndexIdMaps {
 
 		@Override
 		public boolean contains(int key) {
-			return indexList.contains(map.idToIndex(key));
+			return indexList.contains(map.idToIndexIfExist(key));
 		}
 
 		@Override
 		public boolean rem(int key) {
-			return indexList.rem(map.idToIndex(key));
+			return indexList.rem(map.idToIndexIfExist(key));
 		}
 
 		@Override

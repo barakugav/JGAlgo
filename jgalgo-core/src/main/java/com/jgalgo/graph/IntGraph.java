@@ -538,14 +538,10 @@ public interface IntGraph extends Graph<Integer, Integer> {
 			IndexGraph iGraph = reIndexedGraph.graph();
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-			viMap = vReIndexing.isEmpty() ? viMap
-					: IntGraphBuilderImpl.Directed.reIndexedIdMap(viMap, vReIndexing.get());
-			eiMap = eReIndexing.isEmpty() ? eiMap
-					: IntGraphBuilderImpl.Directed.reIndexedIdMap(eiMap, eReIndexing.get());
-			return new IntGraphImpl.Directed(iGraph, viMap, eiMap);
+			return new IntGraphImpl.Directed(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
 		} else {
 			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);
-			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap);
+			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap,null,null);
 		}
 	}
 

@@ -1093,6 +1093,11 @@ public class Graphs {
 		public int idToIndex(int id) {
 			return id;
 		}
+
+		@Override
+		public int idToIndexIfExist(int id) {
+			return id;
+		}
 	}
 
 	static class EdgeSetSourceTargetSingleton extends AbstractIntSet implements IEdgeSet {

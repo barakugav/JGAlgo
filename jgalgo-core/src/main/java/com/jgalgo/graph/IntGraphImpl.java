@@ -50,16 +50,17 @@ abstract class IntGraphImpl extends IntGraphBase {
 		eiMap = IdIdxMapImpl.newInstance(indexGraph.edges(), expectedEdgesNum, true);
 	}
 
-	IntGraphImpl(IndexGraph indexGraph, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+	IntGraphImpl(IndexGraph indexGraph, IndexIntIdMap viMap, IndexIntIdMap eiMap,
+			IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
 		this.indexGraph = (IndexGraphImpl) Objects.requireNonNull(indexGraph);
-		this.viMap = IdIdxMapImpl.copyOf(viMap, this.indexGraph.vertices(), false);
-		this.eiMap = IdIdxMapImpl.copyOf(eiMap, this.indexGraph.edges(), true);
+		this.viMap = IdIdxMapImpl.reindexedCopyOf(viMap, vReIndexing, this.indexGraph.vertices(), false);
+		this.eiMap = IdIdxMapImpl.reindexedCopyOf(eiMap, eReIndexing, this.indexGraph.edges(), true);
 	}
 
 	/* copy constructor */
 	IntGraphImpl(IntGraph orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
 		this(indexGraphFactory.newCopyOf(orig.indexGraph(), copyWeights), orig.indexGraphVerticesMap(),
-				orig.indexGraphEdgesMap());
+				orig.indexGraphEdgesMap(), null, null);
 	}
 
 	@Override
@@ -388,8 +389,9 @@ abstract class IntGraphImpl extends IntGraphBase {
 			Assertions.Graphs.onlyDirected(indexGraph);
 		}
 
-		Directed(IndexGraph indexGraph, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
-			super(indexGraph, viMap, eiMap);
+		Directed(IndexGraph indexGraph, IndexIntIdMap viMap, IndexIntIdMap eiMap,
+				IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
+			super(indexGraph, viMap, eiMap, vReIndexing, eReIndexing);
 			Assertions.Graphs.onlyDirected(indexGraph);
 		}
 
@@ -409,8 +411,9 @@ abstract class IntGraphImpl extends IntGraphBase {
 
 	static class Undirected extends IntGraphImpl {
 
-		Undirected(IndexGraph indexGraph, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
-			super(indexGraph, viMap, eiMap);
+		Undirected(IndexGraph indexGraph, IndexIntIdMap viMap, IndexIntIdMap eiMap,
+				IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
+			super(indexGraph, viMap, eiMap, vReIndexing, eReIndexing);
 			Assertions.Graphs.onlyUndirected(indexGraph);
 		}
 
@@ -439,7 +442,8 @@ abstract class IntGraphImpl extends IntGraphBase {
 
 			IdIdxMapImpl newInstance(GraphElementSet elements, int expectedSize, boolean isEdges);
 
-			IdIdxMapImpl copyOf(IndexIntIdMap orig, GraphElementSet elements, boolean isEdges);
+			IdIdxMapImpl reindexedCopyOf(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing,
+					GraphElementSet elements, boolean isEdges);
 
 		}
 
@@ -453,8 +457,9 @@ abstract class IntGraphImpl extends IntGraphBase {
 				}
 
 				@Override
-				public IdIdxMapImpl copyOf(IndexIntIdMap orig, GraphElementSet elements, boolean isEdges) {
-					return new IdIdxMapCustom(orig, elements, isEdges, nextIdFunc.get());
+				public IdIdxMapImpl reindexedCopyOf(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing,
+						GraphElementSet elements, boolean isEdges) {
+					return new IdIdxMapCustom(orig, reIndexing, elements, isEdges, nextIdFunc.get());
 				}
 			};
 			Object strat = JGAlgoConfigImpl.GraphIdStrategy;
@@ -473,8 +478,10 @@ abstract class IntGraphImpl extends IntGraphBase {
 							}
 
 							@Override
-							public IdIdxMapImpl copyOf(IndexIntIdMap orig, GraphElementSet elements, boolean isEdges) {
-								return new IdIdxMapCounter(orig, elements, isEdges);
+							public IdIdxMapImpl reindexedCopyOf(IndexIntIdMap orig,
+									IndexGraphBuilder.ReIndexingMap reIndexing, GraphElementSet elements,
+									boolean isEdges) {
+								return new IdIdxMapCounter(orig, reIndexing, elements, isEdges);
 							}
 						};
 						break;
@@ -522,13 +529,15 @@ abstract class IntGraphImpl extends IntGraphBase {
 			initListeners(elements);
 		}
 
-		IdIdxMapImpl(IndexIntIdMap orig, GraphElementSet elements, boolean isEdges) {
-			if (orig instanceof IdIdxMapImpl) {
+		IdIdxMapImpl(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing, GraphElementSet elements,
+				boolean isEdges) {
+			if (orig instanceof IdIdxMapImpl && reIndexing == null) {
 				IdIdxMapImpl orig0 = (IdIdxMapImpl) orig;
 				idToIndex = new Int2IntOpenHashMap(orig0.idToIndex);
 				idToIndex.defaultReturnValue(-1);
 				indexToId = new WeightsImplInt.IndexMutable(orig0.indexToId, elements);
-			} else {
+
+			} else if (reIndexing == null) {
 				idToIndex = new Int2IntOpenHashMap(elements.size());
 				idToIndex.defaultReturnValue(-1);
 				indexToId = new WeightsImplInt.IndexMutable(elements, -1);
@@ -536,6 +545,26 @@ abstract class IntGraphImpl extends IntGraphBase {
 					((WeightsImplInt.IndexMutable) indexToId).expand(elements.size());
 					for (int idx : elements) {
 						int id = orig.indexToIdInt(idx);
+						if (indexToId.get(idx) != -1)
+							throw new IllegalArgumentException("duplicate index: " + idx);
+						if (id < 0)
+							throw new IllegalArgumentException("negative id: " + id);
+						indexToId.set(idx, id);
+
+						int oldIdx = idToIndex.put(id, idx);
+						if (oldIdx != -1)
+							throw new IllegalArgumentException("duplicate id: " + id);
+					}
+				}
+
+			} else {
+				idToIndex = new Int2IntOpenHashMap(elements.size());
+				idToIndex.defaultReturnValue(-1);
+				indexToId = new WeightsImplInt.IndexMutable(elements, -1);
+				if (elements.size() > 0) {
+					((WeightsImplInt.IndexMutable) indexToId).expand(elements.size());
+					for (int idx : elements) {
+						int id = orig.indexToIdInt(reIndexing.reIndexedToOrig(idx));
 						if (indexToId.get(idx) != -1)
 							throw new IllegalArgumentException("duplicate index: " + idx);
 						if (id < 0)
@@ -557,8 +586,9 @@ abstract class IntGraphImpl extends IntGraphBase {
 			return strategy.newInstance(elements, expectedSize, isEdges);
 		}
 
-		static IdIdxMapImpl copyOf(IndexIntIdMap orig, GraphElementSet elements, boolean isEdges) {
-			return strategy.copyOf(orig, elements, isEdges);
+		static IdIdxMapImpl reindexedCopyOf(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing,
+				GraphElementSet elements, boolean isEdges) {
+			return strategy.reindexedCopyOf(orig, reIndexing, elements, isEdges);
 		}
 
 		private void initListeners(GraphElementSet elements) {
@@ -624,6 +654,11 @@ abstract class IntGraphImpl extends IntGraphBase {
 			return idx;
 		}
 
+		@Override
+		public int idToIndexIfExist(int id) {
+			return idToIndex.get(id);
+		}
+
 		IntSet idSet() {
 			return idsView;
 		}
@@ -640,9 +675,11 @@ abstract class IntGraphImpl extends IntGraphBase {
 			counter = 1;
 		}
 
-		IdIdxMapCounter(IndexIntIdMap orig, GraphElementSet elements, boolean isEdges) {
-			super(orig, elements, isEdges);
+		IdIdxMapCounter(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing, GraphElementSet elements,
+				boolean isEdges) {
+			super(orig, reIndexing, elements, isEdges);
 			if (orig instanceof IdIdxMapCounter) {
+
 				counter = ((IdIdxMapCounter) orig).counter;
 			} else {
 				counter = 1;
@@ -668,8 +705,9 @@ abstract class IntGraphImpl extends IntGraphBase {
 			this.nextId = Objects.requireNonNull(nextId);
 		}
 
-		IdIdxMapCustom(IndexIntIdMap orig, GraphElementSet elements, boolean isEdges, ToIntFunction<IntSet> nextId) {
-			super(orig, elements, isEdges);
+		IdIdxMapCustom(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing, GraphElementSet elements,
+				boolean isEdges, ToIntFunction<IntSet> nextId) {
+			super(orig, reIndexing, elements, isEdges);
 			this.nextId = Objects.requireNonNull(nextId);
 		}
 

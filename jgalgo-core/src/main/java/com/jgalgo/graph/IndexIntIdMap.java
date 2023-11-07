@@ -84,4 +84,22 @@ public interface IndexIntIdMap extends IndexIdMap<Integer> {
 		return idToIndex(id.intValue());
 	}
 
+	/**
+	 * Get the index of an element by its identifier if it exists, or {@code -1} if it doesn't.
+	 *
+	 * <p>
+	 * Whether this method maps vertices or edges depends if the mapping object was obtained by
+	 * {@link Graph#indexGraphVerticesMap()} or {@link Graph#indexGraphEdgesMap()}.
+	 *
+	 * @param  id an identifier of an element (vertex/edge)
+	 * @return    the index of the element, or {@code -1} if there is not such element
+	 */
+	int idToIndexIfExist(int id);
+
+	@Deprecated
+	@Override
+	default int idToIndexIfExist(Integer id) {
+		return idToIndexIfExist(id.intValue());
+	}
+
 }

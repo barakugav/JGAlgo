@@ -44,16 +44,17 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 		eiMap = IdIdxMapImpl.newInstance(indexGraph.edges(), expectedEdgesNum, true);
 	}
 
-	GraphImpl(IndexGraph indexGraph, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
+	GraphImpl(IndexGraph indexGraph, IndexIdMap<V> viMap, IndexIdMap<E> eiMap,
+			IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
 		this.indexGraph = (IndexGraphImpl) Objects.requireNonNull(indexGraph);
-		this.viMap = IdIdxMapImpl.copyOf(viMap, this.indexGraph.vertices(), false);
-		this.eiMap = IdIdxMapImpl.copyOf(eiMap, this.indexGraph.edges(), true);
+		this.viMap = IdIdxMapImpl.reindexedCopyOf(viMap, vReIndexing, this.indexGraph.vertices(), false);
+		this.eiMap = IdIdxMapImpl.reindexedCopyOf(eiMap, eReIndexing, this.indexGraph.edges(), true);
 	}
 
 	/* copy constructor */
 	GraphImpl(Graph<V, E> orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
 		this(indexGraphFactory.newCopyOf(orig.indexGraph(), copyWeights), orig.indexGraphVerticesMap(),
-				orig.indexGraphEdgesMap());
+				orig.indexGraphEdgesMap(), null, null);
 	}
 
 	@Override
@@ -377,8 +378,9 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 			Assertions.Graphs.onlyDirected(indexGraph);
 		}
 
-		Directed(IndexGraph indexGraph, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
-			super(indexGraph, viMap, eiMap);
+		Directed(IndexGraph indexGraph, IndexIdMap<V> viMap, IndexIdMap<E> eiMap,
+				IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
+			super(indexGraph, viMap, eiMap, vReIndexing, eReIndexing);
 			Assertions.Graphs.onlyDirected(indexGraph);
 		}
 
@@ -398,13 +400,14 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 
 	static class Undirected<V, E> extends GraphImpl<V, E> {
 
-		Undirected(IndexGraph indexGraph, IndexIdMap<V> viMap, IndexIdMap<E> eiMap) {
-			super(indexGraph, viMap, eiMap);
+		Undirected(IndexGraph indexGraph, int expectedVerticesNum, int expectedEdgesNum) {
+			super(indexGraph, expectedVerticesNum, expectedEdgesNum);
 			Assertions.Graphs.onlyUndirected(indexGraph);
 		}
 
-		Undirected(IndexGraph indexGraph, int expectedVerticesNum, int expectedEdgesNum) {
-			super(indexGraph, expectedVerticesNum, expectedEdgesNum);
+		Undirected(IndexGraph indexGraph, IndexIdMap<V> viMap, IndexIdMap<E> eiMap,
+				IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
+			super(indexGraph, viMap, eiMap, vReIndexing, eReIndexing);
 			Assertions.Graphs.onlyUndirected(indexGraph);
 		}
 
@@ -439,13 +442,15 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 			initListeners(elements);
 		}
 
-		IdIdxMapImpl(IndexIdMap<K> orig, GraphElementSet elements, boolean isEdges) {
-			if (orig instanceof IdIdxMapImpl) {
+		IdIdxMapImpl(IndexIdMap<K> orig, IndexGraphBuilder.ReIndexingMap reIndexing, GraphElementSet elements,
+				boolean isEdges) {
+			if (orig instanceof IdIdxMapImpl && reIndexing == null) {
 				IdIdxMapImpl<K> orig0 = (IdIdxMapImpl<K>) orig;
 				idToIndex = new Object2IntOpenHashMap<>(orig0.idToIndex);
 				idToIndex.defaultReturnValue(-1);
 				indexToId = new WeightsImplObj.IndexMutable<>(orig0.indexToId, elements);
-			} else {
+
+			} else if (reIndexing == null) {
 				idToIndex = new Object2IntOpenHashMap<>(elements.size());
 				idToIndex.defaultReturnValue(-1);
 				indexToId = new WeightsImplObj.IndexMutable<>(elements, null);
@@ -453,6 +458,26 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 					((WeightsImplObj.IndexMutable<K>) indexToId).expand(elements.size());
 					for (int idx : elements) {
 						K id = orig.indexToId(idx);
+						if (id == null)
+							throw new IllegalArgumentException("null id");
+						if (indexToId.get(idx) != null)
+							throw new IllegalArgumentException("duplicate index: " + idx);
+						indexToId.set(idx, id);
+
+						int oldIdx = idToIndex.put(id, idx);
+						if (oldIdx != -1)
+							throw new IllegalArgumentException("duplicate id: " + id);
+					}
+				}
+
+			} else {
+				idToIndex = new Object2IntOpenHashMap<>(elements.size());
+				idToIndex.defaultReturnValue(-1);
+				indexToId = new WeightsImplObj.IndexMutable<>(elements, null);
+				if (elements.size() > 0) {
+					((WeightsImplObj.IndexMutable<K>) indexToId).expand(elements.size());
+					for (int idx : elements) {
+						K id = orig.indexToId(reIndexing.reIndexedToOrig(idx));
 						if (id == null)
 							throw new IllegalArgumentException("null id");
 						if (indexToId.get(idx) != null)
@@ -474,8 +499,9 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 			return new IdIdxMapImpl<>(elements, expectedSize, isEdges);
 		}
 
-		static <K> IdIdxMapImpl<K> copyOf(IndexIdMap<K> orig, GraphElementSet elements, boolean isEdges) {
-			return new IdIdxMapImpl<>(orig, elements, isEdges);
+		static <K> IdIdxMapImpl<K> reindexedCopyOf(IndexIdMap<K> orig, IndexGraphBuilder.ReIndexingMap reIndexing,
+				GraphElementSet elements, boolean isEdges) {
+			return new IdIdxMapImpl<>(orig, reIndexing, elements, isEdges);
 		}
 
 		private void initListeners(GraphElementSet elements) {
@@ -538,6 +564,11 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 			if (idx < 0)
 				throw new IndexOutOfBoundsException("No such " + (isEdges ? "edge" : "vertex") + ": " + id);
 			return idx;
+		}
+
+		@Override
+		public int idToIndexIfExist(K id) {
+			return idToIndex.getInt(id);
 		}
 
 		Set<K> idSet() {

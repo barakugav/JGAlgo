@@ -285,21 +285,11 @@ class IntGraphBuilderImpl {
 					throw new IndexOutOfBoundsException("No such " + (isEdges ? "edge" : "vertex") + ": " + id);
 				return idx;
 			}
-		}
 
-		static IndexIntIdMap reIndexedIdMap(IndexIntIdMap iMapOrig, IndexGraphBuilder.ReIndexingMap indexingMap) {
-			return new IndexIntIdMap() {
-
-				@Override
-				public int indexToIdInt(int index) {
-					return iMapOrig.indexToIdInt(indexingMap.reIndexedToOrig(index));
-				}
-
-				@Override
-				public int idToIndex(int id) {
-					return indexingMap.origToReIndexed(iMapOrig.idToIndex(id));
-				}
-			};
+			@Override
+			public int idToIndexIfExist(int id) {
+				return idToIndex.get(id);
+			}
 		}
 	}
 
@@ -320,24 +310,20 @@ class IntGraphBuilderImpl {
 
 		@Override
 		public IntGraph build() {
-			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuild(true, true);
-			IndexGraph iGraph = reIndexedGraph.graph();
-			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
-			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-			IndexIntIdMap viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());
-			IndexIntIdMap eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());
-			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap);
+			return buildFromReIndexed(ibuilder.reIndexAndBuild(true, true));
 		}
 
 		@Override
 		public IntGraph buildMutable() {
-			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuildMutable(true, true);
+			return buildFromReIndexed(ibuilder.reIndexAndBuildMutable(true, true));
+		}
+
+		private IntGraph buildFromReIndexed(IndexGraphBuilder.ReIndexedGraph reIndexedGraph) {
 			IndexGraph iGraph = reIndexedGraph.graph();
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-			IndexIntIdMap viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());
-			IndexIntIdMap eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());
-			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap);
+			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap, vReIndexing.orElse(null),
+					eReIndexing.orElse(null));
 		}
 	}
 
@@ -358,24 +344,19 @@ class IntGraphBuilderImpl {
 
 		@Override
 		public IntGraph build() {
-			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuild(true, true);
-			IndexGraph iGraph = reIndexedGraph.graph();
-			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
-			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-			IndexIntIdMap viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());
-			IndexIntIdMap eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());
-			return new IntGraphImpl.Directed(iGraph, viMap, eiMap);
+			return buildFromReIndexed(ibuilder.reIndexAndBuild(true, true));
 		}
 
 		@Override
 		public IntGraph buildMutable() {
-			IndexGraphBuilder.ReIndexedGraph reIndexedGraph = ibuilder.reIndexAndBuildMutable(true, true);
+			return buildFromReIndexed(ibuilder.reIndexAndBuildMutable(true, true));
+		}
+
+		private IntGraph buildFromReIndexed(IndexGraphBuilder.ReIndexedGraph reIndexedGraph) {
 			IndexGraph iGraph = reIndexedGraph.graph();
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-			IndexIntIdMap viMap = vReIndexing.isEmpty() ? this.viMap : reIndexedIdMap(this.viMap, vReIndexing.get());
-			IndexIntIdMap eiMap = eReIndexing.isEmpty() ? this.eiMap : reIndexedIdMap(this.eiMap, eReIndexing.get());
-			return new IntGraphImpl.Directed(iGraph, viMap, eiMap);
+			return new IntGraphImpl.Directed(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
 		}
 	}
 
