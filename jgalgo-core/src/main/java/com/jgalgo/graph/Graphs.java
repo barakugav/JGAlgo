@@ -374,8 +374,7 @@ public class Graphs {
 
 		ImmutableIndexGraphView(IndexGraph g) {
 			super(g);
-			if (!(g instanceof IndexGraphImpl))
-				throw new IllegalArgumentException("unknown graph implementation");
+			assert g instanceof IndexGraphImpl;
 		}
 
 		@Override
@@ -867,8 +866,7 @@ public class Graphs {
 
 		ReverseIndexGraph(IndexGraph g) {
 			super(g);
-			if (!(g instanceof IndexGraphImpl))
-				throw new IllegalArgumentException("unknown graph implementation");
+			assert g instanceof IndexGraphImpl;
 		}
 
 		@Override
@@ -1326,7 +1324,7 @@ public class Graphs {
 
 		if (copyVerticesWeights) {
 			for (String key : g.getVerticesWeightsKeys()) {
-				IWeights wSrc = g.getVerticesWeights(key);
+				Weights wSrc = g.getVerticesWeights(key);
 				Class<?> type = (Class) getWeightsType(wSrc);
 				Weights wDst = gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
 				copyWeights(wSrc, wDst, type, gb.vertices());
@@ -1334,7 +1332,7 @@ public class Graphs {
 		}
 		if (copyEdgesWeights) {
 			for (String key : g.getEdgesWeightsKeys()) {
-				IWeights wSrc = g.getEdgesWeights(key);
+				Weights wSrc = g.getEdgesWeights(key);
 				Class<?> type = (Class) getWeightsType(wSrc);
 				Weights wDst = gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
 				copyWeights(wSrc, wDst, type, gb.edges());

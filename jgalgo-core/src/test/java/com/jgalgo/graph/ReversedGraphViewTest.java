@@ -102,8 +102,15 @@ public class ReversedGraphViewTest extends TestBase {
 							}
 						}
 						newVertex = nonExistingVertex;
+
+						/* index graphs should not support adding vertices with user defined identifiers */
+						int newVertex0 = newVertex.intValue();
+						assertThrows(UnsupportedOperationException.class,
+								() -> ((IntGraph) gRev).addVertex(newVertex0));
+
 						/* can't add new vertex directly to IndexGraph, only via wrapper Int/Obj Graph */
 						IndexIdMap<Integer> viMap = gRev0.indexGraphVerticesMap();
+
 						gRev0.addVertex(newVertex);
 						newVertex = viMap.indexToId(newVertex.intValue());
 
@@ -174,6 +181,12 @@ public class ReversedGraphViewTest extends TestBase {
 							}
 						}
 						newEdge = nonExistingEdge;
+
+						/* index graphs should not support adding edges with user defined identifiers */
+						int newEdge0 = newEdge.intValue();
+						assertThrows(UnsupportedOperationException.class,
+								() -> ((IntGraph) gRev).addEdge(u.intValue(), v.intValue(), newEdge0));
+
 						/* can't add new edge directly to IndexGraph, only via wrapper Int/Obj Graph */
 						IndexIdMap<Integer> viMap = gRev0.indexGraphVerticesMap();
 						IndexIdMap<Integer> eiMap = gRev0.indexGraphEdgesMap();
