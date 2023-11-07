@@ -141,7 +141,7 @@ public interface VertexBiPartition<V, E> extends VertexPartition<V, E> {
 	 * Create a new vertex bi-partition from a vertex-side map.
 	 *
 	 * <p>
-	 * Note that this function does not validate the input. For that, see {@link #isPartition(IntGraph, IntPredicate)}.
+	 * Note that this function does not validate the input. For that, see {@link #isPartition(Graph, Predicate)}.
 	 *
 	 * @param  <V> the vertices type
 	 * @param  <E> the edges type
@@ -157,7 +157,7 @@ public interface VertexBiPartition<V, E> extends VertexPartition<V, E> {
 	 * Create a new vertex bi-partition from a vertex-side mapping function.
 	 *
 	 * <p>
-	 * Note that this function does not validate the input. For that, see {@link #isPartition(IntGraph, IntPredicate)}.
+	 * Note that this function does not validate the input. For that, see {@link #isPartition(Graph, Predicate)}.
 	 *
 	 * @param  <V>     the vertices type
 	 * @param  <E>     the edges type

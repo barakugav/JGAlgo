@@ -4,6 +4,8 @@ import shutil
 import subprocess
 import functools
 import json
+import argparse
+import logging
 
 
 TOP_DIR = os.path.dirname(os.path.realpath(__file__))
@@ -37,10 +39,10 @@ def find_eclipse():
 
 
 def format_sourcefiles(filenames):
-    print("Formatting generated files...")
+    logging.info("Formatting generated files...")
     ECLIPSE_PATH = find_eclipse()
     if ECLIPSE_PATH is None:
-        print("Failed to find eclipse.")
+        logging.warning("Failed to find eclipse.")
         return
     ECLIPSE_FORMATTER_CONFIG_FILE = os.path.abspath(
         os.path.join(TOP_DIR, "..", "ect", "eclipse-java-style.xml")
@@ -64,7 +66,7 @@ def format_sourcefiles(filenames):
 
 
 def generate_sourcefile(input_filename, output_filename, constants, functions):
-    print("Generating " + output_filename + " from " + input_filename)
+    logging.info("Generating %s from %s", output_filename, input_filename)
 
     def apply_function(text, func_name, func):
         begin = 0
@@ -409,7 +411,10 @@ def generate_weights_impl(type):
     )
 
 
-def all_generated_filenames():
+def clean():
+    if os.path.exists(HASHES_FILENAME):
+        os.remove(HASHES_FILENAME)
+
     generated_filenames = []
     for type in TYPE_ALL:
         generated_filenames.append(weights_filename(type))
@@ -417,13 +422,10 @@ def all_generated_filenames():
         generated_filenames.append(iweights_filename(type))
     for type in TYPE_ALL:
         generated_filenames.append(weights_impl_filename(type))
-    return generated_filenames
 
-
-def clean():
-    for filename in all_generated_filenames():
+    for filename in generated_filenames:
         if os.path.exists(filename):
-            # print("Removing " + filename)
+            logging.debug("Removing %s", filename)
             os.remove(filename)
 
 
@@ -475,7 +477,14 @@ def write_generated_templates():
 
 
 def main():
-    # clean()
+    logging.basicConfig(format="[%(levelname)s] %(message)s", level=logging.INFO)
+
+    parser = argparse.ArgumentParser(description="Auto source generator")
+    parser.add_argument("--clean", action="store_true")
+    args = parser.parse_args()
+
+    if args.clean:
+        clean()
 
     hashes = read_last_generated_templates_hashes()
     # collect all sources to generate
@@ -493,7 +502,7 @@ def main():
             gen = functools.partial(generate_weights_impl, type)
             generators[weights_impl_filename(type)] = gen
     if not generators:
-        print("No template changed, nothing to do.")
+        logging.info("No template changed, nothing to do.")
         return
 
     for _filename, generator in generators.items():
