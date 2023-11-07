@@ -16,6 +16,7 @@
 package com.jgalgo.graph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import java.util.Random;
@@ -108,47 +109,7 @@ public class GraphsTest extends TestBase {
 							.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
 					Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 
-					WeightsByte<Integer> vertexWeights1 = g.addVerticesWeights("weights1", byte.class);
-					WeightsShort<Integer> vertexWeights2 = g.addVerticesWeights("weights2", short.class);
-					WeightsInt<Integer> vertexWeights3 = g.addVerticesWeights("weights3", int.class);
-					WeightsLong<Integer> vertexWeights4 = g.addVerticesWeights("weights4", long.class);
-					WeightsFloat<Integer> vertexWeights5 = g.addVerticesWeights("weights5", float.class);
-					WeightsDouble<Integer> vertexWeights6 = g.addVerticesWeights("weights6", double.class);
-					WeightsBool<Integer> vertexWeights7 = g.addVerticesWeights("weights7", boolean.class);
-					WeightsChar<Integer> vertexWeights8 = g.addVerticesWeights("weights8", char.class);
-					WeightsObj<Integer, Object> vertexWeights9 = g.addVerticesWeights("weights9", Object.class);
-					WeightsByte<Integer> edgeWeights1 = g.addEdgesWeights("weights1", byte.class);
-					WeightsShort<Integer> edgeWeights2 = g.addEdgesWeights("weights2", short.class);
-					WeightsInt<Integer> edgeWeights3 = g.addEdgesWeights("weights3", int.class);
-					WeightsLong<Integer> edgeWeights4 = g.addEdgesWeights("weights4", long.class);
-					WeightsFloat<Integer> edgeWeights5 = g.addEdgesWeights("weights5", float.class);
-					WeightsDouble<Integer> edgeWeights6 = g.addEdgesWeights("weights6", double.class);
-					WeightsBool<Integer> edgeWeights7 = g.addEdgesWeights("weights7", boolean.class);
-					WeightsChar<Integer> edgeWeights8 = g.addEdgesWeights("weights8", char.class);
-					WeightsObj<Integer, Object> edgeWeights9 = g.addEdgesWeights("weights9", Object.class);
-
-					for (Integer v : g.vertices()) {
-						vertexWeights1.set(v, (byte) rand.nextInt(100));
-						vertexWeights2.set(v, (short) rand.nextInt(100));
-						vertexWeights3.set(v, rand.nextInt(100));
-						vertexWeights4.set(v, rand.nextInt(100));
-						vertexWeights5.set(v, rand.nextInt(100) / 10.0f);
-						vertexWeights6.set(v, rand.nextInt(100) / 10.0);
-						vertexWeights7.set(v, rand.nextBoolean());
-						vertexWeights8.set(v, (char) ('0' + rand.nextInt(10)));
-						vertexWeights9.set(v, String.valueOf(rand.nextInt(100)));
-					}
-					for (Integer e : g.edges()) {
-						edgeWeights1.set(e, (byte) rand.nextInt(100));
-						edgeWeights2.set(e, (short) rand.nextInt(100));
-						edgeWeights3.set(e, rand.nextInt(100));
-						edgeWeights4.set(e, rand.nextInt(100));
-						edgeWeights5.set(e, rand.nextInt(100) / 10.0f);
-						edgeWeights6.set(e, rand.nextInt(100) / 10.0);
-						edgeWeights7.set(e, rand.nextBoolean());
-						edgeWeights8.set(e, (char) ('0' + rand.nextInt(10)));
-						edgeWeights9.set(e, String.valueOf(rand.nextInt(100)));
-					}
+					addWeights(g, rand);
 
 					Set<Integer> subVs = new IntOpenHashSet();
 					while (subVs.size() < n / 3)
@@ -195,47 +156,25 @@ public class GraphsTest extends TestBase {
 							.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
 					Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 
-					WeightsByte<Integer> vertexWeights1 = g.addVerticesWeights("weights1", byte.class);
-					WeightsShort<Integer> vertexWeights2 = g.addVerticesWeights("weights2", short.class);
-					WeightsInt<Integer> vertexWeights3 = g.addVerticesWeights("weights3", int.class);
-					WeightsLong<Integer> vertexWeights4 = g.addVerticesWeights("weights4", long.class);
-					WeightsFloat<Integer> vertexWeights5 = g.addVerticesWeights("weights5", float.class);
-					WeightsDouble<Integer> vertexWeights6 = g.addVerticesWeights("weights6", double.class);
-					WeightsBool<Integer> vertexWeights7 = g.addVerticesWeights("weights7", boolean.class);
-					WeightsChar<Integer> vertexWeights8 = g.addVerticesWeights("weights8", char.class);
-					WeightsObj<Integer, Object> vertexWeights9 = g.addVerticesWeights("weights9", Object.class);
-					WeightsByte<Integer> edgeWeights1 = g.addEdgesWeights("weights1", byte.class);
-					WeightsShort<Integer> edgeWeights2 = g.addEdgesWeights("weights2", short.class);
-					WeightsInt<Integer> edgeWeights3 = g.addEdgesWeights("weights3", int.class);
-					WeightsLong<Integer> edgeWeights4 = g.addEdgesWeights("weights4", long.class);
-					WeightsFloat<Integer> edgeWeights5 = g.addEdgesWeights("weights5", float.class);
-					WeightsDouble<Integer> edgeWeights6 = g.addEdgesWeights("weights6", double.class);
-					WeightsBool<Integer> edgeWeights7 = g.addEdgesWeights("weights7", boolean.class);
-					WeightsChar<Integer> edgeWeights8 = g.addEdgesWeights("weights8", char.class);
-					WeightsObj<Integer, Object> edgeWeights9 = g.addEdgesWeights("weights9", Object.class);
-
-					for (Integer v : g.vertices()) {
-						vertexWeights1.set(v, (byte) rand.nextInt(100));
-						vertexWeights2.set(v, (short) rand.nextInt(100));
-						vertexWeights3.set(v, rand.nextInt(100));
-						vertexWeights4.set(v, rand.nextInt(100));
-						vertexWeights5.set(v, rand.nextInt(100) / 10.0f);
-						vertexWeights6.set(v, rand.nextInt(100) / 10.0);
-						vertexWeights7.set(v, rand.nextBoolean());
-						vertexWeights8.set(v, (char) ('0' + rand.nextInt(10)));
-						vertexWeights9.set(v, String.valueOf(rand.nextInt(100)));
-					}
-					for (Integer e : g.edges()) {
-						edgeWeights1.set(e, (byte) rand.nextInt(100));
-						edgeWeights2.set(e, (short) rand.nextInt(100));
-						edgeWeights3.set(e, rand.nextInt(100));
-						edgeWeights4.set(e, rand.nextInt(100));
-						edgeWeights5.set(e, rand.nextInt(100) / 10.0f);
-						edgeWeights6.set(e, rand.nextInt(100) / 10.0);
-						edgeWeights7.set(e, rand.nextBoolean());
-						edgeWeights8.set(e, (char) ('0' + rand.nextInt(10)));
-						edgeWeights9.set(e, String.valueOf(rand.nextInt(100)));
-					}
+					addWeights(g, rand);
+					WeightsByte<Integer> vertexWeights1 = g.getVerticesWeights("weights1");
+					WeightsShort<Integer> vertexWeights2 = g.getVerticesWeights("weights2");
+					WeightsInt<Integer> vertexWeights3 = g.getVerticesWeights("weights3");
+					WeightsLong<Integer> vertexWeights4 = g.getVerticesWeights("weights4");
+					WeightsFloat<Integer> vertexWeights5 = g.getVerticesWeights("weights5");
+					WeightsDouble<Integer> vertexWeights6 = g.getVerticesWeights("weights6");
+					WeightsBool<Integer> vertexWeights7 = g.getVerticesWeights("weights7");
+					WeightsChar<Integer> vertexWeights8 = g.getVerticesWeights("weights8");
+					WeightsObj<Integer, Object> vertexWeights9 = g.getVerticesWeights("weights9");
+					WeightsByte<Integer> edgeWeights1 = g.getEdgesWeights("weights1");
+					WeightsShort<Integer> edgeWeights2 = g.getEdgesWeights("weights2");
+					WeightsInt<Integer> edgeWeights3 = g.getEdgesWeights("weights3");
+					WeightsLong<Integer> edgeWeights4 = g.getEdgesWeights("weights4");
+					WeightsFloat<Integer> edgeWeights5 = g.getEdgesWeights("weights5");
+					WeightsDouble<Integer> edgeWeights6 = g.getEdgesWeights("weights6");
+					WeightsBool<Integer> edgeWeights7 = g.getEdgesWeights("weights7");
+					WeightsChar<Integer> edgeWeights8 = g.getEdgesWeights("weights8");
+					WeightsObj<Integer, Object> edgeWeights9 = g.getEdgesWeights("weights9");
 
 					Set<Integer> subVs = new IntOpenHashSet();
 					while (subVs.size() < n / 3)
@@ -304,6 +243,347 @@ public class GraphsTest extends TestBase {
 				}
 			}
 		});
+	}
+
+	@Test
+	public void testGraphEqualsWeights() {
+		final long seed = 0xa9af376e90cd5845L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
+		for (boolean directed : BooleanList.of(false, true)) {
+			for (boolean index : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> g0 = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(400).directed(directed)
+						.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+				Graph<Integer, Integer> g1 = index ? g0.indexGraph() : g0;
+
+				addWeights(g1, rand);
+				WeightsByte<Integer> vertexWeights1g1 = g1.getVerticesWeights("weights1");
+				WeightsShort<Integer> vertexWeights2g1 = g1.getVerticesWeights("weights2");
+				WeightsInt<Integer> vertexWeights3g1 = g1.getVerticesWeights("weights3");
+				WeightsLong<Integer> vertexWeights4g1 = g1.getVerticesWeights("weights4");
+				WeightsFloat<Integer> vertexWeights5g1 = g1.getVerticesWeights("weights5");
+				WeightsDouble<Integer> vertexWeights6g1 = g1.getVerticesWeights("weights6");
+				WeightsBool<Integer> vertexWeights7g1 = g1.getVerticesWeights("weights7");
+				WeightsChar<Integer> vertexWeights8g1 = g1.getVerticesWeights("weights8");
+				WeightsObj<Integer, Object> vertexWeights9g1 = g1.getVerticesWeights("weights9");
+				WeightsByte<Integer> edgeWeights1g1 = g1.getEdgesWeights("weights1");
+				WeightsShort<Integer> edgeWeights2g1 = g1.getEdgesWeights("weights2");
+				WeightsInt<Integer> edgeWeights3g1 = g1.getEdgesWeights("weights3");
+				WeightsLong<Integer> edgeWeights4g1 = g1.getEdgesWeights("weights4");
+				WeightsFloat<Integer> edgeWeights5g1 = g1.getEdgesWeights("weights5");
+				WeightsDouble<Integer> edgeWeights6g1 = g1.getEdgesWeights("weights6");
+				WeightsBool<Integer> edgeWeights7g1 = g1.getEdgesWeights("weights7");
+				WeightsChar<Integer> edgeWeights8g1 = g1.getEdgesWeights("weights8");
+				WeightsObj<Integer, Object> edgeWeights9g1 = g1.getEdgesWeights("weights9");
+
+				Graph<Integer, Integer> g2 = g1.copy(true);
+				WeightsByte<Integer> vertexWeights1g2 = g2.getVerticesWeights("weights1");
+				WeightsShort<Integer> vertexWeights2g2 = g2.getVerticesWeights("weights2");
+				WeightsInt<Integer> vertexWeights3g2 = g2.getVerticesWeights("weights3");
+				WeightsLong<Integer> vertexWeights4g2 = g2.getVerticesWeights("weights4");
+				WeightsFloat<Integer> vertexWeights5g2 = g2.getVerticesWeights("weights5");
+				WeightsDouble<Integer> vertexWeights6g2 = g2.getVerticesWeights("weights6");
+				WeightsBool<Integer> vertexWeights7g2 = g2.getVerticesWeights("weights7");
+				WeightsChar<Integer> vertexWeights8g2 = g2.getVerticesWeights("weights8");
+				WeightsObj<Integer, Object> vertexWeights9g2 = g2.getVerticesWeights("weights9");
+				WeightsByte<Integer> edgeWeights1g2 = g2.getEdgesWeights("weights1");
+				WeightsShort<Integer> edgeWeights2g2 = g2.getEdgesWeights("weights2");
+				WeightsInt<Integer> edgeWeights3g2 = g2.getEdgesWeights("weights3");
+				WeightsLong<Integer> edgeWeights4g2 = g2.getEdgesWeights("weights4");
+				WeightsFloat<Integer> edgeWeights5g2 = g2.getEdgesWeights("weights5");
+				WeightsDouble<Integer> edgeWeights6g2 = g2.getEdgesWeights("weights6");
+				WeightsBool<Integer> edgeWeights7g2 = g2.getEdgesWeights("weights7");
+				WeightsChar<Integer> edgeWeights8g2 = g2.getEdgesWeights("weights8");
+				WeightsObj<Integer, Object> edgeWeights9g2 = g2.getEdgesWeights("weights9");
+
+				Integer v = g1.vertices().iterator().next();
+				Integer e = g1.edges().iterator().next();
+
+				assertEquals(g1, g2);
+
+				vertexWeights1g2.set(v, (byte) (vertexWeights1g2.get(v) + 1));
+				assertNotEquals(g1, g2);
+				vertexWeights1g2.set(v, vertexWeights1g1.get(v));
+				assert g1.equals(g2);
+
+				vertexWeights2g2.set(v, (short) (vertexWeights2g2.get(v) + 1));
+				assertNotEquals(g1, g2);
+				vertexWeights2g2.set(v, vertexWeights2g1.get(v));
+				assert g1.equals(g2);
+
+				vertexWeights3g2.set(v, vertexWeights3g2.get(v) + 1);
+				assertNotEquals(g1, g2);
+				vertexWeights3g2.set(v, vertexWeights3g1.get(v));
+				assert g1.equals(g2);
+
+				vertexWeights4g2.set(v, vertexWeights4g2.get(v) + 1);
+				assertNotEquals(g1, g2);
+				vertexWeights4g2.set(v, vertexWeights4g1.get(v));
+				assert g1.equals(g2);
+
+				vertexWeights5g2.set(v, vertexWeights5g2.get(v) + 1);
+				assertNotEquals(g1, g2);
+				vertexWeights5g2.set(v, vertexWeights5g1.get(v));
+				assert g1.equals(g2);
+
+				vertexWeights6g2.set(v, vertexWeights6g2.get(v) + 1);
+				assertNotEquals(g1, g2);
+				vertexWeights6g2.set(v, vertexWeights6g1.get(v));
+				assert g1.equals(g2);
+
+				vertexWeights7g2.set(v, !vertexWeights7g2.get(v));
+				assertNotEquals(g1, g2);
+				vertexWeights7g2.set(v, vertexWeights7g1.get(v));
+				assert g1.equals(g2);
+
+				vertexWeights8g2.set(v, (char) (vertexWeights8g2.get(v) + 1));
+				assertNotEquals(g1, g2);
+				vertexWeights8g2.set(v, vertexWeights8g1.get(v));
+				assert g1.equals(g2);
+
+				vertexWeights9g2.set(v, new Object());
+				assertNotEquals(g1, g2);
+				vertexWeights9g2.set(v, vertexWeights9g1.get(v));
+				assert g1.equals(g2);
+
+				edgeWeights1g2.set(e, (byte) (edgeWeights1g2.get(e) + 1));
+				assertNotEquals(g1, g2);
+				edgeWeights1g2.set(e, edgeWeights1g1.get(e));
+				assert g1.equals(g2);
+
+				edgeWeights2g2.set(e, (short) (edgeWeights2g2.get(e) + 1));
+				assertNotEquals(g1, g2);
+				edgeWeights2g2.set(e, edgeWeights2g1.get(e));
+				assert g1.equals(g2);
+
+				edgeWeights3g2.set(e, edgeWeights3g2.get(e) + 1);
+				assertNotEquals(g1, g2);
+				edgeWeights3g2.set(e, edgeWeights3g1.get(e));
+				assert g1.equals(g2);
+
+				edgeWeights4g2.set(e, edgeWeights4g2.get(e) + 1);
+				assertNotEquals(g1, g2);
+				edgeWeights4g2.set(e, edgeWeights4g1.get(e));
+				assert g1.equals(g2);
+
+				edgeWeights5g2.set(e, edgeWeights5g2.get(e) + 1);
+				assertNotEquals(g1, g2);
+				edgeWeights5g2.set(e, edgeWeights5g1.get(e));
+				assert g1.equals(g2);
+
+				edgeWeights6g2.set(e, edgeWeights6g2.get(e) + 1);
+				assertNotEquals(g1, g2);
+				edgeWeights6g2.set(e, edgeWeights6g1.get(e));
+				assert g1.equals(g2);
+
+				edgeWeights7g2.set(e, !edgeWeights7g2.get(e));
+				assertNotEquals(g1, g2);
+				edgeWeights7g2.set(e, edgeWeights7g1.get(e));
+				assert g1.equals(g2);
+
+				edgeWeights8g2.set(e, (char) (edgeWeights8g2.get(e) + 1));
+				assertNotEquals(g1, g2);
+				edgeWeights8g2.set(e, edgeWeights8g1.get(e));
+				assert g1.equals(g2);
+
+				edgeWeights9g2.set(e, new Object());
+				assertNotEquals(g1, g2);
+				edgeWeights9g2.set(e, edgeWeights9g1.get(e));
+				assert g1.equals(g2);
+			}
+		}
+	}
+
+	@Test
+	public void testEqualNegativeDirected() {
+		final long seed = 0x2a9b993ea2f19151L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		for (boolean directed : BooleanList.of(false, true)) {
+			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(400).directed(directed)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+
+			Graph<Integer, Integer> g2;
+			if (g1 instanceof IntGraph) {
+				g2 = directed ? IntGraph.newUndirected() : IntGraph.newDirected();
+			} else {
+				g2 = directed ? Graph.newUndirected() : Graph.newDirected();
+			}
+			for (Integer v : g1.vertices())
+				g2.addVertex(v);
+			for (Integer e : g1.edges())
+				g2.addEdge(g1.edgeSource(e), g1.edgeTarget(e), e);
+
+			assertNotEquals(g1, g2);
+		}
+	}
+
+	@Test
+	public void testEqualNegativeDifferentVertices() {
+		final long seed = 0xe68db99aa8e9bbf1L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
+		for (boolean directed : BooleanList.of(false, true)) {
+			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(400).directed(directed)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+
+			Graph<Integer, Integer> g2;
+			if (g1 instanceof IntGraph) {
+				g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+			} else {
+				g2 = directed ? Graph.newDirected() : Graph.newUndirected();
+			}
+			for (Integer v : g1.vertices())
+				g2.addVertex(v);
+			for (;;) {
+				int v = rand.nextInt();
+				if (v >= 1 && !g1.vertices().contains(Integer.valueOf(v))) {
+					g2.addVertex(Integer.valueOf(v));
+					break;
+				}
+			}
+			for (Integer e : g1.edges())
+				g2.addEdge(g1.edgeSource(e), g1.edgeTarget(e), e);
+
+			assertNotEquals(g1, g2);
+		}
+	}
+
+	@Test
+	public void testEqualNegativeDifferentEdges() {
+		final long seed = 0x713602fa31b3e82aL;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
+		for (boolean directed : BooleanList.of(false, true)) {
+			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(400).directed(directed)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+
+			Graph<Integer, Integer> g2;
+			if (g1 instanceof IntGraph) {
+				g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+			} else {
+				g2 = directed ? Graph.newDirected() : Graph.newUndirected();
+			}
+			for (Integer v : g1.vertices())
+				g2.addVertex(v);
+			for (Integer e : g1.edges())
+				g2.addEdge(g1.edgeSource(e), g1.edgeTarget(e), e);
+			for (;;) {
+				int e = rand.nextInt();
+				if (e >= 1 && !g1.edges().contains(Integer.valueOf(e))) {
+					g2.addEdge(Graphs.randVertex(g2, rand), Graphs.randVertex(g2, rand), Integer.valueOf(e));
+					break;
+				}
+			}
+
+			assertNotEquals(g1, g2);
+		}
+	}
+
+	@Test
+	public void testEqualNegativeDifferentEndpoints() {
+		final long seed = 0x96bda5169a1e5e5cL;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
+		for (boolean directed : BooleanList.of(false, true)) {
+			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(400).directed(directed)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+
+			Graph<Integer, Integer> g2;
+			if (g1 instanceof IntGraph) {
+				g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+			} else {
+				g2 = directed ? Graph.newDirected() : Graph.newUndirected();
+			}
+			for (Integer v : g1.vertices())
+				g2.addVertex(v);
+			for (Integer e : g1.edges())
+				g2.addEdge(g1.edgeSource(e), Graphs.randVertex(g2, rand), e);
+
+			assertNotEquals(g1, g2);
+		}
+	}
+
+	@Test
+	public void testEqualNegativeDifferentWeightsKeys() {
+		final long seed = 0xd7a3e806dd5e50a1L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		for (boolean directed : BooleanList.of(false, true)) {
+			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(400).directed(directed)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+
+			Graph<Integer, Integer> g2 = g1.copy();
+			assertEquals(g1, g2);
+			g2.addVerticesWeights("6548949", char.class);
+			assertNotEquals(g1, g2);
+
+			g2 = g1.copy();
+			assertEquals(g1, g2);
+			g2.addEdgesWeights("dfgfdslk", int.class);
+			assertNotEquals(g1, g2);
+		}
+	}
+
+	@Test
+	public void testGraphHashCode() {
+		final long seed = 0x1076bbfb8212b47eL;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
+		for (boolean directed : BooleanList.of(false, true)) {
+			for (boolean index : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> g0 = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(400).directed(directed)
+						.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+				Graph<Integer, Integer> g1 = index ? g0.indexGraph() : g0;
+
+				addWeights(g1, rand);
+				Graph<Integer, Integer> g2 = g1.copy(true);
+
+				assertEquals(g1.hashCode(), g2.hashCode());
+			}
+		}
+	}
+
+	private static void addWeights(Graph<Integer, Integer> g, Random rand) {
+		WeightsByte<Integer> vertexWeights1 = g.addVerticesWeights("weights1", byte.class);
+		WeightsShort<Integer> vertexWeights2 = g.addVerticesWeights("weights2", short.class);
+		WeightsInt<Integer> vertexWeights3 = g.addVerticesWeights("weights3", int.class);
+		WeightsLong<Integer> vertexWeights4 = g.addVerticesWeights("weights4", long.class);
+		WeightsFloat<Integer> vertexWeights5 = g.addVerticesWeights("weights5", float.class);
+		WeightsDouble<Integer> vertexWeights6 = g.addVerticesWeights("weights6", double.class);
+		WeightsBool<Integer> vertexWeights7 = g.addVerticesWeights("weights7", boolean.class);
+		WeightsChar<Integer> vertexWeights8 = g.addVerticesWeights("weights8", char.class);
+		WeightsObj<Integer, Object> vertexWeights9 = g.addVerticesWeights("weights9", Object.class);
+		WeightsByte<Integer> edgeWeights1 = g.addEdgesWeights("weights1", byte.class);
+		WeightsShort<Integer> edgeWeights2 = g.addEdgesWeights("weights2", short.class);
+		WeightsInt<Integer> edgeWeights3 = g.addEdgesWeights("weights3", int.class);
+		WeightsLong<Integer> edgeWeights4 = g.addEdgesWeights("weights4", long.class);
+		WeightsFloat<Integer> edgeWeights5 = g.addEdgesWeights("weights5", float.class);
+		WeightsDouble<Integer> edgeWeights6 = g.addEdgesWeights("weights6", double.class);
+		WeightsBool<Integer> edgeWeights7 = g.addEdgesWeights("weights7", boolean.class);
+		WeightsChar<Integer> edgeWeights8 = g.addEdgesWeights("weights8", char.class);
+		WeightsObj<Integer, Object> edgeWeights9 = g.addEdgesWeights("weights9", Object.class);
+
+		for (Integer v : g.vertices()) {
+			vertexWeights1.set(v, (byte) rand.nextInt(100));
+			vertexWeights2.set(v, (short) rand.nextInt(100));
+			vertexWeights3.set(v, rand.nextInt(100));
+			vertexWeights4.set(v, rand.nextInt(100));
+			vertexWeights5.set(v, rand.nextInt(100) / 10.0f);
+			vertexWeights6.set(v, rand.nextInt(100) / 10.0);
+			vertexWeights7.set(v, rand.nextBoolean());
+			vertexWeights8.set(v, (char) ('0' + rand.nextInt(10)));
+			vertexWeights9.set(v, String.valueOf(rand.nextInt(100)));
+		}
+		for (Integer e : g.edges()) {
+			edgeWeights1.set(e, (byte) rand.nextInt(100));
+			edgeWeights2.set(e, (short) rand.nextInt(100));
+			edgeWeights3.set(e, rand.nextInt(100));
+			edgeWeights4.set(e, rand.nextInt(100));
+			edgeWeights5.set(e, rand.nextInt(100) / 10.0f);
+			edgeWeights6.set(e, rand.nextInt(100) / 10.0);
+			edgeWeights7.set(e, rand.nextBoolean());
+			edgeWeights8.set(e, (char) ('0' + rand.nextInt(10)));
+			edgeWeights9.set(e, String.valueOf(rand.nextInt(100)));
+		}
 	}
 
 }

@@ -145,7 +145,8 @@ public class ImmutableGraphViewTest extends TestBase {
 					}
 
 					if (gImmutable instanceof IntGraph)
-						assertThrows(UnsupportedOperationException.class, () -> ((IntGraph) gImmutable).addEdge(u.intValue(), v.intValue()));
+						assertThrows(UnsupportedOperationException.class,
+								() -> ((IntGraph) gImmutable).addEdge(u.intValue(), v.intValue()));
 					assertThrows(UnsupportedOperationException.class, () -> gImmutable.addEdge(u, v, nonExistingEdge));
 
 					Integer edgeToRemove = gImmutable.edges().iterator().next();
@@ -392,7 +393,7 @@ public class ImmutableGraphViewTest extends TestBase {
 		}
 	}
 
-	 @SuppressWarnings("boxing")
+	@SuppressWarnings("boxing")
 	@Test
 	public void testGraphCapabilities() {
 		for (boolean directed : BooleanList.of(false, true)) {
@@ -421,6 +422,42 @@ public class ImmutableGraphViewTest extends TestBase {
 					Graph<Integer, Integer> gImmutable = gOrig.immutableView();
 
 					assertTrue(gImmutable == gImmutable.immutableView());
+				}
+			}
+		}
+	}
+
+	@Test
+	public void testEquals() {
+		for (boolean directed : BooleanList.of(false, true)) {
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+					Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+					Graph<Integer, Integer> gImmutable = gOrig.immutableView();
+
+					assertTrue(gImmutable.equals(gImmutable));
+					assertTrue(gImmutable.equals(gOrig));
+					assertTrue(gOrig.equals(gImmutable));
+
+					assertFalse(gImmutable.equals(null));
+					assertFalse(gImmutable.equals(new Object()));
+				}
+			}
+		}
+	}
+
+	@Test
+	public void testHashCode() {
+		for (boolean directed : BooleanList.of(false, true)) {
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				for (boolean index : BooleanList.of(false, true)) {
+					Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+					Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+					Graph<Integer, Integer> gImmutable = gOrig.immutableView();
+
+					assertEquals(gImmutable.hashCode(), gOrig.hashCode());
+					assertEquals(gImmutable.hashCode(), gOrig.immutableView().hashCode());
 				}
 			}
 		}
