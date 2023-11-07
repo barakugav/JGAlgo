@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
@@ -26,6 +27,7 @@ import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -376,14 +378,8 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 
 		@Override
 		public String toString() {
-			StringBuilder s = new StringBuilder().append('[');
-			final int biccNum = getNumberOfBiCcs();
-			for (int biccIdx = 0; biccIdx < biccNum; biccIdx++) {
-				if (biccIdx > 0)
-					s.append(", ");
-				s.append(getBiCcVertices(biccIdx).toString());
-			}
-			return s.append(']').toString();
+			return Range.of(getNumberOfBiCcs()).intStream().mapToObj(this::getBiCcVertices).map(Object::toString)
+					.collect(Collectors.joining(", ", "[", "]"));
 		}
 
 		@Override
