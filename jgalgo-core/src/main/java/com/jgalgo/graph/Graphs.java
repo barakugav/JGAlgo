@@ -21,8 +21,8 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -1293,12 +1293,8 @@ public class Graphs {
 	public static <V, E> Graph<V, E> subGraph(Graph<V, E> g, Collection<V> vertices, Collection<E> edges,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		if (g instanceof IntGraph) {
-			IntCollection vs = vertices == null ? null
-					: (vertices instanceof IntCollection ? (IntCollection) vertices
-							: new IntArrayList((Collection<Integer>) vertices));
-			IntCollection es = edges == null ? null
-					: (edges instanceof IntCollection ? (IntCollection) edges
-							: new IntArrayList((Collection<Integer>) edges));
+			IntCollection vs = vertices == null ? null : IntAdapters.asIntCollection((Collection<Integer>) vertices);
+			IntCollection es = edges == null ? null : IntAdapters.asIntCollection((Collection<Integer>) edges);
 			return (Graph<V, E>) subGraph((IntGraph) g, vs, es, copyVerticesWeights, copyEdgesWeights);
 		}
 
@@ -1387,7 +1383,7 @@ public class Graphs {
 	public static IntGraph subGraph(IntGraph g, IntCollection vertices, IntCollection edges,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		if (vertices == null && edges == null)
-			throw new NullPointerException();
+			throw new NullPointerException("Either vertices or edges can be null, not both.");
 		IntGraphBuilder gb = g.isDirected() ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
 
 		if (vertices == null) {

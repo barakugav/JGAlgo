@@ -17,6 +17,7 @@
 package com.jgalgo.alg;
 
 import java.util.List;
+import java.util.Set;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
@@ -28,6 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A path of edges in a graph.
@@ -244,6 +246,27 @@ public interface Path<V, E> {
 
 		IPath indexPath = PathImpl.findPath(iGraph, iSource, iTarget);
 		return PathImpl.objPathFromIndexPath(g, indexPath);
+	}
+
+	/**
+	 * Find all the vertices reachable from a given source vertex.
+	 *
+	 * @param  <V>    the vertices type
+	 * @param  <E>    the edges type
+	 * @param  g      a graph
+	 * @param  source a source vertex
+	 * @return        a set of all the vertices reachable from the given source vertex
+	 */
+	@SuppressWarnings("unchecked")
+	static <V, E> Set<V> reachableVertices(Graph<V, E> g, V source) {
+		if (g instanceof IntGraph)
+			return (Set<V>) IPath.reachableVertices((IntGraph) g, ((Integer) source).intValue());
+
+		IndexGraph ig = g.indexGraph();
+		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+		int iSource = viMap.idToIndex(source);
+		IntSet indexRes = IPath.reachableVertices(ig, iSource);
+		return IndexIdMaps.indexToIdSet(indexRes, viMap);
 	}
 
 }

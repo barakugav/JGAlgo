@@ -30,6 +30,11 @@
  * {@link com.jgalgo.graph.IntGraph} and the result objects that are specific to it.
  *
  * <p>
+ * Non of the algorithms or result objects in this package are thread safe. Result objects should not be used once the
+ * graph on which the result was computed is modified, as the result object may relay on the graph for information and
+ * may not be able to detect the modification.
+ *
+ * <p>
  * Most algorithm implementations are not expose as public API.
  */
 package com.jgalgo.alg;

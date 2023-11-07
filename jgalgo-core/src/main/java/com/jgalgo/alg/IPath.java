@@ -21,9 +21,15 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A path of edges in an int graph.
@@ -165,6 +171,51 @@ public interface IPath extends Path<Integer, Integer> {
 
 		IPath indexPath = PathImpl.findPath(iGraph, iSource, iTarget);
 		return PathImpl.intPathFromIndexPath(g, indexPath);
+	}
+
+	/**
+	 * Find all the vertices reachable from a given source vertex.
+	 *
+	 * @param  g      a graph
+	 * @param  source a source vertex
+	 * @return        a set of all the vertices reachable from the given source vertex
+	 */
+	static IntSet reachableVertices(IntGraph g, int source) {
+		IndexGraph ig = g.indexGraph();
+		int iSource = g.indexGraphVerticesMap().idToIndex(source);
+
+		final int n = g.vertices().size();
+		Bitmap visited = new Bitmap(n);
+		IntArrayList visitedList = new IntArrayList();
+		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
+
+		visited.set(iSource);
+		visitedList.add(iSource);
+		for (int u = iSource;;) {
+			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
+				eit.nextInt();
+				int v = eit.targetInt();
+				if (visited.get(v))
+					continue;
+				visited.set(v);
+				visitedList.add(v);
+				queue.enqueue(v);
+			}
+			if (queue.isEmpty())
+				break;
+			u = queue.dequeueInt();
+		}
+
+		int[] visitedArr = visitedList.toIntArray();
+		IntSet indexRes = new ImmutableIntArraySet(visitedArr) {
+			@Override
+			public boolean contains(int v) {
+				return 0 <= v && v < n && visited.get(v);
+			}
+		};
+		if (!(g instanceof IndexGraph))
+			indexRes = IndexIdMaps.indexToIdSet(indexRes, g.indexGraphVerticesMap());
+		return indexRes;
 	}
 
 }
