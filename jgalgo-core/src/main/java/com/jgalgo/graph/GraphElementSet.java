@@ -70,13 +70,9 @@ abstract class GraphElementSet extends AbstractIntSet {
 		Assertions.Graphs.checkId(idx, size, isEdges);
 	}
 
-	abstract void addIdSwapListener(IndexSwapListener listener);
+	abstract void addRemoveListener(IndexRemoveListener listener);
 
-	abstract void removeIdSwapListener(IndexSwapListener listener);
-
-	abstract void addIdAddRemoveListener(IdAddRemoveListener listener);
-
-	abstract void removeIdAddRemoveListener(IdAddRemoveListener listener);
+	abstract void removeRemoveListener(IndexRemoveListener listener);
 
 	static class FixedSize extends GraphElementSet {
 
@@ -85,26 +81,18 @@ abstract class GraphElementSet extends AbstractIntSet {
 		}
 
 		@Override
-		void addIdSwapListener(IndexSwapListener listener) {
+		void addRemoveListener(IndexRemoveListener listener) {
 			Objects.requireNonNull(listener);
 		}
 
 		@Override
-		void removeIdSwapListener(IndexSwapListener listener) {}
+		void removeRemoveListener(IndexRemoveListener listener) {}
 
-		@Override
-		void addIdAddRemoveListener(IdAddRemoveListener listener) {
-			Objects.requireNonNull(listener);
-		}
-
-		@Override
-		void removeIdAddRemoveListener(IdAddRemoveListener listener) {}
 	}
 
 	static class Default extends GraphElementSet.FixedSize {
 
-		private final List<IndexSwapListener> idSwapListeners = new CopyOnWriteArrayList<>();
-		private final List<IdAddRemoveListener> idAddRemoveListeners = new CopyOnWriteArrayList<>();
+		private final List<IndexRemoveListener> removeListeners = new CopyOnWriteArrayList<>();
 
 		Default(int initSize, boolean isEdges) {
 			super(initSize, isEdges);
@@ -112,106 +100,59 @@ abstract class GraphElementSet extends AbstractIntSet {
 
 		int newIdx() {
 			int id = size++;
-			notifyIdAdd(id);
 			return id;
 		}
 
 		void removeIdx(int idx) {
 			assert idx == size - 1;
 			assert size > 0;
-			notifyIdRemove(idx);
+			for (IndexRemoveListener listener : removeListeners)
+				listener.removeLast(idx);
 			size--;
 		}
 
 		@Override
 		public void clear() {
-			notifyIdsClear();
 			size = 0;
 		}
 
-		int isSwapNeededBeforeRemove(int idx) {
-			checkIdx(idx);
-			return size - 1;
-		}
+		// void idxSwap(int idx1, int idx2) {
+		// checkIdx(idx1);
+		// checkIdx(idx2);
+		// notifyIDSwap(idx1, idx2);
+		// }
 
-		void idxSwap(int idx1, int idx2) {
-			checkIdx(idx1);
-			checkIdx(idx2);
-			notifyIDSwap(idx1, idx2);
+		void swapAndRemove(int removedIdx, int swappedIdx) {
+			checkIdx(removedIdx);
+			checkIdx(swappedIdx);
+			assert swappedIdx == size - 1;
+			assert size > 0;
+			for (IndexRemoveListener listener : removeListeners)
+				listener.swapAndRemove(removedIdx, swappedIdx);
+			size--;
 		}
 
 		GraphElementSet.Default copy() {
 			return new GraphElementSet.Default(size, isEdges);
 		}
 
-		void notifyIDSwap(int id1, int id2) {
-			for (IndexSwapListener listener : idSwapListeners)
-				listener.swap(id1, id2);
-		}
+		// void notifyIDSwap(int id1, int id2) {
+		// for (IndexRemoveListener listener : idSwapListeners)
+		// listener.swap(id1, id2);
+		// }
 
-		void notifyIdAdd(int id) {
-			for (IdAddRemoveListener listener : idAddRemoveListeners)
-				listener.idAdd(id);
-		}
-
-		void notifyIdRemove(int id) {
-			for (IdAddRemoveListener listener : idAddRemoveListeners)
-				listener.idRemove(id);
-		}
-
-		void notifyIdsClear() {
-			for (IdAddRemoveListener listener : idAddRemoveListeners)
-				listener.idsClear();
+		@Override
+		void addRemoveListener(IndexRemoveListener listener) {
+			removeListeners.add(Objects.requireNonNull(listener));
 		}
 
 		@Override
-		void addIdSwapListener(IndexSwapListener listener) {
-			idSwapListeners.add(Objects.requireNonNull(listener));
-		}
-
-		@Override
-		void removeIdSwapListener(IndexSwapListener listener) {
-			idSwapListeners.remove(listener);
-		}
-
-		@Override
-		void addIdAddRemoveListener(IdAddRemoveListener listener) {
-			idAddRemoveListeners.add(Objects.requireNonNull(listener));
-		}
-
-		@Override
-		void removeIdAddRemoveListener(IdAddRemoveListener listener) {
-			idAddRemoveListeners.remove(listener);
+		void removeRemoveListener(IndexRemoveListener listener) {
+			removeListeners.remove(listener);
 		}
 	}
 
 	static final GraphElementSet EmptyVertices = new GraphElementSet.FixedSize(0, false);
 	static final GraphElementSet EmptyEdges = new GraphElementSet.FixedSize(0, true);
-
-	/**
-	 * A listener that will be notified each time a strategy add or remove an id.
-	 *
-	 * @author Barak Ugav
-	 */
-	static interface IdAddRemoveListener {
-		/**
-		 * A callback that is called when {@code id} is added by the strategy.
-		 *
-		 * @param id the new id
-		 */
-		void idAdd(int id);
-
-		/**
-		 * A callback that is called when {@code id} is removed by the strategy.
-		 *
-		 * @param id the removed id
-		 */
-		void idRemove(int id);
-
-		/**
-		 * A callback that is called when all ids are removed from the strategy.
-		 */
-		void idsClear();
-	}
 
 }

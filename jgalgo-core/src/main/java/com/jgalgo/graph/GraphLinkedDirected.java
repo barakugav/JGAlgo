@@ -96,29 +96,27 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	void removeVertexImpl(int vertex) {
-		super.removeVertexImpl(vertex);
+	void removeVertexLast(int vertex) {
 		edgesOutContainer.clear(edgesOut, vertex);
 		edgesInContainer.clear(edgesIn, vertex);
+		super.removeVertexLast(vertex);
 	}
 
 	@Override
-	void vertexSwap(int v1, int v2) {
-		for (Edge p = edgesOut[v1]; p != null; p = p.nextOut)
-			p.source = v2;
-		for (Edge p = edgesIn[v1]; p != null; p = p.nextIn)
-			p.target = v2;
-		for (Edge p = edgesOut[v2]; p != null; p = p.nextOut)
-			p.source = v1;
-		for (Edge p = edgesIn[v2]; p != null; p = p.nextIn)
-			p.target = v1;
+	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
+		assert edgesOutNum[removedIdx] == 0 && edgesInNum[removedIdx] == 0;
 
-		edgesOutContainer.swap(edgesOut, v1, v2);
-		edgesInContainer.swap(edgesIn, v1, v2);
-		edgesOutNumContainer.swap(edgesOutNum, v1, v2);
-		edgesInNumContainer.swap(edgesInNum, v1, v2);
+		for (Edge p = edgesOut[swappedIdx]; p != null; p = p.nextOut)
+			p.source = removedIdx;
+		for (Edge p = edgesIn[swappedIdx]; p != null; p = p.nextIn)
+			p.target = removedIdx;
 
-		super.vertexSwap(v1, v2);
+		edgesOutContainer.swapAndClear(removedIdx, swappedIdx);
+		edgesInContainer.swapAndClear(removedIdx, swappedIdx);
+		edgesOutNumContainer.swapAndClear(removedIdx, swappedIdx);
+		edgesInNumContainer.swapAndClear(removedIdx, swappedIdx);
+
+		super.vertexSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override
@@ -170,11 +168,19 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	void removeEdgeImpl(int edge) {
+	void removeEdgeLast(int edge) {
 		Edge e = getEdge(edge);
 		removeEdgeOutPointers(e);
 		removeEdgeInPointers(e);
-		super.removeEdgeImpl(edge);
+		super.removeEdgeLast(edge);
+	}
+
+	@Override
+	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
+		Edge removed = getEdge(removedIdx);
+		removeEdgeOutPointers(removed);
+		removeEdgeInPointers(removed);
+		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override
@@ -184,8 +190,11 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			next = p.nextOut;
 			p.nextOut = p.prevOut = null;
 			removeEdgeInPointers(p);
-			edgeSwapBeforeRemove(p.id);
-			super.removeEdgeImpl(p.id);
+			if (p.id == edges().size() - 1) {
+				super.removeEdgeLast(p.id);
+			} else {
+				super.edgeSwapAndRemove(p.id, edges().size() - 1);
+			}
 		}
 		edgesOut[source] = null;
 		edgesOutNum[source] = 0;
@@ -198,8 +207,11 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			next = p.nextIn;
 			p.nextIn = p.prevIn = null;
 			removeEdgeOutPointers(p);
-			edgeSwapBeforeRemove(p.id);
-			super.removeEdgeImpl(p.id);
+			if (p.id == edges().size() - 1) {
+				super.removeEdgeLast(p.id);
+			} else {
+				super.edgeSwapAndRemove(p.id, edges().size() - 1);
+			}
 		}
 		edgesIn[target] = null;
 		edgesInNum[target] = 0;

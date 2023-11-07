@@ -84,7 +84,7 @@ import com.jgalgo.alg.ShortestPathSingleSource;
  * <p>
  * If the weights container is associated with the edges of an index graph, and the graph implementation chooses to
  * perform some swaps and renames to the edges, the weights container will update automatically (see
- * {@link IndexGraph#addEdgeSwapListener(IndexSwapListener)}).
+ * {@link IndexGraph#addEdgeRemoveListener(IndexRemoveListener)}).
  *
  * <p>
  * The {@link IWeights} interface can be used for edges or vertices, depending on how it was created. In this

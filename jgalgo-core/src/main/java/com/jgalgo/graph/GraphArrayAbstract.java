@@ -68,15 +68,15 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 	}
 
 	@Override
-	void removeEdgeImpl(int edge) {
+	void removeEdgeLast(int edge) {
 		edgeEndpointsContainer.clear(edgeEndpoints, edge);
-		super.removeEdgeImpl(edge);
+		super.removeEdgeLast(edge);
 	}
 
 	@Override
-	void edgeSwap(int e1, int e2) {
-		edgeEndpointsContainer.swap(edgeEndpoints, e1, e2);
-		super.edgeSwap(e1, e2);
+	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
+		edgeEndpointsContainer.swapAndClear(removedIdx, swappedIdx);
+		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	static void addEdgeToList(int[][] edges, int[] edgesNum, int w, int e) {

@@ -146,43 +146,32 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	}
 
 	@Override
-	void removeVertexImpl(int vertex) {
-		super.removeVertexImpl(vertex);
-		edgesOutNumContainer.clear(edgesOutNum, vertex);
-		edgesInNumContainer.clear(edgesInNum, vertex);
+	void removeVertexLast(int vertex) {
+		assert edgesOutNum[vertex] == 0 && edgesInNum[vertex] == 0;
 		// Reuse allocated edges arrays for v
 		// edgesOut.clear(v);
 		// edgesIn.clear(v);
+		super.removeVertexLast(vertex);
 	}
 
 	@Override
-	void vertexSwap(int v1, int v2) {
-		int[] es1Out = edgesOut[v1];
-		int es1OutLen = edgesOutNum[v1];
-		for (int i = 0; i < es1OutLen; i++)
-			replaceEdgeSource(es1Out[i], v2);
+	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
+		assert edgesOutNum[removedIdx] == 0 && edgesInNum[removedIdx] == 0;
 
-		int[] es1In = edgesIn[v1];
-		int es1InLen = edgesInNum[v1];
-		for (int i = 0; i < es1InLen; i++)
-			replaceEdgeTarget(es1In[i], v2);
+		int[] outEdges = edgesOut[swappedIdx], inEdges = edgesIn[swappedIdx];
+		for (int num = edgesOutNum[swappedIdx], i = 0; i < num; i++)
+			replaceEdgeSource(outEdges[i], removedIdx);
+		for (int num = edgesInNum[swappedIdx], i = 0; i < num; i++)
+			replaceEdgeTarget(inEdges[i], removedIdx);
 
-		int[] es2Out = edgesOut[v2];
-		int es2OutLen = edgesOutNum[v2];
-		for (int i = 0; i < es2OutLen; i++)
-			replaceEdgeSource(es2Out[i], v1);
-
-		int[] es2In = edgesIn[v2];
-		int es2InLen = edgesInNum[v2];
-		for (int i = 0; i < es2InLen; i++)
-			replaceEdgeTarget(es2In[i], v1);
-
-		edgesOutContainer.swap(edgesOut, v1, v2);
-		edgesOutNumContainer.swap(edgesOutNum, v1, v2);
-		edgesInContainer.swap(edgesIn, v1, v2);
-		edgesInNumContainer.swap(edgesInNum, v1, v2);
-
-		super.vertexSwap(v1, v2);
+		edgesOutContainer.swapAndClear(removedIdx, swappedIdx);
+		edgesInContainer.swapAndClear(removedIdx, swappedIdx);
+		edgesOutNumContainer.swapAndClear(removedIdx, swappedIdx);
+		edgesInNumContainer.swapAndClear(removedIdx, swappedIdx);
+		// Reuse allocated edges arrays for v
+		// edgesOut.clear(v);
+		// edgesIn.clear(v);
+		super.vertexSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override
@@ -206,29 +195,28 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	}
 
 	@Override
-	void removeEdgeImpl(int edge) {
+	void removeEdgeLast(int edge) {
 		int u = edgeSource(edge), v = edgeTarget(edge);
 		removeEdgeFromList(edgesOut, edgesOutNum, u, edge);
 		removeEdgeFromList(edgesIn, edgesInNum, v, edge);
-		super.removeEdgeImpl(edge);
+		super.removeEdgeLast(edge);
 	}
 
 	@Override
-	void edgeSwap(int e1, int e2) {
-		assert e1 != e2;
-		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
-		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
-		int[] u1es = edgesOut[u1], v1es = edgesIn[v1];
-		int[] u2es = edgesOut[u2], v2es = edgesIn[v2];
-		int i1 = edgeIndexOf(u1es, edgesOutNum[u1], e1);
-		int j1 = edgeIndexOf(v1es, edgesInNum[v1], e1);
-		int i2 = edgeIndexOf(u2es, edgesOutNum[u2], e2);
-		int j2 = edgeIndexOf(v2es, edgesInNum[v2], e2);
-		u1es[i1] = e2;
-		v1es[j1] = e2;
-		u2es[i2] = e1;
-		v2es[j2] = e1;
-		super.edgeSwap(e1, e2);
+	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
+		int ur = edgeSource(removedIdx), vr = edgeTarget(removedIdx);
+		int us = edgeSource(swappedIdx), vs = edgeTarget(swappedIdx);
+		int[] urEdges = edgesOut[ur], vrEdges = edgesIn[vr];
+		int[] usEdges = edgesOut[us], vsEdges = edgesIn[vs];
+		int urIdx = edgeIndexOf(urEdges, edgesOutNum[ur], removedIdx);
+		int vrIdx = edgeIndexOf(vrEdges, edgesInNum[vr], removedIdx);
+		urEdges[urIdx] = urEdges[--edgesOutNum[ur]];
+		vrEdges[vrIdx] = vrEdges[--edgesInNum[vr]];
+		int usIdx = edgeIndexOf(usEdges, edgesOutNum[us], swappedIdx);
+		int vsIdx = edgeIndexOf(vsEdges, edgesInNum[vs], swappedIdx);
+		usEdges[usIdx] = removedIdx;
+		vsEdges[vsIdx] = removedIdx;
+		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override

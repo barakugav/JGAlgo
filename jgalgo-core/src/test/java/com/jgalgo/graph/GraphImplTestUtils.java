@@ -871,12 +871,20 @@ class GraphImplTestUtils extends TestUtils {
 			this.dataKey = dataKey;
 
 			if (g instanceof IndexGraph) {
-				((IndexGraph) g).addVertexSwapListener((id1, id2) -> {
-					Vertex v1 = getVertex(id1), v2 = getVertex(id2);
-					v1.id = id2;
-					v2.id = id1;
-					vertices.put(id1, v2);
-					vertices.put(id2, v1);
+				((IndexGraph) g).addVertexRemoveListener(new IndexRemoveListener() {
+
+					@Override
+					public void swapAndRemove(int removedIdx, int swappedIdx) {
+						/* we do only swap, remove is done outside */
+						Vertex v1 = getVertex(removedIdx), v2 = getVertex(swappedIdx);
+						v1.id = swappedIdx;
+						v2.id = removedIdx;
+						vertices.put(removedIdx, v2);
+						vertices.put(swappedIdx, v1);
+					}
+
+					@Override
+					public void removeLast(int removedIdx) {}
 				});
 			}
 

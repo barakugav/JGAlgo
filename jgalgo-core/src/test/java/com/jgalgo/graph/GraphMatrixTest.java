@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
-public class GraphTableTest extends TestBase {
+public class GraphMatrixTest extends TestBase {
 
 	private static Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl() {
 		return directed -> IntGraphFactory.newUndirected().setOption("impl", "matrix").setDirected(directed).newGraph();

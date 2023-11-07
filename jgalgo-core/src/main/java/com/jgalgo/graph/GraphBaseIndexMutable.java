@@ -102,31 +102,26 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 	@Override
 	public final void removeVertex(int vertex) {
 		removeEdgesOf(vertex);
-		vertex = vertexSwapBeforeRemove(vertex);
-		removeVertexImpl(vertex);
+		// vertex = vertexSwapBeforeRemove(vertex);
+		// removeVertexImpl(vertex);
+
+		if (vertex == vertices.size - 1) {
+			removeVertexLast(vertex);
+		} else {
+			vertexSwapAndRemove(vertex, vertices.size - 1);
+		}
 	}
 
-	void removeVertexImpl(int vertex) {
-		// internal weights are handled manually
-		// verticesInternalContainers.clearElement(vertex);
+	void removeVertexLast(int vertex) {
 		verticesUserWeights.clearElement(vertex);
 		vertices.removeIdx(vertex);
 	}
 
-	private int vertexSwapBeforeRemove(int v) {
-		int vn = vertices.isSwapNeededBeforeRemove(v);
-		if (v != vn) {
-			vertexSwap(v, vn);
-			v = vn;
-		}
-		return v;
-	}
-
-	void vertexSwap(int v1, int v2) {
-		vertices.idxSwap(v1, v2);
+	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
 		// internal weights are handled manually
-		// verticesInternalContainers.swapElements(v1, v2);
-		verticesUserWeights.swapElements(v1, v2);
+		// verticesInternalContainers.swapElements(removedIdx, swappedIdx);
+		verticesUserWeights.swapAndClear(removedIdx, swappedIdx);
+		vertices.swapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override
@@ -142,31 +137,23 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 
 	@Override
 	public final void removeEdge(int edge) {
-		edge = edgeSwapBeforeRemove(edge);
-		removeEdgeImpl(edge);
+		if (edge == edges.size - 1) {
+			removeEdgeLast(edge);
+		} else {
+			edgeSwapAndRemove(edge, edges.size - 1);
+		}
 	}
 
-	void removeEdgeImpl(int edge) {
-		// internal weights are handled manually
-		// edgesInternalContainers.clearElement(edge);
+	void removeEdgeLast(int edge) {
 		edgesUserWeights.clearElement(edge);
 		edges.removeIdx(edge);
 	}
 
-	int edgeSwapBeforeRemove(int e) {
-		int en = edges.isSwapNeededBeforeRemove(e);
-		if (e != en) {
-			edgeSwap(e, en);
-			e = en;
-		}
-		return e;
-	}
-
-	void edgeSwap(int e1, int e2) {
-		edges.idxSwap(e1, e2);
+	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
 		// internal weights are handled manually
-		// edgesInternalContainers.swapElements(e1, e2);
-		edgesUserWeights.swapElements(e1, e2);
+		// edgesInternalContainers.swapElements(removedIdx, swappedIdx);
+		edgesUserWeights.swapAndClear(removedIdx, swappedIdx);
+		edges.swapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override

@@ -16,14 +16,15 @@
 package com.jgalgo.graph;
 
 import java.util.AbstractSet;
+import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import com.jgalgo.graph.GraphElementSet.IdAddRemoveListener;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import it.unimi.dsi.fastutil.objects.ObjectSets;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
@@ -88,9 +89,8 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 			throw new IllegalArgumentException("User chosen vertex ID must be non null");
 		if (vertices().contains(vertex))
 			throw new IllegalArgumentException("Graph already contain a vertex with the specified ID: " + vertex);
-		/* The listener of new IDs will be called by the index graph implementation, and the user ID will be used */
-		viMap.userChosenId = vertex;
-		indexGraph.addVertex();
+		int vIdx = indexGraph.addVertex();
+		viMap.addId(vertex, vIdx);
 	}
 
 	@Override
@@ -125,14 +125,6 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 		return new EdgeSetMapped(s);
 	}
 
-	// @Override
-	// public int addEdge(int source, int target) {
-	// int uIdx = viMap.idToIndex(source);
-	// int vIdx = viMap.idToIndex(target);
-	// int eIdx = indexGraph.addEdge(uIdx, vIdx);
-	// return eiMap.indexToIdInt(eIdx);
-	// }
-
 	@Override
 	public void addEdge(V source, V target, E edge) {
 		if (edge == null)
@@ -141,9 +133,8 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 			throw new IllegalArgumentException("Graph already contain a edge with the specified ID: " + edge);
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
-		/* The listener of new IDs will be called by the index graph implementation, and the user ID will be used */
-		eiMap.userChosenId = edge;
-		indexGraph.addEdge(uIdx, vIdx);
+		int eIdx = indexGraph.addEdge(uIdx, vIdx);
+		eiMap.addId(edge, eIdx);
 	}
 
 	@Override
@@ -193,11 +184,14 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 	@Override
 	public void clear() {
 		indexGraph.clear();
+		viMap.idsClear();
+		eiMap.idsClear();
 	}
 
 	@Override
 	public void clearEdges() {
 		indexGraph.clearEdges();
+		eiMap.idsClear();
 	}
 
 	@Override
@@ -427,66 +421,62 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 
 	private static class IdIdxMapImpl<K> implements IndexIdMap<K> {
 
+		private final GraphElementSet elements;
 		private final Object2IntOpenHashMap<K> idToIndex;
 		private final Set<K> idsView; // TODO move to graph abstract implementation
-		private final WeightsImplObj.IndexImpl<K> indexToId;
-		private K userChosenId = null;
+		private Object[] indexToId;
 		private final boolean isEdges;
 
 		IdIdxMapImpl(GraphElementSet elements, int expectedSize, boolean isEdges) {
+			this.elements = elements;
 			idToIndex = new Object2IntOpenHashMap<>(expectedSize);
 			idToIndex.defaultReturnValue(-1);
 			idsView = ObjectSets.unmodifiable(idToIndex.keySet());
-			indexToId = new WeightsImplObj.IndexMutable<>(elements, null);
+			indexToId = expectedSize == 0 ? ObjectArrays.DEFAULT_EMPTY_ARRAY : new Object[expectedSize];
 			this.isEdges = isEdges;
 			initListeners(elements);
 		}
 
 		IdIdxMapImpl(IndexIdMap<K> orig, IndexGraphBuilder.ReIndexingMap reIndexing, GraphElementSet elements,
 				boolean isEdges) {
+			this.elements = elements;
+			int elementsSize = elements.size();
 			if (orig instanceof IdIdxMapImpl && reIndexing == null) {
 				IdIdxMapImpl<K> orig0 = (IdIdxMapImpl<K>) orig;
 				idToIndex = new Object2IntOpenHashMap<>(orig0.idToIndex);
 				idToIndex.defaultReturnValue(-1);
-				indexToId = new WeightsImplObj.IndexMutable<>(orig0.indexToId, elements);
-
-			} else if (reIndexing == null) {
-				idToIndex = new Object2IntOpenHashMap<>(elements.size());
-				idToIndex.defaultReturnValue(-1);
-				indexToId = new WeightsImplObj.IndexMutable<>(elements, null);
-				if (elements.size() > 0) {
-					((WeightsImplObj.IndexMutable<K>) indexToId).expand(elements.size());
-					for (int idx : elements) {
-						K id = orig.indexToId(idx);
-						if (id == null)
-							throw new IllegalArgumentException("null id");
-						if (indexToId.get(idx) != null)
-							throw new IllegalArgumentException("duplicate index: " + idx);
-						indexToId.set(idx, id);
-
-						int oldIdx = idToIndex.put(id, idx);
-						if (oldIdx != -1)
-							throw new IllegalArgumentException("duplicate id: " + id);
-					}
-				}
+				indexToId = Arrays.copyOf(orig0.indexToId, elementsSize);
 
 			} else {
-				idToIndex = new Object2IntOpenHashMap<>(elements.size());
+				idToIndex = new Object2IntOpenHashMap<>(elementsSize);
 				idToIndex.defaultReturnValue(-1);
-				indexToId = new WeightsImplObj.IndexMutable<>(elements, null);
-				if (elements.size() > 0) {
-					((WeightsImplObj.IndexMutable<K>) indexToId).expand(elements.size());
-					for (int idx : elements) {
-						K id = orig.indexToId(reIndexing.reIndexedToOrig(idx));
-						if (id == null)
-							throw new IllegalArgumentException("null id");
-						if (indexToId.get(idx) != null)
-							throw new IllegalArgumentException("duplicate index: " + idx);
-						indexToId.set(idx, id);
+				if (elements.isEmpty()) {
+					indexToId = ObjectArrays.DEFAULT_EMPTY_ARRAY;
+				} else {
+					indexToId = new Object[elementsSize];
+					if (reIndexing == null) {
+						for (int idx : elements) {
+							K id = orig.indexToId(idx);
+							if (id == null)
+								throw new IllegalArgumentException("null id");
+							indexToId[idx] = id;
 
-						int oldIdx = idToIndex.put(id, idx);
-						if (oldIdx != -1)
-							throw new IllegalArgumentException("duplicate id: " + id);
+							int oldIdx = idToIndex.put(id, idx);
+							if (oldIdx != -1)
+								throw new IllegalArgumentException("duplicate id: " + id);
+						}
+
+					} else {
+						for (int idx : elements) {
+							K id = orig.indexToId(reIndexing.reIndexedToOrig(idx));
+							if (id == null)
+								throw new IllegalArgumentException("null id");
+							indexToId[idx] = id;
+
+							int oldIdx = idToIndex.put(id, idx);
+							if (oldIdx != -1)
+								throw new IllegalArgumentException("duplicate id: " + id);
+						}
 					}
 				}
 			}
@@ -504,58 +494,51 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 			return new IdIdxMapImpl<>(orig, reIndexing, elements, isEdges);
 		}
 
+		@SuppressWarnings("unchecked")
 		private void initListeners(GraphElementSet elements) {
-			elements.addIdSwapListener((idx1, idx2) -> {
-				K id1 = indexToId.get(idx1);
-				K id2 = indexToId.get(idx2);
-				indexToId.set(idx1, id2);
-				indexToId.set(idx2, id1);
-				int oldIdx1 = idToIndex.put(id1, idx2);
-				int oldIdx2 = idToIndex.put(id2, idx1);
-				assert idx1 == oldIdx1;
-				assert idx2 == oldIdx2;
-			});
-			elements.addIdAddRemoveListener(new IdAddRemoveListener() {
+			elements.addRemoveListener(new IndexRemoveListener() {
 
-				WeightsImplObj.IndexMutable<K> indexToId() {
-					return (WeightsImplObj.IndexMutable<K>) indexToId;
+				@Override
+				public void swapAndRemove(int removedIdx, int swappedIdx) {
+					K id1 = (K) indexToId[removedIdx];
+					K id2 = (K) indexToId[swappedIdx];
+					indexToId[removedIdx] = id2;
+					indexToId[swappedIdx] = null;
+					int oldIdx1 = idToIndex.removeInt(id1);
+					int oldIdx2 = idToIndex.put(id2, removedIdx);
+					assert removedIdx == oldIdx1;
+					assert swappedIdx == oldIdx2;
 				}
 
 				@Override
-				public void idRemove(int idx) {
-					final K id = indexToId.get(idx);
-					indexToId().clear(idx);
+				public void removeLast(int removedIdx) {
+					Object id = indexToId[removedIdx];
+					indexToId[removedIdx] = null;
 					idToIndex.removeInt(id);
-				}
-
-				@Override
-				public void idAdd(int idx) {
-					assert idx == idToIndex.size();
-					if (userChosenId == null)
-						throw new IllegalStateException(
-								"can't add vertex/edge from index graph, use wrapper graph API");
-					K id = userChosenId;
-					int oldIdx = idToIndex.put(id, idx);
-					assert oldIdx == -1;
-
-					if (idx == indexToId().capacity())
-						indexToId().expand(Math.max(2, 2 * indexToId().capacity()));
-					indexToId.set(idx, id);
-
-					userChosenId = null;
-				}
-
-				@Override
-				public void idsClear() {
-					idToIndex.clear();
-					indexToId().clear();
 				}
 			});
 		}
 
+		void addId(K id, int idx) {
+			assert idx == idToIndex.size();
+			int oldIdx = idToIndex.put(id, idx);
+			assert oldIdx == -1;
+
+			if (idx == indexToId.length)
+				indexToId = Arrays.copyOf(indexToId, Math.max(2, 2 * indexToId.length));
+			indexToId[idx] = id;
+		}
+
+		void idsClear() {
+			Arrays.fill(indexToId, 0, idToIndex.size(), null);
+			idToIndex.clear();
+		}
+
+		@SuppressWarnings("unchecked")
 		@Override
 		public K indexToId(int index) {
-			return indexToId.get(index);
+			elements.checkIdx(index);
+			return (K) indexToId[index];
 		}
 
 		@Override

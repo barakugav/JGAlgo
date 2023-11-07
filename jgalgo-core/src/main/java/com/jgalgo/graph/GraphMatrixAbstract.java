@@ -142,9 +142,9 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 	}
 
 	@Override
-	void removeVertexImpl(int vertex) {
+	void removeVertexLast(int vertex) {
 		DataContainer.Int edgesV = edges.get(vertex);
-		super.removeVertexImpl(vertex);
+		super.removeVertexLast(vertex);
 		edgesV.clear();
 		// Don't deallocate v array
 		// edges.clear(v);
@@ -155,12 +155,11 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 	}
 
 	@Override
-	void vertexSwap(int v1, int v2) {
-		final int n = vertices().size();
-		edges.swap(v1, v2);
-		for (int u = 0; u < n; u++)
-			edges.get(u).swap(v1, v2);
-		super.vertexSwap(v1, v2);
+	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
+		for (int n = vertices().size(), u = 0; u < n; u++)
+			edges.get(u).swapAndClear(removedIdx, swappedIdx);
+		edges.swapAndClear(removedIdx, swappedIdx);
+		super.vertexSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override
@@ -184,15 +183,15 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 	}
 
 	@Override
-	void removeEdgeImpl(int edge) {
+	void removeEdgeLast(int edge) {
 		edgeEndpointsContainer.clear(edgeEndpoints, edge);
-		super.removeEdgeImpl(edge);
+		super.removeEdgeLast(edge);
 	}
 
 	@Override
-	void edgeSwap(int e1, int e2) {
-		edgeEndpointsContainer.swap(edgeEndpoints, e1, e2);
-		super.edgeSwap(e1, e2);
+	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
+		edgeEndpointsContainer.swapAndClear(removedIdx, swappedIdx);
+		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	void reverseEdge0(int edge) {

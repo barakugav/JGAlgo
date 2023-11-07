@@ -58,7 +58,7 @@ interface WeightsImpl {
 
 		void clear();
 
-		void swap(int idx1, int idx2);
+		void swapAndClear(int removedIdx, int swappedIdx);
 
 		static <D> WeightsImpl.IndexMutable<D> newInstance(GraphElementSet elements, Class<? super D> type, D defVal) {
 			IWeights<?> container;
@@ -173,9 +173,14 @@ interface WeightsImpl {
 				weightsCapacity = newCapacity;
 			}
 
-			void swapElements(int idx1, int idx2) {
+			// void swapElements(int idx1, int idx2) {
+			// for (WeightsImpl.IndexMutable<?> container : weights.values())
+			// container.swap(idx1, idx2);
+			// }
+
+			void swapAndClear(int removedIdx, int swappedIdx) {
 				for (WeightsImpl.IndexMutable<?> container : weights.values())
-					container.swap(idx1, idx2);
+					container.swapAndClear(removedIdx, swappedIdx);
 			}
 
 			void clearElement(int idx) {

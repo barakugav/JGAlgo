@@ -15,20 +15,20 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Arrays;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
-import com.jgalgo.graph.GraphElementSet.IdAddRemoveListener;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
@@ -40,6 +40,63 @@ abstract class IntGraphImpl extends IntGraphBase {
 	final IdIdxMapImpl eiMap;
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> verticesWeights = new IdentityHashMap<>();
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> edgesWeights = new IdentityHashMap<>();
+	private final ToIntFunction<IntSet> vIdStrategy = IdStrategy.get();
+	private final ToIntFunction<IntSet> eIdStrategy = IdStrategy.get();
+
+	private static final Supplier<ToIntFunction<IntSet>> IdStrategy;
+
+	static {
+		Object strat = JGAlgoConfigImpl.GraphIdStrategy;
+		if (strat == null)
+			strat = "counter"; // default
+		if (strat instanceof String) {
+			String strategyName = (String) strat;
+
+			switch (strategyName.toLowerCase()) {
+				case "counter":
+					IdStrategy = () -> {
+						return new ToIntFunction<>() {
+							private int counter;
+
+							@Override
+							public int applyAsInt(IntSet ids) {
+								for (;;) {
+									int id = ++counter;
+									if (!ids.contains(id))
+										return id;
+								}
+							}
+						};
+					};
+					break;
+				case "rand":
+				case "random":
+					IdStrategy = () -> {
+						final Random rand = new Random();
+						return (IntSet idSet) -> {
+							for (;;) {
+								int id = rand.nextInt();
+								if (id >= 1 && !idSet.contains(id))
+									// We prefer non zero IDs because fastutil handle zero (null) keys
+									// separately
+									return id;
+							}
+						};
+					};
+					break;
+
+				default:
+					throw new IllegalArgumentException("unknown id strategy: " + strategyName);
+			}
+
+		} else if (strat instanceof Supplier) {
+			@SuppressWarnings("unchecked")
+			Supplier<ToIntFunction<IntSet>> stratFunc = (Supplier<ToIntFunction<IntSet>>) strat;
+			IdStrategy = stratFunc;
+		} else {
+			throw new IllegalArgumentException("Unknown graph ID strategy: " + JGAlgoConfigImpl.GraphIdStrategy);
+		}
+	}
 
 	IntGraphImpl(IndexGraph g, int expectedVerticesNum, int expectedEdgesNum) {
 		assert g.vertices().isEmpty();
@@ -90,8 +147,10 @@ abstract class IntGraphImpl extends IntGraphBase {
 
 	@Override
 	public int addVertex() {
-		int uIdx = indexGraph.addVertex();
-		return viMap.indexToIdInt(uIdx);
+		int id = vIdStrategy.applyAsInt(vertices());
+		int vIdx = indexGraph.addVertex();
+		viMap.addId(id, vIdx);
+		return id;
 	}
 
 	@Override
@@ -100,9 +159,8 @@ abstract class IntGraphImpl extends IntGraphBase {
 			throw new IllegalArgumentException("User chosen vertex ID must be non negative: " + vertex);
 		if (vertices().contains(vertex))
 			throw new IllegalArgumentException("Graph already contain a vertex with the specified ID: " + vertex);
-		/* The listener of new IDs will be called by the index graph implementation, and the user ID will be used */
-		viMap.userChosenId = vertex;
-		indexGraph.addVertex();
+		int vIdx = indexGraph.addVertex();
+		viMap.addId(vertex, vIdx);
 	}
 
 	@Override
@@ -141,8 +199,10 @@ abstract class IntGraphImpl extends IntGraphBase {
 	public int addEdge(int source, int target) {
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
+		int id = eIdStrategy.applyAsInt(edges());
 		int eIdx = indexGraph.addEdge(uIdx, vIdx);
-		return eiMap.indexToIdInt(eIdx);
+		eiMap.addId(id, eIdx);
+		return id;
 	}
 
 	@Override
@@ -153,9 +213,8 @@ abstract class IntGraphImpl extends IntGraphBase {
 			throw new IllegalArgumentException("Graph already contain a edge with the specified ID: " + edge);
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
-		/* The listener of new IDs will be called by the index graph implementation, and the user ID will be used */
-		eiMap.userChosenId = edge;
-		indexGraph.addEdge(uIdx, vIdx);
+		int eIdx = indexGraph.addEdge(uIdx, vIdx);
+		eiMap.addId(edge, eIdx);
 	}
 
 	@Override
@@ -205,11 +264,14 @@ abstract class IntGraphImpl extends IntGraphBase {
 	@Override
 	public void clear() {
 		indexGraph.clear();
+		viMap.idsClear();
+		eiMap.idsClear();
 	}
 
 	@Override
 	public void clearEdges() {
 		indexGraph.clearEdges();
+		eiMap.idsClear();
 	}
 
 	@Override
@@ -436,144 +498,64 @@ abstract class IntGraphImpl extends IntGraphBase {
 		}
 	}
 
-	private abstract static class IdIdxMapImpl implements IndexIntIdMap {
+	private static class IdIdxMapImpl implements IndexIntIdMap {
 
-		static interface Strategy {
-
-			IdIdxMapImpl newInstance(GraphElementSet elements, int expectedSize, boolean isEdges);
-
-			IdIdxMapImpl reindexedCopyOf(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing,
-					GraphElementSet elements, boolean isEdges);
-
-		}
-
-		static final Strategy strategy;
-
-		static {
-			Function<Supplier<ToIntFunction<IntSet>>, Strategy> customStrategy = nextIdFunc -> new Strategy() {
-				@Override
-				public IdIdxMapImpl newInstance(GraphElementSet elements, int expectedSize, boolean isEdges) {
-					return new IdIdxMapCustom(elements, expectedSize, isEdges, nextIdFunc.get());
-				}
-
-				@Override
-				public IdIdxMapImpl reindexedCopyOf(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing,
-						GraphElementSet elements, boolean isEdges) {
-					return new IdIdxMapCustom(orig, reIndexing, elements, isEdges, nextIdFunc.get());
-				}
-			};
-			Object strat = JGAlgoConfigImpl.GraphIdStrategy;
-			if (strat == null)
-				strat = "counter"; // default
-			if (strat instanceof String) {
-				String strategyName = (String) strat;
-
-				switch (strategyName.toLowerCase()) {
-					case "counter":
-						strategy = new Strategy() {
-							@Override
-							public IdIdxMapImpl newInstance(GraphElementSet elements, int expectedSize,
-									boolean isEdges) {
-								return new IdIdxMapCounter(elements, expectedSize, isEdges);
-							}
-
-							@Override
-							public IdIdxMapImpl reindexedCopyOf(IndexIntIdMap orig,
-									IndexGraphBuilder.ReIndexingMap reIndexing, GraphElementSet elements,
-									boolean isEdges) {
-								return new IdIdxMapCounter(orig, reIndexing, elements, isEdges);
-							}
-						};
-						break;
-					case "rand":
-					case "random":
-						strategy = customStrategy.apply(() -> {
-							final Random rand = new Random();
-							return (IntSet idSet) -> {
-								for (;;) {
-									int id = rand.nextInt();
-									if (id >= 1 && !idSet.contains(id))
-										// We prefer non zero IDs because fastutil handle zero (null) keys
-										// separately
-										return id;
-								}
-							};
-						});
-						break;
-
-					default:
-						throw new IllegalArgumentException("");
-				}
-
-			} else if (strat instanceof Supplier) {
-				@SuppressWarnings("unchecked")
-				Supplier<ToIntFunction<IntSet>> strategyFunc = (Supplier<ToIntFunction<IntSet>>) strat;
-				strategy = customStrategy.apply(strategyFunc);
-			} else {
-				throw new IllegalArgumentException("Unknown graph ID strategy: " + JGAlgoConfigImpl.GraphIdStrategy);
-			}
-		}
-
+		private final GraphElementSet elements;
 		private final Int2IntOpenHashMap idToIndex;
 		private final IntSet idsView; // TODO move to graph abstract implementation
-		private final WeightsImplInt.IndexImpl indexToId;
-		private int userChosenId = -1;
+		private int[] indexToId;
 		private final boolean isEdges;
 
 		IdIdxMapImpl(GraphElementSet elements, int expectedSize, boolean isEdges) {
+			this.elements = elements;
 			idToIndex = new Int2IntOpenHashMap(expectedSize);
 			idToIndex.defaultReturnValue(-1);
 			idsView = IntSets.unmodifiable(idToIndex.keySet());
-			indexToId = new WeightsImplInt.IndexMutable(elements, -1);
+			indexToId = expectedSize == 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[expectedSize];
 			this.isEdges = isEdges;
 			initListeners(elements);
 		}
 
 		IdIdxMapImpl(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing, GraphElementSet elements,
 				boolean isEdges) {
+			this.elements = elements;
+			int elementsSize = elements.size();
 			if (orig instanceof IdIdxMapImpl && reIndexing == null) {
 				IdIdxMapImpl orig0 = (IdIdxMapImpl) orig;
 				idToIndex = new Int2IntOpenHashMap(orig0.idToIndex);
 				idToIndex.defaultReturnValue(-1);
-				indexToId = new WeightsImplInt.IndexMutable(orig0.indexToId, elements);
-
-			} else if (reIndexing == null) {
-				idToIndex = new Int2IntOpenHashMap(elements.size());
-				idToIndex.defaultReturnValue(-1);
-				indexToId = new WeightsImplInt.IndexMutable(elements, -1);
-				if (elements.size() > 0) {
-					((WeightsImplInt.IndexMutable) indexToId).expand(elements.size());
-					for (int idx : elements) {
-						int id = orig.indexToIdInt(idx);
-						if (indexToId.get(idx) != -1)
-							throw new IllegalArgumentException("duplicate index: " + idx);
-						if (id < 0)
-							throw new IllegalArgumentException("negative id: " + id);
-						indexToId.set(idx, id);
-
-						int oldIdx = idToIndex.put(id, idx);
-						if (oldIdx != -1)
-							throw new IllegalArgumentException("duplicate id: " + id);
-					}
-				}
+				indexToId = Arrays.copyOf(orig0.indexToId, elementsSize);
 
 			} else {
-				idToIndex = new Int2IntOpenHashMap(elements.size());
+				idToIndex = new Int2IntOpenHashMap(elementsSize);
 				idToIndex.defaultReturnValue(-1);
-				indexToId = new WeightsImplInt.IndexMutable(elements, -1);
-				if (elements.size() > 0) {
-					((WeightsImplInt.IndexMutable) indexToId).expand(elements.size());
-					for (int idx : elements) {
-						int id = orig.indexToIdInt(reIndexing.reIndexedToOrig(idx));
-						if (indexToId.get(idx) != -1)
-							throw new IllegalArgumentException("duplicate index: " + idx);
-						if (id < 0)
-							throw new IllegalArgumentException("negative id: " + id);
-						indexToId.set(idx, id);
+				if (elements.isEmpty()) {
+					indexToId = IntArrays.DEFAULT_EMPTY_ARRAY;
+				} else {
+					indexToId = new int[elementsSize];
+					if (reIndexing == null) {
+						for (int idx = 0; idx < elementsSize; idx++) {
+							int id = orig.indexToIdInt(idx);
+							if (id < 0)
+								throw new IllegalArgumentException("negative id: " + id);
+							indexToId[idx] = id;
 
-						int oldIdx = idToIndex.put(id, idx);
-						if (oldIdx != -1)
-							throw new IllegalArgumentException("duplicate id: " + id);
+							int oldIdx = idToIndex.put(id, idx);
+							if (oldIdx != -1)
+								throw new IllegalArgumentException("duplicate id: " + id);
+						}
+
+					} else {
+						for (int idx = 0; idx < elementsSize; idx++) {
+							int id = orig.indexToIdInt(reIndexing.reIndexedToOrig(idx));
+							if (id < 0)
+								throw new IllegalArgumentException("negative id: " + id);
+							indexToId[idx] = id;
+
+							int oldIdx = idToIndex.put(id, idx);
+							if (oldIdx != -1)
+								throw new IllegalArgumentException("duplicate id: " + id);
+						}
 					}
 				}
 			}
@@ -583,67 +565,59 @@ abstract class IntGraphImpl extends IntGraphBase {
 		}
 
 		static IdIdxMapImpl newInstance(GraphElementSet elements, int expectedSize, boolean isEdges) {
-			return strategy.newInstance(elements, expectedSize, isEdges);
+			return new IdIdxMapImpl(elements, expectedSize, isEdges);
 		}
 
 		static IdIdxMapImpl reindexedCopyOf(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing,
 				GraphElementSet elements, boolean isEdges) {
-			return strategy.reindexedCopyOf(orig, reIndexing, elements, isEdges);
+			return new IdIdxMapImpl(orig, reIndexing, elements, isEdges);
 		}
 
 		private void initListeners(GraphElementSet elements) {
-			elements.addIdSwapListener((idx1, idx2) -> {
-				int id1 = indexToId.get(idx1);
-				int id2 = indexToId.get(idx2);
-				indexToId.set(idx1, id2);
-				indexToId.set(idx2, id1);
-				int oldIdx1 = idToIndex.put(id1, idx2);
-				int oldIdx2 = idToIndex.put(id2, idx1);
-				assert idx1 == oldIdx1;
-				assert idx2 == oldIdx2;
-			});
-			elements.addIdAddRemoveListener(new IdAddRemoveListener() {
 
-				WeightsImplInt.IndexMutable indexToId() {
-					return (WeightsImplInt.IndexMutable) indexToId;
+			elements.addRemoveListener(new IndexRemoveListener() {
+
+				@Override
+				public void swapAndRemove(int removedIdx, int swappedIdx) {
+					int id1 = indexToId[removedIdx];
+					int id2 = indexToId[swappedIdx];
+					indexToId[removedIdx] = id2;
+					// indexToId[swappedIdx] = -1;
+					int oldIdx1 = idToIndex.remove(id1);
+					int oldIdx2 = idToIndex.put(id2, removedIdx);
+					assert removedIdx == oldIdx1;
+					assert swappedIdx == oldIdx2;
 				}
 
 				@Override
-				public void idRemove(int idx) {
-					final int id = indexToId.get(idx);
-					indexToId().clear(idx);
+				public void removeLast(int removedIdx) {
+					int id = indexToId[removedIdx];
+					// indexToId[removedIdx] = -1;
 					idToIndex.remove(id);
-				}
-
-				@Override
-				public void idAdd(int idx) {
-					assert idx == idToIndex.size();
-					int id = userChosenId != -1 ? userChosenId : nextID();
-					assert id >= 0;
-
-					int oldIdx = idToIndex.put(id, idx);
-					assert oldIdx == -1;
-
-					if (idx == indexToId().capacity())
-						indexToId().expand(Math.max(2, 2 * indexToId().capacity()));
-					indexToId.set(idx, id);
-
-					userChosenId = -1;
-				}
-
-				@Override
-				public void idsClear() {
-					idToIndex.clear();
-					indexToId().clear();
 				}
 			});
 		}
 
-		abstract int nextID();
+		void addId(int id, int idx) {
+			assert id >= 0;
+			assert idx == idToIndex.size();
+			int oldIdx = idToIndex.put(id, idx);
+			assert oldIdx == -1;
+
+			if (idx == indexToId.length)
+				indexToId = Arrays.copyOf(indexToId, Math.max(2, 2 * indexToId.length));
+			indexToId[idx] = id;
+		}
+
+		void idsClear() {
+			// Arrays.fill(indexToId, 0, idToIndex.size(), -1);
+			idToIndex.clear();
+		}
 
 		@Override
 		public int indexToIdInt(int index) {
-			return indexToId.get(index);
+			elements.checkIdx(index);
+			return indexToId[index];
 		}
 
 		@Override
@@ -663,58 +637,6 @@ abstract class IntGraphImpl extends IntGraphBase {
 			return idsView;
 		}
 
-	}
-
-	private static class IdIdxMapCounter extends IdIdxMapImpl {
-
-		private int counter;
-
-		IdIdxMapCounter(GraphElementSet elements, int expectedSize, boolean isEdges) {
-			super(elements, expectedSize, isEdges);
-			// We prefer non zero IDs because fastutil handle zero (null) keys separately
-			counter = 1;
-		}
-
-		IdIdxMapCounter(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing, GraphElementSet elements,
-				boolean isEdges) {
-			super(orig, reIndexing, elements, isEdges);
-			if (orig instanceof IdIdxMapCounter) {
-
-				counter = ((IdIdxMapCounter) orig).counter;
-			} else {
-				counter = 1;
-			}
-		}
-
-		@Override
-		int nextID() {
-			for (;;) {
-				int id = counter++;
-				if (!idSet().contains(id))
-					return id;
-			}
-		}
-	}
-
-	private static class IdIdxMapCustom extends IdIdxMapImpl {
-
-		private final ToIntFunction<IntSet> nextId;
-
-		IdIdxMapCustom(GraphElementSet elements, int expectedSize, boolean isEdges, ToIntFunction<IntSet> nextId) {
-			super(elements, expectedSize, isEdges);
-			this.nextId = Objects.requireNonNull(nextId);
-		}
-
-		IdIdxMapCustom(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing, GraphElementSet elements,
-				boolean isEdges, ToIntFunction<IntSet> nextId) {
-			super(orig, reIndexing, elements, isEdges);
-			this.nextId = Objects.requireNonNull(nextId);
-		}
-
-		@Override
-		int nextID() {
-			return nextId.applyAsInt(idSet());
-		}
 	}
 
 	static class Factory implements IntGraphFactory {

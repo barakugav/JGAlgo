@@ -68,9 +68,16 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 	}
 
 	@Override
-	void removeEdgeImpl(int edge) {
+	void removeEdgeLast(int edge) {
 		edgesContainer.clear(edges, edge);
-		super.removeEdgeImpl(edge);
+		super.removeEdgeLast(edge);
+	}
+
+	@Override
+	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
+		getEdge(swappedIdx).id = removedIdx;
+		edgesContainer.swapAndClear(removedIdx, swappedIdx);
+		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	Edge addEdgeObj(int source, int target) {
@@ -81,15 +88,6 @@ abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
 	}
 
 	abstract Edge allocEdge(int id, int source, int target);
-
-	@Override
-	void edgeSwap(int e1, int e2) {
-		Edge n1 = getEdge(e1), n2 = getEdge(e2);
-		n1.id = e2;
-		n2.id = e1;
-		edgesContainer.swap(edges, e1, e2);
-		super.edgeSwap(e1, e2);
-	}
 
 	@Override
 	public int edgeSource(int edge) {

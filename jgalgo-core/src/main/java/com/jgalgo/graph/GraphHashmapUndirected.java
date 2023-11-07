@@ -16,7 +16,6 @@
 
 package com.jgalgo.graph;
 
-import java.util.Iterator;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
@@ -97,68 +96,38 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	}
 
 	@Override
-	void removeVertexImpl(int vertex) {
-		super.removeVertexImpl(vertex);
+	void removeVertexLast(int vertex) {
 		assert edges[vertex].isEmpty();
 		// Reuse allocated edges array for v
 		// edges.clear(v);
+		super.removeVertexLast(vertex);
 	}
 
 	@Override
-	void vertexSwap(int v1, int v2) {
-		assert v1 != v2;
+	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
+		assert edges[removedIdx].isEmpty();
 
-		/* we handle self edges of v1,v2 and edges between v1 and v2 separately */
-		int v1v1 = edges[v1].remove(v1);
-		int v1v2 = edges[v1].remove(v2);
-		int v2v1 = edges[v2].remove(v1);
-		assert v1v2 == v2v1;
-		int v2v2 = edges[v2].remove(v2);
+		/* we handle the self edge of the swapped vertex separately */
+		int selfEdge = edges[swappedIdx].remove(swappedIdx);
 
-		for (Iterator<Int2IntMap.Entry> eit = Int2IntMaps.fastIterator(edges[v1]); eit.hasNext();) {
-			Int2IntMap.Entry entry = eit.next();
+		for (Int2IntMap.Entry entry : JGAlgoUtils.iterable(Int2IntMaps.fastIterator(edges[swappedIdx]))) {
 			int target = entry.getIntKey();
 			int e = entry.getIntValue();
-
-			replaceEdgeEndpoint(e, v1, v2);
-			int oldVal1 = edges[target].remove(v1);
-			int oldVal2 = edges[target].put(v2, e);
-			assert oldVal1 == e;
-			assert oldVal2 == -1;
-		}
-		for (Iterator<Int2IntMap.Entry> eit = Int2IntMaps.fastIterator(edges[v2]); eit.hasNext();) {
-			Int2IntMap.Entry entry = eit.next();
-			int target = entry.getIntKey();
-			int e = entry.getIntValue();
-
-			replaceEdgeEndpoint(e, v2, v1);
-			int oldVal1 = edges[target].remove(v2);
-			int oldVal2 = edges[target].put(v1, e);
+			replaceEdgeEndpoint(e, swappedIdx, removedIdx);
+			int oldVal1 = edges[target].remove(swappedIdx);
+			int oldVal2 = edges[target].put(removedIdx, e);
 			assert oldVal1 == e;
 			assert oldVal2 == -1;
 		}
 
-		if (v1v1 != -1) {
-			setEndpoints(v1v1, v2, v2);
-			int oldVal = edges[v1].put(v2, v1v1);
-			assert oldVal == -1;
-		}
-		if (v1v2 != -1) {
-			reverseEdge(v1v2);
-			int oldVal1 = edges[v1].put(v1, v1v2);
-			int oldVal2 = edges[v2].put(v2, v1v2);
-			assert oldVal1 == -1;
-			assert oldVal2 == -1;
-		}
-		if (v2v2 != -1) {
-			setEndpoints(v2v2, v1, v1);
-			int oldVal = edges[v2].put(v1, v2v2);
+		if (selfEdge != -1) {
+			setEndpoints(selfEdge, removedIdx, removedIdx);
+			int oldVal = edges[swappedIdx].put(removedIdx, selfEdge);
 			assert oldVal == -1;
 		}
 
-		edgesContainer.swap(edges, v1, v2);
-
-		super.vertexSwap(v1, v2);
+		edgesContainer.swapAndClear(removedIdx, swappedIdx);
+		super.vertexSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override
@@ -195,7 +164,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	}
 
 	@Override
-	void removeEdgeImpl(int edge) {
+	void removeEdgeLast(int edge) {
 		int source = edgeSource(edge), target = edgeTarget(edge);
 		int oldVal1 = edges[source].remove(target);
 		assert edge == oldVal1;
@@ -203,34 +172,32 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 			int oldVal2 = edges[target].remove(source);
 			assert edge == oldVal2;
 		}
-		super.removeEdgeImpl(edge);
+		super.removeEdgeLast(edge);
 	}
 
 	@Override
-	void edgeSwap(int e1, int e2) {
-		assert e1 != e2;
-
-		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
-		assert edges[u1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
-		assert edges[v1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
-		int oldVal1 = edges[u1].put(v1, e2);
-		assert oldVal1 == e1;
-		if (u1 != v1) {
-			int oldVal2 = edges[v1].put(u1, e2);
-			assert oldVal2 == e1;
+	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
+		int ur = edgeSource(removedIdx), vr = edgeTarget(removedIdx);
+		assert edges[ur] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
+		assert edges[vr] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
+		int oldVal1 = edges[ur].remove(vr);
+		assert oldVal1 == removedIdx;
+		if (ur != vr) {
+			int oldVal2 = edges[vr].remove(ur);
+			assert oldVal2 == removedIdx;
 		}
 
-		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
-		assert edges[u2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
-		assert edges[v2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
-		int oldVal3 = edges[u2].put(v2, e1);
-		assert oldVal3 == e2;
-		if (u2 != v2) {
-			int oldVal4 = edges[v2].put(u2, e1);
-			assert oldVal4 == e2;
+		int us = edgeSource(swappedIdx), vs = edgeTarget(swappedIdx);
+		assert edges[us] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
+		assert edges[vs] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
+		int oldVal3 = edges[us].put(vs, removedIdx);
+		assert oldVal3 == swappedIdx;
+		if (us != vs) {
+			int oldVal4 = edges[vs].put(us, removedIdx);
+			assert oldVal4 == swappedIdx;
 		}
 
-		super.edgeSwap(e1, e2);
+		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override

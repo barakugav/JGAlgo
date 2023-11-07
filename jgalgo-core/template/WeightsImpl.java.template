@@ -109,10 +109,11 @@ class WEIGHTS_IMPL {
 		}
 
 		@Override
-		public void swap(int idx1, int idx2) {
-			checkIdx(idx1);
-			checkIdx(idx2);
-			FASTUTIL_TYPEArrays.swap(weights, idx1, idx2);
+		public void swapAndClear(int removedIdx, int swappedIdx) {
+			// checkIdx(removedIdx);
+			// checkIdx(swappedIdx);
+			weights[removedIdx] = weights[swappedIdx];
+			weights[swappedIdx] = defaultWeight;
 		}
 
 		@Override

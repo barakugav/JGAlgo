@@ -23,7 +23,6 @@ import java.util.function.Consumer;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.longs.LongArrays;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 abstract class DataContainer {
 
@@ -86,14 +85,11 @@ abstract class DataContainer {
 			onArrayAlloc.accept(weights);
 		}
 
-		void swap(int idx1, int idx2) {
-			checkIdx(idx1);
-			checkIdx(idx2);
-			ObjectArrays.swap(weights, idx1, idx2);
-		}
-
-		void swap(T[] weights, int idx1, int idx2) {
-			ObjectArrays.swap(weights, idx1, idx2);
+		void swapAndClear(int removedIdx, int swappedIdx) {
+			checkIdx(removedIdx);
+			checkIdx(swappedIdx);
+			weights[removedIdx] = weights[swappedIdx];
+			weights[swappedIdx] = defaultWeight;
 		}
 
 		void clear(int idx) {
@@ -165,14 +161,11 @@ abstract class DataContainer {
 			onArrayAlloc.accept(weights);
 		}
 
-		void swap(int idx1, int idx2) {
-			checkIdx(idx1);
-			checkIdx(idx2);
-			IntArrays.swap(weights, idx1, idx2);
-		}
-
-		void swap(int[] weights, int idx1, int idx2) {
-			IntArrays.swap(weights, idx1, idx2);
+		void swapAndClear(int removedIdx, int swappedIdx) {
+			checkIdx(removedIdx);
+			checkIdx(swappedIdx);
+			weights[removedIdx] = weights[swappedIdx];
+			weights[swappedIdx] = defaultWeight;
 		}
 
 		void clear(int idx) {
@@ -255,29 +248,22 @@ abstract class DataContainer {
 			onArrayAlloc.accept(weights);
 		}
 
-		// void swap(int idx1, int idx2) {
+		// void swap(long[] weights, int idx1, int idx2) {
 		// checkIdx(idx1);
 		// checkIdx(idx2);
 		// LongArrays.swap(weights, idx1, idx2);
 		// }
 
-		void swap(long[] weights, int idx1, int idx2) {
-			checkIdx(idx1);
-			checkIdx(idx2);
-			LongArrays.swap(weights, idx1, idx2);
+		void swapAndClear(int removedIdx, int swappedIdx) {
+			checkIdx(removedIdx);
+			checkIdx(swappedIdx);
+			weights[removedIdx] = weights[swappedIdx];
+			weights[swappedIdx] = defaultWeight;
 		}
-
-		// void clear(int idx) {
-		// weights[idx] = defaultWeight;
-		// }
 
 		void clear(long[] weights, int idx) {
 			weights[idx] = defaultWeight;
 		}
-
-		// void clear() {
-		// Arrays.fill(weights, 0, size(), defaultWeight);
-		// }
 
 		void clear(long[] weights) {
 			Arrays.fill(weights, 0, size(), defaultWeight);

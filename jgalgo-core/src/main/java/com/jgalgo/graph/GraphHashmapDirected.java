@@ -16,10 +16,8 @@
 
 package com.jgalgo.graph;
 
-import java.util.Iterator;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -114,119 +112,53 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 	}
 
 	@Override
-	void removeVertexImpl(int vertex) {
-		super.removeVertexImpl(vertex);
-		edgesOut[vertex].clear();
-		edgesIn[vertex].clear();
+	void removeVertexLast(int vertex) {
+		assert edgesOut[vertex].isEmpty() && edgesIn[vertex].isEmpty();
 		// Reuse allocated edges arrays for v
 		// edgesOutContainer.clear(v);
 		// edgesInContainer.clear(v);
+		super.removeVertexLast(vertex);
 	}
 
 	@Override
-	void vertexSwap(int v1, int v2) {
-		assert v1 != v2;
+	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
+		assert edgesOut[removedIdx].isEmpty() && edgesIn[removedIdx].isEmpty();
 
-		/* we handle self edges of v1,v2 and edges between v1 and v2 separately */
-		int v1v1 = edgesOut[v1].remove(v1);
-		int v1v2 = edgesOut[v1].remove(v2);
-		int v2v1 = edgesOut[v2].remove(v1);
-		int v2v2 = edgesOut[v2].remove(v2);
-		if (v1v1 != -1) {
-			int oldVal = edgesIn[v1].remove(v1);
-			assert oldVal == v1v1;
-		}
-		if (v1v2 != -1) {
-			int oldVal = edgesIn[v2].remove(v1);
-			assert oldVal == v1v2;
-		}
-		if (v2v1 != -1) {
-			int oldVal = edgesIn[v1].remove(v2);
-			assert oldVal == v2v1;
-		}
-		if (v2v2 != -1) {
-			int oldVal = edgesIn[v2].remove(v2);
-			assert oldVal == v2v2;
+		/* we handle the self edge of the swapped vertex separately */
+		int selfEdge = edgesOut[swappedIdx].remove(swappedIdx);
+		if (selfEdge != -1) {
+			int oldVal = edgesIn[swappedIdx].remove(swappedIdx);
+			assert oldVal == selfEdge;
 		}
 
-		for (Iterator<Int2IntMap.Entry> eit = Int2IntMaps.fastIterator(edgesOut[v1]); eit.hasNext();) {
-			Int2IntMap.Entry entry = eit.next();
-			int target = entry.getIntKey();
-			int e = entry.getIntValue();
-
-			replaceEdgeSource(e, v2);
-			int oldVal1 = edgesIn[target].remove(v1);
-			int oldVal2 = edgesIn[target].put(v2, e);
+		for (int e : edgesOut[swappedIdx].values()) {
+			int target = edgeTarget(e);
+			replaceEdgeSource(e, removedIdx);
+			int oldVal1 = edgesIn[target].remove(swappedIdx);
+			int oldVal2 = edgesIn[target].put(removedIdx, e);
 			assert oldVal1 == e;
 			assert oldVal2 == -1;
 		}
-		for (Iterator<Int2IntMap.Entry> eit = Int2IntMaps.fastIterator(edgesIn[v1]); eit.hasNext();) {
-			Int2IntMap.Entry entry = eit.next();
-			int source = entry.getIntKey();
-			int e = entry.getIntValue();
-
-			replaceEdgeTarget(e, v2);
-			int oldVal1 = edgesOut[source].remove(v1);
-			int oldVal2 = edgesOut[source].put(v2, e);
-			assert oldVal1 == e;
-			assert oldVal2 == -1;
-		}
-		for (Iterator<Int2IntMap.Entry> eit = Int2IntMaps.fastIterator(edgesOut[v2]); eit.hasNext();) {
-			Int2IntMap.Entry entry = eit.next();
-			int target = entry.getIntKey();
-			int e = entry.getIntValue();
-
-			replaceEdgeSource(e, v1);
-			int oldVal1 = edgesIn[target].remove(v2);
-			int oldVal2 = edgesIn[target].put(v1, e);
-			assert oldVal1 == e;
-			assert oldVal2 == -1;
-		}
-		for (Iterator<Int2IntMap.Entry> eit = Int2IntMaps.fastIterator(edgesIn[v2]); eit.hasNext();) {
-			Int2IntMap.Entry entry = eit.next();
-			int source = entry.getIntKey();
-			int e = entry.getIntValue();
-
-			replaceEdgeTarget(e, v1);
-			int oldVal1 = edgesOut[source].remove(v2);
-			int oldVal2 = edgesOut[source].put(v1, e);
+		for (int e : edgesIn[swappedIdx].values()) {
+			int source = edgeSource(e);
+			replaceEdgeTarget(e, removedIdx);
+			int oldVal1 = edgesOut[source].remove(swappedIdx);
+			int oldVal2 = edgesOut[source].put(removedIdx, e);
 			assert oldVal1 == e;
 			assert oldVal2 == -1;
 		}
 
-		if (v1v1 != -1) {
-			setEndpoints(v1v1, v2, v2);
-			int oldVal1 = edgesOut[v1].put(v2, v1v1);
-			int oldVal2 = edgesIn[v1].put(v2, v1v1);
-			assert oldVal1 == -1;
-			assert oldVal2 == -1;
-		}
-		if (v1v2 != -1) {
-			setEndpoints(v1v2, v2, v1);
-			int oldVal1 = edgesOut[v1].put(v1, v1v2);
-			int oldVal2 = edgesIn[v1].put(v1, v1v2);
-			assert oldVal1 == -1;
-			assert oldVal2 == -1;
-		}
-		if (v2v1 != -1) {
-			setEndpoints(v2v1, v1, v2);
-			int oldVal1 = edgesOut[v2].put(v2, v2v1);
-			int oldVal2 = edgesIn[v2].put(v2, v2v1);
-			assert oldVal1 == -1;
-			assert oldVal2 == -1;
-		}
-		if (v2v2 != -1) {
-			setEndpoints(v2v2, v1, v1);
-			int oldVal1 = edgesOut[v2].put(v1, v2v2);
-			int oldVal2 = edgesIn[v2].put(v1, v2v2);
+		if (selfEdge != -1) {
+			setEndpoints(selfEdge, removedIdx, removedIdx);
+			int oldVal1 = edgesOut[swappedIdx].put(removedIdx, selfEdge);
+			int oldVal2 = edgesIn[swappedIdx].put(removedIdx, selfEdge);
 			assert oldVal1 == -1;
 			assert oldVal2 == -1;
 		}
 
-		edgesOutContainer.swap(edgesOut, v1, v2);
-		edgesInContainer.swap(edgesIn, v1, v2);
-
-		super.vertexSwap(v1, v2);
+		edgesOutContainer.swapAndClear(removedIdx, swappedIdx);
+		edgesInContainer.swapAndClear(removedIdx, swappedIdx);
+		super.vertexSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override
@@ -262,33 +194,32 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 	}
 
 	@Override
-	void removeEdgeImpl(int edge) {
+	void removeEdgeLast(int edge) {
 		int source = edgeSource(edge), target = edgeTarget(edge);
 		int oldVal1 = edgesOut[source].remove(target);
 		int oldVal2 = edgesIn[target].remove(source);
 		assert edge == oldVal1;
 		assert edge == oldVal2;
-		super.removeEdgeImpl(edge);
+		super.removeEdgeLast(edge);
 	}
 
 	@Override
-	void edgeSwap(int e1, int e2) {
-		assert e1 != e2;
-		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
-		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
-		assert edgesOut[u1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
-		assert edgesIn[v1] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
-		assert edgesOut[u2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
-		assert edgesIn[v2] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
-		int oldVal1 = edgesOut[u1].put(v1, e2);
-		int oldVal2 = edgesIn[v1].put(u1, e2);
-		int oldVal3 = edgesOut[u2].put(v2, e1);
-		int oldVal4 = edgesIn[v2].put(u2, e1);
-		assert oldVal1 == e1;
-		assert oldVal2 == e1;
-		assert oldVal3 == e2;
-		assert oldVal4 == e2;
-		super.edgeSwap(e1, e2);
+	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
+		int ur = edgeSource(removedIdx), vr = edgeTarget(removedIdx);
+		int us = edgeSource(swappedIdx), vs = edgeTarget(swappedIdx);
+		assert edgesOut[ur] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
+		assert edgesIn[vr] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
+		assert edgesOut[us] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
+		assert edgesIn[vs] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
+		int oldVal1 = edgesOut[ur].remove(vr);
+		int oldVal2 = edgesIn[vr].remove(ur);
+		int oldVal3 = edgesOut[us].put(vs, removedIdx);
+		int oldVal4 = edgesIn[vs].put(us, removedIdx);
+		assert oldVal1 == removedIdx;
+		assert oldVal2 == removedIdx;
+		assert oldVal3 == swappedIdx;
+		assert oldVal4 == swappedIdx;
+		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override

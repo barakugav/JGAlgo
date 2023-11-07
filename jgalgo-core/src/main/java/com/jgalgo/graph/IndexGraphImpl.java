@@ -24,23 +24,23 @@ interface IndexGraphImpl extends IndexGraph {
 	GraphElementSet edges();
 
 	@Override
-	default void addVertexSwapListener(IndexSwapListener listener) {
-		vertices().addIdSwapListener(listener);
+	default void addVertexRemoveListener(IndexRemoveListener listener) {
+		vertices().addRemoveListener(listener);
 	}
 
 	@Override
-	default void removeVertexSwapListener(IndexSwapListener listener) {
-		vertices().removeIdSwapListener(listener);
+	default void removeVertexSwapRemoveListener(IndexRemoveListener listener) {
+		vertices().removeRemoveListener(listener);
 	}
 
 	@Override
-	default void addEdgeSwapListener(IndexSwapListener listener) {
-		edges().addIdSwapListener(listener);
+	default void addEdgeRemoveListener(IndexRemoveListener listener) {
+		edges().addRemoveListener(listener);
 	}
 
 	@Override
-	default void removeEdgeSwapListener(IndexSwapListener listener) {
-		edges().removeIdSwapListener(listener);
+	default void removeEdgeSwapRemoveListener(IndexRemoveListener listener) {
+		edges().removeRemoveListener(listener);
 	}
 
 }

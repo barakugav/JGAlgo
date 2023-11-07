@@ -17,74 +17,34 @@
 package com.jgalgo.graph;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * A discrete graph with vertices and edges.
+ * A discrete graph with {@code int} vertices and edges.
  *
  * <p>
- * A graph consist of a finite set of vertices \(V\) and edges \(E\). Vertices are some abstract entities, and edges are
- * connections between the vertices, for example vertices can be cities and edges could be the roads between them, or
- * vertices can be people the edges are the relation of "friends". Edges could be directed or undirected. Weights may be
- * assigned to vertices or edges, for example the length of a road might be a weight of an edge. Than, questions such as
- * "what is the shortest path between two cities?" might be answered using graph algorithms.
+ * This interface is a specification of {@link Graph} for graphs with {@code int} vertices and edges, similarly how
+ * {@link Int2IntMap} is a specification of {@link Map} for maps with {@code int} keys and values. Methods that accept a
+ * primitive {@code int} as an identifier are provided, and the original ones that accept a {@link Integer} are
+ * deprecated. Specific {@link IEdgeSet} and {@link IEdgeIter} are returned for edges queries, avoiding boxing of
+ * integers. Similarly, the {@link IWeights} interface is used for weights containers, which accept primitive
+ * {@code int} as identifiers.
  *
  * <p>
- * Each edge \(e=(u, v)\) in the graph has a <i>source</i> vertex, \(u\), and a <i>target</i> vertex, \(v\). In
- * undirected graphs the 'source' and 'target' can be switched, as the edge is not directed, and we treat the source and
- * target as interchangeable <i>end points</i>. If an edge \((u,v)\) exist in the graph, we say the vertices \(u\) and
- * \(v\) and <i>neighbors</i>, or <i>adjacent</i>. The edges are usually stored in some list for each vertex, allowing
- * efficient iteration of its edges. The <i>degree</i> of a vertex is the number of its edges. In directed graph, we
- * have both <i>in-degree</i> and <i>out-degree</i>, which are the number of edges going in and out the vertex,
- * respectively.
+ * Each vertex and edge in the graph is identified by a unique non negative {@code int} identifier. Vertices and edges
+ * may be created by {@link #addVertex()} and {@link #addEdge(int, int)}, in which case the graph implementation will
+ * choose the {@code int} identifier and will return it to the user. Alternatively, the methods {@link #addVertex(int)}
+ * and {@link #addEdge(int, int, int)} (similar the regular {@link Graph} methods) can be used to add new vertices and
+ * edges with user chosen identifiers.
  *
  * <p>
- * Vertices can be added or removed. When a vertex \(v\) is removed, all the edges with \(v\) as one of their end points
- * are removed as well. Edges can be added as connection to existing vertices, or removed.
- *
- * <p>
- * A directed graph and an undirected graph both implement this interface. In a directed graph, the edges are
- * <i>directed</i>, namely an edge \(e(u, v)\) will be contained in {@code outEdges(u)} and in {@code inEdges(v)} and
- * will not be contained in {@code outEdges(v)} and {@code inEdges(u)}. In an undirected graph, the edges are
- * undirected, namely an edge \(e(u, v)\) will be contained in {@code outEdges(u)}, {@code inEdges(v)},
- * {@code outEdges(v)} and in {@code inEdges(u)}. Also {@link #removeEdgesOf(int)}, {@link #removeInEdgesOf(int)} and
- * {@link #removeOutEdgesOf(int)} are equivalent for the same vertex in an undirected graph. To check if a graph is
- * directed or not, use the {@link #isDirected()} method.
- *
- * <p>
- * Each vertex and edge in the graph is identified by a unique non negative {@code int} ID. The existing vertices and
- * edges of the graph can be retrieved using {@link #vertices()} and {@link #edges()}. Vertices and edges may be created
- * by {@link #addVertex()} and {@link #addEdge(int, int)}, in which case the graph implementation will choose the
- * {@code int} ID and will return it to the user. Alternatively, the methods {@link #addVertex(int)} and
- * {@link #addEdge(int, int, int)} can be used to add new vertices and edges with user chosen identifiers.
- *
- * <p>
- * Weights may be assigned to the graph vertices and/or edges. A <i>weight</i> is some value such as any primitive (for
- * example {@code double}, {@code int} or {@code boolean} flag) or an Object. Multiple different weights can be added to
- * the vertices and/or edges, each is identified by some key. When a new weights type is added to a graph, it is added
- * to <i>all</i> the vertices/edges, with either user provided default weight value, or {@code null} ({@code 0} in case
- * the weight type is primitive). The weights are accessed via the {@link IWeights} container, which can be used to get
- * or set a vertex/edge weight, and can be passed to algorithms as a {@link IWeightFunction} for example. See
- * {@link #addVerticesWeights(String, Class)} and {@link #addEdgesWeights(String, Class)}, or {@link IWeights} for the
- * full weights documentation.
- *
- * <p>
- * Each graph expose an <i>Index</i> view on itself via the {@link #indexGraph()} method. The returned
- * {@link IndexGraph} is a graph in which the identifiers of the vertices are always {@code (0,1,2, ...,verticesNum-1)},
- * and the identifiers of the edges are always {@code (0,1,2, ...,edgesNum-1)}. To maintain this, the index graph
- * implementation may rename existing vertices or edges along the graph lifetime. This rename behavior is less user
- * friendly, but allow for high performance boost as no hash tables are needed, a simple array or bitmap can be used to
- * map each vertex/edge to a value/weight/flag. See {@link IndexGraph} for more information. The {@link IndexGraph}
- * should not be used in scenarios where performance does not matter.
- *
- * <p>
- * The number of vertices and edges can be read via {@code g.vertices().size()} and {@code g.edges().size()}. The out or
- * in degree of a vertex is exposed by {@code g.outEdges(vertex).size()} and {@code g.inEdges(vertex).size()}.
- *
- * <p>
- * The number of vertices, \(|V|\), is usually denoted as \(n\) in algorithms time and space complexities, and
- * similarly, the number of edges, \(|E|\), is usually denoted as \(m\).
+ * Implementations of this interface are more efficient than the generic {@link Graph} interface, and should be used for
+ * better performance if its needed. For even better performance, consider using {@link IndexGraph}, which does violate
+ * the {@link Graph} interface as its vertices and edges may change during the lifetime of the graph and therefore less
+ * user friendly, but is even more efficient.
  *
  * <p>
  * To create a new empty graph, use {@link #newUndirected()} or {@link #newDirected()}. The returned graph will use the
@@ -541,7 +501,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 			return new IntGraphImpl.Directed(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
 		} else {
 			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);
-			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap,null,null);
+			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap, null, null);
 		}
 	}
 

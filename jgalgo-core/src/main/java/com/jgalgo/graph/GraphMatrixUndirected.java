@@ -81,6 +81,15 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 	}
 
 	@Override
+	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
+		assert outEdges(removedIdx).isEmpty() && inEdges(removedIdx).isEmpty();
+		for (int e : outEdges(swappedIdx))
+			replaceEdgeEndpoint(e, swappedIdx, removedIdx);
+		edgesNumContainer.swapAndClear(removedIdx, swappedIdx);
+		super.vertexSwapAndRemove(removedIdx, swappedIdx);
+	}
+
+	@Override
 	public int addEdge(int source, int target) {
 		int e = super.addEdge(source, target);
 		edges.get(source).set(target, e);
@@ -93,7 +102,7 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 	}
 
 	@Override
-	void removeEdgeImpl(int edge) {
+	void removeEdgeLast(int edge) {
 		int u = edgeSource(edge), v = edgeTarget(edge);
 		edges.get(u).set(v, EdgeNone);
 		edgesNum[u]--;
@@ -101,7 +110,22 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 			edges.get(v).set(u, EdgeNone);
 			edgesNum[v]--;
 		}
-		super.removeEdgeImpl(edge);
+		super.removeEdgeLast(edge);
+	}
+
+	@Override
+	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
+		int ur = edgeSource(removedIdx), vr = edgeTarget(removedIdx);
+		int us = edgeSource(swappedIdx), vs = edgeTarget(swappedIdx);
+		edges.get(ur).set(vr, EdgeNone);
+		edgesNum[ur]--;
+		if (ur != vr) {
+			edges.get(vr).set(ur, EdgeNone);
+			edgesNum[vr]--;
+		}
+		edges.get(us).set(vs, removedIdx);
+		edges.get(vs).set(us, removedIdx);
+		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override
@@ -147,30 +171,6 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		}
 		edgesNumContainer.clear(edgesNum);
 		super.clearEdges();
-	}
-
-	@Override
-	void edgeSwap(int e1, int e2) {
-		int u1 = edgeSource(e1), v1 = edgeTarget(e1);
-		int u2 = edgeSource(e2), v2 = edgeTarget(e2);
-		edges.get(u1).set(v1, e2);
-		edges.get(v1).set(u1, e2);
-		edges.get(u2).set(v2, e1);
-		edges.get(v2).set(u2, e1);
-		super.edgeSwap(e1, e2);
-	}
-
-	@Override
-	void vertexSwap(int v1, int v2) {
-		final int tempV = -2;
-		for (int e : outEdges(v1))
-			replaceEdgeEndpoint(e, v1, tempV);
-		for (int e : outEdges(v2))
-			replaceEdgeEndpoint(e, v2, v1);
-		for (int e : outEdges(v1))
-			replaceEdgeEndpoint(e, tempV, v2);
-		edgesNumContainer.swap(edgesNum, v1, v2);
-		super.vertexSwap(v1, v2);
 	}
 
 	private class EdgeSetOut extends IntGraphBase.EdgeSetOutUndirected {

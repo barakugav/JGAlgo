@@ -73,8 +73,9 @@ import java.util.Set;
  * and the identifiers of the edges are always {@code (0,1,2, ...,edgesNum-1)}. To maintain this, the index graph
  * implementation may rename existing vertices or edges along the graph lifetime. This rename behavior is less user
  * friendly, but allow for high performance boost as no hash tables are needed, a simple array or bitmap can be used to
- * map each vertex/edge to a value/weight/flag. See {@link IndexGraph} for more information. The {@link IndexGraph}
- * should not be used in scenarios where performance does not matter.
+ * map each vertex/edge to a value/weight/flag. The index graph returned by {@link #indexGraph()} should not be modified
+ * directly by adding/removing vertices/edges/weights, use the enclosing graph instead. See {@link IndexGraph} for more
+ * information. The {@link IndexGraph} should not be used in scenarios where performance does not matter.
  *
  * <p>
  * The number of vertices and edges can be read via {@code g.vertices().size()} and {@code g.edges().size()}. The out or
@@ -652,7 +653,8 @@ public interface Graph<V, E> {
 	 * <p>
 	 * The returned graph is a view, namely a graph that will contain the same vertices and edges (with different
 	 * {@code int} identifiers), and the same associated weights, that is automatically updated when the original graph
-	 * is updated and vice versa.
+	 * is updated, but not visa versa. The index graph returned <b>should not be modified directly</b> by
+	 * adding/removing vertices/edges/weights, use the enclosing graph instead.
 	 *
 	 * <p>
 	 * If this graph is an Index graph, this method returns this graph.
