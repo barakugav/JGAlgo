@@ -68,13 +68,13 @@ public abstract class GraphBaseWithEdgeEndpointsContainer extends GraphBaseMutab
 
 	@Override
 	void removeEdgeLast(int edge) {
-		edgeEndpointsContainer.clear(edgeEndpoints, edge);
+		clear(edgeEndpoints, edge, EdgeEndpointsContainer.DefVal);
 		super.removeEdgeLast(edge);
 	}
 
 	@Override
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
-		edgeEndpointsContainer.swapAndClear(removedIdx, swappedIdx);
+		swapAndClear(edgeEndpoints, removedIdx, swappedIdx, EdgeEndpointsContainer.DefVal);
 		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
 
@@ -84,7 +84,7 @@ public abstract class GraphBaseWithEdgeEndpointsContainer extends GraphBaseMutab
 
 	@Override
 	public void clearEdges() {
-		edgeEndpointsContainer.clear(edgeEndpoints);
+		edgeEndpointsContainer.clear();
 		super.clearEdges();
 	}
 

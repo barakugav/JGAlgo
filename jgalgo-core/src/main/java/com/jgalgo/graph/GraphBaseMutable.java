@@ -240,4 +240,26 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		Assertions.Graphs.checkEdge(edge, edges.size);
 	}
 
+	static void clear(int[] dataContainer, int idx, int defaultVal) {
+		dataContainer[idx] = defaultVal;
+	}
+
+	static void clear(long[] dataContainer, int idx, long defaultVal) {
+		dataContainer[idx] = defaultVal;
+	}
+
+	void swapAndClear(int[] dataContainer, int removedIdx, int swappedIdx, int defaultVal) {
+		dataContainer[removedIdx] = dataContainer[swappedIdx];
+		dataContainer[swappedIdx] = defaultVal;
+	}
+
+	void swapAndClear(long[] dataContainer, int removedIdx, int swappedIdx, long defaultVal) {
+		dataContainer[removedIdx] = dataContainer[swappedIdx];
+		dataContainer[swappedIdx] = defaultVal;
+	}
+
+	<T> void swapAndClear(T[] dataContainer, int removedIdx, int swappedIdx, T defaultVal) {
+		dataContainer[removedIdx] = dataContainer[swappedIdx];
+		dataContainer[swappedIdx] = defaultVal;
+	}
 }

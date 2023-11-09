@@ -85,17 +85,17 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		assert outEdges(removedIdx).isEmpty() && inEdges(removedIdx).isEmpty();
 		for (int e : outEdges(swappedIdx))
 			replaceEdgeEndpoint(e, swappedIdx, removedIdx);
-		edgesNumContainer.swapAndClear(removedIdx, swappedIdx);
+		swapAndClear(edgesNum, removedIdx, swappedIdx, 0);
 		super.vertexSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override
 	public int addEdge(int source, int target) {
 		int e = super.addEdge(source, target);
-		edges.get(source).set(target, e);
+		edges.data[source].data[target] = e;
 		edgesNum[source]++;
 		if (source != target) {
-			edges.get(target).set(source, e);
+			edges.data[target].data[source] = e;
 			edgesNum[target]++;
 		}
 		return e;
@@ -104,10 +104,10 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 	@Override
 	void removeEdgeLast(int edge) {
 		int u = edgeSource(edge), v = edgeTarget(edge);
-		edges.get(u).set(v, EdgeNone);
+		edges.data[u].data[v] = EdgeNone;
 		edgesNum[u]--;
 		if (u != v) {
-			edges.get(v).set(u, EdgeNone);
+			edges.data[v].data[u] = EdgeNone;
 			edgesNum[v]--;
 		}
 		super.removeEdgeLast(edge);
@@ -117,14 +117,14 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
 		int ur = edgeSource(removedIdx), vr = edgeTarget(removedIdx);
 		int us = edgeSource(swappedIdx), vs = edgeTarget(swappedIdx);
-		edges.get(ur).set(vr, EdgeNone);
+		edges.data[ur].data[vr] = EdgeNone;
 		edgesNum[ur]--;
 		if (ur != vr) {
-			edges.get(vr).set(ur, EdgeNone);
+			edges.data[vr].data[ur] = EdgeNone;
 			edgesNum[vr]--;
 		}
-		edges.get(us).set(vs, removedIdx);
-		edges.get(vs).set(us, removedIdx);
+		edges.data[us].data[vs] = removedIdx;
+		edges.data[vs].data[us] = removedIdx;
 		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
 
@@ -166,10 +166,10 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		final int m = edges().size();
 		for (int e = 0; e < m; e++) {
 			int u = edgeSource(e), v = edgeTarget(e);
-			edges.get(u).set(v, EdgeNone);
-			edges.get(v).set(u, EdgeNone);
+			edges.data[u].data[v] = EdgeNone;
+			edges.data[v].data[u] = EdgeNone;
 		}
-		edgesNumContainer.clear(edgesNum);
+		edgesNumContainer.clear();
 		super.clearEdges();
 	}
 

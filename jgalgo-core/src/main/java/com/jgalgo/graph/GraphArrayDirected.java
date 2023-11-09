@@ -164,10 +164,10 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		for (int num = edgesInNum[swappedIdx], i = 0; i < num; i++)
 			replaceEdgeTarget(inEdges[i], removedIdx);
 
-		edgesOutContainer.swapAndClear(removedIdx, swappedIdx);
-		edgesInContainer.swapAndClear(removedIdx, swappedIdx);
-		edgesOutNumContainer.swapAndClear(removedIdx, swappedIdx);
-		edgesInNumContainer.swapAndClear(removedIdx, swappedIdx);
+		swapAndClear(edgesOut, removedIdx, swappedIdx, IntArrays.EMPTY_ARRAY);
+		swapAndClear(edgesIn, removedIdx, swappedIdx, IntArrays.EMPTY_ARRAY);
+		swapAndClear(edgesOutNum, removedIdx, swappedIdx, 0);
+		swapAndClear(edgesInNum, removedIdx, swappedIdx, 0);
 		// Reuse allocated edges arrays for v
 		// edgesOut.clear(v);
 		// edgesIn.clear(v);
@@ -247,8 +247,8 @@ class GraphArrayDirected extends GraphArrayAbstract {
 
 	@Override
 	public void clearEdges() {
-		edgesOutNumContainer.clear(edgesOutNum);
-		edgesInNumContainer.clear(edgesInNum);
+		edgesOutNumContainer.clear();
+		edgesInNumContainer.clear();
 		super.clearEdges();
 	}
 

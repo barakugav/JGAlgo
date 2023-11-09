@@ -98,8 +98,8 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 			replaceEdgeSource(e, removedIdx);
 		for (int e : inEdges(swappedIdx))
 			replaceEdgeTarget(e, removedIdx);
-		edgesOutNumContainer.swapAndClear(removedIdx, swappedIdx);
-		edgesInNumContainer.swapAndClear(removedIdx, swappedIdx);
+		swapAndClear(edgesOutNum, removedIdx, swappedIdx, 0);
+		swapAndClear(edgesInNum, removedIdx, swappedIdx, 0);
 		super.vertexSwapAndRemove(removedIdx, swappedIdx);
 	}
 
@@ -116,7 +116,7 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	@Override
 	public int addEdge(int source, int target) {
 		int e = super.addEdge(source, target);
-		edges.get(source).set(target, e);
+		edges.data[source].data[target] = e;
 		edgesOutNum[source]++;
 		edgesInNum[target]++;
 		return e;
@@ -125,7 +125,7 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	@Override
 	void removeEdgeLast(int edge) {
 		int u = edgeSource(edge), v = edgeTarget(edge);
-		edges.get(u).set(v, EdgeNone);
+		edges.data[u].data[v] = EdgeNone;
 		edgesOutNum[u]--;
 		edgesInNum[v]--;
 		super.removeEdgeLast(edge);
@@ -135,8 +135,8 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
 		int ur = edgeSource(removedIdx), vr = edgeTarget(removedIdx);
 		int us = edgeSource(swappedIdx), vs = edgeTarget(swappedIdx);
-		edges.get(ur).set(vr, EdgeNone);
-		edges.get(us).set(vs, removedIdx);
+		edges.data[ur].data[vr] = EdgeNone;
+		edges.data[us].data[vs] = removedIdx;
 		edgesOutNum[ur]--;
 		edgesInNum[vr]--;
 		super.edgeSwapAndRemove(removedIdx, swappedIdx);
@@ -147,20 +147,20 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 		final int m = edges().size();
 		for (int e = 0; e < m; e++) {
 			int u = edgeSource(e), v = edgeTarget(e);
-			edges.get(u).set(v, EdgeNone);
+			edges.data[u].data[v] = EdgeNone;
 		}
-		edgesOutNumContainer.clear(edgesOutNum);
-		edgesInNumContainer.clear(edgesInNum);
+		edgesOutNumContainer.clear();
+		edgesInNumContainer.clear();
 		super.clearEdges();
 	}
 
 	@Override
 	public void reverseEdge(int edge) {
 		int u = edgeSource(edge), v = edgeTarget(edge);
-		if (edges.get(v).get(u) != EdgeNone && u != v)
+		if (edges.data[v].data[u] != EdgeNone && u != v)
 			throw new IllegalArgumentException("parallel edges are not supported");
-		edges.get(u).set(v, EdgeNone);
-		edges.get(v).set(u, edge);
+		edges.data[u].data[v] = EdgeNone;
+		edges.data[v].data[u] = edge;
 		edgesOutNum[u]--;
 		edgesInNum[v]--;
 		edgesOutNum[v]++;

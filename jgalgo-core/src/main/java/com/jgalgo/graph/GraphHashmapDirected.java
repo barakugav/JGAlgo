@@ -156,8 +156,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 			assert oldVal2 == -1;
 		}
 
-		edgesOutContainer.swapAndClear(removedIdx, swappedIdx);
-		edgesInContainer.swapAndClear(removedIdx, swappedIdx);
+		swapAndClear(edgesOut, removedIdx, swappedIdx, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE);
+		swapAndClear(edgesIn, removedIdx, swappedIdx, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE);
 		super.vertexSwapAndRemove(removedIdx, swappedIdx);
 	}
 

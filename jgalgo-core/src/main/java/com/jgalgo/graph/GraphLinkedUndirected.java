@@ -96,8 +96,8 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 				p.target = removedIdx;
 		}
 
-		edgesContainer.swapAndClear(removedIdx, swappedIdx);
-		edgesNumContainer.swapAndClear(removedIdx, swappedIdx);
+		swapAndClear(edges, removedIdx, swappedIdx, null);
+		swapAndClear(edgesNum, removedIdx, swappedIdx, 0);
 
 		super.vertexSwapAndRemove(removedIdx, swappedIdx);
 	}
@@ -229,8 +229,8 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			Edge p = getEdge(e);
 			p.nextu = p.nextv = p.prevu = p.prevv = null;
 		}
-		edgesContainer.clear(edges);
-		edgesNumContainer.clear(edgesNum);
+		edgesContainer.clear();
+		edgesNumContainer.clear();
 		super.clearEdges();
 	}
 

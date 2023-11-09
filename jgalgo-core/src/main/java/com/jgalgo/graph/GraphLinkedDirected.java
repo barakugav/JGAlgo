@@ -111,10 +111,10 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		for (Edge p = edgesIn[swappedIdx]; p != null; p = p.nextIn)
 			p.target = removedIdx;
 
-		edgesOutContainer.swapAndClear(removedIdx, swappedIdx);
-		edgesInContainer.swapAndClear(removedIdx, swappedIdx);
-		edgesOutNumContainer.swapAndClear(removedIdx, swappedIdx);
-		edgesInNumContainer.swapAndClear(removedIdx, swappedIdx);
+		swapAndClear(edgesOut, removedIdx, swappedIdx, null);
+		swapAndClear(edgesIn, removedIdx, swappedIdx, null);
+		swapAndClear(edgesOutNum, removedIdx, swappedIdx, 0);
+		swapAndClear(edgesInNum, removedIdx, swappedIdx, 0);
 
 		super.vertexSwapAndRemove(removedIdx, swappedIdx);
 	}
@@ -266,10 +266,10 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			Edge p = getEdge(e);
 			p.nextOut = p.prevOut = p.nextIn = p.prevIn = null;
 		}
-		edgesOutContainer.clear(edgesOut);
-		edgesInContainer.clear(edgesIn);
-		edgesOutNumContainer.clear(edgesOutNum);
-		edgesInNumContainer.clear(edgesInNum);
+		edgesOutContainer.clear();
+		edgesInContainer.clear();
+		edgesOutNumContainer.clear();
+		edgesInNumContainer.clear();
 		super.clearEdges();
 	}
 

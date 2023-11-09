@@ -126,7 +126,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 			assert oldVal == -1;
 		}
 
-		edgesContainer.swapAndClear(removedIdx, swappedIdx);
+		swapAndClear(edges, removedIdx, swappedIdx, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE);
 		super.vertexSwapAndRemove(removedIdx, swappedIdx);
 	}
 

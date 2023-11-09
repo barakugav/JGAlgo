@@ -76,7 +76,7 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 	@Override
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
 		getEdge(swappedIdx).id = removedIdx;
-		edgesContainer.swapAndClear(removedIdx, swappedIdx);
+		swapAndClear(edges, removedIdx, swappedIdx, null);
 		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
 
@@ -103,7 +103,7 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 
 	@Override
 	public void clearEdges() {
-		edgesContainer.clear(edges);
+		edgesContainer.clear();
 		super.clearEdges();
 	}
 

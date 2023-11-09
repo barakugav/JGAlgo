@@ -128,8 +128,8 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		for (int num = edgesNum[swappedIdx], i = 0; i < num; i++)
 			replaceEdgeEndpoint(edges[i], swappedIdx, removedIdx);
 
-		edgesContainer.swapAndClear(removedIdx, swappedIdx);
-		edgesNumContainer.swapAndClear(removedIdx, swappedIdx);
+		swapAndClear(this.edges, removedIdx, swappedIdx, IntArrays.EMPTY_ARRAY);
+		swapAndClear(edgesNum, removedIdx, swappedIdx, 0);
 		// Reuse allocated edges arrays for v
 		// edgesOut.clear(v);
 		// edgesIn.clear(v);
@@ -215,7 +215,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 
 	@Override
 	public void clearEdges() {
-		edgesNumContainer.clear(edgesNum);
+		edgesNumContainer.clear();
 		super.clearEdges();
 	}
 

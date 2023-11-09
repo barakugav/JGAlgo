@@ -47,166 +47,112 @@ abstract class DataContainer {
 
 	static class Obj<T> extends DataContainer {
 
-		private T[] weights;
-		private final T defaultWeight;
+		T[] data;
+		private final T defaultVal;
 		private final Consumer<T[]> onArrayAlloc;
 
 		Obj(GraphElementSet elements, T defVal, T[] emptyArr, Consumer<T[]> onArrayAlloc) {
 			super(elements);
 
-			defaultWeight = defVal;
+			defaultVal = defVal;
 			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);
-			weights = emptyArr;
-			Arrays.fill(weights, defaultWeight);
-			onArrayAlloc.accept(weights);
-		}
-
-		public T get(int idx) {
-			checkIdx(idx);
-			return weights[idx];
-		}
-
-		public void set(int idx, T weight) {
-			checkIdx(idx);
-			weights[idx] = weight;
+			data = emptyArr;
+			Arrays.fill(data, defaultVal);
+			onArrayAlloc.accept(data);
 		}
 
 		@Override
 		public int capacity() {
-			return weights.length;
+			return data.length;
 		}
 
 		@Override
 		public void expand(int newCapacity) {
-			int oldCapacity = weights.length;
+			int oldCapacity = data.length;
 			assert oldCapacity < newCapacity;
-			weights = Arrays.copyOf(weights, newCapacity);
-			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
-			onArrayAlloc.accept(weights);
+			data = Arrays.copyOf(data, newCapacity);
+			Arrays.fill(data, oldCapacity, newCapacity, defaultVal);
+			onArrayAlloc.accept(data);
 		}
 
-		void swapAndClear(int removedIdx, int swappedIdx) {
-			checkIdx(removedIdx);
-			checkIdx(swappedIdx);
-			weights[removedIdx] = weights[swappedIdx];
-			weights[swappedIdx] = defaultWeight;
-		}
-
-		void clear(int idx) {
-			weights[idx] = defaultWeight;
-		}
-
-		void clear(T[] weights, int idx) {
-			weights[idx] = defaultWeight;
+		void clear(T[] data, int idx) {
+			data[idx] = defaultVal;
 		}
 
 		void clear() {
-			Arrays.fill(weights, 0, size(), defaultWeight);
-		}
-
-		public void clear(T[] weights) {
-			Arrays.fill(weights, 0, size(), defaultWeight);
+			Arrays.fill(data, 0, size(), defaultVal);
 		}
 
 		public DataContainer.Obj<T> copy(GraphElementSet elements, T[] emptyArr, Consumer<T[]> onArrayAlloc) {
 			if (elements.size() != this.elements.size())
 				throw new IllegalArgumentException();
-			DataContainer.Obj<T> copy = new DataContainer.Obj<>(elements, defaultWeight, emptyArr, onArrayAlloc);
-			copy.weights = Arrays.copyOf(weights, elements.size());
-			onArrayAlloc.accept(copy.weights);
+			DataContainer.Obj<T> copy = new DataContainer.Obj<>(elements, defaultVal, emptyArr, onArrayAlloc);
+			copy.data = Arrays.copyOf(data, elements.size());
+			onArrayAlloc.accept(copy.data);
 			return copy;
 		}
 	}
 
 	static class Int extends DataContainer {
 
-		private int[] weights;
-		private final int defaultWeight;
+		int[] data;
+		private final int defaultVal;
 		private final Consumer<int[]> onArrayAlloc;
 
 		Int(GraphElementSet elements, int defVal, Consumer<int[]> onArrayAlloc) {
 			super(elements);
 
-			weights = IntArrays.EMPTY_ARRAY;
-			defaultWeight = defVal;
+			data = IntArrays.EMPTY_ARRAY;
+			defaultVal = defVal;
 			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);
-			onArrayAlloc.accept(weights);
-		}
-
-		public int get(int idx) {
-			checkIdx(idx);
-			return weights[idx];
-		}
-
-		public void set(int idx, int weight) {
-			checkIdx(idx);
-			weights[idx] = weight;
-		}
-
-		public int defaultWeight() {
-			return defaultWeight;
+			onArrayAlloc.accept(data);
 		}
 
 		@Override
 		public int capacity() {
-			return weights.length;
+			return data.length;
 		}
 
 		@Override
 		public void expand(int newCapacity) {
-			int oldCapacity = weights.length;
+			int oldCapacity = data.length;
 			assert oldCapacity < newCapacity;
-			weights = Arrays.copyOf(weights, newCapacity);
-			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
-			onArrayAlloc.accept(weights);
+			data = Arrays.copyOf(data, newCapacity);
+			Arrays.fill(data, oldCapacity, newCapacity, defaultVal);
+			onArrayAlloc.accept(data);
 		}
 
-		void swapAndClear(int removedIdx, int swappedIdx) {
-			checkIdx(removedIdx);
-			checkIdx(swappedIdx);
-			weights[removedIdx] = weights[swappedIdx];
-			weights[swappedIdx] = defaultWeight;
-		}
-
-		void clear(int idx) {
-			weights[idx] = defaultWeight;
-		}
-
-		void clear(int[] weights, int idx) {
-			weights[idx] = defaultWeight;
+		void clear(int[] data, int idx) {
+			data[idx] = defaultVal;
 		}
 
 		void clear() {
-			Arrays.fill(weights, 0, size(), defaultWeight);
-		}
-
-		void clear(int[] weights) {
-			Arrays.fill(weights, 0, size(), defaultWeight);
+			Arrays.fill(data, 0, size(), defaultVal);
 		}
 
 		DataContainer.Int copy(GraphElementSet elements, Consumer<int[]> onArrayAlloc) {
 			if (elements.size() != this.elements.size())
 				throw new IllegalArgumentException();
-			DataContainer.Int copy = new DataContainer.Int(elements, defaultWeight, onArrayAlloc);
-			copy.weights = Arrays.copyOf(weights, elements.size());
-			onArrayAlloc.accept(copy.weights);
+			DataContainer.Int copy = new DataContainer.Int(elements, defaultVal, onArrayAlloc);
+			copy.data = Arrays.copyOf(data, elements.size());
+			onArrayAlloc.accept(copy.data);
 			return copy;
 		}
 	}
 
 	static class Long extends DataContainer {
 
-		private long[] weights;
-		private final long defaultWeight;
+		private long[] data;
+		private final long defaultVal;
 		private final Consumer<long[]> onArrayAlloc;
 
 		Long(GraphElementSet elements, long defVal, Consumer<long[]> onArrayAlloc) {
 			super(elements);
 
-			weights = LongArrays.EMPTY_ARRAY;
-			defaultWeight = defVal;
+			data = LongArrays.EMPTY_ARRAY;
+			defaultVal = defVal;
 			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);
-			onArrayAlloc.accept(weights);
+			onArrayAlloc.accept(data);
 		}
 
 		Long(DataContainer.Long orig, GraphElementSet elements, Consumer<long[]> onArrayAlloc) {
@@ -214,59 +160,28 @@ abstract class DataContainer {
 			if (elements.size() != this.elements.size())
 				throw new IllegalArgumentException();
 
-			weights = Arrays.copyOf(orig.weights, elements.size());
-			defaultWeight = orig.defaultWeight;
+			data = Arrays.copyOf(orig.data, elements.size());
+			defaultVal = orig.defaultVal;
 			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);
-			onArrayAlloc.accept(weights);
-		}
-
-		long get(int idx) {
-			checkIdx(idx);
-			return weights[idx];
-		}
-
-		void set(int idx, long weight) {
-			checkIdx(idx);
-			weights[idx] = weight;
-		}
-
-		long defaultWeight() {
-			return defaultWeight;
+			onArrayAlloc.accept(data);
 		}
 
 		@Override
 		int capacity() {
-			return weights.length;
+			return data.length;
 		}
 
 		@Override
 		void expand(int newCapacity) {
-			int oldCapacity = weights.length;
+			int oldCapacity = data.length;
 			assert oldCapacity < newCapacity;
-			weights = Arrays.copyOf(weights, newCapacity);
-			Arrays.fill(weights, oldCapacity, newCapacity, defaultWeight);
-			onArrayAlloc.accept(weights);
+			data = Arrays.copyOf(data, newCapacity);
+			Arrays.fill(data, oldCapacity, newCapacity, defaultVal);
+			onArrayAlloc.accept(data);
 		}
 
-		// void swap(long[] weights, int idx1, int idx2) {
-		// checkIdx(idx1);
-		// checkIdx(idx2);
-		// LongArrays.swap(weights, idx1, idx2);
-		// }
-
-		void swapAndClear(int removedIdx, int swappedIdx) {
-			checkIdx(removedIdx);
-			checkIdx(swappedIdx);
-			weights[removedIdx] = weights[swappedIdx];
-			weights[swappedIdx] = defaultWeight;
-		}
-
-		void clear(long[] weights, int idx) {
-			weights[idx] = defaultWeight;
-		}
-
-		void clear(long[] weights) {
-			Arrays.fill(weights, 0, size(), defaultWeight);
+		void clear() {
+			Arrays.fill(data, 0, size(), defaultVal);
 		}
 
 		DataContainer.Long copy(GraphElementSet elements, Consumer<long[]> onArrayAlloc) {
