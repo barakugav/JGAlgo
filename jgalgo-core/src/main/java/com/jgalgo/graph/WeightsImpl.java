@@ -15,14 +15,20 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.internal.util.IntAdapters;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
 interface WeightsImpl {
 
@@ -130,67 +136,108 @@ interface WeightsImpl {
 
 		static class Manager {
 
-			final Map<String, WeightsImpl.IndexMutable<?>> weights = new Object2ObjectOpenHashMap<>();
+			private String[] weightsKey;
+			private WeightsImpl.IndexMutable<?>[] weights;
+			private final Object2IntMap<String> keyToIdx;
 			private int weightsCapacity;
 
+			private static final String[] EMPTY_WEIGHTS_KEY_ARR = new String[0];
+			private static final WeightsImpl.IndexMutable<?>[] EMPTY_WEIGHTS_ARR = new WeightsImpl.IndexMutable<?>[0];
+
 			Manager(int initCapacity) {
+				weightsKey = EMPTY_WEIGHTS_KEY_ARR;
+				weights = EMPTY_WEIGHTS_ARR;
+				keyToIdx = new Object2IntOpenHashMap<>();
+				keyToIdx.defaultReturnValue(-1);
 				weightsCapacity = initCapacity;
 			}
 
 			Manager(Manager orig, GraphElementSet elements) {
-				this(elements.size());
-				for (var entry : orig.weights.entrySet())
-					weights.put(entry.getKey(), WeightsImpl.IndexMutable.copyOf(entry.getValue(), elements));
+				weightsCapacity = elements.size();
+				int numberOfWeights = orig.keyToIdx.size();
+				if (numberOfWeights == 0) {
+					weightsKey = EMPTY_WEIGHTS_KEY_ARR;
+					weights = EMPTY_WEIGHTS_ARR;
+					keyToIdx = new Object2IntOpenHashMap<>();
+
+				} else {
+					weightsKey = Arrays.copyOf(orig.weightsKey, numberOfWeights);
+					weights = Arrays.copyOf(orig.weights, numberOfWeights);
+					keyToIdx = new Object2IntOpenHashMap<>(orig.keyToIdx);
+				}
+				keyToIdx.defaultReturnValue(-1);
 			}
 
-			void addWeights(String key, WeightsImpl.IndexMutable<?> weight) {
-				WeightsImpl.IndexMutable<?> oldContainer = weights.put(key, weight);
-				if (oldContainer != null)
+			void addWeights(String key, WeightsImpl.IndexMutable<?> weights) {
+				Objects.requireNonNull(key);
+				int idx = keyToIdx.size();
+				int oldIdx = keyToIdx.put(key, idx);
+				if (oldIdx != -1) {
+					keyToIdx.put(key, oldIdx);
 					throw new IllegalArgumentException("Two weights types with the same key: " + key);
-				if (weightsCapacity > weight.capacity())
-					weight.expand(weightsCapacity);
+				}
+
+				if (idx == this.weights.length) {
+					weightsKey = Arrays.copyOf(weightsKey, Math.max(2, 2 * weightsKey.length));
+					this.weights = Arrays.copyOf(this.weights, Math.max(2, 2 * this.weights.length));
+				}
+				weightsKey[idx] = key;
+				this.weights[idx] = weights;
+
+				if (weightsCapacity > weights.capacity())
+					weights.expand(weightsCapacity);
 			}
 
 			void removeWeights(String key) {
-				weights.remove(key);
+				int lastIdx = keyToIdx.size() - 1;
+				int idx = keyToIdx.removeInt(key);
+				if (idx == -1)
+					throw new IllegalArgumentException("no weights with key: " + key);
+
+				if (idx != lastIdx) {
+					weights[idx] = weights[lastIdx];
+					keyToIdx.put(weightsKey[lastIdx], idx);
+				}
+				weightsKey[lastIdx] = null;
+				weights[lastIdx] = null;
 			}
 
 			@SuppressWarnings("unchecked")
 			<T, WeightsT extends IWeights<T>> WeightsT getWeights(String key) {
-				return (WeightsT) weights.get(key);
+				int idx = keyToIdx.getInt(key);
+				return idx == -1 ? null : (WeightsT) weights[idx];
 			}
 
 			Set<String> weightsKeys() {
-				return Collections.unmodifiableSet(weights.keySet());
+				return Collections.unmodifiableSet(keyToIdx.keySet());
 			}
 
 			void ensureCapacity(int capacity) {
 				if (capacity <= weightsCapacity)
 					return;
 				int newCapacity = Math.max(Math.max(2, 2 * weightsCapacity), capacity);
-				for (WeightsImpl.IndexMutable<?> container : weights.values())
+				for (WeightsImpl.IndexMutable<?> container : JGAlgoUtils.iterable(weights()))
 					container.expand(newCapacity);
 				weightsCapacity = newCapacity;
 			}
 
-			// void swapElements(int idx1, int idx2) {
-			// for (WeightsImpl.IndexMutable<?> container : weights.values())
-			// container.swap(idx1, idx2);
-			// }
-
 			void swapAndClear(int removedIdx, int swappedIdx) {
-				for (WeightsImpl.IndexMutable<?> container : weights.values())
+				for (WeightsImpl.IndexMutable<?> container : JGAlgoUtils.iterable(weights()))
 					container.swapAndClear(removedIdx, swappedIdx);
 			}
 
 			void clearElement(int idx) {
-				for (WeightsImpl.IndexMutable<?> container : weights.values())
+				for (WeightsImpl.IndexMutable<?> container : JGAlgoUtils.iterable(weights()))
 					container.clear(idx);
 			}
 
 			void clearContainers() {
-				for (WeightsImpl.IndexMutable<?> container : weights.values())
+				for (WeightsImpl.IndexMutable<?> container : JGAlgoUtils.iterable(weights()))
 					container.clear();
+			}
+
+			private Iterator<WeightsImpl.IndexMutable<?>> weights() {
+				return ObjectIterators.wrap(weights, 0, keyToIdx.size());
 			}
 		}
 

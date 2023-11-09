@@ -65,15 +65,15 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 				}
 			} else {
 				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();
-				for (var entry : builder.verticesUserWeights.weights.entrySet())
-					verticesUserWeightsBuilder.copyAndAddWeights(entry.getKey(), entry.getValue());
+				for (String key : builder.verticesUserWeights.weightsKeys())
+					verticesUserWeightsBuilder.copyAndAddWeights(key, builder.verticesUserWeights.getWeights(key));
 				if (edgesReIndexing == null) {
-					for (var entry : builder.edgesUserWeights.weights.entrySet())
-						edgesUserWeightsBuilder.copyAndAddWeights(entry.getKey(), entry.getValue());
+					for (String key : builder.edgesUserWeights.weightsKeys())
+						edgesUserWeightsBuilder.copyAndAddWeights(key, builder.edgesUserWeights.getWeights(key));
 				} else {
-					for (var entry : builder.edgesUserWeights.weights.entrySet())
-						edgesUserWeightsBuilder.copyAndAddWeightsReindexed(entry.getKey(), entry.getValue(),
-								edgesReIndexing);
+					for (String key : builder.edgesUserWeights.weightsKeys())
+						edgesUserWeightsBuilder.copyAndAddWeightsReindexed(key,
+								builder.edgesUserWeights.getWeights(key), edgesReIndexing);
 				}
 			}
 		}
