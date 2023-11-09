@@ -1276,7 +1276,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class ArrayDirected extends GraphBench.Remove.Edge {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
@@ -1305,7 +1305,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class ArrayUndirected extends GraphBench.Remove.Edge {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
@@ -1335,7 +1335,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class LinkedDirected extends GraphBench.Remove.Edge {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
@@ -1365,7 +1365,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class LinkedUndirected extends GraphBench.Remove.Edge {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
@@ -1395,7 +1395,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class HashtableDirected extends GraphBench.Remove.Edge {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
@@ -1425,7 +1425,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class HashtableUndirected extends GraphBench.Remove.Edge {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
@@ -1455,7 +1455,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class MatrixDirected extends GraphBench.Remove.Edge {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
@@ -1485,7 +1485,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class MatrixUndirected extends GraphBench.Remove.Edge {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
@@ -1542,7 +1542,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class ArrayDirected extends GraphBench.Remove.Vertex {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
@@ -1571,7 +1571,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class ArrayUndirected extends GraphBench.Remove.Vertex {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
@@ -1602,7 +1602,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class LinkedDirected extends GraphBench.Remove.Vertex {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
@@ -1633,7 +1633,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class LinkedUndirected extends GraphBench.Remove.Vertex {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
@@ -1664,7 +1664,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class HashtableDirected extends GraphBench.Remove.Vertex {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
@@ -1695,7 +1695,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class HashtableUndirected extends GraphBench.Remove.Vertex {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
@@ -1726,7 +1726,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class MatrixDirected extends GraphBench.Remove.Vertex {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
@@ -1757,7 +1757,7 @@ public class GraphBench {
 			@State(Scope.Benchmark)
 			public static class MatrixUndirected extends GraphBench.Remove.Vertex {
 
-				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
 				public String args;
 
 				@Setup(Level.Trial)
