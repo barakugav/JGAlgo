@@ -51,6 +51,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * @see    <a href="https://en.wikipedia.org/wiki/Minimum_cut">Wikipedia</a>
  * @see    MinimumEdgeCutGlobal
+ * @see    MinimumVertexCutST
  * @author Barak Ugav
  */
 public interface MinimumEdgeCutST {
