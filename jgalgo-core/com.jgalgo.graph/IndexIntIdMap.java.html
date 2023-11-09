@@ -84,5 +84,23 @@ public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
 <span class="fc" id="L84">		return idToIndex(id.intValue());</span>
 	}
 
+	/**
+	 * Get the index of an element by its identifier if it exists, or {@code -1} if it doesn't.
+	 *
+	 * &lt;p&gt;
+	 * Whether this method maps vertices or edges depends if the mapping object was obtained by
+	 * {@link Graph#indexGraphVerticesMap()} or {@link Graph#indexGraphEdgesMap()}.
+	 *
+	 * @param  id an identifier of an element (vertex/edge)
+	 * @return    the index of the element, or {@code -1} if there is not such element
+	 */
+	int idToIndexIfExist(int id);
+
+	@Deprecated
+	@Override
+	default int idToIndexIfExist(Integer id) {
+<span class="nc" id="L102">		return idToIndexIfExist(id.intValue());</span>
+	}
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

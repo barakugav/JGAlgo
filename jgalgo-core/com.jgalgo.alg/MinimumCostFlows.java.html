@@ -46,12 +46,12 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		@Override
 		public &lt;V, E&gt; void computeMinCostMaxFlow(Graph&lt;V, E&gt; g, FlowNetwork&lt;V, E&gt; net, WeightFunction&lt;E&gt; cost, V source,
 				V sink) {
-<span class="pc bpc" id="L49" title="3 of 4 branches missed.">			if (g instanceof IndexGraph &amp;&amp; net instanceof IFlowNetwork) {</span>
-<span class="nc" id="L50">				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
-<span class="nc" id="L51">				int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();</span>
-<span class="nc" id="L52">				computeMinCostMaxFlow((IndexGraph) g, (IFlowNetwork) net, cost0, source0, sink0);</span>
+<span class="pc bpc" id="L49" title="1 of 4 branches missed.">			if (g instanceof IndexGraph &amp;&amp; net instanceof IFlowNetwork) {</span>
+<span class="fc" id="L50">				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
+<span class="fc" id="L51">				int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();</span>
+<span class="fc" id="L52">				computeMinCostMaxFlow((IndexGraph) g, (IFlowNetwork) net, cost0, source0, sink0);</span>
 
-<span class="nc" id="L54">			} else {</span>
+<span class="fc" id="L54">			} else {</span>
 <span class="fc" id="L55">				IndexGraph iGraph = g.indexGraph();</span>
 <span class="fc" id="L56">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
 <span class="fc" id="L57">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
@@ -67,14 +67,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		@Override
 		public &lt;V, E&gt; void computeMinCostMaxFlow(Graph&lt;V, E&gt; g, FlowNetwork&lt;V, E&gt; net, WeightFunction&lt;E&gt; cost,
 				WeightFunction&lt;E&gt; lowerBound, V source, V sink) {
-<span class="pc bpc" id="L70" title="3 of 4 branches missed.">			if (g instanceof IndexGraph &amp;&amp; net instanceof IFlowNetwork) {</span>
-<span class="nc" id="L71">				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
-<span class="nc" id="L72">				IWeightFunction lowerBound0 =</span>
-<span class="nc" id="L73">						WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) lowerBound);</span>
-<span class="nc" id="L74">				int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();</span>
-<span class="nc" id="L75">				computeMinCostMaxFlow((IndexGraph) g, (IFlowNetwork) net, cost0, lowerBound0, source0, sink0);</span>
+<span class="pc bpc" id="L70" title="1 of 4 branches missed.">			if (g instanceof IndexGraph &amp;&amp; net instanceof IFlowNetwork) {</span>
+<span class="fc" id="L71">				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
+<span class="fc" id="L72">				IWeightFunction lowerBound0 =</span>
+<span class="fc" id="L73">						WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) lowerBound);</span>
+<span class="fc" id="L74">				int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();</span>
+<span class="fc" id="L75">				computeMinCostMaxFlow((IndexGraph) g, (IFlowNetwork) net, cost0, lowerBound0, source0, sink0);</span>
 
-<span class="nc" id="L77">			} else {</span>
+<span class="fc" id="L77">			} else {</span>
 <span class="fc" id="L78">				IndexGraph iGraph = g.indexGraph();</span>
 <span class="fc" id="L79">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
 <span class="fc" id="L80">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
@@ -91,13 +91,13 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		@Override
 		public &lt;V, E&gt; void computeMinCostMaxFlow(Graph&lt;V, E&gt; g, FlowNetwork&lt;V, E&gt; net, WeightFunction&lt;E&gt; cost,
 				Collection&lt;V&gt; sources, Collection&lt;V&gt; sinks) {
-<span class="pc bpc" id="L94" title="3 of 4 branches missed.">			if (g instanceof IndexGraph &amp;&amp; net instanceof IFlowNetwork) {</span>
-<span class="nc" id="L95">				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
-<span class="nc" id="L96">				IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
-<span class="nc" id="L97">				IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
-<span class="nc" id="L98">				computeMinCostMaxFlow((IndexGraph) g, (IFlowNetwork) net, cost0, sources0, sinks0);</span>
+<span class="pc bpc" id="L94" title="1 of 4 branches missed.">			if (g instanceof IndexGraph &amp;&amp; net instanceof IFlowNetwork) {</span>
+<span class="fc" id="L95">				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
+<span class="fc" id="L96">				IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
+<span class="fc" id="L97">				IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
+<span class="fc" id="L98">				computeMinCostMaxFlow((IndexGraph) g, (IFlowNetwork) net, cost0, sources0, sinks0);</span>
 
-<span class="nc" id="L100">			} else {</span>
+<span class="fc" id="L100">			} else {</span>
 <span class="fc" id="L101">				IndexGraph iGraph = g.indexGraph();</span>
 <span class="fc" id="L102">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
 <span class="fc" id="L103">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
@@ -113,15 +113,15 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		@Override
 		public &lt;V, E&gt; void computeMinCostMaxFlow(Graph&lt;V, E&gt; g, FlowNetwork&lt;V, E&gt; net, WeightFunction&lt;E&gt; cost,
 				WeightFunction&lt;E&gt; lowerBound, Collection&lt;V&gt; sources, Collection&lt;V&gt; sinks) {
-<span class="pc bpc" id="L116" title="3 of 4 branches missed.">			if (g instanceof IndexGraph &amp;&amp; net instanceof IFlowNetwork) {</span>
-<span class="nc" id="L117">				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
-<span class="nc" id="L118">				IWeightFunction lowerBound0 =</span>
-<span class="nc" id="L119">						WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) lowerBound);</span>
-<span class="nc" id="L120">				IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
-<span class="nc" id="L121">				IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
-<span class="nc" id="L122">				computeMinCostMaxFlow((IndexGraph) g, (IFlowNetwork) net, cost0, lowerBound0, sources0, sinks0);</span>
+<span class="pc bpc" id="L116" title="1 of 4 branches missed.">			if (g instanceof IndexGraph &amp;&amp; net instanceof IFlowNetwork) {</span>
+<span class="fc" id="L117">				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
+<span class="fc" id="L118">				IWeightFunction lowerBound0 =</span>
+<span class="fc" id="L119">						WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) lowerBound);</span>
+<span class="fc" id="L120">				IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
+<span class="fc" id="L121">				IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
+<span class="fc" id="L122">				computeMinCostMaxFlow((IndexGraph) g, (IFlowNetwork) net, cost0, lowerBound0, sources0, sinks0);</span>
 
-<span class="nc" id="L124">			} else {</span>
+<span class="fc" id="L124">			} else {</span>
 <span class="fc" id="L125">				IndexGraph iGraph = g.indexGraph();</span>
 <span class="fc" id="L126">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
 <span class="fc" id="L127">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
@@ -138,12 +138,12 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		@Override
 		public &lt;V, E&gt; void computeMinCostFlow(Graph&lt;V, E&gt; g, FlowNetwork&lt;V, E&gt; net, WeightFunction&lt;E&gt; cost,
 				WeightFunction&lt;V&gt; supply) {
-<span class="pc bpc" id="L141" title="3 of 4 branches missed.">			if (g instanceof IndexGraph &amp;&amp; net instanceof IFlowNetwork) {</span>
-<span class="nc" id="L142">				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
-<span class="nc" id="L143">				IWeightFunction supply0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) supply);</span>
-<span class="nc" id="L144">				computeMinCostFlow((IndexGraph) g, (IFlowNetwork) net, cost0, supply0);</span>
+<span class="pc bpc" id="L141" title="1 of 4 branches missed.">			if (g instanceof IndexGraph &amp;&amp; net instanceof IFlowNetwork) {</span>
+<span class="fc" id="L142">				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
+<span class="fc" id="L143">				IWeightFunction supply0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) supply);</span>
+<span class="fc" id="L144">				computeMinCostFlow((IndexGraph) g, (IFlowNetwork) net, cost0, supply0);</span>
 
-<span class="nc" id="L146">			} else {</span>
+<span class="fc" id="L146">			} else {</span>
 <span class="fc" id="L147">				IndexGraph iGraph = g.indexGraph();</span>
 <span class="fc" id="L148">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
 <span class="fc" id="L149">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
@@ -158,14 +158,14 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		@Override
 		public &lt;V, E&gt; void computeMinCostFlow(Graph&lt;V, E&gt; g, FlowNetwork&lt;V, E&gt; net, WeightFunction&lt;E&gt; cost,
 				WeightFunction&lt;E&gt; lowerBound, WeightFunction&lt;V&gt; supply) {
-<span class="pc bpc" id="L161" title="3 of 4 branches missed.">			if (g instanceof IndexGraph &amp;&amp; net instanceof IFlowNetwork) {</span>
-<span class="nc" id="L162">				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
-<span class="nc" id="L163">				IWeightFunction lowerBound0 =</span>
-<span class="nc" id="L164">						WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) lowerBound);</span>
-<span class="nc" id="L165">				IWeightFunction supply0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) supply);</span>
-<span class="nc" id="L166">				computeMinCostFlow((IndexGraph) g, (IFlowNetwork) net, cost0, lowerBound0, supply0);</span>
+<span class="pc bpc" id="L161" title="1 of 4 branches missed.">			if (g instanceof IndexGraph &amp;&amp; net instanceof IFlowNetwork) {</span>
+<span class="fc" id="L162">				IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) cost);</span>
+<span class="fc" id="L163">				IWeightFunction lowerBound0 =</span>
+<span class="fc" id="L164">						WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) lowerBound);</span>
+<span class="fc" id="L165">				IWeightFunction supply0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) supply);</span>
+<span class="fc" id="L166">				computeMinCostFlow((IndexGraph) g, (IFlowNetwork) net, cost0, lowerBound0, supply0);</span>
 
-<span class="nc" id="L168">			} else {</span>
+<span class="fc" id="L168">			} else {</span>
 <span class="fc" id="L169">				IndexGraph iGraph = g.indexGraph();</span>
 <span class="fc" id="L170">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
 <span class="fc" id="L171">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>

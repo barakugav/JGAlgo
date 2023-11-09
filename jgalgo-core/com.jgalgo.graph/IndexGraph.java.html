@@ -245,7 +245,7 @@ public interface IndexGraph extends IntGraph {
 
 	@Override
 	default IndexGraph copy(boolean copyWeights) {
-<span class="nc" id="L248">		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
+<span class="fc" id="L248">		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
 	}
 
 	@Override

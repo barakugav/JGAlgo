@@ -26,7 +26,9 @@ import com.jgalgo.graph.WeightFunction;
  *
  * &lt;p&gt;
  * A spanning tree in directed graph is defined similarly to a spanning tree in undirected graph, but the 'spanning
- * tree' does not yield a strongly connected graph, but a weakly connected tree rooted at some vertex.
+ * tree' does not yield a strongly connected graph, rather a tree in which all the vertices are reachable from the root.
+ * Note that differing from the undirected {@link MinimumSpanningTree}, the root is given as part of the input, and the
+ * result spanning tree will span only the vertices reachable from the root with a single tree, and not a forest.
  *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
@@ -38,6 +40,10 @@ public interface MinimumDirectedSpanningTree {
 
 	/**
 	 * Compute a minimum directed spanning tree (MDST) in a directed graph, rooted at the given vertex.
+	 *
+	 * &lt;p&gt;
+	 * Note that the returned spanning tree is a single tree that span only the vertices reachable from the root, and
+	 * not a forest that span the whole graph.
 	 *
 	 * &lt;p&gt;
 	 * If {@code g} is an {@link IntGraph}, a {@link MinimumSpanningTree.IResult} object will be returned. In that case,
@@ -64,7 +70,7 @@ public interface MinimumDirectedSpanningTree {
 	 * @return a default implementation of {@link MinimumDirectedSpanningTree}
 	 */
 	static MinimumDirectedSpanningTree newInstance() {
-<span class="fc" id="L67">		return newBuilder().build();</span>
+<span class="fc" id="L73">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -76,7 +82,7 @@ public interface MinimumDirectedSpanningTree {
 	 * @return a new builder that can build {@link MinimumDirectedSpanningTree} objects
 	 */
 	static MinimumDirectedSpanningTree.Builder newBuilder() {
-<span class="fc" id="L79">		return MinimumDirectedSpanningTreeTarjan::new;</span>
+<span class="fc" id="L85">		return MinimumDirectedSpanningTreeTarjan::new;</span>
 	}
 
 	/**
@@ -110,7 +116,7 @@ public interface MinimumDirectedSpanningTree {
 		 * @return       this builder
 		 */
 		default MinimumDirectedSpanningTree.Builder setOption(String key, Object value) {
-<span class="nc" id="L113">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L119">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

@@ -169,8 +169,8 @@ public interface Weights&lt;K, T&gt; {
 <span class="fc" id="L169">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);</span>
 <span class="pc bpc" id="L170" title="1 of 2 branches missed.">		if (vertices.size() &gt; 0)</span>
 <span class="fc" id="L171">			weights.expand(vertices.size());</span>
-<span class="pc bpc" id="L172" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L173">			return (WeightsT) weights;</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L173">			return (WeightsT) weights;</span>
 <span class="fc bfc" id="L174" title="All 2 branches covered.">		} else if (g instanceof IntGraph) {</span>
 <span class="fc" id="L175">			IntGraph g0 = (IntGraph) g;</span>
 <span class="fc" id="L176">			return (WeightsT) WeightsImpl.IntMapped.newInstance(weights, g0.indexGraphVerticesMap());</span>
@@ -225,8 +225,8 @@ public interface Weights&lt;K, T&gt; {
 <span class="fc" id="L225">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);</span>
 <span class="pc bpc" id="L226" title="1 of 2 branches missed.">		if (edges.size() &gt; 0)</span>
 <span class="fc" id="L227">			weights.expand(edges.size());</span>
-<span class="pc bpc" id="L228" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L229">			return (WeightsT) weights;</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L229">			return (WeightsT) weights;</span>
 <span class="fc bfc" id="L230" title="All 2 branches covered.">		} else if (g instanceof IntGraph) {</span>
 <span class="fc" id="L231">			IntGraph g0 = (IntGraph) g;</span>
 <span class="fc" id="L232">			return (WeightsT) WeightsImpl.IntMapped.newInstance(weights, g0.indexGraphEdgesMap());</span>

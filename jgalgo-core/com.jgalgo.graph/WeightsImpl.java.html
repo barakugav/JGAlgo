@@ -380,95 +380,95 @@ interface WeightsImpl {
 <span class="fc" id="L380">			IntCollection elements = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) elementsSet);</span>
 <span class="pc bpc" id="L381" title="1 of 4 branches missed.">			if (w1 instanceof IWeightsObj&lt;?&gt; &amp;&amp; w2 instanceof IWeightsObj&lt;?&gt;) {</span>
 <span class="fc bfc" id="L382" title="All 2 branches covered.">				for (int elm : elements)</span>
-<span class="pc bpc" id="L383" title="1 of 2 branches missed.">					if (!Objects.equals(((IWeightsObj&lt;?&gt;) w1).get(elm), ((IWeightsObj&lt;?&gt;) w2).get(elm)))</span>
-<span class="nc" id="L384">						return false;</span>
+<span class="fc bfc" id="L383" title="All 2 branches covered.">					if (!Objects.equals(((IWeightsObj&lt;?&gt;) w1).get(elm), ((IWeightsObj&lt;?&gt;) w2).get(elm)))</span>
+<span class="fc" id="L384">						return false;</span>
 <span class="fc" id="L385">				return true;</span>
 <span class="pc bpc" id="L386" title="1 of 4 branches missed.">			} else if (w1 instanceof IWeightsByte &amp;&amp; w2 instanceof IWeightsByte) {</span>
 <span class="fc bfc" id="L387" title="All 2 branches covered.">				for (int elm : elements)</span>
-<span class="pc bpc" id="L388" title="1 of 2 branches missed.">					if (((IWeightsByte) w1).get(elm) != ((IWeightsByte) w2).get(elm))</span>
-<span class="nc" id="L389">						return false;</span>
+<span class="fc bfc" id="L388" title="All 2 branches covered.">					if (((IWeightsByte) w1).get(elm) != ((IWeightsByte) w2).get(elm))</span>
+<span class="fc" id="L389">						return false;</span>
 <span class="fc" id="L390">				return true;</span>
 <span class="pc bpc" id="L391" title="1 of 4 branches missed.">			} else if (w1 instanceof IWeightsShort &amp;&amp; w2 instanceof IWeightsShort) {</span>
 <span class="fc bfc" id="L392" title="All 2 branches covered.">				for (int elm : elements)</span>
-<span class="pc bpc" id="L393" title="1 of 2 branches missed.">					if (((IWeightsShort) w1).get(elm) != ((IWeightsShort) w2).get(elm))</span>
-<span class="nc" id="L394">						return false;</span>
+<span class="fc bfc" id="L393" title="All 2 branches covered.">					if (((IWeightsShort) w1).get(elm) != ((IWeightsShort) w2).get(elm))</span>
+<span class="fc" id="L394">						return false;</span>
 <span class="fc" id="L395">				return true;</span>
 <span class="pc bpc" id="L396" title="1 of 4 branches missed.">			} else if (w1 instanceof IWeightsInt &amp;&amp; w2 instanceof IWeightsInt) {</span>
 <span class="fc bfc" id="L397" title="All 2 branches covered.">				for (int elm : elements)</span>
-<span class="pc bpc" id="L398" title="1 of 2 branches missed.">					if (((IWeightsInt) w1).get(elm) != ((IWeightsInt) w2).get(elm))</span>
-<span class="nc" id="L399">						return false;</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">					if (((IWeightsInt) w1).get(elm) != ((IWeightsInt) w2).get(elm))</span>
+<span class="fc" id="L399">						return false;</span>
 <span class="fc" id="L400">				return true;</span>
 <span class="pc bpc" id="L401" title="1 of 4 branches missed.">			} else if (w1 instanceof IWeightsLong &amp;&amp; w2 instanceof IWeightsLong) {</span>
 <span class="fc bfc" id="L402" title="All 2 branches covered.">				for (int elm : elements)</span>
-<span class="pc bpc" id="L403" title="1 of 2 branches missed.">					if (((IWeightsLong) w1).get(elm) != ((IWeightsLong) w2).get(elm))</span>
-<span class="nc" id="L404">						return false;</span>
+<span class="fc bfc" id="L403" title="All 2 branches covered.">					if (((IWeightsLong) w1).get(elm) != ((IWeightsLong) w2).get(elm))</span>
+<span class="fc" id="L404">						return false;</span>
 <span class="fc" id="L405">				return true;</span>
 <span class="pc bpc" id="L406" title="1 of 4 branches missed.">			} else if (w1 instanceof IWeightsFloat &amp;&amp; w2 instanceof IWeightsFloat) {</span>
 <span class="fc bfc" id="L407" title="All 2 branches covered.">				for (int elm : elements)</span>
-<span class="pc bpc" id="L408" title="1 of 2 branches missed.">					if (((IWeightsFloat) w1).get(elm) != ((IWeightsFloat) w2).get(elm))</span>
-<span class="nc" id="L409">						return false;</span>
+<span class="fc bfc" id="L408" title="All 2 branches covered.">					if (((IWeightsFloat) w1).get(elm) != ((IWeightsFloat) w2).get(elm))</span>
+<span class="fc" id="L409">						return false;</span>
 <span class="fc" id="L410">				return true;</span>
 <span class="pc bpc" id="L411" title="1 of 4 branches missed.">			} else if (w1 instanceof IWeightsDouble &amp;&amp; w2 instanceof IWeightsDouble) {</span>
 <span class="fc bfc" id="L412" title="All 2 branches covered.">				for (int elm : elements)</span>
-<span class="pc bpc" id="L413" title="1 of 2 branches missed.">					if (((IWeightsDouble) w1).get(elm) != ((IWeightsDouble) w2).get(elm))</span>
-<span class="nc" id="L414">						return false;</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">					if (((IWeightsDouble) w1).get(elm) != ((IWeightsDouble) w2).get(elm))</span>
+<span class="fc" id="L414">						return false;</span>
 <span class="fc" id="L415">				return true;</span>
 <span class="pc bpc" id="L416" title="1 of 4 branches missed.">			} else if (w1 instanceof IWeightsBool &amp;&amp; w2 instanceof IWeightsBool) {</span>
 <span class="fc bfc" id="L417" title="All 2 branches covered.">				for (int elm : elements)</span>
-<span class="pc bpc" id="L418" title="1 of 2 branches missed.">					if (((IWeightsBool) w1).get(elm) != ((IWeightsBool) w2).get(elm))</span>
-<span class="nc" id="L419">						return false;</span>
+<span class="fc bfc" id="L418" title="All 2 branches covered.">					if (((IWeightsBool) w1).get(elm) != ((IWeightsBool) w2).get(elm))</span>
+<span class="fc" id="L419">						return false;</span>
 <span class="fc" id="L420">				return true;</span>
 <span class="pc bpc" id="L421" title="2 of 4 branches missed.">			} else if (w1 instanceof IWeightsChar &amp;&amp; w2 instanceof IWeightsChar) {</span>
 <span class="fc bfc" id="L422" title="All 2 branches covered.">				for (int elm : elements)</span>
-<span class="pc bpc" id="L423" title="1 of 2 branches missed.">					if (((IWeightsChar) w1).get(elm) != ((IWeightsChar) w2).get(elm))</span>
-<span class="nc" id="L424">						return false;</span>
+<span class="fc bfc" id="L423" title="All 2 branches covered.">					if (((IWeightsChar) w1).get(elm) != ((IWeightsChar) w2).get(elm))</span>
+<span class="fc" id="L424">						return false;</span>
 <span class="fc" id="L425">				return true;</span>
 			}
 <span class="nc" id="L427">		} else {</span>
 <span class="pc bpc" id="L428" title="1 of 4 branches missed.">			if (w1 instanceof WeightsObj &amp;&amp; w2 instanceof WeightsObj) {</span>
 <span class="fc bfc" id="L429" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
-<span class="pc bpc" id="L430" title="1 of 2 branches missed.">					if (!Objects.equals(((WeightsObj&lt;K, ?&gt;) w1).get(elm), ((WeightsObj&lt;K, ?&gt;) w2).get(elm)))</span>
-<span class="nc" id="L431">						return false;</span>
+<span class="fc bfc" id="L430" title="All 2 branches covered.">					if (!Objects.equals(((WeightsObj&lt;K, ?&gt;) w1).get(elm), ((WeightsObj&lt;K, ?&gt;) w2).get(elm)))</span>
+<span class="fc" id="L431">						return false;</span>
 <span class="fc" id="L432">				return true;</span>
 <span class="pc bpc" id="L433" title="1 of 4 branches missed.">			} else if (w1 instanceof WeightsByte &amp;&amp; w2 instanceof WeightsByte) {</span>
 <span class="fc bfc" id="L434" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
-<span class="pc bpc" id="L435" title="1 of 2 branches missed.">					if (((WeightsByte&lt;K&gt;) w1).get(elm) != ((WeightsByte&lt;K&gt;) w2).get(elm))</span>
-<span class="nc" id="L436">						return false;</span>
+<span class="fc bfc" id="L435" title="All 2 branches covered.">					if (((WeightsByte&lt;K&gt;) w1).get(elm) != ((WeightsByte&lt;K&gt;) w2).get(elm))</span>
+<span class="fc" id="L436">						return false;</span>
 <span class="fc" id="L437">				return true;</span>
 <span class="pc bpc" id="L438" title="1 of 4 branches missed.">			} else if (w1 instanceof WeightsShort &amp;&amp; w2 instanceof WeightsShort) {</span>
 <span class="fc bfc" id="L439" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
-<span class="pc bpc" id="L440" title="1 of 2 branches missed.">					if (((WeightsShort&lt;K&gt;) w1).get(elm) != ((WeightsShort&lt;K&gt;) w2).get(elm))</span>
-<span class="nc" id="L441">						return false;</span>
+<span class="fc bfc" id="L440" title="All 2 branches covered.">					if (((WeightsShort&lt;K&gt;) w1).get(elm) != ((WeightsShort&lt;K&gt;) w2).get(elm))</span>
+<span class="fc" id="L441">						return false;</span>
 <span class="fc" id="L442">				return true;</span>
 <span class="pc bpc" id="L443" title="1 of 4 branches missed.">			} else if (w1 instanceof WeightsInt &amp;&amp; w2 instanceof WeightsInt) {</span>
 <span class="fc bfc" id="L444" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
-<span class="pc bpc" id="L445" title="1 of 2 branches missed.">					if (((WeightsInt&lt;K&gt;) w1).get(elm) != ((WeightsInt&lt;K&gt;) w2).get(elm))</span>
-<span class="nc" id="L446">						return false;</span>
+<span class="fc bfc" id="L445" title="All 2 branches covered.">					if (((WeightsInt&lt;K&gt;) w1).get(elm) != ((WeightsInt&lt;K&gt;) w2).get(elm))</span>
+<span class="fc" id="L446">						return false;</span>
 <span class="fc" id="L447">				return true;</span>
 <span class="pc bpc" id="L448" title="1 of 4 branches missed.">			} else if (w1 instanceof WeightsLong &amp;&amp; w2 instanceof WeightsLong) {</span>
 <span class="fc bfc" id="L449" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
-<span class="pc bpc" id="L450" title="1 of 2 branches missed.">					if (((WeightsLong&lt;K&gt;) w1).get(elm) != ((WeightsLong&lt;K&gt;) w2).get(elm))</span>
-<span class="nc" id="L451">						return false;</span>
+<span class="fc bfc" id="L450" title="All 2 branches covered.">					if (((WeightsLong&lt;K&gt;) w1).get(elm) != ((WeightsLong&lt;K&gt;) w2).get(elm))</span>
+<span class="fc" id="L451">						return false;</span>
 <span class="fc" id="L452">				return true;</span>
 <span class="pc bpc" id="L453" title="1 of 4 branches missed.">			} else if (w1 instanceof WeightsFloat &amp;&amp; w2 instanceof WeightsFloat) {</span>
 <span class="fc bfc" id="L454" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
-<span class="pc bpc" id="L455" title="1 of 2 branches missed.">					if (((WeightsFloat&lt;K&gt;) w1).get(elm) != ((WeightsFloat&lt;K&gt;) w2).get(elm))</span>
-<span class="nc" id="L456">						return false;</span>
+<span class="fc bfc" id="L455" title="All 2 branches covered.">					if (((WeightsFloat&lt;K&gt;) w1).get(elm) != ((WeightsFloat&lt;K&gt;) w2).get(elm))</span>
+<span class="fc" id="L456">						return false;</span>
 <span class="fc" id="L457">				return true;</span>
 <span class="pc bpc" id="L458" title="1 of 4 branches missed.">			} else if (w1 instanceof WeightsDouble &amp;&amp; w2 instanceof WeightsDouble) {</span>
 <span class="fc bfc" id="L459" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
-<span class="pc bpc" id="L460" title="1 of 2 branches missed.">					if (((WeightsDouble&lt;K&gt;) w1).get(elm) != ((WeightsDouble&lt;K&gt;) w2).get(elm))</span>
-<span class="nc" id="L461">						return false;</span>
+<span class="fc bfc" id="L460" title="All 2 branches covered.">					if (((WeightsDouble&lt;K&gt;) w1).get(elm) != ((WeightsDouble&lt;K&gt;) w2).get(elm))</span>
+<span class="fc" id="L461">						return false;</span>
 <span class="fc" id="L462">				return true;</span>
 <span class="pc bpc" id="L463" title="1 of 4 branches missed.">			} else if (w1 instanceof WeightsBool &amp;&amp; w2 instanceof WeightsBool) {</span>
 <span class="fc bfc" id="L464" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
-<span class="pc bpc" id="L465" title="1 of 2 branches missed.">					if (((WeightsBool&lt;K&gt;) w1).get(elm) != ((WeightsBool&lt;K&gt;) w2).get(elm))</span>
-<span class="nc" id="L466">						return false;</span>
+<span class="fc bfc" id="L465" title="All 2 branches covered.">					if (((WeightsBool&lt;K&gt;) w1).get(elm) != ((WeightsBool&lt;K&gt;) w2).get(elm))</span>
+<span class="fc" id="L466">						return false;</span>
 <span class="fc" id="L467">				return true;</span>
 <span class="pc bpc" id="L468" title="2 of 4 branches missed.">			} else if (w1 instanceof WeightsChar &amp;&amp; w2 instanceof WeightsChar) {</span>
 <span class="fc bfc" id="L469" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
-<span class="pc bpc" id="L470" title="1 of 2 branches missed.">					if (((WeightsChar&lt;K&gt;) w1).get(elm) != ((WeightsChar&lt;K&gt;) w2).get(elm))</span>
-<span class="nc" id="L471">						return false;</span>
+<span class="fc bfc" id="L470" title="All 2 branches covered.">					if (((WeightsChar&lt;K&gt;) w1).get(elm) != ((WeightsChar&lt;K&gt;) w2).get(elm))</span>
+<span class="fc" id="L471">						return false;</span>
 <span class="fc" id="L472">				return true;</span>
 			}
 		}
@@ -477,81 +477,81 @@ interface WeightsImpl {
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;K&gt; int hashCode(Set&lt;K&gt; elementsSet, Weights&lt;K, ?&gt; w) {
-<span class="nc" id="L480">		int h = 0;</span>
-<span class="nc bnc" id="L481" title="All 2 branches missed.">		if (w instanceof IWeights) {</span>
-<span class="nc" id="L482">			IntCollection elements = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) elementsSet);</span>
-<span class="nc bnc" id="L483" title="All 2 branches missed.">			if (w instanceof IWeightsObj) {</span>
-<span class="nc bnc" id="L484" title="All 2 branches missed.">				for (int elm : elements)</span>
-<span class="nc" id="L485">					h += Objects.hashCode(((IWeightsObj&lt;?&gt;) w).get(elm));</span>
-<span class="nc bnc" id="L486" title="All 2 branches missed.">			} else if (w instanceof IWeightsByte) {</span>
-<span class="nc bnc" id="L487" title="All 2 branches missed.">				for (int elm : elements)</span>
-<span class="nc" id="L488">					h += ((IWeightsByte) w).get(elm);</span>
-<span class="nc bnc" id="L489" title="All 2 branches missed.">			} else if (w instanceof IWeightsShort) {</span>
-<span class="nc bnc" id="L490" title="All 2 branches missed.">				for (int elm : elements)</span>
-<span class="nc" id="L491">					h += ((IWeightsShort) w).get(elm);</span>
-<span class="nc bnc" id="L492" title="All 2 branches missed.">			} else if (w instanceof IWeightsInt) {</span>
-<span class="nc bnc" id="L493" title="All 2 branches missed.">				for (int elm : elements)</span>
-<span class="nc" id="L494">					h += ((IWeightsInt) w).get(elm);</span>
-<span class="nc bnc" id="L495" title="All 2 branches missed.">			} else if (w instanceof IWeightsLong) {</span>
-<span class="nc bnc" id="L496" title="All 2 branches missed.">				for (int elm : elements) {</span>
-<span class="nc" id="L497">					long x = ((IWeightsLong) w).get(elm);</span>
-<span class="nc" id="L498">					h += (int) (x ^ (x &gt;&gt;&gt; 32));</span>
-<span class="nc" id="L499">				}</span>
-<span class="nc bnc" id="L500" title="All 2 branches missed.">			} else if (w instanceof IWeightsFloat) {</span>
-<span class="nc bnc" id="L501" title="All 2 branches missed.">				for (int elm : elements)</span>
-<span class="nc" id="L502">					h += java.lang.Float.floatToRawIntBits(((IWeightsFloat) w).get(elm));</span>
-<span class="nc bnc" id="L503" title="All 2 branches missed.">			} else if (w instanceof IWeightsDouble) {</span>
-<span class="nc bnc" id="L504" title="All 2 branches missed.">				for (int elm : elements) {</span>
-<span class="nc" id="L505">					long x = java.lang.Double.doubleToRawLongBits(((IWeightsDouble) w).get(elm));</span>
-<span class="nc" id="L506">					h += (int) (x ^ (x &gt;&gt;&gt; 32));</span>
-<span class="nc" id="L507">				}</span>
-<span class="nc bnc" id="L508" title="All 2 branches missed.">			} else if (w instanceof IWeightsBool) {</span>
-<span class="nc bnc" id="L509" title="All 2 branches missed.">				for (int elm : elements)</span>
-<span class="nc bnc" id="L510" title="All 2 branches missed.">					h += ((IWeightsBool) w).get(elm) ? 1231 : 1237;</span>
-<span class="nc bnc" id="L511" title="All 2 branches missed.">			} else if (w instanceof IWeightsChar) {</span>
-<span class="nc bnc" id="L512" title="All 2 branches missed.">				for (int elm : elements)</span>
-<span class="nc" id="L513">					h += ((IWeightsChar) w).get(elm);</span>
+<span class="fc" id="L480">		int h = 0;</span>
+<span class="fc bfc" id="L481" title="All 2 branches covered.">		if (w instanceof IWeights) {</span>
+<span class="fc" id="L482">			IntCollection elements = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) elementsSet);</span>
+<span class="fc bfc" id="L483" title="All 2 branches covered.">			if (w instanceof IWeightsObj) {</span>
+<span class="fc bfc" id="L484" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="fc" id="L485">					h += Objects.hashCode(((IWeightsObj&lt;?&gt;) w).get(elm));</span>
+<span class="fc bfc" id="L486" title="All 2 branches covered.">			} else if (w instanceof IWeightsByte) {</span>
+<span class="fc bfc" id="L487" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="fc" id="L488">					h += ((IWeightsByte) w).get(elm);</span>
+<span class="fc bfc" id="L489" title="All 2 branches covered.">			} else if (w instanceof IWeightsShort) {</span>
+<span class="fc bfc" id="L490" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="fc" id="L491">					h += ((IWeightsShort) w).get(elm);</span>
+<span class="fc bfc" id="L492" title="All 2 branches covered.">			} else if (w instanceof IWeightsInt) {</span>
+<span class="fc bfc" id="L493" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="fc" id="L494">					h += ((IWeightsInt) w).get(elm);</span>
+<span class="fc bfc" id="L495" title="All 2 branches covered.">			} else if (w instanceof IWeightsLong) {</span>
+<span class="fc bfc" id="L496" title="All 2 branches covered.">				for (int elm : elements) {</span>
+<span class="fc" id="L497">					long x = ((IWeightsLong) w).get(elm);</span>
+<span class="fc" id="L498">					h += (int) (x ^ (x &gt;&gt;&gt; 32));</span>
+<span class="fc" id="L499">				}</span>
+<span class="fc bfc" id="L500" title="All 2 branches covered.">			} else if (w instanceof IWeightsFloat) {</span>
+<span class="fc bfc" id="L501" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="fc" id="L502">					h += java.lang.Float.floatToRawIntBits(((IWeightsFloat) w).get(elm));</span>
+<span class="fc bfc" id="L503" title="All 2 branches covered.">			} else if (w instanceof IWeightsDouble) {</span>
+<span class="fc bfc" id="L504" title="All 2 branches covered.">				for (int elm : elements) {</span>
+<span class="fc" id="L505">					long x = java.lang.Double.doubleToRawLongBits(((IWeightsDouble) w).get(elm));</span>
+<span class="fc" id="L506">					h += (int) (x ^ (x &gt;&gt;&gt; 32));</span>
+<span class="fc" id="L507">				}</span>
+<span class="fc bfc" id="L508" title="All 2 branches covered.">			} else if (w instanceof IWeightsBool) {</span>
+<span class="fc bfc" id="L509" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">					h += ((IWeightsBool) w).get(elm) ? 1231 : 1237;</span>
+<span class="pc bpc" id="L511" title="1 of 2 branches missed.">			} else if (w instanceof IWeightsChar) {</span>
+<span class="fc bfc" id="L512" title="All 2 branches covered.">				for (int elm : elements)</span>
+<span class="fc" id="L513">					h += ((IWeightsChar) w).get(elm);</span>
 			} else {
 <span class="nc" id="L515">				throw new IllegalArgumentException(&quot;Unsupported weights type: &quot; + w.getClass());</span>
 			}
-<span class="nc" id="L517">		} else {</span>
-<span class="nc bnc" id="L518" title="All 2 branches missed.">			if (w instanceof WeightsObj) {</span>
-<span class="nc bnc" id="L519" title="All 2 branches missed.">				for (K elm : elementsSet)</span>
-<span class="nc" id="L520">					h += Objects.hashCode(((WeightsObj&lt;K, ?&gt;) w).get(elm));</span>
-<span class="nc bnc" id="L521" title="All 2 branches missed.">			} else if (w instanceof WeightsByte) {</span>
-<span class="nc bnc" id="L522" title="All 2 branches missed.">				for (K elm : elementsSet)</span>
-<span class="nc" id="L523">					h += ((WeightsByte&lt;K&gt;) w).get(elm);</span>
-<span class="nc bnc" id="L524" title="All 2 branches missed.">			} else if (w instanceof WeightsShort) {</span>
-<span class="nc bnc" id="L525" title="All 2 branches missed.">				for (K elm : elementsSet)</span>
-<span class="nc" id="L526">					h += ((WeightsShort&lt;K&gt;) w).get(elm);</span>
-<span class="nc bnc" id="L527" title="All 2 branches missed.">			} else if (w instanceof WeightsInt) {</span>
-<span class="nc bnc" id="L528" title="All 2 branches missed.">				for (K elm : elementsSet)</span>
-<span class="nc" id="L529">					h += ((WeightsInt&lt;K&gt;) w).get(elm);</span>
-<span class="nc bnc" id="L530" title="All 2 branches missed.">			} else if (w instanceof WeightsLong) {</span>
-<span class="nc bnc" id="L531" title="All 2 branches missed.">				for (K elm : elementsSet) {</span>
-<span class="nc" id="L532">					long x = ((WeightsLong&lt;K&gt;) w).get(elm);</span>
-<span class="nc" id="L533">					h += (int) (x ^ (x &gt;&gt;&gt; 32));</span>
-<span class="nc" id="L534">				}</span>
-<span class="nc bnc" id="L535" title="All 2 branches missed.">			} else if (w instanceof WeightsFloat) {</span>
-<span class="nc bnc" id="L536" title="All 2 branches missed.">				for (K elm : elementsSet)</span>
-<span class="nc" id="L537">					h += java.lang.Float.floatToRawIntBits(((WeightsFloat&lt;K&gt;) w).get(elm));</span>
-<span class="nc bnc" id="L538" title="All 2 branches missed.">			} else if (w instanceof WeightsDouble) {</span>
-<span class="nc bnc" id="L539" title="All 2 branches missed.">				for (K elm : elementsSet) {</span>
-<span class="nc" id="L540">					long x = java.lang.Double.doubleToRawLongBits(((WeightsDouble&lt;K&gt;) w).get(elm));</span>
-<span class="nc" id="L541">					h += (int) (x ^ (x &gt;&gt;&gt; 32));</span>
-<span class="nc" id="L542">				}</span>
-<span class="nc bnc" id="L543" title="All 2 branches missed.">			} else if (w instanceof WeightsBool) {</span>
-<span class="nc bnc" id="L544" title="All 2 branches missed.">				for (K elm : elementsSet)</span>
-<span class="nc bnc" id="L545" title="All 2 branches missed.">					h += ((WeightsBool&lt;K&gt;) w).get(elm) ? 1231 : 1237;</span>
-<span class="nc bnc" id="L546" title="All 2 branches missed.">			} else if (w instanceof WeightsChar) {</span>
-<span class="nc bnc" id="L547" title="All 2 branches missed.">				for (K elm : elementsSet)</span>
-<span class="nc" id="L548">					h += ((WeightsChar&lt;K&gt;) w).get(elm);</span>
+<span class="fc" id="L517">		} else {</span>
+<span class="fc bfc" id="L518" title="All 2 branches covered.">			if (w instanceof WeightsObj) {</span>
+<span class="fc bfc" id="L519" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="fc" id="L520">					h += Objects.hashCode(((WeightsObj&lt;K, ?&gt;) w).get(elm));</span>
+<span class="fc bfc" id="L521" title="All 2 branches covered.">			} else if (w instanceof WeightsByte) {</span>
+<span class="fc bfc" id="L522" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="fc" id="L523">					h += ((WeightsByte&lt;K&gt;) w).get(elm);</span>
+<span class="fc bfc" id="L524" title="All 2 branches covered.">			} else if (w instanceof WeightsShort) {</span>
+<span class="fc bfc" id="L525" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="fc" id="L526">					h += ((WeightsShort&lt;K&gt;) w).get(elm);</span>
+<span class="fc bfc" id="L527" title="All 2 branches covered.">			} else if (w instanceof WeightsInt) {</span>
+<span class="fc bfc" id="L528" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="fc" id="L529">					h += ((WeightsInt&lt;K&gt;) w).get(elm);</span>
+<span class="fc bfc" id="L530" title="All 2 branches covered.">			} else if (w instanceof WeightsLong) {</span>
+<span class="fc bfc" id="L531" title="All 2 branches covered.">				for (K elm : elementsSet) {</span>
+<span class="fc" id="L532">					long x = ((WeightsLong&lt;K&gt;) w).get(elm);</span>
+<span class="fc" id="L533">					h += (int) (x ^ (x &gt;&gt;&gt; 32));</span>
+<span class="fc" id="L534">				}</span>
+<span class="fc bfc" id="L535" title="All 2 branches covered.">			} else if (w instanceof WeightsFloat) {</span>
+<span class="fc bfc" id="L536" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="fc" id="L537">					h += java.lang.Float.floatToRawIntBits(((WeightsFloat&lt;K&gt;) w).get(elm));</span>
+<span class="fc bfc" id="L538" title="All 2 branches covered.">			} else if (w instanceof WeightsDouble) {</span>
+<span class="fc bfc" id="L539" title="All 2 branches covered.">				for (K elm : elementsSet) {</span>
+<span class="fc" id="L540">					long x = java.lang.Double.doubleToRawLongBits(((WeightsDouble&lt;K&gt;) w).get(elm));</span>
+<span class="fc" id="L541">					h += (int) (x ^ (x &gt;&gt;&gt; 32));</span>
+<span class="fc" id="L542">				}</span>
+<span class="fc bfc" id="L543" title="All 2 branches covered.">			} else if (w instanceof WeightsBool) {</span>
+<span class="fc bfc" id="L544" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="fc bfc" id="L545" title="All 2 branches covered.">					h += ((WeightsBool&lt;K&gt;) w).get(elm) ? 1231 : 1237;</span>
+<span class="pc bpc" id="L546" title="1 of 2 branches missed.">			} else if (w instanceof WeightsChar) {</span>
+<span class="fc bfc" id="L547" title="All 2 branches covered.">				for (K elm : elementsSet)</span>
+<span class="fc" id="L548">					h += ((WeightsChar&lt;K&gt;) w).get(elm);</span>
 			} else {
 <span class="nc" id="L550">				throw new IllegalArgumentException(&quot;Unsupported weights type: &quot; + w.getClass());</span>
 			}
 		}
 
-<span class="nc" id="L554">		return h;</span>
+<span class="fc" id="L554">		return h;</span>
 	}
 
 	abstract static class ObjMapped&lt;K, T&gt; implements Weights&lt;K, T&gt;, WeightsImpl {

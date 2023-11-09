@@ -407,17 +407,20 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 <span class="fc" id="L407">		}</span>
 
 		long get(String key) {
-<span class="nc bnc" id="L410" title="All 2 branches missed.">			if (&quot;runCount&quot;.equals(key))</span>
-<span class="nc" id="L411">				return runCount;</span>
-<span class="nc bnc" id="L412" title="All 2 branches missed.">			if (&quot;scalingIterations&quot;.equals(key))</span>
-<span class="nc" id="L413">				return scalingIterations;</span>
-<span class="nc bnc" id="L414" title="All 2 branches missed.">			if (&quot;potentialIterations&quot;.equals(key))</span>
-<span class="nc" id="L415">				return potentialIterations;</span>
-<span class="nc bnc" id="L416" title="All 2 branches missed.">			if (&quot;bigLayer&quot;.equals(key))</span>
-<span class="nc" id="L417">				return bigLayer;</span>
-<span class="nc bnc" id="L418" title="All 2 branches missed.">			if (&quot;longPath&quot;.equals(key))</span>
-<span class="nc" id="L419">				return longPath;</span>
-<span class="nc" id="L420">			throw new IllegalArgumentException(&quot;unknown diagnostic key: &quot; + key);</span>
+<span class="nc bnc" id="L410" title="All 6 branches missed.">			switch (key) {</span>
+				case &quot;runCount&quot;:
+<span class="nc" id="L412">					return runCount;</span>
+				case &quot;scalingIterations&quot;:
+<span class="nc" id="L414">					return scalingIterations;</span>
+				case &quot;potentialIterations&quot;:
+<span class="nc" id="L416">					return potentialIterations;</span>
+				case &quot;bigLayer&quot;:
+<span class="nc" id="L418">					return bigLayer;</span>
+				case &quot;longPath&quot;:
+<span class="nc" id="L420">					return longPath;</span>
+				default:
+<span class="nc" id="L422">					throw new IllegalArgumentException(&quot;unknown diagnostic key: &quot; + key);</span>
+			}
 		}
 
 	}

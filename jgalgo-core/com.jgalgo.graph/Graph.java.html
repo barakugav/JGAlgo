@@ -787,12 +787,10 @@ public interface Graph&lt;V, E&gt; {
 <span class="nc" id="L787">			IndexGraph iGraph = reIndexedGraph.graph();</span>
 <span class="nc" id="L788">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
 <span class="nc" id="L789">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="nc bnc" id="L790" title="All 2 branches missed.">			viMap = vReIndexing.isEmpty() ? viMap : GraphBuilderImpl.Directed.reIndexedIdMap(viMap, vReIndexing.get());</span>
-<span class="nc bnc" id="L791" title="All 2 branches missed.">			eiMap = eReIndexing.isEmpty() ? eiMap : GraphBuilderImpl.Directed.reIndexedIdMap(eiMap, eReIndexing.get());</span>
-<span class="nc" id="L792">			return new GraphImpl.Directed&lt;&gt;(iGraph, viMap, eiMap);</span>
+<span class="nc" id="L790">			return new GraphImpl.Directed&lt;&gt;(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
 		} else {
-<span class="nc" id="L794">			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);</span>
-<span class="nc" id="L795">			return new GraphImpl.Undirected&lt;&gt;(iGraph, viMap, eiMap);</span>
+<span class="nc" id="L792">			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);</span>
+<span class="nc" id="L793">			return new GraphImpl.Undirected&lt;&gt;(iGraph, viMap, eiMap, null, null);</span>
 		}
 	}
 
@@ -807,7 +805,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an immutable view of this graph
 	 */
 	default Graph&lt;V, E&gt; immutableView() {
-<span class="fc" id="L810">		return Graphs.immutableView(this);</span>
+<span class="fc" id="L808">		return Graphs.immutableView(this);</span>
 	}
 
 	/**
@@ -824,7 +822,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return a reversed view of this graph
 	 */
 	default Graph&lt;V, E&gt; reverseView() {
-<span class="fc" id="L827">		return Graphs.reverseView(this);</span>
+<span class="fc" id="L825">		return Graphs.reverseView(this);</span>
 	}
 
 	/**
@@ -856,7 +854,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
 	 */
 	default Graph&lt;V, E&gt; subGraphCopy(Collection&lt;V&gt; vertices, Collection&lt;E&gt; edges) {
-<span class="nc" id="L859">		return Graphs.subGraph(this, vertices, edges);</span>
+<span class="nc" id="L857">		return Graphs.subGraph(this, vertices, edges);</span>
 	}
 
 	/**
@@ -871,7 +869,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return     a new undirected empty graph
 	 */
 	static &lt;V, E&gt; Graph&lt;V, E&gt; newUndirected() {
-<span class="fc" id="L874">		return GraphFactory.&lt;V, E&gt;newUndirected().newGraph();</span>
+<span class="fc" id="L872">		return GraphFactory.&lt;V, E&gt;newUndirected().newGraph();</span>
 	}
 
 	/**
@@ -886,7 +884,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return     a new directed empty graph
 	 */
 	static &lt;V, E&gt; Graph&lt;V, E&gt; newDirected() {
-<span class="fc" id="L889">		return GraphFactory.&lt;V, E&gt;newDirected().newGraph();</span>
+<span class="fc" id="L887">		return GraphFactory.&lt;V, E&gt;newDirected().newGraph();</span>
 	}
 
 }

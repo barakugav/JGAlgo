@@ -24,19 +24,19 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	@Override
 	public boolean equals(Object other) {
-<span class="pc bpc" id="L27" title="1 of 2 branches missed.">		if (other == this)</span>
-<span class="nc" id="L28">			return true;</span>
-<span class="pc bpc" id="L29" title="1 of 2 branches missed.">		if (!(other instanceof Graph))</span>
-<span class="nc" id="L30">			return false;</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">		if (other == this)</span>
+<span class="fc" id="L28">			return true;</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">		if (!(other instanceof Graph))</span>
+<span class="fc" id="L30">			return false;</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L32">		Graph&lt;V, E&gt; o = (Graph&lt;V, E&gt;) other;</span>
 
 <span class="pc bpc" id="L34" title="1 of 2 branches missed.">		if (isDirected() != o.isDirected())</span>
 <span class="nc" id="L35">			return false;</span>
-<span class="pc bpc" id="L36" title="1 of 2 branches missed.">		if (!vertices().equals(o.vertices()))</span>
-<span class="nc" id="L37">			return false;</span>
-<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		if (!edges().equals(o.edges()))</span>
-<span class="nc" id="L39">			return false;</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">		if (!vertices().equals(o.vertices()))</span>
+<span class="fc" id="L37">			return false;</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">		if (!edges().equals(o.edges()))</span>
+<span class="fc" id="L39">			return false;</span>
 <span class="fc bfc" id="L40" title="All 2 branches covered.">		if (isDirected()) {</span>
 <span class="fc bfc" id="L41" title="All 2 branches covered.">			for (E e : edges())</span>
 <span class="pc bpc" id="L42" title="2 of 4 branches missed.">				if (!edgeSource(e).equals(o.edgeSource(e)) || !edgeTarget(e).equals(o.edgeTarget(e)))</span>
@@ -45,24 +45,24 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L45" title="All 2 branches covered.">			for (E e : edges()) {</span>
 <span class="fc" id="L46">				V s1 = edgeSource(e), t1 = edgeTarget(e);</span>
 <span class="fc" id="L47">				V s2 = o.edgeSource(e), t2 = o.edgeTarget(e);</span>
-<span class="pc bpc" id="L48" title="6 of 8 branches missed.">				if (!(s1.equals(s2) &amp;&amp; t1.equals(t2)) &amp;&amp; !(s1.equals(t2) &amp;&amp; t1.equals(s2)))</span>
-<span class="nc" id="L49">					return false;</span>
+<span class="pc bpc" id="L48" title="4 of 8 branches missed.">				if (!(s1.equals(s2) &amp;&amp; t1.equals(t2)) &amp;&amp; !(s1.equals(t2) &amp;&amp; t1.equals(s2)))</span>
+<span class="fc" id="L49">					return false;</span>
 <span class="fc" id="L50">			}</span>
 		}
 
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		if (!getVerticesWeightsKeys().equals(o.getVerticesWeightsKeys()))</span>
-<span class="nc" id="L54">			return false;</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		if (!getVerticesWeightsKeys().equals(o.getVerticesWeightsKeys()))</span>
+<span class="fc" id="L54">			return false;</span>
 <span class="fc bfc" id="L55" title="All 2 branches covered.">		for (String key : getVerticesWeightsKeys()) {</span>
 <span class="fc" id="L56">			Weights&lt;V, ?&gt; w1 = getVerticesWeights(key), w2 = o.getVerticesWeights(key);</span>
-<span class="pc bpc" id="L57" title="1 of 2 branches missed.">			if (!WeightsImpl.isEqual(vertices(), w1, w2))</span>
-<span class="nc" id="L58">				return false;</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(vertices(), w1, w2))</span>
+<span class="fc" id="L58">				return false;</span>
 <span class="fc" id="L59">		}</span>
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">		if (!getEdgesWeightsKeys().equals(o.getEdgesWeightsKeys()))</span>
-<span class="nc" id="L61">			return false;</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">		if (!getEdgesWeightsKeys().equals(o.getEdgesWeightsKeys()))</span>
+<span class="fc" id="L61">			return false;</span>
 <span class="fc bfc" id="L62" title="All 2 branches covered.">		for (String key : getEdgesWeightsKeys()) {</span>
 <span class="fc" id="L63">			Weights&lt;E, ?&gt; w1 = getEdgesWeights(key), w2 = o.getEdgesWeights(key);</span>
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">			if (!WeightsImpl.isEqual(edges(), w1, w2))</span>
-<span class="nc" id="L65">				return false;</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(edges(), w1, w2))</span>
+<span class="fc" id="L65">				return false;</span>
 <span class="fc" id="L66">		}</span>
 
 <span class="fc" id="L68">		return true;</span>
@@ -70,21 +70,21 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	@Override
 	public int hashCode() {
-<span class="nc" id="L73">		int h = Boolean.hashCode(isDirected());</span>
-<span class="nc" id="L74">		h += vertices().hashCode();</span>
-<span class="nc" id="L75">		h += edges().hashCode();</span>
-<span class="nc bnc" id="L76" title="All 2 branches missed.">		if (isDirected()) {</span>
-<span class="nc bnc" id="L77" title="All 2 branches missed.">			for (E e : edges())</span>
-<span class="nc" id="L78">				h += edgeSource(e).hashCode() + 31 * edgeTarget(e).hashCode();</span>
+<span class="fc" id="L73">		int h = Boolean.hashCode(isDirected());</span>
+<span class="fc" id="L74">		h += vertices().hashCode();</span>
+<span class="fc" id="L75">		h += edges().hashCode();</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		if (isDirected()) {</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">			for (E e : edges())</span>
+<span class="fc" id="L78">				h += edgeSource(e).hashCode() + 31 * edgeTarget(e).hashCode();</span>
 		} else {
-<span class="nc bnc" id="L80" title="All 2 branches missed.">			for (E e : edges())</span>
-<span class="nc" id="L81">				h += edgeSource(e).hashCode() + edgeTarget(e).hashCode();</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			for (E e : edges())</span>
+<span class="fc" id="L81">				h += edgeSource(e).hashCode() + edgeTarget(e).hashCode();</span>
 		}
-<span class="nc bnc" id="L83" title="All 2 branches missed.">		for (String key : getVerticesWeightsKeys())</span>
-<span class="nc" id="L84">			h += WeightsImpl.hashCode(vertices(), getVerticesWeights(key));</span>
-<span class="nc bnc" id="L85" title="All 2 branches missed.">		for (String key : getEdgesWeightsKeys())</span>
-<span class="nc" id="L86">			h += WeightsImpl.hashCode(edges(), getEdgesWeights(key));</span>
-<span class="nc" id="L87">		return h;</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (String key : getVerticesWeightsKeys())</span>
+<span class="fc" id="L84">			h += WeightsImpl.hashCode(vertices(), getVerticesWeights(key));</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		for (String key : getEdgesWeightsKeys())</span>
+<span class="fc" id="L86">			h += WeightsImpl.hashCode(edges(), getEdgesWeights(key));</span>
+<span class="fc" id="L87">		return h;</span>
 	}
 
 	@Override

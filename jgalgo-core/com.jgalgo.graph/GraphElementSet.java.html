@@ -43,7 +43,7 @@ abstract class GraphElementSet extends AbstractIntSet {
 
 	@Override
 	public boolean contains(int key) {
-<span class="pc bpc" id="L46" title="1 of 4 branches missed.">		return key &gt;= 0 &amp;&amp; key &lt; size;</span>
+<span class="fc bfc" id="L46" title="All 4 branches covered.">		return key &gt;= 0 &amp;&amp; key &lt; size;</span>
 	}
 
 	@Override
@@ -63,7 +63,7 @@ abstract class GraphElementSet extends AbstractIntSet {
 
 	@Override
 	public int hashCode() {
-<span class="nc" id="L66">		return size * (size + 1) / 2;</span>
+<span class="fc" id="L66">		return size * (size + 1) / 2;</span>
 	}
 
 	void checkIdx(int idx) {

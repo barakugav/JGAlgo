@@ -538,25 +538,21 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 <span class="fc" id="L538">			IndexGraph iGraph = reIndexedGraph.graph();</span>
 <span class="fc" id="L539">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
 <span class="fc" id="L540">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="pc bpc" id="L541" title="1 of 2 branches missed.">			viMap = vReIndexing.isEmpty() ? viMap</span>
-<span class="pc" id="L542">					: IntGraphBuilderImpl.Directed.reIndexedIdMap(viMap, vReIndexing.get());</span>
-<span class="pc bpc" id="L543" title="1 of 2 branches missed.">			eiMap = eReIndexing.isEmpty() ? eiMap</span>
-<span class="fc" id="L544">					: IntGraphBuilderImpl.Directed.reIndexedIdMap(eiMap, eReIndexing.get());</span>
-<span class="fc" id="L545">			return new IntGraphImpl.Directed(iGraph, viMap, eiMap);</span>
+<span class="fc" id="L541">			return new IntGraphImpl.Directed(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
 		} else {
-<span class="fc" id="L547">			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);</span>
-<span class="fc" id="L548">			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap);</span>
+<span class="fc" id="L543">			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);</span>
+<span class="fc" id="L544">			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap,null,null);</span>
 		}
 	}
 
 	@Override
 	default IntGraph immutableView() {
-<span class="fc" id="L554">		return (IntGraph) Graph.super.immutableView();</span>
+<span class="fc" id="L550">		return (IntGraph) Graph.super.immutableView();</span>
 	}
 
 	@Override
 	default IntGraph reverseView() {
-<span class="fc" id="L559">		return (IntGraph) Graph.super.reverseView();</span>
+<span class="fc" id="L555">		return (IntGraph) Graph.super.reverseView();</span>
 	}
 
 	/**
@@ -567,7 +563,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 */
 	@Override
 	default IntGraph subGraphCopy(Collection&lt;Integer&gt; vertices, Collection&lt;Integer&gt; edges) {
-<span class="fc" id="L570">		return (IntGraph) Graphs.subGraph(this, vertices, edges);</span>
+<span class="fc" id="L566">		return (IntGraph) Graphs.subGraph(this, vertices, edges);</span>
 	}
 
 	/**
@@ -580,7 +576,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @return a new undirected empty graph
 	 */
 	static IntGraph newUndirected() {
-<span class="fc" id="L583">		return IntGraphFactory.newUndirected().newGraph();</span>
+<span class="fc" id="L579">		return IntGraphFactory.newUndirected().newGraph();</span>
 	}
 
 	/**
@@ -593,7 +589,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @return a new directed empty graph
 	 */
 	static IntGraph newDirected() {
-<span class="fc" id="L596">		return IntGraphFactory.newDirected().newGraph();</span>
+<span class="fc" id="L592">		return IntGraphFactory.newDirected().newGraph();</span>
 	}
 
 }
