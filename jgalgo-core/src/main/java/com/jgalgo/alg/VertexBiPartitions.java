@@ -187,7 +187,7 @@ class VertexBiPartitions {
 						public boolean contains(int e) {
 							return 0 <= e && e < m && isLeft0(g.edgeSource(e)) != isLeft0(g.edgeTarget(e));
 						}
-					};;
+					};
 				}
 			}
 			if (block1 == 0 && block2 == 1)

@@ -1890,7 +1890,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			Processed_True = (byte) (1 << f.shift);
 			f = b.newField(1);
 			OuterMask = (byte) f.mask;
-			Outer_False = (byte) (0 << f.shift);;
+			Outer_False = (byte) (0 << f.shift);
 			Outer_True = (byte) (1 << f.shift);
 			f = b.newField(1);
 			IsBlossomMask = (byte) f.mask;

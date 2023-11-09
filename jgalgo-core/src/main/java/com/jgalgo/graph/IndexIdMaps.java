@@ -693,7 +693,7 @@ public class IndexIdMaps {
 
 		@Override
 		public void clear() {
-			indexList.clear();;
+			indexList.clear();
 		}
 
 		@Override
@@ -749,7 +749,7 @@ public class IndexIdMaps {
 
 		@Override
 		public void clear() {
-			indexList.clear();;
+			indexList.clear();
 		}
 
 		@Override
