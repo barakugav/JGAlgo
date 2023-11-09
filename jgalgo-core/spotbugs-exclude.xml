@@ -188,4 +188,10 @@
     <Constructor />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
+  <Match>
+    <!-- The method edgeEndpoints() is in package visibility interface -->
+    <Class name="com.jgalgo.graph.GraphBaseWithEdgeEndpointsContainer" />
+    <Method name="edgeEndpoints" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
 </FindBugsFilter>

@@ -18,7 +18,7 @@ package com.jgalgo.graph;
 
 import com.jgalgo.internal.util.Assertions;
 
-abstract class GraphLinkedAbstract extends GraphBaseIndexMutable {
+abstract class GraphLinkedAbstract extends GraphBaseMutable {
 
 	private Edge[] edges;
 	private final DataContainer.Obj<Edge> edgesContainer;

@@ -17,66 +17,20 @@
 package com.jgalgo.graph;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 import com.jgalgo.internal.util.Assertions;
 
-abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements GraphWithEdgeEndpointsContainer {
-
-	private final DataContainer.Long edgeEndpointsContainer;
-	private long[] edgeEndpoints;
+abstract class GraphArrayAbstract extends GraphBaseWithEdgeEndpointsContainer {
 
 	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
 		super(capabilities, expectedVerticesNum, expectedEdgesNum);
-		edgeEndpointsContainer =
-				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
-		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
 	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
 		super(capabilities, g, copyWeights);
-		if (g instanceof GraphArrayAbstract) {
-			GraphArrayAbstract g0 = (GraphArrayAbstract) g;
-			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edges, newArr -> edgeEndpoints = newArr);
-			addInternalEdgesContainer(edgeEndpointsContainer);
-		} else {
-
-			final int m = edges.size();
-			edgeEndpointsContainer =
-					new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
-			addInternalEdgesContainer(edgeEndpointsContainer);
-			for (int e = 0; e < m; e++)
-				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
-		}
 	}
 
 	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 		super(capabilities, builder);
-		final int m = edges.size();
-		edgeEndpointsContainer =
-				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
-		addInternalEdgesContainer(edgeEndpointsContainer);
-
-		for (int e = 0; e < m; e++)
-			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
-	}
-
-	@Override
-	public int addEdge(int source, int target) {
-		int e = super.addEdge(source, target);
-		setEndpoints(e, source, target);
-		return e;
-	}
-
-	@Override
-	void removeEdgeLast(int edge) {
-		edgeEndpointsContainer.clear(edgeEndpoints, edge);
-		super.removeEdgeLast(edge);
-	}
-
-	@Override
-	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
-		edgeEndpointsContainer.swapAndClear(removedIdx, swappedIdx);
-		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	static void addEdgeToList(int[][] edges, int[] edgesNum, int w, int e) {
@@ -103,21 +57,6 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 		int i = edgeIndexOf(es, num, e);
 		es[i] = es[num - 1];
 		edgesNum[w] = num - 1;
-	}
-
-	@Override
-	public long[] edgeEndpoints() {
-		return edgeEndpoints;
-	}
-
-	void reverseEdge0(int edge) {
-		EdgeEndpointsContainer.reverseEdge(edgeEndpoints, edge);
-	}
-
-	@Override
-	public void clearEdges() {
-		edgeEndpointsContainer.clear(edgeEndpoints);
-		super.clearEdges();
 	}
 
 	private abstract class EdgeIterBase implements IEdgeIter {

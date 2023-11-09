@@ -19,7 +19,7 @@ package com.jgalgo.graph;
 import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
 
-abstract class GraphBaseIndexMutable extends IndexGraphBase {
+abstract class GraphBaseMutable extends IndexGraphBase {
 
 	final GraphElementSet.Default vertices;
 	final GraphElementSet.Default edges;
@@ -28,7 +28,7 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 	private final WeightsImpl.IndexMutable.Manager verticesUserWeights;
 	private final WeightsImpl.IndexMutable.Manager edgesUserWeights;
 
-	GraphBaseIndexMutable(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
+	GraphBaseMutable(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
 		super(capabilities);
 		vertices = new GraphElementSet.Default(0, false);
 		edges = new GraphElementSet.Default(0, true);
@@ -38,7 +38,7 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum);
 	}
 
-	GraphBaseIndexMutable(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
+	GraphBaseMutable(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
 		super(capabilities);
 		if (isDirected()) {
 			Assertions.Graphs.onlyDirected(g);
@@ -70,7 +70,7 @@ abstract class GraphBaseIndexMutable extends IndexGraphBase {
 		edgesInternalContainers = new DataContainer.Manager(edges.size());
 	}
 
-	GraphBaseIndexMutable(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+	GraphBaseMutable(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 		super(capabilities);
 		vertices = builder.vertices.copy();
 		edges = builder.edges.copy();

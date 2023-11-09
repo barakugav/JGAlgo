@@ -16,15 +16,12 @@
 
 package com.jgalgo.graph;
 
-import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
-abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements GraphWithEdgeEndpointsContainer {
+abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 
 	final DataContainer.Obj<DataContainer.Int> edges;
-	private long[] edgeEndpoints;
-	private final DataContainer.Long edgeEndpointsContainer;
 
 	static final int EdgeNone = -1;
 
@@ -35,10 +32,6 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 
 		edges = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
 		addInternalVerticesContainer(edges);
-
-		edgeEndpointsContainer =
-				new DataContainer.Long(super.edges, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
-		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
 	GraphMatrixAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
@@ -54,9 +47,6 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 				addInternalVerticesContainer(vEdges);
 				edges.set(u, vEdges);
 			}
-
-			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(super.edges, newArr -> edgeEndpoints = newArr);
-			addInternalEdgesContainer(edgeEndpointsContainer);
 		} else {
 
 			edges = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
@@ -75,13 +65,6 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 					vEdges.set(v, e);
 				}
 			}
-
-			final int m = edges.size();
-			edgeEndpointsContainer = new DataContainer.Long(super.edges, EdgeEndpointsContainer.DefVal,
-					newArr -> edgeEndpoints = newArr);
-			addInternalEdgesContainer(edgeEndpointsContainer);
-			for (int e = 0; e < m; e++)
-				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 		}
 	}
 
@@ -121,12 +104,6 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 				uEdges.set(source, e);
 			}
 		}
-
-		edgeEndpointsContainer =
-				new DataContainer.Long(super.edges, EdgeEndpointsContainer.DefVal, newArr -> edgeEndpoints = newArr);
-		addInternalEdgesContainer(edgeEndpointsContainer);
-		for (int m = builder.edges().size(), e = 0; e < m; e++)
-			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
 	}
 
 	@Override
@@ -183,27 +160,6 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 	}
 
 	@Override
-	void removeEdgeLast(int edge) {
-		edgeEndpointsContainer.clear(edgeEndpoints, edge);
-		super.removeEdgeLast(edge);
-	}
-
-	@Override
-	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
-		edgeEndpointsContainer.swapAndClear(removedIdx, swappedIdx);
-		super.edgeSwapAndRemove(removedIdx, swappedIdx);
-	}
-
-	void reverseEdge0(int edge) {
-		EdgeEndpointsContainer.reverseEdge(edgeEndpoints, edge);
-	}
-
-	@Override
-	public long[] edgeEndpoints() {
-		return edgeEndpoints;
-	}
-
-	@Override
 	public void clear() {
 		clearEdges();
 		final int n = vertices().size();
@@ -212,12 +168,6 @@ abstract class GraphMatrixAbstract extends GraphBaseIndexMutable implements Grap
 		// Don't deallocate edges containers
 		// edges.clear();
 		super.clear();
-	}
-
-	@Override
-	public void clearEdges() {
-		edgeEndpointsContainer.clear(edgeEndpoints);
-		super.clearEdges();
 	}
 
 	class EdgeIterOut implements IEdgeIter {
