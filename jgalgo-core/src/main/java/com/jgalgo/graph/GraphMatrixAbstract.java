@@ -21,7 +21,8 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 
 abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 
-	final DataContainer.Obj<DataContainer.Int> edges;
+	DataContainer.Int[] edges;
+	private final DataContainer.Obj<DataContainer.Int> edgesContainer;
 
 	static final int EdgeNone = -1;
 
@@ -30,8 +31,8 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 	GraphMatrixAbstract(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
 		super(capabilities, expectedVerticesNum, expectedEdgesNum);
 
-		edges = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
-		addInternalVerticesContainer(edges);
+		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, newArr -> edges = newArr);
+		addInternalVerticesContainer(edgesContainer);
 	}
 
 	GraphMatrixAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
@@ -40,21 +41,21 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 
 		if (g instanceof GraphMatrixAbstract) {
 			GraphMatrixAbstract g0 = (GraphMatrixAbstract) g;
-			edges = g0.edges.copy(vertices, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
-			addInternalVerticesContainer(edges);
+			edgesContainer = g0.edgesContainer.copy(vertices, EmptyEdgesArr, newArr -> edges = newArr);
+			addInternalVerticesContainer(edgesContainer);
 			for (int u = 0; u < n; u++) {
-				DataContainer.Int vEdges = edges.data[u].copy(vertices, JGAlgoUtils.consumerNoOp());
+				DataContainer.Int vEdges = edges[u].copy(vertices, JGAlgoUtils.consumerNoOp());
 				addInternalVerticesContainer(vEdges);
-				edges.data[u] = vEdges;
+				edges[u] = vEdges;
 			}
 		} else {
 
-			edges = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
-			addInternalVerticesContainer(edges);
+			edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, newArr -> edges = newArr);
+			addInternalVerticesContainer(edgesContainer);
 			for (int u = 0; u < n; u++) {
 				DataContainer.Int vEdges = new DataContainer.Int(vertices, EdgeNone, JGAlgoUtils.consumerNoOp());
 				addInternalVerticesContainer(vEdges);
-				edges.data[u] = vEdges;
+				edges[u] = vEdges;
 
 				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
@@ -71,12 +72,12 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 	GraphMatrixAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 		super(capabilities, builder);
 
-		edges = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, JGAlgoUtils.consumerNoOp());
-		addInternalVerticesContainer(edges);
+		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, newArr -> edges = newArr);
+		addInternalVerticesContainer(edgesContainer);
 		for (int n = builder.vertices().size(), u = 0; u < n; u++) {
 			DataContainer.Int vEdges = new DataContainer.Int(vertices, EdgeNone, JGAlgoUtils.consumerNoOp());
 			addInternalVerticesContainer(vEdges);
-			edges.data[u] = vEdges;
+			edges[u] = vEdges;
 		}
 
 		assert builder instanceof IndexGraphBuilderImpl.Directed || builder instanceof IndexGraphBuilderImpl.Undirected;
@@ -84,7 +85,7 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 		if (directed) {
 			for (int m = builder.edges().size(), e = 0; e < m; e++) {
 				int source = builder.edgeSource(e), target = builder.edgeTarget(e);
-				DataContainer.Int uEdges = edges.data[source];
+				DataContainer.Int uEdges = edges[source];
 				int existingEdge = uEdges.data[target];
 				if (existingEdge != EdgeNone)
 					throw new IllegalArgumentException("parallel edges are not supported");
@@ -94,8 +95,8 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 		} else {
 			for (int m = builder.edges().size(), e = 0; e < m; e++) {
 				int source = builder.edgeSource(e), target = builder.edgeTarget(e);
-				DataContainer.Int uEdges = edges.data[source];
-				DataContainer.Int vEdges = edges.data[target];
+				DataContainer.Int uEdges = edges[source];
+				DataContainer.Int vEdges = edges[target];
 				int existingEdge1 = uEdges.data[target];
 				int existingEdge2 = vEdges.data[source];
 				if (existingEdge1 != EdgeNone || existingEdge2 != EdgeNone)
@@ -109,18 +110,18 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 	@Override
 	public int addVertex() {
 		int v = super.addVertex();
-		DataContainer.Int vEdges = edges.data[v];
+		DataContainer.Int vEdges = edges[v];
 		if (vEdges == null) {
 			vEdges = new DataContainer.Int(vertices, EdgeNone, JGAlgoUtils.consumerNoOp());
 			addInternalVerticesContainer(vEdges);
-			edges.data[v] = vEdges;
+			edges[v] = vEdges;
 		}
 		return v;
 	}
 
 	@Override
 	void removeVertexLast(int vertex) {
-		DataContainer.Int edgesV = edges.data[vertex];
+		DataContainer.Int edgesV = edges[vertex];
 		super.removeVertexLast(vertex);
 		edgesV.clear();
 		// Don't deallocate v array
@@ -128,31 +129,31 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 
 		final int n = vertices().size();
 		for (int u = 0; u < n; u++)
-			clear(edges.data[u].data, vertex, EdgeNone);
+			clear(edges[u].data, vertex, EdgeNone);
 	}
 
 	@Override
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
 		for (int n = vertices().size(), u = 0; u < n; u++)
-			swapAndClear(edges.data[u].data, removedIdx, swappedIdx, EdgeNone);
-		swapAndClear(edges.data, removedIdx, swappedIdx, null);
+			swapAndClear(edges[u].data, removedIdx, swappedIdx, EdgeNone);
+		swapAndClear(edges, removedIdx, swappedIdx, null);
 		super.vertexSwapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override
 	public int getEdge(int source, int target) {
-		return edges.data[source].data[target];
+		return edges[source].data[target];
 	}
 
 	@Override
 	public IEdgeSet getEdges(int source, int target) {
-		int edge = edges.data[source].data[target];
+		int edge = edges[source].data[target];
 		return new Graphs.EdgeSetSourceTargetSingleton(this, source, target, edge);
 	}
 
 	@Override
 	public int addEdge(int source, int target) {
-		if (edges.data[source].data[target] != EdgeNone)
+		if (edges[source].data[target] != EdgeNone)
 			throw new IllegalArgumentException("parallel edges are not supported");
 		int e = super.addEdge(source, target);
 		setEndpoints(e, source, target);
@@ -164,7 +165,7 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 		clearEdges();
 		final int n = vertices().size();
 		for (int u = 0; u < n; u++)
-			edges.data[u].clear();
+			edges[u].clear();
 		// Don't deallocate edges containers
 		// edges.clear();
 		super.clear();
@@ -180,7 +181,7 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 		EdgeIterOut(int source) {
 			checkVertex(source);
 			this.source = source;
-			sourceEdges = edges.data[source];
+			sourceEdges = edges[source];
 
 			advanceUntilNext(0);
 		}
@@ -241,7 +242,7 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 		EdgeIterInUndirected(int target) {
 			checkVertex(target);
 			this.target = target;
-			targetEdges = edges.data[target];
+			targetEdges = edges[target];
 
 			advanceUntilNext(0);
 		}
@@ -313,7 +314,7 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 		@Override
 		public int nextInt() {
 			Assertions.Iters.hasNext(this);
-			int e = edges.data[lastSource = source].data[target];
+			int e = edges[lastSource = source].data[target];
 			advanceUntilNext(source + 1);
 			return e;
 		}
@@ -321,13 +322,13 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 		@Override
 		public int peekNextInt() {
 			Assertions.Iters.hasNext(this);
-			return edges.data[source].data[target];
+			return edges[source].data[target];
 		}
 
 		private void advanceUntilNext(int next) {
 			int n = vertices().size();
 			for (; next < n; next++) {
-				if (edges.data[next].data[target] != EdgeNone) {
+				if (edges[next].data[target] != EdgeNone) {
 					source = next;
 					return;
 				}
@@ -347,7 +348,7 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 
 		@Override
 		public void remove() {
-			removeEdge(edges.data[sourceInt()].data[targetInt()]);
+			removeEdge(edges[sourceInt()].data[targetInt()]);
 		}
 	}
 

@@ -116,7 +116,7 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	@Override
 	public int addEdge(int source, int target) {
 		int e = super.addEdge(source, target);
-		edges.data[source].data[target] = e;
+		edges[source].data[target] = e;
 		edgesOutNum[source]++;
 		edgesInNum[target]++;
 		return e;
@@ -125,7 +125,7 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	@Override
 	void removeEdgeLast(int edge) {
 		int u = edgeSource(edge), v = edgeTarget(edge);
-		edges.data[u].data[v] = EdgeNone;
+		edges[u].data[v] = EdgeNone;
 		edgesOutNum[u]--;
 		edgesInNum[v]--;
 		super.removeEdgeLast(edge);
@@ -135,8 +135,8 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
 		int ur = edgeSource(removedIdx), vr = edgeTarget(removedIdx);
 		int us = edgeSource(swappedIdx), vs = edgeTarget(swappedIdx);
-		edges.data[ur].data[vr] = EdgeNone;
-		edges.data[us].data[vs] = removedIdx;
+		edges[ur].data[vr] = EdgeNone;
+		edges[us].data[vs] = removedIdx;
 		edgesOutNum[ur]--;
 		edgesInNum[vr]--;
 		super.edgeSwapAndRemove(removedIdx, swappedIdx);
@@ -147,7 +147,7 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 		final int m = edges().size();
 		for (int e = 0; e < m; e++) {
 			int u = edgeSource(e), v = edgeTarget(e);
-			edges.data[u].data[v] = EdgeNone;
+			edges[u].data[v] = EdgeNone;
 		}
 		edgesOutNumContainer.clear();
 		edgesInNumContainer.clear();
@@ -157,10 +157,10 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	@Override
 	public void reverseEdge(int edge) {
 		int u = edgeSource(edge), v = edgeTarget(edge);
-		if (edges.data[v].data[u] != EdgeNone && u != v)
+		if (edges[v].data[u] != EdgeNone && u != v)
 			throw new IllegalArgumentException("parallel edges are not supported");
-		edges.data[u].data[v] = EdgeNone;
-		edges.data[v].data[u] = edge;
+		edges[u].data[v] = EdgeNone;
+		edges[v].data[u] = edge;
 		edgesOutNum[u]--;
 		edgesInNum[v]--;
 		edgesOutNum[v]++;

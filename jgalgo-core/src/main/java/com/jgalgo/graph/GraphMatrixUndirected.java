@@ -92,10 +92,10 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 	@Override
 	public int addEdge(int source, int target) {
 		int e = super.addEdge(source, target);
-		edges.data[source].data[target] = e;
+		edges[source].data[target] = e;
 		edgesNum[source]++;
 		if (source != target) {
-			edges.data[target].data[source] = e;
+			edges[target].data[source] = e;
 			edgesNum[target]++;
 		}
 		return e;
@@ -104,10 +104,10 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 	@Override
 	void removeEdgeLast(int edge) {
 		int u = edgeSource(edge), v = edgeTarget(edge);
-		edges.data[u].data[v] = EdgeNone;
+		edges[u].data[v] = EdgeNone;
 		edgesNum[u]--;
 		if (u != v) {
-			edges.data[v].data[u] = EdgeNone;
+			edges[v].data[u] = EdgeNone;
 			edgesNum[v]--;
 		}
 		super.removeEdgeLast(edge);
@@ -117,14 +117,14 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
 		int ur = edgeSource(removedIdx), vr = edgeTarget(removedIdx);
 		int us = edgeSource(swappedIdx), vs = edgeTarget(swappedIdx);
-		edges.data[ur].data[vr] = EdgeNone;
+		edges[ur].data[vr] = EdgeNone;
 		edgesNum[ur]--;
 		if (ur != vr) {
-			edges.data[vr].data[ur] = EdgeNone;
+			edges[vr].data[ur] = EdgeNone;
 			edgesNum[vr]--;
 		}
-		edges.data[us].data[vs] = removedIdx;
-		edges.data[vs].data[us] = removedIdx;
+		edges[us].data[vs] = removedIdx;
+		edges[vs].data[us] = removedIdx;
 		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
 
@@ -166,8 +166,8 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		final int m = edges().size();
 		for (int e = 0; e < m; e++) {
 			int u = edgeSource(e), v = edgeTarget(e);
-			edges.data[u].data[v] = EdgeNone;
-			edges.data[v].data[u] = EdgeNone;
+			edges[u].data[v] = EdgeNone;
+			edges[v].data[u] = EdgeNone;
 		}
 		edgesNumContainer.clear();
 		super.clearEdges();
