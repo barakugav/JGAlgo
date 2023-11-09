@@ -139,12 +139,12 @@ class ContractableGraph {
 			}
 
 			@Override
-			public int sourceInt() {
+			public int source() {
 				return U;
 			}
 
 			@Override
-			public int targetInt() {
+			public int target() {
 				return target;
 			}
 
@@ -192,8 +192,8 @@ class ContractableGraph {
 					s.append(", ");
 				}
 				s.append(e).append('(');
-				s.append(eit.sourceOriginal()).append("(").append(eit.sourceInt()).append("), ");
-				s.append(eit.targetOriginal()).append("(").append(eit.targetInt()).append("))");
+				s.append(eit.sourceOriginal()).append("(").append(eit.source()).append("), ");
+				s.append(eit.targetOriginal()).append("(").append(eit.target()).append("))");
 			}
 			s.append(']');
 		}
@@ -205,15 +205,14 @@ class ContractableGraph {
 		Assertions.Graphs.checkVertex(U, numV);
 	}
 
-	static interface EdgeIter extends com.jgalgo.graph.IEdgeIter {
+	static interface EdgeIter extends IntIterator {
+		int source();
+
+		int target();
+
 		int sourceOriginal();
 
 		int targetOriginal();
-
-		@Override
-		default int peekNextInt() {
-			throw new UnsupportedOperationException();
-		}
 	}
 
 }

@@ -22,6 +22,7 @@ import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -65,14 +66,13 @@ class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutGlobalAbstract {
 
 			/* Insert all (super) vertices to the heap */
 			assert heap.isEmpty();
-			for (int U = 0; U < cg.numberOfSuperVertices(); U++)
-				assert vRefs[U] == null;
+			assert Range.of(cg.numberOfSuperVertices()).intStream().allMatch(U -> vRefs[U] == null);
 			for (int U = 1; U < cg.numberOfSuperVertices(); U++) {
 				double weightsSum = 0;
 				for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {
 					int e = eit.nextInt();
-					assert eit.sourceInt() == U;
-					int V = eit.targetInt();
+					assert eit.source() == U;
+					int V = eit.target();
 					if (cut.get(V))
 						weightsSum += w.weight(e);
 				}
@@ -97,8 +97,8 @@ class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutGlobalAbstract {
 					/* Decrease (actually increase) key of all neighbors (super) vertices not in the cut */
 					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {
 						int e = eit.nextInt();
-						assert eit.sourceInt() == U;
-						int V = eit.targetInt();
+						assert eit.source() == U;
+						int V = eit.target();
 						if (!cut.get(V)) {
 							HeapReference<Double, Integer> vRef = vRefs[V];
 							double weightsSum = -vRef.key().doubleValue();
@@ -111,8 +111,8 @@ class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutGlobalAbstract {
 					/* Find the cut-of-the-phase and its weight */
 					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {
 						int e = eit.nextInt();
-						assert eit.sourceInt() == U;
-						assert cut.get(eit.targetInt());
+						assert eit.source() == U;
+						assert cut.get(eit.target());
 						cutOfThePhaseWeight += w.weight(e);
 					}
 					break minimumCutPhase;
