@@ -28,7 +28,7 @@ import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
-abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implements MaximumFlow {
+abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl implements MaximumFlow {
 
 	@Override
 	public <V, E> double computeMaximumFlow(Graph<V, E> g, FlowNetwork<V, E> net, V source, V sink) {
@@ -74,12 +74,12 @@ abstract class MaximumFlowAbstract extends MinimumCutSTUtils.AbstractImpl implem
 
 	@Override
 	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
-		return MinimumCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, source, sink, this);
+		return MinimumEdgeCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, source, sink, this);
 	}
 
 	@Override
 	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, IntCollection sources, IntCollection sinks) {
-		return MinimumCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, sources, sinks, this);
+		return MinimumEdgeCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, sources, sinks, this);
 	}
 
 	abstract static class WithoutResidualGraph extends MaximumFlowAbstract {

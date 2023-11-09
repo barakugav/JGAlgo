@@ -31,15 +31,15 @@ import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
-class MinimumCutGlobalStoerWagnerTest extends TestBase {
+class MinimumEdgeCutGlobalStoerWagnerTest extends TestBase {
 
 	@Test
 	public void testMinimumCutRandUGraphs() {
 		final long seed = 0x34199fd52891f95aL;
-		testRandGraphs(new MinimumCutGlobalStoerWagner(), seed, /* directed= */ false);
+		testRandGraphs(new MinimumEdgeCutGlobalStoerWagner(), seed, /* directed= */ false);
 	}
 
-	static void testRandGraphs(MinimumCutGlobal algo, long seed, boolean directed) {
+	static void testRandGraphs(MinimumEdgeCutGlobal algo, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
@@ -62,7 +62,7 @@ class MinimumCutGlobalStoerWagnerTest extends TestBase {
 
 	}
 
-	private static <V, E> void testMinCut(Graph<V, E> g, WeightFunctionInt<E> w, MinimumCutGlobal alg) {
+	private static <V, E> void testMinCut(Graph<V, E> g, WeightFunctionInt<E> w, MinimumEdgeCutGlobal alg) {
 		VertexBiPartition<V, E> minCut = alg.computeMinimumCut(g, w);
 		int minCutWeight = (int) w.weightSum(minCut.crossEdges());
 
@@ -96,7 +96,8 @@ class MinimumCutGlobalStoerWagnerTest extends TestBase {
 			}
 
 		} else {
-			MinimumCutGlobal validationAlgo = MinimumCutSTUtils.globalMinCutFromStMinCut(new MaximumFlowEdmondsKarp());
+			MinimumEdgeCutGlobal validationAlgo =
+					MinimumEdgeCutSTUtils.globalMinCutFromStMinCut(new MaximumFlowEdmondsKarp());
 			VertexBiPartition<V, E> minCutExpected = validationAlgo.computeMinimumCut(g, w);
 			int minCutWeightExpected = (int) w.weightSum(minCutExpected.crossEdges());
 

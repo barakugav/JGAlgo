@@ -88,49 +88,49 @@ public class MaximumFlowEdmondsKarpTest extends TestBase {
 	@Test
 	public void testMinimumCutRandDiGraphsInt() {
 		final long seed = 0xaa7eab04a9b554cbL;
-		MinimumCutSTTestUtils.testRandGraphsInt(algo(), seed, /* directed= */ true);
+		MinimumEdgeCutSTTestUtils.testRandGraphsInt(algo(), seed, /* directed= */ true);
 	}
 
 	@Test
 	public void testMinimumCutRandUGraphsInt() {
 		final long seed = 0xae19d36885e91694L;
-		MinimumCutSTTestUtils.testRandGraphsInt(algo(), seed, /* directed= */ false);
+		MinimumEdgeCutSTTestUtils.testRandGraphsInt(algo(), seed, /* directed= */ false);
 	}
 
 	@Test
 	public void testMinimumCutRandDiGraphs() {
 		final long seed = 0x8a373ae312238006L;
-		MinimumCutSTTestUtils.testRandGraphs(algo(), seed, /* directed= */ true);
+		MinimumEdgeCutSTTestUtils.testRandGraphs(algo(), seed, /* directed= */ true);
 	}
 
 	@Test
 	public void testMinimumCutRandUGraphs() {
 		final long seed = 0x5b022255ca4a4adbL;
-		MinimumCutSTTestUtils.testRandGraphs(algo(), seed, /* directed= */ false);
+		MinimumEdgeCutSTTestUtils.testRandGraphs(algo(), seed, /* directed= */ false);
 	}
 
 	@Test
 	public void testMinimumCutRandDiGraphsMultiSourceMultiSink() {
 		final long seed = 0x76b371f5c1ccd8b1L;
-		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSink(algo(), seed, /* directed= */ true);
+		MinimumEdgeCutSTTestUtils.testRandGraphsMultiSourceMultiSink(algo(), seed, /* directed= */ true);
 	}
 
 	@Test
 	public void testMinimumCutRandUGraphsMultiSourceMultiSink() {
 		final long seed = 0x7788a53ce2988224L;
-		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSink(algo(), seed, /* directed= */ false);
+		MinimumEdgeCutSTTestUtils.testRandGraphsMultiSourceMultiSink(algo(), seed, /* directed= */ false);
 	}
 
 	@Test
 	public void testMinimumCutRandDiGraphsMultiSourceMultiSinkInt() {
 		final long seed = 0x9f8031ceb55ca23fL;
-		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSinkInt(algo(), seed, /* directed= */ true);
+		MinimumEdgeCutSTTestUtils.testRandGraphsMultiSourceMultiSinkInt(algo(), seed, /* directed= */ true);
 	}
 
 	@Test
 	public void testMinimumCutRandUGraphsMultiSourceMultiSinkInt() {
 		final long seed = 0xbf7d89623c8c4aedL;
-		MinimumCutSTTestUtils.testRandGraphsMultiSourceMultiSinkInt(algo(), seed, /* directed= */ false);
+		MinimumEdgeCutSTTestUtils.testRandGraphsMultiSourceMultiSinkInt(algo(), seed, /* directed= */ false);
 	}
 
 }

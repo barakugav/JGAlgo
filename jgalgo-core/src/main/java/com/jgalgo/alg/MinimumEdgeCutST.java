@@ -24,35 +24,42 @@ import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 /**
- * Minimum Cut algorithm with terminal vertices (source-sink, S-T).
+ * Minimum Edge-Cut algorithm with terminal vertices (source-sink, S-T).
  *
  * <p>
- * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into two sets \(C, \bar{C} = V \setminus C\). Given a weight
- * function, the weight of a cut \((C,\bar{C})\) is the weight sum of all edges \((u,v)\) such that \(u\) is in \(C\)
- * and \(v\) is in \(\bar{C}\). There are two variants of the problem to find a minimum weight cut: (1) With terminal
- * vertices, and (2) without terminal vertices. In the variant with terminal vertices, we are given two special vertices
- * {@code source (S)} and {@code sink (T)} and we need to find the minimum cut \((C,\bar{C})\) such that the
- * {@code source} is in \(C\) and the {@code sink} is in \(\bar{C}\). In the variant without terminal vertices we need
- * to find the global cut, and \(C,\bar{C}\) simply must not be empty.
+ * Given a graph \(G=(V,E)\), an edge cut is a partition of \(V\) into two sets \(C, \bar{C} = V \setminus C\). Given a
+ * weight function, the weight of an edge-cut \((C,\bar{C})\) is the weight sum of all edges \((u,v)\) such that \(u\)
+ * is in \(C\) and \(v\) is in \(\bar{C}\). There are two variants of the problem to find a minimum weight edge-cut: (1)
+ * With terminal vertices, and (2) without terminal vertices. In the variant with terminal vertices, we are given two
+ * special vertices {@code source (S)} and {@code sink (T)} and we need to find the minimum edge-cut \((C,\bar{C})\)
+ * such that the {@code source} is in \(C\) and the {@code sink} is in \(\bar{C}\). In the variant without terminal
+ * vertices (also called 'global edge-cut') we need to find the minimal cut among all possible cuts, and \(C,\bar{C}\)
+ * simply must not be empty.
  *
  * <p>
- * Algorithms implementing this interface compute the minimum cut given two terminal vertices, {@code source (S)} and
- * {@code sink (T)}.
+ * Algorithms implementing this interface compute the minimum edge-cut given two terminal vertices, {@code source (S)}
+ * and {@code sink (T)}.
+ *
+ * <p>
+ * The cardinality (unweighted) minimum edge-cut between two vertices is equal to the (local) edge connectivity of these
+ * two vertices. If the graph is directed, the edge connectivity between \(u\) and \(v\) is the minimum of the minimum
+ * edge-cut between \(u\) and \(v\) and the minimum edge-cut between \(v\) and \(u\).
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    <a href="https://en.wikipedia.org/wiki/Minimum_cut">Wikipedia</a>
+ * @see    MinimumEdgeCutGlobal
  * @author Barak Ugav
  */
-public interface MinimumCutST {
+public interface MinimumEdgeCutST {
 
 	/**
-	 * Compute the minimum cut in a graph between two terminal vertices.
+	 * Compute the minimum edge-cut in a graph between two terminal vertices.
 	 *
 	 * <p>
-	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
+	 * Given a graph \(G=(V,E)\), an edge-cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
 	 * return value of this function is a partition into these two sets.
 	 *
 	 * <p>
@@ -71,10 +78,10 @@ public interface MinimumCutST {
 	<V, E> VertexBiPartition<V, E> computeMinimumCut(Graph<V, E> g, WeightFunction<E> w, V source, V sink);
 
 	/**
-	 * Compute the minimum cut in a graph between two sets of vertices.
+	 * Compute the minimum edge-cut in a graph between two sets of vertices.
 	 *
 	 * <p>
-	 * Given a graph \(G=(V,E)\), a cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
+	 * Given a graph \(G=(V,E)\), an edge-cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
 	 * return value of this function is a partition into these two sets.
 	 *
 	 * <p>
@@ -96,58 +103,58 @@ public interface MinimumCutST {
 			Collection<V> sinks);
 
 	/**
-	 * Create a new minimum S-T cut algorithm object.
+	 * Create a new minimum S-T edge-cut algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumCutST} object. The {@link MinimumCutST.Builder}
-	 * might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MinimumEdgeCutST} object. The
+	 * {@link MinimumEdgeCutST.Builder} might support different options to obtain different implementations.
 	 *
-	 * @return a default implementation of {@link MinimumCutST}
+	 * @return a default implementation of {@link MinimumEdgeCutST}
 	 */
-	static MinimumCutST newInstance() {
+	static MinimumEdgeCutST newInstance() {
 		return newBuilder().build();
 	}
 
 	/**
-	 * Create a new minimum cut algorithm builder.
+	 * Create a new minimum edge-cut algorithm builder.
 	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
-	 * @return a new builder that can build {@link MinimumCutST} objects
+	 * @return a new builder that can build {@link MinimumEdgeCutST} objects
 	 */
-	static MinimumCutST.Builder newBuilder() {
+	static MinimumEdgeCutST.Builder newBuilder() {
 		return MaximumFlowPushRelabel::newInstanceHighestFirst;
 	}
 
 	/**
-	 * Create a new minimum cut algorithm using a maximum flow algorithm.
+	 * Create a new minimum edge-cut algorithm using a maximum flow algorithm.
 	 *
 	 * <p>
-	 * By first computing a maximum flow between the source and the sink, the minimum cut can be realized from the
+	 * By first computing a maximum flow between the source and the sink, the minimum edge-cut can be realized from the
 	 * maximum flow without increasing the asymptotical running time of the maximum flow algorithm running time.
 	 *
 	 * @param  maxFlowAlg a maximum flow algorithm
-	 * @return            a minimum cut algorithm based on the provided maximum flow algorithm
+	 * @return            a minimum edge-cut algorithm based on the provided maximum flow algorithm
 	 */
-	static MinimumCutST newFromMaximumFlow(MaximumFlow maxFlowAlg) {
-		return MinimumCutSTUtils.buildFromMaxFlow(maxFlowAlg);
+	static MinimumEdgeCutST newFromMaximumFlow(MaximumFlow maxFlowAlg) {
+		return MinimumEdgeCutSTUtils.buildFromMaxFlow(maxFlowAlg);
 	}
 
 	/**
-	 * A builder for {@link MinimumCutST} objects.
+	 * A builder for {@link MinimumEdgeCutST} objects.
 	 *
-	 * @see    MinimumCutST#newBuilder()
+	 * @see    MinimumEdgeCutST#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {
 
 		/**
-		 * Create a new algorithm object for minimum cut computation.
+		 * Create a new algorithm object for minimum edge-cut computation.
 		 *
-		 * @return a new minimum cut algorithm
+		 * @return a new minimum edge-cut algorithm
 		 */
-		MinimumCutST build();
+		MinimumEdgeCutST build();
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
@@ -164,7 +171,7 @@ public interface MinimumCutST {
 		 * @param  value the option value
 		 * @return       this builder
 		 */
-		default MinimumCutST.Builder setOption(String key, Object value) {
+		default MinimumEdgeCutST.Builder setOption(String key, Object value) {
 			throw new IllegalArgumentException("unknown option key: " + key);
 		}
 	}

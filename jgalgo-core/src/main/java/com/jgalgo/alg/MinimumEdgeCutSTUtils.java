@@ -32,11 +32,11 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-class MinimumCutSTUtils {
+class MinimumEdgeCutSTUtils {
 
-	private MinimumCutSTUtils() {}
+	private MinimumEdgeCutSTUtils() {}
 
-	abstract static class AbstractImpl implements MinimumCutST {
+	abstract static class AbstractImpl implements MinimumEdgeCutST {
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -172,7 +172,7 @@ class MinimumCutSTUtils {
 		return new VertexBiPartitions.FromBitmap(g, visited);
 	}
 
-	static MinimumCutST buildFromMaxFlow(MaximumFlow maxFlowAlg) {
+	static MinimumEdgeCutST buildFromMaxFlow(MaximumFlow maxFlowAlg) {
 		return new AbstractImpl() {
 
 			@Override
@@ -216,8 +216,8 @@ class MinimumCutSTUtils {
 		return net;
 	}
 
-	static MinimumCutGlobal globalMinCutFromStMinCut(MinimumCutST stMinCut) {
-		return new MinimumCutGlobalAbstract() {
+	static MinimumEdgeCutGlobal globalMinCutFromStMinCut(MinimumEdgeCutST stMinCut) {
+		return new MinimumEdgeCutGlobalAbstract() {
 			@Override
 			IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
 				final int n = g.vertices().size();

@@ -23,7 +23,7 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 
-abstract class MinimumCutGlobalAbstract implements MinimumCutGlobal {
+abstract class MinimumEdgeCutGlobalAbstract implements MinimumEdgeCutGlobal {
 
 	@SuppressWarnings("unchecked")
 	@Override

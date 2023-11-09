@@ -33,9 +33,9 @@ import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
-class MinimumCutSTTestUtils extends TestUtils {
+class MinimumEdgeCutSTTestUtils extends TestUtils {
 
-	static void testRandGraphs(MinimumCutST algo, long seed, boolean directed) {
+	static void testRandGraphs(MinimumEdgeCutST algo, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
@@ -56,7 +56,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 		});
 	}
 
-	static void testRandGraphsInt(MinimumCutST algo, long seed, boolean directed) {
+	static void testRandGraphsInt(MinimumEdgeCutST algo, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
@@ -77,7 +77,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 		});
 	}
 
-	static void testRandGraphsMultiSourceMultiSink(MinimumCutST algo, long seed, boolean directed) {
+	static void testRandGraphsMultiSourceMultiSink(MinimumEdgeCutST algo, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
@@ -99,7 +99,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 		});
 	}
 
-	static void testRandGraphsMultiSourceMultiSinkInt(MinimumCutST algo, long seed, boolean directed) {
+	static void testRandGraphsMultiSourceMultiSinkInt(MinimumEdgeCutST algo, long seed, boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
@@ -121,7 +121,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 		});
 	}
 
-	private static <V, E> void testMinCut(Graph<V, E> g, WeightFunction<E> w, V source, V sink, MinimumCutST alg) {
+	private static <V, E> void testMinCut(Graph<V, E> g, WeightFunction<E> w, V source, V sink, MinimumEdgeCutST alg) {
 		VertexBiPartition<V, E> minCut = alg.computeMinimumCut(g, w, source, sink);
 		double minCutWeight = w.weightSum(minCut.crossEdges());
 
@@ -158,7 +158,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 			}
 
 		} else {
-			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()
+			MinimumEdgeCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()
 					: MaximumFlowPushRelabel.newInstanceHighestFirst();
 			VertexBiPartition<V, E> minCutExpected = validationAlgo.computeMinimumCut(g, w, source, sink);
 			double minCutWeightExpected = w.weightSum(minCutExpected.crossEdges());
@@ -168,7 +168,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 	}
 
 	private static <V, E> void testMinCut(Graph<V, E> g, WeightFunction<E> w, Collection<V> sources,
-			Collection<V> sinks, MinimumCutST alg) {
+			Collection<V> sinks, MinimumEdgeCutST alg) {
 		VertexBiPartition<V, E> minCut = alg.computeMinimumCut(g, w, sources, sinks);
 		double minCutWeight = w.weightSum(minCut.crossEdges());
 
@@ -206,7 +206,7 @@ class MinimumCutSTTestUtils extends TestUtils {
 			}
 
 		} else {
-			MinimumCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()
+			MinimumEdgeCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()
 					: MaximumFlowPushRelabel.newInstanceHighestFirst();
 			VertexBiPartition<V, E> minCutExpected = validationAlgo.computeMinimumCut(g, w, sources, sinks);
 			double minCutWeightExpected = w.weightSum(minCutExpected.crossEdges());

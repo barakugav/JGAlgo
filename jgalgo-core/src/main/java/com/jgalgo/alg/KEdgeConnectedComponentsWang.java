@@ -39,7 +39,7 @@ class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.Abstrac
 
 	private final Random rand;
 	private final WeaklyConnectedComponentsAlgo wccAlgo = WeaklyConnectedComponentsAlgo.newInstance();
-	private final MinimumCutST minCutAlgo = MinimumCutST.newInstance();
+	private final MinimumEdgeCutST minCutAlgo = MinimumEdgeCutST.newInstance();
 
 	/**
 	 * Create a new algorithm object with a random seed.
