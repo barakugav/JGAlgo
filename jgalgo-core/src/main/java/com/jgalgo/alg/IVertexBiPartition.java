@@ -121,10 +121,10 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition<
 	static IVertexBiPartition fromMapping(IntGraph g, IntPredicate mapping) {
 		final int n = g.vertices().size();
 		if (g instanceof IndexGraph) {
-			return new VertexBiPartitions.FromBitmap((IndexGraph) g, new Bitmap(n, mapping));
+			return new VertexBiPartitions.FromBitmap((IndexGraph) g, Bitmap.fromPredicate(n, mapping));
 		} else {
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			Bitmap vertexToBlock = new Bitmap(n, vIdx -> mapping.test(viMap.indexToIdInt(vIdx)));
+			Bitmap vertexToBlock = Bitmap.fromPredicate(n, vIdx -> mapping.test(viMap.indexToIdInt(vIdx)));
 			IVertexBiPartition indexPartition = new VertexBiPartitions.FromBitmap(g.indexGraph(), vertexToBlock);
 			return new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, indexPartition);
 		}
@@ -149,10 +149,10 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition<
 			return false;
 		Bitmap vertexToBlock;
 		if (g instanceof IndexGraph) {
-			vertexToBlock = new Bitmap(n, mapping);
+			vertexToBlock = Bitmap.fromPredicate(n, mapping);
 		} else {
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			vertexToBlock = new Bitmap(n, vIdx -> mapping.test(viMap.indexToIdInt(vIdx)));
+			vertexToBlock = Bitmap.fromPredicate(n, vIdx -> mapping.test(viMap.indexToIdInt(vIdx)));
 		}
 		if (vertexToBlock.get(0)) {
 			for (int v = 1; v < n; v++)

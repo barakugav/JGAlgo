@@ -26,6 +26,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 
 public class TspMetricTest extends TestBase {
@@ -80,13 +81,8 @@ public class TspMetricTest extends TestBase {
 		IPath appxMatch = new TspMetricMatchingAppx().computeShortestTour(g, distances);
 
 		Predicate<IPath> isPathVisitAllVertices = path -> {
-			Bitmap visited = new Bitmap(n);
-			for (int u : path.vertices())
-				visited.set(u);
-			for (int u = 0; u < n; u++)
-				if (!visited.get(u))
-					return false;
-			return true;
+			Bitmap visited = Bitmap.fromOnes(n, path.vertices());
+			return Range.of(n).intStream().allMatch(visited::get);
 		};
 		assertTrue(isPathVisitAllVertices.test(appxMst), "MST approximation result doesn't visit every vertex");
 		assertTrue(isPathVisitAllVertices.test(appxMatch), "Matching approximation result doesn't visit every vertex");

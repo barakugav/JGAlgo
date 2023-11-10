@@ -21,6 +21,8 @@ import java.util.function.IntPredicate;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntIterators;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * A bitmap of fixed size number of bits.
@@ -52,24 +54,54 @@ public class Bitmap implements IntIterable {
 	}
 
 	/**
-	 * Creates a new bitmap of the specified size, with the specified initial value provided from a predicate.
+	 * Creates a new bitmap of the specified size, with the provided {@code true} 'ones' bits.
+	 *
+	 * @param  size the number of bits
+	 * @param  ones the 'ones' bits, {@code true} bits
+	 * @return      a new bitmap of the specified size, with the provided {@code true} 'ones' bits
+	 */
+	public static Bitmap fromOnes(int size, int[] ones) {
+		return fromOnes(size, IntIterators.wrap(ones));
+	}
+
+	/**
+	 * Creates a new bitmap of the specified size, with the provided {@code true} 'ones' bits.
+	 *
+	 * @param  size the number of bits
+	 * @param  ones the 'ones' bits, {@code true} bits
+	 * @return      a new bitmap of the specified size, with the provided {@code true} 'ones' bits
+	 */
+	public static Bitmap fromOnes(int size, IntList ones) {
+		return fromOnes(size, ones.iterator());
+	}
+
+	/**
+	 * Creates a new bitmap of the specified size, with the provided {@code true} 'ones' bits.
+	 *
+	 * @param  size the number of bits
+	 * @param  ones the 'ones' bits, {@code true} bits
+	 * @return      a new bitmap of the specified size, with the provided {@code true} 'ones' bits
+	 */
+	public static Bitmap fromOnes(int size, IntIterator ones) {
+		Bitmap bitmap = new Bitmap(size);
+		while (ones.hasNext())
+			bitmap.set(ones.nextInt());
+		return bitmap;
+	}
+
+	/**
+	 * Creates a new bitmap of the specified size, with the specified initial values provided from a predicate.
 	 *
 	 * @param size          the number of bits
 	 * @param initialValues a provider that determine the initial value of each bit
 	 */
-	public Bitmap(int size, IntPredicate initialValues) {
-		if (size < 0)
-			throw new IllegalArgumentException("Negative size: " + size);
-		Objects.requireNonNull(initialValues);
-		words = new long[(size + WordSize - 1) / WordSize];
-		this.size = size;
-		for (int idx = 0; idx < size; idx++) {
-			if (initialValues.test(idx)) {
-				words[word(idx)] |= bit(idx);
-			} else {
-				words[word(idx)] &= ~bit(idx);
-			}
-		}
+	public static Bitmap fromPredicate(int size, IntPredicate predicate) {
+		Bitmap bitmap = new Bitmap(size);
+		Objects.requireNonNull(predicate);
+		for (int idx = 0; idx < size; idx++)
+			if (predicate.test(idx))
+				bitmap.words[word(idx)] |= bit(idx);
+		return bitmap;
 	}
 
 	/**
@@ -297,6 +329,21 @@ public class Bitmap implements IntIterable {
 		for (int b : this)
 			arr[i++] = b;
 		return arr;
+	}
+
+	/**
+	 * Returns the complementary bitmap of this bitmap.
+	 *
+	 * <p>
+	 * Every bit in the returned bitmap is the opposite of the corresponding bit in this bitmap.
+	 *
+	 * @return the complementary bitmap of this bitmap
+	 */
+	public Bitmap not() {
+		Bitmap ret = new Bitmap(size);
+		for (int i = 0; i < words.length; i++)
+			ret.words[i] = ~words[i];
+		return ret;
 	}
 
 }

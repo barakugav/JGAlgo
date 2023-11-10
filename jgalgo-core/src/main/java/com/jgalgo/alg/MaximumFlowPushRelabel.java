@@ -1711,10 +1711,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 				}
 			}
 			assert !visited.get(source);
-			Bitmap cut = new Bitmap(n);
-			for (int n = g.vertices().size(), u = 0; u < n; u++)
-				if (!visited.get(u))
-					cut.set(u);
+			Bitmap cut = visited.not();
 			visited.clear();
 			return new VertexBiPartitions.FromBitmap(g, cut);
 		}

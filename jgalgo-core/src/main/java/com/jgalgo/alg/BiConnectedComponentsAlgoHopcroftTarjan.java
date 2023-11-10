@@ -385,12 +385,8 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 		@Override
 		public boolean isCutVertex(int vertex) {
 			final int n = g.vertices().size();
-			if (cutVerticesBitmap == null) {
-				cutVerticesBitmap = new Bitmap(n);
-				for (int v = 0; v < n; v++)
-					if (getVertexBiCcs(v).size() > 1)
-						cutVerticesBitmap.set(v);
-			}
+			if (cutVerticesBitmap == null)
+				cutVerticesBitmap = Bitmap.fromPredicate(n, v -> getVertexBiCcs(v).size() > 1);
 			if (!(0 <= vertex && vertex <= n))
 				throw new IndexOutOfBoundsException("No vertex with index " + vertex);
 			return cutVerticesBitmap.get(vertex);

@@ -173,7 +173,7 @@ public interface VertexBiPartition<V, E> extends VertexPartition<V, E> {
 		} else {
 			final int n = g.vertices().size();
 			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-			Bitmap vertexToBlock = new Bitmap(n, vIdx -> mapping.test(viMap.indexToId(vIdx)));
+			Bitmap vertexToBlock = Bitmap.fromPredicate(n, vIdx -> mapping.test(viMap.indexToId(vIdx)));
 			IVertexBiPartition indexPartition = new VertexBiPartitions.FromBitmap(g.indexGraph(), vertexToBlock);
 			return new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition<>(g, indexPartition);
 		}
@@ -205,7 +205,7 @@ public interface VertexBiPartition<V, E> extends VertexPartition<V, E> {
 			return false;
 
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-		Bitmap vertexToBlock = new Bitmap(n, vIdx -> mapping.test(viMap.indexToId(vIdx)));
+		Bitmap vertexToBlock = Bitmap.fromPredicate(n, vIdx -> mapping.test(viMap.indexToId(vIdx)));
 		if (vertexToBlock.get(0)) {
 			for (int v = 1; v < n; v++)
 				if (!vertexToBlock.get(v))
