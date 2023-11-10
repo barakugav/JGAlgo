@@ -20,18 +20,24 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class EdgeCoverCardinality extends EdgeCovers.AbstractImpl {
 
 	private final MatchingAlgo matchingAlgo = MatchingAlgo.newBuilder().setCardinality(true).build();
 
 	@Override
-	EdgeCover.IResult computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
+	IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyCardinality(w);
 		final int m = g.edges().size();
 
 		IMatching matching = (IMatching) matchingAlgo.computeMaximumMatching(g, null);
+
+		/* add all the matched edges */
 		Bitmap cover = new Bitmap(m);
+		for (int e : matching.edges())
+			cover.set(e);
 
 		/* add more edges greedily to complete the cover */
 		if (g.isDirected()) {
@@ -53,12 +59,12 @@ class EdgeCoverCardinality extends EdgeCovers.AbstractImpl {
 			}
 		}
 
-		/* add all the matched edges */
-		for (int e = 0; e < m; e++)
-			if (matching.containsEdge(e))
-				cover.set(e);
-
-		return new EdgeCovers.ResultImpl(g, cover);
+		return new ImmutableIntArraySet(cover.toArray()) {
+			@Override
+			public boolean contains(int e) {
+				return 0 <= e && e < m && cover.get(e);
+			}
+		};
 	}
 
 }

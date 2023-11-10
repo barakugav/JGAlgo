@@ -69,16 +69,16 @@ class EdgeCoverTestUtils {
 	}
 
 	static <V, E> void testEdgeCover(Graph<V, E> g, WeightFunctionInt<E> w, EdgeCover algo) {
-		EdgeCover.Result<V, E> ec = algo.computeMinimumEdgeCover(g, w);
+		Set<E> ec = algo.computeMinimumEdgeCover(g, w);
 
 		for (V v : g.vertices()) {
-			boolean isCovered = g.outEdges(v).stream().anyMatch(ec::isInCover);
+			boolean isCovered = g.outEdges(v).stream().anyMatch(ec::contains);
 			if (g.isDirected())
-				isCovered |= g.inEdges(v).stream().anyMatch(ec::isInCover);
+				isCovered |= g.inEdges(v).stream().anyMatch(ec::contains);
 			assertTrue(isCovered, "vertex is not covered: " + v);
 		}
 
-		assertTrue(EdgeCover.isCover(g, ec.edges()));
+		assertTrue(EdgeCover.isCover(g, ec));
 
 		final int m = g.edges().size();
 		if (m <= 16) {
@@ -103,7 +103,7 @@ class EdgeCoverTestUtils {
 			}
 
 			assertNotNull(bestCover);
-			assertEquals(coverWeight.applyAsDouble(bestCover), WeightFunction.weightSum(w, ec.edges()));
+			assertEquals(coverWeight.applyAsDouble(bestCover), WeightFunction.weightSum(w, ec));
 		}
 	}
 

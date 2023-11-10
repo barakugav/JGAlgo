@@ -51,8 +51,8 @@ public interface EdgeCover {
 	 * Compute a minimum edge cover of a graph with respect to an edge weight function.
 	 *
 	 * <p>
-	 * If {@code g} is {@link IntGraph}, the returned object is {@link EdgeCover.IResult}. If {@code g} is
-	 * {@link IntGraph}, prefer to pass {@link IWeightFunction} for best performance.
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IntSet}. If {@code g} is {@link IntGraph}, prefer
+	 * to pass {@link IWeightFunction} for best performance.
 	 *
 	 * @param  <V> the vertices type
 	 * @param  <E> the edges type
@@ -60,61 +60,7 @@ public interface EdgeCover {
 	 * @param  w   an edge weight function
 	 * @return     a minimum edge cover
 	 */
-	<V, E> EdgeCover.Result<V, E> computeMinimumEdgeCover(Graph<V, E> g, WeightFunction<E> w);
-
-	/**
-	 * A result object of {@link EdgeCover} computation.
-	 *
-	 * <p>
-	 * The result object is basically the set of edges that form the cover.
-	 *
-	 * @param  <V> the vertices type
-	 * @param  <E> the edges type
-	 * @author     Barak Ugav
-	 */
-	@SuppressWarnings("unused")
-	static interface Result<V, E> {
-
-		/**
-		 * Get the edges which are included in the cover.
-		 *
-		 * @return the edges that are included in the cover
-		 */
-		Set<E> edges();
-
-		/**
-		 * Check whether a edge is included in the cover.
-		 *
-		 * @param  edge a graph edge identifier
-		 * @return      {@code true} if {@code edge} is included in the cover
-		 */
-		boolean isInCover(E edge);
-	}
-
-	/**
-	 * A result object of {@link EdgeCover} computation for {@link IntGraph}.
-	 *
-	 * @author Barak Ugav
-	 */
-	static interface IResult extends EdgeCover.Result<Integer, Integer> {
-
-		@Override
-		IntSet edges();
-
-		/**
-		 * Check whether a edge is included in the cover.
-		 *
-		 * @param  edge a graph edge identifier
-		 * @return      {@code true} if {@code edge} is included in the cover
-		 */
-		boolean isInCover(int edge);
-
-		@Deprecated
-		@Override
-		default boolean isInCover(Integer edge) {
-			return isInCover(edge.intValue());
-		}
-	}
+	<V, E> Set<E> computeMinimumEdgeCover(Graph<V, E> g, WeightFunction<E> w);
 
 	/**
 	 * Check whether a set of edges is a edge cover of a graph.
@@ -199,7 +145,7 @@ public interface EdgeCover {
 			EdgeCover weightedAlgo = new EdgeCoverWeighted();
 			return new EdgeCover() {
 				@Override
-				public <V, E> Result<V, E> computeMinimumEdgeCover(Graph<V, E> g, WeightFunction<E> w) {
+				public <V, E> Set<E> computeMinimumEdgeCover(Graph<V, E> g, WeightFunction<E> w) {
 					boolean isCardinality = w == null || w == IWeightFunction.CardinalityWeightFunction;
 					if (isCardinality) {
 						return cardinalityAlgo.computeMinimumEdgeCover(g, null);

@@ -21,13 +21,15 @@ import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 
 	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();
 
 	@Override
-	EdgeCover.IResult computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
+	IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
 		final int n = g.vertices().size();
@@ -108,7 +110,12 @@ class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 		for (int v = 0; v < n; v++)
 			if (matching.containsEdge(vvEdgeThreshold + v))
 				cover.set(minAdjacentEdge[v]);
-		return new EdgeCovers.ResultImpl(g, cover);
+		return new ImmutableIntArraySet(cover.toArray()) {
+			@Override
+			public boolean contains(int e) {
+				return 0 <= e && e < m && cover.get(e);
+			}
+		};
 	}
 
 }
