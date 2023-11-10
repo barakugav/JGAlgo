@@ -23,7 +23,7 @@ import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * Minimum Vertex-Cut algorithm with terminal vertices (source-sink, S-T).
+ * Minimum Vertex-Cut algorithm without terminal vertices.
  *
  * <p>
  * Given a graph \(G=(V,E)\), a vertex cut (or separating set) is a set of vertices \(C\) whose removal transforms \(G\)
@@ -38,91 +38,79 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * make it trivial, containing a single vertex).
  *
  * <p>
- * Algorithms implementing this interface compute the minimum vertex-cut given two terminal vertices, {@code source (S)}
- * and {@code sink (T)}.
+ * Algorithms implementing this interface compute the global minimum vertex-cut without terminal vertices.
  *
  * <p>
- * The cardinality (unweighted) minimum vertex-cut between two vertices is equal to the (local) vertex connectivity of
- * these two vertices. If the graph is directed, the vertex connectivity between \(u\) and \(v\) is the minimum of the
- * minimum vertex-cut between \(u\) and \(v\) and the minimum vertex-cut between \(v\) and \(u\).
+ * The cardinality (unweighted) global minimum vertex-cut is equal to the vertex connectivity of a graph.
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
- * @see    MinimumVertexCutGlobal
- * @see    MinimumEdgeCutST
+ * @see    MinimumVertexCutST
+ * @see    MinimumEdgeCutGlobal
  * @author Barak Ugav
  */
-public interface MinimumVertexCutST {
+public interface MinimumVertexCutGlobal {
 
 	/**
-	 * Compute the minimum vertex-cut in a graph between two terminal vertices.
+	 * Compute the global minimum vertex-cut in a graph.
 	 *
 	 * <p>
-	 * Given a graph \(G=(V,E)\), an vertex-cut is a set of vertices whose removal disconnect the source from the sink.
-	 * Note that connectivity is with respect to direction from the source to the sink, and not the other way around. In
-	 * undirected graphs the source and sink are interchangeable.
-	 *
-	 * <p>
-	 * If the source and sink are the same vertex no vertex-cut exists and an exception will be thrown. If the source
-	 * and sink and an edge exists between them, no vertex-cut exists and {@code null} will be returned.
+	 * Given a graph \(G=(V,E)\), an vertex-cut is a set of vertices whose removal disconnect graph into more than one
+	 * connected components.
 	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, a {@link IntSet} object will be returned. In that case, its better to pass a
 	 * {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
-	 * @param  <V>                      the vertices type
-	 * @param  <E>                      the edges type
-	 * @param  g                        a graph
-	 * @param  w                        a vertex weight function
-	 * @param  source                   the source vertex
-	 * @param  sink                     the sink vertex
-	 * @return                          a set of vertices that form the minimum vertex-cut, or {@code null} if an edge
-	 *                                  exists between the source and the sink and therefore no vertex-cut exists
-	 * @throws IllegalArgumentException if the source and the sink are the same vertex
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   the graph
+	 * @param  w   a vertex weight function
+	 * @return     the global minimum vertex-cut
 	 */
-	<V, E> Set<V> computeMinimumCut(Graph<V, E> g, WeightFunction<V> w, V source, V sink);
+	<V, E> Set<V> computeMinimumCut(Graph<V, E> g, WeightFunction<V> w);
 
 	/**
-	 * Create a new minimum S-T vertex-cut algorithm object.
+	 * Create a new minimum global vertex-cut algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumVertexCutST} object. The
-	 * {@link MinimumVertexCutST.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MinimumVertexCutGlobal} object. The
+	 * {@link MinimumVertexCutGlobal.Builder} might support different options to obtain different implementations.
 	 *
-	 * @return a default implementation of {@link MinimumVertexCutST}
+	 * @return a default implementation of {@link MinimumVertexCutGlobal}
 	 */
-	static MinimumVertexCutST newInstance() {
+	static MinimumVertexCutGlobal newInstance() {
 		return newBuilder().build();
 	}
 
 	/**
-	 * Create a new minimum vertex-cut algorithm builder.
+	 * Create a new global minimum vertex-cut algorithm builder.
 	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
-	 * @return a new builder that can build {@link MinimumVertexCutST} objects
+	 * @return a new builder that can build {@link MinimumVertexCutGlobal} objects
 	 */
-	static MinimumVertexCutST.Builder newBuilder() {
-		return MinimumVertexCutSTEdgeCut::new;
+	static MinimumVertexCutGlobal.Builder newBuilder() {
+		return MinimumVertexCutGlobalEsfahanianHakimi::new;
 	}
 
 	/**
-	 * A builder for {@link MinimumVertexCutST} objects.
+	 * A builder for {@link MinimumVertexCutGlobal} objects.
 	 *
-	 * @see    MinimumVertexCutST#newBuilder()
+	 * @see    MinimumVertexCutGlobal#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {
 
 		/**
-		 * Create a new algorithm object for minimum vertex-cut computation.
+		 * Create a new algorithm object for global minimum vertex-cut computation.
 		 *
 		 * @return a new minimum vertex-cut algorithm
 		 */
-		MinimumVertexCutST build();
+		MinimumVertexCutGlobal build();
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
@@ -139,9 +127,8 @@ public interface MinimumVertexCutST {
 		 * @param  value the option value
 		 * @return       this builder
 		 */
-		default MinimumVertexCutST.Builder setOption(String key, Object value) {
+		default MinimumVertexCutGlobal.Builder setOption(String key, Object value) {
 			throw new IllegalArgumentException("unknown option key: " + key);
 		}
 	}
-
 }

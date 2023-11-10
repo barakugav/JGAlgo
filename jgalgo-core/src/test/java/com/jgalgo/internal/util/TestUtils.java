@@ -33,7 +33,7 @@ public class TestUtils {
 
 		public static class Phase {
 
-			int repeat;
+			int repeat = 1;
 			int[] args;
 
 			Phase() {}
