@@ -33,13 +33,19 @@ public class KEdgeConnectedComponentsWangTest extends TestBase {
 	@Test
 	public void randGraphUndirected() {
 		final long seed = 0x76e9278ecee7ec95L;
-		randGraphs(new KEdgeConnectedComponentsWang(0x42d103fa15fe6159L), false, seed);
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		KEdgeConnectedComponentsWang algo = new KEdgeConnectedComponentsWang();
+		algo.setSeed(seedGen.nextSeed());
+		randGraphs(algo, false, seedGen.nextSeed());
 	}
 
 	@Test
 	public void randGraphDirected() {
 		final long seed = 0x9e59724ed80b40fbL;
-		randGraphs(new KEdgeConnectedComponentsWang(0xbbfc6acc86ad126dL), true, seed);
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		KEdgeConnectedComponentsWang algo = new KEdgeConnectedComponentsWang();
+		algo.setSeed(seedGen.nextSeed());
+		randGraphs(algo, true, seedGen.nextSeed());
 	}
 
 	static void randGraphs(KEdgeConnectedComponentsAlgo algo, boolean directed, long seed) {

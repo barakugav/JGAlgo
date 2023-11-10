@@ -35,26 +35,15 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  *
  * @author Barak Ugav
  */
-class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.AbstractImpl {
+class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.AbstractImpl implements RandomizedAlgorithm {
 
-	private final Random rand;
+	private final Random rand = new Random();
 	private final WeaklyConnectedComponentsAlgo wccAlgo = WeaklyConnectedComponentsAlgo.newInstance();
 	private final MinimumEdgeCutST minCutAlgo = MinimumEdgeCutST.newInstance();
 
-	/**
-	 * Create a new algorithm object with a random seed.
-	 */
-	KEdgeConnectedComponentsWang() {
-		rand = new Random();
-	}
-
-	/**
-	 * Create a new algorithm object with a given seed.
-	 *
-	 * @param seed a seed for the random number generator
-	 */
-	KEdgeConnectedComponentsWang(long seed) {
-		rand = new Random(seed);
+	@Override
+	public void setSeed(long seed) {
+		rand.setSeed(seed);
 	}
 
 	@Override

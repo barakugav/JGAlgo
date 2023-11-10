@@ -25,8 +25,9 @@ public class MinimumSpanningTreeKargerKleinTarjanTest extends TestBase {
 	public void testRandGraph() {
 		final long seed = 0xe76fc4911bdb2da2L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		MinimumSpanningTreeTestUtils.testRandGraph(new MinimumSpanningTreeKargerKleinTarjan(seedGen.nextSeed()),
-				seedGen.nextSeed());
+		MinimumSpanningTreeKargerKleinTarjan algo = new MinimumSpanningTreeKargerKleinTarjan();
+		algo.setSeed(seedGen.nextSeed());
+		MinimumSpanningTreeTestUtils.testRandGraph(algo, seedGen.nextSeed());
 	}
 
 }

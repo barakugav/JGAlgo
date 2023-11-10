@@ -16,7 +16,6 @@
 
 package com.jgalgo.alg;
 
-import java.util.Random;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
 import com.jgalgo.graph.Graph;
@@ -172,14 +171,13 @@ public interface ColoringAlgo {
 	static ColoringAlgo.Builder newBuilder() {
 		return new ColoringAlgo.Builder() {
 			String impl;
-			Random rand;
 
 			@Override
 			public ColoringAlgo build() {
 				if (impl != null) {
 					switch (impl) {
 						case "greedy":
-							return rand == null ? new ColoringGreedy() : new ColoringGreedy(rand.nextLong());
+							return new ColoringGreedy();
 						case "dsatur":
 							return new ColoringDSatur();
 						case "rlf":
@@ -196,9 +194,6 @@ public interface ColoringAlgo {
 				switch (key) {
 					case "impl":
 						impl = (String) value;
-						break;
-					case "seed":
-						rand = value == null ? null : new Random(((Long) value).longValue());
 						break;
 					default:
 						throw new IllegalArgumentException("unknown option key: " + key);

@@ -46,29 +46,19 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  *
  * @author Barak Ugav
  */
-class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.AbstractUndirected {
+class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.AbstractUndirected
+		implements RandomizedAlgorithm {
 
-	private final Random rand;
+	private final Random rand = new Random();
 	private final WeaklyConnectedComponentsAlgo ccAlg = WeaklyConnectedComponentsAlgo.newInstance();
 	private final MinimumSpanningTreeBoruvka boruvka = new MinimumSpanningTreeBoruvka();
 	private final TreePathMaxima tpm = new TreePathMaximaHagerup();
 
 	private final AllocatedMemory allocatedMem = new AllocatedMemory();
 
-	/**
-	 * Create a new MST algorithm with random seed.
-	 */
-	MinimumSpanningTreeKargerKleinTarjan() {
-		this(System.nanoTime() ^ 0x905a1dad25b30034L);
-	}
-
-	/**
-	 * Create a new MST algorithm with the given seed.
-	 *
-	 * @param seed a seed used for all random generators
-	 */
-	public MinimumSpanningTreeKargerKleinTarjan(long seed) {
-		rand = new Random(seed ^ 0x1af7babf9783fd8bL);
+	@Override
+	public void setSeed(long seed) {
+		rand.setSeed(seed);
 	}
 
 	/**

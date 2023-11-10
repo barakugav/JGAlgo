@@ -39,7 +39,9 @@ public class ColoringGreedyTest extends TestBase {
 
 	private static ColoringAlgo algo() {
 		final long seed = 0x1e86629cfff1ccacL;
-		return new ColoringGreedy(seed);
+		ColoringGreedy algo = new ColoringGreedy();
+		algo.setSeed(seed);
+		return algo;
 	}
 
 }

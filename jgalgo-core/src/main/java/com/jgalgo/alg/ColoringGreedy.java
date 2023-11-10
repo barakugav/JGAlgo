@@ -41,24 +41,13 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    <a href="https://en.wikipedia.org/wiki/Greedy_coloring">Wikipedia</a>
  * @author Barak Ugav
  */
-class ColoringGreedy extends ColoringUtils.AbstractImpl {
+class ColoringGreedy extends ColoringUtils.AbstractImpl implements RandomizedAlgorithm {
 
-	private final Random rand;
+	private final Random rand = new Random();
 
-	/**
-	 * Create a new coloring algorithm object with random seed.
-	 */
-	ColoringGreedy() {
-		rand = new Random();
-	}
-
-	/**
-	 * Create a new coloring algorithm object with the provided seed.
-	 *
-	 * @param seed the seed to use for all random operations
-	 */
-	public ColoringGreedy(long seed) {
-		rand = new Random(seed);
+	@Override
+	public void setSeed(long seed) {
+		rand.setSeed(seed);
 	}
 
 	@Override
