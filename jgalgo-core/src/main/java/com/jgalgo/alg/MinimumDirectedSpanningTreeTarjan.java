@@ -19,6 +19,7 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.internal.ds.HeapReferenceable;
@@ -45,7 +46,6 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
 			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
 	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();
-	private static final double HeavyEdgeWeight = Double.MAX_VALUE;
 
 	/**
 	 * Construct a new MDST algorithm object.
@@ -208,12 +208,31 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			ufIdxToV[uf.make()] = v;
 
 		IWeightFunction w;
-		if (edgeRef == null) {
-			w = e -> (e < artificialEdgesThreshold ? wOrig.weight(e) : HeavyEdgeWeight) + uf.getValue(g.edgeTarget(e));
+		if (wOrig instanceof IWeightFunctionInt) {
+			IWeightFunctionInt wInt = (IWeightFunctionInt) wOrig;
+			long hugeWeight = 1;
+			for (int e = 0; e < artificialEdgesThreshold; e++)
+				hugeWeight = Math.max(hugeWeight, wInt.weightInt(e));
+			int hugeWeight0 = hugeWeight > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) hugeWeight;
+			if (edgeRef == null) {
+				w = e -> (e < artificialEdgesThreshold ? wOrig.weight(e) : hugeWeight0) + uf.getValue(g.edgeTarget(e));
+			} else {
+				w = e -> (e < artificialEdgesThreshold ? wOrig.weight(edgeRef[e]) : hugeWeight0)
+						+ uf.getValue(g.edgeTarget(e));
+			}
 		} else {
-			w = e -> (e < artificialEdgesThreshold ? wOrig.weight(edgeRef[e]) : HeavyEdgeWeight)
-					+ uf.getValue(g.edgeTarget(e));
+			double hugeWeight = 1;
+			for (int e = 0; e < artificialEdgesThreshold; e++)
+				hugeWeight = Math.max(hugeWeight, wOrig.weight(e));
+			double hugeWeight0 = hugeWeight;
+			if (edgeRef == null) {
+				w = e -> (e < artificialEdgesThreshold ? wOrig.weight(e) : hugeWeight0) + uf.getValue(g.edgeTarget(e));
+			} else {
+				w = e -> (e < artificialEdgesThreshold ? wOrig.weight(edgeRef[e]) : hugeWeight0)
+						+ uf.getValue(g.edgeTarget(e));
+			}
 		}
+
 		@SuppressWarnings("unchecked")
 		HeapReferenceable<Integer, Void>[] heap = new HeapReferenceable[VMaxNum];
 		for (int v = 0; v < n; v++)
