@@ -355,4 +355,9 @@ public class Bitmap implements IntIterable {
 		return ret;
 	}
 
+	@Override
+	public String toString() {
+		return ImmutableIntArraySet.withNaiveContains(toArray()).toString();
+	}
+
 }
