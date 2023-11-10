@@ -237,7 +237,7 @@ class CoresAlgoImpl implements CoresAlgo {
 					coreShells[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], coreOffset[c + 1]) {
 						@Override
 						public boolean contains(int v) {
-							return 0 <= v && v < n && ResultImpl.this.core[v] >= c0;
+							return 0 <= v && v < n && ResultImpl.this.core[v] == c0;
 						}
 					};
 				}
@@ -257,7 +257,7 @@ class CoresAlgoImpl implements CoresAlgo {
 					coreCrusts[c] = new ImmutableIntArraySet(sortedVertices, 0, coreOffset[c]) {
 						@Override
 						public boolean contains(int v) {
-							return 0 <= v && v < n && ResultImpl.this.core[v] >= c0;
+							return 0 <= v && v < n && ResultImpl.this.core[v] < c0;
 						}
 					};
 				}

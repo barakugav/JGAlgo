@@ -17,6 +17,7 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
@@ -68,6 +69,7 @@ public class CoresAlgoTest extends TestBase {
 
 	private static void testCoresAlgo(EdgeDirection degreeType, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32).repeat(128);
 		tester.addPhase().withArgs(64, 128).repeat(64);
@@ -76,6 +78,7 @@ public class CoresAlgoTest extends TestBase {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
 
 			CoresAlgo algo = new CoresAlgoImpl();
 			testCoresAlgo(g, algo, degreeType);
@@ -158,6 +161,11 @@ public class CoresAlgoTest extends TestBase {
 			assertEquals(expectedCore, res.coreVertices(k));
 			assertEquals(expectedShell, res.coreShell(k));
 			assertEquals(expectedCrust, res.coreCrust(k));
+			for (V v : g.vertices()) {
+				assertEqualsBool(expectedCore.contains(v), res.coreVertices(k).contains(v));
+				assertEqualsBool(expectedShell.contains(v), res.coreShell(k).contains(v));
+				assertEqualsBool(expectedCrust.contains(v), res.coreCrust(k).contains(v));
+			}
 		}
 	}
 
