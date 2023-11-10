@@ -24,7 +24,6 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -186,11 +185,9 @@ public interface IPath extends Path<Integer, Integer> {
 
 		final int n = g.vertices().size();
 		Bitmap visited = new Bitmap(n);
-		IntArrayList visitedList = new IntArrayList();
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 
 		visited.set(iSource);
-		visitedList.add(iSource);
 		for (int u = iSource;;) {
 			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
@@ -198,7 +195,6 @@ public interface IPath extends Path<Integer, Integer> {
 				if (visited.get(v))
 					continue;
 				visited.set(v);
-				visitedList.add(v);
 				queue.enqueue(v);
 			}
 			if (queue.isEmpty())
@@ -206,13 +202,7 @@ public interface IPath extends Path<Integer, Integer> {
 			u = queue.dequeueInt();
 		}
 
-		int[] visitedArr = visitedList.toIntArray();
-		IntSet indexRes = new ImmutableIntArraySet(visitedArr) {
-			@Override
-			public boolean contains(int v) {
-				return 0 <= v && v < n && visited.get(v);
-			}
-		};
+		IntSet indexRes = ImmutableIntArraySet.ofBitmap(visited);
 		if (!(g instanceof IndexGraph))
 			indexRes = IndexIdMaps.indexToIdSet(indexRes, g.indexGraphVerticesMap());
 		return indexRes;

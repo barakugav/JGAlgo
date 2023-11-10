@@ -384,32 +384,22 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 
 		@Override
 		public boolean isCutVertex(int vertex) {
-			final int n = g.vertices().size();
-			if (cutVerticesBitmap == null)
-				cutVerticesBitmap = Bitmap.fromPredicate(n, v -> getVertexBiCcs(v).size() > 1);
-			if (!(0 <= vertex && vertex <= n))
+			computeCutVerticesBitmap();
+			if (!(0 <= vertex && vertex <= g.vertices().size()))
 				throw new IndexOutOfBoundsException("No vertex with index " + vertex);
 			return cutVerticesBitmap.get(vertex);
+		}
+
+		private void computeCutVerticesBitmap() {
+			if (cutVerticesBitmap == null)
+				cutVerticesBitmap = Bitmap.fromPredicate(g.vertices().size(), v -> getVertexBiCcs(v).size() > 1);
 		}
 
 		@Override
 		public IntSet getCutVertices() {
 			if (cutVertices == null) {
-				final int n = g.vertices().size();
-				int cutVerticesNum = 0;
-				for (int v = 0; v < n; v++)
-					if (getVertexBiCcs(v).size() > 1)
-						cutVerticesNum++;
-				int[] cutVertices0 = new int[cutVerticesNum];
-				for (int i = 0, v = 0; v < n; v++)
-					if (getVertexBiCcs(v).size() > 1)
-						cutVertices0[i++] = v;
-				cutVertices = new ImmutableIntArraySet(cutVertices0) {
-					@Override
-					public boolean contains(int v) {
-						return 0 <= v && v < n && isCutVertex(v);
-					}
-				};
+				computeCutVerticesBitmap();
+				cutVertices = ImmutableIntArraySet.ofBitmap(cutVerticesBitmap);
 			}
 			return cutVertices;
 		}

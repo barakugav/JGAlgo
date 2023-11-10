@@ -116,6 +116,16 @@ public abstract class ImmutableIntArraySet extends AbstractIntSet {
 		return new WithNaiveContains(arr, from, to);
 	}
 
+	public static ImmutableIntArraySet ofBitmap(Bitmap bitmap) {
+		int s = bitmap.capacity();
+		return new ImmutableIntArraySet(bitmap.toArray()) {
+			@Override
+			public boolean contains(int key) {
+				return 0 <= key && key < s && bitmap.get(key);
+			}
+		};
+	}
+
 	private static class WithNaiveContains extends ImmutableIntArraySet {
 
 		WithNaiveContains(int[] arr) {

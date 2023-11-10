@@ -110,12 +110,7 @@ class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 		for (int v = 0; v < n; v++)
 			if (matching.containsEdge(vvEdgeThreshold + v))
 				cover.set(minAdjacentEdge[v]);
-		return new ImmutableIntArraySet(cover.toArray()) {
-			@Override
-			public boolean contains(int e) {
-				return 0 <= e && e < m && cover.get(e);
-			}
-		};
+		return ImmutableIntArraySet.ofBitmap(cover);
 	}
 
 }

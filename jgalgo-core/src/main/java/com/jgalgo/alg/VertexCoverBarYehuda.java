@@ -57,13 +57,7 @@ class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {
 				cover.set(v);
 			}
 		}
-
-		return new ImmutableIntArraySet(cover.toArray()) {
-			@Override
-			public boolean contains(int v) {
-				return 0 <= v && v < n && cover.get(v);
-			}
-		};
+		return ImmutableIntArraySet.ofBitmap(cover);
 	}
 
 }

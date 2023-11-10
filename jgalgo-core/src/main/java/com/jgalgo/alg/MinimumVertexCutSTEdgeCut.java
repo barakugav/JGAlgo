@@ -50,13 +50,7 @@ class MinimumVertexCutSTEdgeCut extends MinimumVertexCutUtils.AbstractImplST {
 			return null;
 
 		final int n = g.vertices().size();
-		Bitmap vertexCutBitmap = Bitmap.fromOnes(n, vertexCut);
-		return new ImmutableIntArraySet(vertexCut) {
-			@Override
-			public boolean contains(int v) {
-				return 0 <= v && v < n && vertexCutBitmap.get(v);
-			}
-		};
+		return ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, vertexCut));
 	}
 
 	int[] computeMinCut(IndexGraph g, int source, int sink, Pair<IndexGraph, IWeightFunction> auxiliaryGraph) {

@@ -276,6 +276,15 @@ public class Bitmap implements IntIterable {
 	}
 
 	/**
+	 * Returns the number of bits in this bitmap.
+	 *
+	 * @return the number of bits in this bitmap
+	 */
+	public int capacity() {
+		return size;
+	}
+
+	/**
 	 * Returns the number of bits set to {@code true} in this bitmap.
 	 *
 	 * @return the number of bits set to {@code true} in this bitmap

@@ -59,12 +59,7 @@ class EdgeCoverCardinality extends EdgeCovers.AbstractImpl {
 			}
 		}
 
-		return new ImmutableIntArraySet(cover.toArray()) {
-			@Override
-			public boolean contains(int e) {
-				return 0 <= e && e < m && cover.get(e);
-			}
-		};
+		return ImmutableIntArraySet.ofBitmap(cover);
 	}
 
 }
