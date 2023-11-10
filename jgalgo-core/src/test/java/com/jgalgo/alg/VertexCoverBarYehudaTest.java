@@ -57,14 +57,14 @@ public class VertexCoverBarYehudaTest extends TestBase {
 	}
 
 	private static <V, E> void testVC(Graph<V, E> g, WeightFunctionInt<V> w, VertexCover algo, double appxFactor) {
-		VertexCover.Result<V, E> vc = algo.computeMinimumVertexCover(g, w);
+		Set<V> vc = algo.computeMinimumVertexCover(g, w);
 
 		for (E e : g.edges()) {
 			V u = g.edgeSource(e), v = g.edgeTarget(e);
-			assertTrue(vc.isInCover(u) || vc.isInCover(v), "edge is not covered: " + e);
+			assertTrue(vc.contains(u) || vc.contains(v), "edge is not covered: " + e);
 		}
 
-		assertTrue(VertexCover.isCover(g, vc.vertices()));
+		assertTrue(VertexCover.isCover(g, vc));
 
 		final int n = g.vertices().size();
 		if (n < 16) {
@@ -88,7 +88,7 @@ public class VertexCoverBarYehudaTest extends TestBase {
 			}
 
 			assertNotNull(bestCover);
-			assertTrue(w.weightSum(vc.vertices()) / appxFactor <= coverWeight.applyAsDouble(bestCover));
+			assertTrue(w.weightSum(vc) / appxFactor <= coverWeight.applyAsDouble(bestCover));
 		}
 	}
 

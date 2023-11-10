@@ -60,8 +60,8 @@ public interface VertexCover {
 	 * approximation of the optimal solution.
 	 *
 	 * <p>
-	 * If {@code g} is {@link IntGraph}, the returned object is {@link VertexCover.IResult}. If {@code g} is
-	 * {@link IntGraph}, prefer to pass {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
+	 * If {@code g} is {@link IntGraph}, the returned object is {@link IntSet}. If {@code g} is {@link IntGraph}, prefer
+	 * to pass {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
 	 * @param  <V> the vertices type
 	 * @param  <E> the edges type
@@ -69,61 +69,7 @@ public interface VertexCover {
 	 * @param  w   a vertex weight function
 	 * @return     a minimum vertex cover
 	 */
-	<V, E> VertexCover.Result<V, E> computeMinimumVertexCover(Graph<V, E> g, WeightFunction<V> w);
-
-	/**
-	 * A result object of {@link VertexCover} computation.
-	 *
-	 * <p>
-	 * The result object is basically the set of vertices that form the cover.
-	 *
-	 * @param  <V> the vertices type
-	 * @param  <E> the edges type
-	 * @author     Barak Ugav
-	 */
-	@SuppressWarnings("unused")
-	static interface Result<V, E> {
-
-		/**
-		 * Get the vertices which are included in the cover.
-		 *
-		 * @return the vertices that are included in the cover
-		 */
-		Set<V> vertices();
-
-		/**
-		 * Check whether a vertex is included in the cover.
-		 *
-		 * @param  vertex a graph vertex identifier
-		 * @return        {@code true} if {@code vertex} is included in the cover
-		 */
-		boolean isInCover(V vertex);
-	}
-
-	/**
-	 * A result object of {@link VertexCover} computation for {@link IntGraph}.
-	 *
-	 * @author Barak Ugav
-	 */
-	static interface IResult extends VertexCover.Result<Integer, Integer> {
-
-		@Override
-		IntSet vertices();
-
-		/**
-		 * Check whether a vertex is included in the cover.
-		 *
-		 * @param  vertex a graph vertex identifier
-		 * @return        {@code true} if {@code vertex} is included in the cover
-		 */
-		boolean isInCover(int vertex);
-
-		@Deprecated
-		@Override
-		default boolean isInCover(Integer vertex) {
-			return isInCover(vertex.intValue());
-		}
-	}
+	<V, E> Set<V> computeMinimumVertexCover(Graph<V, E> g, WeightFunction<V> w);
 
 	/**
 	 * Check whether a set of vertices is a vertex cover of a graph.

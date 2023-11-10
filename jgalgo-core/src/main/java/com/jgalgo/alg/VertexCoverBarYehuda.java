@@ -18,6 +18,8 @@ package com.jgalgo.alg;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Bar Yehuda's vertex cover algorithm.
@@ -33,7 +35,7 @@ import com.jgalgo.internal.util.Bitmap;
 class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {
 
 	@Override
-	public VertexCover.IResult computeMinimumVertexCover(IndexGraph g, IWeightFunction w) {
+	public IntSet computeMinimumVertexCover(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 		double[] sw = new double[n];
 		for (int v = 0; v < n; v++)
@@ -56,7 +58,12 @@ class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {
 			}
 		}
 
-		return new VertexCoverUtils.ResultImpl(g, cover);
+		return new ImmutableIntArraySet(cover.toArray()) {
+			@Override
+			public boolean contains(int v) {
+				return 0 <= v && v < n && cover.get(v);
+			}
+		};
 	}
 
 }
