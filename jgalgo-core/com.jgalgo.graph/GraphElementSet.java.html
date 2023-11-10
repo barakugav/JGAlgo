@@ -70,149 +70,90 @@ abstract class GraphElementSet extends AbstractIntSet {
 <span class="fc" id="L70">		Assertions.Graphs.checkId(idx, size, isEdges);</span>
 <span class="fc" id="L71">	}</span>
 
-	abstract void addIdSwapListener(IndexSwapListener listener);
+	abstract void addRemoveListener(IndexRemoveListener listener);
 
-	abstract void removeIdSwapListener(IndexSwapListener listener);
-
-	abstract void addIdAddRemoveListener(IdAddRemoveListener listener);
-
-	abstract void removeIdAddRemoveListener(IdAddRemoveListener listener);
+	abstract void removeRemoveListener(IndexRemoveListener listener);
 
 	static class FixedSize extends GraphElementSet {
 
 		FixedSize(int initSize, boolean isEdges) {
-<span class="fc" id="L84">			super(initSize, isEdges);</span>
-<span class="fc" id="L85">		}</span>
+<span class="fc" id="L80">			super(initSize, isEdges);</span>
+<span class="fc" id="L81">		}</span>
 
 		@Override
-		void addIdSwapListener(IndexSwapListener listener) {
-<span class="fc" id="L89">			Objects.requireNonNull(listener);</span>
-<span class="fc" id="L90">		}</span>
+		void addRemoveListener(IndexRemoveListener listener) {
+<span class="fc" id="L85">			Objects.requireNonNull(listener);</span>
+<span class="fc" id="L86">		}</span>
 
 		@Override
-<span class="nc" id="L93">		void removeIdSwapListener(IndexSwapListener listener) {}</span>
+<span class="nc" id="L89">		void removeRemoveListener(IndexRemoveListener listener) {}</span>
 
-		@Override
-		void addIdAddRemoveListener(IdAddRemoveListener listener) {
-<span class="fc" id="L97">			Objects.requireNonNull(listener);</span>
-<span class="fc" id="L98">		}</span>
-
-		@Override
-<span class="nc" id="L101">		void removeIdAddRemoveListener(IdAddRemoveListener listener) {}</span>
 	}
 
-<span class="fc" id="L104">	static class Default extends GraphElementSet.FixedSize {</span>
+<span class="fc" id="L93">	static class Default extends GraphElementSet.FixedSize {</span>
 
-<span class="fc" id="L106">		private final List&lt;IndexSwapListener&gt; idSwapListeners = new CopyOnWriteArrayList&lt;&gt;();</span>
-<span class="fc" id="L107">		private final List&lt;IdAddRemoveListener&gt; idAddRemoveListeners = new CopyOnWriteArrayList&lt;&gt;();</span>
+<span class="fc" id="L95">		private final List&lt;IndexRemoveListener&gt; removeListeners = new CopyOnWriteArrayList&lt;&gt;();</span>
 
 		Default(int initSize, boolean isEdges) {
-<span class="fc" id="L110">			super(initSize, isEdges);</span>
-<span class="fc" id="L111">		}</span>
+<span class="fc" id="L98">			super(initSize, isEdges);</span>
+<span class="fc" id="L99">		}</span>
 
 		int newIdx() {
-<span class="fc" id="L114">			int id = size++;</span>
-<span class="fc" id="L115">			notifyIdAdd(id);</span>
-<span class="fc" id="L116">			return id;</span>
+<span class="fc" id="L102">			int id = size++;</span>
+<span class="fc" id="L103">			return id;</span>
 		}
 
 		void removeIdx(int idx) {
-<span class="pc bnc" id="L120" title="All 2 branches missed.">			assert idx == size - 1;</span>
-<span class="pc bnc" id="L121" title="All 2 branches missed.">			assert size &gt; 0;</span>
-<span class="fc" id="L122">			notifyIdRemove(idx);</span>
-<span class="fc" id="L123">			size--;</span>
-<span class="fc" id="L124">		}</span>
+<span class="pc bnc" id="L107" title="All 2 branches missed.">			assert idx == size - 1;</span>
+<span class="pc bnc" id="L108" title="All 2 branches missed.">			assert size &gt; 0;</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">			for (IndexRemoveListener listener : removeListeners)</span>
+<span class="fc" id="L110">				listener.removeLast(idx);</span>
+<span class="fc" id="L111">			size--;</span>
+<span class="fc" id="L112">		}</span>
 
 		@Override
 		public void clear() {
-<span class="fc" id="L128">			notifyIdsClear();</span>
-<span class="fc" id="L129">			size = 0;</span>
-<span class="fc" id="L130">		}</span>
+<span class="fc" id="L116">			size = 0;</span>
+<span class="fc" id="L117">		}</span>
 
-		int isSwapNeededBeforeRemove(int idx) {
-<span class="fc" id="L133">			checkIdx(idx);</span>
-<span class="fc" id="L134">			return size - 1;</span>
-		}
+		// void idxSwap(int idx1, int idx2) {
+		// checkIdx(idx1);
+		// checkIdx(idx2);
+		// notifyIDSwap(idx1, idx2);
+		// }
 
-		void idxSwap(int idx1, int idx2) {
-<span class="fc" id="L138">			checkIdx(idx1);</span>
-<span class="fc" id="L139">			checkIdx(idx2);</span>
-<span class="fc" id="L140">			notifyIDSwap(idx1, idx2);</span>
-<span class="fc" id="L141">		}</span>
+		void swapAndRemove(int removedIdx, int swappedIdx) {
+<span class="fc" id="L126">			checkIdx(removedIdx);</span>
+<span class="fc" id="L127">			checkIdx(swappedIdx);</span>
+<span class="pc bnc" id="L128" title="All 2 branches missed.">			assert swappedIdx == size - 1;</span>
+<span class="pc bnc" id="L129" title="All 2 branches missed.">			assert size &gt; 0;</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">			for (IndexRemoveListener listener : removeListeners)</span>
+<span class="fc" id="L131">				listener.swapAndRemove(removedIdx, swappedIdx);</span>
+<span class="fc" id="L132">			size--;</span>
+<span class="fc" id="L133">		}</span>
 
 		GraphElementSet.Default copy() {
-<span class="fc" id="L144">			return new GraphElementSet.Default(size, isEdges);</span>
+<span class="fc" id="L136">			return new GraphElementSet.Default(size, isEdges);</span>
 		}
 
-		void notifyIDSwap(int id1, int id2) {
-<span class="fc bfc" id="L148" title="All 2 branches covered.">			for (IndexSwapListener listener : idSwapListeners)</span>
-<span class="fc" id="L149">				listener.swap(id1, id2);</span>
-<span class="fc" id="L150">		}</span>
-
-		void notifyIdAdd(int id) {
-<span class="fc bfc" id="L153" title="All 2 branches covered.">			for (IdAddRemoveListener listener : idAddRemoveListeners)</span>
-<span class="fc" id="L154">				listener.idAdd(id);</span>
-<span class="fc" id="L155">		}</span>
-
-		void notifyIdRemove(int id) {
-<span class="fc bfc" id="L158" title="All 2 branches covered.">			for (IdAddRemoveListener listener : idAddRemoveListeners)</span>
-<span class="fc" id="L159">				listener.idRemove(id);</span>
-<span class="fc" id="L160">		}</span>
-
-		void notifyIdsClear() {
-<span class="fc bfc" id="L163" title="All 2 branches covered.">			for (IdAddRemoveListener listener : idAddRemoveListeners)</span>
-<span class="fc" id="L164">				listener.idsClear();</span>
-<span class="fc" id="L165">		}</span>
+		// void notifyIDSwap(int id1, int id2) {
+		// for (IndexRemoveListener listener : idSwapListeners)
+		// listener.swap(id1, id2);
+		// }
 
 		@Override
-		void addIdSwapListener(IndexSwapListener listener) {
-<span class="fc" id="L169">			idSwapListeners.add(Objects.requireNonNull(listener));</span>
-<span class="fc" id="L170">		}</span>
+		void addRemoveListener(IndexRemoveListener listener) {
+<span class="fc" id="L146">			removeListeners.add(Objects.requireNonNull(listener));</span>
+<span class="fc" id="L147">		}</span>
 
 		@Override
-		void removeIdSwapListener(IndexSwapListener listener) {
-<span class="nc" id="L174">			idSwapListeners.remove(listener);</span>
-<span class="nc" id="L175">		}</span>
-
-		@Override
-		void addIdAddRemoveListener(IdAddRemoveListener listener) {
-<span class="fc" id="L179">			idAddRemoveListeners.add(Objects.requireNonNull(listener));</span>
-<span class="fc" id="L180">		}</span>
-
-		@Override
-		void removeIdAddRemoveListener(IdAddRemoveListener listener) {
-<span class="nc" id="L184">			idAddRemoveListeners.remove(listener);</span>
-<span class="nc" id="L185">		}</span>
+		void removeRemoveListener(IndexRemoveListener listener) {
+<span class="nc" id="L151">			removeListeners.remove(listener);</span>
+<span class="nc" id="L152">		}</span>
 	}
 
-<span class="fc" id="L188">	static final GraphElementSet EmptyVertices = new GraphElementSet.FixedSize(0, false);</span>
-<span class="fc" id="L189">	static final GraphElementSet EmptyEdges = new GraphElementSet.FixedSize(0, true);</span>
-
-	/**
-	 * A listener that will be notified each time a strategy add or remove an id.
-	 *
-	 * @author Barak Ugav
-	 */
-	static interface IdAddRemoveListener {
-		/**
-		 * A callback that is called when {@code id} is added by the strategy.
-		 *
-		 * @param id the new id
-		 */
-		void idAdd(int id);
-
-		/**
-		 * A callback that is called when {@code id} is removed by the strategy.
-		 *
-		 * @param id the removed id
-		 */
-		void idRemove(int id);
-
-		/**
-		 * A callback that is called when all ids are removed from the strategy.
-		 */
-		void idsClear();
-	}
+<span class="fc" id="L155">	static final GraphElementSet EmptyVertices = new GraphElementSet.FixedSize(0, false);</span>
+<span class="fc" id="L156">	static final GraphElementSet EmptyEdges = new GraphElementSet.FixedSize(0, true);</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

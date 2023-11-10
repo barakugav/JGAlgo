@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumVertexCutGlobalEsfahanianHakimi.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">MinimumVertexCutGlobalEsfahanianHakimi.java</span></div><h1>MinimumVertexCutGlobalEsfahanianHakimi.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.Range;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+/**
+ * Esfahanian-Hakimi algorithm for computing a minimum unweighted vertex cut in a graph.
+ *
+ * &lt;p&gt;
+ * Based on 'On computing the connectivities of graphs and digraphs' by Abdol H. Esfahanian, S. Louis Hakimi.
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L38">class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.AbstractImplGlobal {</span>
+
+<span class="fc" id="L40">	private final MinimumVertexCutSTEdgeCut minCutStAlgo = new MinimumVertexCutSTEdgeCut();</span>
+
+	@Override
+	IntSet computeMinimumCut(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L44">		Assertions.Graphs.onlyCardinality(w);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		if (g.vertices().isEmpty())</span>
+<span class="fc" id="L46">			throw new IllegalArgumentException(&quot;No vertex cut exists in an empty graph&quot;);</span>
+
+<span class="fc" id="L48">		final int n = g.vertices().size();</span>
+
+<span class="fc" id="L50">		int[] minCut = null;</span>
+<span class="fc" id="L51">		Neighbors neighbors = new Neighbors(g);</span>
+<span class="fc" id="L52">		int minCutSize = n - 1;</span>
+<span class="fc" id="L53">		int startVertex = -1;</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L56">				IntList vNeighbors = neighbors.outNeighbors(v);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">				if (minCutSize &gt; vNeighbors.size()) {</span>
+<span class="fc" id="L58">					minCutSize = vNeighbors.size();</span>
+<span class="fc" id="L59">					minCut = vNeighbors.toIntArray();</span>
+<span class="fc" id="L60">					startVertex = v;</span>
+				}
+<span class="fc" id="L62">				vNeighbors = neighbors.inNeighbors(v);</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">				if (minCutSize &gt; vNeighbors.size()) {</span>
+<span class="fc" id="L64">					minCutSize = vNeighbors.size();</span>
+<span class="fc" id="L65">					minCut = vNeighbors.toIntArray();</span>
+<span class="fc" id="L66">					startVertex = v;</span>
+				}
+			}
+		} else {
+<span class="fc bfc" id="L70" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L71">				IntList vNeighbors = neighbors.outNeighbors(v);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">				if (minCutSize &gt; vNeighbors.size()) {</span>
+<span class="fc" id="L73">					minCutSize = vNeighbors.size();</span>
+<span class="fc" id="L74">					minCut = vNeighbors.toIntArray();</span>
+<span class="fc" id="L75">					startVertex = v;</span>
+				}
+			}
+		}
+<span class="fc bfc" id="L79" title="All 2 branches covered.">		if (startVertex == -1) {</span>
+			/* the graph is a clique, we can disconnect it only by removing n-1 vertices */
+<span class="fc" id="L81">			return Range.of(g.vertices().size() - 1);</span>
+		}
+
+<span class="fc" id="L84">		final Pair&lt;IndexGraph, IWeightFunction&gt; auxiliaryGraph = MinimumVertexCutUtils.auxiliaryGraph(g, null);</span>
+
+<span class="fc" id="L86">		IntList startVertexNeighbors = neighbors.neighbors(startVertex);</span>
+
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L89" title="All 4 branches covered.">			if (v == startVertex || startVertexNeighbors.contains(v))</span>
+<span class="fc" id="L90">				continue;</span>
+<span class="fc" id="L91">			int[] cut = minCutStAlgo.computeMinCut(g, startVertex, v, auxiliaryGraph);</span>
+<span class="pc bpc" id="L92" title="1 of 4 branches missed.">			if (cut != null &amp;&amp; minCutSize &gt; cut.length) {</span>
+<span class="fc" id="L93">				minCutSize = cut.length;</span>
+<span class="fc" id="L94">				minCut = cut;</span>
+			}
+		}
+
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		for (int d = startVertexNeighbors.size(), i = 0; i &lt; d - 1; i++) { // should be up to d - 1</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">			for (int j = i + 1; j &lt; d; j++) { // should be up to d - 1</span>
+<span class="fc" id="L100">				int u = startVertexNeighbors.getInt(i), v = startVertexNeighbors.getInt(j);</span>
+<span class="fc" id="L101">				int[] cut = minCutStAlgo.computeMinCut(g, u, v, auxiliaryGraph);</span>
+<span class="fc bfc" id="L102" title="All 4 branches covered.">				if (cut != null &amp;&amp; minCutSize &gt; cut.length) {</span>
+<span class="fc" id="L103">					minCutSize = cut.length;</span>
+<span class="fc" id="L104">					minCut = cut;</span>
+				}
+			}
+		}
+
+<span class="fc" id="L109">		Bitmap minCutBitmap = Bitmap.fromOnes(n, minCut);</span>
+<span class="fc" id="L110">		return new ImmutableIntArraySet(minCut) {</span>
+			@Override
+			public boolean contains(int v) {
+<span class="pc bpc" id="L113" title="2 of 6 branches missed.">				return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; minCutBitmap.get(v);</span>
+			}
+		};
+	}
+
+	private static class Neighbors {
+		private final IndexGraph g;
+		private final Bitmap neighborsBitmap;
+		private final IntList neighborsList;
+
+<span class="fc" id="L123">		Neighbors(IndexGraph g) {</span>
+<span class="fc" id="L124">			this.g = g;</span>
+<span class="fc" id="L125">			final int n = g.vertices().size();</span>
+<span class="fc" id="L126">			neighborsBitmap = new Bitmap(n);</span>
+<span class="fc" id="L127">			neighborsList = new IntArrayList();</span>
+<span class="fc" id="L128">		}</span>
+
+		IntList outNeighbors(int source) {
+<span class="fc" id="L131">			neighborsList.clear();</span>
+<span class="fc" id="L132">			neighborsBitmap.set(source);</span>
+<span class="fc" id="L133">			addOutNeighbors(source);</span>
+<span class="fc" id="L134">			neighborsBitmap.clear(source);</span>
+<span class="fc" id="L135">			neighborsBitmap.clearAllUnsafe(neighborsList);</span>
+<span class="fc" id="L136">			return neighborsList;</span>
+		}
+
+		IntList inNeighbors(int target) {
+<span class="fc" id="L140">			neighborsList.clear();</span>
+<span class="fc" id="L141">			neighborsBitmap.set(target);</span>
+<span class="fc" id="L142">			addInNeighbors(target);</span>
+<span class="fc" id="L143">			neighborsBitmap.clear(target);</span>
+<span class="fc" id="L144">			neighborsBitmap.clearAllUnsafe(neighborsList);</span>
+<span class="fc" id="L145">			return neighborsList;</span>
+		}
+
+		private void addOutNeighbors(int source) {
+<span class="fc bfc" id="L149" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L150">				eit.nextInt();</span>
+<span class="fc" id="L151">				int v = eit.targetInt();</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">				if (!neighborsBitmap.get(v)) {</span>
+<span class="fc" id="L153">					neighborsBitmap.set(v);</span>
+<span class="fc" id="L154">					neighborsList.add(v);</span>
+				}
+<span class="fc" id="L156">			}</span>
+<span class="fc" id="L157">		}</span>
+
+		private void addInNeighbors(int target) {
+<span class="fc bfc" id="L160" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(target).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L161">				eit.nextInt();</span>
+<span class="fc" id="L162">				int u = eit.sourceInt();</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">				if (!neighborsBitmap.get(u)) {</span>
+<span class="fc" id="L164">					neighborsBitmap.set(u);</span>
+<span class="fc" id="L165">					neighborsList.add(u);</span>
+				}
+<span class="fc" id="L167">			}</span>
+<span class="fc" id="L168">		}</span>
+
+		IntList neighbors(int vertex) {
+<span class="fc" id="L171">			neighborsList.clear();</span>
+<span class="fc" id="L172">			neighborsBitmap.set(vertex);</span>
+<span class="fc" id="L173">			addOutNeighbors(vertex);</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			if (g.isDirected())</span>
+<span class="fc" id="L175">				addInNeighbors(vertex);</span>
+<span class="fc" id="L176">			neighborsBitmap.clear(vertex);</span>
+<span class="fc" id="L177">			neighborsBitmap.clearAllUnsafe(neighborsList);</span>
+<span class="fc" id="L178">			return neighborsList;</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

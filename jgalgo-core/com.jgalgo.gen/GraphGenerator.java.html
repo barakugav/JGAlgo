@@ -52,7 +52,7 @@ public interface GraphGenerator&lt;V, E&gt; {
 	 * @return a new mutable graph generated with the generator parameters
 	 */
 	default Graph&lt;V, E&gt; generateMutable() {
-<span class="nc" id="L55">		return generateIntoBuilder().buildMutable();</span>
+<span class="fc" id="L55">		return generateIntoBuilder().buildMutable();</span>
 	}
 
 	/**

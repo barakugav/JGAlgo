@@ -109,124 +109,125 @@ import it.unimi.dsi.fastutil.bytes.ByteArrays;
 <span class="fc" id="L109">		}</span>
 
 		@Override
-		public void swap(int idx1, int idx2) {
-<span class="fc" id="L113">			checkIdx(idx1);</span>
-<span class="fc" id="L114">			checkIdx(idx2);</span>
-<span class="fc" id="L115">			ByteArrays.swap(weights, idx1, idx2);</span>
-<span class="fc" id="L116">		}</span>
+		public void swapAndClear(int removedIdx, int swappedIdx) {
+			// checkIdx(removedIdx);
+			// checkIdx(swappedIdx);
+<span class="fc" id="L115">			weights[removedIdx] = weights[swappedIdx];</span>
+<span class="fc" id="L116">			weights[swappedIdx] = defaultWeight;</span>
+<span class="fc" id="L117">		}</span>
 
 		@Override
 		public void clear(int idx) {
-<span class="fc" id="L120">			weights[idx] = defaultWeight;</span>
-<span class="fc" id="L121">		}</span>
+<span class="nc" id="L121">			weights[idx] = defaultWeight;</span>
+<span class="nc" id="L122">		}</span>
 
 		@Override
 		public void clear() {
-<span class="nc" id="L125">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
-<span class="nc" id="L126">		}</span>
+<span class="nc" id="L126">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="nc" id="L127">		}</span>
 	}
 
 	static class IntMapped  extends WeightsImpl.IntMapped&lt;Byte&gt; implements IWeightsByte  {
 		IntMapped(WeightsImplByte.IndexImpl  weights, IndexIntIdMap indexMap) {
-<span class="fc" id="L131">			super(weights, indexMap);</span>
-<span class="fc" id="L132">		}</span>
+<span class="fc" id="L132">			super(weights, indexMap);</span>
+<span class="fc" id="L133">		}</span>
 
 		@Override
 		public WeightsImplByte.IndexImpl  weights() {
-<span class="fc" id="L136">			return (WeightsImplByte.IndexImpl ) super.weights();</span>
+<span class="fc" id="L137">			return (WeightsImplByte.IndexImpl ) super.weights();</span>
 		}
 
 		@Override
 		public byte get(int id) {
-<span class="fc" id="L141">			return weights().get(indexMap.idToIndex(id));</span>
+<span class="fc" id="L142">			return weights().get(indexMap.idToIndex(id));</span>
 		}
 
 		@Override
 		public void set(int id, byte weight) {
-<span class="fc" id="L146">			weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="fc" id="L147">		}</span>
+<span class="fc" id="L147">			weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L148">		}</span>
 
 		@Override
 		public byte defaultWeight() {
-<span class="fc" id="L151">			return weights().defaultWeight();</span>
+<span class="fc" id="L152">			return weights().defaultWeight();</span>
 		}
 	}
 
 	static class ObjMapped&lt;K &gt; extends WeightsImpl.ObjMapped&lt;K, Byte&gt; implements WeightsByte&lt;K &gt; {
 		ObjMapped(WeightsImplByte.IndexImpl  weights, IndexIdMap&lt;K&gt; indexMap) {
-<span class="fc" id="L157">			super(weights, indexMap);</span>
-<span class="fc" id="L158">		}</span>
+<span class="fc" id="L158">			super(weights, indexMap);</span>
+<span class="fc" id="L159">		}</span>
 
 		@Override
 		public WeightsImplByte.IndexImpl  weights() {
-<span class="fc" id="L162">			return (WeightsImplByte.IndexImpl ) super.weights();</span>
+<span class="fc" id="L163">			return (WeightsImplByte.IndexImpl ) super.weights();</span>
 		}
 
 		@Override
 		public byte get(K id) {
-<span class="fc" id="L167">			return weights().get(indexMap.idToIndex(id));</span>
+<span class="fc" id="L168">			return weights().get(indexMap.idToIndex(id));</span>
 		}
 
 		@Override
 		public void set(K id, byte weight) {
-<span class="fc" id="L172">			weights().set(indexMap.idToIndex(id), weight);</span>
-<span class="fc" id="L173">		}</span>
+<span class="fc" id="L173">			weights().set(indexMap.idToIndex(id), weight);</span>
+<span class="fc" id="L174">		}</span>
 
 		@Override
 		public byte defaultWeight() {
-<span class="fc" id="L177">			return weights().defaultWeight();</span>
+<span class="fc" id="L178">			return weights().defaultWeight();</span>
 		}
 	}
 
 	static class IntImmutableView  extends WeightsImpl.IntImmutableView&lt;Byte&gt; implements IWeightsByte  {
 		IntImmutableView(IWeightsByte  w) {
-<span class="fc" id="L183">			super(w);</span>
-<span class="fc" id="L184">		}</span>
+<span class="fc" id="L184">			super(w);</span>
+<span class="fc" id="L185">		}</span>
 
 		@Override
 		IWeightsByte  weights() {
-<span class="fc" id="L188">			return (IWeightsByte ) super.weights();</span>
+<span class="fc" id="L189">			return (IWeightsByte ) super.weights();</span>
 		}
 
 		@Override
 		public byte get(int id) {
-<span class="fc" id="L193">			return weights().get(id);</span>
+<span class="fc" id="L194">			return weights().get(id);</span>
 		}
 
 		@Override
 		public void set(int id, byte weight) {
-<span class="fc" id="L198">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+<span class="fc" id="L199">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
 		}
 
 		@Override
 		public byte defaultWeight() {
-<span class="fc" id="L203">			return weights().defaultWeight();</span>
+<span class="fc" id="L204">			return weights().defaultWeight();</span>
 		}
 	}
 
 	static class ObjImmutableView&lt;K &gt; extends WeightsImpl.ObjImmutableView&lt;K, Byte&gt; implements WeightsByte &lt;K &gt; {
 		ObjImmutableView(WeightsByte &lt;K &gt; w) {
-<span class="nc" id="L209">			super(w);</span>
-<span class="nc" id="L210">		}</span>
+<span class="nc" id="L210">			super(w);</span>
+<span class="nc" id="L211">		}</span>
 
 		@Override
 		WeightsByte &lt;K &gt; weights() {
-<span class="nc" id="L214">			return (WeightsByte &lt;K &gt;) super.weights();</span>
+<span class="nc" id="L215">			return (WeightsByte &lt;K &gt;) super.weights();</span>
 		}
 
 		@Override
 		public byte get(K id) {
-<span class="nc" id="L219">			return weights().get(id);</span>
+<span class="nc" id="L220">			return weights().get(id);</span>
 		}
 
 		@Override
 		public void set(K id, byte weight) {
-<span class="nc" id="L224">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+<span class="nc" id="L225">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
 		}
 
 		@Override
 		public byte defaultWeight() {
-<span class="nc" id="L229">			return weights().defaultWeight();</span>
+<span class="nc" id="L230">			return weights().defaultWeight();</span>
 		}
 	}
 

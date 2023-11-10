@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * &lt;p&gt;
  * The distances and paths are directed from the sites to the vertices. If the other direction is needed, consider
- * passing a reversed view of the original graph by using {@link IntGraph#reverseView()}.
+ * passing a reversed view of the original graph by using {@link Graph#reverseView()}.
  *
  * &lt;p&gt;
  * If there are some vertices that are unreachable from any sites, the partition will contain an addition block with
@@ -78,7 +78,7 @@ public interface VoronoiAlgo {
 	 * In addition to being a partition, the result object also contains the distance of each vertex from its site, and
 	 * the shortest path from the sites to the vertices. Note that the direction of the distances and paths (in case of
 	 * a directed graph) is from the sites to the vertices. If the other direction is needed, consider passing a
-	 * reversed view of the original graph by using {@link IntGraph#reverseView()}.
+	 * reversed view of the original graph by using {@link Graph#reverseView()}.
 	 *
 	 * @param  &lt;V&gt; the vertices type
 	 * @param  &lt;E&gt; the edges type

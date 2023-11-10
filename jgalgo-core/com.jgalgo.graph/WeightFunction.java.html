@@ -134,7 +134,7 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	/**
 	 * A weight function that assign a weight of {@code 1} to any element.
 	 */
-<span class="pc" id="L137">	public static WeightFunctionInt&lt;?&gt; CardinalityWeightFunction = e -&gt; 1;</span>
+<span class="fc" id="L137">	public static WeightFunctionInt&lt;?&gt; CardinalityWeightFunction = e -&gt; 1;</span>
 
 	/**
 	 * Get the cardinality weight function.
@@ -149,7 +149,7 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K&gt; WeightFunctionInt&lt;K&gt; cardinalityWeightFunction() {
-<span class="nc" id="L152">		return (WeightFunctionInt&lt;K&gt;) CardinalityWeightFunction;</span>
+<span class="fc" id="L152">		return (WeightFunctionInt&lt;K&gt;) CardinalityWeightFunction;</span>
 	}
 
 }

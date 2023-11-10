@@ -24,23 +24,23 @@ interface IndexGraphImpl extends IndexGraph {
 	GraphElementSet edges();
 
 	@Override
-	default void addVertexSwapListener(IndexSwapListener listener) {
-<span class="nc" id="L28">		vertices().addIdSwapListener(listener);</span>
+	default void addVertexRemoveListener(IndexRemoveListener listener) {
+<span class="nc" id="L28">		vertices().addRemoveListener(listener);</span>
 <span class="nc" id="L29">	}</span>
 
 	@Override
-	default void removeVertexSwapListener(IndexSwapListener listener) {
-<span class="nc" id="L33">		vertices().removeIdSwapListener(listener);</span>
+	default void removeVertexSwapRemoveListener(IndexRemoveListener listener) {
+<span class="nc" id="L33">		vertices().removeRemoveListener(listener);</span>
 <span class="nc" id="L34">	}</span>
 
 	@Override
-	default void addEdgeSwapListener(IndexSwapListener listener) {
-<span class="nc" id="L38">		edges().addIdSwapListener(listener);</span>
+	default void addEdgeRemoveListener(IndexRemoveListener listener) {
+<span class="nc" id="L38">		edges().addRemoveListener(listener);</span>
 <span class="nc" id="L39">	}</span>
 
 	@Override
-	default void removeEdgeSwapListener(IndexSwapListener listener) {
-<span class="nc" id="L43">		edges().removeIdSwapListener(listener);</span>
+	default void removeEdgeSwapRemoveListener(IndexRemoveListener listener) {
+<span class="nc" id="L43">		edges().removeRemoveListener(listener);</span>
 <span class="nc" id="L44">	}</span>
 
 }

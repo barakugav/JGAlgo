@@ -17,150 +17,89 @@
 package com.jgalgo.graph;
 
 import java.util.Arrays;
-import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 import com.jgalgo.internal.util.Assertions;
 
-abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements GraphWithEdgeEndpointsContainer {
-
-	private final DataContainer.Long edgeEndpointsContainer;
-	private long[] edgeEndpoints;
+abstract class GraphArrayAbstract extends GraphBaseWithEdgeEndpointsContainer {
 
 	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L29">		super(capabilities, expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L30">		edgeEndpointsContainer =</span>
-<span class="fc" id="L31">				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
-<span class="fc" id="L32">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
-<span class="fc" id="L33">	}</span>
+<span class="fc" id="L25">		super(capabilities, expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L26">	}</span>
 
 	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L36">		super(capabilities, g, copyWeights);</span>
-<span class="fc bfc" id="L37" title="All 2 branches covered.">		if (g instanceof GraphArrayAbstract) {</span>
-<span class="fc" id="L38">			GraphArrayAbstract g0 = (GraphArrayAbstract) g;</span>
-<span class="fc" id="L39">			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edges, newArr -&gt; edgeEndpoints = newArr);</span>
-<span class="fc" id="L40">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
-<span class="fc" id="L41">		} else {</span>
-
-<span class="fc" id="L43">			final int m = edges.size();</span>
-<span class="fc" id="L44">			edgeEndpointsContainer =</span>
-<span class="fc" id="L45">					new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
-<span class="fc" id="L46">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
-<span class="fc bfc" id="L47" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L48">				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));</span>
-		}
-<span class="fc" id="L50">	}</span>
+<span class="fc" id="L29">		super(capabilities, g, copyWeights);</span>
+<span class="fc" id="L30">	}</span>
 
 	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
-<span class="fc" id="L53">		super(capabilities, builder);</span>
-<span class="fc" id="L54">		final int m = edges.size();</span>
-<span class="fc" id="L55">		edgeEndpointsContainer =</span>
-<span class="fc" id="L56">				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
-<span class="fc" id="L57">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
-
-<span class="fc bfc" id="L59" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L60">			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));</span>
-<span class="fc" id="L61">	}</span>
-
-	@Override
-	public int addEdge(int source, int target) {
-<span class="fc" id="L65">		int e = super.addEdge(source, target);</span>
-<span class="fc" id="L66">		setEndpoints(e, source, target);</span>
-<span class="fc" id="L67">		return e;</span>
-	}
-
-	@Override
-	void removeEdgeImpl(int edge) {
-<span class="fc" id="L72">		edgeEndpointsContainer.clear(edgeEndpoints, edge);</span>
-<span class="fc" id="L73">		super.removeEdgeImpl(edge);</span>
-<span class="fc" id="L74">	}</span>
-
-	@Override
-	void edgeSwap(int e1, int e2) {
-<span class="fc" id="L78">		edgeEndpointsContainer.swap(edgeEndpoints, e1, e2);</span>
-<span class="fc" id="L79">		super.edgeSwap(e1, e2);</span>
-<span class="fc" id="L80">	}</span>
+<span class="fc" id="L33">		super(capabilities, builder);</span>
+<span class="fc" id="L34">	}</span>
 
 	static void addEdgeToList(int[][] edges, int[] edgesNum, int w, int e) {
-<span class="fc" id="L83">		int[] es = edges[w];</span>
-<span class="fc" id="L84">		int num = edgesNum[w];</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">		if (es.length &lt;= num) {</span>
-<span class="fc" id="L86">			es = Arrays.copyOf(es, Math.max(es.length * 2, 2));</span>
-<span class="fc" id="L87">			edges[w] = es;</span>
+<span class="fc" id="L37">		int[] es = edges[w];</span>
+<span class="fc" id="L38">		int num = edgesNum[w];</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">		if (es.length &lt;= num) {</span>
+<span class="fc" id="L40">			es = Arrays.copyOf(es, Math.max(es.length * 2, 2));</span>
+<span class="fc" id="L41">			edges[w] = es;</span>
 		}
-<span class="fc" id="L89">		es[num] = e;</span>
-<span class="fc" id="L90">		edgesNum[w] = num + 1;</span>
-<span class="fc" id="L91">	}</span>
+<span class="fc" id="L43">		es[num] = e;</span>
+<span class="fc" id="L44">		edgesNum[w] = num + 1;</span>
+<span class="fc" id="L45">	}</span>
 
 	static int edgeIndexOf(int[] edges, int edgesNum, int e) {
-<span class="pc bpc" id="L94" title="1 of 2 branches missed.">		for (int i = 0; i &lt; edgesNum; i++)</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">			if (edges[i] == e)</span>
-<span class="fc" id="L96">				return i;</span>
-<span class="nc" id="L97">		return -1;</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">		for (int i = 0; i &lt; edgesNum; i++)</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">			if (edges[i] == e)</span>
+<span class="fc" id="L50">				return i;</span>
+<span class="nc" id="L51">		return -1;</span>
 	}
 
 	static void removeEdgeFromList(int[][] edges, int[] edgesNum, int w, int e) {
-<span class="fc" id="L101">		int[] es = edges[w];</span>
-<span class="fc" id="L102">		int num = edgesNum[w];</span>
-<span class="fc" id="L103">		int i = edgeIndexOf(es, num, e);</span>
-<span class="fc" id="L104">		es[i] = es[num - 1];</span>
-<span class="fc" id="L105">		edgesNum[w] = num - 1;</span>
-<span class="fc" id="L106">	}</span>
-
-	@Override
-	public long[] edgeEndpoints() {
-<span class="fc" id="L110">		return edgeEndpoints;</span>
-	}
-
-	void reverseEdge0(int edge) {
-<span class="fc" id="L114">		EdgeEndpointsContainer.reverseEdge(edgeEndpoints, edge);</span>
-<span class="fc" id="L115">	}</span>
-
-	@Override
-	public void clearEdges() {
-<span class="fc" id="L119">		edgeEndpointsContainer.clear(edgeEndpoints);</span>
-<span class="fc" id="L120">		super.clearEdges();</span>
-<span class="fc" id="L121">	}</span>
+<span class="fc" id="L55">		int[] es = edges[w];</span>
+<span class="fc" id="L56">		int num = edgesNum[w];</span>
+<span class="fc" id="L57">		int i = edgeIndexOf(es, num, e);</span>
+<span class="fc" id="L58">		es[i] = es[num - 1];</span>
+<span class="fc" id="L59">		edgesNum[w] = num - 1;</span>
+<span class="fc" id="L60">	}</span>
 
 	private abstract class EdgeIterBase implements IEdgeIter {
 
 		private final int[] edges;
 		private int count;
 		private int idx;
-<span class="fc" id="L128">		int lastEdge = -1;</span>
+<span class="fc" id="L67">		int lastEdge = -1;</span>
 
-<span class="fc" id="L130">		EdgeIterBase(int[] edges, int count) {</span>
-<span class="fc" id="L131">			this.edges = edges;</span>
-<span class="fc" id="L132">			this.count = count;</span>
-<span class="fc" id="L133">		}</span>
+<span class="fc" id="L69">		EdgeIterBase(int[] edges, int count) {</span>
+<span class="fc" id="L70">			this.edges = edges;</span>
+<span class="fc" id="L71">			this.count = count;</span>
+<span class="fc" id="L72">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L137" title="All 2 branches covered.">			return idx &lt; count;</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			return idx &lt; count;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L142">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L143">			return lastEdge = edges[idx++];</span>
+<span class="fc" id="L81">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L82">			return lastEdge = edges[idx++];</span>
 		}
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L148">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L149">			return edges[idx];</span>
+<span class="fc" id="L87">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L88">			return edges[idx];</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="pc bpc" id="L154" title="1 of 2 branches missed.">			if (lastEdge == -1)</span>
-<span class="nc" id="L155">				throw new IllegalStateException();</span>
-<span class="fc" id="L156">			removeEdge(lastEdge);</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">			if (lastEdge == -1)</span>
+<span class="nc" id="L94">				throw new IllegalStateException();</span>
+<span class="fc" id="L95">			removeEdge(lastEdge);</span>
 			/*
 			 * The edge will be removed from entry idx-1 in edges[], go back and decrease the edges count.
 			 */
-<span class="fc" id="L160">			count--;</span>
-<span class="fc" id="L161">			idx--;</span>
-<span class="fc" id="L162">			lastEdge = -1;</span>
-<span class="fc" id="L163">		}</span>
+<span class="fc" id="L99">			count--;</span>
+<span class="fc" id="L100">			idx--;</span>
+<span class="fc" id="L101">			lastEdge = -1;</span>
+<span class="fc" id="L102">		}</span>
 
 	}
 
@@ -168,14 +107,14 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 
 		final int source;
 
-<span class="fc" id="L171">		EdgeIterOut(int source, int[] edges, int count) {</span>
-<span class="fc" id="L172">			super(edges, count);</span>
-<span class="fc" id="L173">			this.source = source;</span>
-<span class="fc" id="L174">		}</span>
+<span class="fc" id="L110">		EdgeIterOut(int source, int[] edges, int count) {</span>
+<span class="fc" id="L111">			super(edges, count);</span>
+<span class="fc" id="L112">			this.source = source;</span>
+<span class="fc" id="L113">		}</span>
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L178">			return source;</span>
+<span class="fc" id="L117">			return source;</span>
 		}
 	}
 
@@ -183,14 +122,14 @@ abstract class GraphArrayAbstract extends GraphBaseIndexMutable implements Graph
 
 		final int target;
 
-<span class="fc" id="L186">		EdgeIterIn(int target, int[] edges, int count) {</span>
-<span class="fc" id="L187">			super(edges, count);</span>
-<span class="fc" id="L188">			this.target = target;</span>
-<span class="fc" id="L189">		}</span>
+<span class="fc" id="L125">		EdgeIterIn(int target, int[] edges, int count) {</span>
+<span class="fc" id="L126">			super(edges, count);</span>
+<span class="fc" id="L127">			this.target = target;</span>
+<span class="fc" id="L128">		}</span>
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L193">			return target;</span>
+<span class="fc" id="L132">			return target;</span>
 		}
 	}
 

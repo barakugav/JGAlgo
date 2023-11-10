@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphBaseIndexMutable.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphBaseIndexMutable.java</span></div><h1>GraphBaseIndexMutable.java</h1><pre class="source lang-java linenums">/*-
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphBaseMutable.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphBaseMutable.java</span></div><h1>GraphBaseMutable.java</h1><pre class="source lang-java linenums">/*-
  * Copyright 2023 Barak Ugav
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -19,7 +19,7 @@ package com.jgalgo.graph;
 import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
 
-<span class="fc" id="L22">abstract class GraphBaseIndexMutable extends IndexGraphBase {</span>
+<span class="fc" id="L22">abstract class GraphBaseMutable extends IndexGraphBase {</span>
 
 	final GraphElementSet.Default vertices;
 	final GraphElementSet.Default edges;
@@ -28,7 +28,7 @@ import com.jgalgo.internal.util.Assertions;
 	private final WeightsImpl.IndexMutable.Manager verticesUserWeights;
 	private final WeightsImpl.IndexMutable.Manager edgesUserWeights;
 
-	GraphBaseIndexMutable(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
+	GraphBaseMutable(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L32">		super(capabilities);</span>
 <span class="fc" id="L33">		vertices = new GraphElementSet.Default(0, false);</span>
 <span class="fc" id="L34">		edges = new GraphElementSet.Default(0, true);</span>
@@ -38,7 +38,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L38">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum);</span>
 <span class="fc" id="L39">	}</span>
 
-	GraphBaseIndexMutable(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
+	GraphBaseMutable(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
 <span class="fc" id="L42">		super(capabilities);</span>
 <span class="fc bfc" id="L43" title="All 2 branches covered.">		if (isDirected()) {</span>
 <span class="fc" id="L44">			Assertions.Graphs.onlyDirected(g);</span>
@@ -70,7 +70,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L70">		edgesInternalContainers = new DataContainer.Manager(edges.size());</span>
 <span class="fc" id="L71">	}</span>
 
-	GraphBaseIndexMutable(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+	GraphBaseMutable(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L74">		super(capabilities);</span>
 <span class="fc" id="L75">		vertices = builder.vertices.copy();</span>
 <span class="fc" id="L76">		edges = builder.edges.copy();</span>
@@ -102,156 +102,165 @@ import com.jgalgo.internal.util.Assertions;
 	@Override
 	public final void removeVertex(int vertex) {
 <span class="fc" id="L104">		removeEdgesOf(vertex);</span>
-<span class="fc" id="L105">		vertex = vertexSwapBeforeRemove(vertex);</span>
-<span class="fc" id="L106">		removeVertexImpl(vertex);</span>
-<span class="fc" id="L107">	}</span>
+		// vertex = vertexSwapBeforeRemove(vertex);
+		// removeVertexImpl(vertex);
 
-	void removeVertexImpl(int vertex) {
-		// internal weights are handled manually
-		// verticesInternalContainers.clearElement(vertex);
-<span class="fc" id="L112">		verticesUserWeights.clearElement(vertex);</span>
-<span class="fc" id="L113">		vertices.removeIdx(vertex);</span>
-<span class="fc" id="L114">	}</span>
-
-	private int vertexSwapBeforeRemove(int v) {
-<span class="fc" id="L117">		int vn = vertices.isSwapNeededBeforeRemove(v);</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">		if (v != vn) {</span>
-<span class="fc" id="L119">			vertexSwap(v, vn);</span>
-<span class="fc" id="L120">			v = vn;</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		if (vertex == vertices.size - 1) {</span>
+<span class="fc" id="L109">			removeVertexLast(vertex);</span>
+		} else {
+<span class="fc" id="L111">			vertexSwapAndRemove(vertex, vertices.size - 1);</span>
 		}
-<span class="fc" id="L122">		return v;</span>
-	}
+<span class="fc" id="L113">	}</span>
 
-	void vertexSwap(int v1, int v2) {
-<span class="fc" id="L126">		vertices.idxSwap(v1, v2);</span>
+	void removeVertexLast(int vertex) {
+<span class="fc" id="L116">		verticesUserWeights.clearElement(vertex);</span>
+<span class="fc" id="L117">		vertices.removeIdx(vertex);</span>
+<span class="fc" id="L118">	}</span>
+
+	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
 		// internal weights are handled manually
-		// verticesInternalContainers.swapElements(v1, v2);
-<span class="fc" id="L129">		verticesUserWeights.swapElements(v1, v2);</span>
-<span class="fc" id="L130">	}</span>
+		// verticesInternalContainers.swapElements(removedIdx, swappedIdx);
+<span class="fc" id="L123">		verticesUserWeights.swapAndClear(removedIdx, swappedIdx);</span>
+<span class="fc" id="L124">		vertices.swapAndRemove(removedIdx, swappedIdx);</span>
+<span class="fc" id="L125">	}</span>
 
 	@Override
 	public int addEdge(int source, int target) {
-<span class="fc" id="L134">		checkVertex(source);</span>
-<span class="fc" id="L135">		checkVertex(target);</span>
-<span class="fc" id="L136">		int e = edges.newIdx();</span>
-<span class="pc bnc" id="L137" title="All 2 branches missed.">		assert e &gt;= 0;</span>
-<span class="fc" id="L138">		edgesInternalContainers.ensureCapacity(e + 1);</span>
-<span class="fc" id="L139">		edgesUserWeights.ensureCapacity(e + 1);</span>
-<span class="fc" id="L140">		return e;</span>
+<span class="fc" id="L129">		checkVertex(source);</span>
+<span class="fc" id="L130">		checkVertex(target);</span>
+<span class="fc" id="L131">		int e = edges.newIdx();</span>
+<span class="pc bnc" id="L132" title="All 2 branches missed.">		assert e &gt;= 0;</span>
+<span class="fc" id="L133">		edgesInternalContainers.ensureCapacity(e + 1);</span>
+<span class="fc" id="L134">		edgesUserWeights.ensureCapacity(e + 1);</span>
+<span class="fc" id="L135">		return e;</span>
 	}
 
 	@Override
 	public final void removeEdge(int edge) {
-<span class="fc" id="L145">		edge = edgeSwapBeforeRemove(edge);</span>
-<span class="fc" id="L146">		removeEdgeImpl(edge);</span>
-<span class="fc" id="L147">	}</span>
-
-	void removeEdgeImpl(int edge) {
-		// internal weights are handled manually
-		// edgesInternalContainers.clearElement(edge);
-<span class="fc" id="L152">		edgesUserWeights.clearElement(edge);</span>
-<span class="fc" id="L153">		edges.removeIdx(edge);</span>
-<span class="fc" id="L154">	}</span>
-
-	int edgeSwapBeforeRemove(int e) {
-<span class="fc" id="L157">		int en = edges.isSwapNeededBeforeRemove(e);</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">		if (e != en) {</span>
-<span class="fc" id="L159">			edgeSwap(e, en);</span>
-<span class="fc" id="L160">			e = en;</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">		if (edge == edges.size - 1) {</span>
+<span class="fc" id="L141">			removeEdgeLast(edge);</span>
+		} else {
+<span class="fc" id="L143">			edgeSwapAndRemove(edge, edges.size - 1);</span>
 		}
-<span class="fc" id="L162">		return e;</span>
-	}
+<span class="fc" id="L145">	}</span>
 
-	void edgeSwap(int e1, int e2) {
-<span class="fc" id="L166">		edges.idxSwap(e1, e2);</span>
+	void removeEdgeLast(int edge) {
+<span class="fc" id="L148">		edgesUserWeights.clearElement(edge);</span>
+<span class="fc" id="L149">		edges.removeIdx(edge);</span>
+<span class="fc" id="L150">	}</span>
+
+	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
 		// internal weights are handled manually
-		// edgesInternalContainers.swapElements(e1, e2);
-<span class="fc" id="L169">		edgesUserWeights.swapElements(e1, e2);</span>
-<span class="fc" id="L170">	}</span>
+		// edgesInternalContainers.swapElements(removedIdx, swappedIdx);
+<span class="fc" id="L155">		edgesUserWeights.swapAndClear(removedIdx, swappedIdx);</span>
+<span class="fc" id="L156">		edges.swapAndRemove(removedIdx, swappedIdx);</span>
+<span class="fc" id="L157">	}</span>
 
 	@Override
 	public void clear() {
-<span class="fc" id="L174">		clearEdges();</span>
-<span class="fc" id="L175">		vertices.clear();</span>
+<span class="fc" id="L161">		clearEdges();</span>
+<span class="fc" id="L162">		vertices.clear();</span>
 		// internal weights are handled manually
 		// verticesInternalContainers.clearContainers();
-<span class="fc" id="L178">		verticesUserWeights.clearContainers();</span>
-<span class="fc" id="L179">	}</span>
+<span class="fc" id="L165">		verticesUserWeights.clearContainers();</span>
+<span class="fc" id="L166">	}</span>
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L183">		edges.clear();</span>
+<span class="fc" id="L170">		edges.clear();</span>
 		// internal weights are handled manually
 		// edgesInternalContainers.clearContainers();
-<span class="fc" id="L186">		edgesUserWeights.clearContainers();</span>
-<span class="fc" id="L187">	}</span>
+<span class="fc" id="L173">		edgesUserWeights.clearContainers();</span>
+<span class="fc" id="L174">	}</span>
 
 	@Override
 	public &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT getVerticesIWeights(String key) {
-<span class="fc" id="L191">		return verticesUserWeights.getWeights(key);</span>
+<span class="fc" id="L178">		return verticesUserWeights.getWeights(key);</span>
 	}
 
 	@Override
 	public Set&lt;String&gt; getVerticesWeightsKeys() {
-<span class="fc" id="L196">		return verticesUserWeights.weightsKeys();</span>
+<span class="fc" id="L183">		return verticesUserWeights.weightsKeys();</span>
 	}
 
 	@Override
 	public void removeVerticesWeights(String key) {
-<span class="fc" id="L201">		verticesUserWeights.removeWeights(key);</span>
-<span class="fc" id="L202">	}</span>
+<span class="fc" id="L188">		verticesUserWeights.removeWeights(key);</span>
+<span class="fc" id="L189">	}</span>
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT getEdgesIWeights(String key) {
-<span class="fc" id="L207">		return (WeightsT) edgesUserWeights.getWeights(key);</span>
+<span class="fc" id="L194">		return (WeightsT) edgesUserWeights.getWeights(key);</span>
 	}
 
 	@Override
 	public Set&lt;String&gt; getEdgesWeightsKeys() {
-<span class="fc" id="L212">		return edgesUserWeights.weightsKeys();</span>
+<span class="fc" id="L199">		return edgesUserWeights.weightsKeys();</span>
 	}
 
 	@Override
 	public void removeEdgesWeights(String key) {
-<span class="fc" id="L217">		edgesUserWeights.removeWeights(key);</span>
-<span class="fc" id="L218">	}</span>
+<span class="fc" id="L204">		edgesUserWeights.removeWeights(key);</span>
+<span class="fc" id="L205">	}</span>
 
 	void addInternalVerticesContainer(DataContainer container) {
-<span class="fc" id="L221">		verticesInternalContainers.addContainer(container);</span>
-<span class="fc" id="L222">	}</span>
+<span class="fc" id="L208">		verticesInternalContainers.addContainer(container);</span>
+<span class="fc" id="L209">	}</span>
 
 	void addInternalEdgesContainer(DataContainer container) {
-<span class="fc" id="L225">		edgesInternalContainers.addContainer(container);</span>
-<span class="fc" id="L226">	}</span>
+<span class="fc" id="L212">		edgesInternalContainers.addContainer(container);</span>
+<span class="fc" id="L213">	}</span>
 
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
-<span class="fc" id="L231">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);</span>
-<span class="fc" id="L232">		verticesUserWeights.addWeights(key, weights);</span>
+<span class="fc" id="L218">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);</span>
+<span class="fc" id="L219">		verticesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L234">		WeightsT weights0 = (WeightsT) weights;</span>
-<span class="fc" id="L235">		return weights0;</span>
+<span class="fc" id="L221">		WeightsT weights0 = (WeightsT) weights;</span>
+<span class="fc" id="L222">		return weights0;</span>
 	}
 
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
-<span class="fc" id="L241">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);</span>
-<span class="fc" id="L242">		edgesUserWeights.addWeights(key, weights);</span>
+<span class="fc" id="L228">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);</span>
+<span class="fc" id="L229">		edgesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L244">		WeightsT weights0 = (WeightsT) weights;</span>
-<span class="fc" id="L245">		return weights0;</span>
+<span class="fc" id="L231">		WeightsT weights0 = (WeightsT) weights;</span>
+<span class="fc" id="L232">		return weights0;</span>
 	}
 
 	void checkVertex(int vertex) {
-<span class="fc" id="L249">		Assertions.Graphs.checkVertex(vertex, vertices.size);</span>
-<span class="fc" id="L250">	}</span>
+<span class="fc" id="L236">		Assertions.Graphs.checkVertex(vertex, vertices.size);</span>
+<span class="fc" id="L237">	}</span>
 
 	void checkEdge(int edge) {
-<span class="fc" id="L253">		Assertions.Graphs.checkEdge(edge, edges.size);</span>
+<span class="fc" id="L240">		Assertions.Graphs.checkEdge(edge, edges.size);</span>
+<span class="fc" id="L241">	}</span>
+
+	static void clear(int[] dataContainer, int idx, int defaultVal) {
+<span class="fc" id="L244">		dataContainer[idx] = defaultVal;</span>
+<span class="fc" id="L245">	}</span>
+
+	static void clear(long[] dataContainer, int idx, long defaultVal) {
+<span class="fc" id="L248">		dataContainer[idx] = defaultVal;</span>
+<span class="fc" id="L249">	}</span>
+
+	void swapAndClear(int[] dataContainer, int removedIdx, int swappedIdx, int defaultVal) {
+<span class="fc" id="L252">		dataContainer[removedIdx] = dataContainer[swappedIdx];</span>
+<span class="fc" id="L253">		dataContainer[swappedIdx] = defaultVal;</span>
 <span class="fc" id="L254">	}</span>
 
+	void swapAndClear(long[] dataContainer, int removedIdx, int swappedIdx, long defaultVal) {
+<span class="fc" id="L257">		dataContainer[removedIdx] = dataContainer[swappedIdx];</span>
+<span class="fc" id="L258">		dataContainer[swappedIdx] = defaultVal;</span>
+<span class="fc" id="L259">	}</span>
+
+	&lt;T&gt; void swapAndClear(T[] dataContainer, int removedIdx, int swappedIdx, T defaultVal) {
+<span class="fc" id="L262">		dataContainer[removedIdx] = dataContainer[swappedIdx];</span>
+<span class="fc" id="L263">		dataContainer[swappedIdx] = defaultVal;</span>
+<span class="fc" id="L264">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -65,15 +65,15 @@ import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 				}
 <span class="fc" id="L66">			} else {</span>
 <span class="fc" id="L67">				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">				for (var entry : builder.verticesUserWeights.weights.entrySet())</span>
-<span class="fc" id="L69">					verticesUserWeightsBuilder.copyAndAddWeights(entry.getKey(), entry.getValue());</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">				for (String key : builder.verticesUserWeights.weightsKeys())</span>
+<span class="fc" id="L69">					verticesUserWeightsBuilder.copyAndAddWeights(key, builder.verticesUserWeights.getWeights(key));</span>
 <span class="fc bfc" id="L70" title="All 2 branches covered.">				if (edgesReIndexing == null) {</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">					for (var entry : builder.edgesUserWeights.weights.entrySet())</span>
-<span class="fc" id="L72">						edgesUserWeightsBuilder.copyAndAddWeights(entry.getKey(), entry.getValue());</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">					for (String key : builder.edgesUserWeights.weightsKeys())</span>
+<span class="fc" id="L72">						edgesUserWeightsBuilder.copyAndAddWeights(key, builder.edgesUserWeights.getWeights(key));</span>
 				} else {
-<span class="fc bfc" id="L74" title="All 2 branches covered.">					for (var entry : builder.edgesUserWeights.weights.entrySet())</span>
-<span class="fc" id="L75">						edgesUserWeightsBuilder.copyAndAddWeightsReindexed(entry.getKey(), entry.getValue(),</span>
-								edgesReIndexing);
+<span class="fc bfc" id="L74" title="All 2 branches covered.">					for (String key : builder.edgesUserWeights.weightsKeys())</span>
+<span class="fc" id="L75">						edgesUserWeightsBuilder.copyAndAddWeightsReindexed(key,</span>
+<span class="fc" id="L76">								builder.edgesUserWeights.getWeights(key), edgesReIndexing);</span>
 				}
 			}
 		}

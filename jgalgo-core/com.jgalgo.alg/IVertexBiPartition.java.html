@@ -121,10 +121,10 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition&
 	static IVertexBiPartition fromMapping(IntGraph g, IntPredicate mapping) {
 <span class="fc" id="L122">		final int n = g.vertices().size();</span>
 <span class="fc bfc" id="L123" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L124">			return new VertexBiPartitions.FromBitmap((IndexGraph) g, new Bitmap(n, mapping));</span>
+<span class="fc" id="L124">			return new VertexBiPartitions.FromBitmap((IndexGraph) g, Bitmap.fromPredicate(n, mapping));</span>
 		} else {
 <span class="fc" id="L126">			IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L127">			Bitmap vertexToBlock = new Bitmap(n, vIdx -&gt; mapping.test(viMap.indexToIdInt(vIdx)));</span>
+<span class="fc" id="L127">			Bitmap vertexToBlock = Bitmap.fromPredicate(n, vIdx -&gt; mapping.test(viMap.indexToIdInt(vIdx)));</span>
 <span class="fc" id="L128">			IVertexBiPartition indexPartition = new VertexBiPartitions.FromBitmap(g.indexGraph(), vertexToBlock);</span>
 <span class="fc" id="L129">			return new VertexBiPartitions.IntBiPartitionFromIndexBiPartition(g, indexPartition);</span>
 		}
@@ -149,10 +149,10 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition&
 <span class="nc" id="L149">			return false;</span>
 		Bitmap vertexToBlock;
 <span class="fc bfc" id="L151" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L152">			vertexToBlock = new Bitmap(n, mapping);</span>
+<span class="fc" id="L152">			vertexToBlock = Bitmap.fromPredicate(n, mapping);</span>
 		} else {
 <span class="fc" id="L154">			IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L155">			vertexToBlock = new Bitmap(n, vIdx -&gt; mapping.test(viMap.indexToIdInt(vIdx)));</span>
+<span class="fc" id="L155">			vertexToBlock = Bitmap.fromPredicate(n, vIdx -&gt; mapping.test(viMap.indexToIdInt(vIdx)));</span>
 		}
 <span class="fc bfc" id="L157" title="All 2 branches covered.">		if (vertexToBlock.get(0)) {</span>
 <span class="fc bfc" id="L158" title="All 2 branches covered.">			for (int v = 1; v &lt; n; v++)</span>

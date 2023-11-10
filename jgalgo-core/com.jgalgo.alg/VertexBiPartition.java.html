@@ -173,7 +173,7 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 		} else {
 <span class="fc" id="L174">			final int n = g.vertices().size();</span>
 <span class="fc" id="L175">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L176">			Bitmap vertexToBlock = new Bitmap(n, vIdx -&gt; mapping.test(viMap.indexToId(vIdx)));</span>
+<span class="fc" id="L176">			Bitmap vertexToBlock = Bitmap.fromPredicate(n, vIdx -&gt; mapping.test(viMap.indexToId(vIdx)));</span>
 <span class="fc" id="L177">			IVertexBiPartition indexPartition = new VertexBiPartitions.FromBitmap(g.indexGraph(), vertexToBlock);</span>
 <span class="fc" id="L178">			return new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition&lt;&gt;(g, indexPartition);</span>
 		}
@@ -205,7 +205,7 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 <span class="nc" id="L205">			return false;</span>
 
 <span class="fc" id="L207">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L208">		Bitmap vertexToBlock = new Bitmap(n, vIdx -&gt; mapping.test(viMap.indexToId(vIdx)));</span>
+<span class="fc" id="L208">		Bitmap vertexToBlock = Bitmap.fromPredicate(n, vIdx -&gt; mapping.test(viMap.indexToId(vIdx)));</span>
 <span class="fc bfc" id="L209" title="All 2 branches covered.">		if (vertexToBlock.get(0)) {</span>
 <span class="fc bfc" id="L210" title="All 2 branches covered.">			for (int v = 1; v &lt; n; v++)</span>
 <span class="fc bfc" id="L211" title="All 2 branches covered.">				if (!vertexToBlock.get(v))</span>

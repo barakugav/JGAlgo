@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumCutGlobalStoerWagner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">MinimumCutGlobalStoerWagner.java</span></div><h1>MinimumCutGlobalStoerWagner.java</h1><pre class="source lang-java linenums">/*-
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumEdgeCutGlobalStoerWagner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">MinimumEdgeCutGlobalStoerWagner.java</span></div><h1>MinimumEdgeCutGlobalStoerWagner.java</h1><pre class="source lang-java linenums">/*-
  * Copyright 2023 Barak Ugav
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -22,6 +22,7 @@ import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -35,44 +36,43 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L38">class MinimumCutGlobalStoerWagner extends MinimumCutGlobalAbstract {</span>
+<span class="fc" id="L39">class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutGlobalAbstract {</span>
 
 	@Override
 	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L42">		Assertions.Graphs.onlyUndirected(g);</span>
-<span class="fc" id="L43">		final int n = g.vertices().size();</span>
-<span class="pc bpc" id="L44" title="1 of 2 branches missed.">		if (n &lt; 2)</span>
-<span class="nc" id="L45">			throw new IllegalArgumentException(&quot;There is no valid cut in a graph with less than two vertices&quot;);</span>
+<span class="fc" id="L43">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L44">		final int n = g.vertices().size();</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">		if (n &lt; 2)</span>
+<span class="nc" id="L46">			throw new IllegalArgumentException(&quot;There is no valid cut in a graph with less than two vertices&quot;);</span>
 
-<span class="fc" id="L47">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
-<span class="fc" id="L48">		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);</span>
+<span class="fc" id="L48">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
+<span class="fc" id="L49">		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);</span>
 
-<span class="fc" id="L50">		ContractableGraph cg = new ContractableGraph(g);</span>
-<span class="fc" id="L51">		Bitmap cut = new Bitmap(n);</span>
+<span class="fc" id="L51">		ContractableGraph cg = new ContractableGraph(g);</span>
+<span class="fc" id="L52">		Bitmap cut = new Bitmap(n);</span>
 
 		HeapReferenceable&lt;Double, Integer&gt; heap =
-<span class="fc" id="L54">				HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();</span>
+<span class="fc" id="L55">				HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L56">		HeapReference&lt;Double, Integer&gt;[] vRefs = new HeapReference[n];</span>
+<span class="fc" id="L57">		HeapReference&lt;Double, Integer&gt;[] vRefs = new HeapReference[n];</span>
 
-<span class="fc" id="L58">		Bitmap minimumCut = new Bitmap(n);</span>
-<span class="fc" id="L59">		double minimumCutWeight = Double.MAX_VALUE;</span>
+<span class="fc" id="L59">		Bitmap minimumCut = new Bitmap(n);</span>
+<span class="fc" id="L60">		double minimumCutWeight = Double.MAX_VALUE;</span>
 
-<span class="fc bfc" id="L61" title="All 2 branches covered.">		while (cg.numberOfSuperVertices() &gt; 1) {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		while (cg.numberOfSuperVertices() &gt; 1) {</span>
 			/* Start with an arbitrary cut with a single vertex */
-<span class="fc" id="L63">			cut.clear();</span>
-<span class="fc" id="L64">			cut.set(0);</span>
+<span class="fc" id="L64">			cut.clear();</span>
+<span class="fc" id="L65">			cut.set(0);</span>
 
 			/* Insert all (super) vertices to the heap */
-<span class="pc bnc" id="L67" title="All 2 branches missed.">			assert heap.isEmpty();</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">			for (int U = 0; U &lt; cg.numberOfSuperVertices(); U++)</span>
-<span class="pc bnc" id="L69" title="All 2 branches missed.">				assert vRefs[U] == null;</span>
+<span class="pc bnc" id="L68" title="All 2 branches missed.">			assert heap.isEmpty();</span>
+<span class="pc bnc" id="L69" title="All 4 branches missed.">			assert Range.of(cg.numberOfSuperVertices()).intStream().allMatch(U -&gt; vRefs[U] == null);</span>
 <span class="fc bfc" id="L70" title="All 2 branches covered.">			for (int U = 1; U &lt; cg.numberOfSuperVertices(); U++) {</span>
 <span class="fc" id="L71">				double weightsSum = 0;</span>
 <span class="fc bfc" id="L72" title="All 2 branches covered.">				for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
 <span class="fc" id="L73">					int e = eit.nextInt();</span>
-<span class="pc bnc" id="L74" title="All 2 branches missed.">					assert eit.sourceInt() == U;</span>
-<span class="fc" id="L75">					int V = eit.targetInt();</span>
+<span class="pc bnc" id="L74" title="All 2 branches missed.">					assert eit.source() == U;</span>
+<span class="fc" id="L75">					int V = eit.target();</span>
 <span class="fc bfc" id="L76" title="All 2 branches covered.">					if (cut.get(V))</span>
 <span class="fc" id="L77">						weightsSum += w.weight(e);</span>
 <span class="fc" id="L78">				}</span>
@@ -97,8 +97,8 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 					/* Decrease (actually increase) key of all neighbors (super) vertices not in the cut */
 <span class="fc bfc" id="L98" title="All 2 branches covered.">					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
 <span class="fc" id="L99">						int e = eit.nextInt();</span>
-<span class="pc bnc" id="L100" title="All 2 branches missed.">						assert eit.sourceInt() == U;</span>
-<span class="fc" id="L101">						int V = eit.targetInt();</span>
+<span class="pc bnc" id="L100" title="All 2 branches missed.">						assert eit.source() == U;</span>
+<span class="fc" id="L101">						int V = eit.target();</span>
 <span class="fc bfc" id="L102" title="All 2 branches covered.">						if (!cut.get(V)) {</span>
 <span class="fc" id="L103">							HeapReference&lt;Double, Integer&gt; vRef = vRefs[V];</span>
 <span class="fc" id="L104">							double weightsSum = -vRef.key().doubleValue();</span>
@@ -111,8 +111,8 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 					/* Find the cut-of-the-phase and its weight */
 <span class="fc bfc" id="L112" title="All 2 branches covered.">					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
 <span class="fc" id="L113">						int e = eit.nextInt();</span>
-<span class="pc bnc" id="L114" title="All 2 branches missed.">						assert eit.sourceInt() == U;</span>
-<span class="pc bnc" id="L115" title="All 2 branches missed.">						assert cut.get(eit.targetInt());</span>
+<span class="pc bnc" id="L114" title="All 2 branches missed.">						assert eit.source() == U;</span>
+<span class="pc bnc" id="L115" title="All 2 branches missed.">						assert cut.get(eit.target());</span>
 <span class="fc" id="L116">						cutOfThePhaseWeight += w.weight(e);</span>
 <span class="fc" id="L117">					}</span>
 <span class="fc" id="L118">					break minimumCutPhase;</span>

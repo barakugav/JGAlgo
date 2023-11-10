@@ -139,12 +139,12 @@ class ContractableGraph {
 			}
 
 			@Override
-			public int sourceInt() {
+			public int source() {
 <span class="nc" id="L143">				return U;</span>
 			}
 
 			@Override
-			public int targetInt() {
+			public int target() {
 <span class="fc" id="L148">				return target;</span>
 			}
 
@@ -192,8 +192,8 @@ class ContractableGraph {
 <span class="nc" id="L192">					s.append(&quot;, &quot;);</span>
 				}
 <span class="nc" id="L194">				s.append(e).append('(');</span>
-<span class="nc" id="L195">				s.append(eit.sourceOriginal()).append(&quot;(&quot;).append(eit.sourceInt()).append(&quot;), &quot;);</span>
-<span class="nc" id="L196">				s.append(eit.targetOriginal()).append(&quot;(&quot;).append(eit.targetInt()).append(&quot;))&quot;);</span>
+<span class="nc" id="L195">				s.append(eit.sourceOriginal()).append(&quot;(&quot;).append(eit.source()).append(&quot;), &quot;);</span>
+<span class="nc" id="L196">				s.append(eit.targetOriginal()).append(&quot;(&quot;).append(eit.target()).append(&quot;))&quot;);</span>
 <span class="nc" id="L197">			}</span>
 <span class="nc" id="L198">			s.append(']');</span>
 		}
@@ -205,15 +205,14 @@ class ContractableGraph {
 <span class="fc" id="L205">		Assertions.Graphs.checkVertex(U, numV);</span>
 <span class="fc" id="L206">	}</span>
 
-	static interface EdgeIter extends com.jgalgo.graph.IEdgeIter {
+	static interface EdgeIter extends IntIterator {
+		int source();
+
+		int target();
+
 		int sourceOriginal();
 
 		int targetOriginal();
-
-		@Override
-		default int peekNextInt() {
-<span class="nc" id="L215">			throw new UnsupportedOperationException();</span>
-		}
 	}
 
 }

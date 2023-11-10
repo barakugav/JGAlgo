@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphBaseWithEdgeEndpointsContainer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphBaseWithEdgeEndpointsContainer.java</span></div><h1>GraphBaseWithEdgeEndpointsContainer.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.graph;
+
+import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
+
+public abstract class GraphBaseWithEdgeEndpointsContainer extends GraphBaseMutable
+		implements GraphWithEdgeEndpointsContainer {
+
+	private long[] edgeEndpoints;
+	private final DataContainer.Long edgeEndpointsContainer;
+
+	GraphBaseWithEdgeEndpointsContainer(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum,
+			int expectedEdgesNum) {
+<span class="fc" id="L28">		super(capabilities, expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L29">		edgeEndpointsContainer =</span>
+<span class="fc" id="L30">				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L31">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
+<span class="fc" id="L32">	}</span>
+
+	GraphBaseWithEdgeEndpointsContainer(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
+<span class="fc" id="L35">		super(capabilities, g, copyWeights);</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">		if (g instanceof GraphBaseWithEdgeEndpointsContainer) {</span>
+<span class="fc" id="L37">			GraphBaseWithEdgeEndpointsContainer g0 = (GraphBaseWithEdgeEndpointsContainer) g;</span>
+<span class="fc" id="L38">			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edges, newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L39">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
+<span class="fc" id="L40">		} else {</span>
+
+<span class="fc" id="L42">			final int m = edges.size();</span>
+<span class="fc" id="L43">			edgeEndpointsContainer =</span>
+<span class="fc" id="L44">					new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L45">			addInternalEdgesContainer(edgeEndpointsContainer);</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L47">				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));</span>
+		}
+<span class="fc" id="L49">	}</span>
+
+	GraphBaseWithEdgeEndpointsContainer(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+<span class="fc" id="L52">		super(capabilities, builder);</span>
+<span class="fc" id="L53">		final int m = edges.size();</span>
+<span class="fc" id="L54">		edgeEndpointsContainer =</span>
+<span class="fc" id="L55">				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L56">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
+
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L59">			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));</span>
+<span class="fc" id="L60">	}</span>
+
+	@Override
+	public int addEdge(int source, int target) {
+<span class="fc" id="L64">		int e = super.addEdge(source, target);</span>
+<span class="fc" id="L65">		setEndpoints(e, source, target);</span>
+<span class="fc" id="L66">		return e;</span>
+	}
+
+	@Override
+	void removeEdgeLast(int edge) {
+<span class="fc" id="L71">		clear(edgeEndpoints, edge, EdgeEndpointsContainer.DefVal);</span>
+<span class="fc" id="L72">		super.removeEdgeLast(edge);</span>
+<span class="fc" id="L73">	}</span>
+
+	@Override
+	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
+<span class="fc" id="L77">		swapAndClear(edgeEndpoints, removedIdx, swappedIdx, EdgeEndpointsContainer.DefVal);</span>
+<span class="fc" id="L78">		super.edgeSwapAndRemove(removedIdx, swappedIdx);</span>
+<span class="fc" id="L79">	}</span>
+
+	void reverseEdge0(int edge) {
+<span class="fc" id="L82">		EdgeEndpointsContainer.reverseEdge(edgeEndpoints, edge);</span>
+<span class="fc" id="L83">	}</span>
+
+	@Override
+	public void clearEdges() {
+<span class="fc" id="L87">		edgeEndpointsContainer.clear();</span>
+<span class="fc" id="L88">		super.clearEdges();</span>
+<span class="fc" id="L89">	}</span>
+
+	@Override
+	public long[] edgeEndpoints() {
+<span class="fc" id="L93">		return edgeEndpoints;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

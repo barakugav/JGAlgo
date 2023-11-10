@@ -30,6 +30,13 @@ import com.jgalgo.graph.IntGraph;
  * vertices.
  *
  * &lt;p&gt;
+ * To compute the edge connectivity between two specific edges, use {@link MinimumEdgeCutST}, as the minimum cardinality
+ * edge-cut of a graph is equal to its edge connectivity. To compute the
+ * &lt;a href=&quot;https://mathworld.wolfram.com/EdgeConnectivity.html&quot;&gt;edge connectivity&lt;/a&gt; of a graph, use
+ * {@link MinimumEdgeCutGlobal}, as the minimum global cardinality edge-cut of a graph is equal to its edge
+ * connectivity.
+ *
+ * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
@@ -68,7 +75,7 @@ public interface KEdgeConnectedComponentsAlgo {
 	 * @return a default implementation of {@link KEdgeConnectedComponentsAlgo}
 	 */
 	static KEdgeConnectedComponentsAlgo newInstance() {
-<span class="nc" id="L71">		return newBuilder().build();</span>
+<span class="nc" id="L78">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -80,7 +87,7 @@ public interface KEdgeConnectedComponentsAlgo {
 	 * @return a new builder that can build {@link KEdgeConnectedComponentsAlgo} objects
 	 */
 	static KEdgeConnectedComponentsAlgo.Builder newBuilder() {
-<span class="nc" id="L83">		return KEdgeConnectedComponentsWang::new;</span>
+<span class="nc" id="L90">		return KEdgeConnectedComponentsWang::new;</span>
 	}
 
 	/**
@@ -114,7 +121,7 @@ public interface KEdgeConnectedComponentsAlgo {
 		 * @return       this builder
 		 */
 		default KEdgeConnectedComponentsAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L117">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L124">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 
