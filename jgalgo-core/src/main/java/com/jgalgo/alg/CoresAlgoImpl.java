@@ -45,7 +45,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 class CoresAlgoImpl implements CoresAlgo {
 
-	CoresAlgo.IResult computeCores(IndexGraph g, DegreeType degreeType) {
+	CoresAlgo.IResult computeCores(IndexGraph g, EdgeDirection degreeType) {
 		Objects.requireNonNull(degreeType);
 
 		final int n = g.vertices().size();
@@ -54,18 +54,18 @@ class CoresAlgoImpl implements CoresAlgo {
 		/* cache the degree of each vertex */
 		int[] degree = new int[n];
 		int maxDegree = 0;
-		if (!directed || degreeType == DegreeType.OutDegree) {
+		if (!directed || degreeType == EdgeDirection.Out) {
 			for (int v = 0; v < n; v++) {
 				degree[v] = g.outEdges(v).size();
 				maxDegree = Math.max(maxDegree, degree[v]);
 			}
-		} else if (degreeType == DegreeType.InDegree) {
+		} else if (degreeType == EdgeDirection.In) {
 			for (int v = 0; v < n; v++) {
 				degree[v] = g.inEdges(v).size();
 				maxDegree = Math.max(maxDegree, degree[v]);
 			}
 		} else {
-			assert degreeType == DegreeType.OutAndInDegree;
+			assert degreeType == EdgeDirection.All;
 			for (int v = 0; v < n; v++) {
 				degree[v] = g.outEdges(v).size() + g.inEdges(v).size();
 				maxDegree = Math.max(maxDegree, degree[v]);
@@ -117,14 +117,14 @@ class CoresAlgoImpl implements CoresAlgo {
 			int uDegree = degree[u];
 
 			/* we 'remove' u from the graph, actually just decreasing the degree of its neighbors */
-			if (!directed || degreeType == DegreeType.InDegree) {
+			if (!directed || degreeType == EdgeDirection.In) {
 				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.targetInt();
 					if (degree[v] > uDegree)
 						decreaseDegree.accept(v);
 				}
-			} else if (degreeType == DegreeType.OutDegree) {
+			} else if (degreeType == EdgeDirection.Out) {
 				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.sourceInt();
@@ -132,7 +132,7 @@ class CoresAlgoImpl implements CoresAlgo {
 						decreaseDegree.accept(v);
 				}
 			} else {
-				assert degreeType == DegreeType.OutAndInDegree;
+				assert degreeType == EdgeDirection.All;
 				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.targetInt();
@@ -268,7 +268,7 @@ class CoresAlgoImpl implements CoresAlgo {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <V, E> CoresAlgo.Result<V, E> computeCores(Graph<V, E> g, DegreeType degreeType) {
+	public <V, E> CoresAlgo.Result<V, E> computeCores(Graph<V, E> g, EdgeDirection degreeType) {
 		if (g instanceof IndexGraph) {
 			return (CoresAlgo.Result<V, E>) computeCores((IndexGraph) g, degreeType);
 

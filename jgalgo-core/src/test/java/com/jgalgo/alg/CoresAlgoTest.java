@@ -33,40 +33,40 @@ public class CoresAlgoTest extends TestBase {
 	@Test
 	public void testRandDiGraphOutDegree() {
 		final long seed = 0x9580a32b3a337964L;
-		testCoresAlgo(CoresAlgo.DegreeType.OutDegree, true, seed);
+		testCoresAlgo(EdgeDirection.Out, true, seed);
 	}
 
 	@Test
 	public void testRandUGraphOutDegree() {
 		final long seed = 0xbbc94ada47517633L;
-		testCoresAlgo(CoresAlgo.DegreeType.OutDegree, false, seed);
+		testCoresAlgo(EdgeDirection.Out, false, seed);
 	}
 
 	@Test
 	public void testRandDiGraphInDegree() {
 		final long seed = 0xfc360f8910a1daf5L;
-		testCoresAlgo(CoresAlgo.DegreeType.InDegree, true, seed);
+		testCoresAlgo(EdgeDirection.In, true, seed);
 	}
 
 	@Test
 	public void testRandUGraphInDegree() {
 		final long seed = 0x45fdea8a6c65ad42L;
-		testCoresAlgo(CoresAlgo.DegreeType.InDegree, false, seed);
+		testCoresAlgo(EdgeDirection.In, false, seed);
 	}
 
 	@Test
 	public void testRandDiGraphOutAndInDegree() {
 		final long seed = 0x934896c8f5134dceL;
-		testCoresAlgo(CoresAlgo.DegreeType.OutAndInDegree, true, seed);
+		testCoresAlgo(EdgeDirection.All, true, seed);
 	}
 
 	@Test
 	public void testRandUGraphOutAndInDegree() {
 		final long seed = 0xc17b43624b506d6bL;
-		testCoresAlgo(CoresAlgo.DegreeType.OutAndInDegree, false, seed);
+		testCoresAlgo(EdgeDirection.All, false, seed);
 	}
 
-	private static void testCoresAlgo(CoresAlgo.DegreeType degreeType, boolean directed, long seed) {
+	private static void testCoresAlgo(EdgeDirection degreeType, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32).repeat(128);
@@ -82,9 +82,9 @@ public class CoresAlgoTest extends TestBase {
 		});
 	}
 
-	private static <V, E> void testCoresAlgo(Graph<V, E> g, CoresAlgo algo, CoresAlgo.DegreeType degreeType) {
+	private static <V, E> void testCoresAlgo(Graph<V, E> g, CoresAlgo algo, EdgeDirection degreeType) {
 		CoresAlgo.Result<V, E> res;
-		if (degreeType == CoresAlgo.DegreeType.OutAndInDegree) {
+		if (degreeType == EdgeDirection.All) {
 			res = algo.computeCores(g);
 		} else {
 			res = algo.computeCores(g, degreeType);
@@ -104,20 +104,20 @@ public class CoresAlgoTest extends TestBase {
 				for (Iterator<V> vit = vs.iterator(); vit.hasNext();) {
 					V u = vit.next();
 					int degree = 0;
-					if (!directed || degreeType == CoresAlgo.DegreeType.OutDegree) {
+					if (!directed || degreeType == EdgeDirection.Out) {
 						for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							eit.next();
 							if (vs.contains(eit.target()))
 								degree++;
 						}
-					} else if (degreeType == CoresAlgo.DegreeType.InDegree) {
+					} else if (degreeType == EdgeDirection.In) {
 						for (EdgeIter<V, E> eit = g.inEdges(u).iterator(); eit.hasNext();) {
 							eit.next();
 							if (vs.contains(eit.source()))
 								degree++;
 						}
 					} else {
-						assert degreeType == CoresAlgo.DegreeType.OutAndInDegree;
+						assert degreeType == EdgeDirection.All;
 						for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							eit.next();
 							if (vs.contains(eit.target()))

@@ -27,13 +27,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Given a graph \(G=(V,E)\), a subgraph \(H\) induced by a subset of vertices \(W\) is a \(k\)-core or a core of order
  * \(k\) if \(\forall v \in W : deg_H(v) \geq k\) and \(H\) is a maximum subgraph with this property. The core number of
  * vertex is the highest order of a core that contains this vertex. The degree \(deg(v)\) can be: in-degree, out-degree,
- * in-degree + out-degree, determining different types of cores.
+ * in-degree + out-degree, determining different types of cores. See {@link EdgeDirection} for more details.
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
- * @see    CoresAlgo.DegreeType
+ * @see    EdgeDirection
  * @author Barak Ugav
  */
 public interface CoresAlgo {
@@ -53,7 +53,7 @@ public interface CoresAlgo {
 	 * @return     the cores of the graph
 	 */
 	default <V, E> CoresAlgo.Result<V, E> computeCores(Graph<V, E> g) {
-		return computeCores(g, DegreeType.OutAndInDegree);
+		return computeCores(g, EdgeDirection.All);
 	}
 
 	/**
@@ -75,36 +75,7 @@ public interface CoresAlgo {
 	 * @param  degreeType the degree type the cores are computed with respect to
 	 * @return            the cores of the graph
 	 */
-	<V, E> CoresAlgo.Result<V, E> computeCores(Graph<V, E> g, DegreeType degreeType);
-
-	/**
-	 * The degree type the cores are defined with respect to.
-	 *
-	 * <p>
-	 * A \(k\)-core is a maximal set of vertices such that the graph induced by the set has minimum degree \(k\).
-	 * Different types of degrees can be considered, yielding different types of cores. For undirected graphs the degree
-	 * type has no effect.
-	 *
-	 * @see    CoresAlgo
-	 * @see    CoresAlgo#computeCores(Graph, DegreeType)
-	 * @author Barak Ugav
-	 */
-	static enum DegreeType {
-		/**
-		 * Cores will be computed with respect to the out-degree of the vertices, namely the number of outgoing edges.
-		 */
-		OutDegree,
-
-		/**
-		 * Cores will be computed with respect to the in-degree of the vertices, namely the number of incoming edges.
-		 */
-		InDegree,
-
-		/**
-		 * Cores will be computed with respect to the sum of the in and out degrees of the vertices.
-		 */
-		OutAndInDegree
-	}
+	<V, E> CoresAlgo.Result<V, E> computeCores(Graph<V, E> g, EdgeDirection degreeType);
 
 	/**
 	 * The result of the cores computation.
