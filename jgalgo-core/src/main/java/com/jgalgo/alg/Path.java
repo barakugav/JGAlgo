@@ -25,7 +25,6 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.IntAdapters;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -162,7 +161,7 @@ public interface Path<V, E> {
 		if (g instanceof IntGraph) {
 			int iSource = ((Integer) source).intValue();
 			int iTarget = ((Integer) target).intValue();
-			IntList iEdges = edges instanceof IntList ? (IntList) edges : new IntArrayList((List<Integer>) edges);
+			IntList iEdges = IntAdapters.asIntList((List<Integer>) edges);
 			return (Path<V, E>) IPath.newInstance((IntGraph) g, iSource, iTarget, iEdges);
 		}
 

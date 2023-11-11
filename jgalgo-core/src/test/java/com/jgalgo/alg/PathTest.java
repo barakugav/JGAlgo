@@ -22,6 +22,8 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
@@ -46,6 +48,8 @@ public class PathTest extends TestBase {
 			boolean directed = rand.nextBoolean();
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(true).build();
+			g = maybeIndexGraph(g, rand);
+
 			testFindPath(g, validationAlgo, rand);
 		});
 	}
@@ -147,6 +151,33 @@ public class PathTest extends TestBase {
 		assertFalse(IPath.newInstance(g, v1, v1, IntList.of(e1, e2, e3, e4)).isSimple());
 		assertFalse(IPath.newInstance(g, v1, v2, IntList.of(e1, e5, e3, e2)).isSimple());
 		assertTrue(IPath.newInstance(g, v1, v3, IntList.of(e1, e5, e3)).isSimple());
+	}
+
+	@Test
+	public void testReachableVertices() {
+		final long seed = 0;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 8).repeat(256);
+		tester.addPhase().withArgs(32, 64).repeat(128);
+		tester.addPhase().withArgs(312, 600).repeat(8);
+		tester.run((n, m) -> {
+			boolean directed = rand.nextBoolean();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(true).build();
+			g = maybeIndexGraph(g, rand);
+			Integer source = Graphs.randVertex(g, rand);
+
+			testReachableVertices(g, source, rand);
+		});
+	}
+
+	private static <V, E> void testReachableVertices(Graph<V, E> g, V source, Random rand) {
+		Set<V> reachableActual = Path.reachableVertices(g, source);
+		Set<V> reachableExpected =
+				g.vertices().stream().filter(v -> Path.findPath(g, source, v) != null).collect(Collectors.toSet());
+		assertEquals(reachableExpected, reachableActual);
 	}
 
 }

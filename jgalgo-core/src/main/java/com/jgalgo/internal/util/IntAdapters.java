@@ -17,6 +17,8 @@ package com.jgalgo.internal.util;
 
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+import java.util.ListIterator;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
@@ -27,10 +29,13 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
+import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 
 public class IntAdapters {
 
@@ -55,8 +60,18 @@ public class IntAdapters {
 	public static IntCollection asIntCollection(Collection<Integer> c) {
 		if (c instanceof IntCollection) {
 			return (IntCollection) c;
+		} else if (c instanceof List) {
+			return new IntListWrapper((List<Integer>) c);
 		} else {
 			return new IntCollectionWrapper(c);
+		}
+	}
+
+	public static IntList asIntList(List<Integer> c) {
+		if (c instanceof IntList) {
+			return (IntList) c;
+		} else {
+			return new IntListWrapper((List<Integer>) c);
 		}
 	}
 
@@ -75,6 +90,44 @@ public class IntAdapters {
 		@Override
 		public int nextInt() {
 			return it.next().intValue();
+		}
+	}
+
+	private static class IntListIteratorWrapper implements IntListIterator {
+		private final ListIterator<Integer> it;
+
+		public IntListIteratorWrapper(ListIterator<Integer> it) {
+			this.it = Objects.requireNonNull(it);
+		}
+
+		@Override
+		public int previousInt() {
+			return it.previous().intValue();
+		}
+
+		@Override
+		public int nextInt() {
+			return it.next().intValue();
+		}
+
+		@Override
+		public boolean hasPrevious() {
+			return it.hasPrevious();
+		}
+
+		@Override
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+
+		@Override
+		public int nextIndex() {
+			return it.nextIndex();
+		}
+
+		@Override
+		public int previousIndex() {
+			return it.previousIndex();
 		}
 	}
 
@@ -181,6 +234,119 @@ public class IntAdapters {
 		@Override
 		public boolean retainAll(IntCollection c2) {
 			return c.retainAll(c2);
+		}
+	}
+
+	private static class IntListWrapper extends AbstractIntList {
+
+		private final List<Integer> l;
+
+		public IntListWrapper(List<Integer> l) {
+			this.l = Objects.requireNonNull(l);
+		}
+
+		@Override
+		public int size() {
+			return l.size();
+		}
+
+		@Override
+		public boolean addAll(IntCollection c) {
+			return l.addAll(c);
+		}
+
+		public boolean addAll(Collection<? extends Integer> c) {
+			return l.addAll(c);
+		}
+
+		@Override
+		public boolean addAll(int index, Collection<? extends Integer> c) {
+			return l.addAll(index, c);
+		}
+
+		@Override
+		public boolean removeAll(Collection<?> c) {
+			return l.removeAll(c);
+		}
+
+		@Override
+		public boolean retainAll(Collection<?> c) {
+			return l.retainAll(c);
+		}
+
+		@Override
+		public void clear() {
+			l.clear();
+		}
+
+		@Override
+		public boolean contains(int key) {
+			return l.contains(Integer.valueOf(key));
+		}
+
+		@Override
+		public boolean containsAll(Collection<?> c) {
+			return l.containsAll(c);
+		}
+
+		@Override
+		public boolean containsAll(IntCollection c) {
+			return l.containsAll(c);
+		}
+
+		@Override
+		public boolean rem(int key) {
+			return l.remove(Integer.valueOf(key));
+		}
+
+		@Override
+		public boolean removeAll(IntCollection c) {
+			return l.removeAll(c);
+		}
+
+		@Override
+		public boolean retainAll(IntCollection c) {
+			return l.retainAll(c);
+		}
+
+		@Override
+		public IntListIterator listIterator(int index) {
+			return new IntListIteratorWrapper(l.listIterator(index));
+		}
+
+		@Override
+		public void add(int index, int key) {
+			l.add(index, Integer.valueOf(key));
+		}
+
+		@Override
+		public boolean addAll(int index, IntCollection c) {
+			return l.addAll(index, c);
+		}
+
+		@Override
+		public int set(int index, int k) {
+			return l.set(index, Integer.valueOf(k)).intValue();
+		}
+
+		@Override
+		public int getInt(int index) {
+			return l.get(index).intValue();
+		}
+
+		@Override
+		public int indexOf(int k) {
+			return l.indexOf(Integer.valueOf(k));
+		}
+
+		@Override
+		public int lastIndexOf(int k) {
+			return l.lastIndexOf(Integer.valueOf(k));
+		}
+
+		@Override
+		public int removeInt(int index) {
+			return l.remove(index).intValue();
 		}
 
 	}
