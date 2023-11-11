@@ -29,6 +29,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -66,8 +67,7 @@ class FlowNetworks {
 
 		@Override
 		public void setCapacity(E edge, double capacity) {
-			if (capacity < 0)
-				throw new IllegalArgumentException("capacity can't be negative");
+			Assertions.Flows.positiveCapacity(capacity);
 			capacities.set(edge, capacity);
 		}
 
@@ -79,8 +79,7 @@ class FlowNetworks {
 		@Override
 		public void setFlow(E edge, double flow) {
 			double capacity = getCapacity(edge);
-			if (flow > capacity + EPS)
-				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
+			Assertions.Flows.flowLessThanCapacity(flow, capacity, EPS);
 			flows.set(edge, Math.min(flow, capacity));
 		}
 	}
@@ -114,8 +113,7 @@ class FlowNetworks {
 
 		@Override
 		public void setCapacity(E edge, int capacity) {
-			if (capacity < 0)
-				throw new IllegalArgumentException("capacity can't be negative");
+			Assertions.Flows.positiveCapacity(capacity);
 			capacities.set(edge, capacity);
 		}
 
@@ -127,8 +125,7 @@ class FlowNetworks {
 		@Override
 		public void setFlow(E edge, int flow) {
 			int capacity = getCapacityInt(edge);
-			if (flow > capacity)
-				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
+			Assertions.Flows.flowLessThanCapacity(flow, capacity);
 			flows.set(edge, Math.min(flow, capacity));
 		}
 	}
@@ -151,8 +148,7 @@ class FlowNetworks {
 
 		@Override
 		public void setCapacity(int edge, double capacity) {
-			if (capacity < 0)
-				throw new IllegalArgumentException("capacity can't be negative");
+			Assertions.Flows.positiveCapacity(capacity);
 			capacities.set(edge, capacity);
 		}
 
@@ -164,8 +160,7 @@ class FlowNetworks {
 		@Override
 		public void setFlow(int edge, double flow) {
 			double capacity = getCapacity(edge);
-			if (flow > capacity + EPS)
-				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
+			Assertions.Flows.flowLessThanCapacity(flow, capacity, EPS);
 			flows.set(edge, Math.min(flow, capacity));
 		}
 	}
@@ -199,8 +194,7 @@ class FlowNetworks {
 
 		@Override
 		public void setCapacity(int edge, int capacity) {
-			if (capacity < 0)
-				throw new IllegalArgumentException("capacity can't be negative");
+			Assertions.Flows.positiveCapacity(capacity);
 			capacities.set(edge, capacity);
 		}
 
@@ -212,8 +206,7 @@ class FlowNetworks {
 		@Override
 		public void setFlow(int edge, int flow) {
 			int capacity = getCapacityInt(edge);
-			if (flow > capacity)
-				throw new IllegalArgumentException("Illegal flow " + flow + " on edge " + edge);
+			Assertions.Flows.flowLessThanCapacity(flow, capacity);
 			flows.set(edge, Math.min(flow, capacity));
 		}
 	}

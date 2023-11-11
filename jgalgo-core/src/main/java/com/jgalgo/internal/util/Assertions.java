@@ -176,6 +176,21 @@ public class Assertions {
 			}
 		}
 
+		public static void positiveCapacity(double capacity) {
+			if (capacity < 0)
+				throw new IllegalArgumentException("capacity can't be negative: " + capacity);
+		}
+
+		public static void flowLessThanCapacity(double flow, double capacity, double EPS) {
+			if (flow > capacity + EPS)
+				throw new IllegalArgumentException("Illegal flow: " + flow + " > " + capacity);
+		}
+
+		public static void flowLessThanCapacity(int flow, int capacity) {
+			if (flow > capacity)
+				throw new IllegalArgumentException("Illegal flow: " + flow + " > " + capacity);
+		}
+
 		public static void checkLowerBound(IndexGraph g, IFlowNetwork net, IWeightFunction lowerBound) {
 			if (net instanceof IFlowNetworkInt && lowerBound instanceof IWeightFunctionInt) {
 				IFlowNetworkInt netInt = (IFlowNetworkInt) net;
