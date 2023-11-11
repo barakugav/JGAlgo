@@ -80,6 +80,60 @@ public class MaximumFlowTestUtils extends TestUtils {
 			flow.setCapacity(e, cap);
 		}
 
+		/* given unknown FlowNetwork implementation sometimes */
+		if (rand.nextInt(4) == 0) {
+			if (flow instanceof IFlowNetwork && rand.nextBoolean()) {
+				IFlowNetwork flowOrig = (IFlowNetwork) flow;
+
+				@SuppressWarnings("unchecked")
+				FlowNetwork<V, E> flowTemp = (FlowNetwork<V, E>) new IFlowNetwork() {
+					@Override
+					public double getCapacity(int edge) {
+						return flowOrig.getCapacity(edge);
+					}
+
+					@Override
+					public void setCapacity(int edge, double capacity) {
+						flowOrig.setCapacity(edge, capacity);
+					}
+
+					@Override
+					public double getFlow(int edge) {
+						return flowOrig.getFlow(edge);
+					}
+
+					@Override
+					public void setFlow(int edge, double flow) {
+						flowOrig.setFlow(edge, flow);
+					}
+				};
+				flow = flowTemp;
+			} else {
+				FlowNetwork<V, E> flowOrig = flow;
+				flow = new FlowNetwork<>() {
+					@Override
+					public double getCapacity(E edge) {
+						return flowOrig.getCapacity(edge);
+					}
+
+					@Override
+					public void setCapacity(E edge, double capacity) {
+						flowOrig.setCapacity(edge, capacity);
+					}
+
+					@Override
+					public double getFlow(E edge) {
+						return flowOrig.getFlow(edge);
+					}
+
+					@Override
+					public void setFlow(E edge, double flow) {
+						flowOrig.setFlow(edge, flow);
+					}
+				};
+			}
+		}
+
 		return flow;
 	}
 
@@ -88,6 +142,61 @@ public class MaximumFlowTestUtils extends TestUtils {
 		FlowNetworkInt<V, E> flow = FlowNetworkInt.createFromEdgeWeights(g);
 		for (E e : g.edges())
 			flow.setCapacity(e, rand.nextInt(16384));
+
+		/* given unknown FlowNetwork implementation sometimes */
+		if (rand.nextInt(4) == 0) {
+			if (flow instanceof IFlowNetworkInt && rand.nextBoolean()) {
+				IFlowNetworkInt flowOrig = (IFlowNetworkInt) flow;
+				@SuppressWarnings("unchecked")
+				FlowNetworkInt<V, E> flowTemp = (FlowNetworkInt<V, E>) new IFlowNetworkInt() {
+					@Override
+					public int getCapacityInt(int edge) {
+						return flowOrig.getCapacityInt(edge);
+					}
+
+					@Override
+					public void setCapacity(int edge, int capacity) {
+						flowOrig.setCapacity(edge, capacity);
+					}
+
+					@Override
+					public int getFlowInt(int edge) {
+						return flowOrig.getFlowInt(edge);
+					}
+
+					@Override
+					public void setFlow(int edge, int flow) {
+						flowOrig.setFlow(edge, flow);
+					}
+				};
+				flow = flowTemp;
+
+			} else {
+				FlowNetworkInt<V, E> flowOrig = flow;
+				flow = new FlowNetworkInt<>() {
+					@Override
+					public int getCapacityInt(E edge) {
+						return flowOrig.getCapacityInt(edge);
+					}
+
+					@Override
+					public void setCapacity(E edge, int capacity) {
+						flowOrig.setCapacity(edge, capacity);
+					}
+
+					@Override
+					public int getFlowInt(E edge) {
+						return flowOrig.getFlowInt(edge);
+					}
+
+					@Override
+					public void setFlow(E edge, int flow) {
+						flowOrig.setFlow(edge, flow);
+					}
+				};
+			}
+		}
+
 		return flow;
 	}
 
