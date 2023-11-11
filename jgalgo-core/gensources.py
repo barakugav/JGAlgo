@@ -412,6 +412,7 @@ def generate_weights_impl(type):
 
 
 def clean():
+    logging.info("Cleaning generated sources...")
     if os.path.exists(HASHES_FILENAME):
         os.remove(HASHES_FILENAME)
 
@@ -486,30 +487,31 @@ def main():
     if args.clean:
         clean()
 
-    hashes = read_last_generated_templates_hashes()
-    # collect all sources to generate
-    generators = {}
-    if hashes.is_template_changed("Weights.java.template"):
-        for type in TYPE_ALL:
-            gen = functools.partial(generate_weights, type)
-            generators[weights_filename(type)] = gen
-    if hashes.is_template_changed("IWeights.java.template"):
-        for type in TYPE_ALL:
-            gen = functools.partial(generate_iweights, type)
-            generators[iweights_filename(type)] = gen
-    if hashes.is_template_changed("WeightsImpl.java.template"):
-        for type in TYPE_ALL:
-            gen = functools.partial(generate_weights_impl, type)
-            generators[weights_impl_filename(type)] = gen
-    if not generators:
-        logging.info("No template changed, nothing to do.")
-        return
+    else:
+        hashes = read_last_generated_templates_hashes()
+        # collect all sources to generate
+        generators = {}
+        if hashes.is_template_changed("Weights.java.template"):
+            for type in TYPE_ALL:
+                gen = functools.partial(generate_weights, type)
+                generators[weights_filename(type)] = gen
+        if hashes.is_template_changed("IWeights.java.template"):
+            for type in TYPE_ALL:
+                gen = functools.partial(generate_iweights, type)
+                generators[iweights_filename(type)] = gen
+        if hashes.is_template_changed("WeightsImpl.java.template"):
+            for type in TYPE_ALL:
+                gen = functools.partial(generate_weights_impl, type)
+                generators[weights_impl_filename(type)] = gen
+        if not generators:
+            logging.info("No template changed, nothing to do.")
+            return
 
-    for _filename, generator in generators.items():
-        generator()
-    format_sourcefiles(generators.keys())
+        for _filename, generator in generators.items():
+            generator()
+        format_sourcefiles(generators.keys())
 
-    write_generated_templates()
+        write_generated_templates()
 
 
 if __name__ == "__main__":

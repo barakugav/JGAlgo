@@ -53,6 +53,20 @@
         <version>3.1.0</version>
         <executions>
           <execution>
+            <id>clean-gensources</id>
+            <phase>clean</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>python</executable>
+              <arguments>
+                <argument>gensources.py</argument>
+                <argument>--clean</argument>
+              </arguments>
+            </configuration>
+          </execution>
+          <execution>
             <id>gensources</id>
             <phase>generate-sources</phase>
             <goals>
