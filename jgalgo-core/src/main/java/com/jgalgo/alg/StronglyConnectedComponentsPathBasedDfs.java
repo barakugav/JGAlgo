@@ -21,26 +21,37 @@ import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntStack;
 
-class StronglyConnectedComponentsAlgoTarjan extends ConnectedComponentsUtils.AbstractStronglyConnectedComponentsAlgo {
+/**
+ * Path based DFS implementation of Dijkstra's strongly connected components algorithm.
+ *
+ * <p>
+ * The algorithm run in linear time and use linear space.
+ *
+ * <p>
+ * Based on 'A Discipline of Programming' by Edsger W. Dijkstra, 1976.
+ *
+ * @author Barak Ugav
+ */
+class StronglyConnectedComponentsPathBasedDfs extends ConnectedComponentsUtils.AbstractStronglyConnectedComponentsAlgo {
 
 	@Override
 	IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g) {
+		return findStronglyConnectedComponentsDirected(g, false);
+	}
+
+	private static IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g, boolean stopAfterOneBlock) {
 		final int n = g.vertices().size();
 		IntStack s = new IntArrayList();
 		IntStack p = new IntArrayList();
 		int[] dfsPath = new int[n];
-		int[] c = new int[n];
 		IEdgeIter[] edges = new IEdgeIter[n];
 		// TODO DFS stack class
-
-		// implementation of Tarjan's strongly connected components algorithm
-		// https://en.wikipedia.org/wiki/Tarjan%27s_strongly_connected_components_algorithm
 
 		int[] comp = new int[n];
 		Arrays.fill(comp, -1);
 		int compNum = 0;
 
-		Arrays.fill(c, 0);
+		int[] c = new int[n];
 		int cNext = 1;
 
 		for (int root = 0; root < n; root++) {
@@ -75,6 +86,12 @@ class StronglyConnectedComponentsAlgoTarjan extends ConnectedComponentsUtils.Abs
 						v = s.popInt();
 						comp[v] = compNum;
 					} while (v != u);
+					if (stopAfterOneBlock) {
+						for (int w = 0; w < n; w++)
+							if (comp[w] == -1)
+								return null;
+						return new VertexPartitions.Impl(g, compNum, comp);
+					}
 					compNum++;
 					p.popInt();
 				}
@@ -89,7 +106,7 @@ class StronglyConnectedComponentsAlgoTarjan extends ConnectedComponentsUtils.Abs
 
 	@Override
 	boolean isStronglyConnected(IndexGraph g) {
-		return findStronglyConnectedComponentsDirected(g).numberOfBlocks() <= 1;
+		return findStronglyConnectedComponentsDirected(g, true) != null;
 	}
 
 }

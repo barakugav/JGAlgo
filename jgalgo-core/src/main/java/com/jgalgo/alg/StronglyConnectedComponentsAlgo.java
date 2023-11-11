@@ -92,7 +92,7 @@ public interface StronglyConnectedComponentsAlgo {
 	 * @return a new builder that can build {@link StronglyConnectedComponentsAlgo} objects
 	 */
 	static StronglyConnectedComponentsAlgo.Builder newBuilder() {
-		return StronglyConnectedComponentsAlgoTarjan::new;
+		return StronglyConnectedComponentsPathBasedDfs::new;
 	}
 
 	/**

@@ -15,18 +15,15 @@
  */
 package com.jgalgo.alg;
 
-import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
-import com.jgalgo.internal.util.TestBase;
+import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
-public class StronglyConnectedComponentsAlgoTest extends TestBase {
+class StronglyConnectedComponentsTestUtils extends TestUtils {
 
-	@Test
-	public void strongCCUGraph() {
-		final long seed = 0xb3f19acd0e1041deL;
+	static void strongCcUndirected(StronglyConnectedComponentsAlgo algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32).repeat(128);
@@ -35,17 +32,16 @@ public class StronglyConnectedComponentsAlgoTest extends TestBase {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
-			VertexPartition<Integer, Integer> actual =
-					new StronglyConnectedComponentsAlgoTarjan().findStronglyConnectedComponents(g);
+			VertexPartition<Integer, Integer> actual = algo.findStronglyConnectedComponents(g);
 			ConnectedComponentsTestUtils.validateConnectivityResult(g, actual);
 			IntObjectPair<Object2IntMap<Integer>> expected = ConnectedComponentsTestUtils.calcUndirectedConnectivity(g);
 			ConnectedComponentsTestUtils.assertConnectivityResultsEqual(g, expected, actual);
+
+			assertEqualsBool(actual.numberOfBlocks() <= 1, algo.isStronglyConnected(g));
 		});
 	}
 
-	@Test
-	public void strongCCsDiGraph() {
-		final long seed = 0xd21f8ca761bc1aaeL;
+	static void strongCcDirected(StronglyConnectedComponentsAlgo algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 
 		PhasedTester tester = new PhasedTester();
@@ -56,11 +52,12 @@ public class StronglyConnectedComponentsAlgoTest extends TestBase {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
 
-			VertexPartition<Integer, Integer> actual =
-					new StronglyConnectedComponentsAlgoTarjan().findStronglyConnectedComponents(g);
+			VertexPartition<Integer, Integer> actual = algo.findStronglyConnectedComponents(g);
 			ConnectedComponentsTestUtils.validateConnectivityResult(g, actual);
 			IntObjectPair<Object2IntMap<Integer>> expected = ConnectedComponentsTestUtils.calcDirectedConnectivity(g);
 			ConnectedComponentsTestUtils.assertConnectivityResultsEqual(g, expected, actual);
+
+			assertEqualsBool(actual.numberOfBlocks() <= 1, algo.isStronglyConnected(g));
 		});
 	}
 
