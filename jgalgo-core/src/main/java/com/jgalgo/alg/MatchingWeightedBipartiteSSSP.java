@@ -190,15 +190,13 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 		return match;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws UnsupportedOperationException this implementation does not support perfect matching computation
-	 */
-	@Deprecated
 	@Override
 	IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-		throw new UnsupportedOperationException();
+		if (w != null && w != IWeightFunction.CardinalityWeightFunction) {
+			throw new UnsupportedOperationException("weighted perfect matching is not supported by this algorithm");
+		} else {
+			return computeMaximumWeightedMatching(g, null);
+		}
 	}
 
 }

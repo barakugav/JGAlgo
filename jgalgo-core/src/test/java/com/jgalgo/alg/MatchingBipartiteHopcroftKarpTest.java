@@ -16,7 +16,9 @@
 
 package com.jgalgo.alg;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.TestBase;
 
 public class MatchingBipartiteHopcroftKarpTest extends TestBase {
@@ -25,6 +27,22 @@ public class MatchingBipartiteHopcroftKarpTest extends TestBase {
 	public void testRandBipartiteGraphs() {
 		final long seed = 0x16f0491558fa62f8L;
 		MatchingBipartiteTestUtils.randBipartiteGraphs(new MatchingCardinalityBipartiteHopcroftKarp(), seed);
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void testMinimumMatching() {
+		Graph<Integer, Integer> g = Graph.newUndirected();
+		g.addVertex(0);
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addEdge(0, 1, 0);
+		g.addEdge(1, 2, 1);
+		g.addEdge(2, 0, 2);
+
+		MatchingAlgo algo = new MatchingCardinalityBipartiteHopcroftKarp();
+		Matching<Integer, Integer> matching = algo.computeMinimumMatching(g, null);
+		assertTrue(matching.edges().isEmpty());
 	}
 
 }

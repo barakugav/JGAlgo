@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.gen.CompleteGraphGenerator;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 
@@ -50,9 +51,10 @@ public class MatchingWeightedGabow1990Test extends TestBase {
 		gen.setVertices(Range.of(10));
 		gen.setEdges(new AtomicInteger()::getAndIncrement);
 		Graph<Integer, Integer> g = gen.generate();
+		WeightFunction<Integer> w = e -> 5;
 
 		MatchingAlgo algo = new MatchingWeightedGabow1990();
-		assertThrows(UnsupportedOperationException.class, () -> algo.computeMaximumPerfectMatching(g, null));
+		assertThrows(UnsupportedOperationException.class, () -> algo.computeMaximumPerfectMatching(g, w));
 	}
 
 	@Test

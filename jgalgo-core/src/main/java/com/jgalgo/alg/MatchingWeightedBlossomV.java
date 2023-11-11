@@ -125,6 +125,8 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 	@Override
 	IMatching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
+		if (w == null)
+			w = IWeightFunction.CardinalityWeightFunction;
 		return new Worker(g, w).solve();
 	}
 

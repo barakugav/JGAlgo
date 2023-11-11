@@ -83,12 +83,19 @@ class MatchingUnweightedTestUtils extends TestUtils {
 			}
 		}
 
+		Set<V> unmatchedExpected =
+				g.vertices().stream().filter(v -> !matched.containsKey(v)).collect(Collectors.toSet());
 		assertEquals(matched.keySet(), matching.matchedVertices());
-		assertEquals(g.vertices().stream().filter(v -> !matched.containsKey(v)).collect(Collectors.toSet()),
-				matching.unmatchedVertices());
+		assertEquals(unmatchedExpected, matching.unmatchedVertices());
+		for (V v : g.vertices())
+			assertEqualsBool(matched.containsKey(v), matching.matchedVertices().contains(v));
+		for (V v : g.vertices())
+			assertEqualsBool(unmatchedExpected.contains(v), matching.unmatchedVertices().contains(v));
 
 		for (E e : matching.edges())
 			assertTrue(matching.containsEdge(e));
+		for (E e : g.edges())
+			assertEqualsBool(matching.containsEdge(e), matching.edges().contains(e));
 		Set<E> unmatchedEdgesExpected = new ObjectOpenHashSet<>(g.edges());
 		for (E e : matching.edges())
 			unmatchedEdgesExpected.remove(e);

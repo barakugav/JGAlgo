@@ -48,12 +48,6 @@ class Matchings {
 			this.matched = Objects.requireNonNull(matched);
 		}
 
-		static MatchingImpl emptyMatching(IndexGraph g) {
-			int[] matched = new int[g.vertices().size()];
-			Arrays.fill(matched, -1);
-			return new MatchingImpl(g, matched);
-		}
-
 		@Override
 		public boolean isVertexMatched(int vertex) {
 			return getMatchedEdge(vertex) != -1;
@@ -249,7 +243,9 @@ class Matchings {
 		@Override
 		IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
 			Assertions.Graphs.onlyCardinality(w);
-			return Matchings.MatchingImpl.emptyMatching(g);
+			int[] matched = new int[g.vertices().size()];
+			Arrays.fill(matched, -1);
+			return new Matchings.MatchingImpl(g, matched);
 		}
 
 		@Override
@@ -287,7 +283,12 @@ class Matchings {
 
 		@Override
 		IMatching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-			return computeMaximumWeightedPerfectMatching(g, negate(w));
+			if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
+				/* minimum and maximum weighted perfect matching are equivalent for unweighed graphs */
+				return computeMaximumWeightedPerfectMatching(g, null);
+			} else {
+				return computeMaximumWeightedPerfectMatching(g, negate(w));
+			}
 		}
 	}
 
@@ -300,7 +301,12 @@ class Matchings {
 
 		@Override
 		IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-			return computeMinimumWeightedPerfectMatching(g, negate(w));
+			if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
+				/* minimum and maximum weighted perfect matching are equivalent for unweighed graphs */
+				return computeMinimumWeightedPerfectMatching(g, null);
+			} else {
+				return computeMinimumWeightedPerfectMatching(g, negate(w));
+			}
 		}
 
 	}

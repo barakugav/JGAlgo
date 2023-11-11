@@ -60,8 +60,12 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 
 	@Override
 	IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyUndirected(g);
-		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);
+		if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
+			return computeMaximumWeightedMatching(g, null);
+		} else {
+			Assertions.Graphs.onlyUndirected(g);
+			return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);
+		}
 	}
 
 	abstract Worker newWorker(IndexGraph gOrig, IWeightFunction w,
@@ -535,8 +539,11 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 
 		private IMatching computeMaxMatching(boolean perfect) {
 			if (perfect) {
-				/* delta3 is lower than delta in some updates when we try to compute perfect matching */
-				throw new UnsupportedOperationException("there is a bug in the perfect matching implementation");
+				/*
+				 * there is a bug in the perfect matching implementation delta3 is lower than delta in some updates when
+				 * we try to compute perfect matching
+				 */
+				throw new UnsupportedOperationException("perfect weighted matching is not supported by this algorithm");
 			}
 
 			int n = g.vertices().size();

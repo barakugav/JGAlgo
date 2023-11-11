@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Objects;
+import java.util.Random;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
@@ -45,6 +46,7 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 	public static void randBipartiteGraphs(MatchingAlgo algo, Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(4, 4, 4).repeat(128);
 		tester.addPhase().withArgs(16, 16, 64).repeat(64);
@@ -55,12 +57,25 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 			Graph<Integer, Integer> g = randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
 
 			int expected = calcExpectedMaxMatching(g);
-			testBipartiteAlgo(algo, g, expected);
+			testBipartiteAlgo(algo, g, expected, rand);
 		});
 	}
 
-	private static <V, E> void testBipartiteAlgo(MatchingAlgo algo, Graph<V, E> g, int expectedMatchSize) {
-		Matching<V, E> match = algo.computeMaximumMatching(g, null);
+	private static <V, E> void testBipartiteAlgo(MatchingAlgo algo, Graph<V, E> g, int expectedMatchSize, Random rand) {
+		Matching<V, E> match;
+		if (rand.nextBoolean() && new MatchingCardinalityBipartiteHopcroftKarp()
+				.computeMaximumCardinalityMatching(g.indexGraph()).isPerfect()) {
+			if (rand.nextBoolean()) {
+				/* maximum perfect matching is the same as maximum matching in unweighted graph */
+				match = algo.computeMaximumPerfectMatching(g, null);
+
+			} else {
+				/* min/max has no effect as we are unweighted perfect */
+				match = algo.computeMinimumPerfectMatching(g, null);
+			}
+		} else {
+			match = algo.computeMaximumMatching(g, null);
+		}
 
 		MatchingUnweightedTestUtils.validateMatching(g, match);
 

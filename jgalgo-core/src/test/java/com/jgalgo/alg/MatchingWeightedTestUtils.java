@@ -41,6 +41,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 	public static void randGraphsBipartiteWeighted(MatchingAlgo algo,
 			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(8, 8, 8).repeat(256);
 		tester.addPhase().withArgs(16, 16, 64).repeat(128);
@@ -54,7 +55,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			MatchingAlgo validationAlgo =
 					algo instanceof MatchingWeightedBipartiteSSSP ? new MatchingWeightedBipartiteHungarianMethod()
 							: new MatchingWeightedBipartiteSSSP();
-			testGraphWeighted(algo, g, w, validationAlgo);
+			testGraphWeighted(algo, g, w, validationAlgo, rand);
 		});
 	}
 
@@ -102,12 +103,13 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			MatchingAlgo validationWeightedAlgo =
 					algo instanceof MatchingWeightedBipartiteHungarianMethod ? new MatchingWeightedBlossomV()
 							: new MatchingWeightedBipartiteHungarianMethod();
-			testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
+			testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo, rand);
 		});
 	}
 
 	static void randGraphsWeighted(MatchingAlgo algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(8, 8).repeat(256);
 		tester.addPhase().withArgs(16, 64).repeat(128);
@@ -121,13 +123,18 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			MatchingAlgo validationAlgo = algo instanceof MatchingWeightedGabow1990 ? new MatchingWeightedBlossomV()
 					: new MatchingWeightedGabow1990();
 
-			testGraphWeighted(algo, g, w, validationAlgo);
+			testGraphWeighted(algo, g, w, validationAlgo, rand);
 		});
 	}
 
 	private static <V, E> void testGraphWeighted(MatchingAlgo algo, Graph<V, E> g, WeightFunctionInt<E> w,
-			MatchingAlgo validationAlgo) {
-		Matching<V, E> actual = algo.computeMaximumMatching(g, w);
+			MatchingAlgo validationAlgo, Random rand) {
+		Matching<V, E> actual;
+		if (rand.nextBoolean()) {
+			actual = algo.computeMaximumMatching(g, w);
+		} else {
+			actual = algo.computeMinimumMatching(g, e -> -w.weightInt(e));
+		}
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
 		double actualWeight = w.weightSum(actual.edges());
 
@@ -155,10 +162,11 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
 			if (g.vertices().size() % 2 != 0)
 				throw new IllegalArgumentException("there is no perfect matching");
+			Graph<Integer, Integer> g0 = g;
 			Supplier<Integer> edgeSupplier = () -> {
 				for (;;) {
 					Integer e = Integer.valueOf(rand.nextInt());
-					if (e.intValue() >= 1 && !g.edges().contains(e))
+					if (e.intValue() >= 1 && !g0.edges().contains(e))
 						return e;
 				}
 			};
@@ -174,6 +182,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 				g.addEdge(u, v, edgeSupplier.get());
 			}
 			assert cardinalityAlgo.computeMaximumMatching(g, null).isPerfect();
+			g = maybeIndexGraph(g, rand);
 
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
 			WeightFunction<Integer> w =
@@ -184,13 +193,18 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			// algo instanceof MatchingWeightedGabow1990 ? new MatchingWeightedBlossomV()
 			// : new MatchingWeightedGabow1990();
 			MatchingAlgo validationWeightedAlgo = new MatchingWeightedBlossomV();
-			testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo);
+			testGraphWeightedPerfect(algo, g, w, validationUnweightedAlgo, validationWeightedAlgo, rand);
 		});
 	}
 
 	static <V, E> void testGraphWeightedPerfect(MatchingAlgo algo, Graph<V, E> g, WeightFunction<E> w,
-			MatchingAlgo validationUnweightedAlgo, MatchingAlgo validationWeightedAlgo) {
-		Matching<V, E> actual = algo.computeMaximumPerfectMatching(g, w);
+			MatchingAlgo validationUnweightedAlgo, MatchingAlgo validationWeightedAlgo, Random rand) {
+		Matching<V, E> actual;
+		if (rand.nextBoolean()) {
+			actual = algo.computeMaximumPerfectMatching(g, w);
+		} else {
+			actual = algo.computeMinimumPerfectMatching(g, e -> -w.weight(e));
+		}
 		MatchingUnweightedTestUtils.validateMatching(g, actual);
 		int actualSize = actual.edges().size();
 		double actualWeight = w.weightSum(actual.edges());
