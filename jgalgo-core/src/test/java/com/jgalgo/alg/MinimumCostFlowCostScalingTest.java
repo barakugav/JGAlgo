@@ -15,7 +15,12 @@
  */
 package com.jgalgo.alg;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.TestBase;
 
 public class MinimumCostFlowCostScalingTest extends TestBase {
@@ -58,6 +63,29 @@ public class MinimumCostFlowCostScalingTest extends TestBase {
 
 	private static MinimumCostFlow algo() {
 		return new MinimumCostFlowCostScaling();
+	}
+
+	@Test
+	public void testNonIntNetSupplyCost() {
+		IntGraph g = IntGraph.newDirected();
+
+		IWeightsDouble capDouble = IWeights.createExternalEdgesWeights(g, double.class);
+		IWeightsDouble flowDouble = IWeights.createExternalEdgesWeights(g, double.class);
+		IWeightsInt capInt = IWeights.createExternalEdgesWeights(g, int.class);
+		IWeightsInt flowInt = IWeights.createExternalEdgesWeights(g, int.class);
+		IFlowNetwork netDouble = IFlowNetwork.createFromEdgeWeights(capDouble, flowDouble);
+		IFlowNetwork netInt = IFlowNetworkInt.createFromEdgeWeights(capInt, flowInt);
+
+		IWeightsDouble costDouble = IWeights.createExternalEdgesWeights(g, double.class);
+		IWeightsInt costInt = IWeights.createExternalEdgesWeights(g, int.class);
+
+		IWeightsDouble supplyDouble = IWeights.createExternalVerticesWeights(g, double.class);
+		IWeightsInt supplyInt = IWeights.createExternalVerticesWeights(g, int.class);
+
+		MinimumCostFlow algo = algo();
+		assertThrows(IllegalArgumentException.class, () -> algo.computeMinCostFlow(g, netDouble, costInt, supplyInt));
+		assertThrows(IllegalArgumentException.class, () -> algo.computeMinCostFlow(g, netInt, costDouble, supplyInt));
+		assertThrows(IllegalArgumentException.class, () -> algo.computeMinCostFlow(g, netInt, costInt, supplyDouble));
 	}
 
 }
