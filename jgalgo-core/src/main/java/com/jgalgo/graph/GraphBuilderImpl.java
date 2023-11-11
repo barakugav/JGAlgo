@@ -104,13 +104,15 @@ class GraphBuilderImpl {
 
 		@Override
 		public void addVertex(V vertex) {
-			int vIndex = ibuilder.addVertex();
-			V vId = vertex;
-			assert vIndex == vIndexToId.size();
-			vIndexToId.add(vId);
-			int oldVal = vIdToIndex.put(vId, vIndex);
+			int vIndex = ibuilder.vertices().size();
+			int oldVal = vIdToIndex.putIfAbsent(vertex, vIndex);
 			if (oldVal != vIdToIndex.defaultReturnValue())
-				throw new IllegalArgumentException("duplicate vertex: " + vId);
+				throw new IllegalArgumentException("duplicate vertex: " + vertex);
+
+			int vIndex2 = ibuilder.addVertex();
+			assert vIndex == vIndex2;
+			assert vIndex == vIndexToId.size();
+			vIndexToId.add(vertex);
 		}
 
 		@Override
@@ -122,13 +124,15 @@ class GraphBuilderImpl {
 			if (sourceIdx == vIdToIndex.defaultReturnValue())
 				throw new IndexOutOfBoundsException("invalid vertex: " + source);
 
-			int eIndex = ibuilder.addEdge(sourceIdx, targetIdx);
-			E eId = edge;
-			assert eIndex == eIndexToId.size();
-			eIndexToId.add(eId);
-			int oldVal = eIdToIndex.put(eId, eIndex);
+			int eIndex = ibuilder.edges().size();
+			int oldVal = eIdToIndex.putIfAbsent(edge, eIndex);
 			if (oldVal != eIdToIndex.defaultReturnValue())
 				throw new IllegalArgumentException("duplicate edge: " + edge);
+
+			int eIndex2 = ibuilder.addEdge(sourceIdx, targetIdx);
+			assert eIndex == eIndex2;
+			assert eIndex == eIndexToId.size();
+			eIndexToId.add(edge);
 		}
 
 		@Override

@@ -16,7 +16,9 @@
 package com.jgalgo.graph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -97,8 +99,16 @@ public class GraphBuilderTest extends TestBase {
 				addWeights.accept(char.class, () -> Character.valueOf((char) rand.nextInt()));
 				addWeights.accept(String.class, () -> String.valueOf(rand.nextInt()));
 
+				assertEquals(g.getVerticesWeightsKeys(), b.getVerticesWeightsKeys());
+				assertEquals(g.getEdgesWeightsKeys(), b.getEdgesWeightsKeys());
+				assertNull(b.getVerticesWeights("dashpauht"));
+				assertNull(b.getEdgesWeights("asdjeea"));
+
 				IntGraph gActual = buildMut ? b.buildMutable() : b.build();
 				assertEquals(g, gActual);
+
+				assertEquals(b.getVerticesWeightsKeys(), gActual.getVerticesWeightsKeys());
+				assertEquals(b.getEdgesWeightsKeys(), gActual.getEdgesWeightsKeys());
 
 				for (String key : g.getVerticesWeightsKeys())
 					assertEquals(g.getVerticesWeights(key).defaultWeightAsObj(),
@@ -117,89 +127,124 @@ public class GraphBuilderTest extends TestBase {
 		final Random rand = new Random(seed);
 		for (boolean directed : BooleanList.of(false, true)) {
 			for (boolean buildMut : BooleanList.of(false, true)) {
-				IntGraphBuilder b = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
-				IntGraph g = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+				for (String impl : List.of("array", "linked-list", "hashtable", "matrix")) {
+					IntGraphFactory factory =
+							directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
+					IntGraphBuilder b = factory.setOption("impl", impl).newBuilder();
+					IntGraph g = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 
-				/* Add vertices and edges */
-				final int n = 12 + rand.nextInt(12);
-				final int m = 20 + rand.nextInt(20);
-				while (g.vertices().size() < n) {
-					int v = rand.nextInt(2 * n);
-					if (g.vertices().contains(v))
-						continue;
-					g.addVertex(v);
-					b.addVertex(v);
-				}
-				while (g.edges().size() < m) {
-					int e = rand.nextInt(2 * m);
-					if (g.edges().contains(e))
-						continue;
-					int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
-					g.addEdge(u, v, e);
-					b.addEdge(u, v, e);
-				}
+					/* Add vertices and edges */
+					final int n = 12 + rand.nextInt(12);
+					final int m = 20 + rand.nextInt(20);
+					while (g.vertices().size() < n) {
+						int v = rand.nextInt(2 * n);
+						if (g.vertices().contains(v))
+							continue;
+						g.addVertex(v);
+						b.addVertex(v);
+					}
 
-				/* Add weights */
-				AtomicInteger weightIdx = new AtomicInteger();
-				@SuppressWarnings("rawtypes")
-				BiConsumer<Class, Supplier> addWeights = (type, valSupplier) -> {
-					for (boolean edgesWeights : BooleanList.of(false, true)) {
-						for (int repeat = 1 + rand.nextInt(2); repeat > 0; repeat--) {
-							String key = "weight" + weightIdx.getAndIncrement();
-							Object defVal = valSupplier.get();
-							IWeights wG, wB;
-							IntSet elements;
-							if (!edgesWeights) {
-								wG = (IWeights) g.addVerticesWeights(key, type, defVal);
-								wB = (IWeights) b.addVerticesWeights(key, type, defVal);
-								elements = g.vertices();
-							} else {
-								wG = (IWeights) g.addEdgesWeights(key, type, defVal);
-								wB = (IWeights) b.addEdgesWeights(key, type, defVal);
-								elements = g.edges();
-							}
-							for (int elm : elements) {
-								Object w = valSupplier.get();
-								wG.setAsObj(elm, w);
-								wB.setAsObj(elm, w);
-							}
+					/* duplicate vertex */
+					assertThrows(IllegalArgumentException.class, () -> b.addVertex(Graphs.randVertex(g, rand)));
+
+					while (g.edges().size() < m) {
+						int e = rand.nextInt(2 * m);
+						if (g.edges().contains(e))
+							continue;
+						int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
+						if (g.getEdge(u, v) != -1)
+							continue; /* avoid parallel edges */
+						g.addEdge(u, v, e);
+						b.addEdge(u, v, e);
+					}
+
+					/* duplicate edge */
+					assertThrows(IllegalArgumentException.class, () -> b.addEdge(Graphs.randVertex(g, rand),
+							Graphs.randVertex(g, rand), Graphs.randEdge(g, rand)));
+					/* non existing endpoints */
+					for (;;) {
+						int v = rand.nextInt(2 * n);
+						int e = rand.nextInt(2 * m);
+						if (!g.vertices().contains(v) && !g.edges().contains(e)) {
+							int u = Graphs.randVertex(g, rand);
+							assertThrows(RuntimeException.class, () -> b.addEdge(u, v, e));
+							assertThrows(RuntimeException.class, () -> b.addEdge(v, u, e));
+							break;
 						}
 					}
-				};
-				addWeights.accept(byte.class, () -> Byte.valueOf((byte) rand.nextInt()));
-				addWeights.accept(short.class, () -> Short.valueOf((short) rand.nextInt()));
-				addWeights.accept(int.class, () -> Integer.valueOf(rand.nextInt()));
-				addWeights.accept(long.class, () -> Long.valueOf(rand.nextLong()));
-				addWeights.accept(float.class, () -> Float.valueOf(rand.nextFloat()));
-				addWeights.accept(double.class, () -> Double.valueOf(rand.nextDouble()));
-				addWeights.accept(boolean.class, () -> Boolean.valueOf(rand.nextBoolean()));
-				addWeights.accept(char.class, () -> Character.valueOf((char) rand.nextInt()));
-				addWeights.accept(String.class, () -> String.valueOf(rand.nextInt()));
 
-				IntGraph gActual = buildMut ? b.buildMutable() : b.build();
-				assertEquals(g, gActual);
+					/* Add weights */
+					AtomicInteger weightIdx = new AtomicInteger();
+					@SuppressWarnings("rawtypes")
+					BiConsumer<Class, Supplier> addWeights = (type, valSupplier) -> {
+						for (boolean edgesWeights : BooleanList.of(false, true)) {
+							for (int repeat = 1 + rand.nextInt(2); repeat > 0; repeat--) {
+								String key = "weight" + weightIdx.getAndIncrement();
+								Object defVal = valSupplier.get();
+								IWeights wG, wB;
+								IntSet elements;
+								if (!edgesWeights) {
+									wG = (IWeights) g.addVerticesWeights(key, type, defVal);
+									wB = (IWeights) b.addVerticesWeights(key, type, defVal);
+									elements = g.vertices();
+								} else {
+									wG = (IWeights) g.addEdgesWeights(key, type, defVal);
+									wB = (IWeights) b.addEdgesWeights(key, type, defVal);
+									elements = g.edges();
+								}
+								for (int elm : elements) {
+									Object w = valSupplier.get();
+									wG.setAsObj(elm, w);
+									wB.setAsObj(elm, w);
+								}
+							}
+						}
+					};
+					addWeights.accept(byte.class, () -> Byte.valueOf((byte) rand.nextInt()));
+					addWeights.accept(short.class, () -> Short.valueOf((short) rand.nextInt()));
+					addWeights.accept(int.class, () -> Integer.valueOf(rand.nextInt()));
+					addWeights.accept(long.class, () -> Long.valueOf(rand.nextLong()));
+					addWeights.accept(float.class, () -> Float.valueOf(rand.nextFloat()));
+					addWeights.accept(double.class, () -> Double.valueOf(rand.nextDouble()));
+					addWeights.accept(boolean.class, () -> Boolean.valueOf(rand.nextBoolean()));
+					addWeights.accept(char.class, () -> Character.valueOf((char) rand.nextInt()));
+					addWeights.accept(String.class, () -> String.valueOf(rand.nextInt()));
 
-				for (String key : g.getVerticesWeightsKeys())
-					assertEquals(g.getVerticesWeights(key).defaultWeightAsObj(),
-							gActual.getVerticesWeights(key).defaultWeightAsObj());
-				for (String key : g.getEdgesWeightsKeys())
-					assertEquals(g.getEdgesWeights(key).defaultWeightAsObj(),
-							gActual.getEdgesWeights(key).defaultWeightAsObj());
+					assertEquals(g.getVerticesWeightsKeys(), b.getVerticesWeightsKeys());
+					assertEquals(g.getEdgesWeightsKeys(), b.getEdgesWeightsKeys());
+					assertNull(b.getVerticesWeights("dashpauht"));
+					assertNull(b.getEdgesWeights("asdjeea"));
 
-				if (!buildMut) {
-					for (String key : gActual.getVerticesWeightsKeys()) {
-						@SuppressWarnings("rawtypes")
-						Weights w = gActual.getVerticesWeights(key);
-						int v = Graphs.randVertex(gActual, rand);
-						Object data = w.getAsObj(Integer.valueOf(Graphs.randVertex(gActual, rand)));
-						assertThrows(UnsupportedOperationException.class, () -> w.setAsObj(Integer.valueOf(v), data));
-					}
-					for (String key : gActual.getEdgesWeightsKeys()) {
-						@SuppressWarnings("rawtypes")
-						Weights w = gActual.getEdgesWeights(key);
-						int e = Graphs.randEdge(gActual, rand);
-						Object data = w.getAsObj(Integer.valueOf(Graphs.randEdge(gActual, rand)));
-						assertThrows(UnsupportedOperationException.class, () -> w.setAsObj(Integer.valueOf(e), data));
+					IntGraph gActual = buildMut ? b.buildMutable() : b.build();
+					assertEquals(g, gActual);
+
+					assertEquals(b.getVerticesWeightsKeys(), gActual.getVerticesWeightsKeys());
+					assertEquals(b.getEdgesWeightsKeys(), gActual.getEdgesWeightsKeys());
+
+					for (String key : g.getVerticesWeightsKeys())
+						assertEquals(g.getVerticesWeights(key).defaultWeightAsObj(),
+								gActual.getVerticesWeights(key).defaultWeightAsObj());
+					for (String key : g.getEdgesWeightsKeys())
+						assertEquals(g.getEdgesWeights(key).defaultWeightAsObj(),
+								gActual.getEdgesWeights(key).defaultWeightAsObj());
+
+					if (!buildMut) {
+						for (String key : gActual.getVerticesWeightsKeys()) {
+							@SuppressWarnings("rawtypes")
+							Weights w = gActual.getVerticesWeights(key);
+							int v = Graphs.randVertex(gActual, rand);
+							Object data = w.getAsObj(Integer.valueOf(Graphs.randVertex(gActual, rand)));
+							assertThrows(UnsupportedOperationException.class,
+									() -> w.setAsObj(Integer.valueOf(v), data));
+						}
+						for (String key : gActual.getEdgesWeightsKeys()) {
+							@SuppressWarnings("rawtypes")
+							Weights w = gActual.getEdgesWeights(key);
+							int e = Graphs.randEdge(gActual, rand);
+							Object data = w.getAsObj(Integer.valueOf(Graphs.randEdge(gActual, rand)));
+							assertThrows(UnsupportedOperationException.class,
+									() -> w.setAsObj(Integer.valueOf(e), data));
+						}
 					}
 				}
 			}
@@ -272,8 +317,16 @@ public class GraphBuilderTest extends TestBase {
 				addWeights.accept(char.class, () -> Character.valueOf((char) rand.nextInt()));
 				addWeights.accept(String.class, () -> String.valueOf(rand.nextInt()));
 
+				assertEquals(g.getVerticesWeightsKeys(), b.getVerticesWeightsKeys());
+				assertEquals(g.getEdgesWeightsKeys(), b.getEdgesWeightsKeys());
+				assertNull(b.getVerticesWeights("dashpauht"));
+				assertNull(b.getEdgesWeights("asdjeea"));
+
 				Graph<Integer, Integer> gActual = buildMut ? b.buildMutable() : b.build();
 				assertEquals(g, gActual);
+
+				assertEquals(b.getVerticesWeightsKeys(), gActual.getVerticesWeightsKeys());
+				assertEquals(b.getEdgesWeightsKeys(), gActual.getEdgesWeightsKeys());
 
 				for (String key : g.getVerticesWeightsKeys())
 					assertEquals(g.getVerticesWeights(key).defaultWeightAsObj(),

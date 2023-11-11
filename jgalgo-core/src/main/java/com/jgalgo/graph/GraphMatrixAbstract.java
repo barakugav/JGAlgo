@@ -102,7 +102,7 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 				if (existingEdge1 != EdgeNone || existingEdge2 != EdgeNone)
 					throw new IllegalArgumentException("parallel edges are not supported");
 				uEdges.data[target] = e;
-				uEdges.data[source] = e;
+				vEdges.data[source] = e;
 			}
 		}
 	}
