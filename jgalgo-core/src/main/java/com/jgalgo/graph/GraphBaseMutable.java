@@ -58,9 +58,9 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		if (copyWeights) {
 			for (String key : g.getVerticesWeightsKeys())
 				verticesUserWeights.addWeights(key,
-						WeightsImpl.IndexMutable.copyOf(g.getVerticesIWeights(key), vertices));
+						WeightsImpl.IndexMutable.copyOf(g.getVerticesIWeights(key), vertices, false));
 			for (String key : g.getEdgesWeightsKeys())
-				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesIWeights(key), edges));
+				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesIWeights(key), edges, true));
 		}
 
 		/* internal data containers should be copied manually */
@@ -215,7 +215,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
 			T defVal) {
-		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);
+		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, false, type, defVal);
 		verticesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;
@@ -225,11 +225,31 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
 			T defVal) {
-		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);
+		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, true, type, defVal);
 		edgesUserWeights.addWeights(key, weights);
 		@SuppressWarnings("unchecked")
 		WeightsT weights0 = (WeightsT) weights;
 		return weights0;
+	}
+
+	@Override
+	public void addVertexRemoveListener(IndexRemoveListener listener) {
+		vertices.addRemoveListener(listener);
+	}
+
+	@Override
+	public void removeVertexSwapRemoveListener(IndexRemoveListener listener) {
+		vertices.removeRemoveListener(listener);
+	}
+
+	@Override
+	public void addEdgeRemoveListener(IndexRemoveListener listener) {
+		edges.addRemoveListener(listener);
+	}
+
+	@Override
+	public void removeEdgeSwapRemoveListener(IndexRemoveListener listener) {
+		edges.removeRemoveListener(listener);
 	}
 
 	void checkVertex(int vertex) {

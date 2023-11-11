@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
 abstract class IntGraphImpl extends IntGraphBase {
 
-	final IndexGraphImpl indexGraph;
+	final IndexGraph indexGraph;
 	final IdIdxMapImpl viMap;
 	final IdIdxMapImpl eiMap;
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> verticesWeights = new IdentityHashMap<>();
@@ -102,16 +102,16 @@ abstract class IntGraphImpl extends IntGraphBase {
 		assert g.vertices().isEmpty();
 		assert g.edges().isEmpty();
 
-		indexGraph = (IndexGraphImpl) g;
-		viMap = IdIdxMapImpl.newInstance(indexGraph.vertices(), expectedVerticesNum, false);
-		eiMap = IdIdxMapImpl.newInstance(indexGraph.edges(), expectedEdgesNum, true);
+		indexGraph = g;
+		viMap = IdIdxMapImpl.newInstance(indexGraph, expectedVerticesNum, false);
+		eiMap = IdIdxMapImpl.newInstance(indexGraph, expectedEdgesNum, true);
 	}
 
 	IntGraphImpl(IndexGraph indexGraph, IndexIntIdMap viMap, IndexIntIdMap eiMap,
 			IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
-		this.indexGraph = (IndexGraphImpl) Objects.requireNonNull(indexGraph);
-		this.viMap = IdIdxMapImpl.reindexedCopyOf(viMap, vReIndexing, this.indexGraph.vertices(), false);
-		this.eiMap = IdIdxMapImpl.reindexedCopyOf(eiMap, eReIndexing, this.indexGraph.edges(), true);
+		this.indexGraph = Objects.requireNonNull(indexGraph);
+		this.viMap = IdIdxMapImpl.reindexedCopyOf(viMap, vReIndexing, this.indexGraph, false);
+		this.eiMap = IdIdxMapImpl.reindexedCopyOf(eiMap, eReIndexing, this.indexGraph, true);
 	}
 
 	/* copy constructor */
@@ -505,25 +505,24 @@ abstract class IntGraphImpl extends IntGraphBase {
 
 	private static class IdIdxMapImpl implements IndexIntIdMap {
 
-		private final GraphElementSet elements;
+		private final IntSet elements;
 		private final Int2IntOpenHashMap idToIndex;
 		private final IntSet idsView; // TODO move to graph abstract implementation
 		private int[] indexToId;
 		private final boolean isEdges;
 
-		IdIdxMapImpl(GraphElementSet elements, int expectedSize, boolean isEdges) {
-			this.elements = elements;
+		IdIdxMapImpl(IndexGraph g, int expectedSize, boolean isEdges) {
+			this.elements = isEdges ? g.edges() : g.vertices();
 			idToIndex = new Int2IntOpenHashMap(expectedSize);
 			idToIndex.defaultReturnValue(-1);
 			idsView = IntSets.unmodifiable(idToIndex.keySet());
 			indexToId = expectedSize == 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[expectedSize];
 			this.isEdges = isEdges;
-			initListeners(elements);
+			initListeners(g);
 		}
 
-		IdIdxMapImpl(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing, GraphElementSet elements,
-				boolean isEdges) {
-			this.elements = elements;
+		IdIdxMapImpl(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing, IndexGraph g, boolean isEdges) {
+			this.elements = isEdges ? g.edges() : g.vertices();
 			int elementsSize = elements.size();
 			if (orig instanceof IdIdxMapImpl && reIndexing == null) {
 				IdIdxMapImpl orig0 = (IdIdxMapImpl) orig;
@@ -566,21 +565,20 @@ abstract class IntGraphImpl extends IntGraphBase {
 			}
 			this.isEdges = isEdges;
 			idsView = IntSets.unmodifiable(idToIndex.keySet());
-			initListeners(elements);
+			initListeners(g);
 		}
 
-		static IdIdxMapImpl newInstance(GraphElementSet elements, int expectedSize, boolean isEdges) {
-			return new IdIdxMapImpl(elements, expectedSize, isEdges);
+		static IdIdxMapImpl newInstance(IndexGraph g, int expectedSize, boolean isEdges) {
+			return new IdIdxMapImpl(g, expectedSize, isEdges);
 		}
 
 		static IdIdxMapImpl reindexedCopyOf(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing,
-				GraphElementSet elements, boolean isEdges) {
-			return new IdIdxMapImpl(orig, reIndexing, elements, isEdges);
+				IndexGraph g, boolean isEdges) {
+			return new IdIdxMapImpl(orig, reIndexing, g, isEdges);
 		}
 
-		private void initListeners(GraphElementSet elements) {
-
-			elements.addRemoveListener(new IndexRemoveListener() {
+		private void initListeners(IndexGraph g) {
+			IndexRemoveListener listener = new IndexRemoveListener() {
 
 				@Override
 				public void swapAndRemove(int removedIdx, int swappedIdx) {
@@ -600,7 +598,12 @@ abstract class IntGraphImpl extends IntGraphBase {
 					// indexToId[removedIdx] = -1;
 					idToIndex.remove(id);
 				}
-			});
+			};
+			if (isEdges) {
+				g.addEdgeRemoveListener(listener);
+			} else {
+				g.addVertexRemoveListener(listener);
+			}
 		}
 
 		void addId(int id, int idx) {
@@ -621,7 +624,7 @@ abstract class IntGraphImpl extends IntGraphBase {
 
 		@Override
 		public int indexToIdInt(int index) {
-			elements.checkIdx(index);
+			Assertions.Graphs.checkId(index, elements.size(), isEdges);
 			return indexToId[index];
 		}
 

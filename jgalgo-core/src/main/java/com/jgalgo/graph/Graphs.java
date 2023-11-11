@@ -198,11 +198,11 @@ public class Graphs {
 
 	}
 
-	private static class ImmutableIntGraphView extends IntGraphBase implements ImmutableGraph {
+	private abstract static class ImmutableIntGraphViewBase extends IntGraphBase implements ImmutableGraph {
 
 		private final IntGraph graph;
 
-		ImmutableIntGraphView(IntGraph g) {
+		ImmutableIntGraphViewBase(IntGraph g) {
 			this.graph = Objects.requireNonNull(g);
 		}
 
@@ -350,36 +350,42 @@ public class Graphs {
 			return graph.copy();
 		}
 
-		@Override
-		public IndexGraph indexGraph() {
-			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.immutableView(graph.indexGraph());
-		}
-
-		@Override
-		public IndexIntIdMap indexGraphVerticesMap() {
-			return graph.indexGraphVerticesMap();
-		}
-
-		@Override
-		public IndexIntIdMap indexGraphEdgesMap() {
-			return graph.indexGraphEdgesMap();
-		}
-
 		IntGraph graph() {
 			return graph;
 		}
 	}
 
-	private static class ImmutableIndexGraphView extends ImmutableIntGraphView implements IndexGraphImpl {
+	private static class ImmutableIntGraphView extends ImmutableIntGraphViewBase {
 
-		ImmutableIndexGraphView(IndexGraph g) {
+		ImmutableIntGraphView(IntGraph g) {
 			super(g);
-			assert g instanceof IndexGraphImpl;
 		}
 
 		@Override
-		IndexGraphImpl graph() {
-			return (IndexGraphImpl) super.graph();
+		public IndexGraph indexGraph() {
+			return Graphs.immutableView(graph().indexGraph());
+		}
+
+		@Override
+		public IndexIntIdMap indexGraphVerticesMap() {
+			return graph().indexGraphVerticesMap();
+		}
+
+		@Override
+		public IndexIntIdMap indexGraphEdgesMap() {
+			return graph().indexGraphEdgesMap();
+		}
+	}
+
+	private static class ImmutableIndexGraphView extends ImmutableIntGraphViewBase implements IndexGraph {
+
+		ImmutableIndexGraphView(IndexGraph g) {
+			super(g);
+		}
+
+		@Override
+		IndexGraph graph() {
+			return (IndexGraph) super.graph();
 		}
 
 		@Override
@@ -388,27 +394,36 @@ public class Graphs {
 		}
 
 		@Override
-		public GraphElementSet vertices() {
-			return graph().vertices();
-		}
-
-		@Override
-		public GraphElementSet edges() {
-			return graph().edges();
-		}
-
-		@Override
 		@Deprecated
 		public void addVertex(int vertex) {
-			IndexGraphImpl.super.addVertex(vertex);
+			IndexGraph.super.addVertex(vertex);
 		}
 
 		@Override
 		@Deprecated
 		public void addEdge(int source, int target, int edge) {
-			IndexGraphImpl.super.addEdge(source, target, edge);
+			IndexGraph.super.addEdge(source, target, edge);
 		}
 
+		@Override
+		public void addVertexRemoveListener(IndexRemoveListener listener) {
+			throw new UnsupportedOperationException("graph is immutable, cannot add a listener");
+		}
+
+		@Override
+		public void removeVertexSwapRemoveListener(IndexRemoveListener listener) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove a listener");
+		}
+
+		@Override
+		public void addEdgeRemoveListener(IndexRemoveListener listener) {
+			throw new UnsupportedOperationException("graph is immutable, cannot add a listener");
+		}
+
+		@Override
+		public void removeEdgeSwapRemoveListener(IndexRemoveListener listener) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove a listener");
+		}
 	}
 
 	private static class ImmutableEdgeSet<V, E> extends AbstractSet<E> implements EdgeSet<V, E> {
@@ -696,11 +711,11 @@ public class Graphs {
 
 	}
 
-	private static class ReverseIntGraph extends IntGraphBase {
+	private abstract static class ReverseIntGraphBase extends IntGraphBase {
 
 		private final IntGraph graph;
 
-		ReverseIntGraph(IntGraph g) {
+		ReverseIntGraphBase(IntGraph g) {
 			this.graph = Objects.requireNonNull(g);
 		}
 
@@ -844,58 +859,72 @@ public class Graphs {
 				T defVal) {
 			return graph.addEdgesWeights(key, type, defVal);
 		}
+	}
+
+	private static class ReverseIntGraph extends ReverseIntGraphBase {
+
+		ReverseIntGraph(IntGraph g) {
+			super(g);
+		}
 
 		@Override
 		public IndexGraph indexGraph() {
-			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.reverseView(graph.indexGraph());
+			return Graphs.reverseView(graph().indexGraph());
 		}
 
 		@Override
 		public IndexIntIdMap indexGraphVerticesMap() {
-			return graph.indexGraphVerticesMap();
+			return graph().indexGraphVerticesMap();
 		}
 
 		@Override
 		public IndexIntIdMap indexGraphEdgesMap() {
-			return graph.indexGraphEdgesMap();
+			return graph().indexGraphEdgesMap();
 		}
-
 	}
 
-	private static class ReverseIndexGraph extends ReverseIntGraph implements IndexGraphImpl {
+	private static class ReverseIndexGraph extends ReverseIntGraphBase implements IndexGraph {
 
 		ReverseIndexGraph(IndexGraph g) {
 			super(g);
-			assert g instanceof IndexGraphImpl;
 		}
 
 		@Override
-		IndexGraphImpl graph() {
-			return (IndexGraphImpl) super.graph();
-		}
-
-		@Override
-		public GraphElementSet vertices() {
-			return graph().vertices();
-		}
-
-		@Override
-		public GraphElementSet edges() {
-			return graph().edges();
+		IndexGraph graph() {
+			return (IndexGraph) super.graph();
 		}
 
 		@Override
 		@Deprecated
 		public void addVertex(int vertex) {
-			IndexGraphImpl.super.addVertex(vertex);
+			IndexGraph.super.addVertex(vertex);
 		}
 
 		@Override
 		@Deprecated
 		public void addEdge(int source, int target, int edge) {
-			IndexGraphImpl.super.addEdge(source, target, edge);
+			IndexGraph.super.addEdge(source, target, edge);
 		}
 
+		@Override
+		public void addVertexRemoveListener(IndexRemoveListener listener) {
+			graph().addVertexRemoveListener(listener);
+		}
+
+		@Override
+		public void removeVertexSwapRemoveListener(IndexRemoveListener listener) {
+			graph().removeVertexSwapRemoveListener(listener);
+		}
+
+		@Override
+		public void addEdgeRemoveListener(IndexRemoveListener listener) {
+			graph().addEdgeRemoveListener(listener);
+		}
+
+		@Override
+		public void removeEdgeSwapRemoveListener(IndexRemoveListener listener) {
+			graph().removeEdgeSwapRemoveListener(listener);
+		}
 	}
 
 	private static class ReversedEdgeSet<V, E> extends AbstractSet<E> implements EdgeSet<V, E> {
@@ -1043,13 +1072,14 @@ public class Graphs {
 	}
 
 	static IndexGraph reverseView(IndexGraph g) {
-		return g instanceof ReverseIntGraph ? ((ReverseIntGraph) g).graph.indexGraph() : new ReverseIndexGraph(g);
+		return g instanceof ReverseIntGraphBase ? ((ReverseIntGraphBase) g).graph.indexGraph()
+				: new ReverseIndexGraph(g);
 	}
 
 	static IntGraph reverseView(IntGraph g) {
 		if (g instanceof IndexGraph)
 			return reverseView((IndexGraph) g);
-		return g instanceof ReverseIntGraph ? ((ReverseIntGraph) g).graph : new ReverseIntGraph(g);
+		return g instanceof ReverseIntGraphBase ? ((ReverseIntGraphBase) g).graph : new ReverseIntGraph(g);
 	}
 
 	@SuppressWarnings("unchecked")

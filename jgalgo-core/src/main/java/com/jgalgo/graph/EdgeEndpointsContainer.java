@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
 class EdgeEndpointsContainer {
@@ -42,7 +43,7 @@ class EdgeEndpointsContainer {
 		return JGAlgoUtils.long2high(endpoints);
 	}
 
-	static interface GraphWithEdgeEndpointsContainer extends IndexGraphImpl {
+	static interface GraphWithEdgeEndpointsContainer extends IndexGraph {
 
 		long[] edgeEndpoints();
 
@@ -52,7 +53,7 @@ class EdgeEndpointsContainer {
 
 		@Override
 		default int edgeEndpoint(int edge, int endpoint) {
-			edges().checkIdx(edge);
+			Assertions.Graphs.checkId(edge, edges().size(), true);
 			long endpoints = edgeEndpoints()[edge];
 			int u = endpoints2Source(endpoints);
 			int v = endpoints2Target(endpoints);
@@ -68,13 +69,13 @@ class EdgeEndpointsContainer {
 
 		@Override
 		default int edgeSource(int edge) {
-			edges().checkIdx(edge);
+			Assertions.Graphs.checkId(edge, edges().size(), true);
 			return endpoints2Source(edgeEndpoints()[edge]);
 		}
 
 		@Override
 		default int edgeTarget(int edge) {
-			edges().checkIdx(edge);
+			Assertions.Graphs.checkId(edge, edges().size(), true);
 			return endpoints2Target(edgeEndpoints()[edge]);
 		}
 

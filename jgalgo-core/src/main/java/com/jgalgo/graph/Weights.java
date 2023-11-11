@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 import com.jgalgo.alg.BipartiteGraphs;
 import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.alg.ShortestPathSingleSource;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Weights of graph vertices or edges.
@@ -165,8 +166,8 @@ public interface Weights<K, T> {
 	@SuppressWarnings("unchecked")
 	public static <V, T, WeightsT extends Weights<V, T>> WeightsT createExternalVerticesWeights(Graph<V, ?> g,
 			Class<? super T> type, T defVal) {
-		GraphElementSet vertices = ((IndexGraphImpl) g.indexGraph()).vertices();
-		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);
+		IntSet vertices = g.indexGraph().vertices();
+		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(vertices, false, type, defVal);
 		if (vertices.size() > 0)
 			weights.expand(vertices.size());
 		if (g instanceof IndexGraph) {
@@ -221,8 +222,8 @@ public interface Weights<K, T> {
 	@SuppressWarnings("unchecked")
 	public static <E, T, WeightsT extends Weights<E, T>> WeightsT createExternalEdgesWeights(Graph<?, E> g,
 			Class<? super T> type, T defVal) {
-		GraphElementSet edges = ((IndexGraphImpl) g.indexGraph()).edges();
-		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);
+		IntSet edges = g.indexGraph().edges();
+		WeightsImpl.IndexMutable<T> weights = WeightsImpl.IndexMutable.newInstance(edges, true, type, defVal);
 		if (edges.size() > 0)
 			weights.expand(edges.size());
 		if (g instanceof IndexGraph) {

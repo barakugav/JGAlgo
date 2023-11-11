@@ -48,8 +48,9 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 		assert edgesOutBegin.length == n + 1;
 
 		WeightsImpl.IndexImmutable.Builder verticesUserWeightsBuilder =
-				new WeightsImpl.IndexImmutable.Builder(vertices);
-		WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder = new WeightsImpl.IndexImmutable.Builder(edges);
+				new WeightsImpl.IndexImmutable.Builder(vertices, false);
+		WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder =
+				new WeightsImpl.IndexImmutable.Builder(edges, true);
 		if (copyWeights) {
 			if (graphOrBuilder.contains(IndexGraph.class)) {
 				IndexGraph g = graphOrBuilder.get(IndexGraph.class).get();
@@ -96,8 +97,9 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 			setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 
 		WeightsImpl.IndexImmutable.Builder verticesUserWeightsBuilder =
-				new WeightsImpl.IndexImmutable.Builder(vertices);
-		WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder = new WeightsImpl.IndexImmutable.Builder(edges);
+				new WeightsImpl.IndexImmutable.Builder(vertices, false);
+		WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder =
+				new WeightsImpl.IndexImmutable.Builder(edges, true);
 		if (copyWeights) {
 			for (String key : g.getVerticesWeightsKeys())
 				verticesUserWeightsBuilder.copyAndAddWeights(key, g.getVerticesIWeights(key));
@@ -200,6 +202,26 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
 			T defVal) {
 		throw new UnsupportedOperationException("graph is immutable, can't add edges weights");
+	}
+
+	@Override
+	public void addVertexRemoveListener(IndexRemoveListener listener) {
+		vertices.addRemoveListener(listener);
+	}
+
+	@Override
+	public void removeVertexSwapRemoveListener(IndexRemoveListener listener) {
+		vertices.removeRemoveListener(listener);
+	}
+
+	@Override
+	public void addEdgeRemoveListener(IndexRemoveListener listener) {
+		edges.addRemoveListener(listener);
+	}
+
+	@Override
+	public void removeEdgeSwapRemoveListener(IndexRemoveListener listener) {
+		edges.removeRemoveListener(listener);
 	}
 
 	@Override

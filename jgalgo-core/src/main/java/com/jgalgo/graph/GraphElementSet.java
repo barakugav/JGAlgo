@@ -116,12 +116,6 @@ abstract class GraphElementSet extends AbstractIntSet {
 			size = 0;
 		}
 
-		// void idxSwap(int idx1, int idx2) {
-		// checkIdx(idx1);
-		// checkIdx(idx2);
-		// notifyIDSwap(idx1, idx2);
-		// }
-
 		void swapAndRemove(int removedIdx, int swappedIdx) {
 			checkIdx(removedIdx);
 			checkIdx(swappedIdx);
@@ -136,11 +130,6 @@ abstract class GraphElementSet extends AbstractIntSet {
 			return new GraphElementSet.Default(size, isEdges);
 		}
 
-		// void notifyIDSwap(int id1, int id2) {
-		// for (IndexRemoveListener listener : idSwapListeners)
-		// listener.swap(id1, id2);
-		// }
-
 		@Override
 		void addRemoveListener(IndexRemoveListener listener) {
 			removeListeners.add(Objects.requireNonNull(listener));
@@ -151,8 +140,5 @@ abstract class GraphElementSet extends AbstractIntSet {
 			removeListeners.remove(listener);
 		}
 	}
-
-	static final GraphElementSet EmptyVertices = new GraphElementSet.FixedSize(0, false);
-	static final GraphElementSet EmptyEdges = new GraphElementSet.FixedSize(0, true);
 
 }

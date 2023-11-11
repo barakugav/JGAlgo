@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 
 import java.util.Arrays;
 import FASTUTIL_PACKAGE.FASTUTIL_TYPEArrays;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class WEIGHTS_IMPL {
 
@@ -26,22 +27,21 @@ class WEIGHTS_IMPL {
 		PRIMITIVE_TYPE_REAL[] weights;
 		final PRIMITIVE_TYPE defaultWeight;
 
-		IndexImpl(GraphElementSet elements, PRIMITIVE_TYPE defVal) {
-			super(elements);
+		IndexImpl(IntSet elements, boolean isEdges, PRIMITIVE_TYPE defVal) {
+			super(elements, isEdges);
 
 			weights = FASTUTIL_TYPEArrays.EMPTY_ARRAY;
 			defaultWeight = defVal;
 		}
 
-		IndexImpl(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, GraphElementSet elements) {
-			this(elements, orig.defaultWeight);
+		IndexImpl(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, IntSet elements, boolean isEdges) {
+			this(elements, isEdges, orig.defaultWeight);
 			WeightsImpl.checkSameSize(elements, orig.elements);
 			weights = Arrays.copyOf(orig.weights, elements.size());
 		}
 
-		IndexImpl(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, GraphElementSet elements,
-				IndexGraphBuilder.ReIndexingMap reIndexMap) {
-			this(elements, orig.defaultWeight);
+		IndexImpl(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, IntSet elements, boolean isEdges, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+			this(elements, isEdges, orig.defaultWeight);
 			WeightsImpl.checkSameSize(elements, orig.elements);
 			weights = Arrays.copyOf(weights, elements.size());
 			final int s = elements.size();
@@ -64,13 +64,12 @@ class WEIGHTS_IMPL {
 
 	static class IndexImmutable TYPE_GENERIC extends WEIGHTS_IMPL.IndexImpl TYPE_GENERIC implements WeightsImpl.IndexImmutable<TYPE_GENERIC_CLASS> {
 
-		IndexImmutable(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, GraphElementSet.FixedSize elements) {
-			super(orig, elements);
+		IndexImmutable(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, IntSet elements, boolean isEdges) {
+			super(orig, elements, isEdges);
 		}
 
-		IndexImmutable(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, GraphElementSet.FixedSize elements,
-				IndexGraphBuilder.ReIndexingMap reIndexMap) {
-			super(orig, elements, reIndexMap);
+		IndexImmutable(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, IntSet elements, boolean isEdges, IndexGraphBuilder.ReIndexingMap reIndexMap) {
+			super(orig, elements, isEdges, reIndexMap);
 		}
 
 		@Override
@@ -81,12 +80,12 @@ class WEIGHTS_IMPL {
 
 	static class IndexMutable TYPE_GENERIC extends WEIGHTS_IMPL.IndexImpl TYPE_GENERIC implements WeightsImpl.IndexMutable<TYPE_GENERIC_CLASS> {
 
-		IndexMutable(GraphElementSet elements, PRIMITIVE_TYPE defVal) {
-			super(elements, defVal);
+		IndexMutable(IntSet elements, boolean isEdges, PRIMITIVE_TYPE defVal) {
+			super(elements, isEdges, defVal);
 		}
 
-		IndexMutable(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, GraphElementSet elements) {
-			super(orig, elements);
+		IndexMutable(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, IntSet elements, boolean isEdges) {
+			super(orig, elements, isEdges);
 		}
 
 		@Override
