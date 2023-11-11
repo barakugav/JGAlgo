@@ -75,8 +75,7 @@ class UnionFindArray implements UnionFind {
 
 	@Override
 	public int find(int x) {
-		if (x < 0 || x >= size)
-			throw new IndexOutOfBoundsException(x);
+		assert 0 <= x && x < size;
 		return find0(x);
 	}
 

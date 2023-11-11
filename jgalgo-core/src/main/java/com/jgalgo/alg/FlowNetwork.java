@@ -19,6 +19,7 @@ package com.jgalgo.alg;
 import java.util.List;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.Weights;
@@ -82,19 +83,19 @@ public interface FlowNetwork<V, E> {
 	/**
 	 * Get the capacity of an edge.
 	 *
-	 * @param  edge                      an edge in the graph
-	 * @return                           the capacity of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
+	 * @param  edge                an edge in the graph
+	 * @return                     the capacity of the edge
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge
 	 */
 	double getCapacity(E edge);
 
 	/**
 	 * Set the capacity of an edge.
 	 *
-	 * @param  edge                      an edge in the graph
-	 * @param  capacity                  the new capacity of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-	 * @throws IllegalArgumentException  if {@code capacity} is negative
+	 * @param  edge                     an edge in the graph
+	 * @param  capacity                 the new capacity of the edge
+	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge
+	 * @throws IllegalArgumentException if {@code capacity} is negative
 	 */
 	void setCapacity(E edge, double capacity);
 
@@ -111,18 +112,18 @@ public interface FlowNetwork<V, E> {
 	 * {@code e}, for \(-cap(e) \leq -f \leq 0\), means a flow of \(|-f|\) units of flow from {@code edgeTarget(e)} to
 	 * {@code edgeSource(e)} (opposite direction).
 	 *
-	 * @param  edge                      an edge in the graph
-	 * @return                           the amount of flow units going along an edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
+	 * @param  edge                an edge in the graph
+	 * @return                     the amount of flow units going along an edge
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge
 	 */
 	double getFlow(E edge);
 
 	/**
 	 * Set the amount of flow units going along an edge.
 	 *
-	 * @param  edge                      an edge in the graph
-	 * @param  flow                      the new flow of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
+	 * @param  edge                an edge in the graph
+	 * @param  flow                the new flow of the edge
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge
 	 */
 	void setFlow(E edge, double flow);
 

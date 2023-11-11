@@ -120,9 +120,9 @@ class GraphBuilderImpl {
 			int sourceIdx = vIdToIndex.getInt(source);
 			int targetIdx = vIdToIndex.getInt(target);
 			if (targetIdx == vIdToIndex.defaultReturnValue())
-				throw new IndexOutOfBoundsException("invalid vertex: " + target);
+				throw NoSuchVertexException.ofVertex(target);
 			if (sourceIdx == vIdToIndex.defaultReturnValue())
-				throw new IndexOutOfBoundsException("invalid vertex: " + source);
+				throw NoSuchVertexException.ofVertex(source);
 
 			int eIndex = ibuilder.edges().size();
 			int oldVal = eIdToIndex.putIfAbsent(edge, eIndex);
@@ -221,8 +221,13 @@ class GraphBuilderImpl {
 			@Override
 			public int idToIndex(K id) {
 				int idx = idToIndex.getInt(id);
-				if (idx < 0)
-					throw new IndexOutOfBoundsException("No such " + (isEdges ? "edge" : "vertex") + ": " + id);
+				if (idx < 0) {
+					if (isEdges) {
+						throw NoSuchEdgeException.ofEdge(id);
+					} else {
+						throw NoSuchVertexException.ofVertex(id);
+					}
+				}
 				return idx;
 			}
 

@@ -22,6 +22,7 @@ import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.IntAdapters;
@@ -43,9 +44,9 @@ public interface IFlowNetwork extends FlowNetwork<Integer, Integer> {
 	/**
 	 * Get the capacity of an edge.
 	 *
-	 * @param  edge                      an edge in the graph
-	 * @return                           the capacity of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
+	 * @param  edge                an edge in the graph
+	 * @return                     the capacity of the edge
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge
 	 */
 	double getCapacity(int edge);
 
@@ -58,10 +59,10 @@ public interface IFlowNetwork extends FlowNetwork<Integer, Integer> {
 	/**
 	 * Set the capacity of an edge.
 	 *
-	 * @param  edge                      an edge in the graph
-	 * @param  capacity                  the new capacity of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
-	 * @throws IllegalArgumentException  if {@code capacity} is negative
+	 * @param  edge                     an edge in the graph
+	 * @param  capacity                 the new capacity of the edge
+	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge
+	 * @throws IllegalArgumentException if {@code capacity} is negative
 	 */
 	void setCapacity(int edge, double capacity);
 
@@ -84,9 +85,9 @@ public interface IFlowNetwork extends FlowNetwork<Integer, Integer> {
 	 * {@code e}, for \(-cap(e) \leq -f \leq 0\), means a flow of \(|-f|\) units of flow from {@code edgeTarget(e)} to
 	 * {@code edgeSource(e)} (opposite direction).
 	 *
-	 * @param  edge                      an edge in the graph
-	 * @return                           the amount of flow units going along an edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
+	 * @param  edge                an edge in the graph
+	 * @return                     the amount of flow units going along an edge
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge
 	 */
 	double getFlow(int edge);
 
@@ -99,9 +100,9 @@ public interface IFlowNetwork extends FlowNetwork<Integer, Integer> {
 	/**
 	 * Set the amount of flow units going along an edge.
 	 *
-	 * @param  edge                      an edge in the graph
-	 * @param  flow                      the new flow of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge
+	 * @param  edge                an edge in the graph
+	 * @param  flow                the new flow of the edge
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge
 	 */
 	void setFlow(int edge, double flow);
 

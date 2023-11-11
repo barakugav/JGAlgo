@@ -75,9 +75,12 @@ public interface WeightFunction<K> extends Comparator<K> {
 	/**
 	 * Get the weight of an element.
 	 *
-	 * @param  element                   an element identifier
-	 * @return                           the weight of the element
-	 * @throws IndexOutOfBoundsException if {@code element} is not a valid element identifier in the graph
+	 * @param  element               an element identifier
+	 * @return                       the weight of the element
+	 * @throws NoSuchVertexException if this weight function maps vertices and {@code element} is not a valid vertex
+	 *                                   identifier in the graph
+	 * @throws NoSuchEdgeException   if this weight function maps edges and {@code element} is not a valid edge
+	 *                                   identifier in the graph
 	 */
 	double weight(K element);
 

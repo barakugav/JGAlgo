@@ -631,8 +631,13 @@ abstract class IntGraphImpl extends IntGraphBase {
 		@Override
 		public int idToIndex(int id) {
 			int idx = idToIndex.get(id);
-			if (idx < 0)
-				throw new IndexOutOfBoundsException("No such " + (isEdges ? "edge" : "vertex") + ": " + id);
+			if (idx < 0) {
+				if (isEdges) {
+					throw NoSuchEdgeException.ofEdge(id);
+				} else {
+					throw NoSuchVertexException.ofVertex(id);
+				}
+			}
 			return idx;
 		}
 

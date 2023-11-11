@@ -71,10 +71,11 @@ public interface IndexIntIdMap extends IndexIdMap<Integer> {
 	 * Whether this method maps vertices or edges depends if the mapping object was obtained by
 	 * {@link IntGraph#indexGraphVerticesMap()} or {@link IntGraph#indexGraphEdgesMap()}.
 	 *
-	 * @param  id                        an ID of an element (vertex/edge)
-	 * @return                           the index of the element
-	 * @throws IndexOutOfBoundsException if {@code id} is not a valid identifier of vertex/edge, depending on the
-	 *                                       context
+	 * @param  id                    an ID of an element (vertex/edge)
+	 * @return                       the index of the element
+	 * @throws NoSuchVertexException if this map maps vertices to ids and {@code id} is not a valid identifier of a
+	 *                                   vertex
+	 * @throws NoSuchEdgeException   if this map maps edges to ids and {@code id} is not a valid identifier of an edge
 	 */
 	int idToIndex(int id);
 

@@ -17,6 +17,7 @@ package com.jgalgo.alg;
 
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
@@ -33,9 +34,9 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 	@Override
 	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
 		if (!g.vertices().contains(source))
-			throw new IndexOutOfBoundsException(source);
+			throw NoSuchVertexException.ofIndex(source);
 		if (!g.vertices().contains(target))
-			throw new IndexOutOfBoundsException(target);
+			throw NoSuchVertexException.ofIndex(target);
 		if (source == target)
 			return new PathImpl(g, source, target, IntLists.emptyList());
 		if (w == null)

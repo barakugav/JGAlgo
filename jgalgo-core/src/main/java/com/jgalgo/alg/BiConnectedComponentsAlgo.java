@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchVertexException;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -74,9 +75,9 @@ public interface BiConnectedComponentsAlgo {
 		/**
 		 * Get the bi-connected components a vertex is contained in.
 		 *
-		 * @param  vertex                    a vertex in the graph
-		 * @return                           the labels of the bi-connected components containing the vertex
-		 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier in the graph
+		 * @param  vertex                a vertex in the graph
+		 * @return                       the labels of the bi-connected components containing the vertex
+		 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier in the graph
 		 */
 		IntSet getVertexBiCcs(V vertex);
 
@@ -160,9 +161,9 @@ public interface BiConnectedComponentsAlgo {
 		/**
 		 * Get the bi-connected components a vertex is contained in.
 		 *
-		 * @param  vertex                    a vertex in the graph
-		 * @return                           the labels of the bi-connected components containing the vertex
-		 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier in the graph
+		 * @param  vertex                a vertex in the graph
+		 * @return                       the labels of the bi-connected components containing the vertex
+		 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier in the graph
 		 */
 		IntSet getVertexBiCcs(int vertex);
 

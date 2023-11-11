@@ -70,8 +70,7 @@ class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
 
 	@Override
 	public double getValue(int x) {
-		if (x < 0 || x >= size)
-			throw new IndexOutOfBoundsException(x);
+		assert 0 <= x && x < size;
 		double sum = 0;
 		int r;
 		for (r = x; hasParent(r); r = parent[r])

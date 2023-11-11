@@ -162,9 +162,9 @@ class IntGraphBuilderImpl {
 			int sourceIdx = vIdToIndex.get(source);
 			int targetIdx = vIdToIndex.get(target);
 			if (targetIdx == vIdToIndex.defaultReturnValue())
-				throw new IndexOutOfBoundsException("invalid vertex: " + target);
+				throw NoSuchVertexException.ofVertex(target);
 			if (sourceIdx == vIdToIndex.defaultReturnValue())
-				throw new IndexOutOfBoundsException("invalid vertex: " + source);
+				throw NoSuchVertexException.ofVertex(source);
 
 			int eIndex = ibuilder.addEdge(sourceIdx, targetIdx);
 			int eId = eIndex + 1; // avoid null key in open hash maps
@@ -183,9 +183,9 @@ class IntGraphBuilderImpl {
 			int sourceIdx = vIdToIndex.get(source);
 			int targetIdx = vIdToIndex.get(target);
 			if (targetIdx == vIdToIndex.defaultReturnValue())
-				throw new IndexOutOfBoundsException("invalid vertex: " + target);
+				throw NoSuchVertexException.ofVertex(target);
 			if (sourceIdx == vIdToIndex.defaultReturnValue())
-				throw new IndexOutOfBoundsException("invalid vertex: " + source);
+				throw NoSuchVertexException.ofVertex(source);
 
 			int eIndex = ibuilder.edges().size();
 			int oldVal = eIdToIndex.putIfAbsent(edge, eIndex);
@@ -288,8 +288,13 @@ class IntGraphBuilderImpl {
 			@Override
 			public int idToIndex(int id) {
 				int idx = idToIndex.get(id);
-				if (idx < 0)
-					throw new IndexOutOfBoundsException("No such " + (isEdges ? "edge" : "vertex") + ": " + id);
+				if (idx < 0) {
+					if (isEdges) {
+						throw NoSuchEdgeException.ofEdge(id);
+					} else {
+						throw NoSuchVertexException.ofVertex(id);
+					}
+				}
 				return idx;
 			}
 

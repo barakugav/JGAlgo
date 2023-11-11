@@ -173,8 +173,8 @@ public interface Graph<V, E> {
 	/**
 	 * Remove a vertex and all its edges from the graph.
 	 *
-	 * @param  vertex                    the vertex identifier to remove
-	 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier
+	 * @param  vertex                the vertex identifier to remove
+	 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier
 	 */
 	void removeVertex(V vertex);
 
@@ -188,9 +188,9 @@ public interface Graph<V, E> {
 	 * The graph object does not expose an explicit method to get the (out) degree of a vertex, but it can accessed
 	 * using this method by {@code g.outEdges(vertex).size()}.
 	 *
-	 * @param  source                    a source vertex
-	 * @return                           all the edges whose source is {@code source}
-	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
+	 * @param  source                a source vertex
+	 * @return                       all the edges whose source is {@code source}
+	 * @throws NoSuchVertexException if {@code source} is not a valid vertex identifier
 	 */
 	EdgeSet<V, E> outEdges(V source);
 
@@ -204,9 +204,9 @@ public interface Graph<V, E> {
 	 * The graph object does not expose an explicit method to get the (in) degree of a vertex, but it can accessed using
 	 * this method by {@code g.inEdges(vertex).size()}.
 	 *
-	 * @param  target                    a target vertex
-	 * @return                           all the edges whose target is {@code target}
-	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
+	 * @param  target                a target vertex
+	 * @return                       all the edges whose target is {@code target}
+	 * @throws NoSuchVertexException if {@code target} is not a valid vertex identifier
 	 */
 	EdgeSet<V, E> inEdges(V target);
 
@@ -221,10 +221,10 @@ public interface Graph<V, E> {
 	 * In case there are multiple (parallel) edges between {@code source} and {@code target}, a single arbitrary one is
 	 * returned.
 	 *
-	 * @param  source                    a source vertex
-	 * @param  target                    a target vertex
-	 * @return                           id of the edge or {@code null} if no such edge exists
-	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
+	 * @param  source                a source vertex
+	 * @param  target                a target vertex
+	 * @return                       id of the edge or {@code null} if no such edge exists
+	 * @throws NoSuchVertexException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	default E getEdge(V source, V target) {
 		for (EdgeIter<V, E> it = outEdges(source).iterator(); it.hasNext();) {
@@ -238,10 +238,10 @@ public interface Graph<V, E> {
 	/**
 	 * Get the edges whose source is {@code source} and target is {@code target}.
 	 *
-	 * @param  source                    a source vertex
-	 * @param  target                    a target vertex
-	 * @return                           all the edges whose source is {@code source} and target is {@code target}
-	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
+	 * @param  source                a source vertex
+	 * @param  target                a target vertex
+	 * @return                       all the edges whose source is {@code source} and target is {@code target}
+	 * @throws NoSuchVertexException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	EdgeSet<V, E> getEdges(V source, V target);
 
@@ -265,16 +265,16 @@ public interface Graph<V, E> {
 	/**
 	 * Remove an edge from the graph.
 	 *
-	 * @param  edge                      the edge to remove
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @param  edge                the edge to remove
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
 	 */
 	void removeEdge(E edge);
 
 	/**
 	 * Remove all the edges of a vertex.
 	 *
-	 * @param  vertex                    a vertex in the graph
-	 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier
+	 * @param  vertex                a vertex in the graph
+	 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier
 	 */
 	default void removeEdgesOf(V vertex) {
 		removeOutEdgesOf(vertex);
@@ -284,8 +284,8 @@ public interface Graph<V, E> {
 	/**
 	 * Remove all edges whose source is {@code source}.
 	 *
-	 * @param  source                    a vertex in the graph
-	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
+	 * @param  source                a vertex in the graph
+	 * @throws NoSuchVertexException if {@code source} is not a valid vertex identifier
 	 */
 	default void removeOutEdgesOf(V source) {
 		for (EdgeIter<V, E> eit = outEdges(source).iterator(); eit.hasNext();) {
@@ -297,8 +297,8 @@ public interface Graph<V, E> {
 	/**
 	 * Remove all edges whose target is {@code target}.
 	 *
-	 * @param  target                    a vertex in the graph
-	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
+	 * @param  target                a vertex in the graph
+	 * @throws NoSuchVertexException if {@code target} is not a valid vertex identifier
 	 */
 	default void removeInEdgesOf(V target) {
 		for (EdgeIter<V, E> eit = inEdges(target).iterator(); eit.hasNext();) {
@@ -313,8 +313,8 @@ public interface Graph<V, E> {
 	 * <p>
 	 * If the graph is undirected, this method does nothing.
 	 *
-	 * @param  edge                      an existing edge in the graph
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @param  edge                an existing edge in the graph
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
 	 */
 	void reverseEdge(E edge);
 
@@ -325,9 +325,9 @@ public interface Graph<V, E> {
 	 * If the graph is undirected, this function return an arbitrary end-point of the edge, but always other end-point
 	 * than {@link #edgeTarget(Object)} returns.
 	 *
-	 * @param  edge                      the edge identifier
-	 * @return                           the edge source vertex
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @param  edge                the edge identifier
+	 * @return                     the edge source vertex
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
 	 */
 	V edgeSource(E edge);
 
@@ -338,9 +338,9 @@ public interface Graph<V, E> {
 	 * If the graph is undirected, this function return an arbitrary end-point of the edge, but always the other
 	 * end-point than {@link #edgeSource(Object)} returns.
 	 *
-	 * @param  edge                      the edge identifier
-	 * @return                           the edge target vertex
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @param  edge                the edge identifier
+	 * @return                     the edge target vertex
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
 	 */
 	V edgeTarget(E edge);
 
@@ -352,11 +352,11 @@ public interface Graph<V, E> {
 	 * either \(u\) or \(v\), the method will return the <i>other</i> endpoint which is not \(w\). If \(w=u\) the method
 	 * will return \(v\), if \(w=v\) the method will return \(u\).
 	 *
-	 * @param  edge                      an edge identifier
-	 * @param  endpoint                  one of the edge end-point
-	 * @return                           the other end-point of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
-	 * @throws IllegalArgumentException  if {@code endpoint} is not an endpoint of the edge
+	 * @param  edge                     an edge identifier
+	 * @param  endpoint                 one of the edge end-point
+	 * @return                          the other end-point of the edge
+	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge identifier
+	 * @throws IllegalArgumentException if {@code endpoint} is not an endpoint of the edge
 	 */
 	default V edgeEndpoint(E edge, V endpoint) {
 		V u = edgeSource(edge);

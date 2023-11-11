@@ -67,9 +67,12 @@ public interface IWeightFunctionInt extends WeightFunctionInt<Integer>, IWeightF
 	/**
 	 * Get the integer weight of an element.
 	 *
-	 * @param  element                   an element identifier
-	 * @return                           the integer weight of the element
-	 * @throws IndexOutOfBoundsException if {@code element} is not a valid element identifier
+	 * @param  element               an element identifier
+	 * @return                       the integer weight of the element
+	 * @throws NoSuchVertexException if this weight container holds vertices weights and {@code element} is not a valid
+	 *                                   vertex identifier in the graph
+	 * @throws NoSuchEdgeException   if this weight container holds edges weights and {@code element} is not a valid
+	 *                                   edge identifier in the graph
 	 */
 	public int weightInt(int element);
 

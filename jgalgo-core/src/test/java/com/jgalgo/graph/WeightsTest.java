@@ -246,11 +246,10 @@ public class WeightsTest extends TestBase {
 					nonExistingEdge0 = rand.nextInt();
 				} while (g.edges().contains(nonExistingEdge0));
 				final int nonExistingEdge = nonExistingEdge0;
-				assertThrows(IndexOutOfBoundsException.class, () -> weights.getAsObj(-1));
-				assertThrows(IndexOutOfBoundsException.class, () -> weights.getAsObj(nonExistingEdge));
-				assertThrows(IndexOutOfBoundsException.class, () -> weights.setAsObj(-1, weightFactory.get()));
-				assertThrows(IndexOutOfBoundsException.class,
-						() -> weights.setAsObj(nonExistingEdge, weightFactory.get()));
+				assertThrows(NoSuchEdgeException.class, () -> weights.getAsObj(-1));
+				assertThrows(NoSuchEdgeException.class, () -> weights.getAsObj(nonExistingEdge));
+				assertThrows(NoSuchEdgeException.class, () -> weights.setAsObj(-1, weightFactory.get()));
+				assertThrows(NoSuchEdgeException.class, () -> weights.setAsObj(nonExistingEdge, weightFactory.get()));
 
 				Weights<Integer, T> weightsImmutable = g.immutableView().getEdgesWeights(wKey);
 				for (int e : g.edges())

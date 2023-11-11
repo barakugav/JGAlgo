@@ -554,8 +554,13 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 		@Override
 		public int idToIndex(K id) {
 			int idx = idToIndex.getInt(id);
-			if (idx < 0)
-				throw new IndexOutOfBoundsException("No such " + (isEdges ? "edge" : "vertex") + ": " + id);
+			if (idx < 0) {
+				if (isEdges) {
+					throw NoSuchEdgeException.ofEdge(id);
+				} else {
+					throw NoSuchVertexException.ofVertex(id);
+				}
+			}
 			return idx;
 		}
 

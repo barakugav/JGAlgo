@@ -21,6 +21,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.Range;
@@ -43,8 +44,7 @@ class VertexBiPartitions {
 
 		@Override
 		public boolean isLeft(int vertex) {
-			if (!(0 <= vertex && vertex < g.vertices().size()))
-				throw new IndexOutOfBoundsException(vertex);
+			Assertions.Graphs.checkVertex(vertex, g.vertices().size());
 			return isLeft0(vertex);
 		}
 

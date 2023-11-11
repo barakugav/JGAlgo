@@ -29,6 +29,8 @@ import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchEdgeException;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.ds.Heap;
 import com.jgalgo.internal.ds.HeapReferenceable;
@@ -102,25 +104,30 @@ public class Assertions {
 				throw new IllegalArgumentException("only cardinality shortest path is supported by this algorithm");
 		}
 
-		public static void checkId(int idx, int length, boolean isEdge) {
+		public static void checkId(int elementIdx, int length, boolean isEdge) {
 			if (!JGAlgoConfigImpl.AssertionsGraphIdCheck)
 				return;
-			if (idx < 0 || idx >= length)
-				throw new IndexOutOfBoundsException("No such " + (isEdge ? "edge" : "vertex") + " index: " + idx);
+			if (elementIdx < 0 || elementIdx >= length) {
+				if (isEdge) {
+					throw NoSuchEdgeException.ofIndex(elementIdx);
+				} else {
+					throw NoSuchVertexException.ofIndex(elementIdx);
+				}
+			}
 		}
 
-		public static void checkVertex(int vertex, int n) {
+		public static void checkVertex(int vertexIdx, int n) {
 			if (!JGAlgoConfigImpl.AssertionsGraphIdCheck)
 				return;
-			if (vertex < 0 || vertex >= n)
-				throw new IndexOutOfBoundsException("No such vertex index: " + vertex);
+			if (vertexIdx < 0 || vertexIdx >= n)
+				throw NoSuchVertexException.ofIndex(vertexIdx);
 		}
 
-		public static void checkEdge(int edge, int m) {
+		public static void checkEdge(int edgeIdx, int m) {
 			if (!JGAlgoConfigImpl.AssertionsGraphIdCheck)
 				return;
-			if (edge < 0 || edge >= m)
-				throw new IndexOutOfBoundsException("No such edge index: " + edge);
+			if (edgeIdx < 0 || edgeIdx >= m)
+				throw NoSuchEdgeException.ofIndex(edgeIdx);
 		}
 
 	}

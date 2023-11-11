@@ -68,12 +68,11 @@ class UnionFindPtr implements UnionFind {
 
 	@Override
 	public int find(int x) {
+		assert 0 <= x && x < size;
 		return find0(x).idx;
 	}
 
 	private Elm find0(int x) {
-		if (x < 0 || x >= size)
-			throw new IndexOutOfBoundsException(x);
 		Elm e = elements[x];
 
 		/* Find root */
@@ -92,6 +91,7 @@ class UnionFindPtr implements UnionFind {
 
 	@Override
 	public int union(int aIdx, int bIdx) {
+		assert 0 <= aIdx && aIdx < size && 0 <= bIdx && bIdx < size;
 		Elm a = find0(aIdx);
 		Elm b = find0(bIdx);
 		if (a == b)

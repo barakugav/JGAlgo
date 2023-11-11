@@ -81,9 +81,12 @@ public interface IWeightFunction extends WeightFunction<Integer>, IntComparator 
 	/**
 	 * Get the weight of an element.
 	 *
-	 * @param  element                   an element identifier
-	 * @return                           the weight of the element
-	 * @throws IndexOutOfBoundsException if {@code element} is not a valid element identifier in the graph
+	 * @param  element               an element identifier
+	 * @return                       the weight of the element
+	 * @throws NoSuchVertexException if this weight container holds vertices weights and {@code element} is not a valid
+	 *                                   vertex identifier in the graph
+	 * @throws NoSuchEdgeException   if this weight container holds edges weights and {@code element} is not a valid
+	 *                                   edge identifier in the graph
 	 */
 	double weight(int element);
 

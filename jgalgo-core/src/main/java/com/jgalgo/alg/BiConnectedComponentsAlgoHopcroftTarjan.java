@@ -211,9 +211,8 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 
 		@Override
 		public IntSet getVertexBiCcs(int vertex) {
+			final int n = g.vertices().size();
 			if (vertexBiCcs == null) {
-				final int n = g.vertices().size();
-
 				int[] vertexBiCcsCount = new int[n + 1];
 				for (int biccIdx = 0; biccIdx < biccsVertices.length; biccIdx++)
 					for (int v : biccsVertices[biccIdx])
@@ -241,6 +240,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 					vertexBiCcs[v] =
 							ImmutableIntArraySet.withNaiveContains(sortedBiccs, vertexOffset[v], vertexOffset[v + 1]);
 			}
+			Assertions.Graphs.checkVertex(vertex, n);
 			return vertexBiCcs[vertex];
 		}
 
@@ -385,8 +385,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 		@Override
 		public boolean isCutVertex(int vertex) {
 			computeCutVerticesBitmap();
-			if (!(0 <= vertex && vertex <= g.vertices().size()))
-				throw new IndexOutOfBoundsException("No vertex with index " + vertex);
+			Assertions.Graphs.checkVertex(vertex, g.vertices().size());
 			return cutVerticesBitmap.get(vertex);
 		}
 
