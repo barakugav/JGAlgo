@@ -61,11 +61,7 @@ public class RandomGraphBuilder {
 		cycles = false;
 		connected = false;
 
-		if (rand.nextBoolean()) {
-			impl = direct -> IntGraphFactory.newUndirected().setDirected(direct).newGraph();
-		} else {
-			impl = direct -> GraphFactory.<Integer, Integer>newUndirected().setDirected(direct).newGraph();
-		}
+		graphImpl(rand.nextBoolean());
 	}
 
 	public RandomGraphBuilder n(int n) {
@@ -120,6 +116,15 @@ public class RandomGraphBuilder {
 
 	public RandomGraphBuilder graphImpl(Boolean2ObjectFunction<Graph<Integer, Integer>> impl) {
 		this.impl = impl;
+		return this;
+	}
+
+	public RandomGraphBuilder graphImpl(boolean intGraph) {
+		if (intGraph) {
+			impl = direct -> IntGraphFactory.newUndirected().setDirected(direct).newGraph();
+		} else {
+			impl = direct -> GraphFactory.<Integer, Integer>newUndirected().setDirected(direct).newGraph();
+		}
 		return this;
 	}
 

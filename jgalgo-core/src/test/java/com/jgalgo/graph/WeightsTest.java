@@ -26,6 +26,7 @@ import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -194,78 +195,103 @@ public class WeightsTest extends TestBase {
 		final int n = 1024;
 		final int m = 5000;
 
-		for (boolean removeEdges : new boolean[] { false, true }) {
-			Graph<Integer, Integer> g;
-			if (removeEdges) {
-				g = GraphsTestUtils.randGraph(n, m, GraphArrayWithFixEdgesIDsTest.graphImpl(), seedGen.nextSeed());
-			} else {
-				g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-			}
+		for (boolean intGraph : new boolean[] { false, true }) {
+			for (boolean removeEdges : new boolean[] { false, true }) {
+				Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(n).m(m)
+						.directed(false).parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
 
-			String wKey = "edgeWeight";
-			Weights<Integer, T> weights = edgeWeightsAdder.apply(g, wKey);
-			assertEquals(defaultWeight, weights.defaultWeightAsObj());
+				String wKey = "edgeWeight";
+				Weights<Integer, T> weights = edgeWeightsAdder.apply(g, wKey);
+				assertEquals(defaultWeight, weights.defaultWeightAsObj());
 
-			List<Integer> edges = new ArrayList<>(g.edges());
-			int edgesLen = edges.size();
-			Int2ObjectMap<T> assignedEdges = new Int2ObjectOpenHashMap<>();
-			assignedEdges.defaultReturnValue(defaultWeight);
-			while (assignedEdges.size() < g.edges().size() * 3 / 4) {
-				int op = rand.nextInt(10);
+				List<Integer> edges = new ArrayList<>(g.edges());
+				int edgesLen = edges.size();
+				Int2ObjectMap<T> assignedEdges = new Int2ObjectOpenHashMap<>();
+				assignedEdges.defaultReturnValue(defaultWeight);
+				while (assignedEdges.size() < g.edges().size() * 3 / 4) {
+					int op = rand.nextInt(10);
 
-				if (op == 9 && removeEdges) {
-					int eIdx = rand.nextInt(edgesLen);
-					int e = edges.get(eIdx);
-					g.removeEdge(e);
-					assignedEdges.remove(e);
-					edges.set(eIdx, edges.get(--edgesLen));
-					continue;
+					if (op == 9 && removeEdges) {
+						int eIdx = rand.nextInt(edgesLen);
+						int e = edges.get(eIdx);
+						g.removeEdge(e);
+						assignedEdges.remove(e);
+						edges.set(eIdx, edges.get(--edgesLen));
+						continue;
+					}
+
+					if (op % 2 == 0) {
+
+						// Choose random unassigned edge
+						int e;
+						do {
+							e = edges.get(rand.nextInt(edgesLen));
+						} while (assignedEdges.containsKey(e));
+
+						// assigned to it a new value
+						T val = weightFactory.get();
+						weights.setAsObj(e, val);
+						assignedEdges.put(e, val);
+
+					} else {
+						int e = edges.get(rand.nextInt(edgesLen));
+						T actual = weights.getAsObj(e);
+						T expected = assignedEdges.get(e);
+						assertEquals(expected, actual);
+					}
 				}
 
-				if (op % 2 == 0) {
+				int nonExistingEdge0;
+				do {
+					nonExistingEdge0 = rand.nextInt();
+				} while (g.edges().contains(nonExistingEdge0));
+				final int nonExistingEdge = nonExistingEdge0;
+				assertThrows(IndexOutOfBoundsException.class, () -> weights.getAsObj(-1));
+				assertThrows(IndexOutOfBoundsException.class, () -> weights.getAsObj(nonExistingEdge));
+				assertThrows(IndexOutOfBoundsException.class, () -> weights.setAsObj(-1, weightFactory.get()));
+				assertThrows(IndexOutOfBoundsException.class,
+						() -> weights.setAsObj(nonExistingEdge, weightFactory.get()));
 
-					// Choose random unassigned edge
-					int e;
-					do {
-						e = edges.get(rand.nextInt(edgesLen));
-					} while (assignedEdges.containsKey(e));
+				Weights<Integer, T> weightsImmutable = g.immutableView().getEdgesWeights(wKey);
+				for (int e : g.edges())
+					assertEquals(weights.getAsObj(e), weightsImmutable.getAsObj(e));
+				assertEquals(weights.defaultWeightAsObj(), weightsImmutable.defaultWeightAsObj());
+				assertThrows(UnsupportedOperationException.class, () -> {
+					Iterator<Integer> eit = g.edges().iterator();
+					Integer e1 = eit.next(), e2 = eit.next();
+					weightsImmutable.setAsObj(e1, weightsImmutable.getAsObj(e2));
+				});
 
-					// assigned to it a new value
-					T val = weightFactory.get();
-					weights.setAsObj(e, val);
-					assignedEdges.put(e, val);
+				assertTrue(WeightsImpl.isEqual(g.edges(), weights, weights));
+				assertTrue(WeightsImpl.isEqual(g.edges(), weights, weightsImmutable));
+				assertTrue(WeightsImpl.isEqual(g.edges(), weightsImmutable, weightsImmutable));
 
-				} else {
-					int e = edges.get(rand.nextInt(edgesLen));
-					T actual = weights.getAsObj(e);
-					T expected = assignedEdges.get(e);
-					assertEquals(expected, actual);
+				IndexIdMap<Integer> eiMap = g.indexGraphEdgesMap();
+				IWeights<T> indexWeights = IndexIdMaps.idToIndexWeights(weights, eiMap);
+				Weights<Integer, T> weights2 = unknownImplementationWrap(weights);
+				IWeights<T> indexWeights2 = IndexIdMaps.idToIndexWeights(weights2, eiMap);
+				assertEquals(weights.defaultWeightAsObj(), indexWeights.defaultWeightAsObj());
+				assertEquals(weights.defaultWeightAsObj(), indexWeights2.defaultWeightAsObj());
+				for (int e : g.edges()) {
+					switch (rand.nextInt(3)) {
+						case 0:
+							weights.setAsObj(e, weightFactory.get());
+							break;
+						case 1:
+							indexWeights.setAsObj(eiMap.idToIndex(e), weightFactory.get());
+							break;
+						case 2:
+							indexWeights2.setAsObj(eiMap.idToIndex(e), weightFactory.get());
+							break;
+						default:
+							break;
+					}
+				}
+				for (int e : g.edges()) {
+					assertEquals(weights.getAsObj(e), indexWeights.getAsObj(eiMap.idToIndex(e)));
+					assertEquals(weights.getAsObj(e), indexWeights2.getAsObj(eiMap.idToIndex(e)));
 				}
 			}
-
-			int nonExistingEdge0;
-			do {
-				nonExistingEdge0 = rand.nextInt();
-			} while (g.edges().contains(nonExistingEdge0));
-			final int nonExistingEdge = nonExistingEdge0;
-			assertThrows(IndexOutOfBoundsException.class, () -> weights.getAsObj(-1));
-			assertThrows(IndexOutOfBoundsException.class, () -> weights.getAsObj(nonExistingEdge));
-			assertThrows(IndexOutOfBoundsException.class, () -> weights.setAsObj(-1, weightFactory.get()));
-			assertThrows(IndexOutOfBoundsException.class, () -> weights.setAsObj(nonExistingEdge, weightFactory.get()));
-
-			Weights<Integer, T> weightsImmutable = g.immutableView().getEdgesWeights(wKey);
-			for (int e : g.edges())
-				assertEquals(weights.getAsObj(e), weightsImmutable.getAsObj(e));
-			assertEquals(weights.defaultWeightAsObj(), weightsImmutable.defaultWeightAsObj());
-			assertThrows(UnsupportedOperationException.class, () -> {
-				Iterator<Integer> eit = g.edges().iterator();
-				Integer e1 = eit.next(), e2 = eit.next();
-				weightsImmutable.setAsObj(e1, weightsImmutable.getAsObj(e2));
-			});
-
-			assertTrue(WeightsImpl.isEqual(g.edges(), weights, weights));
-			assertTrue(WeightsImpl.isEqual(g.edges(), weights, weightsImmutable));
-			assertTrue(WeightsImpl.isEqual(g.edges(), weightsImmutable, weightsImmutable));
 		}
 	}
 
@@ -359,6 +385,337 @@ public class WeightsTest extends TestBase {
 				return (char) rand.nextInt();
 			}
 		};
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <K, T> Weights<K, T> unknownImplementationWrap(Weights<K, T> w) {
+		if (w instanceof IWeightsObj) {
+			IWeightsObj<T> w0 = (IWeightsObj<T>) w;
+			return (WeightsObj<K, T>) new IWeightsObj<T>() {
+				@Override
+				public T get(int element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(int element, T weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public T defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof IWeightsByte) {
+			IWeightsByte w0 = (IWeightsByte) w;
+			return (Weights<K, T>) new IWeightsByte() {
+				@Override
+				public byte get(int element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(int element, byte weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public byte defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof IWeightsShort) {
+			IWeightsShort w0 = (IWeightsShort) w;
+			return (Weights<K, T>) new IWeightsShort() {
+				@Override
+				public short get(int element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(int element, short weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public short defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof IWeightsInt) {
+			IWeightsInt w0 = (IWeightsInt) w;
+			return (Weights<K, T>) new IWeightsInt() {
+				@Override
+				public int get(int element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(int element, int weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public int defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof IWeightsLong) {
+			IWeightsLong w0 = (IWeightsLong) w;
+			return (Weights<K, T>) new IWeightsLong() {
+				@Override
+				public long get(int element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(int element, long weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public long defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof IWeightsFloat) {
+			IWeightsFloat w0 = (IWeightsFloat) w;
+			return (Weights<K, T>) new IWeightsFloat() {
+				@Override
+				public float get(int element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(int element, float weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public float defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof IWeightsDouble) {
+			IWeightsDouble w0 = (IWeightsDouble) w;
+			return (Weights<K, T>) new IWeightsDouble() {
+				@Override
+				public double get(int element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(int element, double weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public double defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof IWeightsBool) {
+			IWeightsBool w0 = (IWeightsBool) w;
+			return (Weights<K, T>) new IWeightsBool() {
+				@Override
+				public boolean get(int element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(int element, boolean weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public boolean defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof IWeightsChar) {
+			IWeightsChar w0 = (IWeightsChar) w;
+			return (Weights<K, T>) new IWeightsChar() {
+				@Override
+				public char get(int element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(int element, char weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public char defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof WeightsObj) {
+			WeightsObj<K, T> w0 = (WeightsObj<K, T>) w;
+			return new WeightsObj<>() {
+				@Override
+				public T get(K element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(K element, T weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public T defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof WeightsByte) {
+			WeightsByte<K> w0 = (WeightsByte<K>) w;
+			return (Weights<K, T>) new WeightsByte<K>() {
+				@Override
+				public byte get(K element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(K element, byte weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public byte defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof WeightsShort) {
+			WeightsShort<K> w0 = (WeightsShort<K>) w;
+			return (Weights<K, T>) new WeightsShort<K>() {
+				@Override
+				public short get(K element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(K element, short weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public short defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof WeightsInt) {
+			WeightsInt<K> w0 = (WeightsInt<K>) w;
+			return (Weights<K, T>) new WeightsInt<K>() {
+				@Override
+				public int get(K element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(K element, int weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public int defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof WeightsLong) {
+			WeightsLong<K> w0 = (WeightsLong<K>) w;
+			return (Weights<K, T>) new WeightsLong<K>() {
+				@Override
+				public long get(K element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(K element, long weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public long defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof WeightsFloat) {
+			WeightsFloat<K> w0 = (WeightsFloat<K>) w;
+			return (Weights<K, T>) new WeightsFloat<K>() {
+				@Override
+				public float get(K element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(K element, float weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public float defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof WeightsDouble) {
+			WeightsDouble<K> w0 = (WeightsDouble<K>) w;
+			return (Weights<K, T>) new WeightsDouble<K>() {
+				@Override
+				public double get(K element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(K element, double weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public double defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof WeightsBool) {
+			WeightsBool<K> w0 = (WeightsBool<K>) w;
+			return (Weights<K, T>) new WeightsBool<K>() {
+				@Override
+				public boolean get(K element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(K element, boolean weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public boolean defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else if (w instanceof WeightsChar) {
+			WeightsChar<K> w0 = (WeightsChar<K>) w;
+			return (Weights<K, T>) new WeightsChar<K>() {
+				@Override
+				public char get(K element) {
+					return w0.get(element);
+				}
+
+				@Override
+				public void set(K element, char weight) {
+					w0.set(element, weight);
+				}
+
+				@Override
+				public char defaultWeight() {
+					return w0.defaultWeight();
+				}
+			};
+		} else {
+			throw new AssertionError("unknown weights type: " + w.getClass().getName());
+		}
 	}
 
 }
