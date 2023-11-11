@@ -17,7 +17,6 @@ package com.jgalgo.graph;
 
 import java.util.Arrays;
 import java.util.IdentityHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Random;
@@ -31,7 +30,6 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
-import it.unimi.dsi.fastutil.objects.ReferenceArrayList;
 
 abstract class IntGraphImpl extends IntGraphBase {
 
@@ -277,7 +275,6 @@ abstract class IntGraphImpl extends IntGraphBase {
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T, WeightsT extends IWeights<T>> WeightsT getVerticesIWeights(String key) {
-		proneRemovedVerticesWeights();
 		WeightsImpl.Index<T> indexWeights = indexGraph.getVerticesIWeights(key);
 		if (indexWeights == null)
 			return null;
@@ -287,27 +284,17 @@ abstract class IntGraphImpl extends IntGraphBase {
 
 	@Override
 	public Set<String> getVerticesWeightsKeys() {
-		proneRemovedVerticesWeights();
 		return indexGraph.getVerticesWeightsKeys();
 	}
 
 	@Override
 	public void removeVerticesWeights(String key) {
 		indexGraph.removeVerticesWeights(key);
-		proneRemovedVerticesWeights();
-	}
-
-	private void proneRemovedVerticesWeights() {
-		List<IWeights<?>> indexWeights = new ReferenceArrayList<>();
-		for (String key : indexGraph.getVerticesWeightsKeys())
-			indexWeights.add(indexGraph.getVerticesIWeights(key));
-		verticesWeights.keySet().removeIf(w -> !indexWeights.contains(w));
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <T, WeightsT extends IWeights<T>> WeightsT getEdgesIWeights(String key) {
-		proneRemovedEdgesWeights();
 		WeightsImpl.Index<T> indexWeights = indexGraph.getEdgesIWeights(key);
 		if (indexWeights == null)
 			return null;
@@ -318,7 +305,6 @@ abstract class IntGraphImpl extends IntGraphBase {
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
 			T defVal) {
-		proneRemovedVerticesWeights();
 		indexGraph.addVerticesWeights(key, type, defVal);
 		return getVerticesWeights(key);
 	}
@@ -326,28 +312,18 @@ abstract class IntGraphImpl extends IntGraphBase {
 	@Override
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
 			T defVal) {
-		proneRemovedEdgesWeights();
 		indexGraph.addEdgesWeights(key, type, defVal);
 		return getEdgesWeights(key);
 	}
 
 	@Override
 	public Set<String> getEdgesWeightsKeys() {
-		proneRemovedEdgesWeights();
 		return indexGraph.getEdgesWeightsKeys();
 	}
 
 	@Override
 	public void removeEdgesWeights(String key) {
 		indexGraph.removeEdgesWeights(key);
-		proneRemovedEdgesWeights();
-	}
-
-	private void proneRemovedEdgesWeights() {
-		List<IWeights<?>> indexWeights = new ReferenceArrayList<>();
-		for (String key : indexGraph.getEdgesWeightsKeys())
-			indexWeights.add(indexGraph.getEdgesIWeights(key));
-		edgesWeights.keySet().removeIf(w -> !indexWeights.contains(w));
 	}
 
 	class EdgeSetMapped extends AbstractIntSet implements IEdgeSet {
