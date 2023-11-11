@@ -117,6 +117,7 @@ class DominatingSetAlgoGreedy extends DominatingSetAlgos.AbstractImpl implements
 				int e = edges[rand.nextInt(edgesNum)];
 				int u;
 				if (!directed || dominanceDirection == EdgeDirection.All) {
+					assert !dominated.get(g.edgeSource(e)) || !dominated.get(g.edgeTarget(e));
 					u = rand.nextBoolean() ? g.edgeSource(e) : g.edgeTarget(e);
 					if (directed) {
 						for (IEdgeIter uEdges = g.outEdges(u).iterator(); uEdges.hasNext();) {
@@ -153,6 +154,7 @@ class DominatingSetAlgoGreedy extends DominatingSetAlgos.AbstractImpl implements
 					}
 
 				} else if (dominanceDirection == EdgeDirection.Out) {
+					assert !dominated.get(g.edgeTarget(e));
 					u = g.edgeSource(e);
 					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						eit.nextInt();
@@ -166,6 +168,7 @@ class DominatingSetAlgoGreedy extends DominatingSetAlgos.AbstractImpl implements
 
 				} else {
 					assert dominanceDirection == EdgeDirection.In;
+					assert !dominated.get(g.edgeSource(e));
 					u = g.edgeTarget(e);
 					for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
 						eit.nextInt();
@@ -177,7 +180,6 @@ class DominatingSetAlgoGreedy extends DominatingSetAlgos.AbstractImpl implements
 					}
 					removeOutEdges(u); /* no need to dominate u anymore */
 				}
-				assert !dominating.get(u);
 				dominating.set(u);
 				dominated.set(u);
 			}
