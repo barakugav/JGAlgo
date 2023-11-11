@@ -22,6 +22,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import com.jgalgo.alg.IFlowNetwork;
 import com.jgalgo.alg.IFlowNetworkInt;
+import com.jgalgo.alg.Trees;
 import com.jgalgo.alg.GraphsUtils;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
@@ -102,6 +103,20 @@ public class Assertions {
 		public static void onlyCardinality(IWeightFunction w) {
 			if (w != null && w != IWeightFunction.CardinalityWeightFunction)
 				throw new IllegalArgumentException("only cardinality shortest path is supported by this algorithm");
+		}
+
+		public static void onlyTree(IndexGraph g) {
+			if (!JGAlgoConfigImpl.AssertionsGraphsIsTree)
+				return;
+			if (!Trees.isTree(g))
+				throw new IllegalArgumentException("only trees are supported");
+		}
+
+		public static void onlyTree(IndexGraph g, int root) {
+			if (!JGAlgoConfigImpl.AssertionsGraphsIsTree)
+				return;
+			if (!Trees.isTree(g, Integer.valueOf(root)))
+				throw new IllegalArgumentException("The given graph is not a tree rooted at the given root");
 		}
 
 		public static void checkId(int elementIdx, int length, boolean isEdge) {

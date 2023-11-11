@@ -50,8 +50,7 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 
 	@Override
 	LowestCommonAncestorStatic.IDataStructure preProcessTree(IndexGraph tree, int root) {
-		if (!Trees.isTree(tree, Integer.valueOf(root)))
-			throw new IllegalArgumentException("The given graph is not a tree rooted at the given root");
+		Assertions.Graphs.onlyTree(tree, root);
 
 		final int n = tree.vertices().size();
 		int[] depths = new int[n * 2];

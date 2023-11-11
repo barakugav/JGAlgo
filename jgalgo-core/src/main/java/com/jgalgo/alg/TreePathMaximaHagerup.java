@@ -80,8 +80,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 	TreePathMaxima.IResult computeHeaviestEdgeInTreePaths(IndexGraph tree, IWeightFunction w,
 			TreePathMaxima.IQueries queries) {
 		Assertions.Graphs.onlyUndirected(tree);
-		if (!Trees.isTree(tree))
-			throw new IllegalArgumentException("only trees are supported");
+		Assertions.Graphs.onlyTree(tree);
 		return new Worker(tree, w, useBitsLookupTables).calcTPM(queries);
 	}
 

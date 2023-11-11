@@ -23,6 +23,7 @@ public class JGAlgoConfigNonFrozen {
 	static Object graphIdStrategy = null;
 	static boolean assertionsGraphsBipartitePartition = true;
 	static boolean assertionsGraphsPositiveWeights = true;
+	static boolean assertionsGraphsIsTree = true;
 	static boolean assertionsGraphIdCheck = true;
 	static boolean assertionsIterNotEmpty = true;
 	static boolean assertionsHeapsDecreaseKeyLegal = true;
@@ -45,6 +46,9 @@ public class JGAlgoConfigNonFrozen {
 				break;
 			case "AssertionsGraphsPositiveWeights":
 				assertionsGraphsPositiveWeights = ((Boolean) value).booleanValue();
+				break;
+			case "AssertionsGraphsIsTree":
+				assertionsGraphsIsTree = ((Boolean) value).booleanValue();
 				break;
 			case "AssertionsGraphIdCheck":
 				assertionsGraphIdCheck = ((Boolean) value).booleanValue();
