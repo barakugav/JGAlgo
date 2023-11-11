@@ -70,42 +70,42 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 <span class="fc" id="L70">	}</span>
 
 	GraphMatrixAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
-<span class="nc" id="L73">		super(capabilities, builder);</span>
+<span class="fc" id="L73">		super(capabilities, builder);</span>
 
-<span class="nc" id="L75">		edgesContainer = new DataContainer.Obj&lt;&gt;(vertices, null, EmptyEdgesArr, newArr -&gt; edges = newArr);</span>
-<span class="nc" id="L76">		addInternalVerticesContainer(edgesContainer);</span>
-<span class="nc bnc" id="L77" title="All 2 branches missed.">		for (int n = builder.vertices().size(), u = 0; u &lt; n; u++) {</span>
-<span class="nc" id="L78">			DataContainer.Int vEdges = new DataContainer.Int(vertices, EdgeNone, JGAlgoUtils.consumerNoOp());</span>
-<span class="nc" id="L79">			addInternalVerticesContainer(vEdges);</span>
-<span class="nc" id="L80">			edges[u] = vEdges;</span>
+<span class="fc" id="L75">		edgesContainer = new DataContainer.Obj&lt;&gt;(vertices, null, EmptyEdgesArr, newArr -&gt; edges = newArr);</span>
+<span class="fc" id="L76">		addInternalVerticesContainer(edgesContainer);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">		for (int n = builder.vertices().size(), u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L78">			DataContainer.Int vEdges = new DataContainer.Int(vertices, EdgeNone, JGAlgoUtils.consumerNoOp());</span>
+<span class="fc" id="L79">			addInternalVerticesContainer(vEdges);</span>
+<span class="fc" id="L80">			edges[u] = vEdges;</span>
 		}
 
-<span class="nc bnc" id="L83" title="All 4 branches missed.">		assert builder instanceof IndexGraphBuilderImpl.Directed || builder instanceof IndexGraphBuilderImpl.Undirected;</span>
-<span class="nc" id="L84">		boolean directed = builder instanceof IndexGraphBuilderImpl.Directed;</span>
-<span class="nc bnc" id="L85" title="All 2 branches missed.">		if (directed) {</span>
-<span class="nc bnc" id="L86" title="All 2 branches missed.">			for (int m = builder.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L87">				int source = builder.edgeSource(e), target = builder.edgeTarget(e);</span>
-<span class="nc" id="L88">				DataContainer.Int uEdges = edges[source];</span>
-<span class="nc" id="L89">				int existingEdge = uEdges.data[target];</span>
-<span class="nc bnc" id="L90" title="All 2 branches missed.">				if (existingEdge != EdgeNone)</span>
+<span class="pc bnc" id="L83" title="All 4 branches missed.">		assert builder instanceof IndexGraphBuilderImpl.Directed || builder instanceof IndexGraphBuilderImpl.Undirected;</span>
+<span class="fc" id="L84">		boolean directed = builder instanceof IndexGraphBuilderImpl.Directed;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		if (directed) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">			for (int m = builder.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L87">				int source = builder.edgeSource(e), target = builder.edgeTarget(e);</span>
+<span class="fc" id="L88">				DataContainer.Int uEdges = edges[source];</span>
+<span class="fc" id="L89">				int existingEdge = uEdges.data[target];</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">				if (existingEdge != EdgeNone)</span>
 <span class="nc" id="L91">					throw new IllegalArgumentException(&quot;parallel edges are not supported&quot;);</span>
-<span class="nc" id="L92">				uEdges.data[target] = e;</span>
+<span class="fc" id="L92">				uEdges.data[target] = e;</span>
 			}
 
 		} else {
-<span class="nc bnc" id="L96" title="All 2 branches missed.">			for (int m = builder.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L97">				int source = builder.edgeSource(e), target = builder.edgeTarget(e);</span>
-<span class="nc" id="L98">				DataContainer.Int uEdges = edges[source];</span>
-<span class="nc" id="L99">				DataContainer.Int vEdges = edges[target];</span>
-<span class="nc" id="L100">				int existingEdge1 = uEdges.data[target];</span>
-<span class="nc" id="L101">				int existingEdge2 = vEdges.data[source];</span>
-<span class="nc bnc" id="L102" title="All 4 branches missed.">				if (existingEdge1 != EdgeNone || existingEdge2 != EdgeNone)</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			for (int m = builder.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L97">				int source = builder.edgeSource(e), target = builder.edgeTarget(e);</span>
+<span class="fc" id="L98">				DataContainer.Int uEdges = edges[source];</span>
+<span class="fc" id="L99">				DataContainer.Int vEdges = edges[target];</span>
+<span class="fc" id="L100">				int existingEdge1 = uEdges.data[target];</span>
+<span class="fc" id="L101">				int existingEdge2 = vEdges.data[source];</span>
+<span class="pc bpc" id="L102" title="2 of 4 branches missed.">				if (existingEdge1 != EdgeNone || existingEdge2 != EdgeNone)</span>
 <span class="nc" id="L103">					throw new IllegalArgumentException(&quot;parallel edges are not supported&quot;);</span>
-<span class="nc" id="L104">				uEdges.data[target] = e;</span>
-<span class="nc" id="L105">				uEdges.data[source] = e;</span>
+<span class="fc" id="L104">				uEdges.data[target] = e;</span>
+<span class="fc" id="L105">				vEdges.data[source] = e;</span>
 			}
 		}
-<span class="nc" id="L108">	}</span>
+<span class="fc" id="L108">	}</span>
 
 	@Override
 	public int addVertex() {

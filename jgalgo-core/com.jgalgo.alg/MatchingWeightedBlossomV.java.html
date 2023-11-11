@@ -101,11 +101,11 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 		/* Compute a perfect matching in the new graph */
 		IWeightFunction wDup;
 <span class="pc bpc" id="L103" title="1 of 2 branches missed.">		if (w instanceof IWeightFunctionInt) {</span>
-<span class="nc" id="L104">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
-<span class="nc bnc" id="L105" title="All 2 branches missed.">			IWeightFunctionInt wDupInt = e -&gt; e &lt; dummyEdgesThreshold ? wInt.weightInt(e / 2) : 0;</span>
-<span class="nc" id="L106">			wDup = wDupInt;</span>
-<span class="nc" id="L107">		} else {</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">			wDup = e -&gt; e &lt; dummyEdgesThreshold ? w.weight(e / 2) : 0;</span>
+<span class="fc" id="L104">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			IWeightFunctionInt wDupInt = e -&gt; e &lt; dummyEdgesThreshold ? wInt.weightInt(e / 2) : 0;</span>
+<span class="fc" id="L106">			wDup = wDupInt;</span>
+<span class="fc" id="L107">		} else {</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">			wDup = e -&gt; e &lt; dummyEdgesThreshold ? w.weight(e / 2) : 0;</span>
 		}
 <span class="fc" id="L110">		IndexGraph gDup = b.build();</span>
 <span class="fc" id="L111">		IMatching matchDup = computeMinimumWeightedPerfectMatching(gDup, wDup);</span>

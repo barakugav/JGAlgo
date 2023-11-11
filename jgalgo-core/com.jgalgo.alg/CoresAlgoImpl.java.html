@@ -45,7 +45,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 <span class="fc" id="L46">class CoresAlgoImpl implements CoresAlgo {</span>
 
-	CoresAlgo.IResult computeCores(IndexGraph g, DegreeType degreeType) {
+	CoresAlgo.IResult computeCores(IndexGraph g, EdgeDirection degreeType) {
 <span class="fc" id="L49">		Objects.requireNonNull(degreeType);</span>
 
 <span class="fc" id="L51">		final int n = g.vertices().size();</span>
@@ -54,18 +54,18 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		/* cache the degree of each vertex */
 <span class="fc" id="L55">		int[] degree = new int[n];</span>
 <span class="fc" id="L56">		int maxDegree = 0;</span>
-<span class="fc bfc" id="L57" title="All 4 branches covered.">		if (!directed || degreeType == DegreeType.OutDegree) {</span>
+<span class="fc bfc" id="L57" title="All 4 branches covered.">		if (!directed || degreeType == EdgeDirection.Out) {</span>
 <span class="fc bfc" id="L58" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L59">				degree[v] = g.outEdges(v).size();</span>
 <span class="fc" id="L60">				maxDegree = Math.max(maxDegree, degree[v]);</span>
 			}
-<span class="fc bfc" id="L62" title="All 2 branches covered.">		} else if (degreeType == DegreeType.InDegree) {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		} else if (degreeType == EdgeDirection.In) {</span>
 <span class="fc bfc" id="L63" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L64">				degree[v] = g.inEdges(v).size();</span>
 <span class="fc" id="L65">				maxDegree = Math.max(maxDegree, degree[v]);</span>
 			}
 		} else {
-<span class="pc bnc" id="L68" title="All 2 branches missed.">			assert degreeType == DegreeType.OutAndInDegree;</span>
+<span class="pc bnc" id="L68" title="All 2 branches missed.">			assert degreeType == EdgeDirection.All;</span>
 <span class="fc bfc" id="L69" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L70">				degree[v] = g.outEdges(v).size() + g.inEdges(v).size();</span>
 <span class="fc" id="L71">				maxDegree = Math.max(maxDegree, degree[v]);</span>
@@ -117,14 +117,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L117">			int uDegree = degree[u];</span>
 
 			/* we 'remove' u from the graph, actually just decreasing the degree of its neighbors */
-<span class="fc bfc" id="L120" title="All 4 branches covered.">			if (!directed || degreeType == DegreeType.InDegree) {</span>
+<span class="fc bfc" id="L120" title="All 4 branches covered.">			if (!directed || degreeType == EdgeDirection.In) {</span>
 <span class="fc bfc" id="L121" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L122">					eit.nextInt();</span>
 <span class="fc" id="L123">					int v = eit.targetInt();</span>
 <span class="fc bfc" id="L124" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
 <span class="fc" id="L125">						decreaseDegree.accept(v);</span>
 <span class="fc" id="L126">				}</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">			} else if (degreeType == DegreeType.OutDegree) {</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">			} else if (degreeType == EdgeDirection.Out) {</span>
 <span class="fc bfc" id="L128" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L129">					eit.nextInt();</span>
 <span class="fc" id="L130">					int v = eit.sourceInt();</span>
@@ -132,7 +132,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L132">						decreaseDegree.accept(v);</span>
 <span class="fc" id="L133">				}</span>
 			} else {
-<span class="pc bnc" id="L135" title="All 2 branches missed.">				assert degreeType == DegreeType.OutAndInDegree;</span>
+<span class="pc bnc" id="L135" title="All 2 branches missed.">				assert degreeType == EdgeDirection.All;</span>
 <span class="fc bfc" id="L136" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L137">					eit.nextInt();</span>
 <span class="fc" id="L138">					int v = eit.targetInt();</span>
@@ -217,7 +217,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L217">					coreVertices[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], n) {</span>
 						@Override
 						public boolean contains(int v) {
-<span class="nc bnc" id="L220" title="All 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; ResultImpl.this.core[v] &gt;= c0;</span>
+<span class="pc bpc" id="L220" title="2 of 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; ResultImpl.this.core[v] &gt;= c0;</span>
 						}
 					};
 				}
@@ -237,7 +237,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L237">					coreShells[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], coreOffset[c + 1]) {</span>
 						@Override
 						public boolean contains(int v) {
-<span class="nc bnc" id="L240" title="All 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; ResultImpl.this.core[v] &gt;= c0;</span>
+<span class="pc bpc" id="L240" title="2 of 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; ResultImpl.this.core[v] == c0;</span>
 						}
 					};
 				}
@@ -257,7 +257,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L257">					coreCrusts[c] = new ImmutableIntArraySet(sortedVertices, 0, coreOffset[c]) {</span>
 						@Override
 						public boolean contains(int v) {
-<span class="nc bnc" id="L260" title="All 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; ResultImpl.this.core[v] &gt;= c0;</span>
+<span class="pc bpc" id="L260" title="2 of 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; ResultImpl.this.core[v] &lt; c0;</span>
 						}
 					};
 				}
@@ -268,9 +268,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
-	public &lt;V, E&gt; CoresAlgo.Result&lt;V, E&gt; computeCores(Graph&lt;V, E&gt; g, DegreeType degreeType) {
-<span class="pc bpc" id="L272" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L273">			return (CoresAlgo.Result&lt;V, E&gt;) computeCores((IndexGraph) g, degreeType);</span>
+	public &lt;V, E&gt; CoresAlgo.Result&lt;V, E&gt; computeCores(Graph&lt;V, E&gt; g, EdgeDirection degreeType) {
+<span class="fc bfc" id="L272" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L273">			return (CoresAlgo.Result&lt;V, E&gt;) computeCores((IndexGraph) g, degreeType);</span>
 
 		} else {
 <span class="fc" id="L276">			IndexGraph iGraph = g.indexGraph();</span>

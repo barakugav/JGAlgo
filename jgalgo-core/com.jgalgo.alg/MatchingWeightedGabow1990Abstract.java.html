@@ -60,7 +60,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	@Override
 	IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-<span class="nc" id="L63">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L63">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="nc" id="L64">		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);</span>
 	}
 
@@ -534,9 +534,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		abstract EdgeEvent extractNextBlossomEvent();
 
 		private IMatching computeMaxMatching(boolean perfect) {
-<span class="pc bpc" id="L537" title="1 of 2 branches missed.">			if (perfect) {</span>
+<span class="fc bfc" id="L537" title="All 2 branches covered.">			if (perfect) {</span>
 				/* delta3 is lower than delta in some updates when we try to compute perfect matching */
-<span class="nc" id="L539">				throw new UnsupportedOperationException(&quot;there is a bug in the perfect matching implementation&quot;);</span>
+<span class="fc" id="L539">				throw new UnsupportedOperationException(&quot;there is a bug in the perfect matching implementation&quot;);</span>
 			}
 
 <span class="fc" id="L542">			int n = g.vertices().size();</span>

@@ -116,22 +116,32 @@ import it.unimi.dsi.fastutil.objects.ObjectArrays;
 <span class="fc" id="L116">		return new WithNaiveContains(arr, from, to);</span>
 	}
 
+	public static ImmutableIntArraySet ofBitmap(Bitmap bitmap) {
+<span class="fc" id="L120">		int s = bitmap.capacity();</span>
+<span class="fc" id="L121">		return new ImmutableIntArraySet(bitmap.toArray()) {</span>
+			@Override
+			public boolean contains(int key) {
+<span class="pc bpc" id="L124" title="2 of 6 branches missed.">				return 0 &lt;= key &amp;&amp; key &lt; s &amp;&amp; bitmap.get(key);</span>
+			}
+		};
+	}
+
 	private static class WithNaiveContains extends ImmutableIntArraySet {
 
 		WithNaiveContains(int[] arr) {
-<span class="fc" id="L122">			this(arr, 0, arr.length);</span>
-<span class="fc" id="L123">		}</span>
+<span class="fc" id="L132">			this(arr, 0, arr.length);</span>
+<span class="fc" id="L133">		}</span>
 
 		WithNaiveContains(int[] arr, int from, int to) {
-<span class="fc" id="L126">			super(arr, from, to);</span>
-<span class="fc" id="L127">		}</span>
+<span class="fc" id="L136">			super(arr, from, to);</span>
+<span class="fc" id="L137">		}</span>
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc bfc" id="L131" title="All 2 branches covered.">			for (int i = from; i &lt; to; i++)</span>
-<span class="fc bfc" id="L132" title="All 2 branches covered.">				if (key == arr[i])</span>
-<span class="fc" id="L133">					return true;</span>
-<span class="fc" id="L134">			return false;</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			for (int i = from; i &lt; to; i++)</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">				if (key == arr[i])</span>
+<span class="fc" id="L143">					return true;</span>
+<span class="fc" id="L144">			return false;</span>
 		}
 
 	}

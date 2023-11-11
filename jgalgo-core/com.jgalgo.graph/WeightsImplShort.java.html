@@ -207,27 +207,27 @@ import it.unimi.dsi.fastutil.shorts.ShortArrays;
 
 	static class ObjImmutableView&lt;K &gt; extends WeightsImpl.ObjImmutableView&lt;K, Short&gt; implements WeightsShort &lt;K &gt; {
 		ObjImmutableView(WeightsShort &lt;K &gt; w) {
-<span class="nc" id="L210">			super(w);</span>
-<span class="nc" id="L211">		}</span>
+<span class="fc" id="L210">			super(w);</span>
+<span class="fc" id="L211">		}</span>
 
 		@Override
 		WeightsShort &lt;K &gt; weights() {
-<span class="nc" id="L215">			return (WeightsShort &lt;K &gt;) super.weights();</span>
+<span class="fc" id="L215">			return (WeightsShort &lt;K &gt;) super.weights();</span>
 		}
 
 		@Override
 		public short get(K id) {
-<span class="nc" id="L220">			return weights().get(id);</span>
+<span class="fc" id="L220">			return weights().get(id);</span>
 		}
 
 		@Override
 		public void set(K id, short weight) {
-<span class="nc" id="L225">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+<span class="fc" id="L225">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
 		}
 
 		@Override
 		public short defaultWeight() {
-<span class="nc" id="L230">			return weights().defaultWeight();</span>
+<span class="fc" id="L230">			return weights().defaultWeight();</span>
 		}
 	}
 

@@ -36,182 +36,174 @@ abstract class DataContainer {
 <span class="fc" id="L36">		return elements.size();</span>
 	}
 
-	void checkIdx(int idx) {
-<span class="nc bnc" id="L40" title="All 2 branches missed.">		if (!elements.contains(idx))</span>
-<span class="nc" id="L41">			throw new IndexOutOfBoundsException(idx);</span>
-<span class="nc" id="L42">	}</span>
-
 	abstract void expand(int newCapacity);
 
 	abstract int capacity();
 
-<span class="fc" id="L48">	static class Obj&lt;T&gt; extends DataContainer {</span>
+<span class="fc" id="L43">	static class Obj&lt;T&gt; extends DataContainer {</span>
 
 		T[] data;
 		private final T defaultVal;
 		private final Consumer&lt;T[]&gt; onArrayAlloc;
 
 		Obj(GraphElementSet elements, T defVal, T[] emptyArr, Consumer&lt;T[]&gt; onArrayAlloc) {
-<span class="fc" id="L55">			super(elements);</span>
+<span class="fc" id="L50">			super(elements);</span>
 
-<span class="fc" id="L57">			defaultVal = defVal;</span>
-<span class="fc" id="L58">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
-<span class="fc" id="L59">			data = emptyArr;</span>
-<span class="fc" id="L60">			Arrays.fill(data, defaultVal);</span>
-<span class="fc" id="L61">			onArrayAlloc.accept(data);</span>
-<span class="fc" id="L62">		}</span>
+<span class="fc" id="L52">			defaultVal = defVal;</span>
+<span class="fc" id="L53">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
+<span class="fc" id="L54">			data = emptyArr;</span>
+<span class="fc" id="L55">			Arrays.fill(data, defaultVal);</span>
+<span class="fc" id="L56">			onArrayAlloc.accept(data);</span>
+<span class="fc" id="L57">		}</span>
 
 		@Override
 		public int capacity() {
-<span class="fc" id="L66">			return data.length;</span>
+<span class="fc" id="L61">			return data.length;</span>
 		}
 
 		@Override
 		public void expand(int newCapacity) {
-<span class="fc" id="L71">			int oldCapacity = data.length;</span>
-<span class="pc bnc" id="L72" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
-<span class="fc" id="L73">			data = Arrays.copyOf(data, newCapacity);</span>
-<span class="fc" id="L74">			Arrays.fill(data, oldCapacity, newCapacity, defaultVal);</span>
-<span class="fc" id="L75">			onArrayAlloc.accept(data);</span>
-<span class="fc" id="L76">		}</span>
+<span class="fc" id="L66">			int oldCapacity = data.length;</span>
+<span class="pc bnc" id="L67" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L68">			data = Arrays.copyOf(data, newCapacity);</span>
+<span class="fc" id="L69">			Arrays.fill(data, oldCapacity, newCapacity, defaultVal);</span>
+<span class="fc" id="L70">			onArrayAlloc.accept(data);</span>
+<span class="fc" id="L71">		}</span>
 
 		void clear(T[] data, int idx) {
-<span class="fc" id="L79">			data[idx] = defaultVal;</span>
-<span class="fc" id="L80">		}</span>
+<span class="fc" id="L74">			data[idx] = defaultVal;</span>
+<span class="fc" id="L75">		}</span>
 
 		void clear() {
-<span class="fc" id="L83">			Arrays.fill(data, 0, size(), defaultVal);</span>
-<span class="fc" id="L84">		}</span>
+<span class="fc" id="L78">			Arrays.fill(data, 0, size(), defaultVal);</span>
+<span class="fc" id="L79">		}</span>
 
 		public DataContainer.Obj&lt;T&gt; copy(GraphElementSet elements, T[] emptyArr, Consumer&lt;T[]&gt; onArrayAlloc) {
-<span class="pc bpc" id="L87" title="1 of 2 branches missed.">			if (elements.size() != this.elements.size())</span>
-<span class="nc" id="L88">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L89">			DataContainer.Obj&lt;T&gt; copy = new DataContainer.Obj&lt;&gt;(elements, defaultVal, emptyArr, onArrayAlloc);</span>
-<span class="fc" id="L90">			copy.data = Arrays.copyOf(data, elements.size());</span>
-<span class="fc" id="L91">			onArrayAlloc.accept(copy.data);</span>
-<span class="fc" id="L92">			return copy;</span>
+<span class="pc bnc" id="L82" title="All 2 branches missed.">			assert elements.size() == this.elements.size();</span>
+<span class="fc" id="L83">			DataContainer.Obj&lt;T&gt; copy = new DataContainer.Obj&lt;&gt;(elements, defaultVal, emptyArr, onArrayAlloc);</span>
+<span class="fc" id="L84">			copy.data = Arrays.copyOf(data, elements.size());</span>
+<span class="fc" id="L85">			onArrayAlloc.accept(copy.data);</span>
+<span class="fc" id="L86">			return copy;</span>
 		}
 	}
 
-<span class="fc" id="L96">	static class Int extends DataContainer {</span>
+<span class="fc" id="L90">	static class Int extends DataContainer {</span>
 
 		int[] data;
 		private final int defaultVal;
 		private final Consumer&lt;int[]&gt; onArrayAlloc;
 
 		Int(GraphElementSet elements, int defVal, Consumer&lt;int[]&gt; onArrayAlloc) {
-<span class="fc" id="L103">			super(elements);</span>
+<span class="fc" id="L97">			super(elements);</span>
 
-<span class="fc" id="L105">			data = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L106">			defaultVal = defVal;</span>
-<span class="fc" id="L107">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
-<span class="fc" id="L108">			onArrayAlloc.accept(data);</span>
-<span class="fc" id="L109">		}</span>
+<span class="fc" id="L99">			data = IntArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L100">			defaultVal = defVal;</span>
+<span class="fc" id="L101">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
+<span class="fc" id="L102">			onArrayAlloc.accept(data);</span>
+<span class="fc" id="L103">		}</span>
 
 		@Override
 		public int capacity() {
-<span class="fc" id="L113">			return data.length;</span>
+<span class="fc" id="L107">			return data.length;</span>
 		}
 
 		@Override
 		public void expand(int newCapacity) {
-<span class="fc" id="L118">			int oldCapacity = data.length;</span>
-<span class="pc bnc" id="L119" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
-<span class="fc" id="L120">			data = Arrays.copyOf(data, newCapacity);</span>
-<span class="fc" id="L121">			Arrays.fill(data, oldCapacity, newCapacity, defaultVal);</span>
-<span class="fc" id="L122">			onArrayAlloc.accept(data);</span>
-<span class="fc" id="L123">		}</span>
+<span class="fc" id="L112">			int oldCapacity = data.length;</span>
+<span class="pc bnc" id="L113" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L114">			data = Arrays.copyOf(data, newCapacity);</span>
+<span class="fc" id="L115">			Arrays.fill(data, oldCapacity, newCapacity, defaultVal);</span>
+<span class="fc" id="L116">			onArrayAlloc.accept(data);</span>
+<span class="fc" id="L117">		}</span>
 
 		void clear(int[] data, int idx) {
-<span class="nc" id="L126">			data[idx] = defaultVal;</span>
-<span class="nc" id="L127">		}</span>
+<span class="nc" id="L120">			data[idx] = defaultVal;</span>
+<span class="nc" id="L121">		}</span>
 
 		void clear() {
-<span class="fc" id="L130">			Arrays.fill(data, 0, size(), defaultVal);</span>
-<span class="fc" id="L131">		}</span>
+<span class="fc" id="L124">			Arrays.fill(data, 0, size(), defaultVal);</span>
+<span class="fc" id="L125">		}</span>
 
 		DataContainer.Int copy(GraphElementSet elements, Consumer&lt;int[]&gt; onArrayAlloc) {
-<span class="pc bpc" id="L134" title="1 of 2 branches missed.">			if (elements.size() != this.elements.size())</span>
-<span class="nc" id="L135">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L136">			DataContainer.Int copy = new DataContainer.Int(elements, defaultVal, onArrayAlloc);</span>
-<span class="fc" id="L137">			copy.data = Arrays.copyOf(data, elements.size());</span>
-<span class="fc" id="L138">			onArrayAlloc.accept(copy.data);</span>
-<span class="fc" id="L139">			return copy;</span>
+<span class="pc bnc" id="L128" title="All 2 branches missed.">			assert elements.size() == this.elements.size();</span>
+<span class="fc" id="L129">			DataContainer.Int copy = new DataContainer.Int(elements, defaultVal, onArrayAlloc);</span>
+<span class="fc" id="L130">			copy.data = Arrays.copyOf(data, elements.size());</span>
+<span class="fc" id="L131">			onArrayAlloc.accept(copy.data);</span>
+<span class="fc" id="L132">			return copy;</span>
 		}
 	}
 
-<span class="fc" id="L143">	static class Long extends DataContainer {</span>
+<span class="fc" id="L136">	static class Long extends DataContainer {</span>
 
 		private long[] data;
 		private final long defaultVal;
 		private final Consumer&lt;long[]&gt; onArrayAlloc;
 
 		Long(GraphElementSet elements, long defVal, Consumer&lt;long[]&gt; onArrayAlloc) {
-<span class="fc" id="L150">			super(elements);</span>
+<span class="fc" id="L143">			super(elements);</span>
 
-<span class="fc" id="L152">			data = LongArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L153">			defaultVal = defVal;</span>
-<span class="fc" id="L154">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
-<span class="fc" id="L155">			onArrayAlloc.accept(data);</span>
-<span class="fc" id="L156">		}</span>
+<span class="fc" id="L145">			data = LongArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L146">			defaultVal = defVal;</span>
+<span class="fc" id="L147">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
+<span class="fc" id="L148">			onArrayAlloc.accept(data);</span>
+<span class="fc" id="L149">		}</span>
 
 		Long(DataContainer.Long orig, GraphElementSet elements, Consumer&lt;long[]&gt; onArrayAlloc) {
-<span class="fc" id="L159">			super(elements);</span>
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">			if (elements.size() != this.elements.size())</span>
-<span class="nc" id="L161">				throw new IllegalArgumentException();</span>
+<span class="fc" id="L152">			super(elements);</span>
+<span class="pc bnc" id="L153" title="All 2 branches missed.">			assert elements.size() == this.elements.size();</span>
 
-<span class="fc" id="L163">			data = Arrays.copyOf(orig.data, elements.size());</span>
-<span class="fc" id="L164">			defaultVal = orig.defaultVal;</span>
-<span class="fc" id="L165">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
-<span class="fc" id="L166">			onArrayAlloc.accept(data);</span>
-<span class="fc" id="L167">		}</span>
+<span class="fc" id="L155">			data = Arrays.copyOf(orig.data, elements.size());</span>
+<span class="fc" id="L156">			defaultVal = orig.defaultVal;</span>
+<span class="fc" id="L157">			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);</span>
+<span class="fc" id="L158">			onArrayAlloc.accept(data);</span>
+<span class="fc" id="L159">		}</span>
 
 		@Override
 		int capacity() {
-<span class="fc" id="L171">			return data.length;</span>
+<span class="fc" id="L163">			return data.length;</span>
 		}
 
 		@Override
 		void expand(int newCapacity) {
-<span class="fc" id="L176">			int oldCapacity = data.length;</span>
-<span class="pc bnc" id="L177" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
-<span class="fc" id="L178">			data = Arrays.copyOf(data, newCapacity);</span>
-<span class="fc" id="L179">			Arrays.fill(data, oldCapacity, newCapacity, defaultVal);</span>
-<span class="fc" id="L180">			onArrayAlloc.accept(data);</span>
-<span class="fc" id="L181">		}</span>
+<span class="fc" id="L168">			int oldCapacity = data.length;</span>
+<span class="pc bnc" id="L169" title="All 2 branches missed.">			assert oldCapacity &lt; newCapacity;</span>
+<span class="fc" id="L170">			data = Arrays.copyOf(data, newCapacity);</span>
+<span class="fc" id="L171">			Arrays.fill(data, oldCapacity, newCapacity, defaultVal);</span>
+<span class="fc" id="L172">			onArrayAlloc.accept(data);</span>
+<span class="fc" id="L173">		}</span>
 
 		void clear() {
-<span class="fc" id="L184">			Arrays.fill(data, 0, size(), defaultVal);</span>
-<span class="fc" id="L185">		}</span>
+<span class="fc" id="L176">			Arrays.fill(data, 0, size(), defaultVal);</span>
+<span class="fc" id="L177">		}</span>
 
 		DataContainer.Long copy(GraphElementSet elements, Consumer&lt;long[]&gt; onArrayAlloc) {
-<span class="fc" id="L188">			return new DataContainer.Long(this, elements, onArrayAlloc);</span>
+<span class="fc" id="L180">			return new DataContainer.Long(this, elements, onArrayAlloc);</span>
 		}
 	}
 
 	static class Manager {
 
-<span class="fc" id="L194">		final List&lt;DataContainer&gt; containers = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L186">		final List&lt;DataContainer&gt; containers = new ObjectArrayList&lt;&gt;();</span>
 		private int containersCapacity;
 
-<span class="fc" id="L197">		Manager(int initCapacity) {</span>
-<span class="fc" id="L198">			containersCapacity = initCapacity;</span>
-<span class="fc" id="L199">		}</span>
+<span class="fc" id="L189">		Manager(int initCapacity) {</span>
+<span class="fc" id="L190">			containersCapacity = initCapacity;</span>
+<span class="fc" id="L191">		}</span>
 
 		void addContainer(DataContainer container) {
-<span class="fc" id="L202">			containers.add(container);</span>
-<span class="fc bfc" id="L203" title="All 2 branches covered.">			if (containersCapacity &gt; container.capacity())</span>
-<span class="fc" id="L204">				container.expand(containersCapacity);</span>
-<span class="fc" id="L205">		}</span>
+<span class="fc" id="L194">			containers.add(container);</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">			if (containersCapacity &gt; container.capacity())</span>
+<span class="fc" id="L196">				container.expand(containersCapacity);</span>
+<span class="fc" id="L197">		}</span>
 
 		void ensureCapacity(int capacity) {
-<span class="fc bfc" id="L208" title="All 2 branches covered.">			if (capacity &lt;= containersCapacity)</span>
-<span class="fc" id="L209">				return;</span>
-<span class="fc" id="L210">			int newCapacity = Math.max(Math.max(2, 2 * containersCapacity), capacity);</span>
-<span class="fc bfc" id="L211" title="All 2 branches covered.">			for (DataContainer container : containers)</span>
-<span class="fc" id="L212">				container.expand(newCapacity);</span>
-<span class="fc" id="L213">			containersCapacity = newCapacity;</span>
-<span class="fc" id="L214">		}</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">			if (capacity &lt;= containersCapacity)</span>
+<span class="fc" id="L201">				return;</span>
+<span class="fc" id="L202">			int newCapacity = Math.max(Math.max(2, 2 * containersCapacity), capacity);</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">			for (DataContainer container : containers)</span>
+<span class="fc" id="L204">				container.expand(newCapacity);</span>
+<span class="fc" id="L205">			containersCapacity = newCapacity;</span>
+<span class="fc" id="L206">		}</span>
 	}
 
 }

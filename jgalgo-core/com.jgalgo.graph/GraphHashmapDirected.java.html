@@ -91,25 +91,25 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 <span class="fc" id="L91">	}</span>
 
 	GraphHashmapDirected(IndexGraphBuilderImpl.Directed builder) {
-<span class="nc" id="L94">		super(Capabilities, builder);</span>
-<span class="nc" id="L95">		edgesOutContainer = new DataContainer.Obj&lt;&gt;(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
-<span class="nc" id="L96">				EMPTY_MAP_ARRAY, newArr -&gt; edgesOut = newArr);</span>
-<span class="nc" id="L97">		edgesInContainer = new DataContainer.Obj&lt;&gt;(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
-<span class="nc" id="L98">				EMPTY_MAP_ARRAY, newArr -&gt; edgesIn = newArr);</span>
+<span class="fc" id="L94">		super(Capabilities, builder);</span>
+<span class="fc" id="L95">		edgesOutContainer = new DataContainer.Obj&lt;&gt;(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
+<span class="fc" id="L96">				EMPTY_MAP_ARRAY, newArr -&gt; edgesOut = newArr);</span>
+<span class="fc" id="L97">		edgesInContainer = new DataContainer.Obj&lt;&gt;(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
+<span class="fc" id="L98">				EMPTY_MAP_ARRAY, newArr -&gt; edgesIn = newArr);</span>
 
-<span class="nc" id="L100">		addInternalVerticesContainer(edgesOutContainer);</span>
-<span class="nc" id="L101">		addInternalVerticesContainer(edgesInContainer);</span>
+<span class="fc" id="L100">		addInternalVerticesContainer(edgesOutContainer);</span>
+<span class="fc" id="L101">		addInternalVerticesContainer(edgesInContainer);</span>
 
-<span class="nc bnc" id="L103" title="All 2 branches missed.">		for (int m = builder.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L104">			int source = builder.edgeSource(e), target = builder.edgeTarget(e);</span>
-<span class="nc" id="L105">			int oldVal1 = ensureEdgesMapMutable(edgesOut, source).put(target, e);</span>
-<span class="nc" id="L106">			int oldVal2 = ensureEdgesMapMutable(edgesIn, target).put(source, e);</span>
-<span class="nc bnc" id="L107" title="All 2 branches missed.">			if (oldVal1 != -1)</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		for (int m = builder.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L104">			int source = builder.edgeSource(e), target = builder.edgeTarget(e);</span>
+<span class="fc" id="L105">			int oldVal1 = ensureEdgesMapMutable(edgesOut, source).put(target, e);</span>
+<span class="fc" id="L106">			int oldVal2 = ensureEdgesMapMutable(edgesIn, target).put(source, e);</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">			if (oldVal1 != -1)</span>
 <span class="nc" id="L108">				throw new IllegalStateException(&quot;Parallel edge (idx=&quot; + source + &quot;,idx=&quot; + target</span>
 						+ &quot;) already exists. Parallel edges are not allowed.&quot;);
-<span class="nc bnc" id="L110" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
+<span class="pc bnc" id="L110" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
 		}
-<span class="nc" id="L112">	}</span>
+<span class="fc" id="L112">	}</span>
 
 	@Override
 	void removeVertexLast(int vertex) {
@@ -293,7 +293,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 		@Override
 		public boolean isEmpty() {
-<span class="nc" id="L296">			return edges.isEmpty();</span>
+<span class="fc" id="L296">			return edges.isEmpty();</span>
 		}
 
 		@Override
@@ -317,7 +317,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 		@Override
 		public boolean isEmpty() {
-<span class="nc" id="L320">			return edges.isEmpty();</span>
+<span class="fc" id="L320">			return edges.isEmpty();</span>
 		}
 
 		@Override

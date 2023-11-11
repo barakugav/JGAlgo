@@ -207,27 +207,27 @@ import it.unimi.dsi.fastutil.chars.CharArrays;
 
 	static class ObjImmutableView&lt;K &gt; extends WeightsImpl.ObjImmutableView&lt;K, Character&gt; implements WeightsChar &lt;K &gt; {
 		ObjImmutableView(WeightsChar &lt;K &gt; w) {
-<span class="nc" id="L210">			super(w);</span>
-<span class="nc" id="L211">		}</span>
+<span class="fc" id="L210">			super(w);</span>
+<span class="fc" id="L211">		}</span>
 
 		@Override
 		WeightsChar &lt;K &gt; weights() {
-<span class="nc" id="L215">			return (WeightsChar &lt;K &gt;) super.weights();</span>
+<span class="fc" id="L215">			return (WeightsChar &lt;K &gt;) super.weights();</span>
 		}
 
 		@Override
 		public char get(K id) {
-<span class="nc" id="L220">			return weights().get(id);</span>
+<span class="fc" id="L220">			return weights().get(id);</span>
 		}
 
 		@Override
 		public void set(K id, char weight) {
-<span class="nc" id="L225">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+<span class="fc" id="L225">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
 		}
 
 		@Override
 		public char defaultWeight() {
-<span class="nc" id="L230">			return weights().defaultWeight();</span>
+<span class="fc" id="L230">			return weights().defaultWeight();</span>
 		}
 	}
 

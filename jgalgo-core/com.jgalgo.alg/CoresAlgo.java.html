@@ -27,13 +27,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Given a graph \(G=(V,E)\), a subgraph \(H\) induced by a subset of vertices \(W\) is a \(k\)-core or a core of order
  * \(k\) if \(\forall v \in W : deg_H(v) \geq k\) and \(H\) is a maximum subgraph with this property. The core number of
  * vertex is the highest order of a core that contains this vertex. The degree \(deg(v)\) can be: in-degree, out-degree,
- * in-degree + out-degree, determining different types of cores.
+ * in-degree + out-degree, determining different types of cores. See {@link EdgeDirection} for more details.
  *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
- * @see    CoresAlgo.DegreeType
+ * @see    EdgeDirection
  * @author Barak Ugav
  */
 public interface CoresAlgo {
@@ -53,7 +53,7 @@ public interface CoresAlgo {
 	 * @return     the cores of the graph
 	 */
 	default &lt;V, E&gt; CoresAlgo.Result&lt;V, E&gt; computeCores(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L56">		return computeCores(g, DegreeType.OutAndInDegree);</span>
+<span class="fc" id="L56">		return computeCores(g, EdgeDirection.All);</span>
 	}
 
 	/**
@@ -75,36 +75,7 @@ public interface CoresAlgo {
 	 * @param  degreeType the degree type the cores are computed with respect to
 	 * @return            the cores of the graph
 	 */
-	&lt;V, E&gt; CoresAlgo.Result&lt;V, E&gt; computeCores(Graph&lt;V, E&gt; g, DegreeType degreeType);
-
-	/**
-	 * The degree type the cores are defined with respect to.
-	 *
-	 * &lt;p&gt;
-	 * A \(k\)-core is a maximal set of vertices such that the graph induced by the set has minimum degree \(k\).
-	 * Different types of degrees can be considered, yielding different types of cores. For undirected graphs the degree
-	 * type has no effect.
-	 *
-	 * @see    CoresAlgo
-	 * @see    CoresAlgo#computeCores(Graph, DegreeType)
-	 * @author Barak Ugav
-	 */
-<span class="fc" id="L92">	static enum DegreeType {</span>
-		/**
-		 * Cores will be computed with respect to the out-degree of the vertices, namely the number of outgoing edges.
-		 */
-<span class="fc" id="L96">		OutDegree,</span>
-
-		/**
-		 * Cores will be computed with respect to the in-degree of the vertices, namely the number of incoming edges.
-		 */
-<span class="fc" id="L101">		InDegree,</span>
-
-		/**
-		 * Cores will be computed with respect to the sum of the in and out degrees of the vertices.
-		 */
-<span class="fc" id="L106">		OutAndInDegree</span>
-	}
+	&lt;V, E&gt; CoresAlgo.Result&lt;V, E&gt; computeCores(Graph&lt;V, E&gt; g, EdgeDirection degreeType);
 
 	/**
 	 * The result of the cores computation.
@@ -191,7 +162,7 @@ public interface CoresAlgo {
 		@Deprecated
 		@Override
 		default int vertexCoreNum(Integer v) {
-<span class="fc" id="L194">			return vertexCoreNum(v.intValue());</span>
+<span class="fc" id="L165">			return vertexCoreNum(v.intValue());</span>
 		}
 
 		@Override
@@ -214,7 +185,7 @@ public interface CoresAlgo {
 	 * @return a default implementation of {@link CoresAlgo}
 	 */
 	static CoresAlgo newInstance() {
-<span class="nc" id="L217">		return newBuilder().build();</span>
+<span class="nc" id="L188">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -226,7 +197,7 @@ public interface CoresAlgo {
 	 * @return a new builder for core algorithms
 	 */
 	static CoresAlgo.Builder newBuilder() {
-<span class="nc" id="L229">		return CoresAlgoImpl::new;</span>
+<span class="nc" id="L200">		return CoresAlgoImpl::new;</span>
 	}
 
 	/**
@@ -260,7 +231,7 @@ public interface CoresAlgo {
 		 * @return       this builder
 		 */
 		default CoresAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L263">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L234">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

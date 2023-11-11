@@ -76,24 +76,24 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 <span class="fc" id="L76">	}</span>
 
 	GraphHashmapUndirected(IndexGraphBuilderImpl.Undirected builder) {
-<span class="nc" id="L79">		super(Capabilities, builder);</span>
-<span class="nc" id="L80">		edgesContainer = new DataContainer.Obj&lt;&gt;(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
-<span class="nc" id="L81">				EMPTY_MAP_ARRAY, newArr -&gt; edges = newArr);</span>
+<span class="fc" id="L79">		super(Capabilities, builder);</span>
+<span class="fc" id="L80">		edgesContainer = new DataContainer.Obj&lt;&gt;(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,</span>
+<span class="fc" id="L81">				EMPTY_MAP_ARRAY, newArr -&gt; edges = newArr);</span>
 
-<span class="nc" id="L83">		addInternalVerticesContainer(edgesContainer);</span>
+<span class="fc" id="L83">		addInternalVerticesContainer(edgesContainer);</span>
 
-<span class="nc bnc" id="L85" title="All 2 branches missed.">		for (int m = builder.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L86">			int source = builder.edgeSource(e), target = builder.edgeTarget(e);</span>
-<span class="nc" id="L87">			int oldVal1 = ensureEdgesMapMutable(edges, source).put(target, e);</span>
-<span class="nc bnc" id="L88" title="All 2 branches missed.">			if (oldVal1 != -1)</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		for (int m = builder.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L86">			int source = builder.edgeSource(e), target = builder.edgeTarget(e);</span>
+<span class="fc" id="L87">			int oldVal1 = ensureEdgesMapMutable(edges, source).put(target, e);</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">			if (oldVal1 != -1)</span>
 <span class="nc" id="L89">				throw new IllegalStateException(&quot;Parallel edge (idx=&quot; + source + &quot;,idx=&quot; + target</span>
 						+ &quot;) already exists. Parallel edges are not allowed.&quot;);
-<span class="nc bnc" id="L91" title="All 2 branches missed.">			if (source != target) {</span>
-<span class="nc" id="L92">				int oldVal2 = ensureEdgesMapMutable(edges, target).put(source, e);</span>
-<span class="nc bnc" id="L93" title="All 2 branches missed.">				assert oldVal2 == -1;</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">			if (source != target) {</span>
+<span class="fc" id="L92">				int oldVal2 = ensureEdgesMapMutable(edges, target).put(source, e);</span>
+<span class="pc bnc" id="L93" title="All 2 branches missed.">				assert oldVal2 == -1;</span>
 			}
 		}
-<span class="nc" id="L96">	}</span>
+<span class="fc" id="L96">	}</span>
 
 	@Override
 	void removeVertexLast(int vertex) {
@@ -253,7 +253,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 
 		@Override
 		public boolean isEmpty() {
-<span class="nc" id="L256">			return edges.isEmpty();</span>
+<span class="fc" id="L256">			return edges.isEmpty();</span>
 		}
 
 		@Override
@@ -277,7 +277,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 
 		@Override
 		public boolean isEmpty() {
-<span class="nc" id="L280">			return edges.isEmpty();</span>
+<span class="fc" id="L280">			return edges.isEmpty();</span>
 		}
 
 		@Override

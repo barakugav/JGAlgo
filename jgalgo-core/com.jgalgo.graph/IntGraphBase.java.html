@@ -46,20 +46,20 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L46" title="All 2 branches covered.">			for (int e : edges()) {</span>
 <span class="fc" id="L47">				int s1 = edgeSource(e), t1 = edgeTarget(e);</span>
 <span class="fc" id="L48">				int s2 = o.edgeSource(e), t2 = o.edgeTarget(e);</span>
-<span class="pc bpc" id="L49" title="6 of 8 branches missed.">				if (!(s1 == s2 &amp;&amp; t1 == t2) &amp;&amp; !(s1 == t2 &amp;&amp; t1 == s2))</span>
-<span class="nc" id="L50">					return false;</span>
+<span class="pc bpc" id="L49" title="4 of 8 branches missed.">				if (!(s1 == s2 &amp;&amp; t1 == t2) &amp;&amp; !(s1 == t2 &amp;&amp; t1 == s2))</span>
+<span class="fc" id="L50">					return false;</span>
 <span class="fc" id="L51">			}</span>
 		}
 
-<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		if (!getVerticesWeightsKeys().equals(o.getVerticesWeightsKeys()))</span>
-<span class="nc" id="L55">			return false;</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		if (!getVerticesWeightsKeys().equals(o.getVerticesWeightsKeys()))</span>
+<span class="fc" id="L55">			return false;</span>
 <span class="fc bfc" id="L56" title="All 2 branches covered.">		for (String key : getVerticesWeightsKeys()) {</span>
 <span class="fc" id="L57">			IWeights&lt;?&gt; w1 = getVerticesIWeights(key), w2 = o.getVerticesIWeights(key);</span>
 <span class="fc bfc" id="L58" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(vertices(), w1, w2))</span>
 <span class="fc" id="L59">				return false;</span>
 <span class="fc" id="L60">		}</span>
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">		if (!getEdgesWeightsKeys().equals(o.getEdgesWeightsKeys()))</span>
-<span class="nc" id="L62">			return false;</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		if (!getEdgesWeightsKeys().equals(o.getEdgesWeightsKeys()))</span>
+<span class="fc" id="L62">			return false;</span>
 <span class="fc bfc" id="L63" title="All 2 branches covered.">		for (String key : getEdgesWeightsKeys()) {</span>
 <span class="fc" id="L64">			IWeights&lt;?&gt; w1 = getEdgesIWeights(key), w2 = o.getEdgesIWeights(key);</span>
 <span class="fc bfc" id="L65" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(edges(), w1, w2))</span>

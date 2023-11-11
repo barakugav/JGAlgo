@@ -276,15 +276,24 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L276">	}</span>
 
 	/**
+	 * Returns the number of bits in this bitmap.
+	 *
+	 * @return the number of bits in this bitmap
+	 */
+	public int capacity() {
+<span class="fc" id="L284">		return size;</span>
+	}
+
+	/**
 	 * Returns the number of bits set to {@code true} in this bitmap.
 	 *
 	 * @return the number of bits set to {@code true} in this bitmap
 	 */
 	public int cardinality() {
-<span class="fc" id="L284">		int sum = 0;</span>
-<span class="fc bfc" id="L285" title="All 2 branches covered.">		for (long word : words)</span>
-<span class="fc" id="L286">			sum += Long.bitCount(word);</span>
-<span class="fc" id="L287">		return sum;</span>
+<span class="fc" id="L293">		int sum = 0;</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">		for (long word : words)</span>
+<span class="fc" id="L295">			sum += Long.bitCount(word);</span>
+<span class="fc" id="L296">		return sum;</span>
 	}
 
 	/**
@@ -294,25 +303,25 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 */
 	@Override
 	public IntIterator iterator() {
-<span class="fc" id="L297">		return new IntIterator() {</span>
+<span class="fc" id="L306">		return new IntIterator() {</span>
 
-<span class="fc" id="L299">			int bit = nextSetBit(0);</span>
+<span class="fc" id="L308">			int bit = nextSetBit(0);</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc bfc" id="L303" title="All 2 branches covered.">				return bit != -1;</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">				return bit != -1;</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="fc" id="L308">				Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L309">				int ret = bit;</span>
-<span class="fc bfc" id="L310" title="All 2 branches covered.">				if (bit + 1 &lt; size) {</span>
-<span class="fc" id="L311">					bit = nextSetBit(bit + 1);</span>
+<span class="fc" id="L317">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L318">				int ret = bit;</span>
+<span class="fc bfc" id="L319" title="All 2 branches covered.">				if (bit + 1 &lt; size) {</span>
+<span class="fc" id="L320">					bit = nextSetBit(bit + 1);</span>
 				} else {
-<span class="fc" id="L313">					bit = -1;</span>
+<span class="fc" id="L322">					bit = -1;</span>
 				}
-<span class="fc" id="L315">				return ret;</span>
+<span class="fc" id="L324">				return ret;</span>
 			}
 		};
 	}
@@ -324,11 +333,11 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 * @return an array containing all of the {@code true} bits in this bitmap
 	 */
 	public int[] toArray() {
-<span class="fc" id="L327">		int[] arr = new int[cardinality()];</span>
-<span class="fc" id="L328">		int i = 0;</span>
-<span class="fc bfc" id="L329" title="All 2 branches covered.">		for (int b : this)</span>
-<span class="fc" id="L330">			arr[i++] = b;</span>
-<span class="fc" id="L331">		return arr;</span>
+<span class="fc" id="L336">		int[] arr = new int[cardinality()];</span>
+<span class="fc" id="L337">		int i = 0;</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">		for (int b : this)</span>
+<span class="fc" id="L339">			arr[i++] = b;</span>
+<span class="fc" id="L340">		return arr;</span>
 	}
 
 	/**
@@ -340,10 +349,15 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 * @return the complementary bitmap of this bitmap
 	 */
 	public Bitmap not() {
-<span class="fc" id="L343">		Bitmap ret = new Bitmap(size);</span>
-<span class="fc bfc" id="L344" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L345">			ret.words[i] = ~words[i];</span>
-<span class="fc" id="L346">		return ret;</span>
+<span class="fc" id="L352">		Bitmap ret = new Bitmap(size);</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L354">			ret.words[i] = ~words[i];</span>
+<span class="fc" id="L355">		return ret;</span>
+	}
+
+	@Override
+	public String toString() {
+<span class="nc" id="L360">		return ImmutableIntArraySet.withNaiveContains(toArray()).toString();</span>
 	}
 
 }

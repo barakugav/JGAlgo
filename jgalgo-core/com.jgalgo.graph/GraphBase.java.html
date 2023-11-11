@@ -31,16 +31,16 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L32">		Graph&lt;V, E&gt; o = (Graph&lt;V, E&gt;) other;</span>
 
-<span class="pc bpc" id="L34" title="1 of 2 branches missed.">		if (isDirected() != o.isDirected())</span>
-<span class="nc" id="L35">			return false;</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">		if (isDirected() != o.isDirected())</span>
+<span class="fc" id="L35">			return false;</span>
 <span class="fc bfc" id="L36" title="All 2 branches covered.">		if (!vertices().equals(o.vertices()))</span>
 <span class="fc" id="L37">			return false;</span>
 <span class="fc bfc" id="L38" title="All 2 branches covered.">		if (!edges().equals(o.edges()))</span>
 <span class="fc" id="L39">			return false;</span>
 <span class="fc bfc" id="L40" title="All 2 branches covered.">		if (isDirected()) {</span>
 <span class="fc bfc" id="L41" title="All 2 branches covered.">			for (E e : edges())</span>
-<span class="pc bpc" id="L42" title="2 of 4 branches missed.">				if (!edgeSource(e).equals(o.edgeSource(e)) || !edgeTarget(e).equals(o.edgeTarget(e)))</span>
-<span class="nc" id="L43">					return false;</span>
+<span class="pc bpc" id="L42" title="1 of 4 branches missed.">				if (!edgeSource(e).equals(o.edgeSource(e)) || !edgeTarget(e).equals(o.edgeTarget(e)))</span>
+<span class="fc" id="L43">					return false;</span>
 		} else {
 <span class="fc bfc" id="L45" title="All 2 branches covered.">			for (E e : edges()) {</span>
 <span class="fc" id="L46">				V s1 = edgeSource(e), t1 = edgeTarget(e);</span>

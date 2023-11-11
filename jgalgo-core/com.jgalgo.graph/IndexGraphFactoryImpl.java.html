@@ -53,7 +53,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	@Override
 	public IndexGraphBuilder newBuilder() {
 		IndexGraphBuilderImpl builder =
-<span class="pc bpc" id="L56" title="1 of 2 branches missed.">				directed ? new IndexGraphBuilderImpl.Directed() : new IndexGraphBuilderImpl.Undirected();</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">				directed ? new IndexGraphBuilderImpl.Directed() : new IndexGraphBuilderImpl.Undirected();</span>
 <span class="fc" id="L57">		builder.setMutableImpl(mutableImpl());</span>
 <span class="fc" id="L58">		builder.setImmutableImpl(immutableImpl());</span>
 <span class="fc" id="L59">		return builder;</span>
@@ -117,7 +117,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-<span class="nc" id="L120">				return new GraphLinkedDirected((IndexGraphBuilderImpl.Directed) builder);</span>
+<span class="fc" id="L120">				return new GraphLinkedDirected((IndexGraphBuilderImpl.Directed) builder);</span>
 			}
 <span class="fc" id="L122">		} : new Impl() {</span>
 
@@ -133,7 +133,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-<span class="nc" id="L136">				return new GraphLinkedUndirected((IndexGraphBuilderImpl.Undirected) builder);</span>
+<span class="fc" id="L136">				return new GraphLinkedUndirected((IndexGraphBuilderImpl.Undirected) builder);</span>
 			}
 		};
 <span class="fc bfc" id="L139" title="All 2 branches covered.">		Impl hashtableImpl = directed ? new Impl() {</span>
@@ -150,7 +150,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-<span class="nc" id="L153">				return new GraphHashmapDirected((IndexGraphBuilderImpl.Directed) builder);</span>
+<span class="fc" id="L153">				return new GraphHashmapDirected((IndexGraphBuilderImpl.Directed) builder);</span>
 			}
 <span class="fc" id="L155">		} : new Impl() {</span>
 
@@ -166,7 +166,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-<span class="nc" id="L169">				return new GraphHashmapUndirected((IndexGraphBuilderImpl.Undirected) builder);</span>
+<span class="fc" id="L169">				return new GraphHashmapUndirected((IndexGraphBuilderImpl.Undirected) builder);</span>
 			}
 		};
 <span class="fc bfc" id="L172" title="All 2 branches covered.">		Impl matrixImpl = directed ? new Impl() {</span>
@@ -183,7 +183,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-<span class="nc" id="L186">				return new GraphMatrixDirected((IndexGraphBuilderImpl.Directed) builder);</span>
+<span class="fc" id="L186">				return new GraphMatrixDirected((IndexGraphBuilderImpl.Directed) builder);</span>
 			}
 <span class="fc" id="L188">		} : new Impl() {</span>
 
@@ -199,7 +199,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-<span class="nc" id="L202">				return new GraphMatrixUndirected((IndexGraphBuilderImpl.Undirected) builder);</span>
+<span class="fc" id="L202">				return new GraphMatrixUndirected((IndexGraphBuilderImpl.Undirected) builder);</span>
 			}
 		};
 

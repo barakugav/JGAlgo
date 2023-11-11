@@ -118,8 +118,8 @@ import it.unimi.dsi.fastutil.floats.FloatArrays;
 
 		@Override
 		public void clear(int idx) {
-<span class="nc" id="L121">			weights[idx] = defaultWeight;</span>
-<span class="nc" id="L122">		}</span>
+<span class="fc" id="L121">			weights[idx] = defaultWeight;</span>
+<span class="fc" id="L122">		}</span>
 
 		@Override
 		public void clear() {
@@ -207,27 +207,27 @@ import it.unimi.dsi.fastutil.floats.FloatArrays;
 
 	static class ObjImmutableView&lt;K &gt; extends WeightsImpl.ObjImmutableView&lt;K, Float&gt; implements WeightsFloat &lt;K &gt; {
 		ObjImmutableView(WeightsFloat &lt;K &gt; w) {
-<span class="nc" id="L210">			super(w);</span>
-<span class="nc" id="L211">		}</span>
+<span class="fc" id="L210">			super(w);</span>
+<span class="fc" id="L211">		}</span>
 
 		@Override
 		WeightsFloat &lt;K &gt; weights() {
-<span class="nc" id="L215">			return (WeightsFloat &lt;K &gt;) super.weights();</span>
+<span class="fc" id="L215">			return (WeightsFloat &lt;K &gt;) super.weights();</span>
 		}
 
 		@Override
 		public float get(K id) {
-<span class="nc" id="L220">			return weights().get(id);</span>
+<span class="fc" id="L220">			return weights().get(id);</span>
 		}
 
 		@Override
 		public void set(K id, float weight) {
-<span class="nc" id="L225">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
+<span class="fc" id="L225">			throw new UnsupportedOperationException(&quot;immutable weights&quot;);</span>
 		}
 
 		@Override
 		public float defaultWeight() {
-<span class="nc" id="L230">			return weights().defaultWeight();</span>
+<span class="fc" id="L230">			return weights().defaultWeight();</span>
 		}
 	}
 

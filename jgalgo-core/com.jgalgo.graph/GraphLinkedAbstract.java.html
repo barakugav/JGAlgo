@@ -40,13 +40,13 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 <span class="fc" id="L40">	}</span>
 
 	GraphLinkedAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
-<span class="nc" id="L43">		super(capabilities, builder);</span>
-<span class="nc" id="L44">		edgesContainer = new DataContainer.Obj&lt;&gt;(super.edges, null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
-<span class="nc" id="L45">		addInternalEdgesContainer(edgesContainer);</span>
+<span class="fc" id="L43">		super(capabilities, builder);</span>
+<span class="fc" id="L44">		edgesContainer = new DataContainer.Obj&lt;&gt;(super.edges, null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
+<span class="fc" id="L45">		addInternalEdgesContainer(edgesContainer);</span>
 
-<span class="nc bnc" id="L47" title="All 2 branches missed.">		for (int m = super.edges.size(), e = 0; e &lt; m; e++)</span>
-<span class="nc" id="L48">			edges[e] = allocEdge(e, builder.edgeSource(e), builder.edgeTarget(e));</span>
-<span class="nc" id="L49">	}</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		for (int m = super.edges.size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L48">			edges[e] = allocEdge(e, builder.edgeSource(e), builder.edgeTarget(e));</span>
+<span class="fc" id="L49">	}</span>
 
 	@Override
 	public int edgeEndpoint(int edge, int endpoint) {

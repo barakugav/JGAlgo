@@ -55,8 +55,8 @@ abstract class GraphElementSet extends AbstractIntSet {
 	public boolean equals(Object other) {
 <span class="fc bfc" id="L56" title="All 2 branches covered.">		if (this == other)</span>
 <span class="fc" id="L57">			return true;</span>
-<span class="pc bpc" id="L58" title="1 of 2 branches missed.">		if (!(other instanceof GraphElementSet))</span>
-<span class="nc" id="L59">			return super.equals(other);</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		if (!(other instanceof GraphElementSet))</span>
+<span class="fc" id="L59">			return super.equals(other);</span>
 <span class="fc" id="L60">		GraphElementSet o = (GraphElementSet) other;</span>
 <span class="pc bpc" id="L61" title="1 of 2 branches missed.">		return size == o.size();</span>
 	}
