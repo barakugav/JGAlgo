@@ -376,6 +376,11 @@ abstract class IntGraphImpl extends IntGraphBase {
 		}
 
 		@Override
+		public boolean isEmpty() {
+			return set.isEmpty();
+		}
+
+		@Override
 		public void clear() {
 			set.clear();
 		}

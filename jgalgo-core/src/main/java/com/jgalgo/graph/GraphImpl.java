@@ -297,6 +297,11 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 		}
 
 		@Override
+		public boolean isEmpty() {
+			return set.isEmpty();
+		}
+
+		@Override
 		public void clear() {
 			set.clear();
 		}

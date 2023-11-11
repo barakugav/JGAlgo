@@ -36,11 +36,6 @@ abstract class DataContainer {
 		return elements.size();
 	}
 
-	void checkIdx(int idx) {
-		if (!elements.contains(idx))
-			throw new IndexOutOfBoundsException(idx);
-	}
-
 	abstract void expand(int newCapacity);
 
 	abstract int capacity();
@@ -84,8 +79,7 @@ abstract class DataContainer {
 		}
 
 		public DataContainer.Obj<T> copy(GraphElementSet elements, T[] emptyArr, Consumer<T[]> onArrayAlloc) {
-			if (elements.size() != this.elements.size())
-				throw new IllegalArgumentException();
+			assert elements.size() == this.elements.size();
 			DataContainer.Obj<T> copy = new DataContainer.Obj<>(elements, defaultVal, emptyArr, onArrayAlloc);
 			copy.data = Arrays.copyOf(data, elements.size());
 			onArrayAlloc.accept(copy.data);
@@ -131,8 +125,7 @@ abstract class DataContainer {
 		}
 
 		DataContainer.Int copy(GraphElementSet elements, Consumer<int[]> onArrayAlloc) {
-			if (elements.size() != this.elements.size())
-				throw new IllegalArgumentException();
+			assert elements.size() == this.elements.size();
 			DataContainer.Int copy = new DataContainer.Int(elements, defaultVal, onArrayAlloc);
 			copy.data = Arrays.copyOf(data, elements.size());
 			onArrayAlloc.accept(copy.data);
@@ -157,8 +150,7 @@ abstract class DataContainer {
 
 		Long(DataContainer.Long orig, GraphElementSet elements, Consumer<long[]> onArrayAlloc) {
 			super(elements);
-			if (elements.size() != this.elements.size())
-				throw new IllegalArgumentException();
+			assert elements.size() == this.elements.size();
 
 			data = Arrays.copyOf(orig.data, elements.size());
 			defaultVal = orig.defaultVal;
