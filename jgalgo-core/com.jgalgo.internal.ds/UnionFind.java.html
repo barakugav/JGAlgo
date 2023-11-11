@@ -151,7 +151,7 @@ public interface UnionFind {
 <span class="nc" id="L151">						impl = (String) value;</span>
 <span class="nc" id="L152">						break;</span>
 					default:
-<span class="nc" id="L154">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L154">						UnionFind.Builder.super.setOption(key, value);</span>
 				}
 <span class="nc" id="L156">				return this;</span>
 			}

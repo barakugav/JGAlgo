@@ -58,9 +58,9 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc bfc" id="L58" title="All 2 branches covered.">		if (copyWeights) {</span>
 <span class="fc bfc" id="L59" title="All 2 branches covered.">			for (String key : g.getVerticesWeightsKeys())</span>
 <span class="fc" id="L60">				verticesUserWeights.addWeights(key,</span>
-<span class="fc" id="L61">						WeightsImpl.IndexMutable.copyOf(g.getVerticesIWeights(key), vertices));</span>
+<span class="fc" id="L61">						WeightsImpl.IndexMutable.copyOf(g.getVerticesIWeights(key), vertices, false));</span>
 <span class="fc bfc" id="L62" title="All 2 branches covered.">			for (String key : g.getEdgesWeightsKeys())</span>
-<span class="fc" id="L63">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesIWeights(key), edges));</span>
+<span class="fc" id="L63">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesIWeights(key), edges, true));</span>
 		}
 
 		/* internal data containers should be copied manually */
@@ -215,7 +215,7 @@ import com.jgalgo.internal.util.Assertions;
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
-<span class="fc" id="L218">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);</span>
+<span class="fc" id="L218">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, false, type, defVal);</span>
 <span class="fc" id="L219">		verticesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L221">		WeightsT weights0 = (WeightsT) weights;</span>
@@ -225,42 +225,62 @@ import com.jgalgo.internal.util.Assertions;
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
-<span class="fc" id="L228">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);</span>
+<span class="fc" id="L228">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, true, type, defVal);</span>
 <span class="fc" id="L229">		edgesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L231">		WeightsT weights0 = (WeightsT) weights;</span>
 <span class="fc" id="L232">		return weights0;</span>
 	}
 
+	@Override
+	public void addVertexRemoveListener(IndexRemoveListener listener) {
+<span class="fc" id="L237">		vertices.addRemoveListener(listener);</span>
+<span class="fc" id="L238">	}</span>
+
+	@Override
+	public void removeVertexSwapRemoveListener(IndexRemoveListener listener) {
+<span class="nc" id="L242">		vertices.removeRemoveListener(listener);</span>
+<span class="nc" id="L243">	}</span>
+
+	@Override
+	public void addEdgeRemoveListener(IndexRemoveListener listener) {
+<span class="fc" id="L247">		edges.addRemoveListener(listener);</span>
+<span class="fc" id="L248">	}</span>
+
+	@Override
+	public void removeEdgeSwapRemoveListener(IndexRemoveListener listener) {
+<span class="nc" id="L252">		edges.removeRemoveListener(listener);</span>
+<span class="nc" id="L253">	}</span>
+
 	void checkVertex(int vertex) {
-<span class="fc" id="L236">		Assertions.Graphs.checkVertex(vertex, vertices.size);</span>
-<span class="fc" id="L237">	}</span>
+<span class="fc" id="L256">		Assertions.Graphs.checkVertex(vertex, vertices.size);</span>
+<span class="fc" id="L257">	}</span>
 
 	void checkEdge(int edge) {
-<span class="fc" id="L240">		Assertions.Graphs.checkEdge(edge, edges.size);</span>
-<span class="fc" id="L241">	}</span>
+<span class="fc" id="L260">		Assertions.Graphs.checkEdge(edge, edges.size);</span>
+<span class="fc" id="L261">	}</span>
 
 	static void clear(int[] dataContainer, int idx, int defaultVal) {
-<span class="fc" id="L244">		dataContainer[idx] = defaultVal;</span>
-<span class="fc" id="L245">	}</span>
+<span class="fc" id="L264">		dataContainer[idx] = defaultVal;</span>
+<span class="fc" id="L265">	}</span>
 
 	static void clear(long[] dataContainer, int idx, long defaultVal) {
-<span class="fc" id="L248">		dataContainer[idx] = defaultVal;</span>
-<span class="fc" id="L249">	}</span>
+<span class="fc" id="L268">		dataContainer[idx] = defaultVal;</span>
+<span class="fc" id="L269">	}</span>
 
 	void swapAndClear(int[] dataContainer, int removedIdx, int swappedIdx, int defaultVal) {
-<span class="fc" id="L252">		dataContainer[removedIdx] = dataContainer[swappedIdx];</span>
-<span class="fc" id="L253">		dataContainer[swappedIdx] = defaultVal;</span>
-<span class="fc" id="L254">	}</span>
+<span class="fc" id="L272">		dataContainer[removedIdx] = dataContainer[swappedIdx];</span>
+<span class="fc" id="L273">		dataContainer[swappedIdx] = defaultVal;</span>
+<span class="fc" id="L274">	}</span>
 
 	void swapAndClear(long[] dataContainer, int removedIdx, int swappedIdx, long defaultVal) {
-<span class="fc" id="L257">		dataContainer[removedIdx] = dataContainer[swappedIdx];</span>
-<span class="fc" id="L258">		dataContainer[swappedIdx] = defaultVal;</span>
-<span class="fc" id="L259">	}</span>
+<span class="fc" id="L277">		dataContainer[removedIdx] = dataContainer[swappedIdx];</span>
+<span class="fc" id="L278">		dataContainer[swappedIdx] = defaultVal;</span>
+<span class="fc" id="L279">	}</span>
 
 	&lt;T&gt; void swapAndClear(T[] dataContainer, int removedIdx, int swappedIdx, T defaultVal) {
-<span class="fc" id="L262">		dataContainer[removedIdx] = dataContainer[swappedIdx];</span>
-<span class="fc" id="L263">		dataContainer[swappedIdx] = defaultVal;</span>
-<span class="fc" id="L264">	}</span>
+<span class="fc" id="L282">		dataContainer[removedIdx] = dataContainer[swappedIdx];</span>
+<span class="fc" id="L283">		dataContainer[swappedIdx] = defaultVal;</span>
+<span class="fc" id="L284">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

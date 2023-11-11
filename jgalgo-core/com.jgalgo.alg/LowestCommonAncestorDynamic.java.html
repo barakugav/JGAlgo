@@ -168,7 +168,7 @@ public interface LowestCommonAncestorDynamic {
 <span class="nc" id="L168">						impl = (String) value;</span>
 <span class="nc" id="L169">						break;</span>
 					default:
-<span class="nc" id="L171">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L171">						LowestCommonAncestorDynamic.Builder.super.setOption(key, value);</span>
 				}
 <span class="nc" id="L173">				return this;</span>
 			}

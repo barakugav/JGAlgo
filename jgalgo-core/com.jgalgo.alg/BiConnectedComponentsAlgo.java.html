@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchVertexException;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -74,9 +75,9 @@ public interface BiConnectedComponentsAlgo {
 		/**
 		 * Get the bi-connected components a vertex is contained in.
 		 *
-		 * @param  vertex                    a vertex in the graph
-		 * @return                           the labels of the bi-connected components containing the vertex
-		 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier in the graph
+		 * @param  vertex                a vertex in the graph
+		 * @return                       the labels of the bi-connected components containing the vertex
+		 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier in the graph
 		 */
 		IntSet getVertexBiCcs(V vertex);
 
@@ -160,16 +161,16 @@ public interface BiConnectedComponentsAlgo {
 		/**
 		 * Get the bi-connected components a vertex is contained in.
 		 *
-		 * @param  vertex                    a vertex in the graph
-		 * @return                           the labels of the bi-connected components containing the vertex
-		 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier in the graph
+		 * @param  vertex                a vertex in the graph
+		 * @return                       the labels of the bi-connected components containing the vertex
+		 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier in the graph
 		 */
 		IntSet getVertexBiCcs(int vertex);
 
 		@Deprecated
 		@Override
 		default IntSet getVertexBiCcs(Integer vertex) {
-<span class="fc" id="L172">			return getVertexBiCcs((vertex).intValue());</span>
+<span class="fc" id="L173">			return getVertexBiCcs((vertex).intValue());</span>
 		}
 
 		@Override
@@ -194,7 +195,7 @@ public interface BiConnectedComponentsAlgo {
 		@Deprecated
 		@Override
 		default boolean isCutVertex(Integer vertex) {
-<span class="fc" id="L197">			return isCutVertex((vertex).intValue());</span>
+<span class="fc" id="L198">			return isCutVertex((vertex).intValue());</span>
 		}
 
 		@Override
@@ -212,7 +213,7 @@ public interface BiConnectedComponentsAlgo {
 	 * @return a default implementation of {@link BiConnectedComponentsAlgo}
 	 */
 	static BiConnectedComponentsAlgo newInstance() {
-<span class="fc" id="L215">		return newBuilder().build();</span>
+<span class="fc" id="L216">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -224,7 +225,7 @@ public interface BiConnectedComponentsAlgo {
 	 * @return a new builder that can build {@link BiConnectedComponentsAlgo} objects
 	 */
 	static BiConnectedComponentsAlgo.Builder newBuilder() {
-<span class="fc" id="L227">		return BiConnectedComponentsAlgoHopcroftTarjan::new;</span>
+<span class="fc" id="L228">		return BiConnectedComponentsAlgoHopcroftTarjan::new;</span>
 	}
 
 	/**
@@ -258,7 +259,7 @@ public interface BiConnectedComponentsAlgo {
 		 * @return       this builder
 		 */
 		default BiConnectedComponentsAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L261">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L262">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 
 	}

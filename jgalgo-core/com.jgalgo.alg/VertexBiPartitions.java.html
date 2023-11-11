@@ -21,12 +21,13 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-<span class="pc" id="L29">class VertexBiPartitions {</span>
+<span class="pc" id="L30">class VertexBiPartitions {</span>
 
 	abstract static class Impl implements IVertexBiPartition {
 
@@ -35,16 +36,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private IntSet leftEdges, rightEdges;
 		private IntSet crossEdges01, crossEdges10;
 
-<span class="fc" id="L38">		Impl(IndexGraph g) {</span>
-<span class="fc" id="L39">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L40">		}</span>
+<span class="fc" id="L39">		Impl(IndexGraph g) {</span>
+<span class="fc" id="L40">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L41">		}</span>
 
 		abstract boolean isLeft0(int vertex);
 
 		@Override
 		public boolean isLeft(int vertex) {
-<span class="pc bpc" id="L46" title="2 of 4 branches missed.">			if (!(0 &lt;= vertex &amp;&amp; vertex &lt; g.vertices().size()))</span>
-<span class="nc" id="L47">				throw new IndexOutOfBoundsException(vertex);</span>
+<span class="fc" id="L47">			Assertions.Graphs.checkVertex(vertex, g.vertices().size());</span>
 <span class="fc" id="L48">			return isLeft0(vertex);</span>
 		}
 

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NoSuchVertexException.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">NoSuchVertexException.java</span></div><h1>NoSuchVertexException.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.graph;
+
+/**
+ * Exception thrown when a vertex is not found in a graph.
+ *
+ * @see    NoSuchEdgeException
+ * @author Barak Ugav
+ */
+public class NoSuchVertexException extends RuntimeException {
+
+	private static final long serialVersionUID = -743969638589879515L;
+
+	private NoSuchVertexException(String message) {
+<span class="fc" id="L29">		super(message);</span>
+<span class="fc" id="L30">	}</span>
+
+	/**
+	 * Create a new exception of a missing vertex by its index.
+	 *
+	 * &lt;p&gt;
+	 * The index of a vertex is the index of the vertex in the {@code IndexGraph} of the graph, accessed by
+	 * {@link Graph#indexGraph()}. In case the graph is an index graph, and identifier and the index of a vertex are the
+	 * same.
+	 *
+	 * @param  vertexIdx the index of the missing vertex
+	 * @return           the exception
+	 */
+	public static NoSuchVertexException ofIndex(int vertexIdx) {
+<span class="nc" id="L44">		return new NoSuchVertexException(&quot;No vertex with index &quot; + vertexIdx);</span>
+	}
+
+	/**
+	 * Create a new exception of a missing vertex by its identifier.
+	 *
+	 * @param  vertexId the identifier of the missing vertex
+	 * @return          the exception
+	 */
+	public static NoSuchVertexException ofVertex(Object vertexId) {
+<span class="nc" id="L54">		return new NoSuchVertexException(&quot;No vertex &quot; + vertexId);</span>
+	}
+
+	/**
+	 * Create a new exception of a missing vertex by its {@code int} identifier.
+	 *
+	 * &lt;p&gt;
+	 * This is a specification of {@link #ofVertex(Object)} for {@link IntGraph}.
+	 *
+	 * @param  vertexId the identifier of the missing vertex
+	 * @return          the exception
+	 */
+	public static NoSuchVertexException ofVertex(int vertexId) {
+<span class="fc" id="L67">		return new NoSuchVertexException(&quot;No vertex &quot; + vertexId);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

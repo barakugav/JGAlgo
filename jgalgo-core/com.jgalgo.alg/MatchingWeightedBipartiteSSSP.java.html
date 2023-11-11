@@ -190,15 +190,13 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L190">		return match;</span>
 	}
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * @throws UnsupportedOperationException this implementation does not support perfect matching computation
-	 */
-	@Deprecated
 	@Override
 	IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-<span class="nc" id="L201">		throw new UnsupportedOperationException();</span>
+<span class="pc bpc" id="L195" title="3 of 4 branches missed.">		if (w != null &amp;&amp; w != IWeightFunction.CardinalityWeightFunction) {</span>
+<span class="nc" id="L196">			throw new UnsupportedOperationException(&quot;weighted perfect matching is not supported by this algorithm&quot;);</span>
+		} else {
+<span class="fc" id="L198">			return computeMaximumWeightedMatching(g, null);</span>
+		}
 	}
 
 }

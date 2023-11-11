@@ -120,9 +120,9 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 <span class="fc" id="L120">			int sourceIdx = vIdToIndex.getInt(source);</span>
 <span class="fc" id="L121">			int targetIdx = vIdToIndex.getInt(target);</span>
 <span class="pc bpc" id="L122" title="1 of 2 branches missed.">			if (targetIdx == vIdToIndex.defaultReturnValue())</span>
-<span class="nc" id="L123">				throw new IndexOutOfBoundsException(&quot;invalid vertex: &quot; + target);</span>
+<span class="nc" id="L123">				throw NoSuchVertexException.ofVertex(target);</span>
 <span class="pc bpc" id="L124" title="1 of 2 branches missed.">			if (sourceIdx == vIdToIndex.defaultReturnValue())</span>
-<span class="nc" id="L125">				throw new IndexOutOfBoundsException(&quot;invalid vertex: &quot; + source);</span>
+<span class="nc" id="L125">				throw NoSuchVertexException.ofVertex(source);</span>
 
 <span class="fc" id="L127">			int eIndex = ibuilder.edges().size();</span>
 <span class="fc" id="L128">			int oldVal = eIdToIndex.putIfAbsent(edge, eIndex);</span>
@@ -221,14 +221,19 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 			@Override
 			public int idToIndex(K id) {
 <span class="fc" id="L223">				int idx = idToIndex.getInt(id);</span>
-<span class="pc bpc" id="L224" title="1 of 2 branches missed.">				if (idx &lt; 0)</span>
-<span class="nc bnc" id="L225" title="All 2 branches missed.">					throw new IndexOutOfBoundsException(&quot;No such &quot; + (isEdges ? &quot;edge&quot; : &quot;vertex&quot;) + &quot;: &quot; + id);</span>
-<span class="fc" id="L226">				return idx;</span>
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">				if (idx &lt; 0) {</span>
+<span class="nc bnc" id="L225" title="All 2 branches missed.">					if (isEdges) {</span>
+<span class="nc" id="L226">						throw NoSuchEdgeException.ofEdge(id);</span>
+					} else {
+<span class="nc" id="L228">						throw NoSuchVertexException.ofVertex(id);</span>
+					}
+				}
+<span class="fc" id="L231">				return idx;</span>
 			}
 
 			@Override
 			public int idToIndexIfExist(K id) {
-<span class="nc" id="L231">				return idToIndex.getInt(id);</span>
+<span class="nc" id="L236">				return idToIndex.getInt(id);</span>
 			}
 		}
 	}
@@ -236,66 +241,66 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 	static class Undirected&lt;V, E&gt; extends GraphBuilderImpl.Abstract&lt;V, E&gt; {
 
 		Undirected(IndexGraphBuilder indexBuilder) {
-<span class="fc" id="L239">			super(indexBuilder);</span>
-<span class="fc" id="L240">		}</span>
+<span class="fc" id="L244">			super(indexBuilder);</span>
+<span class="fc" id="L245">		}</span>
 
 		Undirected() {
-<span class="fc" id="L243">			this(IndexGraphBuilder.newUndirected());</span>
-<span class="fc" id="L244">		}</span>
+<span class="fc" id="L248">			this(IndexGraphBuilder.newUndirected());</span>
+<span class="fc" id="L249">		}</span>
 
 		Undirected(Graph&lt;V, E&gt; g, boolean copyWeights) {
-<span class="nc" id="L247">			super(g, copyWeights);</span>
-<span class="nc" id="L248">			Assertions.Graphs.onlyUndirected(g);</span>
-<span class="nc" id="L249">		}</span>
+<span class="nc" id="L252">			super(g, copyWeights);</span>
+<span class="nc" id="L253">			Assertions.Graphs.onlyUndirected(g);</span>
+<span class="nc" id="L254">		}</span>
 
 		@Override
 		public Graph&lt;V, E&gt; build() {
-<span class="fc" id="L253">			return buildFromReIndexed(ibuilder.reIndexAndBuild(true, true));</span>
+<span class="fc" id="L258">			return buildFromReIndexed(ibuilder.reIndexAndBuild(true, true));</span>
 		}
 
 		@Override
 		public Graph&lt;V, E&gt; buildMutable() {
-<span class="fc" id="L258">			return buildFromReIndexed(ibuilder.reIndexAndBuildMutable(true, true));</span>
+<span class="fc" id="L263">			return buildFromReIndexed(ibuilder.reIndexAndBuildMutable(true, true));</span>
 		}
 
 		private Graph&lt;V, E&gt; buildFromReIndexed(IndexGraphBuilder.ReIndexedGraph reIndexedGraph) {
-<span class="fc" id="L262">			IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="fc" id="L263">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="fc" id="L264">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="fc" id="L265">			return new GraphImpl.Undirected&lt;&gt;(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
+<span class="fc" id="L267">			IndexGraph iGraph = reIndexedGraph.graph();</span>
+<span class="fc" id="L268">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
+<span class="fc" id="L269">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="fc" id="L270">			return new GraphImpl.Undirected&lt;&gt;(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
 		}
 	}
 
 	static class Directed&lt;V, E&gt; extends GraphBuilderImpl.Abstract&lt;V, E&gt; {
 
 		Directed(IndexGraphBuilder indexBuilder) {
-<span class="fc" id="L272">			super(indexBuilder);</span>
-<span class="fc" id="L273">		}</span>
+<span class="fc" id="L277">			super(indexBuilder);</span>
+<span class="fc" id="L278">		}</span>
 
 		Directed() {
-<span class="fc" id="L276">			this(IndexGraphBuilder.newDirected());</span>
-<span class="fc" id="L277">		}</span>
+<span class="fc" id="L281">			this(IndexGraphBuilder.newDirected());</span>
+<span class="fc" id="L282">		}</span>
 
 		Directed(Graph&lt;V, E&gt; g, boolean copyWeights) {
-<span class="nc" id="L280">			super(g, copyWeights);</span>
-<span class="nc" id="L281">			Assertions.Graphs.onlyDirected(g);</span>
-<span class="nc" id="L282">		}</span>
+<span class="nc" id="L285">			super(g, copyWeights);</span>
+<span class="nc" id="L286">			Assertions.Graphs.onlyDirected(g);</span>
+<span class="nc" id="L287">		}</span>
 
 		@Override
 		public Graph&lt;V, E&gt; build() {
-<span class="fc" id="L286">			return buildFromReIndexed(ibuilder.reIndexAndBuild(true, true));</span>
+<span class="fc" id="L291">			return buildFromReIndexed(ibuilder.reIndexAndBuild(true, true));</span>
 		}
 
 		@Override
 		public Graph&lt;V, E&gt; buildMutable() {
-<span class="fc" id="L291">			return buildFromReIndexed(ibuilder.reIndexAndBuildMutable(true, true));</span>
+<span class="fc" id="L296">			return buildFromReIndexed(ibuilder.reIndexAndBuildMutable(true, true));</span>
 		}
 
 		private Graph&lt;V, E&gt; buildFromReIndexed(IndexGraphBuilder.ReIndexedGraph reIndexedGraph) {
-<span class="fc" id="L295">			IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="fc" id="L296">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="fc" id="L297">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="fc" id="L298">			return new GraphImpl.Directed&lt;&gt;(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
+<span class="fc" id="L300">			IndexGraph iGraph = reIndexedGraph.graph();</span>
+<span class="fc" id="L301">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
+<span class="fc" id="L302">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="fc" id="L303">			return new GraphImpl.Directed&lt;&gt;(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
 		}
 	}
 

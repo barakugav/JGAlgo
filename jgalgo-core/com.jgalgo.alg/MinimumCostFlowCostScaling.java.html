@@ -48,10 +48,10 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 	@Override
 	void computeMinCostFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction supply) {
-<span class="pc bpc" id="L51" title="2 of 4 branches missed.">		if (!(net instanceof IFlowNetworkInt &amp;&amp; supply instanceof IWeightFunctionInt))</span>
-<span class="nc" id="L52">			throw new IllegalArgumentException(&quot;only integer capacities and flows are supported&quot;);</span>
-<span class="pc bpc" id="L53" title="1 of 2 branches missed.">		if (!(cost instanceof IWeightFunctionInt))</span>
-<span class="nc" id="L54">			throw new IllegalArgumentException(&quot;only integer costs are supported&quot;);</span>
+<span class="fc bfc" id="L51" title="All 4 branches covered.">		if (!(net instanceof IFlowNetworkInt &amp;&amp; supply instanceof IWeightFunctionInt))</span>
+<span class="fc" id="L52">			throw new IllegalArgumentException(&quot;only integer capacities and flows are supported&quot;);</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		if (!(cost instanceof IWeightFunctionInt))</span>
+<span class="fc" id="L54">			throw new IllegalArgumentException(&quot;only integer costs are supported&quot;);</span>
 <span class="fc" id="L55">		new Worker(g, (IFlowNetworkInt) net, (IWeightFunctionInt) cost, (IWeightFunctionInt) supply).solve();</span>
 <span class="fc" id="L56">	}</span>
 

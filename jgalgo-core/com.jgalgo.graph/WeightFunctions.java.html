@@ -110,14 +110,14 @@ public class WeightFunctions {
 <span class="pc bpc" id="L110" title="1 of 6 branches missed.">		if (w == null || w == WeightFunction.CardinalityWeightFunction</span>
 				|| w == IWeightFunction.CardinalityWeightFunction)
 <span class="fc" id="L112">			return null;</span>
-<span class="pc bpc" id="L113" title="1 of 2 branches missed.">		if (w instanceof IWeightFunction) {</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">		if (w instanceof IWeightFunction) {</span>
 <span class="fc" id="L114">			return (IWeightFunction) w;</span>
-<span class="nc bnc" id="L115" title="All 2 branches missed.">		} else if (w instanceof WeightFunctionInt) {</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">		} else if (w instanceof WeightFunctionInt) {</span>
 <span class="nc" id="L116">			WeightFunctionInt&lt;Integer&gt; wInt = (WeightFunctionInt&lt;Integer&gt;) w;</span>
 <span class="nc" id="L117">			IWeightFunctionInt ret = elm -&gt; wInt.weightInt(Integer.valueOf(elm));</span>
 <span class="nc" id="L118">			return ret;</span>
 		} else {
-<span class="nc" id="L120">			return elm -&gt; w.weight(Integer.valueOf(elm));</span>
+<span class="fc" id="L120">			return elm -&gt; w.weight(Integer.valueOf(elm));</span>
 		}
 	}
 

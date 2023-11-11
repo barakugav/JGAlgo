@@ -322,7 +322,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 <span class="fc" id="L322">				impl = (String) value;</span>
 <span class="fc" id="L323">				break;</span>
 			default:
-<span class="nc" id="L325">				throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L325">				IndexGraphFactory.super.setOption(key, value);</span>
 		}
 <span class="fc" id="L327">		return this;</span>
 	}

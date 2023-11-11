@@ -60,29 +60,32 @@ public interface WeightFunctionInt&lt;K&gt; extends WeightFunction&lt;K&gt; {
 	/**
 	 * Get the integer weight of an element.
 	 *
-	 * @param  element                   an element identifier
-	 * @return                           the weight of the element
-	 * @throws IndexOutOfBoundsException if {@code element} is not a valid element identifier in the graph
+	 * @param  element               an element identifier
+	 * @return                       the weight of the element
+	 * @throws NoSuchVertexException if this weight function maps vertices and {@code element} is not a valid vertex
+	 *                                   identifier in the graph
+	 * @throws NoSuchEdgeException   if this weight function maps edges and {@code element} is not a valid edge
+	 *                                   identifier in the graph
 	 */
 	public int weightInt(K element);
 
 	@Deprecated
 	@Override
 	default double weight(K element) {
-<span class="fc" id="L72">		return weightInt(element);</span>
+<span class="fc" id="L75">		return weightInt(element);</span>
 	}
 
 	@Override
 	default int compare(K e1, K e2) {
-<span class="nc" id="L77">		return Integer.compare(weightInt(e1), weightInt(e2));</span>
+<span class="nc" id="L80">		return Integer.compare(weightInt(e1), weightInt(e2));</span>
 	}
 
 	@Override
 	default double weightSum(Iterable&lt;K&gt; elements) {
-<span class="fc" id="L82">		long sum = 0;</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (K e : elements)</span>
-<span class="fc" id="L84">			sum += weightInt(e);</span>
-<span class="fc" id="L85">		return sum;</span>
+<span class="fc" id="L85">		long sum = 0;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		for (K e : elements)</span>
+<span class="fc" id="L87">			sum += weightInt(e);</span>
+<span class="fc" id="L88">		return sum;</span>
 	}
 
 }

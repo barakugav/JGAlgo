@@ -48,7 +48,7 @@ import com.jgalgo.graph.IndexGraph;
 
 		@Override
 		public &lt;V, E&gt; boolean isStronglyConnected(Graph&lt;V, E&gt; g) {
-<span class="nc bnc" id="L51" title="All 2 branches missed.">			return g instanceof IndexGraph ? isStronglyConnected((IndexGraph) g) : isStronglyConnected(g.indexGraph());</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">			return g instanceof IndexGraph ? isStronglyConnected((IndexGraph) g) : isStronglyConnected(g.indexGraph());</span>
 		}
 
 		abstract IVertexPartition findStronglyConnectedComponentsDirected(IndexGraph g);

@@ -304,7 +304,7 @@ public interface MinimumCostFlow {
 <span class="nc" id="L304">						impl = (String) value;</span>
 <span class="nc" id="L305">						break;</span>
 					default:
-<span class="nc" id="L307">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L307">						MinimumCostFlow.Builder.super.setOption(key, value);</span>
 				}
 <span class="nc" id="L309">				return this;</span>
 			}

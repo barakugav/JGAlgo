@@ -100,7 +100,7 @@ public interface MinimumMeanCycle {
 <span class="nc" id="L100">						impl = (String) value;</span>
 <span class="nc" id="L101">						break;</span>
 					default:
-<span class="nc" id="L103">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L103">						MinimumMeanCycle.Builder.super.setOption(key, value);</span>
 				}
 <span class="nc" id="L105">				return this;</span>
 			}

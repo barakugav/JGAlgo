@@ -196,7 +196,7 @@ public interface ColoringAlgo {
 <span class="nc" id="L196">						impl = (String) value;</span>
 <span class="nc" id="L197">						break;</span>
 					default:
-<span class="nc" id="L199">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L199">						ColoringAlgo.Builder.super.setOption(key, value);</span>
 				}
 <span class="nc" id="L201">				return this;</span>
 			}

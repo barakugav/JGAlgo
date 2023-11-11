@@ -69,9 +69,9 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 <span class="pc bpc" id="L69" title="1 of 2 branches missed.">		if (copyWeights) {</span>
 <span class="nc bnc" id="L70" title="All 2 branches missed.">			for (String key : g.getVerticesWeightsKeys())</span>
 <span class="nc" id="L71">				verticesUserWeights.addWeights(key,</span>
-<span class="nc" id="L72">						WeightsImpl.IndexMutable.copyOf(g.getVerticesIWeights(key), vertices));</span>
+<span class="nc" id="L72">						WeightsImpl.IndexMutable.copyOf(g.getVerticesIWeights(key), vertices, false));</span>
 <span class="nc bnc" id="L73" title="All 2 branches missed.">			for (String key : g.getEdgesWeightsKeys())</span>
-<span class="nc" id="L74">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesIWeights(key), edges));</span>
+<span class="nc" id="L74">				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesIWeights(key), edges, true));</span>
 		}
 
 <span class="fc" id="L77">		setDefaultImpls();</span>
@@ -295,7 +295,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
-<span class="fc" id="L298">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);</span>
+<span class="fc" id="L298">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, false, type, defVal);</span>
 <span class="fc" id="L299">		verticesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L301">		WeightsT weights0 = (WeightsT) weights;</span>
@@ -315,7 +315,7 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
-<span class="fc" id="L318">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);</span>
+<span class="fc" id="L318">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, true, type, defVal);</span>
 <span class="fc" id="L319">		edgesUserWeights.addWeights(key, weights);</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
 <span class="fc" id="L321">		WeightsT weights0 = (WeightsT) weights;</span>

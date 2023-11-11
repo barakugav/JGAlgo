@@ -75,9 +75,12 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	/**
 	 * Get the weight of an element.
 	 *
-	 * @param  element                   an element identifier
-	 * @return                           the weight of the element
-	 * @throws IndexOutOfBoundsException if {@code element} is not a valid element identifier in the graph
+	 * @param  element               an element identifier
+	 * @return                       the weight of the element
+	 * @throws NoSuchVertexException if this weight function maps vertices and {@code element} is not a valid vertex
+	 *                                   identifier in the graph
+	 * @throws NoSuchEdgeException   if this weight function maps edges and {@code element} is not a valid edge
+	 *                                   identifier in the graph
 	 */
 	double weight(K element);
 
@@ -86,7 +89,7 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 */
 	@Override
 	default int compare(K e1, K e2) {
-<span class="nc" id="L89">		return Double.compare(weight(e1), weight(e2));</span>
+<span class="nc" id="L92">		return Double.compare(weight(e1), weight(e2));</span>
 	}
 
 	/**
@@ -96,10 +99,10 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 * @return          the sum of the weights of the elements
 	 */
 	default double weightSum(Iterable&lt;K&gt; elements) {
-<span class="fc" id="L99">		double sum = 0;</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">		for (K e : elements)</span>
-<span class="fc" id="L101">			sum += weight(e);</span>
-<span class="fc" id="L102">		return sum;</span>
+<span class="fc" id="L102">		double sum = 0;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		for (K e : elements)</span>
+<span class="fc" id="L104">			sum += weight(e);</span>
+<span class="fc" id="L105">		return sum;</span>
 	}
 
 	/**
@@ -115,26 +118,26 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 * @return            the sum of the weights of the elements
 	 */
 	static &lt;K&gt; double weightSum(WeightFunction&lt;K&gt; weightFunc, Iterable&lt;K&gt; elements) {
-<span class="pc bpc" id="L118" title="2 of 6 branches missed.">		if (weightFunc == null || weightFunc == CardinalityWeightFunction</span>
+<span class="pc bpc" id="L121" title="2 of 6 branches missed.">		if (weightFunc == null || weightFunc == CardinalityWeightFunction</span>
 				|| weightFunc == IWeightFunction.CardinalityWeightFunction) {
-<span class="pc bpc" id="L120" title="1 of 2 branches missed.">			if (elements instanceof Collection) {</span>
-<span class="fc" id="L121">				return ((Collection&lt;?&gt;) elements).size();</span>
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">			if (elements instanceof Collection) {</span>
+<span class="fc" id="L124">				return ((Collection&lt;?&gt;) elements).size();</span>
 			} else {
-<span class="nc" id="L123">				int s = 0;</span>
+<span class="nc" id="L126">				int s = 0;</span>
 				for (@SuppressWarnings(&quot;unused&quot;)
-<span class="nc bnc" id="L125" title="All 2 branches missed.">				K elm : elements)</span>
-<span class="nc" id="L126">					s++;</span>
-<span class="nc" id="L127">				return s;</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">				K elm : elements)</span>
+<span class="nc" id="L129">					s++;</span>
+<span class="nc" id="L130">				return s;</span>
 			}
 		} else {
-<span class="fc" id="L130">			return weightFunc.weightSum(elements);</span>
+<span class="fc" id="L133">			return weightFunc.weightSum(elements);</span>
 		}
 	}
 
 	/**
 	 * A weight function that assign a weight of {@code 1} to any element.
 	 */
-<span class="fc" id="L137">	public static WeightFunctionInt&lt;?&gt; CardinalityWeightFunction = e -&gt; 1;</span>
+<span class="fc" id="L140">	public static WeightFunctionInt&lt;?&gt; CardinalityWeightFunction = e -&gt; 1;</span>
 
 	/**
 	 * Get the cardinality weight function.
@@ -149,7 +152,7 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K&gt; WeightFunctionInt&lt;K&gt; cardinalityWeightFunction() {
-<span class="fc" id="L152">		return (WeightFunctionInt&lt;K&gt;) CardinalityWeightFunction;</span>
+<span class="fc" id="L155">		return (WeightFunctionInt&lt;K&gt;) CardinalityWeightFunction;</span>
 	}
 
 }

@@ -32,7 +32,7 @@ import java.util.Arrays;
  *
  * @author Barak Ugav
  */
-class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
+<span class="fc" id="L35">class UnionFindValueArray extends UnionFindArray implements UnionFindValue {</span>
 
 	private double[] deltas;
 
@@ -70,50 +70,49 @@ class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
 
 	@Override
 	public double getValue(int x) {
-<span class="pc bpc" id="L73" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
-<span class="nc" id="L74">			throw new IndexOutOfBoundsException(x);</span>
-<span class="fc" id="L75">		double sum = 0;</span>
+<span class="pc bnc" id="L73" title="All 4 branches missed.">		assert 0 &lt;= x &amp;&amp; x &lt; size;</span>
+<span class="fc" id="L74">		double sum = 0;</span>
 		int r;
-<span class="fc bfc" id="L77" title="All 2 branches covered.">		for (r = x; hasParent(r); r = parent[r])</span>
-<span class="fc" id="L78">			sum += deltas[r];</span>
-<span class="fc" id="L79">		pathCompression(x, r, sum);</span>
-<span class="fc" id="L80">		return sum + deltas[r];</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		for (r = x; hasParent(r); r = parent[r])</span>
+<span class="fc" id="L77">			sum += deltas[r];</span>
+<span class="fc" id="L78">		pathCompression(x, r, sum);</span>
+<span class="fc" id="L79">		return sum + deltas[r];</span>
 	}
 
 	@Override
 	public void addValue(int x, double value) {
-<span class="fc" id="L85">		deltas[find(x)] += value;</span>
-<span class="fc" id="L86">	}</span>
+<span class="fc" id="L84">		deltas[find(x)] += value;</span>
+<span class="fc" id="L85">	}</span>
 
 	@Override
 	int find0(int x) {
 		/* Find root and calc delta sum (not including r's delta) */
-<span class="fc" id="L91">		double sum = 0;</span>
+<span class="fc" id="L90">		double sum = 0;</span>
 		int r;
-<span class="fc bfc" id="L93" title="All 2 branches covered.">		for (r = x; hasParent(r); r = parent[r])</span>
-<span class="fc" id="L94">			sum += deltas[r];</span>
-<span class="fc" id="L95">		pathCompression(x, r, sum);</span>
-<span class="fc" id="L96">		return r;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (r = x; hasParent(r); r = parent[r])</span>
+<span class="fc" id="L93">			sum += deltas[r];</span>
+<span class="fc" id="L94">		pathCompression(x, r, sum);</span>
+<span class="fc" id="L95">		return r;</span>
 	}
 
 	// deltaSum shouldn't include the delta of the root
 	private void pathCompression(int x, int r, double deltaSum) {
-<span class="fc bfc" id="L101" title="All 2 branches covered.">		while (x != r) {</span>
-<span class="fc" id="L102">			double delta = deltas[x];</span>
-<span class="fc" id="L103">			deltas[x] = deltaSum;</span>
-<span class="fc" id="L104">			deltaSum -= delta;</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">		while (x != r) {</span>
+<span class="fc" id="L101">			double delta = deltas[x];</span>
+<span class="fc" id="L102">			deltas[x] = deltaSum;</span>
+<span class="fc" id="L103">			deltaSum -= delta;</span>
 
-<span class="fc" id="L106">			int next = parent[x];</span>
-<span class="fc" id="L107">			parent[x] = r;</span>
-<span class="fc" id="L108">			x = next;</span>
-<span class="fc" id="L109">		}</span>
-<span class="fc" id="L110">	}</span>
+<span class="fc" id="L105">			int next = parent[x];</span>
+<span class="fc" id="L106">			parent[x] = r;</span>
+<span class="fc" id="L107">			x = next;</span>
+<span class="fc" id="L108">		}</span>
+<span class="fc" id="L109">	}</span>
 
 	@Override
 	void unionSetParent(int c, int p) {
-<span class="fc" id="L114">		parent[c] = p;</span>
-<span class="fc" id="L115">		deltas[c] -= deltas[p];</span>
-<span class="fc" id="L116">	}</span>
+<span class="fc" id="L113">		parent[c] = p;</span>
+<span class="fc" id="L114">		deltas[c] -= deltas[p];</span>
+<span class="fc" id="L115">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

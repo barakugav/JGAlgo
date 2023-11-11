@@ -124,7 +124,7 @@ public interface RMQStatic {
 <span class="fc" id="L124">						impl = (String) value;</span>
 <span class="fc" id="L125">						break;</span>
 					default:
-<span class="nc" id="L127">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L127">						RMQStatic.Builder.super.setOption(key, value);</span>
 				}
 <span class="fc" id="L129">				return this;</span>
 			}

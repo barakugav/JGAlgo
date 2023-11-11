@@ -18,7 +18,7 @@ package com.jgalgo.graph;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntIterables;
 
-abstract class IndexGraphBase extends IntGraphBase implements IndexGraphImpl {
+abstract class IndexGraphBase extends IntGraphBase implements IndexGraph {
 
 	private final boolean isDirected;
 	private final boolean isAllowSelfEdges;

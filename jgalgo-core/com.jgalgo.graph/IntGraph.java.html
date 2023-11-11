@@ -133,8 +133,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	/**
 	 * Remove a vertex and all its edges from the graph.
 	 *
-	 * @param  vertex                    the vertex identifier to remove
-	 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier
+	 * @param  vertex                the vertex identifier to remove
+	 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier
 	 */
 	void removeVertex(int vertex);
 
@@ -154,9 +154,9 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * The graph object does not expose an explicit method to get the (out) degree of a vertex, but it can accessed
 	 * using this method by {@code g.outEdges(vertex).size()}.
 	 *
-	 * @param  source                    a source vertex
-	 * @return                           all the edges whose source is {@code source}
-	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
+	 * @param  source                a source vertex
+	 * @return                       all the edges whose source is {@code source}
+	 * @throws NoSuchVertexException if {@code source} is not a valid vertex identifier
 	 */
 	IEdgeSet outEdges(int source);
 
@@ -176,9 +176,9 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * The graph object does not expose an explicit method to get the (in) degree of a vertex, but it can accessed using
 	 * this method by {@code g.inEdges(vertex).size()}.
 	 *
-	 * @param  target                    a target vertex
-	 * @return                           all the edges whose target is {@code target}
-	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
+	 * @param  target                a target vertex
+	 * @return                       all the edges whose target is {@code target}
+	 * @throws NoSuchVertexException if {@code target} is not a valid vertex identifier
 	 */
 	IEdgeSet inEdges(int target);
 
@@ -199,10 +199,10 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * In case there are multiple (parallel) edges between {@code source} and {@code target}, a single arbitrary one is
 	 * returned.
 	 *
-	 * @param  source                    a source vertex
-	 * @param  target                    a target vertex
-	 * @return                           id of the edge or {@code -1} if no such edge exists
-	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
+	 * @param  source                a source vertex
+	 * @param  target                a target vertex
+	 * @return                       id of the edge or {@code -1} if no such edge exists
+	 * @throws NoSuchVertexException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	default int getEdge(int source, int target) {
 <span class="fc bfc" id="L208" title="All 2 branches covered.">		for (IEdgeIter it = outEdges(source).iterator(); it.hasNext();) {</span>
@@ -223,10 +223,10 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	/**
 	 * Get the edges whose source is {@code source} and target is {@code target}.
 	 *
-	 * @param  source                    a source vertex
-	 * @param  target                    a target vertex
-	 * @return                           all the edges whose source is {@code source} and target is {@code target}
-	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
+	 * @param  source                a source vertex
+	 * @param  target                a target vertex
+	 * @return                       all the edges whose source is {@code source} and target is {@code target}
+	 * @throws NoSuchVertexException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	IEdgeSet getEdges(int source, int target);
 
@@ -243,10 +243,10 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * The graph implementation will choose a new {@code int} identifier which is not currently used as one of the graph
 	 * edges, and will return it as the new edge ID.
 	 *
-	 * @param  source                    a source vertex
-	 * @param  target                    a target vertex
-	 * @return                           the new edge identifier
-	 * @throws IndexOutOfBoundsException if {@code source} or {@code target} are not valid vertices identifiers
+	 * @param  source                a source vertex
+	 * @param  target                a target vertex
+	 * @return                       the new edge identifier
+	 * @throws NoSuchVertexException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	int addEdge(int source, int target);
 
@@ -275,8 +275,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	/**
 	 * Remove an edge from the graph.
 	 *
-	 * @param  edge                      the edge identifier
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @param  edge                the edge identifier
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
 	 */
 	void removeEdge(int edge);
 
@@ -289,8 +289,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	/**
 	 * Remove all the edges of a vertex.
 	 *
-	 * @param  vertex                    a vertex in the graph
-	 * @throws IndexOutOfBoundsException if {@code vertex} is not a valid vertex identifier
+	 * @param  vertex                a vertex in the graph
+	 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier
 	 */
 	default void removeEdgesOf(int vertex) {
 <span class="fc" id="L296">		removeOutEdgesOf(vertex);</span>
@@ -306,8 +306,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	/**
 	 * Remove all edges whose source is {@code source}.
 	 *
-	 * @param  source                    a vertex in the graph
-	 * @throws IndexOutOfBoundsException if {@code source} is not a valid vertex identifier
+	 * @param  source                a vertex in the graph
+	 * @throws NoSuchVertexException if {@code source} is not a valid vertex identifier
 	 */
 	default void removeOutEdgesOf(int source) {
 <span class="fc bfc" id="L313" title="All 2 branches covered.">		for (IEdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {</span>
@@ -325,8 +325,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	/**
 	 * Remove all edges whose target is {@code target}.
 	 *
-	 * @param  target                    a vertex in the graph
-	 * @throws IndexOutOfBoundsException if {@code target} is not a valid vertex identifier
+	 * @param  target                a vertex in the graph
+	 * @throws NoSuchVertexException if {@code target} is not a valid vertex identifier
 	 */
 	default void removeInEdgesOf(int target) {
 <span class="fc bfc" id="L332" title="All 2 branches covered.">		for (IEdgeIter eit = inEdges(target).iterator(); eit.hasNext();) {</span>
@@ -347,8 +347,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * &lt;p&gt;
 	 * If the graph is undirected, this method does nothing.
 	 *
-	 * @param  edge                      an existing edge in the graph
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @param  edge                an existing edge in the graph
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
 	 */
 	void reverseEdge(int edge);
 
@@ -365,9 +365,9 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * If the graph is undirected, this function return an arbitrary end-point of the edge, but always other end-point
 	 * than {@link #edgeTarget(int)} returns.
 	 *
-	 * @param  edge                      the edge identifier
-	 * @return                           the edge source vertex
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @param  edge                the edge identifier
+	 * @return                     the edge source vertex
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
 	 */
 	int edgeSource(int edge);
 
@@ -384,9 +384,9 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * If the graph is undirected, this function return an arbitrary end-point of the edge, but always the other
 	 * end-point than {@link #edgeSource(int)} returns.
 	 *
-	 * @param  edge                      the edge identifier
-	 * @return                           the edge target vertex
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
+	 * @param  edge                the edge identifier
+	 * @return                     the edge target vertex
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
 	 */
 	int edgeTarget(int edge);
 
@@ -404,11 +404,11 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * either \(u\) or \(v\), the method will return the &lt;i&gt;other&lt;/i&gt; endpoint which is not \(w\). If \(w=u\) the method
 	 * will return \(v\), if \(w=v\) the method will return \(u\).
 	 *
-	 * @param  edge                      an edge identifier
-	 * @param  endpoint                  one of the edge end-point
-	 * @return                           the other end-point of the edge
-	 * @throws IndexOutOfBoundsException if {@code edge} is not a valid edge identifier
-	 * @throws IllegalArgumentException  if {@code endpoint} is not an endpoint of the edge
+	 * @param  edge                     an edge identifier
+	 * @param  endpoint                 one of the edge end-point
+	 * @return                          the other end-point of the edge
+	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge identifier
+	 * @throws IllegalArgumentException if {@code endpoint} is not an endpoint of the edge
 	 */
 	default int edgeEndpoint(int edge, int endpoint) {
 <span class="fc" id="L414">		int u = edgeSource(edge);</span>

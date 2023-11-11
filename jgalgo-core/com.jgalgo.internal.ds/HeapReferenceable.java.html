@@ -303,7 +303,7 @@ public interface HeapReferenceable&lt;K, V&gt; extends Collection&lt;HeapReferen
 <span class="fc" id="L303">						impl = (String) value;</span>
 <span class="fc" id="L304">						break;</span>
 					default:
-<span class="nc" id="L306">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L306">						HeapReferenceable.Builder.super.setOption(key, value);</span>
 				}
 <span class="fc" id="L308">				return this;</span>
 			}

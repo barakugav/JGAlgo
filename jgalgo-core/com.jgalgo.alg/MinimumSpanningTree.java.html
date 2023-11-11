@@ -312,7 +312,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 <span class="nc" id="L312">						heapBuilder = (HeapReferenceable.Builder&lt;?, ?&gt;) value;</span>
 <span class="nc" id="L313">						break;</span>
 					default:
-<span class="nc" id="L315">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L315">						MinimumSpanningTree.Builder.super.setOption(key, value);</span>
 				}
 <span class="nc" id="L317">				return this;</span>
 			}

@@ -220,7 +220,7 @@ public interface MatchingAlgo {
 <span class="nc" id="L220">						impl = (String) value;</span>
 <span class="nc" id="L221">						break;</span>
 					default:
-<span class="nc" id="L223">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L223">						MatchingAlgo.Builder.super.setOption(key, value);</span>
 				}
 <span class="nc" id="L225">				return this;</span>
 			}

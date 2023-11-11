@@ -33,7 +33,7 @@ import java.util.Arrays;
  * @see    UnionFindArray
  * @author Barak Ugav
  */
-class UnionFindPtr implements UnionFind {
+<span class="fc" id="L36">class UnionFindPtr implements UnionFind {</span>
 
 	private Elm[] elements;
 	private int size;
@@ -68,30 +68,30 @@ class UnionFindPtr implements UnionFind {
 
 	@Override
 	public int find(int x) {
-<span class="fc" id="L71">		return find0(x).idx;</span>
+<span class="pc bnc" id="L71" title="All 4 branches missed.">		assert 0 &lt;= x &amp;&amp; x &lt; size;</span>
+<span class="fc" id="L72">		return find0(x).idx;</span>
 	}
 
 	private Elm find0(int x) {
-<span class="pc bpc" id="L75" title="2 of 4 branches missed.">		if (x &lt; 0 || x &gt;= size)</span>
-<span class="nc" id="L76">			throw new IndexOutOfBoundsException(x);</span>
-<span class="fc" id="L77">		Elm e = elements[x];</span>
+<span class="fc" id="L76">		Elm e = elements[x];</span>
 
 		/* Find root */
 		Elm r;
-<span class="fc bfc" id="L81" title="All 2 branches covered.">		for (r = e; r.parent != null; r = r.parent);</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		for (r = e; r.parent != null; r = r.parent);</span>
 
 		/* path compression */
-<span class="fc bfc" id="L84" title="All 2 branches covered.">		while (e != r) {</span>
-<span class="fc" id="L85">			Elm next = e.parent;</span>
-<span class="fc" id="L86">			e.parent = r;</span>
-<span class="fc" id="L87">			e = next;</span>
-<span class="fc" id="L88">		}</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		while (e != r) {</span>
+<span class="fc" id="L84">			Elm next = e.parent;</span>
+<span class="fc" id="L85">			e.parent = r;</span>
+<span class="fc" id="L86">			e = next;</span>
+<span class="fc" id="L87">		}</span>
 
-<span class="fc" id="L90">		return r;</span>
+<span class="fc" id="L89">		return r;</span>
 	}
 
 	@Override
 	public int union(int aIdx, int bIdx) {
+<span class="pc bnc" id="L94" title="All 8 branches missed.">		assert 0 &lt;= aIdx &amp;&amp; aIdx &lt; size &amp;&amp; 0 &lt;= bIdx &amp;&amp; bIdx &lt; size;</span>
 <span class="fc" id="L95">		Elm a = find0(aIdx);</span>
 <span class="fc" id="L96">		Elm b = find0(bIdx);</span>
 <span class="fc bfc" id="L97" title="All 2 branches covered.">		if (a == b)</span>

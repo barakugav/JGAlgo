@@ -92,7 +92,36 @@ public interface StronglyConnectedComponentsAlgo {
 	 * @return a new builder that can build {@link StronglyConnectedComponentsAlgo} objects
 	 */
 	static StronglyConnectedComponentsAlgo.Builder newBuilder() {
-<span class="fc" id="L95">		return StronglyConnectedComponentsAlgoTarjan::new;</span>
+<span class="fc" id="L95">		return new StronglyConnectedComponentsAlgo.Builder() {</span>
+			String impl;
+
+			@Override
+			public StronglyConnectedComponentsAlgo build() {
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L101" title="All 3 branches missed.">					switch (impl) {</span>
+						case &quot;path-based&quot;:
+<span class="nc" id="L103">							return new StronglyConnectedComponentsPathBasedDfs();</span>
+						case &quot;tarjan&quot;:
+<span class="nc" id="L105">							return new StronglyConnectedComponentsTarjan();</span>
+						default:
+<span class="nc" id="L107">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+					}
+				}
+<span class="fc" id="L110">				return new StronglyConnectedComponentsTarjan();</span>
+			}
+
+			@Override
+			public StronglyConnectedComponentsAlgo.Builder setOption(String key, Object value) {
+<span class="nc bnc" id="L115" title="All 2 branches missed.">				switch (key) {</span>
+					case &quot;impl&quot;:
+<span class="nc" id="L117">						impl = (String) value;</span>
+<span class="nc" id="L118">						break;</span>
+					default:
+<span class="nc" id="L120">						StronglyConnectedComponentsAlgo.Builder.super.setOption(key, value);</span>
+				}
+<span class="nc" id="L122">				return this;</span>
+			}
+		};
 	}
 
 	/**
@@ -126,7 +155,7 @@ public interface StronglyConnectedComponentsAlgo {
 		 * @return       this builder
 		 */
 		default StronglyConnectedComponentsAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L129">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L158">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

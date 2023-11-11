@@ -264,7 +264,7 @@ public interface ShortestPathAllPairs {
 <span class="nc" id="L264">						impl = (String) value;</span>
 <span class="nc" id="L265">						break;</span>
 					default:
-<span class="nc" id="L267">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L267">						ShortestPathAllPairs.Builder.super.setOption(key, value);</span>
 				}
 <span class="nc" id="L269">				return this;</span>
 			}

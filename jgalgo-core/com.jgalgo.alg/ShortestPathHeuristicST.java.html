@@ -125,7 +125,7 @@ public interface ShortestPathHeuristicST {
 <span class="nc" id="L125">						impl = (String) value;</span>
 <span class="nc" id="L126">						break;</span>
 					default:
-<span class="nc" id="L128">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L128">						ShortestPathHeuristicST.Builder.super.setOption(key, value);</span>
 				}
 <span class="nc" id="L130">				return this;</span>
 			}

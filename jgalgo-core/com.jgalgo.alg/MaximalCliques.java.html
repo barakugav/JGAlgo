@@ -138,7 +138,7 @@ public interface MaximalCliques {
 <span class="nc" id="L138">						impl = (String) value;</span>
 <span class="nc" id="L139">						break;</span>
 					default:
-<span class="nc" id="L141">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L141">						MaximalCliques.Builder.super.setOption(key, value);</span>
 				}
 <span class="nc" id="L143">				return this;</span>
 			}

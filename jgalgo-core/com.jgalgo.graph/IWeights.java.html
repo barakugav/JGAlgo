@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 import com.jgalgo.alg.BipartiteGraphs;
 import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.alg.ShortestPathSingleSource;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Weights of {@linkplain IntGraph int graph} vertices or edges.
@@ -106,7 +107,7 @@ public interface IWeights&lt;T&gt; extends Weights&lt;Integer, T&gt; {
 	@Deprecated
 	@Override
 	default T getAsObj(Integer id) {
-<span class="nc" id="L109">		return getAsObj(id.intValue());</span>
+<span class="nc" id="L110">		return getAsObj(id.intValue());</span>
 	}
 
 	/**
@@ -120,8 +121,8 @@ public interface IWeights&lt;T&gt; extends Weights&lt;Integer, T&gt; {
 	@Deprecated
 	@Override
 	default void setAsObj(Integer id, T weight) {
-<span class="nc" id="L123">		setAsObj(id.intValue(), weight);</span>
-<span class="nc" id="L124">	}</span>
+<span class="nc" id="L124">		setAsObj(id.intValue(), weight);</span>
+<span class="nc" id="L125">	}</span>
 
 	/**
 	 * Create an external vertex weights container.
@@ -139,7 +140,7 @@ public interface IWeights&lt;T&gt; extends Weights&lt;Integer, T&gt; {
 	 */
 	public static &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT createExternalVerticesWeights(IntGraph g,
 			Class&lt;? super T&gt; type) {
-<span class="fc" id="L142">		return createExternalVerticesWeights(g, type, null);</span>
+<span class="fc" id="L143">		return createExternalVerticesWeights(g, type, null);</span>
 	}
 
 	/**
@@ -160,14 +161,14 @@ public interface IWeights&lt;T&gt; extends Weights&lt;Integer, T&gt; {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT createExternalVerticesWeights(IntGraph g,
 			Class&lt;? super T&gt; type, T defVal) {
-<span class="fc" id="L163">		GraphElementSet vertices = ((IndexGraphImpl) g.indexGraph()).vertices();</span>
-<span class="fc" id="L164">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, type, defVal);</span>
-<span class="pc bpc" id="L165" title="1 of 2 branches missed.">		if (vertices.size() &gt; 0)</span>
-<span class="fc" id="L166">			weights.expand(vertices.size());</span>
-<span class="pc bpc" id="L167" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L168">			return (WeightsT) weights;</span>
+<span class="fc" id="L164">		IntSet vertices = g.indexGraph().vertices();</span>
+<span class="fc" id="L165">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, false, type, defVal);</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">		if (vertices.size() &gt; 0)</span>
+<span class="fc" id="L167">			weights.expand(vertices.size());</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L169">			return (WeightsT) weights;</span>
 		} else {
-<span class="nc" id="L170">			return (WeightsT) WeightsImpl.IntMapped.newInstance(weights, g.indexGraphVerticesMap());</span>
+<span class="fc" id="L171">			return (WeightsT) WeightsImpl.IntMapped.newInstance(weights, g.indexGraphVerticesMap());</span>
 		}
 	}
 
@@ -187,7 +188,7 @@ public interface IWeights&lt;T&gt; extends Weights&lt;Integer, T&gt; {
 	 */
 	public static &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT createExternalEdgesWeights(IntGraph g,
 			Class&lt;? super T&gt; type) {
-<span class="fc" id="L190">		return createExternalEdgesWeights(g, type, null);</span>
+<span class="fc" id="L191">		return createExternalEdgesWeights(g, type, null);</span>
 	}
 
 	/**
@@ -208,14 +209,14 @@ public interface IWeights&lt;T&gt; extends Weights&lt;Integer, T&gt; {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT createExternalEdgesWeights(IntGraph g,
 			Class&lt;? super T&gt; type, T defVal) {
-<span class="fc" id="L211">		GraphElementSet edges = ((IndexGraphImpl) g.indexGraph()).edges();</span>
-<span class="fc" id="L212">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, type, defVal);</span>
-<span class="fc bfc" id="L213" title="All 2 branches covered.">		if (edges.size() &gt; 0)</span>
-<span class="fc" id="L214">			weights.expand(edges.size());</span>
-<span class="pc bpc" id="L215" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L216">			return (WeightsT) weights;</span>
+<span class="fc" id="L212">		IntSet edges = g.indexGraph().edges();</span>
+<span class="fc" id="L213">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, true, type, defVal);</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">		if (edges.size() &gt; 0)</span>
+<span class="fc" id="L215">			weights.expand(edges.size());</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L217">			return (WeightsT) weights;</span>
 		} else {
-<span class="nc" id="L218">			return (WeightsT) WeightsImpl.IntMapped.newInstance(weights, g.indexGraphEdgesMap());</span>
+<span class="fc" id="L219">			return (WeightsT) WeightsImpl.IntMapped.newInstance(weights, g.indexGraphEdgesMap());</span>
 		}
 	}
 

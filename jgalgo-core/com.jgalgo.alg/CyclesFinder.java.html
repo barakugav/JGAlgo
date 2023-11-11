@@ -91,7 +91,7 @@ public interface CyclesFinder {
 <span class="nc" id="L91">						impl = (String) value;</span>
 <span class="nc" id="L92">						break;</span>
 					default:
-<span class="nc" id="L94">						throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L94">						CyclesFinder.Builder.super.setOption(key, value);</span>
 				}
 <span class="nc" id="L96">				return this;</span>
 			}

@@ -81,16 +81,19 @@ public interface IWeightFunction extends WeightFunction&lt;Integer&gt;, IntCompa
 	/**
 	 * Get the weight of an element.
 	 *
-	 * @param  element                   an element identifier
-	 * @return                           the weight of the element
-	 * @throws IndexOutOfBoundsException if {@code element} is not a valid element identifier in the graph
+	 * @param  element               an element identifier
+	 * @return                       the weight of the element
+	 * @throws NoSuchVertexException if this weight container holds vertices weights and {@code element} is not a valid
+	 *                                   vertex identifier in the graph
+	 * @throws NoSuchEdgeException   if this weight container holds edges weights and {@code element} is not a valid
+	 *                                   edge identifier in the graph
 	 */
 	double weight(int element);
 
 	@Deprecated
 	@Override
 	default double weight(Integer element) {
-<span class="nc" id="L93">		return weight(element.intValue());</span>
+<span class="nc" id="L96">		return weight(element.intValue());</span>
 	}
 
 	/**
@@ -98,26 +101,26 @@ public interface IWeightFunction extends WeightFunction&lt;Integer&gt;, IntCompa
 	 */
 	@Override
 	default int compare(int e1, int e2) {
-<span class="fc" id="L101">		return Double.compare(weight(e1), weight(e2));</span>
+<span class="fc" id="L104">		return Double.compare(weight(e1), weight(e2));</span>
 	}
 
 	@Deprecated
 	@Override
 	default int compare(Integer e1, Integer e2) {
-<span class="nc" id="L107">		return Double.compare(weight(e1), weight(e2));</span>
+<span class="nc" id="L110">		return Double.compare(weight(e1), weight(e2));</span>
 	}
 
 	@Override
 	default double weightSum(Iterable&lt;Integer&gt; elements) {
-<span class="fc" id="L112">		double sum = 0;</span>
-<span class="pc bpc" id="L113" title="1 of 2 branches missed.">		if (elements instanceof IntIterable) {</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">			for (int e : (IntIterable) elements)</span>
-<span class="fc" id="L115">				sum += weight(e);</span>
+<span class="fc" id="L115">		double sum = 0;</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (elements instanceof IntIterable) {</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">			for (int e : (IntIterable) elements)</span>
+<span class="fc" id="L118">				sum += weight(e);</span>
 		} else {
-<span class="nc bnc" id="L117" title="All 2 branches missed.">			for (Integer e : elements)</span>
-<span class="nc" id="L118">				sum += weight(e.intValue());</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">			for (Integer e : elements)</span>
+<span class="nc" id="L121">				sum += weight(e.intValue());</span>
 		}
-<span class="fc" id="L120">		return sum;</span>
+<span class="fc" id="L123">		return sum;</span>
 	}
 
 	/**
@@ -132,25 +135,25 @@ public interface IWeightFunction extends WeightFunction&lt;Integer&gt;, IntCompa
 	 * @return            the sum of the weights of the elements
 	 */
 	static double weightSum(IWeightFunction weightFunc, IntIterable elements) {
-<span class="nc bnc" id="L135" title="All 4 branches missed.">		if (weightFunc == null || weightFunc == CardinalityWeightFunction) {</span>
-<span class="nc bnc" id="L136" title="All 2 branches missed.">			if (elements instanceof Collection) {</span>
-<span class="nc" id="L137">				return ((Collection&lt;?&gt;) elements).size();</span>
+<span class="nc bnc" id="L138" title="All 4 branches missed.">		if (weightFunc == null || weightFunc == CardinalityWeightFunction) {</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">			if (elements instanceof Collection) {</span>
+<span class="nc" id="L140">				return ((Collection&lt;?&gt;) elements).size();</span>
 			} else {
-<span class="nc" id="L139">				int s = 0;</span>
+<span class="nc" id="L142">				int s = 0;</span>
 				for (@SuppressWarnings(&quot;unused&quot;)
-<span class="nc bnc" id="L141" title="All 2 branches missed.">				int elm : elements)</span>
-<span class="nc" id="L142">					s++;</span>
-<span class="nc" id="L143">				return s;</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">				int elm : elements)</span>
+<span class="nc" id="L145">					s++;</span>
+<span class="nc" id="L146">				return s;</span>
 			}
 		} else {
-<span class="nc" id="L146">			return weightFunc.weightSum(elements);</span>
+<span class="nc" id="L149">			return weightFunc.weightSum(elements);</span>
 		}
 	}
 
 	/**
 	 * A weight function that assign a weight of {@code 1} to any element.
 	 */
-<span class="fc" id="L153">	public static IWeightFunctionInt CardinalityWeightFunction = e -&gt; 1;</span>
+<span class="fc" id="L156">	public static IWeightFunctionInt CardinalityWeightFunction = e -&gt; 1;</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

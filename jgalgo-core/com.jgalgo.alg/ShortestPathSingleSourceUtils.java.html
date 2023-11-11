@@ -248,7 +248,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 <span class="nc" id="L248">					heapBuilder = (HeapReferenceable.Builder&lt;?, ?&gt;) value;</span>
 <span class="nc" id="L249">					break;</span>
 				default:
-<span class="nc" id="L251">					throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L251">					ShortestPathSingleSource.Builder.super.setOption(key, value);</span>
 			}
 <span class="nc" id="L253">			return this;</span>
 		}
