@@ -82,6 +82,17 @@ public class GraphsTestUtils extends TestUtils {
 		return weight;
 	}
 
+	public static <V, E> WeightFunction<E> assignRandWeightsMaybeInt(Graph<V, E> g, int minWeight, int maxWeight,
+			long seed) {
+		if (new Random(seed).nextBoolean())
+			return assignRandWeightsInt(g, minWeight, maxWeight, seed);
+		WeightsDouble<E> w = assignRandWeights(g, minWeight, maxWeight, seed);
+		/* floor weights to avoid floating points errors */
+		for (E e : g.edges())
+			w.set(e, (int) w.get(e));
+		return w;
+	}
+
 	public static Graph<Integer, Integer> randGraph(int n, int m, long seed) {
 		return randGraph(n, m, GraphsTestUtils.defaultGraphImpl(), seed);
 	}

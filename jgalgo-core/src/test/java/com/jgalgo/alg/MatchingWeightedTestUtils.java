@@ -17,13 +17,13 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.function.Supplier;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.util.TestUtils;
@@ -95,8 +95,8 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			}
 			assert cardinalityAlgo.computeMaximumMatching(g, null).isPerfect();
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
-			WeightFunctionInt<Integer> w =
-					GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
+			WeightFunction<Integer> w =
+					GraphsTestUtils.assignRandWeightsMaybeInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
 
 			MatchingAlgo validationUnweightedAlgo = new MatchingCardinalityBipartiteHopcroftKarp();
 			MatchingAlgo validationWeightedAlgo =
@@ -176,8 +176,8 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			assert cardinalityAlgo.computeMaximumMatching(g, null).isPerfect();
 
 			int maxWeight = m < 50 ? 100 : m * 2 + 2;
-			WeightFunctionInt<Integer> w =
-					GraphsTestUtils.assignRandWeightsInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
+			WeightFunction<Integer> w =
+					GraphsTestUtils.assignRandWeightsMaybeInt(g, -maxWeight, maxWeight / 4, seedGen.nextSeed());
 
 			MatchingAlgo validationUnweightedAlgo = new MatchingCardinalityGabow1976();
 			// MatchingAlgo validationWeightedAlgo =
@@ -188,7 +188,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		});
 	}
 
-	static <V, E> void testGraphWeightedPerfect(MatchingAlgo algo, Graph<V, E> g, WeightFunctionInt<E> w,
+	static <V, E> void testGraphWeightedPerfect(MatchingAlgo algo, Graph<V, E> g, WeightFunction<E> w,
 			MatchingAlgo validationUnweightedAlgo, MatchingAlgo validationWeightedAlgo) {
 		Matching<V, E> actual = algo.computeMaximumPerfectMatching(g, w);
 		MatchingUnweightedTestUtils.validateMatching(g, actual);

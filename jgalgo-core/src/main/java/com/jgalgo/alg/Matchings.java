@@ -20,6 +20,7 @@ import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
@@ -267,8 +268,14 @@ class Matchings {
 	static IWeightFunction negate(IWeightFunction w) {
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
-		IWeightFunction w0 = w;
-		return e -> -w0.weight(e);
+		if (w instanceof IWeightFunctionInt) {
+			IWeightFunctionInt w0 = (IWeightFunctionInt) w;
+			IWeightFunctionInt w1 = e -> -w0.weightInt(e);
+			return w1;
+		} else {
+			IWeightFunction w0 = w;
+			return e -> -w0.weight(e);
+		}
 	}
 
 	abstract static class AbstractMaximumMatchingImpl extends AbstractMatchingImpl {
