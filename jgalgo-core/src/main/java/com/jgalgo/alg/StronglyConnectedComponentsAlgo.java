@@ -92,7 +92,36 @@ public interface StronglyConnectedComponentsAlgo {
 	 * @return a new builder that can build {@link StronglyConnectedComponentsAlgo} objects
 	 */
 	static StronglyConnectedComponentsAlgo.Builder newBuilder() {
-		return StronglyConnectedComponentsPathBasedDfs::new;
+		return new StronglyConnectedComponentsAlgo.Builder() {
+			String impl;
+
+			@Override
+			public StronglyConnectedComponentsAlgo build() {
+				if (impl != null) {
+					switch (impl) {
+						case "path-based":
+							return new StronglyConnectedComponentsPathBasedDfs();
+						case "tarjan":
+							return new StronglyConnectedComponentsTarjan();
+						default:
+							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+					}
+				}
+				return new StronglyConnectedComponentsTarjan();
+			}
+
+			@Override
+			public StronglyConnectedComponentsAlgo.Builder setOption(String key, Object value) {
+				switch (key) {
+					case "impl":
+						impl = (String) value;
+						break;
+					default:
+						StronglyConnectedComponentsAlgo.Builder.super.setOption(key, value);
+				}
+				return this;
+			}
+		};
 	}
 
 	/**

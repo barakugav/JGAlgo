@@ -15,16 +15,23 @@
  */
 package com.jgalgo.alg;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.Random;
+
+import org.junit.jupiter.api.Test;
+
 import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
-import com.jgalgo.internal.util.TestUtils;
+import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 
-class StronglyConnectedComponentsTestUtils extends TestUtils {
+class StronglyConnectedComponentsTestUtils extends TestBase {
 
 	static void strongCcUndirected(StronglyConnectedComponentsAlgo algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32).repeat(128);
 		tester.addPhase().withArgs(64, 256).repeat(64);
@@ -32,6 +39,8 @@ class StronglyConnectedComponentsTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
+
 			VertexPartition<Integer, Integer> actual = algo.findStronglyConnectedComponents(g);
 			ConnectedComponentsTestUtils.validateConnectivityResult(g, actual);
 			IntObjectPair<Object2IntMap<Integer>> expected = ConnectedComponentsTestUtils.calcUndirectedConnectivity(g);
@@ -43,7 +52,7 @@ class StronglyConnectedComponentsTestUtils extends TestUtils {
 
 	static void strongCcDirected(StronglyConnectedComponentsAlgo algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-
+		final Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32).repeat(128);
 		tester.addPhase().withArgs(64, 256).repeat(64);
@@ -51,6 +60,7 @@ class StronglyConnectedComponentsTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
 
 			VertexPartition<Integer, Integer> actual = algo.findStronglyConnectedComponents(g);
 			ConnectedComponentsTestUtils.validateConnectivityResult(g, actual);
@@ -59,6 +69,23 @@ class StronglyConnectedComponentsTestUtils extends TestUtils {
 
 			assertEqualsBool(actual.numberOfBlocks() <= 1, algo.isStronglyConnected(g));
 		});
+	}
+
+	@Test
+	public void testNewInstance() {
+		assertNotNull(StronglyConnectedComponentsAlgo.newInstance());
+	}
+
+	@Test
+	public void testSetOption() {
+		StronglyConnectedComponentsAlgo.Builder builder = StronglyConnectedComponentsAlgo.newBuilder();
+		assertNotNull(builder.build());
+
+		assertThrows(IllegalArgumentException.class, () -> builder.setOption("jdasg", "lhfj"));
+
+		assertNotNull(builder.setOption("impl", "path-based").build());
+		assertNotNull(builder.setOption("impl", "tarjan").build());
+		assertThrows(IllegalArgumentException.class, () -> builder.setOption("impl", "dmksm").build());
 	}
 
 }
