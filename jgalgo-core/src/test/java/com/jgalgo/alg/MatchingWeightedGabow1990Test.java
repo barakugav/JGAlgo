@@ -16,7 +16,12 @@
 
 package com.jgalgo.alg;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.gen.CompleteGraphGenerator;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 
 public class MatchingWeightedGabow1990Test extends TestBase {
@@ -38,6 +43,17 @@ public class MatchingWeightedGabow1990Test extends TestBase {
 	// final long seed = 0xf5c0a210842d9f5eL;
 	// MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(new MatchingWeightedGabow1990(), seed);
 	// }
+
+	@Test
+	public void testRandBipartiteGraphsWeightedPerfect() {
+		CompleteGraphGenerator<Integer, Integer> gen = CompleteGraphGenerator.newInstance();
+		gen.setVertices(Range.of(10));
+		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		Graph<Integer, Integer> g = gen.generate();
+
+		MatchingAlgo algo = new MatchingWeightedGabow1990();
+		assertThrows(UnsupportedOperationException.class, () -> algo.computeMaximumPerfectMatching(g, null));
+	}
 
 	@Test
 	public void testRandGraphsWeight1() {
