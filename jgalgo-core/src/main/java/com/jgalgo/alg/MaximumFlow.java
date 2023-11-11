@@ -154,7 +154,7 @@ public interface MaximumFlow {
 						impl = (String) value;
 						break;
 					default:
-						throw new IllegalArgumentException("unknown option key: " + key);
+						MaximumFlow.Builder.super.setOption(key, value);
 				}
 				return this;
 			}

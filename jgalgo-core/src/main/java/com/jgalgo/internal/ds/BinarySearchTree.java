@@ -275,7 +275,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 						impl = (String) value;
 						break;
 					default:
-						throw new IllegalArgumentException("unknown option key: " + key);
+						BinarySearchTree.Builder.super.setOption(key, value);
 				}
 				return this;
 			}

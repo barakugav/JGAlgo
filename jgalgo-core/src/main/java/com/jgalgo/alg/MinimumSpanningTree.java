@@ -312,7 +312,7 @@ public interface MinimumSpanningTree {
 						heapBuilder = (HeapReferenceable.Builder<?, ?>) value;
 						break;
 					default:
-						throw new IllegalArgumentException("unknown option key: " + key);
+						MinimumSpanningTree.Builder.super.setOption(key, value);
 				}
 				return this;
 			}

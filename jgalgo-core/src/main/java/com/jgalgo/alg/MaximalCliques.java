@@ -138,7 +138,7 @@ public interface MaximalCliques {
 						impl = (String) value;
 						break;
 					default:
-						throw new IllegalArgumentException("unknown option key: " + key);
+						MaximalCliques.Builder.super.setOption(key, value);
 				}
 				return this;
 			}

@@ -91,7 +91,7 @@ public interface CyclesFinder {
 						impl = (String) value;
 						break;
 					default:
-						throw new IllegalArgumentException("unknown option key: " + key);
+						CyclesFinder.Builder.super.setOption(key, value);
 				}
 				return this;
 			}

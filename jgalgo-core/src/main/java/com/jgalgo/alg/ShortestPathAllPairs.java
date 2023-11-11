@@ -264,7 +264,7 @@ public interface ShortestPathAllPairs {
 						impl = (String) value;
 						break;
 					default:
-						throw new IllegalArgumentException("unknown option key: " + key);
+						ShortestPathAllPairs.Builder.super.setOption(key, value);
 				}
 				return this;
 			}

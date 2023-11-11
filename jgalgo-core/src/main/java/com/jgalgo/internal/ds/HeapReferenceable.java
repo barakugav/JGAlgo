@@ -303,7 +303,7 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 						impl = (String) value;
 						break;
 					default:
-						throw new IllegalArgumentException("unknown option key: " + key);
+						HeapReferenceable.Builder.super.setOption(key, value);
 				}
 				return this;
 			}

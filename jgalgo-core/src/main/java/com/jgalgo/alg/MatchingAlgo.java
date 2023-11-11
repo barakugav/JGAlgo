@@ -220,7 +220,7 @@ public interface MatchingAlgo {
 						impl = (String) value;
 						break;
 					default:
-						throw new IllegalArgumentException("unknown option key: " + key);
+						MatchingAlgo.Builder.super.setOption(key, value);
 				}
 				return this;
 			}

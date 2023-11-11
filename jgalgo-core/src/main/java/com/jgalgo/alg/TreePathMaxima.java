@@ -322,7 +322,7 @@ public interface TreePathMaxima {
 						bitsLookupTablesEnable = ((Boolean) value).booleanValue();
 						break;
 					default:
-						throw new IllegalArgumentException("unknown option key: " + key);
+						TreePathMaxima.Builder.super.setOption(key, value);
 				}
 				return this;
 			}

@@ -322,7 +322,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				impl = (String) value;
 				break;
 			default:
-				throw new IllegalArgumentException("unknown option key: " + key);
+				IndexGraphFactory.super.setOption(key, value);
 		}
 		return this;
 	}

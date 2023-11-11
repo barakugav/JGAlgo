@@ -304,7 +304,7 @@ public interface MinimumCostFlow {
 						impl = (String) value;
 						break;
 					default:
-						throw new IllegalArgumentException("unknown option key: " + key);
+						MinimumCostFlow.Builder.super.setOption(key, value);
 				}
 				return this;
 			}

@@ -248,7 +248,7 @@ class ShortestPathSingleSourceUtils {
 					heapBuilder = (HeapReferenceable.Builder<?, ?>) value;
 					break;
 				default:
-					throw new IllegalArgumentException("unknown option key: " + key);
+					ShortestPathSingleSource.Builder.super.setOption(key, value);
 			}
 			return this;
 		}

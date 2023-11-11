@@ -196,7 +196,7 @@ public interface ColoringAlgo {
 						impl = (String) value;
 						break;
 					default:
-						throw new IllegalArgumentException("unknown option key: " + key);
+						ColoringAlgo.Builder.super.setOption(key, value);
 				}
 				return this;
 			}
