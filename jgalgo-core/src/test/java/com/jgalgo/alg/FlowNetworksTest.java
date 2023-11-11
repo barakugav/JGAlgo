@@ -136,4 +136,92 @@ public class FlowNetworksTest extends TestBase {
 			assertEquals(net.getFlowInt(e), indexNet.getFlowInt(eiMap.idToIndex(e)));
 	}
 
+	@SuppressWarnings("boxing")
+	@Test
+	public void testFlowAndCostSumDirected() {
+		for (boolean intGraph : BooleanList.of(false, true)) {
+			for (boolean intWeights : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> g = intGraph ? IntGraph.newDirected() : Graph.newDirected();
+				g.addVertex(0);
+				g.addVertex(1);
+				g.addVertex(2);
+				g.addEdge(0, 2, 0);
+				g.addEdge(1, 2, 1);
+				g.addEdge(2, 0, 2);
+
+				FlowNetwork<Integer, Integer> net =
+						intWeights ? FlowNetworkInt.createFromEdgeWeights(g) : FlowNetwork.createFromEdgeWeights(g);
+				for (Integer e : g.edges())
+					net.setCapacity(e, 1);
+
+				WeightsDouble<Integer> costDouble = Weights.createExternalEdgesWeights(g, double.class);
+				WeightsInt<Integer> costInt = Weights.createExternalEdgesWeights(g, int.class);
+				for (Integer e : g.edges()) {
+					costDouble.set(e, e.intValue() + 1);
+					costInt.set(e, e.intValue() + 1);
+				}
+
+				assertEquals(0, net.getFlowSum(g, 0));
+				assertEquals(0, net.getCostSum(g.edges(), costInt));
+				assertEquals(0, net.getCostSum(g.edges(), costDouble));
+
+				net.setFlow(0, 1);
+				assertEquals(1, net.getFlowSum(g, 0));
+				assertEquals(1, net.getCostSum(g.edges(), costInt));
+				assertEquals(1, net.getCostSum(g.edges(), costDouble));
+
+				net.setFlow(1, 1);
+				assertEquals(1, net.getFlowSum(g, 0));
+				assertEquals(2, net.getFlowSum(g, IntList.of(0, 1)));
+				assertEquals(3, net.getCostSum(g.edges(), costInt));
+				assertEquals(3, net.getCostSum(g.edges(), costDouble));
+
+			}
+		}
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void testFlowAndCostSumUndirected() {
+		for (boolean intGraph : BooleanList.of(false, true)) {
+			for (boolean intWeights : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> g = intGraph ? IntGraph.newUndirected() : Graph.newUndirected();
+				g.addVertex(0);
+				g.addVertex(1);
+				g.addVertex(2);
+				g.addEdge(0, 2, 0);
+				g.addEdge(1, 2, 1);
+				g.addEdge(2, 0, 2);
+
+				FlowNetwork<Integer, Integer> net =
+						intWeights ? FlowNetworkInt.createFromEdgeWeights(g) : FlowNetwork.createFromEdgeWeights(g);
+				for (Integer e : g.edges())
+					net.setCapacity(e, 1);
+
+				WeightsDouble<Integer> costDouble = Weights.createExternalEdgesWeights(g, double.class);
+				WeightsInt<Integer> costInt = Weights.createExternalEdgesWeights(g, int.class);
+				for (Integer e : g.edges()) {
+					costDouble.set(e, e.intValue() + 1);
+					costInt.set(e, e.intValue() + 1);
+				}
+
+				assertEquals(0, net.getFlowSum(g, 0));
+				assertEquals(0, net.getCostSum(g.edges(), costInt));
+				assertEquals(0, net.getCostSum(g.edges(), costDouble));
+
+				net.setFlow(0, 1);
+				assertEquals(1, net.getFlowSum(g, 0));
+				assertEquals(1, net.getCostSum(g.edges(), costInt));
+				assertEquals(1, net.getCostSum(g.edges(), costDouble));
+
+				net.setFlow(1, 1);
+				assertEquals(1, net.getFlowSum(g, 0));
+				assertEquals(2, net.getFlowSum(g, IntList.of(0, 1)));
+				assertEquals(3, net.getCostSum(g.edges(), costInt));
+				assertEquals(3, net.getCostSum(g.edges(), costDouble));
+
+			}
+		}
+	}
+
 }
