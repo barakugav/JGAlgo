@@ -71,7 +71,7 @@ public class IntAdapters {
 		if (c instanceof IntList) {
 			return (IntList) c;
 		} else {
-			return new IntListWrapper((List<Integer>) c);
+			return new IntListWrapper(c);
 		}
 	}
 
@@ -255,6 +255,7 @@ public class IntAdapters {
 			return l.addAll(c);
 		}
 
+		@Override
 		public boolean addAll(Collection<? extends Integer> c) {
 			return l.addAll(c);
 		}

@@ -68,7 +68,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 
 		for (int m = g.edges().size(), e = 0; e < m; e++)
 			if (resGraph.isOriginalEdge(e))
-				net.setFlow(resGraph.edgeRef[e], flow[e]);
+				net.setFlow(resGraph.edgeRef[e], Math.max(0, Math.min(flow[e], capacity[e])));
 
 		MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, net, cost);
 	}
