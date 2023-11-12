@@ -89,10 +89,8 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();
 		g1Builder.expectedVerticesNum(n);
 		g1Builder.expectedEdgesNum(mst.size() + matching.edges().size());
-		for (int v = 0; v < n; v++) {
-			int vBuilder = g1Builder.addVertex();
-			assert vBuilder == v;
-		}
+		for (int v = 0; v < n; v++)
+			g1Builder.addVertex();
 		int[] g1EdgeRef = new int[mst.size() + matching.edges().size()];
 		for (int e : mst) {
 			int g1Edge = g1Builder.addEdge(g.edgeSource(e), g.edgeTarget(e));

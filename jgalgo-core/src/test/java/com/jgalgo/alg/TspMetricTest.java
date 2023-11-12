@@ -16,18 +16,21 @@
 
 package com.jgalgo.alg;
 
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.function.Predicate;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.GraphFactory;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.IndexGraphFactory;
-import com.jgalgo.internal.util.Bitmap;
-import com.jgalgo.internal.util.Range;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.Pair;
 
 public class TspMetricTest extends TestBase {
 
@@ -43,11 +46,15 @@ public class TspMetricTest extends TestBase {
 		tester.addPhase().withArgs(128).repeat(4);
 		tester.addPhase().withArgs(256).repeat(3);
 		tester.run(n -> {
-			testMstAppxAndMatchingAppxRandGraph(n, seedGen.nextSeed());
+			Pair<Graph<Integer, Integer>, WeightFunction<Integer>> p = generateMetricGraph(n, seedGen.nextSeed());
+			Graph<Integer, Integer> g = p.first();
+			WeightFunction<Integer> distances = p.second();
+			testMstAppxAndMatchingAppxRandGraph(g, distances, seedGen.nextSeed());
 		});
 	}
 
-	private static void testMstAppxAndMatchingAppxRandGraph(int n, long seed) {
+	@SuppressWarnings("boxing")
+	private static Pair<Graph<Integer, Integer>, WeightFunction<Integer>> generateMetricGraph(int n, long seed) {
 		Random rand = new Random(seed);
 
 		final int x = 0, y = 1;
@@ -57,33 +64,37 @@ public class TspMetricTest extends TestBase {
 			locations[u][y] = nextDouble(rand, 1, 100);
 		}
 
-		IndexGraphFactory gFactory = IndexGraphFactory.newUndirected();
+		GraphFactory<Integer, Integer> gFactory =
+				rand.nextBoolean() ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
 		gFactory.addHint(GraphFactory.Hint.FastEdgeLookup);
 		gFactory.addHint(GraphFactory.Hint.DenseGraph);
-		IndexGraphBuilder gBuilder = gFactory.newBuilder();
+		GraphBuilder<Integer, Integer> gBuilder = gFactory.newBuilder();
 		gBuilder.expectedVerticesNum(n);
 		gBuilder.expectedEdgesNum(n * (n - 1) / 2);
 		for (int v = 0; v < n; v++)
-			gBuilder.addVertex();
+			gBuilder.addVertex(gBuilder.vertices().size());
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
-				gBuilder.addEdge(u, v);
-		IndexGraph g = gBuilder.build();
-		IWeightFunction distances = e -> {
+				gBuilder.addEdge(u, v, gBuilder.edges().size());
+		Graph<Integer, Integer> g = rand.nextBoolean() ? gBuilder.build() : gBuilder.build().indexGraph();
+		WeightFunction<Integer> distances = e -> {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			double xd = locations[u][x] - locations[v][x];
 			double yd = locations[u][y] - locations[v][y];
 			return Math.sqrt(xd * xd + yd * yd);
 		};
+		return Pair.of(g, distances);
+	}
 
-		IPath appxMst = new TspMetricMSTAppx().computeShortestTour(g, distances);
-		IPath appxMatch = new TspMetricMatchingAppx().computeShortestTour(g, distances);
+	private static <V, E> void testMstAppxAndMatchingAppxRandGraph(Graph<V, E> g, WeightFunction<E> distances,
+			long seed) {
 
-		Predicate<IPath> isPathVisitAllVertices = path -> {
-			Bitmap visited = Bitmap.fromOnes(n, path.vertices());
-			return Range.of(n).intStream().allMatch(visited::get);
-		};
+		Path<V, E> appxMst = new TspMetricMSTAppx().computeShortestTour(g, distances);
+		Path<V, E> appxMatch = new TspMetricMatchingAppx().computeShortestTour(g, distances);
+
+		Predicate<Path<V, E>> isPathVisitAllVertices =
+				path -> new HashSet<>(path.vertices()).size() == g.vertices().size();;
 		assertTrue(isPathVisitAllVertices.test(appxMst), "MST approximation result doesn't visit every vertex");
 		assertTrue(isPathVisitAllVertices.test(appxMatch), "Matching approximation result doesn't visit every vertex");
 
@@ -92,7 +103,22 @@ public class TspMetricTest extends TestBase {
 
 		assertTrue(mstAppxLen * 3 / 2 >= matchAppxLen && matchAppxLen * 2 > mstAppxLen,
 				"Approximations factor doesn't match");
+	}
 
+	@Test
+	public void emptyGraph() {
+		Graph<Integer, Integer> g = IntGraph.newUndirected();
+		assertNull(new TspMetricMSTAppx().computeShortestTour(g, e -> 1));
+		assertNull(new TspMetricMatchingAppx().computeShortestTour(g, e -> 1));
+	}
+
+	@Test
+	public void notConnectedGraphs() {
+		IntGraph g = IntGraph.newUndirected();
+		g.addVertex(0);
+		g.addVertex(1);
+		assertThrows(IllegalArgumentException.class, () -> new TspMetricMSTAppx().computeShortestTour(g, e -> 1));
+		assertThrows(IllegalArgumentException.class, () -> new TspMetricMatchingAppx().computeShortestTour(g, e -> 1));
 	}
 
 }

@@ -50,7 +50,8 @@ public interface TspMetric {
 	 * @param  g   a graph containing all the vertices the tour must visit, using its edges
 	 * @param  w   an edge weight function. In the metric world every three vertices \(u,v,w\) should satisfy \(w((u,v))
 	 *                 + w((v,w)) \leq w((u,w))$
-	 * @return     a result object containing the list of the \(n\) vertices ordered by the calculated path
+	 * @return     a result object containing the list of the \(n\) vertices ordered by the calculated path. If the
+	 *             graph contains no vertices, {@code null} is returned
 	 */
 	<V, E> Path<V, E> computeShortestTour(Graph<V, E> g, WeightFunction<E> w);
 
