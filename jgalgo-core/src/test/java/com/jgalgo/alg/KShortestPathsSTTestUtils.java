@@ -24,15 +24,17 @@ import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
+import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
-import com.jgalgo.internal.util.TestUtils;
+import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 
-class KShortestPathsSTTestUtils extends TestUtils {
+class KShortestPathsSTTestUtils extends TestBase {
 
 	static void randGraphs(KShortestPathsST algo, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
@@ -48,7 +50,10 @@ class KShortestPathsSTTestUtils extends TestUtils {
 		tester.run((n, m, k) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
-			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			g = maybeIndexGraph(g, rand);
+			WeightFunctionInt<Integer> w = null;
+			if (rand.nextInt(10) != 0)
+				GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			Integer source = Graphs.randVertex(g, rand);
 			Integer target = Graphs.randVertex(g, rand);
 
@@ -66,13 +71,16 @@ class KShortestPathsSTTestUtils extends TestUtils {
 			assertTrue(Path.isPath(g, source, target, p.edges()));
 			assertTrue(p.vertices().stream().distinct().count() == p.vertices().size());
 		}
+		if (w == null)
+			w = WeightFunction.cardinalityWeightFunction();
+		WeightFunctionInt<E> w0 = w;
 
 		if ((g.isDirected() && g.edges().size() < 55) || (!g.isDirected() && g.edges().size() < 40)) {
 			Iterator<Path<V, E>> simplePathsIter =
 					SimplePathsFinder.newInstance().findAllSimplePaths(g, source, target);
 			List<Path<V, E>> pathsExpected = StreamSupport
 					.stream(Spliterators.spliteratorUnknownSize(simplePathsIter, Spliterator.ORDERED), false)
-					.map(p -> ObjectDoublePair.of(p, w.weightSum(p.edges())))
+					.map(p -> ObjectDoublePair.of(p, w0.weightSum(p.edges())))
 					.sorted((p1, p2) -> Double.compare(p1.secondDouble(), p2.secondDouble())).limit(k)
 					.map(ObjectDoublePair::first).collect(Collectors.toList());
 
@@ -80,6 +88,12 @@ class KShortestPathsSTTestUtils extends TestUtils {
 			for (int i = 0; i < pathsExpected.size(); i++)
 				assertEquals(w.weightSum(pathsExpected.get(i).edges()), w.weightSum(pathsActual.get(i).edges()));
 		}
+	}
+
+	@Test
+	public void testDefaultImpl() {
+		KShortestPathsST algo = KShortestPathsST.newInstance();
+		assertEquals(KShortestPathsSTYen.class, algo.getClass());
 	}
 
 }

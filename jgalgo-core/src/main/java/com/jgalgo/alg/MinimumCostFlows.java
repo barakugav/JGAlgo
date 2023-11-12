@@ -40,6 +40,8 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 class MinimumCostFlows {
 
+	private MinimumCostFlows() {}
+
 	private abstract static class AbstractImplBase implements MinimumCostFlow {
 
 		@SuppressWarnings("unchecked")
