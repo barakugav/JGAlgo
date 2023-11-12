@@ -16,8 +16,13 @@
 
 package com.jgalgo.alg;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 class ShortestPathAllPairsFloydWarshallTest extends TestBase {
 
@@ -83,6 +88,38 @@ class ShortestPathAllPairsFloydWarshallTest extends TestBase {
 	public void testRandGraphUndirectedCardinalityVerticesSubset() {
 		final long seed = 0xecb005fa68a74e0dL;
 		ShortestPathAllPairsTestUtils.testAPSPCardinality(algo(), false, false, seed);
+	}
+
+	@Test
+	public void undirectedNegativeSelfEdge() {
+		IntGraph g = IntGraph.newUndirected();
+		g.addVertex(0);
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addEdge(1, 1, 0);
+
+		ShortestPathAllPairs.IResult res = (ShortestPathAllPairs.IResult) algo().computeAllShortestPaths(g, e -> -1);
+		assertTrue(res.foundNegativeCycle());
+		assertEquals(IntList.of(0), res.getNegativeCycle().edges());
+
+		assertThrows(IllegalStateException.class, () -> res.distance(0, 1));
+		assertThrows(IllegalStateException.class, () -> res.getPath(0, 1));
+	}
+
+	@Test
+	public void undirectedNegativeEdge() {
+		IntGraph g = IntGraph.newUndirected();
+		g.addVertex(0);
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addEdge(1, 2, 0);
+
+		ShortestPathAllPairs.IResult res = (ShortestPathAllPairs.IResult) algo().computeAllShortestPaths(g, e -> -1);
+		assertTrue(res.foundNegativeCycle());
+		assertEquals(IntList.of(0, 0), res.getNegativeCycle().edges());
+
+		assertThrows(IllegalStateException.class, () -> res.distance(0, 1));
+		assertThrows(IllegalStateException.class, () -> res.getPath(0, 1));
 	}
 
 }

@@ -59,12 +59,14 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			double ew = w.weight(e);
-			if (u == v) {
-				if (ew < 0) {
+			if (ew < 0) {
+				if (u == v) {
 					res.setNegCycle(new PathImpl(g, u, u, IntList.of(e)));
 					return res;
+				} else {
+					res.setNegCycle(new PathImpl(g, u, u, IntList.of(e, e)));
+					return res;
 				}
-				continue;
 			}
 			if (ew < res.distance(u, v)) {
 				res.setDistance(u, v, ew);
@@ -93,8 +95,6 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 					}
 				}
 			}
-			if (detectNegCycle(res, n, k))
-				return res;
 		}
 		return res;
 	}

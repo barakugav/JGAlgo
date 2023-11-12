@@ -37,6 +37,8 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 class ShortestPathAllPairsUtils {
 
+	private ShortestPathAllPairsUtils() {}
+
 	abstract static class AbstractImpl implements ShortestPathAllPairs {
 
 		@SuppressWarnings("unchecked")
