@@ -636,7 +636,7 @@ public class ReversedGraphViewTest extends TestBase {
 				gRev.removeEdge(gRev.edges().iterator().nextInt());
 				assertFalse(called.get());
 
-				gRev.removeVertexSwapRemoveListener(listener);
+				gRev.removeVertexRemoveListener(listener);
 				called.set(false);
 				gRev.removeVertex(gRev.vertices().iterator().nextInt());
 				assertFalse(called.get());
@@ -652,7 +652,7 @@ public class ReversedGraphViewTest extends TestBase {
 				gRev.removeVertex(v);
 				assertFalse(called.get());
 
-				gRev.removeEdgeSwapRemoveListener(listener);
+				gRev.removeEdgeRemoveListener(listener);
 				called.set(false);
 				gRev.removeEdge(gRev.edges().iterator().nextInt());
 				assertFalse(called.get());

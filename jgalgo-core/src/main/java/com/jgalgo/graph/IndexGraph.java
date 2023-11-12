@@ -322,7 +322,7 @@ public interface IndexGraph extends IntGraph {
 	 *
 	 * @param listener a remove listener that should be removed
 	 */
-	void removeVertexSwapRemoveListener(IndexRemoveListener listener);
+	void removeVertexRemoveListener(IndexRemoveListener listener);
 
 	/**
 	 * Adds a listener that will be called each time a edge swap is performed.
@@ -348,7 +348,7 @@ public interface IndexGraph extends IntGraph {
 	 *
 	 * @param listener a remove listener that should be removed
 	 */
-	void removeEdgeSwapRemoveListener(IndexRemoveListener listener);
+	void removeEdgeRemoveListener(IndexRemoveListener listener);
 
 	/**
 	 * The index graph of an {@link IndexGraph} is itself.

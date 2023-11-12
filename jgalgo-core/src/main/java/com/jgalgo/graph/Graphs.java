@@ -416,7 +416,7 @@ public class Graphs {
 		}
 
 		@Override
-		public void removeVertexSwapRemoveListener(IndexRemoveListener listener) {
+		public void removeVertexRemoveListener(IndexRemoveListener listener) {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove a listener");
 		}
 
@@ -426,7 +426,7 @@ public class Graphs {
 		}
 
 		@Override
-		public void removeEdgeSwapRemoveListener(IndexRemoveListener listener) {
+		public void removeEdgeRemoveListener(IndexRemoveListener listener) {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove a listener");
 		}
 	}
@@ -1105,8 +1105,8 @@ public class Graphs {
 		}
 
 		@Override
-		public void removeVertexSwapRemoveListener(IndexRemoveListener listener) {
-			graph().removeVertexSwapRemoveListener(listener);
+		public void removeVertexRemoveListener(IndexRemoveListener listener) {
+			graph().removeVertexRemoveListener(listener);
 		}
 
 		@Override
@@ -1115,8 +1115,8 @@ public class Graphs {
 		}
 
 		@Override
-		public void removeEdgeSwapRemoveListener(IndexRemoveListener listener) {
-			graph().removeEdgeSwapRemoveListener(listener);
+		public void removeEdgeRemoveListener(IndexRemoveListener listener) {
+			graph().removeEdgeRemoveListener(listener);
 		}
 	}
 
@@ -1878,8 +1878,8 @@ public class Graphs {
 		}
 
 		@Override
-		public void removeVertexSwapRemoveListener(IndexRemoveListener listener) {
-			graph().removeVertexSwapRemoveListener(listener);
+		public void removeVertexRemoveListener(IndexRemoveListener listener) {
+			graph().removeVertexRemoveListener(listener);
 		}
 
 		@Override
@@ -1888,8 +1888,8 @@ public class Graphs {
 		}
 
 		@Override
-		public void removeEdgeSwapRemoveListener(IndexRemoveListener listener) {
-			graph().removeEdgeSwapRemoveListener(listener);
+		public void removeEdgeRemoveListener(IndexRemoveListener listener) {
+			graph().removeEdgeRemoveListener(listener);
 		}
 	}
 

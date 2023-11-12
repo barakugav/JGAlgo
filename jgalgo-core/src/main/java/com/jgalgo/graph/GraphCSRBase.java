@@ -210,7 +210,7 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 	}
 
 	@Override
-	public void removeVertexSwapRemoveListener(IndexRemoveListener listener) {
+	public void removeVertexRemoveListener(IndexRemoveListener listener) {
 		vertices.removeRemoveListener(listener);
 	}
 
@@ -220,7 +220,7 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 	}
 
 	@Override
-	public void removeEdgeSwapRemoveListener(IndexRemoveListener listener) {
+	public void removeEdgeRemoveListener(IndexRemoveListener listener) {
 		edges.removeRemoveListener(listener);
 	}
 

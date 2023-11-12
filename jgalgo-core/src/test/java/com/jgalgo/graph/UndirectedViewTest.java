@@ -686,7 +686,7 @@ public class UndirectedViewTest extends TestBase {
 			undirectedG.removeEdge(undirectedG.edges().iterator().nextInt());
 			assertFalse(called.get());
 
-			undirectedG.removeVertexSwapRemoveListener(listener);
+			undirectedG.removeVertexRemoveListener(listener);
 			called.set(false);
 			undirectedG.removeVertex(undirectedG.vertices().iterator().nextInt());
 			assertFalse(called.get());
@@ -702,7 +702,7 @@ public class UndirectedViewTest extends TestBase {
 			undirectedG.removeVertex(v);
 			assertFalse(called.get());
 
-			undirectedG.removeEdgeSwapRemoveListener(listener);
+			undirectedG.removeEdgeRemoveListener(listener);
 			called.set(false);
 			undirectedG.removeEdge(undirectedG.edges().iterator().nextInt());
 			assertFalse(called.get());
