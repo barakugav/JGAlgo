@@ -22,6 +22,8 @@ import com.jgalgo.graph.IndexIdMap;
 
 class SimplePathsFinders {
 
+	private SimplePathsFinders() {}
+
 	abstract static class AbstractImpl implements SimplePathsFinder {
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })

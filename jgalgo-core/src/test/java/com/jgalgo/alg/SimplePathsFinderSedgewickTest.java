@@ -53,6 +53,7 @@ public class SimplePathsFinderSedgewickTest extends TestBase {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
 			Integer source = Graphs.randVertex(g, rand);
 			Integer target = Graphs.randVertex(g, rand);
 

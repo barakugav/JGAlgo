@@ -46,6 +46,7 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
 
 			WeightsDouble<Integer> w = g.addEdgesWeights("weight", double.class);
 			for (Integer e : g.edges())
@@ -67,6 +68,7 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
 
 			WeightsInt<Integer> w = g.addEdgesWeights("weight", int.class);
 			for (Integer e : g.edges())
@@ -88,6 +90,7 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
 
 			WeightsDouble<Integer> w = g.addEdgesWeights("weight", double.class);
 			for (Integer e : g.edges())
@@ -110,6 +113,7 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
 
 			WeightsInt<Integer> w = g.addEdgesWeights("weight", int.class);
 			for (Integer e : g.edges())
