@@ -393,7 +393,6 @@ public class ImmutableGraphViewTest extends TestBase {
 		}
 	}
 
-	@SuppressWarnings("boxing")
 	@Test
 	public void testGraphCapabilities() {
 		for (boolean directed : BooleanList.of(false, true)) {
@@ -404,9 +403,9 @@ public class ImmutableGraphViewTest extends TestBase {
 					Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 					Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
 
-					assertEquals(gOrig.isAllowParallelEdges(), gImmutable.isAllowParallelEdges());
-					assertEquals(gOrig.isAllowSelfEdges(), gImmutable.isAllowSelfEdges());
-					assertEquals(gOrig.isDirected(), gImmutable.isDirected());
+					assertEqualsBool(gOrig.isAllowParallelEdges(), gImmutable.isAllowParallelEdges());
+					assertEqualsBool(gOrig.isAllowSelfEdges(), gImmutable.isAllowSelfEdges());
+					assertEqualsBool(gOrig.isDirected(), gImmutable.isDirected());
 				}
 			}
 		}

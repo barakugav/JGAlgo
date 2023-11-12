@@ -828,6 +828,30 @@ public interface Graph<V, E> {
 	}
 
 	/**
+	 * Get an undirected view of this (directed) graph.
+	 *
+	 * <p>
+	 * This method return a view of this graph, namely a Graph that contains the same vertices, edges and weights, that
+	 * is automatically updated when the original graph is updated and vice versa. The view is undirected, namely each
+	 * directed edge \((u,v)\) will exist in all the sets {@code g.outEdges(u)}, {@code g.inEdges(u)},
+	 * {@code g.outEdges(v)} and {@code g.inEdges(u)}. The view will contain the same number of edges as this graph.
+	 *
+	 * <p>
+	 * The returned view will return {@code true} for {@link #isAllowParallelEdges()} even if the original graph <b>does
+	 * not</b> support parallel edges. This is because the original graph could have both \((u,v)\) in \((v,u)\) without
+	 * violating the parallel edges constraint, but the view will treat them as parallel edges as the direction is
+	 * 'forgotten'.
+	 *
+	 * <p>
+	 * If this graph is undirected, this function return the graph itself.
+	 *
+	 * @return an undirected view of this graph
+	 */
+	default Graph<V, E> undirectedView() {
+		return Graphs.undirectedView(this);
+	}
+
+	/**
 	 * Create a new graph that is a subgraph of this graph.
 	 *
 	 * <p>

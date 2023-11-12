@@ -29,6 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectIterables;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 /**
@@ -1229,6 +1230,679 @@ public class Graphs {
 					: new ReverseIntGraph((IntGraph) g));
 		} else {
 			return g instanceof ReverseGraph ? ((ReverseGraph<V, E>) g).graph() : new ReverseGraph<>(g);
+		}
+	}
+
+	private static class UndirectedView<V, E> extends GraphView<V, E> {
+
+		UndirectedView(Graph<V, E> g) {
+			super(g);
+			assert g.isDirected();
+		}
+
+		@Override
+		public EdgeSet<V, E> outEdges(V source) {
+			return new EdgeSetOut(source);
+		}
+
+		@Override
+		public EdgeSet<V, E> inEdges(V target) {
+			return new EdgeSetIn(target);
+		}
+
+		@Override
+		public E getEdge(V source, V target) {
+			E e = graph().getEdge(source, target);
+			return e != null ? e : graph().getEdge(target, source);
+		}
+
+		@Override
+		public EdgeSet<V, E> getEdges(V source, V target) {
+			if (source.equals(target))
+				return graph().getEdges(source, target);
+			return new EdgeSetSourceTarget(source, target);
+		}
+
+		@Override
+		public void removeEdgesOf(V vertex) {
+			graph().removeEdgesOf(vertex);
+		}
+
+		@Override
+		public void removeInEdgesOf(V vertex) {
+			graph().removeEdgesOf(vertex);
+		}
+
+		@Override
+		public void removeOutEdgesOf(V vertex) {
+			graph().removeEdgesOf(vertex);
+		}
+
+		@Override
+		public IndexGraph indexGraph() {
+			return graph().indexGraph().undirectedView();
+		}
+
+		@Override
+		public boolean isDirected() {
+			return false;
+		}
+
+		@Override
+		public boolean isAllowParallelEdges() {
+			/*
+			 * We do not enforce that (u,v) and (v,u) both exists in the original graph. Although this function return
+			 * true, the original graph may no support parallel edges. See {@link Graph#undirectedView()}.
+			 */
+			return true;
+		}
+
+		private abstract class EdgeSetBase extends AbstractSet<E> implements EdgeSet<V, E> {
+
+			final EdgeSet<V, E> out;
+			final EdgeSet<V, E> in;
+
+			EdgeSetBase(EdgeSet<V, E> out, EdgeSet<V, E> in) {
+				this.out = out;
+				this.in = in;
+			}
+
+			@Override
+			public boolean contains(Object o) {
+				return out.contains(o) || in.contains(o);
+			}
+
+			@Override
+			public boolean remove(Object o) {
+				return out.remove(o) || in.remove(o);
+			}
+
+			@Override
+			public boolean removeAll(Collection<?> c) {
+				boolean changed = false;
+				changed |= out.removeAll(c);
+				changed |= in.removeAll(c);
+				return changed;
+			}
+
+			@Override
+			public void clear() {
+				out.clear();
+				in.clear();
+			}
+		}
+
+		private abstract class EdgeSetOutOrInBase extends EdgeSetBase {
+
+			final V vertex;
+
+			EdgeSetOutOrInBase(V vertex) {
+				super(graph().outEdges(vertex), graph().inEdges(vertex));
+				this.vertex = vertex;
+			}
+
+			@Override
+			public int size() {
+				return (int) ObjectIterables.size(this);
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return !iterator().hasNext();
+			}
+		}
+
+		private abstract class EdgeIterOutOrInBase implements EdgeIter<V, E> {
+
+			private EdgeIter<V, E> outIt, inIt;
+			final V vertex;
+			V endpoint;
+
+			EdgeIterOutOrInBase(V vertex) {
+				outIt = graph().outEdges(vertex).iterator();
+				inIt = graph().inEdges(vertex).iterator();
+				this.vertex = vertex;
+				advance();
+			}
+
+			private void advance() {
+				if (outIt != null) {
+					if (outIt.hasNext())
+						return;
+					outIt = null;
+				}
+				if (inIt != null) {
+					for (; inIt.hasNext(); inIt.next()) {
+						E e = inIt.peekNext();
+						/* we skip self edges in the in-edges iterator */
+						if (!vertex.equals(graph().edgeSource(e)))
+							return;
+					}
+					inIt = null;
+				}
+			}
+
+			@Override
+			public boolean hasNext() {
+				return inIt != null;
+			}
+
+			@Override
+			public E next() {
+				Assertions.Iters.hasNext(this);
+				E e;
+				if (outIt != null) {
+					e = outIt.next();
+					endpoint = outIt.target();
+				} else {
+					e = inIt.next();
+					endpoint = inIt.source();
+				}
+				advance();
+				return e;
+			}
+
+			@Override
+			public E peekNext() {
+				Assertions.Iters.hasNext(this);
+				return outIt != null ? outIt.peekNext() : inIt.peekNext();
+			}
+		}
+
+		private class EdgeSetOut extends EdgeSetOutOrInBase {
+			EdgeSetOut(V source) {
+				super(source);
+			}
+
+			@Override
+			public EdgeIter<V, E> iterator() {
+				return new EdgeIterOut(vertex);
+			}
+		}
+
+		private class EdgeIterOut extends EdgeIterOutOrInBase {
+			EdgeIterOut(V source) {
+				super(source);
+			}
+
+			@Override
+			public V source() {
+				return vertex;
+			}
+
+			@Override
+			public V target() {
+				return endpoint;
+			}
+		}
+
+		private class EdgeSetIn extends EdgeSetOutOrInBase {
+			EdgeSetIn(V target) {
+				super(target);
+			}
+
+			@Override
+			public EdgeIter<V, E> iterator() {
+				return new EdgeIterIn(vertex);
+			}
+		}
+
+		private class EdgeIterIn extends EdgeIterOutOrInBase {
+			EdgeIterIn(V target) {
+				super(target);
+			}
+
+			@Override
+			public V source() {
+				return endpoint;
+			}
+
+			@Override
+			public V target() {
+				return vertex;
+			}
+		}
+
+		private class EdgeSetSourceTarget extends EdgeSetBase {
+
+			private final V source, target;
+
+			EdgeSetSourceTarget(V source, V target) {
+				super(graph().getEdges(source, target), graph().getEdges(target, source));
+				this.source = source;
+				this.target = target;
+			}
+
+			@Override
+			public int size() {
+				return out.size() + in.size();
+			}
+
+			@Override
+			public EdgeIter<V, E> iterator() {
+				return new EdgeIter<>() {
+
+					private final EdgeIter<V, E> stIt = out.iterator();
+					private final EdgeIter<V, E> tsIt = in.iterator();
+					private EdgeIter<V, E> it = stIt;
+					{
+						advance();
+					}
+
+					private void advance() {
+						if (it.hasNext())
+							return;
+						if (it == stIt && tsIt.hasNext()) {
+							it = tsIt;
+						} else {
+							it = null;
+						}
+					}
+
+					@Override
+					public boolean hasNext() {
+						return it != null;
+					}
+
+					@Override
+					public E next() {
+						Assertions.Iters.hasNext(this);
+						E e = it.next();
+						advance();
+						return e;
+					}
+
+					@Override
+					public E peekNext() {
+						Assertions.Iters.hasNext(this);
+						return it.peekNext();
+					}
+
+					@Override
+					public V source() {
+						return source;
+					}
+
+					@Override
+					public V target() {
+						return target;
+					}
+				};
+			}
+		}
+	}
+
+	private abstract static class UndirectedViewIntBase extends IntGraphViewBase {
+
+		UndirectedViewIntBase(IntGraph g) {
+			super(g);
+			assert g.isDirected();
+		}
+
+		@Override
+		public IEdgeSet outEdges(int source) {
+			return new EdgeSetOut(source);
+		}
+
+		@Override
+		public IEdgeSet inEdges(int target) {
+			return new EdgeSetIn(target);
+		}
+
+		@Override
+		public int getEdge(int source, int target) {
+			int e = graph().getEdge(source, target);
+			return e != -1 ? e : graph().getEdge(target, source);
+		}
+
+		@Override
+		public IEdgeSet getEdges(int source, int target) {
+			if (source == target)
+				return graph().getEdges(source, target);
+			return new EdgeSetSourceTarget(source, target);
+		}
+
+		@Override
+		public void removeEdgesOf(int vertex) {
+			graph().removeEdgesOf(vertex);
+		}
+
+		@Override
+		public void removeInEdgesOf(int vertex) {
+			graph().removeEdgesOf(vertex);
+		}
+
+		@Override
+		public void removeOutEdgesOf(int vertex) {
+			graph().removeEdgesOf(vertex);
+		}
+
+		@Override
+		public boolean isDirected() {
+			return false;
+		}
+
+		@Override
+		public boolean isAllowParallelEdges() {
+			/*
+			 * We do not enforce that (u,v) and (v,u) both exists in the original graph. Although this function return
+			 * true, the original graph may no support parallel edges. See {@link Graph#undirectedView()}.
+			 */
+			return true;
+		}
+
+		private abstract class EdgeSetBase extends AbstractIntSet implements IEdgeSet {
+
+			final IEdgeSet out;
+			final IEdgeSet in;
+
+			EdgeSetBase(IEdgeSet out, IEdgeSet in) {
+				this.out = out;
+				this.in = in;
+			}
+
+			@Override
+			public boolean contains(int o) {
+				return out.contains(o) || in.contains(o);
+			}
+
+			@Override
+			public boolean remove(int o) {
+				return out.remove(o) || in.remove(o);
+			}
+
+			@Override
+			public boolean removeAll(IntCollection c) {
+				boolean changed = false;
+				changed |= out.removeAll(c);
+				changed |= in.removeAll(c);
+				return changed;
+			}
+
+			@Override
+			public void clear() {
+				out.clear();
+				in.clear();
+			}
+		}
+
+		private abstract class EdgeSetOutOrInBase extends EdgeSetBase {
+
+			final int vertex;
+
+			EdgeSetOutOrInBase(int vertex) {
+				super(graph().outEdges(vertex), graph().inEdges(vertex));
+				this.vertex = vertex;
+			}
+
+			@Override
+			public int size() {
+				return (int) ObjectIterables.size(this);
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return !iterator().hasNext();
+			}
+		}
+
+		private abstract class EdgeIterOutOrInBase implements IEdgeIter {
+
+			private IEdgeIter outIt, inIt;
+			final int vertex;
+			int endpoint;
+
+			EdgeIterOutOrInBase(int vertex) {
+				outIt = graph().outEdges(vertex).iterator();
+				inIt = graph().inEdges(vertex).iterator();
+				this.vertex = vertex;
+				advance();
+			}
+
+			private void advance() {
+				if (outIt != null) {
+					if (outIt.hasNext())
+						return;
+					outIt = null;
+				}
+				if (inIt != null) {
+					for (; inIt.hasNext(); inIt.nextInt()) {
+						int e = inIt.peekNextInt();
+						/* we skip self edges in the in-edges iterator */
+						if (vertex != graph().edgeSource(e))
+							return;
+					}
+					inIt = null;
+				}
+			}
+
+			@Override
+			public boolean hasNext() {
+				return inIt != null;
+			}
+
+			@Override
+			public int nextInt() {
+				Assertions.Iters.hasNext(this);
+				int e;
+				if (outIt != null) {
+					e = outIt.nextInt();
+					endpoint = outIt.targetInt();
+				} else {
+					e = inIt.nextInt();
+					endpoint = inIt.sourceInt();
+				}
+				advance();
+				return e;
+			}
+
+			@Override
+			public int peekNextInt() {
+				Assertions.Iters.hasNext(this);
+				return outIt != null ? outIt.peekNextInt() : inIt.peekNextInt();
+			}
+		}
+
+		private class EdgeSetOut extends EdgeSetOutOrInBase {
+			EdgeSetOut(int source) {
+				super(source);
+			}
+
+			@Override
+			public IEdgeIter iterator() {
+				return new EdgeIterOut(vertex);
+			}
+		}
+
+		private class EdgeIterOut extends EdgeIterOutOrInBase {
+			EdgeIterOut(int source) {
+				super(source);
+			}
+
+			@Override
+			public int sourceInt() {
+				return vertex;
+			}
+
+			@Override
+			public int targetInt() {
+				return endpoint;
+			}
+		}
+
+		private class EdgeSetIn extends EdgeSetOutOrInBase {
+			EdgeSetIn(int target) {
+				super(target);
+			}
+
+			@Override
+			public IEdgeIter iterator() {
+				return new EdgeIterIn(vertex);
+			}
+		}
+
+		private class EdgeIterIn extends EdgeIterOutOrInBase {
+			EdgeIterIn(int target) {
+				super(target);
+			}
+
+			@Override
+			public int sourceInt() {
+				return endpoint;
+			}
+
+			@Override
+			public int targetInt() {
+				return vertex;
+			}
+		}
+
+		private class EdgeSetSourceTarget extends EdgeSetBase {
+
+			private final int source, target;
+
+			EdgeSetSourceTarget(int source, int target) {
+				super(graph().getEdges(source, target), graph().getEdges(target, source));
+				this.source = source;
+				this.target = target;
+			}
+
+			@Override
+			public int size() {
+				return out.size() + in.size();
+			}
+
+			@Override
+			public IEdgeIter iterator() {
+				return new IEdgeIter() {
+
+					private final IEdgeIter stIt = out.iterator();
+					private final IEdgeIter tsIt = in.iterator();
+					private IEdgeIter it = stIt;
+					{
+						advance();
+					}
+
+					private void advance() {
+						if (it.hasNext())
+							return;
+						if (it == stIt && tsIt.hasNext()) {
+							it = tsIt;
+						} else {
+							it = null;
+						}
+					}
+
+					@Override
+					public boolean hasNext() {
+						return it != null;
+					}
+
+					@Override
+					public int nextInt() {
+						Assertions.Iters.hasNext(this);
+						int e = it.nextInt();
+						advance();
+						return e;
+					}
+
+					@Override
+					public int peekNextInt() {
+						Assertions.Iters.hasNext(this);
+						return it.peekNextInt();
+					}
+
+					@Override
+					public int sourceInt() {
+						return source;
+					}
+
+					@Override
+					public int targetInt() {
+						return target;
+					}
+				};
+			}
+		}
+
+	}
+
+	private static class UndirectedViewInt extends UndirectedViewIntBase {
+
+		UndirectedViewInt(IntGraph g) {
+			super(g);
+		}
+
+		@Override
+		public IndexGraph indexGraph() {
+			return graph().indexGraph().undirectedView();
+		}
+
+		@Override
+		public IndexIntIdMap indexGraphVerticesMap() {
+			return graph().indexGraphVerticesMap();
+		}
+
+		@Override
+		public IndexIntIdMap indexGraphEdgesMap() {
+			return graph().indexGraphEdgesMap();
+		}
+	}
+
+	private static class UndirectedViewIndex extends UndirectedViewIntBase implements IndexGraph {
+
+		UndirectedViewIndex(IndexGraph g) {
+			super(g);
+		}
+
+		@Override
+		IndexGraph graph() {
+			return (IndexGraph) super.graph();
+		}
+
+		@Override
+		@Deprecated
+		public void addVertex(int vertex) {
+			IndexGraph.super.addVertex(vertex);
+		}
+
+		@Override
+		@Deprecated
+		public void addEdge(int source, int target, int edge) {
+			IndexGraph.super.addEdge(source, target, edge);
+		}
+
+		@Override
+		public void addVertexRemoveListener(IndexRemoveListener listener) {
+			graph().addVertexRemoveListener(listener);
+		}
+
+		@Override
+		public void removeVertexSwapRemoveListener(IndexRemoveListener listener) {
+			graph().removeVertexSwapRemoveListener(listener);
+		}
+
+		@Override
+		public void addEdgeRemoveListener(IndexRemoveListener listener) {
+			graph().addEdgeRemoveListener(listener);
+		}
+
+		@Override
+		public void removeEdgeSwapRemoveListener(IndexRemoveListener listener) {
+			graph().removeEdgeSwapRemoveListener(listener);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	static <V, E> Graph<V, E> undirectedView(Graph<V, E> g) {
+		if (!g.isDirected()) {
+			return g;
+		} else if (g instanceof IndexGraph) {
+			return (Graph<V, E>) new UndirectedViewIndex((IndexGraph) g);
+		} else if (g instanceof IntGraph) {
+			return (Graph<V, E>) new UndirectedViewInt((IntGraph) g);
+		} else {
+			return new UndirectedView<>(g);
 		}
 	}
 

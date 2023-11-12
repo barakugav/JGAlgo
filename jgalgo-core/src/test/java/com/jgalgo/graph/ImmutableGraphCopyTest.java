@@ -349,7 +349,6 @@ public class ImmutableGraphCopyTest extends TestBase {
 		}
 	}
 
-	@SuppressWarnings("boxing")
 	@Test
 	public void testGraphCapabilities() {
 		for (boolean directed : BooleanList.of(false, true)) {
@@ -358,9 +357,9 @@ public class ImmutableGraphCopyTest extends TestBase {
 				IntGraph gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				IntGraph gImmutable = gOrig.immutableCopy();
 
-				assertEquals(gOrig.isDirected(), gImmutable.isDirected());
-				assertEquals(gOrig.isAllowSelfEdges(), gImmutable.isAllowSelfEdges());
-				assertEquals(gOrig.isAllowParallelEdges(), gImmutable.isAllowParallelEdges());
+				assertEqualsBool(gOrig.isDirected(), gImmutable.isDirected());
+				assertEqualsBool(gOrig.isAllowSelfEdges(), gImmutable.isAllowSelfEdges());
+				assertEqualsBool(gOrig.isAllowParallelEdges(), gImmutable.isAllowParallelEdges());
 			}
 		}
 	}

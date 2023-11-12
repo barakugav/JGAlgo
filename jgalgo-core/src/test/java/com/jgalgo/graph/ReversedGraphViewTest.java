@@ -592,7 +592,6 @@ public class ReversedGraphViewTest extends TestBase {
 		}
 	}
 
-	@SuppressWarnings("boxing")
 	@Test
 	public void testGraphCapabilities() {
 		for (boolean directed : BooleanList.of(false, true)) {
@@ -602,9 +601,9 @@ public class ReversedGraphViewTest extends TestBase {
 				for (boolean index : BooleanList.of(false, true)) {
 					Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 					Graph<Integer, Integer> gRev = index ? gRev0.indexGraph() : gRev0;
-					assertEquals(gOrig.isAllowParallelEdges(), gRev.isAllowParallelEdges());
-					assertEquals(gOrig.isAllowSelfEdges(), gRev.isAllowSelfEdges());
-					assertEquals(gOrig.isDirected(), gRev.isDirected());
+					assertEqualsBool(gOrig.isAllowParallelEdges(), gRev.isAllowParallelEdges());
+					assertEqualsBool(gOrig.isAllowSelfEdges(), gRev.isAllowSelfEdges());
+					assertEqualsBool(gOrig.isDirected(), gRev.isDirected());
 				}
 			}
 		}

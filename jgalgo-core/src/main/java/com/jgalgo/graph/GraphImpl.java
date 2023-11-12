@@ -257,15 +257,13 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 		@SuppressWarnings("unchecked")
 		@Override
 		public boolean remove(Object edge) {
-			int eIdx = eiMap.idToIndex((E) edge);
-			return set.remove(eIdx);
+			return set.remove(eiMap.idToIndexIfExist((E) edge));
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public boolean contains(Object edge) {
-			int eIdx = eiMap.idToIndex((E) edge);
-			return set.contains(eIdx);
+			return set.contains(eiMap.idToIndexIfExist((E) edge));
 		}
 
 		@Override

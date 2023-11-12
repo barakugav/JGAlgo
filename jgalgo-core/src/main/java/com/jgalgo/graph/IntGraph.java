@@ -515,6 +515,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 		return (IntGraph) Graph.super.reverseView();
 	}
 
+	@Override
+	default IntGraph undirectedView() {
+		return (IntGraph) Graph.super.undirectedView();
+	}
+
 	/**
 	 * {@inheritDoc}
 	 *

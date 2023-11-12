@@ -418,6 +418,11 @@ public interface IndexGraph extends IntGraph {
 		return (IndexGraph) IntGraph.super.reverseView();
 	}
 
+	@Override
+	default IndexGraph undirectedView() {
+		return (IndexGraph) IntGraph.super.undirectedView();
+	}
+
 	/**
 	 * Create a new undirected empty index graph.
 	 *

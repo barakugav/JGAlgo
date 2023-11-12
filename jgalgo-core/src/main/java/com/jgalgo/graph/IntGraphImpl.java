@@ -336,14 +336,12 @@ abstract class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGr
 
 		@Override
 		public boolean remove(int edge) {
-			int eIdx = eiMap.idToIndex(edge);
-			return set.remove(eIdx);
+			return set.remove(eiMap.idToIndexIfExist(edge));
 		}
 
 		@Override
 		public boolean contains(int edge) {
-			int eIdx = eiMap.idToIndex(edge);
-			return set.contains(eIdx);
+			return set.contains(eiMap.idToIndexIfExist(edge));
 		}
 
 		@Override
