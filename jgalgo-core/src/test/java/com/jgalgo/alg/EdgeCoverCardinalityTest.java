@@ -21,9 +21,21 @@ import com.jgalgo.internal.util.TestBase;
 public class EdgeCoverCardinalityTest extends TestBase {
 
 	@Test
-	public void testRandGraphs() {
+	public void testRandGraphsUndirected() {
 		final long seed = 0x1e30267ee5e7daebL;
-		EdgeCoverTestUtils.testRandGraphsCardinality(new EdgeCoverCardinality(), seed);
+		EdgeCoverTestUtils.testRandGraphs(new EdgeCoverCardinality(), false, false, seed);
+	}
+
+	@Test
+	public void testRandGraphsDirected() {
+		final long seed = 0xae0951d73b6c66c2L;
+		EdgeCoverTestUtils.testRandGraphs(new EdgeCoverCardinality(), true, false, seed);
+	}
+
+	@Test
+	public void testNoValidCover() {
+		final long seed = 0xd1b695f92a470527L;
+		EdgeCoverTestUtils.testNoValidCover(new EdgeCoverCardinality(), seed);
 	}
 
 }

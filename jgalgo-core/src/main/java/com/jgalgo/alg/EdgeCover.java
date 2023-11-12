@@ -22,6 +22,7 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
@@ -91,7 +92,7 @@ public interface EdgeCover {
 		Bitmap coverEdges = new Bitmap(m);
 		for (int e : edges0) {
 			if (!ig.edges().contains(e))
-				throw new IllegalArgumentException("invalid edge index " + e);
+				throw NoSuchEdgeException.ofIndex(e);
 			if (coverEdges.get(e))
 				throw new IllegalArgumentException("edge with index " + e + " is included more than once in the cover");
 			coverEdges.set(e);

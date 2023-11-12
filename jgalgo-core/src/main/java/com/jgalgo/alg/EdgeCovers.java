@@ -27,6 +27,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 class EdgeCovers {
 
+	private EdgeCovers() {}
+
 	abstract static class AbstractImpl implements EdgeCover {
 
 		@SuppressWarnings("unchecked")

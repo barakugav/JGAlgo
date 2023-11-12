@@ -71,10 +71,6 @@ class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 					minAdjacentEdge[v] = e;
 				}
 			}
-			for (int v = 0; v < n; v++)
-				if (minAdjacentEdge[v] == -1)
-					throw new IllegalArgumentException(
-							"no edge cover exists, vertex with index " + v + " has no edges");
 			IWeightFunctionInt w2Int =
 					e -> e < vvEdgeThreshold ? wInt.weightInt(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];
 			w2 = w2Int;
@@ -94,13 +90,12 @@ class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 					minAdjacentEdge[v] = e;
 				}
 			}
-			for (int v = 0; v < n; v++)
-				if (minAdjacentEdge[v] == -1)
-					throw new IllegalArgumentException(
-							"no edge cover exists, vertex with index " + v + " has no edges");
 			IWeightFunction w0 = w;
 			w2 = e -> e < vvEdgeThreshold ? w0.weight(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];
 		}
+		for (int v = 0; v < n; v++)
+			if (minAdjacentEdge[v] == -1)
+				throw new IllegalArgumentException("no edge cover exists, vertex with index " + v + " has no edges");
 
 		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(g2, w2);
 		Bitmap cover = new Bitmap(m);

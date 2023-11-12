@@ -21,9 +21,33 @@ import com.jgalgo.internal.util.TestBase;
 public class EdgeCoverWeightedTest extends TestBase {
 
 	@Test
-	public void testRandGraphs() {
+	public void testRandGraphsUndirectedUnweighted() {
+		final long seed = 0x65ce7bdd4feebe24L;
+		EdgeCoverTestUtils.testRandGraphs(new EdgeCoverWeighted(), false, false, seed);
+	}
+
+	@Test
+	public void testRandGraphsDirectedUnweighted() {
+		final long seed = 0xd7950706843b1ed8L;
+		EdgeCoverTestUtils.testRandGraphs(new EdgeCoverWeighted(), true, false, seed);
+	}
+
+	@Test
+	public void testRandGraphsUndirectedWeighted() {
 		final long seed = 0xb9ad2d3aaa77ed58L;
-		EdgeCoverTestUtils.testRandGraphsWeighted(new EdgeCoverWeighted(), seed);
+		EdgeCoverTestUtils.testRandGraphs(new EdgeCoverWeighted(), false, true, seed);
+	}
+
+	@Test
+	public void testRandGraphsDirectedWeighted() {
+		final long seed = 0x29b61db44248c0f2L;
+		EdgeCoverTestUtils.testRandGraphs(new EdgeCoverWeighted(), true, true, seed);
+	}
+
+	@Test
+	public void testNoValidCover() {
+		final long seed = 0x2708750bcce981f0L;
+		EdgeCoverTestUtils.testNoValidCover(new EdgeCoverWeighted(), seed);
 	}
 
 }

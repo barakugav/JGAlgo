@@ -16,34 +16,33 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.ToDoubleFunction;
+import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
-import com.jgalgo.internal.util.RandomIntUnique;
-import com.jgalgo.internal.util.TestUtils.PhasedTester;
-import com.jgalgo.internal.util.TestUtils.SeedGenerator;
+import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
-class EdgeCoverTestUtils {
+class EdgeCoverTestUtils extends TestBase {
 
-	static void testRandGraphsCardinality(EdgeCover algo, long seed) {
-		testRandGraphs(algo, seed, false);
-	}
-
-	static void testRandGraphsWeighted(EdgeCover algo, long seed) {
-		testRandGraphs(algo, seed, true);
-	}
-
-	private static void testRandGraphs(EdgeCover algo, long seed, boolean weighted) {
+	static void testRandGraphs(EdgeCover algo, boolean directed, boolean weighted, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(4, 6).repeat(64);
 		tester.addPhase().withArgs(8, 12).repeat(64);
@@ -51,24 +50,19 @@ class EdgeCoverTestUtils {
 		tester.addPhase().withArgs(64, 256).repeat(16);
 		tester.addPhase().withArgs(1024, 2048).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(true).build();
+			g = maybeIndexGraph(g, rand);
 
-			RandomIntUnique rand = new RandomIntUnique(0, m * 16, seedGen.nextSeed());
-			WeightsInt<Integer> weights;
-			if (weighted) {
-				weights = g.addEdgesWeights("weight", int.class);
-				for (Integer e : g.edges())
-					weights.set(e, rand.next());
-			} else {
-				weights = null;
-			}
+			WeightFunction<Integer> w = null;
+			if (weighted)
+				w = GraphsTestUtils.assignRandWeightsMaybeInt(g, 0, m * 16, seedGen.nextSeed());
 
-			EdgeCoverTestUtils.testEdgeCover(g, weights, algo);
+			EdgeCoverTestUtils.testEdgeCover(g, w, algo);
 		});
 	}
 
-	static <V, E> void testEdgeCover(Graph<V, E> g, WeightFunctionInt<E> w, EdgeCover algo) {
+	static <V, E> void testEdgeCover(Graph<V, E> g, WeightFunction<E> w, EdgeCover algo) {
 		Set<E> ec = algo.computeMinimumEdgeCover(g, w);
 
 		for (V v : g.vertices()) {
@@ -105,6 +99,82 @@ class EdgeCoverTestUtils {
 			assertNotNull(bestCover);
 			assertEquals(coverWeight.applyAsDouble(bestCover), WeightFunction.weightSum(w, ec));
 		}
+	}
+
+	static void testNoValidCover(EdgeCover algo, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8, 12).repeat(4);
+		tester.addPhase().withArgs(8, 16).repeat(4);
+		tester.addPhase().withArgs(64, 256).repeat(4);
+		tester.run((n, m) -> {
+			boolean directed = rand.nextBoolean();
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
+					.parallelEdges(true).selfEdges(true).cycles(true).connected(true).build();
+
+			/* remove all edges of a random vertex, no edge cover will be able to cover it */
+			g.removeEdgesOf(Graphs.randVertex(g, rand));
+
+			assertThrows(IllegalArgumentException.class, () -> algo.computeMinimumEdgeCover(g, null));
+		});
+	}
+
+	@Test
+	public void isCoverNonExistingEdge() {
+		IntGraph g = IntGraph.newDirected();
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addEdge(1, 2, 1);
+
+		assertThrows(NoSuchEdgeException.class, () -> EdgeCover.isCover(g, IntSet.of(2)));
+		assertThrows(NoSuchEdgeException.class, () -> EdgeCover.isCover(g.indexGraph(), IntSet.of(57)));
+	}
+
+	@Test
+	public void isCoverDuplicatedEdge() {
+		IntGraph g = IntGraph.newDirected();
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addEdge(1, 2, 1);
+
+		assertThrows(IllegalArgumentException.class, () -> EdgeCover.isCover(g, IntList.of(1, 1)));
+	}
+
+	@Test
+	public void isCoverNegativeDirected() {
+		IntGraph g = IntGraph.newDirected();
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addVertex(3);
+		g.addEdge(1, 2, 1);
+
+		assertFalse(EdgeCover.isCover(g, IntSet.of(1)));
+	}
+
+	@Test
+	public void isCoverNegativeUndirected() {
+		IntGraph g = IntGraph.newUndirected();
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addVertex(3);
+		g.addEdge(1, 2, 1);
+
+		assertFalse(EdgeCover.isCover(g, IntSet.of(1)));
+	}
+
+	@Test
+	public void defaultAlgo() {
+		EdgeCover algo = EdgeCover.newInstance();
+
+		IntGraph g = IntGraph.newUndirected();
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addEdge(1, 2, 1);
+
+		assertTrue(EdgeCover.isCover(g, algo.computeMinimumEdgeCover(g, null)));
+		assertTrue(EdgeCover.isCover(g, algo.computeMinimumEdgeCover(g, WeightFunction.cardinalityWeightFunction())));
+		assertTrue(EdgeCover.isCover(g, algo.computeMinimumEdgeCover(g, e -> 57)));
 	}
 
 }
