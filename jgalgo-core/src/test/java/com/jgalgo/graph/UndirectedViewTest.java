@@ -566,7 +566,7 @@ public class UndirectedViewTest extends TestBase {
 
 	@Test
 	public void testVerticesWeights() {
-		final long seed = 0;
+		final long seed = 0xf8c0980b446e4bfdL;
 		Random rand = new Random(seed);
 		int keyCounter = 0;
 		for (boolean intGraph : BooleanList.of(false, true)) {
@@ -602,7 +602,7 @@ public class UndirectedViewTest extends TestBase {
 
 	@Test
 	public void testEdgesWeights() {
-		final long seed = 0;
+		final long seed = 0xc017705f906caff1L;
 		Random rand = new Random(seed);
 		int keyCounter = 0;
 		for (boolean intGraph : BooleanList.of(false, true)) {

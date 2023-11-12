@@ -83,6 +83,8 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	 */
 	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunctionInt w, int source,
 			int maxDistance) {
+		if (w == null)
+			w = IWeightFunction.CardinalityWeightFunction;
 		DialHeap heap = new DialHeap(g.vertices().size(), maxDistance);
 		heap.distances[source] = 0;
 		int[] backtrack = new int[g.vertices().size()];

@@ -34,6 +34,8 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 
 class ShortestPathSingleSourceUtils {
 
+	private ShortestPathSingleSourceUtils() {}
+
 	abstract static class AbstractImpl implements ShortestPathSingleSource {
 
 		@SuppressWarnings("unchecked")

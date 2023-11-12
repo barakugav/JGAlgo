@@ -18,17 +18,23 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
+import org.junit.jupiter.api.Test;
+import com.jgalgo.gen.CompleteGraphGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
-import com.jgalgo.internal.util.TestUtils;
+import com.jgalgo.internal.util.Range;
+import com.jgalgo.internal.util.TestBase;
 
-public class ShortestPathSingleSourceTestUtils extends TestUtils {
+public class ShortestPathSingleSourceTestUtils extends TestBase {
 
 	private ShortestPathSingleSourceTestUtils() {}
 
@@ -152,10 +158,14 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 			} else {
 				assertTrue(expectedRes.foundNegativeCycle(), "found non existing negative cycle");
 			}
+			V v = g.vertices().iterator().next();
+			assertThrows(IllegalStateException.class, () -> result.distance(v));
+			assertThrows(IllegalStateException.class, () -> result.getPath(v));
 			return;
 		}
 		assertFalse(expectedRes.foundNegativeCycle(),
 				() -> "failed to find negative cycle: " + expectedRes.getNegativeCycle());
+		assertThrows(IllegalStateException.class, () -> result.getNegativeCycle());
 
 		for (V v : g.vertices()) {
 			double expectedDistance = expectedRes.distance(v);
@@ -171,6 +181,70 @@ public class ShortestPathSingleSourceTestUtils extends TestUtils {
 						"Distance to vertex " + v + " is not infinity but path is null");
 			}
 		}
+	}
+
+	@Test
+	public void testBuilderSetOption() {
+		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.newBuilder();
+		assertNotNull(builder.build());
+
+		assertThrows(IllegalArgumentException.class, () -> builder.setOption("non-existing-option", "value"));
+
+		builder.setOption("impl", "cardinality");
+		assertEquals(ShortestPathSingleSourceCardinality.class, builder.build().getClass());
+		builder.setOption("impl", "dag");
+		assertEquals(ShortestPathSingleSourceDag.class, builder.build().getClass());
+		builder.setOption("impl", "dijkstra");
+		assertEquals(ShortestPathSingleSourceDijkstra.class, builder.build().getClass());
+		builder.setOption("impl", "dial");
+		assertEquals(ShortestPathSingleSourceDial.class, builder.build().getClass());
+		builder.setOption("impl", "bellman-ford");
+		assertEquals(ShortestPathSingleSourceBellmanFord.class, builder.build().getClass());
+		builder.setOption("impl", "goldberg");
+		assertEquals(ShortestPathSingleSourceGoldberg.class, builder.build().getClass());
+
+		builder.setOption("impl", "non-existing-imp");
+		assertThrows(IllegalArgumentException.class, () -> builder.build());
+	}
+
+	@Test
+	public void testBuilderNegInt() {
+		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.newBuilder();
+		builder.setNegativeWeights(false);
+		builder.setIntWeights(false);
+		assertEquals(ShortestPathSingleSourceDijkstra.class, builder.build().getClass());
+
+		builder.setNegativeWeights(true);
+		builder.setIntWeights(true);
+		assertEquals(ShortestPathSingleSourceGoldberg.class, builder.build().getClass());
+
+		builder.setNegativeWeights(true);
+		builder.setIntWeights(false);
+		assertEquals(ShortestPathSingleSourceBellmanFord.class, builder.build().getClass());
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void testBuilderMaxDistance() {
+		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.newBuilder();
+		builder.setIntWeights(true);
+		builder.setMaxDistance(10);
+
+		Graph<Integer, Integer> g;
+		ShortestPathSingleSource.Result<Integer, Integer> res;
+
+		CompleteGraphGenerator<Integer, Integer> gen = CompleteGraphGenerator.newInstance();
+		gen.setVertices(Range.of(25));
+		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		g = gen.generate();
+		res = builder.build().computeShortestPaths(g, null, 0);
+		validateResult(g, null, 0, res, new ShortestPathSingleSourceDijkstra());
+
+		gen.setVertices(Range.of(2));
+		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		g = gen.generate();
+		res = builder.build().computeShortestPaths(g, null, 0);
+		validateResult(g, null, 0, res, new ShortestPathSingleSourceDijkstra());
 	}
 
 }
