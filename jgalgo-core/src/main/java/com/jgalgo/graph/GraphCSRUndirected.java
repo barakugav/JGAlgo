@@ -40,7 +40,7 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 		return new EdgeSetIn(target);
 	}
 
-	private class EdgeSetOut extends IntGraphBase.EdgeSetOutUndirected {
+	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutUndirected {
 
 		final int begin, end;
 
@@ -66,7 +66,7 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 		}
 	}
 
-	class EdgeSetIn extends IntGraphBase.EdgeSetInUndirected {
+	class EdgeSetIn extends IndexGraphBase.EdgeSetInUndirected {
 
 		final int begin, end;
 

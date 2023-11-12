@@ -16,9 +16,10 @@
 package com.jgalgo.graph;
 
 import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntIterables;
 
-abstract class IndexGraphBase extends IntGraphBase implements IndexGraph {
+abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements IndexGraph {
 
 	private final boolean isDirected;
 	private final boolean isAllowSelfEdges;
@@ -68,6 +69,94 @@ abstract class IndexGraphBase extends IntGraphBase implements IndexGraph {
 		Assertions.Graphs.checkVertex(target, vertices().size());
 		return isDirected() ? new EdgeSetSourceTargetDirected(source, target)
 				: new EdgeSetSourceTargetUndirected(source, target);
+	}
+
+	abstract class EdgeSetAbstract extends AbstractIntSet implements IEdgeSet {
+
+		@Override
+		public boolean remove(int edge) {
+			if (!contains(edge))
+				return false;
+			removeEdge(edge);
+			return true;
+		}
+
+	}
+
+	abstract class EdgeSetOutUndirected extends EdgeSetAbstract {
+
+		final int source;
+
+		EdgeSetOutUndirected(int source) {
+			this.source = source;
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return source == edgeSource(edge) || source == edgeTarget(edge);
+		}
+
+		@Override
+		public void clear() {
+			removeOutEdgesOf(source);
+		}
+	}
+
+	abstract class EdgeSetInUndirected extends EdgeSetAbstract {
+
+		final int target;
+
+		EdgeSetInUndirected(int target) {
+			this.target = target;
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return target == edgeSource(edge) || target == edgeTarget(edge);
+		}
+
+		@Override
+		public void clear() {
+			removeInEdgesOf(target);
+		}
+	}
+
+	abstract class EdgeSetOutDirected extends EdgeSetAbstract {
+
+		final int source;
+
+		EdgeSetOutDirected(int source) {
+			this.source = source;
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return source == edgeSource(edge);
+		}
+
+		@Override
+		public void clear() {
+			removeOutEdgesOf(source);
+		}
+	}
+
+	abstract class EdgeSetInDirected extends EdgeSetAbstract {
+
+		final int target;
+
+		EdgeSetInDirected(int target) {
+			this.target = target;
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return target == edgeTarget(edge);
+		}
+
+		@Override
+		public void clear() {
+			removeInEdgesOf(target);
+		}
 	}
 
 	private abstract class EdgeSetSourceTarget extends EdgeSetAbstract {

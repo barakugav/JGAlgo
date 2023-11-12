@@ -173,7 +173,7 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		super.clearEdges();
 	}
 
-	private class EdgeSetOut extends IntGraphBase.EdgeSetOutUndirected {
+	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutUndirected {
 		EdgeSetOut(int source) {
 			super(source);
 		}
@@ -189,7 +189,7 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		}
 	}
 
-	private class EdgeSetIn extends IntGraphBase.EdgeSetInUndirected {
+	private class EdgeSetIn extends IndexGraphBase.EdgeSetInUndirected {
 		EdgeSetIn(int target) {
 			super(target);
 		}

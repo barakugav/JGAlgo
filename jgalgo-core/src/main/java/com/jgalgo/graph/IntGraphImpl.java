@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
-abstract class IntGraphImpl extends IntGraphBase {
+abstract class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 
 	final IndexGraph indexGraph;
 	final IdIdxMapImpl viMap;

@@ -98,7 +98,7 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		return new EdgeSetIn(target);
 	}
 
-	private class EdgeSetOut extends IntGraphBase.EdgeSetOutDirected {
+	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutDirected {
 
 		final int begin, end;
 
@@ -124,7 +124,7 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		}
 	}
 
-	private class EdgeSetIn extends IntGraphBase.EdgeSetInDirected {
+	private class EdgeSetIn extends IndexGraphBase.EdgeSetInDirected {
 
 		final int begin, end;
 

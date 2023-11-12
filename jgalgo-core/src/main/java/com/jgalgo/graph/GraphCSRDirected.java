@@ -57,7 +57,7 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 		return new EdgeSetIn(target);
 	}
 
-	private class EdgeSetOut extends IntGraphBase.EdgeSetOutDirected {
+	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutDirected {
 
 		final int begin, end;
 
@@ -83,7 +83,7 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 		}
 	}
 
-	class EdgeSetIn extends IntGraphBase.EdgeSetInDirected {
+	class EdgeSetIn extends IndexGraphBase.EdgeSetInDirected {
 
 		final int begin, end;
 

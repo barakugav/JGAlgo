@@ -273,7 +273,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		super.clearEdges();
 	}
 
-	private class EdgeSetOut extends IntGraphBase.EdgeSetOutDirected {
+	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutDirected {
 		EdgeSetOut(int source) {
 			super(source);
 		}
@@ -289,7 +289,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		}
 	}
 
-	private class EdgeSetIn extends IntGraphBase.EdgeSetInDirected {
+	private class EdgeSetIn extends IndexGraphBase.EdgeSetInDirected {
 		EdgeSetIn(int target) {
 			super(target);
 		}

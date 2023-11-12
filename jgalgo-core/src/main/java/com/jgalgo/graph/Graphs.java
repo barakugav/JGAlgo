@@ -20,12 +20,15 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.ObjIntConsumer;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 /**
@@ -198,7 +201,8 @@ public class Graphs {
 
 	}
 
-	private abstract static class ImmutableIntGraphViewBase extends IntGraphBase implements ImmutableGraph {
+	private abstract static class ImmutableIntGraphViewBase extends GraphBase<Integer, Integer>
+			implements IntGraph, ImmutableGraph {
 
 		private final IntGraph graph;
 
@@ -708,10 +712,9 @@ public class Graphs {
 		public IndexIdMap<E> indexGraphEdgesMap() {
 			return graph.indexGraphEdgesMap();
 		}
-
 	}
 
-	private abstract static class ReverseIntGraphBase extends IntGraphBase {
+	private abstract static class ReverseIntGraphBase extends GraphBase<Integer, Integer> implements IntGraph {
 
 		private final IntGraph graph;
 
@@ -1631,6 +1634,270 @@ public class Graphs {
 	 */
 	public static int randEdge(IntGraph g, Random rand) {
 		return g.indexGraphEdgesMap().indexToIdInt(rand.nextInt(g.edges().size()));
+	}
+
+	@SuppressWarnings("unchecked")
+	static boolean isEquals(Graph<?, ?> g1, Graph<?, ?> g2) {
+		if (g1 == g2)
+			return true;
+		if (g1 instanceof IntGraph && g2 instanceof IntGraph)
+			return isEquals((IntGraph) g1, (IntGraph) g2);
+
+		if (g1.isDirected() != g2.isDirected())
+			return false;
+		if (!g1.vertices().equals(g2.vertices()))
+			return false;
+		if (!g1.edges().equals(g2.edges()))
+			return false;
+		Graph<Object, Object> g10 = (Graph<Object, Object>) g1, g20 = (Graph<Object, Object>) g2;
+		return isEquals0(g10, g20);
+	}
+
+	private static <V, E> boolean isEquals0(Graph<V, E> g1, Graph<V, E> g2) {
+		if (g1.isDirected()) {
+			for (E e : g1.edges())
+				if (!g1.edgeSource(e).equals(g2.edgeSource(e)) || !g1.edgeTarget(e).equals(g2.edgeTarget(e)))
+					return false;
+		} else {
+			for (E e : g1.edges()) {
+				V s1 = g1.edgeSource(e), t1 = g1.edgeTarget(e);
+				V s2 = g2.edgeSource(e), t2 = g2.edgeTarget(e);
+				if (!(s1.equals(s2) && t1.equals(t2)) && !(s1.equals(t2) && t1.equals(s2)))
+					return false;
+			}
+		}
+
+		if (!g1.getVerticesWeightsKeys().equals(g2.getVerticesWeightsKeys()))
+			return false;
+		for (String key : g1.getVerticesWeightsKeys()) {
+			Weights<V, ?> w1 = g1.getVerticesWeights(key), w2 = g2.getVerticesWeights(key);
+			if (!WeightsImpl.isEqual(g1.vertices(), w1, w2))
+				return false;
+		}
+		if (!g1.getEdgesWeightsKeys().equals(g2.getEdgesWeightsKeys()))
+			return false;
+		for (String key : g1.getEdgesWeightsKeys()) {
+			Weights<E, ?> w1 = g1.getEdgesWeights(key), w2 = g2.getEdgesWeights(key);
+			if (!WeightsImpl.isEqual(g1.edges(), w1, w2))
+				return false;
+		}
+
+		return true;
+	}
+
+	private static boolean isEquals(IntGraph g1, IntGraph g2) {
+		if (g1.isDirected() != g2.isDirected())
+			return false;
+		if (!g1.vertices().equals(g2.vertices()))
+			return false;
+		if (!g1.edges().equals(g2.edges()))
+			return false;
+		if (g1.isDirected()) {
+			for (int e : g1.edges())
+				if (g1.edgeSource(e) != g2.edgeSource(e) || g1.edgeTarget(e) != g2.edgeTarget(e))
+					return false;
+		} else {
+			for (int e : g1.edges()) {
+				int s1 = g1.edgeSource(e), t1 = g1.edgeTarget(e);
+				int s2 = g2.edgeSource(e), t2 = g2.edgeTarget(e);
+				if (!(s1 == s2 && t1 == t2) && !(s1 == t2 && t1 == s2))
+					return false;
+			}
+		}
+
+		if (!g1.getVerticesWeightsKeys().equals(g2.getVerticesWeightsKeys()))
+			return false;
+		for (String key : g1.getVerticesWeightsKeys()) {
+			IWeights<?> w1 = g1.getVerticesIWeights(key), w2 = g2.getVerticesIWeights(key);
+			if (!WeightsImpl.isEqual(g1.vertices(), w1, w2))
+				return false;
+		}
+		if (!g1.getEdgesWeightsKeys().equals(g2.getEdgesWeightsKeys()))
+			return false;
+		for (String key : g1.getEdgesWeightsKeys()) {
+			IWeights<?> w1 = g1.getEdgesIWeights(key), w2 = g2.getEdgesIWeights(key);
+			if (!WeightsImpl.isEqual(g1.edges(), w1, w2))
+				return false;
+		}
+
+		return true;
+	}
+
+	static <V, E> int hashCode(Graph<V, E> g) {
+		if (g instanceof IntGraph)
+			return hashCode((IntGraph) g);
+
+		int h = Boolean.hashCode(g.isDirected());
+		h += g.vertices().hashCode();
+		h += g.edges().hashCode();
+		if (g.isDirected()) {
+			for (E e : g.edges())
+				h += g.edgeSource(e).hashCode() + 31 * g.edgeTarget(e).hashCode();
+		} else {
+			for (E e : g.edges())
+				h += g.edgeSource(e).hashCode() + g.edgeTarget(e).hashCode();
+		}
+		for (String key : g.getVerticesWeightsKeys())
+			h += WeightsImpl.hashCode(g.vertices(), g.getVerticesWeights(key));
+		for (String key : g.getEdgesWeightsKeys())
+			h += WeightsImpl.hashCode(g.edges(), g.getEdgesWeights(key));
+		return h;
+	}
+
+	private static int hashCode(IntGraph g) {
+		int h = Boolean.hashCode(g.isDirected());
+		h += g.vertices().hashCode();
+		h += g.edges().hashCode();
+		if (g.isDirected()) {
+			for (int e : g.edges())
+				h += g.edgeSource(e) + 31 * g.edgeTarget(e);
+		} else {
+			for (int e : g.edges())
+				h += g.edgeSource(e) + g.edgeTarget(e);
+		}
+		for (String key : g.getVerticesWeightsKeys())
+			h += WeightsImpl.hashCode(g.vertices(), g.getVerticesIWeights(key));
+		for (String key : g.getEdgesWeightsKeys())
+			h += WeightsImpl.hashCode(g.edges(), g.getEdgesIWeights(key));
+		return h;
+	}
+
+	static <V, E> String toString(Graph<V, E> g) {
+		if (g instanceof IntGraph)
+			return toString((IntGraph) g);
+
+		StringBuilder s = new StringBuilder();
+		s.append('{');
+
+		Set<String> verticesWeightsKeys = g.getVerticesWeightsKeys();
+		Collection<Weights<V, ?>> verticesWeights = new ObjectArrayList<>(verticesWeightsKeys.size());
+		for (String key : verticesWeightsKeys)
+			verticesWeights.add(g.getVerticesWeights(key));
+
+		Set<String> edgesWeightsKeys = g.getEdgesWeightsKeys();
+		Collection<Weights<E, ?>> edgesWeights = new ObjectArrayList<>(edgesWeightsKeys.size());
+		for (String key : edgesWeightsKeys)
+			edgesWeights.add(g.getEdgesWeights(key));
+
+		BiConsumer<Collection<Weights<V, ?>>, V> appendVertexWeights = (weights, vertex) -> {
+			s.append('[');
+			boolean firstData = true;
+			for (Weights<V, ?> weight : weights) {
+				if (firstData) {
+					firstData = false;
+				} else {
+					s.append(", ");
+				}
+				s.append(weight.getAsObj(vertex));
+			}
+			s.append(']');
+		};
+		BiConsumer<Collection<Weights<E, ?>>, E> appendEdgeWeights = (weights, edge) -> {
+			s.append('[');
+			boolean firstData = true;
+			for (Weights<E, ?> weight : weights) {
+				if (firstData) {
+					firstData = false;
+				} else {
+					s.append(", ");
+				}
+				s.append(weight.getAsObj(edge));
+			}
+			s.append(']');
+		};
+
+		boolean firstVertex = true;
+		for (V u : g.vertices()) {
+			if (firstVertex) {
+				firstVertex = false;
+			} else {
+				s.append(", ");
+			}
+			s.append('v').append(u);
+			if (!verticesWeights.isEmpty())
+				appendVertexWeights.accept(verticesWeights, u);
+
+			s.append(": [");
+			boolean firstEdge = true;
+			for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				E e = eit.next();
+				V v = eit.target();
+				if (firstEdge)
+					firstEdge = false;
+				else
+					s.append(", ");
+				s.append(e).append('(').append(u).append(", ").append(v);
+				if (!edgesWeights.isEmpty()) {
+					s.append(", ");
+					appendEdgeWeights.accept(edgesWeights, e);
+				}
+				s.append(')');
+			}
+			s.append(']');
+		}
+		s.append('}');
+		return s.toString();
+	}
+
+	private static String toString(IntGraph g) {
+		StringBuilder s = new StringBuilder();
+		s.append('{');
+
+		Set<String> verticesWeightsKeys = g.getVerticesWeightsKeys();
+		Collection<IWeights<?>> verticesWeights = new ObjectArrayList<>(verticesWeightsKeys.size());
+		for (String key : verticesWeightsKeys)
+			verticesWeights.add(g.getVerticesIWeights(key));
+
+		Set<String> edgesWeightsKeys = g.getEdgesWeightsKeys();
+		Collection<IWeights<?>> edgesWeights = new ObjectArrayList<>(edgesWeightsKeys.size());
+		for (String key : edgesWeightsKeys)
+			edgesWeights.add(g.getEdgesIWeights(key));
+
+		ObjIntConsumer<Collection<IWeights<?>>> appendWeights = (weights, elm) -> {
+			s.append('[');
+			boolean firstData = true;
+			for (IWeights<?> weight : weights) {
+				if (firstData) {
+					firstData = false;
+				} else {
+					s.append(", ");
+				}
+				s.append(weight.getAsObj(elm));
+			}
+			s.append(']');
+		};
+
+		boolean firstVertex = true;
+		for (int u : g.vertices()) {
+			if (firstVertex) {
+				firstVertex = false;
+			} else {
+				s.append(", ");
+			}
+			s.append('v').append(u);
+			if (!verticesWeights.isEmpty())
+				appendWeights.accept(verticesWeights, u);
+
+			s.append(": [");
+			boolean firstEdge = true;
+			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				int e = eit.nextInt();
+				int v = eit.targetInt();
+				if (firstEdge)
+					firstEdge = false;
+				else
+					s.append(", ");
+				s.append(e).append('(').append(u).append(", ").append(v);
+				if (!edgesWeights.isEmpty()) {
+					s.append(", ");
+					appendWeights.accept(edgesWeights, e);
+				}
+				s.append(')');
+			}
+			s.append(']');
+		}
+		s.append('}');
+		return s.toString();
 	}
 
 }

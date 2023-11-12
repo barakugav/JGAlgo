@@ -260,7 +260,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		// edgesIn.clear();
 	}
 
-	private class EdgeSetOut extends IntGraphBase.EdgeSetOutDirected {
+	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutDirected {
 		EdgeSetOut(int source) {
 			super(source);
 		}
@@ -281,7 +281,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		}
 	}
 
-	private class EdgeSetIn extends IntGraphBase.EdgeSetInDirected {
+	private class EdgeSetIn extends IndexGraphBase.EdgeSetInDirected {
 		EdgeSetIn(int target) {
 			super(target);
 		}

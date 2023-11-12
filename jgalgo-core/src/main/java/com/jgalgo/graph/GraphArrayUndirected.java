@@ -226,7 +226,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		// edges.clear();
 	}
 
-	private class EdgeSetOut extends IntGraphBase.EdgeSetOutUndirected {
+	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutUndirected {
 		EdgeSetOut(int source) {
 			super(source);
 		}
@@ -247,7 +247,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		}
 	}
 
-	private class EdgeSetIn extends IntGraphBase.EdgeSetInUndirected {
+	private class EdgeSetIn extends IndexGraphBase.EdgeSetInUndirected {
 		EdgeSetIn(int target) {
 			super(target);
 		}
