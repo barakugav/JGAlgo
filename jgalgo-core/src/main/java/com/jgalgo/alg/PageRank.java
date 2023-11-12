@@ -71,13 +71,14 @@ class PageRank {
 				double rFactor = randomFactor.getAsDouble();
 
 				for (int v = 0; v < n; v++)
-					transferredScores[v] = scores[v] / outDegree[v];
+					if (outDegree[v] != 0)
+						transferredScores[v] = scores[v] / outDegree[v];
 
 				double maxChange = 0;
 				for (int v = 0; v < n; v++) {
 					double score = 0;
-					for (int num = outDegree[v], eIdx = 0; eIdx < num; eIdx++)
-						score += transferredScores[ng.predecessor(v, eIdx)];
+					for (Predecessors.Iter it = ng.predecessors(v); it.hasNext(); it.advance())
+						score += transferredScores[it.vertex()];
 					score = rFactor + dampingFactor * score;
 					maxChange = Math.max(maxChange, Math.abs(scores[v] - score));
 					scores[v] = score;
@@ -88,20 +89,21 @@ class PageRank {
 
 		} else {
 			double[] weightSum = new double[n];
-			for (int u = 0; u < n; u++)
-				weightSum[u] = w.weightSum(g.outEdges(u));
+			for (int v = 0; v < n; v++)
+				weightSum[v] = w.weightSum(g.outEdges(v));
 
 			for (int iters = 0; iters < iterations; iters++) {
 				double rFactor = randomFactor.getAsDouble();
 
 				for (int v = 0; v < n; v++)
-					transferredScores[v] = scores[v] / weightSum[v];
+					if (!g.outEdges(v).isEmpty())
+						transferredScores[v] = scores[v] / weightSum[v];
 
 				double maxChange = 0;
 				for (int v = 0; v < n; v++) {
 					double score = 0;
-					for (int num = outDegree[v], eIdx = 0; eIdx < num; eIdx++)
-						score += transferredScores[ng.predecessor(v, eIdx)] * ng.edgeWeight(v, eIdx);
+					for (Predecessors.Iter it = ng.predecessors(v); it.hasNext(); it.advance())
+						score += transferredScores[it.vertex()] * it.weight();
 					score = rFactor + dampingFactor * score;
 					maxChange = Math.max(maxChange, Math.abs(scores[v] - score));
 					scores[v] = score;
@@ -117,54 +119,76 @@ class PageRank {
 
 	private static class Predecessors {
 
-		private final int[] neighbors;
-		private final int[] neighborsBegin;
+		private final int[] predecessors;
+		private final int[] predecessorsBegin;
 		private final double[] weights;
 
 		Predecessors(IndexGraph g, IWeightFunction w) {
 			final int n = g.vertices().size();
 			final int m = g.edges().size();
-			neighborsBegin = new int[n + 1];
+			predecessorsBegin = new int[n + 1];
 
 			if (g.isDirected()) {
-				neighbors = new int[m];
+				predecessors = new int[m];
 			} else {
 				int outDegreeSum = 0;
 				for (int u = 0; u < n; u++)
 					outDegreeSum += g.outEdges(u).size();
-				neighbors = new int[outDegreeSum];
+				predecessors = new int[outDegreeSum];
 			}
 
 			if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
 				weights = null;
-				for (int eIdx = 0, u = 0; u < n; u++) {
-					neighborsBegin[u] = eIdx;
-					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				for (int eIdx = 0, v = 0; v < n; v++) {
+					predecessorsBegin[v] = eIdx;
+					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
 						eit.nextInt();
-						neighbors[eIdx++] = eit.targetInt();
+						predecessors[eIdx++] = eit.sourceInt();
 					}
 				}
 			} else {
-				weights = new double[neighbors.length];
-				for (int eIdx = 0, u = 0; u < n; u++) {
-					neighborsBegin[u] = eIdx;
-					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				weights = new double[predecessors.length];
+				for (int eIdx = 0, v = 0; v < n; v++) {
+					predecessorsBegin[v] = eIdx;
+					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
-						neighbors[eIdx] = eit.targetInt();
+						predecessors[eIdx] = eit.sourceInt();
 						weights[eIdx] = w.weight(e);
 						eIdx++;
 					}
 				}
 			}
-			neighborsBegin[n] = neighbors.length;
+			predecessorsBegin[n] = predecessors.length;
 		}
 
-		int predecessor(int source, int edgeIdx) {
-			return neighbors[neighborsBegin[source] + edgeIdx];
+		Predecessors.Iter predecessors(int target) {
+			return new Predecessors.Iter(target);
 		}
 
-		double edgeWeight(int source, int edgeIdx) {
-			return weights[neighborsBegin[source] + edgeIdx];
+		class Iter {
+			private int index;
+			private final int end;
+
+			Iter(int target) {
+				index = predecessorsBegin[target];
+				end = predecessorsBegin[target + 1];
+			}
+
+			boolean hasNext() {
+				return index < end;
+			}
+
+			void advance() {
+				index++;
+			}
+
+			int vertex() {
+				return predecessors[index];
+			}
+
+			double weight() {
+				return weights[index];
+			}
 		}
 
 	}

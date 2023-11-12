@@ -16,19 +16,44 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 
 class PageRankTest extends TestBase {
 
 	@Test
-	public void testRandGraph() {
+	public void testRandGraphsUndirectedWeighted() {
 		final long seed = 0xe573594a68dac687L;
+		testRandGraphs(false, true, seed);
+	}
+
+	@Test
+	public void testRandGraphsUndirectedUnweighted() {
+		final long seed = 0xc665f15fa8309ef5L;
+		testRandGraphs(false, false, seed);
+	}
+
+	@Test
+	public void testRandGraphsDirectedWeighted() {
+		final long seed = 0xa93f3d07843ad7aaL;
+		testRandGraphs(true, true, seed);
+	}
+
+	@Test
+	public void testRandGraphsDirectedUnweighted() {
+		final long seed = 0x532700508b908e89L;
+		testRandGraphs(true, false, seed);
+	}
+
+	private static void testRandGraphs(boolean directed, boolean weighted, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32).repeat(128);
 		tester.addPhase().withArgs(64, 128).repeat(64);
@@ -36,8 +61,13 @@ class PageRankTest extends TestBase {
 		tester.addPhase().withArgs(1024, 4096).repeat(8);
 		tester.addPhase().withArgs(4096, 16384).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
-			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(false)
+					.selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
+
+			WeightFunctionInt<Integer> w = null;
+			if (weighted)
+				w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			testPageRank(g, w);
 		});
 	}
