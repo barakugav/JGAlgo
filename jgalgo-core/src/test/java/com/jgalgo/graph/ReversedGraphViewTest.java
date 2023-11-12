@@ -25,9 +25,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 
 public class ReversedGraphViewTest extends TestBase {
@@ -381,11 +383,25 @@ public class ReversedGraphViewTest extends TestBase {
 				for (boolean index : BooleanList.of(false, true)) {
 					Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 					Graph<Integer, Integer> gRev = index ? gRev0.indexGraph() : gRev0;
-					Integer v = gRev.vertices().iterator().next();
+					Iterator<Integer> vit = gRev.vertices().iterator();
+					Integer v1 = vit.next();
+					Integer v2 = vit.next();
+					Integer v3 = vit.next();
 
-					gRev.removeInEdgesOf(v);
-					assertTrue(gRev.inEdges(v).isEmpty());
-					assertTrue(gOrig.outEdges(v).isEmpty());
+					gRev.removeInEdgesOf(v1);
+					assertTrue(gRev.inEdges(v1).isEmpty());
+					assertTrue(gOrig.outEdges(v1).isEmpty());
+
+					gRev.inEdges(v2).clear();
+					assertTrue(gRev.inEdges(v2).isEmpty());
+					assertTrue(gOrig.outEdges(v2).isEmpty());
+
+					if (!index) {
+						for (Integer e : new IntArrayList(gRev.inEdges(v3)))
+							gRev.inEdges(v3).remove(e);
+						assertTrue(gRev.inEdges(v3).isEmpty());
+						assertTrue(gOrig.outEdges(v3).isEmpty());
+					}
 				}
 			}
 		}
@@ -400,11 +416,25 @@ public class ReversedGraphViewTest extends TestBase {
 				for (boolean index : BooleanList.of(false, true)) {
 					Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 					Graph<Integer, Integer> gRev = index ? gRev0.indexGraph() : gRev0;
-					Integer v = gRev.vertices().iterator().next();
+					Iterator<Integer> vit = gRev.vertices().iterator();
+					Integer v1 = vit.next();
+					Integer v2 = vit.next();
+					Integer v3 = vit.next();
 
-					gRev.removeOutEdgesOf(v);
-					assertTrue(gRev.outEdges(v).isEmpty());
-					assertTrue(gOrig.inEdges(v).isEmpty());
+					gRev.removeOutEdgesOf(v1);
+					assertTrue(gRev.outEdges(v1).isEmpty());
+					assertTrue(gOrig.inEdges(v1).isEmpty());
+
+					gRev.outEdges(v2).clear();
+					assertTrue(gRev.outEdges(v2).isEmpty());
+					assertTrue(gOrig.inEdges(v2).isEmpty());
+
+					if (!index) {
+						for (Integer e : new IntArrayList(gRev.outEdges(v3)))
+							gRev.outEdges(v3).remove(e);
+						assertTrue(gRev.outEdges(v3).isEmpty());
+						assertTrue(gOrig.inEdges(v3).isEmpty());
+					}
 				}
 			}
 		}
@@ -576,6 +606,57 @@ public class ReversedGraphViewTest extends TestBase {
 					assertEquals(gOrig.isAllowSelfEdges(), gRev.isAllowSelfEdges());
 					assertEquals(gOrig.isDirected(), gRev.isDirected());
 				}
+			}
+		}
+	}
+
+	@Test
+	public void testRemoveListeners() {
+		for (boolean directed : BooleanList.of(false, true)) {
+			for (boolean intGraph : BooleanList.of(false, true)) {
+				IndexGraph gRev = createGraph(directed, intGraph).indexGraph().reverseView();
+				AtomicBoolean called = new AtomicBoolean();
+				IndexRemoveListener listener = new IndexRemoveListener() {
+					@Override
+					public void removeLast(int removedIdx) {
+						called.set(true);
+					}
+
+					@Override
+					public void swapAndRemove(int removedIdx, int swappedIdx) {
+						called.set(true);
+					}
+				};
+
+				gRev.addVertexRemoveListener(listener);
+				called.set(false);
+				gRev.removeVertex(gRev.vertices().iterator().nextInt());
+				assertTrue(called.get());
+
+				called.set(false);
+				gRev.removeEdge(gRev.edges().iterator().nextInt());
+				assertFalse(called.get());
+
+				gRev.removeVertexSwapRemoveListener(listener);
+				called.set(false);
+				gRev.removeVertex(gRev.vertices().iterator().nextInt());
+				assertFalse(called.get());
+
+				gRev.addEdgeRemoveListener(listener);
+				called.set(false);
+				gRev.removeEdge(gRev.edges().iterator().nextInt());
+				assertTrue(called.get());
+
+				int v = gRev.vertices().iterator().nextInt();
+				gRev.removeEdgesOf(v);
+				called.set(false);
+				gRev.removeVertex(v);
+				assertFalse(called.get());
+
+				gRev.removeEdgeSwapRemoveListener(listener);
+				called.set(false);
+				gRev.removeEdge(gRev.edges().iterator().nextInt());
+				assertFalse(called.get());
 			}
 		}
 	}

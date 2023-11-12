@@ -410,12 +410,12 @@ public interface IndexGraph extends IntGraph {
 
 	@Override
 	default IndexGraph immutableView() {
-		return Graphs.immutableView(this);
+		return (IndexGraph) IntGraph.super.immutableView();
 	}
 
 	@Override
 	default IndexGraph reverseView() {
-		return Graphs.reverseView(this);
+		return (IndexGraph) IntGraph.super.reverseView();
 	}
 
 	/**

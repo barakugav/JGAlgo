@@ -523,7 +523,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 */
 	@Override
 	default IntGraph subGraphCopy(Collection<Integer> vertices, Collection<Integer> edges) {
-		return (IntGraph) Graphs.subGraph(this, vertices, edges);
+		return (IntGraph) Graph.super.subGraphCopy(vertices, edges);
 	}
 
 	/**
