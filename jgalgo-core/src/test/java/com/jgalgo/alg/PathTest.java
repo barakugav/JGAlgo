@@ -155,7 +155,7 @@ public class PathTest extends TestBase {
 
 	@Test
 	public void testReachableVertices() {
-		final long seed = 0;
+		final long seed = 0xb89cfbb5bfbc6989L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();

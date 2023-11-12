@@ -17,10 +17,14 @@
 package com.jgalgo.alg;
 
 import java.util.Random;
+import java.util.function.IntToDoubleFunction;
 import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
@@ -40,27 +44,33 @@ public class ShortestPathAStarTest extends TestBase {
 	@Test
 	public void testRandGraphDirectedNoHeuristic() {
 		final long seed = 0x4c6096c679a03079L;
-		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithNoHeuristic(), true, seed, SsspPhases);
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithNoHeuristic(seedGen.nextSeed()), true,
+				seedGen.nextSeed(), SsspPhases);
 	}
 
 	@Test
 	public void testSSSPUndirectedNoHeuristic() {
 		final long seed = 0x97997bc1c8243730L;
-		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithNoHeuristic(), false, seed, SsspPhases);
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithNoHeuristic(seedGen.nextSeed()), false,
+				seedGen.nextSeed(), SsspPhases);
 	}
 
 	@Test
 	public void testRandGraphDirectedPerfectHeuristic() {
 		final long seed = 0xf84561a561971620L;
-		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithPerfectHeuristic(), true, seed,
-				SsspPhases);
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithPerfectHeuristic(seedGen.nextSeed()), true,
+				seedGen.nextSeed(), SsspPhases);
 	}
 
 	@Test
 	public void testSSSPUndirectedPerfectHeuristic() {
 		final long seed = 0xf33456751c101f3bL;
-		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithPerfectHeuristic(), false, seed,
-				SsspPhases);
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithPerfectHeuristic(seedGen.nextSeed()),
+				false, seedGen.nextSeed(), SsspPhases);
 	}
 
 	@Test
@@ -79,16 +89,16 @@ public class ShortestPathAStarTest extends TestBase {
 				AStarAsSSSPWithRandAdmissibleHeuristic(seedGen.nextSeed()), false, seedGen.nextSeed(), SsspPhases);
 	}
 
-	private static ShortestPathSingleSource AStarAsSSSPWithNoHeuristic() {
+	private static ShortestPathSingleSource AStarAsSSSPWithNoHeuristic(long seed) {
 		return AStarAsSSSP(new HeuristicBuilder() {
 			@Override
 			public <V, E> ToDoubleFunction<V> buildHeuristic(HeuristicParams<V, E> params) {
 				return v -> 0;
 			}
-		});
+		}, seed);
 	}
 
-	private static ShortestPathSingleSource AStarAsSSSPWithPerfectHeuristic() {
+	private static ShortestPathSingleSource AStarAsSSSPWithPerfectHeuristic(long seed) {
 		return AStarAsSSSP(new HeuristicBuilder() {
 			@Override
 			public <V, E> ToDoubleFunction<V> buildHeuristic(HeuristicParams<V, E> params) {
@@ -100,7 +110,7 @@ public class ShortestPathAStarTest extends TestBase {
 						new ShortestPathSingleSourceDijkstra().computeShortestPaths(g, w, params.target);
 				return v -> ssspRes.distance(v);
 			}
-		});
+		}, seed);
 	}
 
 	private static ShortestPathSingleSource AStarAsSSSPWithRandAdmissibleHeuristic(long seed) {
@@ -122,7 +132,7 @@ public class ShortestPathAStarTest extends TestBase {
 						new ShortestPathSingleSourceDijkstra().computeShortestPaths(g, w1, params.target);
 				return v -> ssspRes.distance(v);
 			}
-		});
+		}, rand.nextLong());
 	}
 
 	private static class HeuristicParams<V, E> {
@@ -146,8 +156,10 @@ public class ShortestPathAStarTest extends TestBase {
 
 	}
 
-	private static ShortestPathSingleSource AStarAsSSSP(HeuristicBuilder vHeuristicBuilder) {
+	private static ShortestPathSingleSource AStarAsSSSP(HeuristicBuilder vHeuristicBuilder, long seed) {
+		Random rand = new Random(seed);
 		return new ShortestPathSingleSource() {
+			@SuppressWarnings("unchecked")
 			@Override
 			public <V, E> ShortestPathSingleSource.Result<V, E> computeShortestPaths(Graph<V, E> g, WeightFunction<E> w,
 					V source) {
@@ -160,7 +172,17 @@ public class ShortestPathAStarTest extends TestBase {
 				for (V target : g.vertices()) {
 					ToDoubleFunction<V> vHeuristic =
 							vHeuristicBuilder.buildHeuristic(new HeuristicParams<>(g, w, source, target));
-					Path<V, E> path = aStar.computeShortestPath(g, w, source, target, vHeuristic);
+					Path<V, E> path;
+					if (g instanceof IntGraph && rand.nextBoolean()) {
+						IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+						int source0 = ((Integer) source).intValue();
+						int target0 = ((Integer) target).intValue();
+						IntToDoubleFunction vHeuristicInt = v -> vHeuristic.applyAsDouble((V) Integer.valueOf(v));
+						path = (Path<V, E>) aStar.computeShortestPath((IntGraph) g, w0, source0, target0,
+								vHeuristicInt);
+					} else {
+						path = aStar.computeShortestPath(g, w, source, target, vHeuristic);
+					}
 					if (path != null) {
 						paths.put(target, path);
 						distances.put(target, w.weightSum(path.edges()));
