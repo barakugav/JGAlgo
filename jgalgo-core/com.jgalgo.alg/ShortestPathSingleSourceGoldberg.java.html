@@ -335,15 +335,15 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 		@Override
 		public double distance(int target) {
-<span class="pc bpc" id="L338" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L339">				throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">			if (foundNegativeCycle())</span>
+<span class="fc" id="L339">				throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
 <span class="fc" id="L340">			return dijkstraRes.distance(target) - sourcePotential + potential[target];</span>
 		}
 
 		@Override
 		public IPath getPath(int target) {
-<span class="pc bpc" id="L345" title="1 of 2 branches missed.">			if (foundNegativeCycle())</span>
-<span class="nc" id="L346">				throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">			if (foundNegativeCycle())</span>
+<span class="fc" id="L346">				throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
 <span class="fc" id="L347">			return dijkstraRes.getPath(target);</span>
 		}
 
@@ -354,8 +354,8 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 		@Override
 		public IPath getNegativeCycle() {
-<span class="pc bpc" id="L357" title="1 of 2 branches missed.">			if (!foundNegativeCycle())</span>
-<span class="nc" id="L358">				throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">			if (!foundNegativeCycle())</span>
+<span class="fc" id="L358">				throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
 <span class="fc" id="L359">			return cycle;</span>
 		}
 

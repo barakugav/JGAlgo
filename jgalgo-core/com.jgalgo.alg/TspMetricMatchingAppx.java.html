@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L36">public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {</span>
+public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 
 <span class="fc" id="L38">	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();</span>
 <span class="fc" id="L39">	private final MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();</span>
@@ -46,16 +46,16 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	@Override
 	IPath computeShortestTour(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L48">		final int n = g.vertices().size();</span>
-<span class="pc bpc" id="L49" title="1 of 2 branches missed.">		if (n == 0)</span>
-<span class="nc" id="L50">			return null;</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		if (n == 0)</span>
+<span class="fc" id="L50">			return null;</span>
 <span class="fc" id="L51">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L52">		Assertions.Graphs.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
 		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Calculate MST */
 <span class="fc" id="L56">		IntCollection mst = ((MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(g, w)).edges();</span>
-<span class="pc bpc" id="L57" title="1 of 2 branches missed.">		if (mst.size() &lt; n - 1)</span>
-<span class="nc" id="L58">			throw new IllegalArgumentException(&quot;graph is not connected&quot;);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		if (mst.size() &lt; n - 1)</span>
+<span class="fc" id="L58">			throw new IllegalArgumentException(&quot;graph is not connected&quot;);</span>
 
 		/*
 		 * Build graph for the matching calculation, containing only vertices with odd degree from the MST
@@ -89,27 +89,25 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L89">		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();</span>
 <span class="fc" id="L90">		g1Builder.expectedVerticesNum(n);</span>
 <span class="fc" id="L91">		g1Builder.expectedEdgesNum(mst.size() + matching.edges().size());</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L93">			int vBuilder = g1Builder.addVertex();</span>
-<span class="pc bnc" id="L94" title="All 2 branches missed.">			assert vBuilder == v;</span>
-		}
-<span class="fc" id="L96">		int[] g1EdgeRef = new int[mst.size() + matching.edges().size()];</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">		for (int e : mst) {</span>
-<span class="fc" id="L98">			int g1Edge = g1Builder.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L99">			g1EdgeRef[g1Edge] = e;</span>
-<span class="fc" id="L100">		}</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">		for (int mGedge : matching.edges()) {</span>
-<span class="fc" id="L102">			int u = mVtoV[mG.edgeSource(mGedge)];</span>
-<span class="fc" id="L103">			int v = mVtoV[mG.edgeTarget(mGedge)];</span>
-<span class="fc" id="L104">			int g1Edge = g1Builder.addEdge(u, v);</span>
-<span class="fc" id="L105">			g1EdgeRef[g1Edge] = g.getEdge(u, v);</span>
-<span class="fc" id="L106">		}</span>
-<span class="fc" id="L107">		IndexGraph g1 = g1Builder.build();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L93">			g1Builder.addVertex();</span>
+<span class="fc" id="L94">		int[] g1EdgeRef = new int[mst.size() + matching.edges().size()];</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		for (int e : mst) {</span>
+<span class="fc" id="L96">			int g1Edge = g1Builder.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L97">			g1EdgeRef[g1Edge] = e;</span>
+<span class="fc" id="L98">		}</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int mGedge : matching.edges()) {</span>
+<span class="fc" id="L100">			int u = mVtoV[mG.edgeSource(mGedge)];</span>
+<span class="fc" id="L101">			int v = mVtoV[mG.edgeTarget(mGedge)];</span>
+<span class="fc" id="L102">			int g1Edge = g1Builder.addEdge(u, v);</span>
+<span class="fc" id="L103">			g1EdgeRef[g1Edge] = g.getEdge(u, v);</span>
+<span class="fc" id="L104">		}</span>
+<span class="fc" id="L105">		IndexGraph g1 = g1Builder.build();</span>
 
-<span class="fc" id="L109">		IPath cycle = TspMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);</span>
+<span class="fc" id="L107">		IPath cycle = TspMetricUtils.calcEulerianTourAndConvertToHamiltonianCycle(g, g1, g1EdgeRef);</span>
 
 		/* Convert cycle of edges to list of vertices */
-<span class="fc" id="L112">		return cycle;</span>
+<span class="fc" id="L110">		return cycle;</span>
 	}
 
 }

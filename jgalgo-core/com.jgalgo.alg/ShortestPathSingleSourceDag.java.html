@@ -52,32 +52,32 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 <span class="fc" id="L52">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc bfc" id="L53" title="All 2 branches covered.">		if (w == null)</span>
 <span class="fc" id="L54">			w = IWeightFunction.CardinalityWeightFunction;</span>
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">		return w instanceof IWeightFunctionInt ? computeSsspInt(g, (IWeightFunctionInt) w, source)</span>
-<span class="nc" id="L56">				: computeSsspDouble(g, w, source);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		return w instanceof IWeightFunctionInt ? computeSsspInt(g, (IWeightFunctionInt) w, source)</span>
+<span class="fc" id="L56">				: computeSsspDouble(g, w, source);</span>
 	}
 
 	private ShortestPathSingleSourceDag.IResult computeSsspDouble(IndexGraph g, IWeightFunction w, int source) {
-<span class="nc" id="L60">		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);</span>
-<span class="nc" id="L61">		res.distances[source] = 0;</span>
+<span class="fc" id="L60">		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);</span>
+<span class="fc" id="L61">		res.distances[source] = 0;</span>
 
-<span class="nc" id="L63">		TopologicalOrderAlgo.IResult topoOrder = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);</span>
-<span class="nc" id="L64">		for (IntIterator uit = topoOrder.orderedVertices().listIterator(topoOrder.vertexOrderIndex(source)); uit</span>
-<span class="nc bnc" id="L65" title="All 2 branches missed.">				.hasNext();) {</span>
-<span class="nc" id="L66">			int u = uit.nextInt();</span>
-<span class="nc" id="L67">			double uDistance = res.distances[u];</span>
-<span class="nc bnc" id="L68" title="All 2 branches missed.">			if (uDistance == Double.POSITIVE_INFINITY)</span>
-<span class="nc" id="L69">				continue;</span>
-<span class="nc bnc" id="L70" title="All 2 branches missed.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="nc" id="L71">				int e = eit.nextInt();</span>
-<span class="nc" id="L72">				int v = eit.targetInt();</span>
-<span class="nc" id="L73">				double d = uDistance + w.weight(e);</span>
-<span class="nc bnc" id="L74" title="All 2 branches missed.">				if (d &lt; res.distances[v]) {</span>
-<span class="nc" id="L75">					res.distances[v] = d;</span>
-<span class="nc" id="L76">					res.backtrack[v] = e;</span>
+<span class="fc" id="L63">		TopologicalOrderAlgo.IResult topoOrder = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);</span>
+<span class="fc" id="L64">		for (IntIterator uit = topoOrder.orderedVertices().listIterator(topoOrder.vertexOrderIndex(source)); uit</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">				.hasNext();) {</span>
+<span class="fc" id="L66">			int u = uit.nextInt();</span>
+<span class="fc" id="L67">			double uDistance = res.distances[u];</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">			if (uDistance == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L69">				continue;</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L71">				int e = eit.nextInt();</span>
+<span class="fc" id="L72">				int v = eit.targetInt();</span>
+<span class="fc" id="L73">				double d = uDistance + w.weight(e);</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">				if (d &lt; res.distances[v]) {</span>
+<span class="fc" id="L75">					res.distances[v] = d;</span>
+<span class="fc" id="L76">					res.backtrack[v] = e;</span>
 				}
-<span class="nc" id="L78">			}</span>
-<span class="nc" id="L79">		}</span>
-<span class="nc" id="L80">		return res;</span>
+<span class="fc" id="L78">			}</span>
+<span class="fc" id="L79">		}</span>
+<span class="fc" id="L80">		return res;</span>
 	}
 
 	private ShortestPathSingleSourceDag.IResult computeSsspInt(IndexGraph g, IWeightFunctionInt w, int source) {

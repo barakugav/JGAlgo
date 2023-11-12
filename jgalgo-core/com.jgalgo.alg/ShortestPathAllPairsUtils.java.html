@@ -35,23 +35,25 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-<span class="pc" id="L38">class ShortestPathAllPairsUtils {</span>
+<span class="fc" id="L38">class ShortestPathAllPairsUtils {</span>
 
-<span class="fc" id="L40">	abstract static class AbstractImpl implements ShortestPathAllPairs {</span>
+	private ShortestPathAllPairsUtils() {}
+
+<span class="fc" id="L42">	abstract static class AbstractImpl implements ShortestPathAllPairs {</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeAllShortestPaths(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
-<span class="pc bpc" id="L45" title="1 of 2 branches missed.">			if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L46">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="nc" id="L47">				return (ShortestPathAllPairs.Result&lt;V, E&gt;) computeAllShortestPaths((IndexGraph) g, w0);</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L48">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L49">				return (ShortestPathAllPairs.Result&lt;V, E&gt;) computeAllShortestPaths((IndexGraph) g, w0);</span>
 
 			} else {
-<span class="fc" id="L50">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L51">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L52">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L53">				ShortestPathAllPairs.IResult indexResult = computeAllShortestPaths(iGraph, iw);</span>
-<span class="fc" id="L54">				return resultFromIndexResult(g, indexResult);</span>
+<span class="fc" id="L52">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L53">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L54">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L55">				ShortestPathAllPairs.IResult indexResult = computeAllShortestPaths(iGraph, iw);</span>
+<span class="fc" id="L56">				return resultFromIndexResult(g, indexResult);</span>
 			}
 		}
 
@@ -59,20 +61,20 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		@Override
 		public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeSubsetShortestPaths(Graph&lt;V, E&gt; g,
 				Collection&lt;V&gt; verticesSubset, WeightFunction&lt;E&gt; w) {
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">			if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L63">				IntCollection verticesSubset0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) verticesSubset);</span>
-<span class="fc" id="L64">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="fc" id="L65">				return (ShortestPathAllPairs.Result&lt;V, E&gt;) computeSubsetShortestPaths((IndexGraph) g, verticesSubset0,</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L65">				IntCollection verticesSubset0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) verticesSubset);</span>
+<span class="fc" id="L66">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L67">				return (ShortestPathAllPairs.Result&lt;V, E&gt;) computeSubsetShortestPaths((IndexGraph) g, verticesSubset0,</span>
 						w0);
 
 			} else {
-<span class="nc" id="L69">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L70">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L71">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L72">				IntCollection iVerticesSubset = IndexIdMaps.idToIndexCollection(verticesSubset, viMap);</span>
-<span class="nc" id="L73">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="nc" id="L74">				ShortestPathAllPairs.IResult indexResult = computeSubsetShortestPaths(iGraph, iVerticesSubset, iw);</span>
-<span class="nc" id="L75">				return resultFromIndexResult(g, indexResult);</span>
+<span class="fc" id="L71">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L72">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L73">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L74">				IntCollection iVerticesSubset = IndexIdMaps.idToIndexCollection(verticesSubset, viMap);</span>
+<span class="fc" id="L75">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L76">				ShortestPathAllPairs.IResult indexResult = computeSubsetShortestPaths(iGraph, iVerticesSubset, iw);</span>
+<span class="fc" id="L77">				return resultFromIndexResult(g, indexResult);</span>
 			}
 		}
 
@@ -84,18 +86,18 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	}
 
 	static int[] vToResIdx(IndexGraph g, IntCollection verticesSubset) {
-<span class="fc" id="L87">		int[] vToResIdx = new int[g.vertices().size()];</span>
-<span class="fc" id="L88">		Arrays.fill(vToResIdx, -1);</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">		boolean allVertices = verticesSubset == null;</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">		if (allVertices) {</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">			for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L92">				vToResIdx[v] = v;</span>
+<span class="fc" id="L89">		int[] vToResIdx = new int[g.vertices().size()];</span>
+<span class="fc" id="L90">		Arrays.fill(vToResIdx, -1);</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		boolean allVertices = verticesSubset == null;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		if (allVertices) {</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L94">				vToResIdx[v] = v;</span>
 		} else {
-<span class="fc" id="L94">			int resIdx = 0;</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">			for (int v : verticesSubset)</span>
-<span class="fc" id="L96">				vToResIdx[v] = resIdx++;</span>
+<span class="fc" id="L96">			int resIdx = 0;</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">			for (int v : verticesSubset)</span>
+<span class="fc" id="L98">				vToResIdx[v] = resIdx++;</span>
 		}
-<span class="fc" id="L98">		return vToResIdx;</span>
+<span class="fc" id="L100">		return vToResIdx;</span>
 	}
 
 	abstract static class ResultImpl implements ShortestPathAllPairs.IResult {
@@ -114,134 +116,134 @@ import it.unimi.dsi.fastutil.ints.IntList;
 			private final int[][] edges;
 			private IPath negCycle;
 
-<span class="fc" id="L117">			AllVertices(IndexGraph g) {</span>
-<span class="fc" id="L118">				this.g = g;</span>
-<span class="fc" id="L119">				int n = g.vertices().size();</span>
-<span class="fc" id="L120">				edges = new int[n][n];</span>
-<span class="fc" id="L121">				BigArrays.fill(edges, -1);</span>
-<span class="fc" id="L122">			}</span>
+<span class="fc" id="L119">			AllVertices(IndexGraph g) {</span>
+<span class="fc" id="L120">				this.g = g;</span>
+<span class="fc" id="L121">				int n = g.vertices().size();</span>
+<span class="fc" id="L122">				edges = new int[n][n];</span>
+<span class="fc" id="L123">				BigArrays.fill(edges, -1);</span>
+<span class="fc" id="L124">			}</span>
 
 			@Override
 			int getEdgeTo(int source, int target) {
-<span class="fc" id="L126">				return edges[source][target];</span>
+<span class="fc" id="L128">				return edges[source][target];</span>
 			}
 
 			@Override
 			void setEdgeTo(int source, int target, int edge) {
-<span class="fc" id="L131">				edges[source][target] = edge;</span>
-<span class="fc" id="L132">			}</span>
+<span class="fc" id="L133">				edges[source][target] = edge;</span>
+<span class="fc" id="L134">			}</span>
 
 			void setNegCycle(IPath cycle) {
-<span class="fc" id="L135">				Objects.requireNonNull(cycle);</span>
-<span class="fc" id="L136">				this.negCycle = cycle;</span>
-<span class="fc" id="L137">			}</span>
+<span class="fc" id="L137">				Objects.requireNonNull(cycle);</span>
+<span class="fc" id="L138">				this.negCycle = cycle;</span>
+<span class="fc" id="L139">			}</span>
 
 			@Override
 			public boolean foundNegativeCycle() {
-<span class="fc bfc" id="L141" title="All 2 branches covered.">				return negCycle != null;</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">				return negCycle != null;</span>
 			}
 
 			@Override
 			public IPath getNegativeCycle() {
-<span class="pc bpc" id="L146" title="1 of 2 branches missed.">				if (!foundNegativeCycle())</span>
-<span class="nc" id="L147">					throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
-<span class="fc" id="L148">				return negCycle;</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">				if (!foundNegativeCycle())</span>
+<span class="fc" id="L149">					throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
+<span class="fc" id="L150">				return negCycle;</span>
 			}
 
 		}
 
-<span class="fc" id="L153">		static class Undirected extends AllVertices {</span>
+<span class="fc" id="L155">		static class Undirected extends AllVertices {</span>
 
 			private final int n;
 			private final double[] distances;
 
 			Undirected(IndexGraph g) {
-<span class="fc" id="L159">				super(g);</span>
-<span class="fc" id="L160">				n = g.vertices().size();</span>
-<span class="fc" id="L161">				distances = new double[n * (n - 1) / 2];</span>
-<span class="fc" id="L162">				Arrays.fill(distances, Double.POSITIVE_INFINITY);</span>
-<span class="fc" id="L163">			}</span>
+<span class="fc" id="L161">				super(g);</span>
+<span class="fc" id="L162">				n = g.vertices().size();</span>
+<span class="fc" id="L163">				distances = new double[n * (n - 1) / 2];</span>
+<span class="fc" id="L164">				Arrays.fill(distances, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L165">			}</span>
 
 			private int index(int u, int v) {
-<span class="pc bnc" id="L166" title="All 2 branches missed.">				assert u != v;</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">				if (u &gt; v) {</span>
-<span class="fc" id="L168">					int temp = u;</span>
-<span class="fc" id="L169">					u = v;</span>
-<span class="fc" id="L170">					v = temp;</span>
+<span class="pc bnc" id="L168" title="All 2 branches missed.">				assert u != v;</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">				if (u &gt; v) {</span>
+<span class="fc" id="L170">					int temp = u;</span>
+<span class="fc" id="L171">					u = v;</span>
+<span class="fc" id="L172">					v = temp;</span>
 				}
 				/* index mapping assume always u &lt; v (strictly!) */
-<span class="fc" id="L173">				return (2 * n - u - 1) * u / 2 + v - u - 1;</span>
+<span class="fc" id="L175">				return (2 * n - u - 1) * u / 2 + v - u - 1;</span>
 			}
 
 			@Override
 			void setDistance(int source, int target, double distance) {
-<span class="fc" id="L178">				distances[index(source, target)] = distance;</span>
-<span class="fc" id="L179">			}</span>
+<span class="fc" id="L180">				distances[index(source, target)] = distance;</span>
+<span class="fc" id="L181">			}</span>
 
 			@Override
 			public double distance(int source, int target) {
-<span class="pc bpc" id="L183" title="1 of 2 branches missed.">				if (foundNegativeCycle())</span>
-<span class="nc" id="L184">					throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">				return source != target ? distances[index(source, target)] : 0;</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">				if (foundNegativeCycle())</span>
+<span class="fc" id="L186">					throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">				return source != target ? distances[index(source, target)] : 0;</span>
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
-<span class="pc bpc" id="L190" title="1 of 2 branches missed.">				if (foundNegativeCycle())</span>
-<span class="nc" id="L191">					throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
-<span class="fc bfc" id="L192" title="All 2 branches covered.">				if (distance(source, target) == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L193">					return null;</span>
-<span class="fc" id="L194">				IntList path = new IntArrayList();</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">				for (int v = source; v != target;) {</span>
-<span class="fc" id="L196">					int e = getEdgeTo(v, target);</span>
-<span class="pc bnc" id="L197" title="All 2 branches missed.">					assert e != -1;</span>
-<span class="fc" id="L198">					path.add(e);</span>
-<span class="fc" id="L199">					v = g.edgeEndpoint(e, v);</span>
-<span class="fc" id="L200">				}</span>
-<span class="fc" id="L201">				return new PathImpl(g, source, target, path);</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">				if (foundNegativeCycle())</span>
+<span class="fc" id="L193">					throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">				if (distance(source, target) == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L195">					return null;</span>
+<span class="fc" id="L196">				IntList path = new IntArrayList();</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">				for (int v = source; v != target;) {</span>
+<span class="fc" id="L198">					int e = getEdgeTo(v, target);</span>
+<span class="pc bnc" id="L199" title="All 2 branches missed.">					assert e != -1;</span>
+<span class="fc" id="L200">					path.add(e);</span>
+<span class="fc" id="L201">					v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L202">				}</span>
+<span class="fc" id="L203">				return new PathImpl(g, source, target, path);</span>
 			}
 		}
 
-<span class="fc" id="L205">		static class Directed extends AllVertices {</span>
+<span class="fc" id="L207">		static class Directed extends AllVertices {</span>
 			private final double[][] distances;
 
 			Directed(IndexGraph g) {
-<span class="fc" id="L209">				super(g);</span>
-<span class="fc" id="L210">				int n = g.vertices().size();</span>
-<span class="fc" id="L211">				distances = new double[n][n];</span>
-<span class="fc bfc" id="L212" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L213">					Arrays.fill(distances[v], Double.POSITIVE_INFINITY);</span>
-<span class="fc" id="L214">					setDistance(v, v, 0);</span>
+<span class="fc" id="L211">				super(g);</span>
+<span class="fc" id="L212">				int n = g.vertices().size();</span>
+<span class="fc" id="L213">				distances = new double[n][n];</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L215">					Arrays.fill(distances[v], Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L216">					setDistance(v, v, 0);</span>
 				}
-<span class="fc" id="L216">			}</span>
+<span class="fc" id="L218">			}</span>
 
 			@Override
 			void setDistance(int source, int target, double distance) {
-<span class="fc" id="L220">				distances[source][target] = distance;</span>
-<span class="fc" id="L221">			}</span>
+<span class="fc" id="L222">				distances[source][target] = distance;</span>
+<span class="fc" id="L223">			}</span>
 
 			@Override
 			public double distance(int source, int target) {
-<span class="pc bpc" id="L225" title="1 of 2 branches missed.">				if (foundNegativeCycle())</span>
-<span class="nc" id="L226">					throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
-<span class="fc" id="L227">				return distances[source][target];</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">				if (foundNegativeCycle())</span>
+<span class="fc" id="L228">					throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
+<span class="fc" id="L229">				return distances[source][target];</span>
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
-<span class="pc bpc" id="L232" title="1 of 2 branches missed.">				if (foundNegativeCycle())</span>
-<span class="nc" id="L233">					throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
-<span class="fc bfc" id="L234" title="All 2 branches covered.">				if (distance(source, target) == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L235">					return null;</span>
-<span class="fc" id="L236">				IntList path = new IntArrayList();</span>
-<span class="fc bfc" id="L237" title="All 2 branches covered.">				for (int v = source; v != target;) {</span>
-<span class="fc" id="L238">					int e = getEdgeTo(v, target);</span>
-<span class="pc bnc" id="L239" title="All 2 branches missed.">					assert e != -1;</span>
-<span class="pc bnc" id="L240" title="All 2 branches missed.">					assert v == g.edgeSource(e);</span>
-<span class="fc" id="L241">					path.add(e);</span>
-<span class="fc" id="L242">					v = g.edgeTarget(e);</span>
-<span class="fc" id="L243">				}</span>
-<span class="fc" id="L244">				return new PathImpl(g, source, target, path);</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">				if (foundNegativeCycle())</span>
+<span class="fc" id="L235">					throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">				if (distance(source, target) == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L237">					return null;</span>
+<span class="fc" id="L238">				IntList path = new IntArrayList();</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">				for (int v = source; v != target;) {</span>
+<span class="fc" id="L240">					int e = getEdgeTo(v, target);</span>
+<span class="pc bnc" id="L241" title="All 2 branches missed.">					assert e != -1;</span>
+<span class="pc bnc" id="L242" title="All 2 branches missed.">					assert v == g.edgeSource(e);</span>
+<span class="fc" id="L243">					path.add(e);</span>
+<span class="fc" id="L244">					v = g.edgeTarget(e);</span>
+<span class="fc" id="L245">				}</span>
+<span class="fc" id="L246">				return new PathImpl(g, source, target, path);</span>
 			}
 		}
 
@@ -251,34 +253,34 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 		final ShortestPathSingleSource.IResult[] ssspResults;
 
-<span class="fc" id="L254">		ResFromSSSP(ShortestPathSingleSource.IResult[] ssspResults) {</span>
-<span class="fc" id="L255">			this.ssspResults = ssspResults;</span>
-<span class="fc" id="L256">		}</span>
+<span class="fc" id="L256">		ResFromSSSP(ShortestPathSingleSource.IResult[] ssspResults) {</span>
+<span class="fc" id="L257">			this.ssspResults = ssspResults;</span>
+<span class="fc" id="L258">		}</span>
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="fc" id="L260">			return false;</span>
+<span class="fc" id="L262">			return false;</span>
 		}
 
 		@Override
 		public IPath getNegativeCycle() {
-<span class="nc" id="L265">			throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
+<span class="fc" id="L267">			throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
 		}
 
 		static class AllVertices extends ResFromSSSP {
 
 			AllVertices(IResult[] ssspResults) {
-<span class="fc" id="L271">				super(ssspResults);</span>
-<span class="fc" id="L272">			}</span>
+<span class="fc" id="L273">				super(ssspResults);</span>
+<span class="fc" id="L274">			}</span>
 
 			@Override
 			public double distance(int source, int target) {
-<span class="fc" id="L276">				return ssspResults[source].distance(target);</span>
+<span class="fc" id="L278">				return ssspResults[source].distance(target);</span>
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
-<span class="fc" id="L281">				return ssspResults[source].getPath(target);</span>
+<span class="fc" id="L283">				return ssspResults[source].getPath(target);</span>
 			}
 
 		}
@@ -288,18 +290,18 @@ import it.unimi.dsi.fastutil.ints.IntList;
 			final int[] vToResIdx;
 
 			VerticesSubset(IResult[] ssspResults, int[] vToResIdx) {
-<span class="nc" id="L291">				super(ssspResults);</span>
-<span class="nc" id="L292">				this.vToResIdx = vToResIdx;</span>
-<span class="nc" id="L293">			}</span>
+<span class="fc" id="L293">				super(ssspResults);</span>
+<span class="fc" id="L294">				this.vToResIdx = vToResIdx;</span>
+<span class="fc" id="L295">			}</span>
 
 			@Override
 			public double distance(int source, int target) {
-<span class="nc" id="L297">				return ssspResults[vToResIdx[source]].distance(target);</span>
+<span class="fc" id="L299">				return ssspResults[vToResIdx[source]].distance(target);</span>
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
-<span class="nc" id="L302">				return ssspResults[vToResIdx[source]].getPath(target);</span>
+<span class="fc" id="L304">				return ssspResults[vToResIdx[source]].getPath(target);</span>
 			}
 
 		}
@@ -312,31 +314,31 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		private final Graph&lt;V, E&gt; g;
 		private final IndexIdMap&lt;V&gt; viMap;
 
-<span class="fc" id="L315">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, ShortestPathAllPairs.IResult indexRes) {</span>
-<span class="fc" id="L316">			this.indexRes = Objects.requireNonNull(indexRes);</span>
-<span class="fc" id="L317">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L318">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L319">		}</span>
+<span class="fc" id="L317">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, ShortestPathAllPairs.IResult indexRes) {</span>
+<span class="fc" id="L318">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L319">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L320">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L321">		}</span>
 
 		@Override
 		public double distance(V source, V target) {
-<span class="fc" id="L323">			return indexRes.distance(viMap.idToIndex(source), viMap.idToIndex(target));</span>
+<span class="fc" id="L325">			return indexRes.distance(viMap.idToIndex(source), viMap.idToIndex(target));</span>
 		}
 
 		@Override
 		public Path&lt;V, E&gt; getPath(V source, V target) {
-<span class="fc" id="L328">			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));</span>
-<span class="fc" id="L329">			return PathImpl.objPathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L330">			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));</span>
+<span class="fc" id="L331">			return PathImpl.objPathFromIndexPath(g, indexPath);</span>
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="fc" id="L334">			return indexRes.foundNegativeCycle();</span>
+<span class="fc" id="L336">			return indexRes.foundNegativeCycle();</span>
 		}
 
 		@Override
 		public Path&lt;V, E&gt; getNegativeCycle() {
-<span class="fc" id="L339">			return PathImpl.objPathFromIndexPath(g, indexRes.getNegativeCycle());</span>
+<span class="fc" id="L341">			return PathImpl.objPathFromIndexPath(g, indexRes.getNegativeCycle());</span>
 		}
 	}
 
@@ -346,42 +348,42 @@ import it.unimi.dsi.fastutil.ints.IntList;
 		private final IntGraph g;
 		private final IndexIntIdMap viMap;
 
-<span class="fc" id="L349">		IntResultFromIndexResult(IntGraph g, ShortestPathAllPairs.IResult indexRes) {</span>
-<span class="fc" id="L350">			this.indexRes = Objects.requireNonNull(indexRes);</span>
-<span class="fc" id="L351">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L352">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L353">		}</span>
+<span class="fc" id="L351">		IntResultFromIndexResult(IntGraph g, ShortestPathAllPairs.IResult indexRes) {</span>
+<span class="fc" id="L352">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L353">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L354">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L355">		}</span>
 
 		@Override
 		public double distance(int source, int target) {
-<span class="fc" id="L357">			return indexRes.distance(viMap.idToIndex(source), viMap.idToIndex(target));</span>
+<span class="fc" id="L359">			return indexRes.distance(viMap.idToIndex(source), viMap.idToIndex(target));</span>
 		}
 
 		@Override
 		public IPath getPath(int source, int target) {
-<span class="fc" id="L362">			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));</span>
-<span class="fc" id="L363">			return PathImpl.intPathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L364">			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));</span>
+<span class="fc" id="L365">			return PathImpl.intPathFromIndexPath(g, indexPath);</span>
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="fc" id="L368">			return indexRes.foundNegativeCycle();</span>
+<span class="fc" id="L370">			return indexRes.foundNegativeCycle();</span>
 		}
 
 		@Override
 		public IPath getNegativeCycle() {
-<span class="fc" id="L373">			return PathImpl.intPathFromIndexPath(g, indexRes.getNegativeCycle());</span>
+<span class="fc" id="L375">			return PathImpl.intPathFromIndexPath(g, indexRes.getNegativeCycle());</span>
 		}
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
 			ShortestPathAllPairs.IResult indexResult) {
-<span class="pc bnc" id="L380" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
-<span class="fc bfc" id="L381" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L382">			return (ShortestPathAllPairs.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
+<span class="pc bnc" id="L382" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L383" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L384">			return (ShortestPathAllPairs.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
 		} else {
-<span class="fc" id="L384">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
+<span class="fc" id="L386">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
 		}
 	}
 

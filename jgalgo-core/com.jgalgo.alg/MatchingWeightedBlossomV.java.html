@@ -1146,8 +1146,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1146">			for (Blossom b = base;;) {</span>
 <span class="pc bnc" id="L1147" title="All 2 branches missed.">				assert b.isOdd();</span>
 <span class="fc" id="L1148">				dbgLog.format(&quot;\t%s\n&quot;, b);</span>
-<span class="fc bfc" id="L1149" title="All 2 branches covered.">				if (b.isBlossom())</span>
-<span class="fc" id="L1150">					tree.pqInsertOdd(b);</span>
+<span class="pc bpc" id="L1149" title="1 of 2 branches missed.">				if (b.isBlossom())</span>
+<span class="nc" id="L1150">					tree.pqInsertOdd(b);</span>
 <span class="fc bfc" id="L1151" title="All 2 branches covered.">				for (Edge e : b.outEdges())</span>
 <span class="fc bfc" id="L1152" title="All 2 branches covered.">					if (!e.target.isEven())</span>
 <span class="fc" id="L1153">						e.slack -= eps;</span>
@@ -1167,7 +1167,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L1167" title="All 2 branches covered.">					if (e.target.isOut()) {</span>
 <span class="fc" id="L1168">						e.slack += eps;</span>
 <span class="fc" id="L1169">						tree.pqInsertEvenOut(e);</span>
-<span class="fc bfc" id="L1170" title="All 4 branches covered.">					} else if (e.target.isEven() &amp;&amp; System.identityHashCode(b) &lt; System.identityHashCode(e.target)) {</span>
+<span class="pc bpc" id="L1170" title="1 of 4 branches missed.">					} else if (e.target.isEven() &amp;&amp; System.identityHashCode(b) &lt; System.identityHashCode(e.target)) {</span>
 <span class="fc" id="L1171">						e.slack += 2 * eps;</span>
 <span class="fc" id="L1172">						tree.pqInsertEvenEven(e);</span>
 					}
@@ -1176,9 +1176,9 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="pc bpc" id="L1176" title="1 of 2 branches missed.">					if (e.source.isOut()) {</span>
 <span class="nc" id="L1177">						e.slack += eps;</span>
 <span class="nc" id="L1178">						tree.pqInsertEvenOut(e);</span>
-<span class="fc bfc" id="L1179" title="All 4 branches covered.">					} else if (e.source.isEven() &amp;&amp; System.identityHashCode(b) &lt; System.identityHashCode(e.source)) {</span>
-<span class="fc" id="L1180">						e.slack += 2 * eps;</span>
-<span class="fc" id="L1181">						tree.pqInsertEvenEven(e);</span>
+<span class="pc bpc" id="L1179" title="1 of 4 branches missed.">					} else if (e.source.isEven() &amp;&amp; System.identityHashCode(b) &lt; System.identityHashCode(e.source)) {</span>
+<span class="nc" id="L1180">						e.slack += 2 * eps;</span>
+<span class="nc" id="L1181">						tree.pqInsertEvenEven(e);</span>
 					}
 <span class="fc" id="L1183">				}</span>
 <span class="fc" id="L1184">				b.setProcessed(true);</span>

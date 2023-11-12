@@ -56,7 +56,7 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 <span class="fc bfc" id="L56" title="All 2 branches covered.">		if (source == target)</span>
 <span class="fc" id="L57">			return List.of(new PathImpl(g, source, target, IntList.of()));</span>
 <span class="pc bpc" id="L58" title="1 of 2 branches missed.">		if (w == null)</span>
-<span class="nc" id="L59">			w = IWeightFunction.CardinalityWeightFunction;</span>
+<span class="fc" id="L59">			w = IWeightFunction.CardinalityWeightFunction;</span>
 <span class="fc" id="L60">		final int n = g.vertices().size();</span>
 <span class="fc" id="L61">		final int m = g.edges().size();</span>
 <span class="fc" id="L62">		HeapReferenceable&lt;Double, ObjectIntPair&lt;IPath&gt;&gt; heap = HeapReferenceable.newBuilder()</span>
@@ -247,9 +247,9 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 <span class="fc" id="L247">						toClearS.add(v);</span>
 <span class="fc" id="L248">						heapPtrsS[v] = heapS.insert(Double.valueOf(vDistance), Integer.valueOf(v));</span>
 <span class="fc" id="L249">						backtrackS[v] = e;</span>
-<span class="fc bfc" id="L250" title="All 2 branches covered.">					} else if (vDistance &lt; vPtr.key().doubleValue()) {</span>
-<span class="fc" id="L251">						heapS.decreaseKey(vPtr, Double.valueOf(vDistance));</span>
-<span class="fc" id="L252">						backtrackS[v] = e;</span>
+<span class="pc bpc" id="L250" title="1 of 2 branches missed.">					} else if (vDistance &lt; vPtr.key().doubleValue()) {</span>
+<span class="nc" id="L251">						heapS.decreaseKey(vPtr, Double.valueOf(vDistance));</span>
+<span class="nc" id="L252">						backtrackS[v] = e;</span>
 					}
 <span class="fc" id="L254">				}</span>
 
@@ -277,9 +277,9 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
 <span class="fc" id="L277">						toClearT.add(v);</span>
 <span class="fc" id="L278">						heapPtrsT[v] = heapT.insert(Double.valueOf(vDistance), Integer.valueOf(v));</span>
 <span class="fc" id="L279">						backtrackT[v] = e;</span>
-<span class="fc bfc" id="L280" title="All 2 branches covered.">					} else if (vDistance &lt; vPtr.key().doubleValue()) {</span>
-<span class="fc" id="L281">						heapT.decreaseKey(vPtr, Double.valueOf(vDistance));</span>
-<span class="fc" id="L282">						backtrackT[v] = e;</span>
+<span class="pc bpc" id="L280" title="1 of 2 branches missed.">					} else if (vDistance &lt; vPtr.key().doubleValue()) {</span>
+<span class="nc" id="L281">						heapT.decreaseKey(vPtr, Double.valueOf(vDistance));</span>
+<span class="nc" id="L282">						backtrackT[v] = e;</span>
 					}
 <span class="fc" id="L284">				}</span>
 

@@ -124,19 +124,19 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 <span class="fc" id="L125">		} else {</span>
 			/* parallel */
-<span class="fc" id="L127">			List&lt;RecursiveAction&gt; tasks = new ObjectArrayList&lt;&gt;(verticesSubsetSize);</span>
-<span class="fc" id="L128">			ThreadLocal&lt;ShortestPathSingleSource&gt; sssp =</span>
-<span class="fc" id="L129">					ThreadLocal.withInitial(() -&gt; ShortestPathSingleSource.newInstance());</span>
-<span class="fc bfc" id="L130" title="All 2 branches covered.">			for (int source : verticesSubset) {</span>
-<span class="fc" id="L131">				final int source0 = source;</span>
-<span class="fc" id="L132">				tasks.add(JGAlgoUtils</span>
-<span class="fc" id="L133">						.recursiveAction(() -&gt; ssspResults[vToResIdx[source0]] = (ShortestPathSingleSource.IResult) sssp</span>
-<span class="fc" id="L134">								.get().computeShortestPaths(g, w, Integer.valueOf(source0))));</span>
-<span class="fc" id="L135">			}</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">			for (RecursiveAction task : tasks)</span>
-<span class="fc" id="L137">				pool.execute(task);</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">			for (RecursiveAction task : tasks)</span>
-<span class="fc" id="L139">				task.join();</span>
+<span class="nc" id="L127">			List&lt;RecursiveAction&gt; tasks = new ObjectArrayList&lt;&gt;(verticesSubsetSize);</span>
+<span class="nc" id="L128">			ThreadLocal&lt;ShortestPathSingleSource&gt; sssp =</span>
+<span class="nc" id="L129">					ThreadLocal.withInitial(() -&gt; ShortestPathSingleSource.newInstance());</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">			for (int source : verticesSubset) {</span>
+<span class="nc" id="L131">				final int source0 = source;</span>
+<span class="nc" id="L132">				tasks.add(JGAlgoUtils</span>
+<span class="nc" id="L133">						.recursiveAction(() -&gt; ssspResults[vToResIdx[source0]] = (ShortestPathSingleSource.IResult) sssp</span>
+<span class="nc" id="L134">								.get().computeShortestPaths(g, w, Integer.valueOf(source0))));</span>
+<span class="nc" id="L135">			}</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">			for (RecursiveAction task : tasks)</span>
+<span class="nc" id="L137">				pool.execute(task);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">			for (RecursiveAction task : tasks)</span>
+<span class="nc" id="L139">				task.join();</span>
 		}
 
 <span class="fc bfc" id="L142" title="All 2 branches covered.">		if (allVertices) {</span>
@@ -216,12 +216,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Override
 		public double distance(int source, int target) {
-<span class="nc" id="L219">			throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
+<span class="fc" id="L219">			throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
 		}
 
 		@Override
 		public IPath getPath(int source, int target) {
-<span class="nc" id="L224">			throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
+<span class="fc" id="L224">			throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
 		}
 
 		@Override
@@ -252,7 +252,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Override
 		public IPath getNegativeCycle() {
-<span class="nc" id="L255">			throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
+<span class="fc" id="L255">			throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
 		}
 
 		private static class AllVertices extends SuccessRes {

@@ -581,9 +581,9 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 		@Override
 		public GraphBuilder&lt;V, E&gt; newBuilder() {
-<span class="nc" id="L584">			IndexGraphBuilder indexBuilder = factory.newBuilder();</span>
-<span class="nc bnc" id="L585" title="All 2 branches missed.">			return factory.directed ? new GraphBuilderImpl.Directed&lt;&gt;()</span>
-<span class="nc" id="L586">					: new GraphBuilderImpl.Undirected&lt;&gt;(indexBuilder);</span>
+<span class="fc" id="L584">			IndexGraphBuilder indexBuilder = factory.newBuilder();</span>
+<span class="pc bpc" id="L585" title="1 of 2 branches missed.">			return factory.directed ? new GraphBuilderImpl.Directed&lt;&gt;()</span>
+<span class="fc" id="L586">					: new GraphBuilderImpl.Undirected&lt;&gt;(indexBuilder);</span>
 		}
 
 		@Override
@@ -618,8 +618,8 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 		@Override
 		public GraphFactory&lt;V, E&gt; addHint(GraphFactory.Hint hint) {
-<span class="nc" id="L621">			factory.addHint(hint);</span>
-<span class="nc" id="L622">			return this;</span>
+<span class="fc" id="L621">			factory.addHint(hint);</span>
+<span class="fc" id="L622">			return this;</span>
 		}
 
 		@Override

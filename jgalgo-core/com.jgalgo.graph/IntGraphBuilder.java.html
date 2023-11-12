@@ -70,8 +70,8 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void addVertex(Integer vertex) {
-<span class="nc" id="L73">		addVertex(vertex.intValue());</span>
-<span class="nc" id="L74">	}</span>
+<span class="fc" id="L73">		addVertex(vertex.intValue());</span>
+<span class="fc" id="L74">	}</span>
 
 	/**
 	 * Add a new edge to the graph.
@@ -104,8 +104,8 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void addEdge(Integer source, Integer target, Integer edge) {
-<span class="nc" id="L107">		addEdge(source.intValue(), target.intValue(), edge.intValue());</span>
-<span class="nc" id="L108">	}</span>
+<span class="fc" id="L107">		addEdge(source.intValue(), target.intValue(), edge.intValue());</span>
+<span class="fc" id="L108">	}</span>
 
 	/**
 	 * Get the vertices weights of some key.

@@ -53,8 +53,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	@Override
 	IPath computeShortestTour(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L55">		final int n = g.vertices().size();</span>
-<span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if (n == 0)</span>
-<span class="nc" id="L57">			return null;</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		if (n == 0)</span>
+<span class="fc" id="L57">			return null;</span>
 <span class="fc" id="L58">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L59">		Assertions.Graphs.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
 		// if (VALIDATE_METRIC)
@@ -62,8 +62,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 		/* Calculate MST */
 <span class="fc" id="L64">		IntCollection mst = ((MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(g, w)).edges();</span>
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">		if (mst.size() &lt; n - 1)</span>
-<span class="nc" id="L66">			throw new IllegalArgumentException(&quot;graph is not connected&quot;);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		if (mst.size() &lt; n - 1)</span>
+<span class="fc" id="L66">			throw new IllegalArgumentException(&quot;graph is not connected&quot;);</span>
 
 		/* Build a graph with each MST edge duplicated */
 <span class="fc" id="L69">		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();</span>

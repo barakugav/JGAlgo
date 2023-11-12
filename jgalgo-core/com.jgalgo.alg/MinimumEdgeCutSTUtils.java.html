@@ -62,11 +62,11 @@ class MinimumEdgeCutSTUtils {
 		@Override
 		public &lt;V, E&gt; VertexBiPartition&lt;V, E&gt; computeMinimumCut(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w,
 				Collection&lt;V&gt; sources, Collection&lt;V&gt; sinks) {
-<span class="pc bpc" id="L65" title="1 of 2 branches missed.">			if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L66">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="nc" id="L67">				IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
-<span class="nc" id="L68">				IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
-<span class="nc" id="L69">				return (VertexBiPartition&lt;V, E&gt;) computeMinimumCut((IndexGraph) g, w0, sources0, sinks0);</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L66">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L67">				IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
+<span class="fc" id="L68">				IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
+<span class="fc" id="L69">				return (VertexBiPartition&lt;V, E&gt;) computeMinimumCut((IndexGraph) g, w0, sources0, sinks0);</span>
 
 			} else {
 <span class="fc" id="L72">				IndexGraph iGraph = g.indexGraph();</span>
