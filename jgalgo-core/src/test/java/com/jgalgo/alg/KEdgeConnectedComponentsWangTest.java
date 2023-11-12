@@ -16,12 +16,16 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Random;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.gen.EmptyGraphGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.RandomGraphBuilder;
+import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -29,6 +33,24 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 public class KEdgeConnectedComponentsWangTest extends TestBase {
+
+	@Test
+	public void emptyGraph() {
+		final long seed = 0x3bb18bd8832291d7L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		KEdgeConnectedComponentsWang algo = new KEdgeConnectedComponentsWang();
+		algo.setSeed(seedGen.nextSeed());
+
+		Graph<Integer, Integer> g = EmptyGraphGenerator.emptyGraph(Range.of(5));
+		VertexPartition<Integer, Integer> res = algo.computeKEdgeConnectedComponents(g, 3);
+		assertNotNull(res);
+		assertEquals(g.vertices().size(), res.numberOfBlocks());
+		
+		g = EmptyGraphGenerator.emptyGraph(Range.of(0));
+		res = algo.computeKEdgeConnectedComponents(g, 3);
+		assertNotNull(res);
+		assertEquals(0, res.numberOfBlocks());
+	}
 
 	@Test
 	public void randGraphUndirected() {
@@ -50,6 +72,7 @@ public class KEdgeConnectedComponentsWangTest extends TestBase {
 
 	static void randGraphs(KEdgeConnectedComponentsAlgo algo, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(4, 8, 1).repeat(128);
 		tester.addPhase().withArgs(4, 8, 2).repeat(128);
@@ -61,6 +84,7 @@ public class KEdgeConnectedComponentsWangTest extends TestBase {
 		tester.run((n, m, k) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			g = maybeIndexGraph(g, rand);
 			validateKEdgeConnectedComponents(g, k, algo);
 		});
 	}

@@ -20,6 +20,8 @@ import com.jgalgo.graph.IndexGraph;
 
 class KEdgeConnectedComponentsUtils {
 
+	private KEdgeConnectedComponentsUtils() {}
+
 	abstract static class AbstractImpl implements KEdgeConnectedComponentsAlgo {
 
 		@SuppressWarnings("unchecked")

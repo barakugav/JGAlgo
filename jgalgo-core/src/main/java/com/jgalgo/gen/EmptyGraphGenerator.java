@@ -16,6 +16,7 @@
 package com.jgalgo.gen;
 
 import java.util.Collection;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
@@ -61,6 +62,20 @@ public class EmptyGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 */
 	public static EmptyGraphGenerator<Integer, Integer> newIntInstance() {
 		return new EmptyGraphGenerator<>(true);
+	}
+
+	/**
+	 * Generate a new empty undirected graph.
+	 *
+	 * @param  <V>      the vertices type
+	 * @param  <E>      the edges type
+	 * @param  vertices the vertices of the generated graph
+	 * @return          a new empty undirected graph
+	 */
+	public static <V, E> Graph<V, E> emptyGraph(Collection<V> vertices) {
+		EmptyGraphGenerator<V, E> gen = EmptyGraphGenerator.newInstance();
+		gen.setVertices(vertices);
+		return gen.generate();
 	}
 
 	/**
