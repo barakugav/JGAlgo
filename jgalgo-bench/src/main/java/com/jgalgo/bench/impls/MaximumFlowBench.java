@@ -35,15 +35,15 @@ import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.IFlowNetworkInt;
-import com.jgalgo.alg.MaximumFlow;
 import com.jgalgo.alg.IPath;
+import com.jgalgo.alg.MaximumFlow;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
@@ -62,9 +62,8 @@ public class MaximumFlowBench {
 				graph.flow.setFlow(e, 0);
 	}
 
-	void benchMaxFlow(MaximumFlow.Builder builder, Blackhole blackhole) {
+	void benchMaxFlow(MaximumFlow algo, Blackhole blackhole) {
 		MaxFlowTask graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		MaximumFlow algo = builder.build();
 		double flow = algo.computeMaximumFlow(graph.g, graph.flow, Integer.valueOf(graph.source),
 				Integer.valueOf(graph.sink));
 		blackhole.consume(flow);
@@ -112,37 +111,37 @@ public class MaximumFlowBench {
 
 		@Benchmark
 		public void EdmondsKarp(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "edmonds-karp"), blackhole);
+			benchMaxFlow(getAlgo("edmonds-karp"), blackhole);
 		}
 
 		@Benchmark
 		public void Dinic(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "dinic"), blackhole);
+			benchMaxFlow(getAlgo("dinic"), blackhole);
 		}
 
 		@Benchmark
 		public void PushRelabelFifo(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo"), blackhole);
+			benchMaxFlow(getAlgo("push-relabel-fifo"), blackhole);
 		}
 
 		@Benchmark
 		public void PushRelabelToFront(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-move-to-front"), blackhole);
+			benchMaxFlow(getAlgo("push-relabel-move-to-front"), blackhole);
 		}
 
 		@Benchmark
 		public void PushRelabelHighestFirst(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-highest-first"), blackhole);
+			benchMaxFlow(getAlgo("push-relabel-highest-first"), blackhole);
 		}
 
 		@Benchmark
 		public void PushRelabelPartialAugment(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-partial-augment"), blackhole);
+			benchMaxFlow(getAlgo("push-relabel-partial-augment"), blackhole);
 		}
 
 		@Benchmark
 		public void PushRelabelLowestFirst(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-lowest-first"), blackhole);
+			benchMaxFlow(getAlgo("push-relabel-lowest-first"), blackhole);
 		}
 	}
 
@@ -188,48 +187,48 @@ public class MaximumFlowBench {
 
 		@Benchmark
 		public void EdmondsKarp(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "edmonds-karp"), blackhole);
+			benchMaxFlow(getAlgo("edmonds-karp"), blackhole);
 		}
 
 		@Benchmark
 		public void Dinic(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "dinic"), blackhole);
+			benchMaxFlow(getAlgo("dinic"), blackhole);
 		}
 
 		@Benchmark
 		public void DinicDynamicTrees(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "dinic-dynamic-trees"), blackhole);
+			benchMaxFlow(getAlgo("dinic-dynamic-trees"), blackhole);
 		}
 
 		@Benchmark
 		public void PushRelabelFifo(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo"), blackhole);
+			benchMaxFlow(getAlgo("push-relabel-fifo"), blackhole);
 		}
 
 		@Benchmark
 		public void PushRelabelToFront(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-move-to-front"), blackhole);
+			benchMaxFlow(getAlgo("push-relabel-move-to-front"), blackhole);
 		}
 
 		@Benchmark
 		public void PushRelabelHighestFirst(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-highest-first"), blackhole);
+			benchMaxFlow(getAlgo("push-relabel-highest-first"), blackhole);
 		}
 
 		@Benchmark
 		public void PushRelabelPartialAugment(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-partial-augment"), blackhole);
+			benchMaxFlow(getAlgo("push-relabel-partial-augment"), blackhole);
 		}
 
 		@Benchmark
 		public void PushRelabelLowestFirst(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-lowest-first"), blackhole);
+			benchMaxFlow(getAlgo("push-relabel-lowest-first"), blackhole);
 		}
 
 		/* way too slow, isn't close to compete with the other implementations */
 		// @Benchmark
 		// public void PushRelabelDynamicTrees(Blackhole blackhole) {
-		// benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo-dynamic-trees"), blackhole);
+		// benchMaxFlow(getAlgo("push-relabel-fifo-dynamic-trees"), blackhole);
 		// }
 	}
 
@@ -276,49 +275,55 @@ public class MaximumFlowBench {
 
 		@Benchmark
 		public void EdmondsKarp(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "edmonds-karp"), blackhole);
+			benchMaxFlow(getAlgo("edmonds-karp"), blackhole);
 		}
 
 		@Benchmark
 		public void Dinic(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "dinic"), blackhole);
+			benchMaxFlow(getAlgo("dinic"), blackhole);
 		}
 
 		@Benchmark
 		public void DinicDynamicTrees(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "dinic-dynamic-trees"), blackhole);
+			benchMaxFlow(getAlgo("dinic-dynamic-trees"), blackhole);
 		}
 
 		@Benchmark
 		public void PushRelabelFifo(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo"), blackhole);
+			benchMaxFlow(getAlgo("push-relabel-fifo"), blackhole);
 		}
 
 		@Benchmark
 		public void PushRelabelToFront(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-move-to-front"), blackhole);
+			benchMaxFlow(getAlgo("push-relabel-move-to-front"), blackhole);
 		}
 
 		@Benchmark
 		public void PushRelabelHighestFirst(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-highest-first"), blackhole);
+			benchMaxFlow(getAlgo("push-relabel-highest-first"), blackhole);
 		}
 
 		@Benchmark
 		public void PushRelabelPartialAugment(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-partial-augment"), blackhole);
+			benchMaxFlow(getAlgo("push-relabel-partial-augment"), blackhole);
 		}
 
 		@Benchmark
 		public void PushRelabelLowestFirst(Blackhole blackhole) {
-			benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-lowest-first"), blackhole);
+			benchMaxFlow(getAlgo("push-relabel-lowest-first"), blackhole);
 		}
 
 		/* way too slow, isn't close to compete with the other implementations */
 		// @Benchmark
 		// public void PushRelabelDynamicTrees(Blackhole blackhole) {
-		// benchMaxFlow(MaximumFlow.newBuilder().setOption("impl", "push-relabel-fifo-dynamic-trees"), blackhole);
+		// benchMaxFlow(getAlgo("push-relabel-fifo-dynamic-trees"), blackhole);
 		// }
+	}
+
+	private static MaximumFlow getAlgo(String implName) {
+		MaximumFlow.Builder builder = MaximumFlow.newBuilder();
+		builder.setOption("impl", implName);
+		return builder.build();
 	}
 
 	private static class MaxFlowTask {

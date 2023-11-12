@@ -37,8 +37,8 @@ import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -72,43 +72,48 @@ public class MSTBench {
 		}
 	}
 
-	private void benchMST(MinimumSpanningTree.Builder builder, Blackhole blackhole) {
+	private void benchMST(MinimumSpanningTree algo, Blackhole blackhole) {
 		Pair<IntGraph, IWeightFunctionInt> gw = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 		IntGraph g = gw.first();
 		IWeightFunctionInt w = gw.second();
-		MinimumSpanningTree algo = builder.build();
 		MinimumSpanningTree.IResult mst = (MinimumSpanningTree.IResult) algo.computeMinimumSpanningTree(g, w);
 		blackhole.consume(mst);
 	}
 
 	@Benchmark
 	public void Boruvka(Blackhole blackhole) {
-		benchMST(MinimumSpanningTree.newBuilder().setOption("impl", "boruvka"), blackhole);
+		benchMST(getAlgo("boruvka"), blackhole);
 	}
 
 	@Benchmark
 	public void FredmanTarjan(Blackhole blackhole) {
-		benchMST(MinimumSpanningTree.newBuilder().setOption("impl", "fredman-tarjan"), blackhole);
+		benchMST(getAlgo("fredman-tarjan"), blackhole);
 	}
 
 	@Benchmark
 	public void Kruskal(Blackhole blackhole) {
-		benchMST(MinimumSpanningTree.newBuilder().setOption("impl", "kruskal"), blackhole);
+		benchMST(getAlgo("kruskal"), blackhole);
 	}
 
 	@Benchmark
 	public void Prim(Blackhole blackhole) {
-		benchMST(MinimumSpanningTree.newBuilder().setOption("impl", "prim"), blackhole);
+		benchMST(getAlgo("prim"), blackhole);
 	}
 
 	@Benchmark
 	public void Yao(Blackhole blackhole) {
-		benchMST(MinimumSpanningTree.newBuilder().setOption("impl", "yao"), blackhole);
+		benchMST(getAlgo("yao"), blackhole);
 	}
 
 	@Benchmark
 	public void KargerKleinTarjan(Blackhole blackhole) {
-		benchMST(MinimumSpanningTree.newBuilder().setOption("impl", "karger-klein-tarjan"), blackhole);
+		benchMST(getAlgo("karger-klein-tarjan"), blackhole);
+	}
+
+	private static MinimumSpanningTree getAlgo(String implName) {
+		MinimumSpanningTree.Builder builder = MinimumSpanningTree.newBuilder();
+		builder.setOption("impl", implName);
+		return builder.build();
 	}
 
 }

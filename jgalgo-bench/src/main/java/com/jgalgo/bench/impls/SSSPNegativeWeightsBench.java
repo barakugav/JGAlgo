@@ -49,9 +49,8 @@ public class SSSPNegativeWeightsBench {
 	final int graphsNum = 31;
 	private final AtomicInteger graphIdx = new AtomicInteger();
 
-	void benchSSSP(ShortestPathSingleSource.Builder builder, Blackhole blackhole) {
+	void benchSSSP(ShortestPathSingleSource algo, Blackhole blackhole) {
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		ShortestPathSingleSource algo = builder.build();
 		ShortestPathSingleSource.IResult result = (ShortestPathSingleSource.IResult) algo.computeShortestPaths(args.g,
 				args.w, Integer.valueOf(args.source));
 		blackhole.consume(result);
@@ -89,12 +88,12 @@ public class SSSPNegativeWeightsBench {
 
 		@Benchmark
 		public void BellmanFord(Blackhole blackhole) {
-			benchSSSP(ShortestPathSingleSource.newBuilder().setOption("impl", "bellman-ford"), blackhole);
+			benchSSSP(getAlgo("bellman-ford"), blackhole);
 		}
 
 		@Benchmark
 		public void Goldberg(Blackhole blackhole) {
-			benchSSSP(ShortestPathSingleSource.newBuilder().setOption("impl", "goldberg"), blackhole);
+			benchSSSP(getAlgo("goldberg"), blackhole);
 		}
 	}
 
@@ -130,12 +129,12 @@ public class SSSPNegativeWeightsBench {
 
 		@Benchmark
 		public void BellmanFord(Blackhole blackhole) {
-			benchSSSP(ShortestPathSingleSource.newBuilder().setOption("impl", "bellman-ford"), blackhole);
+			benchSSSP(getAlgo("bellman-ford"), blackhole);
 		}
 
 		@Benchmark
 		public void Goldberg(Blackhole blackhole) {
-			benchSSSP(ShortestPathSingleSource.newBuilder().setOption("impl", "goldberg"), blackhole);
+			benchSSSP(getAlgo("goldberg"), blackhole);
 		}
 	}
 
@@ -172,13 +171,19 @@ public class SSSPNegativeWeightsBench {
 
 		@Benchmark
 		public void BellmanFord(Blackhole blackhole) {
-			benchSSSP(ShortestPathSingleSource.newBuilder().setOption("impl", "bellman-ford"), blackhole);
+			benchSSSP(getAlgo("bellman-ford"), blackhole);
 		}
 
 		@Benchmark
 		public void Goldberg(Blackhole blackhole) {
-			benchSSSP(ShortestPathSingleSource.newBuilder().setOption("impl", "goldberg"), blackhole);
+			benchSSSP(getAlgo("goldberg"), blackhole);
 		}
+	}
+
+	private static ShortestPathSingleSource getAlgo(String implName) {
+		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.newBuilder();
+		builder.setOption("impl", implName);
+		return builder.build();
 	}
 
 	private static class GraphArgs {

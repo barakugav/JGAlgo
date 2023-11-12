@@ -239,7 +239,7 @@ class ShortestPathSingleSourceUtils {
 		}
 
 		@Override
-		public ShortestPathSingleSource.Builder setOption(String key, Object value) {
+		public void setOption(String key, Object value) {
 			switch (key) {
 				case "impl":
 					impl = (String) value;
@@ -250,7 +250,6 @@ class ShortestPathSingleSourceUtils {
 				default:
 					ShortestPathSingleSource.Builder.super.setOption(key, value);
 			}
-			return this;
 		}
 	}
 

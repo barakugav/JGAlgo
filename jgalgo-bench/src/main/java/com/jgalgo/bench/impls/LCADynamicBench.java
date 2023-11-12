@@ -72,9 +72,8 @@ public class LCADynamicBench {
 		}
 	}
 
-	private void benchLCA(LowestCommonAncestorDynamic.Builder builder, Blackhole blackhole) {
+	private void benchLCA(LowestCommonAncestorDynamic lca, Blackhole blackhole) {
 		Collection<Op> ops = lcaOps.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		LowestCommonAncestorDynamic lca = builder.build();
 		LowestCommonAncestorDynamic.Vertex[] vertices = new LowestCommonAncestorDynamic.Vertex[n];
 		int verticesNum = 0;
 		for (Op op0 : ops) {
@@ -102,17 +101,23 @@ public class LCADynamicBench {
 
 	@Benchmark
 	public void GabowSimple(Blackhole blackhole) {
-		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption("impl", "gabow-simple"), blackhole);
+		benchLCA(getAlgo("gabow-simple"), blackhole);
 	}
 
 	@Benchmark
 	public void GabowLinear(Blackhole blackhole) {
-		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption("impl", "gabow-ints"), blackhole);
+		benchLCA(getAlgo("gabow-ints"), blackhole);
 	}
 
 	@Benchmark
 	public void GabowLongs(Blackhole blackhole) {
-		benchLCA(LowestCommonAncestorDynamic.newBuilder().setOption("impl", "gabow-longs"), blackhole);
+		benchLCA(getAlgo("gabow-longs"), blackhole);
+	}
+
+	private static LowestCommonAncestorDynamic getAlgo(String implName) {
+		LowestCommonAncestorDynamic.Builder builder = LowestCommonAncestorDynamic.newBuilder();
+		builder.setOption("impl", implName);
+		return builder.build();
 	}
 
 	private static Collection<Op> generateRandOps(int n, int m, long seed) {

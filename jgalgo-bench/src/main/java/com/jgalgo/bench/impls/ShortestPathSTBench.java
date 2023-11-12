@@ -113,7 +113,7 @@ public class ShortestPathSTBench {
 
 		@Benchmark
 		public void AStar(Blackhole blackhole) {
-			benchStShortestPath(ShortestPathHeuristicST.newBuilder().setOption("impl", "a-star").build(), blackhole);
+			benchStShortestPath(getAlgo("a-star"), blackhole);
 		}
 	}
 
@@ -155,7 +155,7 @@ public class ShortestPathSTBench {
 
 		@Benchmark
 		public void AStar(Blackhole blackhole) {
-			benchStShortestPath(ShortestPathHeuristicST.newBuilder().setOption("impl", "a-star").build(), blackhole);
+			benchStShortestPath(getAlgo("a-star"), blackhole);
 		}
 	}
 
@@ -198,8 +198,14 @@ public class ShortestPathSTBench {
 
 		@Benchmark
 		public void AStar(Blackhole blackhole) {
-			benchStShortestPath(ShortestPathHeuristicST.newBuilder().setOption("impl", "a-star").build(), blackhole);
+			benchStShortestPath(getAlgo("a-star"), blackhole);
 		}
+	}
+
+	private static ShortestPathHeuristicST getAlgo(String implName) {
+		ShortestPathHeuristicST.Builder builder = ShortestPathHeuristicST.newBuilder();
+		builder.setOption("impl", implName);
+		return builder.build();
 	}
 
 	private static class GraphArgs {

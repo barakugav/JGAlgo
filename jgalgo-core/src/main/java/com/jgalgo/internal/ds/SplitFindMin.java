@@ -125,11 +125,6 @@ public interface SplitFindMin<K> extends SplitFind {
 			return buildWithFindMin();
 		}
 
-		@Override
-		default SplitFindMin.Builder setOption(String key, Object value) {
-			SplitFind.Builder.super.setOption(key, value);
-			return this;
-		}
 	}
 
 }

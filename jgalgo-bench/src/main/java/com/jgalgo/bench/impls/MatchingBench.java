@@ -40,10 +40,10 @@ import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -396,8 +396,10 @@ public class MatchingBench {
 
 	}
 
-	private static MatchingAlgo getAlgo(String name) {
-		return MatchingAlgo.newBuilder().setOption("impl", name).build();
+	private static MatchingAlgo getAlgo(String implName) {
+		MatchingAlgo.Builder builder = MatchingAlgo.newBuilder();
+		builder.setOption("impl", implName);
+		return builder.build();
 	}
 
 }

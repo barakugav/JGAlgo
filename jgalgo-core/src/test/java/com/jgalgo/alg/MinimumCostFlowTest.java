@@ -85,9 +85,12 @@ public class MinimumCostFlowTest extends TestBase {
 
 		assertThrows(IllegalArgumentException.class, () -> builder.setOption("jdasg", "lhfj"));
 
-		assertNotNull(builder.setOption("impl", "cycle-canceling").build());
-		assertNotNull(builder.setOption("impl", "cost-scaling").build());
-		assertThrows(IllegalArgumentException.class, () -> builder.setOption("impl", "dmksm").build());
+		builder.setOption("impl", "cycle-canceling");
+		assertNotNull(builder.build());
+		builder.setOption("impl", "cost-scaling");
+		assertNotNull(builder.build());
+		builder.setOption("impl", "dmksm");
+		assertThrows(IllegalArgumentException.class, () -> builder.build());
 	}
 
 }

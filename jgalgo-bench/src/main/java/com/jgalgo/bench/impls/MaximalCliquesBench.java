@@ -54,9 +54,8 @@ public class MaximalCliquesBench {
 	final AtomicInteger graphIdx = new AtomicInteger();
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	void benchMaximalCliques(MaximalCliques.Builder builder, Blackhole blackhole) {
+	void benchMaximalCliques(MaximalCliques algo, Blackhole blackhole) {
 		IntGraph graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		MaximalCliques algo = builder.build();
 		for (Iterator<IntSet> cliqueIter = (Iterator) algo.iterateMaximalCliques(graph); cliqueIter.hasNext();)
 			blackhole.consume(cliqueIter.next());
 	}
@@ -87,12 +86,12 @@ public class MaximalCliquesBench {
 
 		@Benchmark
 		public void BronKerbosch(Blackhole blackhole) {
-			benchMaximalCliques(MaximalCliques.newBuilder().setOption("impl", "bron-kerbosch"), blackhole);
+			benchMaximalCliques(getAlgo("bron-kerbosch"), blackhole);
 		}
 
 		@Benchmark
 		public void BronKerboschPivot(Blackhole blackhole) {
-			benchMaximalCliques(MaximalCliques.newBuilder().setOption("impl", "bron-kerbosch-pivot"), blackhole);
+			benchMaximalCliques(getAlgo("bron-kerbosch-pivot"), blackhole);
 		}
 	}
 
@@ -122,12 +121,12 @@ public class MaximalCliquesBench {
 
 		@Benchmark
 		public void BronKerbosch(Blackhole blackhole) {
-			benchMaximalCliques(MaximalCliques.newBuilder().setOption("impl", "bron-kerbosch"), blackhole);
+			benchMaximalCliques(getAlgo("bron-kerbosch"), blackhole);
 		}
 
 		@Benchmark
 		public void BronKerboschPivot(Blackhole blackhole) {
-			benchMaximalCliques(MaximalCliques.newBuilder().setOption("impl", "bron-kerbosch-pivot"), blackhole);
+			benchMaximalCliques(getAlgo("bron-kerbosch-pivot"), blackhole);
 		}
 	}
 
@@ -158,13 +157,19 @@ public class MaximalCliquesBench {
 
 		@Benchmark
 		public void BronKerbosch(Blackhole blackhole) {
-			benchMaximalCliques(MaximalCliques.newBuilder().setOption("impl", "bron-kerbosch"), blackhole);
+			benchMaximalCliques(getAlgo("bron-kerbosch"), blackhole);
 		}
 
 		@Benchmark
 		public void BronKerboschPivot(Blackhole blackhole) {
-			benchMaximalCliques(MaximalCliques.newBuilder().setOption("impl", "bron-kerbosch-pivot"), blackhole);
+			benchMaximalCliques(getAlgo("bron-kerbosch-pivot"), blackhole);
 		}
+	}
+
+	private static MaximalCliques getAlgo(String implName) {
+		MaximalCliques.Builder builder = MaximalCliques.newBuilder();
+		builder.setOption("impl", implName);
+		return builder.build();
 	}
 
 	static Pair<IntCollection, IntCollection> chooseMultiSourceMultiSink(IntGraph g, Random rand) {

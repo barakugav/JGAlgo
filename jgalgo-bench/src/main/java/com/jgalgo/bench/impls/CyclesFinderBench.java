@@ -73,21 +73,26 @@ public class CyclesFinderBench {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void benchMST(CyclesFinder.Builder builder, Blackhole blackhole) {
+	private void benchMST(CyclesFinder algo, Blackhole blackhole) {
 		IntGraph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		CyclesFinder algo = builder.build();
 		List<IPath> cycles = new ObjectArrayList<>((Iterator) algo.findAllCycles(g));
 		blackhole.consume(cycles);
 	}
 
 	@Benchmark
 	public void Johnson(Blackhole blackhole) {
-		benchMST(CyclesFinder.newBuilder().setOption("impl", "johnson"), blackhole);
+		benchMST(getAlgo("johnson"), blackhole);
 	}
 
 	@Benchmark
 	public void Tarjan(Blackhole blackhole) {
-		benchMST(CyclesFinder.newBuilder().setOption("impl", "tarjan"), blackhole);
+		benchMST(getAlgo("tarjan"), blackhole);
+	}
+
+	private static CyclesFinder getAlgo(String implName) {
+		CyclesFinder.Builder builder = CyclesFinder.newBuilder();
+		builder.setOption("impl", implName);
+		return builder.build();
 	}
 
 }

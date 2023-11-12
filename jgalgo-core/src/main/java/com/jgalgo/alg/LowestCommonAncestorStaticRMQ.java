@@ -41,12 +41,16 @@ import com.jgalgo.internal.util.Assertions;
  */
 class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 
-	private final RMQStatic rmq = RMQStatic.newBuilder().setOption("impl", "plus-minus-one").build();
+	private final RMQStatic rmq;
 
 	/**
 	 * Create a new static LCA algorithm object.
 	 */
-	LowestCommonAncestorStaticRMQ() {}
+	LowestCommonAncestorStaticRMQ() {
+		RMQStatic.Builder rmqBuilder = RMQStatic.newBuilder();
+		rmqBuilder.setOption("impl", "plus-minus-one");
+		rmq = rmqBuilder.build();
+	}
 
 	@Override
 	LowestCommonAncestorStatic.IDataStructure preProcessTree(IndexGraph tree, int root) {

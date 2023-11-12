@@ -36,8 +36,8 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.UnionFind;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -124,12 +124,18 @@ public class UnionFindBench {
 
 	@Benchmark
 	public void UnionFindArrayMSTKruskal(Blackhole blackhole) {
-		benchUnionFindByRunningMSTKruskal(UnionFind.newBuilder().setOption("impl", "array"), blackhole);
+		benchUnionFindByRunningMSTKruskal(getAlgo("array"), blackhole);
 	}
 
 	@Benchmark
 	public void UnionFindPtrMSTKruskal(Blackhole blackhole) {
-		benchUnionFindByRunningMSTKruskal(UnionFind.newBuilder().setOption("impl", "ptr"), blackhole);
+		benchUnionFindByRunningMSTKruskal(getAlgo("ptr"), blackhole);
+	}
+
+	private static UnionFind.Builder getAlgo(String implName) {
+		UnionFind.Builder builder = UnionFind.newBuilder();
+		builder.setOption("impl", implName);
+		return builder;
 	}
 
 }

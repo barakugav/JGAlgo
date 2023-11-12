@@ -71,21 +71,25 @@ public class StrongConnectedComponentsBench {
 		}
 	}
 
-	private void benchAPSPPositiveWeights(StronglyConnectedComponentsAlgo.Builder builder, Blackhole blackhole) {
+	private void benchAPSPPositiveWeights(StronglyConnectedComponentsAlgo algo, Blackhole blackhole) {
 		IntGraph graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		StronglyConnectedComponentsAlgo algo = builder.build();
 		IVertexPartition result = (IVertexPartition) algo.findStronglyConnectedComponents(graph);
 		blackhole.consume(result);
 	}
 
 	@Benchmark
 	public void pathBasedDfs(Blackhole blackhole) {
-		benchAPSPPositiveWeights(StronglyConnectedComponentsAlgo.newBuilder().setOption("impl", "path-based"),
-				blackhole);
+		benchAPSPPositiveWeights(getAlgo("path-based"), blackhole);
 	}
 
 	@Benchmark
 	public void Tarjan(Blackhole blackhole) {
-		benchAPSPPositiveWeights(StronglyConnectedComponentsAlgo.newBuilder().setOption("impl", "tarjan"), blackhole);
+		benchAPSPPositiveWeights(getAlgo("tarjan"), blackhole);
+	}
+
+	private static StronglyConnectedComponentsAlgo getAlgo(String implName) {
+		StronglyConnectedComponentsAlgo.Builder builder = StronglyConnectedComponentsAlgo.newBuilder();
+		builder.setOption("impl", implName);
+		return builder.build();
 	}
 }

@@ -16,6 +16,8 @@
 
 package com.jgalgo.internal.ds;
 
+import com.jgalgo.alg.AlgorithmBuilderBase;
+
 /**
  * Static Range Minimum Query (RMQ) algorithm.
  *
@@ -118,7 +120,7 @@ public interface RMQStatic {
 			}
 
 			@Override
-			public RMQStatic.Builder setOption(String key, Object value) {
+			public void setOption(String key, Object value) {
 				switch (key) {
 					case "impl":
 						impl = (String) value;
@@ -126,7 +128,6 @@ public interface RMQStatic {
 					default:
 						RMQStatic.Builder.super.setOption(key, value);
 				}
-				return this;
 			}
 		};
 	}
@@ -137,7 +138,7 @@ public interface RMQStatic {
 	 * @see    RMQStatic#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends AlgorithmBuilderBase {
 
 		/**
 		 * Create a new static range minimum queries algorithm.
@@ -145,25 +146,6 @@ public interface RMQStatic {
 		 * @return a new static range minimum queries algorithm
 		 */
 		RMQStatic build();
-
-		/**
-		 * <b>[TL;DR Don't call me!]</b> Set an option.
-		 *
-		 * <p>
-		 * The builder might support different options to customize its implementation. These options never change the
-		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
-		 * because they are not part of the API and may change in the future.
-		 *
-		 * <p>
-		 * These options are mainly for debug and benchmark purposes.
-		 *
-		 * @param  key   the option key
-		 * @param  value the option value
-		 * @return       this builder
-		 */
-		default RMQStatic.Builder setOption(String key, Object value) {
-			throw new IllegalArgumentException("unknown option key: " + key);
-		}
 	}
 
 }

@@ -104,7 +104,7 @@ public interface WeaklyConnectedComponentsAlgo {
 	 * @see    WeaklyConnectedComponentsAlgo#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends AlgorithmBuilderBase {
 
 		/**
 		 * Create a new algorithm object for weakly connected components computation.
@@ -112,25 +112,6 @@ public interface WeaklyConnectedComponentsAlgo {
 		 * @return a new connected components algorithm
 		 */
 		WeaklyConnectedComponentsAlgo build();
-
-		/**
-		 * <b>[TL;DR Don't call me!]</b> Set an option.
-		 *
-		 * <p>
-		 * The builder might support different options to customize its implementation. These options never change the
-		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
-		 * because they are not part of the API and may change in the future.
-		 *
-		 * <p>
-		 * These options are mainly for debug and benchmark purposes.
-		 *
-		 * @param  key   the option key
-		 * @param  value the option value
-		 * @return       this builder
-		 */
-		default WeaklyConnectedComponentsAlgo.Builder setOption(String key, Object value) {
-			throw new IllegalArgumentException("unknown option key: " + key);
-		}
 	}
 
 }

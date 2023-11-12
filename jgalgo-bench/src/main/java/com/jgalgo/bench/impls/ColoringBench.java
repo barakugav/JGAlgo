@@ -80,19 +80,25 @@ public class ColoringBench {
 	@Benchmark
 	public void Greedy(Blackhole blackhole) {
 		final long seed = 0xefeae78aba502d4aL;
-		ColoringAlgo algo = ColoringAlgo.newBuilder().setOption("impl", "greedy").build();
+		ColoringAlgo algo = getAlgo("greedy");
 		((RandomizedAlgorithm) algo).setSeed(seed);
 		benchColoring(algo, blackhole);
 	}
 
 	@Benchmark
 	public void DSatur(Blackhole blackhole) {
-		benchColoring(ColoringAlgo.newBuilder().setOption("impl", "dsatur").build(), blackhole);
+		benchColoring(getAlgo("dsatur"), blackhole);
 	}
 
 	@Benchmark
 	public void RecursiveLargestFirst(Blackhole blackhole) {
-		benchColoring(ColoringAlgo.newBuilder().setOption("impl", "rlf").build(), blackhole);
+		benchColoring(getAlgo("rlf"), blackhole);
+	}
+
+	private static ColoringAlgo getAlgo(String implName) {
+		ColoringAlgo.Builder builder = ColoringAlgo.newBuilder();
+		builder.setOption("impl", implName);
+		return builder.build();
 	}
 
 }

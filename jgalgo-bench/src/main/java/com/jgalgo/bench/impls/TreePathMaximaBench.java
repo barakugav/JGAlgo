@@ -76,9 +76,8 @@ public class TreePathMaximaBench {
 		}
 	}
 
-	private void benchTPM(TreePathMaxima.Builder builder, Blackhole blackhole) {
+	private void benchTPM(TreePathMaxima algo, Blackhole blackhole) {
 		TPMArgs g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		TreePathMaxima algo = builder.build();
 		TreePathMaxima.IResult result =
 				(TreePathMaxima.IResult) algo.computeHeaviestEdgeInTreePaths(g.tree, g.w, g.queries);
 		blackhole.consume(result);
@@ -86,12 +85,16 @@ public class TreePathMaximaBench {
 
 	@Benchmark
 	public void TPMHagerup(Blackhole blackhole) {
-		benchTPM(TreePathMaxima.newBuilder().setOption("bits-lookup-tables-enable", Boolean.FALSE), blackhole);
+		TreePathMaxima.Builder builder = TreePathMaxima.newBuilder();
+		builder.setOption("bits-lookup-tables-enable", Boolean.FALSE);
+		benchTPM(builder.build(), blackhole);
 	}
 
 	@Benchmark
 	public void TPMHagerupWithBitsLookupTable(Blackhole blackhole) {
-		benchTPM(TreePathMaxima.newBuilder().setOption("bits-lookup-tables-enable", Boolean.TRUE), blackhole);
+		TreePathMaxima.Builder builder = TreePathMaxima.newBuilder();
+		builder.setOption("bits-lookup-tables-enable", Boolean.TRUE);
+		benchTPM(builder.build(), blackhole);
 	}
 
 	private static class TPMArgs {

@@ -83,9 +83,12 @@ class StronglyConnectedComponentsTestUtils extends TestBase {
 
 		assertThrows(IllegalArgumentException.class, () -> builder.setOption("jdasg", "lhfj"));
 
-		assertNotNull(builder.setOption("impl", "path-based").build());
-		assertNotNull(builder.setOption("impl", "tarjan").build());
-		assertThrows(IllegalArgumentException.class, () -> builder.setOption("impl", "dmksm").build());
+		builder.setOption("impl", "path-based");
+		assertNotNull(builder.build());
+		builder.setOption("impl", "tarjan");
+		assertNotNull(builder.build());
+		builder.setOption("impl", "dmksm");
+		assertThrows(IllegalArgumentException.class, () -> builder.build());
 	}
 
 }

@@ -75,26 +75,25 @@ public class RMQStaticBench {
 			}
 		}
 
-		private void benchPreProcess(RMQStatic.Builder builder, Blackhole blackhole) {
+		private void benchPreProcess(RMQStatic rmq, Blackhole blackhole) {
 			Pair<Integer, RMQStaticComparator> arr = arrays.get(arrIdx.getAndUpdate(i -> (i + 1) % arrsNum));
-			RMQStatic rmq = builder.build();
 			rmq.preProcessSequence(arr.second(), arr.first().intValue());
 			blackhole.consume(rmq);
 		}
 
 		@Benchmark
 		public void LookupTable(Blackhole blackhole) {
-			benchPreProcess(RMQStatic.newBuilder().setOption("impl", "simple-lookup-table"), blackhole);
+			benchPreProcess(getAlgo("simple-lookup-table"), blackhole);
 		}
 
 		@Benchmark
 		public void PowerOf2Table(Blackhole blackhole) {
-			benchPreProcess(RMQStatic.newBuilder().setOption("impl", "power-of-2-table"), blackhole);
+			benchPreProcess(getAlgo("power-of-2-table"), blackhole);
 		}
 
 		@Benchmark
 		public void CartesianTrees(Blackhole blackhole) {
-			benchPreProcess(RMQStatic.newBuilder().setOption("impl", "cartesian-trees"), blackhole);
+			benchPreProcess(getAlgo("cartesian-trees"), blackhole);
 		}
 
 	}
@@ -133,7 +132,7 @@ public class RMQStaticBench {
 		@Benchmark
 		public void benchPreProcess(Blackhole blackhole) {
 			Pair<Integer, RMQStaticComparator> arr = arrays.get(arrIdx.getAndUpdate(i -> (i + 1) % arrsNum));
-			RMQStatic rmq = RMQStatic.newBuilder().setOption("impl", "plus-minus-one").build();
+			RMQStatic rmq = getAlgo("plus-minus-one");
 			rmq.preProcessSequence(arr.second(), arr.first().intValue());
 			blackhole.consume(rmq);
 		}
@@ -154,12 +153,11 @@ public class RMQStaticBench {
 			return TestUtils.randArray(size, seed);
 		}
 
-		Pair<RMQStatic.DataStructure, long[]> createArray(RMQStatic.Builder builder, int n) {
+		Pair<RMQStatic.DataStructure, long[]> createArray(RMQStatic rmq, int n) {
 			final SeedGenerator seedGen = new SeedGenerator(0x5b3fba9dd26f2769L);
 
 			int[] arr = randArray(n, seedGen.nextSeed());
 
-			RMQStatic rmq = builder.build();
 			RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQStaticComparator.ofIntArray(arr), n);
 
 			int queriesNum = n * 53;
@@ -181,12 +179,12 @@ public class RMQStaticBench {
 			return Pair.of(rmqDS, queries0);
 		}
 
-		private void setupCreateArray(String args, RMQStatic.Builder builder) {
+		private void setupCreateArray(String args, RMQStatic rmq) {
 			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 			n = Integer.parseInt(argsMap.get("N"));
 
-			Pair<RMQStatic.DataStructure, long[]> p = createArray(builder, n);
-			rmq = p.first();
+			Pair<RMQStatic.DataStructure, long[]> p = createArray(rmq, n);
+			this.rmq = p.first();
 			queriesAll = p.second();
 			queryIdx = 0;
 		}
@@ -221,7 +219,7 @@ public class RMQStaticBench {
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
-				super.setupCreateArray(args, RMQStatic.newBuilder().setOption("impl", "simple-lookup-table"));
+				super.setupCreateArray(args, getAlgo("simple-lookup-table"));
 			}
 
 			@Setup(Level.Invocation)
@@ -249,7 +247,7 @@ public class RMQStaticBench {
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
-				super.setupCreateArray(args, RMQStatic.newBuilder().setOption("impl", "power-of-2-table"));
+				super.setupCreateArray(args, getAlgo("power-of-2-table"));
 			}
 
 			@Setup(Level.Invocation)
@@ -277,7 +275,7 @@ public class RMQStaticBench {
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
-				super.setupCreateArray(args, RMQStatic.newBuilder().setOption("impl", "plus-minus-one"));
+				super.setupCreateArray(args, getAlgo("plus-minus-one"));
 			}
 
 			@Override
@@ -314,7 +312,7 @@ public class RMQStaticBench {
 
 			@Setup(Level.Iteration)
 			public void setupCreateArray() {
-				super.setupCreateArray(args, RMQStatic.newBuilder().setOption("impl", "cartesian-trees"));
+				super.setupCreateArray(args, getAlgo("cartesian-trees"));
 			}
 
 			@Setup(Level.Invocation)
@@ -329,6 +327,12 @@ public class RMQStaticBench {
 			}
 		}
 
+	}
+
+	private static RMQStatic getAlgo(String implName) {
+		RMQStatic.Builder builder = RMQStatic.newBuilder();
+		builder.setOption("impl", implName);
+		return builder.build();
 	}
 
 }
