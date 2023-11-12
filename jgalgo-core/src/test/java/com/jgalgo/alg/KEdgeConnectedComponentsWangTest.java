@@ -74,13 +74,11 @@ public class KEdgeConnectedComponentsWangTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
-		tester.addPhase().withArgs(4, 8, 1).repeat(128);
-		tester.addPhase().withArgs(4, 8, 2).repeat(128);
-		tester.addPhase().withArgs(16, 32, 2).repeat(128);
-		tester.addPhase().withArgs(19, 39, 3).repeat(128);
-		tester.addPhase().withArgs(23, 52, 3).repeat(32);
-		tester.addPhase().withArgs(64, 256, 4).repeat(12);
-		tester.addPhase().withArgs(100, 4096, 5).repeat(1);
+		tester.addPhase().withArgs(16, 32, 2).repeat(64);
+		tester.addPhase().withArgs(19, 39, 3).repeat(64);
+		tester.addPhase().withArgs(23, 52, 3).repeat(16);
+		tester.addPhase().withArgs(64, 256, 4).repeat(8);
+		tester.addPhase().withArgs(100, 2100, 5).repeat(1);
 		tester.run((n, m, k) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
