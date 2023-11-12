@@ -80,20 +80,26 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Benchmark
 	public void Greedy(Blackhole blackhole) {
 <span class="fc" id="L82">		final long seed = 0xefeae78aba502d4aL;</span>
-<span class="fc" id="L83">		ColoringAlgo algo = ColoringAlgo.newBuilder().setOption(&quot;impl&quot;, &quot;greedy&quot;).build();</span>
+<span class="fc" id="L83">		ColoringAlgo algo = getAlgo(&quot;greedy&quot;);</span>
 <span class="fc" id="L84">		((RandomizedAlgorithm) algo).setSeed(seed);</span>
 <span class="fc" id="L85">		benchColoring(algo, blackhole);</span>
 <span class="fc" id="L86">	}</span>
 
 	@Benchmark
 	public void DSatur(Blackhole blackhole) {
-<span class="fc" id="L90">		benchColoring(ColoringAlgo.newBuilder().setOption(&quot;impl&quot;, &quot;dsatur&quot;).build(), blackhole);</span>
+<span class="fc" id="L90">		benchColoring(getAlgo(&quot;dsatur&quot;), blackhole);</span>
 <span class="fc" id="L91">	}</span>
 
 	@Benchmark
 	public void RecursiveLargestFirst(Blackhole blackhole) {
-<span class="fc" id="L95">		benchColoring(ColoringAlgo.newBuilder().setOption(&quot;impl&quot;, &quot;rlf&quot;).build(), blackhole);</span>
+<span class="fc" id="L95">		benchColoring(getAlgo(&quot;rlf&quot;), blackhole);</span>
 <span class="fc" id="L96">	}</span>
+
+	private static ColoringAlgo getAlgo(String implName) {
+<span class="fc" id="L99">		ColoringAlgo.Builder builder = ColoringAlgo.newBuilder();</span>
+<span class="fc" id="L100">		builder.setOption(&quot;impl&quot;, implName);</span>
+<span class="fc" id="L101">		return builder.build();</span>
+	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

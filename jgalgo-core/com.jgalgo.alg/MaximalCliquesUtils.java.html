@@ -73,29 +73,29 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final Iterator&lt;IntSet&gt; indexResult;
 		private final IndexIdMap&lt;V&gt; viMap;
 
-<span class="nc" id="L76">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, Iterator&lt;IntSet&gt; indexResult) {</span>
-<span class="nc" id="L77">			this.indexResult = Objects.requireNonNull(indexResult);</span>
-<span class="nc" id="L78">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L79">		}</span>
+<span class="fc" id="L76">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, Iterator&lt;IntSet&gt; indexResult) {</span>
+<span class="fc" id="L77">			this.indexResult = Objects.requireNonNull(indexResult);</span>
+<span class="fc" id="L78">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L79">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="nc" id="L83">			return indexResult.hasNext();</span>
+<span class="fc" id="L83">			return indexResult.hasNext();</span>
 		}
 
 		@Override
 		public Set&lt;V&gt; next() {
-<span class="nc" id="L88">			return IndexIdMaps.indexToIdSet(indexResult.next(), viMap);</span>
+<span class="fc" id="L88">			return IndexIdMaps.indexToIdSet(indexResult.next(), viMap);</span>
 		}
 	}
 
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	private static &lt;V, E&gt; Iterator&lt;Set&lt;V&gt;&gt; resultFromIndexResult(Graph&lt;V, E&gt; g, Iterator&lt;IntSet&gt; indexResult) {
 <span class="pc bnc" id="L94" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
-<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		if (g instanceof IntGraph) {</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L96">			return (Iterator) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
 		} else {
-<span class="nc" id="L98">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
+<span class="fc" id="L98">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
 		}
 	}
 

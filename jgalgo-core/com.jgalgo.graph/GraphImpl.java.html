@@ -150,13 +150,13 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 	@Override
 	public void removeOutEdgesOf(V source) {
-<span class="nc" id="L153">		indexGraph.removeOutEdgesOf(viMap.idToIndex(source));</span>
-<span class="nc" id="L154">	}</span>
+<span class="fc" id="L153">		indexGraph.removeOutEdgesOf(viMap.idToIndex(source));</span>
+<span class="fc" id="L154">	}</span>
 
 	@Override
 	public void removeInEdgesOf(V target) {
-<span class="nc" id="L158">		indexGraph.removeInEdgesOf(viMap.idToIndex(target));</span>
-<span class="nc" id="L159">	}</span>
+<span class="fc" id="L158">		indexGraph.removeInEdgesOf(viMap.idToIndex(target));</span>
+<span class="fc" id="L159">	}</span>
 
 	@Override
 	public V edgeSource(E edge) {
@@ -257,35 +257,33 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public boolean remove(Object edge) {
-<span class="nc" id="L260">			int eIdx = eiMap.idToIndex((E) edge);</span>
-<span class="nc" id="L261">			return set.remove(eIdx);</span>
+<span class="fc" id="L260">			return set.remove(eiMap.idToIndexIfExist((E) edge));</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public boolean contains(Object edge) {
-<span class="fc" id="L267">			int eIdx = eiMap.idToIndex((E) edge);</span>
-<span class="fc" id="L268">			return set.contains(eIdx);</span>
+<span class="fc" id="L266">			return set.contains(eiMap.idToIndexIfExist((E) edge));</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L273">			return set.size();</span>
+<span class="fc" id="L271">			return set.size();</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L278">			return set.isEmpty();</span>
+<span class="fc" id="L276">			return set.isEmpty();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L283">			set.clear();</span>
-<span class="nc" id="L284">		}</span>
+<span class="fc" id="L281">			set.clear();</span>
+<span class="fc" id="L282">		}</span>
 
 		@Override
 		public EdgeIter&lt;V, E&gt; iterator() {
-<span class="fc" id="L288">			return new EdgeIterMapped(set.iterator());</span>
+<span class="fc" id="L286">			return new EdgeIterMapped(set.iterator());</span>
 		}
 	}
 
@@ -293,115 +291,115 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 		private final IEdgeIter it;
 
-<span class="fc" id="L296">		EdgeIterMapped(IEdgeIter it) {</span>
-<span class="fc" id="L297">			this.it = it;</span>
-<span class="fc" id="L298">		}</span>
+<span class="fc" id="L294">		EdgeIterMapped(IEdgeIter it) {</span>
+<span class="fc" id="L295">			this.it = it;</span>
+<span class="fc" id="L296">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc" id="L302">			return it.hasNext();</span>
+<span class="fc" id="L300">			return it.hasNext();</span>
 		}
 
 		@Override
 		public E next() {
-<span class="fc" id="L307">			int eIdx = it.nextInt();</span>
-<span class="fc" id="L308">			return eiMap.indexToId(eIdx);</span>
+<span class="fc" id="L305">			int eIdx = it.nextInt();</span>
+<span class="fc" id="L306">			return eiMap.indexToId(eIdx);</span>
 		}
 
 		@Override
 		public E peekNext() {
-<span class="fc" id="L313">			int eIdx = it.peekNextInt();</span>
-<span class="fc" id="L314">			return eiMap.indexToId(eIdx);</span>
+<span class="fc" id="L311">			int eIdx = it.peekNextInt();</span>
+<span class="fc" id="L312">			return eiMap.indexToId(eIdx);</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="fc" id="L319">			it.remove();</span>
-<span class="fc" id="L320">		}</span>
+<span class="fc" id="L317">			it.remove();</span>
+<span class="fc" id="L318">		}</span>
 
 		@Override
 		public V target() {
-<span class="fc" id="L324">			int vIdx = it.targetInt();</span>
-<span class="fc" id="L325">			return viMap.indexToId(vIdx);</span>
+<span class="fc" id="L322">			int vIdx = it.targetInt();</span>
+<span class="fc" id="L323">			return viMap.indexToId(vIdx);</span>
 		}
 
 		@Override
 		public V source() {
-<span class="fc" id="L330">			int uIdx = it.sourceInt();</span>
-<span class="fc" id="L331">			return viMap.indexToId(uIdx);</span>
+<span class="fc" id="L328">			int uIdx = it.sourceInt();</span>
+<span class="fc" id="L329">			return viMap.indexToId(uIdx);</span>
 		}
 	}
 
 	@Override
 	public boolean isDirected() {
-<span class="fc" id="L337">		return indexGraph.isDirected();</span>
+<span class="fc" id="L335">		return indexGraph.isDirected();</span>
 	}
 
 	@Override
 	public boolean isAllowSelfEdges() {
-<span class="fc" id="L342">		return indexGraph.isAllowSelfEdges();</span>
+<span class="fc" id="L340">		return indexGraph.isAllowSelfEdges();</span>
 	}
 
 	@Override
 	public boolean isAllowParallelEdges() {
-<span class="fc" id="L347">		return indexGraph.isAllowParallelEdges();</span>
+<span class="fc" id="L345">		return indexGraph.isAllowParallelEdges();</span>
 	}
 
 	static class Directed&lt;V, E&gt; extends GraphImpl&lt;V, E&gt; {
 
 		Directed(IndexGraph indexGraph, int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L353">			super(indexGraph, expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L354">			Assertions.Graphs.onlyDirected(indexGraph);</span>
-<span class="fc" id="L355">		}</span>
+<span class="fc" id="L351">			super(indexGraph, expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L352">			Assertions.Graphs.onlyDirected(indexGraph);</span>
+<span class="fc" id="L353">		}</span>
 
 		Directed(IndexGraph indexGraph, IndexIdMap&lt;V&gt; viMap, IndexIdMap&lt;E&gt; eiMap,
 				IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
-<span class="fc" id="L359">			super(indexGraph, viMap, eiMap, vReIndexing, eReIndexing);</span>
-<span class="fc" id="L360">			Assertions.Graphs.onlyDirected(indexGraph);</span>
-<span class="fc" id="L361">		}</span>
+<span class="fc" id="L357">			super(indexGraph, viMap, eiMap, vReIndexing, eReIndexing);</span>
+<span class="fc" id="L358">			Assertions.Graphs.onlyDirected(indexGraph);</span>
+<span class="fc" id="L359">		}</span>
 
 		/* copy constructor */
 		Directed(Graph&lt;V, E&gt; orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
-<span class="fc" id="L365">			super(orig, indexGraphFactory, copyWeights);</span>
-<span class="fc" id="L366">			Assertions.Graphs.onlyDirected(orig);</span>
-<span class="fc" id="L367">			Assertions.Graphs.onlyDirected(indexGraph);</span>
-<span class="fc" id="L368">		}</span>
+<span class="fc" id="L363">			super(orig, indexGraphFactory, copyWeights);</span>
+<span class="fc" id="L364">			Assertions.Graphs.onlyDirected(orig);</span>
+<span class="fc" id="L365">			Assertions.Graphs.onlyDirected(indexGraph);</span>
+<span class="fc" id="L366">		}</span>
 
 		@Override
 		public void reverseEdge(E edge) {
-<span class="fc" id="L372">			int eIdx = eiMap.idToIndex(edge);</span>
-<span class="fc" id="L373">			indexGraph.reverseEdge(eIdx);</span>
-<span class="fc" id="L374">		}</span>
+<span class="fc" id="L370">			int eIdx = eiMap.idToIndex(edge);</span>
+<span class="fc" id="L371">			indexGraph.reverseEdge(eIdx);</span>
+<span class="fc" id="L372">		}</span>
 	}
 
 	static class Undirected&lt;V, E&gt; extends GraphImpl&lt;V, E&gt; {
 
 		Undirected(IndexGraph indexGraph, int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L380">			super(indexGraph, expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L381">			Assertions.Graphs.onlyUndirected(indexGraph);</span>
-<span class="fc" id="L382">		}</span>
+<span class="fc" id="L378">			super(indexGraph, expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L379">			Assertions.Graphs.onlyUndirected(indexGraph);</span>
+<span class="fc" id="L380">		}</span>
 
 		Undirected(IndexGraph indexGraph, IndexIdMap&lt;V&gt; viMap, IndexIdMap&lt;E&gt; eiMap,
 				IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
-<span class="fc" id="L386">			super(indexGraph, viMap, eiMap, vReIndexing, eReIndexing);</span>
-<span class="fc" id="L387">			Assertions.Graphs.onlyUndirected(indexGraph);</span>
-<span class="fc" id="L388">		}</span>
+<span class="fc" id="L384">			super(indexGraph, viMap, eiMap, vReIndexing, eReIndexing);</span>
+<span class="fc" id="L385">			Assertions.Graphs.onlyUndirected(indexGraph);</span>
+<span class="fc" id="L386">		}</span>
 
 		/* copy constructor */
 		Undirected(Graph&lt;V, E&gt; orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
-<span class="fc" id="L392">			super(orig, indexGraphFactory, copyWeights);</span>
-<span class="fc" id="L393">			Assertions.Graphs.onlyUndirected(orig);</span>
-<span class="fc" id="L394">			Assertions.Graphs.onlyUndirected(indexGraph);</span>
-<span class="fc" id="L395">		}</span>
+<span class="fc" id="L390">			super(orig, indexGraphFactory, copyWeights);</span>
+<span class="fc" id="L391">			Assertions.Graphs.onlyUndirected(orig);</span>
+<span class="fc" id="L392">			Assertions.Graphs.onlyUndirected(indexGraph);</span>
+<span class="fc" id="L393">		}</span>
 
 		@Override
 		public void reverseEdge(E edge) {
-<span class="nc" id="L399">			int eIdx = eiMap.idToIndex(edge);</span>
-<span class="nc" id="L400">			indexGraph.reverseEdge(eIdx);</span>
-<span class="nc" id="L401">		}</span>
+<span class="nc" id="L397">			int eIdx = eiMap.idToIndex(edge);</span>
+<span class="nc" id="L398">			indexGraph.reverseEdge(eIdx);</span>
+<span class="nc" id="L399">		}</span>
 	}
 
-<span class="fc" id="L404">	private static class IdIdxMapImpl&lt;K&gt; implements IndexIdMap&lt;K&gt; {</span>
+<span class="fc" id="L402">	private static class IdIdxMapImpl&lt;K&gt; implements IndexIdMap&lt;K&gt; {</span>
 
 		private final IntSet elements;
 		private final Object2IntOpenHashMap&lt;K&gt; idToIndex;
@@ -409,144 +407,144 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 		private Object[] indexToId;
 		private final boolean isEdges;
 
-<span class="fc" id="L412">		IdIdxMapImpl(IndexGraph g, int expectedSize, boolean isEdges) {</span>
-<span class="fc bfc" id="L413" title="All 2 branches covered.">			this.elements = isEdges ? g.edges() : g.vertices();</span>
-<span class="fc" id="L414">			idToIndex = new Object2IntOpenHashMap&lt;&gt;(expectedSize);</span>
-<span class="fc" id="L415">			idToIndex.defaultReturnValue(-1);</span>
-<span class="fc" id="L416">			idsView = ObjectSets.unmodifiable(idToIndex.keySet());</span>
-<span class="pc bpc" id="L417" title="1 of 2 branches missed.">			indexToId = expectedSize == 0 ? ObjectArrays.DEFAULT_EMPTY_ARRAY : new Object[expectedSize];</span>
-<span class="fc" id="L418">			this.isEdges = isEdges;</span>
-<span class="fc" id="L419">			initListeners(g);</span>
-<span class="fc" id="L420">		}</span>
+<span class="fc" id="L410">		IdIdxMapImpl(IndexGraph g, int expectedSize, boolean isEdges) {</span>
+<span class="fc bfc" id="L411" title="All 2 branches covered.">			this.elements = isEdges ? g.edges() : g.vertices();</span>
+<span class="fc" id="L412">			idToIndex = new Object2IntOpenHashMap&lt;&gt;(expectedSize);</span>
+<span class="fc" id="L413">			idToIndex.defaultReturnValue(-1);</span>
+<span class="fc" id="L414">			idsView = ObjectSets.unmodifiable(idToIndex.keySet());</span>
+<span class="pc bpc" id="L415" title="1 of 2 branches missed.">			indexToId = expectedSize == 0 ? ObjectArrays.DEFAULT_EMPTY_ARRAY : new Object[expectedSize];</span>
+<span class="fc" id="L416">			this.isEdges = isEdges;</span>
+<span class="fc" id="L417">			initListeners(g);</span>
+<span class="fc" id="L418">		}</span>
 
-<span class="fc" id="L422">		IdIdxMapImpl(IndexIdMap&lt;K&gt; orig, IndexGraphBuilder.ReIndexingMap reIndexing, IndexGraph g, boolean isEdges) {</span>
-<span class="fc bfc" id="L423" title="All 2 branches covered.">			this.elements = isEdges ? g.edges() : g.vertices();</span>
-<span class="fc" id="L424">			int elementsSize = elements.size();</span>
-<span class="pc bpc" id="L425" title="1 of 4 branches missed.">			if (orig instanceof IdIdxMapImpl &amp;&amp; reIndexing == null) {</span>
-<span class="fc" id="L426">				IdIdxMapImpl&lt;K&gt; orig0 = (IdIdxMapImpl&lt;K&gt;) orig;</span>
-<span class="fc" id="L427">				idToIndex = new Object2IntOpenHashMap&lt;&gt;(orig0.idToIndex);</span>
-<span class="fc" id="L428">				idToIndex.defaultReturnValue(-1);</span>
-<span class="fc" id="L429">				indexToId = Arrays.copyOf(orig0.indexToId, elementsSize);</span>
+<span class="fc" id="L420">		IdIdxMapImpl(IndexIdMap&lt;K&gt; orig, IndexGraphBuilder.ReIndexingMap reIndexing, IndexGraph g, boolean isEdges) {</span>
+<span class="fc bfc" id="L421" title="All 2 branches covered.">			this.elements = isEdges ? g.edges() : g.vertices();</span>
+<span class="fc" id="L422">			int elementsSize = elements.size();</span>
+<span class="pc bpc" id="L423" title="1 of 4 branches missed.">			if (orig instanceof IdIdxMapImpl &amp;&amp; reIndexing == null) {</span>
+<span class="fc" id="L424">				IdIdxMapImpl&lt;K&gt; orig0 = (IdIdxMapImpl&lt;K&gt;) orig;</span>
+<span class="fc" id="L425">				idToIndex = new Object2IntOpenHashMap&lt;&gt;(orig0.idToIndex);</span>
+<span class="fc" id="L426">				idToIndex.defaultReturnValue(-1);</span>
+<span class="fc" id="L427">				indexToId = Arrays.copyOf(orig0.indexToId, elementsSize);</span>
 
-<span class="fc" id="L431">			} else {</span>
-<span class="fc" id="L432">				idToIndex = new Object2IntOpenHashMap&lt;&gt;(elementsSize);</span>
-<span class="fc" id="L433">				idToIndex.defaultReturnValue(-1);</span>
-<span class="fc bfc" id="L434" title="All 2 branches covered.">				if (elements.isEmpty()) {</span>
-<span class="fc" id="L435">					indexToId = ObjectArrays.DEFAULT_EMPTY_ARRAY;</span>
+<span class="fc" id="L429">			} else {</span>
+<span class="fc" id="L430">				idToIndex = new Object2IntOpenHashMap&lt;&gt;(elementsSize);</span>
+<span class="fc" id="L431">				idToIndex.defaultReturnValue(-1);</span>
+<span class="fc bfc" id="L432" title="All 2 branches covered.">				if (elements.isEmpty()) {</span>
+<span class="fc" id="L433">					indexToId = ObjectArrays.DEFAULT_EMPTY_ARRAY;</span>
 				} else {
-<span class="fc" id="L437">					indexToId = new Object[elementsSize];</span>
-<span class="fc bfc" id="L438" title="All 2 branches covered.">					if (reIndexing == null) {</span>
-<span class="fc bfc" id="L439" title="All 2 branches covered.">						for (int idx : elements) {</span>
-<span class="fc" id="L440">							K id = orig.indexToId(idx);</span>
-<span class="pc bpc" id="L441" title="1 of 2 branches missed.">							if (id == null)</span>
-<span class="nc" id="L442">								throw new IllegalArgumentException(&quot;null id&quot;);</span>
-<span class="fc" id="L443">							indexToId[idx] = id;</span>
+<span class="fc" id="L435">					indexToId = new Object[elementsSize];</span>
+<span class="fc bfc" id="L436" title="All 2 branches covered.">					if (reIndexing == null) {</span>
+<span class="fc bfc" id="L437" title="All 2 branches covered.">						for (int idx : elements) {</span>
+<span class="fc" id="L438">							K id = orig.indexToId(idx);</span>
+<span class="pc bpc" id="L439" title="1 of 2 branches missed.">							if (id == null)</span>
+<span class="nc" id="L440">								throw new IllegalArgumentException(&quot;null id&quot;);</span>
+<span class="fc" id="L441">							indexToId[idx] = id;</span>
 
-<span class="fc" id="L445">							int oldIdx = idToIndex.put(id, idx);</span>
-<span class="pc bpc" id="L446" title="1 of 2 branches missed.">							if (oldIdx != -1)</span>
-<span class="nc" id="L447">								throw new IllegalArgumentException(&quot;duplicate id: &quot; + id);</span>
-<span class="fc" id="L448">						}</span>
+<span class="fc" id="L443">							int oldIdx = idToIndex.put(id, idx);</span>
+<span class="pc bpc" id="L444" title="1 of 2 branches missed.">							if (oldIdx != -1)</span>
+<span class="nc" id="L445">								throw new IllegalArgumentException(&quot;duplicate id: &quot; + id);</span>
+<span class="fc" id="L446">						}</span>
 
 					} else {
-<span class="fc bfc" id="L451" title="All 2 branches covered.">						for (int idx : elements) {</span>
-<span class="fc" id="L452">							K id = orig.indexToId(reIndexing.reIndexedToOrig(idx));</span>
-<span class="pc bpc" id="L453" title="1 of 2 branches missed.">							if (id == null)</span>
-<span class="nc" id="L454">								throw new IllegalArgumentException(&quot;null id&quot;);</span>
-<span class="fc" id="L455">							indexToId[idx] = id;</span>
+<span class="fc bfc" id="L449" title="All 2 branches covered.">						for (int idx : elements) {</span>
+<span class="fc" id="L450">							K id = orig.indexToId(reIndexing.reIndexedToOrig(idx));</span>
+<span class="pc bpc" id="L451" title="1 of 2 branches missed.">							if (id == null)</span>
+<span class="nc" id="L452">								throw new IllegalArgumentException(&quot;null id&quot;);</span>
+<span class="fc" id="L453">							indexToId[idx] = id;</span>
 
-<span class="fc" id="L457">							int oldIdx = idToIndex.put(id, idx);</span>
-<span class="pc bpc" id="L458" title="1 of 2 branches missed.">							if (oldIdx != -1)</span>
-<span class="nc" id="L459">								throw new IllegalArgumentException(&quot;duplicate id: &quot; + id);</span>
-<span class="fc" id="L460">						}</span>
+<span class="fc" id="L455">							int oldIdx = idToIndex.put(id, idx);</span>
+<span class="pc bpc" id="L456" title="1 of 2 branches missed.">							if (oldIdx != -1)</span>
+<span class="nc" id="L457">								throw new IllegalArgumentException(&quot;duplicate id: &quot; + id);</span>
+<span class="fc" id="L458">						}</span>
 					}
 				}
 			}
-<span class="fc" id="L464">			this.isEdges = isEdges;</span>
-<span class="fc" id="L465">			idsView = ObjectSets.unmodifiable(idToIndex.keySet());</span>
-<span class="fc" id="L466">			initListeners(g);</span>
-<span class="fc" id="L467">		}</span>
+<span class="fc" id="L462">			this.isEdges = isEdges;</span>
+<span class="fc" id="L463">			idsView = ObjectSets.unmodifiable(idToIndex.keySet());</span>
+<span class="fc" id="L464">			initListeners(g);</span>
+<span class="fc" id="L465">		}</span>
 
 		static &lt;K&gt; IdIdxMapImpl&lt;K&gt; newInstance(IndexGraph g, int expectedSize, boolean isEdges) {
-<span class="fc" id="L470">			return new IdIdxMapImpl&lt;&gt;(g, expectedSize, isEdges);</span>
+<span class="fc" id="L468">			return new IdIdxMapImpl&lt;&gt;(g, expectedSize, isEdges);</span>
 		}
 
 		static &lt;K&gt; IdIdxMapImpl&lt;K&gt; reindexedCopyOf(IndexIdMap&lt;K&gt; orig, IndexGraphBuilder.ReIndexingMap reIndexing,
 				IndexGraph g, boolean isEdges) {
-<span class="fc" id="L475">			return new IdIdxMapImpl&lt;&gt;(orig, reIndexing, g, isEdges);</span>
+<span class="fc" id="L473">			return new IdIdxMapImpl&lt;&gt;(orig, reIndexing, g, isEdges);</span>
 		}
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		private void initListeners(IndexGraph g) {
-<span class="fc" id="L480">			IndexRemoveListener listener = new IndexRemoveListener() {</span>
+<span class="fc" id="L478">			IndexRemoveListener listener = new IndexRemoveListener() {</span>
 
 				@Override
 				public void swapAndRemove(int removedIdx, int swappedIdx) {
-<span class="fc" id="L484">					K id1 = (K) indexToId[removedIdx];</span>
-<span class="fc" id="L485">					K id2 = (K) indexToId[swappedIdx];</span>
-<span class="fc" id="L486">					indexToId[removedIdx] = id2;</span>
-<span class="fc" id="L487">					indexToId[swappedIdx] = null;</span>
-<span class="fc" id="L488">					int oldIdx1 = idToIndex.removeInt(id1);</span>
-<span class="fc" id="L489">					int oldIdx2 = idToIndex.put(id2, removedIdx);</span>
-<span class="pc bnc" id="L490" title="All 2 branches missed.">					assert removedIdx == oldIdx1;</span>
-<span class="pc bnc" id="L491" title="All 2 branches missed.">					assert swappedIdx == oldIdx2;</span>
-<span class="fc" id="L492">				}</span>
+<span class="fc" id="L482">					K id1 = (K) indexToId[removedIdx];</span>
+<span class="fc" id="L483">					K id2 = (K) indexToId[swappedIdx];</span>
+<span class="fc" id="L484">					indexToId[removedIdx] = id2;</span>
+<span class="fc" id="L485">					indexToId[swappedIdx] = null;</span>
+<span class="fc" id="L486">					int oldIdx1 = idToIndex.removeInt(id1);</span>
+<span class="fc" id="L487">					int oldIdx2 = idToIndex.put(id2, removedIdx);</span>
+<span class="pc bnc" id="L488" title="All 2 branches missed.">					assert removedIdx == oldIdx1;</span>
+<span class="pc bnc" id="L489" title="All 2 branches missed.">					assert swappedIdx == oldIdx2;</span>
+<span class="fc" id="L490">				}</span>
 
 				@Override
 				public void removeLast(int removedIdx) {
-<span class="fc" id="L496">					Object id = indexToId[removedIdx];</span>
-<span class="fc" id="L497">					indexToId[removedIdx] = null;</span>
-<span class="fc" id="L498">					idToIndex.removeInt(id);</span>
-<span class="fc" id="L499">				}</span>
+<span class="fc" id="L494">					Object id = indexToId[removedIdx];</span>
+<span class="fc" id="L495">					indexToId[removedIdx] = null;</span>
+<span class="fc" id="L496">					idToIndex.removeInt(id);</span>
+<span class="fc" id="L497">				}</span>
 			};
-<span class="fc bfc" id="L501" title="All 2 branches covered.">			if (isEdges) {</span>
-<span class="fc" id="L502">				g.addEdgeRemoveListener(listener);</span>
+<span class="fc bfc" id="L499" title="All 2 branches covered.">			if (isEdges) {</span>
+<span class="fc" id="L500">				g.addEdgeRemoveListener(listener);</span>
 			} else {
-<span class="fc" id="L504">				g.addVertexRemoveListener(listener);</span>
+<span class="fc" id="L502">				g.addVertexRemoveListener(listener);</span>
 			}
-<span class="fc" id="L506">		}</span>
+<span class="fc" id="L504">		}</span>
 
 		void addId(K id, int idx) {
-<span class="pc bnc" id="L509" title="All 2 branches missed.">			assert idx == idToIndex.size();</span>
-<span class="fc" id="L510">			int oldIdx = idToIndex.put(id, idx);</span>
-<span class="pc bnc" id="L511" title="All 2 branches missed.">			assert oldIdx == -1;</span>
+<span class="pc bnc" id="L507" title="All 2 branches missed.">			assert idx == idToIndex.size();</span>
+<span class="fc" id="L508">			int oldIdx = idToIndex.put(id, idx);</span>
+<span class="pc bnc" id="L509" title="All 2 branches missed.">			assert oldIdx == -1;</span>
 
-<span class="fc bfc" id="L513" title="All 2 branches covered.">			if (idx == indexToId.length)</span>
-<span class="fc" id="L514">				indexToId = Arrays.copyOf(indexToId, Math.max(2, 2 * indexToId.length));</span>
-<span class="fc" id="L515">			indexToId[idx] = id;</span>
-<span class="fc" id="L516">		}</span>
+<span class="fc bfc" id="L511" title="All 2 branches covered.">			if (idx == indexToId.length)</span>
+<span class="fc" id="L512">				indexToId = Arrays.copyOf(indexToId, Math.max(2, 2 * indexToId.length));</span>
+<span class="fc" id="L513">			indexToId[idx] = id;</span>
+<span class="fc" id="L514">		}</span>
 
 		void idsClear() {
-<span class="fc" id="L519">			Arrays.fill(indexToId, 0, idToIndex.size(), null);</span>
-<span class="fc" id="L520">			idToIndex.clear();</span>
-<span class="fc" id="L521">		}</span>
+<span class="fc" id="L517">			Arrays.fill(indexToId, 0, idToIndex.size(), null);</span>
+<span class="fc" id="L518">			idToIndex.clear();</span>
+<span class="fc" id="L519">		}</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public K indexToId(int index) {
-<span class="fc" id="L526">			Assertions.Graphs.checkId(index, elements.size(), isEdges);</span>
-<span class="fc" id="L527">			return (K) indexToId[index];</span>
+<span class="fc" id="L524">			Assertions.Graphs.checkId(index, elements.size(), isEdges);</span>
+<span class="fc" id="L525">			return (K) indexToId[index];</span>
 		}
 
 		@Override
 		public int idToIndex(K id) {
-<span class="fc" id="L532">			int idx = idToIndex.getInt(id);</span>
-<span class="fc bfc" id="L533" title="All 2 branches covered.">			if (idx &lt; 0) {</span>
-<span class="pc bpc" id="L534" title="1 of 2 branches missed.">				if (isEdges) {</span>
-<span class="fc" id="L535">					throw NoSuchEdgeException.ofEdge(id);</span>
+<span class="fc" id="L530">			int idx = idToIndex.getInt(id);</span>
+<span class="fc bfc" id="L531" title="All 2 branches covered.">			if (idx &lt; 0) {</span>
+<span class="pc bpc" id="L532" title="1 of 2 branches missed.">				if (isEdges) {</span>
+<span class="fc" id="L533">					throw NoSuchEdgeException.ofEdge(id);</span>
 				} else {
-<span class="nc" id="L537">					throw NoSuchVertexException.ofVertex(id);</span>
+<span class="nc" id="L535">					throw NoSuchVertexException.ofVertex(id);</span>
 				}
 			}
-<span class="fc" id="L540">			return idx;</span>
+<span class="fc" id="L538">			return idx;</span>
 		}
 
 		@Override
 		public int idToIndexIfExist(K id) {
-<span class="fc" id="L545">			return idToIndex.getInt(id);</span>
+<span class="fc" id="L543">			return idToIndex.getInt(id);</span>
 		}
 
 		Set&lt;K&gt; idSet() {
-<span class="fc" id="L549">			return idsView;</span>
+<span class="fc" id="L547">			return idsView;</span>
 		}
 
 	}
@@ -554,86 +552,86 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 	static class Factory&lt;V, E&gt; implements GraphFactory&lt;V, E&gt; {
 		private final IndexGraphFactoryImpl factory;
 
-<span class="fc" id="L557">		Factory(boolean directed) {</span>
-<span class="fc" id="L558">			this.factory = new IndexGraphFactoryImpl(directed);</span>
-<span class="fc" id="L559">		}</span>
+<span class="fc" id="L555">		Factory(boolean directed) {</span>
+<span class="fc" id="L556">			this.factory = new IndexGraphFactoryImpl(directed);</span>
+<span class="fc" id="L557">		}</span>
 
-<span class="fc" id="L561">		Factory(Graph&lt;V, E&gt; g) {</span>
-<span class="fc" id="L562">			this.factory = new IndexGraphFactoryImpl(g.indexGraph());</span>
-<span class="fc" id="L563">		}</span>
+<span class="fc" id="L559">		Factory(Graph&lt;V, E&gt; g) {</span>
+<span class="fc" id="L560">			this.factory = new IndexGraphFactoryImpl(g.indexGraph());</span>
+<span class="fc" id="L561">		}</span>
 
 		@Override
 		public Graph&lt;V, E&gt; newGraph() {
-<span class="fc" id="L567">			IndexGraph indexGraph = factory.newGraph();</span>
-<span class="fc bfc" id="L568" title="All 2 branches covered.">			if (indexGraph.isDirected()) {</span>
-<span class="fc" id="L569">				return new GraphImpl.Directed&lt;&gt;(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);</span>
+<span class="fc" id="L565">			IndexGraph indexGraph = factory.newGraph();</span>
+<span class="fc bfc" id="L566" title="All 2 branches covered.">			if (indexGraph.isDirected()) {</span>
+<span class="fc" id="L567">				return new GraphImpl.Directed&lt;&gt;(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);</span>
 			} else {
-<span class="fc" id="L571">				return new GraphImpl.Undirected&lt;&gt;(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);</span>
+<span class="fc" id="L569">				return new GraphImpl.Undirected&lt;&gt;(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);</span>
 			}
 		}
 
 		@Override
 		public Graph&lt;V, E&gt; newCopyOf(Graph&lt;V, E&gt; g, boolean copyWeights) {
-<span class="fc bfc" id="L577" title="All 2 branches covered.">			if (g.isDirected()) {</span>
-<span class="fc" id="L578">				return new GraphImpl.Directed&lt;&gt;(g, factory, copyWeights);</span>
+<span class="fc bfc" id="L575" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc" id="L576">				return new GraphImpl.Directed&lt;&gt;(g, factory, copyWeights);</span>
 			} else {
-<span class="fc" id="L580">				return new GraphImpl.Undirected&lt;&gt;(g, factory, copyWeights);</span>
+<span class="fc" id="L578">				return new GraphImpl.Undirected&lt;&gt;(g, factory, copyWeights);</span>
 			}
 		}
 
 		@Override
 		public GraphBuilder&lt;V, E&gt; newBuilder() {
-<span class="nc" id="L586">			IndexGraphBuilder indexBuilder = factory.newBuilder();</span>
-<span class="nc bnc" id="L587" title="All 2 branches missed.">			return factory.directed ? new GraphBuilderImpl.Directed&lt;&gt;()</span>
-<span class="nc" id="L588">					: new GraphBuilderImpl.Undirected&lt;&gt;(indexBuilder);</span>
+<span class="nc" id="L584">			IndexGraphBuilder indexBuilder = factory.newBuilder();</span>
+<span class="nc bnc" id="L585" title="All 2 branches missed.">			return factory.directed ? new GraphBuilderImpl.Directed&lt;&gt;()</span>
+<span class="nc" id="L586">					: new GraphBuilderImpl.Undirected&lt;&gt;(indexBuilder);</span>
 		}
 
 		@Override
 		public GraphFactory&lt;V, E&gt; setDirected(boolean directed) {
-<span class="fc" id="L593">			factory.setDirected(directed);</span>
-<span class="fc" id="L594">			return this;</span>
+<span class="fc" id="L591">			factory.setDirected(directed);</span>
+<span class="fc" id="L592">			return this;</span>
 		}
 
 		@Override
 		public GraphFactory&lt;V, E&gt; allowSelfEdges(boolean selfEdges) {
-<span class="nc" id="L599">			factory.allowSelfEdges(selfEdges);</span>
-<span class="nc" id="L600">			return this;</span>
+<span class="nc" id="L597">			factory.allowSelfEdges(selfEdges);</span>
+<span class="nc" id="L598">			return this;</span>
 		}
 
 		@Override
 		public GraphFactory&lt;V, E&gt; allowParallelEdges(boolean parallelEdges) {
-<span class="nc" id="L605">			factory.allowParallelEdges(parallelEdges);</span>
-<span class="nc" id="L606">			return this;</span>
+<span class="nc" id="L603">			factory.allowParallelEdges(parallelEdges);</span>
+<span class="nc" id="L604">			return this;</span>
 		}
 
 		@Override
 		public GraphFactory&lt;V, E&gt; expectedVerticesNum(int expectedVerticesNum) {
-<span class="nc" id="L611">			factory.expectedVerticesNum(expectedVerticesNum);</span>
-<span class="nc" id="L612">			return this;</span>
+<span class="nc" id="L609">			factory.expectedVerticesNum(expectedVerticesNum);</span>
+<span class="nc" id="L610">			return this;</span>
 		}
 
 		@Override
 		public GraphFactory&lt;V, E&gt; expectedEdgesNum(int expectedEdgesNum) {
-<span class="nc" id="L617">			factory.expectedEdgesNum(expectedEdgesNum);</span>
-<span class="nc" id="L618">			return this;</span>
+<span class="nc" id="L615">			factory.expectedEdgesNum(expectedEdgesNum);</span>
+<span class="nc" id="L616">			return this;</span>
 		}
 
 		@Override
 		public GraphFactory&lt;V, E&gt; addHint(GraphFactory.Hint hint) {
-<span class="nc" id="L623">			factory.addHint(hint);</span>
-<span class="nc" id="L624">			return this;</span>
+<span class="nc" id="L621">			factory.addHint(hint);</span>
+<span class="nc" id="L622">			return this;</span>
 		}
 
 		@Override
 		public GraphFactory&lt;V, E&gt; removeHint(GraphFactory.Hint hint) {
-<span class="nc" id="L629">			factory.removeHint(hint);</span>
-<span class="nc" id="L630">			return this;</span>
+<span class="nc" id="L627">			factory.removeHint(hint);</span>
+<span class="nc" id="L628">			return this;</span>
 		}
 
 		@Override
 		public GraphFactory&lt;V, E&gt; setOption(String key, Object value) {
-<span class="fc" id="L635">			factory.setOption(key, value);</span>
-<span class="fc" id="L636">			return this;</span>
+<span class="fc" id="L633">			factory.setOption(key, value);</span>
+<span class="fc" id="L634">			return this;</span>
 		}
 	}
 

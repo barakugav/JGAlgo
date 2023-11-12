@@ -411,28 +411,28 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 		@Override
 		public boolean isVertexMatched(V vertex) {
-<span class="nc" id="L414">			return match.isVertexMatched(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L414">			return match.isVertexMatched(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public Set&lt;V&gt; matchedVertices() {
-<span class="nc" id="L419">			return IndexIdMaps.indexToIdSet(match.matchedVertices(), viMap);</span>
+<span class="fc" id="L419">			return IndexIdMaps.indexToIdSet(match.matchedVertices(), viMap);</span>
 		}
 
 		@Override
 		public Set&lt;V&gt; unmatchedVertices() {
-<span class="nc" id="L424">			return IndexIdMaps.indexToIdSet(match.unmatchedVertices(), viMap);</span>
+<span class="fc" id="L424">			return IndexIdMaps.indexToIdSet(match.unmatchedVertices(), viMap);</span>
 		}
 
 		@Override
 		public E getMatchedEdge(V vertex) {
-<span class="nc" id="L429">			int e = match.getMatchedEdge(viMap.idToIndex(vertex));</span>
-<span class="nc bnc" id="L430" title="All 2 branches missed.">			return e == -1 ? null : eiMap.indexToId(e);</span>
+<span class="fc" id="L429">			int e = match.getMatchedEdge(viMap.idToIndex(vertex));</span>
+<span class="fc bfc" id="L430" title="All 2 branches covered.">			return e == -1 ? null : eiMap.indexToId(e);</span>
 		}
 
 		@Override
 		public boolean containsEdge(E edge) {
-<span class="nc" id="L435">			return match.containsEdge(eiMap.idToIndex(edge));</span>
+<span class="fc" id="L435">			return match.containsEdge(eiMap.idToIndex(edge));</span>
 		}
 
 		@Override
@@ -447,7 +447,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 		@Override
 		public boolean isPerfect() {
-<span class="nc" id="L450">			return match.isPerfect();</span>
+<span class="fc" id="L450">			return match.isPerfect();</span>
 		}
 	}
 

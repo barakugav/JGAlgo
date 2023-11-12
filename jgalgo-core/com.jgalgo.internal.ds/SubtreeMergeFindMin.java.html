@@ -18,6 +18,7 @@ package com.jgalgo.internal.ds;
 
 import java.util.Comparator;
 import java.util.NoSuchElementException;
+import com.jgalgo.alg.AlgorithmBuilderBase;
 
 /**
  * Subtree Merge Find Min data structure.
@@ -187,7 +188,7 @@ public interface SubtreeMergeFindMin&lt;E&gt; {
 	 * @return a default implementation of {@link SubtreeMergeFindMin}
 	 */
 	static &lt;E&gt; SubtreeMergeFindMin&lt;E&gt; newInstance() {
-<span class="nc" id="L190">		return newBuilder().build();</span>
+<span class="nc" id="L191">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -200,7 +201,7 @@ public interface SubtreeMergeFindMin&lt;E&gt; {
 	 * @return a default implementation of {@link SubtreeMergeFindMin}
 	 */
 	static &lt;E&gt; SubtreeMergeFindMin&lt;E&gt; newInstance(Comparator&lt;? super E&gt; cmp) {
-<span class="fc" id="L203">		return newBuilder().build(cmp);</span>
+<span class="fc" id="L204">		return newBuilder().build(cmp);</span>
 	}
 
 	/**
@@ -212,7 +213,7 @@ public interface SubtreeMergeFindMin&lt;E&gt; {
 	 * @return a new builder that can build {@link SubtreeMergeFindMin} objects
 	 */
 	static SubtreeMergeFindMin.Builder newBuilder() {
-<span class="fc" id="L215">		return SubtreeMergeFindMinImpl::new;</span>
+<span class="fc" id="L216">		return SubtreeMergeFindMinImpl::new;</span>
 	}
 
 	/**
@@ -221,7 +222,7 @@ public interface SubtreeMergeFindMin&lt;E&gt; {
 	 * @see    SubtreeMergeFindMin#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends AlgorithmBuilderBase {
 		/**
 		 * Build a new subtree-merge-findMin data structure with the given comparator.
 		 *
@@ -238,27 +239,9 @@ public interface SubtreeMergeFindMin&lt;E&gt; {
 		 * @return     the newly constructed subtree-merge-findMin data structure
 		 */
 		default &lt;E&gt; SubtreeMergeFindMin&lt;E&gt; build() {
-<span class="nc" id="L241">			return build(null);</span>
+<span class="nc" id="L242">			return build(null);</span>
 		}
 
-		/**
-		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
-		 *
-		 * &lt;p&gt;
-		 * The builder might support different options to customize its implementation. These options never change the
-		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
-		 * because they are not part of the API and may change in the future.
-		 *
-		 * &lt;p&gt;
-		 * These options are mainly for debug and benchmark purposes.
-		 *
-		 * @param  key   the option key
-		 * @param  value the option value
-		 * @return       this builder
-		 */
-		default SubtreeMergeFindMin.Builder setOption(String key, Object value) {
-<span class="nc" id="L260">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
-		}
 	}
 
 }

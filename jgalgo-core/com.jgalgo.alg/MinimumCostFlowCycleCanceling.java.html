@@ -68,7 +68,7 @@ import com.jgalgo.internal.util.Bitmap;
 
 <span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc bfc" id="L70" title="All 2 branches covered.">			if (resGraph.isOriginalEdge(e))</span>
-<span class="fc" id="L71">				net.setFlow(resGraph.edgeRef[e], flow[e]);</span>
+<span class="fc" id="L71">				net.setFlow(resGraph.edgeRef[e], Math.max(0, Math.min(flow[e], capacity[e])));</span>
 
 <span class="fc" id="L73">		MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, net, cost);</span>
 <span class="fc" id="L74">	}</span>

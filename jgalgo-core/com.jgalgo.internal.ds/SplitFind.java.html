@@ -16,6 +16,8 @@
 
 package com.jgalgo.internal.ds;
 
+import com.jgalgo.alg.AlgorithmBuilderBase;
+
 /**
  * Data structure of a finite set of elements supporting split and find operations.
  *
@@ -90,7 +92,7 @@ interface SplitFind {
 	 * @return a default implementation of {@link SplitFind}
 	 */
 	static SplitFind newInstance() {
-<span class="nc" id="L93">		return newBuilder().build();</span>
+<span class="nc" id="L95">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -102,7 +104,7 @@ interface SplitFind {
 	 * @return a new builder that can build {@link SplitFind} objects
 	 */
 	static SplitFind.Builder newBuilder() {
-<span class="nc" id="L105">		return SplitFindMinArray::new;</span>
+<span class="nc" id="L107">		return SplitFindMinArray::new;</span>
 	}
 
 	/**
@@ -111,7 +113,7 @@ interface SplitFind {
 	 * @see    SplitFind#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends AlgorithmBuilderBase {
 
 		/**
 		 * Create a new split-find data structure.
@@ -119,25 +121,6 @@ interface SplitFind {
 		 * @return a new split-find data structure
 		 */
 		SplitFind build();
-
-		/**
-		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
-		 *
-		 * &lt;p&gt;
-		 * The builder might support different options to customize its implementation. These options never change the
-		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
-		 * because they are not part of the API and may change in the future.
-		 *
-		 * &lt;p&gt;
-		 * These options are mainly for debug and benchmark purposes.
-		 *
-		 * @param  key   the option key
-		 * @param  value the option value
-		 * @return       this builder
-		 */
-		default SplitFind.Builder setOption(String key, Object value) {
-<span class="nc" id="L139">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
-		}
 	}
 
 }

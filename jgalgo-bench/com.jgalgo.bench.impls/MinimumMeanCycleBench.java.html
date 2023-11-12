@@ -33,14 +33,14 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.alg.MinimumMeanCycle;
 import com.jgalgo.alg.IPath;
+import com.jgalgo.alg.MinimumMeanCycle;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -75,24 +75,29 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		}
 <span class="fc" id="L76">	}</span>
 
-	private void benchMaxFlow(MinimumMeanCycle.Builder builder, Blackhole blackhole) {
+	private void benchMinMeanCycle(MinimumMeanCycle algo, Blackhole blackhole) {
 <span class="fc" id="L79">		Pair&lt;IntGraph, IWeightFunctionInt&gt; gw = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
 <span class="fc" id="L80">		IntGraph g = gw.first();</span>
 <span class="fc" id="L81">		IWeightFunctionInt w = gw.second();</span>
-<span class="fc" id="L82">		MinimumMeanCycle algo = builder.build();</span>
-<span class="fc" id="L83">		IPath cycle = (IPath) algo.computeMinimumMeanCycle(g, w);</span>
-<span class="fc" id="L84">		blackhole.consume(cycle);</span>
-<span class="fc" id="L85">	}</span>
+<span class="fc" id="L82">		IPath cycle = (IPath) algo.computeMinimumMeanCycle(g, w);</span>
+<span class="fc" id="L83">		blackhole.consume(cycle);</span>
+<span class="fc" id="L84">	}</span>
 
 	@Benchmark
 	public void Howard(Blackhole blackhole) {
-<span class="fc" id="L89">		benchMaxFlow(MinimumMeanCycle.newBuilder().setOption(&quot;impl&quot;, &quot;howard&quot;), blackhole);</span>
-<span class="fc" id="L90">	}</span>
+<span class="fc" id="L88">		benchMinMeanCycle(getAlgo(&quot;howard&quot;), blackhole);</span>
+<span class="fc" id="L89">	}</span>
 
 	@Benchmark
 	public void DasdanGupta(Blackhole blackhole) {
-<span class="fc" id="L94">		benchMaxFlow(MinimumMeanCycle.newBuilder().setOption(&quot;impl&quot;, &quot;dasdan-gupta&quot;), blackhole);</span>
-<span class="fc" id="L95">	}</span>
+<span class="fc" id="L93">		benchMinMeanCycle(getAlgo(&quot;dasdan-gupta&quot;), blackhole);</span>
+<span class="fc" id="L94">	}</span>
+
+	private static MinimumMeanCycle getAlgo(String implName) {
+<span class="fc" id="L97">		MinimumMeanCycle.Builder builder = MinimumMeanCycle.newBuilder();</span>
+<span class="fc" id="L98">		builder.setOption(&quot;impl&quot;, implName);</span>
+<span class="fc" id="L99">		return builder.build();</span>
+	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

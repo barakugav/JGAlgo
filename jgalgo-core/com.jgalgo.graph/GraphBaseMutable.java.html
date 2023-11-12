@@ -238,9 +238,9 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L238">	}</span>
 
 	@Override
-	public void removeVertexSwapRemoveListener(IndexRemoveListener listener) {
-<span class="nc" id="L242">		vertices.removeRemoveListener(listener);</span>
-<span class="nc" id="L243">	}</span>
+	public void removeVertexRemoveListener(IndexRemoveListener listener) {
+<span class="fc" id="L242">		vertices.removeRemoveListener(listener);</span>
+<span class="fc" id="L243">	}</span>
 
 	@Override
 	public void addEdgeRemoveListener(IndexRemoveListener listener) {
@@ -248,9 +248,9 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L248">	}</span>
 
 	@Override
-	public void removeEdgeSwapRemoveListener(IndexRemoveListener listener) {
-<span class="nc" id="L252">		edges.removeRemoveListener(listener);</span>
-<span class="nc" id="L253">	}</span>
+	public void removeEdgeRemoveListener(IndexRemoveListener listener) {
+<span class="fc" id="L252">		edges.removeRemoveListener(listener);</span>
+<span class="fc" id="L253">	}</span>
 
 	void checkVertex(int vertex) {
 <span class="fc" id="L256">		Assertions.Graphs.checkVertex(vertex, vertices.size);</span>

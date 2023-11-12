@@ -303,7 +303,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 			}
 
 			@Override
-			public MinimumSpanningTree.Builder setOption(String key, Object value) {
+			public void setOption(String key, Object value) {
 <span class="nc bnc" id="L307" title="All 3 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
 <span class="nc" id="L309">						impl = (String) value;</span>
@@ -314,8 +314,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 					default:
 <span class="nc" id="L315">						MinimumSpanningTree.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L317">				return this;</span>
-			}
+<span class="nc" id="L317">			}</span>
 		};
 	}
 
@@ -325,7 +324,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 	 * @see    MinimumSpanningTree#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends AlgorithmBuilderBase {
 
 		/**
 		 * Create a new algorithm object for minimum spanning tree computation.
@@ -333,25 +332,6 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 		 * @return a new minimum spanning tree algorithm
 		 */
 		MinimumSpanningTree build();
-
-		/**
-		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
-		 *
-		 * &lt;p&gt;
-		 * The builder might support different options to customize its implementation. These options never change the
-		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
-		 * because they are not part of the API and may change in the future.
-		 *
-		 * &lt;p&gt;
-		 * These options are mainly for debug and benchmark purposes.
-		 *
-		 * @param  key   the option key
-		 * @param  value the option value
-		 * @return       this builder
-		 */
-		default MinimumSpanningTree.Builder setOption(String key, Object value) {
-<span class="nc" id="L353">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
-		}
 	}
 
 }

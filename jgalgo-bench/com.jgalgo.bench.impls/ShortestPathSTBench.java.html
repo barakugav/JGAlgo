@@ -113,7 +113,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Benchmark
 		public void AStar(Blackhole blackhole) {
-<span class="fc" id="L116">			benchStShortestPath(ShortestPathHeuristicST.newBuilder().setOption(&quot;impl&quot;, &quot;a-star&quot;).build(), blackhole);</span>
+<span class="fc" id="L116">			benchStShortestPath(getAlgo(&quot;a-star&quot;), blackhole);</span>
 <span class="fc" id="L117">		}</span>
 	}
 
@@ -155,7 +155,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Benchmark
 		public void AStar(Blackhole blackhole) {
-<span class="fc" id="L158">			benchStShortestPath(ShortestPathHeuristicST.newBuilder().setOption(&quot;impl&quot;, &quot;a-star&quot;).build(), blackhole);</span>
+<span class="fc" id="L158">			benchStShortestPath(getAlgo(&quot;a-star&quot;), blackhole);</span>
 <span class="fc" id="L159">		}</span>
 	}
 
@@ -198,8 +198,14 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Benchmark
 		public void AStar(Blackhole blackhole) {
-<span class="fc" id="L201">			benchStShortestPath(ShortestPathHeuristicST.newBuilder().setOption(&quot;impl&quot;, &quot;a-star&quot;).build(), blackhole);</span>
+<span class="fc" id="L201">			benchStShortestPath(getAlgo(&quot;a-star&quot;), blackhole);</span>
 <span class="fc" id="L202">		}</span>
+	}
+
+	private static ShortestPathHeuristicST getAlgo(String implName) {
+<span class="fc" id="L206">		ShortestPathHeuristicST.Builder builder = ShortestPathHeuristicST.newBuilder();</span>
+<span class="fc" id="L207">		builder.setOption(&quot;impl&quot;, implName);</span>
+<span class="fc" id="L208">		return builder.build();</span>
 	}
 
 	private static class GraphArgs {
@@ -209,27 +215,27 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		final int target;
 		final IntToDoubleFunction heuristic;
 
-<span class="fc" id="L212">		GraphArgs(IntGraph g, IWeightFunctionInt w, int source, int target, IntToDoubleFunction heuristic) {</span>
-<span class="fc" id="L213">			this.g = g;</span>
-<span class="fc" id="L214">			this.w = w;</span>
-<span class="fc" id="L215">			this.source = source;</span>
-<span class="fc" id="L216">			this.target = target;</span>
-<span class="fc" id="L217">			this.heuristic = heuristic;</span>
-<span class="fc" id="L218">		}</span>
+<span class="fc" id="L218">		GraphArgs(IntGraph g, IWeightFunctionInt w, int source, int target, IntToDoubleFunction heuristic) {</span>
+<span class="fc" id="L219">			this.g = g;</span>
+<span class="fc" id="L220">			this.w = w;</span>
+<span class="fc" id="L221">			this.source = source;</span>
+<span class="fc" id="L222">			this.target = target;</span>
+<span class="fc" id="L223">			this.heuristic = heuristic;</span>
+<span class="fc" id="L224">		}</span>
 	}
 
 	private static IntToDoubleFunction randAdmissibleHeuristic(IntGraph g, IWeightFunction w, int target, long seed) {
-<span class="fc" id="L222">		Random rand = new Random(seed);</span>
-<span class="fc bfc" id="L223" title="All 2 branches covered.">		if (g.isDirected())</span>
-<span class="fc" id="L224">			g = g.reverseView();</span>
+<span class="fc" id="L228">		Random rand = new Random(seed);</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">		if (g.isDirected())</span>
+<span class="fc" id="L230">			g = g.reverseView();</span>
 
-<span class="fc" id="L226">		IWeightsDouble w0 = IWeights.createExternalEdgesWeights(g, double.class);</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">		for (int e : g.edges())</span>
-<span class="fc" id="L228">			w0.set(e, w.weight(e) * (0.5 + rand.nextDouble() / 2));</span>
+<span class="fc" id="L232">		IWeightsDouble w0 = IWeights.createExternalEdgesWeights(g, double.class);</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc" id="L234">			w0.set(e, w.weight(e) * (0.5 + rand.nextDouble() / 2));</span>
 
 		ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) ShortestPathSingleSource
-<span class="fc" id="L231">				.newInstance().computeShortestPaths(g, w0, Integer.valueOf(target));</span>
-<span class="fc" id="L232">		return ssspRes::distance;</span>
+<span class="fc" id="L237">				.newInstance().computeShortestPaths(g, w0, Integer.valueOf(target));</span>
+<span class="fc" id="L238">		return ssspRes::distance;</span>
 	}
 
 }

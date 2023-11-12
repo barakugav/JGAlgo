@@ -239,7 +239,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 		}
 
 		@Override
-		public ShortestPathSingleSource.Builder setOption(String key, Object value) {
+		public void setOption(String key, Object value) {
 <span class="nc bnc" id="L243" title="All 3 branches missed.">			switch (key) {</span>
 				case &quot;impl&quot;:
 <span class="nc" id="L245">					impl = (String) value;</span>
@@ -250,138 +250,137 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 				default:
 <span class="nc" id="L251">					ShortestPathSingleSource.Builder.super.setOption(key, value);</span>
 			}
-<span class="nc" id="L253">			return this;</span>
-		}
+<span class="nc" id="L253">		}</span>
 	}
 
-<span class="fc" id="L257">	static class ResultImpl implements ShortestPathSingleSource.IResult {</span>
+<span class="fc" id="L256">	static class ResultImpl implements ShortestPathSingleSource.IResult {</span>
 
 		private final IndexGraph g;
 		private final int source;
 		final double[] distances;
 		final int[] backtrack;
 
-<span class="fc" id="L264">		ResultImpl(IndexGraph g, int source) {</span>
-<span class="fc" id="L265">			this.g = g;</span>
-<span class="fc" id="L266">			this.source = source;</span>
-<span class="fc" id="L267">			int n = g.vertices().size();</span>
-<span class="fc" id="L268">			distances = new double[n];</span>
-<span class="fc" id="L269">			backtrack = new int[n];</span>
-<span class="fc" id="L270">			Arrays.fill(distances, Double.POSITIVE_INFINITY);</span>
-<span class="fc" id="L271">			Arrays.fill(backtrack, -1);</span>
-<span class="fc" id="L272">		}</span>
+<span class="fc" id="L263">		ResultImpl(IndexGraph g, int source) {</span>
+<span class="fc" id="L264">			this.g = g;</span>
+<span class="fc" id="L265">			this.source = source;</span>
+<span class="fc" id="L266">			int n = g.vertices().size();</span>
+<span class="fc" id="L267">			distances = new double[n];</span>
+<span class="fc" id="L268">			backtrack = new int[n];</span>
+<span class="fc" id="L269">			Arrays.fill(distances, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L270">			Arrays.fill(backtrack, -1);</span>
+<span class="fc" id="L271">		}</span>
 
 		@Override
 		public double distance(int target) {
-<span class="fc" id="L276">			return distances[target];</span>
+<span class="fc" id="L275">			return distances[target];</span>
 		}
 
 		@Override
 		public IPath getPath(int target) {
-<span class="fc bfc" id="L281" title="All 2 branches covered.">			if (distances[target] == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L282">				return null;</span>
-<span class="fc" id="L283">			IntArrayList path = new IntArrayList();</span>
-<span class="fc bfc" id="L284" title="All 2 branches covered.">			if (g.isDirected()) {</span>
-<span class="fc" id="L285">				for (int v = target;;) {</span>
-<span class="fc" id="L286">					int e = backtrack[v];</span>
-<span class="fc bfc" id="L287" title="All 2 branches covered.">					if (e == -1) {</span>
-<span class="pc bnc" id="L288" title="All 2 branches missed.">						assert v == source;</span>
+<span class="fc bfc" id="L280" title="All 2 branches covered.">			if (distances[target] == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L281">				return null;</span>
+<span class="fc" id="L282">			IntArrayList path = new IntArrayList();</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc" id="L284">				for (int v = target;;) {</span>
+<span class="fc" id="L285">					int e = backtrack[v];</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">					if (e == -1) {</span>
+<span class="pc bnc" id="L287" title="All 2 branches missed.">						assert v == source;</span>
 						break;
 					}
-<span class="fc" id="L291">					path.add(e);</span>
-<span class="fc" id="L292">					v = g.edgeSource(e);</span>
-<span class="fc" id="L293">				}</span>
+<span class="fc" id="L290">					path.add(e);</span>
+<span class="fc" id="L291">					v = g.edgeSource(e);</span>
+<span class="fc" id="L292">				}</span>
 			} else {
-<span class="fc" id="L295">				for (int v = target;;) {</span>
-<span class="fc" id="L296">					int e = backtrack[v];</span>
-<span class="fc bfc" id="L297" title="All 2 branches covered.">					if (e == -1) {</span>
-<span class="pc bnc" id="L298" title="All 2 branches missed.">						assert v == source;</span>
+<span class="fc" id="L294">				for (int v = target;;) {</span>
+<span class="fc" id="L295">					int e = backtrack[v];</span>
+<span class="fc bfc" id="L296" title="All 2 branches covered.">					if (e == -1) {</span>
+<span class="pc bnc" id="L297" title="All 2 branches missed.">						assert v == source;</span>
 						break;
 					}
-<span class="fc" id="L301">					path.add(e);</span>
-<span class="fc" id="L302">					v = g.edgeEndpoint(e, v);</span>
-<span class="fc" id="L303">				}</span>
+<span class="fc" id="L300">					path.add(e);</span>
+<span class="fc" id="L301">					v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L302">				}</span>
 			}
-<span class="fc" id="L305">			IntArrays.reverse(path.elements(), 0, path.size());</span>
-<span class="fc" id="L306">			return new PathImpl(g, source, target, path);</span>
+<span class="fc" id="L304">			IntArrays.reverse(path.elements(), 0, path.size());</span>
+<span class="fc" id="L305">			return new PathImpl(g, source, target, path);</span>
 		}
 
 		@Override
 		public boolean foundNegativeCycle() {
-<span class="fc" id="L311">			return false;</span>
+<span class="fc" id="L310">			return false;</span>
 		}
 
 		@Override
 		public IPath getNegativeCycle() {
-<span class="nc" id="L316">			throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
+<span class="nc" id="L315">			throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L321">			return Arrays.toString(distances);</span>
+<span class="nc" id="L320">			return Arrays.toString(distances);</span>
 		}
 
-<span class="fc" id="L324">		static class Int implements ShortestPathSingleSource.IResult {</span>
+<span class="fc" id="L323">		static class Int implements ShortestPathSingleSource.IResult {</span>
 
 			private final IndexGraph g;
 			private final int source;
 			final int[] distances;
 			final int[] backtrack;
 
-<span class="fc" id="L331">			Int(IndexGraph g, int source) {</span>
-<span class="fc" id="L332">				this.g = g;</span>
-<span class="fc" id="L333">				this.source = source;</span>
-<span class="fc" id="L334">				int n = g.vertices().size();</span>
-<span class="fc" id="L335">				distances = new int[n];</span>
-<span class="fc" id="L336">				backtrack = new int[n];</span>
-<span class="fc" id="L337">				Arrays.fill(distances, Integer.MAX_VALUE);</span>
-<span class="fc" id="L338">				Arrays.fill(backtrack, -1);</span>
-<span class="fc" id="L339">			}</span>
+<span class="fc" id="L330">			Int(IndexGraph g, int source) {</span>
+<span class="fc" id="L331">				this.g = g;</span>
+<span class="fc" id="L332">				this.source = source;</span>
+<span class="fc" id="L333">				int n = g.vertices().size();</span>
+<span class="fc" id="L334">				distances = new int[n];</span>
+<span class="fc" id="L335">				backtrack = new int[n];</span>
+<span class="fc" id="L336">				Arrays.fill(distances, Integer.MAX_VALUE);</span>
+<span class="fc" id="L337">				Arrays.fill(backtrack, -1);</span>
+<span class="fc" id="L338">			}</span>
 
-<span class="fc" id="L341">			Int(IndexGraph g, int source, int[] distances, int[] backtrack) {</span>
-<span class="fc" id="L342">				this.g = g;</span>
-<span class="fc" id="L343">				this.source = source;</span>
-<span class="fc" id="L344">				this.distances = distances;</span>
-<span class="fc" id="L345">				this.backtrack = backtrack;</span>
-<span class="fc" id="L346">			}</span>
+<span class="fc" id="L340">			Int(IndexGraph g, int source, int[] distances, int[] backtrack) {</span>
+<span class="fc" id="L341">				this.g = g;</span>
+<span class="fc" id="L342">				this.source = source;</span>
+<span class="fc" id="L343">				this.distances = distances;</span>
+<span class="fc" id="L344">				this.backtrack = backtrack;</span>
+<span class="fc" id="L345">			}</span>
 
 			@Override
 			public double distance(int target) {
-<span class="fc" id="L350">				int d = distances[target];</span>
-<span class="fc bfc" id="L351" title="All 2 branches covered.">				return d != Integer.MAX_VALUE ? d : Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L349">				int d = distances[target];</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">				return d != Integer.MAX_VALUE ? d : Double.POSITIVE_INFINITY;</span>
 			}
 
 			@Override
 			public IPath getPath(int target) {
-<span class="fc bfc" id="L356" title="All 2 branches covered.">				if (distances[target] == Integer.MAX_VALUE)</span>
-<span class="fc" id="L357">					return null;</span>
-<span class="fc" id="L358">				IntArrayList path = new IntArrayList();</span>
-<span class="fc" id="L359">				for (int v = target;;) {</span>
-<span class="fc" id="L360">					int e = backtrack[v];</span>
-<span class="fc bfc" id="L361" title="All 2 branches covered.">					if (e == -1) {</span>
-<span class="pc bnc" id="L362" title="All 2 branches missed.">						assert v == source;</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">				if (distances[target] == Integer.MAX_VALUE)</span>
+<span class="fc" id="L356">					return null;</span>
+<span class="fc" id="L357">				IntArrayList path = new IntArrayList();</span>
+<span class="fc" id="L358">				for (int v = target;;) {</span>
+<span class="fc" id="L359">					int e = backtrack[v];</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">					if (e == -1) {</span>
+<span class="pc bnc" id="L361" title="All 2 branches missed.">						assert v == source;</span>
 						break;
 					}
-<span class="fc" id="L365">					path.add(e);</span>
-<span class="fc" id="L366">					v = g.edgeEndpoint(e, v);</span>
-<span class="fc" id="L367">				}</span>
-<span class="fc" id="L368">				IntArrays.reverse(path.elements(), 0, path.size());</span>
-<span class="fc" id="L369">				return new PathImpl(g, source, target, path);</span>
+<span class="fc" id="L364">					path.add(e);</span>
+<span class="fc" id="L365">					v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L366">				}</span>
+<span class="fc" id="L367">				IntArrays.reverse(path.elements(), 0, path.size());</span>
+<span class="fc" id="L368">				return new PathImpl(g, source, target, path);</span>
 			}
 
 			@Override
 			public boolean foundNegativeCycle() {
-<span class="fc" id="L374">				return false;</span>
+<span class="fc" id="L373">				return false;</span>
 			}
 
 			@Override
 			public IPath getNegativeCycle() {
-<span class="nc" id="L379">				throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
+<span class="nc" id="L378">				throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
 			}
 
 			@Override
 			public String toString() {
-<span class="nc" id="L384">				return Arrays.toString(distances);</span>
+<span class="nc" id="L383">				return Arrays.toString(distances);</span>
 			}
 		}
 

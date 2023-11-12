@@ -113,12 +113,12 @@ public interface IWeightFunction extends WeightFunction&lt;Integer&gt;, IntCompa
 	@Override
 	default double weightSum(Iterable&lt;Integer&gt; elements) {
 <span class="fc" id="L115">		double sum = 0;</span>
-<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (elements instanceof IntIterable) {</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (elements instanceof IntIterable) {</span>
 <span class="fc bfc" id="L117" title="All 2 branches covered.">			for (int e : (IntIterable) elements)</span>
 <span class="fc" id="L118">				sum += weight(e);</span>
 		} else {
-<span class="nc bnc" id="L120" title="All 2 branches missed.">			for (Integer e : elements)</span>
-<span class="nc" id="L121">				sum += weight(e.intValue());</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">			for (Integer e : elements)</span>
+<span class="fc" id="L121">				sum += weight(e.intValue());</span>
 		}
 <span class="fc" id="L123">		return sum;</span>
 	}

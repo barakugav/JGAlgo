@@ -214,7 +214,7 @@ public interface MatchingAlgo {
 			}
 
 			@Override
-			public MatchingAlgo.Builder setOption(String key, Object value) {
+			public void setOption(String key, Object value) {
 <span class="nc bnc" id="L218" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
 <span class="nc" id="L220">						impl = (String) value;</span>
@@ -222,8 +222,7 @@ public interface MatchingAlgo {
 					default:
 <span class="nc" id="L223">						MatchingAlgo.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L225">				return this;</span>
-			}
+<span class="nc" id="L225">			}</span>
 		};
 	}
 
@@ -233,7 +232,7 @@ public interface MatchingAlgo {
 	 * @see    MatchingAlgo#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends AlgorithmBuilderBase {
 
 		/**
 		 * Create a new matching algorithm object.
@@ -264,25 +263,6 @@ public interface MatchingAlgo {
 		 * @return             this builder
 		 */
 		MatchingAlgo.Builder setCardinality(boolean cardinality);
-
-		/**
-		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
-		 *
-		 * &lt;p&gt;
-		 * The builder might support different options to customize its implementation. These options never change the
-		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
-		 * because they are not part of the API and may change in the future.
-		 *
-		 * &lt;p&gt;
-		 * These options are mainly for debug and benchmark purposes.
-		 *
-		 * @param  key   the option key
-		 * @param  value the option value
-		 * @return       this builder
-		 */
-		default MatchingAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L284">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
-		}
 	}
 
 }

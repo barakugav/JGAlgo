@@ -56,13 +56,13 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 	IResult computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals) {
 <span class="fc" id="L57">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L58">		final int n = g.vertices().size();</span>
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">		if (terminals.isEmpty())</span>
-<span class="nc" id="L60">			throw new IllegalArgumentException(&quot;no terminals provided&quot;);</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		if (terminals.isEmpty())</span>
+<span class="fc" id="L60">			throw new IllegalArgumentException(&quot;no terminals provided&quot;);</span>
 <span class="fc" id="L61">		final int terminalNum = terminals.size();</span>
 <span class="fc" id="L62">		Bitmap isTerminal = new Bitmap(n);</span>
 <span class="fc bfc" id="L63" title="All 2 branches covered.">		for (int t : terminals) {</span>
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">			if (isTerminal.get(t))</span>
-<span class="nc" id="L65">				throw new IllegalArgumentException(&quot;Duplicate terminal: &quot; + t);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			if (isTerminal.get(t))</span>
+<span class="fc" id="L65">				throw new IllegalArgumentException(&quot;Duplicate terminal: &quot; + t);</span>
 <span class="fc" id="L66">			isTerminal.set(t);</span>
 <span class="fc" id="L67">		}</span>
 

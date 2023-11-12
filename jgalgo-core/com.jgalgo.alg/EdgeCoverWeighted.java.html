@@ -30,8 +30,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	@Override
 	IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
-<span class="pc bpc" id="L33" title="1 of 2 branches missed.">		if (w == null)</span>
-<span class="nc" id="L34">			w = IWeightFunction.CardinalityWeightFunction;</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		if (w == null)</span>
+<span class="fc" id="L34">			w = IWeightFunction.CardinalityWeightFunction;</span>
 <span class="fc" id="L35">		final int n = g.vertices().size();</span>
 <span class="fc" id="L36">		final int m = g.edges().size();</span>
 
@@ -55,7 +55,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		IWeightFunction w2;
 <span class="fc" id="L56">		int[] minAdjacentEdge = new int[n];</span>
 <span class="fc" id="L57">		Arrays.fill(minAdjacentEdge, -1);</span>
-<span class="pc bpc" id="L58" title="1 of 2 branches missed.">		if (w instanceof IWeightFunctionInt) {</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">		if (w instanceof IWeightFunctionInt) {</span>
 <span class="fc" id="L59">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
 <span class="fc" id="L60">			int[] minAdjacentWeight = new int[n];</span>
 <span class="fc" id="L61">			Arrays.fill(minAdjacentWeight, Integer.MAX_VALUE);</span>
@@ -71,46 +71,41 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L71">					minAdjacentEdge[v] = e;</span>
 				}
 			}
-<span class="fc bfc" id="L74" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="pc bpc" id="L75" title="1 of 2 branches missed.">				if (minAdjacentEdge[v] == -1)</span>
-<span class="nc" id="L76">					throw new IllegalArgumentException(</span>
-							&quot;no edge cover exists, vertex with index &quot; + v + &quot; has no edges&quot;);
-<span class="fc" id="L78">			IWeightFunctionInt w2Int =</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">					e -&gt; e &lt; vvEdgeThreshold ? wInt.weightInt(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];</span>
-<span class="fc" id="L80">			w2 = w2Int;</span>
+<span class="fc" id="L74">			IWeightFunctionInt w2Int =</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">					e -&gt; e &lt; vvEdgeThreshold ? wInt.weightInt(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];</span>
+<span class="fc" id="L76">			w2 = w2Int;</span>
 
-<span class="fc" id="L82">		} else {</span>
-<span class="nc" id="L83">			double[] minAdjacentWeight = new double[n];</span>
-<span class="nc" id="L84">			Arrays.fill(minAdjacentWeight, Double.POSITIVE_INFINITY);</span>
-<span class="nc bnc" id="L85" title="All 2 branches missed.">			for (int e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L86">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="nc" id="L87">				double ew = w.weight(e);</span>
-<span class="nc bnc" id="L88" title="All 2 branches missed.">				if (minAdjacentWeight[u] &gt; ew) {</span>
-<span class="nc" id="L89">					minAdjacentWeight[u] = ew;</span>
-<span class="nc" id="L90">					minAdjacentEdge[u] = e;</span>
+<span class="fc" id="L78">		} else {</span>
+<span class="fc" id="L79">			double[] minAdjacentWeight = new double[n];</span>
+<span class="fc" id="L80">			Arrays.fill(minAdjacentWeight, Double.POSITIVE_INFINITY);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L82">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L83">				double ew = w.weight(e);</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">				if (minAdjacentWeight[u] &gt; ew) {</span>
+<span class="fc" id="L85">					minAdjacentWeight[u] = ew;</span>
+<span class="fc" id="L86">					minAdjacentEdge[u] = e;</span>
 				}
-<span class="nc bnc" id="L92" title="All 2 branches missed.">				if (minAdjacentWeight[v] &gt; ew) {</span>
-<span class="nc" id="L93">					minAdjacentWeight[v] = ew;</span>
-<span class="nc" id="L94">					minAdjacentEdge[v] = e;</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">				if (minAdjacentWeight[v] &gt; ew) {</span>
+<span class="fc" id="L89">					minAdjacentWeight[v] = ew;</span>
+<span class="fc" id="L90">					minAdjacentEdge[v] = e;</span>
 				}
 			}
-<span class="nc bnc" id="L97" title="All 2 branches missed.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="nc bnc" id="L98" title="All 2 branches missed.">				if (minAdjacentEdge[v] == -1)</span>
-<span class="nc" id="L99">					throw new IllegalArgumentException(</span>
-							&quot;no edge cover exists, vertex with index &quot; + v + &quot; has no edges&quot;);
-<span class="nc" id="L101">			IWeightFunction w0 = w;</span>
-<span class="nc bnc" id="L102" title="All 2 branches missed.">			w2 = e -&gt; e &lt; vvEdgeThreshold ? w0.weight(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];</span>
+<span class="fc" id="L93">			IWeightFunction w0 = w;</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">			w2 = e -&gt; e &lt; vvEdgeThreshold ? w0.weight(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];</span>
 		}
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">			if (minAdjacentEdge[v] == -1)</span>
+<span class="fc" id="L98">				throw new IllegalArgumentException(&quot;no edge cover exists, vertex with index &quot; + v + &quot; has no edges&quot;);</span>
 
-<span class="fc" id="L105">		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(g2, w2);</span>
-<span class="fc" id="L106">		Bitmap cover = new Bitmap(m);</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (matching.containsEdge(e * 2 + 0))</span>
-<span class="fc" id="L109">				cover.set(e);</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">			if (matching.containsEdge(vvEdgeThreshold + v))</span>
-<span class="fc" id="L112">				cover.set(minAdjacentEdge[v]);</span>
-<span class="fc" id="L113">		return ImmutableIntArraySet.ofBitmap(cover);</span>
+<span class="fc" id="L100">		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(g2, w2);</span>
+<span class="fc" id="L101">		Bitmap cover = new Bitmap(m);</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (matching.containsEdge(e * 2 + 0))</span>
+<span class="fc" id="L104">				cover.set(e);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (matching.containsEdge(vvEdgeThreshold + v))</span>
+<span class="fc" id="L107">				cover.set(minAdjacentEdge[v]);</span>
+<span class="fc" id="L108">		return ImmutableIntArraySet.ofBitmap(cover);</span>
 	}
 
 }

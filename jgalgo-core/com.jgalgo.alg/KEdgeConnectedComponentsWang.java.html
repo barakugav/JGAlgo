@@ -49,8 +49,8 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 	@Override
 	IVertexPartition computeKEdgeConnectedComponents(IndexGraph g, int k) {
 <span class="fc" id="L51">		final int n = g.vertices().size();</span>
-<span class="pc bpc" id="L52" title="1 of 2 branches missed.">		if (n == 0)</span>
-<span class="nc" id="L53">			return new VertexPartitions.Impl(g, 0, IntArrays.DEFAULT_EMPTY_ARRAY);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (n == 0)</span>
+<span class="fc" id="L53">			return new VertexPartitions.Impl(g, 0, IntArrays.DEFAULT_EMPTY_ARRAY);</span>
 
 <span class="fc" id="L55">		IndexGraphBuilder auxGraph = IndexGraphBuilder.newUndirected();</span>
 <span class="fc" id="L56">		auxGraph.expectedVerticesNum(n);</span>

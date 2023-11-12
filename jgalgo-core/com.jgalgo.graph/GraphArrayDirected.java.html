@@ -260,7 +260,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		// edgesIn.clear();
 <span class="fc" id="L261">	}</span>
 
-	private class EdgeSetOut extends IntGraphBase.EdgeSetOutDirected {
+	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutDirected {
 <span class="fc" id="L264">		EdgeSetOut(int source) {</span>
 <span class="fc" id="L265">			super(source);</span>
 <span class="fc" id="L266">		}</span>
@@ -281,7 +281,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		}
 	}
 
-	private class EdgeSetIn extends IntGraphBase.EdgeSetInDirected {
+	private class EdgeSetIn extends IndexGraphBase.EdgeSetInDirected {
 <span class="fc" id="L285">		EdgeSetIn(int target) {</span>
 <span class="fc" id="L286">			super(target);</span>
 <span class="fc" id="L287">		}</span>

@@ -128,10 +128,10 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 		IndexGraph ig;
 		IntCollection terminals0;
 		IntCollection edges0;
-<span class="pc bpc" id="L131" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L132">			ig = (IndexGraph) g;</span>
-<span class="nc" id="L133">			terminals0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) terminals);</span>
-<span class="nc" id="L134">			edges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) edges);</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L132">			ig = (IndexGraph) g;</span>
+<span class="fc" id="L133">			terminals0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) terminals);</span>
+<span class="fc" id="L134">			edges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) edges);</span>
 
 		} else {
 <span class="fc" id="L137">			ig = g.indexGraph();</span>
@@ -234,7 +234,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 	 * @see    SteinerTreeAlgo#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends AlgorithmBuilderBase {
 
 		/**
 		 * Create a new algorithm object for Steiner tree computation.
@@ -242,25 +242,6 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 		 * @return a new Steiner tree algorithm
 		 */
 		SteinerTreeAlgo build();
-
-		/**
-		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
-		 *
-		 * &lt;p&gt;
-		 * The builder might support different options to customize its implementation. These options never change the
-		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
-		 * because they are not part of the API and may change in the future.
-		 *
-		 * &lt;p&gt;
-		 * These options are mainly for debug and benchmark purposes.
-		 *
-		 * @param  key   the option key
-		 * @param  value the option value
-		 * @return       this builder
-		 */
-		default SteinerTreeAlgo.Builder setOption(String key, Object value) {
-<span class="nc" id="L262">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
-		}
 	}
 
 }

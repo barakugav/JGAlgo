@@ -322,7 +322,7 @@ public interface IndexGraph extends IntGraph {
 	 *
 	 * @param listener a remove listener that should be removed
 	 */
-	void removeVertexSwapRemoveListener(IndexRemoveListener listener);
+	void removeVertexRemoveListener(IndexRemoveListener listener);
 
 	/**
 	 * Adds a listener that will be called each time a edge swap is performed.
@@ -348,7 +348,7 @@ public interface IndexGraph extends IntGraph {
 	 *
 	 * @param listener a remove listener that should be removed
 	 */
-	void removeEdgeSwapRemoveListener(IndexRemoveListener listener);
+	void removeEdgeRemoveListener(IndexRemoveListener listener);
 
 	/**
 	 * The index graph of an {@link IndexGraph} is itself.
@@ -410,12 +410,17 @@ public interface IndexGraph extends IntGraph {
 
 	@Override
 	default IndexGraph immutableView() {
-<span class="fc" id="L413">		return Graphs.immutableView(this);</span>
+<span class="fc" id="L413">		return (IndexGraph) IntGraph.super.immutableView();</span>
 	}
 
 	@Override
 	default IndexGraph reverseView() {
-<span class="nc" id="L418">		return Graphs.reverseView(this);</span>
+<span class="fc" id="L418">		return (IndexGraph) IntGraph.super.reverseView();</span>
+	}
+
+	@Override
+	default IndexGraph undirectedView() {
+<span class="fc" id="L423">		return (IndexGraph) IntGraph.super.undirectedView();</span>
 	}
 
 	/**
@@ -428,7 +433,7 @@ public interface IndexGraph extends IntGraph {
 	 * @return a new undirected empty index graph
 	 */
 	static IndexGraph newUndirected() {
-<span class="fc" id="L431">		return IndexGraphFactory.newUndirected().newGraph();</span>
+<span class="fc" id="L436">		return IndexGraphFactory.newUndirected().newGraph();</span>
 	}
 
 	/**
@@ -441,7 +446,7 @@ public interface IndexGraph extends IntGraph {
 	 * @return a new directed empty index graph
 	 */
 	static IndexGraph newDirected() {
-<span class="fc" id="L444">		return IndexGraphFactory.newDirected().newGraph();</span>
+<span class="fc" id="L449">		return IndexGraphFactory.newDirected().newGraph();</span>
 	}
 
 }

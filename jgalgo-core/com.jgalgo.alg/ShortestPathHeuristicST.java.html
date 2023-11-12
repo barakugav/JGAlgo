@@ -119,7 +119,7 @@ public interface ShortestPathHeuristicST {
 			}
 
 			@Override
-			public ShortestPathHeuristicST.Builder setOption(String key, Object value) {
+			public void setOption(String key, Object value) {
 <span class="nc bnc" id="L123" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
 <span class="nc" id="L125">						impl = (String) value;</span>
@@ -127,8 +127,7 @@ public interface ShortestPathHeuristicST {
 					default:
 <span class="nc" id="L128">						ShortestPathHeuristicST.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L130">				return this;</span>
-			}
+<span class="nc" id="L130">			}</span>
 		};
 	}
 
@@ -138,7 +137,7 @@ public interface ShortestPathHeuristicST {
 	 * @see    ShortestPathHeuristicST#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends AlgorithmBuilderBase {
 
 		/**
 		 * Create a new algorithm object for shortest path with heuristic computation.
@@ -146,25 +145,6 @@ public interface ShortestPathHeuristicST {
 		 * @return a new heuristic shortest path algorithm
 		 */
 		ShortestPathHeuristicST build();
-
-		/**
-		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
-		 *
-		 * &lt;p&gt;
-		 * The builder might support different options to customize its implementation. These options never change the
-		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
-		 * because they are not part of the API and may change in the future.
-		 *
-		 * &lt;p&gt;
-		 * These options are mainly for debug and benchmark purposes.
-		 *
-		 * @param  key   the option key
-		 * @param  value the option value
-		 * @return       this builder
-		 */
-		default ShortestPathHeuristicST.Builder setOption(String key, Object value) {
-<span class="nc" id="L166">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
-		}
 	}
 
 }

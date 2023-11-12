@@ -238,7 +238,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		// edges.clear();
 <span class="fc" id="L239">	}</span>
 
-	class EdgeSetOut extends IntGraphBase.EdgeSetOutUndirected {
+	class EdgeSetOut extends IndexGraphBase.EdgeSetOutUndirected {
 		private final Int2IntMap edges;
 
 <span class="fc" id="L244">		EdgeSetOut(int source, Int2IntMap[] edges) {</span>
@@ -262,7 +262,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		}
 	}
 
-	class EdgeSetIn extends IntGraphBase.EdgeSetInUndirected {
+	class EdgeSetIn extends IndexGraphBase.EdgeSetInUndirected {
 		private final Int2IntMap edges;
 
 <span class="fc" id="L268">		EdgeSetIn(int target, Int2IntMap[] edges) {</span>

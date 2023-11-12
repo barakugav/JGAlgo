@@ -316,7 +316,7 @@ public interface TreePathMaxima {
 			}
 
 			@Override
-			public TreePathMaxima.Builder setOption(String key, Object value) {
+			public void setOption(String key, Object value) {
 <span class="nc bnc" id="L320" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;bits-lookup-tables-enable&quot;:
 <span class="nc" id="L322">						bitsLookupTablesEnable = ((Boolean) value).booleanValue();</span>
@@ -324,8 +324,7 @@ public interface TreePathMaxima {
 					default:
 <span class="nc" id="L325">						TreePathMaxima.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L327">				return this;</span>
-			}
+<span class="nc" id="L327">			}</span>
 
 		};
 	}
@@ -336,7 +335,7 @@ public interface TreePathMaxima {
 	 * @see    TreePathMaxima#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends AlgorithmBuilderBase {
 
 		/**
 		 * Create a new algorithm object for tree path maxima computation.
@@ -344,25 +343,6 @@ public interface TreePathMaxima {
 		 * @return a new tree path maxima algorithm
 		 */
 		TreePathMaxima build();
-
-		/**
-		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
-		 *
-		 * &lt;p&gt;
-		 * The builder might support different options to customize its implementation. These options never change the
-		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
-		 * because they are not part of the API and may change in the future.
-		 *
-		 * &lt;p&gt;
-		 * These options are mainly for debug and benchmark purposes.
-		 *
-		 * @param  key   the option key
-		 * @param  value the option value
-		 * @return       this builder
-		 */
-		default TreePathMaxima.Builder setOption(String key, Object value) {
-<span class="nc" id="L364">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
-		}
 	}
 
 	/**
@@ -390,17 +370,17 @@ public interface TreePathMaxima {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;V, E&gt; boolean verifyMST(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, Collection&lt;E&gt; mstEdges,
 			TreePathMaxima tpmAlgo) {
-<span class="pc bpc" id="L393" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L394">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="nc" id="L395">			IntCollection mstEdges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) mstEdges);</span>
-<span class="nc" id="L396">			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w0, mstEdges0, tpmAlgo);</span>
+<span class="pc bpc" id="L373" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L374">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="nc" id="L375">			IntCollection mstEdges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) mstEdges);</span>
+<span class="nc" id="L376">			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w0, mstEdges0, tpmAlgo);</span>
 
 		} else {
-<span class="fc" id="L399">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L400">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L401">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L402">			IntCollection iMstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);</span>
-<span class="fc" id="L403">			return TreePathMaximaUtils.verifyMST(iGraph, iw, iMstEdges, tpmAlgo);</span>
+<span class="fc" id="L379">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L380">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L381">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L382">			IntCollection iMstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);</span>
+<span class="fc" id="L383">			return TreePathMaximaUtils.verifyMST(iGraph, iw, iMstEdges, tpmAlgo);</span>
 		}
 	}
 

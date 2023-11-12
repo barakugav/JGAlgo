@@ -173,7 +173,7 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 <span class="fc" id="L173">		super.clearEdges();</span>
 <span class="fc" id="L174">	}</span>
 
-	private class EdgeSetOut extends IntGraphBase.EdgeSetOutUndirected {
+	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutUndirected {
 <span class="fc" id="L177">		EdgeSetOut(int source) {</span>
 <span class="fc" id="L178">			super(source);</span>
 <span class="fc" id="L179">		}</span>
@@ -189,7 +189,7 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		}
 	}
 
-	private class EdgeSetIn extends IntGraphBase.EdgeSetInUndirected {
+	private class EdgeSetIn extends IndexGraphBase.EdgeSetInUndirected {
 <span class="fc" id="L193">		EdgeSetIn(int target) {</span>
 <span class="fc" id="L194">			super(target);</span>
 <span class="fc" id="L195">		}</span>

@@ -515,6 +515,11 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 <span class="fc" id="L515">		return (IntGraph) Graph.super.reverseView();</span>
 	}
 
+	@Override
+	default IntGraph undirectedView() {
+<span class="fc" id="L520">		return (IntGraph) Graph.super.undirectedView();</span>
+	}
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -523,7 +528,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 */
 	@Override
 	default IntGraph subGraphCopy(Collection&lt;Integer&gt; vertices, Collection&lt;Integer&gt; edges) {
-<span class="fc" id="L526">		return (IntGraph) Graphs.subGraph(this, vertices, edges);</span>
+<span class="fc" id="L531">		return (IntGraph) Graph.super.subGraphCopy(vertices, edges);</span>
 	}
 
 	/**
@@ -536,7 +541,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @return a new undirected empty graph
 	 */
 	static IntGraph newUndirected() {
-<span class="fc" id="L539">		return IntGraphFactory.newUndirected().newGraph();</span>
+<span class="fc" id="L544">		return IntGraphFactory.newUndirected().newGraph();</span>
 	}
 
 	/**
@@ -549,7 +554,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @return a new directed empty graph
 	 */
 	static IntGraph newDirected() {
-<span class="fc" id="L552">		return IntGraphFactory.newDirected().newGraph();</span>
+<span class="fc" id="L557">		return IntGraphFactory.newDirected().newGraph();</span>
 	}
 
 }

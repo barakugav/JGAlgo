@@ -36,8 +36,8 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.UnionFind;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -124,13 +124,19 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	@Benchmark
 	public void UnionFindArrayMSTKruskal(Blackhole blackhole) {
-<span class="fc" id="L127">		benchUnionFindByRunningMSTKruskal(UnionFind.newBuilder().setOption(&quot;impl&quot;, &quot;array&quot;), blackhole);</span>
+<span class="fc" id="L127">		benchUnionFindByRunningMSTKruskal(getAlgo(&quot;array&quot;), blackhole);</span>
 <span class="fc" id="L128">	}</span>
 
 	@Benchmark
 	public void UnionFindPtrMSTKruskal(Blackhole blackhole) {
-<span class="fc" id="L132">		benchUnionFindByRunningMSTKruskal(UnionFind.newBuilder().setOption(&quot;impl&quot;, &quot;ptr&quot;), blackhole);</span>
+<span class="fc" id="L132">		benchUnionFindByRunningMSTKruskal(getAlgo(&quot;ptr&quot;), blackhole);</span>
 <span class="fc" id="L133">	}</span>
+
+	private static UnionFind.Builder getAlgo(String implName) {
+<span class="fc" id="L136">		UnionFind.Builder builder = UnionFind.newBuilder();</span>
+<span class="fc" id="L137">		builder.setOption(&quot;impl&quot;, implName);</span>
+<span class="fc" id="L138">		return builder;</span>
+	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

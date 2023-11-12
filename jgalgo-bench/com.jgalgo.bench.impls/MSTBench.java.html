@@ -37,8 +37,8 @@ import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -72,44 +72,49 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		}
 <span class="fc" id="L73">	}</span>
 
-	private void benchMST(MinimumSpanningTree.Builder builder, Blackhole blackhole) {
+	private void benchMST(MinimumSpanningTree algo, Blackhole blackhole) {
 <span class="fc" id="L76">		Pair&lt;IntGraph, IWeightFunctionInt&gt; gw = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
 <span class="fc" id="L77">		IntGraph g = gw.first();</span>
 <span class="fc" id="L78">		IWeightFunctionInt w = gw.second();</span>
-<span class="fc" id="L79">		MinimumSpanningTree algo = builder.build();</span>
-<span class="fc" id="L80">		MinimumSpanningTree.IResult mst = (MinimumSpanningTree.IResult) algo.computeMinimumSpanningTree(g, w);</span>
-<span class="fc" id="L81">		blackhole.consume(mst);</span>
-<span class="fc" id="L82">	}</span>
+<span class="fc" id="L79">		MinimumSpanningTree.IResult mst = (MinimumSpanningTree.IResult) algo.computeMinimumSpanningTree(g, w);</span>
+<span class="fc" id="L80">		blackhole.consume(mst);</span>
+<span class="fc" id="L81">	}</span>
 
 	@Benchmark
 	public void Boruvka(Blackhole blackhole) {
-<span class="fc" id="L86">		benchMST(MinimumSpanningTree.newBuilder().setOption(&quot;impl&quot;, &quot;boruvka&quot;), blackhole);</span>
-<span class="fc" id="L87">	}</span>
+<span class="fc" id="L85">		benchMST(getAlgo(&quot;boruvka&quot;), blackhole);</span>
+<span class="fc" id="L86">	}</span>
 
 	@Benchmark
 	public void FredmanTarjan(Blackhole blackhole) {
-<span class="fc" id="L91">		benchMST(MinimumSpanningTree.newBuilder().setOption(&quot;impl&quot;, &quot;fredman-tarjan&quot;), blackhole);</span>
-<span class="fc" id="L92">	}</span>
+<span class="fc" id="L90">		benchMST(getAlgo(&quot;fredman-tarjan&quot;), blackhole);</span>
+<span class="fc" id="L91">	}</span>
 
 	@Benchmark
 	public void Kruskal(Blackhole blackhole) {
-<span class="fc" id="L96">		benchMST(MinimumSpanningTree.newBuilder().setOption(&quot;impl&quot;, &quot;kruskal&quot;), blackhole);</span>
-<span class="fc" id="L97">	}</span>
+<span class="fc" id="L95">		benchMST(getAlgo(&quot;kruskal&quot;), blackhole);</span>
+<span class="fc" id="L96">	}</span>
 
 	@Benchmark
 	public void Prim(Blackhole blackhole) {
-<span class="fc" id="L101">		benchMST(MinimumSpanningTree.newBuilder().setOption(&quot;impl&quot;, &quot;prim&quot;), blackhole);</span>
-<span class="fc" id="L102">	}</span>
+<span class="fc" id="L100">		benchMST(getAlgo(&quot;prim&quot;), blackhole);</span>
+<span class="fc" id="L101">	}</span>
 
 	@Benchmark
 	public void Yao(Blackhole blackhole) {
-<span class="fc" id="L106">		benchMST(MinimumSpanningTree.newBuilder().setOption(&quot;impl&quot;, &quot;yao&quot;), blackhole);</span>
-<span class="fc" id="L107">	}</span>
+<span class="fc" id="L105">		benchMST(getAlgo(&quot;yao&quot;), blackhole);</span>
+<span class="fc" id="L106">	}</span>
 
 	@Benchmark
 	public void KargerKleinTarjan(Blackhole blackhole) {
-<span class="fc" id="L111">		benchMST(MinimumSpanningTree.newBuilder().setOption(&quot;impl&quot;, &quot;karger-klein-tarjan&quot;), blackhole);</span>
-<span class="fc" id="L112">	}</span>
+<span class="fc" id="L110">		benchMST(getAlgo(&quot;karger-klein-tarjan&quot;), blackhole);</span>
+<span class="fc" id="L111">	}</span>
+
+	private static MinimumSpanningTree getAlgo(String implName) {
+<span class="fc" id="L114">		MinimumSpanningTree.Builder builder = MinimumSpanningTree.newBuilder();</span>
+<span class="fc" id="L115">		builder.setOption(&quot;impl&quot;, implName);</span>
+<span class="fc" id="L116">		return builder.build();</span>
+	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

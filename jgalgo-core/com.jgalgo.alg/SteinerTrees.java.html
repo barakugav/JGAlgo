@@ -42,10 +42,10 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 		@Override
 		public &lt;V, E&gt; SteinerTreeAlgo.Result&lt;V, E&gt; computeSteinerTree(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w,
 				Collection&lt;V&gt; terminals) {
-<span class="pc bpc" id="L45" title="1 of 2 branches missed.">			if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L46">				IntCollection terminals0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) terminals);</span>
-<span class="nc" id="L47">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="nc" id="L48">				return (SteinerTreeAlgo.Result&lt;V, E&gt;) computeSteinerTree((IndexGraph) g, w0, terminals0);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L46">				IntCollection terminals0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) terminals);</span>
+<span class="fc" id="L47">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L48">				return (SteinerTreeAlgo.Result&lt;V, E&gt;) computeSteinerTree((IndexGraph) g, w0, terminals0);</span>
 
 			} else {
 <span class="fc" id="L51">				IndexGraph iGraph = g.indexGraph();</span>
@@ -93,14 +93,14 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 		private final SteinerTreeAlgo.IResult indexRes;
 		private final IndexIdMap&lt;E&gt; eiMap;
 
-<span class="nc" id="L96">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, SteinerTreeAlgo.IResult res) {</span>
-<span class="nc" id="L97">			this.indexRes = Objects.requireNonNull(res);</span>
-<span class="nc" id="L98">			this.eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L99">		}</span>
+<span class="fc" id="L96">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, SteinerTreeAlgo.IResult res) {</span>
+<span class="fc" id="L97">			this.indexRes = Objects.requireNonNull(res);</span>
+<span class="fc" id="L98">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L99">		}</span>
 
 		@Override
 		public Set&lt;E&gt; edges() {
-<span class="nc" id="L103">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
+<span class="fc" id="L103">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
 		}
 	}
 
@@ -124,10 +124,10 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 	private static &lt;V, E&gt; SteinerTreeAlgo.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
 			SteinerTreeAlgo.IResult indexResult) {
 <span class="pc bnc" id="L126" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
-<span class="pc bpc" id="L127" title="1 of 2 branches missed.">		if (g instanceof IntGraph) {</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L128">			return (SteinerTreeAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
 		} else {
-<span class="nc" id="L130">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
+<span class="fc" id="L130">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
 		}
 	}
 

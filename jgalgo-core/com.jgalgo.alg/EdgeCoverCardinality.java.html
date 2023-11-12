@@ -32,34 +32,35 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L32">		Assertions.Graphs.onlyCardinality(w);</span>
 <span class="fc" id="L33">		final int m = g.edges().size();</span>
 
-<span class="fc" id="L35">		IMatching matching = (IMatching) matchingAlgo.computeMaximumMatching(g, null);</span>
+<span class="fc" id="L35">		IMatching matching =</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">				(IMatching) matchingAlgo.computeMaximumMatching(g.isDirected() ? g.undirectedView() : g, null);</span>
 
 		/* add all the matched edges */
-<span class="fc" id="L38">		Bitmap cover = new Bitmap(m);</span>
-<span class="fc bfc" id="L39" title="All 2 branches covered.">		for (int e : matching.edges())</span>
-<span class="fc" id="L40">			cover.set(e);</span>
+<span class="fc" id="L39">		Bitmap cover = new Bitmap(m);</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		for (int e : matching.edges())</span>
+<span class="fc" id="L41">			cover.set(e);</span>
 
 		/* add more edges greedily to complete the cover */
-<span class="pc bpc" id="L43" title="1 of 2 branches missed.">		if (g.isDirected()) {</span>
-<span class="nc bnc" id="L44" title="All 2 branches missed.">			for (int v : matching.unmatchedVertices()) {</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">			for (int v : matching.unmatchedVertices()) {</span>
 				IEdgeSet edges;
-<span class="nc bnc" id="L46" title="All 4 branches missed.">				if ((edges = g.outEdges(v)).isEmpty() &amp;&amp; (edges = g.inEdges(v)).isEmpty())</span>
-<span class="nc" id="L47">					throw new IllegalArgumentException(</span>
+<span class="fc bfc" id="L47" title="All 4 branches covered.">				if ((edges = g.outEdges(v)).isEmpty() &amp;&amp; (edges = g.inEdges(v)).isEmpty())</span>
+<span class="fc" id="L48">					throw new IllegalArgumentException(</span>
 							&quot;no edge cover exists, vertex with index &quot; + v + &quot; has no edges&quot;);
-<span class="nc" id="L49">				cover.set(edges.iterator().nextInt());</span>
-<span class="nc" id="L50">			}</span>
+<span class="fc" id="L50">				cover.set(edges.iterator().nextInt());</span>
+<span class="fc" id="L51">			}</span>
 
 		} else {
-<span class="fc bfc" id="L53" title="All 2 branches covered.">			for (int v : matching.unmatchedVertices()) {</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">			for (int v : matching.unmatchedVertices()) {</span>
 				IEdgeSet edges;
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">				if ((edges = g.outEdges(v)).isEmpty())</span>
-<span class="nc" id="L56">					throw new IllegalArgumentException(</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">				if ((edges = g.outEdges(v)).isEmpty())</span>
+<span class="fc" id="L57">					throw new IllegalArgumentException(</span>
 							&quot;no edge cover exists, vertex with index &quot; + v + &quot; has no edges&quot;);
-<span class="fc" id="L58">				cover.set(edges.iterator().nextInt());</span>
-<span class="fc" id="L59">			}</span>
+<span class="fc" id="L59">				cover.set(edges.iterator().nextInt());</span>
+<span class="fc" id="L60">			}</span>
 		}
 
-<span class="fc" id="L62">		return ImmutableIntArraySet.ofBitmap(cover);</span>
+<span class="fc" id="L63">		return ImmutableIntArraySet.ofBitmap(cover);</span>
 	}
 
 }

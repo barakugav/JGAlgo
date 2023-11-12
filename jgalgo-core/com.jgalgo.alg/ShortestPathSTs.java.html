@@ -30,10 +30,10 @@ import com.jgalgo.graph.WeightFunctions;
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;V, E&gt; Path&lt;V, E&gt; computeShortestPath(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source, V target) {
-<span class="pc bpc" id="L33" title="1 of 2 branches missed.">			if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L34">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="nc" id="L35">				int source0 = ((Integer) source).intValue(), target0 = ((Integer) target).intValue();</span>
-<span class="nc" id="L36">				return (Path&lt;V, E&gt;) computeShortestPath((IndexGraph) g, w0, source0, target0);</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L34">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L35">				int source0 = ((Integer) source).intValue(), target0 = ((Integer) target).intValue();</span>
+<span class="fc" id="L36">				return (Path&lt;V, E&gt;) computeShortestPath((IndexGraph) g, w0, source0, target0);</span>
 
 			} else {
 <span class="fc" id="L39">				IndexGraph iGraph = g.indexGraph();</span>

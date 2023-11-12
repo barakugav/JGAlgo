@@ -142,11 +142,6 @@ public interface UnionFindValue extends UnionFind {
 		@Override
 		UnionFindValue.Builder expectedSize(int expectedSize);
 
-		@Override
-		default UnionFindValue.Builder setOption(String key, Object value) {
-<span class="nc" id="L147">			UnionFind.Builder.super.setOption(key, value);</span>
-<span class="nc" id="L148">			return this;</span>
-		}
 	}
 
 }

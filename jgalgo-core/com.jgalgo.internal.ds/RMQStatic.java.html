@@ -16,6 +16,8 @@
 
 package com.jgalgo.internal.ds;
 
+import com.jgalgo.alg.AlgorithmBuilderBase;
+
 /**
  * Static Range Minimum Query (RMQ) algorithm.
  *
@@ -83,7 +85,7 @@ public interface RMQStatic {
 	 * @return a default implementation of {@link RMQStatic}
 	 */
 	static RMQStatic newInstance() {
-<span class="nc" id="L86">		return newBuilder().build();</span>
+<span class="nc" id="L88">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -95,39 +97,38 @@ public interface RMQStatic {
 	 * @return a new builder that can build {@link RMQStatic} objects
 	 */
 	static RMQStatic.Builder newBuilder() {
-<span class="fc" id="L98">		return new RMQStatic.Builder() {</span>
+<span class="fc" id="L100">		return new RMQStatic.Builder() {</span>
 			String impl;
 
 			@Override
 			public RMQStatic build() {
-<span class="pc bpc" id="L103" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="pc bpc" id="L104" title="4 of 5 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="pc bpc" id="L106" title="4 of 5 branches missed.">					switch (impl) {</span>
 						case &quot;simple-lookup-table&quot;:
-<span class="nc" id="L106">							return new RMQStaticSimpleLookupTable();</span>
+<span class="nc" id="L108">							return new RMQStaticSimpleLookupTable();</span>
 						case &quot;power-of-2-table&quot;:
-<span class="nc" id="L108">							return new RMQStaticPowerOf2Table();</span>
+<span class="nc" id="L110">							return new RMQStaticPowerOf2Table();</span>
 						case &quot;cartesian-trees&quot;:
-<span class="nc" id="L110">							return new RMQStaticCartesianTrees();</span>
+<span class="nc" id="L112">							return new RMQStaticCartesianTrees();</span>
 						case &quot;plus-minus-one&quot;:
-<span class="fc" id="L112">							return new RMQStaticPlusMinusOne();</span>
+<span class="fc" id="L114">							return new RMQStaticPlusMinusOne();</span>
 						default:
-<span class="nc" id="L114">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L116">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="nc" id="L117">				return new RMQStaticPowerOf2Table();</span>
+<span class="nc" id="L119">				return new RMQStaticPowerOf2Table();</span>
 			}
 
 			@Override
-			public RMQStatic.Builder setOption(String key, Object value) {
-<span class="pc bpc" id="L122" title="1 of 2 branches missed.">				switch (key) {</span>
+			public void setOption(String key, Object value) {
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="fc" id="L124">						impl = (String) value;</span>
-<span class="fc" id="L125">						break;</span>
+<span class="fc" id="L126">						impl = (String) value;</span>
+<span class="fc" id="L127">						break;</span>
 					default:
-<span class="nc" id="L127">						RMQStatic.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L129">						RMQStatic.Builder.super.setOption(key, value);</span>
 				}
-<span class="fc" id="L129">				return this;</span>
-			}
+<span class="fc" id="L131">			}</span>
 		};
 	}
 
@@ -137,7 +138,7 @@ public interface RMQStatic {
 	 * @see    RMQStatic#newBuilder()
 	 * @author Barak Ugav
 	 */
-	static interface Builder {
+	static interface Builder extends AlgorithmBuilderBase {
 
 		/**
 		 * Create a new static range minimum queries algorithm.
@@ -145,25 +146,6 @@ public interface RMQStatic {
 		 * @return a new static range minimum queries algorithm
 		 */
 		RMQStatic build();
-
-		/**
-		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
-		 *
-		 * &lt;p&gt;
-		 * The builder might support different options to customize its implementation. These options never change the
-		 * behavior of the algorithm, only its internal implementation. The possible options are not exposed as 'public'
-		 * because they are not part of the API and may change in the future.
-		 *
-		 * &lt;p&gt;
-		 * These options are mainly for debug and benchmark purposes.
-		 *
-		 * @param  key   the option key
-		 * @param  value the option value
-		 * @return       this builder
-		 */
-		default RMQStatic.Builder setOption(String key, Object value) {
-<span class="nc" id="L165">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
-		}
 	}
 
 }
