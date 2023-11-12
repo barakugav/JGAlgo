@@ -94,7 +94,8 @@ public class GraphsTestUtils extends TestUtils {
 	}
 
 	public static Graph<Integer, Integer> randGraph(int n, int m, long seed) {
-		return randGraph(n, m, GraphsTestUtils.defaultGraphImpl(), seed);
+		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).parallelEdges(false)
+				.selfEdges(true).cycles(true).connected(false).build();
 	}
 
 	public static Graph<Integer, Integer> randGraph(int n, int m,

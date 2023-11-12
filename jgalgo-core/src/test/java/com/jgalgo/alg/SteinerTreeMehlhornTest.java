@@ -16,6 +16,7 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,20 +24,41 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.gen.CompleteGraphGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class SteinerTreeMehlhornTest extends TestBase {
+
+	@Test
+	public void testEmptyTerminals() {
+		final SteinerTreeAlgo algo = new SteinerTreeMehlhorn();
+
+		CompleteGraphGenerator<Integer, Integer> gen = CompleteGraphGenerator.newInstance();
+		gen.setVertices(Range.of(7));
+		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		Graph<Integer, Integer> g = gen.generate();
+
+		/* empty terminal set */
+		assertThrows(IllegalArgumentException.class, () -> algo.computeSteinerTree(g, null, IntList.of()));
+
+		/* non unique terminal set */
+		assertThrows(IllegalArgumentException.class, () -> algo.computeSteinerTree(g, null, IntList.of(0, 0, 1)));
+	}
 
 	@Test
 	public void testRandGraph() {
@@ -53,10 +75,11 @@ public class SteinerTreeMehlhornTest extends TestBase {
 		tester.addPhase().withArgs(3542, 25436, 100).repeat(1);
 		tester.run((n, m, k) -> {
 			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			Graph<Integer, Integer> g0 = g;
 			Supplier<Integer> edgeSupplier = () -> {
 				for (;;) {
 					Integer e = Integer.valueOf(rand.nextInt());
-					if (e.intValue() > 0 && !g.edges().contains(e))
+					if (e.intValue() > 0 && !g0.edges().contains(e))
 						return e;
 				}
 			};
@@ -82,6 +105,10 @@ public class SteinerTreeMehlhornTest extends TestBase {
 					}
 				}
 				break;
+			}
+			if (rand.nextInt(3) == 0) {
+				terminals = IndexIdMaps.idToIndexSet(terminals, g.indexGraphVerticesMap());
+				g = g.indexGraph();
 			}
 
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());

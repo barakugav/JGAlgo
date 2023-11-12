@@ -543,20 +543,43 @@ public class IndexIdMaps {
 	@SuppressWarnings("unchecked")
 	public static <K> IntCollection idToIndexCollection(Collection<K> idCollection, IndexIdMap<K> map) {
 		if (idCollection instanceof Set) {
-			// TODO
-			// return new IdToIndexSet<>((Set<K>) idCollection, map);
-			return new IdToIndexCollection<>(idCollection, map);
+			if (map instanceof IndexIntIdMap) {
+				return new IntIdToIndexSet(IntAdapters.asIntSet((Set<Integer>) idCollection), (IndexIntIdMap) map);
+			} else {
+				return new IdToIndexSet<>((Set<K>) idCollection, map);
+			}
 
-		} else if (idCollection instanceof List) {
-			// TODO
+			// } else if (idCollection instanceof List) {
+			// if (map instanceof IndexIntIdMap) {
+			// return new IntIdToIndexList(IntAdapters.asIntList((List<Integer>) idCollection), (IndexIntIdMap) map);
+			// } else {
 			// return new IdToIndexList<>((List<K>) idCollection, map);
-			return new IdToIndexCollection<>(idCollection, map);
+			// }
 
-		} else if (map instanceof IndexIntIdMap) {
-			return new IntIdToIndexCollection(IntAdapters.asIntCollection((Collection<Integer>) idCollection),
-					(IndexIntIdMap) map);
 		} else {
-			return new IdToIndexCollection<>(idCollection, map);
+			if (map instanceof IndexIntIdMap) {
+				return new IntIdToIndexCollection(IntAdapters.asIntCollection((Collection<Integer>) idCollection),
+						(IndexIntIdMap) map);
+			} else {
+				return new IdToIndexCollection<>(idCollection, map);
+			}
+		}
+	}
+
+	/**
+	 * Create an indices set from a set of IDs.
+	 *
+	 * @param  <K>   the type of IDs
+	 * @param  idSet a set of IDs
+	 * @param  map   index-id mapping
+	 * @return       a set that contain indices matching the IDs contained in the original ID-set
+	 */
+	@SuppressWarnings("unchecked")
+	public static <K> IntSet idToIndexSet(Set<K> idSet, IndexIdMap<K> map) {
+		if (map instanceof IndexIntIdMap) {
+			return new IntIdToIndexSet(IntAdapters.asIntSet((Set<Integer>) idSet), (IndexIntIdMap) map);
+		} else {
+			return new IdToIndexSet<>(idSet, map);
 		}
 	}
 
@@ -639,6 +662,88 @@ public class IndexIdMaps {
 		@Override
 		public boolean rem(int key) {
 			return idC.rem(map.indexToIdInt(key));
+		}
+	}
+
+	private static class IdToIndexSet<K> extends AbstractIntSet {
+
+		private final Set<K> idC;
+		private final IndexIdMap<K> map;
+
+		IdToIndexSet(Set<K> idC, IndexIdMap<K> map) {
+			this.idC = Objects.requireNonNull(idC);
+			this.map = Objects.requireNonNull(map);
+		}
+
+		@Override
+		public boolean contains(int key) {
+			return idC.contains(map.indexToId(key));
+		}
+
+		@Override
+		public int size() {
+			return idC.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return idC.isEmpty();
+		}
+
+		@Override
+		public void clear() {
+			idC.clear();
+		}
+
+		@Override
+		public IntIterator iterator() {
+			return new IdToIndexIterator<>(idC.iterator(), map);
+		}
+
+		@Override
+		public boolean remove(int key) {
+			return idC.remove(map.indexToId(key));
+		}
+	}
+
+	private static class IntIdToIndexSet extends AbstractIntSet {
+
+		private final IntSet idC;
+		private final IndexIntIdMap map;
+
+		IntIdToIndexSet(IntSet idC, IndexIntIdMap map) {
+			this.idC = Objects.requireNonNull(idC);
+			this.map = Objects.requireNonNull(map);
+		}
+
+		@Override
+		public boolean contains(int key) {
+			return idC.contains(map.indexToIdInt(key));
+		}
+
+		@Override
+		public int size() {
+			return idC.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return idC.isEmpty();
+		}
+
+		@Override
+		public void clear() {
+			idC.clear();
+		}
+
+		@Override
+		public IntIterator iterator() {
+			return new IdToIndexIterator<>(idC.iterator(), map);
+		}
+
+		@Override
+		public boolean remove(int key) {
+			return idC.remove(map.indexToIdInt(key));
 		}
 	}
 

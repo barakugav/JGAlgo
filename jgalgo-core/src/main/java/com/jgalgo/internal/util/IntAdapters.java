@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.function.IntPredicate;
@@ -30,12 +31,14 @@ import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class IntAdapters {
 
@@ -60,10 +63,20 @@ public class IntAdapters {
 	public static IntCollection asIntCollection(Collection<Integer> c) {
 		if (c instanceof IntCollection) {
 			return (IntCollection) c;
+		} else if (c instanceof Set) {
+			return new IntSetWrapper((Set<Integer>) c);
 		} else if (c instanceof List) {
 			return new IntListWrapper((List<Integer>) c);
 		} else {
 			return new IntCollectionWrapper(c);
+		}
+	}
+
+	public static IntSet asIntSet(Set<Integer> c) {
+		if (c instanceof IntSet) {
+			return (IntSet) c;
+		} else {
+			return new IntSetWrapper(c);
 		}
 	}
 
@@ -234,6 +247,100 @@ public class IntAdapters {
 		@Override
 		public boolean retainAll(IntCollection c2) {
 			return c.retainAll(c2);
+		}
+	}
+
+	private static class IntSetWrapper extends AbstractIntSet {
+
+		private final Set<Integer> s;
+
+		public IntSetWrapper(Set<Integer> s) {
+			this.s = Objects.requireNonNull(s);
+		}
+
+		@Override
+		public boolean add(int key) {
+			return s.add(Integer.valueOf(key));
+		}
+
+		@Override
+		public boolean contains(int key) {
+			return s.contains(Integer.valueOf(key));
+		}
+
+		@Override
+		public boolean addAll(IntCollection c) {
+			return s.addAll(c);
+		}
+
+		@Override
+		public boolean containsAll(IntCollection c) {
+			return s.containsAll(c);
+		}
+
+		@Override
+		public boolean removeAll(IntCollection c) {
+			return s.removeAll(c);
+		}
+
+		@Override
+		public boolean retainAll(IntCollection c) {
+			return s.retainAll(c);
+		}
+
+		@Override
+		public boolean addAll(Collection<? extends Integer> c) {
+			return s.addAll(c);
+		}
+
+		@Override
+		public int size() {
+			return s.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return s.isEmpty();
+		}
+
+		@Override
+		public Object[] toArray() {
+			return s.toArray();
+		}
+
+		@Override
+		public <T> T[] toArray(T[] a) {
+			return s.toArray(a);
+		}
+
+		@Override
+		public boolean containsAll(Collection<?> c) {
+			return s.containsAll(c);
+		}
+
+		@Override
+		public boolean retainAll(Collection<?> c) {
+			return s.retainAll(c);
+		}
+
+		@Override
+		public boolean removeAll(Collection<?> c) {
+			return s.removeAll(c);
+		}
+
+		@Override
+		public void clear() {
+			s.clear();
+		}
+
+		@Override
+		public IntIterator iterator() {
+			return asIntIterator(s.iterator());
+		}
+
+		@Override
+		public boolean remove(int k) {
+			return s.remove(Integer.valueOf(k));
 		}
 	}
 
