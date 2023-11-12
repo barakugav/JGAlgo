@@ -34,7 +34,7 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 	private MinimumSpanningTreeTestUtils() {}
 
 	static void testRandGraph(MinimumSpanningTree algo, long seed) {
-		testRandGraph(algo, GraphsTestUtils.defaultGraphImpl(), seed);
+		testRandGraph(algo, GraphsTestUtils.defaultGraphImpl(seed), seed);
 	}
 
 	public static void testRandGraph(MinimumSpanningTree algo,

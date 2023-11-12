@@ -26,8 +26,12 @@ public class GraphsTestUtils extends TestUtils {
 
 	private GraphsTestUtils() {}
 
-	public static Boolean2ObjectFunction<Graph<Integer, Integer>> defaultGraphImpl() {
-		return direct -> IntGraphFactory.newUndirected().setDirected(direct).newGraph();
+	public static Boolean2ObjectFunction<Graph<Integer, Integer>> defaultGraphImpl(long seed) {
+		if (new Random(seed).nextBoolean()) {
+			return direct -> IntGraphFactory.newUndirected().setDirected(direct).newGraph();
+		} else {
+			return direct -> GraphFactory.<Integer, Integer>newUndirected().setDirected(direct).newGraph();
+		}
 	}
 
 	public static Graph<Integer, Integer> randTree(int n, long seed) {
@@ -94,8 +98,8 @@ public class GraphsTestUtils extends TestUtils {
 	}
 
 	public static Graph<Integer, Integer> randGraph(int n, int m, long seed) {
-		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).parallelEdges(false)
-				.selfEdges(true).cycles(true).connected(false).build();
+		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).parallelEdges(false).selfEdges(true).cycles(true)
+				.connected(false).build();
 	}
 
 	public static Graph<Integer, Integer> randGraph(int n, int m,

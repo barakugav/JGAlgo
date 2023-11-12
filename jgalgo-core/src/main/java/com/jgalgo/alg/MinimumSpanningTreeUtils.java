@@ -34,6 +34,8 @@ import it.unimi.dsi.fastutil.ints.IntCollections;
 
 class MinimumSpanningTreeUtils {
 
+	private MinimumSpanningTreeUtils() {}
+
 	abstract static class AbstractUndirected implements MinimumSpanningTree {
 
 		@SuppressWarnings("unchecked")

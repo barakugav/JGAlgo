@@ -40,7 +40,7 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 	}
 
 	static void randBipartiteGraphs(MatchingAlgo algo, long seed) {
-		randBipartiteGraphs(algo, GraphsTestUtils.defaultGraphImpl(), seed);
+		randBipartiteGraphs(algo, GraphsTestUtils.defaultGraphImpl(seed), seed);
 	}
 
 	public static void randBipartiteGraphs(MatchingAlgo algo, Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl,

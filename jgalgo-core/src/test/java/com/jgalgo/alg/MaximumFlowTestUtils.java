@@ -201,11 +201,11 @@ public class MaximumFlowTestUtils extends TestUtils {
 	}
 
 	static void testRandGraphs(MaximumFlow algo, long seed, boolean directed) {
-		testRandGraphs(algo, GraphsTestUtils.defaultGraphImpl(), seed, directed);
+		testRandGraphs(algo, GraphsTestUtils.defaultGraphImpl(seed), seed, directed);
 	}
 
 	static void testRandGraphsInt(MaximumFlow algo, long seed, boolean directed) {
-		testRandGraphsInt(algo, GraphsTestUtils.defaultGraphImpl(), seed, directed);
+		testRandGraphsInt(algo, GraphsTestUtils.defaultGraphImpl(seed), seed, directed);
 	}
 
 	public static void testRandGraphs(MaximumFlow algo, Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl,
@@ -244,7 +244,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		tester.addPhase().withArgs(1025, 2016).repeat(1);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g =
-					randGraph(n, m, GraphsTestUtils.defaultGraphImpl(), seedGen.nextSeed(), directed);
+					randGraph(n, m, GraphsTestUtils.defaultGraphImpl(seedGen.nextSeed()), seedGen.nextSeed(), directed);
 			FlowNetwork<Integer, Integer> net = randNetwork(g, seedGen.nextSeed());
 
 			final int sourcesNum = Math.max(1, n / 6 + rand.nextInt(n / 6));
@@ -292,7 +292,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		tester.addPhase().withArgs(1025, 2016).repeat(1);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g =
-					randGraph(n, m, GraphsTestUtils.defaultGraphImpl(), seedGen.nextSeed(), directed);
+					randGraph(n, m, GraphsTestUtils.defaultGraphImpl(seedGen.nextSeed()), seedGen.nextSeed(), directed);
 			FlowNetworkInt<Integer, Integer> net = randNetworkInt(g, seedGen.nextSeed());
 
 			final int sourcesNum = Math.max(1, n / 6 + rand.nextInt(n / 6));

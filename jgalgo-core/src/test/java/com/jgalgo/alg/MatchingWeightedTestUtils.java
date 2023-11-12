@@ -35,7 +35,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 	private MatchingWeightedTestUtils() {}
 
 	static void randGraphsBipartiteWeighted(MatchingAlgo algo, long seed) {
-		randGraphsBipartiteWeighted(algo, GraphsTestUtils.defaultGraphImpl(), seed);
+		randGraphsBipartiteWeighted(algo, GraphsTestUtils.defaultGraphImpl(seed), seed);
 	}
 
 	public static void randGraphsBipartiteWeighted(MatchingAlgo algo,
@@ -70,7 +70,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		tester.addPhase().withArgs(1024, 1024, 1024).repeat(1);
 		tester.run((sn, tn, m) -> {
 			Graph<Integer, Integer> g = MatchingBipartiteTestUtils.randGraphBipartite(sn, tn, m,
-					GraphsTestUtils.defaultGraphImpl(), seedGen.nextSeed());
+					GraphsTestUtils.defaultGraphImpl(seedGen.nextSeed()), seedGen.nextSeed());
 			WeightsBool<Integer> partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 			Supplier<Integer> edgeSupplier = () -> {
 				for (;;) {

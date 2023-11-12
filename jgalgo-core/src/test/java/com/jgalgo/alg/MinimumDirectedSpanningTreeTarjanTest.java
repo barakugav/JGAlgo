@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Iterator;
+import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
@@ -113,12 +114,13 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 	@Test
 	public void testRandGraphDirected() {
 		final long seed = 0xdb81d5dd5fe0d5b3L;
-		testRandGraph(new MinimumDirectedSpanningTreeTarjan(), GraphsTestUtils.defaultGraphImpl(), seed);
+		testRandGraph(new MinimumDirectedSpanningTreeTarjan(), GraphsTestUtils.defaultGraphImpl(seed), seed);
 	}
 
 	public static void testRandGraph(MinimumDirectedSpanningTree algo,
 			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(6, 5).repeat(256);
 		tester.addPhase().withArgs(16, 32).repeat(128);
@@ -129,6 +131,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
+			g = maybeIndexGraph(g, rand);
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			testRandGraph(algo, g, w);
@@ -141,6 +144,12 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 		Graph<V, E> mst = g.subGraphCopy(g.vertices(), mstRes.edges());
 
 		assertEquals(Path.reachableVertices(g, root), Path.reachableVertices(mst, root));
+	}
+
+	@Test
+	public void testDefaultImpl() {
+		MinimumDirectedSpanningTree algo = MinimumDirectedSpanningTree.newInstance();
+		assertEquals(MinimumDirectedSpanningTreeTarjan.class, algo.getClass());
 	}
 
 }
