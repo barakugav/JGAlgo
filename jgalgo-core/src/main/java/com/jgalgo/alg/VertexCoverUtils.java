@@ -27,6 +27,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 class VertexCoverUtils {
 
+	private VertexCoverUtils() {}
+
 	abstract static class AbstractImpl implements VertexCover {
 
 		@SuppressWarnings("unchecked")

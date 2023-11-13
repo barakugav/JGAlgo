@@ -15,19 +15,27 @@
  */
 package com.jgalgo.alg;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomIntUnique;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class VertexCoverBarYehudaTest extends TestBase {
@@ -39,6 +47,7 @@ public class VertexCoverBarYehudaTest extends TestBase {
 
 		final long seed = 0x3c94d9694bd37614L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(8, 16).repeat(256);
 		tester.addPhase().withArgs(64, 256).repeat(64);
@@ -46,11 +55,12 @@ public class VertexCoverBarYehudaTest extends TestBase {
 		tester.addPhase().withArgs(8096, 16384).repeat(2);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			g = maybeIndexGraph(g, rand);
 
-			RandomIntUnique rand = new RandomIntUnique(0, 163454, seedGen.nextSeed());
+			RandomIntUnique wRand = new RandomIntUnique(0, 163454, seedGen.nextSeed());
 			WeightsInt<Integer> weight = g.addVerticesWeights("weight", int.class);
 			for (Integer v : g.vertices())
-				weight.set(v, rand.next());
+				weight.set(v, wRand.next());
 
 			testVC(g, weight, algo, appxFactor);
 		});
@@ -90,6 +100,45 @@ public class VertexCoverBarYehudaTest extends TestBase {
 			assertNotNull(bestCover);
 			assertTrue(w.weightSum(vc) / appxFactor <= coverWeight.applyAsDouble(bestCover));
 		}
+	}
+
+	@Test
+	public void isCoverNonExistingVertex() {
+		IntGraph g = IntGraph.newDirected();
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addEdge(1, 2, 1);
+
+		assertThrows(NoSuchVertexException.class, () -> VertexCover.isCover(g, IntSet.of(3)));
+		assertThrows(NoSuchVertexException.class, () -> VertexCover.isCover(g.indexGraph(), IntSet.of(57)));
+	}
+
+	@Test
+	public void isCoverDuplicatedVertex() {
+		IntGraph g = IntGraph.newDirected();
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addEdge(1, 2, 1);
+
+		assertThrows(IllegalArgumentException.class, () -> VertexCover.isCover(g, IntList.of(1, 1)));
+	}
+
+	@Test
+	public void isCoverNegative() {
+		IntGraph g = IntGraph.newUndirected();
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addVertex(3);
+		g.addEdge(1, 2, 1);
+		g.addEdge(1, 3, 2);
+
+		assertFalse(VertexCover.isCover(g, IntSet.of(2)));
+	}
+
+	@Test
+	public void testDefaultImpl() {
+		VertexCover algo = VertexCover.newInstance();
+		assertEquals(VertexCoverBarYehuda.class, algo.getClass());
 	}
 
 }
