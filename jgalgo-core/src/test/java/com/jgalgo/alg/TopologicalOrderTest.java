@@ -16,12 +16,16 @@
 
 package com.jgalgo.alg;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import java.util.Iterator;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -42,6 +46,8 @@ public class TopologicalOrderTest extends TestBase {
 
 	private static void topologicalSort(boolean connected, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
+		TopologicalOrderAlgo algo = new TopologicalOrderAlgoImpl();
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 16).repeat(256);
 		tester.addPhase().withArgs(32, 64).repeat(128);
@@ -49,13 +55,12 @@ public class TopologicalOrderTest extends TestBase {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
 					.parallelEdges(true).selfEdges(false).cycles(false).connected(connected).build();
+			g = maybeIndexGraph(g, rand);
 
-			Iterator<Integer> topolSort =
-					new TopologicalOrderAlgoImpl().computeTopologicalSorting(g).orderedVertices().iterator();
+			TopologicalOrderAlgo.Result<Integer, Integer> res = algo.computeTopologicalSorting(g);
 
 			Set<Integer> seenVertices = new ObjectOpenHashSet<>(n);
-			while (topolSort.hasNext()) {
-				Integer u = topolSort.next();
+			for (Integer u : res.orderedVertices()) {
 				for (EdgeIter<Integer, Integer> eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.next();
 					Integer v = eit.target();
@@ -63,7 +68,38 @@ public class TopologicalOrderTest extends TestBase {
 				}
 				seenVertices.add(u);
 			}
+
+			for (Integer v : g.vertices())
+				assertEquals(v, res.orderedVertices().get(res.vertexOrderIndex(v)));
+
+			assertEquals(res.orderedVertices(),
+					g.vertices().stream().sorted(res.orderComparator()).collect(Collectors.toList()));
 		});
+	}
+
+	@Test
+	public void testNonDagGraph() {
+		IntGraph g = IntGraph.newDirected();
+		g.addVertex(0);
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addVertex(3);
+		g.addVertex(4);
+		g.addEdge(0, 1);
+		g.addEdge(1, 2);
+		g.addEdge(2, 3);
+		g.addEdge(3, 1);
+		g.addEdge(3, 4);
+
+		TopologicalOrderAlgo algo = new TopologicalOrderAlgoImpl();
+		assertThrows(IllegalArgumentException.class, () -> algo.computeTopologicalSorting(g));
+
+	}
+
+	@Test
+	public void testDefaultImpl() {
+		TopologicalOrderAlgo algo = TopologicalOrderAlgo.newInstance();
+		assertEquals(TopologicalOrderAlgoImpl.class, algo.getClass());
 	}
 
 }
