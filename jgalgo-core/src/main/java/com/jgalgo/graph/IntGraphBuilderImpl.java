@@ -270,6 +270,9 @@ class IntGraphBuilderImpl {
 		}
 
 		private static class IndexIdMapImpl implements IndexIntIdMap {
+
+			// TODO: remove this implementation, use GraphImpl.IndexIdMapImpl instead
+
 			private final Int2IntMap idToIndex;
 			private final IntList indexToId;
 			private final boolean isEdges;
@@ -282,6 +285,20 @@ class IntGraphBuilderImpl {
 
 			@Override
 			public int indexToIdInt(int index) {
+				if (!(0 <= index && index < indexToId.size())) {
+					if (isEdges) {
+						throw NoSuchEdgeException.ofIndex(index);
+					} else {
+						throw NoSuchVertexException.ofIndex(index);
+					}
+				}
+				return indexToId.getInt(index);
+			}
+
+			@Override
+			public int indexToIdIfExistInt(int index) {
+				if (!(0 <= index && index < indexToId.size()))
+					return -1;
 				return indexToId.getInt(index);
 			}
 

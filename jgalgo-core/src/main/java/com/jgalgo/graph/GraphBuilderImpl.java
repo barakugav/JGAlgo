@@ -203,6 +203,9 @@ class GraphBuilderImpl {
 		}
 
 		private static class IndexIdMapImpl<K> implements IndexIdMap<K> {
+
+			// TODO: remove this implementation, use GraphImpl.IndexIdMapImpl instead
+
 			private final Object2IntMap<K> idToIndex;
 			private final ObjectList<K> indexToId;
 			private final boolean isEdges;
@@ -215,6 +218,20 @@ class GraphBuilderImpl {
 
 			@Override
 			public K indexToId(int index) {
+				if (!(0 <= index && index < indexToId.size())) {
+					if (isEdges) {
+						throw NoSuchEdgeException.ofIndex(index);
+					} else {
+						throw NoSuchVertexException.ofIndex(index);
+					}
+				}
+				return indexToId.get(index);
+			}
+
+			@Override
+			public K indexToIdIfExist(int index) {
+				if (!(0 <= index && index < indexToId.size()))
+					return null;
 				return indexToId.get(index);
 			}
 

@@ -525,6 +525,14 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 			return (K) indexToId[index];
 		}
 
+		@SuppressWarnings("unchecked")
+		@Override
+		public K indexToIdIfExist(int index) {
+			if (!(0 <= index && index < elements.size()))
+				return null;
+			return (K) indexToId[index];
+		}
+
 		@Override
 		public int idToIndex(K id) {
 			int idx = idToIndex.getInt(id);

@@ -93,7 +93,7 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 
 		@Override
 		public boolean contains(int edge) {
-			return 0 <= edge && edge < edges().size() && source == edgeSource(edge) || source == edgeTarget(edge);
+			return 0 <= edge && edge < edges().size() && (source == edgeSource(edge) || source == edgeTarget(edge));
 		}
 
 		@Override
@@ -112,7 +112,7 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 
 		@Override
 		public boolean contains(int edge) {
-			return 0 <= edge && edge < edges().size() && target == edgeSource(edge) || target == edgeTarget(edge);
+			return 0 <= edge && edge < edges().size() && (target == edgeSource(edge) || target == edgeTarget(edge));
 		}
 
 		@Override

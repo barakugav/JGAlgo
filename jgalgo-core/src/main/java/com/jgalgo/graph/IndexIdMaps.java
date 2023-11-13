@@ -53,7 +53,7 @@ public class IndexIdMaps {
 	@SuppressWarnings("unchecked")
 	public static <K> Iterator<K> indexToIdIterator(IntIterator indexIter, IndexIdMap<K> map) {
 		if (map instanceof IndexIntIdMap) {
-			return (Iterator<K>) new IndexToIntIdIterator(indexIter, (IndexIntIdMap) map);
+			return (Iterator<K>) indexToIdIterator(indexIter, (IndexIntIdMap) map);
 		} else {
 			return new IndexToIdIterator<>(indexIter, map);
 		}
@@ -614,13 +614,13 @@ public class IndexIdMaps {
 		}
 
 		@Override
-		public boolean contains(int key) {
-			return idC.contains(map.indexToId(key));
+		public boolean contains(int idx) {
+			return idC.contains(map.indexToIdIfExist(idx));
 		}
 
 		@Override
-		public boolean rem(int key) {
-			return idC.remove(map.indexToId(key));
+		public boolean rem(int idx) {
+			return idC.remove(map.indexToIdIfExist(idx));
 		}
 	}
 
@@ -656,12 +656,12 @@ public class IndexIdMaps {
 
 		@Override
 		public boolean contains(int key) {
-			return idC.contains(map.indexToIdInt(key));
+			return idC.contains(map.indexToIdIfExistInt(key));
 		}
 
 		@Override
 		public boolean rem(int key) {
-			return idC.rem(map.indexToIdInt(key));
+			return idC.rem(map.indexToIdIfExistInt(key));
 		}
 	}
 
@@ -677,7 +677,7 @@ public class IndexIdMaps {
 
 		@Override
 		public boolean contains(int key) {
-			return idC.contains(map.indexToId(key));
+			return idC.contains(map.indexToIdIfExist(key));
 		}
 
 		@Override
@@ -702,7 +702,7 @@ public class IndexIdMaps {
 
 		@Override
 		public boolean remove(int key) {
-			return idC.remove(map.indexToId(key));
+			return idC.remove(map.indexToIdIfExist(key));
 		}
 	}
 
@@ -718,7 +718,7 @@ public class IndexIdMaps {
 
 		@Override
 		public boolean contains(int key) {
-			return idC.contains(map.indexToIdInt(key));
+			return idC.contains(map.indexToIdIfExistInt(key));
 		}
 
 		@Override
@@ -743,7 +743,7 @@ public class IndexIdMaps {
 
 		@Override
 		public boolean remove(int key) {
-			return idC.remove(map.indexToIdInt(key));
+			return idC.remove(map.indexToIdIfExistInt(key));
 		}
 	}
 
@@ -818,12 +818,14 @@ public class IndexIdMaps {
 
 		@Override
 		public int indexOf(Object k) {
-			return indexList.indexOf(map.idToIndex((K) k));
+			int idx = map.idToIndexIfExist((K) k);
+			return idx == -1 ? -1 : indexList.indexOf(idx);
 		}
 
 		@Override
 		public int lastIndexOf(Object k) {
-			return indexList.lastIndexOf(map.idToIndex((K) k));
+			int idx = map.idToIndexIfExist((K) k);
+			return idx == -1 ? -1 : indexList.lastIndexOf(idx);
 		}
 
 		@Override
@@ -874,12 +876,14 @@ public class IndexIdMaps {
 
 		@Override
 		public int indexOf(int k) {
-			return indexList.indexOf(map.idToIndex(k));
+			int idx = map.idToIndexIfExist(k);
+			return idx == -1 ? -1 : indexList.indexOf(idx);
 		}
 
 		@Override
 		public int lastIndexOf(int k) {
-			return indexList.lastIndexOf(map.idToIndex(k));
+			int idx = map.idToIndexIfExist(k);
+			return idx == -1 ? -1 : indexList.lastIndexOf(idx);
 		}
 
 		@Override

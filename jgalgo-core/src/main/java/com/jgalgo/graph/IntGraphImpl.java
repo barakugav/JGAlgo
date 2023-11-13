@@ -603,6 +603,13 @@ abstract class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGr
 		}
 
 		@Override
+		public int indexToIdIfExistInt(int index) {
+			if (!(0 <= index && index < elements.size()))
+				return -1;
+			return indexToId[index];
+		}
+
+		@Override
 		public int idToIndex(int id) {
 			int idx = idToIndex.get(id);
 			if (idx < 0) {

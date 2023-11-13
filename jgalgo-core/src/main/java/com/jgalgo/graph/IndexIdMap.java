@@ -57,6 +57,18 @@ public interface IndexIdMap<K> {
 	K indexToId(int index);
 
 	/**
+	 * Get the identifier of an element by its index if it exists, or {@code null} if it doesn't.
+	 *
+	 * <p>
+	 * Whether this method maps vertices or edges depends if the mapping object was obtained by
+	 * {@link Graph#indexGraphVerticesMap()} or {@link Graph#indexGraphEdgesMap()}.
+	 *
+	 * @param  index the index of an element (vertex/edge)
+	 * @return       the identifier of the element, or {@code null} if there is not such element
+	 */
+	K indexToIdIfExist(int index);
+
+	/**
 	 * Get the index of an element by its identifier.
 	 *
 	 * <p>

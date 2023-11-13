@@ -1935,6 +1935,11 @@ public class Graphs {
 		}
 
 		@Override
+		public int indexToIdIfExistInt(int index) {
+			return index;
+		}
+
+		@Override
 		public int idToIndex(int id) {
 			return id;
 		}
