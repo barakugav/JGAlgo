@@ -24,10 +24,10 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongList;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
 
 class LowestCommonAncestorOfflineUtils {
+
+	private LowestCommonAncestorOfflineUtils() {}
 
 	abstract static class AbstractImpl implements LowestCommonAncestorOffline {
 
@@ -35,9 +35,11 @@ class LowestCommonAncestorOfflineUtils {
 		@Override
 		public <V, E> LowestCommonAncestorOffline.Result<V, E> findLCAs(Graph<V, E> tree, V root,
 				LowestCommonAncestorOffline.Queries<V, E> queries) {
-			if (tree instanceof IndexGraph && queries instanceof LowestCommonAncestorOffline.IQueries) {
+			if (tree instanceof IndexGraph) {
+				LowestCommonAncestorOffline.IQueries queries0 =
+						asIntQueries((LowestCommonAncestorOffline.Queries<Integer, Integer>) queries);
 				return (LowestCommonAncestorOffline.Result<V, E>) findLCAs((IndexGraph) tree,
-						((Integer) root).intValue(), (LowestCommonAncestorOffline.IQueries) queries);
+						((Integer) root).intValue(), queries0);
 
 			} else {
 				IndexGraph iGraph = tree.indexGraph();
@@ -55,36 +57,37 @@ class LowestCommonAncestorOfflineUtils {
 	}
 
 	static class ObjQueriesImpl<V, E> implements LowestCommonAncestorOffline.Queries<V, E> {
-		private final ObjectList<V> qs;
 
-		ObjQueriesImpl() {
-			qs = new ObjectArrayList<>();
+		private final LowestCommonAncestorOffline.IQueries indexQueries = new IntQueriesImpl();
+		private final IndexIdMap<V> viMap;
+
+		ObjQueriesImpl(Graph<V, E> g) {
+			viMap = g.indexGraphVerticesMap();
 		}
 
 		@Override
 		public void addQuery(V u, V v) {
-			qs.add(u);
-			qs.add(v);
+			indexQueries.addQuery(viMap.idToIndex(u), viMap.idToIndex(v));
 		}
 
 		@Override
 		public V getQuerySource(int idx) {
-			return qs.get(idx * 2 + 0);
+			return viMap.indexToId(indexQueries.getQuerySourceInt(idx));
 		}
 
 		@Override
 		public V getQueryTarget(int idx) {
-			return qs.get(idx * 2 + 1);
+			return viMap.indexToId(indexQueries.getQueryTargetInt(idx));
 		}
 
 		@Override
 		public int size() {
-			return qs.size() / 2;
+			return indexQueries.size();
 		}
 
 		@Override
 		public void clear() {
-			qs.clear();
+			indexQueries.clear();
 		}
 	}
 
@@ -108,6 +111,47 @@ class LowestCommonAncestorOfflineUtils {
 		@Override
 		public int getQueryTargetInt(int idx) {
 			return JGAlgoUtils.long2high(qs.getLong(idx));
+		}
+
+		@Override
+		public int size() {
+			return qs.size();
+		}
+
+		@Override
+		public void clear() {
+			qs.clear();
+		}
+	}
+
+	static LowestCommonAncestorOffline.IQueries asIntQueries(LowestCommonAncestorOffline.Queries<Integer, Integer> qs) {
+		if (qs instanceof LowestCommonAncestorOffline.IQueries) {
+			return (LowestCommonAncestorOffline.IQueries) qs;
+		} else {
+			return new IntQueriesWrapper(qs);
+		}
+	}
+
+	static class IntQueriesWrapper implements LowestCommonAncestorOffline.IQueries {
+		private final LowestCommonAncestorOffline.Queries<Integer, Integer> qs;
+
+		IntQueriesWrapper(LowestCommonAncestorOffline.Queries<Integer, Integer> qs) {
+			this.qs = Objects.requireNonNull(qs);
+		}
+
+		@Override
+		public void addQuery(int u, int v) {
+			qs.addQuery(Integer.valueOf(u), Integer.valueOf(v));
+		}
+
+		@Override
+		public int getQuerySourceInt(int idx) {
+			return qs.getQuerySource(idx).intValue();
+		}
+
+		@Override
+		public int getQueryTargetInt(int idx) {
+			return qs.getQueryTarget(idx).intValue();
 		}
 
 		@Override
@@ -191,11 +235,18 @@ class LowestCommonAncestorOfflineUtils {
 		}
 	}
 
-	private static <V, E> LowestCommonAncestorOffline.IQueries indexQueriesFromQueries(Graph<V, E> g,
+	static <V, E> LowestCommonAncestorOffline.IQueries indexQueriesFromQueries(Graph<V, E> g,
 			LowestCommonAncestorOffline.Queries<V, E> queries) {
 		assert !(g instanceof IndexGraph);
 		if (g instanceof IntGraph && queries instanceof LowestCommonAncestorOffline.IQueries) {
 			return new IndexQueriesFromIntQueries((IntGraph) g, (LowestCommonAncestorOffline.IQueries) queries);
+
+		} else if (queries instanceof ObjQueriesImpl) {
+			ObjQueriesImpl<V, E> q0 = (ObjQueriesImpl<V, E>) queries;
+			if (q0.viMap != g.indexGraphVerticesMap())
+				throw new IllegalArgumentException("queries object was created with different graph");
+			return q0.indexQueries;
+
 		} else {
 			return new IndexQueriesFromObjQueries<>(g, queries);
 		}

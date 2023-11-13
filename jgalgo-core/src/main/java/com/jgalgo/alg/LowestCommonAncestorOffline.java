@@ -16,6 +16,7 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 
 /**
@@ -74,10 +75,16 @@ public interface LowestCommonAncestorOffline {
 		 *
 		 * @param  <V> the vertices type
 		 * @param  <E> the edges type
+		 * @param  g   the graph
 		 * @return     a new queries container
 		 */
-		static <V, E> LowestCommonAncestorOffline.Queries<V, E> newInstance() {
-			return new LowestCommonAncestorOfflineUtils.ObjQueriesImpl<>();
+		@SuppressWarnings("unchecked")
+		static <V, E> LowestCommonAncestorOffline.Queries<V, E> newInstance(Graph<V, E> g) {
+			if (g instanceof IndexGraph) {
+				return (LowestCommonAncestorOffline.Queries<V, E>) new LowestCommonAncestorOfflineUtils.IntQueriesImpl();
+			} else {
+				return new LowestCommonAncestorOfflineUtils.ObjQueriesImpl<>(g);
+			}
 		}
 
 		/**
