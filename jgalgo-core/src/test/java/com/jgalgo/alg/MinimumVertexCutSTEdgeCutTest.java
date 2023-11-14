@@ -21,15 +21,27 @@ import com.jgalgo.internal.util.TestBase;
 public class MinimumVertexCutSTEdgeCutTest extends TestBase {
 
 	@Test
-	public void testRandGraphDirected() {
+	public void testRandGraphDirectedUnweighted() {
 		final long seed = 0x36a317d1b8ab08b4L;
-		MinimumVertexCutSTTestUtils.testRandGraphs(new MinimumVertexCutSTEdgeCut(), true, seed);
+		MinimumVertexCutSTTestUtils.testRandGraphs(new MinimumVertexCutSTEdgeCut(), true, false, seed);
 	}
 
 	@Test
-	public void testRandGraphUndirected() {
+	public void testRandGraphUndirectedUnweighted() {
 		final long seed = 0x431ccd689c0ecea9L;
-		MinimumVertexCutSTTestUtils.testRandGraphs(new MinimumVertexCutSTEdgeCut(), false, seed);
+		MinimumVertexCutSTTestUtils.testRandGraphs(new MinimumVertexCutSTEdgeCut(), false, false, seed);
+	}
+
+	@Test
+	public void testRandGraphDirectedWeighted() {
+		final long seed = 0x12df1d0277298ea3L;
+		MinimumVertexCutSTTestUtils.testRandGraphs(new MinimumVertexCutSTEdgeCut(), true, true, seed);
+	}
+
+	@Test
+	public void testRandGraphUndirectedWeighted() {
+		final long seed = 0x54f7653238122aefL;
+		MinimumVertexCutSTTestUtils.testRandGraphs(new MinimumVertexCutSTEdgeCut(), false, true, seed);
 	}
 
 }

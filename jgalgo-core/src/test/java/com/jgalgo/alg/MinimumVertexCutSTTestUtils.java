@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class MinimumVertexCutSTTestUtils extends TestUtils {
 
-	static void testRandGraphs(MinimumVertexCutST algo, boolean directed, long seed) {
+	static void testRandGraphs(MinimumVertexCutST algo, boolean directed, boolean weighted, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
@@ -45,14 +45,14 @@ class MinimumVertexCutSTTestUtils extends TestUtils {
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
 			g = maybeIndexGraph(g, rand);
 
-			WeightFunction<Integer> w;
-			if (rand.nextBoolean()) {
+			WeightFunction<Integer> w = null;
+			if (weighted && rand.nextBoolean()) {
 				WeightsInt<Integer> w0 = g.addVerticesWeights("weight", int.class);
 				for (Integer v : g.vertices())
 					w0.set(v, rand.nextInt(551));
 				w = w0;
 
-			} else {
+			} else if (weighted) {
 				WeightsDouble<Integer> w0 = g.addVerticesWeights("weight", double.class);
 				for (Integer v : g.vertices())
 					w0.set(v, rand.nextDouble() * 5642);
@@ -75,6 +75,8 @@ class MinimumVertexCutSTTestUtils extends TestUtils {
 		assertTrue(g.vertices().stream().filter(v -> minCutSetCopy.contains(v)).allMatch(v -> minCut.contains(v)));
 		assertTrue(g.vertices().stream().filter(v -> !minCutSetCopy.contains(v)).allMatch(v -> !minCut.contains(v)));
 
+		if (w == null)
+			w = WeightFunction.cardinalityWeightFunction();
 		double minCutWeight = w.weightSum(minCut);
 
 		final int n = g.vertices().size();

@@ -15,11 +15,11 @@
  */
 package com.jgalgo.alg;
 
+import com.jgalgo.alg.MinimumVertexCutUtils.AuxiliaryGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -44,7 +44,7 @@ class MinimumVertexCutSTEdgeCut extends MinimumVertexCutUtils.AbstractImplST {
 
 	@Override
 	IntSet computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
-		Pair<IndexGraph, IWeightFunction> auxiliaryGraph = MinimumVertexCutUtils.auxiliaryGraph(g, w);
+		AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, w);
 		int[] vertexCut = computeMinCut(g, source, sink, auxiliaryGraph);
 		if (vertexCut == null)
 			return null;
@@ -53,22 +53,27 @@ class MinimumVertexCutSTEdgeCut extends MinimumVertexCutUtils.AbstractImplST {
 		return ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, vertexCut));
 	}
 
-	int[] computeMinCut(IndexGraph g, int source, int sink, Pair<IndexGraph, IWeightFunction> auxiliaryGraph) {
+	int[] computeMinCut(IndexGraph g, int source, int sink, AuxiliaryGraph auxiliaryGraph) {
 		if (g.getEdge(source, sink) != -1)
 			return null;
 
-		IndexGraph g0 = auxiliaryGraph.first();
-		IWeightFunction w0 = auxiliaryGraph.second();
-		final int m = g.edges().size();
-		final int verticesEdgesThreshold = g.isDirected() ? m : 2 * m;
+		IndexGraph g0 = auxiliaryGraph.graph;
+		IWeightFunction w0 = auxiliaryGraph.weights;
+		final int verticesEdgesThreshold = auxiliaryGraph.verticesEdgesThreshold;
 
-		IntSet edgeCut = (IntSet) minEdgeCutAlgo
+		IntSet edgesCut = (IntSet) minEdgeCutAlgo
 				.computeMinimumCut(g0, w0, Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0)).crossEdges();
-		assert edgeCut.intStream().allMatch(e -> e >= verticesEdgesThreshold);
+		assert edgesCut.intStream().allMatch(e -> e >= verticesEdgesThreshold);
 
-		int[] vertexCut = edgeCut.toIntArray();
-		for (int i = 0; i < vertexCut.length; i++)
-			vertexCut[i] -= verticesEdgesThreshold;
+		int[] vertexCut = edgesCut.toIntArray();
+		for (int i = 0; i < vertexCut.length; i++) {
+			int cutEdge = vertexCut[i];
+			if (cutEdge >= verticesEdgesThreshold) {
+				vertexCut[i] = cutEdge - verticesEdgesThreshold;
+			} else {
+				vertexCut[i] = g0.edgeTarget(cutEdge) / 2;
+			}
+		}
 		return vertexCut;
 	}
 

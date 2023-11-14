@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import com.jgalgo.alg.MinimumVertexCutUtils.AuxiliaryGraph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -22,7 +23,6 @@ import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.Range;
-import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -81,7 +81,7 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 			return Range.of(g.vertices().size() - 1);
 		}
 
-		final Pair<IndexGraph, IWeightFunction> auxiliaryGraph = MinimumVertexCutUtils.auxiliaryGraph(g, null);
+		final AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, null);
 
 		IntList startVertexNeighbors = neighbors.neighbors(startVertex);
 
