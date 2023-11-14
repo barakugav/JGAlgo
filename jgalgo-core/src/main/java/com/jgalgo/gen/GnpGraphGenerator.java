@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.BiFunction;
+import java.util.function.IntBinaryOperator;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import com.jgalgo.graph.GraphBuilder;
@@ -27,7 +28,6 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -240,15 +240,15 @@ public class GnpGraphGenerator<V, E> implements GraphGenerator<V, E> {
 						for (int vIdx = 0; vIdx < uIdx; vIdx++) {
 							int v = vertices[vIdx];
 							if (rand.nextDouble() <= p)
-								g.addEdge(u, v, edgeBuilder.apply(u, v));
+								g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));
 						}
 					}
 					if (selfEdges && rand.nextDouble() <= p)
-						g.addEdge(u, u, edgeBuilder.apply(u, u));
+						g.addEdge(u, u, edgeBuilder.applyAsInt(u, u));
 					for (int vIdx = uIdx + 1; vIdx < n; vIdx++) {
 						int v = vertices[vIdx];
 						if (rand.nextDouble() <= p)
-							g.addEdge(u, v, edgeBuilder.apply(u, v));
+							g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));
 					}
 				}
 			}

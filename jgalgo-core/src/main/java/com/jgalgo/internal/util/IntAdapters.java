@@ -22,7 +22,7 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiFunction;
-import java.util.function.BinaryOperator;
+import java.util.function.IntBinaryOperator;
 import java.util.function.IntPredicate;
 import java.util.function.IntSupplier;
 import java.util.function.IntUnaryOperator;
@@ -32,7 +32,6 @@ import java.util.function.ToIntFunction;
 import it.unimi.dsi.fastutil.ints.AbstractIntCollection;
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
-import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -55,6 +54,8 @@ public class IntAdapters {
 	public static IntIterable asIntIterable(Iterable<Integer> it) {
 		if (it instanceof IntIterable) {
 			return (IntIterable) it;
+		} else if (it instanceof Collection) {
+			return asIntCollection((Collection<Integer>) it);
 		} else {
 			return new IntIterableWrapper(it);
 		}
@@ -64,9 +65,9 @@ public class IntAdapters {
 		if (c instanceof IntCollection) {
 			return (IntCollection) c;
 		} else if (c instanceof Set) {
-			return new IntSetWrapper((Set<Integer>) c);
+			return asIntSet((Set<Integer>) c);
 		} else if (c instanceof List) {
-			return new IntListWrapper((List<Integer>) c);
+			return asIntList((List<Integer>) c);
 		} else {
 			return new IntCollectionWrapper(c);
 		}
@@ -103,6 +104,11 @@ public class IntAdapters {
 		@Override
 		public int nextInt() {
 			return it.next().intValue();
+		}
+
+		@Override
+		public void remove() {
+			it.remove();
 		}
 	}
 
@@ -358,16 +364,6 @@ public class IntAdapters {
 		}
 
 		@Override
-		public boolean addAll(IntCollection c) {
-			return l.addAll(c);
-		}
-
-		@Override
-		public boolean addAll(Collection<? extends Integer> c) {
-			return l.addAll(c);
-		}
-
-		@Override
 		public boolean addAll(int index, Collection<? extends Integer> c) {
 			return l.addAll(index, c);
 		}
@@ -484,14 +480,6 @@ public class IntAdapters {
 	}
 
 	public static IntBinaryOperator asIntBiOperator(BiFunction<Integer, Integer, Integer> func) {
-		if (func instanceof IntBinaryOperator) {
-			return (IntBinaryOperator) func;
-		} else {
-			return (a, b) -> func.apply(Integer.valueOf(a), Integer.valueOf(b)).intValue();
-		}
-	}
-
-	public static IntBinaryOperator asIntBiOperator(BinaryOperator<Integer> func) {
 		if (func instanceof IntBinaryOperator) {
 			return (IntBinaryOperator) func;
 		} else {

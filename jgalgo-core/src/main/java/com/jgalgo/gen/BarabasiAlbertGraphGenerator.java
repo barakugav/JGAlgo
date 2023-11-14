@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.BiFunction;
+import java.util.function.IntBinaryOperator;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import com.jgalgo.graph.GraphBuilder;
@@ -27,7 +28,6 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -296,7 +296,7 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 			for (int eIdx = 0; eIdx < edgeNum; eIdx++) {
 				int u = vertices[endpoints[eIdx * 2 + 0]];
 				int v = vertices[endpoints[eIdx * 2 + 1]];
-				g.addEdge(u, v, edgeBuilder.apply(u, v));
+				g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));
 			}
 			return (GraphBuilder<V, E>) g;
 

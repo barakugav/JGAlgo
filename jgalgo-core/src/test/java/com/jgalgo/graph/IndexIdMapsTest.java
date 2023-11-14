@@ -82,7 +82,7 @@ public class IndexIdMapsTest extends TestBase {
 
 	@Test
 	public void idToIndexIterator() {
-		final long seed = 0;
+		final long seed = 0xe47e0556fb0eba74L;
 		final Random rand = new Random(seed);
 		for (boolean intGraph : BooleanList.of(false, true)) {
 			for (boolean edgesOrVertices : BooleanList.of(false, true)) {
@@ -116,7 +116,7 @@ public class IndexIdMapsTest extends TestBase {
 
 	@Test
 	public void indexToIdEdgeIter() {
-		final long seed = 0;
+		final long seed = 0x7b422697871558a8L;
 		final Random rand = new Random(seed);
 		for (boolean intGraph : BooleanList.of(false, true)) {
 			Graph<Integer, Integer> g = createGraph(intGraph);
@@ -185,7 +185,7 @@ public class IndexIdMapsTest extends TestBase {
 	public void indexToIdList() {
 		indexToIdCollectionAbstract(indicesSet -> new IntArrayList(indicesSet));
 
-		final long seed = 0;
+		final long seed = 0x136cebddbfbbff4bL;
 		final Random rand = new Random(seed);
 		for (boolean intGraph : BooleanList.of(false, true)) {
 			for (boolean edgesOrVertices : BooleanList.of(false, true)) {
@@ -243,7 +243,7 @@ public class IndexIdMapsTest extends TestBase {
 	}
 
 	public void indexToIdCollectionAbstract(Function<IntSet, IntCollection> createIndexCollection) {
-		final long seed = 0;
+		final long seed = 0x112b0dd34340e8a8L;
 		final Random rand = new Random(seed);
 		for (boolean intGraph : BooleanList.of(false, true)) {
 			for (boolean edgesOrVertices : BooleanList.of(false, true)) {
@@ -320,7 +320,7 @@ public class IndexIdMapsTest extends TestBase {
 	}
 
 	public void idToIndexCollectionOrSet(boolean collectionOrSet) {
-		final long seed = 0;
+		final long seed = 0xd71f63773c813234L;
 		final Random rand = new Random(seed);
 		for (boolean intGraph : BooleanList.of(false, true)) {
 			for (boolean edgesOrVertices : BooleanList.of(false, true)) {

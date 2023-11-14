@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.BiFunction;
+import java.util.function.IntBinaryOperator;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import com.jgalgo.graph.GraphBuilder;
@@ -28,7 +29,6 @@ import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -313,7 +313,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 						int u = vertices[uIdx];
 						if (edges.get(uIdx * N + vIdx)) {
 							int v = vertices[vIdx];
-							g.addEdge(u, v, edgeBuilder.apply(u, v));
+							g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));
 						}
 					}
 				}
@@ -323,7 +323,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 					for (int vIdx = uIdx; vIdx < n; vIdx++) {
 						if (edges.get(uIdx * N + vIdx)) {
 							int v = vertices[vIdx];
-							g.addEdge(u, v, edgeBuilder.apply(u, v));
+							g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));
 						}
 					}
 				}
