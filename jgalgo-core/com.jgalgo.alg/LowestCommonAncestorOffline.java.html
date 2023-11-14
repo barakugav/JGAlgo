@@ -16,6 +16,7 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 
 /**
@@ -74,10 +75,16 @@ public interface LowestCommonAncestorOffline {
 		 *
 		 * @param  &lt;V&gt; the vertices type
 		 * @param  &lt;E&gt; the edges type
+		 * @param  g   the graph
 		 * @return     a new queries container
 		 */
-		static &lt;V, E&gt; LowestCommonAncestorOffline.Queries&lt;V, E&gt; newInstance() {
-<span class="fc" id="L80">			return new LowestCommonAncestorOfflineUtils.ObjQueriesImpl&lt;&gt;();</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+		static &lt;V, E&gt; LowestCommonAncestorOffline.Queries&lt;V, E&gt; newInstance(Graph&lt;V, E&gt; g) {
+<span class="fc bfc" id="L83" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L84">				return (LowestCommonAncestorOffline.Queries&lt;V, E&gt;) new LowestCommonAncestorOfflineUtils.IntQueriesImpl();</span>
+			} else {
+<span class="fc" id="L86">				return new LowestCommonAncestorOfflineUtils.ObjQueriesImpl&lt;&gt;(g);</span>
+			}
 		}
 
 		/**
@@ -140,7 +147,7 @@ public interface LowestCommonAncestorOffline {
 		 * @return a new queries container
 		 */
 		static LowestCommonAncestorOffline.IQueries newInstance() {
-<span class="nc" id="L143">			return new LowestCommonAncestorOfflineUtils.IntQueriesImpl();</span>
+<span class="fc" id="L150">			return new LowestCommonAncestorOfflineUtils.IntQueriesImpl();</span>
 		}
 
 		/**
@@ -154,8 +161,8 @@ public interface LowestCommonAncestorOffline {
 		@Deprecated
 		@Override
 		default void addQuery(Integer u, Integer v) {
-<span class="nc" id="L157">			addQuery(u.intValue(), v.intValue());</span>
-<span class="nc" id="L158">		}</span>
+<span class="fc" id="L164">			addQuery(u.intValue(), v.intValue());</span>
+<span class="fc" id="L165">		}</span>
 
 		/**
 		 * Get a query source by index.
@@ -173,7 +180,7 @@ public interface LowestCommonAncestorOffline {
 		@Deprecated
 		@Override
 		default Integer getQuerySource(int idx) {
-<span class="nc" id="L176">			return Integer.valueOf(getQuerySourceInt(idx));</span>
+<span class="fc" id="L183">			return Integer.valueOf(getQuerySourceInt(idx));</span>
 		}
 
 		/**
@@ -192,7 +199,7 @@ public interface LowestCommonAncestorOffline {
 		@Deprecated
 		@Override
 		default Integer getQueryTarget(int idx) {
-<span class="nc" id="L195">			return Integer.valueOf(getQueryTargetInt(idx));</span>
+<span class="fc" id="L202">			return Integer.valueOf(getQueryTargetInt(idx));</span>
 		}
 	}
 
@@ -256,7 +263,7 @@ public interface LowestCommonAncestorOffline {
 		@Deprecated
 		@Override
 		default Integer getLca(int queryIdx) {
-<span class="fc" id="L259">			return Integer.valueOf(getLcaInt(queryIdx));</span>
+<span class="fc" id="L266">			return Integer.valueOf(getLcaInt(queryIdx));</span>
 		}
 	}
 
@@ -270,7 +277,7 @@ public interface LowestCommonAncestorOffline {
 	 * @return a default implementation of {@link LowestCommonAncestorOffline}
 	 */
 	static LowestCommonAncestorOffline newInstance() {
-<span class="nc" id="L273">		return newBuilder().build();</span>
+<span class="fc" id="L280">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -282,7 +289,7 @@ public interface LowestCommonAncestorOffline {
 	 * @return a new builder that can build {@link LowestCommonAncestorOffline} objects
 	 */
 	static LowestCommonAncestorOffline.Builder newBuilder() {
-<span class="nc" id="L285">		return LowestCommonAncestorOfflineUnionFind::new;</span>
+<span class="fc" id="L292">		return LowestCommonAncestorOfflineUnionFind::new;</span>
 	}
 
 	/**

@@ -97,9 +97,9 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public void setVertices(Collection&lt;V&gt; vertices) {
-<span class="pc bpc" id="L100" title="1 of 2 branches missed.">		if (intGraph) {</span>
-<span class="nc" id="L101">			this.vertices =</span>
-<span class="nc" id="L102">					(Collection&lt;V&gt;) new IntArrayList(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices));</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">		if (intGraph) {</span>
+<span class="fc" id="L101">			this.vertices =</span>
+<span class="fc" id="L102">					(Collection&lt;V&gt;) new IntArrayList(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices));</span>
 		} else {
 <span class="fc" id="L104">			this.vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
 		}

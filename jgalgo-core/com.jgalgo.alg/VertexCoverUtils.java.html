@@ -25,23 +25,25 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-<span class="nc" id="L28">class VertexCoverUtils {</span>
+class VertexCoverUtils {
 
-<span class="fc" id="L30">	abstract static class AbstractImpl implements VertexCover {</span>
+	private VertexCoverUtils() {}
+
+<span class="fc" id="L32">	abstract static class AbstractImpl implements VertexCover {</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;V, E&gt; Set&lt;V&gt; computeMinimumVertexCover(Graph&lt;V, E&gt; g, WeightFunction&lt;V&gt; w) {
-<span class="pc bpc" id="L35" title="1 of 2 branches missed.">			if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L36">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="nc" id="L37">				return (Set&lt;V&gt;) computeMinimumVertexCover((IndexGraph) g, w0);</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L38">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L39">				return (Set&lt;V&gt;) computeMinimumVertexCover((IndexGraph) g, w0);</span>
 
 			} else {
-<span class="fc" id="L40">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L41">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L42">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);</span>
-<span class="fc" id="L43">				IntSet indexResult = computeMinimumVertexCover(iGraph, iw);</span>
-<span class="fc" id="L44">				return IndexIdMaps.indexToIdSet(indexResult, viMap);</span>
+<span class="fc" id="L42">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L43">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L44">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);</span>
+<span class="fc" id="L45">				IntSet indexResult = computeMinimumVertexCover(iGraph, iw);</span>
+<span class="fc" id="L46">				return IndexIdMaps.indexToIdSet(indexResult, viMap);</span>
 			}
 		}
 

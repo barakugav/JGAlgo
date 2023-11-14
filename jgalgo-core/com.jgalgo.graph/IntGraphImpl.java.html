@@ -603,25 +603,32 @@ abstract class IntGraphImpl extends GraphBase&lt;Integer, Integer&gt; implements
 		}
 
 		@Override
+		public int indexToIdIfExistInt(int index) {
+<span class="fc bfc" id="L607" title="All 4 branches covered.">			if (!(0 &lt;= index &amp;&amp; index &lt; elements.size()))</span>
+<span class="fc" id="L608">				return -1;</span>
+<span class="fc" id="L609">			return indexToId[index];</span>
+		}
+
+		@Override
 		public int idToIndex(int id) {
-<span class="fc" id="L607">			int idx = idToIndex.get(id);</span>
-<span class="fc bfc" id="L608" title="All 2 branches covered.">			if (idx &lt; 0) {</span>
-<span class="pc bpc" id="L609" title="1 of 2 branches missed.">				if (isEdges) {</span>
-<span class="fc" id="L610">					throw NoSuchEdgeException.ofEdge(id);</span>
+<span class="fc" id="L614">			int idx = idToIndex.get(id);</span>
+<span class="fc bfc" id="L615" title="All 2 branches covered.">			if (idx &lt; 0) {</span>
+<span class="fc bfc" id="L616" title="All 2 branches covered.">				if (isEdges) {</span>
+<span class="fc" id="L617">					throw NoSuchEdgeException.ofEdge(id);</span>
 				} else {
-<span class="nc" id="L612">					throw NoSuchVertexException.ofVertex(id);</span>
+<span class="fc" id="L619">					throw NoSuchVertexException.ofVertex(id);</span>
 				}
 			}
-<span class="fc" id="L615">			return idx;</span>
+<span class="fc" id="L622">			return idx;</span>
 		}
 
 		@Override
 		public int idToIndexIfExist(int id) {
-<span class="fc" id="L620">			return idToIndex.get(id);</span>
+<span class="fc" id="L627">			return idToIndex.get(id);</span>
 		}
 
 		IntSet idSet() {
-<span class="fc" id="L624">			return idsView;</span>
+<span class="fc" id="L631">			return idsView;</span>
 		}
 
 	}
@@ -629,87 +636,87 @@ abstract class IntGraphImpl extends GraphBase&lt;Integer, Integer&gt; implements
 	static class Factory implements IntGraphFactory {
 		private final IndexGraphFactoryImpl factory;
 
-<span class="fc" id="L632">		Factory(boolean directed) {</span>
-<span class="fc" id="L633">			this.factory = new IndexGraphFactoryImpl(directed);</span>
-<span class="fc" id="L634">		}</span>
+<span class="fc" id="L639">		Factory(boolean directed) {</span>
+<span class="fc" id="L640">			this.factory = new IndexGraphFactoryImpl(directed);</span>
+<span class="fc" id="L641">		}</span>
 
-<span class="fc" id="L636">		Factory(IntGraph g) {</span>
-<span class="fc" id="L637">			this.factory = new IndexGraphFactoryImpl(g.indexGraph());</span>
-<span class="fc" id="L638">		}</span>
+<span class="fc" id="L643">		Factory(IntGraph g) {</span>
+<span class="fc" id="L644">			this.factory = new IndexGraphFactoryImpl(g.indexGraph());</span>
+<span class="fc" id="L645">		}</span>
 
 		@Override
 		public IntGraph newGraph() {
-<span class="fc" id="L642">			IndexGraph indexGraph = factory.newGraph();</span>
-<span class="fc bfc" id="L643" title="All 2 branches covered.">			if (indexGraph.isDirected()) {</span>
-<span class="fc" id="L644">				return new IntGraphImpl.Directed(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);</span>
+<span class="fc" id="L649">			IndexGraph indexGraph = factory.newGraph();</span>
+<span class="fc bfc" id="L650" title="All 2 branches covered.">			if (indexGraph.isDirected()) {</span>
+<span class="fc" id="L651">				return new IntGraphImpl.Directed(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);</span>
 			} else {
-<span class="fc" id="L646">				return new IntGraphImpl.Undirected(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);</span>
+<span class="fc" id="L653">				return new IntGraphImpl.Undirected(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);</span>
 			}
 		}
 
 		@Override
 		public IntGraph newCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyWeights) {
-<span class="fc" id="L652">			IntGraph g0 = (IntGraph) g;</span>
-<span class="fc bfc" id="L653" title="All 2 branches covered.">			if (g.isDirected()) {</span>
-<span class="fc" id="L654">				return new IntGraphImpl.Directed(g0, factory, copyWeights);</span>
+<span class="fc" id="L659">			IntGraph g0 = (IntGraph) g;</span>
+<span class="fc bfc" id="L660" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc" id="L661">				return new IntGraphImpl.Directed(g0, factory, copyWeights);</span>
 			} else {
-<span class="fc" id="L656">				return new IntGraphImpl.Undirected(g0, factory, copyWeights);</span>
+<span class="fc" id="L663">				return new IntGraphImpl.Undirected(g0, factory, copyWeights);</span>
 			}
 		}
 
 		@Override
 		public IntGraphBuilder newBuilder() {
-<span class="fc" id="L662">			IndexGraphBuilder builder = factory.newBuilder();</span>
-<span class="fc bfc" id="L663" title="All 2 branches covered.">			return factory.directed ? new IntGraphBuilderImpl.Directed(builder)</span>
-<span class="fc" id="L664">					: new IntGraphBuilderImpl.Undirected(builder);</span>
+<span class="fc" id="L669">			IndexGraphBuilder builder = factory.newBuilder();</span>
+<span class="fc bfc" id="L670" title="All 2 branches covered.">			return factory.directed ? new IntGraphBuilderImpl.Directed(builder)</span>
+<span class="fc" id="L671">					: new IntGraphBuilderImpl.Undirected(builder);</span>
 		}
 
 		@Override
 		public IntGraphFactory setDirected(boolean directed) {
-<span class="fc" id="L669">			factory.setDirected(directed);</span>
-<span class="fc" id="L670">			return this;</span>
+<span class="fc" id="L676">			factory.setDirected(directed);</span>
+<span class="fc" id="L677">			return this;</span>
 		}
 
 		@Override
 		public IntGraphFactory allowSelfEdges(boolean selfEdges) {
-<span class="nc" id="L675">			factory.allowSelfEdges(selfEdges);</span>
-<span class="nc" id="L676">			return this;</span>
+<span class="nc" id="L682">			factory.allowSelfEdges(selfEdges);</span>
+<span class="nc" id="L683">			return this;</span>
 		}
 
 		@Override
 		public IntGraphFactory allowParallelEdges(boolean parallelEdges) {
-<span class="nc" id="L681">			factory.allowParallelEdges(parallelEdges);</span>
-<span class="nc" id="L682">			return this;</span>
+<span class="nc" id="L688">			factory.allowParallelEdges(parallelEdges);</span>
+<span class="nc" id="L689">			return this;</span>
 		}
 
 		@Override
 		public IntGraphFactory expectedVerticesNum(int expectedVerticesNum) {
-<span class="fc" id="L687">			factory.expectedVerticesNum(expectedVerticesNum);</span>
-<span class="fc" id="L688">			return this;</span>
+<span class="fc" id="L694">			factory.expectedVerticesNum(expectedVerticesNum);</span>
+<span class="fc" id="L695">			return this;</span>
 		}
 
 		@Override
 		public IntGraphFactory expectedEdgesNum(int expectedEdgesNum) {
-<span class="fc" id="L693">			factory.expectedEdgesNum(expectedEdgesNum);</span>
-<span class="fc" id="L694">			return this;</span>
+<span class="fc" id="L700">			factory.expectedEdgesNum(expectedEdgesNum);</span>
+<span class="fc" id="L701">			return this;</span>
 		}
 
 		@Override
 		public IntGraphFactory addHint(GraphFactory.Hint hint) {
-<span class="fc" id="L699">			factory.addHint(hint);</span>
-<span class="fc" id="L700">			return this;</span>
+<span class="fc" id="L706">			factory.addHint(hint);</span>
+<span class="fc" id="L707">			return this;</span>
 		}
 
 		@Override
 		public IntGraphFactory removeHint(GraphFactory.Hint hint) {
-<span class="nc" id="L705">			factory.removeHint(hint);</span>
-<span class="nc" id="L706">			return this;</span>
+<span class="nc" id="L712">			factory.removeHint(hint);</span>
+<span class="nc" id="L713">			return this;</span>
 		}
 
 		@Override
 		public IntGraphFactory setOption(String key, Object value) {
-<span class="fc" id="L711">			factory.setOption(key, value);</span>
-<span class="fc" id="L712">			return this;</span>
+<span class="fc" id="L718">			factory.setOption(key, value);</span>
+<span class="fc" id="L719">			return this;</span>
 		}
 	}
 

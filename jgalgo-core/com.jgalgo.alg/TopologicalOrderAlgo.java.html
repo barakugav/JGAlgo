@@ -87,7 +87,7 @@ public interface TopologicalOrderAlgo {
 		 * @return a comparator that compare vertices by their order in the topological order
 		 */
 		default Comparator&lt;V&gt; orderComparator() {
-<span class="nc" id="L90">			return (v1, v2) -&gt; Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));</span>
+<span class="fc" id="L90">			return (v1, v2) -&gt; Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));</span>
 		}
 	}
 
@@ -112,12 +112,12 @@ public interface TopologicalOrderAlgo {
 		@Deprecated
 		@Override
 		default int vertexOrderIndex(Integer vertex) {
-<span class="nc" id="L115">			return vertexOrderIndex(vertex.intValue());</span>
+<span class="fc" id="L115">			return vertexOrderIndex(vertex.intValue());</span>
 		}
 
 		@Override
 		default IntComparator orderComparator() {
-<span class="nc" id="L120">			return (v1, v2) -&gt; Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));</span>
+<span class="fc" id="L120">			return (v1, v2) -&gt; Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));</span>
 		}
 	}
 

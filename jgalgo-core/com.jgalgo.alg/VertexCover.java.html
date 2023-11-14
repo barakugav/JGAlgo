@@ -22,6 +22,7 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
@@ -88,28 +89,28 @@ public interface VertexCover {
 	static &lt;V, E&gt; boolean isCover(Graph&lt;V, E&gt; g, Collection&lt;V&gt; vertices) {
 		IndexGraph ig;
 		IntCollection vertices0;
-<span class="pc bpc" id="L91" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L92">			ig = (IndexGraph) g;</span>
-<span class="nc" id="L93">			vertices0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L93">			ig = (IndexGraph) g;</span>
+<span class="fc" id="L94">			vertices0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices);</span>
 		} else {
-<span class="fc" id="L95">			ig = g.indexGraph();</span>
-<span class="fc" id="L96">			vertices0 = IndexIdMaps.idToIndexCollection(vertices, g.indexGraphVerticesMap());</span>
+<span class="fc" id="L96">			ig = g.indexGraph();</span>
+<span class="fc" id="L97">			vertices0 = IndexIdMaps.idToIndexCollection(vertices, g.indexGraphVerticesMap());</span>
 		}
-<span class="fc" id="L98">		final int n = ig.vertices().size();</span>
-<span class="fc" id="L99">		final int m = ig.edges().size();</span>
-<span class="fc" id="L100">		Bitmap visited = new Bitmap(n);</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">		for (int v : vertices0) {</span>
-<span class="pc bpc" id="L102" title="1 of 2 branches missed.">			if (!ig.vertices().contains(v))</span>
-<span class="nc" id="L103">				throw new IllegalArgumentException(&quot;invalid vertex index &quot; + v);</span>
-<span class="pc bpc" id="L104" title="1 of 2 branches missed.">			if (visited.get(v))</span>
-<span class="nc" id="L105">				throw new IllegalArgumentException(</span>
+<span class="fc" id="L99">		final int n = ig.vertices().size();</span>
+<span class="fc" id="L100">		final int m = ig.edges().size();</span>
+<span class="fc" id="L101">		Bitmap visited = new Bitmap(n);</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		for (int v : vertices0) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (!ig.vertices().contains(v))</span>
+<span class="fc" id="L104">				throw NoSuchVertexException.ofIndex(v);</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			if (visited.get(v))</span>
+<span class="fc" id="L106">				throw new IllegalArgumentException(</span>
 						&quot;vertex with index &quot; + v + &quot; is included more than once in the cover&quot;);
-<span class="fc" id="L107">			visited.set(v);</span>
-<span class="fc" id="L108">		}</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
-<span class="pc bpc" id="L110" title="1 of 4 branches missed.">			if (!visited.get(ig.edgeSource(e)) &amp;&amp; !visited.get(ig.edgeTarget(e)))</span>
-<span class="nc" id="L111">				return false;</span>
-<span class="fc" id="L112">		return true;</span>
+<span class="fc" id="L108">			visited.set(v);</span>
+<span class="fc" id="L109">		}</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L111" title="All 4 branches covered.">			if (!visited.get(ig.edgeSource(e)) &amp;&amp; !visited.get(ig.edgeTarget(e)))</span>
+<span class="fc" id="L112">				return false;</span>
+<span class="fc" id="L113">		return true;</span>
 	}
 
 	/**
@@ -122,7 +123,7 @@ public interface VertexCover {
 	 * @return a default implementation of {@link VertexCover}
 	 */
 	static VertexCover newInstance() {
-<span class="nc" id="L125">		return newBuilder().build();</span>
+<span class="fc" id="L126">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -134,7 +135,7 @@ public interface VertexCover {
 	 * @return a new builder that can build {@link VertexCover} objects
 	 */
 	static VertexCover.Builder newBuilder() {
-<span class="nc" id="L137">		return VertexCoverBarYehuda::new;</span>
+<span class="fc" id="L138">		return VertexCoverBarYehuda::new;</span>
 	}
 
 	/**
