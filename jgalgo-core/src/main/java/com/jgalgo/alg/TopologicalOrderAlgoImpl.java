@@ -19,6 +19,7 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -84,6 +85,8 @@ class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
 				for (int i = 0; i < orderedVertices.size(); i++)
 					vertexOrderIndex[orderedVertices.getInt(i)] = i;
 			}
+			if (!(0 <= vertex && vertex < vertexOrderIndex.length))
+				throw NoSuchVertexException.ofIndex(vertex);
 			return vertexOrderIndex[vertex];
 		}
 

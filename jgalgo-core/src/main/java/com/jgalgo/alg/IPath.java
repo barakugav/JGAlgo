@@ -26,6 +26,7 @@ import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -180,15 +181,39 @@ public interface IPath extends Path<Integer, Integer> {
 	 * @return        a set of all the vertices reachable from the given source vertex
 	 */
 	static IntSet reachableVertices(IntGraph g, int source) {
-		IndexGraph ig = g.indexGraph();
-		int iSource = g.indexGraphVerticesMap().idToIndex(source);
+		return reachableVertices(g, IntIterators.singleton(source));
+	}
+
+	/**
+	 * Find all the vertices reachable from a set of given source vertices.
+	 *
+	 * @param  g       a graph
+	 * @param  sources a set of source vertices
+	 * @return         a set of all the vertices reachable from the given source vertices
+	 */
+	static IntSet reachableVertices(IntGraph g, IntIterator sources) {
+		IndexGraph ig;
+		IntIterator iSources;
+		if (g instanceof IndexGraph) {
+			ig = (IndexGraph) g;
+			iSources = sources;
+		} else {
+			ig = g.indexGraph();
+			iSources = IndexIdMaps.idToIndexIterator(sources, g.indexGraphVerticesMap());
+		}
 
 		final int n = g.vertices().size();
 		Bitmap visited = new Bitmap(n);
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 
-		visited.set(iSource);
-		for (int u = iSource;;) {
+		while (iSources.hasNext()) {
+			int source = iSources.nextInt();
+			visited.set(source);
+			queue.enqueue(source);
+		}
+
+		while (!queue.isEmpty()) {
+			int u = queue.dequeueInt();
 			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.targetInt();
@@ -197,9 +222,6 @@ public interface IPath extends Path<Integer, Integer> {
 				visited.set(v);
 				queue.enqueue(v);
 			}
-			if (queue.isEmpty())
-				break;
-			u = queue.dequeueInt();
 		}
 
 		IntSet indexRes = ImmutableIntArraySet.ofBitmap(visited);
@@ -207,5 +229,4 @@ public interface IPath extends Path<Integer, Integer> {
 			indexRes = IndexIdMaps.indexToIdSet(indexRes, g.indexGraphVerticesMap());
 		return indexRes;
 	}
-
 }
