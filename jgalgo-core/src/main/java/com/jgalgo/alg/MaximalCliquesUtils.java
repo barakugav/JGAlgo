@@ -16,17 +16,17 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class MaximalCliquesUtils {
+
+	private MaximalCliquesUtils() {}
 
 	abstract static class AbstractImpl implements MaximalCliques {
 
@@ -38,65 +38,14 @@ class MaximalCliquesUtils {
 
 			} else {
 				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 				Iterator<IntSet> indexResult = iterateMaximalCliques(iGraph);
-				return resultFromIndexResult(g, indexResult);
+				return JGAlgoUtils.iterMap(indexResult, iSet -> IndexIdMaps.indexToIdSet(iSet, viMap));
 			}
 		}
 
 		abstract Iterator<IntSet> iterateMaximalCliques(IndexGraph g);
 
-	}
-
-	private static class IntResultFromIndexResult implements Iterator<IntSet> {
-
-		private final Iterator<IntSet> indexResult;
-		private final IndexIntIdMap viMap;
-
-		IntResultFromIndexResult(IntGraph g, Iterator<IntSet> indexResult) {
-			this.indexResult = Objects.requireNonNull(indexResult);
-			this.viMap = g.indexGraphVerticesMap();
-		}
-
-		@Override
-		public boolean hasNext() {
-			return indexResult.hasNext();
-		}
-
-		@Override
-		public IntSet next() {
-			return IndexIdMaps.indexToIdSet(indexResult.next(), viMap);
-		}
-	}
-
-	private static class ObjResultFromIndexResult<V, E> implements Iterator<Set<V>> {
-
-		private final Iterator<IntSet> indexResult;
-		private final IndexIdMap<V> viMap;
-
-		ObjResultFromIndexResult(Graph<V, E> g, Iterator<IntSet> indexResult) {
-			this.indexResult = Objects.requireNonNull(indexResult);
-			this.viMap = g.indexGraphVerticesMap();
-		}
-
-		@Override
-		public boolean hasNext() {
-			return indexResult.hasNext();
-		}
-
-		@Override
-		public Set<V> next() {
-			return IndexIdMaps.indexToIdSet(indexResult.next(), viMap);
-		}
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static <V, E> Iterator<Set<V>> resultFromIndexResult(Graph<V, E> g, Iterator<IntSet> indexResult) {
-		assert !(g instanceof IndexGraph);
-		if (g instanceof IntGraph) {
-			return (Iterator) new IntResultFromIndexResult((IntGraph) g, indexResult);
-		} else {
-			return new ObjResultFromIndexResult<>(g, indexResult);
-		}
 	}
 
 }

@@ -16,7 +16,6 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
@@ -424,58 +423,6 @@ class PathImpl implements IPath {
 		@Override
 		public String toString() {
 			return edges().toString();
-		}
-	}
-
-	static class IntIterFromIndexIter implements Iterator<IPath> {
-
-		private final Iterator<IPath> indexIter;
-		private final IntGraph g;
-
-		IntIterFromIndexIter(IntGraph g, Iterator<IPath> indexIter) {
-			this.indexIter = Objects.requireNonNull(indexIter);
-			this.g = Objects.requireNonNull(g);
-		}
-
-		@Override
-		public boolean hasNext() {
-			return indexIter.hasNext();
-		}
-
-		@Override
-		public IPath next() {
-			return intPathFromIndexPath(g, indexIter.next());
-		}
-	}
-
-	static class ObjIterFromIndexIter<V, E> implements Iterator<Path<V, E>> {
-
-		private final Iterator<IPath> indexIter;
-		private final Graph<V, E> g;
-
-		ObjIterFromIndexIter(Graph<V, E> g, Iterator<IPath> indexIter) {
-			this.indexIter = Objects.requireNonNull(indexIter);
-			this.g = Objects.requireNonNull(g);
-		}
-
-		@Override
-		public boolean hasNext() {
-			return indexIter.hasNext();
-		}
-
-		@Override
-		public Path<V, E> next() {
-			return objPathFromIndexPath(g, indexIter.next());
-		}
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	static <V, E> Iterator<Path<V, E>> iterFromIndexIter(Graph<V, E> g, Iterator<IPath> indexIter) {
-		assert !(g instanceof IndexGraph);
-		if (g instanceof IntGraph) {
-			return (Iterator) new IntIterFromIndexIter((IntGraph) g, indexIter);
-		} else {
-			return new ObjIterFromIndexIter<>(g, indexIter);
 		}
 	}
 

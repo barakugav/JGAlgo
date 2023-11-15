@@ -19,6 +19,7 @@ import java.util.Iterator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.internal.util.JGAlgoUtils;
 
 class SimplePathsFinders {
 
@@ -39,7 +40,7 @@ class SimplePathsFinders {
 				int iSource = viMap.idToIndex(source);
 				int iTarget = viMap.idToIndex(target);
 				Iterator<IPath> indexResult = findAllSimplePaths(iGraph, iSource, iTarget);
-				return PathImpl.iterFromIndexIter(g, indexResult);
+				return JGAlgoUtils.iterMap(indexResult, iPath -> PathImpl.pathFromIndexPath(g, iPath));
 			}
 		}
 
