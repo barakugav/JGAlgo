@@ -75,7 +75,7 @@ public class Assertions {
 		public static void onlyPositiveEdgesWeights(IndexGraph g, IWeightFunction w) {
 			if (!JGAlgoConfigImpl.AssertionsGraphsPositiveWeights)
 				return;
-			if (w instanceof IWeightFunctionInt) {
+			if (WeightFunction.isInteger(w)) {
 				IWeightFunctionInt wInt = (IWeightFunctionInt) w;
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					onlyPositiveWeight(wInt.weightInt(e));
@@ -183,7 +183,7 @@ public class Assertions {
 		public static void positiveCapacities(IndexGraph g, IWeightFunction capacity) {
 			if (WeightFunction.isCardinality(capacity))
 				return;
-			if (capacity instanceof IWeightFunctionInt) {
+			if (WeightFunction.isInteger(capacity)) {
 				IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					int cap = capacityInt.weightInt(e);
@@ -215,7 +215,7 @@ public class Assertions {
 		}
 
 		public static void checkLowerBound(IndexGraph g, IWeightFunction capacity, IWeightFunction lowerBound) {
-			if (capacity instanceof IWeightFunctionInt && lowerBound instanceof IWeightFunctionInt) {
+			if (WeightFunction.isInteger(capacity) && WeightFunction.isInteger(lowerBound)) {
 				IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;
 				IWeightFunctionInt lowerBoundInt = (IWeightFunctionInt) lowerBound;
 				for (int m = g.edges().size(), e = 0; e < m; e++) {

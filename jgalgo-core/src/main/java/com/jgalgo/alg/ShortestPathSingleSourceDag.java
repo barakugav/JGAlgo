@@ -17,9 +17,10 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -52,7 +53,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 		Assertions.Graphs.onlyDirected(g);
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
-		return w instanceof IWeightFunctionInt ? computeSsspInt(g, (IWeightFunctionInt) w, source)
+		return WeightFunction.isInteger(w) ? computeSsspInt(g, (IWeightFunctionInt) w, source)
 				: computeSsspDouble(g, w, source);
 	}
 

@@ -22,6 +22,7 @@ import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -77,7 +78,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 		int n = g.vertices().size();
 		if (n == 0)
 			return MinimumSpanningTreeUtils.ResultImpl.Empty;
-		if (w instanceof IWeightFunctionInt) {
+		if (WeightFunction.isInteger(w)) {
 			return computeMSTInt(g, (IWeightFunctionInt) w);
 		} else {
 			return computeMSTDouble(g, w);

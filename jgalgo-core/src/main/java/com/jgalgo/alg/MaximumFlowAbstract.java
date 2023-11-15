@@ -169,7 +169,7 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 			final int source = builder.addVertex();
 			final int sink = builder.addVertex();
 			Object capacities;
-			if (capacityOrig instanceof IWeightFunctionInt) {
+			if (WeightFunction.isInteger(capacityOrig)) {
 				IWeightFunctionInt capacityOrigInt = (IWeightFunctionInt) capacityOrig;
 				int[] capacities0 = new int[sources.size() + sinks.size()];
 				int capIdx = 0;
@@ -198,7 +198,7 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 			IndexGraph g = builder.build();
 
 			IWeightFunction capacity;
-			if (capacityOrig instanceof IWeightFunctionInt) {
+			if (WeightFunction.isInteger(capacityOrig)) {
 				IWeightFunctionInt capacityOrigInt = (IWeightFunctionInt) capacityOrig;
 				final int[] caps = (int[]) capacities;
 				IWeightFunctionInt capacityInt = edge -> edge < originalEdgesThreshold ? capacityOrigInt.weightInt(edge)

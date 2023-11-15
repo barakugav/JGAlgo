@@ -21,10 +21,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.Heaps;
@@ -100,7 +101,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 
 		/* Compute a perfect matching in the new graph */
 		IWeightFunction wDup;
-		if (w instanceof IWeightFunctionInt) {
+		if (WeightFunction.isInteger(w)) {
 			IWeightFunctionInt wInt = (IWeightFunctionInt) w;
 			IWeightFunctionInt wDupInt = e -> e < dummyEdgesThreshold ? wInt.weightInt(e / 2) : 0;
 			wDup = wDupInt;

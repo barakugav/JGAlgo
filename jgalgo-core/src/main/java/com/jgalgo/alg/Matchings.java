@@ -264,7 +264,7 @@ class Matchings {
 	static IWeightFunction negate(IWeightFunction w) {
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
-		if (w instanceof IWeightFunctionInt) {
+		if (WeightFunction.isInteger(w)) {
 			IWeightFunctionInt w0 = (IWeightFunctionInt) w;
 			IWeightFunctionInt w1 = e -> -w0.weightInt(e);
 			return w1;

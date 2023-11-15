@@ -170,4 +170,18 @@ public interface WeightFunction<K> extends Comparator<K> {
 				|| weightFunc == IWeightFunction.CardinalityWeightFunction;
 	}
 
+	/**
+	 * Check if the given weight function is an integer weight function.
+	 *
+	 * <p>
+	 * This function does not checks that the weight function maps every element to an integer, but only checks that the
+	 * weight function is an instance of {@link WeightFunctionInt} or it is {@code null}.
+	 *
+	 * @param  weightFunc the weight function to check
+	 * @return            {@code true} if the weight function is an integer weight function, {@code false}
+	 */
+	public static boolean isInteger(WeightFunction<?> weightFunc) {
+		return weightFunc == null || weightFunc instanceof WeightFunctionInt<?>;
+	}
+
 }

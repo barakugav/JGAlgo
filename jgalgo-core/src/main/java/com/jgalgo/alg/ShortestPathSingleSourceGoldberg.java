@@ -24,6 +24,7 @@ import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
@@ -91,7 +92,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
-		if (!(w instanceof IWeightFunctionInt))
+		if (!WeightFunction.isInteger(w))
 			throw new IllegalArgumentException("Only integer weights are supported");
 		return computeShortestPaths0(g, (IWeightFunctionInt) w, source);
 	}

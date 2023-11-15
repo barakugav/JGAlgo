@@ -93,7 +93,7 @@ class Flows {
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					sum += getFlow(e);
 
-			} else if (cost0 instanceof IWeightFunctionInt) {
+			} else if (WeightFunction.isInteger(cost0)) {
 				IWeightFunctionInt costInt = (IWeightFunctionInt) cost;
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					sum += getFlow(e) * costInt.weightInt(e);
@@ -276,7 +276,7 @@ class Flows {
 	}
 
 	static double hugeCapacity(IndexGraph g, IWeightFunction capacity, IntCollection sources, IntCollection sinks) {
-		if (capacity instanceof IWeightFunctionInt)
+		if (WeightFunction.isInteger(capacity))
 			return hugeCapacityLong(g, (IWeightFunctionInt) capacity, sources, sinks);
 
 		double sourcesOutCapacity = 0;
@@ -312,7 +312,7 @@ class Flows {
 	}
 
 	static double vertexMaxSupply(IndexGraph g, IWeightFunction capacity, int v) {
-		if (capacity instanceof IWeightFunctionInt)
+		if (WeightFunction.isInteger(capacity))
 			return vertexMaxSupply(g, (IWeightFunctionInt) capacity, v);
 
 		double maxSupply = 0;
@@ -332,7 +332,7 @@ class Flows {
 	}
 
 	static double vertexMaxDemand(IndexGraph g, IWeightFunction capacity, int v) {
-		if (capacity instanceof IWeightFunctionInt)
+		if (WeightFunction.isInteger(capacity))
 			return vertexMaxDemand(g, (IWeightFunctionInt) capacity, v);
 
 		double maxDemand = 0;

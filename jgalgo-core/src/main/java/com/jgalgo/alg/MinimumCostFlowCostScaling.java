@@ -21,6 +21,7 @@ import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
@@ -48,9 +49,9 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 
 	@Override
 	IFlow computeMinCostFlow(IndexGraph g, IWeightFunction capacity, IWeightFunction cost, IWeightFunction supply) {
-		if (!(capacity instanceof IWeightFunctionInt && supply instanceof IWeightFunctionInt))
+		if (!(WeightFunction.isInteger(capacity) && WeightFunction.isInteger(supply)))
 			throw new IllegalArgumentException("only integer capacities and flows are supported");
-		if (!(cost instanceof IWeightFunctionInt))
+		if (!WeightFunction.isInteger(cost))
 			throw new IllegalArgumentException("only integer costs are supported");
 		return new Worker(g, (IWeightFunctionInt) capacity, (IWeightFunctionInt) cost, (IWeightFunctionInt) supply)
 				.solve();

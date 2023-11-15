@@ -18,9 +18,10 @@ package com.jgalgo.alg;
 
 import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
@@ -74,7 +75,7 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
-		if (w instanceof IWeightFunctionInt) {
+		if (WeightFunction.isInteger(w)) {
 			return computeSsspInts(g, (IWeightFunctionInt) w, source);
 		} else {
 			return computeSsspDoubles(g, w, source);

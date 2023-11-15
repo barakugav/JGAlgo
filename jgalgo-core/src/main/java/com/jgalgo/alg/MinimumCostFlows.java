@@ -235,8 +235,7 @@ class MinimumCostFlows {
 			Assertions.Flows.checkLowerBound(g, capacityOrig, lowerBound);
 			Assertions.Flows.checkSupply(g, supply);
 
-			final boolean integerFlow =
-					capacityOrig instanceof IWeightFunctionInt && lowerBound instanceof IWeightFunctionInt;
+			final boolean integerFlow = WeightFunction.isInteger(capacityOrig) && WeightFunction.isInteger(lowerBound);
 
 			/*
 			 * To solve the minimum cost flow for a given supply and edges lower bounds, we perform a reduction to the
@@ -268,7 +267,7 @@ class MinimumCostFlows {
 		}
 
 		static double hugeCost(IndexGraph g, IWeightFunction cost) {
-			if (cost instanceof IWeightFunctionInt)
+			if (WeightFunction.isInteger(cost))
 				return hugeCostLong(g, (IWeightFunctionInt) cost);
 
 			double costSum = 0;
@@ -294,11 +293,11 @@ class MinimumCostFlows {
 
 		static IWeightFunction computeSupply(IndexGraph g, IWeightFunction capacity, IWeightFunction lowerBound,
 				IWeightFunction supply) {
-			boolean isInt = capacity instanceof IWeightFunctionInt;
+			boolean isInt = WeightFunction.isInteger(capacity);
 			if (lowerBound != null)
-				isInt = isInt && lowerBound instanceof IWeightFunctionInt;
+				isInt = isInt && WeightFunction.isInteger(lowerBound);
 			if (supply != null)
-				isInt = isInt && lowerBound instanceof IWeightFunctionInt;
+				isInt = isInt && WeightFunction.isInteger(lowerBound);
 			if (isInt)
 				return computeSupply(g, (IWeightFunctionInt) capacity, (IWeightFunctionInt) lowerBound,
 						(IWeightFunctionInt) supply);
@@ -354,8 +353,8 @@ class MinimumCostFlows {
 				IntCollection sources, IntCollection sinks) {
 			Assertions.Graphs.onlyDirected(gOrig);
 
-			final boolean integerFlow = capacityOrig instanceof IWeightFunctionInt;
-			final boolean integerCost = costOrig instanceof IWeightFunctionInt;
+			final boolean integerFlow = WeightFunction.isInteger(capacityOrig);
+			final boolean integerCost = WeightFunction.isInteger(costOrig);
 
 			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
 			builder.expectedVerticesNum(gOrig.vertices().size() + 2);
@@ -449,9 +448,8 @@ class MinimumCostFlows {
 			Assertions.Graphs.onlyDirected(gOrig);
 			Assertions.Flows.checkLowerBound(gOrig, capacityOrig, lowerBound);
 
-			final boolean integerFlow =
-					capacityOrig instanceof IWeightFunctionInt && lowerBound instanceof IWeightFunctionInt;
-			final boolean integerCost = costOrig instanceof IWeightFunctionInt;
+			final boolean integerFlow = WeightFunction.isInteger(capacityOrig) && WeightFunction.isInteger(lowerBound);
+			final boolean integerCost = WeightFunction.isInteger(costOrig);
 
 			/*
 			 * To solve the problem of minimum-cost maximum-flow between a set of sources and sinks, with a flow lower
@@ -629,9 +627,8 @@ class MinimumCostFlows {
 			Assertions.Graphs.onlyDirected(gOrig);
 			Assertions.Flows.checkSupply(gOrig, supply);
 
-			final boolean integerFlow =
-					capacityOrig instanceof IWeightFunctionInt && supply instanceof IWeightFunctionInt;
-			final boolean integerCost = costOrig instanceof IWeightFunctionInt;
+			final boolean integerFlow = WeightFunction.isInteger(capacityOrig) && WeightFunction.isInteger(supply);
+			final boolean integerCost = WeightFunction.isInteger(costOrig);
 
 			/*
 			 * To solve the minimum cost flow of given supply we use a reduction to minimum-cost maximum-flow between
@@ -752,9 +749,9 @@ class MinimumCostFlows {
 			Assertions.Graphs.onlyDirected(gOrig);
 			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
 
-			final boolean integerFlow = capacityOrig instanceof IWeightFunctionInt
-					&& (lowerBoundOrig == null || lowerBoundOrig instanceof IWeightFunctionInt);
-			final boolean integerCost = costOrig instanceof IWeightFunctionInt;
+			final boolean integerFlow =
+					WeightFunction.isInteger(capacityOrig) && WeightFunction.isInteger(lowerBoundOrig);
+			final boolean integerCost = WeightFunction.isInteger(costOrig);
 
 			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
 			builder.expectedVerticesNum(gOrig.vertices().size() + 2);
@@ -873,9 +870,9 @@ class MinimumCostFlows {
 			double[] flow) {
 		if (!g.isAllowSelfEdges())
 			return;
-		if (capacity instanceof IWeightFunctionInt) {
+		if (WeightFunction.isInteger(capacity)) {
 			IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;
-			if (cost instanceof IWeightFunctionInt) {
+			if (WeightFunction.isInteger(cost)) {
 				IWeightFunctionInt costInt = (IWeightFunctionInt) cost;
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					if (g.edgeSource(e) == g.edgeTarget(e) && costInt.weightInt(e) < 0)
@@ -886,7 +883,7 @@ class MinimumCostFlows {
 						flow[e] = capacityInt.weightInt(e);
 			}
 		} else {
-			if (cost instanceof IWeightFunctionInt) {
+			if (WeightFunction.isInteger(cost)) {
 				IWeightFunctionInt costInt = (IWeightFunctionInt) cost;
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					if (g.edgeSource(e) == g.edgeTarget(e) && costInt.weightInt(e) < 0)

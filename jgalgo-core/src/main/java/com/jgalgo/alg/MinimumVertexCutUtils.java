@@ -148,7 +148,7 @@ class MinimumVertexCutUtils {
 				}
 				verticesEdgesThreshold = builder.edges().size();
 
-				if (w instanceof IWeightFunctionInt) {
+				if (WeightFunction.isInteger(w)) {
 					IWeightFunctionInt wInt = (IWeightFunctionInt) w;
 					long hugeWeight = 1;
 					for (int v = 0; v < n; v++)

@@ -18,10 +18,11 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -62,7 +63,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
-		if (!(w instanceof IWeightFunctionInt))
+		if (!WeightFunction.isInteger(w))
 			throw new IllegalArgumentException("only int weights are supported");
 		IWeightFunctionInt w0 = (IWeightFunctionInt) w;
 

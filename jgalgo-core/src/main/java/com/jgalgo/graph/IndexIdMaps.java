@@ -1529,7 +1529,7 @@ public class IndexIdMaps {
 			/* Instead of re-mapping by wrapping the weight function, return the underlying index weights container */
 			return (IWeightFunction) idToIndexWeights((Weights<K, ?>) w, map);
 
-		} else if (w instanceof IWeightFunctionInt && map instanceof IndexIntIdMap) {
+		} else if (WeightFunction.isInteger(w) && map instanceof IndexIntIdMap) {
 			/* Unknown int weight function, return a mapped wrapper */
 			IWeightFunctionInt wInt = (IWeightFunctionInt) w;
 			IndexIntIdMap map0 = (IndexIntIdMap) map;
@@ -1543,7 +1543,7 @@ public class IndexIdMaps {
 			IWeightFunction wMapped = idx -> wInt.weight(map0.indexToIdInt(idx));
 			return wMapped;
 
-		} else if (w instanceof WeightFunctionInt) {
+		} else if (WeightFunction.isInteger(w)) {
 			/* Unknown int weight function, return a mapped wrapper */
 			WeightFunctionInt<K> wInt = (WeightFunctionInt<K>) w;
 			IWeightFunctionInt wIntMapped = idx -> wInt.weightInt(map.indexToId(idx));

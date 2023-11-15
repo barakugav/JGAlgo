@@ -22,6 +22,7 @@ import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -117,7 +118,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 	 */
 	@Override
 	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
-		if (capacity instanceof IWeightFunctionInt) {
+		if (WeightFunction.isInteger(capacity)) {
 			return new WorkerInt(g, (IWeightFunctionInt) capacity, source, sink, activeOrderPolicy, dischargePolicy)
 					.computeMaxFlow();
 		} else {
@@ -127,7 +128,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 	@Override
 	public IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
-		if (w instanceof IWeightFunctionInt) {
+		if (WeightFunction.isInteger(w)) {
 			return new WorkerInt(g, (IWeightFunctionInt) w, source, sink, activeOrderPolicy, dischargePolicy)
 					.computeMinimumCut();
 		} else {

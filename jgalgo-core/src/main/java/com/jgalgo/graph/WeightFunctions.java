@@ -52,7 +52,7 @@ public class WeightFunctions {
 			return null;
 		if (w instanceof WeightsImpl.Index)
 			return w;
-		if (w instanceof IWeightFunctionInt) {
+		if (WeightFunction.isInteger(w)) {
 			IWeightFunctionInt wInt = (IWeightFunctionInt) w;
 			IWeightsInt wLocal = IWeights.createExternalEdgesWeights(g, int.class);
 			for (int m = g.edges().size(), e = 0; e < m; e++)
@@ -111,7 +111,7 @@ public class WeightFunctions {
 			return null;
 		if (w instanceof IWeightFunction) {
 			return (IWeightFunction) w;
-		} else if (w instanceof WeightFunctionInt) {
+		} else if (WeightFunction.isInteger(w)) {
 			WeightFunctionInt<Integer> wInt = (WeightFunctionInt<Integer>) w;
 			IWeightFunctionInt ret = elm -> wInt.weightInt(Integer.valueOf(elm));
 			return ret;

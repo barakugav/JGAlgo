@@ -17,9 +17,10 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 
@@ -27,7 +28,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 
 	@Override
 	IFlow computeCirculation(IndexGraph g, IWeightFunction capacity, IWeightFunction supply) {
-		if (capacity instanceof IWeightFunctionInt && supply instanceof IWeightFunctionInt) {
+		if (WeightFunction.isInteger(capacity) && WeightFunction.isInteger(supply)) {
 			return new WorkerInt(g, (IWeightFunctionInt) capacity, (IWeightFunctionInt) supply).computeCirculation();
 		} else {
 			return new WorkerDouble(g, capacity, supply).computeCirculation();

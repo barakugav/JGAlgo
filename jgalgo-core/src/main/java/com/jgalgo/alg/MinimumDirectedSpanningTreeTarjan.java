@@ -22,6 +22,7 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.UnionFindValue;
 import com.jgalgo.internal.util.Assertions;
@@ -208,7 +209,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			ufIdxToV[uf.make()] = v;
 
 		IWeightFunction w;
-		if (wOrig instanceof IWeightFunctionInt) {
+		if (WeightFunction.isInteger(wOrig)) {
 			IWeightFunctionInt wInt = (IWeightFunctionInt) wOrig;
 			long hugeWeight = 1;
 			for (int e = 0; e < artificialEdgesThreshold; e++)

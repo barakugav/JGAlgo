@@ -20,6 +20,7 @@ import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -49,7 +50,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 
 	@Override
 	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
-		if (capacity instanceof IWeightFunctionInt) {
+		if (WeightFunction.isInteger(capacity)) {
 			return new WorkerInt(g, (IWeightFunctionInt) capacity, source, sink).computeMaxFlow();
 		} else {
 			return new WorkerDouble(g, capacity, source, sink).computeMaxFlow();

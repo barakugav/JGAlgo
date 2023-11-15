@@ -20,6 +20,7 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -55,7 +56,7 @@ class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 		IWeightFunction w2;
 		int[] minAdjacentEdge = new int[n];
 		Arrays.fill(minAdjacentEdge, -1);
-		if (w instanceof IWeightFunctionInt) {
+		if (WeightFunction.isInteger(w)) {
 			IWeightFunctionInt wInt = (IWeightFunctionInt) w;
 			int[] minAdjacentWeight = new int[n];
 			Arrays.fill(minAdjacentWeight, Integer.MAX_VALUE);

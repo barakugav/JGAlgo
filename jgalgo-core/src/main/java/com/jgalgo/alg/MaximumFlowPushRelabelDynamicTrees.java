@@ -20,6 +20,7 @@ import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.DynamicTree;
 import com.jgalgo.internal.ds.DynamicTree.MinEdge;
 import com.jgalgo.internal.ds.DynamicTreeExtension;
@@ -38,7 +39,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * <p>
  * The push-relabel algorithm maintain a "preflow" and gradually converts it into a maximum flow by moving flow locally
- * between neighboring vertexs using <i>push</i> operations under the guidance of an admissible network maintained by
+ * between neighboring vertices using <i>push</i> operations under the guidance of an admissible network maintained by
  * <i>relabel</i> operations.
  *
  * <p>
@@ -65,7 +66,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 
 	@Override
 	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
-		if (capacity instanceof IWeightFunctionInt) {
+		if (WeightFunction.isInteger(capacity)) {
 			return new WorkerInt(g, (IWeightFunctionInt) capacity, source, sink).computeMaxFlow();
 		} else {
 			return new WorkerDouble(g, capacity, source, sink).computeMaxFlow();

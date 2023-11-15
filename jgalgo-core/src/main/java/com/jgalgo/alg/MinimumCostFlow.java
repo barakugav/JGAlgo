@@ -250,7 +250,7 @@ public interface MinimumCostFlow {
 						@Override
 						public <V, E> Flow<V, E> computeMinCostMaxFlow(Graph<V, E> g, WeightFunction<E> capacity,
 								WeightFunction<E> cost, V source, V sink) {
-							if (capacity instanceof WeightFunctionInt && cost instanceof WeightFunctionInt) {
+							if (WeightFunction.isInteger(capacity) && WeightFunction.isInteger(cost)) {
 								return integerAlgo.computeMinCostMaxFlow(g, capacity, cost, source, sink);
 							} else {
 								return floatsAlgo.computeMinCostMaxFlow(g, capacity, cost, source, sink);
@@ -260,8 +260,8 @@ public interface MinimumCostFlow {
 						@Override
 						public <V, E> Flow<V, E> computeMinCostMaxFlow(Graph<V, E> g, WeightFunction<E> capacity,
 								WeightFunction<E> cost, WeightFunction<E> lowerBound, V source, V sink) {
-							if (capacity instanceof WeightFunctionInt && cost instanceof WeightFunctionInt
-									&& lowerBound instanceof WeightFunctionInt) {
+							if (WeightFunction.isInteger(capacity) && WeightFunction.isInteger(cost)
+									&& WeightFunction.isInteger(lowerBound)) {
 								return integerAlgo.computeMinCostMaxFlow(g, capacity, cost, lowerBound, source, sink);
 							} else {
 								return floatsAlgo.computeMinCostMaxFlow(g, capacity, cost, lowerBound, source, sink);
@@ -271,7 +271,7 @@ public interface MinimumCostFlow {
 						@Override
 						public <V, E> Flow<V, E> computeMinCostMaxFlow(Graph<V, E> g, WeightFunction<E> capacity,
 								WeightFunction<E> cost, Collection<V> sources, Collection<V> sinks) {
-							if (capacity instanceof WeightFunctionInt && cost instanceof WeightFunctionInt) {
+							if (WeightFunction.isInteger(capacity) && WeightFunction.isInteger(cost)) {
 								return integerAlgo.computeMinCostMaxFlow(g, capacity, cost, sources, sinks);
 							} else {
 								return floatsAlgo.computeMinCostMaxFlow(g, capacity, cost, sources, sinks);
@@ -282,8 +282,8 @@ public interface MinimumCostFlow {
 						public <V, E> Flow<V, E> computeMinCostMaxFlow(Graph<V, E> g, WeightFunction<E> capacity,
 								WeightFunction<E> cost, WeightFunction<E> lowerBound, Collection<V> sources,
 								Collection<V> sinks) {
-							if (capacity instanceof WeightFunctionInt && cost instanceof WeightFunctionInt
-									&& lowerBound instanceof WeightFunctionInt) {
+							if (WeightFunction.isInteger(capacity) && WeightFunction.isInteger(cost)
+									&& WeightFunction.isInteger(lowerBound)) {
 								return integerAlgo.computeMinCostMaxFlow(g, capacity, cost, lowerBound, sources, sinks);
 							} else {
 								return floatsAlgo.computeMinCostMaxFlow(g, capacity, cost, lowerBound, sources, sinks);
@@ -293,8 +293,8 @@ public interface MinimumCostFlow {
 						@Override
 						public <V, E> Flow<V, E> computeMinCostFlow(Graph<V, E> g, WeightFunction<E> capacity,
 								WeightFunction<E> cost, WeightFunction<V> supply) {
-							if (capacity instanceof WeightFunctionInt && cost instanceof WeightFunctionInt
-									&& supply instanceof WeightFunctionInt) {
+							if (WeightFunction.isInteger(capacity) && WeightFunction.isInteger(cost)
+									&& WeightFunction.isInteger(supply)) {
 								return integerAlgo.computeMinCostFlow(g, capacity, cost, supply);
 							} else {
 								return floatsAlgo.computeMinCostFlow(g, capacity, cost, supply);
@@ -304,8 +304,8 @@ public interface MinimumCostFlow {
 						@Override
 						public <V, E> Flow<V, E> computeMinCostFlow(Graph<V, E> g, WeightFunction<E> capacity,
 								WeightFunction<E> cost, WeightFunction<E> lowerBound, WeightFunction<V> supply) {
-							if (capacity instanceof WeightFunctionInt && cost instanceof WeightFunctionInt
-									&& lowerBound instanceof WeightFunctionInt && supply instanceof WeightFunctionInt) {
+							if (WeightFunction.isInteger(capacity) && WeightFunction.isInteger(cost)
+									&& WeightFunction.isInteger(lowerBound) && WeightFunction.isInteger(supply)) {
 								return integerAlgo.computeMinCostFlow(g, capacity, cost, lowerBound, supply);
 							} else {
 								return floatsAlgo.computeMinCostFlow(g, capacity, cost, lowerBound, supply);
