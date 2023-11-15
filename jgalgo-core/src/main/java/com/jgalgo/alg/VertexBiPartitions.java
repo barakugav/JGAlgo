@@ -61,16 +61,19 @@ class VertexBiPartitions {
 				for (int v = 0; v < n; v++)
 					if (!isLeft0(v))
 						sortedVertices[i++] = v;
+				int[] vertexSortedIdx = new int[n];
+				for (int v = 0; v < n; v++)
+					vertexSortedIdx[sortedVertices[v]] = v;
 				leftVertices = new ImmutableIntArraySet(sortedVertices, 0, leftCount) {
 					@Override
 					public boolean contains(int v) {
-						return 0 <= v && v < leftCount;
+						return 0 <= v && v < n && vertexSortedIdx[v] < leftCount;
 					}
 				};
 				rightVertices = new ImmutableIntArraySet(sortedVertices, leftCount, n) {
 					@Override
 					public boolean contains(int v) {
-						return leftCount <= v && v < n;
+						return 0 <= v && v < n && leftCount <= vertexSortedIdx[v];
 					}
 				};
 			}

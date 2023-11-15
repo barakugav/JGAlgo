@@ -27,18 +27,19 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * Minimum Edge-Cut algorithm with terminal vertices (source-sink, S-T).
  *
  * <p>
- * Given a graph \(G=(V,E)\), an edge cut is a partition of \(V\) into two sets \(C, \bar{C} = V \setminus C\). Given a
- * weight function, the weight of an edge-cut \((C,\bar{C})\) is the weight sum of all edges \((u,v)\) such that \(u\)
- * is in \(C\) and \(v\) is in \(\bar{C}\). There are two variants of the problem to find a minimum weight edge-cut: (1)
- * With terminal vertices, and (2) without terminal vertices. In the variant with terminal vertices, we are given two
- * special vertices {@code source (S)} and {@code sink (T)} and we need to find the minimum edge-cut \((C,\bar{C})\)
- * such that the {@code source} is in \(C\) and the {@code sink} is in \(\bar{C}\). In the variant without terminal
- * vertices (also called 'global edge-cut') we need to find the minimal cut among all possible cuts, and \(C,\bar{C}\)
- * simply must not be empty.
+ * Given a graph \(G=(V,E)\), an edge cut is a partition of \(V\) into two sets \(C, \bar{C} = V \setminus C\). Given an
+ * edge weight function, the weight of an edge-cut \((C,\bar{C})\) is the weight sum of all edges \((u,v)\) such that
+ * \(u\) is in \(C\) and \(v\) is in \(\bar{C}\). There are two variants of the problem to find a minimum weight
+ * edge-cut: (1) With terminal vertices, and (2) without terminal vertices. In the variant with terminal vertices, we
+ * are given two special vertices {@code source (S)} and {@code sink (T)} and we need to find the minimum edge-cut
+ * \((C,\bar{C})\) such that the {@code source} is in \(C\) and the {@code sink} is in \(\bar{C}\). In the variant
+ * without terminal vertices (also called 'global edge-cut') we need to find the minimal cut among all possible cuts,
+ * and \(C,\bar{C}\) simply must not be empty.
  *
  * <p>
  * Algorithms implementing this interface compute the minimum edge-cut given two terminal vertices, {@code source (S)}
- * and {@code sink (T)}.
+ * and {@code sink (T)}. To enumerate <b>all</b> minimum edge-cuts between two terminal vertices, use
+ * {@link MinimumEdgeCutAllST}. For the global variant (without terminal vertices), see {@link MinimumEdgeCutGlobal}.
  *
  * <p>
  * The cardinality (unweighted) minimum edge-cut between two vertices is equal to the (local) edge connectivity of these

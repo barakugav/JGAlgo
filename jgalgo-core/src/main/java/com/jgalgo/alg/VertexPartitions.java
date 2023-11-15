@@ -328,8 +328,7 @@ class VertexPartitions {
 						gb.addEdge(b1, b2, e);
 					}
 				}
-				for (int s : seenList)
-					seen.clear(s);
+				seen.clearAllUnsafe(seenList);
 				seenList.clear();
 			}
 		}
