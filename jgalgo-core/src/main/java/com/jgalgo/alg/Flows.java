@@ -89,7 +89,7 @@ class Flows {
 		public double getTotalCost(WeightFunction<Integer> cost) {
 			IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc(cost);
 			double sum = 0;
-			if (cost0 == null || cost0 == IWeightFunction.CardinalityWeightFunction) {
+			if (WeightFunction.isCardinality(cost0)) {
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					sum += getFlow(e);
 

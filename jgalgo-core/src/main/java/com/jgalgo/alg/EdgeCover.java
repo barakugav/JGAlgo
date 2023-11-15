@@ -147,8 +147,7 @@ public interface EdgeCover {
 			return new EdgeCover() {
 				@Override
 				public <V, E> Set<E> computeMinimumEdgeCover(Graph<V, E> g, WeightFunction<E> w) {
-					boolean isCardinality = w == null || w == IWeightFunction.CardinalityWeightFunction;
-					if (isCardinality) {
+					if (WeightFunction.isCardinality(w)) {
 						return cardinalityAlgo.computeMinimumEdgeCover(g, null);
 					} else {
 						return weightedAlgo.computeMinimumEdgeCover(g, w);

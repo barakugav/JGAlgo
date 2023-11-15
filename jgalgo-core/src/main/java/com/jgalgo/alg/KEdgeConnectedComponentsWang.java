@@ -18,7 +18,6 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.Random;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.internal.util.Range;
@@ -92,12 +91,12 @@ class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.Abstrac
 					sink = temp;
 				}
 
-				IVertexBiPartition minCut = (IVertexBiPartition) minCutAlgo.computeMinimumCut(g,
-						IWeightFunction.CardinalityWeightFunction, Integer.valueOf(source), Integer.valueOf(sink));
+				IVertexBiPartition minCut = (IVertexBiPartition) minCutAlgo.computeMinimumCut(g, null,
+						Integer.valueOf(source), Integer.valueOf(sink));
 				int cutWeight = minCut.crossEdges().size();
 				if (g.isDirected()) {
-					IVertexBiPartition minCut2 = (IVertexBiPartition) minCutAlgo.computeMinimumCut(g,
-							IWeightFunction.CardinalityWeightFunction, Integer.valueOf(sink), Integer.valueOf(source));
+					IVertexBiPartition minCut2 = (IVertexBiPartition) minCutAlgo.computeMinimumCut(g, null,
+							Integer.valueOf(sink), Integer.valueOf(source));
 					int cutWeight2 = minCut2.crossEdges().size();
 					if (cutWeight > cutWeight2) {
 						cutWeight = cutWeight2;

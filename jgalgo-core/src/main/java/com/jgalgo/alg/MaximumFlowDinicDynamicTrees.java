@@ -19,9 +19,10 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
-import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.DynamicTree;
 import com.jgalgo.internal.ds.DynamicTree.MinEdge;
 import com.jgalgo.internal.util.DebugPrinter;
@@ -89,7 +90,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 			debug.println("\t", getClass().getSimpleName());
 
 			double capacitySum = 100;
-			if (capacityOrig == null || capacityOrig == IWeightFunction.CardinalityWeightFunction) {
+			if (WeightFunction.isCardinality(capacityOrig)) {
 				capacitySum += gOrig.edges().size();
 			} else {
 				for (int m = gOrig.edges().size(), e = 0; e < m; e++)

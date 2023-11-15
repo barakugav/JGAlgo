@@ -90,10 +90,8 @@ public interface ShortestPathST {
 
 				@Override
 				public <V, E> Path<V, E> computeShortestPath(Graph<V, E> g, WeightFunction<E> w, V source, V target) {
-					boolean cardinality = w == null || w == WeightFunction.CardinalityWeightFunction
-							|| w == IWeightFunction.CardinalityWeightFunction;
-					if (cardinality) {
-						return cardinalityStSp.computeShortestPath(g, w, source, target);
+					if (WeightFunction.isCardinality(w)) {
+						return cardinalityStSp.computeShortestPath(g, null, source, target);
 					} else {
 						return weightedStSp.computeShortestPath(g, w, source, target);
 					}

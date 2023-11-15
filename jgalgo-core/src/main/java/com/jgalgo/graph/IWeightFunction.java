@@ -135,7 +135,7 @@ public interface IWeightFunction extends WeightFunction<Integer>, IntComparator 
 	 * @return            the sum of the weights of the elements
 	 */
 	static double weightSum(IWeightFunction weightFunc, IntIterable elements) {
-		if (weightFunc == null || weightFunc == CardinalityWeightFunction) {
+		if (WeightFunction.isCardinality(weightFunc)) {
 			if (elements instanceof Collection) {
 				return ((Collection<?>) elements).size();
 			} else {

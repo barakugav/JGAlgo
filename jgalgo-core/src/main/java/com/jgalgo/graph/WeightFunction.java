@@ -118,8 +118,7 @@ public interface WeightFunction<K> extends Comparator<K> {
 	 * @return            the sum of the weights of the elements
 	 */
 	static <K> double weightSum(WeightFunction<K> weightFunc, Iterable<K> elements) {
-		if (weightFunc == null || weightFunc == CardinalityWeightFunction
-				|| weightFunc == IWeightFunction.CardinalityWeightFunction) {
+		if (isCardinality(weightFunc)) {
 			if (elements instanceof Collection) {
 				return ((Collection<?>) elements).size();
 			} else {
@@ -153,6 +152,22 @@ public interface WeightFunction<K> extends Comparator<K> {
 	@SuppressWarnings("unchecked")
 	public static <K> WeightFunctionInt<K> cardinalityWeightFunction() {
 		return (WeightFunctionInt<K>) CardinalityWeightFunction;
+	}
+
+	/**
+	 * Check if the given weight function is the cardinality weight function.
+	 *
+	 * <p>
+	 * This function does not checks that the weight function maps every element to {@code 1}, but only compares it to
+	 * the static weight functions {@link #CardinalityWeightFunction} and
+	 * {@link IWeightFunction#CardinalityWeightFunction}, or {@code null}.
+	 *
+	 * @param  weightFunc the weight function to check
+	 * @return            {@code true} if the weight function is the cardinality weight function, {@code false}
+	 */
+	public static boolean isCardinality(WeightFunction<?> weightFunc) {
+		return weightFunc == null || weightFunc == CardinalityWeightFunction
+				|| weightFunc == IWeightFunction.CardinalityWeightFunction;
 	}
 
 }

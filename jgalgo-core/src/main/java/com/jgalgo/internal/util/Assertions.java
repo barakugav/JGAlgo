@@ -30,6 +30,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.NoSuchVertexException;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.ds.Heap;
 import com.jgalgo.internal.ds.HeapReferenceable;
@@ -99,7 +100,7 @@ public class Assertions {
 		}
 
 		public static void onlyCardinality(IWeightFunction w) {
-			if (w != null && w != IWeightFunction.CardinalityWeightFunction)
+			if (!WeightFunction.isCardinality(w))
 				throw new IllegalArgumentException("only cardinality shortest path is supported by this algorithm");
 		}
 
@@ -180,8 +181,8 @@ public class Assertions {
 		}
 
 		public static void positiveCapacities(IndexGraph g, IWeightFunction capacity) {
-			if (capacity == null || capacity == IWeightFunction.CardinalityWeightFunction)
-					return;
+			if (WeightFunction.isCardinality(capacity))
+				return;
 			if (capacity instanceof IWeightFunctionInt) {
 				IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;
 				for (int m = g.edges().size(), e = 0; e < m; e++) {

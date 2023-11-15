@@ -113,7 +113,7 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 			}
 
 			void initCapacities(int[] capacities) {
-				if (capacity == null || capacity == IWeightFunction.CardinalityWeightFunction) {
+				if (WeightFunction.isCardinality(capacity)) {
 					Arrays.fill(capacities, 1);
 				} else {
 					IWeightFunctionInt capacity = (IWeightFunctionInt) this.capacity;
@@ -123,7 +123,7 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 			}
 
 			void initCapacities(double[] capacities) {
-				if (capacity == null || capacity == IWeightFunction.CardinalityWeightFunction) {
+				if (WeightFunction.isCardinality(capacity)) {
 					Arrays.fill(capacities, 1);
 				} else {
 					for (int m = g.edges().size(), e = 0; e < m; e++)
@@ -296,7 +296,7 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 
 			void initCapacities(double[] residualCapacity) {
 				if (gOrig.isDirected()) {
-					if (capacityOrig == null || capacityOrig == IWeightFunction.CardinalityWeightFunction) {
+					if (WeightFunction.isCardinality(capacityOrig)) {
 						for (int m = g.edges().size(), e = 0; e < m; e++)
 							residualCapacity[e] = isOriginalEdge(e) ? 1 : 0;
 					} else {
@@ -304,7 +304,7 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 							residualCapacity[e] = isOriginalEdge(e) ? capacityOrig.weight(edgeRef[e]) : 0;
 					}
 				} else {
-					if (capacityOrig == null || capacityOrig == IWeightFunction.CardinalityWeightFunction) {
+					if (WeightFunction.isCardinality(capacityOrig)) {
 						for (int m = g.edges().size(), e = 0; e < m; e++) {
 							int eRef = edgeRef[e];
 							double cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? 1 : 0;
@@ -336,7 +336,7 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 			void initCapacities(int[] residualCapacity) {
 				IWeightFunctionInt capacity = (IWeightFunctionInt) this.capacityOrig;
 				if (gOrig.isDirected()) {
-					if (capacityOrig == null || capacityOrig == IWeightFunction.CardinalityWeightFunction) {
+					if (WeightFunction.isCardinality(capacityOrig)) {
 						for (int m = g.edges().size(), e = 0; e < m; e++)
 							residualCapacity[e] = isOriginalEdge(e) ? 1 : 0;
 					} else {
@@ -344,7 +344,7 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 							residualCapacity[e] = isOriginalEdge(e) ? capacity.weightInt(edgeRef[e]) : 0;
 					}
 				} else {
-					if (capacityOrig == null || capacityOrig == IWeightFunction.CardinalityWeightFunction) {
+					if (WeightFunction.isCardinality(capacityOrig)) {
 						for (int m = g.edges().size(), e = 0; e < m; e++) {
 							int eRef = edgeRef[e];
 							int cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? 1 : 0;

@@ -23,6 +23,7 @@ import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -192,11 +193,9 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 
 	@Override
 	IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-		if (w != null && w != IWeightFunction.CardinalityWeightFunction) {
+		if (!WeightFunction.isCardinality(w))
 			throw new UnsupportedOperationException("weighted perfect matching is not supported by this algorithm");
-		} else {
-			return computeMaximumWeightedMatching(g, null);
-		}
+		return computeMaximumWeightedMatching(g, null);
 	}
 
 }

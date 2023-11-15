@@ -77,9 +77,9 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 	private ShortestPathAllPairs.IResult computeSubsetShortestPaths0(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w, boolean allVertices) {
+		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
-		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		final int n = g.vertices().size();
 
 		boolean negWeight = false;

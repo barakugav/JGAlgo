@@ -283,7 +283,7 @@ class Matchings {
 
 		@Override
 		IMatching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-			if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
+			if (WeightFunction.isCardinality(w)) {
 				/* minimum and maximum weighted perfect matching are equivalent for unweighed graphs */
 				return computeMaximumWeightedPerfectMatching(g, null);
 			} else {
@@ -301,7 +301,7 @@ class Matchings {
 
 		@Override
 		IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-			if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
+			if (WeightFunction.isCardinality(w)) {
 				/* minimum and maximum weighted perfect matching are equivalent for unweighed graphs */
 				return computeMinimumWeightedPerfectMatching(g, null);
 			} else {
@@ -328,7 +328,7 @@ class Matchings {
 
 		@Override
 		public <V, E> Matching<V, E> computeMaximumMatching(Graph<V, E> g, WeightFunction<E> w) {
-			boolean cardinality = isCardinality(w);
+			boolean cardinality = WeightFunction.isCardinality(w);
 			boolean bipartite = isBipartite(g);
 			if (cardinality && bipartite)
 				return cardinalityBipartiteAlgo.computeMaximumMatching(g, w);
@@ -343,7 +343,7 @@ class Matchings {
 
 		@Override
 		public <V, E> Matching<V, E> computeMinimumMatching(Graph<V, E> g, WeightFunction<E> w) {
-			boolean cardinality = isCardinality(w);
+			boolean cardinality = WeightFunction.isCardinality(w);
 			boolean bipartite = isBipartite(g);
 			if (cardinality && bipartite)
 				return cardinalityBipartiteAlgo.computeMinimumMatching(g, w);
@@ -358,7 +358,7 @@ class Matchings {
 
 		@Override
 		public <V, E> Matching<V, E> computeMaximumPerfectMatching(Graph<V, E> g, WeightFunction<E> w) {
-			boolean cardinality = isCardinality(w);
+			boolean cardinality = WeightFunction.isCardinality(w);
 			boolean bipartite = isBipartite(g);
 			if (cardinality && bipartite)
 				return cardinalityBipartiteAlgo.computeMaximumPerfectMatching(g, w);
@@ -373,7 +373,7 @@ class Matchings {
 
 		@Override
 		public <V, E> Matching<V, E> computeMinimumPerfectMatching(Graph<V, E> g, WeightFunction<E> w) {
-			boolean cardinality = isCardinality(w);
+			boolean cardinality = WeightFunction.isCardinality(w);
 			boolean bipartite = isBipartite(g);
 			if (cardinality && bipartite)
 				return cardinalityBipartiteAlgo.computeMinimumPerfectMatching(g, w);
@@ -384,11 +384,6 @@ class Matchings {
 			if (!cardinality && !bipartite)
 				return weightedGeneralAlgo.computeMinimumPerfectMatching(g, w);
 			throw new AssertionError();
-		}
-
-		private static boolean isCardinality(WeightFunction<?> w) {
-			return w == null || w == WeightFunction.CardinalityWeightFunction
-					|| w == IWeightFunction.CardinalityWeightFunction;
 		}
 
 		private static boolean isBipartite(Graph<?, ?> g) {

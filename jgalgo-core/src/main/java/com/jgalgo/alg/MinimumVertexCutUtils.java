@@ -95,7 +95,7 @@ class MinimumVertexCutUtils {
 				builder.addVertex();
 			}
 
-			if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
+			if (WeightFunction.isCardinality(w)) {
 
 				/*
 				 * The reduction in the paper from unweighted minimum vertex-cut to minimum edge-cut create one and two

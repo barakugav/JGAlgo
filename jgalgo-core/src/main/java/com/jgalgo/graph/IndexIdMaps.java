@@ -1521,8 +1521,7 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K> IWeightFunction idToIndexWeightFunc(WeightFunction<K> w, IndexIdMap<K> map) {
-		if (w == null || w == WeightFunction.CardinalityWeightFunction
-				|| w == IWeightFunction.CardinalityWeightFunction) {
+		if (WeightFunction.isCardinality(w)) {
 			return null;
 
 		} else if (w instanceof Weights) {

@@ -26,11 +26,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import com.jgalgo.alg.MatchingWeightedGabow1990Abstract.Worker.EdgeEvent;
 import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightsObj;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
-import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.graph.IWeightsObj;
 import com.jgalgo.internal.ds.HeapReference;
 import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.SplitFindMin;
@@ -60,7 +61,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 
 	@Override
 	IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-		if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
+		if (WeightFunction.isCardinality(w)) {
 			return computeMaximumWeightedMatching(g, null);
 		} else {
 			Assertions.Graphs.onlyUndirected(g);
@@ -467,7 +468,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 				g.addVertex();
 			edgeVal = g.addEdgesWeights("edgeVal", EdgeVal.class);
 			IWeightFunction wLocal = WeightFunctions.localEdgeWeightFunction(gOrig, w);
-			if (wLocal == null || wLocal == IWeightFunction.CardinalityWeightFunction) {
+			if (WeightFunction.isCardinality(wLocal)) {
 				this.w = IWeightFunction.CardinalityWeightFunction;
 			} else {
 				this.w = e -> wLocal.weight(edgeVal.get(e).e);

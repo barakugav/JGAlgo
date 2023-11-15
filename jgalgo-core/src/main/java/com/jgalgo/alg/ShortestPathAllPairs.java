@@ -230,8 +230,7 @@ public interface ShortestPathAllPairs {
 					@Override
 					public <V, E> ShortestPathAllPairs.Result<V, E> computeAllShortestPaths(Graph<V, E> g,
 							WeightFunction<E> w) {
-						if (w == null || w == WeightFunction.CardinalityWeightFunction
-								|| w == IWeightFunction.CardinalityWeightFunction) {
+						if (WeightFunction.isCardinality(w)) {
 							return cardinalityAlgo.computeAllShortestPaths(g, null);
 						} else {
 							return weightedAlgo.computeAllShortestPaths(g, w);
@@ -241,8 +240,7 @@ public interface ShortestPathAllPairs {
 					@Override
 					public <V, E> ShortestPathAllPairs.Result<V, E> computeSubsetShortestPaths(Graph<V, E> g,
 							Collection<V> verticesSubset, WeightFunction<E> w) {
-						if (w == null || w == WeightFunction.CardinalityWeightFunction
-								|| w == IWeightFunction.CardinalityWeightFunction) {
+						if (WeightFunction.isCardinality(w)) {
 							return cardinalityAlgo.computeSubsetShortestPaths(g, verticesSubset, null);
 						} else {
 							return weightedAlgo.computeSubsetShortestPaths(g, verticesSubset, w);

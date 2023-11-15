@@ -48,8 +48,8 @@ public class WeightFunctions {
 	 * @return   a local version of the weight function
 	 */
 	public static IWeightFunction localEdgeWeightFunction(IndexGraph g, IWeightFunction w) {
-		if (w == null || w == IWeightFunction.CardinalityWeightFunction)
-			return w;
+		if (WeightFunction.isCardinality(w))
+			return null;
 		if (w instanceof WeightsImpl.Index)
 			return w;
 		if (w instanceof IWeightFunctionInt) {
@@ -90,8 +90,8 @@ public class WeightFunctions {
 	 * @return   a local version of the weight function
 	 */
 	public static IWeightFunctionInt localEdgeWeightFunction(IndexGraph g, IWeightFunctionInt w) {
-		if (w == null || w == IWeightFunction.CardinalityWeightFunction)
-			return w;
+		if (WeightFunction.isCardinality(w))
+			return null;
 		if (w instanceof WeightsImpl.Index)
 			return w;
 		IWeightsInt wLocal = IWeights.createExternalEdgesWeights(g, int.class);
@@ -107,8 +107,7 @@ public class WeightFunctions {
 	 * @return   a weight function on a graph with integer vertices
 	 */
 	public static IWeightFunction asIntGraphWeightFunc(WeightFunction<Integer> w) {
-		if (w == null || w == WeightFunction.CardinalityWeightFunction
-				|| w == IWeightFunction.CardinalityWeightFunction)
+		if (WeightFunction.isCardinality(w))
 			return null;
 		if (w instanceof IWeightFunction) {
 			return (IWeightFunction) w;

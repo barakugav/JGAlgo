@@ -66,7 +66,7 @@ class PageRank {
 			return rFactor / n;
 		};
 
-		if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
+		if (WeightFunction.isCardinality(w)) {
 			for (int iters = 0; iters < iterations; iters++) {
 				double rFactor = randomFactor.getAsDouble();
 
@@ -137,7 +137,7 @@ class PageRank {
 				predecessors = new int[outDegreeSum];
 			}
 
-			if (w == null || w == IWeightFunction.CardinalityWeightFunction) {
+			if (WeightFunction.isCardinality(w)) {
 				weights = null;
 				for (int eIdx = 0, v = 0; v < n; v++) {
 					predecessorsBegin[v] = eIdx;
