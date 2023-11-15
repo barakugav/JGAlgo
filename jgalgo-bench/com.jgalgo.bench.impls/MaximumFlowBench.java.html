@@ -34,13 +34,14 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.alg.IFlowNetworkInt;
+import com.jgalgo.alg.IFlow;
 import com.jgalgo.alg.IPath;
 import com.jgalgo.alg.MaximumFlow;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IntGraph;
@@ -50,24 +51,18 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-<span class="fc" id="L53">public class MaximumFlowBench {</span>
+<span class="fc" id="L54">public class MaximumFlowBench {</span>
 
 	List&lt;MaxFlowTask&gt; graphs;
-<span class="fc" id="L56">	final int graphsNum = 31;</span>
-<span class="fc" id="L57">	final AtomicInteger graphIdx = new AtomicInteger();</span>
-
-	public void resetFlow() {
-<span class="fc bfc" id="L60" title="All 2 branches covered.">		for (MaxFlowTask graph : graphs)</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">			for (int e : graph.g.edges())</span>
-<span class="fc" id="L62">				graph.flow.setFlow(e, 0);</span>
-<span class="fc" id="L63">	}</span>
+<span class="fc" id="L57">	final int graphsNum = 31;</span>
+<span class="fc" id="L58">	final AtomicInteger graphIdx = new AtomicInteger();</span>
 
 	void benchMaxFlow(MaximumFlow algo, Blackhole blackhole) {
-<span class="fc" id="L66">		MaxFlowTask graph = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
-<span class="fc" id="L67">		double flow = algo.computeMaximumFlow(graph.g, graph.flow, Integer.valueOf(graph.source),</span>
-<span class="fc" id="L68">				Integer.valueOf(graph.sink));</span>
-<span class="fc" id="L69">		blackhole.consume(flow);</span>
-<span class="fc" id="L70">	}</span>
+<span class="fc" id="L61">		MaxFlowTask graph = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L62">		IFlow flow = (IFlow) algo.computeMaximumFlow(graph.g, graph.capacity, Integer.valueOf(graph.source),</span>
+<span class="fc" id="L63">				Integer.valueOf(graph.sink));</span>
+<span class="fc" id="L64">		blackhole.consume(flow);</span>
+<span class="fc" id="L65">	}</span>
 
 	@BenchmarkMode(Mode.AverageTime)
 	@OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -75,74 +70,68 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-<span class="fc" id="L78">	public static class Gnp extends MaximumFlowBench {</span>
+<span class="fc" id="L73">	public static class Gnp extends MaximumFlowBench {</span>
 
 		@Param({ &quot;|V|=1000 Weights=Off&quot;, &quot;|V|=1000 Weights=ON&quot;, &quot;|V|=2000 Weights=Off&quot;, &quot;|V|=2000 Weights=ON&quot;,
 				&quot;|V|=2500 Weights=Off&quot;, &quot;|V|=2500 Weights=ON&quot; })
 		public String args;
 
 		// @Param({ &quot;directed&quot;, &quot;undirected&quot; })
-<span class="fc" id="L85">		public String directed = &quot;directed&quot;;</span>
-
-		@Override
-		@Setup(Level.Invocation)
-		public void resetFlow() {
-<span class="fc" id="L90">			super.resetFlow();</span>
-<span class="fc" id="L91">		}</span>
+<span class="fc" id="L80">		public String directed = &quot;directed&quot;;</span>
 
 		@Setup(Level.Trial)
 		public void setup() {
-<span class="fc" id="L95">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L96">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L97">			boolean weighted = argsMap.get(&quot;Weights&quot;).equals(&quot;ON&quot;);</span>
-<span class="fc" id="L98">			boolean directed = this.directed.equals(&quot;directed&quot;);</span>
+<span class="fc" id="L84">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L85">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L86">			boolean weighted = argsMap.get(&quot;Weights&quot;).equals(&quot;ON&quot;);</span>
+<span class="fc" id="L87">			boolean directed = this.directed.equals(&quot;directed&quot;);</span>
 
-<span class="fc" id="L100">			final SeedGenerator seedGen = new SeedGenerator(0x94fc6ec413f60392L);</span>
-<span class="fc" id="L101">			Random rand = new Random(seedGen.nextSeed());</span>
-<span class="fc" id="L102">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L104">				IntGraph g = GraphsTestUtils.randomGraphGnp(n, directed, seedGen.nextSeed());</span>
-<span class="pc bpc" id="L105" title="1 of 2 branches missed.">				IFlowNetworkInt flow = weighted ? randNetworkInt(g, seedGen.nextSeed()) : unweightedNetwork(g);</span>
+<span class="fc" id="L89">			final SeedGenerator seedGen = new SeedGenerator(0x94fc6ec413f60392L);</span>
+<span class="fc" id="L90">			Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L91">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L93">				IntGraph g = GraphsTestUtils.randomGraphGnp(n, directed, seedGen.nextSeed());</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">				IWeightFunctionInt capacity = weighted ? randNetworkInt(g, seedGen.nextSeed()) : null;</span>
 
-<span class="fc" id="L107">				IntIntPair sourceSink = chooseSourceSink(g, rand);</span>
-<span class="fc" id="L108">				graphs.add(new MaxFlowTask(g, flow, sourceSink.firstInt(), sourceSink.secondInt()));</span>
+<span class="fc" id="L96">				IntIntPair sourceSink = chooseSourceSink(g, rand);</span>
+<span class="fc" id="L97">				graphs.add(new MaxFlowTask(g, capacity, sourceSink.firstInt(), sourceSink.secondInt()));</span>
 			}
-<span class="fc" id="L110">		}</span>
+<span class="fc" id="L99">		}</span>
 
 		@Benchmark
 		public void EdmondsKarp(Blackhole blackhole) {
-<span class="fc" id="L114">			benchMaxFlow(getAlgo(&quot;edmonds-karp&quot;), blackhole);</span>
-<span class="fc" id="L115">		}</span>
+<span class="fc" id="L103">			benchMaxFlow(getAlgo(&quot;edmonds-karp&quot;), blackhole);</span>
+<span class="fc" id="L104">		}</span>
 
 		@Benchmark
 		public void Dinic(Blackhole blackhole) {
-<span class="fc" id="L119">			benchMaxFlow(getAlgo(&quot;dinic&quot;), blackhole);</span>
-<span class="fc" id="L120">		}</span>
+<span class="fc" id="L108">			benchMaxFlow(getAlgo(&quot;dinic&quot;), blackhole);</span>
+<span class="fc" id="L109">		}</span>
 
 		@Benchmark
 		public void PushRelabelFifo(Blackhole blackhole) {
-<span class="fc" id="L124">			benchMaxFlow(getAlgo(&quot;push-relabel-fifo&quot;), blackhole);</span>
-<span class="fc" id="L125">		}</span>
+<span class="fc" id="L113">			benchMaxFlow(getAlgo(&quot;push-relabel-fifo&quot;), blackhole);</span>
+<span class="fc" id="L114">		}</span>
 
 		@Benchmark
 		public void PushRelabelToFront(Blackhole blackhole) {
-<span class="fc" id="L129">			benchMaxFlow(getAlgo(&quot;push-relabel-move-to-front&quot;), blackhole);</span>
-<span class="fc" id="L130">		}</span>
+<span class="fc" id="L118">			benchMaxFlow(getAlgo(&quot;push-relabel-move-to-front&quot;), blackhole);</span>
+<span class="fc" id="L119">		}</span>
 
 		@Benchmark
 		public void PushRelabelHighestFirst(Blackhole blackhole) {
-<span class="fc" id="L134">			benchMaxFlow(getAlgo(&quot;push-relabel-highest-first&quot;), blackhole);</span>
-<span class="fc" id="L135">		}</span>
+<span class="fc" id="L123">			benchMaxFlow(getAlgo(&quot;push-relabel-highest-first&quot;), blackhole);</span>
+<span class="fc" id="L124">		}</span>
 
 		@Benchmark
 		public void PushRelabelPartialAugment(Blackhole blackhole) {
-<span class="fc" id="L139">			benchMaxFlow(getAlgo(&quot;push-relabel-partial-augment&quot;), blackhole);</span>
-<span class="fc" id="L140">		}</span>
+<span class="fc" id="L128">			benchMaxFlow(getAlgo(&quot;push-relabel-partial-augment&quot;), blackhole);</span>
+<span class="fc" id="L129">		}</span>
 
 		@Benchmark
 		public void PushRelabelLowestFirst(Blackhole blackhole) {
-<span class="fc" id="L144">			benchMaxFlow(getAlgo(&quot;push-relabel-lowest-first&quot;), blackhole);</span>
-<span class="fc" id="L145">		}</span>
+<span class="fc" id="L133">			benchMaxFlow(getAlgo(&quot;push-relabel-lowest-first&quot;), blackhole);</span>
+<span class="fc" id="L134">		}</span>
 	}
 
 	@BenchmarkMode(Mode.AverageTime)
@@ -151,79 +140,73 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Measurement(iterations = 3, time = 500, timeUnit = TimeUnit.MILLISECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-<span class="fc" id="L154">	public static class BarabasiAlbert extends MaximumFlowBench {</span>
+<span class="fc" id="L143">	public static class BarabasiAlbert extends MaximumFlowBench {</span>
 
 		@Param({ &quot;|V|=3000 Weights=Off&quot;, &quot;|V|=3000 Weights=ON&quot;, &quot;|V|=4500 Weights=Off&quot;, &quot;|V|=4500 Weights=ON&quot;,
 				&quot;|V|=6000 Weights=Off&quot;, &quot;|V|=6000 Weights=ON&quot; })
 		public String args;
 
 		// @Param({ &quot;directed&quot;, &quot;undirected&quot; })
-<span class="fc" id="L161">		public String directed = &quot;directed&quot;;</span>
-
-		@Override
-		@Setup(Level.Invocation)
-		public void resetFlow() {
-<span class="fc" id="L166">			super.resetFlow();</span>
-<span class="fc" id="L167">		}</span>
+<span class="fc" id="L150">		public String directed = &quot;directed&quot;;</span>
 
 		@Setup(Level.Trial)
 		public void setup() {
-<span class="fc" id="L171">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L172">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L173">			boolean weighted = argsMap.get(&quot;Weights&quot;).equals(&quot;ON&quot;);</span>
-<span class="fc" id="L174">			boolean directed = this.directed.equals(&quot;directed&quot;);</span>
+<span class="fc" id="L154">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L155">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L156">			boolean weighted = argsMap.get(&quot;Weights&quot;).equals(&quot;ON&quot;);</span>
+<span class="fc" id="L157">			boolean directed = this.directed.equals(&quot;directed&quot;);</span>
 
-<span class="fc" id="L176">			final SeedGenerator seedGen = new SeedGenerator(0xdc6c4cf7f4d3843cL);</span>
-<span class="fc" id="L177">			Random rand = new Random(seedGen.nextSeed());</span>
-<span class="fc" id="L178">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
-<span class="fc bfc" id="L179" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L180">				IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, directed, seedGen.nextSeed());</span>
-<span class="pc bpc" id="L181" title="1 of 2 branches missed.">				IFlowNetworkInt flow = weighted ? randNetworkInt(g, seedGen.nextSeed()) : unweightedNetwork(g);</span>
+<span class="fc" id="L159">			final SeedGenerator seedGen = new SeedGenerator(0xdc6c4cf7f4d3843cL);</span>
+<span class="fc" id="L160">			Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L161">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L163">				IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, directed, seedGen.nextSeed());</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">				IWeightFunctionInt capacity = weighted ? randNetworkInt(g, seedGen.nextSeed()) : null;</span>
 
-<span class="fc" id="L183">				IntIntPair sourceSink = chooseSourceSink(g, rand);</span>
-<span class="fc" id="L184">				graphs.add(new MaxFlowTask(g, flow, sourceSink.firstInt(), sourceSink.secondInt()));</span>
+<span class="fc" id="L166">				IntIntPair sourceSink = chooseSourceSink(g, rand);</span>
+<span class="fc" id="L167">				graphs.add(new MaxFlowTask(g, capacity, sourceSink.firstInt(), sourceSink.secondInt()));</span>
 			}
-<span class="fc" id="L186">		}</span>
+<span class="fc" id="L169">		}</span>
 
 		@Benchmark
 		public void EdmondsKarp(Blackhole blackhole) {
-<span class="fc" id="L190">			benchMaxFlow(getAlgo(&quot;edmonds-karp&quot;), blackhole);</span>
-<span class="fc" id="L191">		}</span>
+<span class="fc" id="L173">			benchMaxFlow(getAlgo(&quot;edmonds-karp&quot;), blackhole);</span>
+<span class="fc" id="L174">		}</span>
 
 		@Benchmark
 		public void Dinic(Blackhole blackhole) {
-<span class="fc" id="L195">			benchMaxFlow(getAlgo(&quot;dinic&quot;), blackhole);</span>
-<span class="fc" id="L196">		}</span>
+<span class="fc" id="L178">			benchMaxFlow(getAlgo(&quot;dinic&quot;), blackhole);</span>
+<span class="fc" id="L179">		}</span>
 
 		@Benchmark
 		public void DinicDynamicTrees(Blackhole blackhole) {
-<span class="fc" id="L200">			benchMaxFlow(getAlgo(&quot;dinic-dynamic-trees&quot;), blackhole);</span>
-<span class="fc" id="L201">		}</span>
+<span class="fc" id="L183">			benchMaxFlow(getAlgo(&quot;dinic-dynamic-trees&quot;), blackhole);</span>
+<span class="fc" id="L184">		}</span>
 
 		@Benchmark
 		public void PushRelabelFifo(Blackhole blackhole) {
-<span class="fc" id="L205">			benchMaxFlow(getAlgo(&quot;push-relabel-fifo&quot;), blackhole);</span>
-<span class="fc" id="L206">		}</span>
+<span class="fc" id="L188">			benchMaxFlow(getAlgo(&quot;push-relabel-fifo&quot;), blackhole);</span>
+<span class="fc" id="L189">		}</span>
 
 		@Benchmark
 		public void PushRelabelToFront(Blackhole blackhole) {
-<span class="fc" id="L210">			benchMaxFlow(getAlgo(&quot;push-relabel-move-to-front&quot;), blackhole);</span>
-<span class="fc" id="L211">		}</span>
+<span class="fc" id="L193">			benchMaxFlow(getAlgo(&quot;push-relabel-move-to-front&quot;), blackhole);</span>
+<span class="fc" id="L194">		}</span>
 
 		@Benchmark
 		public void PushRelabelHighestFirst(Blackhole blackhole) {
-<span class="fc" id="L215">			benchMaxFlow(getAlgo(&quot;push-relabel-highest-first&quot;), blackhole);</span>
-<span class="fc" id="L216">		}</span>
+<span class="fc" id="L198">			benchMaxFlow(getAlgo(&quot;push-relabel-highest-first&quot;), blackhole);</span>
+<span class="fc" id="L199">		}</span>
 
 		@Benchmark
 		public void PushRelabelPartialAugment(Blackhole blackhole) {
-<span class="fc" id="L220">			benchMaxFlow(getAlgo(&quot;push-relabel-partial-augment&quot;), blackhole);</span>
-<span class="fc" id="L221">		}</span>
+<span class="fc" id="L203">			benchMaxFlow(getAlgo(&quot;push-relabel-partial-augment&quot;), blackhole);</span>
+<span class="fc" id="L204">		}</span>
 
 		@Benchmark
 		public void PushRelabelLowestFirst(Blackhole blackhole) {
-<span class="fc" id="L225">			benchMaxFlow(getAlgo(&quot;push-relabel-lowest-first&quot;), blackhole);</span>
-<span class="fc" id="L226">		}</span>
+<span class="fc" id="L208">			benchMaxFlow(getAlgo(&quot;push-relabel-lowest-first&quot;), blackhole);</span>
+<span class="fc" id="L209">		}</span>
 
 		/* way too slow, isn't close to compete with the other implementations */
 		// @Benchmark
@@ -238,80 +221,74 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	@Measurement(iterations = 3, time = 200, timeUnit = TimeUnit.MILLISECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-<span class="fc" id="L241">	public static class RecursiveMatrix extends MaximumFlowBench {</span>
+<span class="fc" id="L224">	public static class RecursiveMatrix extends MaximumFlowBench {</span>
 
 		@Param({ &quot;|V|=1500 |E|=5000 Weights=Off&quot;, &quot;|V|=1500 |E|=5000 Weights=ON&quot;, &quot;|V|=2500 |E|=8000 Weights=Off&quot;,
 				&quot;|V|=2500 |E|=8000 Weights=ON&quot;, &quot;|V|=4000 |E|=16000 Weights=Off&quot;, &quot;|V|=4000 |E|=16000 Weights=ON&quot; })
 		public String args;
 
 		// @Param({ &quot;directed&quot;, &quot;undirected&quot; })
-<span class="fc" id="L248">		public String directed = &quot;directed&quot;;</span>
-
-		@Override
-		@Setup(Level.Invocation)
-		public void resetFlow() {
-<span class="fc" id="L253">			super.resetFlow();</span>
-<span class="fc" id="L254">		}</span>
+<span class="fc" id="L231">		public String directed = &quot;directed&quot;;</span>
 
 		@Setup(Level.Trial)
 		public void setup() {
-<span class="fc" id="L258">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L259">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L260">			int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
-<span class="fc" id="L261">			boolean weighted = argsMap.get(&quot;Weights&quot;).equals(&quot;ON&quot;);</span>
-<span class="fc" id="L262">			boolean directed = this.directed.equals(&quot;directed&quot;);</span>
+<span class="fc" id="L235">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L236">			int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L237">			int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+<span class="fc" id="L238">			boolean weighted = argsMap.get(&quot;Weights&quot;).equals(&quot;ON&quot;);</span>
+<span class="fc" id="L239">			boolean directed = this.directed.equals(&quot;directed&quot;);</span>
 
-<span class="fc" id="L264">			final SeedGenerator seedGen = new SeedGenerator(0x9716aede5cfa6eabL);</span>
-<span class="fc" id="L265">			Random rand = new Random(seedGen.nextSeed());</span>
-<span class="fc" id="L266">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
-<span class="fc bfc" id="L267" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L268">				IntGraph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, directed, seedGen.nextSeed());</span>
-<span class="pc bpc" id="L269" title="1 of 2 branches missed.">				IFlowNetworkInt flow = weighted ? randNetworkInt(g, seedGen.nextSeed()) : unweightedNetwork(g);</span>
+<span class="fc" id="L241">			final SeedGenerator seedGen = new SeedGenerator(0x9716aede5cfa6eabL);</span>
+<span class="fc" id="L242">			Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L243">			graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">			for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L245">				IntGraph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, directed, seedGen.nextSeed());</span>
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">				IWeightFunctionInt capacity = weighted ? randNetworkInt(g, seedGen.nextSeed()) : null;</span>
 
-<span class="fc" id="L271">				IntIntPair sourceSink = chooseSourceSink(g, rand);</span>
-<span class="fc" id="L272">				graphs.add(new MaxFlowTask(g, flow, sourceSink.firstInt(), sourceSink.secondInt()));</span>
+<span class="fc" id="L248">				IntIntPair sourceSink = chooseSourceSink(g, rand);</span>
+<span class="fc" id="L249">				graphs.add(new MaxFlowTask(g, capacity, sourceSink.firstInt(), sourceSink.secondInt()));</span>
 			}
-<span class="fc" id="L274">		}</span>
+<span class="fc" id="L251">		}</span>
 
 		@Benchmark
 		public void EdmondsKarp(Blackhole blackhole) {
-<span class="fc" id="L278">			benchMaxFlow(getAlgo(&quot;edmonds-karp&quot;), blackhole);</span>
-<span class="fc" id="L279">		}</span>
+<span class="fc" id="L255">			benchMaxFlow(getAlgo(&quot;edmonds-karp&quot;), blackhole);</span>
+<span class="fc" id="L256">		}</span>
 
 		@Benchmark
 		public void Dinic(Blackhole blackhole) {
-<span class="fc" id="L283">			benchMaxFlow(getAlgo(&quot;dinic&quot;), blackhole);</span>
-<span class="fc" id="L284">		}</span>
+<span class="fc" id="L260">			benchMaxFlow(getAlgo(&quot;dinic&quot;), blackhole);</span>
+<span class="fc" id="L261">		}</span>
 
 		@Benchmark
 		public void DinicDynamicTrees(Blackhole blackhole) {
-<span class="fc" id="L288">			benchMaxFlow(getAlgo(&quot;dinic-dynamic-trees&quot;), blackhole);</span>
-<span class="fc" id="L289">		}</span>
+<span class="fc" id="L265">			benchMaxFlow(getAlgo(&quot;dinic-dynamic-trees&quot;), blackhole);</span>
+<span class="fc" id="L266">		}</span>
 
 		@Benchmark
 		public void PushRelabelFifo(Blackhole blackhole) {
-<span class="fc" id="L293">			benchMaxFlow(getAlgo(&quot;push-relabel-fifo&quot;), blackhole);</span>
-<span class="fc" id="L294">		}</span>
+<span class="fc" id="L270">			benchMaxFlow(getAlgo(&quot;push-relabel-fifo&quot;), blackhole);</span>
+<span class="fc" id="L271">		}</span>
 
 		@Benchmark
 		public void PushRelabelToFront(Blackhole blackhole) {
-<span class="fc" id="L298">			benchMaxFlow(getAlgo(&quot;push-relabel-move-to-front&quot;), blackhole);</span>
-<span class="fc" id="L299">		}</span>
+<span class="fc" id="L275">			benchMaxFlow(getAlgo(&quot;push-relabel-move-to-front&quot;), blackhole);</span>
+<span class="fc" id="L276">		}</span>
 
 		@Benchmark
 		public void PushRelabelHighestFirst(Blackhole blackhole) {
-<span class="fc" id="L303">			benchMaxFlow(getAlgo(&quot;push-relabel-highest-first&quot;), blackhole);</span>
-<span class="fc" id="L304">		}</span>
+<span class="fc" id="L280">			benchMaxFlow(getAlgo(&quot;push-relabel-highest-first&quot;), blackhole);</span>
+<span class="fc" id="L281">		}</span>
 
 		@Benchmark
 		public void PushRelabelPartialAugment(Blackhole blackhole) {
-<span class="fc" id="L308">			benchMaxFlow(getAlgo(&quot;push-relabel-partial-augment&quot;), blackhole);</span>
-<span class="fc" id="L309">		}</span>
+<span class="fc" id="L285">			benchMaxFlow(getAlgo(&quot;push-relabel-partial-augment&quot;), blackhole);</span>
+<span class="fc" id="L286">		}</span>
 
 		@Benchmark
 		public void PushRelabelLowestFirst(Blackhole blackhole) {
-<span class="fc" id="L313">			benchMaxFlow(getAlgo(&quot;push-relabel-lowest-first&quot;), blackhole);</span>
-<span class="fc" id="L314">		}</span>
+<span class="fc" id="L290">			benchMaxFlow(getAlgo(&quot;push-relabel-lowest-first&quot;), blackhole);</span>
+<span class="fc" id="L291">		}</span>
 
 		/* way too slow, isn't close to compete with the other implementations */
 		// @Benchmark
@@ -321,75 +298,67 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	}
 
 	private static MaximumFlow getAlgo(String implName) {
-<span class="fc" id="L324">		MaximumFlow.Builder builder = MaximumFlow.newBuilder();</span>
-<span class="fc" id="L325">		builder.setOption(&quot;impl&quot;, implName);</span>
-<span class="fc" id="L326">		return builder.build();</span>
+<span class="fc" id="L301">		MaximumFlow.Builder builder = MaximumFlow.newBuilder();</span>
+<span class="fc" id="L302">		builder.setOption(&quot;impl&quot;, implName);</span>
+<span class="fc" id="L303">		return builder.build();</span>
 	}
 
 	private static class MaxFlowTask {
 		final IntGraph g;
-		final IFlowNetworkInt flow;
+		final IWeightFunctionInt capacity;
 		final int source;
 		final int sink;
 
-<span class="fc" id="L335">		MaxFlowTask(IntGraph g, IFlowNetworkInt flow, int source, int sink) {</span>
-<span class="fc" id="L336">			this.g = g;</span>
-<span class="fc" id="L337">			this.flow = flow;</span>
-<span class="fc" id="L338">			this.source = source;</span>
-<span class="fc" id="L339">			this.sink = sink;</span>
-<span class="fc" id="L340">		}</span>
+<span class="fc" id="L312">		MaxFlowTask(IntGraph g, IWeightFunctionInt capacity, int source, int sink) {</span>
+<span class="fc" id="L313">			this.g = g;</span>
+<span class="fc" id="L314">			this.capacity = capacity;</span>
+<span class="fc" id="L315">			this.source = source;</span>
+<span class="fc" id="L316">			this.sink = sink;</span>
+<span class="fc" id="L317">		}</span>
 	}
 
-	private static IFlowNetworkInt randNetworkInt(IntGraph g, long seed) {
-<span class="nc" id="L344">		Random rand = new Random(seed);</span>
-<span class="nc" id="L345">		IWeightsInt capacities = IWeights.createExternalEdgesWeights(g, int.class);</span>
-<span class="nc" id="L346">		IWeightsInt flows = IWeights.createExternalEdgesWeights(g, int.class);</span>
-<span class="nc" id="L347">		IFlowNetworkInt net = IFlowNetworkInt.createFromEdgeWeights(capacities, flows);</span>
-<span class="nc bnc" id="L348" title="All 2 branches missed.">		for (int e : g.edges())</span>
-<span class="nc" id="L349">			net.setCapacity(e, 5000 + rand.nextInt(16384));</span>
-<span class="nc" id="L350">		return net;</span>
-	}
-
-	private static IFlowNetworkInt unweightedNetwork(IntGraph g) {
-<span class="fc" id="L354">		IWeightsInt capacities = IWeights.createExternalEdgesWeights(g, int.class, Integer.valueOf(1));</span>
-<span class="fc" id="L355">		IWeightsInt flows = IWeights.createExternalEdgesWeights(g, int.class);</span>
-<span class="fc" id="L356">		return IFlowNetworkInt.createFromEdgeWeights(capacities, flows);</span>
+	private static IWeightFunctionInt randNetworkInt(IntGraph g, long seed) {
+<span class="nc" id="L321">		Random rand = new Random(seed);</span>
+<span class="nc" id="L322">		IWeightsInt capacity = IWeights.createExternalEdgesWeights(g, int.class);</span>
+<span class="nc bnc" id="L323" title="All 2 branches missed.">		for (int e : g.edges())</span>
+<span class="nc" id="L324">			capacity.set(e, 5000 + rand.nextInt(16384));</span>
+<span class="nc" id="L325">		return capacity;</span>
 	}
 
 	private static IntIntPair chooseSourceSink(IntGraph g, Random rand) {
 		for (;;) {
-<span class="fc" id="L361">			int source = Graphs.randVertex(g, rand);</span>
-<span class="fc" id="L362">			int sink = Graphs.randVertex(g, rand);</span>
-<span class="pc bpc" id="L363" title="1 of 4 branches missed.">			if (source != sink &amp;&amp; IPath.findPath(g, source, sink) != null)</span>
-<span class="fc" id="L364">				return IntIntPair.of(source, sink);</span>
-<span class="fc" id="L365">		}</span>
+<span class="fc" id="L330">			int source = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L331">			int sink = Graphs.randVertex(g, rand);</span>
+<span class="pc bpc" id="L332" title="1 of 4 branches missed.">			if (source != sink &amp;&amp; IPath.findPath(g, source, sink) != null)</span>
+<span class="fc" id="L333">				return IntIntPair.of(source, sink);</span>
+<span class="fc" id="L334">		}</span>
 	}
 
 	static Pair&lt;IntCollection, IntCollection&gt; chooseMultiSourceMultiSink(IntGraph g, Random rand) {
-<span class="fc" id="L369">		final int n = g.vertices().size();</span>
+<span class="fc" id="L338">		final int n = g.vertices().size();</span>
 		final int sourcesNum;
 		final int sinksNum;
-<span class="pc bpc" id="L372" title="1 of 2 branches missed.">		if (n &lt; 2) {</span>
-<span class="nc" id="L373">			throw new IllegalArgumentException(&quot;too few vertices&quot;);</span>
-<span class="pc bpc" id="L374" title="1 of 2 branches missed.">		} else if (n &lt; 4) {</span>
-<span class="nc" id="L375">			sourcesNum = sinksNum = 1;</span>
-<span class="pc bpc" id="L376" title="1 of 2 branches missed.">		} else if (n &lt;= 6) {</span>
-<span class="nc" id="L377">			sourcesNum = sinksNum = 2;</span>
+<span class="pc bpc" id="L341" title="1 of 2 branches missed.">		if (n &lt; 2) {</span>
+<span class="nc" id="L342">			throw new IllegalArgumentException(&quot;too few vertices&quot;);</span>
+<span class="pc bpc" id="L343" title="1 of 2 branches missed.">		} else if (n &lt; 4) {</span>
+<span class="nc" id="L344">			sourcesNum = sinksNum = 1;</span>
+<span class="pc bpc" id="L345" title="1 of 2 branches missed.">		} else if (n &lt;= 6) {</span>
+<span class="nc" id="L346">			sourcesNum = sinksNum = 2;</span>
 		} else {
-<span class="fc" id="L379">			sourcesNum = Math.max(1, n / 6 + rand.nextInt(n / 6));</span>
-<span class="fc" id="L380">			sinksNum = Math.max(1, n / 6 + rand.nextInt(n / 6));</span>
+<span class="fc" id="L348">			sourcesNum = Math.max(1, n / 6 + rand.nextInt(n / 6));</span>
+<span class="fc" id="L349">			sinksNum = Math.max(1, n / 6 + rand.nextInt(n / 6));</span>
 		}
 
-<span class="fc" id="L383">		IntCollection sources = new IntOpenHashSet(sourcesNum);</span>
-<span class="fc" id="L384">		IntCollection sinks = new IntOpenHashSet(sinksNum);</span>
-<span class="fc bfc" id="L385" title="All 2 branches covered.">		while (sources.size() &lt; sourcesNum)</span>
-<span class="fc" id="L386">			sources.add(Graphs.randVertex(g, rand));</span>
-<span class="fc bfc" id="L387" title="All 2 branches covered.">		while (sinks.size() &lt; sinksNum) {</span>
-<span class="fc" id="L388">			int sink = Graphs.randVertex(g, rand);</span>
-<span class="fc bfc" id="L389" title="All 2 branches covered.">			if (!sources.contains(sink))</span>
-<span class="fc" id="L390">				sinks.add(sink);</span>
-<span class="fc" id="L391">		}</span>
-<span class="fc" id="L392">		return Pair.of(sources, sinks);</span>
+<span class="fc" id="L352">		IntCollection sources = new IntOpenHashSet(sourcesNum);</span>
+<span class="fc" id="L353">		IntCollection sinks = new IntOpenHashSet(sinksNum);</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">		while (sources.size() &lt; sourcesNum)</span>
+<span class="fc" id="L355">			sources.add(Graphs.randVertex(g, rand));</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">		while (sinks.size() &lt; sinksNum) {</span>
+<span class="fc" id="L357">			int sink = Graphs.randVertex(g, rand);</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">			if (!sources.contains(sink))</span>
+<span class="fc" id="L359">				sinks.add(sink);</span>
+<span class="fc" id="L360">		}</span>
+<span class="fc" id="L361">		return Pair.of(sources, sinks);</span>
 	}
 
 }

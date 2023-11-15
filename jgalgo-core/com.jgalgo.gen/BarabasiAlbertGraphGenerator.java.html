@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.BiFunction;
+import java.util.function.IntBinaryOperator;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import com.jgalgo.graph.GraphBuilder;
@@ -27,7 +28,6 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -296,7 +296,7 @@ public class BarabasiAlbertGraphGenerator&lt;V, E&gt; implements GraphGenerator&
 <span class="nc bnc" id="L296" title="All 2 branches missed.">			for (int eIdx = 0; eIdx &lt; edgeNum; eIdx++) {</span>
 <span class="nc" id="L297">				int u = vertices[endpoints[eIdx * 2 + 0]];</span>
 <span class="nc" id="L298">				int v = vertices[endpoints[eIdx * 2 + 1]];</span>
-<span class="nc" id="L299">				g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="nc" id="L299">				g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));</span>
 			}
 <span class="nc" id="L301">			return (GraphBuilder&lt;V, E&gt;) g;</span>
 

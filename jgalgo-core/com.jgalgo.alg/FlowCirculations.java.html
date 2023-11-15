@@ -23,29 +23,33 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 
-<span class="nc" id="L26">class FlowCirculations {</span>
+class FlowCirculations {
 
-<span class="fc" id="L28">	abstract static class AbstractImpl implements FlowCirculation {</span>
+	private FlowCirculations() {}
+
+<span class="fc" id="L30">	abstract static class AbstractImpl implements FlowCirculation {</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
-		public &lt;V, E&gt; void computeCirculation(Graph&lt;V, E&gt; g, FlowNetwork&lt;V, E&gt; net, WeightFunction&lt;V&gt; supply) {
-<span class="pc bpc" id="L33" title="1 of 4 branches missed.">			if (g instanceof IndexGraph &amp;&amp; net instanceof IFlowNetwork) {</span>
-<span class="fc" id="L34">				IWeightFunction supply0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) supply);</span>
-<span class="fc" id="L35">				computeCirculation((IndexGraph) g, (IFlowNetwork) net, supply0);</span>
+		public &lt;V, E&gt; Flow&lt;V, E&gt; computeCirculation(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity,
+				WeightFunction&lt;V&gt; supply) {
+<span class="fc bfc" id="L36" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L37">				IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
+<span class="fc" id="L38">				IWeightFunction supply0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) supply);</span>
+<span class="fc" id="L39">				return (Flow&lt;V, E&gt;) computeCirculation((IndexGraph) g, capacity0, supply0);</span>
 
-<span class="fc" id="L37">			} else {</span>
-<span class="fc" id="L38">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L39">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L40">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L41">				IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);</span>
-<span class="fc" id="L42">				IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);</span>
-
-<span class="fc" id="L44">				computeCirculation(iGraph, iNet, iSupply);</span>
+			} else {
+<span class="fc" id="L42">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L43">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L44">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L45">				IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
+<span class="fc" id="L46">				IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);</span>
+<span class="fc" id="L47">				IFlow indexFlow = computeCirculation(iGraph, iCapacity, iSupply);</span>
+<span class="fc" id="L48">				return Flows.flowFromIndexFlow(g, indexFlow);</span>
 			}
-<span class="fc" id="L46">		}</span>
+		}
 
-		abstract void computeCirculation(IndexGraph g, IFlowNetwork net, IWeightFunction supply);
+		abstract IFlow computeCirculation(IndexGraph g, IWeightFunction capacity, IWeightFunction supply);
 
 	}
 

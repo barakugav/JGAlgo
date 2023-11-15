@@ -90,12 +90,10 @@ public interface ShortestPathST {
 
 				@Override
 				public &lt;V, E&gt; Path&lt;V, E&gt; computeShortestPath(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source, V target) {
-<span class="nc bnc" id="L93" title="All 6 branches missed.">					boolean cardinality = w == null || w == WeightFunction.CardinalityWeightFunction</span>
-							|| w == IWeightFunction.CardinalityWeightFunction;
-<span class="nc bnc" id="L95" title="All 2 branches missed.">					if (cardinality) {</span>
-<span class="nc" id="L96">						return cardinalityStSp.computeShortestPath(g, w, source, target);</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">					if (WeightFunction.isCardinality(w)) {</span>
+<span class="nc" id="L94">						return cardinalityStSp.computeShortestPath(g, null, source, target);</span>
 					} else {
-<span class="nc" id="L98">						return weightedStSp.computeShortestPath(g, w, source, target);</span>
+<span class="nc" id="L96">						return weightedStSp.computeShortestPath(g, w, source, target);</span>
 					}
 				}
 			};

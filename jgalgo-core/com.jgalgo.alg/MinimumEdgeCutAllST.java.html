@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumEdgeCutAllST.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">MinimumEdgeCutAllST.java</span></div><h1>MinimumEdgeCutAllST.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import java.util.Iterator;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+
+/**
+ * Minimum Edge-Cut algorithm that finds all minimum edge-cuts in a graph between two terminal vertices (source-sink,
+ * S-T).
+ *
+ * &lt;p&gt;
+ * Given a graph \(G=(V,E)\), an edge cut is a partition of \(V\) into two sets \(C, \bar{C} = V \setminus C\). Given an
+ * edge weight function, the weight of an edge-cut \((C,\bar{C})\) is the weight sum of all edges \((u,v)\) such that
+ * \(u\) is in \(C\) and \(v\) is in \(\bar{C}\). There are two variants of the problem to find a minimum weight
+ * edge-cut: (1) With terminal vertices, and (2) without terminal vertices. In the variant with terminal vertices, we
+ * are given two special vertices {@code source (S)} and {@code sink (T)} and we need to find the minimum edge-cut
+ * \((C,\bar{C})\) such that the {@code source} is in \(C\) and the {@code sink} is in \(\bar{C}\). In the variant
+ * without terminal vertices (also called 'global edge-cut') we need to find the minimal cut among all possible cuts,
+ * and \(C,\bar{C}\) simply must not be empty.
+ *
+ * &lt;p&gt;
+ * Algorithms implementing this interface compute &lt;b&gt;all&lt;/b&gt; minimum edge-cuts given two terminal vertices,
+ * {@code source (S)} and {@code sink (T)}. For a single minimum edge-cut, use {@link MinimumEdgeCutST}. For the global
+ * variant (without terminal vertices), see {@link MinimumEdgeCutGlobal}.
+ *
+ * &lt;p&gt;
+ * The cardinality (unweighted) minimum edge-cut between two vertices is equal to the (local) edge connectivity of these
+ * two vertices. If the graph is directed, the edge connectivity between \(u\) and \(v\) is the minimum of the minimum
+ * edge-cut between \(u\) and \(v\) and the minimum edge-cut between \(v\) and \(u\).
+ *
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
+ *
+ * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Minimum_cut&quot;&gt;Wikipedia&lt;/a&gt;
+ * @see    MinimumEdgeCutST
+ * @see    MinimumEdgeCutGlobal
+ * @see    MinimumVertexCutST
+ * @author Barak Ugav
+ */
+public interface MinimumEdgeCutAllST {
+
+	/**
+	 * Compute all the minimum edge-cuts in a graph between two terminal vertices.
+	 *
+	 * &lt;p&gt;
+	 * Given a graph \(G=(V,E)\), an edge-cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
+	 * return value of this function is an iterator over all the partitions of these two sets.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, the returned iterator will iterate over {@link IVertexBiPartition} objects.
+	 * In that case, its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
+	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
+	 * @param  g                        a graph
+	 * @param  w                        an edge weight function
+	 * @param  source                   the source vertex
+	 * @param  sink                     the sink vertex
+	 * @return                          an iterator over all the minimum edge-cuts
+	 * @throws IllegalArgumentException if the source and the sink are the same vertex
+	 */
+	&lt;V, E&gt; Iterator&lt;VertexBiPartition&lt;V, E&gt;&gt; computeAllMinimumCuts(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, V source,
+			V sink);
+
+	/**
+	 * Create a new minimum S-T all edge-cuts algorithm object.
+	 *
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link MinimumEdgeCutAllST} object. The
+	 * {@link MinimumEdgeCutAllST.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link MinimumEdgeCutAllST}
+	 */
+	static MinimumEdgeCutAllST newInstance() {
+<span class="fc" id="L93">		return newBuilder().build();</span>
+	}
+
+	/**
+	 * Create a new minimum all edge-cuts algorithm builder.
+	 *
+	 * &lt;p&gt;
+	 * Use {@link #newInstance()} for a default implementation.
+	 *
+	 * @return a new builder that can build {@link MinimumEdgeCutAllST} objects
+	 */
+	static MinimumEdgeCutAllST.Builder newBuilder() {
+<span class="fc" id="L105">		return MinimumEdgeCutAllSTPicardQueyranne::new;</span>
+	}
+
+	/**
+	 * A builder for {@link MinimumEdgeCutAllST} objects.
+	 *
+	 * @see    MinimumEdgeCutAllST#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends AlgorithmBuilderBase {
+
+		/**
+		 * Create a new algorithm object for minimum all edge-cuts computation.
+		 *
+		 * @return a new minimum all edge-cuts algorithm
+		 */
+		MinimumEdgeCutAllST build();
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

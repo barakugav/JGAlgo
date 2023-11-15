@@ -61,156 +61,159 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L61" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
 <span class="fc bfc" id="L62" title="All 2 branches covered.">					if (!isLeft0(v))</span>
 <span class="fc" id="L63">						sortedVertices[i++] = v;</span>
-<span class="fc" id="L64">				leftVertices = new ImmutableIntArraySet(sortedVertices, 0, leftCount) {</span>
+<span class="fc" id="L64">				int[] vertexSortedIdx = new int[n];</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L66">					vertexSortedIdx[sortedVertices[v]] = v;</span>
+<span class="fc" id="L67">				leftVertices = new ImmutableIntArraySet(sortedVertices, 0, leftCount) {</span>
 					@Override
 					public boolean contains(int v) {
-<span class="nc bnc" id="L67" title="All 4 branches missed.">						return 0 &lt;= v &amp;&amp; v &lt; leftCount;</span>
+<span class="pc bpc" id="L70" title="2 of 6 branches missed.">						return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; vertexSortedIdx[v] &lt; leftCount;</span>
 					}
 				};
-<span class="fc" id="L70">				rightVertices = new ImmutableIntArraySet(sortedVertices, leftCount, n) {</span>
+<span class="fc" id="L73">				rightVertices = new ImmutableIntArraySet(sortedVertices, leftCount, n) {</span>
 					@Override
 					public boolean contains(int v) {
-<span class="nc bnc" id="L73" title="All 4 branches missed.">						return leftCount &lt;= v &amp;&amp; v &lt; n;</span>
+<span class="nc bnc" id="L76" title="All 6 branches missed.">						return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; leftCount &lt;= vertexSortedIdx[v];</span>
 					}
 				};
 			}
-<span class="fc bfc" id="L77" title="All 2 branches covered.">			if (block == 0)</span>
-<span class="fc" id="L78">				return leftVertices;</span>
-<span class="pc bpc" id="L79" title="1 of 2 branches missed.">			if (block == 1)</span>
-<span class="fc" id="L80">				return rightVertices;</span>
-<span class="nc" id="L81">			throw new IndexOutOfBoundsException(block);</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			if (block == 0)</span>
+<span class="fc" id="L81">				return leftVertices;</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">			if (block == 1)</span>
+<span class="fc" id="L83">				return rightVertices;</span>
+<span class="nc" id="L84">			throw new IndexOutOfBoundsException(block);</span>
 		}
 
 		@Override
 		public IntSet blockEdges(int block) {
-<span class="fc bfc" id="L86" title="All 2 branches covered.">			if (leftEdges == null) {</span>
-<span class="fc" id="L87">				final int m = g.edges().size();</span>
-<span class="fc" id="L88">				int b1Count = 0, b2Count = 0;</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L90">					boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">					if (b1 == b2) {</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">						if (b1) {</span>
-<span class="fc" id="L93">							b1Count++;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">			if (leftEdges == null) {</span>
+<span class="fc" id="L90">				final int m = g.edges().size();</span>
+<span class="fc" id="L91">				int b1Count = 0, b2Count = 0;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L93">					boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">					if (b1 == b2) {</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">						if (b1) {</span>
+<span class="fc" id="L96">							b1Count++;</span>
 						} else {
-<span class="fc" id="L95">							b2Count++;</span>
+<span class="fc" id="L98">							b2Count++;</span>
 						}
 					}
 				}
-<span class="fc" id="L99">				int[] sortedEdges = new int[b1Count + b2Count];</span>
-<span class="fc" id="L100">				int b1Idx = 0, b2Idx = b1Count;</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L102">					boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">					if (b1 == b2) {</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">						if (b1) {</span>
-<span class="fc" id="L105">							sortedEdges[b1Idx++] = e;</span>
+<span class="fc" id="L102">				int[] sortedEdges = new int[b1Count + b2Count];</span>
+<span class="fc" id="L103">				int b1Idx = 0, b2Idx = b1Count;</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L105">					boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">					if (b1 == b2) {</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">						if (b1) {</span>
+<span class="fc" id="L108">							sortedEdges[b1Idx++] = e;</span>
 						} else {
-<span class="fc" id="L107">							sortedEdges[b2Idx++] = e;</span>
+<span class="fc" id="L110">							sortedEdges[b2Idx++] = e;</span>
 						}
 					}
 				}
-<span class="fc" id="L111">				final int b1Idx0 = b1Idx, b2Idx0 = b2Idx;</span>
-<span class="fc" id="L112">				leftEdges = new ImmutableIntArraySet(sortedEdges, 0, b1Idx) {</span>
+<span class="fc" id="L114">				final int b1Idx0 = b1Idx, b2Idx0 = b2Idx;</span>
+<span class="fc" id="L115">				leftEdges = new ImmutableIntArraySet(sortedEdges, 0, b1Idx) {</span>
 					@Override
 					public boolean contains(int e) {
-<span class="nc bnc" id="L115" title="All 4 branches missed.">						return 0 &lt;= e &amp;&amp; e &lt; b1Idx0;</span>
+<span class="nc bnc" id="L118" title="All 4 branches missed.">						return 0 &lt;= e &amp;&amp; e &lt; b1Idx0;</span>
 					}
 				};
-<span class="fc" id="L118">				rightEdges = new ImmutableIntArraySet(sortedEdges, b1Idx, b2Idx) {</span>
+<span class="fc" id="L121">				rightEdges = new ImmutableIntArraySet(sortedEdges, b1Idx, b2Idx) {</span>
 					@Override
 					public boolean contains(int e) {
-<span class="nc bnc" id="L121" title="All 4 branches missed.">						return b1Idx0 &lt;= e &amp;&amp; e &lt; b2Idx0;</span>
+<span class="nc bnc" id="L124" title="All 4 branches missed.">						return b1Idx0 &lt;= e &amp;&amp; e &lt; b2Idx0;</span>
 					}
 				};
 			}
-<span class="fc bfc" id="L125" title="All 2 branches covered.">			if (block == 0)</span>
-<span class="fc" id="L126">				return leftEdges;</span>
-<span class="pc bpc" id="L127" title="1 of 2 branches missed.">			if (block == 1)</span>
-<span class="fc" id="L128">				return rightEdges;</span>
-<span class="nc" id="L129">			throw new IndexOutOfBoundsException(block);</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			if (block == 0)</span>
+<span class="fc" id="L129">				return leftEdges;</span>
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">			if (block == 1)</span>
+<span class="fc" id="L131">				return rightEdges;</span>
+<span class="nc" id="L132">			throw new IndexOutOfBoundsException(block);</span>
 		}
 
 		@Override
 		public IntSet crossEdges(int block1, int block2) {
-<span class="pc bpc" id="L134" title="1 of 2 branches missed.">			if (block1 == block2)</span>
-<span class="nc" id="L135">				return blockEdges(block1);</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">			if (crossEdges01 == null) {</span>
-<span class="fc" id="L137">				final int m = g.edges().size();</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">				if (g.isDirected()) {</span>
-<span class="fc" id="L139">					int crossEdges01Count = 0, crossEdges10Count = 0;</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L141">						boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">						if (b1 != b2) {</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">							if (b1) {</span>
-<span class="fc" id="L144">								crossEdges01Count++;</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">			if (block1 == block2)</span>
+<span class="nc" id="L138">				return blockEdges(block1);</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">			if (crossEdges01 == null) {</span>
+<span class="fc" id="L140">				final int m = g.edges().size();</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">				if (g.isDirected()) {</span>
+<span class="fc" id="L142">					int crossEdges01Count = 0, crossEdges10Count = 0;</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L144">						boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">						if (b1 != b2) {</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">							if (b1) {</span>
+<span class="fc" id="L147">								crossEdges01Count++;</span>
 							} else {
-<span class="fc" id="L146">								crossEdges10Count++;</span>
+<span class="fc" id="L149">								crossEdges10Count++;</span>
 							}
 						}
 					}
-<span class="fc" id="L150">					int[] crossEdges = new int[crossEdges01Count + crossEdges10Count];</span>
-<span class="fc" id="L151">					int crossEdges01Idx = 0, crossEdges10Idx = crossEdges01Count;</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L153">						boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">						if (b1 != b2) {</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">							if (b1) {</span>
-<span class="fc" id="L156">								crossEdges[crossEdges01Idx++] = e;</span>
+<span class="fc" id="L153">					int[] crossEdges = new int[crossEdges01Count + crossEdges10Count];</span>
+<span class="fc" id="L154">					int crossEdges01Idx = 0, crossEdges10Idx = crossEdges01Count;</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L156">						boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">						if (b1 != b2) {</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">							if (b1) {</span>
+<span class="fc" id="L159">								crossEdges[crossEdges01Idx++] = e;</span>
 							} else {
-<span class="fc" id="L158">								crossEdges[crossEdges10Idx++] = e;</span>
+<span class="fc" id="L161">								crossEdges[crossEdges10Idx++] = e;</span>
 							}
 						}
 					}
-<span class="fc" id="L162">					final int crossEdges01Idx0 = crossEdges01Idx, crossEdges10Idx0 = crossEdges10Idx;</span>
-<span class="fc" id="L163">					crossEdges01 = new ImmutableIntArraySet(crossEdges, 0, crossEdges01Idx) {</span>
+<span class="fc" id="L165">					final int crossEdges01Idx0 = crossEdges01Idx, crossEdges10Idx0 = crossEdges10Idx;</span>
+<span class="fc" id="L166">					crossEdges01 = new ImmutableIntArraySet(crossEdges, 0, crossEdges01Idx) {</span>
 						@Override
 						public boolean contains(int e) {
-<span class="nc bnc" id="L166" title="All 4 branches missed.">							return 0 &lt;= e &amp;&amp; e &lt; crossEdges01Idx0;</span>
+<span class="nc bnc" id="L169" title="All 4 branches missed.">							return 0 &lt;= e &amp;&amp; e &lt; crossEdges01Idx0;</span>
 						}
 					};
-<span class="fc" id="L169">					crossEdges10 = new ImmutableIntArraySet(crossEdges, crossEdges01Idx, crossEdges10Idx) {</span>
+<span class="fc" id="L172">					crossEdges10 = new ImmutableIntArraySet(crossEdges, crossEdges01Idx, crossEdges10Idx) {</span>
 						@Override
 						public boolean contains(int e) {
-<span class="nc bnc" id="L172" title="All 4 branches missed.">							return crossEdges01Idx0 &lt;= e &amp;&amp; e &lt; crossEdges10Idx0;</span>
+<span class="nc bnc" id="L175" title="All 4 branches missed.">							return crossEdges01Idx0 &lt;= e &amp;&amp; e &lt; crossEdges10Idx0;</span>
 						}
 					};
 
-<span class="fc" id="L176">				} else {</span>
-<span class="fc" id="L177">					int crossEdgesCount = 0;</span>
-<span class="fc bfc" id="L178" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++)</span>
-<span class="fc bfc" id="L179" title="All 2 branches covered.">						if (isLeft0(g.edgeSource(e)) != isLeft0(g.edgeTarget(e)))</span>
-<span class="fc" id="L180">							crossEdgesCount++;</span>
-<span class="fc" id="L181">					int[] crossEdges = new int[crossEdgesCount];</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">					for (int i = 0, e = 0; e &lt; m; e++)</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">						if (isLeft0(g.edgeSource(e)) != isLeft0(g.edgeTarget(e)))</span>
-<span class="fc" id="L184">							crossEdges[i++] = e;</span>
-<span class="fc" id="L185">					crossEdges01 = crossEdges10 = new ImmutableIntArraySet(crossEdges) {</span>
+<span class="fc" id="L179">				} else {</span>
+<span class="fc" id="L180">					int crossEdgesCount = 0;</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">						if (isLeft0(g.edgeSource(e)) != isLeft0(g.edgeTarget(e)))</span>
+<span class="fc" id="L183">							crossEdgesCount++;</span>
+<span class="fc" id="L184">					int[] crossEdges = new int[crossEdgesCount];</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">					for (int i = 0, e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">						if (isLeft0(g.edgeSource(e)) != isLeft0(g.edgeTarget(e)))</span>
+<span class="fc" id="L187">							crossEdges[i++] = e;</span>
+<span class="fc" id="L188">					crossEdges01 = crossEdges10 = new ImmutableIntArraySet(crossEdges) {</span>
 						@Override
 						public boolean contains(int e) {
-<span class="nc bnc" id="L188" title="All 6 branches missed.">							return 0 &lt;= e &amp;&amp; e &lt; m &amp;&amp; isLeft0(g.edgeSource(e)) != isLeft0(g.edgeTarget(e));</span>
+<span class="nc bnc" id="L191" title="All 6 branches missed.">							return 0 &lt;= e &amp;&amp; e &lt; m &amp;&amp; isLeft0(g.edgeSource(e)) != isLeft0(g.edgeTarget(e));</span>
 						}
 					};
 				}
 			}
-<span class="pc bpc" id="L193" title="1 of 4 branches missed.">			if (block1 == 0 &amp;&amp; block2 == 1)</span>
-<span class="fc" id="L194">				return crossEdges01;</span>
-<span class="pc bpc" id="L195" title="2 of 4 branches missed.">			if (block1 == 1 &amp;&amp; block2 == 0)</span>
-<span class="fc" id="L196">				return crossEdges10;</span>
-<span class="nc" id="L197">			throw new IndexOutOfBoundsException(block1 + &quot;,&quot; + block2);</span>
+<span class="pc bpc" id="L196" title="1 of 4 branches missed.">			if (block1 == 0 &amp;&amp; block2 == 1)</span>
+<span class="fc" id="L197">				return crossEdges01;</span>
+<span class="pc bpc" id="L198" title="2 of 4 branches missed.">			if (block1 == 1 &amp;&amp; block2 == 0)</span>
+<span class="fc" id="L199">				return crossEdges10;</span>
+<span class="nc" id="L200">			throw new IndexOutOfBoundsException(block1 + &quot;,&quot; + block2);</span>
 		}
 
 		@Override
 		public IntGraph graph() {
-<span class="nc" id="L202">			return g;</span>
+<span class="nc" id="L205">			return g;</span>
 		}
 
 		@Override
 		public IntGraph blocksGraph(boolean parallelEdges, boolean selfEdges) {
-<span class="fc" id="L207">			return VertexPartitions.blocksGraph(g, this, parallelEdges, selfEdges);</span>
+<span class="fc" id="L210">			return VertexPartitions.blocksGraph(g, this, parallelEdges, selfEdges);</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L212">			return Range.of(numberOfBlocks()).intStream().mapToObj(this::blockVertices).map(Object::toString)</span>
-<span class="nc" id="L213">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
+<span class="nc" id="L215">			return Range.of(numberOfBlocks()).intStream().mapToObj(this::blockVertices).map(Object::toString)</span>
+<span class="nc" id="L216">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
 		}
 	}
 
@@ -219,13 +222,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final Bitmap bitSet;
 
 		FromBitmap(IndexGraph g, Bitmap bitSet) {
-<span class="fc" id="L222">			super(g);</span>
-<span class="fc" id="L223">			this.bitSet = Objects.requireNonNull(bitSet);</span>
-<span class="fc" id="L224">		}</span>
+<span class="fc" id="L225">			super(g);</span>
+<span class="fc" id="L226">			this.bitSet = Objects.requireNonNull(bitSet);</span>
+<span class="fc" id="L227">		}</span>
 
 		@Override
 		boolean isLeft0(int vertex) {
-<span class="fc" id="L228">			return bitSet.get(vertex);</span>
+<span class="fc" id="L231">			return bitSet.get(vertex);</span>
 		}
 	}
 
@@ -234,13 +237,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final IWeightsBool weights;
 
 		FromWeights(IndexGraph g, IWeightsBool weights) {
-<span class="fc" id="L237">			super(g);</span>
-<span class="fc" id="L238">			this.weights = Objects.requireNonNull(weights);</span>
-<span class="fc" id="L239">		}</span>
+<span class="fc" id="L240">			super(g);</span>
+<span class="fc" id="L241">			this.weights = Objects.requireNonNull(weights);</span>
+<span class="fc" id="L242">		}</span>
 
 		@Override
 		boolean isLeft0(int vertex) {
-<span class="nc" id="L243">			return weights.get(vertex);</span>
+<span class="nc" id="L246">			return weights.get(vertex);</span>
 		}
 	}
 
@@ -248,16 +251,16 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 			implements IVertexBiPartition {
 
 		IntBiPartitionFromIndexBiPartition(IntGraph g, IVertexBiPartition indexPartition) {
-<span class="fc" id="L251">			super(g, indexPartition);</span>
-<span class="fc" id="L252">		}</span>
+<span class="fc" id="L254">			super(g, indexPartition);</span>
+<span class="fc" id="L255">		}</span>
 
 		IVertexBiPartition indexPartition() {
-<span class="fc" id="L255">			return (IVertexBiPartition) indexPartition;</span>
+<span class="fc" id="L258">			return (IVertexBiPartition) indexPartition;</span>
 		}
 
 		@Override
 		public boolean isLeft(int vertex) {
-<span class="fc" id="L260">			return indexPartition().isLeft(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L263">			return indexPartition().isLeft(viMap.idToIndex(vertex));</span>
 		}
 	}
 
@@ -265,27 +268,27 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 			implements VertexBiPartition&lt;V, E&gt; {
 
 		ObjBiPartitionFromIndexBiPartition(Graph&lt;V, E&gt; g, IVertexBiPartition indexPartition) {
-<span class="fc" id="L268">			super(g, indexPartition);</span>
-<span class="fc" id="L269">		}</span>
+<span class="fc" id="L271">			super(g, indexPartition);</span>
+<span class="fc" id="L272">		}</span>
 
 		IVertexBiPartition indexPartition() {
-<span class="fc" id="L272">			return (IVertexBiPartition) indexPartition;</span>
+<span class="fc" id="L275">			return (IVertexBiPartition) indexPartition;</span>
 		}
 
 		@Override
 		public boolean isLeft(V vertex) {
-<span class="fc" id="L277">			return indexPartition().isLeft(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L280">			return indexPartition().isLeft(viMap.idToIndex(vertex));</span>
 		}
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; VertexBiPartition&lt;V, E&gt; partitionFromIndexPartition(Graph&lt;V, E&gt; g,
 			IVertexBiPartition indexPartition) {
-<span class="pc bnc" id="L284" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
-<span class="fc bfc" id="L285" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L286">			return (VertexBiPartition&lt;V, E&gt;) new IntBiPartitionFromIndexBiPartition((IntGraph) g, indexPartition);</span>
+<span class="pc bnc" id="L287" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L289">			return (VertexBiPartition&lt;V, E&gt;) new IntBiPartitionFromIndexBiPartition((IntGraph) g, indexPartition);</span>
 		} else {
-<span class="fc" id="L288">			return new ObjBiPartitionFromIndexBiPartition&lt;&gt;(g, indexPartition);</span>
+<span class="fc" id="L291">			return new ObjBiPartitionFromIndexBiPartition&lt;&gt;(g, indexPartition);</span>
 		}
 	}
 

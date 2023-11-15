@@ -16,17 +16,17 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-<span class="pc" id="L29">class MaximalCliquesUtils {</span>
+class MaximalCliquesUtils {
+
+	private MaximalCliquesUtils() {}
 
 <span class="fc" id="L31">	abstract static class AbstractImpl implements MaximalCliques {</span>
 
@@ -38,65 +38,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 			} else {
 <span class="fc" id="L40">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L41">				Iterator&lt;IntSet&gt; indexResult = iterateMaximalCliques(iGraph);</span>
-<span class="fc" id="L42">				return resultFromIndexResult(g, indexResult);</span>
+<span class="fc" id="L41">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L42">				Iterator&lt;IntSet&gt; indexResult = iterateMaximalCliques(iGraph);</span>
+<span class="fc" id="L43">				return JGAlgoUtils.iterMap(indexResult, iSet -&gt; IndexIdMaps.indexToIdSet(iSet, viMap));</span>
 			}
 		}
 
 		abstract Iterator&lt;IntSet&gt; iterateMaximalCliques(IndexGraph g);
 
-	}
-
-	private static class IntResultFromIndexResult implements Iterator&lt;IntSet&gt; {
-
-		private final Iterator&lt;IntSet&gt; indexResult;
-		private final IndexIntIdMap viMap;
-
-<span class="fc" id="L55">		IntResultFromIndexResult(IntGraph g, Iterator&lt;IntSet&gt; indexResult) {</span>
-<span class="fc" id="L56">			this.indexResult = Objects.requireNonNull(indexResult);</span>
-<span class="fc" id="L57">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L58">		}</span>
-
-		@Override
-		public boolean hasNext() {
-<span class="fc" id="L62">			return indexResult.hasNext();</span>
-		}
-
-		@Override
-		public IntSet next() {
-<span class="fc" id="L67">			return IndexIdMaps.indexToIdSet(indexResult.next(), viMap);</span>
-		}
-	}
-
-	private static class ObjResultFromIndexResult&lt;V, E&gt; implements Iterator&lt;Set&lt;V&gt;&gt; {
-
-		private final Iterator&lt;IntSet&gt; indexResult;
-		private final IndexIdMap&lt;V&gt; viMap;
-
-<span class="fc" id="L76">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, Iterator&lt;IntSet&gt; indexResult) {</span>
-<span class="fc" id="L77">			this.indexResult = Objects.requireNonNull(indexResult);</span>
-<span class="fc" id="L78">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L79">		}</span>
-
-		@Override
-		public boolean hasNext() {
-<span class="fc" id="L83">			return indexResult.hasNext();</span>
-		}
-
-		@Override
-		public Set&lt;V&gt; next() {
-<span class="fc" id="L88">			return IndexIdMaps.indexToIdSet(indexResult.next(), viMap);</span>
-		}
-	}
-
-	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
-	private static &lt;V, E&gt; Iterator&lt;Set&lt;V&gt;&gt; resultFromIndexResult(Graph&lt;V, E&gt; g, Iterator&lt;IntSet&gt; indexResult) {
-<span class="pc bnc" id="L94" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L96">			return (Iterator) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
-		} else {
-<span class="fc" id="L98">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
-		}
 	}
 
 }

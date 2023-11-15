@@ -19,278 +19,215 @@ import java.util.Arrays;
 import java.util.Collection;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
-<span class="fc" id="L31">abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl implements MaximumFlow {</span>
+<span class="fc" id="L34">abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl implements MaximumFlow {</span>
 
+	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
-	public &lt;V, E&gt; double computeMaximumFlow(Graph&lt;V, E&gt; g, FlowNetwork&lt;V, E&gt; net, V source, V sink) {
-<span class="pc bpc" id="L35" title="1 of 4 branches missed.">		if (g instanceof IndexGraph &amp;&amp; net instanceof IFlowNetwork) {</span>
-<span class="fc" id="L36">			int source0 = ((Integer) source).intValue();</span>
-<span class="fc" id="L37">			int sink0 = ((Integer) sink).intValue();</span>
-<span class="fc" id="L38">			return computeMaximumFlow((IndexGraph) g, (IFlowNetwork) net, source0, sink0);</span>
+	public &lt;V, E&gt; Flow&lt;V, E&gt; computeMaximumFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity, V source, V sink) {
+<span class="fc bfc" id="L39" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L40">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
+<span class="fc" id="L41">			int source0 = ((Integer) source).intValue();</span>
+<span class="fc" id="L42">			int sink0 = ((Integer) sink).intValue();</span>
+<span class="fc" id="L43">			return (Flow&lt;V, E&gt;) computeMaximumFlow((IndexGraph) g, capacity0, source0, sink0);</span>
 
 		} else {
-<span class="fc" id="L41">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L42">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L43">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L44">			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);</span>
-<span class="fc" id="L45">			int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L46">			int iSink = viMap.idToIndex(sink);</span>
-<span class="fc" id="L47">			return computeMaximumFlow(iGraph, iNet, iSource, iSink);</span>
+<span class="fc" id="L46">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L47">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L48">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L49">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
+<span class="fc" id="L50">			int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L51">			int iSink = viMap.idToIndex(sink);</span>
+<span class="fc" id="L52">			IFlow indexFlow = computeMaximumFlow(iGraph, iCapacity, iSource, iSink);</span>
+<span class="fc" id="L53">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
 		}
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
-	public &lt;V, E&gt; double computeMaximumFlow(Graph&lt;V, E&gt; g, FlowNetwork&lt;V, E&gt; net, Collection&lt;V&gt; sources,
+	public &lt;V, E&gt; Flow&lt;V, E&gt; computeMaximumFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity, Collection&lt;V&gt; sources,
 			Collection&lt;V&gt; sinks) {
-<span class="pc bpc" id="L55" title="1 of 4 branches missed.">		if (g instanceof IndexGraph &amp;&amp; net instanceof IFlowNetwork) {</span>
-<span class="fc" id="L56">			IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
-<span class="fc" id="L57">			IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
-<span class="fc" id="L58">			return computeMaximumFlow((IndexGraph) g, (IFlowNetwork) net, sources0, sinks0);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L62">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
+<span class="fc" id="L63">			IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
+<span class="fc" id="L64">			IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
+<span class="fc" id="L65">			return (Flow&lt;V, E&gt;) computeMaximumFlow((IndexGraph) g, capacity0, sources0, sinks0);</span>
 
 		} else {
-<span class="fc" id="L61">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L62">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L63">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L64">			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);</span>
-<span class="fc" id="L65">			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);</span>
-<span class="fc" id="L66">			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);</span>
-<span class="fc" id="L67">			return computeMaximumFlow(iGraph, iNet, iSources, iSinks);</span>
+<span class="fc" id="L68">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L69">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L70">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L71">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
+<span class="fc" id="L72">			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);</span>
+<span class="fc" id="L73">			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);</span>
+<span class="fc" id="L74">			IFlow indexFlow = computeMaximumFlow(iGraph, iCapacity, iSources, iSinks);</span>
+<span class="fc" id="L75">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
 		}
 	}
 
-	abstract double computeMaximumFlow(IndexGraph g, IFlowNetwork net, int source, int sink);
+	abstract IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink);
 
-	abstract double computeMaximumFlow(IndexGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks);
+	abstract IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, IntCollection sources,
+			IntCollection sinks);
 
 	@Override
 	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
-<span class="fc" id="L77">		return MinimumEdgeCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, source, sink, this);</span>
+<span class="fc" id="L86">		return MinimumEdgeCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, source, sink, this);</span>
 	}
 
 	@Override
 	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, IntCollection sources, IntCollection sinks) {
-<span class="fc" id="L82">		return MinimumEdgeCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, sources, sinks, this);</span>
+<span class="fc" id="L91">		return MinimumEdgeCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, sources, sinks, this);</span>
 	}
 
-<span class="fc" id="L85">	abstract static class WithoutResidualGraph extends MaximumFlowAbstract {</span>
+<span class="fc" id="L94">	abstract static class WithoutResidualGraph extends MaximumFlowAbstract {</span>
 
 		static class Worker {
 			final IndexGraph g;
 			final int source;
 			final int sink;
 			final int n;
-			final IFlowNetwork net;
+			final IWeightFunction capacity;
 			final boolean directed;
 
-<span class="fc" id="L95">			Worker(IndexGraph g, IFlowNetwork net, int source, int sink) {</span>
-<span class="fc" id="L96">				Assertions.Flows.sourceSinkNotTheSame(source, sink);</span>
-<span class="fc" id="L97">				Assertions.Flows.positiveCapacities(g, net);</span>
-<span class="fc" id="L98">				this.g = g;</span>
-<span class="fc" id="L99">				this.source = source;</span>
-<span class="fc" id="L100">				this.sink = sink;</span>
-<span class="fc" id="L101">				this.n = g.vertices().size();</span>
-<span class="fc" id="L102">				this.net = net;</span>
-<span class="fc" id="L103">				directed = g.isDirected();</span>
-<span class="fc" id="L104">			}</span>
+<span class="fc" id="L104">			Worker(IndexGraph g, IWeightFunction capacity, int source, int sink) {</span>
+<span class="fc" id="L105">				Assertions.Flows.sourceSinkNotTheSame(source, sink);</span>
+<span class="fc" id="L106">				Assertions.Flows.positiveCapacities(g, capacity);</span>
+<span class="fc" id="L107">				this.g = g;</span>
+<span class="fc" id="L108">				this.source = source;</span>
+<span class="fc" id="L109">				this.sink = sink;</span>
+<span class="fc" id="L110">				this.n = g.vertices().size();</span>
+<span class="fc" id="L111">				this.capacity = capacity;</span>
+<span class="fc" id="L112">				directed = g.isDirected();</span>
+<span class="fc" id="L113">			}</span>
 
 			void initCapacities(int[] capacities) {
-<span class="fc" id="L107">				IFlowNetworkInt net = (IFlowNetworkInt) this.net;</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L109">					capacities[e] = net.getCapacityInt(e);</span>
-<span class="fc" id="L110">			}</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">				if (WeightFunction.isCardinality(capacity)) {</span>
+<span class="fc" id="L117">					Arrays.fill(capacities, 1);</span>
+				} else {
+<span class="fc" id="L119">					IWeightFunctionInt capacity = (IWeightFunctionInt) this.capacity;</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L121">						capacities[e] = capacity.weightInt(e);</span>
+				}
+<span class="fc" id="L123">			}</span>
 
 			void initCapacities(double[] capacities) {
-<span class="fc bfc" id="L113" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L114">					capacities[e] = net.getCapacity(e);</span>
-<span class="fc" id="L115">			}</span>
-
-			double constructResult(double[] capacity, double[] residualCapacity) {
-<span class="fc bfc" id="L118" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L119">					net.setFlow(e, capacity[e] - residualCapacity[e]);</span>
-
-<span class="fc" id="L121">				double totalFlow = 0;</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">				if (directed) {</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">					for (int e : g.outEdges(source))</span>
-<span class="fc" id="L124">						totalFlow += capacity[e] - residualCapacity[e];</span>
-<span class="fc bfc" id="L125" title="All 2 branches covered.">					for (int e : g.inEdges(source))</span>
-<span class="fc" id="L126">						totalFlow -= capacity[e] - residualCapacity[e];</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">				if (WeightFunction.isCardinality(capacity)) {</span>
+<span class="nc" id="L127">					Arrays.fill(capacities, 1);</span>
 				} else {
-<span class="fc bfc" id="L128" title="All 2 branches covered.">					for (int e : g.outEdges(source)) {</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">						if (source != g.edgeTarget(e)) {</span>
-<span class="fc" id="L130">							totalFlow += capacity[e] - residualCapacity[e];</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">						} else if (source != g.edgeSource(e)) {</span>
-<span class="fc" id="L132">							totalFlow -= capacity[e] - residualCapacity[e];</span>
-						}
-<span class="fc" id="L134">					}</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L130">						capacities[e] = capacity.weight(e);</span>
 				}
-<span class="fc" id="L136">				return totalFlow;</span>
+<span class="fc" id="L132">			}</span>
+
+			IFlow constructResult(double[] capacity, double[] residualCapacity) {
+<span class="fc" id="L135">				double[] flow = new double[g.edges().size()];</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L137">					flow[e] = capacity[e] - residualCapacity[e];</span>
+<span class="fc" id="L138">				return new Flows.FlowImpl(g, flow);</span>
 			}
 
-			int constructResult(int[] capacity, int[] residualCapacity) {
-<span class="fc" id="L140">				IFlowNetworkInt net = (IFlowNetworkInt) this.net;</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L142">					net.setFlow(e, capacity[e] - residualCapacity[e]);</span>
-
-<span class="fc" id="L144">				int totalFlow = 0;</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">				if (directed) {</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">					for (int e : g.outEdges(source))</span>
-<span class="fc" id="L147">						totalFlow += capacity[e] - residualCapacity[e];</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">					for (int e : g.inEdges(source))</span>
-<span class="fc" id="L149">						totalFlow -= capacity[e] - residualCapacity[e];</span>
-				} else {
-<span class="fc bfc" id="L151" title="All 2 branches covered.">					for (int e : g.outEdges(source)) {</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">						if (source != g.edgeTarget(e)) {</span>
-<span class="fc" id="L153">							totalFlow += capacity[e] - residualCapacity[e];</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">						} else if (source != g.edgeSource(e)) {</span>
-<span class="fc" id="L155">							totalFlow -= capacity[e] - residualCapacity[e];</span>
-						}
-<span class="fc" id="L157">					}</span>
-				}
-<span class="fc" id="L159">				return totalFlow;</span>
+			IFlow constructResult(int[] capacity, int[] residualCapacity) {
+<span class="fc" id="L142">				double[] flow = new double[g.edges().size()];</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L144">					flow[e] = capacity[e] - residualCapacity[e];</span>
+<span class="fc" id="L145">				return new Flows.FlowImpl(g, flow);</span>
 			}
 
 		}
 
 		@Override
-		double computeMaximumFlow(IndexGraph gOrig, IFlowNetwork netOrig, IntCollection sources, IntCollection sinks) {
-<span class="pc bpc" id="L166" title="1 of 4 branches missed.">			if (sources.size() == 1 &amp;&amp; sinks.size() == 1)</span>
-<span class="fc" id="L167">				return computeMaximumFlow(gOrig, netOrig, sources.iterator().nextInt(), sinks.iterator().nextInt());</span>
-<span class="fc" id="L168">			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);</span>
+		IFlow computeMaximumFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IntCollection sources,
+				IntCollection sinks) {
+<span class="pc bpc" id="L153" title="1 of 4 branches missed.">			if (sources.size() == 1 &amp;&amp; sinks.size() == 1)</span>
+<span class="fc" id="L154">				return computeMaximumFlow(gOrig, capacityOrig, sources.iterator().nextInt(),</span>
+<span class="fc" id="L155">						sinks.iterator().nextInt());</span>
+<span class="fc" id="L156">			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);</span>
 
 			IndexGraphBuilder builder =
-<span class="fc bfc" id="L171" title="All 2 branches covered.">					gOrig.isDirected() ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();</span>
-<span class="fc" id="L172">			builder.expectedVerticesNum(gOrig.vertices().size() + 2);</span>
-<span class="fc" id="L173">			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size());</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">					gOrig.isDirected() ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();</span>
+<span class="fc" id="L160">			builder.expectedVerticesNum(gOrig.vertices().size() + 2);</span>
+<span class="fc" id="L161">			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size());</span>
 
-<span class="fc bfc" id="L175" title="All 2 branches covered.">			for (int n = gOrig.vertices().size(), v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L176">				builder.addVertex();</span>
-<span class="fc bfc" id="L177" title="All 2 branches covered.">			for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L178">				builder.addEdge(gOrig.edgeSource(e), gOrig.edgeTarget(e));</span>
-<span class="fc" id="L179">			final int originalEdgesThreshold = builder.edges().size();</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">			for (int n = gOrig.vertices().size(), v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L164">				builder.addVertex();</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">			for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L166">				builder.addEdge(gOrig.edgeSource(e), gOrig.edgeTarget(e));</span>
+<span class="fc" id="L167">			final int originalEdgesThreshold = builder.edges().size();</span>
 
-<span class="fc" id="L181">			final int source = builder.addVertex();</span>
-<span class="fc" id="L182">			final int sink = builder.addVertex();</span>
+<span class="fc" id="L169">			final int source = builder.addVertex();</span>
+<span class="fc" id="L170">			final int sink = builder.addVertex();</span>
 			Object capacities;
-<span class="fc bfc" id="L184" title="All 2 branches covered.">			if (netOrig instanceof IFlowNetworkInt) {</span>
-<span class="fc" id="L185">				IFlowNetworkInt netOrigInt = (IFlowNetworkInt) netOrig;</span>
-<span class="fc" id="L186">				int[] capacities0 = new int[sources.size() + sinks.size()];</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">			if (WeightFunction.isInteger(capacityOrig)) {</span>
+<span class="fc" id="L173">				IWeightFunctionInt capacityOrigInt = (IWeightFunctionInt) capacityOrig;</span>
+<span class="fc" id="L174">				int[] capacities0 = new int[sources.size() + sinks.size()];</span>
+<span class="fc" id="L175">				int capIdx = 0;</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">				for (int s : sources) {</span>
+<span class="fc" id="L177">					builder.addEdge(source, s);</span>
+<span class="fc" id="L178">					capacities0[capIdx++] = Flows.vertexMaxSupply(gOrig, capacityOrigInt, s);</span>
+<span class="fc" id="L179">				}</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">				for (int t : sinks) {</span>
+<span class="fc" id="L181">					builder.addEdge(t, sink);</span>
+<span class="fc" id="L182">					capacities0[capIdx++] = Flows.vertexMaxDemand(gOrig, capacityOrigInt, t);</span>
+<span class="fc" id="L183">				}</span>
+<span class="fc" id="L184">				capacities = capacities0;</span>
+<span class="fc" id="L185">			} else {</span>
+<span class="fc" id="L186">				double[] capacities0 = new double[sources.size() + sinks.size()];</span>
 <span class="fc" id="L187">				int capIdx = 0;</span>
 <span class="fc bfc" id="L188" title="All 2 branches covered.">				for (int s : sources) {</span>
 <span class="fc" id="L189">					builder.addEdge(source, s);</span>
-<span class="fc" id="L190">					capacities0[capIdx++] = FlowNetworks.vertexMaxSupply(gOrig, netOrigInt, s);</span>
+<span class="fc" id="L190">					capacities0[capIdx++] = Flows.vertexMaxSupply(gOrig, capacityOrig, s);</span>
 <span class="fc" id="L191">				}</span>
 <span class="fc bfc" id="L192" title="All 2 branches covered.">				for (int t : sinks) {</span>
 <span class="fc" id="L193">					builder.addEdge(t, sink);</span>
-<span class="fc" id="L194">					capacities0[capIdx++] = FlowNetworks.vertexMaxDemand(gOrig, netOrigInt, t);</span>
+<span class="fc" id="L194">					capacities0[capIdx++] = Flows.vertexMaxDemand(gOrig, capacityOrig, t);</span>
 <span class="fc" id="L195">				}</span>
 <span class="fc" id="L196">				capacities = capacities0;</span>
-<span class="fc" id="L197">			} else {</span>
-<span class="fc" id="L198">				double[] capacities0 = new double[sources.size() + sinks.size()];</span>
-<span class="fc" id="L199">				int capIdx = 0;</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">				for (int s : sources) {</span>
-<span class="fc" id="L201">					builder.addEdge(source, s);</span>
-<span class="fc" id="L202">					capacities0[capIdx++] = FlowNetworks.vertexMaxSupply(gOrig, netOrig, s);</span>
-<span class="fc" id="L203">				}</span>
-<span class="fc bfc" id="L204" title="All 2 branches covered.">				for (int t : sinks) {</span>
-<span class="fc" id="L205">					builder.addEdge(t, sink);</span>
-<span class="fc" id="L206">					capacities0[capIdx++] = FlowNetworks.vertexMaxDemand(gOrig, netOrig, t);</span>
-<span class="fc" id="L207">				}</span>
-<span class="fc" id="L208">				capacities = capacities0;</span>
 			}
-<span class="fc" id="L210">			IndexGraph g = builder.build();</span>
+<span class="fc" id="L198">			IndexGraph g = builder.build();</span>
 
-			IFlowNetwork net;
-<span class="fc bfc" id="L213" title="All 2 branches covered.">			if (netOrig instanceof IFlowNetworkInt) {</span>
-<span class="fc" id="L214">				IFlowNetworkInt netOrigInt = (IFlowNetworkInt) netOrig;</span>
+			IWeightFunction capacity;
+<span class="fc bfc" id="L201" title="All 2 branches covered.">			if (WeightFunction.isInteger(capacityOrig)) {</span>
+<span class="fc" id="L202">				IWeightFunctionInt capacityOrigInt = (IWeightFunctionInt) capacityOrig;</span>
+<span class="fc" id="L203">				final int[] caps = (int[]) capacities;</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">				IWeightFunctionInt capacityInt = edge -&gt; edge &lt; originalEdgesThreshold ? capacityOrigInt.weightInt(edge)</span>
+<span class="fc" id="L205">						: caps[edge - originalEdgesThreshold];</span>
+<span class="fc" id="L206">				capacity = capacityInt;</span>
 
-<span class="fc" id="L216">				IFlowNetworkInt netInt = new IFlowNetworkInt() {</span>
-<span class="fc" id="L217">					final int[] caps = (int[]) capacities;</span>
-<span class="fc" id="L218">					final int[] flows = new int[caps.length];</span>
-
-					@Override
-					public int getCapacityInt(int edge) {
-<span class="fc bfc" id="L222" title="All 2 branches covered.">						return edge &lt; originalEdgesThreshold ? netOrigInt.getCapacityInt(edge)</span>
-<span class="fc" id="L223">								: caps[edge - originalEdgesThreshold];</span>
-					}
-
-					@Override
-					public void setCapacity(int edge, int capacity) {
-<span class="nc" id="L228">						throw new UnsupportedOperationException(&quot;capacities are immutable&quot;);</span>
-					}
-
-					@Override
-					public int getFlowInt(int edge) {
-<span class="nc bnc" id="L233" title="All 2 branches missed.">						return edge &lt; originalEdgesThreshold ? netOrigInt.getFlowInt(edge)</span>
-<span class="nc" id="L234">								: flows[edge - originalEdgesThreshold];</span>
-					}
-
-					@Override
-					public void setFlow(int edge, int flow) {
-<span class="fc bfc" id="L239" title="All 2 branches covered.">						if (edge &lt; originalEdgesThreshold) {</span>
-<span class="fc" id="L240">							netOrigInt.setFlow(edge, flow);</span>
-						} else {
-<span class="fc" id="L242">							flows[edge - originalEdgesThreshold] = flow;</span>
-						}
-<span class="fc" id="L244">					}</span>
-				};
-<span class="fc" id="L246">				net = netInt;</span>
-
-<span class="fc" id="L248">			} else {</span>
-<span class="fc" id="L249">				net = new IFlowNetwork() {</span>
-<span class="fc" id="L250">					final double[] caps = (double[]) capacities;</span>
-<span class="fc" id="L251">					final double[] flows = new double[caps.length];</span>
-
-					@Override
-					public double getCapacity(int edge) {
-<span class="fc bfc" id="L255" title="All 2 branches covered.">						return edge &lt; originalEdgesThreshold ? netOrig.getCapacity(edge)</span>
-<span class="fc" id="L256">								: caps[edge - originalEdgesThreshold];</span>
-					}
-
-					@Override
-					public void setCapacity(int edge, double capacity) {
-<span class="nc" id="L261">						throw new UnsupportedOperationException(&quot;capacities are immutable&quot;);</span>
-					}
-
-					@Override
-					public double getFlow(int edge) {
-<span class="nc bnc" id="L266" title="All 2 branches missed.">						return edge &lt; originalEdgesThreshold ? netOrig.getFlow(edge)</span>
-<span class="nc" id="L267">								: flows[edge - originalEdgesThreshold];</span>
-					}
-
-					@Override
-					public void setFlow(int edge, double flow) {
-<span class="fc bfc" id="L272" title="All 2 branches covered.">						if (edge &lt; originalEdgesThreshold) {</span>
-<span class="fc" id="L273">							netOrig.setFlow(edge, flow);</span>
-						} else {
-<span class="fc" id="L275">							flows[edge - originalEdgesThreshold] = flow;</span>
-						}
-<span class="fc" id="L277">					}</span>
-				};
+<span class="fc" id="L208">			} else {</span>
+<span class="fc" id="L209">				final double[] caps = (double[]) capacities;</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">				capacity = edge -&gt; edge &lt; originalEdgesThreshold ? capacityOrig.weight(edge)</span>
+<span class="fc" id="L211">						: caps[edge - originalEdgesThreshold];</span>
 			}
 
-<span class="fc" id="L281">			return computeMaximumFlow(g, net, source, sink);</span>
+<span class="fc" id="L214">			IFlow flow0 = computeMaximumFlow(g, capacity, source, sink);</span>
+<span class="fc" id="L215">			double[] flow = new double[gOrig.edges().size()];</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">			for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L217">				flow[e] = flow0.getFlow(e);</span>
+<span class="fc" id="L218">			return new Flows.FlowImpl(gOrig, flow);</span>
 		}
 
 	}
 
-<span class="fc" id="L286">	abstract static class WithResidualGraph extends MaximumFlowAbstract {</span>
+<span class="fc" id="L223">	abstract static class WithResidualGraph extends MaximumFlowAbstract {</span>
 
 		static class Worker {
 			final IndexGraph gOrig;
 			final int source;
 			final int sink;
 			final int n;
-			final IFlowNetwork net;
+			final IWeightFunction capacityOrig;
 
 			final IndexGraph g;
 			final int[] edgeRef;
@@ -300,178 +237,173 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 			final IntCollection sources;
 			final IntCollection sinks;
 
-<span class="fc" id="L303">			Worker(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {</span>
-<span class="fc" id="L304">				Assertions.Flows.sourceSinkNotTheSame(source, sink);</span>
-<span class="fc" id="L305">				Assertions.Flows.positiveCapacities(gOrig, net);</span>
-<span class="fc" id="L306">				this.gOrig = gOrig;</span>
-<span class="fc" id="L307">				this.source = source;</span>
-<span class="fc" id="L308">				this.sink = sink;</span>
-<span class="fc" id="L309">				this.sources = IntLists.singleton(source);</span>
-<span class="fc" id="L310">				this.sinks = IntLists.singleton(sink);</span>
-<span class="fc" id="L311">				this.n = gOrig.vertices().size();</span>
-<span class="fc" id="L312">				this.net = net;</span>
-<span class="fc" id="L313">				multiSourceMultiSink = false;</span>
+<span class="fc" id="L240">			Worker(IndexGraph gOrig, IWeightFunction capacityOrig, int source, int sink) {</span>
+<span class="fc" id="L241">				Assertions.Flows.sourceSinkNotTheSame(source, sink);</span>
+<span class="fc" id="L242">				Assertions.Flows.positiveCapacities(gOrig, capacityOrig);</span>
+<span class="fc" id="L243">				this.gOrig = gOrig;</span>
+<span class="fc" id="L244">				this.source = source;</span>
+<span class="fc" id="L245">				this.sink = sink;</span>
+<span class="fc" id="L246">				this.sources = IntLists.singleton(source);</span>
+<span class="fc" id="L247">				this.sinks = IntLists.singleton(sink);</span>
+<span class="fc" id="L248">				this.n = gOrig.vertices().size();</span>
+<span class="fc" id="L249">				this.capacityOrig = capacityOrig;</span>
+<span class="fc" id="L250">				multiSourceMultiSink = false;</span>
 
-<span class="fc" id="L315">				FlowNetworks.ResidualGraph.Builder builder = new FlowNetworks.ResidualGraph.Builder(gOrig);</span>
-<span class="fc" id="L316">				builder.addAllOriginalEdges();</span>
+<span class="fc" id="L252">				Flows.ResidualGraph.Builder builder = new Flows.ResidualGraph.Builder(gOrig);</span>
+<span class="fc" id="L253">				builder.addAllOriginalEdges();</span>
 
-<span class="fc" id="L318">				FlowNetworks.ResidualGraph residualGraph = builder.build();</span>
-<span class="fc" id="L319">				g = residualGraph.g;</span>
-<span class="fc" id="L320">				edgeRef = residualGraph.edgeRef;</span>
-<span class="fc" id="L321">				twin = residualGraph.twin;</span>
-<span class="fc" id="L322">			}</span>
+<span class="fc" id="L255">				Flows.ResidualGraph residualGraph = builder.build();</span>
+<span class="fc" id="L256">				g = residualGraph.g;</span>
+<span class="fc" id="L257">				edgeRef = residualGraph.edgeRef;</span>
+<span class="fc" id="L258">				twin = residualGraph.twin;</span>
+<span class="fc" id="L259">			}</span>
 
-<span class="fc" id="L324">			Worker(IndexGraph gOrig, IFlowNetwork net, IntCollection sources, IntCollection sinks) {</span>
-<span class="fc" id="L325">				Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);</span>
-<span class="fc" id="L326">				Assertions.Flows.positiveCapacities(gOrig, net);</span>
-<span class="fc" id="L327">				this.gOrig = gOrig;</span>
-<span class="fc" id="L328">				this.n = gOrig.vertices().size() + 2;</span>
-<span class="fc" id="L329">				this.sources = sources;</span>
-<span class="fc" id="L330">				this.sinks = sinks;</span>
-<span class="fc" id="L331">				this.net = net;</span>
-<span class="fc" id="L332">				multiSourceMultiSink = true;</span>
+<span class="fc" id="L261">			Worker(IndexGraph gOrig, IWeightFunction capacityOrig, IntCollection sources, IntCollection sinks) {</span>
+<span class="fc" id="L262">				Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);</span>
+<span class="fc" id="L263">				Assertions.Flows.positiveCapacities(gOrig, capacityOrig);</span>
+<span class="fc" id="L264">				this.gOrig = gOrig;</span>
+<span class="fc" id="L265">				this.n = gOrig.vertices().size() + 2;</span>
+<span class="fc" id="L266">				this.sources = sources;</span>
+<span class="fc" id="L267">				this.sinks = sinks;</span>
+<span class="fc" id="L268">				this.capacityOrig = capacityOrig;</span>
+<span class="fc" id="L269">				multiSourceMultiSink = true;</span>
 
-<span class="fc" id="L334">				FlowNetworks.ResidualGraph.Builder builder = new FlowNetworks.ResidualGraph.Builder(gOrig);</span>
-<span class="fc" id="L335">				builder.addAllOriginalEdges();</span>
+<span class="fc" id="L271">				Flows.ResidualGraph.Builder builder = new Flows.ResidualGraph.Builder(gOrig);</span>
+<span class="fc" id="L272">				builder.addAllOriginalEdges();</span>
 
-<span class="fc" id="L337">				source = builder.addVertex();</span>
-<span class="fc" id="L338">				sink = builder.addVertex();</span>
-<span class="fc bfc" id="L339" title="All 2 branches covered.">				for (int s : sources)</span>
-<span class="fc" id="L340">					builder.addEdge(source, s, -1);</span>
-<span class="fc bfc" id="L341" title="All 2 branches covered.">				for (int t : sinks)</span>
-<span class="fc" id="L342">					builder.addEdge(t, sink, -1);</span>
+<span class="fc" id="L274">				source = builder.addVertex();</span>
+<span class="fc" id="L275">				sink = builder.addVertex();</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">				for (int s : sources)</span>
+<span class="fc" id="L277">					builder.addEdge(source, s, -1);</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">				for (int t : sinks)</span>
+<span class="fc" id="L279">					builder.addEdge(t, sink, -1);</span>
 
-<span class="fc" id="L344">				FlowNetworks.ResidualGraph residualGraph = builder.build();</span>
-<span class="fc" id="L345">				g = residualGraph.g;</span>
-<span class="fc" id="L346">				edgeRef = residualGraph.edgeRef;</span>
-<span class="fc" id="L347">				twin = residualGraph.twin;</span>
-<span class="fc" id="L348">			}</span>
+<span class="fc" id="L281">				Flows.ResidualGraph residualGraph = builder.build();</span>
+<span class="fc" id="L282">				g = residualGraph.g;</span>
+<span class="fc" id="L283">				edgeRef = residualGraph.edgeRef;</span>
+<span class="fc" id="L284">				twin = residualGraph.twin;</span>
+<span class="fc" id="L285">			}</span>
 
 			void initCapacitiesAndFlows(double[] flow, double[] capacity) {
-<span class="fc" id="L351">				Arrays.fill(flow, 0);</span>
-<span class="fc" id="L352">				initCapacities(capacity);</span>
-<span class="fc" id="L353">			}</span>
+<span class="fc" id="L288">				Arrays.fill(flow, 0);</span>
+<span class="fc" id="L289">				initCapacities(capacity);</span>
+<span class="fc" id="L290">			}</span>
 
 			void initCapacitiesAndFlows(int[] flow, int[] capacity) {
-<span class="fc" id="L356">				Arrays.fill(flow, 0);</span>
-<span class="fc" id="L357">				initCapacities(capacity);</span>
-<span class="fc" id="L358">			}</span>
+<span class="fc" id="L293">				Arrays.fill(flow, 0);</span>
+<span class="fc" id="L294">				initCapacities(capacity);</span>
+<span class="fc" id="L295">			}</span>
 
 			void initCapacities(double[] residualCapacity) {
-<span class="fc bfc" id="L361" title="All 2 branches covered.">				if (gOrig.isDirected()) {</span>
-<span class="fc bfc" id="L362" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc bfc" id="L363" title="All 2 branches covered.">						residualCapacity[e] = isOriginalEdge(e) ? net.getCapacity(edgeRef[e]) : 0;</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">				if (gOrig.isDirected()) {</span>
+<span class="pc bpc" id="L299" title="1 of 2 branches missed.">					if (WeightFunction.isCardinality(capacityOrig)) {</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">						for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">							residualCapacity[e] = isOriginalEdge(e) ? 1 : 0;</span>
+					} else {
+<span class="fc bfc" id="L303" title="All 2 branches covered.">						for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">							residualCapacity[e] = isOriginalEdge(e) ? capacityOrig.weight(edgeRef[e]) : 0;</span>
 					}
 				} else {
-<span class="fc bfc" id="L366" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L367">						int eRef = edgeRef[e];</span>
-<span class="fc bfc" id="L368" title="All 6 branches covered.">						double cap = (eRef != -1 &amp;&amp; g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink)</span>
-<span class="fc" id="L369">								? net.getCapacity(eRef)</span>
-<span class="fc" id="L370">								: 0;</span>
-<span class="fc" id="L371">						residualCapacity[e] = cap;</span>
+<span class="pc bpc" id="L307" title="1 of 2 branches missed.">					if (WeightFunction.isCardinality(capacityOrig)) {</span>
+<span class="nc bnc" id="L308" title="All 2 branches missed.">						for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="nc" id="L309">							int eRef = edgeRef[e];</span>
+<span class="nc bnc" id="L310" title="All 6 branches missed.">							double cap = (eRef != -1 &amp;&amp; g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink) ? 1 : 0;</span>
+<span class="nc" id="L311">							residualCapacity[e] = cap;</span>
+						}
+					} else {
+<span class="fc bfc" id="L314" title="All 2 branches covered.">						for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L315">							int eRef = edgeRef[e];</span>
+<span class="fc bfc" id="L316" title="All 6 branches covered.">							double cap = (eRef != -1 &amp;&amp; g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink)</span>
+<span class="fc" id="L317">									? capacityOrig.weight(eRef)</span>
+<span class="fc" id="L318">									: 0;</span>
+<span class="fc" id="L319">							residualCapacity[e] = cap;</span>
+						}
 					}
 				}
-<span class="fc bfc" id="L374" title="All 2 branches covered.">				if (multiSourceMultiSink) {</span>
-<span class="fc" id="L375">					double capacitySum = 0;</span>
-<span class="fc bfc" id="L376" title="All 2 branches covered.">					for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L377">						capacitySum += net.getCapacity(e);</span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">				if (multiSourceMultiSink) {</span>
+<span class="fc" id="L324">					double capacitySum = 0;</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">					for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L326">						capacitySum += capacityOrig.weight(e);</span>
 
 					/* init edges from super-source to sources and from sinks to super-sink */
-<span class="fc bfc" id="L380" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc bfc" id="L381" title="All 2 branches covered.">						if (edgeRef[e] == -1)</span>
-<span class="fc" id="L382">							residualCapacity[e] =</span>
-<span class="fc bfc" id="L383" title="All 4 branches covered.">									source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">						if (edgeRef[e] == -1)</span>
+<span class="fc" id="L331">							residualCapacity[e] =</span>
+<span class="fc bfc" id="L332" title="All 4 branches covered.">									source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;</span>
 				}
-<span class="fc" id="L385">			}</span>
+<span class="fc" id="L334">			}</span>
 
 			void initCapacities(int[] residualCapacity) {
-<span class="fc" id="L388">				IFlowNetworkInt net = (IFlowNetworkInt) this.net;</span>
-<span class="fc bfc" id="L389" title="All 2 branches covered.">				if (gOrig.isDirected()) {</span>
-<span class="fc bfc" id="L390" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc bfc" id="L391" title="All 2 branches covered.">						residualCapacity[e] = isOriginalEdge(e) ? net.getCapacityInt(edgeRef[e]) : 0;</span>
+<span class="fc" id="L337">				IWeightFunctionInt capacity = (IWeightFunctionInt) this.capacityOrig;</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">				if (gOrig.isDirected()) {</span>
+<span class="pc bpc" id="L339" title="1 of 2 branches missed.">					if (WeightFunction.isCardinality(capacityOrig)) {</span>
+<span class="nc bnc" id="L340" title="All 2 branches missed.">						for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="nc bnc" id="L341" title="All 2 branches missed.">							residualCapacity[e] = isOriginalEdge(e) ? 1 : 0;</span>
+					} else {
+<span class="fc bfc" id="L343" title="All 2 branches covered.">						for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L344" title="All 2 branches covered.">							residualCapacity[e] = isOriginalEdge(e) ? capacity.weightInt(edgeRef[e]) : 0;</span>
 					}
 				} else {
-<span class="fc bfc" id="L394" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L395">						int eRef = edgeRef[e];</span>
-<span class="pc bpc" id="L396" title="1 of 6 branches missed.">						int cap = (eRef != -1 &amp;&amp; g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink)</span>
-<span class="fc" id="L397">								? net.getCapacityInt(eRef)</span>
-<span class="fc" id="L398">								: 0;</span>
-<span class="fc" id="L399">						residualCapacity[e] = cap;</span>
+<span class="pc bpc" id="L347" title="1 of 2 branches missed.">					if (WeightFunction.isCardinality(capacityOrig)) {</span>
+<span class="nc bnc" id="L348" title="All 2 branches missed.">						for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="nc" id="L349">							int eRef = edgeRef[e];</span>
+<span class="nc bnc" id="L350" title="All 6 branches missed.">							int cap = (eRef != -1 &amp;&amp; g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink) ? 1 : 0;</span>
+<span class="nc" id="L351">							residualCapacity[e] = cap;</span>
+						}
+					} else {
+<span class="fc bfc" id="L354" title="All 2 branches covered.">						for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L355">							int eRef = edgeRef[e];</span>
+<span class="pc bpc" id="L356" title="1 of 6 branches missed.">							int cap = (eRef != -1 &amp;&amp; g.edgeTarget(e) != source &amp;&amp; g.edgeSource(e) != sink)</span>
+<span class="fc" id="L357">									? capacity.weightInt(eRef)</span>
+<span class="fc" id="L358">									: 0;</span>
+<span class="fc" id="L359">							residualCapacity[e] = cap;</span>
+						}
 					}
 				}
-<span class="pc bpc" id="L402" title="1 of 2 branches missed.">				if (multiSourceMultiSink) {</span>
-<span class="nc" id="L403">					int capacitySum = 0;</span>
-<span class="nc bnc" id="L404" title="All 2 branches missed.">					for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L405">						int cap = net.getCapacityInt(e);</span>
-<span class="nc" id="L406">						int capacitySumNext = capacitySum + cap;</span>
-<span class="nc bnc" id="L407" title="All 2 branches missed.">						if (((capacitySum ^ capacitySumNext) &amp; (cap ^ capacitySumNext)) &lt; 0) {</span>
+<span class="pc bpc" id="L363" title="1 of 2 branches missed.">				if (multiSourceMultiSink) {</span>
+<span class="nc" id="L364">					int capacitySum = 0;</span>
+<span class="nc bnc" id="L365" title="All 2 branches missed.">					for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="nc" id="L366">						int cap = capacity.weightInt(e);</span>
+<span class="nc" id="L367">						int capacitySumNext = capacitySum + cap;</span>
+<span class="nc bnc" id="L368" title="All 2 branches missed.">						if (((capacitySum ^ capacitySumNext) &amp; (cap ^ capacitySumNext)) &lt; 0) {</span>
 							// HD 2-12 Overflow iff both arguments have the opposite sign of the result
-<span class="nc" id="L409">							capacitySum = Integer.MAX_VALUE;</span>
-<span class="nc" id="L410">							break;</span>
+<span class="nc" id="L370">							capacitySum = Integer.MAX_VALUE;</span>
+<span class="nc" id="L371">							break;</span>
 						}
-<span class="nc" id="L412">						capacitySum = capacitySumNext;</span>
+<span class="nc" id="L373">						capacitySum = capacitySumNext;</span>
 					}
 
 					/* init edges from super-source to sources and from sinks to super-sink */
-<span class="nc bnc" id="L416" title="All 2 branches missed.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="nc bnc" id="L417" title="All 2 branches missed.">						if (edgeRef[e] == -1)</span>
-<span class="nc" id="L418">							residualCapacity[e] =</span>
-<span class="nc bnc" id="L419" title="All 4 branches missed.">									source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;</span>
+<span class="nc bnc" id="L377" title="All 2 branches missed.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="nc bnc" id="L378" title="All 2 branches missed.">						if (edgeRef[e] == -1)</span>
+<span class="nc" id="L379">							residualCapacity[e] =</span>
+<span class="nc bnc" id="L380" title="All 4 branches missed.">									source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;</span>
 				}
-<span class="fc" id="L421">			}</span>
+<span class="fc" id="L382">			}</span>
 
-			double constructResult(double[] flow) {
-<span class="fc bfc" id="L424" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc bfc" id="L425" title="All 2 branches covered.">					if (isOriginalEdge(e))</span>
+			IFlow constructResult(double[] flow) {
+<span class="fc" id="L385">				double[] flowRes = new double[gOrig.edges().size()];</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L387" title="All 2 branches covered.">					if (isOriginalEdge(e))</span>
 						/* The flow of e might be negative if the original graph is undirected, which is fine */
-<span class="fc" id="L427">						net.setFlow(edgeRef[e], flow[e]);</span>
+<span class="fc" id="L389">						flowRes[edgeRef[e]] = flow[e];</span>
 				}
-
-<span class="fc" id="L430">				double totalFlow = 0;</span>
-<span class="fc bfc" id="L431" title="All 2 branches covered.">				if (gOrig.isDirected()) {</span>
-<span class="fc bfc" id="L432" title="All 2 branches covered.">					for (int s : sources) {</span>
-<span class="fc bfc" id="L433" title="All 2 branches covered.">						for (int e : gOrig.outEdges(s))</span>
-<span class="fc" id="L434">							totalFlow += net.getFlow(e);</span>
-<span class="fc bfc" id="L435" title="All 2 branches covered.">						for (int e : gOrig.inEdges(s))</span>
-<span class="fc" id="L436">							totalFlow -= net.getFlow(e);</span>
-<span class="fc" id="L437">					}</span>
-				} else {
-<span class="fc bfc" id="L439" title="All 2 branches covered.">					for (int s : sources)</span>
-<span class="fc bfc" id="L440" title="All 2 branches covered.">						for (int e : g.outEdges(s))</span>
-<span class="fc bfc" id="L441" title="All 2 branches covered.">							if (g.edgeTarget(e) != source)</span>
-<span class="fc" id="L442">								totalFlow += flow[e];</span>
-				}
-<span class="fc" id="L444">				return totalFlow;</span>
+<span class="fc" id="L391">				return new Flows.FlowImpl(gOrig, flowRes);</span>
 			}
 
-			int constructResult(int[] flow) {
-<span class="fc" id="L448">				IFlowNetworkInt net = (IFlowNetworkInt) this.net;</span>
-<span class="fc bfc" id="L449" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc bfc" id="L450" title="All 2 branches covered.">					if (isOriginalEdge(e))</span>
+			IFlow constructResult(int[] flow) {
+<span class="fc" id="L395">				double[] flowRes = new double[gOrig.edges().size()];</span>
+<span class="fc bfc" id="L396" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L397" title="All 2 branches covered.">					if (isOriginalEdge(e))</span>
 						/* The flow of e might be negative if the original graph is undirected, which is fine */
-<span class="fc" id="L452">						net.setFlow(edgeRef[e], flow[e]);</span>
+<span class="fc" id="L399">						flowRes[edgeRef[e]] = flow[e];</span>
 				}
-
-<span class="fc" id="L455">				int totalFlow = 0;</span>
-<span class="fc bfc" id="L456" title="All 2 branches covered.">				if (gOrig.isDirected()) {</span>
-<span class="fc bfc" id="L457" title="All 2 branches covered.">					for (int s : sources) {</span>
-<span class="fc bfc" id="L458" title="All 2 branches covered.">						for (int e : gOrig.outEdges(s))</span>
-<span class="fc" id="L459">							totalFlow += net.getFlowInt(e);</span>
-<span class="fc bfc" id="L460" title="All 2 branches covered.">						for (int e : gOrig.inEdges(s))</span>
-<span class="fc" id="L461">							totalFlow -= net.getFlowInt(e);</span>
-<span class="fc" id="L462">					}</span>
-				} else {
-<span class="fc bfc" id="L464" title="All 2 branches covered.">					for (int s : sources)</span>
-<span class="fc bfc" id="L465" title="All 2 branches covered.">						for (int e : g.outEdges(s))</span>
-<span class="pc bpc" id="L466" title="1 of 2 branches missed.">							if (g.edgeTarget(e) != source)</span>
-<span class="fc" id="L467">								totalFlow += flow[e];</span>
-				}
-<span class="fc" id="L469">				return totalFlow;</span>
+<span class="fc" id="L401">				return new Flows.FlowImpl(gOrig, flowRes);</span>
 			}
 
 			boolean isOriginalEdge(int e) {
-<span class="fc" id="L473">				int eOrig = edgeRef[e];</span>
-<span class="fc bfc" id="L474" title="All 4 branches covered.">				return eOrig != -1 &amp;&amp; g.edgeSource(e) == gOrig.edgeSource(eOrig);</span>
+<span class="fc" id="L405">				int eOrig = edgeRef[e];</span>
+<span class="fc bfc" id="L406" title="All 4 branches covered.">				return eOrig != -1 &amp;&amp; g.edgeSource(e) == gOrig.edgeSource(eOrig);</span>
 
 			}
 		}

@@ -230,22 +230,20 @@ public interface ShortestPathAllPairs {
 					@Override
 					public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeAllShortestPaths(Graph&lt;V, E&gt; g,
 							WeightFunction&lt;E&gt; w) {
-<span class="nc bnc" id="L233" title="All 6 branches missed.">						if (w == null || w == WeightFunction.CardinalityWeightFunction</span>
-								|| w == IWeightFunction.CardinalityWeightFunction) {
-<span class="nc" id="L235">							return cardinalityAlgo.computeAllShortestPaths(g, null);</span>
+<span class="nc bnc" id="L233" title="All 2 branches missed.">						if (WeightFunction.isCardinality(w)) {</span>
+<span class="nc" id="L234">							return cardinalityAlgo.computeAllShortestPaths(g, null);</span>
 						} else {
-<span class="nc" id="L237">							return weightedAlgo.computeAllShortestPaths(g, w);</span>
+<span class="nc" id="L236">							return weightedAlgo.computeAllShortestPaths(g, w);</span>
 						}
 					}
 
 					@Override
 					public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeSubsetShortestPaths(Graph&lt;V, E&gt; g,
 							Collection&lt;V&gt; verticesSubset, WeightFunction&lt;E&gt; w) {
-<span class="pc bpc" id="L244" title="3 of 6 branches missed.">						if (w == null || w == WeightFunction.CardinalityWeightFunction</span>
-								|| w == IWeightFunction.CardinalityWeightFunction) {
-<span class="nc" id="L246">							return cardinalityAlgo.computeSubsetShortestPaths(g, verticesSubset, null);</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">						if (WeightFunction.isCardinality(w)) {</span>
+<span class="nc" id="L244">							return cardinalityAlgo.computeSubsetShortestPaths(g, verticesSubset, null);</span>
 						} else {
-<span class="fc" id="L248">							return weightedAlgo.computeSubsetShortestPaths(g, verticesSubset, w);</span>
+<span class="fc" id="L246">							return weightedAlgo.computeSubsetShortestPaths(g, verticesSubset, w);</span>
 						}
 					}
 				};
@@ -253,20 +251,20 @@ public interface ShortestPathAllPairs {
 
 			@Override
 			public ShortestPathAllPairs.Builder setCardinality(boolean cardinalityWeight) {
-<span class="nc" id="L256">				this.cardinalityWeight = cardinalityWeight;</span>
-<span class="nc" id="L257">				return this;</span>
+<span class="nc" id="L254">				this.cardinalityWeight = cardinalityWeight;</span>
+<span class="nc" id="L255">				return this;</span>
 			}
 
 			@Override
 			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L262" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L260" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L264">						impl = (String) value;</span>
-<span class="nc" id="L265">						break;</span>
+<span class="nc" id="L262">						impl = (String) value;</span>
+<span class="nc" id="L263">						break;</span>
 					default:
-<span class="nc" id="L267">						ShortestPathAllPairs.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L265">						ShortestPathAllPairs.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L269">			}</span>
+<span class="nc" id="L267">			}</span>
 		};
 	}
 

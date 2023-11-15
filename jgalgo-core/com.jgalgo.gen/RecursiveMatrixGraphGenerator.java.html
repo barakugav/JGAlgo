@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.BiFunction;
+import java.util.function.IntBinaryOperator;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import com.jgalgo.graph.GraphBuilder;
@@ -28,7 +29,6 @@ import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -313,7 +313,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="nc" id="L313">						int u = vertices[uIdx];</span>
 <span class="nc bnc" id="L314" title="All 2 branches missed.">						if (edges.get(uIdx * N + vIdx)) {</span>
 <span class="nc" id="L315">							int v = vertices[vIdx];</span>
-<span class="nc" id="L316">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="nc" id="L316">							g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));</span>
 						}
 					}
 				}
@@ -323,7 +323,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="nc bnc" id="L323" title="All 2 branches missed.">					for (int vIdx = uIdx; vIdx &lt; n; vIdx++) {</span>
 <span class="nc bnc" id="L324" title="All 2 branches missed.">						if (edges.get(uIdx * N + vIdx)) {</span>
 <span class="nc" id="L325">							int v = vertices[vIdx];</span>
-<span class="nc" id="L326">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="nc" id="L326">							g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));</span>
 						}
 					}
 				}

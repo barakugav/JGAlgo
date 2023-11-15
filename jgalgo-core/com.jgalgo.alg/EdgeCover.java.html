@@ -147,11 +147,10 @@ public interface EdgeCover {
 <span class="nc" id="L147">			return new EdgeCover() {</span>
 				@Override
 				public &lt;V, E&gt; Set&lt;E&gt; computeMinimumEdgeCover(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
-<span class="nc bnc" id="L150" title="All 4 branches missed.">					boolean isCardinality = w == null || w == IWeightFunction.CardinalityWeightFunction;</span>
-<span class="nc bnc" id="L151" title="All 2 branches missed.">					if (isCardinality) {</span>
-<span class="nc" id="L152">						return cardinalityAlgo.computeMinimumEdgeCover(g, null);</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">					if (WeightFunction.isCardinality(w)) {</span>
+<span class="nc" id="L151">						return cardinalityAlgo.computeMinimumEdgeCover(g, null);</span>
 					} else {
-<span class="nc" id="L154">						return weightedAlgo.computeMinimumEdgeCover(g, w);</span>
+<span class="nc" id="L153">						return weightedAlgo.computeMinimumEdgeCover(g, w);</span>
 					}
 				}
 			};

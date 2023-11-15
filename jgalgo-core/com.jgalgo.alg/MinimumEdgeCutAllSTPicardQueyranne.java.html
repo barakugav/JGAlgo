@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MinimumEdgeCutAllSTPicardQueyranne.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">MinimumEdgeCutAllSTPicardQueyranne.java</span></div><h1>MinimumEdgeCutAllSTPicardQueyranne.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import java.util.Arrays;
+import java.util.Iterator;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+
+/**
+ * Picard-Queyranne algorithm for enumerating all the minimum edge cuts between two terminal nodes.
+ *
+ * &lt;p&gt;
+ * Based on 'On the structure of all minimum cuts in a network and applications' by 'Picard, Queyranne (1985).
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L39">class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutAllSTUtils.AbstractImpl {</span>
+
+<span class="fc" id="L41">	private final MaximumFlow maximumFlow = MaximumFlow.newInstance();</span>
+<span class="fc" id="L42">	private final StronglyConnectedComponentsAlgo sccAlgo = StronglyConnectedComponentsAlgo.newInstance();</span>
+<span class="fc" id="L43">	private final DagClosureIterSchrageBaker closureAlgo = new DagClosureIterSchrageBaker();</span>
+	private static final double EPS = 0.0001;
+
+	@Override
+	Iterator&lt;IVertexBiPartition&gt; computeAllMinimumCuts(IndexGraph g, IWeightFunction w, int source, int sink) {
+		/* Compute maximum flow in the graph, with the weight function as capacity func */
+<span class="fc" id="L49">		IFlow maxFlow = (IFlow) maximumFlow.computeMaximumFlow(g, w, Integer.valueOf(source), Integer.valueOf(sink));</span>
+
+		/* Build the residual network of the graph */
+<span class="fc" id="L52">		final int n = g.vertices().size();</span>
+<span class="fc" id="L53">		IndexGraphBuilder residual0 = IndexGraphBuilder.newDirected();</span>
+<span class="fc" id="L54">		residual0.expectedVerticesNum(n);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L56">			residual0.addVertex();</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L59">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">				if (u == v)</span>
+<span class="fc" id="L61">					continue;</span>
+<span class="fc" id="L62">				double ef = maxFlow.getFlow(e);</span>
+<span class="fc" id="L63">				double ew = w.weight(e);</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">				if (ef &lt; ew - EPS)</span>
+<span class="fc" id="L65">					residual0.addEdge(u, v);</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">				if (ef &gt; EPS)</span>
+<span class="fc" id="L67">					residual0.addEdge(v, u);</span>
+			}
+
+		} else {
+<span class="fc bfc" id="L71" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L72">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">				if (u == v)</span>
+<span class="fc" id="L74">					continue;</span>
+<span class="fc" id="L75">				double f = maxFlow.getFlow(e);</span>
+<span class="fc" id="L76">				double ew = w.weight(e);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">				if (f &lt; ew - EPS)</span>
+<span class="fc" id="L78">					residual0.addEdge(u, v);</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				if (f &gt; -ew + EPS)</span>
+<span class="fc" id="L80">					residual0.addEdge(v, u);</span>
+			}
+		}
+<span class="fc" id="L83">		IndexGraph residual = residual0.build();</span>
+
+		/* Compute the strongly connected components in the residual network */
+<span class="fc" id="L86">		IVertexPartition sccs = (IVertexPartition) sccAlgo.findStronglyConnectedComponents(residual);</span>
+<span class="fc" id="L87">		final int sccNum = sccs.numberOfBlocks();</span>
+
+		/* Identify all the vertices reachable from the source and the reverse-reachable from the sink */
+		/*
+		 * TODO: we can identify the reachable vertices before constructing the residual graph, speeding up the strongly
+		 * connected components computation.
+		 */
+<span class="fc" id="L94">		Bitmap reachableFromSource = new Bitmap(n);</span>
+<span class="fc" id="L95">		Bitmap reverseReachableFromSink = new Bitmap(n);</span>
+<span class="fc" id="L96">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L97">		reachableFromSource.set(source);</span>
+<span class="fc" id="L98">		queue.enqueue(source);</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
+<span class="fc" id="L100">			int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">			for (IEdgeIter eit = residual.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L102">				eit.nextInt();</span>
+<span class="fc" id="L103">				int v = eit.targetInt();</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">				if (reachableFromSource.get(v))</span>
+<span class="fc" id="L105">					continue;</span>
+<span class="fc" id="L106">				reachableFromSource.set(v);</span>
+<span class="fc" id="L107">				queue.enqueue(v);</span>
+<span class="fc" id="L108">			}</span>
+<span class="fc" id="L109">		}</span>
+<span class="fc" id="L110">		reverseReachableFromSink.set(sink);</span>
+<span class="fc" id="L111">		queue.enqueue(sink);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
+<span class="fc" id="L113">			int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">			for (IEdgeIter eit = residual.inEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L115">				eit.nextInt();</span>
+<span class="fc" id="L116">				int v = eit.sourceInt();</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">				if (reverseReachableFromSink.get(v))</span>
+<span class="fc" id="L118">					continue;</span>
+<span class="fc" id="L119">				reverseReachableFromSink.set(v);</span>
+<span class="fc" id="L120">				queue.enqueue(v);</span>
+<span class="fc" id="L121">			}</span>
+<span class="fc" id="L122">		}</span>
+
+		/* Remove blocks that always belong to the closure of the source and sink */
+<span class="fc" id="L125">		Bitmap removedBlocks = new Bitmap(sccNum);</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">		for (int v : reachableFromSource)</span>
+<span class="fc" id="L127">			removedBlocks.set(sccs.vertexBlock(v));</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">		for (int v : reverseReachableFromSink)</span>
+<span class="fc" id="L129">			removedBlocks.set(sccs.vertexBlock(v));</span>
+
+		/* Build the SCC graph created by contracting each strongly connected components to a super vertex */
+<span class="fc" id="L132">		residual0.clear(); /* Reuse graph builder */</span>
+<span class="fc" id="L133">		IndexGraphBuilder sccGraph0 = residual0;</span>
+<span class="fc" id="L134">		sccGraph0.expectedVerticesNum(sccNum);</span>
+<span class="fc" id="L135">		int[] sccvToScc = new int[sccNum];</span>
+<span class="fc" id="L136">		int[] sccToSccv = new int[sccNum];</span>
+<span class="fc" id="L137">		Arrays.fill(sccToSccv, -1);</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">		for (int b = 0; b &lt; sccNum; b++) {</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">			if (!removedBlocks.get(b)) {</span>
+<span class="fc" id="L140">				int sccIdx = sccGraph0.addVertex();</span>
+<span class="fc" id="L141">				sccvToScc[sccIdx] = b;</span>
+<span class="fc" id="L142">				sccToSccv[b] = sccIdx;</span>
+			}
+		}
+<span class="fc" id="L145">		Bitmap seenBlocks = new Bitmap(sccNum);</span>
+<span class="fc" id="L146">		IntList seenBlockList = new IntArrayList();</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">		for (int b1Idx = 0; b1Idx &lt; sccGraph0.vertices().size(); b1Idx++) {</span>
+<span class="fc" id="L148">			int b1 = sccvToScc[b1Idx];</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">			for (int u : sccs.blockVertices(b1)) {</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">				for (IEdgeIter eit = residual.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L151">					eit.nextInt();</span>
+<span class="fc" id="L152">					int b2 = sccs.vertexBlock(eit.targetInt());</span>
+<span class="pc bpc" id="L153" title="1 of 6 branches missed.">					if (b1 == b2 || seenBlocks.get(b2) || removedBlocks.get(b2))</span>
+<span class="fc" id="L154">						continue;</span>
+<span class="fc" id="L155">					seenBlocks.set(b2);</span>
+<span class="fc" id="L156">					seenBlockList.add(b2);</span>
+<span class="fc" id="L157">					sccGraph0.addEdge(b1Idx, sccToSccv[b2]);</span>
+<span class="fc" id="L158">				}</span>
+<span class="fc" id="L159">			}</span>
+<span class="fc" id="L160">			seenBlocks.clearAllUnsafe(seenBlockList);</span>
+<span class="fc" id="L161">			seenBlockList.clear();</span>
+		}
+<span class="fc" id="L163">		IndexGraph sccGraph = sccGraph0.build();</span>
+
+		/* all closures in the scc graph are min edge cuts between s-t */
+<span class="fc" id="L166">		return new Iterator&lt;&gt;() {</span>
+
+<span class="fc" id="L168">			private IVertexBiPartition nextCut = new VertexBiPartitions.FromBitmap(g, reachableFromSource);</span>
+<span class="fc" id="L169">			private final Iterator&lt;Bitmap&gt; closuresIter = closureAlgo.enumerateAllClosures(sccGraph);</span>
+
+			@Override
+			public boolean hasNext() {
+<span class="fc bfc" id="L173" title="All 2 branches covered.">				return nextCut != null;</span>
+			}
+
+			@Override
+			public IVertexBiPartition next() {
+<span class="fc" id="L178">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L179">				IVertexBiPartition ret = nextCut;</span>
+
+<span class="fc bfc" id="L181" title="All 2 branches covered.">				if (closuresIter.hasNext()) {</span>
+<span class="fc" id="L182">					Bitmap closure = closuresIter.next();</span>
+<span class="fc" id="L183">					Bitmap cut = new Bitmap(n);</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">					for (int blk : closure)</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">						for (int v : sccs.blockVertices(sccvToScc[blk]))</span>
+<span class="fc" id="L186">							cut.set(v);</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">					for (int v : reachableFromSource)</span>
+<span class="fc" id="L188">						cut.set(v);</span>
+<span class="fc" id="L189">					nextCut = new VertexBiPartitions.FromBitmap(g, cut);</span>
+<span class="fc" id="L190">				} else {</span>
+<span class="fc" id="L191">					nextCut = null;</span>
+				}
+
+<span class="fc" id="L194">				return ret;</span>
+			}
+
+		};
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -25,108 +25,154 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-<span class="nc" id="L31">class MinimumVertexCutUtils {</span>
+<span class="nc" id="L30">class MinimumVertexCutUtils {</span>
 
-<span class="fc" id="L33">	abstract static class AbstractImplST implements MinimumVertexCutST {</span>
+<span class="fc" id="L32">	abstract static class AbstractImplST implements MinimumVertexCutST {</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;V, E&gt; Set&lt;V&gt; computeMinimumCut(Graph&lt;V, E&gt; g, WeightFunction&lt;V&gt; w, V source, V sink) {
-<span class="fc bfc" id="L38" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L39">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="fc" id="L40">				int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();</span>
-<span class="fc" id="L41">				return (Set&lt;V&gt;) computeMinimumCut((IndexGraph) g, w0, source0, sink0);</span>
+<span class="fc bfc" id="L37" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L38">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L39">				int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();</span>
+<span class="fc" id="L40">				return (Set&lt;V&gt;) computeMinimumCut((IndexGraph) g, w0, source0, sink0);</span>
 
 			} else {
-<span class="fc" id="L44">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L45">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L46">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);</span>
-<span class="fc" id="L47">				int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L48">				int iSink = viMap.idToIndex(sink);</span>
-<span class="fc" id="L49">				IntSet indexCut = computeMinimumCut(iGraph, iw, iSource, iSink);</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">				return indexCut == null ? null : IndexIdMaps.indexToIdSet(indexCut, viMap);</span>
+<span class="fc" id="L43">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L44">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L45">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);</span>
+<span class="fc" id="L46">				int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L47">				int iSink = viMap.idToIndex(sink);</span>
+<span class="fc" id="L48">				IntSet indexCut = computeMinimumCut(iGraph, iw, iSource, iSink);</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">				return indexCut == null ? null : IndexIdMaps.indexToIdSet(indexCut, viMap);</span>
 			}
 		}
 
 		abstract IntSet computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink);
 	}
 
-<span class="fc" id="L57">	abstract static class AbstractImplGlobal implements MinimumVertexCutGlobal {</span>
+<span class="fc" id="L56">	abstract static class AbstractImplGlobal implements MinimumVertexCutGlobal {</span>
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		@Override
 		public &lt;V, E&gt; Set&lt;V&gt; computeMinimumCut(Graph&lt;V, E&gt; g, WeightFunction&lt;V&gt; w) {
-<span class="fc bfc" id="L62" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L63">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="fc" id="L64">				return (Set&lt;V&gt;) computeMinimumCut((IndexGraph) g, w0);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L62">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="fc" id="L63">				return (Set&lt;V&gt;) computeMinimumCut((IndexGraph) g, w0);</span>
 
 			} else {
-<span class="fc" id="L67">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L68">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L69">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);</span>
-<span class="fc" id="L70">				IntSet indexCut = computeMinimumCut(iGraph, iw);</span>
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">				return indexCut == null ? null : IndexIdMaps.indexToIdSet(indexCut, viMap);</span>
+<span class="fc" id="L66">				IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L67">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L68">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);</span>
+<span class="fc" id="L69">				IntSet indexCut = computeMinimumCut(iGraph, iw);</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">				return indexCut == null ? null : IndexIdMaps.indexToIdSet(indexCut, viMap);</span>
 			}
 		}
 
 		abstract IntSet computeMinimumCut(IndexGraph g, IWeightFunction w);
 	}
 
-	static Pair&lt;IndexGraph, IWeightFunction&gt; auxiliaryGraph(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L79">		final int n = g.vertices().size();</span>
-<span class="fc" id="L80">		final int m = g.edges().size();</span>
-<span class="fc" id="L81">		IndexGraphBuilder g0 = IndexGraphBuilder.newDirected();</span>
-<span class="fc" id="L82">		g0.expectedVerticesNum(n * 2);</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc" id="L84">			g0.expectedVerticesNum(m + n);</span>
-		} else {
-<span class="fc" id="L86">			g0.expectedVerticesNum(2 * m + n);</span>
-		}
-<span class="fc bfc" id="L88" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L89">			g0.addVertex();</span>
-<span class="fc" id="L90">			g0.addVertex();</span>
-		}
-<span class="fc bfc" id="L92" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L94">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L95">				g0.addEdge(u * 2 + 1, v * 2 + 0);</span>
+	static class AuxiliaryGraph {
+
+		final IndexGraph graph;
+		final IWeightFunction weights;
+		final int verticesEdgesThreshold;
+
+<span class="fc" id="L83">		AuxiliaryGraph(IndexGraph g, IWeightFunction w) {</span>
+<span class="fc" id="L84">			final int n = g.vertices().size();</span>
+<span class="fc" id="L85">			final int m = g.edges().size();</span>
+<span class="fc" id="L86">			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();</span>
+<span class="fc" id="L87">			builder.expectedVerticesNum(n * 2);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc" id="L89">				builder.expectedVerticesNum(m + n);</span>
+			} else {
+<span class="fc" id="L91">				builder.expectedVerticesNum(2 * m + n);</span>
 			}
-		} else {
-<span class="fc bfc" id="L98" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L99">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L100">				g0.addEdge(u * 2 + 1, v * 2 + 0);</span>
-<span class="fc" id="L101">				g0.addEdge(v * 2 + 1, u * 2 + 0);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L94">				builder.addVertex();</span>
+<span class="fc" id="L95">				builder.addVertex();</span>
 			}
-		}
-<span class="fc" id="L104">		final int verticesEdgesThreshold = g0.edges().size();</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L106">			g0.addEdge(v * 2 + 0, v * 2 + 1);</span>
 
-		IWeightFunction w0;
-<span class="fc bfc" id="L109" title="All 4 branches covered.">		if (w == null || w instanceof IWeightFunctionInt) {</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">			IWeightFunctionInt wInt = w == null ? IWeightFunction.CardinalityWeightFunction : (IWeightFunctionInt) w;</span>
-<span class="fc" id="L111">			long hugeWeight = 1;</span>
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">			if (w != IWeightFunction.CardinalityWeightFunction)</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L114">					hugeWeight = Math.max(hugeWeight, wInt.weightInt(v));</span>
-<span class="fc" id="L115">			hugeWeight = hugeWeight * n + 1;</span>
-<span class="pc bpc" id="L116" title="1 of 2 branches missed.">			int hugeWeight0 = hugeWeight &gt; Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) hugeWeight;</span>
-<span class="fc" id="L117">			IWeightFunctionInt w0Int =</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">					e -&gt; e &lt; verticesEdgesThreshold ? hugeWeight0 : wInt.weightInt(e - verticesEdgesThreshold);</span>
-<span class="fc" id="L119">			w0 = w0Int;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">			if (WeightFunction.isCardinality(w)) {</span>
 
-<span class="fc" id="L121">		} else {</span>
-<span class="fc" id="L122">			double hugeWeight = 1;</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L124">				hugeWeight = Math.max(hugeWeight, w.weight(v));</span>
-<span class="fc" id="L125">			double hugeWeight0 = hugeWeight * n + 1;</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">			w0 = e -&gt; e &lt; verticesEdgesThreshold ? hugeWeight0 : w.weight(e - verticesEdgesThreshold);</span>
-		}
+				/*
+				 * The reduction in the paper from unweighted minimum vertex-cut to minimum edge-cut create one and two
+				 * edges for each edge in the original graph for directed and undirected graphs, respectively. We use
+				 * two and four edges, respectively. The reduction in the paper is correct in that the minimum edge-cut
+				 * &lt;b&gt;value&lt;/b&gt; in the auxiliary graph is the same as the minimum vertex-cut &lt;b&gt;value&lt;/b&gt; in the
+				 * original graph. However, we want that the minimum edge-cut cross edges will be edges connecting pairs
+				 * of duplicated edges only. Therefore, we add additional edges to force the min edge cut will not
+				 * contain any of the edges connecting the original vertices, without weights.
+				 */
 
-<span class="fc" id="L129">		return Pair.of(g0.build(), w0);</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">				if (g.isDirected()) {</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L112">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">						if (u == v)</span>
+<span class="fc" id="L114">							continue;</span>
+<span class="fc" id="L115">						builder.addEdge(u * 2 + 1, v * 2 + 0);</span>
+<span class="fc" id="L116">						builder.addEdge(u * 2 + 1, v * 2 + 0);</span>
+					}
+				} else {
+<span class="fc bfc" id="L119" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L120">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">						if (u == v)</span>
+<span class="fc" id="L122">							continue;</span>
+<span class="fc" id="L123">						builder.addEdge(u * 2 + 1, v * 2 + 0);</span>
+<span class="fc" id="L124">						builder.addEdge(u * 2 + 1, v * 2 + 0);</span>
+<span class="fc" id="L125">						builder.addEdge(v * 2 + 1, u * 2 + 0);</span>
+<span class="fc" id="L126">						builder.addEdge(v * 2 + 1, u * 2 + 0);</span>
+					}
+				}
+<span class="fc" id="L129">				verticesEdgesThreshold = builder.edges().size();</span>
+<span class="fc" id="L130">				weights = null;</span>
+
+			} else {
+<span class="fc bfc" id="L133" title="All 2 branches covered.">				if (g.isDirected()) {</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L135">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">						if (u == v)</span>
+<span class="fc" id="L137">							continue;</span>
+<span class="fc" id="L138">						builder.addEdge(u * 2 + 1, v * 2 + 0);</span>
+					}
+				} else {
+<span class="fc bfc" id="L141" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L142">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">						if (u == v)</span>
+<span class="fc" id="L144">							continue;</span>
+<span class="fc" id="L145">						builder.addEdge(u * 2 + 1, v * 2 + 0);</span>
+<span class="fc" id="L146">						builder.addEdge(v * 2 + 1, u * 2 + 0);</span>
+					}
+				}
+<span class="fc" id="L149">				verticesEdgesThreshold = builder.edges().size();</span>
+
+<span class="fc bfc" id="L151" title="All 2 branches covered.">				if (WeightFunction.isInteger(w)) {</span>
+<span class="fc" id="L152">					IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
+<span class="fc" id="L153">					long hugeWeight = 1;</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">					for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L155">						hugeWeight = Math.max(hugeWeight, wInt.weightInt(v));</span>
+<span class="fc" id="L156">					hugeWeight = hugeWeight * n + 1;</span>
+<span class="fc" id="L157">					int hugeWeight0 = (int) Math.min(hugeWeight, Integer.MAX_VALUE);</span>
+<span class="fc" id="L158">					IWeightFunctionInt w0Int =</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">							e -&gt; e &lt; verticesEdgesThreshold ? hugeWeight0 : wInt.weightInt(e - verticesEdgesThreshold);</span>
+<span class="fc" id="L160">					weights = w0Int;</span>
+
+<span class="fc" id="L162">				} else {</span>
+<span class="fc" id="L163">					double hugeWeight = 1;</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">					for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L165">						hugeWeight = Math.max(hugeWeight, w.weight(v));</span>
+<span class="fc" id="L166">					double hugeWeight0 = hugeWeight * n + 1;</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">					weights = e -&gt; e &lt; verticesEdgesThreshold ? hugeWeight0 : w.weight(e - verticesEdgesThreshold);</span>
+				}
+
+			}
+
+<span class="fc bfc" id="L172" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L173">				builder.addEdge(v * 2 + 0, v * 2 + 1);</span>
+<span class="fc" id="L174">			graph = builder.build();</span>
+<span class="fc" id="L175">		}</span>
 	}
 
 }

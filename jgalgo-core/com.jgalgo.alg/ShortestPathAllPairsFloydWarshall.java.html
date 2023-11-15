@@ -41,9 +41,9 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 
 	@Override
 	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
-<span class="fc bfc" id="L44" title="All 2 branches covered.">		if (w == null)</span>
-<span class="fc" id="L45">			w = IWeightFunction.CardinalityWeightFunction;</span>
-<span class="fc" id="L46">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
+<span class="fc" id="L44">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		if (w == null)</span>
+<span class="fc" id="L46">			w = IWeightFunction.CardinalityWeightFunction;</span>
 <span class="fc bfc" id="L47" title="All 2 branches covered.">		return g.isDirected() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);</span>
 	}
 

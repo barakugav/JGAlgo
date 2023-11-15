@@ -135,7 +135,7 @@ public interface IWeightFunction extends WeightFunction&lt;Integer&gt;, IntCompa
 	 * @return            the sum of the weights of the elements
 	 */
 	static double weightSum(IWeightFunction weightFunc, IntIterable elements) {
-<span class="nc bnc" id="L138" title="All 4 branches missed.">		if (weightFunc == null || weightFunc == CardinalityWeightFunction) {</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">		if (WeightFunction.isCardinality(weightFunc)) {</span>
 <span class="nc bnc" id="L139" title="All 2 branches missed.">			if (elements instanceof Collection) {</span>
 <span class="nc" id="L140">				return ((Collection&lt;?&gt;) elements).size();</span>
 			} else {

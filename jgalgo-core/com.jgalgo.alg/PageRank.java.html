@@ -66,7 +66,7 @@ import com.jgalgo.graph.WeightFunctions;
 <span class="fc" id="L66">			return rFactor / n;</span>
 		};
 
-<span class="pc bpc" id="L69" title="1 of 4 branches missed.">		if (w == null || w == IWeightFunction.CardinalityWeightFunction) {</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		if (WeightFunction.isCardinality(w)) {</span>
 <span class="pc bpc" id="L70" title="1 of 2 branches missed.">			for (int iters = 0; iters &lt; iterations; iters++) {</span>
 <span class="fc" id="L71">				double rFactor = randomFactor.getAsDouble();</span>
 
@@ -137,7 +137,7 @@ import com.jgalgo.graph.WeightFunctions;
 <span class="fc" id="L137">				predecessors = new int[outDegreeSum];</span>
 			}
 
-<span class="pc bpc" id="L140" title="1 of 4 branches missed.">			if (w == null || w == IWeightFunction.CardinalityWeightFunction) {</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">			if (WeightFunction.isCardinality(w)) {</span>
 <span class="fc" id="L141">				weights = null;</span>
 <span class="fc bfc" id="L142" title="All 2 branches covered.">				for (int eIdx = 0, v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L143">					predecessorsBegin[v] = eIdx;</span>

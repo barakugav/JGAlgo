@@ -18,6 +18,10 @@ package com.jgalgo.alg;
 
 import java.util.Collection;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 
 /**
  * Calculate the maximum flow in a flow network.
@@ -35,24 +39,24 @@ import com.jgalgo.graph.Graph;
  *
  * &lt;pre&gt; {@code
  * Graph&lt;String, Integer&gt; g = ...;
- * FlowNetwork&lt;String, Integer&gt; net = FlowNetwork.createAsEdgeWeight(g);
+ * WeightsDouble&lt;Integer&gt; capacities = g.addEdgesWeights(&quot;capacity&quot;, double.class);
  * for (Integer e : g.edges())
- *  f.setCapacity(e, 1);
+ *  capacities.set(e, 1);
  *
  * String sourceVertex = ...;
  * String targetVertex = ...;
- * MaxFlow maxFlowAlg = MaximumFlow.newInstance();
+ * MaximumFlow maxFlowAlg = MaximumFlow.newInstance();
+ * Flow&lt;String, Integer&gt; flow = maxFlowAlg.computeMaximumFlow(g, capacities, sourceVertex, targetVertex);
  *
- * double totalFlow = maxFlowAlg.computeMaximumFlow(g, net, sourceVertex, targetVertex);
- * System.out.println(&quot;The maximum flow that can be pushed in the network is &quot; + totalFlow);
+ * System.out.println(&quot;The maximum flow that can be pushed in the network is &quot; + flow.getSupply(sourceVertex));
  * for (Integer e : g.edges()) {
- * 	double capacity = net.getCapacity(e);
- * 	double flow = net.getFlow(e);
- * 	System.out.println(&quot;flow on edge &quot; + e + &quot;: &quot; + flow + &quot;/&quot; + capacity);
+ * 	double capacity = capacities.get(e);
+ * 	double f = flow.getFlow(e);
+ * 	System.out.println(&quot;flow on edge &quot; + e + &quot;: &quot; + f + &quot;/&quot; + capacity);
  * }
  * }&lt;/pre&gt;
  *
- * @see    FlowNetwork
+ * @see    Flow
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Maximum_flow_problem&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
@@ -62,36 +66,47 @@ public interface MaximumFlow {
 	 * Calculate the maximum flow in a network between a source and a sink.
 	 *
 	 * &lt;p&gt;
-	 * The function will set the edges flow by {@link FlowNetwork#setFlow(Object, double)}.
+	 * Some algorithm might run faster for integer capacities, and {@link WeightFunctionInt} can be passed as
+	 * {@code capacity}.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IWeightFunction} as {@code capacity} to avoid
+	 * boxing/unboxing. If {@code g} is an {@link IntGraph}, the returned object is {@link IFlow}.
 	 *
 	 * @param  &lt;V&gt;                      the vertices type
 	 * @param  &lt;E&gt;                      the edges type
 	 * @param  g                        a graph
-	 * @param  net                      network flow
+	 * @param  capacity                 a capacity edge weight function
 	 * @param  source                   a source vertex
 	 * @param  sink                     a sink vertex
-	 * @return                          the maximum flow in the network from the source to the sink
+	 * @return                          the flows computed for each edge
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
-	&lt;V, E&gt; double computeMaximumFlow(Graph&lt;V, E&gt; g, FlowNetwork&lt;V, E&gt; net, V source, V sink);
+	&lt;V, E&gt; Flow&lt;V, E&gt; computeMaximumFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity, V source, V sink);
 
 	/**
 	 * Calculate the maximum flow in a network between a set of sources and a set of sinks.
 	 *
 	 * &lt;p&gt;
-	 * The function will set the edges flow by {@link FlowNetwork#setFlow(Object, double)}.
+	 * Some algorithm might run faster for integer capacities, and {@link WeightFunctionInt} can be passed as
+	 * {@code capacity}.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IWeightFunction} as {@code capacity} to avoid
+	 * boxing/unboxing. If {@code g} is an {@link IntGraph}, the returned object is {@link IFlow}.
 	 *
 	 * @param  &lt;V&gt;                      the vertices type
 	 * @param  &lt;E&gt;                      the edges type
 	 * @param  g                        a graph
-	 * @param  net                      network flow
+	 * @param  capacity                 a capacity edge weight function
 	 * @param  sources                  a set of source vertices
 	 * @param  sinks                    a set of sink vertices
-	 * @return                          the maximum flow in the network from the sources to the sinks
+	 * @return                          the flows computed for each edge
 	 * @throws IllegalArgumentException if a vertex is both a source and a sink, or if a vertex appear twice in the
 	 *                                      source or sinks sets
 	 */
-	&lt;V, E&gt; double computeMaximumFlow(Graph&lt;V, E&gt; g, FlowNetwork&lt;V, E&gt; net, Collection&lt;V&gt; sources, Collection&lt;V&gt; sinks);
+	&lt;V, E&gt; Flow&lt;V, E&gt; computeMaximumFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity, Collection&lt;V&gt; sources,
+			Collection&lt;V&gt; sinks);
 
 	/**
 	 * Create a new maximum flow algorithm object.
@@ -103,7 +118,7 @@ public interface MaximumFlow {
 	 * @return a default implementation of {@link MaximumFlow}
 	 */
 	static MaximumFlow newInstance() {
-<span class="fc" id="L106">		return newBuilder().build();</span>
+<span class="fc" id="L121">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -115,48 +130,48 @@ public interface MaximumFlow {
 	 * @return a new builder that can build {@link MaximumFlow} objects
 	 */
 	static MaximumFlow.Builder newBuilder() {
-<span class="fc" id="L118">		return new MaximumFlow.Builder() {</span>
+<span class="fc" id="L133">		return new MaximumFlow.Builder() {</span>
 			String impl;
 
 			@Override
 			public MaximumFlow build() {
-<span class="pc bpc" id="L123" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L124" title="All 10 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L139" title="All 10 branches missed.">					switch (impl) {</span>
 						case &quot;edmonds-karp&quot;:
-<span class="nc" id="L126">							return new MaximumFlowEdmondsKarp();</span>
+<span class="nc" id="L141">							return new MaximumFlowEdmondsKarp();</span>
 						case &quot;dinic&quot;:
-<span class="nc" id="L128">							return new MaximumFlowDinic();</span>
+<span class="nc" id="L143">							return new MaximumFlowDinic();</span>
 						case &quot;dinic-dynamic-trees&quot;:
-<span class="nc" id="L130">							return new MaximumFlowDinicDynamicTrees();</span>
+<span class="nc" id="L145">							return new MaximumFlowDinicDynamicTrees();</span>
 						case &quot;push-relabel-fifo&quot;:
-<span class="nc" id="L132">							return MaximumFlowPushRelabel.newInstanceFifo();</span>
+<span class="nc" id="L147">							return MaximumFlowPushRelabel.newInstanceFifo();</span>
 						case &quot;push-relabel-highest-first&quot;:
-<span class="nc" id="L134">							return MaximumFlowPushRelabel.newInstanceHighestFirst();</span>
+<span class="nc" id="L149">							return MaximumFlowPushRelabel.newInstanceHighestFirst();</span>
 						case &quot;push-relabel-partial-augment&quot;:
-<span class="nc" id="L136">							return MaximumFlowPushRelabel.newInstancePartialAugment();</span>
+<span class="nc" id="L151">							return MaximumFlowPushRelabel.newInstancePartialAugment();</span>
 						case &quot;push-relabel-lowest-first&quot;:
-<span class="nc" id="L138">							return MaximumFlowPushRelabel.newInstanceLowestFirst();</span>
+<span class="nc" id="L153">							return MaximumFlowPushRelabel.newInstanceLowestFirst();</span>
 						case &quot;push-relabel-move-to-front&quot;:
-<span class="nc" id="L140">							return MaximumFlowPushRelabel.newInstanceMoveToFront();</span>
+<span class="nc" id="L155">							return MaximumFlowPushRelabel.newInstanceMoveToFront();</span>
 						case &quot;push-relabel-fifo-dynamic-trees&quot;:
-<span class="nc" id="L142">							return new MaximumFlowPushRelabelDynamicTrees();</span>
+<span class="nc" id="L157">							return new MaximumFlowPushRelabelDynamicTrees();</span>
 						default:
-<span class="nc" id="L144">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L159">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="fc" id="L147">				return MaximumFlowPushRelabel.newInstanceHighestFirst();</span>
+<span class="fc" id="L162">				return MaximumFlowPushRelabel.newInstanceHighestFirst();</span>
 			}
 
 			@Override
 			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L152" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L154">						impl = (String) value;</span>
-<span class="nc" id="L155">						break;</span>
+<span class="nc" id="L169">						impl = (String) value;</span>
+<span class="nc" id="L170">						break;</span>
 					default:
-<span class="nc" id="L157">						MaximumFlow.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L172">						MaximumFlow.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L159">			}</span>
+<span class="nc" id="L174">			}</span>
 		};
 	}
 

@@ -136,9 +136,9 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 <span class="nc" id="L136">			throw new IllegalArgumentException(&quot;Can't mix addEdge(u,v) and addEdge(u,v,id), &quot;</span>
 					+ &quot;if IDs are provided for some of the edges, they must be provided for all&quot;);
 <span class="pc bpc" id="L138" title="1 of 2 branches missed.">		if (!vertices().contains(source))</span>
-<span class="nc" id="L139">			throw new IllegalArgumentException(&quot;invalid vertex: &quot; + source);</span>
+<span class="nc" id="L139">			throw NoSuchVertexException.ofIndex(source);</span>
 <span class="pc bpc" id="L140" title="1 of 2 branches missed.">		if (!vertices().contains(target))</span>
-<span class="nc" id="L141">			throw new IllegalArgumentException(&quot;invalid vertex: &quot; + target);</span>
+<span class="nc" id="L141">			throw NoSuchVertexException.ofIndex(target);</span>
 <span class="fc" id="L142">		int e = m++;</span>
 <span class="fc" id="L143">		int eFromEdgesSet = edges.newIdx();</span>
 <span class="pc bnc" id="L144" title="All 2 branches missed.">		assert e == eFromEdgesSet;</span>
@@ -158,9 +158,9 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 <span class="nc" id="L158">			throw new IllegalArgumentException(&quot;Can't mix addEdge(u,v) and addEdge(u,v,id), &quot;</span>
 					+ &quot;if IDs are provided for some of the edges, they must be provided for all&quot;);
 <span class="pc bpc" id="L160" title="1 of 2 branches missed.">		if (!vertices().contains(source))</span>
-<span class="nc" id="L161">			throw new IllegalArgumentException(&quot;invalid vertex: &quot; + source);</span>
+<span class="nc" id="L161">			throw NoSuchVertexException.ofIndex(source);</span>
 <span class="pc bpc" id="L162" title="1 of 2 branches missed.">		if (!vertices().contains(target))</span>
-<span class="nc" id="L163">			throw new IllegalArgumentException(&quot;invalid vertex: &quot; + target);</span>
+<span class="nc" id="L163">			throw NoSuchVertexException.ofIndex(target);</span>
 <span class="fc" id="L164">		int eIdx = m++;</span>
 <span class="fc bfc" id="L165" title="All 2 branches covered.">		while (eIdx &gt;= edges.size())</span>
 <span class="fc" id="L166">			edges.newIdx();</span>

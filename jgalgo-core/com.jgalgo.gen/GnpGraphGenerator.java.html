@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.function.BiFunction;
+import java.util.function.IntBinaryOperator;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import com.jgalgo.graph.GraphBuilder;
@@ -27,7 +28,6 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntBinaryOperator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -240,15 +240,15 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 <span class="nc bnc" id="L240" title="All 2 branches missed.">						for (int vIdx = 0; vIdx &lt; uIdx; vIdx++) {</span>
 <span class="nc" id="L241">							int v = vertices[vIdx];</span>
 <span class="nc bnc" id="L242" title="All 2 branches missed.">							if (rand.nextDouble() &lt;= p)</span>
-<span class="nc" id="L243">								g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="nc" id="L243">								g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));</span>
 						}
 					}
-<span class="pc bpc" id="L246" title="1 of 4 branches missed.">					if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
-<span class="fc" id="L247">						g.addEdge(u, u, edgeBuilder.apply(u, u));</span>
+<span class="fc bfc" id="L246" title="All 4 branches covered.">					if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L247">						g.addEdge(u, u, edgeBuilder.applyAsInt(u, u));</span>
 <span class="fc bfc" id="L248" title="All 2 branches covered.">					for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++) {</span>
 <span class="fc" id="L249">						int v = vertices[vIdx];</span>
 <span class="fc bfc" id="L250" title="All 2 branches covered.">						if (rand.nextDouble() &lt;= p)</span>
-<span class="fc" id="L251">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc" id="L251">							g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));</span>
 					}
 				}
 			}
