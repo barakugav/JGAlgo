@@ -20,10 +20,8 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import com.jgalgo.alg.IFlowNetwork;
-import com.jgalgo.alg.IFlowNetworkInt;
-import com.jgalgo.alg.Trees;
 import com.jgalgo.alg.GraphsUtils;
+import com.jgalgo.alg.Trees;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
@@ -181,17 +179,19 @@ public class Assertions {
 			}
 		}
 
-		public static void positiveCapacities(IndexGraph g, IFlowNetwork net) {
-			if (net instanceof IFlowNetworkInt) {
-				IFlowNetworkInt netInt = (IFlowNetworkInt) net;
+		public static void positiveCapacities(IndexGraph g, IWeightFunction capacity) {
+			if (capacity == null || capacity == IWeightFunction.CardinalityWeightFunction)
+					return;
+			if (capacity instanceof IWeightFunctionInt) {
+				IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
-					int cap = netInt.getCapacityInt(e);
+					int cap = capacityInt.weightInt(e);
 					if (cap < 0)
 						throw new IllegalArgumentException("negative capacity of edge (idx=" + e + "): " + cap);
 				}
 			} else {
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
-					double cap = net.getCapacity(e);
+					double cap = capacity.weight(e);
 					if (cap < 0)
 						throw new IllegalArgumentException("negative capacity of edge (idx=" + e + "): " + cap);
 				}
@@ -213,13 +213,13 @@ public class Assertions {
 				throw new IllegalArgumentException("Illegal flow: " + flow + " > " + capacity);
 		}
 
-		public static void checkLowerBound(IndexGraph g, IFlowNetwork net, IWeightFunction lowerBound) {
-			if (net instanceof IFlowNetworkInt && lowerBound instanceof IWeightFunctionInt) {
-				IFlowNetworkInt netInt = (IFlowNetworkInt) net;
+		public static void checkLowerBound(IndexGraph g, IWeightFunction capacity, IWeightFunction lowerBound) {
+			if (capacity instanceof IWeightFunctionInt && lowerBound instanceof IWeightFunctionInt) {
+				IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;
 				IWeightFunctionInt lowerBoundInt = (IWeightFunctionInt) lowerBound;
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					int l = lowerBoundInt.weightInt(e);
-					int cap = netInt.getCapacityInt(e);
+					int cap = capacityInt.weightInt(e);
 					if (!(0 <= l && l <= cap))
 						throw new IllegalArgumentException(
 								"Lower bound " + l + " of edge with index " + e + " must be in [0, " + cap + "]");
@@ -227,7 +227,7 @@ public class Assertions {
 			} else {
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					double l = lowerBound.weight(e);
-					double cap = net.getCapacity(e);
+					double cap = capacity.weight(e);
 					if (!(0 <= l && l <= cap))
 						throw new IllegalArgumentException(
 								"Lower bound " + l + " of edge with index " + e + " must be in [0, " + cap + "]");

@@ -24,7 +24,6 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.IntAdapters;
@@ -89,27 +88,18 @@ class MinimumEdgeCutSTUtils {
 
 	static IVertexBiPartition computeMinimumCutUsingMaxFlow(IndexGraph g, IWeightFunction w, int source, int sink,
 			MaximumFlow maxFlowAlg) {
-		/* create a flow network with weights as capacities */
-		IFlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
-
-		/* compute max flow */
-		maxFlowAlg.computeMaximumFlow(g, net, Integer.valueOf(source), Integer.valueOf(sink));
-
-		return minCutFromMaxFlow(g, IntLists.singleton(source), net);
+		IFlow flow = (IFlow) maxFlowAlg.computeMaximumFlow(g, w, Integer.valueOf(source), Integer.valueOf(sink));
+		return minCutFromMaxFlow(g, IntLists.singleton(source), w, flow);
 	}
 
 	static IVertexBiPartition computeMinimumCutUsingMaxFlow(IndexGraph g, IWeightFunction w, IntCollection sources,
 			IntCollection sinks, MaximumFlow maxFlowAlg) {
-		/* create a flow network with weights as capacities */
-		IFlowNetwork net = createFlowNetworkFromEdgeWeightFunc(g, w);
-
-		/* compute max flow */
-		maxFlowAlg.computeMaximumFlow(g, net, sources, sinks);
-
-		return minCutFromMaxFlow(g, sources, net);
+		IFlow flow = (IFlow) maxFlowAlg.computeMaximumFlow(g, w, sources, sinks);
+		return minCutFromMaxFlow(g, sources, w, flow);
 	}
 
-	private static IVertexBiPartition minCutFromMaxFlow(IndexGraph g, IntCollection sources, IFlowNetwork net) {
+	private static IVertexBiPartition minCutFromMaxFlow(IndexGraph g, IntCollection sources, IWeightFunction capacity,
+			IFlow flow) {
 		final int n = g.vertices().size();
 		Bitmap visited = new Bitmap(n);
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
@@ -130,7 +120,7 @@ class MinimumEdgeCutSTUtils {
 					int v = it.targetInt();
 					if (visited.get(v))
 						continue;
-					if (Math.abs(net.getCapacity(e) - net.getFlow(e)) < eps)
+					if (Math.abs(capacity.weight(e) - flow.getFlow(e)) < eps)
 						continue; // saturated edge
 					visited.set(v);
 					queue.enqueue(v);
@@ -145,7 +135,7 @@ class MinimumEdgeCutSTUtils {
 					int v = it.sourceInt();
 					if (visited.get(v))
 						continue;
-					if (net.getFlow(e) < eps)
+					if (flow.getFlow(e) < eps)
 						continue; // saturated edge
 					visited.set(v);
 					queue.enqueue(v);
@@ -160,8 +150,8 @@ class MinimumEdgeCutSTUtils {
 					int v = it.targetInt();
 					if (visited.get(v))
 						continue;
-					double directedFlow = net.getFlow(e) * (g.edgeSource(e) == u ? +1 : -1);
-					if (Math.abs(net.getCapacity(e) - directedFlow) < eps)
+					double directedFlow = flow.getFlow(e) * (g.edgeSource(e) == u ? +1 : -1);
+					if (Math.abs(capacity.weight(e) - directedFlow) < eps)
 						continue; // saturated edge
 					visited.set(v);
 					queue.enqueue(v);
@@ -187,33 +177,6 @@ class MinimumEdgeCutSTUtils {
 			}
 
 		};
-	}
-
-	static IFlowNetwork createFlowNetworkFromEdgeWeightFunc(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);
-		double[] flow = new double[g.edges().size()];
-		IFlowNetwork net = new IFlowNetwork() {
-			@Override
-			public double getCapacity(int edge) {
-				return w.weight(edge);
-			}
-
-			@Override
-			public void setCapacity(int edge, double cap) {
-				throw new UnsupportedOperationException("capacities are immutable");
-			}
-
-			@Override
-			public double getFlow(int edge) {
-				return flow[edge];
-			}
-
-			@Override
-			public void setFlow(int edge, double f) {
-				flow[edge] = f;
-			}
-		};
-		return net;
 	}
 
 	static MinimumEdgeCutGlobal globalMinCutFromStMinCut(MinimumEdgeCutST stMinCut) {

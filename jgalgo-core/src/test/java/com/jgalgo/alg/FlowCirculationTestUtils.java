@@ -53,22 +53,20 @@ class FlowCirculationTestUtils extends TestUtils {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
 
-			FlowNetworkInt<Integer, Integer> net = randNetworkInt(g, rand);
-			WeightFunctionInt<Integer> supply = randSupplyInt(g, net, rand);
+			WeightFunctionInt<Integer> capacity = randNetworkInt(g, rand);
+			WeightFunctionInt<Integer> supply = randSupplyInt(g, capacity, rand);
 
-			testRandCirculationInt(g, net, supply, algo);
+			testRandCirculationInt(g, capacity, supply, algo);
 		});
 	}
 
-	private static <V, E> void testRandCirculationInt(Graph<V, E> g, FlowNetworkInt<V, E> net,
+	private static <V, E> void testRandCirculationInt(Graph<V, E> g, WeightFunctionInt<E> capacity,
 			WeightFunctionInt<V> supply, FlowCirculation algo) {
-		for (E e : g.edges())
-			net.setFlow(e, 0);
-		algo.computeCirculation(g, net, supply);
+		Flow<V, E> flow = algo.computeCirculation(g, capacity, supply);
 
-		MaximumFlowTestUtils.assertValidFlow(g, net, verticesWithPositiveSupply(g.vertices(), supply),
+		MaximumFlowTestUtils.assertValidFlow(g, flow, verticesWithPositiveSupply(g.vertices(), supply),
 				verticesWithNegativeSupply(g.vertices(), supply));
-		assertSupplySatisfied(g, net, supply);
+		assertSupplySatisfied(g, supply, flow);
 	}
 
 	static void testRandCirculation(FlowCirculation algo, long seed) {
@@ -84,39 +82,37 @@ class FlowCirculationTestUtils extends TestUtils {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
 
-			FlowNetwork<Integer, Integer> net = randNetwork(g, rand);
-			WeightFunction<Integer> supply = randSupply(g, net, rand);
+			WeightFunction<Integer> capacity = randNetwork(g, rand);
+			WeightFunction<Integer> supply = randSupply(g, capacity, rand);
 
-			testRandCirculation(g, net, supply, algo);
+			testRandCirculation(g, capacity, supply, algo);
 		});
 	}
 
-	private static <V, E> void testRandCirculation(Graph<V, E> g, FlowNetwork<V, E> net, WeightFunction<V> supply,
+	private static <V, E> void testRandCirculation(Graph<V, E> g, WeightFunction<E> capacity, WeightFunction<V> supply,
 			FlowCirculation algo) {
-		for (E e : g.edges())
-			net.setFlow(e, 0);
-		algo.computeCirculation(g, net, supply);
+		Flow<V, E> flow = algo.computeCirculation(g, capacity, supply);
 
-		MaximumFlowTestUtils.assertValidFlow(g, net, verticesWithPositiveSupply(g.vertices(), supply),
+		MaximumFlowTestUtils.assertValidFlow(g, flow, verticesWithPositiveSupply(g.vertices(), supply),
 				verticesWithNegativeSupply(g.vertices(), supply));
-		assertSupplySatisfied(g, net, supply);
+		assertSupplySatisfied(g, supply, flow);
 	}
 
-	private static <V, E> FlowNetworkInt<V, E> randNetworkInt(Graph<V, E> g, Random rand) {
-		FlowNetworkInt<V, E> net = FlowNetworkInt.createFromEdgeWeights(g);
+	private static <V, E> WeightFunctionInt<E> randNetworkInt(Graph<V, E> g, Random rand) {
+		WeightsInt<E> capacity = g.addEdgesWeights("capacity", int.class);
 		for (E e : g.edges())
-			net.setCapacity(e, 400 + rand.nextInt(1024));
-		return net;
+			capacity.set(e, 400 + rand.nextInt(1024));
+		return capacity;
 	}
 
-	private static <V, E> FlowNetwork<V, E> randNetwork(Graph<V, E> g, Random rand) {
-		FlowNetwork<V, E> net = FlowNetwork.createFromEdgeWeights(g);
+	private static <V, E> WeightFunction<E> randNetwork(Graph<V, E> g, Random rand) {
+		WeightsDouble<E> capacity = g.addEdgesWeights("capacity", double.class);
 		for (E e : g.edges())
-			net.setCapacity(e, 400 + rand.nextDouble() * 1024);
-		return net;
+			capacity.set(e, 400 + rand.nextDouble() * 1024);
+		return capacity;
 	}
 
-	static <V, E> WeightFunctionInt<V> randSupplyInt(Graph<V, E> g, FlowNetworkInt<V, E> net, Random rand) {
+	static <V, E> WeightFunctionInt<V> randSupplyInt(Graph<V, E> g, WeightFunctionInt<E> capacity, Random rand) {
 		Assertions.Graphs.onlyDirected(g);
 
 		List<V> suppliers = new ArrayList<>();
@@ -137,9 +133,9 @@ class FlowCirculationTestUtils extends TestUtils {
 			}
 		}
 
-		Object2IntMap<E> capacity = new Object2IntOpenHashMap<>();
+		Object2IntMap<E> caps = new Object2IntOpenHashMap<>();
 		for (E e : g.edges())
-			capacity.put(e, net.getCapacityInt(e));
+			caps.put(e, capacity.weightInt(e));
 
 		Set<V> demandersSet = new ObjectOpenHashSet<>(demanders);
 		List<V> suppliersList = new ArrayList<>(suppliers);
@@ -165,7 +161,7 @@ class FlowCirculationTestUtils extends TestUtils {
 				List<E> es = new ArrayList<>(g.outEdges(u));
 				Collections.shuffle(es, rand);
 				for (E e : es) {
-					if (capacity.getInt(e) == 0)
+					if (caps.getInt(e) == 0)
 						continue;
 					assert u.equals(g.edgeSource(e));
 					V v = g.edgeTarget(e);
@@ -198,10 +194,10 @@ class FlowCirculationTestUtils extends TestUtils {
 			}
 
 			/* Found a residual path from a supplier to a demander */
-			int delta = path.stream().mapToInt(capacity::getInt).min().getAsInt();
+			int delta = path.stream().mapToInt(caps::getInt).min().getAsInt();
 			assert delta > 0;
 			for (E e : path)
-				capacity.put(e, capacity.getInt(e) - delta);
+				caps.put(e, caps.getInt(e) - delta);
 
 			/* Add lower bounds to some of the edges */
 			V source = g.edgeSource(path.get(0));
@@ -214,7 +210,7 @@ class FlowCirculationTestUtils extends TestUtils {
 		}
 	}
 
-	private static <V, E> WeightFunction<V> randSupply(Graph<V, E> g, FlowNetwork<V, E> net, Random rand) {
+	private static <V, E> WeightFunction<V> randSupply(Graph<V, E> g, WeightFunction<E> capacity, Random rand) {
 		Assertions.Graphs.onlyDirected(g);
 
 		List<V> suppliers = new ArrayList<>();
@@ -235,9 +231,9 @@ class FlowCirculationTestUtils extends TestUtils {
 			}
 		}
 
-		Object2DoubleMap<E> capacity = new Object2DoubleOpenHashMap<>();
+		Object2DoubleMap<E> caps = new Object2DoubleOpenHashMap<>();
 		for (E e : g.edges())
-			capacity.put(e, net.getCapacity(e));
+			caps.put(e, capacity.weight(e));
 
 		Set<V> demandersSet = new ObjectOpenHashSet<>(demanders);
 		List<V> suppliersList = new ArrayList<>(suppliers);
@@ -263,7 +259,7 @@ class FlowCirculationTestUtils extends TestUtils {
 				List<E> es = new ArrayList<>(g.outEdges(u));
 				Collections.shuffle(es, rand);
 				for (E e : es) {
-					if (capacity.getDouble(e) == 0)
+					if (caps.getDouble(e) == 0)
 						continue;
 					assert u.equals(g.edgeSource(e));
 					V v = g.edgeTarget(e);
@@ -296,10 +292,10 @@ class FlowCirculationTestUtils extends TestUtils {
 			}
 
 			/* Found a residual path from a supplier to a demander */
-			double delta = path.stream().mapToDouble(capacity::getDouble).min().getAsDouble();
+			double delta = path.stream().mapToDouble(caps::getDouble).min().getAsDouble();
 			assert delta > 0;
 			for (E e : path)
-				capacity.put(e, capacity.getDouble(e) - delta);
+				caps.put(e, caps.getDouble(e) - delta);
 
 			/* Add lower bounds to some of the edges */
 			V source = g.edgeSource(path.get(0));
@@ -312,13 +308,13 @@ class FlowCirculationTestUtils extends TestUtils {
 		}
 	}
 
-	static <V, E> void assertSupplySatisfied(Graph<V, E> g, FlowNetwork<V, E> net, WeightFunction<V> supply) {
+	static <V, E> void assertSupplySatisfied(Graph<V, E> g, WeightFunction<V> supply, Flow<V, E> flow) {
 		for (V v : g.vertices()) {
 			double supplySum = 0;
 			for (E e : g.outEdges(v))
-				supplySum += net.getFlow(e);
+				supplySum += flow.getFlow(e);
 			for (E e : g.inEdges(v))
-				supplySum -= net.getFlow(e);
+				supplySum -= flow.getFlow(e);
 			assertEquals(supply.weight(v), supplySum, 1e-9);
 		}
 	}

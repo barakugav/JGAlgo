@@ -26,28 +26,28 @@ import com.jgalgo.internal.util.Assertions;
 class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 
 	@Override
-	void computeCirculation(IndexGraph g, IFlowNetwork net, IWeightFunction supply) {
-		if (net instanceof IFlowNetworkInt && supply instanceof IWeightFunctionInt) {
-			new WorkerInt(g, (IFlowNetworkInt) net, (IWeightFunctionInt) supply).computeCirculation();
+	IFlow computeCirculation(IndexGraph g, IWeightFunction capacity, IWeightFunction supply) {
+		if (capacity instanceof IWeightFunctionInt && supply instanceof IWeightFunctionInt) {
+			return new WorkerInt(g, (IWeightFunctionInt) capacity, (IWeightFunctionInt) supply).computeCirculation();
 		} else {
-			new WorkerDouble(g, net, supply).computeCirculation();
+			return new WorkerDouble(g, capacity, supply).computeCirculation();
 		}
 	}
 
 	private static class Worker {
 
 		final IndexGraph g;
-		final IFlowNetwork net;
+		final IWeightFunction capacityOrig;
 
 		final int[] label;
 		final LinkedListFixedSize.Doubly layersActive;
 		final int[] layersHeadActive;
 		int maxLayerActive;
 
-		Worker(IndexGraph g, IFlowNetwork net, IWeightFunction supply) {
+		Worker(IndexGraph g, IWeightFunction capacityOrig, IWeightFunction supply) {
 			Assertions.Graphs.onlyDirected(g);
 			this.g = g;
-			this.net = net;
+			this.capacityOrig = capacityOrig;
 			final int n = g.vertices().size();
 
 			label = new int[n];
@@ -89,8 +89,8 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 
 		private static final double eps = 1e-9;
 
-		WorkerDouble(IndexGraph g, IFlowNetwork net, IWeightFunction supply) {
-			super(g, net, supply);
+		WorkerDouble(IndexGraph g, IWeightFunction capacityOrig, IWeightFunction supply) {
+			super(g, capacityOrig, supply);
 
 			final int n = g.vertices().size();
 			final int m = g.edges().size();
@@ -98,7 +98,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 			flow = new double[m];
 			capacity = new double[m];
 			for (int e = 0; e < m; e++)
-				capacity[e] = net.getCapacity(e);
+				capacity[e] = capacityOrig.weight(e);
 
 			excess = new double[n];
 			double excessSum = 0;
@@ -134,7 +134,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 			}
 		}
 
-		void computeCirculation() {
+		IFlow computeCirculation() {
 			final int n = g.vertices().size();
 			final double lowerBound = 0;
 
@@ -217,7 +217,8 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 
 			assert g.vertices().intStream().allMatch(v -> excess[v] < eps);
 			for (int m = g.edges().size(), e = 0; e < m; e++)
-				net.setFlow(e, Math.max(0, Math.min(flow[e], net.getCapacity(e))));
+				flow[e] = Math.max(0, Math.min(flow[e], capacityOrig.weight(e)));
+			return new Flows.FlowImpl(g, flow);
 		}
 	}
 
@@ -227,8 +228,8 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 		final int[] flow;
 		final int[] excess;
 
-		WorkerInt(IndexGraph g, IFlowNetworkInt net, IWeightFunctionInt supply) {
-			super(g, net, supply);
+		WorkerInt(IndexGraph g, IWeightFunctionInt capacityOrig, IWeightFunctionInt supply) {
+			super(g, capacityOrig, supply);
 
 			final int n = g.vertices().size();
 			final int m = g.edges().size();
@@ -236,7 +237,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 			flow = new int[m];
 			capacity = new int[m];
 			for (int e = 0; e < m; e++)
-				capacity[e] = net.getCapacityInt(e);
+				capacity[e] = capacityOrig.weightInt(e);
 
 			excess = new int[n];
 			int excessSum = 0;
@@ -272,7 +273,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 			}
 		}
 
-		void computeCirculation() {
+		IFlow computeCirculation() {
 			final int n = g.vertices().size();
 			final int lowerBound = 0;
 
@@ -353,10 +354,11 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 				}
 			}
 
-			IFlowNetworkInt netInt = (IFlowNetworkInt) net;
+			double[] flow0 = new double[flow.length];
 			assert g.vertices().intStream().allMatch(v -> excess[v] == 0);
 			for (int m = g.edges().size(), e = 0; e < m; e++)
-				netInt.setFlow(e, flow[e]);
+				flow0[e] = flow[e];
+			return new Flows.FlowImpl(g, flow0);
 		}
 	}
 

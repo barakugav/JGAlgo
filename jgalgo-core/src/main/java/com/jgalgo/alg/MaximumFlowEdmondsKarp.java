@@ -17,6 +17,8 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -46,18 +48,18 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 	MaximumFlowEdmondsKarp() {}
 
 	@Override
-	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, int source, int sink) {
-		if (net instanceof IFlowNetworkInt) {
-			return new WorkerInt(g, (IFlowNetworkInt) net, source, sink).computeMaxFlow();
+	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
+		if (capacity instanceof IWeightFunctionInt) {
+			return new WorkerInt(g, (IWeightFunctionInt) capacity, source, sink).computeMaxFlow();
 		} else {
-			return new WorkerDouble(g, net, source, sink).computeMaxFlow();
+			return new WorkerDouble(g, capacity, source, sink).computeMaxFlow();
 		}
 	}
 
 	private abstract class Worker extends MaximumFlowAbstract.WithoutResidualGraph.Worker {
 
-		Worker(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {
-			super(gOrig, net, source, sink);
+		Worker(IndexGraph gOrig, IWeightFunction capacity, int source, int sink) {
+			super(gOrig, capacity, source, sink);
 		}
 
 		void computeMaxFlow0() {
@@ -179,14 +181,14 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		private static final double EPS = 0.0001;
 
-		WorkerDouble(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {
-			super(gOrig, net, source, sink);
+		WorkerDouble(IndexGraph gOrig, IWeightFunction capacityOrig, int source, int sink) {
+			super(gOrig, capacityOrig, source, sink);
 			capacity = new double[g.edges().size()];
 			initCapacities(capacity);
 			residualCapacity = capacity.clone();
 		}
 
-		double computeMaxFlow() {
+		IFlow computeMaxFlow() {
 			computeMaxFlow0();
 			return constructResult(capacity, residualCapacity);
 		}
@@ -306,14 +308,14 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 		final int[] capacity;
 		final int[] residualCapacity;
 
-		WorkerInt(IndexGraph gOrig, IFlowNetworkInt net, int source, int sink) {
-			super(gOrig, net, source, sink);
+		WorkerInt(IndexGraph gOrig, IWeightFunctionInt capacityOrig, int source, int sink) {
+			super(gOrig, capacityOrig, source, sink);
 			capacity = new int[g.edges().size()];
 			initCapacities(capacity);
 			residualCapacity = capacity.clone();
 		}
 
-		int computeMaxFlow() {
+		IFlow computeMaxFlow() {
 			computeMaxFlow0();
 			return constructResult(capacity, residualCapacity);
 		}

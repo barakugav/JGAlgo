@@ -25,27 +25,31 @@ import com.jgalgo.graph.WeightFunctions;
 
 class FlowCirculations {
 
+	private FlowCirculations() {}
+
 	abstract static class AbstractImpl implements FlowCirculation {
 
 		@SuppressWarnings("unchecked")
 		@Override
-		public <V, E> void computeCirculation(Graph<V, E> g, FlowNetwork<V, E> net, WeightFunction<V> supply) {
-			if (g instanceof IndexGraph && net instanceof IFlowNetwork) {
+		public <V, E> Flow<V, E> computeCirculation(Graph<V, E> g, WeightFunction<E> capacity,
+				WeightFunction<V> supply) {
+			if (g instanceof IndexGraph) {
+				IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) capacity);
 				IWeightFunction supply0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) supply);
-				computeCirculation((IndexGraph) g, (IFlowNetwork) net, supply0);
+				return (Flow<V, E>) computeCirculation((IndexGraph) g, capacity0, supply0);
 
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-				IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+				IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);
 				IWeightFunction iSupply = IndexIdMaps.idToIndexWeightFunc(supply, viMap);
-
-				computeCirculation(iGraph, iNet, iSupply);
+				IFlow indexFlow = computeCirculation(iGraph, iCapacity, iSupply);
+				return Flows.flowFromIndexFlow(g, indexFlow);
 			}
 		}
 
-		abstract void computeCirculation(IndexGraph g, IFlowNetwork net, IWeightFunction supply);
+		abstract IFlow computeCirculation(IndexGraph g, IWeightFunction capacity, IWeightFunction supply);
 
 	}
 

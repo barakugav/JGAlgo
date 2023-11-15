@@ -70,11 +70,7 @@ public class MinimumCostFlowCostScalingTest extends TestBase {
 		IntGraph g = IntGraph.newDirected();
 
 		IWeightsDouble capDouble = IWeights.createExternalEdgesWeights(g, double.class);
-		IWeightsDouble flowDouble = IWeights.createExternalEdgesWeights(g, double.class);
 		IWeightsInt capInt = IWeights.createExternalEdgesWeights(g, int.class);
-		IWeightsInt flowInt = IWeights.createExternalEdgesWeights(g, int.class);
-		IFlowNetwork netDouble = IFlowNetwork.createFromEdgeWeights(capDouble, flowDouble);
-		IFlowNetwork netInt = IFlowNetworkInt.createFromEdgeWeights(capInt, flowInt);
 
 		IWeightsDouble costDouble = IWeights.createExternalEdgesWeights(g, double.class);
 		IWeightsInt costInt = IWeights.createExternalEdgesWeights(g, int.class);
@@ -83,9 +79,9 @@ public class MinimumCostFlowCostScalingTest extends TestBase {
 		IWeightsInt supplyInt = IWeights.createExternalVerticesWeights(g, int.class);
 
 		MinimumCostFlow algo = algo();
-		assertThrows(IllegalArgumentException.class, () -> algo.computeMinCostFlow(g, netDouble, costInt, supplyInt));
-		assertThrows(IllegalArgumentException.class, () -> algo.computeMinCostFlow(g, netInt, costDouble, supplyInt));
-		assertThrows(IllegalArgumentException.class, () -> algo.computeMinCostFlow(g, netInt, costInt, supplyDouble));
+		assertThrows(IllegalArgumentException.class, () -> algo.computeMinCostFlow(g, capDouble, costInt, supplyInt));
+		assertThrows(IllegalArgumentException.class, () -> algo.computeMinCostFlow(g, capInt, costDouble, supplyInt));
+		assertThrows(IllegalArgumentException.class, () -> algo.computeMinCostFlow(g, capInt, costInt, supplyDouble));
 	}
 
 }

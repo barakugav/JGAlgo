@@ -16,7 +16,7 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.alg.FlowNetworks.ResidualGraph;
+import com.jgalgo.alg.Flows.ResidualGraph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
@@ -47,12 +47,13 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 	private static final int alpha = 16;
 
 	@Override
-	void computeMinCostFlow(IndexGraph g, IFlowNetwork net, IWeightFunction cost, IWeightFunction supply) {
-		if (!(net instanceof IFlowNetworkInt && supply instanceof IWeightFunctionInt))
+	IFlow computeMinCostFlow(IndexGraph g, IWeightFunction capacity, IWeightFunction cost, IWeightFunction supply) {
+		if (!(capacity instanceof IWeightFunctionInt && supply instanceof IWeightFunctionInt))
 			throw new IllegalArgumentException("only integer capacities and flows are supported");
 		if (!(cost instanceof IWeightFunctionInt))
 			throw new IllegalArgumentException("only integer costs are supported");
-		new Worker(g, (IFlowNetworkInt) net, (IWeightFunctionInt) cost, (IWeightFunctionInt) supply).solve();
+		return new Worker(g, (IWeightFunctionInt) capacity, (IWeightFunctionInt) cost, (IWeightFunctionInt) supply)
+				.solve();
 	}
 
 	private static class Worker {
@@ -61,7 +62,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 		private final IndexGraph g;
 		private final IndexGraph gOrig;
 		private final ResidualGraph resGraph;
-		private final IFlowNetworkInt net;
+		private final IWeightFunctionInt capacity;
 		private final IWeightFunctionInt costOrig;
 
 		/* per-edge information */
@@ -100,15 +101,15 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 		/* Potential refinement doesn't seems to be worth it in the early rounds, skip them */
 		private static final int POTENTIAL_REFINEMENT_ITERATION_SKIP = 2;
 
-		Worker(IndexGraph gOrig, IFlowNetworkInt net, IWeightFunctionInt costOrig, IWeightFunctionInt supply) {
+		Worker(IndexGraph gOrig, IWeightFunctionInt capacity, IWeightFunctionInt costOrig, IWeightFunctionInt supply) {
 			Assertions.Graphs.onlyDirected(gOrig);
 			Assertions.Flows.checkSupply(gOrig, supply);
 			this.gOrig = gOrig;
-			this.net = net;
+			this.capacity = capacity;
 			this.costOrig = costOrig;
 
 			/* Build the residual graph by duplicating each edge in the original graph */
-			FlowNetworks.ResidualGraph.Builder b = new FlowNetworks.ResidualGraph.Builder(gOrig);
+			ResidualGraph.Builder b = new ResidualGraph.Builder(gOrig);
 			b.addAllOriginalEdges();
 			resGraph = b.build();
 			g = resGraph.g;
@@ -133,17 +134,17 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 			eps = maxCost / alpha;
 
 			/* Find a valid circulation that satisfy the supply, without considering costs */
-			FlowCirculation circulation = new FlowCirculationPushRelabel();
-			circulation.computeCirculation(gOrig, net, supply);
+			FlowCirculation circulationAlgo = new FlowCirculationPushRelabel();
+			IFlow circulation = (IFlow) circulationAlgo.computeCirculation(gOrig, capacity, supply);
 
 			/* init residual capacities */
 			residualCapacity = new int[m];
 			for (int e = 0; e < m; e++) {
 				int eRef = edgeRef[e];
 				if (resGraph.isOriginalEdge(e)) {
-					residualCapacity[e] = net.getCapacityInt(eRef) - net.getFlowInt(eRef);
+					residualCapacity[e] = capacity.weightInt(eRef) - (int) circulation.getFlow(eRef);
 				} else {
-					residualCapacity[e] = net.getFlowInt(eRef);
+					residualCapacity[e] = (int) circulation.getFlow(eRef);
 				}
 			}
 
@@ -161,7 +162,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 			bucketsHeads = new int[rankUpperBound];
 		}
 
-		void solve() {
+		IFlow solve() {
 			solveWithPartialAugment();
 
 			for (int n = g.vertices().size(), u = 0; u < n; u++)
@@ -176,15 +177,17 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 					potential[u] -= maxPotential;
 
 			final int[] edgeRef = resGraph.edgeRef;
+			double[] flow = new double[gOrig.edges().size()];
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				if (resGraph.isOriginalEdge(e)) {
 					int eRef = edgeRef[e];
-					int capacity = net.getCapacityInt(eRef);
-					net.setFlow(eRef, capacity - residualCapacity[e]);
+					int cap = capacity.weightInt(eRef);
+					flow[eRef] = cap - residualCapacity[e];
 				}
 			}
 
-			MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, net, costOrig);
+			MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, capacity, costOrig, flow);
+			return new Flows.FlowImpl(gOrig, flow);
 		}
 
 		private void solveWithPartialAugment() {

@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
@@ -48,13 +49,13 @@ class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 	MaximumFlowDinic() {}
 
 	@Override
-	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, int source, int sink) {
-		return new Worker(g, net, source, sink).computeMaximumFlow();
+	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
+		return new Worker(g, capacity, source, sink).computeMaximumFlow();
 	}
 
 	@Override
-	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks) {
-		return new Worker(g, net, sources, sinks).computeMaximumFlow();
+	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, IntCollection sources, IntCollection sinks) {
+		return new Worker(g, capacity, sources, sinks).computeMaximumFlow();
 	}
 
 	private class Worker extends MaximumFlowAbstract.WithResidualGraph.Worker {
@@ -62,23 +63,23 @@ class MaximumFlowDinic extends MaximumFlowAbstract.WithResidualGraph {
 		final double[] flow;
 		final double[] capacity;
 
-		Worker(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {
-			super(gOrig, net, source, sink);
+		Worker(IndexGraph gOrig, IWeightFunction capacityOrig, int source, int sink) {
+			super(gOrig, capacityOrig, source, sink);
 
 			flow = new double[g.edges().size()];
 			capacity = new double[g.edges().size()];
 			initCapacitiesAndFlows(flow, capacity);
 		}
 
-		Worker(IndexGraph gOrig, IFlowNetwork net, IntCollection sources, IntCollection sinks) {
-			super(gOrig, net, sources, sinks);
+		Worker(IndexGraph gOrig, IWeightFunction capacityOrig, IntCollection sources, IntCollection sinks) {
+			super(gOrig, capacityOrig, sources, sinks);
 
 			flow = new double[g.edges().size()];
 			capacity = new double[g.edges().size()];
 			initCapacitiesAndFlows(flow, capacity);
 		}
 
-		double computeMaximumFlow() {
+		IFlow computeMaximumFlow() {
 			Assertions.Graphs.onlyDirected(g);
 			Bitmap residual = new Bitmap(g.edges().size());
 

@@ -116,81 +116,22 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, int source, int sink) {
-		if (net instanceof IFlowNetworkInt) {
-			return new WorkerInt(g, (IFlowNetworkInt) net, source, sink, activeOrderPolicy, dischargePolicy)
+	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
+		if (capacity instanceof IWeightFunctionInt) {
+			return new WorkerInt(g, (IWeightFunctionInt) capacity, source, sink, activeOrderPolicy, dischargePolicy)
 					.computeMaxFlow();
 		} else {
-			return new WorkerDouble(g, net, source, sink, activeOrderPolicy, dischargePolicy).computeMaxFlow();
+			return new WorkerDouble(g, capacity, source, sink, activeOrderPolicy, dischargePolicy).computeMaxFlow();
 		}
 	}
 
 	@Override
 	public IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
-		IFlowNetwork net = flowNetFromEdgeWeights(w);
 		if (w instanceof IWeightFunctionInt) {
-			return new WorkerInt(g, (IFlowNetworkInt) net, source, sink, activeOrderPolicy, dischargePolicy)
+			return new WorkerInt(g, (IWeightFunctionInt) w, source, sink, activeOrderPolicy, dischargePolicy)
 					.computeMinimumCut();
 		} else {
-			return new WorkerDouble(g, net, source, sink, activeOrderPolicy, dischargePolicy).computeMinimumCut();
-		}
-	}
-
-	private static IFlowNetwork flowNetFromEdgeWeights(IWeightFunction w) {
-		if (w == null)
-			w = IWeightFunction.CardinalityWeightFunction;
-		if (w instanceof IWeightFunctionInt) {
-			IWeightFunctionInt wInt = (IWeightFunctionInt) w;
-			IFlowNetworkInt net = new IFlowNetworkInt() {
-
-				@Override
-				public int getCapacityInt(int edge) {
-					return wInt.weightInt(edge);
-				}
-
-				@Override
-				public void setCapacity(int edge, int capacity) {
-					throw new UnsupportedOperationException("capacities are immutable");
-				}
-
-				@Override
-				public int getFlowInt(int edge) {
-					throw new UnsupportedOperationException();
-				}
-
-				@Override
-				public void setFlow(int edge, int flow) {
-					throw new UnsupportedOperationException();
-				}
-
-			};
-			return net;
-		} else {
-			IWeightFunction w0 = w;
-			IFlowNetwork net = new IFlowNetwork() {
-
-				@Override
-				public double getCapacity(int edge) {
-					return w0.weight(edge);
-				}
-
-				@Override
-				public void setCapacity(int edge, double capacity) {
-					throw new UnsupportedOperationException("capacities are immutable");
-				}
-
-				@Override
-				public double getFlow(int edge) {
-					throw new UnsupportedOperationException();
-				}
-
-				@Override
-				public void setFlow(int edge, double flow) {
-					throw new UnsupportedOperationException();
-				}
-
-			};
-			return net;
+			return new WorkerDouble(g, w, source, sink, activeOrderPolicy, dischargePolicy).computeMinimumCut();
 		}
 	}
 
@@ -217,9 +158,9 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		private final ActiveOrderPolicyImpl activeOrderPolicy;
 		private final DischargePolicyImpl dischargePolicy;
 
-		Worker(IndexGraph gOrig, IFlowNetwork net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
+		Worker(IndexGraph gOrig, IWeightFunction capacity, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
 				DischargePolicy dischargePolicy) {
-			super(gOrig, net, source, sink);
+			super(gOrig, capacity, source, sink);
 
 			label = new int[n];
 			outEdgeIters = new IEdgeIter[n];
@@ -1240,7 +1181,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			}
 		}
 
-		abstract double constructResult();
+		abstract IFlow constructResult();
 
 		private void calcMaxPreflow() {
 			recomputeLabels();
@@ -1643,7 +1584,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		abstract void eliminateExcessWithTopologicalOrder(int topoBegin, int topoEnd, int[] topoNext);
 
-		double computeMaxFlow() {
+		IFlow computeMaxFlow() {
 			// first phase
 			calcMaxPreflow();
 			// second phase
@@ -1736,9 +1677,9 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		static final double EPS = 0.0001;
 
-		WorkerDouble(IndexGraph gOrig, IFlowNetwork net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
-				DischargePolicy dischargePolicy) {
-			super(gOrig, net, source, sink, activeOrderPolicy, dischargePolicy);
+		WorkerDouble(IndexGraph gOrig, IWeightFunction capacityOrig, int source, int sink,
+				ActiveOrderPolicy activeOrderPolicy, DischargePolicy dischargePolicy) {
+			super(gOrig, capacityOrig, source, sink, activeOrderPolicy, dischargePolicy);
 
 			capacity = new double[g.edges().size()];
 			initCapacities(capacity);
@@ -1904,7 +1845,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		}
 
 		@Override
-		double constructResult() {
+		IFlow constructResult() {
 			return constructResult(capacity, residualCapacity);
 		}
 
@@ -1955,9 +1896,9 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		final int[] excess;
 
-		WorkerInt(IndexGraph gOrig, IFlowNetworkInt net, int source, int sink, ActiveOrderPolicy activeOrderPolicy,
-				DischargePolicy dischargePolicy) {
-			super(gOrig, net, source, sink, activeOrderPolicy, dischargePolicy);
+		WorkerInt(IndexGraph gOrig, IWeightFunctionInt capacityOrig, int source, int sink,
+				ActiveOrderPolicy activeOrderPolicy, DischargePolicy dischargePolicy) {
+			super(gOrig, capacityOrig, source, sink, activeOrderPolicy, dischargePolicy);
 
 			capacity = new int[g.edges().size()];
 			initCapacities(capacity);
@@ -2123,7 +2064,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		}
 
 		@Override
-		double constructResult() {
+		IFlow constructResult() {
 			return constructResult(capacity, residualCapacity);
 		}
 

@@ -18,6 +18,10 @@ package com.jgalgo.alg;
 
 import java.util.Collection;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctionInt;
 
 /**
  * Calculate the maximum flow in a flow network.
@@ -35,24 +39,24 @@ import com.jgalgo.graph.Graph;
  *
  * <pre> {@code
  * Graph<String, Integer> g = ...;
- * FlowNetwork<String, Integer> net = FlowNetwork.createAsEdgeWeight(g);
+ * WeightsDouble<Integer> capacities = g.addEdgesWeights("capacity", double.class);
  * for (Integer e : g.edges())
- *  f.setCapacity(e, 1);
+ *  capacities.set(e, 1);
  *
  * String sourceVertex = ...;
  * String targetVertex = ...;
- * MaxFlow maxFlowAlg = MaximumFlow.newInstance();
+ * MaximumFlow maxFlowAlg = MaximumFlow.newInstance();
+ * Flow<String, Integer> flow = maxFlowAlg.computeMaximumFlow(g, capacities, sourceVertex, targetVertex);
  *
- * double totalFlow = maxFlowAlg.computeMaximumFlow(g, net, sourceVertex, targetVertex);
- * System.out.println("The maximum flow that can be pushed in the network is " + totalFlow);
+ * System.out.println("The maximum flow that can be pushed in the network is " + flow.getSupply(sourceVertex));
  * for (Integer e : g.edges()) {
- * 	double capacity = net.getCapacity(e);
- * 	double flow = net.getFlow(e);
- * 	System.out.println("flow on edge " + e + ": " + flow + "/" + capacity);
+ * 	double capacity = capacities.get(e);
+ * 	double f = flow.getFlow(e);
+ * 	System.out.println("flow on edge " + e + ": " + f + "/" + capacity);
  * }
  * }</pre>
  *
- * @see    FlowNetwork
+ * @see    Flow
  * @see    <a href= "https://en.wikipedia.org/wiki/Maximum_flow_problem">Wikipedia</a>
  * @author Barak Ugav
  */
@@ -62,36 +66,47 @@ public interface MaximumFlow {
 	 * Calculate the maximum flow in a network between a source and a sink.
 	 *
 	 * <p>
-	 * The function will set the edges flow by {@link FlowNetwork#setFlow(Object, double)}.
+	 * Some algorithm might run faster for integer capacities, and {@link WeightFunctionInt} can be passed as
+	 * {@code capacity}.
+	 *
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IWeightFunction} as {@code capacity} to avoid
+	 * boxing/unboxing. If {@code g} is an {@link IntGraph}, the returned object is {@link IFlow}.
 	 *
 	 * @param  <V>                      the vertices type
 	 * @param  <E>                      the edges type
 	 * @param  g                        a graph
-	 * @param  net                      network flow
+	 * @param  capacity                 a capacity edge weight function
 	 * @param  source                   a source vertex
 	 * @param  sink                     a sink vertex
-	 * @return                          the maximum flow in the network from the source to the sink
+	 * @return                          the flows computed for each edge
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
-	<V, E> double computeMaximumFlow(Graph<V, E> g, FlowNetwork<V, E> net, V source, V sink);
+	<V, E> Flow<V, E> computeMaximumFlow(Graph<V, E> g, WeightFunction<E> capacity, V source, V sink);
 
 	/**
 	 * Calculate the maximum flow in a network between a set of sources and a set of sinks.
 	 *
 	 * <p>
-	 * The function will set the edges flow by {@link FlowNetwork#setFlow(Object, double)}.
+	 * Some algorithm might run faster for integer capacities, and {@link WeightFunctionInt} can be passed as
+	 * {@code capacity}.
+	 *
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, its better to pass a {@link IWeightFunction} as {@code capacity} to avoid
+	 * boxing/unboxing. If {@code g} is an {@link IntGraph}, the returned object is {@link IFlow}.
 	 *
 	 * @param  <V>                      the vertices type
 	 * @param  <E>                      the edges type
 	 * @param  g                        a graph
-	 * @param  net                      network flow
+	 * @param  capacity                 a capacity edge weight function
 	 * @param  sources                  a set of source vertices
 	 * @param  sinks                    a set of sink vertices
-	 * @return                          the maximum flow in the network from the sources to the sinks
+	 * @return                          the flows computed for each edge
 	 * @throws IllegalArgumentException if a vertex is both a source and a sink, or if a vertex appear twice in the
 	 *                                      source or sinks sets
 	 */
-	<V, E> double computeMaximumFlow(Graph<V, E> g, FlowNetwork<V, E> net, Collection<V> sources, Collection<V> sinks);
+	<V, E> Flow<V, E> computeMaximumFlow(Graph<V, E> g, WeightFunction<E> capacity, Collection<V> sources,
+			Collection<V> sinks);
 
 	/**
 	 * Create a new maximum flow algorithm object.

@@ -47,43 +47,47 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 	private static final double EPS = 0.0001;
 
 	@Override
-	void computeMinCostMaxFlow(IndexGraph gOrig, IFlowNetwork net, IWeightFunction cost, int source, int sink) {
+	IFlow computeMinCostMaxFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IWeightFunction cost, int source,
+			int sink) {
 		Assertions.Graphs.onlyDirected(gOrig);
 		Assertions.Flows.sourceSinkNotTheSame(source, sink);
 
 		/* Compute maximum flow */
-		maxFlowAlg.computeMaximumFlow(gOrig, net, Integer.valueOf(source), Integer.valueOf(sink));
+		IFlow flowOrig = (IFlow) maxFlowAlg.computeMaximumFlow(gOrig, capacityOrig, Integer.valueOf(source),
+				Integer.valueOf(sink));
 
 		/* Construct the residual graph from the maximum flow */
-		FlowNetworks.ResidualGraph.Builder builder = new FlowNetworks.ResidualGraph.Builder(gOrig);
+		Flows.ResidualGraph.Builder builder = new Flows.ResidualGraph.Builder(gOrig);
 		builder.addAllOriginalEdges();
-		FlowNetworks.ResidualGraph resGraph = builder.build();
+		Flows.ResidualGraph resGraph = builder.build();
 		IndexGraph g = resGraph.g;
 		double[] capacity = new double[g.edges().size()];
 		double[] flow = new double[g.edges().size()];
 
 		/* eliminate negative cycles in the residual network repeatedly */
-		initResidualCapacitiesAndFlows(gOrig, net, resGraph, capacity, flow);
+		initResidualCapacitiesAndFlows(gOrig, capacityOrig, flowOrig, resGraph, capacity, flow);
 		eliminateAllNegativeCycles(gOrig, resGraph, capacity, flow, cost);
 
+		double[] flow0 = new double[gOrig.edges().size()];
 		for (int m = g.edges().size(), e = 0; e < m; e++)
 			if (resGraph.isOriginalEdge(e))
-				net.setFlow(resGraph.edgeRef[e], Math.max(0, Math.min(flow[e], capacity[e])));
+				flow0[resGraph.edgeRef[e]] = Math.max(0, Math.min(flow[e], capacity[e]));
 
-		MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, net, cost);
+		MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, capacityOrig, cost, flow0);
+		return new Flows.FlowImpl(gOrig, flow0);
 	}
 
-	private static void initResidualCapacitiesAndFlows(IndexGraph gOrig, IFlowNetwork net,
-			FlowNetworks.ResidualGraph resGraph, double[] capacity, double[] flow) {
+	private static void initResidualCapacitiesAndFlows(IndexGraph gOrig, IWeightFunction capacityOrig, IFlow flowOrig,
+			Flows.ResidualGraph resGraph, double[] capacity, double[] flow) {
 		IndexGraph g = resGraph.g;
 		int[] edgeRef = resGraph.edgeRef;
 
 		if (gOrig.isDirected()) {
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				int eRef = edgeRef[e];
-				double eFlow = net.getFlow(eRef);
+				double eFlow = flowOrig.getFlow(eRef);
 				if (resGraph.isOriginalEdge(e)) {
-					capacity[e] = net.getCapacity(eRef);
+					capacity[e] = capacityOrig.weight(eRef);
 					flow[e] = eFlow;
 				} else {
 					capacity[e] = 0;
@@ -94,15 +98,15 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		} else {
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				int eRef = edgeRef[e];
-				double eFlow = net.getFlow(eRef);
-				capacity[e] = net.getCapacity(eRef);
+				double eFlow = flowOrig.getFlow(eRef);
+				capacity[e] = capacityOrig.weight(eRef);
 				flow[e] = resGraph.isOriginalEdge(e) ? eFlow : -eFlow;
 				assert flow[e] <= capacity[e] + 1e-9;
 			}
 		}
 	}
 
-	private void eliminateAllNegativeCycles(IndexGraph gOrig, FlowNetworks.ResidualGraph resGraph, double[] capacity,
+	private void eliminateAllNegativeCycles(IndexGraph gOrig, Flows.ResidualGraph resGraph, double[] capacity,
 			double[] flow, IWeightFunction cost) {
 		IndexGraph g = resGraph.g;
 		int[] edgeRef = resGraph.edgeRef;

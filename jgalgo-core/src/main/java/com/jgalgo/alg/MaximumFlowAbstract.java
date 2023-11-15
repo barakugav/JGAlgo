@@ -19,10 +19,13 @@ import java.util.Arrays;
 import java.util.Collection;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -30,47 +33,53 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl implements MaximumFlow {
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public <V, E> double computeMaximumFlow(Graph<V, E> g, FlowNetwork<V, E> net, V source, V sink) {
-		if (g instanceof IndexGraph && net instanceof IFlowNetwork) {
+	public <V, E> Flow<V, E> computeMaximumFlow(Graph<V, E> g, WeightFunction<E> capacity, V source, V sink) {
+		if (g instanceof IndexGraph) {
+			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) capacity);
 			int source0 = ((Integer) source).intValue();
 			int sink0 = ((Integer) sink).intValue();
-			return computeMaximumFlow((IndexGraph) g, (IFlowNetwork) net, source0, sink0);
+			return (Flow<V, E>) computeMaximumFlow((IndexGraph) g, capacity0, source0, sink0);
 
 		} else {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);
 			int iSource = viMap.idToIndex(source);
 			int iSink = viMap.idToIndex(sink);
-			return computeMaximumFlow(iGraph, iNet, iSource, iSink);
+			IFlow indexFlow = computeMaximumFlow(iGraph, iCapacity, iSource, iSink);
+			return Flows.flowFromIndexFlow(g, indexFlow);
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <V, E> double computeMaximumFlow(Graph<V, E> g, FlowNetwork<V, E> net, Collection<V> sources,
+	public <V, E> Flow<V, E> computeMaximumFlow(Graph<V, E> g, WeightFunction<E> capacity, Collection<V> sources,
 			Collection<V> sinks) {
-		if (g instanceof IndexGraph && net instanceof IFlowNetwork) {
+		if (g instanceof IndexGraph) {
+			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) capacity);
 			IntCollection sources0 = IntAdapters.asIntCollection((Collection<Integer>) sources);
 			IntCollection sinks0 = IntAdapters.asIntCollection((Collection<Integer>) sinks);
-			return computeMaximumFlow((IndexGraph) g, (IFlowNetwork) net, sources0, sinks0);
+			return (Flow<V, E>) computeMaximumFlow((IndexGraph) g, capacity0, sources0, sinks0);
 
 		} else {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-			IFlowNetwork iNet = FlowNetworks.indexNetFromNet(net, eiMap);
+			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);
 			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);
 			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);
-			return computeMaximumFlow(iGraph, iNet, iSources, iSinks);
+			IFlow indexFlow = computeMaximumFlow(iGraph, iCapacity, iSources, iSinks);
+			return Flows.flowFromIndexFlow(g, indexFlow);
 		}
 	}
 
-	abstract double computeMaximumFlow(IndexGraph g, IFlowNetwork net, int source, int sink);
+	abstract IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink);
 
-	abstract double computeMaximumFlow(IndexGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks);
+	abstract IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, IntCollection sources,
+			IntCollection sinks);
 
 	@Override
 	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
@@ -89,82 +98,61 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 			final int source;
 			final int sink;
 			final int n;
-			final IFlowNetwork net;
+			final IWeightFunction capacity;
 			final boolean directed;
 
-			Worker(IndexGraph g, IFlowNetwork net, int source, int sink) {
+			Worker(IndexGraph g, IWeightFunction capacity, int source, int sink) {
 				Assertions.Flows.sourceSinkNotTheSame(source, sink);
-				Assertions.Flows.positiveCapacities(g, net);
+				Assertions.Flows.positiveCapacities(g, capacity);
 				this.g = g;
 				this.source = source;
 				this.sink = sink;
 				this.n = g.vertices().size();
-				this.net = net;
+				this.capacity = capacity;
 				directed = g.isDirected();
 			}
 
 			void initCapacities(int[] capacities) {
-				IFlowNetworkInt net = (IFlowNetworkInt) this.net;
-				for (int m = g.edges().size(), e = 0; e < m; e++)
-					capacities[e] = net.getCapacityInt(e);
+				if (capacity == null || capacity == IWeightFunction.CardinalityWeightFunction) {
+					Arrays.fill(capacities, 1);
+				} else {
+					IWeightFunctionInt capacity = (IWeightFunctionInt) this.capacity;
+					for (int m = g.edges().size(), e = 0; e < m; e++)
+						capacities[e] = capacity.weightInt(e);
+				}
 			}
 
 			void initCapacities(double[] capacities) {
-				for (int m = g.edges().size(), e = 0; e < m; e++)
-					capacities[e] = net.getCapacity(e);
+				if (capacity == null || capacity == IWeightFunction.CardinalityWeightFunction) {
+					Arrays.fill(capacities, 1);
+				} else {
+					for (int m = g.edges().size(), e = 0; e < m; e++)
+						capacities[e] = capacity.weight(e);
+				}
 			}
 
-			double constructResult(double[] capacity, double[] residualCapacity) {
+			IFlow constructResult(double[] capacity, double[] residualCapacity) {
+				double[] flow = new double[g.edges().size()];
 				for (int m = g.edges().size(), e = 0; e < m; e++)
-					net.setFlow(e, capacity[e] - residualCapacity[e]);
-
-				double totalFlow = 0;
-				if (directed) {
-					for (int e : g.outEdges(source))
-						totalFlow += capacity[e] - residualCapacity[e];
-					for (int e : g.inEdges(source))
-						totalFlow -= capacity[e] - residualCapacity[e];
-				} else {
-					for (int e : g.outEdges(source)) {
-						if (source != g.edgeTarget(e)) {
-							totalFlow += capacity[e] - residualCapacity[e];
-						} else if (source != g.edgeSource(e)) {
-							totalFlow -= capacity[e] - residualCapacity[e];
-						}
-					}
-				}
-				return totalFlow;
+					flow[e] = capacity[e] - residualCapacity[e];
+				return new Flows.FlowImpl(g, flow);
 			}
 
-			int constructResult(int[] capacity, int[] residualCapacity) {
-				IFlowNetworkInt net = (IFlowNetworkInt) this.net;
+			IFlow constructResult(int[] capacity, int[] residualCapacity) {
+				double[] flow = new double[g.edges().size()];
 				for (int m = g.edges().size(), e = 0; e < m; e++)
-					net.setFlow(e, capacity[e] - residualCapacity[e]);
-
-				int totalFlow = 0;
-				if (directed) {
-					for (int e : g.outEdges(source))
-						totalFlow += capacity[e] - residualCapacity[e];
-					for (int e : g.inEdges(source))
-						totalFlow -= capacity[e] - residualCapacity[e];
-				} else {
-					for (int e : g.outEdges(source)) {
-						if (source != g.edgeTarget(e)) {
-							totalFlow += capacity[e] - residualCapacity[e];
-						} else if (source != g.edgeSource(e)) {
-							totalFlow -= capacity[e] - residualCapacity[e];
-						}
-					}
-				}
-				return totalFlow;
+					flow[e] = capacity[e] - residualCapacity[e];
+				return new Flows.FlowImpl(g, flow);
 			}
 
 		}
 
 		@Override
-		double computeMaximumFlow(IndexGraph gOrig, IFlowNetwork netOrig, IntCollection sources, IntCollection sinks) {
+		IFlow computeMaximumFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IntCollection sources,
+				IntCollection sinks) {
 			if (sources.size() == 1 && sinks.size() == 1)
-				return computeMaximumFlow(gOrig, netOrig, sources.iterator().nextInt(), sinks.iterator().nextInt());
+				return computeMaximumFlow(gOrig, capacityOrig, sources.iterator().nextInt(),
+						sinks.iterator().nextInt());
 			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
 
 			IndexGraphBuilder builder =
@@ -181,17 +169,17 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 			final int source = builder.addVertex();
 			final int sink = builder.addVertex();
 			Object capacities;
-			if (netOrig instanceof IFlowNetworkInt) {
-				IFlowNetworkInt netOrigInt = (IFlowNetworkInt) netOrig;
+			if (capacityOrig instanceof IWeightFunctionInt) {
+				IWeightFunctionInt capacityOrigInt = (IWeightFunctionInt) capacityOrig;
 				int[] capacities0 = new int[sources.size() + sinks.size()];
 				int capIdx = 0;
 				for (int s : sources) {
 					builder.addEdge(source, s);
-					capacities0[capIdx++] = FlowNetworks.vertexMaxSupply(gOrig, netOrigInt, s);
+					capacities0[capIdx++] = Flows.vertexMaxSupply(gOrig, capacityOrigInt, s);
 				}
 				for (int t : sinks) {
 					builder.addEdge(t, sink);
-					capacities0[capIdx++] = FlowNetworks.vertexMaxDemand(gOrig, netOrigInt, t);
+					capacities0[capIdx++] = Flows.vertexMaxDemand(gOrig, capacityOrigInt, t);
 				}
 				capacities = capacities0;
 			} else {
@@ -199,86 +187,35 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 				int capIdx = 0;
 				for (int s : sources) {
 					builder.addEdge(source, s);
-					capacities0[capIdx++] = FlowNetworks.vertexMaxSupply(gOrig, netOrig, s);
+					capacities0[capIdx++] = Flows.vertexMaxSupply(gOrig, capacityOrig, s);
 				}
 				for (int t : sinks) {
 					builder.addEdge(t, sink);
-					capacities0[capIdx++] = FlowNetworks.vertexMaxDemand(gOrig, netOrig, t);
+					capacities0[capIdx++] = Flows.vertexMaxDemand(gOrig, capacityOrig, t);
 				}
 				capacities = capacities0;
 			}
 			IndexGraph g = builder.build();
 
-			IFlowNetwork net;
-			if (netOrig instanceof IFlowNetworkInt) {
-				IFlowNetworkInt netOrigInt = (IFlowNetworkInt) netOrig;
-
-				IFlowNetworkInt netInt = new IFlowNetworkInt() {
-					final int[] caps = (int[]) capacities;
-					final int[] flows = new int[caps.length];
-
-					@Override
-					public int getCapacityInt(int edge) {
-						return edge < originalEdgesThreshold ? netOrigInt.getCapacityInt(edge)
-								: caps[edge - originalEdgesThreshold];
-					}
-
-					@Override
-					public void setCapacity(int edge, int capacity) {
-						throw new UnsupportedOperationException("capacities are immutable");
-					}
-
-					@Override
-					public int getFlowInt(int edge) {
-						return edge < originalEdgesThreshold ? netOrigInt.getFlowInt(edge)
-								: flows[edge - originalEdgesThreshold];
-					}
-
-					@Override
-					public void setFlow(int edge, int flow) {
-						if (edge < originalEdgesThreshold) {
-							netOrigInt.setFlow(edge, flow);
-						} else {
-							flows[edge - originalEdgesThreshold] = flow;
-						}
-					}
-				};
-				net = netInt;
+			IWeightFunction capacity;
+			if (capacityOrig instanceof IWeightFunctionInt) {
+				IWeightFunctionInt capacityOrigInt = (IWeightFunctionInt) capacityOrig;
+				final int[] caps = (int[]) capacities;
+				IWeightFunctionInt capacityInt = edge -> edge < originalEdgesThreshold ? capacityOrigInt.weightInt(edge)
+						: caps[edge - originalEdgesThreshold];
+				capacity = capacityInt;
 
 			} else {
-				net = new IFlowNetwork() {
-					final double[] caps = (double[]) capacities;
-					final double[] flows = new double[caps.length];
-
-					@Override
-					public double getCapacity(int edge) {
-						return edge < originalEdgesThreshold ? netOrig.getCapacity(edge)
-								: caps[edge - originalEdgesThreshold];
-					}
-
-					@Override
-					public void setCapacity(int edge, double capacity) {
-						throw new UnsupportedOperationException("capacities are immutable");
-					}
-
-					@Override
-					public double getFlow(int edge) {
-						return edge < originalEdgesThreshold ? netOrig.getFlow(edge)
-								: flows[edge - originalEdgesThreshold];
-					}
-
-					@Override
-					public void setFlow(int edge, double flow) {
-						if (edge < originalEdgesThreshold) {
-							netOrig.setFlow(edge, flow);
-						} else {
-							flows[edge - originalEdgesThreshold] = flow;
-						}
-					}
-				};
+				final double[] caps = (double[]) capacities;
+				capacity = edge -> edge < originalEdgesThreshold ? capacityOrig.weight(edge)
+						: caps[edge - originalEdgesThreshold];
 			}
 
-			return computeMaximumFlow(g, net, source, sink);
+			IFlow flow0 = computeMaximumFlow(g, capacity, source, sink);
+			double[] flow = new double[gOrig.edges().size()];
+			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
+				flow[e] = flow0.getFlow(e);
+			return new Flows.FlowImpl(gOrig, flow);
 		}
 
 	}
@@ -290,7 +227,7 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 			final int source;
 			final int sink;
 			final int n;
-			final IFlowNetwork net;
+			final IWeightFunction capacityOrig;
 
 			final IndexGraph g;
 			final int[] edgeRef;
@@ -300,38 +237,38 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 			final IntCollection sources;
 			final IntCollection sinks;
 
-			Worker(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {
+			Worker(IndexGraph gOrig, IWeightFunction capacityOrig, int source, int sink) {
 				Assertions.Flows.sourceSinkNotTheSame(source, sink);
-				Assertions.Flows.positiveCapacities(gOrig, net);
+				Assertions.Flows.positiveCapacities(gOrig, capacityOrig);
 				this.gOrig = gOrig;
 				this.source = source;
 				this.sink = sink;
 				this.sources = IntLists.singleton(source);
 				this.sinks = IntLists.singleton(sink);
 				this.n = gOrig.vertices().size();
-				this.net = net;
+				this.capacityOrig = capacityOrig;
 				multiSourceMultiSink = false;
 
-				FlowNetworks.ResidualGraph.Builder builder = new FlowNetworks.ResidualGraph.Builder(gOrig);
+				Flows.ResidualGraph.Builder builder = new Flows.ResidualGraph.Builder(gOrig);
 				builder.addAllOriginalEdges();
 
-				FlowNetworks.ResidualGraph residualGraph = builder.build();
+				Flows.ResidualGraph residualGraph = builder.build();
 				g = residualGraph.g;
 				edgeRef = residualGraph.edgeRef;
 				twin = residualGraph.twin;
 			}
 
-			Worker(IndexGraph gOrig, IFlowNetwork net, IntCollection sources, IntCollection sinks) {
+			Worker(IndexGraph gOrig, IWeightFunction capacityOrig, IntCollection sources, IntCollection sinks) {
 				Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
-				Assertions.Flows.positiveCapacities(gOrig, net);
+				Assertions.Flows.positiveCapacities(gOrig, capacityOrig);
 				this.gOrig = gOrig;
 				this.n = gOrig.vertices().size() + 2;
 				this.sources = sources;
 				this.sinks = sinks;
-				this.net = net;
+				this.capacityOrig = capacityOrig;
 				multiSourceMultiSink = true;
 
-				FlowNetworks.ResidualGraph.Builder builder = new FlowNetworks.ResidualGraph.Builder(gOrig);
+				Flows.ResidualGraph.Builder builder = new Flows.ResidualGraph.Builder(gOrig);
 				builder.addAllOriginalEdges();
 
 				source = builder.addVertex();
@@ -341,7 +278,7 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 				for (int t : sinks)
 					builder.addEdge(t, sink, -1);
 
-				FlowNetworks.ResidualGraph residualGraph = builder.build();
+				Flows.ResidualGraph residualGraph = builder.build();
 				g = residualGraph.g;
 				edgeRef = residualGraph.edgeRef;
 				twin = residualGraph.twin;
@@ -359,22 +296,34 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 
 			void initCapacities(double[] residualCapacity) {
 				if (gOrig.isDirected()) {
-					for (int m = g.edges().size(), e = 0; e < m; e++) {
-						residualCapacity[e] = isOriginalEdge(e) ? net.getCapacity(edgeRef[e]) : 0;
+					if (capacityOrig == null || capacityOrig == IWeightFunction.CardinalityWeightFunction) {
+						for (int m = g.edges().size(), e = 0; e < m; e++)
+							residualCapacity[e] = isOriginalEdge(e) ? 1 : 0;
+					} else {
+						for (int m = g.edges().size(), e = 0; e < m; e++)
+							residualCapacity[e] = isOriginalEdge(e) ? capacityOrig.weight(edgeRef[e]) : 0;
 					}
 				} else {
-					for (int m = g.edges().size(), e = 0; e < m; e++) {
-						int eRef = edgeRef[e];
-						double cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink)
-								? net.getCapacity(eRef)
-								: 0;
-						residualCapacity[e] = cap;
+					if (capacityOrig == null || capacityOrig == IWeightFunction.CardinalityWeightFunction) {
+						for (int m = g.edges().size(), e = 0; e < m; e++) {
+							int eRef = edgeRef[e];
+							double cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? 1 : 0;
+							residualCapacity[e] = cap;
+						}
+					} else {
+						for (int m = g.edges().size(), e = 0; e < m; e++) {
+							int eRef = edgeRef[e];
+							double cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink)
+									? capacityOrig.weight(eRef)
+									: 0;
+							residualCapacity[e] = cap;
+						}
 					}
 				}
 				if (multiSourceMultiSink) {
 					double capacitySum = 0;
 					for (int m = gOrig.edges().size(), e = 0; e < m; e++)
-						capacitySum += net.getCapacity(e);
+						capacitySum += capacityOrig.weight(e);
 
 					/* init edges from super-source to sources and from sinks to super-sink */
 					for (int m = g.edges().size(), e = 0; e < m; e++)
@@ -385,24 +334,36 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 			}
 
 			void initCapacities(int[] residualCapacity) {
-				IFlowNetworkInt net = (IFlowNetworkInt) this.net;
+				IWeightFunctionInt capacity = (IWeightFunctionInt) this.capacityOrig;
 				if (gOrig.isDirected()) {
-					for (int m = g.edges().size(), e = 0; e < m; e++) {
-						residualCapacity[e] = isOriginalEdge(e) ? net.getCapacityInt(edgeRef[e]) : 0;
+					if (capacityOrig == null || capacityOrig == IWeightFunction.CardinalityWeightFunction) {
+						for (int m = g.edges().size(), e = 0; e < m; e++)
+							residualCapacity[e] = isOriginalEdge(e) ? 1 : 0;
+					} else {
+						for (int m = g.edges().size(), e = 0; e < m; e++)
+							residualCapacity[e] = isOriginalEdge(e) ? capacity.weightInt(edgeRef[e]) : 0;
 					}
 				} else {
-					for (int m = g.edges().size(), e = 0; e < m; e++) {
-						int eRef = edgeRef[e];
-						int cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink)
-								? net.getCapacityInt(eRef)
-								: 0;
-						residualCapacity[e] = cap;
+					if (capacityOrig == null || capacityOrig == IWeightFunction.CardinalityWeightFunction) {
+						for (int m = g.edges().size(), e = 0; e < m; e++) {
+							int eRef = edgeRef[e];
+							int cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? 1 : 0;
+							residualCapacity[e] = cap;
+						}
+					} else {
+						for (int m = g.edges().size(), e = 0; e < m; e++) {
+							int eRef = edgeRef[e];
+							int cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink)
+									? capacity.weightInt(eRef)
+									: 0;
+							residualCapacity[e] = cap;
+						}
 					}
 				}
 				if (multiSourceMultiSink) {
 					int capacitySum = 0;
 					for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
-						int cap = net.getCapacityInt(e);
+						int cap = capacity.weightInt(e);
 						int capacitySumNext = capacitySum + cap;
 						if (((capacitySum ^ capacitySumNext) & (cap ^ capacitySumNext)) < 0) {
 							// HD 2-12 Overflow iff both arguments have the opposite sign of the result
@@ -420,53 +381,24 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 				}
 			}
 
-			double constructResult(double[] flow) {
+			IFlow constructResult(double[] flow) {
+				double[] flowRes = new double[gOrig.edges().size()];
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					if (isOriginalEdge(e))
 						/* The flow of e might be negative if the original graph is undirected, which is fine */
-						net.setFlow(edgeRef[e], flow[e]);
+						flowRes[edgeRef[e]] = flow[e];
 				}
-
-				double totalFlow = 0;
-				if (gOrig.isDirected()) {
-					for (int s : sources) {
-						for (int e : gOrig.outEdges(s))
-							totalFlow += net.getFlow(e);
-						for (int e : gOrig.inEdges(s))
-							totalFlow -= net.getFlow(e);
-					}
-				} else {
-					for (int s : sources)
-						for (int e : g.outEdges(s))
-							if (g.edgeTarget(e) != source)
-								totalFlow += flow[e];
-				}
-				return totalFlow;
+				return new Flows.FlowImpl(gOrig, flowRes);
 			}
 
-			int constructResult(int[] flow) {
-				IFlowNetworkInt net = (IFlowNetworkInt) this.net;
+			IFlow constructResult(int[] flow) {
+				double[] flowRes = new double[gOrig.edges().size()];
 				for (int m = g.edges().size(), e = 0; e < m; e++) {
 					if (isOriginalEdge(e))
 						/* The flow of e might be negative if the original graph is undirected, which is fine */
-						net.setFlow(edgeRef[e], flow[e]);
+						flowRes[edgeRef[e]] = flow[e];
 				}
-
-				int totalFlow = 0;
-				if (gOrig.isDirected()) {
-					for (int s : sources) {
-						for (int e : gOrig.outEdges(s))
-							totalFlow += net.getFlowInt(e);
-						for (int e : gOrig.inEdges(s))
-							totalFlow -= net.getFlowInt(e);
-					}
-				} else {
-					for (int s : sources)
-						for (int e : g.outEdges(s))
-							if (g.edgeTarget(e) != source)
-								totalFlow += flow[e];
-				}
-				return totalFlow;
+				return new Flows.FlowImpl(gOrig, flowRes);
 			}
 
 			boolean isOriginalEdge(int e) {

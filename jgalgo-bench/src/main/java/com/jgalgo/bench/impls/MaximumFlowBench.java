@@ -34,13 +34,14 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.alg.IFlowNetworkInt;
+import com.jgalgo.alg.IFlow;
 import com.jgalgo.alg.IPath;
 import com.jgalgo.alg.MaximumFlow;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IntGraph;
@@ -56,15 +57,9 @@ public class MaximumFlowBench {
 	final int graphsNum = 31;
 	final AtomicInteger graphIdx = new AtomicInteger();
 
-	public void resetFlow() {
-		for (MaxFlowTask graph : graphs)
-			for (int e : graph.g.edges())
-				graph.flow.setFlow(e, 0);
-	}
-
 	void benchMaxFlow(MaximumFlow algo, Blackhole blackhole) {
 		MaxFlowTask graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		double flow = algo.computeMaximumFlow(graph.g, graph.flow, Integer.valueOf(graph.source),
+		IFlow flow = (IFlow) algo.computeMaximumFlow(graph.g, graph.capacity, Integer.valueOf(graph.source),
 				Integer.valueOf(graph.sink));
 		blackhole.consume(flow);
 	}
@@ -84,12 +79,6 @@ public class MaximumFlowBench {
 		// @Param({ "directed", "undirected" })
 		public String directed = "directed";
 
-		@Override
-		@Setup(Level.Invocation)
-		public void resetFlow() {
-			super.resetFlow();
-		}
-
 		@Setup(Level.Trial)
 		public void setup() {
 			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
@@ -102,10 +91,10 @@ public class MaximumFlowBench {
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				IntGraph g = GraphsTestUtils.randomGraphGnp(n, directed, seedGen.nextSeed());
-				IFlowNetworkInt flow = weighted ? randNetworkInt(g, seedGen.nextSeed()) : unweightedNetwork(g);
+				IWeightFunctionInt capacity = weighted ? randNetworkInt(g, seedGen.nextSeed()) : null;
 
 				IntIntPair sourceSink = chooseSourceSink(g, rand);
-				graphs.add(new MaxFlowTask(g, flow, sourceSink.firstInt(), sourceSink.secondInt()));
+				graphs.add(new MaxFlowTask(g, capacity, sourceSink.firstInt(), sourceSink.secondInt()));
 			}
 		}
 
@@ -160,12 +149,6 @@ public class MaximumFlowBench {
 		// @Param({ "directed", "undirected" })
 		public String directed = "directed";
 
-		@Override
-		@Setup(Level.Invocation)
-		public void resetFlow() {
-			super.resetFlow();
-		}
-
 		@Setup(Level.Trial)
 		public void setup() {
 			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
@@ -178,10 +161,10 @@ public class MaximumFlowBench {
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				IntGraph g = GraphsTestUtils.randomGraphBarabasiAlbert(n, directed, seedGen.nextSeed());
-				IFlowNetworkInt flow = weighted ? randNetworkInt(g, seedGen.nextSeed()) : unweightedNetwork(g);
+				IWeightFunctionInt capacity = weighted ? randNetworkInt(g, seedGen.nextSeed()) : null;
 
 				IntIntPair sourceSink = chooseSourceSink(g, rand);
-				graphs.add(new MaxFlowTask(g, flow, sourceSink.firstInt(), sourceSink.secondInt()));
+				graphs.add(new MaxFlowTask(g, capacity, sourceSink.firstInt(), sourceSink.secondInt()));
 			}
 		}
 
@@ -247,12 +230,6 @@ public class MaximumFlowBench {
 		// @Param({ "directed", "undirected" })
 		public String directed = "directed";
 
-		@Override
-		@Setup(Level.Invocation)
-		public void resetFlow() {
-			super.resetFlow();
-		}
-
 		@Setup(Level.Trial)
 		public void setup() {
 			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
@@ -266,10 +243,10 @@ public class MaximumFlowBench {
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
 				IntGraph g = GraphsTestUtils.randomGraphRecursiveMatrix(n, m, directed, seedGen.nextSeed());
-				IFlowNetworkInt flow = weighted ? randNetworkInt(g, seedGen.nextSeed()) : unweightedNetwork(g);
+				IWeightFunctionInt capacity = weighted ? randNetworkInt(g, seedGen.nextSeed()) : null;
 
 				IntIntPair sourceSink = chooseSourceSink(g, rand);
-				graphs.add(new MaxFlowTask(g, flow, sourceSink.firstInt(), sourceSink.secondInt()));
+				graphs.add(new MaxFlowTask(g, capacity, sourceSink.firstInt(), sourceSink.secondInt()));
 			}
 		}
 
@@ -328,32 +305,24 @@ public class MaximumFlowBench {
 
 	private static class MaxFlowTask {
 		final IntGraph g;
-		final IFlowNetworkInt flow;
+		final IWeightFunctionInt capacity;
 		final int source;
 		final int sink;
 
-		MaxFlowTask(IntGraph g, IFlowNetworkInt flow, int source, int sink) {
+		MaxFlowTask(IntGraph g, IWeightFunctionInt capacity, int source, int sink) {
 			this.g = g;
-			this.flow = flow;
+			this.capacity = capacity;
 			this.source = source;
 			this.sink = sink;
 		}
 	}
 
-	private static IFlowNetworkInt randNetworkInt(IntGraph g, long seed) {
+	private static IWeightFunctionInt randNetworkInt(IntGraph g, long seed) {
 		Random rand = new Random(seed);
-		IWeightsInt capacities = IWeights.createExternalEdgesWeights(g, int.class);
-		IWeightsInt flows = IWeights.createExternalEdgesWeights(g, int.class);
-		IFlowNetworkInt net = IFlowNetworkInt.createFromEdgeWeights(capacities, flows);
+		IWeightsInt capacity = IWeights.createExternalEdgesWeights(g, int.class);
 		for (int e : g.edges())
-			net.setCapacity(e, 5000 + rand.nextInt(16384));
-		return net;
-	}
-
-	private static IFlowNetworkInt unweightedNetwork(IntGraph g) {
-		IWeightsInt capacities = IWeights.createExternalEdgesWeights(g, int.class, Integer.valueOf(1));
-		IWeightsInt flows = IWeights.createExternalEdgesWeights(g, int.class);
-		return IFlowNetworkInt.createFromEdgeWeights(capacities, flows);
+			capacity.set(e, 5000 + rand.nextInt(16384));
+		return capacity;
 	}
 
 	private static IntIntPair chooseSourceSink(IntGraph g, Random rand) {

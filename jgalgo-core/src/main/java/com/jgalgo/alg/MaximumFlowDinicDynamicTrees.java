@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.IndexGraph;
@@ -54,13 +55,13 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 	MaximumFlowDinicDynamicTrees() {}
 
 	@Override
-	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, int source, int sink) {
-		return new Worker(g, net, source, sink).computeMaximumFlow();
+	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
+		return new Worker(g, capacity, source, sink).computeMaximumFlow();
 	}
 
 	@Override
-	double computeMaximumFlow(IndexGraph g, IFlowNetwork net, IntCollection sources, IntCollection sinks) {
-		return new Worker(g, net, sources, sinks).computeMaximumFlow();
+	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, IntCollection sources, IntCollection sinks) {
+		return new Worker(g, capacity, sources, sinks).computeMaximumFlow();
 	}
 
 	private class Worker extends MaximumFlowAbstract.WithResidualGraph.Worker {
@@ -68,28 +69,32 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 		final double[] capacity;
 		final double[] flow;
 
-		Worker(IndexGraph gOrig, IFlowNetwork net, int source, int sink) {
-			super(gOrig, net, source, sink);
+		Worker(IndexGraph gOrig, IWeightFunction capacityOrig, int source, int sink) {
+			super(gOrig, capacityOrig, source, sink);
 
 			flow = new double[g.edges().size()];
 			capacity = new double[g.edges().size()];
 			initCapacitiesAndFlows(flow, capacity);
 		}
 
-		Worker(IndexGraph gOrig, IFlowNetwork net, IntCollection sources, IntCollection sinks) {
-			super(gOrig, net, sources, sinks);
+		Worker(IndexGraph gOrig, IWeightFunction capacityOrig, IntCollection sources, IntCollection sinks) {
+			super(gOrig, capacityOrig, sources, sinks);
 
 			flow = new double[g.edges().size()];
 			capacity = new double[g.edges().size()];
 			initCapacitiesAndFlows(flow, capacity);
 		}
 
-		double computeMaximumFlow() {
+		IFlow computeMaximumFlow() {
 			debug.println("\t", getClass().getSimpleName());
 
 			double capacitySum = 100;
-			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
-				capacitySum += net.getCapacity(e);
+			if (capacityOrig == null || capacityOrig == IWeightFunction.CardinalityWeightFunction) {
+				capacitySum += gOrig.edges().size();
+			} else {
+				for (int m = gOrig.edges().size(), e = 0; e < m; e++)
+					capacitySum += capacityOrig.weight(e);
+			}
 			capacitySum *= 16;
 
 			IntGraphFactory factory = IntGraphFactory.newDirected().setOption("impl", "linked-list");

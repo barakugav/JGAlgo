@@ -33,7 +33,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.alg.IFlowNetworkInt;
+import com.jgalgo.alg.IFlow;
 import com.jgalgo.alg.MinimumCostFlow;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
@@ -68,32 +68,30 @@ public class MinCostFlowBench {
 
 		static class Task {
 			IntGraph g;
-			IFlowNetworkInt net;
+			IWeightFunctionInt capacity;
 			IWeightFunctionInt cost;
 			IWeightFunctionInt lowerBound;
 			IWeightFunctionInt supply;
 
 			static Task newRand(IntGraph g, Random rand) {
-				IFlowNetworkInt net = randNetwork(g, rand);
-				IWeightFunctionInt supply = randSupply(g, net, rand);
+				IWeightFunctionInt capacity = randNetwork(g, rand);
+				IWeightFunctionInt supply = randSupply(g, capacity, rand);
 
 				/*
 				 * build a 'random' lower bound by solving min-cost flow with a different cost function and use the
 				 * flows
 				 */
 				IWeightFunctionInt cost1 = randCost(g, rand);
-				MinimumCostFlow.newInstance().computeMinCostFlow(g, net, cost1, supply);
+				IFlow flow = (IFlow) MinimumCostFlow.newInstance().computeMinCostFlow(g, capacity, cost1, supply);
 				IWeightsInt lowerBound = IWeights.createExternalEdgesWeights(g, int.class);
-				for (int e : g.edges()) {
-					lowerBound.set(e, (int) (net.getFlowInt(e) * 0.4 * rand.nextDouble()));
-					net.setFlow(e, 0);
-				}
+				for (int e : g.edges())
+					lowerBound.set(e, (int) (flow.getFlow(e) * 0.4 * rand.nextDouble()));
 
 				IWeightFunctionInt cost = randCost(g, rand);
 
 				Task t = new Task();
 				t.g = g;
-				t.net = net;
+				t.capacity = capacity;
 				t.cost = cost;
 				t.lowerBound = lowerBound;
 				t.supply = supply;
@@ -101,16 +99,10 @@ public class MinCostFlowBench {
 			}
 		}
 
-		public void resetFlow() {
-			for (Task task : graphs)
-				for (int e : task.g.edges())
-					task.net.setFlow(e, 0);
-		}
-
 		void benchMinCostFlow(MinimumCostFlow algo, Blackhole blackhole) {
 			Task t = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-			algo.computeMinCostFlow(t.g, t.net, t.cost, t.lowerBound, t.supply);
-			blackhole.consume(t.net);
+			IFlow flow = (IFlow) algo.computeMinCostFlow(t.g, t.capacity, t.cost, t.lowerBound, t.supply);
+			blackhole.consume(flow);
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -126,12 +118,6 @@ public class MinCostFlowBench {
 			public String args;
 
 			public String directed = "directed";
-
-			@Override
-			@Setup(Level.Invocation)
-			public void resetFlow() {
-				super.resetFlow();
-			}
 
 			@Setup(Level.Trial)
 			public void setup() {
@@ -172,12 +158,6 @@ public class MinCostFlowBench {
 			public String args;
 
 			public String directed = "directed";
-
-			@Override
-			@Setup(Level.Invocation)
-			public void resetFlow() {
-				super.resetFlow();
-			}
 
 			@Setup(Level.Trial)
 			public void setup() {
@@ -220,12 +200,6 @@ public class MinCostFlowBench {
 
 			public String directed = "directed";
 
-			@Override
-			@Setup(Level.Invocation)
-			public void resetFlow() {
-				super.resetFlow();
-			}
-
 			@Setup(Level.Trial)
 			public void setup() {
 				Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
@@ -260,23 +234,23 @@ public class MinCostFlowBench {
 
 		static class Task {
 			IntGraph g;
-			IFlowNetworkInt net;
+			IWeightFunctionInt capacity;
 			IWeightFunctionInt cost;
 			IWeightFunctionInt lowerBound;
 			IntCollection sources;
 			IntCollection sinks;
 
 			static Task newRand(IntGraph g, Random rand) {
-				IFlowNetworkInt net = randNetwork(g, rand);
+				IWeightFunctionInt capacity = randNetwork(g, rand);
 				Pair<IntCollection, IntCollection> sourcesSinks = MaximumFlowBench.chooseMultiSourceMultiSink(g, rand);
 				IntCollection sources = sourcesSinks.first();
 				IntCollection sinks = sourcesSinks.second();
 				IWeightFunctionInt cost = randCost(g, rand);
-				IWeightFunctionInt lowerBound = randLowerBound(g, net, sources, sinks, rand);
+				IWeightFunctionInt lowerBound = randLowerBound(g, capacity, sources, sinks, rand);
 
 				Task t = new Task();
 				t.g = g;
-				t.net = net;
+				t.capacity = capacity;
 				t.cost = cost;
 				t.lowerBound = lowerBound;
 				t.sources = sources;
@@ -285,16 +259,10 @@ public class MinCostFlowBench {
 			}
 		}
 
-		public void resetFlow() {
-			for (Task task : graphs)
-				for (int e : task.g.edges())
-					task.net.setFlow(e, 0);
-		}
-
 		void benchMinCostFlow(MinimumCostFlow algo, Blackhole blackhole) {
 			Task t = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-			algo.computeMinCostMaxFlow(t.g, t.net, t.cost, t.lowerBound, t.sources, t.sinks);
-			blackhole.consume(t.net);
+			IFlow flow = (IFlow) algo.computeMinCostMaxFlow(t.g, t.capacity, t.cost, t.lowerBound, t.sources, t.sinks);
+			blackhole.consume(flow);
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -310,12 +278,6 @@ public class MinCostFlowBench {
 			public String args;
 
 			public String directed = "directed";
-
-			@Override
-			@Setup(Level.Invocation)
-			public void resetFlow() {
-				super.resetFlow();
-			}
 
 			@Setup(Level.Trial)
 			public void setup() {
@@ -357,12 +319,6 @@ public class MinCostFlowBench {
 
 			public String directed = "directed";
 
-			@Override
-			@Setup(Level.Invocation)
-			public void resetFlow() {
-				super.resetFlow();
-			}
-
 			@Setup(Level.Trial)
 			public void setup() {
 				Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
@@ -403,12 +359,6 @@ public class MinCostFlowBench {
 
 			public String directed = "directed";
 
-			@Override
-			@Setup(Level.Invocation)
-			public void resetFlow() {
-				super.resetFlow();
-			}
-
 			@Setup(Level.Trial)
 			public void setup() {
 				Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
@@ -443,13 +393,11 @@ public class MinCostFlowBench {
 		return builder.build();
 	}
 
-	private static IFlowNetworkInt randNetwork(IntGraph g, Random rand) {
-		IWeightsInt capacities = IWeights.createExternalEdgesWeights(g, int.class);
-		IWeightsInt flows = IWeights.createExternalEdgesWeights(g, int.class);
-		IFlowNetworkInt net = IFlowNetworkInt.createFromEdgeWeights(capacities, flows);
+	private static IWeightFunctionInt randNetwork(IntGraph g, Random rand) {
+		IWeightsInt capacity = IWeights.createExternalEdgesWeights(g, int.class);
 		for (int e : g.edges())
-			net.setCapacity(e, 400 + rand.nextInt(1024));
-		return net;
+			capacity.set(e, 400 + rand.nextInt(1024));
+		return capacity;
 	}
 
 	private static IWeightFunctionInt randCost(IntGraph g, Random rand) {
@@ -459,13 +407,13 @@ public class MinCostFlowBench {
 		return cost;
 	}
 
-	private static IWeightFunctionInt randLowerBound(IntGraph g, IFlowNetworkInt net, IntCollection sources,
+	private static IWeightFunctionInt randLowerBound(IntGraph g, IWeightFunctionInt capacity, IntCollection sources,
 			IntCollection sinks, Random rand) {
 		Assertions.Graphs.onlyDirected(g);
 
-		Int2IntMap capacity = new Int2IntOpenHashMap();
+		Int2IntMap caps = new Int2IntOpenHashMap();
 		for (int e : g.edges())
-			capacity.put(e, net.getCapacityInt(e));
+			caps.put(e, capacity.weightInt(e));
 
 		IntSet sinksSet = new IntOpenHashSet(sinks);
 		IntList sourcesList = new IntArrayList(sources);
@@ -504,7 +452,7 @@ public class MinCostFlowBench {
 				/* Find a random edge to deepen the DFS */
 				for (EdgeIterator edgeIter = edgeIters.get(u); edgeIter.idx < edgeIter.es.length; edgeIter.idx++) {
 					int e = edgeIter.es[edgeIter.idx];
-					if (capacity.get(e) == 0)
+					if (caps.get(e) == 0)
 						continue;
 					assert u == g.edgeSource(e);
 					int v = g.edgeTarget(e);
@@ -537,10 +485,10 @@ public class MinCostFlowBench {
 			}
 
 			/* Found a residual path from source to sink */
-			int delta = path.intStream().map(capacity::get).min().getAsInt();
+			int delta = path.intStream().map(caps::get).min().getAsInt();
 			assert delta > 0;
 			for (int e : path)
-				capacity.put(e, capacity.get(e) - delta);
+				caps.put(e, caps.get(e) - delta);
 
 			/* Add lower bounds to some of the edges */
 			IntList lowerBoundEdges = new IntArrayList(path);
@@ -555,7 +503,7 @@ public class MinCostFlowBench {
 		}
 	}
 
-	private static IWeightFunctionInt randSupply(IntGraph g, IFlowNetworkInt net, Random rand) {
+	private static IWeightFunctionInt randSupply(IntGraph g, IWeightFunctionInt capacity, Random rand) {
 		Assertions.Graphs.onlyDirected(g);
 
 		IntList suppliers = new IntArrayList();
@@ -576,9 +524,9 @@ public class MinCostFlowBench {
 			}
 		}
 
-		Int2IntMap capacity = new Int2IntOpenHashMap();
+		Int2IntMap caps = new Int2IntOpenHashMap();
 		for (int e : g.edges())
-			capacity.put(e, net.getCapacityInt(e));
+			caps.put(e, capacity.weightInt(e));
 
 		IntSet demandersSet = new IntOpenHashSet(demanders);
 		IntList suppliersList = new IntArrayList(suppliers);
@@ -604,7 +552,7 @@ public class MinCostFlowBench {
 				int[] es = g.outEdges(u).toIntArray();
 				IntArrays.shuffle(es, rand);
 				for (int e : es) {
-					if (capacity.get(e) == 0)
+					if (caps.get(e) == 0)
 						continue;
 					assert u == g.edgeSource(e);
 					int v = g.edgeTarget(e);
@@ -637,10 +585,10 @@ public class MinCostFlowBench {
 			}
 
 			/* Found a residual path from a supplier to a demander */
-			int delta = path.intStream().map(capacity::get).min().getAsInt();
+			int delta = path.intStream().map(caps::get).min().getAsInt();
 			assert delta > 0;
 			for (int e : path)
-				capacity.put(e, capacity.get(e) - delta);
+				caps.put(e, caps.get(e) - delta);
 
 			/* Add lower bounds to some of the edges */
 			int source = g.edgeSource(path.getInt(0));
