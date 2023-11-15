@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Iterator;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
@@ -23,7 +24,8 @@ import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * Minimum Vertex-Cut algorithm with terminal vertices (source-sink, S-T).
+ * Minimum Vertex-Cut algorithm that finds all minimum vertex-cuts in a graph between two terminal vertices
+ * (source-sink, S-T).
  *
  * <p>
  * Given a graph \(G=(V,E)\), a vertex cut (or separating set) is a set of vertices \(C\) whose removal transforms \(G\)
@@ -38,8 +40,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * make it trivial, containing a single vertex).
  *
  * <p>
- * Algorithms implementing this interface compute the minimum vertex-cut given two terminal vertices, {@code source (S)}
- * and {@code sink (T)}.
+ * Algorithms implementing this interface compute <b>all</b> minimum vertex-cuts given two terminal vertices,
+ * {@code source (S)} and {@code sink (T)}. For a single minimum vertex-cut, use {@link MinimumVertexCutST}. For the
+ * global variant (without terminal vertices), see {@link MinimumVertexCutGlobal}.
  *
  * <p>
  * The cardinality (unweighted) minimum vertex-cut between two vertices is equal to the (local) vertex connectivity of
@@ -50,15 +53,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
+ * @see    MinimumVertexCutST
  * @see    MinimumVertexCutGlobal
- * @see    MinimumVertexCutAllST
  * @see    MinimumEdgeCutST
  * @author Barak Ugav
  */
-public interface MinimumVertexCutST {
+public interface MinimumVertexCutAllST {
 
 	/**
-	 * Compute the minimum vertex-cut in a graph between two terminal vertices.
+	 * Compute all the minimum vertex-cuts in a graph between two terminal vertices.
 	 *
 	 * <p>
 	 * Given a graph \(G=(V,E)\), an vertex-cut is a set of vertices whose removal disconnect the source from the sink.
@@ -70,8 +73,8 @@ public interface MinimumVertexCutST {
 	 * and sink and an edge exists between them, no vertex-cut exists and {@code null} will be returned.
 	 *
 	 * <p>
-	 * If {@code g} is an {@link IntGraph}, a {@link IntSet} object will be returned. In that case, its better to pass a
-	 * {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
+	 * If {@code g} is an {@link IntGraph}, an iterator of {@link IntSet} objects will be returned. In that case, its
+	 * better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
 	 * @param  <V>                      the vertices type
 	 * @param  <E>                      the edges type
@@ -79,51 +82,52 @@ public interface MinimumVertexCutST {
 	 * @param  w                        a vertex weight function
 	 * @param  source                   the source vertex
 	 * @param  sink                     the sink vertex
-	 * @return                          a set of vertices that form the minimum vertex-cut, or {@code null} if an edge
-	 *                                  exists between the source and the sink and therefore no vertex-cut exists
+	 * @return                          an iterator over the sets of vertices that form the minimum vertex-cuts, or
+	 *                                  {@code null} if an edge exists between the source and the sink and therefore no
+	 *                                  vertex-cut exists
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
-	<V, E> Set<V> computeMinimumCut(Graph<V, E> g, WeightFunction<V> w, V source, V sink);
+	<V, E> Iterator<Set<V>> computeAllMinimumCuts(Graph<V, E> g, WeightFunction<V> w, V source, V sink);
 
 	/**
-	 * Create a new minimum S-T vertex-cut algorithm object.
+	 * Create a new minimum S-T all vertex-cuts algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumVertexCutST} object. The
-	 * {@link MinimumVertexCutST.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MinimumVertexCutAllST} object. The
+	 * {@link MinimumVertexCutAllST.Builder} might support different options to obtain different implementations.
 	 *
-	 * @return a default implementation of {@link MinimumVertexCutST}
+	 * @return a default implementation of {@link MinimumVertexCutAllST}
 	 */
-	static MinimumVertexCutST newInstance() {
+	static MinimumVertexCutAllST newInstance() {
 		return newBuilder().build();
 	}
 
 	/**
-	 * Create a new minimum vertex-cut algorithm builder.
+	 * Create a new minimum all vertex-cuts algorithm builder.
 	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
-	 * @return a new builder that can build {@link MinimumVertexCutST} objects
+	 * @return a new builder that can build {@link MinimumVertexCutAllST} objects
 	 */
-	static MinimumVertexCutST.Builder newBuilder() {
-		return MinimumVertexCutSTEdgeCut::new;
+	static MinimumVertexCutAllST.Builder newBuilder() {
+		return MinimumVertexCutAllSTEdgeCut::new;
 	}
 
 	/**
-	 * A builder for {@link MinimumVertexCutST} objects.
+	 * A builder for {@link MinimumVertexCutAllST} objects.
 	 *
-	 * @see    MinimumVertexCutST#newBuilder()
+	 * @see    MinimumVertexCutAllST#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {
 
 		/**
-		 * Create a new algorithm object for minimum vertex-cut computation.
+		 * Create a new algorithm object for minimum all vertex-cuts computation.
 		 *
-		 * @return a new minimum vertex-cut algorithm
+		 * @return a new minimum all vertex-cuts algorithm
 		 */
-		MinimumVertexCutST build();
+		MinimumVertexCutAllST build();
 	}
 
 }

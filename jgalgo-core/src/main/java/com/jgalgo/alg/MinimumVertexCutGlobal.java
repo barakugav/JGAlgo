@@ -27,13 +27,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * <p>
  * Given a graph \(G=(V,E)\), a vertex cut (or separating set) is a set of vertices \(C\) whose removal transforms \(G\)
- * into a disconnected graph. In the case the graph is a clique of size \(k\), any vertex set of size \(k-1\) is
- * consider by convention a vertex cut of the graph. Given a vertex weight function, the weight of a vertex-cut \(C\) is
- * the weight sum of all vertices in \(C\). There are two variants of the problem to find a minimum weight vertex-cut:
- * (1) With terminal vertices, and (2) without terminal vertices. In the variant with terminal vertices, we are given
- * two special vertices {@code source (S)} and {@code sink (T)} and we need to find the minimum vertex-cut \(C\) such
- * that such that the {@code source} and the {@code sink} are not in the same connected components after the removal of
- * the vertices of \(C\). In the variant without terminal vertices (also called 'global vertex-cut') we need to find the
+ * into a disconnected graph. In case the graph is a clique of size \(k\), any vertex set of size \(k-1\) is considered
+ * by convention a vertex cut of the graph. Given a vertex weight function, the weight of a vertex-cut \(C\) is the
+ * weight sum of all vertices in \(C\). There are two variants of the problem to find a minimum weight vertex-cut: (1)
+ * With terminal vertices, and (2) without terminal vertices. In the variant with terminal vertices, we are given two
+ * special vertices {@code source (S)} and {@code sink (T)} and we need to find the minimum vertex-cut \(C\) such that
+ * such that the {@code source} and the {@code sink} are not in the same connected components after the removal of the
+ * vertices of \(C\). In the variant without terminal vertices (also called 'global vertex-cut') we need to find the
  * minimal cut among all possible cuts, and the removal of the vertices of \(C\) should simply disconnect the graph (or
  * make it trivial, containing a single vertex).
  *

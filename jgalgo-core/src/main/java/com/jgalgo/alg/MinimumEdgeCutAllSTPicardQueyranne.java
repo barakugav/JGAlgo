@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutAllSTUtils.AbstractImpl {
+class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImplAllST {
 
 	private final MaximumFlow maximumFlow = MaximumFlow.newInstance();
 	private final StronglyConnectedComponentsAlgo sccAlgo = StronglyConnectedComponentsAlgo.newInstance();
@@ -54,6 +54,8 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutAllSTUtils.Abstra
 		residual0.expectedVerticesNum(n);
 		for (int v = 0; v < n; v++)
 			residual0.addVertex();
+		if (w == null)
+			w = IWeightFunction.CardinalityWeightFunction;
 		if (g.isDirected()) {
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);

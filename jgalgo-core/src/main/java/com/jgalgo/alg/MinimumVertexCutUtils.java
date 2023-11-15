@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Iterator;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
@@ -25,6 +26,7 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class MinimumVertexCutUtils {
@@ -51,6 +53,32 @@ class MinimumVertexCutUtils {
 		}
 
 		abstract IntSet computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink);
+	}
+
+	abstract static class AbstractImplAllST implements MinimumVertexCutAllST {
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public <V, E> Iterator<Set<V>> computeAllMinimumCuts(Graph<V, E> g, WeightFunction<V> w, V source, V sink) {
+			if (g instanceof IndexGraph) {
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();
+				return (Iterator) computeAllMinimumCuts((IndexGraph) g, w0, source0, sink0);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);
+				int iSource = viMap.idToIndex(source);
+				int iSink = viMap.idToIndex(sink);
+				Iterator<IntSet> indexCuts = computeAllMinimumCuts(iGraph, iw, iSource, iSink);
+				return indexCuts == null ? null
+						: JGAlgoUtils.iterMap(indexCuts, c -> IndexIdMaps.indexToIdSet(c, viMap));
+			}
+		}
+
+		abstract Iterator<IntSet> computeAllMinimumCuts(IndexGraph g, IWeightFunction w, int source, int sink);
+
 	}
 
 	abstract static class AbstractImplGlobal implements MinimumVertexCutGlobal {

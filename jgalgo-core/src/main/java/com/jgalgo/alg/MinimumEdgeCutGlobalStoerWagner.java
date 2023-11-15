@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  *
  * @author Barak Ugav
  */
-class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutGlobalAbstract {
+class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutUtils.AbstractImplGlobal {
 
 	@Override
 	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {

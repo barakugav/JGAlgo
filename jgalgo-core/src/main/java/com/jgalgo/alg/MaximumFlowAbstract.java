@@ -31,7 +31,7 @@ import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
-abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl implements MaximumFlow {
+abstract class MaximumFlowAbstract extends MinimumEdgeCutUtils.AbstractImplST implements MaximumFlow {
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -83,12 +83,12 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutSTUtils.AbstractImpl im
 
 	@Override
 	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
-		return MinimumEdgeCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, source, sink, this);
+		return MinimumEdgeCutUtils.computeMinimumCutUsingMaxFlow(g, w, source, sink, this);
 	}
 
 	@Override
 	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, IntCollection sources, IntCollection sinks) {
-		return MinimumEdgeCutSTUtils.computeMinimumCutUsingMaxFlow(g, w, sources, sinks, this);
+		return MinimumEdgeCutUtils.computeMinimumCutUsingMaxFlow(g, w, sources, sinks, this);
 	}
 
 	abstract static class WithoutResidualGraph extends MaximumFlowAbstract {

@@ -97,7 +97,7 @@ class MinimumEdgeCutGlobalStoerWagnerTest extends TestBase {
 
 		} else {
 			MinimumEdgeCutGlobal validationAlgo =
-					MinimumEdgeCutSTUtils.globalMinCutFromStMinCut(new MaximumFlowEdmondsKarp());
+					MinimumEdgeCutUtils.globalMinCutFromStMinCut(new MaximumFlowEdmondsKarp());
 			VertexBiPartition<V, E> minCutExpected = validationAlgo.computeMinimumCut(g, w);
 			int minCutWeightExpected = (int) w.weightSum(minCutExpected.crossEdges());
 

@@ -15,15 +15,17 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Iterator;
 import com.jgalgo.alg.MinimumVertexCutUtils.AuxiliaryGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * Minimum Vertex-Cut algorithm with terminal vertices (source-sink, S-T) using Minimum Edge-Cut algorithm.
+ * All Minimum Vertex-Cuts algorithm with terminal vertices (source-sink, S-T) using All Minimum Edge-Cuts algorithm.
  *
  * <p>
  * An auxiliary graph is constructed from the original graph \(G=(V,E)\) by replacing each vertex \(v\) with two
@@ -32,28 +34,19 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * If the original graph is undirected, then the edge \((u,v)\) is replaced with the edges \((u_1,v_0)\) and
  * \((v_1,u_0)\). The edges connecting the vertices \(v_0\) and \(v_1\) are weighted with the weight of the vertex \(v\)
  * in the original graph. The edges connecting the vertices \(u_1\) and \(v_0\) are weighted with a large enough weight
- * such that the minimum edge-cut in the auxiliary graph will not contain any of these edges. The minimum edge-cut in
- * the auxiliary graph is computed using the {@link MinimumEdgeCutST} algorithm. The minimum vertex-cut in the original
- * graph is the set of vertices corresponding to the edges in the minimum edge-cut in the auxiliary graph.
+ * such that the minimum edge-cut in the auxiliary graph will not contain any of these edges. The minimum edge-cuts in
+ * the auxiliary graph is computed using the {@link MinimumEdgeCutAllST} algorithm. The minimum vertex-cuts in the
+ * original graph is the set of vertices corresponding to the edges in the minimum edge-cuts in the auxiliary graph.
  *
  * @author Barak Ugav
  */
-class MinimumVertexCutSTEdgeCut extends MinimumVertexCutUtils.AbstractImplST {
+class MinimumVertexCutAllSTEdgeCut extends MinimumVertexCutUtils.AbstractImplAllST {
 
-	private final MinimumEdgeCutST minEdgeCutAlgo = MinimumEdgeCutST.newInstance();
+	private final MinimumEdgeCutAllST minEdgeCutAlgo = MinimumEdgeCutAllST.newInstance();
 
 	@Override
-	IntSet computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
+	Iterator<IntSet> computeAllMinimumCuts(IndexGraph g, IWeightFunction w, int source, int sink) {
 		AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, w);
-		int[] vertexCut = computeMinCut(g, source, sink, auxiliaryGraph);
-		if (vertexCut == null)
-			return null;
-
-		final int n = g.vertices().size();
-		return ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, vertexCut));
-	}
-
-	int[] computeMinCut(IndexGraph g, int source, int sink, AuxiliaryGraph auxiliaryGraph) {
 		if (g.getEdge(source, sink) != -1)
 			return null;
 
@@ -61,14 +54,20 @@ class MinimumVertexCutSTEdgeCut extends MinimumVertexCutUtils.AbstractImplST {
 		IWeightFunction w0 = auxiliaryGraph.weights;
 		final int verticesEdgesThreshold = auxiliaryGraph.verticesEdgesThreshold;
 
-		IntSet edgesCut = (IntSet) minEdgeCutAlgo
-				.computeMinimumCut(g0, w0, Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0)).crossEdges();
-		assert edgesCut.intStream().allMatch(e -> e >= verticesEdgesThreshold);
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		Iterator<IVertexBiPartition> edgesCuts = (Iterator) minEdgeCutAlgo.computeAllMinimumCuts(g0, w0,
+				Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0));
 
-		int[] vertexCut = edgesCut.toIntArray();
-		for (int i = 0; i < vertexCut.length; i++)
-			vertexCut[i] -= verticesEdgesThreshold;
-		return vertexCut;
+		return JGAlgoUtils.iterMap(edgesCuts, edgesCut -> {
+			assert edgesCut.crossEdges().intStream().allMatch(e -> e >= verticesEdgesThreshold);
+
+			int[] vertexCut = edgesCut.crossEdges().toIntArray();
+			for (int i = 0; i < vertexCut.length; i++)
+				vertexCut[i] -= verticesEdgesThreshold;
+
+			final int n = g.vertices().size();
+			return ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, vertexCut));
+		});
 	}
 
 }

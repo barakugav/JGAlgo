@@ -16,6 +16,7 @@
 package com.jgalgo.alg;
 
 import java.util.Collection;
+import java.util.Iterator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
@@ -27,15 +28,16 @@ import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.IntAdapters;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-class MinimumEdgeCutSTUtils {
+class MinimumEdgeCutUtils {
 
-	private MinimumEdgeCutSTUtils() {}
+	private MinimumEdgeCutUtils() {}
 
-	abstract static class AbstractImpl implements MinimumEdgeCutST {
+	abstract static class AbstractImplST implements MinimumEdgeCutST {
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -83,6 +85,59 @@ class MinimumEdgeCutSTUtils {
 
 		abstract IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, IntCollection sources,
 				IntCollection sinks);
+
+	}
+
+	abstract static class AbstractImplAllST implements MinimumEdgeCutAllST {
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public <V, E> Iterator<VertexBiPartition<V, E>> computeAllMinimumCuts(Graph<V, E> g, WeightFunction<E> w,
+				V source, V sink) {
+			if (g instanceof IndexGraph) {
+				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+				int source0 = ((Integer) source).intValue();
+				int sink0 = ((Integer) sink).intValue();
+				return (Iterator) computeAllMinimumCuts((IndexGraph) g, w0, source0, sink0);
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+				int iSource = viMap.idToIndex(source);
+				int iSink = viMap.idToIndex(sink);
+				Iterator<IVertexBiPartition> indexIter = computeAllMinimumCuts(iGraph, iw, iSource, iSink);
+				return JGAlgoUtils.iterMap(indexIter,
+						iPartition -> VertexBiPartitions.partitionFromIndexPartition(g, iPartition));
+			}
+		}
+
+		abstract Iterator<IVertexBiPartition> computeAllMinimumCuts(IndexGraph g, IWeightFunction w, int source,
+				int sink);
+
+	}
+
+	abstract static class AbstractImplGlobal implements MinimumEdgeCutGlobal {
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public <V, E> VertexBiPartition<V, E> computeMinimumCut(Graph<V, E> g, WeightFunction<E> w) {
+			if (g instanceof IndexGraph) {
+				return (VertexBiPartition<V, E>) computeMinimumCut((IndexGraph) g,
+						WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w));
+
+			} else {
+				IndexGraph iGraph = g.indexGraph();
+				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+
+				IVertexBiPartition indexCut = computeMinimumCut(iGraph, iw);
+				return VertexBiPartitions.partitionFromIndexPartition(g, indexCut);
+			}
+		}
+
+		abstract IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w);
 
 	}
 
@@ -163,7 +218,7 @@ class MinimumEdgeCutSTUtils {
 	}
 
 	static MinimumEdgeCutST buildFromMaxFlow(MaximumFlow maxFlowAlg) {
-		return new AbstractImpl() {
+		return new AbstractImplST() {
 
 			@Override
 			public IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
@@ -180,7 +235,7 @@ class MinimumEdgeCutSTUtils {
 	}
 
 	static MinimumEdgeCutGlobal globalMinCutFromStMinCut(MinimumEdgeCutST stMinCut) {
-		return new MinimumEdgeCutGlobalAbstract() {
+		return new AbstractImplGlobal() {
 			@Override
 			IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
 				final int n = g.vertices().size();
