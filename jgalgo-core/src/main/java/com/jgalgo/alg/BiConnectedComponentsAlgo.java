@@ -33,11 +33,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * of a graph.
  *
  * <p>
+ * For a general k-vertex connected components, see {@link KVertexConnectedComponentsAlgo}.
+ *
+ * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Biconnected_component">Wikipedia</a>
  * @see    StronglyConnectedComponentsAlgo
+ * @see    KVertexConnectedComponentsAlgo
  * @see    WeaklyConnectedComponentsAlgo
  * @author Barak Ugav
  */

@@ -37,10 +37,14 @@ import com.jgalgo.graph.IntGraph;
  * connectivity.
  *
  * <p>
+ * For k-vertex connected components, see {@link KVertexConnectedComponentsAlgo}.
+ *
+ * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/K-edge-connected_graph">Wikipedia</a>
+ * @see    KVertexConnectedComponentsAlgo
  * @author Barak Ugav
  */
 public interface KEdgeConnectedComponentsAlgo {

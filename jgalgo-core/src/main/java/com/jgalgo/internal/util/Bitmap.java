@@ -149,7 +149,7 @@ public class Bitmap extends BitmapBase {
 			return;
 		for (int i = 0; i < words.length - 1; i++)
 			words[i] = ~0L;
-		words[words.length - 1] = size % WordSize == 0 ? ~0L : (1L << (size % WordSize)) - 1;
+		words[words.length - 1] = lastWordMask();
 	}
 
 	/**
@@ -194,8 +194,11 @@ public class Bitmap extends BitmapBase {
 	 * Flip every bit in this bitmap.
 	 */
 	public void not() {
+		if (words.length == 0)
+			return;
 		for (int i = 0; i < words.length; i++)
 			words[i] = ~words[i];
+		words[words.length - 1] &= lastWordMask();
 	}
 
 	/**
@@ -215,6 +218,10 @@ public class Bitmap extends BitmapBase {
 	private static void checkSize(Bitmap a, Bitmap b) {
 		if (a.size != b.size)
 			throw new IllegalArgumentException("Bitmaps must be of the same size");
+	}
+
+	private long lastWordMask() {
+		return size % WordSize == 0 ? ~0L : (1L << (size % WordSize)) - 1;
 	}
 
 }

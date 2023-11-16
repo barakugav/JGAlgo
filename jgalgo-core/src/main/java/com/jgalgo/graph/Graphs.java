@@ -2167,10 +2167,25 @@ public class Graphs {
 			gb.addVertex(v);
 
 		if (edges == null) {
-			for (E e : g.edges()) {
-				V u = g.edgeSource(e), v = g.edgeTarget(e);
-				if (gb.vertices().contains(u) && gb.vertices().contains(v))
-					gb.addEdge(u, v, e);
+			if (g.isDirected()) {
+				for (V u : gb.vertices()) {
+					for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						E e = eit.next();
+						V v = eit.target();
+						if (gb.vertices().contains(v))
+							gb.addEdge(u, v, e);
+					}
+				}
+			} else {
+				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+				for (V u : gb.vertices()) {
+					for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						E e = eit.next();
+						V v = eit.target();
+						if (viMap.idToIndex(u) <= viMap.idToIndex(v) && gb.vertices().contains(v))
+							gb.addEdge(u, v, e);
+					}
+				}
 			}
 		} else {
 			for (E e : edges)
@@ -2251,10 +2266,24 @@ public class Graphs {
 			gb.addVertex(v);
 
 		if (edges == null) {
-			for (int e : g.edges()) {
-				int u = g.edgeSource(e), v = g.edgeTarget(e);
-				if (gb.vertices().contains(u) && gb.vertices().contains(v))
-					gb.addEdge(u, v, e);
+			if (g.isDirected()) {
+				for (int u : gb.vertices()) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						int e = eit.nextInt();
+						int v = eit.targetInt();
+						if (gb.vertices().contains(v))
+							gb.addEdge(u, v, e);
+					}
+				}
+			} else {
+				for (int u : gb.vertices()) {
+					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						int e = eit.nextInt();
+						int v = eit.targetInt();
+						if (u <= v && gb.vertices().contains(v))
+							gb.addEdge(u, v, e);
+					}
+				}
 			}
 		} else {
 			for (int e : edges)

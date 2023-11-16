@@ -212,10 +212,6 @@ public class BitmapBase implements IntIterable {
 		return ret;
 	}
 
-	public ImmutableBitmap copyImmutable() {
-		return null;
-	}
-
 	@Override
 	public String toString() {
 		return ImmutableIntArraySet.withNaiveContains(toArray()).toString();

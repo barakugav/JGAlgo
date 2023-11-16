@@ -268,7 +268,7 @@ public interface LowestCommonAncestorOffline {
 	}
 
 	/**
-	 * Create a new tree path maxima algorithm object.
+	 * Create a new offline LCA algorithm object.
 	 *
 	 * <p>
 	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorOffline} object. The
@@ -281,7 +281,7 @@ public interface LowestCommonAncestorOffline {
 	}
 
 	/**
-	 * Create a new tree path maxima algorithm builder.
+	 * Create a new offline LCA algorithm builder.
 	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
@@ -301,9 +301,9 @@ public interface LowestCommonAncestorOffline {
 	static interface Builder extends AlgorithmBuilderBase {
 
 		/**
-		 * Create a new algorithm object for tree path maxima computation.
+		 * Create a new algorithm object for offline LCA computation.
 		 *
-		 * @return a new tree path maxima algorithm
+		 * @return a new offline LCA algorithm
 		 */
 		LowestCommonAncestorOffline build();
 	}

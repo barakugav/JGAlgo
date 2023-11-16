@@ -48,13 +48,19 @@ class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutUtils.AbstractIm
 	Iterator<IntSet> minimumCutsIter(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		Assertions.Graphs.onlyCardinality(w);
-		g = g.copy(); /* copy, we add edges to g */
-		final int n = g.vertices().size();
 
 		/* Find k, the (global) connectivity of the graph */
 		final int k = globalConnectivityAlgo.computeMinimumCut(g, null).size();
+
+		return minimumCutsIter(g, k);
+	}
+
+	Iterator<IntSet> minimumCutsIter(IndexGraph g, int k) {
 		if (k == 0)
 			return Collections.emptyIterator();
+
+		g = g.copy(); /* copy, we add edges to g */
+		final int n = g.vertices().size();
 
 		/* Find k vertices with highest degree */
 		int[] vertices = g.vertices().toIntArray();

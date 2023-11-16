@@ -40,6 +40,8 @@ import com.jgalgo.graph.IntGraph;
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    WeaklyConnectedComponentsAlgo
+ * @see    BiConnectedComponentsAlgo
+ * @see    KVertexConnectedComponentsAlgo
  * @author Barak Ugav
  */
 public interface StronglyConnectedComponentsAlgo {
