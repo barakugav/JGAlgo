@@ -16,11 +16,13 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
+import java.util.List;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
- * An algorithm that finds all simple paths between a source and a target.
+ * An algorithm that enumerate over simple paths between a source and a target.
  *
  * <p>
  * Given a graph \(G=(V,E)\), a path is a sequence of edges \(e_1,e_2,\ldots,e_k\) such that \(e_i=(v_{i-1},v_i)\) and
@@ -30,10 +32,10 @@ import com.jgalgo.graph.IntGraph;
  *
  * @author Barak Ugav
  */
-public interface SimplePathsFinder {
+public interface SimplePathsEnumerator {
 
 	/**
-	 * Find all the simple paths between a source and a target vertices in the given graph.
+	 * Iterate over all the simple paths between a source and a target vertices in the given graph.
 	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, an iterator of {@link IPath} objects will be returned.
@@ -45,37 +47,54 @@ public interface SimplePathsFinder {
 	 * @param  target the target vertex
 	 * @return        an iterator that iteration over all simple paths between the two vertices in the graph
 	 */
-	<V, E> Iterator<Path<V, E>> findAllSimplePaths(Graph<V, E> g, V source, V target);
+	<V, E> Iterator<Path<V, E>> simplePathsIter(Graph<V, E> g, V source, V target);
 
 	/**
-	 * Create a new algorithm for simple paths finding.
+	 * Find all the simple paths between a source and a target vertices in the given graph.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link SimplePathsFinder} object. The
-	 * {@link SimplePathsFinder.Builder} might support different options to obtain different implementations.
+	 * If {@code g} is an {@link IntGraph}, a list of {@link IPath} objects will be returned.
 	 *
-	 * @return a default implementation of {@link SimplePathsFinder}
+	 * @param  <V>    the vertices type
+	 * @param  <E>    the edges type
+	 * @param  g      a graph
+	 * @param  source the source vertex
+	 * @param  target the target vertex
+	 * @return        a list of all simple paths between the two vertices in the graph
 	 */
-	static SimplePathsFinder newInstance() {
+	default <V, E> List<Path<V, E>> allSimplePaths(Graph<V, E> g, V source, V target) {
+		return new ObjectArrayList<>(simplePathsIter(g, source, target));
+	}
+
+	/**
+	 * Create a new algorithm for simple paths enumeration.
+	 *
+	 * <p>
+	 * This is the recommended way to instantiate a new {@link SimplePathsEnumerator} object. The
+	 * {@link SimplePathsEnumerator.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link SimplePathsEnumerator}
+	 */
+	static SimplePathsEnumerator newInstance() {
 		return newBuilder().build();
 	}
 
 	/**
-	 * Create a new simple paths finder algorithm builder.
+	 * Create a new simple paths enumerator algorithm builder.
 	 *
 	 * <p>
 	 * Use {@link #newInstance()} for a default implementation.
 	 *
-	 * @return a new builder that can build {@link SimplePathsFinder} objects
+	 * @return a new builder that can build {@link SimplePathsEnumerator} objects
 	 */
-	static SimplePathsFinder.Builder newBuilder() {
-		return SimplePathsFinderSedgewick::new;
+	static SimplePathsEnumerator.Builder newBuilder() {
+		return SimplePathsEnumeratorSedgewick::new;
 	}
 
 	/**
-	 * A builder for {@link SimplePathsFinder} objects.
+	 * A builder for {@link SimplePathsEnumerator} objects.
 	 *
-	 * @see    SimplePathsFinder#newBuilder()
+	 * @see    SimplePathsEnumerator#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {
@@ -83,9 +102,9 @@ public interface SimplePathsFinder {
 		/**
 		 * Create a new algorithm object for simple paths computation.
 		 *
-		 * @return a new simple paths finder algorithm
+		 * @return a new simple paths enumerator algorithm
 		 */
-		SimplePathsFinder build();
+		SimplePathsEnumerator build();
 	}
 
 }

@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
- * Sedgewick's simple paths finder implementation.
+ * Sedgewick's simple paths enumerator implementation.
  *
  * <p>
  * The algorithm is a variant of DFS, that mark visited vertices, but unmark them when the DFS backtracks.
@@ -35,10 +35,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class SimplePathsFinderSedgewick extends SimplePathsFinders.AbstractImpl {
+class SimplePathsEnumeratorSedgewick extends SimplePathsEnumerators.AbstractImpl {
 
 	@Override
-	Iterator<IPath> findAllSimplePaths(IndexGraph g, int source, int target) {
+	Iterator<IPath> simplePathsIter(IndexGraph g, int source, int target) {
 		if (source == target)
 			return List.<IPath>of(new PathImpl(g, source, target, IntList.of())).iterator();
 		return new Iterator<>() {

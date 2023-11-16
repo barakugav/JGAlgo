@@ -29,21 +29,21 @@ import com.jgalgo.graph.Graphs;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 
-public class SimplePathsFinderSedgewickTest extends TestBase {
+public class SimplePathsEnumeratorSedgewickTest extends TestBase {
 
 	@Test
 	public void testRandGraphUndirected() {
 		final long seed = 0xeaab684c5d81dc5aL;
-		testRandGraphs(new SimplePathsFinderSedgewick(), false, seed);
+		testRandGraphs(new SimplePathsEnumeratorSedgewick(), false, seed);
 	}
 
 	@Test
 	public void testRandGraphDirected() {
 		final long seed = 0x478625aebbd87022L;
-		testRandGraphs(new SimplePathsFinderSedgewick(), true, seed);
+		testRandGraphs(new SimplePathsEnumeratorSedgewick(), true, seed);
 	}
 
-	private static void testRandGraphs(SimplePathsFinder algo, boolean directed, long seed) {
+	private static void testRandGraphs(SimplePathsEnumerator algo, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
@@ -61,11 +61,16 @@ public class SimplePathsFinderSedgewickTest extends TestBase {
 		});
 	}
 
-	private static <V, E> void testSimplePaths(Graph<V, E> g, V source, V target, SimplePathsFinder algo) {
+	private static <V, E> void testSimplePaths(Graph<V, E> g, V source, V target, SimplePathsEnumerator algo) {
 		final int limit = 20;
 		Set<List<E>> paths = new HashSet<>();
 
-		Iterator<Path<V, E>> pit = algo.findAllSimplePaths(g, source, target);
+		Iterator<Path<V, E>> pit;
+		if (g.vertices().size() <= 16) {
+			pit = algo.allSimplePaths(g, source, target).iterator();
+		} else {
+			pit = algo.simplePathsIter(g, source, target);
+		}
 		if (!pit.hasNext())
 			assertNull(Path.findPath(g, source, target));
 		for (; pit.hasNext();) {

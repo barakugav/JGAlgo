@@ -77,7 +77,7 @@ class KShortestPathsSTTestUtils extends TestBase {
 
 		if ((g.isDirected() && g.edges().size() < 55) || (!g.isDirected() && g.edges().size() < 40)) {
 			Iterator<Path<V, E>> simplePathsIter =
-					SimplePathsFinder.newInstance().findAllSimplePaths(g, source, target);
+					SimplePathsEnumerator.newInstance().simplePathsIter(g, source, target);
 			List<Path<V, E>> pathsExpected = StreamSupport
 					.stream(Spliterators.spliteratorUnknownSize(simplePathsIter, Spliterator.ORDERED), false)
 					.map(p -> ObjectDoublePair.of(p, w0.weightSum(p.edges())))

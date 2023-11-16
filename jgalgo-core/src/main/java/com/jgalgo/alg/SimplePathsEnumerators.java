@@ -21,30 +21,30 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
-class SimplePathsFinders {
+class SimplePathsEnumerators {
 
-	private SimplePathsFinders() {}
+	private SimplePathsEnumerators() {}
 
-	abstract static class AbstractImpl implements SimplePathsFinder {
+	abstract static class AbstractImpl implements SimplePathsEnumerator {
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
-		public <V, E> Iterator<Path<V, E>> findAllSimplePaths(Graph<V, E> g, V source, V target) {
+		public <V, E> Iterator<Path<V, E>> simplePathsIter(Graph<V, E> g, V source, V target) {
 			if (g instanceof IndexGraph) {
 				int source0 = ((Integer) source).intValue(), target0 = ((Integer) target).intValue();
-				return (Iterator) findAllSimplePaths((IndexGraph) g, source0, target0);
+				return (Iterator) simplePathsIter((IndexGraph) g, source0, target0);
 
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 				int iSource = viMap.idToIndex(source);
 				int iTarget = viMap.idToIndex(target);
-				Iterator<IPath> indexResult = findAllSimplePaths(iGraph, iSource, iTarget);
+				Iterator<IPath> indexResult = simplePathsIter(iGraph, iSource, iTarget);
 				return JGAlgoUtils.iterMap(indexResult, iPath -> PathImpl.pathFromIndexPath(g, iPath));
 			}
 		}
 
-		abstract Iterator<IPath> findAllSimplePaths(IndexGraph g, int source, int target);
+		abstract Iterator<IPath> simplePathsIter(IndexGraph g, int source, int target);
 
 	}
 
