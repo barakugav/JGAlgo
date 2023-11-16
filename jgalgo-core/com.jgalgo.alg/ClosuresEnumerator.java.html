@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClosuresEnumerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">ClosuresEnumerator.java</span></div><h1>ClosuresEnumerator.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+/**
+ * An algorithm that enumerate all the closure subsets in a directed graph.
+ *
+ * &lt;p&gt;
+ * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that no edges leave
+ * \(C\) to \(V \setminus C\). There might be exponentially many closures in a graph, and algorithms implementing this
+ * interface enumerate over all of them (use an {@link Iterator} avoiding storing all of them in memory).
+ *
+ * &lt;p&gt;
+ * For undirected graphs, the closure subsets are simply the weakly connected components.
+ *
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
+ * {@link #newBuilder()} may support different options to obtain different implementations.
+ *
+ * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Closure_problem&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+public interface ClosuresEnumerator {
+
+	/**
+	 * Iterate over all closures in the given graph.
+	 *
+	 * &lt;p&gt;
+	 * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that no edges
+	 * leave \(C\) to \(V \setminus C\). Although the empty set of vertices is consider a colure, it is not returned by
+	 * this method.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned iterator will iterate over {@link IntSet} objects.
+	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
+	 * @param  g                        a directed graph
+	 * @return                          an iterator that iteration over all closures in the graph
+	 * @throws IllegalArgumentException if the graph is not directed
+	 */
+	&lt;V, E&gt; Iterator&lt;Set&lt;V&gt;&gt; closuresIter(Graph&lt;V, E&gt; g);
+
+	/**
+	 * Find all closures in the given graph.
+	 *
+	 * &lt;p&gt;
+	 * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that no edges
+	 * leave \(C\) to \(V \setminus C\). Although the empty set of vertices is consider a colure, it is not returned by
+	 * this method.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, the returned list will contain {@link IntSet} objects.
+	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
+	 * @param  g                        a directed graph
+	 * @return                          a list of all closures in the graph
+	 * @throws IllegalArgumentException if the graph is not directed
+	 */
+	default &lt;V, E&gt; List&lt;Set&lt;V&gt;&gt; allClosures(Graph&lt;V, E&gt; g) {
+<span class="fc" id="L84">		return new ObjectArrayList&lt;&gt;(closuresIter(g));</span>
+	}
+
+	/**
+	 * Create a new closure enumeration algorithm.
+	 *
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link ClosuresEnumerator} object. The
+	 * {@link ClosuresEnumerator.Builder} might support different options to obtain different implementations.
+	 *
+	 * @return a default implementation of {@link ClosuresEnumerator}
+	 */
+	static ClosuresEnumerator newInstance() {
+<span class="fc" id="L97">		return newBuilder().build();</span>
+	}
+
+	/**
+	 * Create a new closure enumeration algo builder.
+	 *
+	 * &lt;p&gt;
+	 * Use {@link #newInstance()} for a default implementation.
+	 *
+	 * @return a new builder that can build {@link ClosuresEnumerator} objects
+	 */
+	static ClosuresEnumerator.Builder newBuilder() {
+<span class="fc" id="L109">		return ClosuresEnumeratorSchrageBaker::new;</span>
+	}
+
+	/**
+	 * A builder for {@link ClosuresEnumerator} objects.
+	 *
+	 * @see    ClosuresEnumerator#newBuilder()
+	 * @author Barak Ugav
+	 */
+	static interface Builder extends AlgorithmBuilderBase {
+
+		/**
+		 * Create a new algorithm object for closure enumeration.
+		 *
+		 * @return a new closure enumeration algorithm
+		 */
+		ClosuresEnumerator build();
+	}
+
+	/**
+	 * Check whether the given set is a closure in the given graph.
+	 *
+	 * &lt;p&gt;
+	 * Given a directed graph \(G = (V, E)\), a closure is a subset of vertices \(C \subseteq V\) such that no edges
+	 * leave \(C\) to \(V \setminus C\). The empty set of vertices is considered a closure.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @param  c   a set of vertices
+	 * @return     {@code true} if the set is a closure, {@code false} otherwise
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; boolean isClosure(Graph&lt;V, E&gt; g, Set&lt;V&gt; c) {
+<span class="fc bfc" id="L143" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L144">			IntSet c0 = IntAdapters.asIntSet((Set&lt;Integer&gt;) c);</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (int w : IPath.reachableVertices((IntGraph) g, c0.iterator()))</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">				if (!(c0.contains(w)))</span>
+<span class="fc" id="L147">					return false;</span>
+<span class="fc" id="L148">		} else {</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">			for (V w : Path.reachableVertices(g, c.iterator()))</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">				if (!(c.contains(w)))</span>
+<span class="fc" id="L151">					return false;</span>
+		}
+<span class="fc" id="L153">		return true;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

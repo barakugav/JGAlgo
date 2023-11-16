@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClosuresEnumeratorSchrageBaker.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">ClosuresEnumeratorSchrageBaker.java</span></div><h1>ClosuresEnumeratorSchrageBaker.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import java.util.Iterator;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+/**
+ * Schrage-Baker algorithm for enumerating all the closure subsets in a directed graph.
+ *
+ * &lt;p&gt;
+ * Based on 'Dynamic Programming Solution of Sequencing Problems with Precedence Constraints' by Linus Schrage and
+ * Kenneth R. Baker (1978).
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L41">class ClosuresEnumeratorSchrageBaker extends ClosuresEnumerators.AbstractImpl {</span>
+
+<span class="fc" id="L43">	private final StronglyConnectedComponentsAlgo sccAlgo = StronglyConnectedComponentsAlgo.newInstance();</span>
+<span class="fc" id="L44">	private final TopologicalOrderAlgo topoAlgo = TopologicalOrderAlgo.newInstance();</span>
+
+	@Override
+	Iterator&lt;IntSet&gt; closuresIter(IndexGraph g) {
+<span class="fc" id="L48">		Assertions.Graphs.onlyDirected(g);</span>
+<span class="fc" id="L49">		final int n = g.vertices().size();</span>
+
+<span class="fc" id="L51">		IVertexPartition sccs = (IVertexPartition) sccAlgo.findStronglyConnectedComponents(g);</span>
+<span class="fc" id="L52">		final int sccNum = sccs.numberOfBlocks();</span>
+
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		if (sccNum == n) {</span>
+			/* The strongly connected components of the graphs are the trivial vertices, no cycles exists */
+			/* Self edges still might exists */
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">			if (g.isAllowSelfEdges()) {</span>
+<span class="fc" id="L58">				int selfEdges = 0;</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">					if (g.edgeSource(e) == g.edgeTarget(e))</span>
+<span class="fc" id="L61">						selfEdges++;</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">				if (selfEdges &gt; 0) {</span>
+<span class="fc" id="L63">					IndexGraphBuilder g0 = IndexGraphBuilder.newDirected();</span>
+<span class="fc" id="L64">					g0.expectedVerticesNum(n);</span>
+<span class="fc" id="L65">					g0.expectedEdgesNum(g.edges().size() - selfEdges);</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">					for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L67">						g0.addVertex();</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">						if (g.edgeSource(e) != g.edgeTarget(e))</span>
+<span class="fc" id="L70">							g0.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L71">					g = g0.build();</span>
+				}
+			}
+			/* Graph is DAG, no need to operate over the condensation graph */
+<span class="fc" id="L75">			return JGAlgoUtils.iterMap(closuresIterDag(g),</span>
+<span class="fc" id="L76">					iter -&gt; ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, iter)));</span>
+		}
+
+		/* Build the condensation graph */
+<span class="fc" id="L80">		IndexGraphBuilder sccGraph0 = IndexGraphBuilder.newDirected();</span>
+<span class="fc" id="L81">		sccGraph0.expectedVerticesNum(sccNum);</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (int b = 0; b &lt; sccNum; b++)</span>
+<span class="fc" id="L83">			sccGraph0.addVertex();</span>
+<span class="fc" id="L84">		Bitmap seenBlocks = new Bitmap(sccNum);</span>
+<span class="fc" id="L85">		IntList seenBlockList = new IntArrayList();</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		for (int b1 = 0; b1 &lt; sccNum; b1++) {</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">			for (int u : sccs.blockVertices(b1)) {</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L89">					eit.nextInt();</span>
+<span class="fc" id="L90">					int b2 = sccs.vertexBlock(eit.targetInt());</span>
+<span class="fc bfc" id="L91" title="All 4 branches covered.">					if (b1 == b2 || seenBlocks.get(b2))</span>
+<span class="fc" id="L92">						continue;</span>
+<span class="fc" id="L93">					seenBlocks.set(b2);</span>
+<span class="fc" id="L94">					seenBlockList.add(b2);</span>
+<span class="fc" id="L95">					sccGraph0.addEdge(b1, b2);</span>
+<span class="fc" id="L96">				}</span>
+<span class="fc" id="L97">			}</span>
+<span class="fc" id="L98">			seenBlocks.clearAllUnsafe(seenBlockList);</span>
+<span class="fc" id="L99">			seenBlockList.clear();</span>
+		}
+<span class="fc" id="L101">		IndexGraph sccGraph = sccGraph0.build();</span>
+
+		/* Find all closures in the DAG condensation graph and map the sets to the original vertices */
+<span class="fc" id="L104">		return JGAlgoUtils.iterMap(closuresIterDag(sccGraph), blkIter -&gt; {</span>
+<span class="fc" id="L105">			Bitmap closure = new Bitmap(n);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">			for (int blk : JGAlgoUtils.iterable(blkIter))</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">				for (int v : sccs.blockVertices(blk))</span>
+<span class="fc" id="L108">					closure.set(v);</span>
+<span class="fc" id="L109">			return ImmutableIntArraySet.ofBitmap(closure);</span>
+		});
+	}
+
+	private Iterator&lt;IntIterator&gt; closuresIterDag(IndexGraph g) {
+<span class="fc" id="L114">		final int n = g.vertices().size();</span>
+
+<span class="fc" id="L116">		int[] topoIdxToV =</span>
+<span class="fc" id="L117">				((TopologicalOrderAlgo.IResult) topoAlgo.computeTopologicalSorting(g)).orderedVertices().toIntArray();</span>
+<span class="fc" id="L118">		IntArrays.reverse(topoIdxToV);</span>
+<span class="fc" id="L119">		int[] vToTopoIndex = new int[n];</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		for (int topoIdx = 0; topoIdx &lt; n; topoIdx++)</span>
+<span class="fc" id="L121">			vToTopoIndex[topoIdxToV[topoIdx]] = topoIdx;</span>
+
+<span class="fc" id="L123">		Bitmap m = new Bitmap(n);</span>
+<span class="fc" id="L124">		return new Iterator&lt;&gt;() {</span>
+<span class="fc" id="L125">			int nextClearBit = 0;</span>
+
+			@Override
+			public boolean hasNext() {
+<span class="fc bfc" id="L129" title="All 2 branches covered.">				return nextClearBit &lt; n;</span>
+			}
+
+			@Override
+			public IntIterator next() {
+				/* Find the smallest positive integer j for which m(j)=0; call it i */
+<span class="fc" id="L135">				int i = nextClearBit;</span>
+
+				/* (if m(j)=1 for j=1,...,n then all subsets have been enumerated) */
+<span class="fc" id="L138">				Assertions.Iters.hasNext(this);</span>
+
+				/* Set m(i)=1 */
+<span class="fc" id="L141">				m.set(i);</span>
+
+				/* For j=i-1 to 1 step -1 */
+<span class="fc bfc" id="L144" title="All 2 branches covered.">				cleanLoop: for (int j = i - 1; j &gt;= 0; j--) {</span>
+					/* If m(j)=1 and j is in R(j) */
+					/* m(j) is always 1, i is the smallest index for which m(i)=0 // if (!m.get(j)) continue; */
+<span class="fc bfc" id="L147" title="All 2 branches covered.">					for (IEdgeIter eit = g.inEdges(topoIdxToV[j]).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L148">						eit.nextInt();</span>
+<span class="fc" id="L149">						int predecessor = eit.sourceInt();</span>
+<span class="pc bnc" id="L150" title="All 2 branches missed.">						assert j &lt; vToTopoIndex[predecessor];</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">						if (m.get(vToTopoIndex[predecessor]))</span>
+<span class="fc" id="L152">							continue cleanLoop;</span>
+<span class="fc" id="L153">					}</span>
+					/* Let m(j)=0 */
+<span class="fc" id="L155">					m.clear(j);</span>
+				}
+
+<span class="fc" id="L158">				nextClearBit = m.nextClearBit(0);</span>
+
+<span class="fc" id="L160">				return JGAlgoUtils.iterMapInt(m.iterator(), topoIdx -&gt; topoIdxToV[topoIdx]);</span>
+			}
+		};
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

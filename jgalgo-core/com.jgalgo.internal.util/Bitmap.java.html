@@ -19,7 +19,6 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.IntPredicate;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -29,13 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L32">public class Bitmap implements IntIterable {</span>
-
-	private final int size;
-	private final long[] words;
-
-	private static final int WordSize = Long.SIZE;
-	private static final long WORD_MASK = 0xffffffffffffffffL;
+<span class="fc" id="L31">public class Bitmap extends BitmapBase {</span>
 
 	/**
 	 * Creates a new bitmap of the specified size.
@@ -46,12 +39,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 *
 	 * @param size the number of bits
 	 */
-<span class="fc" id="L49">	public Bitmap(int size) {</span>
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">		if (size &lt; 0)</span>
-<span class="nc" id="L51">			throw new IllegalArgumentException(&quot;Negative size: &quot; + size);</span>
-<span class="fc" id="L52">		words = new long[(size + WordSize - 1) / WordSize];</span>
-<span class="fc" id="L53">		this.size = size;</span>
-<span class="fc" id="L54">	}</span>
+	public Bitmap(int size) {
+<span class="fc" id="L43">		super(size);</span>
+<span class="fc" id="L44">	}</span>
 
 	/**
 	 * Creates a new bitmap of the specified size, with the provided {@code true} 'ones' bits.
@@ -61,7 +51,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 * @return      a new bitmap of the specified size, with the provided {@code true} 'ones' bits
 	 */
 	public static Bitmap fromOnes(int size, int[] ones) {
-<span class="fc" id="L64">		return fromOnes(size, IntIterators.wrap(ones));</span>
+<span class="fc" id="L54">		return fromOnes(size, IntIterators.wrap(ones));</span>
 	}
 
 	/**
@@ -72,7 +62,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 * @return      a new bitmap of the specified size, with the provided {@code true} 'ones' bits
 	 */
 	public static Bitmap fromOnes(int size, IntList ones) {
-<span class="nc" id="L75">		return fromOnes(size, ones.iterator());</span>
+<span class="nc" id="L65">		return fromOnes(size, ones.iterator());</span>
 	}
 
 	/**
@@ -83,10 +73,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 * @return      a new bitmap of the specified size, with the provided {@code true} 'ones' bits
 	 */
 	public static Bitmap fromOnes(int size, IntIterator ones) {
-<span class="fc" id="L86">		Bitmap bitmap = new Bitmap(size);</span>
-<span class="fc bfc" id="L87" title="All 2 branches covered.">		while (ones.hasNext())</span>
-<span class="fc" id="L88">			bitmap.set(ones.nextInt());</span>
-<span class="fc" id="L89">		return bitmap;</span>
+<span class="fc" id="L76">		Bitmap bitmap = new Bitmap(size);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">		while (ones.hasNext())</span>
+<span class="fc" id="L78">			bitmap.set(ones.nextInt());</span>
+<span class="fc" id="L79">		return bitmap;</span>
 	}
 
 	/**
@@ -96,24 +86,19 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 * @param initialValues a provider that determine the initial value of each bit
 	 */
 	public static Bitmap fromPredicate(int size, IntPredicate predicate) {
-<span class="fc" id="L99">		Bitmap bitmap = new Bitmap(size);</span>
-<span class="fc" id="L100">		Objects.requireNonNull(predicate);</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">		for (int idx = 0; idx &lt; size; idx++)</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">			if (predicate.test(idx))</span>
-<span class="fc" id="L103">				bitmap.words[word(idx)] |= bit(idx);</span>
-<span class="fc" id="L104">		return bitmap;</span>
+<span class="fc" id="L89">		Bitmap bitmap = new Bitmap(size);</span>
+<span class="fc" id="L90">		Objects.requireNonNull(predicate);</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (int idx = 0; idx &lt; size; idx++)</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">			if (predicate.test(idx))</span>
+<span class="fc" id="L93">				bitmap.words[word(idx)] |= bit(idx);</span>
+<span class="fc" id="L94">		return bitmap;</span>
 	}
 
-	/**
-	 * Check whether the bit at the specified index is set ({@code true}).
-	 *
-	 * @param  idx                       the index of the bit
-	 * @return                           {@code true} if the bit is set, {@code false} otherwise
-	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
-	 */
-	public boolean get(int idx) {
-<span class="fc" id="L115">		checkIdx(idx);</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">		return (words[word(idx)] &amp; bit(idx)) != 0;</span>
+	public static Bitmap of(ImmutableBitmap bitmap) {
+<span class="nc" id="L98">		Bitmap b = new Bitmap(bitmap.capacity());</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">		for (int i = 0; i &lt; b.words.length; i++)</span>
+<span class="nc" id="L100">			b.words[i] = bitmap.words[i];</span>
+<span class="nc" id="L101">		return b;</span>
 	}
 
 	/**
@@ -124,13 +109,13 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
 	 */
 	public void set(int idx, boolean val) {
-<span class="fc" id="L127">		checkIdx(idx);</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">		if (val) {</span>
-<span class="fc" id="L129">			words[word(idx)] |= bit(idx);</span>
+<span class="fc" id="L112">		checkIdx(idx);</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">		if (val) {</span>
+<span class="fc" id="L114">			words[word(idx)] |= bit(idx);</span>
 		} else {
-<span class="fc" id="L131">			words[word(idx)] &amp;= ~bit(idx);</span>
+<span class="fc" id="L116">			words[word(idx)] &amp;= ~bit(idx);</span>
 		}
-<span class="fc" id="L133">	}</span>
+<span class="fc" id="L118">	}</span>
 
 	/**
 	 * Set the bit at the specified index to {@code true}.
@@ -139,9 +124,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
 	 */
 	public void set(int idx) {
-<span class="fc" id="L142">		checkIdx(idx);</span>
-<span class="fc" id="L143">		words[word(idx)] |= bit(idx);</span>
-<span class="fc" id="L144">	}</span>
+<span class="fc" id="L127">		checkIdx(idx);</span>
+<span class="fc" id="L128">		words[word(idx)] |= bit(idx);</span>
+<span class="fc" id="L129">	}</span>
 
 	/**
 	 * Set all bits to {@code val}.
@@ -149,23 +134,23 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 * @param val the value to set
 	 */
 	public void setAll(boolean val) {
-<span class="nc bnc" id="L152" title="All 2 branches missed.">		if (val) {</span>
-<span class="nc" id="L153">			setAll();</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">		if (val) {</span>
+<span class="nc" id="L138">			setAll();</span>
 		} else {
-<span class="nc" id="L155">			clear();</span>
+<span class="nc" id="L140">			clear();</span>
 		}
-<span class="nc" id="L157">	}</span>
+<span class="nc" id="L142">	}</span>
 
 	/**
 	 * Set all bits to {@code true}.
 	 */
 	public void setAll() {
-<span class="nc bnc" id="L163" title="All 2 branches missed.">		if (words.length == 0)</span>
-<span class="nc" id="L164">			return;</span>
-<span class="nc bnc" id="L165" title="All 2 branches missed.">		for (int i = 0; i &lt; words.length - 1; i++)</span>
-<span class="nc" id="L166">			words[i] = ~0L;</span>
-<span class="nc bnc" id="L167" title="All 2 branches missed.">		words[words.length - 1] = size % WordSize == 0 ? ~0L : 1L &lt;&lt; (size % WordSize) - 1;</span>
-<span class="nc" id="L168">	}</span>
+<span class="pc bpc" id="L148" title="1 of 2 branches missed.">		if (words.length == 0)</span>
+<span class="nc" id="L149">			return;</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length - 1; i++)</span>
+<span class="fc" id="L151">			words[i] = ~0L;</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">		words[words.length - 1] = size % WordSize == 0 ? ~0L : (1L &lt;&lt; (size % WordSize)) - 1;</span>
+<span class="fc" id="L153">	}</span>
 
 	/**
 	 * Set the bit at the specified index to {@code false}.
@@ -174,9 +159,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
 	 */
 	public void clear(int idx) {
-<span class="fc" id="L177">		checkIdx(idx);</span>
-<span class="fc" id="L178">		words[word(idx)] &amp;= ~bit(idx);</span>
-<span class="fc" id="L179">	}</span>
+<span class="fc" id="L162">		checkIdx(idx);</span>
+<span class="fc" id="L163">		words[word(idx)] &amp;= ~bit(idx);</span>
+<span class="fc" id="L164">	}</span>
 
 	/**
 	 * Set all bits to {@code false}, given a collection of {@code true} bits in this bitmap.
@@ -188,177 +173,49 @@ import it.unimi.dsi.fastutil.ints.IntList;
 	 */
 	public void clearAllUnsafe(IntCollection setBits) {
 		/* TODO: need to benchmark when its better to clear each bit independently */
-<span class="fc bfc" id="L191" title="All 2 branches covered.">		boolean perBitClear = setBits.size() &lt; size / WordSize;</span>
-<span class="fc bfc" id="L192" title="All 2 branches covered.">		if (perBitClear) {</span>
-<span class="fc bfc" id="L193" title="All 2 branches covered.">			for (int idx : setBits)</span>
-<span class="fc" id="L194">				clear(idx);</span>
-<span class="pc bnc" id="L195" title="All 2 branches missed.">			assert isEmpty();</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">		boolean perBitClear = setBits.size() &lt; size / WordSize;</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">		if (perBitClear) {</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">			for (int idx : setBits)</span>
+<span class="fc" id="L179">				clear(idx);</span>
+<span class="pc bnc" id="L180" title="All 2 branches missed.">			assert isEmpty();</span>
 		} else {
-<span class="fc" id="L197">			clear();</span>
+<span class="fc" id="L182">			clear();</span>
 		}
-<span class="fc" id="L199">	}</span>
+<span class="fc" id="L184">	}</span>
 
 	/**
 	 * Set all bits to {@code false}.
 	 */
 	public void clear() {
-<span class="fc" id="L205">		Arrays.fill(words, 0L);</span>
-<span class="fc" id="L206">	}</span>
+<span class="fc" id="L190">		Arrays.fill(words, 0L);</span>
+<span class="fc" id="L191">	}</span>
 
 	/**
-	 * Check whether all bits are set to {@code false}.
-	 *
-	 * @return {@code true} if all bits are {@code false}, {@code false} otherwise
+	 * Flip every bit in this bitmap.
 	 */
-	public boolean isEmpty() {
-<span class="nc bnc" id="L214" title="All 2 branches missed.">		for (long word : words)</span>
-<span class="nc bnc" id="L215" title="All 2 branches missed.">			if (word != 0)</span>
-<span class="nc" id="L216">				return false;</span>
-<span class="nc" id="L217">		return true;</span>
-	}
-
-	private static int word(int idx) {
-<span class="fc" id="L221">		return idx / WordSize;</span>
-	}
-
-	private static long bit(int idx) {
-<span class="fc" id="L225">		return 1L &lt;&lt; (idx % WordSize);</span>
-	}
+	public void not() {
+<span class="fc bfc" id="L197" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L198">			words[i] = ~words[i];</span>
+<span class="fc" id="L199">	}</span>
 
 	/**
-	 * Returns the index of the first bit that is set to {@code true} that occurs on or after the specified starting
-	 * index. If no such bit exists then {@code -1} is returned.
-	 *
-	 * @param  fromIndex                 the index to start checking from (inclusive)
-	 * @return                           the index of the next set bit, or {@code -1} if there is no such bit
-	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
-	 */
-	public int nextSetBit(int fromIndex) {
-<span class="fc" id="L237">		checkIdx(fromIndex);</span>
-
-<span class="fc" id="L239">		int wIdx = word(fromIndex);</span>
-<span class="fc" id="L240">		long word = words[wIdx] &amp; (WORD_MASK &lt;&lt; fromIndex);</span>
-		while (true) {
-<span class="fc bfc" id="L242" title="All 2 branches covered.">			if (word != 0)</span>
-<span class="fc" id="L243">				return (wIdx * WordSize) + Long.numberOfTrailingZeros(word);</span>
-<span class="fc bfc" id="L244" title="All 2 branches covered.">			if (++wIdx == words.length)</span>
-<span class="fc" id="L245">				return -1;</span>
-<span class="fc" id="L246">			word = words[wIdx];</span>
-		}
-	}
-
-	/**
-	 * Returns the index of the first bit that is set to {@code false} that occurs on or after the specified starting
-	 * index.
-	 *
-	 * @param  fromIndex                 the index to start checking from (inclusive)
-	 * @return                           the index of the next clear bit
-	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
-	 */
-	public int nextClearBit(int fromIndex) {
-<span class="fc" id="L259">		checkIdx(fromIndex);</span>
-
-<span class="fc" id="L261">		int wIdx = word(fromIndex);</span>
-<span class="fc" id="L262">		long word = ~words[wIdx] &amp; (WORD_MASK &lt;&lt; fromIndex);</span>
-
-		while (true) {
-<span class="fc bfc" id="L265" title="All 2 branches covered.">			if (word != 0)</span>
-<span class="fc" id="L266">				return (wIdx * WordSize) + Long.numberOfTrailingZeros(word);</span>
-<span class="fc bfc" id="L267" title="All 2 branches covered.">			if (++wIdx == words.length)</span>
-<span class="fc" id="L268">				return words.length * WordSize;</span>
-<span class="fc" id="L269">			word = ~words[wIdx];</span>
-		}
-	}
-
-	private void checkIdx(int idx) {
-<span class="pc bpc" id="L274" title="2 of 4 branches missed.">		if (idx &lt; 0 || idx &gt;= size)</span>
-<span class="nc" id="L275">			throw new IndexOutOfBoundsException(&quot;Index: &quot; + idx + &quot;, Size: &quot; + size);</span>
-<span class="fc" id="L276">	}</span>
-
-	/**
-	 * Returns the number of bits in this bitmap.
-	 *
-	 * @return the number of bits in this bitmap
-	 */
-	public int capacity() {
-<span class="fc" id="L284">		return size;</span>
-	}
-
-	/**
-	 * Returns the number of bits set to {@code true} in this bitmap.
-	 *
-	 * @return the number of bits set to {@code true} in this bitmap
-	 */
-	public int cardinality() {
-<span class="fc" id="L293">		int sum = 0;</span>
-<span class="fc bfc" id="L294" title="All 2 branches covered.">		for (long word : words)</span>
-<span class="fc" id="L295">			sum += Long.bitCount(word);</span>
-<span class="fc" id="L296">		return sum;</span>
-	}
-
-	/**
-	 * Returns an iterator that iterate over the bits current set to {@code true}.
-	 *
-	 * @return an iterator that iterate over the bits current set to {@code true}
-	 */
-	@Override
-	public IntIterator iterator() {
-<span class="fc" id="L306">		return new IntIterator() {</span>
-
-<span class="fc" id="L308">			int bit = nextSetBit(0);</span>
-
-			@Override
-			public boolean hasNext() {
-<span class="fc bfc" id="L312" title="All 2 branches covered.">				return bit != -1;</span>
-			}
-
-			@Override
-			public int nextInt() {
-<span class="fc" id="L317">				Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L318">				int ret = bit;</span>
-<span class="fc bfc" id="L319" title="All 2 branches covered.">				if (bit + 1 &lt; size) {</span>
-<span class="fc" id="L320">					bit = nextSetBit(bit + 1);</span>
-				} else {
-<span class="fc" id="L322">					bit = -1;</span>
-				}
-<span class="fc" id="L324">				return ret;</span>
-			}
-		};
-	}
-
-	/**
-	 * Returns an array containing all of the {@code true} bits in this bitmap in proper sequence (from first to last
-	 * bit).
-	 *
-	 * @return an array containing all of the {@code true} bits in this bitmap
-	 */
-	public int[] toArray() {
-<span class="fc" id="L336">		int[] arr = new int[cardinality()];</span>
-<span class="fc" id="L337">		int i = 0;</span>
-<span class="fc bfc" id="L338" title="All 2 branches covered.">		for (int b : this)</span>
-<span class="fc" id="L339">			arr[i++] = b;</span>
-<span class="fc" id="L340">		return arr;</span>
-	}
-
-	/**
-	 * Returns the complementary bitmap of this bitmap.
+	 * Perform a bitwise or with another bitmap.
 	 *
 	 * &lt;p&gt;
-	 * Every bit in the returned bitmap is the opposite of the corresponding bit in this bitmap.
+	 * This method does not create a new bitmap, but modifies this bitmap.
 	 *
-	 * @return the complementary bitmap of this bitmap
+	 * @param b the other bitmap
 	 */
-	public Bitmap not() {
-<span class="fc" id="L352">		Bitmap ret = new Bitmap(size);</span>
-<span class="fc bfc" id="L353" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L354">			ret.words[i] = ~words[i];</span>
-<span class="fc" id="L355">		return ret;</span>
-	}
+	public void or(Bitmap b) {
+<span class="fc" id="L210">		checkSize(this, b);</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L212">			words[i] |= b.words[i];</span>
+<span class="fc" id="L213">	}</span>
 
-	@Override
-	public String toString() {
-<span class="nc" id="L360">		return ImmutableIntArraySet.withNaiveContains(toArray()).toString();</span>
-	}
+	private static void checkSize(Bitmap a, Bitmap b) {
+<span class="pc bpc" id="L216" title="1 of 2 branches missed.">		if (a.size != b.size)</span>
+<span class="nc" id="L217">			throw new IllegalArgumentException(&quot;Bitmaps must be of the same size&quot;);</span>
+<span class="fc" id="L218">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BitmapBase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.util</a> &gt; <span class="el_source">BitmapBase.java</span></div><h1>BitmapBase.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.internal.util;
+
+import it.unimi.dsi.fastutil.ints.IntIterable;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+
+public class BitmapBase implements IntIterable {
+
+	final int size;
+	final long[] words;
+
+	static final int WordSize = Long.SIZE;
+	static final long WORD_MASK = 0xffffffffffffffffL;
+
+<span class="fc" id="L29">	BitmapBase(int size) {</span>
+<span class="fc" id="L30">		checkSize(size);</span>
+<span class="fc" id="L31">		this.size = size;</span>
+<span class="fc" id="L32">		words = new long[wordsNum(size)];</span>
+<span class="fc" id="L33">	}</span>
+
+<span class="nc" id="L35">	BitmapBase(int size, long[] words) {</span>
+<span class="nc" id="L36">		checkSize(size);</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">		if (words.length != wordsNum(size))</span>
+<span class="nc" id="L38">			throw new IllegalArgumentException(&quot;Wrong number of words: &quot; + words.length);</span>
+<span class="nc" id="L39">		this.size = size;</span>
+<span class="nc" id="L40">		this.words = words;</span>
+<span class="nc" id="L41">	}</span>
+
+	static void checkSize(int size) {
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">		if (size &lt; 0)</span>
+<span class="nc" id="L45">			throw new IllegalArgumentException(&quot;Negative size: &quot; + size);</span>
+<span class="fc" id="L46">	}</span>
+
+	static int wordsNum(int size) {
+<span class="fc" id="L49">		return (size + WordSize - 1) / WordSize;</span>
+	}
+
+	void checkIdx(int idx) {
+<span class="fc" id="L53">		checkIdx(idx, size);</span>
+<span class="fc" id="L54">	}</span>
+
+	static void checkIdx(int idx, int size) {
+<span class="pc bpc" id="L57" title="2 of 4 branches missed.">		if (idx &lt; 0 || idx &gt;= size)</span>
+<span class="nc" id="L58">			throw new IndexOutOfBoundsException(&quot;Index: &quot; + idx + &quot;, Size: &quot; + size);</span>
+<span class="fc" id="L59">	}</span>
+
+	static int word(int idx) {
+<span class="fc" id="L62">		return idx / WordSize;</span>
+	}
+
+	static long bit(int idx) {
+<span class="fc" id="L66">		return 1L &lt;&lt; (idx % WordSize);</span>
+	}
+
+	/**
+	 * Check whether the bit at the specified index is set ({@code true}).
+	 *
+	 * @param  idx                       the index of the bit
+	 * @return                           {@code true} if the bit is set, {@code false} otherwise
+	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
+	 */
+	public boolean get(int idx) {
+<span class="fc" id="L77">		checkIdx(idx);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		return (words[word(idx)] &amp; bit(idx)) != 0;</span>
+	}
+
+	/**
+	 * Check whether all bits are set to {@code false}.
+	 *
+	 * @return {@code true} if all bits are {@code false}, {@code false} otherwise
+	 */
+	public boolean isEmpty() {
+<span class="nc bnc" id="L87" title="All 2 branches missed.">		for (long word : words)</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">			if (word != 0)</span>
+<span class="nc" id="L89">				return false;</span>
+<span class="nc" id="L90">		return true;</span>
+	}
+
+	/**
+	 * Returns the index of the first bit that is set to {@code true} that occurs on or after the specified starting
+	 * index. If no such bit exists then {@code -1} is returned.
+	 *
+	 * @param  fromIndex                 the index to start checking from (inclusive)
+	 * @return                           the index of the next set bit, or {@code -1} if there is no such bit
+	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
+	 */
+	public int nextSetBit(int fromIndex) {
+<span class="fc" id="L102">		checkIdx(fromIndex);</span>
+
+<span class="fc" id="L104">		int wIdx = word(fromIndex);</span>
+<span class="fc" id="L105">		long word = words[wIdx] &amp; (WORD_MASK &lt;&lt; fromIndex);</span>
+		while (true) {
+<span class="fc bfc" id="L107" title="All 2 branches covered.">			if (word != 0)</span>
+<span class="fc" id="L108">				return (wIdx * WordSize) + Long.numberOfTrailingZeros(word);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">			if (++wIdx == words.length)</span>
+<span class="fc" id="L110">				return -1;</span>
+<span class="fc" id="L111">			word = words[wIdx];</span>
+		}
+	}
+
+	/**
+	 * Returns the index of the first bit that is set to {@code false} that occurs on or after the specified starting
+	 * index.
+	 *
+	 * @param  fromIndex                 the index to start checking from (inclusive)
+	 * @return                           the index of the next clear bit
+	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
+	 */
+	public int nextClearBit(int fromIndex) {
+<span class="fc" id="L124">		checkIdx(fromIndex);</span>
+
+<span class="fc" id="L126">		int wIdx = word(fromIndex);</span>
+<span class="fc" id="L127">		long word = ~words[wIdx] &amp; (WORD_MASK &lt;&lt; fromIndex);</span>
+
+		while (true) {
+<span class="fc bfc" id="L130" title="All 2 branches covered.">			if (word != 0)</span>
+<span class="fc" id="L131">				return (wIdx * WordSize) + Long.numberOfTrailingZeros(word);</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">			if (++wIdx == words.length)</span>
+<span class="fc" id="L133">				return words.length * WordSize;</span>
+<span class="fc" id="L134">			word = ~words[wIdx];</span>
+		}
+	}
+
+	/**
+	 * Returns the number of bits in this bitmap.
+	 *
+	 * @return the number of bits in this bitmap
+	 */
+	public int capacity() {
+<span class="fc" id="L144">		return size;</span>
+	}
+
+	/**
+	 * Returns the number of bits set to {@code true} in this bitmap.
+	 *
+	 * @return the number of bits set to {@code true} in this bitmap
+	 */
+	public int cardinality() {
+<span class="fc" id="L153">		int sum = 0;</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">		for (long word : words)</span>
+<span class="fc" id="L155">			sum += Long.bitCount(word);</span>
+<span class="fc" id="L156">		return sum;</span>
+	}
+
+	/**
+	 * Returns an iterator that iterate over the bits current set to {@code true}.
+	 *
+	 * @return an iterator that iterate over the bits current set to {@code true}
+	 */
+	@Override
+	public IntIterator iterator() {
+<span class="fc" id="L166">		return new IntIterator() {</span>
+
+<span class="fc" id="L168">			int bit = nextSetBit(0);</span>
+
+			@Override
+			public boolean hasNext() {
+<span class="fc bfc" id="L172" title="All 2 branches covered.">				return bit != -1;</span>
+			}
+
+			@Override
+			public int nextInt() {
+<span class="fc" id="L177">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L178">				int ret = bit;</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">				if (bit + 1 &lt; size) {</span>
+<span class="fc" id="L180">					bit = nextSetBit(bit + 1);</span>
+				} else {
+<span class="fc" id="L182">					bit = -1;</span>
+				}
+<span class="fc" id="L184">				return ret;</span>
+			}
+		};
+	}
+
+	/**
+	 * Returns an array containing all of the {@code true} bits in this bitmap in proper sequence (from first to last
+	 * bit).
+	 *
+	 * @return an array containing all of the {@code true} bits in this bitmap
+	 */
+	public int[] toArray() {
+<span class="fc" id="L196">		int[] arr = new int[cardinality()];</span>
+<span class="fc" id="L197">		int i = 0;</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">		for (int b : this)</span>
+<span class="fc" id="L199">			arr[i++] = b;</span>
+<span class="fc" id="L200">		return arr;</span>
+	}
+
+	/**
+	 * Returns a copy of this bitmap.
+	 *
+	 * @return a copy of this bitmap
+	 */
+	public Bitmap copy() {
+<span class="fc" id="L209">		Bitmap ret = new Bitmap(size);</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L211">			ret.words[i] = words[i];</span>
+<span class="fc" id="L212">		return ret;</span>
+	}
+
+	public ImmutableBitmap copyImmutable() {
+<span class="nc" id="L216">		return null;</span>
+	}
+
+	@Override
+	public String toString() {
+<span class="nc" id="L221">		return ImmutableIntArraySet.withNaiveContains(toArray()).toString();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

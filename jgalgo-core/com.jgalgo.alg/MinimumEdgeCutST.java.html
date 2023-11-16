@@ -140,7 +140,7 @@ public interface MinimumEdgeCutST {
 	 * @return            a minimum edge-cut algorithm based on the provided maximum flow algorithm
 	 */
 	static MinimumEdgeCutST newFromMaximumFlow(MaximumFlow maxFlowAlg) {
-<span class="fc" id="L143">		return MinimumEdgeCutSTUtils.buildFromMaxFlow(maxFlowAlg);</span>
+<span class="fc" id="L143">		return MinimumEdgeCutUtils.buildFromMaxFlow(maxFlowAlg);</span>
 	}
 
 	/**

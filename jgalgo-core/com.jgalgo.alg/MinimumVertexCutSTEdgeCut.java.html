@@ -59,22 +59,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="fc" id="L60">		IndexGraph g0 = auxiliaryGraph.graph;</span>
 <span class="fc" id="L61">		IWeightFunction w0 = auxiliaryGraph.weights;</span>
-<span class="fc" id="L62">		final int verticesEdgesThreshold = auxiliaryGraph.verticesEdgesThreshold;</span>
 
-<span class="fc" id="L64">		IntSet edgesCut = (IntSet) minEdgeCutAlgo</span>
-<span class="fc" id="L65">				.computeMinimumCut(g0, w0, Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0)).crossEdges();</span>
-<span class="pc bnc" id="L66" title="All 4 branches missed.">		assert edgesCut.intStream().allMatch(e -&gt; e &gt;= verticesEdgesThreshold);</span>
-
-<span class="fc" id="L68">		int[] vertexCut = edgesCut.toIntArray();</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int i = 0; i &lt; vertexCut.length; i++) {</span>
-<span class="fc" id="L70">			int cutEdge = vertexCut[i];</span>
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">			if (cutEdge &gt;= verticesEdgesThreshold) {</span>
-<span class="fc" id="L72">				vertexCut[i] = cutEdge - verticesEdgesThreshold;</span>
-			} else {
-<span class="nc" id="L74">				vertexCut[i] = g0.edgeTarget(cutEdge) / 2;</span>
-			}
-		}
-<span class="fc" id="L77">		return vertexCut;</span>
+<span class="fc" id="L63">		IntSet edgesCut = (IntSet) minEdgeCutAlgo</span>
+<span class="fc" id="L64">				.computeMinimumCut(g0, w0, Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0)).crossEdges();</span>
+<span class="fc" id="L65">		int[] cut = edgesCut.toIntArray();</span>
+<span class="fc" id="L66">		auxiliaryGraph.edgeCutToVertexCut(cut);</span>
+<span class="fc" id="L67">		return cut;</span>
 	}
 
 }

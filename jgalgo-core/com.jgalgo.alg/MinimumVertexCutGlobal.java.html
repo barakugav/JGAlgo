@@ -17,9 +17,17 @@ package com.jgalgo.alg;
 
 import java.util.Set;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -27,13 +35,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * &lt;p&gt;
  * Given a graph \(G=(V,E)\), a vertex cut (or separating set) is a set of vertices \(C\) whose removal transforms \(G\)
- * into a disconnected graph. In the case the graph is a clique of size \(k\), any vertex set of size \(k-1\) is
- * consider by convention a vertex cut of the graph. Given a vertex weight function, the weight of a vertex-cut \(C\) is
- * the weight sum of all vertices in \(C\). There are two variants of the problem to find a minimum weight vertex-cut:
- * (1) With terminal vertices, and (2) without terminal vertices. In the variant with terminal vertices, we are given
- * two special vertices {@code source (S)} and {@code sink (T)} and we need to find the minimum vertex-cut \(C\) such
- * that such that the {@code source} and the {@code sink} are not in the same connected components after the removal of
- * the vertices of \(C\). In the variant without terminal vertices (also called 'global vertex-cut') we need to find the
+ * into a disconnected graph. In case the graph is a clique of size \(k\), any vertex set of size \(k-1\) is considered
+ * by convention a vertex cut of the graph. Given a vertex weight function, the weight of a vertex-cut \(C\) is the
+ * weight sum of all vertices in \(C\). There are two variants of the problem to find a minimum weight vertex-cut: (1)
+ * With terminal vertices, and (2) without terminal vertices. In the variant with terminal vertices, we are given two
+ * special vertices {@code source (S)} and {@code sink (T)} and we need to find the minimum vertex-cut \(C\) such that
+ * such that the {@code source} and the {@code sink} are not in the same connected components after the removal of the
+ * vertices of \(C\). In the variant without terminal vertices (also called 'global vertex-cut') we need to find the
  * minimal cut among all possible cuts, and the removal of the vertices of \(C\) should simply disconnect the graph (or
  * make it trivial, containing a single vertex).
  *
@@ -82,7 +90,7 @@ public interface MinimumVertexCutGlobal {
 	 * @return a default implementation of {@link MinimumVertexCutGlobal}
 	 */
 	static MinimumVertexCutGlobal newInstance() {
-<span class="nc" id="L85">		return newBuilder().build();</span>
+<span class="fc" id="L93">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -94,7 +102,7 @@ public interface MinimumVertexCutGlobal {
 	 * @return a new builder that can build {@link MinimumVertexCutGlobal} objects
 	 */
 	static MinimumVertexCutGlobal.Builder newBuilder() {
-<span class="nc" id="L97">		return MinimumVertexCutGlobalEsfahanianHakimi::new;</span>
+<span class="fc" id="L105">		return MinimumVertexCutGlobalEsfahanianHakimi::new;</span>
 	}
 
 	/**
@@ -112,5 +120,75 @@ public interface MinimumVertexCutGlobal {
 		 */
 		MinimumVertexCutGlobal build();
 	}
+
+	/**
+	 * Check whether the given vertices form a vertex cut in the graph.
+	 *
+	 * &lt;p&gt;
+	 * The method removes the given set of vertices, and than checks if the graph is (strongly) connected or not. If the
+	 * graph was not connected in the first place, this may yield confusing results. The set of all vertices of the
+	 * graph is not considered a vertex cut. The empty set is considered a vertex cut if the graph is not (strongly)
+	 * connected in the first place. The set that contains all vertices except one is considered a vertex cut.
+	 *
+	 * @param  &lt;V&gt;                      the vertices type
+	 * @param  &lt;E&gt;                      the edges type
+	 * @param  g                        a graph
+	 * @param  cut                      a set of vertices
+	 * @return                          {@code true} if {@code cut} is a vertex cut in {@code g}
+	 * @throws IllegalArgumentException if {@code cut} contains duplicate vertices
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; boolean isCut(Graph&lt;V, E&gt; g, Set&lt;V&gt; cut) {
+		IndexGraph ig;
+		IntSet iCut;
+<span class="fc bfc" id="L144" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L145">			ig = (IndexGraph) g;</span>
+<span class="fc" id="L146">			iCut = IntAdapters.asIntSet((Set&lt;Integer&gt;) cut);</span>
+		} else {
+<span class="fc" id="L148">			ig = g.indexGraph();</span>
+<span class="fc" id="L149">			iCut = IndexIdMaps.idToIndexSet(cut, g.indexGraphVerticesMap());</span>
+		}
+<span class="fc" id="L151">		final int n = g.vertices().size();</span>
+<span class="fc" id="L152">		Bitmap cut0 = new Bitmap(n);</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">		for (int v : iCut) {</span>
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">			if (cut0.get(v))</span>
+<span class="nc" id="L155">				throw new IllegalArgumentException(&quot;duplicate vertex with index &quot; + v);</span>
+<span class="fc" id="L156">			cut0.set(v);</span>
+<span class="fc" id="L157">		}</span>
+<span class="fc" id="L158">		final int cutSize = cut0.cardinality();</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">		if (cutSize == n)</span>
+<span class="fc" id="L160">			return false;</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">		if (cutSize == n - 1)</span>
+<span class="fc" id="L162">			return true;</span>
+
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">		if (g.isDirected()) {</span>
+			/* graph is directed, use SCC algorithm */
+<span class="nc" id="L166">			Bitmap remainingVertices = cut0.copy();</span>
+<span class="nc" id="L167">			remainingVertices.not();</span>
+<span class="nc" id="L168">			IntGraph subGraph = ig.subGraphCopy(ImmutableIntArraySet.ofBitmap(remainingVertices), null);</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">			return !StronglyConnectedComponentsAlgo.newInstance().isStronglyConnected(subGraph);</span>
+
+		} else {
+			/* graph is undirected use a simple BFS */
+<span class="fc" id="L173">			IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L174">			Bitmap visited = new Bitmap(n);</span>
+<span class="fc" id="L175">			int start = cut0.nextClearBit(0);</span>
+<span class="fc" id="L176">			visited.set(start);</span>
+<span class="fc" id="L177">			queue.enqueue(start);</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
+<span class="fc" id="L179">				int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">				for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L181">					eit.nextInt();</span>
+<span class="fc" id="L182">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L183" title="All 4 branches covered.">					if (visited.get(v) || cut0.get(v))</span>
+<span class="fc" id="L184">						continue;</span>
+<span class="fc" id="L185">					visited.set(v);</span>
+<span class="fc" id="L186">					queue.enqueue(v);</span>
+<span class="fc" id="L187">				}</span>
+<span class="fc" id="L188">			}</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">			return visited.cardinality() &lt; n - cutSize;</span>
+		}
+	}
+
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

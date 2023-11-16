@@ -90,12 +90,12 @@ class ArraysUtils {
 	static int getKthElement(int[] a, int from, int to, int k, IntComparator c, boolean inPlace) {
 <span class="fc" id="L91">		Assertions.Arrays.checkFromTo(from, to, a.length);</span>
 <span class="fc" id="L92">		Assertions.Arrays.checkIndex(k, from, to);</span>
-<span class="pc bpc" id="L93" title="1 of 2 branches missed.">		if (!inPlace) {</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		if (!inPlace) {</span>
 <span class="fc" id="L94">			a = Arrays.copyOfRange(a, from, to);</span>
 <span class="fc" id="L95">			from = 0;</span>
 <span class="fc" id="L96">			to = a.length;</span>
 		}
-<span class="pc bpc" id="L98" title="1 of 2 branches missed.">		c = c != null ? c : Integer::compare;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		c = c != null ? c : Integer::compare;</span>
 
 <span class="fc" id="L100">		getKthElement0(a, from, to, k, c);</span>
 <span class="fc" id="L101">		return a[k];</span>

@@ -166,7 +166,7 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 * @return            {@code true} if the weight function is the cardinality weight function, {@code false}
 	 */
 	public static boolean isCardinality(WeightFunction&lt;?&gt; weightFunc) {
-<span class="pc bpc" id="L169" title="1 of 6 branches missed.">		return weightFunc == null || weightFunc == CardinalityWeightFunction</span>
+<span class="fc bfc" id="L169" title="All 6 branches covered.">		return weightFunc == null || weightFunc == CardinalityWeightFunction</span>
 				|| weightFunc == IWeightFunction.CardinalityWeightFunction;
 	}
 
