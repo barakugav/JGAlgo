@@ -19,17 +19,17 @@ package com.jgalgo.alg;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 
-public class CyclesFinderTarjanTest extends TestBase {
+public class CyclesEnumeratorJohnsonTest extends TestBase {
 
 	@Test
 	public void testSimpleGraph() {
-		CyclesFinderTestUtils.testSimpleGraph(new CyclesFinderTarjan());
+		CyclesEnumeratorTestUtils.testSimpleGraph(new CyclesEnumeratorJohnson());
 	}
 
 	@Test
 	public void testRandGraphs() {
-		final long seed = 0x80ea8f415c16dec1L;
-		CyclesFinderTestUtils.testRandGraphs(new CyclesFinderTarjan(), seed);
+		final long seed = 0x51f9f9bde92eef18L;
+		CyclesEnumeratorTestUtils.testRandGraphs(new CyclesEnumeratorJohnson(), seed);
 	}
 
 }

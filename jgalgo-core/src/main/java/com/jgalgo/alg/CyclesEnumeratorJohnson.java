@@ -41,17 +41,17 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-class CyclesFinderJohnson extends CyclesFinderAbstract {
+class CyclesEnumeratorJohnson extends CyclesEnumeratorAbstract {
 
 	private final StronglyConnectedComponentsAlgo ccAlg = StronglyConnectedComponentsAlgo.newInstance();
 
 	/**
 	 * Create a new cycles finder algorithm object.
 	 */
-	CyclesFinderJohnson() {}
+	CyclesEnumeratorJohnson() {}
 
 	@Override
-	Iterator<IPath> findAllCycles(IndexGraph g) {
+	Iterator<IPath> cyclesIter(IndexGraph g) {
 		Assertions.Graphs.onlyDirected(g);
 		Assertions.Graphs.noParallelEdges(g, "graphs with parallel edges are not supported");
 		final int n = g.vertices().size();

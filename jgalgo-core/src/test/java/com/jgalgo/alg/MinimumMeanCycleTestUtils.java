@@ -99,7 +99,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 	private static <V, E> void verifyMinimumMeanCycle(MinimumMeanCycle algo, Graph<V, E> g, WeightFunction<E> w) {
 		Path<V, E> cycle = algo.computeMinimumMeanCycle(g, w);
 		if (cycle == null) {
-			Iterator<Path<V, E>> cycles = new CyclesFinderTarjan().findAllCycles(g);
+			Iterator<Path<V, E>> cycles = new CyclesEnumeratorTarjan().cyclesIter(g);
 			Path<V, E> missedCycle = cycles.hasNext() ? cycles.next() : null;
 			assertNull(missedCycle, "failed to find a cycle");
 			return;
@@ -107,7 +107,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		double cycleMeanWeight = getMeanWeight(cycle, w);
 
 		if (g.vertices().size() <= 32 && g.edges().size() <= 32) {
-			Iterator<Path<V, E>> cycles = new CyclesFinderTarjan().findAllCycles(g);
+			Iterator<Path<V, E>> cycles = new CyclesEnumeratorTarjan().cyclesIter(g);
 			assertEquals(cycle.source(), cycle.target());
 			V prevV = cycle.source();
 			for (EdgeIter<V, E> eit = cycle.edgeIter();;) {

@@ -34,7 +34,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.alg.CyclesFinder;
+import com.jgalgo.alg.CyclesEnumerator;
 import com.jgalgo.alg.IPath;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.RandomGraphBuilder;
@@ -48,7 +48,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 @Measurement(iterations = 3, time = 5, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
-public class CyclesFinderBench {
+public class CyclesEnumeratorBench {
 
 	@Param({ "|V|=32 |E|=64", "|V|=64 |E|=140" })
 	public String args;
@@ -73,9 +73,9 @@ public class CyclesFinderBench {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void benchMST(CyclesFinder algo, Blackhole blackhole) {
+	private void benchMST(CyclesEnumerator algo, Blackhole blackhole) {
 		IntGraph g = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		List<IPath> cycles = new ObjectArrayList<>((Iterator) algo.findAllCycles(g));
+		List<IPath> cycles = new ObjectArrayList<>((Iterator) algo.cyclesIter(g));
 		blackhole.consume(cycles);
 	}
 
@@ -89,8 +89,8 @@ public class CyclesFinderBench {
 		benchMST(getAlgo("tarjan"), blackhole);
 	}
 
-	private static CyclesFinder getAlgo(String implName) {
-		CyclesFinder.Builder builder = CyclesFinder.newBuilder();
+	private static CyclesEnumerator getAlgo(String implName) {
+		CyclesEnumerator.Builder builder = CyclesEnumerator.newBuilder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

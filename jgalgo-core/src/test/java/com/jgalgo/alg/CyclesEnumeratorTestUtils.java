@@ -32,9 +32,9 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
-class CyclesFinderTestUtils extends TestUtils {
+class CyclesEnumeratorTestUtils extends TestUtils {
 
-	static void testSimpleGraph(CyclesFinder cyclesFinder) {
+	static void testSimpleGraph(CyclesEnumerator cyclesFinder) {
 		IndexGraph g = IndexGraph.newDirected();
 		int v0 = g.addVertex();
 		int v1 = g.addVertex();
@@ -44,7 +44,7 @@ class CyclesFinderTestUtils extends TestUtils {
 		int e2 = g.addEdge(v2, v1);
 		int e3 = g.addEdge(v2, v0);
 
-		Iterator<Path<Integer, Integer>> actual = cyclesFinder.findAllCycles(g);
+		Iterator<Path<Integer, Integer>> actual = cyclesFinder.allCycles(g).iterator();
 
 		IPath c1 = new PathImpl(g, v0, v0, IntList.of(e0, e1, e3));
 		IPath c2 = new PathImpl(g, v1, v1, IntList.of(e1, e2));
@@ -53,7 +53,7 @@ class CyclesFinderTestUtils extends TestUtils {
 		assertEquals(transformCyclesToCanonical(g, expected.iterator()), transformCyclesToCanonical(g, actual));
 	}
 
-	static void testRandGraphs(CyclesFinder cyclesFinder, long seed) {
+	static void testRandGraphs(CyclesEnumerator cyclesFinder, long seed) {
 
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
@@ -69,11 +69,11 @@ class CyclesFinderTestUtils extends TestUtils {
 		});
 	}
 
-	private static <V, E> void testGraph(Graph<V, E> g, CyclesFinder cyclesFinder) {
-		CyclesFinder validationAlgo =
-				cyclesFinder instanceof CyclesFinderTarjan ? new CyclesFinderJohnson() : new CyclesFinderTarjan();
-		Iterator<Path<V, E>> actual = cyclesFinder.findAllCycles(g);
-		Iterator<Path<V, E>> expected = validationAlgo.findAllCycles(g);
+	private static <V, E> void testGraph(Graph<V, E> g, CyclesEnumerator cyclesFinder) {
+		CyclesEnumerator validationAlgo = cyclesFinder instanceof CyclesEnumeratorTarjan ? new CyclesEnumeratorJohnson()
+				: new CyclesEnumeratorTarjan();
+		Iterator<Path<V, E>> actual = cyclesFinder.cyclesIter(g);
+		Iterator<Path<V, E>> expected = validationAlgo.cyclesIter(g);
 		assertEquals(transformCyclesToCanonical(g, expected), transformCyclesToCanonical(g, actual));
 	}
 

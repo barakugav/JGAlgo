@@ -20,21 +20,21 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
-abstract class CyclesFinderAbstract implements CyclesFinder {
+abstract class CyclesEnumeratorAbstract implements CyclesEnumerator {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public <V, E> Iterator<Path<V, E>> findAllCycles(Graph<V, E> g) {
+	public <V, E> Iterator<Path<V, E>> cyclesIter(Graph<V, E> g) {
 		if (g instanceof IndexGraph) {
-			return (Iterator) findAllCycles((IndexGraph) g);
+			return (Iterator) cyclesIter((IndexGraph) g);
 
 		} else {
 			IndexGraph iGraph = g.indexGraph();
-			Iterator<IPath> indexResult = findAllCycles(iGraph);
+			Iterator<IPath> indexResult = cyclesIter(iGraph);
 			return JGAlgoUtils.iterMap(indexResult, iPath -> PathImpl.pathFromIndexPath(g, iPath));
 		}
 	}
 
-	abstract Iterator<IPath> findAllCycles(IndexGraph g);
+	abstract Iterator<IPath> cyclesIter(IndexGraph g);
 
 }
