@@ -43,11 +43,14 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 
 	@Override
 	Iterator<IVertexBiPartition> minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink) {
-		final int n = g.vertices().size();
-
 		/* Compute maximum flow in the graph, with the weight function as capacity func */
 		IFlow maxFlow = (IFlow) maxFlowAlgo.computeMaximumFlow(g, w, Integer.valueOf(source), Integer.valueOf(sink));
 
+		return minimumCutsIter(g, w, source, sink, maxFlow);
+	}
+
+	Iterator<IVertexBiPartition> minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink, IFlow maxFlow) {
+		final int n = g.vertices().size();
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
 

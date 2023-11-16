@@ -17,9 +17,17 @@ package com.jgalgo.alg;
 
 import java.util.Set;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -112,4 +120,74 @@ public interface MinimumVertexCutGlobal {
 		 */
 		MinimumVertexCutGlobal build();
 	}
+
+	/**
+	 * Check whether the given vertices form a vertex cut in the graph.
+	 *
+	 * <p>
+	 * The method removes the given set of vertices, and than checks if the graph is (strongly) connected or not. If the
+	 * graph was not connected in the first place, this may yield confusing results. The set of all vertices of the
+	 * graph is not considered a vertex cut. The empty set is considered a vertex cut if the graph is not (strongly)
+	 * connected in the first place. The set that contains all vertices except one is considered a vertex cut.
+	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
+	 * @param  g                        a graph
+	 * @param  cut                      a set of vertices
+	 * @return                          {@code true} if {@code cut} is a vertex cut in {@code g}
+	 * @throws IllegalArgumentException if {@code cut} contains duplicate vertices
+	 */
+	@SuppressWarnings("unchecked")
+	static <V, E> boolean isCut(Graph<V, E> g, Set<V> cut) {
+		IndexGraph ig;
+		IntSet iCut;
+		if (g instanceof IndexGraph) {
+			ig = (IndexGraph) g;
+			iCut = IntAdapters.asIntSet((Set<Integer>) cut);
+		} else {
+			ig = g.indexGraph();
+			iCut = IndexIdMaps.idToIndexSet(cut, g.indexGraphVerticesMap());
+		}
+		final int n = g.vertices().size();
+		Bitmap cut0 = new Bitmap(n);
+		for (int v : iCut) {
+			if (cut0.get(v))
+				throw new IllegalArgumentException("duplicate vertex with index " + v);
+			cut0.set(v);
+		}
+		final int cutSize = cut0.cardinality();
+		if (cutSize == n)
+			return false;
+		if (cutSize == n - 1)
+			return true;
+
+		if (g.isDirected()) {
+			/* graph is directed, use SCC algorithm */
+			Bitmap remainingVertices = cut0.copy();
+			remainingVertices.not();
+			IntGraph subGraph = ig.subGraphCopy(ImmutableIntArraySet.ofBitmap(remainingVertices), null);
+			return !StronglyConnectedComponentsAlgo.newInstance().isStronglyConnected(subGraph);
+
+		} else {
+			/* graph is undirected use a simple BFS */
+			IntPriorityQueue queue = new FIFOQueueIntNoReduce();
+			Bitmap visited = new Bitmap(n);
+			int start = cut0.nextClearBit(0);
+			visited.set(start);
+			queue.enqueue(start);
+			while (!queue.isEmpty()) {
+				int u = queue.dequeueInt();
+				for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
+					eit.nextInt();
+					int v = eit.targetInt();
+					if (visited.get(v) || cut0.get(v))
+						continue;
+					visited.set(v);
+					queue.enqueue(v);
+				}
+			}
+			return visited.cardinality() < n - cutSize;
+		}
+	}
+
 }
