@@ -48,9 +48,35 @@ class ClosuresEnumeratorSchrageBaker extends ClosuresEnumerators.AbstractImpl {
 		Assertions.Graphs.onlyDirected(g);
 		final int n = g.vertices().size();
 
-		/* Build the condensation graph */
 		IVertexPartition sccs = (IVertexPartition) sccAlgo.findStronglyConnectedComponents(g);
 		final int sccNum = sccs.numberOfBlocks();
+
+		if (sccNum == n) {
+			/* The strongly connected components of the graphs are the trivial vertices, no cycles exists */
+			/* Self edges still might exists */
+			if (g.isAllowSelfEdges()) {
+				int selfEdges = 0;
+				for (int m = g.edges().size(), e = 0; e < m; e++)
+					if (g.edgeSource(e) == g.edgeTarget(e))
+						selfEdges++;
+				if (selfEdges > 0) {
+					IndexGraphBuilder g0 = IndexGraphBuilder.newDirected();
+					g0.expectedVerticesNum(n);
+					g0.expectedEdgesNum(g.edges().size() - selfEdges);
+					for (int u = 0; u < n; u++)
+						g0.addVertex();
+					for (int m = g.edges().size(), e = 0; e < m; e++)
+						if (g.edgeSource(e) != g.edgeTarget(e))
+							g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
+					g = g0.build();
+				}
+			}
+			/* Graph is DAG, no need to operate over the condensation graph */
+			return JGAlgoUtils.iterMap(closuresIterDag(g),
+					iter -> ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, iter)));
+		}
+
+		/* Build the condensation graph */
 		IndexGraphBuilder sccGraph0 = IndexGraphBuilder.newDirected();
 		sccGraph0.expectedVerticesNum(sccNum);
 		for (int b = 0; b < sccNum; b++)
