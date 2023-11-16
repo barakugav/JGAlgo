@@ -341,18 +341,42 @@ public class Bitmap implements IntIterable {
 	}
 
 	/**
-	 * Returns the complementary bitmap of this bitmap.
+	 * Returns a copy of this bitmap.
 	 *
-	 * <p>
-	 * Every bit in the returned bitmap is the opposite of the corresponding bit in this bitmap.
-	 *
-	 * @return the complementary bitmap of this bitmap
+	 * @return a copy of this bitmap
 	 */
-	public Bitmap not() {
+	public Bitmap copy() {
 		Bitmap ret = new Bitmap(size);
 		for (int i = 0; i < words.length; i++)
-			ret.words[i] = ~words[i];
+			ret.words[i] = words[i];
 		return ret;
+	}
+
+	/**
+	 * Flip every bit in this bitmap.
+	 */
+	public void not() {
+		for (int i = 0; i < words.length; i++)
+			words[i] = ~words[i];
+	}
+
+	/**
+	 * Perform a bitwise or with another bitmap.
+	 *
+	 * <p>
+	 * This method does not create a new bitmap, but modifies this bitmap.
+	 *
+	 * @param b the other bitmap
+	 */
+	public void or(Bitmap b) {
+		checkSize(this, b);
+		for (int i = 0; i < words.length; i++)
+			words[i] |= b.words[i];
+	}
+
+	private static void checkSize(Bitmap a, Bitmap b) {
+		if (a.size != b.size)
+			throw new IllegalArgumentException("Bitmaps must be of the same size");
 	}
 
 	@Override

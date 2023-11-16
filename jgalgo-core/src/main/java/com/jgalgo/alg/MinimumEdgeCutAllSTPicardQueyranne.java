@@ -24,9 +24,8 @@ import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Picard-Queyranne algorithm for enumerating all the minimum edge cuts between two terminal nodes.
@@ -38,35 +37,166 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  */
 class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImplAllST {
 
-	private final MaximumFlow maximumFlow = MaximumFlow.newInstance();
-	private final StronglyConnectedComponentsAlgo sccAlgo = StronglyConnectedComponentsAlgo.newInstance();
-	private final DagClosureIterSchrageBaker closureAlgo = new DagClosureIterSchrageBaker();
+	private final MaximumFlow maxFlowAlgo = MaximumFlow.newInstance();
+	private final ClosuresEnumerator closuresAlgo = ClosuresEnumerator.newInstance();
 	private static final double EPS = 0.0001;
 
 	@Override
 	Iterator<IVertexBiPartition> computeAllMinimumCuts(IndexGraph g, IWeightFunction w, int source, int sink) {
-		/* Compute maximum flow in the graph, with the weight function as capacity func */
-		IFlow maxFlow = (IFlow) maximumFlow.computeMaximumFlow(g, w, Integer.valueOf(source), Integer.valueOf(sink));
-
-		/* Build the residual network of the graph */
 		final int n = g.vertices().size();
-		IndexGraphBuilder residual0 = IndexGraphBuilder.newDirected();
-		residual0.expectedVerticesNum(n);
-		for (int v = 0; v < n; v++)
-			residual0.addVertex();
+
+		/* Compute maximum flow in the graph, with the weight function as capacity func */
+		IFlow maxFlow = (IFlow) maxFlowAlgo.computeMaximumFlow(g, w, Integer.valueOf(source), Integer.valueOf(sink));
+
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
+
+		/* Identify all the vertices reachable from the source and the reverse-reachable from the sink */
+		Bitmap reachableFromSource = new Bitmap(n);
+		Bitmap reverseReachableFromSink = new Bitmap(n);
+		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
+		reachableFromSource.set(source);
+		queue.enqueue(source);
+		if (g.isDirected()) {
+			while (!queue.isEmpty()) {
+				int u = queue.dequeueInt();
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					int e = eit.nextInt();
+					double ef = maxFlow.getFlow(e);
+					double ew = w.weight(e);
+					if (!(ef < ew - EPS))
+						continue; /* not a residual edge */
+					int v = eit.targetInt();
+					if (reachableFromSource.get(v))
+						continue;
+					reachableFromSource.set(v);
+					queue.enqueue(v);
+				}
+				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
+					int e = eit.nextInt();
+					double ef = maxFlow.getFlow(e);
+					if (!(ef > EPS))
+						continue; /* not a residual edge */
+					int v = eit.sourceInt();
+					if (reachableFromSource.get(v))
+						continue;
+					reachableFromSource.set(v);
+					queue.enqueue(v);
+				}
+			}
+		} else {
+			while (!queue.isEmpty()) {
+				int u = queue.dequeueInt();
+				for (int e : g.outEdges(u)) {
+					int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);
+					double f = maxFlow.getFlow(e);
+					double ew = w.weight(e);
+					int v;
+					if (u == u0) {
+						if (!(f < ew - EPS))
+							continue; /* not a residual edge */
+						v = v0;
+					} else {
+						assert u == v0;
+						if (!(f > -ew + EPS))
+							continue; /* not a residual edge */
+						v = u0;
+					}
+					if (reachableFromSource.get(v))
+						continue;
+					reachableFromSource.set(v);
+					queue.enqueue(v);
+				}
+			}
+		}
+		reverseReachableFromSink.set(sink);
+		queue.enqueue(sink);
+		if (g.isDirected()) {
+			while (!queue.isEmpty()) {
+				int u = queue.dequeueInt();
+				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
+					int e = eit.nextInt();
+					double ef = maxFlow.getFlow(e);
+					double ew = w.weight(e);
+					if (!(ef < ew - EPS))
+						continue; /* not a residual edge */
+					int v = eit.sourceInt();
+					if (reverseReachableFromSink.get(v))
+						continue;
+					reverseReachableFromSink.set(v);
+					queue.enqueue(v);
+				}
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					int e = eit.nextInt();
+					double ef = maxFlow.getFlow(e);
+					if (!(ef > EPS))
+						continue; /* not a residual edge */
+					int v = eit.targetInt();
+					if (reverseReachableFromSink.get(v))
+						continue;
+					reverseReachableFromSink.set(v);
+					queue.enqueue(v);
+				}
+			}
+		} else {
+			while (!queue.isEmpty()) {
+				int u = queue.dequeueInt();
+				for (int e : g.outEdges(u)) {
+					int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);
+					double f = maxFlow.getFlow(e);
+					double ew = w.weight(e);
+					int v;
+					if (u == u0) {
+						if (!(f > -ew + EPS))
+							continue; /* not a residual edge */
+						v = v0;
+					} else {
+						assert u == v0;
+						if (!(f < ew - EPS))
+							continue; /* not a residual edge */
+						v = u0;
+					}
+					if (reverseReachableFromSink.get(v))
+						continue;
+					reverseReachableFromSink.set(v);
+					queue.enqueue(v);
+				}
+			}
+		}
+
+		/* Remove blocks that always belong to the closure of the source and sink */
+		Bitmap removedVertices = new Bitmap(n);
+		removedVertices.or(reachableFromSource);
+		removedVertices.or(reverseReachableFromSink);
+
+		/* Build the residual network of the graph */
+		IndexGraphBuilder residual0 = IndexGraphBuilder.newDirected();
+		residual0.expectedVerticesNum(n);
+		int[] vToResV = new int[n];
+		int[] resVToV = new int[n];
+		Arrays.fill(vToResV, -1);
+		Arrays.fill(resVToV, -1);
+		for (int v = 0; v < n; v++) {
+			if (removedVertices.get(v))
+				continue;
+			int resV = residual0.addVertex();
+			vToResV[v] = resV;
+			resVToV[resV] = v;
+		}
 		if (g.isDirected()) {
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				if (u == v)
 					continue;
+				int resU = vToResV[u], resV = vToResV[v];
+				if (resU == -1 || resV == -1)
+					continue;
 				double ef = maxFlow.getFlow(e);
 				double ew = w.weight(e);
 				if (ef < ew - EPS)
-					residual0.addEdge(u, v);
+					residual0.addEdge(resU, resV);
 				if (ef > EPS)
-					residual0.addEdge(v, u);
+					residual0.addEdge(resV, resU);
 			}
 
 		} else {
@@ -74,101 +204,24 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				if (u == v)
 					continue;
+				int resU = vToResV[u], resV = vToResV[v];
+				if (resU == -1 || resV == -1)
+					continue;
 				double f = maxFlow.getFlow(e);
 				double ew = w.weight(e);
 				if (f < ew - EPS)
-					residual0.addEdge(u, v);
+					residual0.addEdge(resU, resV);
 				if (f > -ew + EPS)
-					residual0.addEdge(v, u);
+					residual0.addEdge(resV, resU);
 			}
 		}
 		IndexGraph residual = residual0.build();
 
-		/* Compute the strongly connected components in the residual network */
-		IVertexPartition sccs = (IVertexPartition) sccAlgo.findStronglyConnectedComponents(residual);
-		final int sccNum = sccs.numberOfBlocks();
-
-		/* Identify all the vertices reachable from the source and the reverse-reachable from the sink */
-		/*
-		 * TODO: we can identify the reachable vertices before constructing the residual graph, speeding up the strongly
-		 * connected components computation.
-		 */
-		Bitmap reachableFromSource = new Bitmap(n);
-		Bitmap reverseReachableFromSink = new Bitmap(n);
-		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
-		reachableFromSource.set(source);
-		queue.enqueue(source);
-		while (!queue.isEmpty()) {
-			int u = queue.dequeueInt();
-			for (IEdgeIter eit = residual.outEdges(u).iterator(); eit.hasNext();) {
-				eit.nextInt();
-				int v = eit.targetInt();
-				if (reachableFromSource.get(v))
-					continue;
-				reachableFromSource.set(v);
-				queue.enqueue(v);
-			}
-		}
-		reverseReachableFromSink.set(sink);
-		queue.enqueue(sink);
-		while (!queue.isEmpty()) {
-			int u = queue.dequeueInt();
-			for (IEdgeIter eit = residual.inEdges(u).iterator(); eit.hasNext();) {
-				eit.nextInt();
-				int v = eit.sourceInt();
-				if (reverseReachableFromSink.get(v))
-					continue;
-				reverseReachableFromSink.set(v);
-				queue.enqueue(v);
-			}
-		}
-
-		/* Remove blocks that always belong to the closure of the source and sink */
-		Bitmap removedBlocks = new Bitmap(sccNum);
-		for (int v : reachableFromSource)
-			removedBlocks.set(sccs.vertexBlock(v));
-		for (int v : reverseReachableFromSink)
-			removedBlocks.set(sccs.vertexBlock(v));
-
-		/* Build the SCC graph created by contracting each strongly connected components to a super vertex */
-		residual0.clear(); /* Reuse graph builder */
-		IndexGraphBuilder sccGraph0 = residual0;
-		sccGraph0.expectedVerticesNum(sccNum);
-		int[] sccvToScc = new int[sccNum];
-		int[] sccToSccv = new int[sccNum];
-		Arrays.fill(sccToSccv, -1);
-		for (int b = 0; b < sccNum; b++) {
-			if (!removedBlocks.get(b)) {
-				int sccIdx = sccGraph0.addVertex();
-				sccvToScc[sccIdx] = b;
-				sccToSccv[b] = sccIdx;
-			}
-		}
-		Bitmap seenBlocks = new Bitmap(sccNum);
-		IntList seenBlockList = new IntArrayList();
-		for (int b1Idx = 0; b1Idx < sccGraph0.vertices().size(); b1Idx++) {
-			int b1 = sccvToScc[b1Idx];
-			for (int u : sccs.blockVertices(b1)) {
-				for (IEdgeIter eit = residual.outEdges(u).iterator(); eit.hasNext();) {
-					eit.nextInt();
-					int b2 = sccs.vertexBlock(eit.targetInt());
-					if (b1 == b2 || seenBlocks.get(b2) || removedBlocks.get(b2))
-						continue;
-					seenBlocks.set(b2);
-					seenBlockList.add(b2);
-					sccGraph0.addEdge(b1Idx, sccToSccv[b2]);
-				}
-			}
-			seenBlocks.clearAllUnsafe(seenBlockList);
-			seenBlockList.clear();
-		}
-		IndexGraph sccGraph = sccGraph0.build();
-
-		/* all closures in the scc graph are min edge cuts between s-t */
 		return new Iterator<>() {
 
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			private final Iterator<IntSet> closuresIter = (Iterator) closuresAlgo.closuresIter(residual);
 			private IVertexBiPartition nextCut = new VertexBiPartitions.FromBitmap(g, reachableFromSource);
-			private final Iterator<Bitmap> closuresIter = closureAlgo.enumerateAllClosures(sccGraph);
 
 			@Override
 			public boolean hasNext() {
@@ -181,11 +234,9 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 				IVertexBiPartition ret = nextCut;
 
 				if (closuresIter.hasNext()) {
-					Bitmap closure = closuresIter.next();
 					Bitmap cut = new Bitmap(n);
-					for (int blk : closure)
-						for (int v : sccs.blockVertices(sccvToScc[blk]))
-							cut.set(v);
+					for (int resV : closuresIter.next())
+						cut.set(resVToV[resV]);
 					for (int v : reachableFromSource)
 						cut.set(v);
 					nextCut = new VertexBiPartitions.FromBitmap(g, cut);

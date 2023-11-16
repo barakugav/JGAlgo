@@ -30,6 +30,12 @@ import com.jgalgo.graph.IntGraph;
  * connected components.
  *
  * <p>
+ * The {@linkplain VertexPartition#blocksGraph() blocks graph} of a strongly connected components partition is a
+ * directed acyclic graph, where each vertex is a strongly connected component, and there is an edge from \(B_1\) to
+ * \(B_2\) if there is an edge \((u, v)\) in \(G\) such that \(u \in B_1\) and \(v \in B_2\). This blocks graph is
+ * sometimes called the condensation of \(G\).
+ *
+ * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *

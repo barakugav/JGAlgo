@@ -58,8 +58,7 @@ public class MinimumEdgeCutAllSTPicardQueyranneTest extends TestBase {
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(6, 6).repeat(32);
 		tester.addPhase().withArgs(16, 32).repeat(16);
-		// tester.addPhase().withArgs(64, 128).repeat(16);
-		// tester.addPhase().withArgs(512, 1324).repeat(1);
+		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();

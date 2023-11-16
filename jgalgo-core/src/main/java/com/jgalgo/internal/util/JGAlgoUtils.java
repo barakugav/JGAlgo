@@ -248,11 +248,34 @@ public class JGAlgoUtils {
 		public B next() {
 			return map.apply(it.next());
 		}
-
 	}
 
 	public static <A, B> Iterator<B> iterMap(Iterator<A> it, Function<A, B> map) {
 		return new IterMap<>(it, map);
+	}
+
+	private static class IntIterMap implements IntIterator {
+		private final IntIterator it;
+		private final IntUnaryOperator map;
+
+		IntIterMap(IntIterator it, IntUnaryOperator map) {
+			this.it = Objects.requireNonNull(it);
+			this.map = Objects.requireNonNull(map);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+
+		@Override
+		public int nextInt() {
+			return map.applyAsInt(it.nextInt());
+		}
+	}
+
+	public static IntIterator iterMapInt(IntIterator it, IntUnaryOperator map) {
+		return new IntIterMap(it, map);
 	}
 
 	static class NullIterator<E> implements Iterator<E> {

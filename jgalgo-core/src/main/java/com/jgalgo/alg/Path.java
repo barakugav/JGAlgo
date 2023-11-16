@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import com.jgalgo.graph.EdgeIter;
@@ -258,14 +259,40 @@ public interface Path<V, E> {
 	 */
 	@SuppressWarnings("unchecked")
 	static <V, E> Set<V> reachableVertices(Graph<V, E> g, V source) {
-		if (g instanceof IntGraph)
+		if (g instanceof IntGraph) {
 			return (Set<V>) IPath.reachableVertices((IntGraph) g, ((Integer) source).intValue());
 
-		IndexGraph ig = g.indexGraph();
-		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-		int iSource = viMap.idToIndex(source);
-		IntSet indexRes = IPath.reachableVertices(ig, iSource);
-		return IndexIdMaps.indexToIdSet(indexRes, viMap);
+		} else {
+			IndexGraph ig = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			int iSource = viMap.idToIndex(source);
+			IntSet indexRes = IPath.reachableVertices(ig, iSource);
+			return IndexIdMaps.indexToIdSet(indexRes, viMap);
+		}
+	}
+
+	/**
+	 * Find all the vertices reachable from a given set of source vertices.
+	 *
+	 * @param  <V>     the vertices type
+	 * @param  <E>     the edges type
+	 * @param  g       a graph
+	 * @param  sources an iterator over a set of source vertices
+	 * @return         a set of all the vertices reachable from the given source vertices
+	 */
+	@SuppressWarnings("unchecked")
+	static <V, E> Set<V> reachableVertices(Graph<V, E> g, Iterator<V> sources) {
+		if (g instanceof IntGraph) {
+			IntIterator iSources = IntAdapters.asIntIterator((Iterator<Integer>) sources);
+			return (Set<V>) IPath.reachableVertices((IntGraph) g, iSources);
+
+		} else {
+			IndexGraph ig = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			IntIterator iSources = IndexIdMaps.idToIndexIterator(sources, viMap);
+			IntSet indexRes = IPath.reachableVertices(ig, iSources);
+			return IndexIdMaps.indexToIdSet(indexRes, viMap);
+		}
 	}
 
 }

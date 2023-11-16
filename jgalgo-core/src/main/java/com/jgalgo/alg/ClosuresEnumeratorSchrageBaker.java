@@ -18,12 +18,19 @@ package com.jgalgo.alg;
 import java.util.Iterator;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
- * Schrage-Baker algorithm for enumerating all the closure subsets in a directed acyclic graph.
+ * Schrage-Baker algorithm for enumerating all the closure subsets in a directed graph.
  *
  * <p>
  * Based on 'Dynamic Programming Solution of Sequencing Problems with Precedence Constraints' by Linus Schrage and
@@ -31,11 +38,53 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  *
  * @author Barak Ugav
  */
-class DagClosureIterSchrageBaker {
+class ClosuresEnumeratorSchrageBaker extends ClosuresEnumerators.AbstractImpl {
 
+	private final StronglyConnectedComponentsAlgo sccAlgo = StronglyConnectedComponentsAlgo.newInstance();
 	private final TopologicalOrderAlgo topoAlgo = TopologicalOrderAlgo.newInstance();
 
-	Iterator<Bitmap> enumerateAllClosures(IndexGraph g) {
+	@Override
+	Iterator<IntSet> closuresIter(IndexGraph g) {
+		Assertions.Graphs.onlyDirected(g);
+		final int n = g.vertices().size();
+
+		/* Build the condensation graph */
+		IVertexPartition sccs = (IVertexPartition) sccAlgo.findStronglyConnectedComponents(g);
+		final int sccNum = sccs.numberOfBlocks();
+		IndexGraphBuilder sccGraph0 = IndexGraphBuilder.newDirected();
+		sccGraph0.expectedVerticesNum(sccNum);
+		for (int b = 0; b < sccNum; b++)
+			sccGraph0.addVertex();
+		Bitmap seenBlocks = new Bitmap(sccNum);
+		IntList seenBlockList = new IntArrayList();
+		for (int b1 = 0; b1 < sccNum; b1++) {
+			for (int u : sccs.blockVertices(b1)) {
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					eit.nextInt();
+					int b2 = sccs.vertexBlock(eit.targetInt());
+					if (b1 == b2 || seenBlocks.get(b2))
+						continue;
+					seenBlocks.set(b2);
+					seenBlockList.add(b2);
+					sccGraph0.addEdge(b1, b2);
+				}
+			}
+			seenBlocks.clearAllUnsafe(seenBlockList);
+			seenBlockList.clear();
+		}
+		IndexGraph sccGraph = sccGraph0.build();
+
+		/* Find all closures in the DAG condensation graph and map the sets to the original vertices */
+		return JGAlgoUtils.iterMap(closuresIterDag(sccGraph), blkIter -> {
+			Bitmap closure = new Bitmap(n);
+			for (int blk : JGAlgoUtils.iterable(blkIter))
+				for (int v : sccs.blockVertices(blk))
+					closure.set(v);
+			return ImmutableIntArraySet.ofBitmap(closure);
+		});
+	}
+
+	private Iterator<IntIterator> closuresIterDag(IndexGraph g) {
 		final int n = g.vertices().size();
 
 		int[] topoIdxToV =
@@ -55,7 +104,7 @@ class DagClosureIterSchrageBaker {
 			}
 
 			@Override
-			public Bitmap next() {
+			public IntIterator next() {
 				/* Find the smallest positive integer j for which m(j)=0; call it i */
 				int i = nextClearBit;
 
@@ -80,13 +129,9 @@ class DagClosureIterSchrageBaker {
 					m.clear(j);
 				}
 
-				Bitmap closure = new Bitmap(n);
-				for (int topoIdx : m)
-					closure.set(topoIdxToV[topoIdx]);
-
 				nextClearBit = m.nextClearBit(0);
 
-				return closure;
+				return JGAlgoUtils.iterMapInt(m.iterator(), topoIdx -> topoIdxToV[topoIdx]);
 			}
 		};
 	}

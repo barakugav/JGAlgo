@@ -1653,7 +1653,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 				}
 			}
 			assert !visited.get(source);
-			Bitmap cut = visited.not();
+			Bitmap cut = visited.copy();
+			cut.not();
 			visited.clear();
 			return new VertexBiPartitions.FromBitmap(g, cut);
 		}
