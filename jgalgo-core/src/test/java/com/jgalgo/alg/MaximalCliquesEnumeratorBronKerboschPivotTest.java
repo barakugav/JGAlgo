@@ -18,16 +18,16 @@ package com.jgalgo.alg;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 
-public class MaximalCliquesBronKerboschTest extends TestBase {
+public class MaximalCliquesEnumeratorBronKerboschPivotTest extends TestBase {
 
-	private static MaximalCliques algo() {
-		return new MaximalCliquesBronKerbosch();
+	private static MaximalCliquesEnumerator algo() {
+		return new MaximalCliquesEnumeratorBronKerboschPivot();
 	}
 
 	@Test
 	public void testRandGraphs() {
-		final long seed = 0xa95d5c493f644824L;
-		MaximalCliquesTestUtils.testRandGraphs(algo(), seed);
+		final long seed = 0xfaf05bcde9acc15bL;
+		MaximalCliquesEnumeratorTestUtils.testRandGraphs(algo(), seed);
 	}
 
 }

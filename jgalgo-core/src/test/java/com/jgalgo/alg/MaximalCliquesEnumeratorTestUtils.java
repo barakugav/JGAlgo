@@ -28,9 +28,9 @@ import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
-class MaximalCliquesTestUtils extends TestUtils {
+class MaximalCliquesEnumeratorTestUtils extends TestUtils {
 
-	static void testRandGraphs(MaximalCliques algo, long seed) {
+	static void testRandGraphs(MaximalCliquesEnumerator algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32).repeat(128);
@@ -43,9 +43,9 @@ class MaximalCliquesTestUtils extends TestUtils {
 		});
 	}
 
-	private static <V, E> void testAlgo(Graph<V, E> g, MaximalCliques algo) {
+	private static <V, E> void testAlgo(Graph<V, E> g, MaximalCliquesEnumerator algo) {
 		final int n = g.vertices().size();
-		Collection<Set<V>> cliques = algo.findAllMaximalCliques(g);
+		Collection<Set<V>> cliques = algo.allMaximalCliques(g);
 
 		Set<Pair<V, V>> edges = new HashSet<>();
 		for (E e : g.edges()) {

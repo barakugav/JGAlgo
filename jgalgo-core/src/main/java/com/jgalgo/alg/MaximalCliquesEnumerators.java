@@ -24,27 +24,27 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-class MaximalCliquesUtils {
+class MaximalCliquesEnumerators {
 
-	private MaximalCliquesUtils() {}
+	private MaximalCliquesEnumerators() {}
 
-	abstract static class AbstractImpl implements MaximalCliques {
+	abstract static class AbstractImpl implements MaximalCliquesEnumerator {
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
-		public <V, E> Iterator<Set<V>> iterateMaximalCliques(Graph<V, E> g) {
+		public <V, E> Iterator<Set<V>> maximalCliquesIter(Graph<V, E> g) {
 			if (g instanceof IndexGraph) {
-				return (Iterator) iterateMaximalCliques((IndexGraph) g);
+				return (Iterator) maximalCliquesIter((IndexGraph) g);
 
 			} else {
 				IndexGraph iGraph = g.indexGraph();
 				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-				Iterator<IntSet> indexResult = iterateMaximalCliques(iGraph);
+				Iterator<IntSet> indexResult = maximalCliquesIter(iGraph);
 				return JGAlgoUtils.iterMap(indexResult, iSet -> IndexIdMaps.indexToIdSet(iSet, viMap));
 			}
 		}
 
-		abstract Iterator<IntSet> iterateMaximalCliques(IndexGraph g);
+		abstract Iterator<IntSet> maximalCliquesIter(IndexGraph g);
 
 	}
 

@@ -35,7 +35,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
-import com.jgalgo.alg.MaximalCliques;
+import com.jgalgo.alg.MaximalCliquesEnumerator;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
@@ -47,16 +47,16 @@ import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-public class MaximalCliquesBench {
+public class MaximalCliquesEnumeratorBench {
 
 	List<IntGraph> graphs;
 	final int graphsNum = 31;
 	final AtomicInteger graphIdx = new AtomicInteger();
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	void benchMaximalCliques(MaximalCliques algo, Blackhole blackhole) {
+	void benchMaximalCliques(MaximalCliquesEnumerator algo, Blackhole blackhole) {
 		IntGraph graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		for (Iterator<IntSet> cliqueIter = (Iterator) algo.iterateMaximalCliques(graph); cliqueIter.hasNext();)
+		for (Iterator<IntSet> cliqueIter = (Iterator) algo.maximalCliquesIter(graph); cliqueIter.hasNext();)
 			blackhole.consume(cliqueIter.next());
 	}
 
@@ -66,7 +66,7 @@ public class MaximalCliquesBench {
 	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-	public static class Gnp extends MaximalCliquesBench {
+	public static class Gnp extends MaximalCliquesEnumeratorBench {
 
 		@Param({ "|V|=150", "|V|=500", "|V|=1000" })
 		public String args;
@@ -101,7 +101,7 @@ public class MaximalCliquesBench {
 	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-	public static class BarabasiAlbert extends MaximalCliquesBench {
+	public static class BarabasiAlbert extends MaximalCliquesEnumeratorBench {
 
 		@Param({ "|V|=100", "|V|=400", "|V|=1000" })
 		public String args;
@@ -136,7 +136,7 @@ public class MaximalCliquesBench {
 	@Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 	@Fork(value = 1, warmups = 0)
 	@State(Scope.Benchmark)
-	public static class RecursiveMatrix extends MaximalCliquesBench {
+	public static class RecursiveMatrix extends MaximalCliquesEnumeratorBench {
 
 		@Param({ "|V|=300 |E|=1000", "|V|=300 |E|=2500", "|V|=800 |E|=5000" })
 		public String args;
@@ -166,8 +166,8 @@ public class MaximalCliquesBench {
 		}
 	}
 
-	private static MaximalCliques getAlgo(String implName) {
-		MaximalCliques.Builder builder = MaximalCliques.newBuilder();
+	private static MaximalCliquesEnumerator getAlgo(String implName) {
+		MaximalCliquesEnumerator.Builder builder = MaximalCliquesEnumerator.newBuilder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +24,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
- * Finds all maximal cliques in a graph.
+ * Algorithm for enumerating over all maximal cliques in a graph.
  *
  * <p>
  * A clique is a subset of vertices of an undirected graph such that every two distinct vertices in the clique are
@@ -38,9 +37,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * <pre> {@code
  * Graph<String, Integer> g = ...;
- * MaximalCliques maxCliquesAlgo = MaximalCliques.newInstance();
+ * MaximalCliquesEnumerator maxCliquesAlgo = MaximalCliquesEnumerator.newInstance();
  *
- * for (Set<String> clique : maxCliquesAlgo.findAllMaximalCliques(g)) {
+ * for (Set<String> clique : maxCliquesAlgo.allMaximalCliques(g)) {
  * 	System.out.println("Clique in the graph:");
  * 	for (String v : clique)
  * 		System.out.println("\t" + v);
@@ -49,37 +48,14 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-public interface MaximalCliques {
-
-	/**
-	 * Finds all the maximal cliques in a graph.
-	 *
-	 * <p>
-	 * The number of maximal cliques can be exponential in the number of vertices in the graph. If the graph is large,
-	 * consider using the {@link #iterateMaximalCliques(Graph)} method instead, which may iterate the cliques one at a
-	 * time without storing all them at the same time in memory.
-	 *
-	 * <p>
-	 * If {@code g} is {@link IntGraph}, the returned object will be a collection of {@link IntSet}.
-	 *
-	 * @param  <V> the vertices type
-	 * @param  <E> the edges type
-	 * @param  g   a graph
-	 * @return     a collection containing all maximal cliques in the graph
-	 */
-	default <V, E> Collection<Set<V>> findAllMaximalCliques(Graph<V, E> g) {
-		List<Set<V>> cliques = new ObjectArrayList<>();
-		for (Iterator<Set<V>> it = iterateMaximalCliques(g); it.hasNext();)
-			cliques.add(it.next());
-		return cliques;
-	}
+public interface MaximalCliquesEnumerator {
 
 	/**
 	 * Iterate over all maximal cliques in a graph.
 	 *
 	 * <p>
-	 * In contrast to {@link #findAllMaximalCliques(Graph)}, this method may iterate the cliques one at a time and can
-	 * be used to avoid storing all the cliques in memory at the the time.
+	 * In contrast to {@link #allMaximalCliques(Graph)}, this method may iterate the cliques one at a time and can be
+	 * used to avoid storing all the cliques in memory at the the time.
 	 *
 	 * <p>
 	 * If {@code g} is {@link IntGraph}, the returned iterator will be iterate over {@link IntSet}.
@@ -89,18 +65,38 @@ public interface MaximalCliques {
 	 * @param  g   a graph
 	 * @return     an iterator that iterates over all maximal cliques in the graph
 	 */
-	<V, E> Iterator<Set<V>> iterateMaximalCliques(Graph<V, E> g);
+	<V, E> Iterator<Set<V>> maximalCliquesIter(Graph<V, E> g);
+
+	/**
+	 * Finds all the maximal cliques in a graph.
+	 *
+	 * <p>
+	 * The number of maximal cliques can be exponential in the number of vertices in the graph. If the graph is large,
+	 * consider using the {@link #maximalCliquesIter(Graph)} method instead, which may iterate the cliques one at a time
+	 * without storing all them at the same time in memory.
+	 *
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned object will be a list of {@link IntSet}.
+	 *
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     a list containing all maximal cliques in the graph
+	 */
+	default <V, E> List<Set<V>> allMaximalCliques(Graph<V, E> g) {
+		return new ObjectArrayList<>(maximalCliquesIter(g));
+	}
 
 	/**
 	 * Create a new maximal cliques algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MaximalCliques} object. The
-	 * {@link MaximalCliques.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MaximalCliquesEnumerator} object. The
+	 * {@link MaximalCliquesEnumerator.Builder} might support different options to obtain different implementations.
 	 *
-	 * @return a default implementation of {@link MaximalCliques}
+	 * @return a default implementation of {@link MaximalCliquesEnumerator}
 	 */
-	static MaximalCliques newInstance() {
+	static MaximalCliquesEnumerator newInstance() {
 		return newBuilder().build();
 	}
 
@@ -112,23 +108,23 @@ public interface MaximalCliques {
 	 *
 	 * @return a new builder for maximal cliques algorithms
 	 */
-	static MaximalCliques.Builder newBuilder() {
-		return new MaximalCliques.Builder() {
+	static MaximalCliquesEnumerator.Builder newBuilder() {
+		return new MaximalCliquesEnumerator.Builder() {
 			String impl;
 
 			@Override
-			public MaximalCliques build() {
+			public MaximalCliquesEnumerator build() {
 				if (impl != null) {
 					switch (impl) {
 						case "bron-kerbosch":
-							return new MaximalCliquesBronKerbosch();
+							return new MaximalCliquesEnumeratorBronKerbosch();
 						case "bron-kerbosch-pivot":
-							return new MaximalCliquesBronKerboschPivot();
+							return new MaximalCliquesEnumeratorBronKerboschPivot();
 						default:
 							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 					}
 				}
-				return new MaximalCliquesBronKerbosch();
+				return new MaximalCliquesEnumeratorBronKerbosch();
 			}
 
 			@Override
@@ -138,26 +134,26 @@ public interface MaximalCliques {
 						impl = (String) value;
 						break;
 					default:
-						MaximalCliques.Builder.super.setOption(key, value);
+						MaximalCliquesEnumerator.Builder.super.setOption(key, value);
 				}
 			}
 		};
 	}
 
 	/**
-	 * A builder for {@link MaximalCliques} objects.
+	 * A builder for {@link MaximalCliquesEnumerator} objects.
 	 *
-	 * @see    MaximalCliques#newBuilder()
+	 * @see    MaximalCliquesEnumerator#newBuilder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {
 
 		/**
-		 * Build a new {@link MaximalCliques} object.
+		 * Build a new {@link MaximalCliquesEnumerator} object.
 		 *
-		 * @return a new {@link MaximalCliques} object
+		 * @return a new {@link MaximalCliquesEnumerator} object
 		 */
-		MaximalCliques build();
+		MaximalCliquesEnumerator build();
 	}
 
 }
