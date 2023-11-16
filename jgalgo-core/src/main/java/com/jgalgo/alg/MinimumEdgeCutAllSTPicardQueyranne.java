@@ -42,7 +42,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 	private static final double EPS = 0.0001;
 
 	@Override
-	Iterator<IVertexBiPartition> computeAllMinimumCuts(IndexGraph g, IWeightFunction w, int source, int sink) {
+	Iterator<IVertexBiPartition> minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink) {
 		final int n = g.vertices().size();
 
 		/* Compute maximum flow in the graph, with the weight function as capacity func */

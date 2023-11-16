@@ -17,11 +17,9 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -34,7 +32,6 @@ import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -75,8 +72,7 @@ public class MinimumEdgeCutAllSTPicardQueyranneTest extends TestBase {
 
 	private static <V, E> void testAllMinCuts(Graph<V, E> g, WeightFunction<E> w, V source, V sink,
 			MinimumEdgeCutAllST algo) {
-		Iterator<VertexBiPartition<V, E>> cutsIter = algo.computeAllMinimumCuts(g, w, source, sink);
-		List<VertexBiPartition<V, E>> cuts = new ObjectArrayList<>(cutsIter);
+		List<VertexBiPartition<V, E>> cuts = algo.allMinimumCuts(g, w, source, sink);
 
 		if (cuts.isEmpty()) {
 			assertNull(Path.findPath(g, source, sink));

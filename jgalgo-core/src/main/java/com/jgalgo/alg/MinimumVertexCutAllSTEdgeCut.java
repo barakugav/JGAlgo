@@ -45,7 +45,7 @@ class MinimumVertexCutAllSTEdgeCut extends MinimumVertexCutUtils.AbstractImplAll
 	private final MinimumEdgeCutAllST minEdgeCutAlgo = MinimumEdgeCutAllST.newInstance();
 
 	@Override
-	Iterator<IntSet> computeAllMinimumCuts(IndexGraph g, IWeightFunction w, int source, int sink) {
+	Iterator<IntSet> minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink) {
 		AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, w);
 		if (g.getEdge(source, sink) != -1)
 			return null;
@@ -55,7 +55,7 @@ class MinimumVertexCutAllSTEdgeCut extends MinimumVertexCutUtils.AbstractImplAll
 		final int verticesEdgesThreshold = auxiliaryGraph.verticesEdgesThreshold;
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		Iterator<IVertexBiPartition> edgesCuts = (Iterator) minEdgeCutAlgo.computeAllMinimumCuts(g0, w0,
+		Iterator<IVertexBiPartition> edgesCuts = (Iterator) minEdgeCutAlgo.minimumCutsIter(g0, w0,
 				Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0));
 
 		return JGAlgoUtils.iterMap(edgesCuts, edgesCut -> {

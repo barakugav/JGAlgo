@@ -92,13 +92,13 @@ class MinimumEdgeCutUtils {
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
-		public <V, E> Iterator<VertexBiPartition<V, E>> computeAllMinimumCuts(Graph<V, E> g, WeightFunction<E> w,
-				V source, V sink) {
+		public <V, E> Iterator<VertexBiPartition<V, E>> minimumCutsIter(Graph<V, E> g, WeightFunction<E> w, V source,
+				V sink) {
 			if (g instanceof IndexGraph) {
 				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 				int source0 = ((Integer) source).intValue();
 				int sink0 = ((Integer) sink).intValue();
-				return (Iterator) computeAllMinimumCuts((IndexGraph) g, w0, source0, sink0);
+				return (Iterator) minimumCutsIter((IndexGraph) g, w0, source0, sink0);
 
 			} else {
 				IndexGraph iGraph = g.indexGraph();
@@ -107,14 +107,13 @@ class MinimumEdgeCutUtils {
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 				int iSource = viMap.idToIndex(source);
 				int iSink = viMap.idToIndex(sink);
-				Iterator<IVertexBiPartition> indexIter = computeAllMinimumCuts(iGraph, iw, iSource, iSink);
+				Iterator<IVertexBiPartition> indexIter = minimumCutsIter(iGraph, iw, iSource, iSink);
 				return JGAlgoUtils.iterMap(indexIter,
 						iPartition -> VertexBiPartitions.partitionFromIndexPartition(g, iPartition));
 			}
 		}
 
-		abstract Iterator<IVertexBiPartition> computeAllMinimumCuts(IndexGraph g, IWeightFunction w, int source,
-				int sink);
+		abstract Iterator<IVertexBiPartition> minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink);
 
 	}
 

@@ -19,7 +19,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -96,12 +95,11 @@ public class MinimumVertexCutAllSTEdgeCutTest extends TestBase {
 
 	private static <V, E> void testMinCuts(Graph<V, E> g, WeightFunction<V> w, V source, V sink,
 			MinimumVertexCutAllST alg) {
-		Iterator<Set<V>> minCutsIter = alg.computeAllMinimumCuts(g, w, source, sink);
+		List<Set<V>> minCuts = alg.allMinimumCuts(g, w, source, sink);
 		if (g.getEdge(source, sink) != null) {
-			assertNull(minCutsIter);
+			assertNull(minCuts);
 			return;
 		}
-		List<Set<V>> minCuts = new ObjectArrayList<>(minCutsIter);
 		if (minCuts.isEmpty()) {
 			assertNull(Path.findPath(g, source, sink));
 			return;

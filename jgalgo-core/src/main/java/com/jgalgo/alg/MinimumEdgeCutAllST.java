@@ -16,10 +16,12 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
+import java.util.List;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Minimum Edge-Cut algorithm that finds all minimum edge-cuts in a graph between two terminal vertices (source-sink,
@@ -58,11 +60,11 @@ import com.jgalgo.graph.WeightFunction;
 public interface MinimumEdgeCutAllST {
 
 	/**
-	 * Compute all the minimum edge-cuts in a graph between two terminal vertices.
+	 * Iterate over all the minimum edge-cuts in a graph between two terminal vertices.
 	 *
 	 * <p>
 	 * Given a graph \(G=(V,E)\), an edge-cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
-	 * return value of this function is an iterator over all the partitions of these two sets.
+	 * return value of this function is an iterator over all the partitions to these two sets with minimum weight.
 	 *
 	 * <p>
 	 * If {@code g} is an {@link IntGraph}, the returned iterator will iterate over {@link IVertexBiPartition} objects.
@@ -77,8 +79,31 @@ public interface MinimumEdgeCutAllST {
 	 * @return                          an iterator over all the minimum edge-cuts
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
-	<V, E> Iterator<VertexBiPartition<V, E>> computeAllMinimumCuts(Graph<V, E> g, WeightFunction<E> w, V source,
-			V sink);
+	<V, E> Iterator<VertexBiPartition<V, E>> minimumCutsIter(Graph<V, E> g, WeightFunction<E> w, V source, V sink);
+
+	/**
+	 * Compute all the minimum edge-cuts in a graph between two terminal vertices.
+	 *
+	 * <p>
+	 * Given a graph \(G=(V,E)\), an edge-cut is a partition of \(V\) into twos sets \(C, \bar{C} = V \setminus C\). The
+	 * return value of this function is a list containing all the partitions to these two sets with minimum weight.
+	 *
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, the returned list will contain {@link IVertexBiPartition} objects. In that
+	 * case, its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
+	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
+	 * @param  g                        a graph
+	 * @param  w                        an edge weight function
+	 * @param  source                   the source vertex
+	 * @param  sink                     the sink vertex
+	 * @return                          a list of all the minimum edge-cuts
+	 * @throws IllegalArgumentException if the source and the sink are the same vertex
+	 */
+	default <V, E> List<VertexBiPartition<V, E>> allMinimumCuts(Graph<V, E> g, WeightFunction<E> w, V source, V sink) {
+		return new ObjectArrayList<>(minimumCutsIter(g, w, source, sink));
+	}
 
 	/**
 	 * Create a new minimum S-T all edge-cuts algorithm object.

@@ -59,11 +59,11 @@ class MinimumVertexCutUtils {
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
-		public <V, E> Iterator<Set<V>> computeAllMinimumCuts(Graph<V, E> g, WeightFunction<V> w, V source, V sink) {
+		public <V, E> Iterator<Set<V>> minimumCutsIter(Graph<V, E> g, WeightFunction<V> w, V source, V sink) {
 			if (g instanceof IndexGraph) {
 				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 				int source0 = ((Integer) source).intValue(), sink0 = ((Integer) sink).intValue();
-				return (Iterator) computeAllMinimumCuts((IndexGraph) g, w0, source0, sink0);
+				return (Iterator) minimumCutsIter((IndexGraph) g, w0, source0, sink0);
 
 			} else {
 				IndexGraph iGraph = g.indexGraph();
@@ -71,13 +71,13 @@ class MinimumVertexCutUtils {
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);
 				int iSource = viMap.idToIndex(source);
 				int iSink = viMap.idToIndex(sink);
-				Iterator<IntSet> indexCuts = computeAllMinimumCuts(iGraph, iw, iSource, iSink);
+				Iterator<IntSet> indexCuts = minimumCutsIter(iGraph, iw, iSource, iSink);
 				return indexCuts == null ? null
 						: JGAlgoUtils.iterMap(indexCuts, c -> IndexIdMaps.indexToIdSet(c, viMap));
 			}
 		}
 
-		abstract Iterator<IntSet> computeAllMinimumCuts(IndexGraph g, IWeightFunction w, int source, int sink);
+		abstract Iterator<IntSet> minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink);
 
 	}
 

@@ -16,12 +16,14 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
  * Minimum Vertex-Cut algorithm that finds all minimum vertex-cuts in a graph between two terminal vertices
@@ -61,7 +63,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 public interface MinimumVertexCutAllST {
 
 	/**
-	 * Compute all the minimum vertex-cuts in a graph between two terminal vertices.
+	 * Iterate over all the minimum vertex-cuts in a graph between two terminal vertices.
 	 *
 	 * <p>
 	 * Given a graph \(G=(V,E)\), an vertex-cut is a set of vertices whose removal disconnect the source from the sink.
@@ -87,7 +89,39 @@ public interface MinimumVertexCutAllST {
 	 *                                  vertex-cut exists
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
-	<V, E> Iterator<Set<V>> computeAllMinimumCuts(Graph<V, E> g, WeightFunction<V> w, V source, V sink);
+	<V, E> Iterator<Set<V>> minimumCutsIter(Graph<V, E> g, WeightFunction<V> w, V source, V sink);
+
+	/**
+	 * Compute all the minimum vertex-cuts in a graph between two terminal vertices.
+	 *
+	 * <p>
+	 * Given a graph \(G=(V,E)\), an vertex-cut is a set of vertices whose removal disconnect the source from the sink.
+	 * Note that connectivity is with respect to direction from the source to the sink, and not the other way around. In
+	 * undirected graphs the source and sink are interchangeable.
+	 *
+	 * <p>
+	 * If the source and sink are the same vertex no vertex-cut exists and an exception will be thrown. If the source
+	 * and sink and an edge exists between them, no vertex-cut exists and {@code null} will be returned.
+	 *
+	 * <p>
+	 * If {@code g} is an {@link IntGraph}, a list of {@link IntSet} objects will be returned. In that case, its better
+	 * to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
+	 *
+	 * @param  <V>                      the vertices type
+	 * @param  <E>                      the edges type
+	 * @param  g                        a graph
+	 * @param  w                        a vertex weight function
+	 * @param  source                   the source vertex
+	 * @param  sink                     the sink vertex
+	 * @return                          a list containing all the sets of vertices that form the minimum vertex-cuts, or
+	 *                                  {@code null} if an edge exists between the source and the sink and therefore no
+	 *                                  vertex-cut exists
+	 * @throws IllegalArgumentException if the source and the sink are the same vertex
+	 */
+	default <V, E> List<Set<V>> allMinimumCuts(Graph<V, E> g, WeightFunction<V> w, V source, V sink) {
+		Iterator<Set<V>> iter = minimumCutsIter(g, w, source, sink);
+		return iter == null ? null : new ObjectArrayList<>(iter);
+	}
 
 	/**
 	 * Create a new minimum S-T all vertex-cuts algorithm object.
