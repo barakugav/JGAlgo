@@ -38,6 +38,7 @@ import java.util.function.Supplier;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
+import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.ints.AbstractInt2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -48,6 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
+import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import it.unimi.dsi.fastutil.objects.ObjectSets;
 
@@ -768,6 +770,27 @@ public class JGAlgoUtils {
 		} else {
 			Arrays.fill(arr, null);
 		}
+	}
+
+	public static <T> Iterator<T> queueIter(Collection<T> elements) {
+		PriorityQueue<T> queue = new ObjectArrayFIFOQueue<>(elements.size());
+		for (T elm : elements)
+			queue.enqueue(elm);
+		return dequeueIter(queue);
+	}
+
+	public static <T> Iterator<T> dequeueIter(PriorityQueue<T> queue) {
+		return new Iterator<>() {
+			@Override
+			public boolean hasNext() {
+				return !queue.isEmpty();
+			}
+
+			@Override
+			public T next() {
+				return queue.dequeue();
+			}
+		};
 	}
 
 }

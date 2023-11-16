@@ -59,16 +59,12 @@ class MinimumVertexCutSTEdgeCut extends MinimumVertexCutUtils.AbstractImplST {
 
 		IndexGraph g0 = auxiliaryGraph.graph;
 		IWeightFunction w0 = auxiliaryGraph.weights;
-		final int verticesEdgesThreshold = auxiliaryGraph.verticesEdgesThreshold;
 
 		IntSet edgesCut = (IntSet) minEdgeCutAlgo
 				.computeMinimumCut(g0, w0, Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0)).crossEdges();
-		assert edgesCut.intStream().allMatch(e -> e >= verticesEdgesThreshold);
-
-		int[] vertexCut = edgesCut.toIntArray();
-		for (int i = 0; i < vertexCut.length; i++)
-			vertexCut[i] -= verticesEdgesThreshold;
-		return vertexCut;
+		int[] cut = edgesCut.toIntArray();
+		auxiliaryGraph.edgeCutToVertexCut(cut);
+		return cut;
 	}
 
 }

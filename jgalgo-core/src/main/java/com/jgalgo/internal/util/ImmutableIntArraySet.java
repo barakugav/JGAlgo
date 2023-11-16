@@ -19,6 +19,7 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Objects;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
@@ -27,6 +28,7 @@ public abstract class ImmutableIntArraySet extends AbstractIntSet {
 
 	final int[] arr;
 	final int from, to, size;
+	private int hashCode = 0;
 
 	public ImmutableIntArraySet(int[] arr) {
 		this(arr, 0, arr.length);
@@ -87,6 +89,23 @@ public abstract class ImmutableIntArraySet extends AbstractIntSet {
 	}
 
 	@Override
+	public int hashCode() {
+		if (hashCode == 0)
+			hashCode = super.hashCode();
+		return hashCode;
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof ImmutableIntArraySet) {
+			ImmutableIntArraySet o = (ImmutableIntArraySet) other;
+			if (hashCode() != o.hashCode())
+				return false;
+		}
+		return super.equals(other);
+	}
+
+	@Override
 	public IntIterator iterator() {
 		return new Iter();
 	}
@@ -117,13 +136,41 @@ public abstract class ImmutableIntArraySet extends AbstractIntSet {
 	}
 
 	public static ImmutableIntArraySet ofBitmap(Bitmap bitmap) {
-		int s = bitmap.capacity();
-		return new ImmutableIntArraySet(bitmap.toArray()) {
-			@Override
-			public boolean contains(int key) {
-				return 0 <= key && key < s && bitmap.get(key);
-			}
-		};
+		int[] arr = bitmap.toArray();
+		return new WithBitmap(arr, 0, arr.length, bitmap);
+	}
+
+	public static ImmutableIntArraySet ofBitmap(IntCollection elms, int bitmapSize) {
+		if (elms instanceof ImmutableIntArraySet) {
+			ImmutableIntArraySet elms0 = (ImmutableIntArraySet) elms;
+			if (elms0 instanceof WithBitmap && ((WithBitmap) elms0).bitmap.capacity() == bitmapSize)
+				return elms0;
+			Bitmap bitmap = new Bitmap(bitmapSize);
+			for (int i = elms0.from; i < elms0.to; i++)
+				bitmap.set(elms0.arr[i]);
+			return new WithBitmap(elms0.arr, elms0.from, elms0.to, bitmap);
+
+		} else {
+			int[] arr = elms.toIntArray();
+			Bitmap bitmap = new Bitmap(bitmapSize);
+			for (int i : arr)
+				bitmap.set(i);
+			return new WithBitmap(arr, 0, arr.length, bitmap);
+		}
+	}
+
+	private static class WithBitmap extends ImmutableIntArraySet {
+		private final Bitmap bitmap;
+
+		WithBitmap(int[] arr, int from, int to, Bitmap bitmap) {
+			super(arr, from, to);
+			this.bitmap = bitmap;
+		}
+
+		@Override
+		public boolean contains(int key) {
+			return 0 <= key && key < bitmap.capacity() && bitmap.get(key);
+		}
 	}
 
 	private static class WithNaiveContains extends ImmutableIntArraySet {

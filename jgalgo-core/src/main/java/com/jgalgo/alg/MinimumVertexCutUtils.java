@@ -106,9 +106,13 @@ class MinimumVertexCutUtils {
 
 		final IndexGraph graph;
 		final IWeightFunction weights;
-		final int verticesEdgesThreshold;
+		private final int verticesEdgesThreshold;
 
 		AuxiliaryGraph(IndexGraph g, IWeightFunction w) {
+			this(g, w, false);
+		}
+
+		AuxiliaryGraph(IndexGraph g, IWeightFunction w, boolean mutable) {
 			final int n = g.vertices().size();
 			final int m = g.edges().size();
 			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
@@ -199,7 +203,14 @@ class MinimumVertexCutUtils {
 
 			for (int v = 0; v < n; v++)
 				builder.addEdge(v * 2 + 0, v * 2 + 1);
-			graph = builder.build();
+			graph = mutable ? builder.buildMutable() : builder.build();
+		}
+
+		void edgeCutToVertexCut(int[] edgeCut) {
+			for (int i = 0; i < edgeCut.length; i++) {
+				assert edgeCut[i] >= verticesEdgesThreshold;
+				edgeCut[i] -= verticesEdgesThreshold;
+			}
 		}
 	}
 

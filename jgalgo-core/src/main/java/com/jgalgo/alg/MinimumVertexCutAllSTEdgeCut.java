@@ -16,13 +16,14 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
+import java.util.Set;
 import com.jgalgo.alg.MinimumVertexCutUtils.AuxiliaryGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 /**
  * All Minimum Vertex-Cuts algorithm with terminal vertices (source-sink, S-T) using All Minimum Edge-Cuts algorithm.
@@ -52,22 +53,30 @@ class MinimumVertexCutAllSTEdgeCut extends MinimumVertexCutUtils.AbstractImplAll
 
 		IndexGraph g0 = auxiliaryGraph.graph;
 		IWeightFunction w0 = auxiliaryGraph.weights;
-		final int verticesEdgesThreshold = auxiliaryGraph.verticesEdgesThreshold;
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		Iterator<IVertexBiPartition> edgesCuts = (Iterator) minEdgeCutAlgo.minimumCutsIter(g0, w0,
 				Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0));
 
-		return JGAlgoUtils.iterMap(edgesCuts, edgesCut -> {
-			assert edgesCut.crossEdges().intStream().allMatch(e -> e >= verticesEdgesThreshold);
+		/*
+		 * The iterator returned by the minimum edge cut algorithm returns cuts which are unique with respect to the
+		 * vertices set of the cut. We map each cut to the cross edges of the cut (in the auxiliary graph), which than
+		 * map to vertices in the original graph. Although the vertices of these edge cuts are be different (guaranteed
+		 * by the iterator), the cross edges may be the same. We filter out cuts with the same cross edges by storing a
+		 * set of cuts. This is unfortunate as we require exponential space. I could not find a way to avoid this. If we
+		 * already using exponential space, there is no need to work hard an implement the algorithm in Iterator form,
+		 * its easier to compute all cuts in one run.
+		 */
+		Set<IntSet> cuts = new ObjectOpenHashSet<>();
+		while (edgesCuts.hasNext()) {
+			int[] cut = edgesCuts.next().crossEdges().toIntArray();
+			auxiliaryGraph.edgeCutToVertexCut(cut);
+			cuts.add(ImmutableIntArraySet.withNaiveContains(cut));
+		}
 
-			int[] vertexCut = edgesCut.crossEdges().toIntArray();
-			for (int i = 0; i < vertexCut.length; i++)
-				vertexCut[i] -= verticesEdgesThreshold;
-
-			final int n = g.vertices().size();
-			return ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, vertexCut));
-		});
+		/* The queue iterator stores the cuts and use less and less memory as the elements are consumed */
+		Iterator<IntSet> cutsIter = JGAlgoUtils.queueIter(cuts);
+		return JGAlgoUtils.iterMap(cutsIter, cut -> cut);
 	}
 
 }

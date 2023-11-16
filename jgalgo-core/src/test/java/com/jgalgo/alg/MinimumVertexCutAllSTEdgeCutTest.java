@@ -108,8 +108,10 @@ public class MinimumVertexCutAllSTEdgeCutTest extends TestBase {
 		for (Set<V> cut : minCuts)
 			assertEquals(minCutWeight, WeightFunction.weightSum(w, cut), 1e-6);
 
+		Set<Set<V>> actual = new HashSet<>(minCuts);
+		assertEquals(minCuts.size(), actual.size(), "duplicate cuts: " + minCuts);
+
 		if (g.vertices().size() <= 16) {
-			Set<Set<V>> actual = new HashSet<>(minCuts);
 			Set<Set<V>> expected = new HashSet<>(computeExpectedMinCuts(g, w, source, sink));
 			assertEquals(expected, actual);
 		}

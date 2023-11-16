@@ -47,22 +47,22 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 
 		final int n = g.vertices().size();
 
-		int[] minCut = null;
 		Neighbors neighbors = new Neighbors(g);
 		int minCutSize = n - 1;
 		int startVertex = -1;
+		boolean startVertexNeighborsIsOut = false;
 		if (g.isDirected()) {
 			for (int v = 0; v < n; v++) {
 				IntList vNeighbors = neighbors.outNeighbors(v);
 				if (minCutSize > vNeighbors.size()) {
 					minCutSize = vNeighbors.size();
-					minCut = vNeighbors.toIntArray();
+					startVertexNeighborsIsOut = true;
 					startVertex = v;
 				}
 				vNeighbors = neighbors.inNeighbors(v);
 				if (minCutSize > vNeighbors.size()) {
 					minCutSize = vNeighbors.size();
-					minCut = vNeighbors.toIntArray();
+					startVertexNeighborsIsOut = false;
 					startVertex = v;
 				}
 			}
@@ -71,7 +71,7 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 				IntList vNeighbors = neighbors.outNeighbors(v);
 				if (minCutSize > vNeighbors.size()) {
 					minCutSize = vNeighbors.size();
-					minCut = vNeighbors.toIntArray();
+					startVertexNeighborsIsOut = true;
 					startVertex = v;
 				}
 			}
@@ -80,6 +80,10 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 			/* the graph is a clique, we can disconnect it only by removing n-1 vertices */
 			return Range.of(g.vertices().size() - 1);
 		}
+
+		int[] minCut =
+				(startVertexNeighborsIsOut ? neighbors.outNeighbors(startVertex) : neighbors.inNeighbors(startVertex))
+						.toIntArray();
 
 		final AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, null);
 
