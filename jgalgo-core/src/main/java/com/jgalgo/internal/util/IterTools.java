@@ -60,7 +60,7 @@ public class IterTools {
 
 		private final Iterator<? super E> it;
 		private Object nextElm;
-		private static final Object nextNone = JGAlgoUtils.labeledObj("None");
+		private static final Object nextNone = new Object();
 
 		IterPeekableImpl(Iterator<? super E> it) {
 			this.it = Objects.requireNonNull(it);

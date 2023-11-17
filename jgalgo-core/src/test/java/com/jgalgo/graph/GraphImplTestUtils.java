@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -41,7 +42,6 @@ import com.jgalgo.alg.MinimumDirectedSpanningTree;
 import com.jgalgo.alg.MinimumDirectedSpanningTreeTarjanTest;
 import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.alg.MinimumSpanningTreeTestUtils;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -511,7 +511,7 @@ class GraphImplTestUtils extends TestUtils {
 				WeightsObj<Integer, Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
 				Object2ObjectMap<Integer, Object> gVDataMap = new Object2ObjectOpenHashMap<>();
 				for (Integer u : g.vertices()) {
-					Object data = JGAlgoUtils.labeledObj("data" + u);
+					Object data = labeledObj("data" + u);
 					gVData.set(u, data);
 					gVDataMap.put(u, data);
 				}
@@ -521,7 +521,7 @@ class GraphImplTestUtils extends TestUtils {
 				WeightsObj<Integer, Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
 				Object2ObjectMap<Integer, Object> gEDataMap = new Object2ObjectOpenHashMap<>();
 				for (Integer e : g.edges()) {
-					Object data = JGAlgoUtils.labeledObj("data" + e);
+					Object data = labeledObj("data" + e);
 					gEData.set(e, data);
 					gEDataMap.put(e, data);
 				}
@@ -569,7 +569,7 @@ class GraphImplTestUtils extends TestUtils {
 			WeightsObj<Integer, Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
 			Object2ObjectMap<Integer, Object> gVDataMap = new Object2ObjectOpenHashMap<>();
 			for (Integer u : g.vertices()) {
-				Object data = JGAlgoUtils.labeledObj("data" + u);
+				Object data = labeledObj("data" + u);
 				gVData.set(u, data);
 				gVDataMap.put(u, data);
 			}
@@ -579,7 +579,7 @@ class GraphImplTestUtils extends TestUtils {
 			WeightsObj<Integer, Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
 			Object2ObjectMap<Integer, Object> gEDataMap = new Object2ObjectOpenHashMap<>();
 			for (Integer e : g.edges()) {
-				Object data = JGAlgoUtils.labeledObj("data" + e);
+				Object data = labeledObj("data" + e);
 				gEData.set(e, data);
 				gEDataMap.put(e, data);
 			}
@@ -616,25 +616,25 @@ class GraphImplTestUtils extends TestUtils {
 			/* Reassign some weights to both g and copy, and assert they are updated independently */
 			for (int ops = 0; ops < g.vertices().size() / 4; ops++) {
 				Integer u = Graphs.randVertex(g, rand);
-				Object data = JGAlgoUtils.labeledObj("data" + u + "new");
+				Object data = labeledObj("data" + u + "new");
 				g.<Object, WeightsObj<Integer, Object>>getVerticesWeights(gVDataKey).set(u, data);
 				gVDataMap.put(u, data);
 			}
 			for (int ops = 0; ops < copy.vertices().size() / 4; ops++) {
 				Integer u = Graphs.randVertex(copy, rand);
-				Object data = JGAlgoUtils.labeledObj("data" + u + "new");
+				Object data = labeledObj("data" + u + "new");
 				copy.<Object, WeightsObj<Integer, Object>>getVerticesWeights(gVDataKey).set(u, data);
 				copyVDataMap.put(u, data);
 			}
 			for (int ops = 0; ops < g.edges().size() / 4; ops++) {
 				Integer e = Graphs.randEdge(g, rand);
-				Object data = JGAlgoUtils.labeledObj("data" + e + "new");
+				Object data = labeledObj("data" + e + "new");
 				g.<Object, WeightsObj<Integer, Object>>getEdgesWeights(gEDataKey).set(e, data);
 				gEDataMap.put(e, data);
 			}
 			for (int ops = 0; ops < copy.edges().size() / 4; ops++) {
 				Integer e = Graphs.randEdge(copy, rand);
-				Object data = JGAlgoUtils.labeledObj("data" + e + "new");
+				Object data = labeledObj("data" + e + "new");
 				copy.<Object, WeightsObj<Integer, Object>>getEdgesWeights(gEDataKey).set(e, data);
 				copyEDataMap.put(e, data);
 			}
@@ -663,7 +663,7 @@ class GraphImplTestUtils extends TestUtils {
 			WeightsObj<Integer, Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
 			Object2ObjectMap<Integer, Object> gVDataMap = new Object2ObjectOpenHashMap<>();
 			for (Integer u : g.vertices()) {
-				Object data = JGAlgoUtils.labeledObj("data" + u);
+				Object data = labeledObj("data" + u);
 				gVData.set(u, data);
 				gVDataMap.put(u, data);
 			}
@@ -673,7 +673,7 @@ class GraphImplTestUtils extends TestUtils {
 			WeightsObj<Integer, Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
 			Object2ObjectMap<Integer, Object> gEDataMap = new Object2ObjectOpenHashMap<>();
 			for (Integer e : g.edges()) {
-				Object data = JGAlgoUtils.labeledObj("data" + e);
+				Object data = labeledObj("data" + e);
 				gEData.set(e, data);
 				gEDataMap.put(e, data);
 			}
@@ -714,7 +714,7 @@ class GraphImplTestUtils extends TestUtils {
 			WeightsObj<Integer, Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
 			Object2ObjectMap<Integer, Object> gVDataMap = new Object2ObjectOpenHashMap<>();
 			for (Integer u : g.vertices()) {
-				Object data = JGAlgoUtils.labeledObj("data" + u);
+				Object data = labeledObj("data" + u);
 				gVData.set(u, data);
 				gVDataMap.put(u, data);
 			}
@@ -724,7 +724,7 @@ class GraphImplTestUtils extends TestUtils {
 			WeightsObj<Integer, Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
 			Object2ObjectMap<Integer, Object> gEDataMap = new Object2ObjectOpenHashMap<>();
 			for (Integer e : g.edges()) {
-				Object data = JGAlgoUtils.labeledObj("data" + e);
+				Object data = labeledObj("data" + e);
 				gEData.set(e, data);
 				gEDataMap.put(e, data);
 			}
@@ -761,13 +761,13 @@ class GraphImplTestUtils extends TestUtils {
 			/* Reassign some weights to g, and assert they are updated independently */
 			for (int ops = 0; ops < g.vertices().size() / 4; ops++) {
 				Integer u = Graphs.randVertex(g, rand);
-				Object data = JGAlgoUtils.labeledObj("data" + u + "new");
+				Object data = labeledObj("data" + u + "new");
 				g.<Object, WeightsObj<Integer, Object>>getVerticesWeights(gVDataKey).set(u, data);
 				gVDataMap.put(u, data);
 			}
 			for (int ops = 0; ops < g.edges().size() / 4; ops++) {
 				Integer e = Graphs.randEdge(g, rand);
-				Object data = JGAlgoUtils.labeledObj("data" + e + "new");
+				Object data = labeledObj("data" + e + "new");
 				g.<Object, WeightsObj<Integer, Object>>getEdgesWeights(gEDataKey).set(e, data);
 				gEDataMap.put(e, data);
 			}
@@ -1503,6 +1503,23 @@ class GraphImplTestUtils extends TestUtils {
 
 			opsNum--;
 		}
+	}
+
+	private static class LabeledObj {
+		private final String s;
+
+		LabeledObj(String label) {
+			this.s = Objects.requireNonNull(label);
+		}
+
+		@Override
+		public String toString() {
+			return s;
+		}
+	}
+
+	static Object labeledObj(String label) {
+		return new LabeledObj(label);
 	}
 
 }

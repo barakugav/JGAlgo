@@ -379,23 +379,6 @@ public class JGAlgoUtils {
 		}
 	}
 
-	private static class LabeledObj {
-		private final String s;
-
-		LabeledObj(String label) {
-			this.s = Objects.requireNonNull(label);
-		}
-
-		@Override
-		public String toString() {
-			return s;
-		}
-	}
-
-	public static Object labeledObj(String label) {
-		return new LabeledObj(label);
-	}
-
 	public static IWeightFunction potentialWeightFunc(IndexGraph g, IWeightFunction w, double[] potential) {
 		return e -> w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
 	}
