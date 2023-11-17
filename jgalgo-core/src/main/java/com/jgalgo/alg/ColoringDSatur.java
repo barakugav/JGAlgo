@@ -95,7 +95,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 			neighborColors[u] = new BitSet();
 		}
 
-		while (!heap.isEmpty()) {
+		while (heap.isNotEmpty()) {
 			int u = heap.extractMin().value().intValue();
 
 			int color = colors[u] = neighborColors[u].nextClearBit(0);

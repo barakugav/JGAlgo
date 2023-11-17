@@ -18,6 +18,8 @@ package com.jgalgo.internal.ds;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * A a collection which maintains elements in order and support efficient retrieval of the minimum value.
@@ -57,7 +59,7 @@ import java.util.Comparator;
  * @see        HeapReferenceable
  * @author     Barak Ugav
  */
-public interface Heap<E> extends Collection<E> {
+public interface Heap<E> extends Iterable<E> {
 
 	/**
 	 * Insert a new element to the heap.
@@ -97,6 +99,14 @@ public interface Heap<E> extends Collection<E> {
 	E extractMin();
 
 	/**
+	 * Remove an element from the heap.
+	 *
+	 * @param  elm element to remove
+	 * @return     {@code true} if the element was removed, {@code false} otherwise
+	 */
+	boolean remove(E elm);
+
+	/**
 	 * Meld with another heap.
 	 *
 	 * <p>
@@ -115,6 +125,34 @@ public interface Heap<E> extends Collection<E> {
 	 * @throws IllegalArgumentException if the given heap is {@code this} heap, or its of another implementation
 	 */
 	void meld(Heap<? extends E> heap);
+
+	/**
+	 * Check whether the heap is empty.
+	 *
+	 * @return {@code true} if the heap is empty, {@code false} otherwise
+	 */
+	boolean isEmpty();
+
+	/**
+	 * Check whether the heap is not empty.
+	 *
+	 * @return {@code true} if the heap is not empty, {@code false} otherwise
+	 */
+	boolean isNotEmpty();
+
+	/**
+	 * Removes all of the elements from this heap.
+	 */
+	void clear();
+
+	/**
+	 * Get a stream over the elements in this heap.
+	 *
+	 * @return a stream over the elements in this heap
+	 */
+	default Stream<E> stream() {
+		return StreamSupport.stream(spliterator(), false);
+	}
 
 	/**
 	 * Returns the comparator used to order the elements in this heap, or {@code null} if this heap uses the

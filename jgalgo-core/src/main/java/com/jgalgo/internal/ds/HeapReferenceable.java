@@ -16,8 +16,9 @@
 
 package com.jgalgo.internal.ds;
 
-import java.util.Collection;
 import java.util.Comparator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
@@ -62,7 +63,7 @@ import com.jgalgo.internal.util.JGAlgoUtils;
  * @see        HeapReference
  * @author     Barak Ugav
  */
-public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>> {
+public interface HeapReferenceable<K, V> extends Iterable<HeapReference<K, V>> {
 
 	/**
 	 * Insert a new element to the heap with {@code null} value.
@@ -185,6 +186,34 @@ public interface HeapReferenceable<K, V> extends Collection<HeapReference<K, V>>
 	 * @param ref a reference to an inserted element
 	 */
 	void remove(HeapReference<K, V> ref);
+
+	/**
+	 * Removes all of the elements from this heap.
+	 */
+	void clear();
+
+	/**
+	 * Check whether the heap is empty.
+	 *
+	 * @return {@code true} if the heap is empty, {@code false} otherwise
+	 */
+	boolean isEmpty();
+
+	/**
+	 * Check whether the heap is not empty.
+	 *
+	 * @return {@code true} if the heap is not empty, {@code false} otherwise
+	 */
+	boolean isNotEmpty();
+
+	/**
+	 * Get a stream over the elements in this heap.
+	 *
+	 * @return a stream over the elements in this heap
+	 */
+	default Stream<HeapReference<K, V>> stream() {
+		return StreamSupport.stream(spliterator(), false);
+	}
 
 	/**
 	 * Create a {@link Heap} view on this referenceable heap.

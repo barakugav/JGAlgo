@@ -157,7 +157,7 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 				}
 
 				currentTree: for (;;) {
-					while (!nextTightEdge.isEmpty()) {
+					while (nextTightEdge.isNotEmpty()) {
 						HeapReference<Integer, Void> minRef = nextTightEdge.findMin();
 						int e = minRef.key().intValue();
 						int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);

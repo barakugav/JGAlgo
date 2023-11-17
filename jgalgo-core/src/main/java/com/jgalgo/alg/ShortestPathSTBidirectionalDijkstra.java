@@ -56,7 +56,7 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 		infoT.put(target, new Info());
 		heapS.insert(.0, source);
 		heapT.insert(.0, target);
-		while (!heapS.isEmpty() && !heapT.isEmpty()) {
+		while (heapS.isNotEmpty() && heapT.isNotEmpty()) {
 
 			HeapReference<Double, Integer> min = heapS.extractMin();
 			double uDistanceS = min.key();

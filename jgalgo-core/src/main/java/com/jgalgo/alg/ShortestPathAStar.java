@@ -132,7 +132,7 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 		info.put(source, sourceInfo);
 		heap.insert(.0, source);
 
-		while (!heap.isEmpty()) {
+		while (heap.isNotEmpty()) {
 			HeapReference<Double, Integer> min = heap.extractMin();
 			int u = min.value();
 			if (u == target)

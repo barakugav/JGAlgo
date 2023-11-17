@@ -69,7 +69,7 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 
 		@Override
 		double computeNextDelta3() {
-			while (!blossomEvents.isEmpty()) {
+			while (blossomEvents.isNotEmpty()) {
 				EdgeEvent blossomEvent = blossomEvents.findMin();
 				int u = g.edgeSource(blossomEvent.e);
 				int v = g.edgeTarget(blossomEvent.e);
@@ -233,7 +233,7 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 
 		@Override
 		void addBlossomEvent(int e, double slackBar) {
-			blossomEvents.add(new EdgeEvent(e, slackBar));
+			blossomEvents.insert(new EdgeEvent(e, slackBar));
 		}
 
 	}

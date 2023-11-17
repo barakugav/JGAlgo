@@ -75,9 +75,19 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 		root = null;
 	}
 
+	// @Override
+	// public int size() {
+	// return root != null ? root.size : 0;
+	// }
+
 	@Override
-	public int size() {
-		return root != null ? root.size : 0;
+	public boolean isEmpty() {
+		return root == null;
+	}
+
+	@Override
+	public boolean isNotEmpty() {
+		return root != null;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -442,6 +452,7 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 
 	private static class SplayBSTNode<K, V> extends BaseNode<K, SplayBSTNode<K, V>> implements HeapReference<K, V> {
 
+		// TODO consider removing the size field
 		int size;
 
 		private V value;

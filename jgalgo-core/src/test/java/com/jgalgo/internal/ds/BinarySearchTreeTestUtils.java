@@ -306,7 +306,7 @@ class BinarySearchTreeTestUtils extends TestUtils {
 				if (h.tree().isEmpty())
 					continue;
 
-				Integer[] elms = h.tree().asHeap().toArray(s -> new Integer[s]);
+				Integer[] elms = h.tree().asHeap().stream().toArray(Integer[]::new);
 				Arrays.sort(elms, null);
 
 				double idx0 = 0.5 + rand.nextGaussian() / 10;

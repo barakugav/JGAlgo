@@ -16,7 +16,6 @@
 
 package com.jgalgo.internal.ds;
 
-import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -24,7 +23,7 @@ import java.util.Objects;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
-abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> {
+abstract class HeapAbstract<E> implements Heap<E> {
 
 	final Comparator<? super E> c;
 
@@ -33,25 +32,11 @@ abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> 
 	}
 
 	@Override
-	public boolean add(E e) {
-		insert(e);
-		return true;
-	}
-
-	@Override
-	public boolean removeAll(Collection<?> c) {
-		boolean modified = false;
-		for (Object e : c)
-			if (remove(e))
-				modified = true;
-		return modified;
-	}
-
-	@Override
 	public void meld(Heap<? extends E> heap) {
 		Assertions.Heaps.noMeldWithSelf(this, heap);
 		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
-		addAll(heap);
+		for (E elm : heap)
+			insert(elm);
 		heap.clear();
 	}
 
@@ -78,29 +63,8 @@ abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> 
 		}
 
 		@Override
-		public int size() {
-			return h.size();
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public boolean contains(Object o) {
-			return h.find((K) o) != null;
-		}
-
-		@Override
 		public Iterator<K> iterator() {
 			return JGAlgoUtils.iterMap(h.iterator(), HeapReference::key);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public boolean remove(Object o) {
-			HeapReference<K, ?> ref = h.find((K) o);
-			if (ref == null)
-				return false;
-			h.remove(ref);
-			return true;
 		}
 
 		@Override
@@ -136,6 +100,26 @@ abstract class HeapAbstract<E> extends AbstractCollection<E> implements Heap<E> 
 				throw new IllegalArgumentException();
 			HeapReferenceable<K, ?> oh = ((HeapFromReferenceable<K>) heap).h;
 			h.meld((HeapReferenceable) oh);
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return h.isEmpty();
+		}
+
+		@Override
+		public boolean isNotEmpty() {
+			return h.isNotEmpty();
+		}
+
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		@Override
+		public boolean remove(K elm) {
+			HeapReference<K, ?> ref = h.find(elm);
+			if (ref == null)
+				return false;
+			h.remove((HeapReference) ref);
+			return true;
 		}
 	}
 

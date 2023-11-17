@@ -54,7 +54,7 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 			heapVPtrs[site] = heap.insert(0.0, site);
 		}
 
-		while (!heap.isEmpty()) {
+		while (heap.isNotEmpty()) {
 			HeapReference<Double, Integer> min = heap.extractMin();
 			int u = min.value();
 			double uDistance = distance[u] = min.key();

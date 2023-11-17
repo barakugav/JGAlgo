@@ -57,6 +57,7 @@ import java.util.Objects;
  */
 class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 
+	private int size;
 	private Node<K, V>[] nodes;
 	private final RedBlackTreeExtension<K, V>[] extensions;
 
@@ -118,7 +119,7 @@ class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 
 	@Override
 	Node<K, V> newNode(K key) {
-		int idx = size();
+		int idx = size;
 		if (idx >= nodes.length) {
 			int newLen = Math.max(2, nodes.length * 2);
 			nodes = Arrays.copyOf(nodes, newLen);
@@ -129,6 +130,7 @@ class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 		Node<K, V> n = nodes[idx] = new Node<>(key, idx);
 		for (RedBlackTreeExtension<K, V> extension : extensions)
 			extension.initNode(n);
+		size++;
 		return n;
 	}
 
@@ -139,7 +141,7 @@ class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 		int nIdx = n.idx;
 		assert nodes[nIdx] == n;
 
-		int lastIdx = size();
+		int lastIdx = size - 1;
 		Node<K, V> last = nodes[lastIdx];
 		assert last.idx == lastIdx;
 		nodes[nIdx] = last;
@@ -152,6 +154,7 @@ class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 		}
 		last.idx = nIdx;
 		n.idx = -1;
+		size--;
 	}
 
 	@Override
@@ -193,7 +196,7 @@ class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 
 	@Override
 	public void clear() {
-		int s = size();
+		int s = size;
 		for (RedBlackTreeExtension<K, V> extension : extensions)
 			extension.data.clear(s);
 		super.clear();

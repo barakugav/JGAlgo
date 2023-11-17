@@ -61,7 +61,6 @@ abstract class HeapPairing<K, V, NodeT extends HeapPairing.NodeBase<K, V, NodeT>
 	}
 
 	NodeT minRoot;
-	int size;
 
 	HeapPairing(Comparator<? super K> c) {
 		super(c);
@@ -74,8 +73,13 @@ abstract class HeapPairing<K, V, NodeT extends HeapPairing.NodeBase<K, V, NodeT>
 	}
 
 	@Override
-	public int size() {
-		return size;
+	public boolean isEmpty() {
+		return minRoot == null;
+	}
+
+	@Override
+	public boolean isNotEmpty() {
+		return minRoot != null;
 	}
 
 	private static <K, V, NodeT extends NodeBase<K, V, NodeT>> void cut(NodeT n) {
@@ -107,11 +111,9 @@ abstract class HeapPairing<K, V, NodeT extends HeapPairing.NodeBase<K, V, NodeT>
 	void insertNode(NodeT n) {
 		if (minRoot == null) {
 			minRoot = n;
-			assert size == 0;
 		} else {
 			minRoot = meld(minRoot, n);
 		}
-		size++;
 	}
 
 	void afterKeyDecrease(NodeT n) {
@@ -132,7 +134,6 @@ abstract class HeapPairing<K, V, NodeT extends HeapPairing.NodeBase<K, V, NodeT>
 			minRoot = n;
 		}
 		removeRoot();
-		size--;
 	}
 
 	abstract void removeRoot();
@@ -145,16 +146,13 @@ abstract class HeapPairing<K, V, NodeT extends HeapPairing.NodeBase<K, V, NodeT>
 		@SuppressWarnings("unchecked")
 		HeapPairing<K, V, NodeT> h = (HeapPairing<K, V, NodeT>) heap;
 
-		if (size == 0) {
-			assert minRoot == null;
+		if (minRoot == null) {
 			minRoot = h.minRoot;
 		} else if (h.minRoot != null) {
 			minRoot = meld(minRoot, h.minRoot);
 		}
-		size += h.size;
 
 		h.minRoot = null;
-		h.size = 0;
 	}
 
 	private NodeT meld(NodeT n1, NodeT n2) {
@@ -167,10 +165,8 @@ abstract class HeapPairing<K, V, NodeT extends HeapPairing.NodeBase<K, V, NodeT>
 
 	@Override
 	public void clear() {
-		if (minRoot == null) {
-			assert size == 0;
+		if (minRoot == null)
 			return;
-		}
 
 		for (NodeT p = minRoot;;) {
 			while (p.child != null) {
@@ -192,7 +188,6 @@ abstract class HeapPairing<K, V, NodeT extends HeapPairing.NodeBase<K, V, NodeT>
 		}
 
 		minRoot = null;
-		size = 0;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

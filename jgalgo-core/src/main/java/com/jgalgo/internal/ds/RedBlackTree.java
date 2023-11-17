@@ -34,7 +34,6 @@ import com.jgalgo.internal.util.Assertions;
  */
 class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 
-	private int size;
 	private Node<K, V> root;
 
 	static final boolean Red = true;
@@ -69,12 +68,16 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	RedBlackTree(Comparator<? super K> comparator) {
 		super(comparator);
 		root = null;
-		size = 0;
 	}
 
 	@Override
-	public int size() {
-		return size;
+	public boolean isEmpty() {
+		return root == null;
+	}
+
+	@Override
+	public boolean isNotEmpty() {
+		return root != null;
 	}
 
 	@Override
@@ -96,7 +99,6 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 			return;
 		BinarySearchTrees.clear(root);
 		root = null;
-		size = 0;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -110,7 +112,6 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 			return;
 		if (isEmpty()) {
 			root = h.root;
-			size = h.size;
 		} else {
 			/* there is nothing smarter to do than 'addAll' */
 			/* We use 'insertNode' instead of 'insert' to maintain user references to nodes */
@@ -142,7 +143,6 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 			}
 		}
 		h.root = null;
-		h.size = 0;
 	}
 
 	void beforeNodeReuse(Node<K, V> node) {}
@@ -227,7 +227,6 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 			afterInsert(n);
 			fixAfterInsert(n);
 		}
-		size++;
 	}
 
 	private void fixAfterInsert(Node<K, V> n) {
@@ -307,7 +306,6 @@ class RedBlackTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 		if (replace != null)
 			replace.parent = parent;
 		n.clearWithoutUserData();
-		size--;
 	}
 
 	void removeNode(Node<K, V> n) {

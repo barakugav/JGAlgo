@@ -47,7 +47,9 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 
 	private Node<K, V>[] roots;
 	private int rootsLen;
-	private int size;
+
+	@SuppressWarnings("unchecked")
+	private Node<K, V>[] tempNodeArray = EmptyNodeArr;
 
 	@SuppressWarnings("rawtypes")
 	private static final Node[] EmptyNodeArr = new Node[0];
@@ -83,7 +85,6 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 		super(comparator);
 		roots = EmptyNodeArr;
 		rootsLen = 0;
-		size = 0;
 	}
 
 	private void swapParentChild(Node<K, V> parent, Node<K, V> child) {
@@ -166,7 +167,7 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 		if (rootIdx == -1)
 			throw new ConcurrentModificationException();
 
-		Node<K, V>[] childs = newArr(rootIdx);
+		Node<K, V>[] childs = tempArray(rootIdx);
 		Node<K, V> next, p = node.child;
 		for (int i = 0; i < rootIdx; i++, p = next) {
 			next = p.next;
@@ -176,8 +177,9 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 			childs[rootIdx - i - 1] = p;
 		}
 
-		meld(childs, childs.length);
-		size--;
+		meld(childs, rootIdx);
+		while (rootsLen > 0 && roots[rootsLen - 1] == null)
+			rootsLen--;
 	}
 
 	@Override
@@ -192,21 +194,25 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 			}
 		}
 
-		size = 0;
 		rootsLen = 0;
 	}
 
 	@Override
-	public int size() {
-		return size;
+	public boolean isEmpty() {
+		return rootsLen == 0;
+	}
+
+	@Override
+	public boolean isNotEmpty() {
+		return rootsLen != 0;
 	}
 
 	@Override
 	public HeapReference<K, V> insert(K key) {
 		Node<K, V> node = new Node<>(key);
-		Node<K, V>[] h2 = newArr(1);
+		Node<K, V>[] h2 = tempArray(1);
 		h2[0] = node;
-		size += meld(h2, 1);
+		meld(h2, 1);
 		return node;
 	}
 
@@ -256,14 +262,18 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 
 	private int meld(Node<K, V>[] rs2, int rs2len) {
 		Node<K, V>[] rs1 = roots;
-		Node<K, V>[] rs = rs1.length >= rs2.length ? rs1 : rs2;
+		// Node<K, V>[] rs = rs1.length >= rs2.length ? rs1 : rs2;
 		int rs1len = rootsLen;
-		int rslen = rs1len > rs2len ? rs1len : rs2len;
 		int h2size = 0;
+		rootsLen = rs1len > rs2len ? rs1len : rs2len;
+
+		int maxArrLen = Math.max(rs1len, rs2len) + 1;
+		if (maxArrLen > roots.length)
+			roots = Arrays.copyOf(roots, Math.max(maxArrLen, roots.length * 2));
 
 		Node<K, V> carry = null;
 		if (c == null) {
-			for (int i = 0; i < rslen; i++) {
+			for (int i = 0; i < rootsLen; i++) {
 				Node<K, V> r1 = i < rs1len ? rs1[i] : null;
 				Node<K, V> r2 = i < rs2len ? rs2[i] : null;
 
@@ -271,20 +281,20 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 					h2size += 1 << i;
 
 				if ((r1 == null && r2 == null) || (r1 != null && r2 != null)) {
-					rs[i] = carry;
+					roots[i] = carry;
 					carry = (r1 != null && r2 != null) ? mergeTreesDefaultCmp(r1, r2) : null;
 				} else {
 					Node<K, V> r = r1 != null ? r1 : r2;
 					if (carry == null)
-						rs[i] = r;
+						roots[i] = r;
 					else {
-						rs[i] = null;
+						roots[i] = null;
 						carry = mergeTreesDefaultCmp(carry, r);
 					}
 				}
 			}
 		} else {
-			for (int i = 0; i < rslen; i++) {
+			for (int i = 0; i < rootsLen; i++) {
 				Node<K, V> r1 = i < rs1len ? rs1[i] : null;
 				Node<K, V> r2 = i < rs2len ? rs2[i] : null;
 
@@ -292,27 +302,24 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 					h2size += 1 << i;
 
 				if ((r1 == null && r2 == null) || (r1 != null && r2 != null)) {
-					rs[i] = carry;
+					roots[i] = carry;
 					carry = (r1 != null && r2 != null) ? mergeTreesCustomCmp(r1, r2) : null;
 				} else {
 					Node<K, V> r = r1 != null ? r1 : r2;
 					if (carry == null)
-						rs[i] = r;
+						roots[i] = r;
 					else {
-						rs[i] = null;
+						roots[i] = null;
 						carry = mergeTreesCustomCmp(carry, r);
 					}
 				}
 			}
 		}
-		if (carry != null) {
-			if (rslen + 1 >= rs.length)
-				rs = Arrays.copyOf(rs, rs.length * 2);
-			rs[rslen++] = carry;
-		}
+		if (carry != null)
+			roots[rootsLen++] = carry;
 
-		roots = rs;
-		rootsLen = rslen;
+		Arrays.fill(rs2, 0, rs2len, null);
+
 		return h2size;
 	}
 
@@ -324,11 +331,10 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
 
 		HeapBinomial<K, V> h = (HeapBinomial<K, V>) heap;
-		size += meld(h.roots, h.rootsLen);
+		meld(h.roots, h.rootsLen);
 
 		h.roots = EmptyNodeArr;
 		h.rootsLen = 0;
-		h.size = 0;
 	}
 
 	@Override
@@ -350,9 +356,10 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 		return min;
 	}
 
-	@SuppressWarnings("unchecked")
-	private static <K, V> Node<K, V>[] newArr(int n) {
-		return new Node[n];
+	private Node<K, V>[] tempArray(int n) {
+		if (n > tempNodeArray.length)
+			tempNodeArray = Arrays.copyOf(tempNodeArray, Math.max(2, Math.max(tempNodeArray.length, n)));
+		return tempNodeArray;
 	}
 
 	private static class Node<K, V> extends Trees.TreeNodeImpl<Node<K, V>> implements HeapReference<K, V> {

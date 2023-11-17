@@ -85,8 +85,13 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 	}
 
 	@Override
-	public int size() {
-		return size;
+	public boolean isEmpty() {
+		return size == 0;
+	}
+
+	@Override
+	public boolean isNotEmpty() {
+		return size != 0;
 	}
 
 	@Override
@@ -103,8 +108,8 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 	}
 
 	@Override
-	public boolean remove(Object e) {
-		int eInt = ((Integer) e).intValue();
+	public boolean remove(Integer e) {
+		int eInt = e.intValue();
 		int s = size;
 		int[] a = arr;
 
@@ -191,14 +196,6 @@ class HeapBinaryInt extends HeapAbstract<Integer> {
 					moveDown(parent, a[parent]);
 			}
 		}
-	}
-
-	@Override
-	public boolean addAll(Collection<? extends Integer> other) {
-		if (other.isEmpty())
-			return false;
-		insertAll(other);
-		return true;
 	}
 
 	@Override

@@ -99,8 +99,13 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 	}
 
 	@Override
-	public int size() {
-		return size;
+	public boolean isEmpty() {
+		return size == 0;
+	}
+
+	@Override
+	public boolean isNotEmpty() {
+		return size != 0;
 	}
 
 	@Override

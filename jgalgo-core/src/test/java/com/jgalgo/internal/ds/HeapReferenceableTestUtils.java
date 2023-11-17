@@ -16,6 +16,7 @@
 package com.jgalgo.internal.ds;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectIterables;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class HeapReferenceableTestUtils extends TestUtils {
@@ -303,7 +305,8 @@ public class HeapReferenceableTestUtils extends TestUtils {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		if (clear) {
 			heap.clear();
-			assertTrue(heap.size() == 0 && heap.isEmpty(), "failed clear");
+			assertTrue(heap.isEmpty());
+			assertFalse(heap.iterator().hasNext());
 		}
 
 		HeapReferenceableTracker tracker = new HeapReferenceableTracker(heap, 0, compare, seedGen.nextSeed());
@@ -311,7 +314,8 @@ public class HeapReferenceableTestUtils extends TestUtils {
 
 		if (clear) {
 			heap.clear();
-			assertTrue(heap.size() == 0 && heap.isEmpty(), "failed clear");
+			assertTrue(heap.isEmpty());
+			assertFalse(heap.iterator().hasNext());
 		}
 	}
 
@@ -347,7 +351,7 @@ public class HeapReferenceableTestUtils extends TestUtils {
 		opLoop: for (int opIdx = 0; opIdx < m;) {
 			HeapOp op = opIdx < insertFirst ? HeapOp.Insert : randElement(ops, rand);
 
-			debug.println("\t size=" + tracker.heap.size());
+			debug.printExec(() -> debug.println("\t size=" + ObjectIterables.size(tracker.heap)));
 			int expected, actual;
 			switch (op) {
 				case Insert: {
@@ -424,22 +428,6 @@ public class HeapReferenceableTestUtils extends TestUtils {
 			}
 			opIdx++;
 		}
-
-		int heapSize = tracker.heap.size();
-		int countedSize = 0;
-		for (@SuppressWarnings("unused")
-		HeapReference<Integer, Void> ref : tracker.heap)
-			countedSize++;
-		assertEquals(countedSize, heapSize, "size() is different than counted size using iterator");
-	}
-
-	@SuppressWarnings("unused")
-	private static <E> void testHeapSize(Heap<E> h) {
-		int expected = h.size();
-		int actual = 0;
-		for (E e : h)
-			actual++;
-		assertEquals(expected, actual, "unexpected size");
 	}
 
 }

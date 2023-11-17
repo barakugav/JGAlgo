@@ -82,8 +82,13 @@ class HeapBinary<E> extends HeapAbstract<E> {
 	}
 
 	@Override
-	public int size() {
-		return size;
+	public boolean isEmpty() {
+		return size == 0;
+	}
+
+	@Override
+	public boolean isNotEmpty() {
+		return size != 0;
 	}
 
 	@Override
@@ -162,7 +167,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 		int addAllCost = elms.size() * JGAlgoUtils.log2ceil(combinedSize);
 		if (reconstructionCost >= addAllCost) {
 			for (E e : elms)
-				add(e);
+				insert(e);
 		} else {
 			E[] a = arr;
 			int s = size;
@@ -177,14 +182,6 @@ class HeapBinary<E> extends HeapAbstract<E> {
 					moveDown(parent, a[parent]);
 			}
 		}
-	}
-
-	@Override
-	public boolean addAll(Collection<? extends E> other) {
-		if (other.isEmpty())
-			return false;
-		insertAll(other);
-		return true;
 	}
 
 	@Override

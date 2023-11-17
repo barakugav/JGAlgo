@@ -15,14 +15,12 @@
  */
 package com.jgalgo.internal.ds;
 
-import java.util.AbstractCollection;
 import java.util.Comparator;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
 public class Heaps {
 
-	abstract static class AbstractHeapReferenceable<K, V> extends AbstractCollection<HeapReference<K, V>>
-			implements HeapReferenceable<K, V> {
+	abstract static class AbstractHeapReferenceable<K, V> implements HeapReferenceable<K, V> {
 
 		final Comparator<? super K> c;
 
@@ -33,21 +31,6 @@ public class Heaps {
 		@Override
 		public Comparator<? super K> comparator() {
 			return c;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public boolean contains(Object o) {
-			if (!(o instanceof HeapReference<?, ?>))
-				return false;
-			return o == find(((HeapReference<K, ?>) o).key());
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public boolean remove(Object o) {
-			remove((HeapReference<K, V>) o);
-			return true;
 		}
 
 		@Override

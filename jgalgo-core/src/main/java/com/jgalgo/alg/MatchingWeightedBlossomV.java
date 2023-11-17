@@ -243,7 +243,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 						Tree t2 = e.target;
 						t2.currentEdge = e;
 
-						if (!e.pqEvenEven.isEmpty()) {
+						if (e.pqEvenEven.isNotEmpty()) {
 							Edge minEdge = e.pqEvenEven.findMin().key();
 							if (minEdge.slack - tree.eps <= t2.eps) {
 								augment(minEdge);
@@ -258,7 +258,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 						t2.currentEdge = e;
 
 						Edge minEdge;
-						if (!e.pqEvenEven.isEmpty()
+						if (e.pqEvenEven.isNotEmpty()
 								&& (minEdge = e.pqEvenEven.findMin().key()).slack - tree.eps <= t2.eps) {
 							/* Augment step */
 							augment(minEdge);
@@ -274,14 +274,15 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 						Edge minEdge;
 						Blossom minBlossom;
 
-						if (!tree.pqEvenOut.isEmpty() && (minEdge = tree.pqEvenOut.findMin().key()).slack <= tree.eps) {
+						if (tree.pqEvenOut.isNotEmpty()
+								&& (minEdge = tree.pqEvenOut.findMin().key()).slack <= tree.eps) {
 							/* Grow step */
 							/* no need to extractMin(), all Even-Out edges of minEdge's target will be removed */
 							boolean augmentPerformed = grow(minEdge);
 							if (augmentPerformed)
 								continue treesLoop;
 
-						} else if (!tree.pqEvenEven.isEmpty()
+						} else if (tree.pqEvenEven.isNotEmpty()
 								&& (minEdge = tree.pqEvenEven.findMin().key()).slack <= tree.eps * 2) {
 							/* Shrink step */
 							tree.pqRemoveEvenEven(minEdge);
@@ -291,7 +292,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 									continue treesLoop;
 							}
 
-						} else if (!tree.pqOdd.isEmpty()
+						} else if (tree.pqOdd.isNotEmpty()
 								&& (minBlossom = tree.pqOdd.findMin().key()).dual <= tree.eps) {
 							/* Expand step */
 							tree.pqRemoveOdd(minBlossom);
@@ -1590,11 +1591,11 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				Tree tree = root.tree;
 
 				double eps = Double.POSITIVE_INFINITY, epsOther;
-				if (!tree.pqEvenOut.isEmpty() && (epsOther = tree.pqEvenOut.findMin().key().slack) < eps)
+				if (tree.pqEvenOut.isNotEmpty() && (epsOther = tree.pqEvenOut.findMin().key().slack) < eps)
 					eps = epsOther;
-				if (!tree.pqOdd.isEmpty() && (epsOther = tree.pqOdd.findMin().key().dual) < eps)
+				if (tree.pqOdd.isNotEmpty() && (epsOther = tree.pqOdd.findMin().key().dual) < eps)
 					eps = epsOther;
-				while (!tree.pqEvenEven.isEmpty()) {
+				while (tree.pqEvenEven.isNotEmpty()) {
 					Edge minEdge = tree.pqEvenEven.findMin().key();
 					if (processEdgeEvenEven(minEdge, false)) {
 						epsOther = minEdge.slack / 2;

@@ -32,6 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 import it.unimi.dsi.fastutil.objects.ObjectIntPair;
+import it.unimi.dsi.fastutil.objects.ObjectIterables;
 import it.unimi.dsi.fastutil.objects.ObjectLists;
 
 /**
@@ -72,7 +73,7 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 		heap.insert(shortestPath.secondDouble(), ObjectIntPair.of(shortestPath.first(), 0));
 
 		List<IPath> paths = k <= m ? new ArrayList<>(k) : new ArrayList<>();
-		while (!heap.isEmpty()) {
+		while (heap.isNotEmpty()) {
 			HeapReference<Double, ObjectIntPair<IPath>> min = heap.extractMin();
 			IPath kthPath = min.value().first();
 			final int kthPathDeviationIdx = min.value().secondInt();
@@ -105,8 +106,9 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 					path.addAll(shortestPath.first().edges());
 					heap.insert(w.weightSum(path),
 							ObjectIntPair.of(new PathImpl(g, source, target, path), deviationIdx));
-					assert heap.stream().map(r -> r.value().left().edges()).distinct().count() == heap
-							.size() : "heap contains duplicate paths";
+
+					assert heap.stream().map(r -> r.value().left().edges()).distinct().count() == ObjectIterables
+							.size(heap) : "heap contains duplicate paths";
 				}
 
 				verticesMask.clear();
@@ -207,7 +209,7 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 			heapT.insert(.0, target);
 			toClearS.add(source);
 			toClearT.add(target);
-			while (!heapS.isEmpty() && !heapT.isEmpty()) {
+			while (heapS.isNotEmpty() && heapT.isNotEmpty()) {
 
 				HeapReference<Double, Integer> min = heapS.extractMin();
 				double uDistanceS = min.key();

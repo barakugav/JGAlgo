@@ -81,18 +81,19 @@ class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutUtils.AbstractImplGl
 
 			double cutOfThePhaseWeight = 0;
 			int S = -1, T = -1;
-			minimumCutPhase: for (;;) {
+			minimumCutPhase: for (int prev = -1;;) {
 				HeapReference<Double, Integer> min = heap.extractMin();
 				int U = min.value().intValue();
 				vRefs[U] = null;
 				cut.set(U);
 
-				if (heap.size() == 1)
-					S = U;
-				if (heap.size() == 0)
+				if (heap.isEmpty()) {
+					S = prev;
 					T = U;
+				}
+				prev = U;
 
-				if (heap.size() > 0) {
+				if (heap.isNotEmpty()) {
 					/* Not the last vertex */
 					/* Decrease (actually increase) key of all neighbors (super) vertices not in the cut */
 					for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {

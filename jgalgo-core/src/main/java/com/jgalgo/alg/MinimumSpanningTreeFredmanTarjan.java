@@ -106,6 +106,7 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 
 		// heap of edges going out of the current tree, one edge in per super vertex
 		HeapReferenceable<Integer, Void> heap = heapBuilder.build(w);
+		int heapSize = 0;
 		// (super vertex -> heap element) for fast decreaseKey
 		@SuppressWarnings("unchecked")
 		HeapReference<Integer, Void>[] vHeapElm = new HeapReference[n];
@@ -143,7 +144,8 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 							HeapReference<Integer, Void> heapElm = vHeapElm[v];
 							if (heapElm == null) {
 								heapElm = vHeapElm[v] = heap.insert(Integer.valueOf(e));
-								if (heap.size() > k)
+								heapSize++;
+								if (heapSize > k)
 									break treeLoop;
 							} else if (w.compare(e, heapElm.key().intValue()) < 0)
 								heap.decreaseKey(heapElm, Integer.valueOf(e));
@@ -157,6 +159,7 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 							// reached all vertices from current root, continue to next tree
 							break treeLoop;
 						e = heap.extractMin().key().intValue();
+						heapSize--;
 
 						v = V[g.edgeSource(e)];
 						if ((vt = vTree[v]) != r)
@@ -203,6 +206,7 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 
 				Arrays.fill(vHeapElm, 0, ni, null);
 				heap.clear();
+				heapSize = 0;
 			}
 
 			// assign new super vertices' vertices list

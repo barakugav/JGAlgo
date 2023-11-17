@@ -17,6 +17,8 @@
 package com.jgalgo.internal.ds;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Comparator;
 import java.util.List;
@@ -257,16 +259,28 @@ class HeapTestUtils extends TestUtils {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		if (clear) {
 			heap.clear();
-			assertTrue(heap.size() == 0 && heap.isEmpty(), "failed clear");
+			assertTrue(heap.isEmpty());
+			assertFalse(heap.iterator().hasNext());
 		}
 
 		HeapTracker tracker = new HeapTracker(heap, 0, compare, seedGen.nextSeed());
 		testHeap(tracker, n, m, mode, Math.max(16, (int) Math.sqrt(n)), compare, seedGen.nextSeed());
 
+		List<Integer> elms = new ObjectArrayList<>(heap.iterator());
+
 		if (clear) {
 			heap.clear();
-			assertTrue(heap.size() == 0 && heap.isEmpty(), "failed clear");
+			assertTrue(heap.isEmpty());
+			assertFalse(heap.iterator().hasNext());
 		}
+
+		for (Integer x : elms)
+			heap.insert(x);
+		while (heap.isNotEmpty())
+			assertNotNull(heap.extractMin());
+		assertTrue(heap.isEmpty());
+		assertFalse(heap.isNotEmpty());
+		assertFalse(heap.iterator().hasNext());
 	}
 
 	private static void testHeap(HeapTracker tracker, int n, int m, TestMode mode, int elementsBound,
@@ -341,22 +355,6 @@ class HeapTestUtils extends TestUtils {
 			}
 			opIdx++;
 		}
-
-		int expectedSize = tracker.heap.size();
-		int actualSize = 0;
-		for (@SuppressWarnings("unused")
-		Integer elm : tracker.heap)
-			actualSize++;
-		assertEquals(expectedSize, actualSize, "size() is different than counted size using iterator");
-	}
-
-	@SuppressWarnings("unused")
-	private static <E> void testHeapSize(Heap<E> h) {
-		int expected = h.size();
-		int actual = 0;
-		for (E e : h)
-			actual++;
-		assertEquals(expected, actual, "unexpected size");
 	}
 
 }
