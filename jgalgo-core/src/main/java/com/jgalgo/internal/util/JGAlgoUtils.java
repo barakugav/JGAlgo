@@ -33,9 +33,6 @@ import java.util.concurrent.RecursiveTask;
 import java.util.function.Consumer;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IWeightFunctionInt;
-import com.jgalgo.graph.IndexGraph;
 import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.ints.AbstractInt2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
@@ -377,14 +374,6 @@ public class JGAlgoUtils {
 		protected V compute() {
 			return exec.get();
 		}
-	}
-
-	public static IWeightFunction potentialWeightFunc(IndexGraph g, IWeightFunction w, double[] potential) {
-		return e -> w.weight(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
-	}
-
-	public static IWeightFunctionInt potentialWeightFunc(IndexGraph g, IWeightFunctionInt w, int[] potential) {
-		return e -> w.weightInt(e) + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
 	}
 
 	@SuppressWarnings("rawtypes")

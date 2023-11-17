@@ -25,7 +25,6 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -141,7 +140,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 		}
 
 		double[] potential = new double[n + 2];
-		IWeightFunction spWeightFunc = JGAlgoUtils.potentialWeightFunc(g, w, potential);
+		IWeightFunction spWeightFunc = ShortestPathUtils.potentialWeightFunc(g, w, potential);
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values

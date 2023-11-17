@@ -114,7 +114,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 		/* create a (positive) weight function using the potential */
 		int[] potential = p.first();
-		IWeightFunctionInt pw = JGAlgoUtils.potentialWeightFunc(g, w, potential);
+		IWeightFunctionInt pw = ShortestPathUtils.potentialWeightFunc(g, w, potential);
 
 		/* run positive SSSP */
 		ShortestPathSingleSource.IResult res = (ShortestPathSingleSource.IResult) positiveSsspAlgo

@@ -103,7 +103,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 			return new NegCycleRes(potential0.second());
 		double[] potential = potential0.first();
 
-		IWeightFunction wPotential = JGAlgoUtils.potentialWeightFunc(g, w, potential);
+		IWeightFunction wPotential = ShortestPathUtils.potentialWeightFunc(g, w, potential);
 		SuccessRes res = computeAPSPPositive(g, verticesSubset, wPotential, allVertices);
 		res.potential = potential;
 		return res;
