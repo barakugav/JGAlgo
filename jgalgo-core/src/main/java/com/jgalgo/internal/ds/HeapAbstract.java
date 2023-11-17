@@ -21,6 +21,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Objects;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
 abstract class HeapAbstract<E> implements Heap<E> {
@@ -64,7 +65,7 @@ abstract class HeapAbstract<E> implements Heap<E> {
 
 		@Override
 		public Iterator<K> iterator() {
-			return JGAlgoUtils.iterMap(h.iterator(), HeapReference::key);
+			return IterTools.map(h.iterator(), HeapReference::key);
 		}
 
 		@Override

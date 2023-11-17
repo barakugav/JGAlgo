@@ -21,7 +21,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class MaximalCliquesEnumerators {
@@ -40,7 +40,7 @@ class MaximalCliquesEnumerators {
 				IndexGraph iGraph = g.indexGraph();
 				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 				Iterator<IntSet> indexResult = maximalCliquesIter(iGraph);
-				return JGAlgoUtils.iterMap(indexResult, iSet -> IndexIdMaps.indexToIdSet(iSet, viMap));
+				return IterTools.map(indexResult, iSet -> IndexIdMaps.indexToIdSet(iSet, viMap));
 			}
 		}
 

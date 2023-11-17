@@ -21,7 +21,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class ClosuresEnumerators {
@@ -39,7 +39,7 @@ class ClosuresEnumerators {
 				IndexGraph ig = g.indexGraph();
 				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 				Iterator<IntSet> indexIter = closuresIter(ig);
-				return JGAlgoUtils.iterMap(indexIter, s -> IndexIdMaps.indexToIdSet(s, viMap));
+				return IterTools.map(indexIter, s -> IndexIdMaps.indexToIdSet(s, viMap));
 			}
 		}
 

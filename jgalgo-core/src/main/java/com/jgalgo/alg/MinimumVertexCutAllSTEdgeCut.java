@@ -21,6 +21,7 @@ import com.jgalgo.alg.MinimumVertexCutUtils.AuxiliaryGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -76,7 +77,7 @@ class MinimumVertexCutAllSTEdgeCut extends MinimumVertexCutUtils.AbstractImplAll
 
 		/* The queue iterator stores the cuts and use less and less memory as the elements are consumed */
 		Iterator<IntSet> cutsIter = JGAlgoUtils.queueIter(cuts);
-		return JGAlgoUtils.iterMap(cutsIter, cut -> cut);
+		return IterTools.map(cutsIter, cut -> cut);
 	}
 
 }

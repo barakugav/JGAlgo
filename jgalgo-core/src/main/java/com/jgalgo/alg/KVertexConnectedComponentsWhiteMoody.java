@@ -29,7 +29,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -153,7 +153,7 @@ class KVertexConnectedComponentsWhiteMoody extends KVertexConnectedComponentsUti
 			if (cuts.hasNext()) {
 				List<IntSet> partitions = generateSubCompsFromCuts(iBiCc, cuts, topConnectivity);
 				Iterator<IntSet> partitionsIter =
-						JGAlgoUtils.iterMap(partitions.iterator(), s -> IndexIdMaps.indexToIdSet(s, biCcViMap));
+						IterTools.map(partitions.iterator(), s -> IndexIdMaps.indexToIdSet(s, biCcViMap));
 				stack.push(IntObjectPair.of(topConnectivity, partitionsIter));
 			}
 
@@ -191,7 +191,7 @@ class KVertexConnectedComponentsWhiteMoody extends KVertexConnectedComponentsUti
 				if (cuts.hasNext()) {
 					List<IntSet> partitions = generateSubCompsFromCuts(iComp, cuts, compConnectivity);
 					Iterator<IntSet> partitionsIter =
-							JGAlgoUtils.iterMap(partitions.iterator(), s -> IndexIdMaps.indexToIdSet(s, compViMap));
+							IterTools.map(partitions.iterator(), s -> IndexIdMaps.indexToIdSet(s, compViMap));
 					stack.push(IntObjectPair.of(compConnectivity, partitionsIter));
 				}
 			}
@@ -233,7 +233,7 @@ class KVertexConnectedComponentsWhiteMoody extends KVertexConnectedComponentsUti
 	List<IntSet> generateSubCompsFromCuts(IndexGraph g, Iterator<IntSet> cuts, int k) {
 		final int n = g.vertices().size();
 		Bitmap cut = new Bitmap(n);
-		for (IntSet c : JGAlgoUtils.iterable(cuts))
+		for (IntSet c : IterTools.foreach(cuts))
 			for (int v : c)
 				cut.set(v);
 

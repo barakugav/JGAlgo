@@ -26,7 +26,7 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class MinimumVertexCutUtils {
@@ -74,8 +74,7 @@ class MinimumVertexCutUtils {
 				int iSource = viMap.idToIndex(source);
 				int iSink = viMap.idToIndex(sink);
 				Iterator<IntSet> indexCuts = minimumCutsIter(iGraph, iw, iSource, iSink);
-				return indexCuts == null ? null
-						: JGAlgoUtils.iterMap(indexCuts, c -> IndexIdMaps.indexToIdSet(c, viMap));
+				return indexCuts == null ? null : IterTools.map(indexCuts, c -> IndexIdMaps.indexToIdSet(c, viMap));
 			}
 		}
 
@@ -118,7 +117,7 @@ class MinimumVertexCutUtils {
 				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, viMap);
 				Iterator<IntSet> indexCuts = minimumCutsIter(iGraph, iw);
-				return JGAlgoUtils.iterMap(indexCuts, c -> IndexIdMaps.indexToIdSet(c, viMap));
+				return IterTools.map(indexCuts, c -> IndexIdMaps.indexToIdSet(c, viMap));
 			}
 		}
 

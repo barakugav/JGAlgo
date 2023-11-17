@@ -22,7 +22,7 @@ import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -72,8 +72,7 @@ class ClosuresEnumeratorSchrageBaker extends ClosuresEnumerators.AbstractImpl {
 				}
 			}
 			/* Graph is DAG, no need to operate over the condensation graph */
-			return JGAlgoUtils.iterMap(closuresIterDag(g),
-					iter -> ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, iter)));
+			return IterTools.map(closuresIterDag(g), iter -> ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, iter)));
 		}
 
 		/* Build the condensation graph */
@@ -101,9 +100,9 @@ class ClosuresEnumeratorSchrageBaker extends ClosuresEnumerators.AbstractImpl {
 		IndexGraph sccGraph = sccGraph0.build();
 
 		/* Find all closures in the DAG condensation graph and map the sets to the original vertices */
-		return JGAlgoUtils.iterMap(closuresIterDag(sccGraph), blkIter -> {
+		return IterTools.map(closuresIterDag(sccGraph), blkIter -> {
 			Bitmap closure = new Bitmap(n);
-			for (int blk : JGAlgoUtils.iterable(blkIter))
+			for (int blk : IterTools.foreach(blkIter))
 				for (int v : sccs.blockVertices(blk))
 					closure.set(v);
 			return ImmutableIntArraySet.ofBitmap(closure);
@@ -157,7 +156,7 @@ class ClosuresEnumeratorSchrageBaker extends ClosuresEnumerators.AbstractImpl {
 
 				nextClearBit = m.nextClearBit(0);
 
-				return JGAlgoUtils.iterMapInt(m.iterator(), topoIdx -> topoIdxToV[topoIdx]);
+				return IterTools.mapInt(m.iterator(), topoIdx -> topoIdxToV[topoIdx]);
 			}
 		};
 	}

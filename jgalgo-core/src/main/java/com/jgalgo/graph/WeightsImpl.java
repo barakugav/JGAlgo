@@ -18,13 +18,11 @@ package com.jgalgo.graph;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntAdapters;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -221,28 +219,28 @@ interface WeightsImpl {
 				if (capacity <= weightsCapacity)
 					return;
 				int newCapacity = Math.max(Math.max(2, 2 * weightsCapacity), capacity);
-				for (WeightsImpl.IndexMutable<?> container : JGAlgoUtils.iterable(weights()))
+				for (WeightsImpl.IndexMutable<?> container : weights())
 					container.expand(newCapacity);
 				weightsCapacity = newCapacity;
 			}
 
 			void swapAndClear(int removedIdx, int swappedIdx) {
-				for (WeightsImpl.IndexMutable<?> container : JGAlgoUtils.iterable(weights()))
+				for (WeightsImpl.IndexMutable<?> container : weights())
 					container.swapAndClear(removedIdx, swappedIdx);
 			}
 
 			void clearElement(int idx) {
-				for (WeightsImpl.IndexMutable<?> container : JGAlgoUtils.iterable(weights()))
+				for (WeightsImpl.IndexMutable<?> container : weights())
 					container.clear(idx);
 			}
 
 			void clearContainers() {
-				for (WeightsImpl.IndexMutable<?> container : JGAlgoUtils.iterable(weights()))
+				for (WeightsImpl.IndexMutable<?> container : weights())
 					container.clear();
 			}
 
-			private Iterator<WeightsImpl.IndexMutable<?>> weights() {
-				return ObjectIterators.wrap(weights, 0, keyToIdx.size());
+			private Iterable<WeightsImpl.IndexMutable<?>> weights() {
+				return () -> ObjectIterators.wrap(weights, 0, keyToIdx.size());
 			}
 		}
 

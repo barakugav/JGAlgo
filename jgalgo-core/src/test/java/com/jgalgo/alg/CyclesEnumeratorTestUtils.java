@@ -25,7 +25,7 @@ import java.util.function.IntSupplier;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -80,7 +80,7 @@ class CyclesEnumeratorTestUtils extends TestUtils {
 	private static <V, E> Set<List<E>> transformCyclesToCanonical(Graph<V, E> g, Iterator<Path<V, E>> cycles) {
 		int expectedCount = 0;
 		Set<List<E>> cycles0 = new TreeSet<>();
-		for (Path<V, E> cycle : JGAlgoUtils.iterable(cycles)) {
+		for (Path<V, E> cycle : IterTools.foreach(cycles)) {
 			ObjectArrayList<E> cycle0 = new ObjectArrayList<>(cycle.edges());
 			transformCycleToCanonical(g, cycle0);
 			cycles0.add(cycle0);

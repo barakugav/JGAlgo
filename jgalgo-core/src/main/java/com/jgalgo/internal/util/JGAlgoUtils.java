@@ -24,7 +24,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ForkJoinPool;
@@ -32,7 +31,6 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.RecursiveTask;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 import com.jgalgo.graph.IWeightFunction;
@@ -45,8 +43,6 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
-import it.unimi.dsi.fastutil.ints.IntIterable;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
@@ -101,183 +97,6 @@ public class JGAlgoUtils {
 		double mag = Math.max(Math.abs(a), Math.abs(b));
 		double eps = mag * 1E-6;
 		return Math.abs(a - b) <= eps;
-	}
-
-	/* syntax sugar to iterator for loops */
-	public static <E> Iterable<E> iterable(Iterator<E> it) {
-		return new Iterable<>() {
-			@Override
-			public Iterator<E> iterator() {
-				return it;
-			}
-		};
-	}
-
-	/* syntax sugar to iterator for loops */
-	public static IntIterable iterable(IntIterator it) {
-		return new IntIterable() {
-			@Override
-			public IntIterator iterator() {
-				return it;
-			}
-		};
-	}
-
-	public static interface IterPeekable<E> extends Iterator<E> {
-
-		E peekNext();
-
-		static interface Int extends IntIterator {
-
-			int peekNext();
-
-			static final IterPeekable.Int Empty = new IterPeekable.Int() {
-
-				@Override
-				public boolean hasNext() {
-					return false;
-				}
-
-				@Override
-				public int nextInt() {
-					throw new NoSuchElementException(Assertions.Iters.ERR_NO_NEXT);
-				}
-
-				@Override
-				public int peekNext() {
-					throw new NoSuchElementException(Assertions.Iters.ERR_NO_NEXT);
-				}
-			};
-
-		}
-
-	}
-
-	static class IterPeekableImpl<E> implements IterPeekable<E> {
-
-		private final Iterator<? super E> it;
-		private Object nextElm;
-		private static final Object nextNone = JGAlgoUtils.labeledObj("None");
-
-		IterPeekableImpl(Iterator<? super E> it) {
-			this.it = Objects.requireNonNull(it);
-			advance();
-		}
-
-		private void advance() {
-			if (it.hasNext()) {
-				nextElm = it.next();
-			} else {
-				nextElm = nextNone;
-			}
-		}
-
-		@Override
-		public boolean hasNext() {
-			return nextElm != null;
-		}
-
-		@Override
-		public E next() {
-			Assertions.Iters.hasNext(this);
-			@SuppressWarnings("unchecked")
-			E ret = (E) nextElm;
-			advance();
-			return ret;
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public E peekNext() {
-			Assertions.Iters.hasNext(this);
-			return (E) nextElm;
-		}
-
-		static class Int implements IterPeekable.Int {
-
-			private final IntIterator it;
-			private int next;
-			private boolean isNextValid;
-
-			Int(IntIterator it) {
-				this.it = Objects.requireNonNull(it);
-				advance();
-			}
-
-			private void advance() {
-				if (isNextValid = it.hasNext())
-					next = it.nextInt();
-			}
-
-			@Override
-			public boolean hasNext() {
-				return isNextValid;
-			}
-
-			@Override
-			public int nextInt() {
-				Assertions.Iters.hasNext(this);
-				int ret = next;
-				advance();
-				return ret;
-			}
-
-			@Override
-			public int peekNext() {
-				Assertions.Iters.hasNext(this);
-				return next;
-			}
-
-		}
-
-	}
-
-	private static class IterMap<A, B> implements Iterator<B> {
-		private final Iterator<A> it;
-		private final Function<A, B> map;
-
-		IterMap(Iterator<A> it, Function<A, B> map) {
-			this.it = Objects.requireNonNull(it);
-			this.map = Objects.requireNonNull(map);
-		}
-
-		@Override
-		public boolean hasNext() {
-			return it.hasNext();
-		}
-
-		@Override
-		public B next() {
-			return map.apply(it.next());
-		}
-	}
-
-	public static <A, B> Iterator<B> iterMap(Iterator<A> it, Function<A, B> map) {
-		return new IterMap<>(it, map);
-	}
-
-	private static class IntIterMap implements IntIterator {
-		private final IntIterator it;
-		private final IntUnaryOperator map;
-
-		IntIterMap(IntIterator it, IntUnaryOperator map) {
-			this.it = Objects.requireNonNull(it);
-			this.map = Objects.requireNonNull(map);
-		}
-
-		@Override
-		public boolean hasNext() {
-			return it.hasNext();
-		}
-
-		@Override
-		public int nextInt() {
-			return map.applyAsInt(it.nextInt());
-		}
-	}
-
-	public static IntIterator iterMapInt(IntIterator it, IntUnaryOperator map) {
-		return new IntIterMap(it, map);
 	}
 
 	static class NullIterator<E> implements Iterator<E> {

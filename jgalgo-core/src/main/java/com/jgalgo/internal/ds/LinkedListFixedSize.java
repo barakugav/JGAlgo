@@ -18,7 +18,7 @@ package com.jgalgo.internal.ds;
 
 import java.util.Arrays;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IterTools;
 
 public class LinkedListFixedSize {
 	private LinkedListFixedSize() {}
@@ -54,9 +54,9 @@ public class LinkedListFixedSize {
 			Arrays.fill(arr, None);
 		}
 
-		public JGAlgoUtils.IterPeekable.Int iterator(int id) {
+		public IterTools.IterPeekable.Int iterator(int id) {
 			Assertions.Arrays.checkIndex(id, 0, size());
-			return new JGAlgoUtils.IterPeekable.Int() {
+			return new IterTools.IterPeekable.Int() {
 				int p = id;
 
 				@Override
@@ -73,7 +73,7 @@ public class LinkedListFixedSize {
 				}
 
 				@Override
-				public int peekNext() {
+				public int peekNextInt() {
 					Assertions.Iters.hasNext(this);
 					return p;
 				}
@@ -163,31 +163,42 @@ public class LinkedListFixedSize {
 			Arrays.fill(arr, None);
 		}
 
-		public JGAlgoUtils.IterPeekable.Int iterator(int id) {
+		public IterTools.IterPeekable.Int iterator(int id) {
 			Assertions.Arrays.checkIndex(id, 0, size());
-			return new JGAlgoUtils.IterPeekable.Int() {
-				int p = id;
+			return new Iter(id);
+		}
 
-				@Override
-				public boolean hasNext() {
-					return p != None;
-				}
+		public IterTools.IterPeekable.Int emptyIter() {
+			return new Iter(None);
+		}
 
-				@Override
-				public int nextInt() {
-					Assertions.Iters.hasNext(this);
-					int ret = p;
-					p = LinkedListFixedSize.Doubly.this.next(p);
-					return ret;
-				}
+		private class Iter implements IterTools.IterPeekable.Int {
 
-				@Override
-				public int peekNext() {
-					Assertions.Iters.hasNext(this);
-					return p;
-				}
+			int p;
 
-			};
+			Iter(int start) {
+				p = start;
+			}
+
+			@Override
+			public boolean hasNext() {
+				return p != None;
+			}
+
+			@Override
+			public int nextInt() {
+				Assertions.Iters.hasNext(this);
+				int ret = p;
+				p = LinkedListFixedSize.Doubly.this.next(p);
+				return ret;
+			}
+
+			@Override
+			public int peekNextInt() {
+				Assertions.Iters.hasNext(this);
+				return p;
+			}
+
 		}
 
 	}

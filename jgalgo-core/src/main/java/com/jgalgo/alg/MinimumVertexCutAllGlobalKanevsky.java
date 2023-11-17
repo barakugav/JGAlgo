@@ -25,6 +25,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -101,7 +102,7 @@ class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutUtils.AbstractIm
 					Iterator<IVertexBiPartition> minEdgeCuts =
 							minEdgeCutAllStAlgo.minimumCutsIter(auxGraph.graph, null, xAux, vAux, maxFlow);
 
-					for (IVertexBiPartition minEdgeCut : JGAlgoUtils.iterable(minEdgeCuts)) {
+					for (IVertexBiPartition minEdgeCut : IterTools.foreach(minEdgeCuts)) {
 						int[] cut = minEdgeCut.crossEdges().toIntArray();
 						auxGraph.edgeCutToVertexCut(cut);
 						cuts.add(ImmutableIntArraySet.withNaiveContains(cut));
@@ -120,7 +121,7 @@ class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutUtils.AbstractIm
 
 		/* The queue iterator stores the cuts and use less and less memory as the elements are consumed */
 		Iterator<IntSet> cutsIter = JGAlgoUtils.queueIter(cuts);
-		return JGAlgoUtils.iterMap(cutsIter, cut -> ImmutableIntArraySet.ofBitmap(cut, n));
+		return IterTools.map(cutsIter, cut -> ImmutableIntArraySet.ofBitmap(cut, n));
 	}
 
 }

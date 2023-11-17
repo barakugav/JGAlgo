@@ -28,7 +28,7 @@ import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.IntAdapters;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -108,7 +108,7 @@ class MinimumEdgeCutUtils {
 				int iSource = viMap.idToIndex(source);
 				int iSink = viMap.idToIndex(sink);
 				Iterator<IVertexBiPartition> indexIter = minimumCutsIter(iGraph, iw, iSource, iSink);
-				return JGAlgoUtils.iterMap(indexIter,
+				return IterTools.map(indexIter,
 						iPartition -> VertexBiPartitions.partitionFromIndexPartition(g, iPartition));
 			}
 		}

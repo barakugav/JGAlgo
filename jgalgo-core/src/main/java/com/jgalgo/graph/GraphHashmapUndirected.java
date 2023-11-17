@@ -16,6 +16,7 @@
 
 package com.jgalgo.graph;
 
+import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
@@ -110,7 +111,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		/* we handle the self edge of the swapped vertex separately */
 		int selfEdge = edges[swappedIdx].remove(swappedIdx);
 
-		for (Int2IntMap.Entry entry : JGAlgoUtils.iterable(Int2IntMaps.fastIterator(edges[swappedIdx]))) {
+		for (Int2IntMap.Entry entry : IterTools.foreach(Int2IntMaps.fastIterator(edges[swappedIdx]))) {
 			int target = entry.getIntKey();
 			int e = entry.getIntValue();
 			replaceEdgeEndpoint(e, swappedIdx, removedIdx);

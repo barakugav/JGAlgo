@@ -26,7 +26,7 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -1348,7 +1348,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				private final LinkedListFixedSize.Doubly vertices;
 				private int listHead = LinkedListFixedSize.None;
-				private JGAlgoUtils.IterPeekable.Int listIter;
+				private IterTools.IterPeekable.Int listIter;
 
 				MoveToFront(MaximumFlowPushRelabel.Worker worker) {
 					super(worker);
@@ -1365,8 +1365,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				void afterRecomputeLabels() {
-					listIter = listHead != LinkedListFixedSize.None ? vertices.iterator(listHead)
-							: JGAlgoUtils.IterPeekable.Int.Empty;
+					listIter =
+							listHead != LinkedListFixedSize.None ? vertices.iterator(listHead) : vertices.emptyIter();
 				}
 
 				@Override
@@ -1390,7 +1390,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 				@Override
 				boolean hasMoreVerticesToDischarge() {
 					for (; listIter.hasNext(); listIter.nextInt())
-						if (worker.hasExcess(listIter.peekNext()))
+						if (worker.hasExcess(listIter.peekNextInt()))
 							return true;
 					return false;
 				}

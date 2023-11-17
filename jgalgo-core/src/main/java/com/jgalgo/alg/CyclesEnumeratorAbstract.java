@@ -18,7 +18,7 @@ package com.jgalgo.alg;
 import java.util.Iterator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IterTools;
 
 abstract class CyclesEnumeratorAbstract implements CyclesEnumerator {
 
@@ -31,7 +31,7 @@ abstract class CyclesEnumeratorAbstract implements CyclesEnumerator {
 		} else {
 			IndexGraph iGraph = g.indexGraph();
 			Iterator<IPath> indexResult = cyclesIter(iGraph);
-			return JGAlgoUtils.iterMap(indexResult, iPath -> PathImpl.pathFromIndexPath(g, iPath));
+			return IterTools.map(indexResult, iPath -> PathImpl.pathFromIndexPath(g, iPath));
 		}
 	}
 

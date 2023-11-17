@@ -163,7 +163,7 @@
       <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Tree$2$1" />
       <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Worker$2$1" />
       <Class name="com.jgalgo.alg.MatchingWeightedBlossomV$Worker$3$1" />
-      <Class name="com.jgalgo.internal.util.JGAlgoUtils$IterPeekableImpl" />
+      <Class name="com.jgalgo.internal.util.IterTools$IterPeekableImpl" />
       <Class name="com.jgalgo.internal.util.JGAlgoUtils$NullIterator" />
       <Class name="com.jgalgo.internal.util.JGAlgoUtils$NullListIterator" />
     </Or>
