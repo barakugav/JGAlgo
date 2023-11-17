@@ -19,5 +19,9 @@
  *
  * <p>
  * Contains global configurations.
+ *
+ * <p>
+ * The package {@code com.jgalgo.internal} and its sub-packages are for internal use only. Please do not use them
+ * directly. They may be removed or changed without notice. Documentation is not generated for them.
  */
 package com.jgalgo;
