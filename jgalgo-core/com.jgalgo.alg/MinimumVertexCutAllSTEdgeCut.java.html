@@ -21,6 +21,7 @@ import com.jgalgo.alg.MinimumVertexCutUtils.AuxiliaryGraph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
+import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -41,22 +42,22 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L44">class MinimumVertexCutAllSTEdgeCut extends MinimumVertexCutUtils.AbstractImplAllST {</span>
+<span class="fc" id="L45">class MinimumVertexCutAllSTEdgeCut extends MinimumVertexCutUtils.AbstractImplAllST {</span>
 
-<span class="fc" id="L46">	private final MinimumEdgeCutAllST minEdgeCutAlgo = MinimumEdgeCutAllST.newInstance();</span>
+<span class="fc" id="L47">	private final MinimumEdgeCutAllST minEdgeCutAlgo = MinimumEdgeCutAllST.newInstance();</span>
 
 	@Override
 	Iterator&lt;IntSet&gt; minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink) {
-<span class="fc" id="L50">		AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, w);</span>
-<span class="fc bfc" id="L51" title="All 2 branches covered.">		if (g.getEdge(source, sink) != -1)</span>
-<span class="fc" id="L52">			return null;</span>
+<span class="fc" id="L51">		AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, w);</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (g.getEdge(source, sink) != -1)</span>
+<span class="fc" id="L53">			return null;</span>
 
-<span class="fc" id="L54">		IndexGraph g0 = auxiliaryGraph.graph;</span>
-<span class="fc" id="L55">		IWeightFunction w0 = auxiliaryGraph.weights;</span>
+<span class="fc" id="L55">		IndexGraph g0 = auxiliaryGraph.graph;</span>
+<span class="fc" id="L56">		IWeightFunction w0 = auxiliaryGraph.weights;</span>
 
 		@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
-<span class="fc" id="L58">		Iterator&lt;IVertexBiPartition&gt; edgesCuts = (Iterator) minEdgeCutAlgo.minimumCutsIter(g0, w0,</span>
-<span class="fc" id="L59">				Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0));</span>
+<span class="fc" id="L59">		Iterator&lt;IVertexBiPartition&gt; edgesCuts = (Iterator) minEdgeCutAlgo.minimumCutsIter(g0, w0,</span>
+<span class="fc" id="L60">				Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0));</span>
 
 		/*
 		 * The iterator returned by the minimum edge cut algorithm returns cuts which are unique with respect to the
@@ -67,16 +68,16 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 		 * already using exponential space, there is no need to work hard an implement the algorithm in Iterator form,
 		 * its easier to compute all cuts in one run.
 		 */
-<span class="fc" id="L70">		Set&lt;IntSet&gt; cuts = new ObjectOpenHashSet&lt;&gt;();</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">		while (edgesCuts.hasNext()) {</span>
-<span class="fc" id="L72">			int[] cut = edgesCuts.next().crossEdges().toIntArray();</span>
-<span class="fc" id="L73">			auxiliaryGraph.edgeCutToVertexCut(cut);</span>
-<span class="fc" id="L74">			cuts.add(ImmutableIntArraySet.withNaiveContains(cut));</span>
-<span class="fc" id="L75">		}</span>
+<span class="fc" id="L71">		Set&lt;IntSet&gt; cuts = new ObjectOpenHashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		while (edgesCuts.hasNext()) {</span>
+<span class="fc" id="L73">			int[] cut = edgesCuts.next().crossEdges().toIntArray();</span>
+<span class="fc" id="L74">			auxiliaryGraph.edgeCutToVertexCut(cut);</span>
+<span class="fc" id="L75">			cuts.add(ImmutableIntArraySet.withNaiveContains(cut));</span>
+<span class="fc" id="L76">		}</span>
 
 		/* The queue iterator stores the cuts and use less and less memory as the elements are consumed */
-<span class="fc" id="L78">		Iterator&lt;IntSet&gt; cutsIter = JGAlgoUtils.queueIter(cuts);</span>
-<span class="fc" id="L79">		return JGAlgoUtils.iterMap(cutsIter, cut -&gt; cut);</span>
+<span class="fc" id="L79">		Iterator&lt;IntSet&gt; cutsIter = JGAlgoUtils.queueIter(cuts);</span>
+<span class="fc" id="L80">		return IterTools.map(cutsIter, cut -&gt; cut);</span>
 	}
 
 }

@@ -40,6 +40,8 @@ import com.jgalgo.graph.IntGraph;
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    WeaklyConnectedComponentsAlgo
+ * @see    BiConnectedComponentsAlgo
+ * @see    KVertexConnectedComponentsAlgo
  * @author Barak Ugav
  */
 public interface StronglyConnectedComponentsAlgo {
@@ -86,7 +88,7 @@ public interface StronglyConnectedComponentsAlgo {
 	 * @return a default implementation of {@link StronglyConnectedComponentsAlgo}
 	 */
 	static StronglyConnectedComponentsAlgo newInstance() {
-<span class="fc" id="L89">		return newBuilder().build();</span>
+<span class="fc" id="L91">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -98,34 +100,34 @@ public interface StronglyConnectedComponentsAlgo {
 	 * @return a new builder that can build {@link StronglyConnectedComponentsAlgo} objects
 	 */
 	static StronglyConnectedComponentsAlgo.Builder newBuilder() {
-<span class="fc" id="L101">		return new StronglyConnectedComponentsAlgo.Builder() {</span>
+<span class="fc" id="L103">		return new StronglyConnectedComponentsAlgo.Builder() {</span>
 			String impl;
 
 			@Override
 			public StronglyConnectedComponentsAlgo build() {
-<span class="pc bpc" id="L106" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L107" title="All 3 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L109" title="All 3 branches missed.">					switch (impl) {</span>
 						case &quot;path-based&quot;:
-<span class="nc" id="L109">							return new StronglyConnectedComponentsPathBasedDfs();</span>
+<span class="nc" id="L111">							return new StronglyConnectedComponentsPathBasedDfs();</span>
 						case &quot;tarjan&quot;:
-<span class="nc" id="L111">							return new StronglyConnectedComponentsTarjan();</span>
+<span class="nc" id="L113">							return new StronglyConnectedComponentsTarjan();</span>
 						default:
-<span class="nc" id="L113">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L115">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="fc" id="L116">				return new StronglyConnectedComponentsTarjan();</span>
+<span class="fc" id="L118">				return new StronglyConnectedComponentsTarjan();</span>
 			}
 
 			@Override
 			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L121" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L123">						impl = (String) value;</span>
-<span class="nc" id="L124">						break;</span>
+<span class="nc" id="L125">						impl = (String) value;</span>
+<span class="nc" id="L126">						break;</span>
 					default:
-<span class="nc" id="L126">						StronglyConnectedComponentsAlgo.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L128">						StronglyConnectedComponentsAlgo.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L128">			}</span>
+<span class="nc" id="L130">			}</span>
 		};
 	}
 

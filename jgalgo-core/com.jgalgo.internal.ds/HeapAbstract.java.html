@@ -16,15 +16,15 @@
 
 package com.jgalgo.internal.ds;
 
-import java.util.AbstractCollection;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.Objects;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
-abstract class HeapAbstract&lt;E&gt; extends AbstractCollection&lt;E&gt; implements Heap&lt;E&gt; {
+abstract class HeapAbstract&lt;E&gt; implements Heap&lt;E&gt; {
 
 	final Comparator&lt;? super E&gt; c;
 
@@ -33,39 +33,25 @@ abstract class HeapAbstract&lt;E&gt; extends AbstractCollection&lt;E&gt; impleme
 <span class="fc" id="L33">	}</span>
 
 	@Override
-	public boolean add(E e) {
-<span class="fc" id="L37">		insert(e);</span>
-<span class="fc" id="L38">		return true;</span>
-	}
-
-	@Override
-	public boolean removeAll(Collection&lt;?&gt; c) {
-<span class="nc" id="L43">		boolean modified = false;</span>
-<span class="nc bnc" id="L44" title="All 2 branches missed.">		for (Object e : c)</span>
-<span class="nc bnc" id="L45" title="All 2 branches missed.">			if (remove(e))</span>
-<span class="nc" id="L46">				modified = true;</span>
-<span class="nc" id="L47">		return modified;</span>
-	}
-
-	@Override
 	public void meld(Heap&lt;? extends E&gt; heap) {
-<span class="fc" id="L52">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
-<span class="fc" id="L53">		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);</span>
-<span class="fc" id="L54">		addAll(heap);</span>
-<span class="fc" id="L55">		heap.clear();</span>
-<span class="fc" id="L56">	}</span>
+<span class="fc" id="L37">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
+<span class="fc" id="L38">		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">		for (E elm : heap)</span>
+<span class="fc" id="L40">			insert(elm);</span>
+<span class="fc" id="L41">		heap.clear();</span>
+<span class="fc" id="L42">	}</span>
 
 	@Override
 	public Comparator&lt;? super E&gt; comparator() {
-<span class="fc" id="L60">		return c;</span>
+<span class="fc" id="L46">		return c;</span>
 	}
 
 	int compare(E e1, E e2) {
-<span class="fc bfc" id="L64" title="All 2 branches covered.">		return c == null ? JGAlgoUtils.cmpDefault(e1, e2) : c.compare(e1, e2);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		return c == null ? JGAlgoUtils.cmpDefault(e1, e2) : c.compare(e1, e2);</span>
 	}
 
 	static &lt;K&gt; Heap&lt;K&gt; fromHeapReferenceable(HeapReferenceable&lt;K, ?&gt; h) {
-<span class="fc" id="L68">		return new HeapFromReferenceable&lt;&gt;(h);</span>
+<span class="fc" id="L54">		return new HeapFromReferenceable&lt;&gt;(h);</span>
 	}
 
 	private static class HeapFromReferenceable&lt;K&gt; extends HeapAbstract&lt;K&gt; {
@@ -73,70 +59,69 @@ abstract class HeapAbstract&lt;E&gt; extends AbstractCollection&lt;E&gt; impleme
 		private final HeapReferenceable&lt;K, ?&gt; h;
 
 		HeapFromReferenceable(HeapReferenceable&lt;K, ?&gt; h) {
-<span class="fc" id="L76">			super(h.comparator());</span>
-<span class="fc" id="L77">			this.h = Objects.requireNonNull(h);</span>
-<span class="fc" id="L78">		}</span>
-
-		@Override
-		public int size() {
-<span class="fc" id="L82">			return h.size();</span>
-		}
-
-		@SuppressWarnings(&quot;unchecked&quot;)
-		@Override
-		public boolean contains(Object o) {
-<span class="nc bnc" id="L88" title="All 2 branches missed.">			return h.find((K) o) != null;</span>
-		}
+<span class="fc" id="L62">			super(h.comparator());</span>
+<span class="fc" id="L63">			this.h = Objects.requireNonNull(h);</span>
+<span class="fc" id="L64">		}</span>
 
 		@Override
 		public Iterator&lt;K&gt; iterator() {
-<span class="fc" id="L93">			return JGAlgoUtils.iterMap(h.iterator(), HeapReference::key);</span>
-		}
-
-		@SuppressWarnings(&quot;unchecked&quot;)
-		@Override
-		public boolean remove(Object o) {
-<span class="fc" id="L99">			HeapReference&lt;K, ?&gt; ref = h.find((K) o);</span>
-<span class="pc bpc" id="L100" title="1 of 2 branches missed.">			if (ref == null)</span>
-<span class="nc" id="L101">				return false;</span>
-<span class="fc" id="L102">			h.remove(ref);</span>
-<span class="fc" id="L103">			return true;</span>
+<span class="fc" id="L68">			return IterTools.map(h.iterator(), HeapReference::key);</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="fc" id="L108">			h.clear();</span>
-<span class="fc" id="L109">		}</span>
+<span class="fc" id="L73">			h.clear();</span>
+<span class="fc" id="L74">		}</span>
 
 		@Override
 		public void insert(K key) {
-<span class="fc" id="L113">			h.insert(key);</span>
-<span class="fc" id="L114">		}</span>
+<span class="fc" id="L78">			h.insert(key);</span>
+<span class="fc" id="L79">		}</span>
 
 		@Override
 		public void insertAll(Collection&lt;? extends K&gt; elms) {
-<span class="nc bnc" id="L118" title="All 2 branches missed.">			for (K elm : elms)</span>
-<span class="nc" id="L119">				h.insert(elm);</span>
-<span class="nc" id="L120">		}</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">			for (K elm : elms)</span>
+<span class="nc" id="L84">				h.insert(elm);</span>
+<span class="nc" id="L85">		}</span>
 
 		@Override
 		public K findMin() {
-<span class="fc" id="L124">			return h.findMin().key();</span>
+<span class="fc" id="L89">			return h.findMin().key();</span>
 		}
 
 		@Override
 		public K extractMin() {
-<span class="fc" id="L129">			return h.extractMin().key();</span>
+<span class="fc" id="L94">			return h.extractMin().key();</span>
 		}
 
 		@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 		@Override
 		public void meld(Heap&lt;? extends K&gt; heap) {
-<span class="pc bpc" id="L135" title="1 of 2 branches missed.">			if (!(heap instanceof HeapFromReferenceable&lt;?&gt;))</span>
-<span class="nc" id="L136">				throw new IllegalArgumentException();</span>
-<span class="fc" id="L137">			HeapReferenceable&lt;K, ?&gt; oh = ((HeapFromReferenceable&lt;K&gt;) heap).h;</span>
-<span class="fc" id="L138">			h.meld((HeapReferenceable) oh);</span>
-<span class="fc" id="L139">		}</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">			if (!(heap instanceof HeapFromReferenceable&lt;?&gt;))</span>
+<span class="nc" id="L101">				throw new IllegalArgumentException();</span>
+<span class="fc" id="L102">			HeapReferenceable&lt;K, ?&gt; oh = ((HeapFromReferenceable&lt;K&gt;) heap).h;</span>
+<span class="fc" id="L103">			h.meld((HeapReferenceable) oh);</span>
+<span class="fc" id="L104">		}</span>
+
+		@Override
+		public boolean isEmpty() {
+<span class="fc" id="L108">			return h.isEmpty();</span>
+		}
+
+		@Override
+		public boolean isNotEmpty() {
+<span class="fc" id="L113">			return h.isNotEmpty();</span>
+		}
+
+		@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+		@Override
+		public boolean remove(K elm) {
+<span class="fc" id="L119">			HeapReference&lt;K, ?&gt; ref = h.find(elm);</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">			if (ref == null)</span>
+<span class="nc" id="L121">				return false;</span>
+<span class="fc" id="L122">			h.remove((HeapReference) ref);</span>
+<span class="fc" id="L123">			return true;</span>
+		}
 	}
 
 }

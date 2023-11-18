@@ -95,7 +95,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 <span class="fc" id="L95">			neighborColors[u] = new BitSet();</span>
 		}
 
-<span class="fc bfc" id="L98" title="All 2 branches covered.">		while (!heap.isEmpty()) {</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		while (heap.isNotEmpty()) {</span>
 <span class="fc" id="L99">			int u = heap.extractMin().value().intValue();</span>
 
 <span class="fc" id="L101">			int color = colors[u] = neighborColors[u].nextClearBit(0);</span>

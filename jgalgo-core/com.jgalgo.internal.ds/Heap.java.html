@@ -18,6 +18,8 @@ package com.jgalgo.internal.ds;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * A a collection which maintains elements in order and support efficient retrieval of the minimum value.
@@ -57,7 +59,7 @@ import java.util.Comparator;
  * @see        HeapReferenceable
  * @author     Barak Ugav
  */
-public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
+public interface Heap&lt;E&gt; extends Iterable&lt;E&gt; {
 
 	/**
 	 * Insert a new element to the heap.
@@ -97,6 +99,14 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	E extractMin();
 
 	/**
+	 * Remove an element from the heap.
+	 *
+	 * @param  elm element to remove
+	 * @return     {@code true} if the element was removed, {@code false} otherwise
+	 */
+	boolean remove(E elm);
+
+	/**
 	 * Meld with another heap.
 	 *
 	 * &lt;p&gt;
@@ -117,6 +127,34 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	void meld(Heap&lt;? extends E&gt; heap);
 
 	/**
+	 * Check whether the heap is empty.
+	 *
+	 * @return {@code true} if the heap is empty, {@code false} otherwise
+	 */
+	boolean isEmpty();
+
+	/**
+	 * Check whether the heap is not empty.
+	 *
+	 * @return {@code true} if the heap is not empty, {@code false} otherwise
+	 */
+	boolean isNotEmpty();
+
+	/**
+	 * Removes all of the elements from this heap.
+	 */
+	void clear();
+
+	/**
+	 * Get a stream over the elements in this heap.
+	 *
+	 * @return a stream over the elements in this heap
+	 */
+	default Stream&lt;E&gt; stream() {
+<span class="fc" id="L154">		return StreamSupport.stream(spliterator(), false);</span>
+	}
+
+	/**
 	 * Returns the comparator used to order the elements in this heap, or {@code null} if this heap uses the
 	 * {@linkplain Comparable natural ordering} of its elements.
 	 *
@@ -135,7 +173,7 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	 * @return a default implementation of {@link Heap}
 	 */
 	static &lt;E&gt; Heap&lt;E&gt; newInstance() {
-<span class="nc" id="L138">		return newBuilder().&lt;E&gt;elementsTypeObj().build();</span>
+<span class="nc" id="L176">		return newBuilder().&lt;E&gt;elementsTypeObj().build();</span>
 	}
 
 	/**
@@ -148,7 +186,7 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	 * @return a default implementation of {@link Heap}
 	 */
 	static &lt;E&gt; Heap&lt;E&gt; newInstance(Comparator&lt;? super E&gt; cmp) {
-<span class="nc" id="L151">		return newBuilder().&lt;E&gt;elementsTypeObj().build(cmp);</span>
+<span class="nc" id="L189">		return newBuilder().&lt;E&gt;elementsTypeObj().build(cmp);</span>
 	}
 
 	/**
@@ -161,31 +199,31 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 	 */
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	static Heap.Builder&lt;Object&gt; newBuilder() {
-<span class="fc" id="L164">		return new Heap.Builder&lt;&gt;() {</span>
+<span class="fc" id="L202">		return new Heap.Builder&lt;&gt;() {</span>
 
 			Class&lt;?&gt; elmsType;
 
 			@Override
 			public Heap build(Comparator cmp) {
-<span class="pc bpc" id="L170" title="1 of 2 branches missed.">				if (elmsType == int.class) {</span>
-<span class="nc" id="L171">					return new HeapBinaryInt(cmp);</span>
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">				if (elmsType == int.class) {</span>
+<span class="nc" id="L209">					return new HeapBinaryInt(cmp);</span>
 				} else {
-<span class="fc" id="L173">					return new HeapBinary&lt;&gt;(cmp);</span>
+<span class="fc" id="L211">					return new HeapBinary&lt;&gt;(cmp);</span>
 				}
 			}
 
 			@Override
 			public Heap.Builder elementsTypeObj() {
-<span class="fc" id="L179">				elmsType = null;</span>
-<span class="fc" id="L180">				return this;</span>
+<span class="fc" id="L217">				elmsType = null;</span>
+<span class="fc" id="L218">				return this;</span>
 			}
 
 			@Override
 			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
-<span class="nc bnc" id="L185" title="All 2 branches missed.">				if (!primitiveType.isPrimitive())</span>
-<span class="nc" id="L186">					throw new IllegalArgumentException(&quot;type is not primitive: &quot; + primitiveType);</span>
-<span class="nc" id="L187">				elmsType = primitiveType;</span>
-<span class="nc" id="L188">				return this;</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">				if (!primitiveType.isPrimitive())</span>
+<span class="nc" id="L224">					throw new IllegalArgumentException(&quot;type is not primitive: &quot; + primitiveType);</span>
+<span class="nc" id="L225">				elmsType = primitiveType;</span>
+<span class="nc" id="L226">				return this;</span>
 			}
 		};
 	}
@@ -216,7 +254,7 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 		 * @return the newly constructed heap
 		 */
 		default Heap&lt;E&gt; build() {
-<span class="nc" id="L219">			return build(null);</span>
+<span class="nc" id="L257">			return build(null);</span>
 		}
 
 		/**
@@ -258,7 +296,7 @@ public interface Heap&lt;E&gt; extends Collection&lt;E&gt; {
 		 * @return       this builder
 		 */
 		default Heap.Builder&lt;E&gt; setOption(String key, Object value) {
-<span class="nc" id="L261">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L299">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

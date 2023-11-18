@@ -26,7 +26,7 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
@@ -1348,7 +1348,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				private final LinkedListFixedSize.Doubly vertices;
 <span class="fc" id="L1350">				private int listHead = LinkedListFixedSize.None;</span>
-				private JGAlgoUtils.IterPeekable.Int listIter;
+				private IterTools.IterPeekable.Int listIter;
 
 				MoveToFront(MaximumFlowPushRelabel.Worker worker) {
 <span class="fc" id="L1354">					super(worker);</span>
@@ -1365,8 +1365,8 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 				@Override
 				void afterRecomputeLabels() {
-<span class="fc bfc" id="L1368" title="All 2 branches covered.">					listIter = listHead != LinkedListFixedSize.None ? vertices.iterator(listHead)</span>
-<span class="fc" id="L1369">							: JGAlgoUtils.IterPeekable.Int.Empty;</span>
+<span class="fc" id="L1368">					listIter =</span>
+<span class="fc bfc" id="L1369" title="All 2 branches covered.">							listHead != LinkedListFixedSize.None ? vertices.iterator(listHead) : vertices.emptyIter();</span>
 <span class="fc" id="L1370">				}</span>
 
 				@Override
@@ -1390,7 +1390,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 				@Override
 				boolean hasMoreVerticesToDischarge() {
 <span class="fc bfc" id="L1392" title="All 2 branches covered.">					for (; listIter.hasNext(); listIter.nextInt())</span>
-<span class="fc bfc" id="L1393" title="All 2 branches covered.">						if (worker.hasExcess(listIter.peekNext()))</span>
+<span class="fc bfc" id="L1393" title="All 2 branches covered.">						if (worker.hasExcess(listIter.peekNextInt()))</span>
 <span class="fc" id="L1394">							return true;</span>
 <span class="fc" id="L1395">					return false;</span>
 				}

@@ -33,11 +33,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * of a graph.
  *
  * &lt;p&gt;
+ * For a general k-vertex connected components, see {@link KVertexConnectedComponentsAlgo}.
+ *
+ * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
  * {@link #newBuilder()} may support different options to obtain different implementations.
  *
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Biconnected_component&quot;&gt;Wikipedia&lt;/a&gt;
  * @see    StronglyConnectedComponentsAlgo
+ * @see    KVertexConnectedComponentsAlgo
  * @see    WeaklyConnectedComponentsAlgo
  * @author Barak Ugav
  */
@@ -170,7 +174,7 @@ public interface BiConnectedComponentsAlgo {
 		@Deprecated
 		@Override
 		default IntSet getVertexBiCcs(Integer vertex) {
-<span class="fc" id="L173">			return getVertexBiCcs((vertex).intValue());</span>
+<span class="fc" id="L177">			return getVertexBiCcs((vertex).intValue());</span>
 		}
 
 		@Override
@@ -195,7 +199,7 @@ public interface BiConnectedComponentsAlgo {
 		@Deprecated
 		@Override
 		default boolean isCutVertex(Integer vertex) {
-<span class="fc" id="L198">			return isCutVertex((vertex).intValue());</span>
+<span class="fc" id="L202">			return isCutVertex((vertex).intValue());</span>
 		}
 
 		@Override
@@ -213,7 +217,7 @@ public interface BiConnectedComponentsAlgo {
 	 * @return a default implementation of {@link BiConnectedComponentsAlgo}
 	 */
 	static BiConnectedComponentsAlgo newInstance() {
-<span class="fc" id="L216">		return newBuilder().build();</span>
+<span class="fc" id="L220">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -225,7 +229,7 @@ public interface BiConnectedComponentsAlgo {
 	 * @return a new builder that can build {@link BiConnectedComponentsAlgo} objects
 	 */
 	static BiConnectedComponentsAlgo.Builder newBuilder() {
-<span class="fc" id="L228">		return BiConnectedComponentsAlgoHopcroftTarjan::new;</span>
+<span class="fc" id="L232">		return BiConnectedComponentsAlgoHopcroftTarjan::new;</span>
 	}
 
 	/**

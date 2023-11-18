@@ -54,7 +54,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L54">			heapVPtrs[site] = heap.insert(0.0, site);</span>
 		}
 
-<span class="fc bfc" id="L57" title="All 2 branches covered.">		while (!heap.isEmpty()) {</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		while (heap.isNotEmpty()) {</span>
 <span class="fc" id="L58">			HeapReference&lt;Double, Integer&gt; min = heap.extractMin();</span>
 <span class="fc" id="L59">			int u = min.value();</span>
 <span class="fc" id="L60">			double uDistance = distance[u] = min.key();</span>

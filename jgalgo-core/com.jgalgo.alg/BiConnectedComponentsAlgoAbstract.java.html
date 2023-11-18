@@ -30,8 +30,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;V, E&gt; BiConnectedComponentsAlgo.Result&lt;V, E&gt; findBiConnectedComponents(Graph&lt;V, E&gt; g) {
-<span class="pc bpc" id="L33" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
-<span class="nc" id="L34">			return (BiConnectedComponentsAlgo.Result&lt;V, E&gt;) findBiConnectedComponents((IndexGraph) g);</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L34">			return (BiConnectedComponentsAlgo.Result&lt;V, E&gt;) findBiConnectedComponents((IndexGraph) g);</span>
 
 <span class="fc" id="L36">		IndexGraph iGraph = g.indexGraph();</span>
 <span class="fc" id="L37">		BiConnectedComponentsAlgo.IResult indexResult = findBiConnectedComponents(iGraph);</span>

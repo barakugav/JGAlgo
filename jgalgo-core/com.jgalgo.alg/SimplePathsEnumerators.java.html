@@ -19,7 +19,7 @@ import java.util.Iterator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.IterTools;
 
 class SimplePathsEnumerators {
 
@@ -40,7 +40,7 @@ class SimplePathsEnumerators {
 <span class="fc" id="L40">				int iSource = viMap.idToIndex(source);</span>
 <span class="fc" id="L41">				int iTarget = viMap.idToIndex(target);</span>
 <span class="fc" id="L42">				Iterator&lt;IPath&gt; indexResult = simplePathsIter(iGraph, iSource, iTarget);</span>
-<span class="fc" id="L43">				return JGAlgoUtils.iterMap(indexResult, iPath -&gt; PathImpl.pathFromIndexPath(g, iPath));</span>
+<span class="fc" id="L43">				return IterTools.map(indexResult, iPath -&gt; PathImpl.pathFromIndexPath(g, iPath));</span>
 			}
 		}
 

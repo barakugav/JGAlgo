@@ -1919,10 +1919,10 @@ public class Graphs {
 <span class="fc" id="L1919">				return &quot;linked-list&quot;;</span>
 <span class="fc bfc" id="L1920" title="All 2 branches covered.">			if (g instanceof GraphHashmapAbstract)</span>
 <span class="fc" id="L1921">				return &quot;hashtable&quot;;</span>
-<span class="pc bpc" id="L1922" title="1 of 2 branches missed.">			if (g instanceof GraphMatrixAbstract)</span>
+<span class="fc bfc" id="L1922" title="All 2 branches covered.">			if (g instanceof GraphMatrixAbstract)</span>
 <span class="fc" id="L1923">				return &quot;matrix&quot;;</span>
-<span class="nc bnc" id="L1924" title="All 2 branches missed.">			if (g == g0)</span>
-<span class="nc" id="L1925">				return null;</span>
+<span class="pc bpc" id="L1924" title="1 of 2 branches missed.">			if (g == g0)</span>
+<span class="fc" id="L1925">				return null;</span>
 <span class="nc" id="L1926">		}</span>
 	}
 
@@ -2167,34 +2167,49 @@ public class Graphs {
 <span class="fc" id="L2167">			gb.addVertex(v);</span>
 
 <span class="fc bfc" id="L2169" title="All 2 branches covered.">		if (edges == null) {</span>
-<span class="fc bfc" id="L2170" title="All 2 branches covered.">			for (E e : g.edges()) {</span>
-<span class="fc" id="L2171">				V u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L2172" title="All 4 branches covered.">				if (gb.vertices().contains(u) &amp;&amp; gb.vertices().contains(v))</span>
-<span class="fc" id="L2173">					gb.addEdge(u, v, e);</span>
-<span class="fc" id="L2174">			}</span>
+<span class="fc bfc" id="L2170" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc bfc" id="L2171" title="All 2 branches covered.">				for (V u : gb.vertices()) {</span>
+<span class="fc bfc" id="L2172" title="All 2 branches covered.">					for (EdgeIter&lt;V, E&gt; eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L2173">						E e = eit.next();</span>
+<span class="fc" id="L2174">						V v = eit.target();</span>
+<span class="fc bfc" id="L2175" title="All 2 branches covered.">						if (gb.vertices().contains(v))</span>
+<span class="fc" id="L2176">							gb.addEdge(u, v, e);</span>
+<span class="fc" id="L2177">					}</span>
+<span class="fc" id="L2178">				}</span>
+			} else {
+<span class="fc" id="L2180">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc bfc" id="L2181" title="All 2 branches covered.">				for (V u : gb.vertices()) {</span>
+<span class="fc bfc" id="L2182" title="All 2 branches covered.">					for (EdgeIter&lt;V, E&gt; eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L2183">						E e = eit.next();</span>
+<span class="fc" id="L2184">						V v = eit.target();</span>
+<span class="fc bfc" id="L2185" title="All 4 branches covered.">						if (viMap.idToIndex(u) &lt;= viMap.idToIndex(v) &amp;&amp; gb.vertices().contains(v))</span>
+<span class="fc" id="L2186">							gb.addEdge(u, v, e);</span>
+<span class="fc" id="L2187">					}</span>
+<span class="fc" id="L2188">				}</span>
+<span class="fc" id="L2189">			}</span>
 		} else {
-<span class="fc bfc" id="L2176" title="All 2 branches covered.">			for (E e : edges)</span>
-<span class="fc" id="L2177">				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);</span>
+<span class="fc bfc" id="L2191" title="All 2 branches covered.">			for (E e : edges)</span>
+<span class="fc" id="L2192">				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);</span>
 		}
 
-<span class="fc bfc" id="L2180" title="All 2 branches covered.">		if (copyVerticesWeights) {</span>
-<span class="fc bfc" id="L2181" title="All 2 branches covered.">			for (String key : g.getVerticesWeightsKeys()) {</span>
-<span class="fc" id="L2182">				Weights wSrc = g.getVerticesWeights(key);</span>
-<span class="fc" id="L2183">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
-<span class="fc" id="L2184">				Weights wDst = gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
-<span class="fc" id="L2185">				copyWeights(wSrc, wDst, type, gb.vertices());</span>
-<span class="fc" id="L2186">			}</span>
+<span class="fc bfc" id="L2195" title="All 2 branches covered.">		if (copyVerticesWeights) {</span>
+<span class="fc bfc" id="L2196" title="All 2 branches covered.">			for (String key : g.getVerticesWeightsKeys()) {</span>
+<span class="fc" id="L2197">				Weights wSrc = g.getVerticesWeights(key);</span>
+<span class="fc" id="L2198">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
+<span class="fc" id="L2199">				Weights wDst = gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
+<span class="fc" id="L2200">				copyWeights(wSrc, wDst, type, gb.vertices());</span>
+<span class="fc" id="L2201">			}</span>
 		}
-<span class="fc bfc" id="L2188" title="All 2 branches covered.">		if (copyEdgesWeights) {</span>
-<span class="fc bfc" id="L2189" title="All 2 branches covered.">			for (String key : g.getEdgesWeightsKeys()) {</span>
-<span class="fc" id="L2190">				Weights wSrc = g.getEdgesWeights(key);</span>
-<span class="fc" id="L2191">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
-<span class="fc" id="L2192">				Weights wDst = gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
-<span class="fc" id="L2193">				copyWeights(wSrc, wDst, type, gb.edges());</span>
-<span class="fc" id="L2194">			}</span>
+<span class="fc bfc" id="L2203" title="All 2 branches covered.">		if (copyEdgesWeights) {</span>
+<span class="fc bfc" id="L2204" title="All 2 branches covered.">			for (String key : g.getEdgesWeightsKeys()) {</span>
+<span class="fc" id="L2205">				Weights wSrc = g.getEdgesWeights(key);</span>
+<span class="fc" id="L2206">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
+<span class="fc" id="L2207">				Weights wDst = gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
+<span class="fc" id="L2208">				copyWeights(wSrc, wDst, type, gb.edges());</span>
+<span class="fc" id="L2209">			}</span>
 		}
 
-<span class="fc" id="L2197">		return gb.build();</span>
+<span class="fc" id="L2212">		return gb.build();</span>
 	}
 
 	/**
@@ -2235,176 +2250,190 @@ public class Graphs {
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot;, &quot;cast&quot; })
 	public static IntGraph subGraph(IntGraph g, IntCollection vertices, IntCollection edges,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="pc bpc" id="L2238" title="1 of 4 branches missed.">		if (vertices == null &amp;&amp; edges == null)</span>
-<span class="nc" id="L2239">			throw new NullPointerException(&quot;Either vertices or edges can be null, not both.&quot;);</span>
-<span class="fc bfc" id="L2240" title="All 2 branches covered.">		IntGraphBuilder gb = g.isDirected() ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
+<span class="pc bpc" id="L2253" title="1 of 4 branches missed.">		if (vertices == null &amp;&amp; edges == null)</span>
+<span class="nc" id="L2254">			throw new NullPointerException(&quot;Either vertices or edges can be null, not both.&quot;);</span>
+<span class="fc bfc" id="L2255" title="All 2 branches covered.">		IntGraphBuilder gb = g.isDirected() ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
 
-<span class="fc bfc" id="L2242" title="All 2 branches covered.">		if (vertices == null) {</span>
-<span class="fc" id="L2243">			vertices = new IntOpenHashSet();</span>
-<span class="fc bfc" id="L2244" title="All 2 branches covered.">			for (int e : edges) {</span>
-<span class="fc" id="L2245">				vertices.add(g.edgeSource(e));</span>
-<span class="fc" id="L2246">				vertices.add(g.edgeTarget(e));</span>
-<span class="fc" id="L2247">			}</span>
+<span class="fc bfc" id="L2257" title="All 2 branches covered.">		if (vertices == null) {</span>
+<span class="fc" id="L2258">			vertices = new IntOpenHashSet();</span>
+<span class="fc bfc" id="L2259" title="All 2 branches covered.">			for (int e : edges) {</span>
+<span class="fc" id="L2260">				vertices.add(g.edgeSource(e));</span>
+<span class="fc" id="L2261">				vertices.add(g.edgeTarget(e));</span>
+<span class="fc" id="L2262">			}</span>
 		}
-<span class="fc" id="L2249">		gb.expectedVerticesNum(vertices.size());</span>
-<span class="fc bfc" id="L2250" title="All 2 branches covered.">		for (int v : vertices)</span>
-<span class="fc" id="L2251">			gb.addVertex(v);</span>
+<span class="fc" id="L2264">		gb.expectedVerticesNum(vertices.size());</span>
+<span class="fc bfc" id="L2265" title="All 2 branches covered.">		for (int v : vertices)</span>
+<span class="fc" id="L2266">			gb.addVertex(v);</span>
 
-<span class="fc bfc" id="L2253" title="All 2 branches covered.">		if (edges == null) {</span>
-<span class="fc bfc" id="L2254" title="All 2 branches covered.">			for (int e : g.edges()) {</span>
-<span class="fc" id="L2255">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L2256" title="All 4 branches covered.">				if (gb.vertices().contains(u) &amp;&amp; gb.vertices().contains(v))</span>
-<span class="fc" id="L2257">					gb.addEdge(u, v, e);</span>
-<span class="fc" id="L2258">			}</span>
+<span class="fc bfc" id="L2268" title="All 2 branches covered.">		if (edges == null) {</span>
+<span class="fc bfc" id="L2269" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc bfc" id="L2270" title="All 2 branches covered.">				for (int u : gb.vertices()) {</span>
+<span class="fc bfc" id="L2271" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L2272">						int e = eit.nextInt();</span>
+<span class="fc" id="L2273">						int v = eit.targetInt();</span>
+<span class="fc bfc" id="L2274" title="All 2 branches covered.">						if (gb.vertices().contains(v))</span>
+<span class="fc" id="L2275">							gb.addEdge(u, v, e);</span>
+<span class="fc" id="L2276">					}</span>
+<span class="fc" id="L2277">				}</span>
+			} else {
+<span class="fc bfc" id="L2279" title="All 2 branches covered.">				for (int u : gb.vertices()) {</span>
+<span class="fc bfc" id="L2280" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L2281">						int e = eit.nextInt();</span>
+<span class="fc" id="L2282">						int v = eit.targetInt();</span>
+<span class="fc bfc" id="L2283" title="All 4 branches covered.">						if (u &lt;= v &amp;&amp; gb.vertices().contains(v))</span>
+<span class="fc" id="L2284">							gb.addEdge(u, v, e);</span>
+<span class="fc" id="L2285">					}</span>
+<span class="fc" id="L2286">				}</span>
+			}
 		} else {
-<span class="fc bfc" id="L2260" title="All 2 branches covered.">			for (int e : edges)</span>
-<span class="fc" id="L2261">				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);</span>
+<span class="fc bfc" id="L2289" title="All 2 branches covered.">			for (int e : edges)</span>
+<span class="fc" id="L2290">				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);</span>
 		}
 
-<span class="fc bfc" id="L2264" title="All 2 branches covered.">		if (copyVerticesWeights) {</span>
-<span class="fc bfc" id="L2265" title="All 2 branches covered.">			for (String key : g.getVerticesWeightsKeys()) {</span>
-<span class="fc" id="L2266">				IWeights wSrc = g.getVerticesWeights(key);</span>
-<span class="fc" id="L2267">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
-<span class="fc" id="L2268">				IWeights wDst = (IWeights) gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
-<span class="fc" id="L2269">				copyWeights(wSrc, wDst, type, gb.vertices());</span>
-<span class="fc" id="L2270">			}</span>
+<span class="fc bfc" id="L2293" title="All 2 branches covered.">		if (copyVerticesWeights) {</span>
+<span class="fc bfc" id="L2294" title="All 2 branches covered.">			for (String key : g.getVerticesWeightsKeys()) {</span>
+<span class="fc" id="L2295">				IWeights wSrc = g.getVerticesWeights(key);</span>
+<span class="fc" id="L2296">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
+<span class="fc" id="L2297">				IWeights wDst = (IWeights) gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
+<span class="fc" id="L2298">				copyWeights(wSrc, wDst, type, gb.vertices());</span>
+<span class="fc" id="L2299">			}</span>
 		}
-<span class="fc bfc" id="L2272" title="All 2 branches covered.">		if (copyEdgesWeights) {</span>
-<span class="fc bfc" id="L2273" title="All 2 branches covered.">			for (String key : g.getEdgesWeightsKeys()) {</span>
-<span class="fc" id="L2274">				IWeights wSrc = g.getEdgesWeights(key);</span>
-<span class="fc" id="L2275">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
-<span class="fc" id="L2276">				IWeights wDst = (IWeights) gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
-<span class="fc" id="L2277">				copyWeights(wSrc, wDst, type, gb.edges());</span>
-<span class="fc" id="L2278">			}</span>
+<span class="fc bfc" id="L2301" title="All 2 branches covered.">		if (copyEdgesWeights) {</span>
+<span class="fc bfc" id="L2302" title="All 2 branches covered.">			for (String key : g.getEdgesWeightsKeys()) {</span>
+<span class="fc" id="L2303">				IWeights wSrc = g.getEdgesWeights(key);</span>
+<span class="fc" id="L2304">				Class&lt;?&gt; type = (Class) getWeightsType(wSrc);</span>
+<span class="fc" id="L2305">				IWeights wDst = (IWeights) gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());</span>
+<span class="fc" id="L2306">				copyWeights(wSrc, wDst, type, gb.edges());</span>
+<span class="fc" id="L2307">			}</span>
 		}
 
-<span class="fc" id="L2281">		return gb.build();</span>
+<span class="fc" id="L2310">		return gb.build();</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;K&gt; void copyWeights(Weights&lt;K, ?&gt; src, Weights&lt;K, ?&gt; dst, Class&lt;?&gt; type, Collection&lt;K&gt; elements) {
-<span class="fc bfc" id="L2286" title="All 2 branches covered.">		if (type == byte.class) {</span>
-<span class="fc" id="L2287">			WeightsByte&lt;K&gt; src0 = (WeightsByte&lt;K&gt;) src;</span>
-<span class="fc" id="L2288">			WeightsByte&lt;K&gt; dst0 = (WeightsByte&lt;K&gt;) dst;</span>
-<span class="fc bfc" id="L2289" title="All 2 branches covered.">			for (K elm : elements)</span>
-<span class="fc" id="L2290">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc bfc" id="L2291" title="All 2 branches covered.">		} else if (type == short.class) {</span>
-<span class="fc" id="L2292">			WeightsShort&lt;K&gt; src0 = (WeightsShort&lt;K&gt;) src;</span>
-<span class="fc" id="L2293">			WeightsShort&lt;K&gt; dst0 = (WeightsShort&lt;K&gt;) dst;</span>
-<span class="fc bfc" id="L2294" title="All 2 branches covered.">			for (K elm : elements)</span>
-<span class="fc" id="L2295">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc bfc" id="L2296" title="All 2 branches covered.">		} else if (type == int.class) {</span>
-<span class="fc" id="L2297">			WeightsInt&lt;K&gt; src0 = (WeightsInt&lt;K&gt;) src;</span>
-<span class="fc" id="L2298">			WeightsInt&lt;K&gt; dst0 = (WeightsInt&lt;K&gt;) dst;</span>
-<span class="fc bfc" id="L2299" title="All 2 branches covered.">			for (K elm : elements)</span>
-<span class="fc" id="L2300">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc bfc" id="L2301" title="All 2 branches covered.">		} else if (type == long.class) {</span>
-<span class="fc" id="L2302">			WeightsLong&lt;K&gt; src0 = (WeightsLong&lt;K&gt;) src;</span>
-<span class="fc" id="L2303">			WeightsLong&lt;K&gt; dst0 = (WeightsLong&lt;K&gt;) dst;</span>
-<span class="fc bfc" id="L2304" title="All 2 branches covered.">			for (K elm : elements)</span>
-<span class="fc" id="L2305">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc bfc" id="L2306" title="All 2 branches covered.">		} else if (type == float.class) {</span>
-<span class="fc" id="L2307">			WeightsFloat&lt;K&gt; src0 = (WeightsFloat&lt;K&gt;) src;</span>
-<span class="fc" id="L2308">			WeightsFloat&lt;K&gt; dst0 = (WeightsFloat&lt;K&gt;) dst;</span>
-<span class="fc bfc" id="L2309" title="All 2 branches covered.">			for (K elm : elements)</span>
-<span class="fc" id="L2310">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc bfc" id="L2311" title="All 2 branches covered.">		} else if (type == double.class) {</span>
-<span class="fc" id="L2312">			WeightsDouble&lt;K&gt; src0 = (WeightsDouble&lt;K&gt;) src;</span>
-<span class="fc" id="L2313">			WeightsDouble&lt;K&gt; dst0 = (WeightsDouble&lt;K&gt;) dst;</span>
-<span class="fc bfc" id="L2314" title="All 2 branches covered.">			for (K elm : elements)</span>
-<span class="fc" id="L2315">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc bfc" id="L2316" title="All 2 branches covered.">		} else if (type == boolean.class) {</span>
-<span class="fc" id="L2317">			WeightsBool&lt;K&gt; src0 = (WeightsBool&lt;K&gt;) src;</span>
-<span class="fc" id="L2318">			WeightsBool&lt;K&gt; dst0 = (WeightsBool&lt;K&gt;) dst;</span>
-<span class="fc bfc" id="L2319" title="All 2 branches covered.">			for (K elm : elements)</span>
-<span class="fc" id="L2320">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc bfc" id="L2321" title="All 2 branches covered.">		} else if (type == char.class) {</span>
-<span class="fc" id="L2322">			WeightsChar&lt;K&gt; src0 = (WeightsChar&lt;K&gt;) src;</span>
-<span class="fc" id="L2323">			WeightsChar&lt;K&gt; dst0 = (WeightsChar&lt;K&gt;) dst;</span>
-<span class="fc bfc" id="L2324" title="All 2 branches covered.">			for (K elm : elements)</span>
-<span class="fc" id="L2325">				dst0.set(elm, src0.get(elm));</span>
-<span class="pc bpc" id="L2326" title="1 of 2 branches missed.">		} else if (type == Object.class) {</span>
-<span class="fc" id="L2327">			WeightsObj&lt;K, Object&gt; src0 = (WeightsObj&lt;K, Object&gt;) src;</span>
-<span class="fc" id="L2328">			WeightsObj&lt;K, Object&gt; dst0 = (WeightsObj&lt;K, Object&gt;) dst;</span>
-<span class="fc bfc" id="L2329" title="All 2 branches covered.">			for (K elm : elements)</span>
-<span class="fc" id="L2330">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc" id="L2331">		} else {</span>
-<span class="nc" id="L2332">			throw new AssertionError();</span>
+<span class="fc bfc" id="L2315" title="All 2 branches covered.">		if (type == byte.class) {</span>
+<span class="fc" id="L2316">			WeightsByte&lt;K&gt; src0 = (WeightsByte&lt;K&gt;) src;</span>
+<span class="fc" id="L2317">			WeightsByte&lt;K&gt; dst0 = (WeightsByte&lt;K&gt;) dst;</span>
+<span class="fc bfc" id="L2318" title="All 2 branches covered.">			for (K elm : elements)</span>
+<span class="fc" id="L2319">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc bfc" id="L2320" title="All 2 branches covered.">		} else if (type == short.class) {</span>
+<span class="fc" id="L2321">			WeightsShort&lt;K&gt; src0 = (WeightsShort&lt;K&gt;) src;</span>
+<span class="fc" id="L2322">			WeightsShort&lt;K&gt; dst0 = (WeightsShort&lt;K&gt;) dst;</span>
+<span class="fc bfc" id="L2323" title="All 2 branches covered.">			for (K elm : elements)</span>
+<span class="fc" id="L2324">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc bfc" id="L2325" title="All 2 branches covered.">		} else if (type == int.class) {</span>
+<span class="fc" id="L2326">			WeightsInt&lt;K&gt; src0 = (WeightsInt&lt;K&gt;) src;</span>
+<span class="fc" id="L2327">			WeightsInt&lt;K&gt; dst0 = (WeightsInt&lt;K&gt;) dst;</span>
+<span class="fc bfc" id="L2328" title="All 2 branches covered.">			for (K elm : elements)</span>
+<span class="fc" id="L2329">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc bfc" id="L2330" title="All 2 branches covered.">		} else if (type == long.class) {</span>
+<span class="fc" id="L2331">			WeightsLong&lt;K&gt; src0 = (WeightsLong&lt;K&gt;) src;</span>
+<span class="fc" id="L2332">			WeightsLong&lt;K&gt; dst0 = (WeightsLong&lt;K&gt;) dst;</span>
+<span class="fc bfc" id="L2333" title="All 2 branches covered.">			for (K elm : elements)</span>
+<span class="fc" id="L2334">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc bfc" id="L2335" title="All 2 branches covered.">		} else if (type == float.class) {</span>
+<span class="fc" id="L2336">			WeightsFloat&lt;K&gt; src0 = (WeightsFloat&lt;K&gt;) src;</span>
+<span class="fc" id="L2337">			WeightsFloat&lt;K&gt; dst0 = (WeightsFloat&lt;K&gt;) dst;</span>
+<span class="fc bfc" id="L2338" title="All 2 branches covered.">			for (K elm : elements)</span>
+<span class="fc" id="L2339">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc bfc" id="L2340" title="All 2 branches covered.">		} else if (type == double.class) {</span>
+<span class="fc" id="L2341">			WeightsDouble&lt;K&gt; src0 = (WeightsDouble&lt;K&gt;) src;</span>
+<span class="fc" id="L2342">			WeightsDouble&lt;K&gt; dst0 = (WeightsDouble&lt;K&gt;) dst;</span>
+<span class="fc bfc" id="L2343" title="All 2 branches covered.">			for (K elm : elements)</span>
+<span class="fc" id="L2344">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc bfc" id="L2345" title="All 2 branches covered.">		} else if (type == boolean.class) {</span>
+<span class="fc" id="L2346">			WeightsBool&lt;K&gt; src0 = (WeightsBool&lt;K&gt;) src;</span>
+<span class="fc" id="L2347">			WeightsBool&lt;K&gt; dst0 = (WeightsBool&lt;K&gt;) dst;</span>
+<span class="fc bfc" id="L2348" title="All 2 branches covered.">			for (K elm : elements)</span>
+<span class="fc" id="L2349">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc bfc" id="L2350" title="All 2 branches covered.">		} else if (type == char.class) {</span>
+<span class="fc" id="L2351">			WeightsChar&lt;K&gt; src0 = (WeightsChar&lt;K&gt;) src;</span>
+<span class="fc" id="L2352">			WeightsChar&lt;K&gt; dst0 = (WeightsChar&lt;K&gt;) dst;</span>
+<span class="fc bfc" id="L2353" title="All 2 branches covered.">			for (K elm : elements)</span>
+<span class="fc" id="L2354">				dst0.set(elm, src0.get(elm));</span>
+<span class="pc bpc" id="L2355" title="1 of 2 branches missed.">		} else if (type == Object.class) {</span>
+<span class="fc" id="L2356">			WeightsObj&lt;K, Object&gt; src0 = (WeightsObj&lt;K, Object&gt;) src;</span>
+<span class="fc" id="L2357">			WeightsObj&lt;K, Object&gt; dst0 = (WeightsObj&lt;K, Object&gt;) dst;</span>
+<span class="fc bfc" id="L2358" title="All 2 branches covered.">			for (K elm : elements)</span>
+<span class="fc" id="L2359">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc" id="L2360">		} else {</span>
+<span class="nc" id="L2361">			throw new AssertionError();</span>
 		}
-<span class="fc" id="L2334">	}</span>
+<span class="fc" id="L2363">	}</span>
 
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	private static void copyWeights(IWeights&lt;?&gt; src, IWeights&lt;?&gt; dst, Class&lt;?&gt; type, IntCollection elements) {
-<span class="fc bfc" id="L2338" title="All 2 branches covered.">		if (type == byte.class) {</span>
-<span class="fc" id="L2339">			IWeightsByte src0 = (IWeightsByte) src;</span>
-<span class="fc" id="L2340">			IWeightsByte dst0 = (IWeightsByte) dst;</span>
-<span class="fc bfc" id="L2341" title="All 2 branches covered.">			for (int elm : elements)</span>
-<span class="fc" id="L2342">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc bfc" id="L2343" title="All 2 branches covered.">		} else if (type == short.class) {</span>
-<span class="fc" id="L2344">			IWeightsShort src0 = (IWeightsShort) src;</span>
-<span class="fc" id="L2345">			IWeightsShort dst0 = (IWeightsShort) dst;</span>
-<span class="fc bfc" id="L2346" title="All 2 branches covered.">			for (int elm : elements)</span>
-<span class="fc" id="L2347">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc bfc" id="L2348" title="All 2 branches covered.">		} else if (type == int.class) {</span>
-<span class="fc" id="L2349">			IWeightsInt src0 = (IWeightsInt) src;</span>
-<span class="fc" id="L2350">			IWeightsInt dst0 = (IWeightsInt) dst;</span>
-<span class="fc bfc" id="L2351" title="All 2 branches covered.">			for (int elm : elements)</span>
-<span class="fc" id="L2352">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc bfc" id="L2353" title="All 2 branches covered.">		} else if (type == long.class) {</span>
-<span class="fc" id="L2354">			IWeightsLong src0 = (IWeightsLong) src;</span>
-<span class="fc" id="L2355">			IWeightsLong dst0 = (IWeightsLong) dst;</span>
-<span class="fc bfc" id="L2356" title="All 2 branches covered.">			for (int elm : elements)</span>
-<span class="fc" id="L2357">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc bfc" id="L2358" title="All 2 branches covered.">		} else if (type == float.class) {</span>
-<span class="fc" id="L2359">			IWeightsFloat src0 = (IWeightsFloat) src;</span>
-<span class="fc" id="L2360">			IWeightsFloat dst0 = (IWeightsFloat) dst;</span>
-<span class="fc bfc" id="L2361" title="All 2 branches covered.">			for (int elm : elements)</span>
-<span class="fc" id="L2362">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc bfc" id="L2363" title="All 2 branches covered.">		} else if (type == double.class) {</span>
-<span class="fc" id="L2364">			IWeightsDouble src0 = (IWeightsDouble) src;</span>
-<span class="fc" id="L2365">			IWeightsDouble dst0 = (IWeightsDouble) dst;</span>
-<span class="fc bfc" id="L2366" title="All 2 branches covered.">			for (int elm : elements)</span>
-<span class="fc" id="L2367">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc bfc" id="L2368" title="All 2 branches covered.">		} else if (type == boolean.class) {</span>
-<span class="fc" id="L2369">			IWeightsBool src0 = (IWeightsBool) src;</span>
-<span class="fc" id="L2370">			IWeightsBool dst0 = (IWeightsBool) dst;</span>
-<span class="fc bfc" id="L2371" title="All 2 branches covered.">			for (int elm : elements)</span>
-<span class="fc" id="L2372">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc bfc" id="L2373" title="All 2 branches covered.">		} else if (type == char.class) {</span>
-<span class="fc" id="L2374">			IWeightsChar src0 = (IWeightsChar) src;</span>
-<span class="fc" id="L2375">			IWeightsChar dst0 = (IWeightsChar) dst;</span>
-<span class="fc bfc" id="L2376" title="All 2 branches covered.">			for (int elm : elements)</span>
-<span class="fc" id="L2377">				dst0.set(elm, src0.get(elm));</span>
-<span class="pc bpc" id="L2378" title="1 of 2 branches missed.">		} else if (type == Object.class) {</span>
-<span class="fc" id="L2379">			IWeightsObj src0 = (IWeightsObj) src;</span>
-<span class="fc" id="L2380">			IWeightsObj dst0 = (IWeightsObj) dst;</span>
-<span class="fc bfc" id="L2381" title="All 2 branches covered.">			for (int elm : elements)</span>
-<span class="fc" id="L2382">				dst0.set(elm, src0.get(elm));</span>
-<span class="fc" id="L2383">		} else {</span>
-<span class="nc" id="L2384">			throw new AssertionError();</span>
+<span class="fc bfc" id="L2367" title="All 2 branches covered.">		if (type == byte.class) {</span>
+<span class="fc" id="L2368">			IWeightsByte src0 = (IWeightsByte) src;</span>
+<span class="fc" id="L2369">			IWeightsByte dst0 = (IWeightsByte) dst;</span>
+<span class="fc bfc" id="L2370" title="All 2 branches covered.">			for (int elm : elements)</span>
+<span class="fc" id="L2371">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc bfc" id="L2372" title="All 2 branches covered.">		} else if (type == short.class) {</span>
+<span class="fc" id="L2373">			IWeightsShort src0 = (IWeightsShort) src;</span>
+<span class="fc" id="L2374">			IWeightsShort dst0 = (IWeightsShort) dst;</span>
+<span class="fc bfc" id="L2375" title="All 2 branches covered.">			for (int elm : elements)</span>
+<span class="fc" id="L2376">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc bfc" id="L2377" title="All 2 branches covered.">		} else if (type == int.class) {</span>
+<span class="fc" id="L2378">			IWeightsInt src0 = (IWeightsInt) src;</span>
+<span class="fc" id="L2379">			IWeightsInt dst0 = (IWeightsInt) dst;</span>
+<span class="fc bfc" id="L2380" title="All 2 branches covered.">			for (int elm : elements)</span>
+<span class="fc" id="L2381">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc bfc" id="L2382" title="All 2 branches covered.">		} else if (type == long.class) {</span>
+<span class="fc" id="L2383">			IWeightsLong src0 = (IWeightsLong) src;</span>
+<span class="fc" id="L2384">			IWeightsLong dst0 = (IWeightsLong) dst;</span>
+<span class="fc bfc" id="L2385" title="All 2 branches covered.">			for (int elm : elements)</span>
+<span class="fc" id="L2386">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc bfc" id="L2387" title="All 2 branches covered.">		} else if (type == float.class) {</span>
+<span class="fc" id="L2388">			IWeightsFloat src0 = (IWeightsFloat) src;</span>
+<span class="fc" id="L2389">			IWeightsFloat dst0 = (IWeightsFloat) dst;</span>
+<span class="fc bfc" id="L2390" title="All 2 branches covered.">			for (int elm : elements)</span>
+<span class="fc" id="L2391">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc bfc" id="L2392" title="All 2 branches covered.">		} else if (type == double.class) {</span>
+<span class="fc" id="L2393">			IWeightsDouble src0 = (IWeightsDouble) src;</span>
+<span class="fc" id="L2394">			IWeightsDouble dst0 = (IWeightsDouble) dst;</span>
+<span class="fc bfc" id="L2395" title="All 2 branches covered.">			for (int elm : elements)</span>
+<span class="fc" id="L2396">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc bfc" id="L2397" title="All 2 branches covered.">		} else if (type == boolean.class) {</span>
+<span class="fc" id="L2398">			IWeightsBool src0 = (IWeightsBool) src;</span>
+<span class="fc" id="L2399">			IWeightsBool dst0 = (IWeightsBool) dst;</span>
+<span class="fc bfc" id="L2400" title="All 2 branches covered.">			for (int elm : elements)</span>
+<span class="fc" id="L2401">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc bfc" id="L2402" title="All 2 branches covered.">		} else if (type == char.class) {</span>
+<span class="fc" id="L2403">			IWeightsChar src0 = (IWeightsChar) src;</span>
+<span class="fc" id="L2404">			IWeightsChar dst0 = (IWeightsChar) dst;</span>
+<span class="fc bfc" id="L2405" title="All 2 branches covered.">			for (int elm : elements)</span>
+<span class="fc" id="L2406">				dst0.set(elm, src0.get(elm));</span>
+<span class="pc bpc" id="L2407" title="1 of 2 branches missed.">		} else if (type == Object.class) {</span>
+<span class="fc" id="L2408">			IWeightsObj src0 = (IWeightsObj) src;</span>
+<span class="fc" id="L2409">			IWeightsObj dst0 = (IWeightsObj) dst;</span>
+<span class="fc bfc" id="L2410" title="All 2 branches covered.">			for (int elm : elements)</span>
+<span class="fc" id="L2411">				dst0.set(elm, src0.get(elm));</span>
+<span class="fc" id="L2412">		} else {</span>
+<span class="nc" id="L2413">			throw new AssertionError();</span>
 		}
-<span class="fc" id="L2386">	}</span>
+<span class="fc" id="L2415">	}</span>
 
 	private static Class&lt;?&gt; getWeightsType(Weights&lt;?, ?&gt; w) {
-<span class="fc bfc" id="L2389" title="All 2 branches covered.">		if (w instanceof WeightsByte)</span>
-<span class="fc" id="L2390">			return byte.class;</span>
-<span class="fc bfc" id="L2391" title="All 2 branches covered.">		if (w instanceof WeightsShort)</span>
-<span class="fc" id="L2392">			return short.class;</span>
-<span class="fc bfc" id="L2393" title="All 2 branches covered.">		if (w instanceof WeightsInt)</span>
-<span class="fc" id="L2394">			return int.class;</span>
-<span class="fc bfc" id="L2395" title="All 2 branches covered.">		if (w instanceof WeightsLong)</span>
-<span class="fc" id="L2396">			return long.class;</span>
-<span class="fc bfc" id="L2397" title="All 2 branches covered.">		if (w instanceof WeightsFloat)</span>
-<span class="fc" id="L2398">			return float.class;</span>
-<span class="fc bfc" id="L2399" title="All 2 branches covered.">		if (w instanceof WeightsDouble)</span>
-<span class="fc" id="L2400">			return double.class;</span>
-<span class="fc bfc" id="L2401" title="All 2 branches covered.">		if (w instanceof WeightsBool)</span>
-<span class="fc" id="L2402">			return boolean.class;</span>
-<span class="fc bfc" id="L2403" title="All 2 branches covered.">		if (w instanceof WeightsChar)</span>
-<span class="fc" id="L2404">			return char.class;</span>
-<span class="pc bpc" id="L2405" title="1 of 2 branches missed.">		if (w instanceof WeightsObj)</span>
-<span class="fc" id="L2406">			return Object.class;</span>
-<span class="nc" id="L2407">		throw new AssertionError();</span>
+<span class="fc bfc" id="L2418" title="All 2 branches covered.">		if (w instanceof WeightsByte)</span>
+<span class="fc" id="L2419">			return byte.class;</span>
+<span class="fc bfc" id="L2420" title="All 2 branches covered.">		if (w instanceof WeightsShort)</span>
+<span class="fc" id="L2421">			return short.class;</span>
+<span class="fc bfc" id="L2422" title="All 2 branches covered.">		if (w instanceof WeightsInt)</span>
+<span class="fc" id="L2423">			return int.class;</span>
+<span class="fc bfc" id="L2424" title="All 2 branches covered.">		if (w instanceof WeightsLong)</span>
+<span class="fc" id="L2425">			return long.class;</span>
+<span class="fc bfc" id="L2426" title="All 2 branches covered.">		if (w instanceof WeightsFloat)</span>
+<span class="fc" id="L2427">			return float.class;</span>
+<span class="fc bfc" id="L2428" title="All 2 branches covered.">		if (w instanceof WeightsDouble)</span>
+<span class="fc" id="L2429">			return double.class;</span>
+<span class="fc bfc" id="L2430" title="All 2 branches covered.">		if (w instanceof WeightsBool)</span>
+<span class="fc" id="L2431">			return boolean.class;</span>
+<span class="fc bfc" id="L2432" title="All 2 branches covered.">		if (w instanceof WeightsChar)</span>
+<span class="fc" id="L2433">			return char.class;</span>
+<span class="pc bpc" id="L2434" title="1 of 2 branches missed.">		if (w instanceof WeightsObj)</span>
+<span class="fc" id="L2435">			return Object.class;</span>
+<span class="nc" id="L2436">		throw new AssertionError();</span>
 	}
 
 	/**
@@ -2416,7 +2445,7 @@ public class Graphs {
 	 * @return      a random vertex from the given graph
 	 */
 	public static &lt;V&gt; V randVertex(Graph&lt;V, ?&gt; g, Random rand) {
-<span class="fc" id="L2419">		return g.indexGraphVerticesMap().indexToId(rand.nextInt(g.vertices().size()));</span>
+<span class="fc" id="L2448">		return g.indexGraphVerticesMap().indexToId(rand.nextInt(g.vertices().size()));</span>
 	}
 
 	/**
@@ -2427,7 +2456,7 @@ public class Graphs {
 	 * @return      a random vertex from the given graph
 	 */
 	public static int randVertex(IntGraph g, Random rand) {
-<span class="fc" id="L2430">		return g.indexGraphVerticesMap().indexToIdInt(rand.nextInt(g.vertices().size()));</span>
+<span class="fc" id="L2459">		return g.indexGraphVerticesMap().indexToIdInt(rand.nextInt(g.vertices().size()));</span>
 	}
 
 	/**
@@ -2439,7 +2468,7 @@ public class Graphs {
 	 * @return      a random edge from the given graph
 	 */
 	public static &lt;E&gt; E randEdge(Graph&lt;?, E&gt; g, Random rand) {
-<span class="fc" id="L2442">		return g.indexGraphEdgesMap().indexToId(rand.nextInt(g.edges().size()));</span>
+<span class="fc" id="L2471">		return g.indexGraphEdgesMap().indexToId(rand.nextInt(g.edges().size()));</span>
 	}
 
 	/**
@@ -2450,271 +2479,271 @@ public class Graphs {
 	 * @return      a random edge from the given graph
 	 */
 	public static int randEdge(IntGraph g, Random rand) {
-<span class="fc" id="L2453">		return g.indexGraphEdgesMap().indexToIdInt(rand.nextInt(g.edges().size()));</span>
+<span class="fc" id="L2482">		return g.indexGraphEdgesMap().indexToIdInt(rand.nextInt(g.edges().size()));</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static boolean isEquals(Graph&lt;?, ?&gt; g1, Graph&lt;?, ?&gt; g2) {
-<span class="pc bpc" id="L2458" title="1 of 2 branches missed.">		if (g1 == g2)</span>
-<span class="nc" id="L2459">			return true;</span>
-<span class="pc bpc" id="L2460" title="1 of 4 branches missed.">		if (g1 instanceof IntGraph &amp;&amp; g2 instanceof IntGraph)</span>
-<span class="fc" id="L2461">			return isEquals((IntGraph) g1, (IntGraph) g2);</span>
+<span class="pc bpc" id="L2487" title="1 of 2 branches missed.">		if (g1 == g2)</span>
+<span class="nc" id="L2488">			return true;</span>
+<span class="pc bpc" id="L2489" title="1 of 4 branches missed.">		if (g1 instanceof IntGraph &amp;&amp; g2 instanceof IntGraph)</span>
+<span class="fc" id="L2490">			return isEquals((IntGraph) g1, (IntGraph) g2);</span>
 
-<span class="fc bfc" id="L2463" title="All 2 branches covered.">		if (g1.isDirected() != g2.isDirected())</span>
-<span class="fc" id="L2464">			return false;</span>
-<span class="fc bfc" id="L2465" title="All 2 branches covered.">		if (!g1.vertices().equals(g2.vertices()))</span>
-<span class="fc" id="L2466">			return false;</span>
-<span class="fc bfc" id="L2467" title="All 2 branches covered.">		if (!g1.edges().equals(g2.edges()))</span>
-<span class="fc" id="L2468">			return false;</span>
-<span class="fc" id="L2469">		Graph&lt;Object, Object&gt; g10 = (Graph&lt;Object, Object&gt;) g1, g20 = (Graph&lt;Object, Object&gt;) g2;</span>
-<span class="fc" id="L2470">		return isEquals0(g10, g20);</span>
+<span class="fc bfc" id="L2492" title="All 2 branches covered.">		if (g1.isDirected() != g2.isDirected())</span>
+<span class="fc" id="L2493">			return false;</span>
+<span class="fc bfc" id="L2494" title="All 2 branches covered.">		if (!g1.vertices().equals(g2.vertices()))</span>
+<span class="fc" id="L2495">			return false;</span>
+<span class="fc bfc" id="L2496" title="All 2 branches covered.">		if (!g1.edges().equals(g2.edges()))</span>
+<span class="fc" id="L2497">			return false;</span>
+<span class="fc" id="L2498">		Graph&lt;Object, Object&gt; g10 = (Graph&lt;Object, Object&gt;) g1, g20 = (Graph&lt;Object, Object&gt;) g2;</span>
+<span class="fc" id="L2499">		return isEquals0(g10, g20);</span>
 	}
 
 	private static &lt;V, E&gt; boolean isEquals0(Graph&lt;V, E&gt; g1, Graph&lt;V, E&gt; g2) {
-<span class="fc bfc" id="L2474" title="All 2 branches covered.">		if (g1.isDirected()) {</span>
-<span class="fc bfc" id="L2475" title="All 2 branches covered.">			for (E e : g1.edges())</span>
-<span class="pc bpc" id="L2476" title="1 of 4 branches missed.">				if (!g1.edgeSource(e).equals(g2.edgeSource(e)) || !g1.edgeTarget(e).equals(g2.edgeTarget(e)))</span>
-<span class="fc" id="L2477">					return false;</span>
+<span class="fc bfc" id="L2503" title="All 2 branches covered.">		if (g1.isDirected()) {</span>
+<span class="fc bfc" id="L2504" title="All 2 branches covered.">			for (E e : g1.edges())</span>
+<span class="pc bpc" id="L2505" title="1 of 4 branches missed.">				if (!g1.edgeSource(e).equals(g2.edgeSource(e)) || !g1.edgeTarget(e).equals(g2.edgeTarget(e)))</span>
+<span class="fc" id="L2506">					return false;</span>
 		} else {
-<span class="fc bfc" id="L2479" title="All 2 branches covered.">			for (E e : g1.edges()) {</span>
-<span class="fc" id="L2480">				V s1 = g1.edgeSource(e), t1 = g1.edgeTarget(e);</span>
-<span class="fc" id="L2481">				V s2 = g2.edgeSource(e), t2 = g2.edgeTarget(e);</span>
-<span class="pc bpc" id="L2482" title="4 of 8 branches missed.">				if (!(s1.equals(s2) &amp;&amp; t1.equals(t2)) &amp;&amp; !(s1.equals(t2) &amp;&amp; t1.equals(s2)))</span>
-<span class="fc" id="L2483">					return false;</span>
-<span class="fc" id="L2484">			}</span>
+<span class="fc bfc" id="L2508" title="All 2 branches covered.">			for (E e : g1.edges()) {</span>
+<span class="fc" id="L2509">				V s1 = g1.edgeSource(e), t1 = g1.edgeTarget(e);</span>
+<span class="fc" id="L2510">				V s2 = g2.edgeSource(e), t2 = g2.edgeTarget(e);</span>
+<span class="pc bpc" id="L2511" title="4 of 8 branches missed.">				if (!(s1.equals(s2) &amp;&amp; t1.equals(t2)) &amp;&amp; !(s1.equals(t2) &amp;&amp; t1.equals(s2)))</span>
+<span class="fc" id="L2512">					return false;</span>
+<span class="fc" id="L2513">			}</span>
 		}
 
-<span class="fc bfc" id="L2487" title="All 2 branches covered.">		if (!g1.getVerticesWeightsKeys().equals(g2.getVerticesWeightsKeys()))</span>
-<span class="fc" id="L2488">			return false;</span>
-<span class="fc bfc" id="L2489" title="All 2 branches covered.">		for (String key : g1.getVerticesWeightsKeys()) {</span>
-<span class="fc" id="L2490">			Weights&lt;V, ?&gt; w1 = g1.getVerticesWeights(key), w2 = g2.getVerticesWeights(key);</span>
-<span class="fc bfc" id="L2491" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(g1.vertices(), w1, w2))</span>
-<span class="fc" id="L2492">				return false;</span>
-<span class="fc" id="L2493">		}</span>
-<span class="fc bfc" id="L2494" title="All 2 branches covered.">		if (!g1.getEdgesWeightsKeys().equals(g2.getEdgesWeightsKeys()))</span>
-<span class="fc" id="L2495">			return false;</span>
-<span class="fc bfc" id="L2496" title="All 2 branches covered.">		for (String key : g1.getEdgesWeightsKeys()) {</span>
-<span class="fc" id="L2497">			Weights&lt;E, ?&gt; w1 = g1.getEdgesWeights(key), w2 = g2.getEdgesWeights(key);</span>
-<span class="fc bfc" id="L2498" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(g1.edges(), w1, w2))</span>
-<span class="fc" id="L2499">				return false;</span>
-<span class="fc" id="L2500">		}</span>
+<span class="fc bfc" id="L2516" title="All 2 branches covered.">		if (!g1.getVerticesWeightsKeys().equals(g2.getVerticesWeightsKeys()))</span>
+<span class="fc" id="L2517">			return false;</span>
+<span class="fc bfc" id="L2518" title="All 2 branches covered.">		for (String key : g1.getVerticesWeightsKeys()) {</span>
+<span class="fc" id="L2519">			Weights&lt;V, ?&gt; w1 = g1.getVerticesWeights(key), w2 = g2.getVerticesWeights(key);</span>
+<span class="fc bfc" id="L2520" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(g1.vertices(), w1, w2))</span>
+<span class="fc" id="L2521">				return false;</span>
+<span class="fc" id="L2522">		}</span>
+<span class="fc bfc" id="L2523" title="All 2 branches covered.">		if (!g1.getEdgesWeightsKeys().equals(g2.getEdgesWeightsKeys()))</span>
+<span class="fc" id="L2524">			return false;</span>
+<span class="fc bfc" id="L2525" title="All 2 branches covered.">		for (String key : g1.getEdgesWeightsKeys()) {</span>
+<span class="fc" id="L2526">			Weights&lt;E, ?&gt; w1 = g1.getEdgesWeights(key), w2 = g2.getEdgesWeights(key);</span>
+<span class="fc bfc" id="L2527" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(g1.edges(), w1, w2))</span>
+<span class="fc" id="L2528">				return false;</span>
+<span class="fc" id="L2529">		}</span>
 
-<span class="fc" id="L2502">		return true;</span>
+<span class="fc" id="L2531">		return true;</span>
 	}
 
 	private static boolean isEquals(IntGraph g1, IntGraph g2) {
-<span class="fc bfc" id="L2506" title="All 2 branches covered.">		if (g1.isDirected() != g2.isDirected())</span>
-<span class="fc" id="L2507">			return false;</span>
-<span class="fc bfc" id="L2508" title="All 2 branches covered.">		if (!g1.vertices().equals(g2.vertices()))</span>
-<span class="fc" id="L2509">			return false;</span>
-<span class="fc bfc" id="L2510" title="All 2 branches covered.">		if (!g1.edges().equals(g2.edges()))</span>
-<span class="fc" id="L2511">			return false;</span>
-<span class="fc bfc" id="L2512" title="All 2 branches covered.">		if (g1.isDirected()) {</span>
-<span class="fc bfc" id="L2513" title="All 2 branches covered.">			for (int e : g1.edges())</span>
-<span class="pc bpc" id="L2514" title="1 of 4 branches missed.">				if (g1.edgeSource(e) != g2.edgeSource(e) || g1.edgeTarget(e) != g2.edgeTarget(e))</span>
-<span class="fc" id="L2515">					return false;</span>
+<span class="fc bfc" id="L2535" title="All 2 branches covered.">		if (g1.isDirected() != g2.isDirected())</span>
+<span class="fc" id="L2536">			return false;</span>
+<span class="fc bfc" id="L2537" title="All 2 branches covered.">		if (!g1.vertices().equals(g2.vertices()))</span>
+<span class="fc" id="L2538">			return false;</span>
+<span class="fc bfc" id="L2539" title="All 2 branches covered.">		if (!g1.edges().equals(g2.edges()))</span>
+<span class="fc" id="L2540">			return false;</span>
+<span class="fc bfc" id="L2541" title="All 2 branches covered.">		if (g1.isDirected()) {</span>
+<span class="fc bfc" id="L2542" title="All 2 branches covered.">			for (int e : g1.edges())</span>
+<span class="pc bpc" id="L2543" title="1 of 4 branches missed.">				if (g1.edgeSource(e) != g2.edgeSource(e) || g1.edgeTarget(e) != g2.edgeTarget(e))</span>
+<span class="fc" id="L2544">					return false;</span>
 		} else {
-<span class="fc bfc" id="L2517" title="All 2 branches covered.">			for (int e : g1.edges()) {</span>
-<span class="fc" id="L2518">				int s1 = g1.edgeSource(e), t1 = g1.edgeTarget(e);</span>
-<span class="fc" id="L2519">				int s2 = g2.edgeSource(e), t2 = g2.edgeTarget(e);</span>
-<span class="pc bpc" id="L2520" title="4 of 8 branches missed.">				if (!(s1 == s2 &amp;&amp; t1 == t2) &amp;&amp; !(s1 == t2 &amp;&amp; t1 == s2))</span>
-<span class="fc" id="L2521">					return false;</span>
-<span class="fc" id="L2522">			}</span>
+<span class="fc bfc" id="L2546" title="All 2 branches covered.">			for (int e : g1.edges()) {</span>
+<span class="fc" id="L2547">				int s1 = g1.edgeSource(e), t1 = g1.edgeTarget(e);</span>
+<span class="fc" id="L2548">				int s2 = g2.edgeSource(e), t2 = g2.edgeTarget(e);</span>
+<span class="pc bpc" id="L2549" title="4 of 8 branches missed.">				if (!(s1 == s2 &amp;&amp; t1 == t2) &amp;&amp; !(s1 == t2 &amp;&amp; t1 == s2))</span>
+<span class="fc" id="L2550">					return false;</span>
+<span class="fc" id="L2551">			}</span>
 		}
 
-<span class="fc bfc" id="L2525" title="All 2 branches covered.">		if (!g1.getVerticesWeightsKeys().equals(g2.getVerticesWeightsKeys()))</span>
-<span class="fc" id="L2526">			return false;</span>
-<span class="fc bfc" id="L2527" title="All 2 branches covered.">		for (String key : g1.getVerticesWeightsKeys()) {</span>
-<span class="fc" id="L2528">			IWeights&lt;?&gt; w1 = g1.getVerticesIWeights(key), w2 = g2.getVerticesIWeights(key);</span>
-<span class="fc bfc" id="L2529" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(g1.vertices(), w1, w2))</span>
-<span class="fc" id="L2530">				return false;</span>
-<span class="fc" id="L2531">		}</span>
-<span class="fc bfc" id="L2532" title="All 2 branches covered.">		if (!g1.getEdgesWeightsKeys().equals(g2.getEdgesWeightsKeys()))</span>
-<span class="fc" id="L2533">			return false;</span>
-<span class="fc bfc" id="L2534" title="All 2 branches covered.">		for (String key : g1.getEdgesWeightsKeys()) {</span>
-<span class="fc" id="L2535">			IWeights&lt;?&gt; w1 = g1.getEdgesIWeights(key), w2 = g2.getEdgesIWeights(key);</span>
-<span class="fc bfc" id="L2536" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(g1.edges(), w1, w2))</span>
-<span class="fc" id="L2537">				return false;</span>
-<span class="fc" id="L2538">		}</span>
+<span class="fc bfc" id="L2554" title="All 2 branches covered.">		if (!g1.getVerticesWeightsKeys().equals(g2.getVerticesWeightsKeys()))</span>
+<span class="fc" id="L2555">			return false;</span>
+<span class="fc bfc" id="L2556" title="All 2 branches covered.">		for (String key : g1.getVerticesWeightsKeys()) {</span>
+<span class="fc" id="L2557">			IWeights&lt;?&gt; w1 = g1.getVerticesIWeights(key), w2 = g2.getVerticesIWeights(key);</span>
+<span class="fc bfc" id="L2558" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(g1.vertices(), w1, w2))</span>
+<span class="fc" id="L2559">				return false;</span>
+<span class="fc" id="L2560">		}</span>
+<span class="fc bfc" id="L2561" title="All 2 branches covered.">		if (!g1.getEdgesWeightsKeys().equals(g2.getEdgesWeightsKeys()))</span>
+<span class="fc" id="L2562">			return false;</span>
+<span class="fc bfc" id="L2563" title="All 2 branches covered.">		for (String key : g1.getEdgesWeightsKeys()) {</span>
+<span class="fc" id="L2564">			IWeights&lt;?&gt; w1 = g1.getEdgesIWeights(key), w2 = g2.getEdgesIWeights(key);</span>
+<span class="fc bfc" id="L2565" title="All 2 branches covered.">			if (!WeightsImpl.isEqual(g1.edges(), w1, w2))</span>
+<span class="fc" id="L2566">				return false;</span>
+<span class="fc" id="L2567">		}</span>
 
-<span class="fc" id="L2540">		return true;</span>
+<span class="fc" id="L2569">		return true;</span>
 	}
 
 	static &lt;V, E&gt; int hashCode(Graph&lt;V, E&gt; g) {
-<span class="fc bfc" id="L2544" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
-<span class="fc" id="L2545">			return hashCode((IntGraph) g);</span>
+<span class="fc bfc" id="L2573" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
+<span class="fc" id="L2574">			return hashCode((IntGraph) g);</span>
 
-<span class="fc" id="L2547">		int h = Boolean.hashCode(g.isDirected());</span>
-<span class="fc" id="L2548">		h += g.vertices().hashCode();</span>
-<span class="fc" id="L2549">		h += g.edges().hashCode();</span>
-<span class="fc bfc" id="L2550" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc bfc" id="L2551" title="All 2 branches covered.">			for (E e : g.edges())</span>
-<span class="fc" id="L2552">				h += g.edgeSource(e).hashCode() + 31 * g.edgeTarget(e).hashCode();</span>
+<span class="fc" id="L2576">		int h = Boolean.hashCode(g.isDirected());</span>
+<span class="fc" id="L2577">		h += g.vertices().hashCode();</span>
+<span class="fc" id="L2578">		h += g.edges().hashCode();</span>
+<span class="fc bfc" id="L2579" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L2580" title="All 2 branches covered.">			for (E e : g.edges())</span>
+<span class="fc" id="L2581">				h += g.edgeSource(e).hashCode() + 31 * g.edgeTarget(e).hashCode();</span>
 		} else {
-<span class="fc bfc" id="L2554" title="All 2 branches covered.">			for (E e : g.edges())</span>
-<span class="fc" id="L2555">				h += g.edgeSource(e).hashCode() + g.edgeTarget(e).hashCode();</span>
+<span class="fc bfc" id="L2583" title="All 2 branches covered.">			for (E e : g.edges())</span>
+<span class="fc" id="L2584">				h += g.edgeSource(e).hashCode() + g.edgeTarget(e).hashCode();</span>
 		}
-<span class="fc bfc" id="L2557" title="All 2 branches covered.">		for (String key : g.getVerticesWeightsKeys())</span>
-<span class="fc" id="L2558">			h += WeightsImpl.hashCode(g.vertices(), g.getVerticesWeights(key));</span>
-<span class="fc bfc" id="L2559" title="All 2 branches covered.">		for (String key : g.getEdgesWeightsKeys())</span>
-<span class="fc" id="L2560">			h += WeightsImpl.hashCode(g.edges(), g.getEdgesWeights(key));</span>
-<span class="fc" id="L2561">		return h;</span>
+<span class="fc bfc" id="L2586" title="All 2 branches covered.">		for (String key : g.getVerticesWeightsKeys())</span>
+<span class="fc" id="L2587">			h += WeightsImpl.hashCode(g.vertices(), g.getVerticesWeights(key));</span>
+<span class="fc bfc" id="L2588" title="All 2 branches covered.">		for (String key : g.getEdgesWeightsKeys())</span>
+<span class="fc" id="L2589">			h += WeightsImpl.hashCode(g.edges(), g.getEdgesWeights(key));</span>
+<span class="fc" id="L2590">		return h;</span>
 	}
 
 	private static int hashCode(IntGraph g) {
-<span class="fc" id="L2565">		int h = Boolean.hashCode(g.isDirected());</span>
-<span class="fc" id="L2566">		h += g.vertices().hashCode();</span>
-<span class="fc" id="L2567">		h += g.edges().hashCode();</span>
-<span class="fc bfc" id="L2568" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc bfc" id="L2569" title="All 2 branches covered.">			for (int e : g.edges())</span>
-<span class="fc" id="L2570">				h += g.edgeSource(e) + 31 * g.edgeTarget(e);</span>
+<span class="fc" id="L2594">		int h = Boolean.hashCode(g.isDirected());</span>
+<span class="fc" id="L2595">		h += g.vertices().hashCode();</span>
+<span class="fc" id="L2596">		h += g.edges().hashCode();</span>
+<span class="fc bfc" id="L2597" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L2598" title="All 2 branches covered.">			for (int e : g.edges())</span>
+<span class="fc" id="L2599">				h += g.edgeSource(e) + 31 * g.edgeTarget(e);</span>
 		} else {
-<span class="fc bfc" id="L2572" title="All 2 branches covered.">			for (int e : g.edges())</span>
-<span class="fc" id="L2573">				h += g.edgeSource(e) + g.edgeTarget(e);</span>
+<span class="fc bfc" id="L2601" title="All 2 branches covered.">			for (int e : g.edges())</span>
+<span class="fc" id="L2602">				h += g.edgeSource(e) + g.edgeTarget(e);</span>
 		}
-<span class="fc bfc" id="L2575" title="All 2 branches covered.">		for (String key : g.getVerticesWeightsKeys())</span>
-<span class="fc" id="L2576">			h += WeightsImpl.hashCode(g.vertices(), g.getVerticesIWeights(key));</span>
-<span class="fc bfc" id="L2577" title="All 2 branches covered.">		for (String key : g.getEdgesWeightsKeys())</span>
-<span class="fc" id="L2578">			h += WeightsImpl.hashCode(g.edges(), g.getEdgesIWeights(key));</span>
-<span class="fc" id="L2579">		return h;</span>
+<span class="fc bfc" id="L2604" title="All 2 branches covered.">		for (String key : g.getVerticesWeightsKeys())</span>
+<span class="fc" id="L2605">			h += WeightsImpl.hashCode(g.vertices(), g.getVerticesIWeights(key));</span>
+<span class="fc bfc" id="L2606" title="All 2 branches covered.">		for (String key : g.getEdgesWeightsKeys())</span>
+<span class="fc" id="L2607">			h += WeightsImpl.hashCode(g.edges(), g.getEdgesIWeights(key));</span>
+<span class="fc" id="L2608">		return h;</span>
 	}
 
 	static &lt;V, E&gt; String toString(Graph&lt;V, E&gt; g) {
-<span class="nc bnc" id="L2583" title="All 2 branches missed.">		if (g instanceof IntGraph)</span>
-<span class="nc" id="L2584">			return toString((IntGraph) g);</span>
+<span class="nc bnc" id="L2612" title="All 2 branches missed.">		if (g instanceof IntGraph)</span>
+<span class="nc" id="L2613">			return toString((IntGraph) g);</span>
 
-<span class="nc" id="L2586">		StringBuilder s = new StringBuilder();</span>
-<span class="nc" id="L2587">		s.append('{');</span>
+<span class="nc" id="L2615">		StringBuilder s = new StringBuilder();</span>
+<span class="nc" id="L2616">		s.append('{');</span>
 
-<span class="nc" id="L2589">		Set&lt;String&gt; verticesWeightsKeys = g.getVerticesWeightsKeys();</span>
-<span class="nc" id="L2590">		Collection&lt;Weights&lt;V, ?&gt;&gt; verticesWeights = new ObjectArrayList&lt;&gt;(verticesWeightsKeys.size());</span>
-<span class="nc bnc" id="L2591" title="All 2 branches missed.">		for (String key : verticesWeightsKeys)</span>
-<span class="nc" id="L2592">			verticesWeights.add(g.getVerticesWeights(key));</span>
+<span class="nc" id="L2618">		Set&lt;String&gt; verticesWeightsKeys = g.getVerticesWeightsKeys();</span>
+<span class="nc" id="L2619">		Collection&lt;Weights&lt;V, ?&gt;&gt; verticesWeights = new ObjectArrayList&lt;&gt;(verticesWeightsKeys.size());</span>
+<span class="nc bnc" id="L2620" title="All 2 branches missed.">		for (String key : verticesWeightsKeys)</span>
+<span class="nc" id="L2621">			verticesWeights.add(g.getVerticesWeights(key));</span>
 
-<span class="nc" id="L2594">		Set&lt;String&gt; edgesWeightsKeys = g.getEdgesWeightsKeys();</span>
-<span class="nc" id="L2595">		Collection&lt;Weights&lt;E, ?&gt;&gt; edgesWeights = new ObjectArrayList&lt;&gt;(edgesWeightsKeys.size());</span>
-<span class="nc bnc" id="L2596" title="All 2 branches missed.">		for (String key : edgesWeightsKeys)</span>
-<span class="nc" id="L2597">			edgesWeights.add(g.getEdgesWeights(key));</span>
+<span class="nc" id="L2623">		Set&lt;String&gt; edgesWeightsKeys = g.getEdgesWeightsKeys();</span>
+<span class="nc" id="L2624">		Collection&lt;Weights&lt;E, ?&gt;&gt; edgesWeights = new ObjectArrayList&lt;&gt;(edgesWeightsKeys.size());</span>
+<span class="nc bnc" id="L2625" title="All 2 branches missed.">		for (String key : edgesWeightsKeys)</span>
+<span class="nc" id="L2626">			edgesWeights.add(g.getEdgesWeights(key));</span>
 
-<span class="nc" id="L2599">		BiConsumer&lt;Collection&lt;Weights&lt;V, ?&gt;&gt;, V&gt; appendVertexWeights = (weights, vertex) -&gt; {</span>
-<span class="nc" id="L2600">			s.append('[');</span>
-<span class="nc" id="L2601">			boolean firstData = true;</span>
-<span class="nc bnc" id="L2602" title="All 2 branches missed.">			for (Weights&lt;V, ?&gt; weight : weights) {</span>
-<span class="nc bnc" id="L2603" title="All 2 branches missed.">				if (firstData) {</span>
-<span class="nc" id="L2604">					firstData = false;</span>
+<span class="nc" id="L2628">		BiConsumer&lt;Collection&lt;Weights&lt;V, ?&gt;&gt;, V&gt; appendVertexWeights = (weights, vertex) -&gt; {</span>
+<span class="nc" id="L2629">			s.append('[');</span>
+<span class="nc" id="L2630">			boolean firstData = true;</span>
+<span class="nc bnc" id="L2631" title="All 2 branches missed.">			for (Weights&lt;V, ?&gt; weight : weights) {</span>
+<span class="nc bnc" id="L2632" title="All 2 branches missed.">				if (firstData) {</span>
+<span class="nc" id="L2633">					firstData = false;</span>
 				} else {
-<span class="nc" id="L2606">					s.append(&quot;, &quot;);</span>
+<span class="nc" id="L2635">					s.append(&quot;, &quot;);</span>
 				}
-<span class="nc" id="L2608">				s.append(weight.getAsObj(vertex));</span>
-<span class="nc" id="L2609">			}</span>
-<span class="nc" id="L2610">			s.append(']');</span>
-<span class="nc" id="L2611">		};</span>
-<span class="nc" id="L2612">		BiConsumer&lt;Collection&lt;Weights&lt;E, ?&gt;&gt;, E&gt; appendEdgeWeights = (weights, edge) -&gt; {</span>
-<span class="nc" id="L2613">			s.append('[');</span>
-<span class="nc" id="L2614">			boolean firstData = true;</span>
-<span class="nc bnc" id="L2615" title="All 2 branches missed.">			for (Weights&lt;E, ?&gt; weight : weights) {</span>
-<span class="nc bnc" id="L2616" title="All 2 branches missed.">				if (firstData) {</span>
-<span class="nc" id="L2617">					firstData = false;</span>
+<span class="nc" id="L2637">				s.append(weight.getAsObj(vertex));</span>
+<span class="nc" id="L2638">			}</span>
+<span class="nc" id="L2639">			s.append(']');</span>
+<span class="nc" id="L2640">		};</span>
+<span class="nc" id="L2641">		BiConsumer&lt;Collection&lt;Weights&lt;E, ?&gt;&gt;, E&gt; appendEdgeWeights = (weights, edge) -&gt; {</span>
+<span class="nc" id="L2642">			s.append('[');</span>
+<span class="nc" id="L2643">			boolean firstData = true;</span>
+<span class="nc bnc" id="L2644" title="All 2 branches missed.">			for (Weights&lt;E, ?&gt; weight : weights) {</span>
+<span class="nc bnc" id="L2645" title="All 2 branches missed.">				if (firstData) {</span>
+<span class="nc" id="L2646">					firstData = false;</span>
 				} else {
-<span class="nc" id="L2619">					s.append(&quot;, &quot;);</span>
-				}
-<span class="nc" id="L2621">				s.append(weight.getAsObj(edge));</span>
-<span class="nc" id="L2622">			}</span>
-<span class="nc" id="L2623">			s.append(']');</span>
-<span class="nc" id="L2624">		};</span>
-
-<span class="nc" id="L2626">		boolean firstVertex = true;</span>
-<span class="nc bnc" id="L2627" title="All 2 branches missed.">		for (V u : g.vertices()) {</span>
-<span class="nc bnc" id="L2628" title="All 2 branches missed.">			if (firstVertex) {</span>
-<span class="nc" id="L2629">				firstVertex = false;</span>
-			} else {
-<span class="nc" id="L2631">				s.append(&quot;, &quot;);</span>
-			}
-<span class="nc" id="L2633">			s.append('v').append(u);</span>
-<span class="nc bnc" id="L2634" title="All 2 branches missed.">			if (!verticesWeights.isEmpty())</span>
-<span class="nc" id="L2635">				appendVertexWeights.accept(verticesWeights, u);</span>
-
-<span class="nc" id="L2637">			s.append(&quot;: [&quot;);</span>
-<span class="nc" id="L2638">			boolean firstEdge = true;</span>
-<span class="nc bnc" id="L2639" title="All 2 branches missed.">			for (EdgeIter&lt;V, E&gt; eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="nc" id="L2640">				E e = eit.next();</span>
-<span class="nc" id="L2641">				V v = eit.target();</span>
-<span class="nc bnc" id="L2642" title="All 2 branches missed.">				if (firstEdge)</span>
-<span class="nc" id="L2643">					firstEdge = false;</span>
-				else
-<span class="nc" id="L2645">					s.append(&quot;, &quot;);</span>
-<span class="nc" id="L2646">				s.append(e).append('(').append(u).append(&quot;, &quot;).append(v);</span>
-<span class="nc bnc" id="L2647" title="All 2 branches missed.">				if (!edgesWeights.isEmpty()) {</span>
 <span class="nc" id="L2648">					s.append(&quot;, &quot;);</span>
-<span class="nc" id="L2649">					appendEdgeWeights.accept(edgesWeights, e);</span>
 				}
-<span class="nc" id="L2651">				s.append(')');</span>
-<span class="nc" id="L2652">			}</span>
-<span class="nc" id="L2653">			s.append(']');</span>
-<span class="nc" id="L2654">		}</span>
-<span class="nc" id="L2655">		s.append('}');</span>
-<span class="nc" id="L2656">		return s.toString();</span>
+<span class="nc" id="L2650">				s.append(weight.getAsObj(edge));</span>
+<span class="nc" id="L2651">			}</span>
+<span class="nc" id="L2652">			s.append(']');</span>
+<span class="nc" id="L2653">		};</span>
+
+<span class="nc" id="L2655">		boolean firstVertex = true;</span>
+<span class="nc bnc" id="L2656" title="All 2 branches missed.">		for (V u : g.vertices()) {</span>
+<span class="nc bnc" id="L2657" title="All 2 branches missed.">			if (firstVertex) {</span>
+<span class="nc" id="L2658">				firstVertex = false;</span>
+			} else {
+<span class="nc" id="L2660">				s.append(&quot;, &quot;);</span>
+			}
+<span class="nc" id="L2662">			s.append('v').append(u);</span>
+<span class="nc bnc" id="L2663" title="All 2 branches missed.">			if (!verticesWeights.isEmpty())</span>
+<span class="nc" id="L2664">				appendVertexWeights.accept(verticesWeights, u);</span>
+
+<span class="nc" id="L2666">			s.append(&quot;: [&quot;);</span>
+<span class="nc" id="L2667">			boolean firstEdge = true;</span>
+<span class="nc bnc" id="L2668" title="All 2 branches missed.">			for (EdgeIter&lt;V, E&gt; eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="nc" id="L2669">				E e = eit.next();</span>
+<span class="nc" id="L2670">				V v = eit.target();</span>
+<span class="nc bnc" id="L2671" title="All 2 branches missed.">				if (firstEdge)</span>
+<span class="nc" id="L2672">					firstEdge = false;</span>
+				else
+<span class="nc" id="L2674">					s.append(&quot;, &quot;);</span>
+<span class="nc" id="L2675">				s.append(e).append('(').append(u).append(&quot;, &quot;).append(v);</span>
+<span class="nc bnc" id="L2676" title="All 2 branches missed.">				if (!edgesWeights.isEmpty()) {</span>
+<span class="nc" id="L2677">					s.append(&quot;, &quot;);</span>
+<span class="nc" id="L2678">					appendEdgeWeights.accept(edgesWeights, e);</span>
+				}
+<span class="nc" id="L2680">				s.append(')');</span>
+<span class="nc" id="L2681">			}</span>
+<span class="nc" id="L2682">			s.append(']');</span>
+<span class="nc" id="L2683">		}</span>
+<span class="nc" id="L2684">		s.append('}');</span>
+<span class="nc" id="L2685">		return s.toString();</span>
 	}
 
 	private static String toString(IntGraph g) {
-<span class="nc" id="L2660">		StringBuilder s = new StringBuilder();</span>
-<span class="nc" id="L2661">		s.append('{');</span>
+<span class="nc" id="L2689">		StringBuilder s = new StringBuilder();</span>
+<span class="nc" id="L2690">		s.append('{');</span>
 
-<span class="nc" id="L2663">		Set&lt;String&gt; verticesWeightsKeys = g.getVerticesWeightsKeys();</span>
-<span class="nc" id="L2664">		Collection&lt;IWeights&lt;?&gt;&gt; verticesWeights = new ObjectArrayList&lt;&gt;(verticesWeightsKeys.size());</span>
-<span class="nc bnc" id="L2665" title="All 2 branches missed.">		for (String key : verticesWeightsKeys)</span>
-<span class="nc" id="L2666">			verticesWeights.add(g.getVerticesIWeights(key));</span>
+<span class="nc" id="L2692">		Set&lt;String&gt; verticesWeightsKeys = g.getVerticesWeightsKeys();</span>
+<span class="nc" id="L2693">		Collection&lt;IWeights&lt;?&gt;&gt; verticesWeights = new ObjectArrayList&lt;&gt;(verticesWeightsKeys.size());</span>
+<span class="nc bnc" id="L2694" title="All 2 branches missed.">		for (String key : verticesWeightsKeys)</span>
+<span class="nc" id="L2695">			verticesWeights.add(g.getVerticesIWeights(key));</span>
 
-<span class="nc" id="L2668">		Set&lt;String&gt; edgesWeightsKeys = g.getEdgesWeightsKeys();</span>
-<span class="nc" id="L2669">		Collection&lt;IWeights&lt;?&gt;&gt; edgesWeights = new ObjectArrayList&lt;&gt;(edgesWeightsKeys.size());</span>
-<span class="nc bnc" id="L2670" title="All 2 branches missed.">		for (String key : edgesWeightsKeys)</span>
-<span class="nc" id="L2671">			edgesWeights.add(g.getEdgesIWeights(key));</span>
+<span class="nc" id="L2697">		Set&lt;String&gt; edgesWeightsKeys = g.getEdgesWeightsKeys();</span>
+<span class="nc" id="L2698">		Collection&lt;IWeights&lt;?&gt;&gt; edgesWeights = new ObjectArrayList&lt;&gt;(edgesWeightsKeys.size());</span>
+<span class="nc bnc" id="L2699" title="All 2 branches missed.">		for (String key : edgesWeightsKeys)</span>
+<span class="nc" id="L2700">			edgesWeights.add(g.getEdgesIWeights(key));</span>
 
-<span class="nc" id="L2673">		ObjIntConsumer&lt;Collection&lt;IWeights&lt;?&gt;&gt;&gt; appendWeights = (weights, elm) -&gt; {</span>
-<span class="nc" id="L2674">			s.append('[');</span>
-<span class="nc" id="L2675">			boolean firstData = true;</span>
-<span class="nc bnc" id="L2676" title="All 2 branches missed.">			for (IWeights&lt;?&gt; weight : weights) {</span>
-<span class="nc bnc" id="L2677" title="All 2 branches missed.">				if (firstData) {</span>
-<span class="nc" id="L2678">					firstData = false;</span>
+<span class="nc" id="L2702">		ObjIntConsumer&lt;Collection&lt;IWeights&lt;?&gt;&gt;&gt; appendWeights = (weights, elm) -&gt; {</span>
+<span class="nc" id="L2703">			s.append('[');</span>
+<span class="nc" id="L2704">			boolean firstData = true;</span>
+<span class="nc bnc" id="L2705" title="All 2 branches missed.">			for (IWeights&lt;?&gt; weight : weights) {</span>
+<span class="nc bnc" id="L2706" title="All 2 branches missed.">				if (firstData) {</span>
+<span class="nc" id="L2707">					firstData = false;</span>
 				} else {
-<span class="nc" id="L2680">					s.append(&quot;, &quot;);</span>
-				}
-<span class="nc" id="L2682">				s.append(weight.getAsObj(elm));</span>
-<span class="nc" id="L2683">			}</span>
-<span class="nc" id="L2684">			s.append(']');</span>
-<span class="nc" id="L2685">		};</span>
-
-<span class="nc" id="L2687">		boolean firstVertex = true;</span>
-<span class="nc bnc" id="L2688" title="All 2 branches missed.">		for (int u : g.vertices()) {</span>
-<span class="nc bnc" id="L2689" title="All 2 branches missed.">			if (firstVertex) {</span>
-<span class="nc" id="L2690">				firstVertex = false;</span>
-			} else {
-<span class="nc" id="L2692">				s.append(&quot;, &quot;);</span>
-			}
-<span class="nc" id="L2694">			s.append('v').append(u);</span>
-<span class="nc bnc" id="L2695" title="All 2 branches missed.">			if (!verticesWeights.isEmpty())</span>
-<span class="nc" id="L2696">				appendWeights.accept(verticesWeights, u);</span>
-
-<span class="nc" id="L2698">			s.append(&quot;: [&quot;);</span>
-<span class="nc" id="L2699">			boolean firstEdge = true;</span>
-<span class="nc bnc" id="L2700" title="All 2 branches missed.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="nc" id="L2701">				int e = eit.nextInt();</span>
-<span class="nc" id="L2702">				int v = eit.targetInt();</span>
-<span class="nc bnc" id="L2703" title="All 2 branches missed.">				if (firstEdge)</span>
-<span class="nc" id="L2704">					firstEdge = false;</span>
-				else
-<span class="nc" id="L2706">					s.append(&quot;, &quot;);</span>
-<span class="nc" id="L2707">				s.append(e).append('(').append(u).append(&quot;, &quot;).append(v);</span>
-<span class="nc bnc" id="L2708" title="All 2 branches missed.">				if (!edgesWeights.isEmpty()) {</span>
 <span class="nc" id="L2709">					s.append(&quot;, &quot;);</span>
-<span class="nc" id="L2710">					appendWeights.accept(edgesWeights, e);</span>
 				}
-<span class="nc" id="L2712">				s.append(')');</span>
-<span class="nc" id="L2713">			}</span>
-<span class="nc" id="L2714">			s.append(']');</span>
-<span class="nc" id="L2715">		}</span>
-<span class="nc" id="L2716">		s.append('}');</span>
-<span class="nc" id="L2717">		return s.toString();</span>
+<span class="nc" id="L2711">				s.append(weight.getAsObj(elm));</span>
+<span class="nc" id="L2712">			}</span>
+<span class="nc" id="L2713">			s.append(']');</span>
+<span class="nc" id="L2714">		};</span>
+
+<span class="nc" id="L2716">		boolean firstVertex = true;</span>
+<span class="nc bnc" id="L2717" title="All 2 branches missed.">		for (int u : g.vertices()) {</span>
+<span class="nc bnc" id="L2718" title="All 2 branches missed.">			if (firstVertex) {</span>
+<span class="nc" id="L2719">				firstVertex = false;</span>
+			} else {
+<span class="nc" id="L2721">				s.append(&quot;, &quot;);</span>
+			}
+<span class="nc" id="L2723">			s.append('v').append(u);</span>
+<span class="nc bnc" id="L2724" title="All 2 branches missed.">			if (!verticesWeights.isEmpty())</span>
+<span class="nc" id="L2725">				appendWeights.accept(verticesWeights, u);</span>
+
+<span class="nc" id="L2727">			s.append(&quot;: [&quot;);</span>
+<span class="nc" id="L2728">			boolean firstEdge = true;</span>
+<span class="nc bnc" id="L2729" title="All 2 branches missed.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="nc" id="L2730">				int e = eit.nextInt();</span>
+<span class="nc" id="L2731">				int v = eit.targetInt();</span>
+<span class="nc bnc" id="L2732" title="All 2 branches missed.">				if (firstEdge)</span>
+<span class="nc" id="L2733">					firstEdge = false;</span>
+				else
+<span class="nc" id="L2735">					s.append(&quot;, &quot;);</span>
+<span class="nc" id="L2736">				s.append(e).append('(').append(u).append(&quot;, &quot;).append(v);</span>
+<span class="nc bnc" id="L2737" title="All 2 branches missed.">				if (!edgesWeights.isEmpty()) {</span>
+<span class="nc" id="L2738">					s.append(&quot;, &quot;);</span>
+<span class="nc" id="L2739">					appendWeights.accept(edgesWeights, e);</span>
+				}
+<span class="nc" id="L2741">				s.append(')');</span>
+<span class="nc" id="L2742">			}</span>
+<span class="nc" id="L2743">			s.append(']');</span>
+<span class="nc" id="L2744">		}</span>
+<span class="nc" id="L2745">		s.append('}');</span>
+<span class="nc" id="L2746">		return s.toString();</span>
 	}
 
 }
