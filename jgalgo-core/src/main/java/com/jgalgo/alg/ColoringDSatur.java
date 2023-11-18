@@ -18,10 +18,11 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.internal.ds.HeapReference;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.IntIntReferenceableHeap;
+import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2IntFunc;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
@@ -47,8 +48,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntFunction;
  */
 class ColoringDSatur extends ColoringUtils.AbstractImpl {
 
-	private HeapReferenceable.Builder<Integer, Integer> heapBuilder =
-			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypePrimitive(int.class);
+	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.newBuilder();
 
 	/**
 	 * Create a new coloring algorithm object.
@@ -60,8 +60,8 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
-		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class);
+	void setHeapBuilder(ReferenceableHeap.Builder heapBuilder) {
+		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
 	@Override
@@ -86,17 +86,16 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 		Int2IntFunction keyToSaturationDegree = key -> (-key) / maxDegreeFactor;
 		Int2IntFunction keyToUncoloredDegree = key -> (-key) % maxDegreeFactor;
 
-		HeapReferenceable<Integer, Integer> heap = heapBuilder.build();
-		@SuppressWarnings("unchecked")
-		HeapReference<Integer, Integer>[] refs = new HeapReference[n];
+		IntIntReferenceableHeap heap = (IntIntReferenceableHeap) heapBuilder.build(int.class, int.class);
+		IntIntReferenceableHeap.Ref[] refs = new IntIntReferenceableHeap.Ref[n];
 		for (int u = 0; u < n; u++) {
 			int key = createKey.apply(/* saturationDegree= */0, g.outEdges(u).size());
-			refs[u] = heap.insert(Integer.valueOf(key), Integer.valueOf(u));
+			refs[u] = heap.insert(key, u);
 			neighborColors[u] = new BitSet();
 		}
 
 		while (heap.isNotEmpty()) {
-			int u = heap.extractMin().value().intValue();
+			int u = heap.extractMin().value();
 
 			int color = colors[u] = neighborColors[u].nextClearBit(0);
 			colorsNum = Math.max(colorsNum, color + 1);
@@ -105,8 +104,8 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 				eit.nextInt();
 				int v = eit.targetInt();
 				if (colors[v] == -1) { /* v is uncolored */
-					HeapReference<Integer, Integer> ref = refs[v];
-					int key = ref.key().intValue();
+					IntIntReferenceableHeap.Ref ref = refs[v];
+					int key = ref.key();
 					int saturationDegree = keyToSaturationDegree.applyAsInt(key);
 					int uncoloredDegree = keyToUncoloredDegree.applyAsInt(key);
 
@@ -119,7 +118,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 						saturationDegree++;
 
 						key = createKey.apply(saturationDegree, uncoloredDegree);
-						heap.decreaseKey(ref, Integer.valueOf(key));
+						heap.decreaseKey(ref, key);
 					} else {
 
 						key = createKey.apply(saturationDegree, uncoloredDegree);
@@ -129,7 +128,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 						 * and pay \(O(\log n)\) instead of \(O(1)\)
 						 */
 						heap.remove(ref);
-						refs[v] = heap.insert(Integer.valueOf(key), ref.value());
+						refs[v] = heap.insert(key, ref.value());
 					}
 
 				}

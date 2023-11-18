@@ -33,7 +33,7 @@ import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.ds.Heap;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.ReferenceableHeap;
 import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 import it.unimi.dsi.fastutil.ints.Int2ByteMap;
 import it.unimi.dsi.fastutil.ints.Int2ByteOpenHashMap;
@@ -315,17 +315,14 @@ public class Assertions {
 				throw new IllegalArgumentException("A heap can't meld with itself");
 		}
 
-		public static <K, V> void noMeldWithSelf(HeapReferenceable<K, V> heap,
-				HeapReferenceable<? extends K, ? extends V> other) {
+		public static void noMeldWithSelf(ReferenceableHeap heap, ReferenceableHeap other) {
 			if (!JGAlgoConfigImpl.AssertionsHeapsMeldLegal)
 				return;
 			if (heap == other)
 				throw new IllegalArgumentException("A heap can't meld with itself");
 		}
 
-		@SuppressWarnings("rawtypes")
-		public static <K, V> void meldWithSameImpl(Class<? extends HeapReferenceable> impl,
-				HeapReferenceable<? extends K, ? extends V> other) {
+		public static void meldWithSameImpl(Class<? extends ReferenceableHeap> impl, ReferenceableHeap other) {
 			if (!JGAlgoConfigImpl.AssertionsHeapsMeldLegal)
 				return;
 			if (!impl.isAssignableFrom(other.getClass()))
@@ -339,11 +336,10 @@ public class Assertions {
 				throw new IllegalArgumentException("Can't meld, heaps have different comparators");
 		}
 
-		public static <K, V> void equalComparatorBeforeMeld(HeapReferenceable<K, V> heap,
-				HeapReferenceable<? extends K, ? extends V> other) {
+		public static void equalComparatorBeforeMeld(Comparator<?> c1, Comparator<?> c2) {
 			if (!JGAlgoConfigImpl.AssertionsHeapsMeldLegal)
 				return;
-			if (!Objects.equals(heap.comparator(), other.comparator()))
+			if (!Objects.equals(c1, c2))
 				throw new IllegalArgumentException("Can't meld, heaps have different comparators");
 		}
 
@@ -354,7 +350,7 @@ public class Assertions {
 				throw new IllegalStateException("Heap is empty");
 		}
 
-		public static void notEmpty(HeapReferenceable<?, ?> heap) {
+		public static void notEmpty(ReferenceableHeap heap) {
 			if (!JGAlgoConfigImpl.AssertionsHeapsNotEmpty)
 				return;
 			if (heap.isEmpty())

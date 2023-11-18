@@ -25,4 +25,12 @@ src/main/java/com/jgalgo/graph/WeightsImplFloat.java
 src/main/java/com/jgalgo/graph/WeightsImplDouble.java
 src/main/java/com/jgalgo/graph/WeightsImplBool.java
 src/main/java/com/jgalgo/graph/WeightsImplChar.java
+src/main/java/com/jgalgo/internal/ds/[A-Z]*ReferenceableHeap.java
+src/main/java/com/jgalgo/internal/ds/*BinomialHeap.java
+src/main/java/com/jgalgo/internal/ds/*FibonacciHeap.java
+src/main/java/com/jgalgo/internal/ds/*PairingHeap.java
+src/main/java/com/jgalgo/internal/ds/*BinarySearchTree.java
+src/main/java/com/jgalgo/internal/ds/*BinarySearchTrees.java
+src/main/java/com/jgalgo/internal/ds/*RedBlackTree.java
+src/main/java/com/jgalgo/internal/ds/*SplayTree.java
 .gen/

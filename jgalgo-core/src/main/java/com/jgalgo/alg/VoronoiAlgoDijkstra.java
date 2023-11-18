@@ -17,25 +17,21 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.internal.ds.HeapReference;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.ds.DoubleIntReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
 class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 
-	@SuppressWarnings("boxing")
 	@Override
 	VoronoiAlgo.IResult computeVoronoiCells(IndexGraph g, IntCollection sites, IWeightFunction w) {
 		if (sites.isEmpty())
 			throw new IllegalArgumentException("no sites provided");
 		final int n = g.vertices().size();
-		HeapReferenceable<Double, Integer> heap =
-				HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
-		@SuppressWarnings("unchecked")
-		HeapReference<Double, Integer>[] heapVPtrs = new HeapReference[n];
+		DoubleIntReferenceableHeap heap = DoubleIntReferenceableHeap.newInstance();
+		DoubleIntReferenceableHeap.Ref[] heapVPtrs = new DoubleIntReferenceableHeap.Ref[n];
 
 		double[] distance = new double[n];
 		Arrays.fill(distance, Double.POSITIVE_INFINITY);
@@ -55,7 +51,7 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 		}
 
 		while (heap.isNotEmpty()) {
-			HeapReference<Double, Integer> min = heap.extractMin();
+			DoubleIntReferenceableHeap.Ref min = heap.extractMin();
 			int u = min.value();
 			double uDistance = distance[u] = min.key();
 			int uCell = cell[u];
@@ -70,13 +66,13 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 				Assertions.Graphs.onlyPositiveWeight(ew);
 				double vDistance = uDistance + ew;
 
-				HeapReference<Double, Integer> vPtr = heapVPtrs[v];
+				DoubleIntReferenceableHeap.Ref vPtr = heapVPtrs[v];
 				if (vPtr == null) {
-					heapVPtrs[v] = heap.insert(Double.valueOf(vDistance), Integer.valueOf(v));
+					heapVPtrs[v] = heap.insert(vDistance, v);
 					backtrack[v] = e;
 					cell[v] = uCell;
-				} else if (vDistance < vPtr.key().doubleValue()) {
-					heap.decreaseKey(vPtr, Double.valueOf(vDistance));
+				} else if (vDistance < vPtr.key()) {
+					heap.decreaseKey(vPtr, vDistance);
 					backtrack[v] = e;
 					cell[v] = uCell;
 				}

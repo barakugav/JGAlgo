@@ -25,7 +25,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -272,7 +272,7 @@ public interface MinimumSpanningTree {
 	static MinimumSpanningTree.Builder newBuilder() {
 		return new MinimumSpanningTree.Builder() {
 			String impl;
-			private HeapReferenceable.Builder<?, ?> heapBuilder;
+			private ReferenceableHeap.Builder heapBuilder;
 
 			@Override
 			public MinimumSpanningTree build() {
@@ -309,7 +309,7 @@ public interface MinimumSpanningTree {
 						impl = (String) value;
 						break;
 					case "heap-builder":
-						heapBuilder = (HeapReferenceable.Builder<?, ?>) value;
+						heapBuilder = (ReferenceableHeap.Builder) value;
 						break;
 					default:
 						MinimumSpanningTree.Builder.super.setOption(key, value);

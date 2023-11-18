@@ -23,8 +23,9 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.HeapReference;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.DoubleIntReferenceableHeap;
+import com.jgalgo.internal.ds.IntIntReferenceableHeap;
+import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -51,7 +52,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  */
 class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirected {
 
-	private HeapReferenceable.Builder<?, ?> heapBuilder = HeapReferenceable.newBuilder();
+	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.newBuilder();
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -61,9 +62,9 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 	/**
 	 * Set the implementation of the heap used by this algorithm.
 	 *
-	 * @param heapBuilder a builder for heaps used by this algorithm
+	 * @param heapBuilder a builder for heaps used by this algorithm //
 	 */
-	void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
+	void setHeapBuilder(ReferenceableHeap.Builder heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
@@ -87,10 +88,8 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 
 	private MinimumSpanningTree.IResult computeMSTDouble(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
-		HeapReferenceable<Double, Integer> heap =
-				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
-		@SuppressWarnings("unchecked")
-		HeapReference<Double, Integer>[] verticesPtrs = new HeapReference[n];
+		DoubleIntReferenceableHeap heap = (DoubleIntReferenceableHeap) heapBuilder.build(double.class, int.class);
+		DoubleIntReferenceableHeap.Ref[] verticesPtrs = new DoubleIntReferenceableHeap.Ref[n];
 		Bitmap visited = new Bitmap(n);
 
 		IntCollection mst = new IntArrayList(n - 1);
@@ -110,12 +109,12 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 						continue;
 
 					double ew = w.weight(e);
-					HeapReference<Double, Integer> vPtr = verticesPtrs[v];
+					DoubleIntReferenceableHeap.Ref vPtr = verticesPtrs[v];
 					if (vPtr == null)
-						verticesPtrs[v] = heap.insert(Double.valueOf(ew), Integer.valueOf(e));
-					else if (ew < vPtr.key().doubleValue()) {
-						heap.decreaseKey(vPtr, Double.valueOf(ew));
-						vPtr.setValue(Integer.valueOf(e));
+						verticesPtrs[v] = heap.insert(ew, e);
+					else if (ew < vPtr.key()) {
+						heap.decreaseKey(vPtr, ew);
+						vPtr.setValue(e);
 					}
 				}
 
@@ -125,7 +124,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 					if (heap.isEmpty())
 						/* reached all vertices from current root, continue to next tree */
 						break treeLoop;
-					e = heap.extractMin().value().intValue();
+					e = heap.extractMin().value();
 					if (!visited.get(v = g.edgeSource(e)))
 						break;
 					if (!visited.get(v = g.edgeTarget(e)))
@@ -144,10 +143,8 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 
 	private MinimumSpanningTree.IResult computeMSTInt(IndexGraph g, IWeightFunctionInt w) {
 		final int n = g.vertices().size();
-		HeapReferenceable<Integer, Integer> heap =
-				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();
-		@SuppressWarnings("unchecked")
-		HeapReference<Integer, Integer>[] verticesPtrs = new HeapReference[n];
+		IntIntReferenceableHeap heap = (IntIntReferenceableHeap) heapBuilder.build(int.class, int.class);
+		IntIntReferenceableHeap.Ref[] verticesPtrs = new IntIntReferenceableHeap.Ref[n];
 		Bitmap visited = new Bitmap(n);
 
 		IntCollection mst = new IntArrayList(n - 1);
@@ -167,12 +164,12 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 						continue;
 
 					int ew = w.weightInt(e);
-					HeapReference<Integer, Integer> vPtr = verticesPtrs[v];
+					IntIntReferenceableHeap.Ref vPtr = verticesPtrs[v];
 					if (vPtr == null)
-						verticesPtrs[v] = heap.insert(Integer.valueOf(ew), Integer.valueOf(e));
-					else if (ew < vPtr.key().intValue()) {
-						heap.decreaseKey(vPtr, Integer.valueOf(ew));
-						vPtr.setValue(Integer.valueOf(e));
+						verticesPtrs[v] = heap.insert(ew, e);
+					else if (ew < vPtr.key()) {
+						heap.decreaseKey(vPtr, ew);
+						vPtr.setValue(e);
 					}
 				}
 
@@ -182,7 +179,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 					if (heap.isEmpty())
 						/* reached all vertices from current root, continue to next tree */
 						break treeLoop;
-					e = heap.extractMin().value().intValue();
+					e = heap.extractMin().value();
 					if (!visited.get(v = g.edgeSource(e)))
 						break;
 					if (!visited.get(v = g.edgeTarget(e)))

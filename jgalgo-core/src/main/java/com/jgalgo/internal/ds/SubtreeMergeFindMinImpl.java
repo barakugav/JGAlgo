@@ -34,7 +34,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 
 	private NodeImpl<E>[] nodes;
 	private final UnionFind uf;
-	private final HeapReferenceable<SubTree<E>, Void> heap;
+	private final ObjReferenceableHeap<SubTree<E>> heap;
 	private final LowestCommonAncestorDynamic lca;
 
 	private final Comparator<? super E> weightCmp;
@@ -52,18 +52,8 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 	 *
 	 * @param weightCmp comparator used to compare edge weights.
 	 */
-	SubtreeMergeFindMinImpl(Comparator<? super E> weightCmp) {
-		this(weightCmp, HeapReferenceable.newBuilder());
-	}
-
-	/**
-	 * Create a new SMF data structure with the provided comparator for edge weights and a custom heap implementation.
-	 *
-	 * @param weightCmp   comparator used to compare edge weights.
-	 * @param heapBuilder heap builder used to provide a custom heap implementation.
-	 */
 	@SuppressWarnings("unchecked")
-	SubtreeMergeFindMinImpl(Comparator<? super E> weightCmp, HeapReferenceable.Builder<?, ?> heapBuilder) {
+	SubtreeMergeFindMinImpl(Comparator<? super E> weightCmp) {
 		nodes = new NodeImpl[2];
 
 		uf = UnionFind.newInstance();
@@ -72,8 +62,8 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		this.weightCmp = weightCmp != null ? weightCmp : JGAlgoUtils.getDefaultComparator();
 		timestamp = 0;
 
-		heap = heapBuilder.<SubTree<E>>keysTypeObj().valuesTypeVoid()
-				.build((t1, t2) -> this.weightCmp.compare(t1.minEdge.data.data, t2.minEdge.data.data));
+		heap = ObjReferenceableHeap
+				.newInstance((t1, t2) -> this.weightCmp.compare(t1.minEdge.data.data, t2.minEdge.data.data));
 	}
 
 	@Override
@@ -383,7 +373,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 
 		EdgeList<E>[] edges;
 		EdgeNode<E> minEdge;
-		HeapReference<SubTree<E>, Void> heapRef;
+		ObjReferenceableHeap.Ref<SubTree<E>> heapRef;
 
 		/* field used to detect redundant edges during merge */
 		EdgeNode<E> inEdge;

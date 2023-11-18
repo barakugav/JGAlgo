@@ -22,8 +22,8 @@ import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.internal.ds.HeapReference;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.DoubleIntReferenceableHeap;
+import com.jgalgo.internal.ds.DoubleObjReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -51,7 +51,6 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
  */
 class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 
-	@SuppressWarnings("boxing") // TODO
 	@Override
 	List<IPath> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
 		if (source == target)
@@ -60,8 +59,7 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 			w = IWeightFunction.CardinalityWeightFunction;
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
-		HeapReferenceable<Double, ObjectIntPair<IPath>> heap = HeapReferenceable.newBuilder()
-				.keysTypePrimitive(double.class).<ObjectIntPair<IPath>>valuesTypeObj().build();
+		DoubleObjReferenceableHeap<ObjectIntPair<IPath>> heap = DoubleObjReferenceableHeap.newInstance();
 		Bitmap verticesMask = new Bitmap(n);
 		Bitmap edgesMask = new Bitmap(m);
 		ShortestPathSubroutine spFunc = new ShortestPathSubroutine(g, w, target, verticesMask, edgesMask);
@@ -74,7 +72,7 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 
 		List<IPath> paths = k <= m ? new ArrayList<>(k) : new ArrayList<>();
 		while (heap.isNotEmpty()) {
-			HeapReference<Double, ObjectIntPair<IPath>> min = heap.extractMin();
+			DoubleObjReferenceableHeap.Ref<ObjectIntPair<IPath>> min = heap.extractMin();
 			IPath kthPath = min.value().first();
 			final int kthPathDeviationIdx = min.value().secondInt();
 			assert kthPath.isSimple();
@@ -126,8 +124,8 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 		private final Bitmap verticesMask;
 		private final Bitmap edgesMask;
 
-		private final HeapReferenceable<Double, Integer> heapS;
-		private final HeapReferenceable<Double, Integer> heapT;
+		private final DoubleIntReferenceableHeap heapS;
+		private final DoubleIntReferenceableHeap heapT;
 
 		/*
 		 * usually bidirectional dijkstra uses hashtable to store vertex information, to hopefully achieve less than
@@ -141,15 +139,14 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 		private final int[] backtrackT;
 		private final double[] distanceS;
 		private final double[] distanceT;
-		private final HeapReference<Double, Integer>[] heapPtrsS;
-		private final HeapReference<Double, Integer>[] heapPtrsT;
+		private final DoubleIntReferenceableHeap.Ref[] heapPtrsS;
+		private final DoubleIntReferenceableHeap.Ref[] heapPtrsT;
 		private final Bitmap visitedS;
 		private final Bitmap visitedT;
 
 		private final IntList toClearS = new IntArrayList();
 		private final IntList toClearT = new IntArrayList();
 
-		@SuppressWarnings("unchecked")
 		ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target, Bitmap verticesMask, Bitmap edgesMask) {
 			this.g = g;
 			this.w = w;
@@ -157,10 +154,8 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 			this.verticesMask = verticesMask;
 			this.edgesMask = edgesMask;
 
-			HeapReferenceable.Builder<Double, Integer> heapBuilder =
-					HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class);
-			heapS = heapBuilder.build();
-			heapT = heapBuilder.build();
+			heapS = DoubleIntReferenceableHeap.newInstance();
+			heapT = DoubleIntReferenceableHeap.newInstance();
 
 			final int n = g.vertices().size();
 			backtrackS = new int[n];
@@ -171,8 +166,8 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 			distanceT = new double[n];
 			// Arrays.fill(distanceS, Double.POSITIVE_INFINITY);
 			// Arrays.fill(distanceT, Double.POSITIVE_INFINITY);
-			heapPtrsS = new HeapReference[n];
-			heapPtrsT = new HeapReference[n];
+			heapPtrsS = new DoubleIntReferenceableHeap.Ref[n];
+			heapPtrsT = new DoubleIntReferenceableHeap.Ref[n];
 			visitedS = new Bitmap(n);
 			visitedT = new Bitmap(n);
 		}
@@ -190,7 +185,6 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 			return res;
 		}
 
-		@SuppressWarnings("boxing") // TODO
 		private ObjectDoublePair<IPath> computeShortestPath0(int source) {
 			assert source != target;
 			assert !verticesMask.get(source);
@@ -211,7 +205,7 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 			toClearT.add(target);
 			while (heapS.isNotEmpty() && heapT.isNotEmpty()) {
 
-				HeapReference<Double, Integer> min = heapS.extractMin();
+				DoubleIntReferenceableHeap.Ref min = heapS.extractMin();
 				double uDistanceS = min.key();
 				int uS = min.value();
 				heapPtrsS[uS] = null;
@@ -244,13 +238,13 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 						}
 					}
 
-					HeapReference<Double, Integer> vPtr = heapPtrsS[v];
+					DoubleIntReferenceableHeap.Ref vPtr = heapPtrsS[v];
 					if (vPtr == null) {
 						toClearS.add(v);
-						heapPtrsS[v] = heapS.insert(Double.valueOf(vDistance), Integer.valueOf(v));
+						heapPtrsS[v] = heapS.insert(vDistance, v);
 						backtrackS[v] = e;
-					} else if (vDistance < vPtr.key().doubleValue()) {
-						heapS.decreaseKey(vPtr, Double.valueOf(vDistance));
+					} else if (vDistance < vPtr.key()) {
+						heapS.decreaseKey(vPtr, vDistance);
 						backtrackS[v] = e;
 					}
 				}
@@ -274,13 +268,13 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 						}
 					}
 
-					HeapReference<Double, Integer> vPtr = heapPtrsT[v];
+					DoubleIntReferenceableHeap.Ref vPtr = heapPtrsT[v];
 					if (vPtr == null) {
 						toClearT.add(v);
-						heapPtrsT[v] = heapT.insert(Double.valueOf(vDistance), Integer.valueOf(v));
+						heapPtrsT[v] = heapT.insert(vDistance, v);
 						backtrackT[v] = e;
-					} else if (vDistance < vPtr.key().doubleValue()) {
-						heapT.decreaseKey(vPtr, Double.valueOf(vDistance));
+					} else if (vDistance < vPtr.key()) {
+						heapT.decreaseKey(vPtr, vDistance);
 						backtrackT[v] = e;
 					}
 				}

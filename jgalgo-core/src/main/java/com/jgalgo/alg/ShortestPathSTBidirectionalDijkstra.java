@@ -16,11 +16,10 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.NoSuchVertexException;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.internal.ds.HeapReference;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.DoubleIntReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -30,7 +29,6 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 
-	@SuppressWarnings("boxing") // TODO
 	@Override
 	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
 		if (!g.vertices().contains(source))
@@ -42,10 +40,8 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
 
-		HeapReferenceable.Builder<Double, Integer> heapBuilder =
-				HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class);
-		HeapReferenceable<Double, Integer> heapS = heapBuilder.build();
-		HeapReferenceable<Double, Integer> heapT = heapBuilder.build();
+		DoubleIntReferenceableHeap heapS = DoubleIntReferenceableHeap.newInstance();
+		DoubleIntReferenceableHeap heapT = DoubleIntReferenceableHeap.newInstance();
 
 		Int2ObjectMap<Info> infoS = new Int2ObjectOpenHashMap<>();
 		Int2ObjectMap<Info> infoT = new Int2ObjectOpenHashMap<>();
@@ -58,7 +54,7 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 		heapT.insert(.0, target);
 		while (heapS.isNotEmpty() && heapT.isNotEmpty()) {
 
-			HeapReference<Double, Integer> min = heapS.extractMin();
+			DoubleIntReferenceableHeap.Ref min = heapS.extractMin();
 			double uDistanceS = min.key();
 			int uS = min.value();
 			Info uInfoS = infoS.get(uS);
@@ -91,12 +87,12 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 					}
 				}
 
-				HeapReference<Double, Integer> vPtr = vInfoS.heapPtr;
+				DoubleIntReferenceableHeap.Ref vPtr = vInfoS.heapPtr;
 				if (vPtr == null) {
-					vInfoS.heapPtr = heapS.insert(Double.valueOf(vDistance), Integer.valueOf(v));
+					vInfoS.heapPtr = heapS.insert(vDistance, v);
 					vInfoS.backtrack = e;
-				} else if (vDistance < vPtr.key().doubleValue()) {
-					heapS.decreaseKey(vPtr, Double.valueOf(vDistance));
+				} else if (vDistance < vPtr.key()) {
+					heapS.decreaseKey(vPtr, vDistance);
 					vInfoS.backtrack = e;
 				}
 			}
@@ -118,12 +114,12 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 					}
 				}
 
-				HeapReference<Double, Integer> vPtr = vInfoT.heapPtr;
+				DoubleIntReferenceableHeap.Ref vPtr = vInfoT.heapPtr;
 				if (vPtr == null) {
-					vInfoT.heapPtr = heapT.insert(Double.valueOf(vDistance), Integer.valueOf(v));
+					vInfoT.heapPtr = heapT.insert(vDistance, v);
 					vInfoT.backtrack = e;
-				} else if (vDistance < vPtr.key().doubleValue()) {
-					heapT.decreaseKey(vPtr, Double.valueOf(vDistance));
+				} else if (vDistance < vPtr.key()) {
+					heapT.decreaseKey(vPtr, vDistance);
 					vInfoT.backtrack = e;
 				}
 			}
@@ -160,7 +156,7 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 	static class Info {
 		int backtrack = -1;
 		double distance = Double.POSITIVE_INFINITY;
-		HeapReference<Double, Integer> heapPtr;
+		DoubleIntReferenceableHeap.Ref heapPtr;
 
 		void markVisited() {
 			assert heapPtr != VisitedMark : "already visited";
@@ -171,9 +167,8 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 			return heapPtr == VisitedMark;
 		}
 
-		@SuppressWarnings("boxing")
-		private static final HeapReference<Double, Integer> VisitedMark = HeapReferenceable.newBuilder()
-				.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build().insert(0.0, 0);
+		private static final DoubleIntReferenceableHeap.Ref VisitedMark =
+				DoubleIntReferenceableHeap.newInstance().insert(0.0, 0);
 	}
 
 }

@@ -16,10 +16,9 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.Heap;
-import com.jgalgo.internal.ds.HeapReferenceable;
 import com.jgalgo.internal.ds.SubtreeMergeFindMin;
 import com.jgalgo.internal.util.DebugPrinter;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -50,9 +49,8 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 	MatchingWeightedGabow1990Simpler() {}
 
 	@Override
-	Worker newWorker(IndexGraph gOrig, IWeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
-			DebugPrinter debugPrint) {
-		return new Worker(gOrig, w, heapBuilder, debugPrint);
+	Worker newWorker(IndexGraph gOrig, IWeightFunction w, DebugPrinter debugPrint) {
+		return new Worker(gOrig, w, debugPrint);
 	}
 
 	private static class Worker extends MatchingWeightedGabow1990Abstract.Worker {
@@ -60,9 +58,8 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 		/* Heap storing all the blossom and augmenting events */
 		final Heap<EdgeEvent> blossomEvents;
 
-		Worker(IndexGraph gOrig, IWeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
-				DebugPrinter debugPrint) {
-			super(gOrig, w, heapBuilder, debugPrint);
+		Worker(IndexGraph gOrig, IWeightFunction w, DebugPrinter debugPrint) {
+			super(gOrig, w, debugPrint);
 			blossomEvents = Heap.newBuilder().<EdgeEvent>elementsTypeObj()
 					.build((e1, e2) -> Double.compare(e1.slack, e2.slack));
 		}
@@ -115,7 +112,7 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 			assert V.growRef.key().e == e;
 			V.growRef = null;
 			if (!V.isSingleton())
-				V.expandRef = expandEvents.insert(Double.valueOf(V.z0 / 2 + V.delta1), V);
+				V.expandRef = expandEvents.insert(V.z0 / 2 + V.delta1, V);
 			debug.print(" ", V);
 
 			// Immediately add it's matched edge and vertex as even vertex

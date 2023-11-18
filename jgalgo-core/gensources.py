@@ -12,7 +12,7 @@ TOP_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(TOP_DIR, "template")
 SOURCE_DIR = os.path.join(TOP_DIR, "src", "main", "java")
 PACKAGE_DIR = os.path.join(SOURCE_DIR, "com", "jgalgo")
-TYPE_ALL = ["Obj", "Byte", "Short", "Int", "Long", "Float", "Double", "Bool", "Char"]
+TYPE_ALL = {"Obj", "Byte", "Short", "Int", "Long", "Float", "Double", "Bool", "Char"}
 
 HASHES_FILENAME = os.path.join(TOP_DIR, ".gen", "hashes.json")
 
@@ -192,132 +192,214 @@ def find_func_args(text, begin):
         begin += 1
 
 
-def get_constants_and_functions(type):
+def get_constants_and_functions_key0(key_type, generic_name):
     constants = {
+        "Void": {
+            "KEY_TYPE_NAME": "Void",
+            "PRIMITIVE_KEY_TYPE": "Void",
+            "PRIMITIVE_KEY_TYPE_REAL": "Void",
+            "KEY_TYPE_GENERIC_CLASS": "Void",
+            "FASTUTIL_KEY_TYPE": "_NONE_",
+            "FASTUTIL_KEY_PACKAGE": "_NONE_",
+        },
         "Obj": {
-            "TYPE_NAME": "Obj",
-            "PRIMITIVE_TYPE": "T",
-            "PRIMITIVE_TYPE_REAL": "Object",
-            "TYPE_GENERIC_CLASS": "T",
-            "FASTUTIL_TYPE": "Object",
-            "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.objects",
+            "KEY_TYPE_NAME": "Obj",
+            "PRIMITIVE_KEY_TYPE": generic_name,
+            "PRIMITIVE_KEY_TYPE_REAL": "Object",
+            "KEY_TYPE_GENERIC_CLASS": generic_name,
+            "FASTUTIL_KEY_TYPE": "Object",
+            "FASTUTIL_KEY_PACKAGE": "it.unimi.dsi.fastutil.objects",
         },
         "Byte": {
-            "TYPE_NAME": "Byte",
-            "PRIMITIVE_TYPE": "byte",
-            "PRIMITIVE_TYPE_REAL": "byte",
-            "TYPE_GENERIC_CLASS": "Byte",
-            "FASTUTIL_TYPE": "Byte",
-            "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.bytes",
+            "KEY_TYPE_NAME": "Byte",
+            "PRIMITIVE_KEY_TYPE": "byte",
+            "PRIMITIVE_KEY_TYPE_REAL": "byte",
+            "KEY_TYPE_GENERIC_CLASS": "Byte",
+            "FASTUTIL_KEY_TYPE": "Byte",
+            "FASTUTIL_KEY_PACKAGE": "it.unimi.dsi.fastutil.bytes",
         },
         "Short": {
-            "TYPE_NAME": "Short",
-            "PRIMITIVE_TYPE": "short",
-            "PRIMITIVE_TYPE_REAL": "short",
-            "TYPE_GENERIC_CLASS": "Short",
-            "FASTUTIL_TYPE": "Short",
-            "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.shorts",
+            "KEY_TYPE_NAME": "Short",
+            "PRIMITIVE_KEY_TYPE": "short",
+            "PRIMITIVE_KEY_TYPE_REAL": "short",
+            "KEY_TYPE_GENERIC_CLASS": "Short",
+            "FASTUTIL_KEY_TYPE": "Short",
+            "FASTUTIL_KEY_PACKAGE": "it.unimi.dsi.fastutil.shorts",
         },
         "Int": {
-            "TYPE_NAME": "Int",
-            "PRIMITIVE_TYPE": "int",
-            "PRIMITIVE_TYPE_REAL": "int",
-            "TYPE_GENERIC_CLASS": "Integer",
-            "FASTUTIL_TYPE": "Int",
-            "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.ints",
+            "KEY_TYPE_NAME": "Int",
+            "PRIMITIVE_KEY_TYPE": "int",
+            "PRIMITIVE_KEY_TYPE_REAL": "int",
+            "KEY_TYPE_GENERIC_CLASS": "Integer",
+            "FASTUTIL_KEY_TYPE": "Int",
+            "FASTUTIL_KEY_PACKAGE": "it.unimi.dsi.fastutil.ints",
         },
         "Long": {
-            "TYPE_NAME": "Long",
-            "PRIMITIVE_TYPE": "long",
-            "PRIMITIVE_TYPE_REAL": "long",
-            "TYPE_GENERIC_CLASS": "Long",
-            "FASTUTIL_TYPE": "Long",
-            "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.longs",
+            "KEY_TYPE_NAME": "Long",
+            "PRIMITIVE_KEY_TYPE": "long",
+            "PRIMITIVE_KEY_TYPE_REAL": "long",
+            "KEY_TYPE_GENERIC_CLASS": "Long",
+            "FASTUTIL_KEY_TYPE": "Long",
+            "FASTUTIL_KEY_PACKAGE": "it.unimi.dsi.fastutil.longs",
         },
         "Float": {
-            "TYPE_NAME": "Float",
-            "PRIMITIVE_TYPE": "float",
-            "PRIMITIVE_TYPE_REAL": "float",
-            "TYPE_GENERIC_CLASS": "Float",
-            "FASTUTIL_TYPE": "Float",
-            "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.floats",
+            "KEY_TYPE_NAME": "Float",
+            "PRIMITIVE_KEY_TYPE": "float",
+            "PRIMITIVE_KEY_TYPE_REAL": "float",
+            "KEY_TYPE_GENERIC_CLASS": "Float",
+            "FASTUTIL_KEY_TYPE": "Float",
+            "FASTUTIL_KEY_PACKAGE": "it.unimi.dsi.fastutil.floats",
         },
         "Double": {
-            "TYPE_NAME": "Double",
-            "PRIMITIVE_TYPE": "double",
-            "PRIMITIVE_TYPE_REAL": "double",
-            "TYPE_GENERIC_CLASS": "Double",
-            "FASTUTIL_TYPE": "Double",
-            "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.doubles",
+            "KEY_TYPE_NAME": "Double",
+            "PRIMITIVE_KEY_TYPE": "double",
+            "PRIMITIVE_KEY_TYPE_REAL": "double",
+            "KEY_TYPE_GENERIC_CLASS": "Double",
+            "FASTUTIL_KEY_TYPE": "Double",
+            "FASTUTIL_KEY_PACKAGE": "it.unimi.dsi.fastutil.doubles",
         },
         "Bool": {
-            "TYPE_NAME": "Bool",
-            "PRIMITIVE_TYPE": "boolean",
-            "PRIMITIVE_TYPE_REAL": "boolean",
-            "TYPE_GENERIC_CLASS": "Boolean",
-            "FASTUTIL_TYPE": "Boolean",
-            "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.booleans",
+            "KEY_TYPE_NAME": "Bool",
+            "PRIMITIVE_KEY_TYPE": "boolean",
+            "PRIMITIVE_KEY_TYPE_REAL": "boolean",
+            "KEY_TYPE_GENERIC_CLASS": "Boolean",
+            "FASTUTIL_KEY_TYPE": "Boolean",
+            "FASTUTIL_KEY_PACKAGE": "it.unimi.dsi.fastutil.booleans",
         },
         "Char": {
-            "TYPE_NAME": "Char",
-            "PRIMITIVE_TYPE": "char",
-            "PRIMITIVE_TYPE_REAL": "char",
-            "TYPE_GENERIC_CLASS": "Character",
-            "FASTUTIL_TYPE": "Char",
-            "FASTUTIL_PACKAGE": "it.unimi.dsi.fastutil.chars",
+            "KEY_TYPE_NAME": "Char",
+            "PRIMITIVE_KEY_TYPE": "char",
+            "PRIMITIVE_KEY_TYPE_REAL": "char",
+            "KEY_TYPE_GENERIC_CLASS": "Character",
+            "FASTUTIL_KEY_TYPE": "Char",
+            "FASTUTIL_KEY_PACKAGE": "it.unimi.dsi.fastutil.chars",
         },
-    }[type]
+    }[key_type]
 
-    if type == "Obj":
-        constants["TYPE_GENERIC"] = "<T>"
-        constants["TYPE_GENERIC_IN_TEMPLATE_LIST"] = ", T"
-        constants["CAST_TO_GENERIC"] = "(T)"
-        constants["SUPPRESS_WARNINGS_UNCHECKED"] = '@SuppressWarnings("unchecked")'
+    if key_type == "Obj":
+        constants["KEY_TYPE_GENERIC"] = "<" + generic_name + ">"
+        constants["KEY_TYPE_GENERIC_IN_TEMPLATE_LIST"] = ", " + generic_name
+        constants["KEY_CAST_TO_GENERIC"] = "(" + generic_name + ")"
+        constants["KEY_SUPPRESS_WARNINGS_UNCHECKED"] = '@SuppressWarnings("unchecked")'
+        constants["KEY_COMPARATOR"] = "Comparator"
     else:
-        constants["TYPE_GENERIC"] = ""
-        constants["TYPE_GENERIC_IN_TEMPLATE_LIST"] = ""
-        constants["CAST_TO_GENERIC"] = ""
-        constants["SUPPRESS_WARNINGS_UNCHECKED"] = ""
+        constants["KEY_TYPE_GENERIC"] = ""
+        constants["KEY_TYPE_GENERIC_IN_TEMPLATE_LIST"] = ""
+        constants["KEY_CAST_TO_GENERIC"] = ""
+        constants["KEY_SUPPRESS_WARNINGS_UNCHECKED"] = ""
+        constants["KEY_COMPARATOR"] = constants["FASTUTIL_KEY_TYPE"] + "Comparator"
 
     functions = {
+        "Void": {
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: x,
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: x,
+        },
         "Obj": {
-            "PRIMITIVE_TO_BOXED": lambda x: x,
-            "BOXED_TO_PRIMITIVE": lambda x: x,
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: x,
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: x,
         },
         "Byte": {
-            "PRIMITIVE_TO_BOXED": lambda x: "Byte.valueOf(" + x + ")",
-            "BOXED_TO_PRIMITIVE": lambda x: x + ".byteValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Byte.valueOf(" + x + ")",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".byteValue()",
         },
         "Short": {
-            "PRIMITIVE_TO_BOXED": lambda x: "Short.valueOf(" + x + ")",
-            "BOXED_TO_PRIMITIVE": lambda x: x + ".shortValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Short.valueOf(" + x + ")",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".shortValue()",
         },
         "Int": {
-            "PRIMITIVE_TO_BOXED": lambda x: "Integer.valueOf(" + x + ")",
-            "BOXED_TO_PRIMITIVE": lambda x: x + ".intValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Integer.valueOf(" + x + ")",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".intValue()",
         },
         "Long": {
-            "PRIMITIVE_TO_BOXED": lambda x: "Long.valueOf(" + x + ")",
-            "BOXED_TO_PRIMITIVE": lambda x: x + ".longValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Long.valueOf(" + x + ")",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".longValue()",
         },
         "Float": {
-            "PRIMITIVE_TO_BOXED": lambda x: "Float.valueOf(" + x + ")",
-            "BOXED_TO_PRIMITIVE": lambda x: x + ".floatValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Float.valueOf(" + x + ")",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".floatValue()",
         },
         "Double": {
-            "PRIMITIVE_TO_BOXED": lambda x: "Double.valueOf(" + x + ")",
-            "BOXED_TO_PRIMITIVE": lambda x: x + ".doubleValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Double.valueOf(" + x + ")",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".doubleValue()",
         },
         "Bool": {
-            "PRIMITIVE_TO_BOXED": lambda x: "Boolean.valueOf(" + x + ")",
-            "BOXED_TO_PRIMITIVE": lambda x: x + ".booleanValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Boolean.valueOf(" + x + ")",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".booleanValue()",
         },
         "Char": {
-            "PRIMITIVE_TO_BOXED": lambda x: "Character.valueOf(" + x + ")",
-            "BOXED_TO_PRIMITIVE": lambda x: x + ".charValue()",
+            "KEY_PRIMITIVE_TO_BOXED": lambda x: "Character.valueOf(" + x + ")",
+            "KEY_BOXED_TO_PRIMITIVE": lambda x: x + ".charValue()",
         },
-    }[type]
+    }[key_type]
 
+    if key_type == "Obj":
+        cmpDefault = lambda a, b: "JGAlgoUtils.cmpDefault(" + a + ", " + b + ")"
+        functions["COMPARE_KEY_DEFAULT"] = lambda a, b: cmpDefault(a, b)
+        functions["COMPARE_KEY_DEFAULT_EQ"] = lambda a, b: cmpDefault(a, b) + " == 0"
+        functions["COMPARE_KEY_DEFAULT_NEQ"] = lambda a, b: cmpDefault(a, b) + " != 0"
+        functions["COMPARE_KEY_DEFAULT_LE"] = lambda a, b: cmpDefault(a, b) + " < 0"
+        functions["COMPARE_KEY_DEFAULT_LEQ"] = lambda a, b: cmpDefault(a, b) + " <= 0"
+        functions["COMPARE_KEY_DEFAULT_GE"] = lambda a, b: cmpDefault(a, b) + " > 0"
+        functions["COMPARE_KEY_DEFAULT_GEQ"] = lambda a, b: cmpDefault(a, b) + " >= 0"
+    elif key_type == "Bool":
+        functions["COMPARE_KEY_DEFAULT_EQ"] = lambda a, b: a + " == " + b
+        functions["COMPARE_KEY_DEFAULT_NEQ"] = lambda a, b: a + " != " + b
+        # functions["COMPARE_KEY_DEFAULT_LE"] = None
+        # functions["COMPARE_KEY_DEFAULT_LEQ"] = None
+        # functions["COMPARE_KEY_DEFAULT_GE"] = None
+        # functions["COMPARE_KEY_DEFAULT_GEQ"] = None
+    else:
+        cmp = constants["KEY_TYPE_GENERIC_CLASS"]
+        functions["COMPARE_KEY_DEFAULT"] = (
+            lambda a, b: cmp + ".compare(" + a + ", " + b + ")"
+        )
+        functions["COMPARE_KEY_DEFAULT_EQ"] = lambda a, b: a + " == " + b
+        functions["COMPARE_KEY_DEFAULT_NEQ"] = lambda a, b: a + " != " + b
+        functions["COMPARE_KEY_DEFAULT_LE"] = lambda a, b: a + " < " + b
+        functions["COMPARE_KEY_DEFAULT_LEQ"] = lambda a, b: a + " <= " + b
+        functions["COMPARE_KEY_DEFAULT_GE"] = lambda a, b: a + " > " + b
+        functions["COMPARE_KEY_DEFAULT_GEQ"] = lambda a, b: a + " >= " + b
+
+    return constants, functions
+
+
+def get_constants_and_functions_key(key_type):
+    return get_constants_and_functions_key0(key_type, "K")
+
+
+def get_constants_and_functions_value(value_type):
+    constants, functions = get_constants_and_functions_key0(value_type, "V")
+    constants = {k.replace("KEY_", "VALUE_"): v for k, v in constants.items()}
+    functions = {k.replace("KEY_", "VALUE_"): v for k, v in functions.items()}
+    return constants, functions
+
+
+def get_constants_and_functions_key_value(key_type, value_type):
+    constants, functions = get_constants_and_functions_key(key_type)
+    constants_value, functions_value = get_constants_and_functions_value(value_type)
+    constants.update(constants_value)
+    functions.update(functions_value)
+    functions.update(functions_value)
+
+    if key_type == "Obj" and value_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<K, V>"
+    elif key_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<K>"
+    elif value_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<V>"
+    else:
+        constants["KEY_VALUE_GENERIC"] = ""
+    constants["KEY_VALUE_GENERIC_EMPTY"] = (
+        "" if constants["KEY_VALUE_GENERIC"] == "" else "<>"
+    )
+
+    return constants, functions
+
+
+def get_constants_and_functions(type):
+    constants, functions = get_constants_and_functions_key0(type, "T")
+    constants = {k.replace("KEY_", ""): v for k, v in constants.items()}
+    functions = {k.replace("KEY_", ""): v for k, v in functions.items()}
     return constants, functions
 
 
@@ -331,6 +413,53 @@ def iweights_filename(type):
 
 def weights_impl_filename(type):
     return os.path.join(PACKAGE_DIR, "graph", "WeightsImpl" + type + ".java")
+
+
+def key_value_prefix(key_type, value_type):
+    return key_type + value_type if value_type != "Void" else key_type
+
+
+def referenceable_heap_filename(key_type, value_type):
+    prefix = key_value_prefix(key_type, value_type)
+    return os.path.join(
+        PACKAGE_DIR, "internal", "ds", prefix + "ReferenceableHeap.java"
+    )
+
+
+def pairing_heap_filename(key_type, value_type):
+    prefix = key_value_prefix(key_type, value_type)
+    return os.path.join(PACKAGE_DIR, "internal", "ds", prefix + "PairingHeap.java")
+
+
+def binomial_heap_filename(key_type, value_type):
+    prefix = key_value_prefix(key_type, value_type)
+    return os.path.join(PACKAGE_DIR, "internal", "ds", prefix + "BinomialHeap.java")
+
+
+def fibonacci_heap_filename(key_type, value_type):
+    prefix = key_value_prefix(key_type, value_type)
+    return os.path.join(PACKAGE_DIR, "internal", "ds", prefix + "FibonacciHeap.java")
+
+
+def binary_search_tree_filename(key_type, value_type):
+    prefix = key_value_prefix(key_type, value_type)
+    return os.path.join(PACKAGE_DIR, "internal", "ds", prefix + "BinarySearchTree.java")
+
+
+def binary_search_trees_filename(key_type):
+    return os.path.join(
+        PACKAGE_DIR, "internal", "ds", key_type + "BinarySearchTrees.java"
+    )
+
+
+def red_black_tree_filename(key_type, value_type):
+    prefix = key_value_prefix(key_type, value_type)
+    return os.path.join(PACKAGE_DIR, "internal", "ds", prefix + "RedBlackTree.java")
+
+
+def splay_tree_filename(key_type, value_type):
+    prefix = key_value_prefix(key_type, value_type)
+    return os.path.join(PACKAGE_DIR, "internal", "ds", prefix + "SplayTree.java")
 
 
 def generate_weights(type):
@@ -373,6 +502,148 @@ def generate_weights_impl(type):
     )
 
 
+def generate_referenceable_heap(key_type, value_type):
+    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
+
+    prefix = key_value_prefix(key_type, value_type)
+    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
+    constants["PAIRING_HEAP"] = prefix + "PairingHeap"
+
+    generate_sourcefile(
+        os.path.join(TEMPLATE_DIR, "ReferenceableHeap.java.template"),
+        referenceable_heap_filename(key_type, value_type),
+        constants,
+        functions,
+    )
+
+
+def generate_pairing_heap(key_type, value_type):
+    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
+
+    prefix = key_value_prefix(key_type, value_type)
+    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
+    constants["PAIRING_HEAP"] = prefix + "PairingHeap"
+
+    generate_sourcefile(
+        os.path.join(TEMPLATE_DIR, "PairingHeap.java.template"),
+        pairing_heap_filename(key_type, value_type),
+        constants,
+        functions,
+    )
+
+
+def generate_binomial_heap(key_type, value_type):
+    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
+
+    prefix = key_value_prefix(key_type, value_type)
+    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
+    constants["BINOMIAL_HEAP"] = prefix + "BinomialHeap"
+
+    generate_sourcefile(
+        os.path.join(TEMPLATE_DIR, "BinomialHeap.java.template"),
+        binomial_heap_filename(key_type, value_type),
+        constants,
+        functions,
+    )
+
+
+def generate_fibonacci_heap(key_type, value_type):
+    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
+
+    prefix = key_value_prefix(key_type, value_type)
+    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
+    constants["FIBONACCI_HEAP"] = prefix + "FibonacciHeap"
+
+    generate_sourcefile(
+        os.path.join(TEMPLATE_DIR, "FibonacciHeap.java.template"),
+        fibonacci_heap_filename(key_type, value_type),
+        constants,
+        functions,
+    )
+
+
+def generate_binary_search_tree(key_type, value_type):
+    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
+
+    prefix = key_value_prefix(key_type, value_type)
+    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
+    constants["BINARY_SEARCH_TREE"] = prefix + "BinarySearchTree"
+    constants["RED_BLACK_TREE"] = prefix + "RedBlackTree"
+
+    generate_sourcefile(
+        os.path.join(TEMPLATE_DIR, "BinarySearchTree.java.template"),
+        binary_search_tree_filename(key_type, value_type),
+        constants,
+        functions,
+    )
+
+
+def generate_binary_search_trees(key_type):
+    constants, functions = get_constants_and_functions_key(key_type)
+
+    constants["BINARY_SEARCH_TREES"] = key_type + "BinarySearchTrees"
+    if key_type == "Obj":
+        constants["KEY_GENERIC_LIST_START"] = "K, "
+    else:
+        constants["KEY_GENERIC_LIST_START"] = ""
+
+    generate_sourcefile(
+        os.path.join(TEMPLATE_DIR, "BinarySearchTrees.java.template"),
+        binary_search_trees_filename(key_type),
+        constants,
+        functions,
+    )
+
+
+def generate_red_black_tree(key_type, value_type):
+    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
+
+    prefix = key_value_prefix(key_type, value_type)
+    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
+    constants["BINARY_SEARCH_TREE"] = prefix + "BinarySearchTree"
+    constants["BINARY_SEARCH_TREES"] = key_type + "BinarySearchTrees"
+    constants["RED_BLACK_TREE"] = prefix + "RedBlackTree"
+    if key_type == "Obj":
+        constants["KEY_GENERIC_LIST_START"] = "K, "
+    else:
+        constants["KEY_GENERIC_LIST_START"] = ""
+
+    generate_sourcefile(
+        os.path.join(TEMPLATE_DIR, "RedBlackTree.java.template"),
+        red_black_tree_filename(key_type, value_type),
+        constants,
+        functions,
+    )
+
+
+def generate_splay_tree(key_type, value_type):
+    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
+
+    prefix = key_value_prefix(key_type, value_type)
+    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
+    constants["BINARY_SEARCH_TREE"] = prefix + "BinarySearchTree"
+    constants["BINARY_SEARCH_TREES"] = key_type + "BinarySearchTrees"
+    constants["SPLAY_TREE"] = prefix + "SplayTree"
+    if key_type == "Obj":
+        constants["KEY_GENERIC_LIST_START"] = "K, "
+    else:
+        constants["KEY_GENERIC_LIST_START"] = ""
+
+    generate_sourcefile(
+        os.path.join(TEMPLATE_DIR, "SplayTree.java.template"),
+        splay_tree_filename(key_type, value_type),
+        constants,
+        functions,
+    )
+
+
 def clean():
     logging.info("Cleaning generated sources...")
     if os.path.exists(HASHES_FILENAME):
@@ -385,6 +656,35 @@ def clean():
         generated_filenames.append(iweights_filename(type))
     for type in TYPE_ALL:
         generated_filenames.append(weights_impl_filename(type))
+    for key_type in TYPE_ALL - {"Bool"}:
+        for value_type in TYPE_ALL | {"Void"}:
+            generated_filenames.append(
+                referenceable_heap_filename(key_type, value_type)
+            )
+    for key_type in TYPE_ALL - {"Bool"}:
+        for value_type in TYPE_ALL | {"Void"}:
+            generated_filenames.append(pairing_heap_filename(key_type, value_type))
+    for key_type in TYPE_ALL - {"Bool"}:
+        for value_type in TYPE_ALL | {"Void"}:
+            generated_filenames.append(binomial_heap_filename(key_type, value_type))
+    for key_type in TYPE_ALL - {"Bool"}:
+        for value_type in TYPE_ALL | {"Void"}:
+            generated_filenames.append(fibonacci_heap_filename(key_type, value_type))
+    for key_type in TYPE_ALL - {"Bool"}:
+        for value_type in TYPE_ALL | {"Void"}:
+            generated_filenames.append(
+                binary_search_tree_filename(key_type, value_type)
+            )
+    for key_type in TYPE_ALL - {"Bool"}:
+        for value_type in TYPE_ALL | {"Void"}:
+            generated_filenames.append(binary_search_trees_filename(key_type))
+    for key_type in TYPE_ALL - {"Bool"}:
+        for value_type in TYPE_ALL | {"Void"}:
+            generated_filenames.append(red_black_tree_filename(key_type, value_type))
+
+    for key_type in TYPE_ALL - {"Bool"}:
+        for value_type in TYPE_ALL | {"Void"}:
+            generated_filenames.append(splay_tree_filename(key_type, value_type))
 
     for filename in generated_filenames:
         if os.path.exists(filename):
@@ -430,6 +730,12 @@ def write_generated_templates():
             "Weights.java.template",
             "IWeights.java.template",
             "WeightsImpl.java.template",
+            "ReferenceableHeap.java.template",
+            "PairingHeap.java.template",
+            "BinarySearchTree.java.template",
+            "BinarySearchTrees.java.template",
+            "RedBlackTree.java.template",
+            "SplayTree.java.template",
         )
     ]
     hashes = json.dumps({temp: compute_template_hash(temp) for temp in templates})
@@ -453,25 +759,127 @@ def main():
         hashes = read_last_generated_templates_hashes()
         # collect all sources to generate
         generators = {}
+
         if hashes.is_template_changed("Weights.java.template"):
             for type in TYPE_ALL:
                 gen = functools.partial(generate_weights, type)
                 generators[weights_filename(type)] = gen
+
         if hashes.is_template_changed("IWeights.java.template"):
             for type in TYPE_ALL:
                 gen = functools.partial(generate_iweights, type)
                 generators[iweights_filename(type)] = gen
+
         if hashes.is_template_changed("WeightsImpl.java.template"):
             for type in TYPE_ALL:
                 gen = functools.partial(generate_weights_impl, type)
                 generators[weights_impl_filename(type)] = gen
+
+        if hashes.is_template_changed("ReferenceableHeap.java.template"):
+            types = []
+            # for key_type in TYPE_ALL - {"Bool"}:
+            #     for value_type in TYPE_ALL | {"Void"}:
+            #         types.append((key_type, value_type))
+            types.append(("Int", "Int"))
+            types.append(("Int", "Void"))
+            types.append(("Double", "Int"))
+            types.append(("Double", "Obj"))
+            types.append(("Obj", "Void"))
+            types.append(("Obj", "Obj"))
+            for key_type, value_type in types:
+                gen = functools.partial(
+                    generate_referenceable_heap, key_type, value_type
+                )
+                generators[referenceable_heap_filename(key_type, value_type)] = gen
+
+        if hashes.is_template_changed("PairingHeap.java.template"):
+            types = []
+            types.append(("Int", "Int"))
+            types.append(("Int", "Void"))
+            types.append(("Double", "Int"))
+            types.append(("Double", "Obj"))
+            types.append(("Obj", "Void"))
+            types.append(("Obj", "Obj"))
+            for key_type, value_type in types:
+                gen = functools.partial(generate_pairing_heap, key_type, value_type)
+                generators[pairing_heap_filename(key_type, value_type)] = gen
+
+        if hashes.is_template_changed("BinomialHeap.java.template"):
+            types = []
+            types.append(("Int", "Int"))
+            types.append(("Int", "Void"))
+            types.append(("Double", "Int"))
+            types.append(("Double", "Obj"))
+            types.append(("Obj", "Void"))
+            for key_type, value_type in types:
+                gen = functools.partial(generate_binomial_heap, key_type, value_type)
+                generators[binomial_heap_filename(key_type, value_type)] = gen
+
+        if hashes.is_template_changed("FibonacciHeap.java.template"):
+            types = []
+            types.append(("Int", "Int"))
+            types.append(("Int", "Void"))
+            types.append(("Double", "Int"))
+            types.append(("Double", "Obj"))
+            types.append(("Obj", "Void"))
+            for key_type, value_type in types:
+                gen = functools.partial(generate_fibonacci_heap, key_type, value_type)
+                generators[fibonacci_heap_filename(key_type, value_type)] = gen
+
+        if hashes.is_template_changed("BinarySearchTree.java.template"):
+            types = []
+            types.append(("Int", "Int"))
+            types.append(("Int", "Void"))
+            types.append(("Double", "Int"))
+            types.append(("Double", "Obj"))
+            types.append(("Obj", "Void"))
+            types.append(("Obj", "Obj"))
+            for key_type, value_type in types:
+                gen = functools.partial(
+                    generate_binary_search_tree, key_type, value_type
+                )
+                generators[binary_search_tree_filename(key_type, value_type)] = gen
+
+        if hashes.is_template_changed("BinarySearchTrees.java.template"):
+            types = []
+            types.append("Int")
+            types.append("Double")
+            types.append("Obj")
+            for key_type in types:
+                gen = functools.partial(generate_binary_search_trees, key_type)
+                generators[binary_search_trees_filename(key_type)] = gen
+
+        if hashes.is_template_changed("RedBlackTree.java.template"):
+            types = []
+            types.append(("Int", "Int"))
+            types.append(("Int", "Void"))
+            types.append(("Double", "Int"))
+            types.append(("Double", "Obj"))
+            types.append(("Obj", "Void"))
+            types.append(("Obj", "Obj"))
+            for key_type, value_type in types:
+                gen = functools.partial(generate_red_black_tree, key_type, value_type)
+                generators[red_black_tree_filename(key_type, value_type)] = gen
+
+        if hashes.is_template_changed("SplayTree.java.template"):
+            types = []
+            types.append(("Int", "Int"))
+            types.append(("Int", "Void"))
+            types.append(("Double", "Int"))
+            types.append(("Double", "Obj"))
+            types.append(("Obj", "Void"))
+            types.append(("Obj", "Obj"))
+            for key_type, value_type in types:
+                gen = functools.partial(generate_splay_tree, key_type, value_type)
+                generators[splay_tree_filename(key_type, value_type)] = gen
+
         if not generators:
             logging.info("No template changed, nothing to do.")
             return
 
         for _filename, generator in generators.items():
             generator()
-        format_sourcefiles(generators.keys())
+        # format_sourcefiles(generators.keys())
 
         write_generated_templates()
 

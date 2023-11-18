@@ -16,35 +16,31 @@
 
 package com.jgalgo.internal.ds;
 
-import java.util.Comparator;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.doubles.DoubleComparator;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 
 public class HeapPairingTestIntKeys extends TestBase {
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static Heap.Builder<Integer> heapBuilder() {
-		return new Heap.Builder<>() {
-
-			@Override
-			public Heap build(Comparator cmp) {
-				return heapReferenceableBuilder().build(cmp).asHeap();
-			}
-
-			@Override
-			public Heap.Builder elementsTypeObj() {
-				return this;
-			}
-
-			@Override
-			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
-				return this;
-			}
-		};
+		return ReferenceableHeapTestUtils.heapBuilderFromReferenceableHeapBuilder(heapReferenceableBuilder());
 	}
 
-	private static HeapReferenceable.Builder<Integer, Void> heapReferenceableBuilder() {
-		return HeapReferenceable.newBuilder().setOption("impl", "pairing").<Integer>keysTypeObj().valuesTypeVoid();
+	private static ReferenceableHeap.Builder heapReferenceableBuilder() {
+		return (keyType, valueType, comparator) -> {
+			if (keyType == int.class && valueType == int.class)
+				return new IntIntPairingHeap((IntComparator) comparator);
+			if (keyType == int.class && valueType == void.class)
+				return new IntPairingHeap((IntComparator) comparator);
+			if (keyType == double.class && valueType == int.class)
+				return new DoubleIntPairingHeap((DoubleComparator) comparator);
+			if (keyType == double.class && valueType == Object.class)
+				return new DoubleObjPairingHeap<>((DoubleComparator) comparator);
+			if (keyType == Object.class && valueType == void.class)
+				return new ObjPairingHeap<>(comparator);
+			throw new UnsupportedOperationException("Unsupported heap type: " + keyType + ", " + valueType);
+		};
 	}
 
 	@Test
@@ -80,13 +76,13 @@ public class HeapPairingTestIntKeys extends TestBase {
 	@Test
 	public void testDecreaseKeyDefaultCompare() {
 		final long seed = 0x90a80620c3ef1a43L;
-		HeapReferenceableTestUtils.testDecreaseKeyDefaultCompare(heapReferenceableBuilder(), seed);
+		ReferenceableHeapTestUtils.testDecreaseKeyDefaultCompare(heapReferenceableBuilder(), seed);
 	}
 
 	@Test
 	public void testDecreaseKeyCustomCompare() {
 		final long seed = 0x4204a31e91374f21L;
-		HeapReferenceableTestUtils.testDecreaseKeyCustomCompare(heapReferenceableBuilder(), seed);
+		ReferenceableHeapTestUtils.testDecreaseKeyCustomCompare(heapReferenceableBuilder(), seed);
 	}
 
 }

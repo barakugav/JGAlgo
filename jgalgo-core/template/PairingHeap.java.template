@@ -1,0 +1,429 @@
+/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.ds;
+
+import java.util.Iterator;
+import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.Stack;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+import com.jgalgo.internal.util.JGAlgoUtils;
+import java.util.Comparator;
+#else
+import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
+#endif
+
+
+/**
+ * A Pairing heap implementation.
+ *
+ * <p>
+ * A pointer based heap implementation that support almost any operation in \(O(1)\) amortized time, except
+ * {@link #remove} and {@link #decreaseKey} which takes \(O(\log n)\) time
+ * amortized.
+ *
+ * <p>
+ * Using this heap, {@link ShortestPathSingleSourceDijkstra} can be implemented in time \(O(m + n \log n)\) rather than
+ * \(O(m \log n)\) as the {@link #decreaseKey} operation is performed in \(O(1)\) time amortized.
+ *
+ * <p>
+ * Pairing heaps are one of the best pointer based heaps implementations in practice, and should be used as a default
+ * choice for the general use case.
+ *
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+ * @param  <K> the keys type
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
+ * @param  <V> the values type
+#endif
+ * @see    <a href="https://en.wikipedia.org/wiki/Pairing_heap">Wikipedia</a>
+ * @author Barak Ugav
+ */
+public class PAIRING_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_VALUE_GENERIC {
+
+	private final KEY_COMPARATOR KEY_TYPE_GENERIC c;
+	private Node KEY_VALUE_GENERIC minRoot;
+
+	public PAIRING_HEAP(KEY_COMPARATOR KEY_TYPE_GENERIC c) {
+		this.c = c;
+	}
+
+	@Override
+	public KEY_COMPARATOR KEY_TYPE_GENERIC comparator() {
+		return c;
+	}
+
+	@Override
+	public HEAP_REFERENCE KEY_VALUE_GENERIC findMin() {
+		Assertions.Heaps.notEmpty(this);
+		return minRoot;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		return minRoot == null;
+	}
+
+	@Override
+	public boolean isNotEmpty() {
+		return minRoot != null;
+	}
+
+	private static KEY_VALUE_GENERIC void cut(Node KEY_VALUE_GENERIC n) {
+		Node KEY_VALUE_GENERIC next = n.next;
+		if (next != null) {
+			next.prevOrParent = n.prevOrParent;
+			n.next = null;
+		}
+		if (n.prevOrParent.child == n) { /* n.parent.child == n */
+			n.prevOrParent.child = next;
+		} else {
+			n.prevOrParent.next = next;
+		}
+		n.prevOrParent = null;
+	}
+
+	void addChild(Node KEY_VALUE_GENERIC parent, Node KEY_VALUE_GENERIC newChild) {
+		assert newChild.prevOrParent == null;
+		assert newChild.next == null;
+		Node KEY_VALUE_GENERIC oldChild = parent.child;
+		if (oldChild != null) {
+			oldChild.prevOrParent = newChild;
+			newChild.next = oldChild;
+		}
+		parent.child = newChild;
+		newChild.prevOrParent = parent;
+	}
+
+	void insertNode(Node KEY_VALUE_GENERIC n) {
+		if (minRoot == null) {
+			minRoot = n;
+		} else {
+			minRoot = meld(minRoot, n);
+		}
+	}
+
+	void afterKeyDecrease(Node KEY_VALUE_GENERIC n) {
+		if (n == minRoot)
+			return;
+		cut(n);
+		minRoot = meld(minRoot, n);
+	}
+
+	@Override
+	public HEAP_REFERENCE KEY_VALUE_GENERIC extractMin() {
+		Node KEY_VALUE_GENERIC min = minRoot;
+		removeRoot();
+		return min;
+	}
+
+	@Override
+	public void remove(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
+		Node KEY_VALUE_GENERIC n = (Node KEY_VALUE_GENERIC) ref;
+		assert minRoot != null;
+		if (n != minRoot) {
+			cut(n);
+			addChild(n, minRoot);
+			minRoot = n;
+		}
+		removeRoot();
+	}
+
+	@Override
+	public void meld(REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap) {
+		Assertions.Heaps.noMeldWithSelf(this, heap);
+		Assertions.Heaps.meldWithSameImpl(getClass(), heap);
+		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());
+		PAIRING_HEAP KEY_VALUE_GENERIC h = (PAIRING_HEAP KEY_VALUE_GENERIC) heap;
+
+		if (minRoot == null) {
+			minRoot = h.minRoot;
+		} else if (h.minRoot != null) {
+			minRoot = meld(minRoot, h.minRoot);
+		}
+
+		h.minRoot = null;
+	}
+
+	private Node KEY_VALUE_GENERIC meld(Node KEY_VALUE_GENERIC n1, Node KEY_VALUE_GENERIC n2) {
+		return c == null ? meldDefaultCmp(n1, n2) : meldCustomCmp(n1, n2);
+	}
+
+	Node KEY_VALUE_GENERIC meldDefaultCmp(Node KEY_VALUE_GENERIC n1, Node KEY_VALUE_GENERIC n2) {
+		assert n1.prevOrParent == null;
+		assert n1.next == null;
+		assert n2.prevOrParent == null;
+		assert n2.next == null;
+
+		/* assume n1 has smaller key than n2 */
+		if (COMPARE_KEY_DEFAULT_GE(n1.key, n2.key)) {
+			Node KEY_VALUE_GENERIC temp = n1;
+			n1 = n2;
+			n2 = temp;
+		}
+
+		addChild(n1, n2);
+		return n1;
+	}
+
+	Node KEY_VALUE_GENERIC meldCustomCmp(Node KEY_VALUE_GENERIC n1, Node KEY_VALUE_GENERIC n2) {
+		assert n1.prevOrParent == null;
+		assert n1.next == null;
+		assert n2.prevOrParent == null;
+		assert n2.next == null;
+
+		/* assume n1 has smaller key than n2 */
+		if (c.compare(n1.key, n2.key) > 0) {
+			Node KEY_VALUE_GENERIC temp = n1;
+			n1 = n2;
+			n2 = temp;
+		}
+
+		addChild(n1, n2);
+		return n1;
+	}
+
+	@Override
+	public void clear() {
+		if (minRoot == null)
+			return;
+
+		for (Node KEY_VALUE_GENERIC p = minRoot;;) {
+			while (p.child != null) {
+				p = p.child;
+				while (p.next != null)
+					p = p.next;
+			}
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+			p.key = null;
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
+			p.value = null;
+#endif
+			Node KEY_VALUE_GENERIC prev = p.prevOrParent;
+			if (prev == null)
+				break;
+			p.prevOrParent = null;
+			if (prev.next == p) {
+				prev.next = null;
+			} else {
+				prev.child = null;
+			}
+			p = prev;
+		}
+
+		minRoot = null;
+	}
+
+	@Override
+	public Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> iterator() {
+		return new PreOrderIter KEY_VALUE_GENERIC_EMPTY(minRoot);
+	}
+
+	int compareNodesKeys(Node KEY_VALUE_GENERIC n1, Node KEY_VALUE_GENERIC n2) {
+		return c.compare(n1.key, n2.key);
+	}
+
+	static class PreOrderIter KEY_VALUE_GENERIC implements Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> {
+
+		private final Stack<Node KEY_VALUE_GENERIC> path = new ObjectArrayList<>();
+
+		PreOrderIter(Node KEY_VALUE_GENERIC p) {
+			if (p != null)
+				path.push(p);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return !path.isEmpty();
+		}
+
+		@Override
+		public Node KEY_VALUE_GENERIC next() {
+			Assertions.Iters.hasNext(this);
+			final Node KEY_VALUE_GENERIC ret = path.top();
+
+			Node KEY_VALUE_GENERIC next;
+			if ((next = ret.child) != null) {
+				path.push(next);
+			} else {
+				Node KEY_VALUE_GENERIC p0;
+				do {
+					p0 = path.pop();
+					if ((next = p0.next) != null) {
+						path.push(next);
+						break;
+					}
+				} while (!path.isEmpty());
+			}
+
+			return ret;
+		}
+
+	}
+
+	@Override
+	public HEAP_REFERENCE KEY_VALUE_GENERIC insert(PRIMITIVE_KEY_TYPE key) {
+		Node KEY_VALUE_GENERIC n = new Node KEY_VALUE_GENERIC_EMPTY(key);
+		insertNode(n);
+		return n;
+	}
+
+
+	void removeRoot() {
+		if (minRoot.child == null) {
+			minRoot = null;
+			return;
+		}
+
+		if (c == null) {
+			/* meld pairs from left to right */
+			Node KEY_VALUE_GENERIC tail;
+			for (Node KEY_VALUE_GENERIC prev = minRoot, next = minRoot.child;;) {
+				Node KEY_VALUE_GENERIC n1 = next;
+				if (n1 == null) {
+					tail = prev;
+					break;
+				}
+
+				Node KEY_VALUE_GENERIC n2 = n1.next;
+				if (n2 == null) {
+					n1.prevOrParent = prev;
+					tail = n1;
+					break;
+				}
+				next = n2.next;
+				n1.next = null;
+				n2.next = null;
+				n1.prevOrParent = null;
+				n2.prevOrParent = null;
+				n1 = meldDefaultCmp(n1, n2);
+
+				n1.prevOrParent = prev;
+				prev = n1;
+			}
+			minRoot.child = null;
+
+			/* meld all from right to left */
+			Node KEY_VALUE_GENERIC root = tail, prev = root.prevOrParent;
+			root.prevOrParent = null;
+			for (;;) {
+				Node KEY_VALUE_GENERIC other = prev;
+				if (other == minRoot) {
+					minRoot = root;
+					break;
+				}
+				prev = other.prevOrParent;
+				other.prevOrParent = null;
+				root = meldDefaultCmp(root, other);
+			}
+		} else {
+
+			/* meld pairs from left to right */
+			Node KEY_VALUE_GENERIC tail;
+			for (Node KEY_VALUE_GENERIC prev = minRoot, next = minRoot.child;;) {
+				Node KEY_VALUE_GENERIC n1 = next;
+				if (n1 == null) {
+					tail = prev;
+					break;
+				}
+
+				Node KEY_VALUE_GENERIC n2 = n1.next;
+				if (n2 == null) {
+					n1.prevOrParent = prev;
+					tail = n1;
+					break;
+				}
+				next = n2.next;
+				n1.next = null;
+				n2.next = null;
+				n1.prevOrParent = null;
+				n2.prevOrParent = null;
+				n1 = meldCustomCmp(n1, n2);
+
+				n1.prevOrParent = prev;
+				prev = n1;
+			}
+			minRoot.child = null;
+
+			/* meld all from right to left */
+			Node KEY_VALUE_GENERIC root = tail, prev = root.prevOrParent;
+			root.prevOrParent = null;
+			for (;;) {
+				Node KEY_VALUE_GENERIC other = prev;
+				if (other == minRoot) {
+					minRoot = root;
+					break;
+				}
+				prev = other.prevOrParent;
+				other.prevOrParent = null;
+				root = meldCustomCmp(root, other);
+			}
+		}
+	}
+
+	@Override
+	public void decreaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
+		Node KEY_VALUE_GENERIC n = (Node KEY_VALUE_GENERIC) ref;
+		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);
+		n.key = newKey;
+		afterKeyDecrease(n);
+	}
+
+
+	private static class Node KEY_VALUE_GENERIC implements HEAP_REFERENCE KEY_VALUE_GENERIC {
+		PRIMITIVE_KEY_TYPE key;
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+		private PRIMITIVE_VALUE_TYPE value;
+#endif
+
+		Node KEY_VALUE_GENERIC prevOrParent;
+		Node KEY_VALUE_GENERIC next;
+		Node KEY_VALUE_GENERIC child;
+
+		Node(PRIMITIVE_KEY_TYPE key) {
+			this.key = key;
+		}
+
+		@Override
+		public PRIMITIVE_KEY_TYPE key() {
+			return key;
+		}
+
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+		@Override
+		public PRIMITIVE_VALUE_TYPE value() {
+			return value;
+		}
+
+		@Override
+		public void setValue(PRIMITIVE_VALUE_TYPE val) {
+			value = val;
+		}
+#endif
+
+		@Override
+		public String toString() {
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+			return "{" + key + ":" + value + "}";
+#else
+			return String.valueOf(key);
+#endif
+		}
+	}
+
+}

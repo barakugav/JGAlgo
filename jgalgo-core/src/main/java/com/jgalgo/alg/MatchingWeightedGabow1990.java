@@ -17,9 +17,8 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.SubtreeMergeFindMin;
 import com.jgalgo.internal.util.DebugPrinter;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -46,9 +45,8 @@ class MatchingWeightedGabow1990 extends MatchingWeightedGabow1990Abstract {
 	MatchingWeightedGabow1990() {}
 
 	@Override
-	Worker newWorker(IndexGraph gOrig, IWeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
-			DebugPrinter debugPrint) {
-		return new Worker(gOrig, w, heapBuilder, debugPrint);
+	Worker newWorker(IndexGraph gOrig, IWeightFunction w, DebugPrinter debugPrint) {
+		return new Worker(gOrig, w, debugPrint);
 	}
 
 	private static class Worker extends MatchingWeightedGabow1990Abstract.Worker {
@@ -68,9 +66,8 @@ class MatchingWeightedGabow1990 extends MatchingWeightedGabow1990Abstract {
 		 */
 		final int[] oddBlossomPath;
 
-		Worker(IndexGraph gOrig, IWeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
-				DebugPrinter debugPrint) {
-			super(gOrig, w, heapBuilder, debugPrint);
+		Worker(IndexGraph gOrig, IWeightFunction w, DebugPrinter debugPrint) {
+			super(gOrig, w, debugPrint);
 			int n = gOrig.vertices().size();
 			vToSMFId = new SubtreeMergeFindMin.Node[n];
 			oddBlossomPath = new int[n];
@@ -136,7 +133,7 @@ class MatchingWeightedGabow1990 extends MatchingWeightedGabow1990Abstract {
 			assert V.growRef.key().e == e;
 			V.growRef = null;
 			if (!V.isSingleton())
-				V.expandRef = expandEvents.insert(Double.valueOf(V.z0 / 2 + V.delta1), V);
+				V.expandRef = expandEvents.insert(V.z0 / 2 + V.delta1, V);
 			debug.print(" ", V);
 
 			int pathLen = computePath(V, v, oddBlossomPath);

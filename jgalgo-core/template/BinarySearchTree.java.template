@@ -16,26 +16,30 @@
 
 package com.jgalgo.internal.ds;
 
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
 import java.util.Comparator;
+#else
+import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
+#endif
 
 /**
  * Binary search tree data structure.
  *
  * <p>
- * In addition to all {@link HeapReferenceable} operations, a binary search tree (BST) allow for an efficient search of
- * an element, not just {@link Heap#findMin()}. Every element could be found in \(O(\log n)\) time, notably
- * {@link #findMax()} in addition to {@link Heap#findMin()}. Also, given an element, the nearest (smaller or larger)
+ * In addition to all {@link REFERENCEABLE_HEAP} operations, a binary search tree (BST) allow for an efficient search of
+ * an element, not just {@link #findMin()}. Every element can be found in \(O(\log n)\) time, notably
+ * {@link #findMax()} in addition to {@link #findMin()}. Also, given an element, the nearest (smaller or larger)
  * element in the tree can be found efficiently.
  *
- * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
- *
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
  * @param  <K> the keys type
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
  * @param  <V> the values type
+#endif
  * @author     Barak Ugav
  */
-public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
+public interface BINARY_SEARCH_TREE KEY_VALUE_GENERIC extends REFERENCEABLE_HEAP KEY_VALUE_GENERIC {
 
 	/**
 	 * Find the element with the maximal key in the tree and return a reference to it.
@@ -43,7 +47,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @return                       a reference to the element with the maximal key in the tree
 	 * @throws IllegalStateException if the tree is empty
 	 */
-	HeapReference<K, V> findMax();
+	HEAP_REFERENCE KEY_VALUE_GENERIC findMax();
 
 	/**
 	 * Extract the element with the maximal key in the tree.
@@ -54,7 +58,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @return                       the element with the maximal key in the tree
 	 * @throws IllegalStateException if the tree is empty
 	 */
-	HeapReference<K, V> extractMax();
+	HEAP_REFERENCE KEY_VALUE_GENERIC extractMax();
 
 	/**
 	 * Find an element in the tree by its key, or the element with the greatest strictly smaller (predecessor) key than
@@ -64,7 +68,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @return     reference to an element with the searched key or it's predecessor if is not found, or {@code null} if
 	 *             there is no predecessor
 	 */
-	HeapReference<K, V> findOrSmaller(K key);
+	HEAP_REFERENCE KEY_VALUE_GENERIC findOrSmaller(PRIMITIVE_KEY_TYPE key);
 
 	/**
 	 * Find an element in the tree by its key, or the element with the smallest strictly greater (successor) key than it
@@ -74,7 +78,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @return     reference to an element with the searched key or it's successor if it is not found, or {@code null}
 	 *             if there is no successor
 	 */
-	HeapReference<K, V> findOrGreater(K key);
+	HEAP_REFERENCE KEY_VALUE_GENERIC findOrGreater(PRIMITIVE_KEY_TYPE key);
 
 	/**
 	 * Find the element with the greatest strictly smaller key than a given key.
@@ -82,7 +86,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @param  key a key
 	 * @return     reference to the predecessor element with strictly smaller key or {@code null} if no such exists
 	 */
-	HeapReference<K, V> findSmaller(K key);
+	HEAP_REFERENCE KEY_VALUE_GENERIC findSmaller(PRIMITIVE_KEY_TYPE key);
 
 	/**
 	 * Find the element with the smallest strictly greater key than a given key.
@@ -90,7 +94,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @param  key a key
 	 * @return     reference to the successor element with strictly greater key or {@code null} if no such exists
 	 */
-	HeapReference<K, V> findGreater(K key);
+	HEAP_REFERENCE KEY_VALUE_GENERIC findGreater(PRIMITIVE_KEY_TYPE key);
 
 	/**
 	 * Get the predecessor of a node in the tree.
@@ -107,7 +111,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @return     reference to the predecessor element in the tree, that is an element with smaller or equal key to the
 	 *             given referenced element's key, or {@code null} if no such predecessor exists
 	 */
-	HeapReference<K, V> getPredecessor(HeapReference<K, V> ref);
+	HEAP_REFERENCE KEY_VALUE_GENERIC getPredecessor(HEAP_REFERENCE KEY_VALUE_GENERIC ref);
 
 	/**
 	 * Finds the successor of an element in the tree.
@@ -124,7 +128,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @return     reference to the successor element in the tree, that is an element with greater or equal key to the
 	 *             given referenced element's key, or {@code null} if no such successor exists
 	 */
-	HeapReference<K, V> getSuccessor(HeapReference<K, V> ref);
+	HEAP_REFERENCE KEY_VALUE_GENERIC getSuccessor(HEAP_REFERENCE KEY_VALUE_GENERIC ref);
 
 	/**
 	 * Split the current BST into two different BSTs with keys strictly smaller and greater or equal than a key.
@@ -136,7 +140,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @param  key a pivot key
 	 * @return     new tree with elements with keys strictly smaller than the given key
 	 */
-	BinarySearchTree<K, V> splitSmaller(K key);
+	BINARY_SEARCH_TREE KEY_VALUE_GENERIC splitSmaller(PRIMITIVE_KEY_TYPE key);
 
 	/**
 	 * Split the current BST into two different BSTs with keys smaller or equal and strictly greater than a key.
@@ -148,7 +152,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @param  key a pivot key
 	 * @return     new tree with elements with keys strictly greater than the given key
 	 */
-	BinarySearchTree<K, V> splitGreater(K key);
+	BINARY_SEARCH_TREE KEY_VALUE_GENERIC splitGreater(PRIMITIVE_KEY_TYPE key);
 
 	/**
 	 * Split the current BST into two different BSTs with elements smaller and greater than an element's key.
@@ -157,8 +161,7 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * After this operation, all elements keys in this tree will be smaller or equal to the given element's key, and the
 	 * returned new tree will contain elements with keys greater than the given element's key. If the tree contains
 	 * duplications of the given element's key, the elements keys in the returned tree will be greater or equal (rather
-	 * than strictly greater). To split a tree more precisely, use {@link #splitSmaller(Object)} or
-	 * {@link #splitGreater(Object)}.
+	 * than strictly greater). To split a tree more precisely, use {@link #splitSmaller} or {@link #splitGreater}.
 	 *
 	 * <p>
 	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
@@ -168,176 +171,31 @@ public interface BinarySearchTree<K, V> extends HeapReferenceable<K, V> {
 	 * @return     new tree with elements with keys greater (greater or equal if duplicate keys of the given element's
 	 *             key exists) than the given key
 	 */
-	BinarySearchTree<K, V> split(HeapReference<K, V> ref);
+	BINARY_SEARCH_TREE KEY_VALUE_GENERIC split(HEAP_REFERENCE KEY_VALUE_GENERIC ref);
 
 	/**
 	 * Create a new BST.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link BinarySearchTree} object. The
-	 * {@link BinarySearchTree.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link BINARY_SEARCH_TREE} object.
 	 *
-	 * @return a default implementation of {@link BinarySearchTree}
+	 * @return a default implementation of {@link BINARY_SEARCH_TREE}
 	 */
-	static <K, V> BinarySearchTree<K, V> newInstance() {
-		return newBuilder().<K>keysTypeObj().<V>valuesTypeObj().build();
+	static KEY_VALUE_GENERIC BINARY_SEARCH_TREE KEY_VALUE_GENERIC newInstance() {
+		return new RED_BLACK_TREE KEY_VALUE_GENERIC_EMPTY();
 	}
 
 	/**
 	 * Create a new BST with custom comparator.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link BinarySearchTree} object. The
-	 * {@link BinarySearchTree.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link BINARY_SEARCH_TREE} object.
 	 *
-	 * @return a default implementation of {@link BinarySearchTree}
+	 * @param  cmp a custom comparator
+	 * @return a default implementation of {@link BINARY_SEARCH_TREE}
 	 */
-	static <K, V> BinarySearchTree<K, V> newInstance(Comparator<? super K> cmp) {
-		return newBuilder().<K>keysTypeObj().<V>valuesTypeObj().build(cmp);
-	}
-
-	/**
-	 * Create a new binary search tree algorithm builder.
-	 *
-	 * <p>
-	 * This is the recommended way to instantiate a new {@link BinarySearchTree} object.
-	 *
-	 * @return a new builder that can build {@link BinarySearchTree} objects
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	static BinarySearchTree.Builder<Object, Object> newBuilder() {
-		return new BinarySearchTree.Builder<>() {
-
-			boolean splitRequired;
-			boolean meldRequired;
-			String impl;
-
-			@Override
-			public BinarySearchTree build(Comparator cmp) {
-				if (impl != null) {
-					switch (impl) {
-						case "splay":
-							return new SplayTree(cmp);
-						case "red-black":
-							return new RedBlackTree(cmp);
-						default:
-							throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-					}
-				}
-				if (splitRequired || meldRequired) {
-					return new SplayTree(cmp);
-				} else {
-					return new RedBlackTree(cmp);
-				}
-			}
-
-			@Override
-			public BinarySearchTree.Builder setSplits(boolean enable) {
-				splitRequired = enable;
-				return this;
-			}
-
-			@Override
-			public BinarySearchTree.Builder setMelds(boolean enable) {
-				meldRequired = enable;
-				return this;
-			}
-
-			@Override
-			public BinarySearchTree.Builder keysTypeObj() {
-				return this;
-			}
-
-			@Override
-			public BinarySearchTree.Builder keysTypePrimitive(Class primitiveType) {
-				return this;
-			}
-
-			@Override
-			public BinarySearchTree.Builder valuesTypeObj() {
-				return this;
-			}
-
-			@Override
-			public BinarySearchTree.Builder valuesTypePrimitive(Class primitiveType) {
-				return this;
-			}
-
-			@Override
-			public BinarySearchTree.Builder valuesTypeVoid() {
-				return this;
-			}
-
-			@Override
-			public BinarySearchTree.Builder setOption(String key, Object value) {
-				switch (key) {
-					case "impl":
-						impl = (String) value;
-						break;
-					default:
-						BinarySearchTree.Builder.super.setOption(key, value);
-				}
-				return this;
-			}
-		};
-	}
-
-	/**
-	 * A builder for {@link BinarySearchTree} objects.
-	 *
-	 * @see    BinarySearchTree#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder<K, V> extends HeapReferenceable.Builder<K, V> {
-
-		@Override
-		BinarySearchTree<K, V> build(Comparator<? super K> cmp);
-
-		@Override
-		default BinarySearchTree<K, V> build() {
-			return build(null);
-		}
-
-		/**
-		 * Enable/disable efficient split operations.
-		 *
-		 * @param  enable if {@code true} the split operations such as {@link BinarySearchTree#split(HeapReference)},
-		 *                    {@link BinarySearchTree#splitSmaller(Object)} and
-		 *                    {@link BinarySearchTree#splitGreater(Object)} will be supported efficiently by the trees
-		 *                    created by this builder
-		 * @return        this builder
-		 */
-		BinarySearchTree.Builder<K, V> setSplits(boolean enable);
-
-		/**
-		 * Enable/disable efficient {@link BinarySearchTree#meld} operations.
-		 *
-		 * @param  enable if {@code true} the {@link BinarySearchTree#meld} operation will be supported efficiently by
-		 *                    the trees created by this builder
-		 * @return        this builder
-		 */
-		BinarySearchTree.Builder<K, V> setMelds(boolean enable);
-
-		@Override
-		<KeysT> BinarySearchTree.Builder<KeysT, V> keysTypeObj();
-
-		@Override
-		<KeysT> BinarySearchTree.Builder<KeysT, V> keysTypePrimitive(Class<? extends KeysT> primitiveType);
-
-		@Override
-		<ValuesT> BinarySearchTree.Builder<K, ValuesT> valuesTypeObj();
-
-		@Override
-		<ValuesT> BinarySearchTree.Builder<K, ValuesT> valuesTypePrimitive(Class<? extends ValuesT> primitiveType);
-
-		@Override
-		BinarySearchTree.Builder<K, Void> valuesTypeVoid();
-
-		@Override
-		default BinarySearchTree.Builder<K, V> setOption(String key, Object value) {
-			HeapReferenceable.Builder.super.setOption(key, value);
-			return this;
-		}
+	static KEY_VALUE_GENERIC BINARY_SEARCH_TREE KEY_VALUE_GENERIC newInstance(KEY_COMPARATOR KEY_TYPE_GENERIC cmp) {
+		return new RED_BLACK_TREE KEY_VALUE_GENERIC_EMPTY(cmp);
 	}
 
 }

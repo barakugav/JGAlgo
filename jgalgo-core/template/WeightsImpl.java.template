@@ -22,6 +22,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 class WEIGHTS_IMPL {
 
+	private WEIGHTS_IMPL() {}
+
 	abstract static class IndexImpl TYPE_GENERIC extends WeightsImpl.IndexAbstract<TYPE_GENERIC_CLASS> implements IWEIGHTS TYPE_GENERIC {
 
 		PRIMITIVE_TYPE_REAL[] weights;

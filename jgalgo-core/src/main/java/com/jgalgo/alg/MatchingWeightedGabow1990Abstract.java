@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -32,8 +31,8 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.ds.HeapReference;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.DoubleObjReferenceableHeap;
+import com.jgalgo.internal.ds.ObjReferenceableHeap;
 import com.jgalgo.internal.ds.SplitFindMin;
 import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.Assertions;
@@ -49,13 +48,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaximumMatchingImpl {
 
 	final DebugPrinter debugPrintManager = new DebugPrinter(false);
-	HeapReferenceable.Builder<Object, Object> heapBuilder = HeapReferenceable.newBuilder();
 	static final double EPS = 0.00001;
 
 	@Override
 	IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
-		return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(false);
+		return newWorker(g, w, debugPrintManager).computeMaxMatching(false);
 
 	}
 
@@ -65,21 +63,11 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 			return computeMaximumWeightedMatching(g, null);
 		} else {
 			Assertions.Graphs.onlyUndirected(g);
-			return newWorker(g, w, heapBuilder, debugPrintManager).computeMaxMatching(true);
+			return newWorker(g, w, debugPrintManager).computeMaxMatching(true);
 		}
 	}
 
-	abstract Worker newWorker(IndexGraph gOrig, IWeightFunction w,
-			HeapReferenceable.Builder<Object, Object> heapBuilder, DebugPrinter debugPrint);
-
-	/**
-	 * Set the implementation of the heap used by this algorithm.
-	 *
-	 * @param heapBuilder a builder for heaps used by this algorithm
-	 */
-	void setHeapBuilder(HeapReferenceable.Builder<Object, Object> heapBuilder) {
-		this.heapBuilder = Objects.requireNonNull(heapBuilder);
-	}
+	abstract Worker newWorker(IndexGraph gOrig, IWeightFunction w, DebugPrinter debugPrint);
 
 	static class Blossom {
 
@@ -150,12 +138,12 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 		/*
 		 * pointer to the grow event for this blossom, relevant only if this blossom is out
 		 */
-		HeapReference<EdgeEvent, Void> growRef;
+		ObjReferenceableHeap.Ref<EdgeEvent> growRef;
 
 		/*
 		 * pointer to the expand event for this blossom, relevant only if this blossom is top odd
 		 */
-		HeapReference<Double, Blossom> expandRef;
+		DoubleObjReferenceableHeap.Ref<Blossom> expandRef;
 
 		/* field used to keep track which blossoms were visited during traverse */
 		int lastVisitIdx;
@@ -418,10 +406,10 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 		final EdgeEvent[] vToGrowEvent;
 
 		/* Heap storing all the grow events */
-		final HeapReferenceable<EdgeEvent, Void> growEvents;
+		final ObjReferenceableHeap<EdgeEvent> growEvents;
 
 		/* Heap storing all expand events for odd vertices */
-		final HeapReferenceable<Double, Blossom> expandEvents;
+		final DoubleObjReferenceableHeap<Blossom> expandEvents;
 
 		/* queue used during blossom creation to union all vertices */
 		final IntPriorityQueue unionQueue;
@@ -459,8 +447,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 			}
 		}
 
-		Worker(IndexGraph gOrig, IWeightFunction w, HeapReferenceable.Builder<Object, Object> heapBuilder,
-				DebugPrinter debugPrint) {
+		Worker(IndexGraph gOrig, IWeightFunction w, DebugPrinter debugPrint) {
 			int n = gOrig.vertices().size();
 			this.gOrig = gOrig;
 			this.g = IndexGraphFactory.newDirected().expectedVerticesNum(n).newGraph();
@@ -496,9 +483,9 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 			vertexDualValBase = new double[n];
 
 			vToGrowEvent = new EdgeEvent[n];
-			growEvents = heapBuilder.<EdgeEvent>keysTypeObj().valuesTypeVoid()
-					.build((e1, e2) -> Double.compare(growEventsKey(e1), growEventsKey(e2)));
-			expandEvents = heapBuilder.keysTypePrimitive(double.class).<Blossom>valuesTypeObj().build();
+			growEvents =
+					ObjReferenceableHeap.newInstance((e1, e2) -> Double.compare(growEventsKey(e1), growEventsKey(e2)));
+			expandEvents = DoubleObjReferenceableHeap.newInstance();
 
 			unionQueue = new FIFOQueueIntNoReduce();
 			scanQueue = new FIFOQueueIntNoReduce();
@@ -603,8 +590,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 
 					double delta3 = computeNextDelta3();
 
-					double delta4 =
-							expandEvents.isEmpty() ? Double.MAX_VALUE : expandEvents.findMin().key().doubleValue();
+					double delta4 = expandEvents.isEmpty() ? Double.MAX_VALUE : expandEvents.findMin().key();
 
 					double deltaNext = Math.min(delta2, Math.min(delta3, delta4));
 					if (deltaNext == Double.MAX_VALUE || (!perfect && delta1 < deltaNext))
@@ -696,7 +682,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 		void expandStep() {
 			debug.println("expandStep");
 
-			assert JGAlgoUtils.isEqual(delta, expandEvents.findMin().key().doubleValue());
+			assert JGAlgoUtils.isEqual(delta, expandEvents.findMin().key());
 			final Blossom B = expandEvents.extractMin().value();
 
 			assert B.root != -1 && !B.isEven && !B.isSingleton() && dualVal(B) <= EPS;
@@ -737,7 +723,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 				odds.split(b);
 				assert b.expandRef == null;
 				if (!b.isSingleton())
-					b.expandRef = expandEvents.insert(Double.valueOf(b.z0 / 2 + b.delta1), b);
+					b.expandRef = expandEvents.insert(b.z0 / 2 + b.delta1, b);
 				if (b == base)
 					break;
 				b = next.apply(b);

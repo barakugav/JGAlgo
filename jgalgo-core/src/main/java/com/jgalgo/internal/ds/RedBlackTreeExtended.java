@@ -38,7 +38,7 @@ import java.util.Objects;
  * RedBlackTreeExtension.Max<Integer, String> maxExt = new RedBlackTreeExtension.Max<>();
  * RedBlackTreeExtended<Integer> tree = new RedBlackTreeExtended<>(List.of(sizeExt, maxExt));
  *
- * HeapReference<Integer, String> e1 = tree.insert(15, "Alice");
+ * ObjObjReferenceableHeap.Ref<Integer, String> e1 = tree.insert(15, "Alice");
  * tree.insert(5, "Bob");
  * tree.insert(3, "Charlie");
  * tree.insert(1, "Door");
@@ -46,7 +46,7 @@ import java.util.Objects;
  * tree.insert(1, "Zebra");
  *
  * int subTreeSize = sizeExt.getSubTreeSize(e1);
- * HeapReference<Integer, String> subTreeMax = maxExt.getSubTreeMax(e1);
+ * ObjReferenceableHeap.Ref<Integer, String> subTreeMax = maxExt.getSubTreeMax(e1);
  * System.out.println("The subtree of " + e1 + " is of size " + subTreeSize);
  * System.out.println("The maximum element in the sub tree of " + e1 + " is " + subTreeMax);
  * }</pre>
@@ -55,7 +55,7 @@ import java.util.Objects;
  * @param  <V> the values type
  * @author     Barak Ugav
  */
-class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
+class RedBlackTreeExtended<K, V> extends ObjObjRedBlackTree<K, V> {
 
 	private int size;
 	private Node<K, V>[] nodes;
@@ -106,8 +106,7 @@ class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 	 * @throws IllegalArgumentException if the extensions collection is empty
 	 */
 	@SuppressWarnings("unchecked")
-	RedBlackTreeExtended(Comparator<? super K> comparator,
-			Collection<? extends RedBlackTreeExtension<K, V>> extensions) {
+	RedBlackTreeExtended(Comparator<K> comparator, Collection<? extends RedBlackTreeExtension<K, V>> extensions) {
 		super(comparator);
 		if (extensions.isEmpty())
 			throw new IllegalArgumentException("No extensions provided. Use the regular Red Black tree.");
@@ -135,7 +134,7 @@ class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 	}
 
 	@Override
-	void removeNode(RedBlackTree.Node<K, V> n0) {
+	void removeNode(ObjObjRedBlackTree.Node<K, V> n0) {
 		super.removeNode(n0);
 		Node<K, V> n = (Node<K, V>) n0;
 		int nIdx = n.idx;
@@ -158,7 +157,7 @@ class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 	}
 
 	@Override
-	void swap(RedBlackTree.Node<K, V> a, RedBlackTree.Node<K, V> b) {
+	void swap(ObjObjRedBlackTree.Node<K, V> a, ObjObjRedBlackTree.Node<K, V> b) {
 		Node<K, V> n1 = (Node<K, V>) a, n2 = (Node<K, V>) b;
 		for (RedBlackTreeExtension<K, V> extension : extensions)
 			extension.beforeNodeSwap((Node<K, V>) a, (Node<K, V>) b);
@@ -166,25 +165,25 @@ class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 	}
 
 	@Override
-	void afterInsert(RedBlackTree.Node<K, V> n) {
+	void afterInsert(ObjObjRedBlackTree.Node<K, V> n) {
 		for (RedBlackTreeExtension<K, V> extension : extensions)
 			extension.afterInsert((Node<K, V>) n);
 	}
 
 	@Override
-	void beforeRemove(RedBlackTree.Node<K, V> n) {
+	void beforeRemove(ObjObjRedBlackTree.Node<K, V> n) {
 		for (RedBlackTreeExtension<K, V> extension : extensions)
 			extension.beforeRemove((Node<K, V>) n);
 	}
 
 	@Override
-	void beforeRotateLeft(RedBlackTree.Node<K, V> n) {
+	void beforeRotateLeft(ObjObjRedBlackTree.Node<K, V> n) {
 		for (RedBlackTreeExtension<K, V> extension : extensions)
 			extension.beforeRotateLeft((Node<K, V>) n);
 	}
 
 	@Override
-	void beforeRotateRight(RedBlackTree.Node<K, V> n) {
+	void beforeRotateRight(ObjObjRedBlackTree.Node<K, V> n) {
 		for (RedBlackTreeExtension<K, V> extension : extensions)
 			extension.beforeRotateRight((Node<K, V>) n);
 	}
@@ -202,7 +201,7 @@ class RedBlackTreeExtended<K, V> extends RedBlackTree<K, V> {
 		super.clear();
 	}
 
-	static class Node<K, V> extends RedBlackTree.Node<K, V> {
+	static class Node<K, V> extends ObjObjRedBlackTree.Node<K, V> {
 
 		int idx;
 

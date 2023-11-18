@@ -17,46 +17,58 @@
 package com.jgalgo.internal.ds;
 
 import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Iterator;
-import com.jgalgo.internal.ds.Heaps.AbstractHeapReferenceable;
-import com.jgalgo.internal.util.Assertions;
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
 import com.jgalgo.internal.util.JGAlgoUtils;
+import java.util.Comparator;
+#else
+import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
+#endif
+import java.util.Iterator;
+import com.jgalgo.internal.util.Assertions;
 
 /**
  * A Fibonacci heap implementation.
  *
  * <p>
  * A pointer based heap implementation that support almost any operation in \(O(1)\) amortized time, except
- * {@link #remove(HeapReference)} which takes \(O(\log n)\) time amortized.
+ * {@link #remove} which takes \(O(\log n)\) time amortized.
  *
  * <p>
  * Using this heap, Dijkstra's shortest-path algorithm can be implemented in time \(O(m + n \log n)\) rather than \(O(m
- * \log n)\) as the {@link #decreaseKey(HeapReference, Object)} operation is performed in \(O(1)\) time amortized.
+ * \log n)\) as the {@link #decreaseKey} operation is performed in \(O(1)\) time amortized.
  *
  * <p>
- * In practice, the Fibonacci heaps are quire complex, and in some cases is better to use {@link HeapPairing}.
+ * In practice, the Fibonacci heaps are quite complex, and in some cases is better to use a Oairing heap.
  *
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
  * @param  <K> the keys type
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
  * @param  <V> the values type
+#endif
  * @see        <a href="https://en.wikipedia.org/wiki/Fibonacci_heap">Wikipedia</a>
- * @see        HeapPairing
  * @author     Barak Ugav
  */
-class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
+public class FIBONACCI_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_VALUE_GENERIC {
 
-	private Node<K, V> minRoot;
-	private Node<K, V> begin;
-	private Node<K, V> end;
+	private final KEY_COMPARATOR KEY_TYPE_GENERIC c;
+	private Node KEY_VALUE_GENERIC minRoot;
+	private Node KEY_VALUE_GENERIC begin;
+	private Node KEY_VALUE_GENERIC end;
 	private int size;
 
+#if PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
 	@SuppressWarnings("unchecked")
-	private Node<K, V>[] tempNodesArr = EmptyNodesArr;
+#endif
+	private Node KEY_VALUE_GENERIC[] tempNodesArr = EmptyNodesArr;
+#if PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
 	@SuppressWarnings("rawtypes")
+#endif
 	private static final Node[] EmptyNodesArr = new Node[0];
 
 	/**
 	 * Constructs a new, empty Fibonacci heap, ordered according to the natural ordering of its keys.
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
 	 *
 	 * <p>
 	 * All keys inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such keys must
@@ -64,34 +76,47 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 	 * {@code k1} and {@code k2} in the heap. If the user attempts to insert a key to the heap that violates this
 	 * constraint (for example, the user attempts to insert a string element to a heap whose keys are integers), the
 	 * {@code insert} call will throw a {@code ClassCastException}.
+#endif
 	 */
-	HeapFibonacci() {
+	public FIBONACCI_HEAP() {
 		this(null);
 	}
 
 	/**
 	 * Constructs a new, empty Fibonacci heap, with keys ordered according to the specified comparator.
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
 	 *
 	 * <p>
 	 * All keys inserted into the heap must be <i>mutually comparable</i> by the specified comparator:
 	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
 	 * {@code k2} in the heap. If the user attempts to insert a key to the heap that violates this constraint, the
 	 * {@code insert} call will throw a {@code ClassCastException}.
+#endif
 	 *
 	 * @param comparator the comparator that will be used to order this heap. If {@code null}, the
 	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
-	HeapFibonacci(Comparator<? super K> comparator) {
-		super(comparator);
-		begin = end = minRoot = null;
-		size = 0;
+	public FIBONACCI_HEAP(KEY_COMPARATOR KEY_TYPE_GENERIC comparator) {
+		c = comparator;
+	}
+
+	@Override
+	public KEY_COMPARATOR KEY_TYPE_GENERIC comparator() {
+		return c;
 	}
 
 	@Override
 	public void clear() {
-		for (Node<K, V> p = begin, next; p != null; p = next) {
+		for (Node KEY_VALUE_GENERIC p = begin, next; p != null; p = next) {
 			next = p.next;
-			Trees.clear(p, n -> n.key = null);
+			Trees.clear(p, n -> {
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+				n.key = null;
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
+				n.value = null;
+#endif
+			});
 		}
 
 		begin = end = minRoot = null;
@@ -109,10 +134,10 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 	}
 
 	@Override
-	public HeapReference<K, V> insert(K key) {
-		Node<K, V> n = new Node<>(key);
+	public HEAP_REFERENCE KEY_VALUE_GENERIC insert(PRIMITIVE_KEY_TYPE key) {
+		Node KEY_VALUE_GENERIC n = new Node KEY_VALUE_GENERIC_EMPTY(key);
 		if (minRoot != null) {
-			Node<K, V> last = end;
+			Node KEY_VALUE_GENERIC last = end;
 			last.next = n;
 			n.prev = last;
 			compareToMinRoot(n);
@@ -127,17 +152,16 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public Iterator<HeapReference<K, V>> iterator() {
+	public Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> iterator() {
 		return (Iterator) new Trees.PreOrderIter<>(begin);
 	}
 
 	@Override
-	public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
+	public void meld(REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap) {
 		Assertions.Heaps.noMeldWithSelf(this, heap);
-		Assertions.Heaps.meldWithSameImpl(HeapFibonacci.class, heap);
-		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
-		@SuppressWarnings("unchecked")
-		HeapFibonacci<K, V> h = (HeapFibonacci<K, V>) heap;
+		Assertions.Heaps.meldWithSameImpl(FIBONACCI_HEAP.class, heap);
+		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());
+		FIBONACCI_HEAP KEY_VALUE_GENERIC h = (FIBONACCI_HEAP KEY_VALUE_GENERIC) heap;
 		if (h.isEmpty())
 			return;
 
@@ -158,14 +182,21 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 	}
 
 	@Override
-	public HeapReference<K, V> findMin() {
+	public HEAP_REFERENCE KEY_VALUE_GENERIC findMin() {
 		Assertions.Heaps.notEmpty(this);
 		return minRoot;
 	}
 
-	private void cut(Node<K, V> p) {
+	@Override
+	public HEAP_REFERENCE KEY_VALUE_GENERIC extractMin() {
+		HEAP_REFERENCE KEY_VALUE_GENERIC min = findMin();
+		remove(min);
+		return min;
+	}
+
+	private static KEY_VALUE_GENERIC void cut(Node KEY_VALUE_GENERIC p) {
 		assert p.parent != null;
-		Node<K, V> prev = p.prev;
+		Node KEY_VALUE_GENERIC prev = p.prev;
 		if (prev != null) {
 			prev.next = p.next;
 			p.prev = null;
@@ -182,21 +213,26 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 		p.marked = false;
 	}
 
-	private void addRoot(Node<K, V> p) {
-		Node<K, V> last = end;
+	private void addRoot(Node KEY_VALUE_GENERIC p) {
+		Node KEY_VALUE_GENERIC last = end;
 		last.next = p;
 		p.prev = last;
 		end = p;
 	}
 
-	private void compareToMinRoot(Node<K, V> p) {
+	private void compareToMinRoot(Node KEY_VALUE_GENERIC p) {
 		assert p.parent == null;
-		if (compare(minRoot.key, p.key) > 0)
-			minRoot = p;
+		if (c == null) {
+			if (COMPARE_KEY_DEFAULT_GE(minRoot.key, p.key))
+				minRoot = p;
+		} else {
+			if (c.compare(minRoot.key, p.key) > 0)
+				minRoot = p;
+		}
 	}
 
-	private void mark(Node<K, V> p) {
-		for (Node<K, V> q; p.parent != null; p = q) {
+	private void mark(Node KEY_VALUE_GENERIC p) {
+		for (Node KEY_VALUE_GENERIC q; p.parent != null; p = q) {
 			if (!p.marked) {
 				p.marked = true;
 				break;
@@ -208,29 +244,36 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 	}
 
 	@Override
-	public void decreaseKey(HeapReference<K, V> ref, K newKey) {
-		Node<K, V> n = (Node<K, V>) ref;
+	public void decreaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
+		Node KEY_VALUE_GENERIC n = (Node KEY_VALUE_GENERIC) ref;
 		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);
 		n.key = newKey;
 
-		Node<K, V> parent = n.parent;
+		Node KEY_VALUE_GENERIC parent = n.parent;
 		if (parent == null) {
 			compareToMinRoot(n);
-		} else if (compare(newKey, parent.key) < 0) {
-			cut(n);
-			addRoot(n);
-			compareToMinRoot(n);
-			mark(parent);
+			return;
 		}
+		if (c == null) {
+			if (COMPARE_KEY_DEFAULT_GEQ(newKey, parent.key))
+				return;
+		} else {
+			if (c.compare(newKey, parent.key) >= 0)
+				return;
+		}
+		cut(n);
+		addRoot(n);
+		compareToMinRoot(n);
+		mark(parent);
 	}
 
 	@Override
-	public void remove(HeapReference<K, V> ref) {
-		Node<K, V> prev, n = (Node<K, V>) ref;
+	public void remove(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
+		Node KEY_VALUE_GENERIC prev, n = (Node KEY_VALUE_GENERIC) ref;
 
 		final boolean isMinRoot = n == minRoot;
 		if (n.parent != null) {
-			Node<K, V> parent = n.parent;
+			Node KEY_VALUE_GENERIC parent = n.parent;
 			cut(n);
 			mark(parent);
 		} else {
@@ -252,11 +295,11 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 		}
 
 		// add n children
-		Node<K, V> first = n.child, last = null;
+		Node KEY_VALUE_GENERIC first = n.child, last = null;
 		if (first != null) {
-			for (Node<K, V> p = first;;) {
+			for (Node KEY_VALUE_GENERIC p = first;;) {
 				p.parent = null;
-				Node<K, V> next = p.next;
+				Node KEY_VALUE_GENERIC next = p.next;
 				if (next == null) {
 					last = p;
 					break;
@@ -275,20 +318,22 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 		}
 
 		// union trees
-		Node<K, V>[] newRoots = tempNodesArr;
+		Node KEY_VALUE_GENERIC[] newRoots = tempNodesArr;
 		int maxDegree = getMaxDegree(size);
 		if (newRoots.length < maxDegree) {
+#if PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
 			@SuppressWarnings("unchecked")
-			Node<K, V>[] t = new Node[Math.max(maxDegree, newRoots.length * 2)];
+#endif
+			Node KEY_VALUE_GENERIC[] t = new Node[Math.max(maxDegree, newRoots.length * 2)];
 			newRoots = tempNodesArr = t;
 		}
 
 		if (c == null) {
-			for (Node<K, V> next, p = begin; p != null; p = next) {
+			for (Node KEY_VALUE_GENERIC next, p = begin; p != null; p = next) {
 				next = p.next;
 
 				int degree;
-				for (Node<K, V> q; (q = newRoots[degree = p.degree]) != null;) {
+				for (Node KEY_VALUE_GENERIC q; (q = newRoots[degree = p.degree]) != null;) {
 					newRoots[degree] = null;
 					p = unionDefaultCmp(p, q);
 				}
@@ -296,11 +341,11 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 				newRoots[degree] = p;
 			}
 		} else {
-			for (Node<K, V> next, p = begin; p != null; p = next) {
+			for (Node KEY_VALUE_GENERIC next, p = begin; p != null; p = next) {
 				next = p.next;
 
 				int degree;
-				for (Node<K, V> q; (q = newRoots[degree = p.degree]) != null;) {
+				for (Node KEY_VALUE_GENERIC q; (q = newRoots[degree = p.degree]) != null;) {
 					newRoots[degree] = null;
 					p = unionCustomCmp(p, q);
 				}
@@ -310,7 +355,7 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 		}
 		prev = null;
 		begin = null;
-		for (Node<K, V> p : newRoots) {
+		for (Node KEY_VALUE_GENERIC p : newRoots) {
 			if (p == null)
 				continue;
 			if (prev == null)
@@ -327,16 +372,16 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 
 		/* Find new minimum */
 		if (isMinRoot) {
-			Node<K, V> min = null;
+			Node KEY_VALUE_GENERIC min = null;
 			if (c == null) {
-				for (Node<K, V> p : newRoots) {
+				for (Node KEY_VALUE_GENERIC p : newRoots) {
 					if (p == null)
 						continue;
-					if (min == null || JGAlgoUtils.cmpDefault(min.key, p.key) > 0)
+					if (min == null || COMPARE_KEY_DEFAULT_GE(min.key, p.key))
 						min = p;
 				}
 			} else {
-				for (Node<K, V> p : newRoots) {
+				for (Node KEY_VALUE_GENERIC p : newRoots) {
 					if (p == null)
 						continue;
 					if (min == null || c.compare(min.key, p.key) > 0)
@@ -348,20 +393,20 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 		Arrays.fill(newRoots, 0, maxDegree, null);
 	}
 
-	private Node<K, V> unionDefaultCmp(Node<K, V> u, Node<K, V> v) {
-		if (v == minRoot || JGAlgoUtils.cmpDefault(u.key, v.key) > 0) {
-			Node<K, V> temp = u;
+	private Node KEY_VALUE_GENERIC unionDefaultCmp(Node KEY_VALUE_GENERIC u, Node KEY_VALUE_GENERIC v) {
+		if (v == minRoot || COMPARE_KEY_DEFAULT_GE(u.key, v.key)) {
+			Node KEY_VALUE_GENERIC temp = u;
 			u = v;
 			v = temp;
 		}
-		assert JGAlgoUtils.cmpDefault(u.key, v.key) <= 0;
+		assert COMPARE_KEY_DEFAULT_LEQ(u.key, v.key);
 		addChild(u, v);
 		return u;
 	}
 
-	private Node<K, V> unionCustomCmp(Node<K, V> u, Node<K, V> v) {
+	private Node KEY_VALUE_GENERIC unionCustomCmp(Node KEY_VALUE_GENERIC u, Node KEY_VALUE_GENERIC v) {
 		if (v == minRoot || c.compare(u.key, v.key) > 0) {
-			Node<K, V> temp = u;
+			Node KEY_VALUE_GENERIC temp = u;
 			u = v;
 			v = temp;
 		}
@@ -370,7 +415,7 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 		return u;
 	}
 
-	private static <K, V> void addChild(Node<K, V> parent, Node<K, V> child) {
+	private static  KEY_VALUE_GENERIC void addChild(Node KEY_VALUE_GENERIC parent, Node KEY_VALUE_GENERIC child) {
 		child.parent = parent;
 		child.prev = null;
 		child.next = parent.child;
@@ -380,35 +425,43 @@ class HeapFibonacci<K, V> extends AbstractHeapReferenceable<K, V> {
 		parent.degree++;
 	}
 
-	private static class Node<K, V> extends Trees.TreeNodeImpl<Node<K, V>> implements HeapReference<K, V> {
+	private static class Node KEY_VALUE_GENERIC extends Trees.TreeNodeImpl<Node KEY_VALUE_GENERIC> implements HEAP_REFERENCE KEY_VALUE_GENERIC {
 
-		K key;
-		V value;
+		PRIMITIVE_KEY_TYPE key;
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+		PRIMITIVE_VALUE_TYPE value;
+#endif
 		byte degree;
 		boolean marked;
 
-		Node(K key) {
+		Node(PRIMITIVE_KEY_TYPE key) {
 			this.key = key;
 		}
 
 		@Override
-		public K key() {
+		public PRIMITIVE_KEY_TYPE key() {
 			return key;
 		}
 
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
 		@Override
-		public V value() {
+		public PRIMITIVE_VALUE_TYPE value() {
 			return value;
 		}
 
 		@Override
-		public void setValue(V val) {
+		public void setValue(PRIMITIVE_VALUE_TYPE val) {
 			value = val;
 		}
+#endif
 
 		@Override
 		public String toString() {
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
 			return "{" + key + ":" + value + "}";
+#else
+			return String.valueOf(key);
+#endif
 		}
 
 	}

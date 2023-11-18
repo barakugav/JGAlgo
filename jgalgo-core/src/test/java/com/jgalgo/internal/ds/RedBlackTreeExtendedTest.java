@@ -17,12 +17,15 @@
 package com.jgalgo.internal.ds;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.internal.ds.HeapReferenceableTestUtils.TestMode;
+import com.jgalgo.internal.ds.ReferenceableHeapTestUtils.TestMode;
 import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
 @SuppressWarnings("boxing")
 public class RedBlackTreeExtendedTest extends TestBase {
@@ -40,15 +43,16 @@ public class RedBlackTreeExtendedTest extends TestBase {
 		tester.addPhase().withArgs(16384, 32768).repeat(8);
 		tester.run((n, m) -> {
 			RedBlackTreeExtension.Size<Integer, Void> sizeExt = new RedBlackTreeExtension.Size<>();
-			RedBlackTree<Integer, Void> tree = new RedBlackTreeExtended<>(compare, List.of(sizeExt));
+			ObjObjRedBlackTree<Integer, Void> tree = new RedBlackTreeExtended<>(compare, List.of(sizeExt));
 
-			HeapReferenceableTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
+			ReferenceableHeapTestUtils.testHeap(intRefHeapFromObjObjRefHeap(tree), n, m, TestMode.Normal, false,
+					compare, seedGen.nextSeed());
 
-			for (HeapReference<Integer, Void> node : tree) {
+			for (ObjObjReferenceableHeap.Ref<Integer, Void> node : tree) {
 				int expectedSize = 0;
 
 				for (@SuppressWarnings("unused")
-				HeapReference<Integer, Void> descendant : IterTools.foreach(tree.subTreeIterator(node)))
+				ObjObjReferenceableHeap.Ref<Integer, Void> descendant : IterTools.foreach(tree.subTreeIterator(node)))
 					expectedSize++;
 
 				int actualSize = sizeExt.getSubTreeSize(node);
@@ -70,13 +74,15 @@ public class RedBlackTreeExtendedTest extends TestBase {
 		tester.addPhase().withArgs(16384, 32768).repeat(4);
 		tester.run((n, m) -> {
 			RedBlackTreeExtension.Min<Integer, Void> minExt = new RedBlackTreeExtension.Min<>();
-			RedBlackTree<Integer, Void> tree = new RedBlackTreeExtended<>(compare, List.of(minExt));
+			ObjObjRedBlackTree<Integer, Void> tree = new RedBlackTreeExtended<>(compare, List.of(minExt));
 
-			HeapReferenceableTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
+			ReferenceableHeapTestUtils.testHeap(intRefHeapFromObjObjRefHeap(tree), n, m, TestMode.Normal, false,
+					compare, seedGen.nextSeed());
 
-			for (HeapReference<Integer, Void> node : tree) {
+			for (ObjObjReferenceableHeap.Ref<Integer, Void> node : tree) {
 				int expectedMin = Integer.MAX_VALUE;
-				for (HeapReference<Integer, Void> descendant : IterTools.foreach(tree.subTreeIterator(node)))
+				for (ObjObjReferenceableHeap.Ref<Integer, Void> descendant : IterTools
+						.foreach(tree.subTreeIterator(node)))
 					expectedMin = Math.min(expectedMin, descendant.key());
 
 				int actualMin = minExt.getSubTreeMin(node).key();
@@ -98,18 +104,99 @@ public class RedBlackTreeExtendedTest extends TestBase {
 		tester.addPhase().withArgs(16384, 32768).repeat(4);
 		tester.run((n, m) -> {
 			RedBlackTreeExtension.Max<Integer, Void> maxExt = new RedBlackTreeExtension.Max<>();
-			RedBlackTree<Integer, Void> tree = new RedBlackTreeExtended<>(compare, List.of(maxExt));
+			ObjObjRedBlackTree<Integer, Void> tree = new RedBlackTreeExtended<>(compare, List.of(maxExt));
 
-			HeapReferenceableTestUtils.testHeap(tree, n, m, TestMode.Normal, false, compare, seedGen.nextSeed());
-			for (HeapReference<Integer, Void> node : tree) {
+			ReferenceableHeapTestUtils.testHeap(intRefHeapFromObjObjRefHeap(tree), n, m, TestMode.Normal, false,
+					compare, seedGen.nextSeed());
+			for (ObjObjReferenceableHeap.Ref<Integer, Void> node : tree) {
 				int expectedMax = Integer.MIN_VALUE;
-				for (HeapReference<Integer, Void> descendant : IterTools.foreach(tree.subTreeIterator(node)))
+				for (ObjObjReferenceableHeap.Ref<Integer, Void> descendant : IterTools
+						.foreach(tree.subTreeIterator(node)))
 					expectedMax = Math.max(expectedMax, descendant.key());
 
 				int actualMax = maxExt.getSubTreeMax(node).key();
 				assertEquals(expectedMax, actualMax, "Max extension reported wrong value");
 			}
 		});
+	}
+
+	private static IntReferenceableHeap intRefHeapFromObjObjRefHeap(ObjObjReferenceableHeap<Integer, Void> h) {
+		return new IntReferenceableHeap() {
+
+			final Map<IntReferenceableHeap.Ref, ObjObjReferenceableHeap.Ref<Integer, Void>> refIntToObj =
+					new Reference2ObjectOpenHashMap<>();
+			final Map<ObjObjReferenceableHeap.Ref<Integer, Void>, IntReferenceableHeap.Ref> refObjToRef =
+					new Reference2ObjectOpenHashMap<>();
+
+			@Override
+			public void clear() {
+				h.clear();
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return h.isEmpty();
+			}
+
+			@Override
+			public boolean isNotEmpty() {
+				return h.isNotEmpty();
+			}
+
+			@Override
+			public Iterator<IntReferenceableHeap.Ref> iterator() {
+				return IterTools.map(h.iterator(), refObjToRef::get);
+			}
+
+			@Override
+			public IntReferenceableHeap.Ref insert(int key) {
+				ObjObjReferenceableHeap.Ref<Integer, Void> objRef = h.insert(key);
+				IntReferenceableHeap.Ref intRef = new IntReferenceableHeap.Ref() {
+					@Override
+					public int key() {
+						return objRef.key().intValue();
+					}
+				};
+				refObjToRef.put(objRef, intRef);
+				refIntToObj.put(intRef, objRef);
+				return intRef;
+			}
+
+			@Override
+			public IntReferenceableHeap.Ref findMin() {
+				return refObjToRef.get(h.findMin());
+			}
+
+			@Override
+			public IntReferenceableHeap.Ref extractMin() {
+				ObjObjReferenceableHeap.Ref<Integer, Void> objRef = h.extractMin();
+				IntReferenceableHeap.Ref intRef = refObjToRef.remove(objRef);
+				refIntToObj.remove(intRef);
+				return intRef;
+			}
+
+			@Override
+			public void meld(IntReferenceableHeap heap) {
+				throw new UnsupportedOperationException("Unimplemented method 'meld'");
+			}
+
+			@Override
+			public IntComparator comparator() {
+				return (IntComparator) h.comparator();
+			}
+
+			@Override
+			public void decreaseKey(IntReferenceableHeap.Ref ref, int newKey) {
+				h.decreaseKey(refIntToObj.get(ref), newKey);
+			}
+
+			@Override
+			public void remove(IntReferenceableHeap.Ref ref) {
+				ObjObjReferenceableHeap.Ref<Integer, Void> objRef = refIntToObj.remove(ref);
+				refObjToRef.remove(objRef);
+				h.remove(objRef);
+			}
+		};
 	}
 
 }

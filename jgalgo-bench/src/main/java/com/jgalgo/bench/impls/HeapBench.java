@@ -16,12 +16,15 @@
 
 package com.jgalgo.bench.impls;
 
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -37,9 +40,15 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
-import com.jgalgo.internal.ds.BinarySearchTree;
 import com.jgalgo.internal.ds.Heap;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.IntBinomialHeap;
+import com.jgalgo.internal.ds.IntFibonacciHeap;
+import com.jgalgo.internal.ds.IntPairingHeap;
+import com.jgalgo.internal.ds.IntRedBlackTree;
+import com.jgalgo.internal.ds.IntReferenceableHeap;
+import com.jgalgo.internal.ds.IntSplayTree;
+import com.jgalgo.internal.util.IterTools;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 @BenchmarkMode(Mode.AverageTime)
@@ -129,36 +138,35 @@ public class HeapBench {
 
 	@Benchmark
 	public void Pairing(Blackhole blackhole) {
-		benchHeap(heapBuilder(HeapReferenceable.newBuilder().setOption("impl", "pairing")), blackhole);
+		benchHeap(heapBuilder(IntPairingHeap::new), blackhole);
 	}
 
 	@Benchmark
 	public void Fibonacci(Blackhole blackhole) {
-		benchHeap(heapBuilder(HeapReferenceable.newBuilder().setOption("impl", "fibonacci")), blackhole);
+		benchHeap(heapBuilder(IntFibonacciHeap::new), blackhole);
 	}
 
 	@Benchmark
 	public void Binomial(Blackhole blackhole) {
-		benchHeap(heapBuilder(HeapReferenceable.newBuilder().setOption("impl", "binomial")), blackhole);
+		benchHeap(heapBuilder(IntBinomialHeap::new), blackhole);
 	}
 
 	@Benchmark
 	public void RedBlackTree(Blackhole blackhole) {
-		benchHeap(heapBuilder(basicRefBuilder(BinarySearchTree.newBuilder().setOption("impl", "red-black"))),
-				blackhole);
+		benchHeap(heapBuilder(IntRedBlackTree::new), blackhole);
 	}
 
 	@Benchmark
 	public void SplayTree(Blackhole blackhole) {
-		benchHeap(heapBuilder(basicRefBuilder(BinarySearchTree.newBuilder().setOption("impl", "splay"))), blackhole);
+		benchHeap(heapBuilder(IntSplayTree::new), blackhole);
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static Heap.Builder<Integer> heapBuilder(HeapReferenceable.Builder builder) {
+	private static Heap.Builder<Integer> heapBuilder(Function<IntComparator, IntReferenceableHeap> builder) {
 		return new Heap.Builder<>() {
 			@Override
 			public Heap build(Comparator cmp) {
-				return builder.keysTypePrimitive(int.class).valuesTypeVoid().build(cmp).asHeap();
+				return new HeapFromReferenceableHeap(builder.apply((IntComparator) cmp));
 			}
 
 			@Override
@@ -173,40 +181,73 @@ public class HeapBench {
 		};
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	static HeapReferenceable.Builder<Integer, Void> basicRefBuilder(HeapReferenceable.Builder<?, ?> builder) {
-		return new HeapReferenceable.Builder<>() {
+	static class HeapFromReferenceableHeap implements Heap<Integer> {
 
-			@Override
-			public HeapReferenceable build(Comparator cmp) {
-				return builder.keysTypePrimitive(int.class).valuesTypeVoid().build(cmp);
-			}
+		private final IntReferenceableHeap heap;
 
-			@Override
-			public HeapReferenceable.Builder keysTypeObj() {
-				return this;
-			}
+		HeapFromReferenceableHeap(IntReferenceableHeap heap) {
+			this.heap = heap;
+		}
 
-			@Override
-			public HeapReferenceable.Builder keysTypePrimitive(Class primitiveType) {
-				return this;
-			}
+		@Override
+		public Iterator<Integer> iterator() {
+			return IterTools.map(heap.iterator(), IntReferenceableHeap.Ref::key);
+		}
 
-			@Override
-			public HeapReferenceable.Builder valuesTypeObj() {
-				return this;
-			}
+		@Override
+		public void insert(Integer elm) {
+			heap.insert(elm.intValue());
+		}
 
-			@Override
-			public HeapReferenceable.Builder valuesTypePrimitive(Class primitiveType) {
-				return this;
-			}
+		@Override
+		public void insertAll(Collection<? extends Integer> elms) {
+			for (Integer elm : elms)
+				heap.insert(elm.intValue());
+		}
 
-			@Override
-			public HeapReferenceable.Builder valuesTypeVoid() {
-				return this;
-			}
-		};
+		@Override
+		public Integer findMin() {
+			return Integer.valueOf(heap.findMin().key());
+		}
+
+		@Override
+		public Integer extractMin() {
+			return Integer.valueOf(heap.extractMin().key());
+		}
+
+		@Override
+		public boolean remove(Integer elm) {
+			IntReferenceableHeap.Ref ref = heap.find(elm.intValue());
+			if (ref == null)
+				return false;
+			heap.remove(ref);
+			return true;
+		}
+
+		@Override
+		public void meld(Heap<? extends Integer> heap) {
+			throw new UnsupportedOperationException("Unimplemented method 'meld'");
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return heap.isEmpty();
+		}
+
+		@Override
+		public boolean isNotEmpty() {
+			return heap.isNotEmpty();
+		}
+
+		@Override
+		public void clear() {
+			heap.clear();
+		}
+
+		@Override
+		public Comparator<? super Integer> comparator() {
+			return heap.comparator();
+		}
 	}
 
 }

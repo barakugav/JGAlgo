@@ -30,6 +30,8 @@ import java.util.TreeMap;
 import com.jgalgo.internal.util.DebugPrinter;
 import com.jgalgo.internal.util.RandomIntUnique;
 import com.jgalgo.internal.util.TestUtils;
+
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -42,10 +44,10 @@ class HeapTestUtils extends TestUtils {
 	}
 
 	static void testRandOpsCustomCompare(Heap.Builder<Integer> heapBuilder, long seed) {
-		testRandOps(heapBuilder, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+		testRandOps(heapBuilder, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testRandOps(Heap.Builder<Integer> heapBuilder, Comparator<? super Integer> compare, long seed) {
+	private static void testRandOps(Heap.Builder<Integer> heapBuilder, IntComparator compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 16).repeat(128);
@@ -80,7 +82,7 @@ class HeapTestUtils extends TestUtils {
 	}
 
 	static void testMeldCustomCompare(Heap.Builder<Integer> heapBuilder, long seed) {
-		testMeld(heapBuilder, false, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+		testMeld(heapBuilder, false, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
 	static void testMeldWithOrderedValuesDefaultCompare(Heap.Builder<Integer> heapBuilder, long seed) {
@@ -88,11 +90,11 @@ class HeapTestUtils extends TestUtils {
 	}
 
 	static void testMeldWithOrderedValuesCustomCompare(Heap.Builder<Integer> heapBuilder, long seed) {
-		testMeld(heapBuilder, true, (x1, x2) -> -Integer.compare(x1.intValue(), x2.intValue()), seed);
+		testMeld(heapBuilder, true, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
 	private static void testMeld(Heap.Builder<Integer> heapBuilder, boolean orderedValues,
-			Comparator<? super Integer> compare, long seed) {
+			IntComparator compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16).repeat(64);

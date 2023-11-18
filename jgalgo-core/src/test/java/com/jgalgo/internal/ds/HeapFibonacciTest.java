@@ -16,30 +16,30 @@
 
 package com.jgalgo.internal.ds;
 
-import java.util.Comparator;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.doubles.DoubleComparator;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 
 public class HeapFibonacciTest extends TestBase {
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static Heap.Builder<Integer> heapBuilder() {
-		return new Heap.Builder<>() {
+		return ReferenceableHeapTestUtils.heapBuilderFromReferenceableHeapBuilder(heapReferenceableBuilder());
+	}
 
-			@Override
-			public Heap build(Comparator cmp) {
-				return new HeapFibonacci<Integer, Object>(cmp).asHeap();
-			}
-
-			@Override
-			public Heap.Builder elementsTypeObj() {
-				return this;
-			}
-
-			@Override
-			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
-				return this;
-			}
+	private static ReferenceableHeap.Builder heapReferenceableBuilder() {
+		return (keyType, valueType, comparator) -> {
+			if (keyType == int.class && valueType == int.class)
+				return new IntIntFibonacciHeap((IntComparator) comparator);
+			if (keyType == int.class && valueType == void.class)
+				return new IntFibonacciHeap((IntComparator) comparator);
+			if (keyType == double.class && valueType == int.class)
+				return new DoubleIntFibonacciHeap((DoubleComparator) comparator);
+			if (keyType == double.class && valueType == Object.class)
+				return new DoubleObjFibonacciHeap<>((DoubleComparator) comparator);
+			if (keyType == Object.class && valueType == void.class)
+				return new ObjFibonacciHeap<>(comparator);
+			throw new UnsupportedOperationException("Unsupported heap type: " + keyType + ", " + valueType);
 		};
 	}
 
@@ -76,18 +76,13 @@ public class HeapFibonacciTest extends TestBase {
 	@Test
 	public void testDecreaseKeyDefaultCompare() {
 		final long seed = 0xcadbabb0e01d6ea5L;
-		HeapReferenceableTestUtils.testDecreaseKeyDefaultCompare(createRefHeapBuilder(), seed);
+		ReferenceableHeapTestUtils.testDecreaseKeyDefaultCompare(heapReferenceableBuilder(), seed);
 	}
 
 	@Test
 	public void testDecreaseKeyCustomCompare() {
 		final long seed = 0x0a7f3203577b4cefL;
-		HeapReferenceableTestUtils.testDecreaseKeyCustomCompare(createRefHeapBuilder(), seed);
-	}
-
-	private static HeapReferenceable.Builder<Integer, Void> createRefHeapBuilder() {
-		return HeapReferenceable.newBuilder().setOption("impl", "fibonacci").keysTypePrimitive(int.class)
-				.valuesTypeVoid();
+		ReferenceableHeapTestUtils.testDecreaseKeyCustomCompare(heapReferenceableBuilder(), seed);
 	}
 
 }

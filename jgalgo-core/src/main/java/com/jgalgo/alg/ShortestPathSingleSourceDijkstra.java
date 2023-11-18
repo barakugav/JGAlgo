@@ -22,8 +22,9 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.HeapReference;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.DoubleIntReferenceableHeap;
+import com.jgalgo.internal.ds.IntIntReferenceableHeap;
+import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 
 /**
@@ -48,21 +49,19 @@ import com.jgalgo.internal.util.Assertions;
  */
 class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.AbstractImpl {
 
-	private HeapReferenceable.Builder<?, ?> heapBuilder;
+	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.newBuilder();
 
 	/**
 	 * Construct a new SSSP algorithm.
 	 */
-	ShortestPathSingleSourceDijkstra() {
-		heapBuilder = HeapReferenceable.newBuilder();
-	}
+	ShortestPathSingleSourceDijkstra() {}
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
+	void setHeapBuilder(ReferenceableHeap.Builder heapBuilder) {
 		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
@@ -84,10 +83,8 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 
 	private ShortestPathSingleSource.IResult computeSsspDoubles(IndexGraph g, IWeightFunction w, int source) {
 		final int n = g.vertices().size();
-		HeapReferenceable<Double, Integer> heap =
-				heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
-		@SuppressWarnings("unchecked")
-		HeapReference<Double, Integer>[] verticesPtrs = new HeapReference[n];
+		DoubleIntReferenceableHeap heap = (DoubleIntReferenceableHeap) heapBuilder.build(double.class, int.class);
+		DoubleIntReferenceableHeap.Ref[] verticesPtrs = new DoubleIntReferenceableHeap.Ref[n];
 
 		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);
 		res.distances[source] = 0;
@@ -103,20 +100,20 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 				Assertions.Graphs.onlyPositiveWeight(ew);
 				double distance = uDistance + ew;
 
-				HeapReference<Double, Integer> vPtr = verticesPtrs[v];
+				DoubleIntReferenceableHeap.Ref vPtr = verticesPtrs[v];
 				if (vPtr == null) {
-					verticesPtrs[v] = heap.insert(Double.valueOf(distance), Integer.valueOf(v));
+					verticesPtrs[v] = heap.insert(distance, v);
 					res.backtrack[v] = e;
-				} else if (distance < vPtr.key().doubleValue()) {
-					heap.decreaseKey(vPtr, Double.valueOf(distance));
+				} else if (distance < vPtr.key()) {
+					heap.decreaseKey(vPtr, distance);
 					res.backtrack[v] = e;
 				}
 			}
 
 			if (heap.isEmpty())
 				break;
-			HeapReference<Double, Integer> next = heap.extractMin();
-			res.distances[u = next.value().intValue()] = next.key().doubleValue();
+			DoubleIntReferenceableHeap.Ref next = heap.extractMin();
+			res.distances[u = next.value()] = next.key();
 		}
 
 		return res;
@@ -124,10 +121,8 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 
 	private ShortestPathSingleSource.IResult computeSsspInts(IndexGraph g, IWeightFunctionInt w, int source) {
 		final int n = g.vertices().size();
-		HeapReferenceable<Integer, Integer> heap =
-				heapBuilder.keysTypePrimitive(int.class).valuesTypePrimitive(int.class).build();
-		@SuppressWarnings("unchecked")
-		HeapReference<Integer, Integer>[] verticesPtrs = new HeapReference[n];
+		IntIntReferenceableHeap heap = (IntIntReferenceableHeap) heapBuilder.build(int.class, int.class);
+		IntIntReferenceableHeap.Ref[] verticesPtrs = new IntIntReferenceableHeap.Ref[n];
 
 		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
 		res.distances[source] = 0;
@@ -143,20 +138,20 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 				Assertions.Graphs.onlyPositiveWeight(ew);
 				int distance = uDistance + ew;
 
-				HeapReference<Integer, Integer> vPtr = verticesPtrs[v];
+				IntIntReferenceableHeap.Ref vPtr = verticesPtrs[v];
 				if (vPtr == null) {
-					verticesPtrs[v] = heap.insert(Integer.valueOf(distance), Integer.valueOf(v));
+					verticesPtrs[v] = heap.insert(distance, v);
 					res.backtrack[v] = e;
-				} else if (distance < vPtr.key().intValue()) {
-					heap.decreaseKey(vPtr, Integer.valueOf(distance));
+				} else if (distance < vPtr.key()) {
+					heap.decreaseKey(vPtr, distance);
 					res.backtrack[v] = e;
 				}
 			}
 
 			if (heap.isEmpty())
 				break;
-			HeapReference<Integer, Integer> next = heap.extractMin();
-			res.distances[u = next.value().intValue()] = next.key().intValue();
+			IntIntReferenceableHeap.Ref next = heap.extractMin();
+			res.distances[u = next.value()] = next.key();
 		}
 
 		return res;

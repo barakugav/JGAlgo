@@ -24,9 +24,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import com.jgalgo.internal.ds.HeapReferenceableTestUtils.HeapReferenceableTracker;
-import com.jgalgo.internal.ds.HeapReferenceableTestUtils.HeapTrackerIdGenerator;
-import com.jgalgo.internal.ds.HeapReferenceableTestUtils.TestMode;
+import com.jgalgo.internal.ds.ReferenceableHeapTestUtils.ReferenceableHeapTracker;
+import com.jgalgo.internal.ds.ReferenceableHeapTestUtils.HeapTrackerIdGenerator;
+import com.jgalgo.internal.ds.ReferenceableHeapTestUtils.TestMode;
 import com.jgalgo.internal.util.DebugPrinter;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -37,8 +37,7 @@ class BinarySearchTreeTestUtils extends TestUtils {
 
 	private BinarySearchTreeTestUtils() {}
 
-	@SuppressWarnings("boxing")
-	static void testExtractMax(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+	static void testExtractMax(IntReferenceableHeap.Builder treeBuilder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		IntComparator compare = null;
@@ -49,17 +48,18 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		tester.addPhase().withArgs(256).repeat(16);
 		tester.addPhase().withArgs(4096).repeat(8);
 		tester.run(n -> {
-			BSTTracker tracker = new BSTTracker(treeBuilder.build(compare), 0, compare, seedGen.nextSeed());
-			HeapReferenceableTestUtils.testHeap(tracker, n, TestMode.InsertFirst,
+			BSTTracker tracker = new BSTTracker((IntBinarySearchTree) treeBuilder.build(int.class, void.class, compare),
+					0, compare, seedGen.nextSeed());
+			ReferenceableHeapTestUtils.testHeap(tracker, n, TestMode.InsertFirst,
 					randArray(n / 2, 0, Integer.MAX_VALUE, seedGen.nextSeed()), compare, seedGen.nextSeed());
 
 			for (int repeat = 0; repeat < 4; repeat++) {
-				HeapReferenceableTestUtils.testHeap(tracker, n, TestMode.Normal,
+				ReferenceableHeapTestUtils.testHeap(tracker, n, TestMode.Normal,
 						randArray(n / 2, 0, Integer.MAX_VALUE, seedGen.nextSeed()), compare, seedGen.nextSeed());
 
 				for (int i = 0; i < 2; i++) {
 					int x = rand.nextInt();
-					HeapReference<Integer, Void> ref = tracker.heap.insert(x);
+					IntReferenceableHeap.Ref ref = tracker.heap.insert(x);
 					tracker.insert(x, ref);
 				}
 				int expected = tracker.extractMax();
@@ -69,16 +69,15 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		});
 	}
 
-	static void testFindSmallerDefaultCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+	static void testFindSmallerDefaultCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
 		testFindSmaller(treeBuilder, null, seed);
 	}
 
-	static void testFindSmallerCustomCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+	static void testFindSmallerCustomCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
 		testFindSmaller(treeBuilder, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testFindSmaller(BinarySearchTree.Builder<Integer, Void> treeBuilder, IntComparator compare,
-			long seed) {
+	private static void testFindSmaller(IntReferenceableHeap.Builder treeBuilder, IntComparator compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(8).repeat(256);
@@ -91,16 +90,15 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		});
 	}
 
-	static void testFindGreaterDefaultCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+	static void testFindGreaterDefaultCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
 		testFindGreater(treeBuilder, null, seed);
 	}
 
-	static void testFindGreaterCustomCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+	static void testFindGreaterCustomCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
 		testFindGreater(treeBuilder, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testFindGreater(BinarySearchTree.Builder<Integer, Void> treeBuilder, IntComparator compare,
-			long seed) {
+	private static void testFindGreater(IntReferenceableHeap.Builder treeBuilder, IntComparator compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(8).repeat(256);
@@ -114,22 +112,23 @@ class BinarySearchTreeTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	private static void testFindSmallerGreater(BinarySearchTree.Builder<Integer, Void> treeBuilder,
-			IntComparator compare, long seed, int n, boolean smaller) {
+	private static void testFindSmallerGreater(IntReferenceableHeap.Builder treeBuilder, IntComparator compare,
+			long seed, int n, boolean smaller) {
 		DebugPrinter debug = new DebugPrinter(false);
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		BSTTracker tracker = new BSTTracker(treeBuilder.build(compare), 0, compare, seedGen.nextSeed());
+		BSTTracker tracker = new BSTTracker((IntBinarySearchTree) treeBuilder.build(int.class, void.class, compare), 0,
+				compare, seedGen.nextSeed());
 
 		for (int i = 0; i < n; i++) {
 			int newElm = rand.nextInt(n);
 			debug.println("Insert(", newElm, ")");
-			HeapReference<Integer, Void> ref = tracker.tree().insert(newElm);
+			IntReferenceableHeap.Ref ref = tracker.tree().insert(newElm);
 			tracker.insert(newElm, ref);
 
 			int searchedElm = rand.nextInt(n);
 
-			HeapReference<Integer, Void> actualRef;
+			IntReferenceableHeap.Ref actualRef;
 			Integer actual, expected;
 			if (smaller) {
 				if (rand.nextBoolean()) {
@@ -154,15 +153,15 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		}
 	}
 
-	static void testGetPredecessorsDefaultCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+	static void testGetPredecessorsDefaultCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
 		testGetPredecessors(treeBuilder, null, seed);
 	}
 
-	static void testGetPredecessorsCustomCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+	static void testGetPredecessorsCustomCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
 		testGetPredecessors(treeBuilder, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testGetPredecessors(BinarySearchTree.Builder<Integer, Void> treeBuilder, IntComparator compare,
+	private static void testGetPredecessors(IntReferenceableHeap.Builder treeBuilder, IntComparator compare,
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
@@ -176,15 +175,15 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		});
 	}
 
-	static void testGetSuccessorsDefaultCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+	static void testGetSuccessorsDefaultCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
 		testGetSuccessors(treeBuilder, null, seed);
 	}
 
-	static void testGetSuccessorsCustomCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+	static void testGetSuccessorsCustomCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
 		testGetSuccessors(treeBuilder, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testGetSuccessors(BinarySearchTree.Builder<Integer, Void> treeBuilder, IntComparator compare,
+	private static void testGetSuccessors(IntReferenceableHeap.Builder treeBuilder, IntComparator compare,
 
 			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
@@ -200,19 +199,20 @@ class BinarySearchTreeTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	private static void testGetPredecessorSuccessor(BinarySearchTree.Builder<Integer, Void> treeBuilder, int n,
+	private static void testGetPredecessorSuccessor(IntReferenceableHeap.Builder treeBuilder, int n,
 			IntComparator compare, long seed, boolean predecessor) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		DebugPrinter debug = new DebugPrinter(false);
 		Random rand = new Random(seedGen.nextSeed());
 		int[] a = randPermutation(n, seedGen.nextSeed());
 
-		BSTTracker tracker = new BSTTracker(treeBuilder.build(compare), 0, compare, seedGen.nextSeed());
+		BSTTracker tracker = new BSTTracker((IntBinarySearchTree) treeBuilder.build(int.class, void.class, compare), 0,
+				compare, seedGen.nextSeed());
 
 		for (int i = 0; i < n; i++) {
 			int newElm = a[i];
 			debug.println("Insert(", newElm, ")");
-			HeapReference<Integer, Void> ref = tracker.tree().insert(newElm);
+			IntReferenceableHeap.Ref ref = tracker.tree().insert(newElm);
 			tracker.insert(newElm, ref);
 
 			Integer searchedElm;
@@ -223,16 +223,16 @@ class BinarySearchTreeTestUtils extends TestUtils {
 					searchedElm = tracker.ceiling(rand.nextInt(n));
 			} while (searchedElm == null);
 
-			HeapReference<Integer, Void> h = tracker.tree().find(searchedElm);
+			IntReferenceableHeap.Ref h = tracker.tree().find(searchedElm);
 			assertNotNull(h, "Failed to find ref for " + searchedElm);
 
 			Integer actual, expected;
 			if (predecessor) {
-				HeapReference<Integer, Void> actualH = tracker.tree().getPredecessor(h);
+				IntReferenceableHeap.Ref actualH = tracker.tree().getPredecessor(h);
 				actual = actualH == null ? null : actualH.key();
 				expected = tracker.lower(searchedElm);
 			} else {
-				HeapReference<Integer, Void> actualH = tracker.tree().getSuccessor(h);
+				IntReferenceableHeap.Ref actualH = tracker.tree().getSuccessor(h);
 				actual = actualH == null ? null : actualH.key();
 				expected = tracker.higher(searchedElm);
 			}
@@ -241,16 +241,15 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		}
 	}
 
-	static void testSplitDefaultCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+	static void testSplitDefaultCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
 		testSplit(treeBuilder, null, seed);
 	}
 
-	static void testSplitCustomCompare(BinarySearchTree.Builder<Integer, Void> treeBuilder, long seed) {
+	static void testSplitCustomCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
 		testSplit(treeBuilder, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testSplit(BinarySearchTree.Builder<Integer, Void> treeBuilder, IntComparator compare,
-			long seed) {
+	private static void testSplit(IntReferenceableHeap.Builder treeBuilder, IntComparator compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(8).repeat(128);
@@ -264,8 +263,8 @@ class BinarySearchTreeTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	private static void testSplit(BinarySearchTree.Builder<Integer, Void> treeBuilder, int tCount,
-			IntComparator compare, long seed) {
+	private static void testSplit(IntReferenceableHeap.Builder treeBuilder, int tCount, IntComparator compare,
+			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(seedGen.nextSeed());
@@ -273,10 +272,10 @@ class BinarySearchTreeTestUtils extends TestUtils {
 		final int maxVal = tCount * (1 << 12);
 
 		for (int i = 0; i < tCount; i++) {
-			BSTTracker tracker =
-					new BSTTracker(treeBuilder.build(compare), heapTrackerIdGen.nextId(), compare, seedGen.nextSeed());
+			BSTTracker tracker = new BSTTracker((IntBinarySearchTree) treeBuilder.build(int.class, void.class, compare),
+					heapTrackerIdGen.nextId(), compare, seedGen.nextSeed());
 			int[] elms = randArray(16, 0, maxVal, seedGen.nextSeed());
-			HeapReferenceableTestUtils.testHeap(tracker, 16, TestMode.InsertFirst, elms, compare, seedGen.nextSeed());
+			ReferenceableHeapTestUtils.testHeap(tracker, 16, TestMode.InsertFirst, elms, compare, seedGen.nextSeed());
 			trees.add(tracker);
 		}
 
@@ -306,7 +305,7 @@ class BinarySearchTreeTestUtils extends TestUtils {
 				if (h.tree().isEmpty())
 					continue;
 
-				Integer[] elms = h.tree().asHeap().stream().toArray(Integer[]::new);
+				Integer[] elms = h.tree().stream().map(IntReferenceableHeap.Ref::key).toArray(Integer[]::new);
 				Arrays.sort(elms, null);
 
 				double idx0 = 0.5 + rand.nextGaussian() / 10;
@@ -314,7 +313,7 @@ class BinarySearchTreeTestUtils extends TestUtils {
 				int idx = (int) ((elms.length - 1) * idx0);
 				Integer val = elms[idx];
 
-				BinarySearchTree<Integer, Void> s = h.tree().splitGreater(val);
+				IntBinarySearchTree s = h.tree().splitGreater(val);
 				BSTTracker t = new BSTTracker(s, heapTrackerIdGen.nextId(), compare, seedGen.nextSeed());
 				h.split(val, t);
 				treesNext.add(h);
@@ -326,7 +325,7 @@ class BinarySearchTreeTestUtils extends TestUtils {
 			for (BSTTracker h : trees) {
 				int opsNum = 512 / trees.size();
 				int[] elms = randArray(opsNum, 0, maxVal, seedGen.nextSeed());
-				HeapReferenceableTestUtils.testHeap(h, opsNum, TestMode.Normal, elms, compare, seedGen.nextSeed());
+				ReferenceableHeapTestUtils.testHeap(h, opsNum, TestMode.Normal, elms, compare, seedGen.nextSeed());
 			}
 		};
 
@@ -345,19 +344,19 @@ class BinarySearchTreeTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("boxing")
-	static class BSTTracker extends HeapReferenceableTracker {
+	static class BSTTracker extends ReferenceableHeapTracker {
 
-		BSTTracker(BinarySearchTree<Integer, Void> heap, int id, IntComparator compare, long seed) {
+		BSTTracker(IntBinarySearchTree heap, int id, IntComparator compare, long seed) {
 			super(heap, id, compare, seed);
 		}
 
-		BinarySearchTree<Integer, Void> tree() {
-			return (BinarySearchTree<Integer, Void>) heap;
+		IntBinarySearchTree tree() {
+			return (IntBinarySearchTree) heap;
 		}
 
 		int extractMax() {
 			Integer x = elms.lastKey();
-			HeapReference<Integer, Void> ref = elms.get(x).get(0);
+			IntReferenceableHeap.Ref ref = elms.get(x).get(0);
 			remove(x, ref);
 			return x;
 		}

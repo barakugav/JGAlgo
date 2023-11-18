@@ -16,25 +16,29 @@
 
 package com.jgalgo.internal.ds;
 
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
 import java.util.Comparator;
+import com.jgalgo.internal.util.JGAlgoUtils;
+#else
+import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
+#endif
 import java.util.Iterator;
 import java.util.function.BiFunction;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
 
-class BinarySearchTrees {
+class BINARY_SEARCH_TREES {
 
-	private BinarySearchTrees() {}
+	private BINARY_SEARCH_TREES() {}
 
-	static <K, NodeT extends Node<K, NodeT>> NodeT find(NodeT root, Comparator<? super K> c, K key) {
+	static <KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> NodeT find(NodeT root, KEY_COMPARATOR KEY_TYPE_GENERIC c, PRIMITIVE_KEY_TYPE key) {
 		return findOrNeighbor(root, c, key, NeighborType.None);
 	}
 
-	static <K, NodeT extends Node<K, NodeT>> NodeT findOrSmaller(NodeT root, Comparator<? super K> c, K key) {
+	static <KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> NodeT findOrSmaller(NodeT root, KEY_COMPARATOR KEY_TYPE_GENERIC c, PRIMITIVE_KEY_TYPE key) {
 		return findOrNeighbor(root, c, key, NeighborType.Predecessor);
 	}
 
-	static <K, NodeT extends Node<K, NodeT>> NodeT findOrGreater(NodeT root, Comparator<? super K> c, K key) {
+	static <KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> NodeT findOrGreater(NodeT root, KEY_COMPARATOR KEY_TYPE_GENERIC c, PRIMITIVE_KEY_TYPE key) {
 		return findOrNeighbor(root, c, key, NeighborType.Successor);
 	}
 
@@ -42,7 +46,7 @@ class BinarySearchTrees {
 		None, Predecessor, Successor,
 	}
 
-	private static <K, NodeT extends Node<K, NodeT>> NodeT findOrNeighbor(NodeT root, Comparator<? super K> c, K key,
+	private static <KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> NodeT findOrNeighbor(NodeT root, KEY_COMPARATOR KEY_TYPE_GENERIC c, PRIMITIVE_KEY_TYPE key,
 			NeighborType neighborType) {
 		if (root == null)
 			return null;
@@ -72,7 +76,7 @@ class BinarySearchTrees {
 		};
 		if (c == null) {
 			for (NodeT p = root;;) {
-				int cmp = JGAlgoUtils.cmpDefault(key, p.key);
+				int cmp = COMPARE_KEY_DEFAULT(key, p.key);
 				if (cmp < 0) {
 					if (!p.hasLeftChild())
 						return onLeftChildMissing.apply(neighborType, p);
@@ -103,12 +107,12 @@ class BinarySearchTrees {
 		}
 	}
 
-	static <K, NodeT extends Node<K, NodeT>> NodeT findSmaller(NodeT root, Comparator<? super K> c, K key) {
+	static <KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> NodeT findSmaller(NodeT root, KEY_COMPARATOR KEY_TYPE_GENERIC c, PRIMITIVE_KEY_TYPE key) {
 		if (root == null)
 			return null;
 		if (c == null) {
 			for (NodeT p = root;;) {
-				int cmp = JGAlgoUtils.cmpDefault(key, p.key);
+				int cmp = COMPARE_KEY_DEFAULT(key, p.key);
 				if (cmp <= 0) {
 					if (!p.hasLeftChild())
 						return getPredecessor(p);
@@ -135,12 +139,12 @@ class BinarySearchTrees {
 		}
 	}
 
-	static <K, NodeT extends Node<K, NodeT>> NodeT findGreater(NodeT root, Comparator<? super K> c, K key) {
+	static <KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> NodeT findGreater(NodeT root, KEY_COMPARATOR KEY_TYPE_GENERIC c, PRIMITIVE_KEY_TYPE key) {
 		if (root == null)
 			return null;
 		if (c == null) {
 			for (NodeT p = root;;) {
-				int cmp = JGAlgoUtils.cmpDefault(key, p.key);
+				int cmp = COMPARE_KEY_DEFAULT(key, p.key);
 				if (cmp >= 0) {
 					if (!p.hasRightChild())
 						return getSuccessor(p);
@@ -167,23 +171,23 @@ class BinarySearchTrees {
 		}
 	}
 
-	static <K, NodeT extends Node<K, NodeT>> NodeT findMin(NodeT root) {
+	static <KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> NodeT findMin(NodeT root) {
 		for (NodeT p = root;; p = p.left)
 			if (!p.hasLeftChild())
 				return p;
 	}
 
-	static <K, NodeT extends Node<K, NodeT>> NodeT findMax(NodeT root) {
+	static <KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> NodeT findMax(NodeT root) {
 		for (NodeT p = root;; p = p.right)
 			if (!p.hasRightChild())
 				return p;
 	}
 
-	static <K, NodeT extends Node<K, NodeT>> NodeT getPredecessor(NodeT n) {
+	static <KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> NodeT getPredecessor(NodeT n) {
 		return getPredecessorInSubtree(n, null);
 	}
 
-	private static <K, NodeT extends Node<K, NodeT>> NodeT getPredecessorInSubtree(NodeT n, NodeT subtreeRoot) {
+	private static <KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> NodeT getPredecessorInSubtree(NodeT n, NodeT subtreeRoot) {
 		/* predecessor in left sub tree */
 		if (n.hasLeftChild())
 			for (NodeT p = n.left;; p = p.right)
@@ -198,11 +202,11 @@ class BinarySearchTrees {
 		return null;
 	}
 
-	static <K, NodeT extends Node<K, NodeT>> NodeT getSuccessor(NodeT n) {
+	static <KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> NodeT getSuccessor(NodeT n) {
 		return getSuccessorInSubtree(n, null);
 	}
 
-	private static <K, NodeT extends Node<K, NodeT>> NodeT getSuccessorInSubtree(NodeT n, NodeT subtreeRoot) {
+	private static <KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> NodeT getSuccessorInSubtree(NodeT n, NodeT subtreeRoot) {
 		/* successor in right sub tree */
 		if (n.hasRightChild())
 			for (NodeT p = n.right;; p = p.left)
@@ -217,10 +221,10 @@ class BinarySearchTrees {
 		return null;
 	}
 
-	static <K, NodeT extends Node<K, NodeT>> void insert(NodeT root, Comparator<? super K> c, NodeT n) {
+	static <KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> void insert(NodeT root, KEY_COMPARATOR KEY_TYPE_GENERIC c, NodeT n) {
 		if (c == null) {
 			for (NodeT parent = root;;) {
-				int cmp = JGAlgoUtils.cmpDefault(n.key, parent.key);
+				int cmp = COMPARE_KEY_DEFAULT(n.key, parent.key);
 				if (cmp <= 0) {
 					if (!parent.hasLeftChild()) {
 						parent.left = n;
@@ -259,7 +263,7 @@ class BinarySearchTrees {
 		}
 	}
 
-	static <K, NodeT extends Node<K, NodeT>> void clear(NodeT root) {
+	static <KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> void clear(NodeT root) {
 		for (NodeT p = root; p != null;) {
 			for (;;) {
 				if (p.hasLeftChild()) {
@@ -278,7 +282,7 @@ class BinarySearchTrees {
 		}
 	}
 
-	static <K, NodeT extends Node<K, NodeT>> void swap(NodeT n1, NodeT n2) {
+	static <KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> void swap(NodeT n1, NodeT n2) {
 		if (n2 == n1.parent) {
 			NodeT temp = n1;
 			n1 = n2;
@@ -341,20 +345,22 @@ class BinarySearchTrees {
 		}
 	}
 
-	static class Node<K, NodeT extends Node<K, NodeT>> {
-		K key;
+	static class Node<KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> {
+		PRIMITIVE_KEY_TYPE key;
 		NodeT parent;
 		NodeT right;
 		NodeT left;
 
-		Node(K key) {
+		Node(PRIMITIVE_KEY_TYPE key) {
 			this.key = key;
 			parent = right = left = null;
 		}
 
 		void clear() {
 			clearWithoutUserData();
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
 			key = null;
+#endif
 		}
 
 		void clearWithoutUserData() {
@@ -363,7 +369,7 @@ class BinarySearchTrees {
 
 		@Override
 		public String toString() {
-			return "<" + key + ">";
+			return String.valueOf(key);
 		}
 
 		boolean isRoot() {
@@ -387,7 +393,7 @@ class BinarySearchTrees {
 		}
 	}
 
-	static class BSTIterator<K, NodeT extends Node<K, NodeT>> implements Iterator<NodeT> {
+	static class BSTIterator<KEY_GENERIC_LIST_START NodeT extends Node<KEY_GENERIC_LIST_START NodeT>> implements Iterator<NodeT> {
 
 		private final NodeT subtreeRoot;
 		private NodeT n;

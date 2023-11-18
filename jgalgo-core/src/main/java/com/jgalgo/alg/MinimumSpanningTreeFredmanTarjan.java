@@ -17,11 +17,12 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
+import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.internal.ds.HeapReference;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.ds.IntReferenceableHeap;
+import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -49,8 +50,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  */
 class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.AbstractUndirected {
 
-	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
-			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
+	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.newBuilder();
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -62,8 +62,8 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
-		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
+	void setHeapBuilder(ReferenceableHeap.Builder heapBuilder) {
+		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
 	/**
@@ -105,11 +105,10 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 		int[] treeVertices = new int[n]; // stack of super vertices in current built tree
 
 		// heap of edges going out of the current tree, one edge in per super vertex
-		HeapReferenceable<Integer, Void> heap = heapBuilder.build(w);
+		IntReferenceableHeap heap = (IntReferenceableHeap) heapBuilder.build(int.class, void.class, w);
 		int heapSize = 0;
 		// (super vertex -> heap element) for fast decreaseKey
-		@SuppressWarnings("unchecked")
-		HeapReference<Integer, Void>[] vHeapElm = new HeapReference[n];
+		IntReferenceableHeap.Ref[] vHeapElm = new IntReferenceableHeap.Ref[n];
 
 		IntCollection mst = new IntArrayList(n - 1);
 		for (int niNext;; ni = niNext) {
@@ -141,14 +140,14 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 							if (vTree[v] == r)
 								continue;
 
-							HeapReference<Integer, Void> heapElm = vHeapElm[v];
+							IntReferenceableHeap.Ref heapElm = vHeapElm[v];
 							if (heapElm == null) {
-								heapElm = vHeapElm[v] = heap.insert(Integer.valueOf(e));
+								heapElm = vHeapElm[v] = heap.insert(e);
 								heapSize++;
 								if (heapSize > k)
 									break treeLoop;
-							} else if (w.compare(e, heapElm.key().intValue()) < 0)
-								heap.decreaseKey(heapElm, Integer.valueOf(e));
+							} else if (w.compare(e, heapElm.key()) < 0)
+								heap.decreaseKey(heapElm, e);
 						}
 					}
 
@@ -158,7 +157,7 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 						if (heap.isEmpty())
 							// reached all vertices from current root, continue to next tree
 							break treeLoop;
-						e = heap.extractMin().key().intValue();
+						e = heap.extractMin().key();
 						heapSize--;
 
 						v = V[g.edgeSource(e)];

@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrays;
  * RedBlackTreeExtension.Max<Integer, String> maxExt = new RedBlackTreeExtension.Max<>();
  * RedBlackTreeExtended<Integer> tree = new RedBlackTreeExtended<>(List.of(sizeExt, maxExt));
  *
- * HeapReference<Integer, String> e1 = tree.insert(15, "Alice");
+ * ObjReferenceableHeap.Ref<Integer, String> e1 = tree.insert(15, "Alice");
  * tree.insert(5, "Bob");
  * tree.insert(3, "Charlie");
  * tree.insert(1, "Door");
@@ -45,7 +45,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrays;
  * tree.insert(1, "Zebra");
  *
  * int subTreeSize = sizeExt.getSubTreeSize(e1);
- * HeapReference<Integer, String> subTreeMax = maxExt.getSubTreeMax(e1);
+ * ObjReferenceableHeap.Ref<Integer, String> subTreeMax = maxExt.getSubTreeMax(e1);
  * System.out.println("The subtree of " + e1 + " is of size " + subTreeSize);
  * System.out.println("The maximum element in the sub tree of " + e1 + " is " + subTreeMax);
  * }</pre>
@@ -87,8 +87,8 @@ class RedBlackTreeExtension<K, V> {
 	 * RedBlackTreeExtension.Size<Integer, String> sizeExt = new RedBlackTreeExtension.Size<>();
 	 * RedBlackTreeExtended<Integer, String> tree = new RedBlackTreeExtended<>(List.of(sizeExt));
 	 *
-	 * HeapReference<Integer, String> e1 = tree.insert(15, "Alice");
-	 * HeapReference<Integer, String> e2 = tree.insert(5, "Bob");
+	 * ObjReferenceableHeap.Ref<Integer, String> e1 = tree.insert(15, "Alice");
+	 * ObjReferenceableHeap.Ref<Integer, String> e2 = tree.insert(5, "Bob");
 	 * tree.insert(3, "Charlie");
 	 * tree.insert(1, "Dude");
 	 * ...
@@ -119,7 +119,7 @@ class RedBlackTreeExtension<K, V> {
 		 * @return     the number of nodes in the subtree of given red black tree node. The counting include the node
 		 *             itself, therefore the returned value is always greater or equal to one.
 		 */
-		int getSubTreeSize(HeapReference<K, V> ref) {
+		int getSubTreeSize(ObjObjReferenceableHeap.Ref<K, V> ref) {
 			return getNodeData((RedBlackTreeExtended.Node<K, V>) ref);
 		}
 
@@ -180,15 +180,15 @@ class RedBlackTreeExtension<K, V> {
 	 * RedBlackTreeExtension.Min<Integer, String> minExt = new RedBlackTreeExtension.Min<>();
 	 * RedBlackTreeExtended<Integer, String> tree = new RedBlackTreeExtended<>(List.of(minExt));
 	 *
-	 * HeapReference<Integer, String> e1 = tree.insert(15, "Alice");
-	 * HeapReference<Integer, String> e2 = tree.insert(5, "Bob");
+	 * ObjReferenceableHeap.Ref<Integer, String> e1 = tree.insert(15, "Alice");
+	 * ObjReferenceableHeap.Ref<Integer, String> e2 = tree.insert(5, "Bob");
 	 * tree.insert(3, "Charlie");
 	 * tree.insert(1, "The Doors");
 	 * ...
 	 * tree.insert(1, "Led Zeppelin");
 	 *
-	 * HeapReference<Integer, String> e1SubtreeMin = minExt.getSubTreeMin(e1);
-	 * HeapReference<Integer, String> e2SubtreeMin = minExt.getSubTreeMin(e2);
+	 * ObjReferenceableHeap.Ref<Integer, String> e1SubtreeMin = minExt.getSubTreeMin(e1);
+	 * ObjReferenceableHeap.Ref<Integer, String> e2SubtreeMin = minExt.getSubTreeMin(e2);
 	 * System.out.println("The minimum element in the subtree of " + e1 + " is " + e1SubtreeMin);
 	 * System.out.println("The minimum element in the subtree of " + e2 + " is " + e2SubtreeMin);
 	 * }</pre>
@@ -215,7 +215,7 @@ class RedBlackTreeExtension<K, V> {
 		 *             subtree include the given node itself, therefore the returned element is always smaller or equal
 		 *             to the provided node.
 		 */
-		HeapReference<K, V> getSubTreeMin(HeapReference<K, V> ref) {
+		ObjObjReferenceableHeap.Ref<K, V> getSubTreeMin(ObjObjReferenceableHeap.Ref<K, V> ref) {
 			return getNodeData((RedBlackTreeExtended.Node<K, V>) ref);
 		}
 
@@ -314,15 +314,15 @@ class RedBlackTreeExtension<K, V> {
 	 * RedBlackTreeExtension.Max<Integer, String> maxExt = new RedBlackTreeExtension.Max<>();
 	 * RedBlackTreeExtended<Integer, String> tree = new RedBlackTreeExtended<>(List.of(maxExt));
 	 *
-	 * HeapReference<Integer, String> e1 = tree.insert(15, "Alice");
-	 * HeapReference<Integer, String> e2 = tree.insert(5, "Bob");
+	 * ObjReferenceableHeap.Ref<Integer, String> e1 = tree.insert(15, "Alice");
+	 * ObjReferenceableHeap.Ref<Integer, String> e2 = tree.insert(5, "Bob");
 	 * tree.insert(3, "Charlie");
 	 * tree.insert(1, "Dollar");
 	 * ...
 	 * tree.insert(1, "Euro");
 	 *
-	 * HeapReference<Integer, String> e1SubtreeMax = maxExt.getSubTreeMax(e1);
-	 * HeapReference<Integer, String> e2SubtreeMax = maxExt.getSubTreeMax(e2);
+	 * ObjReferenceableHeap.Ref<Integer, String> e1SubtreeMax = maxExt.getSubTreeMax(e1);
+	 * ObjReferenceableHeap.Ref<Integer, String> e2SubtreeMax = maxExt.getSubTreeMax(e2);
 	 * System.out.println("The maximum element in the subtree of " + e1 + " is " + e1SubtreeMax);
 	 * System.out.println("The maximum element in the subtree of " + e2 + " is " + e2SubtreeMax);
 	 * }</pre>
@@ -349,7 +349,7 @@ class RedBlackTreeExtension<K, V> {
 		 *             subtree include the given node itself, therefore the returned element is always greater or equal
 		 *             to the provided node.
 		 */
-		HeapReference<K, V> getSubTreeMax(HeapReference<K, V> ref) {
+		ObjObjReferenceableHeap.Ref<K, V> getSubTreeMax(ObjObjReferenceableHeap.Ref<K, V> ref) {
 			return getNodeData((RedBlackTreeExtended.Node<K, V>) ref);
 		}
 

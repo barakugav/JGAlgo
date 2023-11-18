@@ -18,8 +18,7 @@ package com.jgalgo.alg;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.ds.HeapReference;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.DoubleIntReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.Range;
@@ -51,10 +50,8 @@ class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutUtils.AbstractImplGl
 		ContractableGraph cg = new ContractableGraph(g);
 		Bitmap cut = new Bitmap(n);
 
-		HeapReferenceable<Double, Integer> heap =
-				HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class).build();
-		@SuppressWarnings("unchecked")
-		HeapReference<Double, Integer>[] vRefs = new HeapReference[n];
+		DoubleIntReferenceableHeap heap = DoubleIntReferenceableHeap.newInstance();
+		DoubleIntReferenceableHeap.Ref[] vRefs = new DoubleIntReferenceableHeap.Ref[n];
 
 		Bitmap minimumCut = new Bitmap(n);
 		double minimumCutWeight = Double.MAX_VALUE;
@@ -76,14 +73,14 @@ class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutUtils.AbstractImplGl
 					if (cut.get(V))
 						weightsSum += w.weight(e);
 				}
-				vRefs[U] = heap.insert(Double.valueOf(-weightsSum), Integer.valueOf(U));
+				vRefs[U] = heap.insert(-weightsSum, U);
 			}
 
 			double cutOfThePhaseWeight = 0;
 			int S = -1, T = -1;
 			minimumCutPhase: for (int prev = -1;;) {
-				HeapReference<Double, Integer> min = heap.extractMin();
-				int U = min.value().intValue();
+				DoubleIntReferenceableHeap.Ref min = heap.extractMin();
+				int U = min.value();
 				vRefs[U] = null;
 				cut.set(U);
 
@@ -101,10 +98,10 @@ class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutUtils.AbstractImplGl
 						assert eit.source() == U;
 						int V = eit.target();
 						if (!cut.get(V)) {
-							HeapReference<Double, Integer> vRef = vRefs[V];
-							double weightsSum = -vRef.key().doubleValue();
+							DoubleIntReferenceableHeap.Ref vRef = vRefs[V];
+							double weightsSum = -vRef.key();
 							weightsSum += w.weight(e);
-							heap.decreaseKey(vRef, Double.valueOf(-weightsSum));
+							heap.decreaseKey(vRef, -weightsSum);
 						}
 					}
 				} else {

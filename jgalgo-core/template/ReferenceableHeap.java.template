@@ -1,0 +1,267 @@
+/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.ds;
+
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+import com.jgalgo.internal.util.JGAlgoUtils;
+import java.util.Comparator;
+#else
+import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
+#endif
+
+/**
+ * A collection which maintains elements in order and support efficient retrieval of the minimum value, and expose
+ * references to the underling elements.
+ *
+ * <p>
+ * In addition to the regular Heap operations, the user can obtain a {@linkplain REFERENCEABLE_HEAP.Ref reference} to
+ * each inserted element via the return value of the {@link #insert} function. The reference will be valid as
+ * long as the element is still in the heap. By passing the reference to the heap implementation to functions such as
+ * {@link #decreaseKey} or {@link #remove} the heap implementation can perform the operations efficiently as is does
+ * not need to search for the element.
+ *
+ * <p>
+ * Another difference from the regular Heap, is the existent of both keys and values, rather than just
+ * 'elements'. A key may be changed using {@link #decreaseKey} while the <b>value</b> is the same. This matches the
+ * common use case of these heaps.
+ *
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface.
+ *
+ * <pre> {@code
+ * IntObjReferenceableHeap<Integer, String> heap = IntObjReferenceableHeap.newInstance();
+ * IntObjReferenceableHeap.Ref<String> r1 = heap.insert(5, "Alice");
+ * IntObjReferenceableHeap.Ref<String> r2 = heap.insert(10, "Bob");
+ * IntObjReferenceableHeap.Ref<String> r3 = heap.insert(3, "Charlie");
+ *
+ * assert heap.findMin() == r3;
+ * assert r2.key() == 10;
+ * heap.decreaseKey(r2, 2);
+ * assert r2.key() == 2;
+ * assert r2.value().equals("Bob");
+ * assert heap.findMin() == r2;
+ *
+ * heap.remove(r1);
+ * assert heap.size() == 2;
+ * }</pre>
+ *
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+ * @param  <K> the keys type
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
+ * @param  <V> the values type
+#endif
+ * @author     Barak Ugav
+ */
+public interface REFERENCEABLE_HEAP KEY_VALUE_GENERIC extends ReferenceableHeap, Iterable<HEAP_REFERENCE KEY_VALUE_GENERIC> {
+
+	/**
+	 * Insert a new element to the heap with {@code null} value.
+	 *
+	 * <p>
+	 * Only a key is passed to this method, and a {@code null} value (or {@code 0} if values are primitive) will be
+	 * used. To insert a new element with both a key and a value use {@link #insert}.
+	 *
+	 * @param  key the key of the new element
+	 * @return     reference to the new element
+	 */
+	HEAP_REFERENCE KEY_VALUE_GENERIC insert(PRIMITIVE_KEY_TYPE key);
+
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+	/**
+	 * Insert a new element to the heap with both key and value.
+	 *
+	 * @param  key   the key of the new element
+	 * @param  value the value of the new element
+	 * @return       reference to the new element
+	 */
+	default HEAP_REFERENCE KEY_VALUE_GENERIC insert(PRIMITIVE_KEY_TYPE key, PRIMITIVE_VALUE_TYPE value) {
+		HEAP_REFERENCE KEY_VALUE_GENERIC ref = insert(key);
+		ref.setValue(value);
+		return ref;
+	}
+#endif
+
+	/**
+	 * Find the element with the minimal key in the heap and return a reference to it.
+	 *
+	 * @return                       a reference to the element with the minimal key in the heap
+	 * @throws IllegalStateException if the heap is empty
+	 */
+	HEAP_REFERENCE KEY_VALUE_GENERIC findMin();
+
+	/**
+	 * Extract the element with the minimal key in the heap.
+	 *
+	 * <p>
+	 * This method find and <b>remove</b> the element with the minimal key.
+	 *
+	 * @return                       the element with the minimal key in the heap
+	 * @throws IllegalStateException if the heap is empty
+	 */
+	HEAP_REFERENCE KEY_VALUE_GENERIC extractMin();
+
+	/**
+	 * Meld with another heap.
+	 *
+	 * <p>
+	 * Melding is performed by adding all elements of the given heap to this heap, and clearing the given heap. Some
+	 * implementations support efficient melding due to internal structures used to maintain the heap elements.
+	 *
+	 * <p>
+	 * Its only possible to meld with a heap with the same implementation of this heap.
+	 *
+	 * <p>
+	 * After the melding, the references of both ({@code this} and the given {@code heap}) remain valid and its possible
+	 * to use them only in this heap (they are no longer valid with respect to the given heap, which will be cleared).
+	 *
+	 * @param  heap                     a heap to meld with. After the operation it will be empty.
+	 * @throws IllegalArgumentException if the given heap is {@code this} heap, or its of another implementation
+	 */
+	void meld(REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap);
+
+	/**
+	 * Returns the comparator used to order the element's keys in this heap, or {@code null} if this heap uses the
+	 * {@linkplain Comparable natural ordering} of its keys.
+	 *
+	 * @return the comparator used to order the element's keys in this heap, or {@code null} if this heap uses the
+	 *         natural ordering of its keys
+	 */
+	KEY_COMPARATOR KEY_TYPE_GENERIC comparator();
+
+	/**
+	 * Find an element by its key in the heap and get a reference to it.
+	 *
+	 * <p>
+	 * Note that this method uses the comparator of the heap to determine if two keys are equal, rather than
+	 * {@link Object#equals} or primitive comparison for primitive types.
+	 *
+	 * @param  key a key
+	 * @return     a reference to an element with the given key or {@code null} if such element was not found
+	 */
+	default HEAP_REFERENCE KEY_VALUE_GENERIC find(PRIMITIVE_KEY_TYPE key) {
+		KEY_COMPARATOR KEY_TYPE_GENERIC c = comparator();
+		if (c == null) {
+			for (HEAP_REFERENCE KEY_VALUE_GENERIC p : this) {
+				if (COMPARE_KEY_DEFAULT_EQ(key, p.key()))
+					return p;
+			}
+		} else {
+			for (HEAP_REFERENCE KEY_VALUE_GENERIC p : this) {
+				if (c.compare(key, p.key()) == 0)
+					return p;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Decrease the key of an element in the heap.
+	 *
+	 * <p>
+	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
+	 * removed, or to an element in another heap.
+	 *
+	 * @param  ref                      reference to an inserted element
+	 * @param  newKey                   a new key
+	 * @throws IllegalArgumentException if the new key is greater than the previous key
+	 */
+	void decreaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey);
+
+	/**
+	 * Remove an element from the heap by its reference.
+	 *
+	 * <p>
+	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
+	 * removed, or to an element in another heap.
+	 *
+	 * @param ref a reference to an inserted element
+	 */
+	void remove(HEAP_REFERENCE KEY_VALUE_GENERIC ref);
+
+	/**
+	 * Get a stream over the elements in this heap.
+	 *
+	 * @return a stream over the elements in this heap
+	 */
+	default Stream<HEAP_REFERENCE KEY_VALUE_GENERIC> stream() {
+		return StreamSupport.stream(spliterator(), false);
+	}
+
+	/**
+	 * A reference to an element in a {@linkplain REFERENCEABLE_HEAP referenceable heap}.
+	 *
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+	 * @param  <K> the keys type
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
+	 * @param  <V> the values type
+#endif
+	 * @author Barak Ugav
+	 */
+	static interface Ref KEY_VALUE_GENERIC {
+
+		/**
+		* Get the key of this element.
+		*
+		* <p>
+		* There is no {@code setKey} method, but the key of an element can be changed (decrease only) by
+		* {@link REFERENCEABLE_HEAP#decreaseKey}.
+		*
+		* @return the element's key
+		*/
+		PRIMITIVE_KEY_TYPE key();
+
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+		/**
+		* Get the value of this element.
+		*
+		* @return the element's key
+		*/
+		PRIMITIVE_VALUE_TYPE value();
+
+		/**
+		* Set the value of this element.
+		*
+		* @param val new value for this element
+		*/
+		void setValue(PRIMITIVE_VALUE_TYPE val);
+#endif
+	}
+
+	/**
+	 * Get an instance of this interface with the default implementation.
+	 *
+	 * @return an instance of this interface with the default implementation
+	 */
+	static KEY_VALUE_GENERIC REFERENCEABLE_HEAP KEY_VALUE_GENERIC newInstance() {
+		return new PAIRING_HEAP KEY_VALUE_GENERIC_EMPTY (null);
+	}
+
+	/**
+	 * Get an instance of this interface with the default implementation and custom comparator.
+	 *
+	 * @param c a comparator to use for ordering the elements in the heap
+	 * @return an instance of this interface with the default implementation
+	 */
+	static KEY_VALUE_GENERIC REFERENCEABLE_HEAP KEY_VALUE_GENERIC newInstance(KEY_COMPARATOR KEY_TYPE_GENERIC c) {
+		return new PAIRING_HEAP KEY_VALUE_GENERIC_EMPTY (c);
+	}
+
+}

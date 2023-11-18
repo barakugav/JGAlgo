@@ -17,45 +17,58 @@
 package com.jgalgo.internal.ds;
 
 import java.util.Arrays;
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+import com.jgalgo.internal.util.JGAlgoUtils;
 import java.util.Comparator;
+#else
+import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
+#endif
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
-import com.jgalgo.internal.ds.Heaps.AbstractHeapReferenceable;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
 
 /**
  * A binomial heap implementation.
  *
  * <p>
  * Pointer based data structure that support user references to the internal nodes, allowing efficient \(O(\log n)\)
- * implementation of the {@link #remove(HeapReference)} and {@link #decreaseKey(HeapReference, Object)} operations. The
- * regular operations like {@link #insert(Object)}, {@link #extractMin()} and {@link #findMin()} are also implemented in
- * \(O(\log n)\) time. Another advantage of the binomial heap is its ability to merge with another binomial heap in
- * \(O(\log n)\) time, which is much faster than the required \(O(n)\) time of binary heaps.
+ * implementation of the {@link #remove} and {@link #decreaseKey} operations. The regular operations like
+ * {@link #insert}, {@link #extractMin()} and {@link #findMin()} are also implemented in \(O(\log n)\) time. Another
+ * advantage of the binomial heap is its ability to merge with another binomial heap in \(O(\log n)\) time, which is
+ * much faster than the required \(O(n)\) time of binary heaps.
  *
  * <p>
- * Although it has great complexities bounds, {@link #decreaseKey(HeapReference, Object)} can be implemented faster
- * using {@link HeapPairing} or {@link HeapFibonacci}.
+ * Although it has great complexities bounds, {@link #decreaseKey} can is implemented in faster times by Fibonnachi and
+ * Pairing heaps.
  *
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
  * @param  <K> the keys type
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
  * @param  <V> the values type
+#endif
  * @see        <a href="https://en.wikipedia.org/wiki/Binomial_heap">Wikipedia</a>
  * @author     Barak Ugav
  */
-class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
+public class BINOMIAL_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_VALUE_GENERIC {
 
-	private Node<K, V>[] roots;
+	private final KEY_COMPARATOR KEY_TYPE_GENERIC c;
+	private Node KEY_VALUE_GENERIC[] roots;
 	private int rootsLen;
 
+#if PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
 	@SuppressWarnings("unchecked")
-	private Node<K, V>[] tempNodeArray = EmptyNodeArr;
+#endif
+	private Node KEY_VALUE_GENERIC[] tempNodeArray = EmptyNodeArr;
 
+#if PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
 	@SuppressWarnings("rawtypes")
+#endif
 	private static final Node[] EmptyNodeArr = new Node[0];
 
 	/**
 	 * Constructs a new, empty binomial heap, ordered according to the natural ordering of its keys.
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
 	 *
 	 * <p>
 	 * All keys inserted into the heap must implement the {@link Comparable} interface. Furthermore, all such keys must
@@ -63,33 +76,50 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 	 * {@code k1} and {@code k2} in the heap. If the user attempts to insert a key to the heap that violates this
 	 * constraint (for example, the user attempts to insert a string element to a heap whose keys are integers), the
 	 * {@code insert} call will throw a {@code ClassCastException}.
+#endif
 	 */
-	HeapBinomial() {
+	public BINOMIAL_HEAP() {
 		this(null);
 	}
 
 	/**
 	 * Constructs a new, empty binomial heap, with keys ordered according to the specified comparator.
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
 	 *
 	 * <p>
 	 * All keys inserted into the heap must be <i>mutually comparable</i> by the specified comparator:
 	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
 	 * {@code k2} in the heap. If the user attempts to insert a key to the heap that violates this constraint, the
 	 * {@code insert} call will throw a {@code ClassCastException}.
+#endif
 	 *
 	 * @param comparator the comparator that will be used to order this heap. If {@code null}, the
 	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
+#if PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
 	@SuppressWarnings("unchecked")
-	HeapBinomial(Comparator<? super K> comparator) {
-		super(comparator);
+#endif
+	public BINOMIAL_HEAP(KEY_COMPARATOR KEY_TYPE_GENERIC comparator) {
+		c = comparator;
 		roots = EmptyNodeArr;
 		rootsLen = 0;
 	}
 
-	private void swapParentChild(Node<K, V> parent, Node<K, V> child) {
-		final Node<K, V> pNext = parent.next, pPrev = parent.prev, pParent = parent.parent, pChild = parent.child;
-		Node<K, V> t;
+	@Override
+	public KEY_COMPARATOR KEY_TYPE_GENERIC comparator() {
+		return c;
+	}
+
+	@Override
+	public HEAP_REFERENCE KEY_VALUE_GENERIC extractMin() {
+		HEAP_REFERENCE KEY_VALUE_GENERIC min = findMin();
+		remove(min);
+		return min;
+	}
+
+	private void swapParentChild(Node KEY_VALUE_GENERIC parent, Node KEY_VALUE_GENERIC child) {
+		final Node KEY_VALUE_GENERIC pNext = parent.next, pPrev = parent.prev, pParent = parent.parent, pChild = parent.child;
+		Node KEY_VALUE_GENERIC t;
 
 		parent.next = (t = child.next);
 		if (t != null)
@@ -98,7 +128,7 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 		if (t != null)
 			t.next = parent;
 		parent.child = child.child;
-		for (Node<K, V> p = child.child; p != null; p = p.next)
+		for (Node KEY_VALUE_GENERIC p = child.child; p != null; p = p.next)
 			p.parent = parent;
 
 		child.next = pNext;
@@ -108,7 +138,7 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 		if (pPrev != null)
 			pPrev.next = child;
 		child.child = pChild == child ? parent : pChild;
-		for (Node<K, V> p = child.child; p != null; p = p.next)
+		for (Node KEY_VALUE_GENERIC p = child.child; p != null; p = p.next)
 			p.parent = child;
 		child.parent = pParent;
 		if (pParent != null && pParent.child == parent)
@@ -116,7 +146,7 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 
 		if (pParent == null) {
 			/* Switched a root, fix roots array */
-			Node<K, V>[] rs = roots;
+			Node KEY_VALUE_GENERIC[] rs = roots;
 			for (int i = 0; i < rootsLen; i++) {
 				if (rs[i] == parent) {
 					rs[i] = child;
@@ -127,19 +157,19 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 	}
 
 	@Override
-	public void decreaseKey(HeapReference<K, V> ref, K newKey) {
-		Node<K, V> node = (Node<K, V>) ref;
+	public void decreaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
+		Node KEY_VALUE_GENERIC node = (Node KEY_VALUE_GENERIC) ref;
 		Assertions.Heaps.decreaseKeyIsSmaller(node.key, newKey, c);
 		node.key = newKey;
 
 		if (c == null) {
-			for (Node<K, V> p; (p = node.parent) != null;) {
-				if (JGAlgoUtils.cmpDefault(p.key, newKey) <= 0)
+			for (Node KEY_VALUE_GENERIC p; (p = node.parent) != null;) {
+				if (COMPARE_KEY_DEFAULT_LEQ(p.key, newKey))
 					break;
 				swapParentChild(p, node);
 			}
 		} else {
-			for (Node<K, V> p; (p = node.parent) != null;) {
+			for (Node KEY_VALUE_GENERIC p; (p = node.parent) != null;) {
 				if (c.compare(p.key, newKey) <= 0)
 					break;
 				swapParentChild(p, node);
@@ -148,14 +178,14 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 	}
 
 	@Override
-	public void remove(HeapReference<K, V> ref) {
-		Node<K, V> node = (Node<K, V>) ref;
+	public void remove(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
+		Node KEY_VALUE_GENERIC node = (Node KEY_VALUE_GENERIC) ref;
 
 		/* propagate to top of the tree */
-		for (Node<K, V> p; (p = node.parent) != null;)
+		for (Node KEY_VALUE_GENERIC p; (p = node.parent) != null;)
 			swapParentChild(p, node);
 
-		Node<K, V>[] rs = roots;
+		Node KEY_VALUE_GENERIC[] rs = roots;
 		int rootIdx = -1;
 		for (int i = 0; i < rootsLen; i++) {
 			if (rs[i] == node) {
@@ -167,8 +197,8 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 		if (rootIdx == -1)
 			throw new ConcurrentModificationException();
 
-		Node<K, V>[] childs = tempArray(rootIdx);
-		Node<K, V> next, p = node.child;
+		Node KEY_VALUE_GENERIC[] childs = tempArray(rootIdx);
+		Node KEY_VALUE_GENERIC next, p = node.child;
 		for (int i = 0; i < rootIdx; i++, p = next) {
 			next = p.next;
 			p.parent = null;
@@ -184,12 +214,19 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 
 	@Override
 	public void clear() {
-		Node<K, V>[] rs = roots;
+		Node KEY_VALUE_GENERIC[] rs = roots;
 		int rslen = rootsLen;
 
 		for (int i = 0; i < rslen; i++) {
 			if (rs[i] != null) {
-				Trees.clear(rs[i], n -> n.key = null);
+				Trees.clear(rs[i], n -> {
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+					n.key = null;
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
+					n.value = null;
+#endif
+				});
 				rs[i] = null;
 			}
 		}
@@ -208,9 +245,9 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 	}
 
 	@Override
-	public HeapReference<K, V> insert(K key) {
-		Node<K, V> node = new Node<>(key);
-		Node<K, V>[] h2 = tempArray(1);
+	public HEAP_REFERENCE KEY_VALUE_GENERIC insert(PRIMITIVE_KEY_TYPE key) {
+		Node KEY_VALUE_GENERIC node = new Node KEY_VALUE_GENERIC_EMPTY(key);
+		Node KEY_VALUE_GENERIC[] h2 = tempArray(1);
 		h2[0] = node;
 		meld(h2, 1);
 		return node;
@@ -218,21 +255,21 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public Iterator<HeapReference<K, V>> iterator() {
+	public Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> iterator() {
 		return (Iterator) new Itr();
 	}
 
-	private Node<K, V> mergeTreesDefaultCmp(Node<K, V> r1, Node<K, V> r2) {
+	private static KEY_VALUE_GENERIC Node KEY_VALUE_GENERIC mergeTreesDefaultCmp(Node KEY_VALUE_GENERIC r1, Node KEY_VALUE_GENERIC r2) {
 		assert r1 != r2;
 		if (r1 == r2)
 			throw new IllegalStateException();
-		if (JGAlgoUtils.cmpDefault(r1.key, r2.key) > 0) {
-			Node<K, V> t = r1;
+		if (COMPARE_KEY_DEFAULT_GE(r1.key, r2.key)) {
+			Node KEY_VALUE_GENERIC t = r1;
 			r1 = r2;
 			r2 = t;
 		}
 		r2.next = r1.child;
-		Node<K, V> next = r1.child;
+		Node KEY_VALUE_GENERIC next = r1.child;
 		if (next != null)
 			next.prev = r2;
 		r1.child = r2;
@@ -241,17 +278,17 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 		return r1;
 	}
 
-	private Node<K, V> mergeTreesCustomCmp(Node<K, V> r1, Node<K, V> r2) {
+	private Node KEY_VALUE_GENERIC mergeTreesCustomCmp(Node KEY_VALUE_GENERIC r1, Node KEY_VALUE_GENERIC r2) {
 		assert r1 != r2;
 		if (r1 == r2)
 			throw new IllegalStateException();
 		if (c.compare(r1.key, r2.key) > 0) {
-			Node<K, V> t = r1;
+			Node KEY_VALUE_GENERIC t = r1;
 			r1 = r2;
 			r2 = t;
 		}
 		r2.next = r1.child;
-		Node<K, V> next = r1.child;
+		Node KEY_VALUE_GENERIC next = r1.child;
 		if (next != null)
 			next.prev = r2;
 		r1.child = r2;
@@ -260,9 +297,8 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 		return r1;
 	}
 
-	private int meld(Node<K, V>[] rs2, int rs2len) {
-		Node<K, V>[] rs1 = roots;
-		// Node<K, V>[] rs = rs1.length >= rs2.length ? rs1 : rs2;
+	private int meld(Node KEY_VALUE_GENERIC[] rs2, int rs2len) {
+		Node KEY_VALUE_GENERIC[] rs1 = roots;
 		int rs1len = rootsLen;
 		int h2size = 0;
 		rootsLen = rs1len > rs2len ? rs1len : rs2len;
@@ -271,11 +307,11 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 		if (maxArrLen > roots.length)
 			roots = Arrays.copyOf(roots, Math.max(maxArrLen, roots.length * 2));
 
-		Node<K, V> carry = null;
+		Node KEY_VALUE_GENERIC carry = null;
 		if (c == null) {
 			for (int i = 0; i < rootsLen; i++) {
-				Node<K, V> r1 = i < rs1len ? rs1[i] : null;
-				Node<K, V> r2 = i < rs2len ? rs2[i] : null;
+				Node KEY_VALUE_GENERIC r1 = i < rs1len ? rs1[i] : null;
+				Node KEY_VALUE_GENERIC r2 = i < rs2len ? rs2[i] : null;
 
 				if (r2 != null)
 					h2size += 1 << i;
@@ -284,7 +320,7 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 					roots[i] = carry;
 					carry = (r1 != null && r2 != null) ? mergeTreesDefaultCmp(r1, r2) : null;
 				} else {
-					Node<K, V> r = r1 != null ? r1 : r2;
+					Node KEY_VALUE_GENERIC r = r1 != null ? r1 : r2;
 					if (carry == null)
 						roots[i] = r;
 					else {
@@ -295,8 +331,8 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 			}
 		} else {
 			for (int i = 0; i < rootsLen; i++) {
-				Node<K, V> r1 = i < rs1len ? rs1[i] : null;
-				Node<K, V> r2 = i < rs2len ? rs2[i] : null;
+				Node KEY_VALUE_GENERIC r1 = i < rs1len ? rs1[i] : null;
+				Node KEY_VALUE_GENERIC r2 = i < rs2len ? rs2[i] : null;
 
 				if (r2 != null)
 					h2size += 1 << i;
@@ -305,7 +341,7 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 					roots[i] = carry;
 					carry = (r1 != null && r2 != null) ? mergeTreesCustomCmp(r1, r2) : null;
 				} else {
-					Node<K, V> r = r1 != null ? r1 : r2;
+					Node KEY_VALUE_GENERIC r = r1 != null ? r1 : r2;
 					if (carry == null)
 						roots[i] = r;
 					else {
@@ -323,14 +359,16 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 		return h2size;
 	}
 
+#if PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
 	@SuppressWarnings("unchecked")
+#endif
 	@Override
-	public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
+	public void meld(REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap) {
 		Assertions.Heaps.noMeldWithSelf(this, heap);
-		Assertions.Heaps.meldWithSameImpl(HeapBinomial.class, heap);
-		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
+		Assertions.Heaps.meldWithSameImpl(BINOMIAL_HEAP.class, heap);
+		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());
 
-		HeapBinomial<K, V> h = (HeapBinomial<K, V>) heap;
+		BINOMIAL_HEAP KEY_VALUE_GENERIC h = (BINOMIAL_HEAP KEY_VALUE_GENERIC) heap;
 		meld(h.roots, h.rootsLen);
 
 		h.roots = EmptyNodeArr;
@@ -338,15 +376,15 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 	}
 
 	@Override
-	public HeapReference<K, V> findMin() {
+	public HEAP_REFERENCE KEY_VALUE_GENERIC findMin() {
 		Assertions.Heaps.notEmpty(this);
-		Node<K, V>[] rs = roots;
+		Node KEY_VALUE_GENERIC[] rs = roots;
 		int rsLen = rootsLen;
-		Node<K, V> min = null;
+		Node KEY_VALUE_GENERIC min = null;
 
 		if (c == null) {
 			for (int i = 0; i < rsLen; i++)
-				if (rs[i] != null && (min == null || JGAlgoUtils.cmpDefault(min.key, rs[i].key) > 0))
+				if (rs[i] != null && (min == null || COMPARE_KEY_DEFAULT_GE(min.key, rs[i].key)))
 					min = rs[i];
 		} else {
 			for (int i = 0; i < rsLen; i++)
@@ -356,48 +394,52 @@ class HeapBinomial<K, V> extends AbstractHeapReferenceable<K, V> {
 		return min;
 	}
 
-	private Node<K, V>[] tempArray(int n) {
+	private Node KEY_VALUE_GENERIC[] tempArray(int n) {
 		if (n > tempNodeArray.length)
 			tempNodeArray = Arrays.copyOf(tempNodeArray, Math.max(2, Math.max(tempNodeArray.length, n)));
 		return tempNodeArray;
 	}
 
-	private static class Node<K, V> extends Trees.TreeNodeImpl<Node<K, V>> implements HeapReference<K, V> {
+	private static class Node KEY_VALUE_GENERIC extends Trees.TreeNodeImpl<Node KEY_VALUE_GENERIC> implements HEAP_REFERENCE KEY_VALUE_GENERIC {
 
-		K key;
-		V value;
+		PRIMITIVE_KEY_TYPE key;
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+		PRIMITIVE_VALUE_TYPE value;
+#endif
 
-		Node(K key) {
-			parent = null;
-			next = null;
-			prev = null;
-			child = null;
+		Node(PRIMITIVE_KEY_TYPE key) {
 			this.key = key;
 		}
 
 		@Override
-		public K key() {
+		public PRIMITIVE_KEY_TYPE key() {
 			return key;
 		}
 
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
 		@Override
-		public V value() {
+		public PRIMITIVE_VALUE_TYPE value() {
 			return value;
 		}
 
 		@Override
-		public void setValue(V val) {
+		public void setValue(PRIMITIVE_VALUE_TYPE val) {
 			value = val;
 		}
+#endif
 
 		@Override
 		public String toString() {
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
 			return "{" + key + ":" + value + "}";
+#else
+			return String.valueOf(key);
+#endif
 		}
 
 	}
 
-	private class Itr extends Trees.PreOrderIter<Node<K, V>> {
+	private class Itr extends Trees.PreOrderIter<Node KEY_VALUE_GENERIC> {
 
 		private int nextRootIdx;
 

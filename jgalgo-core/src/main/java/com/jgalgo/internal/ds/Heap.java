@@ -29,7 +29,7 @@ import java.util.stream.StreamSupport;
  * constant time.
  *
  * <p>
- * If {@code decreaseKey()} or fast {@code remove()} operations are required, consider using {@link HeapReferenceable}.
+ * If {@code decreaseKey()} or fast {@code remove()} operations are required, consider using {@link ReferenceableHeap}.
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
@@ -56,7 +56,7 @@ import java.util.stream.StreamSupport;
  *
  * @param  <E> the elements type
  * @see        <a href= "https://en.wikipedia.org/wiki/Heap_(data_structure)">Wikipedia</a>
- * @see        HeapReferenceable
+ * @see        ReferenceableHeap
  * @author     Barak Ugav
  */
 public interface Heap<E> extends Iterable<E> {
@@ -117,7 +117,7 @@ public interface Heap<E> extends Iterable<E> {
 	 * Its only possible to meld with a heap with the same implementation of this heap.
 	 *
 	 * <p>
-	 * If the heap implementation expose references to its element (see {@link HeapReferenceable}), the references of
+	 * If the heap implementation expose references to its element (see {@link ReferenceableHeap}), the references of
 	 * both ({@code this} and the given {@code heap}) remain valid and its possible to use them only in this heap (they
 	 * are no longer valid with respect to the given heap, which will be cleared).
 	 *

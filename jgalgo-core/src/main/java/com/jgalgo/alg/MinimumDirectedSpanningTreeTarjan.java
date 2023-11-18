@@ -17,13 +17,15 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
+import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.IntReferenceableHeap;
+import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.ds.UnionFindValue;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
@@ -44,8 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.AbstractDirected {
 
-	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
-			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
+	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.newBuilder();
 	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();
 
 	/**
@@ -58,8 +59,8 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
-		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
+	void setHeapBuilder(ReferenceableHeap.Builder heapBuilder) {
+		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
 	@Override
@@ -234,14 +235,13 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			}
 		}
 
-		@SuppressWarnings("unchecked")
-		HeapReferenceable<Integer, Void>[] heap = new HeapReferenceable[VMaxNum];
+		IntReferenceableHeap[] heap = new IntReferenceableHeap[VMaxNum];
 		for (int v = 0; v < n; v++)
-			heap[v] = heapBuilder.build(w);
+			heap[v] = (IntReferenceableHeap) heapBuilder.build(int.class, void.class, w);
 		for (int v = 0; v < n; v++)
 			for (int e : g.inEdges(v))
 				if (g.edgeSource(e) != g.edgeTarget(e))
-					heap[v].insert(Integer.valueOf(e));
+					heap[v].insert(e);
 
 		int[] parent = new int[VMaxNum];
 		int[] child = new int[VMaxNum];
@@ -262,7 +262,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 				// Assuming the graph is strongly connected, if heap is empty we are done
 				if (heap[a].isEmpty())
 					return new ContractedGraph(n, parent, child, brother, inEdge);
-				e = heap[a].extractMin().key().intValue();
+				e = heap[a].extractMin().key();
 				u = ufIdxToV[uf.find(g.edgeSource(e))];
 			} while (a == u);
 
@@ -280,7 +280,8 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			} else {
 				// Create new super vertex
 				int c = uf.make();
-				HeapReferenceable<Integer, Void> cHeap = heap[c] = heapBuilder.build(w);
+				IntReferenceableHeap cHeap =
+						heap[c] = (IntReferenceableHeap) heapBuilder.build(int.class, void.class, w);
 				brother[c] = brother[u];
 				brother[u] = a;
 				child[c] = a;

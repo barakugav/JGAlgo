@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import java.util.Objects;
 import java.util.function.IntToDoubleFunction;
 import java.util.function.ToDoubleFunction;
 import com.jgalgo.graph.Graph;
@@ -28,8 +29,8 @@ import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.ds.HeapReference;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.DoubleIntReferenceableHeap;
+import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -57,8 +58,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  */
 class ShortestPathAStar implements ShortestPathHeuristicST {
 
-	private HeapReferenceable.Builder<Double, Integer> heapBuilder =
-			HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class);
+	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.newBuilder();
 
 	/**
 	 * Construct a new AStart algorithm.
@@ -70,8 +70,8 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
-		this.heapBuilder = heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class);
+	void setHeapBuilder(ReferenceableHeap.Builder heapBuilder) {
+		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -120,11 +120,10 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 
 	}
 
-	@SuppressWarnings("boxing")
 	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
 		if (source == target)
 			return new PathImpl(g, source, target, IntLists.emptyList());
-		HeapReferenceable<Double, Integer> heap = heapBuilder.build();
+		DoubleIntReferenceableHeap heap = (DoubleIntReferenceableHeap) heapBuilder.build(double.class, int.class);
 
 		Int2ObjectMap<Info> info = new Int2ObjectOpenHashMap<>();
 		Info sourceInfo = new Info();
@@ -133,7 +132,7 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 		heap.insert(.0, source);
 
 		while (heap.isNotEmpty()) {
-			HeapReference<Double, Integer> min = heap.extractMin();
+			DoubleIntReferenceableHeap.Ref min = heap.extractMin();
 			int u = min.value();
 			if (u == target)
 				return computePath(g, source, target, info);
@@ -157,10 +156,10 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 				double distanceEstimate = distance + vHeuristic.applyAsDouble(v);
 
 				if (vInfo.heapPtr == null) {
-					vInfo.heapPtr = heap.insert(Double.valueOf(distanceEstimate), Integer.valueOf(v));
+					vInfo.heapPtr = heap.insert(distanceEstimate, v);
 				} else {
-					assert distanceEstimate <= vInfo.heapPtr.key().doubleValue();
-					heap.decreaseKey(vInfo.heapPtr, Double.valueOf(distanceEstimate));
+					assert distanceEstimate <= vInfo.heapPtr.key();
+					heap.decreaseKey(vInfo.heapPtr, distanceEstimate);
 				}
 			}
 		}
@@ -197,7 +196,7 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 	static class Info {
 		int backtrack = -1;
 		double distance = Double.POSITIVE_INFINITY;
-		HeapReference<Double, Integer> heapPtr;
+		DoubleIntReferenceableHeap.Ref heapPtr;
 	}
 
 }

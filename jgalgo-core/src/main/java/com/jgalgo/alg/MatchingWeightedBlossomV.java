@@ -26,9 +26,8 @@ import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.HeapReference;
-import com.jgalgo.internal.ds.HeapReferenceable;
-import com.jgalgo.internal.ds.Heaps;
+import com.jgalgo.internal.ds.ObjReferenceableHeap;
+import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.DebugPrinter;
 import it.unimi.dsi.fastutil.objects.Reference2IntMap;
@@ -40,7 +39,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
  * <p>
  * The implementation is based on 'Blossom V: A new implementation of a minimum cost perfect matching algorithm' by
  * Vladimir Kolmogorov. It is an implementation of Edmonds 'Blossom' algorithm, using priory queues
- * ({@link HeapReferenceable}, pairing heaps) to find the next tight edge each iteration. In contrast to
+ * ({@link ReferenceableHeap}, pairing heaps) to find the next tight edge each iteration. In contrast to
  * {@link MatchingWeightedGabow1990}, it achieve a worse \(O(n^3 m)\) running time in the worst case, but runs faster in
  * practice.
  *
@@ -1373,7 +1372,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				target.currentEdge = null;
 
 				/* All odd nodes of this tree become out, meld into EvenOut of the other tree */
-				// for (HeapReference<Edge, Void> ref : e.pqOddEven) {
+				// for (ObjReferenceableHeap.Ref<Edge> ref : e.pqOddEven) {
 				// Edge ePq = ref.key();
 				// assert ePq.pqEvenOddRef == ref;
 				// ePq.pqEvenOddRef = null;
@@ -1383,7 +1382,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				target.pqEvenOut.meld(e.pqOddEven);
 
 				/* All even nodes of this tree become out, meld into EvenOut of the other tree */
-				for (HeapReference<Edge, Void> ref : e.pqEvenEven) {
+				for (ObjReferenceableHeap.Ref<Edge> ref : e.pqEvenEven) {
 					handleEvenPqEdge.accept(ref.key());
 					// Edge ePq = ref.key();
 					// assert ePq.pqEvenEvenRef == ref;
@@ -1394,7 +1393,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				target.pqEvenOut.meld(e.pqEvenEven);
 
 				/* All even nodes of this tree become out, clear EvenOdd PQ */
-				for (HeapReference<Edge, Void> ref : e.pqEvenOdd) {
+				for (ObjReferenceableHeap.Ref<Edge> ref : e.pqEvenOdd) {
 					Edge ePq = ref.key();
 					// assert ePq.pqEvenOddRef == ref;
 					// ePq.pqEvenOddRef = null;
@@ -1410,7 +1409,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				source.currentEdge = null;
 
 				/* All odd nodes of this tree become out, meld into EvenOut of the other tree */
-				// for (HeapReference<Edge, Void> ref : e.pqEvenOdd) {
+				// for (ObjReferenceableHeap.Ref<Edge> ref : e.pqEvenOdd) {
 				// Edge ePq = ref.key();
 				// assert ePq.pqEvenOddRef == ref;
 				// ePq.pqEvenOddRef = null;
@@ -1420,7 +1419,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				source.pqEvenOut.meld(e.pqEvenOdd);
 
 				/* All even nodes of this tree become out, meld into EvenOut of the other tree */
-				for (HeapReference<Edge, Void> ref : e.pqEvenEven) {
+				for (ObjReferenceableHeap.Ref<Edge> ref : e.pqEvenEven) {
 					handleEvenPqEdge.accept(ref.key());
 					// Edge ePq = ref.key();
 					// assert ePq.pqEvenEvenRef == ref;
@@ -1431,7 +1430,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				source.pqEvenOut.meld(e.pqEvenEven);
 
 				/* All even nodes of this tree become out, clear OddEven PQ */
-				for (HeapReference<Edge, Void> ref : e.pqOddEven) {
+				for (ObjReferenceableHeap.Ref<Edge> ref : e.pqOddEven) {
 					Edge ePq = ref.key();
 					// assert ePq.pqEvenOddRef == ref;
 					// ePq.pqEvenOddRef = null;
@@ -1444,7 +1443,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			}
 
 			/* All even nodes of this tree become out, clear EvenOut PQ */
-			for (HeapReference<Edge, Void> ref : tree.pqEvenOut) {
+			for (ObjReferenceableHeap.Ref<Edge> ref : tree.pqEvenOut) {
 				Edge ePq = ref.key();
 				// assert ePq.pqEvenOutRef == ref;
 				// ePq.pqEvenOutRef = null;
@@ -1456,7 +1455,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			tree.pqEvenOut.clear();
 
 			/* All even nodes of this tree become out, clear EvenEven PQ */
-			for (HeapReference<Edge, Void> ref : tree.pqEvenEven) {
+			for (ObjReferenceableHeap.Ref<Edge> ref : tree.pqEvenEven) {
 				Edge ePq = ref.key();
 				// assert ePq.pqEvenEvenRef == ref;
 				// ePq.pqEvenEvenRef = null;
@@ -1990,7 +1989,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		double blossomEps;
 
 		/* Reference to the expand element in the PQ, used for odd non-singleton blossoms */
-		HeapReference<Blossom, Void> expandRef;
+		ObjReferenceableHeap.Ref<Blossom> expandRef;
 
 		/* Comparator that compare the dual value of blossoms, used for expand PQ */
 		static final Comparator<Blossom> dualComparator = (b1, b2) -> Double.compare(b1.dual, b2.dual);
@@ -2326,11 +2325,11 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		/* The alternating tree is composed of tight edges */
 		double slack;
 
-		// HeapReference<Edge, Void> pqEvenEvenRef;
-		// HeapReference<Edge, Void> pqEvenOddRef;
-		// HeapReference<Edge, Void> pqEvenOutRef;
+		// ObjReferenceableHeap.Ref<Edge> pqEvenEvenRef;
+		// ObjReferenceableHeap.Ref<Edge> pqEvenOddRef;
+		// ObjReferenceableHeap.Ref<Edge> pqEvenOutRef;
 		/* Reference to either to the PQ containing this edge */
-		HeapReference<Edge, Void> pqRef;
+		ObjReferenceableHeap.Ref<Edge> pqRef;
 
 		static final Comparator<Edge> slackComparator = (e1, e2) -> Double.compare(e1.slack, e2.slack);
 
@@ -2411,11 +2410,11 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		Blossom root;
 
 		/* PQ containing all (+,+) edges between two even blossoms in this tree, by their slack */
-		final HeapReferenceable<Edge, Void> pqEvenEven = newHeap(Edge.slackComparator);
+		final ObjReferenceableHeap<Edge> pqEvenEven = ObjReferenceableHeap.newInstance(Edge.slackComparator);
 		/* PQ containing all (+,-) edges between even blossom in this tree to out blossoms, by their slack */
-		final HeapReferenceable<Edge, Void> pqEvenOut = newHeap(Edge.slackComparator);
+		final ObjReferenceableHeap<Edge> pqEvenOut = ObjReferenceableHeap.newInstance(Edge.slackComparator);
 		/* PQ containing all odd non-singleton blossoms of this tree, by their expand dual value */
-		final HeapReferenceable<Blossom, Void> pqOdd = newHeap(Blossom.dualComparator);
+		final ObjReferenceableHeap<Blossom> pqOdd = ObjReferenceableHeap.newInstance(Blossom.dualComparator);
 
 		/*
 		 * Dual value implicitly added to all even blossoms and removed from all odd blossoms. We want to change the
@@ -2685,7 +2684,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		}
 
 		private void pqEdgeInsertEvenOdd(TreesEdge treesEdge, Edge edge) {
-			HeapReferenceable<Edge, Void> pqEvenOdd;
+			ObjReferenceableHeap<Edge> pqEvenOdd;
 			if (this == treesEdge.source) {
 				pqEvenOdd = treesEdge.pqEvenOdd;
 			} else {
@@ -2702,7 +2701,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		}
 
 		private void pqEdgeRemoveEvenOdd(TreesEdge treesEdge, Edge edge) {
-			HeapReferenceable<Edge, Void> pqEvenOdd;
+			ObjReferenceableHeap<Edge> pqEvenOdd;
 			if (this == treesEdge.source) {
 				pqEvenOdd = treesEdge.pqEvenOdd;
 			} else {
@@ -2755,11 +2754,11 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		TreesEdge nextOutEdge, nextInEdge;
 
 		/* PQ containing all (+,+) edges between the two trees */
-		final HeapReferenceable<Edge, Void> pqEvenEven = newHeap(Edge.slackComparator);
+		final ObjReferenceableHeap<Edge> pqEvenEven = ObjReferenceableHeap.newInstance(Edge.slackComparator);
 		/* PQ containing all (+,-) edges between an even blossom in source tree and odd blossom in target tree */
-		final HeapReferenceable<Edge, Void> pqEvenOdd = newHeap(Edge.slackComparator);
+		final ObjReferenceableHeap<Edge> pqEvenOdd = ObjReferenceableHeap.newInstance(Edge.slackComparator);
 		/* PQ containing all (+,-) edges between an odd blossom in source tree and even blossom in target tree */
-		final HeapReferenceable<Edge, Void> pqOddEven = newHeap(Edge.slackComparator);
+		final ObjReferenceableHeap<Edge> pqOddEven = ObjReferenceableHeap.newInstance(Edge.slackComparator);
 
 		private void pqInsertEvenEven(Edge edge) {
 			assert edge.source != edge.target;
@@ -2775,10 +2774,6 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		public String toString() {
 			return String.format("(%s, %s)", source, target);
 		}
-	}
-
-	private static <K> HeapReferenceable<K, Void> newHeap(Comparator<? super K> cmp) {
-		return HeapReferenceable.newBuilder().<K>keysTypeObj().valuesTypeVoid().build(cmp);
 	}
 
 	private static class Debug {
@@ -2814,17 +2809,17 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				return;
 
 			/* assert heaps constraints */
-			for (Blossom root : worker.roots()) {
-				Tree tree = root.tree;
-				Heaps.assertHeapConstraints(tree.pqEvenOut);
-				Heaps.assertHeapConstraints(tree.pqEvenEven);
-				Heaps.assertHeapConstraints(tree.pqOdd);
-				for (TreesEdge treesEdge : tree.outEdges()) {
-					Heaps.assertHeapConstraints(treesEdge.pqEvenEven);
-					Heaps.assertHeapConstraints(treesEdge.pqEvenOdd);
-					Heaps.assertHeapConstraints(treesEdge.pqOddEven);
-				}
-			}
+			// for (Blossom root : worker.roots()) {
+			// Tree tree = root.tree;
+			// Heaps.assertHeapConstraints(tree.pqEvenOut);
+			// Heaps.assertHeapConstraints(tree.pqEvenEven);
+			// Heaps.assertHeapConstraints(tree.pqOdd);
+			// for (TreesEdge treesEdge : tree.outEdges()) {
+			// Heaps.assertHeapConstraints(treesEdge.pqEvenEven);
+			// Heaps.assertHeapConstraints(treesEdge.pqEvenOdd);
+			// Heaps.assertHeapConstraints(treesEdge.pqOddEven);
+			// }
+			// }
 		}
 	}
 

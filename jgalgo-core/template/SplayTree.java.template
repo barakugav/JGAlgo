@@ -16,7 +16,13 @@
 
 package com.jgalgo.internal.ds;
 
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
 import java.util.Comparator;
+import com.jgalgo.internal.util.JGAlgoUtils;
+#else
+import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
+#endif
+
 import java.util.Iterator;
 import com.jgalgo.internal.util.Assertions;
 
@@ -24,7 +30,7 @@ import com.jgalgo.internal.util.Assertions;
  * Splay binary search tree.
  *
  * <p>
- * The splay tree is a binary search tree which is not strictly balanced, in contrast to {@link RedBlackTree}. The splay
+ * The splay tree is a binary search tree which is not strictly balanced, in contrast to a red black tree. The splay
  * tree has a property that recent accessed elements are closer to the root, and therefore faster to access. All
  * operations have a time complexity of \(O(\log n)\) amortized time.
  *
@@ -34,18 +40,24 @@ import com.jgalgo.internal.util.Assertions;
  * <p>
  * Based on 'Self-Adjusting Binary Search Trees' by Sleator and Tarjan (1985).
  *
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
  * @param  <K> the keys type
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
  * @param  <V> the values type
+#endif
  * @see        <a href="https://en.wikipedia.org/wiki/Splay_tree">Wikipedia</a>
  * @author     Barak Ugav
  */
-class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
+public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALUE_GENERIC {
 
-	private SplayBSTNode<K, V> root;
-	private final SplayImplWithSize<K, V> impl = new SplayImplWithSize<>();
+	private final KEY_COMPARATOR KEY_TYPE_GENERIC c;
+	private SplayBSTNode KEY_VALUE_GENERIC root;
+	private final SplayImplWithSize KEY_VALUE_GENERIC impl = new SplayImplWithSize KEY_VALUE_GENERIC_EMPTY();
 
 	/**
 	 * Constructs a new, empty splay tree, ordered according to the natural ordering of its keys.
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
 	 *
 	 * <p>
 	 * All keys inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such keys must
@@ -53,26 +65,28 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	 * {@code k1} and {@code k2} in the tree. If the user attempts to insert a key to the tree that violates this
 	 * constraint (for example, the user attempts to insert a string element to a tree whose keys are integers), the
 	 * {@code insert} call will throw a {@code ClassCastException}.
+#endif
 	 */
-	SplayTree() {
+	public SPLAY_TREE() {
 		this(null);
 	}
 
 	/**
 	 * Constructs a new, empty splay tree, with keys ordered according to the specified comparator.
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
 	 *
 	 * <p>
 	 * All keys inserted into the tree must be <i>mutually comparable</i> by the specified comparator:
 	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
 	 * {@code k2} in the tree. If the user attempts to insert a key to the tree that violates this constraint, the
 	 * {@code insert} call will throw a {@code ClassCastException}.
+#endif
 	 *
 	 * @param comparator the comparator that will be used to order this tree. If {@code null}, the
 	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
 	 */
-	SplayTree(Comparator<? super K> comparator) {
-		super(comparator);
-		root = null;
+	public SPLAY_TREE(KEY_COMPARATOR KEY_TYPE_GENERIC comparator) {
+		this.c = comparator;
 	}
 
 	// @Override
@@ -90,39 +104,58 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 		return root != null;
 	}
 
+	@Override
+	public KEY_COMPARATOR KEY_TYPE_GENERIC comparator() {
+		return c;
+	}
+
+	@Override
+	public HEAP_REFERENCE KEY_VALUE_GENERIC extractMin() {
+		HEAP_REFERENCE KEY_VALUE_GENERIC min = findMin();
+		remove(min);
+		return min;
+	}
+
+	@Override
+	public HEAP_REFERENCE KEY_VALUE_GENERIC extractMax() {
+		HEAP_REFERENCE KEY_VALUE_GENERIC max = findMax();
+		remove(max);
+		return max;
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
-	public Iterator<HeapReference<K, V>> iterator() {
-		return (Iterator) new BinarySearchTrees.BSTIterator<>(root);
+	public Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> iterator() {
+		return (Iterator) new BINARY_SEARCH_TREES.BSTIterator <>(root);
 	}
 
 	@Override
-	public HeapReference<K, V> insert(K key) {
-		return insertNode(new SplayBSTNode<>(key));
+	public HEAP_REFERENCE KEY_VALUE_GENERIC insert(PRIMITIVE_KEY_TYPE key) {
+		return insertNode(new SplayBSTNode KEY_VALUE_GENERIC_EMPTY(key));
 	}
 
-	private SplayBSTNode<K, V> insertNode(SplayBSTNode<K, V> n) {
+	private SplayBSTNode KEY_VALUE_GENERIC insertNode(SplayBSTNode KEY_VALUE_GENERIC n) {
 		assert n.parent == null;
 		assert n.left == null;
 		assert n.right == null;
 		if (root == null)
 			return root = n;
 
-		BinarySearchTrees.insert(root, c, n);
-		for (SplayBSTNode<K, V> p = n.parent; p != null; p = p.parent)
+		BINARY_SEARCH_TREES.insert(root, c, n);
+		for (SplayBSTNode KEY_VALUE_GENERIC p = n.parent; p != null; p = p.parent)
 			p.size++;
 		return root = impl.splay(n);
 	}
 
 	@Override
-	public void remove(HeapReference<K, V> ref) {
-		SplayBSTNode<K, V> n = (SplayBSTNode<K, V>) ref;
+	public void remove(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
+		SplayBSTNode KEY_VALUE_GENERIC n = (SplayBSTNode KEY_VALUE_GENERIC) ref;
 
 		/* If the node has two children, swap with successor */
 		if (n.hasLeftChild() && n.hasRightChild())
-			swap(n, BinarySearchTrees.getSuccessor(n));
+			swap(n, BINARY_SEARCH_TREES.getSuccessor(n));
 
-		SplayBSTNode<K, V> child;
+		SplayBSTNode KEY_VALUE_GENERIC child;
 		if (!n.hasLeftChild()) {
 			replace(n, child = n.right);
 		} else {
@@ -131,15 +164,15 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 		}
 
 		/* Decrease ancestors size by 1 */
-		for (SplayBSTNode<K, V> p = n.parent; p != null; p = p.parent)
+		for (SplayBSTNode KEY_VALUE_GENERIC p = n.parent; p != null; p = p.parent)
 			p.size--;
 
-		SplayBSTNode<K, V> parent = n.parent;
+		SplayBSTNode KEY_VALUE_GENERIC parent = n.parent;
 		n.clearWithoutUserData();
 		root = impl.splay(child != null ? child : parent);
 	}
 
-	private void replace(SplayBSTNode<K, V> u, SplayBSTNode<K, V> v) {
+	private static KEY_VALUE_GENERIC void replace(SplayBSTNode KEY_VALUE_GENERIC u, SplayBSTNode KEY_VALUE_GENERIC v) {
 		/* replaces u with v */
 		if (u.parent != null) {
 			if (u.isLeftChild()) {
@@ -153,8 +186,8 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 			v.parent = u.parent;
 	}
 
-	private void swap(SplayBSTNode<K, V> n1, SplayBSTNode<K, V> n2) {
-		BinarySearchTrees.swap(n1, n2);
+	private void swap(SplayBSTNode KEY_VALUE_GENERIC n1, SplayBSTNode KEY_VALUE_GENERIC n2) {
+		BINARY_SEARCH_TREES.swap(n1, n2);
 		if (n1 == root)
 			root = n2;
 		else if (n2 == root)
@@ -165,8 +198,8 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	}
 
 	@Override
-	public void decreaseKey(HeapReference<K, V> ref, K newKey) {
-		SplayBSTNode<K, V> n = (SplayBSTNode<K, V>) ref;
+	public void decreaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
+		SplayBSTNode KEY_VALUE_GENERIC n = (SplayBSTNode KEY_VALUE_GENERIC) ref;
 		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);
 		remove(n);
 		n.key = newKey;
@@ -174,66 +207,65 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	}
 
 	@Override
-	public HeapReference<K, V> find(K key) {
-		SplayBSTNode<K, V> n = BinarySearchTrees.find(root, c, key);
+	public HEAP_REFERENCE KEY_VALUE_GENERIC find(PRIMITIVE_KEY_TYPE key) {
+		SplayBSTNode KEY_VALUE_GENERIC n = BINARY_SEARCH_TREES.find(root, c, key);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public HeapReference<K, V> findMin() {
+	public HEAP_REFERENCE KEY_VALUE_GENERIC findMin() {
 		checkTreeNotEmpty();
-		return root = impl.splay(BinarySearchTrees.findMin(root));
+		return root = impl.splay(BINARY_SEARCH_TREES.findMin(root));
 	}
 
 	@Override
-	public HeapReference<K, V> findMax() {
+	public HEAP_REFERENCE KEY_VALUE_GENERIC findMax() {
 		checkTreeNotEmpty();
-		return root = impl.splay(BinarySearchTrees.findMax(root));
+		return root = impl.splay(BINARY_SEARCH_TREES.findMax(root));
 	}
 
 	@Override
-	public HeapReference<K, V> findOrSmaller(K key) {
-		SplayBSTNode<K, V> n = BinarySearchTrees.findOrSmaller(root, c, key);
+	public HEAP_REFERENCE KEY_VALUE_GENERIC findOrSmaller(PRIMITIVE_KEY_TYPE key) {
+		SplayBSTNode KEY_VALUE_GENERIC n = BINARY_SEARCH_TREES.findOrSmaller(root, c, key);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public HeapReference<K, V> findOrGreater(K key) {
-		SplayBSTNode<K, V> n = BinarySearchTrees.findOrGreater(root, c, key);
+	public HEAP_REFERENCE KEY_VALUE_GENERIC findOrGreater(PRIMITIVE_KEY_TYPE key) {
+		SplayBSTNode KEY_VALUE_GENERIC n = BINARY_SEARCH_TREES.findOrGreater(root, c, key);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public HeapReference<K, V> findSmaller(K key) {
-		SplayBSTNode<K, V> n = BinarySearchTrees.findSmaller(root, c, key);
+	public HEAP_REFERENCE KEY_VALUE_GENERIC findSmaller(PRIMITIVE_KEY_TYPE key) {
+		SplayBSTNode KEY_VALUE_GENERIC n = BINARY_SEARCH_TREES.findSmaller(root, c, key);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public HeapReference<K, V> findGreater(K key) {
-		SplayBSTNode<K, V> n = BinarySearchTrees.findGreater(root, c, key);
+	public HEAP_REFERENCE KEY_VALUE_GENERIC findGreater(PRIMITIVE_KEY_TYPE key) {
+		SplayBSTNode KEY_VALUE_GENERIC n = BINARY_SEARCH_TREES.findGreater(root, c, key);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public HeapReference<K, V> getPredecessor(HeapReference<K, V> ref) {
-		SplayBSTNode<K, V> n = BinarySearchTrees.getPredecessor((SplayBSTNode<K, V>) ref);
+	public HEAP_REFERENCE KEY_VALUE_GENERIC getPredecessor(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
+		SplayBSTNode KEY_VALUE_GENERIC n = BINARY_SEARCH_TREES.getPredecessor((SplayBSTNode KEY_VALUE_GENERIC) ref);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
-	public HeapReference<K, V> getSuccessor(HeapReference<K, V> ref) {
-		SplayBSTNode<K, V> n = BinarySearchTrees.getSuccessor((SplayBSTNode<K, V>) ref);
+	public HEAP_REFERENCE KEY_VALUE_GENERIC getSuccessor(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
+		SplayBSTNode KEY_VALUE_GENERIC n = BINARY_SEARCH_TREES.getSuccessor((SplayBSTNode KEY_VALUE_GENERIC) ref);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
-	public void meld(HeapReferenceable<? extends K, ? extends V> heap) {
+	public void meld(REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap) {
 		Assertions.Heaps.noMeldWithSelf(this, heap);
-		Assertions.Heaps.meldWithSameImpl(SplayTree.class, heap);
-		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
-		SplayTree<K, V> h = (SplayTree<K, V>) heap;
+		Assertions.Heaps.meldWithSameImpl(SPLAY_TREE.class, heap);
+		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());
+		SPLAY_TREE KEY_VALUE_GENERIC h = (SPLAY_TREE KEY_VALUE_GENERIC) heap;
 		if (h.isEmpty())
 			return;
 		if (isEmpty()) {
@@ -242,17 +274,19 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 			return;
 		}
 
-		K min1, max1, min2, max2;
-		if (compare(max1 = findMax().key(), min2 = h.findMin().key()) <= 0) {
+		KEY_COMPARATOR KEY_TYPE_GENERIC cmp = c != null ? c : (a, b) -> COMPARE_KEY_DEFAULT(a, b);
+
+		PRIMITIVE_KEY_TYPE min1, max1, min2, max2;
+		if (cmp.compare(max1 = findMax().key(), min2 = h.findMin().key()) <= 0) {
 			/* all elements in this tree are <= than all elements in other tree */
 			root = meld(this, h);
-		} else if (compare(min1 = findMin().key(), max2 = h.findMax().key()) >= 0) {
+		} else if (cmp.compare(min1 = findMin().key(), max2 = h.findMax().key()) >= 0) {
 			/* all elements in this tree are >= than all elements in other tree */
 			root = meld(h, this);
 		} else {
-			int minCmp = compare(min1, min2);
-			int maxCmp = compare(max1, max2);
-			SplayTree<K, V> hLow = null, hHigh = null;
+			int minCmp = cmp.compare(min1, min2);
+			int maxCmp = cmp.compare(max1, max2);
+			SPLAY_TREE KEY_VALUE_GENERIC hLow = null, hHigh = null;
 
 			if (minCmp < 0) {
 				hLow = this.splitSmaller(min2);
@@ -268,7 +302,7 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 			if (h.root != null) {
 				/* there is nothing smarter to do than 'addAll' for the shared range */
 				/* We use 'insertNode' instead of 'insert' to maintain user references to nodes */
-				for (SplayBSTNode<K, V> node = h.root;;) {
+				for (SplayBSTNode KEY_VALUE_GENERIC node = h.root;;) {
 					for (;;) {
 						while (node.hasLeftChild())
 							node = node.left;
@@ -277,7 +311,7 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 						node = node.right;
 					}
 					node.size = 1;
-					SplayBSTNode<K, V> parent = node.parent;
+					SplayBSTNode KEY_VALUE_GENERIC parent = node.parent;
 					if (parent == null) {
 						insertNode(node);
 						break;
@@ -296,22 +330,22 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 			}
 
 			if (hLow != null) {
-				assert compare(hLow.findMax().key(), findMin().key()) < 0;
+				assert cmp.compare(hLow.findMax().key(), findMin().key()) < 0;
 				root = meld(hLow, this);
 			}
 			if (hHigh != null) {
-				assert compare(hHigh.findMin().key(), findMax().key()) > 0;
+				assert cmp.compare(hHigh.findMin().key(), findMax().key()) > 0;
 				root = meld(this, hHigh);
 			}
 		}
 		h.root = null;
 	}
 
-	private static <K, V> SplayBSTNode<K, V> meld(SplayTree<K, V> t1, SplayTree<K, V> t2) {
+	private static KEY_VALUE_GENERIC SplayBSTNode KEY_VALUE_GENERIC meld(SPLAY_TREE KEY_VALUE_GENERIC t1, SPLAY_TREE KEY_VALUE_GENERIC t2) {
 		/* Assume all nodes in t1 are smaller than all nodes in t2 */
 
 		/* Splay t1 max and t2 min */
-		SplayBSTNode<K, V> n1 = (SplayBSTNode<K, V>) t1.findMax();
+		SplayBSTNode KEY_VALUE_GENERIC n1 = (SplayBSTNode KEY_VALUE_GENERIC) t1.findMax();
 		assert n1.isRoot();
 		assert !n1.hasRightChild();
 
@@ -322,9 +356,9 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	}
 
 	@Override
-	public SplayTree<K, V> splitSmaller(K key) {
-		SplayTree<K, V> newTree = new SplayTree<>(c);
-		SplayBSTNode<K, V> pred = (SplayBSTNode<K, V>) findSmaller(key);
+	public SPLAY_TREE KEY_VALUE_GENERIC splitSmaller(PRIMITIVE_KEY_TYPE key) {
+		SPLAY_TREE KEY_VALUE_GENERIC newTree = new SPLAY_TREE KEY_VALUE_GENERIC_EMPTY(c);
+		SplayBSTNode KEY_VALUE_GENERIC pred = (SplayBSTNode KEY_VALUE_GENERIC) findSmaller(key);
 		if (pred == null)
 			return newTree;
 		assert pred.isRoot();
@@ -340,18 +374,18 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	}
 
 	@Override
-	public SplayTree<K, V> splitGreater(K key) {
-		SplayBSTNode<K, V> succ = (SplayBSTNode<K, V>) findGreater(key);
+	public SPLAY_TREE KEY_VALUE_GENERIC splitGreater(PRIMITIVE_KEY_TYPE key) {
+		SplayBSTNode KEY_VALUE_GENERIC succ = (SplayBSTNode KEY_VALUE_GENERIC) findGreater(key);
 		if (succ == null)
-			return new SplayTree<>(c);
+			return new SPLAY_TREE KEY_VALUE_GENERIC_EMPTY(c);
 		return split(succ);
 	}
 
 	@Override
-	public SplayTree<K, V> split(HeapReference<K, V> ref) {
-		SplayTree<K, V> newTree = new SplayTree<>(c);
+	public SPLAY_TREE KEY_VALUE_GENERIC split(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
+		SPLAY_TREE KEY_VALUE_GENERIC newTree = new SPLAY_TREE KEY_VALUE_GENERIC_EMPTY(c);
 
-		SplayBSTNode<K, V> n = impl.splay((SplayBSTNode<K, V>) ref);
+		SplayBSTNode KEY_VALUE_GENERIC n = impl.splay((SplayBSTNode KEY_VALUE_GENERIC) ref);
 		assert n.isRoot();
 
 		if ((root = n.left) != null) {
@@ -368,23 +402,23 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 	public void clear() {
 		if (root == null)
 			return;
-		BinarySearchTrees.clear(root);
+		BINARY_SEARCH_TREES.clear(root);
 		root = null;
 	}
 
-	static class BaseNode<K, N extends BaseNode<K, N>> extends BinarySearchTrees.Node<K, N> {
+	static class BaseNode<KEY_GENERIC_LIST_START N extends BaseNode<KEY_GENERIC_LIST_START N>> extends BINARY_SEARCH_TREES.Node<KEY_GENERIC_LIST_START N> {
 
-		BaseNode(K key) {
+		BaseNode(PRIMITIVE_KEY_TYPE key) {
 			super(key);
 		}
 
-		public K key() {
+		public PRIMITIVE_KEY_TYPE key() {
 			return key;
 		}
 
 	}
 
-	abstract static class SplayImpl<K, N extends BaseNode<K, N>> {
+	abstract static class SplayImpl<KEY_GENERIC_LIST_START N extends BaseNode<KEY_GENERIC_LIST_START N>> {
 
 		SplayImpl() {}
 
@@ -450,32 +484,36 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 
 	}
 
-	private static class SplayBSTNode<K, V> extends BaseNode<K, SplayBSTNode<K, V>> implements HeapReference<K, V> {
+	private static class SplayBSTNode KEY_VALUE_GENERIC extends BaseNode<KEY_GENERIC_LIST_START SplayBSTNode KEY_VALUE_GENERIC> implements HEAP_REFERENCE KEY_VALUE_GENERIC {
 
 		// TODO consider removing the size field
 		int size;
 
-		private V value;
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+		private PRIMITIVE_VALUE_TYPE value;
+#endif
 
-		SplayBSTNode(K key) {
+		SplayBSTNode(PRIMITIVE_KEY_TYPE key) {
 			super(key);
 			size = 1;
 		}
 
 		@Override
-		public K key() {
+		public PRIMITIVE_KEY_TYPE key() {
 			return key;
 		}
 
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
 		@Override
-		public V value() {
+		public PRIMITIVE_VALUE_TYPE value() {
 			return value;
 		}
 
 		@Override
-		public void setValue(V val) {
+		public void setValue(PRIMITIVE_VALUE_TYPE val) {
 			value = val;
 		}
+#endif
 
 		@Override
 		void clearWithoutUserData() {
@@ -485,13 +523,13 @@ class SplayTree<K, V> extends BinarySearchTreeAbstract<K, V> {
 
 	}
 
-	private static class SplayImplWithSize<K, V> extends SplayImpl<K, SplayBSTNode<K, V>> {
+	private static class SplayImplWithSize KEY_VALUE_GENERIC extends SplayImpl<KEY_GENERIC_LIST_START SplayBSTNode KEY_VALUE_GENERIC> {
 
 		@Override
-		void beforeRotate(SplayBSTNode<K, V> n) {
+		void beforeRotate(SplayBSTNode KEY_VALUE_GENERIC n) {
 			super.beforeRotate(n);
 
-			SplayBSTNode<K, V> parent = n.parent;
+			SplayBSTNode KEY_VALUE_GENERIC parent = n.parent;
 			int parentOldSize = parent.size;
 
 			if (n.isLeftChild()) {

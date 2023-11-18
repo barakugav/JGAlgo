@@ -27,7 +27,7 @@ import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -148,7 +148,7 @@ class ShortestPathSingleSourceUtils {
 		private boolean cardinalityWeight;
 
 		private String impl;
-		private HeapReferenceable.Builder<?, ?> heapBuilder;
+		private ReferenceableHeap.Builder heapBuilder;
 
 		@Override
 		public ShortestPathSingleSource build() {
@@ -247,7 +247,7 @@ class ShortestPathSingleSourceUtils {
 					impl = (String) value;
 					break;
 				case "heap-builder":
-					heapBuilder = (HeapReferenceable.Builder<?, ?>) value;
+					heapBuilder = (ReferenceableHeap.Builder) value;
 					break;
 				default:
 					ShortestPathSingleSource.Builder.super.setOption(key, value);

@@ -16,36 +16,31 @@
 
 package com.jgalgo.internal.ds;
 
-import java.util.Comparator;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.doubles.DoubleComparator;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 
 public class RedBlackTreeTest extends TestBase {
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private static Heap.Builder<Integer> heapBuilder() {
-		return new Heap.Builder<>() {
-
-			@Override
-			public Heap build(Comparator cmp) {
-				return new RedBlackTree<Integer, Object>(cmp).asHeap();
-			}
-
-			@Override
-			public Heap.Builder elementsTypeObj() {
-				return this;
-			}
-
-			@Override
-			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
-				return this;
-			}
-		};
+		return ReferenceableHeapTestUtils.heapBuilderFromReferenceableHeapBuilder(heapReferenceableBuilder());
 	}
 
-	private static BinarySearchTree.Builder<Integer, Void> createBuilder() {
-		return BinarySearchTree.newBuilder().setOption("impl", "red-black").keysTypePrimitive(int.class)
-				.valuesTypeVoid();
+	private static ReferenceableHeap.Builder heapReferenceableBuilder() {
+		return (keyType, valueType, comparator) -> {
+			if (keyType == int.class && valueType == int.class)
+				return new IntIntRedBlackTree((IntComparator) comparator);
+			if (keyType == int.class && valueType == void.class)
+				return new IntRedBlackTree((IntComparator) comparator);
+			if (keyType == double.class && valueType == int.class)
+				return new DoubleIntRedBlackTree((DoubleComparator) comparator);
+			if (keyType == double.class && valueType == Object.class)
+				return new DoubleObjRedBlackTree<>((DoubleComparator) comparator);
+			if (keyType == Object.class && valueType == void.class)
+				return new ObjRedBlackTree<>(comparator);
+			throw new UnsupportedOperationException("Unsupported heap type: " + keyType + ", " + valueType);
+		};
 	}
 
 	@Test
@@ -69,7 +64,7 @@ public class RedBlackTreeTest extends TestBase {
 	@Test
 	public void testExtractMax() {
 		final long seed = 0x51537cb2cbca4774L;
-		BinarySearchTreeTestUtils.testExtractMax(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testExtractMax(heapReferenceableBuilder(), seed);
 	}
 
 	@Test
@@ -87,61 +82,61 @@ public class RedBlackTreeTest extends TestBase {
 	@Test
 	public void testDecreaseKeyDefaultCompare() {
 		final long seed = 0x3ad0758602c2f656L;
-		HeapReferenceableTestUtils.testDecreaseKeyDefaultCompare(createBuilder(), seed);
+		ReferenceableHeapTestUtils.testDecreaseKeyDefaultCompare(heapReferenceableBuilder(), seed);
 	}
 
 	@Test
 	public void testDecreaseKeyCustomCompare() {
 		final long seed = 0x0edcd3dd97c5f867L;
-		HeapReferenceableTestUtils.testDecreaseKeyCustomCompare(createBuilder(), seed);
+		ReferenceableHeapTestUtils.testDecreaseKeyCustomCompare(heapReferenceableBuilder(), seed);
 	}
 
 	@Test
 	public void testFindSmallersDefaultCompare() {
 		final long seed = 0x4c57d0d410b7e9d6L;
-		BinarySearchTreeTestUtils.testFindSmallerDefaultCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testFindSmallerDefaultCompare(heapReferenceableBuilder(), seed);
 	}
 
 	@Test
 	public void testFindSmallersCustomCompare() {
 		final long seed = 0x73810ca9d38884ecL;
-		BinarySearchTreeTestUtils.testFindSmallerCustomCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testFindSmallerCustomCompare(heapReferenceableBuilder(), seed);
 	}
 
 	@Test
 	public void testFindGreatersDefaultCompare() {
 		final long seed = 0xec49fe38ca3ca19bL;
-		BinarySearchTreeTestUtils.testFindGreaterDefaultCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testFindGreaterDefaultCompare(heapReferenceableBuilder(), seed);
 	}
 
 	@Test
 	public void testFindGreatersCustomCompare() {
 		final long seed = 0x5939e3cdc2c3fb8fL;
-		BinarySearchTreeTestUtils.testFindGreaterCustomCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testFindGreaterCustomCompare(heapReferenceableBuilder(), seed);
 	}
 
 	@Test
 	public void testGetPredecessorDefaultCompare() {
 		final long seed = 0x941838c5890fae32L;
-		BinarySearchTreeTestUtils.testGetPredecessorsDefaultCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testGetPredecessorsDefaultCompare(heapReferenceableBuilder(), seed);
 	}
 
 	@Test
 	public void testGetPredecessorCustomCompare() {
 		final long seed = 0x6eec0c5157093ce4L;
-		BinarySearchTreeTestUtils.testGetPredecessorsCustomCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testGetPredecessorsCustomCompare(heapReferenceableBuilder(), seed);
 	}
 
 	@Test
 	public void testGetSuccessorDefaultCompare() {
 		final long seed = 0xc68b22dd9e9afed9L;
-		BinarySearchTreeTestUtils.testGetSuccessorsDefaultCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testGetSuccessorsDefaultCompare(heapReferenceableBuilder(), seed);
 	}
 
 	@Test
 	public void testGetSuccessorCustomCompare() {
 		final long seed = 0x89f85333bcca14e0L;
-		BinarySearchTreeTestUtils.testGetSuccessorsCustomCompare(createBuilder(), seed);
+		BinarySearchTreeTestUtils.testGetSuccessorsCustomCompare(heapReferenceableBuilder(), seed);
 	}
 
 }

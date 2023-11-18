@@ -16,36 +16,118 @@
 
 package com.jgalgo.internal.ds;
 
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.doubles.DoubleComparator;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 
 public class HeapPairingTestObjKeys extends TestBase {
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Heap.Builder<Integer> heapBuilder() {
-		return new Heap.Builder<>() {
+		return new Heap.Builder<Integer>() {
 
 			@Override
-			public Heap build(Comparator cmp) {
-				return heapReferenceableBuilder().build(cmp).asHeap();
+			public Heap build(Comparator<? super Integer> cmp) {
+				ObjReferenceableHeap<Integer> h =
+						(ObjReferenceableHeap<Integer>) heapReferenceableBuilder().build(Object.class, void.class, cmp);
+				return new Heap<Integer>() {
+
+					@Override
+					public Iterator<Integer> iterator() {
+						return IterTools.map(h.iterator(), ObjReferenceableHeap.Ref::key);
+					}
+
+					@Override
+					public void insert(Integer elm) {
+						h.insert(elm);
+					}
+
+					@Override
+					public void insertAll(Collection<? extends Integer> elms) {
+						for (Integer elm : elms)
+							h.insert(elm);
+					}
+
+					@Override
+					public Integer findMin() {
+						return h.findMin().key();
+					}
+
+					@Override
+					public Integer extractMin() {
+						return h.extractMin().key();
+					}
+
+					@Override
+					public boolean remove(Integer elm) {
+						ObjReferenceableHeap.Ref ref = h.find(elm);
+						if (ref == null)
+							return false;
+						h.remove(ref);
+						return true;
+					}
+
+					@Override
+					public void meld(Heap<? extends Integer> heap) {
+						for (Integer elm : heap)
+							insert(elm);
+						heap.clear();
+					}
+
+					@Override
+					public boolean isEmpty() {
+						return h.isEmpty();
+					}
+
+					@Override
+					public boolean isNotEmpty() {
+						return h.isNotEmpty();
+					}
+
+					@Override
+					public void clear() {
+						h.clear();
+					}
+
+					@Override
+					public Comparator<? super Integer> comparator() {
+						return h.comparator();
+					}
+
+				};
 			}
 
 			@Override
-			public Heap.Builder elementsTypeObj() {
+			public <ElementsT> Heap.Builder elementsTypeObj() {
 				return this;
 			}
 
 			@Override
-			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
+			public <ElementsT> Heap.Builder elementsTypePrimitive(Class<? extends ElementsT> primitiveType) {
 				return this;
 			}
 		};
 	}
 
-	private static HeapReferenceable.Builder<Integer, Void> heapReferenceableBuilder() {
-		return HeapReferenceable.newBuilder().setOption("impl", "pairing").keysTypePrimitive(int.class)
-				.valuesTypeVoid();
+	private static ReferenceableHeap.Builder heapReferenceableBuilder() {
+		return (keyType, valueType, comparator) -> {
+			if (keyType == int.class && valueType == int.class)
+				return new IntIntPairingHeap((IntComparator) comparator);
+			if (keyType == int.class && valueType == void.class)
+				return new IntPairingHeap((IntComparator) comparator);
+			if (keyType == double.class && valueType == int.class)
+				return new DoubleIntPairingHeap((DoubleComparator) comparator);
+			if (keyType == double.class && valueType == Object.class)
+				return new DoubleObjPairingHeap<>((DoubleComparator) comparator);
+			if (keyType == Object.class && valueType == void.class)
+				return new ObjPairingHeap<>(comparator);
+			throw new UnsupportedOperationException("Unsupported heap type: " + keyType + ", " + valueType);
+		};
 	}
 
 	@Test
@@ -81,13 +163,13 @@ public class HeapPairingTestObjKeys extends TestBase {
 	@Test
 	public void testDecreaseKeyDefaultCompare() {
 		final long seed = 0x90a80620c3ef1a43L;
-		HeapReferenceableTestUtils.testDecreaseKeyDefaultCompare(heapReferenceableBuilder(), seed);
+		ReferenceableHeapTestUtils.testDecreaseKeyDefaultCompare(heapReferenceableBuilder(), seed);
 	}
 
 	@Test
 	public void testDecreaseKeyCustomCompare() {
 		final long seed = 0x4204a31e91374f21L;
-		HeapReferenceableTestUtils.testDecreaseKeyCustomCompare(heapReferenceableBuilder(), seed);
+		ReferenceableHeapTestUtils.testDecreaseKeyCustomCompare(heapReferenceableBuilder(), seed);
 	}
 
 }

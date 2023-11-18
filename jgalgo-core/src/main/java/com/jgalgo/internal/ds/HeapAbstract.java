@@ -16,12 +16,8 @@
 
 package com.jgalgo.internal.ds;
 
-import java.util.Collection;
 import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Objects;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
 abstract class HeapAbstract<E> implements Heap<E> {
@@ -48,80 +44,6 @@ abstract class HeapAbstract<E> implements Heap<E> {
 
 	int compare(E e1, E e2) {
 		return c == null ? JGAlgoUtils.cmpDefault(e1, e2) : c.compare(e1, e2);
-	}
-
-	static <K> Heap<K> fromHeapReferenceable(HeapReferenceable<K, ?> h) {
-		return new HeapFromReferenceable<>(h);
-	}
-
-	private static class HeapFromReferenceable<K> extends HeapAbstract<K> {
-
-		private final HeapReferenceable<K, ?> h;
-
-		HeapFromReferenceable(HeapReferenceable<K, ?> h) {
-			super(h.comparator());
-			this.h = Objects.requireNonNull(h);
-		}
-
-		@Override
-		public Iterator<K> iterator() {
-			return IterTools.map(h.iterator(), HeapReference::key);
-		}
-
-		@Override
-		public void clear() {
-			h.clear();
-		}
-
-		@Override
-		public void insert(K key) {
-			h.insert(key);
-		}
-
-		@Override
-		public void insertAll(Collection<? extends K> elms) {
-			for (K elm : elms)
-				h.insert(elm);
-		}
-
-		@Override
-		public K findMin() {
-			return h.findMin().key();
-		}
-
-		@Override
-		public K extractMin() {
-			return h.extractMin().key();
-		}
-
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		@Override
-		public void meld(Heap<? extends K> heap) {
-			if (!(heap instanceof HeapFromReferenceable<?>))
-				throw new IllegalArgumentException();
-			HeapReferenceable<K, ?> oh = ((HeapFromReferenceable<K>) heap).h;
-			h.meld((HeapReferenceable) oh);
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return h.isEmpty();
-		}
-
-		@Override
-		public boolean isNotEmpty() {
-			return h.isNotEmpty();
-		}
-
-		@SuppressWarnings({ "rawtypes", "unchecked" })
-		@Override
-		public boolean remove(K elm) {
-			HeapReference<K, ?> ref = h.find(elm);
-			if (ref == null)
-				return false;
-			h.remove((HeapReference) ref);
-			return true;
-		}
 	}
 
 }

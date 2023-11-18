@@ -22,8 +22,8 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.ds.HeapReference;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.IntReferenceableHeap;
+import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -43,8 +43,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  */
 class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximumMatchingImpl {
 
-	private HeapReferenceable.Builder<Integer, Void> heapBuilder =
-			HeapReferenceable.newBuilder().keysTypePrimitive(int.class).valuesTypeVoid();
+	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.newBuilder();
 
 	/**
 	 * Create a new maximum weighted matching object.
@@ -56,8 +55,8 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	void setHeapBuilder(HeapReferenceable.Builder<?, ?> heapBuilder) {
-		this.heapBuilder = heapBuilder.keysTypePrimitive(int.class).valuesTypeVoid();
+	void setHeapBuilder(ReferenceableHeap.Builder heapBuilder) {
+		this.heapBuilder = Objects.requireNonNull(heapBuilder);
 	}
 
 	/**
@@ -101,14 +100,13 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 		private final Bitmap inTree;
 
 		private final IntComparator edgeSlackComparator;
-		private final HeapReferenceable<Integer, Void> nextTightEdge;
-		private final HeapReference<Integer, Void>[] nextTightEdgePerOutV;
+		private final IntReferenceableHeap nextTightEdge;
+		private final IntReferenceableHeap.Ref[] nextTightEdgePerOutV;
 
 		private double deltaTotal;
 		private final double[] dualValBase;
 		private final double[] dualVal0;
 
-		@SuppressWarnings("unchecked")
 		Worker(IndexGraph g, IWeightsBool partition, IWeightFunction w) {
 			Assertions.Graphs.onlyBipartite(g, partition);
 
@@ -121,8 +119,8 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 			inTree = new Bitmap(n);
 
 			edgeSlackComparator = (e1, e2) -> Double.compare(edgeSlack(e1), edgeSlack(e2));
-			nextTightEdge = heapBuilder.build(edgeSlackComparator);
-			nextTightEdgePerOutV = new HeapReference[n];
+			nextTightEdge = (IntReferenceableHeap) heapBuilder.build(int.class, void.class, edgeSlackComparator);
+			nextTightEdgePerOutV = new IntReferenceableHeap.Ref[n];
 
 			dualValBase = new double[n];
 			dualVal0 = new double[n];
@@ -158,8 +156,8 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 
 				currentTree: for (;;) {
 					while (nextTightEdge.isNotEmpty()) {
-						HeapReference<Integer, Void> minRef = nextTightEdge.findMin();
-						int e = minRef.key().intValue();
+						IntReferenceableHeap.Ref minRef = nextTightEdge.findMin();
+						int e = minRef.key();
 						int u0 = g.edgeSource(e), v0 = g.edgeTarget(e);
 
 						if (inTree.get(u0) && inTree.get(v0)) {
@@ -203,7 +201,7 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 
 					// Adjust dual values
 					double delta1 = delta1Threshold - deltaTotal;
-					double delta2 = nextTightEdge.isEmpty() ? -1 : edgeSlack(nextTightEdge.findMin().key().intValue());
+					double delta2 = nextTightEdge.isEmpty() ? -1 : edgeSlack(nextTightEdge.findMin().key());
 					if ((!perfect && delta1 <= delta2) || delta2 == -1)
 						break mainLoop;
 					deltaTotal += delta2;
@@ -228,11 +226,11 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 
 		private void nextTightEdgeAdd(int u, int e) {
 			int v = g.edgeEndpoint(e, u);
-			HeapReference<Integer, Void> ref = nextTightEdgePerOutV[v];
+			IntReferenceableHeap.Ref ref = nextTightEdgePerOutV[v];
 			if (ref == null)
-				nextTightEdgePerOutV[v] = nextTightEdge.insert(Integer.valueOf(e));
-			else if (edgeSlackComparator.compare(e, ref.key().intValue()) < 0)
-				nextTightEdge.decreaseKey(ref, Integer.valueOf(e));
+				nextTightEdgePerOutV[v] = nextTightEdge.insert(e);
+			else if (edgeSlackComparator.compare(e, ref.key()) < 0)
+				nextTightEdge.decreaseKey(ref, e);
 		}
 
 		private double dualVal(int v) {

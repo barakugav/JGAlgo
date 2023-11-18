@@ -34,7 +34,7 @@ package com.jgalgo.internal.ds;
 class DynamicTreeSplayInt implements DynamicTree {
 
 	private final int rootWeight;
-	private final SplayTree.SplayImpl<Object, SplayNode> impl;
+	private final ObjObjSplayTree.SplayImpl<Object, SplayNode> impl;
 
 	/**
 	 * Create a new empty dynamic tree data structure.
@@ -47,7 +47,7 @@ class DynamicTreeSplayInt implements DynamicTree {
 		this(new SplayImplWithRelativeWeights(), weightLimit);
 	}
 
-	DynamicTreeSplayInt(SplayTree.SplayImpl<Object, SplayNode> impl, int weightLimit) {
+	DynamicTreeSplayInt(ObjObjSplayTree.SplayImpl<Object, SplayNode> impl, int weightLimit) {
 		this.rootWeight = weightLimit;
 		this.impl = impl;
 	}
@@ -65,7 +65,7 @@ class DynamicTreeSplayInt implements DynamicTree {
 		if (!n.isLinked())
 			return n;
 		splay(n);
-		return splay(BinarySearchTrees.findMax(n));
+		return splay(ObjBinarySearchTrees.findMax(n));
 	}
 
 	@Override
@@ -222,7 +222,7 @@ class DynamicTreeSplayInt implements DynamicTree {
 
 	void afterLink(SplayNode n) {}
 
-	static class SplayImplWithRelativeWeights extends SplayTree.SplayImpl<Object, SplayNode> {
+	static class SplayImplWithRelativeWeights extends ObjObjSplayTree.SplayImpl<Object, SplayNode> {
 
 		@Override
 		void beforeRotate(SplayNode n) {
@@ -271,7 +271,7 @@ class DynamicTreeSplayInt implements DynamicTree {
 
 	}
 
-	static class SplayNode extends SplayTree.BaseNode<Object, SplayNode> implements DynamicTree.Vertex {
+	static class SplayNode extends ObjObjSplayTree.BaseNode<Object, SplayNode> implements DynamicTree.Vertex {
 
 		SplayNode userParent;
 
