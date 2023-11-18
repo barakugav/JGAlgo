@@ -21,7 +21,13 @@ package com.jgalgo.graph;
  *
  * @author Barak Ugav
  */
-public interface WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> extends Weights<K, TYPE_GENERIC_CLASS> WEIGHT_FUNC_IMPLEMENT {
+public interface WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> extends Weights<K, TYPE_GENERIC_CLASS>
+#if PRIMITIVE_TYPE in ["byte", "short", "int"]
+, WeightFunctionInt<K>
+#elif PRIMITIVE_TYPE in ["long", "float", "double"]
+, WeightFunction<K>
+#endif
+{
 
 	/**
 	 * Get the weight associated with the given element.
@@ -68,6 +74,29 @@ public interface WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> extends Weights<K, TYP
 		return PRIMITIVE_TO_BOXED(defaultWeight());
 	}
 
-	WEIGHT_FUNC_IMPLEMENTATION
+#if PRIMITIVE_TYPE in ["byte", "short", "int"]
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
+	 */
+	@Override
+	default int weightInt(K element) {
+		return get(element);
+	}
 
+#elif PRIMITIVE_TYPE in ["long", "float", "double"]
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * Implement the {@link WeightFunction} interface by using the weights of the container.
+	 */
+	@Override
+	default double weight(K element) {
+		return get(element);
+	}
+
+#endif
 }

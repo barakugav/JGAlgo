@@ -79,16 +79,86 @@ def generate_sourcefile(input_filename, output_filename, constants, functions):
 
     text = open(input_filename).read()
 
+    # Solve all '#if' and '#ifdef' directives
+    root_block = {"type": "container", "blocks": []}
+    stack = [root_block]
+    for line in text.splitlines():
+        if line.startswith("#if "):
+            block = {
+                "type": "if",
+                "condition": line[len("#if ") :],
+                "blocks": [],
+            }
+            stack[-1]["blocks"].append(block)
+            stack.append(block)
+
+        elif line.startswith("#elif "):
+            stack.pop()
+            block = {"type": "elif", "condition": line[len("#elif ") :], "blocks": []}
+            stack[-1]["blocks"].append(block)
+            stack.append(block)
+
+        elif line.startswith("#else"):
+            stack.pop()
+            block = {"type": "else", "blocks": []}
+            stack[-1]["blocks"].append(block)
+            stack.append(block)
+
+        elif line.startswith("#endif"):
+            stack.pop()
+            block = {"type": "endif", "blocks": []}
+            stack[-1]["blocks"].append(block)
+
+        else:
+            stack[-1]["blocks"].append(line)
+    text = []
+
+    def eval_condition(condition):
+        return eval(condition, {}, constants)
+
+    def append_lines(top_block):
+        block_num = len(top_block["blocks"])
+        block_idx = 0
+        while block_idx < block_num:
+            block = top_block["blocks"][block_idx]
+            if isinstance(block, str):
+                text.append(block)
+                block_idx += 1
+                continue
+            assert block["type"] == "if", "unexpected block type: " + block["type"]
+            while True:
+                if block["type"] == "else" or eval_condition(block["condition"]):
+                    append_lines(block)
+                    block_idx += 1
+                    block = top_block["blocks"][block_idx]
+                    while block["type"] != "endif":
+                        block_idx += 1
+                        block = top_block["blocks"][block_idx]
+                    block_idx += 1
+                    break
+
+                block_idx += 1
+                block = top_block["blocks"][block_idx]
+                if block["type"] == "endif":
+                    block_idx += 1
+                    break
+                assert (
+                    block["type"] == "if"
+                    or block["type"] == "elif"
+                    or block["type"] == "else"
+                )
+
+    append_lines(root_block)
+    text = "\n".join(text)
+
     # Replace all constants one by one, in reverse sorted order to (hopefully) avoid one constant being a prefix of another
-    for constant, value in sorted(
-        constants.items(), key=lambda kv: kv[0], reverse=True
-    ):
+    sorted_constants = sorted(constants.items(), key=lambda kv: kv[0], reverse=True)
+    for constant, value in sorted_constants:
         text = text.replace(constant, value)
 
     # Replace all functions calls one by one, in reverse sorted order to (hopefully) avoid one constant being a prefix of another
-    for func_name, func in sorted(
-        functions.items(), key=lambda kv: kv[0], reverse=True
-    ):
+    sorted_functions = sorted(functions.items(), key=lambda kv: kv[0], reverse=True)
+    for func_name, func in sorted_functions:
         text = apply_function(text, func_name, func)
 
     with open(output_filename, "w") as output_file:
@@ -268,42 +338,6 @@ def generate_weights(type):
     constants["IWEIGHTS"] = "IWeights" + type
     constants["WEIGHTS"] = "Weights" + type
 
-    if type in ["Byte", "Short", "Int"]:
-        constants["WEIGHT_FUNC_IMPLEMENT"] = ", WeightFunctionInt<K>"
-        constants[
-            "WEIGHT_FUNC_IMPLEMENTATION"
-        ] = """
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
-	 */
-	@Override
-	default int weightInt(K element) {
-		return get(element);
-	}
-"""
-    elif type in ["Long", "Float", "Double"]:
-        constants["WEIGHT_FUNC_IMPLEMENT"] = ", WeightFunction<K>"
-        constants[
-            "WEIGHT_FUNC_IMPLEMENTATION"
-        ] = """
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * Implement the {@link WeightFunction} interface by using the weights of the container.
-	 */
-	@Override
-	default double weight(K element) {
-		return get(element);
-	}
-"""
-    else:
-        constants["WEIGHT_FUNC_IMPLEMENT"] = ""
-        constants["WEIGHT_FUNC_IMPLEMENTATION"] = ""
-
     generate_sourcefile(
         os.path.join(TEMPLATE_DIR, "Weights.java.template"),
         weights_filename(type),
@@ -316,78 +350,6 @@ def generate_iweights(type):
     constants, functions = get_constants_and_functions(type)
     constants["IWEIGHTS"] = "IWeights" + type
     constants["WEIGHTS"] = "Weights" + type
-
-    if type in ["Byte", "Short", "Int"]:
-        constants["WEIGHT_FUNC_IMPLEMENT"] = ", IWeightFunctionInt"
-        constants[
-            "WEIGHT_FUNC_IMPLEMENTATION"
-        ] = """
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * Implement the {@link IWeightFunctionInt} interface by using the weights of the container.
-	 */
-	@Override
-	default int weightInt(int element) {
-		return get(element);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
-	 */
-	@Deprecated
-	@Override
-	default int weightInt(Integer element) {
-		return get(element.intValue());
-	}
-
-	@Deprecated
-	@Override
-	default int compare(Integer e1, Integer e2) {
-		return IWeightFunctionInt.super.compare(e1.intValue(), e2.intValue());
-	}
-"""
-    elif type in ["Long", "Float", "Double"]:
-        constants["WEIGHT_FUNC_IMPLEMENT"] = ", IWeightFunction"
-        constants[
-            "WEIGHT_FUNC_IMPLEMENTATION"
-        ] = """
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * Implement the {@link IWeightFunction} interface by using the weights of the container.
-	 */
-	@Override
-	default double weight(int element) {
-		return get(element);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
-	 */
-	@Deprecated
-	@Override
-	default double weight(Integer element) {
-		return get(element.intValue());
-	}
-
-	@Deprecated
-	@Override
-	default int compare(Integer e1, Integer e2) {
-		return IWeightFunction.super.compare(e1.intValue(), e2.intValue());
-	}
-"""
-    else:
-        constants["WEIGHT_FUNC_IMPLEMENT"] = ""
-        constants["WEIGHT_FUNC_IMPLEMENTATION"] = ""
 
     generate_sourcefile(
         os.path.join(TEMPLATE_DIR, "IWeights.java.template"),

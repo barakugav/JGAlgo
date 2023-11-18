@@ -21,7 +21,13 @@ package com.jgalgo.graph;
  *
  * @author Barak Ugav
  */
-public interface IWEIGHTS TYPE_GENERIC extends IWeights<TYPE_GENERIC_CLASS>, WEIGHTS<Integer TYPE_GENERIC_IN_TEMPLATE_LIST> WEIGHT_FUNC_IMPLEMENT {
+public interface IWEIGHTS TYPE_GENERIC extends IWeights<TYPE_GENERIC_CLASS>, WEIGHTS<Integer TYPE_GENERIC_IN_TEMPLATE_LIST>
+#if PRIMITIVE_TYPE in ["byte", "short", "int"]
+, IWeightFunctionInt
+#elif PRIMITIVE_TYPE in ["long", "float", "double"]
+, IWeightFunction
+#endif
+{
 
 	/**
 	 * Get the weight associated with the given element.
@@ -75,6 +81,65 @@ public interface IWEIGHTS TYPE_GENERIC extends IWeights<TYPE_GENERIC_CLASS>, WEI
 		set(element.intValue(), BOXED_TO_PRIMITIVE(weight));
 	}
 
-	WEIGHT_FUNC_IMPLEMENTATION
+#if PRIMITIVE_TYPE in ["byte", "short", "int"]
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * Implement the {@link IWeightFunctionInt} interface by using the weights of the container.
+	 */
+	@Override
+	default int weightInt(int element) {
+		return get(element);
+	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
+	 */
+	@Deprecated
+	@Override
+	default int weightInt(Integer element) {
+		return get(element.intValue());
+	}
+
+	@Deprecated
+	@Override
+	default int compare(Integer e1, Integer e2) {
+		return IWeightFunctionInt.super.compare(e1.intValue(), e2.intValue());
+	}
+
+#elif PRIMITIVE_TYPE in ["long", "float", "double"]
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * Implement the {@link IWeightFunction} interface by using the weights of the container.
+	 */
+	@Override
+	default double weight(int element) {
+		return get(element);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * Implement the {@link WeightFunctionInt} interface by using the weights of the container.
+	 */
+	@Deprecated
+	@Override
+	default double weight(Integer element) {
+		return get(element.intValue());
+	}
+
+	@Deprecated
+	@Override
+	default int compare(Integer e1, Integer e2) {
+		return IWeightFunction.super.compare(e1.intValue(), e2.intValue());
+	}
+
+#endif
 }
