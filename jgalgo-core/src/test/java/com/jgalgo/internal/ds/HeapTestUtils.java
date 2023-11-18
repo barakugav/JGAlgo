@@ -39,15 +39,15 @@ class HeapTestUtils extends TestUtils {
 
 	private HeapTestUtils() {}
 
-	static void testRandOpsDefaultCompare(Heap.Builder<Integer> heapBuilder, long seed) {
+	static void testRandOpsDefaultCompare(Heap.Builder heapBuilder, long seed) {
 		testRandOps(heapBuilder, null, seed);
 	}
 
-	static void testRandOpsCustomCompare(Heap.Builder<Integer> heapBuilder, long seed) {
+	static void testRandOpsCustomCompare(Heap.Builder heapBuilder, long seed) {
 		testRandOps(heapBuilder, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testRandOps(Heap.Builder<Integer> heapBuilder, IntComparator compare, long seed) {
+	private static void testRandOps(Heap.Builder heapBuilder, IntComparator compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 16).repeat(128);
@@ -61,7 +61,7 @@ class HeapTestUtils extends TestUtils {
 		});
 	}
 
-	static void testRandOpsAfterManyInserts(Heap.Builder<Integer> heapBuilder, long seed) {
+	static void testRandOpsAfterManyInserts(Heap.Builder heapBuilder, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Comparator<? super Integer> compare = null;
 		PhasedTester tester = new PhasedTester();
@@ -77,24 +77,23 @@ class HeapTestUtils extends TestUtils {
 		});
 	}
 
-	static void testMeldDefaultCompare(Heap.Builder<Integer> heapBuilder, long seed) {
+	static void testMeldDefaultCompare(Heap.Builder heapBuilder, long seed) {
 		testMeld(heapBuilder, false, null, seed);
 	}
 
-	static void testMeldCustomCompare(Heap.Builder<Integer> heapBuilder, long seed) {
+	static void testMeldCustomCompare(Heap.Builder heapBuilder, long seed) {
 		testMeld(heapBuilder, false, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	static void testMeldWithOrderedValuesDefaultCompare(Heap.Builder<Integer> heapBuilder, long seed) {
+	static void testMeldWithOrderedValuesDefaultCompare(Heap.Builder heapBuilder, long seed) {
 		testMeld(heapBuilder, true, null, seed);
 	}
 
-	static void testMeldWithOrderedValuesCustomCompare(Heap.Builder<Integer> heapBuilder, long seed) {
+	static void testMeldWithOrderedValuesCustomCompare(Heap.Builder heapBuilder, long seed) {
 		testMeld(heapBuilder, true, (x1, x2) -> -Integer.compare(x1, x2), seed);
 	}
 
-	private static void testMeld(Heap.Builder<Integer> heapBuilder, boolean orderedValues,
-			IntComparator compare, long seed) {
+	private static void testMeld(Heap.Builder heapBuilder, boolean orderedValues, IntComparator compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16).repeat(64);
@@ -106,7 +105,7 @@ class HeapTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testMeld(Heap.Builder<Integer> heapBuilder, boolean orderedValues, int hCount,
+	private static void testMeld(Heap.Builder heapBuilder, boolean orderedValues, int hCount,
 			Comparator<? super Integer> compare, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Set<HeapTracker> heaps = new ObjectOpenHashSet<>();

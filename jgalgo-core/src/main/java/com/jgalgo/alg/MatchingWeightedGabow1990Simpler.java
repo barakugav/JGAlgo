@@ -60,8 +60,7 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 
 		Worker(IndexGraph gOrig, IWeightFunction w, DebugPrinter debugPrint) {
 			super(gOrig, w, debugPrint);
-			blossomEvents = Heap.newBuilder().<EdgeEvent>elementsTypeObj()
-					.build((e1, e2) -> Double.compare(e1.slack, e2.slack));
+			blossomEvents = Heap.newInstance((e1, e2) -> Double.compare(e1.slack, e2.slack));
 		}
 
 		@Override

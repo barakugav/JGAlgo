@@ -16,31 +16,13 @@
 
 package com.jgalgo.internal.ds;
 
-import java.util.Comparator;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 
 public class HeapBinaryTest extends TestBase {
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static Heap.Builder<Integer> heapBuilder() {
-		return new Heap.Builder<>() {
-
-			@Override
-			public Heap build(Comparator cmp) {
-				return new HeapBinary(cmp);
-			}
-
-			@Override
-			public Heap.Builder elementsTypeObj() {
-				return this;
-			}
-
-			@Override
-			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
-				return this;
-			}
-		};
+	private static Heap.Builder heapBuilder() {
+		return HeapBinary::new;
 	}
 
 	@Test

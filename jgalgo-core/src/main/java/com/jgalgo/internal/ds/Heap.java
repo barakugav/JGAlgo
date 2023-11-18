@@ -173,7 +173,7 @@ public interface Heap<E> extends Iterable<E> {
 	 * @return a default implementation of {@link Heap}
 	 */
 	static <E> Heap<E> newInstance() {
-		return newBuilder().<E>elementsTypeObj().build();
+		return newBuilder().build();
 	}
 
 	/**
@@ -186,7 +186,7 @@ public interface Heap<E> extends Iterable<E> {
 	 * @return a default implementation of {@link Heap}
 	 */
 	static <E> Heap<E> newInstance(Comparator<? super E> cmp) {
-		return newBuilder().<E>elementsTypeObj().build(cmp);
+		return newBuilder().build(cmp);
 	}
 
 	/**
@@ -197,88 +197,33 @@ public interface Heap<E> extends Iterable<E> {
 	 *
 	 * @return a new builder that can build {@link Heap} objects
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	static Heap.Builder<Object> newBuilder() {
-		return new Heap.Builder<>() {
-
-			Class<?> elmsType;
-
-			@Override
-			public Heap build(Comparator cmp) {
-				if (elmsType == int.class) {
-					return new HeapBinaryInt(cmp);
-				} else {
-					return new HeapBinary<>(cmp);
-				}
-			}
-
-			@Override
-			public Heap.Builder elementsTypeObj() {
-				elmsType = null;
-				return this;
-			}
-
-			@Override
-			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
-				if (!primitiveType.isPrimitive())
-					throw new IllegalArgumentException("type is not primitive: " + primitiveType);
-				elmsType = primitiveType;
-				return this;
-			}
-		};
+	static Heap.Builder newBuilder() {
+		return HeapBinary::new;
 	}
 
 	/**
 	 * Builder for heaps.
 	 *
-	 * @param  <E> the heap elements type
-	 * @see        Heap#newBuilder()
-	 * @author     Barak Ugav
+	 * @see    Heap#newBuilder()
+	 * @author Barak Ugav
 	 */
-	static interface Builder<E> {
+	static interface Builder {
 		/**
 		 * Build a new heap with the given comparator.
-		 *
-		 * <p>
-		 * If primitive elements are in used, namely {@link #elementsTypePrimitive(Class)}, its recommended to use a
-		 * primitive {@link Comparator} such as {@link it.unimi.dsi.fastutil.ints.IntComparator}, for best performance.
 		 *
 		 * @param  cmp the comparator that will be used to order the elements in the heap
 		 * @return     the newly constructed heap
 		 */
-		Heap<E> build(Comparator<? super E> cmp);
+		<E> Heap<E> build(Comparator<? super E> cmp);
 
 		/**
 		 * Build a new heap with {@linkplain Comparable natural ordering}.
 		 *
 		 * @return the newly constructed heap
 		 */
-		default Heap<E> build() {
+		default <E> Heap<E> build() {
 			return build(null);
 		}
-
-		/**
-		 * Change the elements type of the built heaps to a generic object type.
-		 *
-		 * @param  <ElementsT> object type
-		 * @return             this builder
-		 */
-		<ElementsT> Heap.Builder<ElementsT> elementsTypeObj();
-
-		/**
-		 * Change the elements type of the built heaps to some primitive type.
-		 *
-		 * <p>
-		 * Some specific type implementation may exists that is more efficient than the boxed general object
-		 * implementation.
-		 *
-		 * @param  <ElementsT>              elements primitive boxed type
-		 * @param  primitiveType            the class of the primitive type
-		 * @return                          this builder
-		 * @throws IllegalArgumentException if {@code primitiveType} is not a class of a primitive type, a.k.a
-		 *                                      {@code int.class, double.class} ect.
-		 */
-		<ElementsT> Heap.Builder<ElementsT> elementsTypePrimitive(Class<? extends ElementsT> primitiveType);
 
 		/**
 		 * <b>[TL;DR Don't call me!]</b> Set an option.
@@ -295,7 +240,7 @@ public interface Heap<E> extends Iterable<E> {
 		 * @param  value the option value
 		 * @return       this builder
 		 */
-		default Heap.Builder<E> setOption(String key, Object value) {
+		default Heap.Builder setOption(String key, Object value) {
 			throw new IllegalArgumentException("unknown option key: " + key);
 		}
 	}

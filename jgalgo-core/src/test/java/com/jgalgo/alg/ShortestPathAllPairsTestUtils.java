@@ -184,7 +184,7 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 
 	@Test
 	public void testDefaultImpl() {
-		ShortestPathAllPairs algo = ShortestPathAllPairs.newBuilder().build();
+		ShortestPathAllPairs algo = ShortestPathAllPairs.newInstance();
 
 		CompleteGraphGenerator<Integer, Integer> gen = CompleteGraphGenerator.newInstance();
 		gen.setVertices(Range.of(25));

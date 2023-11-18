@@ -28,11 +28,11 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 public class HeapPairingTestObjKeys extends TestBase {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static Heap.Builder<Integer> heapBuilder() {
-		return new Heap.Builder<Integer>() {
+	private static Heap.Builder heapBuilder() {
+		return new Heap.Builder() {
 
 			@Override
-			public Heap build(Comparator<? super Integer> cmp) {
+			public Heap build(Comparator cmp) {
 				ObjReferenceableHeap<Integer> h =
 						(ObjReferenceableHeap<Integer>) heapReferenceableBuilder().build(Object.class, void.class, cmp);
 				return new Heap<Integer>() {
@@ -100,16 +100,6 @@ public class HeapPairingTestObjKeys extends TestBase {
 					}
 
 				};
-			}
-
-			@Override
-			public <ElementsT> Heap.Builder elementsTypeObj() {
-				return this;
-			}
-
-			@Override
-			public <ElementsT> Heap.Builder elementsTypePrimitive(Class<? extends ElementsT> primitiveType) {
-				return this;
 			}
 		};
 	}

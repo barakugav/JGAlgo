@@ -105,7 +105,7 @@ public class HeapBench {
 		}
 	}
 
-	private void benchHeap(Heap.Builder<Integer> heapBuilder, Blackhole blackhole) {
+	private void benchHeap(Heap.Builder heapBuilder, Blackhole blackhole) {
 		Heap<Integer> heap = heapBuilder.build();
 
 		List<Op> sequence = sequences.get(graphIdx.getAndUpdate(i -> (i + 1) % sequencesNum));
@@ -133,7 +133,7 @@ public class HeapBench {
 
 	@Benchmark
 	public void Binary(Blackhole blackhole) {
-		benchHeap(Heap.newBuilder().elementsTypePrimitive(int.class), blackhole);
+		benchHeap(Heap.newBuilder(), blackhole);
 	}
 
 	@Benchmark
@@ -161,22 +161,12 @@ public class HeapBench {
 		benchHeap(heapBuilder(IntSplayTree::new), blackhole);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private static Heap.Builder<Integer> heapBuilder(Function<IntComparator, IntReferenceableHeap> builder) {
-		return new Heap.Builder<>() {
+	@SuppressWarnings("unchecked")
+	private static Heap.Builder heapBuilder(Function<IntComparator, IntReferenceableHeap> builder) {
+		return new Heap.Builder() {
 			@Override
-			public Heap build(Comparator cmp) {
-				return new HeapFromReferenceableHeap(builder.apply((IntComparator) cmp));
-			}
-
-			@Override
-			public Heap.Builder elementsTypeObj() {
-				return this;
-			}
-
-			@Override
-			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
-				return this;
+			public <E> Heap<E> build(Comparator<? super E> cmp) {
+				return (Heap<E>) new HeapFromReferenceableHeap(builder.apply((IntComparator) cmp));
 			}
 		};
 	}

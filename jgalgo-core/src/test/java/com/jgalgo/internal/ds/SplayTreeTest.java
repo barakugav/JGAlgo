@@ -23,7 +23,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 
 public class SplayTreeTest extends TestBase {
 
-	private static Heap.Builder<Integer> heapBuilder() {
+	private static Heap.Builder heapBuilder() {
 		return ReferenceableHeapTestUtils.heapBuilderFromReferenceableHeapBuilder(heapReferenceableBuilder());
 	}
 

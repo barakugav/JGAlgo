@@ -502,23 +502,12 @@ public class ReferenceableHeapTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	static Heap.Builder<Integer> heapBuilderFromReferenceableHeapBuilder(ReferenceableHeap.Builder refHeapBuilder) {
-		return new Heap.Builder<>() {
-
+	static Heap.Builder heapBuilderFromReferenceableHeapBuilder(ReferenceableHeap.Builder refHeapBuilder) {
+		return new Heap.Builder() {
 			@Override
 			public Heap build(Comparator cmp) {
 				return new HeapFromReferenceableHeap(
 						(IntReferenceableHeap) refHeapBuilder.build(int.class, void.class, cmp));
-			}
-
-			@Override
-			public Heap.Builder elementsTypeObj() {
-				return this;
-			}
-
-			@Override
-			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
-				return this;
 			}
 		};
 	}
