@@ -30,7 +30,7 @@ import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
  * references to the underling elements.
  *
  * <p>
- * In addition to the regular Heap operations, the user can obtain a {@linkplain REFERENCEABLE_HEAP.Ref reference} to
+ * In addition to the regular Heap operations, the user can obtain a {@linkplain HEAP_REFERENCE reference} to
  * each inserted element via the return value of the {@link #insert} function. The reference will be valid as
  * long as the element is still in the heap. By passing the reference to the heap implementation to functions such as
  * {@link #decreaseKey} or {@link #remove} the heap implementation can perform the operations efficiently as is does
@@ -251,7 +251,7 @@ public interface REFERENCEABLE_HEAP KEY_VALUE_GENERIC extends ReferenceableHeap,
 	 * @return an instance of this interface with the default implementation
 	 */
 	static KEY_VALUE_GENERIC REFERENCEABLE_HEAP KEY_VALUE_GENERIC newInstance() {
-		return new PAIRING_HEAP KEY_VALUE_GENERIC_EMPTY (null);
+		return newInstance(null);
 	}
 
 	/**

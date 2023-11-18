@@ -33,4 +33,11 @@ src/main/java/com/jgalgo/internal/ds/*BinarySearchTree.java
 src/main/java/com/jgalgo/internal/ds/*BinarySearchTrees.java
 src/main/java/com/jgalgo/internal/ds/*RedBlackTree.java
 src/main/java/com/jgalgo/internal/ds/*SplayTree.java
+src/test/java/com/jgalgo/internal/ds/[A-Z]*ReferenceableHeapTestUtils.java
+src/test/java/com/jgalgo/internal/ds/[A-Z]*BinarySearchTreeTestUtils.java
+src/test/java/com/jgalgo/internal/ds/[A-Z]*BinomialHeapTest.java
+src/test/java/com/jgalgo/internal/ds/[A-Z]*FibonacciHeapTest.java
+src/test/java/com/jgalgo/internal/ds/[A-Z]*PairingHeapTest.java
+src/test/java/com/jgalgo/internal/ds/[A-Z]*RedBlackTreeTest.java
+src/test/java/com/jgalgo/internal/ds/[A-Z]*SplayTreeTest.java
 .gen/

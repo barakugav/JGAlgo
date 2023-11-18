@@ -18,27 +18,21 @@ package com.jgalgo.internal.ds;
 
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.doubles.DoubleComparator;
-import it.unimi.dsi.fastutil.ints.IntComparator;
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+import java.util.Comparator;
+#else
+import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
+#endif
 
-public class HeapBinomialTest extends TestBase {
+public class BINOMIAL_HEAP_TEST extends TestBase {
 
-	private static Heap.Builder heapBuilder() {
-		return ReferenceableHeapTestUtils.heapBuilderFromReferenceableHeapBuilder(heapReferenceableBuilder());
-	}
-
-	private static ReferenceableHeap.Builder heapReferenceableBuilder() {
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+			@SuppressWarnings("unchecked")
+#endif
+	private static ReferenceableHeap.Builder heapBuilder() {
 		return (keyType, valueType, comparator) -> {
-			if (keyType == int.class && valueType == int.class)
-				return new IntIntBinomialHeap((IntComparator) comparator);
-			if (keyType == int.class && valueType == void.class)
-				return new IntBinomialHeap((IntComparator) comparator);
-			if (keyType == double.class && valueType == int.class)
-				return new DoubleIntBinomialHeap((DoubleComparator) comparator);
-			if (keyType == double.class && valueType == Object.class)
-				return new DoubleObjBinomialHeap<>((DoubleComparator) comparator);
-			if (keyType == Object.class && valueType == void.class)
-				return new ObjBinomialHeap<>(comparator);
+			if (keyType == PRIMITIVE_KEY_TYPE_REAL.class && valueType == PRIMITIVE_VALUE_TYPE_REAL.class)
+				return new BINOMIAL_HEAP KEY_VALUE_GENERIC_EMPTY((KEY_COMPARATOR KEY_TYPE_GENERIC) comparator);
 			throw new UnsupportedOperationException("Unsupported heap type: " + keyType + ", " + valueType);
 		};
 	}
@@ -46,43 +40,43 @@ public class HeapBinomialTest extends TestBase {
 	@Test
 	public void testRandOpsDefaultCompare() {
 		final long seed = 0x0600b0c18d6d97d4L;
-		HeapTestUtils.testRandOpsDefaultCompare(heapBuilder(), seed);
+		REFERENCEABLE_HEAP_TEST_UTILS.testRandOpsDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testRandOpsCustomCompare() {
 		final long seed = 0xe71c7e9f2765e4eaL;
-		HeapTestUtils.testRandOpsCustomCompare(heapBuilder(), seed);
+		REFERENCEABLE_HEAP_TEST_UTILS.testRandOpsCustomCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testRandOpsAfterManyInserts() {
 		final long seed = 0x55bb8b5e3f70d05aL;
-		HeapTestUtils.testRandOpsAfterManyInserts(heapBuilder(), seed);
+		REFERENCEABLE_HEAP_TEST_UTILS.testRandOpsAfterManyInserts(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testMeldDefaultCompare() {
 		final long seed = 0x98473460a5541235L;
-		HeapTestUtils.testMeldDefaultCompare(heapBuilder(), seed);
+		REFERENCEABLE_HEAP_TEST_UTILS.testMeldDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testMeldCustomCompare() {
 		final long seed = 0xbc597576efd52ccfL;
-		HeapTestUtils.testMeldCustomCompare(heapBuilder(), seed);
+		REFERENCEABLE_HEAP_TEST_UTILS.testMeldCustomCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testDecreaseKeyDefaultCompare() {
 		final long seed = 0x553462f097149dc1L;
-		ReferenceableHeapTestUtils.testDecreaseKeyDefaultCompare(heapReferenceableBuilder(), seed);
+		REFERENCEABLE_HEAP_TEST_UTILS.testDecreaseKeyDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testDecreaseKeyCustomCompare() {
 		final long seed = 0xd7d8cf9389480696L;
-		ReferenceableHeapTestUtils.testDecreaseKeyCustomCompare(heapReferenceableBuilder(), seed);
+		REFERENCEABLE_HEAP_TEST_UTILS.testDecreaseKeyCustomCompare(heapBuilder(), seed);
 	}
 
 }

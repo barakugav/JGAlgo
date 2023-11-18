@@ -182,7 +182,7 @@ public interface BINARY_SEARCH_TREE KEY_VALUE_GENERIC extends REFERENCEABLE_HEAP
 	 * @return a default implementation of {@link BINARY_SEARCH_TREE}
 	 */
 	static KEY_VALUE_GENERIC BINARY_SEARCH_TREE KEY_VALUE_GENERIC newInstance() {
-		return new RED_BLACK_TREE KEY_VALUE_GENERIC_EMPTY();
+		return newInstance(null);
 	}
 
 	/**

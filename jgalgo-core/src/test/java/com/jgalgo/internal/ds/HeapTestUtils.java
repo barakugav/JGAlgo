@@ -20,7 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Collection;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -28,9 +30,9 @@ import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
 import com.jgalgo.internal.util.DebugPrinter;
+import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.RandomIntUnique;
 import com.jgalgo.internal.util.TestUtils;
-
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -356,6 +358,88 @@ class HeapTestUtils extends TestUtils {
 			}
 			opIdx++;
 		}
+	}
+
+	static class HeapFromReferenceableHeap implements Heap<Integer> {
+
+		private final IntReferenceableHeap heap;
+
+		HeapFromReferenceableHeap(IntReferenceableHeap heap) {
+			this.heap = heap;
+		}
+
+		@Override
+		public Iterator<Integer> iterator() {
+			return IterTools.map(heap.iterator(), IntReferenceableHeap.Ref::key);
+		}
+
+		@Override
+		public void insert(Integer elm) {
+			heap.insert(elm.intValue());
+		}
+
+		@Override
+		public void insertAll(Collection<? extends Integer> elms) {
+			for (Integer elm : elms)
+				heap.insert(elm.intValue());
+		}
+
+		@Override
+		public Integer findMin() {
+			return Integer.valueOf(heap.findMin().key());
+		}
+
+		@Override
+		public Integer extractMin() {
+			return Integer.valueOf(heap.extractMin().key());
+		}
+
+		@Override
+		public boolean remove(Integer elm) {
+			IntReferenceableHeap.Ref ref = heap.find(elm.intValue());
+			if (ref == null)
+				return false;
+			heap.remove(ref);
+			return true;
+		}
+
+		@Override
+		public void meld(Heap<? extends Integer> heap) {
+			for (Integer elm : heap)
+				insert(elm);
+			heap.clear();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return heap.isEmpty();
+		}
+
+		@Override
+		public boolean isNotEmpty() {
+			return heap.isNotEmpty();
+		}
+
+		@Override
+		public void clear() {
+			heap.clear();
+		}
+
+		@Override
+		public Comparator<? super Integer> comparator() {
+			return heap.comparator();
+		}
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	static Heap.Builder heapBuilderFromReferenceableHeapBuilder(ReferenceableHeap.Builder refHeapBuilder) {
+		return new Heap.Builder() {
+			@Override
+			public Heap build(Comparator cmp) {
+				return new HeapFromReferenceableHeap(
+						(IntReferenceableHeap) refHeapBuilder.build(int.class, void.class, cmp));
+			}
+		};
 	}
 
 }

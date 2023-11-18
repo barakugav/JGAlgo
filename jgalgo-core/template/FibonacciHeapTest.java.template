@@ -18,27 +18,21 @@ package com.jgalgo.internal.ds;
 
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.doubles.DoubleComparator;
-import it.unimi.dsi.fastutil.ints.IntComparator;
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+import java.util.Comparator;
+#else
+import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
+#endif
 
-public class HeapFibonacciTest extends TestBase {
+public class FIBONACCI_HEAP_TEST extends TestBase {
 
-	private static Heap.Builder heapBuilder() {
-		return ReferenceableHeapTestUtils.heapBuilderFromReferenceableHeapBuilder(heapReferenceableBuilder());
-	}
-
-	private static ReferenceableHeap.Builder heapReferenceableBuilder() {
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+			@SuppressWarnings("unchecked")
+#endif
+	private static ReferenceableHeap.Builder heapBuilder() {
 		return (keyType, valueType, comparator) -> {
-			if (keyType == int.class && valueType == int.class)
-				return new IntIntFibonacciHeap((IntComparator) comparator);
-			if (keyType == int.class && valueType == void.class)
-				return new IntFibonacciHeap((IntComparator) comparator);
-			if (keyType == double.class && valueType == int.class)
-				return new DoubleIntFibonacciHeap((DoubleComparator) comparator);
-			if (keyType == double.class && valueType == Object.class)
-				return new DoubleObjFibonacciHeap<>((DoubleComparator) comparator);
-			if (keyType == Object.class && valueType == void.class)
-				return new ObjFibonacciHeap<>(comparator);
+			if (keyType == PRIMITIVE_KEY_TYPE_REAL.class && valueType == PRIMITIVE_VALUE_TYPE_REAL.class)
+				return new FIBONACCI_HEAP KEY_VALUE_GENERIC_EMPTY((KEY_COMPARATOR KEY_TYPE_GENERIC) comparator);
 			throw new UnsupportedOperationException("Unsupported heap type: " + keyType + ", " + valueType);
 		};
 	}
@@ -46,43 +40,43 @@ public class HeapFibonacciTest extends TestBase {
 	@Test
 	public void testRandOpsDefaultCompare() {
 		final long seed = 0xc5b0d9f99444efc5L;
-		HeapTestUtils.testRandOpsDefaultCompare(heapBuilder(), seed);
+		REFERENCEABLE_HEAP_TEST_UTILS.testRandOpsDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testRandOpsCustomCompare() {
 		final long seed = 0x73f5ac001997955cL;
-		HeapTestUtils.testRandOpsCustomCompare(heapBuilder(), seed);
+		REFERENCEABLE_HEAP_TEST_UTILS.testRandOpsCustomCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testRandOpsAfterManyInserts() {
 		final long seed = 0x194fe80fdf0b3e1bL;
-		HeapTestUtils.testRandOpsAfterManyInserts(heapBuilder(), seed);
+		REFERENCEABLE_HEAP_TEST_UTILS.testRandOpsAfterManyInserts(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testMeldDefaultCompare() {
 		final long seed = 0xc801a24c2405c42dL;
-		HeapTestUtils.testMeldDefaultCompare(heapBuilder(), seed);
+		REFERENCEABLE_HEAP_TEST_UTILS.testMeldDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testMeldCustomCompare() {
 		final long seed = 0x631ed5c1813636efL;
-		HeapTestUtils.testMeldCustomCompare(heapBuilder(), seed);
+		REFERENCEABLE_HEAP_TEST_UTILS.testMeldCustomCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testDecreaseKeyDefaultCompare() {
 		final long seed = 0xcadbabb0e01d6ea5L;
-		ReferenceableHeapTestUtils.testDecreaseKeyDefaultCompare(heapReferenceableBuilder(), seed);
+		REFERENCEABLE_HEAP_TEST_UTILS.testDecreaseKeyDefaultCompare(heapBuilder(), seed);
 	}
 
 	@Test
 	public void testDecreaseKeyCustomCompare() {
 		final long seed = 0x0a7f3203577b4cefL;
-		ReferenceableHeapTestUtils.testDecreaseKeyCustomCompare(heapReferenceableBuilder(), seed);
+		REFERENCEABLE_HEAP_TEST_UTILS.testDecreaseKeyCustomCompare(heapBuilder(), seed);
 	}
 
 }

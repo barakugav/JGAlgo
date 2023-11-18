@@ -516,6 +516,15 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 #endif
 
 		@Override
+		public String toString() {
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+			return "{" + key + ":" + value + "}";
+#else
+			return String.valueOf(key);
+#endif
+		}
+
+		@Override
 		void clearWithoutUserData() {
 			super.clearWithoutUserData();
 			size = 1;

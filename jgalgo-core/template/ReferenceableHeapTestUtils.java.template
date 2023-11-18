@@ -1,0 +1,576 @@
+/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.internal.ds;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.NavigableMap;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+import com.jgalgo.internal.util.DebugPrinter;
+import com.jgalgo.internal.util.RandomIntUnique;
+import com.jgalgo.internal.util.TestUtils;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectIterables;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+import com.jgalgo.internal.util.JGAlgoUtils;
+import java.util.Comparator;
+#else
+import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+#if PRIMITIVE_KEY_TYPE_REAL == "Object" and PRIMITIVE_VALUE_TYPE_REAL == "Object"
+import it.unimi.dsi.fastutil.Pair;
+#else
+import FASTUTIL_KEY_PACKAGE.KEY_VALUE_PAIR;
+#endif
+#endif
+
+
+public class REFERENCEABLE_HEAP_TEST_UTILS extends TestUtils {
+
+	static void testRandOpsDefaultCompare(ReferenceableHeap.Builder heapBuilder, long seed) {
+		testRandOps(heapBuilder, null, seed);
+	}
+
+	static void testRandOpsCustomCompare(ReferenceableHeap.Builder heapBuilder, long seed) {
+		testRandOps(heapBuilder, (x1, x2) -> -COMPARE_KEY_DEFAULT(x1, x2), seed);
+	}
+
+	private static void testRandOps(ReferenceableHeap.Builder heapBuilder, KEY_COMPARATOR KEY_TYPE_GENERIC compare, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 16).repeat(128);
+		tester.addPhase().withArgs(64, 128).repeat(64);
+		tester.addPhase().withArgs(512, 1024).repeat(32);
+		tester.addPhase().withArgs(4096, 8096).repeat(8);
+		tester.addPhase().withArgs(16384, 32768).repeat(4);
+		tester.run((n, m) -> {
+#if PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
+			@SuppressWarnings("unchecked")
+#endif
+			REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap = (REFERENCEABLE_HEAP KEY_VALUE_GENERIC) heapBuilder.build(PRIMITIVE_KEY_TYPE_REAL.class, PRIMITIVE_VALUE_TYPE_REAL.class, compare);
+			testHeap(heap, n, m, TestMode.Normal, compare, seedGen.nextSeed());
+		});
+	}
+
+	static void testRandOpsAfterManyInserts(ReferenceableHeap.Builder heapBuilder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final KEY_COMPARATOR KEY_TYPE_GENERIC compare = null;
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16).repeat(256);
+		tester.addPhase().withArgs(64).repeat(128);
+		tester.addPhase().withArgs(512).repeat(64);
+		tester.addPhase().withArgs(4096).repeat(16);
+		tester.addPhase().withArgs(16384).repeat(8);
+		tester.run(n -> {
+			int m = n;
+#if PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
+			@SuppressWarnings("unchecked")
+#endif
+			REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap = (REFERENCEABLE_HEAP KEY_VALUE_GENERIC) heapBuilder.build(PRIMITIVE_KEY_TYPE_REAL.class, PRIMITIVE_VALUE_TYPE_REAL.class, compare);
+			testHeap(heap, n, m, TestMode.InsertFirst, compare, seedGen.nextSeed());
+		});
+	}
+
+	static void testMeldDefaultCompare(ReferenceableHeap.Builder heapBuilder, long seed) {
+		testMeld(heapBuilder, false, null, seed);
+	}
+
+	static void testMeldCustomCompare(ReferenceableHeap.Builder heapBuilder, long seed) {
+		testMeld(heapBuilder, false, (x1, x2) -> -COMPARE_KEY_DEFAULT(x1, x2), seed);
+	}
+
+	static void testMeldWithOrderedValuesDefaultCompare(ReferenceableHeap.Builder heapBuilder, long seed) {
+		testMeld(heapBuilder, true, null, seed);
+	}
+
+	static void testMeldWithOrderedValuesCustomCompare(ReferenceableHeap.Builder heapBuilder, long seed) {
+		testMeld(heapBuilder, true, (x1, x2) -> -COMPARE_KEY_DEFAULT(x1, x2), seed);
+	}
+
+	private static void testMeld(ReferenceableHeap.Builder heapBuilder, boolean orderedValues, KEY_COMPARATOR KEY_TYPE_GENERIC compare,
+			long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16).repeat(64);
+		tester.addPhase().withArgs(32).repeat(64);
+		tester.addPhase().withArgs(256).repeat(8);
+		tester.addPhase().withArgs(2048).repeat(1);
+		tester.run(hCount -> {
+			testMeld(heapBuilder, orderedValues, hCount, compare, seedGen.nextSeed());
+		});
+	}
+
+#if PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
+	@SuppressWarnings("unchecked")
+#endif
+	private static void testMeld(ReferenceableHeap.Builder heapBuilder, boolean orderedValues, int hCount,
+			KEY_COMPARATOR KEY_TYPE_GENERIC compare, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Set<ReferenceableHeapTracker> heaps = new ObjectOpenHashSet<>();
+		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(seedGen.nextSeed());
+
+		int elm = 0;
+		for (int i = 0; i < hCount; i++) {
+			ReferenceableHeapTracker h = new ReferenceableHeapTracker(
+					(REFERENCEABLE_HEAP KEY_VALUE_GENERIC) heapBuilder.build(PRIMITIVE_KEY_TYPE_REAL.class, PRIMITIVE_VALUE_TYPE_REAL.class, compare),
+					heapTrackerIdGen.nextId(), compare, seedGen.nextSeed());
+			heaps.add(h);
+			if (!orderedValues) {
+				testHeap(h, 16, 16, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32)), compare,
+						seedGen.nextSeed());
+			} else {
+				PRIMITIVE_KEY_TYPE[] elements = new PRIMITIVE_KEY_TYPE[16];
+				for (int j = 0; j < 16; j++)
+					elements[j] = toKey(elm++);
+				testHeap(h, 16, TestMode.InsertFirst, elements, compare, seedGen.nextSeed());
+			}
+		}
+		/* add a few empty heaps */
+		for (int i = 0; i < hCount / 2; i++) {
+			ReferenceableHeapTracker h = new ReferenceableHeapTracker(
+					(REFERENCEABLE_HEAP KEY_VALUE_GENERIC) heapBuilder.build(PRIMITIVE_KEY_TYPE_REAL.class, PRIMITIVE_VALUE_TYPE_REAL.class, compare),
+					heapTrackerIdGen.nextId(), compare, seedGen.nextSeed());
+			heaps.add(h);
+		}
+
+		while (heaps.size() > 1) {
+			/* meld half of the heaps */
+			Set<ReferenceableHeapTracker> heapsNext = new ObjectOpenHashSet<>();
+			List<ReferenceableHeapTracker> heapsShuffled = new ObjectArrayList<>(heaps);
+			Collections.shuffle(heapsShuffled, new Random(seedGen.nextSeed()));
+
+			for (int i = 0; i < heapsShuffled.size() / 2; i++) {
+				ReferenceableHeapTracker h1 = heapsShuffled.get(i * 2);
+				ReferenceableHeapTracker h2 = heapsShuffled.get(i * 2 + 1);
+
+				h1.heap.meld(h2.heap);
+				assertTrue(h2.heap.isEmpty());
+				h1.meld(h2);
+				heapsNext.add(h1);
+
+				/* make some OPs on the united heap */
+				int opsNum = 1024 / heaps.size();
+				testHeap(h1, opsNum, opsNum, TestMode.InsertFirst, Math.max(16, (int) Math.sqrt(hCount * 32)), compare,
+						seedGen.nextSeed());
+			}
+			heaps.clear();
+			heaps.addAll(heapsNext);
+		}
+	}
+
+	static void testDecreaseKeyDefaultCompare(ReferenceableHeap.Builder heapBuilder, long seed) {
+		testDecreaseKey(heapBuilder, null, seed);
+	}
+
+	static void testDecreaseKeyCustomCompare(ReferenceableHeap.Builder heapBuilder, long seed) {
+		testDecreaseKey(heapBuilder, (x1, x2) -> -COMPARE_KEY_DEFAULT(x1, x2), seed);
+	}
+
+	private static void testDecreaseKey(ReferenceableHeap.Builder heapBuilder, KEY_COMPARATOR KEY_TYPE_GENERIC compare, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16).repeat(256);
+		tester.addPhase().withArgs(64).repeat(128);
+		tester.addPhase().withArgs(512).repeat(16);
+		tester.addPhase().withArgs(4096).repeat(4);
+		tester.addPhase().withArgs(16384).repeat(1);
+		tester.run(n -> {
+			int m = n;
+#if PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
+			@SuppressWarnings("unchecked")
+#endif
+			REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap = (REFERENCEABLE_HEAP KEY_VALUE_GENERIC) heapBuilder.build(PRIMITIVE_KEY_TYPE_REAL.class, PRIMITIVE_VALUE_TYPE_REAL.class, compare);
+			testHeap(heap, n, m, TestMode.DecreaseKey, compare, seedGen.nextSeed());
+		});
+	}
+
+	static enum TestMode {
+		Normal, InsertFirst, DecreaseKey,
+	}
+
+	private static enum HeapOp {
+		Insert, RemoveRef, FindMin, ExtractMin, DecreaseKey
+	}
+
+	static class HeapTrackerIdGenerator {
+		private final RandomIntUnique rand;
+
+		HeapTrackerIdGenerator(long seed) {
+			rand = new RandomIntUnique(0, Integer.MAX_VALUE, seed);
+		}
+
+		int nextId() {
+			return rand.next();
+		}
+	}
+
+	@SuppressWarnings("boxing")
+	static class ReferenceableHeapTracker implements Comparable<ReferenceableHeapTracker> {
+
+		private final int id;
+		final REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap;
+		final NavigableMap<KEY_TYPE_GENERIC_CLASS, List<HEAP_REFERENCE KEY_VALUE_GENERIC>> elms;
+		final Random rand;
+
+		ReferenceableHeapTracker(REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap, int id, KEY_COMPARATOR KEY_TYPE_GENERIC compare, long seed) {
+			this.id = id;
+			this.heap = heap;
+			elms = new TreeMap<>(compare);
+			rand = new Random(seed);
+		}
+
+		boolean isEmpty() {
+			return elms.isEmpty();
+		}
+
+		void insert(PRIMITIVE_KEY_TYPE key, HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
+			elms.computeIfAbsent(key, dontCare -> new ObjectArrayList<>()).add(ref);
+		}
+
+		void remove(PRIMITIVE_KEY_TYPE key, HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
+			List<HEAP_REFERENCE KEY_VALUE_GENERIC> l = elms.get(key);
+			boolean removed = l.remove(ref);
+			if (l.isEmpty())
+				elms.remove(key);
+			assert removed;
+		}
+
+		PRIMITIVE_KEY_TYPE findMin() {
+			return elms.firstKey();
+		}
+
+		void decreaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
+			remove(ref.key(), ref);
+			insert(newKey, ref);
+		}
+
+		void meld(ReferenceableHeapTracker other) {
+			for (Map.Entry<KEY_TYPE_GENERIC_CLASS, List<HEAP_REFERENCE KEY_VALUE_GENERIC>> e : other.elms.entrySet()) {
+				elms.merge(e.getKey(), e.getValue(), (c1, c2) -> {
+					List<HEAP_REFERENCE KEY_VALUE_GENERIC> l = new ObjectArrayList<>();
+					if (c1 != null)
+						l.addAll(c1);
+					if (c2 != null)
+						l.addAll(c2);
+					return l;
+				});
+			}
+			other.elms.clear();
+		}
+
+		void split(PRIMITIVE_KEY_TYPE pivotKey, ReferenceableHeapTracker newTracker) {
+			NavigableMap<KEY_TYPE_GENERIC_CLASS, List<HEAP_REFERENCE KEY_VALUE_GENERIC>> newElms = elms.tailMap(pivotKey, false);
+			newTracker.elms.putAll(newElms);
+			newElms.clear();
+		}
+
+		PRIMITIVE_KEY_TYPE randElement() {
+			return TestUtils.randElement(
+					elms.values().stream().flatMap(List::stream).map(r -> r.key()).collect(Collectors.toList()), rand);
+		}
+
+		HEAP_REFERENCE KEY_VALUE_GENERIC randRef() {
+			List<HEAP_REFERENCE KEY_VALUE_GENERIC> elms0 = new ObjectArrayList<>();
+			for (Map.Entry<KEY_TYPE_GENERIC_CLASS, List<HEAP_REFERENCE KEY_VALUE_GENERIC>> e : elms.entrySet())
+				elms0.addAll(e.getValue());
+			return TestUtils.randElement(elms0, rand);
+		}
+
+		@Override
+		public int hashCode() {
+			return id;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			return o == this;
+		}
+
+		@Override
+		public String toString() {
+			return elms.toString();
+		}
+
+		@Override
+		public int compareTo(ReferenceableHeapTracker o) {
+			return COMPARE_KEY_DEFAULT(id, o.id);
+		}
+
+	}
+
+	static void testHeap(REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap, int n, int m, TestMode mode, KEY_COMPARATOR KEY_TYPE_GENERIC compare, long seed) {
+		testHeap(heap, n, m, mode, true, compare, seed);
+	}
+
+	static void testHeap(REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap, int n, int m, TestMode mode, boolean clear,
+			KEY_COMPARATOR KEY_TYPE_GENERIC compare, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		if (clear) {
+			heap.clear();
+			assertTrue(heap.isEmpty());
+			assertFalse(heap.iterator().hasNext());
+		}
+
+		ReferenceableHeapTracker tracker = new ReferenceableHeapTracker(heap, 0, compare, seedGen.nextSeed());
+		testHeap(tracker, n, m, mode, Math.max(16, (int) Math.sqrt(n)), compare, seedGen.nextSeed());
+
+		if (clear) {
+			heap.clear();
+			assertTrue(heap.isEmpty());
+			assertFalse(heap.iterator().hasNext());
+		}
+	}
+
+	private static void testHeap(ReferenceableHeapTracker tracker, int n, int m, TestMode mode, int elementsBound,
+			KEY_COMPARATOR KEY_TYPE_GENERIC compare, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
+		PRIMITIVE_KEY_TYPE[] elements = new PRIMITIVE_KEY_TYPE[n];
+		for (int i = 0; i < n; i++)
+			elements[i] = randKey(rand, elementsBound);
+		testHeap(tracker, m, mode, elements, compare, seedGen.nextSeed());
+	}
+
+	private static int compare(KEY_COMPARATOR KEY_TYPE_GENERIC c, PRIMITIVE_KEY_TYPE e1, PRIMITIVE_KEY_TYPE e2) {
+		return c == null ? COMPARE_KEY_DEFAULT(e1, e2) : c.compare(e1, e2);
+	}
+
+#if PRIMITIVE_KEY_TYPE_REAL != "Object"
+	@SuppressWarnings("boxing")
+#endif
+	static void testHeap(ReferenceableHeapTracker tracker, int m, TestMode mode, PRIMITIVE_KEY_TYPE[] values, KEY_COMPARATOR KEY_TYPE_GENERIC compare,
+			long seed) {
+		DebugPrinter debug = new DebugPrinter(false);
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
+		int insertFirst = mode == TestMode.InsertFirst ? m / 2 : 0;
+
+		List<HeapOp> ops = new ObjectArrayList<>(List.of(HeapOp.Insert, HeapOp.FindMin, HeapOp.ExtractMin));
+		if (mode == TestMode.DecreaseKey)
+			ops.add(HeapOp.DecreaseKey);
+		ops.add(HeapOp.RemoveRef);
+
+		int[] elmsToInsertIds = randPermutation(values.length, seedGen.nextSeed());
+		int elmsToInsertCursor = 0;
+
+		debug.println("\t testHeap begin");
+
+		final REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap = tracker.heap;
+		assertEquals(compare, heap.comparator());
+
+		opLoop: for (int opIdx = 0; opIdx < m;) {
+			HeapOp op = opIdx < insertFirst ? HeapOp.Insert : randElement(ops, rand);
+
+			debug.printExec(() -> debug.println("\t size=" + ObjectIterables.size(heap)));
+			switch (op) {
+				case Insert: {
+					if (elmsToInsertCursor >= elmsToInsertIds.length)
+						continue;
+					PRIMITIVE_KEY_TYPE x = values[elmsToInsertIds[elmsToInsertCursor++]];
+					debug.println("Insert(", x, ")");
+
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+					HEAP_REFERENCE KEY_VALUE_GENERIC ref = heap.insert(x, randValue(rand));
+#else
+					HEAP_REFERENCE KEY_VALUE_GENERIC ref = heap.insert(x);
+#endif
+					tracker.insert(x, ref);
+					break;
+				}
+				case RemoveRef: {
+					if (tracker.isEmpty() || rand.nextInt(3) != 0)
+						continue;
+					HEAP_REFERENCE KEY_VALUE_GENERIC ref = tracker.randRef();
+					debug.println("RemoveRef(", ref, ")");
+
+					tracker.remove(ref.key(), ref);
+					REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap0 = heap;
+					heap0.remove(ref);
+					break;
+				}
+				case FindMin: {
+					if (tracker.isEmpty()) {
+						assertTrue(heap.isEmpty());
+						assertFalse(heap.isNotEmpty());
+						assertFalse(heap.iterator().hasNext());
+						continue;
+					} else {
+						assertFalse(heap.isEmpty());
+						assertTrue(heap.isNotEmpty());
+						assertTrue(heap.iterator().hasNext());
+					}
+					debug.println("FindMin");
+
+					PRIMITIVE_KEY_TYPE expected = tracker.findMin();
+					HEAP_REFERENCE KEY_VALUE_GENERIC ref = heap.findMin();
+					PRIMITIVE_KEY_TYPE actual = ref.key();
+					assertEquals(expected, actual, "failed findMin");
+
+					/* check toString() on the way */
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+					assertEquals("{" + ref.key() + ":" + ref.value() + "}", ref.toString());
+#else
+					assertEquals(String.valueOf(ref.key()), ref.toString());
+#endif
+					break;
+				}
+				case ExtractMin: {
+					if (tracker.isEmpty() || rand.nextInt(3) != 0)
+						continue;
+					debug.println("ExtractMin");
+
+					HEAP_REFERENCE KEY_VALUE_GENERIC ref = heap.findMin();
+					PRIMITIVE_KEY_TYPE expected = tracker.findMin();
+					assertEquals(expected, ref.key(), "failed findMin");
+
+					PRIMITIVE_KEY_TYPE actual = heap.extractMin().key();
+					assertEquals(expected, actual, "failed extractMin");
+					tracker.remove(expected, ref);
+					break;
+				}
+				case DecreaseKey: {
+					if (tracker.isEmpty())
+						continue;
+					HEAP_REFERENCE KEY_VALUE_GENERIC ref;
+					PRIMITIVE_KEY_TYPE newKey;
+					for (int retry = 20;; retry--) {
+						if (retry <= 0)
+							continue opLoop;
+						ref = tracker.randRef();
+						PRIMITIVE_KEY_TYPE x = ref.key();
+						newKey = randKey(rand);
+						if (compare(compare, newKey, x) <= 0)
+							break;
+					}
+
+					debug.println("DecreaseKey(" + ref.key() + ", " + newKey + ")");
+					tracker.decreaseKey(ref, newKey);
+					heap.decreaseKey(ref, newKey);
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+
+					/* check setValue() and value() on the way */
+					PRIMITIVE_VALUE_TYPE newVal = randValue(rand);
+					ref.setValue(newVal);
+					assertEquals(newVal, ref.value());
+#endif
+					break;
+				}
+				default:
+					throw new IllegalStateException();
+			}
+			opIdx++;
+		}
+
+		if (tracker.elms.size() > 10) {
+			List<KEY_TYPE_GENERIC_CLASS> elms = tracker.elms.values().stream().flatMap(List::stream).map(r -> r.key()).collect(Collectors.toList());
+			for (int i = 0; i < 10; i++) {
+				PRIMITIVE_KEY_TYPE key = KEY_BOXED_TO_PRIMITIVE(TestUtils.randElement(elms, rand));
+				HEAP_REFERENCE KEY_VALUE_GENERIC ref = heap.find(key);
+				assertNotNull(ref);
+			}
+			for (int i = 0; i < 10;) {
+				PRIMITIVE_KEY_TYPE key = randKey(rand);
+				if (tracker.elms.keySet().contains(KEY_PRIMITIVE_TO_BOXED(key)))
+					continue;
+				HEAP_REFERENCE KEY_VALUE_GENERIC ref = heap.find(key);
+				assertNull(ref);
+				i++;
+			}
+		}
+
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+		Object2IntOpenHashMap<KEY_VALUE_PAIR KEY_VALUE_GENERIC> expectedElements = new Object2IntOpenHashMap<>();
+		for (List<HEAP_REFERENCE KEY_VALUE_GENERIC> refs : tracker.elms.values())
+			for (HEAP_REFERENCE KEY_VALUE_GENERIC ref : refs)
+				expectedElements.addTo(KEY_VALUE_PAIR.of(ref.key(), ref.value()), 1);
+		Object2IntOpenHashMap<KEY_VALUE_PAIR KEY_VALUE_GENERIC> actualElements = new Object2IntOpenHashMap<>();
+		for (HEAP_REFERENCE KEY_VALUE_GENERIC ref : heap)
+			actualElements.addTo(KEY_VALUE_PAIR.of(ref.key(), ref.value()), 1);
+#else
+		Object2IntOpenHashMap<KEY_TYPE_GENERIC_CLASS> expectedElements = new Object2IntOpenHashMap<>();
+		for (List<HEAP_REFERENCE KEY_VALUE_GENERIC> refs : tracker.elms.values())
+			for (HEAP_REFERENCE KEY_VALUE_GENERIC ref : refs)
+				expectedElements.addTo(ref.key(), 1);
+		Object2IntOpenHashMap<KEY_TYPE_GENERIC_CLASS> actualElements = new Object2IntOpenHashMap<>();
+		for (HEAP_REFERENCE KEY_VALUE_GENERIC ref : heap)
+				actualElements.addTo(ref.key(), 1);
+#endif
+		assertEquals(expectedElements, actualElements);
+	}
+
+	private static PRIMITIVE_KEY_TYPE randKey(Random rand) {
+		return randKey(rand, Integer.MAX_VALUE);
+	}
+
+	private static PRIMITIVE_KEY_TYPE randKey(Random rand, int upperBound) {
+		return toKey(rand.nextInt(upperBound));
+	}
+
+	private static PRIMITIVE_KEY_TYPE toKey(int r) {
+#if PRIMITIVE_KEY_TYPE in ["int", "long", "float", "double"]
+		return r;
+#elif PRIMITIVE_KEY_TYPE == "byte"
+		return (byte) r;
+#elif PRIMITIVE_KEY_TYPE == "short"
+		return (short) r;
+#elif PRIMITIVE_KEY_TYPE == "char"
+		return (char) r;
+#elif PRIMITIVE_KEY_TYPE == "boolean"
+		return r % 2 == 0;
+#else
+		return String.valueOf(r);
+#endif
+	}
+
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+	private static PRIMITIVE_VALUE_TYPE randValue(Random rand) {
+		return randValue(rand, Integer.MAX_VALUE);
+	}
+
+	private static PRIMITIVE_VALUE_TYPE randValue(Random rand, int upperBound) {
+		return toValue(rand.nextInt(upperBound));
+	}
+
+	private static PRIMITIVE_VALUE_TYPE toValue(int r) {
+#if PRIMITIVE_VALUE_TYPE in ["int", "long", "float", "double"]
+		return r;
+#elif PRIMITIVE_VALUE_TYPE == "byte"
+		return (byte) r;
+#elif PRIMITIVE_VALUE_TYPE == "short"
+		return (short) r;
+#elif PRIMITIVE_VALUE_TYPE == "char"
+		return (char) r;
+#elif PRIMITIVE_VALUE_TYPE == "boolean"
+		return r % 2 == 0;
+#else
+		return String.valueOf(r);
+#endif
+	}
+#endif
+
+}

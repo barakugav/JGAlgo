@@ -1,0 +1,474 @@
+/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.ds;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+import com.jgalgo.internal.ds.REFERENCEABLE_HEAP_TEST_UTILS.ReferenceableHeapTracker;
+import com.jgalgo.internal.ds.REFERENCEABLE_HEAP_TEST_UTILS.HeapTrackerIdGenerator;
+import com.jgalgo.internal.ds.REFERENCEABLE_HEAP_TEST_UTILS.TestMode;
+import com.jgalgo.internal.util.DebugPrinter;
+import com.jgalgo.internal.util.TestUtils;
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+import com.jgalgo.internal.util.JGAlgoUtils;
+import java.util.Comparator;
+#else
+import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
+#endif
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
+class BINARY_SEARCH_TREE_TEST_UTILS extends TestUtils {
+
+#if PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
+	@SuppressWarnings("unchecked")
+#endif
+	static void testExtractMax(REFERENCEABLE_HEAP.Builder treeBuilder, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
+		KEY_COMPARATOR KEY_TYPE_GENERIC compare = null;
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(6);
+		tester.addPhase().withArgs(4096).repeat(2);
+		tester.run(n -> {
+			BSTTracker tracker = new BSTTracker((BINARY_SEARCH_TREE KEY_VALUE_GENERIC) treeBuilder.build(PRIMITIVE_KEY_TYPE_REAL.class, PRIMITIVE_VALUE_TYPE_REAL.class, compare),
+					0, compare, seedGen.nextSeed());
+
+			PRIMITIVE_KEY_TYPE[] elements = new PRIMITIVE_KEY_TYPE[n / 2];
+			for (int i = 0; i < elements.length; i++)
+				elements[i] = randKey(rand);
+			REFERENCEABLE_HEAP_TEST_UTILS.testHeap(tracker, n, TestMode.InsertFirst,
+					elements, compare, seedGen.nextSeed());
+
+			for (int repeat = 0; repeat < 4; repeat++) {
+				elements = new PRIMITIVE_KEY_TYPE[n / 2];
+				for (int i = 0; i < elements.length; i++)
+					elements[i] = randKey(rand);
+				REFERENCEABLE_HEAP_TEST_UTILS.testHeap(tracker, n, TestMode.Normal,
+						elements, compare, seedGen.nextSeed());
+
+				for (int i = 0; i < 2; i++) {
+					PRIMITIVE_KEY_TYPE key = randKey(rand);
+
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+					HEAP_REFERENCE KEY_VALUE_GENERIC ref = tracker.heap.insert(key, randValue(rand));
+#else
+					HEAP_REFERENCE KEY_VALUE_GENERIC ref = tracker.heap.insert(key);
+#endif
+					tracker.insert(key, ref);
+				}
+				PRIMITIVE_KEY_TYPE expected = tracker.extractMax();
+				PRIMITIVE_KEY_TYPE actual = tracker.tree().extractMax().key();
+				assertEquals(expected, actual, "failed extractMax");
+			}
+		});
+	}
+
+	static void testFindSmallerDefaultCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
+		testFindSmaller(treeBuilder, null, seed);
+	}
+
+	static void testFindSmallerCustomCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
+		testFindSmaller(treeBuilder, (x1, x2) -> -COMPARE_KEY_DEFAULT(x1, x2), seed);
+	}
+
+	private static void testFindSmaller(IntReferenceableHeap.Builder treeBuilder, KEY_COMPARATOR KEY_TYPE_GENERIC compare, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(6);
+		tester.addPhase().withArgs(4096).repeat(2);
+		tester.run(n -> {
+			testFindSmallerGreater(treeBuilder, compare, seedGen.nextSeed(), n, true);
+		});
+	}
+
+	static void testFindGreaterDefaultCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
+		testFindGreater(treeBuilder, null, seed);
+	}
+
+	static void testFindGreaterCustomCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
+		testFindGreater(treeBuilder, (x1, x2) -> -COMPARE_KEY_DEFAULT(x1, x2), seed);
+	}
+
+	private static void testFindGreater(IntReferenceableHeap.Builder treeBuilder, KEY_COMPARATOR KEY_TYPE_GENERIC compare, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(6);
+		tester.addPhase().withArgs(4096).repeat(2);
+		tester.run(n -> {
+			testFindSmallerGreater(treeBuilder, compare, seedGen.nextSeed(), n, false);
+		});
+	}
+
+#if PRIMITIVE_KEY_TYPE_REAL != "Object" and PRIMITIVE_VALUE_TYPE_REAL == "Object"
+	@SuppressWarnings({"boxing", "unchecked"})
+#elif PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
+	@SuppressWarnings("unchecked")
+#elif PRIMITIVE_KEY_TYPE_REAL != "Object" and PRIMITIVE_VALUE_TYPE_REAL != "Object"
+	@SuppressWarnings("boxing")
+#endif
+	private static void testFindSmallerGreater(IntReferenceableHeap.Builder treeBuilder, KEY_COMPARATOR KEY_TYPE_GENERIC compare,
+			long seed, int n, boolean smaller) {
+		DebugPrinter debug = new DebugPrinter(false);
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
+		BSTTracker tracker = new BSTTracker((BINARY_SEARCH_TREE KEY_VALUE_GENERIC) treeBuilder.build(PRIMITIVE_KEY_TYPE_REAL.class, PRIMITIVE_VALUE_TYPE_REAL.class, compare), 0,
+				compare, seedGen.nextSeed());
+
+		for (int i = 0; i < n; i++) {
+			PRIMITIVE_KEY_TYPE newElm = randKey(rand, n);
+			debug.println("Insert(", newElm, ")");
+			HEAP_REFERENCE KEY_VALUE_GENERIC ref = tracker.tree().insert(newElm);
+			tracker.insert(newElm, ref);
+
+			PRIMITIVE_KEY_TYPE searchedElm = randKey(rand, n);
+
+			HEAP_REFERENCE KEY_VALUE_GENERIC actualRef;
+			KEY_TYPE_GENERIC_CLASS actual, expected;
+			if (smaller) {
+				if (rand.nextBoolean()) {
+					actualRef = tracker.tree().findSmaller(searchedElm);
+					expected = tracker.lower(searchedElm);
+				} else {
+					actualRef = tracker.tree().findOrSmaller(searchedElm);
+					expected = tracker.floor(searchedElm);
+				}
+			} else {
+				if (rand.nextBoolean()) {
+					actualRef = tracker.tree().findGreater(searchedElm);
+					expected = tracker.higher(searchedElm);
+				} else {
+					actualRef = tracker.tree().findOrGreater(searchedElm);
+					expected = tracker.ceiling(searchedElm);
+				}
+			}
+			actual = actualRef == null ? null : actualRef.key();
+
+			assertEquals(expected, actual, "Failed to find smaller/greater of " + searchedElm);
+		}
+	}
+
+	static void testGetPredecessorsDefaultCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
+		testGetPredecessors(treeBuilder, null, seed);
+	}
+
+	static void testGetPredecessorsCustomCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
+		testGetPredecessors(treeBuilder, (x1, x2) -> -COMPARE_KEY_DEFAULT(x1, x2), seed);
+	}
+
+	private static void testGetPredecessors(IntReferenceableHeap.Builder treeBuilder, KEY_COMPARATOR KEY_TYPE_GENERIC compare,
+			long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(6);
+		tester.addPhase().withArgs(4096).repeat(2);
+		tester.run(n -> {
+			testGetPredecessorSuccessor(treeBuilder, n, compare, seedGen.nextSeed(), true);
+		});
+	}
+
+	static void testGetSuccessorsDefaultCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
+		testGetSuccessors(treeBuilder, null, seed);
+	}
+
+	static void testGetSuccessorsCustomCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
+		testGetSuccessors(treeBuilder, (x1, x2) -> -COMPARE_KEY_DEFAULT(x1, x2), seed);
+	}
+
+	private static void testGetSuccessors(IntReferenceableHeap.Builder treeBuilder, KEY_COMPARATOR KEY_TYPE_GENERIC compare,
+
+			long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(256);
+		tester.addPhase().withArgs(32).repeat(128);
+		tester.addPhase().withArgs(128).repeat(32);
+		tester.addPhase().withArgs(256).repeat(6);
+		tester.addPhase().withArgs(4096).repeat(2);
+		tester.run(n -> {
+			testGetPredecessorSuccessor(treeBuilder, n, compare, seedGen.nextSeed(), false);
+		});
+	}
+
+#if PRIMITIVE_KEY_TYPE_REAL != "Object" and PRIMITIVE_VALUE_TYPE_REAL == "Object"
+	@SuppressWarnings({"boxing", "unchecked"})
+#elif PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
+	@SuppressWarnings("unchecked")
+#elif PRIMITIVE_KEY_TYPE_REAL != "Object" and PRIMITIVE_VALUE_TYPE_REAL != "Object"
+	@SuppressWarnings("boxing")
+#endif
+	private static void testGetPredecessorSuccessor(IntReferenceableHeap.Builder treeBuilder, int n,
+			KEY_COMPARATOR KEY_TYPE_GENERIC compare, long seed, boolean predecessor) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		DebugPrinter debug = new DebugPrinter(false);
+		Random rand = new Random(seedGen.nextSeed());
+		int[] a0 = randPermutation(n, seedGen.nextSeed());
+		PRIMITIVE_KEY_TYPE[] a = new PRIMITIVE_KEY_TYPE[n];
+		for (int i = 0; i < n; i++)
+			a[i] = toKey(a0[i]);
+
+		BSTTracker tracker = new BSTTracker((BINARY_SEARCH_TREE KEY_VALUE_GENERIC) treeBuilder.build(PRIMITIVE_KEY_TYPE_REAL.class, PRIMITIVE_VALUE_TYPE_REAL.class, compare), 0,
+				compare, seedGen.nextSeed());
+
+		for (int i = 0; i < n; i++) {
+			PRIMITIVE_KEY_TYPE newElm = a[i];
+			debug.println("Insert(", newElm, ")");
+			HEAP_REFERENCE KEY_VALUE_GENERIC ref = tracker.tree().insert(newElm);
+			tracker.insert(newElm, ref);
+
+			KEY_TYPE_GENERIC_CLASS searchedElm;
+			do {
+				if (rand.nextBoolean()) {
+					searchedElm = tracker.floor(randKey(rand, n));
+				} else {
+					searchedElm = tracker.ceiling(randKey(rand, n));
+				}
+			} while (searchedElm == null);
+
+			HEAP_REFERENCE KEY_VALUE_GENERIC h = tracker.tree().find(searchedElm);
+			assertNotNull(h, "Failed to find ref for " + searchedElm);
+
+			KEY_TYPE_GENERIC_CLASS actual, expected;
+			if (predecessor) {
+				HEAP_REFERENCE KEY_VALUE_GENERIC actualH = tracker.tree().getPredecessor(h);
+				actual = actualH == null ? null : actualH.key();
+				expected = tracker.lower(searchedElm);
+			} else {
+				HEAP_REFERENCE KEY_VALUE_GENERIC actualH = tracker.tree().getSuccessor(h);
+				actual = actualH == null ? null : actualH.key();
+				expected = tracker.higher(searchedElm);
+			}
+
+			assertEquals(expected, actual, "Failed to find predecessor/successor of " + searchedElm);
+		}
+	}
+
+	static void testSplitDefaultCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
+		testSplit(treeBuilder, null, seed);
+	}
+
+	static void testSplitCustomCompare(IntReferenceableHeap.Builder treeBuilder, long seed) {
+		testSplit(treeBuilder, (x1, x2) -> -COMPARE_KEY_DEFAULT(x1, x2), seed);
+	}
+
+	private static void testSplit(IntReferenceableHeap.Builder treeBuilder, KEY_COMPARATOR KEY_TYPE_GENERIC compare, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(8).repeat(128);
+		tester.addPhase().withArgs(32).repeat(64);
+		tester.addPhase().withArgs(128).repeat(8);
+		tester.addPhase().withArgs(256).repeat(4);
+		tester.addPhase().withArgs(1024).repeat(1);
+		tester.run(n -> {
+			testSplit(treeBuilder, n, compare, seedGen.nextSeed());
+		});
+	}
+
+#if PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
+	@SuppressWarnings("unchecked")
+#endif
+	private static void testSplit(IntReferenceableHeap.Builder treeBuilder, int tCount, KEY_COMPARATOR KEY_TYPE_GENERIC compare,
+			long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
+		HeapTrackerIdGenerator heapTrackerIdGen = new HeapTrackerIdGenerator(seedGen.nextSeed());
+		Set<BSTTracker> trees = new ObjectOpenHashSet<>();
+		final int maxVal = tCount * (1 << 12);
+
+		for (int i = 0; i < tCount; i++) {
+			BSTTracker tracker = new BSTTracker((BINARY_SEARCH_TREE KEY_VALUE_GENERIC) treeBuilder.build(PRIMITIVE_KEY_TYPE_REAL.class, PRIMITIVE_VALUE_TYPE_REAL.class, compare),
+					heapTrackerIdGen.nextId(), compare, seedGen.nextSeed());
+
+			PRIMITIVE_KEY_TYPE[] elements = new PRIMITIVE_KEY_TYPE[16];
+			for (int j = 0; j < 16; j++)
+				elements[j] = randKey(rand, maxVal);
+			REFERENCEABLE_HEAP_TEST_UTILS.testHeap(tracker, 16, TestMode.InsertFirst, elements, compare, seedGen.nextSeed());
+			trees.add(tracker);
+		}
+
+		Runnable meld = () -> {
+			if (trees.size() < 2)
+				return;
+			Set<BSTTracker> treesNext = new ObjectOpenHashSet<>();
+			List<BSTTracker> heapsSuffled = new ObjectArrayList<>(trees);
+			Collections.shuffle(heapsSuffled, new Random(seedGen.nextSeed()));
+
+			for (int i = 0; i < heapsSuffled.size() / 2; i++) {
+				BSTTracker h1 = heapsSuffled.get(i * 2);
+				BSTTracker h2 = heapsSuffled.get(i * 2 + 1);
+				h1.tree().meld(h2.tree());
+				assertTrue(h2.tree().isEmpty());
+				h1.meld(h2);
+				treesNext.add(h1);
+			}
+			trees.clear();
+			trees.addAll(treesNext);
+			return;
+		};
+
+		Runnable split = () -> {
+			Set<BSTTracker> treesNext = new ObjectOpenHashSet<>();
+			for (BSTTracker h : trees) {
+				if (h.tree().isEmpty())
+					continue;
+
+				KEY_TYPE_GENERIC_CLASS[] elms = h.tree().stream().map(HEAP_REFERENCE::key).toArray(KEY_TYPE_GENERIC_CLASS[]::new);
+				Arrays.sort(elms, null);
+
+				double idx0 = 0.5 + rand.nextGaussian() / 10;
+				idx0 = idx0 < 0 ? 0 : idx0 > 1 ? 1 : idx0;
+				int idx = (int) ((elms.length - 1) * idx0);
+				PRIMITIVE_KEY_TYPE val = KEY_BOXED_TO_PRIMITIVE(elms[idx]);
+
+				BINARY_SEARCH_TREE KEY_VALUE_GENERIC s = h.tree().splitGreater(val);
+				BSTTracker t = new BSTTracker(s, heapTrackerIdGen.nextId(), compare, seedGen.nextSeed());
+				h.split(val, t);
+				treesNext.add(h);
+				treesNext.add(t);
+			}
+		};
+
+		Runnable doRandOps = () -> {
+			for (BSTTracker h : trees) {
+				int opsNum = 512 / trees.size();
+				PRIMITIVE_KEY_TYPE[] elements = new PRIMITIVE_KEY_TYPE[opsNum];
+				for (int i = 0; i < opsNum; i++)
+					elements[i] = randKey(rand, maxVal);
+				REFERENCEABLE_HEAP_TEST_UTILS.testHeap(h, opsNum, TestMode.Normal, elements, compare, seedGen.nextSeed());
+			}
+		};
+
+		while (trees.size() > 1) {
+			/*
+			 * Each iteration reduce the number of trees by 2, double it, and halve it. Reducing the number of tree by a
+			 * factor of 2 in total
+			 */
+			meld.run();
+			doRandOps.run();
+			split.run();
+			doRandOps.run();
+			meld.run();
+			doRandOps.run();
+		}
+	}
+
+#if PRIMITIVE_KEY_TYPE_REAL != "Object"
+	@SuppressWarnings("boxing")
+#endif
+	static class BSTTracker extends ReferenceableHeapTracker {
+
+		BSTTracker(BINARY_SEARCH_TREE KEY_VALUE_GENERIC heap, int id, KEY_COMPARATOR KEY_TYPE_GENERIC compare, long seed) {
+			super(heap, id, compare, seed);
+		}
+
+		BINARY_SEARCH_TREE KEY_VALUE_GENERIC tree() {
+			return (BINARY_SEARCH_TREE KEY_VALUE_GENERIC) heap;
+		}
+
+		PRIMITIVE_KEY_TYPE extractMax() {
+			KEY_TYPE_GENERIC_CLASS x = elms.lastKey();
+			HEAP_REFERENCE KEY_VALUE_GENERIC ref = elms.get(x).get(0);
+			remove(x, ref);
+			return x;
+		}
+
+		KEY_TYPE_GENERIC_CLASS lower(PRIMITIVE_KEY_TYPE x) {
+			return elms.lowerKey(x);
+		}
+
+		KEY_TYPE_GENERIC_CLASS higher(PRIMITIVE_KEY_TYPE x) {
+			return elms.higherKey(x);
+		}
+
+		KEY_TYPE_GENERIC_CLASS floor(PRIMITIVE_KEY_TYPE x) {
+			return elms.floorKey(x);
+		}
+
+		KEY_TYPE_GENERIC_CLASS ceiling(PRIMITIVE_KEY_TYPE x) {
+			return elms.ceilingKey(x);
+		}
+	}
+
+	private static PRIMITIVE_KEY_TYPE randKey(Random rand) {
+		return randKey(rand, Integer.MAX_VALUE);
+	}
+
+	private static PRIMITIVE_KEY_TYPE randKey(Random rand, int upperBound) {
+		return toKey(rand.nextInt(upperBound));
+	}
+
+	private static PRIMITIVE_KEY_TYPE toKey(int r) {
+#if PRIMITIVE_KEY_TYPE in ["int", "long", "float", "double"]
+		return r;
+#elif PRIMITIVE_KEY_TYPE == "byte"
+		return (byte) r;
+#elif PRIMITIVE_KEY_TYPE == "short"
+		return (short) r;
+#elif PRIMITIVE_KEY_TYPE == "char"
+		return (char) r;
+#elif PRIMITIVE_KEY_TYPE == "boolean"
+		return r % 2 == 0;
+#else
+		return String.valueOf(r);
+#endif
+	}
+
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+	private static PRIMITIVE_VALUE_TYPE randValue(Random rand) {
+		return randValue(rand, Integer.MAX_VALUE);
+	}
+
+	private static PRIMITIVE_VALUE_TYPE randValue(Random rand, int upperBound) {
+		return toValue(rand.nextInt(upperBound));
+	}
+
+	private static PRIMITIVE_VALUE_TYPE toValue(int r) {
+#if PRIMITIVE_VALUE_TYPE in ["int", "long", "float", "double"]
+		return r;
+#elif PRIMITIVE_VALUE_TYPE == "byte"
+		return (byte) r;
+#elif PRIMITIVE_VALUE_TYPE == "short"
+		return (short) r;
+#elif PRIMITIVE_VALUE_TYPE == "char"
+		return (char) r;
+#elif PRIMITIVE_VALUE_TYPE == "boolean"
+		return r % 2 == 0;
+#else
+		return String.valueOf(r);
+#endif
+	}
+#endif
+
+}

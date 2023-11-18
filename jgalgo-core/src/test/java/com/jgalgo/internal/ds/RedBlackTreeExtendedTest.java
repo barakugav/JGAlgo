@@ -21,7 +21,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.internal.ds.ReferenceableHeapTestUtils.TestMode;
 import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -45,8 +44,8 @@ public class RedBlackTreeExtendedTest extends TestBase {
 			RedBlackTreeExtension.Size<Integer, Void> sizeExt = new RedBlackTreeExtension.Size<>();
 			ObjObjRedBlackTree<Integer, Void> tree = new RedBlackTreeExtended<>(compare, List.of(sizeExt));
 
-			ReferenceableHeapTestUtils.testHeap(intRefHeapFromObjObjRefHeap(tree), n, m, TestMode.Normal, false,
-					compare, seedGen.nextSeed());
+			IntReferenceableHeapTestUtils.testHeap(intRefHeapFromObjObjRefHeap(tree), n, m,
+					IntReferenceableHeapTestUtils.TestMode.Normal, false, compare, seedGen.nextSeed());
 
 			for (ObjObjReferenceableHeap.Ref<Integer, Void> node : tree) {
 				int expectedSize = 0;
@@ -76,8 +75,8 @@ public class RedBlackTreeExtendedTest extends TestBase {
 			RedBlackTreeExtension.Min<Integer, Void> minExt = new RedBlackTreeExtension.Min<>();
 			ObjObjRedBlackTree<Integer, Void> tree = new RedBlackTreeExtended<>(compare, List.of(minExt));
 
-			ReferenceableHeapTestUtils.testHeap(intRefHeapFromObjObjRefHeap(tree), n, m, TestMode.Normal, false,
-					compare, seedGen.nextSeed());
+			IntReferenceableHeapTestUtils.testHeap(intRefHeapFromObjObjRefHeap(tree), n, m,
+					IntReferenceableHeapTestUtils.TestMode.Normal, false, compare, seedGen.nextSeed());
 
 			for (ObjObjReferenceableHeap.Ref<Integer, Void> node : tree) {
 				int expectedMin = Integer.MAX_VALUE;
@@ -106,8 +105,8 @@ public class RedBlackTreeExtendedTest extends TestBase {
 			RedBlackTreeExtension.Max<Integer, Void> maxExt = new RedBlackTreeExtension.Max<>();
 			ObjObjRedBlackTree<Integer, Void> tree = new RedBlackTreeExtended<>(compare, List.of(maxExt));
 
-			ReferenceableHeapTestUtils.testHeap(intRefHeapFromObjObjRefHeap(tree), n, m, TestMode.Normal, false,
-					compare, seedGen.nextSeed());
+			IntReferenceableHeapTestUtils.testHeap(intRefHeapFromObjObjRefHeap(tree), n, m,
+					IntReferenceableHeapTestUtils.TestMode.Normal, false, compare, seedGen.nextSeed());
 			for (ObjObjReferenceableHeap.Ref<Integer, Void> node : tree) {
 				int expectedMax = Integer.MIN_VALUE;
 				for (ObjObjReferenceableHeap.Ref<Integer, Void> descendant : IterTools
@@ -156,6 +155,11 @@ public class RedBlackTreeExtendedTest extends TestBase {
 					public int key() {
 						return objRef.key().intValue();
 					}
+
+					@Override
+					public String toString() {
+						return String.valueOf(key());
+					}
 				};
 				refObjToRef.put(objRef, intRef);
 				refIntToObj.put(intRef, objRef);
@@ -195,6 +199,12 @@ public class RedBlackTreeExtendedTest extends TestBase {
 				ObjObjReferenceableHeap.Ref<Integer, Void> objRef = refIntToObj.remove(ref);
 				refObjToRef.remove(objRef);
 				h.remove(objRef);
+			}
+
+			@Override
+			public IntReferenceableHeap.Ref find(int key) {
+				ObjObjReferenceableHeap.Ref<Integer, Void> objRef = h.find(key);
+				return objRef == null ? null : refObjToRef.get(objRef);
 			}
 		};
 	}

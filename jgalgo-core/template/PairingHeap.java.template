@@ -164,10 +164,8 @@ public class PAIRING_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_VA
 	}
 
 	Node KEY_VALUE_GENERIC meldDefaultCmp(Node KEY_VALUE_GENERIC n1, Node KEY_VALUE_GENERIC n2) {
-		assert n1.prevOrParent == null;
-		assert n1.next == null;
-		assert n2.prevOrParent == null;
-		assert n2.next == null;
+		assert n1.prevOrParent == null && n1.next == null;
+		assert n2.prevOrParent == null && n2.next == null;
 
 		/* assume n1 has smaller key than n2 */
 		if (COMPARE_KEY_DEFAULT_GE(n1.key, n2.key)) {
@@ -181,10 +179,8 @@ public class PAIRING_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_VA
 	}
 
 	Node KEY_VALUE_GENERIC meldCustomCmp(Node KEY_VALUE_GENERIC n1, Node KEY_VALUE_GENERIC n2) {
-		assert n1.prevOrParent == null;
-		assert n1.next == null;
-		assert n2.prevOrParent == null;
-		assert n2.next == null;
+		assert n1.prevOrParent == null && n1.next == null;
+		assert n2.prevOrParent == null && n2.next == null;
 
 		/* assume n1 has smaller key than n2 */
 		if (c.compare(n1.key, n2.key) > 0) {
@@ -232,10 +228,6 @@ public class PAIRING_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_VA
 	@Override
 	public Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> iterator() {
 		return new PreOrderIter KEY_VALUE_GENERIC_EMPTY(minRoot);
-	}
-
-	int compareNodesKeys(Node KEY_VALUE_GENERIC n1, Node KEY_VALUE_GENERIC n2) {
-		return c.compare(n1.key, n2.key);
 	}
 
 	static class PreOrderIter KEY_VALUE_GENERIC implements Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> {
