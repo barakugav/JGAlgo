@@ -17,76 +17,78 @@ package com.jgalgo.example;
 
 import com.jgalgo.alg.LowestCommonAncestorDynamic;
 import com.jgalgo.alg.LowestCommonAncestorStatic;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 
 /**
  * This example demonstrates how to use the lowest common ancestor algorithm.
  *
  * @author Barak Ugav
  */
-<span class="pc" id="L27">public class LowestCommonAncestorExample {</span>
+<span class="fc" id="L27">public class LowestCommonAncestorExample {</span>
+
+	private LowestCommonAncestorExample() {}
 
 	/**
 	 * This example demonstrates how to use the static lowest common ancestor algorithm.
 	 */
+	@SuppressWarnings(&quot;boxing&quot;)
 	public static void staticLCAExample() {
 		/* Create a full binary tree of height 3 */
-<span class="fc" id="L34">		IntGraph tree = IntGraph.newUndirected();</span>
-<span class="fc" id="L35">		int rt = tree.addVertex();</span>
-<span class="fc" id="L36">		int v1 = tree.addVertex();</span>
-<span class="fc" id="L37">		int v2 = tree.addVertex();</span>
-<span class="fc" id="L38">		int v3 = tree.addVertex();</span>
-<span class="fc" id="L39">		int v4 = tree.addVertex();</span>
-<span class="fc" id="L40">		int v5 = tree.addVertex();</span>
-<span class="fc" id="L41">		int v6 = tree.addVertex();</span>
-<span class="fc" id="L42">		tree.addEdge(rt, v1);</span>
-<span class="fc" id="L43">		tree.addEdge(rt, v2);</span>
-<span class="fc" id="L44">		tree.addEdge(v1, v3);</span>
-<span class="fc" id="L45">		tree.addEdge(v1, v4);</span>
-<span class="fc" id="L46">		tree.addEdge(v2, v5);</span>
-<span class="fc" id="L47">		tree.addEdge(v2, v6);</span>
+<span class="fc" id="L37">		Graph&lt;String, Integer&gt; tree = Graph.newUndirected();</span>
+<span class="fc" id="L38">		tree.addVertex(&quot;root&quot;);</span>
+<span class="fc" id="L39">		tree.addVertex(&quot;Smith&quot;);</span>
+<span class="fc" id="L40">		tree.addVertex(&quot;Johnson&quot;);</span>
+<span class="fc" id="L41">		tree.addVertex(&quot;Williams&quot;);</span>
+<span class="fc" id="L42">		tree.addVertex(&quot;Jones&quot;);</span>
+<span class="fc" id="L43">		tree.addVertex(&quot;Brown&quot;);</span>
+<span class="fc" id="L44">		tree.addVertex(&quot;Davis&quot;);</span>
+<span class="fc" id="L45">		tree.addEdge(&quot;root&quot;, &quot;Smith&quot;, 1);</span>
+<span class="fc" id="L46">		tree.addEdge(&quot;root&quot;, &quot;Johnson&quot;, 2);</span>
+<span class="fc" id="L47">		tree.addEdge(&quot;Smith&quot;, &quot;Williams&quot;, 3);</span>
+<span class="fc" id="L48">		tree.addEdge(&quot;Smith&quot;, &quot;Jones&quot;, 4);</span>
+<span class="fc" id="L49">		tree.addEdge(&quot;Johnson&quot;, &quot;Brown&quot;, 5);</span>
+<span class="fc" id="L50">		tree.addEdge(&quot;Johnson&quot;, &quot;Davis&quot;, 6);</span>
 
 		/* Pre process the tree for LCA queries */
-<span class="fc" id="L50">		LowestCommonAncestorStatic lcaAlgo = LowestCommonAncestorStatic.newInstance();</span>
-<span class="fc" id="L51">		LowestCommonAncestorStatic.IDataStructure lcaDs =</span>
-<span class="fc" id="L52">				(LowestCommonAncestorStatic.IDataStructure) lcaAlgo.preProcessTree(tree, Integer.valueOf(rt));</span>
+<span class="fc" id="L53">		LowestCommonAncestorStatic lcaAlgo = LowestCommonAncestorStatic.newInstance();</span>
+<span class="fc" id="L54">		LowestCommonAncestorStatic.DataStructure&lt;String, Integer&gt; lcaDs = lcaAlgo.preProcessTree(tree, &quot;root&quot;);</span>
 
 		/* Find the lowest common ancestor of any pair of vertices in the tree */
-<span class="pc bnc" id="L55" title="All 2 branches missed.">		assert lcaDs.findLca(v1, v2) == rt;</span>
-<span class="pc bnc" id="L56" title="All 2 branches missed.">		assert lcaDs.findLca(v1, v3) == v1;</span>
-<span class="pc bnc" id="L57" title="All 2 branches missed.">		assert lcaDs.findLca(v3, v4) == v1;</span>
-<span class="pc bnc" id="L58" title="All 2 branches missed.">		assert lcaDs.findLca(v5, v6) == v2;</span>
-<span class="pc bnc" id="L59" title="All 2 branches missed.">		assert lcaDs.findLca(v3, v6) == rt;</span>
-<span class="fc" id="L60">	}</span>
+<span class="pc bnc" id="L57" title="All 2 branches missed.">		assert lcaDs.findLca(&quot;Smith&quot;, &quot;Johnson&quot;).equals(&quot;root&quot;);</span>
+<span class="pc bnc" id="L58" title="All 2 branches missed.">		assert lcaDs.findLca(&quot;Smith&quot;, &quot;Williams&quot;).equals(&quot;Smith&quot;);</span>
+<span class="pc bnc" id="L59" title="All 2 branches missed.">		assert lcaDs.findLca(&quot;Williams&quot;, &quot;Jones&quot;).equals(&quot;Smith&quot;);</span>
+<span class="pc bnc" id="L60" title="All 2 branches missed.">		assert lcaDs.findLca(&quot;Brown&quot;, &quot;Davis&quot;).equals(&quot;Johnson&quot;);</span>
+<span class="pc bnc" id="L61" title="All 2 branches missed.">		assert lcaDs.findLca(&quot;Williams&quot;, &quot;Davis&quot;).equals(&quot;root&quot;);</span>
+<span class="fc" id="L62">	}</span>
 
 	/**
 	 * This example demonstrates how to use the dynamic lowest common ancestor algorithm.
 	 */
 	public static void dynamicLCAExample() {
 		/* Create a full binary tree of height 3 and perform LCA queries during the construction */
-<span class="fc" id="L67">		LowestCommonAncestorDynamic lcaAlgo = LowestCommonAncestorDynamic.newInstance();</span>
-<span class="fc" id="L68">		LowestCommonAncestorDynamic.Vertex rt = lcaAlgo.initTree();</span>
+<span class="fc" id="L69">		LowestCommonAncestorDynamic lcaAlgo = LowestCommonAncestorDynamic.newInstance();</span>
+<span class="fc" id="L70">		LowestCommonAncestorDynamic.Vertex rt = lcaAlgo.initTree();</span>
 
-<span class="fc" id="L70">		LowestCommonAncestorDynamic.Vertex v1 = lcaAlgo.addLeaf(rt);</span>
-<span class="fc" id="L71">		LowestCommonAncestorDynamic.Vertex v2 = lcaAlgo.addLeaf(rt);</span>
-<span class="pc bnc" id="L72" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v1, v2) == rt;</span>
+<span class="fc" id="L72">		LowestCommonAncestorDynamic.Vertex v1 = lcaAlgo.addLeaf(rt);</span>
+<span class="fc" id="L73">		LowestCommonAncestorDynamic.Vertex v2 = lcaAlgo.addLeaf(rt);</span>
+<span class="pc bnc" id="L74" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v1, v2) == rt;</span>
 
-<span class="fc" id="L74">		LowestCommonAncestorDynamic.Vertex v3 = lcaAlgo.addLeaf(v1);</span>
-<span class="pc bnc" id="L75" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v1, v3) == v1;</span>
+<span class="fc" id="L76">		LowestCommonAncestorDynamic.Vertex v3 = lcaAlgo.addLeaf(v1);</span>
+<span class="pc bnc" id="L77" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v1, v3) == v1;</span>
 
-<span class="fc" id="L77">		LowestCommonAncestorDynamic.Vertex v4 = lcaAlgo.addLeaf(v1);</span>
-<span class="pc bnc" id="L78" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v3, v4) == v1;</span>
+<span class="fc" id="L79">		LowestCommonAncestorDynamic.Vertex v4 = lcaAlgo.addLeaf(v1);</span>
+<span class="pc bnc" id="L80" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v3, v4) == v1;</span>
 
-<span class="fc" id="L80">		LowestCommonAncestorDynamic.Vertex v5 = lcaAlgo.addLeaf(v2);</span>
-<span class="fc" id="L81">		LowestCommonAncestorDynamic.Vertex v6 = lcaAlgo.addLeaf(v2);</span>
-<span class="pc bnc" id="L82" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v5, v6) == v2;</span>
-<span class="pc bnc" id="L83" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v3, v6) == rt;</span>
-<span class="fc" id="L84">	}</span>
+<span class="fc" id="L82">		LowestCommonAncestorDynamic.Vertex v5 = lcaAlgo.addLeaf(v2);</span>
+<span class="fc" id="L83">		LowestCommonAncestorDynamic.Vertex v6 = lcaAlgo.addLeaf(v2);</span>
+<span class="pc bnc" id="L84" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v5, v6) == v2;</span>
+<span class="pc bnc" id="L85" title="All 2 branches missed.">		assert lcaAlgo.findLowestCommonAncestor(v3, v6) == rt;</span>
+<span class="fc" id="L86">	}</span>
 
 	public static void main(String[] args) {
-<span class="fc" id="L87">		staticLCAExample();</span>
-<span class="fc" id="L88">		dynamicLCAExample();</span>
-<span class="fc" id="L89">	}</span>
+<span class="fc" id="L89">		staticLCAExample();</span>
+<span class="fc" id="L90">		dynamicLCAExample();</span>
+<span class="fc" id="L91">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

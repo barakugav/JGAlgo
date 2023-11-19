@@ -87,8 +87,8 @@ public class GraphsUtils {
 <span class="fc bfc" id="L87" title="All 2 branches covered.">			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L88">				eit.nextInt();</span>
 <span class="fc" id="L89">				int v = eit.targetInt();</span>
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">				if (lastVisit[v] == visitIdx)</span>
-<span class="nc" id="L91">					return true;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">				if (lastVisit[v] == visitIdx)</span>
+<span class="fc" id="L91">					return true;</span>
 <span class="fc" id="L92">				lastVisit[v] = visitIdx;</span>
 <span class="fc" id="L93">			}</span>
 		}

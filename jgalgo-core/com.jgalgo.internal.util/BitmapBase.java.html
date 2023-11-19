@@ -18,7 +18,7 @@ package com.jgalgo.internal.util;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-public class BitmapBase implements IntIterable {
+<span class="fc" id="L21">public class BitmapBase implements IntIterable {</span>
 
 	final int size;
 	final long[] words;
@@ -32,38 +32,37 @@ public class BitmapBase implements IntIterable {
 <span class="fc" id="L32">		words = new long[wordsNum(size)];</span>
 <span class="fc" id="L33">	}</span>
 
-<span class="nc" id="L35">	BitmapBase(int size, long[] words) {</span>
-<span class="nc" id="L36">		checkSize(size);</span>
-<span class="nc bnc" id="L37" title="All 2 branches missed.">		if (words.length != wordsNum(size))</span>
-<span class="nc" id="L38">			throw new IllegalArgumentException(&quot;Wrong number of words: &quot; + words.length);</span>
-<span class="nc" id="L39">		this.size = size;</span>
-<span class="nc" id="L40">		this.words = words;</span>
-<span class="nc" id="L41">	}</span>
+<span class="fc" id="L35">	BitmapBase(int size, long[] words) {</span>
+<span class="fc" id="L36">		checkSize(size);</span>
+<span class="pc bnc" id="L37" title="All 2 branches missed.">		assert words.length == wordsNum(size);</span>
+<span class="fc" id="L38">		this.size = size;</span>
+<span class="fc" id="L39">		this.words = words;</span>
+<span class="fc" id="L40">	}</span>
 
 	static void checkSize(int size) {
-<span class="pc bpc" id="L44" title="1 of 2 branches missed.">		if (size &lt; 0)</span>
-<span class="nc" id="L45">			throw new IllegalArgumentException(&quot;Negative size: &quot; + size);</span>
-<span class="fc" id="L46">	}</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">		if (size &lt; 0)</span>
+<span class="fc" id="L44">			throw new IllegalArgumentException(&quot;Negative size: &quot; + size);</span>
+<span class="fc" id="L45">	}</span>
 
 	static int wordsNum(int size) {
-<span class="fc" id="L49">		return (size + WordSize - 1) / WordSize;</span>
+<span class="fc" id="L48">		return (size + WordSize - 1) / WordSize;</span>
 	}
 
 	void checkIdx(int idx) {
-<span class="fc" id="L53">		checkIdx(idx, size);</span>
-<span class="fc" id="L54">	}</span>
+<span class="fc" id="L52">		checkIdx(idx, size);</span>
+<span class="fc" id="L53">	}</span>
 
 	static void checkIdx(int idx, int size) {
-<span class="pc bpc" id="L57" title="2 of 4 branches missed.">		if (idx &lt; 0 || idx &gt;= size)</span>
-<span class="nc" id="L58">			throw new IndexOutOfBoundsException(&quot;Index: &quot; + idx + &quot;, Size: &quot; + size);</span>
-<span class="fc" id="L59">	}</span>
+<span class="fc bfc" id="L56" title="All 4 branches covered.">		if (idx &lt; 0 || idx &gt;= size)</span>
+<span class="fc" id="L57">			throw new IndexOutOfBoundsException(&quot;Index: &quot; + idx + &quot;, Size: &quot; + size);</span>
+<span class="fc" id="L58">	}</span>
 
 	static int word(int idx) {
-<span class="fc" id="L62">		return idx / WordSize;</span>
+<span class="fc" id="L61">		return idx / WordSize;</span>
 	}
 
 	static long bit(int idx) {
-<span class="fc" id="L66">		return 1L &lt;&lt; (idx % WordSize);</span>
+<span class="fc" id="L65">		return 1L &lt;&lt; (idx % WordSize);</span>
 	}
 
 	/**
@@ -74,8 +73,8 @@ public class BitmapBase implements IntIterable {
 	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
 	 */
 	public boolean get(int idx) {
-<span class="fc" id="L77">		checkIdx(idx);</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">		return (words[word(idx)] &amp; bit(idx)) != 0;</span>
+<span class="fc" id="L76">		checkIdx(idx);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">		return (words[word(idx)] &amp; bit(idx)) != 0;</span>
 	}
 
 	/**
@@ -84,10 +83,10 @@ public class BitmapBase implements IntIterable {
 	 * @return {@code true} if all bits are {@code false}, {@code false} otherwise
 	 */
 	public boolean isEmpty() {
-<span class="nc bnc" id="L87" title="All 2 branches missed.">		for (long word : words)</span>
-<span class="nc bnc" id="L88" title="All 2 branches missed.">			if (word != 0)</span>
-<span class="nc" id="L89">				return false;</span>
-<span class="nc" id="L90">		return true;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		for (long word : words)</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">			if (word != 0)</span>
+<span class="fc" id="L88">				return false;</span>
+<span class="fc" id="L89">		return true;</span>
 	}
 
 	/**
@@ -99,16 +98,16 @@ public class BitmapBase implements IntIterable {
 	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
 	 */
 	public int nextSetBit(int fromIndex) {
-<span class="fc" id="L102">		checkIdx(fromIndex);</span>
+<span class="fc" id="L101">		checkIdx(fromIndex);</span>
 
-<span class="fc" id="L104">		int wIdx = word(fromIndex);</span>
-<span class="fc" id="L105">		long word = words[wIdx] &amp; (WORD_MASK &lt;&lt; fromIndex);</span>
+<span class="fc" id="L103">		int wIdx = word(fromIndex);</span>
+<span class="fc" id="L104">		long word = words[wIdx] &amp; (WORD_MASK &lt;&lt; fromIndex);</span>
 		while (true) {
-<span class="fc bfc" id="L107" title="All 2 branches covered.">			if (word != 0)</span>
-<span class="fc" id="L108">				return (wIdx * WordSize) + Long.numberOfTrailingZeros(word);</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">			if (++wIdx == words.length)</span>
-<span class="fc" id="L110">				return -1;</span>
-<span class="fc" id="L111">			word = words[wIdx];</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (word != 0)</span>
+<span class="fc" id="L107">				return (wIdx * WordSize) + Long.numberOfTrailingZeros(word);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (++wIdx == words.length)</span>
+<span class="fc" id="L109">				return -1;</span>
+<span class="fc" id="L110">			word = words[wIdx];</span>
 		}
 	}
 
@@ -117,21 +116,21 @@ public class BitmapBase implements IntIterable {
 	 * index.
 	 *
 	 * @param  fromIndex                 the index to start checking from (inclusive)
-	 * @return                           the index of the next clear bit
+	 * @return                           the index of the next clear bit, or {@code size} if there is no such bit
 	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
 	 */
 	public int nextClearBit(int fromIndex) {
-<span class="fc" id="L124">		checkIdx(fromIndex);</span>
+<span class="fc" id="L123">		checkIdx(fromIndex);</span>
 
-<span class="fc" id="L126">		int wIdx = word(fromIndex);</span>
-<span class="fc" id="L127">		long word = ~words[wIdx] &amp; (WORD_MASK &lt;&lt; fromIndex);</span>
+<span class="fc" id="L125">		int wIdx = word(fromIndex);</span>
+<span class="fc" id="L126">		long word = ~words[wIdx] &amp; (WORD_MASK &lt;&lt; fromIndex);</span>
 
 		while (true) {
-<span class="fc bfc" id="L130" title="All 2 branches covered.">			if (word != 0)</span>
-<span class="fc" id="L131">				return (wIdx * WordSize) + Long.numberOfTrailingZeros(word);</span>
-<span class="fc bfc" id="L132" title="All 2 branches covered.">			if (++wIdx == words.length)</span>
-<span class="fc" id="L133">				return words.length * WordSize;</span>
-<span class="fc" id="L134">			word = ~words[wIdx];</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">			if (word != 0)</span>
+<span class="fc" id="L130">				return (wIdx * WordSize) + Long.numberOfTrailingZeros(word);</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">			if (++wIdx == words.length)</span>
+<span class="fc" id="L132">				return words.length * WordSize;</span>
+<span class="fc" id="L133">			word = ~words[wIdx];</span>
 		}
 	}
 
@@ -141,7 +140,7 @@ public class BitmapBase implements IntIterable {
 	 * @return the number of bits in this bitmap
 	 */
 	public int capacity() {
-<span class="fc" id="L144">		return size;</span>
+<span class="fc" id="L143">		return size;</span>
 	}
 
 	/**
@@ -150,10 +149,10 @@ public class BitmapBase implements IntIterable {
 	 * @return the number of bits set to {@code true} in this bitmap
 	 */
 	public int cardinality() {
-<span class="fc" id="L153">		int sum = 0;</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">		for (long word : words)</span>
-<span class="fc" id="L155">			sum += Long.bitCount(word);</span>
-<span class="fc" id="L156">		return sum;</span>
+<span class="fc" id="L152">		int sum = 0;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">		for (long word : words)</span>
+<span class="fc" id="L154">			sum += Long.bitCount(word);</span>
+<span class="fc" id="L155">		return sum;</span>
 	}
 
 	/**
@@ -163,25 +162,25 @@ public class BitmapBase implements IntIterable {
 	 */
 	@Override
 	public IntIterator iterator() {
-<span class="fc" id="L166">		return new IntIterator() {</span>
+<span class="fc" id="L165">		return new IntIterator() {</span>
 
-<span class="fc" id="L168">			int bit = nextSetBit(0);</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">			int bit = size == 0 ? -1 : nextSetBit(0);</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc bfc" id="L172" title="All 2 branches covered.">				return bit != -1;</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">				return bit != -1;</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="fc" id="L177">				Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L178">				int ret = bit;</span>
-<span class="fc bfc" id="L179" title="All 2 branches covered.">				if (bit + 1 &lt; size) {</span>
-<span class="fc" id="L180">					bit = nextSetBit(bit + 1);</span>
+<span class="fc" id="L176">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L177">				int ret = bit;</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">				if (bit + 1 &lt; size) {</span>
+<span class="fc" id="L179">					bit = nextSetBit(bit + 1);</span>
 				} else {
-<span class="fc" id="L182">					bit = -1;</span>
+<span class="fc" id="L181">					bit = -1;</span>
 				}
-<span class="fc" id="L184">				return ret;</span>
+<span class="fc" id="L183">				return ret;</span>
 			}
 		};
 	}
@@ -193,11 +192,11 @@ public class BitmapBase implements IntIterable {
 	 * @return an array containing all of the {@code true} bits in this bitmap
 	 */
 	public int[] toArray() {
-<span class="fc" id="L196">		int[] arr = new int[cardinality()];</span>
-<span class="fc" id="L197">		int i = 0;</span>
-<span class="fc bfc" id="L198" title="All 2 branches covered.">		for (int b : this)</span>
-<span class="fc" id="L199">			arr[i++] = b;</span>
-<span class="fc" id="L200">		return arr;</span>
+<span class="fc" id="L195">		int[] arr = new int[cardinality()];</span>
+<span class="fc" id="L196">		int i = 0;</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">		for (int b : this)</span>
+<span class="fc" id="L198">			arr[i++] = b;</span>
+<span class="fc" id="L199">		return arr;</span>
 	}
 
 	/**
@@ -206,15 +205,15 @@ public class BitmapBase implements IntIterable {
 	 * @return a copy of this bitmap
 	 */
 	public Bitmap copy() {
-<span class="fc" id="L209">		Bitmap ret = new Bitmap(size);</span>
-<span class="fc bfc" id="L210" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L211">			ret.words[i] = words[i];</span>
-<span class="fc" id="L212">		return ret;</span>
+<span class="fc" id="L208">		Bitmap ret = new Bitmap(size);</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L210">			ret.words[i] = words[i];</span>
+<span class="fc" id="L211">		return ret;</span>
 	}
 
 	@Override
 	public String toString() {
-<span class="nc" id="L217">		return ImmutableIntArraySet.withNaiveContains(toArray()).toString();</span>
+<span class="fc" id="L216">		return ImmutableIntArraySet.withNaiveContains(toArray()).toString();</span>
 	}
 
 }

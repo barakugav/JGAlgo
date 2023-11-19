@@ -1,8 +1,8 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-JGAlgo - Examples,com.jgalgo.example,ShortestPathExample,26,98,4,2,0,27,3,4,1,3
-JGAlgo - Examples,com.jgalgo.example,EdgeIterationExample,52,115,10,2,0,34,6,4,1,3
-JGAlgo - Examples,com.jgalgo.example,BfsDfsExample,3,116,0,4,1,35,1,6,1,4
-JGAlgo - Examples,com.jgalgo.example,LowestCommonAncestorExample,103,107,20,0,0,41,11,4,1,4
-JGAlgo - Examples,com.jgalgo.example,ColoringExample,10,110,2,4,0,32,2,6,1,4
-JGAlgo - Examples,com.jgalgo.example,MaximumMatchingExample,11,114,2,4,0,29,2,7,1,5
-JGAlgo - Examples,com.jgalgo.example,MinimumSpanningTreeExample,40,164,2,0,0,43,2,3,1,3
+JGAlgo - Examples,com.jgalgo.example,ShortestPathExample,0,100,0,2,0,22,0,3,0,2
+JGAlgo - Examples,com.jgalgo.example,EdgeIterationExample,52,116,10,2,0,34,5,4,0,3
+JGAlgo - Examples,com.jgalgo.example,LowestCommonAncestorExample,110,111,20,0,0,40,10,4,0,4
+JGAlgo - Examples,com.jgalgo.example,BfsDfsExample,0,127,0,4,0,35,0,6,0,4
+JGAlgo - Examples,com.jgalgo.example,MaximumMatchingExample,18,98,2,2,0,27,1,5,0,4
+JGAlgo - Examples,com.jgalgo.example,ColoringExample,7,115,2,4,0,32,1,6,0,4
+JGAlgo - Examples,com.jgalgo.example,MinimumSpanningTreeExample,35,187,2,0,0,43,1,3,0,3

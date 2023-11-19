@@ -150,7 +150,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 		@Override
 		IFlow computeMaximumFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IntCollection sources,
 				IntCollection sinks) {
-<span class="pc bpc" id="L153" title="1 of 4 branches missed.">			if (sources.size() == 1 &amp;&amp; sinks.size() == 1)</span>
+<span class="fc bfc" id="L153" title="All 4 branches covered.">			if (sources.size() == 1 &amp;&amp; sinks.size() == 1)</span>
 <span class="fc" id="L154">				return computeMaximumFlow(gOrig, capacityOrig, sources.iterator().nextInt(),</span>
 <span class="fc" id="L155">						sinks.iterator().nextInt());</span>
 <span class="fc" id="L156">			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);</span>

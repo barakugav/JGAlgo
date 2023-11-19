@@ -143,7 +143,7 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 */
 	public void setEdges(Supplier&lt;E&gt; edgeSupplier) {
 <span class="fc" id="L145">		Objects.requireNonNull(edgeSupplier);</span>
-<span class="fc" id="L146">		this.edgeBuilder = (u, v) -&gt; edgeSupplier.get();</span>
+<span class="fc" id="L146">		setEdges((u, v) -&gt; edgeSupplier.get());</span>
 <span class="fc" id="L147">	}</span>
 
 	/**
@@ -157,8 +157,8 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * @param edgeBuilder the edge builder function
 	 */
 	public void setEdges(BiFunction&lt;V, V, E&gt; edgeBuilder) {
-<span class="nc" id="L160">		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);</span>
-<span class="nc" id="L161">	}</span>
+<span class="fc" id="L160">		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);</span>
+<span class="fc" id="L161">	}</span>
 
 	/**
 	 * Determine if the generated graph(s) is directed or undirected.
@@ -218,15 +218,15 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
-<span class="pc bpc" id="L221" title="1 of 2 branches missed.">		if (vertices == null)</span>
-<span class="nc" id="L222">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
-<span class="pc bpc" id="L223" title="1 of 2 branches missed.">		if (edgeBuilder == null)</span>
-<span class="nc" id="L224">			throw new IllegalStateException(&quot;Edge supplier not set&quot;);</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">		if (vertices == null)</span>
+<span class="fc" id="L222">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
+<span class="fc" id="L224">			throw new IllegalStateException(&quot;Edge supplier not set&quot;);</span>
 
 <span class="fc" id="L226">		final int n = vertices.size();</span>
 
 <span class="fc bfc" id="L228" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="pc bpc" id="L229" title="1 of 2 branches missed.">			IntGraphBuilder g = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">			IntGraphBuilder g = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
 <span class="fc" id="L230">			g.expectedVerticesNum(n);</span>
 <span class="fc" id="L231">			final int[] vertices = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.vertices).toIntArray();</span>
 <span class="fc bfc" id="L232" title="All 2 branches covered.">			for (int v : vertices)</span>
@@ -236,14 +236,14 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 <span class="fc" id="L236">						IntAdapters.asIntBiOperator((BiFunction&lt;Integer, Integer, Integer&gt;) this.edgeBuilder);</span>
 <span class="fc bfc" id="L237" title="All 2 branches covered.">				for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
 <span class="fc" id="L238">					int u = vertices[uIdx];</span>
-<span class="pc bpc" id="L239" title="1 of 2 branches missed.">					if (directed) {</span>
-<span class="nc bnc" id="L240" title="All 2 branches missed.">						for (int vIdx = 0; vIdx &lt; uIdx; vIdx++) {</span>
-<span class="nc" id="L241">							int v = vertices[vIdx];</span>
-<span class="nc bnc" id="L242" title="All 2 branches missed.">							if (rand.nextDouble() &lt;= p)</span>
-<span class="nc" id="L243">								g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">					if (directed) {</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">						for (int vIdx = 0; vIdx &lt; uIdx; vIdx++) {</span>
+<span class="fc" id="L241">							int v = vertices[vIdx];</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">							if (rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L243">								g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));</span>
 						}
 					}
-<span class="fc bfc" id="L246" title="All 4 branches covered.">					if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
+<span class="pc bpc" id="L246" title="1 of 4 branches missed.">					if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
 <span class="fc" id="L247">						g.addEdge(u, u, edgeBuilder.applyAsInt(u, u));</span>
 <span class="fc bfc" id="L248" title="All 2 branches covered.">					for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++) {</span>
 <span class="fc" id="L249">						int v = vertices[vIdx];</span>
@@ -270,8 +270,8 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 <span class="fc" id="L270">								g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
 						}
 					}
-<span class="pc bpc" id="L273" title="3 of 4 branches missed.">					if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
-<span class="nc" id="L274">						g.addEdge(u, u, edgeBuilder.apply(u, u));</span>
+<span class="fc bfc" id="L273" title="All 4 branches covered.">					if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L274">						g.addEdge(u, u, edgeBuilder.apply(u, u));</span>
 <span class="fc bfc" id="L275" title="All 2 branches covered.">					for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++) {</span>
 <span class="fc" id="L276">						V v = vertices[vIdx];</span>
 <span class="fc bfc" id="L277" title="All 2 branches covered.">						if (rand.nextDouble() &lt;= p)</span>

@@ -188,8 +188,8 @@ import com.jgalgo.internal.util.Assertions;
 
 	@Override
 	public DoubleObjReferenceableHeap.Ref &lt;V&gt; findMin() {
-<span class="pc bpc" id="L191" title="1 of 2 branches missed.">		if (root == null)</span>
-<span class="nc" id="L192">			throw new IllegalStateException();</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">		if (root == null)</span>
+<span class="fc" id="L192">			throw new IllegalStateException();</span>
 <span class="fc" id="L193">		return DoubleBinarySearchTrees.findMin(root);</span>
 	}
 

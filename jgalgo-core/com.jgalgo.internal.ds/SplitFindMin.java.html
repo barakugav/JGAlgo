@@ -18,7 +18,8 @@ package com.jgalgo.internal.ds;
 
 import java.util.Collection;
 import java.util.Comparator;
-import com.jgalgo.internal.util.JGAlgoUtils;
+
+import it.unimi.dsi.fastutil.objects.ObjectList;
 
 /**
  * An extension to {@link SplitFind} that support value keys and {@code findMin} operations.
@@ -48,10 +49,11 @@ public interface SplitFindMin&lt;K&gt; extends SplitFind {
 	 */
 	void init(Collection&lt;K&gt; keys, Comparator&lt;? super K&gt; comparator);
 
+	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	default void init(int size) {
-<span class="fc" id="L53">		init(JGAlgoUtils.nullList(size), (k1, k2) -&gt; 0);</span>
-<span class="fc" id="L54">	}</span>
+<span class="fc" id="L55">		init(ObjectList.of((K[]) new Object[size]), (k1, k2) -&gt; 0);</span>
+<span class="fc" id="L56">	}</span>
 
 	/**
 	 * Get the key associated with an element.
@@ -88,7 +90,7 @@ public interface SplitFindMin&lt;K&gt; extends SplitFind {
 	 * @return a default implementation of {@link SplitFindMin}
 	 */
 	static &lt;K&gt; SplitFindMin&lt;K&gt; newInstance() {
-<span class="fc" id="L91">		return newBuilder().buildWithFindMin();</span>
+<span class="fc" id="L93">		return newBuilder().buildWithFindMin();</span>
 	}
 
 	/**
@@ -100,7 +102,7 @@ public interface SplitFindMin&lt;K&gt; extends SplitFind {
 	 * @return a new builder that can build {@link SplitFindMin} objects
 	 */
 	static SplitFindMin.Builder newBuilder() {
-<span class="fc" id="L103">		return SplitFindMinArray::new;</span>
+<span class="fc" id="L105">		return SplitFindMinArray::new;</span>
 	}
 
 	/**
@@ -122,7 +124,7 @@ public interface SplitFindMin&lt;K&gt; extends SplitFind {
 		@SuppressWarnings(&quot;rawtypes&quot;)
 		@Override
 		default SplitFindMin build() {
-<span class="nc" id="L125">			return buildWithFindMin();</span>
+<span class="nc" id="L127">			return buildWithFindMin();</span>
 		}
 
 	}

@@ -40,13 +40,13 @@ package com.jgalgo.graph;
  *
  * // Calculate the shortest paths from Berlin to all other cities
  * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
- * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, &quot;Berlin&quot;);
+ * ShortestPathSingleSource.Result&lt;String, Integer&gt; ssspRes = ssspAlgo.computeShortestPaths(g, w, &quot;Berlin&quot;);
  *
  * // Print the shortest path from Berlin to Leipzig
  * System.out.println(&quot;Distance from Berlin to Leipzig is: &quot; + ssspRes.distance(&quot;Leipzig&quot;));
  * System.out.println(&quot;The shortest path from Berlin to Leipzig is:&quot;);
- * for (int e : ssspRes.getPath(&quot;Leipzig&quot;)) {
- * 	int u = g.edgeSource(e), v = g.edgeTarget(e);
+ * for (Integer e : ssspRes.getPath(&quot;Leipzig&quot;).edges()) {
+ * 	String u = g.edgeSource(e), v = g.edgeTarget(e);
  * 	System.out.println(&quot; &quot; + e + &quot;(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
  * }
  * }&lt;/pre&gt;

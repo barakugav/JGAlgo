@@ -16,9 +16,9 @@
 package com.jgalgo.example;
 
 import com.jgalgo.alg.MinimumSpanningTree;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightsDouble;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -26,64 +26,67 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-<span class="pc" id="L29">public class MinimumSpanningTreeExample {</span>
+<span class="fc" id="L29">public class MinimumSpanningTreeExample {</span>
+
+	private MinimumSpanningTreeExample() {}
 
 	/**
 	 * This example demonstrates how to use the minimum spanning tree algorithm.
 	 */
+	@SuppressWarnings(&quot;boxing&quot;)
 	public static void mstExample() {
 		/* Create a graph with 7 vertices */
-<span class="fc" id="L36">		IntGraph g = IntGraph.newUndirected();</span>
-<span class="fc" id="L37">		int v1 = g.addVertex();</span>
-<span class="fc" id="L38">		int v2 = g.addVertex();</span>
-<span class="fc" id="L39">		int v3 = g.addVertex();</span>
-<span class="fc" id="L40">		int v4 = g.addVertex();</span>
-<span class="fc" id="L41">		int v5 = g.addVertex();</span>
-<span class="fc" id="L42">		int v6 = g.addVertex();</span>
-<span class="fc" id="L43">		int v7 = g.addVertex();</span>
+<span class="fc" id="L39">		Graph&lt;String, Integer&gt; g = Graph.newUndirected();</span>
+<span class="fc" id="L40">		g.addVertex(&quot;Smith&quot;);</span>
+<span class="fc" id="L41">		g.addVertex(&quot;Johnson&quot;);</span>
+<span class="fc" id="L42">		g.addVertex(&quot;Williams&quot;);</span>
+<span class="fc" id="L43">		g.addVertex(&quot;Jones&quot;);</span>
+<span class="fc" id="L44">		g.addVertex(&quot;Brown&quot;);</span>
+<span class="fc" id="L45">		g.addVertex(&quot;Davis&quot;);</span>
+<span class="fc" id="L46">		g.addVertex(&quot;Miller&quot;);</span>
 
 		/* Add a few edges between the vertices */
-<span class="fc" id="L46">		int e1 = g.addEdge(v1, v2);</span>
-<span class="fc" id="L47">		int e2 = g.addEdge(v2, v3);</span>
-<span class="fc" id="L48">		int e3 = g.addEdge(v1, v3);</span>
-<span class="fc" id="L49">		int e4 = g.addEdge(v7, v5);</span>
-<span class="fc" id="L50">		int e5 = g.addEdge(v6, v1);</span>
-<span class="fc" id="L51">		int e6 = g.addEdge(v3, v4);</span>
-<span class="fc" id="L52">		int e7 = g.addEdge(v3, v6);</span>
-<span class="fc" id="L53">		int e8 = g.addEdge(v1, v2);</span>
-<span class="fc" id="L54">		int e9 = g.addEdge(v5, v6);</span>
-<span class="fc" id="L55">		int e10 = g.addEdge(v3, v5);</span>
-<span class="fc" id="L56">		int e11 = g.addEdge(v7, v4);</span>
-<span class="fc" id="L57">		int e12 = g.addEdge(v3, v6);</span>
+<span class="fc" id="L49">		g.addEdge(&quot;Smith&quot;, &quot;Johnson&quot;, 1);</span>
+<span class="fc" id="L50">		g.addEdge(&quot;Johnson&quot;, &quot;Williams&quot;, 2);</span>
+<span class="fc" id="L51">		g.addEdge(&quot;Smith&quot;, &quot;Williams&quot;, 3);</span>
+<span class="fc" id="L52">		g.addEdge(&quot;Miller&quot;, &quot;Brown&quot;, 4);</span>
+<span class="fc" id="L53">		g.addEdge(&quot;Davis&quot;, &quot;Smith&quot;, 5);</span>
+<span class="fc" id="L54">		g.addEdge(&quot;Williams&quot;, &quot;Jones&quot;, 6);</span>
+<span class="fc" id="L55">		g.addEdge(&quot;Williams&quot;, &quot;Davis&quot;, 7);</span>
+<span class="fc" id="L56">		g.addEdge(&quot;Smith&quot;, &quot;Johnson&quot;, 8);</span>
+<span class="fc" id="L57">		g.addEdge(&quot;Brown&quot;, &quot;Davis&quot;, 9);</span>
+<span class="fc" id="L58">		g.addEdge(&quot;Williams&quot;, &quot;Brown&quot;, 10);</span>
+<span class="fc" id="L59">		g.addEdge(&quot;Miller&quot;, &quot;Jones&quot;, 11);</span>
+<span class="fc" id="L60">		g.addEdge(&quot;Williams&quot;, &quot;Davis&quot;, 12);</span>
 
 		/* Assign a weight to each edge */
-<span class="fc" id="L60">		IWeightsDouble weights = g.addEdgesWeights(&quot;weightsKey&quot;, double.class);</span>
-<span class="fc" id="L61">		weights.set(e1, 4.6);</span>
-<span class="fc" id="L62">		weights.set(e2, 5.2);</span>
-<span class="fc" id="L63">		weights.set(e3, 6.1);</span>
-<span class="fc" id="L64">		weights.set(e4, 1.5);</span>
-<span class="fc" id="L65">		weights.set(e5, 1.8);</span>
-<span class="fc" id="L66">		weights.set(e6, 4.1);</span>
-<span class="fc" id="L67">		weights.set(e7, 7.2);</span>
-<span class="fc" id="L68">		weights.set(e8, 5.4);</span>
-<span class="fc" id="L69">		weights.set(e9, 6.3);</span>
-<span class="fc" id="L70">		weights.set(e10, 5.7);</span>
-<span class="fc" id="L71">		weights.set(e11, 1.9);</span>
-<span class="fc" id="L72">		weights.set(e12, 5.5);</span>
+<span class="fc" id="L63">		WeightsDouble&lt;Integer&gt; weights = g.addEdgesWeights(&quot;weightsKey&quot;, double.class);</span>
+<span class="fc" id="L64">		weights.set(1, 4.6);</span>
+<span class="fc" id="L65">		weights.set(2, 5.2);</span>
+<span class="fc" id="L66">		weights.set(3, 6.1);</span>
+<span class="fc" id="L67">		weights.set(4, 1.5);</span>
+<span class="fc" id="L68">		weights.set(5, 1.8);</span>
+<span class="fc" id="L69">		weights.set(6, 4.1);</span>
+<span class="fc" id="L70">		weights.set(7, 7.2);</span>
+<span class="fc" id="L71">		weights.set(8, 5.4);</span>
+<span class="fc" id="L72">		weights.set(9, 6.3);</span>
+<span class="fc" id="L73">		weights.set(10, 5.7);</span>
+<span class="fc" id="L74">		weights.set(11, 1.9);</span>
+<span class="fc" id="L75">		weights.set(12, 5.5);</span>
 
 		/* Compute the minimum spanning tree of the graph */
-<span class="fc" id="L75">		IWeightFunction w = weights;</span>
-<span class="fc" id="L76">		MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();</span>
-<span class="fc" id="L77">		MinimumSpanningTree.IResult mst = (MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(g, w);</span>
+<span class="fc" id="L78">		WeightFunction&lt;Integer&gt; w = weights;</span>
+<span class="fc" id="L79">		MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();</span>
+<span class="fc" id="L80">		MinimumSpanningTree.Result&lt;String, Integer&gt; mst = mstAlgo.computeMinimumSpanningTree(g, w);</span>
 
-<span class="pc bnc" id="L79" title="All 2 branches missed.">		assert IntSet.of(e1, e2, e4, e5, e6, e11).equals(IntSet.of(mst.edges().toIntArray()));</span>
-<span class="fc" id="L80">		System.out.println(&quot;The minimum spanning tree of the graph has the following edges: &quot; + mst.edges());</span>
-<span class="fc" id="L81">		System.out.println(&quot;The minimum spanning tree weight is &quot; + w.weightSum(mst.edges()));</span>
-<span class="fc" id="L82">	}</span>
+<span class="pc bnc" id="L82" title="All 2 branches missed.">		assert IntSet.of(1, 2, 4, 5, 6, 11).equals(mst.edges());</span>
+<span class="fc" id="L83">		System.out.println(&quot;The minimum spanning tree of the graph has the following edges: &quot; + mst.edges());</span>
+<span class="fc" id="L84">		System.out.println(&quot;The minimum spanning tree weight is &quot; + w.weightSum(mst.edges()));</span>
+<span class="fc" id="L85">	}</span>
 
 	public static void main(String[] args) {
-<span class="fc" id="L85">		mstExample();</span>
-<span class="fc" id="L86">	}</span>
+<span class="fc" id="L88">		mstExample();</span>
+<span class="fc" id="L89">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -1529,12 +1529,12 @@ public class IndexIdMaps {
 			/* Instead of re-mapping by wrapping the weight function, return the underlying index weights container */
 <span class="fc" id="L1530">			return (IWeightFunction) idToIndexWeights((Weights&lt;K, ?&gt;) w, map);</span>
 
-<span class="pc bpc" id="L1532" title="3 of 4 branches missed.">		} else if (WeightFunction.isInteger(w) &amp;&amp; map instanceof IndexIntIdMap) {</span>
+<span class="pc bpc" id="L1532" title="1 of 4 branches missed.">		} else if (WeightFunction.isInteger(w) &amp;&amp; map instanceof IndexIntIdMap) {</span>
 			/* Unknown int weight function, return a mapped wrapper */
-<span class="nc" id="L1534">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
-<span class="nc" id="L1535">			IndexIntIdMap map0 = (IndexIntIdMap) map;</span>
-<span class="nc" id="L1536">			IWeightFunctionInt wIntMapped = idx -&gt; wInt.weightInt(map0.indexToIdInt(idx));</span>
-<span class="nc" id="L1537">			return wIntMapped;</span>
+<span class="fc" id="L1534">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
+<span class="fc" id="L1535">			IndexIntIdMap map0 = (IndexIntIdMap) map;</span>
+<span class="fc" id="L1536">			IWeightFunctionInt wIntMapped = idx -&gt; wInt.weightInt(map0.indexToIdInt(idx));</span>
+<span class="fc" id="L1537">			return wIntMapped;</span>
 
 <span class="pc bpc" id="L1539" title="1 of 4 branches missed.">		} else if (w instanceof IWeightFunction &amp;&amp; map instanceof IndexIntIdMap) {</span>
 			/* Unknown weight function, return a mapped wrapper */

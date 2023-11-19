@@ -15,81 +15,84 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.alg.Dfs;
+import java.util.List;
 import com.jgalgo.alg.Bfs;
-import com.jgalgo.graph.IntGraph;
-import it.unimi.dsi.fastutil.ints.IntList;
+import com.jgalgo.alg.Dfs;
+import com.jgalgo.graph.Graph;
 
 /**
  * This example demonstrates how to use the BFS and DFS algorithms.
  *
  * @author Barak Ugav
  */
-<span class="nc" id="L28">public class BfsDfsExample {</span>
+public class BfsDfsExample {
+
+	private BfsDfsExample() {}
 
 	/**
 	 * This example demonstrates how to use the BFS algorithm.
 	 */
 	public static void bfsExample() {
 		/* Create a graph and choose an arbitrary source vertex */
-<span class="fc" id="L35">		IntGraph g = createGraph();</span>
-<span class="fc" id="L36">		int source = g.vertices().iterator().nextInt();</span>
+<span class="fc" id="L37">		Graph&lt;String, Integer&gt; g = createGraph();</span>
+<span class="fc" id="L38">		String source = g.vertices().iterator().next();</span>
 
 		/* Iterate over the graph vertices in a breadth-first search (BFS) order */
-<span class="fc bfc" id="L39" title="All 2 branches covered.">		for (Bfs.IntIter iter = Bfs.newInstance(g, source); iter.hasNext();) {</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">		for (Bfs.Iter&lt;String, Integer&gt; iter = Bfs.newInstance(g, source); iter.hasNext();) {</span>
 			/* v is a vertex the iterator didn't visit before */
-<span class="fc" id="L41">			int v = iter.nextInt();</span>
+<span class="fc" id="L43">			String v = iter.next();</span>
 			/* e is the edge used to reach v */
 			/* In a directed graph, v is the 'target' of e */
-<span class="fc" id="L44">			int e = iter.lastEdgeInt();</span>
+<span class="fc" id="L46">			Integer e = iter.lastEdge();</span>
 			/* the layer is the distance of v from the source vertex */
-<span class="fc" id="L46">			int layer = iter.layer();</span>
-<span class="fc" id="L47">			System.out.println(&quot;BFS reached vertex &quot; + v + &quot; at layer &quot; + layer + &quot; using edge &quot; + e);</span>
-<span class="fc" id="L48">		}</span>
-<span class="fc" id="L49">	}</span>
+<span class="fc" id="L48">			int layer = iter.layer();</span>
+<span class="fc" id="L49">			System.out.println(&quot;BFS reached vertex &quot; + v + &quot; at layer &quot; + layer + &quot; using edge &quot; + e);</span>
+<span class="fc" id="L50">		}</span>
+<span class="fc" id="L51">	}</span>
 
 	/**
 	 * This example demonstrates how to use the DFS algorithm.
 	 */
 	public static void dfsExample() {
 		/* Create a graph and choose an arbitrary source vertex */
-<span class="fc" id="L56">		IntGraph g = createGraph();</span>
-<span class="fc" id="L57">		int source = g.vertices().iterator().nextInt();</span>
+<span class="fc" id="L58">		Graph&lt;String, Integer&gt; g = createGraph();</span>
+<span class="fc" id="L59">		String source = g.vertices().iterator().next();</span>
 
 		/* Iterate over the graph vertices in a depth-first search (DFS) order */
-<span class="fc bfc" id="L60" title="All 2 branches covered.">		for (Dfs.IntIter iter = Dfs.newInstance(g, source); iter.hasNext();) {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		for (Dfs.Iter&lt;String, Integer&gt; iter = Dfs.newInstance(g, source); iter.hasNext();) {</span>
 			/* v is a vertex the iterator didn't visit before */
-<span class="fc" id="L62">			int v = iter.nextInt();</span>
+<span class="fc" id="L64">			String v = iter.next();</span>
 			/* edgePath is a list of edges, forming a path from the source to v */
-<span class="fc" id="L64">			IntList edgePath = iter.edgePath();</span>
-<span class="fc" id="L65">			System.out.println(&quot;Reached vertex &quot; + v + &quot; using the edges: &quot; + edgePath);</span>
-<span class="fc" id="L66">		}</span>
-<span class="fc" id="L67">	}</span>
+<span class="fc" id="L66">			List&lt;Integer&gt; edgePath = iter.edgePath();</span>
+<span class="fc" id="L67">			System.out.println(&quot;Reached vertex &quot; + v + &quot; using the edges: &quot; + edgePath);</span>
+<span class="fc" id="L68">		}</span>
+<span class="fc" id="L69">	}</span>
 
-	private static IntGraph createGraph() {
-<span class="fc" id="L70">		IntGraph g = IntGraph.newUndirected();</span>
-<span class="fc" id="L71">		int v1 = g.addVertex();</span>
-<span class="fc" id="L72">		int v2 = g.addVertex();</span>
-<span class="fc" id="L73">		int v3 = g.addVertex();</span>
-<span class="fc" id="L74">		int v4 = g.addVertex();</span>
-<span class="fc" id="L75">		int v5 = g.addVertex();</span>
-<span class="fc" id="L76">		int v6 = g.addVertex();</span>
-<span class="fc" id="L77">		int v7 = g.addVertex();</span>
+	@SuppressWarnings(&quot;boxing&quot;)
+	private static Graph&lt;String, Integer&gt; createGraph() {
+<span class="fc" id="L73">		Graph&lt;String, Integer&gt; g = Graph.newUndirected();</span>
+<span class="fc" id="L74">		g.addVertex(&quot;Smith&quot;);</span>
+<span class="fc" id="L75">		g.addVertex(&quot;Johnson&quot;);</span>
+<span class="fc" id="L76">		g.addVertex(&quot;Williams&quot;);</span>
+<span class="fc" id="L77">		g.addVertex(&quot;Jones&quot;);</span>
+<span class="fc" id="L78">		g.addVertex(&quot;Brown&quot;);</span>
+<span class="fc" id="L79">		g.addVertex(&quot;Davis&quot;);</span>
+<span class="fc" id="L80">		g.addVertex(&quot;Miller&quot;);</span>
 
-<span class="fc" id="L79">		g.addEdge(v1, v2);</span>
-<span class="fc" id="L80">		g.addEdge(v2, v3);</span>
-<span class="fc" id="L81">		g.addEdge(v1, v3);</span>
-<span class="fc" id="L82">		g.addEdge(v7, v5);</span>
-<span class="fc" id="L83">		g.addEdge(v6, v1);</span>
-<span class="fc" id="L84">		g.addEdge(v3, v4);</span>
+<span class="fc" id="L82">		g.addEdge(&quot;Smith&quot;, &quot;Johnson&quot;, 1);</span>
+<span class="fc" id="L83">		g.addEdge(&quot;Johnson&quot;, &quot;Williams&quot;, 2);</span>
+<span class="fc" id="L84">		g.addEdge(&quot;Smith&quot;, &quot;Williams&quot;, 3);</span>
+<span class="fc" id="L85">		g.addEdge(&quot;Miller&quot;, &quot;Brown&quot;, 4);</span>
+<span class="fc" id="L86">		g.addEdge(&quot;Davis&quot;, &quot;Smith&quot;, 5);</span>
+<span class="fc" id="L87">		g.addEdge(&quot;Williams&quot;, &quot;Jones&quot;, 6);</span>
 
-<span class="fc" id="L86">		return g;</span>
+<span class="fc" id="L89">		return g;</span>
 	}
 
 	public static void main(String[] args) {
-<span class="fc" id="L90">		bfsExample();</span>
-<span class="fc" id="L91">		dfsExample();</span>
-<span class="fc" id="L92">	}</span>
+<span class="fc" id="L93">		bfsExample();</span>
+<span class="fc" id="L94">		dfsExample();</span>
+<span class="fc" id="L95">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

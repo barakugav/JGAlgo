@@ -15,9 +15,9 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import java.util.Set;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -25,59 +25,62 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-<span class="pc" id="L28">public class EdgeIterationExample {</span>
+<span class="fc" id="L28">public class EdgeIterationExample {</span>
+
+	private EdgeIterationExample() {}
 
 	/**
 	 * This example demonstrates how to iterate over the edges of a graph.
 	 */
+	@SuppressWarnings(&quot;boxing&quot;)
 	public static void edgeIterationExample() {
-<span class="fc" id="L34">		IntGraph g = IntGraph.newUndirected();</span>
-<span class="fc" id="L35">		int v1 = g.addVertex();</span>
-<span class="fc" id="L36">		int v2 = g.addVertex();</span>
-<span class="fc" id="L37">		int v3 = g.addVertex();</span>
-<span class="fc" id="L38">		int v4 = g.addVertex();</span>
-<span class="fc" id="L39">		int v5 = g.addVertex();</span>
-<span class="fc" id="L40">		int v6 = g.addVertex();</span>
-<span class="fc" id="L41">		int v7 = g.addVertex();</span>
+<span class="fc" id="L37">		Graph&lt;String, Integer&gt; g = Graph.newUndirected();</span>
+<span class="fc" id="L38">		g.addVertex(&quot;Smith&quot;);</span>
+<span class="fc" id="L39">		g.addVertex(&quot;Johnson&quot;);</span>
+<span class="fc" id="L40">		g.addVertex(&quot;Williams&quot;);</span>
+<span class="fc" id="L41">		g.addVertex(&quot;Jones&quot;);</span>
+<span class="fc" id="L42">		g.addVertex(&quot;Brown&quot;);</span>
+<span class="fc" id="L43">		g.addVertex(&quot;Davis&quot;);</span>
+<span class="fc" id="L44">		g.addVertex(&quot;Miller&quot;);</span>
 
-<span class="fc" id="L43">		int e1 = g.addEdge(v1, v2);</span>
-<span class="fc" id="L44">		int e2 = g.addEdge(v2, v3);</span>
-<span class="fc" id="L45">		int e3 = g.addEdge(v1, v3);</span>
-<span class="fc" id="L46">		int e4 = g.addEdge(v7, v5);</span>
-<span class="fc" id="L47">		int e5 = g.addEdge(v6, v1);</span>
-<span class="fc" id="L48">		int e6 = g.addEdge(v3, v4);</span>
-<span class="fc" id="L49">		int e7 = g.addEdge(v5, v4);</span>
+<span class="fc" id="L46">		g.addEdge(&quot;Smith&quot;, &quot;Johnson&quot;, 1);</span>
+<span class="fc" id="L47">		g.addEdge(&quot;Johnson&quot;, &quot;Williams&quot;, 2);</span>
+<span class="fc" id="L48">		g.addEdge(&quot;Smith&quot;, &quot;Williams&quot;, 3);</span>
+<span class="fc" id="L49">		g.addEdge(&quot;Miller&quot;, &quot;Brown&quot;, 4);</span>
+<span class="fc" id="L50">		g.addEdge(&quot;Miller&quot;, &quot;Smith&quot;, 5);</span>
+<span class="fc" id="L51">		g.addEdge(&quot;Williams&quot;, &quot;Jones&quot;, 6);</span>
+<span class="fc" id="L52">		g.addEdge(&quot;Brown&quot;, &quot;Jones&quot;, 7);</span>
 
 		/* Query the edges of some vertices */
 		/* The EdgeIter returned by outEdges is an int iterator that yield edges identifiers */
-<span class="fc" id="L53">		IntSet v1Edges = new IntOpenHashSet(g.outEdges(v1));</span>
-<span class="pc bnc" id="L54" title="All 2 branches missed.">		assert v1Edges.equals(IntSet.of(e1, e3, e5));</span>
+<span class="fc" id="L56">		Set&lt;Integer&gt; v1Edges = g.outEdges(&quot;Smith&quot;);</span>
+<span class="pc bnc" id="L57" title="All 2 branches missed.">		assert v1Edges.equals(IntSet.of(1, 3, 5));</span>
 
-<span class="fc" id="L56">		IntSet v2Edges = new IntOpenHashSet(g.outEdges(v2));</span>
-<span class="pc bnc" id="L57" title="All 2 branches missed.">		assert v2Edges.equals(IntSet.of(e1, e2));</span>
+<span class="fc" id="L59">		Set&lt;Integer&gt; v2Edges = g.outEdges(&quot;Johnson&quot;);</span>
+<span class="pc bnc" id="L60" title="All 2 branches missed.">		assert v2Edges.equals(IntSet.of(1, 2));</span>
 
-<span class="fc" id="L59">		IntSet v3Edges = new IntOpenHashSet(g.outEdges(v3));</span>
-<span class="pc bnc" id="L60" title="All 2 branches missed.">		assert v3Edges.equals(IntSet.of(e2, e3, e6));</span>
+<span class="fc" id="L62">		Set&lt;Integer&gt; v3Edges = g.outEdges(&quot;Williams&quot;);</span>
+<span class="pc bnc" id="L63" title="All 2 branches missed.">		assert v3Edges.equals(IntSet.of(2, 3, 6));</span>
 
-		/* Print the out-edges of v5 */
-<span class="fc" id="L63">		System.out.println(&quot;The edges of v5:&quot;);</span>
-<span class="fc bfc" id="L64" title="All 2 branches covered.">		for (IEdgeIter eit = g.outEdges(v5).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L65">			int e = eit.nextInt();</span>
+		/* Print the out-edges of Brown */
+<span class="fc" id="L66">		System.out.println(&quot;The edges of Brown:&quot;);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		for (EdgeIter&lt;String, Integer&gt; eit = g.outEdges(&quot;Brown&quot;).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L68">			Integer e = eit.next();</span>
 			/* EdgeIter.source() and EdgeIter.target() can be used to get the endpoints of the last returned edge */
-<span class="fc" id="L67">			int u = eit.sourceInt();</span>
-<span class="fc" id="L68">			int v = eit.targetInt();</span>
+<span class="fc" id="L70">			String u = eit.source();</span>
+<span class="fc" id="L71">			String v = eit.target();</span>
 
 			/* If the iterator was created using g.outEdges(u).iterator(), EdgeIter.source() will always be u */
 			/* If the iterator was created using g.inEdges(v).iterator(), EdgeIter.target() will always be v */
-<span class="pc bnc" id="L72" title="All 2 branches missed.">			assert u == v5;</span>
-<span class="pc bnc" id="L73" title="All 2 branches missed.">			assert IntSet.of(e4, e7).contains(e);</span>
-<span class="fc" id="L74">			System.out.println(&quot;\t&quot; + e + &quot;=(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);</span>
-<span class="fc" id="L75">		}</span>
-<span class="fc" id="L76">	}</span>
+<span class="pc bnc" id="L75" title="All 2 branches missed.">			assert u.equals(&quot;Brown&quot;);</span>
+<span class="pc bnc" id="L76" title="All 2 branches missed.">			assert Set.of(4, 7).contains(e);</span>
+<span class="fc" id="L77">			System.out.println(&quot;\t&quot; + e + &quot;=(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);</span>
+<span class="fc" id="L78">		}</span>
+<span class="fc" id="L79">	}</span>
 
 	public static void main(String[] args) {
-<span class="fc" id="L79">		edgeIterationExample();</span>
-<span class="fc" id="L80">	}</span>
+<span class="fc" id="L82">		edgeIterationExample();</span>
+<span class="fc" id="L83">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

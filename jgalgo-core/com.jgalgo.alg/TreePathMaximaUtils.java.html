@@ -188,10 +188,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		private final TreePathMaxima.IQueries qs;
 		private final IndexIntIdMap viMap;
 
-<span class="nc" id="L191">		IndexQueriesFromIntQueries(IntGraph g, TreePathMaxima.IQueries qs) {</span>
-<span class="nc" id="L192">			this.qs = Objects.requireNonNull(qs);</span>
-<span class="nc" id="L193">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L194">		}</span>
+<span class="fc" id="L191">		IndexQueriesFromIntQueries(IntGraph g, TreePathMaxima.IQueries qs) {</span>
+<span class="fc" id="L192">			this.qs = Objects.requireNonNull(qs);</span>
+<span class="fc" id="L193">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L194">		}</span>
 
 		@Override
 		public void addQuery(int u, int v) {
@@ -222,8 +222,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	private static &lt;V, E&gt; TreePathMaxima.IQueries indexQueriesFromQueries(Graph&lt;V, E&gt; g,
 			TreePathMaxima.Queries&lt;V, E&gt; queries) {
 <span class="pc bnc" id="L224" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
-<span class="pc bpc" id="L225" title="1 of 4 branches missed.">		if (g instanceof IntGraph &amp;&amp; queries instanceof TreePathMaxima.IQueries) {</span>
-<span class="nc" id="L226">			return new IndexQueriesFromIntQueries((IntGraph) g, (TreePathMaxima.IQueries) queries);</span>
+<span class="fc bfc" id="L225" title="All 4 branches covered.">		if (g instanceof IntGraph &amp;&amp; queries instanceof TreePathMaxima.IQueries) {</span>
+<span class="fc" id="L226">			return new IndexQueriesFromIntQueries((IntGraph) g, (TreePathMaxima.IQueries) queries);</span>
 		} else {
 <span class="fc" id="L228">			return new IndexQueriesFromObjQueries&lt;&gt;(g, queries);</span>
 		}

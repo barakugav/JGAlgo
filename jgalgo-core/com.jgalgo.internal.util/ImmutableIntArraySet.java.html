@@ -35,8 +35,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrays;
 <span class="fc" id="L35">	}</span>
 
 <span class="fc" id="L37">	public ImmutableIntArraySet(int[] arr, int from, int to) {</span>
-<span class="pc bpc" id="L38" title="3 of 6 branches missed.">		if (!(0 &lt;= from &amp;&amp; from &lt;= to &amp;&amp; to &lt;= arr.length))</span>
-<span class="nc" id="L39">			throw new IndexOutOfBoundsException();</span>
+<span class="fc bfc" id="L38" title="All 6 branches covered.">		if (!(0 &lt;= from &amp;&amp; from &lt;= to &amp;&amp; to &lt;= arr.length))</span>
+<span class="fc" id="L39">			throw new IndexOutOfBoundsException();</span>
 <span class="fc" id="L40">		this.arr = Objects.requireNonNull(arr);</span>
 <span class="fc" id="L41">		this.from = from;</span>
 <span class="fc" id="L42">		this.to = to;</span>
@@ -60,32 +60,32 @@ import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 	@Override
 	public int[] toArray(int[] a) {
-<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		if (a.length &gt;= size) {</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">		if (a.length &gt;= size) {</span>
 <span class="fc" id="L64">			System.arraycopy(arr, from, a, 0, size);</span>
 <span class="fc" id="L65">			return a;</span>
 		} else {
-<span class="nc" id="L67">			return toIntArray();</span>
+<span class="fc" id="L67">			return toIntArray();</span>
 		}
 	}
 
 	@Override
 	public Object[] toArray() {
-<span class="nc bnc" id="L73" title="All 2 branches missed.">		if (isEmpty())</span>
-<span class="nc" id="L74">			return ObjectArrays.EMPTY_ARRAY;</span>
-<span class="nc" id="L75">		Object[] a = new Object[size];</span>
-<span class="nc bnc" id="L76" title="All 2 branches missed.">		for (int i = from; i &lt; to; i++)</span>
-<span class="nc" id="L77">			a[i - from] = Integer.valueOf(arr[i]);</span>
-<span class="nc" id="L78">		return a;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		if (isEmpty())</span>
+<span class="fc" id="L74">			return ObjectArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L75">		Object[] a = new Object[size];</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		for (int i = from; i &lt; to; i++)</span>
+<span class="fc" id="L77">			a[i - from] = Integer.valueOf(arr[i]);</span>
+<span class="fc" id="L78">		return a;</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;T&gt; T[] toArray(T[] a) {
-<span class="nc bnc" id="L84" title="All 2 branches missed.">		if (a.length &lt; size)</span>
-<span class="nc" id="L85">			a = (T[]) Array.newInstance(a.getClass().getComponentType(), size);</span>
-<span class="nc bnc" id="L86" title="All 2 branches missed.">		for (int i = from; i &lt; to; i++)</span>
-<span class="nc" id="L87">			a[i - from] = (T) Integer.valueOf(arr[i]);</span>
-<span class="nc" id="L88">		return a;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		if (a.length &lt; size)</span>
+<span class="fc" id="L85">			a = (T[]) Array.newInstance(a.getClass().getComponentType(), size);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		for (int i = from; i &lt; to; i++)</span>
+<span class="fc" id="L87">			a[i - from] = (T) Integer.valueOf(arr[i]);</span>
+<span class="fc" id="L88">		return a;</span>
 	}
 
 	@Override
@@ -141,21 +141,21 @@ import it.unimi.dsi.fastutil.objects.ObjectArrays;
 	}
 
 	public static ImmutableIntArraySet ofBitmap(IntCollection elms, int bitmapSize) {
-<span class="pc bpc" id="L144" title="1 of 2 branches missed.">		if (elms instanceof ImmutableIntArraySet) {</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">		if (elms instanceof ImmutableIntArraySet) {</span>
 <span class="fc" id="L145">			ImmutableIntArraySet elms0 = (ImmutableIntArraySet) elms;</span>
-<span class="pc bpc" id="L146" title="3 of 4 branches missed.">			if (elms0 instanceof WithBitmap &amp;&amp; ((WithBitmap) elms0).bitmap.capacity() == bitmapSize)</span>
-<span class="nc" id="L147">				return elms0;</span>
+<span class="fc bfc" id="L146" title="All 4 branches covered.">			if (elms0 instanceof WithBitmap &amp;&amp; ((WithBitmap) elms0).bitmap.capacity() == bitmapSize)</span>
+<span class="fc" id="L147">				return elms0;</span>
 <span class="fc" id="L148">			Bitmap bitmap = new Bitmap(bitmapSize);</span>
 <span class="fc bfc" id="L149" title="All 2 branches covered.">			for (int i = elms0.from; i &lt; elms0.to; i++)</span>
 <span class="fc" id="L150">				bitmap.set(elms0.arr[i]);</span>
 <span class="fc" id="L151">			return new WithBitmap(elms0.arr, elms0.from, elms0.to, bitmap);</span>
 
 		} else {
-<span class="nc" id="L154">			int[] arr = elms.toIntArray();</span>
-<span class="nc" id="L155">			Bitmap bitmap = new Bitmap(bitmapSize);</span>
-<span class="nc bnc" id="L156" title="All 2 branches missed.">			for (int i : arr)</span>
-<span class="nc" id="L157">				bitmap.set(i);</span>
-<span class="nc" id="L158">			return new WithBitmap(arr, 0, arr.length, bitmap);</span>
+<span class="fc" id="L154">			int[] arr = elms.toIntArray();</span>
+<span class="fc" id="L155">			Bitmap bitmap = new Bitmap(bitmapSize);</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">			for (int i : arr)</span>
+<span class="fc" id="L157">				bitmap.set(i);</span>
+<span class="fc" id="L158">			return new WithBitmap(arr, 0, arr.length, bitmap);</span>
 		}
 	}
 
@@ -169,7 +169,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
 		@Override
 		public boolean contains(int key) {
-<span class="pc bpc" id="L172" title="2 of 6 branches missed.">			return 0 &lt;= key &amp;&amp; key &lt; bitmap.capacity() &amp;&amp; bitmap.get(key);</span>
+<span class="fc bfc" id="L172" title="All 6 branches covered.">			return 0 &lt;= key &amp;&amp; key &lt; bitmap.capacity() &amp;&amp; bitmap.get(key);</span>
 		}
 	}
 

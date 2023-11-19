@@ -16,8 +16,8 @@
 
 package com.jgalgo.alg;
 
-import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -29,8 +29,8 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntCollections;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 
 <span class="fc" id="L35">class MinimumSpanningTreeUtils {</span>
 
@@ -87,11 +87,11 @@ import it.unimi.dsi.fastutil.ints.IntCollections;
 
 	static class ResultImpl implements MinimumSpanningTree.IResult {
 
-		private final IntCollection edges;
+		private final IntSet edges;
 <span class="fc" id="L91">		static final MinimumSpanningTree.IResult Empty = new ResultImpl(IntArrays.EMPTY_ARRAY);</span>
 
-<span class="fc" id="L93">		ResultImpl(IntCollection edges) {</span>
-<span class="fc" id="L94">			this.edges = IntCollections.unmodifiable(Objects.requireNonNull(edges));</span>
+<span class="fc" id="L93">		ResultImpl(IntSet edges) {</span>
+<span class="fc" id="L94">			this.edges = IntSets.unmodifiable(Objects.requireNonNull(edges));</span>
 <span class="fc" id="L95">		}</span>
 
 <span class="fc" id="L97">		ResultImpl(int[] edges) {</span>
@@ -99,7 +99,7 @@ import it.unimi.dsi.fastutil.ints.IntCollections;
 <span class="fc" id="L99">		}</span>
 
 		@Override
-		public IntCollection edges() {
+		public IntSet edges() {
 <span class="fc" id="L103">			return edges;</span>
 		}
 
@@ -121,8 +121,8 @@ import it.unimi.dsi.fastutil.ints.IntCollections;
 <span class="fc" id="L121">		}</span>
 
 		@Override
-		public Collection&lt;E&gt; edges() {
-<span class="fc" id="L125">			return IndexIdMaps.indexToIdCollection(indexRes.edges(), eiMap);</span>
+		public Set&lt;E&gt; edges() {
+<span class="fc" id="L125">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
 		}
 	}
 
@@ -137,8 +137,8 @@ import it.unimi.dsi.fastutil.ints.IntCollections;
 <span class="fc" id="L137">		}</span>
 
 		@Override
-		public IntCollection edges() {
-<span class="fc" id="L141">			return IndexIdMaps.indexToIdCollection(indexRes.edges(), eiMap);</span>
+		public IntSet edges() {
+<span class="fc" id="L141">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
 		}
 	}
 

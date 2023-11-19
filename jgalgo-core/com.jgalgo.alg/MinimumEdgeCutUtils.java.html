@@ -154,108 +154,112 @@ class MinimumEdgeCutUtils {
 
 	private static IVertexBiPartition minCutFromMaxFlow(IndexGraph g, IntCollection sources, IWeightFunction capacity,
 			IFlow flow) {
-<span class="fc" id="L157">		final int n = g.vertices().size();</span>
-<span class="fc" id="L158">		Bitmap visited = new Bitmap(n);</span>
-<span class="fc" id="L159">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">		if (capacity == null)</span>
+<span class="fc" id="L158">			capacity = IWeightFunction.CardinalityWeightFunction;</span>
+<span class="fc" id="L159">		final int n = g.vertices().size();</span>
+<span class="fc" id="L160">		Bitmap visited = new Bitmap(n);</span>
+<span class="fc" id="L161">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
 
 		/* perform a BFS from source and use only non saturated edges */
-<span class="fc" id="L162">		final double eps = 0.00001;</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">		for (int source : sources) {</span>
-<span class="fc" id="L164">			visited.set(source);</span>
-<span class="fc" id="L165">			queue.enqueue(source);</span>
-<span class="fc" id="L166">		}</span>
+<span class="fc" id="L164">		final double eps = 0.00001;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">		for (int source : sources) {</span>
+<span class="fc" id="L166">			visited.set(source);</span>
+<span class="fc" id="L167">			queue.enqueue(source);</span>
+<span class="fc" id="L168">		}</span>
 
-<span class="fc bfc" id="L168" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
-<span class="fc" id="L170">				int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
+<span class="fc" id="L172">				int u = queue.dequeueInt();</span>
 
-<span class="fc bfc" id="L172" title="All 2 branches covered.">				for (IEdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {</span>
-<span class="fc" id="L173">					int e = it.nextInt();</span>
-<span class="fc" id="L174">					int v = it.targetInt();</span>
-<span class="fc bfc" id="L175" title="All 2 branches covered.">					if (visited.get(v))</span>
-<span class="fc" id="L176">						continue;</span>
-<span class="fc bfc" id="L177" title="All 2 branches covered.">					if (Math.abs(capacity.weight(e) - flow.getFlow(e)) &lt; eps)</span>
-<span class="fc" id="L178">						continue; // saturated edge</span>
-<span class="fc" id="L179">					visited.set(v);</span>
-<span class="fc" id="L180">					queue.enqueue(v);</span>
-<span class="fc" id="L181">				}</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">				for (IEdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L175">					int e = it.nextInt();</span>
+<span class="fc" id="L176">					int v = it.targetInt();</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L178">						continue;</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">					if (Math.abs(capacity.weight(e) - flow.getFlow(e)) &lt; eps)</span>
+<span class="fc" id="L180">						continue; // saturated edge</span>
+<span class="fc" id="L181">					visited.set(v);</span>
+<span class="fc" id="L182">					queue.enqueue(v);</span>
+<span class="fc" id="L183">				}</span>
 				/*
 				 * We don't have any guarantee that the graph has a twin edge for each edge, so we iterate over the
 				 * in-edges and search for edges with non zero flow which imply an existent of an out edge in the
 				 * residual network
 				 */
-<span class="fc bfc" id="L187" title="All 2 branches covered.">				for (IEdgeIter it = g.inEdges(u).iterator(); it.hasNext();) {</span>
-<span class="fc" id="L188">					int e = it.nextInt();</span>
-<span class="fc" id="L189">					int v = it.sourceInt();</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">					if (visited.get(v))</span>
-<span class="fc" id="L191">						continue;</span>
-<span class="fc bfc" id="L192" title="All 2 branches covered.">					if (flow.getFlow(e) &lt; eps)</span>
-<span class="fc" id="L193">						continue; // saturated edge</span>
-<span class="fc" id="L194">					visited.set(v);</span>
-<span class="fc" id="L195">					queue.enqueue(v);</span>
-<span class="fc" id="L196">				}</span>
-<span class="fc" id="L197">			}</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">				for (IEdgeIter it = g.inEdges(u).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L190">					int e = it.nextInt();</span>
+<span class="fc" id="L191">					int v = it.sourceInt();</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L193">						continue;</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">					if (flow.getFlow(e) &lt; eps)</span>
+<span class="fc" id="L195">						continue; // saturated edge</span>
+<span class="fc" id="L196">					visited.set(v);</span>
+<span class="fc" id="L197">					queue.enqueue(v);</span>
+<span class="fc" id="L198">				}</span>
+<span class="fc" id="L199">			}</span>
 		} else {
-<span class="fc bfc" id="L199" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
-<span class="fc" id="L200">				int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
+<span class="fc" id="L202">				int u = queue.dequeueInt();</span>
 
-<span class="fc bfc" id="L202" title="All 2 branches covered.">				for (IEdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {</span>
-<span class="fc" id="L203">					int e = it.nextInt();</span>
-<span class="fc" id="L204">					int v = it.targetInt();</span>
-<span class="fc bfc" id="L205" title="All 2 branches covered.">					if (visited.get(v))</span>
-<span class="fc" id="L206">						continue;</span>
-<span class="fc bfc" id="L207" title="All 2 branches covered.">					double directedFlow = flow.getFlow(e) * (g.edgeSource(e) == u ? +1 : -1);</span>
-<span class="fc bfc" id="L208" title="All 2 branches covered.">					if (Math.abs(capacity.weight(e) - directedFlow) &lt; eps)</span>
-<span class="fc" id="L209">						continue; // saturated edge</span>
-<span class="fc" id="L210">					visited.set(v);</span>
-<span class="fc" id="L211">					queue.enqueue(v);</span>
-<span class="fc" id="L212">				}</span>
-<span class="fc" id="L213">			}</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">				for (IEdgeIter it = g.outEdges(u).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L205">					int e = it.nextInt();</span>
+<span class="fc" id="L206">					int v = it.targetInt();</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">					if (visited.get(v))</span>
+<span class="fc" id="L208">						continue;</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">					double directedFlow = flow.getFlow(e) * (g.edgeSource(e) == u ? +1 : -1);</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">					if (Math.abs(capacity.weight(e) - directedFlow) &lt; eps)</span>
+<span class="fc" id="L211">						continue; // saturated edge</span>
+<span class="fc" id="L212">					visited.set(v);</span>
+<span class="fc" id="L213">					queue.enqueue(v);</span>
+<span class="fc" id="L214">				}</span>
+<span class="fc" id="L215">			}</span>
 		}
 
-<span class="fc" id="L216">		return new VertexBiPartitions.FromBitmap(g, visited);</span>
+<span class="fc" id="L218">		return new VertexBiPartitions.FromBitmap(g, visited);</span>
 	}
 
 	static MinimumEdgeCutST buildFromMaxFlow(MaximumFlow maxFlowAlg) {
-<span class="fc" id="L220">		return new AbstractImplST() {</span>
+<span class="fc" id="L222">		return new AbstractImplST() {</span>
 
 			@Override
 			public IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
-<span class="fc" id="L224">				return computeMinimumCutUsingMaxFlow(g, w, source, sink, maxFlowAlg);</span>
+<span class="fc" id="L226">				return computeMinimumCutUsingMaxFlow(g, w, source, sink, maxFlowAlg);</span>
 			}
 
 			@Override
 			public IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, IntCollection sources,
 					IntCollection sinks) {
-<span class="fc" id="L230">				return computeMinimumCutUsingMaxFlow(g, w, sources, sinks, maxFlowAlg);</span>
+<span class="fc" id="L232">				return computeMinimumCutUsingMaxFlow(g, w, sources, sinks, maxFlowAlg);</span>
 			}
 
 		};
 	}
 
 	static MinimumEdgeCutGlobal globalMinCutFromStMinCut(MinimumEdgeCutST stMinCut) {
-<span class="fc" id="L237">		return new AbstractImplGlobal() {</span>
+<span class="fc" id="L239">		return new AbstractImplGlobal() {</span>
 			@Override
 			IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L240">				final int n = g.vertices().size();</span>
-<span class="pc bpc" id="L241" title="1 of 2 branches missed.">				if (n &lt; 2)</span>
-<span class="nc" id="L242">					throw new IllegalArgumentException(&quot;no valid cut in graphs with less than two vertices&quot;);</span>
-<span class="fc" id="L243">				w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
+<span class="fc" id="L242">				final int n = g.vertices().size();</span>
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">				if (n &lt; 2)</span>
+<span class="nc" id="L244">					throw new IllegalArgumentException(&quot;no valid cut in graphs with less than two vertices&quot;);</span>
+<span class="fc" id="L245">				w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">				if (w == null)</span>
+<span class="fc" id="L247">					w = IWeightFunction.CardinalityWeightFunction;</span>
 
-<span class="fc" id="L245">				IVertexBiPartition bestCut = null;</span>
-<span class="fc" id="L246">				double bestCutWeight = Double.MAX_VALUE;</span>
-<span class="fc" id="L247">				final int source = 0;</span>
-<span class="fc bfc" id="L248" title="All 2 branches covered.">				for (int sink = 1; sink &lt; n; sink++) {</span>
-<span class="fc" id="L249">					IVertexBiPartition cut = (IVertexBiPartition) stMinCut.computeMinimumCut(g, w,</span>
-<span class="fc" id="L250">							Integer.valueOf(source), Integer.valueOf(sink));</span>
-<span class="fc" id="L251">					double cutWeight = w.weightSum(cut.crossEdges());</span>
-<span class="fc bfc" id="L252" title="All 2 branches covered.">					if (bestCutWeight &gt; cutWeight) {</span>
-<span class="fc" id="L253">						bestCutWeight = cutWeight;</span>
-<span class="fc" id="L254">						bestCut = cut;</span>
+<span class="fc" id="L249">				IVertexBiPartition bestCut = null;</span>
+<span class="fc" id="L250">				double bestCutWeight = Double.MAX_VALUE;</span>
+<span class="fc" id="L251">				final int source = 0;</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">				for (int sink = 1; sink &lt; n; sink++) {</span>
+<span class="fc" id="L253">					IVertexBiPartition cut = (IVertexBiPartition) stMinCut.computeMinimumCut(g, w,</span>
+<span class="fc" id="L254">							Integer.valueOf(source), Integer.valueOf(sink));</span>
+<span class="fc" id="L255">					double cutWeight = w.weightSum(cut.crossEdges());</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">					if (bestCutWeight &gt; cutWeight) {</span>
+<span class="fc" id="L257">						bestCutWeight = cutWeight;</span>
+<span class="fc" id="L258">						bestCut = cut;</span>
 					}
 				}
-<span class="pc bnc" id="L257" title="All 2 branches missed.">				assert bestCut != null;</span>
-<span class="fc" id="L258">				return bestCut;</span>
+<span class="pc bnc" id="L261" title="All 2 branches missed.">				assert bestCut != null;</span>
+<span class="fc" id="L262">				return bestCut;</span>
 			}
 		};
 	}

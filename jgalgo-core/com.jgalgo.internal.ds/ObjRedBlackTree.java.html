@@ -201,8 +201,8 @@ import com.jgalgo.internal.util.Assertions;
 
 	@Override
 	public ObjReferenceableHeap.Ref &lt;K&gt; findMin() {
-<span class="pc bpc" id="L204" title="1 of 2 branches missed.">		if (root == null)</span>
-<span class="nc" id="L205">			throw new IllegalStateException();</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">		if (root == null)</span>
+<span class="fc" id="L205">			throw new IllegalStateException();</span>
 <span class="fc" id="L206">		return ObjBinarySearchTrees.findMin(root);</span>
 	}
 
