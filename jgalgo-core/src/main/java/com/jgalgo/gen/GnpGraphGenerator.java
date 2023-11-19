@@ -143,7 +143,7 @@ public class GnpGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 */
 	public void setEdges(Supplier<E> edgeSupplier) {
 		Objects.requireNonNull(edgeSupplier);
-		this.edgeBuilder = (u, v) -> edgeSupplier.get();
+		setEdges((u, v) -> edgeSupplier.get());
 	}
 
 	/**

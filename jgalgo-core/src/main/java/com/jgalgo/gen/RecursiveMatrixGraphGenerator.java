@@ -231,15 +231,13 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 	public GraphBuilder<V, E> generateIntoBuilder() {
 		if (vertices == null)
 			throw new IllegalStateException("Vertices not set");
-		if (m == -1)
-			throw new IllegalStateException("Edges not set");
+		if (edgeBuilder == null)
+			throw new IllegalStateException("Edge supplier not set");
 		assert m >= 0;
 		final int n = vertices.size();
 		if (m > 0.75 * n * (n - 1))
 			throw new IllegalArgumentException(
 					"too many edges for random sampling (max=" + (int) (0.75 * n * (n - 1)) + ")");
-		if (edgeBuilder == null)
-			throw new IllegalStateException("Edge supplier not set");
 
 		double a, b, c, d;
 		if (abcdDefault) {
@@ -263,7 +261,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 		if (!directed && b != c)
 			throw new IllegalArgumentException("b and c must be equal for undirected graphs");
 		assert a >= 0 && b >= 0 && c >= 0 && d >= 0;
-		assert a + b + c + d == 1;
+		assert Math.abs(a + b + c + d - 1) <= 1e-6;
 		final double p1 = a;
 		final double p2 = a + b;
 		final double p3 = a + b + c;
@@ -283,11 +281,10 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 					v += 1 << (s - 1);
 				} else if (p < p3) {
 					u += 1 << (s - 1);
-				} else if (p < p4) {
+				} else {
+					assert p < p4;
 					u += 1 << (s - 1);
 					v += 1 << (s - 1);
-				} else {
-					throw new AssertionError();
 				}
 			}
 			if (edges.get(u * N + v))

@@ -17,11 +17,15 @@ package com.jgalgo.gen;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.booleans.BooleanList;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class EmptyGraphGeneratorTest extends TestBase {
 
@@ -31,36 +35,72 @@ public class EmptyGraphGeneratorTest extends TestBase {
 		assertFalse(EmptyGraphGenerator.<Integer, Integer>newInstance().generate() instanceof IntGraph);
 	}
 
+	@SuppressWarnings("boxing")
 	@Test
 	public void testVertices() {
-		assertEquals(Set.of(), EmptyGraphGenerator.newInstance().generate().vertices());
-		EmptyGraphGenerator<String, Integer> g = EmptyGraphGenerator.newInstance();
-		g.setVertices(Set.of("a", "b", "c"));
-		assertEquals(Set.of("a", "b", "c"), g.generate().vertices());
+		for (boolean intGraph : BooleanList.of(false, true)) {
+			EmptyGraphGenerator<Integer, Integer> g =
+					intGraph ? EmptyGraphGenerator.newIntInstance() : EmptyGraphGenerator.newInstance();
+			assertEquals(Set.of(), g.generate().vertices());
+
+			g.setVertices(Set.of(0, 1, 2));
+			assertEquals(Set.of(0, 1, 2), g.generate().vertices());
+		}
 	}
 
 	@Test
 	public void testEdges() {
-		assertEquals(Set.of(), EmptyGraphGenerator.newInstance().generate().edges());
 		EmptyGraphGenerator<String, Integer> g = EmptyGraphGenerator.newInstance();
+		assertEquals(Set.of(), g.generate().edges());
 		g.setVertices(Set.of("a", "b", "c"));
 		assertEquals(Set.of(), g.generate().edges());
 	}
 
 	@Test
 	public void testDirected() {
-		EmptyGraphGenerator<String, Integer> g = EmptyGraphGenerator.newInstance();
+		for (boolean intGraph : BooleanList.of(false, true)) {
+			EmptyGraphGenerator<Integer, Integer> g =
+					intGraph ? EmptyGraphGenerator.newIntInstance() : EmptyGraphGenerator.newInstance();
 
-		/* check default */
-		assertFalse(g.generate().isDirected());
+			/* check default */
+			assertFalse(g.generate().isDirected());
 
-		/* check directed */
-		g.setDirected(true);
-		assertTrue(g.generate().isDirected());
+			/* check directed */
+			g.setDirected(true);
+			assertTrue(g.generate().isDirected());
 
-		/* check undirected */
-		g.setDirected(false);
-		assertFalse(g.generate().isDirected());
+			/* check undirected */
+			g.setDirected(false);
+			assertFalse(g.generate().isDirected());
+		}
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void testMutability() {
+		for (boolean intGraph : BooleanList.of(false, true)) {
+			EmptyGraphGenerator<Integer, Integer> g =
+					intGraph ? EmptyGraphGenerator.newIntInstance() : EmptyGraphGenerator.newInstance();
+			g.setVertices(IntList.of(1, 9, 3, 4, 5));
+
+			Graph<Integer, Integer> gImmutable = g.generate();
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertex(50));
+
+			Graph<Integer, Integer> gMutable = g.generateMutable();
+			gMutable.addVertex(50);
+			assertTrue(gMutable.vertices().contains(50));
+		}
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void testEmptyGraphOneLine() {
+		assertEquals(Set.of(), EmptyGraphGenerator.emptyGraph(Set.of()).vertices());
+		assertEquals(Set.of(), EmptyGraphGenerator.emptyGraph(Set.of()).edges());
+		assertEquals(Set.of("a", "b", "c"), EmptyGraphGenerator.emptyGraph(Set.of("a", "b", "c")).vertices());
+		assertEquals(Set.of(0, 1, 2), EmptyGraphGenerator.emptyGraph(Set.of(0, 1, 2)).vertices());
+		assertEquals(Set.of(), EmptyGraphGenerator.emptyGraph(Set.of("a", "b", "c")).edges());
+		assertEquals(Set.of(), EmptyGraphGenerator.emptyGraph(Set.of(0, 1, 2)).edges());
 	}
 
 }

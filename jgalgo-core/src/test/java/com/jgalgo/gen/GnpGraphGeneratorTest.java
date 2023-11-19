@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.booleans.BooleanList;
 
 public class GnpGraphGeneratorTest extends TestBase {
 
@@ -32,8 +33,12 @@ public class GnpGraphGeneratorTest extends TestBase {
 	public void testVertices() {
 		GnpGraphGenerator<String, Integer> g = GnpGraphGenerator.newInstance();
 		g.setSeed(0xf36cd36da8801a6cL);
-		g.setVertices(Set.of("a", "b", "c"));
 		g.setEdges(new AtomicInteger()::getAndIncrement);
+
+		/* vertices were not set yet */
+		assertThrows(IllegalStateException.class, () -> g.generate());
+
+		g.setVertices(Set.of("a", "b", "c"));
 		assertEquals(Set.of("a", "b", "c"), g.generate().vertices());
 		assertEquals(Set.of("a", "b", "c"), g.generate().vertices());
 
@@ -43,63 +48,118 @@ public class GnpGraphGeneratorTest extends TestBase {
 		assertEquals(Set.of("0", "1", "2", "3"), g.generate().vertices());
 	}
 
+	@SuppressWarnings("boxing")
+	@Test
+	public void testVerticesIntGraph() {
+		GnpGraphGenerator<Integer, Integer> g = GnpGraphGenerator.newIntInstance();
+		g.setSeed(0x430f4b24893b9f43L);
+		g.setEdges(new AtomicInteger()::getAndIncrement);
+
+		/* vertices were not set yet */
+		assertThrows(IllegalStateException.class, () -> g.generate());
+
+		g.setVertices(Set.of(17, 86, 5));
+		assertEquals(Set.of(17, 86, 5), g.generate().vertices());
+		assertEquals(Set.of(17, 86, 5), g.generate().vertices());
+
+		AtomicInteger vertexId = new AtomicInteger();
+		g.setVertices(4, () -> vertexId.getAndIncrement());
+		assertEquals(Set.of(0, 1, 2, 3), g.generate().vertices());
+		assertEquals(Set.of(0, 1, 2, 3), g.generate().vertices());
+	}
+
 	@Test
 	public void testEdges() {
-		GnpGraphGenerator<Integer, Integer> g = GnpGraphGenerator.newInstance();
-		g.setSeed(0x2157279ef75b0caaL);
-		g.setVertices(Range.of(10));
-		g.setEdges(new AtomicInteger()::getAndIncrement);
-		Graph<Integer, Integer> g1 = g.generate();
-		assertEquals(Range.of(g1.edges().size()), g1.edges());
+		for (boolean intGraph : BooleanList.of(false, true)) {
+			GnpGraphGenerator<Integer, Integer> g =
+					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
+			g.setSeed(0x2157279ef75b0caaL);
+			g.setVertices(Range.of(10));
+
+			/* edges were not set yet */
+			assertThrows(IllegalStateException.class, () -> g.generate());
+
+			g.setEdges(new AtomicInteger()::getAndIncrement);
+			Graph<Integer, Integer> g1 = g.generate();
+			assertEquals(Range.of(g1.edges().size()), g1.edges());
+		}
 	}
 
 	@Test
 	public void testDirected() {
-		GnpGraphGenerator<Integer, Integer> g = GnpGraphGenerator.newInstance();
-		g.setSeed(0x2d3d96ffc9c5d464L);
-		g.setVertices(10, new AtomicInteger()::getAndIncrement);
-		g.setEdges(new AtomicInteger()::getAndIncrement);
+		for (boolean intGraph : BooleanList.of(false, true)) {
+			GnpGraphGenerator<Integer, Integer> g =
+					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
+			g.setSeed(0x2d3d96ffc9c5d464L);
+			g.setVertices(10, new AtomicInteger()::getAndIncrement);
+			g.setEdges(new AtomicInteger()::getAndIncrement);
 
-		/* check default */
-		assertFalse(g.generate().isDirected());
+			/* check default */
+			assertFalse(g.generate().isDirected());
 
-		/* check directed */
-		g.setDirected(true);
-		assertTrue(g.generate().isDirected());
+			/* check directed */
+			g.setDirected(true);
+			assertTrue(g.generate().isDirected());
 
-		/* check undirected */
-		g.setDirected(false);
-		assertFalse(g.generate().isDirected());
+			/* check undirected */
+			g.setDirected(false);
+			assertFalse(g.generate().isDirected());
+		}
 	}
 
 	@Test
 	public void testEdgeProbabilities() {
-		GnpGraphGenerator<Integer, Integer> g = GnpGraphGenerator.newInstance();
-		assertThrows(IllegalArgumentException.class, () -> g.setEdgeProbability(1.1));
-		assertThrows(IllegalArgumentException.class, () -> g.setEdgeProbability(-0.1));
-		g.setEdgeProbability(0.5);
+		for (boolean intGraph : BooleanList.of(false, true)) {
+			GnpGraphGenerator<Integer, Integer> g =
+					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
+			assertThrows(IllegalArgumentException.class, () -> g.setEdgeProbability(1.1));
+			assertThrows(IllegalArgumentException.class, () -> g.setEdgeProbability(-0.1));
+			g.setEdgeProbability(0.5);
+		}
 	}
 
 	@Test
 	public void testSelfEdges() {
-		GnpGraphGenerator<Integer, Integer> g = GnpGraphGenerator.newIntInstance();
-		g.setVertices(12, new AtomicInteger()::getAndIncrement);
-		g.setEdges(new AtomicInteger()::getAndIncrement);
-		g.setEdgeProbability(0.98);
+		for (boolean intGraph : BooleanList.of(false, true)) {
+			GnpGraphGenerator<Integer, Integer> g =
+					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
+			g.setVertices(12, new AtomicInteger()::getAndIncrement);
+			g.setEdges(new AtomicInteger()::getAndIncrement);
+			g.setEdgeProbability(0.98);
 
-		/* check default */
-		Graph<Integer, Integer> g1 = g.generate();
-		assertFalse(g1.edges().stream().anyMatch(e -> g1.edgeSource(e).equals(g1.edgeTarget(e))));
+			/* check default */
+			Graph<Integer, Integer> g1 = g.generate();
+			assertFalse(g1.edges().stream().anyMatch(e -> g1.edgeSource(e).equals(g1.edgeTarget(e))));
 
-		/* check self-edges enabled */
-		g.setSelfEdges(true);
-		Graph<Integer, Integer> g2 = g.generate();
-		assertTrue(g2.edges().stream().anyMatch(e -> g2.edgeSource(e).equals(g2.edgeTarget(e))));
+			/* check self-edges enabled */
+			g.setSelfEdges(true);
+			Graph<Integer, Integer> g2 = g.generate();
+			assertTrue(g2.edges().stream().anyMatch(e -> g2.edgeSource(e).equals(g2.edgeTarget(e))));
 
-		/* check self-edges disabled */
-		g.setSelfEdges(false);
-		Graph<Integer, Integer> g3 = g.generate();
-		assertFalse(g3.edges().stream().anyMatch(e -> g3.edgeSource(e).equals(g3.edgeTarget(e))));
+			/* check self-edges disabled */
+			g.setSelfEdges(false);
+			Graph<Integer, Integer> g3 = g.generate();
+			assertFalse(g3.edges().stream().anyMatch(e -> g3.edgeSource(e).equals(g3.edgeTarget(e))));
+		}
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void testMutability() {
+		for (boolean intGraph : BooleanList.of(false, true)) {
+			GnpGraphGenerator<Integer, Integer> g =
+					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
+			g.setVertices(12, new AtomicInteger()::getAndIncrement);
+			g.setEdges(new AtomicInteger()::getAndIncrement);
+			g.setEdgeProbability(0.98);
+
+			Graph<Integer, Integer> gImmutable = g.generate();
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertex(50));
+
+			Graph<Integer, Integer> gMutable = g.generateMutable();
+			gMutable.addVertex(50);
+			assertTrue(gMutable.vertices().contains(50));
+		}
 	}
 
 }
