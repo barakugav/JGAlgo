@@ -33,49 +33,55 @@
   </Match>
   <Match>
     <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
-    <Class name="com.jgalgo.alg.HeapBinomial" />
+    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*HeapBinomial" />
     <Method name="refsSet" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
-    <Class name="com.jgalgo.alg.HeapFibonacci" />
+    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*FibonacciHeap" />
     <Method name="refsSet" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- The return value is a view of the heap, and the user SHOULD modify the heap through it -->
-    <Class name="com.jgalgo.alg.HeapPairing" />
+    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*PairingHeap" />
     <Method name="refsSet" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- The return value is a view of the tree, and the user SHOULD modify the tree through it -->
-    <Class name="com.jgalgo.alg.RedBlackTree" />
+    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*RedBlackTree" />
     <Method name="refsSet" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- The return value is a view of the tree, and the user SHOULD modify the tree through it -->
-    <Class name="com.jgalgo.alg.SplayTree" />
+    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*SplayTree" />
     <Method name="refsSet" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- The return value is reference to the minimum root node, and its desire to expose it -->
-    <Class name="com.jgalgo.alg.HeapFibonacci" />
+    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*FibonacciHeap" />
     <Method name="findMin" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
     <!-- The return value is reference to the root node, and its desire to expose it -->
-    <Class name="com.jgalgo.alg.HeapPairing" />
+    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*PairingHeap" />
     <Method name="findMin" />
     <Bug pattern="EI_EXPOSE_REP" />
   </Match>
   <Match>
+    <!-- The return value is reference to the extracted node, and its desire to expose it -->
+    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*PairingHeap" />
+    <Method name="extractMin" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
     <!-- the provided reference is already internal object -->
-    <Class name="com.jgalgo.alg.HeapPairing" />
+    <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*PairingHeap" />
     <Method name="remove" />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
@@ -152,7 +158,7 @@
   <Match>
     <!-- NoSuchElementException will be thrown by Assertions.Iters.hasNext(this); -->
     <Or>
-      <Class name="com.jgalgo.internal.ds.BinarySearchTrees$BSTIterator" />
+      <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*BinarySearchTrees\$BSTIterator" />
       <Class name="com.jgalgo.internal.ds.HeapBinary$It" />
       <Class name="com.jgalgo.alg.MatchingWeightedGabow1990Abstract$Blossom$1$1" />
       <Class name="com.jgalgo.alg.MatchingWeightedGabow1990Abstract$Worker$1" />

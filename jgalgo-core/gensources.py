@@ -40,7 +40,7 @@ def find_eclipse():
     return None
 
 
-def format_sourcefiles(filenames):
+def format_source_files(filenames):
     logging.info("Formatting generated files...")
     ECLIPSE_PATH = find_eclipse()
     if ECLIPSE_PATH is None:
@@ -49,22 +49,30 @@ def format_sourcefiles(filenames):
     ECLIPSE_FORMATTER_CONFIG_FILE = os.path.abspath(
         os.path.join(TOP_DIR, "..", "ect", "eclipse-java-style.xml")
     )
-    subprocess.check_call(
-        [
-            ECLIPSE_PATH,
-            "-data",
-            TOP_DIR,
-            "-nosplash",
-            "-application",
-            "org.eclipse.jdt.core.JavaCodeFormatter",
-            "-verbose",
-            "-config",
-            os.path.join(ECLIPSE_FORMATTER_CONFIG_FILE, "org.eclipse.jdt.core.prefs"),
-            *filenames,
-        ],
-        cwd=TOP_DIR,
-        shell=True,
-    )
+
+    # eclipse has a command line limit
+    def chunker(seq, size):
+        return (seq[pos : pos + size] for pos in range(0, len(seq), size))
+
+    for filenames_chunk in chunker(filenames, 50):
+        subprocess.check_call(
+            [
+                ECLIPSE_PATH,
+                "-data",
+                TOP_DIR,
+                "-nosplash",
+                "-application",
+                "org.eclipse.jdt.core.JavaCodeFormatter",
+                "-verbose",
+                "-config",
+                os.path.join(
+                    ECLIPSE_FORMATTER_CONFIG_FILE, "org.eclipse.jdt.core.prefs"
+                ),
+                *filenames_chunk,
+            ],
+            cwd=TOP_DIR,
+            shell=True,
+        )
 
 
 def generate_sourcefile(input_filename, output_filename, constants, functions):
@@ -411,175 +419,151 @@ def get_constants_and_functions(type):
     return constants, functions
 
 
-def weights_filename(type):
-    return os.path.join(PACKAGE_DIR, "graph", "Weights" + type + ".java")
+TEMPLATES = []
 
 
-def iweights_filename(type):
-    return os.path.join(PACKAGE_DIR, "graph", "IWeights" + type + ".java")
+def register_template(template, types, config_func, file_name_func, flavor=None):
+    TEMPLATES.append(
+        {
+            "template": template + ".java.template",
+            "types": types,
+            "config_func": config_func,
+            "file_name_func": file_name_func,
+            "flavor": flavor,
+        }
+    )
 
 
-def weights_impl_filename(type):
-    return os.path.join(PACKAGE_DIR, "graph", "WeightsImpl" + type + ".java")
+def generate_template_sources(template_entry):
+    generated_files = []
+    for types in template_entry["types"]:
+        if template_entry["flavor"] is None:
+            if type(types) is tuple:
+                assert len(types) == 2
+                constants, functions = get_constants_and_functions_key_value(*types)
+            else:
+                constants, functions = get_constants_and_functions(types)
+        elif template_entry["flavor"] == "key":
+            constants, functions = get_constants_and_functions_key(types)
+        elif template_entry["flavor"] == "key_value":
+            constants, functions = get_constants_and_functions_key_value(*types)
+        elif template_entry["flavor"] == "value":
+            constants, functions = get_constants_and_functions_value(types)
+        elif template_entry["flavor"] == "element":
+            constants, functions = get_constants_and_functions(types)
+        else:
+            raise Exception("Unknown flavor: " + template_entry["flavor"])
+
+        if type(types) is tuple:
+            assert len(types) == 2
+            types = list(types)
+        else:
+            types = [types]
+        template_entry["config_func"](*types, constants, functions)
+
+        filename = template_entry["file_name_func"](*types)
+        try:
+            generate_sourcefile(
+                os.path.join(TEMPLATE_DIR, template_entry["template"]),
+                filename,
+                constants,
+                functions,
+            )
+        except Exception as e:
+            raise Exception("Failed to generate " + filename) from e
+        generated_files.append(filename)
+    return generated_files
+
+
+def clean_template_sources(template_entry):
+    is_key_value = type(next(iter(template_entry["types"]))) is tuple
+    files = []
+    if is_key_value:
+        for key_type in TYPE_ALL - {"Bool"}:
+            for value_type in TYPE_ALL | {"Void"}:
+                files.append(template_entry["file_name_func"](key_type, value_type))
+    else:
+        for type_ in TYPE_ALL:
+            files.append(template_entry["file_name_func"](type_))
+    for filename in files:
+        if os.path.exists(filename):
+            logging.debug("Removing %s", filename)
+            os.remove(filename)
 
 
 def key_value_prefix(key_type, value_type):
     return key_type + value_type if value_type != "Void" else key_type
 
 
-def referenceable_heap_filename(key_type, value_type):
-    prefix = key_value_prefix(key_type, value_type)
-    return os.path.join(
-        PACKAGE_DIR, "internal", "ds", prefix + "ReferenceableHeap.java"
-    )
-
-
-def referenceable_heap_test_utils_filename(key_type, value_type):
-    prefix = key_value_prefix(key_type, value_type)
-    return os.path.join(
-        TEST_PACKAGE_DIR, "internal", "ds", prefix + "ReferenceableHeapTestUtils.java"
-    )
-
-
-def pairing_heap_filename(key_type, value_type):
-    prefix = key_value_prefix(key_type, value_type)
-    return os.path.join(PACKAGE_DIR, "internal", "ds", prefix + "PairingHeap.java")
-
-
-def pairing_heap_test_filename(key_type, value_type):
-    prefix = key_value_prefix(key_type, value_type)
-    return os.path.join(
-        TEST_PACKAGE_DIR, "internal", "ds", prefix + "PairingHeapTest.java"
-    )
-
-
-def binomial_heap_filename(key_type, value_type):
-    prefix = key_value_prefix(key_type, value_type)
-    return os.path.join(PACKAGE_DIR, "internal", "ds", prefix + "BinomialHeap.java")
-
-
-def binomial_heap_test_filename(key_type, value_type):
-    prefix = key_value_prefix(key_type, value_type)
-    return os.path.join(
-        TEST_PACKAGE_DIR, "internal", "ds", prefix + "BinomialHeapTest.java"
-    )
-
-
-def fibonacci_heap_filename(key_type, value_type):
-    prefix = key_value_prefix(key_type, value_type)
-    return os.path.join(PACKAGE_DIR, "internal", "ds", prefix + "FibonacciHeap.java")
-
-
-def fibonacci_heap_test_filename(key_type, value_type):
-    prefix = key_value_prefix(key_type, value_type)
-    return os.path.join(
-        TEST_PACKAGE_DIR, "internal", "ds", prefix + "FibonacciHeapTest.java"
-    )
-
-
-def binary_search_tree_filename(key_type, value_type):
-    prefix = key_value_prefix(key_type, value_type)
-    return os.path.join(PACKAGE_DIR, "internal", "ds", prefix + "BinarySearchTree.java")
-
-
-def binary_search_tree_test_utils_filename(key_type, value_type):
-    prefix = key_value_prefix(key_type, value_type)
-    return os.path.join(
-        TEST_PACKAGE_DIR, "internal", "ds", prefix + "BinarySearchTreeTestUtils.java"
-    )
-
-
-def binary_search_trees_filename(key_type):
-    return os.path.join(
-        PACKAGE_DIR, "internal", "ds", key_type + "BinarySearchTrees.java"
-    )
-
-
-def red_black_tree_filename(key_type, value_type):
-    prefix = key_value_prefix(key_type, value_type)
-    return os.path.join(PACKAGE_DIR, "internal", "ds", prefix + "RedBlackTree.java")
-
-
-def red_black_tree_test_filename(key_type, value_type):
-    prefix = key_value_prefix(key_type, value_type)
-    return os.path.join(
-        TEST_PACKAGE_DIR, "internal", "ds", prefix + "RedBlackTreeTest.java"
-    )
-
-
-def splay_tree_filename(key_type, value_type):
-    prefix = key_value_prefix(key_type, value_type)
-    return os.path.join(PACKAGE_DIR, "internal", "ds", prefix + "SplayTree.java")
-
-
-def splay_tree_test_filename(key_type, value_type):
-    prefix = key_value_prefix(key_type, value_type)
-    return os.path.join(
-        TEST_PACKAGE_DIR, "internal", "ds", prefix + "SplayTreeTest.java"
-    )
-
-
-def generate_weights(type):
-    constants, functions = get_constants_and_functions(type)
+def generate_weights(type, constants, functions):
     constants["IWEIGHTS"] = "IWeights" + type
     constants["WEIGHTS"] = "Weights" + type
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "Weights.java.template"),
-        weights_filename(type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "Weights",
+    TYPE_ALL,
+    generate_weights,
+    lambda type: os.path.join(PACKAGE_DIR, "graph", "Weights" + type + ".java"),
+)
 
 
-def generate_iweights(type):
-    constants, functions = get_constants_and_functions(type)
+def generate_iweights(type, constants, functions):
     constants["IWEIGHTS"] = "IWeights" + type
     constants["WEIGHTS"] = "Weights" + type
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "IWeights.java.template"),
-        iweights_filename(type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "IWeights",
+    TYPE_ALL,
+    generate_iweights,
+    lambda type: os.path.join(PACKAGE_DIR, "graph", "IWeights" + type + ".java"),
+)
 
 
-def generate_weights_impl(type):
-    constants, functions = get_constants_and_functions(type)
+def generate_weights_impl(type, constants, functions):
     constants["WEIGHTS_IMPL"] = "WeightsImpl" + type
     constants["IWEIGHTS"] = "IWeights" + type
     constants["WEIGHTS"] = "Weights" + type
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "WeightsImpl.java.template"),
-        weights_impl_filename(type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "WeightsImpl",
+    TYPE_ALL,
+    generate_weights_impl,
+    lambda type: os.path.join(PACKAGE_DIR, "graph", "WeightsImpl" + type + ".java"),
+)
 
 
-def generate_referenceable_heap(key_type, value_type):
-    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
-
+def generate_referenceable_heap(key_type, value_type, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
     constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
     constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
     constants["PAIRING_HEAP"] = prefix + "PairingHeap"
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "ReferenceableHeap.java.template"),
-        referenceable_heap_filename(key_type, value_type),
-        constants,
-        functions,
-    )
+
+REFERENCEABLE_HEAP_TYPES = [
+    ("Int", "Int"),
+    ("Int", "Void"),
+    ("Double", "Int"),
+    ("Double", "Obj"),
+    ("Obj", "Void"),
+    ("Obj", "Obj"),
+]
+register_template(
+    "ReferenceableHeap",
+    REFERENCEABLE_HEAP_TYPES,
+    generate_referenceable_heap,
+    lambda key_type, value_type: os.path.join(
+        PACKAGE_DIR,
+        "internal",
+        "ds",
+        key_value_prefix(key_type, value_type) + "ReferenceableHeap.java",
+    ),
+)
 
 
-def generate_referenceable_heap_test_utils(key_type, value_type):
-    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
-
-    prefix = key_value_prefix(key_type, value_type)
-
+def generate_referenceable_heap_test_utils(key_type, value_type, constants, functions):
     if key_type == "Obj":
         constants["PRIMITIVE_KEY_TYPE"] = "String"
         constants["KEY_TYPE_GENERIC"] = "<String>"
@@ -597,37 +581,46 @@ def generate_referenceable_heap_test_utils(key_type, value_type):
     else:
         constants["KEY_VALUE_GENERIC"] = ""
 
+    prefix = key_value_prefix(key_type, value_type)
     constants["REFERENCEABLE_HEAP_TEST_UTILS"] = prefix + "ReferenceableHeapTestUtils"
     constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
     constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "ReferenceableHeapTestUtils.java.template"),
-        referenceable_heap_test_utils_filename(key_type, value_type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "ReferenceableHeapTestUtils",
+    REFERENCEABLE_HEAP_TYPES,
+    generate_referenceable_heap_test_utils,
+    lambda key_type, value_type: os.path.join(
+        TEST_PACKAGE_DIR,
+        "internal",
+        "ds",
+        key_value_prefix(key_type, value_type) + "ReferenceableHeapTestUtils.java",
+    ),
+)
 
 
-def generate_pairing_heap(key_type, value_type):
-    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
-
+def generate_pairing_heap(key_type, value_type, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
     constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
     constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
     constants["PAIRING_HEAP"] = prefix + "PairingHeap"
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "PairingHeap.java.template"),
-        pairing_heap_filename(key_type, value_type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "PairingHeap",
+    REFERENCEABLE_HEAP_TYPES,
+    generate_pairing_heap,
+    lambda key_type, value_type: os.path.join(
+        PACKAGE_DIR,
+        "internal",
+        "ds",
+        key_value_prefix(key_type, value_type) + "PairingHeap.java",
+    ),
+)
 
 
-def generate_pairing_heap_test(key_type, value_type):
-    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
-
+def generate_pairing_heap_test(key_type, value_type, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
     constants["PAIRING_HEAP"] = prefix + "PairingHeap"
     constants["PAIRING_HEAP_TEST"] = prefix + "PairingHeapTest"
@@ -636,33 +629,41 @@ def generate_pairing_heap_test(key_type, value_type):
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "PairingHeapTest.java.template"),
-        pairing_heap_test_filename(key_type, value_type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "PairingHeapTest",
+    REFERENCEABLE_HEAP_TYPES,
+    generate_pairing_heap_test,
+    lambda key_type, value_type: os.path.join(
+        TEST_PACKAGE_DIR,
+        "internal",
+        "ds",
+        key_value_prefix(key_type, value_type) + "PairingHeapTest.java",
+    ),
+)
 
 
-def generate_binomial_heap(key_type, value_type):
-    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
-
+def generate_binomial_heap(key_type, value_type, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
     constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
     constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
     constants["BINOMIAL_HEAP"] = prefix + "BinomialHeap"
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "BinomialHeap.java.template"),
-        binomial_heap_filename(key_type, value_type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "BinomialHeap",
+    REFERENCEABLE_HEAP_TYPES,
+    generate_binomial_heap,
+    lambda key_type, value_type: os.path.join(
+        PACKAGE_DIR,
+        "internal",
+        "ds",
+        key_value_prefix(key_type, value_type) + "BinomialHeap.java",
+    ),
+)
 
 
-def generate_binomial_heap_test(key_type, value_type):
-    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
-
+def generate_binomial_heap_test(key_type, value_type, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
     constants["BINOMIAL_HEAP"] = prefix + "BinomialHeap"
     constants["BINOMIAL_HEAP_TEST"] = prefix + "BinomialHeapTest"
@@ -670,33 +671,41 @@ def generate_binomial_heap_test(key_type, value_type):
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "BinomialHeapTest.java.template"),
-        binomial_heap_test_filename(key_type, value_type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "BinomialHeapTest",
+    REFERENCEABLE_HEAP_TYPES,
+    generate_binomial_heap_test,
+    lambda key_type, value_type: os.path.join(
+        TEST_PACKAGE_DIR,
+        "internal",
+        "ds",
+        key_value_prefix(key_type, value_type) + "BinomialHeapTest.java",
+    ),
+)
 
 
-def generate_fibonacci_heap(key_type, value_type):
-    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
-
+def generate_fibonacci_heap(key_type, value_type, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
     constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
     constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
     constants["FIBONACCI_HEAP"] = prefix + "FibonacciHeap"
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "FibonacciHeap.java.template"),
-        fibonacci_heap_filename(key_type, value_type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "FibonacciHeap",
+    REFERENCEABLE_HEAP_TYPES,
+    generate_fibonacci_heap,
+    lambda key_type, value_type: os.path.join(
+        PACKAGE_DIR,
+        "internal",
+        "ds",
+        key_value_prefix(key_type, value_type) + "FibonacciHeap.java",
+    ),
+)
 
 
-def generate_fibonacci_heap_test(key_type, value_type):
-    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
-
+def generate_fibonacci_heap_test(key_type, value_type, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
     constants["FIBONACCI_HEAP"] = prefix + "FibonacciHeap"
     constants["FIBONACCI_HEAP_TEST"] = prefix + "FibonacciHeapTest"
@@ -704,36 +713,42 @@ def generate_fibonacci_heap_test(key_type, value_type):
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "FibonacciHeapTest.java.template"),
-        fibonacci_heap_test_filename(key_type, value_type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "FibonacciHeapTest",
+    REFERENCEABLE_HEAP_TYPES,
+    generate_fibonacci_heap_test,
+    lambda key_type, value_type: os.path.join(
+        TEST_PACKAGE_DIR,
+        "internal",
+        "ds",
+        key_value_prefix(key_type, value_type) + "FibonacciHeapTest.java",
+    ),
+)
 
 
-def generate_binary_search_tree(key_type, value_type):
-    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
-
+def generate_binary_search_tree(key_type, value_type, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
     constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
     constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
     constants["BINARY_SEARCH_TREE"] = prefix + "BinarySearchTree"
     constants["RED_BLACK_TREE"] = prefix + "RedBlackTree"
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "BinarySearchTree.java.template"),
-        binary_search_tree_filename(key_type, value_type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "BinarySearchTree",
+    REFERENCEABLE_HEAP_TYPES,
+    generate_binary_search_tree,
+    lambda key_type, value_type: os.path.join(
+        PACKAGE_DIR,
+        "internal",
+        "ds",
+        key_value_prefix(key_type, value_type) + "BinarySearchTree.java",
+    ),
+)
 
 
-def generate_binary_search_tree_test_utils(key_type, value_type):
-    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
-
-    prefix = key_value_prefix(key_type, value_type)
-
+def generate_binary_search_tree_test_utils(key_type, value_type, constants, functions):
     if key_type == "Obj":
         constants["PRIMITIVE_KEY_TYPE"] = "String"
         constants["KEY_TYPE_GENERIC"] = "<String>"
@@ -751,40 +766,47 @@ def generate_binary_search_tree_test_utils(key_type, value_type):
     else:
         constants["KEY_VALUE_GENERIC"] = ""
 
+    prefix = key_value_prefix(key_type, value_type)
     constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
     constants["REFERENCEABLE_HEAP_TEST_UTILS"] = prefix + "ReferenceableHeapTestUtils"
     constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
     constants["BINARY_SEARCH_TREE"] = prefix + "BinarySearchTree"
     constants["BINARY_SEARCH_TREE_TEST_UTILS"] = prefix + "BinarySearchTreeTestUtils"
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "BinarySearchTreeTestUtils.java.template"),
-        binary_search_tree_test_utils_filename(key_type, value_type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "BinarySearchTreeTestUtils",
+    REFERENCEABLE_HEAP_TYPES,
+    generate_binary_search_tree_test_utils,
+    lambda key_type, value_type: os.path.join(
+        TEST_PACKAGE_DIR,
+        "internal",
+        "ds",
+        key_value_prefix(key_type, value_type) + "BinarySearchTreeTestUtils.java",
+    ),
+)
 
 
-def generate_binary_search_trees(key_type):
-    constants, functions = get_constants_and_functions_key(key_type)
-
+def generate_binary_search_trees(key_type, constants, functions):
     constants["BINARY_SEARCH_TREES"] = key_type + "BinarySearchTrees"
     if key_type == "Obj":
         constants["KEY_GENERIC_LIST_START"] = "K, "
     else:
         constants["KEY_GENERIC_LIST_START"] = ""
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "BinarySearchTrees.java.template"),
-        binary_search_trees_filename(key_type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "BinarySearchTrees",
+    ["Int", "Double", "Obj"],
+    generate_binary_search_trees,
+    lambda key_type: os.path.join(
+        PACKAGE_DIR, "internal", "ds", key_type + "BinarySearchTrees.java"
+    ),
+    flavor="key",
+)
 
 
-def generate_red_black_tree(key_type, value_type):
-    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
-
+def generate_red_black_tree(key_type, value_type, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
     constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
     constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
@@ -796,17 +818,21 @@ def generate_red_black_tree(key_type, value_type):
     else:
         constants["KEY_GENERIC_LIST_START"] = ""
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "RedBlackTree.java.template"),
-        red_black_tree_filename(key_type, value_type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "RedBlackTree",
+    REFERENCEABLE_HEAP_TYPES,
+    generate_red_black_tree,
+    lambda key_type, value_type: os.path.join(
+        PACKAGE_DIR,
+        "internal",
+        "ds",
+        key_value_prefix(key_type, value_type) + "RedBlackTree.java",
+    ),
+)
 
 
-def generate_red_black_tree_test(key_type, value_type):
-    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
-
+def generate_red_black_tree_test(key_type, value_type, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
     constants["RED_BLACK_TREE"] = prefix + "RedBlackTree"
     constants["RED_BLACK_TREE_TEST"] = prefix + "RedBlackTreeTest"
@@ -816,17 +842,21 @@ def generate_red_black_tree_test(key_type, value_type):
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "RedBlackTreeTest.java.template"),
-        red_black_tree_test_filename(key_type, value_type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "RedBlackTreeTest",
+    REFERENCEABLE_HEAP_TYPES,
+    generate_red_black_tree_test,
+    lambda key_type, value_type: os.path.join(
+        TEST_PACKAGE_DIR,
+        "internal",
+        "ds",
+        key_value_prefix(key_type, value_type) + "RedBlackTreeTest.java",
+    ),
+)
 
 
-def generate_splay_tree(key_type, value_type):
-    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
-
+def generate_splay_tree(key_type, value_type, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
     constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
     constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
@@ -838,17 +868,21 @@ def generate_splay_tree(key_type, value_type):
     else:
         constants["KEY_GENERIC_LIST_START"] = ""
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "SplayTree.java.template"),
-        splay_tree_filename(key_type, value_type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "SplayTree",
+    REFERENCEABLE_HEAP_TYPES,
+    generate_splay_tree,
+    lambda key_type, value_type: os.path.join(
+        PACKAGE_DIR,
+        "internal",
+        "ds",
+        key_value_prefix(key_type, value_type) + "SplayTree.java",
+    ),
+)
 
 
-def generate_splay_tree_test(key_type, value_type):
-    constants, functions = get_constants_and_functions_key_value(key_type, value_type)
-
+def generate_splay_tree_test(key_type, value_type, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
     constants["SPLAY_TREE"] = prefix + "SplayTree"
     constants["SPLAY_TREE_TEST"] = prefix + "SplayTreeTest"
@@ -857,12 +891,18 @@ def generate_splay_tree_test(key_type, value_type):
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
 
-    generate_sourcefile(
-        os.path.join(TEMPLATE_DIR, "SplayTreeTest.java.template"),
-        splay_tree_test_filename(key_type, value_type),
-        constants,
-        functions,
-    )
+
+register_template(
+    "SplayTreeTest",
+    REFERENCEABLE_HEAP_TYPES,
+    generate_splay_tree_test,
+    lambda key_type, value_type: os.path.join(
+        TEST_PACKAGE_DIR,
+        "internal",
+        "ds",
+        key_value_prefix(key_type, value_type) + "SplayTreeTest.java",
+    ),
+)
 
 
 def clean():
@@ -870,83 +910,8 @@ def clean():
     if os.path.exists(HASHES_FILENAME):
         os.remove(HASHES_FILENAME)
 
-    generated_filenames = []
-    for type in TYPE_ALL:
-        generated_filenames.append(weights_filename(type))
-    for type in TYPE_ALL:
-        generated_filenames.append(iweights_filename(type))
-    for type in TYPE_ALL:
-        generated_filenames.append(weights_impl_filename(type))
-    for key_type in TYPE_ALL - {"Bool"}:
-        for value_type in TYPE_ALL | {"Void"}:
-            generated_filenames.append(
-                referenceable_heap_filename(key_type, value_type)
-            )
-    for key_type in TYPE_ALL - {"Bool"}:
-        for value_type in TYPE_ALL | {"Void"}:
-            generated_filenames.append(
-                referenceable_heap_test_utils_filename(key_type, value_type)
-            )
-
-    for key_type in TYPE_ALL - {"Bool"}:
-        for value_type in TYPE_ALL | {"Void"}:
-            generated_filenames.append(pairing_heap_filename(key_type, value_type))
-    for key_type in TYPE_ALL - {"Bool"}:
-        for value_type in TYPE_ALL | {"Void"}:
-            generated_filenames.append(pairing_heap_test_filename(key_type, value_type))
-
-    for key_type in TYPE_ALL - {"Bool"}:
-        for value_type in TYPE_ALL | {"Void"}:
-            generated_filenames.append(binomial_heap_filename(key_type, value_type))
-    for key_type in TYPE_ALL - {"Bool"}:
-        for value_type in TYPE_ALL | {"Void"}:
-            generated_filenames.append(
-                binomial_heap_test_filename(key_type, value_type)
-            )
-
-    for key_type in TYPE_ALL - {"Bool"}:
-        for value_type in TYPE_ALL | {"Void"}:
-            generated_filenames.append(fibonacci_heap_filename(key_type, value_type))
-    for key_type in TYPE_ALL - {"Bool"}:
-        for value_type in TYPE_ALL | {"Void"}:
-            generated_filenames.append(
-                fibonacci_heap_test_filename(key_type, value_type)
-            )
-
-    for key_type in TYPE_ALL - {"Bool"}:
-        for value_type in TYPE_ALL | {"Void"}:
-            generated_filenames.append(
-                binary_search_tree_filename(key_type, value_type)
-            )
-    for key_type in TYPE_ALL - {"Bool"}:
-        for value_type in TYPE_ALL | {"Void"}:
-            generated_filenames.append(
-                binary_search_tree_test_utils_filename(key_type, value_type)
-            )
-    for key_type in TYPE_ALL - {"Bool"}:
-        for value_type in TYPE_ALL | {"Void"}:
-            generated_filenames.append(binary_search_trees_filename(key_type))
-
-    for key_type in TYPE_ALL - {"Bool"}:
-        for value_type in TYPE_ALL | {"Void"}:
-            generated_filenames.append(red_black_tree_filename(key_type, value_type))
-    for key_type in TYPE_ALL - {"Bool"}:
-        for value_type in TYPE_ALL | {"Void"}:
-            generated_filenames.append(
-                red_black_tree_test_filename(key_type, value_type)
-            )
-
-    for key_type in TYPE_ALL - {"Bool"}:
-        for value_type in TYPE_ALL | {"Void"}:
-            generated_filenames.append(splay_tree_filename(key_type, value_type))
-    for key_type in TYPE_ALL - {"Bool"}:
-        for value_type in TYPE_ALL | {"Void"}:
-            generated_filenames.append(splay_tree_test_filename(key_type, value_type))
-
-    for filename in generated_filenames:
-        if os.path.exists(filename):
-            logging.debug("Removing %s", filename)
-            os.remove(filename)
+    for template_entry in TEMPLATES:
+        clean_template_sources(template_entry)
 
 
 def compute_template_hash(template_filename):
@@ -982,27 +947,7 @@ def read_last_generated_templates_hashes():
 
 def write_generated_templates():
     templates = [
-        os.path.join(TEMPLATE_DIR, temp)
-        for temp in (
-            "Weights.java.template",
-            "IWeights.java.template",
-            "WeightsImpl.java.template",
-            "ReferenceableHeap.java.template",
-            "ReferenceableHeapTestUtils.java.template",
-            "BinomialHeap.java.template",
-            "BinomialHeapTest.java.template",
-            "FibonacciHeap.java.template",
-            "FibonacciHeapTest.java.template",
-            "PairingHeap.java.template",
-            "PairingHeapTest.java.template",
-            "BinarySearchTree.java.template",
-            "BinarySearchTreeTestUtils.java.template",
-            "BinarySearchTrees.java.template",
-            "RedBlackTree.java.template",
-            "RedBlackTreeTest.java.template",
-            "SplayTree.java.template",
-            "SplayTreeTest.java.template",
-        )
+        os.path.join(TEMPLATE_DIR, generator["template"]) for generator in TEMPLATES
     ]
     hashes = json.dumps({temp: compute_template_hash(temp) for temp in templates})
 
@@ -1023,227 +968,19 @@ def main():
 
     else:
         hashes = read_last_generated_templates_hashes()
-        # collect all sources to generate
-        generators = {}
+        generated_files = []
 
-        if hashes.is_template_changed("Weights.java.template"):
-            for type in TYPE_ALL:
-                gen = functools.partial(generate_weights, type)
-                generators[weights_filename(type)] = gen
+        is_template_changed = False
+        for generator in TEMPLATES:
+            if hashes.is_template_changed(generator["template"]):
+                is_template_changed = True
+                generated_files += generate_template_sources(generator)
 
-        if hashes.is_template_changed("IWeights.java.template"):
-            for type in TYPE_ALL:
-                gen = functools.partial(generate_iweights, type)
-                generators[iweights_filename(type)] = gen
-
-        if hashes.is_template_changed("WeightsImpl.java.template"):
-            for type in TYPE_ALL:
-                gen = functools.partial(generate_weights_impl, type)
-                generators[weights_impl_filename(type)] = gen
-
-        if hashes.is_template_changed("ReferenceableHeap.java.template"):
-            types = []
-            # for key_type in TYPE_ALL - {"Bool"}:
-            #     for value_type in TYPE_ALL | {"Void"}:
-            #         types.append((key_type, value_type))
-            types.append(("Int", "Int"))
-            types.append(("Int", "Void"))
-            types.append(("Double", "Int"))
-            types.append(("Double", "Obj"))
-            types.append(("Obj", "Void"))
-            types.append(("Obj", "Obj"))
-            for key_type, value_type in types:
-                gen = functools.partial(
-                    generate_referenceable_heap, key_type, value_type
-                )
-                generators[referenceable_heap_filename(key_type, value_type)] = gen
-
-        if hashes.is_template_changed("ReferenceableHeapTestUtils.java.template"):
-            types = []
-            types.append(("Int", "Int"))
-            types.append(("Int", "Void"))
-            types.append(("Double", "Int"))
-            types.append(("Double", "Obj"))
-            types.append(("Obj", "Void"))
-            types.append(("Obj", "Obj"))
-            for key_type, value_type in types:
-                gen = functools.partial(
-                    generate_referenceable_heap_test_utils, key_type, value_type
-                )
-                generators[
-                    referenceable_heap_test_utils_filename(key_type, value_type)
-                ] = gen
-
-        if hashes.is_template_changed("PairingHeap.java.template"):
-            types = []
-            types.append(("Int", "Int"))
-            types.append(("Int", "Void"))
-            types.append(("Double", "Int"))
-            types.append(("Double", "Obj"))
-            types.append(("Obj", "Void"))
-            types.append(("Obj", "Obj"))
-            for key_type, value_type in types:
-                gen = functools.partial(generate_pairing_heap, key_type, value_type)
-                generators[pairing_heap_filename(key_type, value_type)] = gen
-
-        if hashes.is_template_changed("PairingHeapTest.java.template"):
-            types = []
-            types.append(("Int", "Int"))
-            types.append(("Int", "Void"))
-            types.append(("Double", "Int"))
-            types.append(("Double", "Obj"))
-            types.append(("Obj", "Void"))
-            types.append(("Obj", "Obj"))
-            for key_type, value_type in types:
-                gen = functools.partial(
-                    generate_pairing_heap_test, key_type, value_type
-                )
-                generators[pairing_heap_test_filename(key_type, value_type)] = gen
-
-        if hashes.is_template_changed("BinomialHeap.java.template"):
-            types = []
-            types.append(("Int", "Int"))
-            types.append(("Int", "Void"))
-            types.append(("Double", "Int"))
-            types.append(("Double", "Obj"))
-            types.append(("Obj", "Void"))
-            for key_type, value_type in types:
-                gen = functools.partial(generate_binomial_heap, key_type, value_type)
-                generators[binomial_heap_filename(key_type, value_type)] = gen
-
-        if hashes.is_template_changed("BinomialHeapTest.java.template"):
-            types = []
-            types.append(("Int", "Int"))
-            types.append(("Int", "Void"))
-            types.append(("Double", "Int"))
-            types.append(("Double", "Obj"))
-            types.append(("Obj", "Void"))
-            for key_type, value_type in types:
-                gen = functools.partial(
-                    generate_binomial_heap_test, key_type, value_type
-                )
-                generators[binomial_heap_test_filename(key_type, value_type)] = gen
-
-        if hashes.is_template_changed("FibonacciHeap.java.template"):
-            types = []
-            types.append(("Int", "Int"))
-            types.append(("Int", "Void"))
-            types.append(("Double", "Int"))
-            types.append(("Double", "Obj"))
-            types.append(("Obj", "Void"))
-            for key_type, value_type in types:
-                gen = functools.partial(generate_fibonacci_heap, key_type, value_type)
-                generators[fibonacci_heap_filename(key_type, value_type)] = gen
-
-        if hashes.is_template_changed("FibonacciHeapTest.java.template"):
-            types = []
-            types.append(("Int", "Int"))
-            types.append(("Int", "Void"))
-            types.append(("Double", "Int"))
-            types.append(("Double", "Obj"))
-            types.append(("Obj", "Void"))
-            for key_type, value_type in types:
-                gen = functools.partial(
-                    generate_fibonacci_heap_test, key_type, value_type
-                )
-                generators[fibonacci_heap_test_filename(key_type, value_type)] = gen
-
-        if hashes.is_template_changed("BinarySearchTree.java.template"):
-            types = []
-            types.append(("Int", "Int"))
-            types.append(("Int", "Void"))
-            types.append(("Double", "Int"))
-            types.append(("Double", "Obj"))
-            types.append(("Obj", "Void"))
-            types.append(("Obj", "Obj"))
-            for key_type, value_type in types:
-                gen = functools.partial(
-                    generate_binary_search_tree, key_type, value_type
-                )
-                generators[binary_search_tree_filename(key_type, value_type)] = gen
-
-        if hashes.is_template_changed("BinarySearchTreeTestUtils.java.template"):
-            types = []
-            types.append(("Int", "Int"))
-            types.append(("Int", "Void"))
-            types.append(("Double", "Int"))
-            types.append(("Double", "Obj"))
-            types.append(("Obj", "Void"))
-            types.append(("Obj", "Obj"))
-            for key_type, value_type in types:
-                gen = functools.partial(
-                    generate_binary_search_tree_test_utils, key_type, value_type
-                )
-                generators[
-                    binary_search_tree_test_utils_filename(key_type, value_type)
-                ] = gen
-
-        if hashes.is_template_changed("BinarySearchTrees.java.template"):
-            types = []
-            types.append("Int")
-            types.append("Double")
-            types.append("Obj")
-            for key_type in types:
-                gen = functools.partial(generate_binary_search_trees, key_type)
-                generators[binary_search_trees_filename(key_type)] = gen
-
-        if hashes.is_template_changed("RedBlackTree.java.template"):
-            types = []
-            types.append(("Int", "Int"))
-            types.append(("Int", "Void"))
-            types.append(("Double", "Int"))
-            types.append(("Double", "Obj"))
-            types.append(("Obj", "Void"))
-            types.append(("Obj", "Obj"))
-            for key_type, value_type in types:
-                gen = functools.partial(generate_red_black_tree, key_type, value_type)
-                generators[red_black_tree_filename(key_type, value_type)] = gen
-
-        if hashes.is_template_changed("RedBlackTreeTest.java.template"):
-            types = []
-            types.append(("Int", "Int"))
-            types.append(("Int", "Void"))
-            types.append(("Double", "Int"))
-            types.append(("Double", "Obj"))
-            types.append(("Obj", "Void"))
-            types.append(("Obj", "Obj"))
-            for key_type, value_type in types:
-                gen = functools.partial(
-                    generate_red_black_tree_test, key_type, value_type
-                )
-                generators[red_black_tree_test_filename(key_type, value_type)] = gen
-
-        if hashes.is_template_changed("SplayTree.java.template"):
-            types = []
-            types.append(("Int", "Int"))
-            types.append(("Int", "Void"))
-            types.append(("Double", "Int"))
-            types.append(("Double", "Obj"))
-            types.append(("Obj", "Void"))
-            types.append(("Obj", "Obj"))
-            for key_type, value_type in types:
-                gen = functools.partial(generate_splay_tree, key_type, value_type)
-                generators[splay_tree_filename(key_type, value_type)] = gen
-
-        if hashes.is_template_changed("SplayTreeTest.java.template"):
-            types = []
-            types.append(("Int", "Int"))
-            types.append(("Int", "Void"))
-            types.append(("Double", "Int"))
-            types.append(("Double", "Obj"))
-            types.append(("Obj", "Void"))
-            types.append(("Obj", "Obj"))
-            for key_type, value_type in types:
-                gen = functools.partial(generate_splay_tree_test, key_type, value_type)
-                generators[splay_tree_test_filename(key_type, value_type)] = gen
-
-        if not generators:
+        if not is_template_changed:
             logging.info("No template changed, nothing to do.")
             return
 
-        for _filename, generator in generators.items():
-            generator()
-        # format_sourcefiles(generators.keys())
+        format_source_files(generated_files)
 
         write_generated_templates()
 
