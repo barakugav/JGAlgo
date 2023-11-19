@@ -52,9 +52,10 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 	}
 
 	/* copy constructor */
-	GraphImpl(Graph<V, E> orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
-		this(indexGraphFactory.newCopyOf(orig.indexGraph(), copyWeights), orig.indexGraphVerticesMap(),
-				orig.indexGraphEdgesMap(), null, null);
+	GraphImpl(Graph<V, E> orig, IndexGraphFactory indexGraphFactory, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
+		this(indexGraphFactory.newCopyOf(orig.indexGraph(), copyVerticesWeights, copyEdgesWeights),
+				orig.indexGraphVerticesMap(), orig.indexGraphEdgesMap(), null, null);
 	}
 
 	@Override
@@ -359,8 +360,9 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 		}
 
 		/* copy constructor */
-		Directed(Graph<V, E> orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
-			super(orig, indexGraphFactory, copyWeights);
+		Directed(Graph<V, E> orig, IndexGraphFactory indexGraphFactory, boolean copyVerticesWeights,
+				boolean copyEdgesWeights) {
+			super(orig, indexGraphFactory, copyVerticesWeights, copyEdgesWeights);
 			Assertions.Graphs.onlyDirected(orig);
 			Assertions.Graphs.onlyDirected(indexGraph);
 		}
@@ -386,8 +388,9 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 		}
 
 		/* copy constructor */
-		Undirected(Graph<V, E> orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
-			super(orig, indexGraphFactory, copyWeights);
+		Undirected(Graph<V, E> orig, IndexGraphFactory indexGraphFactory, boolean copyVerticesWeights,
+				boolean copyEdgesWeights) {
+			super(orig, indexGraphFactory, copyVerticesWeights, copyEdgesWeights);
 			Assertions.Graphs.onlyUndirected(orig);
 			Assertions.Graphs.onlyUndirected(indexGraph);
 		}
@@ -579,11 +582,11 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 		}
 
 		@Override
-		public Graph<V, E> newCopyOf(Graph<V, E> g, boolean copyWeights) {
+		public Graph<V, E> newCopyOf(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 			if (g.isDirected()) {
-				return new GraphImpl.Directed<>(g, factory, copyWeights);
+				return new GraphImpl.Directed<>(g, factory, copyVerticesWeights, copyEdgesWeights);
 			} else {
-				return new GraphImpl.Undirected<>(g, factory, copyWeights);
+				return new GraphImpl.Undirected<>(g, factory, copyVerticesWeights, copyEdgesWeights);
 			}
 		}
 

@@ -28,9 +28,9 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 class GraphBuilderImpl {
 
-	static <V, E> GraphBuilder<V, E> newFrom(Graph<V, E> g, boolean copyWeights) {
-		return g.isDirected() ? new GraphBuilderImpl.Directed<>(g, copyWeights)
-				: new GraphBuilderImpl.Undirected<>(g, copyWeights);
+	static <V, E> GraphBuilder<V, E> newFrom(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		return g.isDirected() ? new GraphBuilderImpl.Directed<>(g, copyVerticesWeights, copyEdgesWeights)
+				: new GraphBuilderImpl.Undirected<>(g, copyVerticesWeights, copyEdgesWeights);
 	}
 
 	private abstract static class Abstract<V, E> implements GraphBuilder<V, E> {
@@ -63,10 +63,10 @@ class GraphBuilderImpl {
 			eiMap = new IndexIdMapImpl<>(eIdToIndex, eIndexToId, true);
 		}
 
-		Abstract(Graph<V, E> g, boolean copyWeights) {
+		Abstract(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 			final int n = g.vertices().size();
 			final int m = g.edges().size();
-			this.ibuilder = IndexGraphBuilder.newFrom(g.indexGraph(), copyWeights);
+			this.ibuilder = IndexGraphBuilder.newFrom(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
 			vIdToIndex = new Object2IntOpenHashMap<>(n);
 			vIdToIndex.defaultReturnValue(-1);
 			vIndexToId = new ObjectArrayList<>(n);
@@ -265,8 +265,8 @@ class GraphBuilderImpl {
 			this(IndexGraphBuilder.newUndirected());
 		}
 
-		Undirected(Graph<V, E> g, boolean copyWeights) {
-			super(g, copyWeights);
+		Undirected(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+			super(g, copyVerticesWeights, copyEdgesWeights);
 			Assertions.Graphs.onlyUndirected(g);
 		}
 
@@ -298,8 +298,8 @@ class GraphBuilderImpl {
 			this(IndexGraphBuilder.newDirected());
 		}
 
-		Directed(Graph<V, E> g, boolean copyWeights) {
-			super(g, copyWeights);
+		Directed(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+			super(g, copyVerticesWeights, copyEdgesWeights);
 			Assertions.Graphs.onlyDirected(g);
 		}
 

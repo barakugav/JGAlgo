@@ -25,8 +25,9 @@ abstract class GraphArrayAbstract extends GraphBaseWithEdgeEndpointsContainer {
 		super(capabilities, expectedVerticesNum, expectedEdgesNum);
 	}
 
-	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
-		super(capabilities, g, copyWeights);
+	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
+		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
 	}
 
 	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {

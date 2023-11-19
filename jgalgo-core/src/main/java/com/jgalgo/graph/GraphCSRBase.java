@@ -35,7 +35,7 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 
 	GraphCSRBase(IndexGraphBase.Capabilities capabilities,
 			Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, BuilderProcessEdges processEdges,
-			IndexGraphBuilder.ReIndexingMap edgesReIndexing, boolean copyWeights) {
+			IndexGraphBuilder.ReIndexingMap edgesReIndexing, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(capabilities);
 		final int n = verticesNum(graphOrBuilder);
 		final int m = edgesNum(graphOrBuilder);
@@ -51,11 +51,20 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 				new WeightsImpl.IndexImmutable.Builder(vertices, false);
 		WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder =
 				new WeightsImpl.IndexImmutable.Builder(edges, true);
-		if (copyWeights) {
+		if (copyVerticesWeights) {
 			if (graphOrBuilder.contains(IndexGraph.class)) {
 				IndexGraph g = graphOrBuilder.get(IndexGraph.class).get();
 				for (String weightKey : g.getVerticesWeightsKeys())
 					verticesUserWeightsBuilder.copyAndAddWeights(weightKey, g.getVerticesIWeights(weightKey));
+			} else {
+				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();
+				for (String key : builder.verticesUserWeights.weightsKeys())
+					verticesUserWeightsBuilder.copyAndAddWeights(key, builder.verticesUserWeights.getWeights(key));
+			}
+		}
+		if (copyEdgesWeights) {
+			if (graphOrBuilder.contains(IndexGraph.class)) {
+				IndexGraph g = graphOrBuilder.get(IndexGraph.class).get();
 				if (edgesReIndexing == null) {
 					for (String weightKey : g.getEdgesWeightsKeys())
 						edgesUserWeightsBuilder.copyAndAddWeights(weightKey, g.getEdgesIWeights(weightKey));
@@ -66,8 +75,6 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 				}
 			} else {
 				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();
-				for (String key : builder.verticesUserWeights.weightsKeys())
-					verticesUserWeightsBuilder.copyAndAddWeights(key, builder.verticesUserWeights.getWeights(key));
 				if (edgesReIndexing == null) {
 					for (String key : builder.edgesUserWeights.weightsKeys())
 						edgesUserWeightsBuilder.copyAndAddWeights(key, builder.edgesUserWeights.getWeights(key));
@@ -82,7 +89,8 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 		edgesUserWeights = edgesUserWeightsBuilder.build();
 	}
 
-	GraphCSRBase(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
+	GraphCSRBase(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
 		super(capabilities);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
@@ -100,9 +108,11 @@ abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpo
 				new WeightsImpl.IndexImmutable.Builder(vertices, false);
 		WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder =
 				new WeightsImpl.IndexImmutable.Builder(edges, true);
-		if (copyWeights) {
+		if (copyVerticesWeights) {
 			for (String key : g.getVerticesWeightsKeys())
 				verticesUserWeightsBuilder.copyAndAddWeights(key, g.getVerticesIWeights(key));
+		}
+		if (copyEdgesWeights) {
 			for (String key : g.getEdgesWeightsKeys())
 				edgesUserWeightsBuilder.copyAndAddWeights(key, g.getEdgesIWeights(key));
 		}

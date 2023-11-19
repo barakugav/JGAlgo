@@ -51,7 +51,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		setDefaultImpls();
 	}
 
-	private IndexGraphBuilderImpl(IndexGraph g, boolean copyWeights) {
+	private IndexGraphBuilderImpl(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		final int n = g.vertices().size();
 		m = g.edges().size();
 
@@ -66,10 +66,12 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size());
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size());
-		if (copyWeights) {
+		if (copyVerticesWeights) {
 			for (String key : g.getVerticesWeightsKeys())
 				verticesUserWeights.addWeights(key,
 						WeightsImpl.IndexMutable.copyOf(g.getVerticesIWeights(key), vertices, false));
+		}
+		if (copyEdgesWeights) {
 			for (String key : g.getEdgesWeightsKeys())
 				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesIWeights(key), edges, true));
 		}
@@ -77,9 +79,9 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		setDefaultImpls();
 	}
 
-	static IndexGraphBuilderImpl newFrom(IndexGraph g, boolean copyWeights) {
-		return g.isDirected() ? new IndexGraphBuilderImpl.Directed(g, copyWeights)
-				: new IndexGraphBuilderImpl.Undirected(g, copyWeights);
+	static IndexGraphBuilderImpl newFrom(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		return g.isDirected() ? new IndexGraphBuilderImpl.Directed(g, copyVerticesWeights, copyEdgesWeights)
+				: new IndexGraphBuilderImpl.Undirected(g, copyVerticesWeights, copyEdgesWeights);
 	}
 
 	private void setDefaultImpls() {
@@ -358,8 +360,8 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 		Undirected() {}
 
-		Undirected(IndexGraph g, boolean copyWeights) {
-			super(g, copyWeights);
+		Undirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+			super(g, copyVerticesWeights, copyEdgesWeights);
 			Assertions.Graphs.onlyUndirected(g);
 		}
 
@@ -379,8 +381,8 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 		Directed() {}
 
-		Directed(IndexGraph g, boolean copyWeights) {
-			super(g, copyWeights);
+		Directed(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+			super(g, copyVerticesWeights, copyEdgesWeights);
 			Assertions.Graphs.onlyDirected(g);
 		}
 

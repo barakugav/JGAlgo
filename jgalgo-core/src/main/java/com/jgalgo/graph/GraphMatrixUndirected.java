@@ -52,8 +52,8 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		addInternalVerticesContainer(edgesNumContainer);
 	}
 
-	GraphMatrixUndirected(IndexGraph g, boolean copyWeights) {
-		super(Capabilities, g, copyWeights);
+	GraphMatrixUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
 		assert !g.isDirected();
 		if (g instanceof GraphMatrixUndirected) {
 			GraphMatrixUndirected g0 = (GraphMatrixUndirected) g;

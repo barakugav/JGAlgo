@@ -31,8 +31,9 @@ abstract class GraphHashmapAbstract extends GraphBaseWithEdgeEndpointsContainer 
 		super(capabilities, expectedVerticesNum, expectedEdgesNum);
 	}
 
-	GraphHashmapAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
-		super(capabilities, g, copyWeights);
+	GraphHashmapAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
+		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
 	}
 
 	GraphHashmapAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {

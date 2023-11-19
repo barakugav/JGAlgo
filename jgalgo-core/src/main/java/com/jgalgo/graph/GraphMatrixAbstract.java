@@ -35,8 +35,9 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 		addInternalVerticesContainer(edgesContainer);
 	}
 
-	GraphMatrixAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
-		super(capabilities, g, copyWeights);
+	GraphMatrixAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
+		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
 		final int n = g.vertices().size();
 
 		if (g instanceof GraphMatrixAbstract) {

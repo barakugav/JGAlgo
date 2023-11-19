@@ -479,8 +479,8 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	}
 
 	@Override
-	default IntGraph copy(boolean copyWeights) {
-		return IntGraphFactory.newFrom(this).newCopyOf(this, copyWeights);
+	default IntGraph copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		return IntGraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);
 	}
 
 	@Override
@@ -489,18 +489,18 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	}
 
 	@Override
-	default IntGraph immutableCopy(boolean copyWeights) {
+	default IntGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		IndexIntIdMap viMap = indexGraphVerticesMap();
 		IndexIntIdMap eiMap = indexGraphEdgesMap();
 		if (isDirected()) {
 			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =
-					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyWeights);
+					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);
 			IndexGraph iGraph = reIndexedGraph.graph();
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
 			return new IntGraphImpl.Directed(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
 		} else {
-			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);
+			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);
 			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap, null, null);
 		}
 	}

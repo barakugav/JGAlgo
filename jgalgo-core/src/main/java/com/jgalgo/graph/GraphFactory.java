@@ -64,7 +64,7 @@ public interface GraphFactory<V, E> {
 	 *           weights
 	 */
 	default Graph<V, E> newCopyOf(Graph<V, E> g) {
-		return newCopyOf(g, false);
+		return newCopyOf(g, false, false);
 	}
 
 	/**
@@ -75,18 +75,19 @@ public interface GraphFactory<V, E> {
 	 * vertices/edges weights. The returned Graph will always be modifiable, with no side affects on the original graph.
 	 *
 	 * <p>
-	 * Differing from {@link Graph#copy(boolean)}, the capabilities of the new graph are determined by the factory
-	 * configuration, rather than copied from the given graph. Note for example that if the factory chooses to use an
-	 * implementation that does not (have to) support self edges (if {@link #allowSelfEdges(boolean)} was not called
-	 * with {@code true}), attempting to create a copy of a graph that does contains self edges will result in an
+	 * Differing from {@link Graph#copy(boolean, boolean)}, the capabilities of the new graph are determined by the
+	 * factory configuration, rather than copied from the given graph. Note for example that if the factory chooses to
+	 * use an implementation that does not (have to) support self edges (if {@link #allowSelfEdges(boolean)} was not
+	 * called with {@code true}), attempting to create a copy of a graph that does contains self edges will result in an
 	 * exception.
 	 *
-	 * @param  g           the original graph to copy
-	 * @param  copyWeights if {@code true}, the weights of the vertices and edges will be copied to the new graph
-	 * @return             an identical copy of the given graph, with the same vertices and edges, with/without the
-	 *                     original graph weights
+	 * @param  g                   the original graph to copy
+	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied to the new graph
+	 * @param  copyEdgesWeights    if {@code true}, the weights of the edges will be copied to the new graph
+	 * @return                     an identical copy of the given graph, with the same vertices and edges, with/without
+	 *                             the original graph weights
 	 */
-	Graph<V, E> newCopyOf(Graph<V, E> g, boolean copyWeights);
+	Graph<V, E> newCopyOf(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights);
 
 	/**
 	 * Create a new graph builder with the factory parameters.

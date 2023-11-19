@@ -56,8 +56,8 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 		addInternalVerticesContainer(edgesInNumContainer);
 	}
 
-	GraphMatrixDirected(IndexGraph g, boolean copyWeights) {
-		super(Capabilities, g, copyWeights);
+	GraphMatrixDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
 		assert g.isDirected();
 		if (g instanceof GraphMatrixDirected) {
 			GraphMatrixDirected g0 = (GraphMatrixDirected) g;

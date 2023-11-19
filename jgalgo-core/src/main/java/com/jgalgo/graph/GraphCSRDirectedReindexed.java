@@ -28,8 +28,8 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 
 	private GraphCSRDirectedReindexed(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
 			BuilderProcessEdgesDirected processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
-			boolean copyWeights) {
-		super(Capabilities, graphOrBuilder, processEdges, edgesReIndexing, copyWeights);
+			boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		super(Capabilities, graphOrBuilder, processEdges, edgesReIndexing, copyVerticesWeights, copyEdgesWeights);
 		final int n = verticesNum(graphOrBuilder);
 		final int m = edgesNum(graphOrBuilder);
 
@@ -62,15 +62,17 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 	}
 
 	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraphBuilderImpl builder) {
-		return newInstance(Variant.Of2.withB(builder), true);
+		return newInstance(Variant.Of2.withB(builder), true, true);
 	}
 
-	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraph g, boolean copyWeights) {
-		return newInstance(Variant.Of2.withA(g), copyWeights);
+	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraph g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
+		return newInstance(Variant.Of2.withA(g), copyVerticesWeights, copyEdgesWeights);
 	}
 
 	private static IndexGraphBuilder.ReIndexedGraph newInstance(
-			Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, boolean copyWeights) {
+			Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
 		GraphCSRBase.BuilderProcessEdgesDirected processEdges =
 				new GraphCSRBase.BuilderProcessEdgesDirected(graphOrBuilder);
 
@@ -83,8 +85,8 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		IndexGraphBuilder.ReIndexingMap edgesReIndexing =
 				new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig);
 
-		GraphCSRDirectedReindexed g =
-				new GraphCSRDirectedReindexed(graphOrBuilder, processEdges, edgesReIndexing, copyWeights);
+		GraphCSRDirectedReindexed g = new GraphCSRDirectedReindexed(graphOrBuilder, processEdges, edgesReIndexing,
+				copyVerticesWeights, copyEdgesWeights);
 		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), Optional.of(edgesReIndexing));
 	}
 

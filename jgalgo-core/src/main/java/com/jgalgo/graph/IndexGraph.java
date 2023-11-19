@@ -390,21 +390,21 @@ public interface IndexGraph extends IntGraph {
 	}
 
 	@Override
-	default IndexGraph copy(boolean copyWeights) {
-		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyWeights);
+	default IndexGraph copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);
 	}
 
 	@Override
 	default IndexGraph immutableCopy() {
-		return immutableCopy(false);
+		return immutableCopy(false, false);
 	}
 
 	@Override
-	default IndexGraph immutableCopy(boolean copyWeights) {
+	default IndexGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		if (isDirected()) {
-			return new GraphCSRDirected(this, copyWeights);
+			return new GraphCSRDirected(this, copyVerticesWeights, copyEdgesWeights);
 		} else {
-			return new GraphCSRUndirected(this, copyWeights);
+			return new GraphCSRUndirected(this, copyVerticesWeights, copyEdgesWeights);
 		}
 	}
 

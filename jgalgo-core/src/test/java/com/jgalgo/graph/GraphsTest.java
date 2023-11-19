@@ -290,7 +290,7 @@ public class GraphsTest extends TestBase {
 					WeightsChar<Integer> edgeWeights8g1 = g1.getEdgesWeights("weights8");
 					WeightsObj<Integer, Object> edgeWeights9g1 = g1.getEdgesWeights("weights9");
 
-					Graph<Integer, Integer> g2 = g1.copy(true);
+					Graph<Integer, Integer> g2 = g1.copy(true, true);
 					WeightsByte<Integer> vertexWeights1g2 = g2.getVerticesWeights("weights1");
 					WeightsShort<Integer> vertexWeights2g2 = g2.getVerticesWeights("weights2");
 					WeightsInt<Integer> vertexWeights3g2 = g2.getVerticesWeights("weights3");
@@ -567,7 +567,7 @@ public class GraphsTest extends TestBase {
 					Graph<Integer, Integer> g1 = index ? g0.indexGraph() : g0;
 
 					addWeights(g1, rand);
-					Graph<Integer, Integer> g2 = g1.copy(true);
+					Graph<Integer, Integer> g2 = g1.copy(true, true);
 
 					assertEquals(g1.hashCode(), g2.hashCode());
 				}

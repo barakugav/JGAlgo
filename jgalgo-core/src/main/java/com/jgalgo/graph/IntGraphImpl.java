@@ -113,9 +113,10 @@ abstract class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGr
 	}
 
 	/* copy constructor */
-	IntGraphImpl(IntGraph orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
-		this(indexGraphFactory.newCopyOf(orig.indexGraph(), copyWeights), orig.indexGraphVerticesMap(),
-				orig.indexGraphEdgesMap(), null, null);
+	IntGraphImpl(IntGraph orig, IndexGraphFactory indexGraphFactory, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
+		this(indexGraphFactory.newCopyOf(orig.indexGraph(), copyVerticesWeights, copyEdgesWeights),
+				orig.indexGraphVerticesMap(), orig.indexGraphEdgesMap(), null, null);
 	}
 
 	@Override
@@ -437,8 +438,9 @@ abstract class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGr
 		}
 
 		/* copy constructor */
-		Directed(IntGraph orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
-			super(orig, indexGraphFactory, copyWeights);
+		Directed(IntGraph orig, IndexGraphFactory indexGraphFactory, boolean copyVerticesWeights,
+				boolean copyEdgesWeights) {
+			super(orig, indexGraphFactory, copyVerticesWeights, copyEdgesWeights);
 			Assertions.Graphs.onlyDirected(orig);
 			Assertions.Graphs.onlyDirected(indexGraph);
 		}
@@ -464,8 +466,9 @@ abstract class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGr
 		}
 
 		/* copy constructor */
-		Undirected(IntGraph orig, IndexGraphFactory indexGraphFactory, boolean copyWeights) {
-			super(orig, indexGraphFactory, copyWeights);
+		Undirected(IntGraph orig, IndexGraphFactory indexGraphFactory, boolean copyVerticesWeights,
+				boolean copyEdgesWeights) {
+			super(orig, indexGraphFactory, copyVerticesWeights, copyEdgesWeights);
 			Assertions.Graphs.onlyUndirected(orig);
 			Assertions.Graphs.onlyUndirected(indexGraph);
 		}
@@ -655,12 +658,12 @@ abstract class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGr
 		}
 
 		@Override
-		public IntGraph newCopyOf(Graph<Integer, Integer> g, boolean copyWeights) {
+		public IntGraph newCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 			IntGraph g0 = (IntGraph) g;
 			if (g.isDirected()) {
-				return new IntGraphImpl.Directed(g0, factory, copyWeights);
+				return new IntGraphImpl.Directed(g0, factory, copyVerticesWeights, copyEdgesWeights);
 			} else {
-				return new IntGraphImpl.Undirected(g0, factory, copyWeights);
+				return new IntGraphImpl.Undirected(g0, factory, copyVerticesWeights, copyEdgesWeights);
 			}
 		}
 

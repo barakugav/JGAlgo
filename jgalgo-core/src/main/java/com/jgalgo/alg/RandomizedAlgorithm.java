@@ -26,10 +26,9 @@ package com.jgalgo.alg;
  * than their deterministic counterparts, and can achieve same or better performance.
  *
  * <p>
- * One drawback of randomized algorithms is that there are more complicated to debug and analyze. In particular, their
- * output is not deterministic, and may vary each time the algorithm is run. The reason for this is that the algorithm
- * may rely on some random choices, which may vary each time the algorithm is run. Therefore, randomized algorithms can
- * be forced to use the same <i>seed</i> for the random number generator, in order to get the same output each time the
+ * One drawback of randomized algorithms is that they are more complicated to debug and analyze. In particular, their
+ * output is not deterministic, and may vary each time the algorithm is run. Therefore, randomized algorithms can be
+ * forced to use the same <i>seed</i> for the random number generator, in order to get the same output each time the
  * algorithm is run. The seed can be set using the {@link #setSeed(long)} method.
  *
  * <p>

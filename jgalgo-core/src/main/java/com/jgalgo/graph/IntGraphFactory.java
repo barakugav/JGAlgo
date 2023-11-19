@@ -48,7 +48,7 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	}
 
 	@Override
-	IntGraph newCopyOf(Graph<Integer, Integer> g, boolean copyWeights);
+	IntGraph newCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights, boolean copyEdgesWeights);
 
 	@Override
 	IntGraphBuilder newBuilder();

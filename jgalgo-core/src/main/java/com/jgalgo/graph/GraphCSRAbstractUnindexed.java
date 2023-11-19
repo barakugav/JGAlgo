@@ -23,15 +23,16 @@ abstract class GraphCSRAbstractUnindexed extends GraphCSRBase {
 
 	GraphCSRAbstractUnindexed(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder,
 			BuilderProcessEdges processEdges) {
-		super(capabilities, Variant.Of2.withB(builder), processEdges, null, true);
+		super(capabilities, Variant.Of2.withB(builder), processEdges, null, true, true);
 		edgesOut = processEdges.edgesOut;
 
 		for (int m = builder.edges().size(), e = 0; e < m; e++)
 			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
 	}
 
-	GraphCSRAbstractUnindexed(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
-		super(capabilities, g, copyWeights);
+	GraphCSRAbstractUnindexed(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
+		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 

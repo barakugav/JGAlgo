@@ -38,7 +38,8 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum);
 	}
 
-	GraphBaseMutable(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
+	GraphBaseMutable(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
 		super(capabilities);
 		if (isDirected()) {
 			Assertions.Graphs.onlyDirected(g);
@@ -55,10 +56,12 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size());
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size());
-		if (copyWeights) {
+		if (copyVerticesWeights) {
 			for (String key : g.getVerticesWeightsKeys())
 				verticesUserWeights.addWeights(key,
 						WeightsImpl.IndexMutable.copyOf(g.getVerticesIWeights(key), vertices, false));
+		}
+		if (copyEdgesWeights) {
 			for (String key : g.getEdgesWeightsKeys())
 				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesIWeights(key), edges, true));
 		}

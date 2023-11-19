@@ -260,7 +260,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *           vertices/edges weights.
 	 */
 	static IndexGraphBuilder newFrom(IndexGraph g) {
-		return newFrom(g, false);
+		return newFrom(g, false, false);
 	}
 
 	/**
@@ -269,13 +269,16 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * <p>
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
-	 * @param  g           a graph
-	 * @param  copyWeights if {@code true}, the weights of the vertices and edges will be copied to the new graph
-	 * @return             a builder initialized with the given graph vertices and edges, with/without the original
-	 *                     graph vertices/edges weights.
+	 * @param  g                   a graph
+	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied from the graph to the
+	 *                                 builder
+	 * @param  copyEdgesWeights    if {@code true}, the weights of the edges will be copied from the graph to the
+	 *                                 builder
+	 * @return                     a builder initialized with the given graph vertices and edges, with/without the
+	 *                             original graph vertices/edges weights.
 	 */
-	static IndexGraphBuilder newFrom(IndexGraph g, boolean copyWeights) {
-		return IndexGraphBuilderImpl.newFrom(g, copyWeights);
+	static IndexGraphBuilder newFrom(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		return IndexGraphBuilderImpl.newFrom(g, copyVerticesWeights, copyEdgesWeights);
 	}
 
 }

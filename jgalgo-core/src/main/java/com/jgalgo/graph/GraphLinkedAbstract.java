@@ -30,8 +30,9 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 		addInternalEdgesContainer(edgesContainer);
 	}
 
-	GraphLinkedAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
-		super(capabilities, g, copyWeights);
+	GraphLinkedAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
+		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
 		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyEdgeArr, newArr -> edges = newArr);
 		addInternalEdgesContainer(edgesContainer);
 		final int m = g.edges().size();

@@ -45,9 +45,9 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	}
 
 	@Override
-	public IndexGraph newCopyOf(Graph<Integer, Integer> g, boolean copyWeights) {
+	public IndexGraph newCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		setDirected(g.isDirected());
-		return mutableImpl().newCopyOf((IndexGraph) g, copyWeights);
+		return mutableImpl().newCopyOf((IndexGraph) g, copyVerticesWeights, copyEdgesWeights);
 	}
 
 	@Override
@@ -63,7 +63,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 		IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum);
 
-		IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights);
+		IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights);
 
 		IndexGraph newFromBuilder(IndexGraphBuilderImpl builder);
 
@@ -78,8 +78,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-				return new GraphArrayDirected(graph, copyWeights);
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+				return new GraphArrayDirected(graph, copyVerticesWeights, copyEdgesWeights);
 			}
 
 			@Override
@@ -94,8 +94,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-				return new GraphArrayUndirected(graph, copyWeights);
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+				return new GraphArrayUndirected(graph, copyVerticesWeights, copyEdgesWeights);
 			}
 
 			@Override
@@ -111,8 +111,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-				return new GraphLinkedDirected(graph, copyWeights);
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+				return new GraphLinkedDirected(graph, copyVerticesWeights, copyEdgesWeights);
 			}
 
 			@Override
@@ -127,8 +127,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-				return new GraphLinkedUndirected(graph, copyWeights);
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+				return new GraphLinkedUndirected(graph, copyVerticesWeights, copyEdgesWeights);
 			}
 
 			@Override
@@ -144,8 +144,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-				return new GraphHashmapDirected(graph, copyWeights);
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+				return new GraphHashmapDirected(graph, copyVerticesWeights, copyEdgesWeights);
 			}
 
 			@Override
@@ -160,8 +160,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-				return new GraphHashmapUndirected(graph, copyWeights);
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+				return new GraphHashmapUndirected(graph, copyVerticesWeights, copyEdgesWeights);
 			}
 
 			@Override
@@ -177,8 +177,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-				return new GraphMatrixDirected(graph, copyWeights);
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+				return new GraphMatrixDirected(graph, copyVerticesWeights, copyEdgesWeights);
 			}
 
 			@Override
@@ -193,8 +193,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-				return new GraphMatrixUndirected(graph, copyWeights);
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+				return new GraphMatrixUndirected(graph, copyVerticesWeights, copyEdgesWeights);
 			}
 
 			@Override
@@ -241,8 +241,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	Impl immutableImpl() {
 		Impl csrImpl = directed ? new ImplImmutable() {
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-				return new GraphCSRDirected(graph, copyWeights);
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+				return new GraphCSRDirected(graph, copyVerticesWeights, copyEdgesWeights);
 			}
 
 			@Override
@@ -254,8 +254,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 		} : new ImplImmutable() {
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-				return new GraphCSRUndirected(graph, copyWeights);
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+				return new GraphCSRUndirected(graph, copyVerticesWeights, copyEdgesWeights);
 			}
 
 			@Override

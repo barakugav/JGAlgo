@@ -30,8 +30,9 @@ abstract class GraphBaseWithEdgeEndpointsContainer extends GraphBaseMutable impl
 		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
-	GraphBaseWithEdgeEndpointsContainer(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
-		super(capabilities, g, copyWeights);
+	GraphBaseWithEdgeEndpointsContainer(IndexGraphBase.Capabilities capabilities, IndexGraph g,
+			boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
 		if (g instanceof GraphBaseWithEdgeEndpointsContainer) {
 			GraphBaseWithEdgeEndpointsContainer g0 = (GraphBaseWithEdgeEndpointsContainer) g;
 			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edges, newArr -> edgeEndpoints = newArr);

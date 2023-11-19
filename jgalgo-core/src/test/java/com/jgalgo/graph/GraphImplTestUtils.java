@@ -596,7 +596,7 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* Copy g */
-			Graph<Integer, Integer> copy = g.copy(true);
+			Graph<Integer, Integer> copy = g.copy(true, true);
 
 			/* Assert vertices and edges are the same */
 			assertEquals(g.vertices().size(), copy.vertices().size());
@@ -741,7 +741,7 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* Copy g */
-			Graph<Integer, Integer> copy = g.immutableCopy(true);
+			Graph<Integer, Integer> copy = g.immutableCopy(true, true);
 
 			/* Assert vertices and edges are the same */
 			assertEquals(g.vertices().size(), copy.vertices().size());

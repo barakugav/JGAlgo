@@ -710,7 +710,7 @@ public interface Graph<V, E> {
 	 * @return an identical copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph<V, E> copy() {
-		return copy(false);
+		return copy(false, false);
 	}
 
 	/**
@@ -726,12 +726,13 @@ public interface Graph<V, E> {
 	 * there is no guarantee that {@code g.indexGraph().equals(g.copy().indexGraph())}. Namely, when the graph is
 	 * copied, new indices may be assigned to the vertices and edges.
 	 *
-	 * @param  copyWeights if {@code true}, the weights of the vertices and edges will be copied to the new graph
-	 * @return             an identical copy of the given graph, with the same vertices and edges, with/without this
-	 *                     graph weights
+	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied to the new graph
+	 * @param  copyEdgesWeights    if {@code true}, the weights of the edges will be copied to the new graph
+	 * @return                     an identical copy of the given graph, with the same vertices and edges, with/without
+	 *                             this graph weights
 	 */
-	default Graph<V, E> copy(boolean copyWeights) {
-		return GraphFactory.newFrom(this).newCopyOf(this, copyWeights);
+	default Graph<V, E> copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		return GraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);
 	}
 
 	/**
@@ -776,22 +777,23 @@ public interface Graph<V, E> {
 	 * {@code true}, there is no guarantee that {@code g.indexGraph().equals(g.immutableCopy().indexGraph())}. Namely,
 	 * when the graph is copied, new indices may be assigned to the vertices and edges.
 	 *
-	 * @param  copyWeights if {@code true}, the weights of the vertices and edges will be copied to the new graph
-	 * @return             an immutable copy of this graph, with the same vertices and edges, with/without this graph
-	 *                     weights
+	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied to the new graph
+	 * @param  copyEdgesWeights    if {@code true}, the weights of the edges will be copied to the new graph
+	 * @return                     an immutable copy of this graph, with the same vertices and edges, with/without this
+	 *                             graph weights
 	 */
-	default Graph<V, E> immutableCopy(boolean copyWeights) {
+	default Graph<V, E> immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		IndexIdMap<V> viMap = indexGraphVerticesMap();
 		IndexIdMap<E> eiMap = indexGraphEdgesMap();
 		if (isDirected()) {
 			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =
-					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyWeights);
+					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);
 			IndexGraph iGraph = reIndexedGraph.graph();
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
 			return new GraphImpl.Directed<>(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
 		} else {
-			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);
+			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);
 			return new GraphImpl.Undirected<>(iGraph, viMap, eiMap, null, null);
 		}
 	}

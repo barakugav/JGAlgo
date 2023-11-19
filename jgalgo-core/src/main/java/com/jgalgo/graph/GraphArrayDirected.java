@@ -67,8 +67,8 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		addInternalVerticesContainer(edgesInNumContainer);
 	}
 
-	GraphArrayDirected(IndexGraph g, boolean copyWeights) {
-		super(Capabilities, g, copyWeights);
+	GraphArrayDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
 		final int n = g.vertices().size();
 
 		if (g instanceof GraphArrayDirected) {
