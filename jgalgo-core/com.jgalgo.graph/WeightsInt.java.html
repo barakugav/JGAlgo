@@ -21,7 +21,9 @@ package com.jgalgo.graph;
  *
  * @author Barak Ugav
  */
-public interface WeightsInt&lt;K &gt; extends Weights&lt;K, Integer&gt; , WeightFunctionInt&lt;K&gt; {
+public interface WeightsInt&lt;K &gt; extends Weights&lt;K, Integer&gt;
+, WeightFunctionInt&lt;K&gt;
+{
 
 	/**
 	 * Get the weight associated with the given element.
@@ -34,7 +36,7 @@ public interface WeightsInt&lt;K &gt; extends Weights&lt;K, Integer&gt; , Weight
 	@Deprecated
 	@Override
 	default Integer getAsObj(K element) {
-<span class="fc" id="L37">		return Integer.valueOf(get(element));</span>
+<span class="fc" id="L39">		return Integer.valueOf(get(element));</span>
 	}
 
 	/**
@@ -48,8 +50,8 @@ public interface WeightsInt&lt;K &gt; extends Weights&lt;K, Integer&gt; , Weight
 	@Deprecated
 	@Override
 	default void setAsObj(K element, Integer weight) {
-<span class="fc" id="L51">		set(element, weight.intValue());</span>
-<span class="fc" id="L52">	}</span>
+<span class="fc" id="L53">		set(element, weight.intValue());</span>
+<span class="fc" id="L54">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.
@@ -65,10 +67,9 @@ public interface WeightsInt&lt;K &gt; extends Weights&lt;K, Integer&gt; , Weight
 	@Deprecated
 	@Override
 	default Integer defaultWeightAsObj() {
-<span class="fc" id="L68">		return Integer.valueOf(defaultWeight());</span>
+<span class="fc" id="L70">		return Integer.valueOf(defaultWeight());</span>
 	}
 
-	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -77,9 +78,8 @@ public interface WeightsInt&lt;K &gt; extends Weights&lt;K, Integer&gt; , Weight
 	 */
 	@Override
 	default int weightInt(K element) {
-<span class="fc" id="L80">		return get(element);</span>
+<span class="fc" id="L81">		return get(element);</span>
 	}
-
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

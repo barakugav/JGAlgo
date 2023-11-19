@@ -21,7 +21,8 @@ package com.jgalgo.graph;
  *
  * @author Barak Ugav
  */
-public interface IWeightsBool  extends IWeights&lt;Boolean&gt;, WeightsBool&lt;Integer &gt;  {
+public interface IWeightsBool  extends IWeights&lt;Boolean&gt;, WeightsBool&lt;Integer &gt;
+{
 
 	/**
 	 * Get the weight associated with the given element.
@@ -34,13 +35,13 @@ public interface IWeightsBool  extends IWeights&lt;Boolean&gt;, WeightsBool&lt;I
 	@Deprecated
 	@Override
 	default boolean get(Integer element) {
-<span class="fc" id="L37">		return get(element.intValue());</span>
+<span class="fc" id="L38">		return get(element.intValue());</span>
 	}
 
 	@Deprecated
 	@Override
 	default Boolean getAsObj(int element) {
-<span class="fc" id="L43">		return Boolean.valueOf(get(element));</span>
+<span class="fc" id="L44">		return Boolean.valueOf(get(element));</span>
 	}
 
 	/**
@@ -54,28 +55,26 @@ public interface IWeightsBool  extends IWeights&lt;Boolean&gt;, WeightsBool&lt;I
 	@Deprecated
 	@Override
 	default void set(Integer element, boolean weight) {
-<span class="fc" id="L57">		set(element.intValue(), weight);</span>
-<span class="fc" id="L58">	}</span>
+<span class="fc" id="L58">		set(element.intValue(), weight);</span>
+<span class="fc" id="L59">	}</span>
 
 	@Deprecated
 	@Override
 	default void setAsObj(int element, Boolean weight) {
-<span class="fc" id="L63">		set(element, weight.booleanValue());</span>
-<span class="fc" id="L64">	}</span>
+<span class="fc" id="L64">		set(element, weight.booleanValue());</span>
+<span class="fc" id="L65">	}</span>
 
 	@Deprecated
 	@Override
 	default Boolean getAsObj(Integer element) {
-<span class="fc" id="L69">		return Boolean.valueOf(get(element.intValue()));</span>
+<span class="fc" id="L70">		return Boolean.valueOf(get(element.intValue()));</span>
 	}
 
 	@Deprecated
 	@Override
 	default void setAsObj(Integer element, Boolean weight) {
-<span class="fc" id="L75">		set(element.intValue(), weight.booleanValue());</span>
-<span class="fc" id="L76">	}</span>
-
-	
+<span class="fc" id="L76">		set(element.intValue(), weight.booleanValue());</span>
+<span class="fc" id="L77">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

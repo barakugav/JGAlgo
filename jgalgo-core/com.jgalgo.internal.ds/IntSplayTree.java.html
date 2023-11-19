@@ -1,0 +1,516 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IntSplayTree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.ds</a> &gt; <span class="el_source">IntSplayTree.java</span></div><h1>IntSplayTree.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.ds;
+
+import it.unimi.dsi.fastutil.ints.IntComparator;
+
+import java.util.Iterator;
+import com.jgalgo.internal.util.Assertions;
+
+/**
+ * Splay binary search tree.
+ *
+ * &lt;p&gt;
+ * The splay tree is a binary search tree which is not strictly balanced, in contrast to a red black tree. The splay
+ * tree has a property that recent accessed elements are closer to the root, and therefore faster to access. All
+ * operations have a time complexity of \(O(\log n)\) amortized time.
+ *
+ * &lt;p&gt;
+ * The splay tree is specifically efficient for splits and joins operations.
+ *
+ * &lt;p&gt;
+ * Based on 'Self-Adjusting Binary Search Trees' by Sleator and Tarjan (1985).
+ *
+ * @see        &lt;a href=&quot;https://en.wikipedia.org/wiki/Splay_tree&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author     Barak Ugav
+ */
+<span class="fc" id="L41">public class IntSplayTree  implements IntBinarySearchTree  {</span>
+
+	private final IntComparator  c;
+	private SplayBSTNode  root;
+<span class="fc" id="L45">	private final SplayImplWithSize  impl = new SplayImplWithSize ();</span>
+
+	/**
+	 * Constructs a new, empty splay tree, ordered according to the natural ordering of its keys.
+	 */
+	public IntSplayTree() {
+<span class="nc" id="L51">		this(null);</span>
+<span class="nc" id="L52">	}</span>
+
+	/**
+	 * Constructs a new, empty splay tree, with keys ordered according to the specified comparator.
+	 *
+	 * @param comparator the comparator that will be used to order this tree. If {@code null}, the
+	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
+	 */
+<span class="fc" id="L60">	public IntSplayTree(IntComparator  comparator) {</span>
+<span class="fc" id="L61">		this.c = comparator;</span>
+<span class="fc" id="L62">	}</span>
+
+	// @Override
+	// public int size() {
+	// return root != null ? root.size : 0;
+	// }
+
+	@Override
+	public boolean isEmpty() {
+<span class="fc bfc" id="L71" title="All 2 branches covered.">		return root == null;</span>
+	}
+
+	@Override
+	public boolean isNotEmpty() {
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		return root != null;</span>
+	}
+
+	@Override
+	public IntComparator  comparator() {
+<span class="fc" id="L81">		return c;</span>
+	}
+
+	@Override
+	public IntReferenceableHeap.Ref  extractMin() {
+<span class="fc" id="L86">		IntReferenceableHeap.Ref  min = findMin();</span>
+<span class="fc" id="L87">		remove(min);</span>
+<span class="fc" id="L88">		return min;</span>
+	}
+
+	@Override
+	public IntReferenceableHeap.Ref  extractMax() {
+<span class="fc" id="L93">		IntReferenceableHeap.Ref  max = findMax();</span>
+<span class="fc" id="L94">		remove(max);</span>
+<span class="fc" id="L95">		return max;</span>
+	}
+
+	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+	@Override
+	public Iterator&lt;IntReferenceableHeap.Ref &gt; iterator() {
+<span class="fc" id="L101">		return (Iterator) new IntBinarySearchTrees.BSTIterator &lt;&gt;(root);</span>
+	}
+
+	@Override
+	public IntReferenceableHeap.Ref  insert(int key) {
+<span class="fc" id="L106">		return insertNode(new SplayBSTNode (key));</span>
+	}
+
+	private SplayBSTNode  insertNode(SplayBSTNode  n) {
+<span class="pc bnc" id="L110" title="All 2 branches missed.">		assert n.parent == null;</span>
+<span class="pc bnc" id="L111" title="All 2 branches missed.">		assert n.left == null;</span>
+<span class="pc bnc" id="L112" title="All 2 branches missed.">		assert n.right == null;</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">		if (root == null)</span>
+<span class="fc" id="L114">			return root = n;</span>
+
+<span class="fc" id="L116">		IntBinarySearchTrees.insert(root, c, n);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">		for (SplayBSTNode  p = n.parent; p != null; p = p.parent)</span>
+<span class="fc" id="L118">			p.size++;</span>
+<span class="fc" id="L119">		return root = impl.splay(n);</span>
+	}
+
+	@Override
+	public void remove(IntReferenceableHeap.Ref  ref) {
+<span class="fc" id="L124">		SplayBSTNode  n = (SplayBSTNode ) ref;</span>
+
+		/* If the node has two children, swap with successor */
+<span class="fc bfc" id="L127" title="All 4 branches covered.">		if (n.hasLeftChild() &amp;&amp; n.hasRightChild())</span>
+<span class="fc" id="L128">			swap(n, IntBinarySearchTrees.getSuccessor(n));</span>
+
+		SplayBSTNode  child;
+<span class="fc bfc" id="L131" title="All 2 branches covered.">		if (!n.hasLeftChild()) {</span>
+<span class="fc" id="L132">			replace(n, child = n.right);</span>
+		} else {
+<span class="pc bnc" id="L134" title="All 2 branches missed.">			assert !n.hasRightChild();</span>
+<span class="fc" id="L135">			replace(n, child = n.left);</span>
+		}
+
+		/* Decrease ancestors size by 1 */
+<span class="fc bfc" id="L139" title="All 2 branches covered.">		for (SplayBSTNode  p = n.parent; p != null; p = p.parent)</span>
+<span class="fc" id="L140">			p.size--;</span>
+
+<span class="fc" id="L142">		SplayBSTNode  parent = n.parent;</span>
+<span class="fc" id="L143">		n.clearWithoutUserData();</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">		root = impl.splay(child != null ? child : parent);</span>
+<span class="fc" id="L145">	}</span>
+
+	private static  void replace(SplayBSTNode  u, SplayBSTNode  v) {
+		/* replaces u with v */
+<span class="fc bfc" id="L149" title="All 2 branches covered.">		if (u.parent != null) {</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">			if (u.isLeftChild()) {</span>
+<span class="fc" id="L151">				u.parent.left = v;</span>
+			} else {
+<span class="pc bnc" id="L153" title="All 2 branches missed.">				assert u.isRightChild();</span>
+<span class="fc" id="L154">				u.parent.right = v;</span>
+			}
+		}
+<span class="fc bfc" id="L157" title="All 2 branches covered.">		if (v != null)</span>
+<span class="fc" id="L158">			v.parent = u.parent;</span>
+<span class="fc" id="L159">	}</span>
+
+	private void swap(SplayBSTNode  n1, SplayBSTNode  n2) {
+<span class="fc" id="L162">		IntBinarySearchTrees.swap(n1, n2);</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">		if (n1 == root)</span>
+<span class="fc" id="L164">			root = n2;</span>
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">		else if (n2 == root)</span>
+<span class="nc" id="L166">			root = n1;</span>
+<span class="fc" id="L167">		int size = n1.size;</span>
+<span class="fc" id="L168">		n1.size = n2.size;</span>
+<span class="fc" id="L169">		n2.size = size;</span>
+<span class="fc" id="L170">	}</span>
+
+	@Override
+	public void decreaseKey(IntReferenceableHeap.Ref  ref, int newKey) {
+<span class="fc" id="L174">		SplayBSTNode  n = (SplayBSTNode ) ref;</span>
+<span class="fc" id="L175">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
+<span class="fc" id="L176">		remove(n);</span>
+<span class="fc" id="L177">		n.key = newKey;</span>
+<span class="fc" id="L178">		insertNode(n);</span>
+<span class="fc" id="L179">	}</span>
+
+	@Override
+	public IntReferenceableHeap.Ref  find(int key) {
+<span class="fc" id="L183">		SplayBSTNode  n = IntBinarySearchTrees.find(root, c, key);</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
+	}
+
+	@Override
+	public IntReferenceableHeap.Ref  findMin() {
+<span class="fc" id="L189">		checkTreeNotEmpty();</span>
+<span class="fc" id="L190">		return root = impl.splay(IntBinarySearchTrees.findMin(root));</span>
+	}
+
+	@Override
+	public IntReferenceableHeap.Ref  findMax() {
+<span class="fc" id="L195">		checkTreeNotEmpty();</span>
+<span class="fc" id="L196">		return root = impl.splay(IntBinarySearchTrees.findMax(root));</span>
+	}
+
+	@Override
+	public IntReferenceableHeap.Ref  findOrSmaller(int key) {
+<span class="fc" id="L201">		SplayBSTNode  n = IntBinarySearchTrees.findOrSmaller(root, c, key);</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
+	}
+
+	@Override
+	public IntReferenceableHeap.Ref  findOrGreater(int key) {
+<span class="fc" id="L207">		SplayBSTNode  n = IntBinarySearchTrees.findOrGreater(root, c, key);</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
+	}
+
+	@Override
+	public IntReferenceableHeap.Ref  findSmaller(int key) {
+<span class="fc" id="L213">		SplayBSTNode  n = IntBinarySearchTrees.findSmaller(root, c, key);</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
+	}
+
+	@Override
+	public IntReferenceableHeap.Ref  findGreater(int key) {
+<span class="fc" id="L219">		SplayBSTNode  n = IntBinarySearchTrees.findGreater(root, c, key);</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
+	}
+
+	@Override
+	public IntReferenceableHeap.Ref  getPredecessor(IntReferenceableHeap.Ref  ref) {
+<span class="fc" id="L225">		SplayBSTNode  n = IntBinarySearchTrees.getPredecessor((SplayBSTNode ) ref);</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
+	}
+
+	@Override
+	public IntReferenceableHeap.Ref  getSuccessor(IntReferenceableHeap.Ref  ref) {
+<span class="fc" id="L231">		SplayBSTNode  n = IntBinarySearchTrees.getSuccessor((SplayBSTNode ) ref);</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
+	}
+
+	@Override
+	public void meld(IntReferenceableHeap  heap) {
+<span class="fc" id="L237">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
+<span class="fc" id="L238">		Assertions.Heaps.meldWithSameImpl(IntSplayTree.class, heap);</span>
+<span class="fc" id="L239">		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());</span>
+<span class="fc" id="L240">		IntSplayTree  h = (IntSplayTree ) heap;</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">		if (h.isEmpty())</span>
+<span class="fc" id="L242">			return;</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">		if (isEmpty()) {</span>
+<span class="fc" id="L244">			root = h.root;</span>
+<span class="fc" id="L245">			h.root = null;</span>
+<span class="fc" id="L246">			return;</span>
+		}
+
+<span class="fc bfc" id="L249" title="All 2 branches covered.">		IntComparator  cmp = c != null ? c : (a, b) -&gt; Integer.compare(a, b);</span>
+
+		int min1, max1, min2, max2;
+<span class="fc bfc" id="L252" title="All 2 branches covered.">		if (cmp.compare(max1 = findMax().key(), min2 = h.findMin().key()) &lt;= 0) {</span>
+			/* all elements in this tree are &lt;= than all elements in other tree */
+<span class="fc" id="L254">			root = meld(this, h);</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">		} else if (cmp.compare(min1 = findMin().key(), max2 = h.findMax().key()) &gt;= 0) {</span>
+			/* all elements in this tree are &gt;= than all elements in other tree */
+<span class="fc" id="L257">			root = meld(h, this);</span>
+		} else {
+<span class="fc" id="L259">			int minCmp = cmp.compare(min1, min2);</span>
+<span class="fc" id="L260">			int maxCmp = cmp.compare(max1, max2);</span>
+<span class="fc" id="L261">			IntSplayTree  hLow = null, hHigh = null;</span>
+
+<span class="fc bfc" id="L263" title="All 2 branches covered.">			if (minCmp &lt; 0) {</span>
+<span class="fc" id="L264">				hLow = this.splitSmaller(min2);</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">			} else if (minCmp &gt; 0) {</span>
+<span class="fc" id="L266">				hLow = h.splitSmaller(min1);</span>
+			}
+<span class="fc bfc" id="L268" title="All 2 branches covered.">			if (maxCmp &lt; 0) {</span>
+<span class="fc" id="L269">				hHigh = h.splitGreater(max1);</span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">			} else if (maxCmp &gt; 0) {</span>
+<span class="fc" id="L271">				hHigh = this.splitGreater(max2);</span>
+			}
+
+<span class="fc bfc" id="L274" title="All 2 branches covered.">			if (h.root != null) {</span>
+				/* there is nothing smarter to do than 'addAll' for the shared range */
+				/* We use 'insertNode' instead of 'insert' to maintain user references to nodes */
+<span class="fc" id="L277">				for (SplayBSTNode  node = h.root;;) {</span>
+					for (;;) {
+<span class="fc bfc" id="L279" title="All 2 branches covered.">						while (node.hasLeftChild())</span>
+<span class="fc" id="L280">							node = node.left;</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">						if (!node.hasRightChild())</span>
+<span class="fc" id="L282">							break;</span>
+<span class="fc" id="L283">						node = node.right;</span>
+					}
+<span class="fc" id="L285">					node.size = 1;</span>
+<span class="fc" id="L286">					SplayBSTNode  parent = node.parent;</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">					if (parent == null) {</span>
+<span class="fc" id="L288">						insertNode(node);</span>
+<span class="fc" id="L289">						break;</span>
+					} else {
+<span class="fc bfc" id="L291" title="All 2 branches covered.">						if (parent.right == node) {</span>
+<span class="fc" id="L292">							parent.right = null;</span>
+						} else {
+<span class="pc bnc" id="L294" title="All 2 branches missed.">							assert parent.left == node;</span>
+<span class="fc" id="L295">							parent.left = null;</span>
+						}
+<span class="fc" id="L297">						node.parent = null;</span>
+<span class="fc" id="L298">						insertNode(node);</span>
+<span class="fc" id="L299">						node = parent;</span>
+					}
+<span class="fc" id="L301">				}</span>
+			}
+
+<span class="fc bfc" id="L304" title="All 2 branches covered.">			if (hLow != null) {</span>
+<span class="pc bnc" id="L305" title="All 2 branches missed.">				assert cmp.compare(hLow.findMax().key(), findMin().key()) &lt; 0;</span>
+<span class="fc" id="L306">				root = meld(hLow, this);</span>
+			}
+<span class="fc bfc" id="L308" title="All 2 branches covered.">			if (hHigh != null) {</span>
+<span class="pc bnc" id="L309" title="All 2 branches missed.">				assert cmp.compare(hHigh.findMin().key(), findMax().key()) &gt; 0;</span>
+<span class="fc" id="L310">				root = meld(this, hHigh);</span>
+			}
+		}
+<span class="fc" id="L313">		h.root = null;</span>
+<span class="fc" id="L314">	}</span>
+
+	private static  SplayBSTNode  meld(IntSplayTree  t1, IntSplayTree  t2) {
+		/* Assume all nodes in t1 are smaller than all nodes in t2 */
+
+		/* Splay t1 max and t2 min */
+<span class="fc" id="L320">		SplayBSTNode  n1 = (SplayBSTNode ) t1.findMax();</span>
+<span class="pc bnc" id="L321" title="All 2 branches missed.">		assert n1.isRoot();</span>
+<span class="pc bnc" id="L322" title="All 2 branches missed.">		assert !n1.hasRightChild();</span>
+
+<span class="fc" id="L324">		n1.right = t2.root;</span>
+<span class="fc" id="L325">		t2.root.parent = n1;</span>
+<span class="fc" id="L326">		n1.size += t2.root.size;</span>
+<span class="fc" id="L327">		return n1;</span>
+	}
+
+	@Override
+	public IntSplayTree  splitSmaller(int key) {
+<span class="fc" id="L332">		IntSplayTree  newTree = new IntSplayTree (c);</span>
+<span class="fc" id="L333">		SplayBSTNode  pred = (SplayBSTNode ) findSmaller(key);</span>
+<span class="pc bpc" id="L334" title="1 of 2 branches missed.">		if (pred == null)</span>
+<span class="nc" id="L335">			return newTree;</span>
+<span class="pc bnc" id="L336" title="All 2 branches missed.">		assert pred.isRoot();</span>
+
+<span class="pc bpc" id="L338" title="1 of 2 branches missed.">		if ((root = pred.right) != null) {</span>
+<span class="fc" id="L339">			pred.size -= pred.right.size;</span>
+<span class="fc" id="L340">			pred.right.parent = null;</span>
+<span class="fc" id="L341">			pred.right = null;</span>
+		}
+
+<span class="fc" id="L344">		newTree.root = pred;</span>
+<span class="fc" id="L345">		return newTree;</span>
+	}
+
+	@Override
+	public IntSplayTree  splitGreater(int key) {
+<span class="fc" id="L350">		SplayBSTNode  succ = (SplayBSTNode ) findGreater(key);</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">		if (succ == null)</span>
+<span class="fc" id="L352">			return new IntSplayTree (c);</span>
+<span class="fc" id="L353">		return split(succ);</span>
+	}
+
+	@Override
+	public IntSplayTree  split(IntReferenceableHeap.Ref  ref) {
+<span class="fc" id="L358">		IntSplayTree  newTree = new IntSplayTree (c);</span>
+
+<span class="fc" id="L360">		SplayBSTNode  n = impl.splay((SplayBSTNode ) ref);</span>
+<span class="pc bnc" id="L361" title="All 2 branches missed.">		assert n.isRoot();</span>
+
+<span class="fc bfc" id="L363" title="All 2 branches covered.">		if ((root = n.left) != null) {</span>
+<span class="fc" id="L364">			n.size -= n.left.size;</span>
+<span class="fc" id="L365">			n.left.parent = null;</span>
+<span class="fc" id="L366">			n.left = null;</span>
+		}
+
+<span class="fc" id="L369">		newTree.root = n;</span>
+<span class="fc" id="L370">		return newTree;</span>
+	}
+
+	@Override
+	public void clear() {
+<span class="fc bfc" id="L375" title="All 2 branches covered.">		if (root == null)</span>
+<span class="fc" id="L376">			return;</span>
+<span class="fc" id="L377">		IntBinarySearchTrees.clear(root);</span>
+<span class="fc" id="L378">		root = null;</span>
+<span class="fc" id="L379">	}</span>
+
+	static class BaseNode&lt; N extends BaseNode&lt; N&gt;&gt; extends IntBinarySearchTrees.Node&lt; N&gt; {
+
+		BaseNode(int key) {
+<span class="fc" id="L384">			super(key);</span>
+<span class="fc" id="L385">		}</span>
+
+		public int key() {
+<span class="nc" id="L388">			return key;</span>
+		}
+
+	}
+
+<span class="fc" id="L393">	abstract static class SplayImpl&lt; N extends BaseNode&lt; N&gt;&gt; {</span>
+
+<span class="fc" id="L395">		SplayImpl() {}</span>
+
+		N splay(N n) {
+<span class="fc bfc" id="L398" title="All 4 branches covered.">			if (n == null || n.isRoot())</span>
+<span class="fc" id="L399">				return n;</span>
+			for (;;) {
+<span class="fc" id="L401">				N parent = n.parent;</span>
+
+<span class="fc bfc" id="L403" title="All 2 branches covered.">				if (parent.isRoot()) {</span>
+					/* zig */
+<span class="fc" id="L405">					rotate(n);</span>
+<span class="fc" id="L406">					return n;</span>
+				}
+
+<span class="fc bfc" id="L409" title="All 2 branches covered.">				if (n.isLeftChild() == parent.isLeftChild()) {</span>
+					/* zig-zig */
+<span class="fc" id="L411">					rotate(parent);</span>
+<span class="fc" id="L412">					rotate(n);</span>
+				} else {
+					/* zig-zag */
+<span class="fc" id="L415">					rotate(n);</span>
+<span class="fc" id="L416">					rotate(n);</span>
+				}
+
+<span class="fc bfc" id="L419" title="All 2 branches covered.">				if (n.isRoot())</span>
+<span class="fc" id="L420">					return n;</span>
+<span class="fc" id="L421">			}</span>
+		}
+
+		private void rotate(N n) {
+<span class="fc" id="L425">			N parent = n.parent, grandparent = parent.parent;</span>
+
+<span class="fc" id="L427">			beforeRotate(n);</span>
+
+<span class="fc bfc" id="L429" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
+
+<span class="fc" id="L431">				parent.left = n.right;</span>
+<span class="fc bfc" id="L432" title="All 2 branches covered.">				if (parent.hasLeftChild())</span>
+<span class="fc" id="L433">					parent.left.parent = parent;</span>
+<span class="fc" id="L434">				n.right = parent;</span>
+
+			} else {
+<span class="pc bnc" id="L437" title="All 2 branches missed.">				assert n.isRightChild();</span>
+
+<span class="fc" id="L439">				parent.right = n.left;</span>
+<span class="fc bfc" id="L440" title="All 2 branches covered.">				if (parent.hasRightChild())</span>
+<span class="fc" id="L441">					parent.right.parent = parent;</span>
+<span class="fc" id="L442">				n.left = parent;</span>
+			}
+
+<span class="fc" id="L445">			n.parent = grandparent;</span>
+<span class="fc" id="L446">			parent.parent = n;</span>
+<span class="fc bfc" id="L447" title="All 2 branches covered.">			if (grandparent != null) {</span>
+<span class="fc bfc" id="L448" title="All 2 branches covered.">				if (grandparent.left == parent)</span>
+<span class="fc" id="L449">					grandparent.left = n;</span>
+				else
+<span class="fc" id="L451">					grandparent.right = n;</span>
+			}
+<span class="fc" id="L453">		}</span>
+
+<span class="fc" id="L455">		void beforeRotate(N n) {}</span>
+
+	}
+
+	private static class SplayBSTNode  extends BaseNode&lt; SplayBSTNode &gt; implements IntReferenceableHeap.Ref  {
+
+		// TODO consider removing the size field
+		int size;
+
+
+		SplayBSTNode(int key) {
+<span class="fc" id="L466">			super(key);</span>
+<span class="fc" id="L467">			size = 1;</span>
+<span class="fc" id="L468">		}</span>
+
+		@Override
+		public int key() {
+<span class="fc" id="L472">			return key;</span>
+		}
+
+
+		@Override
+		public String toString() {
+<span class="fc" id="L478">			return String.valueOf(key);</span>
+		}
+
+		@Override
+		void clearWithoutUserData() {
+<span class="fc" id="L483">			super.clearWithoutUserData();</span>
+<span class="fc" id="L484">			size = 1;</span>
+<span class="fc" id="L485">		}</span>
+
+	}
+
+<span class="fc" id="L489">	private static class SplayImplWithSize  extends SplayImpl&lt; SplayBSTNode &gt; {</span>
+
+		@Override
+		void beforeRotate(SplayBSTNode  n) {
+<span class="fc" id="L493">			super.beforeRotate(n);</span>
+
+<span class="fc" id="L495">			SplayBSTNode  parent = n.parent;</span>
+<span class="fc" id="L496">			int parentOldSize = parent.size;</span>
+
+<span class="fc bfc" id="L498" title="All 2 branches covered.">			if (n.isLeftChild()) {</span>
+<span class="fc bfc" id="L499" title="All 2 branches covered.">				parent.size = parentOldSize - n.size + (n.hasRightChild() ? n.right.size : 0);</span>
+			} else {
+<span class="pc bnc" id="L501" title="All 2 branches missed.">				assert n.isRightChild();</span>
+<span class="fc bfc" id="L502" title="All 2 branches covered.">				parent.size = parentOldSize - n.size + (n.hasLeftChild() ? n.left.size : 0);</span>
+			}
+
+<span class="fc" id="L505">			n.size = parentOldSize;</span>
+<span class="fc" id="L506">		}</span>
+
+	}
+
+	private void checkTreeNotEmpty() {
+<span class="pc bpc" id="L511" title="1 of 2 branches missed.">		if (root == null)</span>
+<span class="nc" id="L512">			throw new IllegalStateException(&quot;Tree is empty&quot;);</span>
+<span class="fc" id="L513">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

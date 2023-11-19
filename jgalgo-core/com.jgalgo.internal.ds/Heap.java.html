@@ -29,7 +29,7 @@ import java.util.stream.StreamSupport;
  * constant time.
  *
  * &lt;p&gt;
- * If {@code decreaseKey()} or fast {@code remove()} operations are required, consider using {@link HeapReferenceable}.
+ * If {@code decreaseKey()} or fast {@code remove()} operations are required, consider using {@link ReferenceableHeap}.
  *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
@@ -56,7 +56,7 @@ import java.util.stream.StreamSupport;
  *
  * @param  &lt;E&gt; the elements type
  * @see        &lt;a href= &quot;https://en.wikipedia.org/wiki/Heap_(data_structure)&quot;&gt;Wikipedia&lt;/a&gt;
- * @see        HeapReferenceable
+ * @see        ReferenceableHeap
  * @author     Barak Ugav
  */
 public interface Heap&lt;E&gt; extends Iterable&lt;E&gt; {
@@ -117,7 +117,7 @@ public interface Heap&lt;E&gt; extends Iterable&lt;E&gt; {
 	 * Its only possible to meld with a heap with the same implementation of this heap.
 	 *
 	 * &lt;p&gt;
-	 * If the heap implementation expose references to its element (see {@link HeapReferenceable}), the references of
+	 * If the heap implementation expose references to its element (see {@link ReferenceableHeap}), the references of
 	 * both ({@code this} and the given {@code heap}) remain valid and its possible to use them only in this heap (they
 	 * are no longer valid with respect to the given heap, which will be cleared).
 	 *
@@ -151,7 +151,7 @@ public interface Heap&lt;E&gt; extends Iterable&lt;E&gt; {
 	 * @return a stream over the elements in this heap
 	 */
 	default Stream&lt;E&gt; stream() {
-<span class="fc" id="L154">		return StreamSupport.stream(spliterator(), false);</span>
+<span class="nc" id="L154">		return StreamSupport.stream(spliterator(), false);</span>
 	}
 
 	/**
@@ -173,7 +173,7 @@ public interface Heap&lt;E&gt; extends Iterable&lt;E&gt; {
 	 * @return a default implementation of {@link Heap}
 	 */
 	static &lt;E&gt; Heap&lt;E&gt; newInstance() {
-<span class="nc" id="L176">		return newBuilder().&lt;E&gt;elementsTypeObj().build();</span>
+<span class="nc" id="L176">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -186,7 +186,7 @@ public interface Heap&lt;E&gt; extends Iterable&lt;E&gt; {
 	 * @return a default implementation of {@link Heap}
 	 */
 	static &lt;E&gt; Heap&lt;E&gt; newInstance(Comparator&lt;? super E&gt; cmp) {
-<span class="nc" id="L189">		return newBuilder().&lt;E&gt;elementsTypeObj().build(cmp);</span>
+<span class="fc" id="L189">		return newBuilder().build(cmp);</span>
 	}
 
 	/**
@@ -197,88 +197,33 @@ public interface Heap&lt;E&gt; extends Iterable&lt;E&gt; {
 	 *
 	 * @return a new builder that can build {@link Heap} objects
 	 */
-	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
-	static Heap.Builder&lt;Object&gt; newBuilder() {
-<span class="fc" id="L202">		return new Heap.Builder&lt;&gt;() {</span>
-
-			Class&lt;?&gt; elmsType;
-
-			@Override
-			public Heap build(Comparator cmp) {
-<span class="pc bpc" id="L208" title="1 of 2 branches missed.">				if (elmsType == int.class) {</span>
-<span class="nc" id="L209">					return new HeapBinaryInt(cmp);</span>
-				} else {
-<span class="fc" id="L211">					return new HeapBinary&lt;&gt;(cmp);</span>
-				}
-			}
-
-			@Override
-			public Heap.Builder elementsTypeObj() {
-<span class="fc" id="L217">				elmsType = null;</span>
-<span class="fc" id="L218">				return this;</span>
-			}
-
-			@Override
-			public Heap.Builder elementsTypePrimitive(Class primitiveType) {
-<span class="nc bnc" id="L223" title="All 2 branches missed.">				if (!primitiveType.isPrimitive())</span>
-<span class="nc" id="L224">					throw new IllegalArgumentException(&quot;type is not primitive: &quot; + primitiveType);</span>
-<span class="nc" id="L225">				elmsType = primitiveType;</span>
-<span class="nc" id="L226">				return this;</span>
-			}
-		};
+	static Heap.Builder newBuilder() {
+<span class="fc" id="L201">		return HeapBinary::new;</span>
 	}
 
 	/**
 	 * Builder for heaps.
 	 *
-	 * @param  &lt;E&gt; the heap elements type
-	 * @see        Heap#newBuilder()
-	 * @author     Barak Ugav
+	 * @see    Heap#newBuilder()
+	 * @author Barak Ugav
 	 */
-	static interface Builder&lt;E&gt; {
+	static interface Builder {
 		/**
 		 * Build a new heap with the given comparator.
-		 *
-		 * &lt;p&gt;
-		 * If primitive elements are in used, namely {@link #elementsTypePrimitive(Class)}, its recommended to use a
-		 * primitive {@link Comparator} such as {@link it.unimi.dsi.fastutil.ints.IntComparator}, for best performance.
 		 *
 		 * @param  cmp the comparator that will be used to order the elements in the heap
 		 * @return     the newly constructed heap
 		 */
-		Heap&lt;E&gt; build(Comparator&lt;? super E&gt; cmp);
+		&lt;E&gt; Heap&lt;E&gt; build(Comparator&lt;? super E&gt; cmp);
 
 		/**
 		 * Build a new heap with {@linkplain Comparable natural ordering}.
 		 *
 		 * @return the newly constructed heap
 		 */
-		default Heap&lt;E&gt; build() {
-<span class="nc" id="L257">			return build(null);</span>
+		default &lt;E&gt; Heap&lt;E&gt; build() {
+<span class="nc" id="L225">			return build(null);</span>
 		}
-
-		/**
-		 * Change the elements type of the built heaps to a generic object type.
-		 *
-		 * @param  &lt;ElementsT&gt; object type
-		 * @return             this builder
-		 */
-		&lt;ElementsT&gt; Heap.Builder&lt;ElementsT&gt; elementsTypeObj();
-
-		/**
-		 * Change the elements type of the built heaps to some primitive type.
-		 *
-		 * &lt;p&gt;
-		 * Some specific type implementation may exists that is more efficient than the boxed general object
-		 * implementation.
-		 *
-		 * @param  &lt;ElementsT&gt;              elements primitive boxed type
-		 * @param  primitiveType            the class of the primitive type
-		 * @return                          this builder
-		 * @throws IllegalArgumentException if {@code primitiveType} is not a class of a primitive type, a.k.a
-		 *                                      {@code int.class, double.class} ect.
-		 */
-		&lt;ElementsT&gt; Heap.Builder&lt;ElementsT&gt; elementsTypePrimitive(Class&lt;? extends ElementsT&gt; primitiveType);
 
 		/**
 		 * &lt;b&gt;[TL;DR Don't call me!]&lt;/b&gt; Set an option.
@@ -295,8 +240,8 @@ public interface Heap&lt;E&gt; extends Iterable&lt;E&gt; {
 		 * @param  value the option value
 		 * @return       this builder
 		 */
-		default Heap.Builder&lt;E&gt; setOption(String key, Object value) {
-<span class="nc" id="L299">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+		default Heap.Builder setOption(String key, Object value) {
+<span class="nc" id="L244">			throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 		}
 	}
 

@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DoubleObjBinarySearchTree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.ds</a> &gt; <span class="el_source">DoubleObjBinarySearchTree.java</span></div><h1>DoubleObjBinarySearchTree.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.ds;
+
+import it.unimi.dsi.fastutil.doubles.DoubleComparator;
+
+/**
+ * Binary search tree data structure.
+ *
+ * &lt;p&gt;
+ * In addition to all {@link DoubleObjReferenceableHeap} operations, a binary search tree (BST) allow for an efficient search of
+ * an element, not just {@link #findMin()}. Every element can be found in \(O(\log n)\) time, notably
+ * {@link #findMax()} in addition to {@link #findMin()}. Also, given an element, the nearest (smaller or larger)
+ * element in the tree can be found efficiently.
+ *
+ * @param  &lt;V&gt; the values type
+ * @author     Barak Ugav
+ */
+public interface DoubleObjBinarySearchTree &lt;V&gt; extends DoubleObjReferenceableHeap &lt;V&gt; {
+
+	/**
+	 * Find the element with the maximal key in the tree and return a reference to it.
+	 *
+	 * @return                       a reference to the element with the maximal key in the tree
+	 * @throws IllegalStateException if the tree is empty
+	 */
+	DoubleObjReferenceableHeap.Ref &lt;V&gt; findMax();
+
+	/**
+	 * Extract the element with the maximal key in the tree.
+	 *
+	 * &lt;p&gt;
+	 * This method find and &lt;b&gt;remove&lt;/b&gt; the element with the maximal key.
+	 *
+	 * @return                       the element with the maximal key in the tree
+	 * @throws IllegalStateException if the tree is empty
+	 */
+	DoubleObjReferenceableHeap.Ref &lt;V&gt; extractMax();
+
+	/**
+	 * Find an element in the tree by its key, or the element with the greatest strictly smaller (predecessor) key than
+	 * it if it's not found.
+	 *
+	 * @param  key the search key
+	 * @return     reference to an element with the searched key or it's predecessor if is not found, or {@code null} if
+	 *             there is no predecessor
+	 */
+	DoubleObjReferenceableHeap.Ref &lt;V&gt; findOrSmaller(double key);
+
+	/**
+	 * Find an element in the tree by its key, or the element with the smallest strictly greater (successor) key than it
+	 * if it's not found.
+	 *
+	 * @param  key the search key
+	 * @return     reference to an element with the searched key or it's successor if it is not found, or {@code null}
+	 *             if there is no successor
+	 */
+	DoubleObjReferenceableHeap.Ref &lt;V&gt; findOrGreater(double key);
+
+	/**
+	 * Find the element with the greatest strictly smaller key than a given key.
+	 *
+	 * @param  key a key
+	 * @return     reference to the predecessor element with strictly smaller key or {@code null} if no such exists
+	 */
+	DoubleObjReferenceableHeap.Ref &lt;V&gt; findSmaller(double key);
+
+	/**
+	 * Find the element with the smallest strictly greater key than a given key.
+	 *
+	 * @param  key a key
+	 * @return     reference to the successor element with strictly greater key or {@code null} if no such exists
+	 */
+	DoubleObjReferenceableHeap.Ref &lt;V&gt; findGreater(double key);
+
+	/**
+	 * Get the predecessor of a node in the tree.
+	 *
+	 * &lt;p&gt;
+	 * The predecessor node depends on the tree structure. If there are no duplicate keys, the predecessor is the
+	 * greatest value strictly smaller than the given element. If there are duplicate keys, it may be smaller or equal.
+	 *
+	 * &lt;p&gt;
+	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
+	 * removed, or to an element in another heap.
+	 *
+	 * @param  ref reference to an element in the tree
+	 * @return     reference to the predecessor element in the tree, that is an element with smaller or equal key to the
+	 *             given referenced element's key, or {@code null} if no such predecessor exists
+	 */
+	DoubleObjReferenceableHeap.Ref &lt;V&gt; getPredecessor(DoubleObjReferenceableHeap.Ref &lt;V&gt; ref);
+
+	/**
+	 * Finds the successor of an element in the tree.
+	 *
+	 * &lt;p&gt;
+	 * The successor node depends on the tree structure. If there are no duplicate keys, the successor is the smallest
+	 * value strictly greater than the given element. If there are duplicate keys, it may be greater or equal.
+	 *
+	 * &lt;p&gt;
+	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
+	 * removed, or to an element in another heap.
+	 *
+	 * @param  ref reference to an element in the tree
+	 * @return     reference to the successor element in the tree, that is an element with greater or equal key to the
+	 *             given referenced element's key, or {@code null} if no such successor exists
+	 */
+	DoubleObjReferenceableHeap.Ref &lt;V&gt; getSuccessor(DoubleObjReferenceableHeap.Ref &lt;V&gt; ref);
+
+	/**
+	 * Split the current BST into two different BSTs with keys strictly smaller and greater or equal than a key.
+	 *
+	 * &lt;p&gt;
+	 * After this operation, all elements in this tree will have keys greater or equal than the given key, and the
+	 * returned new tree will contain elements with keys strictly smaller than the given key.
+	 *
+	 * @param  key a pivot key
+	 * @return     new tree with elements with keys strictly smaller than the given key
+	 */
+	DoubleObjBinarySearchTree &lt;V&gt; splitSmaller(double key);
+
+	/**
+	 * Split the current BST into two different BSTs with keys smaller or equal and strictly greater than a key.
+	 *
+	 * &lt;p&gt;
+	 * After this operation, all elements in this tree will have keys be smaller or equal than the given key, and the
+	 * returned new tree will contain elements with keys strictly greater than the given key.
+	 *
+	 * @param  key a pivot key
+	 * @return     new tree with elements with keys strictly greater than the given key
+	 */
+	DoubleObjBinarySearchTree &lt;V&gt; splitGreater(double key);
+
+	/**
+	 * Split the current BST into two different BSTs with elements smaller and greater than an element's key.
+	 *
+	 * &lt;p&gt;
+	 * After this operation, all elements keys in this tree will be smaller or equal to the given element's key, and the
+	 * returned new tree will contain elements with keys greater than the given element's key. If the tree contains
+	 * duplications of the given element's key, the elements keys in the returned tree will be greater or equal (rather
+	 * than strictly greater). To split a tree more precisely, use {@link #splitSmaller} or {@link #splitGreater}.
+	 *
+	 * &lt;p&gt;
+	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
+	 * removed, or to an element in another heap.
+	 *
+	 * @param  ref given element in the tree
+	 * @return     new tree with elements with keys greater (greater or equal if duplicate keys of the given element's
+	 *             key exists) than the given key
+	 */
+	DoubleObjBinarySearchTree &lt;V&gt; split(DoubleObjReferenceableHeap.Ref &lt;V&gt; ref);
+
+	/**
+	 * Create a new BST.
+	 *
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link DoubleObjBinarySearchTree} object.
+	 *
+	 * @return a default implementation of {@link DoubleObjBinarySearchTree}
+	 */
+	static &lt;V&gt; DoubleObjBinarySearchTree &lt;V&gt; newInstance() {
+<span class="fc" id="L176">		return newInstance(null);</span>
+	}
+
+	/**
+	 * Create a new BST with custom comparator.
+	 *
+	 * &lt;p&gt;
+	 * This is the recommended way to instantiate a new {@link DoubleObjBinarySearchTree} object.
+	 *
+	 * @param  cmp a custom comparator
+	 * @return a default implementation of {@link DoubleObjBinarySearchTree}
+	 */
+	static &lt;V&gt; DoubleObjBinarySearchTree &lt;V&gt; newInstance(DoubleComparator  cmp) {
+<span class="fc" id="L189">		return new DoubleObjRedBlackTree &lt;&gt;(cmp);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

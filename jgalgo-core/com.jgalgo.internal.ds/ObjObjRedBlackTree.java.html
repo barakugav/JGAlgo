@@ -1,0 +1,602 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ObjObjRedBlackTree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.ds</a> &gt; <span class="el_source">ObjObjRedBlackTree.java</span></div><h1>ObjObjRedBlackTree.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.ds;
+
+import java.util.Comparator;
+import java.util.Iterator;
+import com.jgalgo.internal.util.Assertions;
+
+/**
+ * A red black balanced binary search tree.
+ *
+ * &lt;p&gt;
+ * A red black tree is a balanced binary search tree that its height is always \(O(\log n)\). All operations are
+ * performed in \(O(\log n)\) time.
+ *
+ * @param  &lt;K&gt; the keys type
+ * @param  &lt;V&gt; the values type
+ * @see        &lt;a href= &quot;https://en.wikipedia.org/wiki/Red%E2%80%93black_tree&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author     Barak Ugav
+ */
+<span class="fc" id="L35">public class ObjObjRedBlackTree &lt;K, V&gt; implements ObjObjBinarySearchTree &lt;K, V&gt; {</span>
+
+	private final Comparator &lt;K&gt; c;
+	private Node &lt;K, V&gt; root;
+
+	static final boolean Red = true;
+	static final boolean Black = false;
+
+	/**
+	 * Constructs a new, empty red black tree, ordered according to the natural ordering of its keys.
+	 *
+	 * &lt;p&gt;
+	 * All keys inserted into the tree must implement the {@link Comparable} interface. Furthermore, all such keys must
+	 * be &lt;i&gt;mutually comparable&lt;/i&gt;: {@code k1.compareTo(k2)} must not throw a {@code ClassCastException} for any keys
+	 * {@code k1} and {@code k2} in the tree. If the user attempts to insert a key to the tree that violates this
+	 * constraint (for example, the user attempts to insert a string element to a tree whose keys are integers), the
+	 * {@code insert} call will throw a {@code ClassCastException}.
+	 */
+	public ObjObjRedBlackTree() {
+<span class="nc" id="L54">		this(null);</span>
+<span class="nc" id="L55">	}</span>
+
+	/**
+	 * Constructs a new, empty red black tree, with keys ordered according to the specified comparator.
+	 *
+	 * &lt;p&gt;
+	 * All keys inserted into the tree must be &lt;i&gt;mutually comparable&lt;/i&gt; by the specified comparator:
+	 * {@code comparator.compare(k1, k2)} must not throw a {@code ClassCastException} for any keys {@code k1} and
+	 * {@code k2} in the tree. If the user attempts to insert a key to the tree that violates this constraint, the
+	 * {@code insert} call will throw a {@code ClassCastException}.
+	 *
+	 * @param comparator the comparator that will be used to order this tree. If {@code null}, the
+	 *                       {@linkplain Comparable natural ordering} of the keys will be used.
+	 */
+<span class="fc" id="L69">	public ObjObjRedBlackTree(Comparator &lt;K&gt; comparator) {</span>
+<span class="fc" id="L70">		c = comparator;</span>
+<span class="fc" id="L71">		root = null;</span>
+<span class="fc" id="L72">	}</span>
+
+	@Override
+	public Comparator &lt;K&gt; comparator() {
+<span class="fc" id="L76">		return c;</span>
+	}
+
+	@Override
+	public boolean isEmpty() {
+<span class="fc bfc" id="L81" title="All 2 branches covered.">		return root == null;</span>
+	}
+
+	@Override
+	public boolean isNotEmpty() {
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		return root != null;</span>
+	}
+
+	@Override
+	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; insert(K key) {
+<span class="fc" id="L91">		Node &lt;K, V&gt; node = newNode(key);</span>
+<span class="fc" id="L92">		insertNode(node);</span>
+<span class="fc" id="L93">		return node;</span>
+	}
+
+	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+	@Override
+	public Iterator&lt;ObjObjReferenceableHeap.Ref &lt;K, V&gt;&gt; iterator() {
+<span class="fc" id="L99">		return (Iterator) new ObjBinarySearchTrees.BSTIterator&lt;&gt;(root);</span>
+	}
+
+	@Override
+	public void clear() {
+<span class="fc bfc" id="L104" title="All 2 branches covered.">		if (root == null)</span>
+<span class="fc" id="L105">			return;</span>
+<span class="fc" id="L106">		ObjBinarySearchTrees.clear(root);</span>
+<span class="fc" id="L107">		root = null;</span>
+<span class="fc" id="L108">	}</span>
+
+	@Override
+	public void meld(ObjObjReferenceableHeap &lt;K, V&gt; heap) {
+<span class="fc" id="L112">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
+<span class="fc" id="L113">		Assertions.Heaps.meldWithSameImpl(ObjObjRedBlackTree.class, heap);</span>
+<span class="fc" id="L114">		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());</span>
+<span class="fc" id="L115">		ObjObjRedBlackTree &lt;K, V&gt; h = (ObjObjRedBlackTree &lt;K, V&gt;) heap;</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (h.isEmpty())</span>
+<span class="fc" id="L117">			return;</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">		if (isEmpty()) {</span>
+<span class="fc" id="L119">			root = h.root;</span>
+		} else {
+			/* there is nothing smarter to do than 'addAll' */
+			/* We use 'insertNode' instead of 'insert' to maintain user references to nodes */
+<span class="fc" id="L123">			for (Node &lt;K, V&gt; node = h.root;;) {</span>
+				for (;;) {
+<span class="fc bfc" id="L125" title="All 2 branches covered.">					while (node.hasLeftChild())</span>
+<span class="fc" id="L126">						node = node.left;</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">					if (!node.hasRightChild())</span>
+<span class="fc" id="L128">						break;</span>
+<span class="fc" id="L129">					node = node.right;</span>
+				}
+<span class="fc" id="L131">				Node &lt;K, V&gt; parent = node.parent;</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">				if (parent == null) {</span>
+<span class="fc" id="L133">					beforeNodeReuse(node);</span>
+<span class="fc" id="L134">					insertNode(node);</span>
+<span class="fc" id="L135">					break;</span>
+				} else {
+<span class="fc bfc" id="L137" title="All 2 branches covered.">					if (parent.right == node) {</span>
+<span class="fc" id="L138">						parent.right = null;</span>
+					} else {
+<span class="pc bnc" id="L140" title="All 2 branches missed.">						assert parent.left == node;</span>
+<span class="fc" id="L141">						parent.left = null;</span>
+					}
+<span class="fc" id="L143">					node.parent = null;</span>
+<span class="fc" id="L144">					beforeNodeReuse(node);</span>
+<span class="fc" id="L145">					insertNode(node);</span>
+<span class="fc" id="L146">					node = parent;</span>
+				}
+<span class="fc" id="L148">			}</span>
+		}
+<span class="fc" id="L150">		h.root = null;</span>
+<span class="fc" id="L151">	}</span>
+
+<span class="fc" id="L153">	void beforeNodeReuse(Node &lt;K, V&gt; node) {}</span>
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws UnsupportedOperationException the current implementation doesn't support this operation
+	 */
+	@Override
+	public ObjObjRedBlackTree &lt;K, V&gt; splitSmaller(K key) {
+		// we can't perform efficient split because we don't know the size of each sub tree, and we won't be able to
+		// determine the size splits
+		// TODO consider implementing this in O(n)
+
+		// TODO we dont need the size anymore, implement this
+<span class="nc" id="L167">		throw new UnsupportedOperationException();</span>
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws UnsupportedOperationException the current implementation doesn't support this operation
+	 */
+	@Override
+	public ObjObjRedBlackTree &lt;K, V&gt; splitGreater(K key) {
+		// we can't perform efficient split because we don't know the size of each sub tree, and we won't be able to
+		// determine the size splits
+		// TODO consider implementing this in O(n)
+
+		// TODO we dont need the size anymore, implement this
+<span class="nc" id="L182">		throw new UnsupportedOperationException();</span>
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @throws UnsupportedOperationException the current implementation doesn't support this operation
+	 */
+	@Override
+	public ObjObjRedBlackTree &lt;K, V&gt; split(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref) {
+		// we can't perform efficient split because we don't know the size of each sub tree, and we won't be able to
+		// determine the size splits
+		// TODO consider implementing this in O(n)
+<span class="nc" id="L195">		throw new UnsupportedOperationException();</span>
+	}
+
+	@Override
+	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; find(K key) {
+<span class="fc" id="L200">		return ObjBinarySearchTrees.find(root, c, key);</span>
+	}
+
+	@Override
+	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; findMin() {
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">		if (root == null)</span>
+<span class="nc" id="L206">			throw new IllegalStateException();</span>
+<span class="fc" id="L207">		return ObjBinarySearchTrees.findMin(root);</span>
+	}
+
+	@Override
+	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; findMax() {
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">		if (root == null)</span>
+<span class="nc" id="L213">			throw new IllegalStateException();</span>
+<span class="fc" id="L214">		return ObjBinarySearchTrees.findMax(root);</span>
+	}
+
+	@Override
+	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; extractMin() {
+<span class="fc" id="L219">		ObjObjReferenceableHeap.Ref &lt;K, V&gt; min = findMin();</span>
+<span class="fc" id="L220">		remove(min);</span>
+<span class="fc" id="L221">		return min;</span>
+	}
+
+	@Override
+	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; extractMax() {
+<span class="fc" id="L226">		ObjObjReferenceableHeap.Ref &lt;K, V&gt; max = findMax();</span>
+<span class="fc" id="L227">		remove(max);</span>
+<span class="fc" id="L228">		return max;</span>
+	}
+
+	@Override
+	public void decreaseKey(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref, K newKey) {
+<span class="fc" id="L233">		Node &lt;K, V&gt; n = (Node &lt;K, V&gt;) ref;</span>
+<span class="fc" id="L234">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
+<span class="fc" id="L235">		remove(n);</span>
+<span class="fc" id="L236">		n.key = newKey;</span>
+<span class="fc" id="L237">		insertNode(n);</span>
+<span class="fc" id="L238">	}</span>
+
+	private void insertNode(Node &lt;K, V&gt; n) {
+<span class="pc bnc" id="L241" title="All 2 branches missed.">		assert n.parent == null;</span>
+<span class="pc bnc" id="L242" title="All 2 branches missed.">		assert n.left == null;</span>
+<span class="pc bnc" id="L243" title="All 2 branches missed.">		assert n.right == null;</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">		if (root == null) {</span>
+<span class="fc" id="L245">			n.color = Black;</span>
+<span class="fc" id="L246">			root = n;</span>
+<span class="fc" id="L247">			afterInsert(n);</span>
+		} else {
+<span class="fc" id="L249">			ObjBinarySearchTrees.insert(root, c, n);</span>
+<span class="fc" id="L250">			afterInsert(n);</span>
+<span class="fc" id="L251">			fixAfterInsert(n);</span>
+		}
+<span class="fc" id="L253">	}</span>
+
+	private void fixAfterInsert(Node &lt;K, V&gt; n) {
+<span class="fc" id="L256">		Node &lt;K, V&gt; parent = n.parent;</span>
+<span class="fc" id="L257">		n.color = Red;</span>
+
+		do {
+			/* Case 1: parent is black, all the requirements are satisfied */
+<span class="fc bfc" id="L261" title="All 2 branches covered.">			if (parent.color == Black)</span>
+<span class="fc" id="L262">				return;</span>
+
+			/* Case 4: parent is Red and root */
+<span class="fc bfc" id="L265" title="All 2 branches covered.">			if (parent == root) {</span>
+<span class="fc" id="L266">				parent.color = Black;</span>
+<span class="fc" id="L267">				return;</span>
+			}
+
+<span class="fc" id="L270">			Node &lt;K, V&gt; grandparent = parent.parent;</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">			Node &lt;K, V&gt; uncle = parent == grandparent.left ? grandparent.right : grandparent.left;</span>
+
+			/* Case 5,6: parent is Red, uncle is Black */
+<span class="fc bfc" id="L274" title="All 4 branches covered.">			if (uncle == null || uncle.color == Black) {</span>
+
+				/* Case 5: n is an inner grandchild of grandparent */
+<span class="fc bfc" id="L277" title="All 2 branches covered.">				if (n == parent.left) {</span>
+<span class="fc bfc" id="L278" title="All 2 branches covered.">					if (parent == grandparent.right) {</span>
+						/* Case 5a: left inner grandchild */
+<span class="fc" id="L280">						rotateRight(parent);</span>
+<span class="fc" id="L281">						n = parent;</span>
+<span class="fc" id="L282">						parent = grandparent.right;</span>
+					}
+				} else {
+<span class="fc bfc" id="L285" title="All 2 branches covered.">					if (parent == grandparent.left) {</span>
+						/* Case 5b: right inner grandchild */
+<span class="fc" id="L287">						rotateLeft(parent);</span>
+<span class="fc" id="L288">						n = parent;</span>
+<span class="fc" id="L289">						parent = grandparent.left;</span>
+					}
+				}
+
+<span class="pc bnc" id="L293" title="All 8 branches missed.">				assert (n == parent.left &amp;&amp; parent == grandparent.left)</span>
+						|| (n == parent.right &amp;&amp; parent == grandparent.right);
+				/* Case 6: n is an outer grandchild of grandparent */
+<span class="fc bfc" id="L296" title="All 2 branches covered.">				if (parent == grandparent.left)</span>
+<span class="fc" id="L297">					rotateRight(grandparent);</span>
+				else
+<span class="fc" id="L299">					rotateLeft(grandparent);</span>
+<span class="fc" id="L300">				parent.color = Black;</span>
+<span class="fc" id="L301">				grandparent.color = Red;</span>
+<span class="fc" id="L302">				return;</span>
+			}
+
+			/* Case 2: parent is Red, uncle is Red */
+<span class="pc bnc" id="L306" title="All 2 branches missed.">			assert grandparent.color == Black;</span>
+<span class="fc" id="L307">			parent.color = uncle.color = Black;</span>
+<span class="fc" id="L308">			grandparent.color = Red;</span>
+
+<span class="fc" id="L310">			n = grandparent;</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">		} while ((parent = n.parent) != null);</span>
+
+		/* Case 3: we exited the loop through the main condition, n is now a Red root */
+<span class="fc" id="L314">	}</span>
+
+	private void removeNode(Node &lt;K, V&gt; n, Node &lt;K, V&gt; replace) {
+<span class="fc" id="L317">		beforeRemove(n);</span>
+<span class="fc" id="L318">		Node &lt;K, V&gt; parent = n.parent;</span>
+<span class="fc bfc" id="L319" title="All 2 branches covered.">		if (parent != null) {</span>
+<span class="fc bfc" id="L320" title="All 2 branches covered.">			if (n == parent.left) {</span>
+<span class="fc" id="L321">				parent.left = replace;</span>
+			} else {
+<span class="pc bnc" id="L323" title="All 2 branches missed.">				assert n == parent.right;</span>
+<span class="fc" id="L324">				parent.right = replace;</span>
+			}
+		} else {
+<span class="fc" id="L327">			root = replace;</span>
+		}
+<span class="fc bfc" id="L329" title="All 2 branches covered.">		if (replace != null)</span>
+<span class="fc" id="L330">			replace.parent = parent;</span>
+<span class="fc" id="L331">		n.clearWithoutUserData();</span>
+<span class="fc" id="L332">	}</span>
+
+	void removeNode(Node &lt;K, V&gt; n) {
+		/* root with no children, just remove */
+<span class="fc bfc" id="L336" title="All 6 branches covered.">		if (n == root &amp;&amp; n.left == null &amp;&amp; n.right == null) {</span>
+<span class="fc" id="L337">			removeNode(n, null);</span>
+<span class="fc" id="L338">			return;</span>
+		}
+
+		/* 2 children, switch place with a single child node */
+<span class="fc bfc" id="L342" title="All 4 branches covered.">		if (n.left != null &amp;&amp; n.right != null)</span>
+<span class="fc" id="L343">			swap(n, ObjBinarySearchTrees.getSuccessor(n));</span>
+<span class="pc bnc" id="L344" title="All 4 branches missed.">		assert n.left == null || n.right == null;</span>
+<span class="fc" id="L345">		Node &lt;K, V&gt; parent = n.parent;</span>
+
+		/* Red node, just remove */
+<span class="fc bfc" id="L348" title="All 2 branches covered.">		if (n.color == Red) {</span>
+<span class="pc bnc" id="L349" title="All 4 branches missed.">			assert n.left == null &amp;&amp; n.right == null;</span>
+<span class="fc" id="L350">			removeNode(n, null);</span>
+<span class="fc" id="L351">			return;</span>
+		}
+
+		/* Black node, single red child. Remove and make child black */
+<span class="fc bfc" id="L355" title="All 4 branches covered.">		if (n.left != null || n.right != null) {</span>
+<span class="pc bnc" id="L356" title="All 6 branches missed.">			assert n.left != null ^ n.right != null;</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">			Node &lt;K, V&gt; child = n.left != null ? n.left : n.right;</span>
+<span class="pc bnc" id="L358" title="All 2 branches missed.">			assert child.color = Red;</span>
+<span class="pc bnc" id="L359" title="All 4 branches missed.">			assert child.left == null &amp;&amp; child.right == null;</span>
+<span class="fc" id="L360">			child.color = Black;</span>
+<span class="fc" id="L361">			removeNode(n, child);</span>
+<span class="fc" id="L362">			return;</span>
+		}
+
+		/* black node, no children. Remove node and fix short parent subtree in loop */
+<span class="fc bfc" id="L366" title="All 2 branches covered.">		boolean leftIsShortSide = n == parent.left;</span>
+<span class="fc" id="L367">		removeNode(n, null);</span>
+<span class="fc" id="L368">		fixAfterRemove(parent, leftIsShortSide);</span>
+<span class="fc" id="L369">	}</span>
+
+	@Override
+	public void remove(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref) {
+<span class="pc bpc" id="L373" title="1 of 2 branches missed.">		if (root == null)</span>
+<span class="nc" id="L374">			throw new IllegalArgumentException(&quot;ref is not valid&quot;);</span>
+<span class="fc" id="L375">		removeNode((Node &lt;K, V&gt;) ref);</span>
+<span class="fc" id="L376">	}</span>
+
+	private void fixAfterRemove(Node &lt;K, V&gt; parent, boolean leftIsShortSide) {
+		for (;;) {
+			Node &lt;K, V&gt; sibling, d, c;
+<span class="fc bfc" id="L381" title="All 2 branches covered.">			if (leftIsShortSide) {</span>
+<span class="fc" id="L382">				sibling = parent.right;</span>
+<span class="fc" id="L383">				d = sibling.right;</span>
+<span class="fc" id="L384">				c = sibling.left;</span>
+			} else {
+<span class="fc" id="L386">				sibling = parent.left;</span>
+<span class="fc" id="L387">				d = sibling.left;</span>
+<span class="fc" id="L388">				c = sibling.right;</span>
+			}
+
+			/* Case 3: sibling is Red */
+<span class="fc bfc" id="L392" title="All 2 branches covered.">			if (sibling.color == Red) {</span>
+<span class="fc" id="L393">				rotate(parent, leftIsShortSide);</span>
+<span class="pc bnc" id="L394" title="All 2 branches missed.">				assert parent.color == Black;</span>
+<span class="fc" id="L395">				parent.color = Red;</span>
+<span class="fc" id="L396">				sibling.color = Black;</span>
+
+<span class="fc" id="L398">				sibling = c;</span>
+<span class="fc bfc" id="L399" title="All 2 branches covered.">				if (leftIsShortSide) {</span>
+<span class="fc" id="L400">					d = sibling.right;</span>
+<span class="fc" id="L401">					c = sibling.left;</span>
+				} else {
+<span class="fc" id="L403">					d = sibling.left;</span>
+<span class="fc" id="L404">					c = sibling.right;</span>
+				}
+			}
+
+			/* Case 6: sibling is Black, d (distant nephew) is red */
+<span class="fc bfc" id="L409" title="All 4 branches covered.">			if (d != null &amp;&amp; d.color == Red) {</span>
+<span class="fc" id="L410">				rotate(parent, leftIsShortSide);</span>
+<span class="fc" id="L411">				sibling.color = parent.color;</span>
+<span class="fc" id="L412">				parent.color = Black;</span>
+<span class="fc" id="L413">				d.color = Black;</span>
+<span class="fc" id="L414">				return;</span>
+			}
+
+			/* Case 5: sibling is Black, c (close nephew) is red */
+<span class="fc bfc" id="L418" title="All 4 branches covered.">			if (c != null &amp;&amp; c.color == Red) {</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">				rotate(sibling, !leftIsShortSide);</span>
+<span class="fc" id="L420">				sibling.color = Red;</span>
+<span class="fc" id="L421">				c.color = Black;</span>
+<span class="fc" id="L422">				rotate(parent, leftIsShortSide);</span>
+<span class="fc" id="L423">				c.color = parent.color;</span>
+<span class="fc" id="L424">				parent.color = Black;</span>
+<span class="fc" id="L425">				sibling.color = Black;</span>
+<span class="fc" id="L426">				return;</span>
+			}
+
+			/* Case 4: sibling, c, d Black, parent is Red */
+<span class="fc bfc" id="L430" title="All 2 branches covered.">			if (parent.color == Red) {</span>
+<span class="fc" id="L431">				sibling.color = Red;</span>
+<span class="fc" id="L432">				parent.color = Black;</span>
+<span class="fc" id="L433">				return;</span>
+			}
+
+			/* Case 1: sibling, c, d, parent are Black */
+<span class="fc" id="L437">			sibling.color = Red;</span>
+
+<span class="fc" id="L439">			Node &lt;K, V&gt; grandparent = parent.parent;</span>
+			/* Case 2: reached tree root, decrease the total black height by 1, done */
+<span class="fc bfc" id="L441" title="All 2 branches covered.">			if (grandparent == null)</span>
+<span class="fc" id="L442">				return;</span>
+
+<span class="fc bfc" id="L444" title="All 2 branches covered.">			leftIsShortSide = parent == grandparent.left;</span>
+<span class="fc" id="L445">			parent = grandparent;</span>
+<span class="fc" id="L446">		}</span>
+	}
+
+	private void rotate(Node &lt;K, V&gt; n, boolean left) {
+<span class="fc bfc" id="L450" title="All 2 branches covered.">		if (left)</span>
+<span class="fc" id="L451">			rotateLeft(n);</span>
+		else
+<span class="fc" id="L453">			rotateRight(n);</span>
+<span class="fc" id="L454">	}</span>
+
+	private void rotateLeft(Node &lt;K, V&gt; n) {
+<span class="fc" id="L457">		beforeRotateLeft(n);</span>
+<span class="fc" id="L458">		Node &lt;K, V&gt; parent = n.parent, child = n.right, grandchild = child.left;</span>
+
+<span class="fc" id="L460">		n.right = grandchild;</span>
+<span class="fc bfc" id="L461" title="All 2 branches covered.">		if (grandchild != null)</span>
+<span class="fc" id="L462">			grandchild.parent = n;</span>
+
+<span class="fc" id="L464">		child.left = n;</span>
+<span class="fc" id="L465">		n.parent = child;</span>
+<span class="fc" id="L466">		child.parent = parent;</span>
+
+<span class="fc bfc" id="L468" title="All 2 branches covered.">		if (parent != null) {</span>
+<span class="fc bfc" id="L469" title="All 2 branches covered.">			if (n == parent.left) {</span>
+<span class="fc" id="L470">				parent.left = child;</span>
+			} else {
+<span class="pc bnc" id="L472" title="All 2 branches missed.">				assert n == parent.right;</span>
+<span class="fc" id="L473">				parent.right = child;</span>
+			}
+		} else {
+<span class="fc" id="L476">			root = child;</span>
+		}
+<span class="fc" id="L478">	}</span>
+
+	private void rotateRight(Node &lt;K, V&gt; n) {
+<span class="fc" id="L481">		beforeRotateRight(n);</span>
+<span class="fc" id="L482">		Node &lt;K, V&gt; parent = n.parent, child = n.left, grandchild = child.right;</span>
+
+<span class="fc" id="L484">		n.left = grandchild;</span>
+<span class="fc bfc" id="L485" title="All 2 branches covered.">		if (grandchild != null)</span>
+<span class="fc" id="L486">			grandchild.parent = n;</span>
+
+<span class="fc" id="L488">		child.right = n;</span>
+<span class="fc" id="L489">		n.parent = child;</span>
+<span class="fc" id="L490">		child.parent = parent;</span>
+
+<span class="fc bfc" id="L492" title="All 2 branches covered.">		if (parent != null) {</span>
+<span class="fc bfc" id="L493" title="All 2 branches covered.">			if (n == parent.left) {</span>
+<span class="fc" id="L494">				parent.left = child;</span>
+			} else {
+<span class="pc bnc" id="L496" title="All 2 branches missed.">				assert n == parent.right;</span>
+<span class="fc" id="L497">				parent.right = child;</span>
+			}
+		} else {
+<span class="fc" id="L500">			root = child;</span>
+		}
+<span class="fc" id="L502">	}</span>
+
+	void swap(Node &lt;K, V&gt; n1, Node &lt;K, V&gt; n2) {
+<span class="fc" id="L505">		ObjBinarySearchTrees.swap(n1, n2);</span>
+<span class="fc bfc" id="L506" title="All 2 branches covered.">		if (n1 == root)</span>
+<span class="fc" id="L507">			root = n2;</span>
+<span class="pc bpc" id="L508" title="1 of 2 branches missed.">		else if (n2 == root)</span>
+<span class="nc" id="L509">			root = n1;</span>
+<span class="fc" id="L510">		boolean color = n1.color;</span>
+<span class="fc" id="L511">		n1.color = n2.color;</span>
+<span class="fc" id="L512">		n2.color = color;</span>
+<span class="fc" id="L513">	}</span>
+
+	@Override
+	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; findOrSmaller(K key) {
+<span class="fc" id="L517">		return ObjBinarySearchTrees.findOrSmaller(root, c, key);</span>
+	}
+
+	@Override
+	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; findOrGreater(K key) {
+<span class="fc" id="L522">		return ObjBinarySearchTrees.findOrGreater(root, c, key);</span>
+	}
+
+	@Override
+	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; findSmaller(K key) {
+<span class="fc" id="L527">		return ObjBinarySearchTrees.findSmaller(root, c, key);</span>
+	}
+
+	@Override
+	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; findGreater(K key) {
+<span class="fc" id="L532">		return ObjBinarySearchTrees.findGreater(root, c, key);</span>
+	}
+
+	@Override
+	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; getPredecessor(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref) {
+<span class="fc" id="L537">		return ObjBinarySearchTrees.getPredecessor((Node &lt;K, V&gt;) ref);</span>
+	}
+
+	@Override
+	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; getSuccessor(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref) {
+<span class="fc" id="L542">		return ObjBinarySearchTrees.getSuccessor((Node &lt;K, V&gt;) ref);</span>
+	}
+
+	/**
+	 * [experimental API] Get an iterator that iterate over all the nodes in a node's sub tree.
+	 *
+	 * @param  ref a reference to a node in the tree
+	 * @return     an iterator that iterate over all the nodes in the node's sub tree
+	 */
+	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+	Iterator&lt;ObjObjReferenceableHeap.Ref &lt;K, V&gt;&gt; subTreeIterator(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref) {
+<span class="fc" id="L553">		return (Iterator) (new ObjBinarySearchTrees.BSTIterator&lt;&gt;((Node &lt;K, V&gt;) ref));</span>
+	}
+
+	static class Node &lt;K, V&gt; extends ObjBinarySearchTrees.Node&lt;K,  Node &lt;K, V&gt;&gt; implements ObjObjReferenceableHeap.Ref &lt;K, V&gt; {
+
+		private boolean color;
+		private V value;
+
+		Node(K key) {
+<span class="fc" id="L562">			super(key);</span>
+<span class="fc" id="L563">		}</span>
+
+		@Override
+		public K key() {
+<span class="fc" id="L567">			return key;</span>
+		}
+
+		@Override
+		public String toString() {
+			// return &quot;{&quot; + (color == Red ? 'R' : 'B') + &quot;:&quot; + key + &quot;}&quot;;
+<span class="fc" id="L573">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
+		}
+
+		@Override
+		public V value() {
+<span class="fc" id="L578">			return value;</span>
+		}
+
+		@Override
+		public void setValue(V val) {
+<span class="fc" id="L583">			value = val;</span>
+<span class="fc" id="L584">		}</span>
+	}
+
+	/* Hooks for extended red black tree sub class */
+
+	Node &lt;K, V&gt; newNode(K key) {
+<span class="fc" id="L590">		return new Node &lt;&gt;(key);</span>
+	}
+
+<span class="fc" id="L593">	void afterInsert(Node &lt;K, V&gt; n) {}</span>
+
+<span class="fc" id="L595">	void beforeRemove(Node &lt;K, V&gt; n) {}</span>
+
+<span class="fc" id="L597">	void beforeRotateLeft(Node &lt;K, V&gt; n) {}</span>
+
+<span class="fc" id="L599">	void beforeRotateRight(Node &lt;K, V&gt; n) {}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

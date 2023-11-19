@@ -21,7 +21,9 @@ package com.jgalgo.graph;
  *
  * @author Barak Ugav
  */
-public interface WeightsByte&lt;K &gt; extends Weights&lt;K, Byte&gt; , WeightFunctionInt&lt;K&gt; {
+public interface WeightsByte&lt;K &gt; extends Weights&lt;K, Byte&gt;
+, WeightFunctionInt&lt;K&gt;
+{
 
 	/**
 	 * Get the weight associated with the given element.
@@ -34,7 +36,7 @@ public interface WeightsByte&lt;K &gt; extends Weights&lt;K, Byte&gt; , WeightFu
 	@Deprecated
 	@Override
 	default Byte getAsObj(K element) {
-<span class="fc" id="L37">		return Byte.valueOf(get(element));</span>
+<span class="fc" id="L39">		return Byte.valueOf(get(element));</span>
 	}
 
 	/**
@@ -48,8 +50,8 @@ public interface WeightsByte&lt;K &gt; extends Weights&lt;K, Byte&gt; , WeightFu
 	@Deprecated
 	@Override
 	default void setAsObj(K element, Byte weight) {
-<span class="fc" id="L51">		set(element, weight.byteValue());</span>
-<span class="fc" id="L52">	}</span>
+<span class="fc" id="L53">		set(element, weight.byteValue());</span>
+<span class="fc" id="L54">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.
@@ -65,10 +67,9 @@ public interface WeightsByte&lt;K &gt; extends Weights&lt;K, Byte&gt; , WeightFu
 	@Deprecated
 	@Override
 	default Byte defaultWeightAsObj() {
-<span class="fc" id="L68">		return Byte.valueOf(defaultWeight());</span>
+<span class="fc" id="L70">		return Byte.valueOf(defaultWeight());</span>
 	}
 
-	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -77,9 +78,8 @@ public interface WeightsByte&lt;K &gt; extends Weights&lt;K, Byte&gt; , WeightFu
 	 */
 	@Override
 	default int weightInt(K element) {
-<span class="nc" id="L80">		return get(element);</span>
+<span class="nc" id="L81">		return get(element);</span>
 	}
-
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

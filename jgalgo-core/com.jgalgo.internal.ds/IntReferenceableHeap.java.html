@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IntReferenceableHeap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.ds</a> &gt; <span class="el_source">IntReferenceableHeap.java</span></div><h1>IntReferenceableHeap.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.ds;
+
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import it.unimi.dsi.fastutil.ints.IntComparator;
+
+/**
+ * A collection which maintains elements in order and support efficient retrieval of the minimum value, and expose
+ * references to the underling elements.
+ *
+ * &lt;p&gt;
+ * In addition to the regular Heap operations, the user can obtain a {@linkplain IntReferenceableHeap.Ref reference} to
+ * each inserted element via the return value of the {@link #insert} function. The reference will be valid as
+ * long as the element is still in the heap. By passing the reference to the heap implementation to functions such as
+ * {@link #decreaseKey} or {@link #remove} the heap implementation can perform the operations efficiently as is does
+ * not need to search for the element.
+ *
+ * &lt;p&gt;
+ * Another difference from the regular Heap, is the existent of both keys and values, rather than just
+ * 'elements'. A key may be changed using {@link #decreaseKey} while the &lt;b&gt;value&lt;/b&gt; is the same. This matches the
+ * common use case of these heaps.
+ *
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface.
+ *
+ * &lt;pre&gt; {@code
+ * IntObjReferenceableHeap&lt;Integer, String&gt; heap = IntObjReferenceableHeap.newInstance();
+ * IntObjReferenceableHeap.Ref&lt;String&gt; r1 = heap.insert(5, &quot;Alice&quot;);
+ * IntObjReferenceableHeap.Ref&lt;String&gt; r2 = heap.insert(10, &quot;Bob&quot;);
+ * IntObjReferenceableHeap.Ref&lt;String&gt; r3 = heap.insert(3, &quot;Charlie&quot;);
+ *
+ * assert heap.findMin() == r3;
+ * assert r2.key() == 10;
+ * heap.decreaseKey(r2, 2);
+ * assert r2.key() == 2;
+ * assert r2.value().equals(&quot;Bob&quot;);
+ * assert heap.findMin() == r2;
+ *
+ * heap.remove(r1);
+ * assert heap.size() == 2;
+ * }&lt;/pre&gt;
+ *
+ * @author     Barak Ugav
+ */
+public interface IntReferenceableHeap  extends ReferenceableHeap, Iterable&lt;IntReferenceableHeap.Ref &gt; {
+
+	/**
+	 * Insert a new element to the heap with {@code null} value.
+	 *
+	 * &lt;p&gt;
+	 * Only a key is passed to this method, and a {@code null} value (or {@code 0} if values are primitive) will be
+	 * used. To insert a new element with both a key and a value use {@link #insert}.
+	 *
+	 * @param  key the key of the new element
+	 * @return     reference to the new element
+	 */
+	IntReferenceableHeap.Ref  insert(int key);
+
+
+	/**
+	 * Find the element with the minimal key in the heap and return a reference to it.
+	 *
+	 * @return                       a reference to the element with the minimal key in the heap
+	 * @throws IllegalStateException if the heap is empty
+	 */
+	IntReferenceableHeap.Ref  findMin();
+
+	/**
+	 * Extract the element with the minimal key in the heap.
+	 *
+	 * &lt;p&gt;
+	 * This method find and &lt;b&gt;remove&lt;/b&gt; the element with the minimal key.
+	 *
+	 * @return                       the element with the minimal key in the heap
+	 * @throws IllegalStateException if the heap is empty
+	 */
+	IntReferenceableHeap.Ref  extractMin();
+
+	/**
+	 * Meld with another heap.
+	 *
+	 * &lt;p&gt;
+	 * Melding is performed by adding all elements of the given heap to this heap, and clearing the given heap. Some
+	 * implementations support efficient melding due to internal structures used to maintain the heap elements.
+	 *
+	 * &lt;p&gt;
+	 * Its only possible to meld with a heap with the same implementation of this heap.
+	 *
+	 * &lt;p&gt;
+	 * After the melding, the references of both ({@code this} and the given {@code heap}) remain valid and its possible
+	 * to use them only in this heap (they are no longer valid with respect to the given heap, which will be cleared).
+	 *
+	 * @param  heap                     a heap to meld with. After the operation it will be empty.
+	 * @throws IllegalArgumentException if the given heap is {@code this} heap, or its of another implementation
+	 */
+	void meld(IntReferenceableHeap  heap);
+
+	/**
+	 * Returns the comparator used to order the element's keys in this heap, or {@code null} if this heap uses the
+	 * {@linkplain Comparable natural ordering} of its keys.
+	 *
+	 * @return the comparator used to order the element's keys in this heap, or {@code null} if this heap uses the
+	 *         natural ordering of its keys
+	 */
+	IntComparator  comparator();
+
+	/**
+	 * Find an element by its key in the heap and get a reference to it.
+	 *
+	 * &lt;p&gt;
+	 * Note that this method uses the comparator of the heap to determine if two keys are equal, rather than
+	 * {@link Object#equals} or primitive comparison for primitive types.
+	 *
+	 * @param  key a key
+	 * @return     a reference to an element with the given key or {@code null} if such element was not found
+	 */
+	default IntReferenceableHeap.Ref  find(int key) {
+<span class="fc" id="L134">		IntComparator  c = comparator();</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">			for (IntReferenceableHeap.Ref  p : this) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">				if (key == p.key())</span>
+<span class="fc" id="L138">					return p;</span>
+<span class="fc" id="L139">			}</span>
+		} else {
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			for (IntReferenceableHeap.Ref  p : this) {</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">				if (c.compare(key, p.key()) == 0)</span>
+<span class="fc" id="L143">					return p;</span>
+<span class="fc" id="L144">			}</span>
+		}
+<span class="fc" id="L146">		return null;</span>
+	}
+
+	/**
+	 * Decrease the key of an element in the heap.
+	 *
+	 * &lt;p&gt;
+	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
+	 * removed, or to an element in another heap.
+	 *
+	 * @param  ref                      reference to an inserted element
+	 * @param  newKey                   a new key
+	 * @throws IllegalArgumentException if the new key is greater than the previous key
+	 */
+	void decreaseKey(IntReferenceableHeap.Ref  ref, int newKey);
+
+	/**
+	 * Remove an element from the heap by its reference.
+	 *
+	 * &lt;p&gt;
+	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
+	 * removed, or to an element in another heap.
+	 *
+	 * @param ref a reference to an inserted element
+	 */
+	void remove(IntReferenceableHeap.Ref  ref);
+
+	/**
+	 * Get a stream over the elements in this heap.
+	 *
+	 * @return a stream over the elements in this heap
+	 */
+	default Stream&lt;IntReferenceableHeap.Ref &gt; stream() {
+<span class="fc" id="L179">		return StreamSupport.stream(spliterator(), false);</span>
+	}
+
+	/**
+	 * A reference to an element in a {@linkplain IntReferenceableHeap referenceable heap}.
+	 *
+	 * @author Barak Ugav
+	 */
+	static interface Ref  {
+
+		/**
+		* Get the key of this element.
+		*
+		* &lt;p&gt;
+		* There is no {@code setKey} method, but the key of an element can be changed (decrease only) by
+		* {@link IntReferenceableHeap#decreaseKey}.
+		*
+		* @return the element's key
+		*/
+		int key();
+
+	}
+
+	/**
+	 * Get an instance of this interface with the default implementation.
+	 *
+	 * @return an instance of this interface with the default implementation
+	 */
+	static  IntReferenceableHeap  newInstance() {
+<span class="fc" id="L208">		return newInstance(null);</span>
+	}
+
+	/**
+	 * Get an instance of this interface with the default implementation and custom comparator.
+	 *
+	 * @param c a comparator to use for ordering the elements in the heap
+	 * @return an instance of this interface with the default implementation
+	 */
+	static  IntReferenceableHeap  newInstance(IntComparator  c) {
+<span class="fc" id="L218">		return new IntPairingHeap  (c);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

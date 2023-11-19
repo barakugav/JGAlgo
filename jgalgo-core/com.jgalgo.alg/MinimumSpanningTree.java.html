@@ -25,7 +25,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
@@ -272,7 +272,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 	static MinimumSpanningTree.Builder newBuilder() {
 <span class="fc" id="L273">		return new MinimumSpanningTree.Builder() {</span>
 			String impl;
-			private HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder;
+			private ReferenceableHeap.Builder heapBuilder;
 
 			@Override
 			public MinimumSpanningTree build() {
@@ -309,7 +309,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 <span class="nc" id="L309">						impl = (String) value;</span>
 <span class="nc" id="L310">						break;</span>
 					case &quot;heap-builder&quot;:
-<span class="nc" id="L312">						heapBuilder = (HeapReferenceable.Builder&lt;?, ?&gt;) value;</span>
+<span class="nc" id="L312">						heapBuilder = (ReferenceableHeap.Builder) value;</span>
 <span class="nc" id="L313">						break;</span>
 					default:
 <span class="nc" id="L315">						MinimumSpanningTree.Builder.super.setOption(key, value);</span>

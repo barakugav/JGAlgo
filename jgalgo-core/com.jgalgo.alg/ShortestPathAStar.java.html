@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import java.util.Objects;
 import java.util.function.IntToDoubleFunction;
 import java.util.function.ToDoubleFunction;
 import com.jgalgo.graph.Graph;
@@ -28,8 +29,8 @@ import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
-import com.jgalgo.internal.ds.HeapReference;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.DoubleIntReferenceableHeap;
+import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -55,10 +56,9 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/A*_search_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-<span class="fc" id="L58">class ShortestPathAStar implements ShortestPathHeuristicST {</span>
+<span class="fc" id="L59">class ShortestPathAStar implements ShortestPathHeuristicST {</span>
 
-<span class="fc" id="L60">	private HeapReferenceable.Builder&lt;Double, Integer&gt; heapBuilder =</span>
-<span class="fc" id="L61">			HeapReferenceable.newBuilder().keysTypePrimitive(double.class).valuesTypePrimitive(int.class);</span>
+<span class="fc" id="L61">	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.newBuilder();</span>
 
 	/**
 	 * Construct a new AStart algorithm.
@@ -70,8 +70,8 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 	 *
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
-	void setHeapBuilder(HeapReferenceable.Builder&lt;?, ?&gt; heapBuilder) {
-<span class="nc" id="L74">		this.heapBuilder = heapBuilder.keysTypePrimitive(double.class).valuesTypePrimitive(int.class);</span>
+	void setHeapBuilder(ReferenceableHeap.Builder heapBuilder) {
+<span class="nc" id="L74">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
 <span class="nc" id="L75">	}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
@@ -120,84 +120,83 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 	}
 
-	@SuppressWarnings(&quot;boxing&quot;)
 	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
-<span class="fc bfc" id="L125" title="All 2 branches covered.">		if (source == target)</span>
-<span class="fc" id="L126">			return new PathImpl(g, source, target, IntLists.emptyList());</span>
-<span class="fc" id="L127">		HeapReferenceable&lt;Double, Integer&gt; heap = heapBuilder.build();</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">		if (source == target)</span>
+<span class="fc" id="L125">			return new PathImpl(g, source, target, IntLists.emptyList());</span>
+<span class="fc" id="L126">		DoubleIntReferenceableHeap heap = (DoubleIntReferenceableHeap) heapBuilder.build(double.class, int.class);</span>
 
-<span class="fc" id="L129">		Int2ObjectMap&lt;Info&gt; info = new Int2ObjectOpenHashMap&lt;&gt;();</span>
-<span class="fc" id="L130">		Info sourceInfo = new Info();</span>
-<span class="fc" id="L131">		sourceInfo.distance = 0;</span>
-<span class="fc" id="L132">		info.put(source, sourceInfo);</span>
-<span class="fc" id="L133">		heap.insert(.0, source);</span>
+<span class="fc" id="L128">		Int2ObjectMap&lt;Info&gt; info = new Int2ObjectOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L129">		Info sourceInfo = new Info();</span>
+<span class="fc" id="L130">		sourceInfo.distance = 0;</span>
+<span class="fc" id="L131">		info.put(source, sourceInfo);</span>
+<span class="fc" id="L132">		heap.insert(.0, source);</span>
 
-<span class="fc bfc" id="L135" title="All 2 branches covered.">		while (heap.isNotEmpty()) {</span>
-<span class="fc" id="L136">			HeapReference&lt;Double, Integer&gt; min = heap.extractMin();</span>
-<span class="fc" id="L137">			int u = min.value();</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">			if (u == target)</span>
-<span class="fc" id="L139">				return computePath(g, source, target, info);</span>
-<span class="fc" id="L140">			Info uInfo = info.get(u);</span>
-<span class="fc" id="L141">			final double uDistance = uInfo.distance;</span>
-<span class="fc" id="L142">			uInfo.heapPtr = null;</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		while (heap.isNotEmpty()) {</span>
+<span class="fc" id="L135">			DoubleIntReferenceableHeap.Ref min = heap.extractMin();</span>
+<span class="fc" id="L136">			int u = min.value();</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			if (u == target)</span>
+<span class="fc" id="L138">				return computePath(g, source, target, info);</span>
+<span class="fc" id="L139">			Info uInfo = info.get(u);</span>
+<span class="fc" id="L140">			final double uDistance = uInfo.distance;</span>
+<span class="fc" id="L141">			uInfo.heapPtr = null;</span>
 
-<span class="fc bfc" id="L144" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L145">				int e = eit.nextInt();</span>
-<span class="fc" id="L146">				int v = eit.targetInt();</span>
-<span class="fc" id="L147">				Info vInfo = info.computeIfAbsent(v, k -&gt; new Info());</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L144">				int e = eit.nextInt();</span>
+<span class="fc" id="L145">				int v = eit.targetInt();</span>
+<span class="fc" id="L146">				Info vInfo = info.computeIfAbsent(v, k -&gt; new Info());</span>
 
-<span class="fc" id="L149">				double ew = w.weight(e);</span>
-<span class="fc" id="L150">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
-<span class="fc" id="L151">				double distance = uDistance + ew;</span>
+<span class="fc" id="L148">				double ew = w.weight(e);</span>
+<span class="fc" id="L149">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L150">				double distance = uDistance + ew;</span>
 
-<span class="fc bfc" id="L153" title="All 2 branches covered.">				if (distance &gt;= vInfo.distance)</span>
-<span class="fc" id="L154">					continue;</span>
-<span class="fc" id="L155">				vInfo.distance = distance;</span>
-<span class="fc" id="L156">				vInfo.backtrack = e;</span>
-<span class="fc" id="L157">				double distanceEstimate = distance + vHeuristic.applyAsDouble(v);</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">				if (distance &gt;= vInfo.distance)</span>
+<span class="fc" id="L153">					continue;</span>
+<span class="fc" id="L154">				vInfo.distance = distance;</span>
+<span class="fc" id="L155">				vInfo.backtrack = e;</span>
+<span class="fc" id="L156">				double distanceEstimate = distance + vHeuristic.applyAsDouble(v);</span>
 
-<span class="fc bfc" id="L159" title="All 2 branches covered.">				if (vInfo.heapPtr == null) {</span>
-<span class="fc" id="L160">					vInfo.heapPtr = heap.insert(Double.valueOf(distanceEstimate), Integer.valueOf(v));</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">				if (vInfo.heapPtr == null) {</span>
+<span class="fc" id="L159">					vInfo.heapPtr = heap.insert(distanceEstimate, v);</span>
 				} else {
-<span class="pc bnc" id="L162" title="All 2 branches missed.">					assert distanceEstimate &lt;= vInfo.heapPtr.key().doubleValue();</span>
-<span class="fc" id="L163">					heap.decreaseKey(vInfo.heapPtr, Double.valueOf(distanceEstimate));</span>
+<span class="pc bnc" id="L161" title="All 2 branches missed.">					assert distanceEstimate &lt;= vInfo.heapPtr.key();</span>
+<span class="fc" id="L162">					heap.decreaseKey(vInfo.heapPtr, distanceEstimate);</span>
 				}
-<span class="fc" id="L165">			}</span>
-<span class="fc" id="L166">		}</span>
-<span class="fc" id="L167">		return null;</span>
+<span class="fc" id="L164">			}</span>
+<span class="fc" id="L165">		}</span>
+<span class="fc" id="L166">		return null;</span>
 	}
 
 	private static IPath computePath(IndexGraph g, int source, int target, Int2ObjectMap&lt;Info&gt; info) {
-<span class="fc" id="L171">		IntArrayList path = new IntArrayList();</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc" id="L173">			for (int v = target;;) {</span>
-<span class="fc" id="L174">				int e = info.get(v).backtrack;</span>
-<span class="fc bfc" id="L175" title="All 2 branches covered.">				if (e == -1) {</span>
-<span class="pc bnc" id="L176" title="All 2 branches missed.">					assert v == source;</span>
+<span class="fc" id="L170">		IntArrayList path = new IntArrayList();</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc" id="L172">			for (int v = target;;) {</span>
+<span class="fc" id="L173">				int e = info.get(v).backtrack;</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">				if (e == -1) {</span>
+<span class="pc bnc" id="L175" title="All 2 branches missed.">					assert v == source;</span>
 					break;
 				}
-<span class="fc" id="L179">				path.add(e);</span>
-<span class="fc" id="L180">				v = g.edgeSource(e);</span>
-<span class="fc" id="L181">			}</span>
+<span class="fc" id="L178">				path.add(e);</span>
+<span class="fc" id="L179">				v = g.edgeSource(e);</span>
+<span class="fc" id="L180">			}</span>
 		} else {
-<span class="fc" id="L183">			for (int v = target;;) {</span>
-<span class="fc" id="L184">				int e = info.get(v).backtrack;</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">				if (e == -1) {</span>
-<span class="pc bnc" id="L186" title="All 2 branches missed.">					assert v == source;</span>
+<span class="fc" id="L182">			for (int v = target;;) {</span>
+<span class="fc" id="L183">				int e = info.get(v).backtrack;</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">				if (e == -1) {</span>
+<span class="pc bnc" id="L185" title="All 2 branches missed.">					assert v == source;</span>
 					break;
 				}
-<span class="fc" id="L189">				path.add(e);</span>
-<span class="fc" id="L190">				v = g.edgeEndpoint(e, v);</span>
-<span class="fc" id="L191">			}</span>
+<span class="fc" id="L188">				path.add(e);</span>
+<span class="fc" id="L189">				v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L190">			}</span>
 		}
-<span class="fc" id="L193">		IntArrays.reverse(path.elements(), 0, path.size());</span>
-<span class="fc" id="L194">		return new PathImpl(g, source, target, path);</span>
+<span class="fc" id="L192">		IntArrays.reverse(path.elements(), 0, path.size());</span>
+<span class="fc" id="L193">		return new PathImpl(g, source, target, path);</span>
 	}
 
-<span class="fc" id="L197">	static class Info {</span>
-<span class="fc" id="L198">		int backtrack = -1;</span>
-<span class="fc" id="L199">		double distance = Double.POSITIVE_INFINITY;</span>
-		HeapReference&lt;Double, Integer&gt; heapPtr;
+<span class="fc" id="L196">	static class Info {</span>
+<span class="fc" id="L197">		int backtrack = -1;</span>
+<span class="fc" id="L198">		double distance = Double.POSITIVE_INFINITY;</span>
+		DoubleIntReferenceableHeap.Ref heapPtr;
 	}
 
 }

@@ -21,7 +21,8 @@ package com.jgalgo.graph;
  *
  * @author Barak Ugav
  */
-public interface WeightsBool&lt;K &gt; extends Weights&lt;K, Boolean&gt;  {
+public interface WeightsBool&lt;K &gt; extends Weights&lt;K, Boolean&gt;
+{
 
 	/**
 	 * Get the weight associated with the given element.
@@ -34,7 +35,7 @@ public interface WeightsBool&lt;K &gt; extends Weights&lt;K, Boolean&gt;  {
 	@Deprecated
 	@Override
 	default Boolean getAsObj(K element) {
-<span class="fc" id="L37">		return Boolean.valueOf(get(element));</span>
+<span class="fc" id="L38">		return Boolean.valueOf(get(element));</span>
 	}
 
 	/**
@@ -48,8 +49,8 @@ public interface WeightsBool&lt;K &gt; extends Weights&lt;K, Boolean&gt;  {
 	@Deprecated
 	@Override
 	default void setAsObj(K element, Boolean weight) {
-<span class="fc" id="L51">		set(element, weight.booleanValue());</span>
-<span class="fc" id="L52">	}</span>
+<span class="fc" id="L52">		set(element, weight.booleanValue());</span>
+<span class="fc" id="L53">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.
@@ -65,10 +66,8 @@ public interface WeightsBool&lt;K &gt; extends Weights&lt;K, Boolean&gt;  {
 	@Deprecated
 	@Override
 	default Boolean defaultWeightAsObj() {
-<span class="fc" id="L68">		return Boolean.valueOf(defaultWeight());</span>
+<span class="fc" id="L69">		return Boolean.valueOf(defaultWeight());</span>
 	}
-
-	
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -34,7 +34,7 @@ package com.jgalgo.internal.ds;
 <span class="fc" id="L34">class DynamicTreeSplay implements DynamicTree {</span>
 
 	private final double rootWeight;
-	private final SplayTree.SplayImpl&lt;Object, SplayNode&gt; impl;
+	private final ObjObjSplayTree.SplayImpl&lt;Object, SplayNode&gt; impl;
 	private static final double EPS = 0.00001;
 
 	/**
@@ -48,7 +48,7 @@ package com.jgalgo.internal.ds;
 <span class="fc" id="L48">		this(new SplayImplWithRelativeWeights(), weightLimit);</span>
 <span class="fc" id="L49">	}</span>
 
-<span class="fc" id="L51">	DynamicTreeSplay(SplayTree.SplayImpl&lt;Object, SplayNode&gt; impl, double weightLimit) {</span>
+<span class="fc" id="L51">	DynamicTreeSplay(ObjObjSplayTree.SplayImpl&lt;Object, SplayNode&gt; impl, double weightLimit) {</span>
 <span class="fc" id="L52">		this.rootWeight = weightLimit;</span>
 <span class="fc" id="L53">		this.impl = impl;</span>
 <span class="fc" id="L54">	}</span>
@@ -66,7 +66,7 @@ package com.jgalgo.internal.ds;
 <span class="fc bfc" id="L66" title="All 2 branches covered.">		if (!n.isLinked())</span>
 <span class="fc" id="L67">			return n;</span>
 <span class="fc" id="L68">		splay(n);</span>
-<span class="fc" id="L69">		return splay(BinarySearchTrees.findMax(n));</span>
+<span class="fc" id="L69">		return splay(ObjBinarySearchTrees.findMax(n));</span>
 	}
 
 	@Override
@@ -216,7 +216,7 @@ package com.jgalgo.internal.ds;
 
 <span class="fc" id="L217">	void afterLink(SplayNode n) {}</span>
 
-<span class="fc" id="L219">	static class SplayImplWithRelativeWeights extends SplayTree.SplayImpl&lt;Object, SplayNode&gt; {</span>
+<span class="fc" id="L219">	static class SplayImplWithRelativeWeights extends ObjObjSplayTree.SplayImpl&lt;Object, SplayNode&gt; {</span>
 
 		@Override
 		void beforeRotate(SplayNode n) {
@@ -265,7 +265,7 @@ package com.jgalgo.internal.ds;
 
 	}
 
-<span class="fc" id="L268">	static class SplayNode extends SplayTree.BaseNode&lt;Object, SplayNode&gt; implements DynamicTree.Vertex {</span>
+<span class="fc" id="L268">	static class SplayNode extends ObjObjSplayTree.BaseNode&lt;Object, SplayNode&gt; implements DynamicTree.Vertex {</span>
 
 		SplayNode userParent;
 

@@ -33,7 +33,7 @@ import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.ds.Heap;
-import com.jgalgo.internal.ds.HeapReferenceable;
+import com.jgalgo.internal.ds.ReferenceableHeap;
 import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 import it.unimi.dsi.fastutil.ints.Int2ByteMap;
 import it.unimi.dsi.fastutil.ints.Int2ByteOpenHashMap;
@@ -303,7 +303,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 		public static void decreaseKeyIsSmaller(double oldKey, double newKey, DoubleComparator cmp) {
 <span class="pc bpc" id="L304" title="1 of 2 branches missed.">			if (!JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal)</span>
 <span class="nc" id="L305">				return;</span>
-<span class="pc bpc" id="L306" title="1 of 2 branches missed.">			int c = cmp == null ? Double.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">			int c = cmp == null ? Double.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
 <span class="pc bpc" id="L307" title="1 of 2 branches missed.">			if (c &lt; 0)</span>
 <span class="nc" id="L308">				throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
 <span class="fc" id="L309">		}</span>
@@ -315,51 +315,47 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 <span class="nc" id="L315">				throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
 <span class="fc" id="L316">		}</span>
 
-		public static &lt;K, V&gt; void noMeldWithSelf(HeapReferenceable&lt;K, V&gt; heap,
-				HeapReferenceable&lt;? extends K, ? extends V&gt; other) {
-<span class="pc bpc" id="L320" title="1 of 2 branches missed.">			if (!JGAlgoConfigImpl.AssertionsHeapsMeldLegal)</span>
-<span class="nc" id="L321">				return;</span>
-<span class="pc bpc" id="L322" title="1 of 2 branches missed.">			if (heap == other)</span>
-<span class="nc" id="L323">				throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
-<span class="fc" id="L324">		}</span>
+		public static void noMeldWithSelf(ReferenceableHeap heap, ReferenceableHeap other) {
+<span class="pc bpc" id="L319" title="1 of 2 branches missed.">			if (!JGAlgoConfigImpl.AssertionsHeapsMeldLegal)</span>
+<span class="nc" id="L320">				return;</span>
+<span class="pc bpc" id="L321" title="1 of 2 branches missed.">			if (heap == other)</span>
+<span class="nc" id="L322">				throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
+<span class="fc" id="L323">		}</span>
 
-		@SuppressWarnings(&quot;rawtypes&quot;)
-		public static &lt;K, V&gt; void meldWithSameImpl(Class&lt;? extends HeapReferenceable&gt; impl,
-				HeapReferenceable&lt;? extends K, ? extends V&gt; other) {
-<span class="pc bpc" id="L329" title="1 of 2 branches missed.">			if (!JGAlgoConfigImpl.AssertionsHeapsMeldLegal)</span>
-<span class="nc" id="L330">				return;</span>
-<span class="pc bpc" id="L331" title="1 of 2 branches missed.">			if (!impl.isAssignableFrom(other.getClass()))</span>
-<span class="nc" id="L332">				throw new IllegalArgumentException(&quot;Can't meld heaps with different implementations&quot;);</span>
-<span class="fc" id="L333">		}</span>
+		public static void meldWithSameImpl(Class&lt;? extends ReferenceableHeap&gt; impl, ReferenceableHeap other) {
+<span class="pc bpc" id="L326" title="1 of 2 branches missed.">			if (!JGAlgoConfigImpl.AssertionsHeapsMeldLegal)</span>
+<span class="nc" id="L327">				return;</span>
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">			if (!impl.isAssignableFrom(other.getClass()))</span>
+<span class="nc" id="L329">				throw new IllegalArgumentException(&quot;Can't meld heaps with different implementations&quot;);</span>
+<span class="fc" id="L330">		}</span>
 
 		public static &lt;E&gt; void equalComparatorBeforeMeld(Heap&lt;E&gt; heap, Heap&lt;? extends E&gt; other) {
-<span class="pc bpc" id="L336" title="1 of 2 branches missed.">			if (!JGAlgoConfigImpl.AssertionsHeapsMeldLegal)</span>
-<span class="nc" id="L337">				return;</span>
-<span class="pc bpc" id="L338" title="1 of 2 branches missed.">			if (!Objects.equals(heap.comparator(), other.comparator()))</span>
-<span class="nc" id="L339">				throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
-<span class="fc" id="L340">		}</span>
+<span class="pc bpc" id="L333" title="1 of 2 branches missed.">			if (!JGAlgoConfigImpl.AssertionsHeapsMeldLegal)</span>
+<span class="nc" id="L334">				return;</span>
+<span class="pc bpc" id="L335" title="1 of 2 branches missed.">			if (!Objects.equals(heap.comparator(), other.comparator()))</span>
+<span class="nc" id="L336">				throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
+<span class="fc" id="L337">		}</span>
 
-		public static &lt;K, V&gt; void equalComparatorBeforeMeld(HeapReferenceable&lt;K, V&gt; heap,
-				HeapReferenceable&lt;? extends K, ? extends V&gt; other) {
-<span class="pc bpc" id="L344" title="1 of 2 branches missed.">			if (!JGAlgoConfigImpl.AssertionsHeapsMeldLegal)</span>
-<span class="nc" id="L345">				return;</span>
-<span class="pc bpc" id="L346" title="1 of 2 branches missed.">			if (!Objects.equals(heap.comparator(), other.comparator()))</span>
-<span class="nc" id="L347">				throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
-<span class="fc" id="L348">		}</span>
+		public static void equalComparatorBeforeMeld(Comparator&lt;?&gt; c1, Comparator&lt;?&gt; c2) {
+<span class="pc bpc" id="L340" title="1 of 2 branches missed.">			if (!JGAlgoConfigImpl.AssertionsHeapsMeldLegal)</span>
+<span class="nc" id="L341">				return;</span>
+<span class="pc bpc" id="L342" title="1 of 2 branches missed.">			if (!Objects.equals(c1, c2))</span>
+<span class="nc" id="L343">				throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
+<span class="fc" id="L344">		}</span>
 
 		public static void notEmpty(Heap&lt;?&gt; heap) {
-<span class="pc bpc" id="L351" title="1 of 2 branches missed.">			if (!JGAlgoConfigImpl.AssertionsHeapsNotEmpty)</span>
-<span class="nc" id="L352">				return;</span>
-<span class="pc bpc" id="L353" title="1 of 2 branches missed.">			if (heap.isEmpty())</span>
-<span class="nc" id="L354">				throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
-<span class="fc" id="L355">		}</span>
+<span class="pc bpc" id="L347" title="1 of 2 branches missed.">			if (!JGAlgoConfigImpl.AssertionsHeapsNotEmpty)</span>
+<span class="nc" id="L348">				return;</span>
+<span class="pc bpc" id="L349" title="1 of 2 branches missed.">			if (heap.isEmpty())</span>
+<span class="nc" id="L350">				throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
+<span class="fc" id="L351">		}</span>
 
-		public static void notEmpty(HeapReferenceable&lt;?, ?&gt; heap) {
-<span class="pc bpc" id="L358" title="1 of 2 branches missed.">			if (!JGAlgoConfigImpl.AssertionsHeapsNotEmpty)</span>
-<span class="nc" id="L359">				return;</span>
-<span class="pc bpc" id="L360" title="1 of 2 branches missed.">			if (heap.isEmpty())</span>
-<span class="nc" id="L361">				throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
-<span class="fc" id="L362">		}</span>
+		public static void notEmpty(ReferenceableHeap heap) {
+<span class="pc bpc" id="L354" title="1 of 2 branches missed.">			if (!JGAlgoConfigImpl.AssertionsHeapsNotEmpty)</span>
+<span class="nc" id="L355">				return;</span>
+<span class="pc bpc" id="L356" title="1 of 2 branches missed.">			if (heap.isEmpty())</span>
+<span class="nc" id="L357">				throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
+<span class="fc" id="L358">		}</span>
 
 	}
 

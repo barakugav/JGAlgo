@@ -21,7 +21,9 @@ package com.jgalgo.graph;
  *
  * @author Barak Ugav
  */
-public interface IWeightsByte  extends IWeights&lt;Byte&gt;, WeightsByte&lt;Integer &gt; , IWeightFunctionInt {
+public interface IWeightsByte  extends IWeights&lt;Byte&gt;, WeightsByte&lt;Integer &gt;
+, IWeightFunctionInt
+{
 
 	/**
 	 * Get the weight associated with the given element.
@@ -34,13 +36,13 @@ public interface IWeightsByte  extends IWeights&lt;Byte&gt;, WeightsByte&lt;Inte
 	@Deprecated
 	@Override
 	default byte get(Integer element) {
-<span class="fc" id="L37">		return get(element.intValue());</span>
+<span class="fc" id="L39">		return get(element.intValue());</span>
 	}
 
 	@Deprecated
 	@Override
 	default Byte getAsObj(int element) {
-<span class="fc" id="L43">		return Byte.valueOf(get(element));</span>
+<span class="fc" id="L45">		return Byte.valueOf(get(element));</span>
 	}
 
 	/**
@@ -54,28 +56,27 @@ public interface IWeightsByte  extends IWeights&lt;Byte&gt;, WeightsByte&lt;Inte
 	@Deprecated
 	@Override
 	default void set(Integer element, byte weight) {
-<span class="fc" id="L57">		set(element.intValue(), weight);</span>
-<span class="fc" id="L58">	}</span>
+<span class="fc" id="L59">		set(element.intValue(), weight);</span>
+<span class="fc" id="L60">	}</span>
 
 	@Deprecated
 	@Override
 	default void setAsObj(int element, Byte weight) {
-<span class="fc" id="L63">		set(element, weight.byteValue());</span>
-<span class="fc" id="L64">	}</span>
+<span class="fc" id="L65">		set(element, weight.byteValue());</span>
+<span class="fc" id="L66">	}</span>
 
 	@Deprecated
 	@Override
 	default Byte getAsObj(Integer element) {
-<span class="fc" id="L69">		return Byte.valueOf(get(element.intValue()));</span>
+<span class="fc" id="L71">		return Byte.valueOf(get(element.intValue()));</span>
 	}
 
 	@Deprecated
 	@Override
 	default void setAsObj(Integer element, Byte weight) {
-<span class="fc" id="L75">		set(element.intValue(), weight.byteValue());</span>
-<span class="fc" id="L76">	}</span>
+<span class="fc" id="L77">		set(element.intValue(), weight.byteValue());</span>
+<span class="fc" id="L78">	}</span>
 
-	
 	/**
 	 * {@inheritDoc}
 	 *
@@ -84,7 +85,7 @@ public interface IWeightsByte  extends IWeights&lt;Byte&gt;, WeightsByte&lt;Inte
 	 */
 	@Override
 	default int weightInt(int element) {
-<span class="nc" id="L87">		return get(element);</span>
+<span class="nc" id="L88">		return get(element);</span>
 	}
 
 	/**
@@ -96,15 +97,14 @@ public interface IWeightsByte  extends IWeights&lt;Byte&gt;, WeightsByte&lt;Inte
 	@Deprecated
 	@Override
 	default int weightInt(Integer element) {
-<span class="nc" id="L99">		return get(element.intValue());</span>
+<span class="nc" id="L100">		return get(element.intValue());</span>
 	}
 
 	@Deprecated
 	@Override
 	default int compare(Integer e1, Integer e2) {
-<span class="nc" id="L105">		return IWeightFunctionInt.super.compare(e1.intValue(), e2.intValue());</span>
+<span class="nc" id="L106">		return IWeightFunctionInt.super.compare(e1.intValue(), e2.intValue());</span>
 	}
-
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
