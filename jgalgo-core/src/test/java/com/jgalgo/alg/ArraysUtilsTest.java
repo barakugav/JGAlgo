@@ -17,6 +17,7 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.Random;
@@ -269,6 +270,19 @@ public class ArraysUtilsTest extends TestBase {
 		for (int i = 0; i < a.length; i++)
 			A[i] = Integer.valueOf(a[i]);
 		return A;
+	}
+
+	@Test
+	public void invalidIndex() {
+		final int n = 100;
+		int[] a = new int[n];
+		for (int i = 0; i < n; i++)
+			a[i] = i;
+
+		assertThrows(IndexOutOfBoundsException.class, () -> ArraysUtils.getKthElement(a, -1, 100, 7, null, false));
+		assertThrows(IndexOutOfBoundsException.class, () -> ArraysUtils.getKthElement(a, 0, 101, 7, null, false));
+		assertThrows(IndexOutOfBoundsException.class, () -> ArraysUtils.getKthElement(a, 57, 57, 0, null, false));
+		assertThrows(IndexOutOfBoundsException.class, () -> ArraysUtils.getKthElement(a, 57, 56, 0, null, false));
 	}
 
 }

@@ -16,9 +16,12 @@
 
 package com.jgalgo.alg;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.TestBase;
 
 public class MatchingBipartiteHopcroftKarpTest extends TestBase {
@@ -36,13 +39,35 @@ public class MatchingBipartiteHopcroftKarpTest extends TestBase {
 		g.addVertex(0);
 		g.addVertex(1);
 		g.addVertex(2);
+		g.addVertex(3);
 		g.addEdge(0, 1, 0);
 		g.addEdge(1, 2, 1);
-		g.addEdge(2, 0, 2);
+		g.addEdge(2, 3, 2);
+		g.addEdge(0, 3, 3);
 
 		MatchingAlgo algo = new MatchingCardinalityBipartiteHopcroftKarp();
 		Matching<Integer, Integer> matching = algo.computeMinimumMatching(g, null);
 		assertTrue(matching.edges().isEmpty());
+	}
+
+	@Test
+	public void nonBipartiteGraph() {
+		IntGraph g = IntGraph.newUndirected();
+		g.addVertex(0);
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addEdge(0, 1);
+		g.addEdge(1, 2);
+		g.addEdge(2, 0);
+
+		MatchingAlgo algo = new MatchingCardinalityBipartiteHopcroftKarp();
+		assertThrows(IllegalArgumentException.class, () -> algo.computeMaximumMatching(g, null));
+
+		IWeightsBool partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);
+		partition.set(0, true);
+		partition.set(1, false);
+		partition.set(2, true);
+		assertThrows(IllegalArgumentException.class, () -> algo.computeMaximumMatching(g, null));
 	}
 
 }

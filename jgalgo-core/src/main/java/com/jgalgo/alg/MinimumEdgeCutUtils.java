@@ -154,6 +154,8 @@ class MinimumEdgeCutUtils {
 
 	private static IVertexBiPartition minCutFromMaxFlow(IndexGraph g, IntCollection sources, IWeightFunction capacity,
 			IFlow flow) {
+		if (capacity == null)
+			capacity = IWeightFunction.CardinalityWeightFunction;
 		final int n = g.vertices().size();
 		Bitmap visited = new Bitmap(n);
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
@@ -241,6 +243,8 @@ class MinimumEdgeCutUtils {
 				if (n < 2)
 					throw new IllegalArgumentException("no valid cut in graphs with less than two vertices");
 				w = WeightFunctions.localEdgeWeightFunction(g, w);
+				if (w == null)
+					w = IWeightFunction.CardinalityWeightFunction;
 
 				IVertexBiPartition bestCut = null;
 				double bestCutWeight = Double.MAX_VALUE;

@@ -27,4 +27,9 @@ public class MinimumSpanningTreeKruskalTest extends TestBase {
 		MinimumSpanningTreeTestUtils.testRandGraph(new MinimumSpanningTreeKruskal(), seed);
 	}
 
+	@Test
+	public void directedNotSupported() {
+		MinimumSpanningTreeTestUtils.directedNotSupported(new MinimumSpanningTreeKruskal());
+	}
+
 }

@@ -17,12 +17,14 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Random;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -121,6 +123,21 @@ public class LowestCommonAncestorStaticRMQTest extends TestBase {
 			Query<Integer>[] queries = randLcaQueries(g, root, m, seedGen.nextSeed());
 			testLCA(g, root, LowestCommonAncestorStaticRMQ::new, queries);
 		});
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void nonTree() {
+		IntGraph g = IntGraph.newUndirected();
+		g.addVertex(0);
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addEdge(0, 1);
+		g.addEdge(1, 2);
+		g.addEdge(2, 0);
+
+		LowestCommonAncestorStatic algo = new LowestCommonAncestorStaticRMQ();
+		assertThrows(IllegalArgumentException.class, () -> algo.preProcessTree(g, 0));
 	}
 
 }

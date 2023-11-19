@@ -17,6 +17,7 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -129,6 +130,18 @@ public class ClosuresEnumeratorSchrageBakerTest extends TestBase {
 			assertFalse(ClosuresEnumerator.isClosure(g, IntSet.of(1, 2)));
 			assertTrue(ClosuresEnumerator.isClosure(g, IntSet.of(0, 1, 2)));
 		}
+	}
+
+	@Test
+	public void undirectedNotSupported() {
+		IntGraph g = IntGraph.newUndirected();
+		g.addVertex(0);
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addEdge(1, 0, 0);
+		g.addEdge(1, 2, 1);
+
+		assertThrows(IllegalArgumentException.class, () -> ClosuresEnumerator.newInstance().allClosures(g));
 	}
 
 }

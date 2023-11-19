@@ -27,4 +27,9 @@ public class MinimumSpanningTreeBoruvkaTest extends TestBase {
 		MinimumSpanningTreeTestUtils.testRandGraph(new MinimumSpanningTreeBoruvka(), seed);
 	}
 
+	@Test
+	public void directedNotSupported() {
+		MinimumSpanningTreeTestUtils.directedNotSupported(new MinimumSpanningTreeBoruvka());
+	}
+
 }

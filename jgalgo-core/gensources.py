@@ -626,8 +626,17 @@ def generate_pairing_heap_test(key_type, value_type, constants, functions):
     constants["PAIRING_HEAP_TEST"] = prefix + "PairingHeapTest"
     constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
     constants["REFERENCEABLE_HEAP_TEST_UTILS"] = prefix + "ReferenceableHeapTestUtils"
+    constants["RED_BLACK_TREE"] = prefix + "RedBlackTree"
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
+    if key_type == "Obj" and value_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<String, String>"
+    elif key_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<String>"
+    elif value_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<String>"
+    else:
+        constants["KEY_VALUE_GENERIC"] = ""
 
 
 register_template(
@@ -667,9 +676,19 @@ def generate_binomial_heap_test(key_type, value_type, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
     constants["BINOMIAL_HEAP"] = prefix + "BinomialHeap"
     constants["BINOMIAL_HEAP_TEST"] = prefix + "BinomialHeapTest"
+    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
     constants["REFERENCEABLE_HEAP_TEST_UTILS"] = prefix + "ReferenceableHeapTestUtils"
+    constants["PAIRING_HEAP"] = prefix + "PairingHeap"
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
+    if key_type == "Obj" and value_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<String, String>"
+    elif key_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<String>"
+    elif value_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<String>"
+    else:
+        constants["KEY_VALUE_GENERIC"] = ""
 
 
 register_template(
@@ -709,9 +728,19 @@ def generate_fibonacci_heap_test(key_type, value_type, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
     constants["FIBONACCI_HEAP"] = prefix + "FibonacciHeap"
     constants["FIBONACCI_HEAP_TEST"] = prefix + "FibonacciHeapTest"
+    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
     constants["REFERENCEABLE_HEAP_TEST_UTILS"] = prefix + "ReferenceableHeapTestUtils"
+    constants["PAIRING_HEAP"] = prefix + "PairingHeap"
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
+    if key_type == "Obj" and value_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<String, String>"
+    elif key_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<String>"
+    elif value_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<String>"
+    else:
+        constants["KEY_VALUE_GENERIC"] = ""
 
 
 register_template(
@@ -837,10 +866,20 @@ def generate_red_black_tree_test(key_type, value_type, constants, functions):
     constants["RED_BLACK_TREE"] = prefix + "RedBlackTree"
     constants["RED_BLACK_TREE_TEST"] = prefix + "RedBlackTreeTest"
     constants["BINARY_SEARCH_TREE"] = prefix + "BinarySearchTree"
+    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
     constants["REFERENCEABLE_HEAP_TEST_UTILS"] = prefix + "ReferenceableHeapTestUtils"
     constants["BINARY_SEARCH_TREE_TEST_UTILS"] = prefix + "BinarySearchTreeTestUtils"
+    constants["PAIRING_HEAP"] = prefix + "PairingHeap"
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
+    if key_type == "Obj" and value_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<String, String>"
+    elif key_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<String>"
+    elif value_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<String>"
+    else:
+        constants["KEY_VALUE_GENERIC"] = ""
 
 
 register_template(
@@ -886,10 +925,20 @@ def generate_splay_tree_test(key_type, value_type, constants, functions):
     prefix = key_value_prefix(key_type, value_type)
     constants["SPLAY_TREE"] = prefix + "SplayTree"
     constants["SPLAY_TREE_TEST"] = prefix + "SplayTreeTest"
+    constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
     constants["REFERENCEABLE_HEAP_TEST_UTILS"] = prefix + "ReferenceableHeapTestUtils"
     constants["BINARY_SEARCH_TREE_TEST_UTILS"] = prefix + "BinarySearchTreeTestUtils"
+    constants["PAIRING_HEAP"] = prefix + "PairingHeap"
     if key_type == "Obj":
         constants["KEY_TYPE_GENERIC"] = "<String>"
+    if key_type == "Obj" and value_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<String, String>"
+    elif key_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<String>"
+    elif value_type == "Obj":
+        constants["KEY_VALUE_GENERIC"] = "<String>"
+    else:
+        constants["KEY_VALUE_GENERIC"] = ""
 
 
 register_template(

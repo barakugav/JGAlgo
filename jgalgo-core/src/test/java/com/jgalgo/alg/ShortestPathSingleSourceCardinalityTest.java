@@ -16,7 +16,9 @@
 
 package com.jgalgo.alg;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.TestBase;
 
 public class ShortestPathSingleSourceCardinalityTest extends TestBase {
@@ -31,6 +33,21 @@ public class ShortestPathSingleSourceCardinalityTest extends TestBase {
 	public void testSSSPDirectedCardinality() {
 		final long seed = 0xf03c60e86faad030L;
 		ShortestPathSingleSourceTestUtils.testSSSPCardinality(new ShortestPathSingleSourceCardinality(), true, seed);
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void nonCardinality() {
+		IntGraph g = IntGraph.newUndirected();
+		g.addVertex(0);
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addEdge(0, 1);
+		g.addEdge(1, 2);
+		g.addEdge(2, 0);
+
+		ShortestPathSingleSource algo = new ShortestPathSingleSourceCardinality();
+		assertThrows(IllegalArgumentException.class, () -> algo.computeShortestPaths(g, e -> 5, 0));
 	}
 
 }

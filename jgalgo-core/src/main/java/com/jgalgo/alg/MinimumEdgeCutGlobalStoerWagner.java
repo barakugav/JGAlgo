@@ -46,6 +46,8 @@ class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutUtils.AbstractImplGl
 
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);
+		if (w == null)
+			w = IWeightFunction.CardinalityWeightFunction;
 
 		ContractableGraph cg = new ContractableGraph(g);
 		Bitmap cut = new Bitmap(n);

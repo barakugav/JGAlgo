@@ -19,6 +19,7 @@ package com.jgalgo.internal.ds;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collection;
 import java.util.Comparator;
@@ -308,6 +309,7 @@ class HeapTestUtils extends TestUtils {
 		int elmsToInsertCursor = 0;
 
 		debug.println("\t testHeap begin");
+		Heap<Integer> heap = tracker.heap;
 
 		for (int opIdx = 0; opIdx < m;) {
 			HeapOp op = opIdx < insertFirst ? HeapOp.Insert : randElement(ops, rand);
@@ -321,7 +323,7 @@ class HeapTestUtils extends TestUtils {
 					debug.println("Insert(", x, ")");
 
 					tracker.insert(x);
-					tracker.heap.insert(x);
+					heap.insert(x);
 					break;
 
 				case Remove:
@@ -331,16 +333,18 @@ class HeapTestUtils extends TestUtils {
 					debug.println("Remove(", x, ")");
 
 					tracker.remove(x);
-					assertTrue(tracker.heap.remove(x), "failed to remove: " + x);
+					assertTrue(heap.remove(x), "failed to remove: " + x);
 					break;
 
 				case FindMin:
-					if (tracker.isEmpty())
+					if (tracker.isEmpty()) {
+						assertThrows(IllegalStateException.class, () -> heap.findMin());
 						continue;
+					}
 					debug.println("FindMin");
 
 					expected = tracker.findMin();
-					actual = tracker.heap.findMin();
+					actual = heap.findMin();
 					assertEquals(expected, actual, "failed findMin");
 					break;
 
@@ -350,7 +354,7 @@ class HeapTestUtils extends TestUtils {
 					debug.println("ExtractMin");
 
 					expected = tracker.extractMin();
-					actual = tracker.heap.extractMin();
+					actual = heap.extractMin();
 					assertEquals(expected, actual, "failed extractMin");
 					break;
 				default:

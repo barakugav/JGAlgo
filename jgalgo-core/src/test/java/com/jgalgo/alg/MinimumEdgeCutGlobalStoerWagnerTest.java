@@ -25,7 +25,8 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
@@ -53,18 +54,30 @@ class MinimumEdgeCutGlobalStoerWagnerTest extends TestBase {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
 
-			WeightsInt<Integer> w = g.addEdgesWeights("weight", int.class);
-			for (Integer e : g.edges())
-				w.set(e, rand.nextInt(16384));
+			WeightFunction<Integer> w = null;
+			if (rand.nextBoolean()) {
+				WeightsInt<Integer> w0 = g.addEdgesWeights("weight", int.class);
+				for (Integer e : g.edges())
+					w0.set(e, rand.nextInt(16384));
+				w = w0;
+
+			} else if (rand.nextBoolean()) {
+				WeightsDouble<Integer> w0 = g.addEdgesWeights("weight", double.class);
+				for (Integer e : g.edges())
+					w0.set(e, rand.nextInt(16384));
+				w = w0;
+			}
 
 			testMinCut(g, w, algo);
 		});
 
 	}
 
-	private static <V, E> void testMinCut(Graph<V, E> g, WeightFunctionInt<E> w, MinimumEdgeCutGlobal alg) {
+	private static <V, E> void testMinCut(Graph<V, E> g, WeightFunction<E> w, MinimumEdgeCutGlobal alg) {
 		VertexBiPartition<V, E> minCut = alg.computeMinimumCut(g, w);
-		int minCutWeight = (int) w.weightSum(minCut.crossEdges());
+		double minCutWeight = WeightFunction.weightSum(w, minCut.crossEdges());
+		if (w == null)
+			w = WeightFunction.cardinalityWeightFunction();
 
 		final int n = g.vertices().size();
 
@@ -74,6 +87,9 @@ class MinimumEdgeCutGlobalStoerWagnerTest extends TestBase {
 			final V firstVertex = g.vertices().iterator().next();
 			vertices.remove(firstVertex);
 
+			if (w == null)
+				w = WeightFunction.cardinalityWeightFunction();
+
 			Set<V> cut = new ObjectOpenHashSet<>(n);
 			for (int bitmap = 0; bitmap < 1 << (n - 1); bitmap++) {
 				cut.add(firstVertex);
@@ -81,13 +97,13 @@ class MinimumEdgeCutGlobalStoerWagnerTest extends TestBase {
 					if ((bitmap & (1 << i)) != 0)
 						cut.add(vertices.get(i));
 				if (cut.size() != n) {
-					int cutWeight = 0;
+					double cutWeight = 0;
 					for (V u : cut) {
 						for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							E e = eit.next();
 							V v = eit.target();
 							if (!cut.contains(v))
-								cutWeight += w.weightInt(e);
+								cutWeight += w.weight(e);
 						}
 					}
 					assertTrue(minCutWeight <= cutWeight, "failed to find minimum cut: " + cut);
@@ -99,7 +115,7 @@ class MinimumEdgeCutGlobalStoerWagnerTest extends TestBase {
 			MinimumEdgeCutGlobal validationAlgo =
 					MinimumEdgeCutUtils.globalMinCutFromStMinCut(new MaximumFlowEdmondsKarp());
 			VertexBiPartition<V, E> minCutExpected = validationAlgo.computeMinimumCut(g, w);
-			int minCutWeightExpected = (int) w.weightSum(minCutExpected.crossEdges());
+			double minCutWeightExpected = w.weightSum(minCutExpected.crossEdges());
 
 			assertEquals(minCutWeightExpected, minCutWeight, "failed to find minimum cut");
 		}

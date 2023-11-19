@@ -30,4 +30,9 @@ public class MinimumSpanningTreeKargerKleinTarjanTest extends TestBase {
 		MinimumSpanningTreeTestUtils.testRandGraph(algo, seedGen.nextSeed());
 	}
 
+	@Test
+	public void directedNotSupported() {
+		MinimumSpanningTreeTestUtils.directedNotSupported(new MinimumSpanningTreeKargerKleinTarjan());
+	}
+
 }

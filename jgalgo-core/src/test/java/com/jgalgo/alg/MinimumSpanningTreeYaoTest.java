@@ -27,4 +27,9 @@ public class MinimumSpanningTreeYaoTest extends TestBase {
 		MinimumSpanningTreeTestUtils.testRandGraph(new MinimumSpanningTreeYao(), seed);
 	}
 
+	@Test
+	public void directedNotSupported() {
+		MinimumSpanningTreeTestUtils.directedNotSupported(new MinimumSpanningTreeYao());
+	}
+
 }

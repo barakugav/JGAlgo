@@ -27,4 +27,9 @@ public class MinimumSpanningTreeFredmanTarjanTest extends TestBase {
 		MinimumSpanningTreeTestUtils.testRandGraph(new MinimumSpanningTreeFredmanTarjan(), seed);
 	}
 
+	@Test
+	public void directedNotSupported() {
+		MinimumSpanningTreeTestUtils.directedNotSupported(new MinimumSpanningTreeFredmanTarjan());
+	}
+
 }

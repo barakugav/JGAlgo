@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collections;
 import java.util.List;
@@ -418,6 +419,7 @@ public class REFERENCEABLE_HEAP_TEST_UTILS extends TestUtils {
 						assertTrue(heap.isEmpty());
 						assertFalse(heap.isNotEmpty());
 						assertFalse(heap.iterator().hasNext());
+						assertThrows(IllegalStateException.class, () -> heap.findMin());
 						continue;
 					} else {
 						assertFalse(heap.isEmpty());

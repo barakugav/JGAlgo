@@ -16,9 +16,11 @@
 
 package com.jgalgo.internal.ds;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 #if PRIMITIVE_KEY_TYPE_REAL == "Object"
+import com.jgalgo.internal.util.JGAlgoUtils;
 import java.util.Comparator;
 #else
 import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
@@ -77,6 +79,26 @@ public class BINOMIAL_HEAP_TEST extends TestBase {
 	public void testDecreaseKeyCustomCompare() {
 		final long seed = 0xd7d8cf9389480696L;
 		REFERENCEABLE_HEAP_TEST_UTILS.testDecreaseKeyCustomCompare(heapBuilder(), seed);
+	}
+
+	@Test
+	public void meldWithDifferentImpl() {
+		REFERENCEABLE_HEAP KEY_VALUE_GENERIC h1 = new BINOMIAL_HEAP KEY_VALUE_GENERIC_EMPTY(null);
+		REFERENCEABLE_HEAP KEY_VALUE_GENERIC h2 = new PAIRING_HEAP KEY_VALUE_GENERIC_EMPTY(null);
+		assertThrows(IllegalArgumentException.class, () -> h1.meld(h2));
+	}
+
+	@Test
+	public void meldWithDifferentComparator() {
+		REFERENCEABLE_HEAP KEY_VALUE_GENERIC h1 = new BINOMIAL_HEAP KEY_VALUE_GENERIC_EMPTY(null);
+		REFERENCEABLE_HEAP KEY_VALUE_GENERIC h2 = new BINOMIAL_HEAP KEY_VALUE_GENERIC_EMPTY((x1, x2) -> -COMPARE_KEY_DEFAULT(x1, x2));
+		assertThrows(IllegalArgumentException.class, () -> h1.meld(h2));
+	}
+
+	@Test
+	public void meldWithSelf() {
+		REFERENCEABLE_HEAP KEY_VALUE_GENERIC h1 = new BINOMIAL_HEAP KEY_VALUE_GENERIC_EMPTY(null);
+		assertThrows(IllegalArgumentException.class, () -> h1.meld(h1));
 	}
 
 }

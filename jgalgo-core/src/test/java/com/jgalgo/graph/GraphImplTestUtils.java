@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
@@ -71,6 +73,7 @@ class GraphImplTestUtils extends TestUtils {
 		return ObjectSets.unmodifiable(set);
 	}
 
+	@SuppressWarnings("boxing")
 	static void testVertexAdd(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		for (boolean directed : new boolean[] { true, false }) {
 			Graph<Integer, Integer> g = graphImpl.get(directed);
@@ -83,6 +86,8 @@ class GraphImplTestUtils extends TestUtils {
 			}
 			assertEquals(verticesSet, g.vertices());
 			assertEquals(IntSets.emptySet(), g.edges());
+
+			assertThrows(NoSuchVertexException.class, () -> g.outEdges(6687));
 		}
 	}
 
@@ -110,6 +115,8 @@ class GraphImplTestUtils extends TestUtils {
 				int e = edge[0], u = edge[1], v = edge[2];
 				assertEndpoints(g, e, u, v);
 			}
+
+			assertThrows(NoSuchEdgeException.class, () -> g.edgeSource(6687));
 		}
 	}
 
@@ -201,7 +208,11 @@ class GraphImplTestUtils extends TestUtils {
 			}
 			if (directed) {
 				for (Integer u : g.vertices()) {
-					for (EdgeIter<Integer, Integer> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					for (EdgeIter<Integer, Integer> eit = g.outEdges(u).iterator();;) {
+						if (!eit.hasNext()) {
+							assertThrows(NoSuchElementException.class, () -> eit.next());
+							break;
+						}
 						Integer e = eit.next();
 						assertEquals(u, eit.source());
 						assertEquals(g.edgeEndpoint(e, u), eit.target());

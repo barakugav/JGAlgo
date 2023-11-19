@@ -27,4 +27,9 @@ public class MinimumSpanningTreePrimTest extends TestBase {
 		MinimumSpanningTreeTestUtils.testRandGraph(new MinimumSpanningTreePrim(), seed);
 	}
 
+	@Test
+	public void directedNotSupported() {
+		MinimumSpanningTreeTestUtils.directedNotSupported(new MinimumSpanningTreePrim());
+	}
+
 }

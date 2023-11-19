@@ -17,12 +17,14 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Comparator;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.TestUtils;
@@ -108,6 +110,17 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 		assertEquals(expected.edges().size(), actualSet.size(), "unexpected MST size");
 		for (E e : expected.edges())
 			assertTrue(actualSet.contains(e), "MST doesn't contains edge: " + e);
+	}
+
+	static void directedNotSupported(MinimumSpanningTree algo) {
+		IntGraph g = IntGraph.newDirected();
+		g.addVertex(0);
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addEdge(1, 0, 0);
+		g.addEdge(1, 2, 1);
+
+		assertThrows(IllegalArgumentException.class, () -> algo.computeMinimumSpanningTree(g, null));
 	}
 
 }

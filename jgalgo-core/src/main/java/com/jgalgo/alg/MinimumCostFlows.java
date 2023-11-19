@@ -226,14 +226,17 @@ class MinimumCostFlows {
 		@Override
 		IFlow computeMinCostFlow(IndexGraph g, IWeightFunction capacityOrig, IWeightFunction cost,
 				IWeightFunction lowerBound, IWeightFunction supply) {
-			Objects.requireNonNull(g);
-			Objects.requireNonNull(capacityOrig);
-			Objects.requireNonNull(cost);
-			Objects.requireNonNull(lowerBound);
-
 			Assertions.Graphs.onlyDirected(g);
 			Assertions.Flows.checkLowerBound(g, capacityOrig, lowerBound);
 			Assertions.Flows.checkSupply(g, supply);
+			if (capacityOrig == null)
+				capacityOrig = IWeightFunction.CardinalityWeightFunction;
+			if (cost == null)
+				cost = IWeightFunction.CardinalityWeightFunction;
+			if (lowerBound == null)
+				lowerBound = IWeightFunction.CardinalityWeightFunction;
+			if (supply == null)
+				supply = IWeightFunction.CardinalityWeightFunction;
 
 			final boolean integerFlow = WeightFunction.isInteger(capacityOrig) && WeightFunction.isInteger(lowerBound);
 
@@ -252,7 +255,9 @@ class MinimumCostFlows {
 						edge -> capacityOrigInt.weightInt(edge) - lowerBoundInt.weightInt(edge);
 				capacity = capacityInt;
 			} else {
-				capacity = edge -> capacityOrig.weight(edge) - lowerBound.weight(edge);
+				IWeightFunction capacityOrig0 = capacityOrig;
+				IWeightFunction lowerBound0 = lowerBound;
+				capacity = edge -> capacityOrig0.weight(edge) - lowerBound0.weight(edge);
 			}
 
 			/* For each edge with lower bound we add/remove supply from the end endpoints */
@@ -619,13 +624,14 @@ class MinimumCostFlows {
 		@Override
 		IFlow computeMinCostFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IWeightFunction costOrig,
 				IWeightFunction supply) {
-			Objects.requireNonNull(gOrig);
-			Objects.requireNonNull(capacityOrig);
-			Objects.requireNonNull(costOrig);
-			Objects.requireNonNull(supply);
-
 			Assertions.Graphs.onlyDirected(gOrig);
 			Assertions.Flows.checkSupply(gOrig, supply);
+			if (capacityOrig == null)
+				capacityOrig = IWeightFunction.CardinalityWeightFunction;
+			if (costOrig == null)
+				costOrig = IWeightFunction.CardinalityWeightFunction;
+			if (supply == null)
+				supply = IWeightFunction.CardinalityWeightFunction;
 
 			final boolean integerFlow = WeightFunction.isInteger(capacityOrig) && WeightFunction.isInteger(supply);
 			final boolean integerCost = WeightFunction.isInteger(costOrig);
@@ -698,8 +704,9 @@ class MinimumCostFlows {
 				capacity = capacityInt;
 			} else {
 				double[] caps = ((DoubleArrayList) capacities).elements();
-				capacity =
-						edge -> edge < origEdgesThreshold ? capacityOrig.weight(edge) : caps[edge - origEdgesThreshold];
+				IWeightFunction capacityOrig0 = capacityOrig;
+				capacity = edge -> edge < origEdgesThreshold ? capacityOrig0.weight(edge)
+						: caps[edge - origEdgesThreshold];
 			}
 
 			/*
@@ -712,7 +719,8 @@ class MinimumCostFlows {
 				IWeightFunctionInt costInt = e -> e < origEdgesThreshold ? costOrigInt.weightInt(e) : 0;
 				cost = costInt;
 			} else {
-				cost = e -> e < origEdgesThreshold ? costOrig.weight(e) : 0;
+				IWeightFunction costOrig0 = costOrig;
+				cost = e -> e < origEdgesThreshold ? costOrig0.weight(e) : 0;
 			}
 
 			/* Compute a minimum-cost maximum-flow between the two artificial vertices */

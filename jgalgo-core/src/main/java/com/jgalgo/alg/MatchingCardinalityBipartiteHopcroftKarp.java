@@ -17,7 +17,6 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IndexGraph;
@@ -57,10 +56,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size();
 
-		IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
-		Objects.requireNonNull(partition,
-				"Bipartiteness values weren't found with weight " + BipartiteGraphs.VertexBiPartitionWeightKey);
-		Assertions.Graphs.onlyBipartite(g, partition);
+		IWeightsBool partition = Assertions.Graphs.onlyBipartite(g);
 
 		/* BFS */
 		int[] depths = new int[n];
