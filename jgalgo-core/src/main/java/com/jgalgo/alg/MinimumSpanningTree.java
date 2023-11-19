@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
@@ -34,6 +35,7 @@ import com.jgalgo.internal.util.IntAdapters;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 
 /**
@@ -86,9 +88,9 @@ public interface MinimumSpanningTree {
 		/**
 		 * Get all the edges that form the spanning tree.
 		 *
-		 * @return a collection of the MST edges.
+		 * @return the set of MST edges.
 		 */
-		Collection<E> edges();
+		Set<E> edges();
 	}
 
 	/**
@@ -99,7 +101,7 @@ public interface MinimumSpanningTree {
 	static interface IResult extends Result<Integer, Integer> {
 
 		@Override
-		IntCollection edges();
+		IntSet edges();
 	}
 
 	/**

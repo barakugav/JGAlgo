@@ -24,8 +24,9 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.IntReferenceableHeap;
 import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Fredman and Tarjan’s minimum spanning tree algorithm.
@@ -110,7 +111,7 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 		// (super vertex -> heap element) for fast decreaseKey
 		IntReferenceableHeap.Ref[] vHeapElm = new IntReferenceableHeap.Ref[n];
 
-		IntCollection mst = new IntArrayList(n - 1);
+		IntArrayList mst = new IntArrayList(n - 1);
 		for (int niNext;; ni = niNext) {
 			int kExp = 2 * m / ni;
 			int k = kExp < Integer.SIZE ? 1 << kExp : Integer.MAX_VALUE;
@@ -226,7 +227,8 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 
 		}
 
-		return new MinimumSpanningTreeUtils.ResultImpl(mst);
+		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
+		return new MinimumSpanningTreeUtils.ResultImpl(mstSet);
 	}
 
 }

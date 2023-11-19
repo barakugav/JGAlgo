@@ -16,8 +16,8 @@
 
 package com.jgalgo.alg;
 
-import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -29,8 +29,8 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntCollections;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 
 class MinimumSpanningTreeUtils {
 
@@ -87,11 +87,11 @@ class MinimumSpanningTreeUtils {
 
 	static class ResultImpl implements MinimumSpanningTree.IResult {
 
-		private final IntCollection edges;
+		private final IntSet edges;
 		static final MinimumSpanningTree.IResult Empty = new ResultImpl(IntArrays.EMPTY_ARRAY);
 
-		ResultImpl(IntCollection edges) {
-			this.edges = IntCollections.unmodifiable(Objects.requireNonNull(edges));
+		ResultImpl(IntSet edges) {
+			this.edges = IntSets.unmodifiable(Objects.requireNonNull(edges));
 		}
 
 		ResultImpl(int[] edges) {
@@ -99,7 +99,7 @@ class MinimumSpanningTreeUtils {
 		}
 
 		@Override
-		public IntCollection edges() {
+		public IntSet edges() {
 			return edges;
 		}
 
@@ -121,8 +121,8 @@ class MinimumSpanningTreeUtils {
 		}
 
 		@Override
-		public Collection<E> edges() {
-			return IndexIdMaps.indexToIdCollection(indexRes.edges(), eiMap);
+		public Set<E> edges() {
+			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);
 		}
 	}
 
@@ -137,8 +137,8 @@ class MinimumSpanningTreeUtils {
 		}
 
 		@Override
-		public IntCollection edges() {
-			return IndexIdMaps.indexToIdCollection(indexRes.edges(), eiMap);
+		public IntSet edges() {
+			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);
 		}
 	}
 

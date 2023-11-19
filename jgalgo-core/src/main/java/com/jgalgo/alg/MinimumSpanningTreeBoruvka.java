@@ -17,13 +17,15 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Boruvka minimum spanning tree algorithm.
@@ -119,7 +121,7 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 		int edgesNum = m;
 
 		int treeNum = n;
-		IntCollection mst = new IntArrayList();
+		IntArrayList mst = new IntArrayList();
 		for (int i = 0; i < numberOfRounds; i++) {
 
 			/* find minimum edge going out of each tree */
@@ -210,15 +212,16 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 				vTree[v] = vTreeNext[vTree[v]];
 		}
 
-		return new Res(vTree, treeNum, mst);
+		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
+		return new Res(vTree, treeNum, mstSet);
 	}
 
 	private static class Res {
 		final int[] vToTree;
 		final int treeNum;
-		final IntCollection mst;
+		final IntSet mst;
 
-		Res(int[] vToTree, int treeNum, IntCollection mst) {
+		Res(int[] vToTree, int treeNum, IntSet mst) {
 			this.vToTree = vToTree;
 			this.treeNum = treeNum;
 			this.mst = mst;

@@ -24,6 +24,7 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2DoubleFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntFunction;
@@ -31,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntLists;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Karger, Klein and Tarjan randomized linear minimum spanning tree algorithm
@@ -69,17 +70,20 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 	@Override
 	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
-		return new MinimumSpanningTreeUtils.ResultImpl(computeMST(g, w));
+
+		IntArrayList mst = computeMST(g, w);
+		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
+		return new MinimumSpanningTreeUtils.ResultImpl(mstSet);
 	}
 
-	private IntCollection computeMST(IndexGraph g, IWeightFunction w) {
+	private IntArrayList computeMST(IndexGraph g, IWeightFunction w) {
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
-			return IntLists.emptyList();
+			return new IntArrayList();
 
 		/* Run Boruvka to reduce the number of vertices by a factor of 4 by contraction */
 		MinimumSpanningTreeBoruvka.RunBoruvkaResult g0Res = boruvka.runBoruvka(g, w, 2);
 		IndexGraph g0 = g0Res.contractedG;
-		IntCollection f0 = g0Res.mstEdges;
+		IntArrayList f0 = new IntArrayList(g0Res.mstEdges);
 		int[] g0Ref = g0Res.edgeRef;
 
 		/* Find a random subgraph G1 in the contracted graph G0, by choosing each edge with probability 0.5 */

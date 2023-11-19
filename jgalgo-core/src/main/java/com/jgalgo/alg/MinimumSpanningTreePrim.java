@@ -28,8 +28,9 @@ import com.jgalgo.internal.ds.IntIntReferenceableHeap;
 import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Prim's minimum spanning tree algorithm.
@@ -92,7 +93,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 		DoubleIntReferenceableHeap.Ref[] verticesPtrs = new DoubleIntReferenceableHeap.Ref[n];
 		Bitmap visited = new Bitmap(n);
 
-		IntCollection mst = new IntArrayList(n - 1);
+		IntArrayList mst = new IntArrayList(n - 1);
 		for (int r = 0; r < n; r++) {
 			if (visited.get(r))
 				continue;
@@ -138,7 +139,8 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 		}
 		// Help GC
 		Arrays.fill(verticesPtrs, 0, n, null);
-		return new MinimumSpanningTreeUtils.ResultImpl(mst);
+		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
+		return new MinimumSpanningTreeUtils.ResultImpl(mstSet);
 	}
 
 	private MinimumSpanningTree.IResult computeMSTInt(IndexGraph g, IWeightFunctionInt w) {
@@ -147,7 +149,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 		IntIntReferenceableHeap.Ref[] verticesPtrs = new IntIntReferenceableHeap.Ref[n];
 		Bitmap visited = new Bitmap(n);
 
-		IntCollection mst = new IntArrayList(n - 1);
+		IntArrayList mst = new IntArrayList(n - 1);
 		for (int r = 0; r < n; r++) {
 			if (visited.get(r))
 				continue;
@@ -193,7 +195,8 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 		}
 		// Help GC
 		Arrays.fill(verticesPtrs, 0, n, null);
-		return new MinimumSpanningTreeUtils.ResultImpl(mst);
+		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
+		return new MinimumSpanningTreeUtils.ResultImpl(mstSet);
 	}
 
 }

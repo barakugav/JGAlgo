@@ -17,13 +17,14 @@
 package com.jgalgo.alg;
 
 import java.util.Arrays;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Yao's buckets minimum spanning tree algorithm.
@@ -71,7 +72,7 @@ class MinimumSpanningTreeYao extends MinimumSpanningTreeUtils.AbstractUndirected
 		double[] minEdgeWeights = new double[n];
 		int[] path = new int[n];
 
-		IntCollection mst = new IntArrayList();
+		IntArrayList mst = new IntArrayList(n - 1);
 		for (;;) {
 			Arrays.fill(minEdgeWeights, 0, treeNum, Double.MAX_VALUE);
 
@@ -165,7 +166,8 @@ class MinimumSpanningTreeYao extends MinimumSpanningTreeUtils.AbstractUndirected
 				vTree[v] = vTreeNext[vTree[v]];
 		}
 
-		return new MinimumSpanningTreeUtils.ResultImpl(mst);
+		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
+		return new MinimumSpanningTreeUtils.ResultImpl(mstSet);
 	}
 
 	private int[][][] partitionEdgesToBuckets(IndexGraph g, IWeightFunction w) {

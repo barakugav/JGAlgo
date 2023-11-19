@@ -17,14 +17,15 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Kruskal's minimum spanning tree algorithm.
@@ -89,7 +90,7 @@ class MinimumSpanningTreeKruskal extends MinimumSpanningTreeUtils.AbstractUndire
 			uf.make();
 
 		/* iterate over the edges and build the MST */
-		IntCollection mst = new IntArrayList(n - 1);
+		IntArrayList mst = new IntArrayList(n - 1);
 		for (int e : edges) {
 			int U = uf.find(g.edgeSource(e));
 			int V = uf.find(g.edgeTarget(e));
@@ -100,7 +101,8 @@ class MinimumSpanningTreeKruskal extends MinimumSpanningTreeUtils.AbstractUndire
 			}
 		}
 		uf.clear();
-		return new MinimumSpanningTreeUtils.ResultImpl(mst);
+		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
+		return new MinimumSpanningTreeUtils.ResultImpl(mstSet);
 	}
 
 }
