@@ -17,8 +17,7 @@ package com.jgalgo.graph;
 
 import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 
-public abstract class GraphBaseWithEdgeEndpointsContainer extends GraphBaseMutable
-		implements GraphWithEdgeEndpointsContainer {
+abstract class GraphBaseWithEdgeEndpointsContainer extends GraphBaseMutable implements GraphWithEdgeEndpointsContainer {
 
 	private long[] edgeEndpoints;
 	private final DataContainer.Long edgeEndpointsContainer;
