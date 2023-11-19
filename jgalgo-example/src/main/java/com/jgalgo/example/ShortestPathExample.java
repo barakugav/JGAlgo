@@ -27,9 +27,12 @@ import com.jgalgo.graph.WeightsDouble;
  */
 public class ShortestPathExample {
 
+	private ShortestPathExample() {}
+
 	/**
 	 * This example demonstrates how to use the single-source shortest path algorithm.
 	 */
+	@SuppressWarnings("boxing")
 	public static void shortestPathExample() {
 		/* Create an undirected graph with three vertices and edges between them */
 		Graph<String, Integer> g = Graph.newUndirected();

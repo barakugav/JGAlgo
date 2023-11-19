@@ -16,9 +16,9 @@
 package com.jgalgo.example;
 
 import com.jgalgo.alg.ColoringAlgo;
-import com.jgalgo.alg.IVertexPartition;
-import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.alg.VertexPartition;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
 
 /**
  * This example demonstrates how to use the coloring algorithm.
@@ -27,47 +27,50 @@ import com.jgalgo.graph.IntGraph;
  */
 public class ColoringExample {
 
+	private ColoringExample() {}
+
 	/**
 	 * This example demonstrates how to use the coloring algorithm.
 	 */
 	public static void coloringExample() {
 		/* Create a graph with few vertices and edges */
-		IntGraph g = createGraph();
+		Graph<String, Integer> g = createGraph();
 
 		/* Compute a color for each vertex, tying to minimize the number of colors used */
 		ColoringAlgo coloringAlgo = ColoringAlgo.newInstance();
-		IVertexPartition colors = (IVertexPartition) coloringAlgo.computeColoring(g);
+		VertexPartition<String, Integer> colors = coloringAlgo.computeColoring(g);
 
-		for (int u : g.vertices()) {
+		for (String u : g.vertices()) {
 			int uColor = colors.vertexBlock(u);
 			System.out.println("The color of " + u + " is " + uColor);
 
 			/* For each edge (u,v), the endpoints u and v have different colors */
-			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
-				eit.nextInt();
-				int v = eit.targetInt();
+			for (EdgeIter<String, Integer> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+				eit.next();
+				String v = eit.target();
 				int vColor = colors.vertexBlock(v);
 				assert uColor != vColor;
 			}
 		}
 	}
 
-	private static IntGraph createGraph() {
-		IntGraph g = IntGraph.newUndirected();
-		int v1 = g.addVertex();
-		int v2 = g.addVertex();
-		int v3 = g.addVertex();
-		int v4 = g.addVertex();
-		int v5 = g.addVertex();
-		int v6 = g.addVertex();
-		int v7 = g.addVertex();
+	@SuppressWarnings("boxing")
+	private static Graph<String, Integer> createGraph() {
+		Graph<String, Integer> g = Graph.newUndirected();
+		g.addVertex("Smith");
+		g.addVertex("Johnson");
+		g.addVertex("Williams");
+		g.addVertex("Jones");
+		g.addVertex("Brown");
+		g.addVertex("Davis");
+		g.addVertex("Miller");
 
-		g.addEdge(v1, v2);
-		g.addEdge(v2, v3);
-		g.addEdge(v1, v3);
-		g.addEdge(v7, v5);
-		g.addEdge(v6, v1);
-		g.addEdge(v3, v4);
+		g.addEdge("Smith", "Johnson", 1);
+		g.addEdge("Johnson", "Williams", 2);
+		g.addEdge("Smith", "Williams", 3);
+		g.addEdge("Miller", "Brown", 4);
+		g.addEdge("Davis", "Smith", 5);
+		g.addEdge("Williams", "Jones", 6);
 
 		return g;
 	}

@@ -15,9 +15,9 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IntGraph;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import java.util.Set;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -27,50 +27,53 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public class EdgeIterationExample {
 
+	private EdgeIterationExample() {}
+
 	/**
 	 * This example demonstrates how to iterate over the edges of a graph.
 	 */
+	@SuppressWarnings("boxing")
 	public static void edgeIterationExample() {
-		IntGraph g = IntGraph.newUndirected();
-		int v1 = g.addVertex();
-		int v2 = g.addVertex();
-		int v3 = g.addVertex();
-		int v4 = g.addVertex();
-		int v5 = g.addVertex();
-		int v6 = g.addVertex();
-		int v7 = g.addVertex();
+		Graph<String, Integer> g = Graph.newUndirected();
+		g.addVertex("Smith");
+		g.addVertex("Johnson");
+		g.addVertex("Williams");
+		g.addVertex("Jones");
+		g.addVertex("Brown");
+		g.addVertex("Davis");
+		g.addVertex("Miller");
 
-		int e1 = g.addEdge(v1, v2);
-		int e2 = g.addEdge(v2, v3);
-		int e3 = g.addEdge(v1, v3);
-		int e4 = g.addEdge(v7, v5);
-		int e5 = g.addEdge(v6, v1);
-		int e6 = g.addEdge(v3, v4);
-		int e7 = g.addEdge(v5, v4);
+		g.addEdge("Smith", "Johnson", 1);
+		g.addEdge("Johnson", "Williams", 2);
+		g.addEdge("Smith", "Williams", 3);
+		g.addEdge("Miller", "Brown", 4);
+		g.addEdge("Miller", "Smith", 5);
+		g.addEdge("Williams", "Jones", 6);
+		g.addEdge("Brown", "Jones", 7);
 
 		/* Query the edges of some vertices */
 		/* The EdgeIter returned by outEdges is an int iterator that yield edges identifiers */
-		IntSet v1Edges = new IntOpenHashSet(g.outEdges(v1));
-		assert v1Edges.equals(IntSet.of(e1, e3, e5));
+		Set<Integer> v1Edges = g.outEdges("Smith");
+		assert v1Edges.equals(IntSet.of(1, 3, 5));
 
-		IntSet v2Edges = new IntOpenHashSet(g.outEdges(v2));
-		assert v2Edges.equals(IntSet.of(e1, e2));
+		Set<Integer> v2Edges = g.outEdges("Johnson");
+		assert v2Edges.equals(IntSet.of(1, 2));
 
-		IntSet v3Edges = new IntOpenHashSet(g.outEdges(v3));
-		assert v3Edges.equals(IntSet.of(e2, e3, e6));
+		Set<Integer> v3Edges = g.outEdges("Williams");
+		assert v3Edges.equals(IntSet.of(2, 3, 6));
 
-		/* Print the out-edges of v5 */
-		System.out.println("The edges of v5:");
-		for (IEdgeIter eit = g.outEdges(v5).iterator(); eit.hasNext();) {
-			int e = eit.nextInt();
+		/* Print the out-edges of Brown */
+		System.out.println("The edges of Brown:");
+		for (EdgeIter<String, Integer> eit = g.outEdges("Brown").iterator(); eit.hasNext();) {
+			Integer e = eit.next();
 			/* EdgeIter.source() and EdgeIter.target() can be used to get the endpoints of the last returned edge */
-			int u = eit.sourceInt();
-			int v = eit.targetInt();
+			String u = eit.source();
+			String v = eit.target();
 
 			/* If the iterator was created using g.outEdges(u).iterator(), EdgeIter.source() will always be u */
 			/* If the iterator was created using g.inEdges(v).iterator(), EdgeIter.target() will always be v */
-			assert u == v5;
-			assert IntSet.of(e4, e7).contains(e);
+			assert u.equals("Brown");
+			assert Set.of(4, 7).contains(e);
 			System.out.println("\t" + e + "=(" + u + ", " + v + ")");
 		}
 	}

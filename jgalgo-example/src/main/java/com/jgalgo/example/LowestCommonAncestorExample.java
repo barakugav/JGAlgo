@@ -17,7 +17,7 @@ package com.jgalgo.example;
 
 import com.jgalgo.alg.LowestCommonAncestorDynamic;
 import com.jgalgo.alg.LowestCommonAncestorStatic;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 
 /**
  * This example demonstrates how to use the lowest common ancestor algorithm.
@@ -26,37 +26,39 @@ import com.jgalgo.graph.IntGraph;
  */
 public class LowestCommonAncestorExample {
 
+	private LowestCommonAncestorExample() {}
+
 	/**
 	 * This example demonstrates how to use the static lowest common ancestor algorithm.
 	 */
+	@SuppressWarnings("boxing")
 	public static void staticLCAExample() {
 		/* Create a full binary tree of height 3 */
-		IntGraph tree = IntGraph.newUndirected();
-		int rt = tree.addVertex();
-		int v1 = tree.addVertex();
-		int v2 = tree.addVertex();
-		int v3 = tree.addVertex();
-		int v4 = tree.addVertex();
-		int v5 = tree.addVertex();
-		int v6 = tree.addVertex();
-		tree.addEdge(rt, v1);
-		tree.addEdge(rt, v2);
-		tree.addEdge(v1, v3);
-		tree.addEdge(v1, v4);
-		tree.addEdge(v2, v5);
-		tree.addEdge(v2, v6);
+		Graph<String, Integer> tree = Graph.newUndirected();
+		tree.addVertex("root");
+		tree.addVertex("Smith");
+		tree.addVertex("Johnson");
+		tree.addVertex("Williams");
+		tree.addVertex("Jones");
+		tree.addVertex("Brown");
+		tree.addVertex("Davis");
+		tree.addEdge("root", "Smith", 1);
+		tree.addEdge("root", "Johnson", 2);
+		tree.addEdge("Smith", "Williams", 3);
+		tree.addEdge("Smith", "Jones", 4);
+		tree.addEdge("Johnson", "Brown", 5);
+		tree.addEdge("Johnson", "Davis", 6);
 
 		/* Pre process the tree for LCA queries */
 		LowestCommonAncestorStatic lcaAlgo = LowestCommonAncestorStatic.newInstance();
-		LowestCommonAncestorStatic.IDataStructure lcaDs =
-				(LowestCommonAncestorStatic.IDataStructure) lcaAlgo.preProcessTree(tree, Integer.valueOf(rt));
+		LowestCommonAncestorStatic.DataStructure<String, Integer> lcaDs = lcaAlgo.preProcessTree(tree, "root");
 
 		/* Find the lowest common ancestor of any pair of vertices in the tree */
-		assert lcaDs.findLca(v1, v2) == rt;
-		assert lcaDs.findLca(v1, v3) == v1;
-		assert lcaDs.findLca(v3, v4) == v1;
-		assert lcaDs.findLca(v5, v6) == v2;
-		assert lcaDs.findLca(v3, v6) == rt;
+		assert lcaDs.findLca("Smith", "Johnson").equals("root");
+		assert lcaDs.findLca("Smith", "Williams").equals("Smith");
+		assert lcaDs.findLca("Williams", "Jones").equals("Smith");
+		assert lcaDs.findLca("Brown", "Davis").equals("Johnson");
+		assert lcaDs.findLca("Williams", "Davis").equals("root");
 	}
 
 	/**

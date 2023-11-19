@@ -15,11 +15,9 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.alg.IMatching;
+import com.jgalgo.alg.Matching;
 import com.jgalgo.alg.MatchingAlgo;
-import com.jgalgo.graph.IntGraph;
-import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.ints.IntSet;
+import com.jgalgo.graph.Graph;
 
 /**
  * This example demonstrates how to use the maximum matching algorithm.
@@ -28,48 +26,47 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 public class MaximumMatchingExample {
 
+	private MaximumMatchingExample() {}
+
 	/**
 	 * This example demonstrates how to use the maximum matching algorithm.
 	 */
 	public static void maximumMatchingExample() {
 		/* Create a graph with few vertices and edges */
-		IntGraph g = createGraph();
+		Graph<String, Integer> g = createGraph();
 
 		/* Compute a maximum (cardinality) matching */
 		MatchingAlgo matchingAlgo = MatchingAlgo.newInstance();
-		IMatching matching = (IMatching) matchingAlgo.computeMaximumMatching(g, null);
+		Matching<String, Integer> matching = matchingAlgo.computeMaximumMatching(g, null);
 
 		/* Validate the matching is valid */
-		for (int u : g.vertices()) {
-
-			/* Find the matched edges adjacent to u */
-			IntSet uEdges = new IntOpenHashSet(g.outEdges(u));
-			uEdges.removeIf(e -> !matching.containsEdge(e));
+		for (String u : g.vertices()) {
 
 			/* No vertex is allowed to have more than one matched edge */
-			assert uEdges.size() <= 1;
+			assert g.outEdges(u).stream().filter(matching::containsEdge).count() <= 1;
 		}
 
 		System.out.println("The maximum matching in the graph has a size of " + matching.edges().size());
 		System.out.println("The maximum matching is: " + matching.edges());
 	}
 
-	private static IntGraph createGraph() {
-		IntGraph g = IntGraph.newUndirected();
-		int v1 = g.addVertex();
-		int v2 = g.addVertex();
-		int v3 = g.addVertex();
-		int v4 = g.addVertex();
-		int v5 = g.addVertex();
-		int v6 = g.addVertex();
-		int v7 = g.addVertex();
+	@SuppressWarnings("boxing")
+	private static Graph<String, Integer> createGraph() {
+		Graph<String, Integer> g = Graph.newUndirected();
+		g.addVertex("Smith");
+		g.addVertex("Johnson");
+		g.addVertex("Williams");
+		g.addVertex("Jones");
+		g.addVertex("Brown");
+		g.addVertex("Davis");
+		g.addVertex("Miller");
 
-		g.addEdge(v1, v2);
-		g.addEdge(v2, v3);
-		g.addEdge(v1, v3);
-		g.addEdge(v7, v5);
-		g.addEdge(v6, v1);
-		g.addEdge(v3, v4);
+		g.addEdge("Smith", "Johnson", 1);
+		g.addEdge("Johnson", "Williams", 2);
+		g.addEdge("Smith", "Williams", 3);
+		g.addEdge("Miller", "Brown", 4);
+		g.addEdge("Davis", "Smith", 5);
+		g.addEdge("Williams", "Jones", 6);
 
 		return g;
 	}

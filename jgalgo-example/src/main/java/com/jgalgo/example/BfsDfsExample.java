@@ -15,10 +15,10 @@
  */
 package com.jgalgo.example;
 
-import com.jgalgo.alg.Dfs;
+import java.util.List;
 import com.jgalgo.alg.Bfs;
-import com.jgalgo.graph.IntGraph;
-import it.unimi.dsi.fastutil.ints.IntList;
+import com.jgalgo.alg.Dfs;
+import com.jgalgo.graph.Graph;
 
 /**
  * This example demonstrates how to use the BFS and DFS algorithms.
@@ -27,21 +27,23 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 public class BfsDfsExample {
 
+	private BfsDfsExample() {}
+
 	/**
 	 * This example demonstrates how to use the BFS algorithm.
 	 */
 	public static void bfsExample() {
 		/* Create a graph and choose an arbitrary source vertex */
-		IntGraph g = createGraph();
-		int source = g.vertices().iterator().nextInt();
+		Graph<String, Integer> g = createGraph();
+		String source = g.vertices().iterator().next();
 
 		/* Iterate over the graph vertices in a breadth-first search (BFS) order */
-		for (Bfs.IntIter iter = Bfs.newInstance(g, source); iter.hasNext();) {
+		for (Bfs.Iter<String, Integer> iter = Bfs.newInstance(g, source); iter.hasNext();) {
 			/* v is a vertex the iterator didn't visit before */
-			int v = iter.nextInt();
+			String v = iter.next();
 			/* e is the edge used to reach v */
 			/* In a directed graph, v is the 'target' of e */
-			int e = iter.lastEdgeInt();
+			Integer e = iter.lastEdge();
 			/* the layer is the distance of v from the source vertex */
 			int layer = iter.layer();
 			System.out.println("BFS reached vertex " + v + " at layer " + layer + " using edge " + e);
@@ -53,35 +55,36 @@ public class BfsDfsExample {
 	 */
 	public static void dfsExample() {
 		/* Create a graph and choose an arbitrary source vertex */
-		IntGraph g = createGraph();
-		int source = g.vertices().iterator().nextInt();
+		Graph<String, Integer> g = createGraph();
+		String source = g.vertices().iterator().next();
 
 		/* Iterate over the graph vertices in a depth-first search (DFS) order */
-		for (Dfs.IntIter iter = Dfs.newInstance(g, source); iter.hasNext();) {
+		for (Dfs.Iter<String, Integer> iter = Dfs.newInstance(g, source); iter.hasNext();) {
 			/* v is a vertex the iterator didn't visit before */
-			int v = iter.nextInt();
+			String v = iter.next();
 			/* edgePath is a list of edges, forming a path from the source to v */
-			IntList edgePath = iter.edgePath();
+			List<Integer> edgePath = iter.edgePath();
 			System.out.println("Reached vertex " + v + " using the edges: " + edgePath);
 		}
 	}
 
-	private static IntGraph createGraph() {
-		IntGraph g = IntGraph.newUndirected();
-		int v1 = g.addVertex();
-		int v2 = g.addVertex();
-		int v3 = g.addVertex();
-		int v4 = g.addVertex();
-		int v5 = g.addVertex();
-		int v6 = g.addVertex();
-		int v7 = g.addVertex();
+	@SuppressWarnings("boxing")
+	private static Graph<String, Integer> createGraph() {
+		Graph<String, Integer> g = Graph.newUndirected();
+		g.addVertex("Smith");
+		g.addVertex("Johnson");
+		g.addVertex("Williams");
+		g.addVertex("Jones");
+		g.addVertex("Brown");
+		g.addVertex("Davis");
+		g.addVertex("Miller");
 
-		g.addEdge(v1, v2);
-		g.addEdge(v2, v3);
-		g.addEdge(v1, v3);
-		g.addEdge(v7, v5);
-		g.addEdge(v6, v1);
-		g.addEdge(v3, v4);
+		g.addEdge("Smith", "Johnson", 1);
+		g.addEdge("Johnson", "Williams", 2);
+		g.addEdge("Smith", "Williams", 3);
+		g.addEdge("Miller", "Brown", 4);
+		g.addEdge("Davis", "Smith", 5);
+		g.addEdge("Williams", "Jones", 6);
 
 		return g;
 	}
