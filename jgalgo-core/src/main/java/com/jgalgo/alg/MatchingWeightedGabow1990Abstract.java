@@ -44,6 +44,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 
 abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaximumMatchingImpl {
 
@@ -308,7 +309,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 					(e1, e2) -> (e2 == null ? -1 : e1 == null ? 1 : Double.compare(e1.slack, e2.slack));
 
 			Arrays.fill(vToSf, -1);
-			sf.init(JGAlgoUtils.nullList(n), edgeSlackBarComparator);
+			sf.init(ObjectList.of(new EdgeEvent[n]), edgeSlackBarComparator);
 			nextIdx = 0;
 		}
 

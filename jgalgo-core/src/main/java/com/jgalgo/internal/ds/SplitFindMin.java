@@ -18,7 +18,8 @@ package com.jgalgo.internal.ds;
 
 import java.util.Collection;
 import java.util.Comparator;
-import com.jgalgo.internal.util.JGAlgoUtils;
+
+import it.unimi.dsi.fastutil.objects.ObjectList;
 
 /**
  * An extension to {@link SplitFind} that support value keys and {@code findMin} operations.
@@ -48,9 +49,10 @@ public interface SplitFindMin<K> extends SplitFind {
 	 */
 	void init(Collection<K> keys, Comparator<? super K> comparator);
 
+	@SuppressWarnings("unchecked")
 	@Override
 	default void init(int size) {
-		init(JGAlgoUtils.nullList(size), (k1, k2) -> 0);
+		init(ObjectList.of((K[]) new Object[size]), (k1, k2) -> 0);
 	}
 
 	/**
