@@ -34,8 +34,7 @@ public class BitmapBase implements IntIterable {
 
 	BitmapBase(int size, long[] words) {
 		checkSize(size);
-		if (words.length != wordsNum(size))
-			throw new IllegalArgumentException("Wrong number of words: " + words.length);
+		assert words.length == wordsNum(size);
 		this.size = size;
 		this.words = words;
 	}
@@ -117,7 +116,7 @@ public class BitmapBase implements IntIterable {
 	 * index.
 	 *
 	 * @param  fromIndex                 the index to start checking from (inclusive)
-	 * @return                           the index of the next clear bit
+	 * @return                           the index of the next clear bit, or {@code size} if there is no such bit
 	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
 	 */
 	public int nextClearBit(int fromIndex) {
@@ -165,7 +164,7 @@ public class BitmapBase implements IntIterable {
 	public IntIterator iterator() {
 		return new IntIterator() {
 
-			int bit = nextSetBit(0);
+			int bit = size == 0 ? -1 : nextSetBit(0);
 
 			@Override
 			public boolean hasNext() {

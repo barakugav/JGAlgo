@@ -16,6 +16,7 @@
 package com.jgalgo.internal.util;
 
 import java.util.Arrays;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
  * Immutable version of {@link Bitmap}.
@@ -38,10 +39,10 @@ public class ImmutableBitmap extends BitmapBase {
 		return new ImmutableBitmap(bitmap.size, words);
 	}
 
-	public static ImmutableBitmap fromOnes(int size, int[] ones) {
+	public static ImmutableBitmap fromOnes(int size, IntIterator ones) {
 		checkSize(size);
 		long[] words = new long[wordsNum(size)];
-		for (int i : ones) {
+		for (int i : IterTools.foreach(ones)) {
 			checkIdx(i, size);
 			words[word(i)] |= bit(i);
 		}

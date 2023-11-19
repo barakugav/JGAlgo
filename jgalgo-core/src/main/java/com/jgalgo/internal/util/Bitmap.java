@@ -19,9 +19,9 @@ import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.IntPredicate;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
-import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * A bitmap of fixed size number of bits.
@@ -61,7 +61,7 @@ public class Bitmap extends BitmapBase {
 	 * @param  ones the 'ones' bits, {@code true} bits
 	 * @return      a new bitmap of the specified size, with the provided {@code true} 'ones' bits
 	 */
-	public static Bitmap fromOnes(int size, IntList ones) {
+	public static Bitmap fromOnes(int size, IntIterable ones) {
 		return fromOnes(size, ones.iterator());
 	}
 
@@ -94,6 +94,12 @@ public class Bitmap extends BitmapBase {
 		return bitmap;
 	}
 
+	/**
+	 * Create a new bitmap from the specified immutable bitmap.
+	 *
+	 * @param  bitmap the immutable bitmap
+	 * @return        a new bitmap from the specified immutable bitmap
+	 */
 	public static Bitmap of(ImmutableBitmap bitmap) {
 		Bitmap b = new Bitmap(bitmap.capacity());
 		for (int i = 0; i < b.words.length; i++)
