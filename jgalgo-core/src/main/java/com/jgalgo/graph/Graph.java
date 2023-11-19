@@ -108,13 +108,13 @@ import java.util.Set;
  *
  * // Calculate the shortest paths from Berlin to all other cities
  * ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
- * ShortestPathSingleSource.Result ssspRes = ssspAlgo.computeShortestPaths(g, w, "Berlin");
+ * ShortestPathSingleSource.Result<String, Integer> ssspRes = ssspAlgo.computeShortestPaths(g, w, "Berlin");
  *
  * // Print the shortest path from Berlin to Leipzig
  * System.out.println("Distance from Berlin to Leipzig is: " + ssspRes.distance("Leipzig"));
  * System.out.println("The shortest path from Berlin to Leipzig is:");
- * for (int e : ssspRes.getPath("Leipzig")) {
- * 	int u = g.edgeSource(e), v = g.edgeTarget(e);
+ * for (Integer e : ssspRes.getPath("Leipzig").edges()) {
+ * 	String u = g.edgeSource(e), v = g.edgeTarget(e);
  * 	System.out.println(" " + e + "(" + u + ", " + v + ")");
  * }
  * }</pre>

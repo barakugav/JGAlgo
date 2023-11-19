@@ -17,9 +17,8 @@
 package com.jgalgo.example;
 
 import com.jgalgo.alg.ShortestPathSingleSource;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IWeightsDouble;
-import it.unimi.dsi.fastutil.ints.IntList;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightsDouble;
 
 /**
  * This example demonstrates how to use the single-source shortest path algorithm.
@@ -32,35 +31,30 @@ public class ShortestPathExample {
 	 * This example demonstrates how to use the single-source shortest path algorithm.
 	 */
 	public static void shortestPathExample() {
-		/* Create a directed graph with three vertices and edges between them */
-		IntGraph g = IntGraph.newDirected();
-		int v1 = g.addVertex();
-		int v2 = g.addVertex();
-		int v3 = g.addVertex();
-		int e1 = g.addEdge(v1, v2);
-		int e2 = g.addEdge(v2, v3);
-		int e3 = g.addEdge(v1, v3);
+		/* Create an undirected graph with three vertices and edges between them */
+		Graph<String, Integer> g = Graph.newUndirected();
+		g.addVertex("Berlin");
+		g.addVertex("Leipzig");
+		g.addVertex("Dresden");
+		g.addEdge("Berlin", "Leipzig", 9);
+		g.addEdge("Berlin", "Dresden", 13);
+		g.addEdge("Dresden", "Leipzig", 14);
 
 		/* Assign some weights to the edges */
-		IWeightsDouble w = g.addEdgesWeights("weightsKey", double.class);
-		w.set(e1, 1.2);
-		w.set(e2, 3.1);
-		w.set(e3, 15.1);
+		WeightsDouble<Integer> w = g.addEdgesWeights("distance-km", double.class);
+		w.set(9, 191.1);
+		w.set(13, 193.3);
+		w.set(14, 121.3);
 
-		/* Calculate the shortest paths from v1 to all other vertices */
+		/* Calculate the shortest paths from Berlin to all other cities */
 		ShortestPathSingleSource ssspAlgo = ShortestPathSingleSource.newInstance();
-		ShortestPathSingleSource.IResult ssspRes =
-				(ShortestPathSingleSource.IResult) ssspAlgo.computeShortestPaths(g, w, Integer.valueOf(v1));
+		ShortestPathSingleSource.Result<String, Integer> ssspRes = ssspAlgo.computeShortestPaths(g, w, "Berlin");
 
-		assert ssspRes.distance(v3) == 4.3;
-		assert ssspRes.getPath(v3).edges().equals(IntList.of(e1, e2));
-		System.out.println("Distance from v1 to v3 is: " + ssspRes.distance(v3));
-
-		/* Print the shortest path from v1 to v3 */
-		System.out.println("The shortest path from v1 to v3 is:");
-		for (int e : ssspRes.getPath(v3).edges()) {
-			int u = g.edgeSource(e);
-			int v = g.edgeTarget(e);
+		/* Print the shortest path from Berlin to Leipzig */
+		System.out.println("Distance from Berlin to Leipzig is: " + ssspRes.distance("Leipzig"));
+		System.out.println("The shortest path from Berlin to Leipzig is:");
+		for (Integer e : ssspRes.getPath("Leipzig").edges()) {
+			String u = g.edgeSource(e), v = g.edgeTarget(e);
 			System.out.println(" " + e + "(" + u + ", " + v + ")");
 		}
 	}
