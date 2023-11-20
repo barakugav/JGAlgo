@@ -77,7 +77,9 @@ class MinimumVertexCutAllSTEdgeCut extends MinimumVertexCutUtils.AbstractImplAll
 
 		/* The queue iterator stores the cuts and use less and less memory as the elements are consumed */
 		Iterator<IntSet> cutsIter = JGAlgoUtils.queueIter(cuts);
-		return IterTools.map(cutsIter, cut -> cut);
+		cuts.clear();
+		final int n = g.vertices().size();
+		return IterTools.map(cutsIter, cut -> ImmutableIntArraySet.ofBitmap(cut, n));
 	}
 
 }

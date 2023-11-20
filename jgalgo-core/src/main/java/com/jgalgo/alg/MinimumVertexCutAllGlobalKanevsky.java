@@ -121,6 +121,7 @@ class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutUtils.AbstractIm
 
 		/* The queue iterator stores the cuts and use less and less memory as the elements are consumed */
 		Iterator<IntSet> cutsIter = JGAlgoUtils.queueIter(cuts);
+		cuts.clear();
 		return IterTools.map(cutsIter, cut -> ImmutableIntArraySet.ofBitmap(cut, n));
 	}
 
