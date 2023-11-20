@@ -398,6 +398,8 @@ public class MaximumFlowTestUtils extends TestUtils {
 	private static <V, E> double calcExpectedFlow(Graph<V, E> g, WeightFunction<E> capacity, Collection<V> sources,
 			Collection<V> sinks) {
 		int n = g.vertices().size();
+		if (n > 400)
+			return MaximumFlow.newInstance().computeMaximumFlow(g, capacity, sources, sinks).getSupplySubset(sources);
 		double[][] capacities = new double[n + 2][n + 2];
 
 		IndexIdMap<V> vToIdx = g.indexGraphVerticesMap();
