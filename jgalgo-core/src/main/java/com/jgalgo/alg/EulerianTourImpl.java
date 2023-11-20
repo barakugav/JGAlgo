@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import java.util.Optional;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -26,17 +27,11 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 class EulerianTourImpl implements EulerianTourAlgo {
 
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * The running time and space of this function is \(O(n + m)\).
-	 */
-	IPath computeEulerianTour(IndexGraph g) {
+	Optional<IPath> computeEulerianTour(IndexGraph g) {
 		return g.isDirected() ? computeTourDirected(g) : computeTourUndirected(g);
 	}
 
-	private static IPath computeTourUndirected(IndexGraph g) {
+	private static Optional<IPath> computeTourUndirected(IndexGraph g) {
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 
@@ -44,21 +39,19 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		for (int u = 0; u < n; u++) {
 			if (degreeWithoutSelfLoops(g, u) % 2 == 0)
 				continue;
-			if (start == -1)
+			if (start == -1) {
 				start = u;
-			else if (end == -1)
+			} else if (end == -1) {
 				end = u;
-			else
-				throw new IllegalArgumentException("More than two vertices have an odd degree. Vertices indices: "
-						+ start + ", " + end + ", " + u);
+			} else {
+				/* More than two vertices have an odd degree */
+				return Optional.empty();
+			}
 		}
-		if (start != -1 ^ end != -1)
-			throw new IllegalArgumentException(
-					"Eulerian tour exists only if all vertices have even degree or only two vertices have odd degree");
-		if (start == -1)
-			start = 0;
-		if (end == -1)
-			end = 0;
+		if (start == -1) {
+			assert end == -1;
+			start = end = 0;
+		}
 
 		Bitmap usedEdges = new Bitmap(m);
 		IEdgeIter[] iters = new IEdgeIter[n];
@@ -93,10 +86,11 @@ class EulerianTourImpl implements EulerianTourAlgo {
 			u = g.edgeEndpoint(e, u);
 		}
 
-		for (int e = 0; e < m; e++)
-			if (!usedEdges.get(e))
-				throw new IllegalArgumentException("Graph is not connected");
-		return new PathImpl(g, start, end, tour);
+		if (usedEdges.cardinality() != m)
+			/* Graph is not connected */
+			return Optional.empty();
+
+		return Optional.of(new PathImpl(g, start, end, tour));
 	}
 
 	private static int degreeWithoutSelfLoops(IndexGraph g, int u) {
@@ -109,7 +103,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		return d;
 	}
 
-	private static IPath computeTourDirected(IndexGraph g) {
+	private static Optional<IPath> computeTourDirected(IndexGraph g) {
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 
@@ -123,28 +117,25 @@ class EulerianTourImpl implements EulerianTourAlgo {
 				if (start == -1) {
 					start = u;
 				} else {
-					throw new IllegalArgumentException(
-							"More than one vertex have an extra out edge. Vertices indices: " + start + ", " + u);
+					/* More than one vertex have an extra out edge */
+					return Optional.empty();
 				}
 			} else if (outD + 1 == inD) {
 				if (end == -1) {
 					end = u;
 				} else {
-					throw new IllegalArgumentException(
-							"More than one vertex have an extra in edge. Vertices indices: " + end + ", " + u);
+					/* More than one vertex have an extra in edge */
+					return Optional.empty();
 				}
 			} else {
-				throw new IllegalArgumentException(
-						"Can't compute Eulerian tour with vertex degrees, index=" + u + ": in=" + inD + " out=" + outD);
+				/* Can't compute Eulerian tour with vertex degrees */
+				return Optional.empty();
 			}
 		}
-		if (start != -1 ^ end != -1)
-			throw new IllegalArgumentException("Eulerian tour exists in a directed graph only if all vertices have "
-					+ "equal in and out degree or only one have an extra in edge and one have an extra out edge");
-		if (start == -1)
-			start = 0;
-		if (end == -1)
-			end = 0;
+		if (start == -1) {
+			assert end == -1;
+			start = end = 0;
+		}
 
 		Bitmap usedEdges = new Bitmap(m);
 		IEdgeIter[] iters = new IEdgeIter[n];
@@ -180,23 +171,24 @@ class EulerianTourImpl implements EulerianTourAlgo {
 			u = g.edgeSource(e);
 		}
 
-		for (int e = 0; e < m; e++)
-			if (!usedEdges.get(e))
-				throw new IllegalArgumentException("Graph is not connected");
+		if (usedEdges.cardinality() != m)
+			/* Graph is not connected */
+			return Optional.empty();
+
 		IntArrays.reverse(tour.elements(), 0, tour.size());
-		return new PathImpl(g, start, end, tour);
+		return Optional.of(new PathImpl(g, start, end, tour));
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public <V, E> Path<V, E> computeEulerianTour(Graph<V, E> g) {
+	public <V, E> Optional<Path<V, E>> computeEulerianTourIfExist(Graph<V, E> g) {
 		if (g instanceof IndexGraph) {
-			return (Path<V, E>) computeEulerianTour((IndexGraph) g);
+			return (Optional) computeEulerianTour((IndexGraph) g);
 
 		} else {
 			IndexGraph iGraph = g.indexGraph();
-			IPath indexPath = computeEulerianTour(iGraph);
-			return PathImpl.pathFromIndexPath(g, indexPath);
+			Optional<IPath> indexPath = computeEulerianTour(iGraph);
+			return indexPath.map(path -> PathImpl.pathFromIndexPath(g, path));
 		}
 	}
 

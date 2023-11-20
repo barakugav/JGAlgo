@@ -17,6 +17,7 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +28,10 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -61,31 +64,35 @@ public class EulerianTourTest extends TestBase {
 
 	private static void testRandGraphUndirected(boolean allEvenVertices, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32).repeat(128);
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = randUGraph(n, m, allEvenVertices, seedGen.nextSeed());
-			Path<Integer, Integer> tour = EulerianTourAlgo.newInstance().computeEulerianTour(g);
-			validateEulerianTour(g, tour);
+			g = maybeIndexGraph(g, rand);
+			validateEulerianTour(g, EulerianTourAlgo.newInstance());
 		});
 	}
 
 	private static void testRandGraphDirected(boolean allEqualInOutDegree, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32).repeat(128);
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = randDiGraph(n, m, allEqualInOutDegree, seedGen.nextSeed());
-			Path<Integer, Integer> tour = EulerianTourAlgo.newInstance().computeEulerianTour(g);
-			validateEulerianTour(g, tour);
+			g = maybeIndexGraph(g, rand);
+			validateEulerianTour(g, EulerianTourAlgo.newInstance());
 		});
 	}
 
-	private static <V, E> void validateEulerianTour(Graph<V, E> g, Path<V, E> tour) {
+	private static <V, E> void validateEulerianTour(Graph<V, E> g, EulerianTourAlgo algo) {
+		Path<V, E> tour = algo.computeEulerianTour(g);
+		assertTrue(EulerianTourAlgo.isEulerianTour(g, tour.edges()));
 		Set<E> usedEdges = new ObjectOpenHashSet<>(g.edges().size());
 		for (EdgeIter<V, E> it = tour.edgeIter(); it.hasNext();) {
 			E e = it.next();
@@ -95,6 +102,7 @@ public class EulerianTourTest extends TestBase {
 
 		for (E e : g.edges())
 			assertTrue(usedEdges.contains(e), "edge was not used: " + e);
+		assertTrue(algo.isEulerian(g));
 	}
 
 	private static Graph<Integer, Integer> randUGraph(int n, int m, boolean allEvenVertices, long seed) {
@@ -291,6 +299,174 @@ public class EulerianTourTest extends TestBase {
 			g.addEdge(V2v.get(0), V2v.get(V), edgSupplier.get());
 			g.addEdge(V2v.get(V), V2v.get(0), edgSupplier.get());
 		}
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void noEulerianTourUndirected() {
+		for (boolean intGraph : BooleanList.of(false, true)) {
+			Graph<Integer, Integer> g = intGraph ? IntGraph.newUndirected() : Graph.newUndirected();
+
+			/* more than 2 vertices with odd degree */
+			g.addVertex(0);
+			g.addVertex(1);
+			g.addVertex(2);
+			g.addVertex(3);
+			g.addEdge(0, 1, 0);
+			g.addEdge(1, 2, 1);
+			g.addEdge(2, 3, 2);
+			g.addEdge(3, 0, 3);
+			g.addEdge(0, 2, 4);
+			g.addEdge(1, 3, 5);
+			assertFalse(EulerianTourAlgo.newInstance().isEulerian(g));
+			assertThrows(IllegalArgumentException.class, () -> EulerianTourAlgo.newInstance().computeEulerianTour(g));
+			g.clear();
+
+			/* unconnected graph */
+			g.addVertex(0);
+			g.addVertex(1);
+			g.addVertex(2);
+			g.addVertex(3);
+			g.addEdge(0, 1, 0);
+			g.addEdge(0, 1, 1);
+			g.addEdge(2, 3, 2);
+			g.addEdge(2, 3, 3);
+			assertFalse(EulerianTourAlgo.newInstance().isEulerian(g));
+			assertThrows(IllegalArgumentException.class, () -> EulerianTourAlgo.newInstance().computeEulerianTour(g));
+			g.clear();
+		}
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void noEulerianTourDirected() {
+		for (boolean intGraph : BooleanList.of(false, true)) {
+			Graph<Integer, Integer> g = intGraph ? IntGraph.newDirected() : Graph.newDirected();
+
+			/* more than one vertices with extra out-edge */
+			g.addVertex(0);
+			g.addVertex(1);
+			g.addVertex(2);
+			g.addVertex(3);
+			g.addEdge(0, 1, 0);
+			g.addEdge(0, 1, 1);
+			g.addEdge(1, 2, 2);
+			g.addEdge(2, 3, 3);
+			g.addEdge(2, 3, 4);
+			g.addEdge(3, 0, 5);
+			assertFalse(EulerianTourAlgo.newInstance().isEulerian(g));
+			assertThrows(IllegalArgumentException.class, () -> EulerianTourAlgo.newInstance().computeEulerianTour(g));
+			g.clear();
+
+			/* more than one vertices with missing in-edge */
+			g.addVertex(0);
+			g.addVertex(1);
+			g.addVertex(2);
+			g.addVertex(3);
+			g.addEdge(0, 1, 0);
+			g.addEdge(1, 2, 1);
+			g.addEdge(1, 2, 2);
+			g.addEdge(2, 3, 3);
+			g.addEdge(3, 0, 4);
+			g.addEdge(3, 0, 5);
+			assertFalse(EulerianTourAlgo.newInstance().isEulerian(g));
+			assertThrows(IllegalArgumentException.class, () -> EulerianTourAlgo.newInstance().computeEulerianTour(g));
+			g.clear();
+
+			/* difference greater than one between number of out edges to in edges */
+			g.addVertex(0);
+			g.addVertex(1);
+			g.addVertex(2);
+			g.addVertex(3);
+			g.addEdge(0, 1, 0);
+			g.addEdge(0, 1, 1);
+			g.addEdge(0, 1, 2);
+			g.addEdge(1, 2, 3);
+			g.addEdge(2, 3, 4);
+			g.addEdge(2, 3, 5);
+			g.addEdge(2, 3, 6);
+			g.addEdge(3, 0, 7);
+			assertFalse(EulerianTourAlgo.newInstance().isEulerian(g));
+			assertThrows(IllegalArgumentException.class, () -> EulerianTourAlgo.newInstance().computeEulerianTour(g));
+			g.clear();
+
+			/* not unconnected graph */
+			g.addVertex(0);
+			g.addVertex(1);
+			g.addVertex(2);
+			g.addVertex(3);
+			g.addEdge(0, 1, 0);
+			g.addEdge(1, 0, 3);
+			g.addEdge(2, 3, 4);
+			g.addEdge(3, 2, 7);
+			assertFalse(EulerianTourAlgo.newInstance().isEulerian(g));
+			assertThrows(IllegalArgumentException.class, () -> EulerianTourAlgo.newInstance().computeEulerianTour(g));
+			g.clear();
+		}
+	}
+
+	@Test
+	public void isEulerianTourMissingEdges() {
+		IntGraph g = IntGraph.newUndirected();
+		g.addVertex(0);
+		g.addVertex(1);
+		g.addVertex(2);
+		g.addVertex(3);
+		g.addEdge(0, 1, 0);
+		g.addEdge(1, 2, 1);
+		g.addEdge(2, 3, 2);
+		g.addEdge(3, 0, 3);
+		g.addEdge(0, 2, 4);
+
+		assertTrue(EulerianTourAlgo.isEulerianTour(g, IntList.of(0, 1, 2, 3, 4)));
+		assertFalse(EulerianTourAlgo.isEulerianTour(g, IntList.of(0, 1, 2, 3)));
+		assertFalse(EulerianTourAlgo.isEulerianTour(g, IntList.of(1, 2, 3, 4)));
+	}
+
+	@Test
+	public void isEulerianTourDuplicateEdges() {
+		for (boolean directed : BooleanList.of(false, true)) {
+			IntGraph g = directed ? IntGraph.newUndirected() : IntGraph.newDirected();
+			g.addVertex(0);
+			g.addVertex(1);
+			g.addVertex(2);
+			g.addVertex(3);
+			g.addEdge(0, 1, 0);
+			g.addEdge(1, 2, 1);
+			g.addEdge(2, 3, 2);
+			g.addEdge(3, 0, 3);
+			g.addEdge(0, 2, 4);
+
+			assertTrue(EulerianTourAlgo.isEulerianTour(g, IntList.of(0, 1, 2, 3, 4)));
+			assertFalse(EulerianTourAlgo.isEulerianTour(g, IntList.of(3, 0, 1, 2, 3)));
+			assertFalse(EulerianTourAlgo.isEulerianTour(g, IntList.of(3, 4, 2, 3, 0)));
+		}
+	}
+
+	@Test
+	public void isEulerianTourNotAPath() {
+		for (boolean directed : BooleanList.of(false, true)) {
+			IntGraph g = directed ? IntGraph.newUndirected() : IntGraph.newDirected();
+			g.addVertex(0);
+			g.addVertex(1);
+			g.addVertex(2);
+			g.addVertex(3);
+			g.addEdge(0, 1, 0);
+			g.addEdge(1, 2, 1);
+			g.addEdge(2, 3, 2);
+			g.addEdge(3, 0, 3);
+			g.addEdge(0, 2, 4);
+
+			assertTrue(EulerianTourAlgo.isEulerianTour(g, IntList.of(0, 1, 2, 3, 4)));
+			assertFalse(EulerianTourAlgo.isEulerianTour(g, IntList.of(3, 0, 1, 2, 4)));
+			assertFalse(EulerianTourAlgo.isEulerianTour(g, IntList.of(3, 4, 2, 0, 1)));
+		}
+	}
+
+	@Test
+	public void isEulerianTourEmptyGraph() {
+		IntGraph g = IntGraph.newUndirected();
+		assertTrue(EulerianTourAlgo.isEulerianTour(g, IntList.of()));
 	}
 
 }

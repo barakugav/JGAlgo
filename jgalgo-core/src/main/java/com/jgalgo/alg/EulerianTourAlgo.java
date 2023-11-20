@@ -16,8 +16,17 @@
 
 package com.jgalgo.alg;
 
+import java.util.List;
+import java.util.Optional;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.booleans.BooleanList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 /**
  * Eulerian tour calculation algorithm.
@@ -56,7 +65,114 @@ public interface EulerianTourAlgo {
 	 * @return                          an Eulerian tour that visit all edges of the graph exactly once
 	 * @throws IllegalArgumentException if there is no Eulerian tour in the graph
 	 */
-	public <V, E> Path<V, E> computeEulerianTour(Graph<V, E> g);
+	default <V, E> Path<V, E> computeEulerianTour(Graph<V, E> g) {
+		return computeEulerianTourIfExist(g).orElseThrow(() -> new IllegalArgumentException("No Eulerian tour exists"));
+	}
+
+	/**
+	 * Compute an Eulerian tour in the graph that visit all edges exactly once if one exists.
+	 *
+	 * <p>
+	 * The graph is assumed to be (strongly) connected. Either a cycle or tour will be found, depending on the vertices
+	 * degrees.
+	 *
+	 * <p>
+	 * If {@code g} is {@link IntGraph}, the returned optional will contain {@link IPath}.
+	 *
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     an Eulerian tour that visit all edges of the graph exactly once if one exists
+	 */
+	<V, E> Optional<Path<V, E>> computeEulerianTourIfExist(Graph<V, E> g);
+
+	/**
+	 * Check whether a graph is Eulerian.
+	 *
+	 * <p>
+	 * A graph is Eulerian if it contains an Eulerian tour.
+	 *
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     {@code true} if the graph is Eulerian, {@code false} otherwise
+	 */
+	default <V, E> boolean isEulerian(Graph<V, E> g) {
+		return computeEulerianTourIfExist(g).isPresent();
+	}
+
+	/**
+	 * Check if the given tour is an Eulerian tour in the given graph.
+	 *
+	 * <p>
+	 * A list of edges form an Eulerian tour in a graph if it firstly is a valid path in the graph, and it visit all
+	 * edges of the graph exactly once.
+	 *
+	 * @param  <V>  the vertices type
+	 * @param  <E>  the edges type
+	 * @param  g    a graph
+	 * @param  tour a list of edges that should form an Eulerian tour in the graph
+	 * @return      {@code true} if the given tour is an Eulerian tour in the given graph, {@code false} otherwise
+	 */
+	@SuppressWarnings("unchecked")
+	static <V, E> boolean isEulerianTour(Graph<V, E> g, List<E> tour) {
+		IndexGraph ig;
+		IntList tour0;
+		if (g instanceof IndexGraph) {
+			ig = (IndexGraph) g;
+			tour0 = IntAdapters.asIntList((List<Integer>) tour);
+		} else {
+			ig = g.indexGraph();
+			tour0 = IndexIdMaps.idToIndexList(tour, g.indexGraphEdgesMap());
+		}
+
+		final int m = ig.edges().size();
+		if (tour0.size() != m)
+			return false;
+		if (m == 0)
+			return true;
+		Bitmap visited = new Bitmap(m);
+		if (ig.isDirected()) {
+			int u = ig.edgeSource(tour0.getInt(0));
+			IntIterator it = tour0.iterator();
+			for (int i = 0; i < m; i++) {
+				int e = it.nextInt();
+				if (visited.get(e))
+					return false;
+				visited.set(e);
+				if (ig.edgeSource(e) != u)
+					return false;
+				u = ig.edgeTarget(e);
+			}
+			return true;
+
+		} else {
+			int firstEdge = tour0.getInt(0);
+			boolean foundValidStartingEndpoint = false;
+			startingEndpointLoop: for (boolean startingEndpoint : BooleanList.of(true, false)) {
+				visited.clear();
+				int u = startingEndpoint ? ig.edgeSource(firstEdge) : ig.edgeTarget(firstEdge);
+				IntIterator it = tour0.iterator();
+				for (int i = 0; i < m; i++) {
+					int e = it.nextInt();
+					if (visited.get(e))
+						return false;
+					visited.set(e);
+					int eu = ig.edgeSource(e), ev = ig.edgeTarget(e);
+					if (u == eu) {
+						u = ev;
+					} else if (u == ev) {
+						u = eu;
+					} else {
+						continue startingEndpointLoop;
+					}
+				}
+				foundValidStartingEndpoint = true;
+				break;
+			}
+			return foundValidStartingEndpoint;
+		}
+	}
 
 	/**
 	 * Create a new Eulerian tour computation algorithm.
