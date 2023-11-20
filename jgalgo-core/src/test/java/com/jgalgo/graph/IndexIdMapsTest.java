@@ -28,7 +28,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.gen.GnpGraphGenerator;
@@ -41,6 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -178,12 +178,12 @@ public class IndexIdMapsTest extends TestBase {
 
 	@Test
 	public void indexToIdSet() {
-		indexToIdCollectionAbstract(indicesSet -> new IntOpenHashSet(indicesSet));
+		indexToIdCollectionAbstract(IntOpenHashSet::new);
 	}
 
 	@Test
 	public void indexToIdList() {
-		indexToIdCollectionAbstract(indicesSet -> new IntArrayList(indicesSet));
+		indexToIdCollectionAbstract(IntArrayList::new);
 
 		final long seed = 0x136cebddbfbbff4bL;
 		final Random rand = new Random(seed);
@@ -305,12 +305,12 @@ public class IndexIdMapsTest extends TestBase {
 
 	@Test
 	public void idToIndexCollection() {
-		idToIndexCollectionOrSet(true);
+		idToIndexCollectionOrSet(IndexIdMapsTest::copyToRealCollection);
 	}
 
 	@Test
 	public void idToIndexSet() {
-		idToIndexCollectionOrSet(false);
+		idToIndexCollectionOrSet(HashSet::new);
 
 		Graph<Integer, Integer> g = createGraph(false);
 		Set<Integer> edgeSet = g.edges();
@@ -319,7 +319,120 @@ public class IndexIdMapsTest extends TestBase {
 		assertTrue(indexSet instanceof IntSet);
 	}
 
-	public void idToIndexCollectionOrSet(boolean collectionOrSet) {
+	@SuppressWarnings("boxing")
+	@Test
+	public void idToIndexList() {
+		idToIndexCollectionOrSet(ArrayList::new);
+
+		final long seed = 0x58c559c21cf688a8L;
+		final Random rand = new Random(seed);
+		for (boolean intGraph : BooleanList.of(false, true)) {
+			for (boolean edgesOrVertices : BooleanList.of(false, true)) {
+				Graph<Integer, Integer> g = createGraph(intGraph);
+				IntSet allIndices = edgesOrVertices ? g.indexGraph().edges() : g.indexGraph().vertices();
+				Set<Integer> idsSet = randElementsSubSet(g, edgesOrVertices);
+				IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
+
+				/* addAll twice so indexOf() will be different than lastIndexOf() */
+				List<Integer> idList = new ArrayList<>();
+				idList.addAll(idsSet);
+				idList.addAll(idsSet);
+				IntList indexList = IndexIdMaps.idToIndexList(idList, map);
+
+				/* get(index) */
+				for (int i = 0; i < idList.size(); i++) {
+					Integer id = idList.get(i);
+					assertEquals(map.idToIndex(id), indexList.getInt(i));
+				}
+
+				/* indexOf() */
+				List<Integer> indexList2 = idList.stream().map(map::idToIndex).collect(Collectors.toList());
+				for (int i = 0; i < idList.size(); i++) {
+					Integer id = idList.get(i);
+					int idx = map.idToIndex(id);
+					assertEquals(indexList2.indexOf(idx), indexList.indexOf(idx));
+				}
+				for (int i = 0; i < 10; i++) {
+					int nonExistingIdx = rand.nextInt();
+					if (allIndices.contains(nonExistingIdx))
+						continue;
+					assertEquals(-1, indexList.indexOf(nonExistingIdx));
+				}
+
+				/* lastIndexOf() */
+				for (int i = 0; i < idList.size(); i++) {
+					Integer id = idList.get(i);
+					int idx = map.idToIndex(id);
+					assertEquals(indexList2.lastIndexOf(idx), indexList.lastIndexOf(idx));
+				}
+				for (int i = 0; i < 10; i++) {
+					int nonExistingIdx = rand.nextInt();
+					if (allIndices.contains(nonExistingIdx))
+						continue;
+					assertEquals(-1, indexList.lastIndexOf(nonExistingIdx));
+				}
+
+				/* remove(element) */
+				int sizeBeforeRemove = idList.size();
+				IntList expected = new IntArrayList(idList.stream().map(map::idToIndex).collect(Collectors.toList()));
+				int removeElement = expected.getInt(expected.indexOf(expected.getInt(rand.nextInt(idList.size()))));
+				boolean expectedModified = expected.rem(removeElement);
+				boolean actualModified = indexList.rem(removeElement);
+				assertEqualsBool(expectedModified, actualModified);
+				assertEquals(sizeBeforeRemove - 1, idList.size());
+				assertEquals(sizeBeforeRemove - 1, indexList.size());
+				assertEquals(idList.stream().map(map::indexToId).collect(Collectors.toList()),
+						new ArrayList<>(indexList));
+				for (int i = 0; i < 10; i++) {
+					int nonExistingIdx = rand.nextInt();
+					if (allIndices.contains(nonExistingIdx))
+						continue;
+					assertFalse(indexList.rem(nonExistingIdx));
+				}
+				for (int i = 0; i < 10; i++) {
+					int nonExistingIdx = allIndices.toIntArray()[rand.nextInt(allIndices.size())];
+					if (idsSet.contains(nonExistingIdx))
+						continue;
+					assertFalse(indexList.rem(nonExistingIdx));
+				}
+
+				/* remove(index) */
+				sizeBeforeRemove = idList.size();
+				expected = new IntArrayList(idList.stream().map(map::idToIndex).collect(Collectors.toList()));
+				int removeIdx = rand.nextInt(idList.size());
+				int removedIdxExpected = expected.removeInt(removeIdx);
+				int removedIdxActual = indexList.removeInt(removeIdx);
+				assertEquals(removedIdxExpected, removedIdxActual);
+				assertEquals(sizeBeforeRemove - 1, idList.size());
+				assertEquals(sizeBeforeRemove - 1, indexList.size());
+				assertEquals(idList.stream().map(map::indexToId).collect(Collectors.toList()),
+						new ArrayList<>(indexList));
+
+				/* listIterator() */
+				IntListIterator it = indexList.listIterator();
+				for (int i = 0; i < indexList.size(); i++) {
+					assertTrue(it.hasNext());
+					assertEquals(i, it.nextIndex());
+					int element = it.nextInt();
+					assertEquals(indexList.getInt(i), element);
+				}
+				for (int i = indexList.size() - 1; i >= 0; i--) {
+					assertTrue(it.hasPrevious());
+					assertEquals(i, it.previousIndex());
+					int element = it.previousInt();
+					assertEquals(indexList.getInt(i), element);
+				}
+			}
+		}
+
+		Graph<Integer, Integer> g = createGraph(false);
+		List<Integer> listSet = new ArrayList<>(g.edges());
+		IndexIdMap<Integer> map = g.indexGraphEdgesMap();
+		IntCollection indexList = IndexIdMaps.idToIndexCollection(listSet, map);
+		assertTrue(indexList instanceof IntList);
+	}
+
+	public void idToIndexCollectionOrSet(Function<Set<Integer>, Collection<Integer>> createIdCollection) {
 		final long seed = 0xd71f63773c813234L;
 		final Random rand = new Random(seed);
 		for (boolean intGraph : BooleanList.of(false, true)) {
@@ -329,14 +442,7 @@ public class IndexIdMapsTest extends TestBase {
 				Set<Integer> idSet = randElementsSubSet(g, edgesOrVertices);
 				IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
 
-				Supplier<Collection<Integer>> createIdCollection;
-				if (collectionOrSet) {
-					createIdCollection = () -> copyToRealCollection(idSet);
-				} else {
-					createIdCollection = () -> new HashSet<>(idSet);
-				}
-
-				Collection<Integer> idCollection = createIdCollection.get();
+				Collection<Integer> idCollection = createIdCollection.apply(idSet);
 				IntCollection indexCollection;
 				if (idCollection instanceof Set) {
 					indexCollection = IndexIdMaps.idToIndexSet((Set<Integer>) idCollection, map);
@@ -379,7 +485,7 @@ public class IndexIdMapsTest extends TestBase {
 				indexCollection.clear();
 				assertTrue(idCollection.isEmpty());
 				assertTrue(indexCollection.isEmpty());
-				idCollection = createIdCollection.get();
+				idCollection = createIdCollection.apply(idSet);
 				indexCollection = IndexIdMaps.idToIndexCollection(idCollection, map);
 				assertFalse(indexCollection.isEmpty());
 				idCollection.clear();
@@ -395,7 +501,7 @@ public class IndexIdMapsTest extends TestBase {
 		GnpGraphGenerator<Integer, Integer> g =
 				intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
 		g.setSeed(seed);
-		g.setVertices(Range.of(10));
+		g.setVertices(Range.of(24));
 		g.setEdges(new AtomicInteger()::getAndIncrement);
 		g.setEdgeProbability(0.1);
 		return g.generateMutable();

@@ -21,6 +21,7 @@ import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.internal.util.IntAdapters;
@@ -30,6 +31,7 @@ import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -205,6 +207,88 @@ public class IndexIdMaps {
 		@Override
 		public void remove() {
 			idIt.remove();
+		}
+	}
+
+	private static class IdToIndexListIterator<K> implements IntListIterator {
+
+		private final ListIterator<K> idIt;
+		private final IndexIdMap<K> map;
+
+		IdToIndexListIterator(ListIterator<K> idIt, IndexIdMap<K> map) {
+			this.idIt = Objects.requireNonNull(idIt);
+			this.map = Objects.requireNonNull(map);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return idIt.hasNext();
+		}
+
+		@Override
+		public int nextInt() {
+			return map.idToIndex(idIt.next());
+		}
+
+		@Override
+		public boolean hasPrevious() {
+			return idIt.hasPrevious();
+		}
+
+		@Override
+		public int previousInt() {
+			return map.idToIndex(idIt.previous());
+		}
+
+		@Override
+		public int nextIndex() {
+			return idIt.nextIndex();
+		}
+
+		@Override
+		public int previousIndex() {
+			return idIt.previousIndex();
+		}
+	}
+
+	private static class IntIdToIndexListIterator implements IntListIterator {
+
+		private final IntListIterator idIt;
+		private final IndexIntIdMap map;
+
+		IntIdToIndexListIterator(IntListIterator idIt, IndexIntIdMap map) {
+			this.idIt = Objects.requireNonNull(idIt);
+			this.map = Objects.requireNonNull(map);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return idIt.hasNext();
+		}
+
+		@Override
+		public int nextInt() {
+			return map.idToIndex(idIt.nextInt());
+		}
+
+		@Override
+		public boolean hasPrevious() {
+			return idIt.hasPrevious();
+		}
+
+		@Override
+		public int previousInt() {
+			return map.idToIndex(idIt.previousInt());
+		}
+
+		@Override
+		public int nextIndex() {
+			return idIt.nextIndex();
+		}
+
+		@Override
+		public int previousIndex() {
+			return idIt.previousIndex();
 		}
 	}
 
@@ -542,27 +626,17 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K> IntCollection idToIndexCollection(Collection<K> idCollection, IndexIdMap<K> map) {
-		if (idCollection instanceof Set) {
-			if (map instanceof IndexIntIdMap) {
-				return new IntIdToIndexSet(IntAdapters.asIntSet((Set<Integer>) idCollection), (IndexIntIdMap) map);
-			} else {
-				return new IdToIndexSet<>((Set<K>) idCollection, map);
-			}
+		if (idCollection instanceof Set)
+			return idToIndexSet((Set<K>) idCollection, map);
 
-			// } else if (idCollection instanceof List) {
-			// if (map instanceof IndexIntIdMap) {
-			// return new IntIdToIndexList(IntAdapters.asIntList((List<Integer>) idCollection), (IndexIntIdMap) map);
-			// } else {
-			// return new IdToIndexList<>((List<K>) idCollection, map);
-			// }
+		if (idCollection instanceof List)
+			return idToIndexList((List<K>) idCollection, map);
 
+		if (map instanceof IndexIntIdMap) {
+			return new IntIdToIndexCollection(IntAdapters.asIntCollection((Collection<Integer>) idCollection),
+					(IndexIntIdMap) map);
 		} else {
-			if (map instanceof IndexIntIdMap) {
-				return new IntIdToIndexCollection(IntAdapters.asIntCollection((Collection<Integer>) idCollection),
-						(IndexIntIdMap) map);
-			} else {
-				return new IdToIndexCollection<>(idCollection, map);
-			}
+			return new IdToIndexCollection<>(idCollection, map);
 		}
 	}
 
@@ -580,6 +654,23 @@ public class IndexIdMaps {
 			return new IntIdToIndexSet(IntAdapters.asIntSet((Set<Integer>) idSet), (IndexIntIdMap) map);
 		} else {
 			return new IdToIndexSet<>(idSet, map);
+		}
+	}
+
+	/**
+	 * Create an indices list from a list of IDs.
+	 *
+	 * @param  <K>    the type of IDs
+	 * @param  idList a list of IDs
+	 * @param  map    index-id mapping
+	 * @return        a list that contain indices matching the IDs contained in the original ID-list
+	 */
+	@SuppressWarnings("unchecked")
+	public static <K> IntList idToIndexList(List<K> idList, IndexIdMap<K> map) {
+		if (map instanceof IndexIntIdMap) {
+			return new IntIdToIndexList(IntAdapters.asIntList((List<Integer>) idList), (IndexIntIdMap) map);
+		} else {
+			return new IdToIndexList<>(idList, map);
 		}
 	}
 
@@ -744,6 +835,124 @@ public class IndexIdMaps {
 		@Override
 		public boolean remove(int key) {
 			return idC.remove(map.indexToIdIfExistInt(key));
+		}
+	}
+
+	private static class IdToIndexList<K> extends AbstractIntList {
+
+		private final List<K> idList;
+		private final IndexIdMap<K> map;
+
+		IdToIndexList(List<K> idC, IndexIdMap<K> map) {
+			this.idList = Objects.requireNonNull(idC);
+			this.map = Objects.requireNonNull(map);
+		}
+
+		@Override
+		public int size() {
+			return idList.size();
+		}
+
+		@Override
+		public void clear() {
+			idList.clear();
+		}
+
+		@Override
+		public boolean contains(int key) {
+			return idList.contains(map.indexToIdIfExist(key));
+		}
+
+		@Override
+		public boolean rem(int key) {
+			K id = map.indexToIdIfExist(key);
+			return id != null && idList.remove(id);
+		}
+
+		@Override
+		public IntListIterator listIterator(int index) {
+			return new IdToIndexListIterator<>(idList.listIterator(index), map);
+		}
+
+		@Override
+		public int getInt(int index) {
+			return map.idToIndex(idList.get(index));
+		}
+
+		@Override
+		public int indexOf(int k) {
+			K id = map.indexToIdIfExist(k);
+			return id == null ? -1 : idList.indexOf(id);
+		}
+
+		@Override
+		public int lastIndexOf(int k) {
+			K id = map.indexToIdIfExist(k);
+			return id == null ? -1 : idList.lastIndexOf(id);
+		}
+
+		@Override
+		public int removeInt(int index) {
+			return map.idToIndex(idList.remove(index));
+		}
+	}
+
+	private static class IntIdToIndexList extends AbstractIntList {
+
+		private final IntList idList;
+		private final IndexIntIdMap map;
+
+		IntIdToIndexList(IntList idC, IndexIntIdMap map) {
+			this.idList = Objects.requireNonNull(idC);
+			this.map = Objects.requireNonNull(map);
+		}
+
+		@Override
+		public int size() {
+			return idList.size();
+		}
+
+		@Override
+		public void clear() {
+			idList.clear();
+		}
+
+		@Override
+		public boolean contains(int key) {
+			return idList.contains(map.indexToIdIfExistInt(key));
+		}
+
+		@Override
+		public boolean rem(int key) {
+			int id = map.indexToIdIfExistInt(key);
+			return id != -1 && idList.rem(id);
+		}
+
+		@Override
+		public IntListIterator listIterator(int index) {
+			return new IntIdToIndexListIterator(idList.listIterator(index), map);
+		}
+
+		@Override
+		public int getInt(int index) {
+			return map.idToIndex(idList.getInt(index));
+		}
+
+		@Override
+		public int indexOf(int k) {
+			int id = map.indexToIdIfExistInt(k);
+			return id == -1 ? -1 : idList.indexOf(id);
+		}
+
+		@Override
+		public int lastIndexOf(int k) {
+			int id = map.indexToIdIfExistInt(k);
+			return id == -1 ? -1 : idList.lastIndexOf(id);
+		}
+
+		@Override
+		public int removeInt(int index) {
+			return map.idToIndex(idList.removeInt(index));
 		}
 	}
 
