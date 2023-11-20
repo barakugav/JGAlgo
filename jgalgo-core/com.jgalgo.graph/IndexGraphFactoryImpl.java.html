@@ -45,9 +45,9 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	}
 
 	@Override
-	public IndexGraph newCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyWeights) {
+	public IndexGraph newCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 <span class="fc" id="L49">		setDirected(g.isDirected());</span>
-<span class="fc" id="L50">		return mutableImpl().newCopyOf((IndexGraph) g, copyWeights);</span>
+<span class="fc" id="L50">		return mutableImpl().newCopyOf((IndexGraph) g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	@Override
@@ -63,7 +63,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 		IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum);
 
-		IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights);
+		IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights);
 
 		IndexGraph newFromBuilder(IndexGraphBuilderImpl builder);
 
@@ -78,8 +78,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-<span class="fc" id="L82">				return new GraphArrayDirected(graph, copyWeights);</span>
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L82">				return new GraphArrayDirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
 			}
 
 			@Override
@@ -94,8 +94,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-<span class="fc" id="L98">				return new GraphArrayUndirected(graph, copyWeights);</span>
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L98">				return new GraphArrayUndirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
 			}
 
 			@Override
@@ -111,8 +111,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-<span class="fc" id="L115">				return new GraphLinkedDirected(graph, copyWeights);</span>
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L115">				return new GraphLinkedDirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
 			}
 
 			@Override
@@ -127,8 +127,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-<span class="fc" id="L131">				return new GraphLinkedUndirected(graph, copyWeights);</span>
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L131">				return new GraphLinkedUndirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
 			}
 
 			@Override
@@ -144,8 +144,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-<span class="fc" id="L148">				return new GraphHashmapDirected(graph, copyWeights);</span>
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L148">				return new GraphHashmapDirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
 			}
 
 			@Override
@@ -160,8 +160,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-<span class="fc" id="L164">				return new GraphHashmapUndirected(graph, copyWeights);</span>
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L164">				return new GraphHashmapUndirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
 			}
 
 			@Override
@@ -177,8 +177,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-<span class="fc" id="L181">				return new GraphMatrixDirected(graph, copyWeights);</span>
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L181">				return new GraphMatrixDirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
 			}
 
 			@Override
@@ -193,8 +193,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-<span class="fc" id="L197">				return new GraphMatrixUndirected(graph, copyWeights);</span>
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L197">				return new GraphMatrixUndirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
 			}
 
 			@Override
@@ -241,8 +241,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	Impl immutableImpl() {
 <span class="fc bfc" id="L242" title="All 2 branches covered.">		Impl csrImpl = directed ? new ImplImmutable() {</span>
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-<span class="nc" id="L245">				return new GraphCSRDirected(graph, copyWeights);</span>
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="nc" id="L245">				return new GraphCSRDirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
 			}
 
 			@Override
@@ -254,8 +254,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 <span class="fc" id="L255">		} : new ImplImmutable() {</span>
 			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyWeights) {
-<span class="nc" id="L258">				return new GraphCSRUndirected(graph, copyWeights);</span>
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="nc" id="L258">				return new GraphCSRUndirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
 			}
 
 			@Override

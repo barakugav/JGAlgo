@@ -28,9 +28,9 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 <span class="nc" id="L29">class GraphBuilderImpl {</span>
 
-	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newFrom(Graph&lt;V, E&gt; g, boolean copyWeights) {
-<span class="nc bnc" id="L32" title="All 2 branches missed.">		return g.isDirected() ? new GraphBuilderImpl.Directed&lt;&gt;(g, copyWeights)</span>
-<span class="nc" id="L33">				: new GraphBuilderImpl.Undirected&lt;&gt;(g, copyWeights);</span>
+	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newFrom(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="nc bnc" id="L32" title="All 2 branches missed.">		return g.isDirected() ? new GraphBuilderImpl.Directed&lt;&gt;(g, copyVerticesWeights, copyEdgesWeights)</span>
+<span class="nc" id="L33">				: new GraphBuilderImpl.Undirected&lt;&gt;(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 <span class="fc" id="L36">	private abstract static class Abstract&lt;V, E&gt; implements GraphBuilder&lt;V, E&gt; {</span>
@@ -63,10 +63,10 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 <span class="fc" id="L63">			eiMap = new IndexIdMapImpl&lt;&gt;(eIdToIndex, eIndexToId, true);</span>
 <span class="fc" id="L64">		}</span>
 
-<span class="nc" id="L66">		Abstract(Graph&lt;V, E&gt; g, boolean copyWeights) {</span>
+<span class="nc" id="L66">		Abstract(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {</span>
 <span class="nc" id="L67">			final int n = g.vertices().size();</span>
 <span class="nc" id="L68">			final int m = g.edges().size();</span>
-<span class="nc" id="L69">			this.ibuilder = IndexGraphBuilder.newFrom(g.indexGraph(), copyWeights);</span>
+<span class="nc" id="L69">			this.ibuilder = IndexGraphBuilder.newFrom(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
 <span class="nc" id="L70">			vIdToIndex = new Object2IntOpenHashMap&lt;&gt;(n);</span>
 <span class="nc" id="L71">			vIdToIndex.defaultReturnValue(-1);</span>
 <span class="nc" id="L72">			vIndexToId = new ObjectArrayList&lt;&gt;(n);</span>
@@ -265,8 +265,8 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 <span class="fc" id="L265">			this(IndexGraphBuilder.newUndirected());</span>
 <span class="fc" id="L266">		}</span>
 
-		Undirected(Graph&lt;V, E&gt; g, boolean copyWeights) {
-<span class="nc" id="L269">			super(g, copyWeights);</span>
+		Undirected(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="nc" id="L269">			super(g, copyVerticesWeights, copyEdgesWeights);</span>
 <span class="nc" id="L270">			Assertions.Graphs.onlyUndirected(g);</span>
 <span class="nc" id="L271">		}</span>
 
@@ -298,8 +298,8 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 <span class="fc" id="L298">			this(IndexGraphBuilder.newDirected());</span>
 <span class="fc" id="L299">		}</span>
 
-		Directed(Graph&lt;V, E&gt; g, boolean copyWeights) {
-<span class="nc" id="L302">			super(g, copyWeights);</span>
+		Directed(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="nc" id="L302">			super(g, copyVerticesWeights, copyEdgesWeights);</span>
 <span class="nc" id="L303">			Assertions.Graphs.onlyDirected(g);</span>
 <span class="nc" id="L304">		}</span>
 

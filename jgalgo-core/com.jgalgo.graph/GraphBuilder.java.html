@@ -257,7 +257,7 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 *             vertices/edges weights.
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newFrom(Graph&lt;V, E&gt; g) {
-<span class="nc" id="L260">		return newFrom(g, false);</span>
+<span class="nc" id="L260">		return newFrom(g, false, false);</span>
 	}
 
 	/**
@@ -266,15 +266,18 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * &lt;p&gt;
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
-	 * @param  &lt;V&gt;         the vertices type
-	 * @param  &lt;E&gt;         the edges type
-	 * @param  g           a graph
-	 * @param  copyWeights if {@code true}, the weights of the vertices and edges will be copied to the new graph
-	 * @return             a builder initialized with the given graph vertices and edges, with/without the original
-	 *                     graph vertices/edges weights.
+	 * @param  &lt;V&gt;                 the vertices type
+	 * @param  &lt;E&gt;                 the edges type
+	 * @param  g                   a graph
+	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied from the graph to the
+	 *                                 builder
+	 * @param  copyEdgesWeights    if {@code true}, the weights of the edges will be copied from the graph to the
+	 *                                 builder
+	 * @return                     a builder initialized with the given graph vertices and edges, with/without the
+	 *                             original graph vertices/edges weights.
 	 */
-	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newFrom(Graph&lt;V, E&gt; g, boolean copyWeights) {
-<span class="nc" id="L277">		return GraphBuilderImpl.newFrom(g, copyWeights);</span>
+	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newFrom(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="nc" id="L280">		return GraphBuilderImpl.newFrom(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 }

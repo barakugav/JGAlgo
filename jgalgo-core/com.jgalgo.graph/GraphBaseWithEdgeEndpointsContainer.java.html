@@ -17,22 +17,22 @@ package com.jgalgo.graph;
 
 import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 
-public abstract class GraphBaseWithEdgeEndpointsContainer extends GraphBaseMutable
-		implements GraphWithEdgeEndpointsContainer {
+abstract class GraphBaseWithEdgeEndpointsContainer extends GraphBaseMutable implements GraphWithEdgeEndpointsContainer {
 
 	private long[] edgeEndpoints;
 	private final DataContainer.Long edgeEndpointsContainer;
 
 	GraphBaseWithEdgeEndpointsContainer(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum,
 			int expectedEdgesNum) {
-<span class="fc" id="L28">		super(capabilities, expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L29">		edgeEndpointsContainer =</span>
-<span class="fc" id="L30">				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
-<span class="fc" id="L31">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
-<span class="fc" id="L32">	}</span>
+<span class="fc" id="L27">		super(capabilities, expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L28">		edgeEndpointsContainer =</span>
+<span class="fc" id="L29">				new DataContainer.Long(edges, EdgeEndpointsContainer.DefVal, newArr -&gt; edgeEndpoints = newArr);</span>
+<span class="fc" id="L30">		addInternalEdgesContainer(edgeEndpointsContainer);</span>
+<span class="fc" id="L31">	}</span>
 
-	GraphBaseWithEdgeEndpointsContainer(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L35">		super(capabilities, g, copyWeights);</span>
+	GraphBaseWithEdgeEndpointsContainer(IndexGraphBase.Capabilities capabilities, IndexGraph g,
+			boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L35">		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);</span>
 <span class="fc bfc" id="L36" title="All 2 branches covered.">		if (g instanceof GraphBaseWithEdgeEndpointsContainer) {</span>
 <span class="fc" id="L37">			GraphBaseWithEdgeEndpointsContainer g0 = (GraphBaseWithEdgeEndpointsContainer) g;</span>
 <span class="fc" id="L38">			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edges, newArr -&gt; edgeEndpoints = newArr);</span>

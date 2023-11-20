@@ -180,7 +180,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 *           vertices/edges weights.
 	 */
 	static IntGraphBuilder newFrom(IntGraph g) {
-<span class="fc" id="L183">		return newFrom(g, false);</span>
+<span class="fc" id="L183">		return newFrom(g, false, false);</span>
 	}
 
 	/**
@@ -189,13 +189,16 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 * &lt;p&gt;
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
-	 * @param  g           a graph
-	 * @param  copyWeights if {@code true}, the weights of the vertices and edges will be copied to the new graph
-	 * @return             a builder initialized with the given graph vertices and edges, with/without the original
-	 *                     graph vertices/edges weights.
+	 * @param  g                   a graph
+	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied from the graph to the
+	 *                                 builder
+	 * @param  copyEdgesWeights    if {@code true}, the weights of the edges will be copied from the graph to the
+	 *                                 builder
+	 * @return                     a builder initialized with the given graph vertices and edges, with/without the
+	 *                             original graph vertices/edges weights.
 	 */
-	static IntGraphBuilder newFrom(IntGraph g, boolean copyWeights) {
-<span class="fc" id="L198">		return IntGraphBuilderImpl.newFrom(g, copyWeights);</span>
+	static IntGraphBuilder newFrom(IntGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L201">		return IntGraphBuilderImpl.newFrom(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 }

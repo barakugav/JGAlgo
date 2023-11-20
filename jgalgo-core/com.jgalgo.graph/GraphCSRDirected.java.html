@@ -30,8 +30,8 @@ class GraphCSRDirected extends GraphCSRAbstractUnindexed {
 <span class="fc" id="L30">		edgesInBegin = processEdges.edgesInBegin;</span>
 <span class="fc" id="L31">	}</span>
 
-	GraphCSRDirected(IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L34">		super(Capabilities, g, copyWeights);</span>
+	GraphCSRDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L34">		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);</span>
 <span class="fc" id="L35">		Assertions.Graphs.onlyDirected(g);</span>
 <span class="fc" id="L36">		final int n = g.vertices().size();</span>
 <span class="fc" id="L37">		final int m = g.edges().size();</span>

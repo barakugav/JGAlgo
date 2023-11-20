@@ -53,8 +53,8 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 <span class="fc" id="L54">	}</span>
 
-	GraphLinkedUndirected(IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L57">		super(Capabilities, g, copyWeights);</span>
+	GraphLinkedUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L57">		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);</span>
 <span class="fc" id="L58">		edgesContainer = new DataContainer.Obj&lt;&gt;(vertices, null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
 <span class="fc" id="L59">		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -&gt; edgesNum = newArr);</span>
 <span class="fc" id="L60">		addInternalVerticesContainer(edgesContainer);</span>

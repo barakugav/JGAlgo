@@ -710,7 +710,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an identical copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph&lt;V, E&gt; copy() {
-<span class="fc" id="L713">		return copy(false);</span>
+<span class="fc" id="L713">		return copy(false, false);</span>
 	}
 
 	/**
@@ -726,12 +726,13 @@ public interface Graph&lt;V, E&gt; {
 	 * there is no guarantee that {@code g.indexGraph().equals(g.copy().indexGraph())}. Namely, when the graph is
 	 * copied, new indices may be assigned to the vertices and edges.
 	 *
-	 * @param  copyWeights if {@code true}, the weights of the vertices and edges will be copied to the new graph
-	 * @return             an identical copy of the given graph, with the same vertices and edges, with/without this
-	 *                     graph weights
+	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied to the new graph
+	 * @param  copyEdgesWeights    if {@code true}, the weights of the edges will be copied to the new graph
+	 * @return                     an identical copy of the given graph, with the same vertices and edges, with/without
+	 *                             this graph weights
 	 */
-	default Graph&lt;V, E&gt; copy(boolean copyWeights) {
-<span class="fc" id="L734">		return GraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
+	default Graph&lt;V, E&gt; copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L735">		return GraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	/**
@@ -755,7 +756,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an immutable copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph&lt;V, E&gt; immutableCopy() {
-<span class="nc" id="L758">		return GraphBuilder.newFrom(this).build();</span>
+<span class="nc" id="L759">		return GraphBuilder.newFrom(this).build();</span>
 	}
 
 	/**
@@ -776,23 +777,24 @@ public interface Graph&lt;V, E&gt; {
 	 * {@code true}, there is no guarantee that {@code g.indexGraph().equals(g.immutableCopy().indexGraph())}. Namely,
 	 * when the graph is copied, new indices may be assigned to the vertices and edges.
 	 *
-	 * @param  copyWeights if {@code true}, the weights of the vertices and edges will be copied to the new graph
-	 * @return             an immutable copy of this graph, with the same vertices and edges, with/without this graph
-	 *                     weights
+	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied to the new graph
+	 * @param  copyEdgesWeights    if {@code true}, the weights of the edges will be copied to the new graph
+	 * @return                     an immutable copy of this graph, with the same vertices and edges, with/without this
+	 *                             graph weights
 	 */
-	default Graph&lt;V, E&gt; immutableCopy(boolean copyWeights) {
-<span class="nc" id="L784">		IndexIdMap&lt;V&gt; viMap = indexGraphVerticesMap();</span>
-<span class="nc" id="L785">		IndexIdMap&lt;E&gt; eiMap = indexGraphEdgesMap();</span>
-<span class="nc bnc" id="L786" title="All 2 branches missed.">		if (isDirected()) {</span>
-<span class="nc" id="L787">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
-<span class="nc" id="L788">					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyWeights);</span>
-<span class="nc" id="L789">			IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="nc" id="L790">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="nc" id="L791">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="nc" id="L792">			return new GraphImpl.Directed&lt;&gt;(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
+	default Graph&lt;V, E&gt; immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="nc" id="L786">		IndexIdMap&lt;V&gt; viMap = indexGraphVerticesMap();</span>
+<span class="nc" id="L787">		IndexIdMap&lt;E&gt; eiMap = indexGraphEdgesMap();</span>
+<span class="nc bnc" id="L788" title="All 2 branches missed.">		if (isDirected()) {</span>
+<span class="nc" id="L789">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
+<span class="nc" id="L790">					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
+<span class="nc" id="L791">			IndexGraph iGraph = reIndexedGraph.graph();</span>
+<span class="nc" id="L792">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
+<span class="nc" id="L793">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="nc" id="L794">			return new GraphImpl.Directed&lt;&gt;(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
 		} else {
-<span class="nc" id="L794">			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);</span>
-<span class="nc" id="L795">			return new GraphImpl.Undirected&lt;&gt;(iGraph, viMap, eiMap, null, null);</span>
+<span class="nc" id="L796">			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
+<span class="nc" id="L797">			return new GraphImpl.Undirected&lt;&gt;(iGraph, viMap, eiMap, null, null);</span>
 		}
 	}
 
@@ -807,7 +809,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an immutable view of this graph
 	 */
 	default Graph&lt;V, E&gt; immutableView() {
-<span class="fc" id="L810">		return Graphs.immutableView(this);</span>
+<span class="fc" id="L812">		return Graphs.immutableView(this);</span>
 	}
 
 	/**
@@ -824,7 +826,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return a reversed view of this graph
 	 */
 	default Graph&lt;V, E&gt; reverseView() {
-<span class="fc" id="L827">		return Graphs.reverseView(this);</span>
+<span class="fc" id="L829">		return Graphs.reverseView(this);</span>
 	}
 
 	/**
@@ -848,7 +850,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an undirected view of this graph
 	 */
 	default Graph&lt;V, E&gt; undirectedView() {
-<span class="fc" id="L851">		return Graphs.undirectedView(this);</span>
+<span class="fc" id="L853">		return Graphs.undirectedView(this);</span>
 	}
 
 	/**
@@ -880,7 +882,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
 	 */
 	default Graph&lt;V, E&gt; subGraphCopy(Collection&lt;V&gt; vertices, Collection&lt;E&gt; edges) {
-<span class="fc" id="L883">		return Graphs.subGraph(this, vertices, edges);</span>
+<span class="fc" id="L885">		return Graphs.subGraph(this, vertices, edges);</span>
 	}
 
 	/**
@@ -895,7 +897,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return     a new undirected empty graph
 	 */
 	static &lt;V, E&gt; Graph&lt;V, E&gt; newUndirected() {
-<span class="fc" id="L898">		return GraphFactory.&lt;V, E&gt;newUndirected().newGraph();</span>
+<span class="fc" id="L900">		return GraphFactory.&lt;V, E&gt;newUndirected().newGraph();</span>
 	}
 
 	/**
@@ -910,7 +912,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return     a new directed empty graph
 	 */
 	static &lt;V, E&gt; Graph&lt;V, E&gt; newDirected() {
-<span class="fc" id="L913">		return GraphFactory.&lt;V, E&gt;newDirected().newGraph();</span>
+<span class="fc" id="L915">		return GraphFactory.&lt;V, E&gt;newDirected().newGraph();</span>
 	}
 
 }

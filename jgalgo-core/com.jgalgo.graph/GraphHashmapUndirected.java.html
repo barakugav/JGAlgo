@@ -44,8 +44,8 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 <span class="fc" id="L44">		addInternalVerticesContainer(edgesContainer);</span>
 <span class="fc" id="L45">	}</span>
 
-	GraphHashmapUndirected(IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L48">		super(Capabilities, g, copyWeights);</span>
+	GraphHashmapUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L48">		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);</span>
 <span class="fc" id="L49">		final int n = g.vertices().size();</span>
 
 <span class="fc bfc" id="L51" title="All 2 branches covered.">		if (g instanceof GraphHashmapUndirected) {</span>

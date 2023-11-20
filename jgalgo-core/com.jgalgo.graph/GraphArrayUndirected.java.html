@@ -58,8 +58,8 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 <span class="fc" id="L58">		addInternalVerticesContainer(edgesNumContainer);</span>
 <span class="fc" id="L59">	}</span>
 
-	GraphArrayUndirected(IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L62">		super(Capabilities, g, copyWeights);</span>
+	GraphArrayUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L62">		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);</span>
 <span class="fc" id="L63">		final int n = g.vertices().size();</span>
 
 <span class="fc bfc" id="L65" title="All 2 branches covered.">		if (g instanceof GraphArrayUndirected) {</span>

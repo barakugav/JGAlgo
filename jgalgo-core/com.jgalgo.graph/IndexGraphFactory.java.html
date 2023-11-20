@@ -48,7 +48,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	}
 
 	@Override
-	IndexGraph newCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyWeights);
+	IndexGraph newCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights);
 
 	@Override
 	IndexGraphBuilder newBuilder();

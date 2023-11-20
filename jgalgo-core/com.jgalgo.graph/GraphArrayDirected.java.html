@@ -67,8 +67,8 @@ class GraphArrayDirected extends GraphArrayAbstract {
 <span class="fc" id="L67">		addInternalVerticesContainer(edgesInNumContainer);</span>
 <span class="fc" id="L68">	}</span>
 
-	GraphArrayDirected(IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L71">		super(Capabilities, g, copyWeights);</span>
+	GraphArrayDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L71">		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);</span>
 <span class="fc" id="L72">		final int n = g.vertices().size();</span>
 
 <span class="fc bfc" id="L74" title="All 2 branches covered.">		if (g instanceof GraphArrayDirected) {</span>

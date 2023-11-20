@@ -479,8 +479,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	}
 
 	@Override
-	default IntGraph copy(boolean copyWeights) {
-<span class="fc" id="L483">		return IntGraphFactory.newFrom(this).newCopyOf(this, copyWeights);</span>
+	default IntGraph copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L483">		return IntGraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	@Override
@@ -489,18 +489,18 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	}
 
 	@Override
-	default IntGraph immutableCopy(boolean copyWeights) {
+	default IntGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
 <span class="fc" id="L493">		IndexIntIdMap viMap = indexGraphVerticesMap();</span>
 <span class="fc" id="L494">		IndexIntIdMap eiMap = indexGraphEdgesMap();</span>
 <span class="fc bfc" id="L495" title="All 2 branches covered.">		if (isDirected()) {</span>
 <span class="fc" id="L496">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
-<span class="fc" id="L497">					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyWeights);</span>
+<span class="fc" id="L497">					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
 <span class="fc" id="L498">			IndexGraph iGraph = reIndexedGraph.graph();</span>
 <span class="fc" id="L499">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
 <span class="fc" id="L500">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
 <span class="fc" id="L501">			return new IntGraphImpl.Directed(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
 		} else {
-<span class="fc" id="L503">			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyWeights);</span>
+<span class="fc" id="L503">			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
 <span class="fc" id="L504">			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap, null, null);</span>
 		}
 	}

@@ -56,8 +56,8 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 <span class="fc" id="L56">		addInternalVerticesContainer(edgesInNumContainer);</span>
 <span class="fc" id="L57">	}</span>
 
-	GraphMatrixDirected(IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L60">		super(Capabilities, g, copyWeights);</span>
+	GraphMatrixDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L60">		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);</span>
 <span class="pc bnc" id="L61" title="All 2 branches missed.">		assert g.isDirected();</span>
 <span class="fc bfc" id="L62" title="All 2 branches covered.">		if (g instanceof GraphMatrixDirected) {</span>
 <span class="fc" id="L63">			GraphMatrixDirected g0 = (GraphMatrixDirected) g;</span>

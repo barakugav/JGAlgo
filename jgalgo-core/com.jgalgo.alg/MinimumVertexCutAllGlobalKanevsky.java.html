@@ -121,7 +121,8 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 		/* The queue iterator stores the cuts and use less and less memory as the elements are consumed */
 <span class="fc" id="L123">		Iterator&lt;IntSet&gt; cutsIter = JGAlgoUtils.queueIter(cuts);</span>
-<span class="fc" id="L124">		return IterTools.map(cutsIter, cut -&gt; ImmutableIntArraySet.ofBitmap(cut, n));</span>
+<span class="fc" id="L124">		cuts.clear();</span>
+<span class="fc" id="L125">		return IterTools.map(cutsIter, cut -&gt; ImmutableIntArraySet.ofBitmap(cut, n));</span>
 	}
 
 }

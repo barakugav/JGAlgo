@@ -41,8 +41,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 <span class="fc" id="L41">		addInternalVerticesContainer(edgesInContainer);</span>
 <span class="fc" id="L42">	}</span>
 
-	GraphHashmapDirected(IndexGraph g, boolean copyWeights) {
-<span class="fc" id="L45">		super(Capabilities, g, copyWeights);</span>
+	GraphHashmapDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L45">		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);</span>
 <span class="fc" id="L46">		final int n = g.vertices().size();</span>
 
 <span class="fc bfc" id="L48" title="All 2 branches covered.">		if (g instanceof GraphHashmapDirected) {</span>
