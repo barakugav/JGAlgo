@@ -34,11 +34,11 @@ import com.jgalgo.graph.WeightFunction;
  * The most basic single source shortest path (SSSP) algorithms work on graphs with non negative weights, and they are
  * the most efficient, such as Dijkstra algorithm. Negative weights are supported by some implementations of SSSP, and
  * the 'shortest path' is well defined as long as there are no negative cycle in the graph as a path can loop in the
- * cycle and achieve arbitrary small 'length'. When negative cycles exists, algorithms will either find the shortest
- * path to any other vertex, or will find a negative cycle, see
- * {@link ShortestPathSingleSource.Result#getNegativeCycle()}. Note that if a negative cycle exists, but it is not
- * reachable from the source, the algorithm may or may not find it, depending on the implementation. To get an algorithm
- * instance that support negative weights, use {@link ShortestPathSingleSource.Builder#setNegativeWeights(boolean)}.
+ * cycle and achieve arbitrary small 'length'. When the weights are allowed be negative, algorithms will either find the
+ * shortest path to any other vertex, or will find a negative cycle, see {@link NegativeCycleException}. Note that if a
+ * negative cycle exists, but it is not reachable from the source, the algorithm may or may not find it, depending on
+ * the implementation. To get an algorithm instance that support negative weights, use
+ * {@link ShortestPathSingleSource.Builder#setNegativeWeights(boolean)}.
  *
  * <p>
  * A special case of the SSSP problem is on directed graphs that does not contain any cycles, and it could be solved in
@@ -98,12 +98,16 @@ public interface ShortestPathSingleSource {
 	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathSingleSource.IResult} object will be returned. In that
 	 * case, its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
-	 * @param  <V>    the vertices type
-	 * @param  <E>    the edges type
-	 * @param  g      a graph
-	 * @param  w      an edge weight function
-	 * @param  source a source vertex
-	 * @return        a result object containing the distances and shortest paths from the source to any other vertex
+	 * @param  <V>                    the vertices type
+	 * @param  <E>                    the edges type
+	 * @param  g                      a graph
+	 * @param  w                      an edge weight function
+	 * @param  source                 a source vertex
+	 * @return                        a result object containing the distances and shortest paths from the source to any
+	 *                                other vertex
+	 * @throws NegativeCycleException if a negative cycle is detected in the graph. If there is a negative cycle that is
+	 *                                    not reachable from the given source, it might not be detected, depending on
+	 *                                    the implementation
 	 */
 	public <V, E> ShortestPathSingleSource.Result<V, E> computeShortestPaths(Graph<V, E> g, WeightFunction<E> w,
 			V source);
@@ -120,44 +124,19 @@ public interface ShortestPathSingleSource {
 		/**
 		 * Get the distance to a target vertex.
 		 *
-		 * @param  target                a target vertex in the graph
-		 * @return                       the sum of the shortest path edges from the source to the target, or
-		 *                               {@code Double.POSITIVE_INFINITY} if no such path found.
-		 * @throws IllegalStateException if and negative cycle was found and {@link #foundNegativeCycle()} return
-		 *                                   {@code true}.
+		 * @param  target a target vertex in the graph
+		 * @return        the sum of the shortest path edges from the source to the target, or
+		 *                {@code Double.POSITIVE_INFINITY} if no such path found.
 		 */
 		public double distance(V target);
 
 		/**
 		 * Get shortest path to a target vertex.
 		 *
-		 * @param  target                a target vertex in the graph
-		 * @return                       the shortest path from the source to the target or {@code null} if no such path
-		 *                               found.
-		 * @throws IllegalStateException if a negative cycle was found and {@link #foundNegativeCycle()} return
-		 *                                   {@code true}.
+		 * @param  target a target vertex in the graph
+		 * @return        the shortest path from the source to the target or {@code null} if no such path found.
 		 */
 		public Path<V, E> getPath(V target);
-
-		/**
-		 * Check whether a negative cycle was found.
-		 *
-		 * <p>
-		 * If a negative cycle was found, the 'shortest paths' are not well defined, as a path can loop in the cycle and
-		 * achieve arbitrary small 'length'.
-		 *
-		 * @return {@code true} if a negative cycle found, else {@code false}.
-		 */
-		public boolean foundNegativeCycle();
-
-		/**
-		 * Get the negative cycle that was found.
-		 *
-		 * @return                       the negative cycle that was found.
-		 * @throws IllegalStateException if no negative cycle was found and {@link #foundNegativeCycle()} return
-		 *                                   {@code false}.
-		 */
-		public Path<V, E> getNegativeCycle();
 	}
 
 	/**
@@ -170,11 +149,9 @@ public interface ShortestPathSingleSource {
 		/**
 		 * Get the distance to a target vertex.
 		 *
-		 * @param  target                a target vertex in the graph
-		 * @return                       the sum of the shortest path edges from the source to the target, or
-		 *                               {@code Double.POSITIVE_INFINITY} if no such path found.
-		 * @throws IllegalStateException if and negative cycle was found and {@link #foundNegativeCycle()} return
-		 *                                   {@code true}.
+		 * @param  target a target vertex in the graph
+		 * @return        the sum of the shortest path edges from the source to the target, or
+		 *                {@code Double.POSITIVE_INFINITY} if no such path found.
 		 */
 		public double distance(int target);
 
@@ -187,11 +164,8 @@ public interface ShortestPathSingleSource {
 		/**
 		 * Get shortest path to a target vertex.
 		 *
-		 * @param  target                a target vertex in the graph
-		 * @return                       the shortest path from the source to the target or {@code null} if no such path
-		 *                               found.
-		 * @throws IllegalStateException if a negative cycle was found and {@link #foundNegativeCycle()} return
-		 *                                   {@code true}.
+		 * @param  target a target vertex in the graph
+		 * @return        the shortest path from the source to the target or {@code null} if no such path found.
 		 */
 		public IPath getPath(int target);
 
@@ -200,9 +174,6 @@ public interface ShortestPathSingleSource {
 		default IPath getPath(Integer target) {
 			return getPath(target.intValue());
 		}
-
-		@Override
-		public IPath getNegativeCycle();
 	}
 
 	/**

@@ -74,7 +74,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 		 */
 
 		final int n = g.vertices().size();
-		Result res = new Result(g, source);
+		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);
 		res.distances[source] = 0;
 
 		FIFOQueueIntNoReduce modified = new FIFOQueueIntNoReduce();
@@ -196,53 +196,11 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 						break;
 				}
 				IntArrays.reverse(negCycle.elements(), 0, negCycle.size());
-				res.negCycle = new PathImpl(g, u, u, negCycle);
-				return res;
+				throw new NegativeCycleException(g, new PathImpl(g, u, u, negCycle));
 			}
 		}
 
 		return res;
-	}
-
-	private static class Result extends ShortestPathSingleSourceUtils.ResultImpl {
-
-		private IPath negCycle;
-
-		private Result(IndexGraph g, int source) {
-			super(g, source);
-		}
-
-		@Override
-		public double distance(int target) {
-			if (foundNegativeCycle())
-				throw new IllegalStateException("negative cycle found, no shortest path exists");
-			return super.distance(target);
-		}
-
-		@Override
-		public IPath getPath(int target) {
-			if (foundNegativeCycle())
-				throw new IllegalStateException("negative cycle found, no shortest path exists");
-			return super.getPath(target);
-		}
-
-		@Override
-		public boolean foundNegativeCycle() {
-			return negCycle != null;
-		}
-
-		@Override
-		public IPath getNegativeCycle() {
-			if (!foundNegativeCycle())
-				throw new IllegalStateException("no negative cycle found");
-			return negCycle;
-		}
-
-		@Override
-		public String toString() {
-			return foundNegativeCycle() ? "[NegCycle=" + negCycle + "]" : super.toString();
-		}
-
 	}
 
 }

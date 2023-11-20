@@ -16,8 +16,8 @@
 
 package com.jgalgo.alg;
 
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -61,11 +61,9 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 			double ew = w.weight(e);
 			if (ew < 0) {
 				if (u == v) {
-					res.setNegCycle(new PathImpl(g, u, u, IntList.of(e)));
-					return res;
+					throw new NegativeCycleException(g, new PathImpl(g, u, u, IntList.of(e)));
 				} else {
-					res.setNegCycle(new PathImpl(g, u, u, IntList.of(e, e)));
-					return res;
+					throw new NegativeCycleException(g, new PathImpl(g, u, u, IntList.of(e, e)));
 				}
 			}
 			if (ew < res.distance(u, v)) {
@@ -106,10 +104,8 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 			int v = g.edgeTarget(e);
 			double ew = w.weight(e);
 			if (u == v) {
-				if (ew < 0) {
-					res.setNegCycle(new PathImpl(g, u, u, IntList.of(e)));
-					return res;
-				}
+				if (ew < 0)
+					throw new NegativeCycleException(g, new PathImpl(g, u, u, IntList.of(e)));
 				continue;
 			}
 			if (ew < res.distance(u, v)) {
@@ -135,13 +131,12 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 					}
 				}
 			}
-			if (detectNegCycle(res, n, k))
-				return res;
+			detectNegCycle(res, n, k);
 		}
 		return res;
 	}
 
-	private static boolean detectNegCycle(ShortestPathAllPairsUtils.ResultImpl.AllVertices res, int n, int k) {
+	private static void detectNegCycle(ShortestPathAllPairsUtils.ResultImpl.AllVertices res, int n, int k) {
 		for (int u = 0; u < n; u++) {
 			double d1 = res.distance(u, k);
 			double d2 = res.distance(k, u);
@@ -151,11 +146,9 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 				IntList negCycle = new IntArrayList();
 				negCycle.addAll(res.getPath(u, k).edges());
 				negCycle.addAll(res.getPath(k, u).edges());
-				res.setNegCycle(new PathImpl(res.g, u, u, negCycle));
-				return true;
+				throw new NegativeCycleException(res.g, new PathImpl(res.g, u, u, negCycle));
 			}
 		}
-		return false;
 	}
 
 }

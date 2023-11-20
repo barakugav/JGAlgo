@@ -17,12 +17,10 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -106,39 +104,39 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 	static <V, E> void testAPSP(Graph<V, E> g, Collection<V> verticesSubset, boolean allVertices, WeightFunction<E> w,
 			ShortestPathAllPairs algo, ShortestPathSingleSource validationAlgo) {
 		ShortestPathAllPairs.Result<V, E> result;
-		if (allVertices) {
-			result = algo.computeAllShortestPaths(g, w);
-		} else {
-			result = algo.computeSubsetShortestPaths(g, verticesSubset, w);
+		NegativeCycleException actualNegCycle = null;
+		try {
+			if (allVertices) {
+				result = algo.computeAllShortestPaths(g, w);
+			} else {
+				result = algo.computeSubsetShortestPaths(g, verticesSubset, w);
+			}
+		} catch (NegativeCycleException e) {
+			actualNegCycle = e;
+			result = null;
 		}
 
 		for (V source : verticesSubset) {
-			ShortestPathSingleSource.Result<V, E> expectedRes = validationAlgo.computeShortestPaths(g, w, source);
+			ShortestPathSingleSource.Result<V, E> expectedRes;
+			NegativeCycleException expectedNegCycle = null;
+			try {
+				expectedRes = validationAlgo.computeShortestPaths(g, w, source);
+			} catch (NegativeCycleException e) {
+				expectedNegCycle = e;
+				expectedRes = null;
+			}
+			if (expectedNegCycle != null)
+				assertNotNull(actualNegCycle, "failed to found negative cycle");
 
-			if (result.foundNegativeCycle()) {
-				Path<V, E> cycle = null;
-				try {
-					cycle = result.getNegativeCycle();
-				} catch (UnsupportedOperationException e) {
-				}
-				if (cycle != null) {
-					double cycleWeight = w.weightSum(cycle.edges());
-					assertTrue(cycleWeight != Double.NaN, "Invalid cycle: " + cycle);
-					assertTrue(cycleWeight < 0, "Cycle is not negative: " + cycle);
-					if (!expectedRes.foundNegativeCycle())
-						throw new IllegalStateException("validation algorithm didn't find negative cycle: " + cycle);
-				} else {
-					assertTrue(expectedRes.foundNegativeCycle(), "found non existing negative cycle");
-				}
-				Iterator<V> vit = g.vertices().iterator();
-				V v1 = vit.next();
-				V v2 = vit.next();
-				assertThrows(IllegalStateException.class, () -> result.distance(v1, v2));
-				assertThrows(IllegalStateException.class, () -> result.getPath(v1, v2));
+			if (actualNegCycle != null) {
+				Path<V, E> cycle = actualNegCycle.cycle(g);
+				double cycleWeight = w.weightSum(cycle.edges());
+				assertTrue(cycleWeight != Double.NaN, "Invalid cycle: " + cycle);
+				assertTrue(cycleWeight < 0, "Cycle is not negative: " + cycle);
+				if (expectedNegCycle == null)
+					throw new IllegalStateException("validation algorithm didn't find negative cycle: " + cycle);
 				return;
 			}
-			assertFalse(expectedRes.foundNegativeCycle(), "failed to found negative cycle");
-			assertThrows(IllegalStateException.class, () -> result.getNegativeCycle());
 
 			for (V target : verticesSubset) {
 				double expectedDistance = expectedRes.distance(target);

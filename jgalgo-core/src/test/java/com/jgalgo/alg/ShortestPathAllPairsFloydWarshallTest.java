@@ -18,7 +18,6 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.TestBase;
@@ -98,12 +97,9 @@ class ShortestPathAllPairsFloydWarshallTest extends TestBase {
 		g.addVertex(2);
 		g.addEdge(1, 1, 0);
 
-		ShortestPathAllPairs.IResult res = (ShortestPathAllPairs.IResult) algo().computeAllShortestPaths(g, e -> -1);
-		assertTrue(res.foundNegativeCycle());
-		assertEquals(IntList.of(0), res.getNegativeCycle().edges());
-
-		assertThrows(IllegalStateException.class, () -> res.distance(0, 1));
-		assertThrows(IllegalStateException.class, () -> res.getPath(0, 1));
+		NegativeCycleException exception =
+				assertThrows(NegativeCycleException.class, () -> algo().computeAllShortestPaths(g, e -> -1));
+		assertEquals(IntList.of(0), exception.cycle().edges());
 	}
 
 	@Test
@@ -114,12 +110,9 @@ class ShortestPathAllPairsFloydWarshallTest extends TestBase {
 		g.addVertex(2);
 		g.addEdge(1, 2, 0);
 
-		ShortestPathAllPairs.IResult res = (ShortestPathAllPairs.IResult) algo().computeAllShortestPaths(g, e -> -1);
-		assertTrue(res.foundNegativeCycle());
-		assertEquals(IntList.of(0, 0), res.getNegativeCycle().edges());
-
-		assertThrows(IllegalStateException.class, () -> res.distance(0, 1));
-		assertThrows(IllegalStateException.class, () -> res.getPath(0, 1));
+		NegativeCycleException exception =
+				assertThrows(NegativeCycleException.class, () -> algo().computeAllShortestPaths(g, e -> -1));
+		assertEquals(IntList.of(0, 0), exception.cycle().edges());
 	}
 
 }

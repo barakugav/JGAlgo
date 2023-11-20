@@ -200,16 +200,6 @@ public class ShortestPathAStarTest extends TestBase {
 					public Path<V, E> getPath(V target) {
 						return paths.get(target);
 					}
-
-					@Override
-					public boolean foundNegativeCycle() {
-						return false;
-					}
-
-					@Override
-					public Path<V, E> getNegativeCycle() {
-						throw new IllegalStateException("no negative cycle found");
-					}
 				};
 			}
 		};

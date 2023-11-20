@@ -53,11 +53,13 @@ public interface ShortestPathAllPairs {
 	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned. In that
 	 * case, its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
-	 * @param  <V> the vertices type
-	 * @param  <E> the edges type
-	 * @param  g   a graph
-	 * @param  w   an edge weight function
-	 * @return     a result object containing information on the shortest path between each pair of vertices
+	 * @param  <V>                    the vertices type
+	 * @param  <E>                    the edges type
+	 * @param  g                      a graph
+	 * @param  w                      an edge weight function
+	 * @return                        a result object containing information on the shortest path between each pair of
+	 *                                vertices
+	 * @throws NegativeCycleException if a negative cycle is detected in the graph
 	 */
 	public <V, E> ShortestPathAllPairs.Result<V, E> computeAllShortestPaths(Graph<V, E> g, WeightFunction<E> w);
 
@@ -73,14 +75,17 @@ public interface ShortestPathAllPairs {
 	 * case, its better to pass a {@link IWeightFunction} as {@code w} and {@link IntCollection} as
 	 * {@code verticesSubset} to avoid boxing/unboxing.
 	 *
-	 * @param  <V>            the vertices type
-	 * @param  <E>            the edges type
-	 * @param  g              a graph
-	 * @param  verticesSubset a subset of vertices of the graph. All shortest paths will be computed between each pair
-	 *                            of vertices from the subset
-	 * @param  w              as edge weight function
-	 * @return                a result object containing information on the shortest path between each pair of vertices
-	 *                        in the subset
+	 * @param  <V>                    the vertices type
+	 * @param  <E>                    the edges type
+	 * @param  g                      a graph
+	 * @param  verticesSubset         a subset of vertices of the graph. All shortest paths will be computed between
+	 *                                    each pair of vertices from the subset
+	 * @param  w                      as edge weight function
+	 * @return                        a result object containing information on the shortest path between each pair of
+	 *                                vertices in the subset
+	 * @throws NegativeCycleException if a negative cycle is detected in the graph. If there is a negative cycle that is
+	 *                                    not reachable from the set of given vertices, it might not be detected,
+	 *                                    depending on the implementation
 	 */
 	public <V, E> ShortestPathAllPairs.Result<V, E> computeSubsetShortestPaths(Graph<V, E> g,
 			Collection<V> verticesSubset, WeightFunction<E> w);
@@ -97,43 +102,21 @@ public interface ShortestPathAllPairs {
 		/**
 		 * Get the distance of the shortest path between two vertices.
 		 *
-		 * @param  source                   the source vertex
-		 * @param  target                   the target vertex
-		 * @return                          the sum of weights of edges in the shortest path from the source to target,
-		 *                                  or {@code Double.POSITIVE_INFINITY} if no such path exists
-		 * @throws IllegalArgumentException if a negative cycle found. See {@link foundNegativeCycle}
+		 * @param  source the source vertex
+		 * @param  target the target vertex
+		 * @return        the sum of weights of edges in the shortest path from the source to target, or
+		 *                {@code Double.POSITIVE_INFINITY} if no such path exists
 		 */
 		public double distance(V source, V target);
 
 		/**
 		 * Get the shortest path between vertices.
 		 *
-		 * @param  source                   the source vertex
-		 * @param  target                   the target vertex
-		 * @return                          the shortest path from the source to target, or {@code null} if no such path
-		 *                                  exists
-		 * @throws IllegalArgumentException if a negative cycle found. See {@link foundNegativeCycle}
+		 * @param  source the source vertex
+		 * @param  target the target vertex
+		 * @return        the shortest path from the source to target, or {@code null} if no such path exists
 		 */
 		public Path<V, E> getPath(V source, V target);
-
-		/**
-		 * Check whether a negative cycle was found.
-		 *
-		 * <p>
-		 * If a negative cycle was found, there is no unique shortest paths, as the paths weight could be arbitrary
-		 * small by going through the cycle multiple times.
-		 *
-		 * @return {@code true} if a negative cycle was found
-		 */
-		public boolean foundNegativeCycle();
-
-		/**
-		 * Get the negative cycle that was found.
-		 *
-		 * @return                          the negative cycle that was found.
-		 * @throws IllegalArgumentException if a negative cycle was found. See {@link foundNegativeCycle}
-		 */
-		public Path<V, E> getNegativeCycle();
 	}
 
 	/**
@@ -146,11 +129,10 @@ public interface ShortestPathAllPairs {
 		/**
 		 * Get the distance of the shortest path between two vertices.
 		 *
-		 * @param  source                   the source vertex
-		 * @param  target                   the target vertex
-		 * @return                          the sum of weights of edges in the shortest path from the source to target,
-		 *                                  or {@code Double.POSITIVE_INFINITY} if no such path exists
-		 * @throws IllegalArgumentException if a negative cycle found. See {@link foundNegativeCycle}
+		 * @param  source the source vertex
+		 * @param  target the target vertex
+		 * @return        the sum of weights of edges in the shortest path from the source to target, or
+		 *                {@code Double.POSITIVE_INFINITY} if no such path exists
 		 */
 		public double distance(int source, int target);
 
@@ -163,11 +145,9 @@ public interface ShortestPathAllPairs {
 		/**
 		 * Get the shortest path between vertices.
 		 *
-		 * @param  source                   the source vertex
-		 * @param  target                   the target vertex
-		 * @return                          the shortest path from the source to target, or {@code null} if no such path
-		 *                                  exists
-		 * @throws IllegalArgumentException if a negative cycle found. See {@link foundNegativeCycle}
+		 * @param  source the source vertex
+		 * @param  target the target vertex
+		 * @return        the shortest path from the source to target, or {@code null} if no such path exists
 		 */
 		public IPath getPath(int source, int target);
 
@@ -176,9 +156,6 @@ public interface ShortestPathAllPairs {
 		default IPath getPath(Integer source, Integer target) {
 			return getPath(source.intValue(), target.intValue());
 		}
-
-		@Override
-		public IPath getNegativeCycle();
 	}
 
 	/**

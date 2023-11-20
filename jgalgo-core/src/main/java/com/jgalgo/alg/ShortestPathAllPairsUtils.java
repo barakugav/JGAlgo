@@ -52,7 +52,8 @@ class ShortestPathAllPairsUtils {
 				IndexGraph iGraph = g.indexGraph();
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-				ShortestPathAllPairs.IResult indexResult = computeAllShortestPaths(iGraph, iw);
+				ShortestPathAllPairs.IResult indexResult =
+						NegativeCycleException.runAndConvertException(g, () -> computeAllShortestPaths(iGraph, iw));
 				return resultFromIndexResult(g, indexResult);
 			}
 		}
@@ -73,7 +74,8 @@ class ShortestPathAllPairsUtils {
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 				IntCollection iVerticesSubset = IndexIdMaps.idToIndexCollection(verticesSubset, viMap);
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-				ShortestPathAllPairs.IResult indexResult = computeSubsetShortestPaths(iGraph, iVerticesSubset, iw);
+				ShortestPathAllPairs.IResult indexResult = NegativeCycleException.runAndConvertException(g,
+						() -> computeSubsetShortestPaths(iGraph, iVerticesSubset, iw));
 				return resultFromIndexResult(g, indexResult);
 			}
 		}
@@ -114,7 +116,6 @@ class ShortestPathAllPairsUtils {
 
 			final IndexGraph g;
 			private final int[][] edges;
-			private IPath negCycle;
 
 			AllVertices(IndexGraph g) {
 				this.g = g;
@@ -132,24 +133,6 @@ class ShortestPathAllPairsUtils {
 			void setEdgeTo(int source, int target, int edge) {
 				edges[source][target] = edge;
 			}
-
-			void setNegCycle(IPath cycle) {
-				Objects.requireNonNull(cycle);
-				this.negCycle = cycle;
-			}
-
-			@Override
-			public boolean foundNegativeCycle() {
-				return negCycle != null;
-			}
-
-			@Override
-			public IPath getNegativeCycle() {
-				if (!foundNegativeCycle())
-					throw new IllegalStateException("no negative cycle found");
-				return negCycle;
-			}
-
 		}
 
 		static class Undirected extends AllVertices {
@@ -182,15 +165,11 @@ class ShortestPathAllPairsUtils {
 
 			@Override
 			public double distance(int source, int target) {
-				if (foundNegativeCycle())
-					throw new IllegalStateException("negative cycle found, no shortest path exists");
 				return source != target ? distances[index(source, target)] : 0;
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
-				if (foundNegativeCycle())
-					throw new IllegalStateException("negative cycle found, no shortest path exists");
 				if (distance(source, target) == Double.POSITIVE_INFINITY)
 					return null;
 				IntList path = new IntArrayList();
@@ -224,15 +203,11 @@ class ShortestPathAllPairsUtils {
 
 			@Override
 			public double distance(int source, int target) {
-				if (foundNegativeCycle())
-					throw new IllegalStateException("negative cycle found, no shortest path exists");
 				return distances[source][target];
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
-				if (foundNegativeCycle())
-					throw new IllegalStateException("negative cycle found, no shortest path exists");
 				if (distance(source, target) == Double.POSITIVE_INFINITY)
 					return null;
 				IntList path = new IntArrayList();
@@ -255,16 +230,6 @@ class ShortestPathAllPairsUtils {
 
 		ResFromSSSP(ShortestPathSingleSource.IResult[] ssspResults) {
 			this.ssspResults = ssspResults;
-		}
-
-		@Override
-		public boolean foundNegativeCycle() {
-			return false;
-		}
-
-		@Override
-		public IPath getNegativeCycle() {
-			throw new IllegalStateException("no negative cycle found");
 		}
 
 		static class AllVertices extends ResFromSSSP {
@@ -330,16 +295,6 @@ class ShortestPathAllPairsUtils {
 			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));
 			return PathImpl.objPathFromIndexPath(g, indexPath);
 		}
-
-		@Override
-		public boolean foundNegativeCycle() {
-			return indexRes.foundNegativeCycle();
-		}
-
-		@Override
-		public Path<V, E> getNegativeCycle() {
-			return PathImpl.objPathFromIndexPath(g, indexRes.getNegativeCycle());
-		}
 	}
 
 	private static class IntResultFromIndexResult implements ShortestPathAllPairs.IResult {
@@ -363,16 +318,6 @@ class ShortestPathAllPairsUtils {
 		public IPath getPath(int source, int target) {
 			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));
 			return PathImpl.intPathFromIndexPath(g, indexPath);
-		}
-
-		@Override
-		public boolean foundNegativeCycle() {
-			return indexRes.foundNegativeCycle();
-		}
-
-		@Override
-		public IPath getNegativeCycle() {
-			return PathImpl.intPathFromIndexPath(g, indexRes.getNegativeCycle());
 		}
 	}
 

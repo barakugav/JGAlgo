@@ -34,6 +34,7 @@ import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
 import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
+import com.jgalgo.alg.NegativeCycleException;
 import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
@@ -51,9 +52,13 @@ public class SSSPNegativeWeightsBench {
 
 	void benchSSSP(ShortestPathSingleSource algo, Blackhole blackhole) {
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		ShortestPathSingleSource.IResult result = (ShortestPathSingleSource.IResult) algo.computeShortestPaths(args.g,
-				args.w, Integer.valueOf(args.source));
-		blackhole.consume(result);
+		try {
+			ShortestPathSingleSource.IResult result = (ShortestPathSingleSource.IResult) algo
+					.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));
+			blackhole.consume(result);
+		} catch (NegativeCycleException e) {
+			blackhole.consume(e);
+		}
 	}
 
 	@BenchmarkMode(Mode.AverageTime)

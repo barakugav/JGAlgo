@@ -53,7 +53,8 @@ class ShortestPathSingleSourceUtils {
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 				int iSource = viMap.idToIndex(source);
-				ShortestPathSingleSource.IResult indexResult = computeShortestPaths(iGraph, iw, iSource);
+				ShortestPathSingleSource.IResult indexResult = NegativeCycleException.runAndConvertException(g,
+						() -> computeShortestPaths(iGraph, iw, iSource));
 				return resultFromIndexResult(g, indexResult);
 			}
 		}
@@ -83,16 +84,6 @@ class ShortestPathSingleSourceUtils {
 		public Path<V, E> getPath(V target) {
 			return PathImpl.objPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));
 		}
-
-		@Override
-		public boolean foundNegativeCycle() {
-			return indexRes.foundNegativeCycle();
-		}
-
-		@Override
-		public Path<V, E> getNegativeCycle() {
-			return PathImpl.objPathFromIndexPath(g, indexRes.getNegativeCycle());
-		}
 	}
 
 	private static class IntResultFromIndexResult implements ShortestPathSingleSource.IResult {
@@ -115,16 +106,6 @@ class ShortestPathSingleSourceUtils {
 		@Override
 		public IPath getPath(int target) {
 			return PathImpl.intPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));
-		}
-
-		@Override
-		public boolean foundNegativeCycle() {
-			return indexRes.foundNegativeCycle();
-		}
-
-		@Override
-		public IPath getNegativeCycle() {
-			return PathImpl.intPathFromIndexPath(g, indexRes.getNegativeCycle());
 		}
 	}
 
@@ -308,16 +289,6 @@ class ShortestPathSingleSourceUtils {
 		}
 
 		@Override
-		public boolean foundNegativeCycle() {
-			return false;
-		}
-
-		@Override
-		public IPath getNegativeCycle() {
-			throw new IllegalStateException("no negative cycle found");
-		}
-
-		@Override
 		public String toString() {
 			return Arrays.toString(distances);
 		}
@@ -368,16 +339,6 @@ class ShortestPathSingleSourceUtils {
 				}
 				IntArrays.reverse(path.elements(), 0, path.size());
 				return new PathImpl(g, source, target, path);
-			}
-
-			@Override
-			public boolean foundNegativeCycle() {
-				return false;
-			}
-
-			@Override
-			public IPath getNegativeCycle() {
-				throw new IllegalStateException("no negative cycle found");
 			}
 
 			@Override
