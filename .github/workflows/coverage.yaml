@@ -22,7 +22,7 @@ jobs:
       run: mvn --batch-mode --update-snapshots package '-Dmaven.test.skip'
 
     - name: Run JUnit Tests with Jacoco coverage
-      run: mvn --batch-mode  '-Dasserts.enable=false' test jacoco:report
+      run: mvn --batch-mode '-Dasserts.enable=false' test jacoco:report
 
     - name: Aggregate Reports from Sub Modules
       run: |

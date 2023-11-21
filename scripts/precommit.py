@@ -20,7 +20,7 @@ def main(args):
 
     print("\n\n ============ Tests ============\n")
     if not args.skip_tests:
-        run_cmd("mvn test -DfailIfNoTests=false")
+        run_cmd("mvn test jacoco:report")
     else:
         print("skipping...")
 
