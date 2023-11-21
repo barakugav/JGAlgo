@@ -140,23 +140,24 @@ public abstract class ImmutableIntArraySet extends AbstractIntSet {
 		return new WithBitmap(arr, 0, arr.length, bitmap);
 	}
 
-	public static ImmutableIntArraySet ofBitmap(IntCollection elms, int bitmapSize) {
-		if (elms instanceof ImmutableIntArraySet) {
-			ImmutableIntArraySet elms0 = (ImmutableIntArraySet) elms;
-			if (elms0 instanceof WithBitmap && ((WithBitmap) elms0).bitmap.capacity() == bitmapSize)
-				return elms0;
-			Bitmap bitmap = new Bitmap(bitmapSize);
-			for (int i = elms0.from; i < elms0.to; i++)
-				bitmap.set(elms0.arr[i]);
-			return new WithBitmap(elms0.arr, elms0.from, elms0.to, bitmap);
+	public static ImmutableIntArraySet ofBitmap(int[] arr, int bitmapSize) {
+		Bitmap bitmap = new Bitmap(bitmapSize);
+		for (int i : arr)
+			bitmap.set(i);
+		return new WithBitmap(arr, 0, arr.length, bitmap);
+	}
 
-		} else {
-			int[] arr = elms.toIntArray();
-			Bitmap bitmap = new Bitmap(bitmapSize);
-			for (int i : arr)
-				bitmap.set(i);
-			return new WithBitmap(arr, 0, arr.length, bitmap);
-		}
+	public static ImmutableIntArraySet ofBitmap(IntCollection elms, int bitmapSize) {
+		if (!(elms instanceof ImmutableIntArraySet))
+			return ofBitmap(elms.toIntArray(), bitmapSize);
+
+		ImmutableIntArraySet elms0 = (ImmutableIntArraySet) elms;
+		if (elms0 instanceof WithBitmap && ((WithBitmap) elms0).bitmap.capacity() == bitmapSize)
+			return elms0;
+		Bitmap bitmap = new Bitmap(bitmapSize);
+		for (int i = elms0.from; i < elms0.to; i++)
+			bitmap.set(elms0.arr[i]);
+		return new WithBitmap(elms0.arr, elms0.from, elms0.to, bitmap);
 	}
 
 	private static class WithBitmap extends ImmutableIntArraySet {
