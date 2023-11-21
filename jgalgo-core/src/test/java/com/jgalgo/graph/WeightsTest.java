@@ -19,9 +19,7 @@ package com.jgalgo.graph;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -204,19 +202,16 @@ public class WeightsTest extends TestBase {
 				Weights<Integer, T> weights = edgeWeightsAdder.apply(g, wKey);
 				assertEquals(defaultWeight, weights.defaultWeightAsObj());
 
-				List<Integer> edges = new ArrayList<>(g.edges());
-				int edgesLen = edges.size();
 				Int2ObjectMap<T> assignedEdges = new Int2ObjectOpenHashMap<>();
 				assignedEdges.defaultReturnValue(defaultWeight);
 				while (assignedEdges.size() < g.edges().size() * 3 / 4) {
 					int op = rand.nextInt(10);
 
 					if (op == 9 && removeEdges) {
-						int eIdx = rand.nextInt(edgesLen);
-						int e = edges.get(eIdx);
+						int e = rand.nextBoolean() ? Graphs.randEdge(g, rand)
+								: g.indexGraphEdgesMap().indexToId(g.edges().size() - 1);
 						g.removeEdge(e);
 						assignedEdges.remove(e);
-						edges.set(eIdx, edges.get(--edgesLen));
 						continue;
 					}
 
@@ -225,7 +220,7 @@ public class WeightsTest extends TestBase {
 						// Choose random unassigned edge
 						int e;
 						do {
-							e = edges.get(rand.nextInt(edgesLen));
+							e = Graphs.randEdge(g, rand);
 						} while (assignedEdges.containsKey(e));
 
 						// assigned to it a new value
@@ -234,10 +229,27 @@ public class WeightsTest extends TestBase {
 						assignedEdges.put(e, val);
 
 					} else {
-						int e = edges.get(rand.nextInt(edgesLen));
+						int e = Graphs.randEdge(g, rand);
 						T actual = weights.getAsObj(e);
 						T expected = assignedEdges.get(e);
 						assertEquals(expected, actual);
+						if (weights instanceof WeightFunction) {
+							@SuppressWarnings("unchecked")
+							WeightFunction<Integer> weights0 = ((WeightFunction<Integer>) weights);
+
+							int e2;
+							do {
+								e2 = Graphs.randEdge(g, rand);
+							} while (assignedEdges.containsKey(e2));
+
+							assertEquals(((Number) weights.getAsObj(e)).doubleValue(), weights0.weight(e));
+							if (weights instanceof WeightFunctionInt)
+								assertEquals(((Number) weights.getAsObj(e)).intValue(),
+										((WeightFunctionInt<Integer>) weights0).weightInt(e));
+							assertEquals(Double.compare(weights0.weight(e), weights0.weight(e2)),
+									weights0.compare(e, e2));
+						}
+
 					}
 				}
 
@@ -290,6 +302,9 @@ public class WeightsTest extends TestBase {
 					assertEquals(weights.getAsObj(e), indexWeights.getAsObj(eiMap.idToIndex(e)));
 					assertEquals(weights.getAsObj(e), indexWeights2.getAsObj(eiMap.idToIndex(e)));
 				}
+
+				/* clear graph, should clear weights as well */
+				g.clear();
 			}
 		}
 	}
