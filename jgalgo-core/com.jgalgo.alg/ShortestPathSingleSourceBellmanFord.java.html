@@ -74,7 +74,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 		 */
 
 <span class="fc" id="L76">		final int n = g.vertices().size();</span>
-<span class="fc" id="L77">		Result res = new Result(g, source);</span>
+<span class="fc" id="L77">		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);</span>
 <span class="fc" id="L78">		res.distances[source] = 0;</span>
 
 <span class="fc" id="L80">		FIFOQueueIntNoReduce modified = new FIFOQueueIntNoReduce();</span>
@@ -196,53 +196,11 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 <span class="fc" id="L196">						break;</span>
 				}
 <span class="fc" id="L198">				IntArrays.reverse(negCycle.elements(), 0, negCycle.size());</span>
-<span class="fc" id="L199">				res.negCycle = new PathImpl(g, u, u, negCycle);</span>
-<span class="fc" id="L200">				return res;</span>
+<span class="fc" id="L199">				throw new NegativeCycleException(g, new PathImpl(g, u, u, negCycle));</span>
 			}
 		}
 
-<span class="fc" id="L204">		return res;</span>
-	}
-
-	private static class Result extends ShortestPathSingleSourceUtils.ResultImpl {
-
-		private IPath negCycle;
-
-		private Result(IndexGraph g, int source) {
-<span class="fc" id="L212">			super(g, source);</span>
-<span class="fc" id="L213">		}</span>
-
-		@Override
-		public double distance(int target) {
-<span class="fc bfc" id="L217" title="All 2 branches covered.">			if (foundNegativeCycle())</span>
-<span class="fc" id="L218">				throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
-<span class="fc" id="L219">			return super.distance(target);</span>
-		}
-
-		@Override
-		public IPath getPath(int target) {
-<span class="fc bfc" id="L224" title="All 2 branches covered.">			if (foundNegativeCycle())</span>
-<span class="fc" id="L225">				throw new IllegalStateException(&quot;negative cycle found, no shortest path exists&quot;);</span>
-<span class="fc" id="L226">			return super.getPath(target);</span>
-		}
-
-		@Override
-		public boolean foundNegativeCycle() {
-<span class="fc bfc" id="L231" title="All 2 branches covered.">			return negCycle != null;</span>
-		}
-
-		@Override
-		public IPath getNegativeCycle() {
-<span class="fc bfc" id="L236" title="All 2 branches covered.">			if (!foundNegativeCycle())</span>
-<span class="fc" id="L237">				throw new IllegalStateException(&quot;no negative cycle found&quot;);</span>
-<span class="fc" id="L238">			return negCycle;</span>
-		}
-
-		@Override
-		public String toString() {
-<span class="nc bnc" id="L243" title="All 2 branches missed.">			return foundNegativeCycle() ? &quot;[NegCycle=&quot; + negCycle + &quot;]&quot; : super.toString();</span>
-		}
-
+<span class="fc" id="L203">		return res;</span>
 	}
 
 }

@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DistanceMeasures.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">DistanceMeasures.java</span></div><h1>DistanceMeasures.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import java.util.Set;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightFunction;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.WeightFunction;
+
+/**
+ * A set of graph distance measures.
+ *
+ * &lt;p&gt;
+ * Given a graph \(G=(V,E)\), and an edge weight function \(w:E \rightarrow \mathbb{R}\), the eccentricity of a vertex
+ * \(v \in V\) is the maximum distance from \(v\) to any other vertex in the graph. Multiple measures can be derived
+ * from the eccentricity of the vertices, such as {@linkplain #radius() radius}, {@linkplain #diameter() diameter},
+ * {@linkplain #center() center}, and {@linkplain #periphery() periphery}. A {@link DistanceMeasures} object can be
+ * created for a graph using {@link #of(Graph, WeightFunction)}, and all these measures will be computed (possible
+ * lazily).
+ *
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
+ */
+@SuppressWarnings(&quot;unused&quot;)
+public interface DistanceMeasures&lt;V, E&gt; {
+
+	/**
+	 * Get the radius of the graph.
+	 *
+	 * &lt;p&gt;
+	 * Given a graph \(G=(V,E)\), and an edge weight function \(w:E \rightarrow \mathbb{R}\), the eccentricity of a
+	 * vertex \(v \in V\) is the maximum distance from \(v\) to any other vertex in the graph. The raidus of the graph
+	 * is the minimum eccentricity of all vertices in the graph. If the graph is directed, the eccentricity of a vertex
+	 * \(v \in V\) is the maximum &lt;i&gt;directed&lt;/i&gt; distance from \(v\) to any other vertex in the graph.
+	 *
+	 * &lt;p&gt;
+	 * If the graph is not (strongly) connected, the radius is {@link Double#POSITIVE_INFINITY}.
+	 *
+	 * @return the radius of the graph
+	 */
+	double radius();
+
+	/**
+	 * Get the diameter of the graph.
+	 *
+	 * &lt;p&gt;
+	 * Given a graph \(G=(V,E)\), and an edge weight function \(w:E \rightarrow \mathbb{R}\), the eccentricity of a
+	 * vertex \(v \in V\) is the maximum distance from \(v\) to any other vertex in the graph. The diameter of the graph
+	 * is the maximum eccentricity of all vertices in the graph. In other words, it is the maximum distance between two
+	 * vertices. If the graph is directed, the eccentricity of a vertex \(v \in V\) is the maximum &lt;i&gt;directed&lt;/i&gt;
+	 * distance from \(v\) to any other vertex in the graph.
+	 *
+	 * &lt;p&gt;
+	 * If the graph is not (strongly) connected, the diameter is {@link Double#POSITIVE_INFINITY}.
+	 *
+	 * @return the diameter of the graph
+	 */
+	double diameter();
+
+	/**
+	 * Get the eccentricity of a vertex.
+	 *
+	 * &lt;p&gt;
+	 * Given a graph \(G=(V,E)\), and an edge weight function \(w:E \rightarrow \mathbb{R}\), the eccentricity of a
+	 * vertex \(v \in V\) is the maximum distance from \(v\) to any other vertex in the graph. If the graph is directed,
+	 * the eccentricity of a vertex \(v \in V\) is the maximum &lt;i&gt;directed&lt;/i&gt; distance from \(v\) to any other vertex
+	 * in the graph.
+	 *
+	 * &lt;p&gt;
+	 * If there is a vertex \(u \in V\) that is not reachable from \(v\), the eccentricity of \(v\) is
+	 * {@link Double#POSITIVE_INFINITY}.
+	 *
+	 * @param  v a vertex
+	 * @return   the eccentricity of the vertex
+	 */
+	double eccentricity(V v);
+
+	/**
+	 * Get the center of the graph.
+	 *
+	 * &lt;p&gt;
+	 * Given a graph \(G=(V,E)\), and an edge weight function \(w:E \rightarrow \mathbb{R}\), the eccentricity of a
+	 * vertex \(v \in V\) is the maximum distance from \(v\) to any other vertex in the graph. The raidus of the graph
+	 * is the minimum eccentricity of all vertices in the graph. The center of the graph is the set of vertices with
+	 * eccentricity equal to the radius.
+	 *
+	 * @return the set of vertices forming the center of the graph
+	 */
+	Set&lt;V&gt; center();
+
+	/**
+	 * Get the periphery of the graph.
+	 *
+	 * &lt;p&gt;
+	 * Given a graph \(G=(V,E)\), and an edge weight function \(w:E \rightarrow \mathbb{R}\), the eccentricity of a
+	 * vertex \(v \in V\) is the maximum distance from \(v\) to any other vertex in the graph. The diameter of the graph
+	 * is the maximum eccentricity of all vertices in the graph. The periphery of the graph is the set of vertices with
+	 * eccentricity equal to the diameter.
+	 *
+	 * &lt;p&gt;
+	 * If the graph is not (strongly) connected, the periphery is the set of all the vertices as all the vertices
+	 * eccentricity and the diameter are {@link Double#POSITIVE_INFINITY}.
+	 *
+	 * @return the set of vertices forming the periphery of the graph
+	 */
+	Set&lt;V&gt; periphery();
+
+	/**
+	 * Get a distance measures object of a graph.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is and {@link IntGraph}, the return object is of type {@link IDistanceMeasures}.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   the graph
+	 * @param  w   the edge weight function
+	 * @return     a distance measures object of the graph
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; DistanceMeasures&lt;V, E&gt; of(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
+<span class="fc" id="L140">		ShortestPathAllPairs apspAlgo = ShortestPathAllPairs.newInstance();</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L142">			ShortestPathAllPairs.IResult sp = (ShortestPathAllPairs.IResult) apspAlgo.computeAllShortestPaths(g, w);</span>
+<span class="fc" id="L143">			return (DistanceMeasures&lt;V, E&gt;) new DistanceMeasuresImpl.IndexImpl((IndexGraph) g, sp);</span>
+
+		} else {
+<span class="fc" id="L146">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L147">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L148">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L149">			ShortestPathAllPairs.IResult sp = (ShortestPathAllPairs.IResult) apspAlgo.computeAllShortestPaths(ig, iw);</span>
+<span class="fc" id="L150">			IDistanceMeasures indexMeasures = new DistanceMeasuresImpl.IndexImpl(ig, sp);</span>
+<span class="fc" id="L151">			return DistanceMeasuresImpl.measuresFromIndexMeasures(g, indexMeasures);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

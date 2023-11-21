@@ -53,11 +53,13 @@ public interface ShortestPathAllPairs {
 	 * If {@code g} is an {@link IntGraph}, a {@link ShortestPathAllPairs.IResult} object will be returned. In that
 	 * case, its better to pass a {@link IWeightFunction} as {@code w} to avoid boxing/unboxing.
 	 *
-	 * @param  &lt;V&gt; the vertices type
-	 * @param  &lt;E&gt; the edges type
-	 * @param  g   a graph
-	 * @param  w   an edge weight function
-	 * @return     a result object containing information on the shortest path between each pair of vertices
+	 * @param  &lt;V&gt;                    the vertices type
+	 * @param  &lt;E&gt;                    the edges type
+	 * @param  g                      a graph
+	 * @param  w                      an edge weight function
+	 * @return                        a result object containing information on the shortest path between each pair of
+	 *                                vertices
+	 * @throws NegativeCycleException if a negative cycle is detected in the graph
 	 */
 	public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeAllShortestPaths(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w);
 
@@ -73,14 +75,17 @@ public interface ShortestPathAllPairs {
 	 * case, its better to pass a {@link IWeightFunction} as {@code w} and {@link IntCollection} as
 	 * {@code verticesSubset} to avoid boxing/unboxing.
 	 *
-	 * @param  &lt;V&gt;            the vertices type
-	 * @param  &lt;E&gt;            the edges type
-	 * @param  g              a graph
-	 * @param  verticesSubset a subset of vertices of the graph. All shortest paths will be computed between each pair
-	 *                            of vertices from the subset
-	 * @param  w              as edge weight function
-	 * @return                a result object containing information on the shortest path between each pair of vertices
-	 *                        in the subset
+	 * @param  &lt;V&gt;                    the vertices type
+	 * @param  &lt;E&gt;                    the edges type
+	 * @param  g                      a graph
+	 * @param  verticesSubset         a subset of vertices of the graph. All shortest paths will be computed between
+	 *                                    each pair of vertices from the subset
+	 * @param  w                      as edge weight function
+	 * @return                        a result object containing information on the shortest path between each pair of
+	 *                                vertices in the subset
+	 * @throws NegativeCycleException if a negative cycle is detected in the graph. If there is a negative cycle that is
+	 *                                    not reachable from the set of given vertices, it might not be detected,
+	 *                                    depending on the implementation
 	 */
 	public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeSubsetShortestPaths(Graph&lt;V, E&gt; g,
 			Collection&lt;V&gt; verticesSubset, WeightFunction&lt;E&gt; w);
@@ -97,43 +102,21 @@ public interface ShortestPathAllPairs {
 		/**
 		 * Get the distance of the shortest path between two vertices.
 		 *
-		 * @param  source                   the source vertex
-		 * @param  target                   the target vertex
-		 * @return                          the sum of weights of edges in the shortest path from the source to target,
-		 *                                  or {@code Double.POSITIVE_INFINITY} if no such path exists
-		 * @throws IllegalArgumentException if a negative cycle found. See {@link foundNegativeCycle}
+		 * @param  source the source vertex
+		 * @param  target the target vertex
+		 * @return        the sum of weights of edges in the shortest path from the source to target, or
+		 *                {@code Double.POSITIVE_INFINITY} if no such path exists
 		 */
 		public double distance(V source, V target);
 
 		/**
 		 * Get the shortest path between vertices.
 		 *
-		 * @param  source                   the source vertex
-		 * @param  target                   the target vertex
-		 * @return                          the shortest path from the source to target, or {@code null} if no such path
-		 *                                  exists
-		 * @throws IllegalArgumentException if a negative cycle found. See {@link foundNegativeCycle}
+		 * @param  source the source vertex
+		 * @param  target the target vertex
+		 * @return        the shortest path from the source to target, or {@code null} if no such path exists
 		 */
 		public Path&lt;V, E&gt; getPath(V source, V target);
-
-		/**
-		 * Check whether a negative cycle was found.
-		 *
-		 * &lt;p&gt;
-		 * If a negative cycle was found, there is no unique shortest paths, as the paths weight could be arbitrary
-		 * small by going through the cycle multiple times.
-		 *
-		 * @return {@code true} if a negative cycle was found
-		 */
-		public boolean foundNegativeCycle();
-
-		/**
-		 * Get the negative cycle that was found.
-		 *
-		 * @return                          the negative cycle that was found.
-		 * @throws IllegalArgumentException if a negative cycle was found. See {@link foundNegativeCycle}
-		 */
-		public Path&lt;V, E&gt; getNegativeCycle();
 	}
 
 	/**
@@ -146,39 +129,33 @@ public interface ShortestPathAllPairs {
 		/**
 		 * Get the distance of the shortest path between two vertices.
 		 *
-		 * @param  source                   the source vertex
-		 * @param  target                   the target vertex
-		 * @return                          the sum of weights of edges in the shortest path from the source to target,
-		 *                                  or {@code Double.POSITIVE_INFINITY} if no such path exists
-		 * @throws IllegalArgumentException if a negative cycle found. See {@link foundNegativeCycle}
+		 * @param  source the source vertex
+		 * @param  target the target vertex
+		 * @return        the sum of weights of edges in the shortest path from the source to target, or
+		 *                {@code Double.POSITIVE_INFINITY} if no such path exists
 		 */
 		public double distance(int source, int target);
 
 		@Deprecated
 		@Override
 		default double distance(Integer source, Integer target) {
-<span class="fc" id="L160">			return distance(source.intValue(), target.intValue());</span>
+<span class="fc" id="L142">			return distance(source.intValue(), target.intValue());</span>
 		}
 
 		/**
 		 * Get the shortest path between vertices.
 		 *
-		 * @param  source                   the source vertex
-		 * @param  target                   the target vertex
-		 * @return                          the shortest path from the source to target, or {@code null} if no such path
-		 *                                  exists
-		 * @throws IllegalArgumentException if a negative cycle found. See {@link foundNegativeCycle}
+		 * @param  source the source vertex
+		 * @param  target the target vertex
+		 * @return        the shortest path from the source to target, or {@code null} if no such path exists
 		 */
 		public IPath getPath(int source, int target);
 
 		@Deprecated
 		@Override
 		default IPath getPath(Integer source, Integer target) {
-<span class="fc" id="L177">			return getPath(source.intValue(), target.intValue());</span>
+<span class="fc" id="L157">			return getPath(source.intValue(), target.intValue());</span>
 		}
-
-		@Override
-		public IPath getNegativeCycle();
 	}
 
 	/**
@@ -191,7 +168,7 @@ public interface ShortestPathAllPairs {
 	 * @return a default implementation of {@link ShortestPathAllPairs}
 	 */
 	static ShortestPathAllPairs newInstance() {
-<span class="fc" id="L194">		return newBuilder().build();</span>
+<span class="fc" id="L171">		return newBuilder().build();</span>
 	}
 
 	/**
@@ -203,47 +180,47 @@ public interface ShortestPathAllPairs {
 	 * @return a new builder that can build {@link ShortestPathAllPairs} objects
 	 */
 	static ShortestPathAllPairs.Builder newBuilder() {
-<span class="fc" id="L206">		return new ShortestPathAllPairs.Builder() {</span>
+<span class="fc" id="L183">		return new ShortestPathAllPairs.Builder() {</span>
 			private boolean cardinalityWeight;
 			String impl;
 
 			@Override
 			public ShortestPathAllPairs build() {
-<span class="pc bpc" id="L212" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L213" title="All 4 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L190" title="All 4 branches missed.">					switch (impl) {</span>
 						case &quot;cardinality&quot;:
-<span class="nc" id="L215">							return new ShortestPathAllPairsCardinality();</span>
+<span class="nc" id="L192">							return new ShortestPathAllPairsCardinality();</span>
 						case &quot;floyd-warshall&quot;:
-<span class="nc" id="L217">							return new ShortestPathAllPairsFloydWarshall();</span>
+<span class="nc" id="L194">							return new ShortestPathAllPairsFloydWarshall();</span>
 						case &quot;johnson&quot;:
-<span class="nc" id="L219">							return new ShortestPathAllPairsJohnson();</span>
+<span class="nc" id="L196">							return new ShortestPathAllPairsJohnson();</span>
 						default:
-<span class="nc" id="L221">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L198">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="fc" id="L224">				ShortestPathAllPairs cardinalityAlgo = new ShortestPathAllPairsCardinality();</span>
-<span class="pc bpc" id="L225" title="1 of 2 branches missed.">				if (cardinalityWeight)</span>
-<span class="nc" id="L226">					return cardinalityAlgo;</span>
-<span class="fc" id="L227">				return new ShortestPathAllPairs() {</span>
-<span class="fc" id="L228">					final ShortestPathAllPairs weightedAlgo = new ShortestPathAllPairsJohnson();</span>
+<span class="fc" id="L201">				ShortestPathAllPairs cardinalityAlgo = new ShortestPathAllPairsCardinality();</span>
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">				if (cardinalityWeight)</span>
+<span class="nc" id="L203">					return cardinalityAlgo;</span>
+<span class="fc" id="L204">				return new ShortestPathAllPairs() {</span>
+<span class="fc" id="L205">					final ShortestPathAllPairs weightedAlgo = new ShortestPathAllPairsJohnson();</span>
 
 					@Override
 					public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeAllShortestPaths(Graph&lt;V, E&gt; g,
 							WeightFunction&lt;E&gt; w) {
-<span class="nc bnc" id="L233" title="All 2 branches missed.">						if (WeightFunction.isCardinality(w)) {</span>
-<span class="nc" id="L234">							return cardinalityAlgo.computeAllShortestPaths(g, null);</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">						if (WeightFunction.isCardinality(w)) {</span>
+<span class="fc" id="L211">							return cardinalityAlgo.computeAllShortestPaths(g, null);</span>
 						} else {
-<span class="nc" id="L236">							return weightedAlgo.computeAllShortestPaths(g, w);</span>
+<span class="fc" id="L213">							return weightedAlgo.computeAllShortestPaths(g, w);</span>
 						}
 					}
 
 					@Override
 					public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeSubsetShortestPaths(Graph&lt;V, E&gt; g,
 							Collection&lt;V&gt; verticesSubset, WeightFunction&lt;E&gt; w) {
-<span class="pc bpc" id="L243" title="1 of 2 branches missed.">						if (WeightFunction.isCardinality(w)) {</span>
-<span class="nc" id="L244">							return cardinalityAlgo.computeSubsetShortestPaths(g, verticesSubset, null);</span>
+<span class="pc bpc" id="L220" title="1 of 2 branches missed.">						if (WeightFunction.isCardinality(w)) {</span>
+<span class="nc" id="L221">							return cardinalityAlgo.computeSubsetShortestPaths(g, verticesSubset, null);</span>
 						} else {
-<span class="fc" id="L246">							return weightedAlgo.computeSubsetShortestPaths(g, verticesSubset, w);</span>
+<span class="fc" id="L223">							return weightedAlgo.computeSubsetShortestPaths(g, verticesSubset, w);</span>
 						}
 					}
 				};
@@ -251,20 +228,20 @@ public interface ShortestPathAllPairs {
 
 			@Override
 			public ShortestPathAllPairs.Builder setCardinality(boolean cardinalityWeight) {
-<span class="nc" id="L254">				this.cardinalityWeight = cardinalityWeight;</span>
-<span class="nc" id="L255">				return this;</span>
+<span class="nc" id="L231">				this.cardinalityWeight = cardinalityWeight;</span>
+<span class="nc" id="L232">				return this;</span>
 			}
 
 			@Override
 			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L260" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L262">						impl = (String) value;</span>
-<span class="nc" id="L263">						break;</span>
+<span class="nc" id="L239">						impl = (String) value;</span>
+<span class="nc" id="L240">						break;</span>
 					default:
-<span class="nc" id="L265">						ShortestPathAllPairs.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L242">						ShortestPathAllPairs.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L267">			}</span>
+<span class="nc" id="L244">			}</span>
 		};
 	}
 

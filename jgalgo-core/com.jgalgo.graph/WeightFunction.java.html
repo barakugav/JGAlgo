@@ -89,7 +89,7 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 */
 	@Override
 	default int compare(K e1, K e2) {
-<span class="nc" id="L92">		return Double.compare(weight(e1), weight(e2));</span>
+<span class="fc" id="L92">		return Double.compare(weight(e1), weight(e2));</span>
 	}
 
 	/**

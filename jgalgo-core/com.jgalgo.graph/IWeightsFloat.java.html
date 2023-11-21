@@ -85,7 +85,7 @@ public interface IWeightsFloat  extends IWeights&lt;Float&gt;, WeightsFloat&lt;I
 	 */
 	@Override
 	default double weight(int element) {
-<span class="nc" id="L88">		return get(element);</span>
+<span class="fc" id="L88">		return get(element);</span>
 	}
 
 	/**
@@ -97,13 +97,13 @@ public interface IWeightsFloat  extends IWeights&lt;Float&gt;, WeightsFloat&lt;I
 	@Deprecated
 	@Override
 	default double weight(Integer element) {
-<span class="nc" id="L100">		return get(element.intValue());</span>
+<span class="fc" id="L100">		return get(element.intValue());</span>
 	}
 
 	@Deprecated
 	@Override
 	default int compare(Integer e1, Integer e2) {
-<span class="nc" id="L106">		return IWeightFunction.super.compare(e1.intValue(), e2.intValue());</span>
+<span class="fc" id="L106">		return IWeightFunction.super.compare(e1.intValue(), e2.intValue());</span>
 	}
 
 }

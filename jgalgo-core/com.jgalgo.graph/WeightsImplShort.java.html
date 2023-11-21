@@ -119,13 +119,13 @@ class WeightsImplShort {
 
 		@Override
 		public void clear(int idx) {
-<span class="nc" id="L122">			weights[idx] = defaultWeight;</span>
-<span class="nc" id="L123">		}</span>
+<span class="fc" id="L122">			weights[idx] = defaultWeight;</span>
+<span class="fc" id="L123">		}</span>
 
 		@Override
 		public void clear() {
-<span class="nc" id="L127">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
-<span class="nc" id="L128">		}</span>
+<span class="fc" id="L127">			Arrays.fill(weights, 0, size(), defaultWeight);</span>
+<span class="fc" id="L128">		}</span>
 	}
 
 	static class IntMapped  extends WeightsImpl.IntMapped&lt;Short&gt; implements IWeightsShort  {

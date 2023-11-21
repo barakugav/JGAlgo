@@ -43,8 +43,9 @@ import com.jgalgo.graph.WeightFunctions;
 <span class="fc" id="L43">				int iSource = viMap.idToIndex(source);</span>
 <span class="fc" id="L44">				int iTarget = viMap.idToIndex(target);</span>
 
-<span class="fc" id="L46">				IPath indexPath = computeShortestPath(iGraph, iw, iSource, iTarget);</span>
-<span class="fc" id="L47">				return PathImpl.pathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L46">				IPath indexPath = NegativeCycleException.runAndConvertException(g,</span>
+<span class="fc" id="L47">						() -&gt; computeShortestPath(iGraph, iw, iSource, iTarget));</span>
+<span class="fc" id="L48">				return PathImpl.pathFromIndexPath(g, indexPath);</span>
 			}
 		}
 

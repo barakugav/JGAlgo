@@ -48,11 +48,12 @@ class KShortestPathsSTs {
 <span class="fc" id="L48">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
 <span class="fc" id="L49">				int iSource = viMap.idToIndex(source);</span>
 <span class="fc" id="L50">				int iTarget = viMap.idToIndex(target);</span>
-<span class="fc" id="L51">				List&lt;IPath&gt; indexResult = computeKShortestPaths(iGraph, iw, iSource, iTarget, k);</span>
-<span class="fc" id="L52">				List&lt;Path&lt;V, E&gt;&gt; result = new ArrayList&lt;&gt;(indexResult.size());</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">				for (IPath p : indexResult)</span>
-<span class="fc" id="L54">					result.add(PathImpl.pathFromIndexPath(g, p));</span>
-<span class="fc" id="L55">				return result;</span>
+<span class="fc" id="L51">				List&lt;IPath&gt; indexResult = NegativeCycleException.runAndConvertException(g,</span>
+<span class="fc" id="L52">						() -&gt; computeKShortestPaths(iGraph, iw, iSource, iTarget, k));</span>
+<span class="fc" id="L53">				List&lt;Path&lt;V, E&gt;&gt; result = new ArrayList&lt;&gt;(indexResult.size());</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">				for (IPath p : indexResult)</span>
+<span class="fc" id="L55">					result.add(PathImpl.pathFromIndexPath(g, p));</span>
+<span class="fc" id="L56">				return result;</span>
 			}
 		}
 
