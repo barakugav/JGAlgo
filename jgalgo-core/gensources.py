@@ -10,13 +10,13 @@ import logging
 
 TOP_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(TOP_DIR, "template")
-SOURCE_DIR = os.path.join(TOP_DIR, "src", "main", "java")
-PACKAGE_DIR = os.path.join(SOURCE_DIR, "com", "jgalgo")
-TEST_DIR = os.path.join(TOP_DIR, "src", "test", "java")
-TEST_PACKAGE_DIR = os.path.join(TEST_DIR, "com", "jgalgo")
+PACKAGE_DIR = os.path.join(TOP_DIR, "src-generated", "main", "java", "com", "jgalgo")
+TEST_PACKAGE_DIR = os.path.join(
+    TOP_DIR, "src-generated", "test", "java", "com", "jgalgo"
+)
 TYPE_ALL = {"Obj", "Byte", "Short", "Int", "Long", "Float", "Double", "Bool", "Char"}
 
-HASHES_FILENAME = os.path.join(TOP_DIR, ".gen", "hashes.json")
+HASHES_FILENAME = os.path.join(TOP_DIR, "src-generated", ".gen", "hashes.json")
 
 
 def find_eclipse():
@@ -171,6 +171,7 @@ def generate_sourcefile(input_filename, output_filename, constants, functions):
     for func_name, func in sorted_functions:
         text = apply_function(text, func_name, func)
 
+    os.makedirs(os.path.dirname(os.path.realpath(output_filename)), exist_ok=True)
     with open(output_filename, "w") as output_file:
         output_file.write(text)
 
