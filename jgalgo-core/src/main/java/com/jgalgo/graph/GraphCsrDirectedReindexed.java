@@ -19,14 +19,14 @@ import java.util.Optional;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 
-class GraphCsrDirectedReindexed2 extends GraphCsrBase2 {
+class GraphCsrDirectedReindexed extends GraphCsrBase {
 
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
 	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, true);
 
-	private GraphCsrDirectedReindexed2(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
+	private GraphCsrDirectedReindexed(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
 			BuilderProcessEdgesDirected processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(Capabilities, graphOrBuilder, processEdges, edgesReIndexing, copyVerticesWeights, copyEdgesWeights);
@@ -73,8 +73,8 @@ class GraphCsrDirectedReindexed2 extends GraphCsrBase2 {
 	private static IndexGraphBuilder.ReIndexedGraph newInstance(
 			Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
-		GraphCsrBase2.BuilderProcessEdgesDirected processEdges =
-				new GraphCsrBase2.BuilderProcessEdgesDirected(graphOrBuilder);
+		GraphCsrBase.BuilderProcessEdgesDirected processEdges =
+				new GraphCsrBase.BuilderProcessEdgesDirected(graphOrBuilder);
 
 		final int m = edgesNum(graphOrBuilder);
 		int[] edgesCsrToOrig = processEdges.edgesOut;
@@ -85,7 +85,7 @@ class GraphCsrDirectedReindexed2 extends GraphCsrBase2 {
 		IndexGraphBuilder.ReIndexingMap edgesReIndexing =
 				new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig);
 
-		GraphCsrDirectedReindexed2 g = new GraphCsrDirectedReindexed2(graphOrBuilder, processEdges, edgesReIndexing,
+		GraphCsrDirectedReindexed g = new GraphCsrDirectedReindexed(graphOrBuilder, processEdges, edgesReIndexing,
 				copyVerticesWeights, copyEdgesWeights);
 		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), Optional.of(edgesReIndexing));
 	}

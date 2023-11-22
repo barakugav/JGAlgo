@@ -17,15 +17,15 @@ package com.jgalgo.graph;
 
 import com.jgalgo.internal.util.Assertions;
 
-class GraphCsrUndirected2 extends GraphCsrAbstractUnindexed2 {
+class GraphCsrUndirected extends GraphCsrAbstractUnindexed {
 
 	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(false, true, true);
 
-	GraphCsrUndirected2(IndexGraphBuilderImpl builder, BuilderProcessEdgesUndirected processEdges) {
+	GraphCsrUndirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesUndirected processEdges) {
 		super(Capabilities, builder, processEdges);
 	}
 
-	GraphCsrUndirected2(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+	GraphCsrUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
 		Assertions.Graphs.onlyUndirected(g);
 	}

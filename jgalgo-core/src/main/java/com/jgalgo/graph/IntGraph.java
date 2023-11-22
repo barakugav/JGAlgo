@@ -494,13 +494,13 @@ public interface IntGraph extends Graph<Integer, Integer> {
 		IndexIntIdMap eiMap = indexGraphEdgesMap();
 		if (isDirected()) {
 			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =
-					GraphCsrDirectedReindexed2.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);
+					GraphCsrDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);
 			IndexGraph iGraph = reIndexedGraph.graph();
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
 			return new IntGraphImpl.Directed(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
 		} else {
-			IndexGraph iGraph = new GraphCsrUndirected2(indexGraph(), copyVerticesWeights, copyEdgesWeights);
+			IndexGraph iGraph = new GraphCsrUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);
 			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap, null, null);
 		}
 	}

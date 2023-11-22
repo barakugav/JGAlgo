@@ -242,28 +242,28 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 		Impl csrImpl = directed ? new ImplImmutable() {
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				return new GraphCsrDirected2(graph, copyVerticesWeights, copyEdgesWeights);
+				return new GraphCsrDirected(graph, copyVerticesWeights, copyEdgesWeights);
 			}
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 				IndexGraphBuilderImpl.Directed builder0 = (IndexGraphBuilderImpl.Directed) builder;
-				GraphCsrBase2.BuilderProcessEdgesDirected processEdges =
-						GraphCsrBase2.BuilderProcessEdgesDirected.valueOf(builder0);
-				return new GraphCsrDirected2(builder0, processEdges);
+				GraphCsrBase.BuilderProcessEdgesDirected processEdges =
+						GraphCsrBase.BuilderProcessEdgesDirected.valueOf(builder0);
+				return new GraphCsrDirected(builder0, processEdges);
 			}
 		} : new ImplImmutable() {
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				return new GraphCsrUndirected2(graph, copyVerticesWeights, copyEdgesWeights);
+				return new GraphCsrUndirected(graph, copyVerticesWeights, copyEdgesWeights);
 			}
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 				IndexGraphBuilderImpl.Undirected builder0 = (IndexGraphBuilderImpl.Undirected) builder;
-				GraphCsrBase2.BuilderProcessEdgesUndirected processEdges =
-						GraphCsrBase2.BuilderProcessEdgesUndirected.valueOf(builder0);
-				return new GraphCsrUndirected2(builder0, processEdges);
+				GraphCsrBase.BuilderProcessEdgesUndirected processEdges =
+						GraphCsrBase.BuilderProcessEdgesUndirected.valueOf(builder0);
+				return new GraphCsrUndirected(builder0, processEdges);
 			}
 		};
 		return csrImpl;

@@ -17,20 +17,20 @@ package com.jgalgo.graph;
 
 import com.jgalgo.internal.util.Assertions;
 
-class GraphCsrDirected2 extends GraphCsrAbstractUnindexed2 {
+class GraphCsrDirected extends GraphCsrAbstractUnindexed {
 
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
 	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, true);
 
-	GraphCsrDirected2(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges) {
+	GraphCsrDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges) {
 		super(Capabilities, builder, processEdges);
 		edgesIn = processEdges.edgesIn;
 		edgesInBegin = processEdges.edgesInBegin;
 	}
 
-	GraphCsrDirected2(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+	GraphCsrDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
 		Assertions.Graphs.onlyDirected(g);
 		final int n = g.vertices().size();

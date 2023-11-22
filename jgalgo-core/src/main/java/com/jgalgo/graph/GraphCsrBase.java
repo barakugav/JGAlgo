@@ -22,7 +22,7 @@ import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 
-abstract class GraphCsrBase2 extends IndexGraphBase implements GraphWithEdgeEndpointsContainer, ImmutableGraph {
+abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpointsContainer, ImmutableGraph {
 
 	final GraphElementSet.FixedSize vertices;
 	final GraphElementSet.FixedSize edges;
@@ -33,7 +33,7 @@ abstract class GraphCsrBase2 extends IndexGraphBase implements GraphWithEdgeEndp
 	final Map<String, WeightsImpl.IndexImmutable<?>> verticesUserWeights;
 	final Map<String, WeightsImpl.IndexImmutable<?>> edgesUserWeights;
 
-	GraphCsrBase2(IndexGraphBase.Capabilities capabilities,
+	GraphCsrBase(IndexGraphBase.Capabilities capabilities,
 			Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, BuilderProcessEdges processEdges,
 			IndexGraphBuilder.ReIndexingMap edgesReIndexing, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(capabilities);
@@ -89,7 +89,7 @@ abstract class GraphCsrBase2 extends IndexGraphBase implements GraphWithEdgeEndp
 		edgesUserWeights = edgesUserWeightsBuilder.build();
 	}
 
-	GraphCsrBase2(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
+	GraphCsrBase(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 		super(capabilities);
 		final int n = g.vertices().size();
