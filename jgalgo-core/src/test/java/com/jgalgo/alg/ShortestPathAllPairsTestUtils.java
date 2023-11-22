@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,7 +33,6 @@ import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
-import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -185,14 +185,14 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 		ShortestPathAllPairs algo = ShortestPathAllPairs.newInstance();
 
 		CompleteGraphGenerator<Integer, Integer> gen = CompleteGraphGenerator.newInstance();
-		gen.setVertices(Range.of(25));
+		gen.setVertices(range(25));
 		gen.setEdges(new AtomicInteger()::getAndIncrement);
 		Graph<Integer, Integer> g = gen.generate();
 
 		testAPSP(g, g.vertices(), true, null, algo, new ShortestPathSingleSourceDijkstra());
 		testAPSP(g, g.vertices(), true, e -> 78 + e.intValue(), algo, new ShortestPathSingleSourceDijkstra());
-		testAPSP(g, Range.of(5), false, null, algo, new ShortestPathSingleSourceDijkstra());
-		testAPSP(g, Range.of(5), false, e -> 78 + e.intValue(), algo, new ShortestPathSingleSourceDijkstra());
+		testAPSP(g, range(5), false, null, algo, new ShortestPathSingleSourceDijkstra());
+		testAPSP(g, range(5), false, e -> 78 + e.intValue(), algo, new ShortestPathSingleSourceDijkstra());
 	}
 
 }

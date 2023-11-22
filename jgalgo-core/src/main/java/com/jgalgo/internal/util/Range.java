@@ -16,6 +16,13 @@
 package com.jgalgo.internal.util;
 
 import java.util.NoSuchElementException;
+import java.util.function.IntFunction;
+import java.util.function.IntPredicate;
+import java.util.function.IntToDoubleFunction;
+import java.util.function.IntUnaryOperator;
+import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSpliterator;
@@ -29,11 +36,11 @@ public class Range extends AbstractIntSet {
 		this.to = to;
 	}
 
-	public static Range of(int to) {
+	public static Range range(int to) {
 		return new Range(0, to);
 	}
 
-	public static Range of(int from, int to) {
+	public static Range range(int from, int to) {
 		return new Range(from, to);
 	}
 
@@ -70,6 +77,26 @@ public class Range extends AbstractIntSet {
 	@Override
 	public IntSpliterator spliterator() {
 		return super.spliterator();
+	}
+
+	public IntStream map(IntUnaryOperator mapper) {
+		return intStream().map(mapper);
+	}
+
+	public <U> Stream<U> mapToObj(IntFunction<? extends U> mapper) {
+		return intStream().mapToObj(mapper);
+	}
+
+	public DoubleStream mapToDouble(IntToDoubleFunction mapper) {
+		return intStream().mapToDouble(mapper);
+	}
+
+	public IntStream filter(IntPredicate predicate) {
+		return intStream().filter(predicate);
+	}
+
+	public boolean allMatch(IntPredicate allMatch) {
+		return intStream().allMatch(allMatch);
 	}
 
 }

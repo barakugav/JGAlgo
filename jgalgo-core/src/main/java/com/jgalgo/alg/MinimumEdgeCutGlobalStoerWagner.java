@@ -15,13 +15,13 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.ds.DoubleIntReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
-import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -65,7 +65,7 @@ class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutUtils.AbstractImplGl
 
 			/* Insert all (super) vertices to the heap */
 			assert heap.isEmpty();
-			assert Range.of(cg.numberOfSuperVertices()).intStream().allMatch(U -> vRefs[U] == null);
+			assert range(cg.numberOfSuperVertices()).allMatch(U -> vRefs[U] == null);
 			for (int U = 1; U < cg.numberOfSuperVertices(); U++) {
 				double weightsSum = 0;
 				for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {

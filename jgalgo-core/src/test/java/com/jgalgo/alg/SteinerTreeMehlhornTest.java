@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -35,7 +36,6 @@ import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -49,7 +49,7 @@ public class SteinerTreeMehlhornTest extends TestBase {
 		final SteinerTreeAlgo algo = new SteinerTreeMehlhorn();
 
 		CompleteGraphGenerator<Integer, Integer> gen = CompleteGraphGenerator.newInstance();
-		gen.setVertices(Range.of(7));
+		gen.setVertices(range(7));
 		gen.setEdges(new AtomicInteger()::getAndIncrement);
 		Graph<Integer, Integer> g = gen.generate();
 

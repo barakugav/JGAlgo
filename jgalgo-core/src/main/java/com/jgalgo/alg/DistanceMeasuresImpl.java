@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
@@ -29,7 +30,6 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class DistanceMeasuresImpl {
@@ -88,7 +88,7 @@ class DistanceMeasuresImpl {
 			if (center == null) {
 				double radius = radius();
 				final int n = g.vertices().size();
-				int[] centerArr = Range.of(n).intStream().filter(v -> eccentricity[v] <= radius + EPS).toArray();
+				int[] centerArr = range(n).filter(v -> eccentricity[v] <= radius + EPS).toArray();
 				center = ImmutableIntArraySet.ofBitmap(centerArr, n);
 			}
 			return center;
@@ -99,7 +99,7 @@ class DistanceMeasuresImpl {
 			if (periphery == null) {
 				double diameter = diameter();
 				final int n = g.vertices().size();
-				int[] peripheryArr = Range.of(n).intStream().filter(v -> eccentricity[v] >= diameter - EPS).toArray();
+				int[] peripheryArr = range(n).filter(v -> eccentricity[v] >= diameter - EPS).toArray();
 				periphery = ImmutableIntArraySet.ofBitmap(peripheryArr, n);
 			}
 			return periphery;
@@ -109,9 +109,9 @@ class DistanceMeasuresImpl {
 			if (eccentricity != null)
 				return;
 			final int n = g.vertices().size();
-			IntToDoubleFunction uEccentricity = u -> Range.of(n).intStream().mapToDouble(v -> sp.distance(u, v)).max()
-					.orElse(Double.POSITIVE_INFINITY);
-			IntStream stream = Range.of(n).intStream();
+			IntToDoubleFunction uEccentricity =
+					u -> range(n).mapToDouble(v -> sp.distance(u, v)).max().orElse(Double.POSITIVE_INFINITY);
+			IntStream stream = range(n).intStream();
 			if (JGAlgoConfigImpl.ParallelByDefault)
 				stream = stream.parallel();
 			eccentricity = stream.mapToDouble(uEccentricity).toArray();

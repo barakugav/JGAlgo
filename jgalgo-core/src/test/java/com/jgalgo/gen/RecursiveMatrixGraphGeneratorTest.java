@@ -15,6 +15,7 @@
  */
 package com.jgalgo.gen;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -24,7 +25,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 
@@ -78,14 +78,14 @@ public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 								: RecursiveMatrixGraphGenerator.newInstance();
 				g.setSeed(0x28522dc13436389fL);
 				g.setDirected(directed);
-				g.setVertices(Range.of(100));
+				g.setVertices(range(100));
 
 				/* edges were not set yet */
 				assertThrows(IllegalStateException.class, () -> g.generate());
 
 				g.setEdges(5, new AtomicInteger()::getAndIncrement);
-				assertEquals(Range.of(0, 5), g.generate().edges());
-				assertEquals(Range.of(5, 10), g.generate().edges());
+				assertEquals(range(0, 5), g.generate().edges());
+				assertEquals(range(5, 10), g.generate().edges());
 
 				assertThrows(IllegalArgumentException.class,
 						() -> g.setEdges(-5, new AtomicInteger()::getAndIncrement));
@@ -100,7 +100,7 @@ public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 					intGraph ? RecursiveMatrixGraphGenerator.newIntInstance()
 							: RecursiveMatrixGraphGenerator.newInstance();
 			g.setSeed(0x86c8f3658c4c34f6L);
-			g.setVertices(Range.of(100));
+			g.setVertices(range(100));
 			g.setEdges(5, new AtomicInteger()::getAndIncrement);
 
 			/* check default */
@@ -123,7 +123,7 @@ public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 					intGraph ? RecursiveMatrixGraphGenerator.newIntInstance()
 							: RecursiveMatrixGraphGenerator.newInstance();
 			g.setSeed(0x7d5f093080604661L);
-			g.setVertices(Range.of(10));
+			g.setVertices(range(10));
 			g.setEdges(30, new AtomicInteger()::getAndIncrement);
 			assertThrows(IllegalArgumentException.class, () -> g.setEdgeProbabilities(0.2, 0.2, 0.2, 0.2));
 			assertThrows(IllegalArgumentException.class, () -> g.setEdgeProbabilities(-0.2, 0.2, 0.5, 0.5));
@@ -149,7 +149,7 @@ public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 					intGraph ? RecursiveMatrixGraphGenerator.newIntInstance()
 							: RecursiveMatrixGraphGenerator.newInstance();
 			g.setSeed(0x28522dc13436389fL);
-			g.setVertices(Range.of(10));
+			g.setVertices(range(10));
 			g.setEdges(100, new AtomicInteger()::getAndIncrement);
 
 			assertThrows(IllegalArgumentException.class, () -> g.generate());
@@ -164,7 +164,7 @@ public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 					intGraph ? RecursiveMatrixGraphGenerator.newIntInstance()
 							: RecursiveMatrixGraphGenerator.newInstance();
 			g.setSeed(0x29362bc2fa3dddc3L);
-			g.setVertices(Range.of(10));
+			g.setVertices(range(10));
 			g.setEdges(30, new AtomicInteger()::getAndIncrement);
 
 			Graph<Integer, Integer> gImmutable = g.generate();

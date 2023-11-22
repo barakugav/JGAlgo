@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
@@ -28,7 +29,6 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
-import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -77,7 +77,7 @@ class MinimumVertexCutGlobalTestUtils extends TestUtils {
 		tester.run((n) -> {
 			CompleteGraphGenerator<Integer, Integer> gen =
 					rand.nextBoolean() ? CompleteGraphGenerator.newInstance() : CompleteGraphGenerator.newIntInstance();
-			gen.setVertices(Range.of(n));
+			gen.setVertices(range(n));
 			gen.setEdges(new AtomicInteger()::getAndIncrement);
 			Graph<Integer, Integer> g = gen.generateMutable();
 

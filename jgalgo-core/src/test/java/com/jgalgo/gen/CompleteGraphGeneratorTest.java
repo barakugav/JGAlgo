@@ -15,6 +15,7 @@
  */
 package com.jgalgo.gen;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -25,7 +26,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
@@ -42,7 +42,7 @@ public class CompleteGraphGeneratorTest extends TestBase {
 		/* vertices were not set yet */
 		assertThrows(IllegalStateException.class, () -> g.generate());
 
-		Set<String> vertices = Range.of(7).intStream().mapToObj(String::valueOf).collect(Collectors.toSet());
+		Set<String> vertices = range(7).mapToObj(String::valueOf).collect(Collectors.toSet());
 		g.setVertices(vertices);
 		assertEquals(vertices, g.generate().vertices());
 		assertEquals(vertices, g.generate().vertices());
@@ -62,8 +62,8 @@ public class CompleteGraphGeneratorTest extends TestBase {
 		/* vertices were not set yet */
 		assertThrows(IllegalStateException.class, () -> g.generate());
 
-		Set<Integer> vertices = Range.of(7);
-		g.setVertices(Range.of(7));
+		Set<Integer> vertices = range(7);
+		g.setVertices(range(7));
 		assertEquals(vertices, g.generate().vertices());
 		assertEquals(vertices, g.generate().vertices());
 
@@ -81,7 +81,7 @@ public class CompleteGraphGeneratorTest extends TestBase {
 					CompleteGraphGenerator<Integer, Integer> g0 =
 							intGraph ? CompleteGraphGenerator.newIntInstance() : CompleteGraphGenerator.newInstance();
 					final int n = 7;
-					g0.setVertices(Range.of(n));
+					g0.setVertices(range(n));
 
 					/* edges were not set yet */
 					assertThrows(IllegalStateException.class, () -> g0.generate());
@@ -96,15 +96,15 @@ public class CompleteGraphGeneratorTest extends TestBase {
 					int expectedNumEdges = 0;
 					expectedNumEdges += directed ? n * (n - 1) : n * (n - 1) / 2;
 					expectedNumEdges += selfEdges ? n : 0;
-					assertEquals(Range.of(expectedNumEdges), g.edges());
+					assertEquals(range(expectedNumEdges), g.edges());
 
 					Set<Pair<Integer, Integer>> edges = new ObjectOpenHashSet<>();
 					for (Integer e : g.edges()) {
 						boolean dupEdge = !edges.add(Pair.of(g.edgeSource(e), g.edgeTarget(e)));
 						assertFalse(dupEdge, "duplicate edge: (" + g.edgeSource(e) + ", " + g.edgeTarget(e) + ")");
 					}
-					for (Integer u : Range.of(n)) {
-						for (Integer v : Range.of(directed ? 0 : u.intValue(), n)) {
+					for (Integer u : range(n)) {
+						for (Integer v : range(directed ? 0 : u.intValue(), n)) {
 							if (!selfEdges && u.equals(v))
 								continue;
 							if (directed) {

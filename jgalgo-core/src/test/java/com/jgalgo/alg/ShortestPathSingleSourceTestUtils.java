@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,7 +32,6 @@ import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
-import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 
 public class ShortestPathSingleSourceTestUtils extends TestBase {
@@ -232,13 +232,13 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		ShortestPathSingleSource.Result<Integer, Integer> res;
 
 		CompleteGraphGenerator<Integer, Integer> gen = CompleteGraphGenerator.newInstance();
-		gen.setVertices(Range.of(25));
+		gen.setVertices(range(25));
 		gen.setEdges(new AtomicInteger()::getAndIncrement);
 		g = gen.generate();
 		res = builder.build().computeShortestPaths(g, null, 0);
 		validateResult(g, null, 0, res, new ShortestPathSingleSourceDijkstra());
 
-		gen.setVertices(Range.of(2));
+		gen.setVertices(range(2));
 		gen.setEdges(new AtomicInteger()::getAndIncrement);
 		g = gen.generate();
 		res = builder.build().computeShortestPaths(g, null, 0);

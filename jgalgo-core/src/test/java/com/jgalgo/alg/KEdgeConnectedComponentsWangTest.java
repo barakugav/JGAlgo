@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -25,7 +26,6 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.RandomGraphBuilder;
-import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -41,12 +41,12 @@ public class KEdgeConnectedComponentsWangTest extends TestBase {
 		KEdgeConnectedComponentsWang algo = new KEdgeConnectedComponentsWang();
 		algo.setSeed(seedGen.nextSeed());
 
-		Graph<Integer, Integer> g = EmptyGraphGenerator.emptyGraph(Range.of(5));
+		Graph<Integer, Integer> g = EmptyGraphGenerator.emptyGraph(range(5));
 		VertexPartition<Integer, Integer> res = algo.computeKEdgeConnectedComponents(g, 3);
 		assertNotNull(res);
 		assertEquals(g.vertices().size(), res.numberOfBlocks());
-		
-		g = EmptyGraphGenerator.emptyGraph(Range.of(0));
+
+		g = EmptyGraphGenerator.emptyGraph(range(0));
 		res = algo.computeKEdgeConnectedComponents(g, 3);
 		assertNotNull(res);
 		assertEquals(0, res.numberOfBlocks());

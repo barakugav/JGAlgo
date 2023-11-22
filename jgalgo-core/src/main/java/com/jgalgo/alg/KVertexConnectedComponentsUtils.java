@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,7 +23,6 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class KVertexConnectedComponentsUtils {
@@ -104,7 +104,7 @@ class KVertexConnectedComponentsUtils {
 
 		@Override
 		public String toString() {
-			return Range.of(componentsNum()).intStream().mapToObj(this::componentVertices).map(Object::toString)
+			return range(componentsNum()).mapToObj(this::componentVertices).map(Object::toString)
 					.collect(Collectors.joining(", ", "[", "]"));
 		}
 	}
@@ -136,7 +136,7 @@ class KVertexConnectedComponentsUtils {
 
 		@Override
 		public String toString() {
-			return Range.of(componentsNum()).intStream().mapToObj(this::componentVertices).map(Object::toString)
+			return range(componentsNum()).mapToObj(this::componentVertices).map(Object::toString)
 					.collect(Collectors.joining(", ", "[", "]"));
 		}
 	}

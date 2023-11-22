@@ -15,12 +15,12 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Random;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -60,8 +60,7 @@ class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.Abstrac
 
 		IntStack stack = new IntArrayList();
 		IVertexPartition wccs = (IVertexPartition) wccAlgo.findWeaklyConnectedComponents(g);
-		int[] vertices = new int[Range.of(wccs.numberOfBlocks()).intStream().map(b -> wccs.blockVertices(b).size())
-				.max().orElse(0)];
+		int[] vertices = new int[range(wccs.numberOfBlocks()).map(b -> wccs.blockVertices(b).size()).max().orElse(0)];
 		for (int wccNum = wccs.numberOfBlocks(), wccIdx = 0; wccIdx < wccNum; wccIdx++) {
 			IntSet wccVertices = wccs.blockVertices(wccIdx);
 			if (wccVertices.size() <= 1)

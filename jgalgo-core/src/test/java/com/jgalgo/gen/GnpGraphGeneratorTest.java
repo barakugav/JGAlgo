@@ -15,6 +15,7 @@
  */
 package com.jgalgo.gen;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -23,7 +24,6 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 
@@ -74,14 +74,14 @@ public class GnpGraphGeneratorTest extends TestBase {
 			GnpGraphGenerator<Integer, Integer> g =
 					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
 			g.setSeed(0x2157279ef75b0caaL);
-			g.setVertices(Range.of(10));
+			g.setVertices(range(10));
 
 			/* edges were not set yet */
 			assertThrows(IllegalStateException.class, () -> g.generate());
 
 			g.setEdges(new AtomicInteger()::getAndIncrement);
 			Graph<Integer, Integer> g1 = g.generate();
-			assertEquals(Range.of(g1.edges().size()), g1.edges());
+			assertEquals(range(g1.edges().size()), g1.edges());
 		}
 	}
 

@@ -15,6 +15,7 @@
  */
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -34,7 +35,6 @@ import com.jgalgo.graph.IWeightsObj;
 import com.jgalgo.graph.IWeightsShort;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
-import com.jgalgo.internal.util.Range;
 
 class FormatLEDA implements GraphFormat {
 
@@ -65,9 +65,9 @@ class FormatLEDA implements GraphFormat {
 		public void writeGraph(IntGraph graph, Writer writer) {
 			final int numVertices = graph.vertices().size();
 			final int numEdges = graph.edges().size();
-			if (!Range.of(1, numVertices + 1).equals(graph.vertices()))
+			if (!range(1, numVertices + 1).equals(graph.vertices()))
 				throw new IllegalArgumentException("the LEDA format support graphs with vertices 1..n only");
-			if (!Range.of(1, numEdges + 1).equals(graph.edges()))
+			if (!range(1, numEdges + 1).equals(graph.edges()))
 				throw new IllegalArgumentException("the LEDA format support graphs with edges 1..m only");
 
 			try {

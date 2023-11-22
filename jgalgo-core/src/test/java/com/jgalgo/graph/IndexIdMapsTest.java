@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -31,7 +32,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.gen.GnpGraphGenerator;
-import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -501,7 +501,7 @@ public class IndexIdMapsTest extends TestBase {
 		GnpGraphGenerator<Integer, Integer> g =
 				intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
 		g.setSeed(seed);
-		g.setVertices(Range.of(24));
+		g.setVertices(range(24));
 		g.setEdges(new AtomicInteger()::getAndIncrement);
 		g.setEdgeProbability(0.1);
 		return g.generateMutable();

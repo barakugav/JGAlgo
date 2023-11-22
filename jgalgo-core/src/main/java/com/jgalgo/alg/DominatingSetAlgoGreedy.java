@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
@@ -25,7 +26,6 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -186,16 +186,16 @@ class DominatingSetAlgoGreedy extends DominatingSetAlgos.AbstractImpl implements
 
 			/* some vertices might not be dominated if they have no in/out edges */
 			if (!directed || dominanceDirection == EdgeDirection.In) {
-				assert Range.of(n).intStream().filter(u -> !dominated.get(u)).allMatch(u -> g.outEdges(u).intStream()
+				assert range(n).filter(u -> !dominated.get(u)).allMatch(u -> g.outEdges(u).intStream()
 						.filter(e -> g.edgeSource(e) != g.edgeTarget(e)).findAny().isEmpty());
 
 			} else if (dominanceDirection == EdgeDirection.Out) {
-				assert Range.of(n).intStream().filter(u -> !dominated.get(u)).allMatch(u -> g.inEdges(u).intStream()
+				assert range(n).filter(u -> !dominated.get(u)).allMatch(u -> g.inEdges(u).intStream()
 						.filter(e -> g.edgeSource(e) != g.edgeTarget(e)).findAny().isEmpty());
 
 			} else {
 				assert dominanceDirection == EdgeDirection.All;
-				assert Range.of(n).intStream().filter(u -> !dominated.get(u))
+				assert range(n).filter(u -> !dominated.get(u))
 						.allMatch(u -> IntStream.concat(g.outEdges(u).intStream(), g.inEdges(u).intStream())
 								.filter(e -> g.edgeSource(e) != g.edgeTarget(e)).findAny().isEmpty());
 			}

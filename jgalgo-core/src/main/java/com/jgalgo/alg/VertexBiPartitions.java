@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import com.jgalgo.graph.Graph;
@@ -24,7 +25,6 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class VertexBiPartitions {
@@ -212,7 +212,7 @@ class VertexBiPartitions {
 
 		@Override
 		public String toString() {
-			return Range.of(numberOfBlocks()).intStream().mapToObj(this::blockVertices).map(Object::toString)
+			return range(numberOfBlocks()).mapToObj(this::blockVertices).map(Object::toString)
 					.collect(Collectors.joining(", ", "[", "]"));
 		}
 	}

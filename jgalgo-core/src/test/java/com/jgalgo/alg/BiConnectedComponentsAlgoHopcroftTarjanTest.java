@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -32,7 +33,6 @@ import com.jgalgo.graph.WeightsObj;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2LongFunc;
 import com.jgalgo.internal.util.RandomGraphBuilder;
-import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -175,7 +175,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 
 		/* check block graph */
 		IntGraph blockGraph = res.getBlockGraph();
-		assertEquals(Range.of(res.getNumberOfBiCcs()), blockGraph.vertices());
+		assertEquals(range(res.getNumberOfBiCcs()), blockGraph.vertices());
 		BiFunction<Set<V>, Set<V>, Set<V>> intersect = (s1, s2) -> {
 			Set<V> inter = new ObjectOpenHashSet<>(s1);
 			inter.retainAll(s2);
@@ -183,8 +183,8 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		};
 		BiInt2LongFunc key = (b1, b2) -> JGAlgoUtils.longPack(Math.min(b1, b2), Math.max(b1, b2));
 		LongSet expectedBlockEdges = new LongOpenHashSet();
-		for (int b1 : Range.of(res.getNumberOfBiCcs()))
-			for (int b2 : Range.of(b1 + 1, res.getNumberOfBiCcs()))
+		for (int b1 : range(res.getNumberOfBiCcs()))
+			for (int b2 : range(b1 + 1, res.getNumberOfBiCcs()))
 				if (!intersect.apply(res.getBiCcVertices(b1), res.getBiCcVertices(b2)).isEmpty())
 					expectedBlockEdges.add(key.apply(b1, b2));
 		LongSet actualBlockEdges = new LongOpenHashSet();

@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +33,6 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntAdapters;
-import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -612,7 +612,7 @@ class MinimumCostFlows {
 			IFlow flow0 = computeMinCostMaxFlow(g, capacity, cost, source, sink);
 
 			/* assert all supply was provided */
-			assert Range.of(sourcesSinksThreshold, g.edges().size()).intStream()
+			assert range(sourcesSinksThreshold, g.edges().size())
 					.allMatch(e -> Math.abs(flow0.getFlow(e) - capacity.weight(e)) < 1e-9);
 
 			double[] flow = new double[gOrig.edges().size()];

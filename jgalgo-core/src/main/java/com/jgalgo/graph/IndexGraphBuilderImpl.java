@@ -15,12 +15,12 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -274,7 +274,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 				e = nextE;
 			}
 		}
-		assert Range.of(m).intStream().allMatch(e -> e == edgesUserIds[e]);
+		assert range(m).allMatch(e -> e == edgesUserIds[e]);
 	}
 
 	@Override

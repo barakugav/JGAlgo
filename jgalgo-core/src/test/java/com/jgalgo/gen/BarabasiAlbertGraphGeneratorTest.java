@@ -15,6 +15,7 @@
  */
 package com.jgalgo.gen;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -25,7 +26,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 
@@ -40,7 +40,7 @@ public class BarabasiAlbertGraphGeneratorTest extends TestBase {
 		/* vertices were not set yet */
 		assertThrows(IllegalStateException.class, () -> g.generate());
 
-		Set<String> vertices = Range.of(50).intStream().mapToObj(String::valueOf).collect(Collectors.toSet());
+		Set<String> vertices = range(50).mapToObj(String::valueOf).collect(Collectors.toSet());
 		g.setVertices(vertices);
 		assertEquals(vertices, g.generate().vertices());
 		assertEquals(vertices, g.generate().vertices());
@@ -63,7 +63,7 @@ public class BarabasiAlbertGraphGeneratorTest extends TestBase {
 		/* vertices were not set yet */
 		assertThrows(IllegalStateException.class, () -> g.generate());
 
-		Set<Integer> vertices = Range.of(50);
+		Set<Integer> vertices = range(50);
 		g.setVertices(vertices);
 		assertEquals(vertices, g.generate().vertices());
 		assertEquals(vertices, g.generate().vertices());
@@ -82,14 +82,14 @@ public class BarabasiAlbertGraphGeneratorTest extends TestBase {
 			BarabasiAlbertGraphGenerator<Integer, Integer> g = intGraph ? BarabasiAlbertGraphGenerator.newIntInstance()
 					: BarabasiAlbertGraphGenerator.newInstance();
 			g.setSeed(0x58ca12b719e97e61L);
-			g.setVertices(Range.of(50));
+			g.setVertices(range(50));
 
 			/* edges were not set yet */
 			assertThrows(IllegalStateException.class, () -> g.generate());
 
 			g.setEdges(new AtomicInteger()::getAndIncrement);
 			Graph<Integer, Integer> g1 = g.generate();
-			assertEquals(Range.of(g1.edges().size()), g1.edges());
+			assertEquals(range(g1.edges().size()), g1.edges());
 		}
 	}
 
@@ -131,7 +131,7 @@ public class BarabasiAlbertGraphGeneratorTest extends TestBase {
 			BarabasiAlbertGraphGenerator<Integer, Integer> g = intGraph ? BarabasiAlbertGraphGenerator.newIntInstance()
 					: BarabasiAlbertGraphGenerator.newInstance();
 			g.setSeed(0x58ca12b719e97e61L);
-			g.setVertices(Range.of(10));
+			g.setVertices(range(10));
 			g.setEdges(new AtomicInteger()::getAndIncrement);
 			g.setInitialCliqueSize(3);
 
@@ -159,7 +159,7 @@ public class BarabasiAlbertGraphGeneratorTest extends TestBase {
 			BarabasiAlbertGraphGenerator<Integer, Integer> g = intGraph ? BarabasiAlbertGraphGenerator.newIntInstance()
 					: BarabasiAlbertGraphGenerator.newInstance();
 			g.setSeed(0x58ca12b719e97e61L);
-			g.setVertices(Range.of(10));
+			g.setVertices(range(10));
 			g.setEdges(new AtomicInteger()::getAndIncrement);
 
 			g.setInitialCliqueSize(11);
@@ -177,7 +177,7 @@ public class BarabasiAlbertGraphGeneratorTest extends TestBase {
 			BarabasiAlbertGraphGenerator<Integer, Integer> g = intGraph ? BarabasiAlbertGraphGenerator.newIntInstance()
 					: BarabasiAlbertGraphGenerator.newInstance();
 			g.setSeed(0x34960acd3d3b944cL);
-			g.setVertices(Range.of(40));
+			g.setVertices(range(40));
 			g.setEdges(new AtomicInteger()::getAndIncrement);
 
 			Graph<Integer, Integer> gImmutable = g.generate();

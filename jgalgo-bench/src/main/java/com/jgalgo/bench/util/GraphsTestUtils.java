@@ -16,6 +16,7 @@
 
 package com.jgalgo.bench.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import com.jgalgo.gen.BarabasiAlbertGraphGenerator;
@@ -26,7 +27,6 @@ import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
-import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphsTestUtils extends TestUtils {
@@ -100,7 +100,7 @@ public class GraphsTestUtils extends TestUtils {
 		GnpGraphGenerator<Integer, Integer> gen = GnpGraphGenerator.newIntInstance();
 		gen.setSeed(seed);
 		gen.setDirected(directed);
-		gen.setVertices(Range.of(n));
+		gen.setVertices(range(n));
 		gen.setEdges(new AtomicInteger()::getAndIncrement);
 		return gen.generate().indexGraph();
 	}
@@ -109,7 +109,7 @@ public class GraphsTestUtils extends TestUtils {
 		BarabasiAlbertGraphGenerator<Integer, Integer> gen = BarabasiAlbertGraphGenerator.newIntInstance();
 		gen.setSeed(seed);
 		gen.setDirected(directed);
-		gen.setVertices(Range.of(n));
+		gen.setVertices(range(n));
 		gen.setEdges(new AtomicInteger()::getAndIncrement);
 		return gen.generate().indexGraph();
 	}
@@ -118,7 +118,7 @@ public class GraphsTestUtils extends TestUtils {
 		RecursiveMatrixGraphGenerator<Integer, Integer> gen = RecursiveMatrixGraphGenerator.newIntInstance();
 		gen.setSeed(seed);
 		gen.setDirected(directed);
-		gen.setVertices(Range.of(n));
+		gen.setVertices(range(n));
 		gen.setEdges(m, new AtomicInteger()::getAndIncrement);
 		return gen.generate().indexGraph();
 	}

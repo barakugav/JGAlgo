@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -22,12 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
-import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -63,13 +62,15 @@ public class KVertexConnectedComponentsWhiteMoodyTest extends TestBase {
 	private static <V, E> void testKConnectedComponents(Graph<V, E> g, int k, KVertexConnectedComponentsAlgo algo) {
 		KVertexConnectedComponentsAlgo.Result<V, E> result = algo.findKVertexConnectedComponents(g, k);
 
-		for (int c = 0; c < result.componentsNum(); c++)
+		for (int c = 0; c < result.componentsNum(); c++) {
+			final int c0 = c;
 			assertEquals(result.componentVertices(c).size(), new HashSet<>(result.componentVertices(c)).size(),
-					"duplicate vertices in component: " + result.componentVertices(c));
+					() -> "duplicate vertices in component: " + result.componentVertices(c0));
+		}
 
-		assertEquals(result.componentsNum(), Range.of(result.componentsNum()).intStream()
-				.mapToObj(result::componentVertices).collect(Collectors.toSet()).size(),
-				"duplicate components: " + result);
+		assertEquals(result.componentsNum(),
+				range(result.componentsNum()).mapToObj(result::componentVertices).distinct().count(),
+				() -> "duplicate components: " + result);
 
 		for (int c = 0; c < result.componentsNum(); c++) {
 			Graph<V, E> comp = result.componentSubGraph(c);
