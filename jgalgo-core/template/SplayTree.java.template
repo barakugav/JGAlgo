@@ -53,7 +53,7 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 
 	private final KEY_COMPARATOR KEY_TYPE_GENERIC c;
 	private SplayBSTNode KEY_VALUE_GENERIC root;
-	private final SplayImplWithSize KEY_VALUE_GENERIC impl = new SplayImplWithSize KEY_VALUE_GENERIC_EMPTY();
+	private final SplayImpl<KEY_GENERIC_LIST_START SplayBSTNode KEY_VALUE_GENERIC> impl = new SplayImpl<>();
 
 	/**
 	 * Constructs a new, empty splay tree, ordered according to the natural ordering of its keys.
@@ -88,11 +88,6 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 	public SPLAY_TREE(KEY_COMPARATOR KEY_TYPE_GENERIC comparator) {
 		this.c = comparator;
 	}
-
-	// @Override
-	// public int size() {
-	// return root != null ? root.size : 0;
-	// }
 
 	@Override
 	public boolean isEmpty() {
@@ -142,8 +137,6 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 			return root = n;
 
 		BINARY_SEARCH_TREES.insert(root, c, n);
-		for (SplayBSTNode KEY_VALUE_GENERIC p = n.parent; p != null; p = p.parent)
-			p.size++;
 		return root = impl.splay(n);
 	}
 
@@ -153,7 +146,7 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 
 		/* If the node has two children, swap with successor */
 		if (n.hasLeftChild() && n.hasRightChild())
-			swap(n, BINARY_SEARCH_TREES.getSuccessor(n));
+			BINARY_SEARCH_TREES.swap(n, BINARY_SEARCH_TREES.getSuccessor(n));
 
 		SplayBSTNode KEY_VALUE_GENERIC child;
 		if (!n.hasLeftChild()) {
@@ -163,9 +156,6 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 			replace(n, child = n.left);
 		}
 
-		/* Decrease ancestors size by 1 */
-		for (SplayBSTNode KEY_VALUE_GENERIC p = n.parent; p != null; p = p.parent)
-			p.size--;
 
 		SplayBSTNode KEY_VALUE_GENERIC parent = n.parent;
 		n.clearWithoutUserData();
@@ -184,17 +174,6 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 		}
 		if (v != null)
 			v.parent = u.parent;
-	}
-
-	private void swap(SplayBSTNode KEY_VALUE_GENERIC n1, SplayBSTNode KEY_VALUE_GENERIC n2) {
-		BINARY_SEARCH_TREES.swap(n1, n2);
-		if (n1 == root)
-			root = n2;
-		else if (n2 == root)
-			root = n1;
-		int size = n1.size;
-		n1.size = n2.size;
-		n2.size = size;
 	}
 
 	@Override
@@ -310,7 +289,6 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 							break;
 						node = node.right;
 					}
-					node.size = 1;
 					SplayBSTNode KEY_VALUE_GENERIC parent = node.parent;
 					if (parent == null) {
 						insertNode(node);
@@ -351,7 +329,6 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 
 		n1.right = t2.root;
 		t2.root.parent = n1;
-		n1.size += t2.root.size;
 		return n1;
 	}
 
@@ -364,7 +341,6 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 		assert pred.isRoot();
 
 		if ((root = pred.right) != null) {
-			pred.size -= pred.right.size;
 			pred.right.parent = null;
 			pred.right = null;
 		}
@@ -389,7 +365,6 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 		assert n.isRoot();
 
 		if ((root = n.left) != null) {
-			n.size -= n.left.size;
 			n.left.parent = null;
 			n.left = null;
 		}
@@ -418,7 +393,7 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 
 	}
 
-	abstract static class SplayImpl<KEY_GENERIC_LIST_START N extends BaseNode<KEY_GENERIC_LIST_START N>> {
+	static class SplayImpl<KEY_GENERIC_LIST_START N extends BaseNode<KEY_GENERIC_LIST_START N>> {
 
 		SplayImpl() {}
 
@@ -486,16 +461,12 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 
 	private static class SplayBSTNode KEY_VALUE_GENERIC extends BaseNode<KEY_GENERIC_LIST_START SplayBSTNode KEY_VALUE_GENERIC> implements HEAP_REFERENCE KEY_VALUE_GENERIC {
 
-		// TODO consider removing the size field
-		int size;
-
 #if PRIMITIVE_VALUE_TYPE_REAL != "Void"
 		private PRIMITIVE_VALUE_TYPE value;
 #endif
 
 		SplayBSTNode(PRIMITIVE_KEY_TYPE key) {
 			super(key);
-			size = 1;
 		}
 
 		@Override
@@ -522,33 +493,6 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 #else
 			return String.valueOf(key);
 #endif
-		}
-
-		@Override
-		void clearWithoutUserData() {
-			super.clearWithoutUserData();
-			size = 1;
-		}
-
-	}
-
-	private static class SplayImplWithSize KEY_VALUE_GENERIC extends SplayImpl<KEY_GENERIC_LIST_START SplayBSTNode KEY_VALUE_GENERIC> {
-
-		@Override
-		void beforeRotate(SplayBSTNode KEY_VALUE_GENERIC n) {
-			super.beforeRotate(n);
-
-			SplayBSTNode KEY_VALUE_GENERIC parent = n.parent;
-			int parentOldSize = parent.size;
-
-			if (n.isLeftChild()) {
-				parent.size = parentOldSize - n.size + (n.hasRightChild() ? n.right.size : 0);
-			} else {
-				assert n.isRightChild();
-				parent.size = parentOldSize - n.size + (n.hasLeftChild() ? n.left.size : 0);
-			}
-
-			n.size = parentOldSize;
 		}
 
 	}
