@@ -390,7 +390,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		public IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges) {
 			if (reIndexEdges) {
 				validateUserProvidedIdsBeforeBuild();
-				return GraphCSRDirectedReindexed.newInstance(this);
+				return GraphCsrDirectedReindexed2.newInstance(this);
 			} else {
 				return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());
 			}

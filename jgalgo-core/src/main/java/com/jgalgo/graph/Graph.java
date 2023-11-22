@@ -787,13 +787,13 @@ public interface Graph<V, E> {
 		IndexIdMap<E> eiMap = indexGraphEdgesMap();
 		if (isDirected()) {
 			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =
-					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);
+					GraphCsrDirectedReindexed2.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);
 			IndexGraph iGraph = reIndexedGraph.graph();
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
 			return new GraphImpl.Directed<>(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
 		} else {
-			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);
+			IndexGraph iGraph = new GraphCsrUndirected2(indexGraph(), copyVerticesWeights, copyEdgesWeights);
 			return new GraphImpl.Undirected<>(iGraph, viMap, eiMap, null, null);
 		}
 	}

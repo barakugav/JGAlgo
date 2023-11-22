@@ -17,17 +17,34 @@ package com.jgalgo.graph;
 
 import com.jgalgo.internal.util.Assertions;
 
-class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
+class GraphCsrDirected2 extends GraphCsrAbstractUnindexed2 {
 
-	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(false, true, true);
+	private final int[] edgesIn;
+	private final int[] edgesInBegin;
 
-	GraphCSRUndirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesUndirected processEdges) {
+	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, true);
+
+	GraphCsrDirected2(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges) {
 		super(Capabilities, builder, processEdges);
+		edgesIn = processEdges.edgesIn;
+		edgesInBegin = processEdges.edgesInBegin;
 	}
 
-	GraphCSRUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+	GraphCsrDirected2(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.Graphs.onlyDirected(g);
+		final int n = g.vertices().size();
+		final int m = g.edges().size();
+
+		edgesIn = new int[m];
+		edgesInBegin = new int[n + 1];
+
+		for (int eIdx = 0, v = 0; v < n; v++) {
+			edgesInBegin[v] = eIdx;
+			for (int e : g.inEdges(v))
+				edgesIn[eIdx++] = e;
+		}
+		edgesInBegin[n] = m;
 	}
 
 	@Override
@@ -40,7 +57,7 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 		return new EdgeSetIn(target);
 	}
 
-	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutUndirected {
+	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutDirected {
 
 		final int begin, end;
 
@@ -66,19 +83,19 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 		}
 	}
 
-	class EdgeSetIn extends IndexGraphBase.EdgeSetInUndirected {
+	class EdgeSetIn extends IndexGraphBase.EdgeSetInDirected {
 
 		final int begin, end;
 
 		EdgeSetIn(int target) {
 			super(target);
-			begin = edgesOutBegin[target];
-			end = edgesOutBegin[target + 1];
+			begin = edgesInBegin[target];
+			end = edgesInBegin[target + 1];
 		}
 
 		@Override
 		public int size() {
-			return end - begin;
+			return edgesInBegin[target + 1] - edgesInBegin[target];
 		}
 
 		@Override
@@ -88,7 +105,7 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 
 		@Override
 		public IEdgeIter iterator() {
-			return new EdgeIterIn(target, edgesOut, begin, end);
+			return new EdgeIterIn(target, edgesIn, edgesInBegin[target], edgesInBegin[target + 1]);
 		}
 	}
 
@@ -107,7 +124,7 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 
 		@Override
 		public int targetInt() {
-			return edgeEndpoint(lastEdge, source);
+			return edgeTarget(lastEdge);
 		}
 	}
 
@@ -121,7 +138,7 @@ class GraphCSRUndirected extends GraphCSRAbstractUnindexed {
 
 		@Override
 		public int sourceInt() {
-			return edgeEndpoint(lastEdge, target);
+			return edgeSource(lastEdge);
 		}
 
 		@Override

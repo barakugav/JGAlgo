@@ -19,14 +19,14 @@ import java.util.Optional;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 
-class GraphCSRDirectedReindexed extends GraphCSRBase {
+class GraphCsrDirectedReindexed2 extends GraphCsrBase2 {
 
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
 	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, true);
 
-	private GraphCSRDirectedReindexed(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
+	private GraphCsrDirectedReindexed2(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
 			BuilderProcessEdgesDirected processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(Capabilities, graphOrBuilder, processEdges, edgesReIndexing, copyVerticesWeights, copyEdgesWeights);
@@ -73,8 +73,8 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 	private static IndexGraphBuilder.ReIndexedGraph newInstance(
 			Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
-		GraphCSRBase.BuilderProcessEdgesDirected processEdges =
-				new GraphCSRBase.BuilderProcessEdgesDirected(graphOrBuilder);
+		GraphCsrBase2.BuilderProcessEdgesDirected processEdges =
+				new GraphCsrBase2.BuilderProcessEdgesDirected(graphOrBuilder);
 
 		final int m = edgesNum(graphOrBuilder);
 		int[] edgesCsrToOrig = processEdges.edgesOut;
@@ -85,7 +85,7 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 		IndexGraphBuilder.ReIndexingMap edgesReIndexing =
 				new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig);
 
-		GraphCSRDirectedReindexed g = new GraphCSRDirectedReindexed(graphOrBuilder, processEdges, edgesReIndexing,
+		GraphCsrDirectedReindexed2 g = new GraphCsrDirectedReindexed2(graphOrBuilder, processEdges, edgesReIndexing,
 				copyVerticesWeights, copyEdgesWeights);
 		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), Optional.of(edgesReIndexing));
 	}

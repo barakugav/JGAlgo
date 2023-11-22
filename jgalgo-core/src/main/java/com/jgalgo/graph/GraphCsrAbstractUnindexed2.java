@@ -17,11 +17,11 @@ package com.jgalgo.graph;
 
 import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 
-abstract class GraphCSRAbstractUnindexed extends GraphCSRBase {
+abstract class GraphCsrAbstractUnindexed2 extends GraphCsrBase2 {
 
 	final int[] edgesOut;
 
-	GraphCSRAbstractUnindexed(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder,
+	GraphCsrAbstractUnindexed2(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder,
 			BuilderProcessEdges processEdges) {
 		super(capabilities, Variant.Of2.withB(builder), processEdges, null, true, true);
 		edgesOut = processEdges.edgesOut;
@@ -30,7 +30,7 @@ abstract class GraphCSRAbstractUnindexed extends GraphCSRBase {
 			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
 	}
 
-	GraphCSRAbstractUnindexed(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
+	GraphCsrAbstractUnindexed2(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
 		final int n = g.vertices().size();
