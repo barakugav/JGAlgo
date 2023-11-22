@@ -36,7 +36,8 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	private static final Edge[] EmptyEdgeArr = new Edge[0];
 
-	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(false, true, true);
+	private static final GraphBaseMutable.Capabilities Capabilities =
+			GraphBaseMutable.Capabilities.of(false, true, true);
 
 	/**
 	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.

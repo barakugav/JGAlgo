@@ -22,7 +22,7 @@ abstract class GraphBaseWithEdgeEndpointsContainer extends GraphBaseMutable impl
 	private long[] edgeEndpoints;
 	private final DataContainer.Long edgeEndpointsContainer;
 
-	GraphBaseWithEdgeEndpointsContainer(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum,
+	GraphBaseWithEdgeEndpointsContainer(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum,
 			int expectedEdgesNum) {
 		super(capabilities, expectedVerticesNum, expectedEdgesNum);
 		edgeEndpointsContainer =
@@ -30,7 +30,7 @@ abstract class GraphBaseWithEdgeEndpointsContainer extends GraphBaseMutable impl
 		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
-	GraphBaseWithEdgeEndpointsContainer(IndexGraphBase.Capabilities capabilities, IndexGraph g,
+	GraphBaseWithEdgeEndpointsContainer(GraphBaseMutable.Capabilities capabilities, IndexGraph g,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
 		if (g instanceof GraphBaseWithEdgeEndpointsContainer) {
@@ -48,7 +48,7 @@ abstract class GraphBaseWithEdgeEndpointsContainer extends GraphBaseMutable impl
 		}
 	}
 
-	GraphBaseWithEdgeEndpointsContainer(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+	GraphBaseWithEdgeEndpointsContainer(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 		super(capabilities, builder);
 		final int m = edges.size();
 		edgeEndpointsContainer =

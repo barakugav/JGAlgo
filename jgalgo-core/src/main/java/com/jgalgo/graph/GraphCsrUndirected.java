@@ -19,14 +19,12 @@ import com.jgalgo.internal.util.Assertions;
 
 class GraphCsrUndirected extends GraphCsrAbstractUnindexed {
 
-	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(false, true, true);
-
 	GraphCsrUndirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesUndirected processEdges) {
-		super(Capabilities, builder, processEdges);
+		super(false, builder, processEdges);
 	}
 
 	GraphCsrUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
+		super(false, g, copyVerticesWeights, copyEdgesWeights);
 		Assertions.Graphs.onlyUndirected(g);
 	}
 

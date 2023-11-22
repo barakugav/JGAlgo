@@ -24,13 +24,13 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 	private final DataContainer.Obj<Edge> edgesContainer;
 	private static final Edge[] EmptyEdgeArr = new Edge[0];
 
-	GraphLinkedAbstract(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
+	GraphLinkedAbstract(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
 		super(capabilities, expectedVerticesNum, expectedEdgesNum);
 		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyEdgeArr, newArr -> edges = newArr);
 		addInternalEdgesContainer(edgesContainer);
 	}
 
-	GraphLinkedAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
+	GraphLinkedAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
 		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyEdgeArr, newArr -> edges = newArr);
@@ -40,7 +40,7 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 			edges[e] = allocEdge(e, g.edgeSource(e), g.edgeTarget(e));
 	}
 
-	GraphLinkedAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+	GraphLinkedAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 		super(capabilities, builder);
 		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyEdgeArr, newArr -> edges = newArr);
 		addInternalEdgesContainer(edgesContainer);

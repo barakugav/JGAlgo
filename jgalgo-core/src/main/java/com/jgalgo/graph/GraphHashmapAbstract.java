@@ -27,16 +27,16 @@ abstract class GraphHashmapAbstract extends GraphBaseWithEdgeEndpointsContainer 
 
 	static final Int2IntMap[] EMPTY_MAP_ARRAY = new Int2IntMap[0];
 
-	GraphHashmapAbstract(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
+	GraphHashmapAbstract(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
 		super(capabilities, expectedVerticesNum, expectedEdgesNum);
 	}
 
-	GraphHashmapAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
+	GraphHashmapAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
 	}
 
-	GraphHashmapAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+	GraphHashmapAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 		super(capabilities, builder);
 	}
 

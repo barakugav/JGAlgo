@@ -34,7 +34,8 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 
 	private int[] edgesNum;
 	private final DataContainer.Int edgesNumContainer;
-	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(false, true, false);
+	private static final GraphBaseMutable.Capabilities Capabilities =
+			GraphBaseMutable.Capabilities.of(false, true, false);
 
 	GraphMatrixUndirected() {
 		this(0, 0);

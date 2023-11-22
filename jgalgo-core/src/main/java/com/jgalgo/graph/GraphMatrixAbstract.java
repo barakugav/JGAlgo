@@ -28,14 +28,14 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 
 	private static final DataContainer.Int[] EmptyEdgesArr = new DataContainer.Int[0];
 
-	GraphMatrixAbstract(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
+	GraphMatrixAbstract(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
 		super(capabilities, expectedVerticesNum, expectedEdgesNum);
 
 		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, newArr -> edges = newArr);
 		addInternalVerticesContainer(edgesContainer);
 	}
 
-	GraphMatrixAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
+	GraphMatrixAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
 		final int n = g.vertices().size();
@@ -70,7 +70,7 @@ abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
 		}
 	}
 
-	GraphMatrixAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+	GraphMatrixAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 		super(capabilities, builder);
 
 		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, newArr -> edges = newArr);

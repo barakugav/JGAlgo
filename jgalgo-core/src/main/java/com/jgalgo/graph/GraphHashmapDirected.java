@@ -28,7 +28,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 	private final DataContainer.Obj<Int2IntMap> edgesOutContainer;
 	private final DataContainer.Obj<Int2IntMap> edgesInContainer;
 
-	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, false);
+	private static final GraphBaseMutable.Capabilities Capabilities =
+			GraphBaseMutable.Capabilities.of(true, true, false);
 
 	GraphHashmapDirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(Capabilities, expectedVerticesNum, expectedEdgesNum);

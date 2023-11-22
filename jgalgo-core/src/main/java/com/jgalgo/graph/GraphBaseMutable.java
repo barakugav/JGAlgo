@@ -21,6 +21,8 @@ import com.jgalgo.internal.util.Assertions;
 
 abstract class GraphBaseMutable extends IndexGraphBase {
 
+	private final boolean isAllowSelfEdges;
+	private final boolean isAllowParallelEdges;
 	final GraphElementSet.Default vertices;
 	final GraphElementSet.Default edges;
 	private final DataContainer.Manager verticesInternalContainers;
@@ -28,8 +30,10 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	private final WeightsImpl.IndexMutable.Manager verticesUserWeights;
 	private final WeightsImpl.IndexMutable.Manager edgesUserWeights;
 
-	GraphBaseMutable(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
-		super(capabilities);
+	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
+		super(capabilities.isDirected);
+		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
+		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
 		vertices = new GraphElementSet.Default(0, false);
 		edges = new GraphElementSet.Default(0, true);
 		verticesInternalContainers = new DataContainer.Manager(expectedVerticesNum);
@@ -38,9 +42,11 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum);
 	}
 
-	GraphBaseMutable(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
+	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
-		super(capabilities);
+		super(capabilities.isDirected);
+		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
+		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
 		if (isDirected()) {
 			Assertions.Graphs.onlyDirected(g);
 		} else {
@@ -73,14 +79,43 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		edgesInternalContainers = new DataContainer.Manager(edges.size());
 	}
 
-	GraphBaseMutable(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
-		super(capabilities);
+	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+		super(capabilities.isDirected);
+		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
+		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
 		vertices = builder.vertices.copy();
 		edges = builder.edges.copy();
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(builder.verticesUserWeights, vertices);
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(builder.edgesUserWeights, edges);
 		verticesInternalContainers = new DataContainer.Manager(vertices.size());
 		edgesInternalContainers = new DataContainer.Manager(edges.size());
+	}
+
+	static class Capabilities {
+		private Capabilities(boolean isDirected, boolean isAllowSelfEdges, boolean isAllowParallelEdges) {
+			this.isDirected = isDirected;
+			this.isAllowSelfEdges = isAllowSelfEdges;
+			this.isAllowParallelEdges = isAllowParallelEdges;
+		}
+
+		static Capabilities of(boolean isDirected, boolean isAllowSelfEdges, boolean isAllowParallelEdges) {
+			return new Capabilities(isDirected, isAllowSelfEdges, isAllowParallelEdges);
+		}
+
+		private final boolean isDirected;
+		private final boolean isAllowSelfEdges;
+		private final boolean isAllowParallelEdges;
+
+	}
+
+	@Override
+	public boolean isAllowSelfEdges() {
+		return isAllowSelfEdges;
+	}
+
+	@Override
+	public boolean isAllowParallelEdges() {
+		return isAllowParallelEdges;
 	}
 
 	@Override

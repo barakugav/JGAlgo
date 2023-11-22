@@ -21,18 +21,16 @@ abstract class GraphCsrAbstractUnindexed extends GraphCsrBase {
 
 	final int[] edgesOut;
 
-	GraphCsrAbstractUnindexed(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder,
-			BuilderProcessEdges processEdges) {
-		super(capabilities, Variant.Of2.withB(builder), processEdges, null, true, true);
+	GraphCsrAbstractUnindexed(boolean directed, IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges) {
+		super(directed, Variant.Of2.withB(builder), processEdges, null, true, true);
 		edgesOut = processEdges.edgesOut;
 
 		for (int m = builder.edges().size(), e = 0; e < m; e++)
 			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
 	}
 
-	GraphCsrAbstractUnindexed(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
-			boolean copyEdgesWeights) {
-		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
+	GraphCsrAbstractUnindexed(boolean directed, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		super(directed, g, copyVerticesWeights, copyEdgesWeights);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 

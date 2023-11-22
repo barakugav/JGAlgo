@@ -22,45 +22,14 @@ import it.unimi.dsi.fastutil.ints.IntIterables;
 abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements IndexGraph {
 
 	private final boolean isDirected;
-	private final boolean isAllowSelfEdges;
-	private final boolean isAllowParallelEdges;
 
-	IndexGraphBase(IndexGraphBase.Capabilities capabilities) {
-		this.isDirected = capabilities.isDirected;
-		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
-		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
-	}
-
-	static class Capabilities {
-		private Capabilities(boolean isDirected, boolean isAllowSelfEdges, boolean isAllowParallelEdges) {
-			this.isDirected = isDirected;
-			this.isAllowSelfEdges = isAllowSelfEdges;
-			this.isAllowParallelEdges = isAllowParallelEdges;
-		}
-
-		static Capabilities of(boolean isDirected, boolean isAllowSelfEdges, boolean isAllowParallelEdges) {
-			return new Capabilities(isDirected, isAllowSelfEdges, isAllowParallelEdges);
-		}
-
-		private final boolean isDirected;
-		private final boolean isAllowSelfEdges;
-		private final boolean isAllowParallelEdges;
-
+	IndexGraphBase(boolean isDirected) {
+		this.isDirected = isDirected;
 	}
 
 	@Override
 	public boolean isDirected() {
 		return isDirected;
-	}
-
-	@Override
-	public boolean isAllowSelfEdges() {
-		return isAllowSelfEdges;
-	}
-
-	@Override
-	public boolean isAllowParallelEdges() {
-		return isAllowParallelEdges;
 	}
 
 	@Override

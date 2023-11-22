@@ -36,7 +36,8 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	private int[] edgesInNum;
 	private final DataContainer.Int edgesOutNumContainer;
 	private final DataContainer.Int edgesInNumContainer;
-	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, false);
+	private static final GraphBaseMutable.Capabilities Capabilities =
+			GraphBaseMutable.Capabilities.of(true, true, false);
 
 	GraphMatrixDirected() {
 		this(0, 0);

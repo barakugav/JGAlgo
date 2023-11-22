@@ -40,7 +40,8 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 	private final DataContainer.Obj<int[]> edgesContainer;
 	private final DataContainer.Int edgesNumContainer;
 
-	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(false, true, true);
+	private static final GraphBaseMutable.Capabilities Capabilities =
+			GraphBaseMutable.Capabilities.of(false, true, true);
 
 	/**
 	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.

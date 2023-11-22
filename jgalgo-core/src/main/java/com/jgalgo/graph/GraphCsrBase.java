@@ -20,7 +20,10 @@ import java.util.Set;
 import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpointsContainer, ImmutableGraph {
 
@@ -33,10 +36,15 @@ abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpo
 	final Map<String, WeightsImpl.IndexImmutable<?>> verticesUserWeights;
 	final Map<String, WeightsImpl.IndexImmutable<?>> edgesUserWeights;
 
-	GraphCsrBase(IndexGraphBase.Capabilities capabilities,
-			Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, BuilderProcessEdges processEdges,
-			IndexGraphBuilder.ReIndexingMap edgesReIndexing, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		super(capabilities);
+	private boolean containsSelfEdges;
+	private boolean containsSelfEdgesValid;
+	private boolean containsParallelEdges;
+	private boolean containsParallelEdgesValid;
+
+	GraphCsrBase(boolean directed, Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
+			BuilderProcessEdges processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
+			boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		super(directed);
 		final int n = verticesNum(graphOrBuilder);
 		final int m = edgesNum(graphOrBuilder);
 
@@ -87,11 +95,22 @@ abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpo
 		}
 		verticesUserWeights = verticesUserWeightsBuilder.build();
 		edgesUserWeights = edgesUserWeightsBuilder.build();
+
+		if (graphOrBuilder.contains(IndexGraph.class)) {
+			IndexGraph g = graphOrBuilder.get(IndexGraph.class).get();
+			if (!g.isAllowSelfEdges()) {
+				containsSelfEdges = false;
+				containsSelfEdgesValid = true;
+			}
+			if (!g.isAllowParallelEdges()) {
+				containsParallelEdges = false;
+				containsParallelEdgesValid = true;
+			}
+		}
 	}
 
-	GraphCsrBase(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
-			boolean copyEdgesWeights) {
-		super(capabilities);
+	GraphCsrBase(boolean directed, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		super(directed);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 
@@ -118,6 +137,47 @@ abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpo
 		}
 		verticesUserWeights = verticesUserWeightsBuilder.build();
 		edgesUserWeights = edgesUserWeightsBuilder.build();
+	}
+
+	@Override
+	public boolean isAllowSelfEdges() {
+		if (!containsSelfEdgesValid) {
+			containsSelfEdges = false;
+			for (int m = edges().size(), e = 0; e < m; e++) {
+				if (edgeSource(e) == edgeTarget(e)) {
+					containsSelfEdges = true;
+					break;
+				}
+			}
+			containsSelfEdgesValid = true;
+		}
+		return containsSelfEdges;
+	}
+
+	@Override
+	public boolean isAllowParallelEdges() {
+		if (!containsParallelEdgesValid) {
+			final int n = vertices().size();
+			Bitmap neighborsBitmap = new Bitmap(n);
+			IntList neighbors = new IntArrayList();
+			containsParallelEdges = false;
+			mainLoop: for (int u = 0; u < n; u++) {
+				for (IEdgeIter eit = outEdges(u).iterator(); eit.hasNext();) {
+					eit.nextInt();
+					int v = eit.targetInt();
+					if (neighborsBitmap.get(v)) {
+						containsParallelEdges = true;
+						break mainLoop;
+					}
+					neighborsBitmap.set(v);
+					neighbors.add(v);
+				}
+				neighborsBitmap.clearAllUnsafe(neighbors);
+				neighbors.clear();
+			}
+			containsParallelEdgesValid = true;
+		}
+		return containsParallelEdges;
 	}
 
 	@Override

@@ -24,12 +24,10 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
-	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, true);
-
 	private GraphCsrDirectedReindexed(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
 			BuilderProcessEdgesDirected processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		super(Capabilities, graphOrBuilder, processEdges, edgesReIndexing, copyVerticesWeights, copyEdgesWeights);
+		super(true, graphOrBuilder, processEdges, edgesReIndexing, copyVerticesWeights, copyEdgesWeights);
 		final int n = verticesNum(graphOrBuilder);
 		final int m = edgesNum(graphOrBuilder);
 

@@ -22,16 +22,14 @@ class GraphCsrDirected extends GraphCsrAbstractUnindexed {
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
-	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, true);
-
 	GraphCsrDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges) {
-		super(Capabilities, builder, processEdges);
+		super(true, builder, processEdges);
 		edgesIn = processEdges.edgesIn;
 		edgesInBegin = processEdges.edgesInBegin;
 	}
 
 	GraphCsrDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
+		super(true, g, copyVerticesWeights, copyEdgesWeights);
 		Assertions.Graphs.onlyDirected(g);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();

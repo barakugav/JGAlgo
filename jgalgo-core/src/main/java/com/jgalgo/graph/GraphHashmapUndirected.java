@@ -28,7 +28,8 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	private Int2IntMap[] edges;
 	private final DataContainer.Obj<Int2IntMap> edgesContainer;
 
-	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(false, true, false);
+	private static final GraphBaseMutable.Capabilities Capabilities =
+			GraphBaseMutable.Capabilities.of(false, true, false);
 
 	/**
 	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
