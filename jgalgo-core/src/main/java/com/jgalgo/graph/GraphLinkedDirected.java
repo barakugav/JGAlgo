@@ -97,8 +97,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 	@Override
 	void removeVertexLast(int vertex) {
-		edgesOutContainer.clear(edgesOut, vertex);
-		edgesInContainer.clear(edgesIn, vertex);
+		edgesOut[vertex] = null;
+		edgesIn[vertex] = null;
 		super.removeVertexLast(vertex);
 	}
 

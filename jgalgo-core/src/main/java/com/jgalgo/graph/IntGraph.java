@@ -410,18 +410,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge identifier
 	 * @throws IllegalArgumentException if {@code endpoint} is not an endpoint of the edge
 	 */
-	default int edgeEndpoint(int edge, int endpoint) {
-		int u = edgeSource(edge);
-		int v = edgeTarget(edge);
-		if (endpoint == u) {
-			return v;
-		} else if (endpoint == v) {
-			return u;
-		} else {
-			throw new IllegalArgumentException("The given vertex (idx=" + endpoint
-					+ ") is not an endpoint of the edge (idx=" + u + ", idx=" + v + ")");
-		}
-	}
+	int edgeEndpoint(int edge, int endpoint);
 
 	@Deprecated
 	@Override

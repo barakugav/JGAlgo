@@ -70,7 +70,7 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 
 	@Override
 	void removeEdgeLast(int edge) {
-		edgesContainer.clear(edges, edge);
+		edges[edge] = null;
 		super.removeEdgeLast(edge);
 	}
 

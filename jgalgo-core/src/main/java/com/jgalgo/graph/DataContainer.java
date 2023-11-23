@@ -70,10 +70,6 @@ abstract class DataContainer {
 			onArrayAlloc.accept(data);
 		}
 
-		void clear(T[] data, int idx) {
-			data[idx] = defaultVal;
-		}
-
 		void clear() {
 			Arrays.fill(data, 0, size(), defaultVal);
 		}
@@ -116,10 +112,6 @@ abstract class DataContainer {
 			onArrayAlloc.accept(data);
 		}
 
-		void clear(int[] data, int idx) {
-			data[idx] = defaultVal;
-		}
-
 		void clear() {
 			Arrays.fill(data, 0, size(), defaultVal);
 		}
@@ -148,16 +140,6 @@ abstract class DataContainer {
 			onArrayAlloc.accept(data);
 		}
 
-		Long(DataContainer.Long orig, GraphElementSet elements, Consumer<long[]> onArrayAlloc) {
-			super(elements);
-			assert elements.size() == this.elements.size();
-
-			data = Arrays.copyOf(orig.data, elements.size());
-			defaultVal = orig.defaultVal;
-			this.onArrayAlloc = Objects.requireNonNull(onArrayAlloc);
-			onArrayAlloc.accept(data);
-		}
-
 		@Override
 		int capacity() {
 			return data.length;
@@ -177,7 +159,11 @@ abstract class DataContainer {
 		}
 
 		DataContainer.Long copy(GraphElementSet elements, Consumer<long[]> onArrayAlloc) {
-			return new DataContainer.Long(this, elements, onArrayAlloc);
+			assert elements.size() == this.elements.size();
+			DataContainer.Long copy = new DataContainer.Long(elements, defaultVal, onArrayAlloc);
+			copy.data = Arrays.copyOf(data, elements.size());
+			onArrayAlloc.accept(copy.data);
+			return copy;
 		}
 	}
 

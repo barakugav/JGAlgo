@@ -358,18 +358,7 @@ public interface Graph<V, E> {
 	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge identifier
 	 * @throws IllegalArgumentException if {@code endpoint} is not an endpoint of the edge
 	 */
-	default V edgeEndpoint(E edge, V endpoint) {
-		V u = edgeSource(edge);
-		V v = edgeTarget(edge);
-		if (endpoint.equals(u)) {
-			return v;
-		} else if (endpoint.equals(v)) {
-			return u;
-		} else {
-			throw new IllegalArgumentException(
-					"The given vertex (" + endpoint + ") is not an endpoint of the edge (" + u + ", " + v + ")");
-		}
-	}
+	V edgeEndpoint(E edge, V endpoint);
 
 	/**
 	 * Clear the graph completely by removing all vertices and edges.

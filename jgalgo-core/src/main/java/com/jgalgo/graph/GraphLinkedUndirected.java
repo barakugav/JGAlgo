@@ -80,7 +80,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	@Override
 	void removeVertexLast(int vertex) {
-		edgesContainer.clear(edges, vertex);
+		edges[vertex] = null;
 		super.removeVertexLast(vertex);
 	}
 

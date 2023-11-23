@@ -117,6 +117,11 @@ public class Graphs {
 		}
 
 		@Override
+		public V edgeEndpoint(E edge, V endpoint) {
+			return graph.edgeEndpoint(edge, endpoint);
+		}
+
+		@Override
 		public void clear() {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove vertices and edges");
 		}
@@ -279,6 +284,11 @@ public class Graphs {
 		@Override
 		public int edgeTarget(int edge) {
 			return graph.edgeTarget(edge);
+		}
+
+		@Override
+		public int edgeEndpoint(int edge, int endpoint) {
+			return graph.edgeEndpoint(edge, endpoint);
 		}
 
 		@Override
@@ -722,6 +732,11 @@ public class Graphs {
 		}
 
 		@Override
+		public V edgeEndpoint(E edge, V endpoint) {
+			return graph().edgeEndpoint(edge, endpoint);
+		}
+
+		@Override
 		public <T, WeightsT extends Weights<V, T>> WeightsT getVerticesWeights(String key) {
 			return graph().getVerticesWeights(key);
 		}
@@ -841,6 +856,11 @@ public class Graphs {
 		@Override
 		public int edgeTarget(int edge) {
 			return graph().edgeTarget(edge);
+		}
+
+		@Override
+		public int edgeEndpoint(int edge, int endpoint) {
+			return graph().edgeEndpoint(edge, endpoint);
 		}
 
 		@Override
