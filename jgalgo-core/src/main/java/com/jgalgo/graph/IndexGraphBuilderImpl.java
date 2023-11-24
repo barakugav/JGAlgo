@@ -30,8 +30,8 @@ import it.unimi.dsi.fastutil.ints.IntSets;
 abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	private int m;
-	final GraphElementSet.Default vertices;
-	final GraphElementSet.Default edges;
+	final GraphElementSet.Mutable vertices;
+	final GraphElementSet.Mutable edges;
 	private int[] endpoints = IntArrays.EMPTY_ARRAY;
 	private int[] edgesUserIds = IntArrays.EMPTY_ARRAY;
 	private IntSet edgesSetView;
@@ -44,8 +44,8 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	IndexGraphFactoryImpl.Impl immutableImpl;
 
 	private IndexGraphBuilderImpl() {
-		vertices = new GraphElementSet.Default(0, false);
-		edges = new GraphElementSet.Default(0, true);
+		vertices = GraphElementSet.Mutable.ofVertices(0);
+		edges = GraphElementSet.Mutable.ofEdges(0);
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(0);
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(0);
 		setDefaultImpls();
@@ -55,8 +55,8 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		final int n = g.vertices().size();
 		m = g.edges().size();
 
-		vertices = new GraphElementSet.Default(n, false);
-		edges = new GraphElementSet.Default(m, true);
+		vertices = GraphElementSet.Mutable.ofVertices(n);
+		edges = GraphElementSet.Mutable.ofEdges(m);
 
 		endpoints = new int[m * 2];
 		for (int e = 0; e < m; e++) {

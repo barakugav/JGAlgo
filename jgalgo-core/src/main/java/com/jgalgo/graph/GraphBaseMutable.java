@@ -23,19 +23,15 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 	private final boolean isAllowSelfEdges;
 	private final boolean isAllowParallelEdges;
-	final GraphElementSet.Default vertices;
-	final GraphElementSet.Default edges;
 	private final DataContainer.Manager verticesInternalContainers;
 	private final DataContainer.Manager edgesInternalContainers;
 	private final WeightsImpl.IndexMutable.Manager verticesUserWeights;
 	private final WeightsImpl.IndexMutable.Manager edgesUserWeights;
 
 	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
-		super(capabilities.isDirected);
+		super(capabilities.isDirected, 0, 0, true);
 		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
 		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
-		vertices = new GraphElementSet.Default(0, false);
-		edges = new GraphElementSet.Default(0, true);
 		verticesInternalContainers = new DataContainer.Manager(expectedVerticesNum);
 		edgesInternalContainers = new DataContainer.Manager(expectedEdgesNum);
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedVerticesNum);
@@ -44,7 +40,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
-		super(capabilities.isDirected);
+		super(capabilities.isDirected, g.vertices().size(), g.edges().size(), true);
 		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
 		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
 		if (isDirected()) {
@@ -56,9 +52,6 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 			Assertions.Graphs.noSelfEdges(g, "self edges are not supported");
 		if (!isAllowParallelEdges())
 			Assertions.Graphs.noParallelEdges(g, "parallel edges are not supported");
-
-		vertices = new GraphElementSet.Default(g.vertices().size(), false);
-		edges = new GraphElementSet.Default(g.edges().size(), true);
 
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size());
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size());
@@ -80,11 +73,9 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	}
 
 	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
-		super(capabilities.isDirected);
+		super(capabilities.isDirected, builder.vertices.copy(), builder.edges.copy());
 		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
 		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
-		vertices = builder.vertices.copy();
-		edges = builder.edges.copy();
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(builder.verticesUserWeights, vertices);
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(builder.edgesUserWeights, edges);
 		verticesInternalContainers = new DataContainer.Manager(vertices.size());
@@ -118,19 +109,17 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		return isAllowParallelEdges;
 	}
 
-	@Override
-	public final GraphElementSet vertices() {
-		return vertices;
+	private final GraphElementSet.Mutable vertices0() {
+		return (GraphElementSet.Mutable) vertices;
 	}
 
-	@Override
-	public final GraphElementSet edges() {
-		return edges;
+	private final GraphElementSet.Mutable edges0() {
+		return (GraphElementSet.Mutable) edges;
 	}
 
 	@Override
 	public int addVertex() {
-		int u = vertices.newIdx();
+		int u = vertices0().newIdx();
 		assert u >= 0;
 		verticesInternalContainers.ensureCapacity(u + 1);
 		verticesUserWeights.ensureCapacity(u + 1);
@@ -152,21 +141,21 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 	void removeVertexLast(int vertex) {
 		verticesUserWeights.clearElement(vertex);
-		vertices.removeIdx(vertex);
+		vertices0().removeIdx(vertex);
 	}
 
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
 		// internal weights are handled manually
 		// verticesInternalContainers.swapElements(removedIdx, swappedIdx);
 		verticesUserWeights.swapAndClear(removedIdx, swappedIdx);
-		vertices.swapAndRemove(removedIdx, swappedIdx);
+		vertices0().swapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override
 	public int addEdge(int source, int target) {
 		checkVertex(source);
 		checkVertex(target);
-		int e = edges.newIdx();
+		int e = edges0().newIdx();
 		assert e >= 0;
 		edgesInternalContainers.ensureCapacity(e + 1);
 		edgesUserWeights.ensureCapacity(e + 1);
@@ -184,14 +173,14 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 	void removeEdgeLast(int edge) {
 		edgesUserWeights.clearElement(edge);
-		edges.removeIdx(edge);
+		edges0().removeIdx(edge);
 	}
 
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
 		// internal weights are handled manually
 		// edgesInternalContainers.swapElements(removedIdx, swappedIdx);
 		edgesUserWeights.swapAndClear(removedIdx, swappedIdx);
-		edges.swapAndRemove(removedIdx, swappedIdx);
+		edges0().swapAndRemove(removedIdx, swappedIdx);
 	}
 
 	@Override

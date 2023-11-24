@@ -43,7 +43,7 @@ abstract class GraphElementSet extends AbstractIntSet {
 
 	@Override
 	public boolean contains(int key) {
-		return key >= 0 && key < size;
+		return 0 <= key && key < size;
 	}
 
 	@Override
@@ -74,10 +74,18 @@ abstract class GraphElementSet extends AbstractIntSet {
 
 	abstract void removeRemoveListener(IndexRemoveListener listener);
 
-	static class FixedSize extends GraphElementSet {
+	static class Immutable extends GraphElementSet {
 
-		FixedSize(int initSize, boolean isEdges) {
-			super(initSize, isEdges);
+		private Immutable(int size, boolean isEdges) {
+			super(size, isEdges);
+		}
+
+		static GraphElementSet.Immutable ofEdges(int size) {
+			return new GraphElementSet.Immutable(size, true);
+		}
+
+		static GraphElementSet.Immutable ofVertices(int size) {
+			return new GraphElementSet.Immutable(size, false);
 		}
 
 		@Override
@@ -90,12 +98,20 @@ abstract class GraphElementSet extends AbstractIntSet {
 
 	}
 
-	static class Default extends GraphElementSet.FixedSize {
+	static class Mutable extends GraphElementSet.Immutable {
 
 		private final List<IndexRemoveListener> removeListeners = new CopyOnWriteArrayList<>();
 
-		Default(int initSize, boolean isEdges) {
+		private Mutable(int initSize, boolean isEdges) {
 			super(initSize, isEdges);
+		}
+
+		static GraphElementSet.Mutable ofEdges(int initSize) {
+			return new GraphElementSet.Mutable(initSize, true);
+		}
+
+		static GraphElementSet.Mutable ofVertices(int initSize) {
+			return new GraphElementSet.Mutable(initSize, false);
 		}
 
 		int newIdx() {
@@ -126,8 +142,8 @@ abstract class GraphElementSet extends AbstractIntSet {
 			size--;
 		}
 
-		GraphElementSet.Default copy() {
-			return new GraphElementSet.Default(size, isEdges);
+		GraphElementSet.Mutable copy() {
+			return new GraphElementSet.Mutable(size, isEdges);
 		}
 
 		@Override

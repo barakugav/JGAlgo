@@ -27,9 +27,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpointsContainer, ImmutableGraph {
 
-	final GraphElementSet.FixedSize vertices;
-	final GraphElementSet.FixedSize edges;
-
 	final int[] edgesOutBegin;
 	private final long[] endpoints;
 
@@ -44,12 +41,9 @@ abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpo
 	GraphCsrBase(boolean directed, Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
 			BuilderProcessEdges processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		super(directed);
+		super(directed, verticesNum(graphOrBuilder), edgesNum(graphOrBuilder), false);
 		final int n = verticesNum(graphOrBuilder);
 		final int m = edgesNum(graphOrBuilder);
-
-		vertices = new GraphElementSet.FixedSize(n, false);
-		edges = new GraphElementSet.FixedSize(m, true);
 
 		edgesOutBegin = processEdges.edgesOutBegin;
 		endpoints = new long[m];
@@ -110,12 +104,9 @@ abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpo
 	}
 
 	GraphCsrBase(boolean directed, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		super(directed);
+		super(directed, g.vertices().size(), g.edges().size(), false);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
-
-		vertices = new GraphElementSet.FixedSize(n, false);
-		edges = new GraphElementSet.FixedSize(m, true);
 
 		edgesOutBegin = new int[n + 1];
 		endpoints = new long[m];
@@ -178,16 +169,6 @@ abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpo
 			containsParallelEdgesValid = true;
 		}
 		return containsParallelEdges;
-	}
-
-	@Override
-	public GraphElementSet vertices() {
-		return vertices;
-	}
-
-	@Override
-	public GraphElementSet edges() {
-		return edges;
 	}
 
 	@Override

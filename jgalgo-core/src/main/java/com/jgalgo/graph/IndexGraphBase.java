@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Objects;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntIterables;
@@ -22,14 +23,39 @@ import it.unimi.dsi.fastutil.ints.IntIterables;
 abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements IndexGraph {
 
 	private final boolean isDirected;
+	final GraphElementSet vertices;
+	final GraphElementSet edges;
 
-	IndexGraphBase(boolean isDirected) {
+	IndexGraphBase(boolean isDirected, GraphElementSet vertices, GraphElementSet edges) {
 		this.isDirected = isDirected;
+		this.vertices = Objects.requireNonNull(vertices);
+		this.edges = Objects.requireNonNull(edges);
+	}
+
+	IndexGraphBase(boolean isDirected, int n, int m, boolean mutable) {
+		this.isDirected = isDirected;
+		if (mutable) {
+			this.vertices = GraphElementSet.Mutable.ofVertices(n);
+			this.edges = GraphElementSet.Mutable.ofEdges(m);
+		} else {
+			this.vertices = GraphElementSet.Immutable.ofVertices(n);
+			this.edges = GraphElementSet.Immutable.ofEdges(m);
+		}
 	}
 
 	@Override
 	public boolean isDirected() {
 		return isDirected;
+	}
+
+	@Override
+	public final GraphElementSet vertices() {
+		return vertices;
+	}
+
+	@Override
+	public final GraphElementSet edges() {
+		return edges;
 	}
 
 	@Override
