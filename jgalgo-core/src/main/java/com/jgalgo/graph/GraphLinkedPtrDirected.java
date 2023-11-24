@@ -52,27 +52,19 @@ class GraphLinkedPtrDirected extends GraphLinkedPtrAbstract {
 	GraphLinkedPtrDirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
 
-		edgesOutContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesIn = newArr);
-		edgesInContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesOut = newArr);
-		edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesOutNum = newArr);
-		edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesInNum = newArr);
-		addInternalVerticesContainer(edgesOutContainer);
-		addInternalVerticesContainer(edgesInContainer);
-		addInternalVerticesContainer(edgesOutNumContainer);
-		addInternalVerticesContainer(edgesInNumContainer);
+		edgesOutContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edgesIn = newArr);
+		edgesInContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edgesOut = newArr);
+		edgesOutNumContainer = newVerticesIntContainer(0, newArr -> edgesOutNum = newArr);
+		edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);
 	}
 
 	GraphLinkedPtrDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
 
-		edgesOutContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesIn = newArr);
-		edgesInContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesOut = newArr);
-		edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesOutNum = newArr);
-		edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesInNum = newArr);
-		addInternalVerticesContainer(edgesOutContainer);
-		addInternalVerticesContainer(edgesInContainer);
-		addInternalVerticesContainer(edgesOutNumContainer);
-		addInternalVerticesContainer(edgesInNumContainer);
+		edgesOutContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edgesIn = newArr);
+		edgesInContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edgesOut = newArr);
+		edgesOutNumContainer = newVerticesIntContainer(0, newArr -> edgesOutNum = newArr);
+		edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);
 
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)
@@ -82,14 +74,10 @@ class GraphLinkedPtrDirected extends GraphLinkedPtrAbstract {
 	GraphLinkedPtrDirected(IndexGraphBuilderImpl.Directed builder) {
 		super(Capabilities, builder);
 
-		edgesOutContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesIn = newArr);
-		edgesInContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edgesOut = newArr);
-		edgesOutNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesOutNum = newArr);
-		edgesInNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesInNum = newArr);
-		addInternalVerticesContainer(edgesOutContainer);
-		addInternalVerticesContainer(edgesInContainer);
-		addInternalVerticesContainer(edgesOutNumContainer);
-		addInternalVerticesContainer(edgesInNumContainer);
+		edgesOutContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edgesIn = newArr);
+		edgesInContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edgesOut = newArr);
+		edgesOutNumContainer = newVerticesIntContainer(0, newArr -> edgesOutNum = newArr);
+		edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);
 
 		final int m = builder.edges().size();
 		for (int e = 0; e < m; e++)

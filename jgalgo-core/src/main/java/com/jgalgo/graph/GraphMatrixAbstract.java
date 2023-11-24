@@ -30,9 +30,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 	GraphMatrixAbstract(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
 		super(capabilities, expectedVerticesNum, expectedEdgesNum);
-
-		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, newArr -> edges = newArr);
-		addInternalVerticesContainer(edgesContainer);
+		edgesContainer = newVerticesContainer(null, EmptyEdgesArr, newArr -> edges = newArr);
 	}
 
 	GraphMatrixAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
@@ -42,20 +40,14 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 		if (g instanceof GraphMatrixAbstract) {
 			GraphMatrixAbstract g0 = (GraphMatrixAbstract) g;
-			edgesContainer = g0.edgesContainer.copy(vertices, EmptyEdgesArr, newArr -> edges = newArr);
-			addInternalVerticesContainer(edgesContainer);
-			for (int u = 0; u < n; u++) {
-				DataContainer.Int vEdges = edges[u].copy(vertices, JGAlgoUtils.consumerNoOp());
-				addInternalVerticesContainer(vEdges);
-				edges[u] = vEdges;
-			}
+			edgesContainer = copyVerticesContainer(g0.edgesContainer, EmptyEdgesArr, newArr -> edges = newArr);
+			for (int u = 0; u < n; u++)
+				edges[u] = copyVerticesContainer(edges[u], JGAlgoUtils.consumerNoOp());
 		} else {
 
-			edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, newArr -> edges = newArr);
-			addInternalVerticesContainer(edgesContainer);
+			edgesContainer = newVerticesContainer(null, EmptyEdgesArr, newArr -> edges = newArr);
 			for (int u = 0; u < n; u++) {
-				DataContainer.Int vEdges = new DataContainer.Int(vertices, EdgeNone, JGAlgoUtils.consumerNoOp());
-				addInternalVerticesContainer(vEdges);
+				DataContainer.Int vEdges = newVerticesIntContainer(EdgeNone, JGAlgoUtils.<int[]>consumerNoOp());
 				edges[u] = vEdges;
 
 				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
@@ -73,13 +65,9 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 	GraphMatrixAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 		super(capabilities, builder);
 
-		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgesArr, newArr -> edges = newArr);
-		addInternalVerticesContainer(edgesContainer);
-		for (int n = builder.vertices().size(), u = 0; u < n; u++) {
-			DataContainer.Int vEdges = new DataContainer.Int(vertices, EdgeNone, JGAlgoUtils.consumerNoOp());
-			addInternalVerticesContainer(vEdges);
-			edges[u] = vEdges;
-		}
+		edgesContainer = newVerticesContainer(null, EmptyEdgesArr, newArr -> edges = newArr);
+		for (int n = builder.vertices().size(), u = 0; u < n; u++)
+			edges[u] = newVerticesIntContainer(EdgeNone, JGAlgoUtils.<int[]>consumerNoOp());
 
 		assert builder instanceof IndexGraphBuilderImpl.Directed || builder instanceof IndexGraphBuilderImpl.Undirected;
 		boolean directed = builder instanceof IndexGraphBuilderImpl.Directed;
@@ -112,11 +100,8 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 	public int addVertex() {
 		int v = super.addVertex();
 		DataContainer.Int vEdges = edges[v];
-		if (vEdges == null) {
-			vEdges = new DataContainer.Int(vertices, EdgeNone, JGAlgoUtils.consumerNoOp());
-			addInternalVerticesContainer(vEdges);
-			edges[v] = vEdges;
-		}
+		if (vEdges == null)
+			edges[v] = newVerticesIntContainer(EdgeNone, JGAlgoUtils.<int[]>consumerNoOp());
 		return v;
 	}
 

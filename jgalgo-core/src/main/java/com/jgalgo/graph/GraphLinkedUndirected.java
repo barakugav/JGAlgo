@@ -57,41 +57,25 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	GraphLinkedUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
 
-		edgesHeadContainer = new DataContainer.Int(vertices, -1, newArr -> edgesHead = newArr);
-		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
+		edgesHeadContainer = newVerticesIntContainer(-1, newArr -> edgesHead = newArr);
+		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
-		nextuContainer = new DataContainer.Int(edges, -1, newArr -> nextu = newArr);
-		prevuContainer = new DataContainer.Int(edges, -1, newArr -> prevu = newArr);
-		nextvContainer = new DataContainer.Int(edges, -1, newArr -> nextv = newArr);
-		prevvContainer = new DataContainer.Int(edges, -1, newArr -> prevv = newArr);
-
-		addInternalVerticesContainer(edgesHeadContainer);
-		addInternalVerticesContainer(edgesNumContainer);
-
-		addInternalEdgesContainer(nextuContainer);
-		addInternalEdgesContainer(prevuContainer);
-		addInternalEdgesContainer(nextvContainer);
-		addInternalEdgesContainer(prevvContainer);
+		nextuContainer = newEdgesIntContainer(-1, newArr -> nextu = newArr);
+		prevuContainer = newEdgesIntContainer(-1, newArr -> prevu = newArr);
+		nextvContainer = newEdgesIntContainer(-1, newArr -> nextv = newArr);
+		prevvContainer = newEdgesIntContainer(-1, newArr -> prevv = newArr);
 	}
 
 	GraphLinkedUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
 
-		edgesHeadContainer = new DataContainer.Int(vertices, -1, newArr -> edgesHead = newArr);
-		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
+		edgesHeadContainer = newVerticesIntContainer(-1, newArr -> edgesHead = newArr);
+		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
-		nextuContainer = new DataContainer.Int(edges, -1, newArr -> nextu = newArr);
-		prevuContainer = new DataContainer.Int(edges, -1, newArr -> prevu = newArr);
-		nextvContainer = new DataContainer.Int(edges, -1, newArr -> nextv = newArr);
-		prevvContainer = new DataContainer.Int(edges, -1, newArr -> prevv = newArr);
-
-		addInternalVerticesContainer(edgesHeadContainer);
-		addInternalVerticesContainer(edgesNumContainer);
-
-		addInternalEdgesContainer(nextuContainer);
-		addInternalEdgesContainer(prevuContainer);
-		addInternalEdgesContainer(nextvContainer);
-		addInternalEdgesContainer(prevvContainer);
+		nextuContainer = newEdgesIntContainer(-1, newArr -> nextu = newArr);
+		prevuContainer = newEdgesIntContainer(-1, newArr -> prevu = newArr);
+		nextvContainer = newEdgesIntContainer(-1, newArr -> nextv = newArr);
+		prevvContainer = newEdgesIntContainer(-1, newArr -> prevv = newArr);
 
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)
@@ -101,21 +85,13 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	GraphLinkedUndirected(IndexGraphBuilderImpl.Undirected builder) {
 		super(Capabilities, builder);
 
-		edgesHeadContainer = new DataContainer.Int(vertices, -1, newArr -> edgesHead = newArr);
-		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
+		edgesHeadContainer = newVerticesIntContainer(-1, newArr -> edgesHead = newArr);
+		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
-		nextuContainer = new DataContainer.Int(edges, -1, newArr -> nextu = newArr);
-		prevuContainer = new DataContainer.Int(edges, -1, newArr -> prevu = newArr);
-		nextvContainer = new DataContainer.Int(edges, -1, newArr -> nextv = newArr);
-		prevvContainer = new DataContainer.Int(edges, -1, newArr -> prevv = newArr);
-
-		addInternalVerticesContainer(edgesHeadContainer);
-		addInternalVerticesContainer(edgesNumContainer);
-
-		addInternalEdgesContainer(nextuContainer);
-		addInternalEdgesContainer(prevuContainer);
-		addInternalEdgesContainer(nextvContainer);
-		addInternalEdgesContainer(prevvContainer);
+		nextuContainer = newEdgesIntContainer(-1, newArr -> nextu = newArr);
+		prevuContainer = newEdgesIntContainer(-1, newArr -> prevu = newArr);
+		nextvContainer = newEdgesIntContainer(-1, newArr -> nextv = newArr);
+		prevvContainer = newEdgesIntContainer(-1, newArr -> prevv = newArr);
 
 		final int m = builder.edges().size();
 		for (int e = 0; e < m; e++)

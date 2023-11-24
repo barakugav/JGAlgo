@@ -39,10 +39,8 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	 */
 	GraphHashmapUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
-		edgesContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
-				EMPTY_MAP_ARRAY, newArr -> edges = newArr);
-
-		addInternalVerticesContainer(edgesContainer);
+		edgesContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
+				newArr -> edges = newArr);
 	}
 
 	GraphHashmapUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
@@ -51,16 +49,14 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 
 		if (g instanceof GraphHashmapUndirected) {
 			GraphHashmapUndirected g0 = (GraphHashmapUndirected) g;
-			edgesContainer = g0.edgesContainer.copy(vertices, EMPTY_MAP_ARRAY, newArr -> edges = newArr);
-			addInternalVerticesContainer(edgesContainer);
+			edgesContainer = copyVerticesContainer(g0.edgesContainer, EMPTY_MAP_ARRAY, newArr -> edges = newArr);
 
 			for (int v = 0; v < n; v++)
 				if (!edges[v].isEmpty())
 					edges[v] = new Int2IntOpenHashMap(edges[v]);
 		} else {
-			edgesContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
-					EMPTY_MAP_ARRAY, newArr -> edges = newArr);
-			addInternalVerticesContainer(edgesContainer);
+			edgesContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
+					newArr -> edges = newArr);
 
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				int u = g.edgeSource(e);
@@ -79,10 +75,8 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 
 	GraphHashmapUndirected(IndexGraphBuilderImpl.Undirected builder) {
 		super(Capabilities, builder);
-		edgesContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
-				EMPTY_MAP_ARRAY, newArr -> edges = newArr);
-
-		addInternalVerticesContainer(edgesContainer);
+		edgesContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
+				newArr -> edges = newArr);
 
 		for (int m = builder.edges().size(), e = 0; e < m; e++) {
 			int source = builder.edgeSource(e), target = builder.edgeTarget(e);

@@ -33,13 +33,10 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 	GraphHashmapDirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
-		edgesOutContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
-				EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
-		edgesInContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
-				EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
-
-		addInternalVerticesContainer(edgesOutContainer);
-		addInternalVerticesContainer(edgesInContainer);
+		edgesOutContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
+				newArr -> edgesOut = newArr);
+		edgesInContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
+				newArr -> edgesIn = newArr);
 	}
 
 	GraphHashmapDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
@@ -49,10 +46,9 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		if (g instanceof GraphHashmapDirected) {
 			GraphHashmapDirected g0 = (GraphHashmapDirected) g;
 
-			edgesOutContainer = g0.edgesOutContainer.copy(vertices, EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
-			edgesInContainer = g0.edgesInContainer.copy(vertices, EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
-			addInternalVerticesContainer(edgesOutContainer);
-			addInternalVerticesContainer(edgesInContainer);
+			edgesOutContainer =
+					copyVerticesContainer(g0.edgesOutContainer, EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
+			edgesInContainer = copyVerticesContainer(g0.edgesInContainer, EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
 
 			for (int v = 0; v < n; v++) {
 				if (!edgesOut[v].isEmpty()) {
@@ -65,12 +61,10 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 				}
 			}
 		} else {
-			edgesOutContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
-					EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
-			edgesInContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
-					EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
-			addInternalVerticesContainer(edgesOutContainer);
-			addInternalVerticesContainer(edgesInContainer);
+			edgesOutContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
+					newArr -> edgesOut = newArr);
+			edgesInContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
+					newArr -> edgesIn = newArr);
 
 			for (int v = 0; v < n; v++) {
 				for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
@@ -93,13 +87,10 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 	GraphHashmapDirected(IndexGraphBuilderImpl.Directed builder) {
 		super(Capabilities, builder);
-		edgesOutContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
-				EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
-		edgesInContainer = new DataContainer.Obj<>(vertices, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE,
-				EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
-
-		addInternalVerticesContainer(edgesOutContainer);
-		addInternalVerticesContainer(edgesInContainer);
+		edgesOutContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
+				newArr -> edgesOut = newArr);
+		edgesInContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
+				newArr -> edgesIn = newArr);
 
 		for (int m = builder.edges().size(), e = 0; e < m; e++) {
 			int source = builder.edgeSource(e), target = builder.edgeTarget(e);

@@ -47,19 +47,14 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract {
 	 */
 	GraphLinkedPtrUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
-		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edges = newArr);
-		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
-		addInternalVerticesContainer(edgesContainer);
-		addInternalVerticesContainer(edgesNumContainer);
-
+		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edges = newArr);
+		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 	}
 
 	GraphLinkedPtrUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
-		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edges = newArr);
-		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
-		addInternalVerticesContainer(edgesContainer);
-		addInternalVerticesContainer(edgesNumContainer);
+		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edges = newArr);
+		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)
@@ -69,10 +64,8 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract {
 	GraphLinkedPtrUndirected(IndexGraphBuilderImpl.Undirected builder) {
 		super(Capabilities, builder);
 
-		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edges = newArr);
-		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
-		addInternalVerticesContainer(edgesContainer);
-		addInternalVerticesContainer(edgesNumContainer);
+		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edges = newArr);
+		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
 		final int m = builder.edges().size();
 		for (int e = 0; e < m; e++)

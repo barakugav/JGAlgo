@@ -49,8 +49,7 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 	 */
 	GraphMatrixUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
-		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
-		addInternalVerticesContainer(edgesNumContainer);
+		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 	}
 
 	GraphMatrixUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
@@ -58,11 +57,9 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		assert !g.isDirected();
 		if (g instanceof GraphMatrixUndirected) {
 			GraphMatrixUndirected g0 = (GraphMatrixUndirected) g;
-			edgesNumContainer = g0.edgesNumContainer.copy(vertices, newArr -> edgesNum = newArr);
-			addInternalEdgesContainer(edgesNumContainer);
+			edgesNumContainer = copyVerticesContainer(g0.edgesNumContainer, newArr -> edgesNum = newArr);
 		} else {
-			edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
-			addInternalVerticesContainer(edgesNumContainer);
+			edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 			for (int n = g.vertices().size(), u = 0; u < n; u++)
 				edgesNum[u] = g.outEdges(u).size();
 		}
@@ -70,8 +67,7 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 
 	GraphMatrixUndirected(IndexGraphBuilderImpl.Undirected builder) {
 		super(Capabilities, builder);
-		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
-		addInternalVerticesContainer(edgesNumContainer);
+		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
 		for (int m = builder.edges().size(), e = 0; e < m; e++) {
 			int u = builder.edgeSource(e), v = builder.edgeTarget(e);

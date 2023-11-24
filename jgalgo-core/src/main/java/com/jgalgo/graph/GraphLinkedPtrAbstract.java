@@ -26,17 +26,15 @@ abstract class GraphLinkedPtrAbstract extends GraphBaseMutable {
 
 	GraphLinkedPtrAbstract(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
 		super(capabilities, expectedVerticesNum, expectedEdgesNum);
-		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyEdgeArr, newArr -> edges = newArr);
-		addInternalEdgesContainer(edgesContainer);
+		edgesContainer = newEdgesContainer(null, EmptyEdgeArr, newArr -> edges = newArr);
 	}
 
 	GraphLinkedPtrAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
-		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyEdgeArr, newArr -> edges = newArr);
-		addInternalEdgesContainer(edgesContainer);
-		final int m = g.edges().size();
-		for (int e = 0; e < m; e++) {
+		edgesContainer = newEdgesContainer(null, EmptyEdgeArr, newArr -> edges = newArr);
+
+		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			edges[e] = allocEdge(e);
 			setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 		}
@@ -44,8 +42,7 @@ abstract class GraphLinkedPtrAbstract extends GraphBaseMutable {
 
 	GraphLinkedPtrAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 		super(capabilities, builder);
-		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyEdgeArr, newArr -> edges = newArr);
-		addInternalEdgesContainer(edgesContainer);
+		edgesContainer = newEdgesContainer(null, EmptyEdgeArr, newArr -> edges = newArr);
 
 		for (int m = super.edges.size(), e = 0; e < m; e++) {
 			edges[e] = allocEdge(e);

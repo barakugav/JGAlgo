@@ -17,6 +17,7 @@
 package com.jgalgo.graph;
 
 import java.util.Set;
+import java.util.function.Consumer;
 import com.jgalgo.internal.util.Assertions;
 
 abstract class GraphBaseMutable extends IndexGraphBase {
@@ -39,8 +40,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedVerticesNum);
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum);
 
-		edgeEndpointsContainer = new DataContainer.Long(edges, DefaultEndpoints, newArr -> edgeEndpoints = newArr);
-		addInternalEdgesContainer(edgeEndpointsContainer);
+		edgeEndpointsContainer = newEdgesLongContainer(DefaultEndpoints, newArr -> edgeEndpoints = newArr);
 	}
 
 	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
@@ -78,13 +78,11 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 		if (g instanceof GraphBaseMutable) {
 			GraphBaseMutable g0 = (GraphBaseMutable) g;
-			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edges, newArr -> edgeEndpoints = newArr);
-			addInternalEdgesContainer(edgeEndpointsContainer);
+			edgeEndpointsContainer = copyEdgesContainer(g0.edgeEndpointsContainer, newArr -> edgeEndpoints = newArr);
 		} else {
 
 			final int m = edges.size();
-			edgeEndpointsContainer = new DataContainer.Long(edges, DefaultEndpoints, newArr -> edgeEndpoints = newArr);
-			addInternalEdgesContainer(edgeEndpointsContainer);
+			edgeEndpointsContainer = newEdgesLongContainer(DefaultEndpoints, newArr -> edgeEndpoints = newArr);
 			for (int e = 0; e < m; e++)
 				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 		}
@@ -100,8 +98,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		edgesInternalContainers = new DataContainer.Manager(edges.size());
 
 		final int m = edges.size();
-		edgeEndpointsContainer = new DataContainer.Long(edges, DefaultEndpoints, newArr -> edgeEndpoints = newArr);
-		addInternalEdgesContainer(edgeEndpointsContainer);
+		edgeEndpointsContainer = newEdgesLongContainer(DefaultEndpoints, newArr -> edgeEndpoints = newArr);
 
 		for (int e = 0; e < m; e++)
 			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
@@ -293,12 +290,51 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		edgesUserWeights.removeWeights(key);
 	}
 
-	void addInternalVerticesContainer(DataContainer container) {
-		verticesInternalContainers.addContainer(container);
+	<T> DataContainer.Obj<T> newVerticesContainer(T defVal, T[] emptyArr, Consumer<T[]> onArrayAlloc) {
+		return addVerticesContainer(new DataContainer.Obj<>(vertices, defVal, emptyArr, onArrayAlloc));
 	}
 
-	void addInternalEdgesContainer(DataContainer container) {
+	DataContainer.Int newVerticesIntContainer(int defVal, Consumer<int[]> onArrayAlloc) {
+		return addVerticesContainer(new DataContainer.Int(vertices, defVal, onArrayAlloc));
+	}
+
+	DataContainer.Long newVerticesLongContainer(long defVal, Consumer<long[]> onArrayAlloc) {
+		return addVerticesContainer(new DataContainer.Long(vertices, defVal, onArrayAlloc));
+	}
+
+	<T> DataContainer.Obj<T> newEdgesContainer(T defVal, T[] emptyArr, Consumer<T[]> onArrayAlloc) {
+		return addEdgesContainer(new DataContainer.Obj<>(edges, defVal, emptyArr, onArrayAlloc));
+	}
+
+	DataContainer.Int newEdgesIntContainer(int defVal, Consumer<int[]> onArrayAlloc) {
+		return addEdgesContainer(new DataContainer.Int(edges, defVal, onArrayAlloc));
+	}
+
+	DataContainer.Long newEdgesLongContainer(long defVal, Consumer<long[]> onArrayAlloc) {
+		return addEdgesContainer(new DataContainer.Long(edges, defVal, onArrayAlloc));
+	}
+
+	DataContainer.Int copyVerticesContainer(DataContainer.Int container, Consumer<int[]> onArrayAlloc) {
+		return addVerticesContainer(container.copy(vertices, onArrayAlloc));
+	}
+
+	<T> DataContainer.Obj<T> copyVerticesContainer(DataContainer.Obj<T> container, T[] emptyArr,
+			Consumer<T[]> onArrayAlloc) {
+		return addVerticesContainer(container.copy(vertices, emptyArr, onArrayAlloc));
+	}
+
+	DataContainer.Long copyEdgesContainer(DataContainer.Long container, Consumer<long[]> onArrayAlloc) {
+		return addEdgesContainer(container.copy(edges, onArrayAlloc));
+	}
+
+	private <ContainerT extends DataContainer> ContainerT addVerticesContainer(ContainerT container) {
+		verticesInternalContainers.addContainer(container);
+		return container;
+	}
+
+	private <ContainerT extends DataContainer> ContainerT addEdgesContainer(ContainerT container) {
 		edgesInternalContainers.addContainer(container);
+		return container;
 	}
 
 	@Override
