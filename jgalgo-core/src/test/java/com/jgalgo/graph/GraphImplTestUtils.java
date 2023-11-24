@@ -510,7 +510,7 @@ class GraphImplTestUtils extends TestUtils {
 
 	static void testCopy(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		for (String copyType : List.of("origImpl", "array", "linked-list", "hashtable", "matrix")) {
+		for (String copyType : List.of("origImpl", "array", "linked-list", "linked-list-ptr", "hashtable", "matrix")) {
 			for (boolean directed : new boolean[] { true, false }) {
 				/* Create a random graph g */
 				Graph<Integer, Integer> g =

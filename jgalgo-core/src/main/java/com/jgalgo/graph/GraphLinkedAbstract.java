@@ -20,119 +20,62 @@ import com.jgalgo.internal.util.Assertions;
 
 abstract class GraphLinkedAbstract extends GraphBaseMutable {
 
-	private Edge[] edges;
-	private final DataContainer.Obj<Edge> edgesContainer;
-	private static final Edge[] EmptyEdgeArr = new Edge[0];
-
 	GraphLinkedAbstract(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
 		super(capabilities, expectedVerticesNum, expectedEdgesNum);
-		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyEdgeArr, newArr -> edges = newArr);
-		addInternalEdgesContainer(edgesContainer);
 	}
 
 	GraphLinkedAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
-		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyEdgeArr, newArr -> edges = newArr);
-		addInternalEdgesContainer(edgesContainer);
-		final int m = g.edges().size();
-		for (int e = 0; e < m; e++) {
-			edges[e] = allocEdge(e);
-			setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
-		}
 	}
 
 	GraphLinkedAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 		super(capabilities, builder);
-		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyEdgeArr, newArr -> edges = newArr);
-		addInternalEdgesContainer(edgesContainer);
-
-		for (int m = super.edges.size(), e = 0; e < m; e++) {
-			edges[e] = allocEdge(e);
-			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
-		}
-	}
-
-	Edge getEdge(int edge) {
-		Edge n = edges[edge];
-		assert n.id == edge;
-		return n;
-	}
-
-	@Override
-	void removeEdgeLast(int edge) {
-		edges[edge] = null;
-		super.removeEdgeLast(edge);
-	}
-
-	@Override
-	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
-		getEdge(swappedIdx).id = removedIdx;
-		swapAndClear(edges, removedIdx, swappedIdx, null);
-		super.edgeSwapAndRemove(removedIdx, swappedIdx);
-	}
-
-	Edge addEdgeObj(int source, int target) {
-		int e = super.addEdge(source, target);
-		Edge n = allocEdge(e);
-		edges[e] = n;
-		return n;
-	}
-
-	abstract Edge allocEdge(int id);
-
-	@Override
-	public void clearEdges() {
-		edgesContainer.clear();
-		super.clearEdges();
 	}
 
 	abstract class EdgeItr implements IEdgeIter {
 
-		private Edge next;
-		Edge last;
+		private int next;
+		int last;
 
-		EdgeItr(Edge p) {
+		EdgeItr(int p) {
 			this.next = p;
 		}
 
-		abstract Edge nextEdge(Edge n);
+		abstract int nextEdge(int n);
 
 		@Override
 		public boolean hasNext() {
-			return next != null;
+			return next != -1;
 		}
 
 		@Override
 		public int nextInt() {
 			Assertions.Iters.hasNext(this);
 			next = nextEdge(last = next);
-			return last.id;
+			return last;
 		}
 
 		@Override
 		public int peekNextInt() {
 			Assertions.Iters.hasNext(this);
-			return next.id;
+			return next;
 		}
 
 		@Override
 		public void remove() {
-			if (last == null)
+			if (last == -1)
 				throw new IllegalStateException();
-			removeEdge(last.id);
-			last = null;
+			if (last == edges.size - 1) {
+				removeEdgeLast(last);
+			} else {
+				int s = edges.size - 1;
+				edgeSwapAndRemove(last, s);
+				if (next == s)
+					next = last;
+			}
+			last = -1;
 		}
-	}
-
-	abstract static class Edge {
-
-		int id;
-
-		Edge(int id) {
-			this.id = id;
-		}
-
 	}
 
 }

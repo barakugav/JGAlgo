@@ -221,8 +221,6 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		swapAndClear(edgeEndpoints, removedIdx, swappedIdx, DefaultEndpoints);
 	}
 
-
-
 	void replaceEdgeSource(int edge, int newSource) {
 		long endpoints = edgeEndpoints[edge];
 		int target = endpoints2Target(endpoints);

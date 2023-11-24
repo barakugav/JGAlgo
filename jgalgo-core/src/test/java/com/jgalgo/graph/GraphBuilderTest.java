@@ -127,7 +127,7 @@ public class GraphBuilderTest extends TestBase {
 		final Random rand = new Random(seed);
 		for (boolean directed : BooleanList.of(false, true)) {
 			for (boolean buildMut : BooleanList.of(false, true)) {
-				for (String impl : List.of("array", "linked-list", "hashtable", "matrix")) {
+				for (String impl : List.of("array", "linked-list", "linked-list-ptr", "hashtable", "matrix")) {
 					IntGraphFactory factory =
 							directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
 					IntGraphBuilder b = factory.setOption("impl", impl).newBuilder();

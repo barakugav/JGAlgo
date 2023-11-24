@@ -563,6 +563,172 @@ public class GraphBench {
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
+		public static class LinkedPtrDirected extends GraphBench.EdgesRead {
+
+			@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+			public String args;
+
+			@Setup(Level.Trial)
+			public void setup() {
+				setup(args, IndexGraphFactory.newDirected().setOption("impl", "linked-list-ptr")::newGraph, true, true,
+						true);
+			}
+
+			@Benchmark
+			public void benchOutEdges(Blackhole blackhole) {
+				super.benchOutEdges(blackhole);
+			}
+
+			@Benchmark
+			public void benchOutEdgesSize(Blackhole blackhole) {
+				super.benchOutEdgesSize(blackhole);
+			}
+
+			@Benchmark
+			public void benchOutEdgesIteration(Blackhole blackhole) {
+				super.benchOutEdgesIteration(blackhole);
+			}
+
+			@Benchmark
+			public void benchOutEdgesSource(Blackhole blackhole) {
+				super.benchOutEdgesSource(blackhole);
+			}
+
+			@Benchmark
+			public void benchOutEdgesTarget(Blackhole blackhole) {
+				super.benchOutEdgesTarget(blackhole);
+			}
+
+			@Benchmark
+			public void benchInEdges(Blackhole blackhole) {
+				super.benchInEdges(blackhole);
+			}
+
+			@Benchmark
+			public void benchInEdgesSize(Blackhole blackhole) {
+				super.benchInEdgesSize(blackhole);
+			}
+
+			@Benchmark
+			public void benchInEdgesIteration(Blackhole blackhole) {
+				super.benchInEdgesIteration(blackhole);
+			}
+
+			@Benchmark
+			public void benchInEdgesSource(Blackhole blackhole) {
+				super.benchInEdgesSource(blackhole);
+			}
+
+			@Benchmark
+			public void benchInEdgesTarget(Blackhole blackhole) {
+				super.benchInEdgesTarget(blackhole);
+			}
+
+			@Benchmark
+			public void benchGetEdge(Blackhole blackhole) {
+				super.benchGetEdge(blackhole);
+			}
+
+			@Benchmark
+			public void benchGetEdges(Blackhole blackhole) {
+				super.benchGetEdges(blackhole);
+			}
+
+			@Benchmark
+			public void benchGetEdgesIteration(Blackhole blackhole) {
+				super.benchGetEdgesIteration(blackhole);
+			}
+		}
+
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.NANOSECONDS)
+		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Fork(value = 1, warmups = 0)
+		@State(Scope.Benchmark)
+		public static class LinkedPtrUndirected extends GraphBench.EdgesRead {
+
+			@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
+			public String args;
+
+			@Setup(Level.Trial)
+			public void setup() {
+				setup(args, IndexGraphFactory.newUndirected().setOption("impl", "linked-list-ptr")::newGraph, false,
+						true, true);
+			}
+
+			@Benchmark
+			public void benchOutEdges(Blackhole blackhole) {
+				super.benchOutEdges(blackhole);
+			}
+
+			@Benchmark
+			public void benchOutEdgesSize(Blackhole blackhole) {
+				super.benchOutEdgesSize(blackhole);
+			}
+
+			@Benchmark
+			public void benchOutEdgesIteration(Blackhole blackhole) {
+				super.benchOutEdgesIteration(blackhole);
+			}
+
+			@Benchmark
+			public void benchOutEdgesSource(Blackhole blackhole) {
+				super.benchOutEdgesSource(blackhole);
+			}
+
+			@Benchmark
+			public void benchOutEdgesTarget(Blackhole blackhole) {
+				super.benchOutEdgesTarget(blackhole);
+			}
+
+			@Benchmark
+			public void benchInEdges(Blackhole blackhole) {
+				super.benchInEdges(blackhole);
+			}
+
+			@Benchmark
+			public void benchInEdgesSize(Blackhole blackhole) {
+				super.benchInEdgesSize(blackhole);
+			}
+
+			@Benchmark
+			public void benchInEdgesIteration(Blackhole blackhole) {
+				super.benchInEdgesIteration(blackhole);
+			}
+
+			@Benchmark
+			public void benchInEdgesSource(Blackhole blackhole) {
+				super.benchInEdgesSource(blackhole);
+			}
+
+			@Benchmark
+			public void benchInEdgesTarget(Blackhole blackhole) {
+				super.benchInEdgesTarget(blackhole);
+			}
+
+			@Benchmark
+			public void benchGetEdge(Blackhole blackhole) {
+				super.benchGetEdge(blackhole);
+			}
+
+			@Benchmark
+			public void benchGetEdges(Blackhole blackhole) {
+				super.benchGetEdges(blackhole);
+			}
+
+			@Benchmark
+			public void benchGetEdgesIteration(Blackhole blackhole) {
+				super.benchGetEdgesIteration(blackhole);
+			}
+		}
+
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.NANOSECONDS)
+		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Fork(value = 1, warmups = 0)
+		@State(Scope.Benchmark)
 		public static class HashtableDirected extends GraphBench.EdgesRead {
 
 			@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=13000 |E|=50000" })
@@ -1393,6 +1559,66 @@ public class GraphBench {
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
+			public static class LinkedPtrDirected extends GraphBench.Remove.Edge {
+
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
+				public String args;
+
+				@Setup(Level.Trial)
+				public void setup() {
+					setup(args, IndexGraphFactory.newDirected().setOption("impl", "linked-list-ptr")::newGraph, true,
+							true, true);
+				}
+
+				@Override
+				@Setup(Level.Invocation)
+				public void restoreGraph() {
+					super.restoreGraph();
+				}
+
+				@Benchmark
+				@OperationsPerInvocation(GraphBench.Remove.Edge.OperationsPerInvocation)
+				public void bench(Blackhole blackhole) {
+					super.bench(blackhole);
+				}
+			}
+
+			@BenchmarkMode(Mode.AverageTime)
+			@OutputTimeUnit(TimeUnit.NANOSECONDS)
+			@Warmup(iterations = 2, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Fork(value = 1, warmups = 0)
+			@State(Scope.Benchmark)
+			public static class LinkedPtrUndirected extends GraphBench.Remove.Edge {
+
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
+				public String args;
+
+				@Setup(Level.Trial)
+				public void setup() {
+					setup(args, IndexGraphFactory.newUndirected().setOption("impl", "linked-list-ptr")::newGraph, false,
+							true, true);
+				}
+
+				@Override
+				@Setup(Level.Invocation)
+				public void restoreGraph() {
+					super.restoreGraph();
+				}
+
+				@Benchmark
+				@OperationsPerInvocation(GraphBench.Remove.Edge.OperationsPerInvocation)
+				public void bench(Blackhole blackhole) {
+					super.bench(blackhole);
+				}
+			}
+
+			@BenchmarkMode(Mode.AverageTime)
+			@OutputTimeUnit(TimeUnit.NANOSECONDS)
+			@Warmup(iterations = 2, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Fork(value = 1, warmups = 0)
+			@State(Scope.Benchmark)
 			public static class HashtableDirected extends GraphBench.Remove.Edge {
 
 				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
@@ -1639,6 +1865,68 @@ public class GraphBench {
 				@Setup(Level.Trial)
 				public void setup() {
 					setup(args, IndexGraphFactory.newUndirected().setOption("impl", "linked-list")::newGraph, false,
+							true, true);
+				}
+
+				@Override
+				@Setup(Level.Invocation)
+				public void restoreGraph() {
+					super.restoreGraph();
+
+				}
+
+				@Benchmark
+				@OperationsPerInvocation(GraphBench.Remove.Vertex.OperationsPerInvocation)
+				public void bench(Blackhole blackhole) {
+					super.bench(blackhole);
+				}
+			}
+
+			@BenchmarkMode(Mode.AverageTime)
+			@OutputTimeUnit(TimeUnit.NANOSECONDS)
+			@Warmup(iterations = 2, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Fork(value = 1, warmups = 0)
+			@State(Scope.Benchmark)
+			public static class LinkedPtrDirected extends GraphBench.Remove.Vertex {
+
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
+				public String args;
+
+				@Setup(Level.Trial)
+				public void setup() {
+					setup(args, IndexGraphFactory.newDirected().setOption("impl", "linked-list-ptr")::newGraph, true,
+							true, true);
+				}
+
+				@Override
+				@Setup(Level.Invocation)
+				public void restoreGraph() {
+					super.restoreGraph();
+
+				}
+
+				@Benchmark
+				@OperationsPerInvocation(GraphBench.Remove.Vertex.OperationsPerInvocation)
+				public void bench(Blackhole blackhole) {
+					super.bench(blackhole);
+				}
+			}
+
+			@BenchmarkMode(Mode.AverageTime)
+			@OutputTimeUnit(TimeUnit.NANOSECONDS)
+			@Warmup(iterations = 2, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Fork(value = 1, warmups = 0)
+			@State(Scope.Benchmark)
+			public static class LinkedPtrUndirected extends GraphBench.Remove.Vertex {
+
+				@Param({ "|V|=100 |E|=300", "|V|=100 |E|=3000", "|V|=1300 |E|=50000" })
+				public String args;
+
+				@Setup(Level.Trial)
+				public void setup() {
+					setup(args, IndexGraphFactory.newUndirected().setOption("impl", "linked-list-ptr")::newGraph, false,
 							true, true);
 				}
 

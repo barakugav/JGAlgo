@@ -1937,6 +1937,8 @@ public class Graphs {
 				return "array";
 			if (g instanceof GraphLinkedAbstract)
 				return "linked-list";
+			if (g instanceof GraphLinkedPtrAbstract)
+				return "linked-list-ptr";
 			if (g instanceof GraphHashmapAbstract)
 				return "hashtable";
 			if (g instanceof GraphMatrixAbstract)

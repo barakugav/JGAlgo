@@ -21,7 +21,7 @@ import java.util.List;
 class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	boolean directed;
-	private boolean selfEdges;
+	// private boolean selfEdges;
 	private boolean parallelEdges;
 	int expectedVerticesNum;
 	int expectedEdgesNum;
@@ -34,7 +34,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	IndexGraphFactoryImpl(IndexGraph g) {
 		this.directed = g.isDirected();
-		this.selfEdges = g.isAllowSelfEdges();
+		// this.selfEdges = g.isAllowSelfEdges();
 		this.parallelEdges = g.isAllowParallelEdges();
 		impl = Graphs.getIndexGraphImpl(g);
 	}
@@ -136,6 +136,39 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				return new GraphLinkedUndirected((IndexGraphBuilderImpl.Undirected) builder);
 			}
 		};
+		Impl linkedPtrImpl = directed ? new Impl() {
+
+			@Override
+			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+				return new GraphLinkedPtrDirected(expectedVerticesNum, expectedEdgesNum);
+			}
+
+			@Override
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+				return new GraphLinkedPtrDirected(graph, copyVerticesWeights, copyEdgesWeights);
+			}
+
+			@Override
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+				return new GraphLinkedPtrDirected((IndexGraphBuilderImpl.Directed) builder);
+			}
+		} : new Impl() {
+
+			@Override
+			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+				return new GraphLinkedPtrUndirected(expectedVerticesNum, expectedEdgesNum);
+			}
+
+			@Override
+			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+				return new GraphLinkedPtrUndirected(graph, copyVerticesWeights, copyEdgesWeights);
+			}
+
+			@Override
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+				return new GraphLinkedPtrUndirected((IndexGraphBuilderImpl.Undirected) builder);
+			}
+		};
 		Impl hashtableImpl = directed ? new Impl() {
 
 			@Override
@@ -209,6 +242,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 					return arrayImpl;
 				case "linked-list":
 					return linkedImpl;
+				case "linked-list-ptr":
+					return linkedPtrImpl;
 				case "hashtable":
 					return hashtableImpl;
 				case "matrix":
@@ -217,14 +252,14 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 			}
 		} else {
+
+			if (hints.containsAll(List.of(GraphFactory.Hint.DenseGraph)) && !parallelEdges)
+				return matrixImpl;
+
 			if (hints.contains(GraphFactory.Hint.FastEdgeLookup) && !parallelEdges)
 				return hashtableImpl;
 
-			if (hints.containsAll(List.of(GraphFactory.Hint.FastEdgeLookup, GraphFactory.Hint.DenseGraph)) && !selfEdges
-					&& !parallelEdges)
-				return matrixImpl;
-
-			if (hints.contains(GraphFactory.Hint.FastEdgeRemoval) && !selfEdges)
+			if (hints.contains(GraphFactory.Hint.FastEdgeRemoval))
 				return linkedImpl;
 
 			return arrayImpl;
@@ -277,7 +312,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	@Override
 	public IndexGraphFactory allowSelfEdges(boolean selfEdges) {
-		this.selfEdges = selfEdges;
+		// this.selfEdges = selfEdges;
 		return this;
 	}
 

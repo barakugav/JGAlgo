@@ -29,12 +29,21 @@ package com.jgalgo.graph;
  */
 class GraphLinkedUndirected extends GraphLinkedAbstract {
 
-	private Edge[] edges;
+	private int[] edgesHead;
 	private int[] edgesNum;
-	private final DataContainer.Obj<Edge> edgesContainer;
+
+	private int[] nextu;
+	private int[] prevu;
+	private int[] nextv;
+	private int[] prevv;
+
+	private final DataContainer.Int edgesHeadContainer;
 	private final DataContainer.Int edgesNumContainer;
 
-	private static final Edge[] EmptyEdgeArr = new Edge[0];
+	private final DataContainer.Int nextuContainer;
+	private final DataContainer.Int prevuContainer;
+	private final DataContainer.Int nextvContainer;
+	private final DataContainer.Int prevvContainer;
 
 	private static final GraphBaseMutable.Capabilities Capabilities =
 			GraphBaseMutable.Capabilities.of(false, true, true);
@@ -47,41 +56,75 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	 */
 	GraphLinkedUndirected(int expectedVerticesNum, int expectedEdgesNum) {
 		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
-		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edges = newArr);
+
+		edgesHeadContainer = new DataContainer.Int(vertices, -1, newArr -> edgesHead = newArr);
 		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
-		addInternalVerticesContainer(edgesContainer);
+
+		nextuContainer = new DataContainer.Int(edges, -1, newArr -> nextu = newArr);
+		prevuContainer = new DataContainer.Int(edges, -1, newArr -> prevu = newArr);
+		nextvContainer = new DataContainer.Int(edges, -1, newArr -> nextv = newArr);
+		prevvContainer = new DataContainer.Int(edges, -1, newArr -> prevv = newArr);
+
+		addInternalVerticesContainer(edgesHeadContainer);
 		addInternalVerticesContainer(edgesNumContainer);
 
+		addInternalEdgesContainer(nextuContainer);
+		addInternalEdgesContainer(prevuContainer);
+		addInternalEdgesContainer(nextvContainer);
+		addInternalEdgesContainer(prevvContainer);
 	}
 
 	GraphLinkedUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
-		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edges = newArr);
+
+		edgesHeadContainer = new DataContainer.Int(vertices, -1, newArr -> edgesHead = newArr);
 		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
-		addInternalVerticesContainer(edgesContainer);
+
+		nextuContainer = new DataContainer.Int(edges, -1, newArr -> nextu = newArr);
+		prevuContainer = new DataContainer.Int(edges, -1, newArr -> prevu = newArr);
+		nextvContainer = new DataContainer.Int(edges, -1, newArr -> nextv = newArr);
+		prevvContainer = new DataContainer.Int(edges, -1, newArr -> prevv = newArr);
+
+		addInternalVerticesContainer(edgesHeadContainer);
 		addInternalVerticesContainer(edgesNumContainer);
+
+		addInternalEdgesContainer(nextuContainer);
+		addInternalEdgesContainer(prevuContainer);
+		addInternalEdgesContainer(nextvContainer);
+		addInternalEdgesContainer(prevvContainer);
 
 		final int m = g.edges().size();
 		for (int e = 0; e < m; e++)
-			addEdgeToLists(getEdge(e));
+			addEdgeToLists(e);
 	}
 
 	GraphLinkedUndirected(IndexGraphBuilderImpl.Undirected builder) {
 		super(Capabilities, builder);
 
-		edgesContainer = new DataContainer.Obj<>(vertices, null, EmptyEdgeArr, newArr -> edges = newArr);
+		edgesHeadContainer = new DataContainer.Int(vertices, -1, newArr -> edgesHead = newArr);
 		edgesNumContainer = new DataContainer.Int(vertices, 0, newArr -> edgesNum = newArr);
-		addInternalVerticesContainer(edgesContainer);
+
+		nextuContainer = new DataContainer.Int(edges, -1, newArr -> nextu = newArr);
+		prevuContainer = new DataContainer.Int(edges, -1, newArr -> prevu = newArr);
+		nextvContainer = new DataContainer.Int(edges, -1, newArr -> nextv = newArr);
+		prevvContainer = new DataContainer.Int(edges, -1, newArr -> prevv = newArr);
+
+		addInternalVerticesContainer(edgesHeadContainer);
 		addInternalVerticesContainer(edgesNumContainer);
+
+		addInternalEdgesContainer(nextuContainer);
+		addInternalEdgesContainer(prevuContainer);
+		addInternalEdgesContainer(nextvContainer);
+		addInternalEdgesContainer(prevvContainer);
 
 		final int m = builder.edges().size();
 		for (int e = 0; e < m; e++)
-			addEdgeToLists(getEdge(e));
+			addEdgeToLists(e);
 	}
 
 	@Override
 	void removeVertexLast(int vertex) {
-		edges[vertex] = null;
+		edgesHead[vertex] = -1;
 		super.removeVertexLast(vertex);
 	}
 
@@ -89,15 +132,15 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
 		assert edgesNum[removedIdx] == 0;
 
-		for (Edge p = edges[swappedIdx], next; p != null; p = next) {
+		for (int p = edgesHead[swappedIdx], next; p != -1; p = next) {
 			next = next(p, swappedIdx);
-			if (edgeSource(p.id) == swappedIdx)
-				replaceEdgeSource(p.id, removedIdx);
-			if (edgeTarget(p.id) == swappedIdx)
-				replaceEdgeTarget(p.id, removedIdx);
+			if (edgeSource(p) == swappedIdx)
+				replaceEdgeSource(p, removedIdx);
+			if (edgeTarget(p) == swappedIdx)
+				replaceEdgeTarget(p, removedIdx);
 		}
 
-		swapAndClear(edges, removedIdx, swappedIdx, null);
+		swapAndClear(edgesHead, removedIdx, swappedIdx, -1);
 		swapAndClear(edgesNum, removedIdx, swappedIdx, 0);
 
 		super.vertexSwapAndRemove(removedIdx, swappedIdx);
@@ -117,71 +160,89 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	@Override
 	public int addEdge(int source, int target) {
-		Edge e = (Edge) addEdgeObj(source, target);
+		int e = super.addEdge(source, target);
 		addEdgeToLists(e);
-		return e.id;
+		return e;
 	}
 
-	private void addEdgeToLists(Edge e) {
-		int source = edgeSource(e.id), target = edgeTarget(e.id);
-		Edge next;
-		if ((next = edges[source]) != null) {
+	private void addEdgeToLists(int e) {
+		int source = edgeSource(e), target = edgeTarget(e);
+		int next = edgesHead[source];
+		if (next != -1) {
 			setNext(e, source, next);
 			setPrev(next, source, e);
 		}
-		edges[source] = e;
+		edgesHead[source] = e;
 		edgesNum[source]++;
 		if (source != target) {
-			if ((next = edges[target]) != null) {
+			next = edgesHead[target];
+			if (next != -1) {
 				setNext(e, target, next);
 				setPrev(next, target, e);
 			}
-			edges[target] = e;
+			edgesHead[target] = e;
 			edgesNum[target]++;
 		}
 	}
 
 	@Override
-	Edge allocEdge(int id) {
-		return new Edge(id);
-	}
-
-	@Override
-	Edge getEdge(int edge) {
-		return (Edge) super.getEdge(edge);
-	}
-
-	@Override
 	void removeEdgeLast(int edge) {
-		Edge e = getEdge(edge);
-		int u = edgeSource(e.id), v = edgeTarget(e.id);
-		removeEdgePointers(e, u);
+		int u = edgeSource(edge), v = edgeTarget(edge);
+		removeEdgePointers(edge, u);
 		if (u != v)
-			removeEdgePointers(e, v);
+			removeEdgePointers(edge, v);
 		super.removeEdgeLast(edge);
 	}
 
 	@Override
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
-		Edge e = getEdge(removedIdx);
-		int u = edgeSource(e.id), v = edgeTarget(e.id);
-		removeEdgePointers(e, u);
+		int u = edgeSource(removedIdx), v = edgeTarget(removedIdx);
+		removeEdgePointers(removedIdx, u);
 		if (u != v)
-			removeEdgePointers(e, v);
+			removeEdgePointers(removedIdx, v);
+		edgeSwapAndRemove2(removedIdx, swappedIdx);
+	}
+
+	private void edgeSwapAndRemove2(int removedIdx, int swappedIdx) {
+		int u = edgeSource(swappedIdx), v = edgeTarget(swappedIdx);
+		int prev, next;
+		if ((prev = prevu[swappedIdx]) != -1) {
+			setNext(prev, u, removedIdx);
+		} else {
+			edgesHead[u] = removedIdx;
+		}
+		if ((next = nextu[swappedIdx]) != -1)
+			setPrev(next, u, removedIdx);
+
+		if (u != v) {
+			if ((prev = prevv[swappedIdx]) != -1) {
+				setNext(prev, v, removedIdx);
+			} else {
+				edgesHead[v] = removedIdx;
+			}
+			if ((next = nextv[swappedIdx]) != -1)
+				setPrev(next, v, removedIdx);
+		}
+
+		swapAndClear(prevu, removedIdx, swappedIdx, -1);
+		swapAndClear(nextu, removedIdx, swappedIdx, -1);
+		swapAndClear(prevv, removedIdx, swappedIdx, -1);
+		swapAndClear(nextv, removedIdx, swappedIdx, -1);
+
 		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
 
-	private void removeEdgePointers(Edge e, int w) {
-		Edge next = next(e, w), prev = prev(e, w);
-		if (prev == null) {
-			edges[w] = next;
+	private void removeEdgePointers(int e, int w) {
+		int next = next(e, w), prev = prev(e, w);
+		if (prev == -1) {
+			edgesHead[w] = next;
 		} else {
 			setNext(prev, w, next);
-			setPrev(e, w, null);
+			setPrev(e, w, -1);
 		}
-		if (next != null) {
+		if (next != -1) {
 			setPrev(next, w, prev);
-			setNext(e, w, null);
+			setNext(e, w, -1);
 		}
 		edgesNum[w]--;
 	}
@@ -189,25 +250,29 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	@Override
 	public void removeEdgesOf(int source) {
 		checkVertex(source);
-		for (Edge p = edges[source], next; p != null; p = next) {
+		for (int p = edgesHead[source], next; p != -1; p = next) {
 			// update u list
 			next = next(p, source);
-			setNext(p, source, null);
-			setPrev(p, source, null);
+			setNext(p, source, -1);
+			setPrev(p, source, -1);
 
 			// update v list
-			if (edgeSource(p.id) != edgeTarget(p.id)) {
-				int target = edgeEndpoint(p.id, source);
+			if (edgeSource(p) != edgeTarget(p)) {
+				int target = edgeEndpoint(p, source);
 				removeEdgePointers(p, target);
 			}
 
-			if (p.id == edges().size() - 1) {
-				super.removeEdgeLast(p.id);
+			int lastEdge = edges().size() - 1;
+			if (p == lastEdge) {
+				super.removeEdgeLast(p);
 			} else {
-				super.edgeSwapAndRemove(p.id, edges().size() - 1);
+				int swappedEdge = lastEdge;
+				edgeSwapAndRemove2(p, swappedEdge);
+				if (next == swappedEdge)
+					next = p;
 			}
 		}
-		edges[source] = null;
+		edgesHead[source] = -1;
 		edgesNum[source] = 0;
 	}
 
@@ -228,65 +293,57 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	@Override
 	public void clearEdges() {
-		for (int m = edges().size(), e = 0; e < m; e++) {
-			Edge p = getEdge(e);
-			p.nextu = p.nextv = p.prevu = p.prevv = null;
-		}
-		edgesContainer.clear();
+		edgesHeadContainer.clear();
 		edgesNumContainer.clear();
+
+		nextuContainer.clear();
+		prevuContainer.clear();
+		nextvContainer.clear();
+		prevvContainer.clear();
+
 		super.clearEdges();
 	}
 
-	private Edge next(Edge e, int w) {
-		int source = edgeSource(e.id), target = edgeTarget(e.id);
+	private int next(int e, int w) {
+		int source = edgeSource(e), target = edgeTarget(e);
 		if (w == source) {
-			return e.nextu;
+			return nextu[e];
 		} else {
 			assert w == target;
-			return e.nextv;
+			return nextv[e];
 		}
 	}
 
-	private Edge setNext(Edge e, int w, Edge n) {
-		int source = edgeSource(e.id), target = edgeTarget(e.id);
+	private int setNext(int e, int w, int n) {
+		int source = edgeSource(e), target = edgeTarget(e);
 		if (w == source) {
-			e.nextu = n;
+			nextu[e] = n;
 		} else {
 			assert w == target;
-			e.nextv = n;
+			nextv[e] = n;
 		}
 		return n;
 	}
 
-	private Edge prev(Edge e, int w) {
-		int source = edgeSource(e.id), target = edgeTarget(e.id);
+	private int prev(int e, int w) {
+		int source = edgeSource(e), target = edgeTarget(e);
 		if (w == source) {
-			return e.prevu;
+			return prevu[e];
 		} else {
 			assert w == target;
-			return e.prevv;
+			return prevv[e];
 		}
 	}
 
-	private Edge setPrev(Edge e, int w, Edge n) {
-		int source = edgeSource(e.id), target = edgeTarget(e.id);
+	private int setPrev(int e, int w, int n) {
+		int source = edgeSource(e), target = edgeTarget(e);
 		if (w == source) {
-			e.prevu = n;
+			prevu[e] = n;
 		} else {
 			assert w == target;
-			e.prevv = n;
+			prevv[e] = n;
 		}
 		return n;
-	}
-
-	private static class Edge extends GraphLinkedAbstract.Edge {
-
-		private Edge nextu, nextv;
-		private Edge prevu, prevv;
-
-		Edge(int id) {
-			super(id);
-		}
 	}
 
 	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutUndirected {
@@ -296,7 +353,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 		@Override
 		public IEdgeIter iterator() {
-			return new EdgeIterOut(source, edges[source]);
+			return new EdgeIterOut(source, edgesHead[source]);
 		}
 
 		@Override
@@ -312,7 +369,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 		@Override
 		public IEdgeIter iterator() {
-			return new EdgeIterIn(target, edges[target]);
+			return new EdgeIterIn(target, edgesHead[target]);
 		}
 
 		@Override
@@ -325,14 +382,14 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 		private final int source;
 
-		EdgeIterOut(int source, Edge p) {
+		EdgeIterOut(int source, int p) {
 			super(p);
 			this.source = source;
 		}
 
 		@Override
-		Edge nextEdge(GraphLinkedAbstract.Edge n) {
-			return GraphLinkedUndirected.this.next((Edge) n, source);
+		int nextEdge(int n) {
+			return GraphLinkedUndirected.this.next(n, source);
 		}
 
 		@Override
@@ -342,7 +399,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 		@Override
 		public int targetInt() {
-			int u0 = edgeSource(last.id), v0 = edgeTarget(last.id);
+			int u0 = edgeSource(last), v0 = edgeTarget(last);
 			return source == u0 ? v0 : u0;
 		}
 	}
@@ -351,19 +408,19 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 		private final int target;
 
-		EdgeIterIn(int target, Edge p) {
+		EdgeIterIn(int target, int p) {
 			super(p);
 			this.target = target;
 		}
 
 		@Override
-		Edge nextEdge(GraphLinkedAbstract.Edge n) {
-			return GraphLinkedUndirected.this.next((Edge) n, target);
+		int nextEdge(int n) {
+			return GraphLinkedUndirected.this.next(n, target);
 		}
 
 		@Override
 		public int sourceInt() {
-			int u0 = edgeSource(last.id), v0 = edgeTarget(last.id);
+			int u0 = edgeSource(last), v0 = edgeTarget(last);
 			return target == u0 ? v0 : u0;
 		}
 
