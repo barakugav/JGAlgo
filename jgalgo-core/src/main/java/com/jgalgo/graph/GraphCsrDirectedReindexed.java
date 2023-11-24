@@ -44,6 +44,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 			edgesIn[eIdx] = eCsr;
 		}
 
+		edgeEndpoints = new long[m];
 		if (graphOrBuilder.contains(IndexGraph.class)) {
 			IndexGraph g = graphOrBuilder.get(IndexGraph.class).get();
 			for (int eCsr = 0; eCsr < m; eCsr++) {

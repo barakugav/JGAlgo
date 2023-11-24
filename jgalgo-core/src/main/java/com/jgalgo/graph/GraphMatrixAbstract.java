@@ -19,7 +19,7 @@ package com.jgalgo.graph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
-abstract class GraphMatrixAbstract extends GraphBaseWithEdgeEndpointsContainer {
+abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 	DataContainer.Int[] edges;
 	private final DataContainer.Obj<DataContainer.Int> edgesContainer;

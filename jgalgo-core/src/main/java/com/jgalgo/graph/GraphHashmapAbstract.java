@@ -23,7 +23,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
-abstract class GraphHashmapAbstract extends GraphBaseWithEdgeEndpointsContainer {
+abstract class GraphHashmapAbstract extends GraphBaseMutable {
 
 	static final Int2IntMap[] EMPTY_MAP_ARRAY = new Int2IntMap[0];
 

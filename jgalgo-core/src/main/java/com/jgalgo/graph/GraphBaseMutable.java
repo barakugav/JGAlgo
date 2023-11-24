@@ -28,6 +28,8 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	private final WeightsImpl.IndexMutable.Manager verticesUserWeights;
 	private final WeightsImpl.IndexMutable.Manager edgesUserWeights;
 
+	private final DataContainer.Long edgeEndpointsContainer;
+
 	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
 		super(capabilities.isDirected, 0, 0, true);
 		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
@@ -36,6 +38,9 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		edgesInternalContainers = new DataContainer.Manager(expectedEdgesNum);
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedVerticesNum);
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum);
+
+		edgeEndpointsContainer = new DataContainer.Long(edges, DefaultEndpoints, newArr -> edgeEndpoints = newArr);
+		addInternalEdgesContainer(edgeEndpointsContainer);
 	}
 
 	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
@@ -70,6 +75,19 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		// edgesInternalContainers = g.edgesInternalContainers.copy(edges);
 		verticesInternalContainers = new DataContainer.Manager(vertices.size());
 		edgesInternalContainers = new DataContainer.Manager(edges.size());
+
+		if (g instanceof GraphBaseMutable) {
+			GraphBaseMutable g0 = (GraphBaseMutable) g;
+			edgeEndpointsContainer = g0.edgeEndpointsContainer.copy(edges, newArr -> edgeEndpoints = newArr);
+			addInternalEdgesContainer(edgeEndpointsContainer);
+		} else {
+
+			final int m = edges.size();
+			edgeEndpointsContainer = new DataContainer.Long(edges, DefaultEndpoints, newArr -> edgeEndpoints = newArr);
+			addInternalEdgesContainer(edgeEndpointsContainer);
+			for (int e = 0; e < m; e++)
+				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
+		}
 	}
 
 	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
@@ -80,6 +98,13 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(builder.edgesUserWeights, edges);
 		verticesInternalContainers = new DataContainer.Manager(vertices.size());
 		edgesInternalContainers = new DataContainer.Manager(edges.size());
+
+		final int m = edges.size();
+		edgeEndpointsContainer = new DataContainer.Long(edges, DefaultEndpoints, newArr -> edgeEndpoints = newArr);
+		addInternalEdgesContainer(edgeEndpointsContainer);
+
+		for (int e = 0; e < m; e++)
+			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
 	}
 
 	static class Capabilities {
@@ -97,6 +122,14 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		private final boolean isAllowSelfEdges;
 		private final boolean isAllowParallelEdges;
 
+	}
+
+	void reverseEdge0(int edge) {
+		long endpoints = edgeEndpoints[edge];
+		int u = endpoints2Source(endpoints);
+		int v = endpoints2Target(endpoints);
+		endpoints = sourceTarget2Endpoints(v, u);
+		edgeEndpoints[edge] = endpoints;
 	}
 
 	@Override
@@ -156,9 +189,12 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		checkVertex(source);
 		checkVertex(target);
 		int e = edges0().newIdx();
+
 		assert e >= 0;
 		edgesInternalContainers.ensureCapacity(e + 1);
 		edgesUserWeights.ensureCapacity(e + 1);
+
+		setEndpoints(e, source, target);
 		return e;
 	}
 
@@ -174,6 +210,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	void removeEdgeLast(int edge) {
 		edgesUserWeights.clearElement(edge);
 		edges0().removeIdx(edge);
+		clear(edgeEndpoints, edge, DefaultEndpoints);
 	}
 
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
@@ -181,6 +218,32 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		// edgesInternalContainers.swapElements(removedIdx, swappedIdx);
 		edgesUserWeights.swapAndClear(removedIdx, swappedIdx);
 		edges0().swapAndRemove(removedIdx, swappedIdx);
+		swapAndClear(edgeEndpoints, removedIdx, swappedIdx, DefaultEndpoints);
+	}
+
+
+
+	void replaceEdgeSource(int edge, int newSource) {
+		long endpoints = edgeEndpoints[edge];
+		int target = endpoints2Target(endpoints);
+		edgeEndpoints[edge] = sourceTarget2Endpoints(newSource, target);
+	}
+
+	void replaceEdgeTarget(int edge, int newTarget) {
+		long endpoints = edgeEndpoints[edge];
+		int source = endpoints2Source(endpoints);
+		edgeEndpoints[edge] = sourceTarget2Endpoints(source, newTarget);
+	}
+
+	void replaceEdgeEndpoint(int edge, int oldEndpoint, int newEndpoint) {
+		long endpoints = edgeEndpoints[edge];
+		int source = endpoints2Source(endpoints);
+		int target = endpoints2Target(endpoints);
+		if (source == oldEndpoint)
+			source = newEndpoint;
+		if (target == oldEndpoint)
+			target = newEndpoint;
+		edgeEndpoints[edge] = sourceTarget2Endpoints(source, target);
 	}
 
 	@Override
@@ -198,6 +261,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		// internal weights are handled manually
 		// edgesInternalContainers.clearContainers();
 		edgesUserWeights.clearContainers();
+		edgeEndpointsContainer.clear();
 	}
 
 	@Override

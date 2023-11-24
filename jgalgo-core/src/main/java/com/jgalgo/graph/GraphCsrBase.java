@@ -17,7 +17,6 @@ package com.jgalgo.graph;
 
 import java.util.Map;
 import java.util.Set;
-import com.jgalgo.graph.EdgeEndpointsContainer.GraphWithEdgeEndpointsContainer;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
@@ -25,10 +24,9 @@ import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpointsContainer, ImmutableGraph {
+abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 
 	final int[] edgesOutBegin;
-	private final long[] endpoints;
 
 	final Map<String, WeightsImpl.IndexImmutable<?>> verticesUserWeights;
 	final Map<String, WeightsImpl.IndexImmutable<?>> edgesUserWeights;
@@ -43,10 +41,8 @@ abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpo
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(directed, verticesNum(graphOrBuilder), edgesNum(graphOrBuilder), false);
 		final int n = verticesNum(graphOrBuilder);
-		final int m = edgesNum(graphOrBuilder);
 
 		edgesOutBegin = processEdges.edgesOutBegin;
-		endpoints = new long[m];
 		assert edgesOutBegin.length == n + 1;
 
 		WeightsImpl.IndexImmutable.Builder verticesUserWeightsBuilder =
@@ -90,6 +86,8 @@ abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpo
 		verticesUserWeights = verticesUserWeightsBuilder.build();
 		edgesUserWeights = edgesUserWeightsBuilder.build();
 
+		edgeEndpoints = new long[edgesNum(graphOrBuilder)];
+
 		if (graphOrBuilder.contains(IndexGraph.class)) {
 			IndexGraph g = graphOrBuilder.get(IndexGraph.class).get();
 			if (!g.isAllowSelfEdges()) {
@@ -109,10 +107,6 @@ abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpo
 		final int m = g.edges().size();
 
 		edgesOutBegin = new int[n + 1];
-		endpoints = new long[m];
-
-		for (int e = 0; e < m; e++)
-			setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 
 		WeightsImpl.IndexImmutable.Builder verticesUserWeightsBuilder =
 				new WeightsImpl.IndexImmutable.Builder(vertices, false);
@@ -128,6 +122,10 @@ abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpo
 		}
 		verticesUserWeights = verticesUserWeightsBuilder.build();
 		edgesUserWeights = edgesUserWeightsBuilder.build();
+
+		edgeEndpoints = new long[m];
+		for (int e = 0; e < m; e++)
+			setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 	}
 
 	@Override
@@ -184,11 +182,6 @@ abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpo
 	@Override
 	public int addEdge(int source, int target) {
 		throw new UnsupportedOperationException("graph is immutable, can't add edge");
-	}
-
-	@Override
-	public long[] edgeEndpoints() {
-		return endpoints;
 	}
 
 	@Override

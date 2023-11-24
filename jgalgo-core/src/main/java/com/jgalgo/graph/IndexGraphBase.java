@@ -17,6 +17,7 @@ package com.jgalgo.graph;
 
 import java.util.Objects;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntIterables;
 
@@ -25,6 +26,10 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 	private final boolean isDirected;
 	final GraphElementSet vertices;
 	final GraphElementSet edges;
+	long[] edgeEndpoints;
+
+	static final int EndpointNone = -1;
+	static final long DefaultEndpoints = sourceTarget2Endpoints(EndpointNone, EndpointNone);
 
 	IndexGraphBase(boolean isDirected, GraphElementSet vertices, GraphElementSet edges) {
 		this.isDirected = isDirected;
@@ -56,6 +61,50 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 	@Override
 	public final GraphElementSet edges() {
 		return edges;
+	}
+
+	@Override
+	public int edgeSource(int edge) {
+		Assertions.Graphs.checkId(edge, edges().size(), true);
+		return endpoints2Source(edgeEndpoints[edge]);
+	}
+
+	@Override
+	public int edgeTarget(int edge) {
+		Assertions.Graphs.checkId(edge, edges().size(), true);
+		return endpoints2Target(edgeEndpoints[edge]);
+	}
+
+	@Override
+	public int edgeEndpoint(int edge, int endpoint) {
+		Assertions.Graphs.checkId(edge, edges().size(), true);
+		long endpoints = edgeEndpoints[edge];
+		int u = endpoints2Source(endpoints);
+		int v = endpoints2Target(endpoints);
+		if (endpoint == u) {
+			return v;
+		} else if (endpoint == v) {
+			return u;
+		} else {
+			throw new IllegalArgumentException("The given vertex (idx=" + endpoint
+					+ ") is not an endpoint of the edge (idx=" + u + ", idx=" + v + ")");
+		}
+	}
+
+	void setEndpoints(int edge, int source, int target) {
+		edgeEndpoints[edge] = sourceTarget2Endpoints(source, target);
+	}
+
+	static long sourceTarget2Endpoints(int source, int target) {
+		return JGAlgoUtils.longPack(source, target);
+	}
+
+	static int endpoints2Source(long endpoints) {
+		return JGAlgoUtils.long2low(endpoints);
+	}
+
+	static int endpoints2Target(long endpoints) {
+		return JGAlgoUtils.long2high(endpoints);
 	}
 
 	@Override

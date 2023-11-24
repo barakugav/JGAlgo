@@ -108,9 +108,9 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		assert edgesOutNum[removedIdx] == 0 && edgesInNum[removedIdx] == 0;
 
 		for (Edge p = edgesOut[swappedIdx]; p != null; p = p.nextOut)
-			p.source = removedIdx;
+			replaceEdgeSource(p.id, removedIdx);
 		for (Edge p = edgesIn[swappedIdx]; p != null; p = p.nextIn)
-			p.target = removedIdx;
+			replaceEdgeTarget(p.id, removedIdx);
 
 		swapAndClear(edgesOut, removedIdx, swappedIdx, null);
 		swapAndClear(edgesIn, removedIdx, swappedIdx, null);
@@ -140,7 +140,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	private void addEdgeToLists(Edge e) {
-		int u = e.source, v = e.target;
+		int u = edgeSource(e.id), v = edgeTarget(e.id);
 		Edge next;
 		next = edgesOut[u];
 		if (next != null) {
@@ -159,8 +159,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	Edge allocEdge(int id, int source, int target) {
-		return new Edge(id, source, target);
+	Edge allocEdge(int id) {
+		return new Edge(id);
 	}
 
 	@Override
@@ -221,7 +221,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	private void removeEdgeOutPointers(Edge e) {
 		Edge next = e.nextOut, prev = e.prevOut;
 		if (prev == null) {
-			edgesOut[e.source] = next;
+			edgesOut[edgeSource(e.id)] = next;
 		} else {
 			prev.nextOut = next;
 			e.prevOut = null;
@@ -230,13 +230,13 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			next.prevOut = prev;
 			e.nextOut = null;
 		}
-		edgesOutNum[e.source]--;
+		edgesOutNum[edgeSource(e.id)]--;
 	}
 
 	private void removeEdgeInPointers(Edge e) {
 		Edge next = e.nextIn, prev = e.prevIn;
 		if (prev == null) {
-			edgesIn[e.target] = next;
+			edgesIn[edgeTarget(e.id)] = next;
 		} else {
 			prev.nextIn = next;
 			e.prevIn = null;
@@ -245,19 +245,18 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			next.prevIn = prev;
 			e.nextIn = null;
 		}
-		edgesInNum[e.target]--;
+		edgesInNum[edgeTarget(e.id)]--;
 	}
 
 	@Override
 	public void reverseEdge(int edge) {
 		Edge n = getEdge(edge);
-		if (n.source == n.target)
+		int source = edgeSource(edge), target = edgeTarget(edge);
+		if (source == target)
 			return;
 		removeEdgeOutPointers(n);
 		removeEdgeInPointers(n);
-		int w = n.source;
-		n.source = n.target;
-		n.target = w;
+		reverseEdge0(edge);
 		addEdgeToLists(n);
 	}
 
@@ -313,12 +312,12 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 		@Override
 		public int sourceInt() {
-			return last.source;
+			return edgeSource(last.id);
 		}
 
 		@Override
 		public int targetInt() {
-			return last.target;
+			return edgeTarget(last.id);
 		}
 	}
 
@@ -351,8 +350,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		private Edge prevOut;
 		private Edge prevIn;
 
-		Edge(int id, int source, int target) {
-			super(id, source, target);
+		Edge(int id) {
+			super(id);
 		}
 	}
 

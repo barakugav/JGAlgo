@@ -36,8 +36,10 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyEdgeArr, newArr -> edges = newArr);
 		addInternalEdgesContainer(edgesContainer);
 		final int m = g.edges().size();
-		for (int e = 0; e < m; e++)
-			edges[e] = allocEdge(e, g.edgeSource(e), g.edgeTarget(e));
+		for (int e = 0; e < m; e++) {
+			edges[e] = allocEdge(e);
+			setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
+		}
 	}
 
 	GraphLinkedAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
@@ -45,20 +47,9 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 		edgesContainer = new DataContainer.Obj<>(super.edges, null, EmptyEdgeArr, newArr -> edges = newArr);
 		addInternalEdgesContainer(edgesContainer);
 
-		for (int m = super.edges.size(), e = 0; e < m; e++)
-			edges[e] = allocEdge(e, builder.edgeSource(e), builder.edgeTarget(e));
-	}
-
-	@Override
-	public int edgeEndpoint(int edge, int endpoint) {
-		Edge n = getEdge(edge);
-		if (endpoint == n.source) {
-			return n.target;
-		} else if (endpoint == n.target) {
-			return n.source;
-		} else {
-			throw new IllegalArgumentException("The given vertex (idx=" + endpoint
-					+ ") is not an endpoint of the edge (idx=" + n.source + ", idx=" + n.target + ")");
+		for (int m = super.edges.size(), e = 0; e < m; e++) {
+			edges[e] = allocEdge(e);
+			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
 		}
 	}
 
@@ -83,24 +74,12 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 
 	Edge addEdgeObj(int source, int target) {
 		int e = super.addEdge(source, target);
-		Edge n = allocEdge(e, source, target);
+		Edge n = allocEdge(e);
 		edges[e] = n;
 		return n;
 	}
 
-	abstract Edge allocEdge(int id, int source, int target);
-
-	@Override
-	public int edgeSource(int edge) {
-		checkEdge(edge);
-		return getEdge(edge).source;
-	}
-
-	@Override
-	public int edgeTarget(int edge) {
-		checkEdge(edge);
-		return getEdge(edge).target;
-	}
+	abstract Edge allocEdge(int id);
 
 	@Override
 	public void clearEdges() {
@@ -149,12 +128,9 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 	abstract static class Edge {
 
 		int id;
-		int source, target;
 
-		Edge(int id, int source, int target) {
+		Edge(int id) {
 			this.id = id;
-			this.source = source;
-			this.target = target;
 		}
 
 	}

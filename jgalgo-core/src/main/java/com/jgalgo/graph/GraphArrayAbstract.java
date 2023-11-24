@@ -19,7 +19,7 @@ package com.jgalgo.graph;
 import java.util.Arrays;
 import com.jgalgo.internal.util.Assertions;
 
-abstract class GraphArrayAbstract extends GraphBaseWithEdgeEndpointsContainer {
+abstract class GraphArrayAbstract extends GraphBaseMutable {
 
 	GraphArrayAbstract(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
 		super(capabilities, expectedVerticesNum, expectedEdgesNum);
