@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphCSRDirectedReindexed.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphCSRDirectedReindexed.java</span></div><h1>GraphCSRDirectedReindexed.java</h1><pre class="source lang-java linenums">/*-
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphCsrDirectedReindexed.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphCsrDirectedReindexed.java</span></div><h1>GraphCsrDirectedReindexed.java</h1><pre class="source lang-java linenums">/*-
  * Copyright 2023 Barak Ugav
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -19,14 +19,14 @@ import java.util.Optional;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 
-class GraphCSRDirectedReindexed extends GraphCSRBase {
+class GraphCsrDirectedReindexed extends GraphCsrBase {
 
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
 <span class="fc" id="L27">	private static final IndexGraphBase.Capabilities Capabilities = IndexGraphBase.Capabilities.of(true, true, true);</span>
 
-	private GraphCSRDirectedReindexed(Variant.Of2&lt;IndexGraph, IndexGraphBuilderImpl&gt; graphOrBuilder,
+	private GraphCsrDirectedReindexed(Variant.Of2&lt;IndexGraph, IndexGraphBuilderImpl&gt; graphOrBuilder,
 			BuilderProcessEdgesDirected processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 <span class="fc" id="L32">		super(Capabilities, graphOrBuilder, processEdges, edgesReIndexing, copyVerticesWeights, copyEdgesWeights);</span>
@@ -73,8 +73,8 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 	private static IndexGraphBuilder.ReIndexedGraph newInstance(
 			Variant.Of2&lt;IndexGraph, IndexGraphBuilderImpl&gt; graphOrBuilder, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
-<span class="fc" id="L76">		GraphCSRBase.BuilderProcessEdgesDirected processEdges =</span>
-				new GraphCSRBase.BuilderProcessEdgesDirected(graphOrBuilder);
+<span class="fc" id="L76">		GraphCsrBase.BuilderProcessEdgesDirected processEdges =</span>
+				new GraphCsrBase.BuilderProcessEdgesDirected(graphOrBuilder);
 
 <span class="fc" id="L79">		final int m = edgesNum(graphOrBuilder);</span>
 <span class="fc" id="L80">		int[] edgesCsrToOrig = processEdges.edgesOut;</span>
@@ -85,7 +85,7 @@ class GraphCSRDirectedReindexed extends GraphCSRBase {
 <span class="fc" id="L85">		IndexGraphBuilder.ReIndexingMap edgesReIndexing =</span>
 				new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig);
 
-<span class="fc" id="L88">		GraphCSRDirectedReindexed g = new GraphCSRDirectedReindexed(graphOrBuilder, processEdges, edgesReIndexing,</span>
+<span class="fc" id="L88">		GraphCsrDirectedReindexed g = new GraphCsrDirectedReindexed(graphOrBuilder, processEdges, edgesReIndexing,</span>
 				copyVerticesWeights, copyEdgesWeights);
 <span class="fc" id="L90">		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), Optional.of(edgesReIndexing));</span>
 	}

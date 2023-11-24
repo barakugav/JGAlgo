@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -27,7 +28,6 @@ import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -378,7 +378,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Override
 		public String toString() {
-<span class="nc" id="L381">			return Range.of(getNumberOfBiCcs()).intStream().mapToObj(this::getBiCcVertices).map(Object::toString)</span>
+<span class="nc" id="L381">			return range(getNumberOfBiCcs()).mapToObj(this::getBiCcVertices).map(Object::toString)</span>
 <span class="nc" id="L382">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
 		}
 

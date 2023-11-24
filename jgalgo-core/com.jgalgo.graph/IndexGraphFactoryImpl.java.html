@@ -242,28 +242,28 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 <span class="fc bfc" id="L242" title="All 2 branches covered.">		Impl csrImpl = directed ? new ImplImmutable() {</span>
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="nc" id="L245">				return new GraphCSRDirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="nc" id="L245">				return new GraphCsrDirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
 			}
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L250">				IndexGraphBuilderImpl.Directed builder0 = (IndexGraphBuilderImpl.Directed) builder;</span>
-<span class="fc" id="L251">				GraphCSRBase.BuilderProcessEdgesDirected processEdges =</span>
-<span class="fc" id="L252">						GraphCSRBase.BuilderProcessEdgesDirected.valueOf(builder0);</span>
-<span class="fc" id="L253">				return new GraphCSRDirected(builder0, processEdges);</span>
+<span class="fc" id="L251">				GraphCsrBase.BuilderProcessEdgesDirected processEdges =</span>
+<span class="fc" id="L252">						GraphCsrBase.BuilderProcessEdgesDirected.valueOf(builder0);</span>
+<span class="fc" id="L253">				return new GraphCsrDirected(builder0, processEdges);</span>
 			}
 <span class="fc" id="L255">		} : new ImplImmutable() {</span>
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="nc" id="L258">				return new GraphCSRUndirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="nc" id="L258">				return new GraphCsrUndirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
 			}
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L263">				IndexGraphBuilderImpl.Undirected builder0 = (IndexGraphBuilderImpl.Undirected) builder;</span>
-<span class="fc" id="L264">				GraphCSRBase.BuilderProcessEdgesUndirected processEdges =</span>
-<span class="fc" id="L265">						GraphCSRBase.BuilderProcessEdgesUndirected.valueOf(builder0);</span>
-<span class="fc" id="L266">				return new GraphCSRUndirected(builder0, processEdges);</span>
+<span class="fc" id="L264">				GraphCsrBase.BuilderProcessEdgesUndirected processEdges =</span>
+<span class="fc" id="L265">						GraphCsrBase.BuilderProcessEdgesUndirected.valueOf(builder0);</span>
+<span class="fc" id="L266">				return new GraphCsrUndirected(builder0, processEdges);</span>
 			}
 		};
 <span class="fc" id="L269">		return csrImpl;</span>

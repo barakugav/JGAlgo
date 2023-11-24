@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -32,7 +33,6 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntAdapters;
-import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.doubles.DoubleArrayList;
 import it.unimi.dsi.fastutil.doubles.DoubleList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -612,7 +612,7 @@ class MinimumCostFlows {
 <span class="fc" id="L612">			IFlow flow0 = computeMinCostMaxFlow(g, capacity, cost, source, sink);</span>
 
 			/* assert all supply was provided */
-<span class="pc" id="L615">			assert Range.of(sourcesSinksThreshold, g.edges().size()).intStream()</span>
+<span class="pc" id="L615">			assert range(sourcesSinksThreshold, g.edges().size())</span>
 <span class="nc bnc" id="L616" title="All 4 branches missed.">					.allMatch(e -&gt; Math.abs(flow0.getFlow(e) - capacity.weight(e)) &lt; 1e-9);</span>
 
 <span class="fc" id="L618">			double[] flow = new double[gOrig.edges().size()];</span>

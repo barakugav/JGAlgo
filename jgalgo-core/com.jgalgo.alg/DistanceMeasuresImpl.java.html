@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
@@ -29,7 +30,6 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="fc" id="L35">class DistanceMeasuresImpl {</span>
@@ -88,7 +88,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L88" title="All 2 branches covered.">			if (center == null) {</span>
 <span class="fc" id="L89">				double radius = radius();</span>
 <span class="fc" id="L90">				final int n = g.vertices().size();</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">				int[] centerArr = Range.of(n).intStream().filter(v -&gt; eccentricity[v] &lt;= radius + EPS).toArray();</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">				int[] centerArr = range(n).filter(v -&gt; eccentricity[v] &lt;= radius + EPS).toArray();</span>
 <span class="fc" id="L92">				center = ImmutableIntArraySet.ofBitmap(centerArr, n);</span>
 			}
 <span class="fc" id="L94">			return center;</span>
@@ -99,7 +99,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L99" title="All 2 branches covered.">			if (periphery == null) {</span>
 <span class="fc" id="L100">				double diameter = diameter();</span>
 <span class="fc" id="L101">				final int n = g.vertices().size();</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">				int[] peripheryArr = Range.of(n).intStream().filter(v -&gt; eccentricity[v] &gt;= diameter - EPS).toArray();</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">				int[] peripheryArr = range(n).filter(v -&gt; eccentricity[v] &gt;= diameter - EPS).toArray();</span>
 <span class="fc" id="L103">				periphery = ImmutableIntArraySet.ofBitmap(peripheryArr, n);</span>
 			}
 <span class="fc" id="L105">			return periphery;</span>
@@ -109,9 +109,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L109" title="All 2 branches covered.">			if (eccentricity != null)</span>
 <span class="fc" id="L110">				return;</span>
 <span class="fc" id="L111">			final int n = g.vertices().size();</span>
-<span class="fc" id="L112">			IntToDoubleFunction uEccentricity = u -&gt; Range.of(n).intStream().mapToDouble(v -&gt; sp.distance(u, v)).max()</span>
-<span class="fc" id="L113">					.orElse(Double.POSITIVE_INFINITY);</span>
-<span class="fc" id="L114">			IntStream stream = Range.of(n).intStream();</span>
+<span class="fc" id="L112">			IntToDoubleFunction uEccentricity =</span>
+<span class="fc" id="L113">					u -&gt; range(n).mapToDouble(v -&gt; sp.distance(u, v)).max().orElse(Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L114">			IntStream stream = range(n).intStream();</span>
 <span class="pc bpc" id="L115" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.ParallelByDefault)</span>
 <span class="fc" id="L116">				stream = stream.parallel();</span>
 <span class="fc" id="L117">			eccentricity = stream.mapToDouble(uEccentricity).toArray();</span>

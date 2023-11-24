@@ -15,6 +15,7 @@
  */
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -24,7 +25,6 @@ import java.util.List;
 import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
-import com.jgalgo.internal.util.Range;
 
 class FormatDIMACS implements GraphFormat {
 
@@ -57,9 +57,9 @@ class FormatDIMACS implements GraphFormat {
 <span class="fc" id="L57">				throw new IllegalArgumentException(&quot;the DIMACS format support undirected graphs only&quot;);</span>
 <span class="fc" id="L58">			final int numVertices = graph.vertices().size();</span>
 <span class="fc" id="L59">			final int numEdges = graph.edges().size();</span>
-<span class="pc bpc" id="L60" title="1 of 2 branches missed.">			if (!Range.of(1, numVertices + 1).equals(graph.vertices()))</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">			if (!range(1, numVertices + 1).equals(graph.vertices()))</span>
 <span class="nc" id="L61">				throw new IllegalArgumentException(&quot;the DIMACS format support graphs with vertices 1..n only&quot;);</span>
-<span class="pc bpc" id="L62" title="1 of 2 branches missed.">			if (!Range.of(1, numEdges + 1).equals(graph.edges()))</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">			if (!range(1, numEdges + 1).equals(graph.edges()))</span>
 <span class="nc" id="L63">				throw new IllegalArgumentException(&quot;the DIMACS format support graphs with edges 1..m only&quot;);</span>
 
 			try {

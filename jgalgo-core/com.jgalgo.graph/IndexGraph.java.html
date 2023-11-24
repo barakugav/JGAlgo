@@ -402,9 +402,9 @@ public interface IndexGraph extends IntGraph {
 	@Override
 	default IndexGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
 <span class="fc bfc" id="L404" title="All 2 branches covered.">		if (isDirected()) {</span>
-<span class="fc" id="L405">			return new GraphCSRDirected(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L405">			return new GraphCsrDirected(this, copyVerticesWeights, copyEdgesWeights);</span>
 		} else {
-<span class="fc" id="L407">			return new GraphCSRUndirected(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L407">			return new GraphCsrUndirected(this, copyVerticesWeights, copyEdgesWeights);</span>
 		}
 	}
 

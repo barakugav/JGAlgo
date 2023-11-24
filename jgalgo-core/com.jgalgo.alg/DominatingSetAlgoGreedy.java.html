@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Random;
@@ -25,7 +26,6 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -186,16 +186,16 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 			/* some vertices might not be dominated if they have no in/out edges */
 <span class="fc bfc" id="L188" title="All 4 branches covered.">			if (!directed || dominanceDirection == EdgeDirection.In) {</span>
-<span class="pc bnc" id="L189" title="All 4 branches missed.">				assert Range.of(n).intStream().filter(u -&gt; !dominated.get(u)).allMatch(u -&gt; g.outEdges(u).intStream()</span>
+<span class="pc bnc" id="L189" title="All 4 branches missed.">				assert range(n).filter(u -&gt; !dominated.get(u)).allMatch(u -&gt; g.outEdges(u).intStream()</span>
 <span class="nc bnc" id="L190" title="All 2 branches missed.">						.filter(e -&gt; g.edgeSource(e) != g.edgeTarget(e)).findAny().isEmpty());</span>
 
 <span class="fc bfc" id="L192" title="All 2 branches covered.">			} else if (dominanceDirection == EdgeDirection.Out) {</span>
-<span class="pc bnc" id="L193" title="All 4 branches missed.">				assert Range.of(n).intStream().filter(u -&gt; !dominated.get(u)).allMatch(u -&gt; g.inEdges(u).intStream()</span>
+<span class="pc bnc" id="L193" title="All 4 branches missed.">				assert range(n).filter(u -&gt; !dominated.get(u)).allMatch(u -&gt; g.inEdges(u).intStream()</span>
 <span class="nc bnc" id="L194" title="All 2 branches missed.">						.filter(e -&gt; g.edgeSource(e) != g.edgeTarget(e)).findAny().isEmpty());</span>
 
 			} else {
 <span class="pc bnc" id="L197" title="All 2 branches missed.">				assert dominanceDirection == EdgeDirection.All;</span>
-<span class="pc bnc" id="L198" title="All 2 branches missed.">				assert Range.of(n).intStream().filter(u -&gt; !dominated.get(u))</span>
+<span class="pc bnc" id="L198" title="All 2 branches missed.">				assert range(n).filter(u -&gt; !dominated.get(u))</span>
 <span class="nc bnc" id="L199" title="All 2 branches missed.">						.allMatch(u -&gt; IntStream.concat(g.outEdges(u).intStream(), g.inEdges(u).intStream())</span>
 <span class="nc bnc" id="L200" title="All 2 branches missed.">								.filter(e -&gt; g.edgeSource(e) != g.edgeTarget(e)).findAny().isEmpty());</span>
 			}

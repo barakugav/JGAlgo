@@ -15,6 +15,7 @@
  */
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -34,7 +35,6 @@ import com.jgalgo.graph.IWeightsObj;
 import com.jgalgo.graph.IWeightsShort;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
-import com.jgalgo.internal.util.Range;
 
 class FormatLEDA implements GraphFormat {
 
@@ -65,9 +65,9 @@ class FormatLEDA implements GraphFormat {
 		public void writeGraph(IntGraph graph, Writer writer) {
 <span class="fc" id="L66">			final int numVertices = graph.vertices().size();</span>
 <span class="fc" id="L67">			final int numEdges = graph.edges().size();</span>
-<span class="pc bpc" id="L68" title="1 of 2 branches missed.">			if (!Range.of(1, numVertices + 1).equals(graph.vertices()))</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">			if (!range(1, numVertices + 1).equals(graph.vertices()))</span>
 <span class="nc" id="L69">				throw new IllegalArgumentException(&quot;the LEDA format support graphs with vertices 1..n only&quot;);</span>
-<span class="pc bpc" id="L70" title="1 of 2 branches missed.">			if (!Range.of(1, numEdges + 1).equals(graph.edges()))</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">			if (!range(1, numEdges + 1).equals(graph.edges()))</span>
 <span class="nc" id="L71">				throw new IllegalArgumentException(&quot;the LEDA format support graphs with edges 1..m only&quot;);</span>
 
 			try {

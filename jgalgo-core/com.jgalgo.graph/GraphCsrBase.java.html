@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphCSRBase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphCSRBase.java</span></div><h1>GraphCSRBase.java</h1><pre class="source lang-java linenums">/*-
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphCsrBase.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphCsrBase.java</span></div><h1>GraphCsrBase.java</h1><pre class="source lang-java linenums">/*-
  * Copyright 2023 Barak Ugav
  *
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
@@ -22,7 +22,7 @@ import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 
-<span class="fc" id="L25">abstract class GraphCSRBase extends IndexGraphBase implements GraphWithEdgeEndpointsContainer, ImmutableGraph {</span>
+<span class="fc" id="L25">abstract class GraphCsrBase extends IndexGraphBase implements GraphWithEdgeEndpointsContainer, ImmutableGraph {</span>
 
 	final GraphElementSet.FixedSize vertices;
 	final GraphElementSet.FixedSize edges;
@@ -33,7 +33,7 @@ import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 	final Map&lt;String, WeightsImpl.IndexImmutable&lt;?&gt;&gt; verticesUserWeights;
 	final Map&lt;String, WeightsImpl.IndexImmutable&lt;?&gt;&gt; edgesUserWeights;
 
-	GraphCSRBase(IndexGraphBase.Capabilities capabilities,
+	GraphCsrBase(IndexGraphBase.Capabilities capabilities,
 			Variant.Of2&lt;IndexGraph, IndexGraphBuilderImpl&gt; graphOrBuilder, BuilderProcessEdges processEdges,
 			IndexGraphBuilder.ReIndexingMap edgesReIndexing, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 <span class="fc" id="L39">		super(capabilities);</span>
@@ -89,7 +89,7 @@ import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 <span class="fc" id="L89">		edgesUserWeights = edgesUserWeightsBuilder.build();</span>
 <span class="fc" id="L90">	}</span>
 
-	GraphCSRBase(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
+	GraphCsrBase(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 <span class="fc" id="L94">		super(capabilities);</span>
 <span class="fc" id="L95">		final int n = g.vertices().size();</span>

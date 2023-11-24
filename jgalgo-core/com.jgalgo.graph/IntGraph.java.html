@@ -410,23 +410,12 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge identifier
 	 * @throws IllegalArgumentException if {@code endpoint} is not an endpoint of the edge
 	 */
-	default int edgeEndpoint(int edge, int endpoint) {
-<span class="fc" id="L414">		int u = edgeSource(edge);</span>
-<span class="fc" id="L415">		int v = edgeTarget(edge);</span>
-<span class="fc bfc" id="L416" title="All 2 branches covered.">		if (endpoint == u) {</span>
-<span class="fc" id="L417">			return v;</span>
-<span class="pc bpc" id="L418" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
-<span class="fc" id="L419">			return u;</span>
-		} else {
-<span class="nc" id="L421">			throw new IllegalArgumentException(&quot;The given vertex (idx=&quot; + endpoint</span>
-					+ &quot;) is not an endpoint of the edge (idx=&quot; + u + &quot;, idx=&quot; + v + &quot;)&quot;);
-		}
-	}
+	int edgeEndpoint(int edge, int endpoint);
 
 	@Deprecated
 	@Override
 	default Integer edgeEndpoint(Integer edge, Integer endpoint) {
-<span class="fc" id="L429">		return Integer.valueOf(edgeEndpoint(edge.intValue(), endpoint.intValue()));</span>
+<span class="fc" id="L418">		return Integer.valueOf(edgeEndpoint(edge.intValue(), endpoint.intValue()));</span>
 	}
 
 	/**
@@ -445,7 +434,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 
 	@Override
 	default &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getVerticesWeights(String key) {
-<span class="fc" id="L448">		return getVerticesIWeights(key);</span>
+<span class="fc" id="L437">		return getVerticesIWeights(key);</span>
 	}
 
 	/**
@@ -464,7 +453,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 
 	@Override
 	default &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getEdgesWeights(String key) {
-<span class="fc" id="L467">		return getEdgesIWeights(key);</span>
+<span class="fc" id="L456">		return getEdgesIWeights(key);</span>
 	}
 
 	@Override
@@ -475,49 +464,49 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 
 	@Override
 	default IntGraph copy() {
-<span class="fc" id="L478">		return (IntGraph) Graph.super.copy();</span>
+<span class="fc" id="L467">		return (IntGraph) Graph.super.copy();</span>
 	}
 
 	@Override
 	default IntGraph copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L483">		return IntGraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L472">		return IntGraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	@Override
 	default IntGraph immutableCopy() {
-<span class="fc" id="L488">		return IntGraphBuilder.newFrom(this).build();</span>
+<span class="fc" id="L477">		return IntGraphBuilder.newFrom(this).build();</span>
 	}
 
 	@Override
 	default IntGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L493">		IndexIntIdMap viMap = indexGraphVerticesMap();</span>
-<span class="fc" id="L494">		IndexIntIdMap eiMap = indexGraphEdgesMap();</span>
-<span class="fc bfc" id="L495" title="All 2 branches covered.">		if (isDirected()) {</span>
-<span class="fc" id="L496">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
-<span class="fc" id="L497">					GraphCSRDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
-<span class="fc" id="L498">			IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="fc" id="L499">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="fc" id="L500">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="fc" id="L501">			return new IntGraphImpl.Directed(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
+<span class="fc" id="L482">		IndexIntIdMap viMap = indexGraphVerticesMap();</span>
+<span class="fc" id="L483">		IndexIntIdMap eiMap = indexGraphEdgesMap();</span>
+<span class="fc bfc" id="L484" title="All 2 branches covered.">		if (isDirected()) {</span>
+<span class="fc" id="L485">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
+<span class="fc" id="L486">					GraphCsrDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L487">			IndexGraph iGraph = reIndexedGraph.graph();</span>
+<span class="fc" id="L488">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
+<span class="fc" id="L489">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="fc" id="L490">			return new IntGraphImpl.Directed(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
 		} else {
-<span class="fc" id="L503">			IndexGraph iGraph = new GraphCSRUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
-<span class="fc" id="L504">			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap, null, null);</span>
+<span class="fc" id="L492">			IndexGraph iGraph = new GraphCsrUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L493">			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap, null, null);</span>
 		}
 	}
 
 	@Override
 	default IntGraph immutableView() {
-<span class="fc" id="L510">		return (IntGraph) Graph.super.immutableView();</span>
+<span class="fc" id="L499">		return (IntGraph) Graph.super.immutableView();</span>
 	}
 
 	@Override
 	default IntGraph reverseView() {
-<span class="fc" id="L515">		return (IntGraph) Graph.super.reverseView();</span>
+<span class="fc" id="L504">		return (IntGraph) Graph.super.reverseView();</span>
 	}
 
 	@Override
 	default IntGraph undirectedView() {
-<span class="fc" id="L520">		return (IntGraph) Graph.super.undirectedView();</span>
+<span class="fc" id="L509">		return (IntGraph) Graph.super.undirectedView();</span>
 	}
 
 	/**
@@ -528,7 +517,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 */
 	@Override
 	default IntGraph subGraphCopy(Collection&lt;Integer&gt; vertices, Collection&lt;Integer&gt; edges) {
-<span class="fc" id="L531">		return (IntGraph) Graph.super.subGraphCopy(vertices, edges);</span>
+<span class="fc" id="L520">		return (IntGraph) Graph.super.subGraphCopy(vertices, edges);</span>
 	}
 
 	/**
@@ -541,7 +530,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @return a new undirected empty graph
 	 */
 	static IntGraph newUndirected() {
-<span class="fc" id="L544">		return IntGraphFactory.newUndirected().newGraph();</span>
+<span class="fc" id="L533">		return IntGraphFactory.newUndirected().newGraph();</span>
 	}
 
 	/**
@@ -554,7 +543,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @return a new directed empty graph
 	 */
 	static IntGraph newDirected() {
-<span class="fc" id="L557">		return IntGraphFactory.newDirected().newGraph();</span>
+<span class="fc" id="L546">		return IntGraphFactory.newDirected().newGraph();</span>
 	}
 
 }

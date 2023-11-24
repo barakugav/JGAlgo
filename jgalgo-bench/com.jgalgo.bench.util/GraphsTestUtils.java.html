@@ -16,6 +16,7 @@
 
 package com.jgalgo.bench.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import com.jgalgo.gen.BarabasiAlbertGraphGenerator;
@@ -26,7 +27,6 @@ import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
-import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphsTestUtils extends TestUtils {
@@ -100,7 +100,7 @@ public class GraphsTestUtils extends TestUtils {
 <span class="fc" id="L100">		GnpGraphGenerator&lt;Integer, Integer&gt; gen = GnpGraphGenerator.newIntInstance();</span>
 <span class="fc" id="L101">		gen.setSeed(seed);</span>
 <span class="fc" id="L102">		gen.setDirected(directed);</span>
-<span class="fc" id="L103">		gen.setVertices(Range.of(n));</span>
+<span class="fc" id="L103">		gen.setVertices(range(n));</span>
 <span class="fc" id="L104">		gen.setEdges(new AtomicInteger()::getAndIncrement);</span>
 <span class="fc" id="L105">		return gen.generate().indexGraph();</span>
 	}
@@ -109,7 +109,7 @@ public class GraphsTestUtils extends TestUtils {
 <span class="fc" id="L109">		BarabasiAlbertGraphGenerator&lt;Integer, Integer&gt; gen = BarabasiAlbertGraphGenerator.newIntInstance();</span>
 <span class="fc" id="L110">		gen.setSeed(seed);</span>
 <span class="fc" id="L111">		gen.setDirected(directed);</span>
-<span class="fc" id="L112">		gen.setVertices(Range.of(n));</span>
+<span class="fc" id="L112">		gen.setVertices(range(n));</span>
 <span class="fc" id="L113">		gen.setEdges(new AtomicInteger()::getAndIncrement);</span>
 <span class="fc" id="L114">		return gen.generate().indexGraph();</span>
 	}
@@ -118,7 +118,7 @@ public class GraphsTestUtils extends TestUtils {
 <span class="fc" id="L118">		RecursiveMatrixGraphGenerator&lt;Integer, Integer&gt; gen = RecursiveMatrixGraphGenerator.newIntInstance();</span>
 <span class="fc" id="L119">		gen.setSeed(seed);</span>
 <span class="fc" id="L120">		gen.setDirected(directed);</span>
-<span class="fc" id="L121">		gen.setVertices(Range.of(n));</span>
+<span class="fc" id="L121">		gen.setVertices(range(n));</span>
 <span class="fc" id="L122">		gen.setEdges(m, new AtomicInteger()::getAndIncrement);</span>
 <span class="fc" id="L123">		return gen.generate().indexGraph();</span>
 	}
