@@ -24,7 +24,9 @@ import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.junit.jupiter.api.Test;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -39,15 +41,21 @@ public class TestsInheritFromTestBaseTest extends TestBase {
 
 	@Test
 	public void testAllTestsInheritFromTestBase() {
-		String packageName = TestsInheritFromTestBaseTest.class.getPackageName();
-		Collection<Class<?>> classes = getClasses(packageName);
+		Set<Class<?>> classes = new HashSet<>();
+		classes.addAll(getClasses("com.jgalgo"));
+		classes.addAll(getClasses("com.jgalgo.graph"));
+		classes.addAll(getClasses("com.jgalgo.alg"));
+		classes.addAll(getClasses("com.jgalgo.gen"));
+		classes.addAll(getClasses("com.jgalgo.internal"));
+		classes.addAll(getClasses("com.jgalgo.internal.util"));
+		classes.addAll(getClasses("com.jgalgo.internal.ds"));
 		for (Class<?> clazz : classes) {
 			if (clazz.isInterface() || !isClassContainsTests(clazz))
 				continue;
 			if (ExcludeList.contains(clazz.getSimpleName()))
 				continue;
 			assertTrue(isClassInheritFromTestBase(clazz),
-					"Test class does not inherit from " + TestBase.class.getSimpleName() + ": " + clazz);
+					clazz + " does not inherit from " + TestBase.class.getSimpleName());
 		}
 	}
 

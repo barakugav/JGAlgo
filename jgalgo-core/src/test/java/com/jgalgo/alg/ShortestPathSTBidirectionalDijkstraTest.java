@@ -16,8 +16,9 @@
 package com.jgalgo.alg;
 
 import org.junit.jupiter.api.Test;
+import com.jgalgo.internal.util.TestBase;
 
-public class ShortestPathSTBidirectionalDijkstraTest {
+public class ShortestPathSTBidirectionalDijkstraTest extends TestBase {
 
 	private static ShortestPathSingleSource sssp() {
 		return ShortestPathSTTestUtils.ssspFromSpst(new ShortestPathSTBidirectionalDijkstra());
