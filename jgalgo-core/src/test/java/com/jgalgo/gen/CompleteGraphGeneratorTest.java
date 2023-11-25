@@ -28,7 +28,6 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -75,53 +74,49 @@ public class CompleteGraphGeneratorTest extends TestBase {
 
 	@Test
 	public void testEdges() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
-			for (boolean directed : BooleanList.of(false, true)) {
-				for (boolean selfEdges : BooleanList.of(false, true)) {
-					CompleteGraphGenerator<Integer, Integer> g0 =
-							intGraph ? CompleteGraphGenerator.newIntInstance() : CompleteGraphGenerator.newInstance();
-					final int n = 7;
-					g0.setVertices(range(n));
+		foreachBoolConfig((intGraph, directed, selfEdges) -> {
+			CompleteGraphGenerator<Integer, Integer> g0 =
+					intGraph ? CompleteGraphGenerator.newIntInstance() : CompleteGraphGenerator.newInstance();
+			final int n = 7;
+			g0.setVertices(range(n));
 
-					/* edges were not set yet */
-					assertThrows(IllegalStateException.class, () -> g0.generate());
+			/* edges were not set yet */
+			assertThrows(IllegalStateException.class, () -> g0.generate());
 
-					g0.setEdges(new AtomicInteger()::getAndIncrement);
-					g0.setDirected(directed);
-					g0.setSelfEdges(selfEdges);
-					Graph<Integer, Integer> g = g0.generate();
+			g0.setEdges(new AtomicInteger()::getAndIncrement);
+			g0.setDirected(directed);
+			g0.setSelfEdges(selfEdges);
+			Graph<Integer, Integer> g = g0.generate();
 
-					assertEqualsBool(intGraph, g instanceof IntGraph);
+			assertEqualsBool(intGraph, g instanceof IntGraph);
 
-					int expectedNumEdges = 0;
-					expectedNumEdges += directed ? n * (n - 1) : n * (n - 1) / 2;
-					expectedNumEdges += selfEdges ? n : 0;
-					assertEquals(range(expectedNumEdges), g.edges());
+			int expectedNumEdges = 0;
+			expectedNumEdges += directed ? n * (n - 1) : n * (n - 1) / 2;
+			expectedNumEdges += selfEdges ? n : 0;
+			assertEquals(range(expectedNumEdges), g.edges());
 
-					Set<Pair<Integer, Integer>> edges = new ObjectOpenHashSet<>();
-					for (Integer e : g.edges()) {
-						boolean dupEdge = !edges.add(Pair.of(g.edgeSource(e), g.edgeTarget(e)));
-						assertFalse(dupEdge, "duplicate edge: (" + g.edgeSource(e) + ", " + g.edgeTarget(e) + ")");
-					}
-					for (Integer u : range(n)) {
-						for (Integer v : range(directed ? 0 : u.intValue(), n)) {
-							if (!selfEdges && u.equals(v))
-								continue;
-							if (directed) {
-								assertTrue(edges.contains(Pair.of(u, v)));
-							} else {
-								assertTrue(edges.contains(Pair.of(u, v)) || edges.contains(Pair.of(v, u)));
-							}
-						}
+			Set<Pair<Integer, Integer>> edges = new ObjectOpenHashSet<>();
+			for (Integer e : g.edges()) {
+				boolean dupEdge = !edges.add(Pair.of(g.edgeSource(e), g.edgeTarget(e)));
+				assertFalse(dupEdge, "duplicate edge: (" + g.edgeSource(e) + ", " + g.edgeTarget(e) + ")");
+			}
+			for (Integer u : range(n)) {
+				for (Integer v : range(directed ? 0 : u.intValue(), n)) {
+					if (!selfEdges && u.equals(v))
+						continue;
+					if (directed) {
+						assertTrue(edges.contains(Pair.of(u, v)));
+					} else {
+						assertTrue(edges.contains(Pair.of(u, v)) || edges.contains(Pair.of(v, u)));
 					}
 				}
 			}
-		}
+		});
 	}
 
 	@Test
 	public void testDirected() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			CompleteGraphGenerator<Integer, Integer> g =
 					intGraph ? CompleteGraphGenerator.newIntInstance() : CompleteGraphGenerator.newInstance();
 			g.setVertices(IntList.of(1, 9, 3, 4, 5));
@@ -137,13 +132,13 @@ public class CompleteGraphGeneratorTest extends TestBase {
 			/* check undirected */
 			g.setDirected(false);
 			assertFalse(g.generate().isDirected());
-		}
+		});
 	}
 
 	@SuppressWarnings("boxing")
 	@Test
 	public void testMutability() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			CompleteGraphGenerator<Integer, Integer> g =
 					intGraph ? CompleteGraphGenerator.newIntInstance() : CompleteGraphGenerator.newInstance();
 			g.setVertices(IntList.of(1, 9, 3, 4, 5));
@@ -155,7 +150,7 @@ public class CompleteGraphGeneratorTest extends TestBase {
 			Graph<Integer, Integer> gMutable = g.generateMutable();
 			gMutable.addVertex(50);
 			assertTrue(gMutable.vertices().contains(50));
-		}
+		});
 	}
 
 }

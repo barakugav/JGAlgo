@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 
 public class BipartiteGraphsTest extends TestBase {
 
@@ -37,13 +36,11 @@ public class BipartiteGraphsTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
-			for (boolean directed : BooleanList.of(false, true)) {
-				for (boolean index : BooleanList.of(false, true)) {
-					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
-					/* its possible we will generate a bipartite graph, but its not going to happen */
-					assertFalse(BipartiteGraphs.isBipartite(g));
-				}
-			}
+			foreachBoolConfig((directed, index) -> {
+				Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
+				/* its possible we will generate a bipartite graph, but its not going to happen */
+				assertFalse(BipartiteGraphs.isBipartite(g));
+			});
 		});
 	}
 
@@ -56,18 +53,16 @@ public class BipartiteGraphsTest extends TestBase {
 		tester.addPhase().withArgs(37, 11, 256).repeat(64);
 		tester.addPhase().withArgs(200, 315, 1024).repeat(8);
 		tester.run((sn, tn, m) -> {
-			for (boolean directed : BooleanList.of(false, true)) {
-				for (boolean index : BooleanList.of(false, true)) {
-					Graph<Integer, Integer> g = randBipartiteGraph(sn, tn, m, directed, index, seedGen.nextSeed());
-					g.removeVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
+			foreachBoolConfig((directed, index) -> {
+				Graph<Integer, Integer> g = randBipartiteGraph(sn, tn, m, directed, index, seedGen.nextSeed());
+				g.removeVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 
-					assertTrue(BipartiteGraphs.isBipartite(g));
-					assertEquals(Optional.empty(), BipartiteGraphs.getExistingPartition(g));
+				assertTrue(BipartiteGraphs.isBipartite(g));
+				assertEquals(Optional.empty(), BipartiteGraphs.getExistingPartition(g));
 
-					assertNotEquals(Optional.empty(), BipartiteGraphs.findPartition(g, true));
-					assertNotEquals(Optional.empty(), BipartiteGraphs.getExistingPartition(g));
-				}
-			}
+				assertNotEquals(Optional.empty(), BipartiteGraphs.findPartition(g, true));
+				assertNotEquals(Optional.empty(), BipartiteGraphs.getExistingPartition(g));
+			});
 		});
 	}
 

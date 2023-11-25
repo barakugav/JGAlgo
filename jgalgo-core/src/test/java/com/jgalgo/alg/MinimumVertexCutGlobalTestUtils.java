@@ -30,7 +30,6 @@ import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class MinimumVertexCutGlobalTestUtils extends TestUtils {
@@ -100,11 +99,11 @@ class MinimumVertexCutGlobalTestUtils extends TestUtils {
 	}
 
 	static void testEmptyGraph(MinimumVertexCutGlobal algo) {
-		for (boolean directed : BooleanList.of(false, true)) {
+		foreachBoolConfig(directed -> {
 			Graph<Integer, Integer> g = directed ? Graph.newDirected() : Graph.newUndirected();
 			WeightFunction<Integer> w = null;
 			assertThrows(IllegalArgumentException.class, () -> algo.computeMinimumCut(g, w));
-		}
+		});
 	}
 
 	private static <V, E> void testMinCut(Graph<V, E> g, WeightFunction<V> w, MinimumVertexCutGlobal alg) {

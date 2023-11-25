@@ -27,7 +27,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 
 public class BarabasiAlbertGraphGeneratorTest extends TestBase {
 
@@ -78,7 +77,7 @@ public class BarabasiAlbertGraphGeneratorTest extends TestBase {
 
 	@Test
 	public void testEdges() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			BarabasiAlbertGraphGenerator<Integer, Integer> g = intGraph ? BarabasiAlbertGraphGenerator.newIntInstance()
 					: BarabasiAlbertGraphGenerator.newInstance();
 			g.setSeed(0x58ca12b719e97e61L);
@@ -90,12 +89,12 @@ public class BarabasiAlbertGraphGeneratorTest extends TestBase {
 			g.setEdges(new AtomicInteger()::getAndIncrement);
 			Graph<Integer, Integer> g1 = g.generate();
 			assertEquals(range(g1.edges().size()), g1.edges());
-		}
+		});
 	}
 
 	@Test
 	public void testDirected() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			BarabasiAlbertGraphGenerator<Integer, Integer> g = intGraph ? BarabasiAlbertGraphGenerator.newIntInstance()
 					: BarabasiAlbertGraphGenerator.newInstance();
 			g.setSeed(0x8df4db32de040f1dL);
@@ -112,22 +111,22 @@ public class BarabasiAlbertGraphGeneratorTest extends TestBase {
 			/* check undirected */
 			g.setDirected(false);
 			assertFalse(g.generate().isDirected());
-		}
+		});
 	}
 
 	@Test
 	public void edgesPerStep() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			BarabasiAlbertGraphGenerator<Integer, Integer> g = intGraph ? BarabasiAlbertGraphGenerator.newIntInstance()
 					: BarabasiAlbertGraphGenerator.newInstance();
 			assertThrows(IllegalArgumentException.class, () -> g.setEdgesToAddPerStep(-3));
 			g.setEdgesToAddPerStep(4);
-		}
+		});
 	}
 
 	@Test
 	public void tooBigEdgesPerStep() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			BarabasiAlbertGraphGenerator<Integer, Integer> g = intGraph ? BarabasiAlbertGraphGenerator.newIntInstance()
 					: BarabasiAlbertGraphGenerator.newInstance();
 			g.setSeed(0x58ca12b719e97e61L);
@@ -140,22 +139,22 @@ public class BarabasiAlbertGraphGeneratorTest extends TestBase {
 
 			g.setEdgesToAddPerStep(3);
 			assertNotNull(g.generate());
-		}
+		});
 	}
 
 	@Test
 	public void testInitialCliqueSize() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			BarabasiAlbertGraphGenerator<Integer, Integer> g = intGraph ? BarabasiAlbertGraphGenerator.newIntInstance()
 					: BarabasiAlbertGraphGenerator.newInstance();
 			assertThrows(IllegalArgumentException.class, () -> g.setInitialCliqueSize(-3));
 			g.setInitialCliqueSize(4);
-		}
+		});
 	}
 
 	@Test
 	public void tooBigInitialClique() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			BarabasiAlbertGraphGenerator<Integer, Integer> g = intGraph ? BarabasiAlbertGraphGenerator.newIntInstance()
 					: BarabasiAlbertGraphGenerator.newInstance();
 			g.setSeed(0x58ca12b719e97e61L);
@@ -167,13 +166,13 @@ public class BarabasiAlbertGraphGeneratorTest extends TestBase {
 
 			g.setInitialCliqueSize(10);
 			assertNotNull(g.generate());
-		}
+		});
 	}
 
 	@SuppressWarnings("boxing")
 	@Test
 	public void testMutability() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			BarabasiAlbertGraphGenerator<Integer, Integer> g = intGraph ? BarabasiAlbertGraphGenerator.newIntInstance()
 					: BarabasiAlbertGraphGenerator.newInstance();
 			g.setSeed(0x34960acd3d3b944cL);
@@ -186,7 +185,7 @@ public class BarabasiAlbertGraphGeneratorTest extends TestBase {
 			Graph<Integer, Integer> gMutable = g.generateMutable();
 			gMutable.addVertex(50);
 			assertTrue(gMutable.vertices().contains(50));
-		}
+		});
 	}
 
 }

@@ -24,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class EmptyGraphGeneratorTest extends TestBase {
@@ -38,14 +37,14 @@ public class EmptyGraphGeneratorTest extends TestBase {
 	@SuppressWarnings("boxing")
 	@Test
 	public void testVertices() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			EmptyGraphGenerator<Integer, Integer> g =
 					intGraph ? EmptyGraphGenerator.newIntInstance() : EmptyGraphGenerator.newInstance();
 			assertEquals(Set.of(), g.generate().vertices());
 
 			g.setVertices(Set.of(0, 1, 2));
 			assertEquals(Set.of(0, 1, 2), g.generate().vertices());
-		}
+		});
 	}
 
 	@Test
@@ -58,7 +57,7 @@ public class EmptyGraphGeneratorTest extends TestBase {
 
 	@Test
 	public void testDirected() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			EmptyGraphGenerator<Integer, Integer> g =
 					intGraph ? EmptyGraphGenerator.newIntInstance() : EmptyGraphGenerator.newInstance();
 
@@ -72,13 +71,13 @@ public class EmptyGraphGeneratorTest extends TestBase {
 			/* check undirected */
 			g.setDirected(false);
 			assertFalse(g.generate().isDirected());
-		}
+		});
 	}
 
 	@SuppressWarnings("boxing")
 	@Test
 	public void testMutability() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			EmptyGraphGenerator<Integer, Integer> g =
 					intGraph ? EmptyGraphGenerator.newIntInstance() : EmptyGraphGenerator.newInstance();
 			g.setVertices(IntList.of(1, 9, 3, 4, 5));
@@ -89,7 +88,7 @@ public class EmptyGraphGeneratorTest extends TestBase {
 			Graph<Integer, Integer> gMutable = g.generateMutable();
 			gMutable.addVertex(50);
 			assertTrue(gMutable.vertices().contains(50));
-		}
+		});
 	}
 
 	@SuppressWarnings("boxing")

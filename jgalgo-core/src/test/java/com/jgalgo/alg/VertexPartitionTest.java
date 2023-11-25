@@ -31,7 +31,6 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
@@ -52,32 +51,31 @@ public class VertexPartitionTest extends TestBase {
 		tester.addPhase().withArgs(512, 1024, 50).repeat(8);
 		tester.addPhase().withArgs(512, 1024, 200).repeat(8);
 		tester.run((n, m, k) -> {
-			for (boolean directed : BooleanList.of(false, true)) {
-				for (boolean index : BooleanList.of(false, true)) {
-					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
-					VertexPartition<Integer, Integer> partition = randPartition(g, k, seedGen.nextSeed());
+			foreachBoolConfig((directed, index) -> {
+				Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
+				VertexPartition<Integer, Integer> partition = randPartition(g, k, seedGen.nextSeed());
 
-					for (int b = 0; b < k; b++) {
-						final int b0 = b;
-						Set<Integer> expected = g.vertices().stream().filter(v -> partition.vertexBlock(v) == b0)
-								.collect(Collectors.toSet());
-						Set<Integer> actual = partition.blockVertices(b);
-						assertEquals(expected, actual);
+				for (int b = 0; b < k; b++) {
+					final int b0 = b;
+					Set<Integer> expected = g.vertices().stream().filter(v -> partition.vertexBlock(v) == b0)
+							.collect(Collectors.toSet());
+					Set<Integer> actual = partition.blockVertices(b);
+					assertEquals(expected, actual);
 
-						/* test .contains() */
-						for (Integer v : g.vertices())
-							assertEqualsBool(expected.contains(v), actual.contains(v));
-						for (int i = 0; i < 5; i++) {
-							Integer nonVertex;
-							do {
-								nonVertex = Integer.valueOf(rand.nextInt());
-							} while (g.vertices().contains(nonVertex));
-							assertFalse(actual.contains(nonVertex));
-						}
+					/* test .contains() */
+					for (Integer v : g.vertices())
+						assertEqualsBool(expected.contains(v), actual.contains(v));
+					for (int i = 0; i < 5; i++) {
+						Integer nonVertex;
+						do {
+							nonVertex = Integer.valueOf(rand.nextInt());
+						} while (g.vertices().contains(nonVertex));
+						assertFalse(actual.contains(nonVertex));
 					}
 				}
-			}
+			});
 		});
+
 	}
 
 	@Test
@@ -94,43 +92,41 @@ public class VertexPartitionTest extends TestBase {
 		tester.addPhase().withArgs(512, 1024, 50).repeat(8);
 		tester.addPhase().withArgs(512, 1024, 200).repeat(8);
 		tester.run((n, m, k) -> {
-			for (boolean directed : BooleanList.of(false, true)) {
-				for (boolean index : BooleanList.of(false, true)) {
-					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
-					VertexPartition<Integer, Integer> partition = randPartition(g, k, seedGen.nextSeed());
-					final Random rand = new Random(seedGen.nextSeed());
+			foreachBoolConfig((directed, index) -> {
+				Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
+				VertexPartition<Integer, Integer> partition = randPartition(g, k, seedGen.nextSeed());
+				final Random rand = new Random(seedGen.nextSeed());
 
-					Graph<Integer, Integer> blocksGraph = partition.blocksGraph(true, true);
-					Graph<Integer, Integer> blocksGraphNonSelf = partition.blocksGraph(true, false);
+				Graph<Integer, Integer> blocksGraph = partition.blocksGraph(true, true);
+				Graph<Integer, Integer> blocksGraphNonSelf = partition.blocksGraph(true, false);
 
-					for (int b = 0; b < k; b++) {
-						final int b0 = b;
-						Set<Integer> expected =
-								g.edges().stream()
-										.filter(e -> partition.vertexBlock(g.edgeSource(e)) == b0
-												&& partition.vertexBlock(g.edgeTarget(e)) == b0)
-										.collect(Collectors.toSet());
-						Set<Integer> actual = partition.blockEdges(b);
-						assertEquals(expected, actual);
+				for (int b = 0; b < k; b++) {
+					final int b0 = b;
+					Set<Integer> expected =
+							g.edges().stream()
+									.filter(e -> partition.vertexBlock(g.edgeSource(e)) == b0
+											&& partition.vertexBlock(g.edgeTarget(e)) == b0)
+									.collect(Collectors.toSet());
+					Set<Integer> actual = partition.blockEdges(b);
+					assertEquals(expected, actual);
 
-						/* test .contains() */
-						for (Integer e : g.edges())
-							assertEqualsBool(expected.contains(e), actual.contains(e));
-						for (int i = 0; i < 5; i++) {
-							Integer nonEdge;
-							do {
-								nonEdge = Integer.valueOf(rand.nextInt());
-							} while (g.edges().contains(nonEdge));
-							assertFalse(actual.contains(nonEdge));
-						}
-
-						/* test blocksGraph */
-						assertEquals(expected, blocksGraph.getEdges(Integer.valueOf(b), Integer.valueOf(b)));
-						assertNull(blocksGraphNonSelf.getEdge(Integer.valueOf(b), Integer.valueOf(b)));
-						assertEquals(0, blocksGraphNonSelf.getEdges(Integer.valueOf(b), Integer.valueOf(b)).size());
+					/* test .contains() */
+					for (Integer e : g.edges())
+						assertEqualsBool(expected.contains(e), actual.contains(e));
+					for (int i = 0; i < 5; i++) {
+						Integer nonEdge;
+						do {
+							nonEdge = Integer.valueOf(rand.nextInt());
+						} while (g.edges().contains(nonEdge));
+						assertFalse(actual.contains(nonEdge));
 					}
+
+					/* test blocksGraph */
+					assertEquals(expected, blocksGraph.getEdges(Integer.valueOf(b), Integer.valueOf(b)));
+					assertNull(blocksGraphNonSelf.getEdge(Integer.valueOf(b), Integer.valueOf(b)));
+					assertEquals(0, blocksGraphNonSelf.getEdges(Integer.valueOf(b), Integer.valueOf(b)).size());
 				}
-			}
+			});
 		});
 	}
 
@@ -148,46 +144,44 @@ public class VertexPartitionTest extends TestBase {
 		tester.addPhase().withArgs(512, 1024, 5).repeat(8);
 		tester.addPhase().withArgs(512, 1024, 30).repeat(2);
 		tester.run((n, m, k) -> {
-			for (boolean directed : BooleanList.of(false, true)) {
-				for (boolean index : BooleanList.of(false, true)) {
-					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
-					VertexPartition<Integer, Integer> partition = randPartition(g, k, seedGen.nextSeed());
+			foreachBoolConfig((directed, index) -> {
+				Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
+				VertexPartition<Integer, Integer> partition = randPartition(g, k, seedGen.nextSeed());
 
-					Graph<Integer, Integer> blocksGraph = partition.blocksGraph(true, true);
-					Graph<Integer, Integer> blocksGraphNonParallel = partition.blocksGraph(false, true);
+				Graph<Integer, Integer> blocksGraph = partition.blocksGraph(true, true);
+				Graph<Integer, Integer> blocksGraphNonParallel = partition.blocksGraph(false, true);
 
-					for (int b1 = 0; b1 < k; b1++) {
-						for (int b2 = 0; b2 < k; b2++) {
-							final int b10 = b1;
-							final int b20 = b2;
-							Set<Integer> expected;
-							if (directed) {
-								expected = g.edges().stream()
-										.filter(e -> partition.vertexBlock(g.edgeSource(e)) == b10
-												&& partition.vertexBlock(g.edgeTarget(e)) == b20)
-										.collect(Collectors.toSet());
-							} else {
-								expected = g.edges().stream()
-										.filter(e -> (partition.vertexBlock(g.edgeSource(e)) == b10
-												&& partition.vertexBlock(g.edgeTarget(e)) == b20)
-												|| (partition.vertexBlock(g.edgeSource(e)) == b20
-														&& partition.vertexBlock(g.edgeTarget(e)) == b10))
-										.collect(Collectors.toSet());
-							}
-							Set<Integer> actual = partition.crossEdges(b1, b2);
-							assertEquals(expected, actual);
+				for (int b1 = 0; b1 < k; b1++) {
+					for (int b2 = 0; b2 < k; b2++) {
+						final int b10 = b1;
+						final int b20 = b2;
+						Set<Integer> expected;
+						if (directed) {
+							expected = g.edges().stream()
+									.filter(e -> partition.vertexBlock(g.edgeSource(e)) == b10
+											&& partition.vertexBlock(g.edgeTarget(e)) == b20)
+									.collect(Collectors.toSet());
+						} else {
+							expected = g.edges().stream()
+									.filter(e -> (partition.vertexBlock(g.edgeSource(e)) == b10
+											&& partition.vertexBlock(g.edgeTarget(e)) == b20)
+											|| (partition.vertexBlock(g.edgeSource(e)) == b20
+													&& partition.vertexBlock(g.edgeTarget(e)) == b10))
+									.collect(Collectors.toSet());
+						}
+						Set<Integer> actual = partition.crossEdges(b1, b2);
+						assertEquals(expected, actual);
 
-							assertEquals(expected, blocksGraph.getEdges(Integer.valueOf(b1), Integer.valueOf(b2)));
-							if (expected.isEmpty()) {
-								assertNull(blocksGraphNonParallel.getEdge(Integer.valueOf(b1), Integer.valueOf(b2)));
-							} else {
-								assertEquals(1, blocksGraphNonParallel
-										.getEdges(Integer.valueOf(b1), Integer.valueOf(b2)).size());
-							}
+						assertEquals(expected, blocksGraph.getEdges(Integer.valueOf(b1), Integer.valueOf(b2)));
+						if (expected.isEmpty()) {
+							assertNull(blocksGraphNonParallel.getEdge(Integer.valueOf(b1), Integer.valueOf(b2)));
+						} else {
+							assertEquals(1,
+									blocksGraphNonParallel.getEdges(Integer.valueOf(b1), Integer.valueOf(b2)).size());
 						}
 					}
 				}
-			}
+			});
 		});
 	}
 
@@ -206,23 +200,21 @@ public class VertexPartitionTest extends TestBase {
 		tester.addPhase().withArgs(512, 1024, 5).repeat(8);
 		tester.addPhase().withArgs(512, 1024, 30).repeat(8);
 		tester.run((n, m, k) -> {
-			for (boolean directed : BooleanList.of(false, true)) {
-				for (boolean index : BooleanList.of(false, true)) {
-					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
+			foreachBoolConfig((directed, index) -> {
+				Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
 
-					Object2IntMap<Integer> partition1 = randPartitionMap(g, k, seedGen.nextSeed());
-					assertTrue(VertexPartition.isPartition(g, partition1::getInt));
+				Object2IntMap<Integer> partition1 = randPartitionMap(g, k, seedGen.nextSeed());
+				assertTrue(VertexPartition.isPartition(g, partition1::getInt));
 
-					Object2IntMap<Integer> partition2 = new Object2IntOpenHashMap<>(partition1);
-					partition2.put(Graphs.randVertex(g, rand), -1 - rand.nextInt(5));
-					assertFalse(VertexPartition.isPartition(g, partition2::getInt));
+				Object2IntMap<Integer> partition2 = new Object2IntOpenHashMap<>(partition1);
+				partition2.put(Graphs.randVertex(g, rand), -1 - rand.nextInt(5));
+				assertFalse(VertexPartition.isPartition(g, partition2::getInt));
 
-					Object2IntMap<Integer> partition3 = new Object2IntOpenHashMap<>(partition1);
-					int block = rand.nextInt(k);
-					partition3.replaceAll((v, b) -> b != block ? b : k);
-					assertFalse(VertexPartition.isPartition(g, partition3::getInt));
-				}
-			}
+				Object2IntMap<Integer> partition3 = new Object2IntOpenHashMap<>(partition1);
+				int block = rand.nextInt(k);
+				partition3.replaceAll((v, b) -> b != block ? b : k);
+				assertFalse(VertexPartition.isPartition(g, partition3::getInt));
+			});
 		});
 	}
 

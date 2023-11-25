@@ -24,7 +24,6 @@ import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class FlowsTest extends TestBase {
@@ -32,7 +31,7 @@ public class FlowsTest extends TestBase {
 	@SuppressWarnings("boxing")
 	@Test
 	public void testFlowAndCostSumDirected() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			Graph<Integer, Integer> g = intGraph ? IntGraph.newDirected() : Graph.newDirected();
 			g.addVertex(0);
 			g.addVertex(1);
@@ -68,13 +67,13 @@ public class FlowsTest extends TestBase {
 			assertEquals(2, flow.getSupplySubset(IntList.of(0, 1)));
 			assertEquals(3, flow.getTotalCost(costInt));
 			assertEquals(3, flow.getTotalCost(costDouble));
-		}
+		});
 	}
 
 	@SuppressWarnings("boxing")
 	@Test
 	public void testFlowAndCostSumUndirected() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			Graph<Integer, Integer> g = intGraph ? IntGraph.newUndirected() : Graph.newUndirected();
 			g.addVertex(0);
 			g.addVertex(1);
@@ -110,7 +109,7 @@ public class FlowsTest extends TestBase {
 			assertEquals(2, flow.getSupplySubset(IntList.of(0, 1)));
 			assertEquals(3, flow.getTotalCost(costInt));
 			assertEquals(3, flow.getTotalCost(costDouble));
-		}
+		});
 	}
 
 }

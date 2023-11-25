@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.gen.GnpGraphGenerator;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -50,75 +49,71 @@ public class IndexIdMapsTest extends TestBase {
 	public void indexToIdIterator() {
 		final long seed = 0xfd38baacf447aa9eL;
 		final Random rand = new Random(seed);
-		for (boolean intGraph : BooleanList.of(false, true)) {
-			for (boolean edgesOrVertices : BooleanList.of(false, true)) {
-				Graph<Integer, Integer> g = createGraph(intGraph);
-				IntSet indicesSet = (IntSet) randElementsSubSet(g.indexGraph(), edgesOrVertices);
-				IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
+		foreachBoolConfig((intGraph, edgesOrVertices) -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IntSet indicesSet = (IntSet) randElementsSubSet(g.indexGraph(), edgesOrVertices);
+			IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
 
-				Set<Integer> iteratedIds = new HashSet<>();
-				for (Iterator<Integer> it = IndexIdMaps.indexToIdIterator(indicesSet.iterator(), map); it.hasNext();)
-					iteratedIds.add(it.next());
-				assertEquals(indicesSet.intStream().mapToObj(map::indexToId).collect(Collectors.toSet()), iteratedIds);
+			Set<Integer> iteratedIds = new HashSet<>();
+			for (Iterator<Integer> it = IndexIdMaps.indexToIdIterator(indicesSet.iterator(), map); it.hasNext();)
+				iteratedIds.add(it.next());
+			assertEquals(indicesSet.intStream().mapToObj(map::indexToId).collect(Collectors.toSet()), iteratedIds);
 
-				Set<Integer> removedIds = new HashSet<>();
-				Set<Integer> nonRemovedIds = new HashSet<>();
-				for (Iterator<Integer> it = IndexIdMaps.indexToIdIterator(indicesSet.iterator(), map); it.hasNext();) {
-					Integer id = it.next();
-					if (rand.nextBoolean()) {
-						it.remove();
-						removedIds.add(id);
-					} else {
-						nonRemovedIds.add(id);
-					}
+			Set<Integer> removedIds = new HashSet<>();
+			Set<Integer> nonRemovedIds = new HashSet<>();
+			for (Iterator<Integer> it = IndexIdMaps.indexToIdIterator(indicesSet.iterator(), map); it.hasNext();) {
+				Integer id = it.next();
+				if (rand.nextBoolean()) {
+					it.remove();
+					removedIds.add(id);
+				} else {
+					nonRemovedIds.add(id);
 				}
-				for (Integer removedId : removedIds)
-					assertFalse(indicesSet.contains(map.idToIndex(removedId)));
-				for (Integer nonRemovedId : nonRemovedIds)
-					assertTrue(indicesSet.contains(map.idToIndex(nonRemovedId)));
 			}
-		}
+			for (Integer removedId : removedIds)
+				assertFalse(indicesSet.contains(map.idToIndex(removedId)));
+			for (Integer nonRemovedId : nonRemovedIds)
+				assertTrue(indicesSet.contains(map.idToIndex(nonRemovedId)));
+		});
 	}
 
 	@Test
 	public void idToIndexIterator() {
 		final long seed = 0xe47e0556fb0eba74L;
 		final Random rand = new Random(seed);
-		for (boolean intGraph : BooleanList.of(false, true)) {
-			for (boolean edgesOrVertices : BooleanList.of(false, true)) {
-				Graph<Integer, Integer> g = createGraph(intGraph);
-				Set<Integer> idsSet = randElementsSubSet(g, edgesOrVertices);
-				IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
+		foreachBoolConfig((intGraph, edgesOrVertices) -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			Set<Integer> idsSet = randElementsSubSet(g, edgesOrVertices);
+			IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
 
-				IntSet iteratedIndices = new IntOpenHashSet();
-				for (IntIterator it = IndexIdMaps.idToIndexIterator(idsSet.iterator(), map); it.hasNext();)
-					iteratedIndices.add(it.nextInt());
-				assertEquals(idsSet.stream().map(map::idToIndex).collect(Collectors.toSet()), iteratedIndices);
+			IntSet iteratedIndices = new IntOpenHashSet();
+			for (IntIterator it = IndexIdMaps.idToIndexIterator(idsSet.iterator(), map); it.hasNext();)
+				iteratedIndices.add(it.nextInt());
+			assertEquals(idsSet.stream().map(map::idToIndex).collect(Collectors.toSet()), iteratedIndices);
 
-				IntSet removedIndices = new IntOpenHashSet();
-				IntSet nonRemovedIndices = new IntOpenHashSet();
-				for (IntIterator it = IndexIdMaps.idToIndexIterator(idsSet.iterator(), map); it.hasNext();) {
-					int idx = it.nextInt();
-					if (rand.nextBoolean()) {
-						it.remove();
-						removedIndices.add(idx);
-					} else {
-						nonRemovedIndices.add(idx);
-					}
+			IntSet removedIndices = new IntOpenHashSet();
+			IntSet nonRemovedIndices = new IntOpenHashSet();
+			for (IntIterator it = IndexIdMaps.idToIndexIterator(idsSet.iterator(), map); it.hasNext();) {
+				int idx = it.nextInt();
+				if (rand.nextBoolean()) {
+					it.remove();
+					removedIndices.add(idx);
+				} else {
+					nonRemovedIndices.add(idx);
 				}
-				for (int removedIdx : removedIndices)
-					assertFalse(idsSet.contains(map.indexToId(removedIdx)));
-				for (int nonRemovedIdx : nonRemovedIndices)
-					assertTrue(idsSet.contains(map.indexToId(nonRemovedIdx)));
 			}
-		}
+			for (int removedIdx : removedIndices)
+				assertFalse(idsSet.contains(map.indexToId(removedIdx)));
+			for (int nonRemovedIdx : nonRemovedIndices)
+				assertTrue(idsSet.contains(map.indexToId(nonRemovedIdx)));
+		});
 	}
 
 	@Test
 	public void indexToIdEdgeIter() {
 		final long seed = 0x7b422697871558a8L;
 		final Random rand = new Random(seed);
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			Graph<Integer, Integer> g = createGraph(intGraph);
 			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
 			IndexIdMap<Integer> eiMap = g.indexGraphEdgesMap();
@@ -168,7 +163,7 @@ public class IndexIdMapsTest extends TestBase {
 				assertTrue(edges.contains(nonRemovedId));
 				assertTrue(outEdges.contains(nonRemovedId));
 			}
-		}
+		});
 	}
 
 	@Test
@@ -187,120 +182,116 @@ public class IndexIdMapsTest extends TestBase {
 
 		final long seed = 0x136cebddbfbbff4bL;
 		final Random rand = new Random(seed);
-		for (boolean intGraph : BooleanList.of(false, true)) {
-			for (boolean edgesOrVertices : BooleanList.of(false, true)) {
-				Graph<Integer, Integer> g = createGraph(intGraph);
-				Set<Integer> allIds = edgesOrVertices ? g.edges() : g.vertices();
-				IntSet indicesSet = (IntSet) randElementsSubSet(g.indexGraph(), edgesOrVertices);
-				IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
+		foreachBoolConfig((intGraph, edgesOrVertices) -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			Set<Integer> allIds = edgesOrVertices ? g.edges() : g.vertices();
+			IntSet indicesSet = (IntSet) randElementsSubSet(g.indexGraph(), edgesOrVertices);
+			IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
 
-				/* addAll twice so indexOf() will be different than lastIndexOf() */
-				IntList indexList = new IntArrayList();
-				indexList.addAll(indicesSet);
-				indexList.addAll(indicesSet);
-				List<Integer> idList = IndexIdMaps.indexToIdList(indexList, map);
+			/* addAll twice so indexOf() will be different than lastIndexOf() */
+			IntList indexList = new IntArrayList();
+			indexList.addAll(indicesSet);
+			indexList.addAll(indicesSet);
+			List<Integer> idList = IndexIdMaps.indexToIdList(indexList, map);
 
-				/* indexOf() */
-				List<Integer> idList2 = indexList.intStream().mapToObj(map::indexToId).collect(Collectors.toList());
-				for (int i = 0; i < indexList.size(); i++) {
-					int idx = indexList.getInt(i);
-					Integer id = map.indexToId(idx);
-					assertEquals(idList2.indexOf(id), idList.indexOf(id));
-				}
-				for (int i = 0; i < 10; i++) {
-					Integer nonExistingId = Integer.valueOf(rand.nextInt());
-					if (allIds.contains(nonExistingId))
-						continue;
-					assertEquals(-1, idList.indexOf(nonExistingId));
-				}
-
-				/* lastIndexOf() */
-				for (int i = 0; i < indexList.size(); i++) {
-					int idx = indexList.getInt(i);
-					Integer id = map.indexToId(idx);
-					assertEquals(idList2.lastIndexOf(id), idList.lastIndexOf(id));
-				}
-				for (int i = 0; i < 10; i++) {
-					Integer nonExistingId = Integer.valueOf(rand.nextInt());
-					if (allIds.contains(nonExistingId))
-						continue;
-					assertEquals(-1, idList.lastIndexOf(nonExistingId));
-				}
-
-				/* remove(index) */
-				int sizeBeforeRemove = indexList.size();
-				List<Integer> expected = indexList.intStream().mapToObj(map::indexToId).collect(Collectors.toList());
-				int removeIdx = rand.nextInt(indexList.size());
-				Integer removedIdExpected = expected.remove(removeIdx);
-				Integer removedIdActual = idList.remove(removeIdx);
-				assertEquals(removedIdExpected, removedIdActual);
-				assertEquals(sizeBeforeRemove - 1, indexList.size());
-				assertEquals(sizeBeforeRemove - 1, idList.size());
-				assertEquals(indexList.intStream().mapToObj(map::indexToId).collect(Collectors.toList()),
-						new ArrayList<>(idList));
+			/* indexOf() */
+			List<Integer> idList2 = indexList.intStream().mapToObj(map::indexToId).collect(Collectors.toList());
+			for (int i = 0; i < indexList.size(); i++) {
+				int idx = indexList.getInt(i);
+				Integer id = map.indexToId(idx);
+				assertEquals(idList2.indexOf(id), idList.indexOf(id));
 			}
-		}
+			for (int i = 0; i < 10; i++) {
+				Integer nonExistingId = Integer.valueOf(rand.nextInt());
+				if (allIds.contains(nonExistingId))
+					continue;
+				assertEquals(-1, idList.indexOf(nonExistingId));
+			}
+
+			/* lastIndexOf() */
+			for (int i = 0; i < indexList.size(); i++) {
+				int idx = indexList.getInt(i);
+				Integer id = map.indexToId(idx);
+				assertEquals(idList2.lastIndexOf(id), idList.lastIndexOf(id));
+			}
+			for (int i = 0; i < 10; i++) {
+				Integer nonExistingId = Integer.valueOf(rand.nextInt());
+				if (allIds.contains(nonExistingId))
+					continue;
+				assertEquals(-1, idList.lastIndexOf(nonExistingId));
+			}
+
+			/* remove(index) */
+			int sizeBeforeRemove = indexList.size();
+			List<Integer> expected = indexList.intStream().mapToObj(map::indexToId).collect(Collectors.toList());
+			int removeIdx = rand.nextInt(indexList.size());
+			Integer removedIdExpected = expected.remove(removeIdx);
+			Integer removedIdActual = idList.remove(removeIdx);
+			assertEquals(removedIdExpected, removedIdActual);
+			assertEquals(sizeBeforeRemove - 1, indexList.size());
+			assertEquals(sizeBeforeRemove - 1, idList.size());
+			assertEquals(indexList.intStream().mapToObj(map::indexToId).collect(Collectors.toList()),
+					new ArrayList<>(idList));
+		});
 	}
 
 	public void indexToIdCollectionAbstract(Function<IntSet, IntCollection> createIndexCollection) {
 		final long seed = 0x112b0dd34340e8a8L;
 		final Random rand = new Random(seed);
-		for (boolean intGraph : BooleanList.of(false, true)) {
-			for (boolean edgesOrVertices : BooleanList.of(false, true)) {
-				Graph<Integer, Integer> g = createGraph(intGraph);
-				Set<Integer> allIds = edgesOrVertices ? g.edges() : g.vertices();
-				IntSet indicesSet = (IntSet) randElementsSubSet(g.indexGraph(), edgesOrVertices);
-				IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
+		foreachBoolConfig((intGraph, edgesOrVertices) -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			Set<Integer> allIds = edgesOrVertices ? g.edges() : g.vertices();
+			IntSet indicesSet = (IntSet) randElementsSubSet(g.indexGraph(), edgesOrVertices);
+			IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
 
-				IntCollection indexCollection = createIndexCollection.apply(indicesSet);
-				Collection<Integer> idCollection;
-				if (map instanceof IndexIntIdMap) {
-					idCollection = IndexIdMaps.indexToIdCollection(indexCollection, (IndexIntIdMap) map);
-				} else {
-					idCollection = IndexIdMaps.indexToIdCollection(indexCollection, map);
-				}
-
-				/* size() */
-				assertEquals(indexCollection.size(), idCollection.size());
-				/* isEmpty() */
-				assertEqualsBool(indexCollection.isEmpty(), idCollection.isEmpty());
-
-				/* contains() */
-				for (Integer id : allIds)
-					assertEqualsBool(indexCollection.contains(map.idToIndex(id)), idCollection.contains(id));
-				for (int i = 0; i < 10; i++) {
-					Integer nonExistingId = Integer.valueOf(rand.nextInt());
-					if (allIds.contains(nonExistingId))
-						continue;
-					assertFalse(idCollection.contains(nonExistingId));
-				}
-
-				/* iterator() */
-				Set<Integer> iteratedIds = new HashSet<>();
-				for (Iterator<Integer> it = idCollection.iterator(); it.hasNext();)
-					iteratedIds.add(it.next());
-				assertEquals(indicesSet.intStream().mapToObj(map::indexToId).collect(Collectors.toSet()), iteratedIds);
-
-				/* remove() */
-				int sizeBeforeRemove = indexCollection.size();
-				idCollection.remove(idCollection.iterator().next());
-				assertEquals(sizeBeforeRemove - 1, indexCollection.size());
-				assertEquals(sizeBeforeRemove - 1, idCollection.size());
-				assertEquals(indexCollection.intStream().mapToObj(map::indexToId).collect(Collectors.toSet()),
-						new HashSet<>(idCollection));
-
-				/* clear() */
-				idCollection.clear();
-				assertTrue(idCollection.isEmpty());
-				assertTrue(indexCollection.isEmpty());
-				indexCollection = createIndexCollection.apply(indicesSet);
+			IntCollection indexCollection = createIndexCollection.apply(indicesSet);
+			Collection<Integer> idCollection;
+			if (map instanceof IndexIntIdMap) {
+				idCollection = IndexIdMaps.indexToIdCollection(indexCollection, (IndexIntIdMap) map);
+			} else {
 				idCollection = IndexIdMaps.indexToIdCollection(indexCollection, map);
-				assertFalse(indexCollection.isEmpty());
-				indexCollection.clear();
-				assertTrue(idCollection.isEmpty());
-				assertTrue(indexCollection.isEmpty());
 			}
-		}
+
+			/* size() */
+			assertEquals(indexCollection.size(), idCollection.size());
+			/* isEmpty() */
+			assertEqualsBool(indexCollection.isEmpty(), idCollection.isEmpty());
+
+			/* contains() */
+			for (Integer id : allIds)
+				assertEqualsBool(indexCollection.contains(map.idToIndex(id)), idCollection.contains(id));
+			for (int i = 0; i < 10; i++) {
+				Integer nonExistingId = Integer.valueOf(rand.nextInt());
+				if (allIds.contains(nonExistingId))
+					continue;
+				assertFalse(idCollection.contains(nonExistingId));
+			}
+
+			/* iterator() */
+			Set<Integer> iteratedIds = new HashSet<>();
+			for (Iterator<Integer> it = idCollection.iterator(); it.hasNext();)
+				iteratedIds.add(it.next());
+			assertEquals(indicesSet.intStream().mapToObj(map::indexToId).collect(Collectors.toSet()), iteratedIds);
+
+			/* remove() */
+			int sizeBeforeRemove = indexCollection.size();
+			idCollection.remove(idCollection.iterator().next());
+			assertEquals(sizeBeforeRemove - 1, indexCollection.size());
+			assertEquals(sizeBeforeRemove - 1, idCollection.size());
+			assertEquals(indexCollection.intStream().mapToObj(map::indexToId).collect(Collectors.toSet()),
+					new HashSet<>(idCollection));
+
+			/* clear() */
+			idCollection.clear();
+			assertTrue(idCollection.isEmpty());
+			assertTrue(indexCollection.isEmpty());
+			indexCollection = createIndexCollection.apply(indicesSet);
+			idCollection = IndexIdMaps.indexToIdCollection(indexCollection, map);
+			assertFalse(indexCollection.isEmpty());
+			indexCollection.clear();
+			assertTrue(idCollection.isEmpty());
+			assertTrue(indexCollection.isEmpty());
+		});
 	}
 
 	@Test
@@ -326,104 +317,100 @@ public class IndexIdMapsTest extends TestBase {
 
 		final long seed = 0x58c559c21cf688a8L;
 		final Random rand = new Random(seed);
-		for (boolean intGraph : BooleanList.of(false, true)) {
-			for (boolean edgesOrVertices : BooleanList.of(false, true)) {
-				Graph<Integer, Integer> g = createGraph(intGraph);
-				IntSet allIndices = edgesOrVertices ? g.indexGraph().edges() : g.indexGraph().vertices();
-				Set<Integer> idsSet = randElementsSubSet(g, edgesOrVertices);
-				IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
+		foreachBoolConfig((intGraph, edgesOrVertices) -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IntSet allIndices = edgesOrVertices ? g.indexGraph().edges() : g.indexGraph().vertices();
+			Set<Integer> idsSet = randElementsSubSet(g, edgesOrVertices);
+			IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
 
-				/* addAll twice so indexOf() will be different than lastIndexOf() */
-				List<Integer> idList = new ArrayList<>();
-				idList.addAll(idsSet);
-				idList.addAll(idsSet);
-				IntList indexList = IndexIdMaps.idToIndexList(idList, map);
+			/* addAll twice so indexOf() will be different than lastIndexOf() */
+			List<Integer> idList = new ArrayList<>();
+			idList.addAll(idsSet);
+			idList.addAll(idsSet);
+			IntList indexList = IndexIdMaps.idToIndexList(idList, map);
 
-				/* get(index) */
-				for (int i = 0; i < idList.size(); i++) {
-					Integer id = idList.get(i);
-					assertEquals(map.idToIndex(id), indexList.getInt(i));
-				}
-
-				/* indexOf() */
-				List<Integer> indexList2 = idList.stream().map(map::idToIndex).collect(Collectors.toList());
-				for (int i = 0; i < idList.size(); i++) {
-					Integer id = idList.get(i);
-					int idx = map.idToIndex(id);
-					assertEquals(indexList2.indexOf(idx), indexList.indexOf(idx));
-				}
-				for (int i = 0; i < 10; i++) {
-					int nonExistingIdx = rand.nextInt();
-					if (allIndices.contains(nonExistingIdx))
-						continue;
-					assertEquals(-1, indexList.indexOf(nonExistingIdx));
-				}
-
-				/* lastIndexOf() */
-				for (int i = 0; i < idList.size(); i++) {
-					Integer id = idList.get(i);
-					int idx = map.idToIndex(id);
-					assertEquals(indexList2.lastIndexOf(idx), indexList.lastIndexOf(idx));
-				}
-				for (int i = 0; i < 10; i++) {
-					int nonExistingIdx = rand.nextInt();
-					if (allIndices.contains(nonExistingIdx))
-						continue;
-					assertEquals(-1, indexList.lastIndexOf(nonExistingIdx));
-				}
-
-				/* remove(element) */
-				int sizeBeforeRemove = idList.size();
-				IntList expected = new IntArrayList(idList.stream().map(map::idToIndex).collect(Collectors.toList()));
-				int removeElement = expected.getInt(expected.indexOf(expected.getInt(rand.nextInt(idList.size()))));
-				boolean expectedModified = expected.rem(removeElement);
-				boolean actualModified = indexList.rem(removeElement);
-				assertEqualsBool(expectedModified, actualModified);
-				assertEquals(sizeBeforeRemove - 1, idList.size());
-				assertEquals(sizeBeforeRemove - 1, indexList.size());
-				assertEquals(idList.stream().map(map::indexToId).collect(Collectors.toList()),
-						new ArrayList<>(indexList));
-				for (int i = 0; i < 10; i++) {
-					int nonExistingIdx = rand.nextInt();
-					if (allIndices.contains(nonExistingIdx))
-						continue;
-					assertFalse(indexList.rem(nonExistingIdx));
-				}
-				for (int i = 0; i < 10; i++) {
-					int nonExistingIdx = allIndices.toIntArray()[rand.nextInt(allIndices.size())];
-					if (idsSet.contains(nonExistingIdx))
-						continue;
-					assertFalse(indexList.rem(nonExistingIdx));
-				}
-
-				/* remove(index) */
-				sizeBeforeRemove = idList.size();
-				expected = new IntArrayList(idList.stream().map(map::idToIndex).collect(Collectors.toList()));
-				int removeIdx = rand.nextInt(idList.size());
-				int removedIdxExpected = expected.removeInt(removeIdx);
-				int removedIdxActual = indexList.removeInt(removeIdx);
-				assertEquals(removedIdxExpected, removedIdxActual);
-				assertEquals(sizeBeforeRemove - 1, idList.size());
-				assertEquals(sizeBeforeRemove - 1, indexList.size());
-				assertEquals(idList.stream().map(map::indexToId).collect(Collectors.toList()),
-						new ArrayList<>(indexList));
-
-				/* listIterator() */
-				IntListIterator it = indexList.listIterator();
-				for (int i = 0; i < indexList.size(); i++) {
-					assertTrue(it.hasNext());
-					assertEquals(i, it.nextIndex());
-					int element = it.nextInt();
-					assertEquals(indexList.getInt(i), element);
-				}
-				for (int i = indexList.size() - 1; i >= 0; i--) {
-					assertTrue(it.hasPrevious());
-					assertEquals(i, it.previousIndex());
-					int element = it.previousInt();
-					assertEquals(indexList.getInt(i), element);
-				}
+			/* get(index) */
+			for (int i = 0; i < idList.size(); i++) {
+				Integer id = idList.get(i);
+				assertEquals(map.idToIndex(id), indexList.getInt(i));
 			}
-		}
+
+			/* indexOf() */
+			List<Integer> indexList2 = idList.stream().map(map::idToIndex).collect(Collectors.toList());
+			for (int i = 0; i < idList.size(); i++) {
+				Integer id = idList.get(i);
+				int idx = map.idToIndex(id);
+				assertEquals(indexList2.indexOf(idx), indexList.indexOf(idx));
+			}
+			for (int i = 0; i < 10; i++) {
+				int nonExistingIdx = rand.nextInt();
+				if (allIndices.contains(nonExistingIdx))
+					continue;
+				assertEquals(-1, indexList.indexOf(nonExistingIdx));
+			}
+
+			/* lastIndexOf() */
+			for (int i = 0; i < idList.size(); i++) {
+				Integer id = idList.get(i);
+				int idx = map.idToIndex(id);
+				assertEquals(indexList2.lastIndexOf(idx), indexList.lastIndexOf(idx));
+			}
+			for (int i = 0; i < 10; i++) {
+				int nonExistingIdx = rand.nextInt();
+				if (allIndices.contains(nonExistingIdx))
+					continue;
+				assertEquals(-1, indexList.lastIndexOf(nonExistingIdx));
+			}
+
+			/* remove(element) */
+			int sizeBeforeRemove = idList.size();
+			IntList expected = new IntArrayList(idList.stream().map(map::idToIndex).collect(Collectors.toList()));
+			int removeElement = expected.getInt(expected.indexOf(expected.getInt(rand.nextInt(idList.size()))));
+			boolean expectedModified = expected.rem(removeElement);
+			boolean actualModified = indexList.rem(removeElement);
+			assertEqualsBool(expectedModified, actualModified);
+			assertEquals(sizeBeforeRemove - 1, idList.size());
+			assertEquals(sizeBeforeRemove - 1, indexList.size());
+			assertEquals(idList.stream().map(map::indexToId).collect(Collectors.toList()), new ArrayList<>(indexList));
+			for (int i = 0; i < 10; i++) {
+				int nonExistingIdx = rand.nextInt();
+				if (allIndices.contains(nonExistingIdx))
+					continue;
+				assertFalse(indexList.rem(nonExistingIdx));
+			}
+			for (int i = 0; i < 10; i++) {
+				int nonExistingIdx = allIndices.toIntArray()[rand.nextInt(allIndices.size())];
+				if (idsSet.contains(nonExistingIdx))
+					continue;
+				assertFalse(indexList.rem(nonExistingIdx));
+			}
+
+			/* remove(index) */
+			sizeBeforeRemove = idList.size();
+			expected = new IntArrayList(idList.stream().map(map::idToIndex).collect(Collectors.toList()));
+			int removeIdx = rand.nextInt(idList.size());
+			int removedIdxExpected = expected.removeInt(removeIdx);
+			int removedIdxActual = indexList.removeInt(removeIdx);
+			assertEquals(removedIdxExpected, removedIdxActual);
+			assertEquals(sizeBeforeRemove - 1, idList.size());
+			assertEquals(sizeBeforeRemove - 1, indexList.size());
+			assertEquals(idList.stream().map(map::indexToId).collect(Collectors.toList()), new ArrayList<>(indexList));
+
+			/* listIterator() */
+			IntListIterator it = indexList.listIterator();
+			for (int i = 0; i < indexList.size(); i++) {
+				assertTrue(it.hasNext());
+				assertEquals(i, it.nextIndex());
+				int element = it.nextInt();
+				assertEquals(indexList.getInt(i), element);
+			}
+			for (int i = indexList.size() - 1; i >= 0; i--) {
+				assertTrue(it.hasPrevious());
+				assertEquals(i, it.previousIndex());
+				int element = it.previousInt();
+				assertEquals(indexList.getInt(i), element);
+			}
+		});
 
 		Graph<Integer, Integer> g = createGraph(false);
 		List<Integer> listSet = new ArrayList<>(g.edges());
@@ -435,65 +422,62 @@ public class IndexIdMapsTest extends TestBase {
 	public void idToIndexCollectionOrSet(Function<Set<Integer>, Collection<Integer>> createIdCollection) {
 		final long seed = 0xd71f63773c813234L;
 		final Random rand = new Random(seed);
-		for (boolean intGraph : BooleanList.of(false, true)) {
-			for (boolean edgesOrVertices : BooleanList.of(false, true)) {
-				Graph<Integer, Integer> g = createGraph(intGraph);
-				IntSet allIndices = edgesOrVertices ? g.indexGraph().edges() : g.indexGraph().vertices();
-				Set<Integer> idSet = randElementsSubSet(g, edgesOrVertices);
-				IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
+		foreachBoolConfig((intGraph, edgesOrVertices) -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IntSet allIndices = edgesOrVertices ? g.indexGraph().edges() : g.indexGraph().vertices();
+			Set<Integer> idSet = randElementsSubSet(g, edgesOrVertices);
+			IndexIdMap<Integer> map = edgesOrVertices ? g.indexGraphEdgesMap() : g.indexGraphVerticesMap();
 
-				Collection<Integer> idCollection = createIdCollection.apply(idSet);
-				IntCollection indexCollection;
-				if (idCollection instanceof Set) {
-					indexCollection = IndexIdMaps.idToIndexSet((Set<Integer>) idCollection, map);
-				} else if (map instanceof IndexIntIdMap) {
-					indexCollection = IndexIdMaps.idToIndexCollection(idCollection, (IndexIntIdMap) map);
-				} else {
-					indexCollection = IndexIdMaps.idToIndexCollection(idCollection, map);
-				}
-
-				/* size() */
-				assertEquals(indexCollection.size(), idCollection.size());
-				/* isEmpty() */
-				assertEqualsBool(indexCollection.isEmpty(), idCollection.isEmpty());
-
-				/* contains() */
-				for (int idx : allIndices)
-					assertEqualsBool(idCollection.contains(map.indexToId(idx)), indexCollection.contains(idx));
-				for (int i = 0; i < 10; i++) {
-					int nonExistingIdx = rand.nextInt();
-					if (allIndices.contains(nonExistingIdx))
-						continue;
-					assertFalse(indexCollection.contains(nonExistingIdx));
-				}
-
-				/* iterator() */
-				IntSet iteratedIndices = new IntOpenHashSet();
-				for (IntIterator it = indexCollection.iterator(); it.hasNext();)
-					iteratedIndices.add(it.nextInt());
-				assertEquals(idSet.stream().map(map::idToIndex).collect(Collectors.toSet()), iteratedIndices);
-
-				/* remove() */
-				int sizeBeforeRemove = indexCollection.size();
-				indexCollection.rem(indexCollection.iterator().nextInt());
-				assertEquals(sizeBeforeRemove - 1, indexCollection.size());
-				assertEquals(sizeBeforeRemove - 1, idCollection.size());
-				assertEquals(idCollection.stream().map(map::idToIndex).collect(Collectors.toSet()),
-						new HashSet<>(indexCollection));
-
-				/* clear() */
-				indexCollection.clear();
-				assertTrue(idCollection.isEmpty());
-				assertTrue(indexCollection.isEmpty());
-				idCollection = createIdCollection.apply(idSet);
+			Collection<Integer> idCollection = createIdCollection.apply(idSet);
+			IntCollection indexCollection;
+			if (idCollection instanceof Set) {
+				indexCollection = IndexIdMaps.idToIndexSet((Set<Integer>) idCollection, map);
+			} else if (map instanceof IndexIntIdMap) {
+				indexCollection = IndexIdMaps.idToIndexCollection(idCollection, (IndexIntIdMap) map);
+			} else {
 				indexCollection = IndexIdMaps.idToIndexCollection(idCollection, map);
-				assertFalse(indexCollection.isEmpty());
-				idCollection.clear();
-				assertTrue(idCollection.isEmpty());
-				assertTrue(indexCollection.isEmpty());
 			}
-		}
 
+			/* size() */
+			assertEquals(indexCollection.size(), idCollection.size());
+			/* isEmpty() */
+			assertEqualsBool(indexCollection.isEmpty(), idCollection.isEmpty());
+
+			/* contains() */
+			for (int idx : allIndices)
+				assertEqualsBool(idCollection.contains(map.indexToId(idx)), indexCollection.contains(idx));
+			for (int i = 0; i < 10; i++) {
+				int nonExistingIdx = rand.nextInt();
+				if (allIndices.contains(nonExistingIdx))
+					continue;
+				assertFalse(indexCollection.contains(nonExistingIdx));
+			}
+
+			/* iterator() */
+			IntSet iteratedIndices = new IntOpenHashSet();
+			for (IntIterator it = indexCollection.iterator(); it.hasNext();)
+				iteratedIndices.add(it.nextInt());
+			assertEquals(idSet.stream().map(map::idToIndex).collect(Collectors.toSet()), iteratedIndices);
+
+			/* remove() */
+			int sizeBeforeRemove = indexCollection.size();
+			indexCollection.rem(indexCollection.iterator().nextInt());
+			assertEquals(sizeBeforeRemove - 1, indexCollection.size());
+			assertEquals(sizeBeforeRemove - 1, idCollection.size());
+			assertEquals(idCollection.stream().map(map::idToIndex).collect(Collectors.toSet()),
+					new HashSet<>(indexCollection));
+
+			/* clear() */
+			indexCollection.clear();
+			assertTrue(idCollection.isEmpty());
+			assertTrue(indexCollection.isEmpty());
+			idCollection = createIdCollection.apply(idSet);
+			indexCollection = IndexIdMaps.idToIndexCollection(idCollection, map);
+			assertFalse(indexCollection.isEmpty());
+			idCollection.clear();
+			assertTrue(idCollection.isEmpty());
+			assertTrue(indexCollection.isEmpty());
+		});
 	}
 
 	private static Graph<Integer, Integer> createGraph(boolean intGraph) {

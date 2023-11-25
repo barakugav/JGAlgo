@@ -75,7 +75,7 @@ class GraphImplTestUtils extends TestUtils {
 
 	@SuppressWarnings("boxing")
 	static void testVertexAdd(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
-		for (boolean directed : new boolean[] { true, false }) {
+		foreachBoolConfig(directed -> {
 			Graph<Integer, Integer> g = graphImpl.get(directed);
 			final int n = 100;
 			IntSet verticesSet = new IntOpenHashSet();
@@ -88,12 +88,12 @@ class GraphImplTestUtils extends TestUtils {
 			assertEquals(IntSets.emptySet(), g.edges());
 
 			assertThrows(NoSuchVertexException.class, () -> g.outEdges(6687));
-		}
+		});
 	}
 
 	@SuppressWarnings("boxing")
 	static void testAddEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
-		for (boolean directed : new boolean[] { true, false }) {
+		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
 			for (int i = 0; i < n; i++)
@@ -117,7 +117,7 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			assertThrows(NoSuchEdgeException.class, () -> g.edgeSource(6687));
-		}
+		});
 	}
 
 	private static <V, E> void assertEndpoints(Graph<V, E> g, E e, V source, V target) {
@@ -132,7 +132,7 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	static void testGetEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
-		for (boolean directed : new boolean[] { true, false }) {
+		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
 			for (int i = 0; i < n; i++)
@@ -162,13 +162,12 @@ class GraphImplTestUtils extends TestUtils {
 				Integer e = edge.getValue();
 				assertEquals(e, g.getEdge(u, v));
 			}
-		}
-
+		});
 	}
 
 	@SuppressWarnings("boxing")
 	static void testGetEdgesOutIn(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
-		for (boolean directed : new boolean[] { true, false }) {
+		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
 			for (int i = 0; i < n; i++)
@@ -231,11 +230,11 @@ class GraphImplTestUtils extends TestUtils {
 					assertEquals(inEdges.get(v), vEdges);
 				}
 			}
-		}
+		});
 	}
 
 	static void testGetEdgesSourceTarget(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
-		for (boolean directed : new boolean[] { true, false }) {
+		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
 			for (int i = 0; i < n; i++)
@@ -266,11 +265,11 @@ class GraphImplTestUtils extends TestUtils {
 					assertEquals(edges.get(key), g.getEdges(u, v));
 				}
 			}
-		}
+		});
 	}
 
 	static void testEdgeIter(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
-		for (boolean directed : new boolean[] { true, false }) {
+		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
 			for (int i = 0; i < n; i++)
@@ -377,11 +376,11 @@ class GraphImplTestUtils extends TestUtils {
 					}
 				}
 			}
-		}
+		});
 	}
 
 	static void testDegree(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
-		for (boolean directed : new boolean[] { true, false }) {
+		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
 			for (int i = 0; i < n; i++)
@@ -409,12 +408,12 @@ class GraphImplTestUtils extends TestUtils {
 				assertEquals(degreeOut.getInt(u), g.outEdges(u).size(), "u=" + u);
 				assertEquals(degreeIn.getInt(u), g.inEdges(u).size(), "u=" + u);
 			}
-		}
+		});
 	}
 
 	static void testClear(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		Random rand = new Random(seed);
-		for (boolean directed : new boolean[] { true, false }) {
+		foreachBoolConfig(directed -> {
 			Graph<Integer, Integer> g = graphImpl.get(directed);
 			boolean parallelEdges = g.isAllowParallelEdges();
 
@@ -457,12 +456,12 @@ class GraphImplTestUtils extends TestUtils {
 				assertEquals(0, g.vertices().size());
 				assertEquals(0, g.edges().size());
 			}
-		}
+		});
 	}
 
 	static void testClearEdges(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		Random rand = new Random(seed);
-		for (boolean directed : new boolean[] { true, false }) {
+		foreachBoolConfig(directed -> {
 			Graph<Integer, Integer> g = graphImpl.get(directed);
 			boolean parallelEdges = g.isAllowParallelEdges();
 
@@ -505,13 +504,13 @@ class GraphImplTestUtils extends TestUtils {
 				assertEquals(expectedN, g.vertices().size());
 				assertEquals(0, g.edges().size());
 			}
-		}
+		});
 	}
 
 	static void testCopy(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		for (String copyType : List.of("origImpl", "array", "linked-list", "linked-list-ptr", "hashtable", "matrix")) {
-			for (boolean directed : new boolean[] { true, false }) {
+			foreachBoolConfig(directed -> {
 				/* Create a random graph g */
 				Graph<Integer, Integer> g =
 						new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed).parallelEdges(false)
@@ -562,15 +561,14 @@ class GraphImplTestUtils extends TestUtils {
 				assertNull(copyEData);
 				assertEquals(copy.getVerticesWeightsKeys(), Collections.emptySet());
 				assertEquals(copy.getEdgesWeightsKeys(), Collections.emptySet());
-			}
+			});
 		}
-
 	}
 
 	static void testCopyWithWeights(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
-		for (boolean directed : new boolean[] { true, false }) {
+		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
@@ -659,12 +657,12 @@ class GraphImplTestUtils extends TestUtils {
 				assertEquals(gEDataMap.get(e), gEData.get(e));
 				assertEquals(copyEDataMap.get(e), copyEData.get(e));
 			}
-		}
+		});
 	}
 
 	static void testImmutableCopy(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		for (boolean directed : new boolean[] { true, false }) {
+		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
@@ -709,13 +707,13 @@ class GraphImplTestUtils extends TestUtils {
 			assertNull(copyEData);
 			assertEquals(copy.getVerticesWeightsKeys(), Collections.emptySet());
 			assertEquals(copy.getEdgesWeightsKeys(), Collections.emptySet());
-		}
+		});
 	}
 
 	static void testImmutableCopyWithWeights(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
-		for (boolean directed : new boolean[] { true, false }) {
+		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
 					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
@@ -792,7 +790,7 @@ class GraphImplTestUtils extends TestUtils {
 				assertEquals(gEDataMap.get(e), gEData.get(e));
 				assertEquals(copyEDataMap.get(e), copyEData.get(e));
 			}
-		}
+		});
 	}
 
 	static void testUndirectedMST(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {

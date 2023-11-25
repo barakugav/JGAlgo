@@ -29,7 +29,6 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 
@@ -45,21 +44,18 @@ public class VertexBiPartitionTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
-			for (boolean directed : BooleanList.of(false, true)) {
-				for (boolean index : BooleanList.of(false, true)) {
-					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
-					VertexBiPartition<Integer, Integer> partition = randPartition(g, seedGen.nextSeed());
+			foreachBoolConfig((directed, index) -> {
+				Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
+				VertexBiPartition<Integer, Integer> partition = randPartition(g, seedGen.nextSeed());
 
-					Set<Integer> leftExpected =
-							g.vertices().stream().filter(partition::isLeft).collect(Collectors.toSet());
-					Set<Integer> rightExpected =
-							g.vertices().stream().filter(partition::isRight).collect(Collectors.toSet());
-					assertEquals(leftExpected, partition.blockVertices(0));
-					assertEquals(leftExpected, partition.leftVertices());
-					assertEquals(rightExpected, partition.blockVertices(1));
-					assertEquals(rightExpected, partition.rightVertices());
-				}
-			}
+				Set<Integer> leftExpected = g.vertices().stream().filter(partition::isLeft).collect(Collectors.toSet());
+				Set<Integer> rightExpected =
+						g.vertices().stream().filter(partition::isRight).collect(Collectors.toSet());
+				assertEquals(leftExpected, partition.blockVertices(0));
+				assertEquals(leftExpected, partition.leftVertices());
+				assertEquals(rightExpected, partition.blockVertices(1));
+				assertEquals(rightExpected, partition.rightVertices());
+			});
 		});
 	}
 
@@ -73,23 +69,21 @@ public class VertexBiPartitionTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
-			for (boolean directed : BooleanList.of(false, true)) {
-				for (boolean index : BooleanList.of(false, true)) {
-					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
-					VertexBiPartition<Integer, Integer> partition = randPartition(g, seedGen.nextSeed());
+			foreachBoolConfig((directed, index) -> {
+				Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
+				VertexBiPartition<Integer, Integer> partition = randPartition(g, seedGen.nextSeed());
 
-					Set<Integer> leftExpected = g.edges().stream()
-							.filter(e -> partition.isLeft(g.edgeSource(e)) && partition.isLeft(g.edgeTarget(e)))
-							.collect(Collectors.toSet());
-					Set<Integer> rightExpected = g.edges().stream()
-							.filter(e -> partition.isRight(g.edgeSource(e)) && partition.isRight(g.edgeTarget(e)))
-							.collect(Collectors.toSet());
-					assertEquals(leftExpected, partition.blockEdges(0));
-					assertEquals(leftExpected, partition.leftEdges());
-					assertEquals(rightExpected, partition.blockEdges(1));
-					assertEquals(rightExpected, partition.rightEdges());
-				}
-			}
+				Set<Integer> leftExpected = g.edges().stream()
+						.filter(e -> partition.isLeft(g.edgeSource(e)) && partition.isLeft(g.edgeTarget(e)))
+						.collect(Collectors.toSet());
+				Set<Integer> rightExpected = g.edges().stream()
+						.filter(e -> partition.isRight(g.edgeSource(e)) && partition.isRight(g.edgeTarget(e)))
+						.collect(Collectors.toSet());
+				assertEquals(leftExpected, partition.blockEdges(0));
+				assertEquals(leftExpected, partition.leftEdges());
+				assertEquals(rightExpected, partition.blockEdges(1));
+				assertEquals(rightExpected, partition.rightEdges());
+			});
 		});
 	}
 
@@ -103,39 +97,35 @@ public class VertexBiPartitionTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
-			for (boolean directed : BooleanList.of(false, true)) {
-				for (boolean index : BooleanList.of(false, true)) {
-					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
-					VertexBiPartition<Integer, Integer> partition = randPartition(g, seedGen.nextSeed());
+			foreachBoolConfig((directed, index) -> {
+				Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
+				VertexBiPartition<Integer, Integer> partition = randPartition(g, seedGen.nextSeed());
 
-					Graph<Integer, Integer> blocksGraph = partition.blocksGraph(true, true);
+				Graph<Integer, Integer> blocksGraph = partition.blocksGraph(true, true);
 
-					Set<Integer> crossEdgesLeftRightExpected;
-					Set<Integer> crossEdgesRightLeftExpected;
-					if (directed) {
-						crossEdgesLeftRightExpected = g.edges().stream()
-								.filter(e -> partition.isLeft(g.edgeSource(e)) && partition.isRight(g.edgeTarget(e)))
-								.collect(Collectors.toSet());
-						crossEdgesRightLeftExpected = g.edges().stream()
-								.filter(e -> partition.isRight(g.edgeSource(e)) && partition.isLeft(g.edgeTarget(e)))
-								.collect(Collectors.toSet());
-					} else {
-						crossEdgesLeftRightExpected = crossEdgesRightLeftExpected = g.edges().stream()
-								.filter(e -> (partition.isLeft(g.edgeSource(e)) && partition.isRight(g.edgeTarget(e)))
-										|| (partition.isRight(g.edgeSource(e)) && partition.isLeft(g.edgeTarget(e))))
-								.collect(Collectors.toSet());
-					}
-
-					assertEquals(crossEdgesLeftRightExpected, partition.crossEdges(0, 1));
-					assertEquals(crossEdgesLeftRightExpected, partition.crossEdges());
-					assertEquals(crossEdgesRightLeftExpected, partition.crossEdges(1, 0));
-
-					assertEquals(crossEdgesLeftRightExpected,
-							blocksGraph.getEdges(Integer.valueOf(0), Integer.valueOf(1)));
-					assertEquals(crossEdgesRightLeftExpected,
-							blocksGraph.getEdges(Integer.valueOf(1), Integer.valueOf(0)));
+				Set<Integer> crossEdgesLeftRightExpected;
+				Set<Integer> crossEdgesRightLeftExpected;
+				if (directed) {
+					crossEdgesLeftRightExpected = g.edges().stream()
+							.filter(e -> partition.isLeft(g.edgeSource(e)) && partition.isRight(g.edgeTarget(e)))
+							.collect(Collectors.toSet());
+					crossEdgesRightLeftExpected = g.edges().stream()
+							.filter(e -> partition.isRight(g.edgeSource(e)) && partition.isLeft(g.edgeTarget(e)))
+							.collect(Collectors.toSet());
+				} else {
+					crossEdgesLeftRightExpected = crossEdgesRightLeftExpected = g.edges().stream()
+							.filter(e -> (partition.isLeft(g.edgeSource(e)) && partition.isRight(g.edgeTarget(e)))
+									|| (partition.isRight(g.edgeSource(e)) && partition.isLeft(g.edgeTarget(e))))
+							.collect(Collectors.toSet());
 				}
-			}
+
+				assertEquals(crossEdgesLeftRightExpected, partition.crossEdges(0, 1));
+				assertEquals(crossEdgesLeftRightExpected, partition.crossEdges());
+				assertEquals(crossEdgesRightLeftExpected, partition.crossEdges(1, 0));
+
+				assertEquals(crossEdgesLeftRightExpected, blocksGraph.getEdges(Integer.valueOf(0), Integer.valueOf(1)));
+				assertEquals(crossEdgesRightLeftExpected, blocksGraph.getEdges(Integer.valueOf(1), Integer.valueOf(0)));
+			});
 		});
 	}
 
@@ -149,17 +139,15 @@ public class VertexBiPartitionTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
-			for (boolean directed : BooleanList.of(false, true)) {
-				for (boolean index : BooleanList.of(false, true)) {
-					Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
+			foreachBoolConfig((directed, index) -> {
+				Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
 
-					Object2BooleanMap<Integer> partition = randPartitionMap(g, seedGen.nextSeed());
-					assertTrue(VertexBiPartition.isPartition(g, partition::getBoolean));
+				Object2BooleanMap<Integer> partition = randPartitionMap(g, seedGen.nextSeed());
+				assertTrue(VertexBiPartition.isPartition(g, partition::getBoolean));
 
-					assertFalse(VertexBiPartition.isPartition(g, v -> true));
-					assertFalse(VertexBiPartition.isPartition(g, v -> false));
-				}
-			}
+				assertFalse(VertexBiPartition.isPartition(g, v -> true));
+				assertFalse(VertexBiPartition.isPartition(g, v -> false));
+			});
 		});
 	}
 

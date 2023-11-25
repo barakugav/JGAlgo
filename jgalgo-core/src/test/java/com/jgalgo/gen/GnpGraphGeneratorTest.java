@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 
 public class GnpGraphGeneratorTest extends TestBase {
 
@@ -70,7 +69,7 @@ public class GnpGraphGeneratorTest extends TestBase {
 
 	@Test
 	public void testEdges() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			GnpGraphGenerator<Integer, Integer> g =
 					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
 			g.setSeed(0x2157279ef75b0caaL);
@@ -82,12 +81,12 @@ public class GnpGraphGeneratorTest extends TestBase {
 			g.setEdges(new AtomicInteger()::getAndIncrement);
 			Graph<Integer, Integer> g1 = g.generate();
 			assertEquals(range(g1.edges().size()), g1.edges());
-		}
+		});
 	}
 
 	@Test
 	public void testDirected() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			GnpGraphGenerator<Integer, Integer> g =
 					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
 			g.setSeed(0x2d3d96ffc9c5d464L);
@@ -104,23 +103,23 @@ public class GnpGraphGeneratorTest extends TestBase {
 			/* check undirected */
 			g.setDirected(false);
 			assertFalse(g.generate().isDirected());
-		}
+		});
 	}
 
 	@Test
 	public void testEdgeProbabilities() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			GnpGraphGenerator<Integer, Integer> g =
 					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
 			assertThrows(IllegalArgumentException.class, () -> g.setEdgeProbability(1.1));
 			assertThrows(IllegalArgumentException.class, () -> g.setEdgeProbability(-0.1));
 			g.setEdgeProbability(0.5);
-		}
+		});
 	}
 
 	@Test
 	public void testSelfEdges() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			GnpGraphGenerator<Integer, Integer> g =
 					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
 			g.setVertices(12, new AtomicInteger()::getAndIncrement);
@@ -140,13 +139,13 @@ public class GnpGraphGeneratorTest extends TestBase {
 			g.setSelfEdges(false);
 			Graph<Integer, Integer> g3 = g.generate();
 			assertFalse(g3.edges().stream().anyMatch(e -> g3.edgeSource(e).equals(g3.edgeTarget(e))));
-		}
+		});
 	}
 
 	@SuppressWarnings("boxing")
 	@Test
 	public void testMutability() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			GnpGraphGenerator<Integer, Integer> g =
 					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
 			g.setVertices(12, new AtomicInteger()::getAndIncrement);
@@ -159,7 +158,7 @@ public class GnpGraphGeneratorTest extends TestBase {
 			Graph<Integer, Integer> gMutable = g.generateMutable();
 			gMutable.addVertex(50);
 			assertTrue(gMutable.vertices().contains(50));
-		}
+		});
 	}
 
 }

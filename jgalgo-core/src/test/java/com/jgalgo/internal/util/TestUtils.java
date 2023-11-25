@@ -24,6 +24,7 @@ import java.util.Random;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Assertions;
 import com.jgalgo.graph.Graph;
+import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -180,6 +181,52 @@ public class TestUtils {
 
 	public static void assertEqualsBool(boolean expected, boolean actual) {
 		Assertions.assertEquals(Boolean.valueOf(expected), Boolean.valueOf(actual));
+	}
+
+	public static void foreachBoolConfig(RunnableWith1BoolConfig test) {
+		for (boolean cfg1 : BooleanList.of(false, true))
+			test.run(cfg1);
+	}
+
+	public static void foreachBoolConfig(RunnableWith2BoolConfig test) {
+		for (boolean cfg1 : BooleanList.of(false, true))
+			for (boolean cfg2 : BooleanList.of(false, true))
+				test.run(cfg1, cfg2);
+	}
+
+	public static void foreachBoolConfig(RunnableWith3BoolConfig test) {
+		for (boolean cfg1 : BooleanList.of(false, true))
+			for (boolean cfg2 : BooleanList.of(false, true))
+				for (boolean cfg3 : BooleanList.of(false, true))
+					test.run(cfg1, cfg2, cfg3);
+	}
+
+	public static void foreachBoolConfig(RunnableWith4BoolConfig test) {
+		for (boolean cfg1 : BooleanList.of(false, true))
+			for (boolean cfg2 : BooleanList.of(false, true))
+				for (boolean cfg3 : BooleanList.of(false, true))
+					for (boolean cfg4 : BooleanList.of(false, true))
+						test.run(cfg1, cfg2, cfg3, cfg4);
+	}
+
+	@FunctionalInterface
+	public static interface RunnableWith1BoolConfig {
+		public void run(boolean cfg1);
+	}
+
+	@FunctionalInterface
+	public static interface RunnableWith2BoolConfig {
+		public void run(boolean cfg1, boolean cfg2);
+	}
+
+	@FunctionalInterface
+	public static interface RunnableWith3BoolConfig {
+		public void run(boolean cfg1, boolean cfg2, boolean cfg3);
+	}
+
+	@FunctionalInterface
+	public static interface RunnableWith4BoolConfig {
+		public void run(boolean cfg1, boolean cfg2, boolean cfg3, boolean cfg4);
 	}
 
 }

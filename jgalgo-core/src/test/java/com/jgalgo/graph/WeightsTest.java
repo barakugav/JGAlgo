@@ -193,120 +193,117 @@ public class WeightsTest extends TestBase {
 		final int n = 1024;
 		final int m = 5000;
 
-		for (boolean intGraph : new boolean[] { false, true }) {
-			for (boolean removeEdges : new boolean[] { false, true }) {
-				Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(n).m(m)
-						.directed(false).parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+		foreachBoolConfig((intGraph, removeEdges) -> {
+			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(n).m(m)
+					.directed(false).parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
 
-				String wKey = "edgeWeight";
-				Weights<Integer, T> weights = edgeWeightsAdder.apply(g, wKey);
-				assertEquals(defaultWeight, weights.defaultWeightAsObj());
+			String wKey = "edgeWeight";
+			Weights<Integer, T> weights = edgeWeightsAdder.apply(g, wKey);
+			assertEquals(defaultWeight, weights.defaultWeightAsObj());
 
-				Int2ObjectMap<T> assignedEdges = new Int2ObjectOpenHashMap<>();
-				assignedEdges.defaultReturnValue(defaultWeight);
-				while (assignedEdges.size() < g.edges().size() * 3 / 4) {
-					int op = rand.nextInt(10);
+			Int2ObjectMap<T> assignedEdges = new Int2ObjectOpenHashMap<>();
+			assignedEdges.defaultReturnValue(defaultWeight);
+			while (assignedEdges.size() < g.edges().size() * 3 / 4) {
+				int op = rand.nextInt(10);
 
-					if (op == 9 && removeEdges) {
-						int e = rand.nextBoolean() ? Graphs.randEdge(g, rand)
-								: g.indexGraphEdgesMap().indexToId(g.edges().size() - 1);
-						g.removeEdge(e);
-						assignedEdges.remove(e);
-						continue;
-					}
+				if (op == 9 && removeEdges) {
+					int e = rand.nextBoolean() ? Graphs.randEdge(g, rand)
+							: g.indexGraphEdgesMap().indexToId(g.edges().size() - 1);
+					g.removeEdge(e);
+					assignedEdges.remove(e);
+					continue;
+				}
 
-					if (op % 2 == 0) {
+				if (op % 2 == 0) {
 
-						// Choose random unassigned edge
-						int e;
+					// Choose random unassigned edge
+					int e;
+					do {
+						e = Graphs.randEdge(g, rand);
+					} while (assignedEdges.containsKey(e));
+
+					// assigned to it a new value
+					T val = weightFactory.get();
+					weights.setAsObj(e, val);
+					assignedEdges.put(e, val);
+
+				} else {
+					int e = Graphs.randEdge(g, rand);
+					T actual = weights.getAsObj(e);
+					T expected = assignedEdges.get(e);
+					assertEquals(expected, actual);
+					if (weights instanceof WeightFunction) {
+						@SuppressWarnings("unchecked")
+						WeightFunction<Integer> weights0 = ((WeightFunction<Integer>) weights);
+
+						int e2;
 						do {
-							e = Graphs.randEdge(g, rand);
-						} while (assignedEdges.containsKey(e));
+							e2 = Graphs.randEdge(g, rand);
+						} while (assignedEdges.containsKey(e2));
 
-						// assigned to it a new value
-						T val = weightFactory.get();
-						weights.setAsObj(e, val);
-						assignedEdges.put(e, val);
-
-					} else {
-						int e = Graphs.randEdge(g, rand);
-						T actual = weights.getAsObj(e);
-						T expected = assignedEdges.get(e);
-						assertEquals(expected, actual);
-						if (weights instanceof WeightFunction) {
-							@SuppressWarnings("unchecked")
-							WeightFunction<Integer> weights0 = ((WeightFunction<Integer>) weights);
-
-							int e2;
-							do {
-								e2 = Graphs.randEdge(g, rand);
-							} while (assignedEdges.containsKey(e2));
-
-							assertEquals(((Number) weights.getAsObj(e)).doubleValue(), weights0.weight(e));
-							if (weights instanceof WeightFunctionInt)
-								assertEquals(((Number) weights.getAsObj(e)).intValue(),
-										((WeightFunctionInt<Integer>) weights0).weightInt(e));
-							assertEquals(Double.compare(weights0.weight(e), weights0.weight(e2)),
-									weights0.compare(e, e2));
-						}
-
+						assertEquals(((Number) weights.getAsObj(e)).doubleValue(), weights0.weight(e));
+						if (weights instanceof WeightFunctionInt)
+							assertEquals(((Number) weights.getAsObj(e)).intValue(),
+									((WeightFunctionInt<Integer>) weights0).weightInt(e));
+						assertEquals(Double.compare(weights0.weight(e), weights0.weight(e2)), weights0.compare(e, e2));
 					}
+
 				}
-
-				int nonExistingEdge0;
-				do {
-					nonExistingEdge0 = rand.nextInt();
-				} while (g.edges().contains(nonExistingEdge0));
-				final int nonExistingEdge = nonExistingEdge0;
-				assertThrows(NoSuchEdgeException.class, () -> weights.getAsObj(-1));
-				assertThrows(NoSuchEdgeException.class, () -> weights.getAsObj(nonExistingEdge));
-				assertThrows(NoSuchEdgeException.class, () -> weights.setAsObj(-1, weightFactory.get()));
-				assertThrows(NoSuchEdgeException.class, () -> weights.setAsObj(nonExistingEdge, weightFactory.get()));
-
-				Weights<Integer, T> weightsImmutable = g.immutableView().getEdgesWeights(wKey);
-				for (int e : g.edges())
-					assertEquals(weights.getAsObj(e), weightsImmutable.getAsObj(e));
-				assertEquals(weights.defaultWeightAsObj(), weightsImmutable.defaultWeightAsObj());
-				assertThrows(UnsupportedOperationException.class, () -> {
-					Iterator<Integer> eit = g.edges().iterator();
-					Integer e1 = eit.next(), e2 = eit.next();
-					weightsImmutable.setAsObj(e1, weightsImmutable.getAsObj(e2));
-				});
-
-				assertTrue(WeightsImpl.isEqual(g.edges(), weights, weights));
-				assertTrue(WeightsImpl.isEqual(g.edges(), weights, weightsImmutable));
-				assertTrue(WeightsImpl.isEqual(g.edges(), weightsImmutable, weightsImmutable));
-
-				IndexIdMap<Integer> eiMap = g.indexGraphEdgesMap();
-				IWeights<T> indexWeights = IndexIdMaps.idToIndexWeights(weights, eiMap);
-				Weights<Integer, T> weights2 = unknownImplementationWrap(weights);
-				IWeights<T> indexWeights2 = IndexIdMaps.idToIndexWeights(weights2, eiMap);
-				assertEquals(weights.defaultWeightAsObj(), indexWeights.defaultWeightAsObj());
-				assertEquals(weights.defaultWeightAsObj(), indexWeights2.defaultWeightAsObj());
-				for (int e : g.edges()) {
-					switch (rand.nextInt(3)) {
-						case 0:
-							weights.setAsObj(e, weightFactory.get());
-							break;
-						case 1:
-							indexWeights.setAsObj(eiMap.idToIndex(e), weightFactory.get());
-							break;
-						case 2:
-							indexWeights2.setAsObj(eiMap.idToIndex(e), weightFactory.get());
-							break;
-						default:
-							break;
-					}
-				}
-				for (int e : g.edges()) {
-					assertEquals(weights.getAsObj(e), indexWeights.getAsObj(eiMap.idToIndex(e)));
-					assertEquals(weights.getAsObj(e), indexWeights2.getAsObj(eiMap.idToIndex(e)));
-				}
-
-				/* clear graph, should clear weights as well */
-				g.clear();
 			}
-		}
+
+			int nonExistingEdge0;
+			do {
+				nonExistingEdge0 = rand.nextInt();
+			} while (g.edges().contains(nonExistingEdge0));
+			final int nonExistingEdge = nonExistingEdge0;
+			assertThrows(NoSuchEdgeException.class, () -> weights.getAsObj(-1));
+			assertThrows(NoSuchEdgeException.class, () -> weights.getAsObj(nonExistingEdge));
+			assertThrows(NoSuchEdgeException.class, () -> weights.setAsObj(-1, weightFactory.get()));
+			assertThrows(NoSuchEdgeException.class, () -> weights.setAsObj(nonExistingEdge, weightFactory.get()));
+
+			Weights<Integer, T> weightsImmutable = g.immutableView().getEdgesWeights(wKey);
+			for (int e : g.edges())
+				assertEquals(weights.getAsObj(e), weightsImmutable.getAsObj(e));
+			assertEquals(weights.defaultWeightAsObj(), weightsImmutable.defaultWeightAsObj());
+			assertThrows(UnsupportedOperationException.class, () -> {
+				Iterator<Integer> eit = g.edges().iterator();
+				Integer e1 = eit.next(), e2 = eit.next();
+				weightsImmutable.setAsObj(e1, weightsImmutable.getAsObj(e2));
+			});
+
+			assertTrue(WeightsImpl.isEqual(g.edges(), weights, weights));
+			assertTrue(WeightsImpl.isEqual(g.edges(), weights, weightsImmutable));
+			assertTrue(WeightsImpl.isEqual(g.edges(), weightsImmutable, weightsImmutable));
+
+			IndexIdMap<Integer> eiMap = g.indexGraphEdgesMap();
+			IWeights<T> indexWeights = IndexIdMaps.idToIndexWeights(weights, eiMap);
+			Weights<Integer, T> weights2 = unknownImplementationWrap(weights);
+			IWeights<T> indexWeights2 = IndexIdMaps.idToIndexWeights(weights2, eiMap);
+			assertEquals(weights.defaultWeightAsObj(), indexWeights.defaultWeightAsObj());
+			assertEquals(weights.defaultWeightAsObj(), indexWeights2.defaultWeightAsObj());
+			for (int e : g.edges()) {
+				switch (rand.nextInt(3)) {
+					case 0:
+						weights.setAsObj(e, weightFactory.get());
+						break;
+					case 1:
+						indexWeights.setAsObj(eiMap.idToIndex(e), weightFactory.get());
+						break;
+					case 2:
+						indexWeights2.setAsObj(eiMap.idToIndex(e), weightFactory.get());
+						break;
+					default:
+						break;
+				}
+			}
+			for (int e : g.edges()) {
+				assertEquals(weights.getAsObj(e), indexWeights.getAsObj(eiMap.idToIndex(e)));
+				assertEquals(weights.getAsObj(e), indexWeights2.getAsObj(eiMap.idToIndex(e)));
+			}
+
+			/* clear graph, should clear weights as well */
+			g.clear();
+		});
 	}
 
 	private static Supplier<Object> weightFactoryObject() {

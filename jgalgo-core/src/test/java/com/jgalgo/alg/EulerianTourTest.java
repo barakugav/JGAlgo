@@ -31,7 +31,6 @@ import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -304,7 +303,7 @@ public class EulerianTourTest extends TestBase {
 	@SuppressWarnings("boxing")
 	@Test
 	public void noEulerianTourUndirected() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			Graph<Integer, Integer> g = intGraph ? IntGraph.newUndirected() : Graph.newUndirected();
 
 			/* more than 2 vertices with odd degree */
@@ -334,13 +333,13 @@ public class EulerianTourTest extends TestBase {
 			assertFalse(EulerianTourAlgo.newInstance().isEulerian(g));
 			assertThrows(IllegalArgumentException.class, () -> EulerianTourAlgo.newInstance().computeEulerianTour(g));
 			g.clear();
-		}
+		});
 	}
 
 	@SuppressWarnings("boxing")
 	@Test
 	public void noEulerianTourDirected() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			Graph<Integer, Integer> g = intGraph ? IntGraph.newDirected() : Graph.newDirected();
 
 			/* more than one vertices with extra out-edge */
@@ -402,7 +401,7 @@ public class EulerianTourTest extends TestBase {
 			assertFalse(EulerianTourAlgo.newInstance().isEulerian(g));
 			assertThrows(IllegalArgumentException.class, () -> EulerianTourAlgo.newInstance().computeEulerianTour(g));
 			g.clear();
-		}
+		});
 	}
 
 	@Test
@@ -425,7 +424,7 @@ public class EulerianTourTest extends TestBase {
 
 	@Test
 	public void isEulerianTourDuplicateEdges() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		foreachBoolConfig(directed -> {
 			IntGraph g = directed ? IntGraph.newUndirected() : IntGraph.newDirected();
 			g.addVertex(0);
 			g.addVertex(1);
@@ -440,12 +439,12 @@ public class EulerianTourTest extends TestBase {
 			assertTrue(EulerianTourAlgo.isEulerianTour(g, IntList.of(0, 1, 2, 3, 4)));
 			assertFalse(EulerianTourAlgo.isEulerianTour(g, IntList.of(3, 0, 1, 2, 3)));
 			assertFalse(EulerianTourAlgo.isEulerianTour(g, IntList.of(3, 4, 2, 3, 0)));
-		}
+		});
 	}
 
 	@Test
 	public void isEulerianTourNotAPath() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		foreachBoolConfig(directed -> {
 			IntGraph g = directed ? IntGraph.newUndirected() : IntGraph.newDirected();
 			g.addVertex(0);
 			g.addVertex(1);
@@ -460,7 +459,7 @@ public class EulerianTourTest extends TestBase {
 			assertTrue(EulerianTourAlgo.isEulerianTour(g, IntList.of(0, 1, 2, 3, 4)));
 			assertFalse(EulerianTourAlgo.isEulerianTour(g, IntList.of(3, 0, 1, 2, 4)));
 			assertFalse(EulerianTourAlgo.isEulerianTour(g, IntList.of(3, 4, 2, 0, 1)));
-		}
+		});
 	}
 
 	@Test

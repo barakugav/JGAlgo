@@ -29,7 +29,6 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -113,7 +112,7 @@ public class ClosuresEnumeratorSchrageBakerTest extends TestBase {
 	@SuppressWarnings("boxing")
 	@Test
 	public void isClosure() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			Graph<Integer, Integer> g = intGraph ? IntGraph.newDirected() : Graph.newDirected();
 			g.addVertex(0);
 			g.addVertex(1);
@@ -129,7 +128,7 @@ public class ClosuresEnumeratorSchrageBakerTest extends TestBase {
 			assertFalse(ClosuresEnumerator.isClosure(g, IntSet.of(0, 1)));
 			assertFalse(ClosuresEnumerator.isClosure(g, IntSet.of(1, 2)));
 			assertTrue(ClosuresEnumerator.isClosure(g, IntSet.of(0, 1, 2)));
-		}
+		});
 	}
 
 	@Test

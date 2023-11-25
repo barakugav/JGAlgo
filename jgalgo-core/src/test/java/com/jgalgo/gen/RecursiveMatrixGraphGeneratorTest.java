@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 
 public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 
@@ -71,31 +70,28 @@ public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 
 	@Test
 	public void testEdges() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
-			for (boolean directed : BooleanList.of(false, true)) {
-				RecursiveMatrixGraphGenerator<Integer, Integer> g =
-						intGraph ? RecursiveMatrixGraphGenerator.newIntInstance()
-								: RecursiveMatrixGraphGenerator.newInstance();
-				g.setSeed(0x28522dc13436389fL);
-				g.setDirected(directed);
-				g.setVertices(range(100));
+		foreachBoolConfig((intGraph, directed) -> {
+			RecursiveMatrixGraphGenerator<Integer, Integer> g =
+					intGraph ? RecursiveMatrixGraphGenerator.newIntInstance()
+							: RecursiveMatrixGraphGenerator.newInstance();
+			g.setSeed(0x28522dc13436389fL);
+			g.setDirected(directed);
+			g.setVertices(range(100));
 
-				/* edges were not set yet */
-				assertThrows(IllegalStateException.class, () -> g.generate());
+			/* edges were not set yet */
+			assertThrows(IllegalStateException.class, () -> g.generate());
 
-				g.setEdges(5, new AtomicInteger()::getAndIncrement);
-				assertEquals(range(0, 5), g.generate().edges());
-				assertEquals(range(5, 10), g.generate().edges());
+			g.setEdges(5, new AtomicInteger()::getAndIncrement);
+			assertEquals(range(0, 5), g.generate().edges());
+			assertEquals(range(5, 10), g.generate().edges());
 
-				assertThrows(IllegalArgumentException.class,
-						() -> g.setEdges(-5, new AtomicInteger()::getAndIncrement));
-			}
-		}
+			assertThrows(IllegalArgumentException.class, () -> g.setEdges(-5, new AtomicInteger()::getAndIncrement));
+		});
 	}
 
 	@Test
 	public void testDirected() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			RecursiveMatrixGraphGenerator<Integer, Integer> g =
 					intGraph ? RecursiveMatrixGraphGenerator.newIntInstance()
 							: RecursiveMatrixGraphGenerator.newInstance();
@@ -113,12 +109,12 @@ public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 			/* check undirected */
 			g.setDirected(false);
 			assertFalse(g.generate().isDirected());
-		}
+		});
 	}
 
 	@Test
 	public void testEdgeProbabilities() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			RecursiveMatrixGraphGenerator<Integer, Integer> g =
 					intGraph ? RecursiveMatrixGraphGenerator.newIntInstance()
 							: RecursiveMatrixGraphGenerator.newInstance();
@@ -139,12 +135,12 @@ public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 			g.setDirected(true);
 			g.setEdgeProbabilities(0.3, 0.2, 0.4, 0.1);
 			assertNotNull(g.generate());
-		}
+		});
 	}
 
 	@Test
 	public void testTooManyEdges() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			RecursiveMatrixGraphGenerator<Integer, Integer> g =
 					intGraph ? RecursiveMatrixGraphGenerator.newIntInstance()
 							: RecursiveMatrixGraphGenerator.newInstance();
@@ -153,13 +149,13 @@ public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 			g.setEdges(100, new AtomicInteger()::getAndIncrement);
 
 			assertThrows(IllegalArgumentException.class, () -> g.generate());
-		}
+		});
 	}
 
 	@SuppressWarnings("boxing")
 	@Test
 	public void testMutability() {
-		for (boolean intGraph : BooleanList.of(false, true)) {
+		foreachBoolConfig(intGraph -> {
 			RecursiveMatrixGraphGenerator<Integer, Integer> g =
 					intGraph ? RecursiveMatrixGraphGenerator.newIntInstance()
 							: RecursiveMatrixGraphGenerator.newInstance();
@@ -173,7 +169,7 @@ public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 			Graph<Integer, Integer> gMutable = g.generateMutable();
 			gMutable.addVertex(50);
 			assertTrue(gMutable.vertices().contains(50));
-		}
+		});
 	}
 
 }
