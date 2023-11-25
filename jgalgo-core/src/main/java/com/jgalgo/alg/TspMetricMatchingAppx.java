@@ -60,7 +60,11 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 		/*
 		 * Build graph for the matching calculation, containing only vertices with odd degree from the MST
 		 */
-		int[] degree = GraphsUtils.calcDegree(g, mst);
+		int[] degree = new int[g.vertices().size()];
+		for (int e : mst) {
+			degree[g.edgeSource(e)]++;
+			degree[g.edgeTarget(e)]++;
+		}
 		int mGn = 0;
 		int[] mVtoV = new int[n];
 		for (int u = 0; u < n; u++)

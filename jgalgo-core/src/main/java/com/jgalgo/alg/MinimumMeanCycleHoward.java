@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.function.IntPredicate;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -195,8 +196,8 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 		if (g.isAllowSelfEdges()) {
 			int bestSelfEdge = 1;
 			double bestSelfEdgeWeight = Double.POSITIVE_INFINITY;
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
-				if (g.edgeSource(e) == g.edgeTarget(e) && w.weight(e) < bestSelfEdgeWeight) {
+			for (int e : Graphs.selfEdges(g)) {
+				if (w.weight(e) < bestSelfEdgeWeight) {
 					bestSelfEdge = e;
 					bestSelfEdgeWeight = w.weight(e);
 				}

@@ -16,6 +16,7 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
@@ -55,10 +56,7 @@ class ClosuresEnumeratorSchrageBaker extends ClosuresEnumerators.AbstractImpl {
 			/* The strongly connected components of the graphs are the trivial vertices, no cycles exists */
 			/* Self edges still might exists */
 			if (g.isAllowSelfEdges()) {
-				int selfEdges = 0;
-				for (int m = g.edges().size(), e = 0; e < m; e++)
-					if (g.edgeSource(e) == g.edgeTarget(e))
-						selfEdges++;
+				int selfEdges = Graphs.selfEdges(g).size();
 				if (selfEdges > 0) {
 					IndexGraphBuilder g0 = IndexGraphBuilder.newDirected();
 					g0.expectedVerticesNum(n);

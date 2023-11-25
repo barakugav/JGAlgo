@@ -21,7 +21,6 @@ import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import com.jgalgo.alg.BipartiteGraphs;
-import com.jgalgo.alg.GraphsUtils;
 import com.jgalgo.alg.Trees;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
@@ -79,12 +78,12 @@ public class Assertions {
 		}
 
 		public static void noSelfEdges(IntGraph g, String msg) {
-			if (GraphsUtils.containsSelfEdges(g))
+			if (!com.jgalgo.graph.Graphs.selfEdges(g).isEmpty())
 				throw new IllegalArgumentException(msg);
 		}
 
 		public static void noParallelEdges(IntGraph g, String msg) {
-			if (GraphsUtils.containsParallelEdges(g))
+			if (com.jgalgo.graph.Graphs.containsParallelEdges(g))
 				throw new IllegalArgumentException(msg);
 		}
 

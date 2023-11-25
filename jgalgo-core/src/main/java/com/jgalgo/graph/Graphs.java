@@ -26,11 +26,15 @@ import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterables;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectIterables;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 /**
  * Static methods class for graphs.
@@ -2766,6 +2770,125 @@ public class Graphs {
 		}
 		s.append('}');
 		return s.toString();
+	}
+
+	/**
+	 * Get a view of all the self edges in a graph.
+	 *
+	 * <p>
+	 * The returned set is a view, namely it will be updated when the graph is updated.
+	 *
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     a view of all the self edges in the graph
+	 */
+	@SuppressWarnings("unchecked")
+	public static <V, E> Set<E> selfEdges(Graph<V, E> g) {
+		if (g instanceof IntGraph)
+			return (Set<E>) selfEdges((IntGraph) g);
+		if (!g.isAllowSelfEdges())
+			return ObjectSets.emptySet();
+		IntSet indexSelfEdges = selfEdges(g.indexGraph());
+		return IndexIdMaps.indexToIdSet(indexSelfEdges, g.indexGraphEdgesMap());
+	}
+
+	/**
+	 * Get a view of all the self edges in an int graph.
+	 *
+	 * <p>
+	 * The returned set is a view, namely it will be updated when the graph is updated.
+	 *
+	 * @param  g an int graph
+	 * @return   a view of all the self edges in the graph
+	 */
+	public static IntSet selfEdges(IntGraph g) {
+		if (!g.isAllowSelfEdges())
+			return IntSets.EMPTY_SET;
+		if (g instanceof IndexGraph)
+			return selfEdges((IndexGraph) g);
+		IntSet indexSelfEdges = selfEdges(g.indexGraph());
+		return IndexIdMaps.indexToIdSet(indexSelfEdges, g.indexGraphEdgesMap());
+	}
+
+	private static IntSet selfEdges(IndexGraph g) {
+		return new AbstractIntSet() {
+
+			@Override
+			public boolean contains(int edge) {
+				return 0 <= edge && edge < g.edges().size() && g.edgeSource(edge) == g.edgeTarget(edge);
+			}
+
+			@Override
+			public int size() {
+				return (int) IntIterables.size(this);
+			}
+
+			@Override
+			public boolean isEmpty() {
+				return !iterator().hasNext();
+			}
+
+			@Override
+			public IntIterator iterator() {
+				return new IntIterator() {
+					final int m = g.edges().size();
+					int nextEdge = 0;
+					{
+						advance();
+					}
+
+					private void advance() {
+						for (; nextEdge < m; nextEdge++)
+							if (g.edgeSource(nextEdge) == g.edgeTarget(nextEdge))
+								break;
+					}
+
+					@Override
+					public boolean hasNext() {
+						return nextEdge < m;
+					}
+
+					@Override
+					public int nextInt() {
+						Assertions.Iters.hasNext(this);
+						int edge = nextEdge++;
+						advance();
+						return edge;
+					}
+				};
+			}
+		};
+	}
+
+	/**
+	 * Check whether a graph contain parallel edges.
+	 *
+	 * <p>
+	 * Two parallel edges are edges that have the same source and target vertices.
+	 *
+	 * @param  <V> the vertices type
+	 * @param  <E> the edges type
+	 * @param  g   a graph
+	 * @return     {@code true} if the graph contain at least one pair of parallel edges, else {@code false}
+	 */
+	public static <V, E> boolean containsParallelEdges(Graph<V, E> g) {
+		if (!g.isAllowParallelEdges())
+			return false;
+		IndexGraph ig = g.indexGraph();
+		int n = ig.vertices().size();
+		int[] lastVisit = new int[n];
+		for (int u = 0; u < n; u++) {
+			final int visitIdx = u + 1;
+			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
+				eit.nextInt();
+				int v = eit.targetInt();
+				if (lastVisit[v] == visitIdx)
+					return true;
+				lastVisit[v] = visitIdx;
+			}
+		}
+		return false;
 	}
 
 }

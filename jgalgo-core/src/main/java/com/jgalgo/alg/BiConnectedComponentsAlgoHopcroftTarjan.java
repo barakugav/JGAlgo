@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
@@ -322,8 +323,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 
 					/* search for self edges, which are not added to any bicc */
 					if (g.isAllowSelfEdges()) {
-						assert g.edges().intStream().filter(e -> g.edgeSource(e) == g.edgeTarget(e))
-								.allMatch(e -> edge2bicc[e] == -1);
+						assert Graphs.selfEdges(g).intStream().allMatch(e -> edge2bicc[e] == -1);
 						for (int u = 0; u < n; u++) {
 							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 								eit.nextInt();

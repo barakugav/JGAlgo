@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeights;
@@ -882,23 +883,23 @@ class MinimumCostFlows {
 			IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;
 			if (WeightFunction.isInteger(cost)) {
 				IWeightFunctionInt costInt = (IWeightFunctionInt) cost;
-				for (int m = g.edges().size(), e = 0; e < m; e++)
-					if (g.edgeSource(e) == g.edgeTarget(e) && costInt.weightInt(e) < 0)
+				for (int e : Graphs.selfEdges(g))
+					if (costInt.weightInt(e) < 0)
 						flow[e] = capacityInt.weightInt(e);
 			} else {
-				for (int m = g.edges().size(), e = 0; e < m; e++)
-					if (g.edgeSource(e) == g.edgeTarget(e) && cost.weight(e) < 0)
+				for (int e : Graphs.selfEdges(g))
+					if (cost.weight(e) < 0)
 						flow[e] = capacityInt.weightInt(e);
 			}
 		} else {
 			if (WeightFunction.isInteger(cost)) {
 				IWeightFunctionInt costInt = (IWeightFunctionInt) cost;
-				for (int m = g.edges().size(), e = 0; e < m; e++)
-					if (g.edgeSource(e) == g.edgeTarget(e) && costInt.weightInt(e) < 0)
+				for (int e : Graphs.selfEdges(g))
+					if (costInt.weightInt(e) < 0)
 						flow[e] = capacity.weight(e);
 			} else {
-				for (int m = g.edges().size(), e = 0; e < m; e++)
-					if (g.edgeSource(e) == g.edgeTarget(e) && cost.weight(e) < 0)
+				for (int e : Graphs.selfEdges(g))
+					if (cost.weight(e) < 0)
 						flow[e] = capacity.weight(e);
 			}
 		}

@@ -16,9 +16,11 @@
 package com.jgalgo.graph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -616,6 +618,50 @@ public class GraphsTest extends TestBase {
 			edgeWeights7.set(e, rand.nextBoolean());
 			edgeWeights8.set(e, (char) ('0' + rand.nextInt(10)));
 			edgeWeights9.set(e, String.valueOf(rand.nextInt(100)));
+		}
+	}
+
+	@Test
+	public void selfEdgesView() {
+		final long seed = 0xd66826171ad46613L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
+		for (boolean intGraph : BooleanList.of(false, true)) {
+			for (boolean directed : BooleanList.of(false, true)) {
+				for (boolean index : BooleanList.of(false, true)) {
+					for (boolean withSelfEdges : BooleanList.of(false, true)) {
+						Graph<Integer, Integer> g0 = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph)
+								.n(100).m(400).directed(directed).parallelEdges(true).selfEdges(withSelfEdges)
+								.cycles(true).connected(false).build();
+						Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
+
+						Set<Integer> selfEdges = Graphs.selfEdges(g);
+						Set<Integer> expected = g.edges().stream().filter(e -> g.edgeSource(e).equals(g.edgeTarget(e)))
+								.collect(Collectors.toSet());
+
+						assertEqualsBool(expected.isEmpty(), selfEdges.isEmpty());
+						assertEquals(expected.size(), selfEdges.size());
+						assertEquals(expected, selfEdges);
+
+						for (Integer e : g.edges())
+							assertEqualsBool(expected.contains(e), selfEdges.contains(e));
+						for (int i = 0; i < 20; i++) {
+							Integer nonExistingEdge;
+							do {
+								nonExistingEdge = Integer.valueOf(rand.nextInt());
+							} while (g.edges().contains(nonExistingEdge));
+							assertFalse(selfEdges.contains(nonExistingEdge));
+						}
+
+						Set<Integer> iteratedEdges = new IntOpenHashSet();
+						for (Integer e : selfEdges) {
+							assertTrue(g.edgeSource(e).equals(g.edgeTarget(e)));
+							iteratedEdges.add(e);
+						}
+						assertEquals(expected, iteratedEdges);
+					}
+				}
+			}
 		}
 	}
 
