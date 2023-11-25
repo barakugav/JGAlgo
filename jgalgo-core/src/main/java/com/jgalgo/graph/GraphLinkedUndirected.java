@@ -110,9 +110,9 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 		for (int p = edgesHead[swappedIdx], next; p != -1; p = next) {
 			next = next(p, swappedIdx);
-			if (edgeSource(p) == swappedIdx)
+			if (source(p) == swappedIdx)
 				replaceEdgeSource(p, removedIdx);
-			if (edgeTarget(p) == swappedIdx)
+			if (target(p) == swappedIdx)
 				replaceEdgeTarget(p, removedIdx);
 		}
 
@@ -142,7 +142,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	}
 
 	private void addEdgeToLists(int e) {
-		int source = edgeSource(e), target = edgeTarget(e);
+		int source = source(e), target = target(e);
 		int next = edgesHead[source];
 		if (next != -1) {
 			setNext(e, source, next);
@@ -163,7 +163,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	@Override
 	void removeEdgeLast(int edge) {
-		int u = edgeSource(edge), v = edgeTarget(edge);
+		int u = source(edge), v = target(edge);
 		removeEdgePointers(edge, u);
 		if (u != v)
 			removeEdgePointers(edge, v);
@@ -172,7 +172,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	@Override
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
-		int u = edgeSource(removedIdx), v = edgeTarget(removedIdx);
+		int u = source(removedIdx), v = target(removedIdx);
 		removeEdgePointers(removedIdx, u);
 		if (u != v)
 			removeEdgePointers(removedIdx, v);
@@ -180,7 +180,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	}
 
 	private void edgeSwapAndRemove2(int removedIdx, int swappedIdx) {
-		int u = edgeSource(swappedIdx), v = edgeTarget(swappedIdx);
+		int u = source(swappedIdx), v = target(swappedIdx);
 		int prev, next;
 		if ((prev = prevu[swappedIdx]) != -1) {
 			setNext(prev, u, removedIdx);
@@ -233,7 +233,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			setPrev(p, source, -1);
 
 			// update v list
-			if (edgeSource(p) != edgeTarget(p)) {
+			if (source(p) != target(p)) {
 				int target = edgeEndpoint(p, source);
 				removeEdgePointers(p, target);
 			}
@@ -281,7 +281,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	}
 
 	private int next(int e, int w) {
-		int source = edgeSource(e), target = edgeTarget(e);
+		int source = source(e), target = target(e);
 		if (w == source) {
 			return nextu[e];
 		} else {
@@ -291,7 +291,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	}
 
 	private int setNext(int e, int w, int n) {
-		int source = edgeSource(e), target = edgeTarget(e);
+		int source = source(e), target = target(e);
 		if (w == source) {
 			nextu[e] = n;
 		} else {
@@ -302,7 +302,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	}
 
 	private int prev(int e, int w) {
-		int source = edgeSource(e), target = edgeTarget(e);
+		int source = source(e), target = target(e);
 		if (w == source) {
 			return prevu[e];
 		} else {
@@ -312,7 +312,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	}
 
 	private int setPrev(int e, int w, int n) {
-		int source = edgeSource(e), target = edgeTarget(e);
+		int source = source(e), target = target(e);
 		if (w == source) {
 			prevu[e] = n;
 		} else {
@@ -375,7 +375,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 		@Override
 		public int targetInt() {
-			int u0 = edgeSource(last), v0 = edgeTarget(last);
+			int u0 = GraphLinkedUndirected.this.source(last), v0 = GraphLinkedUndirected.this.target(last);
 			return source == u0 ? v0 : u0;
 		}
 	}
@@ -396,7 +396,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 		@Override
 		public int sourceInt() {
-			int u0 = edgeSource(last), v0 = edgeTarget(last);
+			int u0 = GraphLinkedUndirected.this.source(last), v0 = GraphLinkedUndirected.this.target(last);
 			return target == u0 ? v0 : u0;
 		}
 

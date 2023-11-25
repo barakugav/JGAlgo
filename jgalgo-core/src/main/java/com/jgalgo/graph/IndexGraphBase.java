@@ -64,14 +64,24 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 	}
 
 	@Override
-	public int edgeSource(int edge) {
+	public final int edgeSource(int edge) {
 		Assertions.Graphs.checkId(edge, edges().size(), true);
-		return endpoints2Source(edgeEndpoints[edge]);
+		return source(edge);
 	}
 
 	@Override
-	public int edgeTarget(int edge) {
+	public final int edgeTarget(int edge) {
 		Assertions.Graphs.checkId(edge, edges().size(), true);
+		return target(edge);
+	}
+
+	/* unchecked version of edgeSource(edge) */
+	final int source(int edge) {
+		return endpoints2Source(edgeEndpoints[edge]);
+	}
+
+	/* unchecked version of edgeTarget(edge) */
+	final int target(int edge) {
 		return endpoints2Target(edgeEndpoints[edge]);
 	}
 
@@ -137,7 +147,7 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 
 		@Override
 		public boolean contains(int edge) {
-			return 0 <= edge && edge < edges().size() && (source == edgeSource(edge) || source == edgeTarget(edge));
+			return 0 <= edge && edge < edges().size() && (source == source(edge) || source == target(edge));
 		}
 
 		@Override
@@ -156,7 +166,7 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 
 		@Override
 		public boolean contains(int edge) {
-			return 0 <= edge && edge < edges().size() && (target == edgeSource(edge) || target == edgeTarget(edge));
+			return 0 <= edge && edge < edges().size() && (target == source(edge) || target == target(edge));
 		}
 
 		@Override
@@ -175,7 +185,7 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 
 		@Override
 		public boolean contains(int edge) {
-			return 0 <= edge && edge < edges().size() && source == edgeSource(edge);
+			return 0 <= edge && edge < edges().size() && source == source(edge);
 		}
 
 		@Override
@@ -194,7 +204,7 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 
 		@Override
 		public boolean contains(int edge) {
-			return 0 <= edge && edge < edges().size() && target == edgeTarget(edge);
+			return 0 <= edge && edge < edges().size() && target == target(edge);
 		}
 
 		@Override
@@ -235,7 +245,7 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 		public boolean contains(int edge) {
 			if (!(0 <= edge && edge < edges().size()))
 				return false;
-			int s = edgeSource(edge), t = edgeTarget(edge);
+			int s = source(edge), t = target(edge);
 			return (source == s && target == t) || (source == t && target == s);
 		}
 
@@ -257,7 +267,7 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 
 		@Override
 		public boolean contains(int edge) {
-			return 0 <= edge && edge < edges().size() && source == edgeSource(edge) && target == edgeTarget(edge);
+			return 0 <= edge && edge < edges().size() && source == source(edge) && target == target(edge);
 		}
 
 		@Override

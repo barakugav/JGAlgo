@@ -122,7 +122,7 @@ class GraphCsrDirected extends GraphCsrAbstractUnindexed {
 
 		@Override
 		public int targetInt() {
-			return edgeTarget(lastEdge);
+			return GraphCsrDirected.this.target(lastEdge);
 		}
 	}
 
@@ -136,7 +136,7 @@ class GraphCsrDirected extends GraphCsrAbstractUnindexed {
 
 		@Override
 		public int sourceInt() {
-			return edgeSource(lastEdge);
+			return GraphCsrDirected.this.source(lastEdge);
 		}
 
 		@Override

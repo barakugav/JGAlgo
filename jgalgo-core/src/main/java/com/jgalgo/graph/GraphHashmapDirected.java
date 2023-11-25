@@ -124,7 +124,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		}
 
 		for (int e : edgesOut[swappedIdx].values()) {
-			int target = edgeTarget(e);
+			int target = target(e);
 			replaceEdgeSource(e, removedIdx);
 			int oldVal1 = edgesIn[target].remove(swappedIdx);
 			int oldVal2 = edgesIn[target].put(removedIdx, e);
@@ -132,7 +132,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 			assert oldVal2 == -1;
 		}
 		for (int e : edgesIn[swappedIdx].values()) {
-			int source = edgeSource(e);
+			int source = source(e);
 			replaceEdgeTarget(e, removedIdx);
 			int oldVal1 = edgesOut[source].remove(swappedIdx);
 			int oldVal2 = edgesOut[source].put(removedIdx, e);
@@ -187,7 +187,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 	@Override
 	void removeEdgeLast(int edge) {
-		int source = edgeSource(edge), target = edgeTarget(edge);
+		int source = source(edge), target = target(edge);
 		int oldVal1 = edgesOut[source].remove(target);
 		int oldVal2 = edgesIn[target].remove(source);
 		assert edge == oldVal1;
@@ -197,8 +197,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 	@Override
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
-		int ur = edgeSource(removedIdx), vr = edgeTarget(removedIdx);
-		int us = edgeSource(swappedIdx), vs = edgeTarget(swappedIdx);
+		int ur = source(removedIdx), vr = target(removedIdx);
+		int us = source(swappedIdx), vs = target(swappedIdx);
 		assert edgesOut[ur] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
 		assert edgesIn[vr] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
 		assert edgesOut[us] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
@@ -232,7 +232,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 	@Override
 	public void reverseEdge(int edge) {
-		int source = edgeSource(edge), target = edgeTarget(edge);
+		checkEdge(edge);
+		int source = source(edge), target = target(edge);
 		if (source == target)
 			return;
 		if (getEdge(target, source) != -1)

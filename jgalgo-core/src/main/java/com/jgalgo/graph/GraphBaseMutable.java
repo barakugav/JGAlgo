@@ -197,6 +197,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 	@Override
 	public final void removeEdge(int edge) {
+		checkEdge(edge);
 		if (edge == edges.size - 1) {
 			removeEdgeLast(edge);
 		} else {

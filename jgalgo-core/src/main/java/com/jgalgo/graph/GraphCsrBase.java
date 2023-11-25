@@ -133,7 +133,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 		if (!containsSelfEdgesValid) {
 			containsSelfEdges = false;
 			for (int m = edges().size(), e = 0; e < m; e++) {
-				if (edgeSource(e) == edgeTarget(e)) {
+				if (source(e) == target(e)) {
 					containsSelfEdges = true;
 					break;
 				}

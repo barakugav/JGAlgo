@@ -151,7 +151,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	private void addEdgeToLists(int e) {
-		int u = edgeSource(e), v = edgeTarget(e), next;
+		int u = source(e), v = target(e), next;
 
 		if ((next = edgesOutHead[u]) != -1) {
 			edgePrevOut[next] = e;
@@ -188,7 +188,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		if ((prev = edgePrevOut[swappedIdx]) != -1) {
 			edgeNextOut[prev] = removedIdx;
 		} else {
-			edgesOutHead[edgeSource(swappedIdx)] = removedIdx;
+			edgesOutHead[source(swappedIdx)] = removedIdx;
 		}
 		if ((next = edgeNextOut[swappedIdx]) != -1)
 			edgePrevOut[next] = removedIdx;
@@ -196,7 +196,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		if ((prev = edgePrevIn[swappedIdx]) != -1) {
 			edgeNextIn[prev] = removedIdx;
 		} else {
-			edgesInHead[edgeTarget(swappedIdx)] = removedIdx;
+			edgesInHead[target(swappedIdx)] = removedIdx;
 		}
 		if ((next = edgeNextIn[swappedIdx]) != -1)
 			edgePrevIn[next] = removedIdx;
@@ -254,7 +254,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	private void removeEdgeOutPointers(int e) {
-		int u = edgeSource(e);
+		int u = source(e);
 		int next = edgeNextOut[e], prev = edgePrevOut[e];
 		if (prev == -1) {
 			edgesOutHead[u] = next;
@@ -270,7 +270,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	private void removeEdgeInPointers(int e) {
-		int v = edgeTarget(e);
+		int v = target(e);
 		int next = edgeNextIn[e], prev = edgePrevIn[e];
 		if (prev == -1) {
 			edgesInHead[v] = next;
@@ -287,7 +287,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 	@Override
 	public void reverseEdge(int edge) {
-		int source = edgeSource(edge), target = edgeTarget(edge);
+		checkEdge(edge);
+		int source = source(edge), target = target(edge);
 		if (source == target)
 			return;
 		removeEdgeOutPointers(edge);
@@ -350,12 +351,12 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 		@Override
 		public int sourceInt() {
-			return edgeSource(last);
+			return GraphLinkedDirected.this.source(last);
 		}
 
 		@Override
 		public int targetInt() {
-			return edgeTarget(last);
+			return GraphLinkedDirected.this.target(last);
 		}
 	}
 

@@ -100,7 +100,7 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 
 	@Override
 	void removeEdgeLast(int edge) {
-		int u = edgeSource(edge), v = edgeTarget(edge);
+		int u = source(edge), v = target(edge);
 		edges[u].data[v] = EdgeNone;
 		edgesNum[u]--;
 		if (u != v) {
@@ -112,8 +112,8 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 
 	@Override
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
-		int ur = edgeSource(removedIdx), vr = edgeTarget(removedIdx);
-		int us = edgeSource(swappedIdx), vs = edgeTarget(swappedIdx);
+		int ur = source(removedIdx), vr = target(removedIdx);
+		int us = source(swappedIdx), vs = target(swappedIdx);
 		edges[ur].data[vr] = EdgeNone;
 		edgesNum[ur]--;
 		if (ur != vr) {
@@ -160,9 +160,8 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 
 	@Override
 	public void clearEdges() {
-		final int m = edges().size();
-		for (int e = 0; e < m; e++) {
-			int u = edgeSource(e), v = edgeTarget(e);
+		for (int m = edges().size(), e = 0; e < m; e++) {
+			int u = source(e), v = target(e);
 			edges[u].data[v] = EdgeNone;
 			edges[v].data[u] = EdgeNone;
 		}

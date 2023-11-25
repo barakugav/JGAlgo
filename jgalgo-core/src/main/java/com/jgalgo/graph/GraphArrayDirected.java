@@ -177,7 +177,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 
 	@Override
 	void removeEdgeLast(int edge) {
-		int u = edgeSource(edge), v = edgeTarget(edge);
+		int u = source(edge), v = target(edge);
 		removeEdgeFromList(edgesOut, edgesOutNum, u, edge);
 		removeEdgeFromList(edgesIn, edgesInNum, v, edge);
 		super.removeEdgeLast(edge);
@@ -185,8 +185,8 @@ class GraphArrayDirected extends GraphArrayAbstract {
 
 	@Override
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
-		int ur = edgeSource(removedIdx), vr = edgeTarget(removedIdx);
-		int us = edgeSource(swappedIdx), vs = edgeTarget(swappedIdx);
+		int ur = source(removedIdx), vr = target(removedIdx);
+		int us = source(swappedIdx), vs = target(swappedIdx);
 		int[] urEdges = edgesOut[ur], vrEdges = edgesIn[vr];
 		int[] usEdges = edgesOut[us], vsEdges = edgesIn[vs];
 		int urIdx = edgeIndexOf(urEdges, edgesOutNum[ur], removedIdx);
@@ -216,7 +216,8 @@ class GraphArrayDirected extends GraphArrayAbstract {
 
 	@Override
 	public void reverseEdge(int edge) {
-		int u = edgeSource(edge), v = edgeTarget(edge);
+		checkEdge(edge);
+		int u = source(edge), v = target(edge);
 		if (u == v)
 			return;
 		removeEdgeFromList(edgesOut, edgesOutNum, u, edge);
@@ -291,7 +292,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 
 		@Override
 		public int targetInt() {
-			return edgeTarget(lastEdge);
+			return GraphArrayDirected.this.target(lastEdge);
 		}
 	}
 
@@ -303,7 +304,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 
 		@Override
 		public int sourceInt() {
-			return edgeSource(lastEdge);
+			return GraphArrayDirected.this.source(lastEdge);
 		}
 	}
 

@@ -150,7 +150,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 
 	@Override
 	void removeEdgeLast(int edge) {
-		int u = edgeSource(edge), v = edgeTarget(edge);
+		int u = source(edge), v = target(edge);
 		removeEdgeFromList(edges, edgesNum, u, edge);
 		if (u != v)
 			removeEdgeFromList(edges, edgesNum, v, edge);
@@ -159,7 +159,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 
 	@Override
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
-		int ur = edgeSource(removedIdx), vr = edgeTarget(removedIdx);
+		int ur = source(removedIdx), vr = target(removedIdx);
 		int[] urEdges = edges[ur];
 		int urIdx = edgeIndexOf(urEdges, edgesNum[ur], removedIdx);
 		urEdges[urIdx] = urEdges[--edgesNum[ur]];
@@ -169,7 +169,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 			vrEdges[vrIdx] = vrEdges[--edgesNum[vr]];
 		}
 
-		int us = edgeSource(swappedIdx), vs = edgeTarget(swappedIdx);
+		int us = source(swappedIdx), vs = target(swappedIdx);
 		int[] usEdges = edges[us];
 		int usIdx = edgeIndexOf(usEdges, edgesNum[us], swappedIdx);
 		usEdges[usIdx] = removedIdx;

@@ -193,7 +193,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		@Override
 		public int targetInt() {
 			int lastEdge = nextEdge - 1; // undefined behavior if nextInt() wasn't called
-			return edgeTarget(lastEdge);
+			return GraphCsrDirectedReindexed.this.target(lastEdge);
 		}
 	}
 
@@ -207,7 +207,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 
 		@Override
 		public int sourceInt() {
-			return edgeSource(lastEdge);
+			return GraphCsrDirectedReindexed.this.source(lastEdge);
 		}
 
 		@Override

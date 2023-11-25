@@ -161,7 +161,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 
 	@Override
 	void removeEdgeLast(int edge) {
-		int source = edgeSource(edge), target = edgeTarget(edge);
+		int source = source(edge), target = target(edge);
 		int oldVal1 = edges[source].remove(target);
 		assert edge == oldVal1;
 		if (source != target) {
@@ -173,7 +173,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 
 	@Override
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
-		int ur = edgeSource(removedIdx), vr = edgeTarget(removedIdx);
+		int ur = source(removedIdx), vr = target(removedIdx);
 		assert edges[ur] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
 		assert edges[vr] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
 		int oldVal1 = edges[ur].remove(vr);
@@ -183,7 +183,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 			assert oldVal2 == removedIdx;
 		}
 
-		int us = edgeSource(swappedIdx), vs = edgeTarget(swappedIdx);
+		int us = source(swappedIdx), vs = target(swappedIdx);
 		assert edges[us] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
 		assert edges[vs] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
 		int oldVal3 = edges[us].put(vs, removedIdx);

@@ -118,19 +118,20 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 			if (prevEdge != lastEdge) {
 				if (isDirected()) {
 					if (this instanceof EdgeIterOut) {
-						if (edgeSource(lastEdge) == vertex) {
-							int oldVal = clonedMap.replace(edgeTarget(lastEdge), prevEdge);
+						if (GraphHashmapAbstract.this.source(lastEdge) == vertex) {
+							int oldVal = clonedMap.replace(GraphHashmapAbstract.this.target(lastEdge), prevEdge);
 							assert oldVal == -1 || oldVal == lastEdge;
 						}
 					} else {
 						assert this instanceof EdgeIterIn;
-						if (edgeTarget(lastEdge) == vertex) {
-							int oldVal = clonedMap.replace(edgeSource(lastEdge), prevEdge);
+						if (GraphHashmapAbstract.this.target(lastEdge) == vertex) {
+							int oldVal = clonedMap.replace(GraphHashmapAbstract.this.source(lastEdge), prevEdge);
 							assert oldVal == -1 || oldVal == lastEdge;
 						}
 					}
 				} else {
-					int lastSource = edgeSource(lastEdge), lastTarget = edgeTarget(lastEdge);
+					int lastSource = GraphHashmapAbstract.this.source(lastEdge);
+					int lastTarget = GraphHashmapAbstract.this.target(lastEdge);
 					if (lastSource == vertex) {
 						int oldVal = clonedMap.replace(lastTarget, prevEdge);
 						assert oldVal == -1 || oldVal == lastEdge;
