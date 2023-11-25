@@ -126,14 +126,11 @@ public class RandomGraphBuilder {
 
 	public Graph<Integer, Integer> build() {
 		if (impl == null) {
-			String defaultImpl = selfEdges ? "array-selfedges" : "array";
-			if (intGraph) {
-				impl = direct -> IntGraphFactory.newUndirected().setDirected(direct).setOption("impl", defaultImpl)
-						.newGraph();
-			} else {
-				impl = direct -> GraphFactory.<Integer, Integer>newUndirected().setDirected(direct)
-						.setOption("impl", defaultImpl).newGraph();
-			}
+			impl = direct -> {
+				GraphFactory<Integer, Integer> factory = intGraph ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
+				factory.setOption("impl", selfEdges ? "array-selfedges" : "array");
+				return factory.setDirected(direct).newGraph();
+			};
 		}
 
 		IntList vertices = new IntArrayList();

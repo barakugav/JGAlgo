@@ -57,7 +57,17 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	IndexGraphFactory setDirected(boolean directed);
 
 	@Override
+	default IndexGraphFactory allowSelfEdges() {
+		return (IndexGraphFactory) IntGraphFactory.super.allowSelfEdges();
+	}
+
+	@Override
 	IndexGraphFactory allowSelfEdges(boolean selfEdges);
+
+	@Override
+	default IndexGraphFactory allowParallelEdges() {
+		return (IndexGraphFactory) IntGraphFactory.super.allowParallelEdges();
+	}
 
 	@Override
 	IndexGraphFactory allowParallelEdges(boolean parallelEdges);

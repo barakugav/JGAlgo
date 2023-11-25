@@ -22,6 +22,7 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
+import com.jgalgo.graph.IndexGraphFactory;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
@@ -137,7 +138,7 @@ class MinimumVertexCutUtils {
 		AuxiliaryGraph(IndexGraph g, IWeightFunction w, boolean mutable) {
 			final int n = g.vertices().size();
 			final int m = g.edges().size();
-			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
+			IndexGraphBuilder builder = IndexGraphFactory.newDirected().allowParallelEdges().newBuilder();
 			builder.expectedVerticesNum(n * 2);
 			if (g.isDirected()) {
 				builder.expectedVerticesNum(m + n);

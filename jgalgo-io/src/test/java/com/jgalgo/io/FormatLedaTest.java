@@ -25,6 +25,8 @@ import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IntGraphFactory;
+
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 
 public class FormatLedaTest {
@@ -115,7 +117,8 @@ public class FormatLedaTest {
 			for (int repeat = 0; repeat < 32; repeat++) {
 				final int n = 10 + rand.nextInt(20);
 				final int m = 15 + rand.nextInt(30);
-				IntGraph g = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+				IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
+				IntGraph g = factory.allowSelfEdges().newGraph();
 
 				/* LEDA format support vertices with labels 1..n only */
 				for (int v = 1; v <= n; v++)
@@ -150,7 +153,8 @@ public class FormatLedaTest {
 			for (int repeat = 0; repeat < 32; repeat++) {
 				final int n = 10 + rand.nextInt(20);
 				final int m = 15 + rand.nextInt(30);
-				IntGraph g = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+				IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
+				IntGraph g = factory.allowSelfEdges().newGraph();
 
 				/* LEDA format support vertices with labels 1..n only */
 				for (int v = 1; v <= n; v++)

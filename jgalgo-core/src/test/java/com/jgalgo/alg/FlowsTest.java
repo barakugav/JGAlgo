@@ -18,8 +18,10 @@ package com.jgalgo.alg;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
@@ -74,7 +76,9 @@ public class FlowsTest extends TestBase {
 	@Test
 	public void testFlowAndCostSumUndirected() {
 		foreachBoolConfig(intGraph -> {
-			Graph<Integer, Integer> g = intGraph ? IntGraph.newUndirected() : Graph.newUndirected();
+			GraphFactory<Integer, Integer> factory =
+					intGraph ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
+			Graph<Integer, Integer> g = factory.allowParallelEdges().newGraph();
 			g.addVertex(0);
 			g.addVertex(1);
 			g.addVertex(2);

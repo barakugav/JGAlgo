@@ -83,7 +83,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 		if (wOrig == null)
 			wOrig = IWeightFunction.CardinalityWeightFunction;
 		final int n = gOrig.vertices().size();
-		IndexGraph g = IndexGraphFactory.newDirected().allowSelfEdges(true).expectedVerticesNum(n + 2)
+		IndexGraph g = IndexGraphFactory.newDirected().allowSelfEdges().allowParallelEdges().expectedVerticesNum(n + 2)
 				.expectedEdgesNum(gOrig.edges().size() + n).newGraph();
 		for (int v = 0; v < n; v++)
 			g.addVertex();

@@ -234,19 +234,29 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	/**
 	 * Create a new builder that builds undirected graphs.
 	 *
+	 * <p>
+	 * The graphs built by this builder will have the same default capabilities as {@link IndexGraphFactory}, namely
+	 * they will not support self edges and will support parallel edges. See the factory documentation for more
+	 * information.
+	 *
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IndexGraphBuilder newUndirected() {
-		return new IndexGraphBuilderImpl(false);
+		return IndexGraphFactory.newUndirected().newBuilder();
 	}
 
 	/**
 	 * Create a new builder that builds directed graphs.
 	 *
+	 * <p>
+	 * The graphs built by this builder will have the same default capabilities as {@link IndexGraphFactory}, namely
+	 * they will not support self edges and will support parallel edges. See the factory documentation for more
+	 * information.
+	 *
 	 * @return a new empty builder for directed graphs
 	 */
 	static IndexGraphBuilder newDirected() {
-		return new IndexGraphBuilderImpl(true);
+		return IndexGraphFactory.newDirected().newBuilder();
 	}
 
 	/**

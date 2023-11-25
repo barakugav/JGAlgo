@@ -111,17 +111,54 @@ public interface GraphFactory<V, E> {
 	GraphFactory<V, E> setDirected(boolean directed);
 
 	/**
+	 * Change the config of this factory so that the built graphs will support self edges.
+	 *
+	 * <p>
+	 * By default, graphs built by this factory will not support self edges.
+	 *
+	 * @return this factory
+	 */
+	default GraphFactory<V, E> allowSelfEdges() {
+		return allowSelfEdges(true);
+	}
+
+	/**
 	 * Determine if graphs built by this factory should be support self edges.
 	 *
-	 * @param  selfEdges if {@code true}, graphs built by this factory will support self edges
+	 * <p>
+	 * By default, graphs built by this factory will not support self edges.
+	 *
+	 * @param  selfEdges if {@code true} graphs built by this factory will support self edges, else they will not
 	 * @return           this factory
 	 */
 	GraphFactory<V, E> allowSelfEdges(boolean selfEdges);
 
 	/**
+	 * Change the config of this factory so that the built graphs will support parallel edges.
+	 *
+	 * <p>
+	 * By default, graphs built by this factory will support parallel edges. The reason is that in order to enforce no
+	 * parallel edges are added to the graph, an efficient lookup of edges (keyed by an edge's vertices) is required,
+	 * which is an operation most graph algorithms do not use and therefore most implementations are not optimized for.
+	 * See {@link GraphFactory.Hint#FastEdgeLookup}.
+	 *
+	 * @return this factory
+	 */
+	default GraphFactory<V, E> allowParallelEdges() {
+		return allowParallelEdges(true);
+	}
+
+	/**
 	 * Determine if graphs built by this factory should be support parallel edges.
 	 *
-	 * @param  parallelEdges if {@code true}, graphs built by this factory will support parallel edges
+	 * <p>
+	 * By default, graphs built by this factory will support parallel edges. The reason is that in order to enforce no
+	 * parallel edges are added to the graph, an efficient lookup of edges (keyed by an edge's vertices) is required,
+	 * which is an operation most graph algorithms do not use and therefore most implementations are not optimized for.
+	 * See {@link GraphFactory.Hint#FastEdgeLookup}.
+	 *
+	 * @param  parallelEdges if {@code true} graphs built by this factory will support parallel edges, else they will
+	 *                           not
 	 * @return               this factory
 	 */
 	GraphFactory<V, E> allowParallelEdges(boolean parallelEdges);

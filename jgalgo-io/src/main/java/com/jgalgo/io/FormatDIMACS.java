@@ -25,6 +25,7 @@ import java.util.List;
 import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IntGraphFactory;
 
 class FormatDIMACS implements GraphFormat {
 
@@ -131,7 +132,7 @@ class FormatDIMACS implements GraphFormat {
 		public IntGraphBuilder readIntoBuilder(Reader reader) {
 			try (BufferedReader br =
 					reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader)) {
-				IntGraphBuilder gb = IntGraphBuilder.newUndirected();
+				IntGraphBuilder gb = IntGraphFactory.newUndirected().allowSelfEdges().newBuilder();
 				IWeightsInt w = null;
 				int verticesNum = -1;
 				int edgesNum = -1;

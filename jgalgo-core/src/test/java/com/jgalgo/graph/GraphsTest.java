@@ -393,12 +393,13 @@ public class GraphsTest extends TestBase {
 			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(100).m(400)
 					.directed(directed).parallelEdges(true).selfEdges(false).cycles(true).connected(false).build();
 
-			Graph<Integer, Integer> g2;
+			GraphFactory<Integer, Integer> factory;
 			if (g1 instanceof IntGraph) {
-				g2 = directed ? IntGraph.newUndirected() : IntGraph.newDirected();
+				factory = directed ? IntGraphFactory.newUndirected() : IntGraphFactory.newDirected();
 			} else {
-				g2 = directed ? Graph.newUndirected() : Graph.newDirected();
+				factory = directed ? GraphFactory.newUndirected() : GraphFactory.newDirected();
 			}
+			Graph<Integer, Integer> g2 = factory.allowParallelEdges().newGraph();
 			for (Integer v : g1.vertices())
 				g2.addVertex(v);
 			for (Integer e : g1.edges())
@@ -417,12 +418,14 @@ public class GraphsTest extends TestBase {
 			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(100).m(400)
 					.directed(directed).parallelEdges(true).selfEdges(false).cycles(true).connected(false).build();
 
-			Graph<Integer, Integer> g2;
+
+			GraphFactory<Integer, Integer> factory;
 			if (g1 instanceof IntGraph) {
-				g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+				factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
 			} else {
-				g2 = directed ? Graph.newDirected() : Graph.newUndirected();
+				factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();
 			}
+			Graph<Integer, Integer> g2 = factory.allowParallelEdges().newGraph();
 			for (Integer v : g1.vertices())
 				g2.addVertex(v);
 			for (;;) {
@@ -448,12 +451,13 @@ public class GraphsTest extends TestBase {
 			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(100).m(400)
 					.directed(directed).parallelEdges(true).selfEdges(false).cycles(true).connected(false).build();
 
-			Graph<Integer, Integer> g2;
+			GraphFactory<Integer, Integer> factory;
 			if (g1 instanceof IntGraph) {
-				g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+				factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
 			} else {
-				g2 = directed ? Graph.newDirected() : Graph.newUndirected();
+				factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();
 			}
+			Graph<Integer, Integer> g2 = factory.allowParallelEdges().newGraph();
 			for (Integer v : g1.vertices())
 				g2.addVertex(v);
 			for (Integer e : g1.edges())
@@ -479,12 +483,13 @@ public class GraphsTest extends TestBase {
 			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(100).m(400)
 					.directed(directed).parallelEdges(true).selfEdges(false).cycles(true).connected(false).build();
 
-			Graph<Integer, Integer> g2;
+			GraphFactory<Integer, Integer> factory;
 			if (g1 instanceof IntGraph) {
-				g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+				factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
 			} else {
-				g2 = directed ? Graph.newDirected() : Graph.newUndirected();
+				factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();
 			}
+			Graph<Integer, Integer> g2 = factory.allowParallelEdges().newGraph();
 			for (Integer v : g1.vertices())
 				g2.addVertex(v);
 			for (Integer e : g1.edges()) {

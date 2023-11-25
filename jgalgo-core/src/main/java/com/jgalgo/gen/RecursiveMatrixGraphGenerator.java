@@ -299,7 +299,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 
 		if (intGraph) {
 			IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
-			IntGraphBuilder g = factory.allowSelfEdges(true).newBuilder();
+			IntGraphBuilder g = factory.allowSelfEdges().newBuilder();
 			g.expectedVerticesNum(n);
 			g.expectedVerticesNum(m);
 			final int[] vertices = IntAdapters.asIntCollection((Collection<Integer>) this.vertices).toIntArray();
@@ -332,7 +332,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 
 		} else {
 			GraphFactory<V, E> factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();
-			GraphBuilder<V, E> g = factory.allowSelfEdges(true).newBuilder();
+			GraphBuilder<V, E> g = factory.allowSelfEdges().newBuilder();
 			g.expectedVerticesNum(n);
 			g.expectedVerticesNum(m);
 			final V[] vertices = (V[]) this.vertices.toArray();

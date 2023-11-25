@@ -28,6 +28,7 @@ import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IWeightsObj;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IntGraphFactory;
 
 public class FormatGMLTest {
 
@@ -74,7 +75,7 @@ public class FormatGMLTest {
 		for (int repeat = 0; repeat < 32; repeat++) {
 			final int n = 10 + rand.nextInt(20);
 			final int m = 15 + rand.nextInt(30);
-			IntGraph g = IntGraph.newUndirected();
+			IntGraph g = IntGraphFactory.newUndirected().allowSelfEdges().newGraph();
 
 			while (g.vertices().size() < n) {
 				int v = rand.nextInt(n * 3);
@@ -109,7 +110,7 @@ public class FormatGMLTest {
 		for (int repeat = 0; repeat < 32; repeat++) {
 			final int n = 10 + rand.nextInt(20);
 			final int m = 15 + rand.nextInt(30);
-			IntGraph g = IntGraph.newUndirected();
+			IntGraph g = IntGraphFactory.newUndirected().allowSelfEdges().newGraph();
 
 			while (g.vertices().size() < n) {
 				int v = rand.nextInt(n * 3);

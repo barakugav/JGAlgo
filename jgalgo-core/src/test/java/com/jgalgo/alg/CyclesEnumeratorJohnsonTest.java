@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.TestBase;
 
 public class CyclesEnumeratorJohnsonTest extends TestBase {
@@ -37,7 +38,7 @@ public class CyclesEnumeratorJohnsonTest extends TestBase {
 
 	@Test
 	public void noParallelEdges() {
-		IntGraph g = IntGraph.newDirected();
+		IntGraph g = IntGraphFactory.newDirected().allowParallelEdges().newGraph();
 		g.addVertex(0);
 		g.addVertex(1);
 		g.addVertex(2);

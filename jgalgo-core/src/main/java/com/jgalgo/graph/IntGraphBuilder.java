@@ -154,19 +154,27 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	/**
 	 * Create a new builder that builds undirected graphs.
 	 *
+	 * <p>
+	 * The graphs built by this builder will have the same default capabilities as {@link IntGraphFactory}, namely they
+	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
+	 *
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IntGraphBuilder newUndirected() {
-		return new IntGraphBuilderImpl(false);
+		return IntGraphFactory.newUndirected().newBuilder();
 	}
 
 	/**
 	 * Create a new builder that builds directed int graphs.
 	 *
+	 * <p>
+	 * The graphs built by this builder will have the same default capabilities as {@link IntGraphFactory}, namely they
+	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
+	 *
 	 * @return a new empty builder for directed graphs
 	 */
 	static IntGraphBuilder newDirected() {
-		return new IntGraphBuilderImpl(true);
+		return IntGraphFactory.newDirected().newBuilder();
 	}
 
 	/**

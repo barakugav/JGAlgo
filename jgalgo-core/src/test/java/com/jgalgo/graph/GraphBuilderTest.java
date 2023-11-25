@@ -38,8 +38,8 @@ public class GraphBuilderTest extends TestBase {
 		final long seed = 0x56f68a18a0ca8d84L;
 		final Random rand = new Random(seed);
 		foreachBoolConfig((directed, buildMut, selfEdges) -> {
-			IndexGraphFactory factory =
-					IndexGraphFactory.newUndirected().setDirected(directed).allowSelfEdges(selfEdges);
+			IndexGraphFactory factory = IndexGraphFactory.newUndirected().setDirected(directed)
+					.allowSelfEdges(selfEdges).allowParallelEdges();
 			IndexGraphBuilder b = factory.newBuilder();
 			IndexGraph g = factory.newGraph();
 
@@ -260,8 +260,8 @@ public class GraphBuilderTest extends TestBase {
 		final long seed = 0x1dbb0af52c6ad3e8L;
 		final Random rand = new Random(seed);
 		foreachBoolConfig((directed, buildMut, selfEdges) -> {
-			GraphFactory<Integer, Integer> factory =
-					GraphFactory.<Integer, Integer>newUndirected().setDirected(directed).allowSelfEdges(selfEdges);
+			GraphFactory<Integer, Integer> factory = GraphFactory.<Integer, Integer>newUndirected()
+					.setDirected(directed).allowSelfEdges(selfEdges).allowParallelEdges();
 			GraphBuilder<Integer, Integer> b = factory.newBuilder();
 			Graph<Integer, Integer> g = factory.newGraph();
 

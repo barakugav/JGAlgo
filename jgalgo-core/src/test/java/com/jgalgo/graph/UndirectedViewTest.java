@@ -43,9 +43,8 @@ public class UndirectedViewTest extends TestBase {
 		final Random rand = new Random(seed);
 		final int n = 47, m = 1345;
 
-		Graph<Integer, Integer> g =
-				(intGraph ? IntGraphFactory.newDirected() : GraphFactory.<Integer, Integer>newDirected())
-						.allowSelfEdges(true).newGraph();
+		GraphFactory<Integer, Integer> factory = intGraph ? IntGraphFactory.newDirected() : GraphFactory.newDirected();
+		Graph<Integer, Integer> g = factory.allowSelfEdges().allowParallelEdges().newGraph();
 
 		WeightsInt<Integer> vWeights = g.addVerticesWeights(VerticesWeightsKey, int.class);
 		for (int i = 0; i < n; i++) {

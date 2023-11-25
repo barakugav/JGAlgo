@@ -144,7 +144,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		int[] gNegEdgeRefs = new int[m];
 
 		/* G is the graph of strong connected components of gNeg, each vertex is a super vertex of gNeg */
-		IndexGraph G = IndexGraphFactory.newDirected().expectedVerticesNum(n + 2).newGraph();
+		IndexGraph G = IndexGraphFactory.newDirected().allowParallelEdges().expectedVerticesNum(n + 2).newGraph();
 		IWeightsInt GWeights = G.addEdgesWeights("weights", int.class, Integer.valueOf(-1));
 		/* Two fake vertices used to add 0-edges and (r-i)-edges to all other (super) vertices */
 

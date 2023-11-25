@@ -22,7 +22,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	boolean directed;
 	private boolean selfEdges;
-	private boolean parallelEdges;
+	private boolean parallelEdges = true;
 	int expectedVerticesNum;
 	int expectedEdgesNum;
 	private final EnumSet<GraphFactory.Hint> hints = EnumSet.noneOf(GraphFactory.Hint.class);
@@ -282,17 +282,22 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 			}
 		} else {
+			boolean dense = hints.contains(GraphFactory.Hint.DenseGraph);
+			// boolean lookup = hints.contains(GraphFactory.Hint.FastEdgeLookup) || !parallelEdges;
+			boolean remove = hints.contains(GraphFactory.Hint.FastEdgeRemoval);
 
-			if (hints.contains(GraphFactory.Hint.DenseGraph) && !parallelEdges)
-				return selfEdges ? matrixImplWithSelfEdges : matrixImpl;
+			if (parallelEdges) {
+				// if (lookup)
+				// return selfEdges ? hashtableImplWithSelfEdges : hashtableImpl;
+				if (remove)
+					return selfEdges ? linkedImplWithSelfEdges : linkedImpl;
+				return selfEdges ? arrayImplWithSelfEdges : arrayImpl;
 
-			if (hints.contains(GraphFactory.Hint.FastEdgeLookup) && !parallelEdges)
+			} else {
+				if (dense)
+					return selfEdges ? matrixImplWithSelfEdges : matrixImpl;
 				return selfEdges ? hashtableImplWithSelfEdges : hashtableImpl;
-
-			if (hints.contains(GraphFactory.Hint.FastEdgeRemoval))
-				return selfEdges ? linkedImplWithSelfEdges : linkedImpl;
-
-			return selfEdges ? arrayImplWithSelfEdges : arrayImpl;
+			}
 		}
 	}
 

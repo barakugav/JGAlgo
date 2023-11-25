@@ -54,7 +54,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			if (g.isDirected())
 				return algo.computeMinimumDirectedSpanningTree(g, w, g.vertices().iterator().next());
 			int n = g.vertices().size();
-			IntGraph dg = IntGraphFactory.newDirected().expectedVerticesNum(n).newGraph();
+			IntGraph dg = IntGraphFactory.newDirected().allowParallelEdges().expectedVerticesNum(n).newGraph();
 			for (int i = 0; i < n; i++)
 				dg.addVertex();
 
@@ -130,8 +130,9 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 		tester.addPhase().withArgs(1024, 4096).repeat(8);
 		tester.addPhase().withArgs(4096, 16384).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(false).selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
+			Graph<Integer, Integer> g =
+					new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
+							.selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
 			g = maybeIndexGraph(g, rand);
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 

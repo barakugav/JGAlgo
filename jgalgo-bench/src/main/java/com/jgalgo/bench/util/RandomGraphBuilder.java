@@ -25,9 +25,9 @@ import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.ds.UnionFind;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
-import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -50,7 +50,6 @@ public class RandomGraphBuilder {
 	private boolean selfEdges;
 	private boolean cycles;
 	private boolean connected;
-	private Boolean2ObjectFunction<IntGraph> impl = GraphsTestUtils.defaultGraphImpl();
 
 	public RandomGraphBuilder(long seed) {
 		seedGen = new SeedGenerator(seed);
@@ -112,19 +111,13 @@ public class RandomGraphBuilder {
 		return this;
 	}
 
-	public RandomGraphBuilder graphImpl(Boolean2ObjectFunction<IntGraph> impl) {
-		this.impl = impl;
-		return this;
-	}
-
 	public IntGraph build() {
 		IntList vertices = new IntArrayList();
-		final IntGraph g;
+		final IntGraph g = IntGraphFactory.newUndirected().setDirected(directed).allowSelfEdges().newGraph();
 		IWeightsBool partition = null;
 		if (!bipartite) {
 			if (n < 0 || m < 0)
 				throw new IllegalStateException();
-			g = impl.get(directed);
 			for (int i = 0; i < n; i++)
 				vertices.add(g.addVertex());
 		} else {
@@ -133,7 +126,6 @@ public class RandomGraphBuilder {
 			if ((sn == 0 || tn == 0) && m != 0)
 				throw new IllegalStateException();
 			n = sn + tn;
-			g = impl.get(directed);
 			for (int i = 0; i < n; i++)
 				vertices.add(g.addVertex());
 			partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);

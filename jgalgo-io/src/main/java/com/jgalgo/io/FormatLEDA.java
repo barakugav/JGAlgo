@@ -35,6 +35,7 @@ import com.jgalgo.graph.IWeightsObj;
 import com.jgalgo.graph.IWeightsShort;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IntGraphFactory;
 
 class FormatLEDA implements GraphFormat {
 
@@ -232,10 +233,10 @@ class FormatLEDA implements GraphFormat {
 						// or undirected (-2).
 						switch (line) {
 							case "-1":
-								builder = IntGraphBuilder.newDirected();
+								builder = IntGraphFactory.newDirected().allowSelfEdges().newBuilder();
 								break;
 							case "-2":
-								builder = IntGraphBuilder.newUndirected();
+								builder = IntGraphFactory.newUndirected().allowSelfEdges().newBuilder();
 								break;
 							default:
 								throw new IllegalArgumentException(

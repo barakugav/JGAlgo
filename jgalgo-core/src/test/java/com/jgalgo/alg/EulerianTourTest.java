@@ -27,8 +27,10 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -304,7 +306,9 @@ public class EulerianTourTest extends TestBase {
 	@Test
 	public void noEulerianTourUndirected() {
 		foreachBoolConfig(intGraph -> {
-			Graph<Integer, Integer> g = intGraph ? IntGraph.newUndirected() : Graph.newUndirected();
+			GraphFactory<Integer, Integer> factory =
+					intGraph ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
+			Graph<Integer, Integer> g = factory.allowParallelEdges().newGraph();
 
 			/* more than 2 vertices with odd degree */
 			g.addVertex(0);
@@ -340,7 +344,9 @@ public class EulerianTourTest extends TestBase {
 	@Test
 	public void noEulerianTourDirected() {
 		foreachBoolConfig(intGraph -> {
-			Graph<Integer, Integer> g = intGraph ? IntGraph.newDirected() : Graph.newDirected();
+			GraphFactory<Integer, Integer> factory =
+					intGraph ? IntGraphFactory.newDirected() : GraphFactory.newDirected();
+			Graph<Integer, Integer> g = factory.allowParallelEdges().newGraph();
 
 			/* more than one vertices with extra out-edge */
 			g.addVertex(0);

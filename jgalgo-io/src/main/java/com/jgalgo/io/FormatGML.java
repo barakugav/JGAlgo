@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Objects;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IWeightsInt;
@@ -146,7 +147,7 @@ class FormatGML implements GraphFormat {
 			if (roots.size() != 1 || !(root = roots.get(0)).key.equals("graph"))
 				throw new IllegalArgumentException("expected a single root list 'graph'");
 
-			IntGraphBuilder b = IntGraphBuilder.newUndirected();
+			IntGraphBuilder b = IntGraphFactory.newUndirected().allowSelfEdges().newBuilder();
 			Map<String, List<IntObjectPair<Object>>> vWeights = new Object2ObjectOpenHashMap<>();
 			Map<String, List<IntObjectPair<Object>>> eWeights = new Object2ObjectOpenHashMap<>();
 			for (Node n : root.children()) {

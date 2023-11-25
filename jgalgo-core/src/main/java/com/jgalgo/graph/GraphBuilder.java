@@ -232,23 +232,31 @@ public interface GraphBuilder<V, E> {
 	/**
 	 * Create a new builder that builds undirected graphs.
 	 *
+	 * <p>
+	 * The graphs built by this builder will have the same default capabilities as {@link GraphFactory}, namely they
+	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
+	 *
 	 * @param  <V> the vertices type
 	 * @param  <E> the edges type
 	 * @return     a new empty builder for undirected graphs
 	 */
 	static <V, E> GraphBuilder<V, E> newUndirected() {
-		return new GraphBuilderImpl<>(false);
+		return GraphFactory.<V, E>newUndirected().newBuilder();
 	}
 
 	/**
 	 * Create a new builder that builds directed graphs.
+	 *
+	 * <p>
+	 * The graphs built by this builder will have the same default capabilities as {@link GraphFactory}, namely they
+	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
 	 *
 	 * @param  <V> the vertices type
 	 * @param  <E> the edges type
 	 * @return     a new empty builder for directed graphs
 	 */
 	static <V, E> GraphBuilder<V, E> newDirected() {
-		return new GraphBuilderImpl<>(true);
+		return GraphFactory.<V, E>newDirected().newBuilder();
 	}
 
 	/**

@@ -57,7 +57,17 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	IntGraphFactory setDirected(boolean directed);
 
 	@Override
+	default IntGraphFactory allowSelfEdges() {
+		return (IntGraphFactory) GraphFactory.super.allowSelfEdges();
+	}
+
+	@Override
 	IntGraphFactory allowSelfEdges(boolean selfEdges);
+
+	@Override
+	default IntGraphFactory allowParallelEdges() {
+		return (IntGraphFactory) GraphFactory.super.allowParallelEdges();
+	}
 
 	@Override
 	IntGraphFactory allowParallelEdges(boolean parallelEdges);
