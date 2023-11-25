@@ -51,6 +51,7 @@ public class RandomGraphBuilder {
 	private boolean cycles;
 	private boolean connected;
 	private Boolean2ObjectFunction<Graph<Integer, Integer>> impl;
+	private boolean intGraph;
 
 	public RandomGraphBuilder(long seed) {
 		rand = new Random(seed);
@@ -60,8 +61,7 @@ public class RandomGraphBuilder {
 		selfEdges = false;
 		cycles = false;
 		connected = false;
-
-		graphImpl(rand.nextBoolean());
+		intGraph = rand.nextBoolean();
 	}
 
 	public RandomGraphBuilder n(int n) {
@@ -120,15 +120,22 @@ public class RandomGraphBuilder {
 	}
 
 	public RandomGraphBuilder graphImpl(boolean intGraph) {
-		if (intGraph) {
-			impl = direct -> IntGraphFactory.newUndirected().setDirected(direct).newGraph();
-		} else {
-			impl = direct -> GraphFactory.<Integer, Integer>newUndirected().setDirected(direct).newGraph();
-		}
+		this.intGraph = intGraph;
 		return this;
 	}
 
 	public Graph<Integer, Integer> build() {
+		if (impl == null) {
+			String defaultImpl = selfEdges ? "array-selfedges" : "array";
+			if (intGraph) {
+				impl = direct -> IntGraphFactory.newUndirected().setDirected(direct).setOption("impl", defaultImpl)
+						.newGraph();
+			} else {
+				impl = direct -> GraphFactory.<Integer, Integer>newUndirected().setDirected(direct)
+						.setOption("impl", defaultImpl).newGraph();
+			}
+		}
+
 		IntList vertices = new IntArrayList();
 		final Graph<Integer, Integer> g;
 		WeightsBool<Integer> partition = null;

@@ -38,12 +38,10 @@ public class ReversedGraphViewTest extends TestBase {
 		final long seed = 0x97dc96ffefd7165bL;
 		final Random rand = new Random(seed);
 		final int n = 47, m = 1345;
-		Graph<Integer, Integer> g;
-		if (intGraph) {
-			g = IntGraphFactory.newUndirected().setDirected(directed).newGraph();
-		} else {
-			g = GraphFactory.<Integer, Integer>newUndirected().setDirected(directed).newGraph();
-		}
+
+		Graph<Integer, Integer> g =
+				(intGraph ? IntGraphFactory.newUndirected() : GraphFactory.<Integer, Integer>newUndirected())
+						.setDirected(directed).allowSelfEdges(true).newGraph();
 
 		for (int i = 0; i < n; i++)
 			g.addVertex(Integer.valueOf(i + 1));

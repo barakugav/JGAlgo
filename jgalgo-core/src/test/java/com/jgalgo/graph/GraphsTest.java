@@ -391,7 +391,7 @@ public class GraphsTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		foreachBoolConfig((intGraph, directed) -> {
 			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(100).m(400)
-					.directed(directed).parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+					.directed(directed).parallelEdges(true).selfEdges(false).cycles(true).connected(false).build();
 
 			Graph<Integer, Integer> g2;
 			if (g1 instanceof IntGraph) {
@@ -415,7 +415,7 @@ public class GraphsTest extends TestBase {
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig((intGraph, directed) -> {
 			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(100).m(400)
-					.directed(directed).parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+					.directed(directed).parallelEdges(true).selfEdges(false).cycles(true).connected(false).build();
 
 			Graph<Integer, Integer> g2;
 			if (g1 instanceof IntGraph) {
@@ -446,7 +446,7 @@ public class GraphsTest extends TestBase {
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig((intGraph, directed) -> {
 			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(100).m(400)
-					.directed(directed).parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+					.directed(directed).parallelEdges(true).selfEdges(false).cycles(true).connected(false).build();
 
 			Graph<Integer, Integer> g2;
 			if (g1 instanceof IntGraph) {
@@ -477,7 +477,7 @@ public class GraphsTest extends TestBase {
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig((intGraph, directed) -> {
 			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(100).m(400)
-					.directed(directed).parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+					.directed(directed).parallelEdges(true).selfEdges(false).cycles(true).connected(false).build();
 
 			Graph<Integer, Integer> g2;
 			if (g1 instanceof IntGraph) {
@@ -487,8 +487,13 @@ public class GraphsTest extends TestBase {
 			}
 			for (Integer v : g1.vertices())
 				g2.addVertex(v);
-			for (Integer e : g1.edges())
-				g2.addEdge(g1.edgeSource(e), Graphs.randVertex(g2, rand), e);
+			for (Integer e : g1.edges()) {
+				Integer source = g1.edgeSource(e), target;
+				do {
+					target = Graphs.randVertex(g2, rand);
+				} while (source.equals(target));
+				g2.addEdge(source, target, e);
+			}
 
 			assertNotEquals(g1, g2);
 		});

@@ -86,6 +86,14 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 			for (int e = 0; e < m; e++)
 				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 		}
+
+		if (!capabilities.isAllowSelfEdges) {
+			if (g.isAllowSelfEdges()) {
+				checkNoSelfEdges();
+			} else {
+				assert checkNoSelfEdges();
+			}
+		}
 	}
 
 	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
@@ -102,6 +110,9 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 		for (int e = 0; e < m; e++)
 			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
+
+		if (!capabilities.isAllowSelfEdges)
+			checkNoSelfEdges();
 	}
 
 	static class Capabilities {
@@ -130,12 +141,12 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	}
 
 	@Override
-	public boolean isAllowSelfEdges() {
+	public final boolean isAllowSelfEdges() {
 		return isAllowSelfEdges;
 	}
 
 	@Override
-	public boolean isAllowParallelEdges() {
+	public final boolean isAllowParallelEdges() {
 		return isAllowParallelEdges;
 	}
 
@@ -158,6 +169,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 	@Override
 	public final void removeVertex(int vertex) {
+		checkVertex(vertex);
 		removeEdgesOf(vertex);
 		// vertex = vertexSwapBeforeRemove(vertex);
 		// removeVertexImpl(vertex);
@@ -185,6 +197,9 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	public int addEdge(int source, int target) {
 		checkVertex(source);
 		checkVertex(target);
+		if (!isAllowSelfEdges() && source == target)
+			throw new IllegalArgumentException("Self edges are not allowed");
+
 		int e = edges0().newIdx();
 
 		assert e >= 0;
@@ -407,5 +422,12 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	<T> void swapAndClear(T[] dataContainer, int removedIdx, int swappedIdx, T defaultVal) {
 		dataContainer[removedIdx] = dataContainer[swappedIdx];
 		dataContainer[swappedIdx] = defaultVal;
+	}
+
+	private boolean checkNoSelfEdges() {
+		for (int m = edges().size(), e = 0; e < m; e++)
+			if (source(e) == target(e))
+				throw new IllegalArgumentException("Self edges are not allowed");
+		return true;
 	}
 }

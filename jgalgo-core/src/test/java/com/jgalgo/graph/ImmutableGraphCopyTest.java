@@ -37,8 +37,9 @@ public class ImmutableGraphCopyTest extends TestBase {
 		final long seed = 0x4ff62bb8f3a0b831L;
 		final Random rand = new Random(seed);
 		final int n = 47, m = 1345;
-		Graph<Integer, Integer> g = intGraph ? IntGraphFactory.newUndirected().setDirected(directed).newGraph()
-				: GraphFactory.<Integer, Integer>newUndirected().setDirected(directed).newGraph();
+		Graph<Integer, Integer> g =
+				(intGraph ? IntGraphFactory.newUndirected() : GraphFactory.<Integer, Integer>newUndirected())
+						.setDirected(directed).allowSelfEdges(true).newGraph();
 
 		WeightsInt<Integer> vWeights = g.addVerticesWeights(VerticesWeightsKey, int.class);
 		for (int v = 0; v < n; v++) {

@@ -40,24 +40,24 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 	private final DataContainer.Obj<int[]> edgesContainer;
 	private final DataContainer.Int edgesNumContainer;
 
-	private static final GraphBaseMutable.Capabilities Capabilities =
+	private static final GraphBaseMutable.Capabilities CapabilitiesNoSelfEdges =
+			GraphBaseMutable.Capabilities.of(false, false, true);
+	private static final GraphBaseMutable.Capabilities CapabilitiesWithSelfEdges =
 			GraphBaseMutable.Capabilities.of(false, true, true);
 
-	/**
-	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
-	 *
-	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
-	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
-	 */
-	GraphArrayUndirected(int expectedVerticesNum, int expectedEdgesNum) {
-		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
+	private static GraphBaseMutable.Capabilities capabilities(boolean selfEdges) {
+		return selfEdges ? CapabilitiesWithSelfEdges : CapabilitiesNoSelfEdges;
+	}
+
+	GraphArrayUndirected(boolean selfEdges, int expectedVerticesNum, int expectedEdgesNum) {
+		super(capabilities(selfEdges), expectedVerticesNum, expectedEdgesNum);
 		edgesContainer =
 				newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edges = newArr);
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 	}
 
-	GraphArrayUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
+	GraphArrayUndirected(boolean selfEdges, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		super(capabilities(selfEdges), g, copyVerticesWeights, copyEdgesWeights);
 		final int n = g.vertices().size();
 
 		if (g instanceof GraphArrayUndirected) {
@@ -86,16 +86,15 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		}
 	}
 
-	GraphArrayUndirected(IndexGraphBuilderImpl builder) {
-		super(Capabilities, builder);
+	GraphArrayUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+		super(capabilities(selfEdges), builder);
 		assert !builder.isDirected();
 
 		edgesContainer =
 				newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edges = newArr);
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
-		final int m = builder.edges().size();
-		for (int e = 0; e < m; e++) {
+		for (int m = builder.edges().size(), e = 0; e < m; e++) {
 			int source = builder.edgeSource(e);
 			int target = builder.edgeTarget(e);
 

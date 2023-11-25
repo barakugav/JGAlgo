@@ -36,27 +36,24 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	private int[] edgesInNum;
 	private final DataContainer.Int edgesOutNumContainer;
 	private final DataContainer.Int edgesInNumContainer;
-	private static final GraphBaseMutable.Capabilities Capabilities =
+
+	private static final GraphBaseMutable.Capabilities CapabilitiesNoSelfEdges =
+			GraphBaseMutable.Capabilities.of(true, false, false);
+	private static final GraphBaseMutable.Capabilities CapabilitiesWithSelfEdges =
 			GraphBaseMutable.Capabilities.of(true, true, false);
 
-	GraphMatrixDirected() {
-		this(0, 0);
+	private static GraphBaseMutable.Capabilities capabilities(boolean selfEdges) {
+		return selfEdges ? CapabilitiesWithSelfEdges : CapabilitiesNoSelfEdges;
 	}
 
-	/**
-	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
-	 *
-	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
-	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
-	 */
-	GraphMatrixDirected(int expectedVerticesNum, int expectedEdgesNum) {
-		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
+	GraphMatrixDirected(boolean selfEdges, int expectedVerticesNum, int expectedEdgesNum) {
+		super(capabilities(selfEdges), expectedVerticesNum, expectedEdgesNum);
 		edgesOutNumContainer = newVerticesIntContainer(0, newArr -> edgesOutNum = newArr);
 		edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);
 	}
 
-	GraphMatrixDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
+	GraphMatrixDirected(boolean selfEdges, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		super(capabilities(selfEdges), g, copyVerticesWeights, copyEdgesWeights);
 		assert g.isDirected();
 		if (g instanceof GraphMatrixDirected) {
 			GraphMatrixDirected g0 = (GraphMatrixDirected) g;
@@ -73,8 +70,8 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 		}
 	}
 
-	GraphMatrixDirected(IndexGraphBuilderImpl builder) {
-		super(Capabilities, builder);
+	GraphMatrixDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+		super(capabilities(selfEdges), builder);
 		assert builder.isDirected();
 
 		edgesOutNumContainer = newVerticesIntContainer(0, newArr -> edgesOutNum = newArr);

@@ -48,9 +48,10 @@ public class MaximumFlowTestUtils extends TestUtils {
 
 	private static Graph<Integer, Integer> randGraph(int n, int m,
 			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed, boolean directed) {
+		boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
 		for (SeedGenerator seedGen = new SeedGenerator(seed);;) {
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
+					.parallelEdges(false).selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 			boolean allSelfEdges = true;
 			for (int e : g.edges())

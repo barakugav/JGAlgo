@@ -18,6 +18,8 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.Objects;
+
+import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
@@ -125,6 +127,10 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		w0 = WeightFunctions.localEdgeWeightFunction(g, w0);
 		int[] potential = new int[n];
 
+		for (int e : Graphs.selfEdges(g))
+			if (w0.weightInt(e) < 0)
+				throw new NegativeCycleException(g, new PathImpl(g, g.edgeSource(e), g.edgeTarget(e), IntList.of(e)));
+
 		Bitmap connected = new Bitmap(n);
 		int[] layerSize = new int[n + 1];
 
@@ -171,7 +177,8 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 				for (int e = 0; e < m; e++) {
 					if (w[e] <= 0) {
 						int u = g.edgeSource(e), v = g.edgeTarget(e);
-						gNegEdgeRefs[gNeg.addEdge(u, v)] = e;
+						if (u != v)
+							gNegEdgeRefs[gNeg.addEdge(u, v)] = e;
 					}
 				}
 

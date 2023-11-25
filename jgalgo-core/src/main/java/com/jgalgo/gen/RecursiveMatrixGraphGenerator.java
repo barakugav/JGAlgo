@@ -24,8 +24,10 @@ import java.util.function.IntBinaryOperator;
 import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -296,7 +298,8 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 		}
 
 		if (intGraph) {
-			IntGraphBuilder g = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
+			IntGraphBuilder g = factory.allowSelfEdges(true).newBuilder();
 			g.expectedVerticesNum(n);
 			g.expectedVerticesNum(m);
 			final int[] vertices = IntAdapters.asIntCollection((Collection<Integer>) this.vertices).toIntArray();
@@ -328,7 +331,8 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 			return (GraphBuilder<V, E>) g;
 
 		} else {
-			GraphBuilder<V, E> g = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+			GraphFactory<V, E> factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();
+			GraphBuilder<V, E> g = factory.allowSelfEdges(true).newBuilder();
 			g.expectedVerticesNum(n);
 			g.expectedVerticesNum(m);
 			final V[] vertices = (V[]) this.vertices.toArray();

@@ -22,109 +22,146 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphMatrixTest extends TestBase {
 
-	private static Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl() {
-		return directed -> IntGraphFactory.newUndirected().setOption("impl", "matrix").setDirected(directed).newGraph();
+	private static Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl(boolean selfEdges) {
+		return directed -> IntGraphFactory.newUndirected().setOption("impl", selfEdges ? "matrix-selfedges" : "matrix")
+				.setDirected(directed).newGraph();
 	}
 
 	@Test
 	public void testVertexAdd() {
-		GraphImplTestUtils.testVertexAdd(graphImpl());
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testVertexAdd(graphImpl(selfEdges));
+		});
 	}
 
 	@Test
 	public void testAddEdge() {
-		GraphImplTestUtils.testAddEdge(graphImpl());
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testAddEdge(graphImpl(selfEdges));
+		});
 	}
 
 	@Test
 	public void testGetEdge() {
-		GraphImplTestUtils.testGetEdge(graphImpl());
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testGetEdge(graphImpl(selfEdges));
+		});
 	}
 
 	@Test
 	public void testGetEdgesOutIn() {
-		GraphImplTestUtils.testGetEdgesOutIn(graphImpl());
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testGetEdgesOutIn(graphImpl(selfEdges));
+		});
 	}
 
 	@Test
 	public void testGetEdgesSourceTarget() {
-		GraphImplTestUtils.testGetEdgesSourceTarget(graphImpl());
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testGetEdgesSourceTarget(graphImpl(selfEdges));
+		});
 	}
 
 	@Test
 	public void testEdgeIter() {
-		GraphImplTestUtils.testEdgeIter(graphImpl());
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testEdgeIter(graphImpl(selfEdges));
+		});
 	}
 
 	@Test
 	public void testDegree() {
-		GraphImplTestUtils.testDegree(graphImpl());
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testDegree(graphImpl(selfEdges));
+		});
 	}
 
 	@Test
 	public void testClear() {
 		final long seed = 0x25824e374104beceL;
-		GraphImplTestUtils.testClear(graphImpl(), seed);
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testClear(graphImpl(selfEdges), seed);
+		});
 	}
 
 	@Test
 	public void testClearEdges() {
 		final long seed = 0x79550c17b3a2bb6eL;
-		GraphImplTestUtils.testClearEdges(graphImpl(), seed);
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testClearEdges(graphImpl(selfEdges), seed);
+		});
 	}
 
 	@Test
 	public void testCopy() {
 		final long seed = 0xd400f44f753a56b6L;
-		GraphImplTestUtils.testCopy(graphImpl(), seed);
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testCopy(graphImpl(selfEdges), seed);
+		});
 	}
 
 	@Test
 	public void testCopyWithWeights() {
 		final long seed = 0x1e7e9287a4e51db6L;
-		GraphImplTestUtils.testCopyWithWeights(graphImpl(), seed);
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testCopyWithWeights(graphImpl(selfEdges), seed);
+		});
 	}
 
 	@Test
 	public void testImmutableCopy() {
 		final long seed = 0x325c47e089f6edebL;
-		GraphImplTestUtils.testImmutableCopy(graphImpl(), seed);
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testImmutableCopy(graphImpl(selfEdges), seed);
+		});
 	}
 
 	@Test
 	public void testImmutableCopyWithWeights() {
 		final long seed = 0x662367fc40987614L;
-		GraphImplTestUtils.testImmutableCopyWithWeights(graphImpl(), seed);
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testImmutableCopyWithWeights(graphImpl(selfEdges), seed);
+		});
 	}
 
 	@Test
 	public void testUndirectedMST() {
 		final long seed = 0x63a396934a49021cL;
-		GraphImplTestUtils.testUndirectedMST(graphImpl(), seed);
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testUndirectedMST(graphImpl(selfEdges), seed);
+		});
 	}
 
 	@Test
 	public void testDirectedMDST() {
 		final long seed = 0xcebe72e8015778c1L;
-		GraphImplTestUtils.testDirectedMDST(graphImpl(), seed);
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testDirectedMDST(graphImpl(selfEdges), seed);
+		});
 	}
 
 	@Test
 	public void testDirectedMaxFlow() {
 		final long seed = 0xe2e6e3d11dfaa9dfL;
-		GraphImplTestUtils.testDirectedMaxFlow(graphImpl(), seed);
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testDirectedMaxFlow(graphImpl(selfEdges), seed);
+		});
 	}
 
 	@Test
 	public void testRandOpsUndirected() {
 		final long seed = 0x2aee685276834043L;
-		GraphImplTestUtils.testRandOps(graphImpl(), false, seed);
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testRandOps(graphImpl(selfEdges), false, seed);
+		});
 	}
 
 	@Test
 	public void testRandOpsDirected() {
 		final long seed = 0x4cd9a3bcb63cf8f8L;
-		GraphImplTestUtils.testRandOps(graphImpl(), true, seed);
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testRandOps(graphImpl(selfEdges), true, seed);
+		});
 	}
 
 }

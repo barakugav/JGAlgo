@@ -37,9 +37,11 @@ public class GraphBuilderTest extends TestBase {
 	public void indexGraph() {
 		final long seed = 0x56f68a18a0ca8d84L;
 		final Random rand = new Random(seed);
-		foreachBoolConfig((directed, buildMut) -> {
-			IndexGraphBuilder b = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
-			IndexGraph g = directed ? IndexGraph.newDirected() : IndexGraph.newUndirected();
+		foreachBoolConfig((directed, buildMut, selfEdges) -> {
+			IndexGraphFactory factory =
+					IndexGraphFactory.newUndirected().setDirected(directed).allowSelfEdges(selfEdges);
+			IndexGraphBuilder b = factory.newBuilder();
+			IndexGraph g = factory.newGraph();
 
 			/* Add vertices and edges */
 			final int n = 12 + rand.nextInt(12);
@@ -54,6 +56,8 @@ public class GraphBuilderTest extends TestBase {
 				if (g.edges().contains(e))
 					continue;
 				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
+				if (!selfEdges && u == v)
+					continue;
 				g.addEdge(u, v);
 			}
 			for (int e : IntArrays.shuffle(g.edges().toIntArray(), rand)) {
@@ -124,10 +128,14 @@ public class GraphBuilderTest extends TestBase {
 		final long seed = 0x1dbb0af52c6ad3e8L;
 		final Random rand = new Random(seed);
 		foreachBoolConfig((directed, buildMut) -> {
-			for (String impl : List.of("array", "linked-list", "linked-list-ptr", "hashtable", "matrix")) {
-				IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
-				IntGraphBuilder b = factory.setOption("impl", impl).newBuilder();
-				IntGraph g = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+			for (String impl : List.of("array", "array-selfedges", "linked-list", "linked-list-ptr", "hashtable",
+					"hashtable-selfedges", "matrix")) {
+				IntGraphFactory factory = (directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected())
+						.setOption("impl", impl);
+				IntGraphBuilder b = factory.newBuilder();
+				boolean selfEdges = factory.newGraph().isAllowSelfEdges();
+				IntGraph g = (directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected())
+						.allowSelfEdges(selfEdges).newGraph();
 
 				/* Add vertices and edges */
 				final int n = 12 + rand.nextInt(12);
@@ -148,6 +156,8 @@ public class GraphBuilderTest extends TestBase {
 					if (g.edges().contains(e))
 						continue;
 					int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
+					if (!selfEdges && u == v)
+						continue;
 					if (g.getEdge(u, v) != -1)
 						continue; /* avoid parallel edges */
 					g.addEdge(u, v, e);
@@ -249,9 +259,11 @@ public class GraphBuilderTest extends TestBase {
 	public void objGraph() {
 		final long seed = 0x1dbb0af52c6ad3e8L;
 		final Random rand = new Random(seed);
-		foreachBoolConfig((directed, buildMut) -> {
-			GraphBuilder<Integer, Integer> b = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
-			Graph<Integer, Integer> g = directed ? Graph.newDirected() : Graph.newUndirected();
+		foreachBoolConfig((directed, buildMut, selfEdges) -> {
+			GraphFactory<Integer, Integer> factory =
+					GraphFactory.<Integer, Integer>newUndirected().setDirected(directed).allowSelfEdges(selfEdges);
+			GraphBuilder<Integer, Integer> b = factory.newBuilder();
+			Graph<Integer, Integer> g = factory.newGraph();
 
 			/* Add vertices and edges */
 			final int n = 12 + rand.nextInt(12);
@@ -268,6 +280,8 @@ public class GraphBuilderTest extends TestBase {
 				if (g.edges().contains(e))
 					continue;
 				Integer u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
+				if (!selfEdges && u.equals(v))
+					continue;
 				g.addEdge(u, v, e);
 				b.addEdge(u, v, e);
 			}

@@ -1938,15 +1938,15 @@ public class Graphs {
 			if (g instanceof ImmutableIndexGraphView)
 				g = ((ImmutableIndexGraphView) g).graph();
 			if (g instanceof GraphArrayAbstract)
-				return "array";
+				return g.isAllowSelfEdges() ? "array-selfedges" : "array";
 			if (g instanceof GraphLinkedAbstract)
-				return "linked-list";
+				return g.isAllowSelfEdges() ? "linked-list-selfedges" : "linked-list";
 			if (g instanceof GraphLinkedPtrAbstract)
-				return "linked-list-ptr";
+				return g.isAllowSelfEdges() ? "linked-list-ptr-selfedges" : "linked-list-ptr";
 			if (g instanceof GraphHashmapAbstract)
-				return "hashtable";
+				return g.isAllowSelfEdges() ? "hashtable-selfedges" : "hashtable";
 			if (g instanceof GraphMatrixAbstract)
-				return "matrix";
+				return g.isAllowSelfEdges() ? "matrix-selfedges" : "matrix";
 			if (g == g0)
 				return null;
 		}

@@ -49,17 +49,17 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	private final DataContainer.Int edgePrevOutContainer;
 	private final DataContainer.Int edgePrevInContainer;
 
-	private static final GraphBaseMutable.Capabilities Capabilities =
+	private static final GraphBaseMutable.Capabilities CapabilitiesNoSelfEdges =
+			GraphBaseMutable.Capabilities.of(true, false, true);
+	private static final GraphBaseMutable.Capabilities CapabilitiesWithSelfEdges =
 			GraphBaseMutable.Capabilities.of(true, true, true);
 
-	/**
-	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
-	 *
-	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
-	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
-	 */
-	GraphLinkedDirected(int expectedVerticesNum, int expectedEdgesNum) {
-		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
+	private static GraphBaseMutable.Capabilities capabilities(boolean selfEdges) {
+		return selfEdges ? CapabilitiesWithSelfEdges : CapabilitiesNoSelfEdges;
+	}
+
+	GraphLinkedDirected(boolean selfEdges, int expectedVerticesNum, int expectedEdgesNum) {
+		super(capabilities(selfEdges), expectedVerticesNum, expectedEdgesNum);
 
 		edgesHeadOutContainer = newVerticesIntContainer(-1, newArr -> edgesOutHead = newArr);
 		edgesHeadInContainer = newVerticesIntContainer(-1, newArr -> edgesInHead = newArr);
@@ -72,8 +72,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		edgePrevInContainer = newEdgesIntContainer(-1, newArr -> edgePrevIn = newArr);
 	}
 
-	GraphLinkedDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
+	GraphLinkedDirected(boolean selfEdges, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		super(capabilities(selfEdges), g, copyVerticesWeights, copyEdgesWeights);
 
 		edgesHeadOutContainer = newVerticesIntContainer(-1, newArr -> edgesOutHead = newArr);
 		edgesHeadInContainer = newVerticesIntContainer(-1, newArr -> edgesInHead = newArr);
@@ -90,8 +90,8 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			addEdgeToLists(e);
 	}
 
-	GraphLinkedDirected(IndexGraphBuilderImpl builder) {
-		super(Capabilities, builder);
+	GraphLinkedDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+		super(capabilities(selfEdges), builder);
 		assert builder.isDirected();
 
 		edgesHeadOutContainer = newVerticesIntContainer(-1, newArr -> edgesOutHead = newArr);

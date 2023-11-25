@@ -36,23 +36,23 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract {
 
 	private static final Edge[] EmptyEdgeArr = new Edge[0];
 
-	private static final GraphBaseMutable.Capabilities Capabilities =
+	private static final GraphBaseMutable.Capabilities CapabilitiesNoSelfEdges =
+			GraphBaseMutable.Capabilities.of(false, false, true);
+	private static final GraphBaseMutable.Capabilities CapabilitiesWithSelfEdges =
 			GraphBaseMutable.Capabilities.of(false, true, true);
 
-	/**
-	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
-	 *
-	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
-	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
-	 */
-	GraphLinkedPtrUndirected(int expectedVerticesNum, int expectedEdgesNum) {
-		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
+	private static GraphBaseMutable.Capabilities capabilities(boolean selfEdges) {
+		return selfEdges ? CapabilitiesWithSelfEdges : CapabilitiesNoSelfEdges;
+	}
+
+	GraphLinkedPtrUndirected(boolean selfEdges, int expectedVerticesNum, int expectedEdgesNum) {
+		super(capabilities(selfEdges), expectedVerticesNum, expectedEdgesNum);
 		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edges = newArr);
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 	}
 
-	GraphLinkedPtrUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
+	GraphLinkedPtrUndirected(boolean selfEdges, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		super(capabilities(selfEdges), g, copyVerticesWeights, copyEdgesWeights);
 		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edges = newArr);
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
@@ -61,8 +61,8 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract {
 			addEdgeToLists(getEdge(e));
 	}
 
-	GraphLinkedPtrUndirected(IndexGraphBuilderImpl builder) {
-		super(Capabilities, builder);
+	GraphLinkedPtrUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+		super(capabilities(selfEdges), builder);
 		assert !builder.isDirected();
 
 		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edges = newArr);

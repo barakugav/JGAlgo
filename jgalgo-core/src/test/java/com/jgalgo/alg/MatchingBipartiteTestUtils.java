@@ -35,8 +35,9 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 
 	static Graph<Integer, Integer> randGraphBipartite(int sn, int tn, int m,
 			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+		boolean selfEdges = graphImpl.get(false).isAllowSelfEdges();
 		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true).parallelEdges(false)
-				.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+				.selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
 	}
 
 	static void randBipartiteGraphs(MatchingAlgo algo, long seed) {

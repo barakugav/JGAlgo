@@ -102,7 +102,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			builder.expectedEdgesNum(subGraphEdgesNum);
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
-				if (vertices.contains(u) && vertices.contains(v))
+				if (u != v && vertices.contains(u) && vertices.contains(v))
 					edgeRef[builder.addEdge(vOrigToRef[u], vOrigToRef[v])] = e;
 			}
 

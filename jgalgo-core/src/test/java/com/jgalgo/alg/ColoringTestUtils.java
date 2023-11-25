@@ -23,6 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -47,7 +48,7 @@ class ColoringTestUtils extends TestUtils {
 	}
 
 	static void testWithSelfLoops(ColoringAlgo algo) {
-		IntGraph g = IntGraph.newUndirected();
+		IntGraph g = IntGraphFactory.newUndirected().allowSelfEdges(true).newGraph();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();

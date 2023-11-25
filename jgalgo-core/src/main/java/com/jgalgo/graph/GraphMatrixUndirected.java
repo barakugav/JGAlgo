@@ -34,26 +34,23 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 
 	private int[] edgesNum;
 	private final DataContainer.Int edgesNumContainer;
-	private static final GraphBaseMutable.Capabilities Capabilities =
+
+	private static final GraphBaseMutable.Capabilities CapabilitiesNoSelfEdges =
+			GraphBaseMutable.Capabilities.of(false, false, false);
+	private static final GraphBaseMutable.Capabilities CapabilitiesWithSelfEdges =
 			GraphBaseMutable.Capabilities.of(false, true, false);
 
-	GraphMatrixUndirected() {
-		this(0, 0);
+	private static GraphBaseMutable.Capabilities capabilities(boolean selfEdges) {
+		return selfEdges ? CapabilitiesWithSelfEdges : CapabilitiesNoSelfEdges;
 	}
 
-	/**
-	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
-	 *
-	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
-	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
-	 */
-	GraphMatrixUndirected(int expectedVerticesNum, int expectedEdgesNum) {
-		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
+	GraphMatrixUndirected(boolean selfEdges, int expectedVerticesNum, int expectedEdgesNum) {
+		super(capabilities(selfEdges), expectedVerticesNum, expectedEdgesNum);
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 	}
 
-	GraphMatrixUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
+	GraphMatrixUndirected(boolean selfEdges, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		super(capabilities(selfEdges), g, copyVerticesWeights, copyEdgesWeights);
 		assert !g.isDirected();
 		if (g instanceof GraphMatrixUndirected) {
 			GraphMatrixUndirected g0 = (GraphMatrixUndirected) g;
@@ -65,8 +62,8 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		}
 	}
 
-	GraphMatrixUndirected(IndexGraphBuilderImpl builder) {
-		super(Capabilities, builder);
+	GraphMatrixUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+		super(capabilities(selfEdges), builder);
 		assert !builder.isDirected();
 
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);

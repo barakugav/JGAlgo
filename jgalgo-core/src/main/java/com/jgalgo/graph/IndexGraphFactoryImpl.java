@@ -16,12 +16,12 @@
 package com.jgalgo.graph;
 
 import java.util.EnumSet;
-import java.util.List;
+import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	boolean directed;
-	// private boolean selfEdges;
+	private boolean selfEdges;
 	private boolean parallelEdges;
 	int expectedVerticesNum;
 	int expectedEdgesNum;
@@ -34,7 +34,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	IndexGraphFactoryImpl(IndexGraph g) {
 		this.directed = g.isDirected();
-		// this.selfEdges = g.isAllowSelfEdges();
+		this.selfEdges = g.isAllowSelfEdges();
 		this.parallelEdges = g.isAllowParallelEdges();
 		impl = Graphs.getIndexGraphImpl(g);
 	}
@@ -69,199 +69,230 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	}
 
 	Impl mutableImpl() {
-		Impl arrayImpl = directed ? new Impl() {
+		Boolean2ObjectFunction<Impl> arrayImplFactory = selfEdges -> {
+			return directed ? new Impl() {
 
-			@Override
-			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-				return new GraphArrayDirected(expectedVerticesNum, expectedEdgesNum);
-			}
+				@Override
+				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+					return new GraphArrayDirected(selfEdges, expectedVerticesNum, expectedEdgesNum);
+				}
 
-			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				return new GraphArrayDirected(graph, copyVerticesWeights, copyEdgesWeights);
-			}
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					return new GraphArrayDirected(selfEdges, graph, copyVerticesWeights, copyEdgesWeights);
+				}
 
-			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphArrayDirected(builder);
-			}
-		} : new Impl() {
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+					return new GraphArrayDirected(selfEdges, builder);
+				}
+			} : new Impl() {
 
-			@Override
-			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-				return new GraphArrayUndirected(expectedVerticesNum, expectedEdgesNum);
-			}
+				@Override
+				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+					return new GraphArrayUndirected(selfEdges, expectedVerticesNum, expectedEdgesNum);
+				}
 
-			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				return new GraphArrayUndirected(graph, copyVerticesWeights, copyEdgesWeights);
-			}
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					return new GraphArrayUndirected(selfEdges, graph, copyVerticesWeights, copyEdgesWeights);
+				}
 
-			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphArrayUndirected(builder);
-			}
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+					return new GraphArrayUndirected(selfEdges, builder);
+				}
+			};
 		};
-		Impl linkedImpl = directed ? new Impl() {
+		Impl arrayImpl = arrayImplFactory.get(false);
+		Impl arrayImplWithSelfEdges = arrayImplFactory.get(true);
 
-			@Override
-			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-				return new GraphLinkedDirected(expectedVerticesNum, expectedEdgesNum);
-			}
+		Boolean2ObjectFunction<Impl> linkedImplFactory = selfEdges -> {
+			return directed ? new Impl() {
 
-			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				return new GraphLinkedDirected(graph, copyVerticesWeights, copyEdgesWeights);
-			}
+				@Override
+				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+					return new GraphLinkedDirected(selfEdges, expectedVerticesNum, expectedEdgesNum);
+				}
 
-			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphLinkedDirected(builder);
-			}
-		} : new Impl() {
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					return new GraphLinkedDirected(selfEdges, graph, copyVerticesWeights, copyEdgesWeights);
+				}
 
-			@Override
-			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-				return new GraphLinkedUndirected(expectedVerticesNum, expectedEdgesNum);
-			}
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+					return new GraphLinkedDirected(selfEdges, builder);
+				}
+			} : new Impl() {
 
-			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				return new GraphLinkedUndirected(graph, copyVerticesWeights, copyEdgesWeights);
-			}
+				@Override
+				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+					return new GraphLinkedUndirected(selfEdges, expectedVerticesNum, expectedEdgesNum);
+				}
 
-			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphLinkedUndirected(builder);
-			}
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					return new GraphLinkedUndirected(selfEdges, graph, copyVerticesWeights, copyEdgesWeights);
+				}
+
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+					return new GraphLinkedUndirected(selfEdges, builder);
+				}
+			};
 		};
-		Impl linkedPtrImpl = directed ? new Impl() {
+		Impl linkedImpl = linkedImplFactory.get(false);
+		Impl linkedImplWithSelfEdges = linkedImplFactory.get(true);
+		Boolean2ObjectFunction<Impl> linkedPtrImplFactory = selfEdges -> {
+			return directed ? new Impl() {
 
-			@Override
-			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-				return new GraphLinkedPtrDirected(expectedVerticesNum, expectedEdgesNum);
-			}
+				@Override
+				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+					return new GraphLinkedPtrDirected(selfEdges, expectedVerticesNum, expectedEdgesNum);
+				}
 
-			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				return new GraphLinkedPtrDirected(graph, copyVerticesWeights, copyEdgesWeights);
-			}
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					return new GraphLinkedPtrDirected(selfEdges, graph, copyVerticesWeights, copyEdgesWeights);
+				}
 
-			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphLinkedPtrDirected(builder);
-			}
-		} : new Impl() {
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+					return new GraphLinkedPtrDirected(selfEdges, builder);
+				}
+			} : new Impl() {
 
-			@Override
-			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-				return new GraphLinkedPtrUndirected(expectedVerticesNum, expectedEdgesNum);
-			}
+				@Override
+				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+					return new GraphLinkedPtrUndirected(selfEdges, expectedVerticesNum, expectedEdgesNum);
+				}
 
-			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				return new GraphLinkedPtrUndirected(graph, copyVerticesWeights, copyEdgesWeights);
-			}
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					return new GraphLinkedPtrUndirected(selfEdges, graph, copyVerticesWeights, copyEdgesWeights);
+				}
 
-			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphLinkedPtrUndirected(builder);
-			}
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+					return new GraphLinkedPtrUndirected(selfEdges, builder);
+				}
+			};
 		};
-		Impl hashtableImpl = directed ? new Impl() {
+		Impl linkedPtrImpl = linkedPtrImplFactory.get(false);
+		Impl linkedPtrImplWithSelfEdges = linkedPtrImplFactory.get(true);
+		Boolean2ObjectFunction<Impl> hashtableImplFactory = selfEdges -> {
+			return directed ? new Impl() {
 
-			@Override
-			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-				return new GraphHashmapDirected(expectedVerticesNum, expectedEdgesNum);
-			}
+				@Override
+				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+					return new GraphHashmapDirected(selfEdges, expectedVerticesNum, expectedEdgesNum);
+				}
 
-			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				return new GraphHashmapDirected(graph, copyVerticesWeights, copyEdgesWeights);
-			}
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					return new GraphHashmapDirected(selfEdges, graph, copyVerticesWeights, copyEdgesWeights);
+				}
 
-			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphHashmapDirected(builder);
-			}
-		} : new Impl() {
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+					return new GraphHashmapDirected(selfEdges, builder);
+				}
+			} : new Impl() {
 
-			@Override
-			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-				return new GraphHashmapUndirected(expectedVerticesNum, expectedEdgesNum);
-			}
+				@Override
+				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+					return new GraphHashmapUndirected(selfEdges, expectedVerticesNum, expectedEdgesNum);
+				}
 
-			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				return new GraphHashmapUndirected(graph, copyVerticesWeights, copyEdgesWeights);
-			}
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					return new GraphHashmapUndirected(selfEdges, graph, copyVerticesWeights, copyEdgesWeights);
+				}
 
-			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphHashmapUndirected(builder);
-			}
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+					return new GraphHashmapUndirected(selfEdges, builder);
+				}
+			};
 		};
-		Impl matrixImpl = directed ? new Impl() {
+		Impl hashtableImpl = hashtableImplFactory.get(false);
+		Impl hashtableImplWithSelfEdges = hashtableImplFactory.get(true);
+		Boolean2ObjectFunction<Impl> matrixImplFactory = selfEdges -> {
+			return directed ? new Impl() {
 
-			@Override
-			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-				return new GraphMatrixDirected(expectedVerticesNum, expectedEdgesNum);
-			}
+				@Override
+				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+					return new GraphMatrixDirected(selfEdges, expectedVerticesNum, expectedEdgesNum);
+				}
 
-			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				return new GraphMatrixDirected(graph, copyVerticesWeights, copyEdgesWeights);
-			}
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					return new GraphMatrixDirected(selfEdges, graph, copyVerticesWeights, copyEdgesWeights);
+				}
 
-			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphMatrixDirected(builder);
-			}
-		} : new Impl() {
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+					return new GraphMatrixDirected(selfEdges, builder);
+				}
+			} : new Impl() {
 
-			@Override
-			public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-				return new GraphMatrixUndirected(expectedVerticesNum, expectedEdgesNum);
-			}
+				@Override
+				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+					return new GraphMatrixUndirected(selfEdges, expectedVerticesNum, expectedEdgesNum);
+				}
 
-			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				return new GraphMatrixUndirected(graph, copyVerticesWeights, copyEdgesWeights);
-			}
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					return new GraphMatrixUndirected(selfEdges, graph, copyVerticesWeights, copyEdgesWeights);
+				}
 
-			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphMatrixUndirected(builder);
-			}
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+					return new GraphMatrixUndirected(selfEdges, builder);
+				}
+			};
 		};
+		Impl matrixImpl = matrixImplFactory.get(false);
+		Impl matrixImplWithSelfEdges = matrixImplFactory.get(true);
 
 		if (impl != null) {
 			switch (impl) {
 				case "array":
 					return arrayImpl;
+				case "array-selfedges":
+					return arrayImplWithSelfEdges;
 				case "linked-list":
 					return linkedImpl;
+				case "linked-list-selfedges":
+					return linkedImplWithSelfEdges;
 				case "linked-list-ptr":
 					return linkedPtrImpl;
+				case "linked-list-ptr-selfedges":
+					return linkedPtrImplWithSelfEdges;
 				case "hashtable":
 					return hashtableImpl;
+				case "hashtable-selfedges":
+					return hashtableImplWithSelfEdges;
 				case "matrix":
 					return matrixImpl;
+				case "matrix-selfedges":
+					return matrixImplWithSelfEdges;
 				default:
 					throw new IllegalArgumentException("unknown 'impl' value: " + impl);
 			}
 		} else {
 
-			if (hints.containsAll(List.of(GraphFactory.Hint.DenseGraph)) && !parallelEdges)
-				return matrixImpl;
+			if (hints.contains(GraphFactory.Hint.DenseGraph) && !parallelEdges)
+				return selfEdges ? matrixImplWithSelfEdges : matrixImpl;
 
 			if (hints.contains(GraphFactory.Hint.FastEdgeLookup) && !parallelEdges)
-				return hashtableImpl;
+				return selfEdges ? hashtableImplWithSelfEdges : hashtableImpl;
 
 			if (hints.contains(GraphFactory.Hint.FastEdgeRemoval))
-				return linkedImpl;
+				return selfEdges ? linkedImplWithSelfEdges : linkedImpl;
 
-			return arrayImpl;
+			return selfEdges ? arrayImplWithSelfEdges : arrayImpl;
 		}
 	}
 
@@ -309,7 +340,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	@Override
 	public IndexGraphFactory allowSelfEdges(boolean selfEdges) {
-		// this.selfEdges = selfEdges;
+		this.selfEdges = selfEdges;
 		return this;
 	}
 

@@ -44,17 +44,17 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	private final DataContainer.Obj<int[]> edgesInContainer;
 	private final DataContainer.Int edgesInNumContainer;
 
-	private static final GraphBaseMutable.Capabilities Capabilities =
+	private static final GraphBaseMutable.Capabilities CapabilitiesNoSelfEdges =
+			GraphBaseMutable.Capabilities.of(true, false, true);
+	private static final GraphBaseMutable.Capabilities CapabilitiesWithSelfEdges =
 			GraphBaseMutable.Capabilities.of(true, true, true);
 
-	/**
-	 * Create a new graph with no vertices and edges, with expected number of vertices and edges.
-	 *
-	 * @param expectedVerticesNum the expected number of vertices that will be in the graph
-	 * @param expectedEdgesNum    the expected number of edges that will be in the graph
-	 */
-	GraphArrayDirected(int expectedVerticesNum, int expectedEdgesNum) {
-		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
+	private static GraphBaseMutable.Capabilities capabilities(boolean selfEdges) {
+		return selfEdges ? CapabilitiesWithSelfEdges : CapabilitiesNoSelfEdges;
+	}
+
+	GraphArrayDirected(boolean selfEdges, int expectedVerticesNum, int expectedEdgesNum) {
+		super(capabilities(selfEdges), expectedVerticesNum, expectedEdgesNum);
 		edgesOutContainer =
 				newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edgesOut = newArr);
 		edgesOutNumContainer = newVerticesIntContainer(0, newArr -> edgesOutNum = newArr);
@@ -63,8 +63,8 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);
 	}
 
-	GraphArrayDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
+	GraphArrayDirected(boolean selfEdges, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		super(capabilities(selfEdges), g, copyVerticesWeights, copyEdgesWeights);
 		final int n = g.vertices().size();
 
 		if (g instanceof GraphArrayDirected) {
@@ -110,8 +110,8 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		}
 	}
 
-	GraphArrayDirected(IndexGraphBuilderImpl builder) {
-		super(Capabilities, builder);
+	GraphArrayDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+		super(capabilities(selfEdges), builder);
 		assert builder.isDirected();
 
 		edgesOutContainer =
@@ -121,8 +121,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 				newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edgesIn = newArr);
 		edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);
 
-		final int m = builder.edges().size();
-		for (int e = 0; e < m; e++) {
+		for (int m = builder.edges().size(), e = 0; e < m; e++) {
 			addEdgeToList(edgesOut, edgesOutNum, builder.edgeSource(e), e);
 			addEdgeToList(edgesIn, edgesInNum, builder.edgeTarget(e), e);
 		}

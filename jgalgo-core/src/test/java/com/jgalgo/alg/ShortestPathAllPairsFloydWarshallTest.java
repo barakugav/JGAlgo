@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -91,7 +92,7 @@ class ShortestPathAllPairsFloydWarshallTest extends TestBase {
 
 	@Test
 	public void undirectedNegativeSelfEdge() {
-		IntGraph g = IntGraph.newUndirected();
+		IntGraph g = IntGraphFactory.newUndirected().allowSelfEdges(true).newGraph();
 		g.addVertex(0);
 		g.addVertex(1);
 		g.addVertex(2);

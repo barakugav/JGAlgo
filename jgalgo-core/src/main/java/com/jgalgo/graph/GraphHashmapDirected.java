@@ -28,19 +28,25 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 	private final DataContainer.Obj<Int2IntMap> edgesOutContainer;
 	private final DataContainer.Obj<Int2IntMap> edgesInContainer;
 
-	private static final GraphBaseMutable.Capabilities Capabilities =
+	private static final GraphBaseMutable.Capabilities CapabilitiesNoSelfEdges =
+			GraphBaseMutable.Capabilities.of(true, false, false);
+	private static final GraphBaseMutable.Capabilities CapabilitiesWithSelfEdges =
 			GraphBaseMutable.Capabilities.of(true, true, false);
 
-	GraphHashmapDirected(int expectedVerticesNum, int expectedEdgesNum) {
-		super(Capabilities, expectedVerticesNum, expectedEdgesNum);
+	private static GraphBaseMutable.Capabilities capabilities(boolean selfEdges) {
+		return selfEdges ? CapabilitiesWithSelfEdges : CapabilitiesNoSelfEdges;
+	}
+
+	GraphHashmapDirected(boolean selfEdges, int expectedVerticesNum, int expectedEdgesNum) {
+		super(capabilities(selfEdges), expectedVerticesNum, expectedEdgesNum);
 		edgesOutContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
 				newArr -> edgesOut = newArr);
 		edgesInContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
 				newArr -> edgesIn = newArr);
 	}
 
-	GraphHashmapDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		super(Capabilities, g, copyVerticesWeights, copyEdgesWeights);
+	GraphHashmapDirected(boolean selfEdges, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		super(capabilities(selfEdges), g, copyVerticesWeights, copyEdgesWeights);
 		final int n = g.vertices().size();
 
 		if (g instanceof GraphHashmapDirected) {
@@ -85,8 +91,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		}
 	}
 
-	GraphHashmapDirected(IndexGraphBuilderImpl builder) {
-		super(Capabilities, builder);
+	GraphHashmapDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+		super(capabilities(selfEdges), builder);
 		assert builder.isDirected();
 
 		edgesOutContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
@@ -119,8 +125,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		assert edgesOut[removedIdx].isEmpty() && edgesIn[removedIdx].isEmpty();
 
 		/* we handle the self edge of the swapped vertex separately */
-		int selfEdge = edgesOut[swappedIdx].remove(swappedIdx);
-		if (selfEdge != -1) {
+		int selfEdge = -1;
+		if (isAllowSelfEdges() && (selfEdge = edgesOut[swappedIdx].remove(swappedIdx)) != -1) {
 			int oldVal = edgesIn[swappedIdx].remove(swappedIdx);
 			assert oldVal == selfEdge;
 		}

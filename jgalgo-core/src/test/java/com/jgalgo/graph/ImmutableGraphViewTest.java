@@ -38,12 +38,9 @@ public class ImmutableGraphViewTest extends TestBase {
 		final Random rand = new Random(seed);
 		final int n = 47, m = 1345;
 
-		Graph<Integer, Integer> g;
-		if (intGraph) {
-			g = IntGraphFactory.newUndirected().setDirected(directed).newGraph();
-		} else {
-			g = GraphFactory.<Integer, Integer>newUndirected().setDirected(directed).newGraph();
-		}
+		Graph<Integer, Integer> g =
+				(intGraph ? IntGraphFactory.newUndirected() : GraphFactory.<Integer, Integer>newUndirected())
+						.setDirected(directed).allowSelfEdges(true).newGraph();
 
 		WeightsInt<Integer> vWeights = g.addVerticesWeights(VerticesWeightsKey, int.class);
 		for (int i = 0; i < n; i++) {

@@ -571,7 +571,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
-					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
+					.parallelEdges(false).selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -664,8 +664,9 @@ class GraphImplTestUtils extends TestUtils {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
+			boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
-					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
+					.parallelEdges(false).selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -715,8 +716,9 @@ class GraphImplTestUtils extends TestUtils {
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
+			boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
 			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
-					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
+					.parallelEdges(false).selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -835,8 +837,9 @@ class GraphImplTestUtils extends TestUtils {
 	private static void testRandOps(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, boolean directed, int n,
 			int m, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
 		Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-				.parallelEdges(false).selfEdges(true).cycles(true).connected(false).graphImpl(graphImpl).build();
+				.parallelEdges(false).selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
 		final int opsNum = 128;
 		testRandOps(g, opsNum, seedGen.nextSeed());
 	}

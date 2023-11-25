@@ -104,8 +104,9 @@ public class GraphsTestUtils extends TestUtils {
 
 	public static Graph<Integer, Integer> randGraph(int n, int m,
 			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+		boolean selfEdges = graphImpl.get(false).isAllowSelfEdges();
 		return new RandomGraphBuilder(seed).graphImpl(graphImpl).n(n).m(m).directed(false).parallelEdges(false)
-				.selfEdges(true).cycles(true).connected(false).build();
+				.selfEdges(selfEdges).cycles(true).connected(false).build();
 	}
 
 }
