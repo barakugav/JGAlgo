@@ -15,7 +15,6 @@
  */
 package com.jgalgo.internal.util;
 
-import java.util.NoSuchElementException;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
 import java.util.function.IntToDoubleFunction;
@@ -56,22 +55,7 @@ public class Range extends AbstractIntSet {
 
 	@Override
 	public IntIterator iterator() {
-		return new IntIterator() {
-
-			int x = from;
-
-			@Override
-			public int nextInt() {
-				if (x >= to)
-					throw new NoSuchElementException();
-				return x++;
-			}
-
-			@Override
-			public boolean hasNext() {
-				return x < to;
-			}
-		};
+		return new Iter(from, to);
 	}
 
 	@Override
@@ -97,6 +81,28 @@ public class Range extends AbstractIntSet {
 
 	public boolean allMatch(IntPredicate allMatch) {
 		return intStream().allMatch(allMatch);
+	}
+
+	private static class Iter implements IntIterator {
+
+		int x;
+		final int to;
+
+		Iter(int from, int to) {
+			this.x = from;
+			this.to = to;
+		}
+
+		@Override
+		public boolean hasNext() {
+			return x < to;
+		}
+
+		@Override
+		public int nextInt() {
+			Assertions.Iters.hasNext(this);
+			return x++;
+		}
 	}
 
 }
