@@ -27,8 +27,9 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
-abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
+class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
+	private final boolean directed;
 	private int m;
 	final GraphElementSet.Mutable vertices;
 	final GraphElementSet.Mutable edges;
@@ -43,7 +44,8 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	IndexGraphFactoryImpl.Impl mutableImpl;
 	IndexGraphFactoryImpl.Impl immutableImpl;
 
-	private IndexGraphBuilderImpl() {
+	IndexGraphBuilderImpl(boolean directed) {
+		this.directed = directed;
 		vertices = GraphElementSet.Mutable.ofVertices(0);
 		edges = GraphElementSet.Mutable.ofEdges(0);
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(0);
@@ -52,6 +54,7 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	private IndexGraphBuilderImpl(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		this.directed = g.isDirected();
 		final int n = g.vertices().size();
 		m = g.edges().size();
 
@@ -80,12 +83,10 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	static IndexGraphBuilderImpl newFrom(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		return g.isDirected() ? new IndexGraphBuilderImpl.Directed(g, copyVerticesWeights, copyEdgesWeights)
-				: new IndexGraphBuilderImpl.Undirected(g, copyVerticesWeights, copyEdgesWeights);
+		return new IndexGraphBuilderImpl(g, copyVerticesWeights, copyEdgesWeights);
 	}
 
 	private void setDefaultImpls() {
-		boolean directed = this instanceof IndexGraphBuilderImpl.Directed;
 		mutableImpl = new IndexGraphFactoryImpl(directed).mutableImpl();
 		immutableImpl = new IndexGraphFactoryImpl(directed).immutableImpl();
 	}
@@ -200,7 +201,11 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		userProvideEdgesIds = false;
 		verticesUserWeights.clearContainers();
 		edgesUserWeights.clearContainers();
+	}
 
+	@Override
+	public boolean isDirected() {
+		return directed;
 	}
 
 	int edgeSource(int e) {
@@ -290,6 +295,21 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	@Override
+	public IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges) {
+		if (directed && reIndexEdges) {
+			validateUserProvidedIdsBeforeBuild();
+			return GraphCsrDirectedReindexed.newInstance(this);
+		} else {
+			return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());
+		}
+	}
+
+	@Override
+	public IndexGraphBuilder.ReIndexedGraph reIndexAndBuildMutable(boolean reIndexVertices, boolean reIndexEdges) {
+		return new ReIndexedGraphImpl(buildMutable(), Optional.empty(), Optional.empty());
+	}
+
+	@Override
 	public <T, WeightsT extends IWeights<T>> WeightsT getVerticesIWeights(String key) {
 		return verticesUserWeights.getWeights(key);
 	}
@@ -354,53 +374,6 @@ abstract class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 			};
 		}
-	}
-
-	static class Undirected extends IndexGraphBuilderImpl {
-
-		Undirected() {}
-
-		Undirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-			super(g, copyVerticesWeights, copyEdgesWeights);
-			Assertions.Graphs.onlyUndirected(g);
-		}
-
-		@Override
-		public IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges) {
-			return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());
-		}
-
-		@Override
-		public IndexGraphBuilder.ReIndexedGraph reIndexAndBuildMutable(boolean reIndexVertices, boolean reIndexEdges) {
-			return new ReIndexedGraphImpl(buildMutable(), Optional.empty(), Optional.empty());
-		}
-
-	}
-
-	static class Directed extends IndexGraphBuilderImpl {
-
-		Directed() {}
-
-		Directed(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-			super(g, copyVerticesWeights, copyEdgesWeights);
-			Assertions.Graphs.onlyDirected(g);
-		}
-
-		@Override
-		public IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges) {
-			if (reIndexEdges) {
-				validateUserProvidedIdsBeforeBuild();
-				return GraphCsrDirectedReindexed.newInstance(this);
-			} else {
-				return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());
-			}
-		}
-
-		@Override
-		public IndexGraphBuilder.ReIndexedGraph reIndexAndBuildMutable(boolean reIndexVertices, boolean reIndexEdges) {
-			return new ReIndexedGraphImpl(buildMutable(), Optional.empty(), Optional.empty());
-		}
-
 	}
 
 	static class ReIndexedGraphImpl implements IndexGraphBuilder.ReIndexedGraph {

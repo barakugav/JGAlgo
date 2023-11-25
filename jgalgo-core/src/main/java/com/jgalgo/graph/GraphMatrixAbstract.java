@@ -69,9 +69,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 		for (int n = builder.vertices().size(), u = 0; u < n; u++)
 			edges[u] = newVerticesIntContainer(EdgeNone, JGAlgoUtils.<int[]>consumerNoOp());
 
-		assert builder instanceof IndexGraphBuilderImpl.Directed || builder instanceof IndexGraphBuilderImpl.Undirected;
-		boolean directed = builder instanceof IndexGraphBuilderImpl.Directed;
-		if (directed) {
+		if (builder.isDirected()) {
 			for (int m = builder.edges().size(), e = 0; e < m; e++) {
 				int source = builder.edgeSource(e), target = builder.edgeTarget(e);
 				DataContainer.Int uEdges = edges[source];

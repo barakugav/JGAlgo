@@ -85,8 +85,10 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		}
 	}
 
-	GraphHashmapDirected(IndexGraphBuilderImpl.Directed builder) {
+	GraphHashmapDirected(IndexGraphBuilderImpl builder) {
 		super(Capabilities, builder);
+		assert builder.isDirected();
+
 		edgesOutContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
 				newArr -> edgesOut = newArr);
 		edgesInContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,

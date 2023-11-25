@@ -237,7 +237,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IndexGraphBuilder newUndirected() {
-		return new IndexGraphBuilderImpl.Undirected();
+		return new IndexGraphBuilderImpl(false);
 	}
 
 	/**
@@ -246,7 +246,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return a new empty builder for directed graphs
 	 */
 	static IndexGraphBuilder newDirected() {
-		return new IndexGraphBuilderImpl.Directed();
+		return new IndexGraphBuilderImpl(true);
 	}
 
 	/**

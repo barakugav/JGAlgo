@@ -110,8 +110,10 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		}
 	}
 
-	GraphArrayDirected(IndexGraphBuilderImpl.Directed builder) {
+	GraphArrayDirected(IndexGraphBuilderImpl builder) {
 		super(Capabilities, builder);
+		assert builder.isDirected();
+
 		edgesOutContainer =
 				newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edgesOut = newArr);
 		edgesOutNumContainer = newVerticesIntContainer(0, newArr -> edgesOutNum = newArr);

@@ -47,12 +47,16 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		edgeEndpoints = new long[m];
 		if (graphOrBuilder.contains(IndexGraph.class)) {
 			IndexGraph g = graphOrBuilder.get(IndexGraph.class).get();
+			assert g.isDirected();
+
 			for (int eCsr = 0; eCsr < m; eCsr++) {
 				int eOrig = edgesReIndexing.reIndexedToOrig(eCsr);
 				setEndpoints(eCsr, g.edgeSource(eOrig), g.edgeTarget(eOrig));
 			}
 		} else {
 			IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();
+			assert builder.isDirected();
+
 			for (int eCsr = 0; eCsr < m; eCsr++) {
 				int eOrig = edgesReIndexing.reIndexedToOrig(eCsr);
 				setEndpoints(eCsr, builder.edgeSource(eOrig), builder.edgeTarget(eOrig));

@@ -27,7 +27,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 import it.unimi.dsi.fastutil.objects.ObjectSets;
 
-abstract class GraphImpl<V, E> extends GraphBase<V, E> {
+class GraphImpl<V, E> extends GraphBase<V, E> {
 
 	final IndexGraph indexGraph;
 	final IdIdxMapImpl<V> viMap;
@@ -157,6 +157,12 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 	@Override
 	public void removeInEdgesOf(V target) {
 		indexGraph.removeInEdgesOf(viMap.idToIndex(target));
+	}
+
+	@Override
+	public void reverseEdge(E edge) {
+		int eIdx = eiMap.idToIndex(edge);
+		indexGraph.reverseEdge(eIdx);
 	}
 
 	@Override
@@ -346,62 +352,6 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 		return indexGraph.isAllowParallelEdges();
 	}
 
-	static class Directed<V, E> extends GraphImpl<V, E> {
-
-		Directed(IndexGraph indexGraph, int expectedVerticesNum, int expectedEdgesNum) {
-			super(indexGraph, expectedVerticesNum, expectedEdgesNum);
-			Assertions.Graphs.onlyDirected(indexGraph);
-		}
-
-		Directed(IndexGraph indexGraph, IndexIdMap<V> viMap, IndexIdMap<E> eiMap,
-				IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
-			super(indexGraph, viMap, eiMap, vReIndexing, eReIndexing);
-			Assertions.Graphs.onlyDirected(indexGraph);
-		}
-
-		/* copy constructor */
-		Directed(Graph<V, E> orig, IndexGraphFactory indexGraphFactory, boolean copyVerticesWeights,
-				boolean copyEdgesWeights) {
-			super(orig, indexGraphFactory, copyVerticesWeights, copyEdgesWeights);
-			Assertions.Graphs.onlyDirected(orig);
-			Assertions.Graphs.onlyDirected(indexGraph);
-		}
-
-		@Override
-		public void reverseEdge(E edge) {
-			int eIdx = eiMap.idToIndex(edge);
-			indexGraph.reverseEdge(eIdx);
-		}
-	}
-
-	static class Undirected<V, E> extends GraphImpl<V, E> {
-
-		Undirected(IndexGraph indexGraph, int expectedVerticesNum, int expectedEdgesNum) {
-			super(indexGraph, expectedVerticesNum, expectedEdgesNum);
-			Assertions.Graphs.onlyUndirected(indexGraph);
-		}
-
-		Undirected(IndexGraph indexGraph, IndexIdMap<V> viMap, IndexIdMap<E> eiMap,
-				IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
-			super(indexGraph, viMap, eiMap, vReIndexing, eReIndexing);
-			Assertions.Graphs.onlyUndirected(indexGraph);
-		}
-
-		/* copy constructor */
-		Undirected(Graph<V, E> orig, IndexGraphFactory indexGraphFactory, boolean copyVerticesWeights,
-				boolean copyEdgesWeights) {
-			super(orig, indexGraphFactory, copyVerticesWeights, copyEdgesWeights);
-			Assertions.Graphs.onlyUndirected(orig);
-			Assertions.Graphs.onlyUndirected(indexGraph);
-		}
-
-		@Override
-		public void reverseEdge(E edge) {
-			int eIdx = eiMap.idToIndex(edge);
-			indexGraph.reverseEdge(eIdx);
-		}
-	}
-
 	private static class IdIdxMapImpl<K> implements IndexIdMap<K> {
 
 		private final IntSet elements;
@@ -574,27 +524,17 @@ abstract class GraphImpl<V, E> extends GraphBase<V, E> {
 		@Override
 		public Graph<V, E> newGraph() {
 			IndexGraph indexGraph = factory.newGraph();
-			if (indexGraph.isDirected()) {
-				return new GraphImpl.Directed<>(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
-			} else {
-				return new GraphImpl.Undirected<>(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
-			}
+			return new GraphImpl<>(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
 		}
 
 		@Override
 		public Graph<V, E> newCopyOf(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-			if (g.isDirected()) {
-				return new GraphImpl.Directed<>(g, factory, copyVerticesWeights, copyEdgesWeights);
-			} else {
-				return new GraphImpl.Undirected<>(g, factory, copyVerticesWeights, copyEdgesWeights);
-			}
+			return new GraphImpl<>(g, factory, copyVerticesWeights, copyEdgesWeights);
 		}
 
 		@Override
 		public GraphBuilder<V, E> newBuilder() {
-			IndexGraphBuilder indexBuilder = factory.newBuilder();
-			return factory.directed ? new GraphBuilderImpl.Directed<>()
-					: new GraphBuilderImpl.Undirected<>(indexBuilder);
+			return new GraphBuilderImpl<>(factory.newBuilder());
 		}
 
 		@Override

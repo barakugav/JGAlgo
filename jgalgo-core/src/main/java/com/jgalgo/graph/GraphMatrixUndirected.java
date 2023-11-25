@@ -65,8 +65,10 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 		}
 	}
 
-	GraphMatrixUndirected(IndexGraphBuilderImpl.Undirected builder) {
+	GraphMatrixUndirected(IndexGraphBuilderImpl builder) {
 		super(Capabilities, builder);
+		assert !builder.isDirected();
+
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
 		for (int m = builder.edges().size(), e = 0; e < m; e++) {

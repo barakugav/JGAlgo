@@ -487,10 +487,10 @@ public interface IntGraph extends Graph<Integer, Integer> {
 			IndexGraph iGraph = reIndexedGraph.graph();
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-			return new IntGraphImpl.Directed(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
+			return new IntGraphImpl(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
 		} else {
 			IndexGraph iGraph = new GraphCsrUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);
-			return new IntGraphImpl.Undirected(iGraph, viMap, eiMap, null, null);
+			return new IntGraphImpl(iGraph, viMap, eiMap, null, null);
 		}
 	}
 

@@ -52,8 +52,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	@Override
 	public IndexGraphBuilder newBuilder() {
-		IndexGraphBuilderImpl builder =
-				directed ? new IndexGraphBuilderImpl.Directed() : new IndexGraphBuilderImpl.Undirected();
+		IndexGraphBuilderImpl builder = new IndexGraphBuilderImpl(directed);
 		builder.setMutableImpl(mutableImpl());
 		builder.setImmutableImpl(immutableImpl());
 		return builder;
@@ -84,7 +83,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphArrayDirected((IndexGraphBuilderImpl.Directed) builder);
+				return new GraphArrayDirected(builder);
 			}
 		} : new Impl() {
 
@@ -100,7 +99,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphArrayUndirected((IndexGraphBuilderImpl.Undirected) builder);
+				return new GraphArrayUndirected(builder);
 			}
 		};
 		Impl linkedImpl = directed ? new Impl() {
@@ -117,7 +116,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphLinkedDirected((IndexGraphBuilderImpl.Directed) builder);
+				return new GraphLinkedDirected(builder);
 			}
 		} : new Impl() {
 
@@ -133,7 +132,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphLinkedUndirected((IndexGraphBuilderImpl.Undirected) builder);
+				return new GraphLinkedUndirected(builder);
 			}
 		};
 		Impl linkedPtrImpl = directed ? new Impl() {
@@ -150,7 +149,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphLinkedPtrDirected((IndexGraphBuilderImpl.Directed) builder);
+				return new GraphLinkedPtrDirected(builder);
 			}
 		} : new Impl() {
 
@@ -166,7 +165,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphLinkedPtrUndirected((IndexGraphBuilderImpl.Undirected) builder);
+				return new GraphLinkedPtrUndirected(builder);
 			}
 		};
 		Impl hashtableImpl = directed ? new Impl() {
@@ -183,7 +182,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphHashmapDirected((IndexGraphBuilderImpl.Directed) builder);
+				return new GraphHashmapDirected(builder);
 			}
 		} : new Impl() {
 
@@ -199,7 +198,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphHashmapUndirected((IndexGraphBuilderImpl.Undirected) builder);
+				return new GraphHashmapUndirected(builder);
 			}
 		};
 		Impl matrixImpl = directed ? new Impl() {
@@ -216,7 +215,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphMatrixDirected((IndexGraphBuilderImpl.Directed) builder);
+				return new GraphMatrixDirected(builder);
 			}
 		} : new Impl() {
 
@@ -232,7 +231,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				return new GraphMatrixUndirected((IndexGraphBuilderImpl.Undirected) builder);
+				return new GraphMatrixUndirected(builder);
 			}
 		};
 
@@ -282,10 +281,9 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				IndexGraphBuilderImpl.Directed builder0 = (IndexGraphBuilderImpl.Directed) builder;
 				GraphCsrBase.BuilderProcessEdgesDirected processEdges =
-						GraphCsrBase.BuilderProcessEdgesDirected.valueOf(builder0);
-				return new GraphCsrDirected(builder0, processEdges);
+						GraphCsrBase.BuilderProcessEdgesDirected.valueOf(builder);
+				return new GraphCsrDirected(builder, processEdges);
 			}
 		} : new ImplImmutable() {
 			@Override
@@ -295,10 +293,9 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 			@Override
 			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				IndexGraphBuilderImpl.Undirected builder0 = (IndexGraphBuilderImpl.Undirected) builder;
 				GraphCsrBase.BuilderProcessEdgesUndirected processEdges =
-						GraphCsrBase.BuilderProcessEdgesUndirected.valueOf(builder0);
-				return new GraphCsrUndirected(builder0, processEdges);
+						GraphCsrBase.BuilderProcessEdgesUndirected.valueOf(builder);
+				return new GraphCsrUndirected(builder, processEdges);
 			}
 		};
 		return csrImpl;

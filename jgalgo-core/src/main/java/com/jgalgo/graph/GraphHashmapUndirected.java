@@ -73,8 +73,10 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		}
 	}
 
-	GraphHashmapUndirected(IndexGraphBuilderImpl.Undirected builder) {
+	GraphHashmapUndirected(IndexGraphBuilderImpl builder) {
 		super(Capabilities, builder);
+		assert !builder.isDirected();
+
 		edgesContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
 				newArr -> edges = newArr);
 

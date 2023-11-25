@@ -157,7 +157,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IntGraphBuilder newUndirected() {
-		return new IntGraphBuilderImpl.Undirected();
+		return new IntGraphBuilderImpl(false);
 	}
 
 	/**
@@ -166,7 +166,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * @return a new empty builder for directed graphs
 	 */
 	static IntGraphBuilder newDirected() {
-		return new IntGraphBuilderImpl.Directed();
+		return new IntGraphBuilderImpl(true);
 	}
 
 	/**

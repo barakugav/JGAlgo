@@ -61,8 +61,9 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract {
 			addEdgeToLists(getEdge(e));
 	}
 
-	GraphLinkedPtrUndirected(IndexGraphBuilderImpl.Undirected builder) {
+	GraphLinkedPtrUndirected(IndexGraphBuilderImpl builder) {
 		super(Capabilities, builder);
+		assert !builder.isDirected();
 
 		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edges = newArr);
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);

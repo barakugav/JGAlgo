@@ -209,6 +209,13 @@ public interface GraphBuilder<V, E> {
 	void clear();
 
 	/**
+	 * Check if the graph built by this builder is directed or undirected.
+	 *
+	 * @return {@code true} if the graph built by this builder is directed, {@code false} if it is undirected
+	 */
+	boolean isDirected();
+
+	/**
 	 * Build a new immutable graph with the builder vertices and edges.
 	 *
 	 * @return a new immutable graph with the vertices and edges that were added to the builder.
@@ -230,7 +237,7 @@ public interface GraphBuilder<V, E> {
 	 * @return     a new empty builder for undirected graphs
 	 */
 	static <V, E> GraphBuilder<V, E> newUndirected() {
-		return new GraphBuilderImpl.Undirected<>();
+		return new GraphBuilderImpl<>(false);
 	}
 
 	/**
@@ -241,7 +248,7 @@ public interface GraphBuilder<V, E> {
 	 * @return     a new empty builder for directed graphs
 	 */
 	static <V, E> GraphBuilder<V, E> newDirected() {
-		return new GraphBuilderImpl.Directed<>();
+		return new GraphBuilderImpl<>(true);
 	}
 
 	/**

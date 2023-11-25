@@ -31,7 +31,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
-abstract class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
+class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 
 	final IndexGraph indexGraph;
 	final IdIdxMapImpl viMap;
@@ -239,6 +239,12 @@ abstract class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGr
 	}
 
 	@Override
+	public void reverseEdge(int edge) {
+		int eIdx = eiMap.idToIndex(edge);
+		indexGraph.reverseEdge(eIdx);
+	}
+
+	@Override
 	public int edgeSource(int edge) {
 		int eIdx = eiMap.idToIndex(edge);
 		int uIdx = indexGraph.edgeSource(eIdx);
@@ -424,62 +430,6 @@ abstract class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGr
 		return indexGraph.isAllowParallelEdges();
 	}
 
-	static class Directed extends IntGraphImpl {
-
-		Directed(IndexGraph indexGraph, int expectedVerticesNum, int expectedEdgesNum) {
-			super(indexGraph, expectedVerticesNum, expectedEdgesNum);
-			Assertions.Graphs.onlyDirected(indexGraph);
-		}
-
-		Directed(IndexGraph indexGraph, IndexIntIdMap viMap, IndexIntIdMap eiMap,
-				IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
-			super(indexGraph, viMap, eiMap, vReIndexing, eReIndexing);
-			Assertions.Graphs.onlyDirected(indexGraph);
-		}
-
-		/* copy constructor */
-		Directed(IntGraph orig, IndexGraphFactory indexGraphFactory, boolean copyVerticesWeights,
-				boolean copyEdgesWeights) {
-			super(orig, indexGraphFactory, copyVerticesWeights, copyEdgesWeights);
-			Assertions.Graphs.onlyDirected(orig);
-			Assertions.Graphs.onlyDirected(indexGraph);
-		}
-
-		@Override
-		public void reverseEdge(int edge) {
-			int eIdx = eiMap.idToIndex(edge);
-			indexGraph.reverseEdge(eIdx);
-		}
-	}
-
-	static class Undirected extends IntGraphImpl {
-
-		Undirected(IndexGraph indexGraph, IndexIntIdMap viMap, IndexIntIdMap eiMap,
-				IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
-			super(indexGraph, viMap, eiMap, vReIndexing, eReIndexing);
-			Assertions.Graphs.onlyUndirected(indexGraph);
-		}
-
-		Undirected(IndexGraph indexGraph, int expectedVerticesNum, int expectedEdgesNum) {
-			super(indexGraph, expectedVerticesNum, expectedEdgesNum);
-			Assertions.Graphs.onlyUndirected(indexGraph);
-		}
-
-		/* copy constructor */
-		Undirected(IntGraph orig, IndexGraphFactory indexGraphFactory, boolean copyVerticesWeights,
-				boolean copyEdgesWeights) {
-			super(orig, indexGraphFactory, copyVerticesWeights, copyEdgesWeights);
-			Assertions.Graphs.onlyUndirected(orig);
-			Assertions.Graphs.onlyUndirected(indexGraph);
-		}
-
-		@Override
-		public void reverseEdge(int edge) {
-			int eIdx = eiMap.idToIndex(edge);
-			indexGraph.reverseEdge(eIdx);
-		}
-	}
-
 	private static class IdIdxMapImpl implements IndexIntIdMap {
 
 		private final IntSet elements;
@@ -651,9 +601,9 @@ abstract class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGr
 		public IntGraph newGraph() {
 			IndexGraph indexGraph = factory.newGraph();
 			if (indexGraph.isDirected()) {
-				return new IntGraphImpl.Directed(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
+				return new IntGraphImpl(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
 			} else {
-				return new IntGraphImpl.Undirected(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
+				return new IntGraphImpl(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
 			}
 		}
 
@@ -661,17 +611,15 @@ abstract class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGr
 		public IntGraph newCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 			IntGraph g0 = (IntGraph) g;
 			if (g.isDirected()) {
-				return new IntGraphImpl.Directed(g0, factory, copyVerticesWeights, copyEdgesWeights);
+				return new IntGraphImpl(g0, factory, copyVerticesWeights, copyEdgesWeights);
 			} else {
-				return new IntGraphImpl.Undirected(g0, factory, copyVerticesWeights, copyEdgesWeights);
+				return new IntGraphImpl(g0, factory, copyVerticesWeights, copyEdgesWeights);
 			}
 		}
 
 		@Override
 		public IntGraphBuilder newBuilder() {
-			IndexGraphBuilder builder = factory.newBuilder();
-			return factory.directed ? new IntGraphBuilderImpl.Directed(builder)
-					: new IntGraphBuilderImpl.Undirected(builder);
+			return new IntGraphBuilderImpl(factory.newBuilder());
 		}
 
 		@Override

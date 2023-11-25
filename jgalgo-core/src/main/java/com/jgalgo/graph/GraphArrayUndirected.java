@@ -86,8 +86,10 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		}
 	}
 
-	GraphArrayUndirected(IndexGraphBuilderImpl.Undirected builder) {
+	GraphArrayUndirected(IndexGraphBuilderImpl builder) {
 		super(Capabilities, builder);
+		assert !builder.isDirected();
+
 		edgesContainer =
 				newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edges = newArr);
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);

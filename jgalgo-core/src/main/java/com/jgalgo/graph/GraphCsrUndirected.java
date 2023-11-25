@@ -21,6 +21,7 @@ class GraphCsrUndirected extends GraphCsrAbstractUnindexed {
 
 	GraphCsrUndirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesUndirected processEdges) {
 		super(false, builder, processEdges);
+		assert !builder.isDirected();
 	}
 
 	GraphCsrUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {

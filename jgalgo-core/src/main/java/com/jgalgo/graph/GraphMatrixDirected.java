@@ -73,8 +73,10 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 		}
 	}
 
-	GraphMatrixDirected(IndexGraphBuilderImpl.Directed builder) {
+	GraphMatrixDirected(IndexGraphBuilderImpl builder) {
 		super(Capabilities, builder);
+		assert builder.isDirected();
+
 		edgesOutNumContainer = newVerticesIntContainer(0, newArr -> edgesOutNum = newArr);
 		edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);
 

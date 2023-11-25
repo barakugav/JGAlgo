@@ -24,6 +24,8 @@ class GraphCsrDirected extends GraphCsrAbstractUnindexed {
 
 	GraphCsrDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges) {
 		super(true, builder, processEdges);
+		assert builder.isDirected();
+
 		edgesIn = processEdges.edgesIn;
 		edgesInBegin = processEdges.edgesInBegin;
 	}
