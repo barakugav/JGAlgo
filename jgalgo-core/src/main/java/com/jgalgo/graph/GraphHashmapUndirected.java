@@ -16,8 +16,6 @@
 
 package com.jgalgo.graph;
 
-import com.jgalgo.internal.util.IterTools;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -39,8 +37,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 
 	GraphHashmapUndirected(boolean selfEdges, int expectedVerticesNum, int expectedEdgesNum) {
 		super(capabilities(selfEdges), expectedVerticesNum, expectedEdgesNum);
-		edgesContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
-				newArr -> edges = newArr);
+		edgesContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edges = newArr);
 	}
 
 	GraphHashmapUndirected(boolean selfEdges, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
@@ -52,23 +49,21 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 			edgesContainer = copyVerticesContainer(g0.edgesContainer, EMPTY_MAP_ARRAY, newArr -> edges = newArr);
 
 			for (int v = 0; v < n; v++)
-				if (!edges[v].isEmpty())
-					edges[v] = new Int2IntOpenHashMap(edges[v]);
+				if (!g0.edges[v].isEmpty()) {
+					edges[v] = new Int2IntOpenHashMap(g0.edges[v]);
+					edges[v].defaultReturnValue(-1);
+				}
 		} else {
-			edgesContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
-					newArr -> edges = newArr);
+			edgesContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edges = newArr);
 
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
-				int u = g.edgeSource(e);
-				int v = g.edgeTarget(e);
-				int oldVal = ensureEdgesMapMutable(edges, u).put(v, e);
-				if (oldVal != -1)
-					throw new IllegalStateException("Parallel edge (idx=" + u + ",idx=" + v
+				int source = g.edgeSource(e), target = g.edgeTarget(e);
+				int oldVal1 = ensureEdgesMapMutable(edges, source).put(target, e);
+				int oldVal2 = ensureEdgesMapMutable(edges, target).put(source, e);
+				if (oldVal1 != -1)
+					throw new IllegalStateException("Parallel edge (idx=" + source + ",idx=" + target
 							+ ") already exists. Parallel edges are not allowed.");
-				if (u != v) {
-					int oldVal2 = ensureEdgesMapMutable(edges, v).put(u, e);
-					assert oldVal2 == -1;
-				}
+				assert oldVal2 == -1 || (source == target && oldVal2 == e);
 			}
 		}
 	}
@@ -77,19 +72,16 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		super(capabilities(selfEdges), builder);
 		assert !builder.isDirected();
 
-		edgesContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
-				newArr -> edges = newArr);
+		edgesContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edges = newArr);
 
 		for (int m = builder.edges().size(), e = 0; e < m; e++) {
 			int source = builder.edgeSource(e), target = builder.edgeTarget(e);
 			int oldVal1 = ensureEdgesMapMutable(edges, source).put(target, e);
+			int oldVal2 = ensureEdgesMapMutable(edges, target).put(source, e);
 			if (oldVal1 != -1)
 				throw new IllegalStateException("Parallel edge (idx=" + source + ",idx=" + target
 						+ ") already exists. Parallel edges are not allowed.");
-			if (source != target) {
-				int oldVal2 = ensureEdgesMapMutable(edges, target).put(source, e);
-				assert oldVal2 == -1;
-			}
+			assert oldVal2 == -1 || (source == target && oldVal2 == e);
 		}
 	}
 
@@ -108,7 +100,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		/* we handle the self edge of the swapped vertex separately */
 		int selfEdge = isAllowSelfEdges() ? edges[swappedIdx].remove(swappedIdx) : -1;
 
-		for (Int2IntMap.Entry entry : IterTools.foreach(Int2IntMaps.fastIterator(edges[swappedIdx]))) {
+		for (Int2IntMap.Entry entry : Int2IntMaps.fastIterable(edges[swappedIdx])) {
 			int target = entry.getIntKey();
 			int e = entry.getIntValue();
 			replaceEdgeEndpoint(e, swappedIdx, removedIdx);
@@ -124,7 +116,7 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 			assert oldVal == -1;
 		}
 
-		swapAndClear(edges, removedIdx, swappedIdx, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE);
+		swapAndClear(edges, removedIdx, swappedIdx, EmptyEdgeMap);
 		super.vertexSwapAndRemove(removedIdx, swappedIdx);
 	}
 
@@ -138,13 +130,13 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	@Override
 	public IEdgeSet outEdges(int source) {
 		checkVertex(source);
-		return new EdgeSetOut(source, edges);
+		return new EdgeSetOut(source);
 	}
 
 	@Override
 	public IEdgeSet inEdges(int target) {
 		checkVertex(target);
-		return new EdgeSetIn(target, edges);
+		return new EdgeSetIn(target);
 	}
 
 	@Override
@@ -153,11 +145,8 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 			throw new IllegalArgumentException(
 					"Edge (idx=" + source + ",idx=" + target + ") already exists. Parallel edges are not allowed.");
 		int edge = super.addEdge(source, target);
-
 		ensureEdgesMapMutable(edges, source).put(target, edge);
-		if (source != target)
-			ensureEdgesMapMutable(edges, target).put(source, edge);
-
+		ensureEdgesMapMutable(edges, target).put(source, edge);
 		return edge;
 	}
 
@@ -165,35 +154,29 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	void removeEdgeLast(int edge) {
 		int source = source(edge), target = target(edge);
 		int oldVal1 = edges[source].remove(target);
+		int oldVal2 = edges[target].remove(source);
 		assert edge == oldVal1;
-		if (source != target) {
-			int oldVal2 = edges[target].remove(source);
-			assert edge == oldVal2;
-		}
+		assert edge == oldVal2 || (source == target && oldVal2 == -1);
 		super.removeEdgeLast(edge);
 	}
 
 	@Override
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
 		int ur = source(removedIdx), vr = target(removedIdx);
-		assert edges[ur] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
-		assert edges[vr] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
+		assert edges[ur] != EmptyEdgeMap;
+		assert edges[vr] != EmptyEdgeMap;
 		int oldVal1 = edges[ur].remove(vr);
+		int oldVal2 = edges[vr].remove(ur);
 		assert oldVal1 == removedIdx;
-		if (ur != vr) {
-			int oldVal2 = edges[vr].remove(ur);
-			assert oldVal2 == removedIdx;
-		}
+		assert oldVal2 == removedIdx || (ur == vr && oldVal2 == -1);
 
 		int us = source(swappedIdx), vs = target(swappedIdx);
-		assert edges[us] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
-		assert edges[vs] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
+		assert edges[us] != EmptyEdgeMap;
+		assert edges[vs] != EmptyEdgeMap;
 		int oldVal3 = edges[us].put(vs, removedIdx);
+		int oldVal4 = edges[vs].put(us, removedIdx);
 		assert oldVal3 == swappedIdx;
-		if (us != vs) {
-			int oldVal4 = edges[vs].put(us, removedIdx);
-			assert oldVal4 == swappedIdx;
-		}
+		assert oldVal4 == swappedIdx || (us == vs && oldVal4 == removedIdx);
 
 		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
@@ -239,9 +222,9 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	class EdgeSetOut extends IndexGraphBase.EdgeSetOutUndirected {
 		private final Int2IntMap edges;
 
-		EdgeSetOut(int source, Int2IntMap[] edges) {
+		EdgeSetOut(int source) {
 			super(source);
-			this.edges = edges[source];
+			this.edges = GraphHashmapUndirected.this.edges[source];
 		}
 
 		@Override
@@ -263,9 +246,9 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	class EdgeSetIn extends IndexGraphBase.EdgeSetInUndirected {
 		private final Int2IntMap edges;
 
-		EdgeSetIn(int target, Int2IntMap[] edges) {
+		EdgeSetIn(int target) {
 			super(target);
-			this.edges = edges[target];
+			this.edges = GraphHashmapUndirected.this.edges[target];
 		}
 
 		@Override

@@ -31,17 +31,11 @@ import java.util.function.Consumer;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 import it.unimi.dsi.fastutil.PriorityQueue;
-import it.unimi.dsi.fastutil.ints.AbstractInt2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
-import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
-import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 public class JGAlgoUtils {
 	private JGAlgoUtils() {}
@@ -195,77 +189,6 @@ public class JGAlgoUtils {
 	public static <T> Consumer<T> consumerNoOp() {
 		return ConsumerNoOp;
 	}
-
-	private static class Int2IntMapEmptyWithDefVal extends AbstractInt2IntMap {
-
-		private static final long serialVersionUID = 1L;
-
-		private final int defVal;
-
-		Int2IntMapEmptyWithDefVal(int defVal) {
-			this.defVal = defVal;
-		}
-
-		@Override
-		public int get(int key) {
-			return defVal;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return true;
-		}
-
-		@Override
-		public int size() {
-			return 0;
-		}
-
-		@Override
-		public void clear() {}
-
-		@Override
-		public void defaultReturnValue(int rv) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public int defaultReturnValue() {
-			return defVal;
-		}
-
-		@Override
-		public int remove(int key) {
-			return defVal;
-		}
-
-		@Override
-		public ObjectSet<Int2IntMap.Entry> int2IntEntrySet() {
-			return ObjectSets.emptySet();
-		}
-
-		@Override
-		public IntSet keySet() {
-			return IntSets.emptySet();
-		}
-
-		@Override
-		public IntCollection values() {
-			return IntSets.emptySet();
-		}
-
-		@Override
-		public boolean containsKey(int key) {
-			return false;
-		}
-
-		@Override
-		public boolean containsValue(int value) {
-			return false;
-		}
-	}
-
-	public static final Int2IntMap EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE = new Int2IntMapEmptyWithDefVal(-1);
 
 	private static int lowerBound(int from, int to, int key, IntUnaryOperator idx2key) {
 		for (int len = to - from; len > 0;) {

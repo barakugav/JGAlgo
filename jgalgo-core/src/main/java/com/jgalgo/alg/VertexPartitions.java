@@ -39,6 +39,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMaps;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 class VertexPartitions {
@@ -261,8 +262,7 @@ class VertexPartitions {
 						arr[arrSize] = e;
 						arr[0] = arrSize;
 					}
-					for (var it = map.long2ObjectEntrySet().fastIterator(); it.hasNext();) {
-						var entry = it.next();
+					for (var entry : Long2ObjectMaps.fastIterable(map)) {
 						int[] a = entry.getValue();
 						int size = a[0];
 						@SuppressWarnings({ "unchecked", "rawtypes" })

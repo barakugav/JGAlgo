@@ -16,7 +16,6 @@
 
 package com.jgalgo.graph;
 
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -39,10 +38,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 	GraphHashmapDirected(boolean selfEdges, int expectedVerticesNum, int expectedEdgesNum) {
 		super(capabilities(selfEdges), expectedVerticesNum, expectedEdgesNum);
-		edgesOutContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
-				newArr -> edgesOut = newArr);
-		edgesInContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
-				newArr -> edgesIn = newArr);
+		edgesOutContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
+		edgesInContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
 	}
 
 	GraphHashmapDirected(boolean selfEdges, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
@@ -57,20 +54,18 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 			edgesInContainer = copyVerticesContainer(g0.edgesInContainer, EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
 
 			for (int v = 0; v < n; v++) {
-				if (!edgesOut[v].isEmpty()) {
-					edgesOut[v] = new Int2IntOpenHashMap(edgesOut[v]);
+				if (!g0.edgesOut[v].isEmpty()) {
+					edgesOut[v] = new Int2IntOpenHashMap(g0.edgesOut[v]);
 					edgesOut[v].defaultReturnValue(-1);
 				}
-				if (!edgesIn[v].isEmpty()) {
-					edgesIn[v] = new Int2IntOpenHashMap(edgesIn[v]);
+				if (!g0.edgesIn[v].isEmpty()) {
+					edgesIn[v] = new Int2IntOpenHashMap(g0.edgesIn[v]);
 					edgesIn[v].defaultReturnValue(-1);
 				}
 			}
 		} else {
-			edgesOutContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
-					newArr -> edgesOut = newArr);
-			edgesInContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
-					newArr -> edgesIn = newArr);
+			edgesOutContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
+			edgesInContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
 
 			for (int v = 0; v < n; v++) {
 				for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
@@ -95,10 +90,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		super(capabilities(selfEdges), builder);
 		assert builder.isDirected();
 
-		edgesOutContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
-				newArr -> edgesOut = newArr);
-		edgesInContainer = newVerticesContainer(JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE, EMPTY_MAP_ARRAY,
-				newArr -> edgesIn = newArr);
+		edgesOutContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
+		edgesInContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
 
 		for (int m = builder.edges().size(), e = 0; e < m; e++) {
 			int source = builder.edgeSource(e), target = builder.edgeTarget(e);
@@ -156,8 +149,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 			assert oldVal2 == -1;
 		}
 
-		swapAndClear(edgesOut, removedIdx, swappedIdx, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE);
-		swapAndClear(edgesIn, removedIdx, swappedIdx, JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE);
+		swapAndClear(edgesOut, removedIdx, swappedIdx, EmptyEdgeMap);
+		swapAndClear(edgesIn, removedIdx, swappedIdx, EmptyEdgeMap);
 		super.vertexSwapAndRemove(removedIdx, swappedIdx);
 	}
 
@@ -171,13 +164,13 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 	@Override
 	public IEdgeSet outEdges(int source) {
 		checkVertex(source);
-		return new EdgeSetOut(source, edgesOut);
+		return new EdgeSetOut(source);
 	}
 
 	@Override
 	public IEdgeSet inEdges(int target) {
 		checkVertex(target);
-		return new EdgeSetIn(target, edgesIn);
+		return new EdgeSetIn(target);
 	}
 
 	@Override
@@ -186,10 +179,8 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 			throw new IllegalArgumentException(
 					"Edge (idx=" + source + ",idx=" + target + ") already exists. Parallel edges are not allowed.");
 		int edge = super.addEdge(source, target);
-
 		ensureEdgesMapMutable(edgesOut, source).put(target, edge);
 		ensureEdgesMapMutable(edgesIn, target).put(source, edge);
-
 		return edge;
 	}
 
@@ -207,10 +198,10 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
 		int ur = source(removedIdx), vr = target(removedIdx);
 		int us = source(swappedIdx), vs = target(swappedIdx);
-		assert edgesOut[ur] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
-		assert edgesIn[vr] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
-		assert edgesOut[us] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
-		assert edgesIn[vs] != JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE;
+		assert edgesOut[ur] != EmptyEdgeMap;
+		assert edgesIn[vr] != EmptyEdgeMap;
+		assert edgesOut[us] != EmptyEdgeMap;
+		assert edgesIn[vs] != EmptyEdgeMap;
 		int oldVal1 = edgesOut[ur].remove(vr);
 		int oldVal2 = edgesIn[vr].remove(ur);
 		int oldVal3 = edgesOut[us].put(vs, removedIdx);
@@ -282,9 +273,9 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 	class EdgeSetOut extends IndexGraphBase.EdgeSetOutDirected {
 		private final Int2IntMap edges;
 
-		EdgeSetOut(int source, Int2IntMap[] edges) {
+		EdgeSetOut(int source) {
 			super(source);
-			this.edges = edges[source];
+			this.edges = edgesOut[source];
 		}
 
 		@Override
@@ -306,9 +297,9 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 	class EdgeSetIn extends IndexGraphBase.EdgeSetInDirected {
 		private final Int2IntMap edges;
 
-		EdgeSetIn(int target, Int2IntMap[] edges) {
+		EdgeSetIn(int target) {
 			super(target);
-			this.edges = edges[target];
+			this.edges = edgesIn[target];
 		}
 
 		@Override

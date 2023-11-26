@@ -18,7 +18,6 @@ package com.jgalgo.graph;
 
 import java.util.Iterator;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -26,6 +25,13 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 abstract class GraphHashmapAbstract extends GraphBaseMutable {
 
 	static final Int2IntMap[] EMPTY_MAP_ARRAY = new Int2IntMap[0];
+	static final Int2IntMap EmptyEdgeMap;
+	static {
+		Int2IntMap emptyEdgeMap = new Int2IntOpenHashMap(0);
+		emptyEdgeMap.defaultReturnValue(-1);
+		// emptyEdgeMap = Int2IntMaps.unmodifiable(emptyEdgeMap);
+		EmptyEdgeMap = emptyEdgeMap;
+	}
 
 	GraphHashmapAbstract(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
 		super(capabilities, expectedVerticesNum, expectedEdgesNum);
@@ -184,7 +190,7 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 	}
 
 	static Int2IntMap ensureEdgesMapMutable(Int2IntMap[] edgesArr, int idx) {
-		if (edgesArr[idx] == JGAlgoUtils.EMPTY_INT2INT_MAP_DEFVAL_NEG_ONE) {
+		if (edgesArr[idx] == EmptyEdgeMap) {
 			edgesArr[idx] = new Int2IntOpenHashMap();
 			edgesArr[idx].defaultReturnValue(-1);
 		}
