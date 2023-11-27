@@ -58,8 +58,9 @@ public class GraphHashmapMultiTest extends TestBase {
 
 	@Test
 	public void testGetEdgesSourceTarget() {
+		final long seed = 0xbe1150acd4dbdb52L;
 		foreachBoolConfig(selfEdges -> {
-			GraphImplTestUtils.testGetEdgesSourceTarget(graphImpl(selfEdges));
+			GraphImplTestUtils.testGetEdgesSourceTarget(graphImpl(selfEdges), seed);
 		});
 	}
 

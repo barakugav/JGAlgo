@@ -39,7 +39,8 @@ public class ReversedGraphViewTest extends TestBase {
 		final Random rand = new Random(seed);
 		final int n = 47, m = 1345;
 
-		GraphFactory<Integer, Integer> factory = intGraph ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
+		GraphFactory<Integer, Integer> factory =
+				intGraph ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
 		Graph<Integer, Integer> g = factory.setDirected(directed).allowSelfEdges().allowParallelEdges().newGraph();
 
 		for (int i = 0; i < n; i++)
@@ -216,6 +217,29 @@ public class ReversedGraphViewTest extends TestBase {
 				assertFalse(gRev.edges().contains(edgeToRemove));
 			}
 			assertEquals(gOrig.edges(), gRev.edges());
+		});
+	}
+
+	@Test
+	public void removeUsingEdgeIter() {
+		foreachBoolConfig((intGraph, directed) -> {
+			Graph<Integer, Integer> gOrig = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gRev = gOrig.reverseView();
+
+			Set<Integer> edgesExpected = new IntOpenHashSet(gOrig.edges());
+			assertEquals(edgesExpected, gRev.edges());
+			assertEquals(edgesExpected, gOrig.edges());
+
+			EdgeIter<Integer, Integer> eit = gRev.outEdges(gRev.edgeSource(gRev.edges().iterator().next())).iterator();
+			Integer edge = eit.next();
+			eit.remove();
+
+			assertFalse(gRev.edges().contains(edge));
+			assertFalse(gOrig.edges().contains(edge));
+
+			edgesExpected.remove(edge);
+			assertEquals(edgesExpected, gRev.edges());
+			assertEquals(edgesExpected, gOrig.edges());
 		});
 	}
 
@@ -589,6 +613,67 @@ public class ReversedGraphViewTest extends TestBase {
 			called.set(false);
 			gRev.removeEdge(gRev.edges().iterator().nextInt());
 			assertFalse(called.get());
+		});
+	}
+
+	@Test
+	public void reverseViewOfReverseView() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+
+			assertEquals(gOrig, gOrig.reverseView().reverseView());
+			assertTrue(gOrig == gOrig.reverseView().reverseView());
+		});
+	}
+
+	@Test
+	public void verticesAndEdgesIndexMaps() {
+		final long seed = 0x6750ab3bf727a7e8L;
+		final Random rand = new Random(seed);
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+			Graph<Integer, Integer> gRev = gOrig.reverseView();
+
+			IndexIdMap<Integer> origViMap = gOrig.indexGraphVerticesMap();
+			IndexIdMap<Integer> origEiMap = gOrig.indexGraphEdgesMap();
+			IndexIdMap<Integer> revViMap = gRev.indexGraphVerticesMap();
+			IndexIdMap<Integer> revEiMap = gRev.indexGraphEdgesMap();
+
+			for (Integer v : gOrig.vertices()) {
+				assertEquals(origViMap.idToIndex(v), revViMap.idToIndex(v));
+				assertEquals(origViMap.idToIndexIfExist(v), revViMap.idToIndexIfExist(v));
+			}
+			for (int i = 0; i < 10; i++) {
+				Integer v = Integer.valueOf(rand.nextInt());
+				assertEquals(origViMap.idToIndexIfExist(v), revViMap.idToIndexIfExist(v));
+			}
+			for (int vIdx : gOrig.indexGraph().vertices()) {
+				assertEquals(origViMap.indexToId(vIdx), revViMap.indexToId(vIdx));
+				assertEquals(origViMap.indexToIdIfExist(vIdx), revViMap.indexToIdIfExist(vIdx));
+			}
+			for (int i = 0; i < 10; i++) {
+				int vIdx = rand.nextInt();
+				assertEquals(origViMap.indexToIdIfExist(vIdx), revViMap.indexToIdIfExist(vIdx));
+			}
+
+			for (Integer e : gOrig.edges()) {
+				assertEquals(origEiMap.idToIndex(e), revEiMap.idToIndex(e));
+				assertEquals(origEiMap.idToIndexIfExist(e), revEiMap.idToIndexIfExist(e));
+			}
+			for (int i = 0; i < 10; i++) {
+				Integer e = Integer.valueOf(rand.nextInt());
+				assertEquals(origEiMap.idToIndexIfExist(e), revEiMap.idToIndexIfExist(e));
+			}
+			for (int eIdx : gOrig.indexGraph().edges()) {
+				assertEquals(origEiMap.indexToId(eIdx), revEiMap.indexToId(eIdx));
+				assertEquals(origEiMap.indexToIdIfExist(eIdx), revEiMap.indexToIdIfExist(eIdx));
+			}
+			for (int i = 0; i < 10; i++) {
+				int eIdx = rand.nextInt();
+				assertEquals(origEiMap.indexToIdIfExist(eIdx), revEiMap.indexToIdIfExist(eIdx));
+			}
 		});
 	}
 

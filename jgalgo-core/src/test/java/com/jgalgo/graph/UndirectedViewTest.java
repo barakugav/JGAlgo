@@ -399,6 +399,10 @@ public class UndirectedViewTest extends TestBase {
 				assertTrue(undirectedG.inEdges(v4).isEmpty());
 				assertTrue(g.outEdges(v4).isEmpty());
 				assertTrue(g.inEdges(v4).isEmpty());
+
+				/* remove non existing edges */
+				assertFalse(g.outEdges(v4).remove(Integer.valueOf(54698156)));
+				assertFalse(g.inEdges(v4).remove(Integer.valueOf(-98985)));
 			}
 
 			Integer v5 = null;
@@ -615,6 +619,55 @@ public class UndirectedViewTest extends TestBase {
 			Graph<Integer, Integer> g = index ? createGraph(intGraph).indexGraph() : createGraph(intGraph);
 			Graph<Integer, Integer> undirectedG = g.undirectedView();
 			assertTrue(undirectedG == undirectedG.undirectedView());
+		});
+	}
+
+	@Test
+	public void verticesAndEdgesIndexMaps() {
+		final long seed = 0x886220cddb50189dL;
+		final Random rand = new Random(seed);
+		foreachBoolConfig((intGraph, index) -> {
+			Graph<Integer, Integer> gOrig = index ? createGraph(intGraph).indexGraph() : createGraph(intGraph);
+			Graph<Integer, Integer> undirectedG = gOrig.undirectedView();
+
+			IndexIdMap<Integer> origViMap = gOrig.indexGraphVerticesMap();
+			IndexIdMap<Integer> origEiMap = gOrig.indexGraphEdgesMap();
+			IndexIdMap<Integer> undirectedViMap = undirectedG.indexGraphVerticesMap();
+			IndexIdMap<Integer> undirectedEiMap = undirectedG.indexGraphEdgesMap();
+
+			for (Integer v : gOrig.vertices()) {
+				assertEquals(origViMap.idToIndex(v), undirectedViMap.idToIndex(v));
+				assertEquals(origViMap.idToIndexIfExist(v), undirectedViMap.idToIndexIfExist(v));
+			}
+			for (int i = 0; i < 10; i++) {
+				Integer v = Integer.valueOf(rand.nextInt());
+				assertEquals(origViMap.idToIndexIfExist(v), undirectedViMap.idToIndexIfExist(v));
+			}
+			for (int vIdx : gOrig.indexGraph().vertices()) {
+				assertEquals(origViMap.indexToId(vIdx), undirectedViMap.indexToId(vIdx));
+				assertEquals(origViMap.indexToIdIfExist(vIdx), undirectedViMap.indexToIdIfExist(vIdx));
+			}
+			for (int i = 0; i < 10; i++) {
+				int vIdx = rand.nextInt();
+				assertEquals(origViMap.indexToIdIfExist(vIdx), undirectedViMap.indexToIdIfExist(vIdx));
+			}
+
+			for (Integer e : gOrig.edges()) {
+				assertEquals(origEiMap.idToIndex(e), undirectedEiMap.idToIndex(e));
+				assertEquals(origEiMap.idToIndexIfExist(e), undirectedEiMap.idToIndexIfExist(e));
+			}
+			for (int i = 0; i < 10; i++) {
+				Integer e = Integer.valueOf(rand.nextInt());
+				assertEquals(origEiMap.idToIndexIfExist(e), undirectedEiMap.idToIndexIfExist(e));
+			}
+			for (int eIdx : gOrig.indexGraph().edges()) {
+				assertEquals(origEiMap.indexToId(eIdx), undirectedEiMap.indexToId(eIdx));
+				assertEquals(origEiMap.indexToIdIfExist(eIdx), undirectedEiMap.indexToIdIfExist(eIdx));
+			}
+			for (int i = 0; i < 10; i++) {
+				int eIdx = rand.nextInt();
+				assertEquals(origEiMap.indexToIdIfExist(eIdx), undirectedEiMap.indexToIdIfExist(eIdx));
+			}
 		});
 	}
 

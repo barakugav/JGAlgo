@@ -186,26 +186,21 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 		}
 	}
 
-	class SourceTargetEdgeSet extends AbstractIntSet implements IEdgeSet {
+	abstract class SourceTargetEdgeSet extends AbstractIntSet implements IEdgeSet {
 
 		final int source;
 		final int target;
-		int[] edgesArr;
 
-		SourceTargetEdgeSet(int source, int target, Int2ObjectMap<int[]>[] edgesOut) {
+		SourceTargetEdgeSet(int source, int target) {
 			this.source = source;
 			this.target = target;
-			this.edgesArr = edgesOut[source].get(target);
 		}
+
+		abstract Int2ObjectMap<int[]> edgesOut(int source);
 
 		@Override
 		public int size() {
-			return edgesArr[0];
-		}
-
-		@Override
-		public boolean contains(int edge) {
-			return 0 <= edge && edge < edges().size() && source == source(edge) && target == target(edge);
+			return edgesOut(source).get(target)[0];
 		}
 
 		@Override
@@ -217,11 +212,24 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 		}
 
 		@Override
+		public void clear() {
+			for (;;) {
+				int[] edgesArr = edgesOut(source).get(target);
+				int edgesNum = edgesArr[0];
+				if (edgesNum == 0)
+					break;
+				removeEdge(edgesArr[1]);
+			}
+		}
+
+		@Override
 		public IEdgeIter iterator() {
 			return new IEdgeIter() {
 
+				int[] edgesArr = edgesOut(source).get(target);
 				int edgesNum = edgesArr[0];
 				int edgeIdx = 1; /* index in range [1, edgesNum], rather than the usual [0, edgesNum) */
+				int lastEdge = -1;
 
 				@Override
 				public boolean hasNext() {
@@ -231,7 +239,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 				@Override
 				public int nextInt() {
 					Assertions.Iters.hasNext(this);
-					return edgesArr[edgeIdx++];
+					return lastEdge = edgesArr[edgeIdx++];
 				}
 
 				@Override
@@ -248,6 +256,17 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 				@Override
 				public int targetInt() {
 					return target;
+				}
+
+				@Override
+				public void remove() {
+					if (lastEdge == -1)
+						throw new IllegalStateException();
+					removeEdge(lastEdge);
+					edgesNum--;
+					edgeIdx--;
+					edgesArr = edgesOut(source).get(target);
+					lastEdge = -1;
 				}
 			};
 		}

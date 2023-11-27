@@ -369,9 +369,7 @@ public interface IndexGraph extends IntGraph {
 	 */
 	@Override
 	@Deprecated
-	default IndexIntIdMap indexGraphVerticesMap() {
-		return Graphs.IndexIdMapIdentify;
-	}
+	IndexIntIdMap indexGraphVerticesMap();
 
 	/**
 	 * The IDs and indices of an {@link IndexGraph} are the same.
@@ -380,9 +378,7 @@ public interface IndexGraph extends IntGraph {
 	 */
 	@Override
 	@Deprecated
-	default IndexIntIdMap indexGraphEdgesMap() {
-		return Graphs.IndexIdMapIdentify;
-	}
+	IndexIntIdMap indexGraphEdgesMap();
 
 	@Override
 	default IndexGraph copy() {

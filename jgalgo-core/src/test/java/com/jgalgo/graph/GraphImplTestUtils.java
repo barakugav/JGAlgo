@@ -33,6 +33,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import com.jgalgo.alg.MatchingAlgo;
@@ -233,7 +234,8 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testGetEdgesSourceTarget(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void testGetEdgesSourceTarget(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+		Random rand = new Random(seed);
 		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
@@ -241,30 +243,126 @@ class GraphImplTestUtils extends TestUtils {
 				g.addVertex(Integer.valueOf(i + 1));
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
+			BiFunction<Integer, Integer, Collection<Integer>> key = directed ? List::of : GraphImplTestUtils::setOf;
+
 			Object2ObjectMap<Collection<Integer>, Set<Integer>> edges = new Object2ObjectOpenHashMap<>();
 			final int edgeRepeat = g.isAllowParallelEdges() ? 3 : 1;
 			for (int repeat = 0; repeat < edgeRepeat; repeat++) {
 				for (int uIdx = 0; uIdx < n; uIdx++) {
 					for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 						Integer u = vs.get(uIdx), v = vs.get(vIdx);
-						if (u == v && !g.isAllowSelfEdges())
+						if (u.equals(v) && !g.isAllowSelfEdges())
 							continue;
 						Integer e = Integer.valueOf(g.edges().size() + 1);
 						g.addEdge(u, v, e);
-						Collection<Integer> key = directed ? List.of(u, v) : setOf(u, v);
-						edges.computeIfAbsent(key, w -> new ObjectOpenHashSet<>()).add(e);
+						edges.computeIfAbsent(key.apply(u, v), w -> new ObjectOpenHashSet<>()).add(e);
 					}
 				}
 			}
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					Integer u = vs.get(uIdx), v = vs.get(vIdx);
-					if (u == v && !g.isAllowSelfEdges())
+					if (u.equals(v) && !g.isAllowSelfEdges())
 						continue;
-					Collection<Integer> key = directed ? List.of(u, v) : setOf(u, v);
-					assertEquals(edges.get(key), g.getEdges(u, v));
+					EdgeSet<Integer, Integer> edges0 = g.getEdges(u, v);
+					assertEquals(edges.get(key.apply(u, v)), edges0);
 				}
 			}
+
+			/* contains() */
+			for (int i = 0; i < 5; i++) {
+				Integer e = Graphs.randEdge(g, rand);
+				Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+				EdgeSet<Integer, Integer> edges0 = g.getEdges(u, v);
+
+				assertTrue(edges0.contains(e));
+				for (@SuppressWarnings("unused")
+				Integer e1 : g.edges()) {
+					Integer u1 = g.edgeSource(e), v1 = g.edgeTarget(e);
+					assertEqualsBool(key.apply(u, v).equals(key.apply(u1, v1)), edges0.contains(e));
+				}
+
+				Integer nonParallelEdge;
+				do {
+					nonParallelEdge = Graphs.randEdge(g, rand);
+				} while (key.apply(u, v)
+						.equals(key.apply(g.edgeSource(nonParallelEdge), g.edgeTarget(nonParallelEdge))));
+				assertFalse(edges0.contains(nonParallelEdge));
+
+				Integer nonExistingEdge;
+				do {
+					nonExistingEdge = Integer.valueOf(rand.nextInt());
+				} while (g.edges().contains(nonExistingEdge));
+				assertFalse(edges0.contains(nonExistingEdge));
+			}
+
+			/* remove() */
+			for (int i = 0; i < 5; i++) {
+				Integer e = Graphs.randEdge(g, rand);
+				Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+				EdgeSet<Integer, Integer> edges0 = g.getEdges(u, v);
+
+				int sizeBeforeRemove = edges0.size();
+				assertTrue(edges0.remove(e));
+				assertEquals(sizeBeforeRemove - 1, edges0.size());
+				assertFalse(edges0.remove(e));
+				assertFalse(edges0.contains(e));
+
+				Integer nonParallelEdge;
+				do {
+					nonParallelEdge = Graphs.randEdge(g, rand);
+				} while (key.apply(u, v)
+						.equals(key.apply(g.edgeSource(nonParallelEdge), g.edgeTarget(nonParallelEdge))));
+				assertFalse(edges0.remove(nonParallelEdge));
+
+				Integer nonExistingEdge;
+				do {
+					nonExistingEdge = Integer.valueOf(rand.nextInt());
+				} while (g.edges().contains(nonExistingEdge));
+				assertFalse(edges0.remove(nonExistingEdge));
+			}
+
+			/* iterator().remove() */
+			for (int i = 0; i < 5; i++) {
+				Integer e = Graphs.randEdge(g, rand);
+				Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+				EdgeSet<Integer, Integer> edges0 = g.getEdges(u, v);
+
+				int sizeBeforeRemove = edges0.size();
+				EdgeIter<Integer, Integer> eit = edges0.iterator();
+				e = eit.next();
+				eit.remove();
+				assertEquals(sizeBeforeRemove - 1, edges0.size());
+				assertFalse(edges0.remove(e));
+				assertFalse(edges0.contains(e));
+				assertEquals(edges0, new ObjectOpenHashSet<>(eit));
+			}
+
+			/* clear() */
+			for (int i = 0; i < 5; i++) {
+				Integer e = Graphs.randEdge(g, rand);
+				Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+				EdgeSet<Integer, Integer> edges0 = g.getEdges(u, v);
+
+				edges0.clear();
+				assertEquals(0, edges0.size());
+				edges0.clear();
+				assertTrue(edges0.isEmpty());
+				assertFalse(edges0.contains(e));
+			}
+
+			/* empty edge set */
+			for (int i = 0; i < 5; i++) {
+				Integer u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
+				g.getEdges(u, v).clear();
+				EdgeSet<Integer, Integer> edges0 = g.getEdges(u, v);
+
+				assertTrue(edges0.isEmpty());
+				assertEquals(0, edges0.size());
+				assertEquals(Collections.emptySet(), edges0);
+				assertFalse(edges0.iterator().hasNext());
+			}
+
 		});
 	}
 
@@ -280,7 +378,7 @@ class GraphImplTestUtils extends TestUtils {
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					Integer u = vs.get(uIdx), v = vs.get(vIdx);
-					if (u == v && !g.isAllowSelfEdges())
+					if (u.equals(v) && !g.isAllowSelfEdges())
 						continue;
 					Integer e = Integer.valueOf(g.edges().size() + 1);
 					g.addEdge(u, v, e);
@@ -359,7 +457,7 @@ class GraphImplTestUtils extends TestUtils {
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					Integer u = vs.get(uIdx), v = vs.get(vIdx);
-					if (u == v && !g.isAllowSelfEdges())
+					if (u.equals(v) && !g.isAllowSelfEdges())
 						continue;
 					for (EdgeIter<Integer, Integer> eit = g.getEdges(u, v).iterator(); eit.hasNext();) {
 						Integer peekNext = eit.peekNext();
@@ -392,7 +490,7 @@ class GraphImplTestUtils extends TestUtils {
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					Integer u = vs.get(uIdx), v = vs.get(vIdx);
-					if (u == v && !g.isAllowSelfEdges())
+					if (u.equals(v) && !g.isAllowSelfEdges())
 						continue;
 					g.addEdge(u, v, Integer.valueOf(g.edges().size() + 1));
 
@@ -440,7 +538,7 @@ class GraphImplTestUtils extends TestUtils {
 								continue opsLoop;
 							u = Graphs.randVertex(g, rand);
 							v = Graphs.randVertex(g, rand);
-							if (u == v)
+							if (u.equals(v))
 								continue;
 							if (!parallelEdges && g.getEdge(u, v) != null)
 								continue;
@@ -488,7 +586,7 @@ class GraphImplTestUtils extends TestUtils {
 								continue opsLoop;
 							u = Graphs.randVertex(g, rand);
 							v = Graphs.randVertex(g, rand);
-							if (u == v)
+							if (u.equals(v))
 								continue;
 							if (!parallelEdges && g.getEdge(u, v) != null)
 								continue;
@@ -1328,8 +1426,23 @@ class GraphImplTestUtils extends TestUtils {
 							g.getEdges(Integer.valueOf(source.id), Integer.valueOf(target.id));
 					assertTrue(edgeSet.contains(e));
 
-					boolean removed = edgeSet.remove(e);
-					assertTrue(removed);
+					Integer nonExistingEdge;
+					do {
+						nonExistingEdge = Integer.valueOf(rand.nextInt());
+					} while (edgeSet.contains(nonExistingEdge));
+					assertFalse(edgeSet.remove(nonExistingEdge));
+
+					if (Set.of(e).equals(edgeSet) && rand.nextBoolean()) {
+						edgeSet.clear();
+						assertTrue(edgeSet.isEmpty());
+						edgeSet.clear();
+						assertTrue(edgeSet.isEmpty());
+					} else {
+						boolean removed = edgeSet.remove(e);
+						assertTrue(removed);
+						removed = edgeSet.remove(e);
+						assertFalse(removed);
+					}
 
 					tracker.removeEdge(edge);
 					break;

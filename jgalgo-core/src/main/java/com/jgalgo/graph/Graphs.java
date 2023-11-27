@@ -196,7 +196,7 @@ public class Graphs {
 
 		@Override
 		public IndexGraph indexGraph() {
-			return this instanceof IndexGraph ? (IndexGraph) this : Graphs.immutableView(graph.indexGraph());
+			return graph.indexGraph().immutableView();
 		}
 
 		@Override
@@ -364,11 +364,6 @@ public class Graphs {
 			return graph.isAllowParallelEdges();
 		}
 
-		@Override
-		public IntGraph copy() {
-			return graph.copy();
-		}
-
 		IntGraph graph() {
 			return graph;
 		}
@@ -382,7 +377,7 @@ public class Graphs {
 
 		@Override
 		public IndexGraph indexGraph() {
-			return Graphs.immutableView(graph().indexGraph());
+			return graph().indexGraph().immutableView();
 		}
 
 		@Override
@@ -405,11 +400,6 @@ public class Graphs {
 		@Override
 		IndexGraph graph() {
 			return (IndexGraph) super.graph();
-		}
-
-		@Override
-		public IndexGraph copy() {
-			return graph().copy();
 		}
 
 		@Override
@@ -442,6 +432,18 @@ public class Graphs {
 		@Override
 		public void removeEdgeRemoveListener(IndexRemoveListener listener) {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove a listener");
+		}
+
+		@Deprecated
+		@Override
+		public IndexIntIdMap indexGraphVerticesMap() {
+			return graph().indexGraphVerticesMap();
+		}
+
+		@Deprecated
+		@Override
+		public IndexIntIdMap indexGraphEdgesMap() {
+			return graph().indexGraphEdgesMap();
 		}
 	}
 
@@ -559,23 +561,15 @@ public class Graphs {
 		}
 	}
 
-	static IndexGraph immutableView(IndexGraph g) {
-		return g instanceof ImmutableGraph ? g : new ImmutableIndexGraphView(g);
-	}
-
-	static IntGraph immutableView(IntGraph g) {
-		if (g instanceof IndexGraph)
-			return immutableView((IndexGraph) g);
-		return g instanceof ImmutableGraph ? g : new ImmutableIntGraphView(g);
-	}
-
 	@SuppressWarnings("unchecked")
 	static <V, E> Graph<V, E> immutableView(Graph<V, E> g) {
+		if (g instanceof ImmutableGraph)
+			return g;
 		if (g instanceof IndexGraph)
-			return (Graph<V, E>) immutableView((IndexGraph) g);
+			return (Graph<V, E>) new ImmutableIndexGraphView((IndexGraph) g);
 		if (g instanceof IntGraph)
-			return (Graph<V, E>) immutableView((IntGraph) g);
-		return g instanceof ImmutableGraph ? g : new ImmutableGraphView<>(g);
+			return (Graph<V, E>) new ImmutableIntGraphView((IntGraph) g);
+		return new ImmutableGraphView<>(g);
 	}
 
 	private abstract static class GraphViewBase<V, E> extends GraphBase<V, E> {
@@ -586,7 +580,7 @@ public class Graphs {
 			this.graph = Objects.requireNonNull(g);
 		}
 
-		Graph<V, E> graph() {
+		public Graph<V, E> graph() {
 			return graph;
 		}
 
@@ -675,25 +669,29 @@ public class Graphs {
 			graph().removeVertex(vertex);
 		}
 
-		@Override
-		public EdgeSet<V, E> outEdges(V source) {
-			return graph().outEdges(source);
-		}
+		/* outEdges() is overridden by all view implementations */
+		// @Override
+		// public EdgeSet<V, E> outEdges(V source) {
+		// return graph().outEdges(source);
+		// }
 
-		@Override
-		public EdgeSet<V, E> inEdges(V target) {
-			return graph().inEdges(target);
-		}
+		/* inEdges() is overridden by all view implementations */
+		// @Override
+		// public EdgeSet<V, E> inEdges(V target) {
+		// return graph().inEdges(target);
+		// }
 
-		@Override
-		public E getEdge(V source, V target) {
-			return graph().getEdge(source, target);
-		}
+		/* getEdge() is overridden by all view implementations */
+		// @Override
+		// public E getEdge(V source, V target) {
+		// return graph().getEdge(source, target);
+		// }
 
-		@Override
-		public EdgeSet<V, E> getEdges(V source, V target) {
-			return graph().getEdges(source, target);
-		}
+		/* getEdges() is overridden by all view implementations */
+		// @Override
+		// public EdgeSet<V, E> getEdges(V source, V target) {
+		// return graph().getEdges(source, target);
+		// }
 
 		@Override
 		public void addEdge(V source, V target, E edge) {
@@ -710,15 +708,17 @@ public class Graphs {
 			graph().removeEdgesOf(vertex);
 		}
 
-		@Override
-		public void removeInEdgesOf(V vertex) {
-			graph().removeInEdgesOf(vertex);
-		}
+		/* removeInEdgesOf() is overridden by all view implementations */
+		// @Override
+		// public void removeInEdgesOf(V vertex) {
+		// graph().removeInEdgesOf(vertex);
+		// }
 
-		@Override
-		public void removeOutEdgesOf(V vertex) {
-			graph().removeOutEdgesOf(vertex);
-		}
+		/* removeOutEdgesOf() is overridden by all view implementations */
+		// @Override
+		// public void removeOutEdgesOf(V vertex) {
+		// graph().removeOutEdgesOf(vertex);
+		// }
 
 		@Override
 		public void reverseEdge(E edge) {
@@ -768,7 +768,7 @@ public class Graphs {
 		}
 
 		@Override
-		IntGraph graph() {
+		public IntGraph graph() {
 			return (IntGraph) super.graph();
 		}
 
@@ -797,25 +797,29 @@ public class Graphs {
 			graph().removeVertex(vertex);
 		}
 
-		@Override
-		public IEdgeSet outEdges(int source) {
-			return graph().outEdges(source);
-		}
+		/* outEdges() is overridden by all view implementations */
+		// @Override
+		// public IEdgeSet outEdges(int source) {
+		// return graph().outEdges(source);
+		// }
 
-		@Override
-		public IEdgeSet inEdges(int target) {
-			return graph().inEdges(target);
-		}
+		/* inEdges() is overridden by all view implementations */
+		// @Override
+		// public IEdgeSet inEdges(int target) {
+		// return graph().inEdges(target);
+		// }
 
-		@Override
-		public int getEdge(int source, int target) {
-			return graph().getEdge(source, target);
-		}
+		/* getEdge() is overridden by all view implementations */
+		// @Override
+		// public int getEdge(int source, int target) {
+		// return graph().getEdge(source, target);
+		// }
 
-		@Override
-		public IEdgeSet getEdges(int source, int target) {
-			return graph().getEdges(source, target);
-		}
+		/* getEdges() is overridden by all view implementations */
+		// @Override
+		// public IEdgeSet getEdges(int source, int target) {
+		// return graph().getEdges(source, target);
+		// }
 
 		@Override
 		public int addEdge(int source, int target) {
@@ -837,15 +841,17 @@ public class Graphs {
 			graph().removeEdgesOf(vertex);
 		}
 
-		@Override
-		public void removeInEdgesOf(int vertex) {
-			graph().removeInEdgesOf(vertex);
-		}
+		/* removeInEdgesOf() is overridden by all view implementations */
+		// @Override
+		// public void removeInEdgesOf(int vertex) {
+		// graph().removeInEdgesOf(vertex);
+		// }
 
-		@Override
-		public void removeOutEdgesOf(int vertex) {
-			graph().removeOutEdgesOf(vertex);
-		}
+		/* removeOutEdgesOf() is overridden by all view implementations */
+		// @Override
+		// public void removeOutEdgesOf(int vertex) {
+		// graph().removeOutEdgesOf(vertex);
+		// }
 
 		@Override
 		public void reverseEdge(int edge) {
@@ -878,7 +884,7 @@ public class Graphs {
 		}
 	}
 
-	private static class EdgeIterView<V, E> implements EdgeIter<V, E> {
+	private abstract static class EdgeIterView<V, E> implements EdgeIter<V, E> {
 		final EdgeIter<V, E> it;
 
 		EdgeIterView(EdgeIter<V, E> it) {
@@ -900,15 +906,17 @@ public class Graphs {
 			return it.peekNext();
 		}
 
-		@Override
-		public V source() {
-			return it.source();
-		}
+		/* source() is overridden by all view implementations */
+		// @Override
+		// public V source() {
+		// return it.source();
+		// }
 
-		@Override
-		public V target() {
-			return it.target();
-		}
+		/* target() is overridden by all view implementations */
+		// @Override
+		// public V target() {
+		// return it.target();
+		// }
 
 		@Override
 		public void remove() {
@@ -916,7 +924,7 @@ public class Graphs {
 		}
 	}
 
-	private static class IEdgeIterView implements IEdgeIter {
+	private abstract static class IEdgeIterView implements IEdgeIter {
 		final IEdgeIter it;
 
 		IEdgeIterView(IEdgeIter it) {
@@ -938,15 +946,17 @@ public class Graphs {
 			return it.peekNextInt();
 		}
 
-		@Override
-		public int sourceInt() {
-			return it.sourceInt();
-		}
+		/* sourceInt() is overridden by all view implementations */
+		// @Override
+		// public int sourceInt() {
+		// return it.sourceInt();
+		// }
 
-		@Override
-		public int targetInt() {
-			return it.targetInt();
-		}
+		/* targetInt() is overridden by all view implementations */
+		// @Override
+		// public int targetInt() {
+		// return it.targetInt();
+		// }
 
 		@Override
 		public void remove() {
@@ -954,9 +964,13 @@ public class Graphs {
 		}
 	}
 
-	private static class ReverseGraph<V, E> extends GraphView<V, E> {
+	private static interface ReverseGraph<V, E> {
+		Graph<V, E> graph();
+	};
 
-		ReverseGraph(Graph<V, E> g) {
+	private static class ObjReverseGraph<V, E> extends GraphView<V, E> implements ReverseGraph<V, E> {
+
+		ObjReverseGraph(Graph<V, E> g) {
 			super(g);
 		}
 
@@ -986,11 +1000,6 @@ public class Graphs {
 		}
 
 		@Override
-		public void removeEdgesOf(V vertex) {
-			graph().removeEdgesOf(vertex);
-		}
-
-		@Override
 		public void removeInEdgesOf(V vertex) {
 			graph().removeOutEdgesOf(vertex);
 		}
@@ -1012,11 +1021,12 @@ public class Graphs {
 
 		@Override
 		public IndexGraph indexGraph() {
-			return (IndexGraph) Graphs.reverseView(graph().indexGraph());
+			return graph().indexGraph().reverseView();
 		}
 	}
 
-	private abstract static class ReverseIntGraphBase extends IntGraphViewBase {
+	private abstract static class ReverseIntGraphBase extends IntGraphViewBase
+			implements ReverseGraph<Integer, Integer> {
 
 		ReverseIntGraphBase(IntGraph g) {
 			super(g);
@@ -1053,11 +1063,6 @@ public class Graphs {
 		}
 
 		@Override
-		public void removeEdgesOf(int vertex) {
-			graph().removeEdgesOf(vertex);
-		}
-
-		@Override
 		public void removeInEdgesOf(int vertex) {
 			graph().removeOutEdgesOf(vertex);
 		}
@@ -1086,7 +1091,7 @@ public class Graphs {
 
 		@Override
 		public IndexGraph indexGraph() {
-			return (IndexGraph) Graphs.reverseView(graph().indexGraph());
+			return graph().indexGraph().reverseView();
 		}
 
 		@Override
@@ -1107,7 +1112,7 @@ public class Graphs {
 		}
 
 		@Override
-		IndexGraph graph() {
+		public IndexGraph graph() {
 			return (IndexGraph) super.graph();
 		}
 
@@ -1141,6 +1146,18 @@ public class Graphs {
 		@Override
 		public void removeEdgeRemoveListener(IndexRemoveListener listener) {
 			graph().removeEdgeRemoveListener(listener);
+		}
+
+		@Deprecated
+		@Override
+		public IndexIntIdMap indexGraphVerticesMap() {
+			return graph().indexGraphVerticesMap();
+		}
+
+		@Deprecated
+		@Override
+		public IndexIntIdMap indexGraphEdgesMap() {
+			return graph().indexGraphEdgesMap();
 		}
 	}
 
@@ -1246,15 +1263,13 @@ public class Graphs {
 
 	@SuppressWarnings("unchecked")
 	static <V, E> Graph<V, E> reverseView(Graph<V, E> g) {
-		if (g instanceof IndexGraph) {
-			return (Graph<V, E>) (g instanceof ReverseIndexGraph ? ((ReverseIndexGraph) g).graph()
-					: new ReverseIndexGraph((IndexGraph) g));
-		} else if (g instanceof IntGraph) {
-			return (Graph<V, E>) (g instanceof ReverseIntGraphBase ? ((ReverseIntGraphBase) g).graph()
-					: new ReverseIntGraph((IntGraph) g));
-		} else {
-			return g instanceof ReverseGraph ? ((ReverseGraph<V, E>) g).graph() : new ReverseGraph<>(g);
-		}
+		if (g instanceof ReverseGraph)
+			return ((ReverseGraph<V, E>) g).graph();
+		if (g instanceof IndexGraph)
+			return (Graph<V, E>) new ReverseIndexGraph((IndexGraph) g);
+		if (g instanceof IntGraph)
+			return (Graph<V, E>) new ReverseIntGraph((IntGraph) g);
+		return new ObjReverseGraph<>(g);
 	}
 
 	private static class UndirectedView<V, E> extends GraphView<V, E> {
@@ -1285,11 +1300,6 @@ public class Graphs {
 			if (source.equals(target))
 				return graph().getEdges(source, target);
 			return new EdgeSetSourceTarget(source, target);
-		}
-
-		@Override
-		public void removeEdgesOf(V vertex) {
-			graph().removeEdgesOf(vertex);
 		}
 
 		@Override
@@ -1395,15 +1405,13 @@ public class Graphs {
 						return;
 					outIt = null;
 				}
-				if (inIt != null) {
-					for (; inIt.hasNext(); inIt.next()) {
-						E e = inIt.peekNext();
-						/* we skip self edges in the in-edges iterator */
-						if (!vertex.equals(graph().edgeSource(e)))
-							return;
-					}
-					inIt = null;
+				for (; inIt.hasNext(); inIt.next()) {
+					E e = inIt.peekNext();
+					/* we skip self edges in the in-edges iterator */
+					if (!vertex.equals(graph().edgeSource(e)))
+						return;
 				}
+				inIt = null;
 			}
 
 			@Override
@@ -1587,11 +1595,6 @@ public class Graphs {
 		}
 
 		@Override
-		public void removeEdgesOf(int vertex) {
-			graph().removeEdgesOf(vertex);
-		}
-
-		@Override
 		public void removeInEdgesOf(int vertex) {
 			graph().removeEdgesOf(vertex);
 		}
@@ -1689,15 +1692,13 @@ public class Graphs {
 						return;
 					outIt = null;
 				}
-				if (inIt != null) {
-					for (; inIt.hasNext(); inIt.nextInt()) {
-						int e = inIt.peekNextInt();
-						/* we skip self edges in the in-edges iterator */
-						if (vertex != graph().edgeSource(e))
-							return;
-					}
-					inIt = null;
+				for (; inIt.hasNext(); inIt.nextInt()) {
+					int e = inIt.peekNextInt();
+					/* we skip self edges in the in-edges iterator */
+					if (vertex != graph().edgeSource(e))
+						return;
 				}
+				inIt = null;
 			}
 
 			@Override
@@ -1880,7 +1881,7 @@ public class Graphs {
 		}
 
 		@Override
-		IndexGraph graph() {
+		public IndexGraph graph() {
 			return (IndexGraph) super.graph();
 		}
 
@@ -1915,6 +1916,18 @@ public class Graphs {
 		public void removeEdgeRemoveListener(IndexRemoveListener listener) {
 			graph().removeEdgeRemoveListener(listener);
 		}
+
+		@Deprecated
+		@Override
+		public IndexIntIdMap indexGraphVerticesMap() {
+			return graph().indexGraphVerticesMap();
+		}
+
+		@Deprecated
+		@Override
+		public IndexIntIdMap indexGraphEdgesMap() {
+			return graph().indexGraphEdgesMap();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1937,6 +1950,8 @@ public class Graphs {
 				g = ((ReverseIndexGraph) g).graph();
 			if (g instanceof ImmutableIndexGraphView)
 				g = ((ImmutableIndexGraphView) g).graph();
+			if (g instanceof UndirectedViewIndex)
+				g = ((UndirectedViewIndex) g).graph();
 			if (g instanceof GraphArrayAbstract)
 				return g.isAllowSelfEdges() ? "array-selfedges" : "array";
 			if (g instanceof GraphLinkedAbstract)
@@ -1945,6 +1960,8 @@ public class Graphs {
 				return g.isAllowSelfEdges() ? "linked-list-ptr-selfedges" : "linked-list-ptr";
 			if (g instanceof GraphHashmapAbstract)
 				return g.isAllowSelfEdges() ? "hashtable-selfedges" : "hashtable";
+			if (g instanceof GraphHashmapMultiAbstract)
+				return g.isAllowSelfEdges() ? "hashtable-multi-selfedges" : "hashtable-multi";
 			if (g instanceof GraphMatrixAbstract)
 				return g.isAllowSelfEdges() ? "matrix-selfedges" : "matrix";
 			if (g == g0)
@@ -1952,38 +1969,14 @@ public class Graphs {
 		}
 	}
 
-	static final IndexIntIdMap IndexIdMapIdentify = new IndexGraphMapIdentify();
-
-	private static class IndexGraphMapIdentify implements IndexIntIdMap {
-		@Override
-		public int indexToIdInt(int index) {
-			return index;
-		}
-
-		@Override
-		public int indexToIdIfExistInt(int index) {
-			return index;
-		}
-
-		@Override
-		public int idToIndex(int id) {
-			return id;
-		}
-
-		@Override
-		public int idToIndexIfExist(int id) {
-			return id;
-		}
-	}
-
 	static class EdgeSetSourceTargetSingleton extends AbstractIntSet implements IEdgeSet {
 
-		private final IntGraph g;
+		private final IndexGraph g;
 		private final int source, target;
 		private int edge;
 		private static final int EdgeNone = -1;
 
-		EdgeSetSourceTargetSingleton(IntGraph g, int source, int target, int edge) {
+		EdgeSetSourceTargetSingleton(IndexGraph g, int source, int target, int edge) {
 			this.g = g;
 			this.source = source;
 			this.target = target;
@@ -1992,7 +1985,7 @@ public class Graphs {
 
 		@Override
 		public boolean remove(int edge) {
-			if (this.edge != edge)
+			if (!contains(edge))
 				return false;
 			g.removeEdge(edge);
 			this.edge = EdgeNone;
@@ -2178,7 +2171,7 @@ public class Graphs {
 		}
 
 		if (vertices == null && edges == null)
-			throw new NullPointerException();
+			throw new NullPointerException("Either vertices or edges can be null, not both.");
 		GraphBuilder<V, E> gb = g.isDirected() ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
 
 		if (vertices == null) {
@@ -2378,13 +2371,12 @@ public class Graphs {
 			WeightsChar<K> dst0 = (WeightsChar<K>) dst;
 			for (K elm : elements)
 				dst0.set(elm, src0.get(elm));
-		} else if (type == Object.class) {
+		} else {
+			assert type == Object.class;
 			WeightsObj<K, Object> src0 = (WeightsObj<K, Object>) src;
 			WeightsObj<K, Object> dst0 = (WeightsObj<K, Object>) dst;
 			for (K elm : elements)
 				dst0.set(elm, src0.get(elm));
-		} else {
-			throw new AssertionError();
 		}
 	}
 
@@ -2430,13 +2422,12 @@ public class Graphs {
 			IWeightsChar dst0 = (IWeightsChar) dst;
 			for (int elm : elements)
 				dst0.set(elm, src0.get(elm));
-		} else if (type == Object.class) {
+		} else {
+			assert type == Object.class;
 			IWeightsObj src0 = (IWeightsObj) src;
 			IWeightsObj dst0 = (IWeightsObj) dst;
 			for (int elm : elements)
 				dst0.set(elm, src0.get(elm));
-		} else {
-			throw new AssertionError();
 		}
 	}
 
@@ -2457,9 +2448,8 @@ public class Graphs {
 			return boolean.class;
 		if (w instanceof WeightsChar)
 			return char.class;
-		if (w instanceof WeightsObj)
-			return Object.class;
-		throw new AssertionError();
+		assert w instanceof WeightsObj;
+		return Object.class;
 	}
 
 	/**

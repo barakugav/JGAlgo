@@ -58,8 +58,9 @@ public class GraphLinkedTest extends TestBase {
 
 	@Test
 	public void testGetEdgesSourceTarget() {
+		final long seed = 0xdbadd874840f349cL;
 		foreachBoolConfig(selfEdges -> {
-			GraphImplTestUtils.testGetEdgesSourceTarget(graphImpl(selfEdges));
+			GraphImplTestUtils.testGetEdgesSourceTarget(graphImpl(selfEdges), seed);
 		});
 	}
 

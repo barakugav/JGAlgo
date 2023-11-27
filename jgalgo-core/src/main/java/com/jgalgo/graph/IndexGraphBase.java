@@ -19,13 +19,17 @@ import java.util.Objects;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterables;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 
 abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements IndexGraph {
 
 	private final boolean isDirected;
 	final GraphElementSet vertices;
 	final GraphElementSet edges;
+	private final IdentityIndexIdMap verticesIdMap;
+	private final IdentityIndexIdMap edgesIdMap;
 	long[] edgeEndpoints;
 
 	static final int EndpointNone = -1;
@@ -35,6 +39,8 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 		this.isDirected = isDirected;
 		this.vertices = Objects.requireNonNull(vertices);
 		this.edges = Objects.requireNonNull(edges);
+		verticesIdMap = new IdentityIndexIdMap(vertices, false);
+		edgesIdMap = new IdentityIndexIdMap(edges, true);
 	}
 
 	IndexGraphBase(boolean isDirected, int n, int m, boolean mutable) {
@@ -46,6 +52,8 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 			this.vertices = GraphElementSet.Immutable.ofVertices(n);
 			this.edges = GraphElementSet.Immutable.ofEdges(m);
 		}
+		verticesIdMap = new IdentityIndexIdMap(vertices, false);
+		edgesIdMap = new IdentityIndexIdMap(edges, true);
 	}
 
 	@Override
@@ -223,16 +231,24 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 		}
 
 		@Override
-		public void clear() {
-			for (IEdgeIter it = iterator(); it.hasNext();) {
-				it.nextInt();
-				it.remove();
-			}
+		public IEdgeIter iterator() {
+			return new EdgeIterSourceTarget(source, target);
 		}
 
 		@Override
-		public IEdgeIter iterator() {
-			return new EdgeIterSourceTarget(source, target);
+		public int size() {
+			return (int) IntIterables.size(this);
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return !iterator().hasNext();
+		}
+
+		@Override
+		public void clear() {
+			while (!isEmpty())
+				remove(iterator().nextInt());
 		}
 	}
 
@@ -248,16 +264,6 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 			int s = source(edge), t = target(edge);
 			return (source == s && target == t) || (source == t && target == s);
 		}
-
-		@Override
-		public int size() {
-			return (int) IntIterables.size(this);
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return !iterator().hasNext();
-		}
 	}
 
 	private class EdgeSetSourceTargetDirected extends EdgeSetSourceTarget {
@@ -269,23 +275,14 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 		public boolean contains(int edge) {
 			return 0 <= edge && edge < edges().size() && source == source(edge) && target == target(edge);
 		}
-
-		@Override
-		public int size() {
-			return (int) IntIterables.size(this);
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return !iterator().hasNext();
-		}
 	}
 
 	private class EdgeIterSourceTarget implements IEdgeIter {
 
 		private final int source, target;
-		private final IEdgeIter it;
+		private IntIterator it;
 		private int nextEdge = -1;
+		private int lastEdge = -1;
 
 		EdgeIterSourceTarget(int source, int target) {
 			this.source = source;
@@ -297,7 +294,7 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 		private void advance() {
 			while (it.hasNext()) {
 				int e = it.nextInt();
-				if (it.targetInt() == target) {
+				if (edgeEndpoint(e, source) == target) {
 					nextEdge = e;
 					return;
 				}
@@ -315,7 +312,7 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 			Assertions.Iters.hasNext(this);
 			int ret = nextEdge;
 			advance();
-			return ret;
+			return lastEdge = ret;
 		}
 
 		@Override
@@ -333,6 +330,30 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 		public int targetInt() {
 			return target;
 		}
+
+		@Override
+		public void remove() {
+			if (lastEdge == -1)
+				throw new IllegalStateException();
+
+			/* we remove the edge using the graph API, not EdgeIter.remove(), so we must copy the iterator */
+			if (it instanceof IEdgeIter)
+				it = new IntArrayList(it).iterator();
+
+			removeEdge(lastEdge);
+		}
+	}
+
+	@Deprecated
+	@Override
+	public IndexIntIdMap indexGraphVerticesMap() {
+		return verticesIdMap;
+	}
+
+	@Deprecated
+	@Override
+	public IndexIntIdMap indexGraphEdgesMap() {
+		return edgesIdMap;
 	}
 
 }

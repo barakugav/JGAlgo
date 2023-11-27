@@ -38,7 +38,8 @@ public class ImmutableGraphViewTest extends TestBase {
 		final Random rand = new Random(seed);
 		final int n = 47, m = 1345;
 
-		GraphFactory<Integer, Integer> factory = intGraph ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
+		GraphFactory<Integer, Integer> factory =
+				intGraph ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
 		Graph<Integer, Integer> g = factory.setDirected(directed).allowSelfEdges().allowParallelEdges().newGraph();
 
 		WeightsInt<Integer> vWeights = g.addVerticesWeights(VerticesWeightsKey, int.class);
@@ -363,6 +364,77 @@ public class ImmutableGraphViewTest extends TestBase {
 	}
 
 	@Test
+	public void verticesAndEdgesIndexMaps() {
+		final long seed = 0xb997a9a9679fa3c4L;
+		final Random rand = new Random(seed);
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+			Graph<Integer, Integer> gImmutable = gOrig.immutableView();
+
+			IndexIdMap<Integer> origViMap = gOrig.indexGraphVerticesMap();
+			IndexIdMap<Integer> origEiMap = gOrig.indexGraphEdgesMap();
+			IndexIdMap<Integer> immutableViMap = gImmutable.indexGraphVerticesMap();
+			IndexIdMap<Integer> immutableEiMap = gImmutable.indexGraphEdgesMap();
+
+			for (Integer v : gOrig.vertices()) {
+				assertEquals(origViMap.idToIndex(v), immutableViMap.idToIndex(v));
+				assertEquals(origViMap.idToIndexIfExist(v), immutableViMap.idToIndexIfExist(v));
+			}
+			for (int i = 0; i < 10; i++) {
+				Integer v = Integer.valueOf(rand.nextInt());
+				assertEquals(origViMap.idToIndexIfExist(v), immutableViMap.idToIndexIfExist(v));
+			}
+			for (int vIdx : gOrig.indexGraph().vertices()) {
+				assertEquals(origViMap.indexToId(vIdx), immutableViMap.indexToId(vIdx));
+				assertEquals(origViMap.indexToIdIfExist(vIdx), immutableViMap.indexToIdIfExist(vIdx));
+			}
+			for (int i = 0; i < 10; i++) {
+				int vIdx = rand.nextInt();
+				assertEquals(origViMap.indexToIdIfExist(vIdx), immutableViMap.indexToIdIfExist(vIdx));
+			}
+
+			for (Integer e : gOrig.edges()) {
+				assertEquals(origEiMap.idToIndex(e), immutableEiMap.idToIndex(e));
+				assertEquals(origEiMap.idToIndexIfExist(e), immutableEiMap.idToIndexIfExist(e));
+			}
+			for (int i = 0; i < 10; i++) {
+				Integer e = Integer.valueOf(rand.nextInt());
+				assertEquals(origEiMap.idToIndexIfExist(e), immutableEiMap.idToIndexIfExist(e));
+			}
+			for (int eIdx : gOrig.indexGraph().edges()) {
+				assertEquals(origEiMap.indexToId(eIdx), immutableEiMap.indexToId(eIdx));
+				assertEquals(origEiMap.indexToIdIfExist(eIdx), immutableEiMap.indexToIdIfExist(eIdx));
+			}
+			for (int i = 0; i < 10; i++) {
+				int eIdx = rand.nextInt();
+				assertEquals(origEiMap.indexToIdIfExist(eIdx), immutableEiMap.indexToIdIfExist(eIdx));
+			}
+		});
+	}
+
+	@Test
+	public void indexRemoveListeners() {
+		foreachBoolConfig((intGraph, directed) -> {
+			IndexGraph gOrig = createGraph(directed, intGraph).indexGraph();
+			IndexGraph gImmutable = gOrig.immutableView();
+
+			IndexRemoveListener listener = new IndexRemoveListener() {
+				@Override
+				public void removeLast(int removedIdx) {}
+
+				@Override
+				public void swapAndRemove(int removedIdx, int swappedIdx) {}
+			};
+
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertexRemoveListener(listener));
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeVertexRemoveListener(listener));
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addEdgeRemoveListener(listener));
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeEdgeRemoveListener(listener));
+		});
+	}
+
+	@Test
 	public void testEquals() {
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
@@ -385,9 +457,33 @@ public class ImmutableGraphViewTest extends TestBase {
 			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 			Graph<Integer, Integer> gImmutable = gOrig.immutableView();
 
-			assertEquals(gImmutable.hashCode(), gOrig.hashCode());
-			assertEquals(gImmutable.hashCode(), gOrig.immutableView().hashCode());
+			assertEquals(gOrig.hashCode(), gImmutable.hashCode());
 		});
+	}
+
+	@Test
+	public void testToString() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+			Graph<Integer, Integer> gImmutable = gOrig.immutableView();
+
+			assertEquals(gOrig.toString(), gImmutable.toString());
+			assertEquals(gOrig.immutableView().toString(), gImmutable.toString());
+
+			gOrig0.addVerticesWeights("additional-weights", int.class);
+			gOrig0.addEdgesWeights("additional-weights", int.class);
+			assertEquals(gOrig.toString(), gImmutable.toString());
+			assertEquals(gOrig.immutableView().toString(), gImmutable.toString());
+
+			while (!gOrig0.getVerticesWeightsKeys().isEmpty())
+				gOrig0.removeVerticesWeights(gOrig0.getVerticesWeightsKeys().iterator().next());
+			while (!gOrig0.getEdgesWeightsKeys().isEmpty())
+				gOrig0.removeEdgesWeights(gOrig0.getEdgesWeightsKeys().iterator().next());
+			assertEquals(gOrig.toString(), gImmutable.toString());
+			assertEquals(gOrig.immutableView().toString(), gImmutable.toString());
+		});
+
 	}
 
 }

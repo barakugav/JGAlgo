@@ -177,7 +177,7 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 	public IEdgeSet getEdges(int source, int target) {
 		checkVertex(source);
 		checkVertex(target);
-		return new SourceTargetEdgeSet(source, target, edgesOut);
+		return new SourceTargetEdgeSet(source, target);
 	}
 
 	@Override
@@ -354,6 +354,23 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 		@Override
 		public IEdgeIter iterator() {
 			return new EdgeIterIn(target, edges);
+		}
+	}
+
+	class SourceTargetEdgeSet extends GraphHashmapMultiAbstract.SourceTargetEdgeSet {
+
+		SourceTargetEdgeSet(int source, int target) {
+			super(source, target);
+		}
+
+		@Override
+		Int2ObjectMap<int[]> edgesOut(int source) {
+			return edgesOut[source];
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return 0 <= edge && edge < edges().size() && source == source(edge) && target == target(edge);
 		}
 	}
 

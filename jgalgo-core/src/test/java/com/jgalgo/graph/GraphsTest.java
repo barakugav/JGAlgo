@@ -20,15 +20,29 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
+import it.unimi.dsi.fastutil.objects.ObjectImmutableList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class GraphsTest extends TestBase {
 
@@ -239,6 +253,20 @@ public class GraphsTest extends TestBase {
 	}
 
 	@Test
+	public void subGraphWithoutVerticesWithoutEdges() {
+		final long seed = 0xf49ceea07e133a11L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> g0 = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(20).m(50)
+					.directed(directed).parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
+
+			assertThrows(NullPointerException.class, () -> Graphs.subGraph(g, null, null, false, false));
+		});
+	}
+
+	@Test
 	public void testGraphEqualsWeights() {
 		final long seed = 0xa9af376e90cd5845L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
@@ -382,6 +410,15 @@ public class GraphsTest extends TestBase {
 			assertNotEquals(g1, g2);
 			edgeWeights9g2.set(e, edgeWeights9g1.get(e));
 			assert g1.equals(g2);
+
+			assertTrue(Graphs.isEquals(g1, g1));
+
+			if (g1 instanceof IntGraph) {
+				/* compare an IntGraph and a regular graph */
+				Graph<Integer, Integer> g3 = GraphBuilder.newFrom(g1, true, true).build();
+				assertEquals(g1, g3);
+				assertEquals(g3, g1);
+			}
 		});
 	}
 
@@ -417,7 +454,6 @@ public class GraphsTest extends TestBase {
 		foreachBoolConfig((intGraph, directed) -> {
 			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(100).m(400)
 					.directed(directed).parallelEdges(true).selfEdges(false).cycles(true).connected(false).build();
-
 
 			GraphFactory<Integer, Integer> factory;
 			if (g1 instanceof IntGraph) {
@@ -591,14 +627,14 @@ public class GraphsTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig((intGraph, directed, index, withSelfEdges) -> {
-			Graph<Integer, Integer> g0 =
-					new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(100).m(400).directed(directed)
-							.parallelEdges(true).selfEdges(withSelfEdges).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g0 = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(100).m(400)
+					.directed(directed)
+					.parallelEdges(true).selfEdges(withSelfEdges).cycles(true).connected(false).build();
 			Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 
 			Set<Integer> selfEdges = Graphs.selfEdges(g);
-			Set<Integer> expected =
-					g.edges().stream().filter(e -> g.edgeSource(e).equals(g.edgeTarget(e))).collect(Collectors.toSet());
+			Set<Integer> expected = g.edges().stream().filter(e -> g.edgeSource(e).equals(g.edgeTarget(e)))
+					.collect(Collectors.toSet());
 
 			assertEqualsBool(expected.isEmpty(), selfEdges.isEmpty());
 			assertEquals(expected.size(), selfEdges.size());
@@ -621,6 +657,231 @@ public class GraphsTest extends TestBase {
 			}
 			assertEquals(expected, iteratedEdges);
 		});
+	}
+
+	@Test
+	public void containsParallelEdges() {
+		assertFalse(Graphs.containsParallelEdges(IntGraphFactory.newDirected().allowParallelEdges(false).newGraph()));
+
+		IntGraph g = IntGraphFactory.newDirected().allowParallelEdges().newGraph();
+		g.addVertex(0);
+		g.addVertex(1);
+		g.addEdge(0, 1, 0);
+		assertFalse(Graphs.containsParallelEdges(g));
+
+		g.addEdge(0, 1, 1);
+		assertTrue(Graphs.containsParallelEdges(g));
+	}
+
+	@Test
+	public void getIndexGraphImpl() {
+		List<String> impls = new ArrayList<>();
+		impls.add("array");
+		impls.add("array-selfedges");
+		impls.add("linked-list");
+		impls.add("linked-list-selfedges");
+		impls.add("linked-list-ptr");
+		impls.add("linked-list-ptr-selfedges");
+		impls.add("hashtable");
+		impls.add("hashtable-selfedges");
+		impls.add("hashtable-multi");
+		impls.add("hashtable-multi-selfedges");
+		impls.add("matrix");
+		impls.add("matrix-selfedges");
+		for (String impl : impls) {
+			foreachBoolConfig(directed -> {
+				IndexGraphFactory factory = IndexGraphFactory.newUndirected().setOption("impl", impl);
+				IndexGraph g = factory.setDirected(directed).newGraph();
+				assertEquals(impl, Graphs.getIndexGraphImpl(g));
+				assertEquals(impl, Graphs.getIndexGraphImpl(g.copy()));
+
+				foreachBoolConfig((immutable, reverse, undirected) -> {
+					List<Function<IndexGraph, IndexGraph>> views = new ArrayList<>();
+					if (immutable)
+						views.add(IndexGraph::immutableView);
+					if (reverse)
+						views.add(IndexGraph::reverseView);
+					if (undirected)
+						views.add(IndexGraph::undirectedView);
+
+					for (List<Function<IndexGraph, IndexGraph>> permutation : permutations(views)) {
+						IndexGraph g1 = g;
+						for (Function<IndexGraph, IndexGraph> view : permutation)
+							g1 = view.apply(g1);
+						assertEquals(impl, Graphs.getIndexGraphImpl(g1));
+					}
+				});
+			});
+		}
+
+		/* unknown implementation */
+		IndexGraph g = new GraphBaseMutable(GraphBaseMutable.Capabilities.of(false, false, false), 0, 0) {
+
+			@Override
+			public void reverseEdge(int edge) {
+			}
+
+			@Override
+			public IEdgeSet outEdges(int source) {
+				return new EmptyEdgeSet();
+			}
+
+			@Override
+			public IEdgeSet inEdges(int target) {
+				return new EmptyEdgeSet();
+			}
+
+			class EmptyEdgeSet extends AbstractIntSet implements IEdgeSet {
+				@Override
+				public int size() {
+					return 0;
+				}
+
+				@Override
+				public IEdgeIter iterator() {
+					return new IEdgeIter() {
+						@Override
+						public boolean hasNext() {
+							return false;
+						}
+
+						@Override
+						public int nextInt() {
+							throw new NoSuchElementException();
+						}
+
+						@Override
+						public int peekNextInt() {
+							throw new NoSuchElementException();
+						}
+
+						@Override
+						public int sourceInt() {
+							throw new IllegalStateException();
+						}
+
+						@Override
+						public int targetInt() {
+							throw new IllegalStateException();
+						}
+					};
+				}
+			}
+		};
+		assertNull(Graphs.getIndexGraphImpl(g));
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> Iterable<List<T>> permutations(List<T> l) {
+		return () -> new Iterator<>() {
+			final T[] elements = l.toArray((T[]) new Object[l.size()]);
+			final int n = elements.length;
+
+			int[] indexes = new int[n];
+			int i = 0;
+
+			List<T> next = new ObjectImmutableList<>(elements);
+			boolean nextValid = !next.isEmpty();
+
+			@Override
+			public boolean hasNext() {
+				if (!nextValid) {
+					for (; i < n; i++) {
+						if (indexes[i] < i) {
+							ObjectArrays.swap(elements, i % 2 == 0 ? 0 : indexes[i], i);
+							indexes[i]++;
+							i = 0;
+							nextValid = true;
+							break;
+						}
+						indexes[i] = 0;
+					}
+				}
+				return nextValid;
+			}
+
+			@Override
+			public List<T> next() {
+				if (!hasNext())
+					throw new NoSuchElementException();
+				nextValid = false;
+				return next;
+			}
+		};
+	}
+
+	@Test
+	public void permutation0() {
+		IntList l = IntList.of();
+		Set<List<Integer>> actual = new ObjectOpenHashSet<>(permutations(l).iterator());
+		Set<IntList> expected = Set.of();
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void permutation1() {
+		IntList l = IntList.of(3);
+		Set<List<Integer>> actual = new ObjectOpenHashSet<>(permutations(l).iterator());
+		Set<IntList> expected = Set.of(IntList.of(3));
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void permutation2() {
+		IntList l = IntList.of(3, 7);
+		Set<List<Integer>> actual = new ObjectOpenHashSet<>(permutations(l).iterator());
+		Set<IntList> expected = Set.of(IntList.of(3, 7), IntList.of(7, 3));
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void permutation3() {
+		IntList l = IntList.of(3, 7, 12);
+		Set<List<Integer>> actual = new ObjectOpenHashSet<>(permutations(l).iterator());
+		Set<IntList> expected = new HashSet<>();
+		expected.add(IntList.of(3, 7, 12));
+		expected.add(IntList.of(3, 12, 7));
+		expected.add(IntList.of(7, 3, 12));
+		expected.add(IntList.of(7, 12, 3));
+		expected.add(IntList.of(12, 3, 7));
+		expected.add(IntList.of(12, 7, 3));
+		assertEquals(expected, actual);
+	}
+
+	@Test
+	public void permutation4() {
+		IntList l = IntList.of(3, 7, 12, 8);
+		Set<IntList> actual = new TreeSet<>();
+		for (List<Integer> p : permutations(l)) {
+			boolean added = actual.add(new IntArrayList(p));
+			assertTrue(added, "duplicate permutation: " + p);
+		}
+		Set<IntList> expected = new TreeSet<>();
+		expected.add(IntList.of(3, 7, 12, 8));
+		expected.add(IntList.of(3, 7, 8, 12));
+		expected.add(IntList.of(3, 12, 7, 8));
+		expected.add(IntList.of(3, 12, 8, 7));
+		expected.add(IntList.of(3, 8, 7, 12));
+		expected.add(IntList.of(3, 8, 12, 7));
+		expected.add(IntList.of(7, 3, 12, 8));
+		expected.add(IntList.of(7, 3, 8, 12));
+		expected.add(IntList.of(7, 12, 3, 8));
+		expected.add(IntList.of(7, 12, 8, 3));
+		expected.add(IntList.of(7, 8, 3, 12));
+		expected.add(IntList.of(7, 8, 12, 3));
+		expected.add(IntList.of(12, 3, 7, 8));
+		expected.add(IntList.of(12, 3, 8, 7));
+		expected.add(IntList.of(12, 7, 3, 8));
+		expected.add(IntList.of(12, 7, 8, 3));
+		expected.add(IntList.of(12, 8, 3, 7));
+		expected.add(IntList.of(12, 8, 7, 3));
+		expected.add(IntList.of(8, 3, 7, 12));
+		expected.add(IntList.of(8, 3, 12, 7));
+		expected.add(IntList.of(8, 7, 3, 12));
+		expected.add(IntList.of(8, 7, 12, 3));
+		expected.add(IntList.of(8, 12, 3, 7));
+		expected.add(IntList.of(8, 12, 7, 3));
+		assertEquals(expected, actual);
 	}
 
 }

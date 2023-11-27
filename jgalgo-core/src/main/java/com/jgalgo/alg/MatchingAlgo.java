@@ -176,28 +176,29 @@ public interface MatchingAlgo {
 				Supplier<MatchingAlgo> weightedGeneralAlgo = MatchingWeightedBlossomV::new;
 				Supplier<MatchingAlgo> weightedBipartiteAlgo = weightedGeneralAlgo;
 
-				if (cardinality && isBipartite) {
-					return cardinalityBipartiteAlgo.get();
+				if (cardinality) {
+					if (isBipartite) {
+						return cardinalityBipartiteAlgo.get();
 
-				} else if (cardinality && !isBipartite) {
-					MatchingAlgo a = cardinalityGeneralAlgo.get();
-					MatchingAlgo b = cardinalityBipartiteAlgo.get();
-					return new Matchings.SuperImpl(a, b, a, b);
+					} else {
+						MatchingAlgo a = cardinalityGeneralAlgo.get();
+						MatchingAlgo b = cardinalityBipartiteAlgo.get();
+						return new Matchings.SuperImpl(a, b, a, b);
 
-				} else if (!cardinality && isBipartite) {
-					MatchingAlgo a = cardinalityBipartiteAlgo.get();
-					MatchingAlgo b = weightedBipartiteAlgo.get();
-					return new Matchings.SuperImpl(a, a, b, b);
-
-				} else if (!cardinality && !isBipartite) {
-					MatchingAlgo a = cardinalityGeneralAlgo.get();
-					MatchingAlgo b = cardinalityBipartiteAlgo.get();
-					MatchingAlgo c = weightedGeneralAlgo.get();
-					MatchingAlgo d = weightedBipartiteAlgo.get();
-					return new Matchings.SuperImpl(a, b, c, d);
-
+					}
 				} else {
-					throw new AssertionError();
+					if (isBipartite) {
+						MatchingAlgo a = cardinalityBipartiteAlgo.get();
+						MatchingAlgo b = weightedBipartiteAlgo.get();
+						return new Matchings.SuperImpl(a, a, b, b);
+
+					} else {
+						MatchingAlgo a = cardinalityGeneralAlgo.get();
+						MatchingAlgo b = cardinalityBipartiteAlgo.get();
+						MatchingAlgo c = weightedGeneralAlgo.get();
+						MatchingAlgo d = weightedBipartiteAlgo.get();
+						return new Matchings.SuperImpl(a, b, c, d);
+					}
 				}
 			}
 

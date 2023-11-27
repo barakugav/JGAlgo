@@ -330,60 +330,76 @@ class Matchings {
 		public <V, E> Matching<V, E> computeMaximumMatching(Graph<V, E> g, WeightFunction<E> w) {
 			boolean cardinality = WeightFunction.isCardinality(w);
 			boolean bipartite = isBipartite(g);
-			if (cardinality && bipartite)
-				return cardinalityBipartiteAlgo.computeMaximumMatching(g, w);
-			if (cardinality && !bipartite)
-				return cardinalityGeneralAlgo.computeMaximumMatching(g, w);
-			if (!cardinality && bipartite)
-				return weightedBipartiteAlgo.computeMaximumMatching(g, w);
-			if (!cardinality && !bipartite)
-				return weightedGeneralAlgo.computeMaximumMatching(g, w);
-			throw new AssertionError();
+			if (cardinality) {
+				if (bipartite) {
+					return cardinalityBipartiteAlgo.computeMaximumMatching(g, w);
+				} else {
+					return cardinalityGeneralAlgo.computeMaximumMatching(g, w);
+				}
+			} else {
+				if (bipartite) {
+					return weightedBipartiteAlgo.computeMaximumMatching(g, w);
+				} else {
+					return weightedGeneralAlgo.computeMaximumMatching(g, w);
+				}
+			}
 		}
 
 		@Override
 		public <V, E> Matching<V, E> computeMinimumMatching(Graph<V, E> g, WeightFunction<E> w) {
 			boolean cardinality = WeightFunction.isCardinality(w);
 			boolean bipartite = isBipartite(g);
-			if (cardinality && bipartite)
-				return cardinalityBipartiteAlgo.computeMinimumMatching(g, w);
-			if (cardinality && !bipartite)
-				return cardinalityGeneralAlgo.computeMinimumMatching(g, w);
-			if (!cardinality && bipartite)
-				return weightedBipartiteAlgo.computeMinimumMatching(g, w);
-			if (!cardinality && !bipartite)
-				return weightedGeneralAlgo.computeMinimumMatching(g, w);
-			throw new AssertionError();
+			if (cardinality) {
+				if (bipartite) {
+					return cardinalityBipartiteAlgo.computeMinimumMatching(g, w);
+				} else {
+					return cardinalityGeneralAlgo.computeMinimumMatching(g, w);
+				}
+			} else {
+				if (bipartite) {
+					return weightedBipartiteAlgo.computeMinimumMatching(g, w);
+				} else {
+					return weightedGeneralAlgo.computeMinimumMatching(g, w);
+				}
+			}
 		}
 
 		@Override
 		public <V, E> Matching<V, E> computeMaximumPerfectMatching(Graph<V, E> g, WeightFunction<E> w) {
 			boolean cardinality = WeightFunction.isCardinality(w);
 			boolean bipartite = isBipartite(g);
-			if (cardinality && bipartite)
-				return cardinalityBipartiteAlgo.computeMaximumPerfectMatching(g, w);
-			if (cardinality && !bipartite)
-				return cardinalityGeneralAlgo.computeMaximumPerfectMatching(g, w);
-			if (!cardinality && bipartite)
-				return weightedBipartiteAlgo.computeMaximumPerfectMatching(g, w);
-			if (!cardinality && !bipartite)
-				return weightedGeneralAlgo.computeMaximumPerfectMatching(g, w);
-			throw new AssertionError();
+			if (cardinality) {
+				if (bipartite) {
+					return cardinalityBipartiteAlgo.computeMaximumPerfectMatching(g, w);
+				} else {
+					return cardinalityGeneralAlgo.computeMaximumPerfectMatching(g, w);
+				}
+			} else {
+				if (bipartite) {
+					return weightedBipartiteAlgo.computeMaximumPerfectMatching(g, w);
+				} else {
+					return weightedGeneralAlgo.computeMaximumPerfectMatching(g, w);
+				}
+			}
 		}
 
 		@Override
 		public <V, E> Matching<V, E> computeMinimumPerfectMatching(Graph<V, E> g, WeightFunction<E> w) {
 			boolean cardinality = WeightFunction.isCardinality(w);
 			boolean bipartite = isBipartite(g);
-			if (cardinality && bipartite)
-				return cardinalityBipartiteAlgo.computeMinimumPerfectMatching(g, w);
-			if (cardinality && !bipartite)
-				return cardinalityGeneralAlgo.computeMinimumPerfectMatching(g, w);
-			if (!cardinality && bipartite)
-				return weightedBipartiteAlgo.computeMinimumPerfectMatching(g, w);
-			if (!cardinality && !bipartite)
-				return weightedGeneralAlgo.computeMinimumPerfectMatching(g, w);
-			throw new AssertionError();
+			if (cardinality) {
+				if (bipartite) {
+					return cardinalityBipartiteAlgo.computeMinimumPerfectMatching(g, w);
+				} else {
+					return cardinalityGeneralAlgo.computeMinimumPerfectMatching(g, w);
+				}
+			} else {
+				if (bipartite) {
+					return weightedBipartiteAlgo.computeMinimumPerfectMatching(g, w);
+				} else {
+					return weightedGeneralAlgo.computeMinimumPerfectMatching(g, w);
+				}
+			}
 		}
 
 		private static boolean isBipartite(Graph<?, ?> g) {
