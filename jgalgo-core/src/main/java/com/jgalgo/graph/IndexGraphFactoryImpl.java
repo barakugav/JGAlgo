@@ -218,6 +218,43 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 		};
 		Impl hashtableImpl = hashtableImplFactory.get(false);
 		Impl hashtableImplWithSelfEdges = hashtableImplFactory.get(true);
+		Boolean2ObjectFunction<Impl> hashtableMultiImplFactory = selfEdges -> {
+			return directed ? new Impl() {
+
+				@Override
+				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+					return new GraphHashmapMultiDirected(selfEdges, expectedVerticesNum, expectedEdgesNum);
+				}
+
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					return new GraphHashmapMultiDirected(selfEdges, graph, copyVerticesWeights, copyEdgesWeights);
+				}
+
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+					return new GraphHashmapMultiDirected(selfEdges, builder);
+				}
+			} : new Impl() {
+
+				@Override
+				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
+					return new GraphHashmapMultiUndirected(selfEdges, expectedVerticesNum, expectedEdgesNum);
+				}
+
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					return new GraphHashmapMultiUndirected(selfEdges, graph, copyVerticesWeights, copyEdgesWeights);
+				}
+
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+					return new GraphHashmapMultiUndirected(selfEdges, builder);
+				}
+			};
+		};
+		Impl hashtableMultiImpl = hashtableMultiImplFactory.get(false);
+		Impl hashtableMultiImplWithSelfEdges = hashtableMultiImplFactory.get(true);
 		Boolean2ObjectFunction<Impl> matrixImplFactory = selfEdges -> {
 			return directed ? new Impl() {
 
@@ -274,6 +311,10 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 					return hashtableImpl;
 				case "hashtable-selfedges":
 					return hashtableImplWithSelfEdges;
+				case "hashtable-multi":
+					return hashtableMultiImpl;
+				case "hashtable-multi-selfedges":
+					return hashtableMultiImplWithSelfEdges;
 				case "matrix":
 					return matrixImpl;
 				case "matrix-selfedges":
@@ -283,12 +324,12 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 		} else {
 			boolean dense = hints.contains(GraphFactory.Hint.DenseGraph);
-			// boolean lookup = hints.contains(GraphFactory.Hint.FastEdgeLookup) || !parallelEdges;
+			boolean lookup = hints.contains(GraphFactory.Hint.FastEdgeLookup);
 			boolean remove = hints.contains(GraphFactory.Hint.FastEdgeRemoval);
 
 			if (parallelEdges) {
-				// if (lookup)
-				// return selfEdges ? hashtableImplWithSelfEdges : hashtableImpl;
+				if (lookup)
+					return selfEdges ? hashtableMultiImplWithSelfEdges : hashtableMultiImpl;
 				if (remove)
 					return selfEdges ? linkedImplWithSelfEdges : linkedImpl;
 				return selfEdges ? arrayImplWithSelfEdges : arrayImpl;

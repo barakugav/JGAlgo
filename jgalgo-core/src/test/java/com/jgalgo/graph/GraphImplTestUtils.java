@@ -665,8 +665,9 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
 			boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
-					.parallelEdges(false).selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
+			Graph<Integer, Integer> g =
+					new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed).parallelEdges(false)
+							.selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -717,8 +718,9 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
 			boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
-					.parallelEdges(false).selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
+			Graph<Integer, Integer> g =
+					new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed).parallelEdges(false)
+							.selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -1512,6 +1514,19 @@ class GraphImplTestUtils extends TestUtils {
 			assertEquals(tracker.edgesNum(), g.edges().size());
 			if (opsNum % 10 == 0)
 				tracker.checkEdgesEqual(g);
+
+			if (g.isDirected()) {
+				int totalOutDegree = 0, totalInDegree = 0;
+				for (Integer v : g.vertices()) {
+					int outDegree = g.outEdges(v).size(), inDegree = g.inEdges(v).size();
+					assertTrue(inDegree >= 0);
+					assertTrue(outDegree >= 0);
+					totalOutDegree += outDegree;
+					totalInDegree += inDegree;
+				}
+				assertEquals(g.edges().size(), totalOutDegree);
+				assertEquals(g.edges().size(), totalInDegree);
+			}
 
 			opsNum--;
 		}
