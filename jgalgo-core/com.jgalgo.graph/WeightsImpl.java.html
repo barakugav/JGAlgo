@@ -442,7 +442,7 @@ interface WeightsImpl {
 	static &lt;K&gt; boolean isEqual(Set&lt;K&gt; elementsSet, Weights&lt;K, ?&gt; w1, Weights&lt;K, ?&gt; w2) {
 <span class="fc bfc" id="L443" title="All 2 branches covered.">		if (w1 == w2)</span>
 <span class="fc" id="L444">			return true;</span>
-<span class="pc bpc" id="L445" title="1 of 4 branches missed.">		if (w1 instanceof IWeights &amp;&amp; w2 instanceof IWeights) {</span>
+<span class="fc bfc" id="L445" title="All 4 branches covered.">		if (w1 instanceof IWeights &amp;&amp; w2 instanceof IWeights) {</span>
 <span class="fc" id="L446">			IntCollection elements = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) elementsSet);</span>
 <span class="pc bpc" id="L447" title="1 of 4 branches missed.">			if (w1 instanceof IWeightsObj&lt;?&gt; &amp;&amp; w2 instanceof IWeightsObj&lt;?&gt;) {</span>
 <span class="fc bfc" id="L448" title="All 2 branches covered.">				for (int elm : elements)</span>

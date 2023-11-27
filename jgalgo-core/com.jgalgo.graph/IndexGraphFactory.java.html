@@ -57,7 +57,17 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	IndexGraphFactory setDirected(boolean directed);
 
 	@Override
+	default IndexGraphFactory allowSelfEdges() {
+<span class="fc" id="L61">		return (IndexGraphFactory) IntGraphFactory.super.allowSelfEdges();</span>
+	}
+
+	@Override
 	IndexGraphFactory allowSelfEdges(boolean selfEdges);
+
+	@Override
+	default IndexGraphFactory allowParallelEdges() {
+<span class="fc" id="L69">		return (IndexGraphFactory) IntGraphFactory.super.allowParallelEdges();</span>
+	}
 
 	@Override
 	IndexGraphFactory allowParallelEdges(boolean parallelEdges);
@@ -80,7 +90,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 * @return a new factory that can build undirected index graphs
 	 */
 	public static IndexGraphFactory newUndirected() {
-<span class="fc" id="L83">		return new IndexGraphFactoryImpl(false);</span>
+<span class="fc" id="L93">		return new IndexGraphFactoryImpl(false);</span>
 	}
 
 	/**
@@ -89,7 +99,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 * @return a new factory that can build directed index graphs
 	 */
 	public static IndexGraphFactory newDirected() {
-<span class="fc" id="L92">		return new IndexGraphFactoryImpl(true);</span>
+<span class="fc" id="L102">		return new IndexGraphFactoryImpl(true);</span>
 	}
 
 	/**
@@ -104,12 +114,12 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 * @return   a new graph factory that will create graphs with the same capabilities of the given graph
 	 */
 	public static IndexGraphFactory newFrom(IndexGraph g) {
-<span class="fc" id="L107">		return new IndexGraphFactoryImpl(g);</span>
+<span class="fc" id="L117">		return new IndexGraphFactoryImpl(g);</span>
 	}
 
 	@Override
 	default IndexGraphFactory setOption(String key, Object value) {
-<span class="nc" id="L112">		return (IndexGraphFactory) IntGraphFactory.super.setOption(key, value);</span>
+<span class="nc" id="L122">		return (IndexGraphFactory) IntGraphFactory.super.setOption(key, value);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

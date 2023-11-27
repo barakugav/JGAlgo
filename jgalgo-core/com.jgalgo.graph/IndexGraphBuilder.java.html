@@ -234,19 +234,29 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	/**
 	 * Create a new builder that builds undirected graphs.
 	 *
+	 * &lt;p&gt;
+	 * The graphs built by this builder will have the same default capabilities as {@link IndexGraphFactory}, namely
+	 * they will not support self edges and will support parallel edges. See the factory documentation for more
+	 * information.
+	 *
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IndexGraphBuilder newUndirected() {
-<span class="fc" id="L240">		return new IndexGraphBuilderImpl.Undirected();</span>
+<span class="fc" id="L245">		return IndexGraphFactory.newUndirected().newBuilder();</span>
 	}
 
 	/**
 	 * Create a new builder that builds directed graphs.
 	 *
+	 * &lt;p&gt;
+	 * The graphs built by this builder will have the same default capabilities as {@link IndexGraphFactory}, namely
+	 * they will not support self edges and will support parallel edges. See the factory documentation for more
+	 * information.
+	 *
 	 * @return a new empty builder for directed graphs
 	 */
 	static IndexGraphBuilder newDirected() {
-<span class="fc" id="L249">		return new IndexGraphBuilderImpl.Directed();</span>
+<span class="fc" id="L259">		return IndexGraphFactory.newDirected().newBuilder();</span>
 	}
 
 	/**
@@ -260,7 +270,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *           vertices/edges weights.
 	 */
 	static IndexGraphBuilder newFrom(IndexGraph g) {
-<span class="nc" id="L263">		return newFrom(g, false, false);</span>
+<span class="nc" id="L273">		return newFrom(g, false, false);</span>
 	}
 
 	/**
@@ -278,7 +288,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *                             original graph vertices/edges weights.
 	 */
 	static IndexGraphBuilder newFrom(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L281">		return IndexGraphBuilderImpl.newFrom(g, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L291">		return IndexGraphBuilderImpl.newFrom(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 }

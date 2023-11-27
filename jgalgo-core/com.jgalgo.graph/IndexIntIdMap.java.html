@@ -79,8 +79,8 @@ public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer indexToIdIfExist(int index) {
-<span class="nc" id="L82">		int id = indexToIdIfExistInt(index);</span>
-<span class="nc bnc" id="L83" title="All 2 branches missed.">		return id == -1 ? null : Integer.valueOf(id);</span>
+<span class="fc" id="L82">		int id = indexToIdIfExistInt(index);</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		return id == -1 ? null : Integer.valueOf(id);</span>
 	}
 
 	/**
@@ -119,7 +119,7 @@ public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
 	@Deprecated
 	@Override
 	default int idToIndexIfExist(Integer id) {
-<span class="nc" id="L122">		return idToIndexIfExist(id.intValue());</span>
+<span class="fc" id="L122">		return idToIndexIfExist(id.intValue());</span>
 	}
 
 }

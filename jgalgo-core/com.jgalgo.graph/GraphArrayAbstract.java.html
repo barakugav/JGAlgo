@@ -19,18 +19,18 @@ package com.jgalgo.graph;
 import java.util.Arrays;
 import com.jgalgo.internal.util.Assertions;
 
-abstract class GraphArrayAbstract extends GraphBaseWithEdgeEndpointsContainer {
+abstract class GraphArrayAbstract extends GraphBaseMutable {
 
-	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
+	GraphArrayAbstract(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
 <span class="fc" id="L25">		super(capabilities, expectedVerticesNum, expectedEdgesNum);</span>
 <span class="fc" id="L26">	}</span>
 
-	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
+	GraphArrayAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 <span class="fc" id="L30">		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);</span>
 <span class="fc" id="L31">	}</span>
 
-	GraphArrayAbstract(IndexGraphBase.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+	GraphArrayAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L34">		super(capabilities, builder);</span>
 <span class="fc" id="L35">	}</span>
 

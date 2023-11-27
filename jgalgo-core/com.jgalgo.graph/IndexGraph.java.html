@@ -369,9 +369,7 @@ public interface IndexGraph extends IntGraph {
 	 */
 	@Override
 	@Deprecated
-	default IndexIntIdMap indexGraphVerticesMap() {
-<span class="fc" id="L373">		return Graphs.IndexIdMapIdentify;</span>
-	}
+	IndexIntIdMap indexGraphVerticesMap();
 
 	/**
 	 * The IDs and indices of an {@link IndexGraph} are the same.
@@ -380,47 +378,45 @@ public interface IndexGraph extends IntGraph {
 	 */
 	@Override
 	@Deprecated
-	default IndexIntIdMap indexGraphEdgesMap() {
-<span class="fc" id="L384">		return Graphs.IndexIdMapIdentify;</span>
-	}
+	IndexIntIdMap indexGraphEdgesMap();
 
 	@Override
 	default IndexGraph copy() {
-<span class="fc" id="L389">		return IndexGraphFactory.newFrom(this).newCopyOf(this);</span>
+<span class="fc" id="L385">		return IndexGraphFactory.newFrom(this).newCopyOf(this);</span>
 	}
 
 	@Override
 	default IndexGraph copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L394">		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L390">		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	@Override
 	default IndexGraph immutableCopy() {
-<span class="fc" id="L399">		return immutableCopy(false, false);</span>
+<span class="fc" id="L395">		return immutableCopy(false, false);</span>
 	}
 
 	@Override
 	default IndexGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc bfc" id="L404" title="All 2 branches covered.">		if (isDirected()) {</span>
-<span class="fc" id="L405">			return new GraphCsrDirected(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc bfc" id="L400" title="All 2 branches covered.">		if (isDirected()) {</span>
+<span class="fc" id="L401">			return new GraphCsrDirected(this, copyVerticesWeights, copyEdgesWeights);</span>
 		} else {
-<span class="fc" id="L407">			return new GraphCsrUndirected(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L403">			return new GraphCsrUndirected(this, copyVerticesWeights, copyEdgesWeights);</span>
 		}
 	}
 
 	@Override
 	default IndexGraph immutableView() {
-<span class="fc" id="L413">		return (IndexGraph) IntGraph.super.immutableView();</span>
+<span class="fc" id="L409">		return (IndexGraph) IntGraph.super.immutableView();</span>
 	}
 
 	@Override
 	default IndexGraph reverseView() {
-<span class="fc" id="L418">		return (IndexGraph) IntGraph.super.reverseView();</span>
+<span class="fc" id="L414">		return (IndexGraph) IntGraph.super.reverseView();</span>
 	}
 
 	@Override
 	default IndexGraph undirectedView() {
-<span class="fc" id="L423">		return (IndexGraph) IntGraph.super.undirectedView();</span>
+<span class="fc" id="L419">		return (IndexGraph) IntGraph.super.undirectedView();</span>
 	}
 
 	/**
@@ -433,7 +429,7 @@ public interface IndexGraph extends IntGraph {
 	 * @return a new undirected empty index graph
 	 */
 	static IndexGraph newUndirected() {
-<span class="fc" id="L436">		return IndexGraphFactory.newUndirected().newGraph();</span>
+<span class="fc" id="L432">		return IndexGraphFactory.newUndirected().newGraph();</span>
 	}
 
 	/**
@@ -446,7 +442,7 @@ public interface IndexGraph extends IntGraph {
 	 * @return a new directed empty index graph
 	 */
 	static IndexGraph newDirected() {
-<span class="fc" id="L449">		return IndexGraphFactory.newDirected().newGraph();</span>
+<span class="fc" id="L445">		return IndexGraphFactory.newDirected().newGraph();</span>
 	}
 
 }

@@ -34,7 +34,7 @@ public class GraphsTestUtils extends TestUtils {
 	private GraphsTestUtils() {}
 
 	public static Boolean2ObjectFunction&lt;IntGraph&gt; defaultGraphImpl() {
-<span class="fc" id="L37">		return direct -&gt; IntGraphFactory.newUndirected().setDirected(direct).newGraph();</span>
+<span class="nc" id="L37">		return direct -&gt; IntGraphFactory.newUndirected().setDirected(direct).newGraph();</span>
 	}
 
 	public static IntGraph randTree(int n, long seed) {

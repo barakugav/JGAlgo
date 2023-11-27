@@ -209,6 +209,13 @@ public interface GraphBuilder&lt;V, E&gt; {
 	void clear();
 
 	/**
+	 * Check if the graph built by this builder is directed or undirected.
+	 *
+	 * @return {@code true} if the graph built by this builder is directed, {@code false} if it is undirected
+	 */
+	boolean isDirected();
+
+	/**
 	 * Build a new immutable graph with the builder vertices and edges.
 	 *
 	 * @return a new immutable graph with the vertices and edges that were added to the builder.
@@ -225,23 +232,31 @@ public interface GraphBuilder&lt;V, E&gt; {
 	/**
 	 * Create a new builder that builds undirected graphs.
 	 *
+	 * &lt;p&gt;
+	 * The graphs built by this builder will have the same default capabilities as {@link GraphFactory}, namely they
+	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
+	 *
 	 * @param  &lt;V&gt; the vertices type
 	 * @param  &lt;E&gt; the edges type
 	 * @return     a new empty builder for undirected graphs
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newUndirected() {
-<span class="fc" id="L233">		return new GraphBuilderImpl.Undirected&lt;&gt;();</span>
+<span class="fc" id="L244">		return GraphFactory.&lt;V, E&gt;newUndirected().newBuilder();</span>
 	}
 
 	/**
 	 * Create a new builder that builds directed graphs.
+	 *
+	 * &lt;p&gt;
+	 * The graphs built by this builder will have the same default capabilities as {@link GraphFactory}, namely they
+	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
 	 *
 	 * @param  &lt;V&gt; the vertices type
 	 * @param  &lt;E&gt; the edges type
 	 * @return     a new empty builder for directed graphs
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newDirected() {
-<span class="fc" id="L244">		return new GraphBuilderImpl.Directed&lt;&gt;();</span>
+<span class="fc" id="L259">		return GraphFactory.&lt;V, E&gt;newDirected().newBuilder();</span>
 	}
 
 	/**
@@ -257,7 +272,7 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 *             vertices/edges weights.
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newFrom(Graph&lt;V, E&gt; g) {
-<span class="nc" id="L260">		return newFrom(g, false, false);</span>
+<span class="fc" id="L275">		return newFrom(g, false, false);</span>
 	}
 
 	/**
@@ -277,7 +292,7 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 *                             original graph vertices/edges weights.
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newFrom(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="nc" id="L280">		return GraphBuilderImpl.newFrom(g, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L295">		return GraphBuilderImpl.newFrom(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 }

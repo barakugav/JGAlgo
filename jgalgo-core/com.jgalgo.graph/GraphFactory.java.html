@@ -111,17 +111,54 @@ public interface GraphFactory&lt;V, E&gt; {
 	GraphFactory&lt;V, E&gt; setDirected(boolean directed);
 
 	/**
+	 * Change the config of this factory so that the built graphs will support self edges.
+	 *
+	 * &lt;p&gt;
+	 * By default, graphs built by this factory will not support self edges.
+	 *
+	 * @return this factory
+	 */
+	default GraphFactory&lt;V, E&gt; allowSelfEdges() {
+<span class="fc" id="L122">		return allowSelfEdges(true);</span>
+	}
+
+	/**
 	 * Determine if graphs built by this factory should be support self edges.
 	 *
-	 * @param  selfEdges if {@code true}, graphs built by this factory will support self edges
+	 * &lt;p&gt;
+	 * By default, graphs built by this factory will not support self edges.
+	 *
+	 * @param  selfEdges if {@code true} graphs built by this factory will support self edges, else they will not
 	 * @return           this factory
 	 */
 	GraphFactory&lt;V, E&gt; allowSelfEdges(boolean selfEdges);
 
 	/**
+	 * Change the config of this factory so that the built graphs will support parallel edges.
+	 *
+	 * &lt;p&gt;
+	 * By default, graphs built by this factory will support parallel edges. The reason is that in order to enforce no
+	 * parallel edges are added to the graph, an efficient lookup of edges (keyed by an edge's vertices) is required,
+	 * which is an operation most graph algorithms do not use and therefore most implementations are not optimized for.
+	 * See {@link GraphFactory.Hint#FastEdgeLookup}.
+	 *
+	 * @return this factory
+	 */
+	default GraphFactory&lt;V, E&gt; allowParallelEdges() {
+<span class="fc" id="L148">		return allowParallelEdges(true);</span>
+	}
+
+	/**
 	 * Determine if graphs built by this factory should be support parallel edges.
 	 *
-	 * @param  parallelEdges if {@code true}, graphs built by this factory will support parallel edges
+	 * &lt;p&gt;
+	 * By default, graphs built by this factory will support parallel edges. The reason is that in order to enforce no
+	 * parallel edges are added to the graph, an efficient lookup of edges (keyed by an edge's vertices) is required,
+	 * which is an operation most graph algorithms do not use and therefore most implementations are not optimized for.
+	 * See {@link GraphFactory.Hint#FastEdgeLookup}.
+	 *
+	 * @param  parallelEdges if {@code true} graphs built by this factory will support parallel edges, else they will
+	 *                           not
 	 * @return               this factory
 	 */
 	GraphFactory&lt;V, E&gt; allowParallelEdges(boolean parallelEdges);
@@ -172,19 +209,19 @@ public interface GraphFactory&lt;V, E&gt; {
 	 *
 	 * @author Barak Ugav
 	 */
-<span class="fc" id="L175">	static enum Hint {</span>
+<span class="fc" id="L212">	static enum Hint {</span>
 
 		/** The graph should support fast edge removal via {@link Graph#removeEdge(Object)}. */
-<span class="fc" id="L178">		FastEdgeRemoval,</span>
+<span class="fc" id="L215">		FastEdgeRemoval,</span>
 
 		/**
 		 * The graph should support fast edge lookup via {@link Graph#getEdge(Object, Object)} and
 		 * {@link Graph#getEdges(Object, Object)}.
 		 */
-<span class="fc" id="L184">		FastEdgeLookup,</span>
+<span class="fc" id="L221">		FastEdgeLookup,</span>
 
 		/** The graph density (# of edges) will be high, a constant fraction of \(O(n^2)\). */
-<span class="fc" id="L187">		DenseGraph,</span>
+<span class="fc" id="L224">		DenseGraph,</span>
 	}
 
 	/**
@@ -195,7 +232,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return     a new factory that can build undirected graphs
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newUndirected() {
-<span class="fc" id="L198">		return new GraphImpl.Factory&lt;&gt;(false);</span>
+<span class="fc" id="L235">		return new GraphImpl.Factory&lt;&gt;(false);</span>
 	}
 
 	/**
@@ -206,7 +243,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return     a new factory that can build directed graphs
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newDirected() {
-<span class="fc" id="L209">		return new GraphImpl.Factory&lt;&gt;(true);</span>
+<span class="fc" id="L246">		return new GraphImpl.Factory&lt;&gt;(true);</span>
 	}
 
 	/**
@@ -223,7 +260,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return     a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newFrom(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L226">		return new GraphImpl.Factory&lt;&gt;(g);</span>
+<span class="fc" id="L263">		return new GraphImpl.Factory&lt;&gt;(g);</span>
 	}
 
 	/**
@@ -242,7 +279,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return       this builder
 	 */
 	default GraphFactory&lt;V, E&gt; setOption(String key, Object value) {
-<span class="nc" id="L245">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L282">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

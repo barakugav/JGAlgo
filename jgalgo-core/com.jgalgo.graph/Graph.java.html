@@ -745,7 +745,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an immutable copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph&lt;V, E&gt; immutableCopy() {
-<span class="nc" id="L748">		return GraphBuilder.newFrom(this).build();</span>
+<span class="fc" id="L748">		return GraphBuilder.newFrom(this).build();</span>
 	}
 
 	/**
@@ -772,18 +772,18 @@ public interface Graph&lt;V, E&gt; {
 	 *                             graph weights
 	 */
 	default Graph&lt;V, E&gt; immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="nc" id="L775">		IndexIdMap&lt;V&gt; viMap = indexGraphVerticesMap();</span>
-<span class="nc" id="L776">		IndexIdMap&lt;E&gt; eiMap = indexGraphEdgesMap();</span>
-<span class="nc bnc" id="L777" title="All 2 branches missed.">		if (isDirected()) {</span>
-<span class="nc" id="L778">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
-<span class="nc" id="L779">					GraphCsrDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
-<span class="nc" id="L780">			IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="nc" id="L781">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="nc" id="L782">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="nc" id="L783">			return new GraphImpl.Directed&lt;&gt;(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
+<span class="fc" id="L775">		IndexIdMap&lt;V&gt; viMap = indexGraphVerticesMap();</span>
+<span class="fc" id="L776">		IndexIdMap&lt;E&gt; eiMap = indexGraphEdgesMap();</span>
+<span class="fc bfc" id="L777" title="All 2 branches covered.">		if (isDirected()) {</span>
+<span class="fc" id="L778">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
+<span class="fc" id="L779">					GraphCsrDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L780">			IndexGraph iGraph = reIndexedGraph.graph();</span>
+<span class="fc" id="L781">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
+<span class="fc" id="L782">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="fc" id="L783">			return new GraphImpl&lt;&gt;(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
 		} else {
-<span class="nc" id="L785">			IndexGraph iGraph = new GraphCsrUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
-<span class="nc" id="L786">			return new GraphImpl.Undirected&lt;&gt;(iGraph, viMap, eiMap, null, null);</span>
+<span class="fc" id="L785">			IndexGraph iGraph = new GraphCsrUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L786">			return new GraphImpl&lt;&gt;(iGraph, viMap, eiMap, null, null);</span>
 		}
 	}
 

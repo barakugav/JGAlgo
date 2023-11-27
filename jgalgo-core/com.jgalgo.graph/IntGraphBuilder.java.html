@@ -154,19 +154,27 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	/**
 	 * Create a new builder that builds undirected graphs.
 	 *
+	 * &lt;p&gt;
+	 * The graphs built by this builder will have the same default capabilities as {@link IntGraphFactory}, namely they
+	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
+	 *
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IntGraphBuilder newUndirected() {
-<span class="fc" id="L160">		return new IntGraphBuilderImpl.Undirected();</span>
+<span class="fc" id="L164">		return IntGraphFactory.newUndirected().newBuilder();</span>
 	}
 
 	/**
 	 * Create a new builder that builds directed int graphs.
 	 *
+	 * &lt;p&gt;
+	 * The graphs built by this builder will have the same default capabilities as {@link IntGraphFactory}, namely they
+	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
+	 *
 	 * @return a new empty builder for directed graphs
 	 */
 	static IntGraphBuilder newDirected() {
-<span class="fc" id="L169">		return new IntGraphBuilderImpl.Directed();</span>
+<span class="fc" id="L177">		return IntGraphFactory.newDirected().newBuilder();</span>
 	}
 
 	/**
@@ -180,7 +188,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 *           vertices/edges weights.
 	 */
 	static IntGraphBuilder newFrom(IntGraph g) {
-<span class="fc" id="L183">		return newFrom(g, false, false);</span>
+<span class="fc" id="L191">		return newFrom(g, false, false);</span>
 	}
 
 	/**
@@ -198,7 +206,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 *                             original graph vertices/edges weights.
 	 */
 	static IntGraphBuilder newFrom(IntGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L201">		return IntGraphBuilderImpl.newFrom(g, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L209">		return IntGraphBuilderImpl.newFrom(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 }
