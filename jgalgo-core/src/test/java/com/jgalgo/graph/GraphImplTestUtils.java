@@ -27,13 +27,16 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import com.jgalgo.alg.MatchingAlgo;
@@ -51,6 +54,7 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -119,6 +123,26 @@ class GraphImplTestUtils extends TestUtils {
 
 			assertThrows(NoSuchEdgeException.class, () -> g.edgeSource(6687));
 		});
+
+		foreachBoolConfig(directed -> {
+			Graph<Integer, Integer> g = graphImpl.get(directed);
+			if (!g.isAllowSelfEdges()) {
+				g.addVertex(0);
+				assertThrows(IllegalArgumentException.class, () -> g.addEdge(0, 0, 0));
+			}
+		});
+
+		foreachBoolConfig(directed -> {
+			Graph<Integer, Integer> g = graphImpl.get(directed);
+			if (!g.isAllowParallelEdges()) {
+				g.addVertex(0);
+				g.addVertex(1);
+				g.addEdge(0, 1, 0);
+				assertThrows(IllegalArgumentException.class, () -> g.addEdge(0, 1, 1));
+				if (!directed)
+					assertThrows(IllegalArgumentException.class, () -> g.addEdge(1, 0, 1));
+			}
+		});
 	}
 
 	private static <V, E> void assertEndpoints(Graph<V, E> g, E e, V source, V target) {
@@ -130,6 +154,44 @@ class GraphImplTestUtils extends TestUtils {
 		}
 		assertEquals(source, g.edgeEndpoint(e, target));
 		assertEquals(target, g.edgeEndpoint(e, source));
+	}
+
+	static void testEndpoints(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+		final long seed = 0x62f7c169c6fbd294L;
+		Random rand = new Random(seed);
+		foreachBoolConfig(directed -> {
+			final int n = 30;
+			Graph<Integer, Integer> g = graphImpl.get(directed);
+			for (int i = 0; i < n; i++)
+				g.addVertex(Integer.valueOf(i + 1));
+			Map<Integer, IntIntPair> edges = new HashMap<>();
+			while (g.edges().size() < 60) {
+				Integer u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
+				if (!g.isAllowSelfEdges() && u.equals(v))
+					continue;
+				if (!g.isAllowParallelEdges() && g.getEdge(u, v) != null)
+					continue;
+				Integer e = Integer.valueOf(g.edges().size() + 1);
+				g.addEdge(u, v, e);
+				edges.put(e, IntIntPair.of(u.intValue(), v.intValue()));
+			}
+
+			for (Integer e : g.edges()) {
+				IntIntPair endpoints = edges.get(e);
+				Integer u = Integer.valueOf(endpoints.leftInt()), v = Integer.valueOf(endpoints.rightInt());
+				assertEquals(u, g.edgeSource(e));
+				assertEquals(v, g.edgeTarget(e));
+				assertEquals(u, g.edgeEndpoint(e, v));
+				assertEquals(v, g.edgeEndpoint(e, u));
+
+				Integer nonEndpointVertex;
+				do {
+					nonEndpointVertex = Graphs.randVertex(g, rand);
+				} while (nonEndpointVertex.equals(u) || nonEndpointVertex.equals(v));
+				Integer nonEndpointVertex0 = nonEndpointVertex;
+				assertThrows(IllegalArgumentException.class, () -> g.edgeEndpoint(e, nonEndpointVertex0));
+			}
+		});
 	}
 
 	static void testGetEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
@@ -582,7 +644,7 @@ class GraphImplTestUtils extends TestUtils {
 					} else {
 						Integer u, v;
 						for (int retry = 20;;) {
-							if (retry-- > 0)
+							if (retry-- == 0)
 								continue opsLoop;
 							u = Graphs.randVertex(g, rand);
 							v = Graphs.randVertex(g, rand);
@@ -893,6 +955,176 @@ class GraphImplTestUtils extends TestUtils {
 				assertEquals(copyEDataMap.get(e), copyEData.get(e));
 			}
 		});
+	}
+
+	static void testCopyConstructor(Function<IndexGraph, IndexGraph> copyConstructor, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		foreachBoolConfig(directed -> {
+			/* Create a random graph g */
+			final boolean selfEdges = copyConstructor
+					.apply(directed ? IndexGraph.newDirected() : IndexGraph.newUndirected()).isAllowSelfEdges();
+			final boolean parallelEdges = copyConstructor
+					.apply(directed ? IndexGraph.newDirected() : IndexGraph.newUndirected()).isAllowParallelEdges();
+			IndexGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
+					.parallelEdges(parallelEdges).selfEdges(selfEdges).cycles(true).connected(false).build()
+					.indexGraph();
+
+			/* assign some weights to the vertices of g */
+			final String gVDataKey = "vData";
+			WeightsObj<Integer, Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
+			Object2ObjectMap<Integer, Object> gVDataMap = new Object2ObjectOpenHashMap<>();
+			for (Integer u : g.vertices()) {
+				Object data = labeledObj("data" + u);
+				gVData.set(u, data);
+				gVDataMap.put(u, data);
+			}
+
+			/* assign some weights to the edges of g */
+			final String gEDataKey = "eData";
+			WeightsObj<Integer, Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
+			Object2ObjectMap<Integer, Object> gEDataMap = new Object2ObjectOpenHashMap<>();
+			for (Integer e : g.edges()) {
+				Object data = labeledObj("data" + e);
+				gEData.set(e, data);
+				gEDataMap.put(e, data);
+			}
+
+			/* check copy constructor */
+			assertEquals(g, copyConstructor.apply(g));
+			assertEquals(g, copyConstructor.apply(g.immutableCopy(true, true)));
+			assertEquals(g, copyConstructor.apply(g.immutableView()));
+			assertEquals(g, copyConstructor.apply(copyConstructor.apply(g)));
+
+			if (!selfEdges) {
+				IndexGraphFactory factory =
+						directed ? IndexGraphFactory.newDirected() : IndexGraphFactory.newUndirected();
+				IndexGraph g1 = factory.allowSelfEdges().newGraph();
+				g1.addVertex();
+				g1.addEdge(0, 0);
+				assertThrows(IllegalArgumentException.class, () -> copyConstructor.apply(g1));
+			}
+			if (!parallelEdges) {
+				IndexGraph g1 = directed ? IndexGraph.newDirected() : IndexGraph.newUndirected();
+				g1.addVertex();
+				g1.addVertex();
+				g1.addEdge(0, 1);
+				g1.addEdge(0, 1);
+				assertThrows(IllegalArgumentException.class, () -> copyConstructor.apply(g1));
+			}
+			if (!parallelEdges) {
+				IndexGraph g1 = directed ? IndexGraph.newDirected() : IndexGraph.newUndirected();
+				g1.addVertex();
+				g1.addVertex();
+				g1.addEdge(1, 0);
+				g1.addEdge(1, 0);
+				assertThrows(IllegalArgumentException.class, () -> copyConstructor.apply(g1));
+			}
+		});
+	}
+
+	static void testBuilderConstructor(Function<IndexGraphBuilder, IndexGraph> copyConstructor, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		foreachBoolConfig(directed -> {
+			/* Create a random graph g */
+			final boolean selfEdges = copyConstructor
+					.apply(directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected())
+					.isAllowSelfEdges();
+			final boolean parallelEdges = copyConstructor
+					.apply(directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected())
+					.isAllowParallelEdges();
+			IndexGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
+					.parallelEdges(parallelEdges).selfEdges(selfEdges).cycles(true).connected(false).build()
+					.indexGraph();
+
+			/* assign some weights to the vertices of g */
+			final String gVDataKey = "vData";
+			WeightsObj<Integer, Object> gVData = g.addVerticesWeights(gVDataKey, Object.class);
+			Object2ObjectMap<Integer, Object> gVDataMap = new Object2ObjectOpenHashMap<>();
+			for (Integer u : g.vertices()) {
+				Object data = labeledObj("data" + u);
+				gVData.set(u, data);
+				gVDataMap.put(u, data);
+			}
+
+			/* assign some weights to the edges of g */
+			final String gEDataKey = "eData";
+			WeightsObj<Integer, Object> gEData = g.addEdgesWeights(gEDataKey, Object.class);
+			Object2ObjectMap<Integer, Object> gEDataMap = new Object2ObjectOpenHashMap<>();
+			for (Integer e : g.edges()) {
+				Object data = labeledObj("data" + e);
+				gEData.set(e, data);
+				gEDataMap.put(e, data);
+			}
+
+			/* check builder constructor */
+			assertEquals(g, copyConstructor.apply(IndexGraphBuilder.newFrom(g, true, true)));
+
+			if (!selfEdges) {
+				IndexGraphBuilder g1 = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+				g1.addVertex();
+				g1.addEdge(0, 0);
+				assertThrows(IllegalArgumentException.class, () -> copyConstructor.apply(g1));
+			}
+			if (!parallelEdges) {
+				IndexGraphBuilder g1 = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+				g1.addVertex();
+				g1.addVertex();
+				g1.addEdge(0, 1);
+				g1.addEdge(0, 1);
+				assertThrows(IllegalArgumentException.class, () -> copyConstructor.apply(g1));
+			}
+			if (!parallelEdges) {
+				IndexGraphBuilder g1 = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+				g1.addVertex();
+				g1.addVertex();
+				g1.addEdge(1, 0);
+				g1.addEdge(1, 0);
+				assertThrows(IllegalArgumentException.class, () -> copyConstructor.apply(g1));
+			}
+		});
+	}
+
+	static void testReverseEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
+
+		final boolean selfEdges = graphImpl.get(true).isAllowSelfEdges();
+		final boolean parallelEdges = graphImpl.get(true).isAllowParallelEdges();
+		Graph<Integer, Integer> g1 =
+				new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(true).parallelEdges(parallelEdges)
+						.selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
+		Graph<Integer, Integer> g2 = g1.copy(true, true);
+
+		for (int ops = 0; ops < 10; ops++) {
+			Integer e;
+			do {
+				e = Graphs.randEdge(g1, rand);
+			} while (!parallelEdges && g1.getEdge(g1.edgeTarget(e), g1.edgeSource(e)) != null);
+			Integer u = g1.edgeSource(e), v = g1.edgeTarget(e);
+			assertEquals(u, g1.edgeSource(e));
+			assertEquals(v, g1.edgeTarget(e));
+
+			g1.reverseEdge(e);
+			assertEquals(u, g1.edgeTarget(e));
+			assertEquals(v, g1.edgeSource(e));
+
+			g2.removeEdge(e);
+			g2.addEdge(v, u, e);
+			assertEquals(g2, g1);
+		}
+
+		if (!parallelEdges) {
+			Integer e = Graphs.randEdge(g1, rand);
+			if (g1.getEdge(g1.edgeTarget(e), g1.edgeSource(e)) == null) {
+				Integer nonExistingEdge;
+				do {
+					nonExistingEdge = Integer.valueOf(rand.nextInt());
+				} while (g1.edges().contains(nonExistingEdge) || nonExistingEdge.intValue() < 0);
+				g1.addEdge(g1.edgeTarget(e), g1.edgeSource(e), nonExistingEdge);
+			}
+
+			assertThrows(IllegalArgumentException.class, () -> g1.reverseEdge(e));
+		}
 	}
 
 	static void testUndirectedMST(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {

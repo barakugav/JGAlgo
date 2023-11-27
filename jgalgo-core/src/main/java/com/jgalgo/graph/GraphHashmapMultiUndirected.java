@@ -29,9 +29,9 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract {
 	private final DataContainer.Int edgesNumContainer;
 
 	private static final GraphBaseMutable.Capabilities CapabilitiesNoSelfEdges =
-			GraphBaseMutable.Capabilities.of(false, false, false);
+			GraphBaseMutable.Capabilities.of(false, false, true);
 	private static final GraphBaseMutable.Capabilities CapabilitiesWithSelfEdges =
-			GraphBaseMutable.Capabilities.of(false, true, false);
+			GraphBaseMutable.Capabilities.of(false, true, true);
 
 	private static GraphBaseMutable.Capabilities capabilities(boolean selfEdges) {
 		return selfEdges ? CapabilitiesWithSelfEdges : CapabilitiesNoSelfEdges;
@@ -183,7 +183,7 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract {
 		if (isNewEdgesArr) {
 			ensureEdgesMapMutable(edges, target).put(source, edgesArr);
 
-		} else if (edgesNum == edgesArr.length - 1) {
+		} else if (edgesNum == edgesArr.length) {
 			edgesArr = Arrays.copyOf(edgesArr, 1 + Math.max(2, edgesNum * 2));
 
 			outMap.put(target, edgesArr);

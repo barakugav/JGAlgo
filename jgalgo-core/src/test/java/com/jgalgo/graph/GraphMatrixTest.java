@@ -16,6 +16,7 @@
 
 package com.jgalgo.graph;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -38,6 +39,13 @@ public class GraphMatrixTest extends TestBase {
 	public void testAddEdge() {
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testAddEdge(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
+	public void endpoints() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testEndpoints(graphImpl(selfEdges));
 		});
 	}
 
@@ -126,6 +134,42 @@ public class GraphMatrixTest extends TestBase {
 	}
 
 	@Test
+	public void copyConstructor() {
+		final long seed = 0x8e5b78fe69a1c611L;
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testCopyConstructor(g -> {
+				if (g.isDirected()) {
+					return new GraphMatrixDirected(selfEdges, g, true, true);
+				} else {
+					return new GraphMatrixUndirected(selfEdges, g, true, true);
+				}
+			}, seed);
+		});
+	}
+
+	@Test
+	public void builderConstructor() {
+		final long seed = 0xd95f38700240f660L;
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testBuilderConstructor(builder -> {
+				if (builder.isDirected()) {
+					return new GraphMatrixDirected(selfEdges, (IndexGraphBuilderImpl) builder);
+				} else {
+					return new GraphMatrixUndirected(selfEdges, (IndexGraphBuilderImpl) builder);
+				}
+			}, seed);
+		});
+	}
+
+	@Test
+	public void reverseEdge() {
+		final long seed = 0x51e3bdb3331d8cb3L;
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testReverseEdge(graphImpl(selfEdges), seed);
+		});
+	}
+
+	@Test
 	public void testUndirectedMST() {
 		final long seed = 0x63a396934a49021cL;
 		foreachBoolConfig(selfEdges -> {
@@ -162,6 +206,21 @@ public class GraphMatrixTest extends TestBase {
 		final long seed = 0x4cd9a3bcb63cf8f8L;
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testRandOps(graphImpl(selfEdges), true, seed);
+		});
+	}
+
+	@Test
+	public void capabilities() {
+		foreachBoolConfig((directed, selfEdges) -> {
+			IndexGraph g;
+			if (directed) {
+				g = new GraphMatrixDirected(selfEdges, 0, 0);
+			} else {
+				g = new GraphMatrixUndirected(selfEdges, 0, 0);
+			}
+			assertEqualsBool(directed, g.isDirected());
+			assertEqualsBool(selfEdges, g.isAllowSelfEdges());
+			assertFalse(g.isAllowParallelEdges());
 		});
 	}
 

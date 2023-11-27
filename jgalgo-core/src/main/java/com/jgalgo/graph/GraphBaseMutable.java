@@ -53,10 +53,6 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		} else {
 			Assertions.Graphs.onlyUndirected(g);
 		}
-		if (!isAllowSelfEdges())
-			Assertions.Graphs.noSelfEdges(g, "self edges are not supported");
-		if (!isAllowParallelEdges())
-			Assertions.Graphs.noParallelEdges(g, "parallel edges are not supported");
 
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size());
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size());
@@ -312,10 +308,6 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 	DataContainer.Int newVerticesIntContainer(int defVal, Consumer<int[]> onArrayAlloc) {
 		return addVerticesContainer(new DataContainer.Int(vertices, defVal, onArrayAlloc));
-	}
-
-	DataContainer.Long newVerticesLongContainer(long defVal, Consumer<long[]> onArrayAlloc) {
-		return addVerticesContainer(new DataContainer.Long(vertices, defVal, onArrayAlloc));
 	}
 
 	<T> DataContainer.Obj<T> newEdgesContainer(T defVal, T[] emptyArr, Consumer<T[]> onArrayAlloc) {

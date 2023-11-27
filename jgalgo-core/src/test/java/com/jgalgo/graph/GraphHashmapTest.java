@@ -16,6 +16,7 @@
 
 package com.jgalgo.graph;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -38,6 +39,13 @@ public class GraphHashmapTest extends TestBase {
 	public void testAddEdge() {
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testAddEdge(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
+	public void endpoints() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testEndpoints(graphImpl(selfEdges));
 		});
 	}
 
@@ -126,6 +134,42 @@ public class GraphHashmapTest extends TestBase {
 	}
 
 	@Test
+	public void copyConstructor() {
+		final long seed = 0xf44ed837d29cbdbfL;
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testCopyConstructor(g -> {
+				if (g.isDirected()) {
+					return new GraphHashmapDirected(selfEdges, g, true, true);
+				} else {
+					return new GraphHashmapUndirected(selfEdges, g, true, true);
+				}
+			}, seed);
+		});
+	}
+
+	@Test
+	public void builderConstructor() {
+		final long seed = 0x5b8c06921e025dabL;
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testBuilderConstructor(builder -> {
+				if (builder.isDirected()) {
+					return new GraphHashmapDirected(selfEdges, (IndexGraphBuilderImpl) builder);
+				} else {
+					return new GraphHashmapUndirected(selfEdges, (IndexGraphBuilderImpl) builder);
+				}
+			}, seed);
+		});
+	}
+
+	@Test
+	public void reverseEdge() {
+		final long seed = 0x2e9db8c697efa5dL;
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testReverseEdge(graphImpl(selfEdges), seed);
+		});
+	}
+
+	@Test
 	public void testUndirectedMST() {
 		final long seed = 0xc0778e0a295e533fL;
 		foreachBoolConfig(selfEdges -> {
@@ -178,6 +222,21 @@ public class GraphHashmapTest extends TestBase {
 		final long seed = 0xe1f4bdbf72d9b0b7L;
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testRandOps(graphImpl(selfEdges), true, seed);
+		});
+	}
+
+	@Test
+	public void capabilities() {
+		foreachBoolConfig((directed, selfEdges) -> {
+			IndexGraph g;
+			if (directed) {
+				g = new GraphHashmapDirected(selfEdges, 0, 0);
+			} else {
+				g = new GraphHashmapUndirected(selfEdges, 0, 0);
+			}
+			assertEqualsBool(directed, g.isDirected());
+			assertEqualsBool(selfEdges, g.isAllowSelfEdges());
+			assertFalse(g.isAllowParallelEdges());
 		});
 	}
 

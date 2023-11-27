@@ -46,10 +46,11 @@ abstract class GraphArrayAbstract extends GraphBaseMutable {
 	}
 
 	static int edgeIndexOf(int[] edges, int edgesNum, int e) {
-		for (int i = 0; i < edgesNum; i++)
+		for (int i = 0;; i++) {
+			assert i < edgesNum;
 			if (edges[i] == e)
 				return i;
-		return -1;
+		}
 	}
 
 	static void removeEdgeFromList(int[][] edges, int[] edgesNum, int w, int e) {

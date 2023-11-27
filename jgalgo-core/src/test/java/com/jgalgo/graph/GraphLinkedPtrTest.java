@@ -16,6 +16,7 @@
 
 package com.jgalgo.graph;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -39,6 +40,13 @@ public class GraphLinkedPtrTest extends TestBase {
 	public void testAddEdge() {
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testAddEdge(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
+	public void endpoints() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testEndpoints(graphImpl(selfEdges));
 		});
 	}
 
@@ -127,6 +135,42 @@ public class GraphLinkedPtrTest extends TestBase {
 	}
 
 	@Test
+	public void copyConstructor() {
+		final long seed = 0xb924cde1f2774bbbL;
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testCopyConstructor(g -> {
+				if (g.isDirected()) {
+					return new GraphLinkedPtrDirected(selfEdges, g, true, true);
+				} else {
+					return new GraphLinkedPtrUndirected(selfEdges, g, true, true);
+				}
+			}, seed);
+		});
+	}
+
+	@Test
+	public void builderConstructor() {
+		final long seed = 0xcc8121b9ca48ddd1L;
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testBuilderConstructor(builder -> {
+				if (builder.isDirected()) {
+					return new GraphLinkedPtrDirected(selfEdges, (IndexGraphBuilderImpl) builder);
+				} else {
+					return new GraphLinkedPtrUndirected(selfEdges, (IndexGraphBuilderImpl) builder);
+				}
+			}, seed);
+		});
+	}
+
+	@Test
+	public void reverseEdge() {
+		final long seed = 0xd8e7ea9aff32441fL;
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testReverseEdge(graphImpl(selfEdges), seed);
+		});
+	}
+
+	@Test
 	public void testUndirectedMST() {
 		final long seed = 0x757d2f9883276f90L;
 		foreachBoolConfig(selfEdges -> {
@@ -163,6 +207,21 @@ public class GraphLinkedPtrTest extends TestBase {
 		final long seed = 0x136a0df5ecaae5a2L;
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testRandOps(graphImpl(selfEdges), true, seed);
+		});
+	}
+
+	@Test
+	public void capabilities() {
+		foreachBoolConfig((directed, selfEdges) -> {
+			IndexGraph g;
+			if (directed) {
+				g = new GraphLinkedPtrDirected(selfEdges, 0, 0);
+			} else {
+				g = new GraphLinkedPtrUndirected(selfEdges, 0, 0);
+			}
+			assertEqualsBool(directed, g.isDirected());
+			assertEqualsBool(selfEdges, g.isAllowSelfEdges());
+			assertTrue(g.isAllowParallelEdges());
 		});
 	}
 

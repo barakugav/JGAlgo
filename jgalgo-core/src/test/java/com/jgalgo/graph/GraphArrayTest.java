@@ -16,6 +16,7 @@
 
 package com.jgalgo.graph;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -38,6 +39,13 @@ public class GraphArrayTest extends TestBase {
 	public void testAddEdge() {
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testAddEdge(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
+	public void endpoints() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testEndpoints(graphImpl(selfEdges));
 		});
 	}
 
@@ -126,6 +134,42 @@ public class GraphArrayTest extends TestBase {
 	}
 
 	@Test
+	public void copyConstructor() {
+		final long seed = 0x6905db250a6d75b4L;
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testCopyConstructor(g -> {
+				if (g.isDirected()) {
+					return new GraphArrayDirected(selfEdges, g, true, true);
+				} else {
+					return new GraphArrayUndirected(selfEdges, g, true, true);
+				}
+			}, seed);
+		});
+	}
+
+	@Test
+	public void builderConstructor() {
+		final long seed = 0x5cb8ee914578a252L;
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testBuilderConstructor(builder -> {
+				if (builder.isDirected()) {
+					return new GraphArrayDirected(selfEdges, (IndexGraphBuilderImpl) builder);
+				} else {
+					return new GraphArrayUndirected(selfEdges, (IndexGraphBuilderImpl) builder);
+				}
+			}, seed);
+		});
+	}
+
+	@Test
+	public void reverseEdge() {
+		final long seed = 0xdb6d774297f151d1L;
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testReverseEdge(graphImpl(selfEdges), seed);
+		});
+	}
+
+	@Test
 	public void testUndirectedMST() {
 		final long seed = 0x6519a3d6cfdcaa15L;
 		foreachBoolConfig(selfEdges -> {
@@ -178,6 +222,21 @@ public class GraphArrayTest extends TestBase {
 		final long seed = 0xf1d6fb75a6d8d711L;
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testRandOps(graphImpl(selfEdges), true, seed);
+		});
+	}
+
+	@Test
+	public void capabilities() {
+		foreachBoolConfig((directed, selfEdges) -> {
+			IndexGraph g;
+			if (directed) {
+				g = new GraphArrayDirected(selfEdges, 0, 0);
+			} else {
+				g = new GraphArrayUndirected(selfEdges, 0, 0);
+			}
+			assertEqualsBool(directed, g.isDirected());
+			assertEqualsBool(selfEdges, g.isAllowSelfEdges());
+			assertTrue(g.isAllowParallelEdges());
 		});
 	}
 

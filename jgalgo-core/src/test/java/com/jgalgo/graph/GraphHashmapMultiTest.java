@@ -16,6 +16,7 @@
 
 package com.jgalgo.graph;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -39,6 +40,13 @@ public class GraphHashmapMultiTest extends TestBase {
 	public void testAddEdge() {
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testAddEdge(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
+	public void endpoints() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testEndpoints(graphImpl(selfEdges));
 		});
 	}
 
@@ -127,6 +135,42 @@ public class GraphHashmapMultiTest extends TestBase {
 	}
 
 	@Test
+	public void copyConstructor() {
+		final long seed = 0x2f0feb2e2abcfc01L;
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testCopyConstructor(g -> {
+				if (g.isDirected()) {
+					return new GraphHashmapMultiDirected(selfEdges, g, true, true);
+				} else {
+					return new GraphHashmapMultiUndirected(selfEdges, g, true, true);
+				}
+			}, seed);
+		});
+	}
+
+	@Test
+	public void builderConstructor() {
+		final long seed = 0xe88e6580761faf67L;
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testBuilderConstructor(builder -> {
+				if (builder.isDirected()) {
+					return new GraphHashmapMultiDirected(selfEdges, (IndexGraphBuilderImpl) builder);
+				} else {
+					return new GraphHashmapMultiUndirected(selfEdges, (IndexGraphBuilderImpl) builder);
+				}
+			}, seed);
+		});
+	}
+
+	@Test
+	public void reverseEdge() {
+		final long seed = 0x5678d5379291f193L;
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testReverseEdge(graphImpl(selfEdges), seed);
+		});
+	}
+
+	@Test
 	public void testUndirectedMST() {
 		final long seed = 0x149c6019ec1655c2L;
 		foreachBoolConfig(selfEdges -> {
@@ -179,6 +223,21 @@ public class GraphHashmapMultiTest extends TestBase {
 		final long seed = 0xfa7bd3f2a2d735a7L;
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testRandOps(graphImpl(selfEdges), true, seed);
+		});
+	}
+
+	@Test
+	public void capabilities() {
+		foreachBoolConfig((directed, selfEdges) -> {
+			IndexGraph g;
+			if (directed) {
+				g = new GraphHashmapMultiDirected(selfEdges, 0, 0);
+			} else {
+				g = new GraphHashmapMultiUndirected(selfEdges, 0, 0);
+			}
+			assertEqualsBool(directed, g.isDirected());
+			assertEqualsBool(selfEdges, g.isAllowSelfEdges());
+			assertTrue(g.isAllowParallelEdges());
 		});
 	}
 
