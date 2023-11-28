@@ -58,12 +58,12 @@ public class LedaTest {
 		leda_definition += "5 1 0 |{1}|\n";
 		leda_definition += "\n";
 
-		GraphReader rd_leda1 = GraphReader.newInstance("leda");
+		LedaGraphReader rd_leda1 = new LedaGraphReader();
 		StringReader sr = new StringReader(leda_definition);
 		IntGraphBuilder gb = rd_leda1.readIntoBuilder(sr);
 		IntGraph graph1 = gb.build();
 
-		GraphWriter wr_leda1 = GraphWriter.newInstance("leda");
+		LedaGraphWriter wr_leda1 = new LedaGraphWriter();
 		StringWriter sw = new StringWriter();
 		wr_leda1.writeGraph(graph1, sw);
 		System.out.println("The exported LEDA graph is:");
@@ -97,12 +97,12 @@ public class LedaTest {
 		leda_definition += "5 1 0 |{}|\n";
 		leda_definition += "\n";
 
-		GraphReader rd_leda1 = GraphReader.newInstance("leda");
+		LedaGraphReader rd_leda1 = new LedaGraphReader();
 		StringReader sr = new StringReader(leda_definition);
 		IntGraphBuilder gb = rd_leda1.readIntoBuilder(sr);
 		IntGraph graph1 = gb.build();
 
-		GraphWriter wr_leda1 = GraphWriter.newInstance("leda");
+		LedaGraphWriter wr_leda1 = new LedaGraphWriter();
 		StringWriter sw = new StringWriter();
 		wr_leda1.writeGraph(graph1, sw);
 		System.out.println("The exported LEDA graph is:");
@@ -133,10 +133,10 @@ public class LedaTest {
 				}
 
 				StringWriter writer = new StringWriter();
-				GraphWriter.newInstance("leda").writeGraph(g, writer);
+				new LedaGraphWriter().writeGraph(g, writer);
 				String data = writer.toString();
 
-				IntGraphBuilder gb = GraphReader.newInstance("leda").readIntoBuilder(new StringReader(data));
+				IntGraphBuilder gb = new LedaGraphReader().readIntoBuilder(new StringReader(data));
 				IntGraph gImmutable = gb.build();
 				IntGraph gMutable = gb.buildMutable();
 				assertEquals(g, gImmutable);
@@ -173,10 +173,10 @@ public class LedaTest {
 					we1.set(e, n + rand.nextInt(m * 3));
 
 				StringWriter writer = new StringWriter();
-				GraphWriter.newInstance("leda").writeGraph(g, writer);
+				new LedaGraphWriter().writeGraph(g, writer);
 				String data = writer.toString();
 
-				IntGraphBuilder gb = GraphReader.newInstance("leda").readIntoBuilder(new StringReader(data));
+				IntGraphBuilder gb = new LedaGraphReader().readIntoBuilder(new StringReader(data));
 				IntGraph gImmutable = gb.build();
 				IntGraph gMutable = gb.buildMutable();
 				assertEquals(g, gImmutable);

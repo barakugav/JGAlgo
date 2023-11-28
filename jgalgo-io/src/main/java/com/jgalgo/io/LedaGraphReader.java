@@ -33,7 +33,7 @@ import com.jgalgo.graph.IWeightsShort;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
 
-public class LedaGraphReader implements GraphReader {
+public class LedaGraphReader implements IGraphReader {
 
 	@Override
 	public IntGraphBuilder readIntoBuilder(Reader reader) {

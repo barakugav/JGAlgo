@@ -20,21 +20,18 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UncheckedIOException;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 
 /**
  * A reader that reads Graphs from files/IO-reader.
  *
- * <pre> {@code
- * Graph g = GraphReader.newInstance("gml").readGraph("graph1.gml");
- * System.out.println("g's vertices are: " + g.vertices());
- * }</pre>
- *
- * @see    GraphWriter
- * @author Barak Ugav
+ * @param  <V> the vertices type
+ * @param  <E> the edges type
+ * @see        GraphWriter
+ * @author     Barak Ugav
  */
-public interface GraphReader {
+public interface GraphReader<V, E> {
 
 	/**
 	 * Read a graph from an I/O reader.
@@ -42,7 +39,7 @@ public interface GraphReader {
 	 * @param  reader an I/O reader that contain a graph description
 	 * @return        a new graph read from the reader
 	 */
-	default IntGraph readGraph(Reader reader) {
+	default Graph<V, E> readGraph(Reader reader) {
 		return readIntoBuilder(reader).build();
 	}
 
@@ -52,7 +49,7 @@ public interface GraphReader {
 	 * @param  file a file that contain a graph description
 	 * @return      a new graph read from the file
 	 */
-	default IntGraph readGraph(File file) {
+	default Graph<V, E> readGraph(File file) {
 		try (Reader reader = new FileReader(file, GraphFormats.JGALGO_CHARSET)) {
 			return readGraph(reader);
 		} catch (IOException e) {
@@ -66,7 +63,7 @@ public interface GraphReader {
 	 * @param  path a path to a file that contain a graph description
 	 * @return      a new graph read from the file
 	 */
-	default IntGraph readGraph(String path) {
+	default Graph<V, E> readGraph(String path) {
 		try (Reader reader = new FileReader(path, GraphFormats.JGALGO_CHARSET)) {
 			return readGraph(reader);
 		} catch (IOException e) {
@@ -75,25 +72,28 @@ public interface GraphReader {
 	}
 
 	/**
-	 * Read a graph from an I/O reader into a {@link IntGraphBuilder}.
+	 * Read a graph from an I/O reader into a {@link GraphBuilder}.
 	 *
 	 * @param  reader an I/O reader that contain a graph description
 	 * @return        a graph builder containing the vertices and edge read from the reader
 	 */
-	IntGraphBuilder readIntoBuilder(Reader reader);
+	GraphBuilder<V, E> readIntoBuilder(Reader reader);
 
-	/**
-	 * Get new {@link GraphReader} instance by a format name.
-	 *
-	 * <p>
-	 * Any one of the following formats is supported: ['csv', 'dimacs', 'gexf', 'gml', 'graph6', 'space6', 'graphml',
-	 * 'leda']
-	 *
-	 * @param  format the name of the format
-	 * @return        a reader that can read graphs of the given format
-	 */
-	static GraphReader newInstance(String format) {
-		return GraphFormat.getInstanceByName(format).newReader();
-	}
+	// /**
+	// * Get new {@link GraphReader} instance by a format name.
+	// *
+	// * <p>
+	// * Any one of the following formats is supported: ['csv', 'dimacs', 'gexf', 'gml', 'graph6', 'space6', 'graphml',
+	// * 'leda']
+	// *
+	// * @param <V> the vertices type
+	// * @param <E> the edges type
+	// * @param format the name of the format
+	// * @return a reader that can read graphs of the given format
+	// */
+	// static <V, E> GraphReader<V, E> newInstance(String format, Class<V> vType, Class<E> eType) {
+	// // TODO documentation for params and some words on why we accept class types
+	// return GraphFormat.getInstanceByName(format).newReader(vType, eType);
+	// }
 
 }

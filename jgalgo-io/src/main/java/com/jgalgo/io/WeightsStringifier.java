@@ -15,26 +15,28 @@
  */
 package com.jgalgo.io;
 
-import com.jgalgo.graph.IWeights;
-import com.jgalgo.graph.IWeightsBool;
-import com.jgalgo.graph.IWeightsByte;
-import com.jgalgo.graph.IWeightsChar;
-import com.jgalgo.graph.IWeightsDouble;
-import com.jgalgo.graph.IWeightsFloat;
-import com.jgalgo.graph.IWeightsInt;
-import com.jgalgo.graph.IWeightsLong;
-import com.jgalgo.graph.IWeightsObj;
-import com.jgalgo.graph.IWeightsShort;
+import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.WeightsByte;
+import com.jgalgo.graph.WeightsChar;
+import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.WeightsFloat;
+import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.WeightsLong;
+import com.jgalgo.graph.WeightsObj;
+import com.jgalgo.graph.WeightsShort;
 
-interface WeightsStringifier {
+interface WeightsStringifier<K> {
 
-	String getWeightAsString(int id);
+	String getWeightAsString(K id);
 
-	static WeightsStringifier newInstance(IWeights<?> weights) {
+	static <K> WeightsStringifier<K> newInstance(Weights<K, ?> weights) {
 		return newInstance(weights, null, null);
 	}
 
-	static WeightsStringifier newInstance(IWeights<?> weights, String nonNumberPrefix, String nonNumberSuffix) {
+	@SuppressWarnings("unchecked")
+	static <K> WeightsStringifier<K> newInstance(Weights<K, ?> weights, String nonNumberPrefix,
+			String nonNumberSuffix) {
 		boolean nonNumberEnclosing = false;
 		if (nonNumberPrefix != null || nonNumberSuffix != null) {
 			if (nonNumberPrefix == null)
@@ -44,32 +46,32 @@ interface WeightsStringifier {
 			nonNumberEnclosing = true;
 		}
 
-		if (weights instanceof IWeightsByte) {
-			IWeightsByte ws = (IWeightsByte) weights;
+		if (weights instanceof WeightsByte) {
+			WeightsByte<K> ws = (WeightsByte<K>) weights;
 			return elm -> String.valueOf(ws.get(elm));
 
-		} else if (weights instanceof IWeightsShort) {
-			IWeightsShort ws = (IWeightsShort) weights;
+		} else if (weights instanceof WeightsShort) {
+			WeightsShort<K> ws = (WeightsShort<K>) weights;
 			return elm -> String.valueOf(ws.get(elm));
 
-		} else if (weights instanceof IWeightsInt) {
-			IWeightsInt ws = (IWeightsInt) weights;
+		} else if (weights instanceof WeightsInt) {
+			WeightsInt<K> ws = (WeightsInt<K>) weights;
 			return elm -> String.valueOf(ws.get(elm));
 
-		} else if (weights instanceof IWeightsLong) {
-			IWeightsLong ws = (IWeightsLong) weights;
+		} else if (weights instanceof WeightsLong) {
+			WeightsLong<K> ws = (WeightsLong<K>) weights;
 			return elm -> String.valueOf(ws.get(elm));
 
-		} else if (weights instanceof IWeightsFloat) {
-			IWeightsFloat ws = (IWeightsFloat) weights;
+		} else if (weights instanceof WeightsFloat) {
+			WeightsFloat<K> ws = (WeightsFloat<K>) weights;
 			return elm -> String.valueOf(ws.get(elm));
 
-		} else if (weights instanceof IWeightsDouble) {
-			IWeightsDouble ws = (IWeightsDouble) weights;
+		} else if (weights instanceof WeightsDouble) {
+			WeightsDouble<K> ws = (WeightsDouble<K>) weights;
 			return elm -> String.valueOf(ws.get(elm));
 
-		} else if (weights instanceof IWeightsBool) {
-			IWeightsBool ws = (IWeightsBool) weights;
+		} else if (weights instanceof WeightsBool) {
+			WeightsBool<K> ws = (WeightsBool<K>) weights;
 			if (nonNumberEnclosing) {
 				String pre = nonNumberPrefix, post = nonNumberSuffix;
 				return elm -> pre + String.valueOf(ws.get(elm)) + post;
@@ -77,17 +79,8 @@ interface WeightsStringifier {
 				return elm -> String.valueOf(ws.get(elm));
 			}
 
-		} else if (weights instanceof IWeightsChar) {
-			IWeightsChar ws = (IWeightsChar) weights;
-			if (nonNumberEnclosing) {
-				String pre = nonNumberPrefix, post = nonNumberSuffix;
-				return elm -> pre + String.valueOf(ws.get(elm)) + post;
-			} else {
-				return elm -> String.valueOf(ws.get(elm));
-			}
-
-		} else if (weights instanceof IWeightsObj) {
-			IWeightsObj<?> ws = (IWeightsObj<?>) weights;
+		} else if (weights instanceof WeightsChar) {
+			WeightsChar<K> ws = (WeightsChar<K>) weights;
 			if (nonNumberEnclosing) {
 				String pre = nonNumberPrefix, post = nonNumberSuffix;
 				return elm -> pre + String.valueOf(ws.get(elm)) + post;
@@ -96,7 +89,13 @@ interface WeightsStringifier {
 			}
 
 		} else {
-			throw new IllegalArgumentException("Unsupported weights type: " + weights.getClass());
+			WeightsObj<K, ?> ws = (WeightsObj<K, ?>) weights;
+			if (nonNumberEnclosing) {
+				String pre = nonNumberPrefix, post = nonNumberSuffix;
+				return elm -> pre + String.valueOf(ws.get(elm)) + post;
+			} else {
+				return elm -> String.valueOf(ws.get(elm));
+			}
 		}
 	}
 

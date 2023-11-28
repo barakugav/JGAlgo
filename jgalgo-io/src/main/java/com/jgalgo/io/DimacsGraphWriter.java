@@ -19,13 +19,13 @@ import static com.jgalgo.internal.util.Range.range;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightsInt;
-import com.jgalgo.graph.IntGraph;
 
-public class DimacsGraphWriter implements GraphWriter {
+public class DimacsGraphWriter implements GraphWriter<Integer, Integer> {
 
 	@Override
-	public void writeGraph(IntGraph graph, Writer writer) {
+	public void writeGraph(Graph<Integer, Integer> graph, Writer writer) {
 		if (graph.isDirected())
 			throw new IllegalArgumentException("the DIMACS format support undirected graphs only");
 		final int numVertices = graph.vertices().size();

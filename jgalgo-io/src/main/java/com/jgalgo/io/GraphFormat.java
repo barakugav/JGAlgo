@@ -29,19 +29,19 @@ abstract class GraphFormat {
 		this.fileExtensions = ObjectList.of(fileExtensions0);
 	}
 
-	abstract GraphWriter newWriter();
+	abstract <V, E> GraphWriter<V, E> newWriter();
 
-	abstract GraphReader newReader();
+	abstract <V, E> GraphReader<V, E> newReader(Class<V> vType, Class<E> eType);
 
 	final List<String> getFileExtensions() {
 		return fileExtensions;
 	}
 
-	static GraphFormat getInstanceByName(String formatName) {
-		GraphFormat format = GraphFormats.Formats.get(formatName.toLowerCase());
-		if (format == null)
-			throw new IllegalArgumentException("unsupported format: " + formatName);
-		return format;
-	}
+	// static GraphFormat getInstanceByName(String formatName) {
+	// GraphFormat format = GraphFormats.Formats.get(formatName.toLowerCase());
+	// if (format == null)
+	// throw new IllegalArgumentException("unsupported format: " + formatName);
+	// return format;
+	// }
 
 }

@@ -40,10 +40,10 @@ public class DimacsTest {
 		data += "e 2 4\n";
 		data += "e 3 4\n";
 		data += "e 4 5\n";
-		final IntGraph g = GraphReader.newInstance("dimacs").readGraph(new StringReader(data));
+		final IntGraph g = new DimacsGraphReader().readGraph(new StringReader(data));
 
 		final StringWriter writer = new StringWriter();
-		GraphWriter.newInstance("dimacs").writeGraph(g, writer);
+		new DimacsGraphWriter().writeGraph(g, writer);
 		String data2 = writer.toString();
 
 		String check_data2 = "";
@@ -83,10 +83,10 @@ public class DimacsTest {
 		data += "e 2 4 15\n";
 		data += "e 3 4 2\n";
 		data += "e 4 5 7\n";
-		final IntGraph g = GraphReader.newInstance("dimacs").readGraph(new StringReader(data));
+		final IntGraph g = new DimacsGraphReader().readGraph(new StringReader(data));
 
 		final StringWriter writer = new StringWriter();
-		GraphWriter.newInstance("dimacs").writeGraph(g, writer);
+		new DimacsGraphWriter().writeGraph(g, writer);
 		String data2 = writer.toString();
 
 		String check_data2 = "";
@@ -138,10 +138,10 @@ public class DimacsTest {
 			}
 
 			StringWriter writer = new StringWriter();
-			GraphWriter.newInstance("dimacs").writeGraph(g, writer);
+			new DimacsGraphWriter().writeGraph(g, writer);
 			String data = writer.toString();
 
-			IntGraphBuilder gb = GraphReader.newInstance("dimacs").readIntoBuilder(new StringReader(data));
+			IntGraphBuilder gb = new DimacsGraphReader().readIntoBuilder(new StringReader(data));
 			IntGraph gImmutable = gb.build();
 			IntGraph gMutable = gb.buildMutable();
 			assertEquals(g, gImmutable);
@@ -175,10 +175,10 @@ public class DimacsTest {
 				we1.set(e, n + rand.nextInt(m * 3));
 
 			StringWriter writer = new StringWriter();
-			GraphWriter.newInstance("dimacs").writeGraph(g, writer);
+			new DimacsGraphWriter().writeGraph(g, writer);
 			String data = writer.toString();
 
-			IntGraphBuilder gb = GraphReader.newInstance("dimacs").readIntoBuilder(new StringReader(data));
+			IntGraphBuilder gb = new DimacsGraphReader().readIntoBuilder(new StringReader(data));
 			IntGraph gImmutable = gb.build();
 			IntGraph gMutable = gb.buildMutable();
 			assertEquals(g, gImmutable);
@@ -194,8 +194,7 @@ public class DimacsTest {
 		g.addVertex(78);
 		g.addEdge(78, 1);
 		g.addEdge(1, 6);
-		assertThrows(IllegalArgumentException.class,
-				() -> GraphWriter.newInstance("dimacs").writeGraph(g, new StringWriter()));
+		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphWriter().writeGraph(g, new StringWriter()));
 	}
 
 }

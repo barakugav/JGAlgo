@@ -23,7 +23,7 @@ import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
 
-public class DimacsGraphReader implements GraphReader {
+public class DimacsGraphReader implements IGraphReader {
 
 	/**
 	 * Support 2 DIMACS formats:<br>

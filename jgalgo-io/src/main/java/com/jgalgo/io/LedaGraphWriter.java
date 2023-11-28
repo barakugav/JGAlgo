@@ -19,18 +19,18 @@ import static com.jgalgo.internal.util.Range.range;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
-import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IWeightsFloat;
 import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IWeightsLong;
 import com.jgalgo.graph.IWeightsShort;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Weights;
 
-public class LedaGraphWriter implements GraphWriter {
+public class LedaGraphWriter implements GraphWriter<Integer, Integer> {
 
 	@Override
-	public void writeGraph(IntGraph graph, Writer writer) {
+	public void writeGraph(Graph<Integer, Integer> graph, Writer writer) {
 		final int numVertices = graph.vertices().size();
 		final int numEdges = graph.edges().size();
 		if (!range(1, numVertices + 1).equals(graph.vertices()))
@@ -40,14 +40,14 @@ public class LedaGraphWriter implements GraphWriter {
 
 		try {
 			String verticesWeightsType; // can be void, string, int etc
-			IWeights<?> verticesWeights; // weights for vertices
+			Weights<Integer, ?> verticesWeights; // weights for vertices
 			if (graph.getVerticesWeightsKeys().isEmpty()) {
 				verticesWeightsType = "void";
 				verticesWeights = null;
 			} else {
 				// for now, take the first weights collection
 				String key = graph.getVerticesWeightsKeys().iterator().next();
-				verticesWeights = graph.getVerticesIWeights(key);
+				verticesWeights = graph.getVerticesWeights(key);
 				if (verticesWeights instanceof IWeightsInt) {
 					verticesWeightsType = "int";
 				} else if (verticesWeights instanceof IWeightsShort) {
@@ -64,14 +64,14 @@ public class LedaGraphWriter implements GraphWriter {
 			}
 
 			String edgesWeightsType; // can be void, string, int etc
-			IWeights<?> edgesWeights; // weights for edges
+			Weights<Integer, ?> edgesWeights; // weights for edges
 			if (graph.getEdgesWeightsKeys().isEmpty()) {
 				edgesWeightsType = "void";
 				edgesWeights = null;
 			} else {
 				// for now, take the first weights collection
 				String key = graph.getEdgesWeightsKeys().iterator().next();
-				edgesWeights = graph.getEdgesIWeights(key);
+				edgesWeights = graph.getEdgesWeights(key);
 				if (edgesWeights instanceof IWeightsInt) {
 					edgesWeightsType = "int";
 				} else if (edgesWeights instanceof IWeightsShort) {
@@ -102,7 +102,7 @@ public class LedaGraphWriter implements GraphWriter {
 				for (int vertex = 1; vertex <= numVertices; vertex++)
 					writer.append("|{}|").append(System.lineSeparator());
 			} else {
-				WeightsStringifier weightsStringer = WeightsStringifier.newInstance(verticesWeights);
+				WeightsStringifier<Integer> weightsStringer = WeightsStringifier.newInstance(verticesWeights);
 				for (int vertex = 1; vertex <= numVertices; vertex++) {
 					String weightStr = weightsStringer.getWeightAsString(vertex);
 					writer.append("|{").append(weightStr).append("}|").append(System.lineSeparator());
@@ -112,7 +112,7 @@ public class LedaGraphWriter implements GraphWriter {
 			writer.append("# section edges").append(System.lineSeparator());
 			writer.append(Integer.toString(numEdges)).append(System.lineSeparator());
 			// write all edges info
-			WeightsStringifier weightsStringer =
+			WeightsStringifier<Integer> weightsStringer =
 					edgesWeights != null ? WeightsStringifier.newInstance(edgesWeights) : null;
 			for (int edge = 1; edge <= numEdges; edge++) {
 				writer.append(Integer.toString(graph.edgeSource(edge))).append(' ');

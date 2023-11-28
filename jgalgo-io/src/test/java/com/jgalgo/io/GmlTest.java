@@ -22,12 +22,13 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IWeightsObj;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
 
 public class GmlTest {
@@ -65,7 +66,7 @@ public class GmlTest {
 		data += "   label \"Edge C to A\"\n";
 		data += "  ]\n";
 		data += "]\n";
-		GraphReader.newInstance("gml").readGraph(new StringReader(data));
+		new GmlGraphReader<>(int.class, int.class).readGraph(new StringReader(data));
 	}
 
 	@Test
@@ -92,12 +93,13 @@ public class GmlTest {
 			}
 
 			StringWriter writer = new StringWriter();
-			GraphWriter.newInstance("gml").writeGraph(g, writer);
+			new GmlGraphWriter<Integer, Integer>().writeGraph(g, writer);
 			String data = writer.toString();
 
-			IntGraphBuilder gb = GraphReader.newInstance("gml").readIntoBuilder(new StringReader(data));
-			IntGraph gImmutable = gb.build();
-			IntGraph gMutable = gb.buildMutable();
+			GraphBuilder<Integer, Integer> gb =
+					new GmlGraphReader<>(int.class, int.class).readIntoBuilder(new StringReader(data));
+			Graph<Integer, Integer> gImmutable = gb.build();
+			Graph<Integer, Integer> gMutable = gb.buildMutable();
 			assertEquals(g, gImmutable);
 			assertEquals(g, gMutable);
 		}
@@ -145,12 +147,13 @@ public class GmlTest {
 			}
 
 			StringWriter writer = new StringWriter();
-			GraphWriter.newInstance("gml").writeGraph(g, writer);
+			new GmlGraphWriter<Integer, Integer>().writeGraph(g, writer);
 			String data = writer.toString();
 
-			IntGraphBuilder gb = GraphReader.newInstance("gml").readIntoBuilder(new StringReader(data));
-			IntGraph gImmutable = gb.build();
-			IntGraph gMutable = gb.buildMutable();
+			GraphBuilder<Integer, Integer> gb =
+					new GmlGraphReader<>(int.class, int.class).readIntoBuilder(new StringReader(data));
+			Graph<Integer, Integer> gImmutable = gb.build();
+			Graph<Integer, Integer> gMutable = gb.buildMutable();
 			assertEquals(g, gImmutable);
 			assertEquals(g, gMutable);
 		}
@@ -165,7 +168,7 @@ public class GmlTest {
 		g.addEdge(78, 1);
 		g.addEdge(1, 6);
 		assertThrows(IllegalArgumentException.class,
-				() -> GraphWriter.newInstance("gml").writeGraph(g, new StringWriter()));
+				() -> new GmlGraphWriter<Integer, Integer>().writeGraph(g, new StringWriter()));
 	}
 
 }

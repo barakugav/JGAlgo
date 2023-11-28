@@ -23,20 +23,88 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import com.jgalgo.graph.IWeightsDouble;
-import com.jgalgo.graph.IWeightsInt;
-import com.jgalgo.graph.IWeightsObj;
+import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
+import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.WeightsObj;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.Stack;
-import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-public class GmlGraphReader implements GraphReader {
+public class GmlGraphReader<V, E> implements GraphReader<V, E> {
+
+	private Class<V> vType;
+	private Class<E> eType;
+	private Class<V> vTypeBoxed;
+	private Class<E> eTypeBoxed;
+
+	public GmlGraphReader() {}
+
+	public GmlGraphReader(Class<V> vType, Class<E> eType) {
+		this.vType = Objects.requireNonNull(vType);
+		this.eType = Objects.requireNonNull(eType);
+	}
+
+	public void setVertexType(Class<V> vType) {
+		this.vType = Objects.requireNonNull(vType);
+	}
+
+	public void setEdgeType(Class<E> eType) {
+		this.eType = Objects.requireNonNull(eType);
+	}
+
+	private V vertex(Object v) {
+		try {
+			return vTypeBoxed.cast(v);
+		} catch (ClassCastException e) {
+			throw new ClassCastException("expected vertex type " + vType + " but got " + v.getClass());
+		}
+	}
+
+	private E edge(Object e) {
+		try {
+			return eTypeBoxed.cast(e);
+		} catch (ClassCastException ex) {
+			throw new ClassCastException("expected edge type " + eType + " but got " + e.getClass());
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <T> Class<T> boxedType(Class<T> type) {
+		if (!type.isPrimitive())
+			return type;
+		if (type == byte.class)
+			return (Class<T>) Byte.class;
+		if (type == short.class)
+			return (Class<T>) Short.class;
+		if (type == int.class)
+			return (Class<T>) Integer.class;
+		if (type == long.class)
+			return (Class<T>) Long.class;
+		if (type == float.class)
+			return (Class<T>) Float.class;
+		if (type == double.class)
+			return (Class<T>) Double.class;
+		if (type == boolean.class)
+			return (Class<T>) Boolean.class;
+		if (type == char.class)
+			return (Class<T>) Character.class;
+		throw new AssertionError();
+	}
 
 	@Override
-	public IntGraphBuilder readIntoBuilder(Reader reader) {
+	public GraphBuilder<V, E> readIntoBuilder(Reader reader) {
+		if (vType == null)
+			throw new IllegalStateException("Type of vertices was not set");
+		if (eType == null)
+			throw new IllegalStateException("Type of edges was not set");
+		vTypeBoxed = boxedType(vType);
+		eTypeBoxed = boxedType(eType);
+
 		try (BufferedReader r0 =
 				reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader)) {
 
@@ -48,24 +116,31 @@ public class GmlGraphReader implements GraphReader {
 		}
 	}
 
-	private static IntGraphBuilder readIntoBuilder(List<Node> roots) {
+	private GraphBuilder<V, E> readIntoBuilder(List<Node> roots) {
 		Node root;
 		if (roots.size() != 1 || !(root = roots.get(0)).key.equals("graph"))
 			throw new IllegalArgumentException("expected a single root list 'graph'");
 
-		IntGraphBuilder b = IntGraphFactory.newUndirected().allowSelfEdges().newBuilder();
-		Map<String, List<IntObjectPair<Object>>> vWeights = new Object2ObjectOpenHashMap<>();
-		Map<String, List<IntObjectPair<Object>>> eWeights = new Object2ObjectOpenHashMap<>();
+		final boolean intGraph = vType == int.class && eType == int.class;
+		@SuppressWarnings("unchecked")
+		GraphFactory<V, E> factory =
+				intGraph ? (GraphFactory<V, E>) IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
+
+		GraphBuilder<V, E> b = factory.allowSelfEdges().newBuilder();
+		IntGraphBuilder bInt = intGraph ? (IntGraphBuilder)b : null;
+		
+		Map<String, List<Pair<V, Object>>> vWeights = new Object2ObjectOpenHashMap<>();
+		Map<String, List<Pair<E, Object>>> eWeights = new Object2ObjectOpenHashMap<>();
 		for (Node n : root.children()) {
 			if ("node".equals(n.key)) {
-				int id = -1;
+				V id = null;
 				boolean idFound = false;
 				for (Node prop : n.children()) {
 					if ("id".equals(prop.key)) {
 						if (idFound)
 							throw new IllegalArgumentException("duplicate 'id' property");
 						idFound = true;
-						id = ((Integer) prop.value).intValue();
+						id = vertex(prop.value);
 					} else if (prop.value instanceof List<?>) {
 						throw new IllegalArgumentException("unexpected nested vertex weight");
 					}
@@ -76,12 +151,11 @@ public class GmlGraphReader implements GraphReader {
 
 				for (Node prop : n.children())
 					if (!List.of("id").contains(prop.key))
-						vWeights.computeIfAbsent(prop.key, k -> new ArrayList<>())
-								.add(IntObjectPair.of(id, prop.value));
+						vWeights.computeIfAbsent(prop.key, k -> new ArrayList<>()).add(Pair.of(id, prop.value));
 
 			} else if ("edge".equals(n.key)) {
-				int id = -1;
-				int source = -1, target = -1;
+				E id = null;
+				V source = null, target = null;
 				boolean idFound = false;
 				boolean sourceFound = false;
 				boolean targetFound = false;
@@ -90,17 +164,17 @@ public class GmlGraphReader implements GraphReader {
 						if (idFound)
 							throw new IllegalArgumentException("duplicate 'id' property");
 						idFound = true;
-						id = ((Integer) prop.value).intValue();
+						id = edge(prop.value);
 					} else if ("source".equals(prop.key)) {
 						if (sourceFound)
 							throw new IllegalArgumentException("duplicate 'source' property");
 						sourceFound = true;
-						source = ((Integer) prop.value).intValue();
+						source = vertex(prop.value);
 					} else if ("target".equals(prop.key)) {
 						if (targetFound)
 							throw new IllegalArgumentException("duplicate 'target' property");
 						targetFound = true;
-						target = ((Integer) prop.value).intValue();
+						target = vertex(prop.value);
 					} else if (prop.value instanceof List<?>) {
 						throw new IllegalArgumentException("unexpected nested vertex weight");
 					}
@@ -111,14 +185,19 @@ public class GmlGraphReader implements GraphReader {
 					throw new IllegalArgumentException("no 'target' property for edge");
 				if (idFound) {
 					b.addEdge(source, target, id);
+				} else if (intGraph){
+					int source0 = ((Integer)source).intValue();
+					int target0 = ((Integer)target).intValue();
+					@SuppressWarnings("unchecked")
+					E id0 = (E) Integer.valueOf(bInt.addEdge(source0, target0));
+					id = id0;
 				} else {
-					id = b.addEdge(source, target);
+					
 				}
 
 				for (Node prop : n.children())
 					if (!List.of("id", "source", "target").contains(prop.key))
-						eWeights.computeIfAbsent(prop.key, k -> new ArrayList<>())
-								.add(IntObjectPair.of(id, prop.value));
+						eWeights.computeIfAbsent(prop.key, k -> new ArrayList<>()).add(Pair.of(id, prop.value));
 
 			} else {
 				throw new IllegalArgumentException("unexpected key: '" + n.key + "'");
@@ -129,55 +208,55 @@ public class GmlGraphReader implements GraphReader {
 			String key = entry.getKey();
 			Class<?> weightType = chooseWeightType(entry.getValue());
 			if (weightType == int.class) {
-				IWeightsInt w = b.addVerticesWeights(key, int.class);
+				WeightsInt<V> w = b.addVerticesWeights(key, int.class);
 				for (var pair : entry.getValue())
-					w.set(pair.firstInt(), ((Integer) pair.second()).intValue());
+					w.set(pair.first(), ((Integer) pair.second()).intValue());
 
 			} else if (weightType == double.class) {
-				IWeightsDouble w = b.addVerticesWeights(key, double.class);
+				WeightsDouble<V> w = b.addVerticesWeights(key, double.class);
 				for (var pair : entry.getValue())
-					w.set(pair.firstInt(), ((Number) pair.second()).doubleValue());
+					w.set(pair.first(), ((Number) pair.second()).doubleValue());
 
 			} else if (weightType == String.class) {
-				IWeightsObj<String> w = b.addVerticesWeights(key, String.class);
+				WeightsObj<V, String> w = b.addVerticesWeights(key, String.class);
 				for (var pair : entry.getValue())
-					w.set(pair.firstInt(), (String) pair.second());
+					w.set(pair.first(), (String) pair.second());
 
 			} else {
-				IWeightsObj<Object> w = b.addVerticesWeights(key, Object.class);
+				WeightsObj<V, Object> w = b.addVerticesWeights(key, Object.class);
 				for (var pair : entry.getValue())
-					w.set(pair.firstInt(), pair.second());
+					w.set(pair.first(), pair.second());
 			}
 		}
 		for (var entry : eWeights.entrySet()) {
 			String key = entry.getKey();
 			Class<?> weightType = chooseWeightType(entry.getValue());
 			if (weightType == int.class) {
-				IWeightsInt w = b.addEdgesWeights(key, int.class);
+				WeightsInt<E> w = b.addEdgesWeights(key, int.class);
 				for (var pair : entry.getValue())
-					w.set(pair.firstInt(), ((Integer) pair.second()).intValue());
+					w.set(pair.first(), ((Integer) pair.second()).intValue());
 
 			} else if (weightType == double.class) {
-				IWeightsDouble w = b.addEdgesWeights(key, double.class);
+				WeightsDouble<E> w = b.addEdgesWeights(key, double.class);
 				for (var pair : entry.getValue())
-					w.set(pair.firstInt(), ((Number) pair.second()).doubleValue());
+					w.set(pair.first(), ((Number) pair.second()).doubleValue());
 
 			} else if (weightType == String.class) {
-				IWeightsObj<String> w = b.addEdgesWeights(key, String.class);
+				WeightsObj<E, String> w = b.addEdgesWeights(key, String.class);
 				for (var pair : entry.getValue())
-					w.set(pair.firstInt(), (String) pair.second());
+					w.set(pair.first(), (String) pair.second());
 
 			} else {
-				IWeightsObj<Object> w = b.addEdgesWeights(key, Object.class);
+				WeightsObj<E, Object> w = b.addEdgesWeights(key, Object.class);
 				for (var pair : entry.getValue())
-					w.set(pair.firstInt(), pair.second());
+					w.set(pair.first(), pair.second());
 			}
 		}
 
 		return b;
 	}
 
-	private static Class<?> chooseWeightType(List<IntObjectPair<Object>> weights) {
+	private static <K> Class<?> chooseWeightType(List<Pair<K, Object>> weights) {
 		Class<?> weightType = null;
 		for (var pair : weights) {
 			Object weightVal = pair.second();

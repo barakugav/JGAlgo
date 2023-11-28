@@ -20,15 +20,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 
 /**
  * A writer that writes Graphs to files/IO-writer.
  *
- * @see    GraphReader
- * @author Barak Ugav
+ * @param  <V> the vertices type
+ * @param  <E> the edges type
+ * @see        GraphReader
+ * @author     Barak Ugav
  */
-public interface GraphWriter {
+public interface GraphWriter<V, E> {
 
 	/**
 	 * Write a graph to an I/O writer.
@@ -36,7 +38,7 @@ public interface GraphWriter {
 	 * @param graph  a graph
 	 * @param writer an I/O writer to which the graph description will be written to
 	 */
-	void writeGraph(IntGraph graph, Writer writer);
+	void writeGraph(Graph<V, E> graph, Writer writer);
 
 	/**
 	 * Write a graph to a file.
@@ -44,7 +46,7 @@ public interface GraphWriter {
 	 * @param graph a graph
 	 * @param file  a file descriptor to which the graph will be written to
 	 */
-	default void writeGraph(IntGraph graph, File file) {
+	default void writeGraph(Graph<V, E> graph, File file) {
 		try (Writer writer = new FileWriter(file, GraphFormats.JGALGO_CHARSET)) {
 			writeGraph(graph, writer);
 		} catch (IOException e) {
@@ -58,7 +60,7 @@ public interface GraphWriter {
 	 * @param graph a graph
 	 * @param path  a path to a file to which the graph will be written to
 	 */
-	default void writeGraph(IntGraph graph, String path) {
+	default void writeGraph(Graph<V, E> graph, String path) {
 		try (Writer writer = new FileWriter(path, GraphFormats.JGALGO_CHARSET)) {
 			writeGraph(graph, writer);
 		} catch (IOException e) {
@@ -66,18 +68,18 @@ public interface GraphWriter {
 		}
 	}
 
-	/**
-	 * Get new {@link GraphWriter} instance by a format name.
-	 *
-	 * <p>
-	 * Any one of the following formats is supported: ['csv', 'dimacs', 'gexf', 'gml', 'graph6', 'space6', 'graphml',
-	 * 'leda']
-	 *
-	 * @param  format the name of the format
-	 * @return        a writer that can write graphs with the given format
-	 */
-	static GraphWriter newInstance(String format) {
-		return GraphFormat.getInstanceByName(format).newWriter();
-	}
+	// /**
+	// * Get new {@link GraphWriter} instance by a format name.
+	// *
+	// * <p>
+	// * Any one of the following formats is supported: ['csv', 'dimacs', 'gexf', 'gml', 'graph6', 'space6', 'graphml',
+	// * 'leda']
+	// *
+	// * @param format the name of the format
+	// * @return a writer that can write graphs with the given format
+	// */
+	// static <V, E> GraphWriter<V, E> newInstance(String format) {
+	// return GraphFormat.getInstanceByName(format).newWriter();
+	// }
 
 }
