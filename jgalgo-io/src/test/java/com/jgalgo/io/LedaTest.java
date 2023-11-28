@@ -29,7 +29,7 @@ import com.jgalgo.graph.IntGraphFactory;
 
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 
-public class FormatLedaTest {
+public class LedaTest {
 
 	@Test
 	public void ReadWriteLEDAWithWeights() {

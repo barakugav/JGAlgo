@@ -30,7 +30,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
 
-public class FormatGMLTest {
+public class GmlTest {
 
 	@Test
 	public void parseSimpleGraph() {

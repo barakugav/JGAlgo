@@ -28,7 +28,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
 
-public class FormatDIMACSTest {
+public class DimacsTest {
 
 	@Test
 	public void parseDimacsEdgeGraph() {

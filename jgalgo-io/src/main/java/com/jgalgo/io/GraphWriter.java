@@ -45,7 +45,7 @@ public interface GraphWriter {
 	 * @param file  a file descriptor to which the graph will be written to
 	 */
 	default void writeGraph(IntGraph graph, File file) {
-		try (Writer writer = new FileWriter(file, GraphIO.JGALGO_CHARSET)) {
+		try (Writer writer = new FileWriter(file, GraphFormats.JGALGO_CHARSET)) {
 			writeGraph(graph, writer);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
@@ -59,7 +59,7 @@ public interface GraphWriter {
 	 * @param path  a path to a file to which the graph will be written to
 	 */
 	default void writeGraph(IntGraph graph, String path) {
-		try (Writer writer = new FileWriter(path, GraphIO.JGALGO_CHARSET)) {
+		try (Writer writer = new FileWriter(path, GraphFormats.JGALGO_CHARSET)) {
 			writeGraph(graph, writer);
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);

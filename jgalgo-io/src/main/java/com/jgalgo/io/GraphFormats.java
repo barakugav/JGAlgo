@@ -17,15 +17,15 @@ package com.jgalgo.io;
 
 import java.io.File;
 import java.nio.charset.Charset;
-import java.util.List;
 import java.util.Map;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMaps;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-class GraphIO {
+class GraphFormats {
+
+	private GraphFormats() {}
 
 	// TODO make this method public
 	static IntGraph readGraph(String path) {
@@ -54,21 +54,108 @@ class GraphIO {
 		return dotIdx == -1 ? null : path.substring(dotIdx + 1);
 	}
 
+	static final Map<String, GraphFormat> Formats;
+
+	static {
+		Object2ObjectMap<String, GraphFormat> formats = new Object2ObjectOpenHashMap<>();
+		formats.put("csv", new GraphFormat("csv") {
+			@Override
+			public GraphWriter newWriter() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			public GraphReader newReader() {
+				throw new UnsupportedOperationException();
+			}
+		});
+		formats.put("dimacs", new GraphFormat("col", "gr") {
+			@Override
+			public GraphWriter newWriter() {
+				return new DimacsGraphWriter();
+			}
+
+			@Override
+			public GraphReader newReader() {
+				return new DimacsGraphReader();
+			}
+		});
+		formats.put("gexf", new GraphFormat("gexf") {
+
+			@Override
+			GraphWriter newWriter() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			GraphReader newReader() {
+				throw new UnsupportedOperationException();
+			}
+
+		});
+		formats.put("gml", new GraphFormat("gml") {
+			@Override
+			public GraphWriter newWriter() {
+				return new GmlGraphWriter();
+			}
+
+			@Override
+			public GraphReader newReader() {
+				return new GmlGraphReader();
+			}
+		});
+		formats.put("graph6", new GraphFormat("g6") {
+			@Override
+			GraphWriter newWriter() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			GraphReader newReader() {
+				throw new UnsupportedOperationException();
+			}
+		});
+		formats.put("graphml", new GraphFormat("graphml") {
+			@Override
+			GraphWriter newWriter() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			GraphReader newReader() {
+				throw new UnsupportedOperationException();
+			}
+		});
+		formats.put("leda", new GraphFormat("lgr") {
+			@Override
+			public GraphWriter newWriter() {
+				return new LedaGraphWriter();
+			}
+
+			@Override
+			public GraphReader newReader() {
+				return new LedaGraphReader();
+			}
+		});
+		formats.put("sparse6", new GraphFormat("s6") {
+			@Override
+			GraphWriter newWriter() {
+				throw new UnsupportedOperationException();
+			}
+
+			@Override
+			GraphReader newReader() {
+				throw new UnsupportedOperationException();
+			}
+		});
+		Formats = Object2ObjectMaps.unmodifiable(formats);
+	}
+
 	private static final Map<String, GraphFormat> FileExtensionToFormat;
 
 	static {
-		List<GraphFormat> formats = new ObjectArrayList<>();
-		formats.add(FormatCSV.Instance);
-		formats.add(FormatDIMACS.Instance);
-		formats.add(FormatGEXF.Instance);
-		formats.add(FormatGML.Instance);
-		formats.add(FormatGraphML.Instance);
-		formats.add(FormatLEDA.Instance);
-		formats.add(FormatGraph6.Instance);
-		formats.add(FormatSparse6.Instance);
-
 		Object2ObjectMap<String, GraphFormat> fileExtensionToFormat = new Object2ObjectOpenHashMap<>();
-		for (GraphFormat format : formats) {
+		for (GraphFormat format : Formats.values()) {
 			for (String ext : format.getFileExtensions()) {
 				GraphFormat f1 = fileExtensionToFormat.put(ext, format);
 				if (f1 != null)

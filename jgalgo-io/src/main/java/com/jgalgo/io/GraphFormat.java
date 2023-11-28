@@ -16,36 +16,32 @@
 package com.jgalgo.io;
 
 import java.util.List;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 
-interface GraphFormat {
+abstract class GraphFormat {
 
-	GraphWriter newWriter();
+	private final List<String> fileExtensions;
 
-	GraphReader newReader();
+	GraphFormat(String fileExtension, String... fileExtensions) {
+		String[] fileExtensions0 = new String[1 + fileExtensions.length];
+		fileExtensions0[0] = fileExtension;
+		System.arraycopy(fileExtensions, 0, fileExtensions0, 1, fileExtensions.length);
+		this.fileExtensions = ObjectList.of(fileExtensions0);
+	}
 
-	List<String> getFileExtensions();
+	abstract GraphWriter newWriter();
+
+	abstract GraphReader newReader();
+
+	final List<String> getFileExtensions() {
+		return fileExtensions;
+	}
 
 	static GraphFormat getInstanceByName(String formatName) {
-		switch (formatName.toLowerCase()) {
-			case "csv":
-				return FormatCSV.Instance;
-			case "dimacs":
-				return FormatDIMACS.Instance;
-			case "gexf":
-				return FormatGEXF.Instance;
-			case "gml":
-				return FormatGML.Instance;
-			case "graph6":
-				return FormatGraph6.Instance;
-			case "graphml":
-				return FormatGraphML.Instance;
-			case "leda":
-				return FormatLEDA.Instance;
-			case "space6":
-				return FormatSparse6.Instance;
-			default:
-				throw new IllegalArgumentException("unsupported format: " + formatName);
-		}
+		GraphFormat format = GraphFormats.Formats.get(formatName.toLowerCase());
+		if (format == null)
+			throw new IllegalArgumentException("unsupported format: " + formatName);
+		return format;
 	}
 
 }
