@@ -114,7 +114,7 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 */
 	default &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type) {
-<span class="nc" id="L117">		return addVerticesWeights(key, type, null);</span>
+<span class="fc" id="L117">		return addVerticesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -271,8 +271,8 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @return     a builder initialized with the given graph vertices and edges, without the original graph
 	 *             vertices/edges weights.
 	 */
-	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newFrom(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L275">		return newFrom(g, false, false);</span>
+	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; fromGraph(Graph&lt;V, E&gt; g) {
+<span class="fc" id="L275">		return fromGraph(g, false, false);</span>
 	}
 
 	/**
@@ -291,8 +291,8 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @return                     a builder initialized with the given graph vertices and edges, with/without the
 	 *                             original graph vertices/edges weights.
 	 */
-	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newFrom(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L295">		return GraphBuilderImpl.newFrom(g, copyVerticesWeights, copyEdgesWeights);</span>
+	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; fromGraph(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L295">		return new GraphBuilderImpl&lt;&gt;(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 }

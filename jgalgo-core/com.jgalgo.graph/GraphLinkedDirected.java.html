@@ -287,99 +287,97 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 <span class="fc" id="L287">	}</span>
 
 	@Override
-	public void reverseEdge(int edge) {
+	public void moveEdge(int edge, int newSource, int newTarget) {
 <span class="fc" id="L291">		checkEdge(edge);</span>
-<span class="fc" id="L292">		int source = source(edge), target = target(edge);</span>
-<span class="fc bfc" id="L293" title="All 2 branches covered.">		if (source == target)</span>
-<span class="fc" id="L294">			return;</span>
-<span class="fc" id="L295">		removeEdgeOutPointers(edge);</span>
-<span class="fc" id="L296">		removeEdgeInPointers(edge);</span>
-<span class="fc" id="L297">		reverseEdge0(edge);</span>
-<span class="fc" id="L298">		addEdgeToLists(edge);</span>
-<span class="fc" id="L299">	}</span>
+<span class="fc" id="L292">		checkNewEdgeEndpoints(newSource, newTarget);</span>
+<span class="fc" id="L293">		removeEdgeOutPointers(edge);</span>
+<span class="fc" id="L294">		removeEdgeInPointers(edge);</span>
+<span class="fc" id="L295">		setEndpoints(edge, newSource, newTarget);</span>
+<span class="fc" id="L296">		addEdgeToLists(edge);</span>
+<span class="fc" id="L297">	}</span>
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L303">		edgeNextOutContainer.clear();</span>
-<span class="fc" id="L304">		edgeNextInContainer.clear();</span>
-<span class="fc" id="L305">		edgePrevOutContainer.clear();</span>
-<span class="fc" id="L306">		edgePrevInContainer.clear();</span>
+<span class="fc" id="L301">		edgeNextOutContainer.clear();</span>
+<span class="fc" id="L302">		edgeNextInContainer.clear();</span>
+<span class="fc" id="L303">		edgePrevOutContainer.clear();</span>
+<span class="fc" id="L304">		edgePrevInContainer.clear();</span>
 
-<span class="fc" id="L308">		edgesHeadOutContainer.clear();</span>
-<span class="fc" id="L309">		edgesHeadInContainer.clear();</span>
-<span class="fc" id="L310">		edgesOutNumContainer.clear();</span>
-<span class="fc" id="L311">		edgesInNumContainer.clear();</span>
+<span class="fc" id="L306">		edgesHeadOutContainer.clear();</span>
+<span class="fc" id="L307">		edgesHeadInContainer.clear();</span>
+<span class="fc" id="L308">		edgesOutNumContainer.clear();</span>
+<span class="fc" id="L309">		edgesInNumContainer.clear();</span>
 
-<span class="fc" id="L313">		super.clearEdges();</span>
-<span class="fc" id="L314">	}</span>
+<span class="fc" id="L311">		super.clearEdges();</span>
+<span class="fc" id="L312">	}</span>
 
 	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutDirected {
-<span class="fc" id="L317">		EdgeSetOut(int source) {</span>
-<span class="fc" id="L318">			super(source);</span>
-<span class="fc" id="L319">		}</span>
+<span class="fc" id="L315">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L316">			super(source);</span>
+<span class="fc" id="L317">		}</span>
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L323">			return new EdgeIterOut(edgesOutHead[source]);</span>
+<span class="fc" id="L321">			return new EdgeIterOut(edgesOutHead[source]);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L328">			return edgesOutNum[source];</span>
+<span class="fc" id="L326">			return edgesOutNum[source];</span>
 		}
 	}
 
 	private class EdgeSetIn extends IndexGraphBase.EdgeSetInDirected {
-<span class="fc" id="L333">		EdgeSetIn(int target) {</span>
-<span class="fc" id="L334">			super(target);</span>
-<span class="fc" id="L335">		}</span>
+<span class="fc" id="L331">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L332">			super(target);</span>
+<span class="fc" id="L333">		}</span>
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L339">			return new EdgeIterIn(edgesInHead[target]);</span>
+<span class="fc" id="L337">			return new EdgeIterIn(edgesInHead[target]);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L344">			return edgesInNum[target];</span>
+<span class="fc" id="L342">			return edgesInNum[target];</span>
 		}
 	}
 
 	private abstract class EdgeIterImpl extends GraphLinkedAbstract.EdgeItr {
-<span class="fc" id="L349">		EdgeIterImpl(int p) {</span>
-<span class="fc" id="L350">			super(p);</span>
-<span class="fc" id="L351">		}</span>
+<span class="fc" id="L347">		EdgeIterImpl(int p) {</span>
+<span class="fc" id="L348">			super(p);</span>
+<span class="fc" id="L349">		}</span>
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L355">			return GraphLinkedDirected.this.source(last);</span>
+<span class="fc" id="L353">			return GraphLinkedDirected.this.source(last);</span>
 		}
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L360">			return GraphLinkedDirected.this.target(last);</span>
+<span class="fc" id="L358">			return GraphLinkedDirected.this.target(last);</span>
 		}
 	}
 
 	private class EdgeIterOut extends EdgeIterImpl {
-<span class="fc" id="L365">		EdgeIterOut(int p) {</span>
-<span class="fc" id="L366">			super(p);</span>
-<span class="fc" id="L367">		}</span>
+<span class="fc" id="L363">		EdgeIterOut(int p) {</span>
+<span class="fc" id="L364">			super(p);</span>
+<span class="fc" id="L365">		}</span>
 
 		@Override
 		int nextEdge(int n) {
-<span class="fc" id="L371">			return edgeNextOut[n];</span>
+<span class="fc" id="L369">			return edgeNextOut[n];</span>
 		}
 	}
 
 	private class EdgeIterIn extends EdgeIterImpl {
-<span class="fc" id="L376">		EdgeIterIn(int p) {</span>
-<span class="fc" id="L377">			super(p);</span>
-<span class="fc" id="L378">		}</span>
+<span class="fc" id="L374">		EdgeIterIn(int p) {</span>
+<span class="fc" id="L375">			super(p);</span>
+<span class="fc" id="L376">		}</span>
 
 		@Override
 		int nextEdge(int n) {
-<span class="fc" id="L382">			return edgeNextIn[n];</span>
+<span class="fc" id="L380">			return edgeNextIn[n];</span>
 		}
 	}
 

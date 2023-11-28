@@ -101,10 +101,10 @@ abstract class IndexGraphBase extends GraphBase&lt;Integer, Integer&gt; implemen
 <span class="fc" id="L101">		int v = endpoints2Target(endpoints);</span>
 <span class="fc bfc" id="L102" title="All 2 branches covered.">		if (endpoint == u) {</span>
 <span class="fc" id="L103">			return v;</span>
-<span class="pc bpc" id="L104" title="1 of 2 branches missed.">		} else if (endpoint == v) {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">		} else if (endpoint == v) {</span>
 <span class="fc" id="L105">			return u;</span>
 		} else {
-<span class="nc" id="L107">			throw new IllegalArgumentException(&quot;The given vertex (idx=&quot; + endpoint</span>
+<span class="fc" id="L107">			throw new IllegalArgumentException(&quot;The given vertex (idx=&quot; + endpoint</span>
 					+ &quot;) is not an endpoint of the edge (idx=&quot; + u + &quot;, idx=&quot; + v + &quot;)&quot;);
 		}
 	}

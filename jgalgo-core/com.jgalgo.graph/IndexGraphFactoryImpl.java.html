@@ -233,7 +233,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 				@Override
 				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-<span class="nc" id="L236">					return new GraphHashmapMultiDirected(selfEdges, builder);</span>
+<span class="fc" id="L236">					return new GraphHashmapMultiDirected(selfEdges, builder);</span>
 				}
 <span class="fc" id="L238">			} : new Impl() {</span>
 
@@ -249,7 +249,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 				@Override
 				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-<span class="nc" id="L252">					return new GraphHashmapMultiUndirected(selfEdges, builder);</span>
+<span class="fc" id="L252">					return new GraphHashmapMultiUndirected(selfEdges, builder);</span>
 				}
 			};
 		};

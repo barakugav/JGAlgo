@@ -136,9 +136,9 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 
 	@Override
 	public void clearEdges() {
-<span class="pc bpc" id="L139" title="1 of 2 branches missed.">		for (int m = edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L140">			int u = source(e), v = target(e);</span>
-<span class="nc" id="L141">			edges[u].data[v] = EdgeNone;</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">		for (int m = edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L140">			int u = source(e), v = target(e);</span>
+<span class="fc" id="L141">			edges[u].data[v] = EdgeNone;</span>
 		}
 <span class="fc" id="L143">		edgesOutNumContainer.clear();</span>
 <span class="fc" id="L144">		edgesInNumContainer.clear();</span>
@@ -146,49 +146,51 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 <span class="fc" id="L146">	}</span>
 
 	@Override
-	public void reverseEdge(int edge) {
+	public void moveEdge(int edge, int newSource, int newTarget) {
 <span class="fc" id="L150">		checkEdge(edge);</span>
-<span class="fc" id="L151">		int u = source(edge), v = target(edge);</span>
-<span class="pc bpc" id="L152" title="1 of 4 branches missed.">		if (edges[v].data[u] != EdgeNone &amp;&amp; u != v)</span>
-<span class="nc" id="L153">			throw new IllegalArgumentException(&quot;parallel edges are not supported&quot;);</span>
-<span class="fc" id="L154">		edges[u].data[v] = EdgeNone;</span>
-<span class="fc" id="L155">		edges[v].data[u] = edge;</span>
-<span class="fc" id="L156">		edgesOutNum[u]--;</span>
-<span class="fc" id="L157">		edgesInNum[v]--;</span>
-<span class="fc" id="L158">		edgesOutNum[v]++;</span>
-<span class="fc" id="L159">		edgesInNum[u]++;</span>
-<span class="fc" id="L160">		super.reverseEdge0(edge);</span>
-<span class="fc" id="L161">	}</span>
+<span class="fc" id="L151">		int oldSource = source(edge), oldTarget = target(edge);</span>
+<span class="pc bpc" id="L152" title="1 of 4 branches missed.">		if (oldSource == newSource &amp;&amp; oldTarget == newTarget)</span>
+<span class="fc" id="L153">			return;</span>
+<span class="fc" id="L154">		checkNewEdgeEndpoints(newSource, newTarget);</span>
+
+<span class="fc" id="L156">		edges[oldSource].data[oldTarget] = EdgeNone;</span>
+<span class="fc" id="L157">		edgesOutNum[oldSource]--;</span>
+<span class="fc" id="L158">		edgesInNum[oldTarget]--;</span>
+<span class="fc" id="L159">		edges[newSource].data[newTarget] = edge;</span>
+<span class="fc" id="L160">		edgesOutNum[newSource]++;</span>
+<span class="fc" id="L161">		edgesInNum[newTarget]++;</span>
+<span class="fc" id="L162">		setEndpoints(edge, newSource, newTarget);</span>
+<span class="fc" id="L163">	}</span>
 
 	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutDirected {
-<span class="fc" id="L164">		EdgeSetOut(int source) {</span>
-<span class="fc" id="L165">			super(source);</span>
-<span class="fc" id="L166">		}</span>
+<span class="fc" id="L166">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L167">			super(source);</span>
+<span class="fc" id="L168">		}</span>
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L170">			return new EdgeIterOut(source);</span>
+<span class="fc" id="L172">			return new EdgeIterOut(source);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L175">			return edgesOutNum[source];</span>
+<span class="fc" id="L177">			return edgesOutNum[source];</span>
 		}
 	}
 
 	private class EdgeSetIn extends IndexGraphBase.EdgeSetInDirected {
-<span class="fc" id="L180">		EdgeSetIn(int target) {</span>
-<span class="fc" id="L181">			super(target);</span>
-<span class="fc" id="L182">		}</span>
+<span class="fc" id="L182">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L183">			super(target);</span>
+<span class="fc" id="L184">		}</span>
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L186">			return new EdgeIterInDirected(target);</span>
+<span class="fc" id="L188">			return new EdgeIterInDirected(target);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L191">			return edgesInNum[target];</span>
+<span class="fc" id="L193">			return edgesInNum[target];</span>
 		}
 	}
 

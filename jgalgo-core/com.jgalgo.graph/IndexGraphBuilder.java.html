@@ -52,7 +52,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	@Deprecated
 	@Override
 	default void addVertex(int vertex) {
-<span class="nc" id="L55">		throw new UnsupportedOperationException(</span>
+<span class="fc" id="L55">		throw new UnsupportedOperationException(</span>
 				&quot;Index graph builder does not support adding vertices with user-chosen IDs&quot;);
 	}
 
@@ -269,8 +269,8 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return   a builder initialized with the given graph vertices and edges, without the original graph
 	 *           vertices/edges weights.
 	 */
-	static IndexGraphBuilder newFrom(IndexGraph g) {
-<span class="nc" id="L273">		return newFrom(g, false, false);</span>
+	static IndexGraphBuilder fromGraph(IndexGraph g) {
+<span class="fc" id="L273">		return fromGraph(g, false, false);</span>
 	}
 
 	/**
@@ -287,8 +287,8 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return                     a builder initialized with the given graph vertices and edges, with/without the
 	 *                             original graph vertices/edges weights.
 	 */
-	static IndexGraphBuilder newFrom(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L291">		return IndexGraphBuilderImpl.newFrom(g, copyVerticesWeights, copyEdgesWeights);</span>
+	static IndexGraphBuilder fromGraph(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L291">		return new IndexGraphBuilderImpl(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 }

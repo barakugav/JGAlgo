@@ -211,16 +211,6 @@ public interface IndexGraph extends IntGraph {
 	 * method should not be called. Use the original graph instead.
 	 */
 	@Override
-	void reverseEdge(int edge);
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * &lt;p&gt;
-	 * If this index graph object was obtained from a regular {@link Graph} using {@link Graph#indexGraph()}, this
-	 * method should not be called. Use the original graph instead.
-	 */
-	@Override
 	void clear();
 
 	/**
@@ -242,7 +232,7 @@ public interface IndexGraph extends IntGraph {
 	 */
 	@Override
 	default &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type) {
-<span class="fc" id="L245">		return IntGraph.super.addVerticesWeights(key, type);</span>
+<span class="fc" id="L235">		return IntGraph.super.addVerticesWeights(key, type);</span>
 	}
 
 	/**
@@ -274,7 +264,7 @@ public interface IndexGraph extends IntGraph {
 	 */
 	@Override
 	default &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type) {
-<span class="fc" id="L277">		return IntGraph.super.addEdgesWeights(key, type);</span>
+<span class="fc" id="L267">		return IntGraph.super.addEdgesWeights(key, type);</span>
 	}
 
 	/**
@@ -359,7 +349,7 @@ public interface IndexGraph extends IntGraph {
 	@Override
 	@Deprecated
 	default IndexGraph indexGraph() {
-<span class="fc" id="L362">		return this;</span>
+<span class="fc" id="L352">		return this;</span>
 	}
 
 	/**
@@ -382,41 +372,41 @@ public interface IndexGraph extends IntGraph {
 
 	@Override
 	default IndexGraph copy() {
-<span class="fc" id="L385">		return IndexGraphFactory.newFrom(this).newCopyOf(this);</span>
+<span class="fc" id="L375">		return IndexGraphFactory.newFrom(this).newCopyOf(this);</span>
 	}
 
 	@Override
 	default IndexGraph copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L390">		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L380">		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	@Override
 	default IndexGraph immutableCopy() {
-<span class="fc" id="L395">		return immutableCopy(false, false);</span>
+<span class="fc" id="L385">		return immutableCopy(false, false);</span>
 	}
 
 	@Override
 	default IndexGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc bfc" id="L400" title="All 2 branches covered.">		if (isDirected()) {</span>
-<span class="fc" id="L401">			return new GraphCsrDirected(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc bfc" id="L390" title="All 2 branches covered.">		if (isDirected()) {</span>
+<span class="fc" id="L391">			return new GraphCsrDirected(this, copyVerticesWeights, copyEdgesWeights);</span>
 		} else {
-<span class="fc" id="L403">			return new GraphCsrUndirected(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L393">			return new GraphCsrUndirected(this, copyVerticesWeights, copyEdgesWeights);</span>
 		}
 	}
 
 	@Override
 	default IndexGraph immutableView() {
-<span class="fc" id="L409">		return (IndexGraph) IntGraph.super.immutableView();</span>
+<span class="fc" id="L399">		return (IndexGraph) IntGraph.super.immutableView();</span>
 	}
 
 	@Override
 	default IndexGraph reverseView() {
-<span class="fc" id="L414">		return (IndexGraph) IntGraph.super.reverseView();</span>
+<span class="fc" id="L404">		return (IndexGraph) IntGraph.super.reverseView();</span>
 	}
 
 	@Override
 	default IndexGraph undirectedView() {
-<span class="fc" id="L419">		return (IndexGraph) IntGraph.super.undirectedView();</span>
+<span class="fc" id="L409">		return (IndexGraph) IntGraph.super.undirectedView();</span>
 	}
 
 	/**
@@ -429,7 +419,7 @@ public interface IndexGraph extends IntGraph {
 	 * @return a new undirected empty index graph
 	 */
 	static IndexGraph newUndirected() {
-<span class="fc" id="L432">		return IndexGraphFactory.newUndirected().newGraph();</span>
+<span class="fc" id="L422">		return IndexGraphFactory.newUndirected().newGraph();</span>
 	}
 
 	/**
@@ -442,7 +432,7 @@ public interface IndexGraph extends IntGraph {
 	 * @return a new directed empty index graph
 	 */
 	static IndexGraph newDirected() {
-<span class="fc" id="L445">		return IndexGraphFactory.newDirected().newGraph();</span>
+<span class="fc" id="L435">		return IndexGraphFactory.newDirected().newGraph();</span>
 	}
 
 }

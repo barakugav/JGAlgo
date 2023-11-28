@@ -145,7 +145,6 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 		/* G is the graph of strong connected components of gNeg, each vertex is a super vertex of gNeg */
 <span class="fc" id="L147">		IndexGraph G = IndexGraphFactory.newDirected().allowParallelEdges().expectedVerticesNum(n + 2).newGraph();</span>
-<span class="fc" id="L148">		IWeightsInt GWeights = G.addEdgesWeights(&quot;weights&quot;, int.class, Integer.valueOf(-1));</span>
 		/* Two fake vertices used to add 0-edges and (r-i)-edges to all other (super) vertices */
 
 		/*
@@ -153,44 +152,45 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		 * find the potential values, and most of the time is spent in the long-path flow. In these cases, we prefer the
 		 * big-layer flow.
 		 */
-<span class="fc" id="L156">		final double density = (double) g.edges().size() / n * (n + 1) / 2;</span>
-<span class="fc" id="L157">		final double alpha = Math.max(0.25, Math.min(3 / -Math.log(density), 2));</span>
+<span class="fc" id="L155">		final double density = (double) g.edges().size() / n * (n + 1) / 2;</span>
+<span class="fc" id="L156">		final double alpha = Math.max(0.25, Math.min(3 / -Math.log(density), 2));</span>
 
 		/* Run log(-minWeight) scaling iterations */
-<span class="fc" id="L160">		final int minWeightWordsize = JGAlgoUtils.log2(-minWeight);</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">		for (int weightMask = minWeightWordsize; weightMask &gt;= 0; weightMask--) {</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">			if (weightMask != minWeightWordsize)</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L164">					potential[v] *= 2;</span>
-<span class="fc" id="L165">			diagnostics.scalingIteration();</span>
+<span class="fc" id="L159">		final int minWeightWordsize = JGAlgoUtils.log2(-minWeight);</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">		for (int weightMask = minWeightWordsize; weightMask &gt;= 0; weightMask--) {</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">			if (weightMask != minWeightWordsize)</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L163">					potential[v] *= 2;</span>
+<span class="fc" id="L164">			diagnostics.scalingIteration();</span>
 
 			/* updated potential function until there are no more negative vertices with current weight function */
 			/* we do at most \sqrt{n} such iterations */
 			for (;;) {
-<span class="fc" id="L170">				diagnostics.potentialIteration();</span>
+<span class="fc" id="L169">				diagnostics.potentialIteration();</span>
 				/* update current weight function according to latest potential */
-<span class="fc bfc" id="L172" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L173">					w[e] = calcWeightWithPotential(g, e, w0, potential, weightMask);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L172">					w[e] = calcWeightWithPotential(g, e, w0, potential, weightMask);</span>
 
 				/* populate gNeg with all 0,-1 edges */
-<span class="fc" id="L176">				gNeg.clearEdges();</span>
-<span class="fc bfc" id="L177" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc bfc" id="L178" title="All 2 branches covered.">					if (w[e] &lt;= 0) {</span>
-<span class="fc" id="L179">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L180" title="All 2 branches covered.">						if (u != v)</span>
-<span class="fc" id="L181">							gNegEdgeRefs[gNeg.addEdge(u, v)] = e;</span>
+<span class="fc" id="L175">				gNeg.clearEdges();</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">					if (w[e] &lt;= 0) {</span>
+<span class="fc" id="L178">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">						if (u != v)</span>
+<span class="fc" id="L180">							gNegEdgeRefs[gNeg.addEdge(u, v)] = e;</span>
 					}
 				}
 
 				/* Find all strong connected components in the graph */
-<span class="fc" id="L186">				IVertexPartition connectivityRes = (IVertexPartition) ccAlg.findStronglyConnectedComponents(gNeg);</span>
-<span class="fc" id="L187">				final int N = connectivityRes.numberOfBlocks();</span>
+<span class="fc" id="L185">				IVertexPartition connectivityRes = (IVertexPartition) ccAlg.findStronglyConnectedComponents(gNeg);</span>
+<span class="fc" id="L186">				final int N = connectivityRes.numberOfBlocks();</span>
 
 				/*
 				 * Contract each strong connected component and search for a negative edge within it, if found -
 				 * negative cycle found
 				 */
-<span class="fc" id="L193">				G.clear();</span>
+<span class="fc" id="L192">				G.clear();</span>
+<span class="fc" id="L193">				IWeightsInt GWeights = G.addEdgesWeights(&quot;weights&quot;, int.class, Integer.valueOf(-1));</span>
 <span class="fc bfc" id="L194" title="All 2 branches covered.">				for (int U = 0; U &lt; N; U++)</span>
 <span class="fc" id="L195">					G.addVertex();</span>
 <span class="fc bfc" id="L196" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>

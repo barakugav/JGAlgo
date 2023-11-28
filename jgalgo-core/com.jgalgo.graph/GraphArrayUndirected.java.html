@@ -201,86 +201,95 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 <span class="fc" id="L201">	}</span>
 
 	@Override
-	public void reverseEdge(int edge) {
-		// Do nothing
-<span class="nc" id="L206">	}</span>
+	public void moveEdge(int edge, int newSource, int newTarget) {
+<span class="fc" id="L205">		checkEdge(edge);</span>
+<span class="fc" id="L206">		checkNewEdgeEndpoints(newSource, newTarget);</span>
+<span class="fc" id="L207">		int oldSource = source(edge), oldTarget = target(edge);</span>
+<span class="fc" id="L208">		removeEdgeFromList(edges, edgesNum, oldSource, edge);</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">		if (oldSource != oldTarget)</span>
+<span class="fc" id="L210">			removeEdgeFromList(edges, edgesNum, oldTarget, edge);</span>
+<span class="fc" id="L211">		addEdgeToList(edges, edgesNum, newSource, edge);</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">		if (newSource != newTarget)</span>
+<span class="fc" id="L213">			addEdgeToList(edges, edgesNum, newTarget, edge);</span>
+<span class="fc" id="L214">		setEndpoints(edge, newSource, newTarget);</span>
+<span class="fc" id="L215">	}</span>
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L210">		edgesNumContainer.clear();</span>
-<span class="fc" id="L211">		super.clearEdges();</span>
-<span class="fc" id="L212">	}</span>
+<span class="fc" id="L219">		edgesNumContainer.clear();</span>
+<span class="fc" id="L220">		super.clearEdges();</span>
+<span class="fc" id="L221">	}</span>
 
 	@Override
 	public void clear() {
-<span class="fc" id="L216">		super.clear();</span>
+<span class="fc" id="L225">		super.clear();</span>
 		// Don't clear allocated edges arrays
 		// edges.clear();
-<span class="fc" id="L219">	}</span>
+<span class="fc" id="L228">	}</span>
 
 	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutUndirected {
-<span class="fc" id="L222">		EdgeSetOut(int source) {</span>
-<span class="fc" id="L223">			super(source);</span>
-<span class="fc" id="L224">		}</span>
+<span class="fc" id="L231">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L232">			super(source);</span>
+<span class="fc" id="L233">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L228">			return edgesNum[source];</span>
+<span class="fc" id="L237">			return edgesNum[source];</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc bfc" id="L233" title="All 2 branches covered.">			return size() == 0;</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">			return size() == 0;</span>
 		}
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L238">			return new EdgeIterOut(source, edges[source], edgesNum[source]);</span>
+<span class="fc" id="L247">			return new EdgeIterOut(source, edges[source], edgesNum[source]);</span>
 		}
 	}
 
 	private class EdgeSetIn extends IndexGraphBase.EdgeSetInUndirected {
-<span class="fc" id="L243">		EdgeSetIn(int target) {</span>
-<span class="fc" id="L244">			super(target);</span>
-<span class="fc" id="L245">		}</span>
+<span class="fc" id="L252">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L253">			super(target);</span>
+<span class="fc" id="L254">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L249">			return edgesNum[target];</span>
+<span class="fc" id="L258">			return edgesNum[target];</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc bfc" id="L254" title="All 2 branches covered.">			return size() == 0;</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">			return size() == 0;</span>
 		}
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L259">			return new EdgeIterIn(target, edges[target], edgesNum[target]);</span>
+<span class="fc" id="L268">			return new EdgeIterIn(target, edges[target], edgesNum[target]);</span>
 		}
 	}
 
 	private class EdgeIterOut extends GraphArrayAbstract.EdgeIterOut {
 
-<span class="fc" id="L265">		EdgeIterOut(int source, int[] edges, int count) {</span>
-<span class="fc" id="L266">			super(source, edges, count);</span>
-<span class="fc" id="L267">		}</span>
+<span class="fc" id="L274">		EdgeIterOut(int source, int[] edges, int count) {</span>
+<span class="fc" id="L275">			super(source, edges, count);</span>
+<span class="fc" id="L276">		}</span>
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L271">			return edgeEndpoint(lastEdge, source);</span>
+<span class="fc" id="L280">			return edgeEndpoint(lastEdge, source);</span>
 		}
 	}
 
 	private class EdgeIterIn extends GraphArrayAbstract.EdgeIterIn {
 
-<span class="fc" id="L277">		EdgeIterIn(int target, int[] edges, int count) {</span>
-<span class="fc" id="L278">			super(target, edges, count);</span>
-<span class="fc" id="L279">		}</span>
+<span class="fc" id="L286">		EdgeIterIn(int target, int[] edges, int count) {</span>
+<span class="fc" id="L287">			super(target, edges, count);</span>
+<span class="fc" id="L288">		}</span>
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L283">			return edgeEndpoint(lastEdge, target);</span>
+<span class="fc" id="L292">			return edgeEndpoint(lastEdge, target);</span>
 		}
 	}
 

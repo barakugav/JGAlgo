@@ -158,9 +158,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L158">		allocatedMem.allocateForLightEdges(n, treeCount);</span>
 
 <span class="fc" id="L160">		IndexGraph[] trees = allocatedMem.trees;</span>
-<span class="fc" id="L161">		IWeightsDouble[] treeData = allocatedMem.treeData;</span>
+<span class="fc" id="L161">		IWeightsDouble[] treeData = new IWeightsDouble[treeCount];</span>
 <span class="fc bfc" id="L162" title="All 2 branches covered.">		for (int t = 0; t &lt; treeCount; t++)</span>
-<span class="fc" id="L163">			treeData[t] = trees[t].getEdgesWeights(&quot;weight&quot;);</span>
+<span class="fc" id="L163">			treeData[t] = trees[t].addEdgesWeights(&quot;weight&quot;, double.class);</span>
 
 <span class="fc" id="L165">		int[] vToVnew = allocatedMem.vToVnew;</span>
 <span class="fc bfc" id="L166" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
@@ -215,35 +215,29 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="fc" id="L216">		IndexGraph[] trees = MemoryReuse.EmptyGraphArr;</span>
 <span class="fc" id="L217">		int[] vToVnew = IntArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L218">		IWeightsDouble[] treeData = MemoryReuse.EmptyWeightsDoubleArr;</span>
 
-<span class="fc" id="L220">		TreePathMaxima.IQueries[] tpmQueries = MemoryReuse.EmptyTpmQueriesArr;</span>
-<span class="fc" id="L221">		TreePathMaxima.IResult[] tpmResults = MemoryReuse.EmptyTpmResultArr;</span>
+<span class="fc" id="L219">		TreePathMaxima.IQueries[] tpmQueries = MemoryReuse.EmptyTpmQueriesArr;</span>
+<span class="fc" id="L220">		TreePathMaxima.IResult[] tpmResults = MemoryReuse.EmptyTpmResultArr;</span>
 
 		void allocateForRandSubGraph() {
-<span class="fc" id="L224">			edgeList = MemoryReuse.ensureAllocated(edgeList, IntArrayList::new);</span>
-<span class="fc" id="L225">		}</span>
+<span class="fc" id="L223">			edgeList = MemoryReuse.ensureAllocated(edgeList, IntArrayList::new);</span>
+<span class="fc" id="L224">		}</span>
 
 		void allocateForLightEdges(int n, int treeCount) {
-<span class="fc" id="L228">			edgeList = MemoryReuse.ensureAllocated(edgeList, IntArrayList::new);</span>
+<span class="fc" id="L227">			edgeList = MemoryReuse.ensureAllocated(edgeList, IntArrayList::new);</span>
 
-<span class="fc" id="L230">			trees = MemoryReuse.ensureLength(trees, treeCount);</span>
+<span class="fc" id="L229">			trees = MemoryReuse.ensureLength(trees, treeCount);</span>
+<span class="fc" id="L230">			vToVnew = MemoryReuse.ensureLength(vToVnew, n);</span>
 
-<span class="fc" id="L232">			treeData = MemoryReuse.ensureLength(treeData, treeCount);</span>
-<span class="fc" id="L233">			vToVnew = MemoryReuse.ensureLength(vToVnew, n);</span>
+<span class="fc" id="L232">			tpmQueries = MemoryReuse.ensureLength(tpmQueries, treeCount);</span>
+<span class="fc" id="L233">			tpmResults = MemoryReuse.ensureLength(tpmResults, treeCount);</span>
 
-<span class="fc" id="L235">			tpmQueries = MemoryReuse.ensureLength(tpmQueries, treeCount);</span>
-<span class="fc" id="L236">			tpmResults = MemoryReuse.ensureLength(tpmResults, treeCount);</span>
-
-<span class="fc bfc" id="L238" title="All 2 branches covered.">			for (int tIdx = 0; tIdx &lt; treeCount; tIdx++) {</span>
-<span class="fc" id="L239">				IndexGraph tree =</span>
-<span class="fc" id="L240">						trees[tIdx] = MemoryReuse.ensureAllocated(trees[tIdx], () -&gt; IndexGraph.newUndirected());</span>
-<span class="fc" id="L241">				treeData[tIdx] =</span>
-<span class="fc" id="L242">						MemoryReuse.ensureAllocated(treeData[tIdx], () -&gt; tree.addEdgesWeights(&quot;weight&quot;, double.class));</span>
-<span class="fc" id="L243">				tpmQueries[tIdx] =</span>
-<span class="fc" id="L244">						MemoryReuse.ensureAllocated(tpmQueries[tIdx], () -&gt; TreePathMaxima.IQueries.newInstance());</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">			for (int tIdx = 0; tIdx &lt; treeCount; tIdx++) {</span>
+<span class="fc" id="L236">				trees[tIdx] = MemoryReuse.ensureAllocated(trees[tIdx], () -&gt; IndexGraph.newUndirected());</span>
+<span class="fc" id="L237">				tpmQueries[tIdx] =</span>
+<span class="fc" id="L238">						MemoryReuse.ensureAllocated(tpmQueries[tIdx], () -&gt; TreePathMaxima.IQueries.newInstance());</span>
 			}
-<span class="fc" id="L246">		}</span>
+<span class="fc" id="L240">		}</span>
 	}
 
 }
