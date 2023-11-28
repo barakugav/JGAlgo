@@ -19,11 +19,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UncheckedIOException;
-import java.util.ArrayList;
-import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.ObjIntConsumer;
+import java.util.function.Supplier;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeights;
+import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.IWeightsByte;
+import com.jgalgo.graph.IWeightsChar;
 import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IWeightsFloat;
 import com.jgalgo.graph.IWeightsInt;
@@ -32,338 +37,271 @@ import com.jgalgo.graph.IWeightsObj;
 import com.jgalgo.graph.IWeightsShort;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
+import com.jgalgo.graph.Weights;
 
+/**
+ * Reads a graph from a file in Leda format.
+ *
+ * <p>
+ * The <a href=https://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html>LEDA
+ * format</a> is a simple format for both directed and undirected graphs, used by the <a
+ * href=https://en.wikipedia.org/wiki/Library_of_Efficient_Data_types_and_Algorithms>LEDA</a> library. Vertices are
+ * numbered from 1 to n, and edges are numbered from 1 to m. It support a single weight for vertices and a single weight
+ * for edges. The weights can be any primitive, or a string.
+ *
+ * <p>
+ * When the reader reads a graph from a file with weights, it will be added to the graph as a {@link Weights} object
+ * with key {@code "weight"}, for both vertices and edges. The weights are later available view
+ * {@link Graph#getVerticesWeights(String)}. To change the weights key, use {@link #setVerticesWeightsKey(String)} and
+ * {@link #setEdgesWeightsKey(String)}.
+ *
+ * @see    LedaGraphWriter
+ * @author Barak Ugav
+ */
 public class LedaGraphReader implements IGraphReader {
+
+	private String verticesWeightsKey = "weight";
+	private String edgesWeightsKey = "weight";
+
+	/**
+	 * Create a new reader.
+	 */
+	public LedaGraphReader() {}
+
+	/**
+	 * Sets the key of the vertices weights that will be read.
+	 *
+	 * <p>
+	 * When the reader reads a graph with vertices weights, {@link Weights} will be added to the built graph. By
+	 * default, the weights will be added with key "weight". Use this method to specify a different key.
+	 *
+	 * @param verticesWeightsKey the key of the vertices weights that will be read
+	 */
+	public void setVerticesWeightsKey(String verticesWeightsKey) {
+		this.verticesWeightsKey = Objects.requireNonNull(verticesWeightsKey);
+	}
+
+	/**
+	 * Sets the key of the edges weights that will be read.
+	 *
+	 * <p>
+	 * When the reader reads a graph with edges weights, {@link Weights} will be added to the built graph. By default,
+	 * the weights will be added with key "weight". Use this method to specify a different key.
+	 *
+	 * @param edgesWeightsKey the key of the edges weights that will be read
+	 */
+	public void setEdgesWeightsKey(String edgesWeightsKey) {
+		this.edgesWeightsKey = Objects.requireNonNull(edgesWeightsKey);
+	}
 
 	@Override
 	public IntGraphBuilder readIntoBuilder(Reader reader) {
-		IntGraphBuilder builder = null;
+		try (BufferedReader br = GraphReaders.bufferedReader(reader)) {
+			Iterator<String> lineIter = GraphReaders.lines(br, true).iterator();
+			Supplier<String> next = () -> {
+				while (lineIter.hasNext()) {
+					String line = lineIter.next();
+					if (!line.isEmpty() && !line.startsWith("#"))
+						return line;
+				}
+				return null;
+			};
 
-		// nodes keep the label/name of each node/vertex
-		// we do not need it, but for future use
-		ArrayList<String> nodes = new ArrayList<>();
+			String line1 = next.get();
+			if (line1 == null)
+				throw new IllegalArgumentException("Leda file format: empty file");
+			if (!line1.equals("LEDA.GRAPH"))
+				throw new IllegalArgumentException("Leda file format: first non-comment line must equals LEDA.GRAPH");
 
-		// Pattern edgePattern to regexp the edge line
-		// Pattern.compile("^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+\\{\\|(.*)\\|\\}\\s*$");
-		Pattern edgePattern = Pattern.compile("^\\s*(\\d+)\\s+(\\d+)\\s+(\\d+)\\s+(\\S\\S.*\\S\\S)\\s*$");
+			String verticesWeightsStr = next.get();
+			if (verticesWeightsStr == null)
+				throw new IllegalArgumentException("Leda file format: invalid header");
+			Class<?> verticesWeightsType = ledaTypeStrToClass(verticesWeightsStr);
 
-		try (BufferedReader br =
-				reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader)) {
-			// these are the oly weights format we support
-			Set<String> hashSupportedTypes = Set.of("void", "int", "short", "long", "float", "double", "string");
-			int lineNumber = 0; // sequence of lines is important!
-			boolean inSection = false;
-			int numberOfSections = 0; // 1 is nodes section, 2 is edges section
-			int sectionElementsNum = -1;
-			// elementIdxInSection will count from 1,2,3,4...,sectionElementsNum
-			int elementIdxInSection = -1;
-			String verticesWeightsType = null; // can be void,string, int etc
-			String edgesWeightsType = null; // can be void,string, int etc
+			String edgesWeightsStr = next.get();
+			if (edgesWeightsStr == null)
+				throw new IllegalArgumentException("Leda file format: invalid header");
+			Class<?> edgesWeightsType = ledaTypeStrToClass(edgesWeightsStr);
+
+			String directedOrUndirected = next.get();
+			if (directedOrUndirected == null)
+				throw new IllegalArgumentException("Leda file format: invalid header");
+			if (!List.of("-1", "-2").contains(directedOrUndirected))
+				throw new IllegalArgumentException("Leda file format: 4th non-comment line must equals -1 or -2. "
+						+ "-1 is Directed graph. -2 is Undirected graph.");
+			boolean directed = "-1".equals(directedOrUndirected);
+			IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
+			IntGraphBuilder builder = factory.allowSelfEdges().newBuilder();
+
 			IWeights<?> verticesWeights = null;
 			IWeights<?> edgesWeights = null;
+			if (verticesWeightsType != null)
+				verticesWeights = (IWeights<?>) builder.addVerticesWeights(verticesWeightsKey, verticesWeightsType);
+			if (edgesWeightsType != null)
+				edgesWeights = (IWeights<?>) builder.addEdgesWeights(edgesWeightsKey, edgesWeightsType);
+			ObjIntConsumer<String> verticesWeightsReader = weightsReader(verticesWeights);
+			ObjIntConsumer<String> edgesWeightsReader = weightsReader(edgesWeights);
 
-			// read all lines from file
-			for (String line; (line = br.readLine()) != null;) {
-				line = line.trim();
-				if (line.length() == 0)
-					continue; // skip empty lines
-				// # This is a comment line
-				if (line.toLowerCase().startsWith("#"))
-					continue; // skip comment lines
-				lineNumber++;
-
-				// LEDA.GRAPH
-				if (lineNumber == 1) {
-					if (line.toUpperCase().startsWith("LEDA.GRAPH"))
-						continue; // skip LEDA.GRAPH
-					throw new IllegalArgumentException(
-							"Leda file format: first non-comment line must equals LEDA.GRAPH");
-				}
-
-				if (lineNumber == 2) {
-					verticesWeightsType = line.toLowerCase();
-					if (!hashSupportedTypes.contains(verticesWeightsType))
-						throw new IllegalArgumentException(
-								"Leda file format: unsupported info/weight to vertices/nodes");
-					continue; // skip 2nd - label string
-				}
-
-				if (lineNumber == 3) {
-					edgesWeightsType = line.toLowerCase();
-					if (!hashSupportedTypes.contains(edgesWeightsType))
-						throw new IllegalArgumentException("Leda file format: unsupported info/weight to edges");
-					continue; // skip 3nd - label string
-				}
-
-				if (lineNumber == 4) {
-					// The fourth line specifies if the graph is
-					// either directed (-1)
-					// or undirected (-2).
-					switch (line) {
-						case "-1":
-							builder = IntGraphFactory.newDirected().allowSelfEdges().newBuilder();
-							break;
-						case "-2":
-							builder = IntGraphFactory.newUndirected().allowSelfEdges().newBuilder();
-							break;
-						default:
-							throw new IllegalArgumentException(
-									"Leda file format: 4th non-comment line must equals -1 or -2. "
-											+ "-1 is Directed graph. -2 is Undirected graph.");
-					}
-
-					switch (verticesWeightsType) {
-						case "int":
-							verticesWeights = (IWeights<?>) builder.addVerticesWeights("weightsKey", int.class);
-							break;
-						case "short":
-							verticesWeights = (IWeights<?>) builder.addVerticesWeights("weightsKey", short.class);
-							break;
-						case "long":
-							verticesWeights = (IWeights<?>) builder.addVerticesWeights("weightsKey", long.class);
-							break;
-						case "float":
-							verticesWeights = (IWeights<?>) builder.addVerticesWeights("weightsKey", float.class);
-							break;
-						case "double":
-							verticesWeights = (IWeights<?>) builder.addVerticesWeights("weightsKey", double.class);
-							break;
-						case "void":
-							break;
-						case "string":
-						default:
-							verticesWeights = (IWeights<?>) builder.addVerticesWeights("weightsKey", String.class);
-							break;
-					}
-
-					switch (edgesWeightsType) {
-						case "int":
-							edgesWeights = (IWeights<?>) builder.addEdgesWeights("weightsKey", int.class);
-							break;
-						case "short":
-							edgesWeights = (IWeights<?>) builder.addEdgesWeights("weightsKey", short.class);
-							break;
-						case "long":
-							edgesWeights = (IWeights<?>) builder.addEdgesWeights("weightsKey", long.class);
-							break;
-						case "float":
-							edgesWeights = (IWeights<?>) builder.addEdgesWeights("weightsKey", float.class);
-							break;
-						case "double":
-							edgesWeights = (IWeights<?>) builder.addEdgesWeights("weightsKey", double.class);
-							break;
-						case "void":
-							break;
-						case "string":
-						default:
-							edgesWeights = (IWeights<?>) builder.addEdgesWeights("weightsKey", String.class);
-							break;
-					}
-
-					continue;
-				}
-
-				if (!inSection) {
-					// this line must be the number of elements in this section
-					inSection = true;
-					numberOfSections++; // 1=nodes/vertices, 2=edges
-					elementIdxInSection = 0;
-					sectionElementsNum = -1;
-					try {
-						sectionElementsNum = Integer.parseInt(line);
-					} catch (Exception e) {
-						sectionElementsNum = -1;
-					}
-					if (sectionElementsNum < 0)
-						throw new IllegalArgumentException(
-								"Leda file format: number of elements must be non-negative integers.");
-					continue; // next
-				}
-
-				// we are inside a section
-				elementIdxInSection++;
-
-				// is this the nodes section?
-				if (numberOfSections == 1) {
-					// define node/vertex
-					// |{v1}| --> v1 is any label or name or identifier
-					// |{}| --> empty label or name or identifier
-					if (!line.startsWith("|{") || !line.endsWith("}|"))
-						throw new IllegalArgumentException(
-								"Leda file format: node/vertex error. must be |{any_name_label}| or |{}|.");
-					// get the label
-					String label = line.substring(2, line.length() - 2);
-					// debug
-					nodes.add(label);
-					final int id = builder.vertices().size() + 1; // 1,2,3...
-					builder.addVertex(id);
-
-					// record label/weight
-					switch (verticesWeightsType) {
-						case "int":
-							try {
-								int val = Integer.parseInt(label);
-								((IWeightsInt) verticesWeights).set(id, val);
-							} catch (Exception e) {
-								throw new IllegalArgumentException("Leda file format: vertex must have int info.");
-							}
-							break;
-						case "short":
-							try {
-								short val = Short.parseShort(label);
-								((IWeightsShort) verticesWeights).set(id, val);
-							} catch (Exception e) {
-								throw new IllegalArgumentException("Leda file format: vertex must have short info.");
-							}
-							break;
-						case "long":
-							try {
-								long val = Long.parseLong(label);
-								((IWeightsLong) verticesWeights).set(id, val);
-							} catch (Exception e) {
-								throw new IllegalArgumentException("Leda file format: vertex must have long info.");
-							}
-							break;
-						case "float":
-							try {
-								float val = Float.parseFloat(label);
-								((IWeightsFloat) verticesWeights).set(id, val);
-							} catch (Exception e) {
-								throw new IllegalArgumentException("Leda file format: vertex must have float info.");
-							}
-							break;
-						case "double":
-							try {
-								double val = Double.parseDouble(label);
-								((IWeightsDouble) verticesWeights).set(id, val);
-							} catch (Exception e) {
-								throw new IllegalArgumentException("Leda file format: vertex must have double info.");
-							}
-							break;
-						case "void":
-							break;
-						case "string":
-						default:
-							@SuppressWarnings("unchecked")
-							IWeightsObj<String> temp = (IWeightsObj<String>) verticesWeights;
-							temp.set(id, label);
-							break;
-					}
-
-					if (elementIdxInSection == sectionElementsNum) {
-						// we ended the current section
-						inSection = false;
-						elementIdxInSection = -1;
-						sectionElementsNum = -1;
-					}
-					continue;
-				}
-
-				if (numberOfSections == 3)
-					throw new IllegalArgumentException(
-							"Leda file format: too many parameers. 2nd section, the edges, is complete.");
-
-				// if (numberOfSections == 2)
-				// define edges
-				// edge definition consists of four space-separated parts:
-				// ==> the number of the source node
-				// ==> the number of the target node
-				// ==> the number of the reversal edge or 0, if no such edge is set
-				// ==> the information associated with the edge (cf. nodes section)
-
-				// We use regexp to parse line
-				final Matcher edgeMatcher = edgePattern.matcher(line);
-				if (!edgeMatcher.find())
-					throw new IllegalArgumentException("Leda file format: invalid edge. must have 4 parts.");
-
-				int fromVertex = Integer.parseInt(edgeMatcher.group(1));
-				int toVertex = Integer.parseInt(edgeMatcher.group(2));
-				// int reverseEdge = Integer.parseInt(edgeMatcher.group(3)); // not used right now
-				String label = edgeMatcher.group(4);
-
-				if (fromVertex < 1 //
-						|| toVertex < 1 //
-						|| fromVertex > nodes.size() //
-						|| toVertex > nodes.size())
-					throw new IllegalArgumentException(
-							"Leda file format: invalid edge. must be between 1 and num nodes/vertices.");
-
-				// |{v1}| --> v1 is any label or name or identifier
-				// |{}| --> empty label or name or identifier
-				if (!label.startsWith("|{") || !label.endsWith("}|"))
-					throw new IllegalArgumentException(
-							"Leda file format: invalid edge. inof/label must be starts with |{ and ends with }|.");
-				// get the label
-				label = label.substring(2, label.length() - 2);
-
-				// add the edge
-				final int id = builder.edges().size() + 1; // 1,2,3...
-				builder.addEdge(fromVertex, toVertex, id);
-
-				// record label/weight
-				switch (edgesWeightsType) {
-					case "int":
-						try {
-							int val = Integer.parseInt(label);
-							((IWeightsInt) edgesWeights).set(id, val);
-						} catch (Exception e) {
-							throw new IllegalArgumentException("Leda file format: edge must have int info.");
-						}
-						break;
-					case "short":
-						try {
-							short val = Short.parseShort(label);
-							((IWeightsShort) edgesWeights).set(id, val);
-						} catch (Exception e) {
-							throw new IllegalArgumentException("Leda file format: edge must have short info.");
-						}
-						break;
-					case "long":
-						try {
-							long val = Long.parseLong(label);
-							((IWeightsLong) edgesWeights).set(id, val);
-						} catch (Exception e) {
-							throw new IllegalArgumentException("Leda file format: edge must have long info.");
-						}
-						break;
-					case "float":
-						try {
-							float val = Float.parseFloat(label);
-							((IWeightsFloat) edgesWeights).set(id, val);
-						} catch (Exception e) {
-							throw new IllegalArgumentException("Leda file format: edge must have float info.");
-						}
-						break;
-					case "double":
-						try {
-							double val = Double.parseDouble(label);
-							((IWeightsDouble) edgesWeights).set(id, val);
-						} catch (Exception e) {
-							throw new IllegalArgumentException("Leda file format: edge must have double info.");
-						}
-						break;
-					case "void":
-						break;
-					case "string":
-					default:
-						@SuppressWarnings("unchecked")
-						IWeightsObj<String> temp = (IWeightsObj<String>) edgesWeights;
-						temp.set(id, label);
-						break;
-				}
-
-				if (elementIdxInSection == sectionElementsNum) {
-					// we ended the current section
-					inSection = false;
-					elementIdxInSection = -1;
-					sectionElementsNum = -1;
-				}
+			String verticesNumLine = next.get();
+			if (verticesNumLine == null)
+				throw new IllegalArgumentException("invalid nodes section");
+			final int n;
+			try {
+				n = Integer.parseInt(verticesNumLine);
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException("invalid nodes section");
 			}
+			if (n < 0)
+				throw new IllegalArgumentException("invalid nodes section. num nodes must be >= 0");
+
+			for (int v = 1; v <= n; v++) {
+				String line = next.get();
+				if (line == null)
+					throw new IllegalArgumentException("Expected more node lines");
+				if (!line.startsWith("|{") || !line.endsWith("}|"))
+					throw new IllegalArgumentException("node line error. Expected '|{weight}|'");
+				String weight = line.substring(2, line.length() - 2);
+
+				builder.addVertex(v);
+				verticesWeightsReader.accept(weight, v);
+			}
+
+			String edgesNumLine = next.get();
+			if (edgesNumLine == null)
+				throw new IllegalArgumentException("invalid edges section");
+			final int m;
+			try {
+				m = Integer.parseInt(edgesNumLine);
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException("invalid edges section");
+			}
+			if (m < 0)
+				throw new IllegalArgumentException("invalid edges section. num edges must be >= 0");
+
+			for (int e = 1; e <= m; e++) {
+				String line = next.get();
+				if (line == null)
+					throw new IllegalArgumentException("Expected more edge lines");
+
+				int sourceEnd = line.indexOf(' ');
+				if (sourceEnd == -1)
+					throw new IllegalArgumentException("edge line error. Expected 'source target twinEdge weight'");
+				int targetEnd = line.indexOf(' ', sourceEnd + 1);
+				if (targetEnd == -1)
+					throw new IllegalArgumentException("edge line error. Expected 'source target twinEdge weight'");
+				int twinEdgeEnd = line.indexOf(' ', targetEnd + 1);
+				if (twinEdgeEnd == -1)
+					throw new IllegalArgumentException("edge line error. Expected 'source target twinEdge weight'");
+
+				int source, target, twinEdge;
+				try {
+					source = Integer.parseInt(line.substring(0, sourceEnd));
+				} catch (NumberFormatException ex) {
+					throw new IllegalArgumentException("edge line error. Invalid source vertex number");
+				}
+				try {
+					target = Integer.parseInt(line.substring(sourceEnd + 1, targetEnd));
+				} catch (NumberFormatException ex) {
+					throw new IllegalArgumentException("edge line error. Invalid target vertex number");
+				}
+				try {
+					twinEdge = Integer.parseInt(line.substring(targetEnd + 1, twinEdgeEnd));
+				} catch (NumberFormatException ex) {
+					throw new IllegalArgumentException("edge line error. Invalid twin edge number");
+				}
+				if (twinEdge != 0)
+					throw new IllegalArgumentException("twin edges are not supported");
+
+				if (line.indexOf("|{", twinEdgeEnd + 1) != twinEdgeEnd + 1 || !line.endsWith("}|"))
+					throw new IllegalArgumentException("edge line error. Invalid weight, expected format: |{weight}|'");
+				String weight = line.substring(twinEdgeEnd + 3, line.length() - 2);
+
+				builder.addEdge(source, target, e);
+				edgesWeightsReader.accept(weight, e);
+			}
+
+			if (next.get() != null)
+				throw new IllegalArgumentException("unexpected lines after edges section");
+
+			return builder;
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
+	}
 
-		return builder;
+	private static Class<?> ledaTypeStrToClass(String weightsType) {
+		switch (weightsType) {
+			case "void":
+				return null;
+			case "byte":
+				return byte.class;
+			case "short":
+				return short.class;
+			case "int":
+				return int.class;
+			case "long":
+				return long.class;
+			case "float":
+				return float.class;
+			case "double":
+				return double.class;
+			case "bool":
+				return boolean.class;
+			case "char":
+				return char.class;
+			case "string":
+				return String.class;
+			default:
+				throw new IllegalArgumentException("unsupported weights type: " + weightsType);
+		}
+	}
+
+	private static ObjIntConsumer<String> weightsReader(IWeights<?> weights) {
+		if (weights == null) {
+			return (weight, id) -> {
+				if (!weight.isEmpty())
+					throw new IllegalArgumentException("void weights must be empty string");
+			};
+		} else if (weights instanceof IWeightsByte) {
+			IWeightsByte weights0 = (IWeightsByte) weights;
+			return (weight, id) -> weights0.set(id, Byte.parseByte(weight));
+
+		} else if (weights instanceof IWeightsShort) {
+			IWeightsShort weights0 = (IWeightsShort) weights;
+			return (weight, id) -> weights0.set(id, Short.parseShort(weight));
+
+		} else if (weights instanceof IWeightsInt) {
+			IWeightsInt weights0 = (IWeightsInt) weights;
+			return (weight, id) -> weights0.set(id, Integer.parseInt(weight));
+
+		} else if (weights instanceof IWeightsLong) {
+			IWeightsLong weights0 = (IWeightsLong) weights;
+			return (weight, id) -> weights0.set(id, Long.parseLong(weight));
+
+		} else if (weights instanceof IWeightsFloat) {
+			IWeightsFloat weights0 = (IWeightsFloat) weights;
+			return (weight, id) -> weights0.set(id, Float.parseFloat(weight));
+
+		} else if (weights instanceof IWeightsDouble) {
+			IWeightsDouble weights0 = (IWeightsDouble) weights;
+			return (weight, id) -> weights0.set(id, Double.parseDouble(weight));
+
+		} else if (weights instanceof IWeightsBool) {
+			IWeightsBool weights0 = (IWeightsBool) weights;
+			return (weight, id) -> weights0.set(id, Boolean.parseBoolean(weight));
+
+		} else if (weights instanceof IWeightsChar) {
+			IWeightsChar weights0 = (IWeightsChar) weights;
+			return (weight, id) -> {
+				if (weight.length() != 1)
+					throw new IllegalArgumentException("char weight must be a single character.");
+				weights0.set(id, weight.charAt(0));
+			};
+		} else {
+			@SuppressWarnings("unchecked")
+			IWeightsObj<String> weights0 = (IWeightsObj<String>) weights;
+			return (weight, id) -> weights0.set(id, weight);
+		}
 	}
 
 }

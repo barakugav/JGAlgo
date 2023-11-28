@@ -20,114 +20,159 @@ import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.IWeightsDouble;
-import com.jgalgo.graph.IWeightsFloat;
-import com.jgalgo.graph.IWeightsInt;
-import com.jgalgo.graph.IWeightsLong;
-import com.jgalgo.graph.IWeightsShort;
 import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.WeightsByte;
+import com.jgalgo.graph.WeightsChar;
+import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.WeightsFloat;
+import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.WeightsLong;
+import com.jgalgo.graph.WeightsObj;
+import com.jgalgo.graph.WeightsShort;
 
+/**
+ * Write a graph using the LEDA format.
+ *
+ * <p>
+ * The <a href=https://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html>LEDA
+ * format</a> is a simple format for both directed and undirected graphs, used by the <a
+ * href=https://en.wikipedia.org/wiki/Library_of_Efficient_Data_types_and_Algorithms>LEDA</a> library. Vertices are
+ * numbered from 1 to n, and edges are numbered from 1 to m. It support a single weight for vertices and a single weight
+ * for edges. The weights can be any primitive, or a string.
+ *
+ * <p>
+ * By default, the writer will write the graph without any weights. Its possible to write one of the vertices weights
+ * and one of the edges weights in the format. Use the {@link #setVerticesWeightsKey(String)} and
+ * {@link #setEdgesWeightsKey(String)} methods to specify the keys of the weights to write.
+ *
+ * @see    LedaGraphReader
+ * @author Barak Ugav
+ */
 public class LedaGraphWriter implements GraphWriter<Integer, Integer> {
+
+	private String verticesWeightsKey;
+	private String edgesWeightsKey;
+
+	/**
+	 * Create a new writer.
+	 */
+	public LedaGraphWriter() {}
+
+	/**
+	 * Set the key of the vertices weights to write.
+	 *
+	 * <p>
+	 * By default, the writer will write the graph without any weights. Use this method to specify the key of the
+	 * vertices weights to write.
+	 *
+	 * @see                      Graph#getVerticesWeights(String)
+	 * @param verticesWeightsKey the key of the vertices weights to write, or {@code null} to write no vertices weights
+	 */
+	public void setVerticesWeightsKey(String verticesWeightsKey) {
+		this.verticesWeightsKey = verticesWeightsKey;
+	}
+
+	/**
+	 * Set the key of the edges weights to write.
+	 *
+	 * <p>
+	 * By default, the writer will write the graph without any weights. Use this method to specify the key of the edges
+	 * weights to write.
+	 *
+	 * @see                   Graph#getEdgesWeights(String)
+	 * @param edgesWeightsKey the key of the edges weights to write, or {@code null} to write no edges weights
+	 */
+	public void setEdgesWeightsKey(String edgesWeightsKey) {
+		this.edgesWeightsKey = edgesWeightsKey;
+	}
 
 	@Override
 	public void writeGraph(Graph<Integer, Integer> graph, Writer writer) {
-		final int numVertices = graph.vertices().size();
-		final int numEdges = graph.edges().size();
-		if (!range(1, numVertices + 1).equals(graph.vertices()))
+		final int n = graph.vertices().size();
+		final int m = graph.edges().size();
+		if (!range(1, n + 1).equals(graph.vertices()))
 			throw new IllegalArgumentException("the LEDA format support graphs with vertices 1..n only");
-		if (!range(1, numEdges + 1).equals(graph.edges()))
+		if (!range(1, m + 1).equals(graph.edges()))
 			throw new IllegalArgumentException("the LEDA format support graphs with edges 1..m only");
 
+		Weights<Integer, ?> verticesWeights = null;
+		if (verticesWeightsKey != null) {
+			verticesWeights = graph.getVerticesWeights(verticesWeightsKey);
+			if (verticesWeights == null)
+				throw new IllegalArgumentException("vertices weights key '" + verticesWeightsKey + "' not found");
+		}
+		Weights<Integer, ?> edgesWeights = null;
+		if (edgesWeightsKey != null) {
+			edgesWeights = graph.getEdgesWeights(edgesWeightsKey);
+			if (edgesWeights == null)
+				throw new IllegalArgumentException("edges weights key '" + edgesWeightsKey + "' not found");
+		}
+
+		Writer2 out = new Writer2(writer);
 		try {
-			String verticesWeightsType; // can be void, string, int etc
-			Weights<Integer, ?> verticesWeights; // weights for vertices
-			if (graph.getVerticesWeightsKeys().isEmpty()) {
-				verticesWeightsType = "void";
-				verticesWeights = null;
-			} else {
-				// for now, take the first weights collection
-				String key = graph.getVerticesWeightsKeys().iterator().next();
-				verticesWeights = graph.getVerticesWeights(key);
-				if (verticesWeights instanceof IWeightsInt) {
-					verticesWeightsType = "int";
-				} else if (verticesWeights instanceof IWeightsShort) {
-					verticesWeightsType = "short";
-				} else if (verticesWeights instanceof IWeightsLong) {
-					verticesWeightsType = "long";
-				} else if (verticesWeights instanceof IWeightsFloat) {
-					verticesWeightsType = "float";
-				} else if (verticesWeights instanceof IWeightsDouble) {
-					verticesWeightsType = "double";
-				} else {
-					verticesWeightsType = "string";
-				}
-			}
+			out.append("# header section").appendNewline();
+			out.append("LEDA.GRAPH").appendNewline();
+			out.append(weightsToLedaType(verticesWeights)).appendNewline();
+			out.append(weightsToLedaType(edgesWeights)).appendNewline();
+			out.append(graph.isDirected() ? "-1" : "-2").appendNewline();
 
-			String edgesWeightsType; // can be void, string, int etc
-			Weights<Integer, ?> edgesWeights; // weights for edges
-			if (graph.getEdgesWeightsKeys().isEmpty()) {
-				edgesWeightsType = "void";
-				edgesWeights = null;
-			} else {
-				// for now, take the first weights collection
-				String key = graph.getEdgesWeightsKeys().iterator().next();
-				edgesWeights = graph.getEdgesWeights(key);
-				if (edgesWeights instanceof IWeightsInt) {
-					edgesWeightsType = "int";
-				} else if (edgesWeights instanceof IWeightsShort) {
-					edgesWeightsType = "short";
-				} else if (edgesWeights instanceof IWeightsLong) {
-					edgesWeightsType = "long";
-				} else if (edgesWeights instanceof IWeightsFloat) {
-					edgesWeightsType = "float";
-				} else if (edgesWeights instanceof IWeightsDouble) {
-					edgesWeightsType = "double";
-				} else {
-					edgesWeightsType = "string";
-				}
-			}
-
-			writer.append("LEDA.GRAPH").append(System.lineSeparator());
-			writer.append(verticesWeightsType).append(System.lineSeparator()); // void/string/int etc
-			writer.append(edgesWeightsType).append(System.lineSeparator()); // void/string/int etc
-			writer.append(graph.isDirected() ? "-1" : "-2").append(System.lineSeparator());
-
-			writer.append("# section nodes/vertices").append(System.lineSeparator());
-			writer.append(Integer.toString(numVertices)).append(System.lineSeparator());
-			// write all vertices info
-			// --> LEDA expects 1..numVertices
-			// for (int ix = 1; ix <= numVertices; ix++)
-			// but just in case, we are consistent with our labels etc
+			out.append("# section nodes/vertices").appendNewline();
+			out.append(n).appendNewline();
 			if (verticesWeights == null) {
-				for (int vertex = 1; vertex <= numVertices; vertex++)
-					writer.append("|{}|").append(System.lineSeparator());
+				for (int vertex = 1; vertex <= n; vertex++)
+					out.append("|{}|").appendNewline();
 			} else {
-				WeightsStringifier<Integer> weightsStringer = WeightsStringifier.newInstance(verticesWeights);
-				for (int vertex = 1; vertex <= numVertices; vertex++) {
-					String weightStr = weightsStringer.getWeightAsString(vertex);
-					writer.append("|{").append(weightStr).append("}|").append(System.lineSeparator());
+				WeightsStringifier<Integer> weightsStringifier = WeightsStringifier.newInstance(verticesWeights);
+				for (int v0 = 1; v0 <= n; v0++) {
+					Integer v = Integer.valueOf(v0);
+					String weightStr = weightsStringifier.getWeightAsString(v);
+					out.append("|{").append(weightStr).append("}|").appendNewline();
 				}
 			}
 
-			writer.append("# section edges").append(System.lineSeparator());
-			writer.append(Integer.toString(numEdges)).append(System.lineSeparator());
-			// write all edges info
-			WeightsStringifier<Integer> weightsStringer =
-					edgesWeights != null ? WeightsStringifier.newInstance(edgesWeights) : null;
-			for (int edge = 1; edge <= numEdges; edge++) {
-				writer.append(Integer.toString(graph.edgeSource(edge))).append(' ');
-				writer.append(Integer.toString(graph.edgeTarget(edge))).append(' ');
-				writer.append(/* twin edge */ '0').append(' ');
-				if (weightsStringer == null) {
-					writer.append("|{}|").append(System.lineSeparator());
+			out.append("# section edges").appendNewline();
+			out.append(m).appendNewline();
+			WeightsStringifier<Integer> weightsStringifier =
+					edgesWeights == null ? null : WeightsStringifier.newInstance(edgesWeights);
+			for (int e0 = 1; e0 <= m; e0++) {
+				Integer e = Integer.valueOf(e0);
+				out.append(graph.edgeSource(e)).append(' ');
+				out.append(graph.edgeTarget(e)).append(' ');
+				out.append(/* twin edge */ '0').append(' ');
+				if (weightsStringifier == null) {
+					out.append("|{}|").appendNewline();
 				} else {
-					String weightStr = weightsStringer.getWeightAsString(edge);
-					writer.append("|{").append(weightStr).append("}|").append(System.lineSeparator());
+					String weightStr = weightsStringifier.getWeightAsString(e);
+					out.append("|{").append(weightStr).append("}|").appendNewline();
 				}
 			}
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
+	}
+
+	private static String weightsToLedaType(Weights<?, ?> weights) {
+		if (weights == null)
+			return "void";
+		if (weights instanceof WeightsByte)
+			return "byte";
+		if (weights instanceof WeightsShort)
+			return "short";
+		if (weights instanceof WeightsInt)
+			return "int";
+		if (weights instanceof WeightsLong)
+			return "long";
+		if (weights instanceof WeightsFloat)
+			return "float";
+		if (weights instanceof WeightsDouble)
+			return "double";
+		if (weights instanceof WeightsBool)
+			return "bool";
+		if (weights instanceof WeightsChar)
+			return "char";
+		assert weights instanceof WeightsObj;
+		return "string";
 	}
 
 }
