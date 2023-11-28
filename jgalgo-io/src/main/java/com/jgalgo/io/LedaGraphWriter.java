@@ -126,7 +126,7 @@ public class LedaGraphWriter implements GraphWriter<Integer, Integer> {
 				WeightsStringifier<Integer> weightsStringifier = WeightsStringifier.newInstance(verticesWeights);
 				for (int v0 = 1; v0 <= n; v0++) {
 					Integer v = Integer.valueOf(v0);
-					String weightStr = weightsStringifier.getWeightAsString(v);
+					String weightStr = weightsStringifier.weightStr(v);
 					out.append("|{").append(weightStr).append("}|").appendNewline();
 				}
 			}
@@ -143,7 +143,7 @@ public class LedaGraphWriter implements GraphWriter<Integer, Integer> {
 				if (weightsStringifier == null) {
 					out.append("|{}|").appendNewline();
 				} else {
-					String weightStr = weightsStringifier.getWeightAsString(e);
+					String weightStr = weightsStringifier.weightStr(e);
 					out.append("|{").append(weightStr).append("}|").appendNewline();
 				}
 			}

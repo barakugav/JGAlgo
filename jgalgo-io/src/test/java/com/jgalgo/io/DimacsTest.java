@@ -69,12 +69,13 @@ public class DimacsTest {
 		checkData3 += "e 4 5\n";
 		checkData3 = checkData3.replace("\n", System.lineSeparator());
 
-		if (data2.trim().equals(checkData2.trim()))
+		if (data2.trim().equals(checkData2.trim())) {
 			assertEquals(data2.trim(), checkData2.trim());
-		else if (data2.trim().equals(checkData3.trim()))
+		} else if (data2.trim().equals(checkData3.trim())) {
 			assertEquals(data2.trim(), checkData3.trim());
-		else
+		} else {
 			assertEquals(data2.trim(), checkData2.trim());
+		}
 	}
 
 	@Test
@@ -114,12 +115,13 @@ public class DimacsTest {
 		checkData3 += "e 4 5 7\n";
 		checkData3 = checkData3.replace("\n", System.lineSeparator());
 
-		if (data2.trim().equals(checkData2.trim()))
+		if (data2.trim().equals(checkData2.trim())) {
 			assertEquals(data2.trim(), checkData2.trim());
-		else if (data2.trim().equals(checkData3.trim()))
+		} else if (data2.trim().equals(checkData3.trim())) {
 			assertEquals(data2.trim(), checkData3.trim());
-		else
+		} else {
 			assertEquals(data2.trim(), checkData2.trim());
+		}
 	}
 
 	@Test
