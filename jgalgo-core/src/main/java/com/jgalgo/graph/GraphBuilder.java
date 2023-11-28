@@ -271,8 +271,8 @@ public interface GraphBuilder<V, E> {
 	 * @return     a builder initialized with the given graph vertices and edges, without the original graph
 	 *             vertices/edges weights.
 	 */
-	static <V, E> GraphBuilder<V, E> newFrom(Graph<V, E> g) {
-		return newFrom(g, false, false);
+	static <V, E> GraphBuilder<V, E> fromGraph(Graph<V, E> g) {
+		return fromGraph(g, false, false);
 	}
 
 	/**
@@ -291,8 +291,8 @@ public interface GraphBuilder<V, E> {
 	 * @return                     a builder initialized with the given graph vertices and edges, with/without the
 	 *                             original graph vertices/edges weights.
 	 */
-	static <V, E> GraphBuilder<V, E> newFrom(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		return GraphBuilderImpl.newFrom(g, copyVerticesWeights, copyEdgesWeights);
+	static <V, E> GraphBuilder<V, E> fromGraph(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		return new GraphBuilderImpl<>(g, copyVerticesWeights, copyEdgesWeights);
 	}
 
 }

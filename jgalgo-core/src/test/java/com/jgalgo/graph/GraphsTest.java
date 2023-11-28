@@ -415,7 +415,7 @@ public class GraphsTest extends TestBase {
 
 			if (g1 instanceof IntGraph) {
 				/* compare an IntGraph and a regular graph */
-				Graph<Integer, Integer> g3 = GraphBuilder.newFrom(g1, true, true).build();
+				Graph<Integer, Integer> g3 = GraphBuilder.fromGraph(g1, true, true).build();
 				assertEquals(g1, g3);
 				assertEquals(g3, g1);
 			}

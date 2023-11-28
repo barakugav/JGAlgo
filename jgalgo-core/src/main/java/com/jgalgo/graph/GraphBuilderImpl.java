@@ -27,10 +27,6 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 
-	static <V, E> GraphBuilder<V, E> newFrom(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		return new GraphBuilderImpl<>(g, copyVerticesWeights, copyEdgesWeights);
-	}
-
 	final IndexGraphBuilder ibuilder;
 	private final Object2IntOpenHashMap<V> vIdToIndex;
 	private final ObjectArrayList<V> vIndexToId;
@@ -42,10 +38,6 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 	final IndexIdMapImpl<E> eiMap;
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.ObjMapped<V, ?>> verticesWeights = new IdentityHashMap<>();
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.ObjMapped<E, ?>> edgesWeights = new IdentityHashMap<>();
-
-	GraphBuilderImpl(boolean directed) {
-		this(directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected());
-	}
 
 	GraphBuilderImpl(IndexGraphBuilder ibuilder) {
 		assert ibuilder.vertices().isEmpty();
@@ -66,7 +58,7 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 	GraphBuilderImpl(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
-		this.ibuilder = IndexGraphBuilder.newFrom(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
+		this.ibuilder = IndexGraphBuilder.fromGraph(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
 		vIdToIndex = new Object2IntOpenHashMap<>(n);
 		vIdToIndex.defaultReturnValue(-1);
 		vIndexToId = new ObjectArrayList<>(n);
@@ -199,6 +191,8 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 		vIndexToId.clear();
 		eIdToIndex.clear();
 		eIndexToId.clear();
+		verticesWeights.clear();
+		edgesWeights.clear();
 	}
 
 	@Override

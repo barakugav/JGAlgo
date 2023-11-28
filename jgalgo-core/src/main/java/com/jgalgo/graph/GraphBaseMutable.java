@@ -37,8 +37,8 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
 		verticesInternalContainers = new DataContainer.Manager(expectedVerticesNum);
 		edgesInternalContainers = new DataContainer.Manager(expectedEdgesNum);
-		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedVerticesNum);
-		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum);
+		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedVerticesNum, false);
+		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(expectedEdgesNum, true);
 
 		edgeEndpointsContainer = newEdgesLongContainer(DefaultEndpoints, newArr -> edgeEndpoints = newArr);
 	}
@@ -54,8 +54,8 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 			Assertions.Graphs.onlyUndirected(g);
 		}
 
-		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size());
-		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size());
+		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), false);
+		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), true);
 		if (copyVerticesWeights) {
 			for (String key : g.getVerticesWeightsKeys())
 				verticesUserWeights.addWeights(key,

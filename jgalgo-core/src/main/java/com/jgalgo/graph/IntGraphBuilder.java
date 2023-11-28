@@ -187,8 +187,8 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * @return   a builder initialized with the given graph vertices and edges, without the original graph
 	 *           vertices/edges weights.
 	 */
-	static IntGraphBuilder newFrom(IntGraph g) {
-		return newFrom(g, false, false);
+	static IntGraphBuilder fromGraph(IntGraph g) {
+		return fromGraph(g, false, false);
 	}
 
 	/**
@@ -205,8 +205,8 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * @return                     a builder initialized with the given graph vertices and edges, with/without the
 	 *                             original graph vertices/edges weights.
 	 */
-	static IntGraphBuilder newFrom(IntGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		return IntGraphBuilderImpl.newFrom(g, copyVerticesWeights, copyEdgesWeights);
+	static IntGraphBuilder fromGraph(IntGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		return new IntGraphBuilderImpl(g, copyVerticesWeights, copyEdgesWeights);
 	}
 
 }

@@ -158,9 +158,9 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 		allocatedMem.allocateForLightEdges(n, treeCount);
 
 		IndexGraph[] trees = allocatedMem.trees;
-		IWeightsDouble[] treeData = allocatedMem.treeData;
+		IWeightsDouble[] treeData = new IWeightsDouble[treeCount];
 		for (int t = 0; t < treeCount; t++)
-			treeData[t] = trees[t].getEdgesWeights("weight");
+			treeData[t] = trees[t].addEdgesWeights("weight", double.class);
 
 		int[] vToVnew = allocatedMem.vToVnew;
 		for (int u = 0; u < n; u++) {
@@ -215,7 +215,6 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 
 		IndexGraph[] trees = MemoryReuse.EmptyGraphArr;
 		int[] vToVnew = IntArrays.EMPTY_ARRAY;
-		IWeightsDouble[] treeData = MemoryReuse.EmptyWeightsDoubleArr;
 
 		TreePathMaxima.IQueries[] tpmQueries = MemoryReuse.EmptyTpmQueriesArr;
 		TreePathMaxima.IResult[] tpmResults = MemoryReuse.EmptyTpmResultArr;
@@ -228,18 +227,13 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 			edgeList = MemoryReuse.ensureAllocated(edgeList, IntArrayList::new);
 
 			trees = MemoryReuse.ensureLength(trees, treeCount);
-
-			treeData = MemoryReuse.ensureLength(treeData, treeCount);
 			vToVnew = MemoryReuse.ensureLength(vToVnew, n);
 
 			tpmQueries = MemoryReuse.ensureLength(tpmQueries, treeCount);
 			tpmResults = MemoryReuse.ensureLength(tpmResults, treeCount);
 
 			for (int tIdx = 0; tIdx < treeCount; tIdx++) {
-				IndexGraph tree =
-						trees[tIdx] = MemoryReuse.ensureAllocated(trees[tIdx], () -> IndexGraph.newUndirected());
-				treeData[tIdx] =
-						MemoryReuse.ensureAllocated(treeData[tIdx], () -> tree.addEdgesWeights("weight", double.class));
+				trees[tIdx] = MemoryReuse.ensureAllocated(trees[tIdx], () -> IndexGraph.newUndirected());
 				tpmQueries[tIdx] =
 						MemoryReuse.ensureAllocated(tpmQueries[tIdx], () -> TreePathMaxima.IQueries.newInstance());
 			}

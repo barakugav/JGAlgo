@@ -143,21 +143,24 @@ interface WeightsImpl {
 			private WeightsImpl.IndexMutable<?>[] weights;
 			private final Object2IntMap<String> keyToIdx;
 			private int weightsCapacity;
+			private final boolean isEdges;
 
 			private static final String[] EMPTY_WEIGHTS_KEY_ARR = new String[0];
 			private static final WeightsImpl.IndexMutable<?>[] EMPTY_WEIGHTS_ARR = new WeightsImpl.IndexMutable<?>[0];
 
-			Manager(int initCapacity) {
+			Manager(int initCapacity, boolean isEdges) {
 				weightsKey = EMPTY_WEIGHTS_KEY_ARR;
 				weights = EMPTY_WEIGHTS_ARR;
 				keyToIdx = new Object2IntOpenHashMap<>();
 				keyToIdx.defaultReturnValue(-1);
 				weightsCapacity = initCapacity;
+				this.isEdges = isEdges;
 			}
 
 			Manager(Manager orig, IntSet elements) {
 				weightsCapacity = elements.size();
 				int numberOfWeights = orig.keyToIdx.size();
+				isEdges = orig.isEdges;
 				if (numberOfWeights == 0) {
 					weightsKey = EMPTY_WEIGHTS_KEY_ARR;
 					weights = EMPTY_WEIGHTS_ARR;
@@ -165,7 +168,9 @@ interface WeightsImpl {
 
 				} else {
 					weightsKey = Arrays.copyOf(orig.weightsKey, numberOfWeights);
-					weights = Arrays.copyOf(orig.weights, numberOfWeights);
+					weights = new WeightsImpl.IndexMutable[numberOfWeights];
+					for (int i = 0; i < numberOfWeights; i++)
+						weights[i] = WeightsImpl.IndexMutable.copyOf(orig.weights[i], elements, isEdges);
 					keyToIdx = new Object2IntOpenHashMap<>(orig.keyToIdx);
 				}
 				keyToIdx.defaultReturnValue(-1);
@@ -237,6 +242,10 @@ interface WeightsImpl {
 			void clearContainers() {
 				for (WeightsImpl.IndexMutable<?> container : weights())
 					container.clear();
+				Arrays.fill(weightsKey, 0, keyToIdx.size(), null);
+				Arrays.fill(weights, 0, keyToIdx.size(), null);
+				keyToIdx.clear();
+				weightsCapacity = 0;
 			}
 
 			private Iterable<WeightsImpl.IndexMutable<?>> weights() {

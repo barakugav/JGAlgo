@@ -269,8 +269,8 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return   a builder initialized with the given graph vertices and edges, without the original graph
 	 *           vertices/edges weights.
 	 */
-	static IndexGraphBuilder newFrom(IndexGraph g) {
-		return newFrom(g, false, false);
+	static IndexGraphBuilder fromGraph(IndexGraph g) {
+		return fromGraph(g, false, false);
 	}
 
 	/**
@@ -287,8 +287,8 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return                     a builder initialized with the given graph vertices and edges, with/without the
 	 *                             original graph vertices/edges weights.
 	 */
-	static IndexGraphBuilder newFrom(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		return IndexGraphBuilderImpl.newFrom(g, copyVerticesWeights, copyEdgesWeights);
+	static IndexGraphBuilder fromGraph(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		return new IndexGraphBuilderImpl(g, copyVerticesWeights, copyEdgesWeights);
 	}
 
 }

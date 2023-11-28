@@ -758,7 +758,7 @@ public interface Graph<V, E> {
 	 * @return an immutable copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph<V, E> immutableCopy() {
-		return GraphBuilder.newFrom(this).build();
+		return GraphBuilder.fromGraph(this).build();
 	}
 
 	/**

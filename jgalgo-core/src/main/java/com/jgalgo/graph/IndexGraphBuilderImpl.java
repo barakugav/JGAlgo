@@ -48,12 +48,12 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		this.directed = directed;
 		vertices = GraphElementSet.Mutable.ofVertices(0);
 		edges = GraphElementSet.Mutable.ofEdges(0);
-		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(0);
-		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(0);
+		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(0, false);
+		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(0, true);
 		setDefaultImpls();
 	}
 
-	private IndexGraphBuilderImpl(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+	IndexGraphBuilderImpl(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		this.directed = g.isDirected();
 		final int n = g.vertices().size();
 		m = g.edges().size();
@@ -67,8 +67,8 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			setEdgeTarget(e, g.edgeTarget(e));
 		}
 
-		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size());
-		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size());
+		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), false);
+		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), true);
 		if (copyVerticesWeights) {
 			for (String key : g.getVerticesWeightsKeys())
 				verticesUserWeights.addWeights(key,
@@ -80,10 +80,6 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		}
 
 		setDefaultImpls();
-	}
-
-	static IndexGraphBuilderImpl newFrom(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		return new IndexGraphBuilderImpl(g, copyVerticesWeights, copyEdgesWeights);
 	}
 
 	private void setDefaultImpls() {
@@ -214,17 +210,6 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	int edgeTarget(int e) {
 		return endpoints[edgeTargetIndex(e)];
-	}
-
-	int edgeEndpoint(int e, int endpoint) {
-		int u = edgeSource(e);
-		int v = edgeTarget(e);
-		if (u == endpoint) {
-			return v;
-		} else {
-			assert v == endpoint;
-			return u;
-		}
 	}
 
 	private void setEdgeSource(int e, int source) {

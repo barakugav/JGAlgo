@@ -1057,7 +1057,7 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* check builder constructor */
-			assertEquals(g, copyConstructor.apply(IndexGraphBuilder.newFrom(g, true, true)));
+			assertEquals(g, copyConstructor.apply(IndexGraphBuilder.fromGraph(g, true, true)));
 
 			if (!selfEdges) {
 				IndexGraphBuilder g1 = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
