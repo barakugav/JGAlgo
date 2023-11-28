@@ -19,72 +19,109 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UncheckedIOException;
+import java.util.Objects;
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
+import com.jgalgo.graph.WeightsInt;
 
+/**
+ * Read a graph in DIMACS format.
+ *
+ * <p>
+ * The DIMACS format is the graph format used by the 'Center of Discrete Mathematics and Theoretical Computer Science'
+ * for their graph challenges. There are many sub-formats, but the most common are the 'edge' and 'sp' formats, which
+ * are supported by this class. A DIMACS file contains a short header which specify the sub-format along with the number
+ * of edges and vertices, followed by the edges themselves. The edges are specified by a pair of vertices, and in the
+ * 'sp' format, also by a weight. The vertices are numbered from 1 to n, where n is the number of vertices, and
+ * similarly the edges are numbered from 1 to m, where m is the number of edges. Only undirected graphs are supported by
+ * this format.
+ *
+ * <p>
+ * The <a href="https://github.com/akinanop/mvl-solver/wiki/DIMACS-Graph-Format">'edge' format</a> is the simplest, and
+ * is used for unweighted undirected graphs. An example file is:
+ *
+ * <pre>
+ * c this is a comment
+ * c this is the graph with vertices {1,2,3,4,5} and edges {1=(1,2),2=(2,3),3=(2,4),4=(3,4),5=(4,5)}
+ * p edge 5 5
+ * e 1 2
+ * e 2 3
+ * e 2 4
+ * e 3 4
+ * e 4 5
+ * </pre>
+ *
+ * <p>
+ * The <a href="http://www.diag.uniroma1.it/challenge9/format.shtml#graph">'sp' format</a> is used for (integer)
+ * weighted undirected graphs. An example file is:
+ *
+ * <pre>
+ * c this is a comment
+ * c this is the graph with vertices {1,2,3,4,5} and edges {1=(1,2),2=(2,3),3=(2,4),4=(3,4),5=(4,5)}
+ * c the weights of the edges are {1=5,2=13,3=2,4=-7,5=0}
+ * p sp 5 5
+ * e 1 2 3
+ * e 2 3 13
+ * e 2 4 2
+ * e 3 4 -7
+ * e 4 5 0
+ * </pre>
+ *
+ * <p>
+ * The reader will identify the format automatically by looking at the header of the file. If the format contains edge
+ * weights ('sp' format), the built graph will have edges {@linkplain WeightsInt integer weights} keys by "weight", or a
+ * key chosen by the user using {@link #setEdgeWeightsKey(String)}. See {@link Graph#getEdgesWeights(String)}.
+ *
+ * @see    <a href="http://www.diag.uniroma1.it/challenge9/format.shtml#graph">DIMACS Graph Format</a>
+ * @see    DimacsGraphWriter
+ * @author Barak Ugav
+ */
 public class DimacsGraphReader implements IGraphReader {
 
+	private String weightsKey = "weight";
+
 	/**
-	 * Support 2 DIMACS formats:<br>
-	 * The "DIMACS edge format" and "DIMACS sp format"<br>
-	 * <br>
-	 * 1. Basic DIMACS format: <br>
-	 * see https://github.com/akinanop/mvl-solver/wiki/DIMACS-Graph-Format
-	 *
-	 * <pre>
-	 * p edge &lt;NumVertices&gt; &lt;NumEdges&gt;
-	 * e &lt;VertexName1&gt; &lt;VertexName2&gt;
-	 * Example:
-	 * c this is the graph with vertices {1,2,3,4,5} and edges {(1,2),(2,3),(2,4),(3,4),(4,5)}
-	 * p edge 5 5
-	 * e 1 2
-	 * e 2 3
-	 * e 2 4
-	 * e 3 4
-	 * e 4 5
-	 * </pre>
+	 * Create a new reader.
+	 */
+	public DimacsGraphReader() {}
+
+	/**
+	 * Sets the key of the edge weights that will be read.
 	 *
 	 * <p>
-	 * 2. Shortest path format (with weights)<br>
-	 * Two assumptions:<br>
-	 * (1) Undirected graph.<br>
-	 * (2) Weights are integers.<br>
-	 * <br>
-	 * The .gr files:<br>
-	 * see http://www.diag.uniroma1.it/challenge9/format.shtml#graph
+	 * When the reader reads a graph in the 'sp' format a {@link WeightsInt} weights will be added to the built graph.
+	 * By default, the weights will be added with key "weight". Use this method to specify a different key.
 	 *
-	 * <pre>
-	 * c
-	 * p sp n nm
-	 * a u v w
-	 * </pre>
+	 * @param weightsKey the key of the edge weights that will be read
+	 * @see              Graph#getEdgesWeights(String)
 	 */
+	public void setEdgeWeightsKey(String weightsKey) {
+		this.weightsKey = Objects.requireNonNull(weightsKey);
+	}
+
 	@Override
 	public IntGraphBuilder readIntoBuilder(Reader reader) {
-		try (BufferedReader br =
-				reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader)) {
+		try (BufferedReader br = GraphReaders.bufferedReader(reader)) {
 			IntGraphBuilder gb = IntGraphFactory.newUndirected().allowSelfEdges().newBuilder();
-			IWeightsInt w = null;
-			int verticesNum = -1;
-			int edgesNum = -1;
-			boolean hasWeights = false;
 			boolean problemLineSeen = false;
+			boolean hasWeights = false;
+			IWeightsInt w = null;
+			int n = -1, m = -1;
 
-			for (String line; (line = br.readLine()) != null;) {
-				line = line.trim();
+			for (String line : GraphReaders.lines(br, true)) {
 				if (line.isEmpty())
 					continue;
-
-				// replace multiple spaces with just one space
-				line = line.replaceAll("\\s+", " ");
-
-				char firstChar = line.charAt(0);
-				switch (firstChar) {
+				switch (line.charAt(0)) {
 					case 'c': /* comment line */
+						if (!line.startsWith("c "))
+							throw new IllegalArgumentException("comment line must start with 'c '");
 						continue;
 
 					case 'p': /* problem line */ {
+						if (!line.startsWith("p "))
+							throw new IllegalArgumentException("problem line must start with 'p '");
 						if (problemLineSeen)
 							throw new IllegalArgumentException("more than one problem line ('p' prefix) in file");
 						problemLineSeen = true;
@@ -92,8 +129,7 @@ public class DimacsGraphReader implements IGraphReader {
 						String[] arr = line.split(" ");
 						if (arr.length != 4)
 							throw new IllegalArgumentException(
-									"p lines must have 4 parameters: p edge <NumVertices> <NumEdges>"
-											+ " or p sp <NumVertices> <NumEdges>");
+									"expected problem line in format: p (edge | sp) <NumVertices> <NumEdges>");
 						String graphFormat = arr[1].toLowerCase();
 						switch (graphFormat) {
 							case "edge":
@@ -103,28 +139,26 @@ public class DimacsGraphReader implements IGraphReader {
 								hasWeights = true;
 								break;
 							default:
-								throw new IllegalArgumentException("support only: p edge <NumVertices> <NumEdges>"
-										+ " or p sp <NumVertices> <NumEdges>");
+								throw new IllegalArgumentException(
+										"Support formats 'sp' and 'edge'. Unknown format: '" + graphFormat + "'");
 						}
 
 						try {
-							verticesNum = Integer.parseInt(arr[2]);
-							edgesNum = Integer.parseInt(arr[3]);
-						} catch (Exception e) {
-							throw new IllegalArgumentException("expect numbers: p edge <NumVertices> <NumEdges>"
-									+ " or p sp <NumVertices> <NumEdges>", e);
+							n = Integer.parseInt(arr[2]);
+							m = Integer.parseInt(arr[3]);
+						} catch (NumberFormatException e) {
+							throw new IllegalArgumentException("Invalid number of vertices or edges", e);
 						}
 
-						if (verticesNum < 0 || edgesNum < 0)
-							throw new IllegalArgumentException(
-									"negative vertices/edges num: " + verticesNum + " " + edgesNum);
-						gb.expectedVerticesNum(verticesNum);
-						gb.expectedEdgesNum(edgesNum);
-
-						if (graphFormat.equals("sp"))
-							w = gb.addEdgesWeights("weightsEdges", int.class);
-						for (int v = 1; v <= verticesNum; v++)
+						if (n < 0 || m < 0)
+							throw new IllegalArgumentException("negative vertices/edges num: " + n + " " + m);
+						gb.expectedVerticesNum(n);
+						gb.expectedEdgesNum(m);
+						for (int v = 1; v <= n; v++)
 							gb.addVertex(v); // vertices are labeled as 1,2,3,4...
+
+						if (hasWeights)
+							w = gb.addEdgesWeights(weightsKey, int.class);
 						break;
 					}
 
@@ -144,26 +178,22 @@ public class DimacsGraphReader implements IGraphReader {
 						}
 
 						/* parse edge source and target vertices */
-						int vertexSource = -1;
-						int vertexTarget = -1;
+						int source, target;
 						try {
-							vertexSource = Integer.parseInt(arr[1]);
-							vertexTarget = Integer.parseInt(arr[2]);
-						} catch (Exception e) {
+							source = Integer.parseInt(arr[1]);
+							target = Integer.parseInt(arr[2]);
+						} catch (NumberFormatException e) {
 							throw new IllegalArgumentException("edge must have 2 vertices as numbers", e);
 						}
-						if (vertexSource < 1 || vertexSource > verticesNum || vertexTarget < 1
-								|| vertexTarget > verticesNum)
-							throw new IllegalArgumentException("vertex number must be between 1 and num_vertices");
 						final int e = gb.edges().size() + 1;
-						gb.addEdge(vertexSource, vertexTarget, e);
+						gb.addEdge(source, target, e);
 
 						/* parse edge weight */
 						if (hasWeights) {
 							int edgeWeight = -1;
 							try {
 								edgeWeight = Integer.parseInt(arr[3]);
-							} catch (Exception ex) {
+							} catch (NumberFormatException ex) {
 								throw new IllegalArgumentException("edge must have 2 vertices as numbers and a weight",
 										ex);
 							}
