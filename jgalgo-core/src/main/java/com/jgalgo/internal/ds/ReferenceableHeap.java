@@ -21,6 +21,36 @@ import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 
 /**
+ * A collection which maintains elements in order and support efficient retrieval of the minimum value, and expose
+ * references to the underling elements.
+ *
+ * <p>
+ * In addition to the regular Heap operations, the user can obtain a reference to each inserted element via the return
+ * value of the {@code insert()} function. The reference will be valid as long as the element is still in the heap. By
+ * passing the reference to the heap implementation to functions such as {@code decreaseKey()} or {@code remove()} the
+ * heap implementation can perform the operations efficiently as is does not need to search for the element.
+ *
+ * <p>
+ * Another difference from the regular Heap, is the existent of both keys and values, rather than just 'elements'. A key
+ * may be changed using {@code decreaseKey()} while the <b>value</b> is the same. This matches the common use case of
+ * these heaps.
+ *
+ * <pre> {@code
+ * IntObjReferenceableHeap<Integer, String> heap = IntObjReferenceableHeap.newInstance();
+ * IntObjReferenceableHeap.Ref<String> r1 = heap.insert(5, "Alice");
+ * IntObjReferenceableHeap.Ref<String> r2 = heap.insert(10, "Bob");
+ * IntObjReferenceableHeap.Ref<String> r3 = heap.insert(3, "Charlie");
+ *
+ * assert heap.findMin() == r3;
+ * assert r2.key() == 10;
+ * heap.decreaseKey(r2, 2);
+ * assert r2.key() == 2;
+ * assert r2.value().equals("Bob");
+ * assert heap.findMin() == r2;
+ *
+ * heap.remove(r1);
+ * assert heap.size() == 2;
+ * }</pre>
  *
  * @author Barak Ugav
  */
