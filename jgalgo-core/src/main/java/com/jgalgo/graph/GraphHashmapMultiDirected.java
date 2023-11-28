@@ -289,14 +289,12 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 	}
 
 	@Override
-	public void reverseEdge(int edge) {
+	public void moveEdge(int edge, int newSource, int newTarget) {
 		checkEdge(edge);
-		int source = source(edge), target = target(edge);
-		if (source == target)
-			return;
+		checkNewEdgeEndpoints(newSource, newTarget);
 		removeEdgeFromMaps(edge);
-		addEdgeToMaps(edge, target, source);
-		super.reverseEdge0(edge);
+		addEdgeToMaps(edge, newSource, newTarget);
+		setEndpoints(edge, newSource, newTarget);
 	}
 
 	@Override

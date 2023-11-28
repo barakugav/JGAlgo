@@ -287,14 +287,12 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	public void reverseEdge(int edge) {
+	public void moveEdge(int edge, int newSource, int newTarget) {
 		checkEdge(edge);
-		int source = source(edge), target = target(edge);
-		if (source == target)
-			return;
+		checkNewEdgeEndpoints(newSource, newTarget);
 		removeEdgeOutPointers(edge);
 		removeEdgeInPointers(edge);
-		reverseEdge0(edge);
+		setEndpoints(edge, newSource, newTarget);
 		addEdgeToLists(edge);
 	}
 

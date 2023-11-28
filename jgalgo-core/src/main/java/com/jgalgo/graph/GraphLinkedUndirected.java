@@ -264,8 +264,15 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	}
 
 	@Override
-	public void reverseEdge(int edge) {
-		// Do nothing
+	public void moveEdge(int edge, int newSource, int newTarget) {
+		checkEdge(edge);
+		checkNewEdgeEndpoints(newSource, newTarget);
+		int oldSource = source(edge), oldTarget = target(edge);
+		removeEdgePointers(edge, oldSource);
+		if (oldSource != oldTarget)
+			removeEdgePointers(edge, oldTarget);
+		setEndpoints(edge, newSource, newTarget);
+		addEdgeToLists(edge);
 	}
 
 	@Override

@@ -143,8 +143,26 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 	}
 
 	@Override
-	public void reverseEdge(int edge) {
-		// Do nothing
+	public void moveEdge(int edge, int newSource, int newTarget) {
+		checkEdge(edge);
+		int oldSource = source(edge), oldTarget = target(edge);
+		if ((oldSource == newSource && oldTarget == newTarget) || (oldSource == newTarget && oldTarget == newSource))
+			return;
+		checkNewEdgeEndpoints(newSource, newTarget);
+
+		edges[oldSource].data[oldTarget] = EdgeNone;
+		edgesNum[oldSource]--;
+		if (oldSource != oldTarget) {
+			edges[oldTarget].data[oldSource] = EdgeNone;
+			edgesNum[oldTarget]--;
+		}
+		edges[newSource].data[newTarget] = edge;
+		edgesNum[newSource]++;
+		if (newSource != newTarget) {
+			edges[newTarget].data[newSource] = edge;
+			edgesNum[newTarget]++;
+		}
+		setEndpoints(edge, newSource, newTarget);
 	}
 
 	@Override

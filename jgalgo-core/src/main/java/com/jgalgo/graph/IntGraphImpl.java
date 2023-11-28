@@ -239,9 +239,8 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	}
 
 	@Override
-	public void reverseEdge(int edge) {
-		int eIdx = eiMap.idToIndex(edge);
-		indexGraph.reverseEdge(eIdx);
+	public void moveEdge(int edge, int newSource, int newTarget) {
+		indexGraph.moveEdge(eiMap.idToIndex(edge), viMap.idToIndex(newSource), viMap.idToIndex(newTarget));
 	}
 
 	@Override

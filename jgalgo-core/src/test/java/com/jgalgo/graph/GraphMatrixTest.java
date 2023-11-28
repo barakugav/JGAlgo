@@ -170,6 +170,13 @@ public class GraphMatrixTest extends TestBase {
 	}
 
 	@Test
+	public void moveEdge() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testMoveEdge(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
 	public void testUndirectedMST() {
 		final long seed = 0x63a396934a49021cL;
 		foreachBoolConfig(selfEdges -> {

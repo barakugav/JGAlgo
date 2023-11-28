@@ -211,16 +211,6 @@ public interface IndexGraph extends IntGraph {
 	 * method should not be called. Use the original graph instead.
 	 */
 	@Override
-	void reverseEdge(int edge);
-
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>
-	 * If this index graph object was obtained from a regular {@link Graph} using {@link Graph#indexGraph()}, this
-	 * method should not be called. Use the original graph instead.
-	 */
-	@Override
 	void clear();
 
 	/**

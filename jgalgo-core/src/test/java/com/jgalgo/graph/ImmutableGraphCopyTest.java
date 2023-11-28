@@ -37,7 +37,8 @@ public class ImmutableGraphCopyTest extends TestBase {
 		final long seed = 0x4ff62bb8f3a0b831L;
 		final Random rand = new Random(seed);
 		final int n = 47, m = 1345;
-		GraphFactory<Integer, Integer> factory = intGraph ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
+		GraphFactory<Integer, Integer> factory =
+				intGraph ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
 		Graph<Integer, Integer> g = factory.setDirected(directed).allowSelfEdges().allowParallelEdges().newGraph();
 
 		WeightsInt<Integer> vWeights = g.addVerticesWeights(VerticesWeightsKey, int.class);
@@ -259,6 +260,18 @@ public class ImmutableGraphCopyTest extends TestBase {
 			Graph<Integer, Integer> gImmutable = gOrig.immutableCopy();
 			Integer e = gImmutable.edges().iterator().next();
 			assertThrows(UnsupportedOperationException.class, () -> gImmutable.reverseEdge(e));
+		});
+	}
+
+	@Test
+	public void moveEdge() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed);
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+			Graph<Integer, Integer> gImmutable = gOrig.immutableCopy();
+			Integer e = gImmutable.edges().iterator().next();
+			Integer v = gImmutable.vertices().iterator().next();
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.moveEdge(e, v, v));
 		});
 	}
 

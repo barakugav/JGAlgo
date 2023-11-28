@@ -627,14 +627,14 @@ public class GraphsTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig((intGraph, directed, index, withSelfEdges) -> {
-			Graph<Integer, Integer> g0 = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(100).m(400)
-					.directed(directed)
-					.parallelEdges(true).selfEdges(withSelfEdges).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g0 =
+					new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(100).m(400).directed(directed)
+							.parallelEdges(true).selfEdges(withSelfEdges).cycles(true).connected(false).build();
 			Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 
 			Set<Integer> selfEdges = Graphs.selfEdges(g);
-			Set<Integer> expected = g.edges().stream().filter(e -> g.edgeSource(e).equals(g.edgeTarget(e)))
-					.collect(Collectors.toSet());
+			Set<Integer> expected =
+					g.edges().stream().filter(e -> g.edgeSource(e).equals(g.edgeTarget(e))).collect(Collectors.toSet());
 
 			assertEqualsBool(expected.isEmpty(), selfEdges.isEmpty());
 			assertEquals(expected.size(), selfEdges.size());
@@ -718,7 +718,8 @@ public class GraphsTest extends TestBase {
 		IndexGraph g = new GraphBaseMutable(GraphBaseMutable.Capabilities.of(false, false, false), 0, 0) {
 
 			@Override
-			public void reverseEdge(int edge) {
+			public void moveEdge(int edge, int newSource, int newTarget) {
+				throw new UnsupportedOperationException();
 			}
 
 			@Override

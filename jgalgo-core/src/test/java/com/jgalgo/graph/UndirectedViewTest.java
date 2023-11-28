@@ -476,6 +476,21 @@ public class UndirectedViewTest extends TestBase {
 	}
 
 	@Test
+	public void moveEdge() {
+		foreachBoolConfig((intGraph, index) -> {
+			Graph<Integer, Integer> g = index ? createGraph(intGraph).indexGraph() : createGraph(intGraph);
+			Graph<Integer, Integer> undirectedG = g.undirectedView();
+
+			Integer e = undirectedG.edges().iterator().next();
+			Integer newSource = undirectedG.edgeTarget(e), newTarget = undirectedG.vertices().iterator().next();
+
+			undirectedG.moveEdge(e, newSource, newTarget);
+			assertEquals(newSource, undirectedG.edgeSource(e));
+			assertEquals(newTarget, undirectedG.edgeTarget(e));
+		});
+	}
+
+	@Test
 	public void testEdgeGetSourceTarget() {
 		foreachBoolConfig((intGraph, index) -> {
 			Graph<Integer, Integer> g = index ? createGraph(intGraph).indexGraph() : createGraph(intGraph);

@@ -308,15 +308,28 @@ public interface Graph<V, E> {
 	}
 
 	/**
-	 * Reverse an edge by switching its source and target.
+	 * Move an existing edge to new source and target vertices.
 	 *
 	 * <p>
-	 * If the graph is undirected, this method does nothing.
+	 * This method changes the source and target of an existing edge, while keeping the identifier of the edge and the
+	 * weights associated with it.
+	 *
+	 * @param  edge                an existing edge in the graph
+	 * @param  newSource           the new source vertex
+	 * @param  newTarget           the new target vertex
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
+	 */
+	void moveEdge(E edge, V newSource, V newTarget);
+
+	/**
+	 * Reverse an edge by switching its source and target.
 	 *
 	 * @param  edge                an existing edge in the graph
 	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
 	 */
-	void reverseEdge(E edge);
+	default void reverseEdge(E edge) {
+		moveEdge(edge, edgeTarget(edge), edgeSource(edge));
+	}
 
 	/**
 	 * Get the source vertex of an edge.

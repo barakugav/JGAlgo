@@ -175,9 +175,6 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 	@Override
 	public int addEdge(int source, int target) {
-		if (getEdge(source, target) != -1)
-			throw new IllegalArgumentException(
-					"Edge (idx=" + source + ",idx=" + target + ") already exists. Parallel edges are not allowed.");
 		int edge = super.addEdge(source, target);
 		ensureEdgesMapMutable(edgesOut, source).put(target, edge);
 		ensureEdgesMapMutable(edgesIn, target).put(source, edge);
@@ -230,26 +227,22 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 	}
 
 	@Override
-	public void reverseEdge(int edge) {
+	public void moveEdge(int edge, int newSource, int newTarget) {
 		checkEdge(edge);
-		int source = source(edge), target = target(edge);
-		if (source == target)
+		int oldSource = source(edge), oldTarget = target(edge);
+		if (oldSource == newSource && oldTarget == newTarget)
 			return;
-		if (getEdge(target, source) != -1)
-			throw new IllegalArgumentException(
-					"Edge (idx=" + target + ",idx=" + source + ") already exists. Parallel edges are not allowed.");
+		checkNewEdgeEndpoints(newSource, newTarget);
 
-		int oldVal1 = edgesOut[source].remove(target);
-		int oldVal2 = edgesIn[target].remove(source);
-		assert edge == oldVal1;
-		assert edge == oldVal2;
+		int oldVal1 = edgesOut[oldSource].remove(oldTarget);
+		int oldVal2 = edgesIn[oldTarget].remove(oldSource);
+		assert edge == oldVal1 && edge == oldVal2;
 
-		int oldVal4 = ensureEdgesMapMutable(edgesOut, target).put(source, edge);
-		int oldVal3 = ensureEdgesMapMutable(edgesIn, source).put(target, edge);
-		assert -1 == oldVal3;
-		assert -1 == oldVal4;
+		int oldVal4 = ensureEdgesMapMutable(edgesOut, newSource).put(newTarget, edge);
+		int oldVal3 = ensureEdgesMapMutable(edgesIn, newTarget).put(newSource, edge);
+		assert -1 == oldVal3 && -1 == oldVal4;
 
-		super.reverseEdge0(edge);
+		setEndpoints(edge, newSource, newTarget);
 	}
 
 	@Override

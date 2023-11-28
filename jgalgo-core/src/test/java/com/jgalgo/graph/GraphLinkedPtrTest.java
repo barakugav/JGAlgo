@@ -171,6 +171,13 @@ public class GraphLinkedPtrTest extends TestBase {
 	}
 
 	@Test
+	public void moveEdge() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testMoveEdge(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
 	public void testUndirectedMST() {
 		final long seed = 0x757d2f9883276f90L;
 		foreachBoolConfig(selfEdges -> {

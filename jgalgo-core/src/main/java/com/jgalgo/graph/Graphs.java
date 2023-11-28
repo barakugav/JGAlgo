@@ -106,8 +106,8 @@ public class Graphs {
 		}
 
 		@Override
-		public void reverseEdge(E edge) {
-			throw new UnsupportedOperationException("graph is immutable, cannot reverse edges");
+		public void moveEdge(E edge, V newSource, V newTarget) {
+			throw new UnsupportedOperationException("graph is immutable, cannot move edges");
 		}
 
 		@Override
@@ -276,8 +276,8 @@ public class Graphs {
 		}
 
 		@Override
-		public void reverseEdge(int edge) {
-			throw new UnsupportedOperationException("graph is immutable, cannot reverse edges");
+		public void moveEdge(int edge, int newSource, int newTarget) {
+			throw new UnsupportedOperationException("graph is immutable, cannot move edges");
 		}
 
 		@Override
@@ -721,8 +721,8 @@ public class Graphs {
 		// }
 
 		@Override
-		public void reverseEdge(E edge) {
-			graph().reverseEdge(edge);
+		public void moveEdge(E edge, V newSource, V newTarget) {
+			graph().moveEdge(edge, newSource, newTarget);
 		}
 
 		@Override
@@ -854,8 +854,8 @@ public class Graphs {
 		// }
 
 		@Override
-		public void reverseEdge(int edge) {
-			graph().reverseEdge(edge);
+		public void moveEdge(int edge, int newSource, int newTarget) {
+			graph().moveEdge(edge, newSource, newTarget);
 		}
 
 		@Override
@@ -1010,6 +1010,11 @@ public class Graphs {
 		}
 
 		@Override
+		public void moveEdge(E edge, V newSource, V newTarget) {
+			graph().moveEdge(edge, newTarget, newSource);
+		}
+
+		@Override
 		public V edgeSource(E edge) {
 			return graph().edgeTarget(edge);
 		}
@@ -1070,6 +1075,11 @@ public class Graphs {
 		@Override
 		public void removeOutEdgesOf(int vertex) {
 			graph().removeInEdgesOf(vertex);
+		}
+
+		@Override
+		public void moveEdge(int edge, int newSource, int newTarget) {
+			graph().moveEdge(edge, newTarget, newSource);
 		}
 
 		@Override

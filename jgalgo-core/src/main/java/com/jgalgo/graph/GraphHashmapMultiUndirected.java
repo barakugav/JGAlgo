@@ -259,8 +259,12 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract {
 	}
 
 	@Override
-	public void reverseEdge(int edge) {
-		// Do nothing
+	public void moveEdge(int edge, int newSource, int newTarget) {
+		checkEdge(edge);
+		checkNewEdgeEndpoints(newSource, newTarget);
+		removeEdgeFromMaps(edge);
+		addEdgeToMaps(edge, newSource, newTarget);
+		setEndpoints(edge, newSource, newTarget);
 	}
 
 	@Override

@@ -216,8 +216,16 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract {
 	}
 
 	@Override
-	public void reverseEdge(int edge) {
-		// Do nothing
+	public void moveEdge(int edge, int newSource, int newTarget) {
+		checkEdge(edge);
+		checkNewEdgeEndpoints(newSource, newTarget);
+		int oldSource = source(edge), oldTarget = target(edge);
+		Edge n = getEdge(edge);
+		removeEdgePointers(n, oldSource);
+		if (oldSource != oldTarget)
+			removeEdgePointers(n, oldTarget);
+		setEndpoints(edge, newSource, newTarget);
+		addEdgeToLists(n);
 	}
 
 	@Override

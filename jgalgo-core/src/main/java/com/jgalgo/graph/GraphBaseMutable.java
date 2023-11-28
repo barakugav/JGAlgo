@@ -128,14 +128,6 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 	}
 
-	void reverseEdge0(int edge) {
-		long endpoints = edgeEndpoints[edge];
-		int u = endpoints2Source(endpoints);
-		int v = endpoints2Target(endpoints);
-		endpoints = sourceTarget2Endpoints(v, u);
-		edgeEndpoints[edge] = endpoints;
-	}
-
 	@Override
 	public final boolean isAllowSelfEdges() {
 		return isAllowSelfEdges;
@@ -193,8 +185,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	public int addEdge(int source, int target) {
 		checkVertex(source);
 		checkVertex(target);
-		if (!isAllowSelfEdges() && source == target)
-			throw new IllegalArgumentException("Self edges are not allowed");
+		checkNewEdgeEndpoints(source, target);
 
 		int e = edges0().newIdx();
 
@@ -204,6 +195,14 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 		setEndpoints(e, source, target);
 		return e;
+	}
+
+	void checkNewEdgeEndpoints(int source, int target) {
+		if (!isAllowSelfEdges() && source == target)
+			throw new IllegalArgumentException("Self edges are not allowed");
+		if (!isAllowParallelEdges() && getEdge(source, target) != -1)
+			throw new IllegalArgumentException(
+					"Edge (idx=" + source + ",idx=" + target + ") already exists. Parallel edges are not allowed.");
 	}
 
 	@Override

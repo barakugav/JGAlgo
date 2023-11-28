@@ -441,6 +441,22 @@ public class ReversedGraphViewTest extends TestBase {
 	}
 
 	@Test
+	public void moveEdge() {
+		foreachBoolConfig((intGraph, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(true, intGraph);
+			Graph<Integer, Integer> gRev0 = gOrig0.reverseView();
+			Graph<Integer, Integer> gRev = index ? gRev0.indexGraph() : gRev0;
+
+			Integer e = gRev.edges().iterator().next();
+			Integer newSource = gRev.edgeTarget(e), newTarget = gRev.vertices().iterator().next();
+
+			gRev.moveEdge(e, newSource, newTarget);
+			assertEquals(newSource, gRev.edgeSource(e));
+			assertEquals(newTarget, gRev.edgeTarget(e));
+		});
+	}
+
+	@Test
 	public void testEdgeGetSourceTarget() {
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);

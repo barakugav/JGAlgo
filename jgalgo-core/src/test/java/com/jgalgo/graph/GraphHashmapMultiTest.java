@@ -171,6 +171,13 @@ public class GraphHashmapMultiTest extends TestBase {
 	}
 
 	@Test
+	public void moveEdge() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testMoveEdge(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
 	public void testUndirectedMST() {
 		final long seed = 0x149c6019ec1655c2L;
 		foreachBoolConfig(selfEdges -> {

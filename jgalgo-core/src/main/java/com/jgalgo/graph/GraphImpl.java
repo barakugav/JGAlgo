@@ -160,9 +160,8 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	}
 
 	@Override
-	public void reverseEdge(E edge) {
-		int eIdx = eiMap.idToIndex(edge);
-		indexGraph.reverseEdge(eIdx);
+	public void moveEdge(E edge, V newSource, V newTarget) {
+		indexGraph.moveEdge(eiMap.idToIndex(edge), viMap.idToIndex(newSource), viMap.idToIndex(newTarget));
 	}
 
 	@Override

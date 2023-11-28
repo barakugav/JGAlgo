@@ -137,8 +137,6 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 	@Override
 	public int addEdge(int source, int target) {
-		if (edges[source].data[target] != EdgeNone)
-			throw new IllegalArgumentException("parallel edges are not supported");
 		int e = super.addEdge(source, target);
 		setEndpoints(e, source, target);
 		return e;

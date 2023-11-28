@@ -141,9 +141,6 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 
 	@Override
 	public int addEdge(int source, int target) {
-		if (getEdge(source, target) != -1)
-			throw new IllegalArgumentException(
-					"Edge (idx=" + source + ",idx=" + target + ") already exists. Parallel edges are not allowed.");
 		int edge = super.addEdge(source, target);
 		ensureEdgesMapMutable(edges, source).put(target, edge);
 		ensureEdgesMapMutable(edges, target).put(source, edge);
@@ -200,8 +197,18 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 	}
 
 	@Override
-	public void reverseEdge(int edge) {
-		// Do nothing
+	public void moveEdge(int edge, int newSource, int newTarget) {
+		checkEdge(edge);
+		int oldSource = source(edge), oldTarget = target(edge);
+		if ((oldSource == newSource && oldTarget == newTarget) || (oldSource == newTarget && oldTarget == newSource))
+			return;
+		checkNewEdgeEndpoints(newSource, newTarget);
+
+		edges[oldSource].remove(oldTarget);
+		edges[oldTarget].remove(oldSource);
+		ensureEdgesMapMutable(edges, newSource).put(newTarget, edge);
+		ensureEdgesMapMutable(edges, newTarget).put(newSource, edge);
+		setEndpoints(edge, newSource, newTarget);
 	}
 
 	@Override

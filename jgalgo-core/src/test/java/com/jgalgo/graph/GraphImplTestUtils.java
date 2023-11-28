@@ -1100,13 +1100,11 @@ class GraphImplTestUtils extends TestUtils {
 			do {
 				e = Graphs.randEdge(g1, rand);
 			} while (!parallelEdges && g1.getEdge(g1.edgeTarget(e), g1.edgeSource(e)) != null);
-			Integer u = g1.edgeSource(e), v = g1.edgeTarget(e);
-			assertEquals(u, g1.edgeSource(e));
-			assertEquals(v, g1.edgeTarget(e));
 
+			Integer u = g1.edgeSource(e), v = g1.edgeTarget(e);
 			g1.reverseEdge(e);
-			assertEquals(u, g1.edgeTarget(e));
 			assertEquals(v, g1.edgeSource(e));
+			assertEquals(u, g1.edgeTarget(e));
 
 			g2.removeEdge(e);
 			g2.addEdge(v, u, e);
@@ -1125,6 +1123,107 @@ class GraphImplTestUtils extends TestUtils {
 
 			assertThrows(IllegalArgumentException.class, () -> g1.reverseEdge(e));
 		}
+	}
+
+	static void testMoveEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+		final long seed = 0x5aaa87a14dbb6a83L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
+
+		foreachBoolConfig(directed -> {
+			final boolean selfEdges = graphImpl.get(true).isAllowSelfEdges();
+			final boolean parallelEdges = graphImpl.get(true).isAllowParallelEdges();
+			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
+					.parallelEdges(parallelEdges).selfEdges(selfEdges).cycles(true).connected(false)
+					.graphImpl(graphImpl).build();
+			Graph<Integer, Integer> g2 = g1.copy(true, true);
+
+			for (int ops = 0; ops < 20; ops++) {
+				Integer e = Graphs.randEdge(g1, rand);
+				if (ops == 3 && selfEdges)
+					e = Graphs.selfEdges(g1).iterator().next();
+				Integer oldSource = g1.edgeSource(e), oldTarget = g1.edgeTarget(e);
+
+				Integer newSource, newTarget;
+				for (;;) {
+					newSource = Graphs.randVertex(g1, rand);
+					newTarget = Graphs.randVertex(g1, rand);
+					if (!selfEdges && newSource.equals(newTarget))
+						continue;
+					if (!parallelEdges && g1.getEdge(newSource, newTarget) != null)
+						continue;
+					break;
+				}
+				if (ops == 0) {
+					newSource = oldSource;
+					newTarget = oldTarget;
+				} else if (ops == 1) {
+					newSource = oldTarget;
+					newTarget = oldSource;
+				} else if (ops == 2 && selfEdges) {
+					newTarget = newSource;
+				}
+				g1.moveEdge(e, newSource, newTarget);
+				if (directed) {
+					assertEquals(newSource, g1.edgeSource(e));
+					assertEquals(newTarget, g1.edgeTarget(e));
+				} else {
+					assertTrue((newSource.equals(g1.edgeSource(e)) && newTarget.equals(g1.edgeTarget(e)))
+							|| (newSource.equals(g1.edgeTarget(e)) && newTarget.equals(g1.edgeSource(e))));
+				}
+
+				g2.removeEdge(e);
+				g2.addEdge(newSource, newTarget, e);
+
+				for (Integer v : List.of(oldSource, oldTarget, newSource, newTarget)) {
+					assertEquals(g1.outEdges(v).size(), g2.outEdges(v).size());
+					assertEquals(g1.outEdges(v), g2.outEdges(v));
+					assertEquals(g1.inEdges(v).size(), g2.inEdges(v).size());
+					assertEquals(g1.inEdges(v), g2.inEdges(v));
+
+					Set<Integer> iteratedEdges = new ObjectOpenHashSet<>();
+					for (Integer e1 : g1.outEdges(v))
+						assertTrue(iteratedEdges.add(e1));
+					assertEquals(iteratedEdges, g2.outEdges(v));
+					iteratedEdges.clear();
+					for (Integer e1 : g1.inEdges(v))
+						assertTrue(iteratedEdges.add(e1));
+					assertEquals(iteratedEdges, g2.inEdges(v));
+				}
+
+				assertEquals(g2, g1);
+			}
+
+			if (!selfEdges) {
+				Integer e = Graphs.randEdge(g1, rand);
+				Integer v = Graphs.randVertex(g1, rand);
+				assertThrows(IllegalArgumentException.class, () -> g1.moveEdge(e, v, v));
+			}
+
+			if (!parallelEdges) {
+				Integer e = Graphs.randEdge(g1, rand);
+
+				Integer newSource, newTarget;
+				for (;;) {
+					newSource = Graphs.randVertex(g1, rand);
+					newTarget = Graphs.randVertex(g1, rand);
+					if (!selfEdges && newSource.equals(newTarget))
+						continue;
+					if (!parallelEdges && g1.getEdge(newSource, newTarget) != null)
+						continue;
+					break;
+				}
+
+				Integer nonExistingEdge;
+				do {
+					nonExistingEdge = Integer.valueOf(rand.nextInt());
+				} while (g1.edges().contains(nonExistingEdge) || nonExistingEdge.intValue() < 0);
+				g1.addEdge(newSource, newTarget, nonExistingEdge);
+
+				Integer newSource0 = newSource, newTarget0 = newTarget;
+				assertThrows(IllegalArgumentException.class, () -> g1.moveEdge(e, newSource0, newTarget0));
+			}
+		});
 	}
 
 	static void testUndirectedMST(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {

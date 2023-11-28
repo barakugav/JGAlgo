@@ -216,16 +216,15 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	}
 
 	@Override
-	public void reverseEdge(int edge) {
+	public void moveEdge(int edge, int newSource, int newTarget) {
 		checkEdge(edge);
-		int u = source(edge), v = target(edge);
-		if (u == v)
-			return;
-		removeEdgeFromList(edgesOut, edgesOutNum, u, edge);
-		removeEdgeFromList(edgesIn, edgesInNum, v, edge);
-		addEdgeToList(edgesOut, edgesOutNum, v, edge);
-		addEdgeToList(edgesIn, edgesInNum, u, edge);
-		super.reverseEdge0(edge);
+		checkNewEdgeEndpoints(newSource, newTarget);
+		int oldSource = source(edge), oldTarget = target(edge);
+		removeEdgeFromList(edgesOut, edgesOutNum, oldSource, edge);
+		removeEdgeFromList(edgesIn, edgesInNum, oldTarget, edge);
+		addEdgeToList(edgesOut, edgesOutNum, newSource, edge);
+		addEdgeToList(edgesIn, edgesInNum, newTarget, edge);
+		setEndpoints(edge, newSource, newTarget);
 	}
 
 	@Override

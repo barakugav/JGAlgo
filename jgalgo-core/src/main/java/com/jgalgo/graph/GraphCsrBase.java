@@ -190,8 +190,8 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	}
 
 	@Override
-	public void reverseEdge(int edge) {
-		throw new UnsupportedOperationException("graph is immutable, can't reverse edge");
+	public void moveEdge(int edge, int newSource, int newTarget) {
+		throw new UnsupportedOperationException("graph is immutable, can't move edge");
 	}
 
 	@Override

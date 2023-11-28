@@ -146,18 +146,20 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	}
 
 	@Override
-	public void reverseEdge(int edge) {
+	public void moveEdge(int edge, int newSource, int newTarget) {
 		checkEdge(edge);
-		int u = source(edge), v = target(edge);
-		if (edges[v].data[u] != EdgeNone && u != v)
-			throw new IllegalArgumentException("parallel edges are not supported");
-		edges[u].data[v] = EdgeNone;
-		edges[v].data[u] = edge;
-		edgesOutNum[u]--;
-		edgesInNum[v]--;
-		edgesOutNum[v]++;
-		edgesInNum[u]++;
-		super.reverseEdge0(edge);
+		int oldSource = source(edge), oldTarget = target(edge);
+		if (oldSource == newSource && oldTarget == newTarget)
+			return;
+		checkNewEdgeEndpoints(newSource, newTarget);
+
+		edges[oldSource].data[oldTarget] = EdgeNone;
+		edgesOutNum[oldSource]--;
+		edgesInNum[oldTarget]--;
+		edges[newSource].data[newTarget] = edge;
+		edgesOutNum[newSource]++;
+		edgesInNum[newTarget]++;
+		setEndpoints(edge, newSource, newTarget);
 	}
 
 	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutDirected {
