@@ -21,6 +21,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -86,9 +87,9 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	@Override
 	public void addVertex(V vertex) {
 		if (vertex == null)
-			throw new IllegalArgumentException("User chosen vertex ID must be non null");
+			throw new IllegalArgumentException("Vertex must be non null");
 		if (vertices().contains(vertex))
-			throw new IllegalArgumentException("Graph already contain a vertex with the specified ID: " + vertex);
+			throw new IllegalArgumentException("Graph already contain such a vertex: " + vertex);
 		int vIdx = indexGraph.addVertex();
 		viMap.addId(vertex, vIdx);
 	}
@@ -97,6 +98,15 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	public void removeVertex(V vertex) {
 		int vIdx = viMap.idToIndex(vertex);
 		indexGraph.removeVertex(vIdx);
+	}
+
+	@Override
+	public void renameVertex(V vertex, V newId) {
+		if (newId == null)
+			throw new IllegalArgumentException("Vertex must be non null");
+		if (vertices().contains(newId))
+			throw new IllegalArgumentException("Graph already contain such a vertex: " + newId);
+		viMap.renameId(vertex, newId);
 	}
 
 	@Override
@@ -128,9 +138,9 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	@Override
 	public void addEdge(V source, V target, E edge) {
 		if (edge == null)
-			throw new IllegalArgumentException("User chosen edge ID must be non null");
+			throw new IllegalArgumentException("Edge must be non null");
 		if (edges().contains(edge))
-			throw new IllegalArgumentException("Graph already contain a edge with the specified ID: " + edge);
+			throw new IllegalArgumentException("Graph already contain such a edge: " + edge);
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
 		int eIdx = indexGraph.addEdge(uIdx, vIdx);
@@ -157,6 +167,15 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	@Override
 	public void removeInEdgesOf(V target) {
 		indexGraph.removeInEdgesOf(viMap.idToIndex(target));
+	}
+
+	@Override
+	public void renameEdge(E edge, E newId) {
+		if (newId == null)
+			throw new IllegalArgumentException("Edge must be non null");
+		if (edges().contains(newId))
+			throw new IllegalArgumentException("Graph already contain such a edge: " + newId);
+		eiMap.renameId(edge, newId);
 	}
 
 	@Override
@@ -358,6 +377,7 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 		private final Set<K> idsView; // TODO move to graph abstract implementation
 		private Object[] indexToId;
 		private final boolean isEdges;
+		private final boolean immutable;
 
 		IdIdxMapImpl(IndexGraph g, int expectedSize, boolean isEdges) {
 			this.elements = isEdges ? g.edges() : g.vertices();
@@ -366,6 +386,7 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 			idsView = ObjectSets.unmodifiable(idToIndex.keySet());
 			indexToId = expectedSize == 0 ? ObjectArrays.DEFAULT_EMPTY_ARRAY : new Object[expectedSize];
 			this.isEdges = isEdges;
+			immutable = false;
 			initListeners(g);
 		}
 
@@ -412,6 +433,7 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 				}
 			}
 			this.isEdges = isEdges;
+			immutable = g instanceof ImmutableGraph;
 			idsView = ObjectSets.unmodifiable(idToIndex.keySet());
 			initListeners(g);
 		}
@@ -501,6 +523,27 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 		@Override
 		public int idToIndexIfExist(K id) {
 			return idToIndex.getInt(id);
+		}
+
+		void renameId(K oldId, K newId) {
+			if (immutable) {
+				if (isEdges) {
+					throw new UnsupportedOperationException("graph is immutable, cannot rename vertices");
+				} else {
+					throw new UnsupportedOperationException("graph is immutable, cannot rename edges");
+				}
+			}
+			int idx = idToIndex.removeInt(oldId);
+			if (idx < 0) {
+				if (isEdges) {
+					throw NoSuchEdgeException.ofEdge(oldId);
+				} else {
+					throw NoSuchVertexException.ofVertex(oldId);
+				}
+			}
+			int oldIdx = idToIndex.put(newId, idx);
+			assert oldIdx == -1;
+			indexToId[idx] = newId;
 		}
 
 		Set<K> idSet() {

@@ -118,6 +118,15 @@ public interface IndexGraph extends IntGraph {
 	void removeVertex(int vertex);
 
 	/**
+	 * Unsupported operation.
+	 */
+	@Deprecated
+	@Override
+	default void renameVertex(int vertex, int newId) {
+		throw new UnsupportedOperationException("Index graphs do not support user chosen IDs");
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>
@@ -201,6 +210,15 @@ public interface IndexGraph extends IntGraph {
 	@Override
 	default void removeInEdgesOf(int target) {
 		IntGraph.super.removeInEdgesOf(target);
+	}
+
+	/**
+	 * Unsupported operation.
+	 */
+	@Deprecated
+	@Override
+	default void renameEdge(int edge, int newId) {
+		throw new UnsupportedOperationException("Index graphs do not support user chosen IDs");
 	}
 
 	/**

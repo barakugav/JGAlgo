@@ -153,6 +153,42 @@ public class UndirectedViewTest extends TestBase {
 	}
 
 	@Test
+	public void renameVertex() {
+		foreachBoolConfig((intGraph, index) -> {
+			Graph<Integer, Integer> g0 = createGraph(intGraph);
+			Graph<Integer, Integer> undirectedG0 = g0.undirectedView();
+			Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
+			Graph<Integer, Integer> undirectedG = index ? undirectedG0.indexGraph() : undirectedG0;
+
+			Integer nonExistingVertex;
+			for (int v = 0;; v++) {
+				if (!undirectedG.vertices().contains(Integer.valueOf(v))) {
+					nonExistingVertex = Integer.valueOf(v);
+					break;
+				}
+			}
+			Integer vertex = g.vertices().iterator().next();
+
+			if (index) {
+				/* rename is not supported in index graphs */
+				assertThrows(UnsupportedOperationException.class,
+						() -> undirectedG.renameVertex(vertex, nonExistingVertex));
+				return;
+			}
+
+			Graph<Integer, Integer> gExpected = g.copy(true, true);
+			Graph<Integer, Integer> undirectedGExpected = undirectedG.copy(true, true);
+			gExpected.renameVertex(vertex, nonExistingVertex);
+			undirectedGExpected.renameVertex(vertex, nonExistingVertex);
+
+			undirectedG.renameVertex(vertex, nonExistingVertex);
+
+			assertEquals(undirectedGExpected, undirectedG);
+			assertEquals(gExpected, g);
+		});
+	}
+
+	@Test
 	public void testAddRemoveEdge() {
 		foreachBoolConfig((intGraph, index) -> {
 			Graph<Integer, Integer> g0 = createGraph(intGraph);
@@ -224,6 +260,41 @@ public class UndirectedViewTest extends TestBase {
 				assertFalse(undirectedG.edges().contains(edgeToRemove));
 			}
 			assertEquals(g.edges(), undirectedG.edges());
+		});
+	}
+
+	@Test
+	public void renameEdge() {
+		foreachBoolConfig((intGraph, index) -> {
+			Graph<Integer, Integer> g0 = createGraph(intGraph);
+			Graph<Integer, Integer> undirectedG0 = g0.undirectedView();
+			Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
+			Graph<Integer, Integer> undirectedG = index ? undirectedG0.indexGraph() : undirectedG0;
+
+			Integer nonExistingEdge;
+			for (int e = 0;; e++) {
+				if (!undirectedG.edges().contains(Integer.valueOf(e))) {
+					nonExistingEdge = Integer.valueOf(e);
+					break;
+				}
+			}
+			Integer edge = g.edges().iterator().next();
+
+			if (index) {
+				/* rename is not supported in index graphs */
+				assertThrows(UnsupportedOperationException.class, () -> undirectedG.renameEdge(edge, nonExistingEdge));
+				return;
+			}
+
+			Graph<Integer, Integer> gExpected = g.copy(true, true);
+			Graph<Integer, Integer> undirectedGExpected = undirectedG.copy(true, true);
+			gExpected.renameEdge(edge, nonExistingEdge);
+			undirectedGExpected.renameEdge(edge, nonExistingEdge);
+
+			undirectedG.renameEdge(edge, nonExistingEdge);
+
+			assertEquals(undirectedGExpected, undirectedG);
+			assertEquals(gExpected, g);
 		});
 	}
 

@@ -179,6 +179,19 @@ public interface Graph<V, E> {
 	void removeVertex(V vertex);
 
 	/**
+	 * Set a new identifier for an existing vertex.
+	 *
+	 * <p>
+	 * This method changes the identifier of an existing vertex, while keeping the edges connecting to it, along with
+	 * the weights associated with it.
+	 *
+	 * @param  vertex                an existing vertex in the graph
+	 * @param  newId                 the new vertex identifier
+	 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier
+	 */
+	void renameVertex(V vertex, V newId);
+
+	/**
 	 * Get the edges whose source is {@code source}.
 	 *
 	 * <p>
@@ -306,6 +319,19 @@ public interface Graph<V, E> {
 			eit.remove();
 		}
 	}
+
+	/**
+	 * Set a new identifier for an existing edge.
+	 *
+	 * <p>
+	 * This method changes the identifier of an existing edge, while keeping the source and target of the edge, along
+	 * with the weights associated with it.
+	 *
+	 * @param  edge                an existing edge in the graph
+	 * @param  newId               the new edge identifier
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
+	 */
+	void renameEdge(E edge, E newId);
 
 	/**
 	 * Move an existing edge to new source and target vertices.

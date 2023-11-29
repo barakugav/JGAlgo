@@ -146,6 +146,41 @@ public class ReversedGraphViewTest extends TestBase {
 	}
 
 	@Test
+	public void renameVertex() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gRev0 = gOrig0.reverseView();
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+			Graph<Integer, Integer> gRev = index ? gRev0.indexGraph() : gRev0;
+
+			Integer nonExistingVertex;
+			for (int v = 0;; v++) {
+				if (!gRev.vertices().contains(Integer.valueOf(v))) {
+					nonExistingVertex = Integer.valueOf(v);
+					break;
+				}
+			}
+			Integer vertex = gOrig.vertices().iterator().next();
+
+			if (index) {
+				/* rename is not supported in index graphs */
+				assertThrows(UnsupportedOperationException.class, () -> gRev.renameVertex(vertex, nonExistingVertex));
+				return;
+			}
+
+			Graph<Integer, Integer> gExpected = gOrig.copy(true, true);
+			Graph<Integer, Integer> gRevExpected = gRev.copy(true, true);
+			gExpected.renameVertex(vertex, nonExistingVertex);
+			gRevExpected.renameVertex(vertex, nonExistingVertex);
+
+			gRev.renameVertex(vertex, nonExistingVertex);
+
+			assertEquals(gRevExpected, gRev);
+			assertEquals(gExpected, gOrig);
+		});
+	}
+
+	@Test
 	public void testAddRemoveEdge() {
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
@@ -217,6 +252,41 @@ public class ReversedGraphViewTest extends TestBase {
 				assertFalse(gRev.edges().contains(edgeToRemove));
 			}
 			assertEquals(gOrig.edges(), gRev.edges());
+		});
+	}
+
+	@Test
+	public void renameEdge() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gRev0 = gOrig0.reverseView();
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+			Graph<Integer, Integer> gRev = index ? gRev0.indexGraph() : gRev0;
+
+			Integer nonExistingEdge;
+			for (int e = 0;; e++) {
+				if (!gRev.edges().contains(Integer.valueOf(e))) {
+					nonExistingEdge = Integer.valueOf(e);
+					break;
+				}
+			}
+			Integer edge = gOrig.edges().iterator().next();
+
+			if (index) {
+				/* rename is not supported in index graphs */
+				assertThrows(UnsupportedOperationException.class, () -> gRev.renameEdge(edge, nonExistingEdge));
+				return;
+			}
+
+			Graph<Integer, Integer> gExpected = gOrig.copy(true, true);
+			Graph<Integer, Integer> gRevExpected = gRev.copy(true, true);
+			gExpected.renameEdge(edge, nonExistingEdge);
+			gRevExpected.renameEdge(edge, nonExistingEdge);
+
+			gRev.renameEdge(edge, nonExistingEdge);
+
+			assertEquals(gRevExpected, gRev);
+			assertEquals(gExpected, gOrig);
 		});
 	}
 

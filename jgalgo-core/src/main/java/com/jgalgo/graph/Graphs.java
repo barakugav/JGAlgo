@@ -81,6 +81,11 @@ public class Graphs {
 		}
 
 		@Override
+		public void renameVertex(V vertex, V newId) {
+			throw new UnsupportedOperationException("graph is immutable, cannot rename vertices");
+		}
+
+		@Override
 		public EdgeSet<V, E> outEdges(V source) {
 			return new ImmutableEdgeSet<>(graph.outEdges(source));
 		}
@@ -103,6 +108,11 @@ public class Graphs {
 		@Override
 		public void removeEdge(E edge) {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
+		}
+
+		@Override
+		public void renameEdge(E edge, E newId) {
+			throw new UnsupportedOperationException("graph is immutable, cannot rename edges");
 		}
 
 		@Override
@@ -236,11 +246,6 @@ public class Graphs {
 		}
 
 		@Override
-		public void addVertex(int vertex) {
-			throw new UnsupportedOperationException("graph is immutable, cannot add vertices");
-		}
-
-		@Override
 		public void removeVertex(int vertex) {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove vertices");
 		}
@@ -262,11 +267,6 @@ public class Graphs {
 
 		@Override
 		public int addEdge(int source, int target) {
-			throw new UnsupportedOperationException("graph is immutable, cannot add edges");
-		}
-
-		@Override
-		public void addEdge(int source, int target, int edge) {
 			throw new UnsupportedOperationException("graph is immutable, cannot add edges");
 		}
 
@@ -376,6 +376,26 @@ public class Graphs {
 		}
 
 		@Override
+		public void addVertex(int vertex) {
+			throw new UnsupportedOperationException("graph is immutable, cannot add vertices");
+		}
+
+		@Override
+		public void renameVertex(int vertex, int newId) {
+			throw new UnsupportedOperationException("graph is immutable, cannot rename vertices");
+		}
+
+		@Override
+		public void addEdge(int source, int target, int edge) {
+			throw new UnsupportedOperationException("graph is immutable, cannot add edges");
+		}
+
+		@Override
+		public void renameEdge(int edge, int newId) {
+			throw new UnsupportedOperationException("graph is immutable, cannot rename edges");
+		}
+
+		@Override
 		public IndexGraph indexGraph() {
 			return graph().indexGraph().immutableView();
 		}
@@ -400,18 +420,6 @@ public class Graphs {
 		@Override
 		IndexGraph graph() {
 			return (IndexGraph) super.graph();
-		}
-
-		@Override
-		@Deprecated
-		public void addVertex(int vertex) {
-			IndexGraph.super.addVertex(vertex);
-		}
-
-		@Override
-		@Deprecated
-		public void addEdge(int source, int target, int edge) {
-			IndexGraph.super.addEdge(source, target, edge);
 		}
 
 		@Override
@@ -669,6 +677,11 @@ public class Graphs {
 			graph().removeVertex(vertex);
 		}
 
+		@Override
+		public void renameVertex(V vertex, V newId) {
+			graph().renameVertex(vertex, newId);
+		}
+
 		/* outEdges() is overridden by all view implementations */
 		// @Override
 		// public EdgeSet<V, E> outEdges(V source) {
@@ -719,6 +732,11 @@ public class Graphs {
 		// public void removeOutEdgesOf(V vertex) {
 		// graph().removeOutEdgesOf(vertex);
 		// }
+
+		@Override
+		public void renameEdge(E edge, E newId) {
+			graph().renameEdge(edge, newId);
+		}
 
 		@Override
 		public void moveEdge(E edge, V newSource, V newTarget) {
@@ -788,11 +806,6 @@ public class Graphs {
 		}
 
 		@Override
-		public void addVertex(int vertex) {
-			graph().addVertex(vertex);
-		}
-
-		@Override
 		public void removeVertex(int vertex) {
 			graph().removeVertex(vertex);
 		}
@@ -824,11 +837,6 @@ public class Graphs {
 		@Override
 		public int addEdge(int source, int target) {
 			return graph().addEdge(source, target);
-		}
-
-		@Override
-		public void addEdge(int source, int target, int edge) {
-			graph().addEdge(source, target, edge);
 		}
 
 		@Override
@@ -1063,11 +1071,6 @@ public class Graphs {
 		}
 
 		@Override
-		public void addEdge(int source, int target, int edge) {
-			graph().addEdge(target, source, edge);
-		}
-
-		@Override
 		public void removeInEdgesOf(int vertex) {
 			graph().removeOutEdgesOf(vertex);
 		}
@@ -1100,6 +1103,26 @@ public class Graphs {
 		}
 
 		@Override
+		public void addVertex(int vertex) {
+			graph().addVertex(vertex);
+		}
+
+		@Override
+		public void renameVertex(int vertex, int newId) {
+			graph().renameVertex(vertex, newId);
+		}
+
+		@Override
+		public void addEdge(int source, int target, int edge) {
+			graph().addEdge(target, source, edge);
+		}
+
+		@Override
+		public void renameEdge(int edge, int newId) {
+			graph().renameEdge(edge, newId);
+		}
+
+		@Override
 		public IndexGraph indexGraph() {
 			return graph().indexGraph().reverseView();
 		}
@@ -1124,18 +1147,6 @@ public class Graphs {
 		@Override
 		public IndexGraph graph() {
 			return (IndexGraph) super.graph();
-		}
-
-		@Override
-		@Deprecated
-		public void addVertex(int vertex) {
-			IndexGraph.super.addVertex(vertex);
-		}
-
-		@Override
-		@Deprecated
-		public void addEdge(int source, int target, int edge) {
-			IndexGraph.super.addEdge(source, target, edge);
 		}
 
 		@Override
@@ -1869,6 +1880,26 @@ public class Graphs {
 		}
 
 		@Override
+		public void addVertex(int vertex) {
+			graph().addVertex(vertex);
+		}
+
+		@Override
+		public void renameVertex(int vertex, int newId) {
+			graph().renameVertex(vertex, newId);
+		}
+
+		@Override
+		public void addEdge(int source, int target, int edge) {
+			graph().addEdge(source, target, edge);
+		}
+
+		@Override
+		public void renameEdge(int edge, int newId) {
+			graph().renameEdge(edge, newId);
+		}
+
+		@Override
 		public IndexGraph indexGraph() {
 			return graph().indexGraph().undirectedView();
 		}
@@ -1893,18 +1924,6 @@ public class Graphs {
 		@Override
 		public IndexGraph graph() {
 			return (IndexGraph) super.graph();
-		}
-
-		@Override
-		@Deprecated
-		public void addVertex(int vertex) {
-			IndexGraph.super.addVertex(vertex);
-		}
-
-		@Override
-		@Deprecated
-		public void addEdge(int source, int target, int edge) {
-			IndexGraph.super.addEdge(source, target, edge);
 		}
 
 		@Override

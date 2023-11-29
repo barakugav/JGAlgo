@@ -23,6 +23,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
+import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
@@ -155,9 +156,9 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	@Override
 	public void addVertex(int vertex) {
 		if (vertex < 0)
-			throw new IllegalArgumentException("User chosen vertex ID must be non negative: " + vertex);
+			throw new IllegalArgumentException("Vertex must be non negative");
 		if (vertices().contains(vertex))
-			throw new IllegalArgumentException("Graph already contain a vertex with the specified ID: " + vertex);
+			throw new IllegalArgumentException("Graph already contain such a vertex: " + vertex);
 		int vIdx = indexGraph.addVertex();
 		viMap.addId(vertex, vIdx);
 	}
@@ -166,6 +167,15 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	public void removeVertex(int vertex) {
 		int vIdx = viMap.idToIndex(vertex);
 		indexGraph.removeVertex(vIdx);
+	}
+
+	@Override
+	public void renameVertex(int vertex, int newId) {
+		if (newId < 0)
+			throw new IllegalArgumentException("Vertex must be non negative");
+		if (vertices().contains(newId))
+			throw new IllegalArgumentException("Graph already contain such a vertex: " + newId);
+		viMap.renameId(vertex, newId);
 	}
 
 	@Override
@@ -207,9 +217,9 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	@Override
 	public void addEdge(int source, int target, int edge) {
 		if (edge < 0)
-			throw new IllegalArgumentException("User chosen edge ID must be non negative: " + edge);
+			throw new IllegalArgumentException("Edge must be non negative");
 		if (edges().contains(edge))
-			throw new IllegalArgumentException("Graph already contain a edge with the specified ID: " + edge);
+			throw new IllegalArgumentException("Graph already contain such a edge: " + edge);
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
 		int eIdx = indexGraph.addEdge(uIdx, vIdx);
@@ -236,6 +246,15 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	@Override
 	public void removeInEdgesOf(int target) {
 		indexGraph.removeInEdgesOf(viMap.idToIndex(target));
+	}
+
+	@Override
+	public void renameEdge(int edge, int newId) {
+		if (newId < 0)
+			throw new IllegalArgumentException("Edge must be non negative");
+		if (edges().contains(newId))
+			throw new IllegalArgumentException("Graph already contain such a edge: " + newId);
+		eiMap.renameId(edge, newId);
 	}
 
 	@Override
@@ -436,6 +455,7 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 		private final IntSet idsView; // TODO move to graph abstract implementation
 		private int[] indexToId;
 		private final boolean isEdges;
+		private final boolean immutable;
 
 		IdIdxMapImpl(IndexGraph g, int expectedSize, boolean isEdges) {
 			this.elements = isEdges ? g.edges() : g.vertices();
@@ -444,6 +464,7 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 			idsView = IntSets.unmodifiable(idToIndex.keySet());
 			indexToId = expectedSize == 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[expectedSize];
 			this.isEdges = isEdges;
+			immutable = false;
 			initListeners(g);
 		}
 
@@ -490,6 +511,7 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 				}
 			}
 			this.isEdges = isEdges;
+			immutable = g instanceof ImmutableGraph;
 			idsView = IntSets.unmodifiable(idToIndex.keySet());
 			initListeners(g);
 		}
@@ -577,6 +599,27 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 		@Override
 		public int idToIndexIfExist(int id) {
 			return idToIndex.get(id);
+		}
+
+		void renameId(int oldId, int newId) {
+			if (immutable) {
+				if (isEdges) {
+					throw new UnsupportedOperationException("graph is immutable, cannot rename vertices");
+				} else {
+					throw new UnsupportedOperationException("graph is immutable, cannot rename edges");
+				}
+			}
+			int idx = idToIndex.remove(oldId);
+			if (idx < 0) {
+				if (isEdges) {
+					throw NoSuchEdgeException.ofEdge(oldId);
+				} else {
+					throw NoSuchVertexException.ofVertex(oldId);
+				}
+			}
+			int oldIdx = idToIndex.put(newId, idx);
+			assert oldIdx == -1;
+			indexToId[idx] = newId;
 		}
 
 		IntSet idSet() {

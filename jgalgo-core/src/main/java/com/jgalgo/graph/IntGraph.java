@@ -145,6 +145,25 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	}
 
 	/**
+	 * Set a new identifier for an existing vertex.
+	 *
+	 * <p>
+	 * This method changes the identifier of an existing vertex, while keeping the edges connecting to it, along with
+	 * the weights associated with it.
+	 *
+	 * @param  vertex                an existing vertex in the graph
+	 * @param  newId                 the new vertex identifier
+	 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier
+	 */
+	void renameVertex(int vertex, int newId);
+
+	@Deprecated
+	@Override
+	default void renameVertex(Integer vertex, Integer newId) {
+		renameVertex(vertex.intValue(), newId.intValue());
+	}
+
+	/**
 	 * Get the edges whose source is {@code source}.
 	 *
 	 * <p>
@@ -339,6 +358,25 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	@Override
 	default void removeInEdgesOf(Integer vertex) {
 		removeInEdgesOf(vertex.intValue());
+	}
+
+	/**
+	 * Set a new identifier for an existing edge.
+	 *
+	 * <p>
+	 * This method changes the identifier of an existing edge, while keeping the source and target of the edge, along
+	 * with the weights associated with it.
+	 *
+	 * @param  edge                an existing edge in the graph
+	 * @param  newId               the new edge identifier
+	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
+	 */
+	void renameEdge(int edge, int newId);
+
+	@Deprecated
+	@Override
+	default void renameEdge(Integer edge, Integer newId) {
+		renameEdge(edge.intValue(), newId.intValue());
 	}
 
 	/**

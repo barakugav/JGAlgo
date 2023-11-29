@@ -105,6 +105,25 @@ public class ImmutableGraphCopyTest extends TestBase {
 	}
 
 	@Test
+	public void renameVertex() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed);
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+			Graph<Integer, Integer> gImmutable = gOrig.immutableCopy();
+
+			Integer nonExistingVertex;
+			for (int v = 0;; v++) {
+				if (!gImmutable.vertices().contains(Integer.valueOf(v))) {
+					nonExistingVertex = Integer.valueOf(v);
+					break;
+				}
+			}
+			assertThrows(UnsupportedOperationException.class,
+					() -> gImmutable.renameVertex(gImmutable.vertices().iterator().next(), nonExistingVertex));
+		});
+	}
+
+	@Test
 	public void testAddRemoveEdge() {
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed);
@@ -132,6 +151,25 @@ public class ImmutableGraphCopyTest extends TestBase {
 
 			Integer edgeToRemove = gImmutable.edges().iterator().next();
 			assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeEdge(edgeToRemove));
+		});
+	}
+
+	@Test
+	public void renameEdge() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed);
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+			Graph<Integer, Integer> gImmutable = gOrig.immutableCopy();
+
+			Integer nonExistingEdge;
+			for (int e = 0;; e++) {
+				if (!gImmutable.edges().contains(Integer.valueOf(e))) {
+					nonExistingEdge = Integer.valueOf(e);
+					break;
+				}
+			}
+			assertThrows(UnsupportedOperationException.class,
+					() -> gImmutable.renameEdge(gImmutable.edges().iterator().next(), nonExistingEdge));
 		});
 	}
 
