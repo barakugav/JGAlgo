@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DimacsGraphReader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - IO</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.io</a> &gt; <span class="el_source">DimacsGraphReader.java</span></div><h1>DimacsGraphReader.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.io;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.UncheckedIOException;
+import java.util.Objects;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IntGraphFactory;
+import com.jgalgo.graph.WeightsInt;
+
+/**
+ * Read a graph in DIMACS format.
+ *
+ * &lt;p&gt;
+ * The DIMACS format is the graph format used by the 'Center of Discrete Mathematics and Theoretical Computer Science'
+ * for their graph challenges. There are many sub-formats, but the most common are the 'edge' and 'sp' formats, which
+ * are supported by this class. A DIMACS file contains a short header which specify the sub-format along with the number
+ * of edges and vertices, followed by the edges themselves. The edges are specified by a pair of vertices, and in the
+ * 'sp' format, also by a weight. The vertices are numbered from 1 to n, where n is the number of vertices, and
+ * similarly the edges are numbered from 1 to m, where m is the number of edges. Only undirected graphs are supported by
+ * this format.
+ *
+ * &lt;p&gt;
+ * The &lt;a href=&quot;https://github.com/akinanop/mvl-solver/wiki/DIMACS-Graph-Format&quot;&gt;'edge' format&lt;/a&gt; is the simplest, and
+ * is used for unweighted undirected graphs. An example file is:
+ *
+ * &lt;pre&gt;
+ * c this is a comment
+ * c this is the graph with vertices {1,2,3,4,5} and edges {1=(1,2),2=(2,3),3=(2,4),4=(3,4),5=(4,5)}
+ * p edge 5 5
+ * e 1 2
+ * e 2 3
+ * e 2 4
+ * e 3 4
+ * e 4 5
+ * &lt;/pre&gt;
+ *
+ * &lt;p&gt;
+ * The &lt;a href=&quot;http://www.diag.uniroma1.it/challenge9/format.shtml#graph&quot;&gt;'sp' format&lt;/a&gt; is used for (integer)
+ * weighted undirected graphs. An example file is:
+ *
+ * &lt;pre&gt;
+ * c this is a comment
+ * c this is the graph with vertices {1,2,3,4,5} and edges {1=(1,2),2=(2,3),3=(2,4),4=(3,4),5=(4,5)}
+ * c the weights of the edges are {1=5,2=13,3=2,4=-7,5=0}
+ * p sp 5 5
+ * e 1 2 3
+ * e 2 3 13
+ * e 2 4 2
+ * e 3 4 -7
+ * e 4 5 0
+ * &lt;/pre&gt;
+ *
+ * &lt;p&gt;
+ * The reader will identify the format automatically by looking at the header of the file. If the format contains edge
+ * weights ('sp' format), the built graph will have edges {@linkplain WeightsInt integer weights} keys by &quot;weight&quot;, or a
+ * key chosen by the user using {@link #setEdgeWeightsKey(String)}. See {@link Graph#getEdgesWeights(String)}.
+ *
+ * @see    &lt;a href=&quot;http://www.diag.uniroma1.it/challenge9/format.shtml#graph&quot;&gt;DIMACS Graph Format&lt;/a&gt;
+ * @see    DimacsGraphWriter
+ * @author Barak Ugav
+ */
+public class DimacsGraphReader implements IGraphReader {
+
+<span class="fc" id="L83">	private String weightsKey = &quot;weight&quot;;</span>
+
+	/**
+	 * Create a new reader.
+	 */
+<span class="fc" id="L88">	public DimacsGraphReader() {}</span>
+
+	/**
+	 * Sets the key of the edge weights that will be read.
+	 *
+	 * &lt;p&gt;
+	 * When the reader reads a graph in the 'sp' format a {@link WeightsInt} weights will be added to the built graph.
+	 * By default, the weights will be added with key &quot;weight&quot;. Use this method to specify a different key.
+	 *
+	 * @param weightsKey the key of the edge weights that will be read
+	 * @see              Graph#getEdgesWeights(String)
+	 */
+	public void setEdgeWeightsKey(String weightsKey) {
+<span class="fc" id="L101">		this.weightsKey = Objects.requireNonNull(weightsKey);</span>
+<span class="fc" id="L102">	}</span>
+
+	@Override
+	public IntGraphBuilder readIntoBuilder(Reader reader) {
+<span class="fc" id="L106">		try (BufferedReader br = GraphReaders.bufferedReader(reader)) {</span>
+<span class="fc" id="L107">			IntGraphBuilder gb = IntGraphFactory.newUndirected().allowSelfEdges().newBuilder();</span>
+<span class="fc" id="L108">			boolean problemLineSeen = false;</span>
+<span class="fc" id="L109">			boolean hasWeights = false;</span>
+<span class="fc" id="L110">			IWeightsInt w = null;</span>
+<span class="fc" id="L111">			int n = -1, m = -1;</span>
+
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			for (String line : GraphReaders.lines(br, true)) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">				if (line.isEmpty())</span>
+<span class="fc" id="L115">					continue;</span>
+<span class="fc bfc" id="L116" title="All 4 branches covered.">				switch (line.charAt(0)) {</span>
+					case 'c': /* comment line */
+<span class="fc bfc" id="L118" title="All 2 branches covered.">						if (!line.startsWith(&quot;c &quot;))</span>
+<span class="fc" id="L119">							throw new IllegalArgumentException(&quot;comment line must start with 'c '&quot;);</span>
+						continue;
+
+					case 'p': /* problem line */ {
+<span class="fc bfc" id="L123" title="All 2 branches covered.">						if (!line.startsWith(&quot;p &quot;))</span>
+<span class="fc" id="L124">							throw new IllegalArgumentException(&quot;problem line must start with 'p '&quot;);</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">						if (problemLineSeen)</span>
+<span class="fc" id="L126">							throw new IllegalArgumentException(&quot;more than one problem line ('p' prefix) in file&quot;);</span>
+<span class="fc" id="L127">						problemLineSeen = true;</span>
+
+<span class="fc" id="L129">						String[] arr = line.split(&quot; &quot;);</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">						if (arr.length != 4)</span>
+<span class="fc" id="L131">							throw new IllegalArgumentException(</span>
+									&quot;expected problem line in format: p (edge | sp) &lt;NumVertices&gt; &lt;NumEdges&gt;&quot;);
+<span class="fc" id="L133">						String graphFormat = arr[1].toLowerCase();</span>
+<span class="fc bfc" id="L134" title="All 3 branches covered.">						switch (graphFormat) {</span>
+							case &quot;edge&quot;:
+<span class="fc" id="L136">								hasWeights = false;</span>
+<span class="fc" id="L137">								break;</span>
+							case &quot;sp&quot;:
+<span class="fc" id="L139">								hasWeights = true;</span>
+<span class="fc" id="L140">								break;</span>
+							default:
+<span class="fc" id="L142">								throw new IllegalArgumentException(</span>
+										&quot;Support formats 'sp' and 'edge'. Unknown format: '&quot; + graphFormat + &quot;'&quot;);
+						}
+
+						try {
+<span class="fc" id="L147">							n = Integer.parseInt(arr[2]);</span>
+<span class="fc" id="L148">							m = Integer.parseInt(arr[3]);</span>
+<span class="fc" id="L149">						} catch (NumberFormatException e) {</span>
+<span class="fc" id="L150">							throw new IllegalArgumentException(&quot;Invalid number of vertices or edges&quot;, e);</span>
+<span class="fc" id="L151">						}</span>
+
+<span class="fc bfc" id="L153" title="All 4 branches covered.">						if (n &lt; 0 || m &lt; 0)</span>
+<span class="fc" id="L154">							throw new IllegalArgumentException(&quot;negative vertices/edges num: &quot; + n + &quot; &quot; + m);</span>
+<span class="fc" id="L155">						gb.expectedVerticesNum(n);</span>
+<span class="fc" id="L156">						gb.expectedEdgesNum(m);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">						for (int v = 1; v &lt;= n; v++)</span>
+<span class="fc" id="L158">							gb.addVertex(v); // vertices are labeled as 1,2,3,4...</span>
+
+<span class="fc bfc" id="L160" title="All 2 branches covered.">						if (hasWeights)</span>
+<span class="fc" id="L161">							w = gb.addEdgesWeights(weightsKey, int.class);</span>
+						break;
+					}
+
+					case 'e': /* edge line */ {
+<span class="fc bfc" id="L166" title="All 2 branches covered.">						if (!problemLineSeen)</span>
+<span class="fc" id="L167">							throw new IllegalArgumentException(&quot;problem line ('p' prefix) was not seen yet&quot;);</span>
+
+<span class="fc" id="L169">						String[] arr = line.split(&quot; &quot;);</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">						if (!hasWeights) {</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">							if (arr.length != 3)</span>
+<span class="fc" id="L172">								throw new IllegalArgumentException(</span>
+										&quot;expect edge definition: e &lt;source_vertex&gt; &lt;destination_vertex&gt;&quot;);
+						} else {
+<span class="fc bfc" id="L175" title="All 2 branches covered.">							if (arr.length != 4)</span>
+<span class="fc" id="L176">								throw new IllegalArgumentException(</span>
+										&quot;expect edge definition: e &lt;source_vertex&gt; &lt;destination_vertex&gt; &lt;weight&gt;&quot;);
+						}
+
+						/* parse edge source and target vertices */
+						int source, target;
+						try {
+<span class="fc" id="L183">							source = Integer.parseInt(arr[1]);</span>
+<span class="fc" id="L184">							target = Integer.parseInt(arr[2]);</span>
+<span class="fc" id="L185">						} catch (NumberFormatException e) {</span>
+<span class="fc" id="L186">							throw new IllegalArgumentException(&quot;edge must have 2 vertices as numbers&quot;, e);</span>
+<span class="fc" id="L187">						}</span>
+<span class="fc" id="L188">						final int e = gb.edges().size() + 1;</span>
+<span class="fc" id="L189">						gb.addEdge(source, target, e);</span>
+
+						/* parse edge weight */
+<span class="fc bfc" id="L192" title="All 2 branches covered.">						if (hasWeights) {</span>
+<span class="fc" id="L193">							int edgeWeight = -1;</span>
+							try {
+<span class="fc" id="L195">								edgeWeight = Integer.parseInt(arr[3]);</span>
+<span class="fc" id="L196">							} catch (NumberFormatException ex) {</span>
+<span class="fc" id="L197">								throw new IllegalArgumentException(&quot;edge must have 2 vertices as numbers and a weight&quot;,</span>
+										ex);
+<span class="fc" id="L199">							}</span>
+<span class="fc" id="L200">							w.set(e, edgeWeight);</span>
+<span class="fc" id="L201">						}</span>
+						break;
+					}
+					default:
+<span class="fc" id="L205">						throw new IllegalArgumentException(&quot;unknown line: &quot; + line);</span>
+				}
+<span class="fc" id="L207">			}</span>
+<span class="fc" id="L208">			return gb;</span>
+<span class="nc" id="L209">		} catch (IOException e) {</span>
+<span class="nc" id="L210">			throw new UncheckedIOException(e);</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

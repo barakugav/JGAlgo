@@ -20,21 +20,18 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.UncheckedIOException;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 
 /**
  * A reader that reads Graphs from files/IO-reader.
  *
- * &lt;pre&gt; {@code
- * Graph g = GraphReader.newInstance(&quot;gml&quot;).readGraph(&quot;graph1.gml&quot;);
- * System.out.println(&quot;g's vertices are: &quot; + g.vertices());
- * }&lt;/pre&gt;
- *
- * @see    GraphWriter
- * @author Barak Ugav
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @see        GraphWriter
+ * @author     Barak Ugav
  */
-public interface GraphReader {
+public interface GraphReader&lt;V, E&gt; {
 
 	/**
 	 * Read a graph from an I/O reader.
@@ -42,8 +39,8 @@ public interface GraphReader {
 	 * @param  reader an I/O reader that contain a graph description
 	 * @return        a new graph read from the reader
 	 */
-	default IntGraph readGraph(Reader reader) {
-<span class="fc" id="L46">		return readIntoBuilder(reader).build();</span>
+	default Graph&lt;V, E&gt; readGraph(Reader reader) {
+<span class="fc" id="L43">		return readIntoBuilder(reader).build();</span>
 	}
 
 	/**
@@ -52,11 +49,11 @@ public interface GraphReader {
 	 * @param  file a file that contain a graph description
 	 * @return      a new graph read from the file
 	 */
-	default IntGraph readGraph(File file) {
-<span class="nc" id="L56">		try (Reader reader = new FileReader(file, GraphIO.JGALGO_CHARSET)) {</span>
-<span class="nc" id="L57">			return readGraph(reader);</span>
-<span class="nc" id="L58">		} catch (IOException e) {</span>
-<span class="nc" id="L59">			throw new UncheckedIOException(e);</span>
+	default Graph&lt;V, E&gt; readGraph(File file) {
+<span class="nc" id="L53">		try (Reader reader = new FileReader(file, GraphFormats.JGALGO_CHARSET)) {</span>
+<span class="nc" id="L54">			return readGraph(reader);</span>
+<span class="nc" id="L55">		} catch (IOException e) {</span>
+<span class="nc" id="L56">			throw new UncheckedIOException(e);</span>
 		}
 	}
 
@@ -66,35 +63,38 @@ public interface GraphReader {
 	 * @param  path a path to a file that contain a graph description
 	 * @return      a new graph read from the file
 	 */
-	default IntGraph readGraph(String path) {
-<span class="nc" id="L70">		try (Reader reader = new FileReader(path, GraphIO.JGALGO_CHARSET)) {</span>
-<span class="nc" id="L71">			return readGraph(reader);</span>
-<span class="nc" id="L72">		} catch (IOException e) {</span>
-<span class="nc" id="L73">			throw new UncheckedIOException(e);</span>
+	default Graph&lt;V, E&gt; readGraph(String path) {
+<span class="nc" id="L67">		try (Reader reader = new FileReader(path, GraphFormats.JGALGO_CHARSET)) {</span>
+<span class="nc" id="L68">			return readGraph(reader);</span>
+<span class="nc" id="L69">		} catch (IOException e) {</span>
+<span class="nc" id="L70">			throw new UncheckedIOException(e);</span>
 		}
 	}
 
 	/**
-	 * Read a graph from an I/O reader into a {@link IntGraphBuilder}.
+	 * Read a graph from an I/O reader into a {@link GraphBuilder}.
 	 *
 	 * @param  reader an I/O reader that contain a graph description
 	 * @return        a graph builder containing the vertices and edge read from the reader
 	 */
-	IntGraphBuilder readIntoBuilder(Reader reader);
+	GraphBuilder&lt;V, E&gt; readIntoBuilder(Reader reader);
 
-	/**
-	 * Get new {@link GraphReader} instance by a format name.
-	 *
-	 * &lt;p&gt;
-	 * Any one of the following formats is supported: ['csv', 'dimacs', 'gexf', 'gml', 'graph6', 'space6', 'graphml',
-	 * 'leda']
-	 *
-	 * @param  format the name of the format
-	 * @return        a reader that can read graphs of the given format
-	 */
-	static GraphReader newInstance(String format) {
-<span class="fc" id="L96">		return GraphFormat.getInstanceByName(format).newReader();</span>
-	}
+	// /**
+	// * Get new {@link GraphReader} instance by a format name.
+	// *
+	// * &lt;p&gt;
+	// * Any one of the following formats is supported: ['csv', 'dimacs', 'gexf', 'gml', 'graph6', 'space6', 'graphml',
+	// * 'leda']
+	// *
+	// * @param &lt;V&gt; the vertices type
+	// * @param &lt;E&gt; the edges type
+	// * @param format the name of the format
+	// * @return a reader that can read graphs of the given format
+	// */
+	// static &lt;V, E&gt; GraphReader&lt;V, E&gt; newInstance(String format, Class&lt;V&gt; vType, Class&lt;E&gt; eType) {
+	// // TODO documentation for params and some words on why we accept class types
+	// return GraphFormat.getInstanceByName(format).newReader(vType, eType);
+	// }
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

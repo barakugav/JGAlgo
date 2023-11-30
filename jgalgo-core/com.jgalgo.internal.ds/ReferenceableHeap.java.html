@@ -21,6 +21,36 @@ import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 
 /**
+ * A collection which maintains elements in order and support efficient retrieval of the minimum value, and expose
+ * references to the underling elements.
+ *
+ * &lt;p&gt;
+ * In addition to the regular Heap operations, the user can obtain a reference to each inserted element via the return
+ * value of the {@code insert()} function. The reference will be valid as long as the element is still in the heap. By
+ * passing the reference to the heap implementation to functions such as {@code decreaseKey()} or {@code remove()} the
+ * heap implementation can perform the operations efficiently as is does not need to search for the element.
+ *
+ * &lt;p&gt;
+ * Another difference from the regular Heap, is the existent of both keys and values, rather than just 'elements'. A key
+ * may be changed using {@code decreaseKey()} while the &lt;b&gt;value&lt;/b&gt; is the same. This matches the common use case of
+ * these heaps.
+ *
+ * &lt;pre&gt; {@code
+ * IntObjReferenceableHeap&lt;Integer, String&gt; heap = IntObjReferenceableHeap.newInstance();
+ * IntObjReferenceableHeap.Ref&lt;String&gt; r1 = heap.insert(5, &quot;Alice&quot;);
+ * IntObjReferenceableHeap.Ref&lt;String&gt; r2 = heap.insert(10, &quot;Bob&quot;);
+ * IntObjReferenceableHeap.Ref&lt;String&gt; r3 = heap.insert(3, &quot;Charlie&quot;);
+ *
+ * assert heap.findMin() == r3;
+ * assert r2.key() == 10;
+ * heap.decreaseKey(r2, 2);
+ * assert r2.key() == 2;
+ * assert r2.value().equals(&quot;Bob&quot;);
+ * assert heap.findMin() == r2;
+ *
+ * heap.remove(r1);
+ * assert heap.size() == 2;
+ * }&lt;/pre&gt;
  *
  * @author Barak Ugav
  */
@@ -46,22 +76,22 @@ public interface ReferenceableHeap {
 	boolean isNotEmpty();
 
 	static ReferenceableHeap.Builder newBuilder() {
-<span class="fc" id="L49">		return new ReferenceableHeap.Builder() {</span>
+<span class="fc" id="L79">		return new ReferenceableHeap.Builder() {</span>
 			@Override
 			public ReferenceableHeap build(Class&lt;?&gt; keyType, Class&lt;?&gt; valueType, Comparator&lt;?&gt; comparator) {
-<span class="fc" id="L52">				Objects.requireNonNull(keyType);</span>
-<span class="fc" id="L53">				Objects.requireNonNull(valueType);</span>
-<span class="fc bfc" id="L54" title="All 4 branches covered.">				if (keyType == int.class &amp;&amp; valueType == int.class)</span>
-<span class="fc" id="L55">					return IntIntReferenceableHeap.newInstance((IntComparator) comparator);</span>
-<span class="pc bpc" id="L56" title="1 of 4 branches missed.">				if (keyType == int.class &amp;&amp; valueType == void.class)</span>
-<span class="fc" id="L57">					return IntReferenceableHeap.newInstance((IntComparator) comparator);</span>
-<span class="pc bpc" id="L58" title="2 of 4 branches missed.">				if (keyType == double.class &amp;&amp; valueType == int.class)</span>
-<span class="fc" id="L59">					return DoubleIntReferenceableHeap.newInstance((DoubleComparator) comparator);</span>
-<span class="nc bnc" id="L60" title="All 4 branches missed.">				if (keyType == double.class &amp;&amp; valueType == Object.class)</span>
-<span class="nc" id="L61">					return DoubleObjReferenceableHeap.newInstance((DoubleComparator) comparator);</span>
-<span class="nc bnc" id="L62" title="All 4 branches missed.">				if (keyType == Object.class &amp;&amp; valueType == void.class)</span>
-<span class="nc" id="L63">					return ObjReferenceableHeap.newInstance(comparator);</span>
-<span class="nc" id="L64">				throw new UnsupportedOperationException(&quot;Unsupported heap type: &quot; + keyType + &quot;, &quot; + valueType);</span>
+<span class="fc" id="L82">				Objects.requireNonNull(keyType);</span>
+<span class="fc" id="L83">				Objects.requireNonNull(valueType);</span>
+<span class="fc bfc" id="L84" title="All 4 branches covered.">				if (keyType == int.class &amp;&amp; valueType == int.class)</span>
+<span class="fc" id="L85">					return IntIntReferenceableHeap.newInstance((IntComparator) comparator);</span>
+<span class="pc bpc" id="L86" title="1 of 4 branches missed.">				if (keyType == int.class &amp;&amp; valueType == void.class)</span>
+<span class="fc" id="L87">					return IntReferenceableHeap.newInstance((IntComparator) comparator);</span>
+<span class="pc bpc" id="L88" title="2 of 4 branches missed.">				if (keyType == double.class &amp;&amp; valueType == int.class)</span>
+<span class="fc" id="L89">					return DoubleIntReferenceableHeap.newInstance((DoubleComparator) comparator);</span>
+<span class="nc bnc" id="L90" title="All 4 branches missed.">				if (keyType == double.class &amp;&amp; valueType == Object.class)</span>
+<span class="nc" id="L91">					return DoubleObjReferenceableHeap.newInstance((DoubleComparator) comparator);</span>
+<span class="nc bnc" id="L92" title="All 4 branches missed.">				if (keyType == Object.class &amp;&amp; valueType == void.class)</span>
+<span class="nc" id="L93">					return ObjReferenceableHeap.newInstance(comparator);</span>
+<span class="nc" id="L94">				throw new UnsupportedOperationException(&quot;Unsupported heap type: &quot; + keyType + &quot;, &quot; + valueType);</span>
 			}
 		};
 	}
@@ -69,7 +99,7 @@ public interface ReferenceableHeap {
 	static interface Builder {
 
 		default ReferenceableHeap build(Class&lt;?&gt; keyType, Class&lt;?&gt; valueType) {
-<span class="fc" id="L72">			return build(keyType, valueType, null);</span>
+<span class="fc" id="L102">			return build(keyType, valueType, null);</span>
 		}
 
 		ReferenceableHeap build(Class&lt;?&gt; keyType, Class&lt;?&gt; valueType, Comparator&lt;?&gt; comparator);

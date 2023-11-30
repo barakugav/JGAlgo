@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DimacsGraphWriter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - IO</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.io</a> &gt; <span class="el_source">DimacsGraphWriter.java</span></div><h1>DimacsGraphWriter.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.io;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.io.Writer;
+import java.util.function.Function;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsByte;
+import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.WeightsShort;
+
+/**
+ * Write a graph using the DIMACS format.
+ *
+ * &lt;p&gt;
+ * The DIMACS format is the graph format used by the 'Center of Discrete Mathematics and Theoretical Computer Science'
+ * for their graph challenges. There are many sub-formats, but the most common are the 'edge' and 'sp' formats, which
+ * are supported by this class. A DIMACS file contains a short header which specify the sub-format along with the number
+ * of edges and vertices, followed by the edges themselves. The edges are specified by a pair of vertices, and in the
+ * 'sp' format, also by a weight. The vertices are numbered from 1 to n, where n is the number of vertices, and
+ * similarly the edges are numbered from 1 to m, where m is the number of edges. Only undirected graphs are supported by
+ * this format.
+ *
+ * &lt;p&gt;
+ * The &lt;a href=&quot;https://github.com/akinanop/mvl-solver/wiki/DIMACS-Graph-Format&quot;&gt;'edge' format&lt;/a&gt; is the simplest, and
+ * is used for unweighted undirected graphs. An example file is:
+ *
+ * &lt;pre&gt;
+ * c this is a comment
+ * c this is the graph with vertices {1,2,3,4,5} and edges {1=(1,2),2=(2,3),3=(2,4),4=(3,4),5=(4,5)}
+ * p edge 5 5
+ * e 1 2
+ * e 2 3
+ * e 2 4
+ * e 3 4
+ * e 4 5
+ * &lt;/pre&gt;
+ *
+ * &lt;p&gt;
+ * The &lt;a href=&quot;http://www.diag.uniroma1.it/challenge9/format.shtml#graph&quot;&gt;'sp' format&lt;/a&gt; is used for (integer)
+ * weighted undirected graphs. An example file is:
+ *
+ * &lt;pre&gt;
+ * c this is a comment
+ * c this is the graph with vertices {1,2,3,4,5} and edges {1=(1,2),2=(2,3),3=(2,4),4=(3,4),5=(4,5)}
+ * c the weights of the edges are {1=5,2=13,3=2,4=-7,5=0}
+ * p sp 5 5
+ * e 1 2 3
+ * e 2 3 13
+ * e 2 4 2
+ * e 3 4 -7
+ * e 4 5 0
+ * &lt;/pre&gt;
+ *
+ * &lt;p&gt;
+ * By default, the writer will write the graph in the 'edge' format. To write the graph in the 'sp' format (with edges
+ * weights), use the {@link #setEdgeWeights(String)} method to specify the key of the edge weights.
+ *
+ * @see    &lt;a href=&quot;http://www.diag.uniroma1.it/challenge9/format.shtml#graph&quot;&gt;DIMACS Graph Format&lt;/a&gt;
+ * @see    DimacsGraphReader
+ * @author Barak Ugav
+ */
+public class DimacsGraphWriter implements GraphWriter&lt;Integer, Integer&gt; {
+
+	private String weightsKey;
+
+	/**
+	 * Create a new writer.
+	 */
+<span class="fc" id="L88">	public DimacsGraphWriter() {}</span>
+
+	/**
+	 * Set the key of the edge weights to write.
+	 *
+	 * &lt;p&gt;
+	 * By default, the writer will write the graph in the 'edge' format, which is unweighted format. To write the graph
+	 * in the 'sp' format (with weights), use this method to specify the key of the edge weights. See the class
+	 * documentation for more details.
+	 *
+	 * &lt;p&gt;
+	 * The weights must be integer, namely the {@link Weights} must be {@link WeightFunctionInt}. It can be any of the
+	 * following: {@link WeightsByte}, {@link WeightsShort} or {@link WeightsInt}.
+	 *
+	 * @see              Graph#getEdgesWeights(String)
+	 * @param weightsKey the key of the edge weights to write, or {@code null} to write the graph in the 'edge' format
+	 *                       (unweighted)
+	 */
+	public void setEdgeWeights(String weightsKey) {
+<span class="fc" id="L107">		this.weightsKey = weightsKey;</span>
+<span class="fc" id="L108">	}</span>
+
+	@Override
+	public void writeGraph(Graph&lt;Integer, Integer&gt; graph, Writer writer) {
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		if (graph.isDirected())</span>
+<span class="fc" id="L113">			throw new IllegalArgumentException(&quot;the DIMACS format support undirected graphs only&quot;);</span>
+<span class="fc" id="L114">		final int n = graph.vertices().size();</span>
+<span class="fc" id="L115">		final int m = graph.edges().size();</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (!range(1, n + 1).equals(graph.vertices()))</span>
+<span class="fc" id="L117">			throw new IllegalArgumentException(&quot;the DIMACS format support graphs with vertices 1..n only&quot;);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">		if (!range(1, m + 1).equals(graph.edges()))</span>
+<span class="fc" id="L119">			throw new IllegalArgumentException(&quot;the DIMACS format support graphs with edges 1..m only&quot;);</span>
+
+<span class="fc bfc" id="L121" title="All 2 branches covered.">		final boolean hasWeights = weightsKey != null;</span>
+<span class="fc" id="L122">		Function&lt;Integer, String&gt; w = null;</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">		if (hasWeights) {</span>
+<span class="fc" id="L124">			Weights&lt;Integer, ?&gt; w0 = graph.getEdgesWeights(weightsKey);</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">			if (w0 == null)</span>
+<span class="fc" id="L126">				throw new IllegalArgumentException(&quot;the graph does not have weights for key: &quot; + weightsKey);</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">			if (!(w0 instanceof WeightFunctionInt))</span>
+<span class="fc" id="L128">				throw new IllegalArgumentException(</span>
+<span class="fc" id="L129">						&quot;Only integer weights are supported. Unsupported: &quot; + w0.getClass().getName());</span>
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L131">			WeightFunctionInt&lt;Integer&gt; w1 = (WeightFunctionInt&lt;Integer&gt;) w0;</span>
+<span class="fc" id="L132">			w = e -&gt; Integer.toString(w1.weightInt(e));</span>
+		}
+
+<span class="fc" id="L135">		Writer2 out = new Writer2(writer);</span>
+		try {
+<span class="fc" id="L137">			out.append(&quot;c DIMACS written graph by JGAlgo&quot;).appendNewline();</span>
+
+<span class="fc bfc" id="L139" title="All 2 branches covered.">			if (hasWeights) {</span>
+<span class="fc" id="L140">				out.append(&quot;p sp &quot; + n + &quot; &quot; + m).appendNewline();</span>
+			} else {
+<span class="fc" id="L142">				out.append(&quot;p edge &quot; + n + &quot; &quot; + m).appendNewline();</span>
+			}
+
+			// writes all edges, optional with weights
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			for (int e0 = 1; e0 &lt;= m; e0++) {</span>
+<span class="fc" id="L147">				Integer e = Integer.valueOf(e0);</span>
+				/* e {source} {target} */
+<span class="fc" id="L149">				out.append(&quot;e &quot;).append(graph.edgeSource(e)).append(' ').append(graph.edgeTarget(e));</span>
+				/* e {source} {target} {weight} */
+<span class="fc bfc" id="L151" title="All 2 branches covered.">				if (hasWeights)</span>
+<span class="fc" id="L152">					out.append(' ').append(w.apply(e));</span>
+<span class="fc" id="L153">				out.appendNewline();</span>
+			}
+<span class="nc" id="L155">		} catch (IOException e) {</span>
+<span class="nc" id="L156">			throw new UncheckedIOException(e);</span>
+<span class="fc" id="L157">		}</span>
+<span class="fc" id="L158">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

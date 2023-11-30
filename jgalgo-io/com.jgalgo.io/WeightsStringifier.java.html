@@ -15,89 +15,132 @@
  */
 package com.jgalgo.io;
 
-import com.jgalgo.graph.IWeights;
-import com.jgalgo.graph.IWeightsBool;
-import com.jgalgo.graph.IWeightsByte;
-import com.jgalgo.graph.IWeightsChar;
-import com.jgalgo.graph.IWeightsDouble;
-import com.jgalgo.graph.IWeightsFloat;
-import com.jgalgo.graph.IWeightsInt;
-import com.jgalgo.graph.IWeightsLong;
-import com.jgalgo.graph.IWeightsObj;
-import com.jgalgo.graph.IWeightsShort;
+import java.util.Objects;
+import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.WeightsByte;
+import com.jgalgo.graph.WeightsChar;
+import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.WeightsFloat;
+import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.WeightsLong;
+import com.jgalgo.graph.WeightsObj;
+import com.jgalgo.graph.WeightsShort;
+import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
+import it.unimi.dsi.fastutil.bytes.Byte2ObjectFunction;
+import it.unimi.dsi.fastutil.chars.Char2ObjectFunction;
+import it.unimi.dsi.fastutil.doubles.Double2ObjectFunction;
+import it.unimi.dsi.fastutil.floats.Float2ObjectFunction;
+import it.unimi.dsi.fastutil.ints.Int2ObjectFunction;
+import it.unimi.dsi.fastutil.longs.Long2ObjectFunction;
+import it.unimi.dsi.fastutil.objects.Object2ObjectFunction;
+import it.unimi.dsi.fastutil.shorts.Short2ObjectFunction;
 
-interface WeightsStringifier {
+interface WeightsStringifier&lt;K&gt; {
 
-	String getWeightAsString(int id);
+	String weightStr(K id);
 
-	static WeightsStringifier newInstance(IWeights&lt;?&gt; weights) {
-<span class="fc" id="L34">		return newInstance(weights, null, null);</span>
+	static &lt;K&gt; WeightsStringifier&lt;K&gt; newInstance(Weights&lt;K, ?&gt; weights) {
+<span class="fc" id="L44">		return new WeightsStringifier.Builder().build(weights);</span>
 	}
 
-	static WeightsStringifier newInstance(IWeights&lt;?&gt; weights, String nonNumberPrefix, String nonNumberSuffix) {
-<span class="fc" id="L38">		boolean nonNumberEnclosing = false;</span>
-<span class="pc bpc" id="L39" title="1 of 4 branches missed.">		if (nonNumberPrefix != null || nonNumberSuffix != null) {</span>
-<span class="pc bpc" id="L40" title="1 of 2 branches missed.">			if (nonNumberPrefix == null)</span>
-<span class="nc" id="L41">				nonNumberPrefix = &quot;&quot;;</span>
-<span class="pc bpc" id="L42" title="1 of 2 branches missed.">			if (nonNumberSuffix == null)</span>
-<span class="nc" id="L43">				nonNumberSuffix = &quot;&quot;;</span>
-<span class="fc" id="L44">			nonNumberEnclosing = true;</span>
+<span class="fc" id="L47">	static class Builder {</span>
+
+<span class="fc" id="L49">		private Byte2ObjectFunction&lt;String&gt; byteStringifier = String::valueOf;</span>
+<span class="fc" id="L50">		private Short2ObjectFunction&lt;String&gt; shortStringifier = String::valueOf;</span>
+<span class="fc" id="L51">		private Int2ObjectFunction&lt;String&gt; intStringifier = String::valueOf;</span>
+<span class="fc" id="L52">		private Long2ObjectFunction&lt;String&gt; longStringifier = String::valueOf;</span>
+<span class="fc" id="L53">		private Float2ObjectFunction&lt;String&gt; floatStringifier = String::valueOf;</span>
+<span class="fc" id="L54">		private Double2ObjectFunction&lt;String&gt; doubleStringifier = String::valueOf;</span>
+<span class="fc" id="L55">		private Boolean2ObjectFunction&lt;String&gt; boolStringifier = String::valueOf;</span>
+<span class="fc" id="L56">		private Char2ObjectFunction&lt;String&gt; charStringifier = String::valueOf;</span>
+<span class="fc" id="L57">		private Object2ObjectFunction&lt;Object, String&gt; objectStringifier = String::valueOf;</span>
+
+		void setByteStringifier(Byte2ObjectFunction&lt;String&gt; byteStringifier) {
+<span class="nc" id="L60">			this.byteStringifier = Objects.requireNonNull(byteStringifier);</span>
+<span class="nc" id="L61">		}</span>
+
+		void setShortStringifier(Short2ObjectFunction&lt;String&gt; shortStringifier) {
+<span class="nc" id="L64">			this.shortStringifier = Objects.requireNonNull(shortStringifier);</span>
+<span class="nc" id="L65">		}</span>
+
+		void setIntStringifier(Int2ObjectFunction&lt;String&gt; intStringifier) {
+<span class="nc" id="L68">			this.intStringifier = Objects.requireNonNull(intStringifier);</span>
+<span class="nc" id="L69">		}</span>
+
+		void setLongStringifier(Long2ObjectFunction&lt;String&gt; longStringifier) {
+<span class="fc" id="L72">			this.longStringifier = Objects.requireNonNull(longStringifier);</span>
+<span class="fc" id="L73">		}</span>
+
+		void setFloatStringifier(Float2ObjectFunction&lt;String&gt; floatStringifier) {
+<span class="nc" id="L76">			this.floatStringifier = Objects.requireNonNull(floatStringifier);</span>
+<span class="nc" id="L77">		}</span>
+
+		void setDoubleStringifier(Double2ObjectFunction&lt;String&gt; doubleStringifier) {
+<span class="nc" id="L80">			this.doubleStringifier = Objects.requireNonNull(doubleStringifier);</span>
+<span class="nc" id="L81">		}</span>
+
+		void setBoolStringifier(Boolean2ObjectFunction&lt;String&gt; boolStringifier) {
+<span class="fc" id="L84">			this.boolStringifier = Objects.requireNonNull(boolStringifier);</span>
+<span class="fc" id="L85">		}</span>
+
+		void setCharStringifier(Char2ObjectFunction&lt;String&gt; charStringifier) {
+<span class="fc" id="L88">			this.charStringifier = Objects.requireNonNull(charStringifier);</span>
+<span class="fc" id="L89">		}</span>
+
+		void setObjectStringifier(Object2ObjectFunction&lt;Object, String&gt; objectStringifier) {
+<span class="fc" id="L92">			this.objectStringifier = Objects.requireNonNull(objectStringifier);</span>
+<span class="fc" id="L93">		}</span>
+
+		@SuppressWarnings(&quot;unchecked&quot;)
+		&lt;K&gt; WeightsStringifier&lt;K&gt; build(Weights&lt;K, ?&gt; weights) {
+<span class="fc bfc" id="L97" title="All 2 branches covered.">			if (weights instanceof WeightsByte) {</span>
+<span class="fc" id="L98">				WeightsByte&lt;K&gt; ws = (WeightsByte&lt;K&gt;) weights;</span>
+<span class="fc" id="L99">				Byte2ObjectFunction&lt;String&gt; stringifier = byteStringifier;</span>
+<span class="fc" id="L100">				return elm -&gt; stringifier.get(ws.get(elm));</span>
+
+<span class="fc bfc" id="L102" title="All 2 branches covered.">			} else if (weights instanceof WeightsShort) {</span>
+<span class="fc" id="L103">				WeightsShort&lt;K&gt; ws = (WeightsShort&lt;K&gt;) weights;</span>
+<span class="fc" id="L104">				Short2ObjectFunction&lt;String&gt; stringifier = shortStringifier;</span>
+<span class="fc" id="L105">				return elm -&gt; stringifier.get(ws.get(elm));</span>
+
+<span class="fc bfc" id="L107" title="All 2 branches covered.">			} else if (weights instanceof WeightsInt) {</span>
+<span class="fc" id="L108">				WeightsInt&lt;K&gt; ws = (WeightsInt&lt;K&gt;) weights;</span>
+<span class="fc" id="L109">				Int2ObjectFunction&lt;String&gt; stringifier = intStringifier;</span>
+<span class="fc" id="L110">				return elm -&gt; stringifier.get(ws.get(elm));</span>
+
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			} else if (weights instanceof WeightsLong) {</span>
+<span class="fc" id="L113">				WeightsLong&lt;K&gt; ws = (WeightsLong&lt;K&gt;) weights;</span>
+<span class="fc" id="L114">				Long2ObjectFunction&lt;String&gt; stringifier = longStringifier;</span>
+<span class="fc" id="L115">				return elm -&gt; stringifier.get(ws.get(elm));</span>
+
+<span class="fc bfc" id="L117" title="All 2 branches covered.">			} else if (weights instanceof WeightsFloat) {</span>
+<span class="fc" id="L118">				WeightsFloat&lt;K&gt; ws = (WeightsFloat&lt;K&gt;) weights;</span>
+<span class="fc" id="L119">				Float2ObjectFunction&lt;String&gt; stringifier = floatStringifier;</span>
+<span class="fc" id="L120">				return elm -&gt; stringifier.get(ws.get(elm));</span>
+
+<span class="fc bfc" id="L122" title="All 2 branches covered.">			} else if (weights instanceof WeightsDouble) {</span>
+<span class="fc" id="L123">				WeightsDouble&lt;K&gt; ws = (WeightsDouble&lt;K&gt;) weights;</span>
+<span class="fc" id="L124">				Double2ObjectFunction&lt;String&gt; stringifier = doubleStringifier;</span>
+<span class="fc" id="L125">				return elm -&gt; stringifier.get(ws.get(elm));</span>
+
+<span class="fc bfc" id="L127" title="All 2 branches covered.">			} else if (weights instanceof WeightsBool) {</span>
+<span class="fc" id="L128">				WeightsBool&lt;K&gt; ws = (WeightsBool&lt;K&gt;) weights;</span>
+<span class="fc" id="L129">				Boolean2ObjectFunction&lt;String&gt; stringifier = boolStringifier;</span>
+<span class="fc" id="L130">				return elm -&gt; stringifier.get(ws.get(elm));</span>
+
+<span class="fc bfc" id="L132" title="All 2 branches covered.">			} else if (weights instanceof WeightsChar) {</span>
+<span class="fc" id="L133">				WeightsChar&lt;K&gt; ws = (WeightsChar&lt;K&gt;) weights;</span>
+<span class="fc" id="L134">				Char2ObjectFunction&lt;String&gt; stringifier = charStringifier;</span>
+<span class="fc" id="L135">				return elm -&gt; stringifier.get(ws.get(elm));</span>
+
+			} else {
+<span class="fc" id="L138">				WeightsObj&lt;K, ?&gt; ws = (WeightsObj&lt;K, ?&gt;) weights;</span>
+<span class="fc" id="L139">				Object2ObjectFunction&lt;Object, String&gt; stringifier = objectStringifier;</span>
+<span class="fc" id="L140">				return elm -&gt; stringifier.get(ws.get(elm));</span>
+			}
 		}
 
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">		if (weights instanceof IWeightsByte) {</span>
-<span class="nc" id="L48">			IWeightsByte ws = (IWeightsByte) weights;</span>
-<span class="nc" id="L49">			return elm -&gt; String.valueOf(ws.get(elm));</span>
-
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		} else if (weights instanceof IWeightsShort) {</span>
-<span class="nc" id="L52">			IWeightsShort ws = (IWeightsShort) weights;</span>
-<span class="nc" id="L53">			return elm -&gt; String.valueOf(ws.get(elm));</span>
-
-<span class="fc bfc" id="L55" title="All 2 branches covered.">		} else if (weights instanceof IWeightsInt) {</span>
-<span class="fc" id="L56">			IWeightsInt ws = (IWeightsInt) weights;</span>
-<span class="fc" id="L57">			return elm -&gt; String.valueOf(ws.get(elm));</span>
-
-<span class="pc bpc" id="L59" title="1 of 2 branches missed.">		} else if (weights instanceof IWeightsLong) {</span>
-<span class="nc" id="L60">			IWeightsLong ws = (IWeightsLong) weights;</span>
-<span class="nc" id="L61">			return elm -&gt; String.valueOf(ws.get(elm));</span>
-
-<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		} else if (weights instanceof IWeightsFloat) {</span>
-<span class="nc" id="L64">			IWeightsFloat ws = (IWeightsFloat) weights;</span>
-<span class="nc" id="L65">			return elm -&gt; String.valueOf(ws.get(elm));</span>
-
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		} else if (weights instanceof IWeightsDouble) {</span>
-<span class="fc" id="L68">			IWeightsDouble ws = (IWeightsDouble) weights;</span>
-<span class="fc" id="L69">			return elm -&gt; String.valueOf(ws.get(elm));</span>
-
-<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		} else if (weights instanceof IWeightsBool) {</span>
-<span class="nc" id="L72">			IWeightsBool ws = (IWeightsBool) weights;</span>
-<span class="nc bnc" id="L73" title="All 2 branches missed.">			if (nonNumberEnclosing) {</span>
-<span class="nc" id="L74">				String pre = nonNumberPrefix, post = nonNumberSuffix;</span>
-<span class="nc" id="L75">				return elm -&gt; pre + String.valueOf(ws.get(elm)) + post;</span>
-			} else {
-<span class="nc" id="L77">				return elm -&gt; String.valueOf(ws.get(elm));</span>
-			}
-
-<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		} else if (weights instanceof IWeightsChar) {</span>
-<span class="nc" id="L81">			IWeightsChar ws = (IWeightsChar) weights;</span>
-<span class="nc bnc" id="L82" title="All 2 branches missed.">			if (nonNumberEnclosing) {</span>
-<span class="nc" id="L83">				String pre = nonNumberPrefix, post = nonNumberSuffix;</span>
-<span class="nc" id="L84">				return elm -&gt; pre + String.valueOf(ws.get(elm)) + post;</span>
-			} else {
-<span class="nc" id="L86">				return elm -&gt; String.valueOf(ws.get(elm));</span>
-			}
-
-<span class="pc bpc" id="L89" title="1 of 2 branches missed.">		} else if (weights instanceof IWeightsObj) {</span>
-<span class="fc" id="L90">			IWeightsObj&lt;?&gt; ws = (IWeightsObj&lt;?&gt;) weights;</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">			if (nonNumberEnclosing) {</span>
-<span class="fc" id="L92">				String pre = nonNumberPrefix, post = nonNumberSuffix;</span>
-<span class="fc" id="L93">				return elm -&gt; pre + String.valueOf(ws.get(elm)) + post;</span>
-			} else {
-<span class="fc" id="L95">				return elm -&gt; String.valueOf(ws.get(elm));</span>
-			}
-
-		} else {
-<span class="nc" id="L99">			throw new IllegalArgumentException(&quot;Unsupported weights type: &quot; + weights.getClass());</span>
-		}
 	}
 
 }

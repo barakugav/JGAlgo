@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gml.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - IO</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.io</a> &gt; <span class="el_source">Gml.java</span></div><h1>Gml.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.io;
+
+class Gml {
+
+	private Gml() {}
+
+	static boolean isKeyCharPrefix(char c) {
+<span class="pc bpc" id="L23" title="3 of 8 branches missed.">		return ('a' &lt;= c &amp;&amp; c &lt;= 'z') || ('A' &lt;= c &amp;&amp; c &lt;= 'Z');</span>
+	}
+
+	static boolean isKeyChar(char c) {
+<span class="pc bpc" id="L27" title="1 of 12 branches missed.">		return ('a' &lt;= c &amp;&amp; c &lt;= 'z') || ('A' &lt;= c &amp;&amp; c &lt;= 'Z') || ('0' &lt;= c &amp;&amp; c &lt;= '9');</span>
+	}
+
+	static boolean isNumSign(char c) {
+<span class="fc bfc" id="L31" title="All 4 branches covered.">		return c == '+' || c == '-';</span>
+	}
+
+	static boolean isDigit(char c) {
+<span class="fc bfc" id="L35" title="All 4 branches covered.">		return '0' &lt;= c &amp;&amp; c &lt;= '9';</span>
+	}
+
+	static void checkValidWeightsKey(String key) {
+<span class="pc bpc" id="L39" title="2 of 4 branches missed.">		if (key == null || key.isEmpty())</span>
+<span class="nc" id="L40">			throw new IllegalArgumentException(&quot;invalid key: '&quot; + key + &quot;'&quot;);</span>
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">		if (!isKeyCharPrefix(key.charAt(0)))</span>
+<span class="nc" id="L42">			throw new IllegalArgumentException(&quot;invalid key: '&quot; + key + &quot;'&quot;);</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">		for (int i = 1; i &lt; key.length(); i++)</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">			if (!isKeyChar(key.charAt(i)))</span>
+<span class="nc" id="L45">				throw new IllegalArgumentException(&quot;invalid key: '&quot; + key + &quot;'&quot;);</span>
+<span class="fc" id="L46">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

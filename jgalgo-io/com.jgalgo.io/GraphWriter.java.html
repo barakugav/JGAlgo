@@ -20,15 +20,17 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.io.Writer;
-import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.Graph;
 
 /**
  * A writer that writes Graphs to files/IO-writer.
  *
- * @see    GraphReader
- * @author Barak Ugav
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @see        GraphReader
+ * @author     Barak Ugav
  */
-public interface GraphWriter {
+public interface GraphWriter&lt;V, E&gt; {
 
 	/**
 	 * Write a graph to an I/O writer.
@@ -36,7 +38,7 @@ public interface GraphWriter {
 	 * @param graph  a graph
 	 * @param writer an I/O writer to which the graph description will be written to
 	 */
-	void writeGraph(IntGraph graph, Writer writer);
+	void writeGraph(Graph&lt;V, E&gt; graph, Writer writer);
 
 	/**
 	 * Write a graph to a file.
@@ -44,13 +46,13 @@ public interface GraphWriter {
 	 * @param graph a graph
 	 * @param file  a file descriptor to which the graph will be written to
 	 */
-	default void writeGraph(IntGraph graph, File file) {
-<span class="nc" id="L48">		try (Writer writer = new FileWriter(file, GraphIO.JGALGO_CHARSET)) {</span>
-<span class="nc" id="L49">			writeGraph(graph, writer);</span>
-<span class="nc" id="L50">		} catch (IOException e) {</span>
-<span class="nc" id="L51">			throw new UncheckedIOException(e);</span>
-<span class="nc" id="L52">		}</span>
-<span class="nc" id="L53">	}</span>
+	default void writeGraph(Graph&lt;V, E&gt; graph, File file) {
+<span class="nc" id="L50">		try (Writer writer = new FileWriter(file, GraphFormats.JGALGO_CHARSET)) {</span>
+<span class="nc" id="L51">			writeGraph(graph, writer);</span>
+<span class="nc" id="L52">		} catch (IOException e) {</span>
+<span class="nc" id="L53">			throw new UncheckedIOException(e);</span>
+<span class="nc" id="L54">		}</span>
+<span class="nc" id="L55">	}</span>
 
 	/**
 	 * Write a graph to a file, given its path.
@@ -58,27 +60,27 @@ public interface GraphWriter {
 	 * @param graph a graph
 	 * @param path  a path to a file to which the graph will be written to
 	 */
-	default void writeGraph(IntGraph graph, String path) {
-<span class="nc" id="L62">		try (Writer writer = new FileWriter(path, GraphIO.JGALGO_CHARSET)) {</span>
-<span class="nc" id="L63">			writeGraph(graph, writer);</span>
-<span class="nc" id="L64">		} catch (IOException e) {</span>
-<span class="nc" id="L65">			throw new UncheckedIOException(e);</span>
-<span class="nc" id="L66">		}</span>
-<span class="nc" id="L67">	}</span>
+	default void writeGraph(Graph&lt;V, E&gt; graph, String path) {
+<span class="nc" id="L64">		try (Writer writer = new FileWriter(path, GraphFormats.JGALGO_CHARSET)) {</span>
+<span class="nc" id="L65">			writeGraph(graph, writer);</span>
+<span class="nc" id="L66">		} catch (IOException e) {</span>
+<span class="nc" id="L67">			throw new UncheckedIOException(e);</span>
+<span class="nc" id="L68">		}</span>
+<span class="nc" id="L69">	}</span>
 
-	/**
-	 * Get new {@link GraphWriter} instance by a format name.
-	 *
-	 * &lt;p&gt;
-	 * Any one of the following formats is supported: ['csv', 'dimacs', 'gexf', 'gml', 'graph6', 'space6', 'graphml',
-	 * 'leda']
-	 *
-	 * @param  format the name of the format
-	 * @return        a writer that can write graphs with the given format
-	 */
-	static GraphWriter newInstance(String format) {
-<span class="fc" id="L80">		return GraphFormat.getInstanceByName(format).newWriter();</span>
-	}
+	// /**
+	// * Get new {@link GraphWriter} instance by a format name.
+	// *
+	// * &lt;p&gt;
+	// * Any one of the following formats is supported: ['csv', 'dimacs', 'gexf', 'gml', 'graph6', 'space6', 'graphml',
+	// * 'leda']
+	// *
+	// * @param format the name of the format
+	// * @return a writer that can write graphs with the given format
+	// */
+	// static &lt;V, E&gt; GraphWriter&lt;V, E&gt; newInstance(String format) {
+	// return GraphFormat.getInstanceByName(format).newWriter();
+	// }
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

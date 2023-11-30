@@ -16,37 +16,33 @@
 package com.jgalgo.io;
 
 import java.util.List;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 
-interface GraphFormat {
+abstract class GraphFormat {
 
-	GraphWriter newWriter();
+	private final List&lt;String&gt; fileExtensions;
 
-	GraphReader newReader();
+<span class="nc" id="L25">	GraphFormat(String fileExtension, String... fileExtensions) {</span>
+<span class="nc" id="L26">		String[] fileExtensions0 = new String[1 + fileExtensions.length];</span>
+<span class="nc" id="L27">		fileExtensions0[0] = fileExtension;</span>
+<span class="nc" id="L28">		System.arraycopy(fileExtensions, 0, fileExtensions0, 1, fileExtensions.length);</span>
+<span class="nc" id="L29">		this.fileExtensions = ObjectList.of(fileExtensions0);</span>
+<span class="nc" id="L30">	}</span>
 
-	List&lt;String&gt; getFileExtensions();
+	abstract &lt;V, E&gt; GraphWriter&lt;V, E&gt; newWriter();
 
-	static GraphFormat getInstanceByName(String formatName) {
-<span class="pc bpc" id="L29" title="6 of 9 branches missed.">		switch (formatName.toLowerCase()) {</span>
-			case &quot;csv&quot;:
-<span class="nc" id="L31">				return FormatCSV.Instance;</span>
-			case &quot;dimacs&quot;:
-<span class="fc" id="L33">				return FormatDIMACS.Instance;</span>
-			case &quot;gexf&quot;:
-<span class="nc" id="L35">				return FormatGEXF.Instance;</span>
-			case &quot;gml&quot;:
-<span class="fc" id="L37">				return FormatGML.Instance;</span>
-			case &quot;graph6&quot;:
-<span class="nc" id="L39">				return FormatGraph6.Instance;</span>
-			case &quot;graphml&quot;:
-<span class="nc" id="L41">				return FormatGraphML.Instance;</span>
-			case &quot;leda&quot;:
-<span class="fc" id="L43">				return FormatLEDA.Instance;</span>
-			case &quot;space6&quot;:
-<span class="nc" id="L45">				return FormatSparse6.Instance;</span>
-			default:
-<span class="nc" id="L47">				throw new IllegalArgumentException(&quot;unsupported format: &quot; + formatName);</span>
-		}
+	abstract &lt;V, E&gt; GraphReader&lt;V, E&gt; newReader(Class&lt;V&gt; vType, Class&lt;E&gt; eType);
+
+	final List&lt;String&gt; getFileExtensions() {
+<span class="nc" id="L37">		return fileExtensions;</span>
 	}
+
+	// static GraphFormat getInstanceByName(String formatName) {
+	// GraphFormat format = GraphFormats.Formats.get(formatName.toLowerCase());
+	// if (format == null)
+	// throw new IllegalArgumentException(&quot;unsupported format: &quot; + formatName);
+	// return format;
+	// }
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

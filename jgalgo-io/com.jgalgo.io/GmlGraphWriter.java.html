@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GmlGraphWriter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - IO</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.io</a> &gt; <span class="el_source">GmlGraphWriter.java</span></div><h1>GmlGraphWriter.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.io;
+
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.io.Writer;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.WeightsByte;
+import com.jgalgo.graph.WeightsChar;
+import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.WeightsFloat;
+import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.WeightsLong;
+import com.jgalgo.graph.WeightsObj;
+import com.jgalgo.graph.WeightsShort;
+import it.unimi.dsi.fastutil.Pair;
+
+/**
+ * Write a graph using the GML format.
+ *
+ * &lt;p&gt;
+ * The GML format is a simple text format for describing graphs. It can represent directed and undirected graphs, and
+ * supports integers, floats and strings as vertices/edges identifiers and weights. The format is described in
+ * &lt;a href=&quot;https://en.wikipedia.org/wiki/Graph_Modelling_Language&quot;&gt;Wikipedia&lt;/a&gt;. The format uses a tree-like
+ * structure, similar to JSON or XML. The root of the tree is a node with the key &quot;graph&quot;, and its children are the
+ * vertices, edges, and additional properties such as whether the graph is directed or not. Each vertex and edge will
+ * have a property 'id', which is the identifier in the written graph. The source and target of each edge will be stored
+ * as properties of an edge node. Except for the 'id' property for vertices, and 'id','source' and 'target' for edges,
+ * the weights of each vertex/edge will be stored as properties of the vertex/edge node. An example of a GML file:
+ *
+ * &lt;pre&gt;
+ * graph [
+ * 	# &quot;This is a sample graph&quot;
+ * 	directed 1
+ * 	node [
+ * 		id 1
+ * 		label &quot;node 1&quot;
+ * 		thisIsASampleAttribute 42
+ * 	]
+ * 	node [
+ * 		id 2
+ * 		label &quot;node 2&quot;
+ * 		thisIsASampleAttribute 43
+ * 	]
+ * 	node [
+ * 		id 3
+ * 		label &quot;node 3&quot;
+ * 		thisIsASampleAttribute 44
+ * 	]
+ * 	edge [
+ * 		id 1
+ * 		source 1
+ * 		target 2
+ * 		label &quot;Edge from node 1 to node 2&quot;
+ * 		weight 22.7
+ * 	]
+ * 	edge [
+ * 		id 2
+ * 		source 2
+ * 		target 3
+ * 		label &quot;Edge from node 2 to node 3&quot;
+ * 		weight 1.5
+ * 	]
+ * 	edge [
+ * 		id 3
+ * 		source 3
+ * 		target 1
+ * 		label &quot;Edge from node 3 to node 1&quot;
+ * 		weight -13.54
+ * 	]
+ * ]
+ * &lt;/pre&gt;
+ *
+ * &lt;p&gt;
+ * The identifiers of a graph will be written using the {@link Object#toString()} method. The vertices and edges should
+ * be either integers, floats, or strings so that when reading the graph using {@link GmlGraphReader} the identifiers
+ * will be parsed correctly.
+ *
+ * &lt;p&gt;
+ * The writer support writing weights of vertices and edges of type {@link WeightsByte}, {@link WeightsShort} and
+ * {@link WeightsInt} as integer weights, {@link WeightsFloat}, {@link WeightsDouble} and {@link WeightsLong} as
+ * floating numbers weights, {@link WeightsObj} as string weights using the {@link Object#toString()} method,
+ * {@link WeightsChar} as string weights, and lastly {@link WeightsBool} as &lt;i&gt;integer&lt;/i&gt; weights where {@code 0} is
+ * {@code false} and {@code 1} is {@code true}. Note that this way of writing the weights will not yield the exact same
+ * graph when reading it using {@link GmlGraphReader}, since the weights will be parsed into {@link WeightsInt},
+ * {@link WeightsDouble} and {@link WeightsObj} only. If only {@link WeightsInt}, {@link WeightsDouble} and
+ * {@link WeightsObj} of strings are written, the read graph will be identical. The weights will be written as
+ * properties of the vertex/edge node, and the key of the property will be the key of the weights. The weights keys
+ * should be valid GML keys. By default, all weights of the vertices/edges will be written. To write only specific
+ * weights, use {@link #setVerticesWeightsKeys(Collection)} and {@link #setEdgesWeightsKeys(Collection)}.
+ *
+ * &lt;p&gt;
+ * The format was presented in a paper 'GML: A portable Graph File Format' by Michael Himsolt.
+ *
+ * @author Barak Ugav
+ */
+public class GmlGraphWriter&lt;V, E&gt; implements GraphWriter&lt;V, E&gt; {
+
+	/*
+	 * TODO: we can write some additional comments to the GML file that describe the type of weights exactly, and avoid
+	 * the loss of types from byte/short/int to int, float,double,long to double, bool to int, ect.
+	 */
+
+	private String[] verticesWeightsKeys;
+	private String[] edgesWeightsKeys;
+
+	/**
+	 * Create a new writer.
+	 */
+<span class="fc" id="L129">	public GmlGraphWriter() {}</span>
+
+	/**
+	 * Set the weights keys of the vertices to write.
+	 *
+	 * &lt;p&gt;
+	 * By default, all weights of the vertices will be written. The writer support writing weights of type
+	 * {@link WeightsByte}, {@link WeightsShort} and {@link WeightsInt} as integer weights, {@link WeightsFloat},
+	 * {@link WeightsDouble} and {@link WeightsLong} as floating numbers weights, {@link WeightsObj} as string weights
+	 * using the {@link Object#toString()} method, {@link WeightsChar} as string weights, and lastly {@link WeightsBool}
+	 * as integer weights where {@code 0} is {@code false} and {@code 1} is {@code true}. Note that this way of writing
+	 * the weights will not yield the exact same graph when reading it using {@link GmlGraphReader}, since the weights
+	 * will be parsed into {@link WeightsInt}, {@link WeightsDouble} and {@link WeightsObj} only. If only
+	 * {@link WeightsInt}, {@link WeightsDouble} and {@link WeightsObj} of strings are written, the read graph will be
+	 * identical. The weights will be written as properties of the vertex node, and the key of the property will be the
+	 * key of the weights. The weights keys should be valid GML keys.
+	 *
+	 * @param verticesWeightsKeys The weights keys of the vertices to write, or {@code null} to write all weights (which
+	 *                                is the default)
+	 */
+	public void setVerticesWeightsKeys(Collection&lt;String&gt; verticesWeightsKeys) {
+<span class="fc bfc" id="L150" title="All 2 branches covered.">		this.verticesWeightsKeys = verticesWeightsKeys == null ? null : verticesWeightsKeys.toArray(String[]::new);</span>
+<span class="fc" id="L151">	}</span>
+
+	/**
+	 * Set the weights keys of the edges to write.
+	 *
+	 * &lt;p&gt;
+	 * By default, all weights of the edges will be written. The writer support writing weights of type
+	 * {@link WeightsByte}, {@link WeightsShort} and {@link WeightsInt} as integer weights, {@link WeightsFloat},
+	 * {@link WeightsDouble} and {@link WeightsLong} as floating numbers weights, {@link WeightsObj} as string weights
+	 * using the {@link Object#toString()} method, {@link WeightsChar} as string weights, and lastly {@link WeightsBool}
+	 * as integer weights where {@code 0} is {@code false} and {@code 1} is {@code true}. Note that this way of writing
+	 * the weights will not yield the exact same graph when reading it using {@link GmlGraphReader}, since the weights
+	 * will be parsed into {@link WeightsInt}, {@link WeightsDouble} and {@link WeightsObj} only. If only
+	 * {@link WeightsInt}, {@link WeightsDouble} and {@link WeightsObj} of strings are written, the read graph will be
+	 * identical. The weights will be written as properties of the edge node, and the key of the property will be the
+	 * key of the weights. The weights keys should be valid GML keys.
+	 *
+	 * @param edgesWeightsKeys The weights keys of the edges to write, or {@code null} to write all weights (which is
+	 *                             the default)
+	 */
+	public void setEdgesWeightsKeys(Collection&lt;String&gt; edgesWeightsKeys) {
+<span class="fc bfc" id="L172" title="All 2 branches covered.">		this.edgesWeightsKeys = edgesWeightsKeys == null ? null : edgesWeightsKeys.toArray(String[]::new);</span>
+<span class="fc" id="L173">	}</span>
+
+	@Override
+	public void writeGraph(Graph&lt;V, E&gt; graph, Writer writer) {
+<span class="fc" id="L177">		WeightsStringifier.Builder weightsStringifierBuilder = new WeightsStringifier.Builder();</span>
+		/* longs are written as floats */
+<span class="fc" id="L179">		weightsStringifierBuilder.setLongStringifier(l -&gt; Double.toString(l));</span>
+		/* chars are written as strings, and both chars and strings are wrapped in &quot;{weight}&quot; */
+<span class="fc" id="L181">		weightsStringifierBuilder.setObjectStringifier(o -&gt; {</span>
+<span class="fc" id="L182">			String str = String.valueOf(o);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">			if (str.contains(&quot;\&quot;&quot;))</span>
+<span class="fc" id="L184">				throw new IllegalArgumentException(&quot;String '&quot; + str + &quot;' contains '\&quot;', which is not supported by GML&quot;);</span>
+<span class="fc" id="L185">			return &quot;\&quot;&quot; + str + &quot;\&quot;&quot;;</span>
+		});
+<span class="fc" id="L187">		weightsStringifierBuilder.setCharStringifier(c -&gt; {</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">			if (c == '&quot;')</span>
+<span class="fc" id="L189">				throw new IllegalArgumentException(&quot;Char '\&quot;' is not supported by GML&quot;);</span>
+<span class="fc" id="L190">			return &quot;\&quot;&quot; + c + &quot;\&quot;&quot;;</span>
+		});
+		/* boolean are written as ones and zeros */
+<span class="fc bfc" id="L193" title="All 2 branches covered.">		weightsStringifierBuilder.setBoolStringifier(b -&gt; b ? &quot;1&quot; : &quot;0&quot;);</span>
+
+<span class="fc" id="L195">		List&lt;Pair&lt;String, WeightsStringifier&lt;V&gt;&gt;&gt; vWeights = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L196">		List&lt;Pair&lt;String, WeightsStringifier&lt;E&gt;&gt;&gt; eWeights = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">		if (verticesWeightsKeys == null) {</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">			for (String key : graph.getVerticesWeightsKeys()) {</span>
+<span class="fc" id="L199">				Weights&lt;V, ?&gt; weights = graph.getVerticesWeights(key);</span>
+<span class="fc" id="L200">				vWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>
+<span class="fc" id="L201">			}</span>
+		} else {
+<span class="fc bfc" id="L203" title="All 2 branches covered.">			for (String key : verticesWeightsKeys) {</span>
+<span class="fc" id="L204">				Weights&lt;V, ?&gt; weights = graph.getVerticesWeights(key);</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">				if (weights == null)</span>
+<span class="fc" id="L206">					throw new IllegalArgumentException(&quot;Vertices weights key '&quot; + key + &quot;' does not exist&quot;);</span>
+<span class="fc" id="L207">				vWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>
+			}
+		}
+<span class="fc bfc" id="L210" title="All 2 branches covered.">		if (edgesWeightsKeys == null) {</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">			for (String key : graph.getEdgesWeightsKeys()) {</span>
+<span class="fc" id="L212">				Weights&lt;E, ?&gt; weights = graph.getEdgesWeights(key);</span>
+<span class="fc" id="L213">				eWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>
+<span class="fc" id="L214">			}</span>
+		} else {
+<span class="fc bfc" id="L216" title="All 2 branches covered.">			for (String key : edgesWeightsKeys) {</span>
+<span class="fc" id="L217">				Weights&lt;E, ?&gt; weights = graph.getEdgesWeights(key);</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">				if (weights == null)</span>
+<span class="fc" id="L219">					throw new IllegalArgumentException(&quot;Edges weights key '&quot; + key + &quot;' does not exist&quot;);</span>
+<span class="fc" id="L220">				eWeights.add(Pair.of(key, weightsStringifierBuilder.build(weights)));</span>
+			}
+		}
+<span class="fc bfc" id="L223" title="All 2 branches covered.">		for (Pair&lt;String, WeightsStringifier&lt;V&gt;&gt; w : vWeights)</span>
+<span class="fc" id="L224">			Gml.checkValidWeightsKey(w.first());</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">		for (Pair&lt;String, WeightsStringifier&lt;E&gt;&gt; w : eWeights)</span>
+<span class="fc" id="L226">			Gml.checkValidWeightsKey(w.first());</span>
+
+<span class="fc" id="L228">		Writer2 out = new Writer2(writer);</span>
+		try {
+<span class="fc" id="L230">			out.append(&quot;graph [&quot;).appendNewline();</span>
+<span class="fc" id="L231">			out.append(&quot;comment \&quot;GML written graph by JGAlgo\&quot;&quot;).appendNewline();</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">			out.append(&quot;\tdirected &quot;).append(graph.isDirected() ? &quot;1&quot; : &quot;0&quot;).appendNewline();</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">			for (V v : graph.vertices()) {</span>
+<span class="fc" id="L234">				out.append(&quot;\tnode [&quot;).appendNewline();</span>
+<span class="fc" id="L235">				out.append(&quot;\t\tid &quot;).append(v).appendNewline();</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">				for (Pair&lt;String, WeightsStringifier&lt;V&gt;&gt; weights : vWeights) {</span>
+<span class="fc" id="L237">					out.append(&quot;\t\t&quot;);</span>
+<span class="fc" id="L238">					String key = weights.first();</span>
+<span class="fc" id="L239">					String weightStr = weights.right().weightStr(v);</span>
+<span class="fc" id="L240">					out.append(key).append(' ').append(weightStr).appendNewline();</span>
+<span class="fc" id="L241">				}</span>
+<span class="fc" id="L242">				out.append(&quot;\t]&quot;).appendNewline();</span>
+<span class="fc" id="L243">			}</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">			for (E e : graph.edges()) {</span>
+<span class="fc" id="L245">				out.append(&quot;\tedge [&quot;).appendNewline();</span>
+<span class="fc" id="L246">				out.append(&quot;\t\tid &quot;).append(e).appendNewline();</span>
+<span class="fc" id="L247">				out.append(&quot;\t\tsource &quot;).append(graph.edgeSource(e)).appendNewline();</span>
+<span class="fc" id="L248">				out.append(&quot;\t\ttarget &quot;).append(graph.edgeTarget(e)).appendNewline();</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">				for (Pair&lt;String, WeightsStringifier&lt;E&gt;&gt; weights : eWeights) {</span>
+<span class="fc" id="L250">					out.append(&quot;\t\t&quot;);</span>
+<span class="fc" id="L251">					String key = weights.first();</span>
+<span class="fc" id="L252">					String weightStr = weights.right().weightStr(e);</span>
+<span class="fc" id="L253">					out.append(key).append(' ').append(weightStr).appendNewline();</span>
+<span class="fc" id="L254">				}</span>
+<span class="fc" id="L255">				out.append(&quot;\t]&quot;).appendNewline();</span>
+<span class="fc" id="L256">			}</span>
+<span class="fc" id="L257">			out.append(']').appendNewline();</span>
+
+<span class="nc" id="L259">		} catch (IOException e) {</span>
+<span class="nc" id="L260">			throw new UncheckedIOException(e);</span>
+<span class="fc" id="L261">		}</span>
+<span class="fc" id="L262">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
