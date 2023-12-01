@@ -1041,6 +1041,7 @@ public class GmlTest {
 		assertEquals("directed 0", directedLines.get(0));
 	}
 
+	@SuppressWarnings("boxing")
 	@Test
 	public void writeWeighted() {
 		IntGraph g = IntGraph.newUndirected();

@@ -41,33 +41,33 @@ public class LedaTest {
 
 	@Test
 	public void ReadWriteLEDAWithWeights() {
-		String ledaDefinition = "";
-		ledaDefinition += "#header section\n";
-		ledaDefinition += "LEDA.GRAPH\n";
-		ledaDefinition += "string\n";
-		ledaDefinition += "int\n";
-		ledaDefinition += "-1\n";
-		ledaDefinition += "#nodes section\n";
-		ledaDefinition += "5\n";
-		ledaDefinition += "|{v1}|\n";
-		ledaDefinition += "|{v2}|\n";
-		ledaDefinition += "|{v3}|\n";
-		ledaDefinition += "|{v4}|\n";
-		ledaDefinition += "|{v5}|\n";
-		ledaDefinition += "\n";
-		ledaDefinition += "#edges section\n";
-		ledaDefinition += "7\n";
-		ledaDefinition += "1 2 0 |{4}|\n";
-		ledaDefinition += "1 3 0 |{3}|\n";
-		ledaDefinition += "2 3 0 |{2}|\n";
-		ledaDefinition += "3 4 0 |{3}|\n";
-		ledaDefinition += "3 5 0 |{7}|\n";
-		ledaDefinition += "4 5 0 |{6}|\n";
-		ledaDefinition += "5 1 0 |{1}|\n";
-		ledaDefinition += "\n";
+		TextBuilder text = new TextBuilder();
+		text.addLine("#header section");
+		text.addLine("LEDA.GRAPH");
+		text.addLine("string");
+		text.addLine("int");
+		text.addLine("-1");
+		text.addLine("#nodes section");
+		text.addLine("5");
+		text.addLine("|{v1}|");
+		text.addLine("|{v2}|");
+		text.addLine("|{v3}|");
+		text.addLine("|{v4}|");
+		text.addLine("|{v5}|");
+		text.addLine("");
+		text.addLine("#edges section");
+		text.addLine("7");
+		text.addLine("1 2 0 |{4}|");
+		text.addLine("1 3 0 |{3}|");
+		text.addLine("2 3 0 |{2}|");
+		text.addLine("3 4 0 |{3}|");
+		text.addLine("3 5 0 |{7}|");
+		text.addLine("4 5 0 |{6}|");
+		text.addLine("5 1 0 |{1}|");
+		text.addLine("");
 
 		LedaGraphReader graphReader = new LedaGraphReader();
-		StringReader sr = new StringReader(ledaDefinition);
+		StringReader sr = new StringReader(text.getAndClear());
 		IntGraphBuilder gb = graphReader.readIntoBuilder(sr);
 		IntGraph graph1 = gb.build();
 
@@ -78,33 +78,33 @@ public class LedaTest {
 
 	@Test
 	public void ReadWriteLEDAWithoutWeights() {
-		String ledaDefinition = "";
-		ledaDefinition += "#header section\n";
-		ledaDefinition += "LEDA.GRAPH\n";
-		ledaDefinition += "string\n";
-		ledaDefinition += "void\n";
-		ledaDefinition += "-1\n";
-		ledaDefinition += "#nodes section\n";
-		ledaDefinition += "5\n";
-		ledaDefinition += "|{vX1}|\n";
-		ledaDefinition += "|{vX2}|\n";
-		ledaDefinition += "|{vX3}|\n";
-		ledaDefinition += "|{vX4}|\n";
-		ledaDefinition += "|{vX5}|\n";
-		ledaDefinition += "\n";
-		ledaDefinition += "#edges section\n";
-		ledaDefinition += "7\n";
-		ledaDefinition += "1 2 0 |{}|\n";
-		ledaDefinition += "1 3 0 |{}|\n";
-		ledaDefinition += "2 3 0 |{}|\n";
-		ledaDefinition += "3 4 0 |{}|\n";
-		ledaDefinition += "3 5 0 |{}|\n";
-		ledaDefinition += "4 5 0 |{}|\n";
-		ledaDefinition += "5 1 0 |{}|\n";
-		ledaDefinition += "\n";
+		TextBuilder text = new TextBuilder();
+		text.addLine("#header section");
+		text.addLine("LEDA.GRAPH");
+		text.addLine("string");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("#nodes section");
+		text.addLine("5");
+		text.addLine("|{vX1}|");
+		text.addLine("|{vX2}|");
+		text.addLine("|{vX3}|");
+		text.addLine("|{vX4}|");
+		text.addLine("|{vX5}|");
+		text.addLine("");
+		text.addLine("#edges section");
+		text.addLine("7");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("1 3 0 |{}|");
+		text.addLine("2 3 0 |{}|");
+		text.addLine("3 4 0 |{}|");
+		text.addLine("3 5 0 |{}|");
+		text.addLine("4 5 0 |{}|");
+		text.addLine("5 1 0 |{}|");
+		text.addLine("");
 
 		LedaGraphReader graphReader = new LedaGraphReader();
-		StringReader sr = new StringReader(ledaDefinition);
+		StringReader sr = new StringReader(text.getAndClear());
 		IntGraphBuilder gb = graphReader.readIntoBuilder(sr);
 		IntGraph graph1 = gb.build();
 
@@ -324,21 +324,21 @@ public class LedaTest {
 			ew.set(e, (char) (55 + e));
 		writeReadWeights(g);
 
-		String data = "";
-		data += "LEDA.GRAPH\n";
-		data += "char\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{alongword}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 0 |{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data1 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data1)));
+		TextBuilder text = new TextBuilder();
+		text.addLine("LEDA.GRAPH");
+		text.addLine("char");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{alongword}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 0 |{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 	}
 
 	@Test
@@ -355,21 +355,21 @@ public class LedaTest {
 
 	@Test
 	public void readWeightsVoid() {
-		String data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 0 |{notempty}|\n";
-		data += "3 1 0 |{}|\n";
-		String data1 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data1)));
+		TextBuilder text = new TextBuilder();
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 0 |{notempty}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 	}
 
 	private static void writeReadWeights(IntGraph g) {
@@ -402,427 +402,402 @@ public class LedaTest {
 
 	@Test
 	public void readInvalidHeader() {
+		TextBuilder text = new TextBuilder();
 		/* empty file */
-		String data = "";
-		String data1 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data1)));
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* invalid 'LEDA.GRAPH' header */
-		data = "";
-		data += "LEDA.GRAPH.invalid-first-line\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 0 |{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data2 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data2)));
+		text.addLine("LEDA.GRAPH.invalid-first-line");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 0 |{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* missing vertices weights type */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		String data3 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data3)));
+		text.addLine("LEDA.GRAPH");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* missing edges weights type */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		String data4 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data4)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* invalid vertices weights type */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "not-a-weights-type\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 0 |{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data5 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data5)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("not-a-weights-type");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 0 |{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* invalid 'LEDA.GRAPH' header */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "not-a-weights-type\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 0 |{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data6 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data6)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("not-a-weights-type");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 0 |{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* missing directed/undirected */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		String data7 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data7)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* invalid directed/undirected */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "0\n";
-		String data8 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data8)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("0");
+		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* invalid directed/undirected */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-3\n";
-		String data9 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data9)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-3");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 	}
 
 	@Test
 	public void readInvalidNodeSection() {
+		TextBuilder text = new TextBuilder();
+
 		/* missing number of vertices */
-		String data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		String data1 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data1)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* invalid number of vertices */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "not-a-number\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 0 |{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data2 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data2)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("not-a-number");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 0 |{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* negative number of vertices */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "-9\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 0 |{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data3 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data3)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("-9");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 0 |{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* missing vertices */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "5\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		String data4 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data4)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("5");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* no vertex weight prefix */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "no-prefix}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 0 |{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data5 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data5)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("no-prefix}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 0 |{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* no vertex weight suffix */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{no-suffix\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 0 |{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data6 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data6)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{no-suffix");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 0 |{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 	}
 
 	@Test
 	public void invalidEdgeSection() {
+		TextBuilder text = new TextBuilder();
+
 		/* missing number of edges */
-		String data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		String data1 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data1)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* invalid number of edges */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "not-a-number\n";
-		String data2 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data2)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("not-a-number");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* negative number of edges */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "-6\n";
-		String data3 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data3)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("-6");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* missing edges */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "4\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 0 |{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data4 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data4)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("4");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 0 |{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* invalid edge */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "230|{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data5 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data5)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("230|{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* invalid edge */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 30|{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data6 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data6)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 30|{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* invalid edge */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 0|{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data7 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data7)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 0|{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* invalid edge source */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "not-a-number 3 0 |{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data8 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data8)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("not-a-number 3 0 |{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* invalid edge target */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 not-a-number 0 |{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data9 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data9)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 not-a-number 0 |{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* invalid edge reverse-twin */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 not-a-number |{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data10 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data10)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 not-a-number |{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* edge reverse-twin */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 1 |{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data11 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data11)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 1 |{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* no edge weight prefix */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 0 no-prefix}|\n";
-		data += "3 1 0 |{}|\n";
-		String data12 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data12)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 0 no-prefix}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* no edge weight suffix */
-		data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 0 |{no-suffix\n";
-		data += "3 1 0 |{}|\n";
-		String data13 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data13)));
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 0 |{no-suffix");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 	}
 
 	@Test
 	public void readTrailingLines() {
-		String data = "";
-		data += "LEDA.GRAPH\n";
-		data += "void\n";
-		data += "void\n";
-		data += "-1\n";
-		data += "3\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "|{}|\n";
-		data += "3\n";
-		data += "1 2 0 |{}|\n";
-		data += "2 3 0 |{}|\n";
-		data += "3 1 0 |{}|\n";
-		data += "3 1 0 |{}|\n";
-		String data1 = data;
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(data1)));
+		TextBuilder text = new TextBuilder();
+		text.addLine("LEDA.GRAPH");
+		text.addLine("void");
+		text.addLine("void");
+		text.addLine("-1");
+		text.addLine("3");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("|{}|");
+		text.addLine("3");
+		text.addLine("1 2 0 |{}|");
+		text.addLine("2 3 0 |{}|");
+		text.addLine("3 1 0 |{}|");
+		text.addLine("3 1 0 |{}|");
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 	}
 

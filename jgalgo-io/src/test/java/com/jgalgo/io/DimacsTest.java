@@ -36,38 +36,37 @@ public class DimacsTest {
 
 	@Test
 	public void parseDimacsEdgeGraph() {
-		String data = "";
-		data += "c this is the graph with vertices {1,2,3,4,5} and edges {(1,2),(2,3),(2,4),(3,4),(4,5)}\n";
-		data += "p edge 5 5\n";
-		data += "e 1 2\n";
-		data += "e 2 3\n";
-		data += "e 2 4\n";
-		data += "e 3 4\n";
-		data += "e 4 5\n";
-		final IntGraph g = new DimacsGraphReader().readGraph(new StringReader(data));
+		TextBuilder text = new TextBuilder();
+		text.addLine("c this is the graph with vertices {1,2,3,4,5} and edges {(1,2),(2,3),(2,4),(3,4),(4,5)}");
+		text.addLine("p edge 5 5");
+		text.addLine("e 1 2");
+		text.addLine("e 2 3");
+		text.addLine("e 2 4");
+		text.addLine("e 3 4");
+		text.addLine("e 4 5");
+		final IntGraph g = new DimacsGraphReader().readGraph(new StringReader(text.getAndClear()));
 
 		final StringWriter writer = new StringWriter();
 		new DimacsGraphWriter().writeGraph(g, writer);
 		String data2 = writer.toString();
 
-		String checkData2 = "";
-		checkData2 += "c DIMACS written graph by JGAlgo\n";
-		checkData2 += "p edge 5 5\n";
-		checkData2 += "e 1 2\n";
-		checkData2 += "e 2 3\n";
-		checkData2 += "e 2 4\n";
-		checkData2 += "e 3 4\n";
-		checkData2 += "e 4 5\n";
-		checkData2 = checkData2.replace("\n", System.lineSeparator());
-		String checkData3 = "";
-		checkData3 += "c DIMACS written graph by JGAlgo\n";
-		checkData3 += "p edge 5 5\n";
-		checkData3 += "e 1 2\n";
-		checkData3 += "e 2 4\n";
-		checkData3 += "e 2 3\n";
-		checkData3 += "e 3 4\n";
-		checkData3 += "e 4 5\n";
-		checkData3 = checkData3.replace("\n", System.lineSeparator());
+		text.addLine("c DIMACS written graph by JGAlgo");
+		text.addLine("p edge 5 5");
+		text.addLine("e 1 2");
+		text.addLine("e 2 3");
+		text.addLine("e 2 4");
+		text.addLine("e 3 4");
+		text.addLine("e 4 5");
+		String checkData2 = text.getAndClear();
+
+		text.addLine("c DIMACS written graph by JGAlgo");
+		text.addLine("p edge 5 5");
+		text.addLine("e 1 2");
+		text.addLine("e 2 4");
+		text.addLine("e 2 3");
+		text.addLine("e 3 4");
+		text.addLine("e 4 5");
+		String checkData3 = text.getAndClear();
 
 		if (data2.trim().equals(checkData2.trim())) {
 			assertEquals(data2.trim(), checkData2.trim());
@@ -80,15 +79,15 @@ public class DimacsTest {
 
 	@Test
 	public void parseDimacsSpGraph() {
-		String data = "";
-		data += "c this is the graph\n";
-		data += "p sp 5 5\n";
-		data += "e 1 2 3\n";
-		data += "e 2 3 9\n";
-		data += "e 2 4 15\n";
-		data += "e 3 4 2\n";
-		data += "e 4 5 7\n";
-		final IntGraph g = new DimacsGraphReader().readGraph(new StringReader(data));
+		TextBuilder text = new TextBuilder();
+		text.addLine("c this is the graph");
+		text.addLine("p sp 5 5");
+		text.addLine("e 1 2 3");
+		text.addLine("e 2 3 9");
+		text.addLine("e 2 4 15");
+		text.addLine("e 3 4 2");
+		text.addLine("e 4 5 7");
+		final IntGraph g = new DimacsGraphReader().readGraph(new StringReader(text.getAndClear()));
 
 		final StringWriter writer = new StringWriter();
 		DimacsGraphWriter graphWriter = new DimacsGraphWriter();
@@ -96,24 +95,23 @@ public class DimacsTest {
 		graphWriter.writeGraph(g, writer);
 		String data2 = writer.toString();
 
-		String checkData2 = "";
-		checkData2 += "c DIMACS written graph by JGAlgo\n";
-		checkData2 += "p sp 5 5\n";
-		checkData2 += "e 1 2 3\n";
-		checkData2 += "e 2 3 9\n";
-		checkData2 += "e 2 4 15\n";
-		checkData2 += "e 3 4 2\n";
-		checkData2 += "e 4 5 7\n";
-		checkData2 = checkData2.replace("\n", System.lineSeparator());
-		String checkData3 = "";
-		checkData3 += "c DIMACS written graph by JGAlgo\n";
-		checkData3 += "p sp 5 5\n";
-		checkData3 += "e 1 2 3\n";
-		checkData3 += "e 2 4 15\n";
-		checkData3 += "e 2 3 9\n";
-		checkData3 += "e 3 4 2\n";
-		checkData3 += "e 4 5 7\n";
-		checkData3 = checkData3.replace("\n", System.lineSeparator());
+		text.addLine("c DIMACS written graph by JGAlgo");
+		text.addLine("p sp 5 5");
+		text.addLine("e 1 2 3");
+		text.addLine("e 2 3 9");
+		text.addLine("e 2 4 15");
+		text.addLine("e 3 4 2");
+		text.addLine("e 4 5 7");
+		String checkData2 = text.getAndClear();
+
+		text.addLine("c DIMACS written graph by JGAlgo");
+		text.addLine("p sp 5 5");
+		text.addLine("e 1 2 3");
+		text.addLine("e 2 4 15");
+		text.addLine("e 2 3 9");
+		text.addLine("e 3 4 2");
+		text.addLine("e 4 5 7");
+		String checkData3 = text.getAndClear();
 
 		if (data2.trim().equals(checkData2.trim())) {
 			assertEquals(data2.trim(), checkData2.trim());
@@ -215,15 +213,14 @@ public class DimacsTest {
 
 	@Test
 	public void readIgnoreBlankLines() {
-		String data = "";
-		data += "p edge 3 3\n";
-		data += "\n";
-		data += "e 1 2\n";
-		data += "e 2 3\n";
-		data += "e 3 1\n";
-		data = data.replace("\n", System.lineSeparator());
+		TextBuilder text = new TextBuilder();
+		text.addLine("p edge 3 3");
+		text.addLine("");
+		text.addLine("e 1 2");
+		text.addLine("e 2 3");
+		text.addLine("e 3 1");
 
-		IntGraph g = new DimacsGraphReader().readGraph(new StringReader(data));
+		IntGraph g = new DimacsGraphReader().readGraph(new StringReader(text.getAndClear()));
 
 		IntGraph g1 = IntGraph.newUndirected();
 		g1.addVertex(1);
@@ -238,160 +235,132 @@ public class DimacsTest {
 
 	@Test
 	public void readInvalidCommentLine() {
-		String data = "";
-		data += "cc not a valid comment\n";
-		data += "p edge 3 3\n";
-		data += "e 1 2\n";
-		data += "e 2 3\n";
-		data += "e 3 1\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data1 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data1)));
+		TextBuilder text = new TextBuilder();
+		text.addLine("cc not a valid comment");
+		text.addLine("p edge 3 3");
+		text.addLine("e 1 2");
+		text.addLine("e 2 3");
+		text.addLine("e 3 1");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 	}
 
 	@Test
 	public void readInvalidProblemLine() {
-		String data = "";
-		data += "pp edge 3 3\n";
-		data += "e 1 2\n";
-		data += "e 2 3\n";
-		data += "e 3 1\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data1 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data1)));
+		TextBuilder text = new TextBuilder();
+		text.addLine("pp edge 3 3");
+		text.addLine("e 1 2");
+		text.addLine("e 2 3");
+		text.addLine("e 3 1");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 
-		data = "";
-		data += "p nonexistingformat 3 3\n";
-		data += "e 1 2\n";
-		data += "e 2 3\n";
-		data += "e 3 1\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data2 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data2)));
+		text.addLine("p nonexistingformat 3 3");
+		text.addLine("e 1 2");
+		text.addLine("e 2 3");
+		text.addLine("e 3 1");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 
-		data = "";
-		data += "p 3 3\n";
-		data += "e 1 2\n";
-		data += "e 2 3\n";
-		data += "e 3 1\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data3 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data3)));
+		text.addLine("p 3 3");
+		text.addLine("e 1 2");
+		text.addLine("e 2 3");
+		text.addLine("e 3 1");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 
-		data = "";
-		data += "p edge -1 3\n";
-		data += "e 1 2\n";
-		data += "e 2 3\n";
-		data += "e 3 1\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data4 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data4)));
+		text.addLine("p edge -1 3");
+		text.addLine("e 1 2");
+		text.addLine("e 2 3");
+		text.addLine("e 3 1");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 
-		data = "";
-		data += "p edge 3 -1\n";
-		data += "e 1 2\n";
-		data += "e 2 3\n";
-		data += "e 3 1\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data5 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data5)));
+		text.addLine("p edge 3 -1");
+		text.addLine("e 1 2");
+		text.addLine("e 2 3");
+		text.addLine("e 3 1");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 
-		data = "";
-		data += "p edge notanumber 3\n";
-		data += "e 1 2\n";
-		data += "e 2 3\n";
-		data += "e 3 1\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data6 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data6)));
+		text.addLine("p edge notanumber 3");
+		text.addLine("e 1 2");
+		text.addLine("e 2 3");
+		text.addLine("e 3 1");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 
-		data = "";
-		data += "p edge 3 notanumber\n";
-		data += "e 1 2\n";
-		data += "e 2 3\n";
-		data += "e 3 1\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data7 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data7)));
+		text.addLine("p edge 3 notanumber");
+		text.addLine("e 1 2");
+		text.addLine("e 2 3");
+		text.addLine("e 3 1");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 
-		data = "";
-		data += "p edge 3 3\n";
-		data += "p edge 3 3\n";
-		data += "e 1 2\n";
-		data += "e 2 3\n";
-		data += "e 3 1\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data8 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data8)));
+		text.addLine("p edge 3 3");
+		text.addLine("p edge 3 3");
+		text.addLine("e 1 2");
+		text.addLine("e 2 3");
+		text.addLine("e 3 1");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 
-		data = "";
-		data += "e 1 2\n";
-		data += "e 2 3\n";
-		data += "e 3 1\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data9 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data9)));
+		text.addLine("e 1 2");
+		text.addLine("e 2 3");
+		text.addLine("e 3 1");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 	}
 
 	@Test
 	public void readInvalidEdgeLine() {
-		String data = "";
-		data += "p edge 3 3\n";
-		data += "e 1\n";
-		data += "e 2 3\n";
-		data += "e 3 1\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data1 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data1)));
+		TextBuilder text = new TextBuilder();
+		text.addLine("p edge 3 3");
+		text.addLine("e 1");
+		text.addLine("e 2 3");
+		text.addLine("e 3 1");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 
-		data = "";
-		data += "p sp 3 3\n";
-		data += "e 1 2\n";
-		data += "e 2 3 1\n";
-		data += "e 3 1 1\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data2 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data2)));
+		text.addLine("p sp 3 3");
+		text.addLine("e 1 2");
+		text.addLine("e 2 3 1");
+		text.addLine("e 3 1 1");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 
-		data = "";
-		data += "p 3 3\n";
-		data += "e notanumber 2\n";
-		data += "e 2 3\n";
-		data += "e 3 1\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data3 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data3)));
+		text.addLine("p 3 3");
+		text.addLine("e notanumber 2");
+		text.addLine("e 2 3");
+		text.addLine("e 3 1");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 
-		data = "";
-		data += "p edge 3 3\n";
-		data += "e 1 notanumber\n";
-		data += "e 2 3\n";
-		data += "e 3 1\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data4 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data4)));
+		text.addLine("p edge 3 3");
+		text.addLine("e 1 notanumber");
+		text.addLine("e 2 3");
+		text.addLine("e 3 1");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 
-		data = "";
-		data += "p sp 3 3\n";
-		data += "e 1 2 5\n";
-		data += "e 2 3 notanumber\n";
-		data += "e 3 1 6\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data5 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data5)));
+		text.addLine("p sp 3 3");
+		text.addLine("e 1 2 5");
+		text.addLine("e 2 3 notanumber");
+		text.addLine("e 3 1 6");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 	}
 
 	@Test
 	public void readUnknownLine() {
-		String data = "";
-		data += "p edge 3 3\n";
-		data += "e 1 2\n";
-		data += "e 2 3\n";
-		data += "e 3 1\n";
-		data += "u unknown line\n";
-		data = data.replace("\n", System.lineSeparator());
-		String data1 = data;
-		assertThrows(IllegalArgumentException.class, () -> new DimacsGraphReader().readGraph(new StringReader(data1)));
+		TextBuilder text = new TextBuilder();
+		text.addLine("p edge 3 3");
+		text.addLine("e 1 2");
+		text.addLine("e 2 3");
+		text.addLine("e 3 1");
+		text.addLine("u unknown line");
+		assertThrows(IllegalArgumentException.class,
+				() -> new DimacsGraphReader().readGraph(new StringReader(text.getAndClear())));
 	}
 
 	@Test
