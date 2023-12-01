@@ -35,16 +35,18 @@ public interface GraphWriter<V, E> {
 	/**
 	 * Write a graph to an I/O writer.
 	 *
-	 * @param graph  a graph
-	 * @param writer an I/O writer to which the graph description will be written to
+	 * @param  graph                a graph
+	 * @param  writer               an I/O writer to which the graph description will be written to
+	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	void writeGraph(Graph<V, E> graph, Writer writer);
 
 	/**
 	 * Write a graph to a file.
 	 *
-	 * @param graph a graph
-	 * @param file  a file descriptor to which the graph will be written to
+	 * @param  graph                a graph
+	 * @param  file                 a file descriptor to which the graph will be written to
+	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	default void writeGraph(Graph<V, E> graph, File file) {
 		try (Writer writer = new FileWriter(file, GraphFormats.JGALGO_CHARSET)) {
@@ -57,8 +59,9 @@ public interface GraphWriter<V, E> {
 	/**
 	 * Write a graph to a file, given its path.
 	 *
-	 * @param graph a graph
-	 * @param path  a path to a file to which the graph will be written to
+	 * @param  graph                a graph
+	 * @param  path                 a path to a file to which the graph will be written to
+	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	default void writeGraph(Graph<V, E> graph, String path) {
 		try (Writer writer = new FileWriter(path, GraphFormats.JGALGO_CHARSET)) {

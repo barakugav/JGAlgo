@@ -18,7 +18,6 @@ package com.jgalgo.io;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -134,7 +133,7 @@ import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
  * @param  <E> the edges type
  * @author     Barak Ugav
  */
-public class GmlGraphReader<V, E> implements GraphReader<V, E> {
+public class GmlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E> {
 
 	private Class<V> vType;
 	private Class<E> eType;
@@ -210,7 +209,7 @@ public class GmlGraphReader<V, E> implements GraphReader<V, E> {
 	}
 
 	@Override
-	public GraphBuilder<V, E> readIntoBuilder(Reader reader) {
+	public GraphBuilder<V, E> readIntoBuilderImpl(Reader reader) throws IOException {
 		if (vType == null)
 			throw new IllegalStateException("Type of vertices was not set");
 		if (eType == null)
@@ -218,13 +217,8 @@ public class GmlGraphReader<V, E> implements GraphReader<V, E> {
 		vTypeBoxed = boxedType(vType);
 		eTypeBoxed = boxedType(eType);
 
-		try (BufferedReader br = GraphReaders.bufferedReader(reader)) {
-			List<Pair<String, Object>> roots = parseHierarchy(new CharReader(br));
-			return readIntoBuilder(roots);
-
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
-		}
+		List<Pair<String, Object>> roots = parseHierarchy(new CharReader(GraphIoUtils.bufferedReader(reader)));
+		return readIntoBuilder(roots);
 	}
 
 	private GraphBuilder<V, E> readIntoBuilder(List<Pair<String, Object>> roots) {

@@ -16,9 +16,7 @@
 package com.jgalgo.io;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -58,7 +56,7 @@ import com.jgalgo.graph.Weights;
  * @see    LedaGraphWriter
  * @author Barak Ugav
  */
-public class LedaGraphReader implements IGraphReader {
+public class LedaGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
 	private String verticesWeightsKey = "weight";
 	private String edgesWeightsKey = "weight";
@@ -95,138 +93,135 @@ public class LedaGraphReader implements IGraphReader {
 	}
 
 	@Override
-	public IntGraphBuilder readIntoBuilder(Reader reader) {
-		try (BufferedReader br = GraphReaders.bufferedReader(reader)) {
-			Iterator<String> lineIter = GraphReaders.lines(br, true).iterator();
-			Supplier<String> next = () -> {
-				while (lineIter.hasNext()) {
-					String line = lineIter.next();
-					if (!line.isEmpty() && !line.startsWith("#"))
-						return line;
-				}
-				return null;
-			};
-
-			String line1 = next.get();
-			if (line1 == null)
-				throw new IllegalArgumentException("Leda file format: empty file");
-			if (!line1.equals("LEDA.GRAPH"))
-				throw new IllegalArgumentException("Leda file format: first non-comment line must equals LEDA.GRAPH");
-
-			String verticesWeightsStr = next.get();
-			if (verticesWeightsStr == null)
-				throw new IllegalArgumentException("Leda file format: invalid header");
-			Class<?> verticesWeightsType = ledaTypeStrToClass(verticesWeightsStr);
-
-			String edgesWeightsStr = next.get();
-			if (edgesWeightsStr == null)
-				throw new IllegalArgumentException("Leda file format: invalid header");
-			Class<?> edgesWeightsType = ledaTypeStrToClass(edgesWeightsStr);
-
-			String directedOrUndirected = next.get();
-			if (directedOrUndirected == null)
-				throw new IllegalArgumentException("Leda file format: invalid header");
-			if (!List.of("-1", "-2").contains(directedOrUndirected))
-				throw new IllegalArgumentException("Leda file format: 4th non-comment line must equals -1 or -2. "
-						+ "-1 is Directed graph. -2 is Undirected graph.");
-			boolean directed = "-1".equals(directedOrUndirected);
-			IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
-			IntGraphBuilder builder = factory.allowSelfEdges().newBuilder();
-
-			IWeights<?> verticesWeights = null;
-			IWeights<?> edgesWeights = null;
-			if (verticesWeightsType != null)
-				verticesWeights = (IWeights<?>) builder.addVerticesWeights(verticesWeightsKey, verticesWeightsType);
-			if (edgesWeightsType != null)
-				edgesWeights = (IWeights<?>) builder.addEdgesWeights(edgesWeightsKey, edgesWeightsType);
-			ObjIntConsumer<String> verticesWeightsReader = weightsReader(verticesWeights);
-			ObjIntConsumer<String> edgesWeightsReader = weightsReader(edgesWeights);
-
-			String verticesNumLine = next.get();
-			if (verticesNumLine == null)
-				throw new IllegalArgumentException("invalid nodes section");
-			final int n;
-			try {
-				n = Integer.parseInt(verticesNumLine);
-			} catch (NumberFormatException e) {
-				throw new IllegalArgumentException("invalid nodes section");
+	public IntGraphBuilder readIntoBuilderImpl(Reader reader) {
+		BufferedReader br = GraphIoUtils.bufferedReader(reader);
+		Iterator<String> lineIter = GraphIoUtils.lines(br, true).iterator();
+		Supplier<String> next = () -> {
+			while (lineIter.hasNext()) {
+				String line = lineIter.next();
+				if (!line.isEmpty() && !line.startsWith("#"))
+					return line;
 			}
-			if (n < 0)
-				throw new IllegalArgumentException("invalid nodes section. num nodes must be >= 0");
+			return null;
+		};
 
-			for (int v = 1; v <= n; v++) {
-				String line = next.get();
-				if (line == null)
-					throw new IllegalArgumentException("Expected more node lines");
-				if (!line.startsWith("|{") || !line.endsWith("}|"))
-					throw new IllegalArgumentException("node line error. Expected '|{weight}|'");
-				String weight = line.substring(2, line.length() - 2);
+		String line1 = next.get();
+		if (line1 == null)
+			throw new IllegalArgumentException("Leda file format: empty file");
+		if (!line1.equals("LEDA.GRAPH"))
+			throw new IllegalArgumentException("Leda file format: first non-comment line must equals LEDA.GRAPH");
 
-				builder.addVertex(v);
-				verticesWeightsReader.accept(weight, v);
-			}
+		String verticesWeightsStr = next.get();
+		if (verticesWeightsStr == null)
+			throw new IllegalArgumentException("Leda file format: invalid header");
+		Class<?> verticesWeightsType = ledaTypeStrToClass(verticesWeightsStr);
 
-			String edgesNumLine = next.get();
-			if (edgesNumLine == null)
-				throw new IllegalArgumentException("invalid edges section");
-			final int m;
-			try {
-				m = Integer.parseInt(edgesNumLine);
-			} catch (NumberFormatException e) {
-				throw new IllegalArgumentException("invalid edges section");
-			}
-			if (m < 0)
-				throw new IllegalArgumentException("invalid edges section. num edges must be >= 0");
+		String edgesWeightsStr = next.get();
+		if (edgesWeightsStr == null)
+			throw new IllegalArgumentException("Leda file format: invalid header");
+		Class<?> edgesWeightsType = ledaTypeStrToClass(edgesWeightsStr);
 
-			for (int e = 1; e <= m; e++) {
-				String line = next.get();
-				if (line == null)
-					throw new IllegalArgumentException("Expected more edge lines");
+		String directedOrUndirected = next.get();
+		if (directedOrUndirected == null)
+			throw new IllegalArgumentException("Leda file format: invalid header");
+		if (!List.of("-1", "-2").contains(directedOrUndirected))
+			throw new IllegalArgumentException("Leda file format: 4th non-comment line must equals -1 or -2. "
+					+ "-1 is Directed graph. -2 is Undirected graph.");
+		boolean directed = "-1".equals(directedOrUndirected);
+		IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
+		IntGraphBuilder builder = factory.allowSelfEdges().newBuilder();
 
-				int sourceEnd = line.indexOf(' ');
-				if (sourceEnd == -1)
-					throw new IllegalArgumentException("edge line error. Expected 'source target twinEdge weight'");
-				int targetEnd = line.indexOf(' ', sourceEnd + 1);
-				if (targetEnd == -1)
-					throw new IllegalArgumentException("edge line error. Expected 'source target twinEdge weight'");
-				int twinEdgeEnd = line.indexOf(' ', targetEnd + 1);
-				if (twinEdgeEnd == -1)
-					throw new IllegalArgumentException("edge line error. Expected 'source target twinEdge weight'");
+		IWeights<?> verticesWeights = null;
+		IWeights<?> edgesWeights = null;
+		if (verticesWeightsType != null)
+			verticesWeights = (IWeights<?>) builder.addVerticesWeights(verticesWeightsKey, verticesWeightsType);
+		if (edgesWeightsType != null)
+			edgesWeights = (IWeights<?>) builder.addEdgesWeights(edgesWeightsKey, edgesWeightsType);
+		ObjIntConsumer<String> verticesWeightsReader = weightsReader(verticesWeights);
+		ObjIntConsumer<String> edgesWeightsReader = weightsReader(edgesWeights);
 
-				int source, target, twinEdge;
-				try {
-					source = Integer.parseInt(line.substring(0, sourceEnd));
-				} catch (NumberFormatException ex) {
-					throw new IllegalArgumentException("edge line error. Invalid source vertex number");
-				}
-				try {
-					target = Integer.parseInt(line.substring(sourceEnd + 1, targetEnd));
-				} catch (NumberFormatException ex) {
-					throw new IllegalArgumentException("edge line error. Invalid target vertex number");
-				}
-				try {
-					twinEdge = Integer.parseInt(line.substring(targetEnd + 1, twinEdgeEnd));
-				} catch (NumberFormatException ex) {
-					throw new IllegalArgumentException("edge line error. Invalid twin edge number");
-				}
-				if (twinEdge != 0)
-					throw new IllegalArgumentException("twin edges are not supported");
-
-				if (line.indexOf("|{", twinEdgeEnd + 1) != twinEdgeEnd + 1 || !line.endsWith("}|"))
-					throw new IllegalArgumentException("edge line error. Invalid weight, expected format: |{weight}|'");
-				String weight = line.substring(twinEdgeEnd + 3, line.length() - 2);
-
-				builder.addEdge(source, target, e);
-				edgesWeightsReader.accept(weight, e);
-			}
-
-			if (next.get() != null)
-				throw new IllegalArgumentException("unexpected lines after edges section");
-
-			return builder;
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
+		String verticesNumLine = next.get();
+		if (verticesNumLine == null)
+			throw new IllegalArgumentException("invalid nodes section");
+		final int n;
+		try {
+			n = Integer.parseInt(verticesNumLine);
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("invalid nodes section");
 		}
+		if (n < 0)
+			throw new IllegalArgumentException("invalid nodes section. num nodes must be >= 0");
+
+		for (int v = 1; v <= n; v++) {
+			String line = next.get();
+			if (line == null)
+				throw new IllegalArgumentException("Expected more node lines");
+			if (!line.startsWith("|{") || !line.endsWith("}|"))
+				throw new IllegalArgumentException("node line error. Expected '|{weight}|'");
+			String weight = line.substring(2, line.length() - 2);
+
+			builder.addVertex(v);
+			verticesWeightsReader.accept(weight, v);
+		}
+
+		String edgesNumLine = next.get();
+		if (edgesNumLine == null)
+			throw new IllegalArgumentException("invalid edges section");
+		final int m;
+		try {
+			m = Integer.parseInt(edgesNumLine);
+		} catch (NumberFormatException e) {
+			throw new IllegalArgumentException("invalid edges section");
+		}
+		if (m < 0)
+			throw new IllegalArgumentException("invalid edges section. num edges must be >= 0");
+
+		for (int e = 1; e <= m; e++) {
+			String line = next.get();
+			if (line == null)
+				throw new IllegalArgumentException("Expected more edge lines");
+
+			int sourceEnd = line.indexOf(' ');
+			if (sourceEnd == -1)
+				throw new IllegalArgumentException("edge line error. Expected 'source target twinEdge weight'");
+			int targetEnd = line.indexOf(' ', sourceEnd + 1);
+			if (targetEnd == -1)
+				throw new IllegalArgumentException("edge line error. Expected 'source target twinEdge weight'");
+			int twinEdgeEnd = line.indexOf(' ', targetEnd + 1);
+			if (twinEdgeEnd == -1)
+				throw new IllegalArgumentException("edge line error. Expected 'source target twinEdge weight'");
+
+			int source, target, twinEdge;
+			try {
+				source = Integer.parseInt(line.substring(0, sourceEnd));
+			} catch (NumberFormatException ex) {
+				throw new IllegalArgumentException("edge line error. Invalid source vertex number");
+			}
+			try {
+				target = Integer.parseInt(line.substring(sourceEnd + 1, targetEnd));
+			} catch (NumberFormatException ex) {
+				throw new IllegalArgumentException("edge line error. Invalid target vertex number");
+			}
+			try {
+				twinEdge = Integer.parseInt(line.substring(targetEnd + 1, twinEdgeEnd));
+			} catch (NumberFormatException ex) {
+				throw new IllegalArgumentException("edge line error. Invalid twin edge number");
+			}
+			if (twinEdge != 0)
+				throw new IllegalArgumentException("twin edges are not supported");
+
+			if (line.indexOf("|{", twinEdgeEnd + 1) != twinEdgeEnd + 1 || !line.endsWith("}|"))
+				throw new IllegalArgumentException("edge line error. Invalid weight, expected format: |{weight}|'");
+			String weight = line.substring(twinEdgeEnd + 3, line.length() - 2);
+
+			builder.addEdge(source, target, e);
+			edgesWeightsReader.accept(weight, e);
+		}
+
+		if (next.get() != null)
+			throw new IllegalArgumentException("unexpected lines after edges section");
+
+		return builder;
 	}
 
 	private static Class<?> ledaTypeStrToClass(String weightsType) {

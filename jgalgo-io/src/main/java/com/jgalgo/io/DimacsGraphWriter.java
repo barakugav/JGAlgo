@@ -17,7 +17,6 @@ package com.jgalgo.io;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.function.Function;
 import com.jgalgo.graph.Graph;
@@ -78,7 +77,7 @@ import com.jgalgo.graph.WeightsShort;
  * @see    DimacsGraphReader
  * @author Barak Ugav
  */
-public class DimacsGraphWriter implements GraphWriter<Integer, Integer> {
+public class DimacsGraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer, Integer> {
 
 	private String weightsKey;
 
@@ -108,7 +107,7 @@ public class DimacsGraphWriter implements GraphWriter<Integer, Integer> {
 	}
 
 	@Override
-	public void writeGraph(Graph<Integer, Integer> graph, Writer writer) {
+	public void writeGraphImpl(Graph<Integer, Integer> graph, Writer writer) throws IOException {
 		if (graph.isDirected())
 			throw new IllegalArgumentException("the DIMACS format support undirected graphs only");
 		final int n = graph.vertices().size();
@@ -133,27 +132,23 @@ public class DimacsGraphWriter implements GraphWriter<Integer, Integer> {
 		}
 
 		Writer2 out = new Writer2(writer);
-		try {
-			out.append("c DIMACS written graph by JGAlgo").appendNewline();
+		out.append("c DIMACS written graph by JGAlgo").appendNewline();
 
-			if (hasWeights) {
-				out.append("p sp " + n + " " + m).appendNewline();
-			} else {
-				out.append("p edge " + n + " " + m).appendNewline();
-			}
+		if (hasWeights) {
+			out.append("p sp " + n + " " + m).appendNewline();
+		} else {
+			out.append("p edge " + n + " " + m).appendNewline();
+		}
 
-			// writes all edges, optional with weights
-			for (int e0 = 1; e0 <= m; e0++) {
-				Integer e = Integer.valueOf(e0);
-				/* e {source} {target} */
-				out.append("e ").append(graph.edgeSource(e)).append(' ').append(graph.edgeTarget(e));
-				/* e {source} {target} {weight} */
-				if (hasWeights)
-					out.append(' ').append(w.apply(e));
-				out.appendNewline();
-			}
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
+		// writes all edges, optional with weights
+		for (int e0 = 1; e0 <= m; e0++) {
+			Integer e = Integer.valueOf(e0);
+			/* e {source} {target} */
+			out.append("e ").append(graph.edgeSource(e)).append(' ').append(graph.edgeTarget(e));
+			/* e {source} {target} {weight} */
+			if (hasWeights)
+				out.append(' ').append(w.apply(e));
+			out.appendNewline();
 		}
 	}
 

@@ -36,8 +36,9 @@ public interface GraphReader<V, E> {
 	/**
 	 * Read a graph from an I/O reader.
 	 *
-	 * @param  reader an I/O reader that contain a graph description
-	 * @return        a new graph read from the reader
+	 * @param  reader               an I/O reader that contain a graph description
+	 * @return                      a new graph read from the reader
+	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	default Graph<V, E> readGraph(Reader reader) {
 		return readIntoBuilder(reader).build();
@@ -46,8 +47,9 @@ public interface GraphReader<V, E> {
 	/**
 	 * Read a graph from a file.
 	 *
-	 * @param  file a file that contain a graph description
-	 * @return      a new graph read from the file
+	 * @param  file                 a file that contain a graph description
+	 * @return                      a new graph read from the file
+	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	default Graph<V, E> readGraph(File file) {
 		try (Reader reader = new FileReader(file, GraphFormats.JGALGO_CHARSET)) {
@@ -60,8 +62,9 @@ public interface GraphReader<V, E> {
 	/**
 	 * Read a graph from a file, given a path to it.
 	 *
-	 * @param  path a path to a file that contain a graph description
-	 * @return      a new graph read from the file
+	 * @param  path                 a path to a file that contain a graph description
+	 * @return                      a new graph read from the file
+	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	default Graph<V, E> readGraph(String path) {
 		try (Reader reader = new FileReader(path, GraphFormats.JGALGO_CHARSET)) {
@@ -74,8 +77,9 @@ public interface GraphReader<V, E> {
 	/**
 	 * Read a graph from an I/O reader into a {@link GraphBuilder}.
 	 *
-	 * @param  reader an I/O reader that contain a graph description
-	 * @return        a graph builder containing the vertices and edge read from the reader
+	 * @param  reader               an I/O reader that contain a graph description
+	 * @return                      a graph builder containing the vertices and edge read from the reader
+	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	GraphBuilder<V, E> readIntoBuilder(Reader reader);
 

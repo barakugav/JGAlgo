@@ -17,7 +17,6 @@ package com.jgalgo.io;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.io.Writer;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Weights;
@@ -49,7 +48,7 @@ import com.jgalgo.graph.WeightsShort;
  * @see    LedaGraphReader
  * @author Barak Ugav
  */
-public class LedaGraphWriter implements GraphWriter<Integer, Integer> {
+public class LedaGraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer, Integer> {
 
 	private String verticesWeightsKey;
 	private String edgesWeightsKey;
@@ -88,7 +87,7 @@ public class LedaGraphWriter implements GraphWriter<Integer, Integer> {
 	}
 
 	@Override
-	public void writeGraph(Graph<Integer, Integer> graph, Writer writer) {
+	public void writeGraphImpl(Graph<Integer, Integer> graph, Writer writer) throws IOException {
 		final int n = graph.vertices().size();
 		final int m = graph.edges().size();
 		if (!range(1, n + 1).equals(graph.vertices()))
@@ -110,45 +109,41 @@ public class LedaGraphWriter implements GraphWriter<Integer, Integer> {
 		}
 
 		Writer2 out = new Writer2(writer);
-		try {
-			out.append("# header section").appendNewline();
-			out.append("LEDA.GRAPH").appendNewline();
-			out.append(weightsToLedaType(verticesWeights)).appendNewline();
-			out.append(weightsToLedaType(edgesWeights)).appendNewline();
-			out.append(graph.isDirected() ? "-1" : "-2").appendNewline();
+		out.append("# header section").appendNewline();
+		out.append("LEDA.GRAPH").appendNewline();
+		out.append(weightsToLedaType(verticesWeights)).appendNewline();
+		out.append(weightsToLedaType(edgesWeights)).appendNewline();
+		out.append(graph.isDirected() ? "-1" : "-2").appendNewline();
 
-			out.append("# section nodes/vertices").appendNewline();
-			out.append(n).appendNewline();
-			if (verticesWeights == null) {
-				for (int vertex = 1; vertex <= n; vertex++)
-					out.append("|{}|").appendNewline();
+		out.append("# section nodes/vertices").appendNewline();
+		out.append(n).appendNewline();
+		if (verticesWeights == null) {
+			for (int vertex = 1; vertex <= n; vertex++)
+				out.append("|{}|").appendNewline();
+		} else {
+			WeightsStringifier<Integer> weightsStringifier = WeightsStringifier.newInstance(verticesWeights);
+			for (int v0 = 1; v0 <= n; v0++) {
+				Integer v = Integer.valueOf(v0);
+				String weightStr = weightsStringifier.weightStr(v);
+				out.append("|{").append(weightStr).append("}|").appendNewline();
+			}
+		}
+
+		out.append("# section edges").appendNewline();
+		out.append(m).appendNewline();
+		WeightsStringifier<Integer> weightsStringifier =
+				edgesWeights == null ? null : WeightsStringifier.newInstance(edgesWeights);
+		for (int e0 = 1; e0 <= m; e0++) {
+			Integer e = Integer.valueOf(e0);
+			out.append(graph.edgeSource(e)).append(' ');
+			out.append(graph.edgeTarget(e)).append(' ');
+			out.append(/* twin edge */ '0').append(' ');
+			if (weightsStringifier == null) {
+				out.append("|{}|").appendNewline();
 			} else {
-				WeightsStringifier<Integer> weightsStringifier = WeightsStringifier.newInstance(verticesWeights);
-				for (int v0 = 1; v0 <= n; v0++) {
-					Integer v = Integer.valueOf(v0);
-					String weightStr = weightsStringifier.weightStr(v);
-					out.append("|{").append(weightStr).append("}|").appendNewline();
-				}
+				String weightStr = weightsStringifier.weightStr(e);
+				out.append("|{").append(weightStr).append("}|").appendNewline();
 			}
-
-			out.append("# section edges").appendNewline();
-			out.append(m).appendNewline();
-			WeightsStringifier<Integer> weightsStringifier =
-					edgesWeights == null ? null : WeightsStringifier.newInstance(edgesWeights);
-			for (int e0 = 1; e0 <= m; e0++) {
-				Integer e = Integer.valueOf(e0);
-				out.append(graph.edgeSource(e)).append(' ');
-				out.append(graph.edgeTarget(e)).append(' ');
-				out.append(/* twin edge */ '0').append(' ');
-				if (weightsStringifier == null) {
-					out.append("|{}|").appendNewline();
-				} else {
-					String weightStr = weightsStringifier.weightStr(e);
-					out.append("|{").append(weightStr).append("}|").appendNewline();
-				}
-			}
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
 		}
 	}
 

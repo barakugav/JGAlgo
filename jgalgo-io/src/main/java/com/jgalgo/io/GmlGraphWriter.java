@@ -16,7 +16,6 @@
 package com.jgalgo.io;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -113,7 +112,7 @@ import it.unimi.dsi.fastutil.Pair;
  *
  * @author Barak Ugav
  */
-public class GmlGraphWriter<V, E> implements GraphWriter<V, E> {
+public class GmlGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V, E> {
 
 	/*
 	 * TODO: we can write some additional comments to the GML file that describe the type of weights exactly, and avoid
@@ -173,7 +172,7 @@ public class GmlGraphWriter<V, E> implements GraphWriter<V, E> {
 	}
 
 	@Override
-	public void writeGraph(Graph<V, E> graph, Writer writer) {
+	public void writeGraphImpl(Graph<V, E> graph, Writer writer) throws IOException {
 		WeightsStringifier.Builder weightsStringifierBuilder = new WeightsStringifier.Builder();
 		/* longs are written as floats */
 		weightsStringifierBuilder.setLongStringifier(l -> Double.toString(l));
@@ -226,39 +225,34 @@ public class GmlGraphWriter<V, E> implements GraphWriter<V, E> {
 			Gml.checkValidWeightsKey(w.first());
 
 		Writer2 out = new Writer2(writer);
-		try {
-			out.append("graph [").appendNewline();
-			out.append("comment \"GML written graph by JGAlgo\"").appendNewline();
-			out.append("\tdirected ").append(graph.isDirected() ? "1" : "0").appendNewline();
-			for (V v : graph.vertices()) {
-				out.append("\tnode [").appendNewline();
-				out.append("\t\tid ").append(v).appendNewline();
-				for (Pair<String, WeightsStringifier<V>> weights : vWeights) {
-					out.append("\t\t");
-					String key = weights.first();
-					String weightStr = weights.right().weightStr(v);
-					out.append(key).append(' ').append(weightStr).appendNewline();
-				}
-				out.append("\t]").appendNewline();
+		out.append("graph [").appendNewline();
+		out.append("comment \"GML written graph by JGAlgo\"").appendNewline();
+		out.append("\tdirected ").append(graph.isDirected() ? "1" : "0").appendNewline();
+		for (V v : graph.vertices()) {
+			out.append("\tnode [").appendNewline();
+			out.append("\t\tid ").append(v).appendNewline();
+			for (Pair<String, WeightsStringifier<V>> weights : vWeights) {
+				out.append("\t\t");
+				String key = weights.first();
+				String weightStr = weights.right().weightStr(v);
+				out.append(key).append(' ').append(weightStr).appendNewline();
 			}
-			for (E e : graph.edges()) {
-				out.append("\tedge [").appendNewline();
-				out.append("\t\tid ").append(e).appendNewline();
-				out.append("\t\tsource ").append(graph.edgeSource(e)).appendNewline();
-				out.append("\t\ttarget ").append(graph.edgeTarget(e)).appendNewline();
-				for (Pair<String, WeightsStringifier<E>> weights : eWeights) {
-					out.append("\t\t");
-					String key = weights.first();
-					String weightStr = weights.right().weightStr(e);
-					out.append(key).append(' ').append(weightStr).appendNewline();
-				}
-				out.append("\t]").appendNewline();
-			}
-			out.append(']').appendNewline();
-
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
+			out.append("\t]").appendNewline();
 		}
+		for (E e : graph.edges()) {
+			out.append("\tedge [").appendNewline();
+			out.append("\t\tid ").append(e).appendNewline();
+			out.append("\t\tsource ").append(graph.edgeSource(e)).appendNewline();
+			out.append("\t\ttarget ").append(graph.edgeTarget(e)).appendNewline();
+			for (Pair<String, WeightsStringifier<E>> weights : eWeights) {
+				out.append("\t\t");
+				String key = weights.first();
+				String weightStr = weights.right().weightStr(e);
+				out.append(key).append(' ').append(weightStr).appendNewline();
+			}
+			out.append("\t]").appendNewline();
+		}
+		out.append(']').appendNewline();
 	}
 
 }

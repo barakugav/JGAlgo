@@ -16,9 +16,7 @@
 package com.jgalgo.io;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.util.Objects;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightsInt;
@@ -78,7 +76,7 @@ import com.jgalgo.graph.WeightsInt;
  * @see    DimacsGraphWriter
  * @author Barak Ugav
  */
-public class DimacsGraphReader implements IGraphReader {
+public class DimacsGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
 	private String weightsKey = "weight";
 
@@ -102,113 +100,109 @@ public class DimacsGraphReader implements IGraphReader {
 	}
 
 	@Override
-	public IntGraphBuilder readIntoBuilder(Reader reader) {
-		try (BufferedReader br = GraphReaders.bufferedReader(reader)) {
-			IntGraphBuilder gb = IntGraphFactory.newUndirected().allowSelfEdges().newBuilder();
-			boolean problemLineSeen = false;
-			boolean hasWeights = false;
-			IWeightsInt w = null;
-			int n = -1, m = -1;
+	public IntGraphBuilder readIntoBuilderImpl(Reader reader) {
+		BufferedReader br = GraphIoUtils.bufferedReader(reader);
+		IntGraphBuilder gb = IntGraphFactory.newUndirected().allowSelfEdges().newBuilder();
+		boolean problemLineSeen = false;
+		boolean hasWeights = false;
+		IWeightsInt w = null;
+		int n = -1, m = -1;
 
-			for (String line : GraphReaders.lines(br, true)) {
-				if (line.isEmpty())
+		for (String line : GraphIoUtils.lines(br, true)) {
+			if (line.isEmpty())
+				continue;
+			switch (line.charAt(0)) {
+				case 'c': /* comment line */
+					if (!line.startsWith("c "))
+						throw new IllegalArgumentException("comment line must start with 'c '");
 					continue;
-				switch (line.charAt(0)) {
-					case 'c': /* comment line */
-						if (!line.startsWith("c "))
-							throw new IllegalArgumentException("comment line must start with 'c '");
-						continue;
 
-					case 'p': /* problem line */ {
-						if (!line.startsWith("p "))
-							throw new IllegalArgumentException("problem line must start with 'p '");
-						if (problemLineSeen)
-							throw new IllegalArgumentException("more than one problem line ('p' prefix) in file");
-						problemLineSeen = true;
+				case 'p': /* problem line */ {
+					if (!line.startsWith("p "))
+						throw new IllegalArgumentException("problem line must start with 'p '");
+					if (problemLineSeen)
+						throw new IllegalArgumentException("more than one problem line ('p' prefix) in file");
+					problemLineSeen = true;
 
-						String[] arr = line.split(" ");
+					String[] arr = line.split(" ");
+					if (arr.length != 4)
+						throw new IllegalArgumentException(
+								"expected problem line in format: p (edge | sp) <NumVertices> <NumEdges>");
+					String graphFormat = arr[1].toLowerCase();
+					switch (graphFormat) {
+						case "edge":
+							hasWeights = false;
+							break;
+						case "sp":
+							hasWeights = true;
+							break;
+						default:
+							throw new IllegalArgumentException(
+									"Support formats 'sp' and 'edge'. Unknown format: '" + graphFormat + "'");
+					}
+
+					try {
+						n = Integer.parseInt(arr[2]);
+						m = Integer.parseInt(arr[3]);
+					} catch (NumberFormatException e) {
+						throw new IllegalArgumentException("Invalid number of vertices or edges", e);
+					}
+
+					if (n < 0 || m < 0)
+						throw new IllegalArgumentException("negative vertices/edges num: " + n + " " + m);
+					gb.expectedVerticesNum(n);
+					gb.expectedEdgesNum(m);
+					for (int v = 1; v <= n; v++)
+						gb.addVertex(v); // vertices are labeled as 1,2,3,4...
+
+					if (hasWeights)
+						w = gb.addEdgesWeights(weightsKey, int.class);
+					break;
+				}
+
+				case 'e': /* edge line */ {
+					if (!problemLineSeen)
+						throw new IllegalArgumentException("problem line ('p' prefix) was not seen yet");
+
+					String[] arr = line.split(" ");
+					if (!hasWeights) {
+						if (arr.length != 3)
+							throw new IllegalArgumentException(
+									"expect edge definition: e <source_vertex> <destination_vertex>");
+					} else {
 						if (arr.length != 4)
 							throw new IllegalArgumentException(
-									"expected problem line in format: p (edge | sp) <NumVertices> <NumEdges>");
-						String graphFormat = arr[1].toLowerCase();
-						switch (graphFormat) {
-							case "edge":
-								hasWeights = false;
-								break;
-							case "sp":
-								hasWeights = true;
-								break;
-							default:
-								throw new IllegalArgumentException(
-										"Support formats 'sp' and 'edge'. Unknown format: '" + graphFormat + "'");
-						}
-
-						try {
-							n = Integer.parseInt(arr[2]);
-							m = Integer.parseInt(arr[3]);
-						} catch (NumberFormatException e) {
-							throw new IllegalArgumentException("Invalid number of vertices or edges", e);
-						}
-
-						if (n < 0 || m < 0)
-							throw new IllegalArgumentException("negative vertices/edges num: " + n + " " + m);
-						gb.expectedVerticesNum(n);
-						gb.expectedEdgesNum(m);
-						for (int v = 1; v <= n; v++)
-							gb.addVertex(v); // vertices are labeled as 1,2,3,4...
-
-						if (hasWeights)
-							w = gb.addEdgesWeights(weightsKey, int.class);
-						break;
+									"expect edge definition: e <source_vertex> <destination_vertex> <weight>");
 					}
 
-					case 'e': /* edge line */ {
-						if (!problemLineSeen)
-							throw new IllegalArgumentException("problem line ('p' prefix) was not seen yet");
-
-						String[] arr = line.split(" ");
-						if (!hasWeights) {
-							if (arr.length != 3)
-								throw new IllegalArgumentException(
-										"expect edge definition: e <source_vertex> <destination_vertex>");
-						} else {
-							if (arr.length != 4)
-								throw new IllegalArgumentException(
-										"expect edge definition: e <source_vertex> <destination_vertex> <weight>");
-						}
-
-						/* parse edge source and target vertices */
-						int source, target;
-						try {
-							source = Integer.parseInt(arr[1]);
-							target = Integer.parseInt(arr[2]);
-						} catch (NumberFormatException e) {
-							throw new IllegalArgumentException("edge must have 2 vertices as numbers", e);
-						}
-						final int e = gb.edges().size() + 1;
-						gb.addEdge(source, target, e);
-
-						/* parse edge weight */
-						if (hasWeights) {
-							int edgeWeight = -1;
-							try {
-								edgeWeight = Integer.parseInt(arr[3]);
-							} catch (NumberFormatException ex) {
-								throw new IllegalArgumentException("edge must have 2 vertices as numbers and a weight",
-										ex);
-							}
-							w.set(e, edgeWeight);
-						}
-						break;
+					/* parse edge source and target vertices */
+					int source, target;
+					try {
+						source = Integer.parseInt(arr[1]);
+						target = Integer.parseInt(arr[2]);
+					} catch (NumberFormatException e) {
+						throw new IllegalArgumentException("edge must have 2 vertices as numbers", e);
 					}
-					default:
-						throw new IllegalArgumentException("unknown line: " + line);
+					final int e = gb.edges().size() + 1;
+					gb.addEdge(source, target, e);
+
+					/* parse edge weight */
+					if (hasWeights) {
+						int edgeWeight = -1;
+						try {
+							edgeWeight = Integer.parseInt(arr[3]);
+						} catch (NumberFormatException ex) {
+							throw new IllegalArgumentException("edge must have 2 vertices as numbers and a weight", ex);
+						}
+						w.set(e, edgeWeight);
+					}
+					break;
 				}
+				default:
+					throw new IllegalArgumentException("unknown line: " + line);
 			}
-			return gb;
-		} catch (IOException e) {
-			throw new UncheckedIOException(e);
 		}
+		return gb;
 	}
 
 }
