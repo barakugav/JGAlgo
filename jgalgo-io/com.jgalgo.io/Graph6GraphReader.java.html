@@ -20,13 +20,14 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import com.jgalgo.graph.IntGraphBuilder;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 /**
- * Read a graph in Graph6 format.
+ * Read a graph in 'graph6' format.
  *
  * &lt;p&gt;
  * 'graph6' is a format for storing undirected graphs in a compact manner, using only printable ASCII characters. Files
- * in these formats have text type and contain one line per graph. It is suitable for small graphs, or large dense
+ * in these format have text type and contain one line per graph. It is suitable for small graphs, or large dense
  * graphs. The format support graphs with vertices numbered 0..n-1 only, where n is the number of vertices, and edges
  * numbered 0..m-1 only, where m is the number of edges. A graph6 file contains a bit vector with {@code n (n - 1) / 2}
  * bits representing the edges of the graph. All bytes of a graph6 file are in the range 63..126, which are the
@@ -39,107 +40,69 @@ import com.jgalgo.graph.IntGraphBuilder;
  * &lt;a href=&quot;https://users.cecs.anu.edu.au/~bdm/data/formats.html&quot;&gt;here&lt;/a&gt;.
  *
  * &lt;p&gt;
+ * The 'graph6' format is efficient for dense graph, for dense graphs the {@linkplain Sparse6GraphReader 'sparse6'
+ * format} should be used.
+ *
+ * &lt;p&gt;
  * Self edges and parallel edges are not supported by the format.
+ *
+ * &lt;p&gt;
+ * File with a graph in 'graph6' format usually have the extension {@code .g6}.
  *
  * @see    Graph6GraphWriter
  * @author Barak Ugav
  */
-<span class="fc" id="L47">public class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {</span>
+public class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
 	/**
 	 * Create a new reader.
 	 */
-<span class="fc" id="L52">	public Graph6GraphReader() {}</span>
+<span class="fc" id="L60">	public Graph6GraphReader() {}</span>
 
 	@Override
 	public IntGraphBuilder readIntoBuilderImpl(Reader reader) throws IOException {
-<span class="fc" id="L56">		BufferedReader br = GraphIoUtils.bufferedReader(reader);</span>
-<span class="fc" id="L57">		IntGraphBuilder g = IntGraphBuilder.newUndirected();</span>
+<span class="fc" id="L64">		BufferedReader br = GraphIoUtils.bufferedReader(reader);</span>
+<span class="fc" id="L65">		IntGraphBuilder g = IntGraphBuilder.newUndirected();</span>
 
-<span class="fc" id="L59">		String line = br.readLine();</span>
+<span class="fc" id="L67">		String line = br.readLine();</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (line == null)</span>
+<span class="fc" id="L69">			throw new IllegalArgumentException(&quot;empty file&quot;);</span>
 
 		/* optional header */
-<span class="fc bfc" id="L62" title="All 2 branches covered.">		if (line.startsWith(&quot;&gt;&gt;graph6&lt;&lt;&quot;))</span>
-<span class="fc" id="L63">			line = line.substring(&quot;&gt;&gt;graph6&lt;&lt;&quot;.length());</span>
-<span class="fc" id="L64">		byte[] bytes = line.getBytes();</span>
-<span class="fc" id="L65">		int cursor = 0;</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		if (line.startsWith(&quot;&gt;&gt;graph6&lt;&lt;&quot;))</span>
+<span class="fc" id="L73">			line = line.substring(&quot;&gt;&gt;graph6&lt;&lt;&quot;.length());</span>
+<span class="fc" id="L74">		byte[] bytes = line.getBytes(GraphFormats.JGALGO_CHARSET);</span>
+<span class="fc" id="L75">		int cursor = 0;</span>
 
 		/* Read N(n) */
-		final int n;
-<span class="fc bfc" id="L69" title="All 2 branches covered.">		if (bytes[cursor] != 126) {</span>
-			/* n is a single byte number */
-<span class="fc" id="L71">			n = checkByte(bytes[cursor++]) - 63;</span>
-
-<span class="fc bfc" id="L73" title="All 2 branches covered.">		} else if (++cursor + 2 &gt;= bytes.length) {</span>
-<span class="fc" id="L74">			throw new IllegalArgumentException(&quot;Invalid number of vertices, expected 126 and further bytes&quot;);</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">		} else if (bytes[cursor] != 126) {</span>
-			/* n is a 3 byte number */
-<span class="fc" id="L77">			int b1 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L78">			int b2 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L79">			int b3 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L80">			int n0 = 0;</span>
-<span class="fc" id="L81">			n0 |= b1 &lt;&lt; 12;</span>
-<span class="fc" id="L82">			n0 |= b2 &lt;&lt; 6;</span>
-<span class="fc" id="L83">			n0 |= b3 &lt;&lt; 0;</span>
-<span class="fc" id="L84">			n = n0;</span>
-
-<span class="fc bfc" id="L86" title="All 2 branches covered.">		} else if (++cursor + 5 &gt;= bytes.length) {</span>
-<span class="fc" id="L87">			throw new IllegalArgumentException(&quot;Invalid number of vertices, expected 126 126 and further bytes&quot;);</span>
-		} else {
-			/* n is a 6 byte number */
-<span class="fc" id="L90">			int b1 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L91">			int b2 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L92">			int b3 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L93">			int b4 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L94">			int b5 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L95">			int b6 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L96">			long n0 = 0;</span>
-<span class="fc" id="L97">			n0 |= ((long) b1) &lt;&lt; 30;</span>
-<span class="fc" id="L98">			n0 |= ((long) b2) &lt;&lt; 24;</span>
-<span class="fc" id="L99">			n0 |= ((long) b3) &lt;&lt; 18;</span>
-<span class="fc" id="L100">			n0 |= ((long) b4) &lt;&lt; 12;</span>
-<span class="fc" id="L101">			n0 |= ((long) b5) &lt;&lt; 6;</span>
-<span class="fc" id="L102">			n0 |= ((long) b6) &lt;&lt; 0;</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (n0 &gt; Integer.MAX_VALUE)</span>
-<span class="fc" id="L104">				throw new IllegalArgumentException(&quot;n is too big: &quot; + n0);</span>
-<span class="fc" id="L105">			n = (int) n0;</span>
-		}
-<span class="fc" id="L107">		g.expectedVerticesNum(n);</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L109">			g.addVertex(v); /* vertices ids are 0,1,2,...,n-1 */</span>
+<span class="fc" id="L78">		IntIntPair nPair = Graph6.readNumberOfVertices(bytes, cursor);</span>
+<span class="fc" id="L79">		final int n = nPair.firstInt();</span>
+<span class="fc" id="L80">		cursor = nPair.secondInt();</span>
+<span class="fc" id="L81">		g.expectedVerticesNum(n);</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L83">			g.addVertex(v); /* vertices ids are 0,1,2,...,n-1 */</span>
 
 		/* Read all edges R(x) */
-<span class="fc" id="L112">		final long maxEdgesNum = (n * ((long) n - 1)) / 2;</span>
-<span class="fc" id="L113">		final long bytesToRead = (maxEdgesNum + 5) / 6; /* div round up */</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">		if (cursor + bytesToRead != bytes.length)</span>
-<span class="fc" id="L115">			throw new IllegalArgumentException(&quot;Unexpected number of bytes for edges bit vector&quot;);</span>
-<span class="pc bnc" id="L116" title="All 2 branches missed.">		assert bytesToRead &lt;= Integer.MAX_VALUE;</span>
-<span class="fc" id="L117">		final int edgesBase = cursor;</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">		for (int i = 0; i &lt; (int) bytesToRead; i++)</span>
-<span class="fc" id="L119">			bytes[edgesBase + i] = (byte) (checkByte(bytes[edgesBase + i]) - 63);</span>
-<span class="fc" id="L120">		int bitNum = 0;</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		for (int u : range(1, n)) {</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">			for (int v : range(0, u)) {</span>
-<span class="pc bnc" id="L123" title="All 2 branches missed.">				assert u * (u - 1) / 2 + v == bitNum;</span>
-<span class="fc" id="L124">				int byteIdx = bitNum / 6;</span>
-<span class="fc" id="L125">				int bitIdx = 5 - (bitNum % 6); /* bigendian */</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">				boolean edgeExist = (bytes[edgesBase + byteIdx] &amp; (1 &lt;&lt; bitIdx)) != 0;</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">				if (edgeExist)</span>
-<span class="fc" id="L128">					g.addEdge(u, v, g.edges().size());</span>
-<span class="fc" id="L129">				bitNum++;</span>
-<span class="fc" id="L130">			}</span>
-<span class="fc" id="L131">		}</span>
+<span class="fc" id="L86">		Graph6.BitsReader bitsReader = new Graph6.BitsReader(bytes, cursor);</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		for (int u : range(1, n)) {</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			for (int v : range(0, u)) {</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">				if (!bitsReader.hasNext())</span>
+<span class="fc" id="L90">					throw new IllegalArgumentException(&quot;Too few bits for edges bit vector&quot;);</span>
+<span class="fc" id="L91">				boolean edgeExist = bitsReader.next();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">				if (edgeExist)</span>
+<span class="fc" id="L93">					g.addEdge(u, v, g.edges().size());</span>
+<span class="fc" id="L94">			}</span>
+<span class="fc" id="L95">		}</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (bitsReader.hasNext()) {</span>
+<span class="fc" id="L97">			bitsReader.skipToCurrentByteEnd(); /* skip last byte padding */</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">			if (bitsReader.hasNext())</span>
+<span class="fc" id="L99">				throw new IllegalArgumentException(&quot;Too many bits for edges bit vector&quot;);</span>
+		}
 
-<span class="fc bfc" id="L133" title="All 2 branches covered.">		if (br.readLine() != null)</span>
-<span class="fc" id="L134">			throw new IllegalArgumentException(&quot;Expected a single line in file&quot;);</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		if (br.readLine() != null)</span>
+<span class="fc" id="L103">			throw new IllegalArgumentException(&quot;Expected a single line in file&quot;);</span>
 
-<span class="fc" id="L136">		return g;</span>
-	}
-
-	private static byte checkByte(byte b) {
-<span class="fc bfc" id="L140" title="All 4 branches covered.">		if (!(63 &lt;= b &amp;&amp; b &lt;= 126))</span>
-<span class="fc" id="L141">			throw new IllegalArgumentException(&quot;Invalid byte, not in range [63, 126]: &quot; + b);</span>
-<span class="fc" id="L142">		return b;</span>
+<span class="fc" id="L105">		return g;</span>
 	}
 
 }

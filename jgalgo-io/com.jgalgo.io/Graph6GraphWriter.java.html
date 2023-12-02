@@ -26,7 +26,7 @@ import com.jgalgo.graph.Graph;
  *
  * &lt;p&gt;
  * 'graph6' is a format for storing undirected graphs in a compact manner, using only printable ASCII characters. Files
- * in these formats have text type and contain one line per graph. It is suitable for small graphs, or large dense
+ * in these format have text type and contain one line per graph. It is suitable for small graphs, or large dense
  * graphs. The format support graphs with vertices numbered 0..n-1 only, where n is the number of vertices, and edges
  * numbered 0..m-1 only, where m is the number of edges. A graph6 file contains a bit vector with {@code n (n - 1) / 2}
  * bits representing the edges of the graph. All bytes of a graph6 file are in the range 63..126, which are the
@@ -43,19 +43,26 @@ import com.jgalgo.graph.Graph;
  * enforced by the writer by default, but can be disabled by calling {@link #keepEdgesIds(boolean)} with {@code false}.
  *
  * &lt;p&gt;
+ * The 'graph6' format is efficient for dense graph, for dense graphs the {@linkplain Sparse6GraphWriter 'sparse6'
+ * format} should be used.
+ *
+ * &lt;p&gt;
  * Self edges and parallel edges are not supported by the format.
+ *
+ * &lt;p&gt;
+ * File with a graph in 'graph6' format usually have the extension {@code .g6}.
  *
  * @see    Graph6GraphReader
  * @author Barak Ugav
  */
-<span class="fc" id="L51">public class Graph6GraphWriter extends GraphIoUtils.AbstractGraphWriter&lt;Integer, Integer&gt; {</span>
+public class Graph6GraphWriter extends GraphIoUtils.AbstractGraphWriter&lt;Integer, Integer&gt; {
 
-<span class="fc" id="L53">	private boolean keepEdgesIds = true;</span>
+<span class="fc" id="L60">	private boolean keepEdgesIds = true;</span>
 
 	/**
 	 * Create a new writer.
 	 */
-<span class="fc" id="L58">	public Graph6GraphWriter() {}</span>
+<span class="fc" id="L65">	public Graph6GraphWriter() {}</span>
 
 	/**
 	 * Enable or disable keeping the edges ids.
@@ -77,103 +84,72 @@ import com.jgalgo.graph.Graph;
 	 * @param enable {@code true} to enable keeping the edges ids, {@code false} to disable it
 	 */
 	public void keepEdgesIds(boolean enable) {
-<span class="fc" id="L80">		this.keepEdgesIds = enable;</span>
-<span class="fc" id="L81">	}</span>
+<span class="fc" id="L87">		this.keepEdgesIds = enable;</span>
+<span class="fc" id="L88">	}</span>
 
 	@Override
 	void writeGraphImpl(Graph&lt;Integer, Integer&gt; graph, Writer writer) throws IOException {
-<span class="fc bfc" id="L85" title="All 2 branches covered.">		if (graph.isDirected())</span>
-<span class="fc" id="L86">			throw new IllegalArgumentException(&quot;the graph6 format support undirected graphs only&quot;);</span>
-<span class="fc" id="L87">		final int n = graph.vertices().size();</span>
-<span class="fc" id="L88">		final int m = graph.edges().size();</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">		if (!range(n).equals(graph.vertices()))</span>
-<span class="fc" id="L90">			throw new IllegalArgumentException(&quot;the graph6 format support graphs with vertices 0..n-1 only&quot;);</span>
-<span class="fc bfc" id="L91" title="All 4 branches covered.">		if (keepEdgesIds &amp;&amp; !range(m).equals(graph.edges()))</span>
-<span class="fc" id="L92">			throw new IllegalArgumentException(&quot;the graph6 format support graphs with edges 0..m-1 only&quot;);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		if (graph.isDirected())</span>
+<span class="fc" id="L93">			throw new IllegalArgumentException(&quot;the graph6 format support undirected graphs only&quot;);</span>
+<span class="fc" id="L94">		final int n = graph.vertices().size();</span>
+<span class="fc" id="L95">		final int m = graph.edges().size();</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (!range(n).equals(graph.vertices()))</span>
+<span class="fc" id="L97">			throw new IllegalArgumentException(&quot;the graph6 format support graphs with vertices 0..n-1 only&quot;);</span>
+<span class="fc bfc" id="L98" title="All 4 branches covered.">		if (keepEdgesIds &amp;&amp; !range(m).equals(graph.edges()))</span>
+<span class="fc" id="L99">			throw new IllegalArgumentException(&quot;the graph6 format support graphs with edges 0..m-1 only&quot;);</span>
 
-<span class="fc" id="L94">		Writer2 out = new Writer2(writer);</span>
-<span class="fc" id="L95">		out.append(&quot;&gt;&gt;graph6&lt;&lt;&quot;);</span>
+<span class="fc" id="L101">		Writer2 out = new Writer2(writer);</span>
+<span class="fc" id="L102">		out.append(&quot;&gt;&gt;graph6&lt;&lt;&quot;);</span>
 
 		/* write number of vertices */
-<span class="pc bnc" id="L98" title="All 2 branches missed.">		assert n &gt;= 0;</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">		if (n &lt;= 62) {</span>
-			/* n is a single byte number */
-<span class="fc" id="L101">			out.appendByte((byte) (n + 63));</span>
-
-<span class="fc bfc" id="L103" title="All 2 branches covered.">		} else if (n &lt;= 258047) {</span>
-			/* n is a 3 byte number */
-<span class="fc" id="L105">			int b1 = (n &gt;&gt; 12) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L106">			int b2 = (n &gt;&gt; 6) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L107">			int b3 = (n &gt;&gt; 0) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L108">			out.appendByte((byte) 126);</span>
-<span class="fc" id="L109">			out.appendByte((byte) (b1 + 63));</span>
-<span class="fc" id="L110">			out.appendByte((byte) (b2 + 63));</span>
-<span class="fc" id="L111">			out.appendByte((byte) (b3 + 63));</span>
-
-<span class="fc" id="L113">		} else {</span>
-			/* n is a 6 byte number */
-<span class="fc" id="L115">			int b1 = (n &gt;&gt; 30) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L116">			int b2 = (n &gt;&gt; 24) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L117">			int b3 = (n &gt;&gt; 18) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L118">			int b4 = (n &gt;&gt; 12) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L119">			int b5 = (n &gt;&gt; 6) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L120">			int b6 = (n &gt;&gt; 0) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L121">			out.appendByte((byte) 126);</span>
-<span class="fc" id="L122">			out.appendByte((byte) 126);</span>
-<span class="fc" id="L123">			out.appendByte((byte) (b1 + 63));</span>
-<span class="fc" id="L124">			out.appendByte((byte) (b2 + 63));</span>
-<span class="fc" id="L125">			out.appendByte((byte) (b3 + 63));</span>
-<span class="fc" id="L126">			out.appendByte((byte) (b4 + 63));</span>
-<span class="fc" id="L127">			out.appendByte((byte) (b5 + 63));</span>
-<span class="fc" id="L128">			out.appendByte((byte) (b6 + 63));</span>
-		}
+<span class="fc" id="L105">		Graph6.writeNumberOfVertices(out, n);</span>
 
 		/* write all edges as bytes, 6 bits each */
-<span class="fc" id="L132">		final long maxNumberOfEdges = n * ((long) n - 1) / 2;</span>
-<span class="fc" id="L133">		final long bytesToWrite = (maxNumberOfEdges + 5) / 6; /* div round up */</span>
+<span class="fc" id="L108">		final long maxNumberOfEdges = n * ((long) n - 1) / 2;</span>
+<span class="fc" id="L109">		final long bytesToWrite = (maxNumberOfEdges + 5) / 6; /* div round up */</span>
 
-<span class="fc bfc" id="L135" title="All 2 branches covered.">		if (bytesToWrite &gt; Integer.MAX_VALUE) {</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">		if (bytesToWrite &gt; Integer.MAX_VALUE) {</span>
 			/*
 			 * TODO: we should be able to support this. Instead of allocating an array of all the bytes, we can write
 			 * directly to the output.
 			 */
-<span class="fc" id="L140">			throw new IllegalArgumentException(&quot;too many vertices, the graph6 format support up to 2^36 vertices, &quot;</span>
+<span class="fc" id="L116">			throw new IllegalArgumentException(&quot;too many vertices, the graph6 format support up to 2^36 vertices, &quot;</span>
 					+ &quot;but this implementation does not support more than 2^17.5&quot;);
 		}
 
-<span class="fc" id="L144">		byte[] bytes = new byte[(int) bytesToWrite];</span>
-<span class="fc" id="L145">		int maxEdgeBit = -1;</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">		Set&lt;Integer&gt; edges = keepEdgesIds ? range(m) : graph.edges();</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">		for (Integer e : edges) {</span>
-<span class="fc" id="L148">			int u = graph.edgeSource(e).intValue();</span>
-<span class="fc" id="L149">			int v = graph.edgeTarget(e).intValue();</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">			if (u == v)</span>
-<span class="fc" id="L151">				throw new IllegalArgumentException(&quot;self edges are not supported&quot;);</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">			if (u &lt; v) {</span>
-<span class="fc" id="L153">				int tmp = u;</span>
-<span class="fc" id="L154">				u = v;</span>
-<span class="fc" id="L155">				v = tmp;</span>
+<span class="fc" id="L120">		byte[] bytes = new byte[(int) bytesToWrite];</span>
+<span class="fc" id="L121">		int maxEdgeBit = -1;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		Set&lt;Integer&gt; edges = keepEdgesIds ? range(m) : graph.edges();</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">		for (Integer e : edges) {</span>
+<span class="fc" id="L124">			int u = graph.edgeSource(e).intValue();</span>
+<span class="fc" id="L125">			int v = graph.edgeTarget(e).intValue();</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">			if (u == v)</span>
+<span class="fc" id="L127">				throw new IllegalArgumentException(&quot;self edges are not supported&quot;);</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			if (u &lt; v) {</span>
+<span class="fc" id="L129">				int tmp = u;</span>
+<span class="fc" id="L130">				u = v;</span>
+<span class="fc" id="L131">				v = tmp;</span>
 			}
-<span class="fc" id="L157">			int edgeBit = u * (u - 1) / 2 + v;</span>
-<span class="fc" id="L158">			int byteIdx = edgeBit / 6;</span>
-<span class="fc" id="L159">			int bitIdx = 5 - (edgeBit % 6); /* bigendian */</span>
-<span class="fc bfc" id="L160" title="All 2 branches covered.">			if ((bytes[byteIdx] &amp; (1 &lt;&lt; bitIdx)) != 0)</span>
-<span class="fc" id="L161">				throw new IllegalArgumentException(&quot;parallel edges are not supported&quot;);</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">			if (keepEdgesIds) {</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">				if (edgeBit &lt; maxEdgeBit)</span>
-<span class="fc" id="L164">					throw new IllegalArgumentException(&quot;edges ids must be 0,1,2,...,m-1 and ordered similar to &quot;</span>
+<span class="fc" id="L133">			int edgeBit = u * (u - 1) / 2 + v;</span>
+<span class="fc" id="L134">			int byteIdx = edgeBit / 6;</span>
+<span class="fc" id="L135">			int bitIdx = 5 - (edgeBit % 6); /* bigendian */</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">			if ((bytes[byteIdx] &amp; (1 &lt;&lt; bitIdx)) != 0)</span>
+<span class="fc" id="L137">				throw new IllegalArgumentException(&quot;parallel edges are not supported&quot;);</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			if (keepEdgesIds) {</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">				if (edgeBit &lt; maxEdgeBit)</span>
+<span class="fc" id="L140">					throw new IllegalArgumentException(&quot;edges ids must be 0,1,2,...,m-1 and ordered similar to &quot;</span>
 							+ &quot;(0,1),(0,2),(1,2),(0,3),(1,3),(2,3),...,(n-2,n-1)&quot;);
-<span class="fc" id="L166">				maxEdgeBit = edgeBit;</span>
+<span class="fc" id="L142">				maxEdgeBit = edgeBit;</span>
 			}
-<span class="fc" id="L168">			bytes[byteIdx] |= 1 &lt;&lt; bitIdx;</span>
-<span class="fc" id="L169">		}</span>
-<span class="fc bfc" id="L170" title="All 2 branches covered.">		for (int i = 0; i &lt; bytes.length; i++)</span>
-<span class="fc" id="L171">			bytes[i] += 63;</span>
-<span class="fc" id="L172">		out.appendBytes(bytes);</span>
+<span class="fc" id="L144">			bytes[byteIdx] |= 1 &lt;&lt; bitIdx;</span>
+<span class="fc" id="L145">		}</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">		for (int i = 0; i &lt; bytes.length; i++)</span>
+<span class="fc" id="L147">			bytes[i] += 63;</span>
+<span class="fc" id="L148">		out.appendBytes(bytes);</span>
 
 		/* terminate graph object with a new line */
-<span class="fc" id="L175">		out.appendNewline();</span>
-<span class="fc" id="L176">	}</span>
+<span class="fc" id="L151">		out.appendNewline();</span>
+<span class="fc" id="L152">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

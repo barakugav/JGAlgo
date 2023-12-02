@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Graph6.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - IO</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.io</a> &gt; <span class="el_source">Graph6.java</span></div><h1>Graph6.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.io;
+
+import java.io.IOException;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
+
+<span class="fc" id="L21">class Graph6 {</span>
+
+	private Graph6() {}
+
+	static IntIntPair readNumberOfVertices(byte[] bytes, int cursor) {
+<span class="fc bfc" id="L26" title="All 2 branches covered.">		if (bytes[cursor] != 126) {</span>
+			/* n is a single byte number */
+<span class="fc" id="L28">			int n = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L29">			return IntIntPair.of(n, cursor);</span>
+
+<span class="fc bfc" id="L31" title="All 2 branches covered.">		} else if (++cursor + 2 &gt;= bytes.length) {</span>
+<span class="fc" id="L32">			throw new IllegalArgumentException(&quot;Invalid number of vertices, expected 126 and further bytes&quot;);</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		} else if (bytes[cursor] != 126) {</span>
+			/* n is a 3 byte number */
+<span class="fc" id="L35">			int b1 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L36">			int b2 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L37">			int b3 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L38">			int n = 0;</span>
+<span class="fc" id="L39">			n |= b1 &lt;&lt; 12;</span>
+<span class="fc" id="L40">			n |= b2 &lt;&lt; 6;</span>
+<span class="fc" id="L41">			n |= b3 &lt;&lt; 0;</span>
+<span class="fc" id="L42">			return IntIntPair.of(n, cursor);</span>
+
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		} else if (++cursor + 5 &gt;= bytes.length) {</span>
+<span class="fc" id="L45">			throw new IllegalArgumentException(&quot;Invalid number of vertices, expected 126 126 and further bytes&quot;);</span>
+		} else {
+			/* n is a 6 byte number */
+<span class="fc" id="L48">			int b1 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L49">			int b2 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L50">			int b3 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L51">			int b4 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L52">			int b5 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L53">			int b6 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L54">			long n = 0;</span>
+<span class="fc" id="L55">			n |= ((long) b1) &lt;&lt; 30;</span>
+<span class="fc" id="L56">			n |= ((long) b2) &lt;&lt; 24;</span>
+<span class="fc" id="L57">			n |= ((long) b3) &lt;&lt; 18;</span>
+<span class="fc" id="L58">			n |= ((long) b4) &lt;&lt; 12;</span>
+<span class="fc" id="L59">			n |= ((long) b5) &lt;&lt; 6;</span>
+<span class="fc" id="L60">			n |= ((long) b6) &lt;&lt; 0;</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">			if (n &gt; Integer.MAX_VALUE)</span>
+<span class="fc" id="L62">				throw new IllegalArgumentException(&quot;n is too big: &quot; + n);</span>
+<span class="fc" id="L63">			return IntIntPair.of((int) n, cursor);</span>
+		}
+	}
+
+	static void writeNumberOfVertices(Writer2 out, int n) throws IOException {
+<span class="pc bnc" id="L68" title="All 2 branches missed.">		assert n &gt;= 0;</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		if (n &lt;= 62) {</span>
+			/* n is a single byte number */
+<span class="fc" id="L71">			out.appendByte((byte) (n + 63));</span>
+
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		} else if (n &lt;= 258047) {</span>
+			/* n is a 3 byte number */
+<span class="fc" id="L75">			int b1 = (n &gt;&gt; 12) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L76">			int b2 = (n &gt;&gt; 6) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L77">			int b3 = (n &gt;&gt; 0) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L78">			out.appendByte((byte) 126);</span>
+<span class="fc" id="L79">			out.appendByte((byte) (b1 + 63));</span>
+<span class="fc" id="L80">			out.appendByte((byte) (b2 + 63));</span>
+<span class="fc" id="L81">			out.appendByte((byte) (b3 + 63));</span>
+
+<span class="fc" id="L83">		} else {</span>
+			/* n is a 6 byte number */
+<span class="fc" id="L85">			int b1 = (n &gt;&gt; 30) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L86">			int b2 = (n &gt;&gt; 24) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L87">			int b3 = (n &gt;&gt; 18) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L88">			int b4 = (n &gt;&gt; 12) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L89">			int b5 = (n &gt;&gt; 6) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L90">			int b6 = (n &gt;&gt; 0) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L91">			out.appendByte((byte) 126);</span>
+<span class="fc" id="L92">			out.appendByte((byte) 126);</span>
+<span class="fc" id="L93">			out.appendByte((byte) (b1 + 63));</span>
+<span class="fc" id="L94">			out.appendByte((byte) (b2 + 63));</span>
+<span class="fc" id="L95">			out.appendByte((byte) (b3 + 63));</span>
+<span class="fc" id="L96">			out.appendByte((byte) (b4 + 63));</span>
+<span class="fc" id="L97">			out.appendByte((byte) (b5 + 63));</span>
+<span class="fc" id="L98">			out.appendByte((byte) (b6 + 63));</span>
+		}
+<span class="fc" id="L100">	}</span>
+
+	static class BitsReader {
+
+		private final byte[] bytes;
+		private byte currentByte;
+		private int cursor;
+		private int currentBit;
+
+<span class="fc" id="L109">		BitsReader(byte[] bytes, int cursor) {</span>
+<span class="fc" id="L110">			this.bytes = bytes;</span>
+<span class="fc" id="L111">			this.cursor = cursor;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			if (cursor &lt; bytes.length) {</span>
+<span class="fc" id="L113">				currentByte = (byte) (checkByte(bytes[cursor]) - 63);</span>
+<span class="fc" id="L114">				currentBit = 0;</span>
+			} else {
+<span class="fc" id="L116">				currentBit = 6;</span>
+			}
+<span class="fc" id="L118">		}</span>
+
+		boolean hasNext() {
+<span class="fc bfc" id="L121" title="All 2 branches covered.">			return currentBit &lt; 6;</span>
+		}
+
+		boolean next() {
+<span class="fc bfc" id="L125" title="All 2 branches covered.">			boolean ret = (currentByte &amp; (1 &lt;&lt; (/* bigendian */ 5 - currentBit))) != 0;</span>
+<span class="fc" id="L126">			currentBit++;</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">			if (currentBit == 6) {</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">				if (++cursor &lt; bytes.length) {</span>
+<span class="fc" id="L129">					currentByte = (byte) (checkByte(bytes[cursor]) - 63);</span>
+<span class="fc" id="L130">					currentBit = 0;</span>
+				}
+			}
+<span class="fc" id="L133">			return ret;</span>
+		}
+
+		void skipToCurrentByteEnd() {
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			if (currentBit == 0)</span>
+<span class="fc" id="L138">				return;</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">			if (++cursor &lt; bytes.length) {</span>
+<span class="fc" id="L140">				currentByte = (byte) (checkByte(bytes[cursor]) - 63);</span>
+<span class="fc" id="L141">				currentBit = 0;</span>
+			} else {
+<span class="fc" id="L143">				currentBit = 6;</span>
+			}
+<span class="fc" id="L145">		}</span>
+	}
+
+<span class="fc" id="L148">	static class BitsWriter {</span>
+		private final Writer2 out;
+		private byte currentByte;
+		private int currentBitNum;
+
+<span class="fc" id="L153">		BitsWriter(Writer2 out) {</span>
+<span class="fc" id="L154">			this.out = out;</span>
+<span class="fc" id="L155">		}</span>
+
+		void write(boolean b) throws IOException {
+<span class="fc bfc" id="L158" title="All 2 branches covered.">			if (b)</span>
+<span class="fc" id="L159">				currentByte |= 1 &lt;&lt; (/* bigendian */ 5 - currentBitNum);</span>
+<span class="fc" id="L160">			currentBitNum++;</span>
+
+<span class="fc bfc" id="L162" title="All 2 branches covered.">			if (currentBitNum == 6) {</span>
+<span class="fc" id="L163">				out.appendByte((byte) (currentByte + 63));</span>
+<span class="fc" id="L164">				currentByte = 0;</span>
+<span class="fc" id="L165">				currentBitNum = 0;</span>
+			}
+<span class="fc" id="L167">		}</span>
+
+		void write(int x, int bitsNum) throws IOException {
+<span class="pc bnc" id="L170" title="All 2 branches missed.">			assert x &lt; (1 &lt;&lt; bitsNum);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">			for (int i = 0; i &lt; bitsNum; i++)</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">				write((x &amp; (1 &lt;&lt; (bitsNum - 1 - i))) != 0); /* bigendian */</span>
+<span class="fc" id="L173">		}</span>
+
+		boolean paddingRequired() {
+<span class="fc bfc" id="L176" title="All 2 branches covered.">			return currentBitNum != 0;</span>
+		}
+	}
+
+	static byte checkByte(byte b) {
+<span class="fc bfc" id="L181" title="All 4 branches covered.">		if (!(63 &lt;= b &amp;&amp; b &lt;= 126))</span>
+<span class="fc" id="L182">			throw new IllegalArgumentException(&quot;Invalid byte, not in range [63, 126]: &quot; + b);</span>
+<span class="fc" id="L183">		return b;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

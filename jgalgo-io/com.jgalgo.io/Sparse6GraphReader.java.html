@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Sparse6GraphReader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - IO</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.io</a> &gt; <span class="el_source">Sparse6GraphReader.java</span></div><h1>Sparse6GraphReader.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.io;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IntGraphFactory;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
+
+/**
+ * Read a graph in Sparse6 format.
+ *
+ * &lt;p&gt;
+ * 'sparse6' is a format for storing undirected graphs in a compact manner, using only printable ASCII characters. Files
+ * in these format have text type and contain one line per graph. It is space-efficient for large sparse graphs. The
+ * format support graphs with vertices numbered 0..n-1 only, where n is the number of vertices, and edges numbered
+ * 0..m-1 only, where m is the number of edges. A sparse6 file contains the number of vertices, following by a list of
+ * edges, encoded in bytes, each in range 63..126 which are the printable ASCII characters. Each byte encode 6 bits.
+ *
+ * &lt;p&gt;
+ * The format does not support specifying the ids of the edges, therefore the reader will number them from {@code 0} to
+ * {@code m-1} in the order it reads them.
+ *
+ * &lt;p&gt;
+ * Self edges and parallel edges are supported by the format. The full description of the format can be found
+ * &lt;a href=&quot;https://users.cecs.anu.edu.au/~bdm/data/formats.html&quot;&gt;here&lt;/a&gt;, which also define the 'graph6' format, which
+ * is used for dense graph. See {@link Graph6GraphReader} for reading graphs in 'graph6' format.
+ *
+ * &lt;p&gt;
+ * File with a graph in 'sparse6' format usually have the extension {@code .s6}.
+ *
+ * @see    Sparse6GraphWriter
+ * @author Barak Ugav
+ */
+public class Sparse6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
+
+	/**
+	 * Create a new reader.
+	 */
+<span class="fc" id="L56">	public Sparse6GraphReader() {}</span>
+
+	@Override
+	IntGraphBuilder readIntoBuilderImpl(Reader reader) throws IOException {
+<span class="fc" id="L60">		BufferedReader br = GraphIoUtils.bufferedReader(reader);</span>
+<span class="fc" id="L61">		IntGraphBuilder g = IntGraphFactory.newUndirected().allowSelfEdges().allowParallelEdges().newBuilder();</span>
+
+<span class="fc" id="L63">		String line = br.readLine();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		if (line == null)</span>
+<span class="fc" id="L65">			throw new IllegalArgumentException(&quot;empty file&quot;);</span>
+
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (line.startsWith(&quot;:&quot;)) {</span>
+<span class="fc" id="L68">			line = line.substring(&quot;:&quot;.length());</span>
+
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		} else if (line.startsWith(&quot;&gt;&gt;sparse6&lt;&lt;:&quot;)) { /* optional header */</span>
+<span class="fc" id="L71">			line = line.substring(&quot;&gt;&gt;sparse6&lt;&lt;:&quot;.length());</span>
+		} else {
+<span class="fc" id="L73">			throw new IllegalArgumentException(&quot;Invalid header, expected ':' or '&gt;&gt;sparse6&lt;&lt;:'&quot;);</span>
+		}
+<span class="fc" id="L75">		byte[] bytes = line.getBytes(GraphFormats.JGALGO_CHARSET);</span>
+<span class="fc" id="L76">		int cursor = 0;</span>
+
+		/* Read N(n) */
+<span class="fc" id="L79">		IntIntPair nPair = Graph6.readNumberOfVertices(bytes, cursor);</span>
+<span class="fc" id="L80">		final int n = nPair.firstInt();</span>
+<span class="fc" id="L81">		cursor = nPair.secondInt();</span>
+<span class="fc" id="L82">		g.expectedVerticesNum(n);</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L84">			g.addVertex(v); /* vertices ids are 0,1,2,...,n-1 */</span>
+
+		/* Read all edges */
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		final int k = n == 0 ? n : JGAlgoUtils.log2ceil(n);</span>
+<span class="fc" id="L88">		Graph6.BitsReader bitsReader = new Graph6.BitsReader(bytes, cursor);</span>
+<span class="fc" id="L89">		edgesLoop: for (int v = 0;;) {</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">			if (!bitsReader.hasNext())</span>
+<span class="fc" id="L91">				break;</span>
+<span class="fc" id="L92">			boolean b = bitsReader.next();</span>
+<span class="fc" id="L93">			int x = 0;</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">			for (int i = 0; i &lt; k; i++) {</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">				if (!bitsReader.hasNext())</span>
+					// throw new IllegalArgumentException(&quot;Unexpected end of bits&quot;);
+<span class="fc" id="L97">					break edgesLoop; /* In decoding, an incomplete (b,x) pair at the end is discarded. */</span>
+<span class="fc" id="L98">				x &lt;&lt;= 1; /* bigendian */</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">				x |= bitsReader.next() ? 1 : 0;</span>
+			}
+
+<span class="fc bfc" id="L102" title="All 2 branches covered.">			if (b)</span>
+<span class="fc" id="L103">				v++;</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (x &gt; v) {</span>
+<span class="fc" id="L105">				v = x;</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">			} else if (v &lt; n) {</span>
+<span class="fc" id="L107">				g.addEdge(v, x, g.edges().size());</span>
+			} else {
+<span class="fc" id="L109">				bitsReader.skipToCurrentByteEnd(); /* skip last edge padding */</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">				if (bitsReader.hasNext())</span>
+<span class="fc" id="L111">					throw new IllegalArgumentException(&quot;invalid edge endpoint: &quot; + v);</span>
+				break;
+			}
+<span class="fc" id="L114">		}</span>
+
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (br.readLine() != null)</span>
+<span class="fc" id="L117">			throw new IllegalArgumentException(&quot;Expected a single line in file&quot;);</span>
+
+<span class="fc" id="L119">		return g;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

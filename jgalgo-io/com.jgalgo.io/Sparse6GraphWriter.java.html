@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Sparse6GraphWriter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - IO</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.io</a> &gt; <span class="el_source">Sparse6GraphWriter.java</span></div><h1>Sparse6GraphWriter.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.io;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Arrays;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.IntList;
+
+/**
+ * Write a graph in 'sparse6' format.
+ *
+ * &lt;p&gt;
+ * 'sparse6' is a format for storing undirected graphs in a compact manner, using only printable ASCII characters. Files
+ * in these format have text type and contain one line per graph. It is space-efficient for large sparse graphs. The
+ * format support graphs with vertices numbered 0..n-1 only, where n is the number of vertices, and edges numbered
+ * 0..m-1 only, where m is the number of edges. A sparse6 file contains the number of vertices, following by a list of
+ * edges, encoded in bytes, each in range 63..126 which are the printable ASCII characters. Each byte encode 6 bits.
+ *
+ * &lt;p&gt;
+ * The format does not support specifying the ids of the edges, therefore the writer will not write them. Nevertheless,
+ * its possible to write and later read the graph using the {@link Sparse6GraphReader} class while keeping the edges
+ * ids: if the edges in the written graph are numbered 0..m-1, and when they are iterated from {@code 0} to {@code m-1}
+ * they are also ordered similar to (0,0),(1,0),(1,1),(2,0),(2,1),(2,2), then the reader will assigned the same ids to
+ * the edges. . This way of keeping the edges ids is enforced by the writer by default, but can be disabled by calling
+ * {@link #keepEdgesIds(boolean)} with {@code false}.
+ *
+ * &lt;p&gt;
+ * Self edges and parallel edges are supported by the format. The full description of the format can be found
+ * &lt;a href=&quot;https://users.cecs.anu.edu.au/~bdm/data/formats.html&quot;&gt;here&lt;/a&gt;, which also define the 'graph6' format, which
+ * is used for dense graph. See {@link Graph6GraphWriter} for writing graphs in 'graph6' format.
+ *
+ * &lt;p&gt;
+ * File with a graph in 'sparse6' format usually have the extension {@code .s6}.
+ *
+ * @see    Sparse6GraphReader
+ * @author Barak Ugav
+ */
+<span class="fc" id="L56">public class Sparse6GraphWriter extends GraphIoUtils.AbstractGraphWriter&lt;Integer, Integer&gt; {</span>
+
+<span class="fc" id="L58">	private boolean keepEdgesIds = true;</span>
+
+	/**
+	 * Create a new writer.
+	 */
+<span class="fc" id="L63">	public Sparse6GraphWriter() {}</span>
+
+	/**
+	 * Enable or disable keeping the edges ids.
+	 *
+	 * &lt;p&gt;
+	 * The format does not support specifying the ids of the edges, therefore the writer will not write them.
+	 * Nevertheless, its possible to write and later read the graph using the {@link Sparse6GraphReader} class while
+	 * keeping the edges ids: if the edges in the written graph are numbered 0..m-1, and when they are iterated from
+	 * {@code 0} to {@code m-1} they are also ordered similar to (0,0),(1,0),(1,1),(2,0),(2,1),(2,2), then the reader
+	 * will assigned the same ids to the edges.
+	 *
+	 * &lt;p&gt;
+	 * If this option is enabled, which is also the default, if a graph is written by the writer and the edges iterated
+	 * from {@code 0} to {@code m-1} are not ordered by the above order, then an exception will be thrown. If this
+	 * option is disabled, the ids of the edges will be ignored and there is not guarantee that the reader will assign
+	 * the same ids to the edges.
+	 *
+	 * @param enable {@code true} to enable keeping the edges ids, {@code false} to disable it
+	 */
+	public void keepEdgesIds(boolean enable) {
+<span class="fc" id="L84">		this.keepEdgesIds = enable;</span>
+<span class="fc" id="L85">	}</span>
+
+	@Override
+	void writeGraphImpl(Graph&lt;Integer, Integer&gt; graph, Writer writer) throws IOException {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		if (graph.isDirected())</span>
+<span class="fc" id="L90">			throw new IllegalArgumentException(&quot;the sparse6 format support undirected graphs only&quot;);</span>
+<span class="fc" id="L91">		final int n = graph.vertices().size();</span>
+<span class="fc" id="L92">		final int m = graph.edges().size();</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		if (!range(n).equals(graph.vertices()))</span>
+<span class="fc" id="L94">			throw new IllegalArgumentException(&quot;the sparse6 format support graphs with vertices 0..n-1 only&quot;);</span>
+<span class="fc bfc" id="L95" title="All 4 branches covered.">		if (keepEdgesIds &amp;&amp; !range(m).equals(graph.edges()))</span>
+<span class="fc" id="L96">			throw new IllegalArgumentException(&quot;the sparse6 format support graphs with edges 0..m-1 only&quot;);</span>
+
+<span class="fc" id="L98">		Writer2 out = new Writer2(writer);</span>
+<span class="fc" id="L99">		out.append(&quot;&gt;&gt;sparse6&lt;&lt;:&quot;);</span>
+
+		/* write number of vertices */
+<span class="fc" id="L102">		Graph6.writeNumberOfVertices(out, n);</span>
+
+		/* sort edges similar to (0,0),(1,0),(1,1),(2,0),(2,1),(2,2) */
+		int[] edges;
+<span class="fc bfc" id="L106" title="All 2 branches covered.">		if (keepEdgesIds) {</span>
+<span class="fc" id="L107">			edges = range(m).toIntArray();</span>
+		} else {
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">			edges = graph instanceof IntGraph ? ((IntGraph) graph).edges().toIntArray()</span>
+<span class="pc" id="L110">					: graph.edges().stream().mapToInt(Integer::intValue).toArray();</span>
+		}
+		/* bucket sort by target vertex */
+<span class="fc" id="L113">		int[] edgesSorted = new int[m];</span>
+<span class="fc" id="L114">		int[] inDegree = new int[n];</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L116">			Integer eObj = Integer.valueOf(e);</span>
+<span class="fc" id="L117">			int u = graph.edgeSource(eObj).intValue();</span>
+<span class="fc" id="L118">			int v = graph.edgeTarget(eObj).intValue();</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">			if (u &lt; v) {</span>
+<span class="fc" id="L120">				int temp = u;</span>
+<span class="fc" id="L121">				u = v;</span>
+<span class="fc" id="L122">				v = temp;</span>
+			}
+<span class="fc" id="L124">			inDegree[v]++;</span>
+		}
+<span class="fc" id="L126">		int[] offset = inDegree;</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">		for (int s = 0, v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L128">			int temp = offset[v];</span>
+<span class="fc" id="L129">			offset[v] = s;</span>
+<span class="fc" id="L130">			s += temp;</span>
+		}
+<span class="fc bfc" id="L132" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L133">			Integer eObj = Integer.valueOf(e);</span>
+<span class="fc" id="L134">			int u = graph.edgeSource(eObj).intValue();</span>
+<span class="fc" id="L135">			int v = graph.edgeTarget(eObj).intValue();</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">			if (u &lt; v) {</span>
+<span class="fc" id="L137">				int temp = u;</span>
+<span class="fc" id="L138">				u = v;</span>
+<span class="fc" id="L139">				v = temp;</span>
+			}
+<span class="fc" id="L141">			edgesSorted[offset[v]++] = e;</span>
+		}
+		{
+<span class="fc" id="L144">			int[] temp = edges;</span>
+<span class="fc" id="L145">			edges = edgesSorted;</span>
+<span class="fc" id="L146">			edgesSorted = temp;</span>
+		}
+		/* bucket sort by source vertex */
+<span class="fc" id="L149">		int[] outDegree = inDegree;</span>
+<span class="fc" id="L150">		Arrays.fill(outDegree, 0);</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L152">			Integer eObj = Integer.valueOf(e);</span>
+<span class="fc" id="L153">			int u = graph.edgeSource(eObj).intValue();</span>
+<span class="fc" id="L154">			int v = graph.edgeTarget(eObj).intValue();</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">			if (u &lt; v) {</span>
+<span class="fc" id="L156">				int temp = u;</span>
+<span class="fc" id="L157">				u = v;</span>
+<span class="fc" id="L158">				v = temp;</span>
+			}
+<span class="fc" id="L160">			outDegree[u]++;</span>
+		}
+<span class="fc" id="L162">		offset = outDegree;</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">		for (int s = 0, v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L164">			int temp = offset[v];</span>
+<span class="fc" id="L165">			offset[v] = s;</span>
+<span class="fc" id="L166">			s += temp;</span>
+		}
+<span class="fc bfc" id="L168" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L169">			Integer eObj = Integer.valueOf(e);</span>
+<span class="fc" id="L170">			int u = graph.edgeSource(eObj).intValue();</span>
+<span class="fc" id="L171">			int v = graph.edgeTarget(eObj).intValue();</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">			if (u &lt; v) {</span>
+<span class="fc" id="L173">				int temp = u;</span>
+<span class="fc" id="L174">				u = v;</span>
+<span class="fc" id="L175">				v = temp;</span>
+			}
+<span class="fc" id="L177">			edgesSorted[offset[u]++] = e;</span>
+		}
+		{
+			// int[] temp = edges;
+<span class="fc" id="L181">			edges = edgesSorted;</span>
+			// edgesSorted = temp;
+		}
+		/* assert sorted */
+<span class="fc bfc" id="L185" title="All 2 branches covered.">		if (m &gt; 0) {</span>
+<span class="fc" id="L186">			final int[] edges0 = edges;</span>
+<span class="pc bnc" id="L187" title="All 2 branches missed.">			assert range(m - 1).allMatch(i -&gt; {</span>
+<span class="nc" id="L188">				int e1 = edges0[i], e2 = edges0[i + 1];</span>
+<span class="nc" id="L189">				Integer e1Obj = Integer.valueOf(e1);</span>
+<span class="nc" id="L190">				Integer e2Obj = Integer.valueOf(e2);</span>
+<span class="nc" id="L191">				int u1 = graph.edgeSource(e1Obj).intValue();</span>
+<span class="nc" id="L192">				int v1 = graph.edgeTarget(e1Obj).intValue();</span>
+<span class="nc" id="L193">				int u2 = graph.edgeSource(e2Obj).intValue();</span>
+<span class="nc" id="L194">				int v2 = graph.edgeTarget(e2Obj).intValue();</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">				if (u1 &lt; v1) {</span>
+<span class="nc" id="L196">					int temp = u1;</span>
+<span class="nc" id="L197">					u1 = v1;</span>
+<span class="nc" id="L198">					v1 = temp;</span>
+				}
+<span class="nc bnc" id="L200" title="All 2 branches missed.">				if (u2 &lt; v2) {</span>
+<span class="nc" id="L201">					int temp = u2;</span>
+<span class="nc" id="L202">					u2 = v2;</span>
+<span class="nc" id="L203">					v2 = temp;</span>
+				}
+<span class="nc bnc" id="L205" title="All 2 branches missed.">				if (u1 != u2)</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">					return u1 &lt; u2;</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">				if (v1 != v2)</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">					return v1 &lt; v2;</span>
+<span class="nc bnc" id="L209" title="All 4 branches missed.">				return !keepEdgesIds || e1 &lt; e2;</span>
+			});
+		}
+
+<span class="fc bfc" id="L213" title="All 2 branches covered.">		if (keepEdgesIds)</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">			for (int i = 0; i &lt; edges.length; i++)</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">				if (edges[i] != i)</span>
+<span class="fc" id="L216">					throw new IllegalArgumentException(&quot;edges ids must be 0,1,2,...,m-1 and ordered similar to &quot;</span>
+							+ &quot;(0,0),(1,0),(1,1),(2,0),(2,1),(2,2)&quot;);
+
+		/* write all edges */
+<span class="fc" id="L220">		Graph6.BitsWriter bitsWriter = new Graph6.BitsWriter(out);</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">		final int k = n == 0 ? 0 : JGAlgoUtils.log2ceil(n);</span>
+<span class="fc" id="L222">		int currentVertex = 0;</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L224">			int u = graph.edgeSource(Integer.valueOf(e)).intValue();</span>
+<span class="fc" id="L225">			int v = graph.edgeTarget(Integer.valueOf(e)).intValue();</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">			if (u &lt; v) {</span>
+<span class="fc" id="L227">				int temp = u;</span>
+<span class="fc" id="L228">				u = v;</span>
+<span class="fc" id="L229">				v = temp;</span>
+			}
+
+<span class="fc bfc" id="L232" title="All 2 branches covered.">			if (u == currentVertex) {</span>
+<span class="fc" id="L233">				bitsWriter.write(false);</span>
+
+<span class="fc bfc" id="L235" title="All 2 branches covered.">			} else if (u == currentVertex + 1) {</span>
+<span class="fc" id="L236">				bitsWriter.write(true);</span>
+<span class="fc" id="L237">				currentVertex = u;</span>
+
+			} else {
+<span class="pc bnc" id="L240" title="All 2 branches missed.">				assert u &gt; currentVertex + 1;</span>
+<span class="fc" id="L241">				bitsWriter.write(false);</span>
+<span class="fc" id="L242">				bitsWriter.write(u, k);</span>
+<span class="fc" id="L243">				currentVertex = u;</span>
+<span class="fc" id="L244">				bitsWriter.write(false);</span>
+			}
+
+<span class="fc" id="L247">			bitsWriter.write(v, k);</span>
+		}
+
+		/* add padding to a multiple of 6 */
+<span class="fc bfc" id="L251" title="All 2 branches covered.">		if (bitsWriter.paddingRequired()) {</span>
+<span class="fc" id="L252">			boolean zeroPrefix = true;</span>
+<span class="pc bpc" id="L253" title="1 of 4 branches missed.">			zeroPrefix = zeroPrefix &amp;&amp; IntList.of(2, 4, 8, 16).contains(n);</span>
+<span class="pc bpc" id="L254" title="1 of 4 branches missed.">			zeroPrefix = zeroPrefix &amp;&amp; !graph.outEdges(Integer.valueOf(n - 2)).isEmpty();</span>
+<span class="fc bfc" id="L255" title="All 4 branches covered.">			zeroPrefix = zeroPrefix &amp;&amp; graph.outEdges(Integer.valueOf(n - 1)).isEmpty();</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">			if (zeroPrefix)</span>
+<span class="fc" id="L257">				bitsWriter.write(false);</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">			while (bitsWriter.paddingRequired())</span>
+<span class="fc" id="L259">				bitsWriter.write(true);</span>
+		}
+
+		/* terminate graph object with a new line */
+<span class="fc" id="L263">		out.appendNewline();</span>
+<span class="fc" id="L264">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
