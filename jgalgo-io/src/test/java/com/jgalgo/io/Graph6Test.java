@@ -28,12 +28,10 @@ import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.Bitmap;
-import it.unimi.dsi.fastutil.bytes.ByteArrayList;
-import it.unimi.dsi.fastutil.bytes.ByteList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-public class Graph6Test {
+public class Graph6Test extends TestUtils {
 
 	@Test
 	public void readSimpleGraph1() {
@@ -336,72 +334,6 @@ public class Graph6Test {
 
 		Graph6GraphWriter writer = new Graph6GraphWriter();
 		assertThrows(IllegalArgumentException.class, () -> writer.writeGraph(g, new StringWriter()));
-	}
-
-	// static String bytesStr(byte... bytes) {
-	// return new String(bytes, GraphFormats.JGALGO_CHARSET);
-	// }
-
-	// static String bytesStr(char... bytes) {
-	// BytesBuilder b = new BytesBuilder();
-	// for (char c : bytes)
-	// b.add(c);
-	// return b.str();
-	// }
-
-	static String bytesStr(String s) {
-		BytesBuilder b = new BytesBuilder();
-		for (char c : s.toCharArray())
-			b.add(c);
-		return b.str();
-	}
-
-	private static class BytesBuilder {
-
-		private final ByteList bytes = new ByteArrayList();
-
-		// void add(byte b) {
-		// bytes.add(b);
-		// }
-
-		// void add(byte... bytes) {
-		// for (byte b : bytes)
-		// add(b);
-		// }
-
-		void add(char b) {
-			assert b >= 0 && b <= 255;
-			bytes.add((byte) b);
-		}
-
-		void add(int b) {
-			assert b >= 0 && b <= 255;
-			bytes.add((byte) b);
-		}
-
-		void add(int... bytes) {
-			for (int b : bytes)
-				add(b);
-		}
-
-		String str() {
-			return new String(bytes.toByteArray(), GraphFormats.JGALGO_CHARSET);
-		}
-
-		String strAndClear() {
-			String s = str();
-			clear();
-			return s;
-		}
-
-		@Override
-		public String toString() {
-			return bytes.toString();
-		}
-
-		void clear() {
-			bytes.clear();
-		}
 	}
 
 }

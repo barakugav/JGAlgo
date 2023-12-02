@@ -43,7 +43,14 @@ import com.jgalgo.graph.Graph;
  * enforced by the writer by default, but can be disabled by calling {@link #keepEdgesIds(boolean)} with {@code false}.
  *
  * <p>
+ * The 'graph6' format is efficient for dense graph, for dense graphs the {@linkplain Sparse6GraphWriter 'sparse6'
+ * format} should be used.
+ *
+ * <p>
  * Self edges and parallel edges are not supported by the format.
+ *
+ * <p>
+ * File with a graph in 'graph6' format usually have the extension {@code .g6}.
  *
  * @see    Graph6GraphReader
  * @author Barak Ugav

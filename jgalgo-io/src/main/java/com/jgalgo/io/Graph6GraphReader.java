@@ -39,7 +39,14 @@ import com.jgalgo.graph.IntGraphBuilder;
  * <a href="https://users.cecs.anu.edu.au/~bdm/data/formats.html">here</a>.
  *
  * <p>
+ * The 'graph6' format is efficient for dense graph, for dense graphs the {@linkplain Sparse6GraphReader 'sparse6'
+ * format} should be used.
+ *
+ * <p>
  * Self edges and parallel edges are not supported by the format.
+ *
+ * <p>
+ * File with a graph in 'graph6' format usually have the extension {@code .g6}.
  *
  * @see    Graph6GraphWriter
  * @author Barak Ugav
