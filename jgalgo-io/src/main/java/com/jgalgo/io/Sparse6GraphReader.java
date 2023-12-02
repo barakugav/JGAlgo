@@ -61,6 +61,8 @@ public class Sparse6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 		IntGraphBuilder g = IntGraphFactory.newUndirected().allowSelfEdges().allowParallelEdges().newBuilder();
 
 		String line = br.readLine();
+		if (line == null)
+			throw new IllegalArgumentException("empty file");
 
 		/* optional header */
 		if (line.startsWith(":")) {
@@ -104,7 +106,7 @@ public class Sparse6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 			} else if (v < n) {
 				g.addEdge(v, x, g.edges().size());
 			} else {
-				bitsReader.skipCurrentByte();
+				bitsReader.skipToCurrentByteEnd(); /* skip last edge padding */
 				if (bitsReader.hasNext())
 					throw new IllegalArgumentException("invalid edge endpoint: " + v);
 				break;

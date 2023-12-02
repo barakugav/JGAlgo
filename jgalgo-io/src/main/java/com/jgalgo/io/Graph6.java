@@ -133,7 +133,9 @@ class Graph6 {
 			return ret;
 		}
 
-		void skipCurrentByte() {
+		void skipToCurrentByteEnd() {
+			if (currentBit == 0)
+				return;
 			if (++cursor < bytes.length) {
 				currentByte = (byte) (checkByte(bytes[cursor]) - 63);
 				currentBit = 0;

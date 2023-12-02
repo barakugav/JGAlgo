@@ -252,6 +252,9 @@ public class Graph6Test extends TestUtils {
 
 		bytes.add(2 + 63); /* edges vector should be of one byte, missing */
 		assertThrows(IllegalArgumentException.class, () -> reader.readGraph(new StringReader(bytes.strAndClear())));
+
+		bytes.add(2 + 63, 0 + 63, 0 + 63); /* edges vector should be of one byte, too many */
+		assertThrows(IllegalArgumentException.class, () -> reader.readGraph(new StringReader(bytes.strAndClear())));
 	}
 
 	@Test
@@ -334,6 +337,11 @@ public class Graph6Test extends TestUtils {
 
 		Graph6GraphWriter writer = new Graph6GraphWriter();
 		assertThrows(IllegalArgumentException.class, () -> writer.writeGraph(g, new StringWriter()));
+	}
+
+	@Test
+	public void readEmptyFile() {
+		assertThrows(IllegalArgumentException.class, () -> new Graph6GraphReader().readGraph(new StringReader("")));
 	}
 
 }

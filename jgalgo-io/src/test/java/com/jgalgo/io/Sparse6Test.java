@@ -447,4 +447,9 @@ public class Sparse6Test extends TestUtils {
 		assertEquals(g, reader.readGraph(new StringReader(sw.toString())));
 	}
 
+	@Test
+	public void readEmptyFile() {
+		assertThrows(IllegalArgumentException.class, () -> new Sparse6GraphReader().readGraph(new StringReader("")));
+	}
+
 }

@@ -65,6 +65,8 @@ public class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 		IntGraphBuilder g = IntGraphBuilder.newUndirected();
 
 		String line = br.readLine();
+		if (line == null)
+			throw new IllegalArgumentException("empty file");
 
 		/* optional header */
 		if (line.startsWith(">>graph6<<"))
@@ -81,25 +83,20 @@ public class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 			g.addVertex(v); /* vertices ids are 0,1,2,...,n-1 */
 
 		/* Read all edges R(x) */
-		final long maxEdgesNum = (n * ((long) n - 1)) / 2;
-		final long bytesToRead = (maxEdgesNum + 5) / 6; /* div round up */
-		if (cursor + bytesToRead != bytes.length)
-			throw new IllegalArgumentException("Unexpected number of bytes for edges bit vector");
-		assert bytesToRead <= Integer.MAX_VALUE;
-		final int edgesBase = cursor;
-		for (int i = 0; i < (int) bytesToRead; i++)
-			bytes[edgesBase + i] = (byte) (Graph6.checkByte(bytes[edgesBase + i]) - 63);
-		int bitNum = 0;
+		Graph6.BitsReader bitsReader = new Graph6.BitsReader(bytes, cursor);
 		for (int u : range(1, n)) {
 			for (int v : range(0, u)) {
-				assert u * (u - 1) / 2 + v == bitNum;
-				int byteIdx = bitNum / 6;
-				int bitIdx = 5 - (bitNum % 6); /* bigendian */
-				boolean edgeExist = (bytes[edgesBase + byteIdx] & (1 << bitIdx)) != 0;
+				if (!bitsReader.hasNext())
+					throw new IllegalArgumentException("Too few bits for edges bit vector");
+				boolean edgeExist = bitsReader.next();
 				if (edgeExist)
 					g.addEdge(u, v, g.edges().size());
-				bitNum++;
 			}
+		}
+		if (bitsReader.hasNext()) {
+			bitsReader.skipToCurrentByteEnd(); /* skip last byte padding */
+			if (bitsReader.hasNext())
+				throw new IllegalArgumentException("Too many bits for edges bit vector");
 		}
 
 		if (br.readLine() != null)
