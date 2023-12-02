@@ -99,38 +99,7 @@ public class Sparse6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer
 		out.append(">>sparse6<<:");
 
 		/* write number of vertices */
-		assert n >= 0;
-		if (n <= 62) {
-			/* n is a single byte number */
-			out.appendByte((byte) (n + 63));
-
-		} else if (n <= 258047) {
-			/* n is a 3 byte number */
-			int b1 = (n >> 12) & ((1 << 6) - 1);
-			int b2 = (n >> 6) & ((1 << 6) - 1);
-			int b3 = (n >> 0) & ((1 << 6) - 1);
-			out.appendByte((byte) 126);
-			out.appendByte((byte) (b1 + 63));
-			out.appendByte((byte) (b2 + 63));
-			out.appendByte((byte) (b3 + 63));
-
-		} else {
-			/* n is a 6 byte number */
-			int b1 = (n >> 30) & ((1 << 6) - 1);
-			int b2 = (n >> 24) & ((1 << 6) - 1);
-			int b3 = (n >> 18) & ((1 << 6) - 1);
-			int b4 = (n >> 12) & ((1 << 6) - 1);
-			int b5 = (n >> 6) & ((1 << 6) - 1);
-			int b6 = (n >> 0) & ((1 << 6) - 1);
-			out.appendByte((byte) 126);
-			out.appendByte((byte) 126);
-			out.appendByte((byte) (b1 + 63));
-			out.appendByte((byte) (b2 + 63));
-			out.appendByte((byte) (b3 + 63));
-			out.appendByte((byte) (b4 + 63));
-			out.appendByte((byte) (b5 + 63));
-			out.appendByte((byte) (b6 + 63));
-		}
+		Graph6.writeNumberOfVertices(out, n);
 
 		/* sort edges similar to (0,0),(1,0),(1,1),(2,0),(2,1),(2,2) */
 		int[] edges;
@@ -248,7 +217,7 @@ public class Sparse6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer
 							+ "(0,0),(1,0),(1,1),(2,0),(2,1),(2,2)");
 
 		/* write all edges */
-		BitsWriter bitsWriter = new BitsWriter(out);
+		Graph6.BitsWriter bitsWriter = new Graph6.BitsWriter(out);
 		final int k = n == 0 ? 0 : JGAlgoUtils.log2ceil(n);
 		int currentVertex = 0;
 		for (int e : edges) {
@@ -292,39 +261,6 @@ public class Sparse6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer
 
 		/* terminate graph object with a new line */
 		out.appendNewline();
-	}
-
-	private static class BitsWriter {
-		private final Writer2 out;
-		private byte currentByte;
-		private int currentBitNum;
-
-		BitsWriter(Writer2 out) {
-			this.out = out;
-		}
-
-		void write(boolean b) throws IOException {
-			if (b)
-				currentByte |= 1 << (/* bigendian */ 5 - currentBitNum);
-			currentBitNum++;
-
-			if (currentBitNum == 6) {
-				out.appendByte((byte) (currentByte + 63));
-				currentByte = 0;
-				currentBitNum = 0;
-			}
-		}
-
-		void write(int x, int bitsNum) throws IOException {
-			assert x < (1 << bitsNum);
-			for (int i = 0; i < bitsNum; i++)
-				write((x & (1 << (bitsNum - 1 - i))) != 0); /* bigendian */
-		}
-
-		boolean paddingRequired() {
-			return currentBitNum != 0;
-		}
-
 	}
 
 }

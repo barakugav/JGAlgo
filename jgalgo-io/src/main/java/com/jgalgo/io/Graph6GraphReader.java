@@ -20,6 +20,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import com.jgalgo.graph.IntGraphBuilder;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 /**
  * Read a graph in Graph6 format.
@@ -72,45 +73,9 @@ public class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 		int cursor = 0;
 
 		/* Read N(n) */
-		final int n;
-		if (bytes[cursor] != 126) {
-			/* n is a single byte number */
-			n = checkByte(bytes[cursor++]) - 63;
-
-		} else if (++cursor + 2 >= bytes.length) {
-			throw new IllegalArgumentException("Invalid number of vertices, expected 126 and further bytes");
-		} else if (bytes[cursor] != 126) {
-			/* n is a 3 byte number */
-			int b1 = checkByte(bytes[cursor++]) - 63;
-			int b2 = checkByte(bytes[cursor++]) - 63;
-			int b3 = checkByte(bytes[cursor++]) - 63;
-			int n0 = 0;
-			n0 |= b1 << 12;
-			n0 |= b2 << 6;
-			n0 |= b3 << 0;
-			n = n0;
-
-		} else if (++cursor + 5 >= bytes.length) {
-			throw new IllegalArgumentException("Invalid number of vertices, expected 126 126 and further bytes");
-		} else {
-			/* n is a 6 byte number */
-			int b1 = checkByte(bytes[cursor++]) - 63;
-			int b2 = checkByte(bytes[cursor++]) - 63;
-			int b3 = checkByte(bytes[cursor++]) - 63;
-			int b4 = checkByte(bytes[cursor++]) - 63;
-			int b5 = checkByte(bytes[cursor++]) - 63;
-			int b6 = checkByte(bytes[cursor++]) - 63;
-			long n0 = 0;
-			n0 |= ((long) b1) << 30;
-			n0 |= ((long) b2) << 24;
-			n0 |= ((long) b3) << 18;
-			n0 |= ((long) b4) << 12;
-			n0 |= ((long) b5) << 6;
-			n0 |= ((long) b6) << 0;
-			if (n0 > Integer.MAX_VALUE)
-				throw new IllegalArgumentException("n is too big: " + n0);
-			n = (int) n0;
-		}
+		IntIntPair nPair = Graph6.readNumberOfVertices(bytes, cursor);
+		final int n = nPair.firstInt();
+		cursor = nPair.secondInt();
 		g.expectedVerticesNum(n);
 		for (int v = 0; v < n; v++)
 			g.addVertex(v); /* vertices ids are 0,1,2,...,n-1 */
@@ -123,7 +88,7 @@ public class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 		assert bytesToRead <= Integer.MAX_VALUE;
 		final int edgesBase = cursor;
 		for (int i = 0; i < (int) bytesToRead; i++)
-			bytes[edgesBase + i] = (byte) (checkByte(bytes[edgesBase + i]) - 63);
+			bytes[edgesBase + i] = (byte) (Graph6.checkByte(bytes[edgesBase + i]) - 63);
 		int bitNum = 0;
 		for (int u : range(1, n)) {
 			for (int v : range(0, u)) {
@@ -141,12 +106,6 @@ public class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 			throw new IllegalArgumentException("Expected a single line in file");
 
 		return g;
-	}
-
-	private static byte checkByte(byte b) {
-		if (!(63 <= b && b <= 126))
-			throw new IllegalArgumentException("Invalid byte, not in range [63, 126]: " + b);
-		return b;
 	}
 
 }
