@@ -91,4 +91,14 @@ class Writer2 {
 		return this;
 	}
 
+	Writer2 appendByte(byte b) throws IOException {
+		writer.append(new String(new byte[] { b }, GraphFormats.JGALGO_CHARSET));
+		return this;
+	}
+
+	Writer2 appendBytes(byte[] bytes) throws IOException {
+		writer.append(new String(bytes, GraphFormats.JGALGO_CHARSET));
+		return this;
+	}
+
 }
