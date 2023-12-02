@@ -177,9 +177,9 @@ public class Sparse6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer
 			edgesSorted[offset[u]++] = e;
 		}
 		{
-			int[] temp = edges;
+			// int[] temp = edges;
 			edges = edgesSorted;
-			edgesSorted = temp;
+			// edgesSorted = temp;
 		}
 		/* assert sorted */
 		if (m > 0) {

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <Match>
+    <!-- NoSuchElementException will be thrown by Assertions.Iters.hasNext(this); -->
+    <Or>
+      <Class name="com.jgalgo.io.Graph6GraphReader" />
+      <Class name="com.jgalgo.io.Sparse6GraphReader" />
+      <Class name="com.jgalgo.io.Digraph6GraphReader" />
+    </Or>
+    <Bug pattern="RV_DONT_JUST_NULL_CHECK_READLINE" />
+  </Match>
+</FindBugsFilter>

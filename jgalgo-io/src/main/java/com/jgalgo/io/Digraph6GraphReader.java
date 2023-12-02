@@ -76,7 +76,7 @@ public class Digraph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 		} else {
 			throw new IllegalArgumentException("Invalid header, expected ':' or '>>digraph6<<:'");
 		}
-		byte[] bytes = line.getBytes();
+		byte[] bytes = line.getBytes(GraphFormats.JGALGO_CHARSET);
 		int cursor = 0;
 
 		/* Read N(n) */
