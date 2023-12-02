@@ -1168,16 +1168,16 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc bfc" id="L1168" title="All 2 branches covered.">					if (e.target.isOut()) {</span>
 <span class="fc" id="L1169">						e.slack += eps;</span>
 <span class="fc" id="L1170">						tree.pqInsertEvenOut(e);</span>
-<span class="fc bfc" id="L1171" title="All 4 branches covered.">					} else if (e.target.isEven() &amp;&amp; System.identityHashCode(b) &lt; System.identityHashCode(e.target)) {</span>
-<span class="fc" id="L1172">						e.slack += 2 * eps;</span>
-<span class="fc" id="L1173">						tree.pqInsertEvenEven(e);</span>
+<span class="pc bpc" id="L1171" title="1 of 4 branches missed.">					} else if (e.target.isEven() &amp;&amp; System.identityHashCode(b) &lt; System.identityHashCode(e.target)) {</span>
+<span class="nc" id="L1172">						e.slack += 2 * eps;</span>
+<span class="nc" id="L1173">						tree.pqInsertEvenEven(e);</span>
 					}
 <span class="fc" id="L1175">				}</span>
 <span class="fc bfc" id="L1176" title="All 2 branches covered.">				for (Edge e : b.inEdges()) {</span>
 <span class="pc bpc" id="L1177" title="1 of 2 branches missed.">					if (e.source.isOut()) {</span>
 <span class="nc" id="L1178">						e.slack += eps;</span>
 <span class="nc" id="L1179">						tree.pqInsertEvenOut(e);</span>
-<span class="fc bfc" id="L1180" title="All 4 branches covered.">					} else if (e.source.isEven() &amp;&amp; System.identityHashCode(b) &lt; System.identityHashCode(e.source)) {</span>
+<span class="pc bpc" id="L1180" title="1 of 4 branches missed.">					} else if (e.source.isEven() &amp;&amp; System.identityHashCode(b) &lt; System.identityHashCode(e.source)) {</span>
 <span class="fc" id="L1181">						e.slack += 2 * eps;</span>
 <span class="fc" id="L1182">						tree.pqInsertEvenEven(e);</span>
 					}

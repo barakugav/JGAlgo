@@ -1,20 +1,24 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-JGAlgo - IO,com.jgalgo.io,GmlGraphWriter,6,428,0,40,2,74,0,30,0,10
-JGAlgo - IO,com.jgalgo.io,Writer2,48,45,0,0,12,13,6,6,6,6
-JGAlgo - IO,com.jgalgo.io,LedaGraphWriter,13,293,2,44,2,72,1,28,0,6
-JGAlgo - IO,com.jgalgo.io,IGraphReader,10,5,0,0,2,1,2,1,2,1
+JGAlgo - IO,com.jgalgo.io,GmlGraphWriter,0,427,0,40,0,73,0,30,0,10
+JGAlgo - IO,com.jgalgo.io,Writer2,48,72,0,0,12,17,6,8,6,8
+JGAlgo - IO,com.jgalgo.io,LedaGraphWriter,7,292,2,44,0,71,1,28,0,6
+JGAlgo - IO,com.jgalgo.io,GraphIoUtils.AbstractIntGraphReader,10,13,0,0,2,3,2,3,2,3
 JGAlgo - IO,com.jgalgo.io,WeightsStringifier.Builder,30,231,0,16,10,53,5,23,5,15
-JGAlgo - IO,com.jgalgo.io,DimacsGraphReader,6,262,0,37,2,70,0,23,0,3
-JGAlgo - IO,com.jgalgo.io,GraphReaders.new Iterator() {...},10,48,2,6,3,14,2,5,0,3
+JGAlgo - IO,com.jgalgo.io,DimacsGraphReader,0,260,0,37,0,70,0,23,0,3
 JGAlgo - IO,com.jgalgo.io,GraphReader,36,5,0,0,8,1,2,1,2,1
 JGAlgo - IO,com.jgalgo.io,GmlGraphReader.KeySearcher,0,51,0,6,0,13,0,6,0,3
 JGAlgo - IO,com.jgalgo.io,GraphWriter,36,0,0,0,12,0,2,0,2,0
-JGAlgo - IO,com.jgalgo.io,GraphReaders,3,18,1,1,0,2,1,3,0,3
+JGAlgo - IO,com.jgalgo.io,GraphIoUtils.AbstractGraphWriter,6,9,0,0,2,4,0,2,0,2
+JGAlgo - IO,com.jgalgo.io,Graph6GraphWriter,6,366,2,30,0,73,1,19,0,4
 JGAlgo - IO,com.jgalgo.io,WeightsStringifier,0,6,0,0,0,1,0,1,0,1
-JGAlgo - IO,com.jgalgo.io,GmlGraphReader,13,1056,2,150,2,227,1,103,0,27
-JGAlgo - IO,com.jgalgo.io,GraphFormats,4,0,0,0,1,0,1,0,1,0
+JGAlgo - IO,com.jgalgo.io,GmlGraphReader,7,1052,2,150,0,226,1,103,0,27
+JGAlgo - IO,com.jgalgo.io,GraphFormats,0,4,0,0,0,1,0,1,0,1
 JGAlgo - IO,com.jgalgo.io,Gml,18,82,8,30,3,9,8,16,0,5
-JGAlgo - IO,com.jgalgo.io,LedaGraphReader,6,613,0,91,2,154,0,67,0,17
+JGAlgo - IO,com.jgalgo.io,LedaGraphReader,0,611,0,91,0,154,0,67,0,17
 JGAlgo - IO,com.jgalgo.io,GmlGraphReader.CharReader,0,146,2,18,0,37,2,18,0,10
+JGAlgo - IO,com.jgalgo.io,GraphIoUtils,3,18,1,1,0,2,1,3,0,3
 JGAlgo - IO,com.jgalgo.io,GraphFormat,27,0,0,0,7,0,2,0,2,0
-JGAlgo - IO,com.jgalgo.io,DimacsGraphWriter,6,165,0,20,2,35,0,14,0,4
+JGAlgo - IO,com.jgalgo.io,Graph6GraphReader,23,378,4,32,0,69,2,20,0,4
+JGAlgo - IO,com.jgalgo.io,GraphIoUtils.AbstractGraphReader,6,7,0,0,2,2,0,2,0,2
+JGAlgo - IO,com.jgalgo.io,DimacsGraphWriter,0,164,0,20,0,34,0,14,0,4
+JGAlgo - IO,com.jgalgo.io,GraphIoUtils.new Iterator() {...},10,48,2,6,3,14,2,5,0,3

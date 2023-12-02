@@ -17,7 +17,6 @@ package com.jgalgo.io;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.function.Function;
 import com.jgalgo.graph.Graph;
@@ -78,14 +77,14 @@ import com.jgalgo.graph.WeightsShort;
  * @see    DimacsGraphReader
  * @author Barak Ugav
  */
-public class DimacsGraphWriter implements GraphWriter&lt;Integer, Integer&gt; {
+public class DimacsGraphWriter extends GraphIoUtils.AbstractGraphWriter&lt;Integer, Integer&gt; {
 
 	private String weightsKey;
 
 	/**
 	 * Create a new writer.
 	 */
-<span class="fc" id="L88">	public DimacsGraphWriter() {}</span>
+<span class="fc" id="L87">	public DimacsGraphWriter() {}</span>
 
 	/**
 	 * Set the key of the edge weights to write.
@@ -104,58 +103,54 @@ public class DimacsGraphWriter implements GraphWriter&lt;Integer, Integer&gt; {
 	 *                       (unweighted)
 	 */
 	public void setEdgeWeights(String weightsKey) {
-<span class="fc" id="L107">		this.weightsKey = weightsKey;</span>
-<span class="fc" id="L108">	}</span>
+<span class="fc" id="L106">		this.weightsKey = weightsKey;</span>
+<span class="fc" id="L107">	}</span>
 
 	@Override
-	public void writeGraph(Graph&lt;Integer, Integer&gt; graph, Writer writer) {
-<span class="fc bfc" id="L112" title="All 2 branches covered.">		if (graph.isDirected())</span>
-<span class="fc" id="L113">			throw new IllegalArgumentException(&quot;the DIMACS format support undirected graphs only&quot;);</span>
-<span class="fc" id="L114">		final int n = graph.vertices().size();</span>
-<span class="fc" id="L115">		final int m = graph.edges().size();</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (!range(1, n + 1).equals(graph.vertices()))</span>
-<span class="fc" id="L117">			throw new IllegalArgumentException(&quot;the DIMACS format support graphs with vertices 1..n only&quot;);</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">		if (!range(1, m + 1).equals(graph.edges()))</span>
-<span class="fc" id="L119">			throw new IllegalArgumentException(&quot;the DIMACS format support graphs with edges 1..m only&quot;);</span>
+	public void writeGraphImpl(Graph&lt;Integer, Integer&gt; graph, Writer writer) throws IOException {
+<span class="fc bfc" id="L111" title="All 2 branches covered.">		if (graph.isDirected())</span>
+<span class="fc" id="L112">			throw new IllegalArgumentException(&quot;the DIMACS format support undirected graphs only&quot;);</span>
+<span class="fc" id="L113">		final int n = graph.vertices().size();</span>
+<span class="fc" id="L114">		final int m = graph.edges().size();</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">		if (!range(1, n + 1).equals(graph.vertices()))</span>
+<span class="fc" id="L116">			throw new IllegalArgumentException(&quot;the DIMACS format support graphs with vertices 1..n only&quot;);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">		if (!range(1, m + 1).equals(graph.edges()))</span>
+<span class="fc" id="L118">			throw new IllegalArgumentException(&quot;the DIMACS format support graphs with edges 1..m only&quot;);</span>
 
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		final boolean hasWeights = weightsKey != null;</span>
-<span class="fc" id="L122">		Function&lt;Integer, String&gt; w = null;</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">		if (hasWeights) {</span>
-<span class="fc" id="L124">			Weights&lt;Integer, ?&gt; w0 = graph.getEdgesWeights(weightsKey);</span>
-<span class="fc bfc" id="L125" title="All 2 branches covered.">			if (w0 == null)</span>
-<span class="fc" id="L126">				throw new IllegalArgumentException(&quot;the graph does not have weights for key: &quot; + weightsKey);</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">			if (!(w0 instanceof WeightFunctionInt))</span>
-<span class="fc" id="L128">				throw new IllegalArgumentException(</span>
-<span class="fc" id="L129">						&quot;Only integer weights are supported. Unsupported: &quot; + w0.getClass().getName());</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		final boolean hasWeights = weightsKey != null;</span>
+<span class="fc" id="L121">		Function&lt;Integer, String&gt; w = null;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		if (hasWeights) {</span>
+<span class="fc" id="L123">			Weights&lt;Integer, ?&gt; w0 = graph.getEdgesWeights(weightsKey);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">			if (w0 == null)</span>
+<span class="fc" id="L125">				throw new IllegalArgumentException(&quot;the graph does not have weights for key: &quot; + weightsKey);</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">			if (!(w0 instanceof WeightFunctionInt))</span>
+<span class="fc" id="L127">				throw new IllegalArgumentException(</span>
+<span class="fc" id="L128">						&quot;Only integer weights are supported. Unsupported: &quot; + w0.getClass().getName());</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L131">			WeightFunctionInt&lt;Integer&gt; w1 = (WeightFunctionInt&lt;Integer&gt;) w0;</span>
-<span class="fc" id="L132">			w = e -&gt; Integer.toString(w1.weightInt(e));</span>
+<span class="fc" id="L130">			WeightFunctionInt&lt;Integer&gt; w1 = (WeightFunctionInt&lt;Integer&gt;) w0;</span>
+<span class="fc" id="L131">			w = e -&gt; Integer.toString(w1.weightInt(e));</span>
 		}
 
-<span class="fc" id="L135">		Writer2 out = new Writer2(writer);</span>
-		try {
-<span class="fc" id="L137">			out.append(&quot;c DIMACS written graph by JGAlgo&quot;).appendNewline();</span>
+<span class="fc" id="L134">		Writer2 out = new Writer2(writer);</span>
+<span class="fc" id="L135">		out.append(&quot;c DIMACS written graph by JGAlgo&quot;).appendNewline();</span>
 
-<span class="fc bfc" id="L139" title="All 2 branches covered.">			if (hasWeights) {</span>
-<span class="fc" id="L140">				out.append(&quot;p sp &quot; + n + &quot; &quot; + m).appendNewline();</span>
-			} else {
-<span class="fc" id="L142">				out.append(&quot;p edge &quot; + n + &quot; &quot; + m).appendNewline();</span>
-			}
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		if (hasWeights) {</span>
+<span class="fc" id="L138">			out.append(&quot;p sp &quot; + n + &quot; &quot; + m).appendNewline();</span>
+		} else {
+<span class="fc" id="L140">			out.append(&quot;p edge &quot; + n + &quot; &quot; + m).appendNewline();</span>
+		}
 
-			// writes all edges, optional with weights
-<span class="fc bfc" id="L146" title="All 2 branches covered.">			for (int e0 = 1; e0 &lt;= m; e0++) {</span>
-<span class="fc" id="L147">				Integer e = Integer.valueOf(e0);</span>
-				/* e {source} {target} */
-<span class="fc" id="L149">				out.append(&quot;e &quot;).append(graph.edgeSource(e)).append(' ').append(graph.edgeTarget(e));</span>
-				/* e {source} {target} {weight} */
-<span class="fc bfc" id="L151" title="All 2 branches covered.">				if (hasWeights)</span>
-<span class="fc" id="L152">					out.append(' ').append(w.apply(e));</span>
-<span class="fc" id="L153">				out.appendNewline();</span>
-			}
-<span class="nc" id="L155">		} catch (IOException e) {</span>
-<span class="nc" id="L156">			throw new UncheckedIOException(e);</span>
-<span class="fc" id="L157">		}</span>
-<span class="fc" id="L158">	}</span>
+		// writes all edges, optional with weights
+<span class="fc bfc" id="L144" title="All 2 branches covered.">		for (int e0 = 1; e0 &lt;= m; e0++) {</span>
+<span class="fc" id="L145">			Integer e = Integer.valueOf(e0);</span>
+			/* e {source} {target} */
+<span class="fc" id="L147">			out.append(&quot;e &quot;).append(graph.edgeSource(e)).append(' ').append(graph.edgeTarget(e));</span>
+			/* e {source} {target} {weight} */
+<span class="fc bfc" id="L149" title="All 2 branches covered.">			if (hasWeights)</span>
+<span class="fc" id="L150">				out.append(' ').append(w.apply(e));</span>
+<span class="fc" id="L151">			out.appendNewline();</span>
+		}
+<span class="fc" id="L153">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

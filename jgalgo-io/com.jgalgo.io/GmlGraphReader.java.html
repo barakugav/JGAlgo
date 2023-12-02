@@ -18,7 +18,6 @@ package com.jgalgo.io;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -134,7 +133,7 @@ import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
  * @param  &lt;E&gt; the edges type
  * @author     Barak Ugav
  */
-<span class="fc" id="L137">public class GmlGraphReader&lt;V, E&gt; implements GraphReader&lt;V, E&gt; {</span>
+<span class="fc" id="L136">public class GmlGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReader&lt;V, E&gt; {</span>
 
 	private Class&lt;V&gt; vType;
 	private Class&lt;E&gt; eType;
@@ -149,7 +148,7 @@ import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
 	 * {@link #setEdgeType(Class)}. Alternatively, the types can be passed in the
 	 * {@linkplain #GmlGraphReader(Class, Class) constructor}.
 	 */
-<span class="fc" id="L152">	public GmlGraphReader() {}</span>
+<span class="fc" id="L151">	public GmlGraphReader() {}</span>
 
 	/**
 	 * Create a new reader and provide the types of vertices and edges.
@@ -159,12 +158,12 @@ import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
 	 * @see         #setVertexType(Class)
 	 * @see         #setEdgeType(Class)
 	 */
-<span class="fc" id="L162">	public GmlGraphReader(Class&lt;V&gt; vType, Class&lt;E&gt; eType) {</span>
-<span class="fc" id="L163">		checkVertexEdgeType(vType);</span>
-<span class="fc" id="L164">		checkVertexEdgeType(eType);</span>
-<span class="fc" id="L165">		this.vType = vType;</span>
-<span class="fc" id="L166">		this.eType = eType;</span>
-<span class="fc" id="L167">	}</span>
+<span class="fc" id="L161">	public GmlGraphReader(Class&lt;V&gt; vType, Class&lt;E&gt; eType) {</span>
+<span class="fc" id="L162">		checkVertexEdgeType(vType);</span>
+<span class="fc" id="L163">		checkVertexEdgeType(eType);</span>
+<span class="fc" id="L164">		this.vType = vType;</span>
+<span class="fc" id="L165">		this.eType = eType;</span>
+<span class="fc" id="L166">	}</span>
 
 	/**
 	 * Set the type of vertices.
@@ -180,9 +179,9 @@ import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
 	 * @param vType the type of vertices
 	 */
 	public void setVertexType(Class&lt;V&gt; vType) {
-<span class="fc" id="L183">		checkVertexEdgeType(vType);</span>
-<span class="fc" id="L184">		this.vType = vType;</span>
-<span class="fc" id="L185">	}</span>
+<span class="fc" id="L182">		checkVertexEdgeType(vType);</span>
+<span class="fc" id="L183">		this.vType = vType;</span>
+<span class="fc" id="L184">	}</span>
 
 	/**
 	 * Set the type of edges.
@@ -198,115 +197,110 @@ import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
 	 * @param eType the type of edges
 	 */
 	public void setEdgeType(Class&lt;E&gt; eType) {
-<span class="fc" id="L201">		checkVertexEdgeType(eType);</span>
-<span class="fc" id="L202">		this.eType = eType;</span>
-<span class="fc" id="L203">	}</span>
+<span class="fc" id="L200">		checkVertexEdgeType(eType);</span>
+<span class="fc" id="L201">		this.eType = eType;</span>
+<span class="fc" id="L202">	}</span>
 
 	private static void checkVertexEdgeType(Class&lt;?&gt; type) {
-<span class="fc" id="L206">		Objects.requireNonNull(type);</span>
-<span class="fc bfc" id="L207" title="All 2 branches covered.">		if (!List.of(int.class, Integer.class, double.class, Double.class, String.class).contains(type))</span>
-<span class="fc" id="L208">			throw new IllegalArgumentException(</span>
+<span class="fc" id="L205">		Objects.requireNonNull(type);</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">		if (!List.of(int.class, Integer.class, double.class, Double.class, String.class).contains(type))</span>
+<span class="fc" id="L207">			throw new IllegalArgumentException(</span>
 					&quot;Only integers, doubles and strings are supported. Unsupported: &quot; + type);
-<span class="fc" id="L210">	}</span>
+<span class="fc" id="L209">	}</span>
 
 	@Override
-	public GraphBuilder&lt;V, E&gt; readIntoBuilder(Reader reader) {
-<span class="fc bfc" id="L214" title="All 2 branches covered.">		if (vType == null)</span>
-<span class="fc" id="L215">			throw new IllegalStateException(&quot;Type of vertices was not set&quot;);</span>
-<span class="fc bfc" id="L216" title="All 2 branches covered.">		if (eType == null)</span>
-<span class="fc" id="L217">			throw new IllegalStateException(&quot;Type of edges was not set&quot;);</span>
-<span class="fc" id="L218">		vTypeBoxed = boxedType(vType);</span>
-<span class="fc" id="L219">		eTypeBoxed = boxedType(eType);</span>
+	public GraphBuilder&lt;V, E&gt; readIntoBuilderImpl(Reader reader) throws IOException {
+<span class="fc bfc" id="L213" title="All 2 branches covered.">		if (vType == null)</span>
+<span class="fc" id="L214">			throw new IllegalStateException(&quot;Type of vertices was not set&quot;);</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">		if (eType == null)</span>
+<span class="fc" id="L216">			throw new IllegalStateException(&quot;Type of edges was not set&quot;);</span>
+<span class="fc" id="L217">		vTypeBoxed = boxedType(vType);</span>
+<span class="fc" id="L218">		eTypeBoxed = boxedType(eType);</span>
 
-<span class="fc" id="L221">		try (BufferedReader br = GraphReaders.bufferedReader(reader)) {</span>
-<span class="fc" id="L222">			List&lt;Pair&lt;String, Object&gt;&gt; roots = parseHierarchy(new CharReader(br));</span>
-<span class="fc" id="L223">			return readIntoBuilder(roots);</span>
-
-<span class="nc" id="L225">		} catch (IOException e) {</span>
-<span class="nc" id="L226">			throw new UncheckedIOException(e);</span>
-		}
+<span class="fc" id="L220">		List&lt;Pair&lt;String, Object&gt;&gt; roots = parseHierarchy(new CharReader(GraphIoUtils.bufferedReader(reader)));</span>
+<span class="fc" id="L221">		return readIntoBuilder(roots);</span>
 	}
 
 	private GraphBuilder&lt;V, E&gt; readIntoBuilder(List&lt;Pair&lt;String, Object&gt;&gt; roots) {
 		Pair&lt;String, Object&gt; root;
-<span class="fc bfc" id="L232" title="All 4 branches covered.">		if (roots.size() != 1 || !(root = roots.get(0)).first().equals(&quot;graph&quot;))</span>
-<span class="fc" id="L233">			throw new IllegalArgumentException(&quot;expected a single root list 'graph'&quot;);</span>
+<span class="fc bfc" id="L226" title="All 4 branches covered.">		if (roots.size() != 1 || !(root = roots.get(0)).first().equals(&quot;graph&quot;))</span>
+<span class="fc" id="L227">			throw new IllegalArgumentException(&quot;expected a single root list 'graph'&quot;);</span>
 
-<span class="fc" id="L235">		KeySearcher directedSearcher = new KeySearcher(&quot;directed&quot;, &quot;graph&quot;);</span>
-<span class="fc" id="L236">		searchChildren(root, directedSearcher);</span>
-<span class="fc" id="L237">		final boolean directed = Integer.valueOf(1).equals(directedSearcher.value);</span>
+<span class="fc" id="L229">		KeySearcher directedSearcher = new KeySearcher(&quot;directed&quot;, &quot;graph&quot;);</span>
+<span class="fc" id="L230">		searchChildren(root, directedSearcher);</span>
+<span class="fc" id="L231">		final boolean directed = Integer.valueOf(1).equals(directedSearcher.value);</span>
 
-<span class="fc bfc" id="L239" title="All 4 branches covered.">		final boolean intGraph = vType == int.class &amp;&amp; eType == int.class;</span>
+<span class="fc bfc" id="L233" title="All 4 branches covered.">		final boolean intGraph = vType == int.class &amp;&amp; eType == int.class;</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
 		GraphFactory&lt;V, E&gt; factory =
-<span class="fc bfc" id="L242" title="All 2 branches covered.">				intGraph ? (GraphFactory&lt;V, E&gt;) IntGraphFactory.newUndirected() : GraphFactory.newUndirected();</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">				intGraph ? (GraphFactory&lt;V, E&gt;) IntGraphFactory.newUndirected() : GraphFactory.newUndirected();</span>
 
-<span class="fc" id="L244">		GraphBuilder&lt;V, E&gt; b = factory.setDirected(directed).allowSelfEdges().newBuilder();</span>
-<span class="fc bfc" id="L245" title="All 2 branches covered.">		IntGraphBuilder bInt = intGraph ? (IntGraphBuilder) b : null;</span>
+<span class="fc" id="L238">		GraphBuilder&lt;V, E&gt; b = factory.setDirected(directed).allowSelfEdges().newBuilder();</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">		IntGraphBuilder bInt = intGraph ? (IntGraphBuilder) b : null;</span>
 
-<span class="fc" id="L247">		Map&lt;String, List&lt;Pair&lt;V, Object&gt;&gt;&gt; vWeights = new Object2ObjectOpenHashMap&lt;&gt;();</span>
-<span class="fc" id="L248">		Map&lt;String, List&lt;Pair&lt;E, Object&gt;&gt;&gt; eWeights = new Object2ObjectOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L241">		Map&lt;String, List&lt;Pair&lt;V, Object&gt;&gt;&gt; vWeights = new Object2ObjectOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L242">		Map&lt;String, List&lt;Pair&lt;E, Object&gt;&gt;&gt; eWeights = new Object2ObjectOpenHashMap&lt;&gt;();</span>
 
-<span class="fc bfc" id="L250" title="All 2 branches covered.">		for (Pair&lt;String, Object&gt; n : children(root)) {</span>
-<span class="fc bfc" id="L251" title="All 4 branches covered.">			switch (n.first()) {</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">		for (Pair&lt;String, Object&gt; n : children(root)) {</span>
+<span class="fc bfc" id="L245" title="All 4 branches covered.">			switch (n.first()) {</span>
 				case &quot;node&quot;: {
-<span class="fc" id="L253">					checkNoNestedLists(n);</span>
+<span class="fc" id="L247">					checkNoNestedLists(n);</span>
 
 					/* search for id */
-<span class="fc" id="L256">					KeySearcher idSearcher = new KeySearcher(&quot;id&quot;, &quot;vertex&quot;);</span>
-<span class="fc" id="L257">					searchChildren(n, idSearcher);</span>
-<span class="fc" id="L258">					V id = vertex(idSearcher.get());</span>
-<span class="fc" id="L259">					b.addVertex(id);</span>
+<span class="fc" id="L250">					KeySearcher idSearcher = new KeySearcher(&quot;id&quot;, &quot;vertex&quot;);</span>
+<span class="fc" id="L251">					searchChildren(n, idSearcher);</span>
+<span class="fc" id="L252">					V id = vertex(idSearcher.get());</span>
+<span class="fc" id="L253">					b.addVertex(id);</span>
 
 					/* add all other children as weights */
-<span class="fc bfc" id="L262" title="All 2 branches covered.">					for (Pair&lt;String, Object&gt; prop : children(n))</span>
-<span class="fc bfc" id="L263" title="All 2 branches covered.">						if (!ObjectList.of(&quot;id&quot;).contains(prop.first()))</span>
-<span class="fc" id="L264">							vWeights.computeIfAbsent(prop.first(), k -&gt; new ArrayList&lt;&gt;())</span>
-<span class="fc" id="L265">									.add(Pair.of(id, prop.second()));</span>
-<span class="fc" id="L266">					break;</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">					for (Pair&lt;String, Object&gt; prop : children(n))</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">						if (!ObjectList.of(&quot;id&quot;).contains(prop.first()))</span>
+<span class="fc" id="L258">							vWeights.computeIfAbsent(prop.first(), k -&gt; new ArrayList&lt;&gt;())</span>
+<span class="fc" id="L259">									.add(Pair.of(id, prop.second()));</span>
+<span class="fc" id="L260">					break;</span>
 				}
 				case &quot;edge&quot;: {
-<span class="fc" id="L269">					checkNoNestedLists(n);</span>
+<span class="fc" id="L263">					checkNoNestedLists(n);</span>
 
 					/* search for id, source and target */
-<span class="fc" id="L272">					KeySearcher idSearcher = new KeySearcher(&quot;id&quot;, &quot;edge&quot;);</span>
-<span class="fc" id="L273">					KeySearcher sourceSearcher = new KeySearcher(&quot;source&quot;, &quot;edge&quot;);</span>
-<span class="fc" id="L274">					KeySearcher targetSearcher = new KeySearcher(&quot;target&quot;, &quot;edge&quot;);</span>
-<span class="fc" id="L275">					searchChildren(n, idSearcher, sourceSearcher, targetSearcher);</span>
-<span class="fc" id="L276">					V source = vertex(sourceSearcher.get());</span>
-<span class="fc" id="L277">					V target = vertex(targetSearcher.get());</span>
+<span class="fc" id="L266">					KeySearcher idSearcher = new KeySearcher(&quot;id&quot;, &quot;edge&quot;);</span>
+<span class="fc" id="L267">					KeySearcher sourceSearcher = new KeySearcher(&quot;source&quot;, &quot;edge&quot;);</span>
+<span class="fc" id="L268">					KeySearcher targetSearcher = new KeySearcher(&quot;target&quot;, &quot;edge&quot;);</span>
+<span class="fc" id="L269">					searchChildren(n, idSearcher, sourceSearcher, targetSearcher);</span>
+<span class="fc" id="L270">					V source = vertex(sourceSearcher.get());</span>
+<span class="fc" id="L271">					V target = vertex(targetSearcher.get());</span>
 					E id;
-<span class="fc bfc" id="L279" title="All 4 branches covered.">					if (intGraph &amp;&amp; !idSearcher.found) {</span>
+<span class="fc bfc" id="L273" title="All 4 branches covered.">					if (intGraph &amp;&amp; !idSearcher.found) {</span>
 						/* no id found, let IntGraphBuilder choose the id itself */
-<span class="fc" id="L281">						int source0 = ((Integer) source).intValue();</span>
-<span class="fc" id="L282">						int target0 = ((Integer) target).intValue();</span>
+<span class="fc" id="L275">						int source0 = ((Integer) source).intValue();</span>
+<span class="fc" id="L276">						int target0 = ((Integer) target).intValue();</span>
 						@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L284">						E id0 = (E) Integer.valueOf(bInt.addEdge(source0, target0));</span>
-<span class="fc" id="L285">						id = id0;</span>
+<span class="fc" id="L278">						E id0 = (E) Integer.valueOf(bInt.addEdge(source0, target0));</span>
+<span class="fc" id="L279">						id = id0;</span>
 
-<span class="fc" id="L287">					} else {</span>
-<span class="fc" id="L288">						id = edge(idSearcher.get());</span>
-<span class="fc" id="L289">						b.addEdge(source, target, id);</span>
+<span class="fc" id="L281">					} else {</span>
+<span class="fc" id="L282">						id = edge(idSearcher.get());</span>
+<span class="fc" id="L283">						b.addEdge(source, target, id);</span>
 					}
 
 					/* add all other children as weights */
-<span class="fc bfc" id="L293" title="All 2 branches covered.">					for (Pair&lt;String, Object&gt; prop : children(n))</span>
-<span class="fc bfc" id="L294" title="All 2 branches covered.">						if (!ObjectList.of(&quot;id&quot;, &quot;source&quot;, &quot;target&quot;).contains(prop.first()))</span>
-<span class="fc" id="L295">							eWeights.computeIfAbsent(prop.first(), k -&gt; new ArrayList&lt;&gt;())</span>
-<span class="fc" id="L296">									.add(Pair.of(id, prop.second()));</span>
-<span class="fc" id="L297">					break;</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">					for (Pair&lt;String, Object&gt; prop : children(n))</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">						if (!ObjectList.of(&quot;id&quot;, &quot;source&quot;, &quot;target&quot;).contains(prop.first()))</span>
+<span class="fc" id="L289">							eWeights.computeIfAbsent(prop.first(), k -&gt; new ArrayList&lt;&gt;())</span>
+<span class="fc" id="L290">									.add(Pair.of(id, prop.second()));</span>
+<span class="fc" id="L291">					break;</span>
 				}
 				case &quot;directed&quot;:
-<span class="fc" id="L300">					break; /* already searched this key */</span>
+<span class="fc" id="L294">					break; /* already searched this key */</span>
 				default:
-<span class="fc" id="L302">					throw new IllegalArgumentException(&quot;unexpected key: '&quot; + n.first() + &quot;'&quot;);</span>
+<span class="fc" id="L296">					throw new IllegalArgumentException(&quot;unexpected key: '&quot; + n.first() + &quot;'&quot;);</span>
 			}
-<span class="fc" id="L304">		}</span>
+<span class="fc" id="L298">		}</span>
 
-<span class="fc" id="L306">		addWeights(vWeights, b::addVerticesWeights);</span>
-<span class="fc" id="L307">		addWeights(eWeights, b::addEdgesWeights);</span>
+<span class="fc" id="L300">		addWeights(vWeights, b::addVerticesWeights);</span>
+<span class="fc" id="L301">		addWeights(eWeights, b::addEdgesWeights);</span>
 
-<span class="fc" id="L309">		return b;</span>
+<span class="fc" id="L303">		return b;</span>
 	}
 
 	static class KeySearcher {
@@ -315,268 +309,268 @@ import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
 		private Object value;
 		private final String parentNode;
 
-<span class="fc" id="L318">		KeySearcher(String key, String parentNode) {</span>
-<span class="fc" id="L319">			this.key = key;</span>
-<span class="fc" id="L320">			this.parentNode = parentNode;</span>
-<span class="fc" id="L321">		}</span>
+<span class="fc" id="L312">		KeySearcher(String key, String parentNode) {</span>
+<span class="fc" id="L313">			this.key = key;</span>
+<span class="fc" id="L314">			this.parentNode = parentNode;</span>
+<span class="fc" id="L315">		}</span>
 
 		boolean accept(Pair&lt;String, Object&gt; node) {
-<span class="fc bfc" id="L324" title="All 2 branches covered.">			if (!key.equals(node.first()))</span>
-<span class="fc" id="L325">				return false;</span>
-<span class="fc bfc" id="L326" title="All 2 branches covered.">			if (found)</span>
-<span class="fc" id="L327">				throw new IllegalArgumentException(&quot;duplicate '&quot; + key + &quot;' property&quot;);</span>
-<span class="fc" id="L328">			value = node.second();</span>
-<span class="fc" id="L329">			return found = true;</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">			if (!key.equals(node.first()))</span>
+<span class="fc" id="L319">				return false;</span>
+<span class="fc bfc" id="L320" title="All 2 branches covered.">			if (found)</span>
+<span class="fc" id="L321">				throw new IllegalArgumentException(&quot;duplicate '&quot; + key + &quot;' property&quot;);</span>
+<span class="fc" id="L322">			value = node.second();</span>
+<span class="fc" id="L323">			return found = true;</span>
 		}
 
 		Object get() {
-<span class="fc bfc" id="L333" title="All 2 branches covered.">			if (!found)</span>
-<span class="fc" id="L334">				throw new IllegalArgumentException(&quot;no '&quot; + key + &quot;' property for &quot; + parentNode);</span>
-<span class="fc" id="L335">			return value;</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">			if (!found)</span>
+<span class="fc" id="L328">				throw new IllegalArgumentException(&quot;no '&quot; + key + &quot;' property for &quot; + parentNode);</span>
+<span class="fc" id="L329">			return value;</span>
 		}
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;K&gt; void addWeights(Map&lt;String, List&lt;Pair&lt;K, Object&gt;&gt;&gt; weights,
 			BiFunction&lt;String, Class&lt;?&gt;, Weights&lt;K, ?&gt;&gt; weightsAdder) {
-<span class="fc bfc" id="L342" title="All 2 branches covered.">		for (var entry : weights.entrySet()) {</span>
-<span class="fc" id="L343">			String key = entry.getKey();</span>
-<span class="fc" id="L344">			Class&lt;?&gt; weightType = chooseWeightType(entry.getValue());</span>
-<span class="fc bfc" id="L345" title="All 2 branches covered.">			if (weightType == int.class) {</span>
-<span class="fc" id="L346">				WeightsInt&lt;K&gt; w = (WeightsInt&lt;K&gt;) weightsAdder.apply(key, int.class);</span>
-<span class="fc bfc" id="L347" title="All 2 branches covered.">				for (var pair : entry.getValue())</span>
-<span class="fc" id="L348">					w.set(pair.first(), ((Integer) pair.second()).intValue());</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">		for (var entry : weights.entrySet()) {</span>
+<span class="fc" id="L337">			String key = entry.getKey();</span>
+<span class="fc" id="L338">			Class&lt;?&gt; weightType = chooseWeightType(entry.getValue());</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">			if (weightType == int.class) {</span>
+<span class="fc" id="L340">				WeightsInt&lt;K&gt; w = (WeightsInt&lt;K&gt;) weightsAdder.apply(key, int.class);</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">				for (var pair : entry.getValue())</span>
+<span class="fc" id="L342">					w.set(pair.first(), ((Integer) pair.second()).intValue());</span>
 
-<span class="fc bfc" id="L350" title="All 2 branches covered.">			} else if (weightType == double.class) {</span>
-<span class="fc" id="L351">				WeightsDouble&lt;K&gt; w = (WeightsDouble&lt;K&gt;) weightsAdder.apply(key, double.class);</span>
-<span class="fc bfc" id="L352" title="All 2 branches covered.">				for (var pair : entry.getValue())</span>
-<span class="fc" id="L353">					w.set(pair.first(), ((Number) pair.second()).doubleValue());</span>
+<span class="fc bfc" id="L344" title="All 2 branches covered.">			} else if (weightType == double.class) {</span>
+<span class="fc" id="L345">				WeightsDouble&lt;K&gt; w = (WeightsDouble&lt;K&gt;) weightsAdder.apply(key, double.class);</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">				for (var pair : entry.getValue())</span>
+<span class="fc" id="L347">					w.set(pair.first(), ((Number) pair.second()).doubleValue());</span>
 
-<span class="fc bfc" id="L355" title="All 2 branches covered.">			} else if (weightType == String.class) {</span>
-<span class="fc" id="L356">				WeightsObj&lt;K, String&gt; w = (WeightsObj&lt;K, String&gt;) weightsAdder.apply(key, String.class);</span>
-<span class="fc bfc" id="L357" title="All 2 branches covered.">				for (var pair : entry.getValue())</span>
-<span class="fc" id="L358">					w.set(pair.first(), (String) pair.second());</span>
+<span class="fc bfc" id="L349" title="All 2 branches covered.">			} else if (weightType == String.class) {</span>
+<span class="fc" id="L350">				WeightsObj&lt;K, String&gt; w = (WeightsObj&lt;K, String&gt;) weightsAdder.apply(key, String.class);</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">				for (var pair : entry.getValue())</span>
+<span class="fc" id="L352">					w.set(pair.first(), (String) pair.second());</span>
 
-<span class="fc" id="L360">			} else {</span>
-<span class="fc" id="L361">				WeightsObj&lt;K, Object&gt; w = (WeightsObj&lt;K, Object&gt;) weightsAdder.apply(key, Object.class);</span>
-<span class="fc bfc" id="L362" title="All 2 branches covered.">				for (var pair : entry.getValue())</span>
-<span class="fc" id="L363">					w.set(pair.first(), pair.second());</span>
+<span class="fc" id="L354">			} else {</span>
+<span class="fc" id="L355">				WeightsObj&lt;K, Object&gt; w = (WeightsObj&lt;K, Object&gt;) weightsAdder.apply(key, Object.class);</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">				for (var pair : entry.getValue())</span>
+<span class="fc" id="L357">					w.set(pair.first(), pair.second());</span>
 			}
-<span class="fc" id="L365">		}</span>
-<span class="fc" id="L366">	}</span>
+<span class="fc" id="L359">		}</span>
+<span class="fc" id="L360">	}</span>
 
 	private static &lt;K&gt; Class&lt;?&gt; chooseWeightType(List&lt;Pair&lt;K, Object&gt;&gt; weights) {
-<span class="fc" id="L369">		Iterator&lt;Class&lt;?&gt;&gt; typeIt = IterTools.map(weights.iterator(), pair -&gt; {</span>
-<span class="fc" id="L370">			Object weight = pair.second();</span>
-<span class="fc bfc" id="L371" title="All 2 branches covered.">			if (weight instanceof Integer) {</span>
-<span class="fc" id="L372">				return int.class;</span>
-<span class="fc bfc" id="L373" title="All 2 branches covered.">			} else if (weight instanceof Double) {</span>
-<span class="fc" id="L374">				return double.class;</span>
+<span class="fc" id="L363">		Iterator&lt;Class&lt;?&gt;&gt; typeIt = IterTools.map(weights.iterator(), pair -&gt; {</span>
+<span class="fc" id="L364">			Object weight = pair.second();</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">			if (weight instanceof Integer) {</span>
+<span class="fc" id="L366">				return int.class;</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">			} else if (weight instanceof Double) {</span>
+<span class="fc" id="L368">				return double.class;</span>
 			} else {
-<span class="pc bnc" id="L376" title="All 2 branches missed.">				assert weight instanceof String;</span>
-<span class="fc" id="L377">				return String.class;</span>
+<span class="pc bnc" id="L370" title="All 2 branches missed.">				assert weight instanceof String;</span>
+<span class="fc" id="L371">				return String.class;</span>
 			}
 		});
-<span class="fc" id="L380">		Class&lt;?&gt; weightType = typeIt.next();</span>
+<span class="fc" id="L374">		Class&lt;?&gt; weightType = typeIt.next();</span>
 
-<span class="fc bfc" id="L382" title="All 4 branches covered.">		while (weightType == int.class &amp;&amp; typeIt.hasNext()) {</span>
-<span class="fc" id="L383">			Class&lt;?&gt; type = typeIt.next();</span>
-<span class="fc bfc" id="L384" title="All 2 branches covered.">			if (type != int.class) {</span>
-<span class="fc bfc" id="L385" title="All 2 branches covered.">				if (type == double.class) {</span>
-<span class="fc" id="L386">					weightType = double.class;</span>
+<span class="fc bfc" id="L376" title="All 4 branches covered.">		while (weightType == int.class &amp;&amp; typeIt.hasNext()) {</span>
+<span class="fc" id="L377">			Class&lt;?&gt; type = typeIt.next();</span>
+<span class="fc bfc" id="L378" title="All 2 branches covered.">			if (type != int.class) {</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">				if (type == double.class) {</span>
+<span class="fc" id="L380">					weightType = double.class;</span>
 				} else {
-<span class="fc" id="L388">					weightType = Object.class;</span>
+<span class="fc" id="L382">					weightType = Object.class;</span>
 				}
 			}
-<span class="fc" id="L391">		}</span>
-<span class="fc bfc" id="L392" title="All 4 branches covered.">		while (weightType == double.class &amp;&amp; typeIt.hasNext()) {</span>
-<span class="fc" id="L393">			Class&lt;?&gt; type = typeIt.next();</span>
-<span class="fc bfc" id="L394" title="All 4 branches covered.">			if (type != int.class &amp;&amp; type != double.class)</span>
-<span class="fc" id="L395">				weightType = Object.class;</span>
-<span class="fc" id="L396">		}</span>
-<span class="fc bfc" id="L397" title="All 4 branches covered.">		while (weightType == String.class &amp;&amp; typeIt.hasNext()) {</span>
-<span class="fc" id="L398">			Class&lt;?&gt; type = typeIt.next();</span>
-<span class="fc bfc" id="L399" title="All 2 branches covered.">			if (type != String.class)</span>
-<span class="fc" id="L400">				weightType = Object.class;</span>
-<span class="fc" id="L401">		}</span>
-<span class="fc" id="L402">		return weightType;</span>
+<span class="fc" id="L385">		}</span>
+<span class="fc bfc" id="L386" title="All 4 branches covered.">		while (weightType == double.class &amp;&amp; typeIt.hasNext()) {</span>
+<span class="fc" id="L387">			Class&lt;?&gt; type = typeIt.next();</span>
+<span class="fc bfc" id="L388" title="All 4 branches covered.">			if (type != int.class &amp;&amp; type != double.class)</span>
+<span class="fc" id="L389">				weightType = Object.class;</span>
+<span class="fc" id="L390">		}</span>
+<span class="fc bfc" id="L391" title="All 4 branches covered.">		while (weightType == String.class &amp;&amp; typeIt.hasNext()) {</span>
+<span class="fc" id="L392">			Class&lt;?&gt; type = typeIt.next();</span>
+<span class="fc bfc" id="L393" title="All 2 branches covered.">			if (type != String.class)</span>
+<span class="fc" id="L394">				weightType = Object.class;</span>
+<span class="fc" id="L395">		}</span>
+<span class="fc" id="L396">		return weightType;</span>
 	}
 
 	private V vertex(Object v) {
 		try {
-<span class="fc" id="L407">			return vTypeBoxed.cast(v);</span>
-<span class="fc" id="L408">		} catch (ClassCastException e) {</span>
-<span class="fc" id="L409">			throw new ClassCastException(&quot;expected vertex type &quot; + vType + &quot; but got &quot; + v.getClass());</span>
+<span class="fc" id="L401">			return vTypeBoxed.cast(v);</span>
+<span class="fc" id="L402">		} catch (ClassCastException e) {</span>
+<span class="fc" id="L403">			throw new ClassCastException(&quot;expected vertex type &quot; + vType + &quot; but got &quot; + v.getClass());</span>
 		}
 	}
 
 	private E edge(Object e) {
 		try {
-<span class="fc" id="L415">			return eTypeBoxed.cast(e);</span>
-<span class="fc" id="L416">		} catch (ClassCastException ex) {</span>
-<span class="fc" id="L417">			throw new ClassCastException(&quot;expected edge type &quot; + eType + &quot; but got &quot; + e.getClass());</span>
+<span class="fc" id="L409">			return eTypeBoxed.cast(e);</span>
+<span class="fc" id="L410">		} catch (ClassCastException ex) {</span>
+<span class="fc" id="L411">			throw new ClassCastException(&quot;expected edge type &quot; + eType + &quot; but got &quot; + e.getClass());</span>
 		}
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;T&gt; Class&lt;T&gt; boxedType(Class&lt;T&gt; type) {
-<span class="fc bfc" id="L423" title="All 2 branches covered.">		if (type == int.class)</span>
-<span class="fc" id="L424">			return (Class&lt;T&gt;) Integer.class;</span>
-<span class="fc bfc" id="L425" title="All 2 branches covered.">		if (type == double.class)</span>
-<span class="fc" id="L426">			return (Class&lt;T&gt;) Double.class;</span>
-<span class="fc" id="L427">		return type;</span>
+<span class="fc bfc" id="L417" title="All 2 branches covered.">		if (type == int.class)</span>
+<span class="fc" id="L418">			return (Class&lt;T&gt;) Integer.class;</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">		if (type == double.class)</span>
+<span class="fc" id="L420">			return (Class&lt;T&gt;) Double.class;</span>
+<span class="fc" id="L421">		return type;</span>
 	}
 
 	private static List&lt;Pair&lt;String, Object&gt;&gt; parseHierarchy(CharReader reader) throws IOException {
-<span class="fc" id="L431">		StringBuilder strBuilder = new StringBuilder();</span>
-<span class="fc" id="L432">		List&lt;Pair&lt;String, Object&gt;&gt; roots = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L433">		Stack&lt;Pair&lt;String, Object&gt;&gt; stack = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L425">		StringBuilder strBuilder = new StringBuilder();</span>
+<span class="fc" id="L426">		List&lt;Pair&lt;String, Object&gt;&gt; roots = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L427">		Stack&lt;Pair&lt;String, Object&gt;&gt; stack = new ObjectArrayList&lt;&gt;();</span>
 		mainLoop: for (;;) {
-<span class="fc" id="L435">			Pair&lt;String, Object&gt; node = new ObjectObjectMutablePair&lt;&gt;(null, null);</span>
-<span class="fc bfc" id="L436" title="All 2 branches covered.">			if (stack.isEmpty()) {</span>
-<span class="fc" id="L437">				roots.add(node);</span>
+<span class="fc" id="L429">			Pair&lt;String, Object&gt; node = new ObjectObjectMutablePair&lt;&gt;(null, null);</span>
+<span class="fc bfc" id="L430" title="All 2 branches covered.">			if (stack.isEmpty()) {</span>
+<span class="fc" id="L431">				roots.add(node);</span>
 			} else {
-<span class="fc" id="L439">				children(stack.top()).add(node);</span>
+<span class="fc" id="L433">				children(stack.top()).add(node);</span>
 			}
 
 			/* parse key */
-<span class="fc" id="L443">			StringBuilder key = strBuilder;</span>
-<span class="fc bfc" id="L444" title="All 2 branches covered.">			if (!reader.appendIf(Gml::isKeyCharPrefix, key))</span>
-<span class="fc" id="L445">				throw new IllegalArgumentException(&quot;invalid key&quot;);</span>
-<span class="fc bfc" id="L446" title="All 2 branches covered.">			while (reader.appendIf(Gml::isKeyChar, key));</span>
+<span class="fc" id="L437">			StringBuilder key = strBuilder;</span>
+<span class="fc bfc" id="L438" title="All 2 branches covered.">			if (!reader.appendIf(Gml::isKeyCharPrefix, key))</span>
+<span class="fc" id="L439">				throw new IllegalArgumentException(&quot;invalid key&quot;);</span>
+<span class="fc bfc" id="L440" title="All 2 branches covered.">			while (reader.appendIf(Gml::isKeyChar, key));</span>
 
-<span class="fc" id="L448">			node.first(key.toString());</span>
-<span class="fc" id="L449">			key.setLength(0);</span>
+<span class="fc" id="L442">			node.first(key.toString());</span>
+<span class="fc" id="L443">			key.setLength(0);</span>
 
-<span class="fc" id="L451">			readWhitespace(reader, true);</span>
+<span class="fc" id="L445">			readWhitespace(reader, true);</span>
 
-<span class="fc" id="L453">			char c = reader.getChar(() -&gt; &quot;no value of key '&quot; + key + &quot;'&quot;);</span>
-<span class="fc bfc" id="L454" title="All 2 branches covered.">			if (c == '&quot;') { /* string */</span>
-<span class="fc" id="L455">				reader.advance();</span>
+<span class="fc" id="L447">			char c = reader.getChar(() -&gt; &quot;no value of key '&quot; + key + &quot;'&quot;);</span>
+<span class="fc bfc" id="L448" title="All 2 branches covered.">			if (c == '&quot;') { /* string */</span>
+<span class="fc" id="L449">				reader.advance();</span>
 
-<span class="fc" id="L457">				StringBuilder strVal = strBuilder;</span>
+<span class="fc" id="L451">				StringBuilder strVal = strBuilder;</span>
 				for (;;) {
-<span class="fc" id="L459">					c = reader.getCharAndAdvance(&quot;string value without terminating character&quot;);</span>
-<span class="fc bfc" id="L460" title="All 2 branches covered.">					if (c == '&quot;')</span>
-<span class="fc" id="L461">						break;</span>
-<span class="fc" id="L462">					strVal.append(c);</span>
+<span class="fc" id="L453">					c = reader.getCharAndAdvance(&quot;string value without terminating character&quot;);</span>
+<span class="fc bfc" id="L454" title="All 2 branches covered.">					if (c == '&quot;')</span>
+<span class="fc" id="L455">						break;</span>
+<span class="fc" id="L456">					strVal.append(c);</span>
 				}
-<span class="fc" id="L464">				node.second(strVal.toString());</span>
-<span class="fc" id="L465">				strVal.setLength(0);</span>
+<span class="fc" id="L458">				node.second(strVal.toString());</span>
+<span class="fc" id="L459">				strVal.setLength(0);</span>
 
-<span class="fc bfc" id="L467" title="All 2 branches covered.">			} else if (c == '[') { /* list */</span>
-<span class="fc" id="L468">				reader.advance();</span>
-<span class="fc" id="L469">				node.second(new ArrayList&lt;&gt;());</span>
-<span class="fc" id="L470">				stack.push(node);</span>
-<span class="fc" id="L471">				readWhitespace(reader, false);</span>
-<span class="fc" id="L472">				continue;</span>
+<span class="fc bfc" id="L461" title="All 2 branches covered.">			} else if (c == '[') { /* list */</span>
+<span class="fc" id="L462">				reader.advance();</span>
+<span class="fc" id="L463">				node.second(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L464">				stack.push(node);</span>
+<span class="fc" id="L465">				readWhitespace(reader, false);</span>
+<span class="fc" id="L466">				continue;</span>
 
 			} else { /* number */
-<span class="fc" id="L475">				StringBuilder num = strBuilder;</span>
+<span class="fc" id="L469">				StringBuilder num = strBuilder;</span>
 
 				/* read all digits */
-<span class="fc" id="L478">				reader.appendIf(Gml::isNumSign, num);</span>
-<span class="fc bfc" id="L479" title="All 2 branches covered.">				while (reader.appendIf(Gml::isDigit, num));</span>
+<span class="fc" id="L472">				reader.appendIf(Gml::isNumSign, num);</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">				while (reader.appendIf(Gml::isDigit, num));</span>
 
 				/* floating number */
-<span class="fc bfc" id="L482" title="All 4 branches covered.">				if (reader.appendIf(ch -&gt; ch == '.', num)) {</span>
+<span class="fc bfc" id="L476" title="All 4 branches covered.">				if (reader.appendIf(ch -&gt; ch == '.', num)) {</span>
 
 					/* read all digits after the period */
-<span class="fc bfc" id="L485" title="All 2 branches covered.">					while (reader.appendIf(Gml::isDigit, num));</span>
+<span class="fc bfc" id="L479" title="All 2 branches covered.">					while (reader.appendIf(Gml::isDigit, num));</span>
 
 					/* scientific format */
-<span class="fc bfc" id="L488" title="All 4 branches covered.">					if (reader.appendIf(ch -&gt; ch == 'E', num)) {</span>
+<span class="fc bfc" id="L482" title="All 4 branches covered.">					if (reader.appendIf(ch -&gt; ch == 'E', num)) {</span>
 
 						/* read all digits of exponent */
-<span class="fc bfc" id="L491" title="All 2 branches covered.">						if (!reader.appendIf(Gml::isNumSign, num))</span>
-<span class="fc" id="L492">							throw new IllegalArgumentException(&quot;expected a sign in float num exponent&quot;);</span>
-<span class="fc bfc" id="L493" title="All 2 branches covered.">						while (reader.appendIf(Gml::isDigit, num));</span>
+<span class="fc bfc" id="L485" title="All 2 branches covered.">						if (!reader.appendIf(Gml::isNumSign, num))</span>
+<span class="fc" id="L486">							throw new IllegalArgumentException(&quot;expected a sign in float num exponent&quot;);</span>
+<span class="fc bfc" id="L487" title="All 2 branches covered.">						while (reader.appendIf(Gml::isDigit, num));</span>
 					}
-<span class="fc" id="L495">					node.second(Double.valueOf(num.toString()));</span>
+<span class="fc" id="L489">					node.second(Double.valueOf(num.toString()));</span>
 
 				} else {
 					/* integer */
-<span class="fc" id="L499">					node.second(Integer.valueOf(num.toString()));</span>
+<span class="fc" id="L493">					node.second(Integer.valueOf(num.toString()));</span>
 				}
 
-<span class="fc" id="L502">				num.setLength(0);</span>
+<span class="fc" id="L496">				num.setLength(0);</span>
 			}
 
-<span class="fc" id="L505">			boolean hadWhitespace = readWhitespace(reader, false);</span>
-<span class="fc bfc" id="L506" title="All 2 branches covered.">			if (!reader.hasChar())</span>
-<span class="fc" id="L507">				break mainLoop;</span>
-<span class="fc bfc" id="L508" title="All 4 branches covered.">			if (!hadWhitespace &amp;&amp; reader.getChar() != ']')</span>
-<span class="fc" id="L509">				throw new IllegalArgumentException(&quot;expected ']&quot;);</span>
+<span class="fc" id="L499">			boolean hadWhitespace = readWhitespace(reader, false);</span>
+<span class="fc bfc" id="L500" title="All 2 branches covered.">			if (!reader.hasChar())</span>
+<span class="fc" id="L501">				break mainLoop;</span>
+<span class="fc bfc" id="L502" title="All 4 branches covered.">			if (!hadWhitespace &amp;&amp; reader.getChar() != ']')</span>
+<span class="fc" id="L503">				throw new IllegalArgumentException(&quot;expected ']&quot;);</span>
 			for (;;) {
-<span class="fc bfc" id="L511" title="All 2 branches covered.">				if (!reader.hasChar())</span>
-<span class="fc" id="L512">					break mainLoop;</span>
-<span class="fc bfc" id="L513" title="All 2 branches covered.">				if (reader.getChar() == ']') {</span>
-<span class="fc" id="L514">					reader.advance();</span>
-<span class="fc" id="L515">					readWhitespace(reader, false);</span>
-<span class="fc bfc" id="L516" title="All 2 branches covered.">					if (stack.isEmpty())</span>
-<span class="fc" id="L517">						throw new IllegalArgumentException(&quot;']' without list in scope&quot;);</span>
-<span class="fc" id="L518">					stack.pop();</span>
+<span class="fc bfc" id="L505" title="All 2 branches covered.">				if (!reader.hasChar())</span>
+<span class="fc" id="L506">					break mainLoop;</span>
+<span class="fc bfc" id="L507" title="All 2 branches covered.">				if (reader.getChar() == ']') {</span>
+<span class="fc" id="L508">					reader.advance();</span>
+<span class="fc" id="L509">					readWhitespace(reader, false);</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">					if (stack.isEmpty())</span>
+<span class="fc" id="L511">						throw new IllegalArgumentException(&quot;']' without list in scope&quot;);</span>
+<span class="fc" id="L512">					stack.pop();</span>
 				} else {
 					break;
 				}
 			}
-<span class="fc" id="L523">		}</span>
-<span class="fc bfc" id="L524" title="All 2 branches covered.">		if (!stack.isEmpty())</span>
-<span class="fc" id="L525">			throw new IllegalArgumentException(&quot;lists without termination&quot;);</span>
+<span class="fc" id="L517">		}</span>
+<span class="fc bfc" id="L518" title="All 2 branches covered.">		if (!stack.isEmpty())</span>
+<span class="fc" id="L519">			throw new IllegalArgumentException(&quot;lists without termination&quot;);</span>
 
 		/* remove nodes with 'comment' key */
-<span class="fc" id="L528">		roots.removeIf(n -&gt; n.first().equals(&quot;comment&quot;));</span>
-<span class="fc" id="L529">		roots.forEach(stack::push);</span>
-<span class="fc bfc" id="L530" title="All 2 branches covered.">		while (!stack.isEmpty()) {</span>
-<span class="fc" id="L531">			Pair&lt;String, Object&gt; node = stack.pop();</span>
-<span class="fc bfc" id="L532" title="All 2 branches covered.">			if (hasChildren(node)) {</span>
-<span class="fc" id="L533">				children(node).removeIf(n -&gt; n.first().equals(&quot;comment&quot;));</span>
-<span class="fc" id="L534">				children(node).forEach(stack::push);</span>
+<span class="fc" id="L522">		roots.removeIf(n -&gt; n.first().equals(&quot;comment&quot;));</span>
+<span class="fc" id="L523">		roots.forEach(stack::push);</span>
+<span class="fc bfc" id="L524" title="All 2 branches covered.">		while (!stack.isEmpty()) {</span>
+<span class="fc" id="L525">			Pair&lt;String, Object&gt; node = stack.pop();</span>
+<span class="fc bfc" id="L526" title="All 2 branches covered.">			if (hasChildren(node)) {</span>
+<span class="fc" id="L527">				children(node).removeIf(n -&gt; n.first().equals(&quot;comment&quot;));</span>
+<span class="fc" id="L528">				children(node).forEach(stack::push);</span>
 			}
-<span class="fc" id="L536">		}</span>
+<span class="fc" id="L530">		}</span>
 
-<span class="fc" id="L538">		return roots;</span>
+<span class="fc" id="L532">		return roots;</span>
 	}
 
 	private static boolean readWhitespace(CharReader reader, boolean required) throws IOException {
-<span class="fc" id="L542">		int count = 0;</span>
+<span class="fc" id="L536">		int count = 0;</span>
 		for (;;) {
-<span class="fc bfc" id="L544" title="All 2 branches covered.">			if (!reader.hasChar())</span>
-<span class="fc" id="L545">				break;</span>
-<span class="fc" id="L546">			char c = reader.getChar();</span>
-<span class="fc bfc" id="L547" title="All 2 branches covered.">			if (!Character.isWhitespace(c))</span>
-<span class="fc" id="L548">				break;</span>
-<span class="fc" id="L549">			reader.advance();</span>
-<span class="fc" id="L550">			count++;</span>
-<span class="fc" id="L551">		}</span>
-<span class="fc bfc" id="L552" title="All 4 branches covered.">		if (required &amp;&amp; count == 0)</span>
-<span class="fc" id="L553">			throw new IllegalArgumentException(&quot;expected whitespace&quot;);</span>
-<span class="fc bfc" id="L554" title="All 2 branches covered.">		return count &gt; 0;</span>
+<span class="fc bfc" id="L538" title="All 2 branches covered.">			if (!reader.hasChar())</span>
+<span class="fc" id="L539">				break;</span>
+<span class="fc" id="L540">			char c = reader.getChar();</span>
+<span class="fc bfc" id="L541" title="All 2 branches covered.">			if (!Character.isWhitespace(c))</span>
+<span class="fc" id="L542">				break;</span>
+<span class="fc" id="L543">			reader.advance();</span>
+<span class="fc" id="L544">			count++;</span>
+<span class="fc" id="L545">		}</span>
+<span class="fc bfc" id="L546" title="All 4 branches covered.">		if (required &amp;&amp; count == 0)</span>
+<span class="fc" id="L547">			throw new IllegalArgumentException(&quot;expected whitespace&quot;);</span>
+<span class="fc bfc" id="L548" title="All 2 branches covered.">		return count &gt; 0;</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static List&lt;Pair&lt;String, Object&gt;&gt; children(Pair&lt;String, Object&gt; parent) {
-<span class="fc bfc" id="L559" title="All 2 branches covered.">		if (!hasChildren(parent))</span>
-<span class="fc" id="L560">			throw new IllegalArgumentException(&quot;node doesn't have a list as value&quot;);</span>
-<span class="fc" id="L561">		return (List&lt;Pair&lt;String, Object&gt;&gt;) parent.second();</span>
+<span class="fc bfc" id="L553" title="All 2 branches covered.">		if (!hasChildren(parent))</span>
+<span class="fc" id="L554">			throw new IllegalArgumentException(&quot;node doesn't have a list as value&quot;);</span>
+<span class="fc" id="L555">		return (List&lt;Pair&lt;String, Object&gt;&gt;) parent.second();</span>
 	}
 
 	static boolean hasChildren(Pair&lt;String, Object&gt; parent) {
-<span class="fc" id="L565">		return parent.second() instanceof List&lt;?&gt;;</span>
+<span class="fc" id="L559">		return parent.second() instanceof List&lt;?&gt;;</span>
 	}
 
 	static void searchChildren(Pair&lt;String, Object&gt; parent, KeySearcher... searchers) {
-<span class="fc bfc" id="L569" title="All 2 branches covered.">		for (Pair&lt;String, Object&gt; child : children(parent))</span>
-<span class="fc bfc" id="L570" title="All 2 branches covered.">			for (KeySearcher searcher : searchers)</span>
-<span class="fc bfc" id="L571" title="All 2 branches covered.">				if (searcher.accept(child))</span>
-<span class="fc" id="L572">					break;</span>
-<span class="fc" id="L573">	}</span>
+<span class="fc bfc" id="L563" title="All 2 branches covered.">		for (Pair&lt;String, Object&gt; child : children(parent))</span>
+<span class="fc bfc" id="L564" title="All 2 branches covered.">			for (KeySearcher searcher : searchers)</span>
+<span class="fc bfc" id="L565" title="All 2 branches covered.">				if (searcher.accept(child))</span>
+<span class="fc" id="L566">					break;</span>
+<span class="fc" id="L567">	}</span>
 
 	static void checkNoNestedLists(Pair&lt;String, Object&gt; parent) {
-<span class="fc bfc" id="L576" title="All 2 branches covered.">		for (Pair&lt;String, Object&gt; child : children(parent))</span>
-<span class="fc bfc" id="L577" title="All 2 branches covered.">			if (hasChildren(child))</span>
-<span class="fc" id="L578">				throw new IllegalArgumentException(&quot;unexpected nested list&quot;);</span>
-<span class="fc" id="L579">	}</span>
+<span class="fc bfc" id="L570" title="All 2 branches covered.">		for (Pair&lt;String, Object&gt; child : children(parent))</span>
+<span class="fc bfc" id="L571" title="All 2 branches covered.">			if (hasChildren(child))</span>
+<span class="fc" id="L572">				throw new IllegalArgumentException(&quot;unexpected nested list&quot;);</span>
+<span class="fc" id="L573">	}</span>
 
 	private static class CharReader {
 		private final BufferedReader reader;
@@ -584,75 +578,75 @@ import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
 		private int linePos;
 		private int nextChar;
 
-<span class="fc" id="L587">		CharReader(BufferedReader reader) throws IOException {</span>
-<span class="fc" id="L588">			this.reader = Objects.requireNonNull(reader);</span>
-<span class="fc" id="L589">			nextLine();</span>
-<span class="fc" id="L590">		}</span>
+<span class="fc" id="L581">		CharReader(BufferedReader reader) throws IOException {</span>
+<span class="fc" id="L582">			this.reader = Objects.requireNonNull(reader);</span>
+<span class="fc" id="L583">			nextLine();</span>
+<span class="fc" id="L584">		}</span>
 
 		char getChar() {
-<span class="fc" id="L593">			return getChar(&quot;&quot;);</span>
+<span class="fc" id="L587">			return getChar(&quot;&quot;);</span>
 		}
 
 		char getChar(String errMsgOnEOF) {
-<span class="fc" id="L597">			return getChar(() -&gt; errMsgOnEOF);</span>
+<span class="fc" id="L591">			return getChar(() -&gt; errMsgOnEOF);</span>
 		}
 
 		char getChar(Supplier&lt;String&gt; errMsgOnEOF) {
-<span class="fc bfc" id="L601" title="All 2 branches covered.">			if (!hasChar())</span>
-<span class="fc" id="L602">				throw new IllegalArgumentException(errMsgOnEOF.get());</span>
-<span class="fc" id="L603">			return (char) nextChar;</span>
+<span class="fc bfc" id="L595" title="All 2 branches covered.">			if (!hasChar())</span>
+<span class="fc" id="L596">				throw new IllegalArgumentException(errMsgOnEOF.get());</span>
+<span class="fc" id="L597">			return (char) nextChar;</span>
 		}
 
 		boolean hasChar() {
-<span class="fc bfc" id="L607" title="All 2 branches covered.">			return nextChar != -1;</span>
+<span class="fc bfc" id="L601" title="All 2 branches covered.">			return nextChar != -1;</span>
 		}
 
 		void advance() throws IOException {
-<span class="fc bfc" id="L611" title="All 2 branches covered.">			if (linePos &lt;= line.length()) {</span>
-<span class="fc bfc" id="L612" title="All 2 branches covered.">				if (linePos &lt; line.length()) {</span>
-<span class="fc" id="L613">					nextChar = line.charAt(linePos);</span>
+<span class="fc bfc" id="L605" title="All 2 branches covered.">			if (linePos &lt;= line.length()) {</span>
+<span class="fc bfc" id="L606" title="All 2 branches covered.">				if (linePos &lt; line.length()) {</span>
+<span class="fc" id="L607">					nextChar = line.charAt(linePos);</span>
 				} else {
-<span class="fc" id="L615">					nextChar = '\n';</span>
+<span class="fc" id="L609">					nextChar = '\n';</span>
 				}
-<span class="fc" id="L617">				linePos++;</span>
+<span class="fc" id="L611">				linePos++;</span>
 
 			} else {
-<span class="fc" id="L620">				nextLine();</span>
+<span class="fc" id="L614">				nextLine();</span>
 			}
-<span class="fc" id="L622">		}</span>
+<span class="fc" id="L616">		}</span>
 
 		private void nextLine() throws IOException {
 			/* ignore lines that start with '#' */
 			for (;;) {
-<span class="fc" id="L627">				line = reader.readLine();</span>
-<span class="fc bfc" id="L628" title="All 2 branches covered.">				if (line == null) {</span>
-<span class="fc" id="L629">					nextChar = -1;</span>
-<span class="fc" id="L630">					return;</span>
+<span class="fc" id="L621">				line = reader.readLine();</span>
+<span class="fc bfc" id="L622" title="All 2 branches covered.">				if (line == null) {</span>
+<span class="fc" id="L623">					nextChar = -1;</span>
+<span class="fc" id="L624">					return;</span>
 				}
-<span class="fc" id="L632">				char firstChar = ' ';</span>
-<span class="pc bpc" id="L633" title="1 of 4 branches missed.">				for (int i = 0; i &lt; line.length() &amp;&amp; Character.isWhitespace(firstChar = line.charAt(i)); i++);</span>
-<span class="fc bfc" id="L634" title="All 2 branches covered.">				if (firstChar != '#')</span>
-<span class="fc" id="L635">					break;</span>
-<span class="fc" id="L636">			}</span>
+<span class="fc" id="L626">				char firstChar = ' ';</span>
+<span class="pc bpc" id="L627" title="1 of 4 branches missed.">				for (int i = 0; i &lt; line.length() &amp;&amp; Character.isWhitespace(firstChar = line.charAt(i)); i++);</span>
+<span class="fc bfc" id="L628" title="All 2 branches covered.">				if (firstChar != '#')</span>
+<span class="fc" id="L629">					break;</span>
+<span class="fc" id="L630">			}</span>
 
-<span class="fc" id="L638">			linePos = 0;</span>
-<span class="fc" id="L639">			advance();</span>
-<span class="fc" id="L640">		}</span>
+<span class="fc" id="L632">			linePos = 0;</span>
+<span class="fc" id="L633">			advance();</span>
+<span class="fc" id="L634">		}</span>
 
 		boolean appendIf(CharPredicate pred, StringBuilder sb) throws IOException {
-<span class="pc bpc" id="L643" title="1 of 4 branches missed.">			if (hasChar() &amp;&amp; pred.test((char) nextChar)) {</span>
-<span class="fc" id="L644">				sb.append(getChar());</span>
-<span class="fc" id="L645">				advance();</span>
-<span class="fc" id="L646">				return true;</span>
+<span class="pc bpc" id="L637" title="1 of 4 branches missed.">			if (hasChar() &amp;&amp; pred.test((char) nextChar)) {</span>
+<span class="fc" id="L638">				sb.append(getChar());</span>
+<span class="fc" id="L639">				advance();</span>
+<span class="fc" id="L640">				return true;</span>
 			} else {
-<span class="fc" id="L648">				return false;</span>
+<span class="fc" id="L642">				return false;</span>
 			}
 		}
 
 		char getCharAndAdvance(String errMsgOnEOF) throws IOException {
-<span class="fc" id="L653">			char c = getChar(errMsgOnEOF);</span>
-<span class="fc" id="L654">			advance();</span>
-<span class="fc" id="L655">			return c;</span>
+<span class="fc" id="L647">			char c = getChar(errMsgOnEOF);</span>
+<span class="fc" id="L648">			advance();</span>
+<span class="fc" id="L649">			return c;</span>
 		}
 
 		// char getCharAndAdvance() throws IOException {

@@ -920,7 +920,7 @@ JGAlgo - Core,com.jgalgo.alg,BiConnectedComponentsAlgoHopcroftTarjan,53,440,12,4
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSource.IResult,0,10,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,BiConnectedComponentsAlgoHopcroftTarjan.Res,75,753,18,92,4,145,14,54,2,11
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Abstract.Worker,443,1722,84,152,20,359,50,103,6,29
-JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Worker,811,4361,243,557,20,1063,131,297,0,28
+JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Worker,822,4350,245,555,22,1061,133,295,0,28
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOfflineUnionFind.new IntIterator() {...},0,51,0,2,0,5,0,4,0,3
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Blossom.2.new Iterator() {...},16,106,5,9,1,24,3,9,0,5
 JGAlgo - Core,com.jgalgo.alg,TreePathMaximaUtils.AbstractImpl,0,46,1,3,0,11,1,3,0,2

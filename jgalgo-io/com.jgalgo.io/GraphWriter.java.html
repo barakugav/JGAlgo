@@ -35,38 +35,41 @@ public interface GraphWriter&lt;V, E&gt; {
 	/**
 	 * Write a graph to an I/O writer.
 	 *
-	 * @param graph  a graph
-	 * @param writer an I/O writer to which the graph description will be written to
+	 * @param  graph                a graph
+	 * @param  writer               an I/O writer to which the graph description will be written to
+	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	void writeGraph(Graph&lt;V, E&gt; graph, Writer writer);
 
 	/**
 	 * Write a graph to a file.
 	 *
-	 * @param graph a graph
-	 * @param file  a file descriptor to which the graph will be written to
+	 * @param  graph                a graph
+	 * @param  file                 a file descriptor to which the graph will be written to
+	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	default void writeGraph(Graph&lt;V, E&gt; graph, File file) {
-<span class="nc" id="L50">		try (Writer writer = new FileWriter(file, GraphFormats.JGALGO_CHARSET)) {</span>
-<span class="nc" id="L51">			writeGraph(graph, writer);</span>
-<span class="nc" id="L52">		} catch (IOException e) {</span>
-<span class="nc" id="L53">			throw new UncheckedIOException(e);</span>
-<span class="nc" id="L54">		}</span>
-<span class="nc" id="L55">	}</span>
+<span class="nc" id="L52">		try (Writer writer = new FileWriter(file, GraphFormats.JGALGO_CHARSET)) {</span>
+<span class="nc" id="L53">			writeGraph(graph, writer);</span>
+<span class="nc" id="L54">		} catch (IOException e) {</span>
+<span class="nc" id="L55">			throw new UncheckedIOException(e);</span>
+<span class="nc" id="L56">		}</span>
+<span class="nc" id="L57">	}</span>
 
 	/**
 	 * Write a graph to a file, given its path.
 	 *
-	 * @param graph a graph
-	 * @param path  a path to a file to which the graph will be written to
+	 * @param  graph                a graph
+	 * @param  path                 a path to a file to which the graph will be written to
+	 * @throws UncheckedIOException if an I/O error occurs
 	 */
 	default void writeGraph(Graph&lt;V, E&gt; graph, String path) {
-<span class="nc" id="L64">		try (Writer writer = new FileWriter(path, GraphFormats.JGALGO_CHARSET)) {</span>
-<span class="nc" id="L65">			writeGraph(graph, writer);</span>
-<span class="nc" id="L66">		} catch (IOException e) {</span>
-<span class="nc" id="L67">			throw new UncheckedIOException(e);</span>
-<span class="nc" id="L68">		}</span>
-<span class="nc" id="L69">	}</span>
+<span class="nc" id="L67">		try (Writer writer = new FileWriter(path, GraphFormats.JGALGO_CHARSET)) {</span>
+<span class="nc" id="L68">			writeGraph(graph, writer);</span>
+<span class="nc" id="L69">		} catch (IOException e) {</span>
+<span class="nc" id="L70">			throw new UncheckedIOException(e);</span>
+<span class="nc" id="L71">		}</span>
+<span class="nc" id="L72">	}</span>
 
 	// /**
 	// * Get new {@link GraphWriter} instance by a format name.

@@ -17,7 +17,6 @@ package com.jgalgo.io;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.io.Writer;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Weights;
@@ -49,7 +48,7 @@ import com.jgalgo.graph.WeightsShort;
  * @see    LedaGraphReader
  * @author Barak Ugav
  */
-<span class="fc" id="L52">public class LedaGraphWriter implements GraphWriter&lt;Integer, Integer&gt; {</span>
+<span class="fc" id="L51">public class LedaGraphWriter extends GraphIoUtils.AbstractGraphWriter&lt;Integer, Integer&gt; {</span>
 
 	private String verticesWeightsKey;
 	private String edgesWeightsKey;
@@ -57,7 +56,7 @@ import com.jgalgo.graph.WeightsShort;
 	/**
 	 * Create a new writer.
 	 */
-<span class="fc" id="L60">	public LedaGraphWriter() {}</span>
+<span class="fc" id="L59">	public LedaGraphWriter() {}</span>
 
 	/**
 	 * Set the key of the vertices weights to write.
@@ -70,8 +69,8 @@ import com.jgalgo.graph.WeightsShort;
 	 * @param verticesWeightsKey the key of the vertices weights to write, or {@code null} to write no vertices weights
 	 */
 	public void setVerticesWeightsKey(String verticesWeightsKey) {
-<span class="fc" id="L73">		this.verticesWeightsKey = verticesWeightsKey;</span>
-<span class="fc" id="L74">	}</span>
+<span class="fc" id="L72">		this.verticesWeightsKey = verticesWeightsKey;</span>
+<span class="fc" id="L73">	}</span>
 
 	/**
 	 * Set the key of the edges weights to write.
@@ -84,95 +83,91 @@ import com.jgalgo.graph.WeightsShort;
 	 * @param edgesWeightsKey the key of the edges weights to write, or {@code null} to write no edges weights
 	 */
 	public void setEdgesWeightsKey(String edgesWeightsKey) {
-<span class="fc" id="L87">		this.edgesWeightsKey = edgesWeightsKey;</span>
-<span class="fc" id="L88">	}</span>
+<span class="fc" id="L86">		this.edgesWeightsKey = edgesWeightsKey;</span>
+<span class="fc" id="L87">	}</span>
 
 	@Override
-	public void writeGraph(Graph&lt;Integer, Integer&gt; graph, Writer writer) {
-<span class="fc" id="L92">		final int n = graph.vertices().size();</span>
-<span class="fc" id="L93">		final int m = graph.edges().size();</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">		if (!range(1, n + 1).equals(graph.vertices()))</span>
-<span class="fc" id="L95">			throw new IllegalArgumentException(&quot;the LEDA format support graphs with vertices 1..n only&quot;);</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (!range(1, m + 1).equals(graph.edges()))</span>
-<span class="fc" id="L97">			throw new IllegalArgumentException(&quot;the LEDA format support graphs with edges 1..m only&quot;);</span>
+	public void writeGraphImpl(Graph&lt;Integer, Integer&gt; graph, Writer writer) throws IOException {
+<span class="fc" id="L91">		final int n = graph.vertices().size();</span>
+<span class="fc" id="L92">		final int m = graph.edges().size();</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		if (!range(1, n + 1).equals(graph.vertices()))</span>
+<span class="fc" id="L94">			throw new IllegalArgumentException(&quot;the LEDA format support graphs with vertices 1..n only&quot;);</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		if (!range(1, m + 1).equals(graph.edges()))</span>
+<span class="fc" id="L96">			throw new IllegalArgumentException(&quot;the LEDA format support graphs with edges 1..m only&quot;);</span>
 
-<span class="fc" id="L99">		Weights&lt;Integer, ?&gt; verticesWeights = null;</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">		if (verticesWeightsKey != null) {</span>
-<span class="fc" id="L101">			verticesWeights = graph.getVerticesWeights(verticesWeightsKey);</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">			if (verticesWeights == null)</span>
-<span class="fc" id="L103">				throw new IllegalArgumentException(&quot;vertices weights key '&quot; + verticesWeightsKey + &quot;' not found&quot;);</span>
+<span class="fc" id="L98">		Weights&lt;Integer, ?&gt; verticesWeights = null;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		if (verticesWeightsKey != null) {</span>
+<span class="fc" id="L100">			verticesWeights = graph.getVerticesWeights(verticesWeightsKey);</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">			if (verticesWeights == null)</span>
+<span class="fc" id="L102">				throw new IllegalArgumentException(&quot;vertices weights key '&quot; + verticesWeightsKey + &quot;' not found&quot;);</span>
 		}
-<span class="fc" id="L105">		Weights&lt;Integer, ?&gt; edgesWeights = null;</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">		if (edgesWeightsKey != null) {</span>
-<span class="fc" id="L107">			edgesWeights = graph.getEdgesWeights(edgesWeightsKey);</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (edgesWeights == null)</span>
-<span class="fc" id="L109">				throw new IllegalArgumentException(&quot;edges weights key '&quot; + edgesWeightsKey + &quot;' not found&quot;);</span>
+<span class="fc" id="L104">		Weights&lt;Integer, ?&gt; edgesWeights = null;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">		if (edgesWeightsKey != null) {</span>
+<span class="fc" id="L106">			edgesWeights = graph.getEdgesWeights(edgesWeightsKey);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">			if (edgesWeights == null)</span>
+<span class="fc" id="L108">				throw new IllegalArgumentException(&quot;edges weights key '&quot; + edgesWeightsKey + &quot;' not found&quot;);</span>
 		}
 
-<span class="fc" id="L112">		Writer2 out = new Writer2(writer);</span>
-		try {
-<span class="fc" id="L114">			out.append(&quot;# header section&quot;).appendNewline();</span>
-<span class="fc" id="L115">			out.append(&quot;LEDA.GRAPH&quot;).appendNewline();</span>
-<span class="fc" id="L116">			out.append(weightsToLedaType(verticesWeights)).appendNewline();</span>
-<span class="fc" id="L117">			out.append(weightsToLedaType(edgesWeights)).appendNewline();</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">			out.append(graph.isDirected() ? &quot;-1&quot; : &quot;-2&quot;).appendNewline();</span>
+<span class="fc" id="L111">		Writer2 out = new Writer2(writer);</span>
+<span class="fc" id="L112">		out.append(&quot;# header section&quot;).appendNewline();</span>
+<span class="fc" id="L113">		out.append(&quot;LEDA.GRAPH&quot;).appendNewline();</span>
+<span class="fc" id="L114">		out.append(weightsToLedaType(verticesWeights)).appendNewline();</span>
+<span class="fc" id="L115">		out.append(weightsToLedaType(edgesWeights)).appendNewline();</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">		out.append(graph.isDirected() ? &quot;-1&quot; : &quot;-2&quot;).appendNewline();</span>
 
-<span class="fc" id="L120">			out.append(&quot;# section nodes/vertices&quot;).appendNewline();</span>
-<span class="fc" id="L121">			out.append(n).appendNewline();</span>
-<span class="fc bfc" id="L122" title="All 2 branches covered.">			if (verticesWeights == null) {</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">				for (int vertex = 1; vertex &lt;= n; vertex++)</span>
-<span class="fc" id="L124">					out.append(&quot;|{}|&quot;).appendNewline();</span>
+<span class="fc" id="L118">		out.append(&quot;# section nodes/vertices&quot;).appendNewline();</span>
+<span class="fc" id="L119">		out.append(n).appendNewline();</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		if (verticesWeights == null) {</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">			for (int vertex = 1; vertex &lt;= n; vertex++)</span>
+<span class="fc" id="L122">				out.append(&quot;|{}|&quot;).appendNewline();</span>
+		} else {
+<span class="fc" id="L124">			WeightsStringifier&lt;Integer&gt; weightsStringifier = WeightsStringifier.newInstance(verticesWeights);</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">			for (int v0 = 1; v0 &lt;= n; v0++) {</span>
+<span class="fc" id="L126">				Integer v = Integer.valueOf(v0);</span>
+<span class="fc" id="L127">				String weightStr = weightsStringifier.weightStr(v);</span>
+<span class="fc" id="L128">				out.append(&quot;|{&quot;).append(weightStr).append(&quot;}|&quot;).appendNewline();</span>
+			}
+		}
+
+<span class="fc" id="L132">		out.append(&quot;# section edges&quot;).appendNewline();</span>
+<span class="fc" id="L133">		out.append(m).appendNewline();</span>
+		WeightsStringifier&lt;Integer&gt; weightsStringifier =
+<span class="fc bfc" id="L135" title="All 2 branches covered.">				edgesWeights == null ? null : WeightsStringifier.newInstance(edgesWeights);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">		for (int e0 = 1; e0 &lt;= m; e0++) {</span>
+<span class="fc" id="L137">			Integer e = Integer.valueOf(e0);</span>
+<span class="fc" id="L138">			out.append(graph.edgeSource(e)).append(' ');</span>
+<span class="fc" id="L139">			out.append(graph.edgeTarget(e)).append(' ');</span>
+<span class="fc" id="L140">			out.append(/* twin edge */ '0').append(' ');</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			if (weightsStringifier == null) {</span>
+<span class="fc" id="L142">				out.append(&quot;|{}|&quot;).appendNewline();</span>
 			} else {
-<span class="fc" id="L126">				WeightsStringifier&lt;Integer&gt; weightsStringifier = WeightsStringifier.newInstance(verticesWeights);</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">				for (int v0 = 1; v0 &lt;= n; v0++) {</span>
-<span class="fc" id="L128">					Integer v = Integer.valueOf(v0);</span>
-<span class="fc" id="L129">					String weightStr = weightsStringifier.weightStr(v);</span>
-<span class="fc" id="L130">					out.append(&quot;|{&quot;).append(weightStr).append(&quot;}|&quot;).appendNewline();</span>
-				}
+<span class="fc" id="L144">				String weightStr = weightsStringifier.weightStr(e);</span>
+<span class="fc" id="L145">				out.append(&quot;|{&quot;).append(weightStr).append(&quot;}|&quot;).appendNewline();</span>
 			}
-
-<span class="fc" id="L134">			out.append(&quot;# section edges&quot;).appendNewline();</span>
-<span class="fc" id="L135">			out.append(m).appendNewline();</span>
-			WeightsStringifier&lt;Integer&gt; weightsStringifier =
-<span class="fc bfc" id="L137" title="All 2 branches covered.">					edgesWeights == null ? null : WeightsStringifier.newInstance(edgesWeights);</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">			for (int e0 = 1; e0 &lt;= m; e0++) {</span>
-<span class="fc" id="L139">				Integer e = Integer.valueOf(e0);</span>
-<span class="fc" id="L140">				out.append(graph.edgeSource(e)).append(' ');</span>
-<span class="fc" id="L141">				out.append(graph.edgeTarget(e)).append(' ');</span>
-<span class="fc" id="L142">				out.append(/* twin edge */ '0').append(' ');</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">				if (weightsStringifier == null) {</span>
-<span class="fc" id="L144">					out.append(&quot;|{}|&quot;).appendNewline();</span>
-				} else {
-<span class="fc" id="L146">					String weightStr = weightsStringifier.weightStr(e);</span>
-<span class="fc" id="L147">					out.append(&quot;|{&quot;).append(weightStr).append(&quot;}|&quot;).appendNewline();</span>
-				}
-			}
-<span class="nc" id="L150">		} catch (IOException e) {</span>
-<span class="nc" id="L151">			throw new UncheckedIOException(e);</span>
-<span class="fc" id="L152">		}</span>
-<span class="fc" id="L153">	}</span>
+		}
+<span class="fc" id="L148">	}</span>
 
 	private static String weightsToLedaType(Weights&lt;?, ?&gt; weights) {
-<span class="fc bfc" id="L156" title="All 2 branches covered.">		if (weights == null)</span>
-<span class="fc" id="L157">			return &quot;void&quot;;</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">		if (weights instanceof WeightsByte)</span>
-<span class="fc" id="L159">			return &quot;byte&quot;;</span>
-<span class="fc bfc" id="L160" title="All 2 branches covered.">		if (weights instanceof WeightsShort)</span>
-<span class="fc" id="L161">			return &quot;short&quot;;</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">		if (weights instanceof WeightsInt)</span>
-<span class="fc" id="L163">			return &quot;int&quot;;</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">		if (weights instanceof WeightsLong)</span>
-<span class="fc" id="L165">			return &quot;long&quot;;</span>
-<span class="fc bfc" id="L166" title="All 2 branches covered.">		if (weights instanceof WeightsFloat)</span>
-<span class="fc" id="L167">			return &quot;float&quot;;</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">		if (weights instanceof WeightsDouble)</span>
-<span class="fc" id="L169">			return &quot;double&quot;;</span>
-<span class="fc bfc" id="L170" title="All 2 branches covered.">		if (weights instanceof WeightsBool)</span>
-<span class="fc" id="L171">			return &quot;bool&quot;;</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">		if (weights instanceof WeightsChar)</span>
-<span class="fc" id="L173">			return &quot;char&quot;;</span>
-<span class="pc bnc" id="L174" title="All 2 branches missed.">		assert weights instanceof WeightsObj;</span>
-<span class="fc" id="L175">		return &quot;string&quot;;</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">		if (weights == null)</span>
+<span class="fc" id="L152">			return &quot;void&quot;;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">		if (weights instanceof WeightsByte)</span>
+<span class="fc" id="L154">			return &quot;byte&quot;;</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">		if (weights instanceof WeightsShort)</span>
+<span class="fc" id="L156">			return &quot;short&quot;;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">		if (weights instanceof WeightsInt)</span>
+<span class="fc" id="L158">			return &quot;int&quot;;</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">		if (weights instanceof WeightsLong)</span>
+<span class="fc" id="L160">			return &quot;long&quot;;</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">		if (weights instanceof WeightsFloat)</span>
+<span class="fc" id="L162">			return &quot;float&quot;;</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">		if (weights instanceof WeightsDouble)</span>
+<span class="fc" id="L164">			return &quot;double&quot;;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">		if (weights instanceof WeightsBool)</span>
+<span class="fc" id="L166">			return &quot;bool&quot;;</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">		if (weights instanceof WeightsChar)</span>
+<span class="fc" id="L168">			return &quot;char&quot;;</span>
+<span class="pc bnc" id="L169" title="All 2 branches missed.">		assert weights instanceof WeightsObj;</span>
+<span class="fc" id="L170">		return &quot;string&quot;;</span>
 	}
 
 }
