@@ -22,54 +22,53 @@ import java.util.Set;
 import com.jgalgo.graph.Graph;
 
 /**
- * Write a graph in 'graph6' format.
+ * Write a graph in 'digraph6' format.
  *
  * <p>
- * 'graph6' is a format for storing undirected graphs in a compact manner, using only printable ASCII characters. Files
+ * 'digraph6' is a format for storing directed graphs in a compact manner, using only printable ASCII characters. Files
  * in these format have text type and contain one line per graph. It is suitable for small graphs, or large dense
  * graphs. The format support graphs with vertices numbered 0..n-1 only, where n is the number of vertices, and edges
- * numbered 0..m-1 only, where m is the number of edges. A graph6 file contains a bit vector with {@code n (n - 1) / 2}
- * bits representing the edges of the graph. All bytes of a graph6 file are in the range 63..126, which are the
- * printable ASCII characters, therefore a bit vector is represented by a sequence of bytes in which each byte encode
- * only 6 bits.
+ * numbered 0..m-1 only, where m is the number of edges. A digraph6 file contains a bit vector with {@code n^2} bits
+ * representing the edges of the graph. All bytes of a digraph6 file are in the range 63..126, which are the printable
+ * ASCII characters, therefore a bit vector is represented by a sequence of bytes in which each byte encode only 6 bits.
  *
  * <p>
  * The format does not support specifying the ids of the edges, therefore the writer will not write them. Nevertheless,
- * its possible to write and later read the graph using the {@link Graph6GraphReader} class while keeping the edges ids:
- * if the edges in the written graph are numbered 0..m-1, and when they are iterated from {@code 0} to {@code m-1} they
- * are also ordered by the order of the bit vector, then the reader will assigned the same ids to the edges. The order
- * of the bit vector and the format details can be found
+ * its possible to write and later read the graph using the {@link Digraph6GraphReader} class while keeping the edges
+ * ids: if the edges in the written graph are numbered 0..m-1, and when they are iterated from {@code 0} to {@code m-1}
+ * they are also ordered by the order of the bit vector, then the reader will assigned the same ids to the edges. The
+ * order of the bit vector and the format details can be found
  * <a href="https://users.cecs.anu.edu.au/~bdm/data/formats.html">here</a>. This way of keeping the edges ids is
  * enforced by the writer by default, but can be disabled by calling {@link #keepEdgesIds(boolean)} with {@code false}.
  *
  * <p>
- * The 'graph6' format is efficient for dense graph, for dense graphs the {@linkplain Sparse6GraphWriter 'sparse6'
+ * The 'digraph6' format support directed graphs only, for undirected graphs the {@linkplain Graph6GraphWriter 'graph6'
  * format} should be used.
  *
  * <p>
- * Self edges and parallel edges are not supported by the format.
+ * Parallel edges are not supported by the format.
  *
  * <p>
- * File with a graph in 'graph6' format usually have the extension {@code .g6}.
+ * File with a graph in 'digraph6' format usually have the extension {@code .d6}.
  *
- * @see    Graph6GraphReader
+ * @see    Digraph6GraphReader
  * @author Barak Ugav
  */
-public class Graph6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer, Integer> {
+public class Digraph6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer, Integer> {
 
 	private boolean keepEdgesIds = true;
 
 	/**
 	 * Create a new writer.
 	 */
-	public Graph6GraphWriter() {}
+	public Digraph6GraphWriter() {}
 
 	/**
 	 * Enable or disable keeping the edges ids.
 	 *
 	 * <p>
 	 * The format does not support specifying the ids of the edges, therefore the writer will not write them.
-	 * Nevertheless, its possible to write and later read the graph using the {@link Graph6GraphReader} class while
+	 * Nevertheless, its possible to write and later read the graph using the {@link Digraph6GraphReader} class while
 	 * keeping the edges ids: if the edges in the written graph are numbered 0..m-1, and when they are iterated from
 	 * {@code 0} to {@code m-1} they are also ordered by the order of the bit vector, then the reader will assigned the
 	 * same ids to the edges. The order of the bit vector and the format details can be found
@@ -89,23 +88,23 @@ public class Graph6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer,
 
 	@Override
 	void writeGraphImpl(Graph<Integer, Integer> graph, Writer writer) throws IOException {
-		if (graph.isDirected())
-			throw new IllegalArgumentException("the graph6 format support undirected graphs only");
+		if (!graph.isDirected())
+			throw new IllegalArgumentException("the digraph6 format support undirected graphs only");
 		final int n = graph.vertices().size();
 		final int m = graph.edges().size();
 		if (!range(n).equals(graph.vertices()))
-			throw new IllegalArgumentException("the graph6 format support graphs with vertices 0..n-1 only");
+			throw new IllegalArgumentException("the digraph6 format support graphs with vertices 0..n-1 only");
 		if (keepEdgesIds && !range(m).equals(graph.edges()))
-			throw new IllegalArgumentException("the graph6 format support graphs with edges 0..m-1 only");
+			throw new IllegalArgumentException("the digraph6 format support graphs with edges 0..m-1 only");
 
 		Writer2 out = new Writer2(writer);
-		out.append(">>graph6<<");
+		out.append(">>digraph6<<&");
 
 		/* write number of vertices */
 		Graph6.writeNumberOfVertices(out, n);
 
 		/* write all edges as bytes, 6 bits each */
-		final long maxNumberOfEdges = n * ((long) n - 1) / 2;
+		final long maxNumberOfEdges = (long) n * n;
 		final long bytesToWrite = (maxNumberOfEdges + 5) / 6; /* div round up */
 
 		if (bytesToWrite > Integer.MAX_VALUE) {
@@ -113,8 +112,8 @@ public class Graph6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer,
 			 * TODO: we should be able to support this. Instead of allocating an array of all the bytes, we can write
 			 * directly to the output.
 			 */
-			throw new IllegalArgumentException("too many vertices, the graph6 format support up to 2^36 vertices, "
-					+ "but this implementation does not support more than 2^17.5");
+			throw new IllegalArgumentException("too many vertices, the digraph6 format support up to 2^36 vertices, "
+					+ "but this implementation does not support more than 2^17");
 		}
 
 		byte[] bytes = new byte[(int) bytesToWrite];
@@ -123,14 +122,7 @@ public class Graph6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer,
 		for (Integer e : edges) {
 			int u = graph.edgeSource(e).intValue();
 			int v = graph.edgeTarget(e).intValue();
-			if (u == v)
-				throw new IllegalArgumentException("self edges are not supported");
-			if (u < v) {
-				int tmp = u;
-				u = v;
-				v = tmp;
-			}
-			int edgeBit = u * (u - 1) / 2 + v;
+			int edgeBit = u * n + v;
 			int byteIdx = edgeBit / 6;
 			int bitIdx = 5 - (edgeBit % 6); /* bigendian */
 			if ((bytes[byteIdx] & (1 << bitIdx)) != 0)
@@ -138,7 +130,7 @@ public class Graph6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer,
 			if (keepEdgesIds) {
 				if (edgeBit < maxEdgeBit)
 					throw new IllegalArgumentException("edges ids must be 0,1,2,...,m-1 and ordered similar to "
-							+ "(0,1),(0,2),(1,2),(0,3),(1,3),(2,3),...,(n-2,n-1)");
+							+ "(0,0),(0,1),(0,2),...,(1,0),(1,1),(1,2),...,(n-1,n-1)");
 				maxEdgeBit = edgeBit;
 			}
 			bytes[byteIdx] |= 1 << bitIdx;

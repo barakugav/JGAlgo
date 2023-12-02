@@ -28,7 +28,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
  *
  * <p>
  * 'sparse6' is a format for storing undirected graphs in a compact manner, using only printable ASCII characters. Files
- * in these formats have text type and contain one line per graph. It is space-efficient for large sparse graphs. The
+ * in these format have text type and contain one line per graph. It is space-efficient for large sparse graphs. The
  * format support graphs with vertices numbered 0..n-1 only, where n is the number of vertices, and edges numbered
  * 0..m-1 only, where m is the number of edges. A sparse6 file contains the number of vertices, following by a list of
  * edges, encoded in bytes, each in range 63..126 which are the printable ASCII characters. Each byte encode 6 bits.
@@ -64,10 +64,10 @@ public class Sparse6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 		if (line == null)
 			throw new IllegalArgumentException("empty file");
 
-		/* optional header */
 		if (line.startsWith(":")) {
 			line = line.substring(":".length());
-		} else if (line.startsWith(">>sparse6<<:")) {
+
+		} else if (line.startsWith(">>sparse6<<:")) { /* optional header */
 			line = line.substring(">>sparse6<<:".length());
 		} else {
 			throw new IllegalArgumentException("Invalid header, expected ':' or '>>sparse6<<:'");

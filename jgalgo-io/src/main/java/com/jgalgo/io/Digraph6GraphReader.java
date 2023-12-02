@@ -20,19 +20,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
 import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IntGraphFactory;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 /**
- * Read a graph in 'graph6' format.
+ * Read a graph in 'digraph6' format.
  *
  * <p>
- * 'graph6' is a format for storing undirected graphs in a compact manner, using only printable ASCII characters. Files
+ * 'digraph6' is a format for storing directed graphs in a compact manner, using only printable ASCII characters. Files
  * in these format have text type and contain one line per graph. It is suitable for small graphs, or large dense
  * graphs. The format support graphs with vertices numbered 0..n-1 only, where n is the number of vertices, and edges
- * numbered 0..m-1 only, where m is the number of edges. A graph6 file contains a bit vector with {@code n (n - 1) / 2}
- * bits representing the edges of the graph. All bytes of a graph6 file are in the range 63..126, which are the
- * printable ASCII characters, therefore a bit vector is represented by a sequence of bytes in which each byte encode
- * only 6 bits.
+ * numbered 0..m-1 only, where m is the number of edges. A digraph6 file contains a bit vector with {@code n^2} bits
+ * representing the edges of the graph. All bytes of a digraph6 file are in the range 63..126, which are the printable
+ * ASCII characters, therefore a bit vector is represented by a sequence of bytes in which each byte encode only 6 bits.
  *
  * <p>
  * The format does not support specifying the ids of the edges, therefore the reader will number them from {@code 0} to
@@ -40,37 +40,42 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
  * <a href="https://users.cecs.anu.edu.au/~bdm/data/formats.html">here</a>.
  *
  * <p>
- * The 'graph6' format is efficient for dense graph, for dense graphs the {@linkplain Sparse6GraphReader 'sparse6'
- * format} should be used.
+ * The 'digraph6' format support directed graphs only, for undirected graphs the {@linkplain Digraph6GraphReader
+ * 'graph6' format} should be used.
  *
  * <p>
- * Self edges and parallel edges are not supported by the format.
+ * Parallel edges are not supported by the format.
  *
  * <p>
- * File with a graph in 'graph6' format usually have the extension {@code .g6}.
+ * File with a graph in 'digraph6' format usually have the extension {@code .d6}.
  *
- * @see    Graph6GraphWriter
+ * @see    Digraph6GraphWriter
  * @author Barak Ugav
  */
-public class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
+public class Digraph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
 	/**
 	 * Create a new reader.
 	 */
-	public Graph6GraphReader() {}
+	public Digraph6GraphReader() {}
 
 	@Override
-	public IntGraphBuilder readIntoBuilderImpl(Reader reader) throws IOException {
+	IntGraphBuilder readIntoBuilderImpl(Reader reader) throws IOException {
 		BufferedReader br = GraphIoUtils.bufferedReader(reader);
-		IntGraphBuilder g = IntGraphBuilder.newUndirected();
+		IntGraphBuilder g = IntGraphFactory.newDirected().allowSelfEdges().newBuilder();
 
 		String line = br.readLine();
 		if (line == null)
 			throw new IllegalArgumentException("empty file");
 
-		/* optional header */
-		if (line.startsWith(">>graph6<<"))
-			line = line.substring(">>graph6<<".length());
+		if (line.startsWith("&")) {
+			line = line.substring("&".length());
+
+		} else if (line.startsWith(">>digraph6<<&")) { /* optional header */
+			line = line.substring(">>digraph6<<&".length());
+		} else {
+			throw new IllegalArgumentException("Invalid header, expected ':' or '>>digraph6<<:'");
+		}
 		byte[] bytes = line.getBytes();
 		int cursor = 0;
 
@@ -84,8 +89,8 @@ public class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
 		/* Read all edges R(x) */
 		Graph6.BitsReader bitsReader = new Graph6.BitsReader(bytes, cursor);
-		for (int u : range(1, n)) {
-			for (int v : range(0, u)) {
+		for (int u : range(0, n)) {
+			for (int v : range(0, n)) {
 				if (!bitsReader.hasNext())
 					throw new IllegalArgumentException("Too few bits for edges bit vector");
 				boolean edgeExist = bitsReader.next();

@@ -218,7 +218,7 @@ public class Sparse6Test extends TestUtils {
 	public void readInvalidHeader() {
 		Sparse6GraphReader reader = new Sparse6GraphReader();
 		assertThrows(IllegalArgumentException.class,
-				() -> reader.readGraph(new StringReader(">>not-sparse-6<<" + bytesStr(":An"))));
+				() -> reader.readGraph(new StringReader(">>not-sparse-6<<:" + bytesStr(":An"))));
 		assertThrows(IllegalArgumentException.class, () -> reader.readGraph(new StringReader(bytesStr("An"))));
 	}
 
