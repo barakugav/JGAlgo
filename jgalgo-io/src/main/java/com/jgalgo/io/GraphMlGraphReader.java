@@ -18,7 +18,6 @@ package com.jgalgo.io;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,13 +25,10 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.LongFunction;
-import java.util.stream.StreamSupport;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import com.jgalgo.graph.Graph;
@@ -46,7 +42,6 @@ import com.jgalgo.graph.WeightsFloat;
 import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.graph.WeightsLong;
 import com.jgalgo.graph.WeightsObj;
-import com.jgalgo.internal.util.Assertions;
 
 /**
  * Read a graph in 'GraphML' format.
@@ -329,10 +324,10 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 
 			// searchUnexpectedChildren(doc, "graph", "key");
 
-			Element graph = requiredChild(doc, "graph");
+			Element graph = XmlUtils.requiredChild(doc, "graph");
 			// searchUnexpectedChildren(graph, "node", "edge");
 
-			boolean directed = requiredAttribute(graph, "edgedefault").equals("directed");
+			boolean directed = XmlUtils.requiredAttribute(graph, "edgedefault").equals("directed");
 			GraphFactory<V, E> factory;
 			if (vertexType == int.class && edgeType == int.class) {
 				@SuppressWarnings("unchecked")
@@ -343,17 +338,17 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 				factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();
 			}
 			GraphBuilder<V, E> g = factory.allowSelfEdges().allowParallelEdges().newBuilder();
-			optionalAttribute(graph, "parse.nodes").map(Integer::parseInt).ifPresent(g::expectedVerticesNum);
-			optionalAttribute(graph, "parse.edges").map(Integer::parseInt).ifPresent(g::expectedEdgesNum);
+			XmlUtils.optionalAttribute(graph, "parse.nodes").map(Integer::parseInt).ifPresent(g::expectedVerticesNum);
+			XmlUtils.optionalAttribute(graph, "parse.edges").map(Integer::parseInt).ifPresent(g::expectedEdgesNum);
 
 			Map<String, BiConsumer<V, String>> vWeights = new HashMap<>();
 			Map<String, BiConsumer<E, String>> eWeights = new HashMap<>();
-			for (Element key : children(doc, "key")) {
-				String weightId = requiredAttribute(key, "id");
-				String domain = requiredAttribute(key, "for");
-				String attrName = requiredAttribute(key, "attr.name");
-				String attrTypeStr = requiredAttribute(key, "attr.type");
-				String defValStr = optionalChild(key, "default").map(Element::getTextContent).orElse(null);
+			for (Element key : XmlUtils.children(doc, "key")) {
+				String weightId = XmlUtils.requiredAttribute(key, "id");
+				String domain = XmlUtils.requiredAttribute(key, "for");
+				String attrName = XmlUtils.requiredAttribute(key, "attr.name");
+				String attrTypeStr = XmlUtils.requiredAttribute(key, "attr.type");
+				String defValStr = XmlUtils.optionalChild(key, "default").map(Element::getTextContent).orElse(null);
 
 				Class<?> attrType;
 				Object defVal;
@@ -460,11 +455,11 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 				}
 			}
 
-			for (Element vElm : children(graph, "node")) {
-				V v = vertexParser.apply(requiredAttribute(vElm, "id"));
+			for (Element vElm : XmlUtils.children(graph, "node")) {
+				V v = vertexParser.apply(XmlUtils.requiredAttribute(vElm, "id"));
 				g.addVertex(v);
-				for (Element dataElm : children(vElm, "data")) {
-					String weightId = requiredAttribute(dataElm, "key");
+				for (Element dataElm : XmlUtils.children(vElm, "data")) {
+					String weightId = XmlUtils.requiredAttribute(dataElm, "key");
 					BiConsumer<V, String> vWeight = vWeights.get(weightId);
 					if (vWeight == null)
 						throw new IllegalArgumentException("unknown weight key: " + weightId);
@@ -472,9 +467,9 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 				}
 				// searchUnexpectedChildren(vElm, "data");
 			}
-			for (Element eElm : children(graph, "edge")) {
+			for (Element eElm : XmlUtils.children(graph, "edge")) {
 				E e;
-				Optional<String> id = optionalAttribute(eElm, "id");
+				Optional<String> id = XmlUtils.optionalAttribute(eElm, "id");
 				if (id.isPresent()) {
 					if (edgeParser == null)
 						throw new IllegalStateException("Edge parser was not set");
@@ -484,13 +479,13 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 						throw new IllegalStateException("Edge supplier was not set");
 					e = edgeSupplier.apply(g.edges());
 				}
-				V u = vertexParser.apply(requiredAttribute(eElm, "source"));
-				V v = vertexParser.apply(requiredAttribute(eElm, "target"));
-				if (optionalAttribute(eElm, "directed").isPresent())
+				V u = vertexParser.apply(XmlUtils.requiredAttribute(eElm, "source"));
+				V v = vertexParser.apply(XmlUtils.requiredAttribute(eElm, "target"));
+				if (XmlUtils.optionalAttribute(eElm, "directed").isPresent())
 					throw new IllegalArgumentException("directed attribute per-edge is not supported");
 				g.addEdge(u, v, e);
-				for (Element dataElm : children(eElm, "data")) {
-					String weightId = requiredAttribute(dataElm, "key");
+				for (Element dataElm : XmlUtils.children(eElm, "data")) {
+					String weightId = XmlUtils.requiredAttribute(dataElm, "key");
 					BiConsumer<E, String> eWeight = eWeights.get(weightId);
 					if (eWeight == null)
 						throw new IllegalArgumentException("unknown weight key: " + weightId);
@@ -504,72 +499,6 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 		} catch (ParserConfigurationException | SAXException e) {
 			throw new IllegalArgumentException(e);
 		}
-	}
-
-	private static Iterable<Element> children(Node parent, String tag) {
-		return () -> StreamSupport.stream(children(parent).spliterator(), false).filter(e -> e.getTagName().equals(tag))
-				.iterator();
-	}
-
-	private static Iterable<Element> children(Node parent) {
-		return () -> new Iterator<>() {
-
-			final NodeList childNodes = parent.getChildNodes();
-			final int length = childNodes.getLength();
-			int idx;
-			{
-				advance();
-			}
-
-			private void advance() {
-				for (; idx < length; idx++)
-					if (childNodes.item(idx) instanceof Element)
-						return;
-			}
-
-			@Override
-			public boolean hasNext() {
-				return idx < length;
-			}
-
-			@Override
-			public Element next() {
-				Assertions.Iters.hasNext(this);
-				Element element = (Element) childNodes.item(idx++);
-				advance();
-				return element;
-			}
-		};
-	}
-
-	private static Element requiredChild(Element parent, String tag) {
-		Iterator<Element> children = children(parent, tag).iterator();
-		if (!children.hasNext())
-			throw new IllegalArgumentException("no " + tag + " element");
-		Element child = children.next();
-		if (children.hasNext())
-			throw new IllegalArgumentException("multiple " + tag + " elements");
-		return child;
-	}
-
-	private static Optional<Element> optionalChild(Element parent, String tag) {
-		Iterator<Element> children = children(parent, tag).iterator();
-		if (!children.hasNext())
-			return Optional.empty();
-		Element child = children.next();
-		if (children.hasNext())
-			throw new IllegalArgumentException("multiple " + tag + " elements");
-		return Optional.of(child);
-	}
-
-	private static String requiredAttribute(Element element, String att) {
-		return optionalAttribute(element, att)
-				.orElseThrow(() -> new IllegalArgumentException("no " + att + " attribute"));
-	}
-
-	private static Optional<String> optionalAttribute(Element element, String att) {
-		String value = element.getAttribute(att);
-		return value.isEmpty() && !element.hasAttribute(att) ? Optional.empty() : Optional.of(value);
 	}
 
 	// private static void searchUnexpectedChildren(Element element, String... tags) {
