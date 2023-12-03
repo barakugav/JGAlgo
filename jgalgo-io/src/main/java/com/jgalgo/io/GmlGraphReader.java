@@ -159,10 +159,8 @@ public class GmlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E>
 	 * @see         #setEdgeType(Class)
 	 */
 	public GmlGraphReader(Class<V> vType, Class<E> eType) {
-		checkVertexEdgeType(vType);
-		checkVertexEdgeType(eType);
-		this.vType = vType;
-		this.eType = eType;
+		setVertexType(vType);
+		setEdgeType(eType);
 	}
 
 	/**
