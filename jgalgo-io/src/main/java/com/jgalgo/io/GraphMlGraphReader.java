@@ -24,7 +24,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.LongFunction;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
@@ -145,7 +144,7 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 	 *                                      {@code double} and {@code String}.
 	 */
 	public void setVertexParserDefault(Class<V> vertexType) {
-		this.vertexParser = defaultParser(vertexType);
+		this.vertexParser = GraphIoUtils.defaultParser(vertexType);
 		this.vertexType = vertexType;
 	}
 
@@ -181,43 +180,8 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 	 *                                      {@code double} and {@code String}.
 	 */
 	public void setEdgeParserDefault(Class<E> edgeType) {
-		this.edgeParser = defaultParser(edgeType);
+		this.edgeParser = GraphIoUtils.defaultParser(edgeType);
 		this.edgeType = edgeType;
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <K> Function<String, K> defaultParser(Class<K> type) {
-		if (type == byte.class || type == Byte.class) {
-			Function<String, Byte> parser = Byte::valueOf;
-			return (Function<String, K>) parser;
-
-		} else if (type == short.class || type == Short.class) {
-			Function<String, Short> parser = Short::valueOf;
-			return (Function<String, K>) parser;
-
-		} else if (type == int.class || type == Integer.class) {
-			Function<String, Integer> parser = Integer::valueOf;
-			return (Function<String, K>) parser;
-
-		} else if (type == long.class || type == Long.class) {
-			Function<String, Long> parser = Long::valueOf;
-			return (Function<String, K>) parser;
-
-		} else if (type == float.class || type == Float.class) {
-			Function<String, Float> parser = Float::valueOf;
-			return (Function<String, K>) parser;
-
-		} else if (type == double.class || type == Double.class) {
-			Function<String, Double> parser = Double::valueOf;
-			return (Function<String, K>) parser;
-
-		} else if (type == String.class) {
-			Function<String, String> parser = Function.identity();
-			return (Function<String, K>) parser;
-
-		} else {
-			throw new IllegalArgumentException("no default parser for type: " + type);
-		}
 	}
 
 	/**
@@ -256,65 +220,8 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 	 *                                      {@code double} and {@code String}.
 	 */
 	public void setEdgeSupplierDefault(Class<E> edgeType) {
-		if (edgeType == byte.class || edgeType == Byte.class) {
-			long min = Byte.MIN_VALUE, max = Byte.MAX_VALUE, maxEdgesSize = 1 << Byte.SIZE;
-			edgeSupplier = defaultEdgeSupplier(min, max, maxEdgesSize, x -> Byte.valueOf((byte) x));
-
-		} else if (edgeType == short.class || edgeType == Short.class) {
-			long min = Short.MIN_VALUE, max = Short.MAX_VALUE, maxEdgesSize = 1 << Short.SIZE;
-			edgeSupplier = defaultEdgeSupplier(min, max, maxEdgesSize, x -> Short.valueOf((short) x));
-
-		} else if (edgeType == int.class || edgeType == Integer.class) {
-			long min = Integer.MIN_VALUE, max = Integer.MAX_VALUE, maxEdgesSize = 1L << Integer.SIZE;
-			edgeSupplier = defaultEdgeSupplier(min, max, maxEdgesSize, x -> Integer.valueOf((int) x));
-
-		} else if (edgeType == long.class || edgeType == Long.class) {
-			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L << 48;
-			edgeSupplier = defaultEdgeSupplier(min, max, maxEdgesSize, x -> Long.valueOf(x));
-
-		} else if (edgeType == float.class || edgeType == Float.class) {
-			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L << 48;
-			edgeSupplier = defaultEdgeSupplier(min, max, maxEdgesSize, x -> Float.valueOf(x));
-
-		} else if (edgeType == double.class || edgeType == Double.class) {
-			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L << 48;
-			edgeSupplier = defaultEdgeSupplier(min, max, maxEdgesSize, x -> Double.valueOf(x));
-
-		} else if (edgeType == String.class) {
-			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L << 48;
-			edgeSupplier = defaultEdgeSupplier(min, max, maxEdgesSize, x -> ("e" + x));
-
-		} else {
-			throw new IllegalArgumentException("no default edge supplier for type: " + edgeType);
-		}
+		edgeSupplier = GraphIoUtils.defaultEdgeSupplier(edgeType);
 		this.edgeType = edgeType;
-	}
-
-	private static <E> Function<Set<E>, E> defaultEdgeSupplier(long minVal, long maxVal, long maxEdgesSize,
-			LongFunction<Object> idBuilder) {
-		return new Function<>() {
-			long nextId;
-
-			@SuppressWarnings("unchecked")
-			@Override
-			public E apply(Set<E> existingEdges) {
-				if (existingEdges.size() >= maxEdgesSize)
-					throw new IllegalArgumentException("too many edges");
-				for (Object id;;)
-					if (!existingEdges.contains(id = idBuilder.apply(getAndInc())))
-						return (E) id;
-			}
-
-			private long getAndInc() {
-				long ret = nextId;
-				if (nextId < maxVal) {
-					nextId++;
-				} else {
-					nextId = minVal;
-				}
-				return ret;
-			}
-		};
 	}
 
 	@Override
@@ -450,7 +357,9 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 					@SuppressWarnings("unchecked")
 					BiConsumer<V, String> setter =
 							(BiConsumer<V, String>) setterFactory.apply((Weights<Object, Object>) weights);
-					vWeights.put(weightId, setter);
+					Object oldVal = vWeights.put(weightId, setter);
+					if (oldVal != null)
+						throw new IllegalArgumentException("duplicate vertex weight key: " + weightId);
 				}
 				if (isEdgeWeight) {
 					@SuppressWarnings("unchecked")
@@ -459,7 +368,9 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 					@SuppressWarnings("unchecked")
 					BiConsumer<E, String> setter =
 							(BiConsumer<E, String>) setterFactory.apply((Weights<Object, Object>) weights);
-					eWeights.put(weightId, setter);
+					Object oldVal = eWeights.put(weightId, setter);
+					if (oldVal != null)
+						throw new IllegalArgumentException("duplicate edge weight key: " + weightId);
 				}
 			}
 

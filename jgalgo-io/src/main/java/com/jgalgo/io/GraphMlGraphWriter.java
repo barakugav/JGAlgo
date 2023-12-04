@@ -18,9 +18,13 @@ package com.jgalgo.io;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
@@ -80,12 +84,17 @@ public class GraphMlGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V
 			List<BiConsumer<E, Element>> eWeightsWriters = new ArrayList<>();
 			for (String weightKey : graph.getVerticesWeightsKeys()) {
 				Weights<V, ?> weights = graph.getVerticesWeights(weightKey);
+				String type = attrType(weights, graph.vertices());
+				if (type == null)
+					throw new IllegalArgumentException(
+							"Vertices weights with key '" + weightKey + "' are not supported");
+
 				Element weightElm = document.createElement("key");
 				String weightId = "d" + nextWeightsIdx++;
 				weightElm.setAttribute("id", weightId);
 				weightElm.setAttribute("for", "node");
 				weightElm.setAttribute("attr.name", weightKey);
-				weightElm.setAttribute("attr.type", attrType(weights));
+				weightElm.setAttribute("attr.type", type);
 				Object defVal = weights.defaultWeightAsObj();
 				if (defVal != null) {
 					Element defaultElm = document.createElement("default");
@@ -106,12 +115,16 @@ public class GraphMlGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V
 			}
 			for (String weightKey : graph.getEdgesWeightsKeys()) {
 				Weights<E, ?> weights = graph.getEdgesWeights(weightKey);
+				String type = attrType(weights, graph.edges());
+				if (type == null)
+					throw new IllegalArgumentException("Edges weights with key '" + weightKey + "' are not supported");
+
 				Element weightElm = document.createElement("key");
 				String weightId = "d" + nextWeightsIdx++;
 				weightElm.setAttribute("id", weightId);
 				weightElm.setAttribute("for", "edge");
 				weightElm.setAttribute("attr.name", weightKey);
-				weightElm.setAttribute("attr.type", attrType(weights));
+				weightElm.setAttribute("attr.type", type);
 				Object defVal = weights.defaultWeightAsObj();
 				if (defVal != null) {
 					Element defaultElm = document.createElement("default");
@@ -162,27 +175,44 @@ public class GraphMlGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V
 		}
 	}
 
-	private static String attrType(Weights<?, ?> weights) {
-		if (weights instanceof WeightsByte) {
+	private static <K> String attrType(Weights<K, ?> weights, Set<K> elements) {
+		AtomicReference<Object[]> objWeightsCache = new AtomicReference<>();
+		Predicate<Class<?>> allInstanceof = cls -> {
+			if (!(weights instanceof WeightsObj))
+				return false;
+
+			WeightsObj<K, ?> ws = (WeightsObj<K, ?>) weights;
+			Object[] objWeights = objWeightsCache.get();
+			if (objWeights == null)
+				objWeightsCache.set(objWeights = elements.stream().map(ws::get).toArray());
+
+			Object defVal = ws.defaultWeight();
+			if (defVal != null && !cls.isInstance(defVal))
+				return false;
+			return Arrays.stream(objWeights).allMatch(cls::isInstance);
+		};
+
+		/* check string first so that if there are no vertices/edges, string will be chosen */
+		if (weights instanceof WeightsObj && allInstanceof.test(String.class))
+			return "string";
+
+		if (weights instanceof WeightsByte || allInstanceof.test(Byte.class))
 			return "int";
-		} else if (weights instanceof WeightsShort) {
+		if (weights instanceof WeightsShort || allInstanceof.test(Short.class))
 			return "int";
-		} else if (weights instanceof WeightsInt) {
+		if (weights instanceof WeightsInt || allInstanceof.test(Integer.class))
 			return "int";
-		} else if (weights instanceof WeightsLong) {
+		if (weights instanceof WeightsLong || allInstanceof.test(Long.class))
 			return "long";
-		} else if (weights instanceof WeightsFloat) {
+		if (weights instanceof WeightsFloat || allInstanceof.test(Float.class))
 			return "float";
-		} else if (weights instanceof WeightsDouble) {
+		if (weights instanceof WeightsDouble || allInstanceof.test(Double.class))
 			return "double";
-		} else if (weights instanceof WeightsBool) {
+		if (weights instanceof WeightsBool || allInstanceof.test(Boolean.class))
 			return "boolean";
-		} else if (weights instanceof WeightsChar) {
+		if (weights instanceof WeightsChar || allInstanceof.test(Character.class))
 			return "string";
-		} else {
-			assert weights instanceof WeightsObj;
-			return "string";
-		}
+		return null;
 	}
 
 }

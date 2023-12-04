@@ -193,30 +193,40 @@ public class GraphMlTest {
 		Random rand = new Random(seed);
 		for (boolean directed : BooleanList.of(false, true)) {
 			for (int n : IntList.of(6, 30, 211)) {
-				final int m = n + rand.nextInt(2 * n);
-				IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
-				IntGraph g = factory.allowSelfEdges().allowParallelEdges().newGraph();
-				while (g.vertices().size() < n) {
-					int v = rand.nextInt(2 * n);
-					if (!g.vertices().contains(v))
-						g.addVertex(v);
-				}
-				while (g.edges().size() < m) {
-					int u = Graphs.randVertex(g, rand);
-					int v = Graphs.randVertex(g, rand);
-					int e = rand.nextInt(2 * m);
-					if (!g.edges().contains(e))
-						g.addEdge(u, v, e);
-				}
+				for (int repeat = 0; repeat < 32; repeat++) {
+					final int m = n + rand.nextInt(2 * n);
+					IntGraphFactory factory =
+							directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
+					IntGraph g = factory.allowSelfEdges().allowParallelEdges().newGraph();
+					while (g.vertices().size() < n) {
+						int v = rand.nextInt(2 * n);
+						if (!g.vertices().contains(v))
+							g.addVertex(v);
+					}
+					while (g.edges().size() < m) {
+						int u = Graphs.randVertex(g, rand);
+						int v = Graphs.randVertex(g, rand);
+						int e = rand.nextInt(2 * m);
+						if (!g.edges().contains(e))
+							g.addEdge(u, v, e);
+					}
 
-				StringWriter writer = new StringWriter();
-				GraphMlGraphWriter<Integer, Integer> graphWriter = new GraphMlGraphWriter<>();
-				graphWriter.writeGraph(g, writer);
-				String data = writer.toString();
-				GraphMlGraphReader<Integer, Integer> graphReader = new GraphMlGraphReader<>(int.class, int.class);
-				IntGraph g1 = (IntGraph) graphReader.readGraph(new StringReader(data));
+					IWeightsInt vWeights = g.addVerticesWeights("v-weights", int.class);
+					for (int v : g.vertices())
+						vWeights.set(v, rand.nextInt(2 * n));
+					IWeightsInt eWeights = g.addEdgesWeights("e-weights", int.class);
+					for (int e : g.edges())
+						eWeights.set(e, rand.nextInt(2 * m));
 
-				assertEquals(g, g1);
+					StringWriter writer = new StringWriter();
+					GraphMlGraphWriter<Integer, Integer> graphWriter = new GraphMlGraphWriter<>();
+					graphWriter.writeGraph(g, writer);
+					String data = writer.toString();
+					GraphMlGraphReader<Integer, Integer> graphReader = new GraphMlGraphReader<>(int.class, int.class);
+					IntGraph g1 = (IntGraph) graphReader.readGraph(new StringReader(data));
+
+					assertEquals(g, g1);
+				}
 			}
 		}
 	}
@@ -1147,6 +1157,70 @@ public class GraphMlTest {
 	}
 
 	@Test
+	public void readVerticesWeightsSameId() {
+		TextBuilder text = new TextBuilder();
+		text.addLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		text.addLine("<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\">\n");
+		text.addLine("  <key id=\"d1\" for=\"node\" attr.name=\"weight1\" attr.type=\"int\"/>\n");
+		text.addLine("  <key id=\"d1\" for=\"node\" attr.name=\"weight2\" attr.type=\"string\"/>\n");
+		text.addLine("  <graph id=\"G\" edgedefault=\"directed\">\n");
+		text.addLine("    <node id=\"n0\"/>\n");
+		text.addLine("  </graph>\n");
+		text.addLine("</graphml>\n");
+
+		GraphMlGraphReader<String, String> reader = new GraphMlGraphReader<>(String.class, String.class);
+		assertThrows(IllegalArgumentException.class, () -> reader.readGraph(new StringReader(text.get())));
+	}
+
+	@Test
+	public void readVerticesWeightsSameName() {
+		TextBuilder text = new TextBuilder();
+		text.addLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		text.addLine("<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\">\n");
+		text.addLine("  <key id=\"d1\" for=\"node\" attr.name=\"weight\" attr.type=\"int\"/>\n");
+		text.addLine("  <key id=\"d2\" for=\"node\" attr.name=\"weight\" attr.type=\"string\"/>\n");
+		text.addLine("  <graph id=\"G\" edgedefault=\"directed\">\n");
+		text.addLine("    <node id=\"n0\"/>\n");
+		text.addLine("  </graph>\n");
+		text.addLine("</graphml>\n");
+
+		GraphMlGraphReader<String, String> reader = new GraphMlGraphReader<>(String.class, String.class);
+		assertThrows(IllegalArgumentException.class, () -> reader.readGraph(new StringReader(text.get())));
+	}
+
+	@Test
+	public void readEdgesWeightsSameId() {
+		TextBuilder text = new TextBuilder();
+		text.addLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		text.addLine("<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\">\n");
+		text.addLine("  <key id=\"d1\" for=\"edge\" attr.name=\"weight1\" attr.type=\"int\"/>\n");
+		text.addLine("  <key id=\"d1\" for=\"edge\" attr.name=\"weight2\" attr.type=\"string\"/>\n");
+		text.addLine("  <graph id=\"G\" edgedefault=\"directed\">\n");
+		text.addLine("    <node id=\"n0\"/>\n");
+		text.addLine("  </graph>\n");
+		text.addLine("</graphml>\n");
+
+		GraphMlGraphReader<String, String> reader = new GraphMlGraphReader<>(String.class, String.class);
+		assertThrows(IllegalArgumentException.class, () -> reader.readGraph(new StringReader(text.get())));
+	}
+
+	@Test
+	public void readEdgesWeightsSameName() {
+		TextBuilder text = new TextBuilder();
+		text.addLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		text.addLine("<graphml xmlns=\"http://graphml.graphdrawing.org/xmlns\">\n");
+		text.addLine("  <key id=\"d1\" for=\"edge\" attr.name=\"weight\" attr.type=\"int\"/>\n");
+		text.addLine("  <key id=\"d2\" for=\"edge\" attr.name=\"weight\" attr.type=\"string\"/>\n");
+		text.addLine("  <graph id=\"G\" edgedefault=\"directed\">\n");
+		text.addLine("    <node id=\"n0\"/>\n");
+		text.addLine("  </graph>\n");
+		text.addLine("</graphml>\n");
+
+		GraphMlGraphReader<String, String> reader = new GraphMlGraphReader<>(String.class, String.class);
+		assertThrows(IllegalArgumentException.class, () -> reader.readGraph(new StringReader(text.get())));
+	}
+
+	@Test
 	public void readWeightsMultipleDefaultVal() {
 		TextBuilder text = new TextBuilder();
 		text.addLine("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
@@ -1205,76 +1279,167 @@ public class GraphMlTest {
 
 		IWeightsByte vWeightsByte1 = g.addVerticesWeights("v-weights-byte1", byte.class);
 		IWeightsByte vWeightsByte2 = g.addVerticesWeights("v-weights-byte2", byte.class, Byte.valueOf((byte) 1));
+		IWeightsObj<Byte> vWeightsByte3 = g.addVerticesWeights("v-weights-byte3", Byte.class);
+		IWeightsObj<Byte> vWeightsByte4 = g.addVerticesWeights("v-weights-byte4", Byte.class, Byte.valueOf((byte) 2));
 		IWeightsShort vWeightsShort1 = g.addVerticesWeights("v-weights-short1", short.class);
-		IWeightsShort vWeightsShort2 = g.addVerticesWeights("v-weights-short2", short.class, Short.valueOf((short) 2));
+		IWeightsShort vWeightsShort2 = g.addVerticesWeights("v-weights-short2", short.class, Short.valueOf((short) 3));
+		IWeightsObj<Short> vWeightsShort3 = g.addVerticesWeights("v-weights-short3", Short.class);
+		IWeightsObj<Short> vWeightsShort4 =
+				g.addVerticesWeights("v-weights-short4", Short.class, Short.valueOf((short) 4));
 		IWeightsInt vWeightsInt1 = g.addVerticesWeights("v-weights-int1", int.class);
-		IWeightsInt vWeightsInt2 = g.addVerticesWeights("v-weights-int2", int.class, Integer.valueOf(3));
+		IWeightsInt vWeightsInt2 = g.addVerticesWeights("v-weights-int2", int.class, Integer.valueOf(5));
+		IWeightsObj<Integer> vWeightsInt3 = g.addVerticesWeights("v-weights-int3", Integer.class);
+		IWeightsObj<Integer> vWeightsInt4 = g.addVerticesWeights("v-weights-int4", Integer.class, Integer.valueOf(6));
 		IWeightsLong vWeightsLong1 = g.addVerticesWeights("v-weights-long1", long.class);
-		IWeightsLong vWeightsLong2 = g.addVerticesWeights("v-weights-long2", long.class, Long.valueOf(4));
+		IWeightsLong vWeightsLong2 = g.addVerticesWeights("v-weights-long2", long.class, Long.valueOf(7));
+		IWeightsObj<Long> vWeightsLong3 = g.addVerticesWeights("v-weights-long3", Long.class);
+		IWeightsObj<Long> vWeightsLong4 = g.addVerticesWeights("v-weights-long4", Long.class, Long.valueOf(8));
 		IWeightsFloat vWeightsFloat1 = g.addVerticesWeights("v-weights-float1", float.class);
-		IWeightsFloat vWeightsFloat2 = g.addVerticesWeights("v-weights-float2", float.class, Float.valueOf(5.5f));
+		IWeightsFloat vWeightsFloat2 = g.addVerticesWeights("v-weights-float2", float.class, Float.valueOf(9.9f));
+		IWeightsObj<Float> vWeightsFloat3 = g.addVerticesWeights("v-weights-float3", Float.class);
+		IWeightsObj<Float> vWeightsFloat4 =
+				g.addVerticesWeights("v-weights-float4", Float.class, Float.valueOf(10.10f));
 		IWeightsDouble vWeightsDouble1 = g.addVerticesWeights("v-weights-double1", double.class);
-		IWeightsDouble vWeightsDouble2 = g.addVerticesWeights("v-weights-double2", double.class, Double.valueOf(6.6));
+		IWeightsDouble vWeightsDouble2 = g.addVerticesWeights("v-weights-double2", double.class, Double.valueOf(11.11));
+		IWeightsObj<Double> vWeightsDouble3 = g.addVerticesWeights("v-weights-double3", Double.class);
+		IWeightsObj<Double> vWeightsDouble4 =
+				g.addVerticesWeights("v-weights-double4", Double.class, Double.valueOf(12.12));
 		IWeightsBool vWeightsBool1 = g.addVerticesWeights("v-weights-bool1", boolean.class);
 		IWeightsBool vWeightsBool2 = g.addVerticesWeights("v-weights-bool2", boolean.class, Boolean.TRUE);
+		IWeightsObj<Boolean> vWeightsBool3 = g.addVerticesWeights("v-weights-bool3", Boolean.class);
+		IWeightsObj<Boolean> vWeightsBool4 = g.addVerticesWeights("v-weights-bool4", Boolean.class, Boolean.TRUE);
 		IWeightsChar vWeightsChar1 = g.addVerticesWeights("v-weights-char1", char.class, Character.valueOf(' '));
 		IWeightsChar vWeightsChar2 = g.addVerticesWeights("v-weights-char2", char.class, Character.valueOf('7'));
+		IWeightsObj<Character> vWeightsChar3 = g.addVerticesWeights("v-weights-char3", Character.class);
+		IWeightsObj<Character> vWeightsChar4 =
+				g.addVerticesWeights("v-weights-char4", Character.class, Character.valueOf('*'));
 		IWeightsObj<String> vWeightsObj1 = g.addVerticesWeights("v-weights-obj1", String.class);
 		IWeightsObj<String> vWeightsObj2 = g.addVerticesWeights("v-weights-obj2", String.class, "8");
 		vWeightsByte1.set(0, (byte) 31);
 		vWeightsByte2.set(0, (byte) 32);
-		vWeightsShort1.set(0, (short) 33);
-		vWeightsShort2.set(0, (short) 34);
-		vWeightsInt1.set(0, 35);
-		vWeightsInt2.set(0, 36);
-		vWeightsLong1.set(0, 37);
-		vWeightsLong2.set(0, 38);
-		vWeightsFloat1.set(0, 39.39f);
-		vWeightsFloat2.set(0, 40.40f);
-		vWeightsDouble1.set(0, 41.41);
-		vWeightsDouble2.set(0, 42.42);
+		vWeightsByte3.set(0, Byte.valueOf((byte) 33));
+		vWeightsByte3.set(1, Byte.valueOf((byte) 34));
+		vWeightsByte4.set(0, Byte.valueOf((byte) 35));
+		vWeightsShort1.set(0, (short) 36);
+		vWeightsShort2.set(0, (short) 37);
+		vWeightsShort3.set(0, Short.valueOf((short) 38));
+		vWeightsShort3.set(1, Short.valueOf((short) 39));
+		vWeightsShort4.set(0, Short.valueOf((short) 40));
+		vWeightsInt1.set(0, 41);
+		vWeightsInt2.set(0, 42);
+		vWeightsInt3.set(0, Integer.valueOf(43));
+		vWeightsInt3.set(1, Integer.valueOf(44));
+		vWeightsInt4.set(0, Integer.valueOf(45));
+		vWeightsLong1.set(0, 46);
+		vWeightsLong2.set(0, 47);
+		vWeightsLong3.set(0, Long.valueOf(48));
+		vWeightsLong3.set(1, Long.valueOf(49));
+		vWeightsLong4.set(0, Long.valueOf(50));
+		vWeightsFloat1.set(0, 51.51f);
+		vWeightsFloat2.set(0, 52.52f);
+		vWeightsFloat3.set(0, Float.valueOf(53.53f));
+		vWeightsFloat3.set(1, Float.valueOf(54.54f));
+		vWeightsFloat4.set(0, Float.valueOf(55.55f));
+		vWeightsDouble1.set(0, 56.56);
+		vWeightsDouble2.set(0, 57.57);
+		vWeightsDouble3.set(0, Double.valueOf(58.58));
+		vWeightsDouble3.set(1, Double.valueOf(59.59));
+		vWeightsDouble4.set(0, Double.valueOf(60.60));
 		vWeightsBool1.set(0, true);
 		vWeightsBool2.set(0, false);
-		vWeightsChar1.set(0, '9');
+		vWeightsBool3.set(0, Boolean.TRUE);
+		vWeightsBool3.set(1, Boolean.FALSE);
+		vWeightsBool4.set(0, Boolean.FALSE);
+		vWeightsChar1.set(0, '8');
+		vWeightsChar1.set(1, '9');
 		vWeightsChar2.set(0, 'A');
+		vWeightsChar3.set(0, Character.valueOf('B'));
+		vWeightsChar3.set(1, Character.valueOf('C'));
+		vWeightsChar4.set(0, Character.valueOf('D'));
 		vWeightsObj1.set(0, "43");
+		vWeightsObj1.set(1, "");
 		vWeightsObj2.set(0, "44");
 
 		IWeightsByte eWeightsByte1 = g.addEdgesWeights("e-weights-byte1", byte.class);
 		IWeightsByte eWeightsByte2 = g.addEdgesWeights("e-weights-byte2", byte.class, Byte.valueOf((byte) 11));
+		IWeightsObj<Byte> eWeightsByte3 = g.addEdgesWeights("e-weights-byte3", Byte.class);
+		IWeightsObj<Byte> eWeightsByte4 = g.addEdgesWeights("e-weights-byte4", Byte.class, Byte.valueOf((byte) 12));
 		IWeightsShort eWeightsShort1 = g.addEdgesWeights("e-weights-short1", short.class);
-		IWeightsShort eWeightsShort2 = g.addEdgesWeights("e-weights-short2", short.class, Short.valueOf((short) 12));
+		IWeightsShort eWeightsShort2 = g.addEdgesWeights("e-weights-short2", short.class, Short.valueOf((short) 13));
+		IWeightsObj<Short> eWeightsShort3 = g.addEdgesWeights("e-weights-short3", Short.class);
+		IWeightsObj<Short> eWeightsShort4 =
+				g.addEdgesWeights("e-weights-short4", Short.class, Short.valueOf((short) 14));
 		IWeightsInt eWeightsInt1 = g.addEdgesWeights("e-weights-int1", int.class);
-		IWeightsInt eWeightsInt2 = g.addEdgesWeights("e-weights-int2", int.class, Integer.valueOf(13));
+		IWeightsInt eWeightsInt2 = g.addEdgesWeights("e-weights-int2", int.class, Integer.valueOf(15));
+		IWeightsObj<Integer> eWeightsInt3 = g.addEdgesWeights("e-weights-int3", Integer.class);
+		IWeightsObj<Integer> eWeightsInt4 = g.addEdgesWeights("e-weights-int4", Integer.class, Integer.valueOf(16));
 		IWeightsLong eWeightsLong1 = g.addEdgesWeights("e-weights-long1", long.class);
-		IWeightsLong eWeightsLong2 = g.addEdgesWeights("e-weights-long2", long.class, Long.valueOf(14));
+		IWeightsLong eWeightsLong2 = g.addEdgesWeights("e-weights-long2", long.class, Long.valueOf(17));
+		IWeightsObj<Long> eWeightsLong3 = g.addEdgesWeights("e-weights-long3", Long.class);
+		IWeightsObj<Long> eWeightsLong4 = g.addEdgesWeights("e-weights-long4", Long.class, Long.valueOf(18));
 		IWeightsFloat eWeightsFloat1 = g.addEdgesWeights("e-weights-float1", float.class);
-		IWeightsFloat eWeightsFloat2 = g.addEdgesWeights("e-weights-float2", float.class, Float.valueOf(15.15f));
+		IWeightsFloat eWeightsFloat2 = g.addEdgesWeights("e-weights-float2", float.class, Float.valueOf(19.19f));
+		IWeightsObj<Float> eWeightsFloat3 = g.addEdgesWeights("e-weights-float3", Float.class);
+		IWeightsObj<Float> eWeightsFloat4 = g.addEdgesWeights("e-weights-float4", Float.class, Float.valueOf(20.20f));
 		IWeightsDouble eWeightsDouble1 = g.addEdgesWeights("e-weights-double1", double.class);
-		IWeightsDouble eWeightsDouble2 = g.addEdgesWeights("e-weights-double2", double.class, Double.valueOf(16.16));
+		IWeightsDouble eWeightsDouble2 = g.addEdgesWeights("e-weights-double2", double.class, Double.valueOf(21.21));
+		IWeightsObj<Double> eWeightsDouble3 = g.addEdgesWeights("e-weights-double3", Double.class);
+		IWeightsObj<Double> eWeightsDouble4 =
+				g.addEdgesWeights("e-weights-double4", Double.class, Double.valueOf(22.22));
 		IWeightsBool eWeightsBool1 = g.addEdgesWeights("e-weights-bool1", boolean.class);
 		IWeightsBool eWeightsBool2 = g.addEdgesWeights("e-weights-bool2", boolean.class, Boolean.TRUE);
+		IWeightsObj<Boolean> eWeightsBool3 = g.addEdgesWeights("e-weights-bool3", Boolean.class);
+		IWeightsObj<Boolean> eWeightsBool4 = g.addEdgesWeights("e-weights-bool4", Boolean.class, Boolean.TRUE);
 		IWeightsChar eWeightsChar1 = g.addEdgesWeights("e-weights-char1", char.class, Character.valueOf(' '));
 		IWeightsChar eWeightsChar2 = g.addEdgesWeights("e-weights-char2", char.class, Character.valueOf('*'));
+		IWeightsObj<Character> eWeightsChar3 = g.addEdgesWeights("e-weights-char3", Character.class);
+		IWeightsObj<Character> eWeightsChar4 =
+				g.addEdgesWeights("e-weights-char4", Character.class, Character.valueOf('7'));
 		IWeightsObj<String> eWeightsObj1 = g.addEdgesWeights("e-weights-obj1", String.class);
 		IWeightsObj<String> eWeightsObj2 = g.addEdgesWeights("e-weights-obj2", String.class, "17");
 		eWeightsByte1.set(0, (byte) 51);
 		eWeightsByte2.set(0, (byte) 52);
-		eWeightsShort1.set(0, (short) 53);
-		eWeightsShort2.set(0, (short) 54);
-		eWeightsInt1.set(0, 55);
-		eWeightsInt2.set(0, 56);
-		eWeightsLong1.set(0, 57);
-		eWeightsLong2.set(0, 58);
-		eWeightsFloat1.set(0, 59.59f);
-		eWeightsFloat2.set(0, 60.60f);
-		eWeightsDouble1.set(0, 61.61);
-		eWeightsDouble2.set(0, 62.62);
+		eWeightsByte3.set(0, Byte.valueOf((byte) 53));
+		eWeightsByte3.set(1, Byte.valueOf((byte) 54));
+		eWeightsByte4.set(0, Byte.valueOf((byte) 55));
+		eWeightsShort1.set(0, (short) 56);
+		eWeightsShort2.set(0, (short) 57);
+		eWeightsShort3.set(0, Short.valueOf((short) 58));
+		eWeightsShort3.set(1, Short.valueOf((short) 59));
+		eWeightsShort4.set(0, Short.valueOf((short) 60));
+		eWeightsInt1.set(0, 61);
+		eWeightsInt2.set(0, 62);
+		eWeightsInt3.set(0, Integer.valueOf(63));
+		eWeightsInt3.set(1, Integer.valueOf(64));
+		eWeightsInt4.set(0, Integer.valueOf(65));
+		eWeightsLong1.set(0, 66);
+		eWeightsLong2.set(0, 67);
+		eWeightsLong3.set(0, Long.valueOf(68));
+		eWeightsLong3.set(1, Long.valueOf(69));
+		eWeightsLong4.set(0, Long.valueOf(70));
+		eWeightsFloat1.set(0, 71.71f);
+		eWeightsFloat2.set(0, 72.72f);
+		eWeightsFloat3.set(0, Float.valueOf(73.73f));
+		eWeightsFloat3.set(1, Float.valueOf(74.74f));
+		eWeightsFloat4.set(0, Float.valueOf(75.75f));
+		eWeightsDouble1.set(0, 76.76);
+		eWeightsDouble2.set(0, 77.77);
+		eWeightsDouble3.set(0, Double.valueOf(78.78));
+		eWeightsDouble3.set(1, Double.valueOf(79.79));
+		eWeightsDouble4.set(0, Double.valueOf(80.80));
 		eWeightsBool1.set(0, true);
 		eWeightsBool2.set(0, false);
-		eWeightsChar1.set(0, 'C');
+		eWeightsBool3.set(0, Boolean.TRUE);
+		eWeightsBool3.set(1, Boolean.FALSE);
+		eWeightsBool4.set(0, Boolean.FALSE);
+		eWeightsChar1.set(0, 'B');
+		eWeightsChar1.set(1, 'C');
 		eWeightsChar2.set(0, 'D');
+		eWeightsChar3.set(0, Character.valueOf('E'));
+		eWeightsChar3.set(1, Character.valueOf('F'));
+		eWeightsChar4.set(0, Character.valueOf('G'));
 		eWeightsObj1.set(0, "63");
+		eWeightsObj1.set(1, "");
 		eWeightsObj2.set(0, "64");
 
 		GraphMlGraphWriter<Integer, Integer> writer = new GraphMlGraphWriter<>();
@@ -1288,115 +1453,147 @@ public class GraphMlTest {
 		assertEquals(g.vertices(), g1.vertices());
 		assertEquals(g.edges(), g1.edges());
 
-		IWeightsInt vWeightsByte3 = g1.getVerticesWeights("v-weights-byte1");
-		IWeightsInt vWeightsByte4 = g1.getVerticesWeights("v-weights-byte2");
-		IWeightsInt vWeightsShort3 = g1.getVerticesWeights("v-weights-short1");
-		IWeightsInt vWeightsShort4 = g1.getVerticesWeights("v-weights-short2");
-		IWeightsInt vWeightsInt3 = g1.getVerticesWeights("v-weights-int1");
-		IWeightsInt vWeightsInt4 = g1.getVerticesWeights("v-weights-int2");
-		IWeightsLong vWeightsLong3 = g1.getVerticesWeights("v-weights-long1");
-		IWeightsLong vWeightsLong4 = g1.getVerticesWeights("v-weights-long2");
-		IWeightsFloat vWeightsFloat3 = g1.getVerticesWeights("v-weights-float1");
-		IWeightsFloat vWeightsFloat4 = g1.getVerticesWeights("v-weights-float2");
-		IWeightsDouble vWeightsDouble3 = g1.getVerticesWeights("v-weights-double1");
-		IWeightsDouble vWeightsDouble4 = g1.getVerticesWeights("v-weights-double2");
-		IWeightsBool vWeightsBool3 = g1.getVerticesWeights("v-weights-bool1");
-		IWeightsBool vWeightsBool4 = g1.getVerticesWeights("v-weights-bool2");
-		IWeightsObj<String> vWeightsChar3 = g1.getVerticesWeights("v-weights-char1");
-		IWeightsObj<String> vWeightsChar4 = g1.getVerticesWeights("v-weights-char2");
-		IWeightsObj<String> vWeightsObj3 = g1.getVerticesWeights("v-weights-obj1");
-		IWeightsObj<String> vWeightsObj4 = g1.getVerticesWeights("v-weights-obj2");
-		assertEquals(vWeightsByte1.get(0), vWeightsByte3.get(0));
-		assertEquals(vWeightsByte1.get(1), vWeightsByte3.get(1));
-		assertEquals(vWeightsByte2.get(0), vWeightsByte4.get(0));
-		assertEquals(vWeightsByte2.get(1), vWeightsByte4.get(1));
-		assertEquals(vWeightsShort1.get(0), vWeightsShort3.get(0));
-		assertEquals(vWeightsShort1.get(1), vWeightsShort3.get(1));
-		assertEquals(vWeightsShort2.get(0), vWeightsShort4.get(0));
-		assertEquals(vWeightsShort2.get(1), vWeightsShort4.get(1));
-		assertEquals(vWeightsInt1.get(0), vWeightsInt3.get(0));
-		assertEquals(vWeightsInt1.get(1), vWeightsInt3.get(1));
-		assertEquals(vWeightsInt2.get(0), vWeightsInt4.get(0));
-		assertEquals(vWeightsInt2.get(1), vWeightsInt4.get(1));
-		assertEquals(vWeightsLong1.get(0), vWeightsLong3.get(0));
-		assertEquals(vWeightsLong1.get(1), vWeightsLong3.get(1));
-		assertEquals(vWeightsLong2.get(0), vWeightsLong4.get(0));
-		assertEquals(vWeightsLong2.get(1), vWeightsLong4.get(1));
-		assertEquals(vWeightsFloat1.get(0), vWeightsFloat3.get(0));
-		assertEquals(vWeightsFloat1.get(1), vWeightsFloat3.get(1));
-		assertEquals(vWeightsFloat2.get(0), vWeightsFloat4.get(0));
-		assertEquals(vWeightsFloat2.get(1), vWeightsFloat4.get(1));
-		assertEquals(vWeightsDouble1.get(0), vWeightsDouble3.get(0));
-		assertEquals(vWeightsDouble1.get(1), vWeightsDouble3.get(1));
-		assertEquals(vWeightsDouble2.get(0), vWeightsDouble4.get(0));
-		assertEquals(vWeightsDouble2.get(1), vWeightsDouble4.get(1));
-		assertEquals(vWeightsBool1.get(0), vWeightsBool3.get(0));
-		assertEquals(vWeightsBool1.get(1), vWeightsBool3.get(1));
-		assertEquals(vWeightsBool2.get(0), vWeightsBool4.get(0));
-		assertEquals(vWeightsBool2.get(1), vWeightsBool4.get(1));
-		assertEquals("" + vWeightsChar1.get(0), vWeightsChar3.get(0));
-		assertEquals("" + vWeightsChar1.get(1), vWeightsChar3.get(1));
-		assertEquals("" + vWeightsChar2.get(0), vWeightsChar4.get(0));
-		assertEquals("" + vWeightsChar2.get(1), vWeightsChar4.get(1));
-		assertEquals(vWeightsObj1.get(0), vWeightsObj3.get(0));
-		assertEquals(vWeightsObj1.get(1), vWeightsObj3.get(1));
-		assertEquals(vWeightsObj2.get(0), vWeightsObj4.get(0));
-		assertEquals(vWeightsObj2.get(1), vWeightsObj4.get(1));
+		IWeightsInt vWeightsByte1_2 = g1.getVerticesWeights("v-weights-byte1");
+		IWeightsInt vWeightsByte2_2 = g1.getVerticesWeights("v-weights-byte2");
+		IWeightsInt vWeightsByte2_3 = g1.getVerticesWeights("v-weights-byte3");
+		IWeightsInt vWeightsByte2_4 = g1.getVerticesWeights("v-weights-byte4");
+		IWeightsInt vWeightsShort1_2 = g1.getVerticesWeights("v-weights-short1");
+		IWeightsInt vWeightsShort2_2 = g1.getVerticesWeights("v-weights-short2");
+		IWeightsInt vWeightsShort2_3 = g1.getVerticesWeights("v-weights-short3");
+		IWeightsInt vWeightsShort2_4 = g1.getVerticesWeights("v-weights-short4");
+		IWeightsInt vWeightsInt1_2 = g1.getVerticesWeights("v-weights-int1");
+		IWeightsInt vWeightsInt2_2 = g1.getVerticesWeights("v-weights-int2");
+		IWeightsInt vWeightsInt2_3 = g1.getVerticesWeights("v-weights-int3");
+		IWeightsInt vWeightsInt2_4 = g1.getVerticesWeights("v-weights-int4");
+		IWeightsLong vWeightsLong1_2 = g1.getVerticesWeights("v-weights-long1");
+		IWeightsLong vWeightsLong2_2 = g1.getVerticesWeights("v-weights-long2");
+		IWeightsLong vWeightsLong2_3 = g1.getVerticesWeights("v-weights-long3");
+		IWeightsLong vWeightsLong2_4 = g1.getVerticesWeights("v-weights-long4");
+		IWeightsFloat vWeightsFloat1_2 = g1.getVerticesWeights("v-weights-float1");
+		IWeightsFloat vWeightsFloat2_2 = g1.getVerticesWeights("v-weights-float2");
+		IWeightsFloat vWeightsFloat2_3 = g1.getVerticesWeights("v-weights-float3");
+		IWeightsFloat vWeightsFloat2_4 = g1.getVerticesWeights("v-weights-float4");
+		IWeightsDouble vWeightsDouble1_2 = g1.getVerticesWeights("v-weights-double1");
+		IWeightsDouble vWeightsDouble2_2 = g1.getVerticesWeights("v-weights-double2");
+		IWeightsDouble vWeightsDouble2_3 = g1.getVerticesWeights("v-weights-double3");
+		IWeightsDouble vWeightsDouble2_4 = g1.getVerticesWeights("v-weights-double4");
+		IWeightsBool vWeightsBool1_2 = g1.getVerticesWeights("v-weights-bool1");
+		IWeightsBool vWeightsBool2_2 = g1.getVerticesWeights("v-weights-bool2");
+		IWeightsBool vWeightsBool2_3 = g1.getVerticesWeights("v-weights-bool3");
+		IWeightsBool vWeightsBool2_4 = g1.getVerticesWeights("v-weights-bool4");
+		IWeightsObj<String> vWeightsChar1_2 = g1.getVerticesWeights("v-weights-char1");
+		IWeightsObj<String> vWeightsChar2_2 = g1.getVerticesWeights("v-weights-char2");
+		IWeightsObj<String> vWeightsChar2_3 = g1.getVerticesWeights("v-weights-char3");
+		IWeightsObj<String> vWeightsChar2_4 = g1.getVerticesWeights("v-weights-char4");
+		IWeightsObj<String> vWeightsObj1_2 = g1.getVerticesWeights("v-weights-obj1");
+		IWeightsObj<String> vWeightsObj2_2 = g1.getVerticesWeights("v-weights-obj2");
+		for (int v : g.vertices()) {
+			assertEquals(vWeightsByte1.get(v), vWeightsByte1_2.get(v));
+			assertEquals(vWeightsByte2.get(v), vWeightsByte2_2.get(v));
+			assertEquals(vWeightsByte3.get(v).intValue(), vWeightsByte2_3.get(v));
+			assertEquals(vWeightsByte4.get(v).intValue(), vWeightsByte2_4.get(v));
+			assertEquals(vWeightsShort1.get(v), vWeightsShort1_2.get(v));
+			assertEquals(vWeightsShort2.get(v), vWeightsShort2_2.get(v));
+			assertEquals(vWeightsShort3.get(v).intValue(), vWeightsShort2_3.get(v));
+			assertEquals(vWeightsShort4.get(v).intValue(), vWeightsShort2_4.get(v));
+			assertEquals(vWeightsInt1.get(v), vWeightsInt1_2.get(v));
+			assertEquals(vWeightsInt2.get(v), vWeightsInt2_2.get(v));
+			assertEquals(vWeightsInt3.get(v), Integer.valueOf(vWeightsInt2_3.get(v)));
+			assertEquals(vWeightsInt4.get(v), Integer.valueOf(vWeightsInt2_4.get(v)));
+			assertEquals(vWeightsLong1.get(v), vWeightsLong1_2.get(v));
+			assertEquals(vWeightsLong2.get(v), vWeightsLong2_2.get(v));
+			assertEquals(vWeightsLong3.get(v), Long.valueOf(vWeightsLong2_3.get(v)));
+			assertEquals(vWeightsLong4.get(v), Long.valueOf(vWeightsLong2_4.get(v)));
+			assertEquals(vWeightsFloat1.get(v), vWeightsFloat1_2.get(v));
+			assertEquals(vWeightsFloat2.get(v), vWeightsFloat2_2.get(v));
+			assertEquals(vWeightsFloat3.get(v), Float.valueOf(vWeightsFloat2_3.get(v)));
+			assertEquals(vWeightsFloat4.get(v), Float.valueOf(vWeightsFloat2_4.get(v)));
+			assertEquals(vWeightsDouble1.get(v), vWeightsDouble1_2.get(v));
+			assertEquals(vWeightsDouble2.get(v), vWeightsDouble2_2.get(v));
+			assertEquals(vWeightsDouble3.get(v), Double.valueOf(vWeightsDouble2_3.get(v)));
+			assertEquals(vWeightsDouble4.get(v), Double.valueOf(vWeightsDouble2_4.get(v)));
+			assertEquals(vWeightsBool1.get(v), vWeightsBool1_2.get(v));
+			assertEquals(vWeightsBool2.get(v), vWeightsBool2_2.get(v));
+			assertEquals(vWeightsBool3.get(v), Boolean.valueOf(vWeightsBool2_3.get(v)));
+			assertEquals(vWeightsBool4.get(v), Boolean.valueOf(vWeightsBool2_4.get(v)));
+			assertEquals("" + vWeightsChar1.get(v), vWeightsChar1_2.get(v));
+			assertEquals("" + vWeightsChar2.get(v), vWeightsChar2_2.get(v));
+			assertEquals("" + vWeightsChar3.get(v), vWeightsChar2_3.get(v));
+			assertEquals("" + vWeightsChar4.get(v), vWeightsChar2_4.get(v));
+			assertEquals(vWeightsObj1.get(v), vWeightsObj1_2.get(v));
+			assertEquals(vWeightsObj2.get(v), vWeightsObj2_2.get(v));
+		}
 
-		IWeightsInt eWeightsByte3 = g1.getEdgesWeights("e-weights-byte1");
-		IWeightsInt eWeightsByte4 = g1.getEdgesWeights("e-weights-byte2");
-		IWeightsInt eWeightsShort3 = g1.getEdgesWeights("e-weights-short1");
-		IWeightsInt eWeightsShort4 = g1.getEdgesWeights("e-weights-short2");
-		IWeightsInt eWeightsInt3 = g1.getEdgesWeights("e-weights-int1");
-		IWeightsInt eWeightsInt4 = g1.getEdgesWeights("e-weights-int2");
-		IWeightsLong eWeightsLong3 = g1.getEdgesWeights("e-weights-long1");
-		IWeightsLong eWeightsLong4 = g1.getEdgesWeights("e-weights-long2");
-		IWeightsFloat eWeightsFloat3 = g1.getEdgesWeights("e-weights-float1");
-		IWeightsFloat eWeightsFloat4 = g1.getEdgesWeights("e-weights-float2");
-		IWeightsDouble eWeightsDouble3 = g1.getEdgesWeights("e-weights-double1");
-		IWeightsDouble eWeightsDouble4 = g1.getEdgesWeights("e-weights-double2");
-		IWeightsBool eWeightsBool3 = g1.getEdgesWeights("e-weights-bool1");
-		IWeightsBool eWeightsBool4 = g1.getEdgesWeights("e-weights-bool2");
-		IWeightsObj<String> eWeightsChar3 = g1.getEdgesWeights("e-weights-char1");
-		IWeightsObj<String> eWeightsChar4 = g1.getEdgesWeights("e-weights-char2");
-		IWeightsObj<String> eWeightsObj3 = g1.getEdgesWeights("e-weights-obj1");
-		IWeightsObj<String> eWeightsObj4 = g1.getEdgesWeights("e-weights-obj2");
-		assertEquals(eWeightsByte1.get(0), eWeightsByte3.get(0));
-		assertEquals(eWeightsByte1.get(1), eWeightsByte3.get(1));
-		assertEquals(eWeightsByte2.get(0), eWeightsByte4.get(0));
-		assertEquals(eWeightsByte2.get(1), eWeightsByte4.get(1));
-		assertEquals(eWeightsShort1.get(0), eWeightsShort3.get(0));
-		assertEquals(eWeightsShort1.get(1), eWeightsShort3.get(1));
-		assertEquals(eWeightsShort2.get(0), eWeightsShort4.get(0));
-		assertEquals(eWeightsShort2.get(1), eWeightsShort4.get(1));
-		assertEquals(eWeightsInt1.get(0), eWeightsInt3.get(0));
-		assertEquals(eWeightsInt1.get(1), eWeightsInt3.get(1));
-		assertEquals(eWeightsInt2.get(0), eWeightsInt4.get(0));
-		assertEquals(eWeightsInt2.get(1), eWeightsInt4.get(1));
-		assertEquals(eWeightsLong1.get(0), eWeightsLong3.get(0));
-		assertEquals(eWeightsLong1.get(1), eWeightsLong3.get(1));
-		assertEquals(eWeightsLong2.get(0), eWeightsLong4.get(0));
-		assertEquals(eWeightsLong2.get(1), eWeightsLong4.get(1));
-		assertEquals(eWeightsFloat1.get(0), eWeightsFloat3.get(0));
-		assertEquals(eWeightsFloat1.get(1), eWeightsFloat3.get(1));
-		assertEquals(eWeightsFloat2.get(0), eWeightsFloat4.get(0));
-		assertEquals(eWeightsFloat2.get(1), eWeightsFloat4.get(1));
-		assertEquals(eWeightsDouble1.get(0), eWeightsDouble3.get(0));
-		assertEquals(eWeightsDouble1.get(1), eWeightsDouble3.get(1));
-		assertEquals(eWeightsDouble2.get(0), eWeightsDouble4.get(0));
-		assertEquals(eWeightsDouble2.get(1), eWeightsDouble4.get(1));
-		assertEquals(eWeightsBool1.get(0), eWeightsBool3.get(0));
-		assertEquals(eWeightsBool1.get(1), eWeightsBool3.get(1));
-		assertEquals(eWeightsBool2.get(0), eWeightsBool4.get(0));
-		assertEquals(eWeightsBool2.get(1), eWeightsBool4.get(1));
-		assertEquals("" + eWeightsChar1.get(0), eWeightsChar3.get(0));
-		assertEquals("" + eWeightsChar1.get(1), eWeightsChar3.get(1));
-		assertEquals("" + eWeightsChar2.get(0), eWeightsChar4.get(0));
-		assertEquals("" + eWeightsChar2.get(1), eWeightsChar4.get(1));
-		assertEquals(eWeightsObj1.get(0), eWeightsObj3.get(0));
-		assertEquals(eWeightsObj1.get(1), eWeightsObj3.get(1));
-		assertEquals(eWeightsObj2.get(0), eWeightsObj4.get(0));
-		assertEquals(eWeightsObj2.get(1), eWeightsObj4.get(1));
+		IWeightsInt eWeightsByte1_2 = g1.getEdgesWeights("e-weights-byte1");
+		IWeightsInt eWeightsByte2_2 = g1.getEdgesWeights("e-weights-byte2");
+		IWeightsInt eWeightsByte2_3 = g1.getEdgesWeights("e-weights-byte3");
+		IWeightsInt eWeightsByte2_4 = g1.getEdgesWeights("e-weights-byte4");
+		IWeightsInt eWeightsShort1_2 = g1.getEdgesWeights("e-weights-short1");
+		IWeightsInt eWeightsShort2_2 = g1.getEdgesWeights("e-weights-short2");
+		IWeightsInt eWeightsShort2_3 = g1.getEdgesWeights("e-weights-short3");
+		IWeightsInt eWeightsShort2_4 = g1.getEdgesWeights("e-weights-short4");
+		IWeightsInt eWeightsInt1_2 = g1.getEdgesWeights("e-weights-int1");
+		IWeightsInt eWeightsInt2_2 = g1.getEdgesWeights("e-weights-int2");
+		IWeightsInt eWeightsInt2_3 = g1.getEdgesWeights("e-weights-int3");
+		IWeightsInt eWeightsInt2_4 = g1.getEdgesWeights("e-weights-int4");
+		IWeightsLong eWeightsLong1_2 = g1.getEdgesWeights("e-weights-long1");
+		IWeightsLong eWeightsLong2_2 = g1.getEdgesWeights("e-weights-long2");
+		IWeightsLong eWeightsLong2_3 = g1.getEdgesWeights("e-weights-long3");
+		IWeightsLong eWeightsLong2_4 = g1.getEdgesWeights("e-weights-long4");
+		IWeightsFloat eWeightsFloat1_2 = g1.getEdgesWeights("e-weights-float1");
+		IWeightsFloat eWeightsFloat2_2 = g1.getEdgesWeights("e-weights-float2");
+		IWeightsFloat eWeightsFloat2_3 = g1.getEdgesWeights("e-weights-float3");
+		IWeightsFloat eWeightsFloat2_4 = g1.getEdgesWeights("e-weights-float4");
+		IWeightsDouble eWeightsDouble1_2 = g1.getEdgesWeights("e-weights-double1");
+		IWeightsDouble eWeightsDouble2_2 = g1.getEdgesWeights("e-weights-double2");
+		IWeightsDouble eWeightsDouble2_3 = g1.getEdgesWeights("e-weights-double3");
+		IWeightsDouble eWeightsDouble2_4 = g1.getEdgesWeights("e-weights-double4");
+		IWeightsBool eWeightsBool1_2 = g1.getEdgesWeights("e-weights-bool1");
+		IWeightsBool eWeightsBool2_2 = g1.getEdgesWeights("e-weights-bool2");
+		IWeightsBool eWeightsBool2_3 = g1.getEdgesWeights("e-weights-bool3");
+		IWeightsBool eWeightsBool2_4 = g1.getEdgesWeights("e-weights-bool4");
+		IWeightsObj<String> eWeightsChar1_2 = g1.getEdgesWeights("e-weights-char1");
+		IWeightsObj<String> eWeightsChar2_2 = g1.getEdgesWeights("e-weights-char2");
+		IWeightsObj<String> eWeightsChar2_3 = g1.getEdgesWeights("e-weights-char3");
+		IWeightsObj<String> eWeightsChar2_4 = g1.getEdgesWeights("e-weights-char4");
+		IWeightsObj<String> eWeightsObj1_2 = g1.getEdgesWeights("e-weights-obj1");
+		IWeightsObj<String> eWeightsObj2_2 = g1.getEdgesWeights("e-weights-obj2");
+		for (int e : g.edges()) {
+			assertEquals(eWeightsByte1.get(e), eWeightsByte1_2.get(e));
+			assertEquals(eWeightsByte2.get(e), eWeightsByte2_2.get(e));
+			assertEquals(eWeightsByte3.get(e).intValue(), eWeightsByte2_3.get(e));
+			assertEquals(eWeightsByte4.get(e).intValue(), eWeightsByte2_4.get(e));
+			assertEquals(eWeightsShort1.get(e), eWeightsShort1_2.get(e));
+			assertEquals(eWeightsShort2.get(e), eWeightsShort2_2.get(e));
+			assertEquals(eWeightsShort3.get(e).intValue(), eWeightsShort2_3.get(e));
+			assertEquals(eWeightsShort4.get(e).intValue(), eWeightsShort2_4.get(e));
+			assertEquals(eWeightsInt1.get(e), eWeightsInt1_2.get(e));
+			assertEquals(eWeightsInt2.get(e), eWeightsInt2_2.get(e));
+			assertEquals(eWeightsInt3.get(e), Integer.valueOf(eWeightsInt2_3.get(e)));
+			assertEquals(eWeightsInt4.get(e), Integer.valueOf(eWeightsInt2_4.get(e)));
+			assertEquals(eWeightsLong1.get(e), eWeightsLong1_2.get(e));
+			assertEquals(eWeightsLong2.get(e), eWeightsLong2_2.get(e));
+			assertEquals(eWeightsLong3.get(e), Long.valueOf(eWeightsLong2_3.get(e)));
+			assertEquals(eWeightsLong4.get(e), Long.valueOf(eWeightsLong2_4.get(e)));
+			assertEquals(eWeightsFloat1.get(e), eWeightsFloat1_2.get(e));
+			assertEquals(eWeightsFloat2.get(e), eWeightsFloat2_2.get(e));
+			assertEquals(eWeightsFloat3.get(e), Float.valueOf(eWeightsFloat2_3.get(e)));
+			assertEquals(eWeightsFloat4.get(e), Float.valueOf(eWeightsFloat2_4.get(e)));
+			assertEquals(eWeightsDouble1.get(e), eWeightsDouble1_2.get(e));
+			assertEquals(eWeightsDouble2.get(e), eWeightsDouble2_2.get(e));
+			assertEquals(eWeightsDouble3.get(e), Double.valueOf(eWeightsDouble2_3.get(e)));
+			assertEquals(eWeightsDouble4.get(e), Double.valueOf(eWeightsDouble2_4.get(e)));
+			assertEquals(eWeightsBool1.get(e), eWeightsBool1_2.get(e));
+			assertEquals(eWeightsBool2.get(e), eWeightsBool2_2.get(e));
+			assertEquals(eWeightsBool3.get(e), Boolean.valueOf(eWeightsBool2_3.get(e)));
+			assertEquals(eWeightsBool4.get(e), Boolean.valueOf(eWeightsBool2_4.get(e)));
+			assertEquals("" + eWeightsChar1.get(e), eWeightsChar1_2.get(e));
+			assertEquals("" + eWeightsChar2.get(e), eWeightsChar2_2.get(e));
+			assertEquals("" + eWeightsChar3.get(e), eWeightsChar2_3.get(e));
+			assertEquals("" + eWeightsChar4.get(e), eWeightsChar2_4.get(e));
+			assertEquals(eWeightsObj1.get(e), eWeightsObj1_2.get(e));
+			assertEquals(eWeightsObj2.get(e), eWeightsObj2_2.get(e));
+		}
 	}
 
 	@Test
@@ -1420,6 +1617,32 @@ public class GraphMlTest {
 				.readGraph(new StringReader(text.get())) instanceof IntGraph);
 		assertFalse(new GraphMlGraphReader<>(int.class, Integer.class)
 				.readGraph(new StringReader(text.get())) instanceof IntGraph);
+	}
+
+	@Test
+	public void writeWeightsVerticesUnsupported() {
+		IntGraph g = IntGraph.newUndirected();
+		g.addVertex(0);
+
+		IWeightsObj<IntGraph> weights = g.addVerticesWeights("weight", IntGraph.class);
+		weights.set(0, IntGraph.newDirected());
+
+		GraphMlGraphWriter<Integer, Integer> writer = new GraphMlGraphWriter<>();
+		assertThrows(IllegalArgumentException.class, () -> writer.writeGraph(g, new StringWriter()));
+	}
+
+	@Test
+	public void writeWeightsEdgesUnsupported() {
+		IntGraph g = IntGraph.newUndirected();
+		g.addVertex(0);
+		g.addVertex(1);
+		g.addEdge(0, 1, 88);
+
+		IWeightsObj<IntGraph> weights = g.addEdgesWeights("weight", IntGraph.class);
+		weights.set(88, IntGraph.newDirected());
+
+		GraphMlGraphWriter<Integer, Integer> writer = new GraphMlGraphWriter<>();
+		assertThrows(IllegalArgumentException.class, () -> writer.writeGraph(g, new StringWriter()));
 	}
 
 }

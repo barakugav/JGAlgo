@@ -23,6 +23,9 @@ import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.LongFunction;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IntGraph;
@@ -125,6 +128,102 @@ class GraphIoUtils {
 		if (s.length() != 1)
 			throw new IllegalArgumentException("expected a string of a single character, got: '" + s + "'");
 		return s.charAt(0);
+	}
+
+	@SuppressWarnings("unchecked")
+	static <K> Function<String, K> defaultParser(Class<K> type) {
+		if (type == byte.class || type == Byte.class) {
+			Function<String, Byte> parser = Byte::valueOf;
+			return (Function<String, K>) parser;
+
+		} else if (type == short.class || type == Short.class) {
+			Function<String, Short> parser = Short::valueOf;
+			return (Function<String, K>) parser;
+
+		} else if (type == int.class || type == Integer.class) {
+			Function<String, Integer> parser = Integer::valueOf;
+			return (Function<String, K>) parser;
+
+		} else if (type == long.class || type == Long.class) {
+			Function<String, Long> parser = Long::valueOf;
+			return (Function<String, K>) parser;
+
+		} else if (type == float.class || type == Float.class) {
+			Function<String, Float> parser = Float::valueOf;
+			return (Function<String, K>) parser;
+
+		} else if (type == double.class || type == Double.class) {
+			Function<String, Double> parser = Double::valueOf;
+			return (Function<String, K>) parser;
+
+		} else if (type == String.class) {
+			Function<String, String> parser = Function.identity();
+			return (Function<String, K>) parser;
+
+		} else {
+			throw new IllegalArgumentException("no default parser for type: " + type);
+		}
+	}
+
+	static <E> Function<Set<E>, E> defaultEdgeSupplier(Class<E> edgeType) {
+		if (edgeType == byte.class || edgeType == Byte.class) {
+			long min = Byte.MIN_VALUE, max = Byte.MAX_VALUE, maxEdgesSize = 1 << Byte.SIZE;
+			return defaultEdgeSupplier(min, max, maxEdgesSize, x -> Byte.valueOf((byte) x));
+
+		} else if (edgeType == short.class || edgeType == Short.class) {
+			long min = Short.MIN_VALUE, max = Short.MAX_VALUE, maxEdgesSize = 1 << Short.SIZE;
+			return defaultEdgeSupplier(min, max, maxEdgesSize, x -> Short.valueOf((short) x));
+
+		} else if (edgeType == int.class || edgeType == Integer.class) {
+			long min = Integer.MIN_VALUE, max = Integer.MAX_VALUE, maxEdgesSize = 1L << Integer.SIZE;
+			return defaultEdgeSupplier(min, max, maxEdgesSize, x -> Integer.valueOf((int) x));
+
+		} else if (edgeType == long.class || edgeType == Long.class) {
+			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L << 48;
+			return defaultEdgeSupplier(min, max, maxEdgesSize, x -> Long.valueOf(x));
+
+		} else if (edgeType == float.class || edgeType == Float.class) {
+			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L << 48;
+			return defaultEdgeSupplier(min, max, maxEdgesSize, x -> Float.valueOf(x));
+
+		} else if (edgeType == double.class || edgeType == Double.class) {
+			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L << 48;
+			return defaultEdgeSupplier(min, max, maxEdgesSize, x -> Double.valueOf(x));
+
+		} else if (edgeType == String.class) {
+			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L << 48;
+			return defaultEdgeSupplier(min, max, maxEdgesSize, x -> ("e" + x));
+
+		} else {
+			throw new IllegalArgumentException("no default edge supplier for type: " + edgeType);
+		}
+	}
+
+	private static <E> Function<Set<E>, E> defaultEdgeSupplier(long minVal, long maxVal, long maxEdgesSize,
+			LongFunction<Object> idBuilder) {
+		return new Function<>() {
+			long nextId;
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public E apply(Set<E> existingEdges) {
+				if (existingEdges.size() >= maxEdgesSize)
+					throw new IllegalArgumentException("too many edges");
+				for (Object id;;)
+					if (!existingEdges.contains(id = idBuilder.apply(getAndInc())))
+						return (E) id;
+			}
+
+			private long getAndInc() {
+				long ret = nextId;
+				if (nextId < maxVal) {
+					nextId++;
+				} else {
+					nextId = minVal;
+				}
+				return ret;
+			}
+		};
 	}
 
 }
