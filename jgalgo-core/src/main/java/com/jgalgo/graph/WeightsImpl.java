@@ -179,11 +179,9 @@ interface WeightsImpl {
 			void addWeights(String key, WeightsImpl.IndexMutable<?> weights) {
 				Objects.requireNonNull(key);
 				int idx = keyToIdx.size();
-				int oldIdx = keyToIdx.put(key, idx);
-				if (oldIdx != -1) {
-					keyToIdx.put(key, oldIdx);
+				int oldIdx = keyToIdx.putIfAbsent(key, idx);
+				if (oldIdx != -1)
 					throw new IllegalArgumentException("Two weights types with the same key: " + key);
-				}
 
 				if (idx == this.weights.length) {
 					weightsKey = Arrays.copyOf(weightsKey, Math.max(2, 2 * weightsKey.length));
