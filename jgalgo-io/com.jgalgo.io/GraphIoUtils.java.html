@@ -23,6 +23,9 @@ import java.io.UncheckedIOException;
 import java.io.Writer;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.LongFunction;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IntGraph;
@@ -33,92 +36,194 @@ class GraphIoUtils {
 	private GraphIoUtils() {}
 
 	static Iterable&lt;String&gt; lines(BufferedReader reader, boolean trim) {
-<span class="fc" id="L36">		return () -&gt; new Iterator&lt;&gt;() {</span>
-<span class="fc" id="L37">			private String nextLine = null;</span>
+<span class="fc" id="L39">		return () -&gt; new Iterator&lt;&gt;() {</span>
+<span class="fc" id="L40">			private String nextLine = null;</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc bfc" id="L41" title="All 2 branches covered.">				if (nextLine != null)</span>
-<span class="fc" id="L42">					return true;</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">				if (nextLine != null)</span>
+<span class="fc" id="L45">					return true;</span>
 				try {
-<span class="fc" id="L44">					nextLine = reader.readLine();</span>
-<span class="fc bfc" id="L45" title="All 2 branches covered.">					if (nextLine == null)</span>
-<span class="fc" id="L46">						return false;</span>
-<span class="pc bpc" id="L47" title="1 of 2 branches missed.">					if (trim)</span>
-<span class="fc" id="L48">						nextLine = nextLine.trim();</span>
-<span class="fc" id="L49">					return true;</span>
-<span class="nc" id="L50">				} catch (IOException e) {</span>
-<span class="nc" id="L51">					throw new UncheckedIOException(e);</span>
+<span class="fc" id="L47">					nextLine = reader.readLine();</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">					if (nextLine == null)</span>
+<span class="fc" id="L49">						return false;</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">					if (trim)</span>
+<span class="fc" id="L51">						nextLine = nextLine.trim();</span>
+<span class="fc" id="L52">					return true;</span>
+<span class="nc" id="L53">				} catch (IOException e) {</span>
+<span class="nc" id="L54">					throw new UncheckedIOException(e);</span>
 				}
 			}
 
 			@Override
 			public String next() {
-<span class="pc bpc" id="L57" title="1 of 2 branches missed.">				if (!hasNext())</span>
-<span class="nc" id="L58">					throw new NoSuchElementException();</span>
-<span class="fc" id="L59">				String line = nextLine;</span>
-<span class="fc" id="L60">				nextLine = null;</span>
-<span class="fc" id="L61">				return line;</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">				if (!hasNext())</span>
+<span class="nc" id="L61">					throw new NoSuchElementException();</span>
+<span class="fc" id="L62">				String line = nextLine;</span>
+<span class="fc" id="L63">				nextLine = null;</span>
+<span class="fc" id="L64">				return line;</span>
 			}
 		};
 	}
 
 	static BufferedReader bufferedReader(Reader reader) {
-<span class="pc bpc" id="L67" title="1 of 2 branches missed.">		return reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader);</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">		return reader instanceof BufferedReader ? (BufferedReader) reader : new BufferedReader(reader);</span>
 	}
 
-<span class="fc" id="L70">	abstract static class AbstractGraphReader&lt;V, E&gt; implements GraphReader&lt;V, E&gt; {</span>
+<span class="fc" id="L73">	abstract static class AbstractGraphReader&lt;V, E&gt; implements GraphReader&lt;V, E&gt; {</span>
 
 		@Override
 		public GraphBuilder&lt;V, E&gt; readIntoBuilder(Reader reader) {
 			try {
-<span class="fc" id="L75">				return readIntoBuilderImpl(reader);</span>
-<span class="nc" id="L76">			} catch (IOException e) {</span>
-<span class="nc" id="L77">				throw new UncheckedIOException(e);</span>
+<span class="fc" id="L78">				return readIntoBuilderImpl(reader);</span>
+<span class="nc" id="L79">			} catch (IOException e) {</span>
+<span class="nc" id="L80">				throw new UncheckedIOException(e);</span>
 			}
 		}
 
 		abstract GraphBuilder&lt;V, E&gt; readIntoBuilderImpl(Reader reader) throws IOException;
 	}
 
-<span class="fc" id="L84">	abstract static class AbstractIntGraphReader extends AbstractGraphReader&lt;Integer, Integer&gt; {</span>
+<span class="fc" id="L87">	abstract static class AbstractIntGraphReader extends AbstractGraphReader&lt;Integer, Integer&gt; {</span>
 
 		@Override
 		public IntGraph readGraph(Reader reader) {
-<span class="fc" id="L88">			return (IntGraph) super.readGraph(reader);</span>
+<span class="fc" id="L91">			return (IntGraph) super.readGraph(reader);</span>
 		}
 
 		@Override
 		public IntGraph readGraph(File file) {
-<span class="nc" id="L93">			return (IntGraph) super.readGraph(file);</span>
+<span class="nc" id="L96">			return (IntGraph) super.readGraph(file);</span>
 		}
 
 		@Override
 		public IntGraph readGraph(String path) {
-<span class="nc" id="L98">			return (IntGraph) super.readGraph(path);</span>
+<span class="nc" id="L101">			return (IntGraph) super.readGraph(path);</span>
 		}
 
 		@Override
 		public final IntGraphBuilder readIntoBuilder(Reader reader) {
-<span class="fc" id="L103">			return (IntGraphBuilder) super.readIntoBuilder(reader);</span>
+<span class="fc" id="L106">			return (IntGraphBuilder) super.readIntoBuilder(reader);</span>
 		}
 
 		@Override
 		abstract IntGraphBuilder readIntoBuilderImpl(Reader reader) throws IOException;
 	}
 
-<span class="fc" id="L110">	abstract static class AbstractGraphWriter&lt;V, E&gt; implements GraphWriter&lt;V, E&gt; {</span>
+<span class="fc" id="L113">	abstract static class AbstractGraphWriter&lt;V, E&gt; implements GraphWriter&lt;V, E&gt; {</span>
 
 		@Override
 		public final void writeGraph(Graph&lt;V, E&gt; graph, Writer writer) {
 			try {
-<span class="fc" id="L115">				writeGraphImpl(graph, writer);</span>
-<span class="nc" id="L116">			} catch (IOException e) {</span>
-<span class="nc" id="L117">				throw new UncheckedIOException(e);</span>
-<span class="fc" id="L118">			}</span>
-<span class="fc" id="L119">		}</span>
+<span class="fc" id="L118">				writeGraphImpl(graph, writer);</span>
+<span class="nc" id="L119">			} catch (IOException e) {</span>
+<span class="nc" id="L120">				throw new UncheckedIOException(e);</span>
+<span class="fc" id="L121">			}</span>
+<span class="fc" id="L122">		}</span>
 
 		abstract void writeGraphImpl(Graph&lt;V, E&gt; graph, Writer writer) throws IOException;
+	}
+
+	static char parseChar(String s) {
+<span class="fc bfc" id="L128" title="All 2 branches covered.">		if (s.length() != 1)</span>
+<span class="fc" id="L129">			throw new IllegalArgumentException(&quot;expected a string of a single character, got: '&quot; + s + &quot;'&quot;);</span>
+<span class="fc" id="L130">		return s.charAt(0);</span>
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;K&gt; Function&lt;String, K&gt; defaultParser(Class&lt;K&gt; type) {
+<span class="fc bfc" id="L135" title="All 4 branches covered.">		if (type == byte.class || type == Byte.class) {</span>
+<span class="fc" id="L136">			Function&lt;String, Byte&gt; parser = Byte::valueOf;</span>
+<span class="fc" id="L137">			return (Function&lt;String, K&gt;) parser;</span>
+
+<span class="fc bfc" id="L139" title="All 4 branches covered.">		} else if (type == short.class || type == Short.class) {</span>
+<span class="fc" id="L140">			Function&lt;String, Short&gt; parser = Short::valueOf;</span>
+<span class="fc" id="L141">			return (Function&lt;String, K&gt;) parser;</span>
+
+<span class="fc bfc" id="L143" title="All 4 branches covered.">		} else if (type == int.class || type == Integer.class) {</span>
+<span class="fc" id="L144">			Function&lt;String, Integer&gt; parser = Integer::valueOf;</span>
+<span class="fc" id="L145">			return (Function&lt;String, K&gt;) parser;</span>
+
+<span class="fc bfc" id="L147" title="All 4 branches covered.">		} else if (type == long.class || type == Long.class) {</span>
+<span class="fc" id="L148">			Function&lt;String, Long&gt; parser = Long::valueOf;</span>
+<span class="fc" id="L149">			return (Function&lt;String, K&gt;) parser;</span>
+
+<span class="fc bfc" id="L151" title="All 4 branches covered.">		} else if (type == float.class || type == Float.class) {</span>
+<span class="fc" id="L152">			Function&lt;String, Float&gt; parser = Float::valueOf;</span>
+<span class="fc" id="L153">			return (Function&lt;String, K&gt;) parser;</span>
+
+<span class="fc bfc" id="L155" title="All 4 branches covered.">		} else if (type == double.class || type == Double.class) {</span>
+<span class="fc" id="L156">			Function&lt;String, Double&gt; parser = Double::valueOf;</span>
+<span class="fc" id="L157">			return (Function&lt;String, K&gt;) parser;</span>
+
+<span class="fc bfc" id="L159" title="All 2 branches covered.">		} else if (type == String.class) {</span>
+<span class="fc" id="L160">			Function&lt;String, String&gt; parser = Function.identity();</span>
+<span class="fc" id="L161">			return (Function&lt;String, K&gt;) parser;</span>
+
+		} else {
+<span class="fc" id="L164">			throw new IllegalArgumentException(&quot;no default parser for type: &quot; + type);</span>
+		}
+	}
+
+	static &lt;E&gt; Function&lt;Set&lt;E&gt;, E&gt; defaultEdgeSupplier(Class&lt;E&gt; edgeType) {
+<span class="fc bfc" id="L169" title="All 4 branches covered.">		if (edgeType == byte.class || edgeType == Byte.class) {</span>
+<span class="fc" id="L170">			long min = Byte.MIN_VALUE, max = Byte.MAX_VALUE, maxEdgesSize = 1 &lt;&lt; Byte.SIZE;</span>
+<span class="fc" id="L171">			return defaultEdgeSupplier(min, max, maxEdgesSize, x -&gt; Byte.valueOf((byte) x));</span>
+
+<span class="fc bfc" id="L173" title="All 4 branches covered.">		} else if (edgeType == short.class || edgeType == Short.class) {</span>
+<span class="fc" id="L174">			long min = Short.MIN_VALUE, max = Short.MAX_VALUE, maxEdgesSize = 1 &lt;&lt; Short.SIZE;</span>
+<span class="fc" id="L175">			return defaultEdgeSupplier(min, max, maxEdgesSize, x -&gt; Short.valueOf((short) x));</span>
+
+<span class="fc bfc" id="L177" title="All 4 branches covered.">		} else if (edgeType == int.class || edgeType == Integer.class) {</span>
+<span class="fc" id="L178">			long min = Integer.MIN_VALUE, max = Integer.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; Integer.SIZE;</span>
+<span class="fc" id="L179">			return defaultEdgeSupplier(min, max, maxEdgesSize, x -&gt; Integer.valueOf((int) x));</span>
+
+<span class="fc bfc" id="L181" title="All 4 branches covered.">		} else if (edgeType == long.class || edgeType == Long.class) {</span>
+<span class="fc" id="L182">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
+<span class="fc" id="L183">			return defaultEdgeSupplier(min, max, maxEdgesSize, x -&gt; Long.valueOf(x));</span>
+
+<span class="fc bfc" id="L185" title="All 4 branches covered.">		} else if (edgeType == float.class || edgeType == Float.class) {</span>
+<span class="fc" id="L186">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
+<span class="fc" id="L187">			return defaultEdgeSupplier(min, max, maxEdgesSize, x -&gt; Float.valueOf(x));</span>
+
+<span class="fc bfc" id="L189" title="All 4 branches covered.">		} else if (edgeType == double.class || edgeType == Double.class) {</span>
+<span class="fc" id="L190">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
+<span class="fc" id="L191">			return defaultEdgeSupplier(min, max, maxEdgesSize, x -&gt; Double.valueOf(x));</span>
+
+<span class="fc bfc" id="L193" title="All 2 branches covered.">		} else if (edgeType == String.class) {</span>
+<span class="fc" id="L194">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
+<span class="fc" id="L195">			return defaultEdgeSupplier(min, max, maxEdgesSize, x -&gt; (&quot;e&quot; + x));</span>
+
+		} else {
+<span class="fc" id="L198">			throw new IllegalArgumentException(&quot;no default edge supplier for type: &quot; + edgeType);</span>
+		}
+	}
+
+	private static &lt;E&gt; Function&lt;Set&lt;E&gt;, E&gt; defaultEdgeSupplier(long minVal, long maxVal, long maxEdgesSize,
+			LongFunction&lt;Object&gt; idBuilder) {
+<span class="fc" id="L204">		return new Function&lt;&gt;() {</span>
+			long nextId;
+
+			@SuppressWarnings(&quot;unchecked&quot;)
+			@Override
+			public E apply(Set&lt;E&gt; existingEdges) {
+<span class="fc bfc" id="L210" title="All 2 branches covered.">				if (existingEdges.size() &gt;= maxEdgesSize)</span>
+<span class="fc" id="L211">					throw new IllegalArgumentException(&quot;too many edges&quot;);</span>
+				for (Object id;;)
+<span class="fc bfc" id="L213" title="All 2 branches covered.">					if (!existingEdges.contains(id = idBuilder.apply(getAndInc())))</span>
+<span class="fc" id="L214">						return (E) id;</span>
+			}
+
+			private long getAndInc() {
+<span class="fc" id="L218">				long ret = nextId;</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">				if (nextId &lt; maxVal) {</span>
+<span class="fc" id="L220">					nextId++;</span>
+				} else {
+<span class="fc" id="L222">					nextId = minVal;</span>
+				}
+<span class="fc" id="L224">				return ret;</span>
+			}
+		};
 	}
 
 }

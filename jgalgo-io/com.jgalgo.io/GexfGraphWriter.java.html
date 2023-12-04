@@ -1,0 +1,412 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GexfGraphWriter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - IO</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.io</a> &gt; <span class="el_source">GexfGraphWriter.java</span></div><h1>GexfGraphWriter.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.io;
+
+import java.io.IOException;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URI;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.Weights;
+import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.graph.WeightsByte;
+import com.jgalgo.graph.WeightsChar;
+import com.jgalgo.graph.WeightsDouble;
+import com.jgalgo.graph.WeightsFloat;
+import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.graph.WeightsLong;
+import com.jgalgo.graph.WeightsObj;
+import com.jgalgo.graph.WeightsShort;
+import it.unimi.dsi.fastutil.Pair;
+import it.unimi.dsi.fastutil.booleans.BooleanList;
+import it.unimi.dsi.fastutil.bytes.ByteList;
+import it.unimi.dsi.fastutil.chars.CharList;
+import it.unimi.dsi.fastutil.doubles.DoubleList;
+import it.unimi.dsi.fastutil.floats.FloatList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.longs.LongList;
+import it.unimi.dsi.fastutil.shorts.ShortList;
+
+/**
+ * Write a graph in 'GEXF' format.
+ *
+ * &lt;p&gt;
+ * GEXF is an XML-based format for graphs. Both directed and undirected graphs are supported, along with mixed graphs
+ * (some edges are directed while others are undirected) although the {@link Graph} does not supported mixed graphs
+ * (therefore the writer also doesn't support it). The format support graphs with vertices and edges of any type, as
+ * long as they can be written as an XML attribute string. The format also support multiple weights for vertices and
+ * edges, of any primitive Java type ({@code int}, {@code long}, {@code double}, {@code boolean}, ect.), {@link String},
+ * {@link Date}, {@link URI}, {@link BigInteger}, {@link BigDecimal}, along with 'list' (arrays) of any of the above
+ * except {@link Date} and {@link URI}.
+ *
+ * &lt;p&gt;
+ * When the writer writes a graph with weights, it will try to identify the type of weights and write them accordingly.
+ * For any of the primitive type weights containers such as {@link WeightsInt}, {@link WeightsLong},
+ * {@link WeightsDouble}, {@link WeightsBool}, ect., the writer will easily identify the primitive types. On the other
+ * hand, for {@link WeightsObj}, the writer will try to identify the type of the weights by checking the type of the
+ * default value and the actual weights of the vertices/edges. If all weights (and default value if exists) are a boxed
+ * type of any primitive type, the writer will write the weights as the corresponding primitive type. If all weights are
+ * {@link String}, {@link Date}, {@link URI}, {@link BigInteger}, {@link BigDecimal}, the writer will be able to
+ * identify the type of the weights and write them accordingly. If all weights are arrays of primitive types (such as
+ * {@code int[]}, {@code long[]}, {@code double[]}, {@code boolean[]}, ect.), or fastutil lists of primitive types (such
+ * as {@link IntList}, {@link LongList}, {@link DoubleList}, {@link BooleanList}, ect.), or {@link List} of boxed
+ * primitive types (such as {@code List&lt;Integer&gt;}, {@code List&lt;Long&gt;}, {@code List&lt;Double&gt;}, {@code List&lt;Boolean&gt;},
+ * ect.), the writer will write the weights 'list' (array) type of the primitive type (the {@linkplain GexfGraphReader
+ * reader} will read them as arrays of primitives). If all weights are arrays of {@link String}, {@link BigInteger},
+ * {@link BigDecimal}, or {@link List} of {@link String}, {@link BigInteger}, {@link BigDecimal}, the writer will write
+ * the weights as 'list' (array) of {@link String}, {@link BigInteger}, {@link BigDecimal} respectively (the
+ * {@linkplain GexfGraphReader reader} will read them as arrays of objects). Note that {@code null} weights are not
+ * supported and will cause an exception to be thrown.
+ *
+ * &lt;p&gt;
+ * The GEXF format support both self edges and parallel edges. The format documentation can be found
+ * &lt;a href= &quot;https://gexf.net/&quot;&gt;here&lt;/a&gt;.
+ *
+ * @see    GexfGraphReader
+ * @author Barak Ugav
+ */
+public class GexfGraphWriter&lt;V, E&gt; extends GraphIoUtils.AbstractGraphWriter&lt;V, E&gt; {
+
+<span class="fc" id="L106">	private final SimpleDateFormat dateFormat = new SimpleDateFormat(Gexf.DateFormat);</span>
+
+	/**
+	 * Create a new writer.
+	 */
+<span class="fc" id="L111">	public GexfGraphWriter() {}</span>
+
+	@Override
+	void writeGraphImpl(Graph&lt;V, E&gt; graph, Writer writer) throws IOException {
+		try {
+<span class="fc" id="L116">			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();</span>
+<span class="fc" id="L117">			Element rootElm = document.createElement(&quot;gexf&quot;);</span>
+<span class="fc" id="L118">			rootElm.setAttribute(&quot;xmlns&quot;, &quot;http://gexf.net/1.3&quot;);</span>
+<span class="fc" id="L119">			document.appendChild(rootElm);</span>
+
+<span class="fc" id="L121">			Element metaElm = document.createElement(&quot;meta&quot;);</span>
+<span class="fc" id="L122">			metaElm.setAttribute(&quot;lastmodifieddate&quot;,</span>
+<span class="fc" id="L123">					new SimpleDateFormat(&quot;yyyy-MM-dd&quot;).format(Calendar.getInstance().getTime()));</span>
+<span class="fc" id="L124">			Element creatorElm = document.createElement(&quot;creator&quot;);</span>
+<span class="fc" id="L125">			creatorElm.setTextContent(&quot;jgalgo.com&quot;);</span>
+<span class="fc" id="L126">			metaElm.appendChild(creatorElm);</span>
+<span class="fc" id="L127">			rootElm.appendChild(metaElm);</span>
+
+<span class="fc" id="L129">			Element graphElm = document.createElement(&quot;graph&quot;);</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">			graphElm.setAttribute(&quot;defaultedgetype&quot;, graph.isDirected() ? &quot;directed&quot; : &quot;undirected&quot;);</span>
+<span class="fc" id="L131">			rootElm.appendChild(graphElm);</span>
+
+<span class="fc" id="L133">			Element nodeAttributesElm = null;</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">			if (!graph.getVerticesWeightsKeys().isEmpty()) {</span>
+<span class="fc" id="L135">				nodeAttributesElm = document.createElement(&quot;attributes&quot;);</span>
+<span class="fc" id="L136">				nodeAttributesElm.setAttribute(&quot;class&quot;, &quot;node&quot;);</span>
+<span class="fc" id="L137">				graphElm.appendChild(nodeAttributesElm);</span>
+			}
+<span class="fc" id="L139">			List&lt;Function&lt;V, Element&gt;&gt; vWeightsWriters = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">			for (String weightKey : graph.getVerticesWeightsKeys()) {</span>
+<span class="fc" id="L141">				Weights&lt;V, ?&gt; weights = graph.getVerticesWeights(weightKey);</span>
+<span class="fc" id="L142">				Pair&lt;String, Function&lt;Object, String&gt;&gt; attrWriter0 = attrWriter(weights, graph.vertices());</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">				if (attrWriter0 == null)</span>
+<span class="fc" id="L144">					throw new IllegalArgumentException(</span>
+							&quot;Vertices weights with key '&quot; + weightKey + &quot;' are not supported&quot;);
+<span class="fc" id="L146">				String attrType = attrWriter0.first();</span>
+<span class="fc" id="L147">				Function&lt;Object, String&gt; attrWriter = attrWriter0.second();</span>
+
+<span class="fc" id="L149">				Element weightElm = document.createElement(&quot;attribute&quot;);</span>
+<span class="fc" id="L150">				String weightId = String.valueOf(vWeightsWriters.size());</span>
+<span class="fc" id="L151">				weightElm.setAttribute(&quot;id&quot;, weightId);</span>
+<span class="fc" id="L152">				weightElm.setAttribute(&quot;title&quot;, weightKey);</span>
+<span class="fc" id="L153">				weightElm.setAttribute(&quot;type&quot;, attrType);</span>
+<span class="fc" id="L154">				Object defVal = weights.defaultWeightAsObj();</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">				if (defVal != null) {</span>
+<span class="fc" id="L156">					Element defaultElm = document.createElement(&quot;default&quot;);</span>
+<span class="fc" id="L157">					defaultElm.setTextContent(attrWriter.apply(defVal));</span>
+<span class="fc" id="L158">					weightElm.appendChild(defaultElm);</span>
+				}
+<span class="fc" id="L160">				nodeAttributesElm.appendChild(weightElm);</span>
+
+<span class="fc" id="L162">				vWeightsWriters.add(v -&gt; {</span>
+<span class="fc" id="L163">					Object w = weights.getAsObj(v);</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">					if (Objects.equals(defVal, w))</span>
+<span class="fc" id="L165">						return null;</span>
+<span class="fc" id="L166">					Element dataElm = document.createElement(&quot;attvalue&quot;);</span>
+<span class="fc" id="L167">					dataElm.setAttribute(&quot;for&quot;, weightId);</span>
+<span class="fc" id="L168">					dataElm.setAttribute(&quot;value&quot;, attrWriter.apply(w));</span>
+<span class="fc" id="L169">					return dataElm;</span>
+				});
+<span class="fc" id="L171">			}</span>
+
+<span class="fc" id="L173">			Element edgeAttributesElm = null;</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			if (!graph.getEdgesWeightsKeys().isEmpty()) {</span>
+<span class="fc" id="L175">				edgeAttributesElm = document.createElement(&quot;attributes&quot;);</span>
+<span class="fc" id="L176">				edgeAttributesElm.setAttribute(&quot;class&quot;, &quot;edge&quot;);</span>
+<span class="fc" id="L177">				graphElm.appendChild(edgeAttributesElm);</span>
+			}
+<span class="fc" id="L179">			List&lt;Function&lt;E, Element&gt;&gt; eWeightsWriters = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">			for (String weightKey : graph.getEdgesWeightsKeys()) {</span>
+<span class="fc" id="L181">				Weights&lt;E, ?&gt; weights = graph.getEdgesWeights(weightKey);</span>
+<span class="fc" id="L182">				Pair&lt;String, Function&lt;Object, String&gt;&gt; attrWriter0 = attrWriter(weights, graph.edges());</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">				if (attrWriter0 == null)</span>
+<span class="fc" id="L184">					throw new IllegalArgumentException(&quot;Edges weights with key '&quot; + weightKey + &quot;' are not supported&quot;);</span>
+<span class="fc" id="L185">				String attrType = attrWriter0.first();</span>
+<span class="fc" id="L186">				Function&lt;Object, String&gt; attrWriter = attrWriter0.second();</span>
+
+<span class="fc" id="L188">				Element weightElm = document.createElement(&quot;attribute&quot;);</span>
+<span class="fc" id="L189">				String weightId = String.valueOf(eWeightsWriters.size());</span>
+<span class="fc" id="L190">				weightElm.setAttribute(&quot;id&quot;, weightId);</span>
+<span class="fc" id="L191">				weightElm.setAttribute(&quot;title&quot;, weightKey);</span>
+<span class="fc" id="L192">				weightElm.setAttribute(&quot;type&quot;, attrType);</span>
+<span class="fc" id="L193">				Object defVal = weights.defaultWeightAsObj();</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">				if (defVal != null) {</span>
+<span class="fc" id="L195">					Element defaultElm = document.createElement(&quot;default&quot;);</span>
+<span class="fc" id="L196">					defaultElm.setTextContent(attrWriter.apply(defVal));</span>
+<span class="fc" id="L197">					weightElm.appendChild(defaultElm);</span>
+				}
+<span class="fc" id="L199">				edgeAttributesElm.appendChild(weightElm);</span>
+
+<span class="fc" id="L201">				eWeightsWriters.add(e -&gt; {</span>
+<span class="fc" id="L202">					Object w = weights.getAsObj(e);</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">					if (Objects.equals(defVal, w))</span>
+<span class="fc" id="L204">						return null;</span>
+<span class="fc" id="L205">					Element dataElm = document.createElement(&quot;attvalue&quot;);</span>
+<span class="fc" id="L206">					dataElm.setAttribute(&quot;for&quot;, weightId);</span>
+<span class="fc" id="L207">					dataElm.setAttribute(&quot;value&quot;, attrWriter.apply(w));</span>
+<span class="fc" id="L208">					return dataElm;</span>
+				});
+<span class="fc" id="L210">			}</span>
+
+<span class="fc" id="L212">			Element nodesElm = null;</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">			if (!graph.vertices().isEmpty()) {</span>
+<span class="fc" id="L214">				nodesElm = document.createElement(&quot;nodes&quot;);</span>
+<span class="fc" id="L215">				graphElm.appendChild(nodesElm);</span>
+			}
+<span class="fc bfc" id="L217" title="All 2 branches covered.">			for (V vertex : graph.vertices()) {</span>
+<span class="fc" id="L218">				Element nodeElm = document.createElement(&quot;node&quot;);</span>
+<span class="fc" id="L219">				nodeElm.setAttribute(&quot;id&quot;, String.valueOf(vertex));</span>
+
+<span class="fc" id="L221">				List&lt;Element&gt; ws = vWeightsWriters.stream().map(w -&gt; w.apply(vertex)).filter(Objects::nonNull)</span>
+<span class="fc" id="L222">						.collect(Collectors.toList());</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">				if (!ws.isEmpty()) {</span>
+<span class="fc" id="L224">					Element attvaluesElm = document.createElement(&quot;attvalues&quot;);</span>
+<span class="fc" id="L225">					ws.forEach(attvaluesElm::appendChild);</span>
+<span class="fc" id="L226">					nodeElm.appendChild(attvaluesElm);</span>
+				}
+<span class="fc" id="L228">				nodesElm.appendChild(nodeElm);</span>
+<span class="fc" id="L229">			}</span>
+<span class="fc" id="L230">			Element edgesElm = null;</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">			if (!graph.edges().isEmpty()) {</span>
+<span class="fc" id="L232">				edgesElm = document.createElement(&quot;edges&quot;);</span>
+<span class="fc" id="L233">				graphElm.appendChild(edgesElm);</span>
+			}
+<span class="fc bfc" id="L235" title="All 2 branches covered.">			for (E edge : graph.edges()) {</span>
+<span class="fc" id="L236">				Element edgeElm = document.createElement(&quot;edge&quot;);</span>
+<span class="fc" id="L237">				edgeElm.setAttribute(&quot;id&quot;, String.valueOf(edge));</span>
+<span class="fc" id="L238">				edgeElm.setAttribute(&quot;source&quot;, String.valueOf(graph.edgeSource(edge)));</span>
+<span class="fc" id="L239">				edgeElm.setAttribute(&quot;target&quot;, String.valueOf(graph.edgeTarget(edge)));</span>
+
+<span class="fc" id="L241">				List&lt;Element&gt; ws = eWeightsWriters.stream().map(w -&gt; w.apply(edge)).filter(Objects::nonNull)</span>
+<span class="fc" id="L242">						.collect(Collectors.toList());</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">				if (!ws.isEmpty()) {</span>
+<span class="fc" id="L244">					Element attvaluesElm = document.createElement(&quot;attvalues&quot;);</span>
+<span class="fc" id="L245">					ws.forEach(attvaluesElm::appendChild);</span>
+<span class="fc" id="L246">					edgeElm.appendChild(attvaluesElm);</span>
+				}
+
+<span class="fc" id="L249">				edgesElm.appendChild(edgeElm);</span>
+<span class="fc" id="L250">			}</span>
+
+<span class="fc" id="L252">			Transformer transformer = TransformerFactory.newInstance().newTransformer();</span>
+<span class="fc" id="L253">			transformer.transform(new DOMSource(document), new StreamResult(writer));</span>
+
+<span class="nc" id="L255">		} catch (TransformerFactoryConfigurationError | ParserConfigurationException | TransformerException e) {</span>
+<span class="nc" id="L256">			throw new IOException(e);</span>
+<span class="fc" id="L257">		}</span>
+<span class="fc" id="L258">	}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private &lt;K&gt; Pair&lt;String, Function&lt;Object, String&gt;&gt; attrWriter(Weights&lt;K, ?&gt; weights, Set&lt;K&gt; elements) {
+<span class="fc" id="L262">		Supplier&lt;Object[]&gt; objWeights = new Supplier&lt;&gt;() {</span>
+			Object[] objWeightsCache;
+
+			@Override
+			public Object[] get() {
+<span class="fc bfc" id="L267" title="All 2 branches covered.">				if (objWeightsCache == null) {</span>
+<span class="fc" id="L268">					WeightsObj&lt;K, ?&gt; ws = (WeightsObj&lt;K, ?&gt;) weights;</span>
+<span class="fc" id="L269">					objWeightsCache = elements.stream().map(ws::get).toArray();</span>
+				}
+<span class="fc" id="L271">				return objWeightsCache;</span>
+			}
+		};
+<span class="fc" id="L274">		Predicate&lt;Class&lt;?&gt;&gt; allInstanceof = cls -&gt; {</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">			if (!(weights instanceof WeightsObj))</span>
+<span class="fc" id="L276">				return false;</span>
+<span class="fc" id="L277">			WeightsObj&lt;K, ?&gt; ws = (WeightsObj&lt;K, ?&gt;) weights;</span>
+<span class="fc" id="L278">			Object defVal = ws.defaultWeight();</span>
+<span class="fc bfc" id="L279" title="All 4 branches covered.">			if (defVal != null &amp;&amp; !cls.isInstance(defVal))</span>
+<span class="fc" id="L280">				return false;</span>
+<span class="fc" id="L281">			return Arrays.stream(objWeights.get()).allMatch(cls::isInstance);</span>
+		};
+
+		/* check string first so that if there are no vertices/edges, string will be chosen */
+<span class="fc bfc" id="L285" title="All 4 branches covered.">		if (weights instanceof WeightsObj &amp;&amp; allInstanceof.test(String.class))</span>
+<span class="fc" id="L286">			return Pair.of(&quot;string&quot;, w -&gt; (String) w);</span>
+
+<span class="fc bfc" id="L288" title="All 4 branches covered.">		if (weights instanceof WeightsByte || allInstanceof.test(Byte.class))</span>
+<span class="fc" id="L289">			return Pair.of(&quot;byte&quot;, w -&gt; String.valueOf(((Byte) w).byteValue()));</span>
+<span class="fc bfc" id="L290" title="All 4 branches covered.">		if (weights instanceof WeightsShort || allInstanceof.test(Short.class))</span>
+<span class="fc" id="L291">			return Pair.of(&quot;short&quot;, w -&gt; String.valueOf(((Short) w).shortValue()));</span>
+<span class="fc bfc" id="L292" title="All 4 branches covered.">		if (weights instanceof WeightsInt || allInstanceof.test(Integer.class))</span>
+<span class="fc" id="L293">			return Pair.of(&quot;integer&quot;, w -&gt; String.valueOf(((Integer) w).intValue()));</span>
+<span class="fc bfc" id="L294" title="All 4 branches covered.">		if (weights instanceof WeightsLong || allInstanceof.test(Long.class))</span>
+<span class="fc" id="L295">			return Pair.of(&quot;long&quot;, w -&gt; String.valueOf(((Long) w).longValue()));</span>
+<span class="fc bfc" id="L296" title="All 4 branches covered.">		if (weights instanceof WeightsFloat || allInstanceof.test(Float.class))</span>
+<span class="fc" id="L297">			return Pair.of(&quot;float&quot;, w -&gt; String.valueOf(((Float) w).floatValue()));</span>
+<span class="fc bfc" id="L298" title="All 4 branches covered.">		if (weights instanceof WeightsDouble || allInstanceof.test(Double.class))</span>
+<span class="fc" id="L299">			return Pair.of(&quot;double&quot;, w -&gt; String.valueOf(((Double) w).doubleValue()));</span>
+<span class="fc bfc" id="L300" title="All 4 branches covered.">		if (weights instanceof WeightsBool || allInstanceof.test(Boolean.class))</span>
+<span class="fc" id="L301">			return Pair.of(&quot;boolean&quot;, w -&gt; String.valueOf(((Boolean) w).booleanValue()));</span>
+<span class="fc bfc" id="L302" title="All 4 branches covered.">		if (weights instanceof WeightsChar || allInstanceof.test(Character.class))</span>
+<span class="fc" id="L303">			return Pair.of(&quot;char&quot;, w -&gt; String.valueOf(((Character) w).charValue()));</span>
+
+<span class="fc" id="L305">		WeightsObj&lt;K, ?&gt; ws = (WeightsObj&lt;K, ?&gt;) weights;</span>
+<span class="fc" id="L306">		Predicate&lt;Class&lt;?&gt;&gt; allListOf = cls -&gt; {</span>
+<span class="fc" id="L307">			Object defVal = ws.defaultWeight();</span>
+<span class="fc bfc" id="L308" title="All 4 branches covered.">			Predicate&lt;Object&gt; isListOf = o -&gt; o instanceof List &amp;&amp; ((List&lt;?&gt;) o).stream().allMatch(cls::isInstance);</span>
+<span class="fc bfc" id="L309" title="All 4 branches covered.">			if (defVal != null &amp;&amp; !isListOf.test(defVal))</span>
+<span class="fc" id="L310">				return false;</span>
+<span class="fc" id="L311">			return Arrays.stream(objWeights.get()).allMatch(isListOf);</span>
+		};
+
+<span class="fc bfc" id="L314" title="All 2 branches covered.">		if (allInstanceof.test(Date.class))</span>
+<span class="fc" id="L315">			return Pair.of(&quot;date&quot;, w -&gt; dateFormat.format((Date) w));</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">		if (allInstanceof.test(URI.class))</span>
+<span class="fc" id="L317">			return Pair.of(&quot;anyURI&quot;, w -&gt; ((URI) w).toString());</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">		if (allInstanceof.test(BigDecimal.class))</span>
+<span class="fc" id="L319">			return Pair.of(&quot;bigdecimal&quot;, w -&gt; ((BigDecimal) w).toString());</span>
+<span class="fc bfc" id="L320" title="All 2 branches covered.">		if (allInstanceof.test(BigInteger.class))</span>
+<span class="fc" id="L321">			return Pair.of(&quot;biginteger&quot;, w -&gt; ((BigInteger) w).toString());</span>
+
+<span class="fc bfc" id="L323" title="All 2 branches covered.">		if (allInstanceof.test(byte[].class))</span>
+<span class="fc" id="L324">			return Pair.of(&quot;listbyte&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((byte[]) w)));</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">		if (allInstanceof.test(ByteList.class))</span>
+<span class="fc" id="L326">			return Pair.of(&quot;listbyte&quot;, w -&gt; ((ByteList) w).toString());</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">		if (allListOf.test(Byte.class))</span>
+<span class="fc" id="L328">			return Pair.of(&quot;listbyte&quot;, w -&gt; requireNonNullList((List&lt;Byte&gt;) w).toString());</span>
+
+<span class="fc bfc" id="L330" title="All 2 branches covered.">		if (allInstanceof.test(short[].class))</span>
+<span class="fc" id="L331">			return Pair.of(&quot;listshort&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((short[]) w)));</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">		if (allInstanceof.test(ShortList.class))</span>
+<span class="fc" id="L333">			return Pair.of(&quot;listshort&quot;, w -&gt; ((ShortList) w).toString());</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">		if (allListOf.test(Short.class))</span>
+<span class="fc" id="L335">			return Pair.of(&quot;listshort&quot;, w -&gt; requireNonNullList((List&lt;Short&gt;) w).toString());</span>
+
+<span class="fc bfc" id="L337" title="All 2 branches covered.">		if (allInstanceof.test(int[].class))</span>
+<span class="fc" id="L338">			return Pair.of(&quot;listinteger&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((int[]) w)));</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">		if (allInstanceof.test(IntList.class))</span>
+<span class="fc" id="L340">			return Pair.of(&quot;listinteger&quot;, w -&gt; ((IntList) w).toString());</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">		if (allListOf.test(Integer.class))</span>
+<span class="fc" id="L342">			return Pair.of(&quot;listinteger&quot;, w -&gt; requireNonNullList((List&lt;Integer&gt;) w).toString());</span>
+
+<span class="fc bfc" id="L344" title="All 2 branches covered.">		if (allInstanceof.test(long[].class))</span>
+<span class="fc" id="L345">			return Pair.of(&quot;listlong&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((long[]) w)));</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">		if (allInstanceof.test(LongList.class))</span>
+<span class="fc" id="L347">			return Pair.of(&quot;listlong&quot;, w -&gt; ((LongList) w).toString());</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">		if (allListOf.test(Long.class))</span>
+<span class="fc" id="L349">			return Pair.of(&quot;listlong&quot;, w -&gt; requireNonNullList((List&lt;Long&gt;) w).toString());</span>
+
+<span class="fc bfc" id="L351" title="All 2 branches covered.">		if (allInstanceof.test(float[].class))</span>
+<span class="fc" id="L352">			return Pair.of(&quot;listfloat&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((float[]) w)));</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">		if (allInstanceof.test(FloatList.class))</span>
+<span class="fc" id="L354">			return Pair.of(&quot;listfloat&quot;, w -&gt; ((FloatList) w).toString());</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">		if (allListOf.test(Float.class))</span>
+<span class="fc" id="L356">			return Pair.of(&quot;listfloat&quot;, w -&gt; requireNonNullList((List&lt;Float&gt;) w).toString());</span>
+
+<span class="fc bfc" id="L358" title="All 2 branches covered.">		if (allInstanceof.test(double[].class))</span>
+<span class="fc" id="L359">			return Pair.of(&quot;listdouble&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((double[]) w)));</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">		if (allInstanceof.test(DoubleList.class))</span>
+<span class="fc" id="L361">			return Pair.of(&quot;listdouble&quot;, w -&gt; ((DoubleList) w).toString());</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">		if (allListOf.test(Double.class))</span>
+<span class="fc" id="L363">			return Pair.of(&quot;listdouble&quot;, w -&gt; requireNonNullList((List&lt;Double&gt;) w).toString());</span>
+
+<span class="fc bfc" id="L365" title="All 2 branches covered.">		if (allInstanceof.test(boolean[].class))</span>
+<span class="fc" id="L366">			return Pair.of(&quot;listboolean&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((boolean[]) w)));</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">		if (allInstanceof.test(BooleanList.class))</span>
+<span class="fc" id="L368">			return Pair.of(&quot;listboolean&quot;, w -&gt; ((BooleanList) w).toString());</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">		if (allListOf.test(Boolean.class))</span>
+<span class="fc" id="L370">			return Pair.of(&quot;listboolean&quot;, w -&gt; requireNonNullList((List&lt;Boolean&gt;) w).toString());</span>
+
+<span class="fc bfc" id="L372" title="All 2 branches covered.">		if (allInstanceof.test(char[].class))</span>
+<span class="fc" id="L373">			return Pair.of(&quot;listchar&quot;, w -&gt; Arrays.toString(Objects.requireNonNull((char[]) w)));</span>
+<span class="fc bfc" id="L374" title="All 2 branches covered.">		if (allInstanceof.test(CharList.class))</span>
+<span class="fc" id="L375">			return Pair.of(&quot;listchar&quot;, w -&gt; ((CharList) w).toString());</span>
+<span class="fc bfc" id="L376" title="All 2 branches covered.">		if (allListOf.test(Character.class))</span>
+<span class="fc" id="L377">			return Pair.of(&quot;listchar&quot;, w -&gt; requireNonNullList((List&lt;Character&gt;) w).toString());</span>
+
+<span class="fc bfc" id="L379" title="All 2 branches covered.">		if (allInstanceof.test(String[].class))</span>
+<span class="fc" id="L380">			return Pair.of(&quot;liststring&quot;, w -&gt; Arrays.toString(requireNonNullArr((String[]) w)));</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">		if (allListOf.test(String.class))</span>
+<span class="fc" id="L382">			return Pair.of(&quot;liststring&quot;, w -&gt; requireNonNullList((List&lt;String&gt;) w).toString());</span>
+
+<span class="fc bfc" id="L384" title="All 2 branches covered.">		if (allInstanceof.test(BigDecimal[].class))</span>
+<span class="fc" id="L385">			return Pair.of(&quot;listbigdecimal&quot;, w -&gt; Arrays.toString(requireNonNullArr((BigDecimal[]) w)));</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">		if (allListOf.test(BigDecimal.class))</span>
+<span class="fc" id="L387">			return Pair.of(&quot;listbigdecimal&quot;, w -&gt; requireNonNullList((List&lt;BigDecimal&gt;) w).toString());</span>
+
+<span class="fc bfc" id="L389" title="All 2 branches covered.">		if (allInstanceof.test(BigInteger[].class))</span>
+<span class="fc" id="L390">			return Pair.of(&quot;listbiginteger&quot;, w -&gt; Arrays.toString(requireNonNullArr((BigInteger[]) w)));</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">		if (allListOf.test(BigInteger.class))</span>
+<span class="fc" id="L392">			return Pair.of(&quot;listbiginteger&quot;, w -&gt; requireNonNullList((List&lt;BigInteger&gt;) w).toString());</span>
+
+<span class="fc" id="L394">		return null;</span>
+	}
+
+	private static &lt;T&gt; T[] requireNonNullArr(T[] arr) {
+<span class="fc" id="L398">		Objects.requireNonNull(arr);</span>
+<span class="fc bfc" id="L399" title="All 2 branches covered.">		for (T t : arr)</span>
+<span class="fc" id="L400">			Objects.requireNonNull(t);</span>
+<span class="fc" id="L401">		return arr;</span>
+	}
+
+	private static &lt;T&gt; List&lt;T&gt; requireNonNullList(List&lt;T&gt; list) {
+<span class="fc" id="L405">		Objects.requireNonNull(list);</span>
+<span class="fc bfc" id="L406" title="All 2 branches covered.">		for (T t : list)</span>
+<span class="fc" id="L407">			Objects.requireNonNull(t);</span>
+<span class="fc" id="L408">		return list;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

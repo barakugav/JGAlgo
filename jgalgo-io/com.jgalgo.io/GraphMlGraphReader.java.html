@@ -18,21 +18,16 @@ package com.jgalgo.io;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
-import java.util.function.LongFunction;
-import java.util.stream.StreamSupport;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import com.jgalgo.graph.Graph;
@@ -46,7 +41,6 @@ import com.jgalgo.graph.WeightsFloat;
 import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.graph.WeightsLong;
 import com.jgalgo.graph.WeightsObj;
-import com.jgalgo.internal.util.Assertions;
 
 /**
  * Read a graph in 'GraphML' format.
@@ -56,7 +50,8 @@ import com.jgalgo.internal.util.Assertions;
  * (some edges are directed while others are undirected) although the {@link Graph} does not supported mixed graphs
  * (therefore the reader also doesn't support it). The format support graphs with vertices and edges of any type, as
  * long as they can be written as an XML attribute string. The format also support multiple weights for vertices and
- * edges, of type boolean, int, long, float, double or string, and a default value for each weight type.
+ * edges, of type {@code int}, {@code long}, {@code float}, {@code double}, {@code boolean} and {@code String}, and a
+ * default value for each weight type.
  *
  * &lt;p&gt;
  * Identifiers of vertices are mandatory, and must be unique. Identifiers of edges are optional, if not specified the
@@ -83,12 +78,12 @@ public class GraphMlGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphRe
 	 * Create a new reader.
 	 *
 	 * &lt;p&gt;
-	 * The user should set the parsers and supplier manually using {@link #setVertexParser(Function)},
+	 * The user should set the vertex/edge parsers and edge supplier manually using {@link #setVertexParser(Function)},
 	 * {@link #setEdgeParser(Function)} and {@link #setEdgeSupplier(Function)}. Setting the vertex parser is mandatory,
 	 * while setting the edge parser is only required if edges identifiers are specified. Similarly, setting the edge
 	 * supplier is only required if edges identifiers are not specified.
 	 */
-<span class="fc" id="L91">	public GraphMlGraphReader() {}</span>
+<span class="fc" id="L86">	public GraphMlGraphReader() {}</span>
 
 	/**
 	 * Create a new reader with default parsers and suppliers for the given vertex and edge types.
@@ -96,27 +91,28 @@ public class GraphMlGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphRe
 	 * &lt;p&gt;
 	 * During the reading process, the reader will use the parser to convert the vertex identifiers from string to the
 	 * given type, and similarly for edges if edges identifiers are specified. If edges identifiers are not specified,
-	 * the reader will use the supplier to generate them. A default parsers and edge supplier exists for types byte,
-	 * short, int, long, float, double and String, which will be used by the reader for the given types. If the given
-	 * types are not supported by the default parsers and supplier, the reader will throw an exception. In such case,
-	 * the constructor {@link #GraphMlGraphReader()} should be used, and the user should set the parsers and supplier
-	 * manually using {@link #setVertexParser(Function)}, {@link #setEdgeParser(Function)} and
-	 * {@link #setEdgeSupplier(Function)}.
+	 * the reader will use the supplier to generate them. Default parsers and edge supplier exists for types
+	 * {@code byte}, {@code short}, {@code int}, {@code long}, {@code float}, {@code double} and {@code String}, which
+	 * will be used by the reader for the given types. If the given types are not supported by the default parsers and
+	 * supplier, the reader will throw an exception. In such case, the constructor {@link #GraphMlGraphReader()} should
+	 * be used, and the user should set the vertex/edge parsers and edge supplier manually using
+	 * {@link #setVertexParser(Function)}, {@link #setEdgeParser(Function)} and {@link #setEdgeSupplier(Function)}.
 	 *
 	 *
 	 * @param  vertexType               the type of the vertices
 	 * @param  edgeType                 the type of the edges
-	 * @throws IllegalArgumentException if the given types are not supported by the default parsers and supplier. The
-	 *                                      supported types are byte, short, int, long, float, double and String.
+	 * @throws IllegalArgumentException if the given types are not supported by the default vertex/edge parsers and edge
+	 *                                      supplier. The supported types are {@code byte}, {@code short}, {@code int},
+	 *                                      {@code long}, {@code float}, {@code double} and {@code String}.
 	 * @see                             #setVertexParserDefault(Class)
 	 * @see                             #setEdgeParserDefault(Class)
 	 * @see                             #setEdgeSupplierDefault(Class)
 	 */
-<span class="fc" id="L115">	public GraphMlGraphReader(Class&lt;V&gt; vertexType, Class&lt;E&gt; edgeType) {</span>
-<span class="fc" id="L116">		setVertexParserDefault(this.vertexType = vertexType);</span>
-<span class="fc" id="L117">		setEdgeParserDefault(this.edgeType = edgeType);</span>
-<span class="fc" id="L118">		setEdgeSupplierDefault(this.edgeType);</span>
-<span class="fc" id="L119">	}</span>
+<span class="fc" id="L111">	public GraphMlGraphReader(Class&lt;V&gt; vertexType, Class&lt;E&gt; edgeType) {</span>
+<span class="fc" id="L112">		setVertexParserDefault(this.vertexType = vertexType);</span>
+<span class="fc" id="L113">		setEdgeParserDefault(this.edgeType = edgeType);</span>
+<span class="fc" id="L114">		setEdgeSupplierDefault(this.edgeType);</span>
+<span class="fc" id="L115">	}</span>
 
 	/**
 	 * Set the parser for the vertices identifiers.
@@ -129,26 +125,28 @@ public class GraphMlGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphRe
 	 * @param vertexParser a parser for the vertices identifiers
 	 */
 	public void setVertexParser(Function&lt;String, V&gt; vertexParser) {
-<span class="fc" id="L132">		this.vertexParser = Objects.requireNonNull(vertexParser);</span>
-<span class="fc" id="L133">	}</span>
+<span class="fc" id="L128">		this.vertexParser = Objects.requireNonNull(vertexParser);</span>
+<span class="fc" id="L129">	}</span>
 
 	/**
 	 * Set the parser for the vertices identifiers, using a default parser for the given vertex type.
 	 *
 	 * &lt;p&gt;
 	 * The parser is used to convert the vertex identifiers from string to the given vertex type. The parser is
-	 * mandatory, and must be set before reading a graph. The default parser exists for types byte, short, int, long,
-	 * float, double and String. If the given type is not supported by the default parser, the reader will throw an
-	 * exception. In such case, the method {@link #setVertexParser(Function)} should be used for custom parsing.
+	 * mandatory, and must be set before reading a graph. The default parser exists for types {@code byte},
+	 * {@code short}, {@code int}, {@code long}, {@code float}, {@code double} and {@code String}. If the given type is
+	 * not supported by the default parser, the reader will throw an exception. In such case, the method
+	 * {@link #setVertexParser(Function)} should be used for custom parsing.
 	 *
 	 * @param  vertexType               the type of the vertices
 	 * @throws IllegalArgumentException if the given type is not supported by the default parser. The supported types
-	 *                                      are byte, short, int, long, float, double and String.
+	 *                                      are {@code byte}, {@code short}, {@code int}, {@code long}, {@code float},
+	 *                                      {@code double} and {@code String}.
 	 */
 	public void setVertexParserDefault(Class&lt;V&gt; vertexType) {
-<span class="fc" id="L149">		this.vertexParser = defaultParser(vertexType);</span>
-<span class="fc" id="L150">		this.vertexType = vertexType;</span>
-<span class="fc" id="L151">	}</span>
+<span class="fc" id="L147">		this.vertexParser = GraphIoUtils.defaultParser(vertexType);</span>
+<span class="fc" id="L148">		this.vertexType = vertexType;</span>
+<span class="fc" id="L149">	}</span>
 
 	/**
 	 * Set the parser for the edges identifiers.
@@ -162,8 +160,8 @@ public class GraphMlGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphRe
 	 * @param edgeParser a parser for the edges identifiers
 	 */
 	public void setEdgeParser(Function&lt;String, E&gt; edgeParser) {
-<span class="fc" id="L165">		this.edgeParser = Objects.requireNonNull(edgeParser);</span>
-<span class="fc" id="L166">	}</span>
+<span class="fc" id="L163">		this.edgeParser = Objects.requireNonNull(edgeParser);</span>
+<span class="fc" id="L164">	}</span>
 
 	/**
 	 * Set the parser for the edges identifiers, using a default parser for the given edge type.
@@ -171,53 +169,20 @@ public class GraphMlGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphRe
 	 * &lt;p&gt;
 	 * The parser is used to convert the edges identifiers from string to the given edge type. The parser is mandatory
 	 * if edges identifiers are specified. In case edge identifiers are not specified, an edge supplier must be set (see
-	 * {@link #setEdgeSupplier(Function)}). The default parser exists for types byte, short, int, long, float, double
-	 * and String. If the given type is not supported by the default parser, the reader will throw an exception. In such
-	 * case, the method {@link #setEdgeParser(Function)} should be used for custom parsing.
+	 * {@link #setEdgeSupplier(Function)}). The default parser exists for types {@code byte}, {@code short},
+	 * {@code int}, {@code long}, {@code float}, {@code double} and {@code String}. If the given type is not supported
+	 * by the default parser, the reader will throw an exception. In such case, the method
+	 * {@link #setEdgeParser(Function)} should be used for custom parsing.
 	 *
 	 * @param  edgeType                 the type of the edges
 	 * @throws IllegalArgumentException if the given type is not supported by the default parser. The supported types
-	 *                                      are byte, short, int, long, float, double and String.
+	 *                                      are {@code byte}, {@code short}, {@code int}, {@code long}, {@code float},
+	 *                                      {@code double} and {@code String}.
 	 */
 	public void setEdgeParserDefault(Class&lt;E&gt; edgeType) {
-<span class="fc" id="L183">		this.edgeParser = defaultParser(edgeType);</span>
+<span class="fc" id="L183">		this.edgeParser = GraphIoUtils.defaultParser(edgeType);</span>
 <span class="fc" id="L184">		this.edgeType = edgeType;</span>
 <span class="fc" id="L185">	}</span>
-
-	@SuppressWarnings(&quot;unchecked&quot;)
-	private static &lt;K&gt; Function&lt;String, K&gt; defaultParser(Class&lt;K&gt; type) {
-<span class="fc bfc" id="L189" title="All 4 branches covered.">		if (type == byte.class || type == Byte.class) {</span>
-<span class="fc" id="L190">			Function&lt;String, Byte&gt; parser = Byte::valueOf;</span>
-<span class="fc" id="L191">			return (Function&lt;String, K&gt;) parser;</span>
-
-<span class="fc bfc" id="L193" title="All 4 branches covered.">		} else if (type == short.class || type == Short.class) {</span>
-<span class="fc" id="L194">			Function&lt;String, Short&gt; parser = Short::valueOf;</span>
-<span class="fc" id="L195">			return (Function&lt;String, K&gt;) parser;</span>
-
-<span class="fc bfc" id="L197" title="All 4 branches covered.">		} else if (type == int.class || type == Integer.class) {</span>
-<span class="fc" id="L198">			Function&lt;String, Integer&gt; parser = Integer::valueOf;</span>
-<span class="fc" id="L199">			return (Function&lt;String, K&gt;) parser;</span>
-
-<span class="fc bfc" id="L201" title="All 4 branches covered.">		} else if (type == long.class || type == Long.class) {</span>
-<span class="fc" id="L202">			Function&lt;String, Long&gt; parser = Long::valueOf;</span>
-<span class="fc" id="L203">			return (Function&lt;String, K&gt;) parser;</span>
-
-<span class="fc bfc" id="L205" title="All 4 branches covered.">		} else if (type == float.class || type == Float.class) {</span>
-<span class="fc" id="L206">			Function&lt;String, Float&gt; parser = Float::valueOf;</span>
-<span class="fc" id="L207">			return (Function&lt;String, K&gt;) parser;</span>
-
-<span class="fc bfc" id="L209" title="All 4 branches covered.">		} else if (type == double.class || type == Double.class) {</span>
-<span class="fc" id="L210">			Function&lt;String, Double&gt; parser = Double::valueOf;</span>
-<span class="fc" id="L211">			return (Function&lt;String, K&gt;) parser;</span>
-
-<span class="fc bfc" id="L213" title="All 2 branches covered.">		} else if (type == String.class) {</span>
-<span class="fc" id="L214">			Function&lt;String, String&gt; parser = Function.identity();</span>
-<span class="fc" id="L215">			return (Function&lt;String, K&gt;) parser;</span>
-
-		} else {
-<span class="fc" id="L218">			throw new IllegalArgumentException(&quot;no default parser for type: &quot; + type);</span>
-		}
-	}
 
 	/**
 	 * Set the supplier for the edges identifiers.
@@ -235,8 +200,8 @@ public class GraphMlGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphRe
 	 * @param edgeSupplier a supplier for the edges identifiers
 	 */
 	public void setEdgeSupplier(Function&lt;Set&lt;E&gt;, E&gt; edgeSupplier) {
-<span class="fc" id="L238">		this.edgeSupplier = Objects.requireNonNull(edgeSupplier);</span>
-<span class="fc" id="L239">	}</span>
+<span class="fc" id="L203">		this.edgeSupplier = Objects.requireNonNull(edgeSupplier);</span>
+<span class="fc" id="L204">	}</span>
 
 	/**
 	 * Set the supplier for the edges identifiers, using a default supplier for the given edge type.
@@ -244,332 +209,217 @@ public class GraphMlGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphRe
 	 * &lt;p&gt;
 	 * The supplier is used to generate edges identifiers if edges identifiers are not specified. The supplier is
 	 * mandatory if edges identifiers are not specified. In case edge identifiers are specified, an edge parser must be
-	 * set (see {@link #setEdgeParser(Function)}). The default supplier exists for types byte, short, int, long, float,
-	 * double and String. If the given type is not supported by the default supplier, the reader will throw an
-	 * exception. In such case, the method {@link #setEdgeSupplier(Function)} should be used for custom supplier.
+	 * set (see {@link #setEdgeParser(Function)}). The default supplier exists for types {@code byte}, {@code short},
+	 * {@code int}, {@code long}, {@code float}, {@code double} and {@code String}. If the given type is not supported
+	 * by the default supplier, the reader will throw an exception. In such case, the method
+	 * {@link #setEdgeSupplier(Function)} should be used for custom supplier.
 	 *
 	 * @param  edgeType                 the type of the edges
 	 * @throws IllegalArgumentException if the given type is not supported by the default supplier. The supported types
-	 *                                      are byte, short, int, long, float, double and String.
+	 *                                      are {@code byte}, {@code short}, {@code int}, {@code long}, {@code float},
+	 *                                      {@code double} and {@code String}.
 	 */
 	public void setEdgeSupplierDefault(Class&lt;E&gt; edgeType) {
-<span class="fc bfc" id="L256" title="All 4 branches covered.">		if (edgeType == byte.class || edgeType == Byte.class) {</span>
-<span class="fc" id="L257">			long min = Byte.MIN_VALUE, max = Byte.MAX_VALUE, maxEdgesSize = 1 &lt;&lt; Byte.SIZE;</span>
-<span class="fc" id="L258">			edgeSupplier = defaultEdgeSupplier(min, max, maxEdgesSize, x -&gt; Byte.valueOf((byte) x));</span>
-
-<span class="fc bfc" id="L260" title="All 4 branches covered.">		} else if (edgeType == short.class || edgeType == Short.class) {</span>
-<span class="fc" id="L261">			long min = Short.MIN_VALUE, max = Short.MAX_VALUE, maxEdgesSize = 1 &lt;&lt; Short.SIZE;</span>
-<span class="fc" id="L262">			edgeSupplier = defaultEdgeSupplier(min, max, maxEdgesSize, x -&gt; Short.valueOf((short) x));</span>
-
-<span class="fc bfc" id="L264" title="All 4 branches covered.">		} else if (edgeType == int.class || edgeType == Integer.class) {</span>
-<span class="fc" id="L265">			long min = Integer.MIN_VALUE, max = Integer.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; Integer.SIZE;</span>
-<span class="fc" id="L266">			edgeSupplier = defaultEdgeSupplier(min, max, maxEdgesSize, x -&gt; Integer.valueOf((int) x));</span>
-
-<span class="fc bfc" id="L268" title="All 4 branches covered.">		} else if (edgeType == long.class || edgeType == Long.class) {</span>
-<span class="fc" id="L269">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
-<span class="fc" id="L270">			edgeSupplier = defaultEdgeSupplier(min, max, maxEdgesSize, x -&gt; Long.valueOf(x));</span>
-
-<span class="fc bfc" id="L272" title="All 4 branches covered.">		} else if (edgeType == float.class || edgeType == Float.class) {</span>
-<span class="fc" id="L273">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
-<span class="fc" id="L274">			edgeSupplier = defaultEdgeSupplier(min, max, maxEdgesSize, x -&gt; Float.valueOf(x));</span>
-
-<span class="fc bfc" id="L276" title="All 4 branches covered.">		} else if (edgeType == double.class || edgeType == Double.class) {</span>
-<span class="fc" id="L277">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
-<span class="fc" id="L278">			edgeSupplier = defaultEdgeSupplier(min, max, maxEdgesSize, x -&gt; Double.valueOf(x));</span>
-
-<span class="fc bfc" id="L280" title="All 2 branches covered.">		} else if (edgeType == String.class) {</span>
-<span class="fc" id="L281">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
-<span class="fc" id="L282">			edgeSupplier = defaultEdgeSupplier(min, max, maxEdgesSize, x -&gt; (&quot;e&quot; + x));</span>
-
-<span class="fc" id="L284">		} else {</span>
-<span class="fc" id="L285">			throw new IllegalArgumentException(&quot;no default edge supplier for type: &quot; + edgeType);</span>
-		}
-<span class="fc" id="L287">		this.edgeType = edgeType;</span>
-<span class="fc" id="L288">	}</span>
-
-	private static &lt;E&gt; Function&lt;Set&lt;E&gt;, E&gt; defaultEdgeSupplier(long minVal, long maxVal, long maxEdgesSize,
-			LongFunction&lt;Object&gt; idBuilder) {
-<span class="fc" id="L292">		return new Function&lt;&gt;() {</span>
-			long nextId;
-
-			@SuppressWarnings(&quot;unchecked&quot;)
-			@Override
-			public E apply(Set&lt;E&gt; existingEdges) {
-<span class="fc bfc" id="L298" title="All 2 branches covered.">				if (existingEdges.size() &gt;= maxEdgesSize)</span>
-<span class="fc" id="L299">					throw new IllegalArgumentException(&quot;too many edges&quot;);</span>
-				for (Object id;;)
-<span class="fc bfc" id="L301" title="All 2 branches covered.">					if (!existingEdges.contains(id = idBuilder.apply(getAndInc())))</span>
-<span class="fc" id="L302">						return (E) id;</span>
-			}
-
-			private long getAndInc() {
-<span class="fc" id="L306">				long ret = nextId;</span>
-<span class="fc bfc" id="L307" title="All 2 branches covered.">				if (nextId &lt; maxVal) {</span>
-<span class="fc" id="L308">					nextId++;</span>
-				} else {
-<span class="fc" id="L310">					nextId = minVal;</span>
-				}
-<span class="fc" id="L312">				return ret;</span>
-			}
-		};
-	}
+<span class="fc" id="L223">		edgeSupplier = GraphIoUtils.defaultEdgeSupplier(edgeType);</span>
+<span class="fc" id="L224">		this.edgeType = edgeType;</span>
+<span class="fc" id="L225">	}</span>
 
 	@Override
 	GraphBuilder&lt;V, E&gt; readIntoBuilderImpl(Reader reader) throws IOException {
-<span class="fc bfc" id="L319" title="All 2 branches covered.">		if (vertexParser == null)</span>
-<span class="fc" id="L320">			throw new IllegalStateException(&quot;Vertex parser was not set&quot;);</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">		if (vertexParser == null)</span>
+<span class="fc" id="L230">			throw new IllegalStateException(&quot;Vertex parser was not set&quot;);</span>
 		try {
 			Document document =
-<span class="fc" id="L323">					DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(reader));</span>
-<span class="fc" id="L324">			Element doc = document.getDocumentElement();</span>
-<span class="fc" id="L325">			doc.normalize();</span>
+<span class="fc" id="L233">					DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(reader));</span>
+<span class="fc" id="L234">			Element doc = document.getDocumentElement();</span>
+<span class="fc" id="L235">			doc.normalize();</span>
 
-<span class="fc bfc" id="L327" title="All 2 branches covered.">			if (!doc.getTagName().equals(&quot;graphml&quot;))</span>
-<span class="fc" id="L328">				throw new IllegalArgumentException(&quot;root element is not 'graphml'&quot;);</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">			if (!doc.getTagName().equals(&quot;graphml&quot;))</span>
+<span class="fc" id="L238">				throw new IllegalArgumentException(&quot;root element is not 'graphml'&quot;);</span>
 
 			// searchUnexpectedChildren(doc, &quot;graph&quot;, &quot;key&quot;);
 
-<span class="fc" id="L332">			Element graph = requiredChild(doc, &quot;graph&quot;);</span>
+<span class="fc" id="L242">			Element graph = XmlUtils.requiredChild(doc, &quot;graph&quot;);</span>
 			// searchUnexpectedChildren(graph, &quot;node&quot;, &quot;edge&quot;);
 
-<span class="fc" id="L335">			boolean directed = requiredAttribute(graph, &quot;edgedefault&quot;).equals(&quot;directed&quot;);</span>
+<span class="fc" id="L245">			boolean directed = XmlUtils.requiredAttribute(graph, &quot;edgedefault&quot;).equals(&quot;directed&quot;);</span>
 			GraphFactory&lt;V, E&gt; factory;
-<span class="fc bfc" id="L337" title="All 4 branches covered.">			if (vertexType == int.class &amp;&amp; edgeType == int.class) {</span>
+<span class="fc bfc" id="L247" title="All 4 branches covered.">			if (vertexType == int.class &amp;&amp; edgeType == int.class) {</span>
 				@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc bfc" id="L339" title="All 2 branches covered.">				GraphFactory&lt;V, E&gt; factory0 = (GraphFactory&lt;V, E&gt;) (directed ? IntGraphFactory.newDirected()</span>
-<span class="fc" id="L340">						: IntGraphFactory.newUndirected());</span>
-<span class="fc" id="L341">				factory = factory0;</span>
-<span class="fc" id="L342">			} else {</span>
-<span class="fc bfc" id="L343" title="All 2 branches covered.">				factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">				GraphFactory&lt;V, E&gt; factory0 = (GraphFactory&lt;V, E&gt;) (directed ? IntGraphFactory.newDirected()</span>
+<span class="fc" id="L250">						: IntGraphFactory.newUndirected());</span>
+<span class="fc" id="L251">				factory = factory0;</span>
+<span class="fc" id="L252">			} else {</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">				factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();</span>
 			}
-<span class="fc" id="L345">			GraphBuilder&lt;V, E&gt; g = factory.allowSelfEdges().allowParallelEdges().newBuilder();</span>
-<span class="fc" id="L346">			optionalAttribute(graph, &quot;parse.nodes&quot;).map(Integer::parseInt).ifPresent(g::expectedVerticesNum);</span>
-<span class="fc" id="L347">			optionalAttribute(graph, &quot;parse.edges&quot;).map(Integer::parseInt).ifPresent(g::expectedEdgesNum);</span>
+<span class="fc" id="L255">			GraphBuilder&lt;V, E&gt; g = factory.allowSelfEdges().allowParallelEdges().newBuilder();</span>
+<span class="fc" id="L256">			XmlUtils.optionalAttribute(graph, &quot;parse.nodes&quot;).map(Integer::parseInt).ifPresent(g::expectedVerticesNum);</span>
+<span class="fc" id="L257">			XmlUtils.optionalAttribute(graph, &quot;parse.edges&quot;).map(Integer::parseInt).ifPresent(g::expectedEdgesNum);</span>
 
-<span class="fc" id="L349">			Map&lt;String, BiConsumer&lt;V, String&gt;&gt; vWeights = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L350">			Map&lt;String, BiConsumer&lt;E, String&gt;&gt; eWeights = new HashMap&lt;&gt;();</span>
-<span class="fc bfc" id="L351" title="All 2 branches covered.">			for (Element key : children(doc, &quot;key&quot;)) {</span>
-<span class="fc" id="L352">				String weightId = requiredAttribute(key, &quot;id&quot;);</span>
-<span class="fc" id="L353">				String domain = requiredAttribute(key, &quot;for&quot;);</span>
-<span class="fc" id="L354">				String attrName = requiredAttribute(key, &quot;attr.name&quot;);</span>
-<span class="fc" id="L355">				String attrTypeStr = requiredAttribute(key, &quot;attr.type&quot;);</span>
-<span class="fc" id="L356">				String defValStr = optionalChild(key, &quot;default&quot;).map(Element::getTextContent).orElse(null);</span>
+<span class="fc" id="L259">			Map&lt;String, BiConsumer&lt;V, String&gt;&gt; vWeights = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L260">			Map&lt;String, BiConsumer&lt;E, String&gt;&gt; eWeights = new HashMap&lt;&gt;();</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">			for (Element key : XmlUtils.children(doc, &quot;key&quot;)) {</span>
+<span class="fc" id="L262">				String weightId = XmlUtils.requiredAttribute(key, &quot;id&quot;);</span>
+<span class="fc" id="L263">				String domain = XmlUtils.requiredAttribute(key, &quot;for&quot;);</span>
+<span class="fc" id="L264">				String attrName = XmlUtils.requiredAttribute(key, &quot;attr.name&quot;);</span>
+<span class="fc" id="L265">				String attrTypeStr = XmlUtils.requiredAttribute(key, &quot;attr.type&quot;);</span>
+<span class="fc" id="L266">				String defValStr = XmlUtils.optionalChild(key, &quot;default&quot;).map(Element::getTextContent).orElse(null);</span>
 
 				Class&lt;?&gt; attrType;
 				Object defVal;
 				Function&lt;Weights&lt;Object, Object&gt;, BiConsumer&lt;Object, String&gt;&gt; setterFactory;
-<span class="fc bfc" id="L361" title="All 7 branches covered.">				switch (attrTypeStr) {</span>
+<span class="fc bfc" id="L271" title="All 7 branches covered.">				switch (attrTypeStr) {</span>
 					case &quot;int&quot;: {
-<span class="fc" id="L363">						attrType = int.class;</span>
-<span class="fc bfc" id="L364" title="All 2 branches covered.">						defVal = defValStr == null ? null : Integer.valueOf(defValStr);</span>
-<span class="fc" id="L365">						setterFactory = weights -&gt; {</span>
+<span class="fc" id="L273">						attrType = int.class;</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">						defVal = defValStr == null ? null : Integer.valueOf(defValStr);</span>
+<span class="fc" id="L275">						setterFactory = weights -&gt; {</span>
 							@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L367">							WeightsInt&lt;Object&gt; weights2 = (WeightsInt) weights;</span>
-<span class="fc" id="L368">							return (o, val) -&gt; weights2.set(o, Integer.parseInt(val));</span>
+<span class="fc" id="L277">							WeightsInt&lt;Object&gt; weights2 = (WeightsInt) weights;</span>
+<span class="fc" id="L278">							return (o, val) -&gt; weights2.set(o, Integer.parseInt(val));</span>
 						};
-<span class="fc" id="L370">						break;</span>
+<span class="fc" id="L280">						break;</span>
 					}
 					case &quot;long&quot;: {
-<span class="fc" id="L373">						attrType = long.class;</span>
-<span class="fc bfc" id="L374" title="All 2 branches covered.">						defVal = defValStr == null ? null : Long.valueOf(defValStr);</span>
-<span class="fc" id="L375">						setterFactory = weights -&gt; {</span>
+<span class="fc" id="L283">						attrType = long.class;</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">						defVal = defValStr == null ? null : Long.valueOf(defValStr);</span>
+<span class="fc" id="L285">						setterFactory = weights -&gt; {</span>
 							@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L377">							WeightsLong&lt;Object&gt; weights2 = (WeightsLong) weights;</span>
-<span class="fc" id="L378">							return (o, val) -&gt; weights2.set(o, Long.parseLong(val));</span>
+<span class="fc" id="L287">							WeightsLong&lt;Object&gt; weights2 = (WeightsLong) weights;</span>
+<span class="fc" id="L288">							return (o, val) -&gt; weights2.set(o, Long.parseLong(val));</span>
 						};
-<span class="fc" id="L380">						break;</span>
+<span class="fc" id="L290">						break;</span>
 					}
 					case &quot;float&quot;: {
-<span class="fc" id="L383">						attrType = float.class;</span>
-<span class="fc bfc" id="L384" title="All 2 branches covered.">						defVal = defValStr == null ? null : Float.valueOf(defValStr);</span>
-<span class="fc" id="L385">						setterFactory = weights -&gt; {</span>
+<span class="fc" id="L293">						attrType = float.class;</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">						defVal = defValStr == null ? null : Float.valueOf(defValStr);</span>
+<span class="fc" id="L295">						setterFactory = weights -&gt; {</span>
 							@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L387">							WeightsFloat&lt;Object&gt; weights2 = (WeightsFloat) weights;</span>
-<span class="fc" id="L388">							return (o, val) -&gt; weights2.set(o, Float.parseFloat(val));</span>
+<span class="fc" id="L297">							WeightsFloat&lt;Object&gt; weights2 = (WeightsFloat) weights;</span>
+<span class="fc" id="L298">							return (o, val) -&gt; weights2.set(o, Float.parseFloat(val));</span>
 						};
-<span class="fc" id="L390">						break;</span>
+<span class="fc" id="L300">						break;</span>
 					}
 					case &quot;double&quot;: {
-<span class="fc" id="L393">						attrType = double.class;</span>
-<span class="fc bfc" id="L394" title="All 2 branches covered.">						defVal = defValStr == null ? null : Double.valueOf(defValStr);</span>
-<span class="fc" id="L395">						setterFactory = weights -&gt; {</span>
+<span class="fc" id="L303">						attrType = double.class;</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">						defVal = defValStr == null ? null : Double.valueOf(defValStr);</span>
+<span class="fc" id="L305">						setterFactory = weights -&gt; {</span>
 							@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L397">							WeightsDouble&lt;Object&gt; weights2 = (WeightsDouble) weights;</span>
-<span class="fc" id="L398">							return (o, val) -&gt; weights2.set(o, Double.parseDouble(val));</span>
+<span class="fc" id="L307">							WeightsDouble&lt;Object&gt; weights2 = (WeightsDouble) weights;</span>
+<span class="fc" id="L308">							return (o, val) -&gt; weights2.set(o, Double.parseDouble(val));</span>
 						};
-<span class="fc" id="L400">						break;</span>
+<span class="fc" id="L310">						break;</span>
 					}
 					case &quot;boolean&quot;: {
-<span class="fc" id="L403">						attrType = boolean.class;</span>
-<span class="fc bfc" id="L404" title="All 2 branches covered.">						defVal = defValStr == null ? null : Boolean.valueOf(defValStr);</span>
-<span class="fc" id="L405">						setterFactory = weights -&gt; {</span>
+<span class="fc" id="L313">						attrType = boolean.class;</span>
+<span class="fc bfc" id="L314" title="All 2 branches covered.">						defVal = defValStr == null ? null : Boolean.valueOf(defValStr);</span>
+<span class="fc" id="L315">						setterFactory = weights -&gt; {</span>
 							@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L407">							WeightsBool&lt;Object&gt; weights2 = (WeightsBool) weights;</span>
-<span class="fc" id="L408">							return (o, val) -&gt; weights2.set(o, Boolean.parseBoolean(val));</span>
+<span class="fc" id="L317">							WeightsBool&lt;Object&gt; weights2 = (WeightsBool) weights;</span>
+<span class="fc" id="L318">							return (o, val) -&gt; weights2.set(o, Boolean.parseBoolean(val));</span>
 						};
-<span class="fc" id="L410">						break;</span>
+<span class="fc" id="L320">						break;</span>
 					}
 					case &quot;string&quot;: {
-<span class="fc" id="L413">						attrType = String.class;</span>
-<span class="fc" id="L414">						defVal = defValStr;</span>
-<span class="fc" id="L415">						setterFactory = weights -&gt; {</span>
+<span class="fc" id="L323">						attrType = String.class;</span>
+<span class="fc" id="L324">						defVal = defValStr;</span>
+<span class="fc" id="L325">						setterFactory = weights -&gt; {</span>
 							@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L417">							WeightsObj&lt;Object, String&gt; weights2 = (WeightsObj) weights;</span>
-<span class="fc" id="L418">							return (o, val) -&gt; weights2.set(o, val);</span>
+<span class="fc" id="L327">							WeightsObj&lt;Object, String&gt; weights2 = (WeightsObj) weights;</span>
+<span class="fc" id="L328">							return (o, val) -&gt; weights2.set(o, val);</span>
 						};
-<span class="fc" id="L420">						break;</span>
+<span class="fc" id="L330">						break;</span>
 					}
 					default:
-<span class="fc" id="L423">						throw new IllegalArgumentException(&quot;unknown attr.type: '&quot; + attrTypeStr + &quot;'&quot;);</span>
+<span class="fc" id="L333">						throw new IllegalArgumentException(&quot;unknown attr.type: '&quot; + attrTypeStr + &quot;'&quot;);</span>
 				}
 				boolean isVertexWeight;
 				boolean isEdgeWeight;
-<span class="fc bfc" id="L427" title="All 4 branches covered.">				switch (domain) {</span>
+<span class="fc bfc" id="L337" title="All 4 branches covered.">				switch (domain) {</span>
 					case &quot;node&quot;:
-<span class="fc" id="L429">						isVertexWeight = true;</span>
-<span class="fc" id="L430">						isEdgeWeight = false;</span>
-<span class="fc" id="L431">						break;</span>
+<span class="fc" id="L339">						isVertexWeight = true;</span>
+<span class="fc" id="L340">						isEdgeWeight = false;</span>
+<span class="fc" id="L341">						break;</span>
 					case &quot;edge&quot;:
-<span class="fc" id="L433">						isVertexWeight = false;</span>
-<span class="fc" id="L434">						isEdgeWeight = true;</span>
-<span class="fc" id="L435">						break;</span>
+<span class="fc" id="L343">						isVertexWeight = false;</span>
+<span class="fc" id="L344">						isEdgeWeight = true;</span>
+<span class="fc" id="L345">						break;</span>
 					case &quot;all&quot;:
-<span class="fc" id="L437">						isVertexWeight = true;</span>
-<span class="fc" id="L438">						isEdgeWeight = true;</span>
-<span class="fc" id="L439">						break;</span>
+<span class="fc" id="L347">						isVertexWeight = true;</span>
+<span class="fc" id="L348">						isEdgeWeight = true;</span>
+<span class="fc" id="L349">						break;</span>
 					default:
-<span class="fc" id="L441">						throw new IllegalArgumentException(&quot;unknown domain: &quot; + domain);</span>
+<span class="fc" id="L351">						throw new IllegalArgumentException(&quot;unknown domain: &quot; + domain);</span>
 				}
-<span class="fc bfc" id="L443" title="All 2 branches covered.">				if (isVertexWeight) {</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">				if (isVertexWeight) {</span>
 					@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L445">					Class&lt;Object&gt; attrType0 = (Class&lt;Object&gt;) attrType;</span>
-<span class="fc" id="L446">					Weights&lt;V, Object&gt; weights = g.addVerticesWeights(attrName, attrType0, defVal);</span>
+<span class="fc" id="L355">					Class&lt;Object&gt; attrType0 = (Class&lt;Object&gt;) attrType;</span>
+<span class="fc" id="L356">					Weights&lt;V, Object&gt; weights = g.addVerticesWeights(attrName, attrType0, defVal);</span>
 					@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L448">					BiConsumer&lt;V, String&gt; setter =</span>
-<span class="fc" id="L449">							(BiConsumer&lt;V, String&gt;) setterFactory.apply((Weights&lt;Object, Object&gt;) weights);</span>
-<span class="fc" id="L450">					vWeights.put(weightId, setter);</span>
+<span class="fc" id="L358">					BiConsumer&lt;V, String&gt; setter =</span>
+<span class="fc" id="L359">							(BiConsumer&lt;V, String&gt;) setterFactory.apply((Weights&lt;Object, Object&gt;) weights);</span>
+<span class="fc" id="L360">					Object oldVal = vWeights.put(weightId, setter);</span>
+<span class="fc bfc" id="L361" title="All 2 branches covered.">					if (oldVal != null)</span>
+<span class="fc" id="L362">						throw new IllegalArgumentException(&quot;duplicate vertex weight key: &quot; + weightId);</span>
 				}
-<span class="fc bfc" id="L452" title="All 2 branches covered.">				if (isEdgeWeight) {</span>
+<span class="fc bfc" id="L364" title="All 2 branches covered.">				if (isEdgeWeight) {</span>
 					@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L454">					Class&lt;Object&gt; attrType0 = (Class&lt;Object&gt;) attrType;</span>
-<span class="fc" id="L455">					Weights&lt;E, Object&gt; weights = g.addEdgesWeights(attrName, attrType0, defVal);</span>
+<span class="fc" id="L366">					Class&lt;Object&gt; attrType0 = (Class&lt;Object&gt;) attrType;</span>
+<span class="fc" id="L367">					Weights&lt;E, Object&gt; weights = g.addEdgesWeights(attrName, attrType0, defVal);</span>
 					@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L457">					BiConsumer&lt;E, String&gt; setter =</span>
-<span class="fc" id="L458">							(BiConsumer&lt;E, String&gt;) setterFactory.apply((Weights&lt;Object, Object&gt;) weights);</span>
-<span class="fc" id="L459">					eWeights.put(weightId, setter);</span>
+<span class="fc" id="L369">					BiConsumer&lt;E, String&gt; setter =</span>
+<span class="fc" id="L370">							(BiConsumer&lt;E, String&gt;) setterFactory.apply((Weights&lt;Object, Object&gt;) weights);</span>
+<span class="fc" id="L371">					Object oldVal = eWeights.put(weightId, setter);</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">					if (oldVal != null)</span>
+<span class="fc" id="L373">						throw new IllegalArgumentException(&quot;duplicate edge weight key: &quot; + weightId);</span>
 				}
-<span class="fc" id="L461">			}</span>
+<span class="fc" id="L375">			}</span>
 
-<span class="fc bfc" id="L463" title="All 2 branches covered.">			for (Element vElm : children(graph, &quot;node&quot;)) {</span>
-<span class="fc" id="L464">				V v = vertexParser.apply(requiredAttribute(vElm, &quot;id&quot;));</span>
-<span class="fc" id="L465">				g.addVertex(v);</span>
-<span class="fc bfc" id="L466" title="All 2 branches covered.">				for (Element dataElm : children(vElm, &quot;data&quot;)) {</span>
-<span class="fc" id="L467">					String weightId = requiredAttribute(dataElm, &quot;key&quot;);</span>
-<span class="fc" id="L468">					BiConsumer&lt;V, String&gt; vWeight = vWeights.get(weightId);</span>
-<span class="fc bfc" id="L469" title="All 2 branches covered.">					if (vWeight == null)</span>
-<span class="fc" id="L470">						throw new IllegalArgumentException(&quot;unknown weight key: &quot; + weightId);</span>
-<span class="fc" id="L471">					vWeight.accept(v, dataElm.getTextContent());</span>
-<span class="fc" id="L472">				}</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">			for (Element vElm : XmlUtils.children(graph, &quot;node&quot;)) {</span>
+<span class="fc" id="L378">				V v = vertexParser.apply(XmlUtils.requiredAttribute(vElm, &quot;id&quot;));</span>
+<span class="fc" id="L379">				g.addVertex(v);</span>
+<span class="fc bfc" id="L380" title="All 2 branches covered.">				for (Element dataElm : XmlUtils.children(vElm, &quot;data&quot;)) {</span>
+<span class="fc" id="L381">					String weightId = XmlUtils.requiredAttribute(dataElm, &quot;key&quot;);</span>
+<span class="fc" id="L382">					BiConsumer&lt;V, String&gt; vWeight = vWeights.get(weightId);</span>
+<span class="fc bfc" id="L383" title="All 2 branches covered.">					if (vWeight == null)</span>
+<span class="fc" id="L384">						throw new IllegalArgumentException(&quot;unknown weight key: &quot; + weightId);</span>
+<span class="fc" id="L385">					vWeight.accept(v, dataElm.getTextContent());</span>
+<span class="fc" id="L386">				}</span>
 				// searchUnexpectedChildren(vElm, &quot;data&quot;);
-<span class="fc" id="L474">			}</span>
-<span class="fc bfc" id="L475" title="All 2 branches covered.">			for (Element eElm : children(graph, &quot;edge&quot;)) {</span>
+<span class="fc" id="L388">			}</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">			for (Element eElm : XmlUtils.children(graph, &quot;edge&quot;)) {</span>
 				E e;
-<span class="fc" id="L477">				Optional&lt;String&gt; id = optionalAttribute(eElm, &quot;id&quot;);</span>
-<span class="fc bfc" id="L478" title="All 2 branches covered.">				if (id.isPresent()) {</span>
-<span class="fc bfc" id="L479" title="All 2 branches covered.">					if (edgeParser == null)</span>
-<span class="fc" id="L480">						throw new IllegalStateException(&quot;Edge parser was not set&quot;);</span>
-<span class="fc" id="L481">					e = edgeParser.apply(id.get());</span>
+<span class="fc" id="L391">				Optional&lt;String&gt; id = XmlUtils.optionalAttribute(eElm, &quot;id&quot;);</span>
+<span class="fc bfc" id="L392" title="All 2 branches covered.">				if (id.isPresent()) {</span>
+<span class="fc bfc" id="L393" title="All 2 branches covered.">					if (edgeParser == null)</span>
+<span class="fc" id="L394">						throw new IllegalStateException(&quot;Edge parser was not set&quot;);</span>
+<span class="fc" id="L395">					e = edgeParser.apply(id.get());</span>
 				} else {
-<span class="fc bfc" id="L483" title="All 2 branches covered.">					if (edgeSupplier == null)</span>
-<span class="fc" id="L484">						throw new IllegalStateException(&quot;Edge supplier was not set&quot;);</span>
-<span class="fc" id="L485">					e = edgeSupplier.apply(g.edges());</span>
+<span class="fc bfc" id="L397" title="All 2 branches covered.">					if (edgeSupplier == null)</span>
+<span class="fc" id="L398">						throw new IllegalStateException(&quot;Edge supplier was not set&quot;);</span>
+<span class="fc" id="L399">					e = edgeSupplier.apply(g.edges());</span>
 				}
-<span class="fc" id="L487">				V u = vertexParser.apply(requiredAttribute(eElm, &quot;source&quot;));</span>
-<span class="fc" id="L488">				V v = vertexParser.apply(requiredAttribute(eElm, &quot;target&quot;));</span>
-<span class="fc bfc" id="L489" title="All 2 branches covered.">				if (optionalAttribute(eElm, &quot;directed&quot;).isPresent())</span>
-<span class="fc" id="L490">					throw new IllegalArgumentException(&quot;directed attribute per-edge is not supported&quot;);</span>
-<span class="fc" id="L491">				g.addEdge(u, v, e);</span>
-<span class="fc bfc" id="L492" title="All 2 branches covered.">				for (Element dataElm : children(eElm, &quot;data&quot;)) {</span>
-<span class="fc" id="L493">					String weightId = requiredAttribute(dataElm, &quot;key&quot;);</span>
-<span class="fc" id="L494">					BiConsumer&lt;E, String&gt; eWeight = eWeights.get(weightId);</span>
-<span class="fc bfc" id="L495" title="All 2 branches covered.">					if (eWeight == null)</span>
-<span class="fc" id="L496">						throw new IllegalArgumentException(&quot;unknown weight key: &quot; + weightId);</span>
-<span class="fc" id="L497">					eWeight.accept(e, dataElm.getTextContent());</span>
-<span class="fc" id="L498">				}</span>
+<span class="fc" id="L401">				V u = vertexParser.apply(XmlUtils.requiredAttribute(eElm, &quot;source&quot;));</span>
+<span class="fc" id="L402">				V v = vertexParser.apply(XmlUtils.requiredAttribute(eElm, &quot;target&quot;));</span>
+<span class="fc" id="L403">				g.addEdge(u, v, e);</span>
+
+<span class="fc bfc" id="L405" title="All 2 branches covered.">				if (eElm.hasAttribute(&quot;directed&quot;))</span>
+<span class="fc" id="L406">					throw new IllegalArgumentException(&quot;directed attribute per-edge is not supported&quot;);</span>
+
+<span class="fc bfc" id="L408" title="All 2 branches covered.">				for (Element dataElm : XmlUtils.children(eElm, &quot;data&quot;)) {</span>
+<span class="fc" id="L409">					String weightId = XmlUtils.requiredAttribute(dataElm, &quot;key&quot;);</span>
+<span class="fc" id="L410">					BiConsumer&lt;E, String&gt; eWeight = eWeights.get(weightId);</span>
+<span class="fc bfc" id="L411" title="All 2 branches covered.">					if (eWeight == null)</span>
+<span class="fc" id="L412">						throw new IllegalArgumentException(&quot;unknown weight key: &quot; + weightId);</span>
+<span class="fc" id="L413">					eWeight.accept(e, dataElm.getTextContent());</span>
+<span class="fc" id="L414">				}</span>
 				// searchUnexpectedChildren(eElm, &quot;data&quot;);
-<span class="fc" id="L500">			}</span>
+<span class="fc" id="L416">			}</span>
 
-<span class="fc" id="L502">			return g;</span>
+<span class="fc" id="L418">			return g;</span>
 
-<span class="fc" id="L504">		} catch (ParserConfigurationException | SAXException e) {</span>
-<span class="fc" id="L505">			throw new IllegalArgumentException(e);</span>
+<span class="fc" id="L420">		} catch (ParserConfigurationException | SAXException e) {</span>
+<span class="fc" id="L421">			throw new IllegalArgumentException(e);</span>
 		}
-	}
-
-	private static Iterable&lt;Element&gt; children(Node parent, String tag) {
-<span class="fc" id="L510">		return () -&gt; StreamSupport.stream(children(parent).spliterator(), false).filter(e -&gt; e.getTagName().equals(tag))</span>
-<span class="fc" id="L511">				.iterator();</span>
-	}
-
-	private static Iterable&lt;Element&gt; children(Node parent) {
-<span class="fc" id="L515">		return () -&gt; new Iterator&lt;&gt;() {</span>
-
-<span class="fc" id="L517">			final NodeList childNodes = parent.getChildNodes();</span>
-<span class="fc" id="L518">			final int length = childNodes.getLength();</span>
-			int idx;
-			{
-<span class="fc" id="L521">				advance();</span>
-<span class="fc" id="L522">			}</span>
-
-			private void advance() {
-<span class="fc bfc" id="L525" title="All 2 branches covered.">				for (; idx &lt; length; idx++)</span>
-<span class="fc bfc" id="L526" title="All 2 branches covered.">					if (childNodes.item(idx) instanceof Element)</span>
-<span class="fc" id="L527">						return;</span>
-<span class="fc" id="L528">			}</span>
-
-			@Override
-			public boolean hasNext() {
-<span class="fc bfc" id="L532" title="All 2 branches covered.">				return idx &lt; length;</span>
-			}
-
-			@Override
-			public Element next() {
-<span class="fc" id="L537">				Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L538">				Element element = (Element) childNodes.item(idx++);</span>
-<span class="fc" id="L539">				advance();</span>
-<span class="fc" id="L540">				return element;</span>
-			}
-		};
-	}
-
-	private static Element requiredChild(Element parent, String tag) {
-<span class="fc" id="L546">		Iterator&lt;Element&gt; children = children(parent, tag).iterator();</span>
-<span class="fc bfc" id="L547" title="All 2 branches covered.">		if (!children.hasNext())</span>
-<span class="fc" id="L548">			throw new IllegalArgumentException(&quot;no &quot; + tag + &quot; element&quot;);</span>
-<span class="fc" id="L549">		Element child = children.next();</span>
-<span class="fc bfc" id="L550" title="All 2 branches covered.">		if (children.hasNext())</span>
-<span class="fc" id="L551">			throw new IllegalArgumentException(&quot;multiple &quot; + tag + &quot; elements&quot;);</span>
-<span class="fc" id="L552">		return child;</span>
-	}
-
-	private static Optional&lt;Element&gt; optionalChild(Element parent, String tag) {
-<span class="fc" id="L556">		Iterator&lt;Element&gt; children = children(parent, tag).iterator();</span>
-<span class="fc bfc" id="L557" title="All 2 branches covered.">		if (!children.hasNext())</span>
-<span class="fc" id="L558">			return Optional.empty();</span>
-<span class="fc" id="L559">		Element child = children.next();</span>
-<span class="fc bfc" id="L560" title="All 2 branches covered.">		if (children.hasNext())</span>
-<span class="fc" id="L561">			throw new IllegalArgumentException(&quot;multiple &quot; + tag + &quot; elements&quot;);</span>
-<span class="fc" id="L562">		return Optional.of(child);</span>
-	}
-
-	private static String requiredAttribute(Element element, String att) {
-<span class="fc" id="L566">		return optionalAttribute(element, att)</span>
-<span class="fc" id="L567">				.orElseThrow(() -&gt; new IllegalArgumentException(&quot;no &quot; + att + &quot; attribute&quot;));</span>
-	}
-
-	private static Optional&lt;String&gt; optionalAttribute(Element element, String att) {
-<span class="fc" id="L571">		String value = element.getAttribute(att);</span>
-<span class="fc bfc" id="L572" title="All 4 branches covered.">		return value.isEmpty() &amp;&amp; !element.hasAttribute(att) ? Optional.empty() : Optional.of(value);</span>
 	}
 
 	// private static void searchUnexpectedChildren(Element element, String... tags) {

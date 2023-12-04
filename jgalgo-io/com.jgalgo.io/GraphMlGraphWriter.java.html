@@ -18,9 +18,13 @@ package com.jgalgo.io;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.BiConsumer;
+import java.util.function.Predicate;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
@@ -51,7 +55,8 @@ import com.jgalgo.graph.WeightsShort;
  * (some edges are directed while others are undirected) although the {@link Graph} does not supported mixed graphs
  * (therefore the writer also doesn't support it). The format support graphs with vertices and edges of any type, as
  * long as they can be written as an XML attribute string. The format also support multiple weights for vertices and
- * edges, of type boolean, int, long, float, double or string, and a default value for each weight type.
+ * edges, of type {@code boolean}, {@code int}, {@code long}, {@code float}, {@code double} or {@link String}, and a
+ * default value for each weight type.
  *
  * &lt;p&gt;
  * The GraphML format support both self edges and parallel edges.
@@ -59,129 +64,155 @@ import com.jgalgo.graph.WeightsShort;
  * @see    GraphMlGraphReader
  * @author Barak Ugav
  */
-<span class="fc" id="L62">public class GraphMlGraphWriter&lt;V, E&gt; extends GraphIoUtils.AbstractGraphWriter&lt;V, E&gt; {</span>
+public class GraphMlGraphWriter&lt;V, E&gt; extends GraphIoUtils.AbstractGraphWriter&lt;V, E&gt; {
 
 	/**
 	 * Create a new writer.
 	 */
-<span class="fc" id="L67">	public GraphMlGraphWriter() {}</span>
+<span class="fc" id="L72">	public GraphMlGraphWriter() {}</span>
 
 	@Override
 	void writeGraphImpl(Graph&lt;V, E&gt; graph, Writer writer) throws IOException {
 		try {
-<span class="fc" id="L72">			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();</span>
-<span class="fc" id="L73">			Element rootElm = document.createElement(&quot;graphml&quot;);</span>
-<span class="fc" id="L74">			rootElm.setAttribute(&quot;xmlns&quot;, &quot;http://graphml.graphdrawing.org/xmlns&quot;);</span>
-<span class="fc" id="L75">			document.appendChild(rootElm);</span>
+<span class="fc" id="L77">			Document document = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();</span>
+<span class="fc" id="L78">			Element rootElm = document.createElement(&quot;graphml&quot;);</span>
+<span class="fc" id="L79">			rootElm.setAttribute(&quot;xmlns&quot;, &quot;http://graphml.graphdrawing.org/xmlns&quot;);</span>
+<span class="fc" id="L80">			document.appendChild(rootElm);</span>
 
-<span class="fc" id="L77">			int nextWeightsIdx = 0;</span>
-<span class="fc" id="L78">			List&lt;BiConsumer&lt;V, Element&gt;&gt; vWeightsWriters = new ArrayList&lt;&gt;();</span>
-<span class="fc" id="L79">			List&lt;BiConsumer&lt;E, Element&gt;&gt; eWeightsWriters = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">			for (String weightKey : graph.getVerticesWeightsKeys()) {</span>
-<span class="fc" id="L81">				Weights&lt;V, ?&gt; weights = graph.getVerticesWeights(weightKey);</span>
-<span class="fc" id="L82">				Element weightElm = document.createElement(&quot;key&quot;);</span>
-<span class="fc" id="L83">				String weightId = &quot;d&quot; + nextWeightsIdx++;</span>
-<span class="fc" id="L84">				weightElm.setAttribute(&quot;id&quot;, weightId);</span>
-<span class="fc" id="L85">				weightElm.setAttribute(&quot;for&quot;, &quot;node&quot;);</span>
-<span class="fc" id="L86">				weightElm.setAttribute(&quot;attr.name&quot;, weightKey);</span>
-<span class="fc" id="L87">				weightElm.setAttribute(&quot;attr.type&quot;, attrType(weights));</span>
-<span class="fc" id="L88">				Object defVal = weights.defaultWeightAsObj();</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">				if (defVal != null) {</span>
-<span class="fc" id="L90">					Element defaultElm = document.createElement(&quot;default&quot;);</span>
-<span class="fc" id="L91">					defaultElm.setTextContent(String.valueOf(defVal));</span>
-<span class="fc" id="L92">					weightElm.appendChild(defaultElm);</span>
+<span class="fc" id="L82">			int nextWeightsIdx = 0;</span>
+<span class="fc" id="L83">			List&lt;BiConsumer&lt;V, Element&gt;&gt; vWeightsWriters = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L84">			List&lt;BiConsumer&lt;E, Element&gt;&gt; eWeightsWriters = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			for (String weightKey : graph.getVerticesWeightsKeys()) {</span>
+<span class="fc" id="L86">				Weights&lt;V, ?&gt; weights = graph.getVerticesWeights(weightKey);</span>
+<span class="fc" id="L87">				String type = attrType(weights, graph.vertices());</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">				if (type == null)</span>
+<span class="fc" id="L89">					throw new IllegalArgumentException(</span>
+							&quot;Vertices weights with key '&quot; + weightKey + &quot;' are not supported&quot;);
+
+<span class="fc" id="L92">				Element weightElm = document.createElement(&quot;key&quot;);</span>
+<span class="fc" id="L93">				String weightId = &quot;d&quot; + nextWeightsIdx++;</span>
+<span class="fc" id="L94">				weightElm.setAttribute(&quot;id&quot;, weightId);</span>
+<span class="fc" id="L95">				weightElm.setAttribute(&quot;for&quot;, &quot;node&quot;);</span>
+<span class="fc" id="L96">				weightElm.setAttribute(&quot;attr.name&quot;, weightKey);</span>
+<span class="fc" id="L97">				weightElm.setAttribute(&quot;attr.type&quot;, type);</span>
+<span class="fc" id="L98">				Object defVal = weights.defaultWeightAsObj();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">				if (defVal != null) {</span>
+<span class="fc" id="L100">					Element defaultElm = document.createElement(&quot;default&quot;);</span>
+<span class="fc" id="L101">					defaultElm.setTextContent(String.valueOf(defVal));</span>
+<span class="fc" id="L102">					weightElm.appendChild(defaultElm);</span>
 				}
-<span class="fc" id="L94">				rootElm.appendChild(weightElm);</span>
+<span class="fc" id="L104">				rootElm.appendChild(weightElm);</span>
 
-<span class="fc" id="L96">				vWeightsWriters.add((v, vertexElm) -&gt; {</span>
-<span class="fc" id="L97">					Object w = weights.getAsObj(v);</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">					if (Objects.equals(defVal, w))</span>
-<span class="fc" id="L99">						return;</span>
-<span class="fc" id="L100">					Element dataElm = document.createElement(&quot;data&quot;);</span>
-<span class="fc" id="L101">					dataElm.setAttribute(&quot;key&quot;, weightId);</span>
-<span class="fc" id="L102">					dataElm.setTextContent(String.valueOf(w));</span>
-<span class="fc" id="L103">					vertexElm.appendChild(dataElm);</span>
-<span class="fc" id="L104">				});</span>
-<span class="fc" id="L105">			}</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">			for (String weightKey : graph.getEdgesWeightsKeys()) {</span>
-<span class="fc" id="L107">				Weights&lt;E, ?&gt; weights = graph.getEdgesWeights(weightKey);</span>
-<span class="fc" id="L108">				Element weightElm = document.createElement(&quot;key&quot;);</span>
-<span class="fc" id="L109">				String weightId = &quot;d&quot; + nextWeightsIdx++;</span>
-<span class="fc" id="L110">				weightElm.setAttribute(&quot;id&quot;, weightId);</span>
-<span class="fc" id="L111">				weightElm.setAttribute(&quot;for&quot;, &quot;edge&quot;);</span>
-<span class="fc" id="L112">				weightElm.setAttribute(&quot;attr.name&quot;, weightKey);</span>
-<span class="fc" id="L113">				weightElm.setAttribute(&quot;attr.type&quot;, attrType(weights));</span>
-<span class="fc" id="L114">				Object defVal = weights.defaultWeightAsObj();</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">				if (defVal != null) {</span>
-<span class="fc" id="L116">					Element defaultElm = document.createElement(&quot;default&quot;);</span>
-<span class="fc" id="L117">					defaultElm.setTextContent(String.valueOf(defVal));</span>
-<span class="fc" id="L118">					weightElm.appendChild(defaultElm);</span>
+<span class="fc" id="L106">				vWeightsWriters.add((v, vertexElm) -&gt; {</span>
+<span class="fc" id="L107">					Object w = weights.getAsObj(v);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">					if (Objects.equals(defVal, w))</span>
+<span class="fc" id="L109">						return;</span>
+<span class="fc" id="L110">					Element dataElm = document.createElement(&quot;data&quot;);</span>
+<span class="fc" id="L111">					dataElm.setAttribute(&quot;key&quot;, weightId);</span>
+<span class="fc" id="L112">					dataElm.setTextContent(String.valueOf(w));</span>
+<span class="fc" id="L113">					vertexElm.appendChild(dataElm);</span>
+<span class="fc" id="L114">				});</span>
+<span class="fc" id="L115">			}</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">			for (String weightKey : graph.getEdgesWeightsKeys()) {</span>
+<span class="fc" id="L117">				Weights&lt;E, ?&gt; weights = graph.getEdgesWeights(weightKey);</span>
+<span class="fc" id="L118">				String type = attrType(weights, graph.edges());</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">				if (type == null)</span>
+<span class="fc" id="L120">					throw new IllegalArgumentException(&quot;Edges weights with key '&quot; + weightKey + &quot;' are not supported&quot;);</span>
+
+<span class="fc" id="L122">				Element weightElm = document.createElement(&quot;key&quot;);</span>
+<span class="fc" id="L123">				String weightId = &quot;d&quot; + nextWeightsIdx++;</span>
+<span class="fc" id="L124">				weightElm.setAttribute(&quot;id&quot;, weightId);</span>
+<span class="fc" id="L125">				weightElm.setAttribute(&quot;for&quot;, &quot;edge&quot;);</span>
+<span class="fc" id="L126">				weightElm.setAttribute(&quot;attr.name&quot;, weightKey);</span>
+<span class="fc" id="L127">				weightElm.setAttribute(&quot;attr.type&quot;, type);</span>
+<span class="fc" id="L128">				Object defVal = weights.defaultWeightAsObj();</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">				if (defVal != null) {</span>
+<span class="fc" id="L130">					Element defaultElm = document.createElement(&quot;default&quot;);</span>
+<span class="fc" id="L131">					defaultElm.setTextContent(String.valueOf(defVal));</span>
+<span class="fc" id="L132">					weightElm.appendChild(defaultElm);</span>
 				}
-<span class="fc" id="L120">				rootElm.appendChild(weightElm);</span>
+<span class="fc" id="L134">				rootElm.appendChild(weightElm);</span>
 
-<span class="fc" id="L122">				eWeightsWriters.add((e, edgeElm) -&gt; {</span>
-<span class="fc" id="L123">					Object w = weights.getAsObj(e);</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">					if (Objects.equals(defVal, w))</span>
-<span class="fc" id="L125">						return;</span>
-<span class="fc" id="L126">					Element dataElm = document.createElement(&quot;data&quot;);</span>
-<span class="fc" id="L127">					dataElm.setAttribute(&quot;key&quot;, weightId);</span>
-<span class="fc" id="L128">					dataElm.setTextContent(String.valueOf(w));</span>
-<span class="fc" id="L129">					edgeElm.appendChild(dataElm);</span>
-<span class="fc" id="L130">				});</span>
-<span class="fc" id="L131">			}</span>
-
-<span class="fc" id="L133">			Element graphElm = document.createElement(&quot;graph&quot;);</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">			graphElm.setAttribute(&quot;edgedefault&quot;, graph.isDirected() ? &quot;directed&quot; : &quot;undirected&quot;);</span>
-<span class="fc" id="L135">			graphElm.setAttribute(&quot;parse.nodes&quot;, String.valueOf(graph.vertices().size()));</span>
-<span class="fc" id="L136">			graphElm.setAttribute(&quot;parse.edges&quot;, String.valueOf(graph.edges().size()));</span>
-<span class="fc" id="L137">			rootElm.appendChild(graphElm);</span>
-
-<span class="fc bfc" id="L139" title="All 2 branches covered.">			for (V vertex : graph.vertices()) {</span>
-<span class="fc" id="L140">				Element nodeElm = document.createElement(&quot;node&quot;);</span>
-<span class="fc" id="L141">				nodeElm.setAttribute(&quot;id&quot;, String.valueOf(vertex));</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">				for (BiConsumer&lt;V, Element&gt; vWeightsWriter : vWeightsWriters)</span>
-<span class="fc" id="L143">					vWeightsWriter.accept(vertex, nodeElm);</span>
-<span class="fc" id="L144">				graphElm.appendChild(nodeElm);</span>
+<span class="fc" id="L136">				eWeightsWriters.add((e, edgeElm) -&gt; {</span>
+<span class="fc" id="L137">					Object w = weights.getAsObj(e);</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">					if (Objects.equals(defVal, w))</span>
+<span class="fc" id="L139">						return;</span>
+<span class="fc" id="L140">					Element dataElm = document.createElement(&quot;data&quot;);</span>
+<span class="fc" id="L141">					dataElm.setAttribute(&quot;key&quot;, weightId);</span>
+<span class="fc" id="L142">					dataElm.setTextContent(String.valueOf(w));</span>
+<span class="fc" id="L143">					edgeElm.appendChild(dataElm);</span>
+<span class="fc" id="L144">				});</span>
 <span class="fc" id="L145">			}</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">			for (E edge : graph.edges()) {</span>
-<span class="fc" id="L147">				Element edgeElm = document.createElement(&quot;edge&quot;);</span>
-<span class="fc" id="L148">				edgeElm.setAttribute(&quot;id&quot;, String.valueOf(edge));</span>
-<span class="fc" id="L149">				edgeElm.setAttribute(&quot;source&quot;, String.valueOf(graph.edgeSource(edge)));</span>
-<span class="fc" id="L150">				edgeElm.setAttribute(&quot;target&quot;, String.valueOf(graph.edgeTarget(edge)));</span>
-<span class="fc bfc" id="L151" title="All 2 branches covered.">				for (BiConsumer&lt;E, Element&gt; eWeightsWriter : eWeightsWriters)</span>
-<span class="fc" id="L152">					eWeightsWriter.accept(edge, edgeElm);</span>
-<span class="fc" id="L153">				graphElm.appendChild(edgeElm);</span>
-<span class="fc" id="L154">			}</span>
 
-<span class="fc" id="L156">			Transformer transformer = TransformerFactory.newInstance().newTransformer();</span>
-<span class="fc" id="L157">			transformer.transform(new DOMSource(document), new StreamResult(writer));</span>
+<span class="fc" id="L147">			Element graphElm = document.createElement(&quot;graph&quot;);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">			graphElm.setAttribute(&quot;edgedefault&quot;, graph.isDirected() ? &quot;directed&quot; : &quot;undirected&quot;);</span>
+<span class="fc" id="L149">			graphElm.setAttribute(&quot;parse.nodes&quot;, String.valueOf(graph.vertices().size()));</span>
+<span class="fc" id="L150">			graphElm.setAttribute(&quot;parse.edges&quot;, String.valueOf(graph.edges().size()));</span>
+<span class="fc" id="L151">			rootElm.appendChild(graphElm);</span>
 
-<span class="nc" id="L159">		} catch (TransformerFactoryConfigurationError | ParserConfigurationException | TransformerException e) {</span>
-<span class="nc" id="L160">			throw new IOException(e);</span>
-<span class="fc" id="L161">		}</span>
-<span class="fc" id="L162">	}</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">			for (V vertex : graph.vertices()) {</span>
+<span class="fc" id="L154">				Element nodeElm = document.createElement(&quot;node&quot;);</span>
+<span class="fc" id="L155">				nodeElm.setAttribute(&quot;id&quot;, String.valueOf(vertex));</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">				for (BiConsumer&lt;V, Element&gt; vWeightsWriter : vWeightsWriters)</span>
+<span class="fc" id="L157">					vWeightsWriter.accept(vertex, nodeElm);</span>
+<span class="fc" id="L158">				graphElm.appendChild(nodeElm);</span>
+<span class="fc" id="L159">			}</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">			for (E edge : graph.edges()) {</span>
+<span class="fc" id="L161">				Element edgeElm = document.createElement(&quot;edge&quot;);</span>
+<span class="fc" id="L162">				edgeElm.setAttribute(&quot;id&quot;, String.valueOf(edge));</span>
+<span class="fc" id="L163">				edgeElm.setAttribute(&quot;source&quot;, String.valueOf(graph.edgeSource(edge)));</span>
+<span class="fc" id="L164">				edgeElm.setAttribute(&quot;target&quot;, String.valueOf(graph.edgeTarget(edge)));</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">				for (BiConsumer&lt;E, Element&gt; eWeightsWriter : eWeightsWriters)</span>
+<span class="fc" id="L166">					eWeightsWriter.accept(edge, edgeElm);</span>
+<span class="fc" id="L167">				graphElm.appendChild(edgeElm);</span>
+<span class="fc" id="L168">			}</span>
 
-	private static String attrType(Weights&lt;?, ?&gt; weights) {
-<span class="fc bfc" id="L165" title="All 2 branches covered.">		if (weights instanceof WeightsByte) {</span>
-<span class="fc" id="L166">			return &quot;int&quot;;</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">		} else if (weights instanceof WeightsShort) {</span>
-<span class="fc" id="L168">			return &quot;int&quot;;</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">		} else if (weights instanceof WeightsInt) {</span>
-<span class="fc" id="L170">			return &quot;int&quot;;</span>
-<span class="fc bfc" id="L171" title="All 2 branches covered.">		} else if (weights instanceof WeightsLong) {</span>
-<span class="fc" id="L172">			return &quot;long&quot;;</span>
-<span class="fc bfc" id="L173" title="All 2 branches covered.">		} else if (weights instanceof WeightsFloat) {</span>
-<span class="fc" id="L174">			return &quot;float&quot;;</span>
-<span class="fc bfc" id="L175" title="All 2 branches covered.">		} else if (weights instanceof WeightsDouble) {</span>
-<span class="fc" id="L176">			return &quot;double&quot;;</span>
-<span class="fc bfc" id="L177" title="All 2 branches covered.">		} else if (weights instanceof WeightsBool) {</span>
-<span class="fc" id="L178">			return &quot;boolean&quot;;</span>
-<span class="fc bfc" id="L179" title="All 2 branches covered.">		} else if (weights instanceof WeightsChar) {</span>
-<span class="fc" id="L180">			return &quot;string&quot;;</span>
-		} else {
-<span class="pc bnc" id="L182" title="All 2 branches missed.">			assert weights instanceof WeightsObj;</span>
-<span class="fc" id="L183">			return &quot;string&quot;;</span>
-		}
+<span class="fc" id="L170">			Transformer transformer = TransformerFactory.newInstance().newTransformer();</span>
+<span class="fc" id="L171">			transformer.transform(new DOMSource(document), new StreamResult(writer));</span>
+
+<span class="nc" id="L173">		} catch (TransformerFactoryConfigurationError | ParserConfigurationException | TransformerException e) {</span>
+<span class="nc" id="L174">			throw new IOException(e);</span>
+<span class="fc" id="L175">		}</span>
+<span class="fc" id="L176">	}</span>
+
+	private static &lt;K&gt; String attrType(Weights&lt;K, ?&gt; weights, Set&lt;K&gt; elements) {
+<span class="fc" id="L179">		AtomicReference&lt;Object[]&gt; objWeightsCache = new AtomicReference&lt;&gt;();</span>
+<span class="fc" id="L180">		Predicate&lt;Class&lt;?&gt;&gt; allInstanceof = cls -&gt; {</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">			if (!(weights instanceof WeightsObj))</span>
+<span class="fc" id="L182">				return false;</span>
+
+<span class="fc" id="L184">			WeightsObj&lt;K, ?&gt; ws = (WeightsObj&lt;K, ?&gt;) weights;</span>
+<span class="fc" id="L185">			Object[] objWeights = objWeightsCache.get();</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">			if (objWeights == null)</span>
+<span class="fc" id="L187">				objWeightsCache.set(objWeights = elements.stream().map(ws::get).toArray());</span>
+
+<span class="fc" id="L189">			Object defVal = ws.defaultWeight();</span>
+<span class="fc bfc" id="L190" title="All 4 branches covered.">			if (defVal != null &amp;&amp; !cls.isInstance(defVal))</span>
+<span class="fc" id="L191">				return false;</span>
+<span class="fc" id="L192">			return Arrays.stream(objWeights).allMatch(cls::isInstance);</span>
+		};
+
+		/* check string first so that if there are no vertices/edges, string will be chosen */
+<span class="fc bfc" id="L196" title="All 4 branches covered.">		if (weights instanceof WeightsObj &amp;&amp; allInstanceof.test(String.class))</span>
+<span class="fc" id="L197">			return &quot;string&quot;;</span>
+
+<span class="fc bfc" id="L199" title="All 4 branches covered.">		if (weights instanceof WeightsByte || allInstanceof.test(Byte.class))</span>
+<span class="fc" id="L200">			return &quot;int&quot;;</span>
+<span class="fc bfc" id="L201" title="All 4 branches covered.">		if (weights instanceof WeightsShort || allInstanceof.test(Short.class))</span>
+<span class="fc" id="L202">			return &quot;int&quot;;</span>
+<span class="fc bfc" id="L203" title="All 4 branches covered.">		if (weights instanceof WeightsInt || allInstanceof.test(Integer.class))</span>
+<span class="fc" id="L204">			return &quot;int&quot;;</span>
+<span class="fc bfc" id="L205" title="All 4 branches covered.">		if (weights instanceof WeightsLong || allInstanceof.test(Long.class))</span>
+<span class="fc" id="L206">			return &quot;long&quot;;</span>
+<span class="fc bfc" id="L207" title="All 4 branches covered.">		if (weights instanceof WeightsFloat || allInstanceof.test(Float.class))</span>
+<span class="fc" id="L208">			return &quot;float&quot;;</span>
+<span class="fc bfc" id="L209" title="All 4 branches covered.">		if (weights instanceof WeightsDouble || allInstanceof.test(Double.class))</span>
+<span class="fc" id="L210">			return &quot;double&quot;;</span>
+<span class="fc bfc" id="L211" title="All 4 branches covered.">		if (weights instanceof WeightsBool || allInstanceof.test(Boolean.class))</span>
+<span class="fc" id="L212">			return &quot;boolean&quot;;</span>
+<span class="fc bfc" id="L213" title="All 4 branches covered.">		if (weights instanceof WeightsChar || allInstanceof.test(Character.class))</span>
+<span class="fc" id="L214">			return &quot;string&quot;;</span>
+<span class="fc" id="L215">		return null;</span>
 	}
 
 }

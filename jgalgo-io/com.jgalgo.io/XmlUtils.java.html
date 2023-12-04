@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>XmlUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - IO</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.io</a> &gt; <span class="el_source">XmlUtils.java</span></div><h1>XmlUtils.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.io;
+
+import java.util.Iterator;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import com.jgalgo.internal.util.Assertions;
+
+class XmlUtils {
+
+	private XmlUtils() {}
+
+	static Iterable&lt;Element&gt; children(Node parent, String tag) {
+<span class="fc" id="L31">		return () -&gt; StreamSupport.stream(children(parent).spliterator(), false).filter(e -&gt; e.getTagName().equals(tag))</span>
+<span class="fc" id="L32">				.iterator();</span>
+	}
+
+	static Iterable&lt;Element&gt; children(Node parent) {
+<span class="fc" id="L36">		return () -&gt; new Iterator&lt;&gt;() {</span>
+
+<span class="fc" id="L38">			final NodeList childNodes = parent.getChildNodes();</span>
+<span class="fc" id="L39">			final int length = childNodes.getLength();</span>
+			int idx;
+			{
+<span class="fc" id="L42">				advance();</span>
+<span class="fc" id="L43">			}</span>
+
+			private void advance() {
+<span class="fc bfc" id="L46" title="All 2 branches covered.">				for (; idx &lt; length; idx++)</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">					if (childNodes.item(idx) instanceof Element)</span>
+<span class="fc" id="L48">						return;</span>
+<span class="fc" id="L49">			}</span>
+
+			@Override
+			public boolean hasNext() {
+<span class="fc bfc" id="L53" title="All 2 branches covered.">				return idx &lt; length;</span>
+			}
+
+			@Override
+			public Element next() {
+<span class="fc" id="L58">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L59">				Element element = (Element) childNodes.item(idx++);</span>
+<span class="fc" id="L60">				advance();</span>
+<span class="fc" id="L61">				return element;</span>
+			}
+		};
+	}
+
+	static Element requiredChild(Element parent, String tag) {
+<span class="fc" id="L67">		Iterator&lt;Element&gt; children = children(parent, tag).iterator();</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (!children.hasNext())</span>
+<span class="fc" id="L69">			throw new IllegalArgumentException(&quot;no &quot; + tag + &quot; element&quot;);</span>
+<span class="fc" id="L70">		Element child = children.next();</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">		if (children.hasNext())</span>
+<span class="fc" id="L72">			throw new IllegalArgumentException(&quot;multiple &quot; + tag + &quot; elements&quot;);</span>
+<span class="fc" id="L73">		return child;</span>
+	}
+
+	static Optional&lt;Element&gt; optionalChild(Element parent, String tag) {
+<span class="fc" id="L77">		Iterator&lt;Element&gt; children = children(parent, tag).iterator();</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		if (!children.hasNext())</span>
+<span class="fc" id="L79">			return Optional.empty();</span>
+<span class="fc" id="L80">		Element child = children.next();</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">		if (children.hasNext())</span>
+<span class="fc" id="L82">			throw new IllegalArgumentException(&quot;multiple &quot; + tag + &quot; elements&quot;);</span>
+<span class="fc" id="L83">		return Optional.of(child);</span>
+	}
+
+	static String requiredAttribute(Element element, String att) {
+<span class="fc" id="L87">		return optionalAttribute(element, att)</span>
+<span class="fc" id="L88">				.orElseThrow(() -&gt; new IllegalArgumentException(&quot;no &quot; + att + &quot; attribute&quot;));</span>
+	}
+
+	static Optional&lt;String&gt; optionalAttribute(Element element, String att) {
+<span class="fc" id="L92">		String value = element.getAttribute(att);</span>
+<span class="fc bfc" id="L93" title="All 4 branches covered.">		return value.isEmpty() &amp;&amp; !element.hasAttribute(att) ? Optional.empty() : Optional.of(value);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

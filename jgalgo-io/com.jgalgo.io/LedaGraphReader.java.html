@@ -287,15 +287,11 @@ public class LedaGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
 <span class="fc bfc" id="L288" title="All 2 branches covered.">		} else if (weights instanceof IWeightsChar) {</span>
 <span class="fc" id="L289">			IWeightsChar weights0 = (IWeightsChar) weights;</span>
-<span class="fc" id="L290">			return (weight, id) -&gt; {</span>
-<span class="fc bfc" id="L291" title="All 2 branches covered.">				if (weight.length() != 1)</span>
-<span class="fc" id="L292">					throw new IllegalArgumentException(&quot;char weight must be a single character.&quot;);</span>
-<span class="fc" id="L293">				weights0.set(id, weight.charAt(0));</span>
-<span class="fc" id="L294">			};</span>
+<span class="fc" id="L290">			return (weight, id) -&gt; weights0.set(id, GraphIoUtils.parseChar(weight));</span>
 		} else {
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L297">			IWeightsObj&lt;String&gt; weights0 = (IWeightsObj&lt;String&gt;) weights;</span>
-<span class="fc" id="L298">			return (weight, id) -&gt; weights0.set(id, weight);</span>
+<span class="fc" id="L293">			IWeightsObj&lt;String&gt; weights0 = (IWeightsObj&lt;String&gt;) weights;</span>
+<span class="fc" id="L294">			return (weight, id) -&gt; weights0.set(id, weight);</span>
 		}
 	}
 
