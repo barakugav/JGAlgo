@@ -186,6 +186,15 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 	}
 
 	@Override
+	public void increaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
+		SplayBSTNode KEY_VALUE_GENERIC n = (SplayBSTNode KEY_VALUE_GENERIC) ref;
+		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);
+		remove(n);
+		n.key = newKey;
+		insertNode(n);
+	}
+
+	@Override
 	public HEAP_REFERENCE KEY_VALUE_GENERIC find(PRIMITIVE_KEY_TYPE key) {
 		SplayBSTNode KEY_VALUE_GENERIC n = BINARY_SEARCH_TREES.find(root, c, key);
 		return n == null ? null : (root = impl.splay(n));

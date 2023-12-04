@@ -249,6 +249,15 @@ public class RED_BLACK_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_
 		insertNode(n);
 	}
 
+	@Override
+	public void increaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
+		Node KEY_VALUE_GENERIC n = (Node KEY_VALUE_GENERIC) ref;
+		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);
+		remove(n);
+		n.key = newKey;
+		insertNode(n);
+	}
+
 	private void insertNode(Node KEY_VALUE_GENERIC n) {
 		assert n.parent == null;
 		assert n.left == null;

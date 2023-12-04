@@ -276,7 +276,7 @@ public class PAIRING_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_VA
 	}
 
 
-	void removeRoot() {
+	private void removeRoot() {
 		if (minRoot.child == null) {
 			minRoot = null;
 			return;
@@ -376,6 +376,14 @@ public class PAIRING_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_VA
 		afterKeyDecrease(n);
 	}
 
+	@Override
+	public void increaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
+		Node KEY_VALUE_GENERIC n = (Node KEY_VALUE_GENERIC) ref;
+		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);
+		remove(n);
+		n.key = newKey;
+		insertNode(n);
+	}
 
 	private static class Node KEY_VALUE_GENERIC implements HEAP_REFERENCE KEY_VALUE_GENERIC {
 		PRIMITIVE_KEY_TYPE key;

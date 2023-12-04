@@ -178,6 +178,15 @@ public class BINOMIAL_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_V
 	}
 
 	@Override
+	public void increaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
+		Node KEY_VALUE_GENERIC node = (Node KEY_VALUE_GENERIC) ref;
+		Assertions.Heaps.increaseKeyIsGreater(node.key, newKey, c);
+		remove(node);
+		node.key = newKey;
+		insertNode(node);
+	}
+
+	@Override
 	public void remove(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
 		Node KEY_VALUE_GENERIC node = (Node KEY_VALUE_GENERIC) ref;
 
@@ -206,6 +215,7 @@ public class BINOMIAL_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_V
 			p.prev = null;
 			childs[rootIdx - i - 1] = p;
 		}
+		node.child = null;
 
 		meld(childs, rootIdx);
 		while (rootsLen > 0 && roots[rootsLen - 1] == null)
@@ -247,10 +257,15 @@ public class BINOMIAL_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_V
 	@Override
 	public HEAP_REFERENCE KEY_VALUE_GENERIC insert(PRIMITIVE_KEY_TYPE key) {
 		Node KEY_VALUE_GENERIC node = new Node KEY_VALUE_GENERIC_EMPTY(key);
+		insertNode(node);
+		return node;
+	}
+
+	private void insertNode(Node KEY_VALUE_GENERIC node) {
+		assert node.parent == null && node.child == null && node.next == null && node.prev == null;
 		Node KEY_VALUE_GENERIC[] h2 = tempArray(1);
 		h2[0] = node;
 		meld(h2, 1);
-		return node;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })

@@ -121,14 +121,12 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 						heap.decreaseKey(ref, key);
 					} else {
 
-						key = createKey.apply(saturationDegree, uncoloredDegree);
 						/*
 						 * we would prefer to use decreaseKey, but we only decrease the uncolored degree, which is
-						 * 'increaseKey' with respect to the heap ordering. Remove and insert a new element to the heap,
-						 * and pay \(O(\log n)\) instead of \(O(1)\)
+						 * increaseKey with respect to the heap ordering. pay \(O(\log n)\) instead of \(O(1)\)
 						 */
-						heap.remove(ref);
-						refs[v] = heap.insert(key, ref.value());
+						key = createKey.apply(saturationDegree, uncoloredDegree);
+						heap.increaseKey(ref, key);
 					}
 
 				}

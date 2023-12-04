@@ -215,7 +215,7 @@ public class REFERENCEABLE_HEAP_TEST_UTILS extends TestUtils {
 	}
 
 	private static enum HeapOp {
-		Insert, RemoveRef, FindMin, ExtractMin, DecreaseKey
+		Insert, RemoveRef, FindMin, ExtractMin, DecreaseKey, IncreaseKey
 	}
 
 	static class HeapTrackerIdGenerator {
@@ -266,6 +266,11 @@ public class REFERENCEABLE_HEAP_TEST_UTILS extends TestUtils {
 		}
 
 		void decreaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
+			remove(ref.key(), ref);
+			insert(newKey, ref);
+		}
+
+		void increaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
 			remove(ref.key(), ref);
 			insert(newKey, ref);
 		}
@@ -372,8 +377,10 @@ public class REFERENCEABLE_HEAP_TEST_UTILS extends TestUtils {
 		int insertFirst = mode == TestMode.InsertFirst ? m / 2 : 0;
 
 		List<HeapOp> ops = new ObjectArrayList<>(List.of(HeapOp.Insert, HeapOp.FindMin, HeapOp.ExtractMin));
-		if (mode == TestMode.DecreaseKey)
+		if (mode == TestMode.DecreaseKey) {
 			ops.add(HeapOp.DecreaseKey);
+			ops.add(HeapOp.IncreaseKey);
+		}
 		ops.add(HeapOp.RemoveRef);
 
 		int[] elmsToInsertIds = randPermutation(values.length, seedGen.nextSeed());
@@ -473,6 +480,33 @@ public class REFERENCEABLE_HEAP_TEST_UTILS extends TestUtils {
 					debug.println("DecreaseKey(" + ref.key() + ", " + newKey + ")");
 					tracker.decreaseKey(ref, newKey);
 					heap.decreaseKey(ref, newKey);
+#if PRIMITIVE_VALUE_TYPE_REAL != "Void"
+
+					/* check setValue() and value() on the way */
+					PRIMITIVE_VALUE_TYPE newVal = randValue(rand);
+					ref.setValue(newVal);
+					assertEquals(newVal, ref.value());
+#endif
+					break;
+				}
+				case IncreaseKey: {
+					if (tracker.isEmpty())
+						continue;
+					HEAP_REFERENCE KEY_VALUE_GENERIC ref;
+					PRIMITIVE_KEY_TYPE newKey;
+					for (int retry = 20;; retry--) {
+						if (retry <= 0)
+							continue opLoop;
+						ref = tracker.randRef();
+						PRIMITIVE_KEY_TYPE x = ref.key();
+						newKey = randKey(rand);
+						if (compare(compare, newKey, x) >= 0)
+							break;
+					}
+
+					debug.println("IncreaseKey(" + ref.key() + ", " + newKey + ")");
+					tracker.increaseKey(ref, newKey);
+					heap.increaseKey(ref, newKey);
 #if PRIMITIVE_VALUE_TYPE_REAL != "Void"
 
 					/* check setValue() and value() on the way */

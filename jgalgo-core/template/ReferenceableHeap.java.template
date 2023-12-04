@@ -185,6 +185,19 @@ public interface REFERENCEABLE_HEAP KEY_VALUE_GENERIC extends ReferenceableHeap,
 	void decreaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey);
 
 	/**
+	 * Increase the key of an element in the heap.
+	 *
+	 * <p>
+	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
+	 * removed, or to an element in another heap.
+	 *
+	 * @param  ref                      reference to an inserted element
+	 * @param  newKey                   a new key
+	 * @throws IllegalArgumentException if the new key is smaller than the previous key
+	 */
+	void increaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey);
+
+	/**
 	 * Remove an element from the heap by its reference.
 	 *
 	 * <p>

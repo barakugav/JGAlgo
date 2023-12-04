@@ -355,6 +355,30 @@ public class Assertions {
 			}
 		}
 
+		public static <E> void increaseKeyIsGreater(E oldKey, E newKey, Comparator<? super E> cmp) {
+			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {
+				int c = cmp == null ? JGAlgoUtils.cmpDefault(oldKey, newKey) : cmp.compare(oldKey, newKey);
+				if (c > 0)
+					throw new IllegalArgumentException("New key is smaller than existing one");
+			}
+		}
+
+		public static void increaseKeyIsGreater(int oldKey, int newKey, IntComparator cmp) {
+			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {
+				int c = cmp == null ? Integer.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);
+				if (c > 0)
+					throw new IllegalArgumentException("New key is smaller than existing one");
+			}
+		}
+
+		public static void increaseKeyIsGreater(double oldKey, double newKey, DoubleComparator cmp) {
+			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {
+				int c = cmp == null ? Double.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);
+				if (c > 0)
+					throw new IllegalArgumentException("New key is smaller than existing one");
+			}
+		}
+
 		public static <E> void noMeldWithSelf(Heap<E> heap, Heap<? extends E> other) {
 			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {
 				if (heap == other)

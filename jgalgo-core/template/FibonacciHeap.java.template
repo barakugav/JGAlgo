@@ -136,6 +136,12 @@ public class FIBONACCI_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_
 	@Override
 	public HEAP_REFERENCE KEY_VALUE_GENERIC insert(PRIMITIVE_KEY_TYPE key) {
 		Node KEY_VALUE_GENERIC n = new Node KEY_VALUE_GENERIC_EMPTY(key);
+		insertNode(n);
+		return n;
+	}
+
+	private void insertNode(Node KEY_VALUE_GENERIC n) {
+		assert n.parent == null && n.child == null && n.prev == null && n.next == null && !n.marked && n.degree == 0;
 		if (minRoot != null) {
 			Node KEY_VALUE_GENERIC last = end;
 			last.next = n;
@@ -147,7 +153,6 @@ public class FIBONACCI_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_
 		}
 		end = n;
 		size++;
-		return n;
 	}
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -268,6 +273,17 @@ public class FIBONACCI_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_
 	}
 
 	@Override
+	public void increaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
+		Node KEY_VALUE_GENERIC n = (Node KEY_VALUE_GENERIC) ref;
+		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);
+		remove(n);
+		n.degree = 0;
+		n.marked = false;
+		n.key = newKey;
+		insertNode(n);
+	}
+
+	@Override
 	public void remove(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
 		Node KEY_VALUE_GENERIC prev, n = (Node KEY_VALUE_GENERIC) ref;
 
@@ -280,8 +296,9 @@ public class FIBONACCI_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_
 			if ((prev = n.prev) != null) {
 				prev.next = n.next;
 				n.prev = null;
-			} else
+			} else {
 				begin = n.next;
+			}
 			if (n.next != null) {
 				n.next.prev = prev;
 				n.next = null;
@@ -315,6 +332,7 @@ public class FIBONACCI_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_
 				begin = first;
 			}
 			end = last;
+			n.child = null;
 		}
 
 		// union trees

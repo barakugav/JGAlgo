@@ -195,6 +195,11 @@ public class RedBlackTreeExtendedTest extends TestBase {
 			}
 
 			@Override
+			public void increaseKey(IntReferenceableHeap.Ref ref, int newKey) {
+				h.increaseKey(refIntToObj.get(ref), newKey);
+			}
+
+			@Override
 			public void remove(IntReferenceableHeap.Ref ref) {
 				ObjObjReferenceableHeap.Ref<Integer, Void> objRef = refIntToObj.remove(ref);
 				refObjToRef.remove(objRef);
