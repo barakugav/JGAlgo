@@ -51,7 +51,7 @@ public class NoSuchEdgeException extends RuntimeException {
 	 * @return        the exception
 	 */
 	public static NoSuchEdgeException ofEdge(Object edgeId) {
-		return new NoSuchEdgeException("No edge " + edgeId);
+		return new NoSuchEdgeException("No edge '" + edgeId + "'");
 	}
 
 	/**

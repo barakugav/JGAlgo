@@ -51,7 +51,7 @@ public class NoSuchVertexException extends RuntimeException {
 	 * @return          the exception
 	 */
 	public static NoSuchVertexException ofVertex(Object vertexId) {
-		return new NoSuchVertexException("No vertex " + vertexId);
+		return new NoSuchVertexException("No vertex '" + vertexId + "'");
 	}
 
 	/**
