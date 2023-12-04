@@ -51,7 +51,8 @@ import com.jgalgo.graph.WeightsObj;
  * (some edges are directed while others are undirected) although the {@link Graph} does not supported mixed graphs
  * (therefore the reader also doesn't support it). The format support graphs with vertices and edges of any type, as
  * long as they can be written as an XML attribute string. The format also support multiple weights for vertices and
- * edges, of type boolean, int, long, float, double or string, and a default value for each weight type.
+ * edges, of type {@code int}, {@code long}, {@code float}, {@code double}, {@code boolean} and {@code String}, and a
+ * default value for each weight type.
  *
  * <p>
  * Identifiers of vertices are mandatory, and must be unique. Identifiers of edges are optional, if not specified the
@@ -78,7 +79,7 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 	 * Create a new reader.
 	 *
 	 * <p>
-	 * The user should set the parsers and supplier manually using {@link #setVertexParser(Function)},
+	 * The user should set the vertex/edge parsers and edge supplier manually using {@link #setVertexParser(Function)},
 	 * {@link #setEdgeParser(Function)} and {@link #setEdgeSupplier(Function)}. Setting the vertex parser is mandatory,
 	 * while setting the edge parser is only required if edges identifiers are specified. Similarly, setting the edge
 	 * supplier is only required if edges identifiers are not specified.
@@ -91,18 +92,19 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 	 * <p>
 	 * During the reading process, the reader will use the parser to convert the vertex identifiers from string to the
 	 * given type, and similarly for edges if edges identifiers are specified. If edges identifiers are not specified,
-	 * the reader will use the supplier to generate them. A default parsers and edge supplier exists for types byte,
-	 * short, int, long, float, double and String, which will be used by the reader for the given types. If the given
-	 * types are not supported by the default parsers and supplier, the reader will throw an exception. In such case,
-	 * the constructor {@link #GraphMlGraphReader()} should be used, and the user should set the parsers and supplier
-	 * manually using {@link #setVertexParser(Function)}, {@link #setEdgeParser(Function)} and
-	 * {@link #setEdgeSupplier(Function)}.
+	 * the reader will use the supplier to generate them. Default parsers and edge supplier exists for types
+	 * {@code byte}, {@code short}, {@code int}, {@code long}, {@code float}, {@code double} and {@code String}, which
+	 * will be used by the reader for the given types. If the given types are not supported by the default parsers and
+	 * supplier, the reader will throw an exception. In such case, the constructor {@link #GraphMlGraphReader()} should
+	 * be used, and the user should set the vertex/edge parsers and edge supplier manually using
+	 * {@link #setVertexParser(Function)}, {@link #setEdgeParser(Function)} and {@link #setEdgeSupplier(Function)}.
 	 *
 	 *
 	 * @param  vertexType               the type of the vertices
 	 * @param  edgeType                 the type of the edges
-	 * @throws IllegalArgumentException if the given types are not supported by the default parsers and supplier. The
-	 *                                      supported types are byte, short, int, long, float, double and String.
+	 * @throws IllegalArgumentException if the given types are not supported by the default vertex/edge parsers and edge
+	 *                                      supplier. The supported types are {@code byte}, {@code short}, {@code int},
+	 *                                      {@code long}, {@code float}, {@code double} and {@code String}.
 	 * @see                             #setVertexParserDefault(Class)
 	 * @see                             #setEdgeParserDefault(Class)
 	 * @see                             #setEdgeSupplierDefault(Class)
@@ -132,13 +134,15 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 	 *
 	 * <p>
 	 * The parser is used to convert the vertex identifiers from string to the given vertex type. The parser is
-	 * mandatory, and must be set before reading a graph. The default parser exists for types byte, short, int, long,
-	 * float, double and String. If the given type is not supported by the default parser, the reader will throw an
-	 * exception. In such case, the method {@link #setVertexParser(Function)} should be used for custom parsing.
+	 * mandatory, and must be set before reading a graph. The default parser exists for types {@code byte},
+	 * {@code short}, {@code int}, {@code long}, {@code float}, {@code double} and {@code String}. If the given type is
+	 * not supported by the default parser, the reader will throw an exception. In such case, the method
+	 * {@link #setVertexParser(Function)} should be used for custom parsing.
 	 *
 	 * @param  vertexType               the type of the vertices
 	 * @throws IllegalArgumentException if the given type is not supported by the default parser. The supported types
-	 *                                      are byte, short, int, long, float, double and String.
+	 *                                      are {@code byte}, {@code short}, {@code int}, {@code long}, {@code float},
+	 *                                      {@code double} and {@code String}.
 	 */
 	public void setVertexParserDefault(Class<V> vertexType) {
 		this.vertexParser = defaultParser(vertexType);
@@ -166,13 +170,15 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 	 * <p>
 	 * The parser is used to convert the edges identifiers from string to the given edge type. The parser is mandatory
 	 * if edges identifiers are specified. In case edge identifiers are not specified, an edge supplier must be set (see
-	 * {@link #setEdgeSupplier(Function)}). The default parser exists for types byte, short, int, long, float, double
-	 * and String. If the given type is not supported by the default parser, the reader will throw an exception. In such
-	 * case, the method {@link #setEdgeParser(Function)} should be used for custom parsing.
+	 * {@link #setEdgeSupplier(Function)}). The default parser exists for types {@code byte}, {@code short},
+	 * {@code int}, {@code long}, {@code float}, {@code double} and {@code String}. If the given type is not supported
+	 * by the default parser, the reader will throw an exception. In such case, the method
+	 * {@link #setEdgeParser(Function)} should be used for custom parsing.
 	 *
 	 * @param  edgeType                 the type of the edges
 	 * @throws IllegalArgumentException if the given type is not supported by the default parser. The supported types
-	 *                                      are byte, short, int, long, float, double and String.
+	 *                                      are {@code byte}, {@code short}, {@code int}, {@code long}, {@code float},
+	 *                                      {@code double} and {@code String}.
 	 */
 	public void setEdgeParserDefault(Class<E> edgeType) {
 		this.edgeParser = defaultParser(edgeType);
@@ -239,13 +245,15 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 	 * <p>
 	 * The supplier is used to generate edges identifiers if edges identifiers are not specified. The supplier is
 	 * mandatory if edges identifiers are not specified. In case edge identifiers are specified, an edge parser must be
-	 * set (see {@link #setEdgeParser(Function)}). The default supplier exists for types byte, short, int, long, float,
-	 * double and String. If the given type is not supported by the default supplier, the reader will throw an
-	 * exception. In such case, the method {@link #setEdgeSupplier(Function)} should be used for custom supplier.
+	 * set (see {@link #setEdgeParser(Function)}). The default supplier exists for types {@code byte}, {@code short},
+	 * {@code int}, {@code long}, {@code float}, {@code double} and {@code String}. If the given type is not supported
+	 * by the default supplier, the reader will throw an exception. In such case, the method
+	 * {@link #setEdgeSupplier(Function)} should be used for custom supplier.
 	 *
 	 * @param  edgeType                 the type of the edges
 	 * @throws IllegalArgumentException if the given type is not supported by the default supplier. The supported types
-	 *                                      are byte, short, int, long, float, double and String.
+	 *                                      are {@code byte}, {@code short}, {@code int}, {@code long}, {@code float},
+	 *                                      {@code double} and {@code String}.
 	 */
 	public void setEdgeSupplierDefault(Class<E> edgeType) {
 		if (edgeType == byte.class || edgeType == Byte.class) {
@@ -481,9 +489,11 @@ public class GraphMlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V
 				}
 				V u = vertexParser.apply(XmlUtils.requiredAttribute(eElm, "source"));
 				V v = vertexParser.apply(XmlUtils.requiredAttribute(eElm, "target"));
-				if (XmlUtils.optionalAttribute(eElm, "directed").isPresent())
-					throw new IllegalArgumentException("directed attribute per-edge is not supported");
 				g.addEdge(u, v, e);
+
+				if (eElm.hasAttribute("directed"))
+					throw new IllegalArgumentException("directed attribute per-edge is not supported");
+
 				for (Element dataElm : XmlUtils.children(eElm, "data")) {
 					String weightId = XmlUtils.requiredAttribute(dataElm, "key");
 					BiConsumer<E, String> eWeight = eWeights.get(weightId);

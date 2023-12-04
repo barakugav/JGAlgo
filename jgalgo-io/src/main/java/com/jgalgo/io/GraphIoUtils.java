@@ -121,4 +121,10 @@ class GraphIoUtils {
 		abstract void writeGraphImpl(Graph<V, E> graph, Writer writer) throws IOException;
 	}
 
+	static char parseChar(String s) {
+		if (s.length() != 1)
+			throw new IllegalArgumentException("expected a string of a single character, got: '" + s + "'");
+		return s.charAt(0);
+	}
+
 }

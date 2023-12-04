@@ -51,7 +51,8 @@ import com.jgalgo.graph.WeightsShort;
  * (some edges are directed while others are undirected) although the {@link Graph} does not supported mixed graphs
  * (therefore the writer also doesn't support it). The format support graphs with vertices and edges of any type, as
  * long as they can be written as an XML attribute string. The format also support multiple weights for vertices and
- * edges, of type boolean, int, long, float, double or string, and a default value for each weight type.
+ * edges, of type {@code boolean}, {@code int}, {@code long}, {@code float}, {@code double} or {@link String}, and a
+ * default value for each weight type.
  *
  * <p>
  * The GraphML format support both self edges and parallel edges.

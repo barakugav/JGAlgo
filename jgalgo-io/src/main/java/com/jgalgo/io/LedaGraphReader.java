@@ -287,11 +287,7 @@ public class LedaGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
 		} else if (weights instanceof IWeightsChar) {
 			IWeightsChar weights0 = (IWeightsChar) weights;
-			return (weight, id) -> {
-				if (weight.length() != 1)
-					throw new IllegalArgumentException("char weight must be a single character.");
-				weights0.set(id, weight.charAt(0));
-			};
+			return (weight, id) -> weights0.set(id, GraphIoUtils.parseChar(weight));
 		} else {
 			@SuppressWarnings("unchecked")
 			IWeightsObj<String> weights0 = (IWeightsObj<String>) weights;
