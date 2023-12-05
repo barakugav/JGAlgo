@@ -1,6 +1,5 @@
-[![Tests](https://github.com/barakugav/JGAlgo/actions/workflows/tests.yaml/badge.svg)](https://github.com/barakugav/JGAlgo/actions/workflows/tests.yaml)
+[![Build](https://github.com/barakugav/JGAlgo/actions/workflows/build.yaml/badge.svg)](https://github.com/barakugav/JGAlgo/actions/workflows/build.yaml)
 [![Coverage](https://github.com/barakugav/JGAlgo/blob/coverage/badges/jacoco.svg?raw=true)](https://github.com/barakugav/JGAlgo/tree/coverage)
-[![SpotBugs](https://github.com/barakugav/JGAlgo/actions/workflows/spotbugs.yaml/badge.svg)](https://github.com/barakugav/JGAlgo/actions/workflows/spotbugs.yaml)
 [![Javadoc](https://img.shields.io/badge/JavaDoc-Online-green)](https://barakugav.github.io/JGAlgo)
 [![Benchmarks](https://github.com/barakugav/JGAlgo/actions/workflows/benchmarks.yaml/badge.svg)](https://github.com/barakugav/JGAlgo/actions/workflows/benchmarks.yaml)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.jgalgo/jgalgo/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.jgalgo/jgalgo)
