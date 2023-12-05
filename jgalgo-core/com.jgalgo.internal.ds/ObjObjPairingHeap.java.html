@@ -264,7 +264,7 @@ import java.util.Comparator;
 	}
 
 
-	void removeRoot() {
+	private void removeRoot() {
 <span class="fc bfc" id="L268" title="All 2 branches covered.">		if (minRoot.child == null) {</span>
 <span class="fc" id="L269">			minRoot = null;</span>
 <span class="fc" id="L270">			return;</span>
@@ -364,6 +364,14 @@ import java.util.Comparator;
 <span class="fc" id="L364">		afterKeyDecrease(n);</span>
 <span class="fc" id="L365">	}</span>
 
+	@Override
+	public void increaseKey(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref, K newKey) {
+<span class="fc" id="L369">		Node &lt;K, V&gt; n = (Node &lt;K, V&gt;) ref;</span>
+<span class="fc" id="L370">		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);</span>
+<span class="fc" id="L371">		remove(n);</span>
+<span class="fc" id="L372">		n.key = newKey;</span>
+<span class="fc" id="L373">		insertNode(n);</span>
+<span class="fc" id="L374">	}</span>
 
 	private static class Node &lt;K, V&gt; implements ObjObjReferenceableHeap.Ref &lt;K, V&gt; {
 		K key;
@@ -373,28 +381,28 @@ import java.util.Comparator;
 		Node &lt;K, V&gt; next;
 		Node &lt;K, V&gt; child;
 
-<span class="fc" id="L376">		Node(K key) {</span>
-<span class="fc" id="L377">			this.key = key;</span>
-<span class="fc" id="L378">		}</span>
+<span class="fc" id="L384">		Node(K key) {</span>
+<span class="fc" id="L385">			this.key = key;</span>
+<span class="fc" id="L386">		}</span>
 
 		@Override
 		public K key() {
-<span class="fc" id="L382">			return key;</span>
+<span class="fc" id="L390">			return key;</span>
 		}
 
 		@Override
 		public V value() {
-<span class="fc" id="L387">			return value;</span>
+<span class="fc" id="L395">			return value;</span>
 		}
 
 		@Override
 		public void setValue(V val) {
-<span class="fc" id="L392">			value = val;</span>
-<span class="fc" id="L393">		}</span>
+<span class="fc" id="L400">			value = val;</span>
+<span class="fc" id="L401">		}</span>
 
 		@Override
 		public String toString() {
-<span class="fc" id="L397">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
+<span class="fc" id="L405">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
 		}
 	}
 

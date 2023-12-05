@@ -262,7 +262,7 @@ import java.util.Comparator;
 	}
 
 
-	void removeRoot() {
+	private void removeRoot() {
 <span class="fc bfc" id="L266" title="All 2 branches covered.">		if (minRoot.child == null) {</span>
 <span class="fc" id="L267">			minRoot = null;</span>
 <span class="fc" id="L268">			return;</span>
@@ -362,6 +362,14 @@ import java.util.Comparator;
 <span class="fc" id="L362">		afterKeyDecrease(n);</span>
 <span class="fc" id="L363">	}</span>
 
+	@Override
+	public void increaseKey(ObjReferenceableHeap.Ref &lt;K&gt; ref, K newKey) {
+<span class="fc" id="L367">		Node &lt;K&gt; n = (Node &lt;K&gt;) ref;</span>
+<span class="fc" id="L368">		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);</span>
+<span class="fc" id="L369">		remove(n);</span>
+<span class="fc" id="L370">		n.key = newKey;</span>
+<span class="fc" id="L371">		insertNode(n);</span>
+<span class="fc" id="L372">	}</span>
 
 	private static class Node &lt;K&gt; implements ObjReferenceableHeap.Ref &lt;K&gt; {
 		K key;
@@ -370,19 +378,19 @@ import java.util.Comparator;
 		Node &lt;K&gt; next;
 		Node &lt;K&gt; child;
 
-<span class="fc" id="L373">		Node(K key) {</span>
-<span class="fc" id="L374">			this.key = key;</span>
-<span class="fc" id="L375">		}</span>
+<span class="fc" id="L381">		Node(K key) {</span>
+<span class="fc" id="L382">			this.key = key;</span>
+<span class="fc" id="L383">		}</span>
 
 		@Override
 		public K key() {
-<span class="fc" id="L379">			return key;</span>
+<span class="fc" id="L387">			return key;</span>
 		}
 
 
 		@Override
 		public String toString() {
-<span class="fc" id="L385">			return String.valueOf(key);</span>
+<span class="fc" id="L393">			return String.valueOf(key);</span>
 		}
 	}
 

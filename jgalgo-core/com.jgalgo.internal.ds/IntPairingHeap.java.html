@@ -259,7 +259,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 	}
 
 
-	void removeRoot() {
+	private void removeRoot() {
 <span class="fc bfc" id="L263" title="All 2 branches covered.">		if (minRoot.child == null) {</span>
 <span class="fc" id="L264">			minRoot = null;</span>
 <span class="fc" id="L265">			return;</span>
@@ -359,6 +359,14 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 <span class="fc" id="L359">		afterKeyDecrease(n);</span>
 <span class="fc" id="L360">	}</span>
 
+	@Override
+	public void increaseKey(IntReferenceableHeap.Ref  ref, int newKey) {
+<span class="fc" id="L364">		Node  n = (Node ) ref;</span>
+<span class="fc" id="L365">		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);</span>
+<span class="fc" id="L366">		remove(n);</span>
+<span class="fc" id="L367">		n.key = newKey;</span>
+<span class="fc" id="L368">		insertNode(n);</span>
+<span class="fc" id="L369">	}</span>
 
 	private static class Node  implements IntReferenceableHeap.Ref  {
 		int key;
@@ -367,19 +375,19 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 		Node  next;
 		Node  child;
 
-<span class="fc" id="L370">		Node(int key) {</span>
-<span class="fc" id="L371">			this.key = key;</span>
-<span class="fc" id="L372">		}</span>
+<span class="fc" id="L378">		Node(int key) {</span>
+<span class="fc" id="L379">			this.key = key;</span>
+<span class="fc" id="L380">		}</span>
 
 		@Override
 		public int key() {
-<span class="fc" id="L376">			return key;</span>
+<span class="fc" id="L384">			return key;</span>
 		}
 
 
 		@Override
 		public String toString() {
-<span class="fc" id="L382">			return String.valueOf(key);</span>
+<span class="fc" id="L390">			return String.valueOf(key);</span>
 		}
 	}
 

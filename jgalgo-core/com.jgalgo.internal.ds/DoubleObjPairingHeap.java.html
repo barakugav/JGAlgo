@@ -261,7 +261,7 @@ import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 	}
 
 
-	void removeRoot() {
+	private void removeRoot() {
 <span class="fc bfc" id="L265" title="All 2 branches covered.">		if (minRoot.child == null) {</span>
 <span class="fc" id="L266">			minRoot = null;</span>
 <span class="fc" id="L267">			return;</span>
@@ -361,6 +361,14 @@ import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 <span class="fc" id="L361">		afterKeyDecrease(n);</span>
 <span class="fc" id="L362">	}</span>
 
+	@Override
+	public void increaseKey(DoubleObjReferenceableHeap.Ref &lt;V&gt; ref, double newKey) {
+<span class="fc" id="L366">		Node &lt;V&gt; n = (Node &lt;V&gt;) ref;</span>
+<span class="fc" id="L367">		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);</span>
+<span class="fc" id="L368">		remove(n);</span>
+<span class="fc" id="L369">		n.key = newKey;</span>
+<span class="fc" id="L370">		insertNode(n);</span>
+<span class="fc" id="L371">	}</span>
 
 	private static class Node &lt;V&gt; implements DoubleObjReferenceableHeap.Ref &lt;V&gt; {
 		double key;
@@ -370,28 +378,28 @@ import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 		Node &lt;V&gt; next;
 		Node &lt;V&gt; child;
 
-<span class="fc" id="L373">		Node(double key) {</span>
-<span class="fc" id="L374">			this.key = key;</span>
-<span class="fc" id="L375">		}</span>
+<span class="fc" id="L381">		Node(double key) {</span>
+<span class="fc" id="L382">			this.key = key;</span>
+<span class="fc" id="L383">		}</span>
 
 		@Override
 		public double key() {
-<span class="fc" id="L379">			return key;</span>
+<span class="fc" id="L387">			return key;</span>
 		}
 
 		@Override
 		public V value() {
-<span class="fc" id="L384">			return value;</span>
+<span class="fc" id="L392">			return value;</span>
 		}
 
 		@Override
 		public void setValue(V val) {
-<span class="fc" id="L389">			value = val;</span>
-<span class="fc" id="L390">		}</span>
+<span class="fc" id="L397">			value = val;</span>
+<span class="fc" id="L398">		}</span>
 
 		@Override
 		public String toString() {
-<span class="fc" id="L394">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
+<span class="fc" id="L402">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
 		}
 	}
 

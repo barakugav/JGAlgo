@@ -172,6 +172,19 @@ public interface DoubleIntReferenceableHeap  extends ReferenceableHeap, Iterable
 	void decreaseKey(DoubleIntReferenceableHeap.Ref  ref, double newKey);
 
 	/**
+	 * Increase the key of an element in the heap.
+	 *
+	 * &lt;p&gt;
+	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
+	 * removed, or to an element in another heap.
+	 *
+	 * @param  ref                      reference to an inserted element
+	 * @param  newKey                   a new key
+	 * @throws IllegalArgumentException if the new key is smaller than the previous key
+	 */
+	void increaseKey(DoubleIntReferenceableHeap.Ref  ref, double newKey);
+
+	/**
 	 * Remove an element from the heap by its reference.
 	 *
 	 * &lt;p&gt;
@@ -188,7 +201,7 @@ public interface DoubleIntReferenceableHeap  extends ReferenceableHeap, Iterable
 	 * @return a stream over the elements in this heap
 	 */
 	default Stream&lt;DoubleIntReferenceableHeap.Ref &gt; stream() {
-<span class="fc" id="L191">		return StreamSupport.stream(spliterator(), false);</span>
+<span class="fc" id="L204">		return StreamSupport.stream(spliterator(), false);</span>
 	}
 
 	/**
@@ -230,7 +243,7 @@ public interface DoubleIntReferenceableHeap  extends ReferenceableHeap, Iterable
 	 * @return an instance of this interface with the default implementation
 	 */
 	static  DoubleIntReferenceableHeap  newInstance() {
-<span class="fc" id="L233">		return newInstance(null);</span>
+<span class="fc" id="L246">		return newInstance(null);</span>
 	}
 
 	/**
@@ -240,7 +253,7 @@ public interface DoubleIntReferenceableHeap  extends ReferenceableHeap, Iterable
 	 * @return an instance of this interface with the default implementation
 	 */
 	static  DoubleIntReferenceableHeap  newInstance(DoubleComparator  c) {
-<span class="fc" id="L243">		return new DoubleIntPairingHeap  (c);</span>
+<span class="fc" id="L256">		return new DoubleIntPairingHeap  (c);</span>
 	}
 
 }

@@ -162,6 +162,19 @@ public interface ObjReferenceableHeap &lt;K&gt; extends ReferenceableHeap, Itera
 	void decreaseKey(ObjReferenceableHeap.Ref &lt;K&gt; ref, K newKey);
 
 	/**
+	 * Increase the key of an element in the heap.
+	 *
+	 * &lt;p&gt;
+	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
+	 * removed, or to an element in another heap.
+	 *
+	 * @param  ref                      reference to an inserted element
+	 * @param  newKey                   a new key
+	 * @throws IllegalArgumentException if the new key is smaller than the previous key
+	 */
+	void increaseKey(ObjReferenceableHeap.Ref &lt;K&gt; ref, K newKey);
+
+	/**
 	 * Remove an element from the heap by its reference.
 	 *
 	 * &lt;p&gt;
@@ -178,7 +191,7 @@ public interface ObjReferenceableHeap &lt;K&gt; extends ReferenceableHeap, Itera
 	 * @return a stream over the elements in this heap
 	 */
 	default Stream&lt;ObjReferenceableHeap.Ref &lt;K&gt;&gt; stream() {
-<span class="fc" id="L181">		return StreamSupport.stream(spliterator(), false);</span>
+<span class="fc" id="L194">		return StreamSupport.stream(spliterator(), false);</span>
 	}
 
 	/**
@@ -208,7 +221,7 @@ public interface ObjReferenceableHeap &lt;K&gt; extends ReferenceableHeap, Itera
 	 * @return an instance of this interface with the default implementation
 	 */
 	static &lt;K&gt; ObjReferenceableHeap &lt;K&gt; newInstance() {
-<span class="fc" id="L211">		return newInstance(null);</span>
+<span class="fc" id="L224">		return newInstance(null);</span>
 	}
 
 	/**
@@ -218,7 +231,7 @@ public interface ObjReferenceableHeap &lt;K&gt; extends ReferenceableHeap, Itera
 	 * @return an instance of this interface with the default implementation
 	 */
 	static &lt;K&gt; ObjReferenceableHeap &lt;K&gt; newInstance(Comparator &lt;K&gt; c) {
-<span class="fc" id="L221">		return new ObjPairingHeap &lt;&gt; (c);</span>
+<span class="fc" id="L234">		return new ObjPairingHeap &lt;&gt; (c);</span>
 	}
 
 }

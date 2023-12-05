@@ -259,7 +259,7 @@ import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 	}
 
 
-	void removeRoot() {
+	private void removeRoot() {
 <span class="fc bfc" id="L263" title="All 2 branches covered.">		if (minRoot.child == null) {</span>
 <span class="fc" id="L264">			minRoot = null;</span>
 <span class="fc" id="L265">			return;</span>
@@ -359,6 +359,14 @@ import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 <span class="fc" id="L359">		afterKeyDecrease(n);</span>
 <span class="fc" id="L360">	}</span>
 
+	@Override
+	public void increaseKey(DoubleIntReferenceableHeap.Ref  ref, double newKey) {
+<span class="fc" id="L364">		Node  n = (Node ) ref;</span>
+<span class="fc" id="L365">		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);</span>
+<span class="fc" id="L366">		remove(n);</span>
+<span class="fc" id="L367">		n.key = newKey;</span>
+<span class="fc" id="L368">		insertNode(n);</span>
+<span class="fc" id="L369">	}</span>
 
 	private static class Node  implements DoubleIntReferenceableHeap.Ref  {
 		double key;
@@ -368,28 +376,28 @@ import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 		Node  next;
 		Node  child;
 
-<span class="fc" id="L371">		Node(double key) {</span>
-<span class="fc" id="L372">			this.key = key;</span>
-<span class="fc" id="L373">		}</span>
+<span class="fc" id="L379">		Node(double key) {</span>
+<span class="fc" id="L380">			this.key = key;</span>
+<span class="fc" id="L381">		}</span>
 
 		@Override
 		public double key() {
-<span class="fc" id="L377">			return key;</span>
+<span class="fc" id="L385">			return key;</span>
 		}
 
 		@Override
 		public int value() {
-<span class="fc" id="L382">			return value;</span>
+<span class="fc" id="L390">			return value;</span>
 		}
 
 		@Override
 		public void setValue(int val) {
-<span class="fc" id="L387">			value = val;</span>
-<span class="fc" id="L388">		}</span>
+<span class="fc" id="L395">			value = val;</span>
+<span class="fc" id="L396">		}</span>
 
 		@Override
 		public String toString() {
-<span class="fc" id="L392">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
+<span class="fc" id="L400">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
 		}
 	}
 

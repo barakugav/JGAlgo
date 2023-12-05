@@ -355,54 +355,78 @@ public class Assertions {
 			}
 <span class="fc" id="L356">		}</span>
 
-		public static &lt;E&gt; void noMeldWithSelf(Heap&lt;E&gt; heap, Heap&lt;? extends E&gt; other) {
-<span class="pc bpc" id="L359" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
-<span class="pc bpc" id="L360" title="1 of 2 branches missed.">				if (heap == other)</span>
-<span class="nc" id="L361">					throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
+		public static &lt;E&gt; void increaseKeyIsGreater(E oldKey, E newKey, Comparator&lt;? super E&gt; cmp) {
+<span class="pc bpc" id="L359" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">				int c = cmp == null ? JGAlgoUtils.cmpDefault(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L361" title="1 of 2 branches missed.">				if (c &gt; 0)</span>
+<span class="nc" id="L362">					throw new IllegalArgumentException(&quot;New key is smaller than existing one&quot;);</span>
 			}
-<span class="fc" id="L363">		}</span>
+<span class="fc" id="L364">		}</span>
+
+		public static void increaseKeyIsGreater(int oldKey, int newKey, IntComparator cmp) {
+<span class="pc bpc" id="L367" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">				int c = cmp == null ? Integer.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L369" title="1 of 2 branches missed.">				if (c &gt; 0)</span>
+<span class="nc" id="L370">					throw new IllegalArgumentException(&quot;New key is smaller than existing one&quot;);</span>
+			}
+<span class="fc" id="L372">		}</span>
+
+		public static void increaseKeyIsGreater(double oldKey, double newKey, DoubleComparator cmp) {
+<span class="pc bpc" id="L375" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
+<span class="fc bfc" id="L376" title="All 2 branches covered.">				int c = cmp == null ? Double.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L377" title="1 of 2 branches missed.">				if (c &gt; 0)</span>
+<span class="nc" id="L378">					throw new IllegalArgumentException(&quot;New key is smaller than existing one&quot;);</span>
+			}
+<span class="fc" id="L380">		}</span>
+
+		public static &lt;E&gt; void noMeldWithSelf(Heap&lt;E&gt; heap, Heap&lt;? extends E&gt; other) {
+<span class="pc bpc" id="L383" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
+<span class="pc bpc" id="L384" title="1 of 2 branches missed.">				if (heap == other)</span>
+<span class="nc" id="L385">					throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
+			}
+<span class="fc" id="L387">		}</span>
 
 		public static void noMeldWithSelf(ReferenceableHeap heap, ReferenceableHeap other) {
-<span class="pc bpc" id="L366" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
-<span class="fc bfc" id="L367" title="All 2 branches covered.">				if (heap == other)</span>
-<span class="fc" id="L368">					throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
+<span class="pc bpc" id="L390" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">				if (heap == other)</span>
+<span class="fc" id="L392">					throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
 			}
-<span class="fc" id="L370">		}</span>
+<span class="fc" id="L394">		}</span>
 
 		public static void meldWithSameImpl(Class&lt;? extends ReferenceableHeap&gt; impl, ReferenceableHeap other) {
-<span class="pc bpc" id="L373" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
-<span class="fc bfc" id="L374" title="All 2 branches covered.">				if (!impl.isAssignableFrom(other.getClass()))</span>
-<span class="fc" id="L375">					throw new IllegalArgumentException(&quot;Can't meld heaps with different implementations&quot;);</span>
+<span class="pc bpc" id="L397" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
+<span class="fc bfc" id="L398" title="All 2 branches covered.">				if (!impl.isAssignableFrom(other.getClass()))</span>
+<span class="fc" id="L399">					throw new IllegalArgumentException(&quot;Can't meld heaps with different implementations&quot;);</span>
 			}
-<span class="fc" id="L377">		}</span>
+<span class="fc" id="L401">		}</span>
 
 		public static &lt;E&gt; void equalComparatorBeforeMeld(Heap&lt;E&gt; heap, Heap&lt;? extends E&gt; other) {
-<span class="pc bpc" id="L380" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
-<span class="pc bpc" id="L381" title="1 of 2 branches missed.">				if (!Objects.equals(heap.comparator(), other.comparator()))</span>
-<span class="nc" id="L382">					throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
+<span class="pc bpc" id="L404" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
+<span class="pc bpc" id="L405" title="1 of 2 branches missed.">				if (!Objects.equals(heap.comparator(), other.comparator()))</span>
+<span class="nc" id="L406">					throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
 			}
-<span class="fc" id="L384">		}</span>
+<span class="fc" id="L408">		}</span>
 
 		public static void equalComparatorBeforeMeld(Comparator&lt;?&gt; c1, Comparator&lt;?&gt; c2) {
-<span class="pc bpc" id="L387" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
-<span class="fc bfc" id="L388" title="All 2 branches covered.">				if (!Objects.equals(c1, c2))</span>
-<span class="fc" id="L389">					throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
+<span class="pc bpc" id="L411" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
+<span class="fc bfc" id="L412" title="All 2 branches covered.">				if (!Objects.equals(c1, c2))</span>
+<span class="fc" id="L413">					throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
 			}
-<span class="fc" id="L391">		}</span>
+<span class="fc" id="L415">		}</span>
 
 		public static void notEmpty(Heap&lt;?&gt; heap) {
-<span class="pc bpc" id="L394" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsNotEmpty) {</span>
-<span class="fc bfc" id="L395" title="All 2 branches covered.">				if (heap.isEmpty())</span>
-<span class="fc" id="L396">					throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
+<span class="pc bpc" id="L418" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsNotEmpty) {</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">				if (heap.isEmpty())</span>
+<span class="fc" id="L420">					throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
 			}
-<span class="fc" id="L398">		}</span>
+<span class="fc" id="L422">		}</span>
 
 		public static void notEmpty(ReferenceableHeap heap) {
-<span class="pc bpc" id="L401" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsNotEmpty) {</span>
-<span class="fc bfc" id="L402" title="All 2 branches covered.">				if (heap.isEmpty())</span>
-<span class="fc" id="L403">					throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
+<span class="pc bpc" id="L425" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsNotEmpty) {</span>
+<span class="fc bfc" id="L426" title="All 2 branches covered.">				if (heap.isEmpty())</span>
+<span class="fc" id="L427">					throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
 			}
-<span class="fc" id="L405">		}</span>
+<span class="fc" id="L429">		}</span>
 
 	}
 

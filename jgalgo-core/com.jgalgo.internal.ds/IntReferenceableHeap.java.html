@@ -160,6 +160,19 @@ public interface IntReferenceableHeap  extends ReferenceableHeap, Iterable&lt;In
 	void decreaseKey(IntReferenceableHeap.Ref  ref, int newKey);
 
 	/**
+	 * Increase the key of an element in the heap.
+	 *
+	 * &lt;p&gt;
+	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
+	 * removed, or to an element in another heap.
+	 *
+	 * @param  ref                      reference to an inserted element
+	 * @param  newKey                   a new key
+	 * @throws IllegalArgumentException if the new key is smaller than the previous key
+	 */
+	void increaseKey(IntReferenceableHeap.Ref  ref, int newKey);
+
+	/**
 	 * Remove an element from the heap by its reference.
 	 *
 	 * &lt;p&gt;
@@ -176,7 +189,7 @@ public interface IntReferenceableHeap  extends ReferenceableHeap, Iterable&lt;In
 	 * @return a stream over the elements in this heap
 	 */
 	default Stream&lt;IntReferenceableHeap.Ref &gt; stream() {
-<span class="fc" id="L179">		return StreamSupport.stream(spliterator(), false);</span>
+<span class="fc" id="L192">		return StreamSupport.stream(spliterator(), false);</span>
 	}
 
 	/**
@@ -205,7 +218,7 @@ public interface IntReferenceableHeap  extends ReferenceableHeap, Iterable&lt;In
 	 * @return an instance of this interface with the default implementation
 	 */
 	static  IntReferenceableHeap  newInstance() {
-<span class="fc" id="L208">		return newInstance(null);</span>
+<span class="fc" id="L221">		return newInstance(null);</span>
 	}
 
 	/**
@@ -215,7 +228,7 @@ public interface IntReferenceableHeap  extends ReferenceableHeap, Iterable&lt;In
 	 * @return an instance of this interface with the default implementation
 	 */
 	static  IntReferenceableHeap  newInstance(IntComparator  c) {
-<span class="fc" id="L218">		return new IntPairingHeap  (c);</span>
+<span class="fc" id="L231">		return new IntPairingHeap  (c);</span>
 	}
 
 }
