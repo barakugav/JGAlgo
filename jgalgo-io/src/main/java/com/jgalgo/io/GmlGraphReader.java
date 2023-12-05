@@ -45,7 +45,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
 
 /**
- * Reads a graph from a GML file.
+ * Read a graph in 'GML' format.
  *
  * <p>
  * The GML format is a simple text format for describing graphs. It can represent directed and undirected graphs, and

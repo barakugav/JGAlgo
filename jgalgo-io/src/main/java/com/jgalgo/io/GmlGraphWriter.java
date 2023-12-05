@@ -34,7 +34,7 @@ import com.jgalgo.graph.WeightsShort;
 import it.unimi.dsi.fastutil.Pair;
 
 /**
- * Write a graph using the GML format.
+ * Write a graph in 'GML' format.
  *
  * <p>
  * The GML format is a simple text format for describing graphs. It can represent directed and undirected graphs, and

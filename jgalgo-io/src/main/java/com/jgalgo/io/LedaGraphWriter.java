@@ -31,7 +31,7 @@ import com.jgalgo.graph.WeightsObj;
 import com.jgalgo.graph.WeightsShort;
 
 /**
- * Write a graph using the LEDA format.
+ * Write a graph in 'LEDA' format.
  *
  * <p>
  * The <a href=https://www.algorithmic-solutions.info/leda_guide/graphs/leda_native_graph_fileformat.html>LEDA
