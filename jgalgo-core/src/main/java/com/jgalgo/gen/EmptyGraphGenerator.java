@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
- * A generator of empty graphs.
+ * Generate a graph with no edges.
  *
  * <p>
  * An empty graph is a graph with no edges, and it may contains some vertices.
