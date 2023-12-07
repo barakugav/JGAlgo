@@ -32,13 +32,13 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
- * Generates a random graph using the G(n,p) model in which every edge exists with probability \(p\).
+ * Generates a random graph using the \(G(n,p)\) model in which every edge exists with probability \(p\).
  *
  * <p>
- * The G(n,p) model generates a graph by connecting nodes randomly. Each edge is included in the graph with probability
- * \(p\) independent from every other edge. The model has only two parameters: the vertices set and the probability
- * \(p\). The generated graphs may be either directed or undirected, and may or may not allow self-edges. Parallel edges
- * are never created.
+ * The \(G(n,p)\) model generates a graph by connecting nodes randomly. Each edge is included in the graph with
+ * probability \(p\) independent from every other edge. The model has only two parameters: the vertices set and the
+ * probability \(p\). The generated graphs may be either directed or undirected, and may or may not allow self-edges.
+ * Parallel edges are never created.
  *
  * <p>
  * By default, the value of \(p\) is \(0.1\) and the graph is undirected and does not generate self-edges.

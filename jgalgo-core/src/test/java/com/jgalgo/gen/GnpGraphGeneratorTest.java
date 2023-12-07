@@ -161,4 +161,18 @@ public class GnpGraphGeneratorTest extends TestBase {
 		});
 	}
 
+	@Test
+	public void probabilityZero() {
+		foreachBoolConfig(intGraph -> {
+			GnpGraphGenerator<Integer, Integer> g =
+					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
+			g.setEdgeProbability(0);
+			g.setVertices(range(10));
+			g.setEdges(new AtomicInteger()::getAndIncrement);
+
+			for (int repeat = 0; repeat < 20; repeat++)
+				assertTrue(g.generate().edges().isEmpty());
+		});
+	}
+
 }
