@@ -32,16 +32,16 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
- * Generates a random graph using the G(n,p) model.
+ * Generates a random graph using the G(n,p) model in which every edge exists with probability \(p\).
  *
  * <p>
  * The G(n,p) model generates a graph by connecting nodes randomly. Each edge is included in the graph with probability
  * \(p\) independent from every other edge. The model has only two parameters: the vertices set and the probability
- * \(p\). The generated graphs may be either directed or undirected, and may or may not allow self-loops. Parallel edges
+ * \(p\). The generated graphs may be either directed or undirected, and may or may not allow self-edges. Parallel edges
  * are never created.
  *
  * <p>
- * By default, the value of \(p\) is \(0.1\) and the graph is undirected and does not generate self-loops.
+ * By default, the value of \(p\) is \(0.1\) and the graph is undirected and does not generate self-edges.
  *
  * <p>
  * For deterministic behavior, set the seed of the generator using {@link #setSeed(long)}.
@@ -173,12 +173,13 @@ public class GnpGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	}
 
 	/**
-	 * Determine if the generated graph(s) will contain self-loops.
+	 * Determine if the generated graph(s) will contain self-edges.
 	 *
 	 * <p>
-	 * By default, the generated graph(s) will not contain self-loops.
+	 * Self edges are edges with the same source and target vertex. By default, the generated graph(s) will not contain
+	 * self-edges.
 	 *
-	 * @param selfEdges {@code true} if the generated graph(s) will contain self-loops, {@code false} otherwise
+	 * @param selfEdges {@code true} if the generated graph(s) will contain self-edges, {@code false} otherwise
 	 */
 	public void setSelfEdges(boolean selfEdges) {
 		this.selfEdges = selfEdges;
@@ -190,7 +191,7 @@ public class GnpGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 * <p>
 	 * First the set of vertices is determined. Then, for each pair of vertices, an edge is created with probability
 	 * \(p\). If the graph is directed, both directions of the edge are created or not created independently with
-	 * probability \(p\). If the graph allows self-loops, each vertex is connected to itself with probability \(p\).
+	 * probability \(p\). If the graph allows self-edges, each vertex is connected to itself with probability \(p\).
 	 *
 	 * <p>
 	 * By default, the probability is \(0.1\).
@@ -222,7 +223,6 @@ public class GnpGraphGenerator<V, E> implements GraphGenerator<V, E> {
 			throw new IllegalStateException("Vertices not set");
 		if (edgeBuilder == null)
 			throw new IllegalStateException("Edge supplier not set");
-
 		final int n = vertices.size();
 
 		if (intGraph) {

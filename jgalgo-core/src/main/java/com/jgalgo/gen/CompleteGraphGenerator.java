@@ -35,7 +35,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * <p>
  * A complete graph is a graph in which each pair of graph vertices is connected by an edge. If the graph is directed,
- * then there are two edges between two pair of vertices, one in each direction. Self loops are optional, but are
+ * then there are two edges between two pair of vertices, one in each direction. Self edges are optional, but are
  * disabled by default. Parallel edges are never created.
  *
  * @param  <V> the vertices type
@@ -160,13 +160,13 @@ public class CompleteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	}
 
 	/**
-	 * Determine if the generated graph(s) will contain self-loops.
+	 * Determine if the generated graph(s) will contain self-edges.
 	 *
 	 * <p>
-	 * By default, the generated graph(s) will not contain self-loops. If this option is turn on, each vertex in a
-	 * generated will have exactly one self edge connected to itself.
+	 * Self edges are edges with the same source and target vertex. By default, the generated graph(s) will not contain
+	 * self-edges.
 	 *
-	 * @param selfEdges {@code true} if the generated graph(s) will contain self-loops, {@code false} otherwise
+	 * @param selfEdges {@code true} if the generated graph(s) will contain self-edges, {@code false} otherwise
 	 */
 	public void setSelfEdges(boolean selfEdges) {
 		this.selfEdges = selfEdges;
