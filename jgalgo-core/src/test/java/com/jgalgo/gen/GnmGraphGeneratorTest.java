@@ -43,11 +43,13 @@ public class GnmGraphGeneratorTest extends TestBase {
 
 		g.setVertices(Set.of("a", "b", "c"));
 		assertEquals(Set.of("a", "b", "c"), g.generate().vertices());
+		/* assert the vertices are reused */
 		assertEquals(Set.of("a", "b", "c"), g.generate().vertices());
 
 		AtomicInteger vertexId = new AtomicInteger();
 		g.setVertices(4, () -> String.valueOf(vertexId.getAndIncrement()));
 		assertEquals(Set.of("0", "1", "2", "3"), g.generate().vertices());
+		/* assert the vertices are reused */
 		assertEquals(Set.of("0", "1", "2", "3"), g.generate().vertices());
 	}
 
@@ -64,11 +66,13 @@ public class GnmGraphGeneratorTest extends TestBase {
 
 		g.setVertices(Set.of(17, 86, 5));
 		assertEquals(Set.of(17, 86, 5), g.generate().vertices());
+		/* assert the vertices are reused */
 		assertEquals(Set.of(17, 86, 5), g.generate().vertices());
 
 		AtomicInteger vertexId = new AtomicInteger();
 		g.setVertices(4, () -> vertexId.getAndIncrement());
 		assertEquals(Set.of(0, 1, 2, 3), g.generate().vertices());
+		/* assert the vertices are reused */
 		assertEquals(Set.of(0, 1, 2, 3), g.generate().vertices());
 	}
 
@@ -123,10 +127,8 @@ public class GnmGraphGeneratorTest extends TestBase {
 			g.setVertices(5, new AtomicInteger()::getAndIncrement);
 			g.setParallelEdges(false);
 			assertThrows(IllegalArgumentException.class, () -> g.setEdges(-1, new AtomicInteger()::getAndIncrement));
-			assertThrows(IllegalArgumentException.class, () -> {
-				g.setEdges(500, new AtomicInteger()::getAndIncrement);
-				g.generate();
-			});
+			g.setEdges(500, new AtomicInteger()::getAndIncrement);
+			assertThrows(IllegalArgumentException.class, () -> g.generate());
 			g.setEdges(5, new AtomicInteger()::getAndIncrement);
 			assertNotNull(g.generate());
 		});
@@ -182,7 +184,7 @@ public class GnmGraphGeneratorTest extends TestBase {
 			Graph<Integer, Integer> g1 = g.generate();
 			assertTrue(Graphs.containsParallelEdges(g1));
 
-			/* check parallel-edges enabled */
+			/* check parallel-edges disabled */
 			for (int repeat = 0; repeat < 20; repeat++) {
 				g.setParallelEdges(false);
 				g.setEdges(maxNumberOfEdges, new AtomicInteger()::getAndIncrement);
@@ -190,7 +192,7 @@ public class GnmGraphGeneratorTest extends TestBase {
 				assertFalse(Graphs.containsParallelEdges(g2));
 			}
 
-			/* check parallel-edges disabled */
+			/* check parallel-edges enabled */
 			g.setParallelEdges(true);
 			g.setEdges(maxNumberOfEdges + 1, new AtomicInteger()::getAndIncrement);
 			Graph<Integer, Integer> g3 = g.generate();

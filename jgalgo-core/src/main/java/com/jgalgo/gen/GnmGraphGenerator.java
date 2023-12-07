@@ -39,7 +39,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * Generates a uniformly random graph among all graphs with \(n\) vertices and \(m\) edges.
  *
  * <p>
- * The generator uses the G(n,m) model to generate a uniformly random graph among all graphs with \(n\) vertices and
+ * The generator uses the \(G(n,m)\) model to generate a uniformly random graph among all graphs with \(n\) vertices and
  * \(m\) edges. Both directed and undirected graphs are supported, as well as self-edges and parallel-edges. By default,
  * the generated graph(s) is undirected, does not contain self-edges and may contain parallel-edges.
  *
@@ -64,20 +64,20 @@ public class GnmGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	}
 
 	/**
-	 * Creates a new G(n,m) generator.
+	 * Creates a new \(G(n,m)\) generator.
 	 *
 	 * @param  <V> the vertices type
 	 * @param  <E> the edges type
-	 * @return     a new G(n,m) generator
+	 * @return     a new \(G(n,m)\) generator
 	 */
 	public static <V, E> GnmGraphGenerator<V, E> newInstance() {
 		return new GnmGraphGenerator<>(false);
 	}
 
 	/**
-	 * Creates a new G(n,m) generator for {@link IntGraph}.
+	 * Creates a new \(G(n,m)\) generator for {@link IntGraph}.
 	 *
-	 * @return a new G(n,m) generator for {@link IntGraph}
+	 * @return a new \(G(n,m)\) generator for {@link IntGraph}
 	 */
 	public static GnmGraphGenerator<Integer, Integer> newIntInstance() {
 		return new GnmGraphGenerator<>(true);
@@ -245,7 +245,7 @@ public class GnmGraphGenerator<V, E> implements GraphGenerator<V, E> {
 		} else {
 			factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();
 		}
-		GraphBuilder<V, E> g = factory.allowSelfEdges(selfEdges).allowParallelEdges(parallelEdges).newBuilder();
+		GraphBuilder<V, E> g = factory.allowSelfEdges(selfEdges).newBuilder();
 		g.expectedVerticesNum(n);
 		g.expectedEdgesNum(m);
 
