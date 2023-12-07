@@ -183,6 +183,10 @@ public class TestUtils {
 		Assertions.assertEquals(Boolean.valueOf(expected), Boolean.valueOf(actual));
 	}
 
+	public static void assertNotEqualsBool(boolean expected, boolean actual) {
+		Assertions.assertNotEquals(Boolean.valueOf(expected), Boolean.valueOf(actual));
+	}
+
 	public static void foreachBoolConfig(RunnableWith1BoolConfig test) {
 		for (boolean cfg1 : BooleanList.of(false, true))
 			test.run(cfg1);

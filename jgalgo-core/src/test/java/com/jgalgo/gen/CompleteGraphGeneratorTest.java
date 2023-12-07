@@ -44,11 +44,13 @@ public class CompleteGraphGeneratorTest extends TestBase {
 		Set<String> vertices = range(7).mapToObj(String::valueOf).collect(Collectors.toSet());
 		g.setVertices(vertices);
 		assertEquals(vertices, g.generate().vertices());
+		/* assert the vertices are reused */
 		assertEquals(vertices, g.generate().vertices());
 
 		AtomicInteger vertexId = new AtomicInteger();
 		g.setVertices(4, () -> String.valueOf(vertexId.getAndIncrement()));
 		assertEquals(Set.of("0", "1", "2", "3"), g.generate().vertices());
+		/* assert the vertices are reused */
 		assertEquals(Set.of("0", "1", "2", "3"), g.generate().vertices());
 	}
 
@@ -64,11 +66,13 @@ public class CompleteGraphGeneratorTest extends TestBase {
 		Set<Integer> vertices = range(7);
 		g.setVertices(range(7));
 		assertEquals(vertices, g.generate().vertices());
+		/* assert the vertices are reused */
 		assertEquals(vertices, g.generate().vertices());
 
 		AtomicInteger vertexId = new AtomicInteger();
 		g.setVertices(4, () -> vertexId.getAndIncrement());
 		assertEquals(Set.of(0, 1, 2, 3), g.generate().vertices());
+		/* assert the vertices are reused */
 		assertEquals(Set.of(0, 1, 2, 3), g.generate().vertices());
 	}
 
@@ -97,8 +101,14 @@ public class CompleteGraphGeneratorTest extends TestBase {
 
 			Set<Pair<Integer, Integer>> edges = new ObjectOpenHashSet<>();
 			for (Integer e : g.edges()) {
-				boolean dupEdge = !edges.add(Pair.of(g.edgeSource(e), g.edgeTarget(e)));
-				assertFalse(dupEdge, "duplicate edge: (" + g.edgeSource(e) + ", " + g.edgeTarget(e) + ")");
+				Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+				if (!directed && u.intValue() > v.intValue()) {
+					Integer tmp = u;
+					u = v;
+					v = tmp;
+				}
+				boolean dupEdge = !edges.add(Pair.of(u, v));
+				assertFalse(dupEdge, "duplicate edge: (" + u + ", " + v + ")");
 			}
 			for (Integer u : range(n)) {
 				for (Integer v : range(directed ? 0 : u.intValue(), n)) {
