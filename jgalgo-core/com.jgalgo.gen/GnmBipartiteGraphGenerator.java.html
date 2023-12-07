@@ -1,0 +1,430 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GnmBipartiteGraphGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.gen</a> &gt; <span class="el_source">GnmBipartiteGraphGenerator.java</span></div><h1>GnmBipartiteGraphGenerator.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.gen;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.function.BiFunction;
+import java.util.function.IntSupplier;
+import java.util.function.Supplier;
+import com.jgalgo.alg.BipartiteGraphs;
+import com.jgalgo.alg.VertexBiPartition;
+import com.jgalgo.gen.BipartiteGenerators.Direction;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.WeightsBool;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.IntAdapters;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+
+/**
+ * Generates a uniformly random bipartite graph among all graphs with \(n\) vertices and \(m\) edges.
+ *
+ * &lt;p&gt;
+ * A bipartite graph is a graph whose vertices can be divided into two disjoint sets \(U\) and \(V\) such that every
+ * edge connects a vertex in \(U\) to one in \(V\). The two sets are usually called the left and right vertices. The
+ * generator uses the \(G(n_1,n_2,m)\) model to generate a uniformly random bipartite graph among all graphs with
+ * \(n_1\) left vertices, \(n_2\) right vertices and \(m\) edges.
+ *
+ * &lt;p&gt;
+ * Both undirected and directed graphs can be generated. If the graph is directed, there are three options for the
+ * considered edges between each pair of left and right vertices: edges in both directions, edge(s) from the left vertex
+ * to the right vertex, or edge(s) from the right vertex to the left vertex. If no parallel edges are generated
+ * ({@link #setParallelEdges(boolean)}) than at most a single edge is generated from the left to right vertex, and
+ * another one from right to left. See {@link #setDirectedAll()}, {@link #setDirectedLeftToRight()} and
+ * {@link #setDirectedRightToLeft()} for more details.
+ *
+ * &lt;p&gt;
+ * The generated graph(s) will have vertex {@linkplain WeightsBool boolean weights} with key
+ * {@link BipartiteGraphs#VertexBiPartitionWeightKey} which is the partition of the vertices into the left and right set
+ * of vertices. The weight is set to {@code true} for vertices in the left set, and {@code false} for vertices in the
+ * right set. The {@link VertexBiPartition} can be created later using
+ * {@link BipartiteGraphs#getExistingPartition(Graph)}.
+ *
+ * &lt;p&gt;
+ * By default, the generated graph(s) will be undirected without parallel edges. Self edges are never generated.
+ *
+ * &lt;p&gt;
+ * For deterministic behavior, set the seed of the generator using {@link #setSeed(long)}.
+ *
+ * &lt;p&gt;
+ * This generator is the bipartite version of {@link GnmGraphGenerator}.
+ *
+ * @see    BipartiteGraphs
+ * @author Barak Ugav
+ */
+public class GnmBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {
+
+	private final boolean intGraph;
+	private List&lt;V&gt; leftVertices;
+	private List&lt;V&gt; rightVertices;
+	private int m;
+	private BiFunction&lt;V, V, E&gt; edgeBuilder;
+<span class="fc" id="L85">	private Direction direction = Direction.Undirected;</span>
+<span class="fc" id="L86">	private boolean parallelEdges = true;</span>
+<span class="fc" id="L87">	private Random rand = new Random();</span>
+
+<span class="fc" id="L89">	private GnmBipartiteGraphGenerator(boolean intGraph) {</span>
+<span class="fc" id="L90">		this.intGraph = intGraph;</span>
+<span class="fc" id="L91">	}</span>
+
+	/**
+	 * Creates a new \(G(n_1,n_2,m)\) generator.
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @return     a new \(G(n_1,n_2,m)\) generator
+	 */
+	public static &lt;V, E&gt; GnmBipartiteGraphGenerator&lt;V, E&gt; newInstance() {
+<span class="fc" id="L101">		return new GnmBipartiteGraphGenerator&lt;&gt;(false);</span>
+	}
+
+	/**
+	 * Creates a new \(G(n_1,n_2,m)\) generator for {@link IntGraph}.
+	 *
+	 * @return a new \(G(n_1,n_2,m)\) generator for {@link IntGraph}
+	 */
+	public static GnmBipartiteGraphGenerator&lt;Integer, Integer&gt; newIntInstance() {
+<span class="fc" id="L110">		return new GnmBipartiteGraphGenerator&lt;&gt;(true);</span>
+	}
+
+	/**
+	 * Set the vertices of the generated graph(s).
+	 *
+	 * &lt;p&gt;
+	 * A bipartite graph is a graph whose vertices can be divided into two disjoint sets \(U\) and \(V\) such that every
+	 * edge connects a vertex in \(U\) to one in \(V\). The two sets are usually called the left and right vertices.
+	 * This method sets these two sets.
+	 *
+	 * &lt;p&gt;
+	 * If the generator is used to generate multiple graphs, the same vertex sets will be used for all of them.
+	 *
+	 * @param leftVertices  the set of left vertices of the generated graph(s)
+	 * @param rightVertices the set of right vertices of the generated graph(s)
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public void setVertices(Collection&lt;V&gt; leftVertices, Collection&lt;V&gt; rightVertices) {
+<span class="fc bfc" id="L129" title="All 2 branches covered.">		if (intGraph) {</span>
+<span class="fc" id="L130">			this.leftVertices =</span>
+<span class="fc" id="L131">					(List&lt;V&gt;) new IntArrayList(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) leftVertices));</span>
+<span class="fc" id="L132">			this.rightVertices =</span>
+<span class="fc" id="L133">					(List&lt;V&gt;) new IntArrayList(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) rightVertices));</span>
+		} else {
+<span class="fc" id="L135">			this.leftVertices = new ObjectArrayList&lt;&gt;(leftVertices);</span>
+<span class="fc" id="L136">			this.rightVertices = new ObjectArrayList&lt;&gt;(rightVertices);</span>
+		}
+<span class="fc" id="L138">	}</span>
+
+	/**
+	 * Set the vertices set of the generated graph(s) from a supplier.
+	 *
+	 * &lt;p&gt;
+	 * A bipartite graph is a graph whose vertices can be divided into two disjoint sets \(U\) and \(V\) such that every
+	 * edge connects a vertex in \(U\) to one in \(V\). The two sets are usually called the left and right vertices.
+	 * This method sets these two sets.
+	 *
+	 * &lt;p&gt;
+	 * The supplier will be called exactly {@code leftVerticesNum+rightVerticesNum} times, and the same sets of vertices
+	 * created will be used for multiple graphs if {@link #generate()} is called multiple times.
+	 *
+	 * @param leftVerticesNum  the number of vertices in the left set
+	 * @param rightVerticesNum the number of vertices in the right set
+	 * @param vertexSupplier   the supplier of vertices
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public void setVertices(int leftVerticesNum, int rightVerticesNum, Supplier&lt;V&gt; vertexSupplier) {
+<span class="fc bfc" id="L158" title="All 2 branches covered.">		if (intGraph) {</span>
+<span class="fc" id="L159">			IntList leftVertices = new IntArrayList(leftVerticesNum);</span>
+<span class="fc" id="L160">			IntList rightVertices = new IntArrayList(rightVerticesNum);</span>
+<span class="fc" id="L161">			IntSupplier vSupplier = IntAdapters.asIntSupplier((Supplier&lt;Integer&gt;) vertexSupplier);</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">			for (int i = 0; i &lt; leftVerticesNum; i++)</span>
+<span class="fc" id="L163">				leftVertices.add(vSupplier.getAsInt());</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">			for (int i = 0; i &lt; rightVerticesNum; i++)</span>
+<span class="fc" id="L165">				rightVertices.add(vSupplier.getAsInt());</span>
+<span class="fc" id="L166">			this.leftVertices = (List&lt;V&gt;) leftVertices;</span>
+<span class="fc" id="L167">			this.rightVertices = (List&lt;V&gt;) rightVertices;</span>
+<span class="fc" id="L168">		} else {</span>
+<span class="fc" id="L169">			List&lt;V&gt; leftVertices = new ObjectArrayList&lt;&gt;(leftVerticesNum);</span>
+<span class="fc" id="L170">			List&lt;V&gt; rightVertices = new ObjectArrayList&lt;&gt;(rightVerticesNum);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">			for (int i = 0; i &lt; leftVerticesNum; i++)</span>
+<span class="fc" id="L172">				leftVertices.add(vertexSupplier.get());</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">			for (int i = 0; i &lt; rightVerticesNum; i++)</span>
+<span class="fc" id="L174">				rightVertices.add(vertexSupplier.get());</span>
+<span class="fc" id="L175">			this.leftVertices = leftVertices;</span>
+<span class="fc" id="L176">			this.rightVertices = rightVertices;</span>
+		}
+<span class="fc" id="L178">	}</span>
+
+	/**
+	 * Set the number of edges and the edge supplier of the generated graph(s).
+	 *
+	 * &lt;p&gt;
+	 * The number of edges must be non-negative, and if parallel edges are not allowed, it must be at most \(n_1 \cdot
+	 * n_2\) for undirected graphs and directed graphs in which only one direction is allowed
+	 * ({@linkplain #setDirectedLeftToRight() left to right}, or {@linkplain #setDirectedRightToLeft() right to left}),
+	 * and at most \(2 \cdot n_1 \cdot n_2\) for directed graphs in which both directions are allowed
+	 * ({@linkplain #setDirectedAll() all directions}).
+	 *
+	 * &lt;p&gt;
+	 * The supplier will be called for any edge created, for any graph generated. This behavior is different from
+	 * {@link #setVertices(int, int, Supplier)}, where the supplier is used to generate a set of vertices which is
+	 * reused for any generated graph.
+	 *
+	 * @param m            the number of edges
+	 * @param edgeSupplier the edge supplier
+	 */
+	public void setEdges(int m, Supplier&lt;E&gt; edgeSupplier) {
+<span class="fc" id="L199">		Objects.requireNonNull(edgeSupplier);</span>
+<span class="fc" id="L200">		setEdges(m, (u, v) -&gt; edgeSupplier.get());</span>
+<span class="fc" id="L201">	}</span>
+
+	/**
+	 * Set the number of edges and the edge builder function of the generated graph(s).
+	 *
+	 * &lt;p&gt;
+	 * The number of edges must be non-negative, and if parallel edges are not allowed, it must be at most \(n_1 \cdot
+	 * n_2\) for undirected graphs and directed graphs in which only one direction is allowed
+	 * ({@linkplain #setDirectedLeftToRight() left to right}, or {@linkplain #setDirectedRightToLeft() right to left}),
+	 * and at most \(2 \cdot n_1 \cdot n_2\) for directed graphs in which both directions are allowed
+	 * ({@linkplain #setDirectedAll() all directions}).
+	 *
+	 * &lt;p&gt;
+	 * The edge builder will be called for any edge created, for any graph generated. This behavior is different from
+	 * {@link #setVertices(int, int, Supplier)}, where the supplier is used to generate a set of vertices which is
+	 * reused for any generated graph.
+	 *
+	 * @param m           the number of edges
+	 * @param edgeBuilder the edge builder function
+	 */
+	public void setEdges(int m, BiFunction&lt;V, V, E&gt; edgeBuilder) {
+<span class="fc bfc" id="L222" title="All 2 branches covered.">		if (m &lt; 0)</span>
+<span class="fc" id="L223">			throw new IllegalArgumentException(&quot;number of edges must be non-negative&quot;);</span>
+<span class="fc" id="L224">		this.m = m;</span>
+<span class="fc" id="L225">		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);</span>
+<span class="fc" id="L226">	}</span>
+
+	/**
+	 * Sets the generated graph(s) to be undirected.
+	 *
+	 * &lt;p&gt;
+	 * A bipartite graph is a graph whose vertices can be divided into two disjoint sets \(U\) and \(V\) such that every
+	 * edge connects a vertex in \(U\) to one in \(V\). The two sets are usually called the left and right vertices.
+	 * Calling this method will cause the generated graph(s) to be undirected, and a single edge between each pair of
+	 * left and right vertices will considered and generated with probability \(p\). The maximum number of edges will be
+	 * \(|U| \cdot |V|\).
+	 *
+	 * &lt;p&gt;
+	 * By default, the generated graph(s) is undirected.
+	 *
+	 * @see #setDirectedAll()
+	 * @see #setDirectedLeftToRight()
+	 * @see #setDirectedRightToLeft()
+	 */
+	public void setUndirected() {
+<span class="fc" id="L246">		direction = Direction.Undirected;</span>
+<span class="fc" id="L247">	}</span>
+
+	/**
+	 * Sets the generated graph(s) to be directed with edges in both directions.
+	 *
+	 * &lt;p&gt;
+	 * A bipartite graph is a graph whose vertices can be divided into two disjoint sets \(U\) and \(V\) such that every
+	 * edge connects a vertex in \(U\) to one in \(V\). The two sets are usually called the left and right vertices.
+	 * Calling this method will cause the generated graph(s) to be directed, and edges in both directions (from left
+	 * vertices to right vertices and visa versa) may be generated. In case parallel edges are not allowed, the maximum
+	 * number of edges will be \(2 \cdot |U| \cdot |V|\).
+	 *
+	 * &lt;p&gt;
+	 * By default, the generated graph(s) is undirected.
+	 *
+	 * @see #setUndirected()
+	 * @see #setDirectedLeftToRight()
+	 * @see #setDirectedRightToLeft()
+	 */
+	public void setDirectedAll() {
+<span class="fc" id="L267">		direction = Direction.DirectedAll;</span>
+<span class="fc" id="L268">	}</span>
+
+	/**
+	 * Sets the generated graph(s) to be directed with edges from left to right.
+	 *
+	 * &lt;p&gt;
+	 * A bipartite graph is a graph whose vertices can be divided into two disjoint sets \(U\) and \(V\) such that every
+	 * edge connects a vertex in \(U\) to one in \(V\). The two sets are usually called the left and right vertices.
+	 * Calling this method will cause the generated graph(s) to be directed, and only edges from left vertices to right
+	 * vertices may be generated. In case parallel edges are not allowed, the maximum number of edges will be \(|U|
+	 * \cdot |V|\).
+	 *
+	 * &lt;p&gt;
+	 * By default, the generated graph(s) is undirected.
+	 *
+	 * @see #setUndirected()
+	 * @see #setDirectedAll()
+	 * @see #setDirectedRightToLeft()
+	 */
+	public void setDirectedLeftToRight() {
+<span class="fc" id="L288">		direction = Direction.DirectedLeftToRight;</span>
+<span class="fc" id="L289">	}</span>
+
+	/**
+	 * Sets the generated graph(s) to be directed with edges from right to left.
+	 *
+	 * &lt;p&gt;
+	 * A bipartite graph is a graph whose vertices can be divided into two disjoint sets \(U\) and \(V\) such that every
+	 * edge connects a vertex in \(U\) to one in \(V\). The two sets are usually called the left and right vertices.
+	 * Calling this method will cause the generated graph(s) to be directed, and only edges from right vertices to left
+	 * vertices may be generated. In case parallel edges are not allowed, the maximum number of edges will be \(|U|
+	 * \cdot |V|\).
+	 *
+	 * &lt;p&gt;
+	 * By default, the generated graph(s) is undirected.
+	 *
+	 * @see #setUndirected()
+	 * @see #setDirectedAll()
+	 * @see #setDirectedLeftToRight()
+	 */
+	public void setDirectedRightToLeft() {
+<span class="fc" id="L309">		direction = Direction.DirectedRightToLeft;</span>
+<span class="fc" id="L310">	}</span>
+
+	/**
+	 * Determine if the generated graph(s) will contain parallel-edges.
+	 *
+	 * &lt;p&gt;
+	 * Parallel edges are a set of edges that connect the same two vertices. By default, the generated graph(s) will
+	 * contain parallel-edges.
+	 *
+	 * @param parallelEdges {@code true} if the generated graph(s) will contain parallel-edges, {@code false} otherwise
+	 */
+	public void setParallelEdges(boolean parallelEdges) {
+<span class="fc" id="L322">		this.parallelEdges = parallelEdges;</span>
+<span class="fc" id="L323">	}</span>
+
+	/**
+	 * Set the seed of the random number generator used to generate the graph(s).
+	 *
+	 * &lt;p&gt;
+	 * By default, a random seed is used. For deterministic behavior, set the seed of the generator.
+	 *
+	 * @param seed the seed of the random number generator
+	 */
+	public void setSeed(long seed) {
+<span class="fc" id="L334">		rand = new Random(seed);</span>
+<span class="fc" id="L335">	}</span>
+
+	@Override
+	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
+<span class="fc bfc" id="L339" title="All 2 branches covered.">		if (leftVertices == null)</span>
+<span class="fc" id="L340">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
+<span class="fc" id="L342">			throw new IllegalStateException(&quot;Number of edges and edge supplier were not set&quot;);</span>
+
+<span class="fc" id="L344">		final int maxNumberOfEdges =</span>
+<span class="fc bfc" id="L345" title="All 2 branches covered.">				leftVertices.size() * rightVertices.size() * (direction == Direction.DirectedAll ? 2 : 1);</span>
+<span class="fc bfc" id="L346" title="All 4 branches covered.">		if (!parallelEdges &amp;&amp; m &gt; maxNumberOfEdges)</span>
+<span class="fc" id="L347">			throw new IllegalArgumentException(&quot;number of edges must be at most &quot; + maxNumberOfEdges);</span>
+
+		GraphBuilder&lt;V, E&gt; g;
+<span class="fc bfc" id="L350" title="All 2 branches covered.">		if (intGraph) {</span>
+			@SuppressWarnings(&quot;unchecked&quot;)
+			GraphBuilder&lt;V, E&gt; g0 =
+<span class="fc bfc" id="L353" title="All 2 branches covered.">					(GraphBuilder&lt;V, E&gt;) (direction != Direction.Undirected ? IntGraphBuilder.newDirected()</span>
+<span class="fc" id="L354">							: IntGraphBuilder.newUndirected());</span>
+<span class="fc" id="L355">			g = g0;</span>
+<span class="fc" id="L356">		} else {</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">			g = direction != Direction.Undirected ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
+		}
+<span class="fc" id="L359">		g.expectedVerticesNum(leftVertices.size() + rightVertices.size());</span>
+<span class="fc" id="L360">		g.expectedEdgesNum(m);</span>
+
+<span class="fc" id="L362">		WeightsBool&lt;V&gt; partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);</span>
+<span class="fc bfc" id="L363" title="All 2 branches covered.">		for (V v : leftVertices) {</span>
+<span class="fc" id="L364">			g.addVertex(v);</span>
+<span class="fc" id="L365">			partition.set(v, true);</span>
+<span class="fc" id="L366">		}</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">		for (V v : rightVertices) {</span>
+<span class="fc" id="L368">			g.addVertex(v);</span>
+<span class="fc" id="L369">			partition.set(v, false);</span>
+<span class="fc" id="L370">		}</span>
+
+<span class="fc bfc" id="L372" title="All 4 branches covered.">		if (parallelEdges || m &lt;= maxNumberOfEdges / 2) {</span>
+			/* Start with an empty graph and add edges one by one */
+
+<span class="fc bfc" id="L375" title="All 2 branches covered.">			LongSet edges = parallelEdges ? null : new LongOpenHashSet(m);</span>
+<span class="fc" id="L376">			final int n1 = leftVertices.size(), n2 = rightVertices.size();</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">			while (g.edges().size() &lt; m) {</span>
+				V u, v;
+				int uIdx, vIdx;
+<span class="fc bfc" id="L380" title="All 4 branches covered.">				if (direction != Direction.DirectedRightToLeft</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">						&amp;&amp; (direction != Direction.DirectedAll || rand.nextBoolean())) {</span>
+					/* left to right edge */
+<span class="fc" id="L383">					uIdx = rand.nextInt(n1);</span>
+<span class="fc" id="L384">					vIdx = rand.nextInt(n2);</span>
+<span class="fc" id="L385">					u = leftVertices.get(uIdx);</span>
+<span class="fc" id="L386">					v = rightVertices.get(vIdx);</span>
+<span class="fc" id="L387">					vIdx += n1;</span>
+				} else {
+					/* right to left edge */
+<span class="fc" id="L390">					uIdx = rand.nextInt(n2);</span>
+<span class="fc" id="L391">					vIdx = rand.nextInt(n1);</span>
+<span class="fc" id="L392">					u = rightVertices.get(uIdx);</span>
+<span class="fc" id="L393">					v = leftVertices.get(vIdx);</span>
+<span class="fc" id="L394">					uIdx += n1;</span>
+				}
+<span class="fc bfc" id="L396" title="All 4 branches covered.">				if (parallelEdges || edges.add(JGAlgoUtils.longPack(uIdx, vIdx)))</span>
+<span class="fc" id="L397">					g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc" id="L398">			}</span>
+
+<span class="fc" id="L400">		} else {</span>
+			/* Start with a complete bipartite graph and remove edges one by one */
+
+<span class="fc" id="L403">			Bitmap edges = new Bitmap(maxNumberOfEdges);</span>
+<span class="fc" id="L404">			edges.setAll();</span>
+<span class="fc bfc" id="L405" title="All 2 branches covered.">			for (int edgesNum = maxNumberOfEdges; edgesNum &gt; m;) {</span>
+<span class="fc" id="L406">				int i = rand.nextInt(maxNumberOfEdges);</span>
+<span class="fc bfc" id="L407" title="All 2 branches covered.">				if (edges.get(i)) {</span>
+<span class="fc" id="L408">					edges.clear(i);</span>
+<span class="fc" id="L409">					edgesNum--;</span>
+				}
+<span class="fc" id="L411">			}</span>
+
+<span class="fc" id="L413">			int i = 0;</span>
+<span class="fc bfc" id="L414" title="All 2 branches covered.">			if (direction != Direction.DirectedRightToLeft)</span>
+<span class="fc bfc" id="L415" title="All 2 branches covered.">				for (V u : leftVertices)</span>
+<span class="fc bfc" id="L416" title="All 2 branches covered.">					for (V v : rightVertices)</span>
+<span class="fc bfc" id="L417" title="All 2 branches covered.">						if (edges.get(i++))</span>
+<span class="fc" id="L418">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc bfc" id="L419" title="All 4 branches covered.">			if (direction == Direction.DirectedRightToLeft || direction == Direction.DirectedAll)</span>
+<span class="fc bfc" id="L420" title="All 2 branches covered.">				for (V u : rightVertices)</span>
+<span class="fc bfc" id="L421" title="All 2 branches covered.">					for (V v : leftVertices)</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">						if (edges.get(i++))</span>
+<span class="fc" id="L423">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+		}
+
+<span class="fc" id="L426">		return g;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

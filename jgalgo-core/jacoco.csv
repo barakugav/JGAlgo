@@ -1,10 +1,16 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+JGAlgo - Core,com.jgalgo.gen,GnpBipartiteGraphGenerator,0,601,0,72,0,109,0,51,0,15
+JGAlgo - Core,com.jgalgo.gen,GnmBipartiteGraphGenerator,0,553,0,74,0,121,0,52,0,15
 JGAlgo - Core,com.jgalgo.gen,CompleteGraphGenerator,0,370,0,46,0,82,0,34,0,11
 JGAlgo - Core,com.jgalgo.gen,GraphGenerator,0,8,0,0,0,2,0,2,0,2
+JGAlgo - Core,com.jgalgo.gen,UniformTreeGenerator,19,350,4,34,0,67,3,30,1,13
+JGAlgo - Core,com.jgalgo.gen,GnmGraphGenerator,0,446,0,70,0,102,0,48,0,13
 JGAlgo - Core,com.jgalgo.gen,BarabasiAlbertGraphGenerator,0,525,0,52,0,107,0,39,0,13
+JGAlgo - Core,com.jgalgo.gen,CompleteBipartiteGraphGenerator,0,558,0,60,0,101,0,43,0,13
+JGAlgo - Core,com.jgalgo.gen,BipartiteGenerators.Direction,0,44,0,0,0,5,0,1,0,1
 JGAlgo - Core,com.jgalgo.gen,EmptyGraphGenerator,0,117,0,16,0,29,0,15,0,7
 JGAlgo - Core,com.jgalgo.gen,RecursiveMatrixGraphGenerator,54,679,18,86,0,145,11,55,0,14
-JGAlgo - Core,com.jgalgo.gen,GnpGraphGenerator,0,428,4,58,0,89,4,40,0,13
+JGAlgo - Core,com.jgalgo.gen,GnpGraphGenerator,0,428,1,61,0,89,1,43,0,13
 JGAlgo - Core,com.jgalgo.graph,WeightsImplObj.IndexImpl,0,78,0,2,0,18,0,6,0,5
 JGAlgo - Core,com.jgalgo.graph,Graphs.UndirectedView.EdgeSetBase,1,64,1,7,0,13,1,8,0,5
 JGAlgo - Core,com.jgalgo.graph,WeightsImplByte.IndexMutable,7,76,2,0,0,21,1,9,0,9
@@ -920,7 +926,7 @@ JGAlgo - Core,com.jgalgo.alg,BiConnectedComponentsAlgoHopcroftTarjan,53,440,12,4
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSource.IResult,0,10,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,BiConnectedComponentsAlgoHopcroftTarjan.Res,75,753,18,92,4,145,14,54,2,11
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Abstract.Worker,443,1722,84,152,20,359,50,103,6,29
-JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Worker,822,4350,245,555,22,1061,133,295,0,28
+JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Worker,811,4361,243,557,20,1063,131,297,0,28
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOfflineUnionFind.new IntIterator() {...},0,51,0,2,0,5,0,4,0,3
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Blossom.2.new Iterator() {...},16,106,5,9,1,24,3,9,0,5
 JGAlgo - Core,com.jgalgo.alg,TreePathMaximaUtils.AbstractImpl,0,46,1,3,0,11,1,3,0,2
@@ -936,7 +942,7 @@ JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.Impl.new ImmutableIntArraySet() 
 JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.Impl.new ImmutableIntArraySet() {...},28,10,6,0,1,1,4,1,1,1
 JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.Impl.new ImmutableIntArraySet() {...},0,36,2,4,0,2,2,3,0,2
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSourceCardinality,0,36,0,2,0,9,0,3,0,2
-JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.Impl.new ImmutableIntArraySet() {...},18,18,6,0,1,1,4,1,1,1
+JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.Impl.new ImmutableIntArraySet() {...},1,35,3,3,0,2,3,2,0,2
 JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.Impl.new ImmutableIntArraySet() {...},11,12,4,0,1,1,3,1,1,1
 JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutUtils.AbstractImplGlobal,2,36,1,3,0,9,1,3,0,2
 JGAlgo - Core,com.jgalgo.alg,KShortestPathsSTYen.ShortestPathSubroutine,99,536,20,50,4,123,11,28,0,4
@@ -1017,7 +1023,7 @@ JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsCardinality,0,172,2,16,0,32,2,1
 JGAlgo - Core,com.jgalgo.alg,KShortestPathsSTYen,44,230,8,22,1,49,6,13,1,3
 JGAlgo - Core,com.jgalgo.alg,MinimumSpanningTreeKruskal,8,111,2,8,3,22,3,5,1,2
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsJohnson,27,386,8,36,3,81,8,26,2,10
-JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.FromWeights,5,9,0,0,1,3,1,1,1,1
+JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.FromWeights,0,14,0,0,0,4,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,TopologicalOrderAlgo.Result,0,11,0,0,0,1,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,Dfs,0,64,0,4,0,14,0,4,0,2
 JGAlgo - Core,com.jgalgo.alg,Flows.FlowImpl,22,206,5,25,3,36,4,16,0,5

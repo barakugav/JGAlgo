@@ -73,7 +73,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L73">				rightVertices = new ImmutableIntArraySet(sortedVertices, leftCount, n) {</span>
 					@Override
 					public boolean contains(int v) {
-<span class="nc bnc" id="L76" title="All 6 branches missed.">						return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; leftCount &lt;= vertexSortedIdx[v];</span>
+<span class="pc bpc" id="L76" title="3 of 6 branches missed.">						return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; leftCount &lt;= vertexSortedIdx[v];</span>
 					}
 				};
 			}
@@ -243,7 +243,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 		@Override
 		boolean isLeft0(int vertex) {
-<span class="nc" id="L246">			return weights.get(vertex);</span>
+<span class="fc" id="L246">			return weights.get(vertex);</span>
 		}
 	}
 
