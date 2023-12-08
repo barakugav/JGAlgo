@@ -106,7 +106,7 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 		eiMap = IdIdxMapImpl.newInstance(indexGraph, expectedEdgesNum, true);
 	}
 
-	IntGraphImpl(IndexGraph indexGraph, IndexIntIdMap viMap, IndexIntIdMap eiMap,
+	IntGraphImpl(IndexGraph indexGraph, IndexIdMap<Integer> viMap, IndexIdMap<Integer> eiMap,
 			IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
 		this.indexGraph = Objects.requireNonNull(indexGraph);
 		this.viMap = IdIdxMapImpl.reindexedCopyOf(viMap, vReIndexing, this.indexGraph, false);
@@ -114,7 +114,7 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	}
 
 	/* copy constructor */
-	IntGraphImpl(IntGraph orig, IndexGraphFactory indexGraphFactory, boolean copyVerticesWeights,
+	IntGraphImpl(Graph<Integer, Integer> orig, IndexGraphFactory indexGraphFactory, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 		this(indexGraphFactory.newCopyOf(orig.indexGraph(), copyVerticesWeights, copyEdgesWeights),
 				orig.indexGraphVerticesMap(), orig.indexGraphEdgesMap(), null, null);
@@ -468,7 +468,8 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 			initListeners(g);
 		}
 
-		IdIdxMapImpl(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing, IndexGraph g, boolean isEdges) {
+		IdIdxMapImpl(IndexIdMap<Integer> orig, IndexGraphBuilder.ReIndexingMap reIndexing, IndexGraph g,
+				boolean isEdges) {
 			this.elements = isEdges ? g.edges() : g.vertices();
 			int elementsSize = elements.size();
 			if (orig instanceof IdIdxMapImpl && reIndexing == null) {
@@ -486,7 +487,7 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 					indexToId = new int[elementsSize];
 					if (reIndexing == null) {
 						for (int idx = 0; idx < elementsSize; idx++) {
-							int id = orig.indexToIdInt(idx);
+							int id = orig.indexToId(idx).intValue();
 							if (id < 0)
 								throw new IllegalArgumentException("negative id: " + id);
 							indexToId[idx] = id;
@@ -498,7 +499,7 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 
 					} else {
 						for (int idx = 0; idx < elementsSize; idx++) {
-							int id = orig.indexToIdInt(reIndexing.reIndexedToOrig(idx));
+							int id = orig.indexToId(reIndexing.reIndexedToOrig(idx)).intValue();
 							if (id < 0)
 								throw new IllegalArgumentException("negative id: " + id);
 							indexToId[idx] = id;
@@ -520,7 +521,7 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 			return new IdIdxMapImpl(g, expectedSize, isEdges);
 		}
 
-		static IdIdxMapImpl reindexedCopyOf(IndexIntIdMap orig, IndexGraphBuilder.ReIndexingMap reIndexing,
+		static IdIdxMapImpl reindexedCopyOf(IndexIdMap<Integer> orig, IndexGraphBuilder.ReIndexingMap reIndexing,
 				IndexGraph g, boolean isEdges) {
 			return new IdIdxMapImpl(orig, reIndexing, g, isEdges);
 		}
@@ -641,22 +642,12 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 
 		@Override
 		public IntGraph newGraph() {
-			IndexGraph indexGraph = factory.newGraph();
-			if (indexGraph.isDirected()) {
-				return new IntGraphImpl(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
-			} else {
-				return new IntGraphImpl(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
-			}
+			return new IntGraphImpl(factory.newGraph(), factory.expectedVerticesNum, factory.expectedEdgesNum);
 		}
 
 		@Override
 		public IntGraph newCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-			IntGraph g0 = (IntGraph) g;
-			if (g.isDirected()) {
-				return new IntGraphImpl(g0, factory, copyVerticesWeights, copyEdgesWeights);
-			} else {
-				return new IntGraphImpl(g0, factory, copyVerticesWeights, copyEdgesWeights);
-			}
+			return new IntGraphImpl(g, factory, copyVerticesWeights, copyEdgesWeights);
 		}
 
 		@Override
