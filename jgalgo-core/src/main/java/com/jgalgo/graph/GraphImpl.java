@@ -17,6 +17,7 @@ package com.jgalgo.graph;
 
 import java.util.AbstractSet;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -24,9 +25,11 @@ import java.util.Set;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.AbstractObjectSet;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
-import it.unimi.dsi.fastutil.objects.ObjectSets;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
+import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
 class GraphImpl<V, E> extends GraphBase<V, E> {
 
@@ -372,18 +375,17 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 
 	private static class IdIdxMapImpl<K> implements IndexIdMap<K> {
 
-		private final IntSet elements;
+		private final IntSet indicesSet;
+		private final Set<K> idsSet = new IdSet();
 		private final Object2IntOpenHashMap<K> idToIndex;
-		private final Set<K> idsView; // TODO move to graph abstract implementation
 		private Object[] indexToId;
 		private final boolean isEdges;
 		private final boolean immutable;
 
 		IdIdxMapImpl(IndexGraph g, int expectedSize, boolean isEdges) {
-			this.elements = isEdges ? g.edges() : g.vertices();
+			this.indicesSet = isEdges ? g.edges() : g.vertices();
 			idToIndex = new Object2IntOpenHashMap<>(expectedSize);
 			idToIndex.defaultReturnValue(-1);
-			idsView = ObjectSets.unmodifiable(idToIndex.keySet());
 			indexToId = expectedSize == 0 ? ObjectArrays.DEFAULT_EMPTY_ARRAY : new Object[expectedSize];
 			this.isEdges = isEdges;
 			immutable = false;
@@ -391,8 +393,8 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 		}
 
 		IdIdxMapImpl(IndexIdMap<K> orig, IndexGraphBuilder.ReIndexingMap reIndexing, IndexGraph g, boolean isEdges) {
-			this.elements = isEdges ? g.edges() : g.vertices();
-			int elementsSize = elements.size();
+			this.indicesSet = isEdges ? g.edges() : g.vertices();
+			int elementsSize = indicesSet.size();
 			if (orig instanceof IdIdxMapImpl && reIndexing == null) {
 				IdIdxMapImpl<K> orig0 = (IdIdxMapImpl<K>) orig;
 				idToIndex = new Object2IntOpenHashMap<>(orig0.idToIndex);
@@ -402,12 +404,12 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 			} else {
 				idToIndex = new Object2IntOpenHashMap<>(elementsSize);
 				idToIndex.defaultReturnValue(-1);
-				if (elements.isEmpty()) {
+				if (indicesSet.isEmpty()) {
 					indexToId = ObjectArrays.DEFAULT_EMPTY_ARRAY;
 				} else {
 					indexToId = new Object[elementsSize];
 					if (reIndexing == null) {
-						for (int idx : elements) {
+						for (int idx : indicesSet) {
 							K id = orig.indexToId(idx);
 							if (id == null)
 								throw new IllegalArgumentException("null id");
@@ -419,7 +421,7 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 						}
 
 					} else {
-						for (int idx : elements) {
+						for (int idx : indicesSet) {
 							K id = orig.indexToId(reIndexing.reIndexedToOrig(idx));
 							if (id == null)
 								throw new IllegalArgumentException("null id");
@@ -434,7 +436,6 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 			}
 			this.isEdges = isEdges;
 			immutable = g instanceof ImmutableGraph;
-			idsView = ObjectSets.unmodifiable(idToIndex.keySet());
 			initListeners(g);
 		}
 
@@ -495,14 +496,14 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 		@SuppressWarnings("unchecked")
 		@Override
 		public K indexToId(int index) {
-			Assertions.Graphs.checkId(index, elements.size(), isEdges);
+			Assertions.Graphs.checkId(index, indicesSet.size(), isEdges);
 			return (K) indexToId[index];
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public K indexToIdIfExist(int index) {
-			if (!(0 <= index && index < elements.size()))
+			if (!(0 <= index && index < indicesSet.size()))
 				return null;
 			return (K) indexToId[index];
 		}
@@ -547,9 +548,46 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 		}
 
 		Set<K> idSet() {
-			return idsView;
+			return idsSet;
 		}
 
+		private class IdSet extends AbstractObjectSet<K> {
+
+			@Override
+			public int size() {
+				return indicesSet.size();
+			}
+
+			@Override
+			public boolean contains(Object o) {
+				return idToIndex.containsKey(o);
+			}
+
+			@Override
+			public boolean containsAll(Collection<?> c) {
+				return idToIndex.keySet().containsAll(c);
+			}
+
+			@SuppressWarnings("unchecked")
+			@Override
+			public ObjectIterator<K> iterator() {
+				return ObjectIterators.wrap((K[]) indexToId, 0, indicesSet.size());
+			}
+
+			@Override
+			public Object[] toArray() {
+				return Arrays.copyOf(indexToId, indicesSet.size());
+			}
+
+			@Override
+			public <T> T[] toArray(T[] a) {
+				int size = indicesSet.size();
+				if (a.length < size)
+					a = java.util.Arrays.copyOf(a, size);
+				System.arraycopy(indexToId, 0, a, 0, size);
+				return a;
+			}
+		}
 	}
 
 	static class Factory<V, E> implements GraphFactory<V, E> {

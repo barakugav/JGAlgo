@@ -16,6 +16,7 @@
 package com.jgalgo.graph;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -29,8 +30,10 @@ import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.ints.IntSets;
 
 class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 
@@ -450,18 +453,17 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 
 	private static class IdIdxMapImpl implements IndexIntIdMap {
 
-		private final IntSet elements;
+		private final IntSet indicesSet;
+		private final IntSet idsSet = new IdSet();
 		private final Int2IntOpenHashMap idToIndex;
-		private final IntSet idsView; // TODO move to graph abstract implementation
 		private int[] indexToId;
 		private final boolean isEdges;
 		private final boolean immutable;
 
 		IdIdxMapImpl(IndexGraph g, int expectedSize, boolean isEdges) {
-			this.elements = isEdges ? g.edges() : g.vertices();
+			this.indicesSet = isEdges ? g.edges() : g.vertices();
 			idToIndex = new Int2IntOpenHashMap(expectedSize);
 			idToIndex.defaultReturnValue(-1);
-			idsView = IntSets.unmodifiable(idToIndex.keySet());
 			indexToId = expectedSize == 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[expectedSize];
 			this.isEdges = isEdges;
 			immutable = false;
@@ -470,8 +472,8 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 
 		IdIdxMapImpl(IndexIdMap<Integer> orig, IndexGraphBuilder.ReIndexingMap reIndexing, IndexGraph g,
 				boolean isEdges) {
-			this.elements = isEdges ? g.edges() : g.vertices();
-			int elementsSize = elements.size();
+			this.indicesSet = isEdges ? g.edges() : g.vertices();
+			int elementsSize = indicesSet.size();
 			if (orig instanceof IdIdxMapImpl && reIndexing == null) {
 				IdIdxMapImpl orig0 = (IdIdxMapImpl) orig;
 				idToIndex = new Int2IntOpenHashMap(orig0.idToIndex);
@@ -481,7 +483,7 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 			} else {
 				idToIndex = new Int2IntOpenHashMap(elementsSize);
 				idToIndex.defaultReturnValue(-1);
-				if (elements.isEmpty()) {
+				if (indicesSet.isEmpty()) {
 					indexToId = IntArrays.DEFAULT_EMPTY_ARRAY;
 				} else {
 					indexToId = new int[elementsSize];
@@ -513,7 +515,6 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 			}
 			this.isEdges = isEdges;
 			immutable = g instanceof ImmutableGraph;
-			idsView = IntSets.unmodifiable(idToIndex.keySet());
 			initListeners(g);
 		}
 
@@ -573,13 +574,13 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 
 		@Override
 		public int indexToIdInt(int index) {
-			Assertions.Graphs.checkId(index, elements.size(), isEdges);
+			Assertions.Graphs.checkId(index, indicesSet.size(), isEdges);
 			return indexToId[index];
 		}
 
 		@Override
 		public int indexToIdIfExistInt(int index) {
-			if (!(0 <= index && index < elements.size()))
+			if (!(0 <= index && index < indicesSet.size()))
 				return -1;
 			return indexToId[index];
 		}
@@ -624,9 +625,50 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 		}
 
 		IntSet idSet() {
-			return idsView;
+			return idsSet;
 		}
 
+		private class IdSet extends AbstractIntSet {
+
+			@Override
+			public int size() {
+				return indicesSet.size();
+			}
+
+			@Override
+			public boolean contains(int key) {
+				return idToIndex.containsKey(key);
+			}
+
+			@Override
+			public boolean containsAll(IntCollection c) {
+				return idToIndex.keySet().containsAll(c);
+			}
+
+			@Override
+			public boolean containsAll(Collection<?> c) {
+				return idToIndex.keySet().containsAll(c);
+			}
+
+			@Override
+			public IntIterator iterator() {
+				return IntIterators.wrap(indexToId, 0, indicesSet.size());
+			}
+
+			@Override
+			public int[] toIntArray() {
+				return Arrays.copyOf(indexToId, indicesSet.size());
+			}
+
+			@Override
+			public int[] toArray(int[] a) {
+				int size = indicesSet.size();
+				if (a.length < size)
+					a = java.util.Arrays.copyOf(a, size);
+				System.arraycopy(indexToId, 0, a, 0, size);
+				return a;
+			}
+		}
 	}
 
 	static class Factory implements IntGraphFactory {
