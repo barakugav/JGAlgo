@@ -233,6 +233,8 @@ public class GnmGraphGenerator<V, E> implements GraphGenerator<V, E> {
 			maxNumberOfEdges /= 2;
 		if (selfEdges)
 			maxNumberOfEdges += n;
+		if (vertices.isEmpty() && m > 0)
+			throw new IllegalArgumentException("number of edges must be zero if vertices set is empty");
 		if (!parallelEdges && m > maxNumberOfEdges)
 			throw new IllegalArgumentException("number of edges must be at most " + maxNumberOfEdges);
 

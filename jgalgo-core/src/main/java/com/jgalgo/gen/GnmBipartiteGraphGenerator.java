@@ -343,6 +343,10 @@ public class GnmBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 		final int maxNumberOfEdges =
 				leftVertices.size() * rightVertices.size() * (direction == Direction.DirectedAll ? 2 : 1);
+		if (leftVertices.isEmpty() && m > 0)
+			throw new IllegalArgumentException("left vertices set is empty, can't add edges");
+		if (rightVertices.isEmpty() && m > 0)
+			throw new IllegalArgumentException("right vertices set is empty, can't add edges");
 		if (!parallelEdges && m > maxNumberOfEdges)
 			throw new IllegalArgumentException("number of edges must be at most " + maxNumberOfEdges);
 

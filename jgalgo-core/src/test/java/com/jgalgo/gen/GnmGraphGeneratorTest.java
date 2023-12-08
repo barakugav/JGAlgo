@@ -16,6 +16,7 @@
 package com.jgalgo.gen;
 
 import static com.jgalgo.internal.util.Range.range;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -239,6 +240,16 @@ public class GnmGraphGeneratorTest extends TestBase {
 					assertFalse(Graphs.containsParallelEdges(g1));
 			}
 		});
+	}
+
+	@Test
+	public void emptyVerticesSetAndNonEmptyEdgeSet() {
+		GnmGraphGenerator<Integer, Integer> g = GnmGraphGenerator.newIntInstance();
+		g.setVertices(Set.of());
+		g.setEdges(6, new AtomicInteger()::getAndIncrement);
+		assertThrows(IllegalArgumentException.class, () -> g.generate());
+		g.setEdges(0, new AtomicInteger()::getAndIncrement);
+		assertDoesNotThrow(() -> g.generate());
 	}
 
 }

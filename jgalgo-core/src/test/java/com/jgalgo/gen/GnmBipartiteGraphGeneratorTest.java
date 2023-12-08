@@ -16,6 +16,7 @@
 package com.jgalgo.gen;
 
 import static com.jgalgo.internal.util.Range.range;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -292,6 +293,26 @@ public class GnmBipartiteGraphGeneratorTest extends TestBase {
 				}
 			}
 		});
+	}
+
+	@Test
+	public void emptyLeftVerticesSetAndNonEmptyEdgeSet() {
+		GnmBipartiteGraphGenerator<Integer, Integer> g = GnmBipartiteGraphGenerator.newInstance();
+		g.setVertices(Set.of(), Set.of(1, 2, 3));
+		g.setEdges(5, new AtomicInteger()::getAndIncrement);
+		assertThrows(IllegalArgumentException.class, () -> g.generate());
+		g.setEdges(0, new AtomicInteger()::getAndIncrement);
+		assertDoesNotThrow(() -> g.generate());
+	}
+
+	@Test
+	public void emptyRightVerticesSetAndNonEmptyEdgeSet() {
+		GnmBipartiteGraphGenerator<Integer, Integer> g = GnmBipartiteGraphGenerator.newInstance();
+		g.setVertices(Set.of(1, 2, 3), Set.of());
+		g.setEdges(5, new AtomicInteger()::getAndIncrement);
+		assertThrows(IllegalArgumentException.class, () -> g.generate());
+		g.setEdges(0, new AtomicInteger()::getAndIncrement);
+		assertDoesNotThrow(() -> g.generate());
 	}
 
 }
