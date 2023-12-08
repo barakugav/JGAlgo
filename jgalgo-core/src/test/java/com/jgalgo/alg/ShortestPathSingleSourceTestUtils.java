@@ -146,8 +146,14 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		double cycleWeight = w.weightSum(cycle.edges());
 		assertTrue(cycleWeight != Double.NaN, () -> "Invalid cycle: " + cycle);
 		assertTrue(cycleWeight < 0, () -> "Cycle is not negative: " + cycle);
-		assertThrows(NegativeCycleException.class, () -> validationAlgo.computeShortestPaths(g, w, source),
-				() -> "validation algorithm didn't find negative cycle: " + cycle);
+
+		/*
+		 * If the cycle is not reachable from the source, some algorithm will not find the cycle, and we can't assume
+		 * the validation algo will
+		 */
+		if (Path.reachableVertices(g, source).contains(cycle.source()))
+			assertThrows(NegativeCycleException.class, () -> validationAlgo.computeShortestPaths(g, w, source),
+					() -> "validation algorithm didn't find negative cycle: " + cycle);
 	}
 
 	static <V, E> void validateResult(Graph<V, E> g, WeightFunction<E> w, V source,
@@ -156,7 +162,10 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		try {
 			expectedRes = validationAlgo.computeShortestPaths(g, w, source);
 		} catch (NegativeCycleException e) {
-			fail("failed to find negative cycle: " + e.cycle(g));
+			/* failed to find a negative cycle */
+			/* this is a fail only if the cycle is reachable from the source */
+			if (Path.reachableVertices(g, source).contains(e.cycle().source()))
+				fail("failed to find negative cycle: " + e.cycle(g));
 			return;
 		}
 
