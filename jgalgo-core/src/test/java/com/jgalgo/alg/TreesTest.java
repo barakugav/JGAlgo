@@ -22,7 +22,6 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 
 public class TreesTest extends TestBase {
@@ -36,10 +35,7 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(32).repeat(128);
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
-			int m = n - 1;
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
-
+			Graph<Integer, Integer> g = randTree(n, seedGen.nextSeed());
 			assertTrue(Trees.isTree(g));
 		});
 	}
@@ -54,12 +50,8 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(32).repeat(128);
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
-			int m = n - 1;
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
-			Integer e = Graphs.randEdge(g, rand);
-			g.removeEdge(e);
-
+			Graph<Integer, Integer> g = randTree(n, seedGen.nextSeed());
+			g.removeEdge(Graphs.randEdge(g, rand));
 			assertFalse(Trees.isTree(g));
 		});
 	}
@@ -74,9 +66,7 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(32).repeat(128);
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
-			int m = n - 1;
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
+			Graph<Integer, Integer> g = randTree(n, seedGen.nextSeed());
 
 			Integer u, v, e;
 			do {
@@ -100,11 +90,8 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(32).repeat(128);
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
-			int m = n - 1;
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
+			Graph<Integer, Integer> g = randTree(n, seedGen.nextSeed());
 			Integer root = Graphs.randVertex(g, rand);
-
 			assertTrue(Trees.isTree(g, root));
 		});
 	}
@@ -119,13 +106,9 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(32).repeat(128);
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
-			int m = n - 1;
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
+			Graph<Integer, Integer> g = randTree(n, seedGen.nextSeed());
+			g.removeEdge(Graphs.randEdge(g, rand));
 			Integer root = Graphs.randVertex(g, rand);
-			Integer e = Graphs.randEdge(g, rand);
-			g.removeEdge(e);
-
 			assertFalse(Trees.isTree(g, root));
 		});
 	}
@@ -140,9 +123,7 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(32).repeat(128);
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
-			int m = n - 1;
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
+			Graph<Integer, Integer> g = randTree(n, seedGen.nextSeed());
 			Integer root = Graphs.randVertex(g, rand);
 
 			Integer u, v, e;
@@ -168,8 +149,8 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
+
+			Graph<Integer, Integer> g = randTree(n, seedGen.nextSeed());
 			// remove a few edges
 			for (int i = 0; i < m / 10; i++)
 				g.removeEdge(Graphs.randEdge(g, rand));
@@ -188,8 +169,8 @@ public class TreesTest extends TestBase {
 		tester.addPhase().withArgs(2048).repeat(4);
 		tester.run(n -> {
 			int m = n - 1;
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(false).selfEdges(false).cycles(false).connected(true).build();
+
+			Graph<Integer, Integer> g = randTree(n, seedGen.nextSeed());
 			// remove a few edges
 			for (int i = 0; i < m / 10; i++)
 				g.removeEdge(Graphs.randEdge(g, rand));

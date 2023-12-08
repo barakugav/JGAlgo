@@ -26,7 +26,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 
 public class SimplePathsEnumeratorSedgewickTest extends TestBase {
@@ -51,8 +50,7 @@ public class SimplePathsEnumeratorSedgewickTest extends TestBase {
 		tester.addPhase().withArgs(23, 40).repeat(128);
 		tester.addPhase().withArgs(23, 55).repeat(128);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 			Integer source = Graphs.randVertex(g, rand);
 			Integer target = Graphs.randVertex(g, rand);

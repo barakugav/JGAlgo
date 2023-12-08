@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunctionInt;
@@ -54,7 +53,7 @@ public class VertexCoverBarYehudaTest extends TestBase {
 		tester.addPhase().withArgs(1024, 2048).repeat(16);
 		tester.addPhase().withArgs(8096, 16384).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			Graph<Integer, Integer> g = randGraph(n, m, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			RandomIntUnique wRand = new RandomIntUnique(0, 163454, seedGen.nextSeed());

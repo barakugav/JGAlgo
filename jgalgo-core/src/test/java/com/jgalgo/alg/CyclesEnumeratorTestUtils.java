@@ -26,7 +26,6 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.IterTools;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -63,8 +62,7 @@ class CyclesEnumeratorTestUtils extends TestUtils {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(64, 64).repeat(64);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, true, true, false, seedGen.nextSeed());
 			testGraph(g, cyclesFinder);
 		});
 	}

@@ -20,24 +20,13 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 
 public class ShortestPathSingleSourceDagTest extends TestBase {
 
 	@Test
-	public void testDistancesDAGUnconnected() {
+	public void randGraphs() {
 		final long seed = 0xbaa64a2aa57cb602L;
-		distancesDAG(false, seed);
-	}
-
-	@Test
-	public void testDistancesDAGConnected() {
-		final long seed = 0x21ee13eb1bee6e46L;
-		distancesDAG(true, seed);
-	}
-
-	private static void distancesDAG(boolean connected, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		ShortestPathSingleSource ssspAlgo = new ShortestPathSingleSourceDag();
 		PhasedTester tester = new PhasedTester();
@@ -45,8 +34,7 @@ public class ShortestPathSingleSourceDagTest extends TestBase {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(512, 1024).repeat(16);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(true).selfEdges(false).cycles(false).connected(connected).build();
+			Graph<Integer, Integer> g = randDag(n, m, seedGen.nextSeed());
 			WeightFunction<Integer> w =
 					GraphsTestUtils.assignRandWeightsMaybeInt(g, 0, 2 + 2 * g.edges().size(), seedGen.nextSeed());
 			Integer source = g.vertices().iterator().next();
@@ -56,18 +44,8 @@ public class ShortestPathSingleSourceDagTest extends TestBase {
 	}
 
 	@Test
-	public void testDistancesDAGUnconnectedCardinality() {
+	public void randGraphsCardinality() {
 		final long seed = 0xcc9a05cd6148c76bL;
-		distancesDAGCardinality(false, seed);
-	}
-
-	@Test
-	public void testDistancesDAGConnectedCardinality() {
-		final long seed = 0x16aace466ac8c336L;
-		distancesDAGCardinality(true, seed);
-	}
-
-	private static void distancesDAGCardinality(boolean connected, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		ShortestPathSingleSource ssspAlgo = new ShortestPathSingleSourceDag();
 		PhasedTester tester = new PhasedTester();
@@ -75,8 +53,7 @@ public class ShortestPathSingleSourceDagTest extends TestBase {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(512, 1024).repeat(16);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(true).selfEdges(false).cycles(false).connected(connected).build();
+			Graph<Integer, Integer> g = randDag(n, m, seedGen.nextSeed());
 			Integer source = g.vertices().iterator().next();
 
 			ShortestPathSingleSourceTestUtils.testAlgo(g, null, source, ssspAlgo,

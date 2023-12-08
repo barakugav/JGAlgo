@@ -23,7 +23,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -35,12 +34,11 @@ public class BfsIterTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 
 		PhasedTester tester = new PhasedTester();
-		tester.addPhase().withArgs(16, 8).repeat(256);
+		tester.addPhase().withArgs(16, 32).repeat(256);
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(2048, 8192).repeat(4);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(true).build();
+			Graph<Integer, Integer> g = randConnectedGraph(n, m, false, seedGen.nextSeed());
 			testBfsConnected(g, seedGen.nextSeed());
 		});
 	}

@@ -31,7 +31,6 @@ import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 
 public class ShortestPathSingleSourceTestUtils extends TestBase {
@@ -60,8 +59,7 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		Random rand = new Random(seedGen.nextSeed());
 
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			Integer source = Graphs.randVertex(g, rand);
@@ -82,8 +80,7 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		tester.addPhase().withArgs(512, 4096).repeat(8);
 		tester.addPhase().withArgs(3542, 25436).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
 			WeightFunction<Integer> w = GraphsTestUtils.assignRandWeights(g, seedGen.nextSeed());
 			Integer source = Graphs.randVertex(g, rand);
 
@@ -101,8 +98,7 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		tester.addPhase().withArgs(512, 4096).repeat(8);
 		tester.addPhase().withArgs(4096, 16384).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
 			Integer source = Graphs.randVertex(g, rand);
 
 			ShortestPathSingleSource validationAlgo =
@@ -115,14 +111,13 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 	static void testSSSPDirectedNegativeInt(ShortestPathSingleSource algo, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
-		tester.addPhase().withArgs(4, 4).repeat(512);
+		tester.addPhase().withArgs(4, 8).repeat(512);
 		tester.addPhase().withArgs(16, 32).repeat(128);
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 4096).repeat(8);
 		tester.addPhase().withArgs(1024, 4096).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(true).build();
+			Graph<Integer, Integer> g = randConnectedGraph(n, m, true, seedGen.nextSeed());
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 			Integer source = g.vertices().iterator().next();
 

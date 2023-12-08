@@ -33,7 +33,6 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -46,12 +45,17 @@ public class MaximumFlowTestUtils extends TestUtils {
 
 	private MaximumFlowTestUtils() {}
 
+	private static Graph<Integer, Integer> randGraph(int n, int m, long seed, boolean directed) {
+		return randGraph(n, m, GraphsTestUtils.defaultGraphImpl(seed ^ 0x6d3d0e7ceb41e9caL), seed ^ 0x9efbcf0d9016d14bL,
+				directed);
+	}
+
 	private static Graph<Integer, Integer> randGraph(int n, int m,
 			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed, boolean directed) {
 		boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
 		for (SeedGenerator seedGen = new SeedGenerator(seed);;) {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-					.parallelEdges(false).selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
+			Graph<Integer, Integer> g =
+					copy(TestUtils.randGraph(n, m, directed, selfEdges, false, seedGen.nextSeed()), graphImpl);
 
 			boolean allSelfEdges = true;
 			for (int e : g.edges())
@@ -138,8 +142,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		tester.addPhase().withArgs(512, 1324).repeat(2);
 		tester.addPhase().withArgs(1025, 2016).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g =
-					randGraph(n, m, GraphsTestUtils.defaultGraphImpl(seedGen.nextSeed()), seedGen.nextSeed(), directed);
+			Graph<Integer, Integer> g = randGraph(n, m, seedGen.nextSeed(), directed);
 			WeightFunction<Integer> capacity = randNetwork(g, seedGen.nextSeed());
 
 			final int sourcesNum = Math.max(1, n / 6 + rand.nextInt(n / 6));
@@ -186,8 +189,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		tester.addPhase().withArgs(512, 1324).repeat(2);
 		tester.addPhase().withArgs(1025, 2016).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g =
-					randGraph(n, m, GraphsTestUtils.defaultGraphImpl(seedGen.nextSeed()), seedGen.nextSeed(), directed);
+			Graph<Integer, Integer> g = randGraph(n, m, seedGen.nextSeed(), directed);
 			WeightFunctionInt<Integer> capacity = randNetworkInt(g, seedGen.nextSeed());
 
 			final int sourcesNum = Math.max(1, n / 6 + rand.nextInt(n / 6));
@@ -207,8 +209,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		tester.addPhase().withArgs(10, 450).repeat(64);
 		tester.addPhase().withArgs(18, 1530).repeat(64);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
 			WeightFunctionInt<Integer> capacity = randNetworkInt(g, seedGen.nextSeed());
 
 			Pair<Integer, Integer> sourceSink = chooseSourceSink(g, rand);

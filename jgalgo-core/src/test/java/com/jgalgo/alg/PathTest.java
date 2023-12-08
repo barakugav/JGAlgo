@@ -28,7 +28,6 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -46,8 +45,7 @@ public class PathTest extends TestBase {
 		tester.addPhase().withArgs(2048, 8192).repeat(4);
 		tester.run((n, m) -> {
 			boolean directed = rand.nextBoolean();
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(true).build();
+			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			testFindPath(g, validationAlgo, rand);
@@ -164,8 +162,7 @@ public class PathTest extends TestBase {
 		tester.addPhase().withArgs(312, 600).repeat(8);
 		tester.run((n, m) -> {
 			boolean directed = rand.nextBoolean();
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(true).build();
+			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 			Integer source = Graphs.randVertex(g, rand);
 

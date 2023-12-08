@@ -23,7 +23,6 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightsBool;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -32,13 +31,6 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 public class MatchingBipartiteTestUtils extends TestUtils {
 
 	private MatchingBipartiteTestUtils() {}
-
-	static Graph<Integer, Integer> randGraphBipartite(int sn, int tn, int m,
-			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
-		boolean selfEdges = graphImpl.get(false).isAllowSelfEdges();
-		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true).parallelEdges(false)
-				.selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
-	}
 
 	static void randBipartiteGraphs(MatchingAlgo algo, long seed) {
 		randBipartiteGraphs(algo, GraphsTestUtils.defaultGraphImpl(seed), seed);
@@ -55,7 +47,8 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 		tester.addPhase().withArgs(128, 128, 512).repeat(8);
 		tester.addPhase().withArgs(300, 300, 1100).repeat(1);
 		tester.run((sn, tn, m) -> {
-			Graph<Integer, Integer> g = randGraphBipartite(sn, tn, m, graphImpl, seedGen.nextSeed());
+			boolean parallelEdges = graphImpl.get(false).isAllowParallelEdges();
+			Graph<Integer, Integer> g = copy(randBipartiteGraph(sn, tn, m, false, parallelEdges, seedGen.nextSeed()), graphImpl);
 
 			int expected = calcExpectedMaxMatching(g);
 			testBipartiteAlgo(algo, g, expected, rand);

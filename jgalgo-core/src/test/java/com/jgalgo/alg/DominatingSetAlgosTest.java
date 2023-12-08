@@ -27,7 +27,6 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -67,8 +66,7 @@ public class DominatingSetAlgosTest extends TestBase {
 		tester.addPhase().withArgs(128, 256).repeat(32);
 		tester.addPhase().withArgs(1024, 4096).repeat(8);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			WeightFunction<Integer> w = null;

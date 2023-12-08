@@ -24,7 +24,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -40,8 +39,7 @@ class ColoringTestUtils extends TestUtils {
 		tester.addPhase().withArgs(200, 1000).repeat(32);
 		tester.addPhase().withArgs(2048, 8192).repeat(4);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(true).selfEdges(false).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, false, false, true, seedGen.nextSeed());
 			VertexPartition<Integer, Integer> coloring = algo.computeColoring(g);
 			validateColoring(g, coloring);
 		});

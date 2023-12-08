@@ -27,7 +27,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -59,11 +58,9 @@ public class ClosuresEnumeratorSchrageBakerTest extends TestBase {
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g;
 			if (dag) {
-				g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
-						.selfEdges(false).cycles(false).connected(false).build();
+				g = randDag(n, m, seedGen.nextSeed());
 			} else {
-				g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
-						.selfEdges(true).cycles(true).connected(false).build();
+				g = randGraph(n, m, true, seedGen.nextSeed());
 			}
 			g = maybeIndexGraph(g, rand);
 

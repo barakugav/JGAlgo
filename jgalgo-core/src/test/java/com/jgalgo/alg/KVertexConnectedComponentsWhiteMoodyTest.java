@@ -26,7 +26,6 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -49,8 +48,7 @@ public class KVertexConnectedComponentsWhiteMoodyTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(20);
 		tester.addPhase().withArgs(80, 2000).repeat(4);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			final int k = vertexConnectivity(g) + rand.nextInt(5);

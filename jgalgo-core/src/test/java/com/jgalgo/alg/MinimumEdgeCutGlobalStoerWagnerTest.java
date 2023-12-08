@@ -28,7 +28,6 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -51,8 +50,7 @@ class MinimumEdgeCutGlobalStoerWagnerTest extends TestBase {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(200, 800).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
 
 			WeightFunction<Integer> w = null;
 			if (rand.nextBoolean()) {

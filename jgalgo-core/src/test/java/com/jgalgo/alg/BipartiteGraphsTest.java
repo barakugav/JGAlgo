@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 
 public class BipartiteGraphsTest extends TestBase {
@@ -37,7 +36,8 @@ public class BipartiteGraphsTest extends TestBase {
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
 			foreachBoolConfig((directed, index) -> {
-				Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
+				Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+				g = index ? g.indexGraph() : g;
 				/* its possible we will generate a bipartite graph, but its not going to happen */
 				assertFalse(BipartiteGraphs.isBipartite(g));
 			});
@@ -64,19 +64,6 @@ public class BipartiteGraphsTest extends TestBase {
 				assertNotEquals(Optional.empty(), BipartiteGraphs.getExistingPartition(g));
 			});
 		});
-	}
-
-	private static Graph<Integer, Integer> randGraph(int n, int m, boolean directed, boolean index, long seed) {
-		Graph<Integer, Integer> g = new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(true)
-				.selfEdges(true).cycles(true).connected(false).build();
-		return index ? g.indexGraph() : g;
-	}
-
-	private static Graph<Integer, Integer> randBipartiteGraph(int sn, int tn, int m, boolean directed, boolean index,
-			long seed) {
-		Graph<Integer, Integer> g = new RandomGraphBuilder(seed).bipartite(true).sn(sn).tn(tn).m(m).directed(directed)
-				.parallelEdges(true).selfEdges(false).cycles(true).connected(false).build();
-		return index ? g.indexGraph() : g;
 	}
 
 }

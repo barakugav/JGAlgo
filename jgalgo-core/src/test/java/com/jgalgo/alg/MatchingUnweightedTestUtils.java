@@ -28,7 +28,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -52,7 +51,7 @@ class MatchingUnweightedTestUtils extends TestUtils {
 		tester.addPhase().withArgs(256, 512).repeat(4);
 		tester.addPhase().withArgs(1000, 2500).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			Graph<Integer, Integer> g = randGraph(n, m, false, seedGen.nextSeed());
 			int expected = calcExpectedMaxMatching(g);
 			testAlgo(algo, g, expected);
 		});

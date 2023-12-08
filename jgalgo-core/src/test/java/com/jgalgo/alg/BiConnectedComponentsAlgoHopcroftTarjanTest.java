@@ -32,7 +32,6 @@ import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsObj;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2LongFunc;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -56,8 +55,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(32);
 		tester.addPhase().withArgs(165, 666).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, false, seedGen.nextSeed());
 			testUGraph(BiConnectedComponentsAlgo.newInstance(), g);
 		});
 	}

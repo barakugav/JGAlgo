@@ -26,25 +26,14 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class TopologicalOrderTest extends TestBase {
 
 	@Test
-	public void testTopologicalSortUnconnected() {
+	public void randGraphs() {
 		final long seed = 0x858cb81cf8e5b5c7L;
-		topologicalSort(false, seed);
-	}
-
-	@Test
-	public void testTopologicalSortConnected() {
-		final long seed = 0xef5ef391b897c354L;
-		topologicalSort(true, seed);
-	}
-
-	private static void topologicalSort(boolean connected, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		TopologicalOrderAlgo algo = new TopologicalOrderAlgoImpl();
@@ -53,8 +42,7 @@ public class TopologicalOrderTest extends TestBase {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(1024, 2048).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(true).selfEdges(false).cycles(false).connected(connected).build();
+			Graph<Integer, Integer> g = randDag(n, m, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			TopologicalOrderAlgo.Result<Integer, Integer> res = algo.computeTopologicalSorting(g);

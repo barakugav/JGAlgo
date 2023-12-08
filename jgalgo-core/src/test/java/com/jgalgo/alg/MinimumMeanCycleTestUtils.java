@@ -29,7 +29,6 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.internal.util.IterTools;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 
@@ -43,8 +42,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 128).repeat(64);
 		tester.addPhase().withArgs(500, 2010).repeat(8);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, true, true, false, seedGen.nextSeed());
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			verifyMinimumMeanCycle(algo, g, w);
@@ -59,8 +57,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 128).repeat(64);
 		tester.addPhase().withArgs(500, 2010).repeat(8);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, true, true, false, seedGen.nextSeed());
 			WeightFunction<Integer> w = GraphsTestUtils.assignRandWeights(g, -10, 10, seedGen.nextSeed());
 
 			verifyMinimumMeanCycle(algo, g, w);
@@ -76,8 +73,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 128).repeat(64);
 		tester.addPhase().withArgs(500, 2010).repeat(8);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true)
-					.parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, true, true, false, seedGen.nextSeed());
 
 			WeightsDouble<Integer> w = g.addEdgesWeights("weights", double.class);
 			for (Integer e : new IntArrayList(g.edges())) {

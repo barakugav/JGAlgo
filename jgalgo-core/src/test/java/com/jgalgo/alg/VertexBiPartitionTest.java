@@ -27,7 +27,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
@@ -174,8 +173,7 @@ public class VertexBiPartitionTest extends TestBase {
 	}
 
 	private static Graph<Integer, Integer> randGraph(int n, int m, boolean directed, boolean index, long seed) {
-		Graph<Integer, Integer> g = new RandomGraphBuilder(seed).n(n).m(m).directed(directed).parallelEdges(true)
-				.selfEdges(true).cycles(true).connected(false).build();
+		Graph<Integer, Integer> g = TestBase.randGraph(n, m, directed, seed);
 		return index ? g.indexGraph() : g;
 	}
 

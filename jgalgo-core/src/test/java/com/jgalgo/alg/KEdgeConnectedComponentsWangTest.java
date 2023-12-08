@@ -25,7 +25,6 @@ import com.jgalgo.gen.EmptyGraphGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -80,8 +79,7 @@ public class KEdgeConnectedComponentsWangTest extends TestBase {
 		tester.addPhase().withArgs(64, 256, 4).repeat(8);
 		tester.addPhase().withArgs(100, 2100, 5).repeat(1);
 		tester.run((n, m, k) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 			validateKEdgeConnectedComponents(g, k, algo);
 		});

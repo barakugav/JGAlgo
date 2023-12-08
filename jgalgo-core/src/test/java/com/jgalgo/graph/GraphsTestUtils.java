@@ -17,7 +17,6 @@
 package com.jgalgo.graph;
 
 import java.util.Random;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.RandomIntUnique;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -32,16 +31,6 @@ public class GraphsTestUtils extends TestUtils {
 		} else {
 			return direct -> GraphFactory.<Integer, Integer>newUndirected().setDirected(direct).newGraph();
 		}
-	}
-
-	public static Graph<Integer, Integer> randTree(int n, long seed) {
-		return new RandomGraphBuilder(seed).n(n).m(n - 1).directed(false).selfEdges(false).cycles(false).connected(true)
-				.build();
-	}
-
-	public static Graph<Integer, Integer> randForest(int n, int m, long seed) {
-		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).selfEdges(false).cycles(false).connected(false)
-				.build();
 	}
 
 	public static <V, E> WeightsDouble<E> assignRandWeights(Graph<V, E> g, long seed) {
@@ -96,17 +85,4 @@ public class GraphsTestUtils extends TestUtils {
 			w.set(e, (int) w.get(e));
 		return w;
 	}
-
-	public static Graph<Integer, Integer> randGraph(int n, int m, long seed) {
-		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).parallelEdges(false).selfEdges(true).cycles(true)
-				.connected(false).build();
-	}
-
-	public static Graph<Integer, Integer> randGraph(int n, int m,
-			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
-		boolean selfEdges = graphImpl.get(false).isAllowSelfEdges();
-		return new RandomGraphBuilder(seed).graphImpl(graphImpl).n(n).m(m).directed(false).parallelEdges(false)
-				.selfEdges(selfEdges).cycles(true).connected(false).build();
-	}
-
 }

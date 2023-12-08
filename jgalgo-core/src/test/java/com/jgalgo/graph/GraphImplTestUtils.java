@@ -48,7 +48,6 @@ import com.jgalgo.alg.MinimumDirectedSpanningTree;
 import com.jgalgo.alg.MinimumDirectedSpanningTreeTarjanTest;
 import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.alg.MinimumSpanningTreeTestUtils;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
@@ -673,8 +672,7 @@ class GraphImplTestUtils extends TestUtils {
 			foreachBoolConfig(directed -> {
 				/* Create a random graph g */
 				Graph<Integer, Integer> g =
-						new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed).parallelEdges(false)
-								.selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+						copy(randGraph(100, 300, directed, false, false, seedGen.nextSeed()), graphImpl);
 
 				/* assign some weights to the vertices of g */
 				final String gVDataKey = "vData";
@@ -730,8 +728,8 @@ class GraphImplTestUtils extends TestUtils {
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
-					.parallelEdges(false).selfEdges(false).cycles(true).connected(false).graphImpl(graphImpl).build();
+			Graph<Integer, Integer> g =
+					copy(randGraph(100, 300, directed, false, false, seedGen.nextSeed()), graphImpl);
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -826,8 +824,7 @@ class GraphImplTestUtils extends TestUtils {
 			/* Create a random graph g */
 			boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
 			Graph<Integer, Integer> g =
-					new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed).parallelEdges(false)
-							.selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
+					copy(randGraph(100, 300, directed, selfEdges, false, seedGen.nextSeed()), graphImpl);
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -879,8 +876,7 @@ class GraphImplTestUtils extends TestUtils {
 			/* Create a random graph g */
 			boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
 			Graph<Integer, Integer> g =
-					new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed).parallelEdges(false)
-							.selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
+					copy(randGraph(100, 300, directed, selfEdges, false, seedGen.nextSeed()), graphImpl);
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -965,9 +961,7 @@ class GraphImplTestUtils extends TestUtils {
 					.apply(directed ? IndexGraph.newDirected() : IndexGraph.newUndirected()).isAllowSelfEdges();
 			final boolean parallelEdges = copyConstructor
 					.apply(directed ? IndexGraph.newDirected() : IndexGraph.newUndirected()).isAllowParallelEdges();
-			IndexGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
-					.parallelEdges(parallelEdges).selfEdges(selfEdges).cycles(true).connected(false).build()
-					.indexGraph();
+			IndexGraph g = randGraph(100, 300, directed, selfEdges, parallelEdges, seedGen.nextSeed()).indexGraph();
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -1032,9 +1026,7 @@ class GraphImplTestUtils extends TestUtils {
 			final boolean parallelEdges = copyConstructor
 					.apply(directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected())
 					.isAllowParallelEdges();
-			IndexGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
-					.parallelEdges(parallelEdges).selfEdges(selfEdges).cycles(true).connected(false).build()
-					.indexGraph();
+			IndexGraph g = randGraph(100, 300, directed, selfEdges, parallelEdges, seedGen.nextSeed()).indexGraph();
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -1091,8 +1083,7 @@ class GraphImplTestUtils extends TestUtils {
 		final boolean selfEdges = graphImpl.get(true).isAllowSelfEdges();
 		final boolean parallelEdges = graphImpl.get(true).isAllowParallelEdges();
 		Graph<Integer, Integer> g1 =
-				new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(true).parallelEdges(parallelEdges)
-						.selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
+				copy(randGraph(100, 300, true, selfEdges, parallelEdges, seedGen.nextSeed()), graphImpl);
 		Graph<Integer, Integer> g2 = g1.copy(true, true);
 
 		for (int ops = 0; ops < 10; ops++) {
@@ -1133,9 +1124,8 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			final boolean selfEdges = graphImpl.get(true).isAllowSelfEdges();
 			final boolean parallelEdges = graphImpl.get(true).isAllowParallelEdges();
-			Graph<Integer, Integer> g1 = new RandomGraphBuilder(seedGen.nextSeed()).n(100).m(300).directed(directed)
-					.parallelEdges(parallelEdges).selfEdges(selfEdges).cycles(true).connected(false)
-					.graphImpl(graphImpl).build();
+			Graph<Integer, Integer> g1 =
+					copy(randGraph(100, 300, true, selfEdges, parallelEdges, seedGen.nextSeed()), graphImpl);
 			Graph<Integer, Integer> g2 = g1.copy(true, true);
 
 			for (int ops = 0; ops < 20; ops++) {
@@ -1269,8 +1259,7 @@ class GraphImplTestUtils extends TestUtils {
 			int m, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
-		Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-				.parallelEdges(false).selfEdges(selfEdges).cycles(true).connected(false).graphImpl(graphImpl).build();
+		Graph<Integer, Integer> g = copy(randGraph(n, m, directed, selfEdges, false, seedGen.nextSeed()), graphImpl);
 		final int opsNum = 128;
 		testRandOps(g, opsNum, seedGen.nextSeed());
 	}

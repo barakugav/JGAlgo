@@ -24,7 +24,6 @@ import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -194,8 +193,7 @@ public class WeightsTest extends TestBase {
 		final int m = 5000;
 
 		foreachBoolConfig((intGraph, removeEdges) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).graphImpl(intGraph).n(n).m(m)
-					.directed(false).parallelEdges(false).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, false, true, false, intGraph, seedGen.nextSeed());
 
 			String wKey = "edgeWeight";
 			Weights<Integer, T> weights = edgeWeightsAdder.apply(g, wKey);

@@ -31,7 +31,6 @@ import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -50,8 +49,18 @@ class EdgeCoverTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(16);
 		tester.addPhase().withArgs(1024, 2048).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(true).build();
+			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+			/* make sure all vertices have at least one adjacent edge */
+			for (Integer u : g.vertices()) {
+				if (g.outEdges(u).isEmpty() && g.inEdges(u).isEmpty()) {
+					Integer v = Graphs.randVertex(g, rand);
+					Integer e;
+					do {
+						e = Integer.valueOf(rand.nextInt(g.edges().size() * 2));
+					} while (g.edges().contains(e));
+					g.addEdge(u, v, e);
+				}
+			}
 			g = maybeIndexGraph(g, rand);
 
 			WeightFunction<Integer> w = null;
@@ -110,8 +119,7 @@ class EdgeCoverTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(4);
 		tester.run((n, m) -> {
 			boolean directed = rand.nextBoolean();
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(true).build();
+			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
 
 			/* remove all edges of a random vertex, no edge cover will be able to cover it */
 			g.removeEdgesOf(Graphs.randVertex(g, rand));

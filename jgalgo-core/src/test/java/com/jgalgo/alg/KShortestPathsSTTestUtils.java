@@ -30,7 +30,6 @@ import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
-import com.jgalgo.internal.util.RandomGraphBuilder;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 
@@ -48,8 +47,7 @@ class KShortestPathsSTTestUtils extends TestBase {
 		tester.addPhase().withArgs(512, 4096, 21).repeat(8);
 		tester.addPhase().withArgs(4096, 16384, 23).repeat(1);
 		tester.run((n, m, k) -> {
-			Graph<Integer, Integer> g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(directed)
-					.parallelEdges(true).selfEdges(true).cycles(true).connected(false).build();
+			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 			WeightFunctionInt<Integer> w = null;
 			if (rand.nextInt(10) != 0)
