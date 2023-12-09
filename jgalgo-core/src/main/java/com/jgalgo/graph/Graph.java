@@ -925,7 +925,7 @@ public interface Graph<V, E> {
 	 * @return     a new undirected empty graph
 	 */
 	static <V, E> Graph<V, E> newUndirected() {
-		return GraphFactory.<V, E>newUndirected().newGraph();
+		return GraphFactory.<V, E>undirected().newGraph();
 	}
 
 	/**
@@ -940,7 +940,7 @@ public interface Graph<V, E> {
 	 * @return     a new directed empty graph
 	 */
 	static <V, E> Graph<V, E> newDirected() {
-		return GraphFactory.<V, E>newDirected().newGraph();
+		return GraphFactory.<V, E>directed().newGraph();
 	}
 
 }

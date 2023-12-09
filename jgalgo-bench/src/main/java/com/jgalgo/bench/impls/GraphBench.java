@@ -240,7 +240,7 @@ public class GraphBench {
 
 			@Setup(Level.Trial)
 			public void setup() {
-				setup(args, IndexGraphFactory.newDirected().setOption("impl", "array")::newGraph, true, true, false);
+				setup(args, IndexGraphFactory.directed().setOption("impl", "array")::newGraph, true, true, false);
 			}
 
 			@Benchmark
@@ -322,7 +322,7 @@ public class GraphBench {
 
 			@Setup(Level.Trial)
 			public void setup() {
-				setup(args, IndexGraphFactory.newUndirected().setOption("impl", "array")::newGraph, false, true, false);
+				setup(args, IndexGraphFactory.undirected().setOption("impl", "array")::newGraph, false, true, false);
 			}
 
 			@Benchmark
@@ -404,8 +404,7 @@ public class GraphBench {
 
 			@Setup(Level.Trial)
 			public void setup() {
-				setup(args, IndexGraphFactory.newDirected().setOption("impl", "linked-list")::newGraph, true, true,
-						false);
+				setup(args, IndexGraphFactory.directed().setOption("impl", "linked-list")::newGraph, true, true, false);
 			}
 
 			@Benchmark
@@ -487,7 +486,7 @@ public class GraphBench {
 
 			@Setup(Level.Trial)
 			public void setup() {
-				setup(args, IndexGraphFactory.newUndirected().setOption("impl", "linked-list")::newGraph, false, true,
+				setup(args, IndexGraphFactory.undirected().setOption("impl", "linked-list")::newGraph, false, true,
 						false);
 			}
 
@@ -570,7 +569,7 @@ public class GraphBench {
 
 			@Setup(Level.Trial)
 			public void setup() {
-				setup(args, IndexGraphFactory.newDirected().setOption("impl", "linked-list-ptr")::newGraph, true, true,
+				setup(args, IndexGraphFactory.directed().setOption("impl", "linked-list-ptr")::newGraph, true, true,
 						false);
 			}
 
@@ -653,8 +652,8 @@ public class GraphBench {
 
 			@Setup(Level.Trial)
 			public void setup() {
-				setup(args, IndexGraphFactory.newUndirected().setOption("impl", "linked-list-ptr")::newGraph, false,
-						true, false);
+				setup(args, IndexGraphFactory.undirected().setOption("impl", "linked-list-ptr")::newGraph, false, true,
+						false);
 			}
 
 			@Benchmark
@@ -736,8 +735,7 @@ public class GraphBench {
 
 			@Setup(Level.Trial)
 			public void setup() {
-				setup(args, IndexGraphFactory.newDirected().setOption("impl", "hashtable")::newGraph, true, false,
-						false);
+				setup(args, IndexGraphFactory.directed().setOption("impl", "hashtable")::newGraph, true, false, false);
 			}
 
 			@Benchmark
@@ -819,7 +817,7 @@ public class GraphBench {
 
 			@Setup(Level.Trial)
 			public void setup() {
-				setup(args, IndexGraphFactory.newUndirected().setOption("impl", "hashtable")::newGraph, false, false,
+				setup(args, IndexGraphFactory.undirected().setOption("impl", "hashtable")::newGraph, false, false,
 						false);
 			}
 
@@ -902,7 +900,7 @@ public class GraphBench {
 
 			@Setup(Level.Trial)
 			public void setup() {
-				setup(args, IndexGraphFactory.newDirected().setOption("impl", "matrix")::newGraph, true, false, false);
+				setup(args, IndexGraphFactory.directed().setOption("impl", "matrix")::newGraph, true, false, false);
 			}
 
 			@Benchmark
@@ -984,8 +982,7 @@ public class GraphBench {
 
 			@Setup(Level.Trial)
 			public void setup() {
-				setup(args, IndexGraphFactory.newUndirected().setOption("impl", "matrix")::newGraph, false, false,
-						false);
+				setup(args, IndexGraphFactory.undirected().setOption("impl", "matrix")::newGraph, false, false, false);
 			}
 
 			@Benchmark
@@ -1448,8 +1445,7 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newDirected().setOption("impl", "array")::newGraph, true, true,
-							false);
+					setup(args, IndexGraphFactory.directed().setOption("impl", "array")::newGraph, true, true, false);
 				}
 
 				@Override
@@ -1478,7 +1474,7 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newUndirected().setOption("impl", "array")::newGraph, false, true,
+					setup(args, IndexGraphFactory.undirected().setOption("impl", "array")::newGraph, false, true,
 							false);
 				}
 
@@ -1508,7 +1504,7 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newDirected().setOption("impl", "linked-list")::newGraph, true, true,
+					setup(args, IndexGraphFactory.directed().setOption("impl", "linked-list")::newGraph, true, true,
 							false);
 				}
 
@@ -1538,8 +1534,8 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newUndirected().setOption("impl", "linked-list")::newGraph, false,
-							true, false);
+					setup(args, IndexGraphFactory.undirected().setOption("impl", "linked-list")::newGraph, false, true,
+							false);
 				}
 
 				@Override
@@ -1568,8 +1564,8 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newDirected().setOption("impl", "linked-list-ptr")::newGraph, true,
-							true, false);
+					setup(args, IndexGraphFactory.directed().setOption("impl", "linked-list-ptr")::newGraph, true, true,
+							false);
 				}
 
 				@Override
@@ -1598,7 +1594,7 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newUndirected().setOption("impl", "linked-list-ptr")::newGraph, false,
+					setup(args, IndexGraphFactory.undirected().setOption("impl", "linked-list-ptr")::newGraph, false,
 							true, false);
 				}
 
@@ -1628,7 +1624,7 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newDirected().setOption("impl", "hashtable")::newGraph, true, false,
+					setup(args, IndexGraphFactory.directed().setOption("impl", "hashtable")::newGraph, true, false,
 							false);
 				}
 
@@ -1658,8 +1654,8 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newUndirected().setOption("impl", "hashtable")::newGraph, false,
-							false, false);
+					setup(args, IndexGraphFactory.undirected().setOption("impl", "hashtable")::newGraph, false, false,
+							false);
 				}
 
 				@Override
@@ -1688,8 +1684,7 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newDirected().setOption("impl", "matrix")::newGraph, true, false,
-							false);
+					setup(args, IndexGraphFactory.directed().setOption("impl", "matrix")::newGraph, true, false, false);
 				}
 
 				@Override
@@ -1718,7 +1713,7 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newUndirected().setOption("impl", "matrix")::newGraph, false, false,
+					setup(args, IndexGraphFactory.undirected().setOption("impl", "matrix")::newGraph, false, false,
 							false);
 				}
 
@@ -1775,8 +1770,7 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newDirected().setOption("impl", "array")::newGraph, true, true,
-							false);
+					setup(args, IndexGraphFactory.directed().setOption("impl", "array")::newGraph, true, true, false);
 				}
 
 				@Override
@@ -1805,7 +1799,7 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newUndirected().setOption("impl", "array")::newGraph, false, true,
+					setup(args, IndexGraphFactory.undirected().setOption("impl", "array")::newGraph, false, true,
 							false);
 				}
 
@@ -1836,7 +1830,7 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newDirected().setOption("impl", "linked-list")::newGraph, true, true,
+					setup(args, IndexGraphFactory.directed().setOption("impl", "linked-list")::newGraph, true, true,
 							false);
 				}
 
@@ -1867,8 +1861,8 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newUndirected().setOption("impl", "linked-list")::newGraph, false,
-							true, false);
+					setup(args, IndexGraphFactory.undirected().setOption("impl", "linked-list")::newGraph, false, true,
+							false);
 				}
 
 				@Override
@@ -1898,8 +1892,8 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newDirected().setOption("impl", "linked-list-ptr")::newGraph, true,
-							true, false);
+					setup(args, IndexGraphFactory.directed().setOption("impl", "linked-list-ptr")::newGraph, true, true,
+							false);
 				}
 
 				@Override
@@ -1929,7 +1923,7 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newUndirected().setOption("impl", "linked-list-ptr")::newGraph, false,
+					setup(args, IndexGraphFactory.undirected().setOption("impl", "linked-list-ptr")::newGraph, false,
 							true, false);
 				}
 
@@ -1960,7 +1954,7 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newDirected().setOption("impl", "hashtable")::newGraph, true, false,
+					setup(args, IndexGraphFactory.directed().setOption("impl", "hashtable")::newGraph, true, false,
 							false);
 				}
 
@@ -1991,8 +1985,8 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newUndirected().setOption("impl", "hashtable")::newGraph, false,
-							false, false);
+					setup(args, IndexGraphFactory.undirected().setOption("impl", "hashtable")::newGraph, false, false,
+							false);
 				}
 
 				@Override
@@ -2022,8 +2016,7 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newDirected().setOption("impl", "matrix")::newGraph, true, false,
-							false);
+					setup(args, IndexGraphFactory.directed().setOption("impl", "matrix")::newGraph, true, false, false);
 				}
 
 				@Override
@@ -2053,7 +2046,7 @@ public class GraphBench {
 
 				@Setup(Level.Trial)
 				public void setup() {
-					setup(args, IndexGraphFactory.newUndirected().setOption("impl", "matrix")::newGraph, false, false,
+					setup(args, IndexGraphFactory.undirected().setOption("impl", "matrix")::newGraph, false, false,
 							false);
 				}
 

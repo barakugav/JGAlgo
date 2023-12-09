@@ -98,7 +98,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 			}
 			capacitySum *= 16;
 
-			IntGraphFactory factory = IntGraphFactory.newDirected().setOption("impl", "linked-list");
+			IntGraphFactory factory = IntGraphFactory.directed().setOption("impl", "linked-list");
 			IntGraph L = factory.expectedVerticesNum(n).expectedEdgesNum(/* >= */ n).newGraph();
 			for (int n = g.vertices().size(), v = 0; v < n; v++)
 				L.addVertex(v);

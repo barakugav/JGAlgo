@@ -161,7 +161,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IntGraphBuilder newUndirected() {
-		return IntGraphFactory.newUndirected().newBuilder();
+		return IntGraphFactory.undirected().newBuilder();
 	}
 
 	/**
@@ -174,7 +174,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * @return a new empty builder for directed graphs
 	 */
 	static IntGraphBuilder newDirected() {
-		return IntGraphFactory.newDirected().newBuilder();
+		return IntGraphFactory.directed().newBuilder();
 	}
 
 	/**

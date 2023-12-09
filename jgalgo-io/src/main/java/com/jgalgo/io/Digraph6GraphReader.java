@@ -62,7 +62,7 @@ public class Digraph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 	@Override
 	IntGraphBuilder readIntoBuilderImpl(Reader reader) throws IOException {
 		BufferedReader br = GraphIoUtils.bufferedReader(reader);
-		IntGraphBuilder g = IntGraphFactory.newDirected().allowSelfEdges().newBuilder();
+		IntGraphBuilder g = IntGraphFactory.directed().allowSelfEdges().newBuilder();
 
 		String line = br.readLine();
 		if (line == null)

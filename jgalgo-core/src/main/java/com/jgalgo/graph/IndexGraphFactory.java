@@ -31,8 +31,8 @@ package com.jgalgo.graph;
  * <p>
  * This interface is a specific version of {@link IntGraphFactory} for {@link IndexGraph}.
  *
- * @see    IndexGraphFactory#newDirected()
- * @see    IndexGraphFactory#newUndirected()
+ * @see    IndexGraphFactory#directed()
+ * @see    IndexGraphFactory#undirected()
  * @see    IndexGraph
  * @see    IndexGraphBuilder
  * @author Barak Ugav
@@ -86,7 +86,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 *
 	 * @return a new factory that can build undirected index graphs
 	 */
-	public static IndexGraphFactory newUndirected() {
+	public static IndexGraphFactory undirected() {
 		return new IndexGraphFactoryImpl(false);
 	}
 
@@ -95,7 +95,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 *
 	 * @return a new factory that can build directed index graphs
 	 */
-	public static IndexGraphFactory newDirected() {
+	public static IndexGraphFactory directed() {
 		return new IndexGraphFactoryImpl(true);
 	}
 

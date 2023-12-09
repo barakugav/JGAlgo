@@ -138,13 +138,13 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 		int[] w = new int[m];
 
 		/* gNeg is the graph g with only 0,-1 edges */
-		IndexGraph gNeg = IndexGraphFactory.newDirected().expectedVerticesNum(n).newGraph();
+		IndexGraph gNeg = IndexGraphFactory.directed().expectedVerticesNum(n).newGraph();
 		for (int v = 0; v < n; v++)
 			gNeg.addVertex();
 		int[] gNegEdgeRefs = new int[m];
 
 		/* G is the graph of strong connected components of gNeg, each vertex is a super vertex of gNeg */
-		IndexGraph G = IndexGraphFactory.newDirected().allowParallelEdges().expectedVerticesNum(n + 2).newGraph();
+		IndexGraph G = IndexGraphFactory.directed().allowParallelEdges().expectedVerticesNum(n + 2).newGraph();
 		/* Two fake vertices used to add 0-edges and (r-i)-edges to all other (super) vertices */
 
 		/*

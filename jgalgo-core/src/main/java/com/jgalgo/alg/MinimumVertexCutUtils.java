@@ -138,7 +138,7 @@ class MinimumVertexCutUtils {
 		AuxiliaryGraph(IndexGraph g, IWeightFunction w, boolean mutable) {
 			final int n = g.vertices().size();
 			final int m = g.edges().size();
-			IndexGraphBuilder builder = IndexGraphFactory.newDirected().allowParallelEdges().newBuilder();
+			IndexGraphBuilder builder = IndexGraphFactory.directed().allowParallelEdges().newBuilder();
 			builder.expectedVerticesNum(n * 2);
 			if (g.isDirected()) {
 				builder.expectedVerticesNum(m + n);

@@ -176,7 +176,7 @@ public class UniformTreeGenerator<V, E> implements GraphGenerator<V, E> {
 
 		@SuppressWarnings("unchecked")
 		GraphFactory<V, E> factory =
-				intGraph ? ((GraphFactory<V, E>) IntGraphFactory.newUndirected()) : GraphFactory.newUndirected();
+				intGraph ? ((GraphFactory<V, E>) IntGraphFactory.undirected()) : GraphFactory.undirected();
 		GraphBuilder<V, E> g = factory.newBuilder();
 
 		final int n = vertices.size();

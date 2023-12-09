@@ -65,7 +65,7 @@ public class TspMetricTest extends TestBase {
 		}
 
 		GraphFactory<Integer, Integer> gFactory =
-				rand.nextBoolean() ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
+				rand.nextBoolean() ? IntGraphFactory.undirected() : GraphFactory.undirected();
 		gFactory.addHint(GraphFactory.Hint.FastEdgeLookup);
 		gFactory.addHint(GraphFactory.Hint.DenseGraph);
 		GraphBuilder<Integer, Integer> gBuilder = gFactory.newBuilder();

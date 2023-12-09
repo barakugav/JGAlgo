@@ -659,9 +659,9 @@ public class GraphsTest extends TestBase {
 
 	@Test
 	public void containsParallelEdges() {
-		assertFalse(Graphs.containsParallelEdges(IntGraphFactory.newDirected().allowParallelEdges(false).newGraph()));
+		assertFalse(Graphs.containsParallelEdges(IntGraphFactory.directed().allowParallelEdges(false).newGraph()));
 
-		IntGraph g = IntGraphFactory.newDirected().allowParallelEdges().newGraph();
+		IntGraph g = IntGraphFactory.directed().allowParallelEdges().newGraph();
 		g.addVertex(0);
 		g.addVertex(1);
 		g.addEdge(0, 1, 0);

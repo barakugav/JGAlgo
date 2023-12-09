@@ -71,7 +71,7 @@ public class Graph6Test extends TestUtils {
 			for (int repeat = 0; repeat < 32; repeat++) {
 				final int n = nBase + rand.nextInt(20);
 				final int m = 15 + rand.nextInt(30);
-				IntGraph g = IntGraphFactory.newUndirected().newGraph();
+				IntGraph g = IntGraphFactory.undirected().newGraph();
 
 				/* graph6 format support vertices with labels 0..n-1 only */
 				for (int v = 0; v < n; v++)
@@ -113,7 +113,7 @@ public class Graph6Test extends TestUtils {
 			for (int repeat = 0; repeat < 32; repeat++) {
 				final int n = nBase + rand.nextInt(20);
 				final int m = 15 + rand.nextInt(30);
-				IntGraph g = IntGraphFactory.newUndirected().newGraph();
+				IntGraph g = IntGraphFactory.undirected().newGraph();
 
 				/* graph6 format support vertices with labels 0..n-1 only */
 				for (int v = 0; v < n; v++)
@@ -319,7 +319,7 @@ public class Graph6Test extends TestUtils {
 
 	@Test
 	public void writeWithSelfEdges() {
-		IntGraph g = IntGraphFactory.newUndirected().allowSelfEdges().newGraph();
+		IntGraph g = IntGraphFactory.undirected().allowSelfEdges().newGraph();
 		g.addVertex(0);
 		g.addEdge(0, 0, 0);
 

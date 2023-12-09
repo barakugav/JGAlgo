@@ -38,7 +38,7 @@ public class CyclesEnumeratorJohnsonTest extends TestBase {
 
 	@Test
 	public void noParallelEdges() {
-		IntGraph g = IntGraphFactory.newDirected().allowParallelEdges().newGraph();
+		IntGraph g = IntGraphFactory.directed().allowParallelEdges().newGraph();
 		g.addVertex(0);
 		g.addVertex(1);
 		g.addVertex(2);

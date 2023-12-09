@@ -437,7 +437,7 @@ public interface IndexGraph extends IntGraph {
 	 * @return a new undirected empty index graph
 	 */
 	static IndexGraph newUndirected() {
-		return IndexGraphFactory.newUndirected().newGraph();
+		return IndexGraphFactory.undirected().newGraph();
 	}
 
 	/**
@@ -450,7 +450,7 @@ public interface IndexGraph extends IntGraph {
 	 * @return a new directed empty index graph
 	 */
 	static IndexGraph newDirected() {
-		return IndexGraphFactory.newDirected().newGraph();
+		return IndexGraphFactory.directed().newGraph();
 	}
 
 }

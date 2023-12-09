@@ -92,7 +92,7 @@ class ShortestPathAllPairsFloydWarshallTest extends TestBase {
 
 	@Test
 	public void undirectedNegativeSelfEdge() {
-		IntGraph g = IntGraphFactory.newUndirected().allowSelfEdges().newGraph();
+		IntGraph g = IntGraphFactory.undirected().allowSelfEdges().newGraph();
 		g.addVertex(0);
 		g.addVertex(1);
 		g.addVertex(2);

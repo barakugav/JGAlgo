@@ -88,7 +88,7 @@ public class GmlTest {
 		for (int repeat = 0; repeat < 32; repeat++) {
 			final int n = 10 + rand.nextInt(20);
 			final int m = 15 + rand.nextInt(30);
-			IntGraph g = IntGraphFactory.newUndirected().allowSelfEdges().newGraph();
+			IntGraph g = IntGraphFactory.undirected().allowSelfEdges().newGraph();
 
 			while (g.vertices().size() < n) {
 				int v = rand.nextInt(n * 3);
@@ -124,7 +124,7 @@ public class GmlTest {
 		for (int repeat = 0; repeat < 32; repeat++) {
 			final int n = 10 + rand.nextInt(20);
 			final int m = 15 + rand.nextInt(30);
-			IntGraph g = IntGraphFactory.newUndirected().allowSelfEdges().newGraph();
+			IntGraph g = IntGraphFactory.undirected().allowSelfEdges().newGraph();
 
 			while (g.vertices().size() < n) {
 				int v = rand.nextInt(n * 3);

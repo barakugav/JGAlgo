@@ -199,7 +199,7 @@ public class BipartiteGraphsTest extends TestBase {
 		final long seed = 0xb0a049416edf2b2fL;
 		final Random rand = new Random(seed);
 		Graph<Integer, Integer> g0 = GraphsTestUtils.randBipartiteGraph(20, 31, 200, false, rand.nextLong());
-		IntGraph g = IntGraphFactory.newUndirected().newCopyOf(g0, true, true);
+		IntGraph g = IntGraphFactory.undirected().newCopyOf(g0, true, true);
 
 		Optional<IVertexBiPartition> partitionOptional = BipartiteGraphs.getExistingPartition(g);
 		assertTrue(partitionOptional.isPresent());

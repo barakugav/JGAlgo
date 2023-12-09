@@ -49,7 +49,7 @@ public class Digraph6Test extends TestUtils {
 
 	@Test
 	public void readSimpleGraph2() {
-		IntGraph g = IntGraphFactory.newDirected().allowSelfEdges().newGraph();
+		IntGraph g = IntGraphFactory.directed().allowSelfEdges().newGraph();
 		g.addVertex(0);
 		g.addVertex(1);
 		g.addVertex(2);
@@ -72,7 +72,7 @@ public class Digraph6Test extends TestUtils {
 			for (int repeat = 0; repeat < 32; repeat++) {
 				final int n = nBase + rand.nextInt(20);
 				final int m = 15 + rand.nextInt(30);
-				IntGraph g = IntGraphFactory.newDirected().allowSelfEdges().newGraph();
+				IntGraph g = IntGraphFactory.directed().allowSelfEdges().newGraph();
 
 				/* digraph6 format support vertices with labels 0..n-1 only */
 				for (int v = 0; v < n; v++)
@@ -114,7 +114,7 @@ public class Digraph6Test extends TestUtils {
 			for (int repeat = 0; repeat < 32; repeat++) {
 				final int n = nBase + rand.nextInt(20);
 				final int m = 15 + rand.nextInt(30);
-				IntGraph g = IntGraphFactory.newDirected().allowSelfEdges().newGraph();
+				IntGraph g = IntGraphFactory.directed().allowSelfEdges().newGraph();
 
 				/* digraph6 format support vertices with labels 0..n-1 only */
 				for (int v = 0; v < n; v++)

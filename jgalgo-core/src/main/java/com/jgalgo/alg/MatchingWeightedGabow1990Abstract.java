@@ -451,7 +451,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 		Worker(IndexGraph gOrig, IWeightFunction w, DebugPrinter debugPrint) {
 			int n = gOrig.vertices().size();
 			this.gOrig = gOrig;
-			this.g = IndexGraphFactory.newDirected().allowParallelEdges().expectedVerticesNum(n).newGraph();
+			this.g = IndexGraphFactory.directed().allowParallelEdges().expectedVerticesNum(n).newGraph();
 			for (int v = 0; v < n; v++)
 				g.addVertex();
 			edgeVal = g.addEdgesWeights("edgeVal", EdgeVal.class);

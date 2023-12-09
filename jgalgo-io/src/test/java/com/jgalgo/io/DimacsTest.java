@@ -131,7 +131,7 @@ public class DimacsTest {
 				final int n = 10 + rand.nextInt(20);
 				final int m = 15 + rand.nextInt(30);
 				GraphFactory<Integer, Integer> factory =
-						intGraph ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
+						intGraph ? IntGraphFactory.undirected() : GraphFactory.undirected();
 				Graph<Integer, Integer> g = factory.allowSelfEdges().newGraph();
 
 				/* DIMACS format support vertices with labels 1..n only */
@@ -166,7 +166,7 @@ public class DimacsTest {
 		for (int repeat = 0; repeat < 32; repeat++) {
 			final int n = 10 + rand.nextInt(20);
 			final int m = 15 + rand.nextInt(30);
-			IntGraph g = IntGraphFactory.newUndirected().allowSelfEdges().newGraph();
+			IntGraph g = IntGraphFactory.undirected().allowSelfEdges().newGraph();
 
 			/* DIMACS format support vertices with labels 1..n only */
 			for (int v = 1; v <= n; v++)

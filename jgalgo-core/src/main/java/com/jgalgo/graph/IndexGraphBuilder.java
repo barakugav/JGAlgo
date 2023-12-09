@@ -242,7 +242,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IndexGraphBuilder newUndirected() {
-		return IndexGraphFactory.newUndirected().newBuilder();
+		return IndexGraphFactory.undirected().newBuilder();
 	}
 
 	/**
@@ -256,7 +256,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return a new empty builder for directed graphs
 	 */
 	static IndexGraphBuilder newDirected() {
-		return IndexGraphFactory.newDirected().newBuilder();
+		return IndexGraphFactory.directed().newBuilder();
 	}
 
 	/**

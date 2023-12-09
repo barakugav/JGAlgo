@@ -53,7 +53,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			if (g.isDirected())
 				return algo.computeMinimumDirectedSpanningTree(g, w, g.vertices().iterator().next());
 			int n = g.vertices().size();
-			IntGraph dg = IntGraphFactory.newDirected().allowParallelEdges().expectedVerticesNum(n).newGraph();
+			IntGraph dg = IntGraphFactory.directed().allowParallelEdges().expectedVerticesNum(n).newGraph();
 			for (int i = 0; i < n; i++)
 				dg.addVertex();
 

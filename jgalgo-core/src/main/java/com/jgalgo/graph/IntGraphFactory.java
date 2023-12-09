@@ -31,8 +31,8 @@ package com.jgalgo.graph;
  * <p>
  * This interface is a specific version of {@link GraphFactory} for {@link IntGraph}.
  *
- * @see    IntGraphFactory#newDirected()
- * @see    IntGraphFactory#newUndirected()
+ * @see    IntGraphFactory#directed()
+ * @see    IntGraphFactory#undirected()
  * @see    IntGraph
  * @see    IntGraphBuilder
  * @author Barak Ugav
@@ -86,7 +86,7 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	 *
 	 * @return a new factory that can build undirected int graphs
 	 */
-	public static IntGraphFactory newUndirected() {
+	public static IntGraphFactory undirected() {
 		return new IntGraphImpl.Factory(false);
 	}
 
@@ -95,7 +95,7 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	 *
 	 * @return a new factory that can build directed int graphs
 	 */
-	public static IntGraphFactory newDirected() {
+	public static IntGraphFactory directed() {
 		return new IntGraphImpl.Factory(true);
 	}
 

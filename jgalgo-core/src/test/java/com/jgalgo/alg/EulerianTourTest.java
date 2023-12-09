@@ -305,7 +305,7 @@ public class EulerianTourTest extends TestBase {
 	public void noEulerianTourUndirected() {
 		foreachBoolConfig(intGraph -> {
 			GraphFactory<Integer, Integer> factory =
-					intGraph ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
+					intGraph ? IntGraphFactory.undirected() : GraphFactory.undirected();
 			Graph<Integer, Integer> g = factory.allowParallelEdges().newGraph();
 
 			/* more than 2 vertices with odd degree */
@@ -342,8 +342,7 @@ public class EulerianTourTest extends TestBase {
 	@Test
 	public void noEulerianTourDirected() {
 		foreachBoolConfig(intGraph -> {
-			GraphFactory<Integer, Integer> factory =
-					intGraph ? IntGraphFactory.newDirected() : GraphFactory.newDirected();
+			GraphFactory<Integer, Integer> factory = intGraph ? IntGraphFactory.directed() : GraphFactory.directed();
 			Graph<Integer, Integer> g = factory.allowParallelEdges().newGraph();
 
 			/* more than one vertices with extra out-edge */

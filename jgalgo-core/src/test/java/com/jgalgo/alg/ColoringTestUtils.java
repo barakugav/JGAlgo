@@ -47,7 +47,7 @@ class ColoringTestUtils extends TestUtils {
 	}
 
 	static void testWithSelfLoops(ColoringAlgo algo) {
-		IntGraph g = IntGraphFactory.newUndirected().allowSelfEdges().newGraph();
+		IntGraph g = IntGraphFactory.undirected().allowSelfEdges().newGraph();
 		int v1 = g.addVertex();
 		int v2 = g.addVertex();
 		int v3 = g.addVertex();

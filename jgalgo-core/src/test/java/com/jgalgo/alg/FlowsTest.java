@@ -77,7 +77,7 @@ public class FlowsTest extends TestBase {
 	public void testFlowAndCostSumUndirected() {
 		foreachBoolConfig(intGraph -> {
 			GraphFactory<Integer, Integer> factory =
-					intGraph ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
+					intGraph ? IntGraphFactory.undirected() : GraphFactory.undirected();
 			Graph<Integer, Integer> g = factory.allowParallelEdges().newGraph();
 			g.addVertex(0);
 			g.addVertex(1);

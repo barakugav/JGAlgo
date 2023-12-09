@@ -58,7 +58,7 @@ public class Sparse6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 	@Override
 	IntGraphBuilder readIntoBuilderImpl(Reader reader) throws IOException {
 		BufferedReader br = GraphIoUtils.bufferedReader(reader);
-		IntGraphBuilder g = IntGraphFactory.newUndirected().allowSelfEdges().allowParallelEdges().newBuilder();
+		IntGraphBuilder g = IntGraphFactory.undirected().allowSelfEdges().allowParallelEdges().newBuilder();
 
 		String line = br.readLine();
 		if (line == null)

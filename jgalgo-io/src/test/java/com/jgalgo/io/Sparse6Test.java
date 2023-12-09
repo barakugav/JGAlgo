@@ -97,7 +97,7 @@ public class Sparse6Test extends TestUtils {
 			for (int repeat = 0; repeat < repeatCount; repeat++) {
 				final int n = nBase + rand.nextInt(20);
 				final int m = 15 + rand.nextInt(30);
-				IntGraph g = IntGraphFactory.newUndirected().allowSelfEdges().allowParallelEdges().newGraph();
+				IntGraph g = IntGraphFactory.undirected().allowSelfEdges().allowParallelEdges().newGraph();
 
 				/* graph6 format support vertices with labels 0..n-1 only */
 				for (int v = 0; v < n; v++)
@@ -176,7 +176,7 @@ public class Sparse6Test extends TestUtils {
 			for (int repeat = 0; repeat < repeatCount; repeat++) {
 				final int n = nBase + rand.nextInt(20);
 				final int m = 15 + rand.nextInt(30);
-				IntGraph g = IntGraphFactory.newUndirected().allowSelfEdges().allowParallelEdges().newGraph();
+				IntGraph g = IntGraphFactory.undirected().allowSelfEdges().allowParallelEdges().newGraph();
 
 				/* graph6 format support vertices with labels 0..n-1 only */
 				for (int v = 0; v < n; v++)
@@ -369,7 +369,7 @@ public class Sparse6Test extends TestUtils {
 
 	@Test
 	public void readSingletonGraphWithSelfEdge() {
-		IntGraph g = IntGraphFactory.newUndirected().allowSelfEdges().newGraph();
+		IntGraph g = IntGraphFactory.undirected().allowSelfEdges().newGraph();
 		g.addVertex(0);
 		g.addEdge(0, 0, 0);
 
@@ -421,7 +421,7 @@ public class Sparse6Test extends TestUtils {
 	@Test
 	public void writeCustomPadding() {
 		Sparse6GraphWriter writer = new Sparse6GraphWriter();
-		IntGraph g = IntGraphFactory.newUndirected().allowSelfEdges().newGraph();
+		IntGraph g = IntGraphFactory.undirected().allowSelfEdges().newGraph();
 		g.addVertex(0);
 		g.addVertex(1);
 		g.addVertex(2);

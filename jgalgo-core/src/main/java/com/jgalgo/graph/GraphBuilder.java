@@ -241,7 +241,7 @@ public interface GraphBuilder<V, E> {
 	 * @return     a new empty builder for undirected graphs
 	 */
 	static <V, E> GraphBuilder<V, E> newUndirected() {
-		return GraphFactory.<V, E>newUndirected().newBuilder();
+		return GraphFactory.<V, E>undirected().newBuilder();
 	}
 
 	/**
@@ -256,7 +256,7 @@ public interface GraphBuilder<V, E> {
 	 * @return     a new empty builder for directed graphs
 	 */
 	static <V, E> GraphBuilder<V, E> newDirected() {
-		return GraphFactory.<V, E>newDirected().newBuilder();
+		return GraphFactory.<V, E>directed().newBuilder();
 	}
 
 	/**

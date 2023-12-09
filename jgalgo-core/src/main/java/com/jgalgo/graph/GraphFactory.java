@@ -30,8 +30,8 @@ package com.jgalgo.graph;
  *
  * @param  <V> the vertices type
  * @param  <E> the edges type
- * @see        GraphFactory#newDirected()
- * @see        GraphFactory#newUndirected()
+ * @see        GraphFactory#directed()
+ * @see        GraphFactory#undirected()
  * @see        Graph
  * @see        GraphBuilder
  * @author     Barak Ugav
@@ -223,7 +223,7 @@ public interface GraphFactory<V, E> {
 	 * @param  <E> the edges type
 	 * @return     a new factory that can build undirected graphs
 	 */
-	public static <V, E> GraphFactory<V, E> newUndirected() {
+	public static <V, E> GraphFactory<V, E> undirected() {
 		return new GraphImpl.Factory<>(false);
 	}
 
@@ -234,7 +234,7 @@ public interface GraphFactory<V, E> {
 	 * @param  <E> the edges type
 	 * @return     a new factory that can build directed graphs
 	 */
-	public static <V, E> GraphFactory<V, E> newDirected() {
+	public static <V, E> GraphFactory<V, E> directed() {
 		return new GraphImpl.Factory<>(true);
 	}
 
