@@ -77,7 +77,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 			}
 		};
 
-<span class="fc" id="L80">		UnionFind uf = UnionFind.newBuilder().expectedSize(n).build();</span>
+<span class="fc" id="L80">		UnionFind uf = UnionFind.builder().expectedSize(n).build();</span>
 <span class="fc" id="L81">		int[] ufRoot = new int[n];</span>
 <span class="fc bfc" id="L82" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L83">			uf.make();</span>

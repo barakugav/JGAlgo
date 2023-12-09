@@ -128,170 +128,169 @@ public class LedaGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 <span class="fc" id="L128">			throw new IllegalArgumentException(&quot;Leda file format: 4th non-comment line must equals -1 or -2. &quot;</span>
 					+ &quot;-1 is Directed graph. -2 is Undirected graph.&quot;);
 <span class="fc" id="L130">		boolean directed = &quot;-1&quot;.equals(directedOrUndirected);</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">		IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();</span>
-<span class="fc" id="L132">		IntGraphBuilder builder = factory.allowSelfEdges().newBuilder();</span>
+<span class="fc" id="L131">		IntGraphBuilder builder = IntGraphFactory.newInstance(directed).allowSelfEdges().newBuilder();</span>
 
-<span class="fc" id="L134">		IWeights&lt;?&gt; verticesWeights = null;</span>
-<span class="fc" id="L135">		IWeights&lt;?&gt; edgesWeights = null;</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">		if (verticesWeightsType != null)</span>
-<span class="fc" id="L137">			verticesWeights = (IWeights&lt;?&gt;) builder.addVerticesWeights(verticesWeightsKey, verticesWeightsType);</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">		if (edgesWeightsType != null)</span>
-<span class="fc" id="L139">			edgesWeights = (IWeights&lt;?&gt;) builder.addEdgesWeights(edgesWeightsKey, edgesWeightsType);</span>
-<span class="fc" id="L140">		ObjIntConsumer&lt;String&gt; verticesWeightsReader = weightsReader(verticesWeights);</span>
-<span class="fc" id="L141">		ObjIntConsumer&lt;String&gt; edgesWeightsReader = weightsReader(edgesWeights);</span>
+<span class="fc" id="L133">		IWeights&lt;?&gt; verticesWeights = null;</span>
+<span class="fc" id="L134">		IWeights&lt;?&gt; edgesWeights = null;</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">		if (verticesWeightsType != null)</span>
+<span class="fc" id="L136">			verticesWeights = (IWeights&lt;?&gt;) builder.addVerticesWeights(verticesWeightsKey, verticesWeightsType);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		if (edgesWeightsType != null)</span>
+<span class="fc" id="L138">			edgesWeights = (IWeights&lt;?&gt;) builder.addEdgesWeights(edgesWeightsKey, edgesWeightsType);</span>
+<span class="fc" id="L139">		ObjIntConsumer&lt;String&gt; verticesWeightsReader = weightsReader(verticesWeights);</span>
+<span class="fc" id="L140">		ObjIntConsumer&lt;String&gt; edgesWeightsReader = weightsReader(edgesWeights);</span>
 
-<span class="fc" id="L143">		String verticesNumLine = next.get();</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">		if (verticesNumLine == null)</span>
-<span class="fc" id="L145">			throw new IllegalArgumentException(&quot;invalid nodes section&quot;);</span>
+<span class="fc" id="L142">		String verticesNumLine = next.get();</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">		if (verticesNumLine == null)</span>
+<span class="fc" id="L144">			throw new IllegalArgumentException(&quot;invalid nodes section&quot;);</span>
 		final int n;
 		try {
-<span class="fc" id="L148">			n = Integer.parseInt(verticesNumLine);</span>
-<span class="fc" id="L149">		} catch (NumberFormatException e) {</span>
-<span class="fc" id="L150">			throw new IllegalArgumentException(&quot;invalid nodes section&quot;);</span>
-<span class="fc" id="L151">		}</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">		if (n &lt; 0)</span>
-<span class="fc" id="L153">			throw new IllegalArgumentException(&quot;invalid nodes section. num nodes must be &gt;= 0&quot;);</span>
+<span class="fc" id="L147">			n = Integer.parseInt(verticesNumLine);</span>
+<span class="fc" id="L148">		} catch (NumberFormatException e) {</span>
+<span class="fc" id="L149">			throw new IllegalArgumentException(&quot;invalid nodes section&quot;);</span>
+<span class="fc" id="L150">		}</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">		if (n &lt; 0)</span>
+<span class="fc" id="L152">			throw new IllegalArgumentException(&quot;invalid nodes section. num nodes must be &gt;= 0&quot;);</span>
 
-<span class="fc bfc" id="L155" title="All 2 branches covered.">		for (int v = 1; v &lt;= n; v++) {</span>
-<span class="fc" id="L156">			String line = next.get();</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">			if (line == null)</span>
-<span class="fc" id="L158">				throw new IllegalArgumentException(&quot;Expected more node lines&quot;);</span>
-<span class="fc bfc" id="L159" title="All 4 branches covered.">			if (!line.startsWith(&quot;|{&quot;) || !line.endsWith(&quot;}|&quot;))</span>
-<span class="fc" id="L160">				throw new IllegalArgumentException(&quot;node line error. Expected '|{weight}|'&quot;);</span>
-<span class="fc" id="L161">			String weight = line.substring(2, line.length() - 2);</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">		for (int v = 1; v &lt;= n; v++) {</span>
+<span class="fc" id="L155">			String line = next.get();</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">			if (line == null)</span>
+<span class="fc" id="L157">				throw new IllegalArgumentException(&quot;Expected more node lines&quot;);</span>
+<span class="fc bfc" id="L158" title="All 4 branches covered.">			if (!line.startsWith(&quot;|{&quot;) || !line.endsWith(&quot;}|&quot;))</span>
+<span class="fc" id="L159">				throw new IllegalArgumentException(&quot;node line error. Expected '|{weight}|'&quot;);</span>
+<span class="fc" id="L160">			String weight = line.substring(2, line.length() - 2);</span>
 
-<span class="fc" id="L163">			builder.addVertex(v);</span>
-<span class="fc" id="L164">			verticesWeightsReader.accept(weight, v);</span>
+<span class="fc" id="L162">			builder.addVertex(v);</span>
+<span class="fc" id="L163">			verticesWeightsReader.accept(weight, v);</span>
 		}
 
-<span class="fc" id="L167">		String edgesNumLine = next.get();</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">		if (edgesNumLine == null)</span>
-<span class="fc" id="L169">			throw new IllegalArgumentException(&quot;invalid edges section&quot;);</span>
+<span class="fc" id="L166">		String edgesNumLine = next.get();</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">		if (edgesNumLine == null)</span>
+<span class="fc" id="L168">			throw new IllegalArgumentException(&quot;invalid edges section&quot;);</span>
 		final int m;
 		try {
-<span class="fc" id="L172">			m = Integer.parseInt(edgesNumLine);</span>
-<span class="fc" id="L173">		} catch (NumberFormatException e) {</span>
-<span class="fc" id="L174">			throw new IllegalArgumentException(&quot;invalid edges section&quot;);</span>
-<span class="fc" id="L175">		}</span>
-<span class="fc bfc" id="L176" title="All 2 branches covered.">		if (m &lt; 0)</span>
-<span class="fc" id="L177">			throw new IllegalArgumentException(&quot;invalid edges section. num edges must be &gt;= 0&quot;);</span>
+<span class="fc" id="L171">			m = Integer.parseInt(edgesNumLine);</span>
+<span class="fc" id="L172">		} catch (NumberFormatException e) {</span>
+<span class="fc" id="L173">			throw new IllegalArgumentException(&quot;invalid edges section&quot;);</span>
+<span class="fc" id="L174">		}</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">		if (m &lt; 0)</span>
+<span class="fc" id="L176">			throw new IllegalArgumentException(&quot;invalid edges section. num edges must be &gt;= 0&quot;);</span>
 
-<span class="fc bfc" id="L179" title="All 2 branches covered.">		for (int e = 1; e &lt;= m; e++) {</span>
-<span class="fc" id="L180">			String line = next.get();</span>
-<span class="fc bfc" id="L181" title="All 2 branches covered.">			if (line == null)</span>
-<span class="fc" id="L182">				throw new IllegalArgumentException(&quot;Expected more edge lines&quot;);</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">		for (int e = 1; e &lt;= m; e++) {</span>
+<span class="fc" id="L179">			String line = next.get();</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">			if (line == null)</span>
+<span class="fc" id="L181">				throw new IllegalArgumentException(&quot;Expected more edge lines&quot;);</span>
 
-<span class="fc" id="L184">			int sourceEnd = line.indexOf(' ');</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">			if (sourceEnd == -1)</span>
-<span class="fc" id="L186">				throw new IllegalArgumentException(&quot;edge line error. Expected 'source target twinEdge weight'&quot;);</span>
-<span class="fc" id="L187">			int targetEnd = line.indexOf(' ', sourceEnd + 1);</span>
-<span class="fc bfc" id="L188" title="All 2 branches covered.">			if (targetEnd == -1)</span>
-<span class="fc" id="L189">				throw new IllegalArgumentException(&quot;edge line error. Expected 'source target twinEdge weight'&quot;);</span>
-<span class="fc" id="L190">			int twinEdgeEnd = line.indexOf(' ', targetEnd + 1);</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">			if (twinEdgeEnd == -1)</span>
-<span class="fc" id="L192">				throw new IllegalArgumentException(&quot;edge line error. Expected 'source target twinEdge weight'&quot;);</span>
+<span class="fc" id="L183">			int sourceEnd = line.indexOf(' ');</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">			if (sourceEnd == -1)</span>
+<span class="fc" id="L185">				throw new IllegalArgumentException(&quot;edge line error. Expected 'source target twinEdge weight'&quot;);</span>
+<span class="fc" id="L186">			int targetEnd = line.indexOf(' ', sourceEnd + 1);</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">			if (targetEnd == -1)</span>
+<span class="fc" id="L188">				throw new IllegalArgumentException(&quot;edge line error. Expected 'source target twinEdge weight'&quot;);</span>
+<span class="fc" id="L189">			int twinEdgeEnd = line.indexOf(' ', targetEnd + 1);</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">			if (twinEdgeEnd == -1)</span>
+<span class="fc" id="L191">				throw new IllegalArgumentException(&quot;edge line error. Expected 'source target twinEdge weight'&quot;);</span>
 
 			int source, target, twinEdge;
 			try {
-<span class="fc" id="L196">				source = Integer.parseInt(line.substring(0, sourceEnd));</span>
-<span class="fc" id="L197">			} catch (NumberFormatException ex) {</span>
-<span class="fc" id="L198">				throw new IllegalArgumentException(&quot;edge line error. Invalid source vertex number&quot;);</span>
-<span class="fc" id="L199">			}</span>
+<span class="fc" id="L195">				source = Integer.parseInt(line.substring(0, sourceEnd));</span>
+<span class="fc" id="L196">			} catch (NumberFormatException ex) {</span>
+<span class="fc" id="L197">				throw new IllegalArgumentException(&quot;edge line error. Invalid source vertex number&quot;);</span>
+<span class="fc" id="L198">			}</span>
 			try {
-<span class="fc" id="L201">				target = Integer.parseInt(line.substring(sourceEnd + 1, targetEnd));</span>
-<span class="fc" id="L202">			} catch (NumberFormatException ex) {</span>
-<span class="fc" id="L203">				throw new IllegalArgumentException(&quot;edge line error. Invalid target vertex number&quot;);</span>
-<span class="fc" id="L204">			}</span>
+<span class="fc" id="L200">				target = Integer.parseInt(line.substring(sourceEnd + 1, targetEnd));</span>
+<span class="fc" id="L201">			} catch (NumberFormatException ex) {</span>
+<span class="fc" id="L202">				throw new IllegalArgumentException(&quot;edge line error. Invalid target vertex number&quot;);</span>
+<span class="fc" id="L203">			}</span>
 			try {
-<span class="fc" id="L206">				twinEdge = Integer.parseInt(line.substring(targetEnd + 1, twinEdgeEnd));</span>
-<span class="fc" id="L207">			} catch (NumberFormatException ex) {</span>
-<span class="fc" id="L208">				throw new IllegalArgumentException(&quot;edge line error. Invalid twin edge number&quot;);</span>
-<span class="fc" id="L209">			}</span>
-<span class="fc bfc" id="L210" title="All 2 branches covered.">			if (twinEdge != 0)</span>
-<span class="fc" id="L211">				throw new IllegalArgumentException(&quot;twin edges are not supported&quot;);</span>
+<span class="fc" id="L205">				twinEdge = Integer.parseInt(line.substring(targetEnd + 1, twinEdgeEnd));</span>
+<span class="fc" id="L206">			} catch (NumberFormatException ex) {</span>
+<span class="fc" id="L207">				throw new IllegalArgumentException(&quot;edge line error. Invalid twin edge number&quot;);</span>
+<span class="fc" id="L208">			}</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">			if (twinEdge != 0)</span>
+<span class="fc" id="L210">				throw new IllegalArgumentException(&quot;twin edges are not supported&quot;);</span>
 
-<span class="fc bfc" id="L213" title="All 4 branches covered.">			if (line.indexOf(&quot;|{&quot;, twinEdgeEnd + 1) != twinEdgeEnd + 1 || !line.endsWith(&quot;}|&quot;))</span>
-<span class="fc" id="L214">				throw new IllegalArgumentException(&quot;edge line error. Invalid weight, expected format: |{weight}|'&quot;);</span>
-<span class="fc" id="L215">			String weight = line.substring(twinEdgeEnd + 3, line.length() - 2);</span>
+<span class="fc bfc" id="L212" title="All 4 branches covered.">			if (line.indexOf(&quot;|{&quot;, twinEdgeEnd + 1) != twinEdgeEnd + 1 || !line.endsWith(&quot;}|&quot;))</span>
+<span class="fc" id="L213">				throw new IllegalArgumentException(&quot;edge line error. Invalid weight, expected format: |{weight}|'&quot;);</span>
+<span class="fc" id="L214">			String weight = line.substring(twinEdgeEnd + 3, line.length() - 2);</span>
 
-<span class="fc" id="L217">			builder.addEdge(source, target, e);</span>
-<span class="fc" id="L218">			edgesWeightsReader.accept(weight, e);</span>
+<span class="fc" id="L216">			builder.addEdge(source, target, e);</span>
+<span class="fc" id="L217">			edgesWeightsReader.accept(weight, e);</span>
 		}
 
-<span class="fc bfc" id="L221" title="All 2 branches covered.">		if (next.get() != null)</span>
-<span class="fc" id="L222">			throw new IllegalArgumentException(&quot;unexpected lines after edges section&quot;);</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">		if (next.get() != null)</span>
+<span class="fc" id="L221">			throw new IllegalArgumentException(&quot;unexpected lines after edges section&quot;);</span>
 
-<span class="fc" id="L224">		return builder;</span>
+<span class="fc" id="L223">		return builder;</span>
 	}
 
 	private static Class&lt;?&gt; ledaTypeStrToClass(String weightsType) {
-<span class="fc bfc" id="L228" title="All 11 branches covered.">		switch (weightsType) {</span>
+<span class="fc bfc" id="L227" title="All 11 branches covered.">		switch (weightsType) {</span>
 			case &quot;void&quot;:
-<span class="fc" id="L230">				return null;</span>
+<span class="fc" id="L229">				return null;</span>
 			case &quot;byte&quot;:
-<span class="fc" id="L232">				return byte.class;</span>
+<span class="fc" id="L231">				return byte.class;</span>
 			case &quot;short&quot;:
-<span class="fc" id="L234">				return short.class;</span>
+<span class="fc" id="L233">				return short.class;</span>
 			case &quot;int&quot;:
-<span class="fc" id="L236">				return int.class;</span>
+<span class="fc" id="L235">				return int.class;</span>
 			case &quot;long&quot;:
-<span class="fc" id="L238">				return long.class;</span>
+<span class="fc" id="L237">				return long.class;</span>
 			case &quot;float&quot;:
-<span class="fc" id="L240">				return float.class;</span>
+<span class="fc" id="L239">				return float.class;</span>
 			case &quot;double&quot;:
-<span class="fc" id="L242">				return double.class;</span>
+<span class="fc" id="L241">				return double.class;</span>
 			case &quot;bool&quot;:
-<span class="fc" id="L244">				return boolean.class;</span>
+<span class="fc" id="L243">				return boolean.class;</span>
 			case &quot;char&quot;:
-<span class="fc" id="L246">				return char.class;</span>
+<span class="fc" id="L245">				return char.class;</span>
 			case &quot;string&quot;:
-<span class="fc" id="L248">				return String.class;</span>
+<span class="fc" id="L247">				return String.class;</span>
 			default:
-<span class="fc" id="L250">				throw new IllegalArgumentException(&quot;unsupported weights type: &quot; + weightsType);</span>
+<span class="fc" id="L249">				throw new IllegalArgumentException(&quot;unsupported weights type: &quot; + weightsType);</span>
 		}
 	}
 
 	private static ObjIntConsumer&lt;String&gt; weightsReader(IWeights&lt;?&gt; weights) {
-<span class="fc bfc" id="L255" title="All 2 branches covered.">		if (weights == null) {</span>
-<span class="fc" id="L256">			return (weight, id) -&gt; {</span>
-<span class="fc bfc" id="L257" title="All 2 branches covered.">				if (!weight.isEmpty())</span>
-<span class="fc" id="L258">					throw new IllegalArgumentException(&quot;void weights must be empty string&quot;);</span>
-<span class="fc" id="L259">			};</span>
-<span class="fc bfc" id="L260" title="All 2 branches covered.">		} else if (weights instanceof IWeightsByte) {</span>
-<span class="fc" id="L261">			IWeightsByte weights0 = (IWeightsByte) weights;</span>
-<span class="fc" id="L262">			return (weight, id) -&gt; weights0.set(id, Byte.parseByte(weight));</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">		if (weights == null) {</span>
+<span class="fc" id="L255">			return (weight, id) -&gt; {</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">				if (!weight.isEmpty())</span>
+<span class="fc" id="L257">					throw new IllegalArgumentException(&quot;void weights must be empty string&quot;);</span>
+<span class="fc" id="L258">			};</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">		} else if (weights instanceof IWeightsByte) {</span>
+<span class="fc" id="L260">			IWeightsByte weights0 = (IWeightsByte) weights;</span>
+<span class="fc" id="L261">			return (weight, id) -&gt; weights0.set(id, Byte.parseByte(weight));</span>
 
-<span class="fc bfc" id="L264" title="All 2 branches covered.">		} else if (weights instanceof IWeightsShort) {</span>
-<span class="fc" id="L265">			IWeightsShort weights0 = (IWeightsShort) weights;</span>
-<span class="fc" id="L266">			return (weight, id) -&gt; weights0.set(id, Short.parseShort(weight));</span>
+<span class="fc bfc" id="L263" title="All 2 branches covered.">		} else if (weights instanceof IWeightsShort) {</span>
+<span class="fc" id="L264">			IWeightsShort weights0 = (IWeightsShort) weights;</span>
+<span class="fc" id="L265">			return (weight, id) -&gt; weights0.set(id, Short.parseShort(weight));</span>
 
-<span class="fc bfc" id="L268" title="All 2 branches covered.">		} else if (weights instanceof IWeightsInt) {</span>
-<span class="fc" id="L269">			IWeightsInt weights0 = (IWeightsInt) weights;</span>
-<span class="fc" id="L270">			return (weight, id) -&gt; weights0.set(id, Integer.parseInt(weight));</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">		} else if (weights instanceof IWeightsInt) {</span>
+<span class="fc" id="L268">			IWeightsInt weights0 = (IWeightsInt) weights;</span>
+<span class="fc" id="L269">			return (weight, id) -&gt; weights0.set(id, Integer.parseInt(weight));</span>
 
-<span class="fc bfc" id="L272" title="All 2 branches covered.">		} else if (weights instanceof IWeightsLong) {</span>
-<span class="fc" id="L273">			IWeightsLong weights0 = (IWeightsLong) weights;</span>
-<span class="fc" id="L274">			return (weight, id) -&gt; weights0.set(id, Long.parseLong(weight));</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">		} else if (weights instanceof IWeightsLong) {</span>
+<span class="fc" id="L272">			IWeightsLong weights0 = (IWeightsLong) weights;</span>
+<span class="fc" id="L273">			return (weight, id) -&gt; weights0.set(id, Long.parseLong(weight));</span>
 
-<span class="fc bfc" id="L276" title="All 2 branches covered.">		} else if (weights instanceof IWeightsFloat) {</span>
-<span class="fc" id="L277">			IWeightsFloat weights0 = (IWeightsFloat) weights;</span>
-<span class="fc" id="L278">			return (weight, id) -&gt; weights0.set(id, Float.parseFloat(weight));</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">		} else if (weights instanceof IWeightsFloat) {</span>
+<span class="fc" id="L276">			IWeightsFloat weights0 = (IWeightsFloat) weights;</span>
+<span class="fc" id="L277">			return (weight, id) -&gt; weights0.set(id, Float.parseFloat(weight));</span>
 
-<span class="fc bfc" id="L280" title="All 2 branches covered.">		} else if (weights instanceof IWeightsDouble) {</span>
-<span class="fc" id="L281">			IWeightsDouble weights0 = (IWeightsDouble) weights;</span>
-<span class="fc" id="L282">			return (weight, id) -&gt; weights0.set(id, Double.parseDouble(weight));</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">		} else if (weights instanceof IWeightsDouble) {</span>
+<span class="fc" id="L280">			IWeightsDouble weights0 = (IWeightsDouble) weights;</span>
+<span class="fc" id="L281">			return (weight, id) -&gt; weights0.set(id, Double.parseDouble(weight));</span>
 
-<span class="fc bfc" id="L284" title="All 2 branches covered.">		} else if (weights instanceof IWeightsBool) {</span>
-<span class="fc" id="L285">			IWeightsBool weights0 = (IWeightsBool) weights;</span>
-<span class="fc" id="L286">			return (weight, id) -&gt; weights0.set(id, Boolean.parseBoolean(weight));</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">		} else if (weights instanceof IWeightsBool) {</span>
+<span class="fc" id="L284">			IWeightsBool weights0 = (IWeightsBool) weights;</span>
+<span class="fc" id="L285">			return (weight, id) -&gt; weights0.set(id, Boolean.parseBoolean(weight));</span>
 
-<span class="fc bfc" id="L288" title="All 2 branches covered.">		} else if (weights instanceof IWeightsChar) {</span>
-<span class="fc" id="L289">			IWeightsChar weights0 = (IWeightsChar) weights;</span>
-<span class="fc" id="L290">			return (weight, id) -&gt; weights0.set(id, GraphIoUtils.parseChar(weight));</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">		} else if (weights instanceof IWeightsChar) {</span>
+<span class="fc" id="L288">			IWeightsChar weights0 = (IWeightsChar) weights;</span>
+<span class="fc" id="L289">			return (weight, id) -&gt; weights0.set(id, GraphIoUtils.parseChar(weight));</span>
 		} else {
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L293">			IWeightsObj&lt;String&gt; weights0 = (IWeightsObj&lt;String&gt;) weights;</span>
-<span class="fc" id="L294">			return (weight, id) -&gt; weights0.set(id, weight);</span>
+<span class="fc" id="L292">			IWeightsObj&lt;String&gt; weights0 = (IWeightsObj&lt;String&gt;) weights;</span>
+<span class="fc" id="L293">			return (weight, id) -&gt; weights0.set(id, weight);</span>
 		}
 	}
 

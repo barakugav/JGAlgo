@@ -29,8 +29,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * &lt;p&gt;
  * This interface is a specific version of {@link GraphBuilder} for {@link IntGraph}.
  *
- * @see    IntGraphBuilder#newUndirected()
- * @see    IntGraphBuilder#newDirected()
+ * @see    IntGraphBuilder#undirected()
+ * @see    IntGraphBuilder#directed()
  * @see    IndexGraphBuilder
  * @see    IntGraphFactory
  * @author Barak Ugav
@@ -160,8 +160,8 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 *
 	 * @return a new empty builder for undirected graphs
 	 */
-	static IntGraphBuilder newUndirected() {
-<span class="fc" id="L164">		return IntGraphFactory.newUndirected().newBuilder();</span>
+	static IntGraphBuilder undirected() {
+<span class="fc" id="L164">		return IntGraphFactory.undirected().newBuilder();</span>
 	}
 
 	/**
@@ -173,8 +173,23 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 *
 	 * @return a new empty builder for directed graphs
 	 */
-	static IntGraphBuilder newDirected() {
-<span class="fc" id="L177">		return IntGraphFactory.newDirected().newBuilder();</span>
+	static IntGraphBuilder directed() {
+<span class="fc" id="L177">		return IntGraphFactory.directed().newBuilder();</span>
+	}
+
+	/**
+	 * Create a new builder that builds un/directed int graphs.
+	 *
+	 * &lt;p&gt;
+	 * The graphs built by this builder will have the same default capabilities as {@link IntGraphFactory}, namely they
+	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
+	 *
+	 * @param  directed if {@code true}, the new builder will build directed graphs, otherwise it will build undirected
+	 *                      graphs
+	 * @return          a new empty builder for un/directed graphs
+	 */
+	static IntGraphBuilder newInstance(boolean directed) {
+<span class="fc" id="L192">		return IntGraphFactory.newInstance(directed).newBuilder();</span>
 	}
 
 	/**
@@ -188,7 +203,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 *           vertices/edges weights.
 	 */
 	static IntGraphBuilder fromGraph(IntGraph g) {
-<span class="fc" id="L191">		return fromGraph(g, false, false);</span>
+<span class="fc" id="L206">		return fromGraph(g, false, false);</span>
 	}
 
 	/**
@@ -206,7 +221,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 *                             original graph vertices/edges weights.
 	 */
 	static IntGraphBuilder fromGraph(IntGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L209">		return new IntGraphBuilderImpl(g, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L224">		return new IntGraphBuilderImpl(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 }

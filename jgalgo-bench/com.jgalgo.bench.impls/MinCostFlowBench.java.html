@@ -388,7 +388,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	}
 
 	private static MinimumCostFlow getAlgo(String implName) {
-<span class="fc" id="L391">		MinimumCostFlow.Builder builder = MinimumCostFlow.newBuilder();</span>
+<span class="fc" id="L391">		MinimumCostFlow.Builder builder = MinimumCostFlow.builder();</span>
 <span class="fc" id="L392">		builder.setOption(&quot;impl&quot;, implName);</span>
 <span class="fc" id="L393">		return builder.build();</span>
 	}

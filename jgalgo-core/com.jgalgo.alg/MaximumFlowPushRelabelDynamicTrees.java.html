@@ -95,7 +95,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 <span class="fc" id="L95">			super(gOrig, capacity, source, sink);</span>
 
 <span class="fc" id="L97">			double maxWeight = getMaxCapacity();</span>
-<span class="fc" id="L98">			dt = DynamicTree.newBuilder().setMaxWeight(maxWeight * 10).setIntWeights(this instanceof WorkerInt)</span>
+<span class="fc" id="L98">			dt = DynamicTree.builder().setMaxWeight(maxWeight * 10).setIntWeights(this instanceof WorkerInt)</span>
 <span class="fc" id="L99">					.addExtension(DynamicTreeExtension.TreeSize.class).build();</span>
 <span class="fc" id="L100">			dtTreeSize = dt.getExtension(DynamicTreeExtension.TreeSize.class);</span>
 <span class="fc" id="L101">			maxTreeSize = Math.max(1, n * n / g.edges().size());</span>

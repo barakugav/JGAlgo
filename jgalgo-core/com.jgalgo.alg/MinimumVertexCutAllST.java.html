@@ -52,8 +52,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * minimum vertex-cut between \(u\) and \(v\) and the minimum vertex-cut between \(v\) and \(u\).
  *
  * &lt;p&gt;
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    MinimumVertexCutST
  * @see    MinimumVertexCutGlobal
@@ -119,49 +118,20 @@ public interface MinimumVertexCutAllST {
 	 * @throws IllegalArgumentException if the source and the sink are the same vertex
 	 */
 	default &lt;V, E&gt; List&lt;Set&lt;V&gt;&gt; allMinimumCuts(Graph&lt;V, E&gt; g, WeightFunction&lt;V&gt; w, V source, V sink) {
-<span class="fc" id="L122">		Iterator&lt;Set&lt;V&gt;&gt; iter = minimumCutsIter(g, w, source, sink);</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">		return iter == null ? null : new ObjectArrayList&lt;&gt;(iter);</span>
+<span class="fc" id="L121">		Iterator&lt;Set&lt;V&gt;&gt; iter = minimumCutsIter(g, w, source, sink);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		return iter == null ? null : new ObjectArrayList&lt;&gt;(iter);</span>
 	}
 
 	/**
 	 * Create a new minimum S-T all vertex-cuts algorithm object.
 	 *
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link MinimumVertexCutAllST} object. The
-	 * {@link MinimumVertexCutAllST.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MinimumVertexCutAllST} object.
 	 *
 	 * @return a default implementation of {@link MinimumVertexCutAllST}
 	 */
 	static MinimumVertexCutAllST newInstance() {
-<span class="fc" id="L136">		return newBuilder().build();</span>
-	}
-
-	/**
-	 * Create a new minimum all vertex-cuts algorithm builder.
-	 *
-	 * &lt;p&gt;
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link MinimumVertexCutAllST} objects
-	 */
-	static MinimumVertexCutAllST.Builder newBuilder() {
-<span class="fc" id="L148">		return MinimumVertexCutAllSTEdgeCut::new;</span>
-	}
-
-	/**
-	 * A builder for {@link MinimumVertexCutAllST} objects.
-	 *
-	 * @see    MinimumVertexCutAllST#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for minimum all vertex-cuts computation.
-		 *
-		 * @return a new minimum all vertex-cuts algorithm
-		 */
-		MinimumVertexCutAllST build();
+<span class="fc" id="L134">		return new MinimumVertexCutAllSTEdgeCut();</span>
 	}
 
 }

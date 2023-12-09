@@ -183,7 +183,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 				/* Compute the component connectivity */
 <span class="fc" id="L185">				final int compConnectivity = globalConnectivityAlgo.computeMinimumCut(iComp, null).size();</span>
-<span class="pc bpc" id="L186" title="1 of 4 branches missed.">				if (compConnectivity &gt; parentConnectivity &amp;&amp; compConnectivity &gt; 2)</span>
+<span class="fc bfc" id="L186" title="All 4 branches covered.">				if (compConnectivity &gt; parentConnectivity &amp;&amp; compConnectivity &gt; 2)</span>
 <span class="fc" id="L187">					addComponent.accept(compVertices, compConnectivity);</span>
 
 				/* Add further sub-graphs of the components, generated from all the vertex-cuts of the component */

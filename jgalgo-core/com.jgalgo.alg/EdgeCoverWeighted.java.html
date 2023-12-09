@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L36">		final int n = g.vertices().size();</span>
 <span class="fc" id="L37">		final int m = g.edges().size();</span>
 
-<span class="fc" id="L39">		IndexGraphBuilder gb = IndexGraphBuilder.newUndirected();</span>
+<span class="fc" id="L39">		IndexGraphBuilder gb = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L40">		gb.expectedVerticesNum(n * 2);</span>
 <span class="fc" id="L41">		gb.expectedEdgesNum(m * 2 + n);</span>
 <span class="fc bfc" id="L42" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>

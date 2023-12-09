@@ -58,7 +58,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L58" title="All 2 branches covered.">			if (g.isAllowSelfEdges()) {</span>
 <span class="fc" id="L59">				int selfEdges = Graphs.selfEdges(g).size();</span>
 <span class="fc bfc" id="L60" title="All 2 branches covered.">				if (selfEdges &gt; 0) {</span>
-<span class="fc" id="L61">					IndexGraphBuilder g0 = IndexGraphBuilder.newDirected();</span>
+<span class="fc" id="L61">					IndexGraphBuilder g0 = IndexGraphBuilder.directed();</span>
 <span class="fc" id="L62">					g0.expectedVerticesNum(n);</span>
 <span class="fc" id="L63">					g0.expectedEdgesNum(g.edges().size() - selfEdges);</span>
 <span class="fc bfc" id="L64" title="All 2 branches covered.">					for (int u = 0; u &lt; n; u++)</span>
@@ -74,7 +74,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		}
 
 		/* Build the condensation graph */
-<span class="fc" id="L77">		IndexGraphBuilder sccGraph0 = IndexGraphBuilder.newDirected();</span>
+<span class="fc" id="L77">		IndexGraphBuilder sccGraph0 = IndexGraphBuilder.directed();</span>
 <span class="fc" id="L78">		sccGraph0.expectedVerticesNum(sccNum);</span>
 <span class="fc bfc" id="L79" title="All 2 branches covered.">		for (int b = 0; b &lt; sccNum; b++)</span>
 <span class="fc" id="L80">			sccGraph0.addVertex();</span>

@@ -36,7 +36,7 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.IVertexPartition;
 import com.jgalgo.alg.StronglyConnectedComponentsAlgo;
 import com.jgalgo.bench.util.BenchUtils;
-import com.jgalgo.bench.util.RandomGraphBuilder;
+import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -65,32 +65,31 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L65">		final SeedGenerator seedGen = new SeedGenerator(0xe9485d7a86646b18L);</span>
 <span class="fc" id="L66">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L67" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L68">			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)</span>
-<span class="fc" id="L69">					.selfEdges(true).cycles(true).connected(false).build();</span>
-<span class="fc" id="L70">			graphs.add(g);</span>
+<span class="fc" id="L68">			IntGraph g = GraphsTestUtils.randGraph(n, m, true, seedGen.nextSeed());</span>
+<span class="fc" id="L69">			graphs.add(g);</span>
 		}
-<span class="fc" id="L72">	}</span>
+<span class="fc" id="L71">	}</span>
 
 	private void benchAPSPPositiveWeights(StronglyConnectedComponentsAlgo algo, Blackhole blackhole) {
-<span class="fc" id="L75">		IntGraph graph = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
-<span class="fc" id="L76">		IVertexPartition result = (IVertexPartition) algo.findStronglyConnectedComponents(graph);</span>
-<span class="fc" id="L77">		blackhole.consume(result);</span>
-<span class="fc" id="L78">	}</span>
+<span class="fc" id="L74">		IntGraph graph = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L75">		IVertexPartition result = (IVertexPartition) algo.findStronglyConnectedComponents(graph);</span>
+<span class="fc" id="L76">		blackhole.consume(result);</span>
+<span class="fc" id="L77">	}</span>
 
 	@Benchmark
 	public void pathBasedDfs(Blackhole blackhole) {
-<span class="fc" id="L82">		benchAPSPPositiveWeights(getAlgo(&quot;path-based&quot;), blackhole);</span>
-<span class="fc" id="L83">	}</span>
+<span class="fc" id="L81">		benchAPSPPositiveWeights(getAlgo(&quot;path-based&quot;), blackhole);</span>
+<span class="fc" id="L82">	}</span>
 
 	@Benchmark
 	public void Tarjan(Blackhole blackhole) {
-<span class="fc" id="L87">		benchAPSPPositiveWeights(getAlgo(&quot;tarjan&quot;), blackhole);</span>
-<span class="fc" id="L88">	}</span>
+<span class="fc" id="L86">		benchAPSPPositiveWeights(getAlgo(&quot;tarjan&quot;), blackhole);</span>
+<span class="fc" id="L87">	}</span>
 
 	private static StronglyConnectedComponentsAlgo getAlgo(String implName) {
-<span class="fc" id="L91">		StronglyConnectedComponentsAlgo.Builder builder = StronglyConnectedComponentsAlgo.newBuilder();</span>
-<span class="fc" id="L92">		builder.setOption(&quot;impl&quot;, implName);</span>
-<span class="fc" id="L93">		return builder.build();</span>
+<span class="fc" id="L90">		StronglyConnectedComponentsAlgo.Builder builder = StronglyConnectedComponentsAlgo.builder();</span>
+<span class="fc" id="L91">		builder.setOption(&quot;impl&quot;, implName);</span>
+<span class="fc" id="L92">		return builder.build();</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

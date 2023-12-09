@@ -66,7 +66,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 		 */
 
 <span class="fc" id="L68">		Assertions.Graphs.onlyUndirected(g);</span>
-<span class="fc" id="L69">		IndexGraphBuilder b = IndexGraphBuilder.newUndirected();</span>
+<span class="fc" id="L69">		IndexGraphBuilder b = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L70">		b.expectedVerticesNum(g.vertices().size() * 2);</span>
 <span class="fc" id="L71">		b.expectedEdgesNum(g.edges().size() * 2 + g.vertices().size());</span>
 
@@ -1033,18 +1033,18 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 <span class="fc" id="L1034">			Consumer&lt;Blossom&gt; processSelfLoops = b -&gt; {</span>
 <span class="fc" id="L1035">				b.setOuter(true);</span>
-<span class="pc bpc" id="L1036" title="1 of 2 branches missed.">				for (Edge e = b.selfLoops, next; e != null; e = next) {</span>
-<span class="nc" id="L1037">					next = e.nextOutEdge;</span>
-<span class="nc" id="L1038">					Blossom source = e.source.getPenultimateBlossom();</span>
-<span class="nc" id="L1039">					Blossom target = e.target.getPenultimateBlossom();</span>
-<span class="nc bnc" id="L1040" title="All 2 branches missed.">					if (source != target) {</span>
-<span class="nc" id="L1041">						e.nextOutEdge = null;</span>
-<span class="nc" id="L1042">						source.addEdgeOut(e);</span>
-<span class="nc" id="L1043">						target.addEdgeIn(e);</span>
-<span class="nc" id="L1044">						e.slack -= 2 * source.blossomEps;</span>
+<span class="fc bfc" id="L1036" title="All 2 branches covered.">				for (Edge e = b.selfLoops, next; e != null; e = next) {</span>
+<span class="fc" id="L1037">					next = e.nextOutEdge;</span>
+<span class="fc" id="L1038">					Blossom source = e.source.getPenultimateBlossom();</span>
+<span class="fc" id="L1039">					Blossom target = e.target.getPenultimateBlossom();</span>
+<span class="fc bfc" id="L1040" title="All 2 branches covered.">					if (source != target) {</span>
+<span class="fc" id="L1041">						e.nextOutEdge = null;</span>
+<span class="fc" id="L1042">						source.addEdgeOut(e);</span>
+<span class="fc" id="L1043">						target.addEdgeIn(e);</span>
+<span class="fc" id="L1044">						e.slack -= 2 * source.blossomEps;</span>
 					} else {
-<span class="nc" id="L1046">						e.nextOutEdge = source.selfLoops;</span>
-<span class="nc" id="L1047">						source.selfLoops = e;</span>
+<span class="fc" id="L1046">						e.nextOutEdge = source.selfLoops;</span>
+<span class="fc" id="L1047">						source.selfLoops = e;</span>
 					}
 				}
 <span class="fc" id="L1050">				b.selfLoops = null;</span>
@@ -1147,8 +1147,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 <span class="fc" id="L1147">			for (Blossom b = base;;) {</span>
 <span class="pc bnc" id="L1148" title="All 2 branches missed.">				assert b.isOdd();</span>
 <span class="fc" id="L1149">				dbgLog.format(&quot;\t%s\n&quot;, b);</span>
-<span class="pc bpc" id="L1150" title="1 of 2 branches missed.">				if (b.isBlossom())</span>
-<span class="nc" id="L1151">					tree.pqInsertOdd(b);</span>
+<span class="fc bfc" id="L1150" title="All 2 branches covered.">				if (b.isBlossom())</span>
+<span class="fc" id="L1151">					tree.pqInsertOdd(b);</span>
 <span class="fc bfc" id="L1152" title="All 2 branches covered.">				for (Edge e : b.outEdges())</span>
 <span class="fc bfc" id="L1153" title="All 2 branches covered.">					if (!e.target.isEven())</span>
 <span class="fc" id="L1154">						e.slack -= eps;</span>
@@ -1174,9 +1174,9 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 					}
 <span class="fc" id="L1175">				}</span>
 <span class="fc bfc" id="L1176" title="All 2 branches covered.">				for (Edge e : b.inEdges()) {</span>
-<span class="pc bpc" id="L1177" title="1 of 2 branches missed.">					if (e.source.isOut()) {</span>
-<span class="nc" id="L1178">						e.slack += eps;</span>
-<span class="nc" id="L1179">						tree.pqInsertEvenOut(e);</span>
+<span class="fc bfc" id="L1177" title="All 2 branches covered.">					if (e.source.isOut()) {</span>
+<span class="fc" id="L1178">						e.slack += eps;</span>
+<span class="fc" id="L1179">						tree.pqInsertEvenOut(e);</span>
 <span class="fc bfc" id="L1180" title="All 4 branches covered.">					} else if (e.source.isEven() &amp;&amp; System.identityHashCode(b) &lt; System.identityHashCode(e.source)) {</span>
 <span class="fc" id="L1181">						e.slack += 2 * eps;</span>
 <span class="fc" id="L1182">						tree.pqInsertEvenEven(e);</span>
@@ -1188,7 +1188,7 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 <span class="pc bpc" id="L1189" title="1 of 2 branches missed.">			if (B.outEdges != null)</span>
 <span class="fc" id="L1190">				B.outEdges.prevOutEdge.nextOutEdge = null;</span>
-<span class="pc bpc" id="L1191" title="1 of 2 branches missed.">			if (B.inEdges != null)</span>
+<span class="fc bfc" id="L1191" title="All 2 branches covered.">			if (B.inEdges != null)</span>
 <span class="fc" id="L1192">				B.inEdges.prevInEdge.nextInEdge = null;</span>
 <span class="fc" id="L1193">			eAugment = null;</span>
 <span class="fc bfc" id="L1194" title="All 2 branches covered.">			for (Edge e : B.outEdges()) {</span>
@@ -2088,8 +2088,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 			for (;;) {
 <span class="fc bfc" id="L2089" title="All 2 branches covered.">				if (!b.blossomGrandparent.isOuter()) {</span>
 <span class="fc" id="L2090">					b = b.blossomGrandparent;</span>
-<span class="pc bpc" id="L2091" title="1 of 2 branches missed.">				} else if (b.blossomGrandparent != b.blossomParent) {</span>
-<span class="nc" id="L2092">					b.blossomGrandparent = b.blossomParent;</span>
+<span class="fc bfc" id="L2091" title="All 2 branches covered.">				} else if (b.blossomGrandparent != b.blossomParent) {</span>
+<span class="fc" id="L2092">					b.blossomGrandparent = b.blossomParent;</span>
 				} else {
 					break;
 				}

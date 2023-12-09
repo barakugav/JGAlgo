@@ -230,7 +230,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 	public void moveEdge(int edge, int newSource, int newTarget) {
 <span class="fc" id="L231">		checkEdge(edge);</span>
 <span class="fc" id="L232">		int oldSource = source(edge), oldTarget = target(edge);</span>
-<span class="pc bpc" id="L233" title="1 of 4 branches missed.">		if (oldSource == newSource &amp;&amp; oldTarget == newTarget)</span>
+<span class="fc bfc" id="L233" title="All 4 branches covered.">		if (oldSource == newSource &amp;&amp; oldTarget == newTarget)</span>
 <span class="fc" id="L234">			return;</span>
 <span class="fc" id="L235">		checkNewEdgeEndpoints(newSource, newTarget);</span>
 

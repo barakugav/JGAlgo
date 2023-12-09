@@ -70,7 +70,7 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 <span class="fc bfc" id="L70" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++)</span>
 <span class="fc bfc" id="L71" title="All 2 branches covered.">			if (degree[u] % 2 != 0)</span>
 <span class="fc" id="L72">				mVtoV[mGn++] = u;</span>
-<span class="fc" id="L73">		IndexGraphBuilder mG0 = IndexGraphBuilder.newUndirected();</span>
+<span class="fc" id="L73">		IndexGraphBuilder mG0 = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L74">		mG0.expectedVerticesNum(mGn);</span>
 <span class="fc" id="L75">		mG0.expectedEdgesNum(mGn * (mGn - 1) / 2);</span>
 <span class="fc bfc" id="L76" title="All 2 branches covered.">		for (int v = 0; v &lt; mGn; v++)</span>
@@ -90,7 +90,7 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 <span class="fc" id="L90">		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(mG, mGWeights);</span>
 
 		/* Build a graph of the union of the MST and the matching result */
-<span class="fc" id="L93">		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();</span>
+<span class="fc" id="L93">		IndexGraphBuilder g1Builder = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L94">		g1Builder.expectedVerticesNum(n);</span>
 <span class="fc" id="L95">		g1Builder.expectedEdgesNum(mst.size() + matching.edges().size());</span>
 <span class="fc bfc" id="L96" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>

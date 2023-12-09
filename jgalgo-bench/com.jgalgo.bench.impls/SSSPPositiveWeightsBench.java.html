@@ -178,7 +178,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	}
 
 	private static ShortestPathSingleSource getAlgo(String implName) {
-<span class="fc" id="L181">		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.newBuilder();</span>
+<span class="fc" id="L181">		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.builder();</span>
 <span class="fc" id="L182">		builder.setOption(&quot;impl&quot;, implName);</span>
 <span class="fc" id="L183">		return builder.build();</span>
 	}

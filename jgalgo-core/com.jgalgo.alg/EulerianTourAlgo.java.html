@@ -41,8 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * \(t\) exists.
  *
  * &lt;p&gt;
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Eulerian_path&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
@@ -66,7 +65,7 @@ public interface EulerianTourAlgo {
 	 * @throws IllegalArgumentException if there is no Eulerian tour in the graph
 	 */
 	default &lt;V, E&gt; Path&lt;V, E&gt; computeEulerianTour(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L69">		return computeEulerianTourIfExist(g).orElseThrow(() -&gt; new IllegalArgumentException(&quot;No Eulerian tour exists&quot;));</span>
+<span class="fc" id="L68">		return computeEulerianTourIfExist(g).orElseThrow(() -&gt; new IllegalArgumentException(&quot;No Eulerian tour exists&quot;));</span>
 	}
 
 	/**
@@ -98,7 +97,7 @@ public interface EulerianTourAlgo {
 	 * @return     {@code true} if the graph is Eulerian, {@code false} otherwise
 	 */
 	default &lt;V, E&gt; boolean isEulerian(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L101">		return computeEulerianTourIfExist(g).isPresent();</span>
+<span class="fc" id="L100">		return computeEulerianTourIfExist(g).isPresent();</span>
 	}
 
 	/**
@@ -118,59 +117,59 @@ public interface EulerianTourAlgo {
 	static &lt;V, E&gt; boolean isEulerianTour(Graph&lt;V, E&gt; g, List&lt;E&gt; tour) {
 		IndexGraph ig;
 		IntList tour0;
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L122">			ig = (IndexGraph) g;</span>
-<span class="fc" id="L123">			tour0 = IntAdapters.asIntList((List&lt;Integer&gt;) tour);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L121">			ig = (IndexGraph) g;</span>
+<span class="fc" id="L122">			tour0 = IntAdapters.asIntList((List&lt;Integer&gt;) tour);</span>
 		} else {
-<span class="fc" id="L125">			ig = g.indexGraph();</span>
-<span class="fc" id="L126">			tour0 = IndexIdMaps.idToIndexList(tour, g.indexGraphEdgesMap());</span>
+<span class="fc" id="L124">			ig = g.indexGraph();</span>
+<span class="fc" id="L125">			tour0 = IndexIdMaps.idToIndexList(tour, g.indexGraphEdgesMap());</span>
 		}
 
-<span class="fc" id="L129">		final int m = ig.edges().size();</span>
-<span class="fc bfc" id="L130" title="All 2 branches covered.">		if (tour0.size() != m)</span>
-<span class="fc" id="L131">			return false;</span>
-<span class="fc bfc" id="L132" title="All 2 branches covered.">		if (m == 0)</span>
-<span class="fc" id="L133">			return true;</span>
-<span class="fc" id="L134">		Bitmap visited = new Bitmap(m);</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">		if (ig.isDirected()) {</span>
-<span class="fc" id="L136">			int u = ig.edgeSource(tour0.getInt(0));</span>
-<span class="fc" id="L137">			IntIterator it = tour0.iterator();</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">			for (int i = 0; i &lt; m; i++) {</span>
-<span class="fc" id="L139">				int e = it.nextInt();</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">				if (visited.get(e))</span>
-<span class="fc" id="L141">					return false;</span>
-<span class="fc" id="L142">				visited.set(e);</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">				if (ig.edgeSource(e) != u)</span>
-<span class="fc" id="L144">					return false;</span>
-<span class="fc" id="L145">				u = ig.edgeTarget(e);</span>
+<span class="fc" id="L128">		final int m = ig.edges().size();</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">		if (tour0.size() != m)</span>
+<span class="fc" id="L130">			return false;</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">		if (m == 0)</span>
+<span class="fc" id="L132">			return true;</span>
+<span class="fc" id="L133">		Bitmap visited = new Bitmap(m);</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		if (ig.isDirected()) {</span>
+<span class="fc" id="L135">			int u = ig.edgeSource(tour0.getInt(0));</span>
+<span class="fc" id="L136">			IntIterator it = tour0.iterator();</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			for (int i = 0; i &lt; m; i++) {</span>
+<span class="fc" id="L138">				int e = it.nextInt();</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">				if (visited.get(e))</span>
+<span class="fc" id="L140">					return false;</span>
+<span class="fc" id="L141">				visited.set(e);</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">				if (ig.edgeSource(e) != u)</span>
+<span class="fc" id="L143">					return false;</span>
+<span class="fc" id="L144">				u = ig.edgeTarget(e);</span>
 			}
-<span class="fc" id="L147">			return true;</span>
+<span class="fc" id="L146">			return true;</span>
 
 		} else {
-<span class="fc" id="L150">			int firstEdge = tour0.getInt(0);</span>
-<span class="fc" id="L151">			boolean foundValidStartingEndpoint = false;</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">			startingEndpointLoop: for (boolean startingEndpoint : BooleanList.of(true, false)) {</span>
-<span class="fc" id="L153">				visited.clear();</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">				int u = startingEndpoint ? ig.edgeSource(firstEdge) : ig.edgeTarget(firstEdge);</span>
-<span class="fc" id="L155">				IntIterator it = tour0.iterator();</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">				for (int i = 0; i &lt; m; i++) {</span>
-<span class="fc" id="L157">					int e = it.nextInt();</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">					if (visited.get(e))</span>
-<span class="fc" id="L159">						return false;</span>
-<span class="fc" id="L160">					visited.set(e);</span>
-<span class="fc" id="L161">					int eu = ig.edgeSource(e), ev = ig.edgeTarget(e);</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">					if (u == eu) {</span>
-<span class="fc" id="L163">						u = ev;</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">					} else if (u == ev) {</span>
-<span class="fc" id="L165">						u = eu;</span>
+<span class="fc" id="L149">			int firstEdge = tour0.getInt(0);</span>
+<span class="fc" id="L150">			boolean foundValidStartingEndpoint = false;</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">			startingEndpointLoop: for (boolean startingEndpoint : BooleanList.of(true, false)) {</span>
+<span class="fc" id="L152">				visited.clear();</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">				int u = startingEndpoint ? ig.edgeSource(firstEdge) : ig.edgeTarget(firstEdge);</span>
+<span class="fc" id="L154">				IntIterator it = tour0.iterator();</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">				for (int i = 0; i &lt; m; i++) {</span>
+<span class="fc" id="L156">					int e = it.nextInt();</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">					if (visited.get(e))</span>
+<span class="fc" id="L158">						return false;</span>
+<span class="fc" id="L159">					visited.set(e);</span>
+<span class="fc" id="L160">					int eu = ig.edgeSource(e), ev = ig.edgeTarget(e);</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">					if (u == eu) {</span>
+<span class="fc" id="L162">						u = ev;</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">					} else if (u == ev) {</span>
+<span class="fc" id="L164">						u = eu;</span>
 					} else {
 						continue startingEndpointLoop;
 					}
 				}
-<span class="fc" id="L170">				foundValidStartingEndpoint = true;</span>
-<span class="fc" id="L171">				break;</span>
+<span class="fc" id="L169">				foundValidStartingEndpoint = true;</span>
+<span class="fc" id="L170">				break;</span>
 			}
-<span class="fc" id="L173">			return foundValidStartingEndpoint;</span>
+<span class="fc" id="L172">			return foundValidStartingEndpoint;</span>
 		}
 	}
 
@@ -178,41 +177,12 @@ public interface EulerianTourAlgo {
 	 * Create a new Eulerian tour computation algorithm.
 	 *
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link EulerianTourAlgo} object. The
-	 * {@link EulerianTourAlgo.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link EulerianTourAlgo} object.
 	 *
 	 * @return a default implementation of {@link EulerianTourAlgo}
 	 */
 	static EulerianTourAlgo newInstance() {
-<span class="fc" id="L187">		return newBuilder().build();</span>
-	}
-
-	/**
-	 * Create a new Eulerian tour algorithm builder.
-	 *
-	 * &lt;p&gt;
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link EulerianTourAlgo} objects
-	 */
-	static EulerianTourAlgo.Builder newBuilder() {
-<span class="fc" id="L199">		return EulerianTourImpl::new;</span>
-	}
-
-	/**
-	 * A builder for {@link EulerianTourAlgo} objects.
-	 *
-	 * @see    EulerianTourAlgo#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for Eulerian tours computation.
-		 *
-		 * @return a new Eulerian tour algorithm
-		 */
-		EulerianTourAlgo build();
+<span class="fc" id="L185">		return new EulerianTourImpl();</span>
 	}
 
 }

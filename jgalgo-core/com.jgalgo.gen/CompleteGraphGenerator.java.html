@@ -188,7 +188,7 @@ public class CompleteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, 
 <span class="fc" id="L188">			m += n;</span>
 
 <span class="fc bfc" id="L190" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">			IntGraphBuilder g = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
+<span class="fc" id="L191">			IntGraphBuilder g = IntGraphBuilder.newInstance(directed);</span>
 <span class="fc" id="L192">			g.expectedVerticesNum(n);</span>
 <span class="fc" id="L193">			g.expectedEdgesNum(m);</span>
 <span class="fc" id="L194">			final int[] vertices = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.vertices).toIntArray();</span>
@@ -214,7 +214,7 @@ public class CompleteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, 
 <span class="fc" id="L214">			return (GraphBuilder&lt;V, E&gt;) g;</span>
 
 		} else {
-<span class="fc bfc" id="L217" title="All 2 branches covered.">			GraphBuilder&lt;V, E&gt; g = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
+<span class="fc" id="L217">			GraphBuilder&lt;V, E&gt; g = GraphBuilder.newInstance(directed);</span>
 <span class="fc" id="L218">			g.expectedVerticesNum(n);</span>
 <span class="fc" id="L219">			g.expectedEdgesNum(m);</span>
 <span class="fc" id="L220">			final V[] vertices = (V[]) this.vertices.toArray();</span>

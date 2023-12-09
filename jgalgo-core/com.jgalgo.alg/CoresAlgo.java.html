@@ -30,8 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * in-degree + out-degree, determining different types of cores. See {@link EdgeDirection} for more details.
  *
  * &lt;p&gt;
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    EdgeDirection
  * @author Barak Ugav
@@ -53,7 +52,7 @@ public interface CoresAlgo {
 	 * @return     the cores of the graph
 	 */
 	default &lt;V, E&gt; CoresAlgo.Result&lt;V, E&gt; computeCores(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L56">		return computeCores(g, EdgeDirection.All);</span>
+<span class="fc" id="L55">		return computeCores(g, EdgeDirection.All);</span>
 	}
 
 	/**
@@ -162,7 +161,7 @@ public interface CoresAlgo {
 		@Deprecated
 		@Override
 		default int vertexCoreNum(Integer v) {
-<span class="fc" id="L165">			return vertexCoreNum(v.intValue());</span>
+<span class="fc" id="L164">			return vertexCoreNum(v.intValue());</span>
 		}
 
 		@Override
@@ -179,41 +178,12 @@ public interface CoresAlgo {
 	 * Create a new cores algorithm object.
 	 *
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link CoresAlgo} object. The {@link CoresAlgo.Builder} might
-	 * support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link CoresAlgo} object.
 	 *
 	 * @return a default implementation of {@link CoresAlgo}
 	 */
 	static CoresAlgo newInstance() {
-<span class="nc" id="L188">		return newBuilder().build();</span>
-	}
-
-	/**
-	 * Create a new builder for core algorithms.
-	 *
-	 * &lt;p&gt;
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder for core algorithms
-	 */
-	static CoresAlgo.Builder newBuilder() {
-<span class="nc" id="L200">		return CoresAlgoImpl::new;</span>
-	}
-
-	/**
-	 * A builder for {@link CoresAlgo} objects.
-	 *
-	 * @see    CoresAlgo#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Build a new {@link CoresAlgo} object.
-		 *
-		 * @return a new {@link CoresAlgo} object
-		 */
-		CoresAlgo build();
+<span class="nc" id="L186">		return new CoresAlgoImpl();</span>
 	}
 
 }

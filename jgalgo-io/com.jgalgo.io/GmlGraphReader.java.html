@@ -230,10 +230,10 @@ import it.unimi.dsi.fastutil.objects.ObjectObjectMutablePair;
 
 <span class="fc bfc" id="L231" title="All 4 branches covered.">		final boolean intGraph = vType == int.class &amp;&amp; eType == int.class;</span>
 		@SuppressWarnings(&quot;unchecked&quot;)
-		GraphFactory&lt;V, E&gt; factory =
-<span class="fc bfc" id="L234" title="All 2 branches covered.">				intGraph ? (GraphFactory&lt;V, E&gt;) IntGraphFactory.newUndirected() : GraphFactory.newUndirected();</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">		GraphFactory&lt;V, E&gt; factory = intGraph ? (GraphFactory&lt;V, E&gt;) IntGraphFactory.newInstance(directed)</span>
+<span class="fc" id="L234">				: GraphFactory.newInstance(directed);</span>
 
-<span class="fc" id="L236">		GraphBuilder&lt;V, E&gt; b = factory.setDirected(directed).allowSelfEdges().newBuilder();</span>
+<span class="fc" id="L236">		GraphBuilder&lt;V, E&gt; b = factory.allowSelfEdges().newBuilder();</span>
 <span class="fc bfc" id="L237" title="All 2 branches covered.">		IntGraphBuilder bInt = intGraph ? (IntGraphBuilder) b : null;</span>
 
 <span class="fc" id="L239">		Map&lt;String, List&lt;Pair&lt;V, Object&gt;&gt;&gt; vWeights = new Object2ObjectOpenHashMap&lt;&gt;();</span>

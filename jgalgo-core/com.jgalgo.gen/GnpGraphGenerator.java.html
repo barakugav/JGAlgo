@@ -226,7 +226,7 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 <span class="fc" id="L226">		final int n = vertices.size();</span>
 
 <span class="fc bfc" id="L228" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc bfc" id="L229" title="All 2 branches covered.">			IntGraphBuilder g = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
+<span class="fc" id="L229">			IntGraphBuilder g = IntGraphBuilder.newInstance(directed);</span>
 <span class="fc" id="L230">			g.expectedVerticesNum(n);</span>
 <span class="fc" id="L231">			final int[] vertices = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.vertices).toIntArray();</span>
 <span class="fc bfc" id="L232" title="All 2 branches covered.">			for (int v : vertices)</span>
@@ -255,7 +255,7 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 <span class="fc" id="L255">			return (GraphBuilder&lt;V, E&gt;) g;</span>
 
 		} else {
-<span class="fc bfc" id="L258" title="All 2 branches covered.">			GraphBuilder&lt;V, E&gt; g = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
+<span class="fc" id="L258">			GraphBuilder&lt;V, E&gt; g = GraphBuilder.newInstance(directed);</span>
 <span class="fc" id="L259">			g.expectedVerticesNum(n);</span>
 <span class="fc" id="L260">			final V[] vertices = (V[]) this.vertices.toArray();</span>
 <span class="fc bfc" id="L261" title="All 2 branches covered.">			for (V v : vertices)</span>
@@ -270,7 +270,7 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 <span class="fc" id="L270">								g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
 						}
 					}
-<span class="fc bfc" id="L273" title="All 4 branches covered.">					if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
+<span class="pc bpc" id="L273" title="1 of 4 branches missed.">					if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
 <span class="fc" id="L274">						g.addEdge(u, u, edgeBuilder.apply(u, u));</span>
 <span class="fc bfc" id="L275" title="All 2 branches covered.">					for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++) {</span>
 <span class="fc" id="L276">						V v = vertices[vIdx];</span>

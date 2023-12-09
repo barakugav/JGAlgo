@@ -2201,7 +2201,7 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 <span class="fc bfc" id="L2202" title="All 4 branches covered.">		if (vertices == null &amp;&amp; edges == null)</span>
 <span class="fc" id="L2203">			throw new NullPointerException(&quot;Either vertices or edges can be null, not both.&quot;);</span>
-<span class="fc bfc" id="L2204" title="All 2 branches covered.">		GraphBuilder&lt;V, E&gt; gb = g.isDirected() ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
+<span class="fc" id="L2204">		GraphBuilder&lt;V, E&gt; gb = GraphBuilder.newInstance(g.isDirected());</span>
 
 <span class="fc bfc" id="L2206" title="All 2 branches covered.">		if (vertices == null) {</span>
 <span class="fc" id="L2207">			vertices = new ObjectOpenHashSet();</span>
@@ -2300,7 +2300,7 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 <span class="fc bfc" id="L2301" title="All 4 branches covered.">		if (vertices == null &amp;&amp; edges == null)</span>
 <span class="fc" id="L2302">			throw new NullPointerException(&quot;Either vertices or edges can be null, not both.&quot;);</span>
-<span class="fc bfc" id="L2303" title="All 2 branches covered.">		IntGraphBuilder gb = g.isDirected() ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
+<span class="fc" id="L2303">		IntGraphBuilder gb = IntGraphBuilder.newInstance(g.isDirected());</span>
 
 <span class="fc bfc" id="L2305" title="All 2 branches covered.">		if (vertices == null) {</span>
 <span class="fc" id="L2306">			vertices = new IntOpenHashSet();</span>
@@ -2591,7 +2591,7 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 <span class="fc bfc" id="L2591" title="All 2 branches covered.">			for (int e : g1.edges()) {</span>
 <span class="fc" id="L2592">				int s1 = g1.edgeSource(e), t1 = g1.edgeTarget(e);</span>
 <span class="fc" id="L2593">				int s2 = g2.edgeSource(e), t2 = g2.edgeTarget(e);</span>
-<span class="pc bpc" id="L2594" title="1 of 8 branches missed.">				if (!(s1 == s2 &amp;&amp; t1 == t2) &amp;&amp; !(s1 == t2 &amp;&amp; t1 == s2))</span>
+<span class="pc bpc" id="L2594" title="4 of 8 branches missed.">				if (!(s1 == s2 &amp;&amp; t1 == t2) &amp;&amp; !(s1 == t2 &amp;&amp; t1 == s2))</span>
 <span class="fc" id="L2595">					return false;</span>
 <span class="fc" id="L2596">			}</span>
 		}

@@ -587,7 +587,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @return a new undirected empty graph
 	 */
 	static IntGraph newUndirected() {
-<span class="fc" id="L590">		return IntGraphFactory.newUndirected().newGraph();</span>
+<span class="fc" id="L590">		return IntGraphFactory.undirected().newGraph();</span>
 	}
 
 	/**
@@ -600,7 +600,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @return a new directed empty graph
 	 */
 	static IntGraph newDirected() {
-<span class="fc" id="L603">		return IntGraphFactory.newDirected().newGraph();</span>
+<span class="fc" id="L603">		return IntGraphFactory.directed().newGraph();</span>
 	}
 
 }

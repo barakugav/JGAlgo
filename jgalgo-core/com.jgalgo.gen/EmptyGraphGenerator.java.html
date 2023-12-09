@@ -112,7 +112,7 @@ public class EmptyGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	@Override
 	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
 <span class="fc bfc" id="L114" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">			IntGraphBuilder g = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
+<span class="fc" id="L115">			IntGraphBuilder g = IntGraphBuilder.newInstance(directed);</span>
 <span class="fc bfc" id="L116" title="All 2 branches covered.">			if (vertices != null) {</span>
 <span class="fc" id="L117">				g.expectedVerticesNum(vertices.size());</span>
 <span class="fc bfc" id="L118" title="All 2 branches covered.">				for (int v : IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices))</span>
@@ -120,7 +120,7 @@ public class EmptyGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 			}
 <span class="fc" id="L121">			return (GraphBuilder&lt;V, E&gt;) g;</span>
 		} else {
-<span class="fc bfc" id="L123" title="All 2 branches covered.">			GraphBuilder&lt;V, E&gt; g = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
+<span class="fc" id="L123">			GraphBuilder&lt;V, E&gt; g = GraphBuilder.newInstance(directed);</span>
 <span class="fc bfc" id="L124" title="All 2 branches covered.">			if (vertices != null) {</span>
 <span class="fc" id="L125">				g.expectedVerticesNum(vertices.size());</span>
 <span class="fc bfc" id="L126" title="All 2 branches covered.">				for (V v : vertices)</span>

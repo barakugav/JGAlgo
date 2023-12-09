@@ -39,7 +39,7 @@ import com.jgalgo.graph.WeightFunction;
  *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * @see    ShortestPathSingleSource
  * @author Barak Ugav
@@ -89,7 +89,7 @@ public interface ShortestPathHeuristicST {
 	 * @return a default implementation of {@link ShortestPathHeuristicST}
 	 */
 	static ShortestPathHeuristicST newInstance() {
-<span class="nc" id="L92">		return newBuilder().build();</span>
+<span class="nc" id="L92">		return builder().build();</span>
 	}
 
 	/**
@@ -100,7 +100,7 @@ public interface ShortestPathHeuristicST {
 	 *
 	 * @return a new builder that can build {@link ShortestPathHeuristicST} objects
 	 */
-	static ShortestPathHeuristicST.Builder newBuilder() {
+	static ShortestPathHeuristicST.Builder builder() {
 <span class="nc" id="L104">		return new ShortestPathHeuristicST.Builder() {</span>
 
 			private String impl;
@@ -134,7 +134,7 @@ public interface ShortestPathHeuristicST {
 	/**
 	 * A builder for {@link ShortestPathHeuristicST} objects.
 	 *
-	 * @see    ShortestPathHeuristicST#newBuilder()
+	 * @see    ShortestPathHeuristicST#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

@@ -298,73 +298,72 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L298">		}</span>
 
 <span class="fc bfc" id="L300" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc bfc" id="L301" title="All 2 branches covered.">			IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();</span>
-<span class="fc" id="L302">			IntGraphBuilder g = factory.allowSelfEdges().newBuilder();</span>
-<span class="fc" id="L303">			g.expectedVerticesNum(n);</span>
-<span class="fc" id="L304">			g.expectedVerticesNum(m);</span>
-<span class="fc" id="L305">			final int[] vertices = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.vertices).toIntArray();</span>
-<span class="fc bfc" id="L306" title="All 2 branches covered.">			for (int v : vertices)</span>
-<span class="fc" id="L307">				g.addVertex(v);</span>
-<span class="fc" id="L308">			IntBinaryOperator edgeBuilder =</span>
-<span class="fc" id="L309">					IntAdapters.asIntBiOperator((BiFunction&lt;Integer, Integer, Integer&gt;) this.edgeBuilder);</span>
-<span class="fc bfc" id="L310" title="All 2 branches covered.">			if (directed) {</span>
-<span class="fc bfc" id="L311" title="All 2 branches covered.">				for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
-<span class="fc bfc" id="L312" title="All 2 branches covered.">					for (int vIdx = 0; vIdx &lt; n; vIdx++) {</span>
-<span class="fc" id="L313">						int u = vertices[uIdx];</span>
-<span class="fc bfc" id="L314" title="All 2 branches covered.">						if (edges.get(uIdx * N + vIdx)) {</span>
-<span class="fc" id="L315">							int v = vertices[vIdx];</span>
-<span class="fc" id="L316">							g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));</span>
+<span class="fc" id="L301">			IntGraphBuilder g = IntGraphFactory.newInstance(directed).allowSelfEdges().newBuilder();</span>
+<span class="fc" id="L302">			g.expectedVerticesNum(n);</span>
+<span class="fc" id="L303">			g.expectedVerticesNum(m);</span>
+<span class="fc" id="L304">			final int[] vertices = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.vertices).toIntArray();</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">			for (int v : vertices)</span>
+<span class="fc" id="L306">				g.addVertex(v);</span>
+<span class="fc" id="L307">			IntBinaryOperator edgeBuilder =</span>
+<span class="fc" id="L308">					IntAdapters.asIntBiOperator((BiFunction&lt;Integer, Integer, Integer&gt;) this.edgeBuilder);</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">				for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">					for (int vIdx = 0; vIdx &lt; n; vIdx++) {</span>
+<span class="fc" id="L312">						int u = vertices[uIdx];</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">						if (edges.get(uIdx * N + vIdx)) {</span>
+<span class="fc" id="L314">							int v = vertices[vIdx];</span>
+<span class="fc" id="L315">							g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));</span>
 						}
 					}
 				}
 			} else {
-<span class="fc bfc" id="L321" title="All 2 branches covered.">				for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
-<span class="fc" id="L322">					int u = vertices[uIdx];</span>
-<span class="fc bfc" id="L323" title="All 2 branches covered.">					for (int vIdx = uIdx; vIdx &lt; n; vIdx++) {</span>
-<span class="fc bfc" id="L324" title="All 2 branches covered.">						if (edges.get(uIdx * N + vIdx)) {</span>
-<span class="fc" id="L325">							int v = vertices[vIdx];</span>
-<span class="fc" id="L326">							g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));</span>
+<span class="fc bfc" id="L320" title="All 2 branches covered.">				for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
+<span class="fc" id="L321">					int u = vertices[uIdx];</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">					for (int vIdx = uIdx; vIdx &lt; n; vIdx++) {</span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">						if (edges.get(uIdx * N + vIdx)) {</span>
+<span class="fc" id="L324">							int v = vertices[vIdx];</span>
+<span class="fc" id="L325">							g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));</span>
 						}
 					}
 				}
 			}
-<span class="fc" id="L331">			return (GraphBuilder&lt;V, E&gt;) g;</span>
+<span class="fc" id="L330">			return (GraphBuilder&lt;V, E&gt;) g;</span>
 
 		} else {
-<span class="fc bfc" id="L334" title="All 2 branches covered.">			GraphFactory&lt;V, E&gt; factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();</span>
-<span class="fc" id="L335">			GraphBuilder&lt;V, E&gt; g = factory.allowSelfEdges().newBuilder();</span>
-<span class="fc" id="L336">			g.expectedVerticesNum(n);</span>
-<span class="fc" id="L337">			g.expectedVerticesNum(m);</span>
-<span class="fc" id="L338">			final V[] vertices = (V[]) this.vertices.toArray();</span>
-<span class="fc bfc" id="L339" title="All 2 branches covered.">			for (V v : vertices)</span>
-<span class="fc" id="L340">				g.addVertex(v);</span>
-<span class="fc bfc" id="L341" title="All 2 branches covered.">			if (directed) {</span>
-<span class="fc bfc" id="L342" title="All 2 branches covered.">				for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
-<span class="fc bfc" id="L343" title="All 2 branches covered.">					for (int vIdx = 0; vIdx &lt; n; vIdx++) {</span>
-<span class="fc" id="L344">						V u = vertices[uIdx];</span>
-<span class="fc bfc" id="L345" title="All 2 branches covered.">						if (edges.get(uIdx * N + vIdx)) {</span>
-<span class="fc" id="L346">							V v = vertices[vIdx];</span>
-<span class="fc" id="L347">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc" id="L333">			GraphFactory&lt;V, E&gt; factory = GraphFactory.newInstance(directed);</span>
+<span class="fc" id="L334">			GraphBuilder&lt;V, E&gt; g = factory.allowSelfEdges().newBuilder();</span>
+<span class="fc" id="L335">			g.expectedVerticesNum(n);</span>
+<span class="fc" id="L336">			g.expectedVerticesNum(m);</span>
+<span class="fc" id="L337">			final V[] vertices = (V[]) this.vertices.toArray();</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">			for (V v : vertices)</span>
+<span class="fc" id="L339">				g.addVertex(v);</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">				for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
+<span class="fc bfc" id="L342" title="All 2 branches covered.">					for (int vIdx = 0; vIdx &lt; n; vIdx++) {</span>
+<span class="fc" id="L343">						V u = vertices[uIdx];</span>
+<span class="fc bfc" id="L344" title="All 2 branches covered.">						if (edges.get(uIdx * N + vIdx)) {</span>
+<span class="fc" id="L345">							V v = vertices[vIdx];</span>
+<span class="fc" id="L346">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
 						}
 					}
 				}
 			} else {
-<span class="fc bfc" id="L352" title="All 2 branches covered.">				for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
-<span class="fc" id="L353">					V u = vertices[uIdx];</span>
-<span class="fc bfc" id="L354" title="All 2 branches covered.">					for (int vIdx = uIdx; vIdx &lt; n; vIdx++) {</span>
-<span class="fc bfc" id="L355" title="All 2 branches covered.">						if (edges.get(uIdx * N + vIdx)) {</span>
-<span class="fc" id="L356">							V v = vertices[vIdx];</span>
-<span class="fc" id="L357">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">				for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
+<span class="fc" id="L352">					V u = vertices[uIdx];</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">					for (int vIdx = uIdx; vIdx &lt; n; vIdx++) {</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">						if (edges.get(uIdx * N + vIdx)) {</span>
+<span class="fc" id="L355">							V v = vertices[vIdx];</span>
+<span class="fc" id="L356">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
 						}
 					}
 				}
 			}
-<span class="fc" id="L362">			return g;</span>
+<span class="fc" id="L361">			return g;</span>
 		}
 	}
 
 	private static int nextPowerOf2(int x) {
-<span class="pc bpc" id="L367" title="1 of 2 branches missed.">		return x == 0 ? 0 : 32 - Integer.numberOfLeadingZeros(x - 1);</span>
+<span class="pc bpc" id="L366" title="1 of 2 branches missed.">		return x == 0 ? 0 : 32 - Integer.numberOfLeadingZeros(x - 1);</span>
 	}
 
 }

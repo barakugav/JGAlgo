@@ -36,8 +36,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * For undirected graphs, the closure subsets are simply the weakly connected components.
  *
  * &lt;p&gt;
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Closure_problem&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
@@ -81,48 +80,19 @@ public interface ClosuresEnumerator {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	default &lt;V, E&gt; List&lt;Set&lt;V&gt;&gt; allClosures(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L84">		return new ObjectArrayList&lt;&gt;(closuresIter(g));</span>
+<span class="fc" id="L83">		return new ObjectArrayList&lt;&gt;(closuresIter(g));</span>
 	}
 
 	/**
 	 * Create a new closure enumeration algorithm.
 	 *
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link ClosuresEnumerator} object. The
-	 * {@link ClosuresEnumerator.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link ClosuresEnumerator} object.
 	 *
 	 * @return a default implementation of {@link ClosuresEnumerator}
 	 */
 	static ClosuresEnumerator newInstance() {
-<span class="fc" id="L97">		return newBuilder().build();</span>
-	}
-
-	/**
-	 * Create a new closure enumeration algo builder.
-	 *
-	 * &lt;p&gt;
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link ClosuresEnumerator} objects
-	 */
-	static ClosuresEnumerator.Builder newBuilder() {
-<span class="fc" id="L109">		return ClosuresEnumeratorSchrageBaker::new;</span>
-	}
-
-	/**
-	 * A builder for {@link ClosuresEnumerator} objects.
-	 *
-	 * @see    ClosuresEnumerator#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for closure enumeration.
-		 *
-		 * @return a new closure enumeration algorithm
-		 */
-		ClosuresEnumerator build();
+<span class="fc" id="L95">		return new ClosuresEnumeratorSchrageBaker();</span>
 	}
 
 	/**
@@ -140,17 +110,17 @@ public interface ClosuresEnumerator {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; boolean isClosure(Graph&lt;V, E&gt; g, Set&lt;V&gt; c) {
-<span class="fc bfc" id="L143" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L144">			IntSet c0 = IntAdapters.asIntSet((Set&lt;Integer&gt;) c);</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (int w : IPath.reachableVertices((IntGraph) g, c0.iterator()))</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">				if (!(c0.contains(w)))</span>
-<span class="fc" id="L147">					return false;</span>
-<span class="fc" id="L148">		} else {</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">			for (V w : Path.reachableVertices(g, c.iterator()))</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">				if (!(c.contains(w)))</span>
-<span class="fc" id="L151">					return false;</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L114">			IntSet c0 = IntAdapters.asIntSet((Set&lt;Integer&gt;) c);</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">			for (int w : IPath.reachableVertices((IntGraph) g, c0.iterator()))</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">				if (!(c0.contains(w)))</span>
+<span class="fc" id="L117">					return false;</span>
+<span class="fc" id="L118">		} else {</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">			for (V w : Path.reachableVertices(g, c.iterator()))</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">				if (!(c.contains(w)))</span>
+<span class="fc" id="L121">					return false;</span>
 		}
-<span class="fc" id="L153">		return true;</span>
+<span class="fc" id="L123">		return true;</span>
 	}
 
 }

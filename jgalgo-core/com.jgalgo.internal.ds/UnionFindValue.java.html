@@ -24,8 +24,7 @@ package com.jgalgo.internal.ds;
  * of each elements and addition of some value to all elements of a set using the {@link #addValue(int, double)} method.
  *
  * &lt;p&gt;
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * &lt;pre&gt; {@code
  * UnionFindValue uf = UnionFindValue.newInstance();
@@ -69,7 +68,7 @@ public interface UnionFindValue extends UnionFind {
 	 */
 	@Override
 	default int make() {
-<span class="nc" id="L72">		return make(0);</span>
+<span class="nc" id="L71">		return make(0);</span>
 	}
 
 	/**
@@ -92,56 +91,27 @@ public interface UnionFindValue extends UnionFind {
 	 * Create a new union find algorithm with values.
 	 *
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link UnionFindValue} object. The
-	 * {@link UnionFindValue.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link UnionFindValue} object.
 	 *
 	 * @return a default implementation of {@link UnionFindValue}
 	 */
 	static UnionFindValue newInstance() {
-<span class="fc" id="L101">		return newBuilder().build();</span>
+<span class="fc" id="L99">		return new UnionFindValueArray();</span>
 	}
 
 	/**
-	 * Create a new union-find with values data structure builder.
+	 * Create a new union find algorithm with values and expected size.
 	 *
 	 * &lt;p&gt;
-	 * Use {@link #newInstance()} for a default implementation.
+	 * This is the recommended way to instantiate a new {@link UnionFindValue} object.
 	 *
-	 * @return a new builder that can build {@link UnionFindValue} objects
+	 * @param  expectedSize expected number of elements in the data structure
+	 * @return              a default implementation of {@link UnionFindValue}
 	 */
-	static UnionFindValue.Builder newBuilder() {
-<span class="fc" id="L113">		return new UnionFindValue.Builder() {</span>
-			int expectedSize;
-
-			@Override
-			public UnionFindValue build() {
-<span class="fc" id="L118">				return new UnionFindValueArray(expectedSize);</span>
-			}
-
-			@Override
-			public UnionFindValue.Builder expectedSize(int expectedSize) {
-<span class="pc bpc" id="L123" title="1 of 2 branches missed.">				if (expectedSize &lt; 0)</span>
-<span class="nc" id="L124">					throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
-<span class="fc" id="L125">				this.expectedSize = expectedSize;</span>
-<span class="fc" id="L126">				return this;</span>
-			}
-		};
-	}
-
-	/**
-	 * A builder for {@link UnionFindValue} objects.
-	 *
-	 * @see    UnionFindValue#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends UnionFind.Builder {
-
-		@Override
-		UnionFindValue build();
-
-		@Override
-		UnionFindValue.Builder expectedSize(int expectedSize);
-
+	static UnionFindValue newInstance(int expectedSize) {
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		if (expectedSize &lt; 0)</span>
+<span class="nc" id="L113">			throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
+<span class="fc" id="L114">		return new UnionFindValueArray(expectedSize);</span>
 	}
 
 }

@@ -293,7 +293,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 <span class="pc bnc" id="L293" title="All 2 branches missed.">		assert g == partition.graph();</span>
 <span class="fc" id="L294">		final int numberOfBlocks = partition.numberOfBlocks();</span>
 <span class="fc" id="L295">		final boolean directed = g.isDirected();</span>
-<span class="fc bfc" id="L296" title="All 2 branches covered.">		IntGraphBuilder gb = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
+<span class="fc" id="L296">		IntGraphBuilder gb = IntGraphBuilder.newInstance(directed);</span>
 <span class="fc" id="L297">		gb.expectedVerticesNum(numberOfBlocks);</span>
 <span class="fc bfc" id="L298" title="All 2 branches covered.">		for (int b = 0; b &lt; numberOfBlocks; b++)</span>
 <span class="fc" id="L299">			gb.addVertex(b);</span>
@@ -383,7 +383,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 		@Override
 		public IntGraph blocksGraph(boolean parallelEdges, boolean selfEdges) {
 <span class="fc" id="L385">			IntGraph ig = VertexPartitions.blocksGraph(g.indexGraph(), indexPartition, parallelEdges, selfEdges);</span>
-<span class="fc bfc" id="L386" title="All 2 branches covered.">			IntGraphBuilder gb = g.isDirected() ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
+<span class="fc" id="L386">			IntGraphBuilder gb = IntGraphBuilder.newInstance(g.isDirected());</span>
 <span class="fc" id="L387">			gb.expectedVerticesNum(ig.vertices().size());</span>
 <span class="fc" id="L388">			gb.expectedEdgesNum(ig.edges().size());</span>
 <span class="fc bfc" id="L389" title="All 2 branches covered.">			for (int b : ig.vertices())</span>
@@ -448,7 +448,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 		@Override
 		public Graph&lt;Integer, E&gt; blocksGraph(boolean parallelEdges, boolean selfEdges) {
 <span class="fc" id="L450">			IntGraph ig = VertexPartitions.blocksGraph(g.indexGraph(), indexPartition, parallelEdges, selfEdges);</span>
-<span class="fc bfc" id="L451" title="All 2 branches covered.">			GraphBuilder&lt;Integer, E&gt; gb = g.isDirected() ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
+<span class="fc" id="L451">			GraphBuilder&lt;Integer, E&gt; gb = GraphBuilder.newInstance(g.isDirected());</span>
 <span class="fc" id="L452">			gb.expectedVerticesNum(ig.vertices().size());</span>
 <span class="fc" id="L453">			gb.expectedEdgesNum(ig.edges().size());</span>
 <span class="fc bfc" id="L454" title="All 2 branches covered.">			for (int b : ig.vertices())</span>

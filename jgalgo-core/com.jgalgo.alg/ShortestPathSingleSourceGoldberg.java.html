@@ -58,7 +58,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 <span class="fc" id="L59">	private ShortestPathSingleSource positiveSsspAlgo = ShortestPathSingleSource.newInstance();</span>
 <span class="fc" id="L60">	private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();</span>
-<span class="fc" id="L61">	private final ShortestPathSingleSource dagSssp = ShortestPathSingleSource.newBuilder().setDag(true).build();</span>
+<span class="fc" id="L61">	private final ShortestPathSingleSource dagSssp = ShortestPathSingleSource.builder().setDag(true).build();</span>
 <span class="fc" id="L62">	private final StronglyConnectedComponentsAlgo ccAlg = StronglyConnectedComponentsAlgo.newInstance();</span>
 
 <span class="fc" id="L64">	private final Diagnostics diagnostics = new Diagnostics();</span>
@@ -138,13 +138,13 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 <span class="fc" id="L138">		int[] w = new int[m];</span>
 
 		/* gNeg is the graph g with only 0,-1 edges */
-<span class="fc" id="L141">		IndexGraph gNeg = IndexGraphFactory.newDirected().expectedVerticesNum(n).newGraph();</span>
+<span class="fc" id="L141">		IndexGraph gNeg = IndexGraphFactory.directed().expectedVerticesNum(n).newGraph();</span>
 <span class="fc bfc" id="L142" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L143">			gNeg.addVertex();</span>
 <span class="fc" id="L144">		int[] gNegEdgeRefs = new int[m];</span>
 
 		/* G is the graph of strong connected components of gNeg, each vertex is a super vertex of gNeg */
-<span class="fc" id="L147">		IndexGraph G = IndexGraphFactory.newDirected().allowParallelEdges().expectedVerticesNum(n + 2).newGraph();</span>
+<span class="fc" id="L147">		IndexGraph G = IndexGraphFactory.directed().allowParallelEdges().expectedVerticesNum(n + 2).newGraph();</span>
 		/* Two fake vertices used to add 0-edges and (r-i)-edges to all other (super) vertices */
 
 		/*

@@ -182,7 +182,7 @@ class CyclesEnumeratorJohnson extends CyclesEnumeratorAbstract {
 <span class="fc" id="L182">				int subToFull = startV;</span>
 <span class="fc" id="L183">				int nSub = nFull - subToFull;</span>
 
-<span class="fc" id="L185">				IndexGraphBuilder gSubBuilder = IndexGraphBuilder.newDirected();</span>
+<span class="fc" id="L185">				IndexGraphBuilder gSubBuilder = IndexGraphBuilder.directed();</span>
 <span class="fc" id="L186">				gSubBuilder.expectedVerticesNum(nSub);</span>
 <span class="fc bfc" id="L187" title="All 2 branches covered.">				for (int uSubIdx = 0; uSubIdx &lt; nSub; uSubIdx++) {</span>
 <span class="fc" id="L188">					int uIdx = gSubBuilder.addVertex();</span>

@@ -1,16 +1,16 @@
 GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
-JGAlgo - Core,com.jgalgo.gen,GnpBipartiteGraphGenerator,0,601,0,72,0,109,0,51,0,15
-JGAlgo - Core,com.jgalgo.gen,GnmBipartiteGraphGenerator,0,553,0,74,0,121,0,52,0,15
-JGAlgo - Core,com.jgalgo.gen,CompleteGraphGenerator,0,370,0,46,0,82,0,34,0,11
+JGAlgo - Core,com.jgalgo.gen,GnpBipartiteGraphGenerator,0,603,0,72,0,109,0,51,0,15
+JGAlgo - Core,com.jgalgo.gen,GnmBipartiteGraphGenerator,0,579,0,82,0,124,0,56,0,15
+JGAlgo - Core,com.jgalgo.gen,CompleteGraphGenerator,0,364,0,42,0,82,0,32,0,11
 JGAlgo - Core,com.jgalgo.gen,GraphGenerator,0,8,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.gen,UniformTreeGenerator,19,350,4,34,0,67,3,30,1,13
-JGAlgo - Core,com.jgalgo.gen,GnmGraphGenerator,0,446,0,70,0,102,0,48,0,13
-JGAlgo - Core,com.jgalgo.gen,BarabasiAlbertGraphGenerator,0,525,0,52,0,107,0,39,0,13
-JGAlgo - Core,com.jgalgo.gen,CompleteBipartiteGraphGenerator,0,558,0,60,0,101,0,43,0,13
+JGAlgo - Core,com.jgalgo.gen,GnmGraphGenerator,0,452,0,70,0,104,0,48,0,13
+JGAlgo - Core,com.jgalgo.gen,BarabasiAlbertGraphGenerator,0,517,0,48,0,106,0,37,0,13
+JGAlgo - Core,com.jgalgo.gen,CompleteBipartiteGraphGenerator,0,560,0,60,0,101,0,43,0,13
 JGAlgo - Core,com.jgalgo.gen,BipartiteGenerators.Direction,0,44,0,0,0,5,0,1,0,1
-JGAlgo - Core,com.jgalgo.gen,EmptyGraphGenerator,0,117,0,16,0,29,0,15,0,7
-JGAlgo - Core,com.jgalgo.gen,RecursiveMatrixGraphGenerator,54,679,18,86,0,145,11,55,0,14
-JGAlgo - Core,com.jgalgo.gen,GnpGraphGenerator,0,428,1,61,0,89,1,43,0,13
+JGAlgo - Core,com.jgalgo.gen,EmptyGraphGenerator,0,111,0,12,0,29,0,13,0,7
+JGAlgo - Core,com.jgalgo.gen,RecursiveMatrixGraphGenerator,54,671,18,82,0,144,11,53,0,14
+JGAlgo - Core,com.jgalgo.gen,GnpGraphGenerator,0,422,2,56,0,89,2,40,0,13
 JGAlgo - Core,com.jgalgo.graph,WeightsImplObj.IndexImpl,0,78,0,2,0,18,0,6,0,5
 JGAlgo - Core,com.jgalgo.graph,Graphs.UndirectedView.EdgeSetBase,1,64,1,7,0,13,1,8,0,5
 JGAlgo - Core,com.jgalgo.graph,WeightsImplByte.IndexMutable,7,76,2,0,0,21,1,9,0,9
@@ -40,20 +40,20 @@ JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IndexToIntIdEdgeIter,0,38,0,0,0,8,0,6
 JGAlgo - Core,com.jgalgo.graph,GraphCsrBase,42,547,7,53,7,110,8,49,3,24
 JGAlgo - Core,com.jgalgo.graph,Graphs.ReverseIndexGraph,0,36,0,0,0,13,0,8,0,8
 JGAlgo - Core,com.jgalgo.graph,WeightsImpl.ImmutableView,0,11,0,0,0,4,0,2,0,2
-JGAlgo - Core,com.jgalgo.graph,IndexGraphFactoryImpl,47,389,11,42,8,93,10,43,1,20
+JGAlgo - Core,com.jgalgo.graph,IndexGraphFactoryImpl,64,384,16,43,10,91,13,42,1,19
 JGAlgo - Core,com.jgalgo.graph,GraphHashmapMultiAbstract.EdgeIterOut,0,15,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,GraphCsrBase.EdgeIterAbstract,0,48,0,2,0,11,0,5,0,4
 JGAlgo - Core,com.jgalgo.graph,Graphs.UndirectedViewIntBase.EdgeIterOutOrInBase,0,110,0,14,0,27,0,12,0,5
 JGAlgo - Core,com.jgalgo.graph,GraphHashmapMultiAbstract.SourceTargetEdgeSet.new IEdgeIter() {...},4,111,1,3,1,19,1,8,0,7
 JGAlgo - Core,com.jgalgo.graph,GraphArrayAbstract.EdgeIterBase,4,73,1,3,1,16,1,6,0,5
 JGAlgo - Core,com.jgalgo.graph,GraphCsrBase.BuilderProcessEdges,0,3,0,0,0,1,0,1,0,1
-JGAlgo - Core,com.jgalgo.graph,GraphImpl.IdIdxMapImpl.new IndexRemoveListener() {...},14,66,4,0,0,14,2,4,0,4
 JGAlgo - Core,com.jgalgo.graph,WeightsObj,0,12,0,0,0,4,0,3,0,3
+JGAlgo - Core,com.jgalgo.graph,GraphImpl.IdIdxMapImpl.new IndexRemoveListener() {...},14,66,4,0,0,14,2,4,0,4
 JGAlgo - Core,com.jgalgo.graph,GraphLinkedPtrDirected.EdgeIterIn,0,12,0,0,0,4,0,2,0,2
 JGAlgo - Core,com.jgalgo.graph,WeightsImplChar.IntMapped,0,30,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,WeightsImplShort.IndexImmutable,0,18,0,0,0,5,0,3,0,3
-JGAlgo - Core,com.jgalgo.graph,IndexGraphBuilderImpl.EdgesSetProvidedIdx,0,15,0,0,0,3,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,IWeightsLong,0,53,0,0,0,12,0,9,0,9
+JGAlgo - Core,com.jgalgo.graph,IndexGraphBuilderImpl.EdgesSetProvidedIdx,0,15,0,0,0,3,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,GraphMatrixAbstract.EdgeIterInDirected,0,112,0,6,0,24,0,11,0,8
 JGAlgo - Core,com.jgalgo.graph,WeightsImplFloat.IndexMutable,7,76,2,0,0,21,1,9,0,9
 JGAlgo - Core,com.jgalgo.graph,WeightsImplShort.ObjImmutableView,0,22,0,0,0,6,0,5,0,5
@@ -82,9 +82,9 @@ JGAlgo - Core,com.jgalgo.graph,NoSuchEdgeException,6,16,0,0,1,4,1,3,1,3
 JGAlgo - Core,com.jgalgo.graph,GraphCsrDirected.EdgeSetIn,7,63,2,0,1,7,2,3,1,3
 JGAlgo - Core,com.jgalgo.graph,IndexGraphBuilderImpl.ReIndexingMapImpl,0,23,0,0,0,6,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,Graphs.GraphViewBase,0,63,0,0,0,19,0,13,0,13
-JGAlgo - Core,com.jgalgo.graph,IntGraphImpl.IdIdxMapImpl,53,350,12,42,4,86,8,33,0,14
-JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IntIdToIndexWeights.Double,0,28,0,0,0,7,0,5,0,5
+JGAlgo - Core,com.jgalgo.graph,IntGraphImpl.IdIdxMapImpl,53,354,12,42,4,85,8,33,0,14
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IntIdToIndexWeights.Long,0,28,0,0,0,7,0,5,0,5
+JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IntIdToIndexWeights.Double,0,28,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,NoSuchVertexException,0,22,0,0,0,5,0,4,0,4
 JGAlgo - Core,com.jgalgo.graph,GraphHashmapMultiDirected,113,1035,30,58,0,182,15,67,0,38
 JGAlgo - Core,com.jgalgo.graph,WeightsImplBool.ObjImmutableView,0,22,0,0,0,6,0,5,0,5
@@ -96,7 +96,7 @@ JGAlgo - Core,com.jgalgo.graph,GraphMatrixDirected.EdgeSetOut,0,23,0,0,0,5,0,3,0
 JGAlgo - Core,com.jgalgo.graph,IEdgeSet,3,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo.graph,WeightFunction,16,71,3,15,4,13,2,15,0,8
 JGAlgo - Core,com.jgalgo.graph,Graphs.IEdgeIterView,0,22,0,0,0,8,0,5,0,5
-JGAlgo - Core,com.jgalgo.graph,GraphImpl.Factory,21,86,0,0,6,20,3,10,3,10
+JGAlgo - Core,com.jgalgo.graph,GraphImpl.Factory,21,79,0,0,6,18,3,9,3,9
 JGAlgo - Core,com.jgalgo.graph,IndexGraphFactoryImpl.ImplImmutable,4,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo.graph,DataContainer.Obj,17,85,4,0,0,22,2,6,0,6
 JGAlgo - Core,com.jgalgo.graph,GraphFactory.Hint,0,34,0,0,0,4,0,1,0,1
@@ -108,18 +108,18 @@ JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IdToIndexWeights.Char,0,28,0,0,0,7,0,
 JGAlgo - Core,com.jgalgo.graph,GraphArrayDirected,35,745,10,26,0,126,5,46,0,33
 JGAlgo - Core,com.jgalgo.graph,GraphCsrUndirected.EdgeIterIn,0,23,0,0,0,6,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,GraphLinkedDirected.EdgeIterImpl,0,20,0,0,0,5,0,3,0,3
-JGAlgo - Core,com.jgalgo.graph,IntGraphFactory,6,28,0,0,1,6,1,6,1,6
+JGAlgo - Core,com.jgalgo.graph,IntGraphFactory,6,33,0,0,1,7,1,7,1,7
 JGAlgo - Core,com.jgalgo.graph,GraphCsrDirectedReindexed.EdgeIterOutAbstract,0,39,0,2,0,11,0,6,0,5
 JGAlgo - Core,com.jgalgo.graph,WeightsFloat,0,20,0,0,0,5,0,4,0,4
-JGAlgo - Core,com.jgalgo.graph,GraphHashmapUndirected,174,565,57,33,0,120,29,39,0,23
+JGAlgo - Core,com.jgalgo.graph,GraphHashmapUndirected,238,501,64,26,11,109,33,35,1,22
 JGAlgo - Core,com.jgalgo.graph,IntGraphImpl.new ToIntFunction() {...},0,18,0,2,0,5,0,3,0,2
 JGAlgo - Core,com.jgalgo.graph,WeightsDouble,0,19,0,0,0,5,0,4,0,4
 JGAlgo - Core,com.jgalgo.graph,Graphs.EdgeSetSourceTargetSingleton.new IEdgeIter() {...},4,57,1,3,1,14,1,8,0,7
 JGAlgo - Core,com.jgalgo.graph,GraphElementSet.Immutable,1,21,0,0,1,6,1,4,1,4
 JGAlgo - Core,com.jgalgo.graph,GraphCsrDirected,7,94,2,4,0,20,1,7,0,5
-JGAlgo - Core,com.jgalgo.graph,GraphLinkedUndirected,44,888,12,54,0,173,6,69,0,42
+JGAlgo - Core,com.jgalgo.graph,GraphLinkedUndirected,79,853,14,52,9,164,8,67,1,41
 JGAlgo - Core,com.jgalgo.graph,WeightsImplObj.ObjMapped,0,30,0,0,0,7,0,5,0,5
-JGAlgo - Core,com.jgalgo.graph,GraphImpl.IdIdxMapImpl,50,364,12,40,5,87,9,31,0,14
+JGAlgo - Core,com.jgalgo.graph,GraphImpl.IdIdxMapImpl,50,364,12,40,5,86,9,31,0,14
 JGAlgo - Core,com.jgalgo.graph,WeightsImplObj.IntImmutableView,0,22,0,0,0,6,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,GraphLinkedDirected,21,929,6,42,0,168,3,65,0,44
 JGAlgo - Core,com.jgalgo.graph,GraphBase,0,26,0,4,0,9,0,6,0,4
@@ -157,14 +157,14 @@ JGAlgo - Core,com.jgalgo.graph,GraphCsrBase.BuilderProcessEdgesDirected,35,334,6
 JGAlgo - Core,com.jgalgo.graph,GraphHashmapMultiDirected.EdgeSetIn,0,31,0,0,0,6,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,GraphCsrUndirected.EdgeSetOut,7,43,2,0,1,7,2,3,1,3
 JGAlgo - Core,com.jgalgo.graph,Graphs.UndirectedView.EdgeIterIn,0,14,0,0,0,5,0,3,0,3
-JGAlgo - Core,com.jgalgo.graph,WeightsImplFloat.IntMapped,0,30,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,GraphHashmapMultiAbstract,7,75,2,4,0,20,1,8,0,6
+JGAlgo - Core,com.jgalgo.graph,WeightsImplFloat.IntMapped,0,30,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,WeightsImpl.ObjMapped,0,101,0,16,0,22,0,11,0,3
 JGAlgo - Core,com.jgalgo.graph,WeightsImplObj.IntMapped,0,30,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,WeightsImpl.IntImmutableView,9,92,2,18,2,22,2,11,0,3
 JGAlgo - Core,com.jgalgo.graph,WeightsImplInt.IndexImmutable,0,18,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,GraphLinkedPtrDirected.EdgeIterImpl,0,22,0,0,0,5,0,3,0,3
-JGAlgo - Core,com.jgalgo.graph,GraphHashmapMultiUndirected,65,811,17,53,0,155,9,57,0,31
+JGAlgo - Core,com.jgalgo.graph,GraphHashmapMultiUndirected,86,790,19,51,6,149,12,54,1,30
 JGAlgo - Core,com.jgalgo.graph,IndexGraphBase.EdgeSetSourceTarget,0,46,0,4,0,10,0,7,0,5
 JGAlgo - Core,com.jgalgo.graph,GraphCsrUndirected.EdgeSetIn,7,43,2,0,1,7,2,3,1,3
 JGAlgo - Core,com.jgalgo.graph,WeightsImplByte.IndexImpl,0,78,0,2,0,18,0,6,0,5
@@ -190,10 +190,11 @@ JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IdToIndexWeights,0,21,0,0,0,6,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,Graphs.GraphView,0,92,0,0,0,27,0,18,0,18
 JGAlgo - Core,com.jgalgo.graph,GraphArrayAbstract.EdgeIterOut,0,15,0,0,0,5,0,2,0,2
 JGAlgo - Core,com.jgalgo.graph,Graphs.EdgeIterView,0,22,0,0,0,8,0,5,0,5
+JGAlgo - Core,com.jgalgo.graph,IntGraphImpl.IdIdxMapImpl.IdSet,32,41,2,0,6,6,3,6,2,6
 JGAlgo - Core,com.jgalgo.graph,Graphs.ImmutableIntGraphView,0,37,0,0,0,9,0,8,0,8
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IndexToIdSet,0,50,0,0,0,11,0,7,0,7
-JGAlgo - Core,com.jgalgo.graph,IndexGraphBuilder,0,23,0,0,0,5,0,5,0,5
-JGAlgo - Core,com.jgalgo.graph,IndexGraphFactory,6,28,0,0,1,6,1,6,1,6
+JGAlgo - Core,com.jgalgo.graph,IndexGraphBuilder,0,27,0,0,0,6,0,6,0,6
+JGAlgo - Core,com.jgalgo.graph,IndexGraphFactory,6,33,0,0,1,7,1,7,1,7
 JGAlgo - Core,com.jgalgo.graph,IntGraph,0,289,0,12,0,71,0,41,0,35
 JGAlgo - Core,com.jgalgo.graph,WeightsImplDouble.IndexImpl,0,78,0,2,0,18,0,6,0,5
 JGAlgo - Core,com.jgalgo.graph,WeightsImplBool.IntMapped,0,30,0,0,0,7,0,5,0,5
@@ -219,30 +220,30 @@ JGAlgo - Core,com.jgalgo.graph,DataContainer,0,12,0,0,0,4,0,2,0,2
 JGAlgo - Core,com.jgalgo.graph,IndexGraphBase.EdgeIterSourceTarget,4,105,2,8,1,30,2,11,0,8
 JGAlgo - Core,com.jgalgo.graph,Graphs.UndirectedViewIntBase.EdgeSetSourceTarget.new IEdgeIter() {...},0,78,0,8,0,21,0,11,0,7
 JGAlgo - Core,com.jgalgo.graph,GraphArrayDirected.EdgeSetOut,0,42,0,2,0,6,0,5,0,4
-JGAlgo - Core,com.jgalgo.graph,GraphLinkedDirected.EdgeIterOut,0,14,0,0,0,4,0,2,0,2
 JGAlgo - Core,com.jgalgo.graph,WeightsImplBool.IndexImpl,0,78,0,2,0,18,0,6,0,5
+JGAlgo - Core,com.jgalgo.graph,GraphLinkedDirected.EdgeIterOut,0,14,0,0,0,4,0,2,0,2
 JGAlgo - Core,com.jgalgo.graph,GraphArrayDirected.EdgeIterIn,0,16,0,0,0,4,0,2,0,2
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IdToIndexWeights.Byte,0,28,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,GraphHashmapUndirected.EdgeSetIn,0,32,0,0,0,7,0,4,0,4
 JGAlgo - Core,com.jgalgo.graph,WeightsImpl.IndexAbstract,0,21,0,0,0,7,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,GraphHashmapAbstract.EdgeIterOut,0,15,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,WeightsImplByte.ObjMapped,0,30,0,0,0,7,0,5,0,5
-JGAlgo - Core,com.jgalgo.graph,GraphBaseMutable,19,850,6,42,0,184,3,77,0,56
 JGAlgo - Core,com.jgalgo.graph,GraphArrayAbstract.EdgeIterIn,0,15,0,0,0,5,0,2,0,2
-JGAlgo - Core,com.jgalgo.graph,Graphs.UndirectedViewIntBase.EdgeSetIn,0,16,0,0,0,4,0,2,0,2
+JGAlgo - Core,com.jgalgo.graph,GraphBaseMutable,19,850,6,42,0,184,3,77,0,56
 JGAlgo - Core,com.jgalgo.graph,WeightsImplDouble.IntMapped,0,30,0,0,0,7,0,5,0,5
+JGAlgo - Core,com.jgalgo.graph,Graphs.UndirectedViewIntBase.EdgeSetIn,0,16,0,0,0,4,0,2,0,2
 JGAlgo - Core,com.jgalgo.graph,Graphs.UndirectedView.EdgeSetOut,0,16,0,0,0,4,0,2,0,2
 JGAlgo - Core,com.jgalgo.graph,GraphArrayUndirected.EdgeSetIn,0,42,0,2,0,6,0,5,0,4
 JGAlgo - Core,com.jgalgo.graph,GraphHashmapAbstract.EdgeIterBase,51,230,19,25,1,61,10,19,0,7
 JGAlgo - Core,com.jgalgo.graph,GraphLinkedAbstract,0,18,0,0,0,6,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,GraphCsrDirected.EdgeSetOut,7,43,2,0,1,7,2,3,1,3
-JGAlgo - Core,com.jgalgo.graph,GraphMatrixDirected,28,495,9,17,0,80,5,29,0,21
 JGAlgo - Core,com.jgalgo.graph,WeightsImplDouble.IntImmutableView,0,22,0,0,0,6,0,5,0,5
+JGAlgo - Core,com.jgalgo.graph,GraphMatrixDirected,28,495,8,18,0,80,4,30,0,21
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IntIdToIndexWeights,0,21,0,0,0,6,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IdToIndexWeights.Obj,0,28,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,Graphs.ImmutableIntGraphViewBase,0,147,0,0,0,30,0,28,0,28
+JGAlgo - Core,com.jgalgo.graph,GraphBuilder,0,34,0,0,0,7,0,7,0,7
 JGAlgo - Core,com.jgalgo.graph,Graphs.UndirectedViewIntBase,7,65,2,4,0,17,1,12,0,10
-JGAlgo - Core,com.jgalgo.graph,GraphBuilder,0,30,0,0,0,6,0,6,0,6
 JGAlgo - Core,com.jgalgo.graph,WeightsImplLong.IntImmutableView,0,22,0,0,0,6,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,GraphMatrixUndirected.EdgeSetIn,0,23,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,GraphLinkedPtrUndirected.EdgeIterIn,0,44,0,2,0,8,0,5,0,4
@@ -254,21 +255,21 @@ JGAlgo - Core,com.jgalgo.graph,WeightsImplChar.ObjImmutableView,0,22,0,0,0,6,0,5
 JGAlgo - Core,com.jgalgo.graph,GraphCsrDirected.EdgeIterOut,0,21,0,0,0,6,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,GraphHashmapMultiDirected.EdgeSetOut,0,31,0,0,0,6,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,GraphLinkedPtrDirected.EdgeIterOut,0,12,0,0,0,4,0,2,0,2
-JGAlgo - Core,com.jgalgo.graph,GraphFactory,6,29,0,0,1,6,1,6,1,6
+JGAlgo - Core,com.jgalgo.graph,GraphFactory,6,34,0,0,1,7,1,7,1,7
 JGAlgo - Core,com.jgalgo.graph,WeightsImplInt.ObjImmutableView,0,22,0,0,0,6,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,WeightsImplFloat.IndexImpl,0,78,0,2,0,18,0,6,0,5
 JGAlgo - Core,com.jgalgo.graph,GraphElementSet.Mutable,34,114,8,4,0,29,4,13,0,11
 JGAlgo - Core,com.jgalgo.graph,GraphCsrAbstractUnindexed,0,130,0,12,0,22,0,8,0,2
-JGAlgo - Core,com.jgalgo.graph,IntGraphImpl.Factory,7,129,0,4,2,29,1,14,1,12
-JGAlgo - Core,com.jgalgo.graph,WeightsImplObj.ObjImmutableView,0,22,0,0,0,6,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IntIdToIndexWeights.Short,0,28,0,0,0,7,0,5,0,5
+JGAlgo - Core,com.jgalgo.graph,IntGraphImpl.Factory,7,91,0,0,2,21,1,11,1,11
+JGAlgo - Core,com.jgalgo.graph,WeightsImplObj.ObjImmutableView,0,22,0,0,0,6,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,WeightsImpl,26,1017,23,207,5,163,23,95,0,3
 JGAlgo - Core,com.jgalgo.graph,WeightsImpl.IndexMutable,7,270,1,51,1,48,1,27,0,2
 JGAlgo - Core,com.jgalgo.graph,IWeightsBool,0,35,0,0,0,9,0,6,0,6
 JGAlgo - Core,com.jgalgo.graph,GraphLinkedPtrAbstract.Edge,0,6,0,0,0,3,0,1,0,1
 JGAlgo - Core,com.jgalgo.graph,WeightFunctions,39,94,5,17,8,23,5,11,1,4
-JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IntIdToIndexWeights.Char,0,28,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IndexToIdIterator,0,34,0,0,0,10,0,6,0,6
+JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IntIdToIndexWeights.Char,0,28,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,GraphHashmapMultiAbstract.EdgeIterBase,22,185,5,13,1,48,3,13,0,7
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IdToIndexWeights.Double,0,28,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,GraphArrayUndirected.EdgeSetOut,0,42,0,2,0,6,0,5,0,4
@@ -278,12 +279,13 @@ JGAlgo - Core,com.jgalgo.graph,Graphs.UndirectedView.EdgeSetSourceTarget.new Edg
 JGAlgo - Core,com.jgalgo.graph,WeightsImplDouble.IndexMutable,7,76,2,0,0,21,1,9,0,9
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IntIdToIndexWeights.Bool,0,28,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,WeightsImplChar.IntImmutableView,0,22,0,0,0,6,0,5,0,5
-JGAlgo - Core,com.jgalgo.graph,GraphHashmapMultiDirected.SourceTargetEdgeSet,0,42,2,6,0,5,2,5,0,3
 JGAlgo - Core,com.jgalgo.graph,GraphMatrixAbstract.EdgeIterInUndirected,0,102,0,6,0,25,0,11,0,8
+JGAlgo - Core,com.jgalgo.graph,GraphHashmapMultiDirected.SourceTargetEdgeSet,0,42,2,6,0,5,2,5,0,3
 JGAlgo - Core,com.jgalgo.graph,GraphElementSet,7,70,2,10,1,17,2,11,0,7
 JGAlgo - Core,com.jgalgo.graph,Graphs.UndirectedViewIntBase.EdgeIterIn,0,14,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,WeightsImplLong.ObjImmutableView,0,22,0,0,0,6,0,5,0,5
-JGAlgo - Core,com.jgalgo.graph,Graphs,25,2419,13,375,0,493,9,215,0,30
+JGAlgo - Core,com.jgalgo.graph,GraphImpl.IdIdxMapImpl.IdSet,23,43,2,0,5,6,2,6,1,6
+JGAlgo - Core,com.jgalgo.graph,Graphs,28,2410,16,368,0,493,11,211,0,30
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IntIdToIndexWeights.Obj,0,28,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,IndexGraphBuilderImpl.EdgesSetProvidedIdx.new IntIterator() {...},0,35,0,2,0,5,0,4,0,3
 JGAlgo - Core,com.jgalgo.graph,IWeightsDouble,0,51,0,0,0,12,0,9,0,9
@@ -294,12 +296,12 @@ JGAlgo - Core,com.jgalgo.graph,GraphMatrixUndirected.EdgeSetOut,0,23,0,0,0,5,0,3
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IdToIndexListIterator,0,43,0,0,0,10,0,7,0,7
 JGAlgo - Core,com.jgalgo.graph,GraphCsrDirectedReindexed,42,188,10,10,0,41,5,12,0,7
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IdToIndexWeights.Short,0,28,0,0,0,7,0,5,0,5
-JGAlgo - Core,com.jgalgo.graph,Graphs.ImmutableGraphView,0,167,0,0,0,34,0,32,0,32
 JGAlgo - Core,com.jgalgo.graph,WeightsImplLong.IndexImpl,0,78,0,2,0,18,0,6,0,5
+JGAlgo - Core,com.jgalgo.graph,Graphs.ImmutableGraphView,0,167,0,0,0,34,0,32,0,32
 JGAlgo - Core,com.jgalgo.graph,WeightsImplBool.IntImmutableView,0,22,0,0,0,6,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,IWeightsChar,0,35,0,0,0,9,0,6,0,6
 JGAlgo - Core,com.jgalgo.graph,Graphs.ImmutableIEdgeIter,0,28,0,0,0,8,0,6,0,6
-JGAlgo - Core,com.jgalgo.graph,GraphMatrixUndirected,28,522,9,33,0,93,5,36,0,20
+JGAlgo - Core,com.jgalgo.graph,GraphMatrixUndirected,132,418,20,22,17,76,11,30,1,19
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IdToIndexWeights.Int,0,28,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,Graphs.ReversedEdgeSet,0,33,0,0,0,9,0,6,0,6
 JGAlgo - Core,com.jgalgo.graph,GraphLinkedPtrUndirected.EdgeSetOut,0,29,0,0,0,5,0,3,0,3
@@ -318,12 +320,12 @@ JGAlgo - Core,com.jgalgo.graph,IndexGraphBuilderImpl.ReIndexedGraphImpl,0,27,0,0
 JGAlgo - Core,com.jgalgo.graph,IntGraphBuilderImpl,84,655,20,44,0,144,10,50,0,28
 JGAlgo - Core,com.jgalgo.graph,WeightsImplDouble.ObjImmutableView,0,22,0,0,0,6,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,IdentityIndexIdMap,0,38,0,4,0,9,0,7,0,5
-JGAlgo - Core,com.jgalgo.graph,IntGraphBuilder,0,40,0,0,0,10,0,8,0,8
+JGAlgo - Core,com.jgalgo.graph,IntGraphBuilder,0,44,0,0,0,11,0,9,0,9
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IdToIndexCollection,0,50,0,0,0,11,0,7,0,7
-JGAlgo - Core,com.jgalgo.graph,GraphArrayUndirected,25,573,7,31,0,112,4,41,0,26
+JGAlgo - Core,com.jgalgo.graph,GraphArrayUndirected,80,518,11,27,11,101,7,38,1,25
 JGAlgo - Core,com.jgalgo.graph,GraphLinkedUndirected.EdgeIterOut,0,41,0,2,0,8,0,5,0,4
 JGAlgo - Core,com.jgalgo.graph,WeightFunctionInt,0,35,0,2,0,6,0,4,0,3
-JGAlgo - Core,com.jgalgo.graph,GraphHashmapDirected,197,740,55,43,0,151,28,47,0,26
+JGAlgo - Core,com.jgalgo.graph,GraphHashmapDirected,197,740,54,44,0,151,27,48,0,26
 JGAlgo - Core,com.jgalgo.graph,IndexGraphBase.EdgeSetOutUndirected,0,43,1,7,0,6,1,6,0,3
 JGAlgo - Core,com.jgalgo.graph,WeightsLong,0,20,0,0,0,5,0,4,0,4
 JGAlgo - Core,com.jgalgo.graph,DataContainer.Int,17,79,4,0,0,21,2,6,0,6
@@ -337,10 +339,10 @@ JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IdToIndexWeights.Long,0,28,0,0,0,7,0,
 JGAlgo - Core,com.jgalgo.graph,GraphCsrDirectedReindexed.EdgeIterIn,0,21,0,0,0,6,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,WeightsImplBool.ObjMapped,0,30,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,WeightsImpl.IndexImmutable.Builder,12,49,2,2,2,14,2,4,0,4
+JGAlgo - Core,com.jgalgo.graph,GraphMatrixAbstract,0,418,2,32,0,77,2,30,0,15
 JGAlgo - Core,com.jgalgo.graph,WeightsImplLong.IntMapped,0,30,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,WeightsShort,0,19,0,0,0,5,0,4,0,4
-JGAlgo - Core,com.jgalgo.graph,GraphMatrixAbstract,0,418,2,32,0,77,2,30,0,15
-JGAlgo - Core,com.jgalgo.graph,GraphLinkedPtrUndirected,44,690,12,44,0,142,6,53,0,31
+JGAlgo - Core,com.jgalgo.graph,GraphLinkedPtrUndirected,83,651,14,42,10,132,8,51,1,30
 JGAlgo - Core,com.jgalgo.graph,GraphArrayUndirected.EdgeIterIn,0,18,0,0,0,4,0,2,0,2
 JGAlgo - Core,com.jgalgo.graph,GraphImpl.EdgeSetMapped,0,50,0,0,0,10,0,7,0,7
 JGAlgo - Core,com.jgalgo.graph,IndexGraph,0,96,0,2,0,24,0,20,0,19
@@ -349,16 +351,16 @@ JGAlgo - Core,com.jgalgo.graph,GraphLinkedPtrUndirected.EdgeSetIn,0,29,0,0,0,5,0
 JGAlgo - Core,com.jgalgo.graph,GraphHashmapAbstract.EdgeIterIn,0,15,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,WeightsImplShort.IndexMutable,7,76,2,0,0,21,1,9,0,9
 JGAlgo - Core,com.jgalgo.graph,GraphBuilderImpl,48,493,12,16,0,108,6,30,0,22
-JGAlgo - Core,com.jgalgo.graph,WeightsImplChar.IndexImmutable,0,18,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,WeightsImplInt.ObjMapped,0,30,0,0,0,7,0,5,0,5
-JGAlgo - Core,com.jgalgo.graph,WeightsImplByte.IndexImmutable,0,18,0,0,0,5,0,3,0,3
+JGAlgo - Core,com.jgalgo.graph,WeightsImplChar.IndexImmutable,0,18,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,Graphs.IntGraphViewBase,0,74,0,0,0,20,0,15,0,15
+JGAlgo - Core,com.jgalgo.graph,WeightsImplByte.IndexImmutable,0,18,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,WeightsImplChar.ObjMapped,0,30,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,DataContainer.Manager,0,59,0,6,0,15,0,6,0,3
 JGAlgo - Core,com.jgalgo.graph,WeightsImplBool.IndexImmutable,0,18,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,Graphs.ImmutableIndexGraphView,0,36,0,0,0,9,0,8,0,8
-JGAlgo - Core,com.jgalgo.graph,Graphs.ReversedIEdgeIter,0,12,0,0,0,4,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,IndexGraphBase.EdgeSetOutDirected,0,36,1,5,0,6,1,5,0,3
+JGAlgo - Core,com.jgalgo.graph,Graphs.ReversedIEdgeIter,0,12,0,0,0,4,0,3,0,3
 JGAlgo - Core,com.jgalgo.graph,WeightsImplFloat.IntImmutableView,0,22,0,0,0,6,0,5,0,5
 JGAlgo - Core,com.jgalgo.graph,IWeightFunction,46,58,6,6,10,9,6,7,3,4
 JGAlgo - Core,com.jgalgo.graph,DataContainer.Long,17,79,4,0,0,21,2,6,0,6
@@ -371,14 +373,13 @@ JGAlgo - Core,com.jgalgo.graph,IntGraphImpl.EdgeIterMapped,0,57,0,0,0,14,0,7,0,7
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IndexToIntIdIterator,0,34,0,0,0,10,0,6,0,6
 JGAlgo - Core,com.jgalgo.graph,WeightsInt,0,19,0,0,0,5,0,4,0,4
 JGAlgo - Core,com.jgalgo.graph,IndexIdMaps.IndexToIdList,0,87,0,4,0,16,0,12,0,10
-JGAlgo - Core,com.jgalgo.graph,GraphHashmapUndirected.EdgeSetOut,0,32,0,0,0,7,0,4,0,4
 JGAlgo - Core,com.jgalgo.graph,GraphArrayDirected.EdgeSetIn,0,42,0,2,0,6,0,5,0,4
+JGAlgo - Core,com.jgalgo.graph,GraphHashmapUndirected.EdgeSetOut,0,32,0,0,0,7,0,4,0,4
 JGAlgo - Core,com.jgalgo.internal.ds,RMQStaticPlusMinusOne,4,16,1,1,1,4,1,2,0,2
 JGAlgo - Core,com.jgalgo.internal.ds,RMQStaticCartesianTrees,4,16,1,1,1,4,1,2,0,2
 JGAlgo - Core,com.jgalgo.internal.ds,ObjFibonacciHeap,72,820,23,99,2,221,13,73,1,24
 JGAlgo - Core,com.jgalgo.internal.ds,DynamicTreeSplayExtension.ExtensionData,0,3,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo.internal.ds,Trees.TreeNodeImpl,0,31,0,0,0,13,0,9,0,9
-JGAlgo - Core,com.jgalgo.internal.ds,SplitFindMin.Builder,3,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo.internal.ds,RMQStaticPowerOf2Table.DSu32,39,164,3,13,6,22,3,8,1,2
 JGAlgo - Core,com.jgalgo.internal.ds,UnionFindArray,29,188,9,17,1,52,5,21,0,13
 JGAlgo - Core,com.jgalgo.internal.ds,RedBlackTreeExtension.Min,131,159,27,21,18,36,16,17,0,9
@@ -386,8 +387,8 @@ JGAlgo - Core,com.jgalgo.internal.ds,IntIntPairingHeap.Node,0,22,0,0,0,8,0,5,0,5
 JGAlgo - Core,com.jgalgo.internal.ds,IntFibonacciHeap,71,813,23,99,2,220,13,73,1,24
 JGAlgo - Core,com.jgalgo.internal.ds,DoubleIntSplayTree.SplayBSTNode,0,20,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.internal.ds,RMQStaticSimpleLookupTable.DSu32,9,103,0,12,1,14,1,8,1,2
-JGAlgo - Core,com.jgalgo.internal.ds,SubtreeMergeFindMinImpl.SubTree,0,58,0,6,0,17,0,7,0,4
 JGAlgo - Core,com.jgalgo.internal.ds,RMQStaticSimpleLookupTable.DSu16,9,117,0,12,1,14,1,8,1,2
+JGAlgo - Core,com.jgalgo.internal.ds,SubtreeMergeFindMinImpl.SubTree,0,58,0,6,0,17,0,7,0,4
 JGAlgo - Core,com.jgalgo.internal.ds,ObjPairingHeap.PreOrderIter,0,60,0,10,0,16,0,8,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,RMQStaticSimpleLookupTable.DSu08,7,117,0,12,1,14,1,8,1,2
 JGAlgo - Core,com.jgalgo.internal.ds,RedBlackTreeExtension.Size,0,136,0,8,0,24,0,12,0,8
@@ -406,20 +407,20 @@ JGAlgo - Core,com.jgalgo.internal.ds,DynamicTreeSplayExtension.Int,0,25,0,0,0,6,
 JGAlgo - Core,com.jgalgo.internal.ds,SplitFindMinArray.Sequence,13,9,2,0,1,4,2,1,1,1
 JGAlgo - Core,com.jgalgo.internal.ds,RMQStaticLinearAbstract,0,8,0,0,0,2,0,1,0,1
 JGAlgo - Core,com.jgalgo.internal.ds,IntIntFibonacciHeap.Node,0,22,0,0,0,8,0,5,0,5
-JGAlgo - Core,com.jgalgo.internal.ds,IntPairingHeap,61,510,22,52,0,173,11,48,0,22
 JGAlgo - Core,com.jgalgo.internal.ds,DoubleObjRedBlackTree,178,829,49,109,9,250,31,91,5,38
+JGAlgo - Core,com.jgalgo.internal.ds,IntPairingHeap,61,510,22,52,0,173,11,48,0,22
 JGAlgo - Core,com.jgalgo.internal.ds,SplitFindMinArray.Block,6,9,0,0,1,4,1,1,1,1
 JGAlgo - Core,com.jgalgo.internal.ds,RedBlackTreeExtension.ExtensionData.Int,0,36,0,0,0,12,0,6,0,6
 JGAlgo - Core,com.jgalgo.internal.ds,DoubleObjPairingHeap,61,514,22,52,0,174,11,48,0,22
 JGAlgo - Core,com.jgalgo.internal.ds,IntBinarySearchTrees.Node,4,73,0,14,1,13,1,15,1,8
-JGAlgo - Core,com.jgalgo.internal.ds,IntFibonacciHeap.Node,0,13,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,RedBlackTreeExtension.ExtensionData,0,3,0,0,0,1,0,1,0,1
+JGAlgo - Core,com.jgalgo.internal.ds,IntFibonacciHeap.Node,0,13,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,DynamicTreeSplayInt,89,466,27,39,10,112,21,28,2,14
 JGAlgo - Core,com.jgalgo.internal.ds,DoubleIntBinarySearchTree,0,8,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.internal.ds,IntIntSplayTree,103,685,26,76,3,160,15,68,1,31
 JGAlgo - Core,com.jgalgo.internal.ds,ObjObjBinomialHeap.Node,0,22,0,0,0,8,0,5,0,5
-JGAlgo - Core,com.jgalgo.internal.ds,DoubleIntPairingHeap.PreOrderIter,0,60,0,10,0,16,0,8,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,ReferenceableHeap,0,4,0,0,0,1,0,1,0,1
+JGAlgo - Core,com.jgalgo.internal.ds,DoubleIntPairingHeap.PreOrderIter,0,60,0,10,0,16,0,8,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,UnionFind.new UnionFind.Builder() {...},52,19,7,2,10,6,6,3,1,3
 JGAlgo - Core,com.jgalgo.internal.ds,RMQStatic,3,4,0,0,1,1,1,1,1,1
 JGAlgo - Core,com.jgalgo.internal.ds,RedBlackTreeExtension.Obj,0,23,0,0,0,6,0,4,0,4
@@ -509,31 +510,30 @@ JGAlgo - Core,com.jgalgo.internal.ds,IntRedBlackTree,178,829,49,109,9,250,31,91,
 JGAlgo - Core,com.jgalgo.internal.ds,IntBinarySearchTrees,86,610,24,120,21,187,19,73,0,18
 JGAlgo - Core,com.jgalgo.internal.ds,ObjObjFibonacciHeap,72,823,23,99,2,222,13,73,1,24
 JGAlgo - Core,com.jgalgo.internal.ds,ObjObjBinomialHeap,46,845,19,137,5,193,14,86,1,21
-JGAlgo - Core,com.jgalgo.internal.ds,SplitFindMin,0,14,0,0,0,4,0,4,0,4
+JGAlgo - Core,com.jgalgo.internal.ds,SplitFindMin,0,13,0,0,0,3,0,3,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,DoubleObjSplayTree.BaseNode,3,4,0,0,1,2,1,1,1,1
 JGAlgo - Core,com.jgalgo.internal.ds,SubtreeMergeFindMinImpl.EdgeNode,4,16,0,0,1,7,1,2,1,2
 JGAlgo - Core,com.jgalgo.internal.ds,IntSplayTree.SplayBSTNode,0,11,0,0,0,4,0,3,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,IntBinarySearchTrees.BSTIterator,0,35,0,4,0,9,0,5,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,ObjBinomialHeap.Node,0,13,0,0,0,5,0,3,0,3
-JGAlgo - Core,com.jgalgo.internal.ds,IntIntRedBlackTree,178,829,49,109,9,250,31,91,5,38
 JGAlgo - Core,com.jgalgo.internal.ds,LinkedListFixedSize.Singly.new IterTools.IterPeekable.Int() {...},5,35,0,2,2,7,1,4,1,3
 JGAlgo - Core,com.jgalgo.internal.ds,RMQStaticPlusMinusOne.PreProcessor,0,126,0,12,0,20,0,11,0,5
+JGAlgo - Core,com.jgalgo.internal.ds,IntIntRedBlackTree,178,829,49,109,9,250,31,91,5,38
 JGAlgo - Core,com.jgalgo.internal.ds,IntBinomialHeap.Node,0,13,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,DynamicTreeSplayExtended,31,203,5,15,6,32,5,14,1,8
 JGAlgo - Core,com.jgalgo.internal.ds,IntReferenceableHeap,0,57,0,10,0,14,0,9,0,4
 JGAlgo - Core,com.jgalgo.internal.ds,ObjReferenceableHeap,0,58,0,10,0,14,0,9,0,4
 JGAlgo - Core,com.jgalgo.internal.ds,ObjRedBlackTree.Node,0,11,0,0,0,4,0,3,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,DynamicTreeSplayExtended.SplayImplWithExtensions,0,32,0,2,0,7,0,3,0,2
-JGAlgo - Core,com.jgalgo.internal.ds,SubtreeMergeFindMin.Builder,4,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo.internal.ds,IntIntSplayTree.SplayBSTNode,0,20,0,0,0,7,0,5,0,5
 JGAlgo - Core,com.jgalgo.internal.ds,IntPairingHeap.Node,0,13,0,0,0,5,0,3,0,3
-JGAlgo - Core,com.jgalgo.internal.ds,SubtreeMergeFindMin,3,6,0,0,1,2,1,2,1,2
+JGAlgo - Core,com.jgalgo.internal.ds,SubtreeMergeFindMin,4,5,0,0,1,1,1,1,1,1
 JGAlgo - Core,com.jgalgo.internal.ds,ObjBinomialHeap.Itr,0,61,0,8,0,13,0,7,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,RedBlackTreeExtended.Node,0,19,0,0,0,6,0,4,0,4
 JGAlgo - Core,com.jgalgo.internal.ds,IntRedBlackTree.Node,0,11,0,0,0,4,0,3,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,DoubleIntSplayTree.SplayImpl,7,114,2,20,0,36,1,15,0,5
 JGAlgo - Core,com.jgalgo.internal.ds,IntSplayTree.BaseNode,3,4,0,0,1,2,1,1,1,1
-JGAlgo - Core,com.jgalgo.internal.ds,UnionFindValue,4,7,0,0,1,2,1,2,1,2
+JGAlgo - Core,com.jgalgo.internal.ds,UnionFindValue,10,11,1,1,2,3,2,2,1,2
 JGAlgo - Core,com.jgalgo.internal.ds,LinkedListFixedSize.Singly,14,37,2,0,3,10,3,5,2,5
 JGAlgo - Core,com.jgalgo.internal.ds,DoubleIntRedBlackTree,178,829,49,109,9,250,31,91,5,38
 JGAlgo - Core,com.jgalgo.internal.ds,ObjObjBinomialHeap.Itr,0,61,0,8,0,13,0,7,0,3
@@ -567,12 +567,11 @@ JGAlgo - Core,com.jgalgo.internal.ds,DoubleIntRedBlackTree.Node,0,20,0,0,0,7,0,5
 JGAlgo - Core,com.jgalgo.internal.ds,SubtreeMergeFindMinImpl.Edge,8,21,0,0,1,8,1,4,1,4
 JGAlgo - Core,com.jgalgo.internal.ds,ObjBinarySearchTrees.Node,0,80,0,14,0,15,0,16,0,9
 JGAlgo - Core,com.jgalgo.internal.ds,RedBlackTreeExtension,7,6,0,0,7,3,7,1,7,1
-JGAlgo - Core,com.jgalgo.internal.ds,UnionFindValue.new UnionFindValue.Builder() {...},6,16,1,1,1,5,1,3,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,RMQStaticLinearAbstract.PreProcessor.new Object() {...},0,9,0,0,0,2,0,1,0,1
-JGAlgo - Core,com.jgalgo.internal.ds,SplitFind,5,0,0,0,2,0,2,0,2,0
+JGAlgo - Core,com.jgalgo.internal.ds,SplitFind,4,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo.internal.ds,DoubleIntFibonacciHeap.Node,0,22,0,0,0,8,0,5,0,5
-JGAlgo - Core,com.jgalgo.internal.ds,DynamicTreeSplayExtension,14,40,2,4,2,11,2,4,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,RMQStaticPowerOf2Table.DSu08,37,171,2,14,5,23,2,9,1,2
+JGAlgo - Core,com.jgalgo.internal.ds,DynamicTreeSplayExtension,14,40,2,4,2,11,2,4,0,3
 JGAlgo - Core,com.jgalgo.internal.ds,RMQStatics,10,10,3,3,2,2,4,1,1,1
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsUtils.ResFromSSSP.VerticesSubset,0,27,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.alg,Matchings.ObjMatchingFromIndexMatching,4,75,0,2,1,13,1,9,1,8
@@ -588,33 +587,33 @@ JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabel.Worker.DischargePolicyImpl.P
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorDynamicGabowSimple.VertexImpl,28,130,8,14,1,25,5,18,1,11
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsUtils.IntResultFromIndexResult,0,46,0,0,0,8,0,3,0,3
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSourceUtils.ResultImpl.Int,12,109,2,6,1,30,2,8,1,5
-JGAlgo - Core,com.jgalgo.alg,KEdgeConnectedComponentsAlgo,5,0,0,0,2,0,2,0,2,0
+JGAlgo - Core,com.jgalgo.alg,KEdgeConnectedComponentsAlgo,4,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo.alg,ArraysUtils,26,722,11,85,6,138,11,55,0,18
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOfflineUnionFind,9,329,2,26,0,67,1,17,0,4
 JGAlgo - Core,com.jgalgo.alg,TreePathMaxima,20,23,1,1,5,6,3,1,2,1
-JGAlgo - Core,com.jgalgo.alg,MatchingAlgo,0,7,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSourceBellmanFord,2,438,1,53,1,92,1,28,0,2
+JGAlgo - Core,com.jgalgo.alg,MatchingAlgo,0,7,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,CoresAlgoImpl.ObjResultFromIndexResult,0,48,0,0,0,9,0,6,0,6
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Tree.5.new Iterator() {...},32,71,8,8,0,20,4,8,0,4
 JGAlgo - Core,com.jgalgo.alg,BiConnectedComponentsAlgoAbstract.IntResultFromIndexResult,0,63,0,0,0,12,0,8,0,8
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorStaticAbstract.ObjDsFromIndexDs,0,27,0,0,0,5,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,MinimumEdgeCutUtils.AbstractImplAllST,0,62,0,2,0,15,0,4,0,3
-JGAlgo - Core,com.jgalgo.alg,TopologicalOrderAlgoImpl.Res,3,49,2,6,1,10,2,5,0,3
 JGAlgo - Core,com.jgalgo.alg,IMatching,0,23,0,2,0,4,0,4,0,3
+JGAlgo - Core,com.jgalgo.alg,TopologicalOrderAlgoImpl.Res,3,49,2,6,1,10,2,5,0,3
 JGAlgo - Core,com.jgalgo.alg,MinimumSpanningTreeUtils.ObjResultFromIndexResult,0,19,0,0,0,5,0,2,0,2
-JGAlgo - Core,com.jgalgo.alg,BfsIterImpl.Backward,0,78,0,8,0,22,0,7,0,3
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSourceDial,7,118,2,12,2,31,2,8,0,3
+JGAlgo - Core,com.jgalgo.alg,BfsIterImpl.Backward,0,78,0,8,0,22,0,7,0,3
 JGAlgo - Core,com.jgalgo.alg,VertexCoverUtils.AbstractImpl,0,34,0,2,0,9,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg,MinimumCostFlows.AbstractImplBase,0,379,0,12,0,93,0,12,0,6
 JGAlgo - Core,com.jgalgo.alg,IPath,16,212,2,18,3,57,2,16,0,8
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabel.Worker.ActiveOrderPolicyImpl.LowestFirst,18,66,3,7,1,15,2,9,0,6
 JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutUtils.AbstractImplST,0,58,0,4,0,12,0,4,0,2
-JGAlgo - Core,com.jgalgo.alg,MinimumCostFlows.AbstractImplBasedSourceSink,35,1136,9,115,4,225,8,72,1,17
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabel.Worker.ActiveOrderPolicyImpl.MoveToFront,13,116,3,11,2,31,2,13,0,8
+JGAlgo - Core,com.jgalgo.alg,MinimumCostFlows.AbstractImplBasedSourceSink,35,1136,9,115,4,225,8,72,1,17
 JGAlgo - Core,com.jgalgo.alg,MinimumSpanningTreeUtils.AbstractUndirected,0,34,0,2,0,9,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg,Matchings.AbstractMatchingImpl,7,112,1,7,2,31,1,8,0,5
-JGAlgo - Core,com.jgalgo.alg,EdgeCoverCardinality,0,125,0,16,0,21,0,10,0,2
 JGAlgo - Core,com.jgalgo.alg,MatchingCardinalityGabow1976,0,580,0,50,0,116,0,28,0,3
+JGAlgo - Core,com.jgalgo.alg,EdgeCoverCardinality,0,125,0,16,0,21,0,10,0,2
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSTBidirectionalBfs,6,335,2,40,2,73,2,24,0,5
 JGAlgo - Core,com.jgalgo.alg,CoresAlgoImpl.ResultImpl,13,300,3,25,1,57,2,20,0,8
 JGAlgo - Core,com.jgalgo.alg,VertexScoringImpl.ResultImpl,0,11,0,0,0,4,0,2,0,2
@@ -633,47 +632,47 @@ JGAlgo - Core,com.jgalgo.alg,ColoringGreedy,0,117,0,8,0,27,0,7,0,3
 JGAlgo - Core,com.jgalgo.alg,TopologicalOrderAlgoImpl,0,97,0,12,0,25,0,8,0,2
 JGAlgo - Core,com.jgalgo.alg,MaximumFlow.new MaximumFlow.Builder() {...},60,8,13,1,16,3,12,2,1,2
 JGAlgo - Core,com.jgalgo.alg,TspMetricMSTAppx,23,116,6,8,0,28,3,7,0,3
-JGAlgo - Core,com.jgalgo.alg,MaximumFlowAbstract.WithoutResidualGraph,0,312,0,28,0,56,0,18,0,4
+JGAlgo - Core,com.jgalgo.alg,MaximumFlowAbstract.WithoutResidualGraph,0,309,0,26,0,56,0,17,0,4
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsJohnson.Res.VerticesSubset,0,37,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.alg,CoresAlgoImpl,30,413,8,50,0,90,4,31,0,6
-JGAlgo - Core,com.jgalgo.alg,CyclesEnumerator,7,7,0,0,2,1,2,1,2,1
 JGAlgo - Core,com.jgalgo.alg,TreePathMaxima.IResult,0,5,0,0,0,1,0,1,0,1
+JGAlgo - Core,com.jgalgo.alg,CyclesEnumerator,7,7,0,0,2,1,2,1,2,1
 JGAlgo - Core,com.jgalgo.alg,TreePathMaximaUtils.ResultImpl,0,15,0,0,0,5,0,3,0,3
 JGAlgo - Core,com.jgalgo.alg,ClosuresEnumeratorSchrageBaker,0,282,0,30,0,57,0,20,0,5
-JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabelDynamicTrees.WorkerDouble.Vertex,0,17,0,2,0,4,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg,FlowCirculationPushRelabel.Worker,0,112,1,9,0,26,1,8,0,4
+JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabelDynamicTrees.WorkerDouble.Vertex,0,17,0,2,0,4,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg,DistanceMeasuresImpl.IntMeasuresFromIndexMeasures,0,42,0,0,0,9,0,6,0,6
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorStaticRMQ,0,159,0,10,0,42,0,7,0,2
-JGAlgo - Core,com.jgalgo.alg,ShortestPathUtils,0,42,0,0,0,2,0,4,0,4
 JGAlgo - Core,com.jgalgo.alg,Matching,46,78,10,8,11,18,7,3,0,1
+JGAlgo - Core,com.jgalgo.alg,ShortestPathUtils,0,42,0,0,0,2,0,4,0,4
 JGAlgo - Core,com.jgalgo.alg,ConnectedComponentsUtils.AbstractWeaklyConnectedComponentsAlgo,5,30,1,3,0,7,1,4,0,3
 JGAlgo - Core,com.jgalgo.alg,DominatingSetAlgos.AbstractImpl,0,36,0,2,0,9,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg,KVertexConnectedComponentsAlgo.Result,0,8,0,0,0,1,0,1,0,1
-JGAlgo - Core,com.jgalgo.alg,ClosuresEnumerator,0,62,0,10,0,13,0,9,0,4
+JGAlgo - Core,com.jgalgo.alg,ClosuresEnumerator,0,61,0,10,0,12,0,8,0,3
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabel.Worker.DischargePolicyImpl.SingleStepDouble,43,444,11,59,0,75,6,34,0,5
-JGAlgo - Core,com.jgalgo.alg,ShortestPathHeuristicST,7,0,0,0,2,0,2,0,2,0
 JGAlgo - Core,com.jgalgo.alg,MinimumDirectedSpanningTreeTarjan.ContractedGraph,0,18,0,0,0,7,0,1,0,1
+JGAlgo - Core,com.jgalgo.alg,ShortestPathHeuristicST,7,0,0,0,2,0,2,0,2,0
 JGAlgo - Core,com.jgalgo.alg,TreePathMaxima.new TreePathMaxima.Builder() {...},32,0,2,0,9,0,4,0,3,0
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorStaticAbstract.IntDsFromIndexDs,0,27,0,0,0,5,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,MinimumSpanningTreeBoruvka.Res,0,12,0,0,0,5,0,1,0,1
-JGAlgo - Core,com.jgalgo.alg,TreePathMaximaUtils.IndexQueriesFromObjQueries,16,32,0,0,4,7,2,4,2,4
 JGAlgo - Core,com.jgalgo.alg,VoronoiAlgo.IResult,0,35,0,4,0,6,0,6,0,4
+JGAlgo - Core,com.jgalgo.alg,TreePathMaximaUtils.IndexQueriesFromObjQueries,16,32,0,0,4,7,2,4,2,4
 JGAlgo - Core,com.jgalgo.alg,ShortestPathHeuristicST.new ShortestPathHeuristicST.Builder() {...},41,0,6,0,10,0,6,0,3,0
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorDynamicGabowLongs.Vertex1,19,56,4,4,1,12,3,6,1,4
-JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorDynamicGabowLongs.Vertex0,10,54,3,3,0,12,2,5,0,4
 JGAlgo - Core,com.jgalgo.alg,PageRank.Predecessors,0,144,0,14,0,29,0,9,0,2
+JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorDynamicGabowLongs.Vertex0,10,54,3,3,0,12,2,5,0,4
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorDynamicGabowLongs.Vertex2,0,16,0,0,0,7,0,4,0,4
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowEdmondsKarp,0,27,0,2,0,4,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSourceDijkstra,6,258,0,24,2,65,1,16,1,4
 JGAlgo - Core,com.jgalgo.alg,TreePathMaximaUtils.IntResultFromIndexResult,2,29,1,1,0,7,1,3,0,3
 JGAlgo - Core,com.jgalgo.alg,EdgeCover,32,132,4,22,9,26,7,10,3,1
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV,73,240,16,18,0,46,8,15,0,6
-JGAlgo - Core,com.jgalgo.alg,BipartiteGraphs,27,256,7,43,7,64,7,24,1,5
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowEdmondsKarp.WorkerInt,79,284,20,22,1,66,11,22,1,11
-JGAlgo - Core,com.jgalgo.alg,MinimumEdgeCutST,0,8,0,0,0,3,0,3,0,3
+JGAlgo - Core,com.jgalgo.alg,BipartiteGraphs,0,289,0,48,0,71,0,32,0,8
+JGAlgo - Core,com.jgalgo.alg,MinimumEdgeCutST,0,5,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOffline.IQueries,0,21,0,0,0,5,0,4,0,4
-JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Abstract,9,30,0,2,1,7,0,4,0,3
 JGAlgo - Core,com.jgalgo.alg,MinimumSpanningTreePrim,8,321,3,37,3,82,4,21,1,4
+JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Abstract,9,30,0,2,1,7,0,4,0,3
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Worker.2.new Iterator() {...},0,32,0,2,0,7,0,4,0,3
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsFloydWarshall,0,399,0,52,0,73,0,32,0,6
 JGAlgo - Core,com.jgalgo.alg,TreePathMaximaHagerup,0,24,0,0,0,7,0,3,0,3
@@ -688,14 +687,14 @@ JGAlgo - Core,com.jgalgo.alg,Dfs.IntIter,0,4,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg,SimplePathsEnumeratorSedgewick.new Iterator() {...},8,180,2,10,0,37,1,10,0,5
 JGAlgo - Core,com.jgalgo.alg,MinimumMeanCycleDasdanGupta.SourceChooser,0,27,0,0,0,9,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,Matchings,10,48,2,6,0,13,2,8,1,5
-JGAlgo - Core,com.jgalgo.alg,VoronoiAlgo,0,5,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Blossom.1.new Iterator() {...},16,106,5,9,1,24,3,9,0,5
+JGAlgo - Core,com.jgalgo.alg,VoronoiAlgo,0,4,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg,SteinerTreeMehlhorn,114,620,22,52,17,120,13,31,1,6
 JGAlgo - Core,com.jgalgo.alg,VertexScoringImpl.ObjResultFromIndexResult,0,20,0,0,0,5,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorDynamicGabowInts,67,371,13,43,9,79,10,30,1,11
 JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.FromBitmap,0,14,0,0,0,4,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,AlgorithmWithDiagnostics,2,0,0,0,1,0,1,0,1,0
-JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutGlobal,25,135,4,20,5,36,3,12,0,3
+JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutGlobal,25,134,4,20,5,35,3,11,0,2
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSourceUtils,7,18,2,2,0,5,1,3,0,2
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Debug,10,6,0,0,1,4,2,4,2,4
 JGAlgo - Core,com.jgalgo.alg,ShortestPathST,9,0,0,0,3,0,3,0,3,0
@@ -708,7 +707,7 @@ JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Abstract.Evens,0,52,0,2,0,
 JGAlgo - Core,com.jgalgo.alg,KVertexConnectedComponentsUtils,7,18,2,2,0,5,1,3,0,2
 JGAlgo - Core,com.jgalgo.alg,Flows.ObjFlowFromIndexFlow,0,46,0,0,0,9,0,5,0,5
 JGAlgo - Core,com.jgalgo.alg,NegativeCycleException,14,50,3,1,1,15,2,6,0,6
-JGAlgo - Core,com.jgalgo.alg,BiConnectedComponentsAlgo,0,5,0,0,0,2,0,2,0,2
+JGAlgo - Core,com.jgalgo.alg,BiConnectedComponentsAlgo,0,4,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg,SteinerTrees.ObjResultFromIndexResult,0,19,0,0,0,5,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairs,0,7,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,VoronoiAlgos.IntResultFromIndexResult,0,63,0,4,0,10,0,8,0,6
@@ -718,9 +717,9 @@ JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsJohnson.Res,0,6,0,0,0,3,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg,MinimumMeanCycleAbstract,0,34,0,2,0,9,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg,TspMetricUtils.AbstractImpl,0,34,0,2,0,9,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Tree,82,154,20,4,1,53,11,18,1,16
-JGAlgo - Core,com.jgalgo.alg,MinimumEdgeCutGlobal,5,0,0,0,2,0,2,0,2,0
+JGAlgo - Core,com.jgalgo.alg,MinimumEdgeCutGlobal,4,0,0,0,1,0,1,0,1,0
+JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorStatic,4,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo.alg,ConnectedComponentsUtils.AbstractStronglyConnectedComponentsAlgo,0,51,0,6,0,12,0,7,0,4
-JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorStatic,5,0,0,0,2,0,2,0,2,0
 JGAlgo - Core,com.jgalgo.alg,CyclesEnumeratorTarjan.new Iterator() {...},14,275,3,23,2,63,2,16,0,5
 JGAlgo - Core,com.jgalgo.alg,BitsLookupTable.Ith,21,164,6,16,3,26,6,8,0,3
 JGAlgo - Core,com.jgalgo.alg,IVertexBiPartition,18,148,3,19,3,29,4,21,2,12
@@ -729,7 +728,7 @@ JGAlgo - Core,com.jgalgo.alg,StronglyConnectedComponentsTarjan,0,217,0,28,0,55,0
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabel.WorkerDouble,147,626,37,75,0,129,20,52,0,16
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairs.1.new ShortestPathAllPairs() {...},7,39,1,3,1,7,1,4,0,3
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairs.new ShortestPathAllPairs.Builder() {...},53,19,8,2,13,5,8,2,2,2
-JGAlgo - Core,com.jgalgo.alg,VertexPartitions.IntPartitionFromIndexPartition,24,134,2,6,2,23,2,12,1,9
+JGAlgo - Core,com.jgalgo.alg,VertexPartitions.IntPartitionFromIndexPartition,24,131,2,4,2,23,2,11,1,9
 JGAlgo - Core,com.jgalgo.alg,ContractableGraph,131,179,11,5,29,33,7,8,1,6
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsUtils.ResultImpl.Undirected,14,121,4,8,0,25,2,10,0,6
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSourceDial.DialHeap,7,186,2,16,0,42,1,15,0,7
@@ -738,7 +737,7 @@ JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Simpler,0,10,0,0,0,2,0,2,0
 JGAlgo - Core,com.jgalgo.alg,VertexPartitions.Impl,37,870,6,80,3,140,5,52,2,12
 JGAlgo - Core,com.jgalgo.alg,TspMetricMatchingAppx,0,291,0,22,0,55,0,14,0,3
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Tree.2.new Iterator() {...},0,31,0,2,0,7,0,4,0,3
-JGAlgo - Core,com.jgalgo.alg,MinimumDirectedSpanningTree,0,5,0,0,0,2,0,2,0,2
+JGAlgo - Core,com.jgalgo.alg,MinimumDirectedSpanningTree,0,4,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowEdmondsKarp.Worker,26,227,3,33,6,72,2,19,0,3
 JGAlgo - Core,com.jgalgo.alg,ColoringAlgo.new ColoringAlgo.Builder() {...},56,0,8,0,13,0,8,0,3,0
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorDynamicGabowInts.Vertex2,0,16,0,0,0,7,0,4,0,4
@@ -753,35 +752,35 @@ JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorDynamicGabowLongs,153,290,26,30
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.TreesEdge,31,25,4,0,1,8,3,3,1,3
 JGAlgo - Core,com.jgalgo.alg,MinimumCostFlow.1.new MinimumCostFlow() {...},0,177,11,23,0,25,11,13,0,7
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowAbstract.WithResidualGraph,0,3,0,0,0,1,0,1,0,1
-JGAlgo - Core,com.jgalgo.alg,MinimumEdgeCutAllST,0,15,0,0,0,3,0,3,0,3
+JGAlgo - Core,com.jgalgo.alg,MinimumEdgeCutAllST,0,14,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,MinimumSpanningTreeBoruvka,19,408,5,49,1,97,3,29,0,5
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Debug.Impl,8,0,0,0,2,0,1,0,1,0
 JGAlgo - Core,com.jgalgo.alg,Flows.IntFlowFromIndexFlow,0,46,0,0,0,9,0,5,0,5
 JGAlgo - Core,com.jgalgo.alg,MinimumSpanningTreeYao,14,468,4,52,0,98,2,30,0,4
-JGAlgo - Core,com.jgalgo.alg,KShortestPathsST,5,0,0,0,2,0,2,0,2,0
+JGAlgo - Core,com.jgalgo.alg,KShortestPathsST,4,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo.alg,KVertexConnectedComponentsUtils.ResultImpl,4,22,0,0,1,7,1,4,1,4
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Tree.4.new Iterator() {...},16,72,4,8,0,19,2,9,0,5
 JGAlgo - Core,com.jgalgo.alg,VertexBiPartition,10,148,3,17,2,31,3,20,1,12
 JGAlgo - Core,com.jgalgo.alg,MaximalCliquesEnumeratorBronKerbosch.new Iterator() {...},17,329,6,28,0,67,3,21,0,7
-JGAlgo - Core,com.jgalgo.alg,KVertexConnectedComponentsAlgo,0,5,0,0,0,2,0,2,0,2
-JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutST,5,0,0,0,2,0,2,0,2,0
+JGAlgo - Core,com.jgalgo.alg,KVertexConnectedComponentsAlgo,0,4,0,0,0,1,0,1,0,1
+JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutST,4,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorStatic.IDataStructure,0,8,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowDinicDynamicTrees.Worker,57,578,10,42,1,120,6,25,0,5
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsUtils.AbstractImpl,0,94,0,4,0,22,0,7,0,5
-JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBipartiteSSSP,54,369,13,31,4,81,9,19,1,5
+JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBipartiteSSSP,61,362,14,30,8,76,10,18,1,5
 JGAlgo - Core,com.jgalgo.alg,TopologicalOrderAlgoAbstract.ObjResultFromIndexResult,0,27,0,0,0,6,0,3,0,3
 JGAlgo - Core,com.jgalgo.alg,DistanceMeasuresImpl.ObjMeasuresFromIndexMeasures,0,42,0,0,0,9,0,6,0,6
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSTs,3,0,0,0,1,0,1,0,1,0
-JGAlgo - Core,com.jgalgo.alg,MaximalCliquesEnumeratorBronKerboschPivot,0,11,0,0,0,3,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,KEdgeConnectedComponentsWang,113,423,32,46,0,111,17,28,0,6
+JGAlgo - Core,com.jgalgo.alg,MaximalCliquesEnumeratorBronKerboschPivot,0,11,0,0,0,3,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAStar.Info,0,9,0,0,0,3,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg,SimplePathsEnumerators.AbstractImpl,0,50,0,2,0,10,0,4,0,3
-JGAlgo - Core,com.jgalgo.alg,BfsIterImpl.Abstract,0,67,2,4,0,18,2,5,0,4
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOfflineUtils.IntResultFromIndexResult,2,29,1,1,0,7,1,3,0,3
+JGAlgo - Core,com.jgalgo.alg,BfsIterImpl.Abstract,0,67,2,4,0,18,2,5,0,4
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowAbstract.WithoutResidualGraph.Worker,4,156,1,11,1,28,1,10,0,5
 JGAlgo - Core,com.jgalgo.alg,MinimumCostFlow,0,7,0,0,0,2,0,2,0,2
-JGAlgo - Core,com.jgalgo.alg,MinimumSpanningTreeUtils.IntResultFromIndexResult,0,19,0,0,0,5,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsUtils.ResultImpl.Directed,17,91,4,6,0,22,2,8,0,5
+JGAlgo - Core,com.jgalgo.alg,MinimumSpanningTreeUtils.IntResultFromIndexResult,0,19,0,0,0,5,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBipartiteHungarianMethod,6,36,0,0,2,8,1,3,1,3
 JGAlgo - Core,com.jgalgo.alg,MinimumSpanningTreeKargerKleinTarjan,8,579,5,33,1,104,4,26,0,11
 JGAlgo - Core,com.jgalgo.alg,Matchings.AbstractMinimumMatchingImpl,0,23,0,2,0,5,0,4,0,3
@@ -789,15 +788,15 @@ JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairs.IResult,0,14,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabelDynamicTrees.WorkerInt,26,329,4,16,0,63,2,20,0,12
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSourceUtils.ResultImpl,20,113,4,8,1,31,3,8,1,4
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Worker.new Iterable() {...},0,11,0,0,0,2,0,2,0,2
-JGAlgo - Core,com.jgalgo.alg,SimplePathsEnumerator,0,14,0,0,0,3,0,3,0,3
+JGAlgo - Core,com.jgalgo.alg,SimplePathsEnumerator,0,13,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Worker.new Iterable() {...},0,11,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Worker.new MatchingWeightedBlossomV.Blossom() {...},2,6,0,0,1,1,1,1,1,1
-JGAlgo - Core,com.jgalgo.alg,ChinesePostmanImpl,28,349,5,29,2,66,3,20,0,6
+JGAlgo - Core,com.jgalgo.alg,ChinesePostmanImpl,34,343,6,28,3,65,4,19,0,6
 JGAlgo - Core,com.jgalgo.alg,CyclesEnumerator.new CyclesEnumerator.Builder() {...},52,0,7,0,12,0,7,0,3,0
 JGAlgo - Core,com.jgalgo.alg,MatchingCardinalityBipartiteHopcroftKarp,1,298,1,39,1,79,1,21,0,2
 JGAlgo - Core,com.jgalgo.alg,BitsLookupTable.Count,6,56,2,6,1,10,2,4,0,2
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorDynamic,0,7,0,0,0,2,0,2,0,2
-JGAlgo - Core,com.jgalgo.alg,VertexPartitions,21,171,7,29,0,42,5,17,1,3
+JGAlgo - Core,com.jgalgo.alg,VertexPartitions,21,168,7,27,0,42,5,16,1,3
 JGAlgo - Core,com.jgalgo.alg,MaximumFlow,0,7,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,EdgeCover.new EdgeCover() {...},24,0,2,0,4,0,3,0,2,0
 JGAlgo - Core,com.jgalgo.alg,ColoringDSatur,6,208,0,12,2,46,1,11,1,5
@@ -809,42 +808,42 @@ JGAlgo - Core,com.jgalgo.alg,CoresAlgoImpl.ResultImpl.new ImmutableIntArraySet()
 JGAlgo - Core,com.jgalgo.alg,CoresAlgoImpl.ResultImpl.new ImmutableIntArraySet() {...},0,34,2,4,0,2,2,3,0,2
 JGAlgo - Core,com.jgalgo.alg,CoresAlgoImpl.ResultImpl.new ImmutableIntArraySet() {...},0,34,2,4,0,2,2,3,0,2
 JGAlgo - Core,com.jgalgo.alg,VoronoiAlgos.ResultImpl,0,135,0,12,0,31,0,11,0,5
-JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Blossom,132,584,33,49,7,117,19,54,1,31
-JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Edge,59,120,10,10,1,39,6,15,1,10
+JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Blossom,127,589,32,50,6,118,18,55,1,31
 JGAlgo - Core,com.jgalgo.alg,BiConnectedComponentsAlgoAbstract.ObjResultFromIndexResult,0,63,0,0,0,12,0,8,0,8
+JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Edge,59,120,10,10,1,39,6,15,1,10
 JGAlgo - Core,com.jgalgo.alg,CyclesEnumeratorJohnson.StronglyConnectedComponent,0,32,0,4,0,9,0,4,0,2
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabel.Worker,286,1427,75,197,17,362,41,113,1,17
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOfflineUtils.ObjQueriesImpl,0,48,0,0,0,11,0,6,0,6
 JGAlgo - Core,com.jgalgo.alg,FlowCirculationPushRelabel,0,27,1,3,0,4,1,3,0,2
-JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOffline,0,5,0,0,0,2,0,2,0,2
+JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOffline,0,4,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg,MinimumEdgeCutUtils.new MinimumEdgeCutUtils.AbstractImplST() {...},0,22,0,0,0,3,0,3,0,3
 JGAlgo - Core,com.jgalgo.alg,MinimumEdgeCutUtils.new MinimumEdgeCutUtils.AbstractImplGlobal() {...},11,62,3,7,1,18,2,6,0,3
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorStaticAbstract,7,51,2,4,0,13,1,6,0,4
 JGAlgo - Core,com.jgalgo.alg,SteinerTrees.ResultImpl,4,25,0,0,1,8,1,4,1,4
 JGAlgo - Core,com.jgalgo.alg,AlgorithmBuilderBase,0,6,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Abstract.Blossom.new IntIterator() {...},0,92,1,11,0,27,1,8,0,3
-JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Abstract.Blossom.new Iterable() {...},2,15,1,1,1,3,1,2,0,2
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabel.Worker.DischargePolicyImpl,16,46,5,6,1,13,3,6,0,3
+JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Abstract.Blossom.new Iterable() {...},2,15,1,1,1,3,1,2,0,2
 JGAlgo - Core,com.jgalgo.alg,MinimumCostFlows.AbstractImplBasedSupply,80,322,20,32,17,69,18,20,4,8
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsUtils.ObjResultFromIndexResult,0,46,0,0,0,8,0,3,0,3
 JGAlgo - Core,com.jgalgo.alg,StronglyConnectedComponentsAlgo.new StronglyConnectedComponentsAlgo.Builder() {...},42,10,6,1,9,3,5,2,1,2
 JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutUtils.AbstractImplAllGlobal,0,39,0,2,0,9,0,4,0,3
-JGAlgo - Core,com.jgalgo.alg,VertexPartitions.ObjPartitionFromIndexPartition,24,137,2,6,2,23,2,12,1,9
+JGAlgo - Core,com.jgalgo.alg,VertexPartitions.ObjPartitionFromIndexPartition,24,134,2,4,2,23,2,11,1,9
 JGAlgo - Core,com.jgalgo.alg,PathImpl,41,441,14,72,6,103,11,46,0,14
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Tree.new Iterable() {...},0,11,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Tree.new Iterable() {...},0,11,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,KShortestPathsSTs.AbstractImpl,0,93,0,4,0,18,0,5,0,3
 JGAlgo - Core,com.jgalgo.alg,MinimumSpanningTreeUtils,7,18,2,2,0,5,1,3,0,2
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Tree.new Iterable() {...},0,11,0,0,0,2,0,2,0,2
-JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutAllST,0,21,0,2,0,4,0,4,0,3
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Tree.new Iterable() {...},0,11,0,0,0,2,0,2,0,2
+JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutAllST,0,20,0,2,0,3,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSourceUtils.AbstractImpl,0,56,0,2,0,13,0,4,0,3
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Tree.new Iterable() {...},0,11,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutSTEdgeCut,0,74,0,4,0,17,0,5,0,3
 JGAlgo - Core,com.jgalgo.alg,CoresAlgo.IResult,0,5,0,0,0,1,0,1,0,1
-JGAlgo - Core,com.jgalgo.alg,DominatingSetAlgoGreedy.Worker,222,596,35,91,4,152,27,53,9,8
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowDinicDynamicTrees,0,29,0,0,0,4,0,3,0,3
-JGAlgo - Core,com.jgalgo.alg,MinimumMeanCycleDasdanGupta,5,561,3,61,1,108,3,32,0,3
+JGAlgo - Core,com.jgalgo.alg,DominatingSetAlgoGreedy.Worker,222,596,35,91,4,152,27,53,9,8
+JGAlgo - Core,com.jgalgo.alg,MinimumMeanCycleDasdanGupta,6,560,4,60,2,107,4,31,0,3
 JGAlgo - Core,com.jgalgo.alg,Matchings.AbstractMaximumMatchingImpl,0,23,0,2,0,5,0,4,0,3
 JGAlgo - Core,com.jgalgo.alg,IDistanceMeasures,0,5,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg,BiConnectedComponentsAlgo.IResult,0,10,0,0,0,2,0,2,0,2
@@ -859,7 +858,7 @@ JGAlgo - Core,com.jgalgo.alg,TreePathMaximaUtils.ObjResultFromIndexResult,2,29,1
 JGAlgo - Core,com.jgalgo.alg,SteinerTrees.AbstractImpl,0,46,0,2,0,12,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.ObjBiPartitionFromIndexBiPartition,0,17,0,0,0,4,0,3,0,3
 JGAlgo - Core,com.jgalgo.alg,PageRank,0,326,2,34,0,60,2,20,0,4
-JGAlgo - Core,com.jgalgo.alg,CoresAlgo,5,5,0,0,2,1,2,1,2,1
+JGAlgo - Core,com.jgalgo.alg,CoresAlgo,4,5,0,0,1,1,1,1,1,1
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSTBidirectionalDijkstra,6,420,2,54,2,94,2,30,0,4
 JGAlgo - Core,com.jgalgo.alg,VoronoiAlgos,10,18,2,2,0,5,2,3,1,2
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabelDynamicTrees.AbstractWorker,88,559,22,58,0,125,11,37,0,8
@@ -881,8 +880,8 @@ JGAlgo - Core,com.jgalgo.alg,CyclesEnumeratorAbstract,0,27,0,2,0,6,0,4,0,3
 JGAlgo - Core,com.jgalgo.alg,KVertexConnectedComponentsUtils.ObjResultFromIndexResult,15,25,0,0,2,7,1,4,1,4
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Worker.3.new Iterator() {...},0,68,0,10,0,13,0,8,0,3
 JGAlgo - Core,com.jgalgo.alg,TreePathMaxima.Queries,0,4,0,0,0,1,0,1,0,1
-JGAlgo - Core,com.jgalgo.alg,Trees,4,159,3,21,2,44,3,15,0,6
 JGAlgo - Core,com.jgalgo.alg,MinimumCostFlows,53,71,10,14,8,16,6,7,0,1
+JGAlgo - Core,com.jgalgo.alg,Trees,4,159,3,21,2,44,3,15,0,6
 JGAlgo - Core,com.jgalgo.alg,MaximalCliquesEnumeratorBronKerbosch,0,11,0,0,0,3,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Simpler.Worker,88,594,23,39,1,122,12,29,0,10
 JGAlgo - Core,com.jgalgo.alg,IFlow,0,10,0,0,0,2,0,2,0,2
@@ -891,14 +890,14 @@ JGAlgo - Core,com.jgalgo.alg,MinimumMeanCycleHoward,33,437,6,58,4,114,4,32,0,4
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSourceGoldberg,17,758,1,85,4,144,3,47,2,5
 JGAlgo - Core,com.jgalgo.alg,TspMetricUtils,87,91,16,8,0,28,9,6,1,2
 JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions,10,18,2,2,0,5,2,3,1,2
-JGAlgo - Core,com.jgalgo.alg,WeaklyConnectedComponentsAlgoImpl,18,211,4,30,0,64,2,19,0,4
 JGAlgo - Core,com.jgalgo.alg,MinimumEdgeCutUtils.AbstractImplST,0,109,0,4,0,26,0,5,0,3
+JGAlgo - Core,com.jgalgo.alg,WeaklyConnectedComponentsAlgoImpl,18,211,4,30,0,64,2,19,0,4
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAStar,30,373,6,22,2,86,4,24,1,13
 JGAlgo - Core,com.jgalgo.alg,DistanceMeasuresImpl.IndexImpl,0,189,1,15,0,39,1,18,0,11
 JGAlgo - Core,com.jgalgo.alg,MinimumSpanningTreeBoruvka.RunBoruvkaResult,0,12,0,0,0,5,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg,EdgeDirection,0,34,0,0,0,4,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg,MinimumCostFlows.AbstractImpl,13,378,11,47,5,74,11,28,0,10
-JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutAllGlobal,0,13,0,0,0,3,0,3,0,3
+JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutAllGlobal,0,12,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,CyclesEnumeratorJohnson.new Iterator() {...},37,492,9,55,2,109,5,35,0,8
 JGAlgo - Core,com.jgalgo.alg,DfsIterImpl,22,177,5,9,1,44,3,9,0,5
 JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutUtils.AbstractImplAllST,0,63,0,4,0,12,0,5,0,3
@@ -914,30 +913,30 @@ JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsUtils.ResultImpl.AllVertices,0,
 JGAlgo - Core,com.jgalgo.alg,DominatingSetAlgoGreedy,0,34,0,2,0,10,0,4,0,3
 JGAlgo - Core,com.jgalgo.alg,BiConnectedComponentsAlgoAbstract,0,38,0,4,0,9,0,5,0,3
 JGAlgo - Core,com.jgalgo.alg,MaximalCliquesEnumerator,7,7,0,0,2,1,2,1,2,1
-JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990.Worker,167,953,40,70,3,199,22,49,0,16
+JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990.Worker,187,933,42,68,10,192,24,47,0,16
 JGAlgo - Core,com.jgalgo.alg,BfsIterImpl,3,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo.alg,CyclesEnumeratorJohnson,0,32,0,2,0,7,0,4,0,3
-JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutGlobalEsfahanianHakimi,0,217,1,35,0,49,1,19,0,2
-JGAlgo - Core,com.jgalgo.alg,KVertexConnectedComponentsUtils.AbstractImpl,0,24,0,2,0,6,0,3,0,2
+JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutGlobalEsfahanianHakimi,5,212,2,34,2,47,2,18,0,2
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorStaticRMQ.DS,0,53,0,2,0,16,0,3,0,2
+JGAlgo - Core,com.jgalgo.alg,KVertexConnectedComponentsUtils.AbstractImpl,0,24,0,2,0,6,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg,SimplePathsEnumeratorSedgewick,0,24,0,2,0,4,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg,ShortestPathST.new ShortestPathST() {...},32,0,2,0,6,0,3,0,2,0
 JGAlgo - Core,com.jgalgo.alg,BiConnectedComponentsAlgoHopcroftTarjan,53,440,12,44,5,88,7,25,0,4
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSource.IResult,0,10,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,BiConnectedComponentsAlgoHopcroftTarjan.Res,75,753,18,92,4,145,14,54,2,11
-JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Abstract.Worker,443,1722,84,152,20,359,50,103,6,29
-JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Worker,811,4361,243,557,20,1063,131,297,0,28
+JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Abstract.Worker,449,1716,85,151,20,359,51,102,6,29
+JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Worker,755,4417,237,563,7,1076,126,302,0,28
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOfflineUnionFind.new IntIterator() {...},0,51,0,2,0,5,0,4,0,3
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Blossom.2.new Iterator() {...},16,106,5,9,1,24,3,9,0,5
 JGAlgo - Core,com.jgalgo.alg,TreePathMaximaUtils.AbstractImpl,0,46,1,3,0,11,1,3,0,2
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowAbstract,0,123,0,4,0,29,0,7,0,5
-JGAlgo - Core,com.jgalgo.alg,EulerianTourAlgo,0,180,0,26,0,46,0,19,0,6
+JGAlgo - Core,com.jgalgo.alg,EulerianTourAlgo,0,179,0,26,0,45,0,18,0,5
 JGAlgo - Core,com.jgalgo.alg,CyclesEnumeratorTarjan,0,11,0,0,0,3,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOfflineUtils.ObjResultFromIndexResult,2,29,1,1,0,7,1,3,0,3
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSource,0,7,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.Impl.new ImmutableIntArraySet() {...},12,15,4,0,1,1,3,1,1,1
-JGAlgo - Core,com.jgalgo.alg,EulerianTourImpl,23,372,7,51,0,103,4,33,0,8
 JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.Impl.new ImmutableIntArraySet() {...},11,12,4,0,1,1,3,1,1,1
+JGAlgo - Core,com.jgalgo.alg,EulerianTourImpl,23,372,7,51,0,103,4,33,0,8
 JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.Impl.new ImmutableIntArraySet() {...},12,15,4,0,1,1,3,1,1,1
 JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.Impl.new ImmutableIntArraySet() {...},28,10,6,0,1,1,4,1,1,1
 JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.Impl.new ImmutableIntArraySet() {...},0,36,2,4,0,2,2,3,0,2
@@ -947,8 +946,8 @@ JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.Impl.new ImmutableIntArraySet() 
 JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutUtils.AbstractImplGlobal,2,36,1,3,0,9,1,3,0,2
 JGAlgo - Core,com.jgalgo.alg,KShortestPathsSTYen.ShortestPathSubroutine,99,536,20,50,4,123,11,28,0,4
 JGAlgo - Core,com.jgalgo.alg,MinimumVertexCutUtils.AuxiliaryGraph,10,418,2,42,0,69,1,27,0,6
-JGAlgo - Core,com.jgalgo.alg,ColoringUtils.AbstractImpl,5,17,1,1,1,5,1,2,0,2
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOfflineUtils,14,69,4,12,0,17,2,10,0,4
+JGAlgo - Core,com.jgalgo.alg,ColoringUtils.AbstractImpl,5,17,1,1,1,5,1,2,0,2
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabel.ActiveOrderPolicy,0,44,0,0,0,2,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg,DistanceMeasures,0,44,0,2,0,10,0,2,0,1
 JGAlgo - Core,com.jgalgo.alg,KEdgeConnectedComponentsUtils.AbstractImpl,0,24,0,2,0,6,0,3,0,2
@@ -960,8 +959,8 @@ JGAlgo - Core,com.jgalgo.alg,VertexScoringImpl.IntResultFromIndexResult,0,20,0,0
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorDynamic.new LowestCommonAncestorDynamic.Builder() {...},46,10,7,1,10,3,6,2,1,2
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabel.Worker.DischargePolicyImpl.PartialAugmentInt,137,373,30,44,0,84,15,27,0,5
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowDinic.Worker,7,343,2,34,0,81,1,21,0,4
-JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSourceUtils.BuilderImpl.new ShortestPathSingleSourceUtils.AbstractImpl() {...},62,0,2,0,9,0,3,0,2,0
 JGAlgo - Core,com.jgalgo.alg,ClosuresEnumerators.AbstractImpl,0,30,0,2,0,7,0,4,0,3
+JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSourceUtils.BuilderImpl.new ShortestPathSingleSourceUtils.AbstractImpl() {...},62,0,2,0,9,0,3,0,2,0
 JGAlgo - Core,com.jgalgo.alg,VertexPartition,25,156,1,15,4,31,4,10,3,3
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSourceUtils.BuilderImpl,92,60,16,10,22,20,16,8,3,5
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOffline.Queries,0,12,0,2,0,3,0,2,0,1
@@ -983,7 +982,7 @@ JGAlgo - Core,com.jgalgo.alg,Matchings.MatchingImpl,40,262,6,42,1,53,4,31,1,10
 JGAlgo - Core,com.jgalgo.alg,DfsIterImpl.IntDfsFromIndexDfs,0,34,0,0,0,8,0,4,0,4
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabel.Worker.DischargePolicyImpl.PartialAugmentBase,222,573,37,89,12,123,21,46,0,4
 JGAlgo - Core,com.jgalgo.alg,TopologicalOrderAlgoAbstract.IntResultFromIndexResult,0,27,0,0,0,6,0,3,0,3
-JGAlgo - Core,com.jgalgo.alg,DominatingSetAlgo,8,164,5,25,0,37,4,16,0,5
+JGAlgo - Core,com.jgalgo.alg,DominatingSetAlgo,8,163,5,25,0,36,4,15,0,4
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Abstract.Odds,0,218,0,22,0,36,0,20,0,9
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOfflineUtils.IndexQueriesFromIntQueries,0,48,0,0,0,11,0,6,0,6
 JGAlgo - Core,com.jgalgo.alg,MinimumCostFlow.new MinimumCostFlow.Builder() {...},4,69,2,9,1,17,2,9,0,5
@@ -993,7 +992,7 @@ JGAlgo - Core,com.jgalgo.alg,EdgeCovers.AbstractImpl,0,34,0,2,0,9,0,3,0,2
 JGAlgo - Core,com.jgalgo.alg,BfsIterImpl.IntBfsFromIndexBfs,4,41,0,2,1,9,1,5,1,4
 JGAlgo - Core,com.jgalgo.alg,Bfs,46,66,3,5,8,12,3,5,1,3
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Blossom.new Iterable() {...},0,11,0,0,0,2,0,2,0,2
-JGAlgo - Core,com.jgalgo.alg,WeaklyConnectedComponentsAlgo,0,5,0,0,0,2,0,2,0,2
+JGAlgo - Core,com.jgalgo.alg,WeaklyConnectedComponentsAlgo,0,4,0,0,0,1,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowAbstract.WithResidualGraph.Worker,205,509,42,60,24,92,24,36,0,9
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Blossom.new Iterable() {...},0,11,0,0,0,2,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,ColoringUtils,3,0,0,0,1,0,1,0,1,0
@@ -1001,11 +1000,11 @@ JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Tree.1.new Iterator() {...
 JGAlgo - Core,com.jgalgo.alg,ColoringAlgo,41,136,7,15,11,27,8,6,2,1
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Blossom.BitmapBuilder,29,44,6,4,4,13,5,3,0,3
 JGAlgo - Core,com.jgalgo.alg,BfsIterImpl.Forward,0,78,0,8,0,22,0,7,0,3
-JGAlgo - Core,com.jgalgo.alg,VertexCover,0,92,0,14,0,21,0,10,0,3
+JGAlgo - Core,com.jgalgo.alg,VertexCover,0,91,0,14,0,20,0,9,0,2
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsUtils.ResFromSSSP,0,6,0,0,0,3,0,1,0,1
 JGAlgo - Core,com.jgalgo.alg,MinimumSpanningTree,67,287,21,41,15,73,17,19,0,5
 JGAlgo - Core,com.jgalgo.alg,Flows.ResidualGraph.Builder,80,210,17,9,3,45,9,10,0,6
-JGAlgo - Core,com.jgalgo.alg,SteinerTreeAlgo,50,240,18,32,11,56,16,13,2,2
+JGAlgo - Core,com.jgalgo.alg,SteinerTreeAlgo,49,240,18,32,10,56,15,13,1,2
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabelDynamicTrees.WorkerDouble,32,323,4,16,0,62,2,20,0,12
 JGAlgo - Core,com.jgalgo.alg,Matchings.MatchingImpl.new ImmutableIntArraySet() {...},0,32,2,4,0,2,2,3,0,2
 JGAlgo - Core,com.jgalgo.alg,Matchings.MatchingImpl.new ImmutableIntArraySet() {...},0,27,2,4,0,2,2,3,0,2
@@ -1022,25 +1021,25 @@ JGAlgo - Core,com.jgalgo.alg,PathImpl.ObjPathFromIndexPath,0,62,0,0,0,13,0,8,0,8
 JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsCardinality,0,172,2,16,0,32,2,13,0,6
 JGAlgo - Core,com.jgalgo.alg,KShortestPathsSTYen,44,230,8,22,1,49,6,13,1,3
 JGAlgo - Core,com.jgalgo.alg,MinimumSpanningTreeKruskal,8,111,2,8,3,22,3,5,1,2
-JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsJohnson,27,386,8,36,3,81,8,26,2,10
+JGAlgo - Core,com.jgalgo.alg,ShortestPathAllPairsJohnson,26,384,7,35,3,80,7,26,2,10
 JGAlgo - Core,com.jgalgo.alg,VertexBiPartitions.FromWeights,0,14,0,0,0,4,0,2,0,2
 JGAlgo - Core,com.jgalgo.alg,TopologicalOrderAlgo.Result,0,11,0,0,0,1,0,2,0,2
-JGAlgo - Core,com.jgalgo.alg,Dfs,0,64,0,4,0,14,0,4,0,2
 JGAlgo - Core,com.jgalgo.alg,Flows.FlowImpl,22,206,5,25,3,36,4,16,0,5
+JGAlgo - Core,com.jgalgo.alg,Dfs,0,64,0,4,0,14,0,4,0,2
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOfflineUtils.IntQueriesWrapper,0,38,0,0,0,10,0,6,0,6
-JGAlgo - Core,com.jgalgo.alg,MinimumDirectedSpanningTreeTarjan,63,880,23,95,4,170,18,52,1,10
+JGAlgo - Core,com.jgalgo.alg,MinimumDirectedSpanningTreeTarjan,63,878,23,95,4,170,18,52,1,10
 JGAlgo - Core,com.jgalgo.alg,TreePathMaximaUtils.ObjQueriesImpl,4,43,0,0,2,9,1,5,1,5
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowDinic,0,23,0,0,0,3,0,3,0,3
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Abstract.Worker.EdgeEvent,6,9,0,0,1,4,1,1,1,1
 JGAlgo - Core,com.jgalgo.alg,PathImpl.IntPathFromIndexPath,0,62,0,0,0,13,0,8,0,8
-JGAlgo - Core,com.jgalgo.alg,ChinesePostman,5,0,0,0,2,0,2,0,2,0
+JGAlgo - Core,com.jgalgo.alg,ChinesePostman,4,0,0,0,1,0,1,0,1,0
 JGAlgo - Core,com.jgalgo.alg,TreePathMaximaUtils.IndexQueriesFromIntQueries,36,12,0,0,7,4,5,1,5,1
 JGAlgo - Core,com.jgalgo.alg,CoresAlgoImpl.IntResultFromIndexResult,0,48,0,0,0,9,0,6,0,6
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedBlossomV.Tree.3.new Iterator() {...},16,72,4,8,0,19,2,9,0,5
 JGAlgo - Core,com.jgalgo.alg,ClosuresEnumeratorSchrageBaker.new Iterator() {...},10,102,2,8,0,17,1,9,0,5
 JGAlgo - Core,com.jgalgo.alg,MinimumSpanningTreeKargerKleinTarjan.AllocatedMemory,0,91,0,2,0,17,0,6,0,5
-JGAlgo - Core,com.jgalgo.alg,TopologicalOrderAlgo,0,5,0,0,0,2,0,2,0,2
-JGAlgo - Core,com.jgalgo.alg,KVertexConnectedComponentsWhiteMoody,9,987,5,123,3,207,5,68,0,9
+JGAlgo - Core,com.jgalgo.alg,TopologicalOrderAlgo,0,4,0,0,0,1,0,1,0,1
+JGAlgo - Core,com.jgalgo.alg,KVertexConnectedComponentsWhiteMoody,9,987,4,124,3,207,4,69,0,9
 JGAlgo - Core,com.jgalgo.alg,MaximumFlowPushRelabel.Worker.ActiveOrderPolicyImpl,6,38,1,4,1,13,1,10,0,7
 JGAlgo - Core,com.jgalgo.alg,TreePathMaxima.IQueries,0,21,0,0,0,5,0,4,0,4
 JGAlgo - Core,com.jgalgo.internal,JGAlgoConfigImpl,3,22,0,0,1,12,1,1,1,1

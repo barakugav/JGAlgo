@@ -47,7 +47,7 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 	 * Create a new static LCA algorithm object.
 	 */
 <span class="fc" id="L49">	LowestCommonAncestorStaticRMQ() {</span>
-<span class="fc" id="L50">		RMQStatic.Builder rmqBuilder = RMQStatic.newBuilder();</span>
+<span class="fc" id="L50">		RMQStatic.Builder rmqBuilder = RMQStatic.builder();</span>
 <span class="fc" id="L51">		rmqBuilder.setOption(&quot;impl&quot;, &quot;plus-minus-one&quot;);</span>
 <span class="fc" id="L52">		rmq = rmqBuilder.build();</span>
 <span class="fc" id="L53">	}</span>

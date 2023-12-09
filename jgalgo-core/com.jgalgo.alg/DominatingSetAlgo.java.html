@@ -42,12 +42,11 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * dominating sets.
  *
  * &lt;p&gt;
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @author Barak Ugav
  */
-<span class="pc bpc" id="L50" title="1 of 2 branches missed.">public interface DominatingSetAlgo {</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">public interface DominatingSetAlgo {</span>
 
 	/**
 	 * Compute a minimum dominating set of the graph with respect to the in-degree + out-degree of the vertices.
@@ -59,7 +58,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	 * @return     a minimum dominating set of the graph
 	 */
 	default &lt;V, E&gt; Set&lt;V&gt; computeMinimumDominationSet(Graph&lt;V, E&gt; g, WeightFunction&lt;V&gt; w) {
-<span class="fc" id="L62">		return computeMinimumDominationSet(g, w, EdgeDirection.All);</span>
+<span class="fc" id="L61">		return computeMinimumDominationSet(g, w, EdgeDirection.All);</span>
 	}
 
 	/**
@@ -88,95 +87,66 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; boolean isDominatingSet(Graph&lt;V, E&gt; g, Collection&lt;V&gt; dominatingSet,
 			EdgeDirection dominanceDirection) {
-<span class="fc bfc" id="L91" title="All 2 branches covered.">		if (dominanceDirection == null)</span>
-<span class="fc" id="L92">			dominanceDirection = EdgeDirection.All;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">		if (dominanceDirection == null)</span>
+<span class="fc" id="L91">			dominanceDirection = EdgeDirection.All;</span>
 
 		IndexGraph g0;
 		IntCollection dominatingSet0;
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L97">			g0 = (IndexGraph) g;</span>
-<span class="fc" id="L98">			dominatingSet0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) dominatingSet);</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L96">			g0 = (IndexGraph) g;</span>
+<span class="fc" id="L97">			dominatingSet0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) dominatingSet);</span>
 		} else {
-<span class="fc" id="L100">			g0 = g.indexGraph();</span>
-<span class="fc" id="L101">			dominatingSet0 = IndexIdMaps.idToIndexCollection(dominatingSet, g.indexGraphVerticesMap());</span>
+<span class="fc" id="L99">			g0 = g.indexGraph();</span>
+<span class="fc" id="L100">			dominatingSet0 = IndexIdMaps.idToIndexCollection(dominatingSet, g.indexGraphVerticesMap());</span>
 		}
 
-<span class="fc" id="L104">		final boolean directed = g.isDirected();</span>
-<span class="fc" id="L105">		final int n = g0.vertices().size();</span>
-<span class="fc" id="L106">		Bitmap dominatingSetBitmap = new Bitmap(n);</span>
-<span class="fc" id="L107">		Bitmap dominated = new Bitmap(n);</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">		for (int v : dominatingSet0) {</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">			if (dominatingSetBitmap.get(v))</span>
-<span class="fc" id="L110">				throw new IllegalArgumentException(&quot;duplicate vertex in dominating set: &quot; + v);</span>
-<span class="fc" id="L111">			dominatingSetBitmap.set(v);</span>
-<span class="fc" id="L112">			dominated.set(v);</span>
+<span class="fc" id="L103">		final boolean directed = g.isDirected();</span>
+<span class="fc" id="L104">		final int n = g0.vertices().size();</span>
+<span class="fc" id="L105">		Bitmap dominatingSetBitmap = new Bitmap(n);</span>
+<span class="fc" id="L106">		Bitmap dominated = new Bitmap(n);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">		for (int v : dominatingSet0) {</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (dominatingSetBitmap.get(v))</span>
+<span class="fc" id="L109">				throw new IllegalArgumentException(&quot;duplicate vertex in dominating set: &quot; + v);</span>
+<span class="fc" id="L110">			dominatingSetBitmap.set(v);</span>
+<span class="fc" id="L111">			dominated.set(v);</span>
 
-<span class="fc bfc" id="L114" title="All 4 branches covered.">			if (!directed || dominanceDirection == EdgeDirection.Out) {</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">				for (IEdgeIter eit = g0.outEdges(v).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L116">					eit.nextInt();</span>
-<span class="fc" id="L117">					dominated.set(eit.targetInt());</span>
+<span class="fc bfc" id="L113" title="All 4 branches covered.">			if (!directed || dominanceDirection == EdgeDirection.Out) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">				for (IEdgeIter eit = g0.outEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L115">					eit.nextInt();</span>
+<span class="fc" id="L116">					dominated.set(eit.targetInt());</span>
 				}
 
-<span class="fc bfc" id="L120" title="All 2 branches covered.">			} else if (dominanceDirection == EdgeDirection.In) {</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">				for (IEdgeIter eit = g0.inEdges(v).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L122">					eit.nextInt();</span>
-<span class="fc" id="L123">					dominated.set(eit.sourceInt());</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">			} else if (dominanceDirection == EdgeDirection.In) {</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">				for (IEdgeIter eit = g0.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L121">					eit.nextInt();</span>
+<span class="fc" id="L122">					dominated.set(eit.sourceInt());</span>
 				}
 
 			} else {
-<span class="pc bpc" id="L127" title="3 of 4 branches missed.">				assert dominanceDirection == EdgeDirection.All;</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">				for (IEdgeIter eit = g0.outEdges(v).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L129">					eit.nextInt();</span>
-<span class="fc" id="L130">					dominated.set(eit.targetInt());</span>
+<span class="pc bpc" id="L126" title="3 of 4 branches missed.">				assert dominanceDirection == EdgeDirection.All;</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">				for (IEdgeIter eit = g0.outEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L128">					eit.nextInt();</span>
+<span class="fc" id="L129">					dominated.set(eit.targetInt());</span>
 				}
-<span class="fc bfc" id="L132" title="All 2 branches covered.">				for (IEdgeIter eit = g0.inEdges(v).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L133">					eit.nextInt();</span>
-<span class="fc" id="L134">					dominated.set(eit.sourceInt());</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">				for (IEdgeIter eit = g0.inEdges(v).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L132">					eit.nextInt();</span>
+<span class="fc" id="L133">					dominated.set(eit.sourceInt());</span>
 				}
 			}
-<span class="fc" id="L137">		}</span>
-<span class="pc bpc" id="L138" title="1 of 2 branches missed.">		return dominated.cardinality() == n;</span>
+<span class="fc" id="L136">		}</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">		return dominated.cardinality() == n;</span>
 	}
 
 	/**
 	 * Create a new dominating set algorithm object.
 	 *
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link DominatingSetAlgo} object. The
-	 * {@link DominatingSetAlgo.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link DominatingSetAlgo} object.
 	 *
 	 * @return a default implementation of {@link DominatingSetAlgo}
 	 */
 	static DominatingSetAlgo newInstance() {
-<span class="fc" id="L151">		return newBuilder().build();</span>
-	}
-
-	/**
-	 * Create a new dominating set algorithm builder.
-	 *
-	 * &lt;p&gt;
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link DominatingSetAlgo} objects
-	 */
-	static DominatingSetAlgo.Builder newBuilder() {
-<span class="fc" id="L163">		return DominatingSetAlgoGreedy::new;</span>
-	}
-
-	/**
-	 * A builder for {@link DominatingSetAlgo} algorithms.
-	 *
-	 * @see    DominatingSetAlgo#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for minimum dominating set computation.
-		 *
-		 * @return a new minimum dominating set algorithm
-		 */
-		DominatingSetAlgo build();
+<span class="fc" id="L149">		return new DominatingSetAlgoGreedy();</span>
 	}
 
 }

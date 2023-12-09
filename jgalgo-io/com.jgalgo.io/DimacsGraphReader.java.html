@@ -102,7 +102,7 @@ public class DimacsGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 	@Override
 	public IntGraphBuilder readIntoBuilderImpl(Reader reader) {
 <span class="fc" id="L104">		BufferedReader br = GraphIoUtils.bufferedReader(reader);</span>
-<span class="fc" id="L105">		IntGraphBuilder gb = IntGraphFactory.newUndirected().allowSelfEdges().newBuilder();</span>
+<span class="fc" id="L105">		IntGraphBuilder gb = IntGraphFactory.undirected().allowSelfEdges().newBuilder();</span>
 <span class="fc" id="L106">		boolean problemLineSeen = false;</span>
 <span class="fc" id="L107">		boolean hasWeights = false;</span>
 <span class="fc" id="L108">		IWeightsInt w = null;</span>

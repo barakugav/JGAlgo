@@ -138,7 +138,7 @@ class MinimumVertexCutUtils {
 <span class="fc" id="L138">		AuxiliaryGraph(IndexGraph g, IWeightFunction w, boolean mutable) {</span>
 <span class="fc" id="L139">			final int n = g.vertices().size();</span>
 <span class="fc" id="L140">			final int m = g.edges().size();</span>
-<span class="fc" id="L141">			IndexGraphBuilder builder = IndexGraphFactory.newDirected().allowParallelEdges().newBuilder();</span>
+<span class="fc" id="L141">			IndexGraphBuilder builder = IndexGraphFactory.directed().allowParallelEdges().newBuilder();</span>
 <span class="fc" id="L142">			builder.expectedVerticesNum(n * 2);</span>
 <span class="fc bfc" id="L143" title="All 2 branches covered.">			if (g.isDirected()) {</span>
 <span class="fc" id="L144">				builder.expectedVerticesNum(m + n);</span>

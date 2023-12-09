@@ -149,7 +149,7 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 	public void moveEdge(int edge, int newSource, int newTarget) {
 <span class="fc" id="L150">		checkEdge(edge);</span>
 <span class="fc" id="L151">		int oldSource = source(edge), oldTarget = target(edge);</span>
-<span class="pc bpc" id="L152" title="1 of 4 branches missed.">		if (oldSource == newSource &amp;&amp; oldTarget == newTarget)</span>
+<span class="fc bfc" id="L152" title="All 4 branches covered.">		if (oldSource == newSource &amp;&amp; oldTarget == newTarget)</span>
 <span class="fc" id="L153">			return;</span>
 <span class="fc" id="L154">		checkNewEdgeEndpoints(newSource, newTarget);</span>
 

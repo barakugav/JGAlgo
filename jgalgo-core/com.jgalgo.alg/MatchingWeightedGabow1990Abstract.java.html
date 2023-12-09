@@ -257,7 +257,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 		final Blossom[] findToBlossoms;
 
 <span class="fc" id="L259">		Evens(int n) {</span>
-<span class="fc" id="L260">			uf = UnionFind.newBuilder().expectedSize(n).build();</span>
+<span class="fc" id="L260">			uf = UnionFind.builder().expectedSize(n).build();</span>
 <span class="fc" id="L261">			findToBlossoms = new Blossom[n];</span>
 <span class="fc" id="L262">		}</span>
 
@@ -451,7 +451,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L451">		Worker(IndexGraph gOrig, IWeightFunction w, DebugPrinter debugPrint) {</span>
 <span class="fc" id="L452">			int n = gOrig.vertices().size();</span>
 <span class="fc" id="L453">			this.gOrig = gOrig;</span>
-<span class="fc" id="L454">			this.g = IndexGraphFactory.newDirected().allowParallelEdges().expectedVerticesNum(n).newGraph();</span>
+<span class="fc" id="L454">			this.g = IndexGraphFactory.directed().allowParallelEdges().expectedVerticesNum(n).newGraph();</span>
 <span class="fc bfc" id="L455" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L456">				g.addVertex();</span>
 <span class="fc" id="L457">			edgeVal = g.addEdgesWeights(&quot;edgeVal&quot;, EdgeVal.class);</span>
@@ -883,7 +883,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 
 		Blossom topBlossom(Blossom v) {
 <span class="pc bnc" id="L885" title="All 2 branches missed.">			assert v.isSingleton();</span>
-<span class="fc bfc" id="L886" title="All 2 branches covered.">			return v.isEven ? evens.findBlossom(v.base) : odds.findBlossom(v.base);</span>
+<span class="pc bpc" id="L886" title="1 of 2 branches missed.">			return v.isEven ? evens.findBlossom(v.base) : odds.findBlossom(v.base);</span>
 		}
 
 		Iterable&lt;Blossom&gt; allBlossoms() {

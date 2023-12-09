@@ -85,14 +85,14 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	@Benchmark
 	public void TPMHagerup(Blackhole blackhole) {
-<span class="fc" id="L88">		TreePathMaxima.Builder builder = TreePathMaxima.newBuilder();</span>
+<span class="fc" id="L88">		TreePathMaxima.Builder builder = TreePathMaxima.builder();</span>
 <span class="fc" id="L89">		builder.setOption(&quot;bits-lookup-tables-enable&quot;, Boolean.FALSE);</span>
 <span class="fc" id="L90">		benchTPM(builder.build(), blackhole);</span>
 <span class="fc" id="L91">	}</span>
 
 	@Benchmark
 	public void TPMHagerupWithBitsLookupTable(Blackhole blackhole) {
-<span class="fc" id="L95">		TreePathMaxima.Builder builder = TreePathMaxima.newBuilder();</span>
+<span class="fc" id="L95">		TreePathMaxima.Builder builder = TreePathMaxima.builder();</span>
 <span class="fc" id="L96">		builder.setOption(&quot;bits-lookup-tables-enable&quot;, Boolean.TRUE);</span>
 <span class="fc" id="L97">		benchTPM(builder.build(), blackhole);</span>
 <span class="fc" id="L98">	}</span>

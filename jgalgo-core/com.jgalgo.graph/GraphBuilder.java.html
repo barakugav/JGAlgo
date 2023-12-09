@@ -28,8 +28,8 @@ import java.util.Set;
  *
  * @param  &lt;V&gt; the vertices type
  * @param  &lt;E&gt; the edges type
- * @see        GraphBuilder#newUndirected()
- * @see        GraphBuilder#newDirected()
+ * @see        GraphBuilder#undirected()
+ * @see        GraphBuilder#directed()
  * @see        GraphFactory
  * @author     Barak Ugav
  */
@@ -240,8 +240,8 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @param  &lt;E&gt; the edges type
 	 * @return     a new empty builder for undirected graphs
 	 */
-	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newUndirected() {
-<span class="fc" id="L244">		return GraphFactory.&lt;V, E&gt;newUndirected().newBuilder();</span>
+	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; undirected() {
+<span class="fc" id="L244">		return GraphFactory.&lt;V, E&gt;undirected().newBuilder();</span>
 	}
 
 	/**
@@ -255,8 +255,25 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @param  &lt;E&gt; the edges type
 	 * @return     a new empty builder for directed graphs
 	 */
-	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newDirected() {
-<span class="fc" id="L259">		return GraphFactory.&lt;V, E&gt;newDirected().newBuilder();</span>
+	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; directed() {
+<span class="fc" id="L259">		return GraphFactory.&lt;V, E&gt;directed().newBuilder();</span>
+	}
+
+	/**
+	 * Create a new builder that builds un/directed graphs.
+	 *
+	 * &lt;p&gt;
+	 * The graphs built by this builder will have the same default capabilities as {@link GraphFactory}, namely they
+	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
+	 *
+	 * @param  &lt;V&gt;      the vertices type
+	 * @param  &lt;E&gt;      the edges type
+	 * @param  directed if {@code true}, the new builder will build directed graphs, otherwise it will build undirected
+	 *                      graphs
+	 * @return          a new empty builder for un/directed graphs
+	 */
+	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newInstance(boolean directed) {
+<span class="fc" id="L276">		return GraphFactory.&lt;V, E&gt;newInstance(directed).newBuilder();</span>
 	}
 
 	/**
@@ -272,7 +289,7 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 *             vertices/edges weights.
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; fromGraph(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L275">		return fromGraph(g, false, false);</span>
+<span class="fc" id="L292">		return fromGraph(g, false, false);</span>
 	}
 
 	/**
@@ -292,7 +309,7 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 *                             original graph vertices/edges weights.
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; fromGraph(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L295">		return new GraphBuilderImpl&lt;&gt;(g, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L312">		return new GraphBuilderImpl&lt;&gt;(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 }

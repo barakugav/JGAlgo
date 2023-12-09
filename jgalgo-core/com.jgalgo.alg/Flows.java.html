@@ -209,7 +209,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="fc" id="L210">			Builder(IndexGraph gOrig) {</span>
 <span class="fc" id="L211">				this.gOrig = Objects.requireNonNull(gOrig);</span>
-<span class="fc" id="L212">				gBuilder = IndexGraphBuilder.newDirected();</span>
+<span class="fc" id="L212">				gBuilder = IndexGraphBuilder.directed();</span>
 <span class="fc" id="L213">				edgeRef = new IntArrayList(gOrig.edges().size() * 2);</span>
 <span class="fc" id="L214">				twin = new IntArrayList(gOrig.edges().size() * 2);</span>
 <span class="fc" id="L215">			}</span>

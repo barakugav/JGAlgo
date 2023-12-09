@@ -37,7 +37,6 @@ import com.jgalgo.alg.IPath;
 import com.jgalgo.alg.MinimumMeanCycle;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
-import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IntGraph;
@@ -50,53 +49,52 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 @Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
-<span class="fc" id="L53">public class MinimumMeanCycleBench {</span>
+<span class="fc" id="L52">public class MinimumMeanCycleBench {</span>
 
 	@Param({ &quot;|V|=30 |E|=300&quot;, &quot;|V|=200 |E|=1500&quot;, &quot;|V|=800 |E|=10000&quot; })
 	public String args;
 
 	private List&lt;Pair&lt;IntGraph, IWeightFunctionInt&gt;&gt; graphs;
-<span class="fc" id="L59">	private final int graphsNum = 31;</span>
-<span class="fc" id="L60">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
+<span class="fc" id="L58">	private final int graphsNum = 31;</span>
+<span class="fc" id="L59">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
 
 	@Setup(Level.Trial)
 	public void setup() {
-<span class="fc" id="L64">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L65">		int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L66">		int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+<span class="fc" id="L63">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L64">		int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L65">		int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
 
-<span class="fc" id="L68">		final SeedGenerator seedGen = new SeedGenerator(0xab5a0b68164b217fL);</span>
-<span class="fc" id="L69">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L71">			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)</span>
-<span class="fc" id="L72">					.selfEdges(false).cycles(true).connected(false).build();</span>
-<span class="fc" id="L73">			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
-<span class="fc" id="L74">			graphs.add(Pair.of(g, w));</span>
+<span class="fc" id="L67">		final SeedGenerator seedGen = new SeedGenerator(0xab5a0b68164b217fL);</span>
+<span class="fc" id="L68">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L70">			IntGraph g = GraphsTestUtils.randGraph(n, m, true, false, true, seedGen.nextSeed());</span>
+<span class="fc" id="L71">			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
+<span class="fc" id="L72">			graphs.add(Pair.of(g, w));</span>
 		}
-<span class="fc" id="L76">	}</span>
+<span class="fc" id="L74">	}</span>
 
 	private void benchMinMeanCycle(MinimumMeanCycle algo, Blackhole blackhole) {
-<span class="fc" id="L79">		Pair&lt;IntGraph, IWeightFunctionInt&gt; gw = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
-<span class="fc" id="L80">		IntGraph g = gw.first();</span>
-<span class="fc" id="L81">		IWeightFunctionInt w = gw.second();</span>
-<span class="fc" id="L82">		IPath cycle = (IPath) algo.computeMinimumMeanCycle(g, w);</span>
-<span class="fc" id="L83">		blackhole.consume(cycle);</span>
-<span class="fc" id="L84">	}</span>
+<span class="fc" id="L77">		Pair&lt;IntGraph, IWeightFunctionInt&gt; gw = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L78">		IntGraph g = gw.first();</span>
+<span class="fc" id="L79">		IWeightFunctionInt w = gw.second();</span>
+<span class="fc" id="L80">		IPath cycle = (IPath) algo.computeMinimumMeanCycle(g, w);</span>
+<span class="fc" id="L81">		blackhole.consume(cycle);</span>
+<span class="fc" id="L82">	}</span>
 
 	@Benchmark
 	public void Howard(Blackhole blackhole) {
-<span class="fc" id="L88">		benchMinMeanCycle(getAlgo(&quot;howard&quot;), blackhole);</span>
-<span class="fc" id="L89">	}</span>
+<span class="fc" id="L86">		benchMinMeanCycle(getAlgo(&quot;howard&quot;), blackhole);</span>
+<span class="fc" id="L87">	}</span>
 
 	@Benchmark
 	public void DasdanGupta(Blackhole blackhole) {
-<span class="fc" id="L93">		benchMinMeanCycle(getAlgo(&quot;dasdan-gupta&quot;), blackhole);</span>
-<span class="fc" id="L94">	}</span>
+<span class="fc" id="L91">		benchMinMeanCycle(getAlgo(&quot;dasdan-gupta&quot;), blackhole);</span>
+<span class="fc" id="L92">	}</span>
 
 	private static MinimumMeanCycle getAlgo(String implName) {
-<span class="fc" id="L97">		MinimumMeanCycle.Builder builder = MinimumMeanCycle.newBuilder();</span>
-<span class="fc" id="L98">		builder.setOption(&quot;impl&quot;, implName);</span>
-<span class="fc" id="L99">		return builder.build();</span>
+<span class="fc" id="L95">		MinimumMeanCycle.Builder builder = MinimumMeanCycle.builder();</span>
+<span class="fc" id="L96">		builder.setOption(&quot;impl&quot;, implName);</span>
+<span class="fc" id="L97">		return builder.build();</span>
 	}
 
 }

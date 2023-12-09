@@ -176,7 +176,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@SuppressWarnings(&quot;unchecked&quot;)
 		GraphFactory&lt;V, E&gt; factory =
-<span class="fc bfc" id="L179" title="All 2 branches covered.">				intGraph ? ((GraphFactory&lt;V, E&gt;) IntGraphFactory.newUndirected()) : GraphFactory.newUndirected();</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">				intGraph ? ((GraphFactory&lt;V, E&gt;) IntGraphFactory.undirected()) : GraphFactory.undirected();</span>
 <span class="fc" id="L180">		GraphBuilder&lt;V, E&gt; g = factory.newBuilder();</span>
 
 <span class="fc" id="L182">		final int n = vertices.size();</span>

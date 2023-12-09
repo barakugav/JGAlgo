@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * &lt;pre&gt; {@code
  * Graph&lt;String, Integer&gt; g = ...;
@@ -97,7 +97,7 @@ public interface MaximalCliquesEnumerator {
 	 * @return a default implementation of {@link MaximalCliquesEnumerator}
 	 */
 	static MaximalCliquesEnumerator newInstance() {
-<span class="nc" id="L100">		return newBuilder().build();</span>
+<span class="nc" id="L100">		return builder().build();</span>
 	}
 
 	/**
@@ -108,7 +108,7 @@ public interface MaximalCliquesEnumerator {
 	 *
 	 * @return a new builder for maximal cliques algorithms
 	 */
-	static MaximalCliquesEnumerator.Builder newBuilder() {
+	static MaximalCliquesEnumerator.Builder builder() {
 <span class="nc" id="L112">		return new MaximalCliquesEnumerator.Builder() {</span>
 			String impl;
 
@@ -143,7 +143,7 @@ public interface MaximalCliquesEnumerator {
 	/**
 	 * A builder for {@link MaximalCliquesEnumerator} objects.
 	 *
-	 * @see    MaximalCliquesEnumerator#newBuilder()
+	 * @see    MaximalCliquesEnumerator#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

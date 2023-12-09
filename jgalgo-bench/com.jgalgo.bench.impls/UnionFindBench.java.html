@@ -67,7 +67,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L67">		final SeedGenerator seedGen = new SeedGenerator(0xecbc984604fcd0afL);</span>
 <span class="fc" id="L68">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L69" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L70">			IndexGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed()).indexGraph();</span>
+<span class="fc" id="L70">			IndexGraph g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed()).indexGraph();</span>
 <span class="fc" id="L71">			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
 
 			/*
@@ -133,7 +133,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L133">	}</span>
 
 	private static UnionFind.Builder getAlgo(String implName) {
-<span class="fc" id="L136">		UnionFind.Builder builder = UnionFind.newBuilder();</span>
+<span class="fc" id="L136">		UnionFind.Builder builder = UnionFind.builder();</span>
 <span class="fc" id="L137">		builder.setOption(&quot;impl&quot;, implName);</span>
 <span class="fc" id="L138">		return builder;</span>
 	}

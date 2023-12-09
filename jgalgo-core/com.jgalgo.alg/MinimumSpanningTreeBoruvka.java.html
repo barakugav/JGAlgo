@@ -80,7 +80,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="nc" id="L80">			throw new IllegalArgumentException(&quot;number of rounds must be positive&quot;);</span>
 <span class="fc" id="L81">		Res mstRes = computeMST(g, w, numberOfRounds);</span>
 
-<span class="fc" id="L83">		IndexGraphBuilder contractedGBuilder = IndexGraphBuilder.newUndirected();</span>
+<span class="fc" id="L83">		IndexGraphBuilder contractedGBuilder = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L84">		contractedGBuilder.expectedVerticesNum(mstRes.treeNum);</span>
 <span class="fc bfc" id="L85" title="All 2 branches covered.">		for (int v = 0; v &lt; mstRes.treeNum; v++) {</span>
 <span class="fc" id="L86">			int vBuilder = contractedGBuilder.addVertex();</span>

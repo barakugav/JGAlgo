@@ -51,7 +51,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc bfc" id="L51" title="All 2 branches covered.">		if (n == 0)</span>
 <span class="fc" id="L52">			return new VertexPartitions.Impl(g, 0, IntArrays.DEFAULT_EMPTY_ARRAY);</span>
 
-<span class="fc" id="L54">		IndexGraphBuilder auxGraph = IndexGraphBuilder.newUndirected();</span>
+<span class="fc" id="L54">		IndexGraphBuilder auxGraph = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L55">		auxGraph.expectedVerticesNum(n);</span>
 <span class="fc" id="L56">		auxGraph.expectedEdgesNum(n - 1);</span>
 <span class="fc" id="L57">		int[] auxWeights = new int[n - 1];</span>

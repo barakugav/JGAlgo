@@ -108,7 +108,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Benchmark
 		public void BidirectionalDijkstra(Blackhole blackhole) {
-<span class="fc" id="L111">			benchStShortestPath(ShortestPathST.newBuilder().build(), blackhole);</span>
+<span class="fc" id="L111">			benchStShortestPath(ShortestPathST.builder().build(), blackhole);</span>
 <span class="fc" id="L112">		}</span>
 
 		@Benchmark
@@ -150,7 +150,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Benchmark
 		public void BidirectionalDijkstra(Blackhole blackhole) {
-<span class="fc" id="L153">			benchStShortestPath(ShortestPathST.newBuilder().build(), blackhole);</span>
+<span class="fc" id="L153">			benchStShortestPath(ShortestPathST.builder().build(), blackhole);</span>
 <span class="fc" id="L154">		}</span>
 
 		@Benchmark
@@ -193,7 +193,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Benchmark
 		public void BidirectionalDijkstra(Blackhole blackhole) {
-<span class="fc" id="L196">			benchStShortestPath(ShortestPathST.newBuilder().build(), blackhole);</span>
+<span class="fc" id="L196">			benchStShortestPath(ShortestPathST.builder().build(), blackhole);</span>
 <span class="fc" id="L197">		}</span>
 
 		@Benchmark
@@ -203,7 +203,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	}
 
 	private static ShortestPathHeuristicST getAlgo(String implName) {
-<span class="fc" id="L206">		ShortestPathHeuristicST.Builder builder = ShortestPathHeuristicST.newBuilder();</span>
+<span class="fc" id="L206">		ShortestPathHeuristicST.Builder builder = ShortestPathHeuristicST.builder();</span>
 <span class="fc" id="L207">		builder.setOption(&quot;impl&quot;, implName);</span>
 <span class="fc" id="L208">		return builder.build();</span>
 	}

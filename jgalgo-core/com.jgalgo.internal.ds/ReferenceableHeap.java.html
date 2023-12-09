@@ -75,7 +75,7 @@ public interface ReferenceableHeap {
 	 */
 	boolean isNotEmpty();
 
-	static ReferenceableHeap.Builder newBuilder() {
+	static ReferenceableHeap.Builder builder() {
 <span class="fc" id="L79">		return new ReferenceableHeap.Builder() {</span>
 			@Override
 			public ReferenceableHeap build(Class&lt;?&gt; keyType, Class&lt;?&gt; valueType, Comparator&lt;?&gt; comparator) {

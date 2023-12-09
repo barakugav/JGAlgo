@@ -198,18 +198,18 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 
 	@Override
 	public void moveEdge(int edge, int newSource, int newTarget) {
-<span class="fc" id="L201">		checkEdge(edge);</span>
-<span class="fc" id="L202">		int oldSource = source(edge), oldTarget = target(edge);</span>
-<span class="pc bpc" id="L203" title="1 of 8 branches missed.">		if ((oldSource == newSource &amp;&amp; oldTarget == newTarget) || (oldSource == newTarget &amp;&amp; oldTarget == newSource))</span>
-<span class="fc" id="L204">			return;</span>
-<span class="fc" id="L205">		checkNewEdgeEndpoints(newSource, newTarget);</span>
+<span class="nc" id="L201">		checkEdge(edge);</span>
+<span class="nc" id="L202">		int oldSource = source(edge), oldTarget = target(edge);</span>
+<span class="nc bnc" id="L203" title="All 8 branches missed.">		if ((oldSource == newSource &amp;&amp; oldTarget == newTarget) || (oldSource == newTarget &amp;&amp; oldTarget == newSource))</span>
+<span class="nc" id="L204">			return;</span>
+<span class="nc" id="L205">		checkNewEdgeEndpoints(newSource, newTarget);</span>
 
-<span class="fc" id="L207">		edges[oldSource].remove(oldTarget);</span>
-<span class="fc" id="L208">		edges[oldTarget].remove(oldSource);</span>
-<span class="fc" id="L209">		ensureEdgesMapMutable(edges, newSource).put(newTarget, edge);</span>
-<span class="fc" id="L210">		ensureEdgesMapMutable(edges, newTarget).put(newSource, edge);</span>
-<span class="fc" id="L211">		setEndpoints(edge, newSource, newTarget);</span>
-<span class="fc" id="L212">	}</span>
+<span class="nc" id="L207">		edges[oldSource].remove(oldTarget);</span>
+<span class="nc" id="L208">		edges[oldTarget].remove(oldSource);</span>
+<span class="nc" id="L209">		ensureEdgesMapMutable(edges, newSource).put(newTarget, edge);</span>
+<span class="nc" id="L210">		ensureEdgesMapMutable(edges, newTarget).put(newSource, edge);</span>
+<span class="nc" id="L211">		setEndpoints(edge, newSource, newTarget);</span>
+<span class="nc" id="L212">	}</span>
 
 	@Override
 	public void clearEdges() {

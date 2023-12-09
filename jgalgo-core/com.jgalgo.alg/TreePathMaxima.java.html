@@ -44,7 +44,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -292,7 +292,7 @@ public interface TreePathMaxima {
 	 * @return a default implementation of {@link TreePathMaxima}
 	 */
 	static TreePathMaxima newInstance() {
-<span class="nc" id="L295">		return newBuilder().build();</span>
+<span class="nc" id="L295">		return builder().build();</span>
 	}
 
 	/**
@@ -303,7 +303,7 @@ public interface TreePathMaxima {
 	 *
 	 * @return a new builder that can build {@link TreePathMaxima} objects
 	 */
-	static TreePathMaxima.Builder newBuilder() {
+	static TreePathMaxima.Builder builder() {
 <span class="nc" id="L307">		return new TreePathMaxima.Builder() {</span>
 
 			boolean bitsLookupTablesEnable;
@@ -332,7 +332,7 @@ public interface TreePathMaxima {
 	/**
 	 * A builder for {@link TreePathMaxima} objects.
 	 *
-	 * @see    TreePathMaxima#newBuilder()
+	 * @see    TreePathMaxima#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

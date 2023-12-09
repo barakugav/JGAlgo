@@ -40,8 +40,7 @@ import com.jgalgo.graph.IntGraph;
  * For k-vertex connected components, see {@link KVertexConnectedComponentsAlgo}.
  *
  * &lt;p&gt;
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/K-edge-connected_graph&quot;&gt;Wikipedia&lt;/a&gt;
  * @see    KVertexConnectedComponentsAlgo
@@ -73,41 +72,12 @@ public interface KEdgeConnectedComponentsAlgo {
 	 * Create a new k-edge connected components algorithm object.
 	 *
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link KEdgeConnectedComponentsAlgo} object. The
-	 * {@link KEdgeConnectedComponentsAlgo.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link KEdgeConnectedComponentsAlgo} object.
 	 *
 	 * @return a default implementation of {@link KEdgeConnectedComponentsAlgo}
 	 */
 	static KEdgeConnectedComponentsAlgo newInstance() {
-<span class="nc" id="L82">		return newBuilder().build();</span>
-	}
-
-	/**
-	 * Create a new k-edge connected components algorithm builder.
-	 *
-	 * &lt;p&gt;
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link KEdgeConnectedComponentsAlgo} objects
-	 */
-	static KEdgeConnectedComponentsAlgo.Builder newBuilder() {
-<span class="nc" id="L94">		return KEdgeConnectedComponentsWang::new;</span>
-	}
-
-	/**
-	 * A builder for {@link KEdgeConnectedComponentsAlgo} objects.
-	 *
-	 * @see    KEdgeConnectedComponentsAlgo#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for k-edge connected components computation.
-		 *
-		 * @return a new k-edge connected components algorithm
-		 */
-		KEdgeConnectedComponentsAlgo build();
+<span class="nc" id="L80">		return new KEdgeConnectedComponentsWang();</span>
 	}
 
 }

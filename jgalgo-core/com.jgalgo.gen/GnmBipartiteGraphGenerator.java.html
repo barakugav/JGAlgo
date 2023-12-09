@@ -343,87 +343,89 @@ public class GnmBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 
 <span class="fc" id="L344">		final int maxNumberOfEdges =</span>
 <span class="fc bfc" id="L345" title="All 2 branches covered.">				leftVertices.size() * rightVertices.size() * (direction == Direction.DirectedAll ? 2 : 1);</span>
-<span class="fc bfc" id="L346" title="All 4 branches covered.">		if (!parallelEdges &amp;&amp; m &gt; maxNumberOfEdges)</span>
-<span class="fc" id="L347">			throw new IllegalArgumentException(&quot;number of edges must be at most &quot; + maxNumberOfEdges);</span>
+<span class="fc bfc" id="L346" title="All 4 branches covered.">		if (leftVertices.isEmpty() &amp;&amp; m &gt; 0)</span>
+<span class="fc" id="L347">			throw new IllegalArgumentException(&quot;left vertices set is empty, can't add edges&quot;);</span>
+<span class="fc bfc" id="L348" title="All 4 branches covered.">		if (rightVertices.isEmpty() &amp;&amp; m &gt; 0)</span>
+<span class="fc" id="L349">			throw new IllegalArgumentException(&quot;right vertices set is empty, can't add edges&quot;);</span>
+<span class="fc bfc" id="L350" title="All 4 branches covered.">		if (!parallelEdges &amp;&amp; m &gt; maxNumberOfEdges)</span>
+<span class="fc" id="L351">			throw new IllegalArgumentException(&quot;number of edges must be at most &quot; + maxNumberOfEdges);</span>
 
 		GraphBuilder&lt;V, E&gt; g;
-<span class="fc bfc" id="L350" title="All 2 branches covered.">		if (intGraph) {</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">		if (intGraph) {</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
-			GraphBuilder&lt;V, E&gt; g0 =
-<span class="fc bfc" id="L353" title="All 2 branches covered.">					(GraphBuilder&lt;V, E&gt;) (direction != Direction.Undirected ? IntGraphBuilder.newDirected()</span>
-<span class="fc" id="L354">							: IntGraphBuilder.newUndirected());</span>
-<span class="fc" id="L355">			g = g0;</span>
-<span class="fc" id="L356">		} else {</span>
-<span class="fc bfc" id="L357" title="All 2 branches covered.">			g = direction != Direction.Undirected ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">			GraphBuilder&lt;V, E&gt; g0 = (GraphBuilder&lt;V, E&gt;) IntGraphBuilder.newInstance(direction != Direction.Undirected);</span>
+<span class="fc" id="L357">			g = g0;</span>
+<span class="fc" id="L358">		} else {</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">			g = GraphBuilder.newInstance(direction != Direction.Undirected);</span>
 		}
-<span class="fc" id="L359">		g.expectedVerticesNum(leftVertices.size() + rightVertices.size());</span>
-<span class="fc" id="L360">		g.expectedEdgesNum(m);</span>
+<span class="fc" id="L361">		g.expectedVerticesNum(leftVertices.size() + rightVertices.size());</span>
+<span class="fc" id="L362">		g.expectedEdgesNum(m);</span>
 
-<span class="fc" id="L362">		WeightsBool&lt;V&gt; partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);</span>
-<span class="fc bfc" id="L363" title="All 2 branches covered.">		for (V v : leftVertices) {</span>
-<span class="fc" id="L364">			g.addVertex(v);</span>
-<span class="fc" id="L365">			partition.set(v, true);</span>
-<span class="fc" id="L366">		}</span>
-<span class="fc bfc" id="L367" title="All 2 branches covered.">		for (V v : rightVertices) {</span>
-<span class="fc" id="L368">			g.addVertex(v);</span>
-<span class="fc" id="L369">			partition.set(v, false);</span>
-<span class="fc" id="L370">		}</span>
+<span class="fc" id="L364">		WeightsBool&lt;V&gt; partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">		for (V v : leftVertices) {</span>
+<span class="fc" id="L366">			g.addVertex(v);</span>
+<span class="fc" id="L367">			partition.set(v, true);</span>
+<span class="fc" id="L368">		}</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">		for (V v : rightVertices) {</span>
+<span class="fc" id="L370">			g.addVertex(v);</span>
+<span class="fc" id="L371">			partition.set(v, false);</span>
+<span class="fc" id="L372">		}</span>
 
-<span class="fc bfc" id="L372" title="All 4 branches covered.">		if (parallelEdges || m &lt;= maxNumberOfEdges / 2) {</span>
+<span class="fc bfc" id="L374" title="All 4 branches covered.">		if (parallelEdges || m &lt;= maxNumberOfEdges / 2) {</span>
 			/* Start with an empty graph and add edges one by one */
 
-<span class="fc bfc" id="L375" title="All 2 branches covered.">			LongSet edges = parallelEdges ? null : new LongOpenHashSet(m);</span>
-<span class="fc" id="L376">			final int n1 = leftVertices.size(), n2 = rightVertices.size();</span>
-<span class="fc bfc" id="L377" title="All 2 branches covered.">			while (g.edges().size() &lt; m) {</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">			LongSet edges = parallelEdges ? null : new LongOpenHashSet(m);</span>
+<span class="fc" id="L378">			final int n1 = leftVertices.size(), n2 = rightVertices.size();</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">			while (g.edges().size() &lt; m) {</span>
 				V u, v;
 				int uIdx, vIdx;
-<span class="fc bfc" id="L380" title="All 4 branches covered.">				if (direction != Direction.DirectedRightToLeft</span>
-<span class="fc bfc" id="L381" title="All 2 branches covered.">						&amp;&amp; (direction != Direction.DirectedAll || rand.nextBoolean())) {</span>
+<span class="fc bfc" id="L382" title="All 4 branches covered.">				if (direction != Direction.DirectedRightToLeft</span>
+<span class="fc bfc" id="L383" title="All 2 branches covered.">						&amp;&amp; (direction != Direction.DirectedAll || rand.nextBoolean())) {</span>
 					/* left to right edge */
-<span class="fc" id="L383">					uIdx = rand.nextInt(n1);</span>
-<span class="fc" id="L384">					vIdx = rand.nextInt(n2);</span>
-<span class="fc" id="L385">					u = leftVertices.get(uIdx);</span>
-<span class="fc" id="L386">					v = rightVertices.get(vIdx);</span>
-<span class="fc" id="L387">					vIdx += n1;</span>
+<span class="fc" id="L385">					uIdx = rand.nextInt(n1);</span>
+<span class="fc" id="L386">					vIdx = rand.nextInt(n2);</span>
+<span class="fc" id="L387">					u = leftVertices.get(uIdx);</span>
+<span class="fc" id="L388">					v = rightVertices.get(vIdx);</span>
+<span class="fc" id="L389">					vIdx += n1;</span>
 				} else {
 					/* right to left edge */
-<span class="fc" id="L390">					uIdx = rand.nextInt(n2);</span>
-<span class="fc" id="L391">					vIdx = rand.nextInt(n1);</span>
-<span class="fc" id="L392">					u = rightVertices.get(uIdx);</span>
-<span class="fc" id="L393">					v = leftVertices.get(vIdx);</span>
-<span class="fc" id="L394">					uIdx += n1;</span>
+<span class="fc" id="L392">					uIdx = rand.nextInt(n2);</span>
+<span class="fc" id="L393">					vIdx = rand.nextInt(n1);</span>
+<span class="fc" id="L394">					u = rightVertices.get(uIdx);</span>
+<span class="fc" id="L395">					v = leftVertices.get(vIdx);</span>
+<span class="fc" id="L396">					uIdx += n1;</span>
 				}
-<span class="fc bfc" id="L396" title="All 4 branches covered.">				if (parallelEdges || edges.add(JGAlgoUtils.longPack(uIdx, vIdx)))</span>
-<span class="fc" id="L397">					g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
-<span class="fc" id="L398">			}</span>
+<span class="fc bfc" id="L398" title="All 4 branches covered.">				if (parallelEdges || edges.add(JGAlgoUtils.longPack(uIdx, vIdx)))</span>
+<span class="fc" id="L399">					g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc" id="L400">			}</span>
 
-<span class="fc" id="L400">		} else {</span>
+<span class="fc" id="L402">		} else {</span>
 			/* Start with a complete bipartite graph and remove edges one by one */
 
-<span class="fc" id="L403">			Bitmap edges = new Bitmap(maxNumberOfEdges);</span>
-<span class="fc" id="L404">			edges.setAll();</span>
-<span class="fc bfc" id="L405" title="All 2 branches covered.">			for (int edgesNum = maxNumberOfEdges; edgesNum &gt; m;) {</span>
-<span class="fc" id="L406">				int i = rand.nextInt(maxNumberOfEdges);</span>
-<span class="fc bfc" id="L407" title="All 2 branches covered.">				if (edges.get(i)) {</span>
-<span class="fc" id="L408">					edges.clear(i);</span>
-<span class="fc" id="L409">					edgesNum--;</span>
+<span class="fc" id="L405">			Bitmap edges = new Bitmap(maxNumberOfEdges);</span>
+<span class="fc" id="L406">			edges.setAll();</span>
+<span class="fc bfc" id="L407" title="All 2 branches covered.">			for (int edgesNum = maxNumberOfEdges; edgesNum &gt; m;) {</span>
+<span class="fc" id="L408">				int i = rand.nextInt(maxNumberOfEdges);</span>
+<span class="fc bfc" id="L409" title="All 2 branches covered.">				if (edges.get(i)) {</span>
+<span class="fc" id="L410">					edges.clear(i);</span>
+<span class="fc" id="L411">					edgesNum--;</span>
 				}
-<span class="fc" id="L411">			}</span>
+<span class="fc" id="L413">			}</span>
 
-<span class="fc" id="L413">			int i = 0;</span>
-<span class="fc bfc" id="L414" title="All 2 branches covered.">			if (direction != Direction.DirectedRightToLeft)</span>
-<span class="fc bfc" id="L415" title="All 2 branches covered.">				for (V u : leftVertices)</span>
-<span class="fc bfc" id="L416" title="All 2 branches covered.">					for (V v : rightVertices)</span>
-<span class="fc bfc" id="L417" title="All 2 branches covered.">						if (edges.get(i++))</span>
-<span class="fc" id="L418">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
-<span class="fc bfc" id="L419" title="All 4 branches covered.">			if (direction == Direction.DirectedRightToLeft || direction == Direction.DirectedAll)</span>
-<span class="fc bfc" id="L420" title="All 2 branches covered.">				for (V u : rightVertices)</span>
-<span class="fc bfc" id="L421" title="All 2 branches covered.">					for (V v : leftVertices)</span>
-<span class="fc bfc" id="L422" title="All 2 branches covered.">						if (edges.get(i++))</span>
-<span class="fc" id="L423">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc" id="L415">			int i = 0;</span>
+<span class="fc bfc" id="L416" title="All 2 branches covered.">			if (direction != Direction.DirectedRightToLeft)</span>
+<span class="fc bfc" id="L417" title="All 2 branches covered.">				for (V u : leftVertices)</span>
+<span class="fc bfc" id="L418" title="All 2 branches covered.">					for (V v : rightVertices)</span>
+<span class="fc bfc" id="L419" title="All 2 branches covered.">						if (edges.get(i++))</span>
+<span class="fc" id="L420">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc bfc" id="L421" title="All 4 branches covered.">			if (direction == Direction.DirectedRightToLeft || direction == Direction.DirectedAll)</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">				for (V u : rightVertices)</span>
+<span class="fc bfc" id="L423" title="All 2 branches covered.">					for (V v : leftVertices)</span>
+<span class="fc bfc" id="L424" title="All 2 branches covered.">						if (edges.get(i++))</span>
+<span class="fc" id="L425">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
 		}
 
-<span class="fc" id="L426">		return g;</span>
+<span class="fc" id="L428">		return g;</span>
 	}
 
 }

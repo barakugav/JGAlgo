@@ -35,7 +35,7 @@ class ContractableGraph {
 <span class="fc" id="L35">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L36">		this.g = g;</span>
 <span class="fc" id="L37">		int n = g.vertices().size();</span>
-<span class="fc" id="L38">		uf = UnionFind.newBuilder().expectedSize(n).build();</span>
+<span class="fc" id="L38">		uf = UnionFind.builder().expectedSize(n).build();</span>
 <span class="fc" id="L39">		vs = new LinkedListFixedSize.Singly(n);</span>
 <span class="fc" id="L40">		findToSuperV = new int[n];</span>
 <span class="fc" id="L41">		head = new int[n];</span>

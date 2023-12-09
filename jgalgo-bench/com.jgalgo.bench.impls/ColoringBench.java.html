@@ -66,7 +66,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L66">		final SeedGenerator seedGen = new SeedGenerator(0x566c25f996355cb4L);</span>
 <span class="fc" id="L67">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
 <span class="fc bfc" id="L68" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L69">			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());</span>
+<span class="fc" id="L69">			IntGraph g = GraphsTestUtils.randGraph(n, m, false, false, true, seedGen.nextSeed());</span>
 <span class="fc" id="L70">			graphs.add(g);</span>
 		}
 <span class="fc" id="L72">	}</span>
@@ -96,7 +96,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L96">	}</span>
 
 	private static ColoringAlgo getAlgo(String implName) {
-<span class="fc" id="L99">		ColoringAlgo.Builder builder = ColoringAlgo.newBuilder();</span>
+<span class="fc" id="L99">		ColoringAlgo.Builder builder = ColoringAlgo.builder();</span>
 <span class="fc" id="L100">		builder.setOption(&quot;impl&quot;, implName);</span>
 <span class="fc" id="L101">		return builder.build();</span>
 	}

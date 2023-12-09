@@ -98,14 +98,14 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 			}
 <span class="fc" id="L99">			capacitySum *= 16;</span>
 
-<span class="fc" id="L101">			IntGraphFactory factory = IntGraphFactory.newDirected().setOption(&quot;impl&quot;, &quot;linked-list&quot;);</span>
+<span class="fc" id="L101">			IntGraphFactory factory = IntGraphFactory.directed().setOption(&quot;impl&quot;, &quot;linked-list&quot;);</span>
 <span class="fc" id="L102">			IntGraph L = factory.expectedVerticesNum(n).expectedEdgesNum(/* &gt;= */ n).newGraph();</span>
 <span class="fc bfc" id="L103" title="All 2 branches covered.">			for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L104">				L.addVertex(v);</span>
 
 <span class="fc" id="L106">			IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();</span>
 <span class="fc" id="L107">			int[] level = new int[n];</span>
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">			DynamicTree dt = DynamicTree.newBuilder().setMaxWeight(capacitySum &gt; 0 ? capacitySum : 1e100).build();</span>
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">			DynamicTree dt = DynamicTree.builder().setMaxWeight(capacitySum &gt; 0 ? capacitySum : 1e100).build();</span>
 <span class="fc" id="L109">			DynamicTree.Vertex[] vToDt = new DynamicTree.Vertex[n];</span>
 <span class="fc" id="L110">			Stack&lt;DynamicTree.Vertex&gt; cleanupStack = new ObjectArrayList&lt;&gt;();</span>
 

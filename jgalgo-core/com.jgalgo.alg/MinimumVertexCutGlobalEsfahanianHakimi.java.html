@@ -103,9 +103,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L103" title="All 2 branches covered.">			for (int j = i + 1; j &lt; d; j++) { // should be up to d - 1</span>
 <span class="fc" id="L104">				int u = startVertexNeighbors.getInt(i), v = startVertexNeighbors.getInt(j);</span>
 <span class="fc" id="L105">				int[] cut = minCutStAlgo.computeMinCut(g, u, v, auxiliaryGraph);</span>
-<span class="fc bfc" id="L106" title="All 4 branches covered.">				if (cut != null &amp;&amp; minCutSize &gt; cut.length) {</span>
-<span class="fc" id="L107">					minCutSize = cut.length;</span>
-<span class="fc" id="L108">					minCut = cut;</span>
+<span class="pc bpc" id="L106" title="1 of 4 branches missed.">				if (cut != null &amp;&amp; minCutSize &gt; cut.length) {</span>
+<span class="nc" id="L107">					minCutSize = cut.length;</span>
+<span class="nc" id="L108">					minCut = cut;</span>
 				}
 			}
 		}

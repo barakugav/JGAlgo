@@ -30,6 +30,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * by the path are distinct. Algorithms implementing this interface find all simple paths between a source and a target
  * vertices in a given graph. Note that there may be exponentially many simple paths between two vertices in a graph.
  *
+ * &lt;p&gt;
+ * Use {@link #newInstance()} to get a default implementation of this interface.
+ *
  * @author Barak Ugav
  */
 public interface SimplePathsEnumerator {
@@ -63,48 +66,19 @@ public interface SimplePathsEnumerator {
 	 * @return        a list of all simple paths between the two vertices in the graph
 	 */
 	default &lt;V, E&gt; List&lt;Path&lt;V, E&gt;&gt; allSimplePaths(Graph&lt;V, E&gt; g, V source, V target) {
-<span class="fc" id="L66">		return new ObjectArrayList&lt;&gt;(simplePathsIter(g, source, target));</span>
+<span class="fc" id="L69">		return new ObjectArrayList&lt;&gt;(simplePathsIter(g, source, target));</span>
 	}
 
 	/**
 	 * Create a new algorithm for simple paths enumeration.
 	 *
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link SimplePathsEnumerator} object. The
-	 * {@link SimplePathsEnumerator.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link SimplePathsEnumerator} object.
 	 *
 	 * @return a default implementation of {@link SimplePathsEnumerator}
 	 */
 	static SimplePathsEnumerator newInstance() {
-<span class="fc" id="L79">		return newBuilder().build();</span>
-	}
-
-	/**
-	 * Create a new simple paths enumerator algorithm builder.
-	 *
-	 * &lt;p&gt;
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link SimplePathsEnumerator} objects
-	 */
-	static SimplePathsEnumerator.Builder newBuilder() {
-<span class="fc" id="L91">		return SimplePathsEnumeratorSedgewick::new;</span>
-	}
-
-	/**
-	 * A builder for {@link SimplePathsEnumerator} objects.
-	 *
-	 * @see    SimplePathsEnumerator#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for simple paths computation.
-		 *
-		 * @return a new simple paths enumerator algorithm
-		 */
-		SimplePathsEnumerator build();
+<span class="fc" id="L81">		return new SimplePathsEnumeratorSedgewick();</span>
 	}
 
 }

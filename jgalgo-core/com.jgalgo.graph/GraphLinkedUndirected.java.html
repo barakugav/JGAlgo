@@ -265,15 +265,15 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	@Override
 	public void moveEdge(int edge, int newSource, int newTarget) {
-<span class="fc" id="L268">		checkEdge(edge);</span>
-<span class="fc" id="L269">		checkNewEdgeEndpoints(newSource, newTarget);</span>
-<span class="fc" id="L270">		int oldSource = source(edge), oldTarget = target(edge);</span>
-<span class="fc" id="L271">		removeEdgePointers(edge, oldSource);</span>
-<span class="fc bfc" id="L272" title="All 2 branches covered.">		if (oldSource != oldTarget)</span>
-<span class="fc" id="L273">			removeEdgePointers(edge, oldTarget);</span>
-<span class="fc" id="L274">		setEndpoints(edge, newSource, newTarget);</span>
-<span class="fc" id="L275">		addEdgeToLists(edge);</span>
-<span class="fc" id="L276">	}</span>
+<span class="nc" id="L268">		checkEdge(edge);</span>
+<span class="nc" id="L269">		checkNewEdgeEndpoints(newSource, newTarget);</span>
+<span class="nc" id="L270">		int oldSource = source(edge), oldTarget = target(edge);</span>
+<span class="nc" id="L271">		removeEdgePointers(edge, oldSource);</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">		if (oldSource != oldTarget)</span>
+<span class="nc" id="L273">			removeEdgePointers(edge, oldTarget);</span>
+<span class="nc" id="L274">		setEndpoints(edge, newSource, newTarget);</span>
+<span class="nc" id="L275">		addEdgeToLists(edge);</span>
+<span class="nc" id="L276">	}</span>
 
 	@Override
 	public void clearEdges() {

@@ -287,36 +287,35 @@ public class BarabasiAlbertGraphGenerator&lt;V, E&gt; implements GraphGenerator&
 		}
 
 <span class="fc bfc" id="L289" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc bfc" id="L290" title="All 2 branches covered.">			IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();</span>
-<span class="fc" id="L291">			IntGraphBuilder g = factory.allowParallelEdges().newBuilder();</span>
-<span class="fc" id="L292">			g.expectedVerticesNum(n);</span>
-<span class="fc" id="L293">			g.expectedVerticesNum(edgeNum);</span>
-<span class="fc" id="L294">			final int[] vertices = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.vertices).toIntArray();</span>
-<span class="fc bfc" id="L295" title="All 2 branches covered.">			for (int v : vertices)</span>
-<span class="fc" id="L296">				g.addVertex(v);</span>
-<span class="fc" id="L297">			IntBinaryOperator edgeBuilder =</span>
-<span class="fc" id="L298">					IntAdapters.asIntBiOperator((BiFunction&lt;Integer, Integer, Integer&gt;) this.edgeBuilder);</span>
-<span class="fc bfc" id="L299" title="All 2 branches covered.">			for (int eIdx = 0; eIdx &lt; edgeNum; eIdx++) {</span>
-<span class="fc" id="L300">				int u = vertices[endpoints[eIdx * 2 + 0]];</span>
-<span class="fc" id="L301">				int v = vertices[endpoints[eIdx * 2 + 1]];</span>
-<span class="fc" id="L302">				g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));</span>
+<span class="fc" id="L290">			IntGraphBuilder g = IntGraphFactory.newInstance(directed).allowParallelEdges().newBuilder();</span>
+<span class="fc" id="L291">			g.expectedVerticesNum(n);</span>
+<span class="fc" id="L292">			g.expectedVerticesNum(edgeNum);</span>
+<span class="fc" id="L293">			final int[] vertices = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.vertices).toIntArray();</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">			for (int v : vertices)</span>
+<span class="fc" id="L295">				g.addVertex(v);</span>
+<span class="fc" id="L296">			IntBinaryOperator edgeBuilder =</span>
+<span class="fc" id="L297">					IntAdapters.asIntBiOperator((BiFunction&lt;Integer, Integer, Integer&gt;) this.edgeBuilder);</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">			for (int eIdx = 0; eIdx &lt; edgeNum; eIdx++) {</span>
+<span class="fc" id="L299">				int u = vertices[endpoints[eIdx * 2 + 0]];</span>
+<span class="fc" id="L300">				int v = vertices[endpoints[eIdx * 2 + 1]];</span>
+<span class="fc" id="L301">				g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));</span>
 			}
-<span class="fc" id="L304">			return (GraphBuilder&lt;V, E&gt;) g;</span>
+<span class="fc" id="L303">			return (GraphBuilder&lt;V, E&gt;) g;</span>
 
 		} else {
-<span class="fc bfc" id="L307" title="All 2 branches covered.">			GraphFactory&lt;V, E&gt; factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();</span>
-<span class="fc" id="L308">			GraphBuilder&lt;V, E&gt; g = factory.allowParallelEdges().newBuilder();</span>
-<span class="fc" id="L309">			g.expectedVerticesNum(n);</span>
-<span class="fc" id="L310">			g.expectedVerticesNum(edgeNum);</span>
-<span class="fc" id="L311">			final V[] vertices = (V[]) this.vertices.toArray();</span>
-<span class="fc bfc" id="L312" title="All 2 branches covered.">			for (V v : vertices)</span>
-<span class="fc" id="L313">				g.addVertex(v);</span>
-<span class="fc bfc" id="L314" title="All 2 branches covered.">			for (int eIdx = 0; eIdx &lt; edgeNum; eIdx++) {</span>
-<span class="fc" id="L315">				V u = vertices[endpoints[eIdx * 2 + 0]];</span>
-<span class="fc" id="L316">				V v = vertices[endpoints[eIdx * 2 + 1]];</span>
-<span class="fc" id="L317">				g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc" id="L306">			GraphFactory&lt;V, E&gt; factory = GraphFactory.newInstance(directed);</span>
+<span class="fc" id="L307">			GraphBuilder&lt;V, E&gt; g = factory.allowParallelEdges().newBuilder();</span>
+<span class="fc" id="L308">			g.expectedVerticesNum(n);</span>
+<span class="fc" id="L309">			g.expectedVerticesNum(edgeNum);</span>
+<span class="fc" id="L310">			final V[] vertices = (V[]) this.vertices.toArray();</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">			for (V v : vertices)</span>
+<span class="fc" id="L312">				g.addVertex(v);</span>
+<span class="fc bfc" id="L313" title="All 2 branches covered.">			for (int eIdx = 0; eIdx &lt; edgeNum; eIdx++) {</span>
+<span class="fc" id="L314">				V u = vertices[endpoints[eIdx * 2 + 0]];</span>
+<span class="fc" id="L315">				V v = vertices[endpoints[eIdx * 2 + 1]];</span>
+<span class="fc" id="L316">				g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
 			}
-<span class="fc" id="L319">			return g;</span>
+<span class="fc" id="L318">			return g;</span>
 		}
 	}
 

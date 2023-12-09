@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 <span class="fc" id="L47">class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.AbstractDirected {</span>
 
-<span class="fc" id="L49">	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.newBuilder();</span>
+<span class="fc" id="L49">	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();</span>
 <span class="fc" id="L50">	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();</span>
 
 	/**
@@ -84,7 +84,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 		} else {
 			/* not all vertices are reachable from the root, operate on the subgraph of these vertices */
-<span class="fc" id="L87">			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();</span>
+<span class="fc" id="L87">			IndexGraphBuilder builder = IndexGraphBuilder.directed();</span>
 
 <span class="fc" id="L89">			builder.expectedVerticesNum(vertices.size());</span>
 <span class="fc" id="L90">			int[] vRefToOrig = vertices.toIntArray();</span>
@@ -204,7 +204,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L204">		int n = g.vertices().size();</span>
 <span class="fc" id="L205">		int VMaxNum = n * 2; // max super vertex number</span>
 
-<span class="fc" id="L207">		UnionFindValue uf = UnionFindValue.newBuilder().expectedSize(n).build();</span>
+<span class="fc" id="L207">		UnionFindValue uf = UnionFindValue.newInstance(n);</span>
 <span class="fc" id="L208">		int[] ufIdxToV = new int[VMaxNum];</span>
 <span class="fc bfc" id="L209" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
 <span class="fc" id="L210">			ufIdxToV[uf.make()] = v;</span>

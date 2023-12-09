@@ -173,7 +173,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L173">		removedVertices.or(reverseReachableFromSink);</span>
 
 		/* Build the residual network of the graph */
-<span class="fc" id="L176">		IndexGraphBuilder residual0 = IndexGraphBuilder.newDirected();</span>
+<span class="fc" id="L176">		IndexGraphBuilder residual0 = IndexGraphBuilder.directed();</span>
 <span class="fc" id="L177">		residual0.expectedVerticesNum(n);</span>
 <span class="fc" id="L178">		int[] vToResV = new int[n];</span>
 <span class="fc" id="L179">		int[] resVToV = new int[n];</span>

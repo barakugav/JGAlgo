@@ -74,7 +74,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 		 * terminal nodes (s,t) is the minimum edge {d(s,u),(u,v),(v,t)} where u is in the cell of s and v is in the
 		 * cell of t.
 		 */
-<span class="fc" id="L77">		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();</span>
+<span class="fc" id="L77">		IndexGraphBuilder g1Builder = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L78">		g1Builder.expectedVerticesNum(terminalNum);</span>
 <span class="fc bfc" id="L79" title="All 2 branches covered.">		for (int t = 0; t &lt; terminalNum; t++)</span>
 <span class="fc" id="L80">			g1Builder.addVertex();</span>

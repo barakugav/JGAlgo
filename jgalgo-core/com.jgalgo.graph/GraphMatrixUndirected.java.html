@@ -144,26 +144,26 @@ class GraphMatrixUndirected extends GraphMatrixAbstract {
 
 	@Override
 	public void moveEdge(int edge, int newSource, int newTarget) {
-<span class="fc" id="L147">		checkEdge(edge);</span>
-<span class="fc" id="L148">		int oldSource = source(edge), oldTarget = target(edge);</span>
-<span class="pc bpc" id="L149" title="1 of 8 branches missed.">		if ((oldSource == newSource &amp;&amp; oldTarget == newTarget) || (oldSource == newTarget &amp;&amp; oldTarget == newSource))</span>
-<span class="fc" id="L150">			return;</span>
-<span class="fc" id="L151">		checkNewEdgeEndpoints(newSource, newTarget);</span>
+<span class="nc" id="L147">		checkEdge(edge);</span>
+<span class="nc" id="L148">		int oldSource = source(edge), oldTarget = target(edge);</span>
+<span class="nc bnc" id="L149" title="All 8 branches missed.">		if ((oldSource == newSource &amp;&amp; oldTarget == newTarget) || (oldSource == newTarget &amp;&amp; oldTarget == newSource))</span>
+<span class="nc" id="L150">			return;</span>
+<span class="nc" id="L151">		checkNewEdgeEndpoints(newSource, newTarget);</span>
 
-<span class="fc" id="L153">		edges[oldSource].data[oldTarget] = EdgeNone;</span>
-<span class="fc" id="L154">		edgesNum[oldSource]--;</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">		if (oldSource != oldTarget) {</span>
-<span class="fc" id="L156">			edges[oldTarget].data[oldSource] = EdgeNone;</span>
-<span class="fc" id="L157">			edgesNum[oldTarget]--;</span>
+<span class="nc" id="L153">		edges[oldSource].data[oldTarget] = EdgeNone;</span>
+<span class="nc" id="L154">		edgesNum[oldSource]--;</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">		if (oldSource != oldTarget) {</span>
+<span class="nc" id="L156">			edges[oldTarget].data[oldSource] = EdgeNone;</span>
+<span class="nc" id="L157">			edgesNum[oldTarget]--;</span>
 		}
-<span class="fc" id="L159">		edges[newSource].data[newTarget] = edge;</span>
-<span class="fc" id="L160">		edgesNum[newSource]++;</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">		if (newSource != newTarget) {</span>
-<span class="fc" id="L162">			edges[newTarget].data[newSource] = edge;</span>
-<span class="fc" id="L163">			edgesNum[newTarget]++;</span>
+<span class="nc" id="L159">		edges[newSource].data[newTarget] = edge;</span>
+<span class="nc" id="L160">		edgesNum[newSource]++;</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">		if (newSource != newTarget) {</span>
+<span class="nc" id="L162">			edges[newTarget].data[newSource] = edge;</span>
+<span class="nc" id="L163">			edgesNum[newTarget]++;</span>
 		}
-<span class="fc" id="L165">		setEndpoints(edge, newSource, newTarget);</span>
-<span class="fc" id="L166">	}</span>
+<span class="nc" id="L165">		setEndpoints(edge, newSource, newTarget);</span>
+<span class="nc" id="L166">	}</span>
 
 	@Override
 	public IEdgeSet outEdges(int source) {

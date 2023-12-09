@@ -45,14 +45,13 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
  * do not guarantee to find the optimal solution, only a solution with bounded approximation factor.
  *
  * &lt;p&gt;
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Steiner_tree_problem&quot;&gt;Wikipedia&lt;/a&gt;
  * @see    MinimumSpanningTree
  * @author Barak Ugav
  */
-<span class="pc bpc" id="L55" title="1 of 2 branches missed.">public interface SteinerTreeAlgo {</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">public interface SteinerTreeAlgo {</span>
 
 	/**
 	 * Compute the minimum Steiner tree of a given graph.
@@ -124,124 +123,95 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; boolean isSteinerTree(Graph&lt;V, E&gt; g, Collection&lt;V&gt; terminals, Collection&lt;E&gt; edges) {
-<span class="fc" id="L127">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L126">		Assertions.Graphs.onlyUndirected(g);</span>
 		IndexGraph ig;
 		IntCollection terminals0;
 		IntCollection edges0;
-<span class="fc bfc" id="L131" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L132">			ig = (IndexGraph) g;</span>
-<span class="fc" id="L133">			terminals0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) terminals);</span>
-<span class="fc" id="L134">			edges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) edges);</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L131">			ig = (IndexGraph) g;</span>
+<span class="fc" id="L132">			terminals0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) terminals);</span>
+<span class="fc" id="L133">			edges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) edges);</span>
 
 		} else {
-<span class="fc" id="L137">			ig = g.indexGraph();</span>
-<span class="fc" id="L138">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L139">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L140">			terminals0 = IndexIdMaps.idToIndexCollection(terminals, viMap);</span>
-<span class="fc" id="L141">			edges0 = IndexIdMaps.idToIndexCollection(edges, eiMap);</span>
+<span class="fc" id="L136">			ig = g.indexGraph();</span>
+<span class="fc" id="L137">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L138">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L139">			terminals0 = IndexIdMaps.idToIndexCollection(terminals, viMap);</span>
+<span class="fc" id="L140">			edges0 = IndexIdMaps.idToIndexCollection(edges, eiMap);</span>
 		}
 
-<span class="fc" id="L144">		final int m = ig.edges().size();</span>
-<span class="fc" id="L145">		final int n = ig.vertices().size();</span>
-<span class="pc bpc" id="L146" title="1 of 2 branches missed.">		if (n == 0) {</span>
-<span class="nc bnc" id="L147" title="All 4 branches missed.">			assert m == 0;</span>
-<span class="nc bnc" id="L148" title="All 4 branches missed.">			return terminals0.isEmpty() &amp;&amp; edges0.isEmpty();</span>
+<span class="fc" id="L143">		final int m = ig.edges().size();</span>
+<span class="fc" id="L144">		final int n = ig.vertices().size();</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">		if (n == 0) {</span>
+<span class="nc bnc" id="L146" title="All 4 branches missed.">			assert m == 0;</span>
+<span class="nc bnc" id="L147" title="All 4 branches missed.">			return terminals0.isEmpty() &amp;&amp; edges0.isEmpty();</span>
 		}
-<span class="pc bpc" id="L150" title="2 of 4 branches missed.">		if (terminals0.isEmpty() || terminals0.size() == 1)</span>
-<span class="nc" id="L151">			return edges0.isEmpty();</span>
+<span class="pc bpc" id="L149" title="2 of 4 branches missed.">		if (terminals0.isEmpty() || terminals0.size() == 1)</span>
+<span class="nc" id="L150">			return edges0.isEmpty();</span>
 
-<span class="fc" id="L153">		Bitmap edgesBitmap = new Bitmap(m);</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">		for (int e : edges0) {</span>
-<span class="pc bpc" id="L155" title="1 of 2 branches missed.">			if (!ig.edges().contains(e))</span>
-<span class="nc" id="L156">				throw new IllegalArgumentException(&quot;invalid edge index &quot; + e);</span>
-<span class="pc bpc" id="L157" title="1 of 2 branches missed.">			if (edgesBitmap.get(e))</span>
-<span class="nc" id="L158">				throw new IllegalArgumentException(&quot;edge with index &quot; + e + &quot; is included more than once in the tree&quot;);</span>
-<span class="fc" id="L159">			edgesBitmap.set(e);</span>
-<span class="fc" id="L160">		}</span>
+<span class="fc" id="L152">		Bitmap edgesBitmap = new Bitmap(m);</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">		for (int e : edges0) {</span>
+<span class="pc bpc" id="L154" title="1 of 2 branches missed.">			if (!ig.edges().contains(e))</span>
+<span class="nc" id="L155">				throw new IllegalArgumentException(&quot;invalid edge index &quot; + e);</span>
+<span class="pc bpc" id="L156" title="1 of 2 branches missed.">			if (edgesBitmap.get(e))</span>
+<span class="nc" id="L157">				throw new IllegalArgumentException(&quot;edge with index &quot; + e + &quot; is included more than once in the tree&quot;);</span>
+<span class="fc" id="L158">			edgesBitmap.set(e);</span>
+<span class="fc" id="L159">		}</span>
 
-<span class="fc" id="L162">		Bitmap visited = new Bitmap(n);</span>
-<span class="fc" id="L163">		LongPriorityQueue queue = new FIFOQueueLongNoReduce();</span>
-<span class="fc" id="L164">		int root = terminals0.iterator().nextInt();</span>
-<span class="fc" id="L165">		visited.set(root);</span>
-<span class="fc" id="L166">		queue.enqueue(JGAlgoUtils.longPack(root, -1));</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
-<span class="fc" id="L168">			long l = queue.dequeueLong();</span>
-<span class="fc" id="L169">			int u = JGAlgoUtils.long2low(l);</span>
-<span class="fc" id="L170">			int parentEdge = JGAlgoUtils.long2high(l);</span>
-<span class="fc bfc" id="L171" title="All 2 branches covered.">			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L172">				int e = eit.nextInt();</span>
-<span class="fc bfc" id="L173" title="All 4 branches covered.">				if (!edgesBitmap.get(e) || e == parentEdge)</span>
-<span class="fc" id="L174">					continue;</span>
-<span class="fc" id="L175">				int v = eit.targetInt();</span>
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">				if (visited.get(v))</span>
-<span class="nc" id="L177">					return false; /* cycle */</span>
-<span class="fc" id="L178">				visited.set(v);</span>
-<span class="fc" id="L179">				queue.enqueue(JGAlgoUtils.longPack(v, e));</span>
-<span class="fc" id="L180">			}</span>
-<span class="fc" id="L181">		}</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">		for (int t : terminals0)</span>
-<span class="pc bpc" id="L183" title="1 of 2 branches missed.">			if (!visited.get(t))</span>
-<span class="nc" id="L184">				return false; /* not all terminals are connected */</span>
+<span class="fc" id="L161">		Bitmap visited = new Bitmap(n);</span>
+<span class="fc" id="L162">		LongPriorityQueue queue = new FIFOQueueLongNoReduce();</span>
+<span class="fc" id="L163">		int root = terminals0.iterator().nextInt();</span>
+<span class="fc" id="L164">		visited.set(root);</span>
+<span class="fc" id="L165">		queue.enqueue(JGAlgoUtils.longPack(root, -1));</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">		while (!queue.isEmpty()) {</span>
+<span class="fc" id="L167">			long l = queue.dequeueLong();</span>
+<span class="fc" id="L168">			int u = JGAlgoUtils.long2low(l);</span>
+<span class="fc" id="L169">			int parentEdge = JGAlgoUtils.long2high(l);</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L171">				int e = eit.nextInt();</span>
+<span class="fc bfc" id="L172" title="All 4 branches covered.">				if (!edgesBitmap.get(e) || e == parentEdge)</span>
+<span class="fc" id="L173">					continue;</span>
+<span class="fc" id="L174">				int v = eit.targetInt();</span>
+<span class="pc bpc" id="L175" title="1 of 2 branches missed.">				if (visited.get(v))</span>
+<span class="nc" id="L176">					return false; /* cycle */</span>
+<span class="fc" id="L177">				visited.set(v);</span>
+<span class="fc" id="L178">				queue.enqueue(JGAlgoUtils.longPack(v, e));</span>
+<span class="fc" id="L179">			}</span>
+<span class="fc" id="L180">		}</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">		for (int t : terminals0)</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">			if (!visited.get(t))</span>
+<span class="nc" id="L183">				return false; /* not all terminals are connected */</span>
 
 		/* check for non-terminal leaves */
-<span class="fc" id="L187">		Bitmap isTerminal = visited;</span>
-<span class="fc" id="L188">		isTerminal.clear();</span>
-<span class="fc bfc" id="L189" title="All 2 branches covered.">		for (int t : terminals0) {</span>
-<span class="pc bpc" id="L190" title="1 of 2 branches missed.">			if (isTerminal.get(t))</span>
-<span class="nc" id="L191">				throw new IllegalArgumentException(&quot;Duplicate terminal: &quot; + t);</span>
-<span class="fc" id="L192">			isTerminal.set(t);</span>
-<span class="fc" id="L193">		}</span>
-<span class="fc" id="L194">		int[] degree = new int[n];</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">		for (int e : edges0) {</span>
-<span class="fc" id="L196">			degree[ig.edgeSource(e)]++;</span>
-<span class="fc" id="L197">			degree[ig.edgeTarget(e)]++;</span>
-<span class="fc" id="L198">		}</span>
-<span class="fc bfc" id="L199" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="pc bpc" id="L200" title="1 of 4 branches missed.">			if (degree[v] == 1 &amp;&amp; !isTerminal.get(v))</span>
-<span class="nc" id="L201">				return false; /* non-terminal leaf */</span>
+<span class="fc" id="L186">		Bitmap isTerminal = visited;</span>
+<span class="fc" id="L187">		isTerminal.clear();</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">		for (int t : terminals0) {</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">			if (isTerminal.get(t))</span>
+<span class="nc" id="L190">				throw new IllegalArgumentException(&quot;Duplicate terminal: &quot; + t);</span>
+<span class="fc" id="L191">			isTerminal.set(t);</span>
+<span class="fc" id="L192">		}</span>
+<span class="fc" id="L193">		int[] degree = new int[n];</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">		for (int e : edges0) {</span>
+<span class="fc" id="L195">			degree[ig.edgeSource(e)]++;</span>
+<span class="fc" id="L196">			degree[ig.edgeTarget(e)]++;</span>
+<span class="fc" id="L197">		}</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="pc bpc" id="L199" title="1 of 4 branches missed.">			if (degree[v] == 1 &amp;&amp; !isTerminal.get(v))</span>
+<span class="nc" id="L200">				return false; /* non-terminal leaf */</span>
 
-<span class="fc" id="L203">		return true;</span>
+<span class="fc" id="L202">		return true;</span>
 	}
 
 	/**
 	 * Create a new Steiner tree algorithm object.
 	 *
 	 * &lt;p&gt;
-	 * This is the recommended way to instantiate a new {@link SteinerTreeAlgo} object. The
-	 * {@link SteinerTreeAlgo.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link SteinerTreeAlgo} object.
 	 *
 	 * @return a default implementation of {@link SteinerTreeAlgo}
 	 */
 	static SteinerTreeAlgo newInstance() {
-<span class="nc" id="L216">		return newBuilder().build();</span>
-	}
-
-	/**
-	 * Create a new Steiner tree algorithm builder.
-	 *
-	 * &lt;p&gt;
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link SteinerTreeAlgo} objects
-	 */
-	static SteinerTreeAlgo.Builder newBuilder() {
-<span class="nc" id="L228">		return SteinerTreeMehlhorn::new;</span>
-	}
-
-	/**
-	 * A builder for {@link SteinerTreeAlgo} objects.
-	 *
-	 * @see    SteinerTreeAlgo#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for Steiner tree computation.
-		 *
-		 * @return a new Steiner tree algorithm
-		 */
-		SteinerTreeAlgo build();
+<span class="nc" id="L214">		return new SteinerTreeMehlhorn();</span>
 	}
 
 }

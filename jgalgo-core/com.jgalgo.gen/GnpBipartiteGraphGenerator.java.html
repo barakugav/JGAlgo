@@ -327,68 +327,66 @@ public class GnpBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 <span class="fc" id="L327">			throw new IllegalStateException(&quot;Edge supplier not set&quot;);</span>
 
 <span class="fc bfc" id="L329" title="All 2 branches covered.">		if (intGraph) {</span>
-			IntGraphBuilder g =
-<span class="fc bfc" id="L331" title="All 2 branches covered.">					direction != Direction.Undirected ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();</span>
-<span class="fc" id="L332">			final int[] leftVertices =</span>
-<span class="fc" id="L333">					IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.leftVertices).toIntArray();</span>
-<span class="fc" id="L334">			final int[] rightVertices =</span>
-<span class="fc" id="L335">					IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.rightVertices).toIntArray();</span>
-<span class="fc" id="L336">			g.expectedVerticesNum(leftVertices.length + rightVertices.length);</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">			IntGraphBuilder g = IntGraphBuilder.newInstance(direction != Direction.Undirected);</span>
+<span class="fc" id="L331">			final int[] leftVertices =</span>
+<span class="fc" id="L332">					IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.leftVertices).toIntArray();</span>
+<span class="fc" id="L333">			final int[] rightVertices =</span>
+<span class="fc" id="L334">					IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.rightVertices).toIntArray();</span>
+<span class="fc" id="L335">			g.expectedVerticesNum(leftVertices.length + rightVertices.length);</span>
 
-<span class="fc" id="L338">			IWeightsBool partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);</span>
-<span class="fc bfc" id="L339" title="All 2 branches covered.">			for (int v : leftVertices) {</span>
-<span class="fc" id="L340">				g.addVertex(v);</span>
-<span class="fc" id="L341">				partition.set(v, true);</span>
+<span class="fc" id="L337">			IWeightsBool partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">			for (int v : leftVertices) {</span>
+<span class="fc" id="L339">				g.addVertex(v);</span>
+<span class="fc" id="L340">				partition.set(v, true);</span>
 			}
-<span class="fc bfc" id="L343" title="All 2 branches covered.">			for (int v : rightVertices) {</span>
-<span class="fc" id="L344">				g.addVertex(v);</span>
-<span class="fc" id="L345">				partition.set(v, false);</span>
+<span class="fc bfc" id="L342" title="All 2 branches covered.">			for (int v : rightVertices) {</span>
+<span class="fc" id="L343">				g.addVertex(v);</span>
+<span class="fc" id="L344">				partition.set(v, false);</span>
 			}
 
-<span class="fc bfc" id="L348" title="All 2 branches covered.">			if (p &gt; 0) {</span>
-<span class="fc" id="L349">				IntBinaryOperator edgeBuilder =</span>
-<span class="fc" id="L350">						IntAdapters.asIntBiOperator((BiFunction&lt;Integer, Integer, Integer&gt;) this.edgeBuilder);</span>
-<span class="fc bfc" id="L351" title="All 2 branches covered.">				if (direction != Direction.DirectedRightToLeft)</span>
-<span class="fc bfc" id="L352" title="All 2 branches covered.">					for (int vLeft : leftVertices)</span>
-<span class="fc bfc" id="L353" title="All 2 branches covered.">						for (int vRight : rightVertices)</span>
-<span class="fc bfc" id="L354" title="All 2 branches covered.">							if (rand.nextDouble() &lt;= p)</span>
-<span class="fc" id="L355">								g.addEdge(vLeft, vRight, edgeBuilder.applyAsInt(vLeft, vRight));</span>
-<span class="fc bfc" id="L356" title="All 4 branches covered.">				if (direction == Direction.DirectedAll || direction == Direction.DirectedRightToLeft)</span>
-<span class="fc bfc" id="L357" title="All 2 branches covered.">					for (int vRight : rightVertices)</span>
-<span class="fc bfc" id="L358" title="All 2 branches covered.">						for (int vLeft : leftVertices)</span>
-<span class="fc bfc" id="L359" title="All 2 branches covered.">							if (rand.nextDouble() &lt;= p)</span>
-<span class="fc" id="L360">								g.addEdge(vRight, vLeft, edgeBuilder.applyAsInt(vRight, vLeft));</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">			if (p &gt; 0) {</span>
+<span class="fc" id="L348">				IntBinaryOperator edgeBuilder =</span>
+<span class="fc" id="L349">						IntAdapters.asIntBiOperator((BiFunction&lt;Integer, Integer, Integer&gt;) this.edgeBuilder);</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">				if (direction != Direction.DirectedRightToLeft)</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">					for (int vLeft : leftVertices)</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">						for (int vRight : rightVertices)</span>
+<span class="fc bfc" id="L353" title="All 2 branches covered.">							if (rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L354">								g.addEdge(vLeft, vRight, edgeBuilder.applyAsInt(vLeft, vRight));</span>
+<span class="fc bfc" id="L355" title="All 4 branches covered.">				if (direction == Direction.DirectedAll || direction == Direction.DirectedRightToLeft)</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">					for (int vRight : rightVertices)</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">						for (int vLeft : leftVertices)</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">							if (rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L359">								g.addEdge(vRight, vLeft, edgeBuilder.applyAsInt(vRight, vLeft));</span>
 			}
-<span class="fc" id="L362">			return (GraphBuilder&lt;V, E&gt;) g;</span>
+<span class="fc" id="L361">			return (GraphBuilder&lt;V, E&gt;) g;</span>
 
 		} else {
-			GraphBuilder&lt;V, E&gt; g =
-<span class="fc bfc" id="L366" title="All 2 branches covered.">					direction != Direction.Undirected ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();</span>
-<span class="fc" id="L367">			final V[] leftVertices = (V[]) this.leftVertices.toArray();</span>
-<span class="fc" id="L368">			final V[] rightVertices = (V[]) this.rightVertices.toArray();</span>
-<span class="fc" id="L369">			g.expectedVerticesNum(leftVertices.length + rightVertices.length);</span>
+<span class="fc bfc" id="L364" title="All 2 branches covered.">			GraphBuilder&lt;V, E&gt; g = GraphBuilder.newInstance(direction != Direction.Undirected);</span>
+<span class="fc" id="L365">			final V[] leftVertices = (V[]) this.leftVertices.toArray();</span>
+<span class="fc" id="L366">			final V[] rightVertices = (V[]) this.rightVertices.toArray();</span>
+<span class="fc" id="L367">			g.expectedVerticesNum(leftVertices.length + rightVertices.length);</span>
 
-<span class="fc" id="L371">			WeightsBool&lt;V&gt; partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);</span>
-<span class="fc bfc" id="L372" title="All 2 branches covered.">			for (V v : leftVertices) {</span>
-<span class="fc" id="L373">				g.addVertex(v);</span>
-<span class="fc" id="L374">				partition.set(v, true);</span>
+<span class="fc" id="L369">			WeightsBool&lt;V&gt; partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">			for (V v : leftVertices) {</span>
+<span class="fc" id="L371">				g.addVertex(v);</span>
+<span class="fc" id="L372">				partition.set(v, true);</span>
 			}
-<span class="fc bfc" id="L376" title="All 2 branches covered.">			for (V v : rightVertices) {</span>
-<span class="fc" id="L377">				g.addVertex(v);</span>
-<span class="fc" id="L378">				partition.set(v, false);</span>
+<span class="fc bfc" id="L374" title="All 2 branches covered.">			for (V v : rightVertices) {</span>
+<span class="fc" id="L375">				g.addVertex(v);</span>
+<span class="fc" id="L376">				partition.set(v, false);</span>
 			}
 
-<span class="fc bfc" id="L381" title="All 2 branches covered.">			if (direction != Direction.DirectedRightToLeft)</span>
-<span class="fc bfc" id="L382" title="All 2 branches covered.">				for (V vLeft : leftVertices)</span>
-<span class="fc bfc" id="L383" title="All 2 branches covered.">					for (V vRight : rightVertices)</span>
-<span class="fc bfc" id="L384" title="All 2 branches covered.">						if (rand.nextDouble() &lt;= p)</span>
-<span class="fc" id="L385">							g.addEdge(vLeft, vRight, edgeBuilder.apply(vLeft, vRight));</span>
-<span class="fc bfc" id="L386" title="All 4 branches covered.">			if (direction == Direction.DirectedAll || direction == Direction.DirectedRightToLeft)</span>
-<span class="fc bfc" id="L387" title="All 2 branches covered.">				for (V vRight : rightVertices)</span>
-<span class="fc bfc" id="L388" title="All 2 branches covered.">					for (V vLeft : leftVertices)</span>
-<span class="fc bfc" id="L389" title="All 2 branches covered.">						if (rand.nextDouble() &lt;= p)</span>
-<span class="fc" id="L390">							g.addEdge(vRight, vLeft, edgeBuilder.apply(vRight, vLeft));</span>
-<span class="fc" id="L391">			return g;</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">			if (direction != Direction.DirectedRightToLeft)</span>
+<span class="fc bfc" id="L380" title="All 2 branches covered.">				for (V vLeft : leftVertices)</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">					for (V vRight : rightVertices)</span>
+<span class="fc bfc" id="L382" title="All 2 branches covered.">						if (rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L383">							g.addEdge(vLeft, vRight, edgeBuilder.apply(vLeft, vRight));</span>
+<span class="fc bfc" id="L384" title="All 4 branches covered.">			if (direction == Direction.DirectedAll || direction == Direction.DirectedRightToLeft)</span>
+<span class="fc bfc" id="L385" title="All 2 branches covered.">				for (V vRight : rightVertices)</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">					for (V vLeft : leftVertices)</span>
+<span class="fc bfc" id="L387" title="All 2 branches covered.">						if (rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L388">							g.addEdge(vRight, vLeft, edgeBuilder.apply(vRight, vLeft));</span>
+<span class="fc" id="L389">			return g;</span>
 		}
 	}
 

@@ -362,7 +362,7 @@ class MinimumCostFlows {
 <span class="fc" id="L362">			final boolean integerFlow = WeightFunction.isInteger(capacityOrig);</span>
 <span class="fc" id="L363">			final boolean integerCost = WeightFunction.isInteger(costOrig);</span>
 
-<span class="fc" id="L365">			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();</span>
+<span class="fc" id="L365">			IndexGraphBuilder builder = IndexGraphBuilder.directed();</span>
 <span class="fc" id="L366">			builder.expectedVerticesNum(gOrig.vertices().size() + 2);</span>
 <span class="fc" id="L367">			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size());</span>
 
@@ -473,7 +473,7 @@ class MinimumCostFlows {
 			/* For each edge with lower bound add/remove supply to the edge endpoints */
 <span class="fc" id="L474">			IWeightFunction supply = computeSupply(gOrig, capacityOrig, lowerBound, null);</span>
 
-<span class="fc" id="L476">			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();</span>
+<span class="fc" id="L476">			IndexGraphBuilder builder = IndexGraphBuilder.directed();</span>
 <span class="fc" id="L477">			builder.expectedVerticesNum(gOrig.vertices().size() + 2);</span>
 <span class="fc" id="L478">			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size() + gOrig.vertices().size());</span>
 
@@ -644,7 +644,7 @@ class MinimumCostFlows {
 			 * with capacity equal to the supply.
 			 */
 
-<span class="fc" id="L647">			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();</span>
+<span class="fc" id="L647">			IndexGraphBuilder builder = IndexGraphBuilder.directed();</span>
 <span class="fc" id="L648">			builder.expectedVerticesNum(gOrig.vertices().size() + 2);</span>
 <span class="fc" id="L649">			builder.expectedEdgesNum(gOrig.edges().size() + gOrig.vertices().size());</span>
 
@@ -762,7 +762,7 @@ class MinimumCostFlows {
 <span class="pc bpc" id="L762" title="2 of 4 branches missed.">					WeightFunction.isInteger(capacityOrig) &amp;&amp; WeightFunction.isInteger(lowerBoundOrig);</span>
 <span class="fc" id="L763">			final boolean integerCost = WeightFunction.isInteger(costOrig);</span>
 
-<span class="fc" id="L765">			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();</span>
+<span class="fc" id="L765">			IndexGraphBuilder builder = IndexGraphBuilder.directed();</span>
 <span class="fc" id="L766">			builder.expectedVerticesNum(gOrig.vertices().size() + 2);</span>
 <span class="fc" id="L767">			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size() + 2);</span>
 

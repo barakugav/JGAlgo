@@ -114,7 +114,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	static Pair&lt;IndexGraph, int[]&gt; subGraph(IndexGraph g, IntCollection edgeSet, int[] edgeRef) {
 <span class="fc" id="L116">		final int n = g.vertices().size();</span>
-<span class="fc" id="L117">		IndexGraphBuilder subBuilder = IndexGraphBuilder.newUndirected();</span>
+<span class="fc" id="L117">		IndexGraphBuilder subBuilder = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L118">		subBuilder.expectedVerticesNum(n);</span>
 <span class="fc" id="L119">		subBuilder.expectedEdgesNum(edgeSet.size());</span>
 <span class="fc bfc" id="L120" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>

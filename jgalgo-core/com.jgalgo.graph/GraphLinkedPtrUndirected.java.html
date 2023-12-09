@@ -217,16 +217,16 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract {
 
 	@Override
 	public void moveEdge(int edge, int newSource, int newTarget) {
-<span class="fc" id="L220">		checkEdge(edge);</span>
-<span class="fc" id="L221">		checkNewEdgeEndpoints(newSource, newTarget);</span>
-<span class="fc" id="L222">		int oldSource = source(edge), oldTarget = target(edge);</span>
-<span class="fc" id="L223">		Edge n = getEdge(edge);</span>
-<span class="fc" id="L224">		removeEdgePointers(n, oldSource);</span>
-<span class="fc bfc" id="L225" title="All 2 branches covered.">		if (oldSource != oldTarget)</span>
-<span class="fc" id="L226">			removeEdgePointers(n, oldTarget);</span>
-<span class="fc" id="L227">		setEndpoints(edge, newSource, newTarget);</span>
-<span class="fc" id="L228">		addEdgeToLists(n);</span>
-<span class="fc" id="L229">	}</span>
+<span class="nc" id="L220">		checkEdge(edge);</span>
+<span class="nc" id="L221">		checkNewEdgeEndpoints(newSource, newTarget);</span>
+<span class="nc" id="L222">		int oldSource = source(edge), oldTarget = target(edge);</span>
+<span class="nc" id="L223">		Edge n = getEdge(edge);</span>
+<span class="nc" id="L224">		removeEdgePointers(n, oldSource);</span>
+<span class="nc bnc" id="L225" title="All 2 branches missed.">		if (oldSource != oldTarget)</span>
+<span class="nc" id="L226">			removeEdgePointers(n, oldTarget);</span>
+<span class="nc" id="L227">		setEndpoints(edge, newSource, newTarget);</span>
+<span class="nc" id="L228">		addEdgeToLists(n);</span>
+<span class="nc" id="L229">	}</span>
 
 	@Override
 	public void clearEdges() {

@@ -62,7 +62,7 @@ public class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 	@Override
 	public IntGraphBuilder readIntoBuilderImpl(Reader reader) throws IOException {
 <span class="fc" id="L64">		BufferedReader br = GraphIoUtils.bufferedReader(reader);</span>
-<span class="fc" id="L65">		IntGraphBuilder g = IntGraphBuilder.newUndirected();</span>
+<span class="fc" id="L65">		IntGraphBuilder g = IntGraphBuilder.undirected();</span>
 
 <span class="fc" id="L67">		String line = br.readLine();</span>
 <span class="fc bfc" id="L68" title="All 2 branches covered.">		if (line == null)</span>
