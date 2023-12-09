@@ -79,6 +79,20 @@ public class GraphHashmapTest extends TestBase {
 	}
 
 	@Test
+	public void edgeIterRemoveSingleEdge() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testEdgeIterRemoveSingle(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
+	public void edgeIterRemoveAll() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testEdgeIterRemoveAll(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
 	public void testDegree() {
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testDegree(graphImpl(selfEdges));

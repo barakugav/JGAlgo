@@ -28,6 +28,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -534,6 +535,171 @@ class GraphImplTestUtils extends TestUtils {
 						} else {
 							assertEquals(edges.get(e), setOf(eit.source(), eit.target()));
 						}
+					}
+				}
+			}
+		});
+	}
+
+	@SuppressWarnings("boxing")
+	static void testEdgeIterRemoveSingle(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+		final SeedGenerator seedGen = new SeedGenerator(0x95a73506247fe12L);
+		final Random rand = new Random(seedGen.nextSeed());
+		foreachBoolConfig((directed, outIn) -> {
+			final boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
+			final boolean parallelEdges = graphImpl.get(directed).isAllowParallelEdges();
+			for (int ops = 0; ops < 20; ops++) {
+				Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
+						GraphsTestUtils.randGraph(10, 30, directed, selfEdges, parallelEdges, seedGen.nextSeed()),
+						graphImpl);
+
+				Map<Integer, Set<Integer>> expectedOutEdges = new Object2ObjectOpenHashMap<>();
+				Map<Integer, Set<Integer>> expectedInEdges = new Object2ObjectOpenHashMap<>();
+				Map<Integer, Pair<Integer, Integer>> expectedEdgeEndpoints = new Object2ObjectOpenHashMap<>();
+				for (Integer u : g.vertices()) {
+					expectedOutEdges.put(u, new TreeSet<>());
+					expectedInEdges.put(u, new TreeSet<>());
+				}
+				if (directed) {
+					for (Integer e : g.edges()) {
+						Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+						expectedOutEdges.get(u).add(e);
+						expectedInEdges.get(v).add(e);
+						expectedEdgeEndpoints.put(e, Pair.of(u, v));
+					}
+				} else {
+					for (Integer e : g.edges()) {
+						Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+						expectedOutEdges.get(u).add(e);
+						expectedOutEdges.get(v).add(e);
+						expectedEdgeEndpoints.put(e, Pair.of(Math.min(u, v), Math.max(u, v)));
+					}
+					expectedInEdges = expectedOutEdges;
+				}
+
+				Integer edgeToRemove = Graphs.randEdge(g, rand);
+				expectedOutEdges.get(g.edgeSource(edgeToRemove)).remove(edgeToRemove);
+				expectedInEdges.get(g.edgeTarget(edgeToRemove)).remove(edgeToRemove);
+				expectedEdgeEndpoints.remove(edgeToRemove);
+				boolean removed = false;
+				EdgeSet<Integer, Integer> edgeSet =
+						outIn ? g.outEdges(g.edgeSource(edgeToRemove)) : g.inEdges(g.edgeTarget(edgeToRemove));
+				Set<Integer> iteratedEdges = new HashSet<>();
+				Set<Integer> iteratedEdgesExpected = new HashSet<>(edgeSet);
+				for (EdgeIter<Integer, Integer> eit = edgeSet.iterator(); eit.hasNext();) {
+					Integer e = eit.next();
+					iteratedEdges.add(e);
+					if (e.equals(edgeToRemove)) {
+						assertFalse(removed);
+						eit.remove();
+						removed = true;
+					}
+				}
+				assertTrue(removed);
+				assertEquals(iteratedEdgesExpected, iteratedEdges);
+
+				for (Integer v : g.vertices()) {
+					assertEquals(expectedOutEdges.get(v), new TreeSet<>(g.outEdges(v)));
+					assertEquals(expectedInEdges.get(v), new TreeSet<>(g.inEdges(v)));
+
+					int outEdgesSetSize = g.outEdges(v).size(), outEdgesIterated = 0;
+					int inEdgesSetSize = g.inEdges(v).size(), inEdgesIterated = 0;
+					for (Iterator<Integer> it = g.outEdges(v).iterator(); it.hasNext(); it.next())
+						outEdgesIterated++;
+					for (Iterator<Integer> it = g.inEdges(v).iterator(); it.hasNext(); it.next())
+						inEdgesIterated++;
+					assertEquals(outEdgesSetSize, outEdgesIterated);
+					assertEquals(inEdgesSetSize, inEdgesIterated);
+				}
+				if (directed) {
+					for (Integer e : g.edges()) {
+						Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+						assertEquals(expectedEdgeEndpoints.get(e), Pair.of(u, v));
+					}
+				} else {
+					for (Integer e : g.edges()) {
+						Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+						assertEquals(expectedEdgeEndpoints.get(e), Pair.of(Math.min(u, v), Math.max(u, v)));
+					}
+				}
+			}
+		});
+	}
+
+	@SuppressWarnings("boxing")
+	static void testEdgeIterRemoveAll(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+		final SeedGenerator seedGen = new SeedGenerator(0x95a73506247fe12L);
+		final Random rand = new Random(seedGen.nextSeed());
+		foreachBoolConfig((directed, outIn) -> {
+			final boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
+			final boolean parallelEdges = graphImpl.get(directed).isAllowParallelEdges();
+			for (int ops = 0; ops < 20; ops++) {
+				Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
+						GraphsTestUtils.randGraph(10, 30, directed, selfEdges, parallelEdges, seedGen.nextSeed()),
+						graphImpl);
+
+				Map<Integer, Set<Integer>> expectedOutEdges = new Object2ObjectOpenHashMap<>();
+				Map<Integer, Set<Integer>> expectedInEdges = new Object2ObjectOpenHashMap<>();
+				Map<Integer, Pair<Integer, Integer>> expectedEdgeEndpoints = new Object2ObjectOpenHashMap<>();
+				for (Integer u : g.vertices()) {
+					expectedOutEdges.put(u, new TreeSet<>());
+					expectedInEdges.put(u, new TreeSet<>());
+				}
+				if (directed) {
+					for (Integer e : g.edges()) {
+						Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+						expectedOutEdges.get(u).add(e);
+						expectedInEdges.get(v).add(e);
+						expectedEdgeEndpoints.put(e, Pair.of(u, v));
+					}
+				} else {
+					for (Integer e : g.edges()) {
+						Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+						expectedOutEdges.get(u).add(e);
+						expectedOutEdges.get(v).add(e);
+						expectedEdgeEndpoints.put(e, Pair.of(Math.min(u, v), Math.max(u, v)));
+					}
+					expectedInEdges = expectedOutEdges;
+				}
+
+				EdgeSet<Integer, Integer> edgeSet =
+						outIn ? g.outEdges(Graphs.randVertex(g, rand)) : g.inEdges(Graphs.randVertex(g, rand));
+				for (Integer edgeToRemove : edgeSet) {
+					expectedOutEdges.get(g.edgeSource(edgeToRemove)).remove(edgeToRemove);
+					expectedInEdges.get(g.edgeTarget(edgeToRemove)).remove(edgeToRemove);
+					expectedEdgeEndpoints.remove(edgeToRemove);
+				}
+				Set<Integer> iteratedEdges = new HashSet<>();
+				Set<Integer> iteratedEdgesExpected = new HashSet<>(edgeSet);
+				for (EdgeIter<Integer, Integer> eit = edgeSet.iterator(); eit.hasNext();) {
+					Integer e = eit.next();
+					iteratedEdges.add(e);
+					eit.remove();
+				}
+				assertEquals(iteratedEdgesExpected, iteratedEdges);
+
+				for (Integer v : g.vertices()) {
+					assertEquals(expectedOutEdges.get(v), new TreeSet<>(g.outEdges(v)));
+					assertEquals(expectedInEdges.get(v), new TreeSet<>(g.inEdges(v)));
+
+					int outEdgesSetSize = g.outEdges(v).size(), outEdgesIterated = 0;
+					int inEdgesSetSize = g.inEdges(v).size(), inEdgesIterated = 0;
+					for (Iterator<Integer> it = g.outEdges(v).iterator(); it.hasNext(); it.next())
+						outEdgesIterated++;
+					for (Iterator<Integer> it = g.inEdges(v).iterator(); it.hasNext(); it.next())
+						inEdgesIterated++;
+					assertEquals(outEdgesSetSize, outEdgesIterated);
+					assertEquals(inEdgesSetSize, inEdgesIterated);
+				}
+				if (directed) {
+					for (Integer e : g.edges()) {
+						Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+						assertEquals(expectedEdgeEndpoints.get(e), Pair.of(u, v));
+					}
+				} else {
+					for (Integer e : g.edges()) {
+						Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+						assertEquals(expectedEdgeEndpoints.get(e), Pair.of(Math.min(u, v), Math.max(u, v)));
 					}
 				}
 			}
@@ -1128,6 +1294,15 @@ class GraphImplTestUtils extends TestUtils {
 				for (Integer v : g.vertices()) {
 					assertEquals(expectedOutEdges.get(v), new TreeSet<>(g.outEdges(v)));
 					assertEquals(expectedInEdges.get(v), new TreeSet<>(g.inEdges(v)));
+
+					int outEdgesSetSize = g.outEdges(v).size(), outEdgesIterated = 0;
+					int inEdgesSetSize = g.inEdges(v).size(), inEdgesIterated = 0;
+					for (Iterator<Integer> it = g.outEdges(v).iterator(); it.hasNext(); it.next())
+						outEdgesIterated++;
+					for (Iterator<Integer> it = g.inEdges(v).iterator(); it.hasNext(); it.next())
+						inEdgesIterated++;
+					assertEquals(outEdgesSetSize, outEdgesIterated);
+					assertEquals(inEdgesSetSize, inEdgesIterated);
 				}
 				if (directed) {
 					for (Integer e : g.edges()) {

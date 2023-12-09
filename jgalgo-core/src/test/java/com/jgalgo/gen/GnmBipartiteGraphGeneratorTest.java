@@ -33,6 +33,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class GnmBipartiteGraphGeneratorTest extends TestBase {
 
@@ -298,7 +299,7 @@ public class GnmBipartiteGraphGeneratorTest extends TestBase {
 	@Test
 	public void emptyLeftVerticesSetAndNonEmptyEdgeSet() {
 		GnmBipartiteGraphGenerator<Integer, Integer> g = GnmBipartiteGraphGenerator.newInstance();
-		g.setVertices(Set.of(), Set.of(1, 2, 3));
+		g.setVertices(Set.of(), IntSet.of(1, 2, 3));
 		g.setEdges(5, new AtomicInteger()::getAndIncrement);
 		assertThrows(IllegalArgumentException.class, () -> g.generate());
 		g.setEdges(0, new AtomicInteger()::getAndIncrement);
@@ -308,7 +309,7 @@ public class GnmBipartiteGraphGeneratorTest extends TestBase {
 	@Test
 	public void emptyRightVerticesSetAndNonEmptyEdgeSet() {
 		GnmBipartiteGraphGenerator<Integer, Integer> g = GnmBipartiteGraphGenerator.newInstance();
-		g.setVertices(Set.of(1, 2, 3), Set.of());
+		g.setVertices(IntSet.of(1, 2, 3), Set.of());
 		g.setEdges(5, new AtomicInteger()::getAndIncrement);
 		assertThrows(IllegalArgumentException.class, () -> g.generate());
 		g.setEdges(0, new AtomicInteger()::getAndIncrement);
