@@ -162,6 +162,13 @@ public class GraphMatrixTest extends TestBase {
 	}
 
 	@Test
+	public void removeEdge() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testRemoveEdge(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
 	public void reverseEdge() {
 		final long seed = 0x51e3bdb3331d8cb3L;
 		foreachBoolConfig(selfEdges -> {

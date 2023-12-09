@@ -162,6 +162,13 @@ public class GraphLinkedPtrTest extends TestBase {
 	}
 
 	@Test
+	public void removeEdge() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testRemoveEdge(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
 	public void reverseEdge() {
 		final long seed = 0xd8e7ea9aff32441fL;
 		foreachBoolConfig(selfEdges -> {

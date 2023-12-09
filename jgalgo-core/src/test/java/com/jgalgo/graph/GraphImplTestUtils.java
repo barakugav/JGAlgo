@@ -35,6 +35,7 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -49,6 +50,7 @@ import com.jgalgo.alg.MinimumDirectedSpanningTreeTarjanTest;
 import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.alg.MinimumSpanningTreeTestUtils;
 import com.jgalgo.internal.util.TestUtils;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -662,6 +664,12 @@ class GraphImplTestUtils extends TestUtils {
 				g.clearEdges();
 				assertEquals(expectedN, g.vertices().size());
 				assertEquals(0, g.edges().size());
+				for (Integer u : g.vertices()) {
+					assertEquals(0, g.outEdges(u).size());
+					assertTrue(g.outEdges(u).isEmpty());
+					assertEquals(0, g.inEdges(u).size());
+					assertTrue(g.inEdges(u).isEmpty());
+				}
 			}
 		});
 	}
@@ -1074,6 +1082,68 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
+	@SuppressWarnings("boxing")
+	static void testRemoveEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+		final SeedGenerator seedGen = new SeedGenerator(0x95a73506247fe12L);
+		final Random rand = new Random(seedGen.nextSeed());
+
+		foreachBoolConfig(directed -> {
+			final boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
+			final boolean parallelEdges = graphImpl.get(directed).isAllowParallelEdges();
+			for (int ops = 0; ops < 20; ops++) {
+				Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
+						GraphsTestUtils.randGraph(10, 30, directed, selfEdges, parallelEdges, seedGen.nextSeed()),
+						graphImpl);
+
+				Map<Integer, Set<Integer>> expectedOutEdges = new Object2ObjectOpenHashMap<>();
+				Map<Integer, Set<Integer>> expectedInEdges = new Object2ObjectOpenHashMap<>();
+				Map<Integer, Pair<Integer, Integer>> expectedEdgeEndpoints = new Object2ObjectOpenHashMap<>();
+				for (Integer u : g.vertices()) {
+					expectedOutEdges.put(u, new TreeSet<>());
+					expectedInEdges.put(u, new TreeSet<>());
+				}
+				if (directed) {
+					for (Integer e : g.edges()) {
+						Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+						expectedOutEdges.get(u).add(e);
+						expectedInEdges.get(v).add(e);
+						expectedEdgeEndpoints.put(e, Pair.of(u, v));
+					}
+				} else {
+					for (Integer e : g.edges()) {
+						Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+						expectedOutEdges.get(u).add(e);
+						expectedOutEdges.get(v).add(e);
+						expectedEdgeEndpoints.put(e, Pair.of(Math.min(u, v), Math.max(u, v)));
+					}
+					expectedInEdges = expectedOutEdges;
+				}
+
+				Integer edgeToRemove = Graphs.randEdge(g, rand);
+				expectedOutEdges.get(g.edgeSource(edgeToRemove)).remove(edgeToRemove);
+				expectedInEdges.get(g.edgeTarget(edgeToRemove)).remove(edgeToRemove);
+				expectedEdgeEndpoints.remove(edgeToRemove);
+				g.removeEdge(edgeToRemove);
+
+				for (Integer v : g.vertices()) {
+					assertEquals(expectedOutEdges.get(v), new TreeSet<>(g.outEdges(v)));
+					assertEquals(expectedInEdges.get(v), new TreeSet<>(g.inEdges(v)));
+				}
+				if (directed) {
+					for (Integer e : g.edges()) {
+						Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+						assertEquals(expectedEdgeEndpoints.get(e), Pair.of(u, v));
+					}
+				} else {
+					for (Integer e : g.edges()) {
+						Integer u = g.edgeSource(e), v = g.edgeTarget(e);
+						assertEquals(expectedEdgeEndpoints.get(e), Pair.of(Math.min(u, v), Math.max(u, v)));
+					}
+				}
+			}
+		});
+	}
+
 	static void testReverseEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
@@ -1120,10 +1190,11 @@ class GraphImplTestUtils extends TestUtils {
 		final Random rand = new Random(seedGen.nextSeed());
 
 		foreachBoolConfig(directed -> {
-			final boolean selfEdges = graphImpl.get(true).isAllowSelfEdges();
-			final boolean parallelEdges = graphImpl.get(true).isAllowParallelEdges();
+			final boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
+			final boolean parallelEdges = graphImpl.get(directed).isAllowParallelEdges();
 			Graph<Integer, Integer> g1 = GraphsTestUtils.withImpl(
-					GraphsTestUtils.randGraph(100, 300, true, selfEdges, parallelEdges, seedGen.nextSeed()), graphImpl);
+					GraphsTestUtils.randGraph(100, 300, directed, selfEdges, parallelEdges, seedGen.nextSeed()),
+					graphImpl);
 			Graph<Integer, Integer> g2 = g1.copy(true, true);
 
 			for (int ops = 0; ops < 20; ops++) {

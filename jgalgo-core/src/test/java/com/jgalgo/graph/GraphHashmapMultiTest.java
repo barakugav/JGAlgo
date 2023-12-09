@@ -162,6 +162,13 @@ public class GraphHashmapMultiTest extends TestBase {
 	}
 
 	@Test
+	public void removeEdge() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.testRemoveEdge(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
 	public void reverseEdge() {
 		final long seed = 0x5678d5379291f193L;
 		foreachBoolConfig(selfEdges -> {
