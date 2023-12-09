@@ -18,7 +18,6 @@ package com.jgalgo.internal.ds;
 
 import java.util.Collection;
 import java.util.Comparator;
-
 import it.unimi.dsi.fastutil.objects.ObjectList;
 
 /**
@@ -31,8 +30,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
  * {@link #findMin(int)}.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @param  <K> the keys type
  * @author     Barak Ugav
@@ -84,49 +82,12 @@ public interface SplitFindMin<K> extends SplitFind {
 	 * Create a new split-find-min object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link SplitFindMin} object. The {@link SplitFindMin.Builder}
-	 * might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link SplitFindMin} object.
 	 *
 	 * @return a default implementation of {@link SplitFindMin}
 	 */
 	static <K> SplitFindMin<K> newInstance() {
-		return newBuilder().buildWithFindMin();
-	}
-
-	/**
-	 * Create a new split-find-min data structure builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link SplitFindMin} objects
-	 */
-	static SplitFindMin.Builder newBuilder() {
-		return SplitFindMinArray::new;
-	}
-
-	/**
-	 * A builder for {@link SplitFindMin} objects.
-	 *
-	 * @see    SplitFindMin#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends SplitFind.Builder {
-
-		/**
-		 * Create a new split-find-min data structure.
-		 *
-		 * @return     a new split-find-min data structure
-		 * @param  <K> the keys type
-		 */
-		<K> SplitFindMin<K> buildWithFindMin();
-
-		@SuppressWarnings("rawtypes")
-		@Override
-		default SplitFindMin build() {
-			return buildWithFindMin();
-		}
-
+		return new SplitFindMinArray<>();
 	}
 
 }

@@ -30,8 +30,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * in-degree + out-degree, determining different types of cores. See {@link EdgeDirection} for more details.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    EdgeDirection
  * @author Barak Ugav
@@ -179,41 +178,12 @@ public interface CoresAlgo {
 	 * Create a new cores algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link CoresAlgo} object. The {@link CoresAlgo.Builder} might
-	 * support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link CoresAlgo} object.
 	 *
 	 * @return a default implementation of {@link CoresAlgo}
 	 */
 	static CoresAlgo newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new builder for core algorithms.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder for core algorithms
-	 */
-	static CoresAlgo.Builder newBuilder() {
-		return CoresAlgoImpl::new;
-	}
-
-	/**
-	 * A builder for {@link CoresAlgo} objects.
-	 *
-	 * @see    CoresAlgo#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Build a new {@link CoresAlgo} object.
-		 *
-		 * @return a new {@link CoresAlgo} object
-		 */
-		CoresAlgo build();
+		return new CoresAlgoImpl();
 	}
 
 }

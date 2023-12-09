@@ -36,8 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * For a general k-vertex connected components, see {@link KVertexConnectedComponentsAlgo}.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Biconnected_component">Wikipedia</a>
  * @see    StronglyConnectedComponentsAlgo
@@ -211,41 +210,12 @@ public interface BiConnectedComponentsAlgo {
 	 * Create a new bi-connected components algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link BiConnectedComponentsAlgo} object. The
-	 * {@link BiConnectedComponentsAlgo.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link BiConnectedComponentsAlgo} object.
 	 *
 	 * @return a default implementation of {@link BiConnectedComponentsAlgo}
 	 */
 	static BiConnectedComponentsAlgo newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new bi-connected components algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link BiConnectedComponentsAlgo} objects
-	 */
-	static BiConnectedComponentsAlgo.Builder newBuilder() {
-		return BiConnectedComponentsAlgoHopcroftTarjan::new;
-	}
-
-	/**
-	 * A builder for {@link BiConnectedComponentsAlgo} objects.
-	 *
-	 * @see    BiConnectedComponentsAlgo#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for bi-connected components computation.
-		 *
-		 * @return a new bi-connected components algorithm
-		 */
-		BiConnectedComponentsAlgo build();
+		return new BiConnectedComponentsAlgoHopcroftTarjan();
 	}
 
 }

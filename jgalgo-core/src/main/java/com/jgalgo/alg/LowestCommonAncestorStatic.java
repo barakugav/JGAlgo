@@ -32,8 +32,7 @@ import com.jgalgo.graph.IntGraph;
  * query time.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * <pre> {@code
  * Graph<String, Integer> tree = Graph.newUndirected();
@@ -125,41 +124,12 @@ public interface LowestCommonAncestorStatic {
 	 * Create a new algorithm for static LCA queries.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorStatic} object. The
-	 * {@link LowestCommonAncestorStatic.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorStatic} object.
 	 *
 	 * @return a default implementation of {@link LowestCommonAncestorStatic}
 	 */
 	static LowestCommonAncestorStatic newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new static LCA algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link LowestCommonAncestorStatic} objects
-	 */
-	static LowestCommonAncestorStatic.Builder newBuilder() {
-		return LowestCommonAncestorStaticRMQ::new;
-	}
-
-	/**
-	 * A builder for {@link LowestCommonAncestorStatic} objects.
-	 *
-	 * @see    LowestCommonAncestorStatic#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new static LCA algorithm.
-		 *
-		 * @return a new static LCA algorithm
-		 */
-		LowestCommonAncestorStatic build();
+		return new LowestCommonAncestorStaticRMQ();
 	}
 
 }

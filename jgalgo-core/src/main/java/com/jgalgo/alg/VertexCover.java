@@ -44,8 +44,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * solution.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    EdgeCover
  * @see    <a href= "https://en.wikipedia.org/wiki/Vertex_cover">Wikipedia</a>
@@ -117,41 +116,12 @@ public interface VertexCover {
 	 * Create a new vertex cover algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link VertexCover} object. The {@link VertexCover.Builder}
-	 * might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link VertexCover} object.
 	 *
 	 * @return a default implementation of {@link VertexCover}
 	 */
 	static VertexCover newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new vertex cover algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link VertexCover} objects
-	 */
-	static VertexCover.Builder newBuilder() {
-		return VertexCoverBarYehuda::new;
-	}
-
-	/**
-	 * A builder for {@link VertexCover} algorithms.
-	 *
-	 * @see    VertexCover#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for minimum vertex cover computation.
-		 *
-		 * @return a new minimum vertex cover algorithm
-		 */
-		VertexCover build();
+		return new VertexCoverBarYehuda();
 	}
 
 }

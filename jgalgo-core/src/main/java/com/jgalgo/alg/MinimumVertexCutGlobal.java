@@ -52,8 +52,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * The cardinality (unweighted) global minimum vertex-cut is equal to the vertex connectivity of a graph.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    MinimumVertexCutST
  * @see    MinimumEdgeCutGlobal
@@ -84,41 +83,12 @@ public interface MinimumVertexCutGlobal {
 	 * Create a new minimum global vertex-cut algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumVertexCutGlobal} object. The
-	 * {@link MinimumVertexCutGlobal.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MinimumVertexCutGlobal} object.
 	 *
 	 * @return a default implementation of {@link MinimumVertexCutGlobal}
 	 */
 	static MinimumVertexCutGlobal newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new global minimum vertex-cut algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link MinimumVertexCutGlobal} objects
-	 */
-	static MinimumVertexCutGlobal.Builder newBuilder() {
-		return MinimumVertexCutGlobalEsfahanianHakimi::new;
-	}
-
-	/**
-	 * A builder for {@link MinimumVertexCutGlobal} objects.
-	 *
-	 * @see    MinimumVertexCutGlobal#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for global minimum vertex-cut computation.
-		 *
-		 * @return a new minimum vertex-cut algorithm
-		 */
-		MinimumVertexCutGlobal build();
+		return new MinimumVertexCutGlobalEsfahanianHakimi();
 	}
 
 	/**

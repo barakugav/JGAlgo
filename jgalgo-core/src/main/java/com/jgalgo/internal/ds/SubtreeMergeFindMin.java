@@ -18,7 +18,6 @@ package com.jgalgo.internal.ds;
 
 import java.util.Comparator;
 import java.util.NoSuchElementException;
-import com.jgalgo.alg.AlgorithmBuilderBase;
 
 /**
  * Subtree Merge Find Min data structure.
@@ -32,8 +31,7 @@ import com.jgalgo.alg.AlgorithmBuilderBase;
  * operation query for the non tree edge with minimum weight that connects two different subtrees.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @param  <E> the edges element type
  * @author     Barak Ugav
@@ -182,66 +180,24 @@ public interface SubtreeMergeFindMin<E> {
 	 * Create a new SMF algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link SubtreeMergeFindMin} object. The
-	 * {@link SubtreeMergeFindMin.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link SubtreeMergeFindMin} object.
 	 *
 	 * @return a default implementation of {@link SubtreeMergeFindMin}
 	 */
 	static <E> SubtreeMergeFindMin<E> newInstance() {
-		return newBuilder().build();
+		return new SubtreeMergeFindMinImpl<>();
 	}
 
 	/**
 	 * Create a new SMF algorithm object with custom comparator.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link SubtreeMergeFindMin} object. The
-	 * {@link SubtreeMergeFindMin.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link SubtreeMergeFindMin} object.
 	 *
 	 * @return a default implementation of {@link SubtreeMergeFindMin}
 	 */
 	static <E> SubtreeMergeFindMin<E> newInstance(Comparator<? super E> cmp) {
-		return newBuilder().build(cmp);
-	}
-
-	/**
-	 * Create a new subtree-merge-findMin algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link SubtreeMergeFindMin} objects
-	 */
-	static SubtreeMergeFindMin.Builder newBuilder() {
-		return SubtreeMergeFindMinImpl::new;
-	}
-
-	/**
-	 * A builder for {@link SubtreeMergeFindMin} objects.
-	 *
-	 * @see    SubtreeMergeFindMin#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-		/**
-		 * Build a new subtree-merge-findMin data structure with the given comparator.
-		 *
-		 * @param  <E> the edges weights type
-		 * @param  cmp the comparator that will be used to order the edges weights
-		 * @return     the newly constructed subtree-merge-findMin data structure
-		 */
-		<E> SubtreeMergeFindMin<E> build(Comparator<? super E> cmp);
-
-		/**
-		 * Build a new subtree-merge-findMin data structure with {@linkplain Comparable natural ordering}.
-		 *
-		 * @param  <E> the edges weights type
-		 * @return     the newly constructed subtree-merge-findMin data structure
-		 */
-		default <E> SubtreeMergeFindMin<E> build() {
-			return build(null);
-		}
-
+		return new SubtreeMergeFindMinImpl<>(cmp);
 	}
 
 }

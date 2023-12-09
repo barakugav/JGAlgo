@@ -36,8 +36,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * For undirected graphs, the closure subsets are simply the weakly connected components.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    <a href="https://en.wikipedia.org/wiki/Closure_problem">Wikipedia</a>
  * @author Barak Ugav
@@ -88,41 +87,12 @@ public interface ClosuresEnumerator {
 	 * Create a new closure enumeration algorithm.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link ClosuresEnumerator} object. The
-	 * {@link ClosuresEnumerator.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link ClosuresEnumerator} object.
 	 *
 	 * @return a default implementation of {@link ClosuresEnumerator}
 	 */
 	static ClosuresEnumerator newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new closure enumeration algo builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link ClosuresEnumerator} objects
-	 */
-	static ClosuresEnumerator.Builder newBuilder() {
-		return ClosuresEnumeratorSchrageBaker::new;
-	}
-
-	/**
-	 * A builder for {@link ClosuresEnumerator} objects.
-	 *
-	 * @see    ClosuresEnumerator#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for closure enumeration.
-		 *
-		 * @return a new closure enumeration algorithm
-		 */
-		ClosuresEnumerator build();
+		return new ClosuresEnumeratorSchrageBaker();
 	}
 
 	/**

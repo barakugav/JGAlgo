@@ -24,8 +24,7 @@ package com.jgalgo.internal.ds;
  * of each elements and addition of some value to all elements of a set using the {@link #addValue(int, double)} method.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * <pre> {@code
  * UnionFindValue uf = UnionFindValue.newInstance();
@@ -92,56 +91,27 @@ public interface UnionFindValue extends UnionFind {
 	 * Create a new union find algorithm with values.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link UnionFindValue} object. The
-	 * {@link UnionFindValue.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link UnionFindValue} object.
 	 *
 	 * @return a default implementation of {@link UnionFindValue}
 	 */
 	static UnionFindValue newInstance() {
-		return newBuilder().build();
+		return new UnionFindValueArray();
 	}
 
 	/**
-	 * Create a new union-find with values data structure builder.
+	 * Create a new union find algorithm with values and expected size.
 	 *
 	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
+	 * This is the recommended way to instantiate a new {@link UnionFindValue} object.
 	 *
-	 * @return a new builder that can build {@link UnionFindValue} objects
+	 * @param  expectedSize expected number of elements in the data structure
+	 * @return              a default implementation of {@link UnionFindValue}
 	 */
-	static UnionFindValue.Builder newBuilder() {
-		return new UnionFindValue.Builder() {
-			int expectedSize;
-
-			@Override
-			public UnionFindValue build() {
-				return new UnionFindValueArray(expectedSize);
-			}
-
-			@Override
-			public UnionFindValue.Builder expectedSize(int expectedSize) {
-				if (expectedSize < 0)
-					throw new IllegalArgumentException("negative expected size: " + expectedSize);
-				this.expectedSize = expectedSize;
-				return this;
-			}
-		};
-	}
-
-	/**
-	 * A builder for {@link UnionFindValue} objects.
-	 *
-	 * @see    UnionFindValue#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends UnionFind.Builder {
-
-		@Override
-		UnionFindValue build();
-
-		@Override
-		UnionFindValue.Builder expectedSize(int expectedSize);
-
+	static UnionFindValue newInstance(int expectedSize) {
+		if (expectedSize < 0)
+			throw new IllegalArgumentException("negative expected size: " + expectedSize);
+		return new UnionFindValueArray(expectedSize);
 	}
 
 }

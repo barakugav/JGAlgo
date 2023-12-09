@@ -40,8 +40,7 @@ import com.jgalgo.graph.WeightFunction;
  * The cardinality (unweighted) global minimum edge-cut is equal to the edge connectivity of a graph.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    <a href="https://en.wikipedia.org/wiki/Minimum_cut">Wikipedia</a>
  * @see    MinimumEdgeCutST
@@ -73,40 +72,11 @@ public interface MinimumEdgeCutGlobal {
 	 * Create a new minimum global edge-cut algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumEdgeCutGlobal} object. The
-	 * {@link MinimumEdgeCutGlobal.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MinimumEdgeCutGlobal} object.
 	 *
 	 * @return a default implementation of {@link MinimumEdgeCutGlobal}
 	 */
 	static MinimumEdgeCutGlobal newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new global minimum edge-cut algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link MinimumEdgeCutGlobal} objects
-	 */
-	static MinimumEdgeCutGlobal.Builder newBuilder() {
-		return MinimumEdgeCutGlobalStoerWagner::new;
-	}
-
-	/**
-	 * A builder for {@link MinimumEdgeCutGlobal} objects.
-	 *
-	 * @see    MinimumEdgeCutGlobal#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for global minimum edge-cut computation.
-		 *
-		 * @return a new minimum edge-cut algorithm
-		 */
-		MinimumEdgeCutGlobal build();
+		return new MinimumEdgeCutGlobalStoerWagner();
 	}
 }

@@ -16,8 +16,6 @@
 
 package com.jgalgo.internal.ds;
 
-import com.jgalgo.alg.AlgorithmBuilderBase;
-
 /**
  * Data structure of a finite set of elements supporting split and find operations.
  *
@@ -33,8 +31,7 @@ import com.jgalgo.alg.AlgorithmBuilderBase;
  * </ul>
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * <pre> {@code
  * SplitFind sf = SplitFind.newInstance();
@@ -86,41 +83,12 @@ interface SplitFind {
 	 * Create a new split-find object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link SplitFind} object. The {@link SplitFind.Builder} might
-	 * support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link SplitFind} object.
 	 *
 	 * @return a default implementation of {@link SplitFind}
 	 */
 	static SplitFind newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new split-find data structure builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link SplitFind} objects
-	 */
-	static SplitFind.Builder newBuilder() {
-		return SplitFindMinArray::new;
-	}
-
-	/**
-	 * A builder for {@link SplitFind} objects.
-	 *
-	 * @see    SplitFind#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new split-find data structure.
-		 *
-		 * @return a new split-find data structure
-		 */
-		SplitFind build();
+		return new SplitFindMinArray<>();
 	}
 
 }

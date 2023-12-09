@@ -34,8 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * This algorithm compute the topological ordering of a given DAG graph in linear time and space.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Topological_sorting">Wikipedia</a>
  * @author Barak Ugav
@@ -125,41 +124,12 @@ public interface TopologicalOrderAlgo {
 	 * Create a new topological order algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link TopologicalOrderAlgo} object. The
-	 * {@link TopologicalOrderAlgo.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link TopologicalOrderAlgo} object.
 	 *
 	 * @return a default implementation of {@link TopologicalOrderAlgo}
 	 */
 	static TopologicalOrderAlgo newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new topological order algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link TopologicalOrderAlgo} objects
-	 */
-	static TopologicalOrderAlgo.Builder newBuilder() {
-		return TopologicalOrderAlgoImpl::new;
-	}
-
-	/**
-	 * A builder for {@link TopologicalOrderAlgo} objects.
-	 *
-	 * @see    TopologicalOrderAlgo#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for topological order computation.
-		 *
-		 * @return a new topological order algorithm
-		 */
-		TopologicalOrderAlgo build();
+		return new TopologicalOrderAlgoImpl();
 	}
 
 }

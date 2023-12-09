@@ -30,6 +30,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * by the path are distinct. Algorithms implementing this interface find all simple paths between a source and a target
  * vertices in a given graph. Note that there may be exponentially many simple paths between two vertices in a graph.
  *
+ * <p>
+ * Use {@link #newInstance()} to get a default implementation of this interface.
+ *
  * @author Barak Ugav
  */
 public interface SimplePathsEnumerator {
@@ -70,41 +73,12 @@ public interface SimplePathsEnumerator {
 	 * Create a new algorithm for simple paths enumeration.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link SimplePathsEnumerator} object. The
-	 * {@link SimplePathsEnumerator.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link SimplePathsEnumerator} object.
 	 *
 	 * @return a default implementation of {@link SimplePathsEnumerator}
 	 */
 	static SimplePathsEnumerator newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new simple paths enumerator algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link SimplePathsEnumerator} objects
-	 */
-	static SimplePathsEnumerator.Builder newBuilder() {
-		return SimplePathsEnumeratorSedgewick::new;
-	}
-
-	/**
-	 * A builder for {@link SimplePathsEnumerator} objects.
-	 *
-	 * @see    SimplePathsEnumerator#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for simple paths computation.
-		 *
-		 * @return a new simple paths enumerator algorithm
-		 */
-		SimplePathsEnumerator build();
+		return new SimplePathsEnumeratorSedgewick();
 	}
 
 }

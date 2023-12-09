@@ -204,7 +204,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		int n = g.vertices().size();
 		int VMaxNum = n * 2; // max super vertex number
 
-		UnionFindValue uf = UnionFindValue.newBuilder().expectedSize(n).build();
+		UnionFindValue uf = UnionFindValue.newInstance(n);
 		int[] ufIdxToV = new int[VMaxNum];
 		for (int v = 0; v < n; v++)
 			ufIdxToV[uf.make()] = v;

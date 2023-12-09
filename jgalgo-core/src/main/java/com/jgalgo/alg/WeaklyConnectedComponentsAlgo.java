@@ -30,8 +30,7 @@ import com.jgalgo.graph.IntGraph;
  * connected components.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    StronglyConnectedComponentsAlgo
  * @author Barak Ugav
@@ -76,42 +75,12 @@ public interface WeaklyConnectedComponentsAlgo {
 	 * Create a new weakly connected components algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link WeaklyConnectedComponentsAlgo} object. The
-	 * {@link WeaklyConnectedComponentsAlgo.Builder} might support different options to obtain different
-	 * implementations.
+	 * This is the recommended way to instantiate a new {@link WeaklyConnectedComponentsAlgo} object.
 	 *
 	 * @return a default implementation of {@link WeaklyConnectedComponentsAlgo}
 	 */
 	static WeaklyConnectedComponentsAlgo newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new weakly connected algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link WeaklyConnectedComponentsAlgo} objects
-	 */
-	static WeaklyConnectedComponentsAlgo.Builder newBuilder() {
-		return WeaklyConnectedComponentsAlgoImpl::new;
-	}
-
-	/**
-	 * A builder for {@link WeaklyConnectedComponentsAlgo} objects.
-	 *
-	 * @see    WeaklyConnectedComponentsAlgo#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for weakly connected components computation.
-		 *
-		 * @return a new connected components algorithm
-		 */
-		WeaklyConnectedComponentsAlgo build();
+		return new WeaklyConnectedComponentsAlgoImpl();
 	}
 
 }

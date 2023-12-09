@@ -31,8 +31,7 @@ import com.jgalgo.graph.WeightFunction;
  * The problem can be solved in polynomial time.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @author Barak Ugav
  */
@@ -58,41 +57,12 @@ public interface ChinesePostman {
 	 * Create a new algorithm object for chinese postman problem.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link ChinesePostman} object. The
-	 * {@link ChinesePostman.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link ChinesePostman} object.
 	 *
 	 * @return a default implementation of {@link ChinesePostman}
 	 */
 	static ChinesePostman newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new builder for chinese postman algorithms.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link ChinesePostman} objects
-	 */
-	static ChinesePostman.Builder newBuilder() {
-		return ChinesePostmanImpl::new;
-	}
-
-	/**
-	 * A builder for {@link ChinesePostman} objects.
-	 *
-	 * @see    ChinesePostman#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for chinese postman problem.
-		 *
-		 * @return a new chinese postman algorithm
-		 */
-		ChinesePostman build();
+		return new ChinesePostmanImpl();
 	}
 
 }

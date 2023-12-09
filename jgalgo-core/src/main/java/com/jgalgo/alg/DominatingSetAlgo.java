@@ -42,8 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * dominating sets.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @author Barak Ugav
  */
@@ -142,41 +141,12 @@ public interface DominatingSetAlgo {
 	 * Create a new dominating set algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link DominatingSetAlgo} object. The
-	 * {@link DominatingSetAlgo.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link DominatingSetAlgo} object.
 	 *
 	 * @return a default implementation of {@link DominatingSetAlgo}
 	 */
 	static DominatingSetAlgo newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new dominating set algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link DominatingSetAlgo} objects
-	 */
-	static DominatingSetAlgo.Builder newBuilder() {
-		return DominatingSetAlgoGreedy::new;
-	}
-
-	/**
-	 * A builder for {@link DominatingSetAlgo} algorithms.
-	 *
-	 * @see    DominatingSetAlgo#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for minimum dominating set computation.
-		 *
-		 * @return a new minimum dominating set algorithm
-		 */
-		DominatingSetAlgo build();
+		return new DominatingSetAlgoGreedy();
 	}
 
 }

@@ -39,8 +39,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * index {@code siteNumber+1} that contains all these vertices.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    ShortestPathSingleSource
  * @see    IVertexPartition
@@ -242,41 +241,12 @@ public interface VoronoiAlgo {
 	 * Create a new Voronoi cells algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link VoronoiAlgo} object. The {@link VoronoiAlgo.Builder}
-	 * might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link VoronoiAlgo} object.
 	 *
 	 * @return a default implementation of {@link VoronoiAlgo}
 	 */
 	static VoronoiAlgo newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new Voronoi cells algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link VoronoiAlgo} objects
-	 */
-	static VoronoiAlgo.Builder newBuilder() {
-		return VoronoiAlgoDijkstra::new;
-	}
-
-	/**
-	 * A builder for {@link VoronoiAlgo} algorithms.
-	 *
-	 * @see    VoronoiAlgo#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for Voronoi cells computation.
-		 *
-		 * @return a new Voronoi cells algorithm
-		 */
-		VoronoiAlgo build();
+		return new VoronoiAlgoDijkstra();
 	}
 
 }

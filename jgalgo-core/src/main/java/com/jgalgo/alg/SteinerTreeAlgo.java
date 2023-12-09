@@ -45,8 +45,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
  * do not guarantee to find the optimal solution, only a solution with bounded approximation factor.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Steiner_tree_problem">Wikipedia</a>
  * @see    MinimumSpanningTree
@@ -207,41 +206,12 @@ public interface SteinerTreeAlgo {
 	 * Create a new Steiner tree algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link SteinerTreeAlgo} object. The
-	 * {@link SteinerTreeAlgo.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link SteinerTreeAlgo} object.
 	 *
 	 * @return a default implementation of {@link SteinerTreeAlgo}
 	 */
 	static SteinerTreeAlgo newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new Steiner tree algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link SteinerTreeAlgo} objects
-	 */
-	static SteinerTreeAlgo.Builder newBuilder() {
-		return SteinerTreeMehlhorn::new;
-	}
-
-	/**
-	 * A builder for {@link SteinerTreeAlgo} objects.
-	 *
-	 * @see    SteinerTreeAlgo#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for Steiner tree computation.
-		 *
-		 * @return a new Steiner tree algorithm
-		 */
-		SteinerTreeAlgo build();
+		return new SteinerTreeMehlhorn();
 	}
 
 }

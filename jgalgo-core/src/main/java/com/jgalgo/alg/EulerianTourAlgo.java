@@ -41,8 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  * \(t\) exists.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    <a href="https://en.wikipedia.org/wiki/Eulerian_path">Wikipedia</a>
  * @author Barak Ugav
@@ -178,41 +177,12 @@ public interface EulerianTourAlgo {
 	 * Create a new Eulerian tour computation algorithm.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link EulerianTourAlgo} object. The
-	 * {@link EulerianTourAlgo.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link EulerianTourAlgo} object.
 	 *
 	 * @return a default implementation of {@link EulerianTourAlgo}
 	 */
 	static EulerianTourAlgo newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new Eulerian tour algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link EulerianTourAlgo} objects
-	 */
-	static EulerianTourAlgo.Builder newBuilder() {
-		return EulerianTourImpl::new;
-	}
-
-	/**
-	 * A builder for {@link EulerianTourAlgo} objects.
-	 *
-	 * @see    EulerianTourAlgo#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for Eulerian tours computation.
-		 *
-		 * @return a new Eulerian tour algorithm
-		 */
-		EulerianTourAlgo build();
+		return new EulerianTourImpl();
 	}
 
 }

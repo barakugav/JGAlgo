@@ -38,8 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * For k-edge connected components, see {@link KEdgeConnectedComponentsAlgo}.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    <a href="https://en.wikipedia.org/wiki/K-vertex-connected_graph">Wikipedia</a>
  * @see    StronglyConnectedComponentsAlgo
@@ -128,42 +127,12 @@ public interface KVertexConnectedComponentsAlgo {
 	 * Create a new k-connected components algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link KVertexConnectedComponentsAlgo} object. The
-	 * {@link KVertexConnectedComponentsAlgo.Builder} might support different options to obtain different
-	 * implementations.
+	 * This is the recommended way to instantiate a new {@link KVertexConnectedComponentsAlgo} object. implementations.
 	 *
 	 * @return a default implementation of {@link KVertexConnectedComponentsAlgo}
 	 */
 	static KVertexConnectedComponentsAlgo newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new k-connected components algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link KVertexConnectedComponentsAlgo} objects
-	 */
-	static KVertexConnectedComponentsAlgo.Builder newBuilder() {
-		return KVertexConnectedComponentsWhiteMoody::new;
-	}
-
-	/**
-	 * A builder for {@link KVertexConnectedComponentsAlgo} objects.
-	 *
-	 * @see    KVertexConnectedComponentsAlgo#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for k-connected components computation.
-		 *
-		 * @return a new k-connected components algorithm
-		 */
-		KVertexConnectedComponentsAlgo build();
+		return new KVertexConnectedComponentsWhiteMoody();
 	}
 
 }

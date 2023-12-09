@@ -48,8 +48,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * edge-cut between \(u\) and \(v\) and the minimum edge-cut between \(v\) and \(u\).
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    <a href="https://en.wikipedia.org/wiki/Minimum_cut">Wikipedia</a>
  * @see    MinimumEdgeCutST
@@ -109,41 +108,12 @@ public interface MinimumEdgeCutAllST {
 	 * Create a new minimum S-T all edge-cuts algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumEdgeCutAllST} object. The
-	 * {@link MinimumEdgeCutAllST.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MinimumEdgeCutAllST} object.
 	 *
 	 * @return a default implementation of {@link MinimumEdgeCutAllST}
 	 */
 	static MinimumEdgeCutAllST newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new minimum all edge-cuts algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link MinimumEdgeCutAllST} objects
-	 */
-	static MinimumEdgeCutAllST.Builder newBuilder() {
-		return MinimumEdgeCutAllSTPicardQueyranne::new;
-	}
-
-	/**
-	 * A builder for {@link MinimumEdgeCutAllST} objects.
-	 *
-	 * @see    MinimumEdgeCutAllST#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for minimum all edge-cuts computation.
-		 *
-		 * @return a new minimum all edge-cuts algorithm
-		 */
-		MinimumEdgeCutAllST build();
+		return new MinimumEdgeCutAllSTPicardQueyranne();
 	}
 
 }

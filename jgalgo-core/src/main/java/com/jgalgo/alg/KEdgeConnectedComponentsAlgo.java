@@ -40,8 +40,7 @@ import com.jgalgo.graph.IntGraph;
  * For k-vertex connected components, see {@link KVertexConnectedComponentsAlgo}.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/K-edge-connected_graph">Wikipedia</a>
  * @see    KVertexConnectedComponentsAlgo
@@ -73,41 +72,12 @@ public interface KEdgeConnectedComponentsAlgo {
 	 * Create a new k-edge connected components algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link KEdgeConnectedComponentsAlgo} object. The
-	 * {@link KEdgeConnectedComponentsAlgo.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link KEdgeConnectedComponentsAlgo} object.
 	 *
 	 * @return a default implementation of {@link KEdgeConnectedComponentsAlgo}
 	 */
 	static KEdgeConnectedComponentsAlgo newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new k-edge connected components algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link KEdgeConnectedComponentsAlgo} objects
-	 */
-	static KEdgeConnectedComponentsAlgo.Builder newBuilder() {
-		return KEdgeConnectedComponentsWang::new;
-	}
-
-	/**
-	 * A builder for {@link KEdgeConnectedComponentsAlgo} objects.
-	 *
-	 * @see    KEdgeConnectedComponentsAlgo#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for k-edge connected components computation.
-		 *
-		 * @return a new k-edge connected components algorithm
-		 */
-		KEdgeConnectedComponentsAlgo build();
+		return new KEdgeConnectedComponentsWang();
 	}
 
 }

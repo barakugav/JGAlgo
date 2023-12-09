@@ -47,8 +47,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * minimum vertex-cut between \(u\) and \(v\) and the minimum vertex-cut between \(v\) and \(u\).
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    MinimumVertexCutGlobal
  * @see    MinimumVertexCutAllST
@@ -89,41 +88,12 @@ public interface MinimumVertexCutST {
 	 * Create a new minimum S-T vertex-cut algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumVertexCutST} object. The
-	 * {@link MinimumVertexCutST.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MinimumVertexCutST} object.
 	 *
 	 * @return a default implementation of {@link MinimumVertexCutST}
 	 */
 	static MinimumVertexCutST newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new minimum vertex-cut algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link MinimumVertexCutST} objects
-	 */
-	static MinimumVertexCutST.Builder newBuilder() {
-		return MinimumVertexCutSTEdgeCut::new;
-	}
-
-	/**
-	 * A builder for {@link MinimumVertexCutST} objects.
-	 *
-	 * @see    MinimumVertexCutST#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for minimum vertex-cut computation.
-		 *
-		 * @return a new minimum vertex-cut algorithm
-		 */
-		MinimumVertexCutST build();
+		return new MinimumVertexCutSTEdgeCut();
 	}
 
 }

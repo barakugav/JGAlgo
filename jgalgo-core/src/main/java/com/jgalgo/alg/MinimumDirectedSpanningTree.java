@@ -31,8 +31,7 @@ import com.jgalgo.graph.WeightFunction;
  * result spanning tree will span only the vertices reachable from the root with a single tree, and not a forest.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @author Barak Ugav
  */
@@ -64,41 +63,12 @@ public interface MinimumDirectedSpanningTree {
 	 * Create a new directed-MST algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumDirectedSpanningTree} object. The
-	 * {@link MinimumDirectedSpanningTree.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MinimumDirectedSpanningTree} object.
 	 *
 	 * @return a default implementation of {@link MinimumDirectedSpanningTree}
 	 */
 	static MinimumDirectedSpanningTree newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new minimum directed spanning tree algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link MinimumDirectedSpanningTree} objects
-	 */
-	static MinimumDirectedSpanningTree.Builder newBuilder() {
-		return MinimumDirectedSpanningTreeTarjan::new;
-	}
-
-	/**
-	 * A builder for {@link MinimumDirectedSpanningTree} objects.
-	 *
-	 * @see    MinimumDirectedSpanningTree#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for minimum directed spanning tree computation.
-		 *
-		 * @return a new minimum directed spanning tree algorithm
-		 */
-		MinimumDirectedSpanningTree build();
+		return new MinimumDirectedSpanningTreeTarjan();
 	}
 
 }

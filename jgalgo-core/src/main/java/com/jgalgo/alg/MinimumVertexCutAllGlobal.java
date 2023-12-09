@@ -49,8 +49,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * The cardinality (unweighted) global minimum vertex-cut is equal to the vertex connectivity of a graph.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    MinimumVertexCutGlobal
  * @see    MinimumVertexCutAllST
@@ -103,41 +102,12 @@ public interface MinimumVertexCutAllGlobal {
 	 * Create a new global minimum all vertex-cuts algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumVertexCutAllGlobal} object. The
-	 * {@link MinimumVertexCutAllGlobal.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MinimumVertexCutAllGlobal} object.
 	 *
 	 * @return a default implementation of {@link MinimumVertexCutAllGlobal}
 	 */
 	static MinimumVertexCutAllGlobal newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new global minimum all vertex-cuts algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link MinimumVertexCutAllGlobal} objects
-	 */
-	static MinimumVertexCutAllGlobal.Builder newBuilder() {
-		return MinimumVertexCutAllGlobalKanevsky::new;
-	}
-
-	/**
-	 * A builder for {@link MinimumVertexCutAllGlobal} objects.
-	 *
-	 * @see    MinimumVertexCutAllGlobal#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for global minimum all vertex-cuts computation.
-		 *
-		 * @return a new minimum vertex-cut algorithm
-		 */
-		MinimumVertexCutAllGlobal build();
+		return new MinimumVertexCutAllGlobalKanevsky();
 	}
 
 }

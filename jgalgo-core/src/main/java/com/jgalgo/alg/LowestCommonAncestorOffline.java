@@ -30,8 +30,7 @@ import com.jgalgo.graph.IntGraph;
  * problem.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    LowestCommonAncestorStatic
  * @see    LowestCommonAncestorDynamic
@@ -271,41 +270,12 @@ public interface LowestCommonAncestorOffline {
 	 * Create a new offline LCA algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorOffline} object. The
-	 * {@link LowestCommonAncestorOffline.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link LowestCommonAncestorOffline} object.
 	 *
 	 * @return a default implementation of {@link LowestCommonAncestorOffline}
 	 */
 	static LowestCommonAncestorOffline newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new offline LCA algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link LowestCommonAncestorOffline} objects
-	 */
-	static LowestCommonAncestorOffline.Builder newBuilder() {
-		return LowestCommonAncestorOfflineUnionFind::new;
-	}
-
-	/**
-	 * A builder for {@link LowestCommonAncestorOffline} objects.
-	 *
-	 * @see    LowestCommonAncestorOffline#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for offline LCA computation.
-		 *
-		 * @return a new offline LCA algorithm
-		 */
-		LowestCommonAncestorOffline build();
+		return new LowestCommonAncestorOfflineUnionFind();
 	}
 
 }

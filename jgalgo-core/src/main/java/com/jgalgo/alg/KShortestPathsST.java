@@ -31,8 +31,7 @@ import com.jgalgo.graph.WeightFunction;
  * multiple paths, and not just one.
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    ShortestPathST
  * @see    ShortestPathSingleSource
@@ -63,41 +62,12 @@ public interface KShortestPathsST {
 	 * Create a new K shortest paths algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link KShortestPathsST} object. The
-	 * {@link KShortestPathsST.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link KShortestPathsST} object.
 	 *
 	 * @return a default implementation of {@link KShortestPathsST}
 	 */
 	static KShortestPathsST newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new K shortest paths algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link KShortestPathsST} objects
-	 */
-	static KShortestPathsST.Builder newBuilder() {
-		return KShortestPathsSTYen::new;
-	}
-
-	/**
-	 * A builder for {@link KShortestPathsST} objects.
-	 *
-	 * @see    KShortestPathsST#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for K shortest paths computation.
-		 *
-		 * @return a new K shortest paths algorithm
-		 */
-		KShortestPathsST build();
+		return new KShortestPathsSTYen();
 	}
 
 }

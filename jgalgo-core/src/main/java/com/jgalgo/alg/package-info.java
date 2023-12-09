@@ -23,14 +23,14 @@
  * {@link com.jgalgo.alg.ShortestPathSingleSource}), a result object is defined within the interface (e.g.
  * {@link com.jgalgo.alg.ShortestPathSingleSource.Result}), a default implementation is provided via
  * {@code newInstance()} method (e.g. {@link com.jgalgo.alg.ShortestPathSingleSource#newInstance()}), and a builder that
- * allow more control over the algorithm is provided via {@code newBuilder()} method (e.g.
+ * allow more control over the algorithm may be provided via {@code newBuilder()} method (e.g.
  * {@link com.jgalgo.alg.ShortestPathSingleSource#newBuilder()}). In addition, algorithm interfaces define a result
- * specifically for graphs in which the vertices and edges are integer only, {@link com.jgalgo.graph.IntGraph} (e.g.
- * {@link com.jgalgo.alg.ShortestPathSingleSource.IResult}). For the most common use case, there is no need to use
- * {@link com.jgalgo.graph.IntGraph} and the result objects that are specific to it.
+ * object specifically for {@linkplain com.jgalgo.graph.IntGraph int graphs} in which the vertices and edges are integer
+ * only (e.g. {@link com.jgalgo.alg.ShortestPathSingleSource.IResult}). In the common use case, there is no need to use
+ * {@link com.jgalgo.graph.IntGraph} and the result objects that are specific for it.
  *
  * <p>
- * Non of the algorithms or result objects in this package are thread safe. Result objects should not be used once the
+ * None of the algorithms or result objects in this package are thread safe. Result objects should not be used once the
  * graph on which the result was computed is modified, as the result object may relay on the graph for information and
  * may not be able to detect the modification.
  *

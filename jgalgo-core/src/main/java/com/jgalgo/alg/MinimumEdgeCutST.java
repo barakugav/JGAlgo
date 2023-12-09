@@ -47,8 +47,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  * edge-cut between \(u\) and \(v\) and the minimum edge-cut between \(v\) and \(u\).
  *
  * <p>
- * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * Use {@link #newInstance()} to get a default implementation of this interface.
  *
  * @see    <a href="https://en.wikipedia.org/wiki/Minimum_cut">Wikipedia</a>
  * @see    MinimumEdgeCutGlobal
@@ -108,25 +107,12 @@ public interface MinimumEdgeCutST {
 	 * Create a new minimum S-T edge-cut algorithm object.
 	 *
 	 * <p>
-	 * This is the recommended way to instantiate a new {@link MinimumEdgeCutST} object. The
-	 * {@link MinimumEdgeCutST.Builder} might support different options to obtain different implementations.
+	 * This is the recommended way to instantiate a new {@link MinimumEdgeCutST} object.
 	 *
 	 * @return a default implementation of {@link MinimumEdgeCutST}
 	 */
 	static MinimumEdgeCutST newInstance() {
-		return newBuilder().build();
-	}
-
-	/**
-	 * Create a new minimum edge-cut algorithm builder.
-	 *
-	 * <p>
-	 * Use {@link #newInstance()} for a default implementation.
-	 *
-	 * @return a new builder that can build {@link MinimumEdgeCutST} objects
-	 */
-	static MinimumEdgeCutST.Builder newBuilder() {
-		return MaximumFlowPushRelabel::newInstanceHighestFirst;
+		return MaximumFlowPushRelabel.newInstanceHighestFirst();
 	}
 
 	/**
@@ -141,22 +127,6 @@ public interface MinimumEdgeCutST {
 	 */
 	static MinimumEdgeCutST newFromMaximumFlow(MaximumFlow maxFlowAlg) {
 		return MinimumEdgeCutUtils.buildFromMaxFlow(maxFlowAlg);
-	}
-
-	/**
-	 * A builder for {@link MinimumEdgeCutST} objects.
-	 *
-	 * @see    MinimumEdgeCutST#newBuilder()
-	 * @author Barak Ugav
-	 */
-	static interface Builder extends AlgorithmBuilderBase {
-
-		/**
-		 * Create a new algorithm object for minimum edge-cut computation.
-		 *
-		 * @return a new minimum edge-cut algorithm
-		 */
-		MinimumEdgeCutST build();
 	}
 
 }

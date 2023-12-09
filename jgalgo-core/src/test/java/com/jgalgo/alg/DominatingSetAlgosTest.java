@@ -46,12 +46,6 @@ public class DominatingSetAlgosTest extends TestBase {
 	}
 
 	@Test
-	public void testBuilderOptions() {
-		assertThrows(IllegalArgumentException.class,
-				() -> DominatingSetAlgo.newBuilder().setOption("unknown option", "value"));
-	}
-
-	@Test
 	public void testNewInstance() {
 		assertNotNull(DominatingSetAlgo.newInstance());
 	}
