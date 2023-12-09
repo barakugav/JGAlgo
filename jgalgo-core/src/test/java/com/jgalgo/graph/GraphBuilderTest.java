@@ -37,8 +37,8 @@ public class GraphBuilderTest extends TestBase {
 
 	@Test
 	public void isDirected() {
-		assertTrue(GraphBuilder.newDirected().isDirected());
-		assertFalse(GraphBuilder.newUndirected().isDirected());
+		assertTrue(GraphBuilder.directed().isDirected());
+		assertFalse(GraphBuilder.undirected().isDirected());
 	}
 
 	@Test

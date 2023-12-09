@@ -70,7 +70,7 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 		for (int u = 0; u < n; u++)
 			if (degree[u] % 2 != 0)
 				mVtoV[mGn++] = u;
-		IndexGraphBuilder mG0 = IndexGraphBuilder.newUndirected();
+		IndexGraphBuilder mG0 = IndexGraphBuilder.undirected();
 		mG0.expectedVerticesNum(mGn);
 		mG0.expectedEdgesNum(mGn * (mGn - 1) / 2);
 		for (int v = 0; v < mGn; v++)
@@ -90,7 +90,7 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(mG, mGWeights);
 
 		/* Build a graph of the union of the MST and the matching result */
-		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();
+		IndexGraphBuilder g1Builder = IndexGraphBuilder.undirected();
 		g1Builder.expectedVerticesNum(n);
 		g1Builder.expectedEdgesNum(mst.size() + matching.edges().size());
 		for (int v = 0; v < n; v++)

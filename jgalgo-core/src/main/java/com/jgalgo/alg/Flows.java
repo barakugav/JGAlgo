@@ -209,7 +209,7 @@ class Flows {
 
 			Builder(IndexGraph gOrig) {
 				this.gOrig = Objects.requireNonNull(gOrig);
-				gBuilder = IndexGraphBuilder.newDirected();
+				gBuilder = IndexGraphBuilder.directed();
 				edgeRef = new IntArrayList(gOrig.edges().size() * 2);
 				twin = new IntArrayList(gOrig.edges().size() * 2);
 			}

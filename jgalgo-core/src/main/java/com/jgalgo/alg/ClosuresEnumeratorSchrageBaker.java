@@ -58,7 +58,7 @@ class ClosuresEnumeratorSchrageBaker extends ClosuresEnumerators.AbstractImpl {
 			if (g.isAllowSelfEdges()) {
 				int selfEdges = Graphs.selfEdges(g).size();
 				if (selfEdges > 0) {
-					IndexGraphBuilder g0 = IndexGraphBuilder.newDirected();
+					IndexGraphBuilder g0 = IndexGraphBuilder.directed();
 					g0.expectedVerticesNum(n);
 					g0.expectedEdgesNum(g.edges().size() - selfEdges);
 					for (int u = 0; u < n; u++)
@@ -74,7 +74,7 @@ class ClosuresEnumeratorSchrageBaker extends ClosuresEnumerators.AbstractImpl {
 		}
 
 		/* Build the condensation graph */
-		IndexGraphBuilder sccGraph0 = IndexGraphBuilder.newDirected();
+		IndexGraphBuilder sccGraph0 = IndexGraphBuilder.directed();
 		sccGraph0.expectedVerticesNum(sccNum);
 		for (int b = 0; b < sccNum; b++)
 			sccGraph0.addVertex();

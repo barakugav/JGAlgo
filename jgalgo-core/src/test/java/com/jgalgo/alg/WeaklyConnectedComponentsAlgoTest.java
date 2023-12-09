@@ -42,7 +42,7 @@ public class WeaklyConnectedComponentsAlgoTest extends TestBase {
 					WeaklyConnectedComponentsAlgo.newInstance().findWeaklyConnectedComponents(g);
 
 			/* create a undirected copy of the original directed graph */
-			GraphBuilder<Integer, Integer> gb = GraphBuilder.newUndirected();
+			GraphBuilder<Integer, Integer> gb = GraphBuilder.undirected();
 			for (Integer u : g.vertices())
 				gb.addVertex(u);
 			for (Integer e : g.edges())

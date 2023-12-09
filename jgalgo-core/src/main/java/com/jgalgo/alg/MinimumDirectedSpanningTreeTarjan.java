@@ -84,7 +84,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 
 		} else {
 			/* not all vertices are reachable from the root, operate on the subgraph of these vertices */
-			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
+			IndexGraphBuilder builder = IndexGraphBuilder.directed();
 
 			builder.expectedVerticesNum(vertices.size());
 			int[] vRefToOrig = vertices.toIntArray();

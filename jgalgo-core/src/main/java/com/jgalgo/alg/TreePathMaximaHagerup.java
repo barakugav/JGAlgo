@@ -265,7 +265,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			IntArrayList parents = new IntArrayList();
 			IntArrayList depths = new IntArrayList();
 
-			IndexGraphBuilder treeBuilder = IndexGraphBuilder.newUndirected();
+			IndexGraphBuilder treeBuilder = IndexGraphBuilder.undirected();
 			treeBuilder.expectedVerticesNum(2 * n);
 			treeBuilder.expectedEdgesNum(2 * n);
 			int[] edgeRef = IntArrays.EMPTY_ARRAY;

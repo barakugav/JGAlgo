@@ -173,7 +173,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 		removedVertices.or(reverseReachableFromSink);
 
 		/* Build the residual network of the graph */
-		IndexGraphBuilder residual0 = IndexGraphBuilder.newDirected();
+		IndexGraphBuilder residual0 = IndexGraphBuilder.directed();
 		residual0.expectedVerticesNum(n);
 		int[] vToResV = new int[n];
 		int[] resVToV = new int[n];

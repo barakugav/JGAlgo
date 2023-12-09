@@ -453,7 +453,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		}
 
 		/* build the residual graph */
-		GraphBuilder<V, Integer> b = GraphBuilder.newDirected();
+		GraphBuilder<V, Integer> b = GraphBuilder.directed();
 		Supplier<Integer> edgeSupplier = () -> Integer.valueOf(b.edges().size());
 		for (V v : g.vertices())
 			b.addVertex(v);

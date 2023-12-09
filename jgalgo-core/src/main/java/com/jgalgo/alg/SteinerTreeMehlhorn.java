@@ -74,7 +74,7 @@ class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 		 * terminal nodes (s,t) is the minimum edge {d(s,u),(u,v),(v,t)} where u is in the cell of s and v is in the
 		 * cell of t.
 		 */
-		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();
+		IndexGraphBuilder g1Builder = IndexGraphBuilder.undirected();
 		g1Builder.expectedVerticesNum(terminalNum);
 		for (int t = 0; t < terminalNum; t++)
 			g1Builder.addVertex();

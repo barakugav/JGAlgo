@@ -77,7 +77,7 @@ public class ChinesePostmanTest extends TestBase {
 		double bestWeight = Double.POSITIVE_INFINITY;
 		List<E> es = new ArrayList<>(g.edges());
 		for (int bitmap = 0; bitmap < 1 << m; bitmap++) {
-			GraphBuilder<V, Integer> b = GraphBuilder.newUndirected();
+			GraphBuilder<V, Integer> b = GraphBuilder.undirected();
 			for (V v : g.vertices())
 				b.addVertex(v);
 			WeightsInt<Integer> bWeights = b.addEdgesWeights("weights", int.class);

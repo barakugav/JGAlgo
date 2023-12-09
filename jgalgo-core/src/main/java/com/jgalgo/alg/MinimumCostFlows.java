@@ -362,7 +362,7 @@ class MinimumCostFlows {
 			final boolean integerFlow = WeightFunction.isInteger(capacityOrig);
 			final boolean integerCost = WeightFunction.isInteger(costOrig);
 
-			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
+			IndexGraphBuilder builder = IndexGraphBuilder.directed();
 			builder.expectedVerticesNum(gOrig.vertices().size() + 2);
 			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size());
 
@@ -473,7 +473,7 @@ class MinimumCostFlows {
 			/* For each edge with lower bound add/remove supply to the edge endpoints */
 			IWeightFunction supply = computeSupply(gOrig, capacityOrig, lowerBound, null);
 
-			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
+			IndexGraphBuilder builder = IndexGraphBuilder.directed();
 			builder.expectedVerticesNum(gOrig.vertices().size() + 2);
 			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size() + gOrig.vertices().size());
 
@@ -644,7 +644,7 @@ class MinimumCostFlows {
 			 * with capacity equal to the supply.
 			 */
 
-			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
+			IndexGraphBuilder builder = IndexGraphBuilder.directed();
 			builder.expectedVerticesNum(gOrig.vertices().size() + 2);
 			builder.expectedEdgesNum(gOrig.edges().size() + gOrig.vertices().size());
 
@@ -762,7 +762,7 @@ class MinimumCostFlows {
 					WeightFunction.isInteger(capacityOrig) && WeightFunction.isInteger(lowerBoundOrig);
 			final boolean integerCost = WeightFunction.isInteger(costOrig);
 
-			IndexGraphBuilder builder = IndexGraphBuilder.newDirected();
+			IndexGraphBuilder builder = IndexGraphBuilder.directed();
 			builder.expectedVerticesNum(gOrig.vertices().size() + 2);
 			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size() + 2);
 

@@ -26,8 +26,8 @@ import java.util.Optional;
  * is required to create immutable graphs, but can also be used to build mutable graph and may gain a performance boost
  * compared to creating an empty graph and adding the same vertices and edges.
  *
- * @see    IndexGraphBuilder#newUndirected()
- * @see    IndexGraphBuilder#newDirected()
+ * @see    IndexGraphBuilder#undirected()
+ * @see    IndexGraphBuilder#directed()
  * @see    IntGraphBuilder
  * @see    IndexGraphFactory
  * @author Barak Ugav
@@ -241,7 +241,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *
 	 * @return a new empty builder for undirected graphs
 	 */
-	static IndexGraphBuilder newUndirected() {
+	static IndexGraphBuilder undirected() {
 		return IndexGraphFactory.undirected().newBuilder();
 	}
 
@@ -255,7 +255,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *
 	 * @return a new empty builder for directed graphs
 	 */
-	static IndexGraphBuilder newDirected() {
+	static IndexGraphBuilder directed() {
 		return IndexGraphFactory.directed().newBuilder();
 	}
 

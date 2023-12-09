@@ -28,8 +28,8 @@ import java.util.Set;
  *
  * @param  <V> the vertices type
  * @param  <E> the edges type
- * @see        GraphBuilder#newUndirected()
- * @see        GraphBuilder#newDirected()
+ * @see        GraphBuilder#undirected()
+ * @see        GraphBuilder#directed()
  * @see        GraphFactory
  * @author     Barak Ugav
  */
@@ -240,7 +240,7 @@ public interface GraphBuilder<V, E> {
 	 * @param  <E> the edges type
 	 * @return     a new empty builder for undirected graphs
 	 */
-	static <V, E> GraphBuilder<V, E> newUndirected() {
+	static <V, E> GraphBuilder<V, E> undirected() {
 		return GraphFactory.<V, E>undirected().newBuilder();
 	}
 
@@ -255,7 +255,7 @@ public interface GraphBuilder<V, E> {
 	 * @param  <E> the edges type
 	 * @return     a new empty builder for directed graphs
 	 */
-	static <V, E> GraphBuilder<V, E> newDirected() {
+	static <V, E> GraphBuilder<V, E> directed() {
 		return GraphFactory.<V, E>directed().newBuilder();
 	}
 

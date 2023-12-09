@@ -1069,7 +1069,7 @@ public class GraphBench {
 				final boolean allowSelfEdges = true;
 				setup(args, g -> {
 					assert g.isDirected() == directed;
-					IndexGraphBuilder g1 = IndexGraphBuilder.newDirected();
+					IndexGraphBuilder g1 = IndexGraphBuilder.directed();
 					for (int n = g.vertices().size(), v = 0; v < n; v++)
 						g1.addVertex();
 					for (int m = g.edges().size(), e = 0; e < m; e++)
@@ -1164,7 +1164,7 @@ public class GraphBench {
 				final boolean allowSelfEdges = true;
 				setup(args, g -> {
 					assert g.isDirected() == directed;
-					IndexGraphBuilder g1 = IndexGraphBuilder.newUndirected();
+					IndexGraphBuilder g1 = IndexGraphBuilder.undirected();
 					for (int n = g.vertices().size(), v = 0; v < n; v++)
 						g1.addVertex();
 					for (int m = g.edges().size(), e = 0; e < m; e++)
@@ -1259,7 +1259,7 @@ public class GraphBench {
 				final boolean allowSelfEdges = true;
 				setup(args, g -> {
 					assert g.isDirected() == directed;
-					IndexGraphBuilder g1 = IndexGraphBuilder.newDirected();
+					IndexGraphBuilder g1 = IndexGraphBuilder.directed();
 					for (int n = g.vertices().size(), v = 0; v < n; v++)
 						g1.addVertex();
 					for (int m = g.edges().size(), e = 0; e < m; e++)

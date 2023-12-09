@@ -62,7 +62,7 @@ class ChinesePostmanImpl implements ChinesePostman {
 		assert oddVertices.length % 2 == 0;
 
 		/* Create a complete graph of the odd vertices, with edges weighted by the shortest paths between each pair */
-		IndexGraphBuilder oddGraph0 = IndexGraphBuilder.newUndirected();
+		IndexGraphBuilder oddGraph0 = IndexGraphBuilder.undirected();
 		oddGraph0.expectedVerticesNum(oddVertices.length);
 		oddGraph0.expectedEdgesNum(oddVertices.length * (oddVertices.length - 1) / 2);
 		for (int n = oddVertices.length, v = 0; v < n; v++)
@@ -82,7 +82,7 @@ class ChinesePostmanImpl implements ChinesePostman {
 		IMatching oddMatching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(oddGraph, oddW);
 
 		/* Create a graph with the original vertices and edges, and add edges resulted from the perfect matching */
-		IndexGraphBuilder b = IndexGraphBuilder.newUndirected();
+		IndexGraphBuilder b = IndexGraphBuilder.undirected();
 		b.expectedVerticesNum(g.vertices().size());
 		b.expectedEdgesNum(g.edges().size() + oddMatching.edges().size());
 		for (int n = g.vertices().size(), v = 0; v < n; v++)

@@ -80,7 +80,7 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 			throw new IllegalArgumentException("number of rounds must be positive");
 		Res mstRes = computeMST(g, w, numberOfRounds);
 
-		IndexGraphBuilder contractedGBuilder = IndexGraphBuilder.newUndirected();
+		IndexGraphBuilder contractedGBuilder = IndexGraphBuilder.undirected();
 		contractedGBuilder.expectedVerticesNum(mstRes.treeNum);
 		for (int v = 0; v < mstRes.treeNum; v++) {
 			int vBuilder = contractedGBuilder.addVertex();

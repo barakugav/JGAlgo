@@ -114,7 +114,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 
 	static Pair<IndexGraph, int[]> subGraph(IndexGraph g, IntCollection edgeSet, int[] edgeRef) {
 		final int n = g.vertices().size();
-		IndexGraphBuilder subBuilder = IndexGraphBuilder.newUndirected();
+		IndexGraphBuilder subBuilder = IndexGraphBuilder.undirected();
 		subBuilder.expectedVerticesNum(n);
 		subBuilder.expectedEdgesNum(edgeSet.size());
 		for (int v = 0; v < n; v++) {

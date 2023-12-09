@@ -182,7 +182,7 @@ class CyclesEnumeratorJohnson extends CyclesEnumeratorAbstract {
 				int subToFull = startV;
 				int nSub = nFull - subToFull;
 
-				IndexGraphBuilder gSubBuilder = IndexGraphBuilder.newDirected();
+				IndexGraphBuilder gSubBuilder = IndexGraphBuilder.directed();
 				gSubBuilder.expectedVerticesNum(nSub);
 				for (int uSubIdx = 0; uSubIdx < nSub; uSubIdx++) {
 					int uIdx = gSubBuilder.addVertex();

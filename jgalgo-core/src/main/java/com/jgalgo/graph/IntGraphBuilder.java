@@ -29,8 +29,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * <p>
  * This interface is a specific version of {@link GraphBuilder} for {@link IntGraph}.
  *
- * @see    IntGraphBuilder#newUndirected()
- * @see    IntGraphBuilder#newDirected()
+ * @see    IntGraphBuilder#undirected()
+ * @see    IntGraphBuilder#directed()
  * @see    IndexGraphBuilder
  * @see    IntGraphFactory
  * @author Barak Ugav
@@ -160,7 +160,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 *
 	 * @return a new empty builder for undirected graphs
 	 */
-	static IntGraphBuilder newUndirected() {
+	static IntGraphBuilder undirected() {
 		return IntGraphFactory.undirected().newBuilder();
 	}
 
@@ -173,7 +173,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 *
 	 * @return a new empty builder for directed graphs
 	 */
-	static IntGraphBuilder newDirected() {
+	static IntGraphBuilder directed() {
 		return IntGraphFactory.directed().newBuilder();
 	}
 

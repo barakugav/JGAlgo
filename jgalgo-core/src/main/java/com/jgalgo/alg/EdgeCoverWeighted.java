@@ -36,7 +36,7 @@ class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 
-		IndexGraphBuilder gb = IndexGraphBuilder.newUndirected();
+		IndexGraphBuilder gb = IndexGraphBuilder.undirected();
 		gb.expectedVerticesNum(n * 2);
 		gb.expectedEdgesNum(m * 2 + n);
 		for (int v = 0; v < n; v++) {

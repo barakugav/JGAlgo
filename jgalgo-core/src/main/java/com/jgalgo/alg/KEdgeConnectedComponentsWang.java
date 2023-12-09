@@ -51,7 +51,7 @@ class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.Abstrac
 		if (n == 0)
 			return new VertexPartitions.Impl(g, 0, IntArrays.DEFAULT_EMPTY_ARRAY);
 
-		IndexGraphBuilder auxGraph = IndexGraphBuilder.newUndirected();
+		IndexGraphBuilder auxGraph = IndexGraphBuilder.undirected();
 		auxGraph.expectedVerticesNum(n);
 		auxGraph.expectedEdgesNum(n - 1);
 		int[] auxWeights = new int[n - 1];

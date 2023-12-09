@@ -62,7 +62,7 @@ public class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 	@Override
 	public IntGraphBuilder readIntoBuilderImpl(Reader reader) throws IOException {
 		BufferedReader br = GraphIoUtils.bufferedReader(reader);
-		IntGraphBuilder g = IntGraphBuilder.newUndirected();
+		IntGraphBuilder g = IntGraphBuilder.undirected();
 
 		String line = br.readLine();
 		if (line == null)

@@ -37,8 +37,8 @@ public class IndexGraphBuilderTest extends TestBase {
 
 	@Test
 	public void isDirected() {
-		assertTrue(IndexGraphBuilder.newDirected().isDirected());
-		assertFalse(IndexGraphBuilder.newUndirected().isDirected());
+		assertTrue(IndexGraphBuilder.directed().isDirected());
+		assertFalse(IndexGraphBuilder.undirected().isDirected());
 	}
 
 	@Test

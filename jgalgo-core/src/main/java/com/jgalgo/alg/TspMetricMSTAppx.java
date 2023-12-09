@@ -66,7 +66,7 @@ public class TspMetricMSTAppx extends TspMetricUtils.AbstractImpl {
 			throw new IllegalArgumentException("graph is not connected");
 
 		/* Build a graph with each MST edge duplicated */
-		IndexGraphBuilder g1Builder = IndexGraphBuilder.newUndirected();
+		IndexGraphBuilder g1Builder = IndexGraphBuilder.undirected();
 		g1Builder.expectedVerticesNum(n);
 		g1Builder.expectedEdgesNum(mst.size() + mst.size() * 2);
 		for (int v = 0; v < n; v++) {

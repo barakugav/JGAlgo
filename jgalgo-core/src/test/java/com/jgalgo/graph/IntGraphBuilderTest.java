@@ -39,8 +39,8 @@ public class IntGraphBuilderTest extends TestBase {
 
 	@Test
 	public void isDirected() {
-		assertTrue(IntGraphBuilder.newDirected().isDirected());
-		assertFalse(IntGraphBuilder.newUndirected().isDirected());
+		assertTrue(IntGraphBuilder.directed().isDirected());
+		assertFalse(IntGraphBuilder.undirected().isDirected());
 	}
 
 	@Test

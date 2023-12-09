@@ -287,7 +287,7 @@ class TreePathMaximaUtils {
 	static boolean verifyMST(IndexGraph g, IWeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
 		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size();
-		IndexGraphBuilder mstBuilder = IndexGraphBuilder.newUndirected();
+		IndexGraphBuilder mstBuilder = IndexGraphBuilder.undirected();
 		mstBuilder.expectedVerticesNum(n);
 		mstBuilder.expectedEdgesNum(mstEdges.size());
 

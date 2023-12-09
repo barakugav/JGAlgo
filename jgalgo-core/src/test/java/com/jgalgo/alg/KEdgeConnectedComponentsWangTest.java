@@ -115,7 +115,7 @@ public class KEdgeConnectedComponentsWangTest extends TestBase {
 		MinimumEdgeCutST minCutAlgo = MinimumEdgeCutST.newInstance();
 		final int n = g.vertices().size();
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-		IndexGraphBuilder gb = IndexGraphBuilder.newUndirected();
+		IndexGraphBuilder gb = IndexGraphBuilder.undirected();
 		for (int v = 0; v < n; v++)
 			gb.addVertex();
 		for (int u = 0; u < n; u++) {
