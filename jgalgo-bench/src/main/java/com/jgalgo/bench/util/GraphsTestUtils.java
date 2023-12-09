@@ -20,8 +20,11 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import com.jgalgo.gen.BarabasiAlbertGraphGenerator;
+import com.jgalgo.gen.GnmBipartiteGraphGenerator;
+import com.jgalgo.gen.GnmGraphGenerator;
 import com.jgalgo.gen.GnpGraphGenerator;
 import com.jgalgo.gen.RecursiveMatrixGraphGenerator;
+import com.jgalgo.gen.UniformTreeGenerator;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IWeightsInt;
@@ -33,18 +36,51 @@ public class GraphsTestUtils extends TestUtils {
 
 	private GraphsTestUtils() {}
 
-	public static Boolean2ObjectFunction<IntGraph> defaultGraphImpl() {
-		return direct -> IntGraphFactory.newUndirected().setDirected(direct).newGraph();
+	public static IntGraph randGraph(int n, int m, boolean directed, long seed) {
+		return GraphsTestUtils.randGraph(n, m, directed, true, true, seed);
+	}
+
+	public static IntGraph randGraph(int n, int m, boolean directed, boolean selfEdges, boolean parallelEdges,
+			long seed) {
+		GnmGraphGenerator<Integer, Integer> gen = GnmGraphGenerator.newIntInstance();
+		gen.setSeed(seed);
+		gen.setDirected(directed);
+		gen.setSelfEdges(selfEdges);
+		gen.setParallelEdges(parallelEdges);
+		gen.setVertices(range(n));
+		gen.setEdges(m, new AtomicInteger()::getAndIncrement);
+		return (IntGraph) gen.generateMutable();
+	}
+
+	public static IntGraph randBipartiteGraph(int n1, int n2, int m, boolean directed, long seed) {
+		return randBipartiteGraph(n1, n2, m, directed, true, seed);
+	}
+
+	public static IntGraph randBipartiteGraph(int n1, int n2, int m, boolean directed, boolean parallelEdges,
+			long seed) {
+		GnmBipartiteGraphGenerator<Integer, Integer> gen = GnmBipartiteGraphGenerator.newIntInstance();
+		gen.setSeed(seed);
+		if (directed) {
+			gen.setDirectedAll();
+		} else {
+			gen.setUndirected();
+		}
+		gen.setVertices(range(n1), range(n1, n1 + n2));
+		gen.setEdges(m, new AtomicInteger()::getAndIncrement);
+		gen.setParallelEdges(parallelEdges);
+		return (IntGraph) gen.generateMutable();
 	}
 
 	public static IntGraph randTree(int n, long seed) {
-		return new RandomGraphBuilder(seed).n(n).m(n - 1).directed(false).selfEdges(false).cycles(false).connected(true)
-				.build();
+		UniformTreeGenerator<Integer, Integer> gen = UniformTreeGenerator.newIntInstance();
+		gen.setSeed(seed);
+		gen.setVertices(range(n));
+		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		return (IntGraph) gen.generateMutable();
 	}
 
-	public static IntGraph randForest(int n, int m, long seed) {
-		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).selfEdges(false).cycles(false).connected(false)
-				.build();
+	public static Boolean2ObjectFunction<IntGraph> defaultGraphImpl() {
+		return direct -> IntGraphFactory.newUndirected().setDirected(direct).newGraph();
 	}
 
 	public static IWeightsDouble assignRandWeights(IntGraph g, long seed) {
@@ -84,16 +120,6 @@ public class GraphsTestUtils extends TestUtils {
 		for (int e : g.edges())
 			weight.set(e, rand.nextInt(maxWeight - minWeight) + minWeight);
 		return weight;
-	}
-
-	public static IntGraph randGraph(int n, int m, long seed) {
-		return new RandomGraphBuilder(seed).n(n).m(m).directed(false).parallelEdges(false).selfEdges(false).cycles(true)
-				.connected(false).build();
-	}
-
-	public static IntGraph randGraphBipartite(int sn, int tn, int m, long seed) {
-		return new RandomGraphBuilder(seed).sn(sn).tn(tn).m(m).directed(false).bipartite(true).parallelEdges(false)
-				.selfEdges(false).cycles(true).connected(false).build();
 	}
 
 	public static IntGraph randomGraphGnp(int n, boolean directed, long seed) {

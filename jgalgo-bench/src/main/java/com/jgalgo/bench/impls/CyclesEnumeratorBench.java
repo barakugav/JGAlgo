@@ -37,7 +37,7 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.CyclesEnumerator;
 import com.jgalgo.alg.IPath;
 import com.jgalgo.bench.util.BenchUtils;
-import com.jgalgo.bench.util.RandomGraphBuilder;
+import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -66,8 +66,7 @@ public class CyclesEnumeratorBench {
 		final SeedGenerator seedGen = new SeedGenerator(0x29b0e6d2a833e386L);
 		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(false)
-					.selfEdges(false).cycles(true).connected(false).build();
+			IntGraph g = GraphsTestUtils.randGraph(n, m, true, false, false, seedGen.nextSeed());
 			graphs.add(g);
 		}
 	}

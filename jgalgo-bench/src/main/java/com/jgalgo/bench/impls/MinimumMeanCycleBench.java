@@ -37,7 +37,6 @@ import com.jgalgo.alg.IPath;
 import com.jgalgo.alg.MinimumMeanCycle;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
-import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IntGraph;
@@ -68,8 +67,7 @@ public class MinimumMeanCycleBench {
 		final SeedGenerator seedGen = new SeedGenerator(0xab5a0b68164b217fL);
 		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(true).parallelEdges(true)
-					.selfEdges(false).cycles(true).connected(false).build();
+			IntGraph g = GraphsTestUtils.randGraph(n, m, true, false, true, seedGen.nextSeed());
 			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			graphs.add(Pair.of(g, w));
 		}

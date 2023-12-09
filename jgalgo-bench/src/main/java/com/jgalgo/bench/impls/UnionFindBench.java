@@ -67,7 +67,7 @@ public class UnionFindBench {
 		final SeedGenerator seedGen = new SeedGenerator(0xecbc984604fcd0afL);
 		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			IndexGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed()).indexGraph();
+			IndexGraph g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed()).indexGraph();
 			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			/*

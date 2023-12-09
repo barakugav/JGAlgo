@@ -38,7 +38,6 @@ import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
-import com.jgalgo.bench.util.RandomGraphBuilder;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeightFunctionInt;
@@ -98,8 +97,7 @@ public class ReferenceableHeapBench {
 		Random rand = new Random(seedGen.nextSeed());
 		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			IntGraph g = new RandomGraphBuilder(seedGen.nextSeed()).n(n).m(m).directed(false).parallelEdges(true)
-					.selfEdges(true).cycles(true).connected(false).build();
+			IntGraph g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());
 			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			int source = Graphs.randVertex(g, rand);
 			graphs.add(new GraphArgs(g, w, source));

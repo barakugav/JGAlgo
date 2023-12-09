@@ -66,7 +66,7 @@ public class ColoringBench {
 		final SeedGenerator seedGen = new SeedGenerator(0x566c25f996355cb4L);
 		graphs = new ObjectArrayList<>(graphsNum);
 		for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-			IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+			IntGraph g = GraphsTestUtils.randGraph(n, m, false, false, true, seedGen.nextSeed());
 			graphs.add(g);
 		}
 	}

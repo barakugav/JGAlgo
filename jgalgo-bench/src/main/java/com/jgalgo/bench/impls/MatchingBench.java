@@ -36,13 +36,13 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.alg.BipartiteGraphs;
 import com.jgalgo.alg.IMatching;
+import com.jgalgo.alg.IVertexBiPartition;
 import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.GraphsTestUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
-import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -76,7 +76,7 @@ public class MatchingBench {
 			final SeedGenerator seedGen = new SeedGenerator(0x2c942284cf26134dL);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());
 				graphs.add(g);
 			}
 		}
@@ -118,7 +118,7 @@ public class MatchingBench {
 			final SeedGenerator seedGen = new SeedGenerator(0xacff2ce7f7ee4fc9L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				IntGraph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randBipartiteGraph(n / 2, n / 2, m, false, seedGen.nextSeed());
 				graphs.add(g);
 			}
 		}
@@ -165,7 +165,7 @@ public class MatchingBench {
 			final SeedGenerator seedGen = new SeedGenerator(0xd857250c5ffe0823L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());
 				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 				graphs.add(Pair.of(g, w));
 			}
@@ -220,7 +220,7 @@ public class MatchingBench {
 			final SeedGenerator seedGen = new SeedGenerator(0x39a998645277eca3L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				IntGraph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randBipartiteGraph(n / 2, n / 2, m, false, seedGen.nextSeed());
 				IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 				graphs.add(Pair.of(g, w));
 			}
@@ -275,7 +275,7 @@ public class MatchingBench {
 			final SeedGenerator seedGen = new SeedGenerator(0xd15309f552f84f10L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				IntGraph g = GraphsTestUtils.randGraph(n, m, seedGen.nextSeed());
+				IntGraph g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());
 
 				if (g.vertices().size() % 2 != 0)
 					throw new IllegalArgumentException("there is no perfect matching");
@@ -346,16 +346,16 @@ public class MatchingBench {
 			final SeedGenerator seedGen = new SeedGenerator(0x6afda59c8a3dee81L);
 			graphs = new ObjectArrayList<>(graphsNum);
 			for (int gIdx = 0; gIdx < graphsNum; gIdx++) {
-				IntGraph g = GraphsTestUtils.randGraphBipartite(n / 2, n / 2, m, seedGen.nextSeed());
-				IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
+				IntGraph g = GraphsTestUtils.randBipartiteGraph(n / 2, n / 2, m, false, seedGen.nextSeed());
+				IVertexBiPartition partition = BipartiteGraphs.getExistingPartition(g).get();
 
 				MatchingAlgo cardinalityAlgo =
 						MatchingAlgo.newBuilder().setCardinality(true).setBipartite(true).build();
 				IMatching cardinalityMatch = (IMatching) cardinalityAlgo.computeMaximumMatching(g, null);
 				IntList unmatchedVerticesS = new IntArrayList(cardinalityMatch.unmatchedVertices());
 				IntList unmatchedVerticesT = new IntArrayList(cardinalityMatch.unmatchedVertices());
-				unmatchedVerticesS.removeIf(v -> partition.get(v));
-				unmatchedVerticesT.removeIf(v -> !partition.get(v));
+				unmatchedVerticesS.removeIf(partition.rightVertices()::contains);
+				unmatchedVerticesT.removeIf(partition.leftVertices()::contains);
 				assert unmatchedVerticesS.size() == unmatchedVerticesT.size();
 				IntLists.shuffle(unmatchedVerticesS, new Random(seedGen.nextSeed()));
 				IntLists.shuffle(unmatchedVerticesT, new Random(seedGen.nextSeed()));
