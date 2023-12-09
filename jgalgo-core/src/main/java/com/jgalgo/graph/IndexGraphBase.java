@@ -57,7 +57,7 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 	}
 
 	@Override
-	public boolean isDirected() {
+	public final boolean isDirected() {
 		return isDirected;
 	}
 
@@ -304,7 +304,7 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 
 		@Override
 		public boolean hasNext() {
-			return nextEdge != -1;
+			return nextEdge >= 0;
 		}
 
 		@Override

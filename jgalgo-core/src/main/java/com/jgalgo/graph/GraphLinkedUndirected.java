@@ -109,7 +109,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
 		assert edgesNum[removedIdx] == 0;
 
-		for (int p = edgesHead[swappedIdx], next; p != -1; p = next) {
+		for (int p = edgesHead[swappedIdx], next; p >= 0; p = next) {
 			next = next(p, swappedIdx);
 			if (source(p) == swappedIdx)
 				replaceEdgeSource(p, removedIdx);
@@ -145,7 +145,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	private void addEdgeToLists(int e) {
 		int source = source(e), target = target(e);
 		int next = edgesHead[source];
-		if (next != -1) {
+		if (next >= 0) {
 			setNext(e, source, next);
 			setPrev(next, source, e);
 		}
@@ -153,7 +153,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		edgesNum[source]++;
 		if (source != target) {
 			next = edgesHead[target];
-			if (next != -1) {
+			if (next >= 0) {
 				setNext(e, target, next);
 				setPrev(next, target, e);
 			}
@@ -183,21 +183,21 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	private void edgeSwapAndRemove2(int removedIdx, int swappedIdx) {
 		int u = source(swappedIdx), v = target(swappedIdx);
 		int prev, next;
-		if ((prev = prevu[swappedIdx]) != -1) {
+		if ((prev = prevu[swappedIdx]) >= 0) {
 			setNext(prev, u, removedIdx);
 		} else {
 			edgesHead[u] = removedIdx;
 		}
-		if ((next = nextu[swappedIdx]) != -1)
+		if ((next = nextu[swappedIdx]) >= 0)
 			setPrev(next, u, removedIdx);
 
 		if (u != v) {
-			if ((prev = prevv[swappedIdx]) != -1) {
+			if ((prev = prevv[swappedIdx]) >= 0) {
 				setNext(prev, v, removedIdx);
 			} else {
 				edgesHead[v] = removedIdx;
 			}
-			if ((next = nextv[swappedIdx]) != -1)
+			if ((next = nextv[swappedIdx]) >= 0)
 				setPrev(next, v, removedIdx);
 		}
 
@@ -217,7 +217,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			setNext(prev, w, next);
 			setPrev(e, w, -1);
 		}
-		if (next != -1) {
+		if (next >= 0) {
 			setPrev(next, w, prev);
 			setNext(e, w, -1);
 		}
@@ -227,7 +227,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	@Override
 	public void removeEdgesOf(int source) {
 		checkVertex(source);
-		for (int p = edgesHead[source], next; p != -1; p = next) {
+		for (int p = edgesHead[source], next; p >= 0; p = next) {
 			// update u list
 			next = next(p, source);
 			setNext(p, source, -1);

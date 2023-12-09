@@ -56,12 +56,12 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 
 		// either the source or target of the iterator
 		final int vertex;
-		Iterator<Int2IntMap.Entry> eit;
-		int nextEdge = -1;
-		int nextEndpoint = -1;
-		int prevEdge = -1;
-		int prevEndpoint = -1;
-		Int2IntMap clonedMap;
+		private Iterator<Int2IntMap.Entry> eit;
+		private int nextEdge = -1;
+		private int nextEndpoint;
+		private int prevEdge = -1;
+		int prevEndpoint;
+		private Int2IntMap clonedMap;
 
 		EdgeIterBase(int vertex, Int2IntMap edges) {
 			this.vertex = vertex;
@@ -82,7 +82,7 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 
 		@Override
 		public boolean hasNext() {
-			return nextEdge != -1;
+			return nextEdge >= 0;
 		}
 
 		@Override
@@ -124,26 +124,20 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 			if (prevEdge != lastEdge) {
 				if (isDirected()) {
 					if (this instanceof EdgeIterOut) {
-						if (GraphHashmapAbstract.this.source(lastEdge) == vertex) {
-							int oldVal = clonedMap.replace(GraphHashmapAbstract.this.target(lastEdge), prevEdge);
-							assert oldVal == -1 || oldVal == lastEdge;
-						}
+						if (GraphHashmapAbstract.this.source(lastEdge) == vertex)
+							clonedMap.replace(GraphHashmapAbstract.this.target(lastEdge), lastEdge, prevEdge);
 					} else {
 						assert this instanceof EdgeIterIn;
-						if (GraphHashmapAbstract.this.target(lastEdge) == vertex) {
-							int oldVal = clonedMap.replace(GraphHashmapAbstract.this.source(lastEdge), prevEdge);
-							assert oldVal == -1 || oldVal == lastEdge;
-						}
+						if (GraphHashmapAbstract.this.target(lastEdge) == vertex)
+							clonedMap.replace(GraphHashmapAbstract.this.source(lastEdge), lastEdge, prevEdge);
 					}
 				} else {
 					int lastSource = GraphHashmapAbstract.this.source(lastEdge);
 					int lastTarget = GraphHashmapAbstract.this.target(lastEdge);
 					if (lastSource == vertex) {
-						int oldVal = clonedMap.replace(lastTarget, prevEdge);
-						assert oldVal == -1 || oldVal == lastEdge;
+						clonedMap.replace(lastTarget, lastEdge, prevEdge);
 					} else if (lastTarget == vertex) {
-						int oldVal = clonedMap.replace(lastSource, prevEdge);
-						assert oldVal == -1 || oldVal == lastEdge;
+						clonedMap.replace(lastSource, lastEdge, prevEdge);
 					}
 				}
 				if (nextEdge == lastEdge)

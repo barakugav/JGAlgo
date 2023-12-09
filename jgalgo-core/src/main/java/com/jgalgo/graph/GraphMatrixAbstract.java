@@ -231,7 +231,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 		@Override
 		public boolean hasNext() {
-			return source != -1;
+			return source >= 0;
 		}
 
 		@Override
@@ -290,7 +290,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 		@Override
 		public boolean hasNext() {
-			return source != -1;
+			return source >= 0;
 		}
 
 		@Override

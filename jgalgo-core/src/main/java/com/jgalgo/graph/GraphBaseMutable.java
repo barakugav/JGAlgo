@@ -159,8 +159,6 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	public final void removeVertex(int vertex) {
 		checkVertex(vertex);
 		removeEdgesOf(vertex);
-		// vertex = vertexSwapBeforeRemove(vertex);
-		// removeVertexImpl(vertex);
 
 		if (vertex == vertices.size - 1) {
 			removeVertexLast(vertex);
@@ -200,7 +198,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	void checkNewEdgeEndpoints(int source, int target) {
 		if (!isAllowSelfEdges() && source == target)
 			throw new IllegalArgumentException("Self edges are not allowed");
-		if (!isAllowParallelEdges() && getEdge(source, target) != -1)
+		if (!isAllowParallelEdges() && getEdge(source, target) >= 0)
 			throw new IllegalArgumentException(
 					"Edge (idx=" + source + ",idx=" + target + ") already exists. Parallel edges are not allowed.");
 	}
@@ -331,6 +329,10 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	}
 
 	DataContainer.Long copyEdgesContainer(DataContainer.Long container, Consumer<long[]> onArrayAlloc) {
+		return addEdgesContainer(container.copy(edges, onArrayAlloc));
+	}
+
+	DataContainer.Int copyEdgesContainer(DataContainer.Int container, Consumer<int[]> onArrayAlloc) {
 		return addEdgesContainer(container.copy(edges, onArrayAlloc));
 	}
 

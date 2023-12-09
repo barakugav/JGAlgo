@@ -46,7 +46,7 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 
 		@Override
 		public boolean hasNext() {
-			return next != -1;
+			return next >= 0;
 		}
 
 		@Override

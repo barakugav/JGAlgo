@@ -119,9 +119,9 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
 		assert edgesOutNum[removedIdx] == 0 && edgesInNum[removedIdx] == 0;
 
-		for (int p = edgesOutHead[swappedIdx]; p != -1; p = edgeNextOut[p])
+		for (int p = edgesOutHead[swappedIdx]; p >= 0; p = edgeNextOut[p])
 			replaceEdgeSource(p, removedIdx);
-		for (int p = edgesInHead[swappedIdx]; p != -1; p = edgeNextIn[p])
+		for (int p = edgesInHead[swappedIdx]; p >= 0; p = edgeNextIn[p])
 			replaceEdgeTarget(p, removedIdx);
 
 		swapAndClear(edgesOutHead, removedIdx, swappedIdx, -1);
@@ -154,14 +154,14 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	private void addEdgeToLists(int e) {
 		int u = source(e), v = target(e), next;
 
-		if ((next = edgesOutHead[u]) != -1) {
+		if ((next = edgesOutHead[u]) >= 0) {
 			edgePrevOut[next] = e;
 			edgeNextOut[e] = next;
 		}
 		edgesOutHead[u] = e;
 		edgesOutNum[u]++;
 
-		if ((next = edgesInHead[v]) != -1) {
+		if ((next = edgesInHead[v]) >= 0) {
 			edgePrevIn[next] = e;
 			edgeNextIn[e] = next;
 		}
@@ -186,20 +186,20 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 	private void edgeSwapAndRemove2(int removedIdx, int swappedIdx) {
 		int prev, next;
-		if ((prev = edgePrevOut[swappedIdx]) != -1) {
+		if ((prev = edgePrevOut[swappedIdx]) >= 0) {
 			edgeNextOut[prev] = removedIdx;
 		} else {
 			edgesOutHead[source(swappedIdx)] = removedIdx;
 		}
-		if ((next = edgeNextOut[swappedIdx]) != -1)
+		if ((next = edgeNextOut[swappedIdx]) >= 0)
 			edgePrevOut[next] = removedIdx;
 
-		if ((prev = edgePrevIn[swappedIdx]) != -1) {
+		if ((prev = edgePrevIn[swappedIdx]) >= 0) {
 			edgeNextIn[prev] = removedIdx;
 		} else {
 			edgesInHead[target(swappedIdx)] = removedIdx;
 		}
-		if ((next = edgeNextIn[swappedIdx]) != -1)
+		if ((next = edgeNextIn[swappedIdx]) >= 0)
 			edgePrevIn[next] = removedIdx;
 
 		swapAndClear(edgeNextIn, removedIdx, swappedIdx, -1);
@@ -213,7 +213,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	@Override
 	public void removeOutEdgesOf(int source) {
 		checkVertex(source);
-		for (int p = edgesOutHead[source], next; p != -1; p = next) {
+		for (int p = edgesOutHead[source], next; p >= 0; p = next) {
 			next = edgeNextOut[p];
 			edgeNextOut[p] = edgePrevOut[p] = -1;
 			removeEdgeInPointers(p);
@@ -235,7 +235,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	@Override
 	public void removeInEdgesOf(int target) {
 		checkVertex(target);
-		for (int p = edgesInHead[target], next; p != -1; p = next) {
+		for (int p = edgesInHead[target], next; p >= 0; p = next) {
 			next = edgeNextIn[p];
 			edgeNextIn[p] = edgePrevIn[p] = -1;
 			removeEdgeOutPointers(p);
@@ -263,7 +263,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			edgeNextOut[prev] = next;
 			edgePrevOut[e] = -1;
 		}
-		if (next != -1) {
+		if (next >= 0) {
 			edgePrevOut[next] = prev;
 			edgeNextOut[e] = -1;
 		}
@@ -279,7 +279,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			edgeNextIn[prev] = next;
 			edgePrevIn[e] = -1;
 		}
-		if (next != -1) {
+		if (next >= 0) {
 			edgePrevIn[next] = prev;
 			edgeNextIn[e] = -1;
 		}

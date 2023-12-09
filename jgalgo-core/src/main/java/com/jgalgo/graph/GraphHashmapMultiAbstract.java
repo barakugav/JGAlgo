@@ -19,42 +19,71 @@ package com.jgalgo.graph;
 import java.util.Iterator;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMaps;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
-	@SuppressWarnings("unchecked")
-	static final Int2ObjectMap<int[]>[] EMPTY_MAP_ARRAY = new Int2ObjectMap[0];
-	static final int[] EmptyEdgeArr = new int[] { 0 };
-	static final Int2ObjectMap<int[]> EmptyEdgeMap;
+	int[] edgeNext;
+	int[] edgePrev;
+	private final DataContainer.Int edgeNextContainer;
+	private final DataContainer.Int edgePrevContainer;
+
+	static final Int2IntMap[] EMPTY_MAP_ARRAY = new Int2IntMap[0];
+	static final Int2IntMap EmptyEdgeMap;
 	static {
-		Int2ObjectMap<int[]> emptyEdgeMap = new Int2ObjectOpenHashMap<>(0);
-		emptyEdgeMap.defaultReturnValue(EmptyEdgeArr);
-		// emptyEdgeMap = Int2ObjectMaps.unmodifiable(emptyEdgeMap);
+		Int2IntMap emptyEdgeMap = new Int2IntOpenHashMap(0);
+		emptyEdgeMap.defaultReturnValue(-1);
+		// emptyEdgeMap = Int2IntMaps.unmodifiable(emptyEdgeMap);
 		EmptyEdgeMap = emptyEdgeMap;
 	}
 
 	GraphHashmapMultiAbstract(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum,
 			int expectedEdgesNum) {
 		super(capabilities, expectedVerticesNum, expectedEdgesNum);
+		edgeNextContainer = newEdgesIntContainer(-1, newArr -> edgeNext = newArr);
+		edgePrevContainer = newEdgesIntContainer(-1, newArr -> edgePrev = newArr);
 	}
 
 	GraphHashmapMultiAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
+
+		if (g instanceof GraphHashmapMultiAbstract) {
+			GraphHashmapMultiAbstract g0 = (GraphHashmapMultiAbstract) g;
+
+			edgeNextContainer = copyEdgesContainer(g0.edgeNextContainer, newArr -> edgeNext = newArr);
+			edgePrevContainer = copyEdgesContainer(g0.edgePrevContainer, newArr -> edgePrev = newArr);
+		} else {
+			edgeNextContainer = newEdgesIntContainer(-1, newArr -> edgeNext = newArr);
+			edgePrevContainer = newEdgesIntContainer(-1, newArr -> edgePrev = newArr);
+		}
 	}
 
 	GraphHashmapMultiAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 		super(capabilities, builder);
+		edgeNextContainer = newEdgesIntContainer(-1, newArr -> edgeNext = newArr);
+		edgePrevContainer = newEdgesIntContainer(-1, newArr -> edgePrev = newArr);
 	}
 
-	static int edgeIndexInArr(int[] edgesArr, int edge) {
-		for (int edgesNum = edgesArr[0], i = 1;; i++) {
-			assert i <= edgesNum;
-			if (edgesArr[i] == edge)
-				return i;
+	@Override
+	public void clearEdges() {
+		edgeNextContainer.clear();
+		edgePrevContainer.clear();
+		super.clearEdges();
+	}
+
+	void removeAllEdgesInList(int firstEdge) {
+		for (;;) {
+			int nextEdge = edgeNext[firstEdge];
+			if (nextEdge == -1) {
+				removeEdge(firstEdge);
+				break;
+			}
+			if (firstEdge == edges().size() - 1)
+				firstEdge = nextEdge; /* the first edge index will be swapped with the removed edge */
+			removeEdge(nextEdge);
 		}
 	}
 
@@ -62,53 +91,43 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 		// either the source or target of the iterator
 		final int vertex;
-
-		private Iterator<Int2ObjectMap.Entry<int[]>> endpointIter;
-
-		private int endpoint;
-		private int[] endpointEdges;
-		private int endpointEdgesNum;
-		/* index in range [1, endpointEdgesNum], rather than the usual [0, endpointEdgesNum) */
-		private int endpointEdgeIdx = 1;
-
+		private Iterator<Int2IntMap.Entry> eit;
+		private int nextEdge = -1;
+		private int nextEndpoint;
 		private int prevEdge = -1;
-		int prevEndpoint = -1;
-		private Int2ObjectMap<int[]> clonedMap;
-		private final Int2ObjectMap<int[]> originalMap;
+		int prevEndpoint;
+		private Int2IntMap clonedMap;
+		// private final Int2IntMap originalMap;
 
-		EdgeIterBase(int vertex, Int2ObjectMap<int[]> edges) {
+		EdgeIterBase(int vertex, Int2IntMap edges) {
 			this.vertex = vertex;
-			originalMap = edges;
-			endpointIter = Int2ObjectMaps.fastIterator(edges);
+			// originalMap = edges;
+			eit = Int2IntMaps.fastIterator(edges);
 			advance();
 		}
 
 		private void advance() {
-			if (endpointEdgeIdx <= endpointEdgesNum)
+			if (nextEdge >= 0)
 				return;
-			if (endpointIter.hasNext()) {
-				Int2ObjectMap.Entry<int[]> entry = endpointIter.next();
-				endpoint = entry.getIntKey();
-				endpointEdges = entry.getValue();
-				endpointEdgesNum = endpointEdges[0];
-				endpointEdgeIdx = 1;
-				assert endpointEdgesNum > 0;
-			} else {
-				endpointEdgesNum = 0;
-				endpointEdgeIdx = 1;
+			if (eit.hasNext()) {
+				Int2IntMap.Entry entry = eit.next();
+				nextEndpoint = entry.getIntKey();
+				nextEdge = entry.getIntValue();
+				assert nextEdge >= 0;
 			}
 		}
 
 		@Override
 		public boolean hasNext() {
-			return endpointEdgeIdx <= endpointEdgesNum;
+			return nextEdge >= 0;
 		}
 
 		@Override
 		public int nextInt() {
 			Assertions.Iters.hasNext(this);
-			prevEdge = endpointEdges[endpointEdgeIdx++];
-			prevEndpoint = endpoint;
+			prevEdge = nextEdge;
+			prevEndpoint = nextEndpoint;
+			nextEdge = edgeNext[prevEdge];
 			advance();
 			return prevEdge;
 		}
@@ -116,7 +135,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 		@Override
 		public int peekNextInt() {
 			Assertions.Iters.hasNext(this);
-			return endpointEdges[endpointEdgeIdx];
+			return nextEdge;
 		}
 
 		@Override
@@ -131,30 +150,47 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 			 * choose to clone the map, it will not be updated when edges are swapped, so we have to update it manually.
 			 */
 			if (clonedMap == null) {
-				clonedMap = new Int2ObjectOpenHashMap<>(1);
-				clonedMap.defaultReturnValue(EmptyEdgeArr);
-				while (endpointIter.hasNext()) {
-					Int2ObjectMap.Entry<int[]> entry = endpointIter.next();
-					clonedMap.put(entry.getIntKey(), entry.getValue());
+				clonedMap = new Int2IntOpenHashMap(1);
+				clonedMap.defaultReturnValue(-1);
+				while (eit.hasNext()) {
+					Int2IntMap.Entry entry = eit.next();
+					clonedMap.put(entry.getIntKey(), entry.getIntValue());
 				}
-				endpointIter = Int2ObjectMaps.fastIterator(clonedMap);
+				eit = Int2IntMaps.fastIterator(clonedMap);
+			}
+
+			int lastEdge = edges().size() - 1;
+			if (prevEdge != lastEdge) {
+				if (isDirected()) {
+					if (this instanceof EdgeIterOut) {
+						if (GraphHashmapMultiAbstract.this.source(lastEdge) == vertex)
+							clonedMap.replace(GraphHashmapMultiAbstract.this.target(lastEdge), lastEdge, prevEdge);
+					} else {
+						assert this instanceof EdgeIterIn;
+						if (GraphHashmapMultiAbstract.this.target(lastEdge) == vertex)
+							clonedMap.replace(GraphHashmapMultiAbstract.this.source(lastEdge), lastEdge, prevEdge);
+					}
+				} else {
+					int lastSource = GraphHashmapMultiAbstract.this.source(lastEdge);
+					int lastTarget = GraphHashmapMultiAbstract.this.target(lastEdge);
+					if (lastSource == vertex) {
+						clonedMap.replace(lastTarget, lastEdge, prevEdge);
+					} else if (lastTarget == vertex) {
+						clonedMap.replace(lastSource, lastEdge, prevEdge);
+					}
+				}
+				if (nextEdge == lastEdge)
+					nextEdge = prevEdge;
 			}
 
 			removeEdge(prevEdge);
 			prevEdge = -1;
-
-			if (endpointEdgeIdx > 1) {
-				endpointEdgeIdx--;
-				endpointEdges = originalMap.get(endpoint);
-				endpointEdgesNum--;
-				assert endpointEdgesNum == endpointEdges[0];
-			}
 		}
 	}
 
 	class EdgeIterOut extends EdgeIterBase {
 
-		EdgeIterOut(int source, Int2ObjectMap<int[]> edges) {
+		EdgeIterOut(int source, Int2IntMap edges) {
 			super(source, edges);
 		}
 
@@ -171,7 +207,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 	class EdgeIterIn extends EdgeIterBase {
 
-		EdgeIterIn(int target, Int2ObjectMap<int[]> edges) {
+		EdgeIterIn(int target, Int2IntMap edges) {
 			super(target, edges);
 		}
 
@@ -196,11 +232,14 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 			this.target = target;
 		}
 
-		abstract Int2ObjectMap<int[]> edgesOut(int source);
+		abstract Int2IntMap edgesOut(int source);
 
 		@Override
 		public int size() {
-			return edgesOut(source).get(target)[0];
+			int s = 0;
+			for (int e = edgesOut(source).get(target); e >= 0; e = edgeNext[e])
+				s++;
+			return s;
 		}
 
 		@Override
@@ -213,39 +252,35 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 		@Override
 		public void clear() {
-			for (;;) {
-				int[] edgesArr = edgesOut(source).get(target);
-				int edgesNum = edgesArr[0];
-				if (edgesNum == 0)
-					break;
-				removeEdge(edgesArr[1]);
-			}
+			int firstEdge = edgesOut(source).get(target);
+			if (firstEdge >= 0)
+				removeAllEdgesInList(firstEdge);
 		}
 
 		@Override
 		public IEdgeIter iterator() {
 			return new IEdgeIter() {
 
-				int[] edgesArr = edgesOut(source).get(target);
-				int edgesNum = edgesArr[0];
-				int edgeIdx = 1; /* index in range [1, edgesNum], rather than the usual [0, edgesNum) */
-				int lastEdge = -1;
+				int nextEdge = edgesOut(source).get(target);
+				int prevEdge;
 
 				@Override
 				public boolean hasNext() {
-					return edgeIdx <= edgesNum;
+					return nextEdge >= 0;
 				}
 
 				@Override
 				public int nextInt() {
 					Assertions.Iters.hasNext(this);
-					return lastEdge = edgesArr[edgeIdx++];
+					prevEdge = nextEdge;
+					nextEdge = edgeNext[prevEdge];
+					return prevEdge;
 				}
 
 				@Override
 				public int peekNextInt() {
 					Assertions.Iters.hasNext(this);
-					return edgesArr[edgeIdx];
+					return nextEdge;
 				}
 
 				@Override
@@ -260,22 +295,21 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 				@Override
 				public void remove() {
-					if (lastEdge == -1)
+					if (prevEdge == -1)
 						throw new IllegalStateException();
-					removeEdge(lastEdge);
-					edgesNum--;
-					edgeIdx--;
-					edgesArr = edgesOut(source).get(target);
-					lastEdge = -1;
+					int lastEdge = edges().size() - 1;
+					if (nextEdge == lastEdge)
+						nextEdge = prevEdge; /* the next edge index will be swapped with the removed edge */
+					removeEdge(prevEdge);
 				}
 			};
 		}
 	}
 
-	static Int2ObjectMap<int[]> ensureEdgesMapMutable(Int2ObjectMap<int[]>[] edgesMaps, int idx) {
+	static Int2IntMap ensureEdgesMapMutable(Int2IntMap[] edgesMaps, int idx) {
 		if (edgesMaps[idx] == EmptyEdgeMap) {
-			edgesMaps[idx] = new Int2ObjectOpenHashMap<>();
-			edgesMaps[idx].defaultReturnValue(EmptyEdgeArr);
+			edgesMaps[idx] = new Int2IntOpenHashMap();
+			edgesMaps[idx].defaultReturnValue(-1);
 		}
 		return edgesMaps[idx];
 	}

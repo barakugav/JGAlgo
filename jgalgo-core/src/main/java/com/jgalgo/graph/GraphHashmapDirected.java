@@ -71,14 +71,14 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 				for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					int oldVal = ensureEdgesMapMutable(edgesOut, v).put(eit.targetInt(), e);
-					if (oldVal != -1)
+					if (oldVal >= 0)
 						throw new IllegalArgumentException("Parallel edge (idx=" + v + ",idx=" + eit.targetInt()
 								+ ") already exists. Parallel edges are not allowed.");
 				}
 				for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					int oldVal = ensureEdgesMapMutable(edgesIn, v).put(eit.sourceInt(), e);
-					if (oldVal != -1)
+					if (oldVal >= 0)
 						throw new IllegalArgumentException("Parallel edge (idx=" + eit.sourceInt() + ",idx=" + v
 								+ ") already exists. Parallel edges are not allowed.");
 				}
@@ -97,7 +97,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 			int source = builder.edgeSource(e), target = builder.edgeTarget(e);
 			int oldVal1 = ensureEdgesMapMutable(edgesOut, source).put(target, e);
 			int oldVal2 = ensureEdgesMapMutable(edgesIn, target).put(source, e);
-			if (oldVal1 != -1)
+			if (oldVal1 >= 0)
 				throw new IllegalArgumentException("Parallel edge (idx=" + source + ",idx=" + target
 						+ ") already exists. Parallel edges are not allowed.");
 			assert oldVal2 == -1;
@@ -119,7 +119,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 		/* we handle the self edge of the swapped vertex separately */
 		int selfEdge = -1;
-		if (isAllowSelfEdges() && (selfEdge = edgesOut[swappedIdx].remove(swappedIdx)) != -1) {
+		if (isAllowSelfEdges() && (selfEdge = edgesOut[swappedIdx].remove(swappedIdx)) >= 0) {
 			int oldVal = edgesIn[swappedIdx].remove(swappedIdx);
 			assert oldVal == selfEdge;
 		}
@@ -141,7 +141,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 			assert oldVal2 == -1;
 		}
 
-		if (selfEdge != -1) {
+		if (selfEdge >= 0) {
 			setEndpoints(selfEdge, removedIdx, removedIdx);
 			int oldVal1 = edgesOut[swappedIdx].put(removedIdx, selfEdge);
 			int oldVal2 = edgesIn[swappedIdx].put(removedIdx, selfEdge);

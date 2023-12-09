@@ -16,19 +16,18 @@
 
 package com.jgalgo.graph;
 
-import java.util.Arrays;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMaps;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 
-	private Int2ObjectMap<int[]>[] edgesOut;
-	private Int2ObjectMap<int[]>[] edgesIn;
+	private Int2IntMap[] edgesOut;
+	private Int2IntMap[] edgesIn;
 	private int[] edgesOutNum;
 	private int[] edgesInNum;
-	private final DataContainer.Obj<Int2ObjectMap<int[]>> edgesOutContainer;
-	private final DataContainer.Obj<Int2ObjectMap<int[]>> edgesInContainer;
+	private final DataContainer.Obj<Int2IntMap> edgesOutContainer;
+	private final DataContainer.Obj<Int2IntMap> edgesInContainer;
 	private final DataContainer.Int edgesOutNumContainer;
 	private final DataContainer.Int edgesInNumContainer;
 
@@ -63,26 +62,13 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 			edgesInNumContainer = copyVerticesContainer(g0.edgesInNumContainer, newArr -> edgesInNum = newArr);
 
 			for (int v = 0; v < n; v++) {
-				if (!g0.edgesIn[v].isEmpty()) {
-					edgesIn[v] = new Int2ObjectOpenHashMap<>(g0.edgesIn[v].size());
-					edgesIn[v].defaultReturnValue(EmptyEdgeArr);
+				if (!g0.edgesOut[v].isEmpty()) {
+					edgesOut[v] = new Int2IntOpenHashMap(g0.edgesOut[v]);
+					edgesOut[v].defaultReturnValue(-1);
 				}
-			}
-			for (int u = 0; u < n; u++) {
-				if (!g0.edgesOut[u].isEmpty()) {
-					edgesOut[u] = new Int2ObjectOpenHashMap<>(g0.edgesOut[u].size());
-					edgesOut[u].defaultReturnValue(EmptyEdgeArr);
-					for (var entry : Int2ObjectMaps.fastIterable(g0.edgesOut[u])) {
-						int v = entry.getIntKey();
-						int[] edgesArr = entry.getValue();
-						int edgesNum = edgesArr[0];
-						assert edgesNum > 0;
-						edgesArr = Arrays.copyOf(edgesArr, 1 + edgesNum);
-
-						assert edgesIn[v] != EmptyEdgeMap;
-						edgesOut[u].put(v, edgesArr);
-						edgesIn[v].put(u, edgesArr);
-					}
+				if (!g0.edgesIn[v].isEmpty()) {
+					edgesIn[v] = new Int2IntOpenHashMap(g0.edgesIn[v]);
+					edgesIn[v].defaultReturnValue(-1);
 				}
 			}
 		} else {
@@ -127,43 +113,43 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 		assert edgesOut[removedIdx].isEmpty() && edgesIn[removedIdx].isEmpty();
 
 		/* we handle the self edges of the swapped vertex separately */
-		int[] selfEdges = EmptyEdgeArr;
+		int firstSelfEdge = -1;
 		if (isAllowSelfEdges() && edgesOut[swappedIdx] != EmptyEdgeMap) {
-			selfEdges = edgesOut[swappedIdx].remove(swappedIdx);
-			if (selfEdges != EmptyEdgeArr) {
-				int[] oldVal = edgesIn[swappedIdx].remove(swappedIdx);
-				assert oldVal == selfEdges;
+			firstSelfEdge = edgesOut[swappedIdx].remove(swappedIdx);
+			if (firstSelfEdge >= 0) {
+				int oldVal = edgesIn[swappedIdx].remove(swappedIdx);
+				assert oldVal == firstSelfEdge;
 			}
 		}
 
-		for (var entry : Int2ObjectMaps.fastIterable(edgesOut[swappedIdx])) {
+		for (var entry : Int2IntMaps.fastIterable(edgesOut[swappedIdx])) {
 			int target = entry.getIntKey();
-			int[] edgesArr = entry.getValue();
-			for (int edgesNum = edgesArr[0], i = 1; i <= edgesNum; i++)
-				replaceEdgeSource(edgesArr[i], removedIdx);
-			int[] oldVal1 = edgesIn[target].remove(swappedIdx);
-			int[] oldVal2 = edgesIn[target].put(removedIdx, edgesArr);
-			assert oldVal1 == edgesArr;
-			assert oldVal2 == EmptyEdgeArr;
+			int firstEdge = entry.getIntValue();
+			for (int e = firstEdge; e >= 0; e = edgeNext[e])
+				replaceEdgeSource(e, removedIdx);
+			int oldVal1 = edgesIn[target].remove(swappedIdx);
+			int oldVal2 = edgesIn[target].put(removedIdx, firstEdge);
+			assert oldVal1 == firstEdge;
+			assert oldVal2 == -1;
 		}
-		for (var entry : Int2ObjectMaps.fastIterable(edgesIn[swappedIdx])) {
+		for (var entry : Int2IntMaps.fastIterable(edgesIn[swappedIdx])) {
 			int source = entry.getIntKey();
-			int[] edgesArr = entry.getValue();
-			for (int edgesNum = edgesArr[0], i = 1; i <= edgesNum; i++)
-				replaceEdgeTarget(edgesArr[i], removedIdx);
-			int[] oldVal1 = edgesOut[source].remove(swappedIdx);
-			int[] oldVal2 = edgesOut[source].put(removedIdx, edgesArr);
-			assert oldVal1 == edgesArr;
-			assert oldVal2 == EmptyEdgeArr;
+			int firstEdge = entry.getIntValue();
+			for (int e = firstEdge; e >= 0; e = edgeNext[e])
+				replaceEdgeTarget(e, removedIdx);
+			int oldVal1 = edgesOut[source].remove(swappedIdx);
+			int oldVal2 = edgesOut[source].put(removedIdx, firstEdge);
+			assert oldVal1 == firstEdge;
+			assert oldVal2 == -1;
 		}
 
-		if (selfEdges != EmptyEdgeArr) {
-			for (int edgesNum = selfEdges[0], i = 1; i <= edgesNum; i++)
-				setEndpoints(selfEdges[i], removedIdx, removedIdx);
-			int[] oldVal1 = edgesOut[swappedIdx].put(removedIdx, selfEdges);
-			int[] oldVal2 = edgesIn[swappedIdx].put(removedIdx, selfEdges);
-			assert oldVal1 == EmptyEdgeArr;
-			assert oldVal2 == EmptyEdgeArr;
+		if (firstSelfEdge >= 0) {
+			for (int e = firstSelfEdge; e >= 0; e = edgeNext[e])
+				setEndpoints(e, removedIdx, removedIdx);
+			int oldVal1 = edgesOut[swappedIdx].put(removedIdx, firstSelfEdge);
+			int oldVal2 = edgesIn[swappedIdx].put(removedIdx, firstSelfEdge);
+			assert oldVal1 == -1;
+			assert oldVal2 == -1;
 		}
 
 		swapAndClear(edgesOut, removedIdx, swappedIdx, EmptyEdgeMap);
@@ -184,9 +170,7 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 	public int getEdge(int source, int target) {
 		checkVertex(source);
 		checkVertex(target);
-		int[] edgesArr = edgesOut[source].get(target);
-		int edgesNum = edgesArr[0];
-		return edgesNum == 0 ? -1 : edgesArr[1];
+		return edgesOut[source].get(target);
 	}
 
 	@Override
@@ -209,23 +193,19 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 	}
 
 	private void addEdgeToMaps(int edge, int source, int target) {
-		Int2ObjectMap<int[]> outMap = ensureEdgesMapMutable(edgesOut, source);
-		int edgesMapSizeBefore = outMap.size();
-		int[] edgesArr = outMap.computeIfAbsent(target, v0 -> new int[2]);
-		boolean isNewEdgesArr = edgesMapSizeBefore != outMap.size();
-		int edgesNum = ++edgesArr[0];
-
-		if (isNewEdgesArr) {
-			ensureEdgesMapMutable(edgesIn, target).put(source, edgesArr);
-
-		} else if (edgesNum == edgesArr.length) {
-			edgesArr = Arrays.copyOf(edgesArr, 1 + Math.max(2, edgesNum * 2));
-
-			outMap.put(target, edgesArr);
-			edgesIn[target].put(source, edgesArr);
+		Int2IntMap outMap = ensureEdgesMapMutable(edgesOut, source);
+		int firstEdge = outMap.putIfAbsent(target, edge);
+		if (firstEdge >= 0) {
+			int secondEdge = edgeNext[firstEdge];
+			edgeNext[firstEdge] = edge;
+			edgePrev[edge] = firstEdge;
+			if (secondEdge >= 0) {
+				edgeNext[edge] = secondEdge;
+				edgePrev[secondEdge] = edge;
+			}
+		} else {
+			ensureEdgesMapMutable(edgesIn, target).put(source, edge);
 		}
-		edgesArr[edgesNum] = edge;
-
 		edgesOutNum[source]++;
 		edgesInNum[target]++;
 	}
@@ -233,30 +213,27 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 	@Override
 	void removeEdgeLast(int edge) {
 		removeEdgeFromMaps(edge);
+		edgeNext[edge] = edgePrev[edge] = -1;
 		super.removeEdgeLast(edge);
 	}
 
 	private void removeEdgeFromMaps(int edge) {
 		int source = source(edge), target = target(edge);
+		int prevEdge = edgePrev[edge], nextEdge = edgeNext[edge];
 
-		Int2ObjectMap<int[]> outMap = edgesOut[source];
-		int[] edgesArr = outMap.get(target);
-		int edgesNum = edgesArr[0];
-		if (edgesNum == 1) {
-			assert edge == edgesArr[1];
-			edgesArr[0] = 0;
-			outMap.remove(target);
-			edgesIn[target].remove(source);
+		if (prevEdge >= 0) {
+			edgeNext[prevEdge] = nextEdge;
+			if (nextEdge >= 0)
+				edgePrev[nextEdge] = prevEdge;
+
+		} else if (nextEdge >= 0) {
+			edgePrev[nextEdge] = -1;
+			edgesOut[source].put(target, nextEdge);
+			edgesIn[target].put(source, nextEdge);
 
 		} else {
-			int edgeIdx = edgeIndexInArr(edgesArr, edge);
-			edgesArr[edgeIdx] = edgesArr[edgesNum];
-			edgesArr[0] = --edgesNum;
-			if (edgesNum <= (edgesArr.length - 1) / 4) {
-				edgesArr = Arrays.copyOf(edgesArr, 1 + Math.max(2, edgesNum * 2));
-				outMap.put(target, edgesArr);
-				edgesIn[target].put(source, edgesArr);
-			}
+			edgesOut[source].remove(target);
+			edgesIn[target].remove(source);
 		}
 
 		edgesOutNum[source]--;
@@ -268,8 +245,19 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 		removeEdgeFromMaps(removedIdx);
 
 		int us = source(swappedIdx), vs = target(swappedIdx);
-		int[] edgesArr = edgesOut[us].get(vs);
-		edgesArr[edgeIndexInArr(edgesArr, swappedIdx)] = removedIdx;
+		int prevEdge = edgePrev[swappedIdx], nextEdge = edgeNext[swappedIdx];
+
+		edgePrev[removedIdx] = prevEdge;
+		if (prevEdge >= 0) {
+			edgeNext[prevEdge] = removedIdx;
+		} else {
+			edgesOut[us].put(vs, removedIdx);
+			edgesIn[vs].put(us, removedIdx);
+		}
+		edgeNext[removedIdx] = nextEdge;
+		if (nextEdge >= 0)
+			edgePrev[nextEdge] = removedIdx;
+		edgeNext[swappedIdx] = edgePrev[swappedIdx] = -1;
 
 		super.edgeSwapAndRemove(removedIdx, swappedIdx);
 	}
@@ -278,14 +266,14 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 	public void removeOutEdgesOf(int source) {
 		checkVertex(source);
 		while (!edgesOut[source].isEmpty())
-			removeEdge(edgesOut[source].values().iterator().next()[1]);
+			removeAllEdgesInList(edgesOut[source].values().iterator().nextInt());
 	}
 
 	@Override
 	public void removeInEdgesOf(int target) {
 		checkVertex(target);
 		while (!edgesIn[target].isEmpty())
-			removeEdge(edgesIn[target].values().iterator().next()[1]);
+			removeAllEdgesInList(edgesIn[target].values().iterator().nextInt());
 	}
 
 	@Override
@@ -293,6 +281,7 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 		checkEdge(edge);
 		checkNewEdgeEndpoints(newSource, newTarget);
 		removeEdgeFromMaps(edge);
+		edgeNext[edge] = edgePrev[edge] = -1;
 		addEdgeToMaps(edge, newSource, newTarget);
 		setEndpoints(edge, newSource, newTarget);
 	}
@@ -306,6 +295,8 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 			if (edgesIn[v] != EmptyEdgeMap)
 				edgesIn[v].clear();
 		}
+		edgesOutNumContainer.clear();
+		edgesInNumContainer.clear();
 		super.clearEdges();
 	}
 
@@ -318,7 +309,7 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 	}
 
 	class EdgeSetOut extends IndexGraphBase.EdgeSetOutDirected {
-		private final Int2ObjectMap<int[]> edges;
+		private final Int2IntMap edges;
 
 		EdgeSetOut(int source) {
 			super(source);
@@ -337,7 +328,7 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 	}
 
 	class EdgeSetIn extends IndexGraphBase.EdgeSetInDirected {
-		private final Int2ObjectMap<int[]> edges;
+		private final Int2IntMap edges;
 
 		EdgeSetIn(int target) {
 			super(target);
@@ -362,7 +353,7 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 		}
 
 		@Override
-		Int2ObjectMap<int[]> edgesOut(int source) {
+		Int2IntMap edgesOut(int source) {
 			return edgesOut[source];
 		}
 
