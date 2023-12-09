@@ -47,8 +47,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl {
 
-	private ShortestPathSingleSource negativeSssp =
-			ShortestPathSingleSource.newBuilder().setNegativeWeights(true).build();
+	private ShortestPathSingleSource negativeSssp = ShortestPathSingleSource.builder().setNegativeWeights(true).build();
 	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
 

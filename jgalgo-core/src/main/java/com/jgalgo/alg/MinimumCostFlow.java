@@ -38,7 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * @see    MaximumFlow
  * @see    Flow
@@ -210,7 +210,7 @@ public interface MinimumCostFlow {
 	 * @return a default implementation of {@link MinimumCostFlow}
 	 */
 	static MinimumCostFlow newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -221,7 +221,7 @@ public interface MinimumCostFlow {
 	 *
 	 * @return a new builder that can build {@link MinimumCostFlow} objects
 	 */
-	static MinimumCostFlow.Builder newBuilder() {
+	static MinimumCostFlow.Builder builder() {
 		return new MinimumCostFlow.Builder() {
 			String impl;
 			boolean integerNetwork;
@@ -344,7 +344,7 @@ public interface MinimumCostFlow {
 	/**
 	 * A builder for {@link MinimumCostFlow} objects.
 	 *
-	 * @see    MinimumCostFlow#newBuilder()
+	 * @see    MinimumCostFlow#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

@@ -298,7 +298,7 @@ public class MaximumFlowBench {
 	}
 
 	private static MaximumFlow getAlgo(String implName) {
-		MaximumFlow.Builder builder = MaximumFlow.newBuilder();
+		MaximumFlow.Builder builder = MaximumFlow.builder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

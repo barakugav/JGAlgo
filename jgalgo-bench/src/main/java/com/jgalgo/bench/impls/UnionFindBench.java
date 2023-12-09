@@ -133,7 +133,7 @@ public class UnionFindBench {
 	}
 
 	private static UnionFind.Builder getAlgo(String implName) {
-		UnionFind.Builder builder = UnionFind.newBuilder();
+		UnionFind.Builder builder = UnionFind.builder();
 		builder.setOption("impl", implName);
 		return builder;
 	}

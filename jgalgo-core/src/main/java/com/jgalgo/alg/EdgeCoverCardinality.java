@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 class EdgeCoverCardinality extends EdgeCovers.AbstractImpl {
 
-	private final MatchingAlgo matchingAlgo = MatchingAlgo.newBuilder().setCardinality(true).build();
+	private final MatchingAlgo matchingAlgo = MatchingAlgo.builder().setCardinality(true).build();
 
 	@Override
 	IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {

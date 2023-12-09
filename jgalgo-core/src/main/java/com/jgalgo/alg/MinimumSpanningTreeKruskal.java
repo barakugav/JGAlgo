@@ -49,7 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 class MinimumSpanningTreeKruskal extends MinimumSpanningTreeUtils.AbstractUndirected {
 
-	private UnionFind.Builder unionFindBuilder = UnionFind.newBuilder();
+	private UnionFind.Builder unionFindBuilder = UnionFind.builder();
 	private boolean parallelEnable = JGAlgoConfigImpl.ParallelByDefault;
 
 	/**

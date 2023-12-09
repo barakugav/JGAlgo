@@ -133,7 +133,7 @@ public class HeapBench {
 
 	@Benchmark
 	public void Binary(Blackhole blackhole) {
-		benchHeap(Heap.newBuilder(), blackhole);
+		benchHeap(Heap.builder(), blackhole);
 	}
 
 	@Benchmark

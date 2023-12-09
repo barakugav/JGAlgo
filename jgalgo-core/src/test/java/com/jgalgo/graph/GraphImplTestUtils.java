@@ -1232,12 +1232,12 @@ class GraphImplTestUtils extends TestUtils {
 
 	static void testUndirectedBipartiteMatching(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		MatchingBipartiteTestUtils.randBipartiteGraphs(
-				MatchingAlgo.newBuilder().setBipartite(true).setCardinality(true).build(), graphImpl, seed);
+				MatchingAlgo.builder().setBipartite(true).setCardinality(true).build(), graphImpl, seed);
 	}
 
 	static void testUndirectedBipartiteMatchingWeighted(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl,
 			long seed) {
-		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingAlgo.newBuilder().setBipartite(true).build(),
+		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingAlgo.builder().setBipartite(true).build(),
 				graphImpl, seed);
 	}
 

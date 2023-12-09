@@ -153,7 +153,7 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 
 	@Test
 	public void testBuilderSetOption() {
-		ShortestPathAllPairs.Builder builder = ShortestPathAllPairs.newBuilder();
+		ShortestPathAllPairs.Builder builder = ShortestPathAllPairs.builder();
 		assertNotNull(builder.build());
 
 		assertThrows(IllegalArgumentException.class, () -> builder.setOption("non-existing-option", "value"));
@@ -171,7 +171,7 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 
 	@Test
 	public void testBuilderSetCardinality() {
-		ShortestPathAllPairs.Builder builder = ShortestPathAllPairs.newBuilder();
+		ShortestPathAllPairs.Builder builder = ShortestPathAllPairs.builder();
 		builder.setCardinality(true);
 		assertEquals(ShortestPathAllPairsCardinality.class, builder.build().getClass());
 	}

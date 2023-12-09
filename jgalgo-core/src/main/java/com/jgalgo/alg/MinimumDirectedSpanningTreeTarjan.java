@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  */
 class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.AbstractDirected {
 
-	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.newBuilder();
+	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();
 
 	/**

@@ -89,7 +89,7 @@ public class CyclesEnumeratorBench {
 	}
 
 	private static CyclesEnumerator getAlgo(String implName) {
-		CyclesEnumerator.Builder builder = CyclesEnumerator.newBuilder();
+		CyclesEnumerator.Builder builder = CyclesEnumerator.builder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

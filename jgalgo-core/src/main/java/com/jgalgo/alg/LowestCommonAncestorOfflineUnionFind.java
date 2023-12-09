@@ -77,7 +77,7 @@ class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUt
 			}
 		};
 
-		UnionFind uf = UnionFind.newBuilder().expectedSize(n).build();
+		UnionFind uf = UnionFind.builder().expectedSize(n).build();
 		int[] ufRoot = new int[n];
 		for (int v = 0; v < n; v++) {
 			uf.make();

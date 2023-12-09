@@ -49,7 +49,7 @@ import com.jgalgo.graph.WeightFunction;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
  * // Create an undirected graph with three vertices and edges between them
@@ -186,7 +186,7 @@ public interface ShortestPathSingleSource {
 	 * @return a default implementation of {@link ShortestPathSingleSource}
 	 */
 	static ShortestPathSingleSource newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -197,14 +197,14 @@ public interface ShortestPathSingleSource {
 	 *
 	 * @return a new builder that can build {@link ShortestPathSingleSource} objects
 	 */
-	static ShortestPathSingleSource.Builder newBuilder() {
+	static ShortestPathSingleSource.Builder builder() {
 		return new ShortestPathSingleSourceUtils.BuilderImpl();
 	}
 
 	/**
 	 * A builder for {@link ShortestPathSingleSource} objects.
 	 *
-	 * @see    ShortestPathSingleSource#newBuilder()
+	 * @see    ShortestPathSingleSource#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

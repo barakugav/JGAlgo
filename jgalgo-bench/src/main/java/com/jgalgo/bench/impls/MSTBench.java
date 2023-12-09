@@ -111,7 +111,7 @@ public class MSTBench {
 	}
 
 	private static MinimumSpanningTree getAlgo(String implName) {
-		MinimumSpanningTree.Builder builder = MinimumSpanningTree.newBuilder();
+		MinimumSpanningTree.Builder builder = MinimumSpanningTree.builder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

@@ -167,7 +167,7 @@ public class MaximalCliquesEnumeratorBench {
 	}
 
 	private static MaximalCliquesEnumerator getAlgo(String implName) {
-		MaximalCliquesEnumerator.Builder builder = MaximalCliquesEnumerator.newBuilder();
+		MaximalCliquesEnumerator.Builder builder = MaximalCliquesEnumerator.builder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

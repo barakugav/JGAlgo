@@ -74,7 +74,7 @@ class StronglyConnectedComponentsTestUtils extends TestBase {
 
 	@Test
 	public void testSetOption() {
-		StronglyConnectedComponentsAlgo.Builder builder = StronglyConnectedComponentsAlgo.newBuilder();
+		StronglyConnectedComponentsAlgo.Builder builder = StronglyConnectedComponentsAlgo.builder();
 		assertNotNull(builder.build());
 
 		assertThrows(IllegalArgumentException.class, () -> builder.setOption("jdasg", "lhfj"));

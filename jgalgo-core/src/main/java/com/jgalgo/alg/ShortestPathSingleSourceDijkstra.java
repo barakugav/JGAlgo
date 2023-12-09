@@ -49,7 +49,7 @@ import com.jgalgo.internal.util.Assertions;
  */
 class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.AbstractImpl {
 
-	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.newBuilder();
+	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 
 	/**
 	 * Construct a new SSSP algorithm.

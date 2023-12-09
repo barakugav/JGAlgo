@@ -187,7 +187,7 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 
 	@Test
 	public void testBuilderSetOption() {
-		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.newBuilder();
+		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.builder();
 		assertNotNull(builder.build());
 
 		assertThrows(IllegalArgumentException.class, () -> builder.setOption("non-existing-option", "value"));
@@ -211,7 +211,7 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 
 	@Test
 	public void testBuilderNegInt() {
-		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.newBuilder();
+		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.builder();
 		builder.setNegativeWeights(false);
 		builder.setIntWeights(false);
 		assertEquals(ShortestPathSingleSourceDijkstra.class, builder.build().getClass());
@@ -228,7 +228,7 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 	@SuppressWarnings("boxing")
 	@Test
 	public void testBuilderMaxDistance() {
-		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.newBuilder();
+		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.builder();
 		builder.setIntWeights(true);
 		builder.setMaxDistance(10);
 

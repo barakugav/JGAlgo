@@ -72,7 +72,7 @@ public class MinimumCostFlowTest extends TestBase {
 
 	@Test
 	public void testBuilderInteger() {
-		MinimumCostFlow.Builder builder = MinimumCostFlow.newBuilder();
+		MinimumCostFlow.Builder builder = MinimumCostFlow.builder();
 		builder.integerCosts(true);
 		builder.integerNetwork(true);
 		assertNotNull(builder.build());
@@ -80,7 +80,7 @@ public class MinimumCostFlowTest extends TestBase {
 
 	@Test
 	public void testSetOption() {
-		MinimumCostFlow.Builder builder = MinimumCostFlow.newBuilder();
+		MinimumCostFlow.Builder builder = MinimumCostFlow.builder();
 		assertNotNull(builder.build());
 
 		assertThrows(IllegalArgumentException.class, () -> builder.setOption("jdasg", "lhfj"));

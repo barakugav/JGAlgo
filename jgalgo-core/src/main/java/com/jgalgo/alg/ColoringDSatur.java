@@ -48,7 +48,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntFunction;
  */
 class ColoringDSatur extends ColoringUtils.AbstractImpl {
 
-	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.newBuilder();
+	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 
 	/**
 	 * Create a new coloring algorithm object.

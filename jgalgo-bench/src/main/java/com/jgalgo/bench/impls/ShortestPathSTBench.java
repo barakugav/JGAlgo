@@ -108,7 +108,7 @@ public class ShortestPathSTBench {
 
 		@Benchmark
 		public void BidirectionalDijkstra(Blackhole blackhole) {
-			benchStShortestPath(ShortestPathST.newBuilder().build(), blackhole);
+			benchStShortestPath(ShortestPathST.builder().build(), blackhole);
 		}
 
 		@Benchmark
@@ -150,7 +150,7 @@ public class ShortestPathSTBench {
 
 		@Benchmark
 		public void BidirectionalDijkstra(Blackhole blackhole) {
-			benchStShortestPath(ShortestPathST.newBuilder().build(), blackhole);
+			benchStShortestPath(ShortestPathST.builder().build(), blackhole);
 		}
 
 		@Benchmark
@@ -193,7 +193,7 @@ public class ShortestPathSTBench {
 
 		@Benchmark
 		public void BidirectionalDijkstra(Blackhole blackhole) {
-			benchStShortestPath(ShortestPathST.newBuilder().build(), blackhole);
+			benchStShortestPath(ShortestPathST.builder().build(), blackhole);
 		}
 
 		@Benchmark
@@ -203,7 +203,7 @@ public class ShortestPathSTBench {
 	}
 
 	private static ShortestPathHeuristicST getAlgo(String implName) {
-		ShortestPathHeuristicST.Builder builder = ShortestPathHeuristicST.newBuilder();
+		ShortestPathHeuristicST.Builder builder = ShortestPathHeuristicST.builder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -80,7 +80,7 @@ public interface CyclesEnumerator {
 	 * @return a default implementation of {@link CyclesEnumerator}
 	 */
 	static CyclesEnumerator newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -91,7 +91,7 @@ public interface CyclesEnumerator {
 	 *
 	 * @return a new builder that can build {@link CyclesEnumerator} objects
 	 */
-	static CyclesEnumerator.Builder newBuilder() {
+	static CyclesEnumerator.Builder builder() {
 		return new CyclesEnumerator.Builder() {
 			String impl;
 
@@ -126,7 +126,7 @@ public interface CyclesEnumerator {
 	/**
 	 * A builder for {@link CyclesEnumerator} objects.
 	 *
-	 * @see    CyclesEnumerator#newBuilder()
+	 * @see    CyclesEnumerator#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

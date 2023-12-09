@@ -33,7 +33,7 @@ import java.util.stream.StreamSupport;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
  * Heap<Integer> h = Heap.newInstance();
@@ -173,7 +173,7 @@ public interface Heap<E> extends Iterable<E> {
 	 * @return a default implementation of {@link Heap}
 	 */
 	static <E> Heap<E> newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -186,7 +186,7 @@ public interface Heap<E> extends Iterable<E> {
 	 * @return a default implementation of {@link Heap}
 	 */
 	static <E> Heap<E> newInstance(Comparator<? super E> cmp) {
-		return newBuilder().build(cmp);
+		return builder().build(cmp);
 	}
 
 	/**
@@ -197,14 +197,14 @@ public interface Heap<E> extends Iterable<E> {
 	 *
 	 * @return a new builder that can build {@link Heap} objects
 	 */
-	static Heap.Builder newBuilder() {
+	static Heap.Builder builder() {
 		return HeapBinary::new;
 	}
 
 	/**
 	 * Builder for heaps.
 	 *
-	 * @see    Heap#newBuilder()
+	 * @see    Heap#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {

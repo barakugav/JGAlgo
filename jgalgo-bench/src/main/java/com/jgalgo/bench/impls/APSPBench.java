@@ -90,7 +90,7 @@ public class APSPBench {
 	}
 
 	private static ShortestPathAllPairs getAlgo(String implName) {
-		ShortestPathAllPairs.Builder builder = ShortestPathAllPairs.newBuilder();
+		ShortestPathAllPairs.Builder builder = ShortestPathAllPairs.builder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

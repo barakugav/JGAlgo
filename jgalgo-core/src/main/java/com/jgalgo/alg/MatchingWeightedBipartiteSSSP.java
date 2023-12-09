@@ -41,8 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImpl {
 
 	private ShortestPathSingleSource ssspPositive = ShortestPathSingleSource.newInstance();
-	private ShortestPathSingleSource ssspNegative =
-			ShortestPathSingleSource.newBuilder().setNegativeWeights(true).build();
+	private ShortestPathSingleSource ssspNegative = ShortestPathSingleSource.builder().setNegativeWeights(true).build();
 
 	/**
 	 * Create a new maximum weighted matching object.

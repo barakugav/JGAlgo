@@ -330,7 +330,7 @@ public class RMQStaticBench {
 	}
 
 	private static RMQStatic getAlgo(String implName) {
-		RMQStatic.Builder builder = RMQStatic.newBuilder();
+		RMQStatic.Builder builder = RMQStatic.builder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

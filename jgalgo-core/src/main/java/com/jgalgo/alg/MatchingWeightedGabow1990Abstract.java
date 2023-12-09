@@ -257,7 +257,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 		final Blossom[] findToBlossoms;
 
 		Evens(int n) {
-			uf = UnionFind.newBuilder().expectedSize(n).build();
+			uf = UnionFind.builder().expectedSize(n).build();
 			findToBlossoms = new Blossom[n];
 		}
 

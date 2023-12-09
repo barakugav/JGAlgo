@@ -26,7 +26,7 @@ package com.jgalgo.alg;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
  * LowestCommonAncestorDynamic lca = LowestCommonAncestorDynamic.newInstance();
@@ -129,7 +129,7 @@ public interface LowestCommonAncestorDynamic {
 	 * @return a default implementation of {@link LowestCommonAncestorDynamic}
 	 */
 	static LowestCommonAncestorDynamic newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -140,7 +140,7 @@ public interface LowestCommonAncestorDynamic {
 	 *
 	 * @return a new builder that can build {@link LowestCommonAncestorDynamic} objects
 	 */
-	static LowestCommonAncestorDynamic.Builder newBuilder() {
+	static LowestCommonAncestorDynamic.Builder builder() {
 		return new LowestCommonAncestorDynamic.Builder() {
 			String impl;
 
@@ -177,7 +177,7 @@ public interface LowestCommonAncestorDynamic {
 	/**
 	 * A builder for {@link LowestCommonAncestorDynamic} objects.
 	 *
-	 * @see    LowestCommonAncestorDynamic#newBuilder()
+	 * @see    LowestCommonAncestorDynamic#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

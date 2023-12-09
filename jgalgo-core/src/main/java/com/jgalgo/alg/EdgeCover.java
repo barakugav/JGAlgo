@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * @see    VertexCover
  * @author Barak Ugav
@@ -129,7 +129,7 @@ public interface EdgeCover {
 	 * @return a default implementation of {@link EdgeCover}
 	 */
 	static EdgeCover newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -140,7 +140,7 @@ public interface EdgeCover {
 	 *
 	 * @return a new builder that can build {@link EdgeCover} objects
 	 */
-	static EdgeCover.Builder newBuilder() {
+	static EdgeCover.Builder builder() {
 		return () -> {
 			EdgeCover cardinalityAlgo = new EdgeCoverCardinality();
 			EdgeCover weightedAlgo = new EdgeCoverWeighted();
@@ -160,7 +160,7 @@ public interface EdgeCover {
 	/**
 	 * A builder for {@link EdgeCover} algorithms.
 	 *
-	 * @see    EdgeCover#newBuilder()
+	 * @see    EdgeCover#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

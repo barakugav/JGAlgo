@@ -24,7 +24,7 @@ package com.jgalgo.internal.ds;
  * increasing the asymptotical running time of any of the operations.
  *
  * <pre> {@code
- * DynamicTree.Builder builder = DynamicTree.newBuilder();
+ * DynamicTree.Builder builder = DynamicTree.builder();
  * builder.addExtension(DynamicTreeExtension.TreeSize.class);
  *
  * DynamicTree dt = builder.build();
@@ -52,7 +52,7 @@ public interface DynamicTreeExtension {
 	 * {@link #getTreeSize(com.jgalgo.internal.ds.DynamicTree.Vertex)} method.
 	 *
 	 * <pre> {@code
-	 * DynamicTree.Builder builder = DynamicTree.newBuilder();
+	 * DynamicTree.Builder builder = DynamicTree.builder();
 	 * builder.addExtension(DynamicTreeExtension.TreeSize.class);
 	 *
 	 * DynamicTree dt = builder.build();

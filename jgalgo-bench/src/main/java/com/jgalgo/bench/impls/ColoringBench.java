@@ -96,7 +96,7 @@ public class ColoringBench {
 	}
 
 	private static ColoringAlgo getAlgo(String implName) {
-		ColoringAlgo.Builder builder = ColoringAlgo.newBuilder();
+		ColoringAlgo.Builder builder = ColoringAlgo.builder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

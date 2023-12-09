@@ -33,7 +33,7 @@ import com.jgalgo.alg.AlgorithmBuilderBase;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -85,7 +85,7 @@ public interface RMQStatic {
 	 * @return a default implementation of {@link RMQStatic}
 	 */
 	static RMQStatic newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -96,7 +96,7 @@ public interface RMQStatic {
 	 *
 	 * @return a new builder that can build {@link RMQStatic} objects
 	 */
-	static RMQStatic.Builder newBuilder() {
+	static RMQStatic.Builder builder() {
 		return new RMQStatic.Builder() {
 			String impl;
 
@@ -135,7 +135,7 @@ public interface RMQStatic {
 	/**
 	 * A builder for {@link RMQStatic} objects.
 	 *
-	 * @see    RMQStatic#newBuilder()
+	 * @see    RMQStatic#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

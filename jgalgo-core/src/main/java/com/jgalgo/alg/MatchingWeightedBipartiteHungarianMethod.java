@@ -43,7 +43,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  */
 class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximumMatchingImpl {
 
-	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.newBuilder();
+	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 
 	/**
 	 * Create a new maximum weighted matching object.

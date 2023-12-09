@@ -34,7 +34,7 @@ import com.jgalgo.graph.WeightFunction;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Matching_(graph_theory)">Wikipedia</a>
  * @author Barak Ugav
@@ -131,7 +131,7 @@ public interface MatchingAlgo {
 	 * @return a default implementation of {@link MatchingAlgo}
 	 */
 	static MatchingAlgo newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -142,7 +142,7 @@ public interface MatchingAlgo {
 	 *
 	 * @return a new builder that can build {@link MatchingAlgo} objects
 	 */
-	static MatchingAlgo.Builder newBuilder() {
+	static MatchingAlgo.Builder builder() {
 		return new MatchingAlgo.Builder() {
 
 			boolean cardinality = false;
@@ -230,7 +230,7 @@ public interface MatchingAlgo {
 	/**
 	 * A builder for {@link MatchingAlgo} objects.
 	 *
-	 * @see    MatchingAlgo#newBuilder()
+	 * @see    MatchingAlgo#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

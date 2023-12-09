@@ -105,7 +105,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 
 			IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();
 			int[] level = new int[n];
-			DynamicTree dt = DynamicTree.newBuilder().setMaxWeight(capacitySum > 0 ? capacitySum : 1e100).build();
+			DynamicTree dt = DynamicTree.builder().setMaxWeight(capacitySum > 0 ? capacitySum : 1e100).build();
 			DynamicTree.Vertex[] vToDt = new DynamicTree.Vertex[n];
 			Stack<DynamicTree.Vertex> cleanupStack = new ObjectArrayList<>();
 

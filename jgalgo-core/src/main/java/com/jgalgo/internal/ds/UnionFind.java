@@ -33,7 +33,7 @@ import com.jgalgo.alg.AlgorithmBuilderBase;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
  * UnionFind uf = UnionFind.newInstance();
@@ -107,7 +107,7 @@ public interface UnionFind {
 	 * @return a default implementation of {@link UnionFind}
 	 */
 	static UnionFind newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -118,7 +118,7 @@ public interface UnionFind {
 	 *
 	 * @return a new builder that can build {@link UnionFind} objects
 	 */
-	static UnionFind.Builder newBuilder() {
+	static UnionFind.Builder builder() {
 		return new UnionFind.Builder() {
 			int expectedSize;
 			String impl;
@@ -162,7 +162,7 @@ public interface UnionFind {
 	/**
 	 * A builder for {@link UnionFind} objects.
 	 *
-	 * @see    UnionFind#newBuilder()
+	 * @see    UnionFind#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

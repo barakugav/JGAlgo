@@ -51,7 +51,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * @see    <a href= "https://en.wikipedia.org/wiki/Minimum_spanning_tree">Wikipedia</a>
  * @see    MinimumDirectedSpanningTree
@@ -260,7 +260,7 @@ public interface MinimumSpanningTree {
 	 * @return a default implementation of {@link MinimumSpanningTree}
 	 */
 	static MinimumSpanningTree newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -271,7 +271,7 @@ public interface MinimumSpanningTree {
 	 *
 	 * @return a new builder that can build {@link MinimumSpanningTree} objects
 	 */
-	static MinimumSpanningTree.Builder newBuilder() {
+	static MinimumSpanningTree.Builder builder() {
 		return new MinimumSpanningTree.Builder() {
 			String impl;
 			private ReferenceableHeap.Builder heapBuilder;
@@ -323,7 +323,7 @@ public interface MinimumSpanningTree {
 	/**
 	 * A builder for {@link MinimumSpanningTree} objects.
 	 *
-	 * @see    MinimumSpanningTree#newBuilder()
+	 * @see    MinimumSpanningTree#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

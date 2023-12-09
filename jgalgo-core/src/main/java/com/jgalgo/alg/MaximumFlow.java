@@ -35,7 +35,7 @@ import com.jgalgo.graph.WeightFunctionInt;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
  * Graph<String, Integer> g = ...;
@@ -118,7 +118,7 @@ public interface MaximumFlow {
 	 * @return a default implementation of {@link MaximumFlow}
 	 */
 	static MaximumFlow newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -129,7 +129,7 @@ public interface MaximumFlow {
 	 *
 	 * @return a new builder that can build {@link MaximumFlow} objects
 	 */
-	static MaximumFlow.Builder newBuilder() {
+	static MaximumFlow.Builder builder() {
 		return new MaximumFlow.Builder() {
 			String impl;
 
@@ -178,7 +178,7 @@ public interface MaximumFlow {
 	/**
 	 * A builder for {@link MaximumFlow} objects.
 	 *
-	 * @see    MaximumFlow#newBuilder()
+	 * @see    MaximumFlow#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

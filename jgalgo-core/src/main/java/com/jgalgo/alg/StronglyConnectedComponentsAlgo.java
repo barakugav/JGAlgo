@@ -37,7 +37,7 @@ import com.jgalgo.graph.IntGraph;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * @see    WeaklyConnectedComponentsAlgo
  * @see    BiConnectedComponentsAlgo
@@ -88,7 +88,7 @@ public interface StronglyConnectedComponentsAlgo {
 	 * @return a default implementation of {@link StronglyConnectedComponentsAlgo}
 	 */
 	static StronglyConnectedComponentsAlgo newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -99,7 +99,7 @@ public interface StronglyConnectedComponentsAlgo {
 	 *
 	 * @return a new builder that can build {@link StronglyConnectedComponentsAlgo} objects
 	 */
-	static StronglyConnectedComponentsAlgo.Builder newBuilder() {
+	static StronglyConnectedComponentsAlgo.Builder builder() {
 		return new StronglyConnectedComponentsAlgo.Builder() {
 			String impl;
 
@@ -134,7 +134,7 @@ public interface StronglyConnectedComponentsAlgo {
 	/**
 	 * A builder for {@link StronglyConnectedComponentsAlgo} objects.
 	 *
-	 * @see    StronglyConnectedComponentsAlgo#newBuilder()
+	 * @see    StronglyConnectedComponentsAlgo#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

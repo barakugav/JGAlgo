@@ -23,10 +23,10 @@
  * {@link com.jgalgo.alg.ShortestPathSingleSource}), a result object is defined within the interface (e.g.
  * {@link com.jgalgo.alg.ShortestPathSingleSource.Result}), a default implementation is provided via
  * {@code newInstance()} method (e.g. {@link com.jgalgo.alg.ShortestPathSingleSource#newInstance()}), and a builder that
- * allow more control over the algorithm may be provided via {@code newBuilder()} method (e.g.
- * {@link com.jgalgo.alg.ShortestPathSingleSource#newBuilder()}). In addition, algorithm interfaces define a result
- * object specifically for {@linkplain com.jgalgo.graph.IntGraph int graphs} in which the vertices and edges are integer
- * only (e.g. {@link com.jgalgo.alg.ShortestPathSingleSource.IResult}). In the common use case, there is no need to use
+ * allow more control over the algorithm may be provided via {@code builder()} method (e.g.
+ * {@link com.jgalgo.alg.ShortestPathSingleSource#builder()}). In addition, algorithm interfaces define a result object
+ * specifically for {@linkplain com.jgalgo.graph.IntGraph int graphs} in which the vertices and edges are integer only
+ * (e.g. {@link com.jgalgo.alg.ShortestPathSingleSource.IResult}). In the common use case, there is no need to use
  * {@link com.jgalgo.graph.IntGraph} and the result objects that are specific for it.
  *
  * <p>

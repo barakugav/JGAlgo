@@ -58,7 +58,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
  */
 class ShortestPathAStar implements ShortestPathHeuristicST {
 
-	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.newBuilder();
+	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 
 	/**
 	 * Construct a new AStart algorithm.

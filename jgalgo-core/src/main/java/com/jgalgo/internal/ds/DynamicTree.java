@@ -166,7 +166,7 @@ public interface DynamicTree {
 	 * {@link DynamicTreeExtension.TreeSize} extension use.
 	 *
 	 * <pre> {@code
-	 * DynamicTree.Builder builder = DynamicTree.newBuilder();
+	 * DynamicTree.Builder builder = DynamicTree.builder();
 	 * builder.addExtension(DynamicTreeExtension.TreeSize.class);
 	 *
 	 * DynamicTree dt = builder.build();
@@ -194,14 +194,14 @@ public interface DynamicTree {
 	 *
 	 * @return a new builder that can build {@link DynamicTree} objects
 	 */
-	static DynamicTree.Builder newBuilder() {
+	static DynamicTree.Builder builder() {
 		return new DynamicTreeBuilderImpl();
 	}
 
 	/**
 	 * A builder for {@link DynamicTree} objects.
 	 *
-	 * @see    DynamicTree#newBuilder()
+	 * @see    DynamicTree#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder {
@@ -244,7 +244,7 @@ public interface DynamicTree {
 		 * For example, this is the recommended way to create a dynamic tree data structure with tree size extension:
 		 *
 		 * <pre> {@code
-		 * DynamicTree.Builder builder = DynamicTree.newBuilder();
+		 * DynamicTree.Builder builder = DynamicTree.builder();
 		 * builder.addExtension(DynamicTreeExtension.TreeSize.class);
 		 *
 		 * DynamicTree dt = builder.build();

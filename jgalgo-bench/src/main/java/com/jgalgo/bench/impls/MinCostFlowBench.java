@@ -388,7 +388,7 @@ public class MinCostFlowBench {
 	}
 
 	private static MinimumCostFlow getAlgo(String implName) {
-		MinimumCostFlow.Builder builder = MinimumCostFlow.newBuilder();
+		MinimumCostFlow.Builder builder = MinimumCostFlow.builder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

@@ -32,7 +32,7 @@ import com.jgalgo.graph.WeightFunction;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -63,7 +63,7 @@ public interface MinimumMeanCycle {
 	 * @return a default implementation of {@link MinimumMeanCycle}
 	 */
 	static MinimumMeanCycle newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -74,7 +74,7 @@ public interface MinimumMeanCycle {
 	 *
 	 * @return a new builder that can build {@link MinimumMeanCycle} objects
 	 */
-	static MinimumMeanCycle.Builder newBuilder() {
+	static MinimumMeanCycle.Builder builder() {
 		return new MinimumMeanCycle.Builder() {
 			String impl;
 
@@ -109,7 +109,7 @@ public interface MinimumMeanCycle {
 	/**
 	 * A builder for {@link MinimumMeanCycle} objects.
 	 *
-	 * @see    MinimumMeanCycle#newBuilder()
+	 * @see    MinimumMeanCycle#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

@@ -186,7 +186,7 @@ public class SSSPNegativeWeightsBench {
 	}
 
 	private static ShortestPathSingleSource getAlgo(String implName) {
-		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.newBuilder();
+		ShortestPathSingleSource.Builder builder = ShortestPathSingleSource.builder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

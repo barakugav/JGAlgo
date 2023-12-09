@@ -51,7 +51,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  */
 class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.AbstractUndirected {
 
-	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.newBuilder();
+	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 
 	/**
 	 * Construct a new MST algorithm object.

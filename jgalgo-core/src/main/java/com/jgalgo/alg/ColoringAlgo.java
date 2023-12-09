@@ -41,7 +41,7 @@ import com.jgalgo.internal.util.IntAdapters;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * <pre> {@code
  * Graph<String, Integer> g = Graph.newUndirected();
@@ -157,7 +157,7 @@ public interface ColoringAlgo {
 	 * @return a default implementation of {@link ColoringAlgo}
 	 */
 	static ColoringAlgo newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -168,7 +168,7 @@ public interface ColoringAlgo {
 	 *
 	 * @return a new builder that can build {@link ColoringAlgo} objects
 	 */
-	static ColoringAlgo.Builder newBuilder() {
+	static ColoringAlgo.Builder builder() {
 		return new ColoringAlgo.Builder() {
 			String impl;
 
@@ -205,7 +205,7 @@ public interface ColoringAlgo {
 	/**
 	 * A builder for {@link ColoringAlgo} objects.
 	 *
-	 * @see    ColoringAlgo#newBuilder()
+	 * @see    ColoringAlgo#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

@@ -87,7 +87,7 @@ public class StrongConnectedComponentsBench {
 	}
 
 	private static StronglyConnectedComponentsAlgo getAlgo(String implName) {
-		StronglyConnectedComponentsAlgo.Builder builder = StronglyConnectedComponentsAlgo.newBuilder();
+		StronglyConnectedComponentsAlgo.Builder builder = StronglyConnectedComponentsAlgo.builder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

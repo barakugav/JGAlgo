@@ -115,7 +115,7 @@ public class LCADynamicBench {
 	}
 
 	private static LowestCommonAncestorDynamic getAlgo(String implName) {
-		LowestCommonAncestorDynamic.Builder builder = LowestCommonAncestorDynamic.newBuilder();
+		LowestCommonAncestorDynamic.Builder builder = LowestCommonAncestorDynamic.builder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

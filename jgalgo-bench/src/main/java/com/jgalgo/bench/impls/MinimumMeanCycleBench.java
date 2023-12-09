@@ -92,7 +92,7 @@ public class MinimumMeanCycleBench {
 	}
 
 	private static MinimumMeanCycle getAlgo(String implName) {
-		MinimumMeanCycle.Builder builder = MinimumMeanCycle.newBuilder();
+		MinimumMeanCycle.Builder builder = MinimumMeanCycle.builder();
 		builder.setOption("impl", implName);
 		return builder.build();
 	}

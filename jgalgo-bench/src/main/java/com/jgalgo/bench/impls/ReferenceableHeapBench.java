@@ -108,7 +108,7 @@ public class ReferenceableHeapBench {
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
 
 		/* SSSP */
-		ShortestPathSingleSource.Builder ssspBuilder = ShortestPathSingleSource.newBuilder();
+		ShortestPathSingleSource.Builder ssspBuilder = ShortestPathSingleSource.builder();
 		ssspBuilder.setOption("heap-builder", heapBuilder);
 		ShortestPathSingleSource ssspAlgo = ssspBuilder.build();
 		ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) ssspAlgo
@@ -116,7 +116,7 @@ public class ReferenceableHeapBench {
 		blackhole.consume(ssspRes);
 
 		/* Prim MST */
-		MinimumSpanningTree.Builder mstBuilder = MinimumSpanningTree.newBuilder();
+		MinimumSpanningTree.Builder mstBuilder = MinimumSpanningTree.builder();
 		mstBuilder.setOption("heap-builder", heapBuilder);
 		MinimumSpanningTree mstAlgo = mstBuilder.build();
 		MinimumSpanningTree.IResult mst =

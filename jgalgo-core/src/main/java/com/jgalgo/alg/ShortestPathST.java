@@ -35,7 +35,7 @@ import com.jgalgo.graph.WeightFunction;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * @see    ShortestPathSingleSource
  * @see    ShortestPathAllPairs
@@ -71,7 +71,7 @@ public interface ShortestPathST {
 	 * @return a default implementation of {@link ShortestPathST}
 	 */
 	static ShortestPathST newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -82,7 +82,7 @@ public interface ShortestPathST {
 	 *
 	 * @return a new builder that can build {@link ShortestPathST} objects
 	 */
-	static ShortestPathST.Builder newBuilder() {
+	static ShortestPathST.Builder builder() {
 		return () -> {
 			return new ShortestPathST() {
 				ShortestPathST cardinalityStSp = new ShortestPathSTBidirectionalBfs();
@@ -103,7 +103,7 @@ public interface ShortestPathST {
 	/**
 	 * A builder for {@link ShortestPathST} objects.
 	 *
-	 * @see    ShortestPathST#newBuilder()
+	 * @see    ShortestPathST#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {

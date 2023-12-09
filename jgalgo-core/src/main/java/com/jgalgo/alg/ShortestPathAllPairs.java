@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
  *
  * <p>
  * Use {@link #newInstance()} to get a default implementation of this interface. A builder obtained via
- * {@link #newBuilder()} may support different options to obtain different implementations.
+ * {@link #builder()} may support different options to obtain different implementations.
  *
  * @author Barak Ugav
  */
@@ -168,7 +168,7 @@ public interface ShortestPathAllPairs {
 	 * @return a default implementation of {@link ShortestPathAllPairs}
 	 */
 	static ShortestPathAllPairs newInstance() {
-		return newBuilder().build();
+		return builder().build();
 	}
 
 	/**
@@ -179,7 +179,7 @@ public interface ShortestPathAllPairs {
 	 *
 	 * @return a new builder that can build {@link ShortestPathAllPairs} objects
 	 */
-	static ShortestPathAllPairs.Builder newBuilder() {
+	static ShortestPathAllPairs.Builder builder() {
 		return new ShortestPathAllPairs.Builder() {
 			private boolean cardinalityWeight;
 			String impl;
@@ -248,7 +248,7 @@ public interface ShortestPathAllPairs {
 	/**
 	 * A builder for {@link ShortestPathAllPairs} objects.
 	 *
-	 * @see    ShortestPathAllPairs#newBuilder()
+	 * @see    ShortestPathAllPairs#builder()
 	 * @author Barak Ugav
 	 */
 	static interface Builder extends AlgorithmBuilderBase {
