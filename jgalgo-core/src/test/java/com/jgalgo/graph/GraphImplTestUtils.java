@@ -1020,12 +1020,9 @@ class GraphImplTestUtils extends TestUtils {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
-			final boolean selfEdges = copyConstructor
-					.apply(directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected())
-					.isAllowSelfEdges();
-			final boolean parallelEdges = copyConstructor
-					.apply(directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected())
-					.isAllowParallelEdges();
+			final boolean selfEdges = copyConstructor.apply(IndexGraphBuilder.newInstance(directed)).isAllowSelfEdges();
+			final boolean parallelEdges =
+					copyConstructor.apply(IndexGraphBuilder.newInstance(directed)).isAllowParallelEdges();
 			IndexGraph g = GraphsTestUtils.randGraph(100, 300, directed, selfEdges, parallelEdges, seedGen.nextSeed())
 					.indexGraph();
 
@@ -1053,13 +1050,13 @@ class GraphImplTestUtils extends TestUtils {
 			assertEquals(g, copyConstructor.apply(IndexGraphBuilder.fromGraph(g, true, true)));
 
 			if (!selfEdges) {
-				IndexGraphBuilder g1 = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+				IndexGraphBuilder g1 = IndexGraphBuilder.newInstance(directed);
 				g1.addVertex();
 				g1.addEdge(0, 0);
 				assertThrows(IllegalArgumentException.class, () -> copyConstructor.apply(g1));
 			}
 			if (!parallelEdges) {
-				IndexGraphBuilder g1 = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+				IndexGraphBuilder g1 = IndexGraphBuilder.newInstance(directed);
 				g1.addVertex();
 				g1.addVertex();
 				g1.addEdge(0, 1);
@@ -1067,7 +1064,7 @@ class GraphImplTestUtils extends TestUtils {
 				assertThrows(IllegalArgumentException.class, () -> copyConstructor.apply(g1));
 			}
 			if (!parallelEdges) {
-				IndexGraphBuilder g1 = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+				IndexGraphBuilder g1 = IndexGraphBuilder.newInstance(directed);
 				g1.addVertex();
 				g1.addVertex();
 				g1.addEdge(1, 0);

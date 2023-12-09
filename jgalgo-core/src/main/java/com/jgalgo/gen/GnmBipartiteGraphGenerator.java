@@ -353,12 +353,10 @@ public class GnmBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 		GraphBuilder<V, E> g;
 		if (intGraph) {
 			@SuppressWarnings("unchecked")
-			GraphBuilder<V, E> g0 =
-					(GraphBuilder<V, E>) (direction != Direction.Undirected ? IntGraphBuilder.newDirected()
-							: IntGraphBuilder.newUndirected());
+			GraphBuilder<V, E> g0 = (GraphBuilder<V, E>) IntGraphBuilder.newInstance(direction != Direction.Undirected);
 			g = g0;
 		} else {
-			g = direction != Direction.Undirected ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+			g = GraphBuilder.newInstance(direction != Direction.Undirected);
 		}
 		g.expectedVerticesNum(leftVertices.size() + rightVertices.size());
 		g.expectedEdgesNum(m);

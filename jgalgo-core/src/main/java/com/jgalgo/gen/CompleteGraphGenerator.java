@@ -188,7 +188,7 @@ public class CompleteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 			m += n;
 
 		if (intGraph) {
-			IntGraphBuilder g = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder g = IntGraphBuilder.newInstance(directed);
 			g.expectedVerticesNum(n);
 			g.expectedEdgesNum(m);
 			final int[] vertices = IntAdapters.asIntCollection((Collection<Integer>) this.vertices).toIntArray();
@@ -214,7 +214,7 @@ public class CompleteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 			return (GraphBuilder<V, E>) g;
 
 		} else {
-			GraphBuilder<V, E> g = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+			GraphBuilder<V, E> g = GraphBuilder.newInstance(directed);
 			g.expectedVerticesNum(n);
 			g.expectedEdgesNum(m);
 			final V[] vertices = (V[]) this.vertices.toArray();

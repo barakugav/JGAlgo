@@ -112,7 +112,7 @@ public class EmptyGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	@Override
 	public GraphBuilder<V, E> generateIntoBuilder() {
 		if (intGraph) {
-			IntGraphBuilder g = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder g = IntGraphBuilder.newInstance(directed);
 			if (vertices != null) {
 				g.expectedVerticesNum(vertices.size());
 				for (int v : IntAdapters.asIntCollection((Collection<Integer>) vertices))
@@ -120,7 +120,7 @@ public class EmptyGraphGenerator<V, E> implements GraphGenerator<V, E> {
 			}
 			return (GraphBuilder<V, E>) g;
 		} else {
-			GraphBuilder<V, E> g = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+			GraphBuilder<V, E> g = GraphBuilder.newInstance(directed);
 			if (vertices != null) {
 				g.expectedVerticesNum(vertices.size());
 				for (V v : vertices)

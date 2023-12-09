@@ -260,6 +260,22 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	}
 
 	/**
+	 * Create a new builder that builds un/directed graphs.
+	 *
+	 * <p>
+	 * The graphs built by this builder will have the same default capabilities as {@link IndexGraphFactory}, namely
+	 * they will not support self edges and will support parallel edges. See the factory documentation for more
+	 * information.
+	 *
+	 * @param  directed if {@code true}, the new builder will build directed graphs, otherwise it will build undirected
+	 *                      graphs
+	 * @return          a new empty builder for un/directed graphs
+	 */
+	static IndexGraphBuilder newInstance(boolean directed) {
+		return IndexGraphFactory.newInstance(directed).newBuilder();
+	}
+
+	/**
 	 * Create a new builder initialized with an existing graph vertices and edges, without copying the weights.
 	 *
 	 * <p>

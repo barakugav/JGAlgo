@@ -226,7 +226,7 @@ public class GnpGraphGenerator<V, E> implements GraphGenerator<V, E> {
 		final int n = vertices.size();
 
 		if (intGraph) {
-			IntGraphBuilder g = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder g = IntGraphBuilder.newInstance(directed);
 			g.expectedVerticesNum(n);
 			final int[] vertices = IntAdapters.asIntCollection((Collection<Integer>) this.vertices).toIntArray();
 			for (int v : vertices)
@@ -255,7 +255,7 @@ public class GnpGraphGenerator<V, E> implements GraphGenerator<V, E> {
 			return (GraphBuilder<V, E>) g;
 
 		} else {
-			GraphBuilder<V, E> g = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+			GraphBuilder<V, E> g = GraphBuilder.newInstance(directed);
 			g.expectedVerticesNum(n);
 			final V[] vertices = (V[]) this.vertices.toArray();
 			for (V v : vertices)

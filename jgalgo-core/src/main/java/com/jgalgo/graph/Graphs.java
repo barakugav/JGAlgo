@@ -2201,7 +2201,7 @@ public class Graphs {
 
 		if (vertices == null && edges == null)
 			throw new NullPointerException("Either vertices or edges can be null, not both.");
-		GraphBuilder<V, E> gb = g.isDirected() ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+		GraphBuilder<V, E> gb = GraphBuilder.newInstance(g.isDirected());
 
 		if (vertices == null) {
 			vertices = new ObjectOpenHashSet();
@@ -2300,7 +2300,7 @@ public class Graphs {
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		if (vertices == null && edges == null)
 			throw new NullPointerException("Either vertices or edges can be null, not both.");
-		IntGraphBuilder gb = g.isDirected() ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+		IntGraphBuilder gb = IntGraphBuilder.newInstance(g.isDirected());
 
 		if (vertices == null) {
 			vertices = new IntOpenHashSet();

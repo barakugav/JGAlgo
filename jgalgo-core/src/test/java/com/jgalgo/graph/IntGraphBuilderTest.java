@@ -63,7 +63,7 @@ public class IntGraphBuilderTest extends TestBase {
 	@Test
 	public void addVertex() {
 		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			IntSet vertices = new IntOpenHashSet();
 			for (int i = 0; i < 15; i++)
 				assertTrue(vertices.add(b.addVertex()));;
@@ -74,7 +74,7 @@ public class IntGraphBuilderTest extends TestBase {
 	@Test
 	public void addVertexUserProvidedId() {
 		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			IntList vertices = IntList.of(48, 84, 66, 91, 3, 7);
 			for (int v : vertices)
 				b.addVertex(v);
@@ -85,13 +85,13 @@ public class IntGraphBuilderTest extends TestBase {
 	@Test
 	public void addVertexMixUserIdsAndImplIds() {
 		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			for (int v : IntList.of(48, 84, 66, 91, 3, 7))
 				b.addVertex(v);
 			assertThrows(IllegalArgumentException.class, () -> b.addVertex());
 		});
 		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			for (int i = 0; i < 15; i++)
 				b.addVertex();
 			assertThrows(IllegalArgumentException.class, () -> b.addVertex(66));
@@ -101,7 +101,7 @@ public class IntGraphBuilderTest extends TestBase {
 	@Test
 	public void addVertexDuplicateId() {
 		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			b.addVertex(5);
 			assertThrows(IllegalArgumentException.class, () -> b.addVertex(5));
 		});
@@ -110,7 +110,7 @@ public class IntGraphBuilderTest extends TestBase {
 	@Test
 	public void addEdge() {
 		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			b.expectedVerticesNum(10);
 			b.expectedEdgesNum(3);
 			range(10).forEach(b::addVertex);
@@ -124,7 +124,7 @@ public class IntGraphBuilderTest extends TestBase {
 	@Test
 	public void addEdgeUserProvidedIds() {
 		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			b.expectedVerticesNum(10);
 			b.expectedEdgesNum(3);
 			range(10).forEach(b::addVertex);
@@ -138,7 +138,7 @@ public class IntGraphBuilderTest extends TestBase {
 	@Test
 	public void addEdgeMixUserIdsAndImplIds() {
 		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			b.expectedVerticesNum(10);
 			b.expectedEdgesNum(3);
 			range(10).forEach(b::addVertex);
@@ -148,7 +148,7 @@ public class IntGraphBuilderTest extends TestBase {
 			assertThrows(IllegalArgumentException.class, () -> b.addEdge(0, 4));
 		});
 		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			b.expectedVerticesNum(10);
 			b.expectedEdgesNum(3);
 			range(10).forEach(b::addVertex);
@@ -162,7 +162,7 @@ public class IntGraphBuilderTest extends TestBase {
 	@Test
 	public void addEdgeDuplicateId() {
 		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			range(10).forEach(b::addVertex);
 			b.addEdge(0, 1, 77);
 			assertThrows(IllegalArgumentException.class, () -> b.addEdge(2, 3, 77));
@@ -172,7 +172,7 @@ public class IntGraphBuilderTest extends TestBase {
 	@Test
 	public void addEdgeInvalidEndpoints() {
 		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			range(10).forEach(b::addVertex);
 			assertThrows(NoSuchVertexException.class, () -> b.addEdge(-1, 0));
 			assertThrows(NoSuchVertexException.class, () -> b.addEdge(0, -1));
@@ -188,7 +188,7 @@ public class IntGraphBuilderTest extends TestBase {
 	@Test
 	public void clear() {
 		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = directed ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			range(10).forEach(b::addVertex);
 			b.addEdge(0, 1, 0);
 			b.addEdge(0, 2, 1);

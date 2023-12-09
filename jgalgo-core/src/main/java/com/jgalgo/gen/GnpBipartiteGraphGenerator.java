@@ -327,8 +327,7 @@ public class GnpBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 			throw new IllegalStateException("Edge supplier not set");
 
 		if (intGraph) {
-			IntGraphBuilder g =
-					direction != Direction.Undirected ? IntGraphBuilder.newDirected() : IntGraphBuilder.newUndirected();
+			IntGraphBuilder g = IntGraphBuilder.newInstance(direction != Direction.Undirected);
 			final int[] leftVertices =
 					IntAdapters.asIntCollection((Collection<Integer>) this.leftVertices).toIntArray();
 			final int[] rightVertices =
@@ -362,8 +361,7 @@ public class GnpBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 			return (GraphBuilder<V, E>) g;
 
 		} else {
-			GraphBuilder<V, E> g =
-					direction != Direction.Undirected ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+			GraphBuilder<V, E> g = GraphBuilder.newInstance(direction != Direction.Undirected);
 			final V[] leftVertices = (V[]) this.leftVertices.toArray();
 			final V[] rightVertices = (V[]) this.rightVertices.toArray();
 			g.expectedVerticesNum(leftVertices.length + rightVertices.length);

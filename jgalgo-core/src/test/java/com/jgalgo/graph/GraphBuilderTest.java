@@ -61,7 +61,7 @@ public class GraphBuilderTest extends TestBase {
 	@Test
 	public void addVertex() {
 		foreachBoolConfig(directed -> {
-			GraphBuilder<Integer, Integer> b = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+			GraphBuilder<Integer, Integer> b = GraphBuilder.newInstance(directed);
 			List<Integer> vertices = IntList.of(48, 84, 66, 91, 3, 7);
 			for (Integer v : vertices)
 				b.addVertex(v);
@@ -73,7 +73,7 @@ public class GraphBuilderTest extends TestBase {
 	@Test
 	public void addVertexDuplicateId() {
 		foreachBoolConfig(directed -> {
-			GraphBuilder<Integer, Integer> b = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+			GraphBuilder<Integer, Integer> b = GraphBuilder.newInstance(directed);
 			b.addVertex(5);
 			assertThrows(IllegalArgumentException.class, () -> b.addVertex(5));
 		});
@@ -83,7 +83,7 @@ public class GraphBuilderTest extends TestBase {
 	@Test
 	public void addEdge() {
 		foreachBoolConfig(directed -> {
-			GraphBuilder<Integer, Integer> b = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+			GraphBuilder<Integer, Integer> b = GraphBuilder.newInstance(directed);
 			b.expectedVerticesNum(10);
 			b.expectedEdgesNum(3);
 			range(10).forEach(b::addVertex);
@@ -98,7 +98,7 @@ public class GraphBuilderTest extends TestBase {
 	@Test
 	public void addEdgeDuplicateId() {
 		foreachBoolConfig(directed -> {
-			GraphBuilder<Integer, Integer> b = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+			GraphBuilder<Integer, Integer> b = GraphBuilder.newInstance(directed);
 			range(10).forEach(b::addVertex);
 			b.addEdge(0, 1, 77);
 			assertThrows(IllegalArgumentException.class, () -> b.addEdge(2, 3, 77));
@@ -109,7 +109,7 @@ public class GraphBuilderTest extends TestBase {
 	@Test
 	public void addEdgeInvalidEndpoints() {
 		foreachBoolConfig(directed -> {
-			GraphBuilder<Integer, Integer> b = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+			GraphBuilder<Integer, Integer> b = GraphBuilder.newInstance(directed);
 			range(10).forEach(b::addVertex);
 			assertThrows(NoSuchVertexException.class, () -> b.addEdge(-1, 0, 0));
 			assertThrows(NoSuchVertexException.class, () -> b.addEdge(0, -1, 1));
@@ -122,7 +122,7 @@ public class GraphBuilderTest extends TestBase {
 	@Test
 	public void clear() {
 		foreachBoolConfig(directed -> {
-			GraphBuilder<Integer, Integer> b = directed ? GraphBuilder.newDirected() : GraphBuilder.newUndirected();
+			GraphBuilder<Integer, Integer> b = GraphBuilder.newInstance(directed);
 			range(10).forEach(b::addVertex);
 			b.addEdge(0, 1, 0);
 			b.addEdge(0, 2, 1);

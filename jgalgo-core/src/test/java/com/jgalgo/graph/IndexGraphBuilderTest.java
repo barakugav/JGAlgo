@@ -61,7 +61,7 @@ public class IndexGraphBuilderTest extends TestBase {
 	@Test
 	public void addVertex() {
 		foreachBoolConfig(directed -> {
-			IndexGraphBuilder b = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			for (int v = 0; v < 10; v++)
 				b.addVertex();
 			assertEquals(range(10), b.vertices());
@@ -72,7 +72,7 @@ public class IndexGraphBuilderTest extends TestBase {
 	@Test
 	public void addVertexUserProvidedId() {
 		foreachBoolConfig(directed -> {
-			IndexGraphBuilder b = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			assertThrows(UnsupportedOperationException.class, () -> b.addVertex(0));
 		});
 	}
@@ -81,7 +81,7 @@ public class IndexGraphBuilderTest extends TestBase {
 	public void addEdge() {
 		foreachBoolConfig(directed -> {
 			IndexGraph g = createGraph(directed);
-			IndexGraphBuilder b = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			b.expectedVerticesNum(g.vertices().size());
 			b.expectedEdgesNum(g.edges().size());
 			for (int n = g.vertices().size(), v = 0; v < n; v++)
@@ -99,7 +99,7 @@ public class IndexGraphBuilderTest extends TestBase {
 	public void addEdgeUserProvidedIds() {
 		foreachBoolConfig(directed -> {
 			IndexGraph g = createGraph(directed);
-			IndexGraphBuilder b = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			for (int n = g.vertices().size(), v = 0; v < n; v++)
 				b.addVertex();
 			int[] es = g.edges().toIntArray();
@@ -114,7 +114,7 @@ public class IndexGraphBuilderTest extends TestBase {
 
 		/* missing edge 0 */
 		foreachBoolConfig(directed -> {
-			IndexGraphBuilder b = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			for (int v = 0; v < 10; v++)
 				b.addVertex();
 			b.addEdge(0, 1, 1);
@@ -124,7 +124,7 @@ public class IndexGraphBuilderTest extends TestBase {
 
 		/* missing edge 1 */
 		foreachBoolConfig(directed -> {
-			IndexGraphBuilder b = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			for (int v = 0; v < 10; v++)
 				b.addVertex();
 			b.addEdge(0, 1, 0);
@@ -134,7 +134,7 @@ public class IndexGraphBuilderTest extends TestBase {
 
 		/* duplicate edge 0 */
 		foreachBoolConfig(directed -> {
-			IndexGraphBuilder b = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			for (int v = 0; v < 10; v++)
 				b.addVertex();
 			b.addEdge(0, 1, 0);
@@ -146,7 +146,7 @@ public class IndexGraphBuilderTest extends TestBase {
 	@Test
 	public void addEdgeNegativeId() {
 		foreachBoolConfig(directed -> {
-			IndexGraphBuilder b = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			for (int v = 0; v < 10; v++)
 				b.addVertex();
 			assertThrows(IllegalArgumentException.class, () -> b.addEdge(0, 1, -1));
@@ -156,7 +156,7 @@ public class IndexGraphBuilderTest extends TestBase {
 	@Test
 	public void addEdgeInvalidEndpoints() {
 		foreachBoolConfig(directed -> {
-			IndexGraphBuilder b = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			for (int v = 0; v < 10; v++)
 				b.addVertex();
 			assertThrows(NoSuchVertexException.class, () -> b.addEdge(-1, 0));
@@ -173,7 +173,7 @@ public class IndexGraphBuilderTest extends TestBase {
 	@Test
 	public void addEdgeMixUserIdsAndImplIds() {
 		foreachBoolConfig(directed -> {
-			IndexGraphBuilder b = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			int v1 = b.addVertex();
 			int v2 = b.addVertex();
 			int v3 = b.addVertex();
@@ -183,7 +183,7 @@ public class IndexGraphBuilderTest extends TestBase {
 			assertThrows(IllegalArgumentException.class, () -> b.addEdge(v3, v4, 37));
 		});
 		foreachBoolConfig(directed -> {
-			IndexGraphBuilder b = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			int v1 = b.addVertex();
 			int v2 = b.addVertex();
 			int v3 = b.addVertex();
@@ -198,7 +198,7 @@ public class IndexGraphBuilderTest extends TestBase {
 	public void clear() {
 		foreachBoolConfig(directed -> {
 			IndexGraph g = createGraph(directed);
-			IndexGraphBuilder b = directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected();
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			for (int n = g.vertices().size(), v = 0; v < n; v++)
 				b.addVertex();
 			for (int m = g.edges().size(), e = 0; e < m; e++)
