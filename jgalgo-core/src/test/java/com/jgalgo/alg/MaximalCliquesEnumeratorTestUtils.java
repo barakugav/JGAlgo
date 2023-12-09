@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -37,7 +38,7 @@ class MaximalCliquesEnumeratorTestUtils extends TestUtils {
 		tester.addPhase().withArgs(128, 256).repeat(12);
 		tester.addPhase().withArgs(1024, 4096).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());
 			testAlgo(g, algo);
 		});
 	}

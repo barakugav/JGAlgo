@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.IntSupplier;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.IterTools;
@@ -62,7 +63,7 @@ class CyclesEnumeratorTestUtils extends TestUtils {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(64, 64).repeat(64);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, true, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, true, true, false, seedGen.nextSeed());
 			testGraph(g, cyclesFinder);
 		});
 	}

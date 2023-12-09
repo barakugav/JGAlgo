@@ -49,7 +49,7 @@ class EdgeCoverTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(16);
 		tester.addPhase().withArgs(1024, 2048).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 			/* make sure all vertices have at least one adjacent edge */
 			for (Integer u : g.vertices()) {
 				if (g.outEdges(u).isEmpty() && g.inEdges(u).isEmpty()) {
@@ -119,7 +119,7 @@ class EdgeCoverTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(4);
 		tester.run((n, m) -> {
 			boolean directed = rand.nextBoolean();
-			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 
 			/* remove all edges of a random vertex, no edge cover will be able to cover it */
 			g.removeEdgesOf(Graphs.randVertex(g, rand));

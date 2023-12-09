@@ -59,7 +59,7 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		Random rand = new Random(seedGen.nextSeed());
 
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			Integer source = Graphs.randVertex(g, rand);
@@ -80,7 +80,7 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		tester.addPhase().withArgs(512, 4096).repeat(8);
 		tester.addPhase().withArgs(3542, 25436).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 			WeightFunction<Integer> w = GraphsTestUtils.assignRandWeights(g, seedGen.nextSeed());
 			Integer source = Graphs.randVertex(g, rand);
 
@@ -98,7 +98,7 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		tester.addPhase().withArgs(512, 4096).repeat(8);
 		tester.addPhase().withArgs(4096, 16384).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 			Integer source = Graphs.randVertex(g, rand);
 
 			ShortestPathSingleSource validationAlgo =
@@ -117,7 +117,7 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		tester.addPhase().withArgs(512, 4096).repeat(8);
 		tester.addPhase().withArgs(1024, 4096).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randConnectedGraph(n, m, true, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randConnectedGraph(n, m, true, seedGen.nextSeed());
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 			Integer source = g.vertices().iterator().next();
 

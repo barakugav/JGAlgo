@@ -25,6 +25,7 @@ import java.util.Random;
 import java.util.Set;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
@@ -43,7 +44,7 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			WeightsDouble<Integer> w = g.addEdgesWeights("weight", double.class);
@@ -64,7 +65,7 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			WeightsInt<Integer> w = g.addEdgesWeights("weight", int.class);
@@ -85,7 +86,7 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			WeightsDouble<Integer> w = g.addEdgesWeights("weight", double.class);
@@ -107,7 +108,7 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			WeightsInt<Integer> w = g.addEdgesWeights("weight", int.class);

@@ -57,7 +57,8 @@ public class GraphsTest extends TestBase {
 		tester.addPhase().withArgs(512, 1024).repeat(1);
 		tester.run((n, m) -> {
 			foreachBoolConfig((intGraph, directed, index) -> {
-				Graph<Integer, Integer> g0 = randGraph(n, m, directed, true, true, intGraph, seedGen.nextSeed());
+				Graph<Integer, Integer> g0 =
+						GraphsTestUtils.randGraph(n, m, directed, true, true, intGraph, seedGen.nextSeed());
 				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 
 				Set<Integer> subVs = new IntOpenHashSet();
@@ -85,7 +86,8 @@ public class GraphsTest extends TestBase {
 		tester.addPhase().withArgs(512, 1024).repeat(1);
 		tester.run((n, m) -> {
 			foreachBoolConfig((intGraph, directed, index) -> {
-				Graph<Integer, Integer> g0 = randGraph(n, m, directed, true, true, intGraph, seedGen.nextSeed());
+				Graph<Integer, Integer> g0 =
+						GraphsTestUtils.randGraph(n, m, directed, true, true, intGraph, seedGen.nextSeed());
 				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 
 				Set<Integer> subEs = new IntOpenHashSet();
@@ -112,7 +114,8 @@ public class GraphsTest extends TestBase {
 		tester.addPhase().withArgs(512, 1024).repeat(1);
 		tester.run((n, m) -> {
 			foreachBoolConfig((intGraph, directed, index) -> {
-				Graph<Integer, Integer> g0 = randGraph(n, m, directed, true, true, intGraph, seedGen.nextSeed());
+				Graph<Integer, Integer> g0 =
+						GraphsTestUtils.randGraph(n, m, directed, true, true, intGraph, seedGen.nextSeed());
 				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 
 				addWeights(g, rand);
@@ -156,7 +159,8 @@ public class GraphsTest extends TestBase {
 		tester.addPhase().withArgs(512, 1024).repeat(1);
 		tester.run((n, m) -> {
 			foreachBoolConfig((intGraph, directed, index) -> {
-				Graph<Integer, Integer> g0 = randGraph(n, m, directed, true, true, intGraph, seedGen.nextSeed());
+				Graph<Integer, Integer> g0 =
+						GraphsTestUtils.randGraph(n, m, directed, true, true, intGraph, seedGen.nextSeed());
 				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 
 				addWeights(g, rand);
@@ -253,7 +257,8 @@ public class GraphsTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 
 		foreachBoolConfig((intGraph, directed, index) -> {
-			Graph<Integer, Integer> g0 = randGraph(20, 50, directed, true, true, intGraph, seedGen.nextSeed());
+			Graph<Integer, Integer> g0 =
+					GraphsTestUtils.randGraph(20, 50, directed, true, true, intGraph, seedGen.nextSeed());
 			Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 
 			assertThrows(NullPointerException.class, () -> Graphs.subGraph(g, null, null, false, false));
@@ -266,7 +271,8 @@ public class GraphsTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig((intGraph, directed, index) -> {
-			Graph<Integer, Integer> g0 = randGraph(100, 400, directed, true, true, intGraph, seedGen.nextSeed());
+			Graph<Integer, Integer> g0 =
+					GraphsTestUtils.randGraph(100, 400, directed, true, true, intGraph, seedGen.nextSeed());
 			Graph<Integer, Integer> g1 = index ? g0.indexGraph() : g0;
 
 			addWeights(g1, rand);
@@ -420,7 +426,8 @@ public class GraphsTest extends TestBase {
 		final long seed = 0x2a9b993ea2f19151L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		foreachBoolConfig((intGraph, directed) -> {
-			Graph<Integer, Integer> g1 = randGraph(100, 400, directed, true, true, intGraph, seedGen.nextSeed());
+			Graph<Integer, Integer> g1 =
+					GraphsTestUtils.randGraph(100, 400, directed, true, true, intGraph, seedGen.nextSeed());
 
 			GraphFactory<Integer, Integer> factory;
 			if (g1 instanceof IntGraph) {
@@ -444,7 +451,8 @@ public class GraphsTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig((intGraph, directed) -> {
-			Graph<Integer, Integer> g1 = randGraph(100, 400, directed, true, true, intGraph, seedGen.nextSeed());
+			Graph<Integer, Integer> g1 =
+					GraphsTestUtils.randGraph(100, 400, directed, true, true, intGraph, seedGen.nextSeed());
 
 			GraphFactory<Integer, Integer> factory;
 			if (g1 instanceof IntGraph) {
@@ -475,7 +483,8 @@ public class GraphsTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig((intGraph, directed) -> {
-			Graph<Integer, Integer> g1 = randGraph(100, 400, directed, true, true, intGraph, seedGen.nextSeed());
+			Graph<Integer, Integer> g1 =
+					GraphsTestUtils.randGraph(100, 400, directed, true, true, intGraph, seedGen.nextSeed());
 
 			GraphFactory<Integer, Integer> factory;
 			if (g1 instanceof IntGraph) {
@@ -506,7 +515,8 @@ public class GraphsTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig((intGraph, directed) -> {
-			Graph<Integer, Integer> g1 = randGraph(100, 400, directed, true, true, intGraph, seedGen.nextSeed());
+			Graph<Integer, Integer> g1 =
+					GraphsTestUtils.randGraph(100, 400, directed, true, true, intGraph, seedGen.nextSeed());
 
 			GraphFactory<Integer, Integer> factory;
 			if (g1 instanceof IntGraph) {
@@ -534,7 +544,8 @@ public class GraphsTest extends TestBase {
 		final long seed = 0xd7a3e806dd5e50a1L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		foreachBoolConfig((intGraph, directed) -> {
-			Graph<Integer, Integer> g1 = randGraph(100, 400, directed, true, true, intGraph, seedGen.nextSeed());
+			Graph<Integer, Integer> g1 =
+					GraphsTestUtils.randGraph(100, 400, directed, true, true, intGraph, seedGen.nextSeed());
 
 			Graph<Integer, Integer> g2 = g1.copy();
 			assertEquals(g1, g2);
@@ -554,7 +565,8 @@ public class GraphsTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig((intGraph, directed, index) -> {
-			Graph<Integer, Integer> g0 = randGraph(100, 400, directed, true, true, intGraph, seedGen.nextSeed());
+			Graph<Integer, Integer> g0 =
+					GraphsTestUtils.randGraph(100, 400, directed, true, true, intGraph, seedGen.nextSeed());
 			Graph<Integer, Integer> g1 = index ? g0.indexGraph() : g0;
 
 			addWeights(g1, rand);
@@ -615,7 +627,7 @@ public class GraphsTest extends TestBase {
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig((intGraph, directed, index, withSelfEdges) -> {
 			Graph<Integer, Integer> g0 =
-					randGraph(100, 400, directed, withSelfEdges, true, intGraph, seedGen.nextSeed());
+					GraphsTestUtils.randGraph(100, 400, directed, withSelfEdges, true, intGraph, seedGen.nextSeed());
 			Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 
 			Set<Integer> selfEdges = Graphs.selfEdges(g);

@@ -53,7 +53,8 @@ public class ChinesePostmanTest extends TestBase {
 		tester.addPhase().withArgs(8, 32).repeat(16);
 		tester.addPhase().withArgs(16, 32).repeat(16);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randConnectedGraph(n, m, false, selfEdges, true, seedGen.nextSeed());
+			Graph<Integer, Integer> g =
+					GraphsTestUtils.randConnectedGraph(n, m, false, selfEdges, true, seedGen.nextSeed());
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			testGraph(g, w, algo);
 		});

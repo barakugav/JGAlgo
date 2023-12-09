@@ -62,7 +62,7 @@ public class DistanceMeasuresTest extends TestBase {
 		tester.addPhase().withArgs(32, 64).repeat(32);
 		tester.addPhase().withArgs(100, 2311).repeat(3);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			WeightFunction<Integer> w = null;

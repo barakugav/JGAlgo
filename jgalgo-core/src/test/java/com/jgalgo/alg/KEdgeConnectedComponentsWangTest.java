@@ -23,6 +23,7 @@ import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.gen.EmptyGraphGenerator;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.internal.util.TestBase;
@@ -79,7 +80,7 @@ public class KEdgeConnectedComponentsWangTest extends TestBase {
 		tester.addPhase().withArgs(64, 256, 4).repeat(8);
 		tester.addPhase().withArgs(100, 2100, 5).repeat(1);
 		tester.run((n, m, k) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 			validateKEdgeConnectedComponents(g, k, algo);
 		});

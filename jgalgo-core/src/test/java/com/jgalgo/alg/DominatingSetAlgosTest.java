@@ -24,6 +24,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
@@ -66,7 +67,7 @@ public class DominatingSetAlgosTest extends TestBase {
 		tester.addPhase().withArgs(128, 256).repeat(32);
 		tester.addPhase().withArgs(1024, 4096).repeat(8);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			WeightFunction<Integer> w = null;

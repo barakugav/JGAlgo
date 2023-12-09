@@ -29,6 +29,7 @@ import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.TestBase;
@@ -108,7 +109,7 @@ public class EulerianTourTest extends TestBase {
 	private static Graph<Integer, Integer> randUGraph(int n, int m, boolean allEvenVertices, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		Graph<Integer, Integer> g = randConnectedGraph(n, m, false, seedGen.nextSeed());
+		Graph<Integer, Integer> g = GraphsTestUtils.randConnectedGraph(n, m, false, seedGen.nextSeed());
 		Supplier<Integer> edgeSupplier = () -> {
 			for (;;) {
 				Integer e = Integer.valueOf(rand.nextInt());
@@ -172,7 +173,7 @@ public class EulerianTourTest extends TestBase {
 	private static Graph<Integer, Integer> randDiGraph(int n, int m, boolean allEqualInOutDegree, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
-		Graph<Integer, Integer> g = randConnectedGraph(n, m, true, seedGen.nextSeed());
+		Graph<Integer, Integer> g = GraphsTestUtils.randConnectedGraph(n, m, true, seedGen.nextSeed());
 		Supplier<Integer> edgeSupplier = () -> {
 			for (;;) {
 				Integer e = Integer.valueOf(rand.nextInt());

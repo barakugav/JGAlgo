@@ -42,7 +42,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 128).repeat(64);
 		tester.addPhase().withArgs(500, 2010).repeat(8);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, true, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, true, true, false, seedGen.nextSeed());
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			verifyMinimumMeanCycle(algo, g, w);
@@ -57,7 +57,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 128).repeat(64);
 		tester.addPhase().withArgs(500, 2010).repeat(8);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, true, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, true, true, false, seedGen.nextSeed());
 			WeightFunction<Integer> w = GraphsTestUtils.assignRandWeights(g, -10, 10, seedGen.nextSeed());
 
 			verifyMinimumMeanCycle(algo, g, w);
@@ -73,7 +73,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 128).repeat(64);
 		tester.addPhase().withArgs(500, 2010).repeat(8);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, true, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, true, true, false, seedGen.nextSeed());
 
 			WeightsDouble<Integer> w = g.addEdgesWeights("weights", double.class);
 			for (Integer e : new IntArrayList(g.edges())) {

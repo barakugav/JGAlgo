@@ -48,7 +48,8 @@ public class MatchingBipartiteTestUtils extends TestUtils {
 		tester.addPhase().withArgs(300, 300, 1100).repeat(1);
 		tester.run((sn, tn, m) -> {
 			boolean parallelEdges = graphImpl.get(false).isAllowParallelEdges();
-			Graph<Integer, Integer> g = copy(randBipartiteGraph(sn, tn, m, false, parallelEdges, seedGen.nextSeed()), graphImpl);
+			Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
+					GraphsTestUtils.randBipartiteGraph(sn, tn, m, false, parallelEdges, seedGen.nextSeed()), graphImpl);
 
 			int expected = calcExpectedMaxMatching(g);
 			testBipartiteAlgo(algo, g, expected, rand);

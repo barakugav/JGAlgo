@@ -47,7 +47,7 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 		tester.addPhase().withArgs(16, 32).repeat(128);
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 			Collection<Integer> verticesSubset = verticesSubset(g, allVertices, seedGen.nextSeed());
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
@@ -63,7 +63,7 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 		tester.addPhase().withArgs(16, 32).repeat(128);
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 			Collection<Integer> verticesSubset = verticesSubset(g, allVertices, seedGen.nextSeed());
 			testAPSP(g, verticesSubset, allVertices, null, algo, new ShortestPathSingleSourceDijkstra());
@@ -78,7 +78,7 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 		tester.addPhase().withArgs(16, 32).repeat(64);
 		tester.addPhase().withArgs(64, 256).repeat(10);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, true, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, true, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 			Collection<Integer> verticesSubset = verticesSubset(g, allVertices, seedGen.nextSeed());
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());

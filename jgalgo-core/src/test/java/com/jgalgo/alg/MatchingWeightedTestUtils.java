@@ -49,7 +49,8 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		tester.addPhase().withArgs(256, 256, 1200).repeat(2);
 		tester.run((sn, tn, m) -> {
 			boolean parallelEdges = graphImpl.get(false).isAllowParallelEdges();
-			Graph<Integer, Integer> g = copy(randBipartiteGraph(sn, tn, m, false, parallelEdges, seedGen.nextSeed()), graphImpl);
+			Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
+					GraphsTestUtils.randBipartiteGraph(sn, tn, m, false, parallelEdges, seedGen.nextSeed()), graphImpl);
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
 			MatchingAlgo validationAlgo =
@@ -69,7 +70,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		tester.addPhase().withArgs(128, 128, 512).repeat(4);
 		tester.addPhase().withArgs(1024, 1024, 1024).repeat(1);
 		tester.run((sn, tn, m) -> {
-			Graph<Integer, Integer> g = randBipartiteGraph(sn, tn, m, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randBipartiteGraph(sn, tn, m, false, seedGen.nextSeed());
 			WeightsBool<Integer> partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 			Supplier<Integer> edgeSupplier = () -> {
 				for (;;) {
@@ -116,7 +117,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		tester.addPhase().withArgs(128, 512).repeat(6);
 		tester.addPhase().withArgs(1024, 2300).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
 			MatchingAlgo validationAlgo = algo instanceof MatchingWeightedGabow1990 ? new MatchingWeightedBlossomV()
@@ -158,7 +159,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		tester.addPhase().withArgs(128, 512).repeat(8);
 		tester.addPhase().withArgs(1024, 1024).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());
 			if (g.vertices().size() % 2 != 0)
 				throw new IllegalArgumentException("there is no perfect matching");
 			Graph<Integer, Integer> g0 = g;

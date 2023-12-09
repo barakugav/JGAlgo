@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -42,7 +43,7 @@ public class TopologicalOrderTest extends TestBase {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(1024, 2048).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randDag(n, m, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randDag(n, m, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			TopologicalOrderAlgo.Result<Integer, Integer> res = algo.computeTopologicalSorting(g);

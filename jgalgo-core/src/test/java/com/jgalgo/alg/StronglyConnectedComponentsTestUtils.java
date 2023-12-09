@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
@@ -34,7 +35,7 @@ class StronglyConnectedComponentsTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			VertexPartition<Integer, Integer> actual = algo.findStronglyConnectedComponents(g);
@@ -54,7 +55,7 @@ class StronglyConnectedComponentsTestUtils extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, true, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, true, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			VertexPartition<Integer, Integer> actual = algo.findStronglyConnectedComponents(g);

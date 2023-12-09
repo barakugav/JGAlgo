@@ -23,6 +23,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -38,7 +39,7 @@ public class BfsIterTest extends TestBase {
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(2048, 8192).repeat(4);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randConnectedGraph(n, m, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randConnectedGraph(n, m, false, seedGen.nextSeed());
 			testBfsConnected(g, seedGen.nextSeed());
 		});
 	}

@@ -671,8 +671,8 @@ class GraphImplTestUtils extends TestUtils {
 		for (String copyType : List.of("origImpl", "array", "linked-list", "linked-list-ptr", "hashtable", "matrix")) {
 			foreachBoolConfig(directed -> {
 				/* Create a random graph g */
-				Graph<Integer, Integer> g =
-						copy(randGraph(100, 300, directed, false, false, seedGen.nextSeed()), graphImpl);
+				Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
+						GraphsTestUtils.randGraph(100, 300, directed, false, false, seedGen.nextSeed()), graphImpl);
 
 				/* assign some weights to the vertices of g */
 				final String gVDataKey = "vData";
@@ -728,8 +728,8 @@ class GraphImplTestUtils extends TestUtils {
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
-			Graph<Integer, Integer> g =
-					copy(randGraph(100, 300, directed, false, false, seedGen.nextSeed()), graphImpl);
+			Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
+					GraphsTestUtils.randGraph(100, 300, directed, false, false, seedGen.nextSeed()), graphImpl);
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -823,8 +823,8 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
 			boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
-			Graph<Integer, Integer> g =
-					copy(randGraph(100, 300, directed, selfEdges, false, seedGen.nextSeed()), graphImpl);
+			Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
+					GraphsTestUtils.randGraph(100, 300, directed, selfEdges, false, seedGen.nextSeed()), graphImpl);
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -875,8 +875,8 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
 			boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
-			Graph<Integer, Integer> g =
-					copy(randGraph(100, 300, directed, selfEdges, false, seedGen.nextSeed()), graphImpl);
+			Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
+					GraphsTestUtils.randGraph(100, 300, directed, selfEdges, false, seedGen.nextSeed()), graphImpl);
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -961,7 +961,8 @@ class GraphImplTestUtils extends TestUtils {
 					.apply(directed ? IndexGraph.newDirected() : IndexGraph.newUndirected()).isAllowSelfEdges();
 			final boolean parallelEdges = copyConstructor
 					.apply(directed ? IndexGraph.newDirected() : IndexGraph.newUndirected()).isAllowParallelEdges();
-			IndexGraph g = randGraph(100, 300, directed, selfEdges, parallelEdges, seedGen.nextSeed()).indexGraph();
+			IndexGraph g = GraphsTestUtils.randGraph(100, 300, directed, selfEdges, parallelEdges, seedGen.nextSeed())
+					.indexGraph();
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -1026,7 +1027,8 @@ class GraphImplTestUtils extends TestUtils {
 			final boolean parallelEdges = copyConstructor
 					.apply(directed ? IndexGraphBuilder.newDirected() : IndexGraphBuilder.newUndirected())
 					.isAllowParallelEdges();
-			IndexGraph g = randGraph(100, 300, directed, selfEdges, parallelEdges, seedGen.nextSeed()).indexGraph();
+			IndexGraph g = GraphsTestUtils.randGraph(100, 300, directed, selfEdges, parallelEdges, seedGen.nextSeed())
+					.indexGraph();
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -1082,8 +1084,8 @@ class GraphImplTestUtils extends TestUtils {
 
 		final boolean selfEdges = graphImpl.get(true).isAllowSelfEdges();
 		final boolean parallelEdges = graphImpl.get(true).isAllowParallelEdges();
-		Graph<Integer, Integer> g1 =
-				copy(randGraph(100, 300, true, selfEdges, parallelEdges, seedGen.nextSeed()), graphImpl);
+		Graph<Integer, Integer> g1 = GraphsTestUtils.withImpl(
+				GraphsTestUtils.randGraph(100, 300, true, selfEdges, parallelEdges, seedGen.nextSeed()), graphImpl);
 		Graph<Integer, Integer> g2 = g1.copy(true, true);
 
 		for (int ops = 0; ops < 10; ops++) {
@@ -1124,8 +1126,8 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			final boolean selfEdges = graphImpl.get(true).isAllowSelfEdges();
 			final boolean parallelEdges = graphImpl.get(true).isAllowParallelEdges();
-			Graph<Integer, Integer> g1 =
-					copy(randGraph(100, 300, true, selfEdges, parallelEdges, seedGen.nextSeed()), graphImpl);
+			Graph<Integer, Integer> g1 = GraphsTestUtils.withImpl(
+					GraphsTestUtils.randGraph(100, 300, true, selfEdges, parallelEdges, seedGen.nextSeed()), graphImpl);
 			Graph<Integer, Integer> g2 = g1.copy(true, true);
 
 			for (int ops = 0; ops < 20; ops++) {
@@ -1259,7 +1261,8 @@ class GraphImplTestUtils extends TestUtils {
 			int m, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
-		Graph<Integer, Integer> g = copy(randGraph(n, m, directed, selfEdges, false, seedGen.nextSeed()), graphImpl);
+		Graph<Integer, Integer> g = GraphsTestUtils
+				.withImpl(GraphsTestUtils.randGraph(n, m, directed, selfEdges, false, seedGen.nextSeed()), graphImpl);
 		final int opsNum = 128;
 		testRandOps(g, opsNum, seedGen.nextSeed());
 	}

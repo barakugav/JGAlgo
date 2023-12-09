@@ -60,7 +60,7 @@ class PageRankTest extends TestBase {
 		tester.addPhase().withArgs(1024, 4096).repeat(8);
 		tester.addPhase().withArgs(4096, 16384).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			WeightFunctionInt<Integer> w = null;

@@ -193,7 +193,8 @@ public class WeightsTest extends TestBase {
 		final int m = 5000;
 
 		foreachBoolConfig((intGraph, removeEdges) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, false, true, false, intGraph, seedGen.nextSeed());
+			Graph<Integer, Integer> g =
+					GraphsTestUtils.randGraph(n, m, false, true, false, intGraph, seedGen.nextSeed());
 
 			String wKey = "edgeWeight";
 			Weights<Integer, T> weights = edgeWeightsAdder.apply(g, wKey);

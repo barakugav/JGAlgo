@@ -27,6 +27,7 @@ import java.util.function.Supplier;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsInt;
@@ -53,7 +54,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			WeightFunctionInt<Integer> capacity = randNetwork(g, rand);
@@ -74,7 +75,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			WeightFunctionInt<Integer> capacity = randNetwork(g, rand);
@@ -98,7 +99,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			WeightFunctionInt<Integer> capacity = randNetwork(g, rand);
@@ -120,7 +121,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			WeightFunctionInt<Integer> capacity = randNetwork(g, rand);
@@ -145,7 +146,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			WeightFunctionInt<Integer> capacity = randNetwork(g, rand);
@@ -166,7 +167,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			WeightFunctionInt<Integer> capacity = randNetwork(g, rand);

@@ -51,7 +51,8 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 		tester.run((n, m) -> {
 			boolean selfEdges = graphImpl.get(false).isAllowSelfEdges();
 			boolean parallelEdges = graphImpl.get(false).isAllowParallelEdges();
-			Graph<Integer, Integer> g = copy(randGraph(n, m, false, selfEdges, parallelEdges, seedGen.nextSeed()), graphImpl);
+			Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
+					GraphsTestUtils.randGraph(n, m, false, selfEdges, parallelEdges, seedGen.nextSeed()), graphImpl);
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			MinimumSpanningTree.Result<Integer, Integer> mst = algo.computeMinimumSpanningTree(g, w);

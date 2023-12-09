@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -75,7 +76,7 @@ public class CoresAlgoTest extends TestBase {
 		tester.addPhase().withArgs(128, 256).repeat(32);
 		tester.addPhase().withArgs(1024, 4096).repeat(8);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			CoresAlgo algo = new CoresAlgoImpl();

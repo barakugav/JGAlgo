@@ -54,8 +54,8 @@ public class MaximumFlowTestUtils extends TestUtils {
 			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed, boolean directed) {
 		boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
 		for (SeedGenerator seedGen = new SeedGenerator(seed);;) {
-			Graph<Integer, Integer> g =
-					copy(TestUtils.randGraph(n, m, directed, selfEdges, false, seedGen.nextSeed()), graphImpl);
+			Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
+					GraphsTestUtils.randGraph(n, m, directed, selfEdges, false, seedGen.nextSeed()), graphImpl);
 
 			boolean allSelfEdges = true;
 			for (int e : g.edges())
@@ -209,7 +209,7 @@ public class MaximumFlowTestUtils extends TestUtils {
 		tester.addPhase().withArgs(10, 450).repeat(64);
 		tester.addPhase().withArgs(18, 1530).repeat(64);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 			WeightFunctionInt<Integer> capacity = randNetworkInt(g, seedGen.nextSeed());
 
 			Pair<Integer, Integer> sourceSink = chooseSourceSink(g, rand);

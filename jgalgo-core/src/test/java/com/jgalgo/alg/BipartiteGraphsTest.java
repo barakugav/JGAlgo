@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.internal.util.TestBase;
 
 public class BipartiteGraphsTest extends TestBase {
@@ -36,7 +37,7 @@ public class BipartiteGraphsTest extends TestBase {
 		tester.addPhase().withArgs(512, 1024).repeat(8);
 		tester.run((n, m) -> {
 			foreachBoolConfig((directed, index) -> {
-				Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+				Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 				g = index ? g.indexGraph() : g;
 				/* its possible we will generate a bipartite graph, but its not going to happen */
 				assertFalse(BipartiteGraphs.isBipartite(g));
@@ -54,7 +55,8 @@ public class BipartiteGraphsTest extends TestBase {
 		tester.addPhase().withArgs(200, 315, 1024).repeat(8);
 		tester.run((sn, tn, m) -> {
 			foreachBoolConfig((directed, index) -> {
-				Graph<Integer, Integer> g = randBipartiteGraph(sn, tn, m, directed, index, seedGen.nextSeed());
+				Graph<Integer, Integer> g =
+						GraphsTestUtils.randBipartiteGraph(sn, tn, m, directed, index, seedGen.nextSeed());
 				g.removeVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);
 
 				assertTrue(BipartiteGraphs.isBipartite(g));

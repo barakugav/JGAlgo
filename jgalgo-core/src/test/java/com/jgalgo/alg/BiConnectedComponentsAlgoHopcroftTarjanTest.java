@@ -27,6 +27,7 @@ import java.util.Set;
 import java.util.function.BiFunction;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsObj;
@@ -55,7 +56,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		tester.addPhase().withArgs(64, 256).repeat(32);
 		tester.addPhase().withArgs(165, 666).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());
 			testUGraph(BiConnectedComponentsAlgo.newInstance(), g);
 		});
 	}

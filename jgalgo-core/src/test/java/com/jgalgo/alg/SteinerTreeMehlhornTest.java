@@ -74,7 +74,7 @@ public class SteinerTreeMehlhornTest extends TestBase {
 		tester.addPhase().withArgs(512, 4096, 23).repeat(8);
 		tester.addPhase().withArgs(3542, 25436, 100).repeat(1);
 		tester.run((n, m, k) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());
 			Graph<Integer, Integer> g0 = g;
 			Supplier<Integer> edgeSupplier = () -> {
 				for (;;) {

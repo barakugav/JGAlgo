@@ -27,6 +27,7 @@ import java.util.function.Supplier;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsDouble;
@@ -53,7 +54,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 
 			WeightFunction<Integer> capacity = randNetwork(g, rand);
 			WeightFunction<Integer> cost = randCost(g, rand);
@@ -73,7 +74,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 
 			WeightFunction<Integer> capacity = randNetwork(g, rand);
 			Pair<Integer, Integer> sourceSink = MaximumFlowTestUtils.chooseSourceSink(g, rand);
@@ -96,7 +97,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 
 			WeightFunction<Integer> capacity = randNetwork(g, rand);
 			WeightFunction<Integer> cost = randCost(g, rand);
@@ -117,7 +118,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 
 			WeightFunction<Integer> capacity = randNetwork(g, rand);
 			Pair<Collection<Integer>, Collection<Integer>> sourcesSinks =
@@ -141,7 +142,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 			WeightFunction<Integer> capacity = randNetwork(g, rand);
 			WeightFunction<Integer> cost = randCost(g, rand);
 			WeightFunction<Integer> supply = randSupply(g, capacity, rand);
@@ -160,7 +161,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 
 			WeightFunction<Integer> capacity = randNetwork(g, rand);
 			WeightFunction<Integer> supply = randSupply(g, capacity, rand);
@@ -276,7 +277,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 				lowerBoundEdges.removeElements(2, lowerBoundEdges.size());
 			}
 			for (E e : lowerBoundEdges) {
-				double boundDelta = delta / 2 + rand.nextDouble() * (delta/ 2);
+				double boundDelta = delta / 2 + rand.nextDouble() * (delta / 2);
 				assert 0 <= boundDelta && boundDelta <= delta;
 				lowerBound.set(e, lowerBound.weight(e) + boundDelta);
 			}

@@ -25,6 +25,7 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import com.jgalgo.gen.CompleteGraphGenerator;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
@@ -42,7 +43,7 @@ class MinimumVertexCutGlobalTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(64);
 		tester.addPhase().withArgs(128, 256).repeat(32);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 
 			WeightFunction<Integer> w = null;

@@ -47,7 +47,7 @@ class KShortestPathsSTTestUtils extends TestBase {
 		tester.addPhase().withArgs(512, 4096, 21).repeat(8);
 		tester.addPhase().withArgs(4096, 16384, 23).repeat(1);
 		tester.run((n, m, k) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
 			WeightFunctionInt<Integer> w = null;
 			if (rand.nextInt(10) != 0)

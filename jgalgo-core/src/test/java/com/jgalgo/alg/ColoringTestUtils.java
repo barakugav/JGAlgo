@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.TestUtils;
@@ -39,7 +40,7 @@ class ColoringTestUtils extends TestUtils {
 		tester.addPhase().withArgs(200, 1000).repeat(32);
 		tester.addPhase().withArgs(2048, 8192).repeat(4);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, false, false, true, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, false, false, true, seedGen.nextSeed());
 			VertexPartition<Integer, Integer> coloring = algo.computeColoring(g);
 			validateColoring(g, coloring);
 		});

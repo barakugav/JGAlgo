@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.Weights;
@@ -49,7 +50,7 @@ class FlowCirculationTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 
 			WeightFunctionInt<Integer> capacity = randNetworkInt(g, rand);
 			WeightFunctionInt<Integer> supply = randSupplyInt(g, capacity, rand);
@@ -77,7 +78,7 @@ class FlowCirculationTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64, 128).repeat(16);
 		tester.addPhase().withArgs(512, 1324).repeat(1);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randGraph(n, m, directed, true, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, directed, true, false, seedGen.nextSeed());
 
 			WeightFunction<Integer> capacity = randNetwork(g, rand);
 			WeightFunction<Integer> supply = randSupply(g, capacity, rand);

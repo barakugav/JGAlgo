@@ -142,7 +142,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		tester.addPhase().withArgs(2048, 4096).repeat(8);
 		tester.addPhase().withArgs(8192, 16384).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randConnectedGraph(n, m, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randConnectedGraph(n, m, false, seedGen.nextSeed());
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 			Collection<Integer> mstEdges = new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges();
 
@@ -161,7 +161,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 		tester.addPhase().withArgs(2048, 4096).repeat(8);
 		tester.addPhase().withArgs(8192, 16384).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = randConnectedGraph(n, m, false, seedGen.nextSeed());
+			Graph<Integer, Integer> g = GraphsTestUtils.randConnectedGraph(n, m, false, seedGen.nextSeed());
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
 			Collection<Integer> mstEdges =

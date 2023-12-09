@@ -129,7 +129,8 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 		tester.addPhase().withArgs(1024, 4096).repeat(8);
 		tester.addPhase().withArgs(4096, 16384).repeat(2);
 		tester.run((n, m) -> {
-			Graph<Integer, Integer> g = copy(randGraph(n, m, true, selfEdges, false, seedGen.nextSeed()), graphImpl);
+			Graph<Integer, Integer> g = GraphsTestUtils
+					.withImpl(GraphsTestUtils.randGraph(n, m, true, selfEdges, false, seedGen.nextSeed()), graphImpl);
 			g = maybeIndexGraph(g, rand);
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
