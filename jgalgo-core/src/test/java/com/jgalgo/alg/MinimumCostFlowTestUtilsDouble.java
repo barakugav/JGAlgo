@@ -201,6 +201,8 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 			Collection<V> sources, Collection<V> sinks, Random rand) {
 		Assertions.Graphs.onlyDirected(g);
 
+		final double eps = 1e-6;
+
 		Object2DoubleMap<E> caps = new Object2DoubleOpenHashMap<>();
 		for (E e : g.edges())
 			caps.put(e, capacity.weight(e));
@@ -227,7 +229,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 				List<E> es = new ArrayList<>(g.outEdges(u));
 				Collections.shuffle(es, rand);
 				for (E e : es) {
-					if (caps.getDouble(e) == 0)
+					if (caps.getDouble(e) < eps)
 						continue;
 					assert u.equals(g.edgeSource(e));
 					V v = g.edgeTarget(e);
@@ -261,7 +263,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 
 			/* Found a residual path from source to sink */
 			double delta = path.stream().mapToDouble(caps::getDouble).min().getAsDouble();
-			assert delta > 0;
+			assert delta >= eps;
 			for (E e : path)
 				caps.put(e, caps.getDouble(e) - delta);
 
@@ -274,7 +276,8 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 				lowerBoundEdges.removeElements(2, lowerBoundEdges.size());
 			}
 			for (E e : lowerBoundEdges) {
-				double boundDelta = delta / 2 + rand.nextDouble() * ((delta + 1) / 2);
+				double boundDelta = delta / 2 + rand.nextDouble() * (delta/ 2);
+				assert 0 <= boundDelta && boundDelta <= delta;
 				lowerBound.set(e, lowerBound.weight(e) + boundDelta);
 			}
 		}
