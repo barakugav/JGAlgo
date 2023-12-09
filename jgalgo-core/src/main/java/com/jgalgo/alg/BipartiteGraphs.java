@@ -131,21 +131,33 @@ public class BipartiteGraphs {
 	private static Bitmap findBipartitePartition0(IndexGraph g) {
 		final int n = g.vertices().size();
 		Bitmap partition = new Bitmap(n);
-		if (n > 0) {
-			IntPriorityQueue queue = new FIFOQueueIntNoReduce();
-			Bitmap visited = new Bitmap(n);
-			for (int start = 0; start < n; start++) {
-				if (visited.get(start))
-					continue;
-				visited.set(start);
-				queue.enqueue(start);
-				partition.set(start, true);
-				while (!queue.isEmpty()) {
-					final int u = queue.dequeueInt();
-					final boolean uSide = partition.get(u);
-					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
+		Bitmap visited = new Bitmap(n);
+		for (int start = 0; start < n; start++) {
+			if (visited.get(start))
+				continue;
+			visited.set(start);
+			queue.enqueue(start);
+			partition.set(start, true);
+			while (!queue.isEmpty()) {
+				final int u = queue.dequeueInt();
+				final boolean uSide = partition.get(u);
+				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
+					eit.nextInt();
+					int v = eit.targetInt();
+					if (visited.get(v)) {
+						if (partition.get(v) == uSide)
+							return null;
+						continue;
+					}
+					partition.set(v, !uSide);
+					visited.set(v);
+					queue.enqueue(v);
+				}
+				if (g.isDirected()) {
+					for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
 						eit.nextInt();
-						int v = eit.targetInt();
+						int v = eit.sourceInt();
 						if (visited.get(v)) {
 							if (partition.get(v) == uSide)
 								return null;
@@ -154,20 +166,6 @@ public class BipartiteGraphs {
 						partition.set(v, !uSide);
 						visited.set(v);
 						queue.enqueue(v);
-					}
-					if (g.isDirected()) {
-						for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
-							eit.nextInt();
-							int v = eit.sourceInt();
-							if (visited.get(v)) {
-								if (partition.get(v) == uSide)
-									return null;
-								continue;
-							}
-							partition.set(v, !uSide);
-							visited.set(v);
-							queue.enqueue(v);
-						}
 					}
 				}
 			}
@@ -229,6 +227,27 @@ public class BipartiteGraphs {
 			resultPartition = VertexBiPartitions.partitionFromIndexPartition(g, indexPartition);
 		}
 		return Optional.of(resultPartition);
+	}
+
+	/**
+	 * Get the existing bipartite partition of the given {@link IntGraph} (if one exists).
+	 *
+	 * <p>
+	 * If a bipartite partition was computed on the graph and boolean vertex weights were added to it, the partition
+	 * will be returned. Otherwise, an empty optional will be returned. This function does not compute a partition if it
+	 * doesn't find an existing one.
+	 *
+	 * <p>
+	 * Note that if the graph was modified after the bipartite partition was computed and added, it might be invalid and
+	 * no checks are performed in this function to verify that it is still valid.
+	 *
+	 * @param  g                        the graph
+	 * @return                          the bipartite partition of the graph if one exists
+	 * @throws IllegalArgumentException if the graph has a non boolean vertex weights with key
+	 *                                      {@link #VertexBiPartitionWeightKey}
+	 */
+	public static Optional<IVertexBiPartition> getExistingPartition(IntGraph g) {
+		return getExistingPartition((Graph<Integer, Integer>) g).map(p -> (IVertexBiPartition) p);
 	}
 
 	/**
