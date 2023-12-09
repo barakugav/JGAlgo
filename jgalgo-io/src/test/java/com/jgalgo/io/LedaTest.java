@@ -121,8 +121,7 @@ public class LedaTest {
 			for (int repeat = 0; repeat < 32; repeat++) {
 				final int n = 10 + rand.nextInt(20);
 				final int m = 15 + rand.nextInt(30);
-				IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
-				IntGraph g = factory.allowSelfEdges().newGraph();
+				IntGraph g = IntGraphFactory.newInstance(directed).allowSelfEdges().newGraph();
 
 				/* LEDA format support vertices with labels 1..n only */
 				for (int v = 1; v <= n; v++)
@@ -157,8 +156,7 @@ public class LedaTest {
 			for (int repeat = 0; repeat < 32; repeat++) {
 				final int n = 10 + rand.nextInt(20);
 				final int m = 15 + rand.nextInt(30);
-				IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
-				IntGraph g = factory.allowSelfEdges().newGraph();
+				IntGraph g = IntGraphFactory.newInstance(directed).allowSelfEdges().newGraph();
 
 				/* LEDA format support vertices with labels 1..n only */
 				for (int v = 1; v <= n; v++)
@@ -447,7 +445,8 @@ public class LedaTest {
 		text.addLine("1 2 0 |{}|");
 		text.addLine("2 3 0 |{}|");
 		text.addLine("3 1 0 |{}|");
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* invalid 'LEDA.GRAPH' header */
 		text.addLine("LEDA.GRAPH");
@@ -477,7 +476,8 @@ public class LedaTest {
 		text.addLine("void");
 		text.addLine("void");
 		text.addLine("0");
-		assertThrows(IllegalArgumentException.class, () -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
+		assertThrows(IllegalArgumentException.class,
+				() -> new LedaGraphReader().readGraph(new StringReader(text.getAndClear())));
 
 		/* invalid directed/undirected */
 		text.addLine("LEDA.GRAPH");

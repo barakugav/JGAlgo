@@ -230,10 +230,10 @@ public class GmlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E>
 
 		final boolean intGraph = vType == int.class && eType == int.class;
 		@SuppressWarnings("unchecked")
-		GraphFactory<V, E> factory =
-				intGraph ? (GraphFactory<V, E>) IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
+		GraphFactory<V, E> factory = intGraph ? (GraphFactory<V, E>) IntGraphFactory.newInstance(directed)
+				: GraphFactory.newInstance(directed);
 
-		GraphBuilder<V, E> b = factory.setDirected(directed).allowSelfEdges().newBuilder();
+		GraphBuilder<V, E> b = factory.allowSelfEdges().newBuilder();
 		IntGraphBuilder bInt = intGraph ? (IntGraphBuilder) b : null;
 
 		Map<String, List<Pair<V, Object>>> vWeights = new Object2ObjectOpenHashMap<>();

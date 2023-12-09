@@ -40,8 +40,8 @@ public class ReversedGraphViewTest extends TestBase {
 		final int n = 47, m = 1345;
 
 		GraphFactory<Integer, Integer> factory =
-				intGraph ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
-		Graph<Integer, Integer> g = factory.setDirected(directed).allowSelfEdges().allowParallelEdges().newGraph();
+				intGraph ? IntGraphFactory.newInstance(directed) : GraphFactory.newInstance(directed);
+		Graph<Integer, Integer> g = factory.allowSelfEdges().allowParallelEdges().newGraph();
 
 		for (int i = 0; i < n; i++)
 			g.addVertex(Integer.valueOf(i + 1));

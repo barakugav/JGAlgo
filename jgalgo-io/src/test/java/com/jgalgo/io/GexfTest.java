@@ -213,9 +213,7 @@ public class GexfTest {
 			for (int n : IntList.of(6, 30, 211)) {
 				for (int repeat = 0; repeat < 32; repeat++) {
 					final int m = n + rand.nextInt(2 * n);
-					IntGraphFactory factory =
-							directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
-					IntGraph g = factory.allowSelfEdges().allowParallelEdges().newGraph();
+					IntGraph g = IntGraphFactory.newInstance(directed).allowSelfEdges().allowParallelEdges().newGraph();
 					while (g.vertices().size() < n) {
 						int v = rand.nextInt(2 * n);
 						if (!g.vertices().contains(v))

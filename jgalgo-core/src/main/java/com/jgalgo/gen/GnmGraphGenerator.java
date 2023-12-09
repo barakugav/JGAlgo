@@ -241,11 +241,10 @@ public class GnmGraphGenerator<V, E> implements GraphGenerator<V, E> {
 		GraphFactory<V, E> factory;
 		if (intGraph) {
 			@SuppressWarnings("unchecked")
-			GraphFactory<V, E> factory0 =
-					(GraphFactory<V, E>) (directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected());
+			GraphFactory<V, E> factory0 = (GraphFactory<V, E>) IntGraphFactory.newInstance(directed);
 			factory = factory0;
 		} else {
-			factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();
+			factory = GraphFactory.newInstance(directed);
 		}
 		GraphBuilder<V, E> g = factory.allowSelfEdges(selfEdges).newBuilder();
 		g.expectedVerticesNum(n);

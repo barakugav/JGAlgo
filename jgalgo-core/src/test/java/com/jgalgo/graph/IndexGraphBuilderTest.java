@@ -219,8 +219,8 @@ public class IndexGraphBuilderTest extends TestBase {
 		final long seed = 0x56f68a18a0ca8d84L;
 		final Random rand = new Random(seed);
 		foreachBoolConfig((directed, buildMut, selfEdges) -> {
-			IndexGraphFactory factory = IndexGraphFactory.newUndirected().setDirected(directed)
-					.allowSelfEdges(selfEdges).allowParallelEdges();
+			IndexGraphFactory factory =
+					IndexGraphFactory.newInstance(directed).allowSelfEdges(selfEdges).allowParallelEdges();
 			IndexGraphBuilder b = factory.newBuilder();
 			IndexGraph g = factory.newGraph();
 
@@ -310,7 +310,7 @@ public class IndexGraphBuilderTest extends TestBase {
 	public void reIndexAndBuild() {
 		foreachBoolConfig(directed -> {
 			IndexGraph g = createGraph(directed);
-			IndexGraphFactory factory = directed ? IndexGraphFactory.newDirected() : IndexGraphFactory.newUndirected();
+			IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
 			IndexGraphBuilder b = factory.allowSelfEdges().allowParallelEdges().newBuilder();
 			b.expectedVerticesNum(g.vertices().size());
 			b.expectedVerticesNum(g.vertices().size());
@@ -397,8 +397,7 @@ public class IndexGraphBuilderTest extends TestBase {
 		final long seed = 0xa636ca816d4202c9L;
 		final Random rand = new Random(seed);
 		final int n = 47, m = 1345;
-		IndexGraph g = IndexGraphFactory.newUndirected().setDirected(directed).allowSelfEdges().allowParallelEdges()
-				.newGraph();
+		IndexGraph g = IndexGraphFactory.newInstance(directed).allowSelfEdges().allowParallelEdges().newGraph();
 
 		IWeightsInt vWeights = g.addVerticesWeights("weights", int.class);
 		for (int v = 0; v < n; v++) {

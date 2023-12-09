@@ -103,14 +103,6 @@ public interface GraphFactory<V, E> {
 	GraphBuilder<V, E> newBuilder();
 
 	/**
-	 * Determine if graphs built by this factory should be directed or not.
-	 *
-	 * @param  directed if {@code true}, graphs built by this factory will be directed
-	 * @return          this factory
-	 */
-	GraphFactory<V, E> setDirected(boolean directed);
-
-	/**
 	 * Change the config of this factory so that the built graphs will support self edges.
 	 *
 	 * <p>
@@ -244,6 +236,18 @@ public interface GraphFactory<V, E> {
 	 */
 	public static <V, E> GraphFactory<V, E> newDirected() {
 		return new GraphImpl.Factory<>(true);
+	}
+
+	/**
+	 * Create a new un/directed graph factory.
+	 *
+	 * @param  <V>      the vertices type
+	 * @param  <E>      the edges type
+	 * @param  directed whether the graphs created by the factory should be directed
+	 * @return          a new factory that can build un/directed graphs
+	 */
+	public static <V, E> GraphFactory<V, E> newInstance(boolean directed) {
+		return new GraphImpl.Factory<>(directed);
 	}
 
 	/**

@@ -431,9 +431,9 @@ public class GraphsTest extends TestBase {
 
 			GraphFactory<Integer, Integer> factory;
 			if (g1 instanceof IntGraph) {
-				factory = directed ? IntGraphFactory.newUndirected() : IntGraphFactory.newDirected();
+				factory = IntGraphFactory.newInstance(!directed);
 			} else {
-				factory = directed ? GraphFactory.newUndirected() : GraphFactory.newDirected();
+				factory = GraphFactory.newInstance(!directed);
 			}
 			Graph<Integer, Integer> g2 = factory.allowSelfEdges().allowParallelEdges().newGraph();
 			for (Integer v : g1.vertices())
@@ -456,9 +456,9 @@ public class GraphsTest extends TestBase {
 
 			GraphFactory<Integer, Integer> factory;
 			if (g1 instanceof IntGraph) {
-				factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
+				factory = IntGraphFactory.newInstance(directed);
 			} else {
-				factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();
+				factory = GraphFactory.newInstance(directed);
 			}
 			Graph<Integer, Integer> g2 = factory.allowSelfEdges().allowParallelEdges().newGraph();
 			for (Integer v : g1.vertices())
@@ -488,9 +488,9 @@ public class GraphsTest extends TestBase {
 
 			GraphFactory<Integer, Integer> factory;
 			if (g1 instanceof IntGraph) {
-				factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
+				factory = IntGraphFactory.newInstance(directed);
 			} else {
-				factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();
+				factory = GraphFactory.newInstance(directed);
 			}
 			Graph<Integer, Integer> g2 = factory.allowSelfEdges().allowParallelEdges().newGraph();
 			for (Integer v : g1.vertices())
@@ -520,9 +520,9 @@ public class GraphsTest extends TestBase {
 
 			GraphFactory<Integer, Integer> factory;
 			if (g1 instanceof IntGraph) {
-				factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
+				factory = IntGraphFactory.newInstance(directed);
 			} else {
-				factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();
+				factory = GraphFactory.newInstance(directed);
 			}
 			Graph<Integer, Integer> g2 = factory.allowParallelEdges().newGraph();
 			for (Integer v : g1.vertices())
@@ -688,8 +688,7 @@ public class GraphsTest extends TestBase {
 		impls.add("matrix-selfedges");
 		for (String impl : impls) {
 			foreachBoolConfig(directed -> {
-				IndexGraphFactory factory = IndexGraphFactory.newUndirected().setOption("impl", impl);
-				IndexGraph g = factory.setDirected(directed).newGraph();
+				IndexGraph g = IndexGraphFactory.newInstance(directed).setOption("impl", impl).newGraph();
 				assertEquals(impl, Graphs.getIndexGraphImpl(g));
 				assertEquals(impl, Graphs.getIndexGraphImpl(g.copy()));
 

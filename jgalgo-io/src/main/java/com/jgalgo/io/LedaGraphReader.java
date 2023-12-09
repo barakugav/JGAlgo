@@ -128,8 +128,7 @@ public class LedaGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 			throw new IllegalArgumentException("Leda file format: 4th non-comment line must equals -1 or -2. "
 					+ "-1 is Directed graph. -2 is Undirected graph.");
 		boolean directed = "-1".equals(directedOrUndirected);
-		IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
-		IntGraphBuilder builder = factory.allowSelfEdges().newBuilder();
+		IntGraphBuilder builder = IntGraphFactory.newInstance(directed).allowSelfEdges().newBuilder();
 
 		IWeights<?> verticesWeights = null;
 		IWeights<?> edgesWeights = null;

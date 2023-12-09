@@ -80,7 +80,7 @@ public class GraphsTestUtils extends TestUtils {
 	}
 
 	public static Boolean2ObjectFunction<IntGraph> defaultGraphImpl() {
-		return direct -> IntGraphFactory.newUndirected().setDirected(direct).newGraph();
+		return directed -> IntGraphFactory.newInstance(directed).newGraph();
 	}
 
 	public static IWeightsDouble assignRandWeights(IntGraph g, long seed) {

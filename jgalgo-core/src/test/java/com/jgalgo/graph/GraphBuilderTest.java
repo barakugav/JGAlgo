@@ -150,8 +150,8 @@ public class GraphBuilderTest extends TestBase {
 		final long seed = 0x1dbb0af52c6ad3e8L;
 		final Random rand = new Random(seed);
 		foreachBoolConfig((directed, buildMut, selfEdges) -> {
-			GraphFactory<Integer, Integer> factory = GraphFactory.<Integer, Integer>newUndirected()
-					.setDirected(directed).allowSelfEdges(selfEdges).allowParallelEdges();
+			GraphFactory<Integer, Integer> factory =
+					GraphFactory.<Integer, Integer>newInstance(directed).allowSelfEdges(selfEdges).allowParallelEdges();
 			GraphBuilder<Integer, Integer> b = factory.newBuilder();
 			Graph<Integer, Integer> g = factory.newGraph();
 
@@ -272,7 +272,7 @@ public class GraphBuilderTest extends TestBase {
 		final long seed = 0xa636ca816d4202c9L;
 		final Random rand = new Random(seed);
 		final int n = 47, m = 1345;
-		GraphFactory<Integer, Integer> factory = GraphFactory.<Integer, Integer>newUndirected().setDirected(directed);
+		GraphFactory<Integer, Integer> factory = GraphFactory.<Integer, Integer>newInstance(directed);
 		Graph<Integer, Integer> g = factory.allowSelfEdges().allowParallelEdges().newGraph();
 
 		WeightsInt<Integer> vWeights = g.addVerticesWeights("weights", int.class);

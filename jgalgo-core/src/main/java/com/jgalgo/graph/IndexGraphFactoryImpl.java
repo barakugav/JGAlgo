@@ -20,7 +20,7 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 class IndexGraphFactoryImpl implements IndexGraphFactory {
 
-	boolean directed;
+	final boolean directed;
 	private boolean selfEdges;
 	private boolean parallelEdges = true;
 	int expectedVerticesNum;
@@ -46,7 +46,9 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	@Override
 	public IndexGraph newCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		setDirected(g.isDirected());
+		if (directed != g.isDirected())
+			throw new IllegalArgumentException("graph is " + (g.isDirected() ? "directed" : "undirected")
+					+ " while factory is " + (directed ? "directed" : "undirected"));
 		return mutableImpl().newCopyOf((IndexGraph) g, copyVerticesWeights, copyEdgesWeights);
 	}
 
@@ -376,12 +378,6 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 		};
 		return csrImpl;
-	}
-
-	@Override
-	public IndexGraphFactory setDirected(boolean directed) {
-		this.directed = directed;
-		return this;
 	}
 
 	@Override

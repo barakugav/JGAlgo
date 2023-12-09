@@ -230,12 +230,10 @@ public class IntGraphBuilderTest extends TestBase {
 			impls.add("matrix");
 			impls.add("matrix-selfedges");
 			for (String impl : impls) {
-				IntGraphFactory factory = (directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected())
-						.setOption("impl", impl);
+				IntGraphFactory factory = IntGraphFactory.newInstance(directed).setOption("impl", impl);
 				IntGraphBuilder b = factory.newBuilder();
 				boolean selfEdges = factory.newGraph().isAllowSelfEdges();
-				IntGraph g = (directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected())
-						.allowSelfEdges(selfEdges).newGraph();
+				IntGraph g = IntGraphFactory.newInstance(directed).allowSelfEdges(selfEdges).newGraph();
 
 				/* Add vertices and edges */
 				final int n = 12 + rand.nextInt(12);
@@ -358,7 +356,7 @@ public class IntGraphBuilderTest extends TestBase {
 		final long seed = 0xa636ca816d4202c9L;
 		final Random rand = new Random(seed);
 		final int n = 47, m = 1345;
-		IntGraphFactory factory = IntGraphFactory.newUndirected().setDirected(directed);
+		IntGraphFactory factory = IntGraphFactory.newInstance(directed);
 		IntGraph g = factory.allowSelfEdges().allowParallelEdges().newGraph();
 
 		IWeightsInt vWeights = g.addVerticesWeights("weights", int.class);

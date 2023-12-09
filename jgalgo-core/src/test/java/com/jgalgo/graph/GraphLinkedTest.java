@@ -24,9 +24,8 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 public class GraphLinkedTest extends TestBase {
 
 	private static Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl(boolean selfEdges) {
-		return directed -> IntGraphFactory.newUndirected()
-				.setOption("impl", selfEdges ? "linked-list-selfedges" : "linked-list").setDirected(directed)
-				.newGraph();
+		return directed -> IntGraphFactory.newInstance(directed)
+				.setOption("impl", selfEdges ? "linked-list-selfedges" : "linked-list").newGraph();
 	}
 
 	@Test

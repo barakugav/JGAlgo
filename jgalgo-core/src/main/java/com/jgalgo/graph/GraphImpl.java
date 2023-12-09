@@ -618,12 +618,6 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 		}
 
 		@Override
-		public GraphFactory<V, E> setDirected(boolean directed) {
-			factory.setDirected(directed);
-			return this;
-		}
-
-		@Override
 		public GraphFactory<V, E> allowSelfEdges(boolean selfEdges) {
 			factory.allowSelfEdges(selfEdges);
 			return this;

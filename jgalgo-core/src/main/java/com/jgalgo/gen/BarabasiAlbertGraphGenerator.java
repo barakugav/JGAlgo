@@ -287,8 +287,7 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 		}
 
 		if (intGraph) {
-			IntGraphFactory factory = directed ? IntGraphFactory.newDirected() : IntGraphFactory.newUndirected();
-			IntGraphBuilder g = factory.allowParallelEdges().newBuilder();
+			IntGraphBuilder g = IntGraphFactory.newInstance(directed).allowParallelEdges().newBuilder();
 			g.expectedVerticesNum(n);
 			g.expectedVerticesNum(edgeNum);
 			final int[] vertices = IntAdapters.asIntCollection((Collection<Integer>) this.vertices).toIntArray();
@@ -304,7 +303,7 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 			return (GraphBuilder<V, E>) g;
 
 		} else {
-			GraphFactory<V, E> factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();
+			GraphFactory<V, E> factory = GraphFactory.newInstance(directed);
 			GraphBuilder<V, E> g = factory.allowParallelEdges().newBuilder();
 			g.expectedVerticesNum(n);
 			g.expectedVerticesNum(edgeNum);

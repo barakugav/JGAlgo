@@ -71,7 +71,7 @@ public class GraphsTestUtils extends TestUtils {
 			boolean parallelEdges, long seed) {
 		Random rand = new Random(seed ^ 0x97768b042d9d1453L);
 		GraphFactory<Integer, Integer> graphFactory =
-				rand.nextBoolean() ? IntGraphFactory.newUndirected() : GraphFactory.newUndirected();
+				rand.nextBoolean() ? IntGraphFactory.newInstance(directed) : GraphFactory.newInstance(directed);
 		if (selfEdges)
 			graphFactory.allowSelfEdges();
 		if (parallelEdges)
@@ -105,7 +105,7 @@ public class GraphsTestUtils extends TestUtils {
 			}
 
 		} else {
-			g = graphFactory.setDirected(true).newGraph();
+			g = graphFactory.newGraph();
 			for (int v : range(n))
 				g.addVertex(v);
 			Stack<IntIntPair> stack = new ObjectArrayList<>();
@@ -258,9 +258,9 @@ public class GraphsTestUtils extends TestUtils {
 
 	public static Boolean2ObjectFunction<Graph<Integer, Integer>> defaultGraphImpl(long seed) {
 		if (new Random(seed).nextBoolean()) {
-			return direct -> IntGraphFactory.newUndirected().setDirected(direct).newGraph();
+			return directed -> IntGraphFactory.newInstance(directed).newGraph();
 		} else {
-			return direct -> GraphFactory.<Integer, Integer>newUndirected().setDirected(direct).newGraph();
+			return directed -> GraphFactory.<Integer, Integer>newInstance(directed).newGraph();
 		}
 	}
 

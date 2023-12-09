@@ -68,8 +68,7 @@ public class GraphBench {
 			final int n = Integer.parseInt(argsMap.get("|V|"));
 			final int m = Integer.parseInt(argsMap.get("|E|"));
 
-			IndexGraphFactory factory = directed ? IndexGraphFactory.newDirected() : IndexGraphFactory.newUndirected();
-			g = factory.allowSelfEdges().newGraph();
+			g = IndexGraphFactory.newInstance(directed).allowSelfEdges().newGraph();
 			for (int v = 0; v < n; v++)
 				g.addVertex();
 			LongSet existingEdges = allowParallelEdges ? null : new LongOpenHashSet();
@@ -1356,8 +1355,8 @@ public class GraphBench {
 			n = Integer.parseInt(argsMap.get("|V|"));
 			m = Integer.parseInt(argsMap.get("|E|"));
 
-			IndexGraphFactory factory = directed ? IndexGraphFactory.newDirected() : IndexGraphFactory.newUndirected();
-			g = factory.allowSelfEdges(allowSelfEdges).allowParallelEdges(allowParallelEdges).newGraph();
+			g = IndexGraphFactory.newInstance(directed).allowSelfEdges(allowSelfEdges)
+					.allowParallelEdges(allowParallelEdges).newGraph();
 			for (int v = 0; v < n; v++)
 				g.addVertex();
 			LongSet existingEdges = allowParallelEdges ? null : new LongOpenHashSet();

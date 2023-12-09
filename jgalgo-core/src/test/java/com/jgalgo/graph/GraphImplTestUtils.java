@@ -991,8 +991,7 @@ class GraphImplTestUtils extends TestUtils {
 			assertEquals(g, copyConstructor.apply(copyConstructor.apply(g)));
 
 			if (!selfEdges) {
-				IndexGraphFactory factory =
-						directed ? IndexGraphFactory.newDirected() : IndexGraphFactory.newUndirected();
+				IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
 				IndexGraph g1 = factory.allowSelfEdges().newGraph();
 				g1.addVertex();
 				g1.addEdge(0, 0);

@@ -54,9 +54,6 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	IndexGraphBuilder newBuilder();
 
 	@Override
-	IndexGraphFactory setDirected(boolean directed);
-
-	@Override
 	default IndexGraphFactory allowSelfEdges() {
 		return (IndexGraphFactory) IntGraphFactory.super.allowSelfEdges();
 	}
@@ -100,6 +97,16 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 */
 	public static IndexGraphFactory newDirected() {
 		return new IndexGraphFactoryImpl(true);
+	}
+
+	/**
+	 * Create a new un/directed index graph factory.
+	 *
+	 * @param  directed whether the graphs created by the factory should be directed
+	 * @return          a new factory that can build un/directed index graphs
+	 */
+	public static IndexGraphFactory newInstance(boolean directed) {
+		return new IndexGraphFactoryImpl(directed);
 	}
 
 	/**

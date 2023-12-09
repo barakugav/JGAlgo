@@ -698,12 +698,6 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 		}
 
 		@Override
-		public IntGraphFactory setDirected(boolean directed) {
-			factory.setDirected(directed);
-			return this;
-		}
-
-		@Override
 		public IntGraphFactory allowSelfEdges(boolean selfEdges) {
 			factory.allowSelfEdges(selfEdges);
 			return this;

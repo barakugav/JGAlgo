@@ -54,9 +54,6 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	IntGraphBuilder newBuilder();
 
 	@Override
-	IntGraphFactory setDirected(boolean directed);
-
-	@Override
 	default IntGraphFactory allowSelfEdges() {
 		return (IntGraphFactory) GraphFactory.super.allowSelfEdges();
 	}
@@ -100,6 +97,16 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	 */
 	public static IntGraphFactory newDirected() {
 		return new IntGraphImpl.Factory(true);
+	}
+
+	/**
+	 * Create a new un/directed int graph factory.
+	 *
+	 * @param  directed whether the graphs created by the factory should be directed
+	 * @return          a new factory that can build un/directed int graphs
+	 */
+	public static IntGraphFactory newInstance(boolean directed) {
+		return new IntGraphImpl.Factory(directed);
 	}
 
 	/**

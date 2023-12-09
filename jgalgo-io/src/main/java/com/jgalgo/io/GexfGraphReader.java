@@ -286,11 +286,10 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 			GraphFactory<V, E> factory;
 			if (vertexType == int.class && edgeType == int.class) {
 				@SuppressWarnings("unchecked")
-				GraphFactory<V, E> factory0 = (GraphFactory<V, E>) (directed ? IntGraphFactory.newDirected()
-						: IntGraphFactory.newUndirected());
+				GraphFactory<V, E> factory0 = (GraphFactory<V, E>) IntGraphFactory.newInstance(directed);
 				factory = factory0;
 			} else {
-				factory = directed ? GraphFactory.newDirected() : GraphFactory.newUndirected();
+				factory = GraphFactory.newInstance(directed);
 			}
 			GraphBuilder<V, E> g = factory.allowSelfEdges().allowParallelEdges().newBuilder();
 
