@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Iterator;
 import com.jgalgo.graph.IEdgeIter;
@@ -39,7 +40,6 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 
 	private final MaximumFlow maxFlowAlgo = MaximumFlow.newInstance();
 	private final ClosuresEnumerator closuresAlgo = ClosuresEnumerator.newInstance();
-	private static final double EPS = 0.0001;
 
 	@Override
 	Iterator<IVertexBiPartition> minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink) {
@@ -53,6 +53,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 		final int n = g.vertices().size();
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
+		final double eps = range(g.edges().size()).mapToDouble(w::weight).filter(c -> c > 0).min().orElse(0) * 1e-8;
 
 		/* Identify all the vertices reachable from the source and the reverse-reachable from the sink */
 		Bitmap reachableFromSource = new Bitmap(n);
@@ -67,7 +68,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 					int e = eit.nextInt();
 					double ef = maxFlow.getFlow(e);
 					double ew = w.weight(e);
-					if (!(ef < ew - EPS))
+					if (!(ef < ew - eps))
 						continue; /* not a residual edge */
 					int v = eit.targetInt();
 					if (reachableFromSource.get(v))
@@ -78,7 +79,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					double ef = maxFlow.getFlow(e);
-					if (!(ef > EPS))
+					if (!(ef > eps))
 						continue; /* not a residual edge */
 					int v = eit.sourceInt();
 					if (reachableFromSource.get(v))
@@ -96,12 +97,12 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 					double ew = w.weight(e);
 					int v;
 					if (u == u0) {
-						if (!(f < ew - EPS))
+						if (!(f < ew - eps))
 							continue; /* not a residual edge */
 						v = v0;
 					} else {
 						assert u == v0;
-						if (!(f > -ew + EPS))
+						if (!(f > -ew + eps))
 							continue; /* not a residual edge */
 						v = u0;
 					}
@@ -121,7 +122,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 					int e = eit.nextInt();
 					double ef = maxFlow.getFlow(e);
 					double ew = w.weight(e);
-					if (!(ef < ew - EPS))
+					if (!(ef < ew - eps))
 						continue; /* not a residual edge */
 					int v = eit.sourceInt();
 					if (reverseReachableFromSink.get(v))
@@ -132,7 +133,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					double ef = maxFlow.getFlow(e);
-					if (!(ef > EPS))
+					if (!(ef > eps))
 						continue; /* not a residual edge */
 					int v = eit.targetInt();
 					if (reverseReachableFromSink.get(v))
@@ -150,12 +151,12 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 					double ew = w.weight(e);
 					int v;
 					if (u == u0) {
-						if (!(f > -ew + EPS))
+						if (!(f > -ew + eps))
 							continue; /* not a residual edge */
 						v = v0;
 					} else {
 						assert u == v0;
-						if (!(f < ew - EPS))
+						if (!(f < ew - eps))
 							continue; /* not a residual edge */
 						v = u0;
 					}
@@ -196,9 +197,9 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 					continue;
 				double ef = maxFlow.getFlow(e);
 				double ew = w.weight(e);
-				if (ef < ew - EPS)
+				if (ef < ew - eps)
 					residual0.addEdge(resU, resV);
-				if (ef > EPS)
+				if (ef > eps)
 					residual0.addEdge(resV, resU);
 			}
 
@@ -212,9 +213,9 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 					continue;
 				double f = maxFlow.getFlow(e);
 				double ew = w.weight(e);
-				if (f < ew - EPS)
+				if (f < ew - eps)
 					residual0.addEdge(resU, resV);
-				if (f > -ew + EPS)
+				if (f > -ew + eps)
 					residual0.addEdge(resV, resU);
 			}
 		}

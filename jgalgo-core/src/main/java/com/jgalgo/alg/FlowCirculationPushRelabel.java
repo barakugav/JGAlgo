@@ -87,8 +87,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 		final double[] capacity;
 		final double[] flow;
 		final double[] excess;
-
-		private static final double eps = 1e-9;
+		private final double eps;
 
 		WorkerDouble(IndexGraph g, IWeightFunction capacityOrig, IWeightFunction supply) {
 			super(g, capacityOrig, supply);
@@ -102,9 +101,14 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 				capacity[e] = capacityOrig.weight(e);
 
 			excess = new double[n];
-			double excessSum = 0;
 			for (int v = 0; v < n; v++)
-				excessSum += excess[v] = supply.weight(v);
+				excess[v] = supply.weight(v);
+
+			double supplyEps = Arrays.stream(excess).filter(e -> e > 0).min().orElse(0) * 1e-8;
+			double capacityEps = Arrays.stream(capacity).filter(c -> c > 0).min().orElse(0) * 1e-8;
+			eps = Math.min(supplyEps, capacityEps);
+
+			double excessSum = Arrays.stream(excess).sum();
 			if (Math.abs(excessSum) > eps)
 				throw new IllegalArgumentException("sum of supply is not zero");
 
@@ -216,7 +220,7 @@ class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
 				}
 			}
 
-			assert g.vertices().intStream().allMatch(v -> excess[v] < eps);
+			assert g.vertices().intStream().allMatch(v -> excess[v] <= eps);
 			for (int m = g.edges().size(), e = 0; e < m; e++)
 				flow[e] = Math.max(0, Math.min(flow[e], capacityOrig.weight(e)));
 			return new Flows.FlowImpl(g, flow);

@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.Iterator;
 import com.jgalgo.graph.Graph;
@@ -160,8 +161,10 @@ class MinimumEdgeCutUtils {
 		Bitmap visited = new Bitmap(n);
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 
+		final double eps =
+				range(g.edges().size()).mapToDouble(capacity::weight).filter(c -> c > 0).min().orElse(0) * 1e-8;
+
 		/* perform a BFS from source and use only non saturated edges */
-		final double eps = 0.00001;
 		for (int source : sources) {
 			visited.set(source);
 			queue.enqueue(source);

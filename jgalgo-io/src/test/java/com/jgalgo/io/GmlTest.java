@@ -1148,9 +1148,9 @@ public class GmlTest {
 		assertNotNull(vwFloat1);
 		assertNotNull(ewFloat1);
 		for (int v : g.vertices())
-			assertEquals(vwFloat.get(v), (float) vwFloat1.get(v), 0.0001);
+			assertEquals(vwFloat.get(v), (float) vwFloat1.get(v), 1e-4);
 		for (int e : g.edges())
-			assertEquals(ewFloat.get(e), (float) ewFloat1.get(e), 0.0001);
+			assertEquals(ewFloat.get(e), (float) ewFloat1.get(e), 1e-4);
 		g.removeVerticesWeights("weightsFloat");
 		g.removeEdgesWeights("weightsFloat");
 
@@ -1168,9 +1168,9 @@ public class GmlTest {
 		assertNotNull(vwDouble1);
 		assertNotNull(ewDouble1);
 		for (int v : g.vertices())
-			assertEquals(vwDouble.get(v), vwDouble1.get(v), 0.0001);
+			assertEquals(vwDouble.get(v), vwDouble1.get(v), 1e-4);
 		for (int e : g.edges())
-			assertEquals(ewDouble.get(e), ewDouble1.get(e), 0.0001);
+			assertEquals(ewDouble.get(e), ewDouble1.get(e), 1e-4);
 		g.removeVerticesWeights("weightsDouble");
 		g.removeEdgesWeights("weightsDouble");
 

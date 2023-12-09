@@ -136,7 +136,7 @@ public class DominatingSetAlgosTest extends TestBase {
 		// if (!DominatingSetAlgo.isDominatingSet(g, dominatingSet, dominanceDirection))
 		// continue; /* not a dominating set */
 		// double setWeight = WeightFunction.weightSum(w, dominatingSet);
-		// final double eps = 0.0001;
+		// final double eps = 1e-4;
 		// assertTrue(minSetWeight <= setWeight + eps, "failed to find dominating set: " + dominatingSet);
 		// }
 		// }

@@ -49,8 +49,6 @@ class DistanceMeasuresImpl {
 		private IntSet center;
 		private IntSet periphery;
 
-		private static final double EPS = 1e-6;
-
 		IndexImpl(IndexGraph g, ShortestPathAllPairs.IResult sp) {
 			this.g = Objects.requireNonNull(g);
 			this.sp = Objects.requireNonNull(sp);
@@ -87,8 +85,9 @@ class DistanceMeasuresImpl {
 		public IntSet center() {
 			if (center == null) {
 				double radius = radius();
+				double eps = Double.isFinite(radius) ? radius * 1e-8 : 0;
 				final int n = g.vertices().size();
-				int[] centerArr = range(n).filter(v -> eccentricity[v] <= radius + EPS).toArray();
+				int[] centerArr = range(n).filter(v -> eccentricity[v] <= radius + eps).toArray();
 				center = ImmutableIntArraySet.ofBitmap(centerArr, n);
 			}
 			return center;
@@ -98,8 +97,9 @@ class DistanceMeasuresImpl {
 		public IntSet periphery() {
 			if (periphery == null) {
 				double diameter = diameter();
+				double eps = Double.isFinite(diameter) ? diameter * 1e-8 : 0;
 				final int n = g.vertices().size();
-				int[] peripheryArr = range(n).filter(v -> eccentricity[v] >= diameter - EPS).toArray();
+				int[] peripheryArr = range(n).filter(v -> eccentricity[v] >= diameter - eps).toArray();
 				periphery = ImmutableIntArraySet.ofBitmap(peripheryArr, n);
 			}
 			return periphery;

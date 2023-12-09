@@ -234,10 +234,6 @@ class MinimumCostFlows {
 				capacityOrig = IWeightFunction.CardinalityWeightFunction;
 			if (cost == null)
 				cost = IWeightFunction.CardinalityWeightFunction;
-			if (lowerBound == null)
-				lowerBound = IWeightFunction.CardinalityWeightFunction;
-			if (supply == null)
-				supply = IWeightFunction.CardinalityWeightFunction;
 
 			final boolean integerFlow = WeightFunction.isInteger(capacityOrig) && WeightFunction.isInteger(lowerBound);
 
@@ -613,8 +609,10 @@ class MinimumCostFlows {
 			IFlow flow0 = computeMinCostMaxFlow(g, capacity, cost, source, sink);
 
 			/* assert all supply was provided */
+			double eps = range(sourcesSinksThreshold, g.edges().size()).mapToDouble(capacity::weight).filter(c -> c > 0)
+					.min().orElse(0);
 			assert range(sourcesSinksThreshold, g.edges().size())
-					.allMatch(e -> Math.abs(flow0.getFlow(e) - capacity.weight(e)) < 1e-9);
+					.allMatch(e -> Math.abs(flow0.getFlow(e) - capacity.weight(e)) < eps);
 
 			double[] flow = new double[gOrig.edges().size()];
 			for (int m = gOrig.edges().size(), e = 0; e < m; e++)

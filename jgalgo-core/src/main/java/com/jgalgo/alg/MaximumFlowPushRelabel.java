@@ -589,7 +589,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 							int e = it.peekNextInt();
 							int v = worker.g.edgeTarget(e);
 							double eAccess = worker().getResidualCapacity(e);
-							if (eAccess > WorkerDouble.EPS && worker.label[u] == worker.label[v] + 1) {
+							if (eAccess > worker().eps && worker.label[u] == worker.label[v] + 1) {
 								if (v != worker.sink && !worker.hasExcess(v))
 									worker.activate(v);
 
@@ -612,7 +612,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 							int e = it.peekNextInt();
 							int v = worker.g.edgeSource(e);
 							double eAccess = worker().flow(e);
-							if (eAccess > WorkerDouble.EPS && worker.label[u] == worker.label[v] + 1) {
+							if (eAccess > worker().eps && worker.label[u] == worker.label[v] + 1) {
 								if (v != worker.sink && !worker.hasExcess(v))
 									worker.activate(v);
 
@@ -648,7 +648,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 						if (u == worker.g.edgeSource(e)) {
 							int v = worker.g.edgeTarget(e);
 							double eAccess = worker().getResidualCapacity(e);
-							if (eAccess > WorkerDouble.EPS && worker.label[u] == worker.label[v] + 1) {
+							if (eAccess > worker().eps && worker.label[u] == worker.label[v] + 1) {
 								if (v != worker.sink && !worker.hasExcess(v))
 									worker.activate(v);
 
@@ -669,7 +669,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 						} else {
 							int v = worker.g.edgeSource(e);
 							double eAccess = worker().capacity[e] + worker().flow(e);
-							if (eAccess > WorkerDouble.EPS && worker.label[u] == worker.label[v] + 1) {
+							if (eAccess > worker().eps && worker.label[u] == worker.label[v] + 1) {
 								if (v != worker.sink && !worker.hasExcess(v))
 									worker.activate(v);
 
@@ -984,7 +984,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 							f = Math.min(worker().excess[u], worker().flow(e));
 							assert f >= 0;
 							worker().residualCapacity[e] += f;
-							assert worker().residualCapacity[e] <= worker().capacity[e] + WorkerDouble.EPS;
+							assert worker().residualCapacity[e] <= worker().capacity[e] + worker().eps;
 
 							if (firstNonResidual == -1 && !worker.hasFlow(e))
 								firstNonResidual = i;
@@ -1677,7 +1677,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		final double[] excess;
 
-		static final double EPS = 0.0001;
+		final double eps;
 
 		WorkerDouble(IndexGraph gOrig, IWeightFunction capacityOrig, int source, int sink,
 				ActiveOrderPolicy activeOrderPolicy, DischargePolicy dischargePolicy) {
@@ -1688,6 +1688,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 			residualCapacity = capacity.clone();
 
 			excess = new double[n];
+			eps = Arrays.stream(capacity).filter(c -> c > 0).min().orElse(0) * 1e-8;
 		}
 
 		@Override
@@ -1727,7 +1728,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		private void push(int e, double f) {
 			residualCapacity[e] -= f;
-			assert residualCapacity[e] >= -EPS;
+			assert residualCapacity[e] >= -eps;
 
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			excess[u] -= f;
@@ -1853,7 +1854,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		@Override
 		boolean hasExcess(int u) {
-			return excess[u] > EPS;
+			return excess[u] > eps;
 		}
 
 		double getResidualCapacity(int e) {
@@ -1866,12 +1867,12 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		@Override
 		boolean isResidual(int e) {
-			return getResidualCapacity(e) > EPS;
+			return getResidualCapacity(e) > eps;
 		}
 
 		@Override
 		boolean isTwinResidualUndirected(int e) {
-			return getTwinResidualCapacity(e) > EPS;
+			return getTwinResidualCapacity(e) > eps;
 		}
 
 		double getTwinResidualCapacity(int e) {
@@ -1882,12 +1883,12 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		@Override
 		boolean hasNegativeFlow(int e) {
 			assert !directed;
-			return flow(e) < -EPS;
+			return flow(e) < -eps;
 		}
 
 		@Override
 		boolean hasFlow(int e) {
-			return flow(e) > EPS;
+			return flow(e) > eps;
 		}
 
 	}

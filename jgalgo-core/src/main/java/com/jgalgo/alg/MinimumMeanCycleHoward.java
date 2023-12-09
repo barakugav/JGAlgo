@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.function.IntPredicate;
 import com.jgalgo.graph.Graphs;
@@ -48,8 +49,6 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 
 	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();
-
-	private static final double EPS = 0.0001;
 
 	/**
 	 * Create a new minimum mean cycle algorithm.
@@ -86,6 +85,8 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 				}
 			}
 		}
+
+		final double eps = range(g.edges().size()).mapToDouble(w::weight).filter(c -> c > 0).min().orElse(0) * 1e-8;
 
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 
@@ -181,7 +182,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 					double newDistance = d[v] + w.weight(e) - bestCycleMeanWeight;
 					double delta = d[u] - newDistance;
 					if (delta > 0) {
-						if (delta > EPS)
+						if (delta > eps)
 							improved = true;
 						d[u] = newDistance;
 						policy[u] = e;

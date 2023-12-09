@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IEdgeIter;
@@ -42,7 +43,6 @@ import it.unimi.dsi.fastutil.ints.IntList;
 class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 
 	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();
-	private static final double EPS = 0.00001;
 
 	/* Although the paper suggest a value of 10, this seems only to slow us down */
 	private static final int SourceChoosingUnfoldingDepth = 0;
@@ -187,11 +187,15 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 		for (int k = 1; k < ccSize + 1; k++)
 			pathWeights[k] = pathWeights[k - 1] + w.weight(path[k - 1]);
 
+		final double eps =
+				range(g.edges().size()).mapToDouble(e -> Math.abs(w.weight(e))).filter(c -> c > 0).min().orElse(0)
+						* 1e-8;
+
 		for (int len : bestCycleLengths) {
 			for (int k = 0; k <= ccSize - len; k++) {
 				if (g.edgeSource(path[k]) != g.edgeTarget(path[k + len - 1]))
 					continue;
-				if (Math.abs((pathWeights[k + len] - pathWeights[k]) - bestCycleMeanWeight * len) < EPS) {
+				if (Math.abs((pathWeights[k + len] - pathWeights[k]) - bestCycleMeanWeight * len) < eps) {
 					IntList cycleList = new IntArrayList(path, k, len);
 					int cycleVertex = g.edgeSource(cycleList.getInt(0));
 					return new PathImpl(g, cycleVertex, cycleVertex, cycleList);

@@ -51,6 +51,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
  */
 class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 
+	private static final Tree BfsProcessed = new Tree(null);
+
 	@Override
 	IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		/*
@@ -148,6 +150,8 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 		/* Temp list used during expand */
 		private final List<Blossom> expandTemp = new ArrayList<>();
 
+		private final double eps;
+
 		private static final boolean OptimizationGrowSubTree = Boolean.parseBoolean("true");
 
 		Worker(IndexGraph g, IWeightFunction w) {
@@ -171,6 +175,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 			treeNum = n;
 
 			/* Create all edges objects */
+			double minWeight = Double.POSITIVE_INFINITY;
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				Blossom U = singletonNodes[g.edgeSource(e)];
 				Blossom V = singletonNodes[g.edgeTarget(e)];
@@ -183,7 +188,10 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 				/* We multiply here by 2 so integers weights will result in round dual values */
 				/* any constant factor is fine here */
 				E.slack = w.weight(e) * 2;
+				if (E.slack != 0)
+					minWeight = Math.min(minWeight, E.slack);
 			}
+			eps = minWeight * 1e-6;
 
 			treeList = new Blossom() {
 				@Override
@@ -1621,10 +1629,8 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 					tree.eps += tree.epsDelta;
 				}
 			}
-			return delta > 1e-12; /* epsilon error */
+			return delta > eps; /* epsilon error */
 		}
-
-		private static final Tree BfsProcessed = new Tree(null);
 
 		private void updateDualsCC() {
 			for (Blossom root : roots())

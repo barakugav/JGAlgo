@@ -152,7 +152,7 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 							cutWeight += w.weight(e);
 					}
 				}
-				final double eps = 0.0001;
+				final double eps = 1e-4;
 				assertTrue(minCutWeight <= cutWeight + eps, "failed to find minimum cut: " + cut);
 				cut.clear();
 			}
@@ -200,7 +200,7 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 							cutWeight += w.weight(e);
 					}
 				}
-				final double eps = 0.0001;
+				final double eps = 1e-4;
 				assertTrue(minCutWeight <= cutWeight + eps, "failed to find minimum cut: " + cut);
 				cut.clear();
 			}

@@ -28,7 +28,7 @@ import com.jgalgo.graph.WeightFunctions;
 class PageRank {
 
 	private int iterations = 100;
-	private double tolerance = 0.0001;
+	private double tolerance = 1e-4;
 	private double dampingFactor = 0.85;
 
 	@SuppressWarnings("unchecked")

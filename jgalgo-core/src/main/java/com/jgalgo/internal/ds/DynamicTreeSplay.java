@@ -35,7 +35,7 @@ class DynamicTreeSplay implements DynamicTree {
 
 	private final double rootWeight;
 	private final ObjObjSplayTree.SplayImpl<Object, SplayNode> impl;
-	private static final double EPS = 0.00001;
+	private final double eps;
 
 	/**
 	 * Create a new empty dynamic tree data structure.
@@ -51,6 +51,7 @@ class DynamicTreeSplay implements DynamicTree {
 	DynamicTreeSplay(ObjObjSplayTree.SplayImpl<Object, SplayNode> impl, double weightLimit) {
 		this.rootWeight = weightLimit;
 		this.impl = impl;
+		this.eps = weightLimit * 1e-9;
 	}
 
 	@Override
@@ -81,10 +82,10 @@ class DynamicTreeSplay implements DynamicTree {
 
 		for (SplayNode p = n.right;;) {
 			double w1 = p.getWeight(w);
-			if (p.hasRightChild() && p.getMinWeight(w) >= p.right.getMinWeight(w1) - EPS) {
+			if (p.hasRightChild() && p.getMinWeight(w) >= p.right.getMinWeight(w1) - eps) {
 				p = p.right;
 				w = w1;
-			} else if (Math.abs(w1 - p.getMinWeight(w)) <= EPS) {
+			} else if (Math.abs(w1 - p.getMinWeight(w)) <= eps) {
 				impl.splay(p); /* perform splay to pay */
 				if (!p.isLinked())
 					throw new IllegalArgumentException("weightLimit was too small");

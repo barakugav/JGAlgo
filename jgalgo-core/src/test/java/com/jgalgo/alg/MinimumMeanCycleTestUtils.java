@@ -118,7 +118,7 @@ public class MinimumMeanCycleTestUtils extends TestBase {
 
 			for (Path<V, E> c : IterTools.foreach(cycles)) {
 				double cMeanWeight = getMeanWeight(c, w);
-				final double EPS = 0.0001;
+				final double EPS = 1e-4;
 				assertTrue(cMeanWeight + EPS >= cycleMeanWeight, "found a cycle with smaller mean weight: " + c);
 			}
 		} else {

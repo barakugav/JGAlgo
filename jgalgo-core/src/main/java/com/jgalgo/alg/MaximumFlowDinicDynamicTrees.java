@@ -48,7 +48,6 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph {
 
 	private final DebugPrinter debug = new DebugPrinter(false);
-	private static final double EPS = 0.0001;
 
 	/**
 	 * Create a new maximum flow algorithm object.
@@ -89,14 +88,21 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 		IFlow computeMaximumFlow() {
 			debug.println("\t", getClass().getSimpleName());
 
-			double capacitySum = 100;
+			double capacitySum = 0;
+			double minCapacity = Double.POSITIVE_INFINITY;
 			if (WeightFunction.isCardinality(capacityOrig)) {
 				capacitySum += gOrig.edges().size();
+				minCapacity = 1;
 			} else {
-				for (int m = gOrig.edges().size(), e = 0; e < m; e++)
-					capacitySum += capacityOrig.weight(e);
+				for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
+					double c = capacityOrig.weight(e);
+					capacitySum += c;
+					if (c != 0)
+						minCapacity = Math.min(minCapacity, c);
+				}
 			}
 			capacitySum *= 16;
+			double eps = minCapacity * 1e-8;
 
 			IntGraphFactory factory = IntGraphFactory.directed().setOption("impl", "linked-list");
 			IntGraph L = factory.expectedVerticesNum(n).expectedEdgesNum(/* >= */ n).newGraph();
@@ -175,7 +181,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 							dt.cut(min.source());
 
 							min = dt.findMinEdge(vToDt[source]);
-						} while (min != null && Math.abs(min.weight()) < EPS);
+						} while (min != null && Math.abs(min.weight()) < eps);
 
 					} else if (L.outEdges(v).isEmpty()) {
 

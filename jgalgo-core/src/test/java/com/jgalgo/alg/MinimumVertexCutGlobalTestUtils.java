@@ -133,7 +133,7 @@ class MinimumVertexCutGlobalTestUtils extends TestUtils {
 					continue; // not a cut
 				double cutWeight =
 						g.vertices().stream().filter(v -> !remainingVertices.contains(v)).mapToDouble(w::weight).sum();
-				final double eps = 0.0001;
+				final double eps = 1e-4;
 				assertTrue(minCutWeight <= cutWeight + eps, "failed to find minimum cut: " + remainingVertices);
 			}
 

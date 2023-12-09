@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
@@ -173,7 +174,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 				IEdgeIter it = U.edgeIter;
 				int uSize = dtTreeSize.getTreeSize(U.dtVertex);
 
-				while (U.hasExcess() && it.hasNext()) {
+				while (hasExcess(U) && it.hasNext()) {
 					int e = it.peekNextInt();
 					Vertex V = vertexData(g.edgeTarget(e));
 
@@ -199,15 +200,15 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 						pushAlongEdge(e);
 						if (V.v == source || V.v == sink)
 							continue;
-						assert V.hasExcess();
+						assert hasExcess(V);
 						W = V;
 					}
 
 					/* Continue as long as w has excess and it is not the root */
-					while (W.hasExcess() && W.dtVertex.getParent() != null)
+					while (hasExcess(W) && W.dtVertex.getParent() != null)
 						pushAlongPath(W);
 
-					if (W.hasExcess() && !W.isActive) {
+					if (hasExcess(W) && !W.isActive) {
 						W.isActive = true;
 						active.push(W);
 					}
@@ -221,7 +222,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 				}
 
 				/* Update isActive and add to queue if active */
-				if (U.isActive = U.hasExcess())
+				if (U.isActive = hasExcess(U))
 					active.push(U);
 			}
 
@@ -317,9 +318,9 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 				firstDtChild = -1;
 				dtVertex.setData(this);
 			}
-
-			abstract boolean hasExcess();
 		}
+
+		abstract boolean hasExcess(Vertex v);
 
 	}
 
@@ -328,7 +329,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 		final double[] capacity;
 		final double[] flow;
 
-		private static final double EPS = 0.0001;
+		private final double eps;
 
 		WorkerDouble(IndexGraph gOrig, IWeightFunction capacityOrig, int source, int sink) {
 			super(gOrig, capacityOrig, source, sink);
@@ -336,6 +337,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			flow = new double[g.edges().size()];
 			capacity = new double[g.edges().size()];
 			initCapacitiesAndFlows(flow, capacity);
+			eps = Arrays.stream(capacity).filter(c -> c > 0).min().orElse(0) * 1e-8;
 		}
 
 		@Override
@@ -355,8 +357,8 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			int t = twin[e];
 			flow[e] += f;
 			flow[t] -= f;
-			assert flow[e] <= capacity[e] + EPS;
-			assert flow[t] <= capacity[t] + EPS;
+			assert flow[e] <= capacity[e] + eps;
+			assert flow[t] <= capacity[t] + eps;
 		}
 
 		@Override
@@ -415,7 +417,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			/* Cut all saturated edges from u to u's tree root */
 			while (W.dtVertex.getParent() != null) {
 				minEdge = dt.findMinEdge(W.dtVertex);
-				if (minEdge.weight() > EPS)
+				if (minEdge.weight() > eps)
 					break;
 				int minEdgeId = minEdge.source().<Vertex>getData().linkedEdge;
 				updateFlow(minEdgeId, minEdge.weight());
@@ -435,7 +437,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 
 		@Override
 		boolean isResidual(int e) {
-			return getResidualCapacity(e) > EPS;
+			return getResidualCapacity(e) > eps;
 		}
 
 		private static class Vertex extends AbstractWorker.Vertex {
@@ -444,11 +446,11 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			Vertex(int v, DynamicTree.Vertex dtVertex) {
 				super(v, dtVertex);
 			}
+		}
 
-			@Override
-			boolean hasExcess() {
-				return excess > EPS;
-			}
+		@Override
+		boolean hasExcess(AbstractWorker.Vertex v) {
+			return ((Vertex) v).excess > eps;
 		}
 
 	}
@@ -573,11 +575,11 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 			Vertex(int v, DynamicTree.Vertex dtVertex) {
 				super(v, dtVertex);
 			}
+		}
 
-			@Override
-			boolean hasExcess() {
-				return excess > 0;
-			}
+		@Override
+		boolean hasExcess(AbstractWorker.Vertex v) {
+			return ((Vertex) v).excess > 0;
 		}
 	}
 

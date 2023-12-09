@@ -280,15 +280,28 @@ public class Assertions {
 		}
 
 		public static void checkSupply(IndexGraph g, IWeightFunction supply) {
-			double sum = 0;
-			for (int n = g.vertices().size(), v = 0; v < n; v++) {
-				double d = supply.weight(v);
-				if (!Double.isFinite(d))
-					throw new IllegalArgumentException("Supply must be finite for vertex with index " + v);
-				sum += d;
+			if (supply instanceof IWeightFunctionInt) {
+				IWeightFunctionInt supplyInt = (IWeightFunctionInt) supply;
+				long sum = 0;
+				for (int n = g.vertices().size(), v = 0; v < n; v++)
+					sum += supplyInt.weightInt(v);
+				if (sum != 0)
+					throw new IllegalArgumentException("Sum of supply must be zero");
+			} else {
+				double sum = 0;
+				double minSupply = Double.POSITIVE_INFINITY;
+				for (int n = g.vertices().size(), v = 0; v < n; v++) {
+					double d = supply.weight(v);
+					if (!Double.isFinite(d))
+						throw new IllegalArgumentException("Supply must be finite for vertex with index " + v);
+					sum += d;
+					if (d != 0)
+						minSupply = Math.min(minSupply, Math.abs(d));
+				}
+				final double eps = minSupply * 1e-8;
+				if (Math.abs(sum) > eps)
+					throw new IllegalArgumentException("Sum of supply must be zero");
 			}
-			if (Math.abs(sum) > 1e-6)
-				throw new IllegalArgumentException("Sum of supply must be zero");
 		}
 	}
 

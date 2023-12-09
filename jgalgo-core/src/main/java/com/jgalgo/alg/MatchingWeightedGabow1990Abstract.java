@@ -49,7 +49,6 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaximumMatchingImpl {
 
 	final DebugPrinter debugPrintManager = new DebugPrinter(false);
-	static final double EPS = 0.00001;
 
 	@Override
 	IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
@@ -600,7 +599,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 						break mainLoop;
 
 					debug.print("delta ", Double.valueOf(deltaNext), " (+", Double.valueOf(deltaNext - delta), ")");
-					assert deltaNext + EPS >= delta;
+					assert deltaNext + 1e-5 >= delta;
 					delta = deltaNext;
 
 					debug.printExec(() -> {
@@ -688,7 +687,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 			assert JGAlgoUtils.isEqual(delta, expandEvents.findMin().key());
 			final Blossom B = expandEvents.extractMin().value();
 
-			assert B.root != -1 && !B.isEven && !B.isSingleton() && dualVal(B) <= EPS;
+			assert B.root != -1 && !B.isEven && !B.isSingleton() && dualVal(B) <= 1e-5;
 
 			int baseV = B.base, topV = g.edgeSource(B.treeParentEdge);
 			Blossom base = null;

@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Arrays;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsDouble;
@@ -44,7 +45,6 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 
 	private final MaximumFlow maxFlowAlg = MaximumFlow.newInstance();
 	private final MinimumMeanCycle minMeanCycleAlg = MinimumMeanCycle.newInstance();
-	private static final double EPS = 0.0001;
 
 	@Override
 	IFlow computeMinCostMaxFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IWeightFunction cost, int source,
@@ -65,8 +65,8 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		double[] flow = new double[g.edges().size()];
 
 		/* eliminate negative cycles in the residual network repeatedly */
-		initResidualCapacitiesAndFlows(gOrig, capacityOrig, flowOrig, resGraph, capacity, flow);
-		eliminateAllNegativeCycles(gOrig, resGraph, capacity, flow, cost);
+		final double eps = initResidualCapacitiesAndFlows(gOrig, capacityOrig, flowOrig, resGraph, capacity, flow);
+		eliminateAllNegativeCycles(gOrig, resGraph, capacity, flow, cost, eps);
 
 		double[] flow0 = new double[gOrig.edges().size()];
 		for (int m = g.edges().size(), e = 0; e < m; e++)
@@ -77,7 +77,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		return new Flows.FlowImpl(gOrig, flow0);
 	}
 
-	private static void initResidualCapacitiesAndFlows(IndexGraph gOrig, IWeightFunction capacityOrig, IFlow flowOrig,
+	private static double initResidualCapacitiesAndFlows(IndexGraph gOrig, IWeightFunction capacityOrig, IFlow flowOrig,
 			Flows.ResidualGraph resGraph, double[] capacity, double[] flow) {
 		IndexGraph g = resGraph.g;
 		int[] edgeRef = resGraph.edgeRef;
@@ -93,7 +93,6 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 					capacity[e] = 0;
 					flow[e] = -eFlow;
 				}
-				assert flow[e] <= capacity[e] + 1e-9;
 			}
 		} else {
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
@@ -101,13 +100,15 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 				double eFlow = flowOrig.getFlow(eRef);
 				capacity[e] = capacityOrig.weight(eRef);
 				flow[e] = resGraph.isOriginalEdge(e) ? eFlow : -eFlow;
-				assert flow[e] <= capacity[e] + 1e-9;
 			}
 		}
+		double eps = Arrays.stream(capacity).filter(c -> c > 0).min().orElse(0) * 1e-8;
+		assert g.edges().intStream().allMatch(e -> flow[e] <= capacity[e] + eps);
+		return eps;
 	}
 
 	private void eliminateAllNegativeCycles(IndexGraph gOrig, Flows.ResidualGraph resGraph, double[] capacity,
-			double[] flow, IWeightFunction cost) {
+			double[] flow, IWeightFunction cost, double eps) {
 		IndexGraph g = resGraph.g;
 		int[] edgeRef = resGraph.edgeRef;
 		int[] twin = resGraph.twin;
@@ -126,7 +127,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		/* saturatedCost for 'removed' (saturated) edges */
 		IWeightsDouble cost0 = IWeights.createExternalEdgesWeights(g, double.class);
 		for (int m = g.edges().size(), e = 0; e < m; e++) {
-			boolean isSaturated = capacity[e] - flow[e] < EPS;
+			boolean isSaturated = capacity[e] - flow[e] < eps;
 			if (isSaturated) {
 				saturated.set(e);
 				cost0.set(e, saturatedCost);
@@ -139,7 +140,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		/* Repeatedly find the cycle with the minimum mean cost and push flow through it */
 		for (;;) {
 			IPath minCycle = (IPath) minMeanCycleAlg.computeMinimumMeanCycle(g, cost0);
-			if (minCycle == null || cost0.weightSum(minCycle.edges()) >= -EPS)
+			if (minCycle == null || cost0.weightSum(minCycle.edges()) >= -eps)
 				break; /* no cycle or cycle that will increase the total cost */
 
 			/* find the maximum amount of flow we can push through the cycle */
@@ -157,7 +158,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 				/* Add/remove edges to the non saturated residual net */
 				/* We use high cost edge instead of actually removing an edge */
 				assert !saturated.get(e);
-				boolean isSaturated = capacity[e] - flow[e] < EPS;
+				boolean isSaturated = capacity[e] - flow[e] < eps;
 				if (isSaturated) {
 					saturated.set(e);
 					cost0.set(e, saturatedCost);

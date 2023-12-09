@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
@@ -179,14 +180,14 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		final double[] capacity;
 		final double[] residualCapacity;
-
-		private static final double EPS = 0.0001;
+		final double eps;
 
 		WorkerDouble(IndexGraph gOrig, IWeightFunction capacityOrig, int source, int sink) {
 			super(gOrig, capacityOrig, source, sink);
 			capacity = new double[g.edges().size()];
 			initCapacities(capacity);
 			residualCapacity = capacity.clone();
+			eps = Arrays.stream(capacity).filter(c -> c > 0).min().orElse(0) * 1e-8;
 		}
 
 		IFlow computeMaxFlow() {
@@ -210,11 +211,11 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 					ec = flow(e);
 					nextP = g.edgeTarget(e);
 				}
-				assert ec >= EPS;
+				assert ec >= eps;
 				f = Math.min(f, ec);
 				p = nextP;
 			}
-			assert f >= EPS;
+			assert f >= eps;
 
 			// update flow of all edges on path
 			for (int p = sink; p != source;) {
@@ -248,11 +249,11 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 					ec = getTwinResidualCapacity(e);
 					nextP = g.edgeTarget(e);
 				}
-				assert ec >= EPS;
+				assert ec >= eps;
 				f = Math.min(f, ec);
 				p = nextP;
 			}
-			assert f >= EPS;
+			assert f >= eps;
 
 			// update flow of all edges on path
 			for (int p = sink; p != source;) {
@@ -276,7 +277,7 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		@Override
 		boolean hasFlow(int e) {
-			return flow(e) > EPS;
+			return flow(e) > eps;
 		}
 
 		double getResidualCapacity(int e) {
@@ -285,17 +286,17 @@ class MaximumFlowEdmondsKarp extends MaximumFlowAbstract.WithoutResidualGraph {
 
 		@Override
 		boolean isSaturated(int e) {
-			return getResidualCapacity(e) <= EPS;
+			return getResidualCapacity(e) <= eps;
 		}
 
 		@Override
 		boolean isResidual(int e) {
-			return getResidualCapacity(e) > EPS;
+			return getResidualCapacity(e) > eps;
 		}
 
 		@Override
 		boolean isTwinResidualUndirected(int e) {
-			return getTwinResidualCapacity(e) > EPS;
+			return getTwinResidualCapacity(e) > eps;
 		}
 
 		double getTwinResidualCapacity(int e) {
