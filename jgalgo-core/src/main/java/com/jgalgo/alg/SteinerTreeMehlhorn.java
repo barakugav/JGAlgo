@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.function.IntConsumer;
 import com.jgalgo.graph.IEdgeIter;
@@ -75,9 +76,7 @@ class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 		 * cell of t.
 		 */
 		IndexGraphBuilder g1Builder = IndexGraphBuilder.undirected();
-		g1Builder.expectedVerticesNum(terminalNum);
-		for (int t = 0; t < terminalNum; t++)
-			g1Builder.addVertex();
+		g1Builder.addVertices(range(terminalNum));
 		IntArrayList g1EdgeRef0 = new IntArrayList();
 		DoubleArrayList g1EdgeWeight0 = new DoubleArrayList();
 		int[] neighborsBestEdge = new int[terminalNum];
@@ -124,9 +123,7 @@ class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {
 
 		/* 3. Construct a subgraph G3 of G by replacing each edge in G2 by its corresponding shortest path in G */
 		IndexGraphBuilder g3Builder = g1Builder;
-		g3Builder.expectedVerticesNum(n);
-		for (int v = 0; v < n; v++)
-			g3Builder.addVertex();
+		g3Builder.addVertices(g.vertices());
 		Bitmap g3Edges = new Bitmap(g.edges().size());
 		IntArrayList g3EdgeRef0 = new IntArrayList();
 		DoubleArrayList g3EdgeWeight0 = g1EdgeWeight0;

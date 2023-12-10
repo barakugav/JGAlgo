@@ -113,19 +113,13 @@ public class EmptyGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	public GraphBuilder<V, E> generateIntoBuilder() {
 		if (intGraph) {
 			IntGraphBuilder g = IntGraphBuilder.newInstance(directed);
-			if (vertices != null) {
-				g.expectedVerticesNum(vertices.size());
-				for (int v : IntAdapters.asIntCollection((Collection<Integer>) vertices))
-					g.addVertex(v);
-			}
+			if (vertices != null)
+				g.addVertices((Collection<Integer>) vertices);
 			return (GraphBuilder<V, E>) g;
 		} else {
 			GraphBuilder<V, E> g = GraphBuilder.newInstance(directed);
-			if (vertices != null) {
-				g.expectedVerticesNum(vertices.size());
-				for (V v : vertices)
-					g.addVertex(v);
-			}
+			if (vertices != null)
+				g.addVertices(vertices);
 			return g;
 		}
 	}

@@ -454,9 +454,8 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 
 		/* build the residual graph */
 		GraphBuilder<V, Integer> b = GraphBuilder.directed();
+		b.addVertices(g.vertices());
 		Supplier<Integer> edgeSupplier = () -> Integer.valueOf(b.edges().size());
-		for (V v : g.vertices())
-			b.addVertex(v);
 		WeightsInt<Integer> residualWeights = b.addEdgesWeights("cost", int.class);
 		for (E e : g.edges()) {
 			V u = g.edgeSource(e);

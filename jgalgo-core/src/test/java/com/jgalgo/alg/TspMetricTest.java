@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -69,10 +70,8 @@ public class TspMetricTest extends TestBase {
 		gFactory.addHint(GraphFactory.Hint.FastEdgeLookup);
 		gFactory.addHint(GraphFactory.Hint.DenseGraph);
 		GraphBuilder<Integer, Integer> gBuilder = gFactory.newBuilder();
-		gBuilder.expectedVerticesNum(n);
+		gBuilder.addVertices(range(n));
 		gBuilder.expectedEdgesNum(n * (n - 1) / 2);
-		for (int v = 0; v < n; v++)
-			gBuilder.addVertex(gBuilder.vertices().size());
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
 				gBuilder.addEdge(u, v, gBuilder.edges().size());

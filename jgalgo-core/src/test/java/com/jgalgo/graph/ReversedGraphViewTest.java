@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -43,8 +44,7 @@ public class ReversedGraphViewTest extends TestBase {
 				intGraph ? IntGraphFactory.newInstance(directed) : GraphFactory.newInstance(directed);
 		Graph<Integer, Integer> g = factory.allowSelfEdges().allowParallelEdges().newGraph();
 
-		for (int i = 0; i < n; i++)
-			g.addVertex(Integer.valueOf(i + 1));
+		g.addVertices(range(1, n + 1));
 		for (int i = 0; i < m; i++)
 			g.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand), Integer.valueOf(i + 1));
 		return g;
@@ -139,6 +139,34 @@ public class ReversedGraphViewTest extends TestBase {
 				assertFalse(gOrig.vertices().contains(vertexToRemove));
 				assertFalse(gRev.vertices().contains(vertexToRemove));
 			}
+			assertEquals(gOrig.vertices(), gRev.vertices());
+		});
+	}
+
+	@Test
+	public void addVertices() {
+		foreachBoolConfig((intGraph, directed) -> {
+			Graph<Integer, Integer> gOrig = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gRev = gOrig.reverseView();
+
+			Integer nonExistingVertex1;
+			for (int v = 0;; v++) {
+				if (!gRev.vertices().contains(Integer.valueOf(v))) {
+					nonExistingVertex1 = Integer.valueOf(v);
+					break;
+				}
+			}
+			Integer nonExistingVertex2;
+			for (int v = nonExistingVertex1.intValue() + 1;; v++) {
+				if (!gRev.vertices().contains(Integer.valueOf(v))) {
+					nonExistingVertex2 = Integer.valueOf(v);
+					break;
+				}
+			}
+			List<Integer> newVertices = List.of(nonExistingVertex1, nonExistingVertex2);
+			gRev.addVertices(newVertices);
+			assertTrue(gOrig.vertices().containsAll(newVertices));
+			assertTrue(gRev.vertices().containsAll(newVertices));
 			assertEquals(gOrig.vertices(), gRev.vertices());
 		});
 	}

@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.ArrayList;
@@ -146,8 +147,7 @@ public class LowestCommonAncestorOfflineUnionFindTest extends TestBase {
 		Graph<Integer, Integer> g = GraphsTestUtils.randTree(16, rand.nextLong());
 
 		IntGraph gInt = IntGraph.newUndirected();
-		for (int v = 0; v < 16; v++)
-			gInt.addVertex(v);
+		gInt.addVertices(range(16));
 
 		testQueries(g, LowestCommonAncestorOffline.Queries.newInstance(g), rand);
 		testQueries(g.indexGraph(), LowestCommonAncestorOffline.Queries.newInstance(g.indexGraph()), rand);

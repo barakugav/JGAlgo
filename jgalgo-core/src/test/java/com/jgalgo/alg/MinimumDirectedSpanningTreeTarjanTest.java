@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Iterator;
 import java.util.Random;
@@ -54,8 +55,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 				return algo.computeMinimumDirectedSpanningTree(g, w, g.vertices().iterator().next());
 			int n = g.vertices().size();
 			IntGraph dg = IntGraphFactory.directed().allowParallelEdges().expectedVerticesNum(n).newGraph();
-			for (int i = 0; i < n; i++)
-				dg.addVertex();
+			dg.addVertices(range(n));
 
 			Object2IntMap<V> gToDg = new Object2IntOpenHashMap<>();
 			Iterator<V> it1 = g.vertices().iterator();

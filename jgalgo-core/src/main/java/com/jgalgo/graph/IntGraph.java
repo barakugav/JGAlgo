@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -129,6 +130,16 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	default void addVertex(Integer vertex) {
 		addVertex(vertex.intValue());
 	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * Prefer to pass {@link IntCollection} instead of {@link Collection}&lt;{@link Integer}&gt; as collection of
+	 * vertices.
+	 */
+	@Override
+	void addVertices(Collection<? extends Integer> vertices);
 
 	/**
 	 * Remove a vertex and all its edges from the graph.

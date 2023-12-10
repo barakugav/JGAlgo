@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -96,9 +98,11 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 
 	@Override
 	public void addVertex(V vertex) {
+		if (vertex == null)
+			throw new NullPointerException("Vertex must be non null");
 		int vIndex = ibuilder.vertices().size();
 		int oldVal = vIdToIndex.putIfAbsent(vertex, vIndex);
-		if (oldVal != vIdToIndex.defaultReturnValue())
+		if (oldVal != -1)
 			throw new IllegalArgumentException("duplicate vertex: " + vertex);
 
 		int vIndex2 = ibuilder.addVertex();
@@ -108,17 +112,50 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 	}
 
 	@Override
+	public void addVertices(Collection<? extends V> vertices) {
+		if (vertices.isEmpty())
+			return;
+		for (V vertex : vertices)
+			if (vertex == null)
+				throw new NullPointerException("Vertex must be non null");
+
+		final int verticesNumBefore = ibuilder.vertices().size();
+		int nextIdx = verticesNumBefore;
+		V duplicateVertex = null;
+		for (V vertex : vertices) {
+			int oldVal = vIdToIndex.putIfAbsent(vertex, nextIdx);
+			if (oldVal != -1) {
+				duplicateVertex = vertex;
+				break;
+			}
+			vIndexToId.add(vertex);
+			nextIdx++;
+		}
+		if (duplicateVertex != null) {
+			for (; nextIdx-- > verticesNumBefore;) {
+				int idx = vIdToIndex.removeInt(vIndexToId.get(nextIdx));
+				assert idx == nextIdx;
+			}
+			vIndexToId.size(verticesNumBefore);
+			throw new IllegalArgumentException("Duplicate vertex: " + duplicateVertex);
+		}
+		ibuilder.addVertices(range(verticesNumBefore, nextIdx));
+	}
+
+	@Override
 	public void addEdge(V source, V target, E edge) {
+		if (edge == null)
+			throw new NullPointerException("Edge must be non null");
 		int sourceIdx = vIdToIndex.getInt(source);
 		int targetIdx = vIdToIndex.getInt(target);
-		if (targetIdx == vIdToIndex.defaultReturnValue())
+		if (targetIdx == -1)
 			throw NoSuchVertexException.ofVertex(target);
-		if (sourceIdx == vIdToIndex.defaultReturnValue())
+		if (sourceIdx == -1)
 			throw NoSuchVertexException.ofVertex(source);
 
 		int eIndex = ibuilder.edges().size();
 		int oldVal = eIdToIndex.putIfAbsent(edge, eIndex);
-		if (oldVal != eIdToIndex.defaultReturnValue())
+		if (oldVal != -1)
 			throw new IllegalArgumentException("duplicate edge: " + edge);
 
 		int eIndex2 = ibuilder.addEdge(sourceIdx, targetIdx);

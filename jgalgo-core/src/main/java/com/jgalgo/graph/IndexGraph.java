@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Collection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -97,6 +98,10 @@ public interface IndexGraph extends IntGraph {
 	 * added is {@code verticesNum}. For any other vertex passed to this method, an exception will be thrown. If
 	 * {@code verticesNum} is passed, this method is equivalent to {@link #addVertex()}.
 	 *
+	 * <p>
+	 * If this index graph object was obtained from a regular {@link Graph} using {@link Graph#indexGraph()}, this
+	 * method should not be called. Use the original graph instead.
+	 *
 	 * @throws     IllegalArgumentException if {@code vertex} is not {@code verticesNum}
 	 * @deprecated                          use {@link #addVertex()} instead
 	 */
@@ -107,6 +112,21 @@ public interface IndexGraph extends IntGraph {
 			throw new IllegalArgumentException("Only vertex ID " + vertices().size() + " can be added");
 		addVertex();
 	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} therefore the only vertices that can be
+	 * added are {@code (verticesNum,verticesNum+1,verticesNum+2, ...)}. For any other vertices passed to this method,
+	 * an exception will be thrown.
+	 *
+	 * <p>
+	 * If this index graph object was obtained from a regular {@link Graph} using {@link Graph#indexGraph()}, this
+	 * method should not be called. Use the original graph instead.
+	 */
+	@Override
+	void addVertices(Collection<? extends Integer> vertices);
 
 	/**
 	 * {@inheritDoc}
@@ -151,6 +171,10 @@ public interface IndexGraph extends IntGraph {
 	 * Index graphs edges IDs are always {@code (0,1,2, ...,edgesNum-1)} therefore the only edge ID that can be added is
 	 * {@code edgesNum}. For any other edge passed to this method, an exception will be thrown. If {@code edgesNum} is
 	 * passed, this method is equivalent to {@link #addEdge(int, int)}.
+	 *
+	 * <p>
+	 * If this index graph object was obtained from a regular {@link Graph} using {@link Graph#indexGraph()}, this
+	 * method should not be called. Use the original graph instead.
 	 *
 	 * @throws     IllegalArgumentException if {@code edge} is not {@code edgesNum}
 	 * @deprecated                          use {@link #addEdge(int, int)} instead

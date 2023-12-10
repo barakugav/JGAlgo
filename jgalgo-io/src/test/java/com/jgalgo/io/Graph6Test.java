@@ -74,8 +74,7 @@ public class Graph6Test extends TestUtils {
 				IntGraph g = IntGraphFactory.undirected().newGraph();
 
 				/* graph6 format support vertices with labels 0..n-1 only */
-				for (int v = 0; v < n; v++)
-					g.addVertex(v);
+				g.addVertices(range(10));
 
 				Bitmap edges = new Bitmap(n * (n - 1) / 2);
 				int edgesNum = 0;
@@ -116,8 +115,7 @@ public class Graph6Test extends TestUtils {
 				IntGraph g = IntGraphFactory.undirected().newGraph();
 
 				/* graph6 format support vertices with labels 0..n-1 only */
-				for (int v = 0; v < n; v++)
-					g.addVertex(v);
+				g.addVertices(range(n));
 
 				while (g.edges().size() < m) {
 					int source = Graphs.randVertex(g, rand);
@@ -291,8 +289,7 @@ public class Graph6Test extends TestUtils {
 	@Test
 	public void writeTooManyVertices() {
 		IntGraph g = IntGraph.newUndirected();
-		for (int i = 0; i < (1 << 19); i++)
-			g.addVertex(i);
+		g.addVertices(range(1 << 19));
 
 		Graph6GraphWriter writer = new Graph6GraphWriter();
 		assertThrows(IllegalArgumentException.class, () -> writer.writeGraph(g, new StringWriter()));

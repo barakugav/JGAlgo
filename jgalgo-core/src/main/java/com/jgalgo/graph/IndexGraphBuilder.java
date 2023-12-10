@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -62,6 +63,17 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 			throw new IllegalArgumentException("Only vertex ID " + vertices().size() + " can be added");
 		addVertex();
 	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} therefore the only vertices that can be
+	 * added are {@code (verticesNum,verticesNum+1,verticesNum+2, ...)}. For any other vertices passed to this method,
+	 * an exception will be thrown.
+	 */
+	@Override
+	void addVertices(Collection<? extends Integer> vertices);
 
 	/**
 	 * {@inheritDoc}

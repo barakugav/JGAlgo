@@ -247,11 +247,8 @@ public class GnmGraphGenerator<V, E> implements GraphGenerator<V, E> {
 			factory = GraphFactory.newInstance(directed);
 		}
 		GraphBuilder<V, E> g = factory.allowSelfEdges(selfEdges).newBuilder();
-		g.expectedVerticesNum(n);
+		g.addVertices(vertices);
 		g.expectedEdgesNum(m);
-
-		for (V v : vertices)
-			g.addVertex(v);
 
 		if (parallelEdges || m <= maxNumberOfEdges / 2) {
 			/* Start with an empty graph and add edges one by one */

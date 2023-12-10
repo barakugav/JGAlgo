@@ -33,6 +33,7 @@ import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 
 /**
  * Generates a random graph using the R-MAT model.
@@ -299,11 +300,10 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 
 		if (intGraph) {
 			IntGraphBuilder g = IntGraphFactory.newInstance(directed).allowSelfEdges().newBuilder();
-			g.expectedVerticesNum(n);
-			g.expectedVerticesNum(m);
 			final int[] vertices = IntAdapters.asIntCollection((Collection<Integer>) this.vertices).toIntArray();
-			for (int v : vertices)
-				g.addVertex(v);
+			g.addVertices(IntList.of(vertices));
+
+			g.expectedEdgesNum(m);
 			IntBinaryOperator edgeBuilder =
 					IntAdapters.asIntBiOperator((BiFunction<Integer, Integer, Integer>) this.edgeBuilder);
 			if (directed) {
@@ -332,11 +332,10 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 		} else {
 			GraphFactory<V, E> factory = GraphFactory.newInstance(directed);
 			GraphBuilder<V, E> g = factory.allowSelfEdges().newBuilder();
-			g.expectedVerticesNum(n);
-			g.expectedVerticesNum(m);
 			final V[] vertices = (V[]) this.vertices.toArray();
-			for (V v : vertices)
-				g.addVertex(v);
+			g.addVertices(ObjectList.of(vertices));
+
+			g.expectedEdgesNum(m);
 			if (directed) {
 				for (int uIdx = 0; uIdx < n; uIdx++) {
 					for (int vIdx = 0; vIdx < n; vIdx++) {

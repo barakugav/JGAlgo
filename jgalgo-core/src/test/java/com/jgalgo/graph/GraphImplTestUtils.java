@@ -58,6 +58,7 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -138,13 +139,298 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
+	@SuppressWarnings("boxing")
+	static void addVerticesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+		final Random rand = new Random(0x4a4735619a4c9042L);
+
+		/* addVertices() valid */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				Graph<Integer, Integer> g = graphImpl.get(directed);
+
+				Set<Integer> vertices = new IntOpenHashSet();
+				while (vertices.size() < n) {
+					int num = Math.min(rand.nextInt(5), n - vertices.size());
+					List<Integer> vs = new ArrayList<>();
+					while (vs.size() < num) {
+						int v = rand.nextInt();
+						if (v < 0 || vertices.contains(v) || vs.contains(v))
+							continue;
+						vs.add(v);
+					}
+					g.addVertices(vs);
+					vertices.addAll(vs);
+				}
+				assertEquals(vertices, g.vertices());
+			}
+		});
+
+		/* addVertices() sometimes with duplicate vertex (in added list) */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				Graph<Integer, Integer> g = graphImpl.get(directed);
+
+				Set<Integer> vertices = new IntOpenHashSet();
+				while (vertices.size() < n) {
+					int num = Math.min(rand.nextInt(5), n - vertices.size());
+					List<Integer> vs = new ArrayList<>();
+					while (vs.size() < num) {
+						int v = rand.nextInt();
+						if (v < 0 || vertices.contains(v) || vs.contains(v))
+							continue;
+						vs.add(v);
+					}
+					if (vs.isEmpty() || rand.nextBoolean()) {
+						g.addVertices(vs);
+						vertices.addAll(vs);
+					} else {
+						vs.add(randElement(vs, rand)); /* duplicate element */
+						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs));
+					}
+				}
+				assertEquals(vertices, g.vertices());
+			}
+		});
+
+		/* addVertices() sometimes with existing vertex */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				Graph<Integer, Integer> g = graphImpl.get(directed);
+
+				Set<Integer> vertices = new IntOpenHashSet();
+				while (vertices.size() < n) {
+					int num = Math.min(rand.nextInt(5), n - vertices.size());
+					List<Integer> vs = new ArrayList<>();
+					while (vs.size() < num) {
+						int v = rand.nextInt();
+						if (v < 0 || vertices.contains(v) || vs.contains(v))
+							continue;
+						vs.add(v);
+					}
+					if (vertices.isEmpty() || rand.nextBoolean()) {
+						g.addVertices(vs);
+						vertices.addAll(vs);
+					} else {
+						vs.add(Graphs.randVertex(g, rand)); /* duplicate element */
+						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs));
+					}
+				}
+				assertEquals(vertices, g.vertices());
+			}
+		});
+
+		/* addVertices() sometimes with null vertex */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				Graph<Integer, Integer> g = graphImpl.get(directed);
+
+				Set<Integer> vertices = new IntOpenHashSet();
+				while (vertices.size() < n) {
+					int num = Math.min(rand.nextInt(5), n - vertices.size());
+					List<Integer> vs = new ArrayList<>();
+					while (vs.size() < num) {
+						int v = rand.nextInt();
+						if (v < 0 || vertices.contains(v) || vs.contains(v))
+							continue;
+						vs.add(v);
+					}
+					if (vs.isEmpty() || rand.nextBoolean()) {
+						g.addVertices(vs);
+						vertices.addAll(vs);
+					} else {
+						vs.add(null);
+						assertThrows(NullPointerException.class, () -> g.addVertices(vs));
+					}
+				}
+				assertEquals(vertices, g.vertices());
+			}
+		});
+
+		/* addVertices() index graph from range() */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					g.addVertices(range(verticesNum, verticesNum + num));
+					verticesNum += num;
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+
+		/* addVertices() index graph from range() sometimes invalid */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					if (rand.nextBoolean()) {
+						g.addVertices(range(verticesNum, verticesNum + num));
+						verticesNum += num;
+					} else {
+						int from = verticesNum + 1;
+						assertThrows(IllegalArgumentException.class, () -> g.addVertices(range(from, from + num)));
+					}
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+
+		/* addVertices() index graph from other graph vertices */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					IndexGraph g0 = IndexGraph.newUndirected();
+					g0.addVertices(range(num));
+
+					if (verticesNum == 0) {
+						g.addVertices(g0.vertices());
+						verticesNum += num;
+					} else if (rand.nextBoolean()) {
+						assertThrows(IllegalArgumentException.class, () -> g.addVertices(g0.vertices()));
+					} else {
+						g.addVertices(range(verticesNum, verticesNum + num));
+						verticesNum += num;
+					}
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+
+		/* addVertices() index graph from sorted list */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					List<Integer> vs = new IntArrayList(range(verticesNum, verticesNum + num).iterator());
+					g.addVertices(vs);
+					verticesNum += num;
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+
+		/* addVertices() index graph from arbitrary collection */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					int[] vs = range(verticesNum, verticesNum + num).toIntArray();
+					IntArrays.shuffle(vs, rand);
+					g.addVertices(IntList.of(vs));
+					verticesNum += num;
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+
+		/* addVertices() index graph from arbitrary collection duplicate vertex (in list) */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					int[] vs = range(verticesNum, verticesNum + num).toIntArray();
+					IntArrays.shuffle(vs, rand);
+					if (vs.length == 0 || rand.nextBoolean()) {
+						g.addVertices(IntList.of(vs));
+						verticesNum += num;
+					} else {
+						IntList vs0 = new IntArrayList(vs);
+						vs0.add(vs[rand.nextInt(vs.length)]); /* duplicate element */
+						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
+					}
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+
+		/* addVertices() index graph from arbitrary collection with existing vertex */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					int[] vs = range(verticesNum, verticesNum + num).toIntArray();
+					IntArrays.shuffle(vs, rand);
+					if (verticesNum == 0 || rand.nextBoolean()) {
+						g.addVertices(IntList.of(vs));
+						verticesNum += num;
+					} else {
+						IntList vs0 = new IntArrayList(vs);
+						vs0.add(Graphs.randVertex(g, rand));
+						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
+					}
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+
+		/* addVertices() index graph from arbitrary collection not in range */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					int[] vs = range(verticesNum, verticesNum + num).toIntArray();
+					IntArrays.shuffle(vs, rand);
+					if (rand.nextBoolean()) {
+						g.addVertices(IntList.of(vs));
+						verticesNum += num;
+					} else if (rand.nextBoolean()) {
+						IntList vs0 = new IntArrayList(vs);
+						vs0.add(verticesNum - 1);
+						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
+					} else {
+						IntList vs0 = new IntArrayList(vs);
+						vs0.add(verticesNum + num + 1);
+						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
+					}
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+	}
+
 	@SuppressWarnings({ "boxing", "deprecation" })
 	static void testAddEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
-			for (int i = 0; i < n; i++)
-				g.addVertex(Integer.valueOf(i + 1));
+			g.addVertices(range(1, n + 1));
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
 			Int2ObjectMap<int[]> edges = new Int2ObjectOpenHashMap<>();
@@ -242,8 +528,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			final int n = 30;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
-			for (int i = 0; i < n; i++)
-				g.addVertex(Integer.valueOf(i + 1));
+			g.addVertices(range(1, n + 1));
 			Map<Integer, IntIntPair> edges = new HashMap<>();
 			while (g.edges().size() < 60) {
 				Integer u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
@@ -278,8 +563,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
-			for (int i = 0; i < n; i++)
-				g.addVertex(Integer.valueOf(i + 1));
+			g.addVertices(range(1, n + 1));
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
 			Object2ObjectMap<Collection<Integer>, Integer> edges = new Object2ObjectOpenHashMap<>();
@@ -313,8 +597,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
-			for (int i = 0; i < n; i++)
-				g.addVertex(i + 1);
+			g.addVertices(range(1, n + 1));
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
 			Object2ObjectMap<Integer, Set<Integer>> outEdges = new Object2ObjectOpenHashMap<>();
@@ -381,8 +664,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
-			for (int i = 0; i < n; i++)
-				g.addVertex(Integer.valueOf(i + 1));
+			g.addVertices(range(1, n + 1));
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
 			BiFunction<Integer, Integer, Collection<Integer>> key = directed ? List::of : GraphImplTestUtils::setOf;
@@ -512,8 +794,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
-			for (int i = 0; i < n; i++)
-				g.addVertex(Integer.valueOf(i + 1));
+			g.addVertices(range(1, n + 1));
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
 			Object2ObjectMap<Integer, Collection<Integer>> edges = new Object2ObjectOpenHashMap<>();
@@ -788,8 +1069,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
-			for (int i = 0; i < n; i++)
-				g.addVertex(Integer.valueOf(i + 1));
+			g.addVertices(range(1, n + 1));
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
 			Object2IntMap<Integer> degreeOut = new Object2IntOpenHashMap<>();

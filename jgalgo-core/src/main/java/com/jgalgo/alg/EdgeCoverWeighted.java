@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
@@ -37,12 +38,8 @@ class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 		final int m = g.edges().size();
 
 		IndexGraphBuilder gb = IndexGraphBuilder.undirected();
-		gb.expectedVerticesNum(n * 2);
+		gb.addVertices(range(n * 2));
 		gb.expectedEdgesNum(m * 2 + n);
-		for (int v = 0; v < n; v++) {
-			gb.addVertex();
-			gb.addVertex();
-		}
 		for (int e = 0; e < m; e++) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			gb.addEdge(u * 2 + 0, v * 2 + 0);

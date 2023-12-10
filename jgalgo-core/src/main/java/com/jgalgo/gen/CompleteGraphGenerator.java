@@ -29,6 +29,7 @@ import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 
 /**
  * Generates a complete graph.
@@ -189,11 +190,10 @@ public class CompleteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 		if (intGraph) {
 			IntGraphBuilder g = IntGraphBuilder.newInstance(directed);
-			g.expectedVerticesNum(n);
-			g.expectedEdgesNum(m);
 			final int[] vertices = IntAdapters.asIntCollection((Collection<Integer>) this.vertices).toIntArray();
-			for (int v : vertices)
-				g.addVertex(v);
+			g.addVertices(IntList.of(vertices));
+
+			g.expectedEdgesNum(m);
 			IntBinaryOperator edgeBuilder =
 					IntAdapters.asIntBiOperator((BiFunction<Integer, Integer, Integer>) this.edgeBuilder);
 			for (int uIdx = 0; uIdx < n; uIdx++) {
@@ -215,11 +215,10 @@ public class CompleteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 		} else {
 			GraphBuilder<V, E> g = GraphBuilder.newInstance(directed);
-			g.expectedVerticesNum(n);
-			g.expectedEdgesNum(m);
 			final V[] vertices = (V[]) this.vertices.toArray();
-			for (V v : vertices)
-				g.addVertex(v);
+			g.addVertices(ObjectList.of(vertices));
+
+			g.expectedEdgesNum(m);
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				V u = vertices[uIdx];
 				if (directed) {

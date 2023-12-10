@@ -16,9 +16,12 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Collection;
 import java.util.Set;
 import java.util.function.Consumer;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
 
 abstract class GraphBaseMutable extends IndexGraphBase {
 
@@ -148,11 +151,59 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 	@Override
 	public int addVertex() {
-		int u = vertices0().newIdx();
+		int u = vertices0().add();
 		assert u >= 0;
 		verticesInternalContainers.ensureCapacity(u + 1);
 		verticesUserWeights.ensureCapacity(u + 1);
 		return u;
+	}
+
+	@Override
+	public final void addVertices(Collection<? extends Integer> vertices) {
+		int currentNum = this.vertices.size();
+		if (!isRangeStartingFrom(currentNum, vertices))
+			throw new IllegalArgumentException("added vertices must be a consecutive range of integers starting from "
+					+ currentNum + " but was " + vertices);
+		addVerticesImpl(vertices.size());
+	}
+
+	static boolean isRangeStartingFrom(int from, Collection<? extends Integer> elements) {
+		/* GraphElementSet are 0,1,2,3,... */
+		if (elements instanceof GraphElementSet)
+			return from == 0;
+
+		/* If the given collection is a set, we know there are no duplications, compare to Range obj */
+		int num = elements.size();
+		if (elements instanceof Set)
+			return range(from, from + num).equals(elements);
+
+		/* Check optimistically if the elements are sorted range */
+		boolean isSortedRange = true;
+		int expectedNextElm = from;
+		for (int elm : elements) {
+			if (elm != expectedNextElm) {
+				isSortedRange = false;
+				break;
+			}
+			expectedNextElm = elm + 1;
+		}
+		if (isSortedRange)
+			return true;
+
+		/* Lastly, use the robust method which uses non constant memory */
+		Bitmap bitmap = new Bitmap(num);
+		for (int elm : elements) {
+			if (elm < from || elm >= from + num || bitmap.get(elm - from))
+				return false;
+			bitmap.set(elm - from);
+		}
+		return true;
+	}
+
+	void addVerticesImpl(int count) {
+		vertices0().addAll(count);
+		verticesInternalContainers.ensureCapacity(vertices.size);
+		verticesUserWeights.ensureCapacity(vertices.size);
 	}
 
 	@Override
@@ -185,7 +236,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		checkVertex(target);
 		checkNewEdgeEndpoints(source, target);
 
-		int e = edges0().newIdx();
+		int e = edges0().add();
 
 		assert e >= 0;
 		edgesInternalContainers.ensureCapacity(e + 1);

@@ -363,8 +363,7 @@ class MinimumCostFlows {
 			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size());
 
 			/* Add all original vertices and edges */
-			for (int n = gOrig.vertices().size(), v = 0; v < n; v++)
-				builder.addVertex();
+			builder.addVertices(gOrig.vertices());
 			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
 				builder.addEdge(gOrig.edgeSource(e), gOrig.edgeTarget(e));
 			/* any edge with index smaller than this threshold is an original edge of the graph */
@@ -474,8 +473,7 @@ class MinimumCostFlows {
 			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size() + gOrig.vertices().size());
 
 			/* Add all original vertices and edges */
-			for (int n = gOrig.vertices().size(), v = 0; v < n; v++)
-				builder.addVertex();
+			builder.addVertices(gOrig.vertices());
 			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
 				builder.addEdge(gOrig.edgeSource(e), gOrig.edgeTarget(e));
 			/* any edge with index smaller than this threshold is an original edge of the graph */
@@ -647,8 +645,7 @@ class MinimumCostFlows {
 			builder.expectedEdgesNum(gOrig.edges().size() + gOrig.vertices().size());
 
 			/* Add all original vertices and edges */
-			for (int n = gOrig.vertices().size(), v = 0; v < n; v++)
-				builder.addVertex();
+			builder.addVertices(gOrig.vertices());
 			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
 				builder.addEdge(gOrig.edgeSource(e), gOrig.edgeTarget(e));
 			/* any edge with index greater than this threshold is not an original edge of the graph */
@@ -764,8 +761,7 @@ class MinimumCostFlows {
 			builder.expectedVerticesNum(gOrig.vertices().size() + 2);
 			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size() + 2);
 
-			for (int n = gOrig.vertices().size(), v = 0; v < n; v++)
-				builder.addVertex();
+			builder.addVertices(gOrig.vertices());
 			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
 				builder.addEdge(gOrig.edgeSource(e), gOrig.edgeTarget(e));
 			/* any edge with index smaller than this threshold is an original edge of the graph */

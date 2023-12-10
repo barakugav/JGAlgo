@@ -106,8 +106,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlowAbstract.WithResidualGraph
 
 			IntGraphFactory factory = IntGraphFactory.directed().setOption("impl", "linked-list");
 			IntGraph L = factory.expectedVerticesNum(n).expectedEdgesNum(/* >= */ n).newGraph();
-			for (int n = g.vertices().size(), v = 0; v < n; v++)
-				L.addVertex(v);
+			L.addVertices(g.vertices());
 
 			IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();
 			int[] level = new int[n];

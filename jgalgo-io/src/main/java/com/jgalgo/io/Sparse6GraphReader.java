@@ -15,6 +15,7 @@
  */
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -79,9 +80,7 @@ public class Sparse6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 		IntIntPair nPair = Graph6.readNumberOfVertices(bytes, cursor);
 		final int n = nPair.firstInt();
 		cursor = nPair.secondInt();
-		g.expectedVerticesNum(n);
-		for (int v = 0; v < n; v++)
-			g.addVertex(v); /* vertices ids are 0,1,2,...,n-1 */
+		g.addVertices(range(n)); /* vertices ids are 0,1,2,...,n-1 */
 
 		/* Read all edges */
 		final int k = n == 0 ? n : JGAlgoUtils.log2ceil(n);

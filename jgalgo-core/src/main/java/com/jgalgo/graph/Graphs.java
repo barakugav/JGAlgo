@@ -76,6 +76,11 @@ public class Graphs {
 		}
 
 		@Override
+		public void addVertices(Collection<? extends V> vertices) {
+			throw new UnsupportedOperationException("graph is immutable, cannot add vertices");
+		}
+
+		@Override
 		public void removeVertex(V vertex) {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove vertices");
 		}
@@ -242,6 +247,11 @@ public class Graphs {
 
 		@Override
 		public int addVertex() {
+			throw new UnsupportedOperationException("graph is immutable, cannot add vertices");
+		}
+
+		@Override
+		public void addVertices(Collection<? extends Integer> vertices) {
 			throw new UnsupportedOperationException("graph is immutable, cannot add vertices");
 		}
 
@@ -590,6 +600,11 @@ public class Graphs {
 
 		public Graph<V, E> graph() {
 			return graph;
+		}
+
+		@Override
+		public void addVertices(Collection<? extends V> vertices) {
+			graph().addVertices(vertices);
 		}
 
 		@Override
@@ -2210,9 +2225,7 @@ public class Graphs {
 				vertices.add(g.edgeTarget(e));
 			}
 		}
-		gb.expectedVerticesNum(vertices.size());
-		for (V v : vertices)
-			gb.addVertex(v);
+		gb.addVertices(vertices);
 
 		if (edges == null) {
 			if (g.isDirected()) {
@@ -2309,9 +2322,7 @@ public class Graphs {
 				vertices.add(g.edgeTarget(e));
 			}
 		}
-		gb.expectedVerticesNum(vertices.size());
-		for (int v : vertices)
-			gb.addVertex(v);
+		gb.addVertices(vertices);
 
 		if (edges == null) {
 			if (g.isDirected()) {

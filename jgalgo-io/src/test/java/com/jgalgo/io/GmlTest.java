@@ -16,6 +16,7 @@
 
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -991,8 +992,7 @@ public class GmlTest {
 	@Test
 	public void writeUnweighted() {
 		IntGraph g = IntGraph.newUndirected();
-		for (int i = 0; i < 10; i++)
-			g.addVertex(i);
+		g.addVertices(range(10));
 		for (int i = 0; i < 10; i++)
 			g.addEdge(i, (i + 1) % 10, 131 + i);
 
@@ -1008,8 +1008,7 @@ public class GmlTest {
 	@Test
 	public void writeDirected() {
 		IntGraph g = IntGraph.newDirected();
-		for (int i = 0; i < 10; i++)
-			g.addVertex(i);
+		g.addVertices(range(10));
 		for (int i = 0; i < 10; i++)
 			g.addEdge(i, (i + 1) % 10, 131 + i);
 
@@ -1026,8 +1025,7 @@ public class GmlTest {
 	@Test
 	public void writeUndirected() {
 		IntGraph g = IntGraph.newUndirected();
-		for (int i = 0; i < 10; i++)
-			g.addVertex(i);
+		g.addVertices(range(10));
 		for (int i = 0; i < 10; i++)
 			g.addEdge(i, (i + 1) % 10, 131 + i);
 
@@ -1045,8 +1043,7 @@ public class GmlTest {
 	@Test
 	public void writeWeighted() {
 		IntGraph g = IntGraph.newUndirected();
-		for (int i = 0; i < 10; i++)
-			g.addVertex(i);
+		g.addVertices(range(10));
 		for (int i = 0; i < 10; i++)
 			g.addEdge(i, (i + 1) % 10, i);
 
@@ -1258,8 +1255,7 @@ public class GmlTest {
 	@Test
 	public void writeWeightsCustom() {
 		IntGraph g = IntGraph.newUndirected();
-		for (int i = 0; i < 10; i++)
-			g.addVertex(i);
+		g.addVertices(range(10));
 		for (int i = 0; i < 10; i++)
 			g.addEdge(i, (i + 1) % 10, i);
 

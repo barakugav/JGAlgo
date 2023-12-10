@@ -83,9 +83,7 @@ public class Digraph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 		IntIntPair nPair = Graph6.readNumberOfVertices(bytes, cursor);
 		final int n = nPair.firstInt();
 		cursor = nPair.secondInt();
-		g.expectedVerticesNum(n);
-		for (int v = 0; v < n; v++)
-			g.addVertex(v); /* vertices ids are 0,1,2,...,n-1 */
+		g.addVertices(range(n)); /* vertices ids are 0,1,2,...,n-1 */
 
 		/* Read all edges R(x) */
 		Graph6.BitsReader bitsReader = new Graph6.BitsReader(bytes, cursor);

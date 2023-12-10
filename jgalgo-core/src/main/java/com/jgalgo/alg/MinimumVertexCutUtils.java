@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Iterator;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
@@ -139,15 +140,11 @@ class MinimumVertexCutUtils {
 			final int n = g.vertices().size();
 			final int m = g.edges().size();
 			IndexGraphBuilder builder = IndexGraphFactory.directed().allowParallelEdges().newBuilder();
-			builder.expectedVerticesNum(n * 2);
+			builder.addVertices(range(n * 2));
 			if (g.isDirected()) {
 				builder.expectedVerticesNum(m + n);
 			} else {
 				builder.expectedVerticesNum(2 * m + n);
-			}
-			for (int v = 0; v < n; v++) {
-				builder.addVertex();
-				builder.addVertex();
 			}
 
 			if (WeightFunction.isCardinality(w)) {

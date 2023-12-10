@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -104,6 +105,24 @@ public class ImmutableGraphViewTest extends TestBase {
 
 			Integer vertexToRemove = gImmutable.vertices().iterator().next();
 			assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeVertex(vertexToRemove));
+		});
+	}
+
+	@Test
+	public void addVertices() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+			Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+
+			Integer nonExistingVertex;
+			for (int v = 0;; v++) {
+				if (!gImmutable.vertices().contains(Integer.valueOf(v))) {
+					nonExistingVertex = Integer.valueOf(v);
+					break;
+				}
+			}
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertices(List.of(nonExistingVertex)));
 		});
 	}
 

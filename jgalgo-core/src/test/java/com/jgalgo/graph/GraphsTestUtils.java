@@ -106,8 +106,7 @@ public class GraphsTestUtils extends TestUtils {
 
 		} else {
 			g = graphFactory.newGraph();
-			for (int v : range(n))
-				g.addVertex(v);
+			g.addVertices(range(n));
 			Stack<IntIntPair> stack = new ObjectArrayList<>();
 			stack.push(IntIntPair.of(0, n));
 			for (int[] vertices = range(n).toIntArray(); !stack.isEmpty();) {
@@ -182,8 +181,7 @@ public class GraphsTestUtils extends TestUtils {
 		Random rand = new Random(seed ^ 0xf2440b5f17ee092fL);
 		int[] topoOrder = randPermutation(n, rand.nextLong() ^ 0x67e18f9b87237f61L);
 		Graph<Integer, Integer> g = rand.nextBoolean() ? IntGraph.newDirected() : Graph.newDirected();
-		for (int v : range(n))
-			g.addVertex(v);
+		g.addVertices(range(n));
 		while (g.edges().size() < m) {
 			int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
 			if (topoOrder[u] < topoOrder[v])
@@ -216,8 +214,7 @@ public class GraphsTestUtils extends TestUtils {
 	public static Graph<Integer, Integer> withImpl(Graph<Integer, Integer> g,
 			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		Graph<Integer, Integer> g2 = graphImpl.apply(g.isDirected());
-		for (int v : g.vertices())
-			g2.addVertex(v);
+		g2.addVertices(g.vertices());
 		for (int e : g.edges())
 			g2.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
 		for (String weightKey : g.getVerticesWeightsKeys()) {

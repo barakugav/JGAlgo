@@ -114,9 +114,14 @@ abstract class GraphElementSet extends AbstractIntSet {
 			return new GraphElementSet.Mutable(initSize, false);
 		}
 
-		int newIdx() {
+		int add() {
 			int id = size++;
 			return id;
+		}
+
+		void addAll(int count) {
+			assert count >= 0;
+			size += count;
 		}
 
 		void removeIdx(int idx) {

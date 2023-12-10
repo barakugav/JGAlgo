@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Iterator;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IEdgeIter;
@@ -59,10 +60,8 @@ class ClosuresEnumeratorSchrageBaker extends ClosuresEnumerators.AbstractImpl {
 				int selfEdges = Graphs.selfEdges(g).size();
 				if (selfEdges > 0) {
 					IndexGraphBuilder g0 = IndexGraphBuilder.directed();
-					g0.expectedVerticesNum(n);
 					g0.expectedEdgesNum(g.edges().size() - selfEdges);
-					for (int u = 0; u < n; u++)
-						g0.addVertex();
+					g0.addVertices(g.vertices());
 					for (int m = g.edges().size(), e = 0; e < m; e++)
 						if (g.edgeSource(e) != g.edgeTarget(e))
 							g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
@@ -75,9 +74,7 @@ class ClosuresEnumeratorSchrageBaker extends ClosuresEnumerators.AbstractImpl {
 
 		/* Build the condensation graph */
 		IndexGraphBuilder sccGraph0 = IndexGraphBuilder.directed();
-		sccGraph0.expectedVerticesNum(sccNum);
-		for (int b = 0; b < sccNum; b++)
-			sccGraph0.addVertex();
+		sccGraph0.addVertices(range(sccNum));
 		Bitmap seenBlocks = new Bitmap(sccNum);
 		IntList seenBlockList = new IntArrayList();
 		for (int b1 = 0; b1 < sccNum; b1++) {

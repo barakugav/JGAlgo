@@ -31,6 +31,7 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -104,6 +105,68 @@ public class IntGraphBuilderTest extends TestBase {
 			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			b.addVertex(5);
 			assertThrows(IllegalArgumentException.class, () -> b.addVertex(5));
+		});
+	}
+
+	@Test
+	public void addVertexNegative() {
+		foreachBoolConfig(directed -> {
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
+			assertThrows(IllegalArgumentException.class, () -> b.addVertex(-1));
+		});
+	}
+
+	@SuppressWarnings("deprecation")
+	@Test
+	public void addVertexNull() {
+		foreachBoolConfig(directed -> {
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
+			assertThrows(NullPointerException.class, () -> b.addVertex(null));
+		});
+	}
+
+	@Test
+	public void addVertices() {
+		final Random rand = new Random(0xf58228fb5d6c94eeL);
+		foreachBoolConfig(directed -> {
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
+
+			IntSet vertices = new IntOpenHashSet();
+			IntList verticesList = new IntArrayList();
+			for (int r = 0; r < 50; r++) {
+				int num = rand.nextInt(5);
+				IntList vs = new IntArrayList();
+				while (vs.size() < num) {
+					int v = rand.nextInt();
+					if (v < 0 || vertices.contains(v) || vs.contains(v))
+						continue;
+					vs.add(v);
+				}
+				if (r % 5 == 0) {
+					b.addVertices(vs);
+					vertices.addAll(vs);
+					verticesList.addAll(vs);
+				} else if (r % 5 == 1) {
+					vs.add(-1);
+					assertThrows(IllegalArgumentException.class, () -> b.addVertices(vs));
+				} else if (r % 5 == 2 && vs.size() > 0) {
+					vs.add(randElement(vs, rand));
+					assertThrows(IllegalArgumentException.class, () -> b.addVertices(vs));
+				} else if (r % 5 == 3 && vertices.size() > 0) {
+					vs.add(randElement(verticesList, rand));
+					assertThrows(IllegalArgumentException.class, () -> b.addVertices(vs));
+				} else if (r % 5 == 4) {
+					List<Integer> vs0 = new ArrayList<>(vs);
+					vs0.add(null);
+					assertThrows(NullPointerException.class, () -> b.addVertices(vs0));
+				}
+				assertEquals(vertices, b.vertices());
+			}
+		});
+		foreachBoolConfig(directed -> {
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
+			b.addVertex();
+			assertThrows(IllegalArgumentException.class, () -> b.addVertices(IntList.of(1, 2)));
 		});
 	}
 
@@ -182,6 +245,15 @@ public class IntGraphBuilderTest extends TestBase {
 			assertThrows(NoSuchVertexException.class, () -> b.addEdge(0, -1, 1));
 			assertThrows(NoSuchVertexException.class, () -> b.addEdge(10, 0, 2));
 			assertThrows(NoSuchVertexException.class, () -> b.addEdge(0, 10, 3));
+		});
+	}
+
+	@Test
+	public void addEdgeNegativeId() {
+		foreachBoolConfig(directed -> {
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
+			range(10).forEach(b::addVertex);
+			assertThrows(IllegalArgumentException.class, () -> b.addEdge(1, 0, -1));
 		});
 	}
 
@@ -360,10 +432,9 @@ public class IntGraphBuilderTest extends TestBase {
 		IntGraph g = factory.allowSelfEdges().allowParallelEdges().newGraph();
 
 		IWeightsInt vWeights = g.addVerticesWeights("weights", int.class);
-		for (int v = 0; v < n; v++) {
-			g.addVertex(v);
+		g.addVertices(range(n));
+		for (int v : g.vertices())
 			vWeights.set(v, rand.nextInt(10000));
-		}
 
 		IWeightsInt eWeights = g.addEdgesWeights("weights", int.class);
 		for (int e = 0; e < m; e++) {

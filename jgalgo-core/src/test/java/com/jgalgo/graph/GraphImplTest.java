@@ -19,7 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -43,6 +46,43 @@ public class GraphImplTest extends TestBase {
 						continue;
 					g.addVertex(v);
 					vertices.add(v);
+				}
+				assertEquals(vertices, g.vertices());
+			}
+		});
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void addVertices() {
+		final Random rand = new Random(0xb7f57a04c7c50e73L);
+		foreachBoolConfig(directed -> {
+			Graph<Integer, Integer> g = directed ? Graph.newDirected() : Graph.newDirected();
+
+			Set<Integer> vertices = new HashSet<>();
+			List<Integer> verticesList = new ArrayList<>();
+			for (int r = 0; r < 50; r++) {
+				int num = rand.nextInt(5);
+				List<Integer> vs = new ArrayList<>();
+				while (vs.size() < num) {
+					int v = rand.nextInt();
+					if (v < 0 || vertices.contains(v) || vs.contains(v))
+						continue;
+					vs.add(v);
+				}
+				if (r % 4 == 0) {
+					g.addVertices(vs);
+					vertices.addAll(vs);
+					verticesList.addAll(vs);
+				} else if (r % 4 == 1) {
+					vs.add(null);
+					assertThrows(NullPointerException.class, () -> g.addVertices(vs));
+				} else if (r % 4 == 2 && vs.size() > 0) {
+					vs.add(randElement(vs, rand));
+					assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs));
+				} else if (r % 4 == 3 && vertices.size() > 0) {
+					vs.add(randElement(verticesList, rand));
+					assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs));
 				}
 				assertEquals(vertices, g.vertices());
 			}

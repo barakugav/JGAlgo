@@ -32,6 +32,7 @@ import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 
 /**
  * Generates a Barabási–Albert graph.
@@ -288,11 +289,10 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 
 		if (intGraph) {
 			IntGraphBuilder g = IntGraphFactory.newInstance(directed).allowParallelEdges().newBuilder();
-			g.expectedVerticesNum(n);
-			g.expectedVerticesNum(edgeNum);
 			final int[] vertices = IntAdapters.asIntCollection((Collection<Integer>) this.vertices).toIntArray();
-			for (int v : vertices)
-				g.addVertex(v);
+			g.addVertices(IntList.of(vertices));
+
+			g.expectedEdgesNum(edgeNum);
 			IntBinaryOperator edgeBuilder =
 					IntAdapters.asIntBiOperator((BiFunction<Integer, Integer, Integer>) this.edgeBuilder);
 			for (int eIdx = 0; eIdx < edgeNum; eIdx++) {
@@ -305,11 +305,10 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 		} else {
 			GraphFactory<V, E> factory = GraphFactory.newInstance(directed);
 			GraphBuilder<V, E> g = factory.allowParallelEdges().newBuilder();
-			g.expectedVerticesNum(n);
-			g.expectedVerticesNum(edgeNum);
 			final V[] vertices = (V[]) this.vertices.toArray();
-			for (V v : vertices)
-				g.addVertex(v);
+			g.addVertices(ObjectList.of(vertices));
+
+			g.expectedEdgesNum(edgeNum);
 			for (int eIdx = 0; eIdx < edgeNum; eIdx++) {
 				V u = vertices[endpoints[eIdx * 2 + 0]];
 				V v = vertices[endpoints[eIdx * 2 + 1]];

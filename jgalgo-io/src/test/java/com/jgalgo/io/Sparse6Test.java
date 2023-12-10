@@ -100,8 +100,7 @@ public class Sparse6Test extends TestUtils {
 				IntGraph g = IntGraphFactory.undirected().allowSelfEdges().allowParallelEdges().newGraph();
 
 				/* graph6 format support vertices with labels 0..n-1 only */
-				for (int v = 0; v < n; v++)
-					g.addVertex(v);
+				g.addVertices(range(n));
 
 				Set<IntSet> edges = new HashSet<>();
 				while (edges.size() < m) {
@@ -179,8 +178,7 @@ public class Sparse6Test extends TestUtils {
 				IntGraph g = IntGraphFactory.undirected().allowSelfEdges().allowParallelEdges().newGraph();
 
 				/* graph6 format support vertices with labels 0..n-1 only */
-				for (int v = 0; v < n; v++)
-					g.addVertex(v);
+				g.addVertices(range(n));
 
 				while (g.edges().size() < m) {
 					int source = Graphs.randVertex(g, rand);

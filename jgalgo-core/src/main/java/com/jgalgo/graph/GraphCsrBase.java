@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Set;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
@@ -172,6 +173,11 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	@Override
 	public int addVertex() {
 		throw new UnsupportedOperationException("graph is immutable, can't add vertex");
+	}
+
+	@Override
+	public void addVertices(Collection<? extends Integer> vertices) {
+		throw new UnsupportedOperationException("graph is immutable, can't add vertices");
 	}
 
 	@Override

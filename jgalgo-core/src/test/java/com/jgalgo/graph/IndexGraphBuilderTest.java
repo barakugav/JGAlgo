@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
@@ -29,7 +30,9 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
@@ -83,15 +86,194 @@ public class IndexGraphBuilderTest extends TestBase {
 		});
 	}
 
+	@SuppressWarnings("boxing")
+	@Test
+	static void addVertices() {
+		final Random rand = new Random(0x7b329816727ad7e8L);
+
+		/* addVertices() from range() */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraphBuilder g = IndexGraphBuilder.newInstance(directed);
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					g.addVertices(range(verticesNum, verticesNum + num));
+					verticesNum += num;
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+
+		/* addVertices() from range() sometimes invalid */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraphBuilder g = IndexGraphBuilder.newInstance(directed);
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					if (rand.nextBoolean()) {
+						g.addVertices(range(verticesNum, verticesNum + num));
+						verticesNum += num;
+					} else {
+						int from = verticesNum + 1;
+						assertThrows(IllegalArgumentException.class, () -> g.addVertices(range(from, from + num)));
+					}
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+
+		/* addVertices() from other graph vertices */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraphBuilder g = IndexGraphBuilder.newInstance(directed);
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					IndexGraph g0 = IndexGraph.newUndirected();
+					g0.addVertices(range(num));
+
+					if (verticesNum == 0) {
+						g.addVertices(g0.vertices());
+						verticesNum += num;
+					} else if (rand.nextBoolean()) {
+						assertThrows(IllegalArgumentException.class, () -> g.addVertices(g0.vertices()));
+					} else {
+						g.addVertices(range(verticesNum, verticesNum + num));
+						verticesNum += num;
+					}
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+
+		/* addVertices() from sorted list */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraphBuilder g = IndexGraphBuilder.newInstance(directed);
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					List<Integer> vs = new IntArrayList(range(verticesNum, verticesNum + num).iterator());
+					g.addVertices(vs);
+					verticesNum += num;
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+
+		/* addVertices() from arbitrary collection */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraphBuilder g = IndexGraphBuilder.newInstance(directed);
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					int[] vs = range(verticesNum, verticesNum + num).toIntArray();
+					IntArrays.shuffle(vs, rand);
+					g.addVertices(IntList.of(vs));
+					verticesNum += num;
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+
+		/* addVertices() from arbitrary collection duplicate vertex (in list) */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraphBuilder g = IndexGraphBuilder.newInstance(directed);
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					int[] vs = range(verticesNum, verticesNum + num).toIntArray();
+					IntArrays.shuffle(vs, rand);
+					if (vs.length == 0 || rand.nextBoolean()) {
+						g.addVertices(IntList.of(vs));
+						verticesNum += num;
+					} else {
+						IntList vs0 = new IntArrayList(vs);
+						vs0.add(vs[rand.nextInt(vs.length)]); /* duplicate element */
+						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
+					}
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+
+		/* addVertices() from arbitrary collection with existing vertex */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraphBuilder g = IndexGraphBuilder.newInstance(directed);
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					int[] vs = range(verticesNum, verticesNum + num).toIntArray();
+					IntArrays.shuffle(vs, rand);
+					if (verticesNum == 0 || rand.nextBoolean()) {
+						g.addVertices(IntList.of(vs));
+						verticesNum += num;
+					} else {
+						IntList vs0 = new IntArrayList(vs);
+						vs0.add(rand.nextInt(g.vertices().size()));
+						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
+					}
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+
+		/* addVertices() from arbitrary collection not in range */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				final int n = rand.nextInt(100);
+				IndexGraphBuilder g = IndexGraphBuilder.newInstance(directed);
+
+				int verticesNum = 0;
+				while (verticesNum < n) {
+					int num = Math.min(rand.nextInt(5), n - verticesNum);
+					int[] vs = range(verticesNum, verticesNum + num).toIntArray();
+					IntArrays.shuffle(vs, rand);
+					if (rand.nextBoolean()) {
+						g.addVertices(IntList.of(vs));
+						verticesNum += num;
+					} else if (rand.nextBoolean()) {
+						IntList vs0 = new IntArrayList(vs);
+						vs0.add(verticesNum - 1);
+						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
+					} else {
+						IntList vs0 = new IntArrayList(vs);
+						vs0.add(verticesNum + num + 1);
+						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
+					}
+				}
+				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+	}
+
 	@Test
 	public void addEdge() {
 		foreachBoolConfig(directed -> {
 			IndexGraph g = createGraph(directed);
 			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			b.expectedVerticesNum(g.vertices().size());
+			b.addVertices(g.vertices());
 			b.expectedEdgesNum(g.edges().size());
-			for (int n = g.vertices().size(), v = 0; v < n; v++)
-				b.addVertex();
 			for (int m = g.edges().size(), e = 0; e < m; e++)
 				b.addEdge(g.edgeSource(e), g.edgeTarget(e));
 
@@ -106,8 +288,7 @@ public class IndexGraphBuilderTest extends TestBase {
 		foreachBoolConfig(directed -> {
 			IndexGraph g = createGraph(directed);
 			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
-			for (int n = g.vertices().size(), v = 0; v < n; v++)
-				b.addVertex();
+			b.addVertices(g.vertices());
 			int[] es = g.edges().toIntArray();
 			IntArrays.shuffle(es, new Random(0x23138df96ec3b620L));
 			for (int e : es)
@@ -121,8 +302,7 @@ public class IndexGraphBuilderTest extends TestBase {
 		/* missing edge 0 */
 		foreachBoolConfig(directed -> {
 			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
-			for (int v = 0; v < 10; v++)
-				b.addVertex();
+			b.addVertices(range(10));
 			b.addEdge(0, 1, 1);
 			b.addEdge(0, 2, 2);
 			assertThrows(IllegalArgumentException.class, () -> b.build());
@@ -131,8 +311,7 @@ public class IndexGraphBuilderTest extends TestBase {
 		/* missing edge 1 */
 		foreachBoolConfig(directed -> {
 			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
-			for (int v = 0; v < 10; v++)
-				b.addVertex();
+			b.addVertices(range(10));
 			b.addEdge(0, 1, 0);
 			b.addEdge(0, 2, 2);
 			assertThrows(IllegalArgumentException.class, () -> b.build());
@@ -141,8 +320,7 @@ public class IndexGraphBuilderTest extends TestBase {
 		/* duplicate edge 0 */
 		foreachBoolConfig(directed -> {
 			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
-			for (int v = 0; v < 10; v++)
-				b.addVertex();
+			b.addVertices(range(10));
 			b.addEdge(0, 1, 0);
 			b.addEdge(0, 2, 0);
 			assertThrows(IllegalArgumentException.class, () -> b.build());
@@ -153,8 +331,7 @@ public class IndexGraphBuilderTest extends TestBase {
 	public void addEdgeNegativeId() {
 		foreachBoolConfig(directed -> {
 			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
-			for (int v = 0; v < 10; v++)
-				b.addVertex();
+			b.addVertices(range(10));
 			assertThrows(IllegalArgumentException.class, () -> b.addEdge(0, 1, -1));
 		});
 	}
@@ -163,8 +340,7 @@ public class IndexGraphBuilderTest extends TestBase {
 	public void addEdgeInvalidEndpoints() {
 		foreachBoolConfig(directed -> {
 			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
-			for (int v = 0; v < 10; v++)
-				b.addVertex();
+			b.addVertices(range(10));
 			assertThrows(NoSuchVertexException.class, () -> b.addEdge(-1, 0));
 			assertThrows(NoSuchVertexException.class, () -> b.addEdge(0, -1));
 			assertThrows(NoSuchVertexException.class, () -> b.addEdge(10, 0));
@@ -205,8 +381,7 @@ public class IndexGraphBuilderTest extends TestBase {
 		foreachBoolConfig(directed -> {
 			IndexGraph g = createGraph(directed);
 			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
-			for (int n = g.vertices().size(), v = 0; v < n; v++)
-				b.addVertex();
+			b.addVertices(g.vertices());
 			for (int m = g.edges().size(), e = 0; e < m; e++)
 				b.addEdge(g.edgeSource(e), g.edgeTarget(e));
 
@@ -322,8 +497,7 @@ public class IndexGraphBuilderTest extends TestBase {
 			b.expectedVerticesNum(g.vertices().size());
 			b.expectedEdgesNum(g.edges().size());
 			b.expectedEdgesNum(g.edges().size());
-			for (int n = g.vertices().size(), v = 0; v < n; v++)
-				b.addVertex();
+			b.addVertices(g.vertices());
 			for (int m = g.edges().size(), e = 0; e < m; e++)
 				b.addEdge(g.edgeSource(e), g.edgeTarget(e));
 			for (String key : g.getVerticesWeightsKeys()) {
@@ -364,8 +538,7 @@ public class IndexGraphBuilderTest extends TestBase {
 					assertEquals(e, eOrigToReIndexed.applyAsInt(eReIndexedToOrig.applyAsInt(e)));
 
 				IndexGraph gReIndexedExpected = factory.newGraph();
-				for (int n = gReIndexed.vertices().size(), v = 0; v < n; v++)
-					gReIndexedExpected.addVertex();
+				gReIndexedExpected.addVertices(g.vertices());
 				for (int m = gReIndexed.edges().size(), e = 0; e < m; e++) {
 					int eOrig = eReIndexedToOrig.applyAsInt(e);
 					int uOrig = g.edgeSource(eOrig), vOrig = g.edgeTarget(eOrig);
@@ -406,10 +579,9 @@ public class IndexGraphBuilderTest extends TestBase {
 		IndexGraph g = IndexGraphFactory.newInstance(directed).allowSelfEdges().allowParallelEdges().newGraph();
 
 		IWeightsInt vWeights = g.addVerticesWeights("weights", int.class);
-		for (int v = 0; v < n; v++) {
-			g.addVertex();
+		g.addVertices(range(n));
+		for (int v : g.vertices())
 			vWeights.set(v, rand.nextInt(10000));
-		}
 
 		IWeightsInt eWeights = g.addEdgesWeights("weights", int.class);
 		for (int e = 0; e < m; e++) {

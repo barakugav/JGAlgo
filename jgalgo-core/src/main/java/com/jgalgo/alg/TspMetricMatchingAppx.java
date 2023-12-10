@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
@@ -71,10 +72,8 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 			if (degree[u] % 2 != 0)
 				mVtoV[mGn++] = u;
 		IndexGraphBuilder mG0 = IndexGraphBuilder.undirected();
-		mG0.expectedVerticesNum(mGn);
+		mG0.addVertices(range(mGn));
 		mG0.expectedEdgesNum(mGn * (mGn - 1) / 2);
-		for (int v = 0; v < mGn; v++)
-			mG0.addVertex();
 		for (int v = 0; v < mGn; v++)
 			for (int u = v + 1; u < mGn; u++)
 				mG0.addEdge(v, u);
@@ -91,10 +90,8 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 
 		/* Build a graph of the union of the MST and the matching result */
 		IndexGraphBuilder g1Builder = IndexGraphBuilder.undirected();
-		g1Builder.expectedVerticesNum(n);
+		g1Builder.addVertices(g.vertices());
 		g1Builder.expectedEdgesNum(mst.size() + matching.edges().size());
-		for (int v = 0; v < n; v++)
-			g1Builder.addVertex();
 		int[] g1EdgeRef = new int[mst.size() + matching.edges().size()];
 		for (int e : mst) {
 			int g1Edge = g1Builder.addEdge(g.edgeSource(e), g.edgeTarget(e));

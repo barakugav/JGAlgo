@@ -15,6 +15,7 @@
  */
 package com.jgalgo.bench.impls;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -69,8 +70,7 @@ public class GraphBench {
 			final int m = Integer.parseInt(argsMap.get("|E|"));
 
 			g = IndexGraphFactory.newInstance(directed).allowSelfEdges().newGraph();
-			for (int v = 0; v < n; v++)
-				g.addVertex();
+			g.addVertices(range(n));
 			LongSet existingEdges = allowParallelEdges ? null : new LongOpenHashSet();
 			for (int e = 0; e < m;) {
 				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
@@ -123,8 +123,7 @@ public class GraphBench {
 				assert g.isDirected() == directed;
 				IndexGraph g1 = graphImplementation.get();
 				assert g1.isDirected() == directed;
-				for (int n = g.vertices().size(), v = 0; v < n; v++)
-					g1.addVertex();
+				g1.addVertices(g.vertices());
 				for (int m = g.edges().size(), e = 0; e < m; e++)
 					g1.addEdge(g.edgeSource(e), g.edgeTarget(e));
 				return g1;
@@ -1236,8 +1235,7 @@ public class GraphBench {
 				setup(args, g -> {
 					assert g.isDirected() == directed;
 					IndexGraphBuilder g1 = IndexGraphBuilder.directed();
-					for (int n = g.vertices().size(), v = 0; v < n; v++)
-						g1.addVertex();
+					g1.addVertices(g.vertices());
 					for (int m = g.edges().size(), e = 0; e < m; e++)
 						g1.addEdge(g.edgeSource(e), g.edgeTarget(e));
 					IndexGraph g1Graph = g1.build();
@@ -1331,8 +1329,7 @@ public class GraphBench {
 				setup(args, g -> {
 					assert g.isDirected() == directed;
 					IndexGraphBuilder g1 = IndexGraphBuilder.undirected();
-					for (int n = g.vertices().size(), v = 0; v < n; v++)
-						g1.addVertex();
+					g1.addVertices(g.vertices());
 					for (int m = g.edges().size(), e = 0; e < m; e++)
 						g1.addEdge(g.edgeSource(e), g.edgeTarget(e));
 					IndexGraph g1Graph = g1.build();
@@ -1426,8 +1423,7 @@ public class GraphBench {
 				setup(args, g -> {
 					assert g.isDirected() == directed;
 					IndexGraphBuilder g1 = IndexGraphBuilder.directed();
-					for (int n = g.vertices().size(), v = 0; v < n; v++)
-						g1.addVertex();
+					g1.addVertices(g.vertices());
 					for (int m = g.edges().size(), e = 0; e < m; e++)
 						g1.addEdge(g.edgeSource(e), g.edgeTarget(e));
 					IndexGraph g1Graph = g1.reIndexAndBuild(true, true).graph();
@@ -1520,8 +1516,7 @@ public class GraphBench {
 
 			g = IndexGraphFactory.newInstance(directed).allowSelfEdges(allowSelfEdges)
 					.allowParallelEdges(allowParallelEdges).newGraph();
-			for (int v = 0; v < n; v++)
-				g.addVertex();
+			g.addVertices(range(n));
 			LongSet existingEdges = allowParallelEdges ? null : new LongOpenHashSet();
 			for (int e = 0; e < m;) {
 				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
@@ -1550,8 +1545,7 @@ public class GraphBench {
 				assert g.isDirected() == directed;
 				IndexGraph g1 = graphImplementation.get();
 				assert g1.isDirected() == directed;
-				for (int n = g.vertices().size(), v = 0; v < n; v++)
-					g1.addVertex();
+				g1.addVertices(g.vertices());
 				for (int e = 0; e < m; e++)
 					g1.addEdge(g.edgeSource(e), g.edgeTarget(e));
 				return g1;

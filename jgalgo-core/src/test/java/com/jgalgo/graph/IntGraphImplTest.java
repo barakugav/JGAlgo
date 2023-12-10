@@ -24,6 +24,8 @@ import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -43,6 +45,42 @@ public class IntGraphImplTest extends TestBase {
 						continue;
 					g.addVertex(v);
 					vertices.add(v);
+				}
+				assertEquals(vertices, g.vertices());
+			}
+		});
+	}
+
+	@Test
+	public void addVertices() {
+		final Random rand = new Random(0x105a48eea70e320dL);
+		foreachBoolConfig(directed -> {
+			IntGraph g = directed ? IntGraph.newDirected() : IntGraph.newDirected();
+
+			IntSet vertices = new IntOpenHashSet();
+			IntList verticesList = new IntArrayList();
+			for (int r = 0; r < 50; r++) {
+				int num = rand.nextInt(5);
+				IntList vs = new IntArrayList();
+				while (vs.size() < num) {
+					int v = rand.nextInt();
+					if (v < 0 || vertices.contains(v) || vs.contains(v))
+						continue;
+					vs.add(v);
+				}
+				if (r % 4 == 0) {
+					g.addVertices(vs);
+					vertices.addAll(vs);
+					verticesList.addAll(vs);
+				} else if (r % 4 == 1) {
+					vs.add(-1);
+					assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs));
+				} else if (r % 4 == 2 && vs.size() > 0) {
+					vs.add(randElement(vs, rand));
+					assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs));
+				} else if (r % 4 == 3 && vertices.size() > 0) {
+					vs.add(randElement(verticesList, rand));
+					assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs));
 				}
 				assertEquals(vertices, g.vertices());
 			}

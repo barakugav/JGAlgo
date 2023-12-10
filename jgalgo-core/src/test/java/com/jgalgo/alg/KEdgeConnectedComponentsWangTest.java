@@ -116,8 +116,7 @@ public class KEdgeConnectedComponentsWangTest extends TestBase {
 		final int n = g.vertices().size();
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 		IndexGraphBuilder gb = IndexGraphBuilder.undirected();
-		for (int v = 0; v < n; v++)
-			gb.addVertex();
+		gb.addVertices(range(n));
 		for (int u = 0; u < n; u++) {
 			for (int v = u + 1; v < n; v++) {
 				int connectivity = minCutAlgo.computeMinimumCut(g, null, viMap.indexToId(u), viMap.indexToId(v))

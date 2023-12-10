@@ -16,6 +16,7 @@
 
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.io.StringReader;
@@ -135,8 +136,7 @@ public class DimacsTest {
 				Graph<Integer, Integer> g = factory.allowSelfEdges().newGraph();
 
 				/* DIMACS format support vertices with labels 1..n only */
-				for (int v = 1; v <= n; v++)
-					g.addVertex(Integer.valueOf(v));
+				g.addVertices(range(1, n + 1));
 
 				while (g.edges().size() < m) {
 					Integer source = Graphs.randVertex(g, rand);
@@ -169,8 +169,7 @@ public class DimacsTest {
 			IntGraph g = IntGraphFactory.undirected().allowSelfEdges().newGraph();
 
 			/* DIMACS format support vertices with labels 1..n only */
-			for (int v = 1; v <= n; v++)
-				g.addVertex(v);
+			g.addVertices(range(1, n + 1));
 
 			while (g.edges().size() < m) {
 				int source = Graphs.randVertex(g, rand);

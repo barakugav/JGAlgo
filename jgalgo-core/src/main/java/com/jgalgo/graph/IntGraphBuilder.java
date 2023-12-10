@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Collection;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -72,6 +74,16 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	default void addVertex(Integer vertex) {
 		addVertex(vertex.intValue());
 	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * Prefer to pass {@link IntCollection} instead of {@link Collection}&lt;{@link Integer}&gt; as collection of
+	 * vertices.
+	 */
+	@Override
+	void addVertices(Collection<? extends Integer> vertices);
 
 	/**
 	 * Add a new edge to the graph.

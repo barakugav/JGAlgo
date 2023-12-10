@@ -151,6 +151,34 @@ public class UndirectedViewTest extends TestBase {
 	}
 
 	@Test
+	public void addVertices() {
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> gOrig = createGraph(intGraph);
+			Graph<Integer, Integer> undirectedG = gOrig.undirectedView();
+
+			Integer nonExistingVertex1;
+			for (int v = 0;; v++) {
+				if (!undirectedG.vertices().contains(Integer.valueOf(v))) {
+					nonExistingVertex1 = Integer.valueOf(v);
+					break;
+				}
+			}
+			Integer nonExistingVertex2;
+			for (int v = nonExistingVertex1.intValue() + 1;; v++) {
+				if (!undirectedG.vertices().contains(Integer.valueOf(v))) {
+					nonExistingVertex2 = Integer.valueOf(v);
+					break;
+				}
+			}
+			List<Integer> newVertices = List.of(nonExistingVertex1, nonExistingVertex2);
+			undirectedG.addVertices(newVertices);
+			assertTrue(gOrig.vertices().containsAll(newVertices));
+			assertTrue(undirectedG.vertices().containsAll(newVertices));
+			assertEquals(gOrig.vertices(), undirectedG.vertices());
+		});
+	}
+
+	@Test
 	public void renameVertex() {
 		foreachBoolConfig((intGraph, index) -> {
 			Graph<Integer, Integer> g0 = createGraph(intGraph);

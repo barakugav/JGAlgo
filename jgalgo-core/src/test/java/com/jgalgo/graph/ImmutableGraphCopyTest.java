@@ -15,12 +15,14 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -42,10 +44,9 @@ public class ImmutableGraphCopyTest extends TestBase {
 		Graph<Integer, Integer> g = factory.allowSelfEdges().allowParallelEdges().newGraph();
 
 		WeightsInt<Integer> vWeights = g.addVerticesWeights(VerticesWeightsKey, int.class);
-		for (int v = 0; v < n; v++) {
-			g.addVertex(v);
+		g.addVertices(range(n));
+		for (int v : g.vertices())
 			vWeights.set(v, rand.nextInt(10000));
-		}
 
 		WeightsInt<Integer> eWeights = g.addEdgesWeights(EdgesWeightsKey, int.class);
 		for (int e = 0; e < m; e++) {
@@ -94,14 +95,35 @@ public class ImmutableGraphCopyTest extends TestBase {
 				}
 			}
 
-			if (gImmutable instanceof IntGraph) {
+			if (gImmutable instanceof IntGraph)
 				assertThrows(UnsupportedOperationException.class, () -> ((IntGraph) gImmutable).addVertex());
-			}
+
 			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertex(nonExistingVertex));
 
 			Integer vertexToRemove = gImmutable.vertices().iterator().next();
 			assertThrows(UnsupportedOperationException.class, () -> gImmutable.removeVertex(vertexToRemove));
 		});
+	}
+
+	@Test
+	public void addVertices() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed);
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+			Graph<Integer, Integer> gImmutable = gOrig.immutableCopy();
+
+			Integer nonExistingVertex;
+			for (int v0 = 0;; v0++) {
+				Integer v = Integer.valueOf(v0);
+				if (!gImmutable.vertices().contains(v)) {
+					nonExistingVertex = v;
+					break;
+				}
+			}
+
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertices(List.of(nonExistingVertex)));
+		});
+
 	}
 
 	@Test

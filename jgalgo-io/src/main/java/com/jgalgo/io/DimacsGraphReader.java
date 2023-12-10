@@ -15,6 +15,7 @@
  */
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.io.BufferedReader;
 import java.io.Reader;
 import java.util.Objects;
@@ -150,10 +151,8 @@ public class DimacsGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
 					if (n < 0 || m < 0)
 						throw new IllegalArgumentException("negative vertices/edges num: " + n + " " + m);
-					gb.expectedVerticesNum(n);
 					gb.expectedEdgesNum(m);
-					for (int v = 1; v <= n; v++)
-						gb.addVertex(v); // vertices are labeled as 1,2,3,4...
+					gb.addVertices(range(1, n + 1)); /* vertices are labeled as 1,2,3,4... */
 
 					if (hasWeights)
 						w = gb.addEdgesWeights(weightsKey, int.class);

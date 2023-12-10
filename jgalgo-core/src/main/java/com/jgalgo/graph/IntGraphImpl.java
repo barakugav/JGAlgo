@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.IdentityHashMap;
@@ -164,6 +165,37 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 		viMap.addId(vertex, vIdx);
 		int vIdx2 = indexGraph.addVertex();
 		assert vIdx == vIdx2;
+	}
+
+	@Override
+	public void addVertices(Collection<? extends Integer> vertices) {
+		if (vertices.isEmpty())
+			return;
+		if (!(vertices instanceof IntCollection))
+			for (Integer vertex : vertices)
+				if (vertex == null)
+					throw new NullPointerException("Vertex must be non null");
+		for (int vertex : vertices)
+			if (vertex < 0)
+				throw new IllegalArgumentException("Vertex must be non negative");
+
+		final int verticesNumBefore = indexGraph.vertices().size();
+		int nextIdx = verticesNumBefore;
+		int duplicateVertex = -1;
+		for (int vertex : vertices) {
+			boolean added = viMap.addIdIfNotDuplicate(vertex, nextIdx);
+			if (!added) {
+				duplicateVertex = vertex;
+				break;
+			}
+			nextIdx++;
+		}
+		if (duplicateVertex >= 0) {
+			for (; nextIdx-- > verticesNumBefore;)
+				viMap.rollBackRemove(nextIdx);
+			throw new IllegalArgumentException("Duplicate vertex: " + duplicateVertex);
+		}
+		indexGraph.addVertices(range(verticesNumBefore, nextIdx));
 	}
 
 	@Override
@@ -531,20 +563,27 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 		}
 
 		void addId(int id, int idx) {
-			assert id >= 0;
-			assert idx == idToIndex.size();
-			int oldIdx = idToIndex.putIfAbsent(id, idx);
-			if (oldIdx != -1) {
+			boolean added = addIdIfNotDuplicate(id, idx);
+			if (!added) {
 				if (isEdges) {
 					throw new IllegalArgumentException("Graph already contain such an edge: " + id);
 				} else {
 					throw new IllegalArgumentException("Graph already contain such a vertex: " + id);
 				}
 			}
+		}
+
+		boolean addIdIfNotDuplicate(int id, int idx) {
+			assert id >= 0;
+			assert idx == idToIndex.size();
+			int oldIdx = idToIndex.putIfAbsent(id, idx);
+			if (oldIdx != -1)
+				return false;
 
 			if (idx == indexToId.length)
 				indexToId = Arrays.copyOf(indexToId, Math.max(2, 2 * indexToId.length));
 			indexToId[idx] = id;
+			return true;
 		}
 
 		void rollBackRemove(int index) {

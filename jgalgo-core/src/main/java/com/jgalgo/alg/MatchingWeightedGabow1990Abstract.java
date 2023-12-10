@@ -451,8 +451,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 			int n = gOrig.vertices().size();
 			this.gOrig = gOrig;
 			this.g = IndexGraphFactory.directed().allowParallelEdges().expectedVerticesNum(n).newGraph();
-			for (int v = 0; v < n; v++)
-				g.addVertex();
+			g.addVertices(gOrig.vertices());
 			edgeVal = g.addEdgesWeights("edgeVal", EdgeVal.class);
 			IWeightFunction wLocal = WeightFunctions.localEdgeWeightFunction(gOrig, w);
 			if (WeightFunction.isCardinality(wLocal)) {

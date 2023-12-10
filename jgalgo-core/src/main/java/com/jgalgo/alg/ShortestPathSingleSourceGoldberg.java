@@ -16,9 +16,9 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
-
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
@@ -139,8 +139,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 
 		/* gNeg is the graph g with only 0,-1 edges */
 		IndexGraph gNeg = IndexGraphFactory.directed().expectedVerticesNum(n).newGraph();
-		for (int v = 0; v < n; v++)
-			gNeg.addVertex();
+		gNeg.addVertices(g.vertices());
 		int[] gNegEdgeRefs = new int[m];
 
 		/* G is the graph of strong connected components of gNeg, each vertex is a super vertex of gNeg */
@@ -191,8 +190,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 				 */
 				G.clear();
 				IWeightsInt GWeights = G.addEdgesWeights("weights", int.class, Integer.valueOf(-1));
-				for (int U = 0; U < N; U++)
-					G.addVertex();
+				G.addVertices(range(N));
 				for (int u = 0; u < n; u++) {
 					int U = connectivityRes.vertexBlock(u);
 					for (IEdgeIter eit = gNeg.outEdges(u).iterator(); eit.hasNext();) {

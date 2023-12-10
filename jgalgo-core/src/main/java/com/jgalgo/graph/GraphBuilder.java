@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -50,11 +51,30 @@ public interface GraphBuilder<V, E> {
 	Set<E> edges();
 
 	/**
-	 * Add a new vertex to the graph.
+	 * Add a new vertex to the built graph.
 	 *
-	 * @param vertex the new vertex
+	 * <p>
+	 * A vertex can be any non null hashable object, namely it must implement the {@link Object#hashCode()} and
+	 * {@link Object#equals(Object)} methods. Duplicate vertices are not allowed.
+	 *
+	 * @param  vertex                   the new vertex
+	 * @throws IllegalArgumentException if {@code vertex} is already in the built graph
 	 */
 	void addVertex(V vertex);
+
+	/**
+	 * Add multiple vertices to the built graph.
+	 *
+	 * <p>
+	 * A vertex can be any non null hashable object, namely it must implement the {@link Object#hashCode()} and
+	 * {@link Object#equals(Object)} methods. Duplicate vertices are not allowed.
+	 *
+	 * @param  vertices                 new vertices
+	 * @throws IllegalArgumentException if {@code vertices} contains duplications or if any of the vertices is already
+	 *                                      in the built graph
+	 * @throws NullPointerException     if {@code vertices} is {@code null} or if any of the vertices is {@code null}
+	 */
+	void addVertices(Collection<? extends V> vertices);
 
 	/**
 	 * Add a new edge to the graph.

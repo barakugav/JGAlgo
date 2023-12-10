@@ -30,6 +30,7 @@ import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 
 /**
  * Generates a random graph using the \(G(n,p)\) model in which every edge exists with probability \(p\).
@@ -227,10 +228,9 @@ public class GnpGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 		if (intGraph) {
 			IntGraphBuilder g = IntGraphBuilder.newInstance(directed);
-			g.expectedVerticesNum(n);
 			final int[] vertices = IntAdapters.asIntCollection((Collection<Integer>) this.vertices).toIntArray();
-			for (int v : vertices)
-				g.addVertex(v);
+			g.addVertices(IntList.of(vertices));
+
 			if (p > 0) {
 				IntBinaryOperator edgeBuilder =
 						IntAdapters.asIntBiOperator((BiFunction<Integer, Integer, Integer>) this.edgeBuilder);
@@ -256,10 +256,9 @@ public class GnpGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
 		} else {
 			GraphBuilder<V, E> g = GraphBuilder.newInstance(directed);
-			g.expectedVerticesNum(n);
 			final V[] vertices = (V[]) this.vertices.toArray();
-			for (V v : vertices)
-				g.addVertex(v);
+			g.addVertices(ObjectList.of(vertices));
+
 			if (p > 0) {
 				for (int uIdx = 0; uIdx < n; uIdx++) {
 					V u = vertices[uIdx];

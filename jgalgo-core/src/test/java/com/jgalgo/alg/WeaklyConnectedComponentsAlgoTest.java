@@ -43,8 +43,7 @@ public class WeaklyConnectedComponentsAlgoTest extends TestBase {
 
 			/* create a undirected copy of the original directed graph */
 			GraphBuilder<Integer, Integer> gb = GraphBuilder.undirected();
-			for (Integer u : g.vertices())
-				gb.addVertex(u);
+			gb.addVertices(g.vertices());
 			for (Integer e : g.edges())
 				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
 			VertexPartition<Integer, Integer> expected =

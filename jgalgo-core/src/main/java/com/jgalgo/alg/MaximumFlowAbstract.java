@@ -159,8 +159,7 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutUtils.AbstractImplST im
 			builder.expectedVerticesNum(gOrig.vertices().size() + 2);
 			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size());
 
-			for (int n = gOrig.vertices().size(), v = 0; v < n; v++)
-				builder.addVertex();
+			builder.addVertices(gOrig.vertices());
 			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
 				builder.addEdge(gOrig.edgeSource(e), gOrig.edgeTarget(e));
 			final int originalEdgesThreshold = builder.edges().size();

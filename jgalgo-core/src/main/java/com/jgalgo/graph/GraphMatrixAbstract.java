@@ -97,10 +97,17 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 	@Override
 	public int addVertex() {
 		int v = super.addVertex();
-		DataContainer.Int vEdges = edges[v];
-		if (vEdges == null)
+		if (edges[v] == null)
 			edges[v] = newVerticesIntContainer(EdgeNone, JGAlgoUtils.<int[]>consumerNoOp());
 		return v;
+	}
+
+	@Override
+	void addVerticesImpl(int count) {
+		super.addVerticesImpl(count);
+		for (int n = vertices().size, v = n - count; v < n; v++)
+			if (edges[v] == null)
+				edges[v] = newVerticesIntContainer(EdgeNone, JGAlgoUtils.<int[]>consumerNoOp());
 	}
 
 	@Override

@@ -17,6 +17,7 @@ package com.jgalgo.graph;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
@@ -116,9 +117,19 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public int addVertex() {
-		int u = vertices.newIdx();
+		int u = vertices.add();
 		verticesUserWeights.ensureCapacity(u + 1);
 		return u;
+	}
+
+	@Override
+	public void addVertices(Collection<? extends Integer> vertices) {
+		if (!GraphBaseMutable.isRangeStartingFrom(this.vertices.size, vertices))
+			throw new IllegalArgumentException("added vertices must be a consecutive range of integers starting from "
+					+ this.vertices.size + " but was " + vertices);
+
+		this.vertices.addAll(vertices.size());
+		verticesUserWeights.ensureCapacity(this.vertices.size);
 	}
 
 	private boolean canAddEdgeWithoutId() {
@@ -139,7 +150,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		if (!vertices().contains(target))
 			throw NoSuchVertexException.ofIndex(target);
 		int e = m++;
-		int eFromEdgesSet = edges.newIdx();
+		int eFromEdgesSet = edges.add();
 		assert e == eFromEdgesSet;
 		if (e * 2 == endpoints.length)
 			endpoints = Arrays.copyOf(endpoints, Math.max(4, 2 * endpoints.length));
@@ -162,7 +173,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			throw NoSuchVertexException.ofIndex(target);
 		int eIdx = m++;
 		while (eIdx >= edges.size())
-			edges.newIdx();
+			edges.add();
 		if (eIdx * 2 >= endpoints.length)
 			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, (eIdx + 1) * 2)));
 		if (eIdx >= edgesUserIds.length)

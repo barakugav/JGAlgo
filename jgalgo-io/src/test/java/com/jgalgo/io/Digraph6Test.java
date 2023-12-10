@@ -75,8 +75,7 @@ public class Digraph6Test extends TestUtils {
 				IntGraph g = IntGraphFactory.directed().allowSelfEdges().newGraph();
 
 				/* digraph6 format support vertices with labels 0..n-1 only */
-				for (int v = 0; v < n; v++)
-					g.addVertex(v);
+				g.addVertices(range(n));
 
 				Bitmap edges = new Bitmap(n * n);
 				int edgesNum = 0;
@@ -117,8 +116,7 @@ public class Digraph6Test extends TestUtils {
 				IntGraph g = IntGraphFactory.directed().allowSelfEdges().newGraph();
 
 				/* digraph6 format support vertices with labels 0..n-1 only */
-				for (int v = 0; v < n; v++)
-					g.addVertex(v);
+				g.addVertices(range(n));
 
 				while (g.edges().size() < m) {
 					int source = Graphs.randVertex(g, rand);
@@ -333,8 +331,7 @@ public class Digraph6Test extends TestUtils {
 	@Test
 	public void writeTooManyVertices() {
 		IntGraph g = IntGraph.newDirected();
-		for (int i = 0; i < (1 << 19); i++)
-			g.addVertex(i);
+		g.addVertices(range(1 << 19));
 
 		Digraph6GraphWriter writer = new Digraph6GraphWriter();
 		assertThrows(IllegalArgumentException.class, () -> writer.writeGraph(g, new StringWriter()));

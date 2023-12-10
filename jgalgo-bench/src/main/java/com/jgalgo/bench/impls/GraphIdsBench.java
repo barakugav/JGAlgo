@@ -15,6 +15,7 @@
  */
 package com.jgalgo.bench.impls;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -56,8 +57,7 @@ public class GraphIdsBench {
 			final int m = Integer.parseInt(argsMap.get("|E|"));
 
 			g = IntGraph.newDirected();
-			for (int i = 0; i < n; i++)
-				g.addVertex();
+			g.addVertices(range(n));
 			for (int i = 0; i < m; i++)
 				g.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand));
 			System.out.println(g.indexGraphVerticesMap().getClass());

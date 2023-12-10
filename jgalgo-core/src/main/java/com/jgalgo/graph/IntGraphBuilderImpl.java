@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -22,6 +24,7 @@ import java.util.Set;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
@@ -123,7 +126,7 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		assert vIndex == vIndexToId.size();
 		vIndexToId.add(vId);
 		int oldVal = vIdToIndex.put(vId, vIndex);
-		assert oldVal == vIdToIndex.defaultReturnValue();
+		assert oldVal == -1;
 		return vId;
 	}
 
@@ -132,10 +135,12 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		if (!canAddVertexWithId())
 			throw new IllegalArgumentException("Can't mix addVertex() and addVertex(id), "
 					+ "if IDs are provided for some of the vertices, they must be provided for all");
+		if (vertex < 0)
+			throw new IllegalArgumentException("Vertex must be non negative");
 
 		int vIndex = ibuilder.vertices().size();
 		int oldVal = vIdToIndex.putIfAbsent(vertex, vIndex);
-		if (oldVal != vIdToIndex.defaultReturnValue())
+		if (oldVal != -1)
 			throw new IllegalArgumentException("duplicate vertex: " + vertex);
 
 		int vIndex2 = ibuilder.addVertex();
@@ -147,15 +152,56 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	}
 
 	@Override
+	public void addVertices(Collection<? extends Integer> vertices) {
+		if (!canAddVertexWithId())
+			throw new IllegalArgumentException("Can't mix addVertex() and addVertex(id), "
+					+ "if IDs are provided for some of the vertices, they must be provided for all");
+		if (vertices.isEmpty())
+			return;
+		if (!(vertices instanceof IntCollection))
+			for (Integer vertex : vertices)
+				if (vertex == null)
+					throw new NullPointerException("Vertex must be non null");
+		for (int vertex : vertices)
+			if (vertex < 0)
+				throw new IllegalArgumentException("Vertex must be non negative");
+
+		final int verticesNumBefore = ibuilder.vertices().size();
+		int nextIdx = verticesNumBefore;
+		int duplicateVertex = -1;
+		for (int vertex : vertices) {
+			int oldVal = vIdToIndex.putIfAbsent(vertex, nextIdx);
+			if (oldVal != -1) {
+				duplicateVertex = vertex;
+				break;
+			}
+			vIndexToId.add(vertex);
+			nextIdx++;
+		}
+		if (duplicateVertex >= 0) {
+			for (; nextIdx-- > verticesNumBefore;) {
+				int idx = vIdToIndex.remove(vIndexToId.getInt(nextIdx));
+				assert idx == nextIdx;
+			}
+			vIndexToId.size(verticesNumBefore);
+			throw new IllegalArgumentException("Duplicate vertex: " + duplicateVertex);
+		}
+		ibuilder.addVertices(range(verticesNumBefore, nextIdx));
+
+		userProvideVerticesIds = true;
+	}
+
+	@Override
 	public int addEdge(int source, int target) {
 		if (!canAddEdgeWithoutId())
 			throw new IllegalArgumentException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
 					+ "if IDs are provided for some of the edges, they must be provided for all");
+
 		int sourceIdx = vIdToIndex.get(source);
 		int targetIdx = vIdToIndex.get(target);
-		if (targetIdx == vIdToIndex.defaultReturnValue())
+		if (targetIdx == -1)
 			throw NoSuchVertexException.ofVertex(target);
-		if (sourceIdx == vIdToIndex.defaultReturnValue())
+		if (sourceIdx == -1)
 			throw NoSuchVertexException.ofVertex(source);
 
 		int eIndex = ibuilder.addEdge(sourceIdx, targetIdx);
@@ -172,11 +218,14 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		if (!canAddEdgeWithId())
 			throw new IllegalArgumentException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
 					+ "if IDs are provided for some of the edges, they must be provided for all");
+		if (edge < 0)
+			throw new IllegalArgumentException("Edge must be non negative");
+
 		int sourceIdx = vIdToIndex.get(source);
 		int targetIdx = vIdToIndex.get(target);
-		if (targetIdx == vIdToIndex.defaultReturnValue())
+		if (targetIdx == -1)
 			throw NoSuchVertexException.ofVertex(target);
-		if (sourceIdx == vIdToIndex.defaultReturnValue())
+		if (sourceIdx == -1)
 			throw NoSuchVertexException.ofVertex(source);
 
 		int eIndex = ibuilder.edges().size();

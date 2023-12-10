@@ -182,8 +182,7 @@ public class UniformTreeGenerator<V, E> implements GraphGenerator<V, E> {
 		final int n = vertices.size();
 		if (n == 0)
 			return g;
-		for (V v : vertices)
-			g.addVertex(v);
+		g.addVertices(vertices);
 		if (n == 1)
 			return g;
 

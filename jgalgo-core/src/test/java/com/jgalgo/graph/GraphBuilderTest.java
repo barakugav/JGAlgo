@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -79,6 +80,51 @@ public class GraphBuilderTest extends TestBase {
 		});
 	}
 
+	@Test
+	public void addVertexNull() {
+		foreachBoolConfig(directed -> {
+			GraphBuilder<Integer, Integer> b = GraphBuilder.newInstance(directed);
+			assertThrows(NullPointerException.class, () -> b.addVertex(null));
+		});
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void addVertices() {
+		final Random rand = new Random(0x73dfee707c122461L);
+		foreachBoolConfig(directed -> {
+			GraphBuilder<Integer, Integer> b = GraphBuilder.newInstance(directed);
+
+			Set<Integer> vertices = new HashSet<>();
+			List<Integer> verticesList = new ArrayList<>();
+			for (int r = 0; r < 50; r++) {
+				int num = rand.nextInt(5);
+				List<Integer> vs = new ArrayList<>();
+				while (vs.size() < num) {
+					int v = rand.nextInt();
+					if (v < 0 || vertices.contains(v) || vs.contains(v))
+						continue;
+					vs.add(v);
+				}
+				if (r % 4 == 0) {
+					b.addVertices(vs);
+					vertices.addAll(vs);
+					verticesList.addAll(vs);
+				} else if (r % 4 == 1) {
+					vs.add(null);
+					assertThrows(NullPointerException.class, () -> b.addVertices(vs));
+				} else if (r % 4 == 2 && vs.size() > 0) {
+					vs.add(randElement(vs, rand));
+					assertThrows(IllegalArgumentException.class, () -> b.addVertices(vs));
+				} else if (r % 4 == 3 && vertices.size() > 0) {
+					vs.add(randElement(verticesList, rand));
+					assertThrows(IllegalArgumentException.class, () -> b.addVertices(vs));
+				}
+				assertEquals(vertices, b.vertices());
+			}
+		});
+	}
+
 	@SuppressWarnings("boxing")
 	@Test
 	public void addEdge() {
@@ -115,6 +161,17 @@ public class GraphBuilderTest extends TestBase {
 			assertThrows(NoSuchVertexException.class, () -> b.addEdge(0, -1, 1));
 			assertThrows(NoSuchVertexException.class, () -> b.addEdge(10, 0, 2));
 			assertThrows(NoSuchVertexException.class, () -> b.addEdge(0, 10, 3));
+		});
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void addEdgeNull() {
+		foreachBoolConfig(directed -> {
+			GraphBuilder<Integer, Integer> b = GraphBuilder.newInstance(directed);
+			b.addVertex(0);
+			b.addVertex(1);
+			assertThrows(NullPointerException.class, () -> b.addEdge(0, 1, null));
 		});
 	}
 

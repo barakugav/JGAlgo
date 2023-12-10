@@ -36,6 +36,13 @@ public class GraphHashmapMultiTest extends TestBase {
 	}
 
 	@Test
+	public void addVertices() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.addVerticesTest(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
 	public void testAddEdge() {
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testAddEdge(graphImpl(selfEdges));

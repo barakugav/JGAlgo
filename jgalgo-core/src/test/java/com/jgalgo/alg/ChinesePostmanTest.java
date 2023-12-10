@@ -78,8 +78,7 @@ public class ChinesePostmanTest extends TestBase {
 		List<E> es = new ArrayList<>(g.edges());
 		for (int bitmap = 0; bitmap < 1 << m; bitmap++) {
 			GraphBuilder<V, Integer> b = GraphBuilder.undirected();
-			for (V v : g.vertices())
-				b.addVertex(v);
+			b.addVertices(g.vertices());
 			WeightsInt<Integer> bWeights = b.addEdgesWeights("weights", int.class);
 			for (E e : es) {
 				Integer newEdge = Integer.valueOf(b.edges().size());

@@ -52,11 +52,9 @@ class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.Abstrac
 			return new VertexPartitions.Impl(g, 0, IntArrays.DEFAULT_EMPTY_ARRAY);
 
 		IndexGraphBuilder auxGraph = IndexGraphBuilder.undirected();
-		auxGraph.expectedVerticesNum(n);
+		auxGraph.addVertices(g.vertices());
 		auxGraph.expectedEdgesNum(n - 1);
 		int[] auxWeights = new int[n - 1];
-		for (int v = 0; v < n; v++)
-			auxGraph.addVertex();
 
 		IntStack stack = new IntArrayList();
 		IVertexPartition wccs = (IVertexPartition) wccAlgo.findWeaklyConnectedComponents(g);

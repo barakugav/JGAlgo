@@ -436,8 +436,7 @@ public class GraphsTest extends TestBase {
 				factory = GraphFactory.newInstance(!directed);
 			}
 			Graph<Integer, Integer> g2 = factory.allowSelfEdges().allowParallelEdges().newGraph();
-			for (Integer v : g1.vertices())
-				g2.addVertex(v);
+			g2.addVertices(g1.vertices());
 			for (Integer e : g1.edges())
 				g2.addEdge(g1.edgeSource(e), g1.edgeTarget(e), e);
 
@@ -461,8 +460,7 @@ public class GraphsTest extends TestBase {
 				factory = GraphFactory.newInstance(directed);
 			}
 			Graph<Integer, Integer> g2 = factory.allowSelfEdges().allowParallelEdges().newGraph();
-			for (Integer v : g1.vertices())
-				g2.addVertex(v);
+			g2.addVertices(g1.vertices());
 			for (;;) {
 				int v = rand.nextInt();
 				if (v >= 1 && !g1.vertices().contains(Integer.valueOf(v))) {
@@ -493,8 +491,7 @@ public class GraphsTest extends TestBase {
 				factory = GraphFactory.newInstance(directed);
 			}
 			Graph<Integer, Integer> g2 = factory.allowSelfEdges().allowParallelEdges().newGraph();
-			for (Integer v : g1.vertices())
-				g2.addVertex(v);
+			g2.addVertices(g1.vertices());
 			for (Integer e : g1.edges())
 				g2.addEdge(g1.edgeSource(e), g1.edgeTarget(e), e);
 			for (;;) {
@@ -525,8 +522,7 @@ public class GraphsTest extends TestBase {
 				factory = GraphFactory.newInstance(directed);
 			}
 			Graph<Integer, Integer> g2 = factory.allowParallelEdges().newGraph();
-			for (Integer v : g1.vertices())
-				g2.addVertex(v);
+			g2.addVertices(g1.vertices());
 			for (Integer e : g1.edges()) {
 				Integer source = g1.edgeSource(e), target;
 				do {

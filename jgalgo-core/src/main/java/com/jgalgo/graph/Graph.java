@@ -172,6 +172,20 @@ public interface Graph<V, E> {
 	void addVertex(V vertex);
 
 	/**
+	 * Add multiple vertices to the graph.
+	 *
+	 * <p>
+	 * A vertex can be any non null hashable object, namely it must implement the {@link Object#hashCode()} and
+	 * {@link Object#equals(Object)} methods. Duplicate vertices are not allowed.
+	 *
+	 * @param  vertices                 new vertices
+	 * @throws IllegalArgumentException if {@code vertices} contains duplications or if any of the vertices is already
+	 *                                      in the graph
+	 * @throws NullPointerException     if {@code vertices} is {@code null} or if any of the vertices is {@code null}
+	 */
+	void addVertices(Collection<? extends V> vertices);
+
+	/**
 	 * Remove a vertex and all its edges from the graph.
 	 *
 	 * @param  vertex                the vertex identifier to remove
