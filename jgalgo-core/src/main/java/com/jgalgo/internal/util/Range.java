@@ -26,7 +26,7 @@ import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSpliterator;
 
-public class Range extends AbstractIntSet {
+public final class Range extends AbstractIntSet {
 
 	private final int from, to;
 
@@ -61,6 +61,20 @@ public class Range extends AbstractIntSet {
 	@Override
 	public IntSpliterator spliterator() {
 		return super.spliterator();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Range))
+			return super.equals(o);
+		Range r = (Range) o;
+		return from == r.from && to == r.to;
+	}
+
+	@Override
+	public int hashCode() {
+		/* hash code compatible with IntSet */
+		return (from + to - 1) * (to - from) / 2;
 	}
 
 	public IntStream map(IntUnaryOperator mapper) {
