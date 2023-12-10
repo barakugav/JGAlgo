@@ -16,6 +16,7 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -80,8 +81,8 @@ class GraphImplTestUtils extends TestUtils {
 		return ObjectSets.unmodifiable(set);
 	}
 
-	@SuppressWarnings("boxing")
-	static void testVertexAdd(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	@SuppressWarnings({ "boxing", "deprecation" })
+	static void testAddVertex(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		foreachBoolConfig(directed -> {
 			Graph<Integer, Integer> g = graphImpl.get(directed);
 			final int n = 100;
@@ -96,9 +97,24 @@ class GraphImplTestUtils extends TestUtils {
 
 			assertThrows(NoSuchVertexException.class, () -> g.outEdges(6687));
 		});
+		foreachBoolConfig(directed -> {
+			IndexGraph g = graphImpl.get(directed).indexGraph();
+			final int n = 87;
+			for (int i = 0; i < n; i++)
+				g.addVertex();
+			assertEquals(range(n), g.vertices());
+
+			for (int i = 0; i < 20; i++) {
+				if (i % 2 == 0) {
+					g.addVertex(g.vertices().size());
+				} else {
+					assertThrows(IllegalArgumentException.class, () -> g.addVertex(g.vertices().size() * 2 + 7));
+				}
+			}
+		});
 	}
 
-	@SuppressWarnings("boxing")
+	@SuppressWarnings({ "boxing", "deprecation" })
 	static void testAddEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		foreachBoolConfig(directed -> {
 			final int n = 100;
@@ -143,6 +159,21 @@ class GraphImplTestUtils extends TestUtils {
 				assertThrows(IllegalArgumentException.class, () -> g.addEdge(0, 1, 1));
 				if (!directed)
 					assertThrows(IllegalArgumentException.class, () -> g.addEdge(1, 0, 1));
+			}
+		});
+		foreachBoolConfig(directed -> {
+			IndexGraph g = graphImpl.get(directed).indexGraph();
+			final int n = 87;
+			for (int i = 0; i < n; i++)
+				g.addVertex();
+
+			for (int i = 0; i < 20; i++) {
+				int u = i, v = i + 1;
+				if (i % 2 == 0) {
+					g.addEdge(u, v, g.edges().size());
+				} else {
+					assertThrows(IllegalArgumentException.class, () -> g.addEdge(u, v, g.edges().size() * 2 + 7));
+				}
 			}
 		});
 	}

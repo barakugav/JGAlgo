@@ -102,7 +102,8 @@ public class UndirectedViewTest extends TestBase {
 
 				/* index graphs should not support adding vertices with user defined identifiers */
 				int newVertex0 = newVertex.intValue();
-				assertThrows(UnsupportedOperationException.class, () -> ((IntGraph) undirectedG).addVertex(newVertex0));
+				if (newVertex0 != undirectedG.vertices().size())
+					assertThrows(IllegalArgumentException.class, () -> ((IntGraph) undirectedG).addVertex(newVertex0));
 
 				/* can't add new vertex directly to IndexGraph, only via wrapper Int/Obj Graph */
 				IndexIdMap<Integer> viMap = undirectedG0.indexGraphVerticesMap();
@@ -132,10 +133,7 @@ public class UndirectedViewTest extends TestBase {
 					break;
 				}
 			}
-			if (undirectedG instanceof IndexGraph) {
-				final Integer nonExistingVertex0 = nonExistingVertex;
-				assertThrows(UnsupportedOperationException.class, () -> undirectedG.addVertex(nonExistingVertex0));
-			} else {
+			if (!(undirectedG instanceof IndexGraph)) {
 				undirectedG.addVertex(nonExistingVertex);
 				assertTrue(g.vertices().contains(nonExistingVertex));
 				assertTrue(undirectedG.vertices().contains(nonExistingVertex));
@@ -212,8 +210,9 @@ public class UndirectedViewTest extends TestBase {
 
 				/* index graphs should not support adding edges with user defined identifiers */
 				int newEdge0 = newEdge.intValue();
-				assertThrows(UnsupportedOperationException.class,
-						() -> ((IntGraph) undirectedG).addEdge(u.intValue(), v.intValue(), newEdge0));
+				if (newEdge0 != undirectedG.edges().size())
+					assertThrows(IllegalArgumentException.class,
+							() -> ((IntGraph) undirectedG).addEdge(u.intValue(), v.intValue(), newEdge0));
 
 				/* can't add new edge directly to IndexGraph, only via wrapper Int/Obj Graph */
 				IndexIdMap<Integer> viMap = undirectedG0.indexGraphVerticesMap();
@@ -243,10 +242,7 @@ public class UndirectedViewTest extends TestBase {
 					break;
 				}
 			}
-			if (undirectedG instanceof IndexGraph) {
-				Integer nonExistingEdge0 = nonExistingEdge;
-				assertThrows(UnsupportedOperationException.class, () -> undirectedG.addEdge(u, v, nonExistingEdge0));
-			} else {
+			if (!(undirectedG instanceof IndexGraph)) {
 				undirectedG.addEdge(u, v, nonExistingEdge);
 				assertTrue(g.edges().contains(nonExistingEdge));
 				assertTrue(undirectedG.edges().contains(nonExistingEdge));

@@ -95,7 +95,8 @@ public class ReversedGraphViewTest extends TestBase {
 
 				/* index graphs should not support adding vertices with user defined identifiers */
 				int newVertex0 = newVertex.intValue();
-				assertThrows(UnsupportedOperationException.class, () -> ((IntGraph) gRev).addVertex(newVertex0));
+				if (newVertex0 != gRev.vertices().size())
+					assertThrows(IllegalArgumentException.class, () -> ((IntGraph) gRev).addVertex(newVertex0));
 
 				/* can't add new vertex directly to IndexGraph, only via wrapper Int/Obj Graph */
 				IndexIdMap<Integer> viMap = gRev0.indexGraphVerticesMap();
@@ -125,10 +126,7 @@ public class ReversedGraphViewTest extends TestBase {
 					break;
 				}
 			}
-			if (gRev instanceof IndexGraph) {
-				final Integer nonExistingVertex0 = nonExistingVertex;
-				assertThrows(UnsupportedOperationException.class, () -> gRev.addVertex(nonExistingVertex0));
-			} else {
+			if (!(gRev instanceof IndexGraph)) {
 				gRev.addVertex(nonExistingVertex);
 				assertTrue(gOrig.vertices().contains(nonExistingVertex));
 				assertTrue(gRev.vertices().contains(nonExistingVertex));
@@ -204,8 +202,9 @@ public class ReversedGraphViewTest extends TestBase {
 
 				/* index graphs should not support adding edges with user defined identifiers */
 				int newEdge0 = newEdge.intValue();
-				assertThrows(UnsupportedOperationException.class,
-						() -> ((IntGraph) gRev).addEdge(u.intValue(), v.intValue(), newEdge0));
+				if (newEdge0 != gRev.edges().size())
+					assertThrows(IllegalArgumentException.class,
+							() -> ((IntGraph) gRev).addEdge(u.intValue(), v.intValue(), newEdge0));
 
 				/* can't add new edge directly to IndexGraph, only via wrapper Int/Obj Graph */
 				IndexIdMap<Integer> viMap = gRev0.indexGraphVerticesMap();
@@ -235,10 +234,7 @@ public class ReversedGraphViewTest extends TestBase {
 					break;
 				}
 			}
-			if (gRev instanceof IndexGraph) {
-				Integer nonExistingEdge0 = nonExistingEdge;
-				assertThrows(UnsupportedOperationException.class, () -> gRev.addEdge(u, v, nonExistingEdge0));
-			} else {
+			if (!(gRev instanceof IndexGraph)) {
 				gRev.addEdge(u, v, nonExistingEdge);
 				assertTrue(gOrig.edges().contains(nonExistingEdge));
 				assertTrue(gRev.edges().contains(nonExistingEdge));

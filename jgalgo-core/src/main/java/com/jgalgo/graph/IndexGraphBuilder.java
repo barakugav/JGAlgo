@@ -47,13 +47,20 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws UnsupportedOperationException always
+	 * <p>
+	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} therefore the only vertex ID that can be
+	 * added is {@code verticesNum}. For any other vertex passed to this method, an exception will be thrown. If
+	 * {@code verticesNum} is passed, this method is equivalent to {@link #addVertex()}.
+	 *
+	 * @throws     IllegalArgumentException if {@code vertex} is not {@code verticesNum}
+	 * @deprecated                          use {@link #addVertex()} instead
 	 */
 	@Deprecated
 	@Override
 	default void addVertex(int vertex) {
-		throw new UnsupportedOperationException(
-				"Index graph builder does not support adding vertices with user-chosen IDs");
+		if (vertex != vertices().size())
+			throw new IllegalArgumentException("Only vertex ID " + vertices().size() + " can be added");
+		addVertex();
 	}
 
 	/**

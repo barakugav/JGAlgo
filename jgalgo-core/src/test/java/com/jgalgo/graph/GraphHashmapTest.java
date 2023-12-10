@@ -31,7 +31,7 @@ public class GraphHashmapTest extends TestBase {
 	@Test
 	public void testVertexAdd() {
 		foreachBoolConfig(selfEdges -> {
-			GraphImplTestUtils.testVertexAdd(graphImpl(selfEdges));
+			GraphImplTestUtils.testAddVertex(graphImpl(selfEdges));
 		});
 	}
 

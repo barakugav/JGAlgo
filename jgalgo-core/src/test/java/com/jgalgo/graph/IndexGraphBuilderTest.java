@@ -73,7 +73,13 @@ public class IndexGraphBuilderTest extends TestBase {
 	public void addVertexUserProvidedId() {
 		foreachBoolConfig(directed -> {
 			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
-			assertThrows(UnsupportedOperationException.class, () -> b.addVertex(0));
+			for (int i = 0; i < 20; i++) {
+				if (i % 2 == 0) {
+					b.addVertex(b.vertices().size());
+				} else {
+					assertThrows(IllegalArgumentException.class, () -> b.addVertex(b.vertices().size() * 2 + 7));
+				}
+			}
 		});
 	}
 

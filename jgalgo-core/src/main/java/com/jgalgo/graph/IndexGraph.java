@@ -90,17 +90,22 @@ public interface IndexGraph extends IntGraph {
 	int addVertex();
 
 	/**
-	 * Unsupported operation.
+	 * {@inheritDoc}
 	 *
 	 * <p>
-	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} and do not support user chosen IDs.
+	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} therefore the only vertex ID that can be
+	 * added is {@code verticesNum}. For any other vertex passed to this method, an exception will be thrown. If
+	 * {@code verticesNum} is passed, this method is equivalent to {@link #addVertex()}.
 	 *
-	 * @throws UnsupportedOperationException always
+	 * @throws     IllegalArgumentException if {@code vertex} is not {@code verticesNum}
+	 * @deprecated                          use {@link #addVertex()} instead
 	 */
 	@Override
 	@Deprecated
 	default void addVertex(int vertex) {
-		throw new UnsupportedOperationException("Index graphs do not support user chosen IDs");
+		if (vertex != vertices().size())
+			throw new IllegalArgumentException("Only vertex ID " + vertices().size() + " can be added");
+		addVertex();
 	}
 
 	/**
@@ -119,11 +124,14 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Unsupported operation.
+	 *
+	 * @throws     UnsupportedOperationException always
+	 * @deprecated                               unsupported operation
 	 */
 	@Deprecated
 	@Override
 	default void renameVertex(int vertex, int newId) {
-		throw new UnsupportedOperationException("Index graphs do not support user chosen IDs");
+		throw new UnsupportedOperationException("Index graphs do not support vertex rename");
 	}
 
 	/**
@@ -137,17 +145,22 @@ public interface IndexGraph extends IntGraph {
 	int addEdge(int source, int target);
 
 	/**
-	 * Unsupported operation.
+	 * {@inheritDoc}
 	 *
 	 * <p>
-	 * Index graphs edges IDs are always {@code (0,1,2, ...,edgesNum-1)} and do not support user chosen IDs.
+	 * Index graphs edges IDs are always {@code (0,1,2, ...,edgesNum-1)} therefore the only edge ID that can be added is
+	 * {@code edgesNum}. For any other edge passed to this method, an exception will be thrown. If {@code edgesNum} is
+	 * passed, this method is equivalent to {@link #addEdge(int, int)}.
 	 *
-	 * @throws UnsupportedOperationException always
+	 * @throws     IllegalArgumentException if {@code edge} is not {@code edgesNum}
+	 * @deprecated                          use {@link #addEdge(int, int)} instead
 	 */
 	@Override
 	@Deprecated
 	default void addEdge(int source, int target, int edge) {
-		throw new UnsupportedOperationException("Index graphs do not support user chosen IDs");
+		if (edge != edges().size())
+			throw new IllegalArgumentException("Only edge ID " + edges().size() + " can be added");
+		addEdge(source, target);
 	}
 
 	/**
@@ -214,11 +227,14 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Unsupported operation.
+	 *
+	 * @throws     UnsupportedOperationException always
+	 * @deprecated                               unsupported operation
 	 */
 	@Deprecated
 	@Override
 	default void renameEdge(int edge, int newId) {
-		throw new UnsupportedOperationException("Index graphs do not support user chosen IDs");
+		throw new UnsupportedOperationException("Index graphs do not support edge rename");
 	}
 
 	/**
