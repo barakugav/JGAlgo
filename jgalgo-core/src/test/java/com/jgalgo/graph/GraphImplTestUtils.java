@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -96,6 +97,29 @@ class GraphImplTestUtils extends TestUtils {
 			assertEquals(IntSets.emptySet(), g.edges());
 
 			assertThrows(NoSuchVertexException.class, () -> g.outEdges(6687));
+
+			/* test vertices().toArray() on the way */
+			Object[] arr1 = g.vertices().toArray();
+			Integer[] arr2 = g.vertices().toArray(new Integer[0]);
+			assertEquals(g.vertices(), Set.of(arr1)); /* Set.of() checks that there are no duplications */
+			assertEquals(g.vertices(), Set.of(arr2));
+			if (g.vertices() instanceof IntSet) {
+				int[] arr3 = ((IntSet) g.vertices()).toIntArray();
+				int[] arr4 = ((IntSet) g.vertices()).toIntArray(new int[0]);
+				int[] arr5Input = new int[g.vertices().size()];
+				int[] arr5 = ((IntSet) g.vertices()).toIntArray(arr5Input);
+				int[] arr6Input = new int[g.vertices().size() + 7];
+				Arrays.fill(arr6Input, -18);
+				int[] arr6 = ((IntSet) g.vertices()).toIntArray(arr6Input);
+				assertEquals(g.vertices(), IntSet.of(arr3)); /* IntSet.of() checks that there are no duplications */
+				assertEquals(g.vertices(), IntSet.of(arr4));
+				assertEquals(g.vertices(), IntSet.of(arr5));
+				assertEquals(g.vertices(), IntSet.of(Arrays.copyOf(arr6, g.vertices().size())));
+				assertTrue(arr5Input == arr5);
+				assertTrue(arr6Input == arr6);
+				for (int i = g.vertices().size(); i < arr6Input.length; i++)
+					assertEquals(-18, arr6[i]);
+			}
 		});
 		foreachBoolConfig(directed -> {
 			IndexGraph g = graphImpl.get(directed).indexGraph();
@@ -140,6 +164,29 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			assertThrows(NoSuchEdgeException.class, () -> g.edgeSource(6687));
+
+			/* test edges().toArray() on the way */
+			Object[] arr1 = g.edges().toArray();
+			Integer[] arr2 = g.edges().toArray(new Integer[0]);
+			assertEquals(edges.keySet(), Set.of(arr1)); /* Set.of() checks that there are no duplications */
+			assertEquals(edges.keySet(), Set.of(arr2));
+			if (g.edges() instanceof IntSet) {
+				int[] arr3 = ((IntSet) g.edges()).toIntArray();
+				int[] arr4 = ((IntSet) g.edges()).toIntArray(new int[0]);
+				int[] arr5Input = new int[g.edges().size()];
+				int[] arr5 = ((IntSet) g.edges()).toIntArray(arr5Input);
+				int[] arr6Input = new int[g.edges().size() + 7];
+				Arrays.fill(arr6Input, -18);
+				int[] arr6 = ((IntSet) g.edges()).toIntArray(arr6Input);
+				assertEquals(edges.keySet(), IntSet.of(arr3)); /* IntSet.of() checks that there are no duplications */
+				assertEquals(edges.keySet(), IntSet.of(arr4));
+				assertEquals(edges.keySet(), IntSet.of(arr5));
+				assertEquals(edges.keySet(), IntSet.of(Arrays.copyOf(arr6, g.edges().size())));
+				assertTrue(arr5Input == arr5);
+				assertTrue(arr6Input == arr6);
+				for (int i = g.edges().size(); i < arr6Input.length; i++)
+					assertEquals(-18, arr6[i]);
+			}
 		});
 
 		foreachBoolConfig(directed -> {

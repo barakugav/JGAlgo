@@ -160,10 +160,10 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	public void addVertex(int vertex) {
 		if (vertex < 0)
 			throw new IllegalArgumentException("Vertex must be non negative");
-		if (vertices().contains(vertex))
-			throw new IllegalArgumentException("Graph already contain such a vertex: " + vertex);
-		int vIdx = indexGraph.addVertex();
+		int vIdx = indexGraph.vertices().size();
 		viMap.addId(vertex, vIdx);
+		int vIdx2 = indexGraph.addVertex();
+		assert vIdx == vIdx2;
 	}
 
 	@Override
@@ -176,8 +176,6 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	public void renameVertex(int vertex, int newId) {
 		if (newId < 0)
 			throw new IllegalArgumentException("Vertex must be non negative");
-		if (vertices().contains(newId))
-			throw new IllegalArgumentException("Graph already contain such a vertex: " + newId);
 		viMap.renameId(vertex, newId);
 	}
 
@@ -221,12 +219,19 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	public void addEdge(int source, int target, int edge) {
 		if (edge < 0)
 			throw new IllegalArgumentException("Edge must be non negative");
-		if (edges().contains(edge))
-			throw new IllegalArgumentException("Graph already contain such a edge: " + edge);
+
+		int eIdx = indexGraph.edges().size();
+		eiMap.addId(edge, eIdx);
+
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
-		int eIdx = indexGraph.addEdge(uIdx, vIdx);
-		eiMap.addId(edge, eIdx);
+		try {
+			int eIdx2 = indexGraph.addEdge(uIdx, vIdx);
+			assert eIdx == eIdx2;
+		} catch (RuntimeException e) {
+			eiMap.rollBackRemove(eIdx);
+			throw e;
+		}
 	}
 
 	@Override
@@ -255,8 +260,6 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	public void renameEdge(int edge, int newId) {
 		if (newId < 0)
 			throw new IllegalArgumentException("Edge must be non negative");
-		if (edges().contains(newId))
-			throw new IllegalArgumentException("Graph already contain such a edge: " + newId);
 		eiMap.renameId(edge, newId);
 	}
 
@@ -527,26 +530,56 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 			return new IdIdxMapImpl(orig, reIndexing, g, isEdges);
 		}
 
+		void addId(int id, int idx) {
+			assert id >= 0;
+			assert idx == idToIndex.size();
+			int oldIdx = idToIndex.putIfAbsent(id, idx);
+			if (oldIdx != -1) {
+				if (isEdges) {
+					throw new IllegalArgumentException("Graph already contain such an edge: " + id);
+				} else {
+					throw new IllegalArgumentException("Graph already contain such a vertex: " + id);
+				}
+			}
+
+			if (idx == indexToId.length)
+				indexToId = Arrays.copyOf(indexToId, Math.max(2, 2 * indexToId.length));
+			indexToId[idx] = id;
+		}
+
+		void rollBackRemove(int index) {
+			assert index == idToIndex.size() - 1;
+			removeLast(index);
+		}
+
+		private void swapAndRemove(int removedIdx, int swappedIdx) {
+			int id1 = indexToId[removedIdx];
+			int id2 = indexToId[swappedIdx];
+			indexToId[removedIdx] = id2;
+			// indexToId[swappedIdx] = -1;
+			int oldIdx1 = idToIndex.remove(id1);
+			int oldIdx2 = idToIndex.put(id2, removedIdx);
+			assert removedIdx == oldIdx1;
+			assert swappedIdx == oldIdx2;
+		}
+
+		private void removeLast(int removedIdx) {
+			int id = indexToId[removedIdx];
+			// indexToId[removedIdx] = -1;
+			idToIndex.remove(id);
+		}
+
 		private void initListeners(IndexGraph g) {
 			IndexRemoveListener listener = new IndexRemoveListener() {
 
 				@Override
 				public void swapAndRemove(int removedIdx, int swappedIdx) {
-					int id1 = indexToId[removedIdx];
-					int id2 = indexToId[swappedIdx];
-					indexToId[removedIdx] = id2;
-					// indexToId[swappedIdx] = -1;
-					int oldIdx1 = idToIndex.remove(id1);
-					int oldIdx2 = idToIndex.put(id2, removedIdx);
-					assert removedIdx == oldIdx1;
-					assert swappedIdx == oldIdx2;
+					IdIdxMapImpl.this.swapAndRemove(removedIdx, swappedIdx);
 				}
 
 				@Override
 				public void removeLast(int removedIdx) {
-					int id = indexToId[removedIdx];
-					// indexToId[removedIdx] = -1;
-					idToIndex.remove(id);
+					IdIdxMapImpl.this.removeLast(removedIdx);
 				}
 			};
 			if (isEdges) {
@@ -554,17 +587,6 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 			} else {
 				g.addVertexRemoveListener(listener);
 			}
-		}
-
-		void addId(int id, int idx) {
-			assert id >= 0;
-			assert idx == idToIndex.size();
-			int oldIdx = idToIndex.put(id, idx);
-			assert oldIdx == -1;
-
-			if (idx == indexToId.length)
-				indexToId = Arrays.copyOf(indexToId, Math.max(2, 2 * indexToId.length));
-			indexToId[idx] = id;
 		}
 
 		void idsClear() {
@@ -619,8 +641,15 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 					throw NoSuchVertexException.ofVertex(oldId);
 				}
 			}
-			int oldIdx = idToIndex.put(newId, idx);
-			assert oldIdx == -1;
+			int oldIdx = idToIndex.putIfAbsent(newId, idx);
+			if (oldIdx != -1) {
+				idToIndex.put(oldId, idx); /* roll back */
+				if (isEdges) {
+					throw new IllegalArgumentException("Graph already contain such an edge: " + newId);
+				} else {
+					throw new IllegalArgumentException("Graph already contain such a vertex: " + newId);
+				}
+			}
 			indexToId[idx] = newId;
 		}
 

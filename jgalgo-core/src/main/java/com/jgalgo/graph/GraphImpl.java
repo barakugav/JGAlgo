@@ -91,10 +91,10 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	public void addVertex(V vertex) {
 		if (vertex == null)
 			throw new IllegalArgumentException("Vertex must be non null");
-		if (vertices().contains(vertex))
-			throw new IllegalArgumentException("Graph already contain such a vertex: " + vertex);
-		int vIdx = indexGraph.addVertex();
+		int vIdx = indexGraph.vertices().size();
 		viMap.addId(vertex, vIdx);
+		int vIdx2 = indexGraph.addVertex();
+		assert vIdx == vIdx2;
 	}
 
 	@Override
@@ -107,8 +107,6 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	public void renameVertex(V vertex, V newId) {
 		if (newId == null)
 			throw new IllegalArgumentException("Vertex must be non null");
-		if (vertices().contains(newId))
-			throw new IllegalArgumentException("Graph already contain such a vertex: " + newId);
 		viMap.renameId(vertex, newId);
 	}
 
@@ -142,12 +140,19 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	public void addEdge(V source, V target, E edge) {
 		if (edge == null)
 			throw new IllegalArgumentException("Edge must be non null");
-		if (edges().contains(edge))
-			throw new IllegalArgumentException("Graph already contain such a edge: " + edge);
+
+		int eIdx = indexGraph.edges().size();
+		eiMap.addId(edge, eIdx);
+
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
-		int eIdx = indexGraph.addEdge(uIdx, vIdx);
-		eiMap.addId(edge, eIdx);
+		try {
+			int eIdx2 = indexGraph.addEdge(uIdx, vIdx);
+			assert eIdx == eIdx2;
+		} catch (RuntimeException e) {
+			eiMap.rollBackRemove(eIdx);
+			throw e;
+		}
 	}
 
 	@Override
@@ -176,8 +181,6 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	public void renameEdge(E edge, E newId) {
 		if (newId == null)
 			throw new IllegalArgumentException("Edge must be non null");
-		if (edges().contains(newId))
-			throw new IllegalArgumentException("Graph already contain such a edge: " + newId);
 		eiMap.renameId(edge, newId);
 	}
 
@@ -448,27 +451,57 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 			return new IdIdxMapImpl<>(orig, reIndexing, g, isEdges);
 		}
 
-		@SuppressWarnings("unchecked")
+		void addId(K id, int idx) {
+			assert idx == idToIndex.size();
+			int oldIdx = idToIndex.putIfAbsent(id, idx);
+			if (oldIdx != -1) {
+				if (isEdges) {
+					throw new IllegalArgumentException("Graph already contain such an edge: " + id);
+				} else {
+					throw new IllegalArgumentException("Graph already contain such a vertex: " + id);
+				}
+			}
+
+			if (idx == indexToId.length)
+				indexToId = Arrays.copyOf(indexToId, Math.max(2, 2 * indexToId.length));
+			indexToId[idx] = id;
+		}
+
+		void rollBackRemove(int index) {
+			assert index == idToIndex.size() - 1;
+			removeLast(index);
+		}
+
+		private void swapAndRemove(int removedIdx, int swappedIdx) {
+			@SuppressWarnings("unchecked")
+			K id1 = (K) indexToId[removedIdx];
+			@SuppressWarnings("unchecked")
+			K id2 = (K) indexToId[swappedIdx];
+			indexToId[removedIdx] = id2;
+			indexToId[swappedIdx] = null;
+			int oldIdx1 = idToIndex.removeInt(id1);
+			int oldIdx2 = idToIndex.put(id2, removedIdx);
+			assert removedIdx == oldIdx1;
+			assert swappedIdx == oldIdx2;
+		}
+
+		private void removeLast(int removedIdx) {
+			Object id = indexToId[removedIdx];
+			indexToId[removedIdx] = null;
+			idToIndex.removeInt(id);
+		}
+
 		private void initListeners(IndexGraph g) {
 			IndexRemoveListener listener = new IndexRemoveListener() {
 
 				@Override
 				public void swapAndRemove(int removedIdx, int swappedIdx) {
-					K id1 = (K) indexToId[removedIdx];
-					K id2 = (K) indexToId[swappedIdx];
-					indexToId[removedIdx] = id2;
-					indexToId[swappedIdx] = null;
-					int oldIdx1 = idToIndex.removeInt(id1);
-					int oldIdx2 = idToIndex.put(id2, removedIdx);
-					assert removedIdx == oldIdx1;
-					assert swappedIdx == oldIdx2;
+					IdIdxMapImpl.this.swapAndRemove(removedIdx, swappedIdx);
 				}
 
 				@Override
 				public void removeLast(int removedIdx) {
-					Object id = indexToId[removedIdx];
-					indexToId[removedIdx] = null;
-					idToIndex.removeInt(id);
+					IdIdxMapImpl.this.removeLast(removedIdx);
 				}
 			};
 			if (isEdges) {
@@ -476,16 +509,6 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 			} else {
 				g.addVertexRemoveListener(listener);
 			}
-		}
-
-		void addId(K id, int idx) {
-			assert idx == idToIndex.size();
-			int oldIdx = idToIndex.put(id, idx);
-			assert oldIdx == -1;
-
-			if (idx == indexToId.length)
-				indexToId = Arrays.copyOf(indexToId, Math.max(2, 2 * indexToId.length));
-			indexToId[idx] = id;
 		}
 
 		void idsClear() {
@@ -542,8 +565,15 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 					throw NoSuchVertexException.ofVertex(oldId);
 				}
 			}
-			int oldIdx = idToIndex.put(newId, idx);
-			assert oldIdx == -1;
+			int oldIdx = idToIndex.putIfAbsent(newId, idx);
+			if (oldIdx != -1) {
+				idToIndex.put(oldId, idx); /* roll back */
+				if (isEdges) {
+					throw new IllegalArgumentException("Graph already contain such an edge: " + newId);
+				} else {
+					throw new IllegalArgumentException("Graph already contain such a vertex: " + newId);
+				}
+			}
 			indexToId[idx] = newId;
 		}
 
@@ -585,6 +615,8 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 				if (a.length < size)
 					a = java.util.Arrays.copyOf(a, size);
 				System.arraycopy(indexToId, 0, a, 0, size);
+				if (a.length > size)
+					a[size] = null;
 				return a;
 			}
 		}
