@@ -162,11 +162,11 @@ public interface Graph<V, E> {
 	 * Add a new vertex to the graph.
 	 *
 	 * <p>
-	 * A vertex can be any non null hashable object, namely it must implement {@link Object#hashCode()} and
-	 * {@link Object#equals(Object)} methods. The set of graph vertices must not contain duplications, therefore the
-	 * provided identifier must not be currently used as one of the graph vertices IDs.
+	 * A vertex can be any non null hashable object, namely it must implement the {@link Object#hashCode()} and
+	 * {@link Object#equals(Object)} methods. Duplicate vertices are not allowed.
 	 *
-	 * @param vertex new vertex
+	 * @param  vertex                   new vertex
+	 * @throws IllegalArgumentException if {@code vertex} is already in the graph, or if {@code vertex} is {@code null}
 	 */
 	void addVertex(V vertex);
 
@@ -185,9 +185,10 @@ public interface Graph<V, E> {
 	 * This method changes the identifier of an existing vertex, while keeping the edges connecting to it, along with
 	 * the weights associated with it.
 	 *
-	 * @param  vertex                an existing vertex in the graph
-	 * @param  newId                 the new vertex identifier
-	 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier
+	 * @param  vertex                   an existing vertex in the graph
+	 * @param  newId                    the new vertex identifier
+	 * @throws NoSuchVertexException    if {@code vertex} is not a valid vertex identifier
+	 * @throws IllegalArgumentException if {@code newId} is already in the graph or if {@code newId} is {@code null}
 	 */
 	void renameVertex(V vertex, V newId);
 
@@ -267,11 +268,17 @@ public interface Graph<V, E> {
 	 * {@code target} are the same vertex, an exception will be raised.
 	 *
 	 * <p>
-	 * The edge identifier must be unique and non null.
+	 * An edge can be any non null hashable object, namely it must implement the {@link Object#hashCode()} and
+	 * {@link Object#equals(Object)} methods. Duplicate edges are not allowed.
 	 *
-	 * @param source a source vertex
-	 * @param target a target vertex
-	 * @param edge   a new edge identifier
+	 * @param  source                   a source vertex
+	 * @param  target                   a target vertex
+	 * @param  edge                     a new edge identifier
+	 * @throws IllegalArgumentException if {@code edge} is already in the graph, or if {@code edge} is {@code null} or
+	 *                                      if the graph does not support parallel edges and an edge between
+	 *                                      {@code source} and {@code target} already exists or if the graph does not
+	 *                                      support self edges and {@code source} and {@code target} are the same vertex
+	 * @throws NoSuchVertexException    if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	void addEdge(V source, V target, E edge);
 
@@ -327,9 +334,10 @@ public interface Graph<V, E> {
 	 * This method changes the identifier of an existing edge, while keeping the source and target of the edge, along
 	 * with the weights associated with it.
 	 *
-	 * @param  edge                an existing edge in the graph
-	 * @param  newId               the new edge identifier
-	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
+	 * @param  edge                     an existing edge in the graph
+	 * @param  newId                    the new edge identifier
+	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge identifier
+	 * @throws IllegalArgumentException if {@code newId} is already in the graph or if {@code newId} is {@code null}
 	 */
 	void renameEdge(E edge, E newId);
 
@@ -340,18 +348,24 @@ public interface Graph<V, E> {
 	 * This method changes the source and target of an existing edge, while keeping the identifier of the edge and the
 	 * weights associated with it.
 	 *
-	 * @param  edge                an existing edge in the graph
-	 * @param  newSource           the new source vertex
-	 * @param  newTarget           the new target vertex
-	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
+	 * @param  edge                     an existing edge in the graph
+	 * @param  newSource                the new source vertex
+	 * @param  newTarget                the new target vertex
+	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge identifier
+	 * @throws NoSuchVertexException    if {@code newSource} or {@code newTarget} are not valid vertices identifiers
+	 * @throws IllegalArgumentException if {@code newSource} and {@code newTarget} are the same vertex and the graph
+	 *                                      does not support self edges, or if the graph does not support parallel edges
+	 *                                      and an edge between {@code newSource} and {@code newTarget} already exists
 	 */
 	void moveEdge(E edge, V newSource, V newTarget);
 
 	/**
 	 * Reverse an edge by switching its source and target.
 	 *
-	 * @param  edge                an existing edge in the graph
-	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
+	 * @param  edge                     an existing edge in the graph
+	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge identifier
+	 * @throws IllegalArgumentException if the graph does not support parallel edges and another edge which is the
+	 *                                      reverse of {@code edge} already exists in the graph
 	 */
 	default void reverseEdge(E edge) {
 		moveEdge(edge, edgeTarget(edge), edgeSource(edge));
@@ -395,6 +409,7 @@ public interface Graph<V, E> {
 	 * @param  endpoint                 one of the edge end-point
 	 * @return                          the other end-point of the edge
 	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge identifier
+	 * @throws NoSuchVertexException    if {@code endpoint} is not a valid vertex identifier
 	 * @throws IllegalArgumentException if {@code endpoint} is not an endpoint of the edge
 	 */
 	V edgeEndpoint(E edge, V endpoint);
@@ -512,7 +527,8 @@ public interface Graph<V, E> {
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param key the key of the weights
+	 * @param  key                      the key of the weights
+	 * @throws IllegalArgumentException if there are no vertices weights with the specified key
 	 */
 	void removeVerticesWeights(String key);
 
@@ -626,7 +642,8 @@ public interface Graph<V, E> {
 	 * <p>
 	 * See {@link Weights} for a complete documentation of the weights containers.
 	 *
-	 * @param key the key of the weights
+	 * @param  key                      the key of the weights
+	 * @throws IllegalArgumentException if there are no edges weights with the specified key
 	 */
 	void removeEdgesWeights(String key);
 

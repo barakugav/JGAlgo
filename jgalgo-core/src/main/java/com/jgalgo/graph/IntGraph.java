@@ -111,7 +111,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * Add a new vertex to the graph with user chosen ID.
 	 *
 	 * <p>
-	 * In contrast to {@link #addVertex()}, in which the implementation chooses ,the new vertex identifier, the user can
+	 * In contrast to {@link #addVertex()}, in which the implementation chooses the new vertex identifier, the user can
 	 * specified what {@code int} ID the new vertex should be assigned. The set of graph vertices must not contain
 	 * duplications, therefore the provided identifier must not be currently used as one of the graph vertices IDs.
 	 *
@@ -151,9 +151,10 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * This method changes the identifier of an existing vertex, while keeping the edges connecting to it, along with
 	 * the weights associated with it.
 	 *
-	 * @param  vertex                an existing vertex in the graph
-	 * @param  newId                 the new vertex identifier
-	 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier
+	 * @param  vertex                   an existing vertex in the graph
+	 * @param  newId                    the new vertex identifier
+	 * @throws NoSuchVertexException    if {@code vertex} is not a valid vertex identifier
+	 * @throws IllegalArgumentException if {@code newId} is already in the graph or if {@code newId} is {@code null}
 	 */
 	void renameVertex(int vertex, int newId);
 
@@ -262,10 +263,13 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * The graph implementation will choose a new {@code int} identifier which is not currently used as one of the graph
 	 * edges, and will return it as the new edge ID.
 	 *
-	 * @param  source                a source vertex
-	 * @param  target                a target vertex
-	 * @return                       the new edge identifier
-	 * @throws NoSuchVertexException if {@code source} or {@code target} are not valid vertices identifiers
+	 * @param  source                   a source vertex
+	 * @param  target                   a target vertex
+	 * @return                          the new edge identifier
+	 * @throws IllegalArgumentException if the graph does not support parallel edges and an edge between {@code source}
+	 *                                      and {@code target} already exists or if the graph does not support self
+	 *                                      edges and {@code source} and {@code target} are the same vertex
+	 * @throws NoSuchVertexException    if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	int addEdge(int source, int target);
 
@@ -280,6 +284,10 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * @param  source                   a source vertex
 	 * @param  target                   a target vertex
 	 * @param  edge                     a user chosen identifier for the new edge
+	 * @throws IllegalArgumentException if {@code edge} is already in the graph, or if {@code edge} is {@code null} or
+	 *                                      if the graph does not support parallel edges and an edge between
+	 *                                      {@code source} and {@code target} already exists or if the graph does not
+	 *                                      support self edges and {@code source} and {@code target} are the same vertex
 	 * @throws IllegalArgumentException if the provided identifier is already used as identifier of one of the graph
 	 *                                      edges, or if its negative
 	 */
@@ -367,9 +375,10 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * This method changes the identifier of an existing edge, while keeping the source and target of the edge, along
 	 * with the weights associated with it.
 	 *
-	 * @param  edge                an existing edge in the graph
-	 * @param  newId               the new edge identifier
-	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
+	 * @param  edge                     an existing edge in the graph
+	 * @param  newId                    the new edge identifier
+	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge identifier
+	 * @throws IllegalArgumentException if {@code newId} is already in the graph or if {@code newId} is negative
 	 */
 	void renameEdge(int edge, int newId);
 
@@ -386,10 +395,14 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * This method changes the source and target of an existing edge, while keeping the identifier of the edge and the
 	 * weights associated with it.
 	 *
-	 * @param  edge                an existing edge in the graph
-	 * @param  newSource           the new source vertex
-	 * @param  newTarget           the new target vertex
-	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
+	 * @param  edge                     an existing edge in the graph
+	 * @param  newSource                the new source vertex
+	 * @param  newTarget                the new target vertex
+	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge identifier
+	 * @throws NoSuchVertexException    if {@code newSource} or {@code newTarget} are not valid vertices identifiers
+	 * @throws IllegalArgumentException if {@code newSource} and {@code newTarget} are the same vertex and the graph
+	 *                                      does not support self edges, or if the graph does not support parallel edges
+	 *                                      and an edge between {@code newSource} and {@code newTarget} already exists
 	 */
 	void moveEdge(int edge, int newSource, int newTarget);
 
@@ -402,8 +415,10 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	/**
 	 * Reverse an edge by switching its source and target.
 	 *
-	 * @param  edge                an existing edge in the graph
-	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
+	 * @param  edge                     an existing edge in the graph
+	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge identifier
+	 * @throws IllegalArgumentException if the graph does not support parallel edges and another edge which is the
+	 *                                      reverse of {@code edge} already exists in the graph
 	 */
 	default void reverseEdge(int edge) {
 		moveEdge(edge, edgeTarget(edge), edgeSource(edge));
@@ -465,6 +480,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * @param  endpoint                 one of the edge end-point
 	 * @return                          the other end-point of the edge
 	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge identifier
+	 * @throws NoSuchVertexException    if {@code endpoint} is not a valid vertex identifier
 	 * @throws IllegalArgumentException if {@code endpoint} is not an endpoint of the edge
 	 */
 	int edgeEndpoint(int edge, int endpoint);
