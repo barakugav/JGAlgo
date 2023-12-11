@@ -90,7 +90,7 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	@Override
 	public void addVertex(V vertex) {
 		if (vertex == null)
-			throw new IllegalArgumentException("Vertex must be non null");
+			throw new NullPointerException("Vertex must be non null");
 		int vIdx = indexGraph.vertices().size();
 		viMap.addId(vertex, vIdx);
 		int vIdx2 = indexGraph.addVertex();
@@ -106,7 +106,7 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	@Override
 	public void renameVertex(V vertex, V newId) {
 		if (newId == null)
-			throw new IllegalArgumentException("Vertex must be non null");
+			throw new NullPointerException("Vertex must be non null");
 		viMap.renameId(vertex, newId);
 	}
 
@@ -139,7 +139,7 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	@Override
 	public void addEdge(V source, V target, E edge) {
 		if (edge == null)
-			throw new IllegalArgumentException("Edge must be non null");
+			throw new NullPointerException("Edge must be non null");
 
 		int eIdx = indexGraph.edges().size();
 		eiMap.addId(edge, eIdx);
@@ -180,7 +180,7 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	@Override
 	public void renameEdge(E edge, E newId) {
 		if (newId == null)
-			throw new IllegalArgumentException("Edge must be non null");
+			throw new NullPointerException("Edge must be non null");
 		eiMap.renameId(edge, newId);
 	}
 

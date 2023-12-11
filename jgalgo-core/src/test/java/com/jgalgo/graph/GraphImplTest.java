@@ -89,7 +89,7 @@ public class GraphImplTest extends TestBase {
 	@Test
 	public void addVertexNull() {
 		Graph<String, String> g = Graph.newUndirected();
-		assertThrows(IllegalArgumentException.class, () -> g.addVertex(null));
+		assertThrows(NullPointerException.class, () -> g.addVertex(null));
 	}
 
 	@Test
@@ -104,7 +104,7 @@ public class GraphImplTest extends TestBase {
 		Graph<String, String> g = Graph.newUndirected();
 		g.addVertex("A");
 		g.addVertex("B");
-		assertThrows(IllegalArgumentException.class, () -> g.addEdge("A", "B", null));
+		assertThrows(NullPointerException.class, () -> g.addEdge("A", "B", null));
 	}
 
 	@Test
@@ -155,7 +155,7 @@ public class GraphImplTest extends TestBase {
 		g.addVertex("A");
 		g.addVertex("B");
 		g.addEdge("A", "B", "AB");
-		assertThrows(IllegalArgumentException.class, () -> g.renameVertex("A", null));
+		assertThrows(NullPointerException.class, () -> g.renameVertex("A", null));
 	}
 
 	@Test
@@ -198,7 +198,7 @@ public class GraphImplTest extends TestBase {
 		g.addVertex("A");
 		g.addVertex("B");
 		g.addEdge("A", "B", "AB");
-		assertThrows(IllegalArgumentException.class, () -> g.renameEdge("AB", null));
+		assertThrows(NullPointerException.class, () -> g.renameEdge("AB", null));
 	}
 
 }

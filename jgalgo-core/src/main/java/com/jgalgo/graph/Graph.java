@@ -166,7 +166,8 @@ public interface Graph<V, E> {
 	 * {@link Object#equals(Object)} methods. Duplicate vertices are not allowed.
 	 *
 	 * @param  vertex                   new vertex
-	 * @throws IllegalArgumentException if {@code vertex} is already in the graph, or if {@code vertex} is {@code null}
+	 * @throws IllegalArgumentException if {@code vertex} is already in the graph
+	 * @throws NullPointerException     if {@code vertex} is {@code null}
 	 */
 	void addVertex(V vertex);
 
@@ -188,7 +189,8 @@ public interface Graph<V, E> {
 	 * @param  vertex                   an existing vertex in the graph
 	 * @param  newId                    the new vertex identifier
 	 * @throws NoSuchVertexException    if {@code vertex} is not a valid vertex identifier
-	 * @throws IllegalArgumentException if {@code newId} is already in the graph or if {@code newId} is {@code null}
+	 * @throws IllegalArgumentException if {@code newId} is already in the graph
+	 * @throws NullPointerException     if {@code newId} is {@code null}
 	 */
 	void renameVertex(V vertex, V newId);
 
@@ -274,10 +276,11 @@ public interface Graph<V, E> {
 	 * @param  source                   a source vertex
 	 * @param  target                   a target vertex
 	 * @param  edge                     a new edge identifier
-	 * @throws IllegalArgumentException if {@code edge} is already in the graph, or if {@code edge} is {@code null} or
-	 *                                      if the graph does not support parallel edges and an edge between
-	 *                                      {@code source} and {@code target} already exists or if the graph does not
-	 *                                      support self edges and {@code source} and {@code target} are the same vertex
+	 * @throws IllegalArgumentException if {@code edge} is already in the graph or if the graph does not support
+	 *                                      parallel edges and an edge between {@code source} and {@code target} already
+	 *                                      exists or if the graph does not support self edges and {@code source} and
+	 *                                      {@code target} are the same vertex
+	 * @throws NullPointerException     if {@code edge} is {@code null}
 	 * @throws NoSuchVertexException    if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	void addEdge(V source, V target, E edge);
@@ -337,7 +340,8 @@ public interface Graph<V, E> {
 	 * @param  edge                     an existing edge in the graph
 	 * @param  newId                    the new edge identifier
 	 * @throws NoSuchEdgeException      if {@code edge} is not a valid edge identifier
-	 * @throws IllegalArgumentException if {@code newId} is already in the graph or if {@code newId} is {@code null}
+	 * @throws IllegalArgumentException if {@code newId} is already in the graph
+	 * @throws NullPointerException     if {@code newId} is {@code null}
 	 */
 	void renameEdge(E edge, E newId);
 
