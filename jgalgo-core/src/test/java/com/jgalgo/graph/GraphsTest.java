@@ -882,4 +882,20 @@ public class GraphsTest extends TestBase {
 		assertEquals(expected, actual);
 	}
 
+	@Test
+	public void randVertexEmptyGraph() {
+		assertThrows(IllegalArgumentException.class, () -> Graphs.randVertex(IntGraph.newDirected(), new Random()));
+		assertThrows(IllegalArgumentException.class, () -> Graphs.randVertex(IntGraph.newUndirected(), new Random()));
+		assertThrows(IllegalArgumentException.class, () -> Graphs.randVertex(Graph.newDirected(), new Random()));
+		assertThrows(IllegalArgumentException.class, () -> Graphs.randVertex(Graph.newUndirected(), new Random()));
+	}
+
+	@Test
+	public void randEdgeEmptyGraph() {
+		assertThrows(IllegalArgumentException.class, () -> Graphs.randEdge(IntGraph.newDirected(), new Random()));
+		assertThrows(IllegalArgumentException.class, () -> Graphs.randEdge(IntGraph.newUndirected(), new Random()));
+		assertThrows(IllegalArgumentException.class, () -> Graphs.randEdge(Graph.newDirected(), new Random()));
+		assertThrows(IllegalArgumentException.class, () -> Graphs.randEdge(Graph.newUndirected(), new Random()));
+	}
+
 }

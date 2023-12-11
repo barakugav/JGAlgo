@@ -2484,47 +2484,63 @@ public class Graphs {
 	/**
 	 * Get a random vertex from the given graph.
 	 *
-	 * @param  <V>  the vertices type
-	 * @param  g    the graph
-	 * @param  rand the random number generator
-	 * @return      a random vertex from the given graph
+	 * @param  <V>                      the vertices type
+	 * @param  g                        the graph
+	 * @param  rand                     the random number generator
+	 * @return                          a random vertex from the given graph
+	 * @throws IllegalArgumentException if the graph is contains no vertices
 	 */
 	public static <V> V randVertex(Graph<V, ?> g, Random rand) {
-		return g.indexGraphVerticesMap().indexToId(rand.nextInt(g.vertices().size()));
+		int n = g.vertices().size();
+		if (n == 0)
+			throw new IllegalArgumentException("Can't choose a random graph from a graph without vertices");
+		return g.indexGraphVerticesMap().indexToId(rand.nextInt(n));
 	}
 
 	/**
 	 * Get a random vertex from the given int graph.
 	 *
-	 * @param  g    the graph
-	 * @param  rand the random number generator
-	 * @return      a random vertex from the given graph
+	 * @param  g                        the graph
+	 * @param  rand                     the random number generator
+	 * @return                          a random vertex from the given graph
+	 * @throws IllegalArgumentException if the graph is contains no vertices
 	 */
 	public static int randVertex(IntGraph g, Random rand) {
-		return g.indexGraphVerticesMap().indexToIdInt(rand.nextInt(g.vertices().size()));
+		int n = g.vertices().size();
+		if (n == 0)
+			throw new IllegalArgumentException("Can't choose a random graph from a graph without vertices");
+		return g.indexGraphVerticesMap().indexToIdInt(rand.nextInt(n));
 	}
 
 	/**
 	 * Get a random edge from the given graph.
 	 *
-	 * @param  <E>  the edges type
-	 * @param  g    the graph
-	 * @param  rand the random number generator
-	 * @return      a random edge from the given graph
+	 * @param  <E>                      the edges type
+	 * @param  g                        the graph
+	 * @param  rand                     the random number generator
+	 * @return                          a random edge from the given graph
+	 * @throws IllegalArgumentException if the graph is contains no edges
 	 */
 	public static <E> E randEdge(Graph<?, E> g, Random rand) {
-		return g.indexGraphEdgesMap().indexToId(rand.nextInt(g.edges().size()));
+		int m = g.edges().size();
+		if (m == 0)
+			throw new IllegalArgumentException("Can't choose a random graph from a graph without edges");
+		return g.indexGraphEdgesMap().indexToId(rand.nextInt(m));
 	}
 
 	/**
 	 * Get a random edge from the given int graph.
 	 *
-	 * @param  g    the graph
-	 * @param  rand the random number generator
-	 * @return      a random edge from the given graph
+	 * @param  g                        the graph
+	 * @param  rand                     the random number generator
+	 * @return                          a random edge from the given graph
+	 * @throws IllegalArgumentException if the graph is contains no edges
 	 */
 	public static int randEdge(IntGraph g, Random rand) {
-		return g.indexGraphEdgesMap().indexToIdInt(rand.nextInt(g.edges().size()));
+		int m = g.edges().size();
+		if (m == 0)
+			throw new IllegalArgumentException("Can't choose a random graph from a graph without edges");
+		return g.indexGraphEdgesMap().indexToIdInt(rand.nextInt(m));
 	}
 
 	@SuppressWarnings("unchecked")
