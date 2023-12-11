@@ -29,9 +29,16 @@ public class GraphLinkedPtrTest extends TestBase {
 	}
 
 	@Test
-	public void testVertexAdd() {
+	public void addVertex() {
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testAddVertex(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
+	public void vertices() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.verticesTest(graphImpl(selfEdges));
 		});
 	}
 
@@ -43,9 +50,16 @@ public class GraphLinkedPtrTest extends TestBase {
 	}
 
 	@Test
-	public void testAddEdge() {
+	public void addEdge() {
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testAddEdge(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
+	public void edges() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.edgesTest(graphImpl(selfEdges));
 		});
 	}
 

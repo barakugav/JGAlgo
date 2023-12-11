@@ -63,7 +63,7 @@ abstract class GraphElementSet extends AbstractIntSet {
 
 	@Override
 	public int hashCode() {
-		return size * (size + 1) / 2;
+		return size * (size - 1) / 2;
 	}
 
 	void checkIdx(int idx) {

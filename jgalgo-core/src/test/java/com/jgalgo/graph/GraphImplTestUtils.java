@@ -98,8 +98,42 @@ class GraphImplTestUtils extends TestUtils {
 			assertEquals(IntSets.emptySet(), g.edges());
 
 			assertThrows(NoSuchVertexException.class, () -> g.outEdges(6687));
+		});
+		foreachBoolConfig(directed -> {
+			IndexGraph g = graphImpl.get(directed).indexGraph();
+			final int n = 87;
+			for (int i = 0; i < n; i++)
+				g.addVertex();
+			assertEquals(range(n), g.vertices());
 
-			/* test vertices().toArray() on the way */
+			for (int i = 0; i < 20; i++) {
+				if (i % 2 == 0) {
+					g.addVertex(g.vertices().size());
+				} else {
+					assertThrows(IllegalArgumentException.class, () -> g.addVertex(g.vertices().size() * 2 + 7));
+				}
+			}
+		});
+	}
+
+	@SuppressWarnings({ "deprecation" })
+	static void verticesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+		foreachBoolConfig((directed, index) -> {
+			Graph<Integer, Integer> g = graphImpl.get(directed);
+			if (index)
+				g = g.indexGraph();
+			final int n = 100;
+			IntSet verticesSet = new IntOpenHashSet();
+			for (int v = 0; v < n; v++) {
+				g.addVertex(Integer.valueOf(v));
+				verticesSet.add(v);
+			}
+			assertEquals(verticesSet, g.vertices());
+			assertEquals(g.vertices(), verticesSet);
+			assertEquals(verticesSet.hashCode(), g.vertices().hashCode());
+			assertEquals(IntSets.emptySet(), g.edges());
+
+			/* toArray() */
 			Object[] arr1 = g.vertices().toArray();
 			Integer[] arr2 = g.vertices().toArray(new Integer[0]);
 			assertEquals(g.vertices(), Set.of(arr1)); /* Set.of() checks that there are no duplications */
@@ -120,21 +154,6 @@ class GraphImplTestUtils extends TestUtils {
 				assertTrue(arr6Input == arr6);
 				for (int i = g.vertices().size(); i < arr6Input.length; i++)
 					assertEquals(-18, arr6[i]);
-			}
-		});
-		foreachBoolConfig(directed -> {
-			IndexGraph g = graphImpl.get(directed).indexGraph();
-			final int n = 87;
-			for (int i = 0; i < n; i++)
-				g.addVertex();
-			assertEquals(range(n), g.vertices());
-
-			for (int i = 0; i < 20; i++) {
-				if (i % 2 == 0) {
-					g.addVertex(g.vertices().size());
-				} else {
-					assertThrows(IllegalArgumentException.class, () -> g.addVertex(g.vertices().size() * 2 + 7));
-				}
 			}
 		});
 	}
@@ -450,29 +469,6 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			assertThrows(NoSuchEdgeException.class, () -> g.edgeSource(6687));
-
-			/* test edges().toArray() on the way */
-			Object[] arr1 = g.edges().toArray();
-			Integer[] arr2 = g.edges().toArray(new Integer[0]);
-			assertEquals(edges.keySet(), Set.of(arr1)); /* Set.of() checks that there are no duplications */
-			assertEquals(edges.keySet(), Set.of(arr2));
-			if (g.edges() instanceof IntSet) {
-				int[] arr3 = ((IntSet) g.edges()).toIntArray();
-				int[] arr4 = ((IntSet) g.edges()).toIntArray(new int[0]);
-				int[] arr5Input = new int[g.edges().size()];
-				int[] arr5 = ((IntSet) g.edges()).toIntArray(arr5Input);
-				int[] arr6Input = new int[g.edges().size() + 7];
-				Arrays.fill(arr6Input, -18);
-				int[] arr6 = ((IntSet) g.edges()).toIntArray(arr6Input);
-				assertEquals(edges.keySet(), IntSet.of(arr3)); /* IntSet.of() checks that there are no duplications */
-				assertEquals(edges.keySet(), IntSet.of(arr4));
-				assertEquals(edges.keySet(), IntSet.of(arr5));
-				assertEquals(edges.keySet(), IntSet.of(Arrays.copyOf(arr6, g.edges().size())));
-				assertTrue(arr5Input == arr5);
-				assertTrue(arr6Input == arr6);
-				for (int i = g.edges().size(); i < arr6Input.length; i++)
-					assertEquals(-18, arr6[i]);
-			}
 		});
 
 		foreachBoolConfig(directed -> {
@@ -520,6 +516,54 @@ class GraphImplTestUtils extends TestUtils {
 		}
 		assertEquals(source, g.edgeEndpoint(e, target));
 		assertEquals(target, g.edgeEndpoint(e, source));
+	}
+
+	@SuppressWarnings( "deprecation" )
+	static void edgesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+		foreachBoolConfig((directed, index) -> {
+			final int n = 30;
+			Graph<Integer, Integer> g = graphImpl.get(directed);
+			if (index)
+				g = g.indexGraph();
+			g.addVertices(range(n));
+			List<Integer> vs = new ArrayList<>(g.vertices());
+
+			IntSet edges = new IntOpenHashSet();
+			for (int uIdx = 0; uIdx < n; uIdx++) {
+				for (int vIdx = uIdx + 1; vIdx < n; vIdx++) {
+					Integer u = vs.get(uIdx), v = vs.get(vIdx);
+					Integer e = Integer.valueOf(g.edges().size());
+					g.addEdge(u, v, e);
+					edges.add(e.intValue());
+				}
+			}
+			assertEquals(edges, g.edges());
+			assertEquals(g.edges(), edges);
+			assertEquals(edges.hashCode(), g.edges().hashCode());
+
+			/* test edges().toArray() on the way */
+			Object[] arr1 = g.edges().toArray();
+			Integer[] arr2 = g.edges().toArray(new Integer[0]);
+			assertEquals(edges, Set.of(arr1)); /* Set.of() checks that there are no duplications */
+			assertEquals(edges, Set.of(arr2));
+			if (g.edges() instanceof IntSet) {
+				int[] arr3 = ((IntSet) g.edges()).toIntArray();
+				int[] arr4 = ((IntSet) g.edges()).toIntArray(new int[0]);
+				int[] arr5Input = new int[g.edges().size()];
+				int[] arr5 = ((IntSet) g.edges()).toIntArray(arr5Input);
+				int[] arr6Input = new int[g.edges().size() + 7];
+				Arrays.fill(arr6Input, -18);
+				int[] arr6 = ((IntSet) g.edges()).toIntArray(arr6Input);
+				assertEquals(edges, IntSet.of(arr3)); /* IntSet.of() checks that there are no duplications */
+				assertEquals(edges, IntSet.of(arr4));
+				assertEquals(edges, IntSet.of(arr5));
+				assertEquals(edges, IntSet.of(Arrays.copyOf(arr6, g.edges().size())));
+				assertTrue(arr5Input == arr5);
+				assertTrue(arr6Input == arr6);
+				for (int i = g.edges().size(); i < arr6Input.length; i++)
+					assertEquals(-18, arr6[i]);
+			}
+		});
 	}
 
 	static void testEndpoints(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
