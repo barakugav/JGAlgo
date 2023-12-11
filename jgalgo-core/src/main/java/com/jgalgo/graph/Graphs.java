@@ -33,7 +33,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectIterables;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSets;
 
 /**
@@ -2213,44 +2212,64 @@ public class Graphs {
 			IntCollection es = edges == null ? null : IntAdapters.asIntCollection((Collection<Integer>) edges);
 			return (Graph<V, E>) subGraph((IntGraph) g, vs, es, copyVerticesWeights, copyEdgesWeights);
 		}
-
 		if (vertices == null && edges == null)
 			throw new NullPointerException("Either vertices or edges can be null, not both.");
-		GraphBuilder<V, E> gb = GraphBuilder.newInstance(g.isDirected());
 
+		GraphBuilder<V, E> gb = GraphBuilder.newInstance(g.isDirected());
+		IndexGraph ig = g.indexGraph();
+		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+		IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+
+		IntCollection verticesIndices;
 		if (vertices == null) {
-			vertices = new ObjectOpenHashSet();
+			verticesIndices = new IntOpenHashSet();
 			for (E e : edges) {
-				vertices.add(g.edgeSource(e));
-				vertices.add(g.edgeTarget(e));
+				int eIdx = eiMap.idToIndex(e);
+				verticesIndices.add(ig.edgeSource(eIdx));
+				verticesIndices.add(ig.edgeTarget(eIdx));
 			}
+			vertices = IndexIdMaps.indexToIdCollection(verticesIndices, viMap);
+		} else {
+			verticesIndices = IndexIdMaps.idToIndexCollection(vertices, viMap);
 		}
 		gb.addVertices(vertices);
 
-		if (edges == null) {
+		if (edges != null) {
+			gb.expectedEdgesNum(edges.size());
+			for (E e : edges) {
+				int eIdx = eiMap.idToIndex(e);
+				int uIdx = ig.edgeSource(eIdx), vIdx = ig.edgeTarget(eIdx);
+				V u = viMap.indexToId(uIdx), v = viMap.indexToId(vIdx);
+				gb.addEdge(u, v, e);
+			}
+		} else {
 			if (g.isDirected()) {
-				for (V u : gb.vertices()) {
-					for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
-						E e = eit.next();
-						V v = eit.target();
-						if (gb.vertices().contains(v))
+				for (int uIdx : verticesIndices) {
+					V u = viMap.indexToId(uIdx);
+					for (IEdgeIter eit = ig.outEdges(uIdx).iterator(); eit.hasNext();) {
+						int eIdx = eit.nextInt();
+						int vIdx = eit.targetInt();
+						if (verticesIndices.contains(vIdx)) {
+							E e = eiMap.indexToId(eIdx);
+							V v = viMap.indexToId(vIdx);
 							gb.addEdge(u, v, e);
+						}
 					}
 				}
 			} else {
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-				for (V u : gb.vertices()) {
-					for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
-						E e = eit.next();
-						V v = eit.target();
-						if (viMap.idToIndex(u) <= viMap.idToIndex(v) && gb.vertices().contains(v))
+				for (int uIdx : verticesIndices) {
+					V u = viMap.indexToId(uIdx);
+					for (IEdgeIter eit = ig.outEdges(uIdx).iterator(); eit.hasNext();) {
+						int eIdx = eit.nextInt();
+						int vIdx = eit.targetInt();
+						if (uIdx <= vIdx && verticesIndices.contains(vIdx)) {
+							E e = eiMap.indexToId(eIdx);
+							V v = viMap.indexToId(vIdx);
 							gb.addEdge(u, v, e);
+						}
 					}
 				}
 			}
-		} else {
-			for (E e : edges)
-				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
 		}
 
 		if (copyVerticesWeights) {
@@ -2313,6 +2332,89 @@ public class Graphs {
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		if (vertices == null && edges == null)
 			throw new NullPointerException("Either vertices or edges can be null, not both.");
+		if (g instanceof IndexGraph)
+			return subGraph((IndexGraph) g, vertices, edges, copyVerticesWeights, copyEdgesWeights);
+
+		IntGraphBuilder gb = IntGraphBuilder.newInstance(g.isDirected());
+		IndexGraph ig = g.indexGraph();
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+
+		IntCollection verticesIndices;
+		if (vertices == null) {
+			verticesIndices = new IntOpenHashSet();
+			for (int e : edges) {
+				int eIdx = eiMap.idToIndex(e);
+				verticesIndices.add(ig.edgeSource(eIdx));
+				verticesIndices.add(ig.edgeTarget(eIdx));
+			}
+			vertices = IndexIdMaps.indexToIdCollection(verticesIndices, viMap);
+		} else {
+			verticesIndices = IndexIdMaps.idToIndexCollection(vertices, viMap);
+		}
+		gb.addVertices(vertices);
+
+		if (edges != null) {
+			gb.expectedEdgesNum(edges.size());
+			for (int e : edges) {
+				int eIdx = eiMap.idToIndex(e);
+				int uIdx = ig.edgeSource(eIdx), vIdx = ig.edgeTarget(eIdx);
+				int u = viMap.indexToIdInt(uIdx), v = viMap.indexToIdInt(vIdx);
+				gb.addEdge(u, v, e);
+			}
+		} else {
+			if (g.isDirected()) {
+				for (int uIdx : verticesIndices) {
+					int u = viMap.indexToIdInt(uIdx);
+					for (IEdgeIter eit = ig.outEdges(uIdx).iterator(); eit.hasNext();) {
+						int eIdx = eit.nextInt();
+						int vIdx = eit.targetInt();
+						if (verticesIndices.contains(vIdx)) {
+							int e = eiMap.indexToIdInt(eIdx);
+							int v = viMap.indexToIdInt(vIdx);
+							gb.addEdge(u, v, e);
+						}
+					}
+				}
+			} else {
+				for (int uIdx : verticesIndices) {
+					int u = viMap.indexToIdInt(uIdx);
+					for (IEdgeIter eit = ig.outEdges(uIdx).iterator(); eit.hasNext();) {
+						int eIdx = eit.nextInt();
+						int vIdx = eit.targetInt();
+						if (uIdx <= vIdx && verticesIndices.contains(vIdx)) {
+							int e = eiMap.indexToIdInt(eIdx);
+							int v = viMap.indexToIdInt(vIdx);
+							gb.addEdge(u, v, e);
+						}
+					}
+				}
+			}
+		}
+
+		if (copyVerticesWeights) {
+			for (String key : g.getVerticesWeightsKeys()) {
+				IWeights wSrc = g.getVerticesWeights(key);
+				Class<?> type = (Class) getWeightsType(wSrc);
+				IWeights wDst = (IWeights) gb.addVerticesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
+				copyWeights(wSrc, wDst, type, gb.vertices());
+			}
+		}
+		if (copyEdgesWeights) {
+			for (String key : g.getEdgesWeightsKeys()) {
+				IWeights wSrc = g.getEdgesWeights(key);
+				Class<?> type = (Class) getWeightsType(wSrc);
+				IWeights wDst = (IWeights) gb.addEdgesWeights(key, (Class) type, wSrc.defaultWeightAsObj());
+				copyWeights(wSrc, wDst, type, gb.edges());
+			}
+		}
+
+		return gb.build();
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes", "cast" })
+	private static IntGraph subGraph(IndexGraph g, IntCollection vertices, IntCollection edges,
+			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		IntGraphBuilder gb = IntGraphBuilder.newInstance(g.isDirected());
 
 		if (vertices == null) {
@@ -2324,29 +2426,30 @@ public class Graphs {
 		}
 		gb.addVertices(vertices);
 
-		if (edges == null) {
+		if (edges != null) {
+			gb.expectedEdgesNum(edges.size());
+			for (int e : edges)
+				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
+		} else {
 			if (g.isDirected()) {
-				for (int u : gb.vertices()) {
+				for (int u : vertices) {
 					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.targetInt();
-						if (gb.vertices().contains(v))
+						if (vertices.contains(v))
 							gb.addEdge(u, v, e);
 					}
 				}
 			} else {
-				for (int u : gb.vertices()) {
+				for (int u : vertices) {
 					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.targetInt();
-						if (u <= v && gb.vertices().contains(v))
+						if (u <= v && vertices.contains(v))
 							gb.addEdge(u, v, e);
 					}
 				}
 			}
-		} else {
-			for (int e : edges)
-				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
 		}
 
 		if (copyVerticesWeights) {
