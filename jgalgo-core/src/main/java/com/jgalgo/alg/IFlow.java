@@ -47,6 +47,11 @@ public interface IFlow extends Flow<Integer, Integer> {
 	 */
 	double getFlow(int edge);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #getFlow(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default double getFlow(Integer edge) {
@@ -68,6 +73,11 @@ public interface IFlow extends Flow<Integer, Integer> {
 	 */
 	double getSupply(int vertex);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #getSupply(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default double getSupply(Integer vertex) {

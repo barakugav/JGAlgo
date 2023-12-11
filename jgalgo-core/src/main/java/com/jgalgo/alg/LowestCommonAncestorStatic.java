@@ -113,6 +113,11 @@ public interface LowestCommonAncestorStatic {
 		 */
 		int findLca(int u, int v);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #findLca(int, int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer findLca(Integer u, Integer v) {

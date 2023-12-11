@@ -37,16 +37,37 @@ public interface IWEIGHTS TYPE_GENERIC extends IWeights<TYPE_GENERIC_CLASS>, WEI
 	 */
 	public PRIMITIVE_TYPE get(int element);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #get(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default PRIMITIVE_TYPE get(Integer element) {
 		return get(element.intValue());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #get(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default TYPE_GENERIC_CLASS getAsObj(int element) {
 		return PRIMITIVE_TO_BOXED(get(element));
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #get(int)} instead to avoid un/boxing.
+	 */
+	@Deprecated
+	@Override
+	default TYPE_GENERIC_CLASS getAsObj(Integer element) {
+		return PRIMITIVE_TO_BOXED(get(element.intValue()));
 	}
 
 	/**
@@ -57,24 +78,33 @@ public interface IWEIGHTS TYPE_GENERIC extends IWeights<TYPE_GENERIC_CLASS>, WEI
 	 */
 	public void set(int element, PRIMITIVE_TYPE weight);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #set(int, PRIMITIVE_TYPE_REAL)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void set(Integer element, PRIMITIVE_TYPE weight) {
 		set(element.intValue(), weight);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #set(int, PRIMITIVE_TYPE_REAL)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void setAsObj(int element, TYPE_GENERIC_CLASS weight) {
 		set(element, BOXED_TO_PRIMITIVE(weight));
 	}
 
-	@Deprecated
-	@Override
-	default TYPE_GENERIC_CLASS getAsObj(Integer element) {
-		return PRIMITIVE_TO_BOXED(get(element.intValue()));
-	}
-
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #set(int, PRIMITIVE_TYPE_REAL)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void setAsObj(Integer element, TYPE_GENERIC_CLASS weight) {

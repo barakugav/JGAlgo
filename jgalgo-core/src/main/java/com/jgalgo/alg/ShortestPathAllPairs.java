@@ -136,6 +136,11 @@ public interface ShortestPathAllPairs {
 		 */
 		public double distance(int source, int target);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #distance(int, int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default double distance(Integer source, Integer target) {
@@ -151,6 +156,11 @@ public interface ShortestPathAllPairs {
 		 */
 		public IPath getPath(int source, int target);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getPath(int, int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default IPath getPath(Integer source, Integer target) {

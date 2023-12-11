@@ -58,6 +58,11 @@ public interface IndexIntIdMap extends IndexIdMap<Integer> {
 	 */
 	int indexToIdInt(int index);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #indexToIdInt(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer indexToId(int index) {
@@ -76,6 +81,11 @@ public interface IndexIntIdMap extends IndexIdMap<Integer> {
 	 */
 	int indexToIdIfExistInt(int index);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #indexToIdIfExistInt(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer indexToIdIfExist(int index) {
@@ -98,6 +108,11 @@ public interface IndexIntIdMap extends IndexIdMap<Integer> {
 	 */
 	int idToIndex(int id);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #idToIndex(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default int idToIndex(Integer id) {
@@ -116,6 +131,11 @@ public interface IndexIntIdMap extends IndexIdMap<Integer> {
 	 */
 	int idToIndexIfExist(int id);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #idToIndexIfExist(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default int idToIndexIfExist(Integer id) {

@@ -104,6 +104,11 @@ public interface IWeights<T> extends Weights<Integer, T> {
 	 */
 	public T getAsObj(int id);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #getAsObj(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default T getAsObj(Integer id) {
@@ -118,6 +123,11 @@ public interface IWeights<T> extends Weights<Integer, T> {
 	 */
 	public void setAsObj(int id, T weight);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #setAsObj(int, Object)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void setAsObj(Integer id, T weight) {

@@ -138,6 +138,11 @@ public interface Dfs {
 		@Override
 		public int nextInt();
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use the corresponding type-specific method instead.
+		 */
 		@Deprecated
 		@Override
 		default Integer next() {

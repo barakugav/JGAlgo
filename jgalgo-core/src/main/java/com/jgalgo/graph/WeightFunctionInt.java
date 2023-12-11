@@ -69,6 +69,11 @@ public interface WeightFunctionInt<K> extends WeightFunction<K> {
 	 */
 	public int weightInt(K element);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #weightInt(Object)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default double weight(K element) {

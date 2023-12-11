@@ -42,6 +42,11 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition<
 	 */
 	boolean isLeft(int vertex);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #isLeft(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default boolean isLeft(Integer vertex) {
@@ -58,14 +63,30 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition<
 		return !isLeft(vertex);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #isRight(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
-	default int vertexBlock(Integer vertex) {
-		return isLeft(vertex) ? 0 : 1;
+	default boolean isRight(Integer vertex) {
+		return !isLeft(vertex.intValue());
 	}
 
 	@Override
 	default int vertexBlock(int vertex) {
+		return isLeft(vertex) ? 0 : 1;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #vertexBlock(int)} instead to avoid un/boxing.
+	 */
+	@Deprecated
+	@Override
+	default int vertexBlock(Integer vertex) {
 		return isLeft(vertex) ? 0 : 1;
 	}
 

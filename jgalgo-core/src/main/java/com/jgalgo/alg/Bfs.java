@@ -212,6 +212,11 @@ public interface Bfs {
 		 */
 		public int lastEdgeInt();
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #lastEdgeInt()} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer lastEdge() {

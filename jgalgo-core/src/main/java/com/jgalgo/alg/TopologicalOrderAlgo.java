@@ -108,6 +108,11 @@ public interface TopologicalOrderAlgo {
 		 */
 		int vertexOrderIndex(int vertex);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #vertexOrderIndex(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default int vertexOrderIndex(Integer vertex) {

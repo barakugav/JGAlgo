@@ -50,6 +50,11 @@ public interface IVertexPartition extends VertexPartition<Integer, Integer> {
 	 */
 	int vertexBlock(int vertex);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #vertexBlock(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default int vertexBlock(Integer vertex) {

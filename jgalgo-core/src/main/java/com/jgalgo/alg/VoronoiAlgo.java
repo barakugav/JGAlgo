@@ -167,6 +167,11 @@ public interface VoronoiAlgo {
 		 */
 		double distance(int vertex);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #distance(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default double distance(Integer vertex) {
@@ -186,6 +191,11 @@ public interface VoronoiAlgo {
 		 */
 		IPath getPath(int target);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getPath(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default IPath getPath(Integer target) {
@@ -209,6 +219,11 @@ public interface VoronoiAlgo {
 		 */
 		int blockSiteInt(int block);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #blockSiteInt(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer blockSite(int block) {
@@ -229,6 +244,11 @@ public interface VoronoiAlgo {
 		 */
 		int vertexSite(int vertex);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #vertexSite(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer vertexSite(Integer vertex) {

@@ -76,18 +76,33 @@ public interface IWeightFunctionInt extends WeightFunctionInt<Integer>, IWeightF
 	 */
 	public int weightInt(int element);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #weightInt(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default int weightInt(Integer element) {
 		return weightInt(element.intValue());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #weightInt(int)} instead to avoid un/boxing, and tp avoid the cast to {@code int}.
+	 */
 	@Deprecated
 	@Override
 	default double weight(int element) {
 		return weightInt(element);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #weightInt(int)} instead to avoid un/boxing, and tp avoid the cast to {@code int}.
+	 */
 	@Deprecated
 	@Override
 	default double weight(Integer element) {
@@ -99,6 +114,11 @@ public interface IWeightFunctionInt extends WeightFunctionInt<Integer>, IWeightF
 		return Integer.compare(weightInt(e1), weightInt(e2));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #compare(int, int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default int compare(Integer e1, Integer e2) {

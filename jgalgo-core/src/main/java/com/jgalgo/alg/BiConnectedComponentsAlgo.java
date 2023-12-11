@@ -170,6 +170,11 @@ public interface BiConnectedComponentsAlgo {
 		 */
 		IntSet getVertexBiCcs(int vertex);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getVertexBiCcs(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default IntSet getVertexBiCcs(Integer vertex) {
@@ -195,6 +200,11 @@ public interface BiConnectedComponentsAlgo {
 		 */
 		boolean isCutVertex(int vertex);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #isCutVertex(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default boolean isCutVertex(Integer vertex) {

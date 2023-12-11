@@ -69,6 +69,11 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 */
 	void addVertex(int vertex);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #addVertex(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void addVertex(Integer vertex) {
@@ -113,6 +118,11 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 */
 	void addEdge(int source, int target, int edge);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #addEdge(int, int, int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void addEdge(Integer source, Integer target, Integer edge) {

@@ -52,6 +52,11 @@ public interface IPath extends Path<Integer, Integer> {
 	 */
 	int sourceInt();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #sourceInt()} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer source() {
@@ -68,6 +73,11 @@ public interface IPath extends Path<Integer, Integer> {
 	 */
 	int targetInt();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #targetInt()} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer target() {

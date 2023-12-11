@@ -19,6 +19,11 @@ interface IVertexScoring extends VertexScoring<Integer, Integer> {
 
 	double vertexScore(int vertex);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #vertexScore(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default double vertexScore(Integer vertex) {

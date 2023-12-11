@@ -158,6 +158,11 @@ public interface CoresAlgo {
 		 */
 		int vertexCoreNum(int v);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #vertexCoreNum(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default int vertexCoreNum(Integer v) {

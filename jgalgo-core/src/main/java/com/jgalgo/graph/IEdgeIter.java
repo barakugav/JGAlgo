@@ -57,6 +57,11 @@ public interface IEdgeIter extends EdgeIter<Integer, Integer>, IntIterator {
 	 */
 	int peekNextInt();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #peekNextInt()} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer peekNext() {
@@ -73,6 +78,11 @@ public interface IEdgeIter extends EdgeIter<Integer, Integer>, IntIterator {
 	 */
 	int sourceInt();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #sourceInt()} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer source() {
@@ -89,6 +99,11 @@ public interface IEdgeIter extends EdgeIter<Integer, Integer>, IntIterator {
 	 */
 	int targetInt();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #targetInt()} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer target() {

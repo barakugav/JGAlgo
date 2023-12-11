@@ -125,6 +125,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 */
 	void addVertex(int vertex);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #addVertex(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void addVertex(Integer vertex) {
@@ -149,6 +154,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 */
 	void removeVertex(int vertex);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #removeVertex(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void removeVertex(Integer vertex) {
@@ -169,6 +179,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 */
 	void renameVertex(int vertex, int newId);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #renameVertex(int, int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void renameVertex(Integer vertex, Integer newId) {
@@ -191,9 +206,14 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 */
 	IEdgeSet outEdges(int source);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #outEdges(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
-	default EdgeSet<Integer, Integer> outEdges(Integer source) {
+	default IEdgeSet outEdges(Integer source) {
 		return outEdges(source.intValue());
 	}
 
@@ -213,9 +233,14 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 */
 	IEdgeSet inEdges(int target);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #inEdges(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
-	default EdgeSet<Integer, Integer> inEdges(Integer target) {
+	default IEdgeSet inEdges(Integer target) {
 		return inEdges(target.intValue());
 	}
 
@@ -244,6 +269,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 		return -1;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #getEdge(int, int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer getEdge(Integer source, Integer target) {
@@ -261,9 +291,14 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 */
 	IEdgeSet getEdges(int source, int target);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #getEdges(int, int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
-	default EdgeSet<Integer, Integer> getEdges(Integer source, Integer target) {
+	default IEdgeSet getEdges(Integer source, Integer target) {
 		return getEdges(source.intValue(), target.intValue());
 	}
 
@@ -304,6 +339,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 */
 	void addEdge(int source, int target, int edge);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #addEdge(int, int, int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void addEdge(Integer source, Integer target, Integer edge) {
@@ -318,6 +358,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 */
 	void removeEdge(int edge);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #removeEdge(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void removeEdge(Integer edge) {
@@ -335,6 +380,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 		removeInEdgesOf(vertex);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #removeEdgesOf(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void removeEdgesOf(Integer vertex) {
@@ -354,6 +404,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #removeOutEdgesOf(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void removeOutEdgesOf(Integer vertex) {
@@ -373,6 +428,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #removeInEdgesOf(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void removeInEdgesOf(Integer vertex) {
@@ -393,6 +453,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 */
 	void renameEdge(int edge, int newId);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #renameEdge(int, int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void renameEdge(Integer edge, Integer newId) {
@@ -417,6 +482,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 */
 	void moveEdge(int edge, int newSource, int newTarget);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #moveEdge(int, int, int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void moveEdge(Integer edge, Integer newSource, Integer newTarget) {
@@ -435,6 +505,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 		moveEdge(edge, edgeTarget(edge), edgeSource(edge));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #reverseEdge(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void reverseEdge(Integer edge) {
@@ -454,6 +529,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 */
 	int edgeSource(int edge);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #edgeSource(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer edgeSource(Integer edge) {
@@ -473,6 +553,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 */
 	int edgeTarget(int edge);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #edgeTarget(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer edgeTarget(Integer edge) {
@@ -496,6 +581,11 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 */
 	int edgeEndpoint(int edge, int endpoint);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #edgeEndpoint(int, int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer edgeEndpoint(Integer edge, Integer endpoint) {

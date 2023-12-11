@@ -43,6 +43,11 @@ public interface IMatching extends Matching<Integer, Integer> {
 	 */
 	boolean isVertexMatched(int vertex);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #isVertexMatched(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default boolean isVertexMatched(Integer vertex) {
@@ -58,6 +63,11 @@ public interface IMatching extends Matching<Integer, Integer> {
 	 */
 	int getMatchedEdge(int vertex);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #getMatchedEdge(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer getMatchedEdge(Integer vertex) {
@@ -83,6 +93,11 @@ public interface IMatching extends Matching<Integer, Integer> {
 	 */
 	boolean containsEdge(int edge);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #containsEdge(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default boolean containsEdge(Integer edge) {

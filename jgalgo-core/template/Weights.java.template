@@ -37,6 +37,11 @@ public interface WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> extends Weights<K, TYP
 	 */
 	public PRIMITIVE_TYPE get(K element);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #get(Object)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default TYPE_GENERIC_CLASS getAsObj(K element) {
@@ -51,6 +56,11 @@ public interface WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> extends Weights<K, TYP
 	 */
 	public void set(K element, PRIMITIVE_TYPE weight);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #set(Object, PRIMITIVE_TYPE_REAL)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void setAsObj(K element, TYPE_GENERIC_CLASS weight) {
@@ -68,6 +78,11 @@ public interface WEIGHTS<K TYPE_GENERIC_IN_TEMPLATE_LIST> extends Weights<K, TYP
 	 */
 	public PRIMITIVE_TYPE defaultWeight();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #defaultWeight()} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default TYPE_GENERIC_CLASS defaultWeightAsObj() {

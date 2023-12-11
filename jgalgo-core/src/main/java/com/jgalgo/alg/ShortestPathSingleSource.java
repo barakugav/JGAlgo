@@ -155,6 +155,11 @@ public interface ShortestPathSingleSource {
 		 */
 		public double distance(int target);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #distance(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default double distance(Integer target) {
@@ -169,6 +174,11 @@ public interface ShortestPathSingleSource {
 		 */
 		public IPath getPath(int target);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getPath(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default IPath getPath(Integer target) {

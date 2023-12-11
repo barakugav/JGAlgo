@@ -157,6 +157,11 @@ public interface LowestCommonAncestorOffline {
 		 */
 		void addQuery(int u, int v);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #addQuery(int, int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default void addQuery(Integer u, Integer v) {
@@ -176,6 +181,11 @@ public interface LowestCommonAncestorOffline {
 		 */
 		int getQuerySourceInt(int idx);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getQuerySourceInt(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer getQuerySource(int idx) {
@@ -195,6 +205,11 @@ public interface LowestCommonAncestorOffline {
 		 */
 		int getQueryTargetInt(int idx);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getQueryTargetInt(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer getQueryTarget(int idx) {
@@ -259,6 +274,11 @@ public interface LowestCommonAncestorOffline {
 		 */
 		int getLcaInt(int queryIdx);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getLcaInt(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer getLca(int queryIdx) {

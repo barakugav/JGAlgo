@@ -90,6 +90,11 @@ public interface IWeightFunction extends WeightFunction<Integer>, IntComparator 
 	 */
 	double weight(int element);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #weight(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default double weight(Integer element) {
@@ -104,6 +109,11 @@ public interface IWeightFunction extends WeightFunction<Integer>, IntComparator 
 		return Double.compare(weight(e1), weight(e2));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #compare(int, int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default int compare(Integer e1, Integer e2) {
