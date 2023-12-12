@@ -293,8 +293,8 @@ public class CompleteBipartiteGraphGenerator<V, E> implements GraphGenerator<V, 
 					IntAdapters.asIntCollection((Collection<Integer>) this.leftVertices).toIntArray();
 			final int[] rightVertices =
 					IntAdapters.asIntCollection((Collection<Integer>) this.rightVertices).toIntArray();
-			g.expectedVerticesNum(leftVertices.length + rightVertices.length);
-			g.expectedEdgesNum(m);
+			g.ensureVertexCapacity(leftVertices.length + rightVertices.length);
+			g.ensureEdgeCapacity(m);
 
 			IWeightsBool partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);
 			for (int v : leftVertices) {
@@ -322,8 +322,8 @@ public class CompleteBipartiteGraphGenerator<V, E> implements GraphGenerator<V, 
 			GraphBuilder<V, E> g = GraphBuilder.newInstance(direction != Direction.Undirected);
 			final V[] leftVertices = (V[]) this.leftVertices.toArray();
 			final V[] rightVertices = (V[]) this.rightVertices.toArray();
-			g.expectedVerticesNum(leftVertices.length + rightVertices.length);
-			g.expectedEdgesNum(m);
+			g.ensureVertexCapacity(leftVertices.length + rightVertices.length);
+			g.ensureEdgeCapacity(m);
 
 			WeightsBool<V> partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);
 			for (V v : leftVertices) {

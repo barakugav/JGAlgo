@@ -67,8 +67,8 @@ public class TspMetricMSTAppx extends TspMetricUtils.AbstractImpl {
 
 		/* Build a graph with each MST edge duplicated */
 		IndexGraphBuilder g1Builder = IndexGraphBuilder.undirected();
-		g1Builder.expectedVerticesNum(n);
-		g1Builder.expectedEdgesNum(mst.size() + mst.size() * 2);
+		g1Builder.ensureVertexCapacity(n);
+		g1Builder.ensureEdgeCapacity(mst.size() + mst.size() * 2);
 		for (int v = 0; v < n; v++) {
 			int vBuilder = g1Builder.addVertex();
 			assert v == vBuilder;

@@ -193,7 +193,7 @@ public class CompleteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 			final int[] vertices = IntAdapters.asIntCollection((Collection<Integer>) this.vertices).toIntArray();
 			g.addVertices(IntList.of(vertices));
 
-			g.expectedEdgesNum(m);
+			g.ensureEdgeCapacity(m);
 			IntBinaryOperator edgeBuilder =
 					IntAdapters.asIntBiOperator((BiFunction<Integer, Integer, Integer>) this.edgeBuilder);
 			for (int uIdx = 0; uIdx < n; uIdx++) {
@@ -218,7 +218,7 @@ public class CompleteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 			final V[] vertices = (V[]) this.vertices.toArray();
 			g.addVertices(ObjectList.of(vertices));
 
-			g.expectedEdgesNum(m);
+			g.ensureEdgeCapacity(m);
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				V u = vertices[uIdx];
 				if (directed) {

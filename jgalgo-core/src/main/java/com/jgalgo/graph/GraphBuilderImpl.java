@@ -71,6 +71,7 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 				throw new NullPointerException("Vertex must be non null");
 
 		final int verticesNumBefore = ibuilder.vertices().size();
+		ensureVertexCapacity(verticesNumBefore + vertices.size());
 		int nextIdx = verticesNumBefore;
 		V duplicateVertex = null;
 		for (V vertex : vertices) {
@@ -103,14 +104,14 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 	}
 
 	@Override
-	public void expectedVerticesNum(int verticesNum) {
-		ibuilder.expectedVerticesNum(verticesNum);
+	public void ensureVertexCapacity(int verticesNum) {
+		ibuilder.ensureVertexCapacity(verticesNum);
 		viMap.ensureCapacity(verticesNum);
 	}
 
 	@Override
-	public void expectedEdgesNum(int edgesNum) {
-		ibuilder.expectedEdgesNum(edgesNum);
+	public void ensureEdgeCapacity(int edgesNum) {
+		ibuilder.ensureEdgeCapacity(edgesNum);
 		eiMap.ensureCapacity(edgesNum);
 	}
 

@@ -266,8 +266,8 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			IntArrayList depths = new IntArrayList();
 
 			IndexGraphBuilder treeBuilder = IndexGraphBuilder.undirected();
-			treeBuilder.expectedVerticesNum(2 * n);
-			treeBuilder.expectedEdgesNum(2 * n);
+			treeBuilder.ensureVertexCapacity(2 * n);
+			treeBuilder.ensureEdgeCapacity(2 * n);
 			int[] edgeRef = IntArrays.EMPTY_ARRAY;
 
 			/* Create the deepest n vertices of the full Boruvka tree, each corresponding to an original vertex */

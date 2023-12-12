@@ -174,8 +174,8 @@ public class IntGraphBuilderTest extends TestBase {
 	public void addEdge() {
 		foreachBoolConfig(directed -> {
 			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
-			b.expectedVerticesNum(10);
-			b.expectedEdgesNum(3);
+			b.ensureVertexCapacity(10);
+			b.ensureEdgeCapacity(3);
 			range(10).forEach(b::addVertex);
 			int e1 = b.addEdge(0, 1);
 			int e2 = b.addEdge(0, 2);
@@ -188,8 +188,8 @@ public class IntGraphBuilderTest extends TestBase {
 	public void addEdgeUserProvidedIds() {
 		foreachBoolConfig(directed -> {
 			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
-			b.expectedVerticesNum(10);
-			b.expectedEdgesNum(3);
+			b.ensureVertexCapacity(10);
+			b.ensureEdgeCapacity(3);
 			range(10).forEach(b::addVertex);
 			b.addEdge(0, 1, 0);
 			b.addEdge(0, 2, 1);
@@ -202,8 +202,8 @@ public class IntGraphBuilderTest extends TestBase {
 	public void addEdgeMixUserIdsAndImplIds() {
 		foreachBoolConfig(directed -> {
 			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
-			b.expectedVerticesNum(10);
-			b.expectedEdgesNum(3);
+			b.ensureVertexCapacity(10);
+			b.ensureEdgeCapacity(3);
 			range(10).forEach(b::addVertex);
 			b.addEdge(0, 1, 0);
 			b.addEdge(0, 2, 1);
@@ -212,8 +212,8 @@ public class IntGraphBuilderTest extends TestBase {
 		});
 		foreachBoolConfig(directed -> {
 			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
-			b.expectedVerticesNum(10);
-			b.expectedEdgesNum(3);
+			b.ensureVertexCapacity(10);
+			b.ensureEdgeCapacity(3);
 			range(10).forEach(b::addVertex);
 			b.addEdge(0, 1);
 			b.addEdge(0, 2);

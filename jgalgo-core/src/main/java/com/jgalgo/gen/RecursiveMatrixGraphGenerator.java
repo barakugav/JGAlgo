@@ -303,7 +303,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 			final int[] vertices = IntAdapters.asIntCollection((Collection<Integer>) this.vertices).toIntArray();
 			g.addVertices(IntList.of(vertices));
 
-			g.expectedEdgesNum(m);
+			g.ensureEdgeCapacity(m);
 			IntBinaryOperator edgeBuilder =
 					IntAdapters.asIntBiOperator((BiFunction<Integer, Integer, Integer>) this.edgeBuilder);
 			if (directed) {
@@ -335,7 +335,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 			final V[] vertices = (V[]) this.vertices.toArray();
 			g.addVertices(ObjectList.of(vertices));
 
-			g.expectedEdgesNum(m);
+			g.ensureEdgeCapacity(m);
 			if (directed) {
 				for (int uIdx = 0; uIdx < n; uIdx++) {
 					for (int vIdx = 0; vIdx < n; vIdx++) {

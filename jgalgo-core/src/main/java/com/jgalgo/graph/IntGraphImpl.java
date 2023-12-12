@@ -178,6 +178,7 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 				throw new IllegalArgumentException("Vertex must be non negative");
 
 		final int verticesNumBefore = indexGraph.vertices().size();
+		ensureVertexCapacity(verticesNumBefore + vertices.size());
 		int nextIdx = verticesNumBefore;
 		int duplicateVertex = -1;
 		for (int vertex : vertices) {
@@ -331,6 +332,18 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	public void clearEdges() {
 		indexGraph.clearEdges();
 		eiMap.idsClear();
+	}
+
+	@Override
+	public void ensureVertexCapacity(int vertexCapacity) {
+		indexGraph.ensureVertexCapacity(vertexCapacity);
+		viMap.ensureCapacity(vertexCapacity);
+	}
+
+	@Override
+	public void ensureEdgeCapacity(int edgeCapacity) {
+		indexGraph.ensureEdgeCapacity(edgeCapacity);
+		eiMap.ensureCapacity(edgeCapacity);
 	}
 
 	@Override

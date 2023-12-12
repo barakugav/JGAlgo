@@ -358,8 +358,8 @@ public class GnmBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 		} else {
 			g = GraphBuilder.newInstance(direction != Direction.Undirected);
 		}
-		g.expectedVerticesNum(leftVertices.size() + rightVertices.size());
-		g.expectedEdgesNum(m);
+		g.ensureVertexCapacity(leftVertices.size() + rightVertices.size());
+		g.ensureEdgeCapacity(m);
 
 		WeightsBool<V> partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);
 		for (V v : leftVertices) {

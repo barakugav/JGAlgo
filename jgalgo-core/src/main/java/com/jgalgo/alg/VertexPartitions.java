@@ -298,7 +298,7 @@ class VertexPartitions {
 		final int m = g.edges().size();
 		if (parallelEdges) {
 			if (selfEdges)
-				gb.expectedEdgesNum(m);
+				gb.ensureEdgeCapacity(m);
 			for (int e = 0; e < m; e++) {
 				int b1 = partition.vertexBlock(g.edgeSource(e));
 				int b2 = partition.vertexBlock(g.edgeTarget(e));
@@ -383,7 +383,7 @@ class VertexPartitions {
 			IntGraph ig = VertexPartitions.blocksGraph(g.indexGraph(), indexPartition, parallelEdges, selfEdges);
 			IntGraphBuilder gb = IntGraphBuilder.newInstance(g.isDirected());
 			gb.addVertices(ig.vertices());
-			gb.expectedEdgesNum(ig.edges().size());
+			gb.ensureEdgeCapacity(ig.edges().size());
 			for (int e : ig.edges())
 				gb.addEdge(ig.edgeSource(e), ig.edgeTarget(e), eiMap.indexToIdInt(e));
 			return gb.build();
@@ -446,7 +446,7 @@ class VertexPartitions {
 			IntGraph ig = VertexPartitions.blocksGraph(g.indexGraph(), indexPartition, parallelEdges, selfEdges);
 			GraphBuilder<Integer, E> gb = GraphBuilder.newInstance(g.isDirected());
 			gb.addVertices(ig.vertices());
-			gb.expectedEdgesNum(ig.edges().size());
+			gb.ensureEdgeCapacity(ig.edges().size());
 			for (int e : ig.edges())
 				gb.addEdge(Integer.valueOf(ig.edgeSource(e)), Integer.valueOf(ig.edgeTarget(e)), eiMap.indexToId(e));
 			return gb.build();

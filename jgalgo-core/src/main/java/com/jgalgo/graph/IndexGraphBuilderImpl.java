@@ -185,12 +185,12 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	@Override
-	public void expectedVerticesNum(int verticesNum) {
+	public void ensureVertexCapacity(int verticesNum) {
 		verticesUserWeights.ensureCapacity(verticesNum);
 	}
 
 	@Override
-	public void expectedEdgesNum(int edgesNum) {
+	public void ensureEdgeCapacity(int edgesNum) {
 		edgesUserWeights.ensureCapacity(edgesNum);
 		if (edgesNum * 2 > endpoints.length)
 			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, edgesNum * 2)));

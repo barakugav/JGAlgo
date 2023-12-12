@@ -53,7 +53,7 @@ class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.Abstrac
 
 		IndexGraphBuilder auxGraph = IndexGraphBuilder.undirected();
 		auxGraph.addVertices(g.vertices());
-		auxGraph.expectedEdgesNum(n - 1);
+		auxGraph.ensureEdgeCapacity(n - 1);
 		int[] auxWeights = new int[n - 1];
 
 		IntStack stack = new IntArrayList();

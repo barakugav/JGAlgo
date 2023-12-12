@@ -86,24 +86,24 @@ public interface GraphBuilder<V, E> {
 	void addEdge(V source, V target, E edge);
 
 	/**
-	 * Hint about the number of vertices expected to be added to the builder.
+	 * Hint the implementation to allocate space for at least {@code vertexCapacity} vertices.
 	 *
 	 * <p>
-	 * This method does not affect the built graph, only the builder itself.
+	 * The implementation may ignore any calls to this function.
 	 *
-	 * @param verticesNum the expected number of vertices to be added to the builder
+	 * @param vertexCapacity the minimum number of vertices to allocate space for
 	 */
-	void expectedVerticesNum(int verticesNum);
+	void ensureVertexCapacity(int vertexCapacity);
 
 	/**
-	 * Hint about the number of edges expected to be added to the builder.
+	 * Hint the implementation to allocate space for at least {@code edgeCapacity} edges.
 	 *
 	 * <p>
-	 * This method does not affect the built graph, only the builder itself.
+	 * The implementation may ignore any calls to this function.
 	 *
-	 * @param edgesNum the expected number of edges to be added to the builder
+	 * @param edgeCapacity the minimum number of edges to allocate space for
 	 */
-	void expectedEdgesNum(int edgesNum);
+	void ensureEdgeCapacity(int edgeCapacity);
 
 	/**
 	 * Get the vertices weights of some key.

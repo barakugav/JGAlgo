@@ -115,6 +115,7 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 				throw new IllegalArgumentException("Vertex must be non negative");
 
 		final int verticesNumBefore = ibuilder.vertices().size();
+		ensureVertexCapacity(verticesNumBefore + vertices.size());
 		int nextIdx = verticesNumBefore;
 		int duplicateVertex = -1;
 		for (int vertex : vertices) {
@@ -168,14 +169,14 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	}
 
 	@Override
-	public void expectedVerticesNum(int verticesNum) {
-		ibuilder.expectedVerticesNum(verticesNum);
+	public void ensureVertexCapacity(int verticesNum) {
+		ibuilder.ensureVertexCapacity(verticesNum);
 		viMap.ensureCapacity(verticesNum);
 	}
 
 	@Override
-	public void expectedEdgesNum(int edgesNum) {
-		ibuilder.expectedEdgesNum(edgesNum);
+	public void ensureEdgeCapacity(int edgesNum) {
+		ibuilder.ensureEdgeCapacity(edgesNum);
 		eiMap.ensureCapacity(edgesNum);
 	}
 

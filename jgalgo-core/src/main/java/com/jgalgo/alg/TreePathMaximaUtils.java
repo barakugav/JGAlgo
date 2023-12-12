@@ -288,8 +288,8 @@ class TreePathMaximaUtils {
 		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size();
 		IndexGraphBuilder mstBuilder = IndexGraphBuilder.undirected();
-		mstBuilder.expectedVerticesNum(n);
-		mstBuilder.expectedEdgesNum(mstEdges.size());
+		mstBuilder.ensureVertexCapacity(n);
+		mstBuilder.ensureEdgeCapacity(mstEdges.size());
 
 		for (int v = 0; v < n; v++) {
 			int vBuilder = mstBuilder.addVertex();

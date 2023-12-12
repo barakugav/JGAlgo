@@ -211,6 +211,12 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	}
 
 	@Override
+	public void ensureVertexCapacity(int vertexCapacity) {}
+
+	@Override
+	public void ensureEdgeCapacity(int edgeCapacity) {}
+
+	@Override
 	@SuppressWarnings("unchecked")
 	public <T, WeightsT extends IWeights<T>> WeightsT getVerticesIWeights(String key) {
 		return (WeightsT) verticesUserWeights.get(key);

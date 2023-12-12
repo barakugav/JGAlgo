@@ -153,8 +153,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	public int addVertex() {
 		int u = vertices0().add();
 		assert u >= 0;
-		verticesInternalContainers.ensureCapacity(u + 1);
-		verticesUserWeights.ensureCapacity(u + 1);
+		ensureVertexCapacity(u + 1);
 		return u;
 	}
 
@@ -202,8 +201,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 	void addVerticesImpl(int count) {
 		vertices0().addAll(count);
-		verticesInternalContainers.ensureCapacity(vertices.size);
-		verticesUserWeights.ensureCapacity(vertices.size);
+		ensureVertexCapacity(vertices.size());
 	}
 
 	@Override
@@ -239,8 +237,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		int e = edges0().add();
 
 		assert e >= 0;
-		edgesInternalContainers.ensureCapacity(e + 1);
-		edgesUserWeights.ensureCapacity(e + 1);
+		ensureEdgeCapacity(e + 1);
 
 		setEndpoints(e, source, target);
 		return e;
@@ -317,6 +314,18 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		// edgesInternalContainers.clearContainers();
 		edgesUserWeights.clearContainers();
 		edgeEndpointsContainer.clear();
+	}
+
+	@Override
+	public void ensureVertexCapacity(int vertexCapacity) {
+		verticesInternalContainers.ensureCapacity(vertexCapacity);
+		verticesUserWeights.ensureCapacity(vertexCapacity);
+	}
+
+	@Override
+	public void ensureEdgeCapacity(int edgeCapacity) {
+		edgesInternalContainers.ensureCapacity(edgeCapacity);
+		edgesUserWeights.ensureCapacity(edgeCapacity);
 	}
 
 	@Override

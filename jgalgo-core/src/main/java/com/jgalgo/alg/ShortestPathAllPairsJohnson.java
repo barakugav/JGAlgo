@@ -146,8 +146,8 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 
 		/* Add fake vertex */
 		IndexGraphBuilder refgBuilder = IndexGraphBuilder.newInstance(g.isDirected());
-		refgBuilder.expectedVerticesNum(n + 1);
-		refgBuilder.expectedEdgesNum(m + n);
+		refgBuilder.ensureVertexCapacity(n + 1);
+		refgBuilder.ensureEdgeCapacity(m + n);
 		refgBuilder.addVertices(g.vertices());
 		final int fakeV = refgBuilder.addVertex();
 		for (int e = 0; e < m; e++)

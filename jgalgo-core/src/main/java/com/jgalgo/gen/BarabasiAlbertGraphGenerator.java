@@ -292,7 +292,7 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 			final int[] vertices = IntAdapters.asIntCollection((Collection<Integer>) this.vertices).toIntArray();
 			g.addVertices(IntList.of(vertices));
 
-			g.expectedEdgesNum(edgeNum);
+			g.ensureEdgeCapacity(edgeNum);
 			IntBinaryOperator edgeBuilder =
 					IntAdapters.asIntBiOperator((BiFunction<Integer, Integer, Integer>) this.edgeBuilder);
 			for (int eIdx = 0; eIdx < edgeNum; eIdx++) {
@@ -308,7 +308,7 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 			final V[] vertices = (V[]) this.vertices.toArray();
 			g.addVertices(ObjectList.of(vertices));
 
-			g.expectedEdgesNum(edgeNum);
+			g.ensureEdgeCapacity(edgeNum);
 			for (int eIdx = 0; eIdx < edgeNum; eIdx++) {
 				V u = vertices[endpoints[eIdx * 2 + 0]];
 				V v = vertices[endpoints[eIdx * 2 + 1]];

@@ -452,6 +452,26 @@ public interface Graph<V, E> {
 	void clearEdges();
 
 	/**
+	 * Hint the implementation to allocate space for at least {@code vertexCapacity} vertices.
+	 *
+	 * <p>
+	 * The implementation may ignore any calls to this function.
+	 *
+	 * @param vertexCapacity the minimum number of vertices to allocate space for
+	 */
+	void ensureVertexCapacity(int vertexCapacity);
+
+	/**
+	 * Hint the implementation to allocate space for at least {@code edgeCapacity} edges.
+	 *
+	 * <p>
+	 * The implementation may ignore any calls to this function.
+	 *
+	 * @param edgeCapacity the minimum number of edges to allocate space for
+	 */
+	void ensureEdgeCapacity(int edgeCapacity);
+
+	/**
 	 * Get the vertices weights of some key.
 	 *
 	 * <p>

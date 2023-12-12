@@ -151,7 +151,7 @@ public class DimacsGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
 					if (n < 0 || m < 0)
 						throw new IllegalArgumentException("negative vertices/edges num: " + n + " " + m);
-					gb.expectedEdgesNum(m);
+					gb.ensureEdgeCapacity(m);
 					gb.addVertices(range(1, n + 1)); /* vertices are labeled as 1,2,3,4... */
 
 					if (hasWeights)

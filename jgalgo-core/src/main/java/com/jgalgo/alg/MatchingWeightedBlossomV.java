@@ -69,8 +69,8 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 
 		Assertions.Graphs.onlyUndirected(g);
 		IndexGraphBuilder b = IndexGraphBuilder.undirected();
-		b.expectedVerticesNum(g.vertices().size() * 2);
-		b.expectedEdgesNum(g.edges().size() * 2 + g.vertices().size());
+		b.ensureVertexCapacity(g.vertices().size() * 2);
+		b.ensureEdgeCapacity(g.edges().size() * 2 + g.vertices().size());
 
 		/* Add two vertices for each original vertex */
 		for (int n = g.vertices().size(), v = 0; v < n; v++) {

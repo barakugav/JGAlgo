@@ -408,7 +408,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 			if (blockGraph == null) {
 				final int blockNum = getNumberOfBiCcs();
 				IntGraphBuilder g = IntGraphBuilder.undirected();
-				g.expectedVerticesNum(blockNum);
+				g.ensureVertexCapacity(blockNum);
 				g.addVertices(range(blockNum));
 				for (int cutVertex : getCutVertices())
 					for (int b1 : getVertexBiCcs(cutVertex))

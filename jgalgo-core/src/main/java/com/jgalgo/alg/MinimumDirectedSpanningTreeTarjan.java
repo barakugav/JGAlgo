@@ -86,7 +86,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			/* not all vertices are reachable from the root, operate on the subgraph of these vertices */
 			IndexGraphBuilder builder = IndexGraphBuilder.directed();
 
-			builder.expectedVerticesNum(vertices.size());
+			builder.ensureVertexCapacity(vertices.size());
 			int[] vRefToOrig = vertices.toIntArray();
 			int[] vOrigToRef = new int[g.vertices().size()];
 			Arrays.fill(vOrigToRef, -1);
@@ -99,7 +99,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 				if (vertices.contains(g.edgeSource(e)) && vertices.contains(g.edgeTarget(e)))
 					subGraphEdgesNum++;
 			int[] edgeRef = new int[subGraphEdgesNum];
-			builder.expectedEdgesNum(subGraphEdgesNum);
+			builder.ensureEdgeCapacity(subGraphEdgesNum);
 			for (int m = g.edges().size(), e = 0; e < m; e++) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				if (u != v && vertices.contains(u) && vertices.contains(v))

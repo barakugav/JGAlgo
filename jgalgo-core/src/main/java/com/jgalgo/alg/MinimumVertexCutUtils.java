@@ -142,9 +142,9 @@ class MinimumVertexCutUtils {
 			IndexGraphBuilder builder = IndexGraphFactory.directed().allowParallelEdges().newBuilder();
 			builder.addVertices(range(n * 2));
 			if (g.isDirected()) {
-				builder.expectedVerticesNum(m + n);
+				builder.ensureEdgeCapacity(m + n);
 			} else {
-				builder.expectedVerticesNum(2 * m + n);
+				builder.ensureEdgeCapacity(2 * m + n);
 			}
 
 			if (WeightFunction.isCardinality(w)) {

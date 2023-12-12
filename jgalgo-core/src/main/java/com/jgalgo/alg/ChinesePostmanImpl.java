@@ -64,8 +64,8 @@ class ChinesePostmanImpl implements ChinesePostman {
 
 		/* Create a complete graph of the odd vertices, with edges weighted by the shortest paths between each pair */
 		IndexGraphBuilder oddGraph0 = IndexGraphBuilder.undirected();
-		oddGraph0.expectedVerticesNum(oddVertices.length);
-		oddGraph0.expectedEdgesNum(oddVertices.length * (oddVertices.length - 1) / 2);
+		oddGraph0.ensureVertexCapacity(oddVertices.length);
+		oddGraph0.ensureEdgeCapacity(oddVertices.length * (oddVertices.length - 1) / 2);
 		oddGraph0.addVertices(range(oddVertices.length));
 		for (int n = oddVertices.length, v = 0; v < n; v++)
 			for (int u = v + 1; u < n; u++)
@@ -83,8 +83,8 @@ class ChinesePostmanImpl implements ChinesePostman {
 
 		/* Create a graph with the original vertices and edges, and add edges resulted from the perfect matching */
 		IndexGraphBuilder b = IndexGraphBuilder.undirected();
-		b.expectedVerticesNum(g.vertices().size());
-		b.expectedEdgesNum(g.edges().size() + oddMatching.edges().size());
+		b.ensureVertexCapacity(g.vertices().size());
+		b.ensureEdgeCapacity(g.edges().size() + oddMatching.edges().size());
 		b.addVertices(g.vertices());
 		for (int m = g.edges().size(), e = 0; e < m; e++)
 			b.addEdge(g.edgeSource(e), g.edgeTarget(e));

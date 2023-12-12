@@ -149,6 +149,12 @@ public class Graphs {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
 		}
 
+		@Override
+		public void ensureVertexCapacity(int vertexCapacity) {}
+
+		@Override
+		public void ensureEdgeCapacity(int edgeCapacity) {}
+
 		@SuppressWarnings("unchecked")
 		@Override
 		public <T, WeightsT extends Weights<V, T>> WeightsT getVerticesWeights(String key) {
@@ -313,6 +319,12 @@ public class Graphs {
 		public void clearEdges() {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
 		}
+
+		@Override
+		public void ensureVertexCapacity(int vertexCapacity) {}
+
+		@Override
+		public void ensureEdgeCapacity(int edgeCapacity) {}
 
 		@SuppressWarnings("unchecked")
 		@Override
@@ -614,6 +626,16 @@ public class Graphs {
 		@Override
 		public void clearEdges() {
 			graph().clearEdges();
+		}
+
+		@Override
+		public void ensureVertexCapacity(int vertexCapacity) {
+			graph().ensureVertexCapacity(vertexCapacity);
+		}
+
+		@Override
+		public void ensureEdgeCapacity(int edgeCapacity) {
+			graph().ensureEdgeCapacity(edgeCapacity);
 		}
 
 		@Override
@@ -2235,7 +2257,7 @@ public class Graphs {
 		gb.addVertices(vertices);
 
 		if (edges != null) {
-			gb.expectedEdgesNum(edges.size());
+			gb.ensureEdgeCapacity(edges.size());
 			for (E e : edges) {
 				int eIdx = eiMap.idToIndex(e);
 				int uIdx = ig.edgeSource(eIdx), vIdx = ig.edgeTarget(eIdx);
@@ -2355,7 +2377,7 @@ public class Graphs {
 		gb.addVertices(vertices);
 
 		if (edges != null) {
-			gb.expectedEdgesNum(edges.size());
+			gb.ensureEdgeCapacity(edges.size());
 			for (int e : edges) {
 				int eIdx = eiMap.idToIndex(e);
 				int uIdx = ig.edgeSource(eIdx), vIdx = ig.edgeTarget(eIdx);
@@ -2427,7 +2449,7 @@ public class Graphs {
 		gb.addVertices(vertices);
 
 		if (edges != null) {
-			gb.expectedEdgesNum(edges.size());
+			gb.ensureEdgeCapacity(edges.size());
 			for (int e : edges)
 				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
 		} else {

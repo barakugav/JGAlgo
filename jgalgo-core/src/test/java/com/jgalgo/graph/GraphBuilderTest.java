@@ -130,8 +130,8 @@ public class GraphBuilderTest extends TestBase {
 	public void addEdge() {
 		foreachBoolConfig(directed -> {
 			GraphBuilder<Integer, Integer> b = GraphBuilder.newInstance(directed);
-			b.expectedVerticesNum(10);
-			b.expectedEdgesNum(3);
+			b.ensureVertexCapacity(10);
+			b.ensureEdgeCapacity(3);
 			range(10).forEach(b::addVertex);
 			b.addEdge(0, 1, 0);
 			b.addEdge(0, 2, 1);

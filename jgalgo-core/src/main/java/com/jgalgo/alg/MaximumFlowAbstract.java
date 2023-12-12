@@ -156,8 +156,8 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutUtils.AbstractImplST im
 			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
 
 			IndexGraphBuilder builder = IndexGraphBuilder.newInstance(gOrig.isDirected());
-			builder.expectedVerticesNum(gOrig.vertices().size() + 2);
-			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size());
+			builder.ensureVertexCapacity(gOrig.vertices().size() + 2);
+			builder.ensureEdgeCapacity(gOrig.edges().size() + sources.size() + sinks.size());
 
 			builder.addVertices(gOrig.vertices());
 			for (int m = gOrig.edges().size(), e = 0; e < m; e++)

@@ -103,6 +103,7 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 				throw new NullPointerException("Vertex must be non null");
 
 		final int verticesNumBefore = indexGraph.vertices().size();
+		ensureVertexCapacity(verticesNumBefore + vertices.size());
 		int nextIdx = verticesNumBefore;
 		V duplicateVertex = null;
 		for (V vertex : vertices) {
@@ -246,6 +247,18 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	public void clearEdges() {
 		indexGraph.clearEdges();
 		eiMap.idsClear();
+	}
+
+	@Override
+	public void ensureVertexCapacity(int vertexCapacity) {
+		indexGraph.ensureVertexCapacity(vertexCapacity);
+		viMap.ensureCapacity(vertexCapacity);
+	}
+
+	@Override
+	public void ensureEdgeCapacity(int edgeCapacity) {
+		indexGraph.ensureEdgeCapacity(edgeCapacity);
+		eiMap.ensureCapacity(edgeCapacity);
 	}
 
 	@Override

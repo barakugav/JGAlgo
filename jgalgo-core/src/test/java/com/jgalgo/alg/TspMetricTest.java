@@ -71,7 +71,7 @@ public class TspMetricTest extends TestBase {
 		gFactory.addHint(GraphFactory.Hint.DenseGraph);
 		GraphBuilder<Integer, Integer> gBuilder = gFactory.newBuilder();
 		gBuilder.addVertices(range(n));
-		gBuilder.expectedEdgesNum(n * (n - 1) / 2);
+		gBuilder.ensureEdgeCapacity(n * (n - 1) / 2);
 		for (int u = 0; u < n; u++)
 			for (int v = u + 1; v < n; v++)
 				gBuilder.addEdge(u, v, gBuilder.edges().size());

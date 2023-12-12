@@ -73,7 +73,7 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 				mVtoV[mGn++] = u;
 		IndexGraphBuilder mG0 = IndexGraphBuilder.undirected();
 		mG0.addVertices(range(mGn));
-		mG0.expectedEdgesNum(mGn * (mGn - 1) / 2);
+		mG0.ensureEdgeCapacity(mGn * (mGn - 1) / 2);
 		for (int v = 0; v < mGn; v++)
 			for (int u = v + 1; u < mGn; u++)
 				mG0.addEdge(v, u);
@@ -91,7 +91,7 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 		/* Build a graph of the union of the MST and the matching result */
 		IndexGraphBuilder g1Builder = IndexGraphBuilder.undirected();
 		g1Builder.addVertices(g.vertices());
-		g1Builder.expectedEdgesNum(mst.size() + matching.edges().size());
+		g1Builder.ensureEdgeCapacity(mst.size() + matching.edges().size());
 		int[] g1EdgeRef = new int[mst.size() + matching.edges().size()];
 		for (int e : mst) {
 			int g1Edge = g1Builder.addEdge(g.edgeSource(e), g.edgeTarget(e));

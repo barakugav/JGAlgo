@@ -60,7 +60,7 @@ class ClosuresEnumeratorSchrageBaker extends ClosuresEnumerators.AbstractImpl {
 				int selfEdges = Graphs.selfEdges(g).size();
 				if (selfEdges > 0) {
 					IndexGraphBuilder g0 = IndexGraphBuilder.directed();
-					g0.expectedEdgesNum(g.edges().size() - selfEdges);
+					g0.ensureEdgeCapacity(g.edges().size() - selfEdges);
 					g0.addVertices(g.vertices());
 					for (int m = g.edges().size(), e = 0; e < m; e++)
 						if (g.edgeSource(e) != g.edgeTarget(e))

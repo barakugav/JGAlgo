@@ -81,7 +81,7 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 		Res mstRes = computeMST(g, w, numberOfRounds);
 
 		IndexGraphBuilder contractedGBuilder = IndexGraphBuilder.undirected();
-		contractedGBuilder.expectedVerticesNum(mstRes.treeNum);
+		contractedGBuilder.ensureVertexCapacity(mstRes.treeNum);
 		for (int v = 0; v < mstRes.treeNum; v++) {
 			int vBuilder = contractedGBuilder.addVertex();
 			assert v == vBuilder;

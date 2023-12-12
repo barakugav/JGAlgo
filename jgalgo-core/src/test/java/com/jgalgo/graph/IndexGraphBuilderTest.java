@@ -270,9 +270,9 @@ public class IndexGraphBuilderTest extends TestBase {
 		foreachBoolConfig(directed -> {
 			IndexGraph g = createGraph(directed);
 			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
-			b.expectedVerticesNum(g.vertices().size());
+			b.ensureVertexCapacity(g.vertices().size());
 			b.addVertices(g.vertices());
-			b.expectedEdgesNum(g.edges().size());
+			b.ensureEdgeCapacity(g.edges().size());
 			for (int m = g.edges().size(), e = 0; e < m; e++)
 				b.addEdge(g.edgeSource(e), g.edgeTarget(e));
 
@@ -492,10 +492,10 @@ public class IndexGraphBuilderTest extends TestBase {
 			IndexGraph g = createGraph(directed);
 			IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
 			IndexGraphBuilder b = factory.allowSelfEdges().allowParallelEdges().newBuilder();
-			b.expectedVerticesNum(g.vertices().size());
-			b.expectedVerticesNum(g.vertices().size());
-			b.expectedEdgesNum(g.edges().size());
-			b.expectedEdgesNum(g.edges().size());
+			b.ensureVertexCapacity(g.vertices().size());
+			b.ensureVertexCapacity(g.vertices().size());
+			b.ensureEdgeCapacity(g.edges().size());
+			b.ensureEdgeCapacity(g.edges().size());
 			b.addVertices(g.vertices());
 			for (int m = g.edges().size(), e = 0; e < m; e++)
 				b.addEdge(g.edgeSource(e), g.edgeTarget(e));

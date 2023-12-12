@@ -359,8 +359,8 @@ class MinimumCostFlows {
 			final boolean integerCost = WeightFunction.isInteger(costOrig);
 
 			IndexGraphBuilder builder = IndexGraphBuilder.directed();
-			builder.expectedVerticesNum(gOrig.vertices().size() + 2);
-			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size());
+			builder.ensureVertexCapacity(gOrig.vertices().size() + 2);
+			builder.ensureEdgeCapacity(gOrig.edges().size() + sources.size() + sinks.size());
 
 			/* Add all original vertices and edges */
 			builder.addVertices(gOrig.vertices());
@@ -469,8 +469,8 @@ class MinimumCostFlows {
 			IWeightFunction supply = computeSupply(gOrig, capacityOrig, lowerBound, null);
 
 			IndexGraphBuilder builder = IndexGraphBuilder.directed();
-			builder.expectedVerticesNum(gOrig.vertices().size() + 2);
-			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size() + gOrig.vertices().size());
+			builder.ensureVertexCapacity(gOrig.vertices().size() + 2);
+			builder.ensureEdgeCapacity(gOrig.edges().size() + sources.size() + sinks.size() + gOrig.vertices().size());
 
 			/* Add all original vertices and edges */
 			builder.addVertices(gOrig.vertices());
@@ -641,8 +641,8 @@ class MinimumCostFlows {
 			 */
 
 			IndexGraphBuilder builder = IndexGraphBuilder.directed();
-			builder.expectedVerticesNum(gOrig.vertices().size() + 2);
-			builder.expectedEdgesNum(gOrig.edges().size() + gOrig.vertices().size());
+			builder.ensureVertexCapacity(gOrig.vertices().size() + 2);
+			builder.ensureEdgeCapacity(gOrig.edges().size() + gOrig.vertices().size());
 
 			/* Add all original vertices and edges */
 			builder.addVertices(gOrig.vertices());
@@ -758,8 +758,8 @@ class MinimumCostFlows {
 			final boolean integerCost = WeightFunction.isInteger(costOrig);
 
 			IndexGraphBuilder builder = IndexGraphBuilder.directed();
-			builder.expectedVerticesNum(gOrig.vertices().size() + 2);
-			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size() + 2);
+			builder.ensureVertexCapacity(gOrig.vertices().size() + 2);
+			builder.ensureEdgeCapacity(gOrig.edges().size() + sources.size() + sinks.size() + 2);
 
 			builder.addVertices(gOrig.vertices());
 			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
