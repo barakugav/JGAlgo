@@ -16,7 +16,6 @@
 package com.jgalgo.graph;
 
 import static com.jgalgo.internal.util.Range.range;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -27,20 +26,15 @@ import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.JGAlgoConfigImpl;
-import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 
 	final IndexGraph indexGraph;
-	final IdIdxMapImpl viMap;
-	final IdIdxMapImpl eiMap;
+	final IndexIntIdMapImpl viMap;
+	final IndexIntIdMapImpl eiMap;
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> verticesWeights = new IdentityHashMap<>();
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> edgesWeights = new IdentityHashMap<>();
 	private final ToIntFunction<IntSet> vIdStrategy = IdStrategy.get();
@@ -102,19 +96,23 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	}
 
 	IntGraphImpl(IndexGraph g, int expectedVerticesNum, int expectedEdgesNum) {
-		assert g.vertices().isEmpty();
-		assert g.edges().isEmpty();
-
 		indexGraph = g;
-		viMap = IdIdxMapImpl.newInstance(indexGraph, expectedVerticesNum, false);
-		eiMap = IdIdxMapImpl.newInstance(indexGraph, expectedEdgesNum, true);
+		viMap = IndexIntIdMapImpl.newEmpty(indexGraph.vertices(), false, expectedVerticesNum);
+		eiMap = IndexIntIdMapImpl.newEmpty(indexGraph.edges(), true, expectedEdgesNum);
+		viMap.initListeners(indexGraph);
+		eiMap.initListeners(indexGraph);
 	}
 
 	IntGraphImpl(IndexGraph indexGraph, IndexIdMap<Integer> viMap, IndexIdMap<Integer> eiMap,
 			IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
-		this.indexGraph = Objects.requireNonNull(indexGraph);
-		this.viMap = IdIdxMapImpl.reindexedCopyOf(viMap, vReIndexing, this.indexGraph, false);
-		this.eiMap = IdIdxMapImpl.reindexedCopyOf(eiMap, eReIndexing, this.indexGraph, true);
+		this.indexGraph = indexGraph;
+		boolean immutable = this.indexGraph instanceof ImmutableGraph;
+		this.viMap = IndexIntIdMapImpl.newCopyOf(viMap, vReIndexing, this.indexGraph.vertices(), false, immutable);
+		this.eiMap = IndexIntIdMapImpl.newCopyOf(eiMap, eReIndexing, this.indexGraph.edges(), true, immutable);
+		if (!immutable) {
+			this.viMap.initListeners(this.indexGraph);
+			this.eiMap.initListeners(this.indexGraph);
+		}
 	}
 
 	/* copy constructor */
@@ -252,11 +250,11 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 		if (edge < 0)
 			throw new IllegalArgumentException("Edge must be non negative");
 
+		int uIdx = viMap.idToIndex(source);
+		int vIdx = viMap.idToIndex(target);
 		int eIdx = indexGraph.edges().size();
 		eiMap.addId(edge, eIdx);
 
-		int uIdx = viMap.idToIndex(source);
-		int vIdx = viMap.idToIndex(target);
 		try {
 			int eIdx2 = indexGraph.addEdge(uIdx, vIdx);
 			assert eIdx == eIdx2;
@@ -484,259 +482,6 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	@Override
 	public boolean isAllowParallelEdges() {
 		return indexGraph.isAllowParallelEdges();
-	}
-
-	private static class IdIdxMapImpl implements IndexIntIdMap {
-
-		private final IntSet indicesSet;
-		private final IntSet idsSet = new IdSet();
-		private final Int2IntOpenHashMap idToIndex;
-		private int[] indexToId;
-		private final boolean isEdges;
-		private final boolean immutable;
-
-		IdIdxMapImpl(IndexGraph g, int expectedSize, boolean isEdges) {
-			this.indicesSet = isEdges ? g.edges() : g.vertices();
-			idToIndex = new Int2IntOpenHashMap(expectedSize);
-			idToIndex.defaultReturnValue(-1);
-			indexToId = expectedSize == 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[expectedSize];
-			this.isEdges = isEdges;
-			immutable = false;
-			initListeners(g);
-		}
-
-		IdIdxMapImpl(IndexIdMap<Integer> orig, IndexGraphBuilder.ReIndexingMap reIndexing, IndexGraph g,
-				boolean isEdges) {
-			this.indicesSet = isEdges ? g.edges() : g.vertices();
-			int elementsSize = indicesSet.size();
-			if (orig instanceof IdIdxMapImpl && reIndexing == null) {
-				IdIdxMapImpl orig0 = (IdIdxMapImpl) orig;
-				idToIndex = new Int2IntOpenHashMap(orig0.idToIndex);
-				idToIndex.defaultReturnValue(-1);
-				indexToId = Arrays.copyOf(orig0.indexToId, elementsSize);
-
-			} else {
-				idToIndex = new Int2IntOpenHashMap(elementsSize);
-				idToIndex.defaultReturnValue(-1);
-				if (indicesSet.isEmpty()) {
-					indexToId = IntArrays.DEFAULT_EMPTY_ARRAY;
-				} else {
-					indexToId = new int[elementsSize];
-					if (reIndexing == null) {
-						for (int idx = 0; idx < elementsSize; idx++) {
-							int id = orig.indexToId(idx).intValue();
-							if (id < 0)
-								throw new IllegalArgumentException("negative id: " + id);
-							indexToId[idx] = id;
-
-							int oldIdx = idToIndex.put(id, idx);
-							if (oldIdx != -1)
-								throw new IllegalArgumentException("duplicate id: " + id);
-						}
-
-					} else {
-						for (int idx = 0; idx < elementsSize; idx++) {
-							int id = orig.indexToId(reIndexing.reIndexedToOrig(idx)).intValue();
-							if (id < 0)
-								throw new IllegalArgumentException("negative id: " + id);
-							indexToId[idx] = id;
-
-							int oldIdx = idToIndex.put(id, idx);
-							if (oldIdx != -1)
-								throw new IllegalArgumentException("duplicate id: " + id);
-						}
-					}
-				}
-			}
-			this.isEdges = isEdges;
-			immutable = g instanceof ImmutableGraph;
-			initListeners(g);
-		}
-
-		static IdIdxMapImpl newInstance(IndexGraph g, int expectedSize, boolean isEdges) {
-			return new IdIdxMapImpl(g, expectedSize, isEdges);
-		}
-
-		static IdIdxMapImpl reindexedCopyOf(IndexIdMap<Integer> orig, IndexGraphBuilder.ReIndexingMap reIndexing,
-				IndexGraph g, boolean isEdges) {
-			return new IdIdxMapImpl(orig, reIndexing, g, isEdges);
-		}
-
-		void addId(int id, int idx) {
-			boolean added = addIdIfNotDuplicate(id, idx);
-			if (!added) {
-				if (isEdges) {
-					throw new IllegalArgumentException("Graph already contain such an edge: " + id);
-				} else {
-					throw new IllegalArgumentException("Graph already contain such a vertex: " + id);
-				}
-			}
-		}
-
-		boolean addIdIfNotDuplicate(int id, int idx) {
-			assert id >= 0;
-			assert idx == idToIndex.size();
-			int oldIdx = idToIndex.putIfAbsent(id, idx);
-			if (oldIdx != -1)
-				return false;
-
-			if (idx == indexToId.length)
-				indexToId = Arrays.copyOf(indexToId, Math.max(2, 2 * indexToId.length));
-			indexToId[idx] = id;
-			return true;
-		}
-
-		void rollBackRemove(int index) {
-			assert index == idToIndex.size() - 1;
-			removeLast(index);
-		}
-
-		private void swapAndRemove(int removedIdx, int swappedIdx) {
-			int id1 = indexToId[removedIdx];
-			int id2 = indexToId[swappedIdx];
-			indexToId[removedIdx] = id2;
-			// indexToId[swappedIdx] = -1;
-			int oldIdx1 = idToIndex.remove(id1);
-			int oldIdx2 = idToIndex.put(id2, removedIdx);
-			assert removedIdx == oldIdx1;
-			assert swappedIdx == oldIdx2;
-		}
-
-		private void removeLast(int removedIdx) {
-			int id = indexToId[removedIdx];
-			// indexToId[removedIdx] = -1;
-			idToIndex.remove(id);
-		}
-
-		private void initListeners(IndexGraph g) {
-			IndexRemoveListener listener = new IndexRemoveListener() {
-
-				@Override
-				public void swapAndRemove(int removedIdx, int swappedIdx) {
-					IdIdxMapImpl.this.swapAndRemove(removedIdx, swappedIdx);
-				}
-
-				@Override
-				public void removeLast(int removedIdx) {
-					IdIdxMapImpl.this.removeLast(removedIdx);
-				}
-			};
-			if (isEdges) {
-				g.addEdgeRemoveListener(listener);
-			} else {
-				g.addVertexRemoveListener(listener);
-			}
-		}
-
-		void idsClear() {
-			// Arrays.fill(indexToId, 0, idToIndex.size(), -1);
-			idToIndex.clear();
-		}
-
-		@Override
-		public int indexToIdInt(int index) {
-			Assertions.Graphs.checkId(index, indicesSet.size(), isEdges);
-			return indexToId[index];
-		}
-
-		@Override
-		public int indexToIdIfExistInt(int index) {
-			if (!(0 <= index && index < indicesSet.size()))
-				return -1;
-			return indexToId[index];
-		}
-
-		@Override
-		public int idToIndex(int id) {
-			int idx = idToIndex.get(id);
-			if (idx < 0) {
-				if (isEdges) {
-					throw NoSuchEdgeException.ofEdge(id);
-				} else {
-					throw NoSuchVertexException.ofVertex(id);
-				}
-			}
-			return idx;
-		}
-
-		@Override
-		public int idToIndexIfExist(int id) {
-			return idToIndex.get(id);
-		}
-
-		void renameId(int oldId, int newId) {
-			if (immutable) {
-				if (isEdges) {
-					throw new UnsupportedOperationException("graph is immutable, cannot rename vertices");
-				} else {
-					throw new UnsupportedOperationException("graph is immutable, cannot rename edges");
-				}
-			}
-			int idx = idToIndex.remove(oldId);
-			if (idx < 0) {
-				if (isEdges) {
-					throw NoSuchEdgeException.ofEdge(oldId);
-				} else {
-					throw NoSuchVertexException.ofVertex(oldId);
-				}
-			}
-			int oldIdx = idToIndex.putIfAbsent(newId, idx);
-			if (oldIdx != -1) {
-				idToIndex.put(oldId, idx); /* roll back */
-				if (isEdges) {
-					throw new IllegalArgumentException("Graph already contain such an edge: " + newId);
-				} else {
-					throw new IllegalArgumentException("Graph already contain such a vertex: " + newId);
-				}
-			}
-			indexToId[idx] = newId;
-		}
-
-		IntSet idSet() {
-			return idsSet;
-		}
-
-		private class IdSet extends AbstractIntSet {
-
-			@Override
-			public int size() {
-				return indicesSet.size();
-			}
-
-			@Override
-			public boolean contains(int key) {
-				return idToIndex.containsKey(key);
-			}
-
-			@Override
-			public boolean containsAll(IntCollection c) {
-				return idToIndex.keySet().containsAll(c);
-			}
-
-			@Override
-			public boolean containsAll(Collection<?> c) {
-				return idToIndex.keySet().containsAll(c);
-			}
-
-			@Override
-			public IntIterator iterator() {
-				return IntIterators.wrap(indexToId, 0, indicesSet.size());
-			}
-
-			@Override
-			public int[] toIntArray() {
-				return Arrays.copyOf(indexToId, indicesSet.size());
-			}
-
-			@Override
-			public int[] toArray(int[] a) {
-				int size = indicesSet.size();
-				if (a.length < size)
-					a = java.util.Arrays.copyOf(a, size);
-				System.arraycopy(indexToId, 0, a, 0, size);
-				return a;
-			}
-		}
 	}
 
 	static class Factory implements IntGraphFactory {

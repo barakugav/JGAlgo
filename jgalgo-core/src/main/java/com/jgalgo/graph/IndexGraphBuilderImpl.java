@@ -26,7 +26,6 @@ import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.ints.IntSets;
 
 class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
@@ -105,7 +104,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	public IntSet edges() {
 		if (edgesSetView == null) {
 			if (m == 0)
-				return IntSets.emptySet();
+				return edges;
 			if (userProvideEdgesIds) {
 				edgesSetView = new EdgesSetProvidedIdx();
 			} else {

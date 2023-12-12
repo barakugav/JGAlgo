@@ -86,7 +86,6 @@ public class IndexGraphBuilderTest extends TestBase {
 		});
 	}
 
-	@SuppressWarnings("boxing")
 	@Test
 	static void addVertices() {
 		final Random rand = new Random(0x7b329816727ad7e8L);

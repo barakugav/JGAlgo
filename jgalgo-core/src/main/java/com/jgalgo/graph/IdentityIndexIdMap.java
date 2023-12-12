@@ -20,6 +20,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 class IdentityIndexIdMap implements IndexIntIdMap {
 
+	/*
+	 * TODO: instead of using this class, we can use an empty IndexIntIdMapImpl by modifying it to check if it is an
+	 * identify map in case id/index is not in range (all ids/indices will be out of range in an empty map). By doing
+	 * so, the number of implementations of IndexIntIdMap will be 1 and number of implementations of IndexIdMap will be
+	 * 2. There is a 'cliff' of performance for more than two implementations for an interface in most JVMs. Consider
+	 * this for performance.
+	 */
+
 	private final IntSet elementsSet;
 	private final boolean isEdges;
 

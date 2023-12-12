@@ -21,99 +21,55 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
-import it.unimi.dsi.fastutil.ints.Int2IntMap;
-import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.ints.IntSets;
 
 class IntGraphBuilderImpl implements IntGraphBuilder {
 
 	final IndexGraphBuilder ibuilder;
-	private final Int2IntOpenHashMap vIdToIndex;
-	private final IntArrayList vIndexToId;
-	private final IntSet vertices;
-	private final Int2IntOpenHashMap eIdToIndex;
-	private final IntArrayList eIndexToId;
-	private final IntSet edges;
 	private boolean userProvideVerticesIds;
 	private boolean userProvideEdgesIds;
-	final IndexIdMapImpl viMap;
-	final IndexIdMapImpl eiMap;
+	final IndexIntIdMapImpl viMap;
+	final IndexIntIdMapImpl eiMap;
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> verticesWeights = new IdentityHashMap<>();
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> edgesWeights = new IdentityHashMap<>();
 
 	IntGraphBuilderImpl(IndexGraphBuilder ibuilder) {
-		assert ibuilder.vertices().isEmpty();
-		assert ibuilder.edges().isEmpty();
 		this.ibuilder = ibuilder;
-		vIdToIndex = new Int2IntOpenHashMap();
-		vIdToIndex.defaultReturnValue(-1);
-		vIndexToId = new IntArrayList();
-		vertices = IntSets.unmodifiable(vIdToIndex.keySet());
-		eIdToIndex = new Int2IntOpenHashMap();
-		eIdToIndex.defaultReturnValue(-1);
-		eIndexToId = new IntArrayList();
-		edges = IntSets.unmodifiable(eIdToIndex.keySet());
-		viMap = new IndexIdMapImpl(vIdToIndex, vIndexToId, false);
-		eiMap = new IndexIdMapImpl(eIdToIndex, eIndexToId, true);
+		viMap = IndexIntIdMapImpl.newEmpty(ibuilder.vertices(), false, 0);
+		eiMap = IndexIntIdMapImpl.newEmpty(ibuilder.edges(), true, 0);
 	}
 
 	IntGraphBuilderImpl(IntGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		final int n = g.vertices().size();
-		final int m = g.edges().size();
 		this.ibuilder = IndexGraphBuilder.fromGraph(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
-		vIdToIndex = new Int2IntOpenHashMap(n);
-		vIdToIndex.defaultReturnValue(-1);
-		vIndexToId = new IntArrayList(n);
-		vertices = IntSets.unmodifiable(vIdToIndex.keySet());
-		eIdToIndex = new Int2IntOpenHashMap(m);
-		eIdToIndex.defaultReturnValue(-1);
-		eIndexToId = new IntArrayList(m);
-		edges = IntSets.unmodifiable(eIdToIndex.keySet());
-		viMap = new IndexIdMapImpl(vIdToIndex, vIndexToId, false);
-		eiMap = new IndexIdMapImpl(eIdToIndex, eIndexToId, true);
-
-		IndexIntIdMap gViMap = g.indexGraphVerticesMap();
-		IndexIntIdMap gEiMap = g.indexGraphEdgesMap();
-		for (int vIdx = 0; vIdx < n; vIdx++) {
-			int v = gViMap.indexToIdInt(vIdx);
-			vIndexToId.add(v);
-			vIdToIndex.put(v, vIdx);
-		}
-		for (int eIdx = 0; eIdx < m; eIdx++) {
-			int e = gEiMap.indexToIdInt(eIdx);
-			eIndexToId.add(e);
-			eIdToIndex.put(e, eIdx);
-		}
+		viMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), null, ibuilder.vertices(), false, false);
+		eiMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), null, ibuilder.edges(), true, false);
 	}
 
 	@Override
 	public IntSet vertices() {
-		return vertices;
+		return viMap.idSet();
 	}
 
 	@Override
 	public IntSet edges() {
-		return edges;
+		return eiMap.idSet();
 	}
 
 	private boolean canAddVertexWithoutId() {
-		return vIdToIndex.isEmpty() || !userProvideVerticesIds;
+		return vertices().isEmpty() || !userProvideVerticesIds;
 	}
 
 	private boolean canAddVertexWithId() {
-		return vIdToIndex.isEmpty() || userProvideVerticesIds;
+		return vertices().isEmpty() || userProvideVerticesIds;
 	}
 
 	private boolean canAddEdgeWithoutId() {
-		return eIdToIndex.isEmpty() || !userProvideEdgesIds;
+		return edges().isEmpty() || !userProvideEdgesIds;
 	}
 
 	private boolean canAddEdgeWithId() {
-		return eIdToIndex.isEmpty() || userProvideEdgesIds;
+		return edges().isEmpty() || userProvideEdgesIds;
 	}
 
 	@Override
@@ -123,10 +79,7 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 					+ "if IDs are provided for some of the vertices, they must be provided for all");
 		int vIndex = ibuilder.addVertex();
 		int vId = vIndex + 1; // +1 because we want to avoid 0 in fastutil open hash maps
-		assert vIndex == vIndexToId.size();
-		vIndexToId.add(vId);
-		int oldVal = vIdToIndex.put(vId, vIndex);
-		assert oldVal == -1;
+		viMap.addId(vId, vIndex);
 		return vId;
 	}
 
@@ -138,15 +91,10 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		if (vertex < 0)
 			throw new IllegalArgumentException("Vertex must be non negative");
 
-		int vIndex = ibuilder.vertices().size();
-		int oldVal = vIdToIndex.putIfAbsent(vertex, vIndex);
-		if (oldVal != -1)
-			throw new IllegalArgumentException("duplicate vertex: " + vertex);
-
-		int vIndex2 = ibuilder.addVertex();
-		assert vIndex == vIndex2;
-		assert vIndex == vIndexToId.size();
-		vIndexToId.add(vertex);
+		int vIdx = ibuilder.vertices().size();
+		viMap.addId(vertex, vIdx);
+		int vIdx2 = ibuilder.addVertex();
+		assert vIdx == vIdx2;
 
 		userProvideVerticesIds = true;
 	}
@@ -170,20 +118,16 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		int nextIdx = verticesNumBefore;
 		int duplicateVertex = -1;
 		for (int vertex : vertices) {
-			int oldVal = vIdToIndex.putIfAbsent(vertex, nextIdx);
-			if (oldVal != -1) {
+			boolean added = viMap.addIdIfNotDuplicate(vertex, nextIdx);
+			if (!added) {
 				duplicateVertex = vertex;
 				break;
 			}
-			vIndexToId.add(vertex);
 			nextIdx++;
 		}
 		if (duplicateVertex >= 0) {
-			for (; nextIdx-- > verticesNumBefore;) {
-				int idx = vIdToIndex.remove(vIndexToId.getInt(nextIdx));
-				assert idx == nextIdx;
-			}
-			vIndexToId.size(verticesNumBefore);
+			for (; nextIdx-- > verticesNumBefore;)
+				viMap.rollBackRemove(nextIdx);
 			throw new IllegalArgumentException("Duplicate vertex: " + duplicateVertex);
 		}
 		ibuilder.addVertices(range(verticesNumBefore, nextIdx));
@@ -197,20 +141,12 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 			throw new IllegalArgumentException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
 					+ "if IDs are provided for some of the edges, they must be provided for all");
 
-		int sourceIdx = vIdToIndex.get(source);
-		int targetIdx = vIdToIndex.get(target);
-		if (targetIdx == -1)
-			throw NoSuchVertexException.ofVertex(target);
-		if (sourceIdx == -1)
-			throw NoSuchVertexException.ofVertex(source);
-
-		int eIndex = ibuilder.addEdge(sourceIdx, targetIdx);
-		int eId = eIndex + 1; // avoid null key in open hash maps
-		assert eIndex == eIndexToId.size();
-		eIndexToId.add(eId);
-		int oldVal = eIdToIndex.put(eId, eIndex);
-		assert oldVal == eIdToIndex.defaultReturnValue();
-		return eId;
+		int uIdx = viMap.idToIndex(source);
+		int vIdx = viMap.idToIndex(target);
+		int eIdx = ibuilder.addEdge(uIdx, vIdx);
+		int id = eIdx + 1; // avoid null key in open hash maps
+		eiMap.addId(id, eIdx);
+		return id;
 	}
 
 	@Override
@@ -221,22 +157,12 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		if (edge < 0)
 			throw new IllegalArgumentException("Edge must be non negative");
 
-		int sourceIdx = vIdToIndex.get(source);
-		int targetIdx = vIdToIndex.get(target);
-		if (targetIdx == -1)
-			throw NoSuchVertexException.ofVertex(target);
-		if (sourceIdx == -1)
-			throw NoSuchVertexException.ofVertex(source);
-
-		int eIndex = ibuilder.edges().size();
-		int oldVal = eIdToIndex.putIfAbsent(edge, eIndex);
-		if (oldVal != eIdToIndex.defaultReturnValue())
-			throw new IllegalArgumentException("duplicate edge: " + edge);
-
-		int eIndex2 = ibuilder.addEdge(sourceIdx, targetIdx);
-		assert eIndex == eIndex2;
-		assert eIndex == eIndexToId.size();
-		eIndexToId.add(edge);
+		int uIdx = viMap.idToIndex(source);
+		int vIdx = viMap.idToIndex(target);
+		int eIdx = ibuilder.edges().size();
+		eiMap.addId(edge, eIdx);
+		int eIdx2 = ibuilder.addEdge(uIdx, vIdx);
+		assert eIdx == eIdx2;
 
 		userProvideEdgesIds = true;
 	}
@@ -244,15 +170,13 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	@Override
 	public void expectedVerticesNum(int verticesNum) {
 		ibuilder.expectedVerticesNum(verticesNum);
-		vIdToIndex.ensureCapacity(verticesNum);
-		vIndexToId.ensureCapacity(verticesNum);
+		viMap.ensureCapacity(verticesNum);
 	}
 
 	@Override
 	public void expectedEdgesNum(int edgesNum) {
 		ibuilder.expectedEdgesNum(edgesNum);
-		eIdToIndex.ensureCapacity(edgesNum);
-		eIndexToId.ensureCapacity(edgesNum);
+		eiMap.ensureCapacity(edgesNum);
 	}
 
 	@Override
@@ -302,10 +226,8 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	@Override
 	public void clear() {
 		ibuilder.clear();
-		vIdToIndex.clear();
-		vIndexToId.clear();
-		eIdToIndex.clear();
-		eIndexToId.clear();
+		viMap.idsClear();
+		eiMap.idsClear();
 		verticesWeights.clear();
 		edgesWeights.clear();
 		userProvideVerticesIds = false;
@@ -315,58 +237,6 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	@Override
 	public boolean isDirected() {
 		return ibuilder.isDirected();
-	}
-
-	private static class IndexIdMapImpl implements IndexIntIdMap {
-
-		// TODO: remove this implementation, use GraphImpl.IndexIdMapImpl instead
-
-		private final Int2IntMap idToIndex;
-		private final IntList indexToId;
-		private final boolean isEdges;
-
-		IndexIdMapImpl(Int2IntMap idToIndex, IntList indexToId, boolean isEdges) {
-			this.idToIndex = idToIndex;
-			this.indexToId = indexToId;
-			this.isEdges = isEdges;
-		}
-
-		@Override
-		public int indexToIdInt(int index) {
-			if (!(0 <= index && index < indexToId.size())) {
-				if (isEdges) {
-					throw NoSuchEdgeException.ofIndex(index);
-				} else {
-					throw NoSuchVertexException.ofIndex(index);
-				}
-			}
-			return indexToId.getInt(index);
-		}
-
-		@Override
-		public int indexToIdIfExistInt(int index) {
-			if (!(0 <= index && index < indexToId.size()))
-				return -1;
-			return indexToId.getInt(index);
-		}
-
-		@Override
-		public int idToIndex(int id) {
-			int idx = idToIndex.get(id);
-			if (idx < 0) {
-				if (isEdges) {
-					throw NoSuchEdgeException.ofEdge(id);
-				} else {
-					throw NoSuchVertexException.ofVertex(id);
-				}
-			}
-			return idx;
-		}
-
-		@Override
-		public int idToIndexIfExist(int id) {
-			return idToIndex.get(id);
-		}
 	}
 
 	@Override
