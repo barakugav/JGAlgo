@@ -172,6 +172,21 @@ public class GraphImplTest extends TestBase {
 	}
 
 	@Test
+	public void renameVertexSameId() {
+		Graph<String, String> g = Graph.newDirected();
+		g.addVertex("A");
+		g.addVertex("B");
+		g.addEdge("A", "B", "AB");
+		g.renameVertex("A", "A");
+
+		Graph<String, String> expected = Graph.newDirected();
+		expected.addVertex("A");
+		expected.addVertex("B");
+		expected.addEdge("A", "B", "AB");
+		assertEquals(expected, g);
+	}
+
+	@Test
 	public void renameVertexDuplication() {
 		Graph<String, String> g = Graph.newDirected();
 		g.addVertex("A");
@@ -210,6 +225,21 @@ public class GraphImplTest extends TestBase {
 		expected.addVertex("A");
 		expected.addVertex("B");
 		expected.addEdge("A", "B", "CCCCCCCC");
+		assertEquals(expected, g);
+	}
+
+	@Test
+	public void renameEdgeSameId() {
+		Graph<String, String> g = Graph.newDirected();
+		g.addVertex("A");
+		g.addVertex("B");
+		g.addEdge("A", "B", "AB");
+		g.renameEdge("AB", "AB");
+
+		Graph<String, String> expected = Graph.newDirected();
+		expected.addVertex("A");
+		expected.addVertex("B");
+		expected.addEdge("A", "B", "AB");
 		assertEquals(expected, g);
 	}
 

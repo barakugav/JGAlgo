@@ -185,6 +185,21 @@ public class IntGraphImplTest extends TestBase {
 	}
 
 	@Test
+	public void renameVertexSameId() {
+		IntGraph g = IntGraph.newDirected();
+		g.addVertex(7);
+		g.addVertex(8);
+		g.addEdge(7, 8, 3);
+		g.renameVertex(7, 7);
+
+		IntGraph expected = IntGraph.newDirected();
+		expected.addVertex(7);
+		expected.addVertex(8);
+		expected.addEdge(7, 8, 3);
+		assertEquals(expected, g);
+	}
+
+	@Test
 	public void renameVertexDuplication() {
 		IntGraph g = IntGraph.newDirected();
 		g.addVertex(7);
@@ -223,6 +238,21 @@ public class IntGraphImplTest extends TestBase {
 		expected.addVertex(7);
 		expected.addVertex(8);
 		expected.addEdge(7, 8, 10);
+		assertEquals(expected, g);
+	}
+
+	@Test
+	public void renameEdgeSameId() {
+		IntGraph g = IntGraph.newDirected();
+		g.addVertex(7);
+		g.addVertex(8);
+		g.addEdge(7, 8, 3);
+		g.renameEdge(3, 3);
+
+		IntGraph expected = IntGraph.newDirected();
+		expected.addVertex(7);
+		expected.addVertex(8);
+		expected.addEdge(7, 8, 3);
 		assertEquals(expected, g);
 	}
 
