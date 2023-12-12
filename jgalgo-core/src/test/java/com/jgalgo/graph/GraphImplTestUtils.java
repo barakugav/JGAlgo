@@ -518,7 +518,7 @@ class GraphImplTestUtils extends TestUtils {
 		assertEquals(target, g.edgeEndpoint(e, source));
 	}
 
-	@SuppressWarnings( "deprecation" )
+	@SuppressWarnings("deprecation")
 	static void edgesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		foreachBoolConfig((directed, index) -> {
 			final int n = 30;
@@ -1858,6 +1858,10 @@ class GraphImplTestUtils extends TestUtils {
 
 				Integer newSource0 = newSource, newTarget0 = newTarget;
 				assertThrows(IllegalArgumentException.class, () -> g1.moveEdge(e, newSource0, newTarget0));
+			}
+			if (!parallelEdges) {
+				Integer e = Graphs.randEdge(g1, rand);
+				g1.moveEdge(e, g1.edgeSource(e), g1.edgeTarget(e));
 			}
 		});
 	}
