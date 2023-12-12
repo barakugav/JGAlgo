@@ -409,16 +409,15 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L409">				final int blockNum = getNumberOfBiCcs();</span>
 <span class="fc" id="L410">				IntGraphBuilder g = IntGraphBuilder.undirected();</span>
 <span class="fc" id="L411">				g.expectedVerticesNum(blockNum);</span>
-<span class="fc bfc" id="L412" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++)</span>
-<span class="fc" id="L413">					g.addVertex(b);</span>
-<span class="fc bfc" id="L414" title="All 2 branches covered.">				for (int cutVertex : getCutVertices())</span>
-<span class="fc bfc" id="L415" title="All 2 branches covered.">					for (int b1 : getVertexBiCcs(cutVertex))</span>
-<span class="fc bfc" id="L416" title="All 2 branches covered.">						for (int b2 : getVertexBiCcs(cutVertex))</span>
-<span class="fc bfc" id="L417" title="All 2 branches covered.">							if (b1 != b2)</span>
-<span class="fc" id="L418">								g.addEdge(b1, b2);</span>
-<span class="fc" id="L419">				blockGraph = g.build();</span>
+<span class="fc" id="L412">				g.addVertices(range(blockNum));</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">				for (int cutVertex : getCutVertices())</span>
+<span class="fc bfc" id="L414" title="All 2 branches covered.">					for (int b1 : getVertexBiCcs(cutVertex))</span>
+<span class="fc bfc" id="L415" title="All 2 branches covered.">						for (int b2 : getVertexBiCcs(cutVertex))</span>
+<span class="fc bfc" id="L416" title="All 2 branches covered.">							if (b1 != b2)</span>
+<span class="fc" id="L417">								g.addEdge(b1, b2);</span>
+<span class="fc" id="L418">				blockGraph = g.build();</span>
 			}
-<span class="fc" id="L421">			return blockGraph;</span>
+<span class="fc" id="L420">			return blockGraph;</span>
 		}
 
 	}

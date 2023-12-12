@@ -119,9 +119,9 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
 <span class="pc bnc" id="L120" title="All 4 branches missed.">		assert edgesOutNum[removedIdx] == 0 &amp;&amp; edgesInNum[removedIdx] == 0;</span>
 
-<span class="fc bfc" id="L122" title="All 2 branches covered.">		for (int p = edgesOutHead[swappedIdx]; p != -1; p = edgeNextOut[p])</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		for (int p = edgesOutHead[swappedIdx]; p &gt;= 0; p = edgeNextOut[p])</span>
 <span class="fc" id="L123">			replaceEdgeSource(p, removedIdx);</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">		for (int p = edgesInHead[swappedIdx]; p != -1; p = edgeNextIn[p])</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">		for (int p = edgesInHead[swappedIdx]; p &gt;= 0; p = edgeNextIn[p])</span>
 <span class="fc" id="L125">			replaceEdgeTarget(p, removedIdx);</span>
 
 <span class="fc" id="L127">		swapAndClear(edgesOutHead, removedIdx, swappedIdx, -1);</span>
@@ -154,14 +154,14 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	private void addEdgeToLists(int e) {
 <span class="fc" id="L155">		int u = source(e), v = target(e), next;</span>
 
-<span class="fc bfc" id="L157" title="All 2 branches covered.">		if ((next = edgesOutHead[u]) != -1) {</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">		if ((next = edgesOutHead[u]) &gt;= 0) {</span>
 <span class="fc" id="L158">			edgePrevOut[next] = e;</span>
 <span class="fc" id="L159">			edgeNextOut[e] = next;</span>
 		}
 <span class="fc" id="L161">		edgesOutHead[u] = e;</span>
 <span class="fc" id="L162">		edgesOutNum[u]++;</span>
 
-<span class="fc bfc" id="L164" title="All 2 branches covered.">		if ((next = edgesInHead[v]) != -1) {</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">		if ((next = edgesInHead[v]) &gt;= 0) {</span>
 <span class="fc" id="L165">			edgePrevIn[next] = e;</span>
 <span class="fc" id="L166">			edgeNextIn[e] = next;</span>
 		}
@@ -186,20 +186,20 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 
 	private void edgeSwapAndRemove2(int removedIdx, int swappedIdx) {
 		int prev, next;
-<span class="fc bfc" id="L189" title="All 2 branches covered.">		if ((prev = edgePrevOut[swappedIdx]) != -1) {</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">		if ((prev = edgePrevOut[swappedIdx]) &gt;= 0) {</span>
 <span class="fc" id="L190">			edgeNextOut[prev] = removedIdx;</span>
 		} else {
 <span class="fc" id="L192">			edgesOutHead[source(swappedIdx)] = removedIdx;</span>
 		}
-<span class="fc bfc" id="L194" title="All 2 branches covered.">		if ((next = edgeNextOut[swappedIdx]) != -1)</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">		if ((next = edgeNextOut[swappedIdx]) &gt;= 0)</span>
 <span class="fc" id="L195">			edgePrevOut[next] = removedIdx;</span>
 
-<span class="fc bfc" id="L197" title="All 2 branches covered.">		if ((prev = edgePrevIn[swappedIdx]) != -1) {</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">		if ((prev = edgePrevIn[swappedIdx]) &gt;= 0) {</span>
 <span class="fc" id="L198">			edgeNextIn[prev] = removedIdx;</span>
 		} else {
 <span class="fc" id="L200">			edgesInHead[target(swappedIdx)] = removedIdx;</span>
 		}
-<span class="fc bfc" id="L202" title="All 2 branches covered.">		if ((next = edgeNextIn[swappedIdx]) != -1)</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">		if ((next = edgeNextIn[swappedIdx]) &gt;= 0)</span>
 <span class="fc" id="L203">			edgePrevIn[next] = removedIdx;</span>
 
 <span class="fc" id="L205">		swapAndClear(edgeNextIn, removedIdx, swappedIdx, -1);</span>
@@ -213,7 +213,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	@Override
 	public void removeOutEdgesOf(int source) {
 <span class="fc" id="L215">		checkVertex(source);</span>
-<span class="fc bfc" id="L216" title="All 2 branches covered.">		for (int p = edgesOutHead[source], next; p != -1; p = next) {</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">		for (int p = edgesOutHead[source], next; p &gt;= 0; p = next) {</span>
 <span class="fc" id="L217">			next = edgeNextOut[p];</span>
 <span class="fc" id="L218">			edgeNextOut[p] = edgePrevOut[p] = -1;</span>
 <span class="fc" id="L219">			removeEdgeInPointers(p);</span>
@@ -235,7 +235,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 	@Override
 	public void removeInEdgesOf(int target) {
 <span class="fc" id="L237">		checkVertex(target);</span>
-<span class="fc bfc" id="L238" title="All 2 branches covered.">		for (int p = edgesInHead[target], next; p != -1; p = next) {</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">		for (int p = edgesInHead[target], next; p &gt;= 0; p = next) {</span>
 <span class="fc" id="L239">			next = edgeNextIn[p];</span>
 <span class="fc" id="L240">			edgeNextIn[p] = edgePrevIn[p] = -1;</span>
 <span class="fc" id="L241">			removeEdgeOutPointers(p);</span>
@@ -263,7 +263,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 <span class="fc" id="L263">			edgeNextOut[prev] = next;</span>
 <span class="fc" id="L264">			edgePrevOut[e] = -1;</span>
 		}
-<span class="fc bfc" id="L266" title="All 2 branches covered.">		if (next != -1) {</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">		if (next &gt;= 0) {</span>
 <span class="fc" id="L267">			edgePrevOut[next] = prev;</span>
 <span class="fc" id="L268">			edgeNextOut[e] = -1;</span>
 		}
@@ -279,7 +279,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 <span class="fc" id="L279">			edgeNextIn[prev] = next;</span>
 <span class="fc" id="L280">			edgePrevIn[e] = -1;</span>
 		}
-<span class="fc bfc" id="L282" title="All 2 branches covered.">		if (next != -1) {</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">		if (next &gt;= 0) {</span>
 <span class="fc" id="L283">			edgePrevIn[next] = prev;</span>
 <span class="fc" id="L284">			edgeNextIn[e] = -1;</span>
 		}

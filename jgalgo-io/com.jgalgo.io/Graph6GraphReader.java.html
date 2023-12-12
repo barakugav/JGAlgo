@@ -78,31 +78,29 @@ public class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 <span class="fc" id="L78">		IntIntPair nPair = Graph6.readNumberOfVertices(bytes, cursor);</span>
 <span class="fc" id="L79">		final int n = nPair.firstInt();</span>
 <span class="fc" id="L80">		cursor = nPair.secondInt();</span>
-<span class="fc" id="L81">		g.expectedVerticesNum(n);</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L83">			g.addVertex(v); /* vertices ids are 0,1,2,...,n-1 */</span>
+<span class="fc" id="L81">		g.addVertices(range(n)); /* vertices ids are 0,1,2,...,n-1 */</span>
 
 		/* Read all edges R(x) */
-<span class="fc" id="L86">		Graph6.BitsReader bitsReader = new Graph6.BitsReader(bytes, cursor);</span>
-<span class="fc bfc" id="L87" title="All 2 branches covered.">		for (int u : range(1, n)) {</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">			for (int v : range(0, u)) {</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">				if (!bitsReader.hasNext())</span>
-<span class="fc" id="L90">					throw new IllegalArgumentException(&quot;Too few bits for edges bit vector&quot;);</span>
-<span class="fc" id="L91">				boolean edgeExist = bitsReader.next();</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">				if (edgeExist)</span>
-<span class="fc" id="L93">					g.addEdge(u, v, g.edges().size());</span>
-<span class="fc" id="L94">			}</span>
-<span class="fc" id="L95">		}</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (bitsReader.hasNext()) {</span>
-<span class="fc" id="L97">			bitsReader.skipToCurrentByteEnd(); /* skip last byte padding */</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">			if (bitsReader.hasNext())</span>
-<span class="fc" id="L99">				throw new IllegalArgumentException(&quot;Too many bits for edges bit vector&quot;);</span>
+<span class="fc" id="L84">		Graph6.BitsReader bitsReader = new Graph6.BitsReader(bytes, cursor);</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		for (int u : range(1, n)) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">			for (int v : range(0, u)) {</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">				if (!bitsReader.hasNext())</span>
+<span class="fc" id="L88">					throw new IllegalArgumentException(&quot;Too few bits for edges bit vector&quot;);</span>
+<span class="fc" id="L89">				boolean edgeExist = bitsReader.next();</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">				if (edgeExist)</span>
+<span class="fc" id="L91">					g.addEdge(u, v, g.edges().size());</span>
+<span class="fc" id="L92">			}</span>
+<span class="fc" id="L93">		}</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">		if (bitsReader.hasNext()) {</span>
+<span class="fc" id="L95">			bitsReader.skipToCurrentByteEnd(); /* skip last byte padding */</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			if (bitsReader.hasNext())</span>
+<span class="fc" id="L97">				throw new IllegalArgumentException(&quot;Too many bits for edges bit vector&quot;);</span>
 		}
 
-<span class="fc bfc" id="L102" title="All 2 branches covered.">		if (br.readLine() != null)</span>
-<span class="fc" id="L103">			throw new IllegalArgumentException(&quot;Expected a single line in file&quot;);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">		if (br.readLine() != null)</span>
+<span class="fc" id="L101">			throw new IllegalArgumentException(&quot;Expected a single line in file&quot;);</span>
 
-<span class="fc" id="L105">		return g;</span>
+<span class="fc" id="L103">		return g;</span>
 	}
 
 }

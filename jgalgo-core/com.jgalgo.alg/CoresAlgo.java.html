@@ -158,10 +158,15 @@ public interface CoresAlgo {
 		 */
 		int vertexCoreNum(int v);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #vertexCoreNum(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default int vertexCoreNum(Integer v) {
-<span class="fc" id="L164">			return vertexCoreNum(v.intValue());</span>
+<span class="fc" id="L169">			return vertexCoreNum(v.intValue());</span>
 		}
 
 		@Override
@@ -183,7 +188,7 @@ public interface CoresAlgo {
 	 * @return a default implementation of {@link CoresAlgo}
 	 */
 	static CoresAlgo newInstance() {
-<span class="nc" id="L186">		return new CoresAlgoImpl();</span>
+<span class="nc" id="L191">		return new CoresAlgoImpl();</span>
 	}
 
 }

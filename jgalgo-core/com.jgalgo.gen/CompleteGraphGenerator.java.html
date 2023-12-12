@@ -29,6 +29,7 @@ import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 
 /**
  * Generates a complete graph.
@@ -47,12 +48,12 @@ public class CompleteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, 
 	private final boolean intGraph;
 	private Collection&lt;V&gt; vertices;
 	private BiFunction&lt;V, V, E&gt; edgeBuilder;
-<span class="fc" id="L50">	private boolean directed = false;</span>
-<span class="fc" id="L51">	private boolean selfEdges = false;</span>
+<span class="fc" id="L51">	private boolean directed = false;</span>
+<span class="fc" id="L52">	private boolean selfEdges = false;</span>
 
-<span class="fc" id="L53">	private CompleteGraphGenerator(boolean intGraph) {</span>
-<span class="fc" id="L54">		this.intGraph = intGraph;</span>
-<span class="fc" id="L55">	}</span>
+<span class="fc" id="L54">	private CompleteGraphGenerator(boolean intGraph) {</span>
+<span class="fc" id="L55">		this.intGraph = intGraph;</span>
+<span class="fc" id="L56">	}</span>
 
 	/**
 	 * Creates a new complete graph generator.
@@ -62,7 +63,7 @@ public class CompleteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, 
 	 * @return     a new complete graph generator
 	 */
 	public static &lt;V, E&gt; CompleteGraphGenerator&lt;V, E&gt; newInstance() {
-<span class="fc" id="L65">		return new CompleteGraphGenerator&lt;&gt;(false);</span>
+<span class="fc" id="L66">		return new CompleteGraphGenerator&lt;&gt;(false);</span>
 	}
 
 	/**
@@ -71,7 +72,7 @@ public class CompleteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, 
 	 * @return a new complete graph generator for {@link IntGraph}
 	 */
 	public static CompleteGraphGenerator&lt;Integer, Integer&gt; newIntInstance() {
-<span class="fc" id="L74">		return new CompleteGraphGenerator&lt;&gt;(true);</span>
+<span class="fc" id="L75">		return new CompleteGraphGenerator&lt;&gt;(true);</span>
 	}
 
 	/**
@@ -84,13 +85,13 @@ public class CompleteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, 
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public void setVertices(Collection&lt;V&gt; vertices) {
-<span class="fc bfc" id="L87" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc" id="L88">			this.vertices =</span>
-<span class="fc" id="L89">					(Collection&lt;V&gt;) new IntArrayList(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices));</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		if (intGraph) {</span>
+<span class="fc" id="L89">			this.vertices =</span>
+<span class="fc" id="L90">					(Collection&lt;V&gt;) new IntArrayList(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices));</span>
 		} else {
-<span class="fc" id="L91">			this.vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
+<span class="fc" id="L92">			this.vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
 		}
-<span class="fc" id="L93">	}</span>
+<span class="fc" id="L94">	}</span>
 
 	/**
 	 * Set the vertices set of the generated graph(s) from a supplier.
@@ -104,19 +105,19 @@ public class CompleteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, 
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public void setVertices(int verticesNum, Supplier&lt;V&gt; vertexSupplier) {
-<span class="fc bfc" id="L107" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc" id="L108">			IntList vertices = new IntArrayList(verticesNum);</span>
-<span class="fc" id="L109">			IntSupplier vSupplier = IntAdapters.asIntSupplier((Supplier&lt;Integer&gt;) vertexSupplier);</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++)</span>
-<span class="fc" id="L111">				vertices.add(vSupplier.getAsInt());</span>
-<span class="fc" id="L112">			this.vertices = (Collection&lt;V&gt;) vertices;</span>
-<span class="fc" id="L113">		} else {</span>
-<span class="fc" id="L114">			List&lt;V&gt; vertices = new ObjectArrayList&lt;&gt;(verticesNum);</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++)</span>
-<span class="fc" id="L116">				vertices.add(vertexSupplier.get());</span>
-<span class="fc" id="L117">			this.vertices = vertices;</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">		if (intGraph) {</span>
+<span class="fc" id="L109">			IntList vertices = new IntArrayList(verticesNum);</span>
+<span class="fc" id="L110">			IntSupplier vSupplier = IntAdapters.asIntSupplier((Supplier&lt;Integer&gt;) vertexSupplier);</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++)</span>
+<span class="fc" id="L112">				vertices.add(vSupplier.getAsInt());</span>
+<span class="fc" id="L113">			this.vertices = (Collection&lt;V&gt;) vertices;</span>
+<span class="fc" id="L114">		} else {</span>
+<span class="fc" id="L115">			List&lt;V&gt; vertices = new ObjectArrayList&lt;&gt;(verticesNum);</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++)</span>
+<span class="fc" id="L117">				vertices.add(vertexSupplier.get());</span>
+<span class="fc" id="L118">			this.vertices = vertices;</span>
 		}
-<span class="fc" id="L119">	}</span>
+<span class="fc" id="L120">	}</span>
 
 	/**
 	 * Set the edge supplier of the generated graph(s).
@@ -129,9 +130,9 @@ public class CompleteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, 
 	 * @param edgeSupplier the edge supplier
 	 */
 	public void setEdges(Supplier&lt;E&gt; edgeSupplier) {
-<span class="fc" id="L132">		Objects.requireNonNull(edgeSupplier);</span>
-<span class="fc" id="L133">		setEdges((u, v) -&gt; edgeSupplier.get());</span>
-<span class="fc" id="L134">	}</span>
+<span class="fc" id="L133">		Objects.requireNonNull(edgeSupplier);</span>
+<span class="fc" id="L134">		setEdges((u, v) -&gt; edgeSupplier.get());</span>
+<span class="fc" id="L135">	}</span>
 
 	/**
 	 * Set the edge builder function of the generated graph(s).
@@ -144,8 +145,8 @@ public class CompleteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, 
 	 * @param edgeBuilder the edge builder function
 	 */
 	public void setEdges(BiFunction&lt;V, V, E&gt; edgeBuilder) {
-<span class="fc" id="L147">		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);</span>
-<span class="fc" id="L148">	}</span>
+<span class="fc" id="L148">		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);</span>
+<span class="fc" id="L149">	}</span>
 
 	/**
 	 * Determine if the generated graph(s) is directed or undirected.
@@ -156,8 +157,8 @@ public class CompleteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, 
 	 * @param directed {@code true} if the generated graph(s) will be directed, {@code false} if undirected
 	 */
 	public void setDirected(boolean directed) {
-<span class="fc" id="L159">		this.directed = directed;</span>
-<span class="fc" id="L160">	}</span>
+<span class="fc" id="L160">		this.directed = directed;</span>
+<span class="fc" id="L161">	}</span>
 
 	/**
 	 * Determine if the generated graph(s) will contain self-edges.
@@ -169,31 +170,30 @@ public class CompleteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, 
 	 * @param selfEdges {@code true} if the generated graph(s) will contain self-edges, {@code false} otherwise
 	 */
 	public void setSelfEdges(boolean selfEdges) {
-<span class="fc" id="L172">		this.selfEdges = selfEdges;</span>
-<span class="fc" id="L173">	}</span>
+<span class="fc" id="L173">		this.selfEdges = selfEdges;</span>
+<span class="fc" id="L174">	}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
-<span class="fc bfc" id="L178" title="All 2 branches covered.">		if (vertices == null)</span>
-<span class="fc" id="L179">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
-<span class="fc bfc" id="L180" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
-<span class="fc" id="L181">			throw new IllegalStateException(&quot;Edge supplier not set&quot;);</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">		if (vertices == null)</span>
+<span class="fc" id="L180">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
+<span class="fc" id="L182">			throw new IllegalStateException(&quot;Edge supplier not set&quot;);</span>
 
-<span class="fc" id="L183">		final int n = vertices.size();</span>
-<span class="fc" id="L184">		int m = n * (n - 1);</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">		if (!directed)</span>
-<span class="fc" id="L186">			m /= 2;</span>
-<span class="fc bfc" id="L187" title="All 2 branches covered.">		if (selfEdges)</span>
-<span class="fc" id="L188">			m += n;</span>
+<span class="fc" id="L184">		final int n = vertices.size();</span>
+<span class="fc" id="L185">		int m = n * (n - 1);</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">		if (!directed)</span>
+<span class="fc" id="L187">			m /= 2;</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">		if (selfEdges)</span>
+<span class="fc" id="L189">			m += n;</span>
 
-<span class="fc bfc" id="L190" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc" id="L191">			IntGraphBuilder g = IntGraphBuilder.newInstance(directed);</span>
-<span class="fc" id="L192">			g.expectedVerticesNum(n);</span>
-<span class="fc" id="L193">			g.expectedEdgesNum(m);</span>
-<span class="fc" id="L194">			final int[] vertices = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.vertices).toIntArray();</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">			for (int v : vertices)</span>
-<span class="fc" id="L196">				g.addVertex(v);</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">		if (intGraph) {</span>
+<span class="fc" id="L192">			IntGraphBuilder g = IntGraphBuilder.newInstance(directed);</span>
+<span class="fc" id="L193">			final int[] vertices = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.vertices).toIntArray();</span>
+<span class="fc" id="L194">			g.addVertices(IntList.of(vertices));</span>
+
+<span class="fc" id="L196">			g.expectedEdgesNum(m);</span>
 <span class="fc" id="L197">			IntBinaryOperator edgeBuilder =</span>
 <span class="fc" id="L198">					IntAdapters.asIntBiOperator((BiFunction&lt;Integer, Integer, Integer&gt;) this.edgeBuilder);</span>
 <span class="fc bfc" id="L199" title="All 2 branches covered.">			for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
@@ -215,27 +215,26 @@ public class CompleteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, 
 
 		} else {
 <span class="fc" id="L217">			GraphBuilder&lt;V, E&gt; g = GraphBuilder.newInstance(directed);</span>
-<span class="fc" id="L218">			g.expectedVerticesNum(n);</span>
-<span class="fc" id="L219">			g.expectedEdgesNum(m);</span>
-<span class="fc" id="L220">			final V[] vertices = (V[]) this.vertices.toArray();</span>
-<span class="fc bfc" id="L221" title="All 2 branches covered.">			for (V v : vertices)</span>
-<span class="fc" id="L222">				g.addVertex(v);</span>
-<span class="fc bfc" id="L223" title="All 2 branches covered.">			for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
-<span class="fc" id="L224">				V u = vertices[uIdx];</span>
-<span class="fc bfc" id="L225" title="All 2 branches covered.">				if (directed) {</span>
-<span class="fc bfc" id="L226" title="All 2 branches covered.">					for (int vIdx = 0; vIdx &lt; uIdx; vIdx++) {</span>
-<span class="fc" id="L227">						V v = vertices[vIdx];</span>
-<span class="fc" id="L228">						g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc" id="L218">			final V[] vertices = (V[]) this.vertices.toArray();</span>
+<span class="fc" id="L219">			g.addVertices(ObjectList.of(vertices));</span>
+
+<span class="fc" id="L221">			g.expectedEdgesNum(m);</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">			for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
+<span class="fc" id="L223">				V u = vertices[uIdx];</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">				if (directed) {</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">					for (int vIdx = 0; vIdx &lt; uIdx; vIdx++) {</span>
+<span class="fc" id="L226">						V v = vertices[vIdx];</span>
+<span class="fc" id="L227">						g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
 					}
 				}
-<span class="fc bfc" id="L231" title="All 2 branches covered.">				if (selfEdges)</span>
-<span class="fc" id="L232">					g.addEdge(u, u, edgeBuilder.apply(u, u));</span>
-<span class="fc bfc" id="L233" title="All 2 branches covered.">				for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++) {</span>
-<span class="fc" id="L234">					V v = vertices[vIdx];</span>
-<span class="fc" id="L235">					g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">				if (selfEdges)</span>
+<span class="fc" id="L231">					g.addEdge(u, u, edgeBuilder.apply(u, u));</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">				for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++) {</span>
+<span class="fc" id="L233">					V v = vertices[vIdx];</span>
+<span class="fc" id="L234">					g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
 				}
 			}
-<span class="fc" id="L238">			return g;</span>
+<span class="fc" id="L237">			return g;</span>
 		}
 	}
 

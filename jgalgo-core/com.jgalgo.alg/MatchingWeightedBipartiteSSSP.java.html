@@ -84,114 +84,113 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L84">		final int n = gOrig.vertices().size();</span>
 <span class="fc" id="L85">		IndexGraph g = IndexGraphFactory.directed().allowSelfEdges().allowParallelEdges().expectedVerticesNum(n + 2)</span>
 <span class="fc" id="L86">				.expectedEdgesNum(gOrig.edges().size() + n).newGraph();</span>
-<span class="fc bfc" id="L87" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L88">			g.addVertex();</span>
-<span class="fc" id="L89">		final int s = g.addVertex(), t = g.addVertex();</span>
-<span class="fc" id="L90">		IWeightsDouble w = g.addEdgesWeights(&quot;weight&quot;, double.class);</span>
+<span class="fc" id="L87">		g.addVertices(gOrig.vertices());</span>
+<span class="fc" id="L88">		final int s = g.addVertex(), t = g.addVertex();</span>
+<span class="fc" id="L89">		IWeightsDouble w = g.addEdgesWeights(&quot;weight&quot;, double.class);</span>
 
-<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L93">			int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);</span>
-<span class="pc bpc" id="L94" title="1 of 2 branches missed.">			if (!partition.get(u)) {</span>
-<span class="nc bnc" id="L95" title="All 2 branches missed.">				assert partition.get(v);</span>
-<span class="nc" id="L96">				int temp = u;</span>
-<span class="nc" id="L97">				u = v;</span>
-<span class="nc" id="L98">				v = temp;</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L92">			int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">			if (!partition.get(u)) {</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">				assert partition.get(v);</span>
+<span class="nc" id="L95">				int temp = u;</span>
+<span class="nc" id="L96">				u = v;</span>
+<span class="nc" id="L97">				v = temp;</span>
 			}
-<span class="pc bnc" id="L100" title="All 2 branches missed.">			assert partition.get(u);</span>
-<span class="pc bnc" id="L101" title="All 2 branches missed.">			assert !partition.get(v);</span>
+<span class="pc bnc" id="L99" title="All 2 branches missed.">			assert partition.get(u);</span>
+<span class="pc bnc" id="L100" title="All 2 branches missed.">			assert !partition.get(v);</span>
 
-<span class="fc" id="L103">			double weight = wOrig.weight(e);</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (weight &gt;= 0) {</span>
-<span class="fc" id="L105">				int e0 = g.addEdge(u, v);</span>
-<span class="pc bnc" id="L106" title="All 2 branches missed.">				assert e0 == e;</span>
-<span class="fc" id="L107">				w.set(e, weight);</span>
-<span class="fc" id="L108">			} else {</span>
+<span class="fc" id="L102">			double weight = wOrig.weight(e);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (weight &gt;= 0) {</span>
+<span class="fc" id="L104">				int e0 = g.addEdge(u, v);</span>
+<span class="pc bnc" id="L105" title="All 2 branches missed.">				assert e0 == e;</span>
+<span class="fc" id="L106">				w.set(e, weight);</span>
+<span class="fc" id="L107">			} else {</span>
 				/* no reason to match negative edges. we can ignore this edge */
 				/* to match the original graph edges ids, we add a dummy edge */
-<span class="fc" id="L111">				int e0 = g.addEdge(t, t);</span>
-<span class="pc bnc" id="L112" title="All 2 branches missed.">				assert e0 == e;</span>
-<span class="fc" id="L113">				w.set(e, 0);</span>
+<span class="fc" id="L110">				int e0 = g.addEdge(t, t);</span>
+<span class="pc bnc" id="L111" title="All 2 branches missed.">				assert e0 == e;</span>
+<span class="fc" id="L112">				w.set(e, 0);</span>
 			}
 		}
 
-<span class="fc" id="L117">		int[] match = new int[n];</span>
-<span class="fc" id="L118">		Arrays.fill(match, -1);</span>
+<span class="fc" id="L116">		int[] match = new int[n];</span>
+<span class="fc" id="L117">		Arrays.fill(match, -1);</span>
 
-<span class="fc" id="L120">		double maxWeight = 1;</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L122">			maxWeight = Math.max(maxWeight, w.weight(e));</span>
-<span class="pc bpc" id="L123" title="1 of 2 branches missed.">		if (!Double.isFinite(maxWeight))</span>
-<span class="nc" id="L124">			throw new IllegalArgumentException(&quot;non finite weights&quot;);</span>
-<span class="fc" id="L125">		final double RemovedEdgeWeight = maxWeight * n;</span>
+<span class="fc" id="L119">		double maxWeight = 1;</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L121">			maxWeight = Math.max(maxWeight, w.weight(e));</span>
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">		if (!Double.isFinite(maxWeight))</span>
+<span class="nc" id="L123">			throw new IllegalArgumentException(&quot;non finite weights&quot;);</span>
+<span class="fc" id="L124">		final double RemovedEdgeWeight = maxWeight * n;</span>
 
 		// Negate unmatched edges
-<span class="fc bfc" id="L128" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L129">			w.set(e, -w.weight(e));</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L128">			w.set(e, -w.weight(e));</span>
 		// Connected unmatched vertices to fake vertices s,t
-<span class="fc bfc" id="L131" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L132" title="All 2 branches covered.">			if (partition.get(u)) {</span>
-<span class="fc" id="L133">				w.set(g.addEdge(s, u), 0);</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">			if (partition.get(u)) {</span>
+<span class="fc" id="L132">				w.set(g.addEdge(s, u), 0);</span>
 			} else {
-<span class="fc" id="L135">				w.set(g.addEdge(u, t), 0);</span>
+<span class="fc" id="L134">				w.set(g.addEdge(u, t), 0);</span>
 			}
 		}
 
-<span class="fc" id="L139">		double[] potential = new double[n + 2];</span>
-<span class="fc" id="L140">		IWeightFunction spWeightFunc = ShortestPathUtils.potentialWeightFunc(g, w, potential);</span>
+<span class="fc" id="L138">		double[] potential = new double[n + 2];</span>
+<span class="fc" id="L139">		IWeightFunction spWeightFunc = ShortestPathUtils.potentialWeightFunc(g, w, potential);</span>
 
 		// Init state may include negative distances, use Bellman Ford to calculate
 		// first potential values
-<span class="fc" id="L144">		ShortestPathSingleSource.IResult sp =</span>
-<span class="fc" id="L145">				(ShortestPathSingleSource.IResult) ssspNegative.computeShortestPaths(g, w, Integer.valueOf(s));</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">		for (int v = 0; v &lt; n + 2; v++)</span>
-<span class="fc" id="L147">			potential[v] = sp.distance(v);</span>
+<span class="fc" id="L143">		ShortestPathSingleSource.IResult sp =</span>
+<span class="fc" id="L144">				(ShortestPathSingleSource.IResult) ssspNegative.computeShortestPaths(g, w, Integer.valueOf(s));</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">		for (int v = 0; v &lt; n + 2; v++)</span>
+<span class="fc" id="L146">			potential[v] = sp.distance(v);</span>
 
 		for (;;) {
-<span class="fc" id="L150">			sp = (ShortestPathSingleSource.IResult) ssspPositive.computeShortestPaths(g, spWeightFunc,</span>
-<span class="fc" id="L151">					Integer.valueOf(s));</span>
-<span class="fc" id="L152">			IPath augPath = sp.getPath(t);</span>
-<span class="fc" id="L153">			double augPathWeight = -(sp.distance(t) + potential[t]);</span>
-<span class="pc bpc" id="L154" title="1 of 6 branches missed.">			if (augPath == null || augPathWeight &gt;= RemovedEdgeWeight || augPathWeight &lt; 0)</span>
-<span class="fc" id="L155">				break;</span>
+<span class="fc" id="L149">			sp = (ShortestPathSingleSource.IResult) ssspPositive.computeShortestPaths(g, spWeightFunc,</span>
+<span class="fc" id="L150">					Integer.valueOf(s));</span>
+<span class="fc" id="L151">			IPath augPath = sp.getPath(t);</span>
+<span class="fc" id="L152">			double augPathWeight = -(sp.distance(t) + potential[t]);</span>
+<span class="pc bpc" id="L153" title="1 of 6 branches missed.">			if (augPath == null || augPathWeight &gt;= RemovedEdgeWeight || augPathWeight &lt; 0)</span>
+<span class="fc" id="L154">				break;</span>
 
 			// avoid using augPath.iterator() as we modify the graph during iteration
-<span class="fc" id="L158">			IntIterator it = new IntArrayList(augPath.edges()).iterator();</span>
+<span class="fc" id="L157">			IntIterator it = new IntArrayList(augPath.edges()).iterator();</span>
 			// 'remove' edge from S to new matched vertex
-<span class="fc" id="L160">			w.set(it.nextInt(), RemovedEdgeWeight);</span>
+<span class="fc" id="L159">			w.set(it.nextInt(), RemovedEdgeWeight);</span>
 			for (;;) {
-<span class="fc" id="L162">				int matchedEdge = it.nextInt();</span>
+<span class="fc" id="L161">				int matchedEdge = it.nextInt();</span>
 
 				// Reverse newly matched edge
-<span class="fc" id="L165">				g.reverseEdge(matchedEdge);</span>
-<span class="fc" id="L166">				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = matchedEdge;</span>
-<span class="fc" id="L167">				w.set(matchedEdge, -w.weight(matchedEdge));</span>
+<span class="fc" id="L164">				g.reverseEdge(matchedEdge);</span>
+<span class="fc" id="L165">				match[g.edgeSource(matchedEdge)] = match[g.edgeTarget(matchedEdge)] = matchedEdge;</span>
+<span class="fc" id="L166">				w.set(matchedEdge, -w.weight(matchedEdge));</span>
 
-<span class="fc" id="L169">				int unmatchedEdge = it.nextInt();</span>
+<span class="fc" id="L168">				int unmatchedEdge = it.nextInt();</span>
 
-<span class="fc bfc" id="L171" title="All 2 branches covered.">				if (!it.hasNext()) {</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">				if (!it.hasNext()) {</span>
 					// 'remove' edge from new matched vertex to T
-<span class="fc" id="L173">					w.set(unmatchedEdge, RemovedEdgeWeight);</span>
-<span class="fc" id="L174">					break;</span>
+<span class="fc" id="L172">					w.set(unmatchedEdge, RemovedEdgeWeight);</span>
+<span class="fc" id="L173">					break;</span>
 				}
 
 				// Reverse newly unmatched edge
-<span class="fc" id="L178">				g.reverseEdge(unmatchedEdge);</span>
-<span class="fc" id="L179">				w.set(unmatchedEdge, -w.weight(unmatchedEdge));</span>
-<span class="fc" id="L180">			}</span>
+<span class="fc" id="L177">				g.reverseEdge(unmatchedEdge);</span>
+<span class="fc" id="L178">				w.set(unmatchedEdge, -w.weight(unmatchedEdge));</span>
+<span class="fc" id="L179">			}</span>
 
 			// Update potential based on the distances
-<span class="fc bfc" id="L183" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L184">				potential[u] += sp.distance(u);</span>
-<span class="fc" id="L185">		}</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L183">				potential[u] += sp.distance(u);</span>
+<span class="fc" id="L184">		}</span>
 
-<span class="fc" id="L187">		return match;</span>
+<span class="fc" id="L186">		return match;</span>
 	}
 
 	@Override
 	IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-<span class="pc bpc" id="L192" title="1 of 2 branches missed.">		if (!WeightFunction.isCardinality(w))</span>
-<span class="nc" id="L193">			throw new UnsupportedOperationException(&quot;weighted perfect matching is not supported by this algorithm&quot;);</span>
-<span class="fc" id="L194">		return computeMaximumWeightedMatching(g, null);</span>
+<span class="pc bpc" id="L191" title="1 of 2 branches missed.">		if (!WeightFunction.isCardinality(w))</span>
+<span class="nc" id="L192">			throw new UnsupportedOperationException(&quot;weighted perfect matching is not supported by this algorithm&quot;);</span>
+<span class="fc" id="L193">		return computeMaximumWeightedMatching(g, null);</span>
 	}
 
 }

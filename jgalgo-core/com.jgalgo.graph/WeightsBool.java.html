@@ -32,10 +32,15 @@ public interface WeightsBool&lt;K &gt; extends Weights&lt;K, Boolean&gt;
 	 */
 	public boolean get(K element);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #get(Object)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Boolean getAsObj(K element) {
-<span class="fc" id="L38">		return Boolean.valueOf(get(element));</span>
+<span class="fc" id="L43">		return Boolean.valueOf(get(element));</span>
 	}
 
 	/**
@@ -46,11 +51,16 @@ public interface WeightsBool&lt;K &gt; extends Weights&lt;K, Boolean&gt;
 	 */
 	public void set(K element, boolean weight);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #set(Object, boolean)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default void setAsObj(K element, Boolean weight) {
-<span class="fc" id="L52">		set(element, weight.booleanValue());</span>
-<span class="fc" id="L53">	}</span>
+<span class="fc" id="L62">		set(element, weight.booleanValue());</span>
+<span class="fc" id="L63">	}</span>
 
 	/**
 	 * Get the default weight of this weights container.
@@ -63,10 +73,15 @@ public interface WeightsBool&lt;K &gt; extends Weights&lt;K, Boolean&gt;
 	 */
 	public boolean defaultWeight();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #defaultWeight()} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Boolean defaultWeightAsObj() {
-<span class="fc" id="L69">		return Boolean.valueOf(defaultWeight());</span>
+<span class="fc" id="L84">		return Boolean.valueOf(defaultWeight());</span>
 	}
 
 }

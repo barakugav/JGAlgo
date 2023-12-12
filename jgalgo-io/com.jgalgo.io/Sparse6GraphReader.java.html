@@ -15,6 +15,7 @@
  */
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
@@ -53,70 +54,68 @@ public class Sparse6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 	/**
 	 * Create a new reader.
 	 */
-<span class="fc" id="L56">	public Sparse6GraphReader() {}</span>
+<span class="fc" id="L57">	public Sparse6GraphReader() {}</span>
 
 	@Override
 	IntGraphBuilder readIntoBuilderImpl(Reader reader) throws IOException {
-<span class="fc" id="L60">		BufferedReader br = GraphIoUtils.bufferedReader(reader);</span>
-<span class="fc" id="L61">		IntGraphBuilder g = IntGraphFactory.undirected().allowSelfEdges().allowParallelEdges().newBuilder();</span>
+<span class="fc" id="L61">		BufferedReader br = GraphIoUtils.bufferedReader(reader);</span>
+<span class="fc" id="L62">		IntGraphBuilder g = IntGraphFactory.undirected().allowSelfEdges().allowParallelEdges().newBuilder();</span>
 
-<span class="fc" id="L63">		String line = br.readLine();</span>
-<span class="fc bfc" id="L64" title="All 2 branches covered.">		if (line == null)</span>
-<span class="fc" id="L65">			throw new IllegalArgumentException(&quot;empty file&quot;);</span>
+<span class="fc" id="L64">		String line = br.readLine();</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">		if (line == null)</span>
+<span class="fc" id="L66">			throw new IllegalArgumentException(&quot;empty file&quot;);</span>
 
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (line.startsWith(&quot;:&quot;)) {</span>
-<span class="fc" id="L68">			line = line.substring(&quot;:&quot;.length());</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (line.startsWith(&quot;:&quot;)) {</span>
+<span class="fc" id="L69">			line = line.substring(&quot;:&quot;.length());</span>
 
-<span class="fc bfc" id="L70" title="All 2 branches covered.">		} else if (line.startsWith(&quot;&gt;&gt;sparse6&lt;&lt;:&quot;)) { /* optional header */</span>
-<span class="fc" id="L71">			line = line.substring(&quot;&gt;&gt;sparse6&lt;&lt;:&quot;.length());</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">		} else if (line.startsWith(&quot;&gt;&gt;sparse6&lt;&lt;:&quot;)) { /* optional header */</span>
+<span class="fc" id="L72">			line = line.substring(&quot;&gt;&gt;sparse6&lt;&lt;:&quot;.length());</span>
 		} else {
-<span class="fc" id="L73">			throw new IllegalArgumentException(&quot;Invalid header, expected ':' or '&gt;&gt;sparse6&lt;&lt;:'&quot;);</span>
+<span class="fc" id="L74">			throw new IllegalArgumentException(&quot;Invalid header, expected ':' or '&gt;&gt;sparse6&lt;&lt;:'&quot;);</span>
 		}
-<span class="fc" id="L75">		byte[] bytes = line.getBytes(GraphFormats.JGALGO_CHARSET);</span>
-<span class="fc" id="L76">		int cursor = 0;</span>
+<span class="fc" id="L76">		byte[] bytes = line.getBytes(GraphFormats.JGALGO_CHARSET);</span>
+<span class="fc" id="L77">		int cursor = 0;</span>
 
 		/* Read N(n) */
-<span class="fc" id="L79">		IntIntPair nPair = Graph6.readNumberOfVertices(bytes, cursor);</span>
-<span class="fc" id="L80">		final int n = nPair.firstInt();</span>
-<span class="fc" id="L81">		cursor = nPair.secondInt();</span>
-<span class="fc" id="L82">		g.expectedVerticesNum(n);</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L84">			g.addVertex(v); /* vertices ids are 0,1,2,...,n-1 */</span>
+<span class="fc" id="L80">		IntIntPair nPair = Graph6.readNumberOfVertices(bytes, cursor);</span>
+<span class="fc" id="L81">		final int n = nPair.firstInt();</span>
+<span class="fc" id="L82">		cursor = nPair.secondInt();</span>
+<span class="fc" id="L83">		g.addVertices(range(n)); /* vertices ids are 0,1,2,...,n-1 */</span>
 
 		/* Read all edges */
-<span class="fc bfc" id="L87" title="All 2 branches covered.">		final int k = n == 0 ? n : JGAlgoUtils.log2ceil(n);</span>
-<span class="fc" id="L88">		Graph6.BitsReader bitsReader = new Graph6.BitsReader(bytes, cursor);</span>
-<span class="fc" id="L89">		edgesLoop: for (int v = 0;;) {</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">			if (!bitsReader.hasNext())</span>
-<span class="fc" id="L91">				break;</span>
-<span class="fc" id="L92">			boolean b = bitsReader.next();</span>
-<span class="fc" id="L93">			int x = 0;</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">			for (int i = 0; i &lt; k; i++) {</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">				if (!bitsReader.hasNext())</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		final int k = n == 0 ? n : JGAlgoUtils.log2ceil(n);</span>
+<span class="fc" id="L87">		Graph6.BitsReader bitsReader = new Graph6.BitsReader(bytes, cursor);</span>
+<span class="fc" id="L88">		edgesLoop: for (int v = 0;;) {</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">			if (!bitsReader.hasNext())</span>
+<span class="fc" id="L90">				break;</span>
+<span class="fc" id="L91">			boolean b = bitsReader.next();</span>
+<span class="fc" id="L92">			int x = 0;</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">			for (int i = 0; i &lt; k; i++) {</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">				if (!bitsReader.hasNext())</span>
 					// throw new IllegalArgumentException(&quot;Unexpected end of bits&quot;);
-<span class="fc" id="L97">					break edgesLoop; /* In decoding, an incomplete (b,x) pair at the end is discarded. */</span>
-<span class="fc" id="L98">				x &lt;&lt;= 1; /* bigendian */</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">				x |= bitsReader.next() ? 1 : 0;</span>
+<span class="fc" id="L96">					break edgesLoop; /* In decoding, an incomplete (b,x) pair at the end is discarded. */</span>
+<span class="fc" id="L97">				x &lt;&lt;= 1; /* bigendian */</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">				x |= bitsReader.next() ? 1 : 0;</span>
 			}
 
-<span class="fc bfc" id="L102" title="All 2 branches covered.">			if (b)</span>
-<span class="fc" id="L103">				v++;</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (x &gt; v) {</span>
-<span class="fc" id="L105">				v = x;</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">			} else if (v &lt; n) {</span>
-<span class="fc" id="L107">				g.addEdge(v, x, g.edges().size());</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">			if (b)</span>
+<span class="fc" id="L102">				v++;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (x &gt; v) {</span>
+<span class="fc" id="L104">				v = x;</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			} else if (v &lt; n) {</span>
+<span class="fc" id="L106">				g.addEdge(v, x, g.edges().size());</span>
 			} else {
-<span class="fc" id="L109">				bitsReader.skipToCurrentByteEnd(); /* skip last edge padding */</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">				if (bitsReader.hasNext())</span>
-<span class="fc" id="L111">					throw new IllegalArgumentException(&quot;invalid edge endpoint: &quot; + v);</span>
+<span class="fc" id="L108">				bitsReader.skipToCurrentByteEnd(); /* skip last edge padding */</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">				if (bitsReader.hasNext())</span>
+<span class="fc" id="L110">					throw new IllegalArgumentException(&quot;invalid edge endpoint: &quot; + v);</span>
 				break;
 			}
-<span class="fc" id="L114">		}</span>
+<span class="fc" id="L113">		}</span>
 
-<span class="fc bfc" id="L116" title="All 2 branches covered.">		if (br.readLine() != null)</span>
-<span class="fc" id="L117">			throw new IllegalArgumentException(&quot;Expected a single line in file&quot;);</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">		if (br.readLine() != null)</span>
+<span class="fc" id="L116">			throw new IllegalArgumentException(&quot;Expected a single line in file&quot;);</span>
 
-<span class="fc" id="L119">		return g;</span>
+<span class="fc" id="L118">		return g;</span>
 	}
 
 }

@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -47,14 +48,32 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws UnsupportedOperationException always
+	 * &lt;p&gt;
+	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} therefore the only vertex ID that can be
+	 * added is {@code verticesNum}. For any other vertex passed to this method, an exception will be thrown. If
+	 * {@code verticesNum} is passed, this method is equivalent to {@link #addVertex()}.
+	 *
+	 * @throws     IllegalArgumentException if {@code vertex} is not {@code verticesNum}
+	 * @deprecated                          use {@link #addVertex()} instead
 	 */
 	@Deprecated
 	@Override
 	default void addVertex(int vertex) {
-<span class="fc" id="L55">		throw new UnsupportedOperationException(</span>
-				&quot;Index graph builder does not support adding vertices with user-chosen IDs&quot;);
-	}
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		if (vertex != vertices().size())</span>
+<span class="fc" id="L63">			throw new IllegalArgumentException(&quot;Only vertex ID &quot; + vertices().size() + &quot; can be added&quot;);</span>
+<span class="fc" id="L64">		addVertex();</span>
+<span class="fc" id="L65">	}</span>
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * &lt;p&gt;
+	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} therefore the only vertices that can be
+	 * added are {@code (verticesNum,verticesNum+1,verticesNum+2, ...)}. For any other vertices passed to this method,
+	 * an exception will be thrown.
+	 */
+	@Override
+	void addVertices(Collection&lt;? extends Integer&gt; vertices);
 
 	/**
 	 * {@inheritDoc}
@@ -242,7 +261,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IndexGraphBuilder undirected() {
-<span class="fc" id="L245">		return IndexGraphFactory.undirected().newBuilder();</span>
+<span class="fc" id="L264">		return IndexGraphFactory.undirected().newBuilder();</span>
 	}
 
 	/**
@@ -256,7 +275,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return a new empty builder for directed graphs
 	 */
 	static IndexGraphBuilder directed() {
-<span class="fc" id="L259">		return IndexGraphFactory.directed().newBuilder();</span>
+<span class="fc" id="L278">		return IndexGraphFactory.directed().newBuilder();</span>
 	}
 
 	/**
@@ -272,7 +291,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return          a new empty builder for un/directed graphs
 	 */
 	static IndexGraphBuilder newInstance(boolean directed) {
-<span class="fc" id="L275">		return IndexGraphFactory.newInstance(directed).newBuilder();</span>
+<span class="fc" id="L294">		return IndexGraphFactory.newInstance(directed).newBuilder();</span>
 	}
 
 	/**
@@ -286,7 +305,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *           vertices/edges weights.
 	 */
 	static IndexGraphBuilder fromGraph(IndexGraph g) {
-<span class="fc" id="L289">		return fromGraph(g, false, false);</span>
+<span class="fc" id="L308">		return fromGraph(g, false, false);</span>
 	}
 
 	/**
@@ -304,7 +323,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *                             original graph vertices/edges weights.
 	 */
 	static IndexGraphBuilder fromGraph(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L307">		return new IndexGraphBuilderImpl(g, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L326">		return new IndexGraphBuilderImpl(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 }

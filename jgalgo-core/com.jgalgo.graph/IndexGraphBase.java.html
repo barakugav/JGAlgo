@@ -57,7 +57,7 @@ abstract class IndexGraphBase extends GraphBase&lt;Integer, Integer&gt; implemen
 <span class="fc" id="L57">	}</span>
 
 	@Override
-	public boolean isDirected() {
+	public final boolean isDirected() {
 <span class="fc" id="L61">		return isDirected;</span>
 	}
 
@@ -304,7 +304,7 @@ abstract class IndexGraphBase extends GraphBase&lt;Integer, Integer&gt; implemen
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L307" title="All 2 branches covered.">			return nextEdge != -1;</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">			return nextEdge &gt;= 0;</span>
 		}
 
 		@Override

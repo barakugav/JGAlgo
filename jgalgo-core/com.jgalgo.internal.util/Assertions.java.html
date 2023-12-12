@@ -280,30 +280,43 @@ public class Assertions {
 <span class="fc" id="L280">		}</span>
 
 		public static void checkSupply(IndexGraph g, IWeightFunction supply) {
-<span class="fc" id="L283">			double sum = 0;</span>
-<span class="fc bfc" id="L284" title="All 2 branches covered.">			for (int n = g.vertices().size(), v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L285">				double d = supply.weight(v);</span>
-<span class="fc bfc" id="L286" title="All 2 branches covered.">				if (!Double.isFinite(d))</span>
-<span class="fc" id="L287">					throw new IllegalArgumentException(&quot;Supply must be finite for vertex with index &quot; + v);</span>
-<span class="fc" id="L288">				sum += d;</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">			if (supply instanceof IWeightFunctionInt) {</span>
+<span class="fc" id="L284">				IWeightFunctionInt supplyInt = (IWeightFunctionInt) supply;</span>
+<span class="fc" id="L285">				long sum = 0;</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">				for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L287">					sum += supplyInt.weightInt(v);</span>
+<span class="pc bpc" id="L288" title="1 of 2 branches missed.">				if (sum != 0)</span>
+<span class="nc" id="L289">					throw new IllegalArgumentException(&quot;Sum of supply must be zero&quot;);</span>
+<span class="fc" id="L290">			} else {</span>
+<span class="fc" id="L291">				double sum = 0;</span>
+<span class="fc" id="L292">				double minSupply = Double.POSITIVE_INFINITY;</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">				for (int n = g.vertices().size(), v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L294">					double d = supply.weight(v);</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">					if (!Double.isFinite(d))</span>
+<span class="fc" id="L296">						throw new IllegalArgumentException(&quot;Supply must be finite for vertex with index &quot; + v);</span>
+<span class="fc" id="L297">					sum += d;</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">					if (d != 0)</span>
+<span class="fc" id="L299">						minSupply = Math.min(minSupply, Math.abs(d));</span>
+				}
+<span class="fc" id="L301">				final double eps = minSupply * 1e-8;</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">				if (Math.abs(sum) &gt; eps)</span>
+<span class="fc" id="L303">					throw new IllegalArgumentException(&quot;Sum of supply must be zero&quot;);</span>
 			}
-<span class="fc bfc" id="L290" title="All 2 branches covered.">			if (Math.abs(sum) &gt; 1e-6)</span>
-<span class="fc" id="L291">				throw new IllegalArgumentException(&quot;Sum of supply must be zero&quot;);</span>
-<span class="fc" id="L292">		}</span>
+<span class="fc" id="L305">		}</span>
 	}
 
 	public static class Arrays {
 		private Arrays() {}
 
 		public static void checkFromTo(int from, int to, int length) {
-<span class="fc" id="L299">			Objects.checkFromToIndex(from, to, length);</span>
-<span class="fc" id="L300">		}</span>
+<span class="fc" id="L312">			Objects.checkFromToIndex(from, to, length);</span>
+<span class="fc" id="L313">		}</span>
 
 		public static void checkIndex(int index, int from, int to) {
-<span class="pc bpc" id="L303" title="1 of 4 branches missed.">			if (index &lt; from || index &gt;= to)</span>
-<span class="fc" id="L304">				throw new IndexOutOfBoundsException(</span>
+<span class="pc bpc" id="L316" title="1 of 4 branches missed.">			if (index &lt; from || index &gt;= to)</span>
+<span class="fc" id="L317">				throw new IndexOutOfBoundsException(</span>
 						&quot;Index &quot; + index + &quot; out of bounds for range Range [&quot; + from + &quot;, &quot; + to + &quot;)&quot;);
-<span class="fc" id="L306">		}</span>
+<span class="fc" id="L319">		}</span>
 	}
 
 	public static class Iters {
@@ -313,18 +326,18 @@ public class Assertions {
 		public static final String ERR_NO_PREVIOUS = &quot;Iterator has no previous element&quot;;
 
 		public static void hasNext(Iterator&lt;?&gt; it) {
-<span class="pc bpc" id="L316" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsIterNotEmpty) {</span>
-<span class="fc bfc" id="L317" title="All 2 branches covered.">				if (!it.hasNext())</span>
-<span class="fc" id="L318">					throw new NoSuchElementException(ERR_NO_NEXT);</span>
+<span class="pc bpc" id="L329" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsIterNotEmpty) {</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">				if (!it.hasNext())</span>
+<span class="fc" id="L331">					throw new NoSuchElementException(ERR_NO_NEXT);</span>
 			}
-<span class="fc" id="L320">		}</span>
+<span class="fc" id="L333">		}</span>
 
 		public static void hasPrevious(ListIterator&lt;?&gt; it) {
-<span class="nc bnc" id="L323" title="All 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsIterNotEmpty) {</span>
-<span class="nc bnc" id="L324" title="All 2 branches missed.">				if (!it.hasPrevious())</span>
-<span class="nc" id="L325">					throw new NoSuchElementException(ERR_NO_PREVIOUS);</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsIterNotEmpty) {</span>
+<span class="nc bnc" id="L337" title="All 2 branches missed.">				if (!it.hasPrevious())</span>
+<span class="nc" id="L338">					throw new NoSuchElementException(ERR_NO_PREVIOUS);</span>
 			}
-<span class="nc" id="L327">		}</span>
+<span class="nc" id="L340">		}</span>
 
 	}
 
@@ -332,101 +345,101 @@ public class Assertions {
 		private Heaps() {}
 
 		public static &lt;E&gt; void decreaseKeyIsSmaller(E oldKey, E newKey, Comparator&lt;? super E&gt; cmp) {
-<span class="pc bpc" id="L335" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
-<span class="fc bfc" id="L336" title="All 2 branches covered.">				int c = cmp == null ? JGAlgoUtils.cmpDefault(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
-<span class="pc bpc" id="L337" title="1 of 2 branches missed.">				if (c &lt; 0)</span>
-<span class="nc" id="L338">					throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
+<span class="pc bpc" id="L348" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
+<span class="fc bfc" id="L349" title="All 2 branches covered.">				int c = cmp == null ? JGAlgoUtils.cmpDefault(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L350" title="1 of 2 branches missed.">				if (c &lt; 0)</span>
+<span class="nc" id="L351">					throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
 			}
-<span class="fc" id="L340">		}</span>
+<span class="fc" id="L353">		}</span>
 
 		public static void decreaseKeyIsSmaller(int oldKey, int newKey, IntComparator cmp) {
-<span class="pc bpc" id="L343" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
-<span class="fc bfc" id="L344" title="All 2 branches covered.">				int c = cmp == null ? Integer.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
-<span class="pc bpc" id="L345" title="1 of 2 branches missed.">				if (c &lt; 0)</span>
-<span class="nc" id="L346">					throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
+<span class="pc bpc" id="L356" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">				int c = cmp == null ? Integer.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L358" title="1 of 2 branches missed.">				if (c &lt; 0)</span>
+<span class="nc" id="L359">					throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
 			}
-<span class="fc" id="L348">		}</span>
+<span class="fc" id="L361">		}</span>
 
 		public static void decreaseKeyIsSmaller(double oldKey, double newKey, DoubleComparator cmp) {
-<span class="pc bpc" id="L351" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
-<span class="fc bfc" id="L352" title="All 2 branches covered.">				int c = cmp == null ? Double.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
-<span class="pc bpc" id="L353" title="1 of 2 branches missed.">				if (c &lt; 0)</span>
-<span class="nc" id="L354">					throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
+<span class="pc bpc" id="L364" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">				int c = cmp == null ? Double.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L366" title="1 of 2 branches missed.">				if (c &lt; 0)</span>
+<span class="nc" id="L367">					throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
 			}
-<span class="fc" id="L356">		}</span>
+<span class="fc" id="L369">		}</span>
 
 		public static &lt;E&gt; void increaseKeyIsGreater(E oldKey, E newKey, Comparator&lt;? super E&gt; cmp) {
-<span class="pc bpc" id="L359" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
-<span class="fc bfc" id="L360" title="All 2 branches covered.">				int c = cmp == null ? JGAlgoUtils.cmpDefault(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
-<span class="pc bpc" id="L361" title="1 of 2 branches missed.">				if (c &gt; 0)</span>
-<span class="nc" id="L362">					throw new IllegalArgumentException(&quot;New key is smaller than existing one&quot;);</span>
+<span class="pc bpc" id="L372" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
+<span class="fc bfc" id="L373" title="All 2 branches covered.">				int c = cmp == null ? JGAlgoUtils.cmpDefault(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L374" title="1 of 2 branches missed.">				if (c &gt; 0)</span>
+<span class="nc" id="L375">					throw new IllegalArgumentException(&quot;New key is smaller than existing one&quot;);</span>
 			}
-<span class="fc" id="L364">		}</span>
+<span class="fc" id="L377">		}</span>
 
 		public static void increaseKeyIsGreater(int oldKey, int newKey, IntComparator cmp) {
-<span class="pc bpc" id="L367" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
-<span class="fc bfc" id="L368" title="All 2 branches covered.">				int c = cmp == null ? Integer.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
-<span class="pc bpc" id="L369" title="1 of 2 branches missed.">				if (c &gt; 0)</span>
-<span class="nc" id="L370">					throw new IllegalArgumentException(&quot;New key is smaller than existing one&quot;);</span>
+<span class="pc bpc" id="L380" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">				int c = cmp == null ? Integer.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L382" title="1 of 2 branches missed.">				if (c &gt; 0)</span>
+<span class="nc" id="L383">					throw new IllegalArgumentException(&quot;New key is smaller than existing one&quot;);</span>
 			}
-<span class="fc" id="L372">		}</span>
+<span class="fc" id="L385">		}</span>
 
 		public static void increaseKeyIsGreater(double oldKey, double newKey, DoubleComparator cmp) {
-<span class="pc bpc" id="L375" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
-<span class="fc bfc" id="L376" title="All 2 branches covered.">				int c = cmp == null ? Double.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
-<span class="pc bpc" id="L377" title="1 of 2 branches missed.">				if (c &gt; 0)</span>
-<span class="nc" id="L378">					throw new IllegalArgumentException(&quot;New key is smaller than existing one&quot;);</span>
+<span class="pc bpc" id="L388" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">				int c = cmp == null ? Double.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L390" title="1 of 2 branches missed.">				if (c &gt; 0)</span>
+<span class="nc" id="L391">					throw new IllegalArgumentException(&quot;New key is smaller than existing one&quot;);</span>
 			}
-<span class="fc" id="L380">		}</span>
+<span class="fc" id="L393">		}</span>
 
 		public static &lt;E&gt; void noMeldWithSelf(Heap&lt;E&gt; heap, Heap&lt;? extends E&gt; other) {
-<span class="pc bpc" id="L383" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
-<span class="pc bpc" id="L384" title="1 of 2 branches missed.">				if (heap == other)</span>
-<span class="nc" id="L385">					throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
+<span class="pc bpc" id="L396" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
+<span class="pc bpc" id="L397" title="1 of 2 branches missed.">				if (heap == other)</span>
+<span class="nc" id="L398">					throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
 			}
-<span class="fc" id="L387">		}</span>
+<span class="fc" id="L400">		}</span>
 
 		public static void noMeldWithSelf(ReferenceableHeap heap, ReferenceableHeap other) {
-<span class="pc bpc" id="L390" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
-<span class="fc bfc" id="L391" title="All 2 branches covered.">				if (heap == other)</span>
-<span class="fc" id="L392">					throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
+<span class="pc bpc" id="L403" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
+<span class="fc bfc" id="L404" title="All 2 branches covered.">				if (heap == other)</span>
+<span class="fc" id="L405">					throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
 			}
-<span class="fc" id="L394">		}</span>
+<span class="fc" id="L407">		}</span>
 
 		public static void meldWithSameImpl(Class&lt;? extends ReferenceableHeap&gt; impl, ReferenceableHeap other) {
-<span class="pc bpc" id="L397" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
-<span class="fc bfc" id="L398" title="All 2 branches covered.">				if (!impl.isAssignableFrom(other.getClass()))</span>
-<span class="fc" id="L399">					throw new IllegalArgumentException(&quot;Can't meld heaps with different implementations&quot;);</span>
+<span class="pc bpc" id="L410" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
+<span class="fc bfc" id="L411" title="All 2 branches covered.">				if (!impl.isAssignableFrom(other.getClass()))</span>
+<span class="fc" id="L412">					throw new IllegalArgumentException(&quot;Can't meld heaps with different implementations&quot;);</span>
 			}
-<span class="fc" id="L401">		}</span>
+<span class="fc" id="L414">		}</span>
 
 		public static &lt;E&gt; void equalComparatorBeforeMeld(Heap&lt;E&gt; heap, Heap&lt;? extends E&gt; other) {
-<span class="pc bpc" id="L404" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
-<span class="pc bpc" id="L405" title="1 of 2 branches missed.">				if (!Objects.equals(heap.comparator(), other.comparator()))</span>
-<span class="nc" id="L406">					throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
+<span class="pc bpc" id="L417" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
+<span class="pc bpc" id="L418" title="1 of 2 branches missed.">				if (!Objects.equals(heap.comparator(), other.comparator()))</span>
+<span class="nc" id="L419">					throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
 			}
-<span class="fc" id="L408">		}</span>
+<span class="fc" id="L421">		}</span>
 
 		public static void equalComparatorBeforeMeld(Comparator&lt;?&gt; c1, Comparator&lt;?&gt; c2) {
-<span class="pc bpc" id="L411" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
-<span class="fc bfc" id="L412" title="All 2 branches covered.">				if (!Objects.equals(c1, c2))</span>
-<span class="fc" id="L413">					throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
+<span class="pc bpc" id="L424" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
+<span class="fc bfc" id="L425" title="All 2 branches covered.">				if (!Objects.equals(c1, c2))</span>
+<span class="fc" id="L426">					throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
 			}
-<span class="fc" id="L415">		}</span>
+<span class="fc" id="L428">		}</span>
 
 		public static void notEmpty(Heap&lt;?&gt; heap) {
-<span class="pc bpc" id="L418" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsNotEmpty) {</span>
-<span class="fc bfc" id="L419" title="All 2 branches covered.">				if (heap.isEmpty())</span>
-<span class="fc" id="L420">					throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
+<span class="pc bpc" id="L431" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsNotEmpty) {</span>
+<span class="fc bfc" id="L432" title="All 2 branches covered.">				if (heap.isEmpty())</span>
+<span class="fc" id="L433">					throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
 			}
-<span class="fc" id="L422">		}</span>
+<span class="fc" id="L435">		}</span>
 
 		public static void notEmpty(ReferenceableHeap heap) {
-<span class="pc bpc" id="L425" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsNotEmpty) {</span>
-<span class="fc bfc" id="L426" title="All 2 branches covered.">				if (heap.isEmpty())</span>
-<span class="fc" id="L427">					throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
+<span class="pc bpc" id="L438" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsNotEmpty) {</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">				if (heap.isEmpty())</span>
+<span class="fc" id="L440">					throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
 			}
-<span class="fc" id="L429">		}</span>
+<span class="fc" id="L442">		}</span>
 
 	}
 

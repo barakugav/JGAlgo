@@ -63,7 +63,7 @@ abstract class GraphElementSet extends AbstractIntSet {
 
 	@Override
 	public int hashCode() {
-<span class="fc" id="L66">		return size * (size + 1) / 2;</span>
+<span class="fc" id="L66">		return size * (size - 1) / 2;</span>
 	}
 
 	void checkIdx(int idx) {
@@ -90,8 +90,8 @@ abstract class GraphElementSet extends AbstractIntSet {
 
 		@Override
 		void addRemoveListener(IndexRemoveListener listener) {
-<span class="fc" id="L93">			Objects.requireNonNull(listener);</span>
-<span class="fc" id="L94">		}</span>
+<span class="nc" id="L93">			Objects.requireNonNull(listener);</span>
+<span class="nc" id="L94">		}</span>
 
 		@Override
 <span class="nc" id="L97">		void removeRemoveListener(IndexRemoveListener listener) {}</span>
@@ -114,47 +114,52 @@ abstract class GraphElementSet extends AbstractIntSet {
 <span class="fc" id="L114">			return new GraphElementSet.Mutable(initSize, false);</span>
 		}
 
-		int newIdx() {
+		int add() {
 <span class="fc" id="L118">			int id = size++;</span>
 <span class="fc" id="L119">			return id;</span>
 		}
 
+		void addAll(int count) {
+<span class="pc bnc" id="L123" title="All 2 branches missed.">			assert count &gt;= 0;</span>
+<span class="fc" id="L124">			size += count;</span>
+<span class="fc" id="L125">		}</span>
+
 		void removeIdx(int idx) {
-<span class="pc bnc" id="L123" title="All 2 branches missed.">			assert idx == size - 1;</span>
-<span class="pc bnc" id="L124" title="All 2 branches missed.">			assert size &gt; 0;</span>
-<span class="fc bfc" id="L125" title="All 2 branches covered.">			for (IndexRemoveListener listener : removeListeners)</span>
-<span class="fc" id="L126">				listener.removeLast(idx);</span>
-<span class="fc" id="L127">			size--;</span>
-<span class="fc" id="L128">		}</span>
+<span class="pc bnc" id="L128" title="All 2 branches missed.">			assert idx == size - 1;</span>
+<span class="pc bnc" id="L129" title="All 2 branches missed.">			assert size &gt; 0;</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">			for (IndexRemoveListener listener : removeListeners)</span>
+<span class="fc" id="L131">				listener.removeLast(idx);</span>
+<span class="fc" id="L132">			size--;</span>
+<span class="fc" id="L133">		}</span>
 
 		@Override
 		public void clear() {
-<span class="fc" id="L132">			size = 0;</span>
-<span class="fc" id="L133">		}</span>
+<span class="fc" id="L137">			size = 0;</span>
+<span class="fc" id="L138">		}</span>
 
 		void swapAndRemove(int removedIdx, int swappedIdx) {
-<span class="fc" id="L136">			checkIdx(removedIdx);</span>
-<span class="fc" id="L137">			checkIdx(swappedIdx);</span>
-<span class="pc bnc" id="L138" title="All 2 branches missed.">			assert swappedIdx == size - 1;</span>
-<span class="pc bnc" id="L139" title="All 2 branches missed.">			assert size &gt; 0;</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">			for (IndexRemoveListener listener : removeListeners)</span>
-<span class="fc" id="L141">				listener.swapAndRemove(removedIdx, swappedIdx);</span>
-<span class="fc" id="L142">			size--;</span>
-<span class="fc" id="L143">		}</span>
+<span class="fc" id="L141">			checkIdx(removedIdx);</span>
+<span class="fc" id="L142">			checkIdx(swappedIdx);</span>
+<span class="pc bnc" id="L143" title="All 2 branches missed.">			assert swappedIdx == size - 1;</span>
+<span class="pc bnc" id="L144" title="All 2 branches missed.">			assert size &gt; 0;</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (IndexRemoveListener listener : removeListeners)</span>
+<span class="fc" id="L146">				listener.swapAndRemove(removedIdx, swappedIdx);</span>
+<span class="fc" id="L147">			size--;</span>
+<span class="fc" id="L148">		}</span>
 
 		GraphElementSet.Mutable copy() {
-<span class="fc" id="L146">			return new GraphElementSet.Mutable(size, isEdges);</span>
+<span class="fc" id="L151">			return new GraphElementSet.Mutable(size, isEdges);</span>
 		}
 
 		@Override
 		void addRemoveListener(IndexRemoveListener listener) {
-<span class="fc" id="L151">			removeListeners.add(Objects.requireNonNull(listener));</span>
-<span class="fc" id="L152">		}</span>
+<span class="fc" id="L156">			removeListeners.add(Objects.requireNonNull(listener));</span>
+<span class="fc" id="L157">		}</span>
 
 		@Override
 		void removeRemoveListener(IndexRemoveListener listener) {
-<span class="fc" id="L156">			removeListeners.remove(listener);</span>
-<span class="fc" id="L157">		}</span>
+<span class="fc" id="L161">			removeListeners.remove(listener);</span>
+<span class="fc" id="L162">		}</span>
 	}
 
 }

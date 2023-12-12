@@ -138,10 +138,15 @@ public interface Dfs {
 		@Override
 		public int nextInt();
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use the corresponding type-specific method instead.
+		 */
 		@Deprecated
 		@Override
 		default Integer next() {
-<span class="fc" id="L144">			return Integer.valueOf(nextInt());</span>
+<span class="fc" id="L149">			return Integer.valueOf(nextInt());</span>
 		}
 
 		@Override

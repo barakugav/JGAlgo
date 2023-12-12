@@ -169,11 +169,16 @@ public interface TreePathMaxima {
 		 */
 		void addQuery(int u, int v);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #addQuery(int, int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default void addQuery(Integer u, Integer v) {
-<span class="fc" id="L175">			addQuery(u.intValue(), v.intValue());</span>
-<span class="fc" id="L176">		}</span>
+<span class="fc" id="L180">			addQuery(u.intValue(), v.intValue());</span>
+<span class="fc" id="L181">		}</span>
 
 		/**
 		 * Get a query source by index.
@@ -188,10 +193,15 @@ public interface TreePathMaxima {
 		 */
 		int getQuerySourceInt(int idx);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getQuerySourceInt(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer getQuerySource(int idx) {
-<span class="fc" id="L194">			return Integer.valueOf(getQuerySourceInt(idx));</span>
+<span class="fc" id="L204">			return Integer.valueOf(getQuerySourceInt(idx));</span>
 		}
 
 		/**
@@ -207,10 +217,15 @@ public interface TreePathMaxima {
 		 */
 		int getQueryTargetInt(int idx);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getQueryTargetInt(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer getQueryTarget(int idx) {
-<span class="fc" id="L213">			return Integer.valueOf(getQueryTargetInt(idx));</span>
+<span class="fc" id="L228">			return Integer.valueOf(getQueryTargetInt(idx));</span>
 		}
 	}
 
@@ -275,10 +290,15 @@ public interface TreePathMaxima {
 		 */
 		int getHeaviestEdgeInt(int queryIdx);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getHeaviestEdgeInt(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer getHeaviestEdge(int queryIdx) {
-<span class="fc" id="L281">			return Integer.valueOf(getHeaviestEdgeInt(queryIdx));</span>
+<span class="fc" id="L301">			return Integer.valueOf(getHeaviestEdgeInt(queryIdx));</span>
 		}
 	}
 
@@ -292,7 +312,7 @@ public interface TreePathMaxima {
 	 * @return a default implementation of {@link TreePathMaxima}
 	 */
 	static TreePathMaxima newInstance() {
-<span class="nc" id="L295">		return builder().build();</span>
+<span class="nc" id="L315">		return builder().build();</span>
 	}
 
 	/**
@@ -304,27 +324,27 @@ public interface TreePathMaxima {
 	 * @return a new builder that can build {@link TreePathMaxima} objects
 	 */
 	static TreePathMaxima.Builder builder() {
-<span class="nc" id="L307">		return new TreePathMaxima.Builder() {</span>
+<span class="nc" id="L327">		return new TreePathMaxima.Builder() {</span>
 
 			boolean bitsLookupTablesEnable;
 
 			@Override
 			public TreePathMaxima build() {
-<span class="nc" id="L313">				TreePathMaximaHagerup tpm = new TreePathMaximaHagerup();</span>
-<span class="nc" id="L314">				tpm.setBitsLookupTablesEnable(bitsLookupTablesEnable);</span>
-<span class="nc" id="L315">				return tpm;</span>
+<span class="nc" id="L333">				TreePathMaximaHagerup tpm = new TreePathMaximaHagerup();</span>
+<span class="nc" id="L334">				tpm.setBitsLookupTablesEnable(bitsLookupTablesEnable);</span>
+<span class="nc" id="L335">				return tpm;</span>
 			}
 
 			@Override
 			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L320" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L340" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;bits-lookup-tables-enable&quot;:
-<span class="nc" id="L322">						bitsLookupTablesEnable = ((Boolean) value).booleanValue();</span>
-<span class="nc" id="L323">						break;</span>
+<span class="nc" id="L342">						bitsLookupTablesEnable = ((Boolean) value).booleanValue();</span>
+<span class="nc" id="L343">						break;</span>
 					default:
-<span class="nc" id="L325">						TreePathMaxima.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L345">						TreePathMaxima.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L327">			}</span>
+<span class="nc" id="L347">			}</span>
 
 		};
 	}
@@ -370,17 +390,17 @@ public interface TreePathMaxima {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;V, E&gt; boolean verifyMST(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w, Collection&lt;E&gt; mstEdges,
 			TreePathMaxima tpmAlgo) {
-<span class="pc bpc" id="L373" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L374">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="nc" id="L375">			IntCollection mstEdges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) mstEdges);</span>
-<span class="nc" id="L376">			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w0, mstEdges0, tpmAlgo);</span>
+<span class="pc bpc" id="L393" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L394">			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
+<span class="nc" id="L395">			IntCollection mstEdges0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) mstEdges);</span>
+<span class="nc" id="L396">			return TreePathMaximaUtils.verifyMST((IndexGraph) g, w0, mstEdges0, tpmAlgo);</span>
 
 		} else {
-<span class="fc" id="L379">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L380">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L381">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L382">			IntCollection iMstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);</span>
-<span class="fc" id="L383">			return TreePathMaximaUtils.verifyMST(iGraph, iw, iMstEdges, tpmAlgo);</span>
+<span class="fc" id="L399">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L400">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L401">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L402">			IntCollection iMstEdges = IndexIdMaps.idToIndexCollection(mstEdges, eiMap);</span>
+<span class="fc" id="L403">			return TreePathMaximaUtils.verifyMST(iGraph, iw, iMstEdges, tpmAlgo);</span>
 		}
 	}
 

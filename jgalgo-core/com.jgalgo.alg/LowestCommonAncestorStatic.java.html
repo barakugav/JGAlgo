@@ -113,10 +113,15 @@ public interface LowestCommonAncestorStatic {
 		 */
 		int findLca(int u, int v);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #findLca(int, int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer findLca(Integer u, Integer v) {
-<span class="fc" id="L119">			return Integer.valueOf(findLca(u.intValue(), v.intValue()));</span>
+<span class="fc" id="L124">			return Integer.valueOf(findLca(u.intValue(), v.intValue()));</span>
 		}
 	}
 
@@ -129,7 +134,7 @@ public interface LowestCommonAncestorStatic {
 	 * @return a default implementation of {@link LowestCommonAncestorStatic}
 	 */
 	static LowestCommonAncestorStatic newInstance() {
-<span class="nc" id="L132">		return new LowestCommonAncestorStaticRMQ();</span>
+<span class="nc" id="L137">		return new LowestCommonAncestorStaticRMQ();</span>
 	}
 
 }

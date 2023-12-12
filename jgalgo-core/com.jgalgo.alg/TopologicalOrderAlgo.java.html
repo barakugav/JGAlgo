@@ -108,15 +108,20 @@ public interface TopologicalOrderAlgo {
 		 */
 		int vertexOrderIndex(int vertex);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #vertexOrderIndex(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default int vertexOrderIndex(Integer vertex) {
-<span class="fc" id="L114">			return vertexOrderIndex(vertex.intValue());</span>
+<span class="fc" id="L119">			return vertexOrderIndex(vertex.intValue());</span>
 		}
 
 		@Override
 		default IntComparator orderComparator() {
-<span class="fc" id="L119">			return (v1, v2) -&gt; Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));</span>
+<span class="fc" id="L124">			return (v1, v2) -&gt; Integer.compare(vertexOrderIndex(v1), vertexOrderIndex(v2));</span>
 		}
 	}
 
@@ -129,7 +134,7 @@ public interface TopologicalOrderAlgo {
 	 * @return a default implementation of {@link TopologicalOrderAlgo}
 	 */
 	static TopologicalOrderAlgo newInstance() {
-<span class="fc" id="L132">		return new TopologicalOrderAlgoImpl();</span>
+<span class="fc" id="L137">		return new TopologicalOrderAlgoImpl();</span>
 	}
 
 }

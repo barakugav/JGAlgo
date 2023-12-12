@@ -167,10 +167,15 @@ public interface VoronoiAlgo {
 		 */
 		double distance(int vertex);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #distance(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default double distance(Integer vertex) {
-<span class="fc" id="L173">			return distance(vertex.intValue());</span>
+<span class="fc" id="L178">			return distance(vertex.intValue());</span>
 		}
 
 		/**
@@ -186,10 +191,15 @@ public interface VoronoiAlgo {
 		 */
 		IPath getPath(int target);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getPath(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default IPath getPath(Integer target) {
-<span class="fc" id="L192">			return getPath(target.intValue());</span>
+<span class="fc" id="L202">			return getPath(target.intValue());</span>
 		}
 
 		/**
@@ -209,11 +219,16 @@ public interface VoronoiAlgo {
 		 */
 		int blockSiteInt(int block);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #blockSiteInt(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer blockSite(int block) {
-<span class="fc" id="L215">			int site = blockSiteInt(block);</span>
-<span class="fc bfc" id="L216" title="All 2 branches covered.">			return site == -1 ? null : Integer.valueOf(site);</span>
+<span class="fc" id="L230">			int site = blockSiteInt(block);</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">			return site == -1 ? null : Integer.valueOf(site);</span>
 		}
 
 		/**
@@ -229,11 +244,16 @@ public interface VoronoiAlgo {
 		 */
 		int vertexSite(int vertex);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #vertexSite(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer vertexSite(Integer vertex) {
-<span class="fc" id="L235">			int site = vertexSite(vertex.intValue());</span>
-<span class="fc bfc" id="L236" title="All 2 branches covered.">			return site == -1 ? null : Integer.valueOf(site);</span>
+<span class="fc" id="L255">			int site = vertexSite(vertex.intValue());</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">			return site == -1 ? null : Integer.valueOf(site);</span>
 		}
 	}
 
@@ -246,7 +266,7 @@ public interface VoronoiAlgo {
 	 * @return a default implementation of {@link VoronoiAlgo}
 	 */
 	static VoronoiAlgo newInstance() {
-<span class="fc" id="L249">		return new VoronoiAlgoDijkstra();</span>
+<span class="fc" id="L269">		return new VoronoiAlgoDijkstra();</span>
 	}
 
 }

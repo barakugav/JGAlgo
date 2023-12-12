@@ -136,10 +136,15 @@ public interface ShortestPathAllPairs {
 		 */
 		public double distance(int source, int target);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #distance(int, int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default double distance(Integer source, Integer target) {
-<span class="fc" id="L142">			return distance(source.intValue(), target.intValue());</span>
+<span class="fc" id="L147">			return distance(source.intValue(), target.intValue());</span>
 		}
 
 		/**
@@ -151,10 +156,15 @@ public interface ShortestPathAllPairs {
 		 */
 		public IPath getPath(int source, int target);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getPath(int, int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default IPath getPath(Integer source, Integer target) {
-<span class="fc" id="L157">			return getPath(source.intValue(), target.intValue());</span>
+<span class="fc" id="L167">			return getPath(source.intValue(), target.intValue());</span>
 		}
 	}
 
@@ -168,7 +178,7 @@ public interface ShortestPathAllPairs {
 	 * @return a default implementation of {@link ShortestPathAllPairs}
 	 */
 	static ShortestPathAllPairs newInstance() {
-<span class="fc" id="L171">		return builder().build();</span>
+<span class="fc" id="L181">		return builder().build();</span>
 	}
 
 	/**
@@ -180,47 +190,47 @@ public interface ShortestPathAllPairs {
 	 * @return a new builder that can build {@link ShortestPathAllPairs} objects
 	 */
 	static ShortestPathAllPairs.Builder builder() {
-<span class="fc" id="L183">		return new ShortestPathAllPairs.Builder() {</span>
+<span class="fc" id="L193">		return new ShortestPathAllPairs.Builder() {</span>
 			private boolean cardinalityWeight;
 			String impl;
 
 			@Override
 			public ShortestPathAllPairs build() {
-<span class="pc bpc" id="L189" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L190" title="All 4 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L199" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L200" title="All 4 branches missed.">					switch (impl) {</span>
 						case &quot;cardinality&quot;:
-<span class="nc" id="L192">							return new ShortestPathAllPairsCardinality();</span>
+<span class="nc" id="L202">							return new ShortestPathAllPairsCardinality();</span>
 						case &quot;floyd-warshall&quot;:
-<span class="nc" id="L194">							return new ShortestPathAllPairsFloydWarshall();</span>
+<span class="nc" id="L204">							return new ShortestPathAllPairsFloydWarshall();</span>
 						case &quot;johnson&quot;:
-<span class="nc" id="L196">							return new ShortestPathAllPairsJohnson();</span>
+<span class="nc" id="L206">							return new ShortestPathAllPairsJohnson();</span>
 						default:
-<span class="nc" id="L198">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L208">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="fc" id="L201">				ShortestPathAllPairs cardinalityAlgo = new ShortestPathAllPairsCardinality();</span>
-<span class="pc bpc" id="L202" title="1 of 2 branches missed.">				if (cardinalityWeight)</span>
-<span class="nc" id="L203">					return cardinalityAlgo;</span>
-<span class="fc" id="L204">				return new ShortestPathAllPairs() {</span>
-<span class="fc" id="L205">					final ShortestPathAllPairs weightedAlgo = new ShortestPathAllPairsJohnson();</span>
+<span class="fc" id="L211">				ShortestPathAllPairs cardinalityAlgo = new ShortestPathAllPairsCardinality();</span>
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">				if (cardinalityWeight)</span>
+<span class="nc" id="L213">					return cardinalityAlgo;</span>
+<span class="fc" id="L214">				return new ShortestPathAllPairs() {</span>
+<span class="fc" id="L215">					final ShortestPathAllPairs weightedAlgo = new ShortestPathAllPairsJohnson();</span>
 
 					@Override
 					public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeAllShortestPaths(Graph&lt;V, E&gt; g,
 							WeightFunction&lt;E&gt; w) {
-<span class="fc bfc" id="L210" title="All 2 branches covered.">						if (WeightFunction.isCardinality(w)) {</span>
-<span class="fc" id="L211">							return cardinalityAlgo.computeAllShortestPaths(g, null);</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">						if (WeightFunction.isCardinality(w)) {</span>
+<span class="fc" id="L221">							return cardinalityAlgo.computeAllShortestPaths(g, null);</span>
 						} else {
-<span class="fc" id="L213">							return weightedAlgo.computeAllShortestPaths(g, w);</span>
+<span class="fc" id="L223">							return weightedAlgo.computeAllShortestPaths(g, w);</span>
 						}
 					}
 
 					@Override
 					public &lt;V, E&gt; ShortestPathAllPairs.Result&lt;V, E&gt; computeSubsetShortestPaths(Graph&lt;V, E&gt; g,
 							Collection&lt;V&gt; verticesSubset, WeightFunction&lt;E&gt; w) {
-<span class="pc bpc" id="L220" title="1 of 2 branches missed.">						if (WeightFunction.isCardinality(w)) {</span>
-<span class="nc" id="L221">							return cardinalityAlgo.computeSubsetShortestPaths(g, verticesSubset, null);</span>
+<span class="pc bpc" id="L230" title="1 of 2 branches missed.">						if (WeightFunction.isCardinality(w)) {</span>
+<span class="nc" id="L231">							return cardinalityAlgo.computeSubsetShortestPaths(g, verticesSubset, null);</span>
 						} else {
-<span class="fc" id="L223">							return weightedAlgo.computeSubsetShortestPaths(g, verticesSubset, w);</span>
+<span class="fc" id="L233">							return weightedAlgo.computeSubsetShortestPaths(g, verticesSubset, w);</span>
 						}
 					}
 				};
@@ -228,20 +238,20 @@ public interface ShortestPathAllPairs {
 
 			@Override
 			public ShortestPathAllPairs.Builder setCardinality(boolean cardinalityWeight) {
-<span class="nc" id="L231">				this.cardinalityWeight = cardinalityWeight;</span>
-<span class="nc" id="L232">				return this;</span>
+<span class="nc" id="L241">				this.cardinalityWeight = cardinalityWeight;</span>
+<span class="nc" id="L242">				return this;</span>
 			}
 
 			@Override
 			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L237" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L239">						impl = (String) value;</span>
-<span class="nc" id="L240">						break;</span>
+<span class="nc" id="L249">						impl = (String) value;</span>
+<span class="nc" id="L250">						break;</span>
 					default:
-<span class="nc" id="L242">						ShortestPathAllPairs.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L252">						ShortestPathAllPairs.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L244">			}</span>
+<span class="nc" id="L254">			}</span>
 		};
 	}
 

@@ -19,110 +19,129 @@ package com.jgalgo.graph;
 import java.util.Iterator;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMaps;
-import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntMaps;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
-	@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L29">	static final Int2ObjectMap&lt;int[]&gt;[] EMPTY_MAP_ARRAY = new Int2ObjectMap[0];</span>
-<span class="fc" id="L30">	static final int[] EmptyEdgeArr = new int[] { 0 };</span>
-	static final Int2ObjectMap&lt;int[]&gt; EmptyEdgeMap;
+	int[] edgeNext;
+	int[] edgePrev;
+	private final DataContainer.Int edgeNextContainer;
+	private final DataContainer.Int edgePrevContainer;
+
+<span class="fc" id="L33">	static final Int2IntMap[] EMPTY_MAP_ARRAY = new Int2IntMap[0];</span>
+	static final Int2IntMap EmptyEdgeMap;
 	static {
-<span class="fc" id="L33">		Int2ObjectMap&lt;int[]&gt; emptyEdgeMap = new Int2ObjectOpenHashMap&lt;&gt;(0);</span>
-<span class="fc" id="L34">		emptyEdgeMap.defaultReturnValue(EmptyEdgeArr);</span>
-		// emptyEdgeMap = Int2ObjectMaps.unmodifiable(emptyEdgeMap);
-<span class="fc" id="L36">		EmptyEdgeMap = emptyEdgeMap;</span>
-<span class="fc" id="L37">	}</span>
+<span class="fc" id="L36">		Int2IntMap emptyEdgeMap = new Int2IntOpenHashMap(0);</span>
+<span class="fc" id="L37">		emptyEdgeMap.defaultReturnValue(-1);</span>
+		// emptyEdgeMap = Int2IntMaps.unmodifiable(emptyEdgeMap);
+<span class="fc" id="L39">		EmptyEdgeMap = emptyEdgeMap;</span>
+<span class="fc" id="L40">	}</span>
 
 	GraphHashmapMultiAbstract(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum,
 			int expectedEdgesNum) {
-<span class="fc" id="L41">		super(capabilities, expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L42">	}</span>
+<span class="fc" id="L44">		super(capabilities, expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L45">		edgeNextContainer = newEdgesIntContainer(-1, newArr -&gt; edgeNext = newArr);</span>
+<span class="fc" id="L46">		edgePrevContainer = newEdgesIntContainer(-1, newArr -&gt; edgePrev = newArr);</span>
+<span class="fc" id="L47">	}</span>
 
 	GraphHashmapMultiAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
-<span class="fc" id="L46">		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);</span>
-<span class="fc" id="L47">	}</span>
+<span class="fc" id="L51">		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);</span>
+
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		if (g instanceof GraphHashmapMultiAbstract) {</span>
+<span class="fc" id="L54">			GraphHashmapMultiAbstract g0 = (GraphHashmapMultiAbstract) g;</span>
+
+<span class="fc" id="L56">			edgeNextContainer = copyEdgesContainer(g0.edgeNextContainer, newArr -&gt; edgeNext = newArr);</span>
+<span class="fc" id="L57">			edgePrevContainer = copyEdgesContainer(g0.edgePrevContainer, newArr -&gt; edgePrev = newArr);</span>
+<span class="fc" id="L58">		} else {</span>
+<span class="fc" id="L59">			edgeNextContainer = newEdgesIntContainer(-1, newArr -&gt; edgeNext = newArr);</span>
+<span class="fc" id="L60">			edgePrevContainer = newEdgesIntContainer(-1, newArr -&gt; edgePrev = newArr);</span>
+		}
+<span class="fc" id="L62">	}</span>
 
 	GraphHashmapMultiAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
-<span class="fc" id="L50">		super(capabilities, builder);</span>
-<span class="fc" id="L51">	}</span>
+<span class="fc" id="L65">		super(capabilities, builder);</span>
+<span class="fc" id="L66">		edgeNextContainer = newEdgesIntContainer(-1, newArr -&gt; edgeNext = newArr);</span>
+<span class="fc" id="L67">		edgePrevContainer = newEdgesIntContainer(-1, newArr -&gt; edgePrev = newArr);</span>
+<span class="fc" id="L68">	}</span>
 
-	static int edgeIndexInArr(int[] edgesArr, int edge) {
-<span class="fc" id="L54">		for (int edgesNum = edgesArr[0], i = 1;; i++) {</span>
-<span class="pc bnc" id="L55" title="All 2 branches missed.">			assert i &lt;= edgesNum;</span>
-<span class="fc bfc" id="L56" title="All 2 branches covered.">			if (edgesArr[i] == edge)</span>
-<span class="fc" id="L57">				return i;</span>
-		}
-	}
+	@Override
+	public void clearEdges() {
+<span class="fc" id="L72">		edgeNextContainer.clear();</span>
+<span class="fc" id="L73">		edgePrevContainer.clear();</span>
+<span class="fc" id="L74">		super.clearEdges();</span>
+<span class="fc" id="L75">	}</span>
 
-<span class="fc" id="L61">	private abstract class EdgeIterBase implements IEdgeIter {</span>
+	void removeAllEdgesInList(int firstEdge) {
+		for (;;) {
+<span class="fc" id="L79">			int nextEdge = edgeNext[firstEdge];</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			if (nextEdge == -1) {</span>
+<span class="fc" id="L81">				removeEdge(firstEdge);</span>
+<span class="fc" id="L82">				break;</span>
+			}
+<span class="fc bfc" id="L84" title="All 2 branches covered.">			if (firstEdge == edges().size() - 1)</span>
+<span class="fc" id="L85">				firstEdge = nextEdge; /* the first edge index will be swapped with the removed edge */</span>
+<span class="fc" id="L86">			removeEdge(nextEdge);</span>
+<span class="fc" id="L87">		}</span>
+<span class="fc" id="L88">	}</span>
+
+<span class="fc" id="L90">	private abstract class EdgeIterBase implements IEdgeIter {</span>
 
 		// either the source or target of the iterator
 		final int vertex;
+		private Iterator&lt;Int2IntMap.Entry&gt; eit;
+<span class="fc" id="L95">		private int nextEdge = -1;</span>
+		private int nextEndpoint;
+<span class="fc" id="L97">		private int prevEdge = -1;</span>
+		int prevEndpoint;
+		private Int2IntMap clonedMap;
+		// private final Int2IntMap originalMap;
 
-		private Iterator&lt;Int2ObjectMap.Entry&lt;int[]&gt;&gt; endpointIter;
-
-		private int endpoint;
-		private int[] endpointEdges;
-		private int endpointEdgesNum;
-		/* index in range [1, endpointEdgesNum], rather than the usual [0, endpointEdgesNum) */
-<span class="fc" id="L72">		private int endpointEdgeIdx = 1;</span>
-
-<span class="fc" id="L74">		private int prevEdge = -1;</span>
-<span class="fc" id="L75">		int prevEndpoint = -1;</span>
-		private Int2ObjectMap&lt;int[]&gt; clonedMap;
-		private final Int2ObjectMap&lt;int[]&gt; originalMap;
-
-<span class="fc" id="L79">		EdgeIterBase(int vertex, Int2ObjectMap&lt;int[]&gt; edges) {</span>
-<span class="fc" id="L80">			this.vertex = vertex;</span>
-<span class="fc" id="L81">			originalMap = edges;</span>
-<span class="fc" id="L82">			endpointIter = Int2ObjectMaps.fastIterator(edges);</span>
-<span class="fc" id="L83">			advance();</span>
-<span class="fc" id="L84">		}</span>
+<span class="fc" id="L102">		EdgeIterBase(int vertex, Int2IntMap edges) {</span>
+<span class="fc" id="L103">			this.vertex = vertex;</span>
+			// originalMap = edges;
+<span class="fc" id="L105">			eit = Int2IntMaps.fastIterator(edges);</span>
+<span class="fc" id="L106">			advance();</span>
+<span class="fc" id="L107">		}</span>
 
 		private void advance() {
-<span class="fc bfc" id="L87" title="All 2 branches covered.">			if (endpointEdgeIdx &lt;= endpointEdgesNum)</span>
-<span class="fc" id="L88">				return;</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">			if (endpointIter.hasNext()) {</span>
-<span class="fc" id="L90">				Int2ObjectMap.Entry&lt;int[]&gt; entry = endpointIter.next();</span>
-<span class="fc" id="L91">				endpoint = entry.getIntKey();</span>
-<span class="fc" id="L92">				endpointEdges = entry.getValue();</span>
-<span class="fc" id="L93">				endpointEdgesNum = endpointEdges[0];</span>
-<span class="fc" id="L94">				endpointEdgeIdx = 1;</span>
-<span class="pc bnc" id="L95" title="All 2 branches missed.">				assert endpointEdgesNum &gt; 0;</span>
-<span class="fc" id="L96">			} else {</span>
-<span class="fc" id="L97">				endpointEdgesNum = 0;</span>
-<span class="fc" id="L98">				endpointEdgeIdx = 1;</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">			if (nextEdge &gt;= 0)</span>
+<span class="fc" id="L111">				return;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			if (eit.hasNext()) {</span>
+<span class="fc" id="L113">				Int2IntMap.Entry entry = eit.next();</span>
+<span class="fc" id="L114">				nextEndpoint = entry.getIntKey();</span>
+<span class="fc" id="L115">				nextEdge = entry.getIntValue();</span>
+<span class="pc bnc" id="L116" title="All 2 branches missed.">				assert nextEdge &gt;= 0;</span>
 			}
-<span class="fc" id="L100">		}</span>
+<span class="fc" id="L118">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L104" title="All 2 branches covered.">			return endpointEdgeIdx &lt;= endpointEdgesNum;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">			return nextEdge &gt;= 0;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L109">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L110">			prevEdge = endpointEdges[endpointEdgeIdx++];</span>
-<span class="fc" id="L111">			prevEndpoint = endpoint;</span>
-<span class="fc" id="L112">			advance();</span>
-<span class="fc" id="L113">			return prevEdge;</span>
+<span class="fc" id="L127">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L128">			prevEdge = nextEdge;</span>
+<span class="fc" id="L129">			prevEndpoint = nextEndpoint;</span>
+<span class="fc" id="L130">			nextEdge = edgeNext[prevEdge];</span>
+<span class="fc" id="L131">			advance();</span>
+<span class="fc" id="L132">			return prevEdge;</span>
 		}
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L118">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L119">			return endpointEdges[endpointEdgeIdx];</span>
+<span class="fc" id="L137">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L138">			return nextEdge;</span>
 		}
 
 		@Override
 		public void remove() {
-<span class="pc bpc" id="L124" title="1 of 2 branches missed.">			if (prevEdge == -1)</span>
-<span class="nc" id="L125">				throw new IllegalStateException();</span>
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">			if (prevEdge == -1)</span>
+<span class="nc" id="L144">				throw new IllegalStateException();</span>
 
 			/*
 			 * remove() is hard to implement due to two reasons: (1) if we want to provide peekNext(), we can not use
@@ -130,59 +149,76 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 			 * forced to use HashMap.remove() which can not be used during iteration, so we clone the map. (2) If we
 			 * choose to clone the map, it will not be updated when edges are swapped, so we have to update it manually.
 			 */
-<span class="fc bfc" id="L133" title="All 2 branches covered.">			if (clonedMap == null) {</span>
-<span class="fc" id="L134">				clonedMap = new Int2ObjectOpenHashMap&lt;&gt;(1);</span>
-<span class="fc" id="L135">				clonedMap.defaultReturnValue(EmptyEdgeArr);</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">				while (endpointIter.hasNext()) {</span>
-<span class="fc" id="L137">					Int2ObjectMap.Entry&lt;int[]&gt; entry = endpointIter.next();</span>
-<span class="fc" id="L138">					clonedMap.put(entry.getIntKey(), entry.getValue());</span>
-<span class="fc" id="L139">				}</span>
-<span class="fc" id="L140">				endpointIter = Int2ObjectMaps.fastIterator(clonedMap);</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">			if (clonedMap == null) {</span>
+<span class="fc" id="L153">				clonedMap = new Int2IntOpenHashMap(1);</span>
+<span class="fc" id="L154">				clonedMap.defaultReturnValue(-1);</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">				while (eit.hasNext()) {</span>
+<span class="fc" id="L156">					Int2IntMap.Entry entry = eit.next();</span>
+<span class="fc" id="L157">					clonedMap.put(entry.getIntKey(), entry.getIntValue());</span>
+<span class="fc" id="L158">				}</span>
+<span class="fc" id="L159">				eit = Int2IntMaps.fastIterator(clonedMap);</span>
 			}
 
-<span class="fc" id="L143">			removeEdge(prevEdge);</span>
-<span class="fc" id="L144">			prevEdge = -1;</span>
-
-<span class="fc bfc" id="L146" title="All 2 branches covered.">			if (endpointEdgeIdx &gt; 1) {</span>
-<span class="fc" id="L147">				endpointEdgeIdx--;</span>
-<span class="fc" id="L148">				endpointEdges = originalMap.get(endpoint);</span>
-<span class="fc" id="L149">				endpointEdgesNum--;</span>
-<span class="pc bnc" id="L150" title="All 2 branches missed.">				assert endpointEdgesNum == endpointEdges[0];</span>
+<span class="fc" id="L162">			int lastEdge = edges().size() - 1;</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">			if (prevEdge != lastEdge) {</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">				if (isDirected()) {</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">					if (this instanceof EdgeIterOut) {</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">						if (GraphHashmapMultiAbstract.this.source(lastEdge) == vertex)</span>
+<span class="fc" id="L167">							clonedMap.replace(GraphHashmapMultiAbstract.this.target(lastEdge), lastEdge, prevEdge);</span>
+					} else {
+<span class="pc bnc" id="L169" title="All 2 branches missed.">						assert this instanceof EdgeIterIn;</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">						if (GraphHashmapMultiAbstract.this.target(lastEdge) == vertex)</span>
+<span class="fc" id="L171">							clonedMap.replace(GraphHashmapMultiAbstract.this.source(lastEdge), lastEdge, prevEdge);</span>
+					}
+				} else {
+<span class="fc" id="L174">					int lastSource = GraphHashmapMultiAbstract.this.source(lastEdge);</span>
+<span class="fc" id="L175">					int lastTarget = GraphHashmapMultiAbstract.this.target(lastEdge);</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">					if (lastSource == vertex) {</span>
+<span class="fc" id="L177">						clonedMap.replace(lastTarget, lastEdge, prevEdge);</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">					} else if (lastTarget == vertex) {</span>
+<span class="fc" id="L179">						clonedMap.replace(lastSource, lastEdge, prevEdge);</span>
+					}
+				}
+<span class="fc bfc" id="L182" title="All 2 branches covered.">				if (nextEdge == lastEdge)</span>
+<span class="fc" id="L183">					nextEdge = prevEdge;</span>
 			}
-<span class="fc" id="L152">		}</span>
+
+<span class="fc" id="L186">			removeEdge(prevEdge);</span>
+<span class="fc" id="L187">			prevEdge = -1;</span>
+<span class="fc" id="L188">		}</span>
 	}
 
 	class EdgeIterOut extends EdgeIterBase {
 
-<span class="fc" id="L157">		EdgeIterOut(int source, Int2ObjectMap&lt;int[]&gt; edges) {</span>
-<span class="fc" id="L158">			super(source, edges);</span>
-<span class="fc" id="L159">		}</span>
+<span class="fc" id="L193">		EdgeIterOut(int source, Int2IntMap edges) {</span>
+<span class="fc" id="L194">			super(source, edges);</span>
+<span class="fc" id="L195">		}</span>
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L163">			return vertex;</span>
+<span class="fc" id="L199">			return vertex;</span>
 		}
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L168">			return prevEndpoint;</span>
+<span class="fc" id="L204">			return prevEndpoint;</span>
 		}
 	}
 
 	class EdgeIterIn extends EdgeIterBase {
 
-<span class="fc" id="L174">		EdgeIterIn(int target, Int2ObjectMap&lt;int[]&gt; edges) {</span>
-<span class="fc" id="L175">			super(target, edges);</span>
-<span class="fc" id="L176">		}</span>
+<span class="fc" id="L210">		EdgeIterIn(int target, Int2IntMap edges) {</span>
+<span class="fc" id="L211">			super(target, edges);</span>
+<span class="fc" id="L212">		}</span>
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L180">			return prevEndpoint;</span>
+<span class="fc" id="L216">			return prevEndpoint;</span>
 		}
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L185">			return vertex;</span>
+<span class="fc" id="L221">			return vertex;</span>
 		}
 	}
 
@@ -191,93 +227,91 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 		final int source;
 		final int target;
 
-<span class="fc" id="L194">		SourceTargetEdgeSet(int source, int target) {</span>
-<span class="fc" id="L195">			this.source = source;</span>
-<span class="fc" id="L196">			this.target = target;</span>
-<span class="fc" id="L197">		}</span>
+<span class="fc" id="L230">		SourceTargetEdgeSet(int source, int target) {</span>
+<span class="fc" id="L231">			this.source = source;</span>
+<span class="fc" id="L232">			this.target = target;</span>
+<span class="fc" id="L233">		}</span>
 
-		abstract Int2ObjectMap&lt;int[]&gt; edgesOut(int source);
+		abstract Int2IntMap edgesOut(int source);
 
 		@Override
 		public int size() {
-<span class="fc" id="L203">			return edgesOut(source).get(target)[0];</span>
+<span class="fc" id="L239">			int s = 0;</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">			for (int e = edgesOut(source).get(target); e &gt;= 0; e = edgeNext[e])</span>
+<span class="fc" id="L241">				s++;</span>
+<span class="fc" id="L242">			return s;</span>
 		}
 
 		@Override
 		public boolean remove(int edge) {
-<span class="fc bfc" id="L208" title="All 2 branches covered.">			if (!contains(edge))</span>
-<span class="fc" id="L209">				return false;</span>
-<span class="fc" id="L210">			removeEdge(edge);</span>
-<span class="fc" id="L211">			return true;</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">			if (!contains(edge))</span>
+<span class="fc" id="L248">				return false;</span>
+<span class="fc" id="L249">			removeEdge(edge);</span>
+<span class="fc" id="L250">			return true;</span>
 		}
 
 		@Override
 		public void clear() {
-			for (;;) {
-<span class="fc" id="L217">				int[] edgesArr = edgesOut(source).get(target);</span>
-<span class="fc" id="L218">				int edgesNum = edgesArr[0];</span>
-<span class="fc bfc" id="L219" title="All 2 branches covered.">				if (edgesNum == 0)</span>
-<span class="fc" id="L220">					break;</span>
-<span class="fc" id="L221">				removeEdge(edgesArr[1]);</span>
-<span class="fc" id="L222">			}</span>
-<span class="fc" id="L223">		}</span>
+<span class="fc" id="L255">			int firstEdge = edgesOut(source).get(target);</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">			if (firstEdge &gt;= 0)</span>
+<span class="fc" id="L257">				removeAllEdgesInList(firstEdge);</span>
+<span class="fc" id="L258">		}</span>
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L227">			return new IEdgeIter() {</span>
+<span class="fc" id="L262">			return new IEdgeIter() {</span>
 
-<span class="fc" id="L229">				int[] edgesArr = edgesOut(source).get(target);</span>
-<span class="fc" id="L230">				int edgesNum = edgesArr[0];</span>
-<span class="fc" id="L231">				int edgeIdx = 1; /* index in range [1, edgesNum], rather than the usual [0, edgesNum) */</span>
-<span class="fc" id="L232">				int lastEdge = -1;</span>
+<span class="fc" id="L264">				int nextEdge = edgesOut(source).get(target);</span>
+				int prevEdge;
 
 				@Override
 				public boolean hasNext() {
-<span class="fc bfc" id="L236" title="All 2 branches covered.">					return edgeIdx &lt;= edgesNum;</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">					return nextEdge &gt;= 0;</span>
 				}
 
 				@Override
 				public int nextInt() {
-<span class="fc" id="L241">					Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L242">					return lastEdge = edgesArr[edgeIdx++];</span>
+<span class="fc" id="L274">					Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L275">					prevEdge = nextEdge;</span>
+<span class="fc" id="L276">					nextEdge = edgeNext[prevEdge];</span>
+<span class="fc" id="L277">					return prevEdge;</span>
 				}
 
 				@Override
 				public int peekNextInt() {
-<span class="fc" id="L247">					Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L248">					return edgesArr[edgeIdx];</span>
+<span class="fc" id="L282">					Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L283">					return nextEdge;</span>
 				}
 
 				@Override
 				public int sourceInt() {
-<span class="fc" id="L253">					return source;</span>
+<span class="fc" id="L288">					return source;</span>
 				}
 
 				@Override
 				public int targetInt() {
-<span class="fc" id="L258">					return target;</span>
+<span class="fc" id="L293">					return target;</span>
 				}
 
 				@Override
 				public void remove() {
-<span class="pc bpc" id="L263" title="1 of 2 branches missed.">					if (lastEdge == -1)</span>
-<span class="nc" id="L264">						throw new IllegalStateException();</span>
-<span class="fc" id="L265">					removeEdge(lastEdge);</span>
-<span class="fc" id="L266">					edgesNum--;</span>
-<span class="fc" id="L267">					edgeIdx--;</span>
-<span class="fc" id="L268">					edgesArr = edgesOut(source).get(target);</span>
-<span class="fc" id="L269">					lastEdge = -1;</span>
-<span class="fc" id="L270">				}</span>
+<span class="pc bpc" id="L298" title="1 of 2 branches missed.">					if (prevEdge == -1)</span>
+<span class="nc" id="L299">						throw new IllegalStateException();</span>
+<span class="fc" id="L300">					int lastEdge = edges().size() - 1;</span>
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">					if (nextEdge == lastEdge)</span>
+<span class="nc" id="L302">						nextEdge = prevEdge; /* the next edge index will be swapped with the removed edge */</span>
+<span class="fc" id="L303">					removeEdge(prevEdge);</span>
+<span class="fc" id="L304">				}</span>
 			};
 		}
 	}
 
-	static Int2ObjectMap&lt;int[]&gt; ensureEdgesMapMutable(Int2ObjectMap&lt;int[]&gt;[] edgesMaps, int idx) {
-<span class="fc bfc" id="L276" title="All 2 branches covered.">		if (edgesMaps[idx] == EmptyEdgeMap) {</span>
-<span class="fc" id="L277">			edgesMaps[idx] = new Int2ObjectOpenHashMap&lt;&gt;();</span>
-<span class="fc" id="L278">			edgesMaps[idx].defaultReturnValue(EmptyEdgeArr);</span>
+	static Int2IntMap ensureEdgesMapMutable(Int2IntMap[] edgesMaps, int idx) {
+<span class="fc bfc" id="L310" title="All 2 branches covered.">		if (edgesMaps[idx] == EmptyEdgeMap) {</span>
+<span class="fc" id="L311">			edgesMaps[idx] = new Int2IntOpenHashMap();</span>
+<span class="fc" id="L312">			edgesMaps[idx].defaultReturnValue(-1);</span>
 		}
-<span class="fc" id="L280">		return edgesMaps[idx];</span>
+<span class="fc" id="L314">		return edgesMaps[idx];</span>
 	}
 
 }

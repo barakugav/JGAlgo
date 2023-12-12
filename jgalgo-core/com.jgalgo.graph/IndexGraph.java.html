@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Collection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -90,18 +91,42 @@ public interface IndexGraph extends IntGraph {
 	int addVertex();
 
 	/**
-	 * Unsupported operation.
+	 * {@inheritDoc}
 	 *
 	 * &lt;p&gt;
-	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} and do not support user chosen IDs.
+	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} therefore the only vertex ID that can be
+	 * added is {@code verticesNum}. For any other vertex passed to this method, an exception will be thrown. If
+	 * {@code verticesNum} is passed, this method is equivalent to {@link #addVertex()}.
 	 *
-	 * @throws UnsupportedOperationException always
+	 * &lt;p&gt;
+	 * If this index graph object was obtained from a regular {@link Graph} using {@link Graph#indexGraph()}, this
+	 * method should not be called. Use the original graph instead.
+	 *
+	 * @throws     IllegalArgumentException if {@code vertex} is not {@code verticesNum}
+	 * @deprecated                          use {@link #addVertex()} instead
 	 */
 	@Override
 	@Deprecated
 	default void addVertex(int vertex) {
-<span class="fc" id="L103">		throw new UnsupportedOperationException(&quot;Index graphs do not support user chosen IDs&quot;);</span>
-	}
+<span class="fc bfc" id="L111" title="All 2 branches covered.">		if (vertex != vertices().size())</span>
+<span class="fc" id="L112">			throw new IllegalArgumentException(&quot;Only vertex ID &quot; + vertices().size() + &quot; can be added&quot;);</span>
+<span class="fc" id="L113">		addVertex();</span>
+<span class="fc" id="L114">	}</span>
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * &lt;p&gt;
+	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} therefore the only vertices that can be
+	 * added are {@code (verticesNum,verticesNum+1,verticesNum+2, ...)}. For any other vertices passed to this method,
+	 * an exception will be thrown.
+	 *
+	 * &lt;p&gt;
+	 * If this index graph object was obtained from a regular {@link Graph} using {@link Graph#indexGraph()}, this
+	 * method should not be called. Use the original graph instead.
+	 */
+	@Override
+	void addVertices(Collection&lt;? extends Integer&gt; vertices);
 
 	/**
 	 * {@inheritDoc}
@@ -119,11 +144,14 @@ public interface IndexGraph extends IntGraph {
 
 	/**
 	 * Unsupported operation.
+	 *
+	 * @throws     UnsupportedOperationException always
+	 * @deprecated                               unsupported operation
 	 */
 	@Deprecated
 	@Override
 	default void renameVertex(int vertex, int newId) {
-<span class="fc" id="L126">		throw new UnsupportedOperationException(&quot;Index graphs do not support user chosen IDs&quot;);</span>
+<span class="fc" id="L154">		throw new UnsupportedOperationException(&quot;Index graphs do not support vertex rename&quot;);</span>
 	}
 
 	/**
@@ -137,18 +165,27 @@ public interface IndexGraph extends IntGraph {
 	int addEdge(int source, int target);
 
 	/**
-	 * Unsupported operation.
+	 * {@inheritDoc}
 	 *
 	 * &lt;p&gt;
-	 * Index graphs edges IDs are always {@code (0,1,2, ...,edgesNum-1)} and do not support user chosen IDs.
+	 * Index graphs edges IDs are always {@code (0,1,2, ...,edgesNum-1)} therefore the only edge ID that can be added is
+	 * {@code edgesNum}. For any other edge passed to this method, an exception will be thrown. If {@code edgesNum} is
+	 * passed, this method is equivalent to {@link #addEdge(int, int)}.
 	 *
-	 * @throws UnsupportedOperationException always
+	 * &lt;p&gt;
+	 * If this index graph object was obtained from a regular {@link Graph} using {@link Graph#indexGraph()}, this
+	 * method should not be called. Use the original graph instead.
+	 *
+	 * @throws     IllegalArgumentException if {@code edge} is not {@code edgesNum}
+	 * @deprecated                          use {@link #addEdge(int, int)} instead
 	 */
 	@Override
 	@Deprecated
 	default void addEdge(int source, int target, int edge) {
-<span class="fc" id="L150">		throw new UnsupportedOperationException(&quot;Index graphs do not support user chosen IDs&quot;);</span>
-	}
+<span class="fc bfc" id="L185" title="All 2 branches covered.">		if (edge != edges().size())</span>
+<span class="fc" id="L186">			throw new IllegalArgumentException(&quot;Only edge ID &quot; + edges().size() + &quot; can be added&quot;);</span>
+<span class="fc" id="L187">		addEdge(source, target);</span>
+<span class="fc" id="L188">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -177,8 +214,8 @@ public interface IndexGraph extends IntGraph {
 	 */
 	@Override
 	default void removeEdgesOf(int vertex) {
-<span class="fc" id="L180">		IntGraph.super.removeEdgesOf(vertex);</span>
-<span class="fc" id="L181">	}</span>
+<span class="fc" id="L217">		IntGraph.super.removeEdgesOf(vertex);</span>
+<span class="fc" id="L218">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -193,8 +230,8 @@ public interface IndexGraph extends IntGraph {
 	 */
 	@Override
 	default void removeOutEdgesOf(int source) {
-<span class="fc" id="L196">		IntGraph.super.removeOutEdgesOf(source);</span>
-<span class="fc" id="L197">	}</span>
+<span class="fc" id="L233">		IntGraph.super.removeOutEdgesOf(source);</span>
+<span class="fc" id="L234">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -209,16 +246,19 @@ public interface IndexGraph extends IntGraph {
 	 */
 	@Override
 	default void removeInEdgesOf(int target) {
-<span class="fc" id="L212">		IntGraph.super.removeInEdgesOf(target);</span>
-<span class="fc" id="L213">	}</span>
+<span class="fc" id="L249">		IntGraph.super.removeInEdgesOf(target);</span>
+<span class="fc" id="L250">	}</span>
 
 	/**
 	 * Unsupported operation.
+	 *
+	 * @throws     UnsupportedOperationException always
+	 * @deprecated                               unsupported operation
 	 */
 	@Deprecated
 	@Override
 	default void renameEdge(int edge, int newId) {
-<span class="fc" id="L221">		throw new UnsupportedOperationException(&quot;Index graphs do not support user chosen IDs&quot;);</span>
+<span class="fc" id="L261">		throw new UnsupportedOperationException(&quot;Index graphs do not support edge rename&quot;);</span>
 	}
 
 	/**
@@ -250,7 +290,7 @@ public interface IndexGraph extends IntGraph {
 	 */
 	@Override
 	default &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type) {
-<span class="fc" id="L253">		return IntGraph.super.addVerticesWeights(key, type);</span>
+<span class="fc" id="L293">		return IntGraph.super.addVerticesWeights(key, type);</span>
 	}
 
 	/**
@@ -282,7 +322,7 @@ public interface IndexGraph extends IntGraph {
 	 */
 	@Override
 	default &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type) {
-<span class="fc" id="L285">		return IntGraph.super.addEdgesWeights(key, type);</span>
+<span class="fc" id="L325">		return IntGraph.super.addEdgesWeights(key, type);</span>
 	}
 
 	/**
@@ -367,7 +407,7 @@ public interface IndexGraph extends IntGraph {
 	@Override
 	@Deprecated
 	default IndexGraph indexGraph() {
-<span class="fc" id="L370">		return this;</span>
+<span class="fc" id="L410">		return this;</span>
 	}
 
 	/**
@@ -390,41 +430,41 @@ public interface IndexGraph extends IntGraph {
 
 	@Override
 	default IndexGraph copy() {
-<span class="fc" id="L393">		return IndexGraphFactory.newFrom(this).newCopyOf(this);</span>
+<span class="fc" id="L433">		return IndexGraphFactory.newFrom(this).newCopyOf(this);</span>
 	}
 
 	@Override
 	default IndexGraph copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L398">		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L438">		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	@Override
 	default IndexGraph immutableCopy() {
-<span class="fc" id="L403">		return immutableCopy(false, false);</span>
+<span class="fc" id="L443">		return immutableCopy(false, false);</span>
 	}
 
 	@Override
 	default IndexGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc bfc" id="L408" title="All 2 branches covered.">		if (isDirected()) {</span>
-<span class="fc" id="L409">			return new GraphCsrDirected(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc bfc" id="L448" title="All 2 branches covered.">		if (isDirected()) {</span>
+<span class="fc" id="L449">			return new GraphCsrDirected(this, copyVerticesWeights, copyEdgesWeights);</span>
 		} else {
-<span class="fc" id="L411">			return new GraphCsrUndirected(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L451">			return new GraphCsrUndirected(this, copyVerticesWeights, copyEdgesWeights);</span>
 		}
 	}
 
 	@Override
 	default IndexGraph immutableView() {
-<span class="fc" id="L417">		return (IndexGraph) IntGraph.super.immutableView();</span>
+<span class="fc" id="L457">		return (IndexGraph) IntGraph.super.immutableView();</span>
 	}
 
 	@Override
 	default IndexGraph reverseView() {
-<span class="fc" id="L422">		return (IndexGraph) IntGraph.super.reverseView();</span>
+<span class="fc" id="L462">		return (IndexGraph) IntGraph.super.reverseView();</span>
 	}
 
 	@Override
 	default IndexGraph undirectedView() {
-<span class="fc" id="L427">		return (IndexGraph) IntGraph.super.undirectedView();</span>
+<span class="fc" id="L467">		return (IndexGraph) IntGraph.super.undirectedView();</span>
 	}
 
 	/**
@@ -437,7 +477,7 @@ public interface IndexGraph extends IntGraph {
 	 * @return a new undirected empty index graph
 	 */
 	static IndexGraph newUndirected() {
-<span class="fc" id="L440">		return IndexGraphFactory.undirected().newGraph();</span>
+<span class="fc" id="L480">		return IndexGraphFactory.undirected().newGraph();</span>
 	}
 
 	/**
@@ -450,7 +490,7 @@ public interface IndexGraph extends IntGraph {
 	 * @return a new directed empty index graph
 	 */
 	static IndexGraph newDirected() {
-<span class="fc" id="L453">		return IndexGraphFactory.directed().newGraph();</span>
+<span class="fc" id="L493">		return IndexGraphFactory.directed().newGraph();</span>
 	}
 
 }

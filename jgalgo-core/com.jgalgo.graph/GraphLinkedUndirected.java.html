@@ -109,7 +109,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
 <span class="pc bnc" id="L110" title="All 2 branches missed.">		assert edgesNum[removedIdx] == 0;</span>
 
-<span class="fc bfc" id="L112" title="All 2 branches covered.">		for (int p = edgesHead[swappedIdx], next; p != -1; p = next) {</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		for (int p = edgesHead[swappedIdx], next; p &gt;= 0; p = next) {</span>
 <span class="fc" id="L113">			next = next(p, swappedIdx);</span>
 <span class="fc bfc" id="L114" title="All 2 branches covered.">			if (source(p) == swappedIdx)</span>
 <span class="fc" id="L115">				replaceEdgeSource(p, removedIdx);</span>
@@ -145,7 +145,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	private void addEdgeToLists(int e) {
 <span class="fc" id="L146">		int source = source(e), target = target(e);</span>
 <span class="fc" id="L147">		int next = edgesHead[source];</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">		if (next != -1) {</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		if (next &gt;= 0) {</span>
 <span class="fc" id="L149">			setNext(e, source, next);</span>
 <span class="fc" id="L150">			setPrev(next, source, e);</span>
 		}
@@ -153,7 +153,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 <span class="fc" id="L153">		edgesNum[source]++;</span>
 <span class="fc bfc" id="L154" title="All 2 branches covered.">		if (source != target) {</span>
 <span class="fc" id="L155">			next = edgesHead[target];</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">			if (next != -1) {</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">			if (next &gt;= 0) {</span>
 <span class="fc" id="L157">				setNext(e, target, next);</span>
 <span class="fc" id="L158">				setPrev(next, target, e);</span>
 			}
@@ -183,21 +183,21 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	private void edgeSwapAndRemove2(int removedIdx, int swappedIdx) {
 <span class="fc" id="L184">		int u = source(swappedIdx), v = target(swappedIdx);</span>
 		int prev, next;
-<span class="fc bfc" id="L186" title="All 2 branches covered.">		if ((prev = prevu[swappedIdx]) != -1) {</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">		if ((prev = prevu[swappedIdx]) &gt;= 0) {</span>
 <span class="fc" id="L187">			setNext(prev, u, removedIdx);</span>
 		} else {
 <span class="fc" id="L189">			edgesHead[u] = removedIdx;</span>
 		}
-<span class="fc bfc" id="L191" title="All 2 branches covered.">		if ((next = nextu[swappedIdx]) != -1)</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">		if ((next = nextu[swappedIdx]) &gt;= 0)</span>
 <span class="fc" id="L192">			setPrev(next, u, removedIdx);</span>
 
 <span class="fc bfc" id="L194" title="All 2 branches covered.">		if (u != v) {</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">			if ((prev = prevv[swappedIdx]) != -1) {</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">			if ((prev = prevv[swappedIdx]) &gt;= 0) {</span>
 <span class="fc" id="L196">				setNext(prev, v, removedIdx);</span>
 			} else {
 <span class="fc" id="L198">				edgesHead[v] = removedIdx;</span>
 			}
-<span class="fc bfc" id="L200" title="All 2 branches covered.">			if ((next = nextv[swappedIdx]) != -1)</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">			if ((next = nextv[swappedIdx]) &gt;= 0)</span>
 <span class="fc" id="L201">				setPrev(next, v, removedIdx);</span>
 		}
 
@@ -217,7 +217,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 <span class="fc" id="L217">			setNext(prev, w, next);</span>
 <span class="fc" id="L218">			setPrev(e, w, -1);</span>
 		}
-<span class="fc bfc" id="L220" title="All 2 branches covered.">		if (next != -1) {</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">		if (next &gt;= 0) {</span>
 <span class="fc" id="L221">			setPrev(next, w, prev);</span>
 <span class="fc" id="L222">			setNext(e, w, -1);</span>
 		}
@@ -227,7 +227,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 	@Override
 	public void removeEdgesOf(int source) {
 <span class="fc" id="L229">		checkVertex(source);</span>
-<span class="fc bfc" id="L230" title="All 2 branches covered.">		for (int p = edgesHead[source], next; p != -1; p = next) {</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">		for (int p = edgesHead[source], next; p &gt;= 0; p = next) {</span>
 			// update u list
 <span class="fc" id="L232">			next = next(p, source);</span>
 <span class="fc" id="L233">			setNext(p, source, -1);</span>
@@ -265,15 +265,15 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 
 	@Override
 	public void moveEdge(int edge, int newSource, int newTarget) {
-<span class="nc" id="L268">		checkEdge(edge);</span>
-<span class="nc" id="L269">		checkNewEdgeEndpoints(newSource, newTarget);</span>
-<span class="nc" id="L270">		int oldSource = source(edge), oldTarget = target(edge);</span>
-<span class="nc" id="L271">		removeEdgePointers(edge, oldSource);</span>
-<span class="nc bnc" id="L272" title="All 2 branches missed.">		if (oldSource != oldTarget)</span>
-<span class="nc" id="L273">			removeEdgePointers(edge, oldTarget);</span>
-<span class="nc" id="L274">		setEndpoints(edge, newSource, newTarget);</span>
-<span class="nc" id="L275">		addEdgeToLists(edge);</span>
-<span class="nc" id="L276">	}</span>
+<span class="fc" id="L268">		checkEdge(edge);</span>
+<span class="fc" id="L269">		checkNewEdgeEndpoints(newSource, newTarget);</span>
+<span class="fc" id="L270">		int oldSource = source(edge), oldTarget = target(edge);</span>
+<span class="fc" id="L271">		removeEdgePointers(edge, oldSource);</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">		if (oldSource != oldTarget)</span>
+<span class="fc" id="L273">			removeEdgePointers(edge, oldTarget);</span>
+<span class="fc" id="L274">		setEndpoints(edge, newSource, newTarget);</span>
+<span class="fc" id="L275">		addEdgeToLists(edge);</span>
+<span class="fc" id="L276">	}</span>
 
 	@Override
 	public void clearEdges() {

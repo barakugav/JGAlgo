@@ -49,57 +49,57 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private IntSet center;
 		private IntSet periphery;
 
-		private static final double EPS = 1e-6;
-
-<span class="fc" id="L54">		IndexImpl(IndexGraph g, ShortestPathAllPairs.IResult sp) {</span>
-<span class="fc" id="L55">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L56">			this.sp = Objects.requireNonNull(sp);</span>
-<span class="fc" id="L57">		}</span>
+<span class="fc" id="L52">		IndexImpl(IndexGraph g, ShortestPathAllPairs.IResult sp) {</span>
+<span class="fc" id="L53">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L54">			this.sp = Objects.requireNonNull(sp);</span>
+<span class="fc" id="L55">		}</span>
 
 		@Override
 		public double radius() {
-<span class="fc bfc" id="L61" title="All 2 branches covered.">			if (!radiusComputed) {</span>
-<span class="fc" id="L62">				computeEccentricity();</span>
-<span class="fc" id="L63">				radius = Arrays.stream(eccentricity).min().orElse(Double.POSITIVE_INFINITY);</span>
-<span class="fc" id="L64">				radiusComputed = true;</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">			if (!radiusComputed) {</span>
+<span class="fc" id="L60">				computeEccentricity();</span>
+<span class="fc" id="L61">				radius = Arrays.stream(eccentricity).min().orElse(Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L62">				radiusComputed = true;</span>
 			}
-<span class="fc" id="L66">			return radius;</span>
+<span class="fc" id="L64">			return radius;</span>
 		}
 
 		@Override
 		public double diameter() {
-<span class="fc bfc" id="L71" title="All 2 branches covered.">			if (!diameterComputed) {</span>
-<span class="fc" id="L72">				computeEccentricity();</span>
-<span class="fc" id="L73">				diameter = Arrays.stream(eccentricity).max().orElse(Double.POSITIVE_INFINITY);</span>
-<span class="fc" id="L74">				diameterComputed = true;</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">			if (!diameterComputed) {</span>
+<span class="fc" id="L70">				computeEccentricity();</span>
+<span class="fc" id="L71">				diameter = Arrays.stream(eccentricity).max().orElse(Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L72">				diameterComputed = true;</span>
 			}
-<span class="fc" id="L76">			return diameter;</span>
+<span class="fc" id="L74">			return diameter;</span>
 		}
 
 		@Override
 		public double eccentricity(int v) {
-<span class="fc" id="L81">			computeEccentricity();</span>
-<span class="fc" id="L82">			Assertions.Graphs.checkVertex(v, g.vertices().size());</span>
-<span class="fc" id="L83">			return eccentricity[v];</span>
+<span class="fc" id="L79">			computeEccentricity();</span>
+<span class="fc" id="L80">			Assertions.Graphs.checkVertex(v, g.vertices().size());</span>
+<span class="fc" id="L81">			return eccentricity[v];</span>
 		}
 
 		@Override
 		public IntSet center() {
-<span class="fc bfc" id="L88" title="All 2 branches covered.">			if (center == null) {</span>
-<span class="fc" id="L89">				double radius = radius();</span>
-<span class="fc" id="L90">				final int n = g.vertices().size();</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">				int[] centerArr = range(n).filter(v -&gt; eccentricity[v] &lt;= radius + EPS).toArray();</span>
-<span class="fc" id="L92">				center = ImmutableIntArraySet.ofBitmap(centerArr, n);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">			if (center == null) {</span>
+<span class="fc" id="L87">				double radius = radius();</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">				double eps = Double.isFinite(radius) ? radius * 1e-8 : 0;</span>
+<span class="fc" id="L89">				final int n = g.vertices().size();</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">				int[] centerArr = range(n).filter(v -&gt; eccentricity[v] &lt;= radius + eps).toArray();</span>
+<span class="fc" id="L91">				center = ImmutableIntArraySet.ofBitmap(centerArr, n);</span>
 			}
-<span class="fc" id="L94">			return center;</span>
+<span class="fc" id="L93">			return center;</span>
 		}
 
 		@Override
 		public IntSet periphery() {
-<span class="fc bfc" id="L99" title="All 2 branches covered.">			if (periphery == null) {</span>
-<span class="fc" id="L100">				double diameter = diameter();</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">			if (periphery == null) {</span>
+<span class="fc" id="L99">				double diameter = diameter();</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">				double eps = Double.isFinite(diameter) ? diameter * 1e-8 : 0;</span>
 <span class="fc" id="L101">				final int n = g.vertices().size();</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">				int[] peripheryArr = range(n).filter(v -&gt; eccentricity[v] &gt;= diameter - EPS).toArray();</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">				int[] peripheryArr = range(n).filter(v -&gt; eccentricity[v] &gt;= diameter - eps).toArray();</span>
 <span class="fc" id="L103">				periphery = ImmutableIntArraySet.ofBitmap(peripheryArr, n);</span>
 			}
 <span class="fc" id="L105">			return periphery;</span>

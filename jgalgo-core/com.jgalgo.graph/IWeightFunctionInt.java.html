@@ -76,46 +76,66 @@ public interface IWeightFunctionInt extends WeightFunctionInt&lt;Integer&gt;, IW
 	 */
 	public int weightInt(int element);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #weightInt(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default int weightInt(Integer element) {
-<span class="nc" id="L82">		return weightInt(element.intValue());</span>
+<span class="nc" id="L87">		return weightInt(element.intValue());</span>
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #weightInt(int)} instead to avoid un/boxing, and tp avoid the cast to {@code int}.
+	 */
 	@Deprecated
 	@Override
 	default double weight(int element) {
-<span class="fc" id="L88">		return weightInt(element);</span>
+<span class="fc" id="L98">		return weightInt(element);</span>
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #weightInt(int)} instead to avoid un/boxing, and tp avoid the cast to {@code int}.
+	 */
 	@Deprecated
 	@Override
 	default double weight(Integer element) {
-<span class="fc" id="L94">		return weightInt(element.intValue());</span>
+<span class="fc" id="L109">		return weightInt(element.intValue());</span>
 	}
 
 	@Override
 	default int compare(int e1, int e2) {
-<span class="fc" id="L99">		return Integer.compare(weightInt(e1), weightInt(e2));</span>
+<span class="fc" id="L114">		return Integer.compare(weightInt(e1), weightInt(e2));</span>
 	}
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #compare(int, int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default int compare(Integer e1, Integer e2) {
-<span class="nc" id="L105">		return compare(e1.intValue(), e2.intValue());</span>
+<span class="nc" id="L125">		return compare(e1.intValue(), e2.intValue());</span>
 	}
 
 	@Override
 	default double weightSum(Iterable&lt;Integer&gt; elements) {
-<span class="fc" id="L110">		long sum = 0;</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">		if (elements instanceof IntIterable) {</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">			for (int e : (IntIterable) elements)</span>
-<span class="fc" id="L113">				sum += weightInt(e);</span>
+<span class="fc" id="L130">		long sum = 0;</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">		if (elements instanceof IntIterable) {</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">			for (int e : (IntIterable) elements)</span>
+<span class="fc" id="L133">				sum += weightInt(e);</span>
 		} else {
-<span class="fc bfc" id="L115" title="All 2 branches covered.">			for (Integer e : elements)</span>
-<span class="fc" id="L116">				sum += weightInt(e.intValue());</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">			for (Integer e : elements)</span>
+<span class="fc" id="L136">				sum += weightInt(e.intValue());</span>
 		}
-<span class="fc" id="L118">		return sum;</span>
+<span class="fc" id="L138">		return sum;</span>
 	}
 
 }

@@ -157,11 +157,16 @@ public interface LowestCommonAncestorOffline {
 		 */
 		void addQuery(int u, int v);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #addQuery(int, int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default void addQuery(Integer u, Integer v) {
-<span class="fc" id="L163">			addQuery(u.intValue(), v.intValue());</span>
-<span class="fc" id="L164">		}</span>
+<span class="fc" id="L168">			addQuery(u.intValue(), v.intValue());</span>
+<span class="fc" id="L169">		}</span>
 
 		/**
 		 * Get a query source by index.
@@ -176,10 +181,15 @@ public interface LowestCommonAncestorOffline {
 		 */
 		int getQuerySourceInt(int idx);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getQuerySourceInt(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer getQuerySource(int idx) {
-<span class="fc" id="L182">			return Integer.valueOf(getQuerySourceInt(idx));</span>
+<span class="fc" id="L192">			return Integer.valueOf(getQuerySourceInt(idx));</span>
 		}
 
 		/**
@@ -195,10 +205,15 @@ public interface LowestCommonAncestorOffline {
 		 */
 		int getQueryTargetInt(int idx);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getQueryTargetInt(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer getQueryTarget(int idx) {
-<span class="fc" id="L201">			return Integer.valueOf(getQueryTargetInt(idx));</span>
+<span class="fc" id="L216">			return Integer.valueOf(getQueryTargetInt(idx));</span>
 		}
 	}
 
@@ -259,10 +274,15 @@ public interface LowestCommonAncestorOffline {
 		 */
 		int getLcaInt(int queryIdx);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getLcaInt(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer getLca(int queryIdx) {
-<span class="fc" id="L265">			return Integer.valueOf(getLcaInt(queryIdx));</span>
+<span class="fc" id="L285">			return Integer.valueOf(getLcaInt(queryIdx));</span>
 		}
 	}
 
@@ -275,7 +295,7 @@ public interface LowestCommonAncestorOffline {
 	 * @return a default implementation of {@link LowestCommonAncestorOffline}
 	 */
 	static LowestCommonAncestorOffline newInstance() {
-<span class="fc" id="L278">		return new LowestCommonAncestorOfflineUnionFind();</span>
+<span class="fc" id="L298">		return new LowestCommonAncestorOfflineUnionFind();</span>
 	}
 
 }

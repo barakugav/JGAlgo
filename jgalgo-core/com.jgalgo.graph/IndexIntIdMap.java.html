@@ -58,10 +58,15 @@ public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
 	 */
 	int indexToIdInt(int index);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #indexToIdInt(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer indexToId(int index) {
-<span class="fc" id="L64">		return Integer.valueOf(indexToIdInt(index));</span>
+<span class="fc" id="L69">		return Integer.valueOf(indexToIdInt(index));</span>
 	}
 
 	/**
@@ -76,11 +81,16 @@ public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
 	 */
 	int indexToIdIfExistInt(int index);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #indexToIdIfExistInt(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer indexToIdIfExist(int index) {
-<span class="fc" id="L82">		int id = indexToIdIfExistInt(index);</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">		return id == -1 ? null : Integer.valueOf(id);</span>
+<span class="fc" id="L92">		int id = indexToIdIfExistInt(index);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		return id == -1 ? null : Integer.valueOf(id);</span>
 	}
 
 	/**
@@ -98,10 +108,15 @@ public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
 	 */
 	int idToIndex(int id);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #idToIndex(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default int idToIndex(Integer id) {
-<span class="fc" id="L104">		return idToIndex(id.intValue());</span>
+<span class="fc" id="L119">		return idToIndex(id.intValue());</span>
 	}
 
 	/**
@@ -116,10 +131,15 @@ public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
 	 */
 	int idToIndexIfExist(int id);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #idToIndexIfExist(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default int idToIndexIfExist(Integer id) {
-<span class="fc" id="L122">		return idToIndexIfExist(id.intValue());</span>
+<span class="fc" id="L142">		return idToIndexIfExist(id.intValue());</span>
 	}
 
 }

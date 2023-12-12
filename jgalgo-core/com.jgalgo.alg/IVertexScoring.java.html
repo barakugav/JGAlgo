@@ -19,10 +19,15 @@ interface IVertexScoring extends VertexScoring&lt;Integer, Integer&gt; {
 
 	double vertexScore(int vertex);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #vertexScore(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default double vertexScore(Integer vertex) {
-<span class="fc" id="L25">		return vertexScore(vertex.intValue());</span>
+<span class="fc" id="L30">		return vertexScore(vertex.intValue());</span>
 	}
 
 }

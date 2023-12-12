@@ -71,14 +71,14 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 <span class="fc bfc" id="L71" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L72">					int e = eit.nextInt();</span>
 <span class="fc" id="L73">					int oldVal = ensureEdgesMapMutable(edgesOut, v).put(eit.targetInt(), e);</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">					if (oldVal != -1)</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">					if (oldVal &gt;= 0)</span>
 <span class="fc" id="L75">						throw new IllegalArgumentException(&quot;Parallel edge (idx=&quot; + v + &quot;,idx=&quot; + eit.targetInt()</span>
 								+ &quot;) already exists. Parallel edges are not allowed.&quot;);
 <span class="fc" id="L77">				}</span>
 <span class="fc bfc" id="L78" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L79">					int e = eit.nextInt();</span>
 <span class="fc" id="L80">					int oldVal = ensureEdgesMapMutable(edgesIn, v).put(eit.sourceInt(), e);</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">					if (oldVal != -1)</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">					if (oldVal &gt;= 0)</span>
 <span class="fc" id="L82">						throw new IllegalArgumentException(&quot;Parallel edge (idx=&quot; + eit.sourceInt() + &quot;,idx=&quot; + v</span>
 								+ &quot;) already exists. Parallel edges are not allowed.&quot;);
 <span class="fc" id="L84">				}</span>
@@ -97,7 +97,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 <span class="fc" id="L97">			int source = builder.edgeSource(e), target = builder.edgeTarget(e);</span>
 <span class="fc" id="L98">			int oldVal1 = ensureEdgesMapMutable(edgesOut, source).put(target, e);</span>
 <span class="fc" id="L99">			int oldVal2 = ensureEdgesMapMutable(edgesIn, target).put(source, e);</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">			if (oldVal1 != -1)</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">			if (oldVal1 &gt;= 0)</span>
 <span class="fc" id="L101">				throw new IllegalArgumentException(&quot;Parallel edge (idx=&quot; + source + &quot;,idx=&quot; + target</span>
 						+ &quot;) already exists. Parallel edges are not allowed.&quot;);
 <span class="pc bnc" id="L103" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
@@ -119,7 +119,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 
 		/* we handle the self edge of the swapped vertex separately */
 <span class="fc" id="L121">		int selfEdge = -1;</span>
-<span class="fc bfc" id="L122" title="All 4 branches covered.">		if (isAllowSelfEdges() &amp;&amp; (selfEdge = edgesOut[swappedIdx].remove(swappedIdx)) != -1) {</span>
+<span class="fc bfc" id="L122" title="All 4 branches covered.">		if (isAllowSelfEdges() &amp;&amp; (selfEdge = edgesOut[swappedIdx].remove(swappedIdx)) &gt;= 0) {</span>
 <span class="fc" id="L123">			int oldVal = edgesIn[swappedIdx].remove(swappedIdx);</span>
 <span class="pc bnc" id="L124" title="All 2 branches missed.">			assert oldVal == selfEdge;</span>
 		}
@@ -141,7 +141,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 <span class="pc bnc" id="L141" title="All 2 branches missed.">			assert oldVal2 == -1;</span>
 <span class="fc" id="L142">		}</span>
 
-<span class="fc bfc" id="L144" title="All 2 branches covered.">		if (selfEdge != -1) {</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">		if (selfEdge &gt;= 0) {</span>
 <span class="fc" id="L145">			setEndpoints(selfEdge, removedIdx, removedIdx);</span>
 <span class="fc" id="L146">			int oldVal1 = edgesOut[swappedIdx].put(removedIdx, selfEdge);</span>
 <span class="fc" id="L147">			int oldVal2 = edgesIn[swappedIdx].put(removedIdx, selfEdge);</span>

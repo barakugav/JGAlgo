@@ -212,11 +212,16 @@ public interface Bfs {
 		 */
 		public int lastEdgeInt();
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #lastEdgeInt()} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default Integer lastEdge() {
-<span class="fc" id="L218">			int e = lastEdgeInt();</span>
-<span class="fc bfc" id="L219" title="All 2 branches covered.">			return e == -1 ? null : Integer.valueOf(e);</span>
+<span class="fc" id="L223">			int e = lastEdgeInt();</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">			return e == -1 ? null : Integer.valueOf(e);</span>
 		}
 	}
 

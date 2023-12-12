@@ -57,10 +57,15 @@ public interface IEdgeIter extends EdgeIter&lt;Integer, Integer&gt;, IntIterator
 	 */
 	int peekNextInt();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #peekNextInt()} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer peekNext() {
-<span class="fc" id="L63">		return Integer.valueOf(peekNextInt());</span>
+<span class="fc" id="L68">		return Integer.valueOf(peekNextInt());</span>
 	}
 
 	/**
@@ -73,10 +78,15 @@ public interface IEdgeIter extends EdgeIter&lt;Integer, Integer&gt;, IntIterator
 	 */
 	int sourceInt();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #sourceInt()} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer source() {
-<span class="fc" id="L79">		return Integer.valueOf(sourceInt());</span>
+<span class="fc" id="L89">		return Integer.valueOf(sourceInt());</span>
 	}
 
 	/**
@@ -89,10 +99,15 @@ public interface IEdgeIter extends EdgeIter&lt;Integer, Integer&gt;, IntIterator
 	 */
 	int targetInt();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #targetInt()} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default Integer target() {
-<span class="fc" id="L95">		return Integer.valueOf(targetInt());</span>
+<span class="fc" id="L110">		return Integer.valueOf(targetInt());</span>
 	}
 
 }

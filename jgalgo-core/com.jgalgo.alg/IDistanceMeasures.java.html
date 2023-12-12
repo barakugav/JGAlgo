@@ -43,10 +43,15 @@ public interface IDistanceMeasures extends DistanceMeasures&lt;Integer, Integer&
 	 */
 	double eccentricity(int v);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #eccentricity(int)} instead to avoid un/boxing.
+	 */
 	@Deprecated
 	@Override
 	default double eccentricity(Integer v) {
-<span class="fc" id="L49">		return eccentricity(v.intValue());</span>
+<span class="fc" id="L54">		return eccentricity(v.intValue());</span>
 	}
 
 	@Override

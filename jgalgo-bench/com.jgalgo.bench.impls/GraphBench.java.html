@@ -15,6 +15,7 @@
  */
 package com.jgalgo.bench.impls;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -52,9 +53,9 @@ import it.unimi.dsi.fastutil.longs.LongIterator;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 
-<span class="nc" id="L55">public class GraphBench {</span>
+<span class="nc" id="L56">public class GraphBench {</span>
 
-<span class="fc" id="L57">	public static class EdgesRead {</span>
+<span class="fc" id="L58">	public static class EdgesRead {</span>
 
 		private IndexGraph g;
 		private IntIterator queryVIter;
@@ -62,15 +63,14 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 
 		void setup(String args, Function&lt;IndexGraph, IndexGraph&gt; graphImplementation, boolean directed,
 				boolean allowParallelEdges, boolean allowSelfEdges) {
-<span class="fc" id="L65">			final long seed = 0x8c91b913bfe81bb7L;</span>
-<span class="fc" id="L66">			final Random rand = new Random(seed);</span>
-<span class="fc" id="L67">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L68">			final int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L69">			final int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+<span class="fc" id="L66">			final long seed = 0x8c91b913bfe81bb7L;</span>
+<span class="fc" id="L67">			final Random rand = new Random(seed);</span>
+<span class="fc" id="L68">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L69">			final int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L70">			final int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
 
-<span class="fc" id="L71">			g = IndexGraphFactory.newInstance(directed).allowSelfEdges().newGraph();</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L73">				g.addVertex();</span>
+<span class="fc" id="L72">			g = IndexGraphFactory.newInstance(directed).allowSelfEdges().newGraph();</span>
+<span class="fc" id="L73">			g.addVertices(range(n));</span>
 <span class="fc bfc" id="L74" title="All 2 branches covered.">			LongSet existingEdges = allowParallelEdges ? null : new LongOpenHashSet();</span>
 <span class="fc bfc" id="L75" title="All 2 branches covered.">			for (int e = 0; e &lt; m;) {</span>
 <span class="fc" id="L76">				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);</span>
@@ -123,109 +123,108 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 <span class="pc bnc" id="L123" title="All 2 branches missed.">				assert g.isDirected() == directed;</span>
 <span class="fc" id="L124">				IndexGraph g1 = graphImplementation.get();</span>
 <span class="pc bnc" id="L125" title="All 2 branches missed.">				assert g1.isDirected() == directed;</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">				for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L127">					g1.addVertex();</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L129">					g1.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L130">				return g1;</span>
+<span class="fc" id="L126">				g1.addVertices(g.vertices());</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L128">					g1.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L129">				return g1;</span>
 			}, directed, allowParallelEdges, allowSelfEdges);
-<span class="fc" id="L132">		}</span>
+<span class="fc" id="L131">		}</span>
 
 		private void benchOutEdges(Blackhole blackhole) {
-<span class="fc" id="L135">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L136">			IEdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc" id="L137">			blackhole.consume(edgeSet);</span>
-<span class="fc" id="L138">		}</span>
+<span class="fc" id="L134">			int v = queryVIter.nextInt();</span>
+<span class="fc" id="L135">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc" id="L136">			blackhole.consume(edgeSet);</span>
+<span class="fc" id="L137">		}</span>
 
 		private void benchOutEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L141">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L142">			IEdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc" id="L143">			blackhole.consume(edgeSet.size());</span>
-<span class="fc" id="L144">		}</span>
+<span class="fc" id="L140">			int v = queryVIter.nextInt();</span>
+<span class="fc" id="L141">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc" id="L142">			blackhole.consume(edgeSet.size());</span>
+<span class="fc" id="L143">		}</span>
 
 		private void benchOutEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L147">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L148">			IEdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();)</span>
-<span class="fc" id="L150">				blackhole.consume(eit.nextInt());</span>
-<span class="fc" id="L151">		}</span>
+<span class="fc" id="L146">			int v = queryVIter.nextInt();</span>
+<span class="fc" id="L147">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();)</span>
+<span class="fc" id="L149">				blackhole.consume(eit.nextInt());</span>
+<span class="fc" id="L150">		}</span>
 
 		private void benchOutEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L154">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L155">			IEdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L157">				eit.nextInt();</span>
-<span class="fc" id="L158">				blackhole.consume(eit.sourceInt());</span>
+<span class="fc" id="L153">			int v = queryVIter.nextInt();</span>
+<span class="fc" id="L154">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L156">				eit.nextInt();</span>
+<span class="fc" id="L157">				blackhole.consume(eit.sourceInt());</span>
 			}
-<span class="fc" id="L160">		}</span>
+<span class="fc" id="L159">		}</span>
 
 		private void benchOutEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L163">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L164">			IEdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L166">				eit.nextInt();</span>
-<span class="fc" id="L167">				blackhole.consume(eit.targetInt());</span>
+<span class="fc" id="L162">			int v = queryVIter.nextInt();</span>
+<span class="fc" id="L163">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L165">				eit.nextInt();</span>
+<span class="fc" id="L166">				blackhole.consume(eit.targetInt());</span>
 			}
-<span class="fc" id="L169">		}</span>
+<span class="fc" id="L168">		}</span>
 
 		private void benchInEdges(Blackhole blackhole) {
-<span class="fc" id="L172">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L173">			IEdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc" id="L174">			blackhole.consume(edgeSet);</span>
-<span class="fc" id="L175">		}</span>
+<span class="fc" id="L171">			int v = queryVIter.nextInt();</span>
+<span class="fc" id="L172">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc" id="L173">			blackhole.consume(edgeSet);</span>
+<span class="fc" id="L174">		}</span>
 
 		private void benchInEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L178">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L179">			IEdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc" id="L180">			blackhole.consume(edgeSet.size());</span>
-<span class="fc" id="L181">		}</span>
+<span class="fc" id="L177">			int v = queryVIter.nextInt();</span>
+<span class="fc" id="L178">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc" id="L179">			blackhole.consume(edgeSet.size());</span>
+<span class="fc" id="L180">		}</span>
 
 		private void benchInEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L184">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L185">			IEdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();)</span>
-<span class="fc" id="L187">				blackhole.consume(eit.nextInt());</span>
-<span class="fc" id="L188">		}</span>
+<span class="fc" id="L183">			int v = queryVIter.nextInt();</span>
+<span class="fc" id="L184">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();)</span>
+<span class="fc" id="L186">				blackhole.consume(eit.nextInt());</span>
+<span class="fc" id="L187">		}</span>
 
 		private void benchInEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L191">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L192">			IEdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc bfc" id="L193" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L194">				eit.nextInt();</span>
-<span class="fc" id="L195">				blackhole.consume(eit.sourceInt());</span>
+<span class="fc" id="L190">			int v = queryVIter.nextInt();</span>
+<span class="fc" id="L191">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L193">				eit.nextInt();</span>
+<span class="fc" id="L194">				blackhole.consume(eit.sourceInt());</span>
 			}
-<span class="fc" id="L197">		}</span>
+<span class="fc" id="L196">		}</span>
 
 		private void benchInEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L200">			int v = queryVIter.nextInt();</span>
-<span class="fc" id="L201">			IEdgeSet edgeSet = g.outEdges(v);</span>
-<span class="fc bfc" id="L202" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L203">				eit.nextInt();</span>
-<span class="fc" id="L204">				blackhole.consume(eit.targetInt());</span>
+<span class="fc" id="L199">			int v = queryVIter.nextInt();</span>
+<span class="fc" id="L200">			IEdgeSet edgeSet = g.outEdges(v);</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">			for (IEdgeIter eit = edgeSet.iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L202">				eit.nextInt();</span>
+<span class="fc" id="L203">				blackhole.consume(eit.targetInt());</span>
 			}
-<span class="fc" id="L206">		}</span>
+<span class="fc" id="L205">		}</span>
 
 		private void benchGetEdge(Blackhole blackhole) {
-<span class="fc" id="L209">			long l = queryUVIter.nextLong();</span>
-<span class="fc" id="L210">			int u = JGAlgoUtils.long2low(l);</span>
-<span class="fc" id="L211">			int v = JGAlgoUtils.long2high(l);</span>
-<span class="fc" id="L212">			blackhole.consume(g.getEdge(u, v));</span>
-<span class="fc" id="L213">		}</span>
+<span class="fc" id="L208">			long l = queryUVIter.nextLong();</span>
+<span class="fc" id="L209">			int u = JGAlgoUtils.long2low(l);</span>
+<span class="fc" id="L210">			int v = JGAlgoUtils.long2high(l);</span>
+<span class="fc" id="L211">			blackhole.consume(g.getEdge(u, v));</span>
+<span class="fc" id="L212">		}</span>
 
 		private void benchGetEdges(Blackhole blackhole) {
-<span class="fc" id="L216">			long l = queryUVIter.nextLong();</span>
-<span class="fc" id="L217">			int u = JGAlgoUtils.long2low(l);</span>
-<span class="fc" id="L218">			int v = JGAlgoUtils.long2high(l);</span>
-<span class="fc" id="L219">			blackhole.consume(g.getEdges(u, v));</span>
-<span class="fc" id="L220">		}</span>
+<span class="fc" id="L215">			long l = queryUVIter.nextLong();</span>
+<span class="fc" id="L216">			int u = JGAlgoUtils.long2low(l);</span>
+<span class="fc" id="L217">			int v = JGAlgoUtils.long2high(l);</span>
+<span class="fc" id="L218">			blackhole.consume(g.getEdges(u, v));</span>
+<span class="fc" id="L219">		}</span>
 
 		private void benchGetEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L223">			long l = queryUVIter.nextLong();</span>
-<span class="fc" id="L224">			int u = JGAlgoUtils.long2low(l);</span>
-<span class="fc" id="L225">			int v = JGAlgoUtils.long2high(l);</span>
-<span class="fc bfc" id="L226" title="All 2 branches covered.">			for (IEdgeIter eit = g.getEdges(u, v).iterator(); eit.hasNext();)</span>
-<span class="fc" id="L227">				blackhole.consume(eit.nextInt());</span>
-<span class="fc" id="L228">		}</span>
+<span class="fc" id="L222">			long l = queryUVIter.nextLong();</span>
+<span class="fc" id="L223">			int u = JGAlgoUtils.long2low(l);</span>
+<span class="fc" id="L224">			int v = JGAlgoUtils.long2high(l);</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">			for (IEdgeIter eit = g.getEdges(u, v).iterator(); eit.hasNext();)</span>
+<span class="fc" id="L226">				blackhole.consume(eit.nextInt());</span>
+<span class="fc" id="L227">		}</span>
 
 		@BenchmarkMode(Mode.AverageTime)
 		@OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -233,80 +232,80 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L236">		public static class ArrayDirected extends GraphBench.EdgesRead {</span>
+<span class="fc" id="L235">		public static class ArrayDirected extends GraphBench.EdgesRead {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setup() {
-<span class="fc" id="L243">				setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;array&quot;)::newGraph, true, true, false);</span>
-<span class="fc" id="L244">			}</span>
+<span class="fc" id="L242">				setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;array&quot;)::newGraph, true, true, false);</span>
+<span class="fc" id="L243">			}</span>
 
 			@Benchmark
 			public void benchOutEdges(Blackhole blackhole) {
-<span class="fc" id="L248">				super.benchOutEdges(blackhole);</span>
-<span class="fc" id="L249">			}</span>
+<span class="fc" id="L247">				super.benchOutEdges(blackhole);</span>
+<span class="fc" id="L248">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L253">				super.benchOutEdgesSize(blackhole);</span>
-<span class="fc" id="L254">			}</span>
+<span class="fc" id="L252">				super.benchOutEdgesSize(blackhole);</span>
+<span class="fc" id="L253">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L258">				super.benchOutEdgesIteration(blackhole);</span>
-<span class="fc" id="L259">			}</span>
+<span class="fc" id="L257">				super.benchOutEdgesIteration(blackhole);</span>
+<span class="fc" id="L258">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L263">				super.benchOutEdgesSource(blackhole);</span>
-<span class="fc" id="L264">			}</span>
+<span class="fc" id="L262">				super.benchOutEdgesSource(blackhole);</span>
+<span class="fc" id="L263">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L268">				super.benchOutEdgesTarget(blackhole);</span>
-<span class="fc" id="L269">			}</span>
+<span class="fc" id="L267">				super.benchOutEdgesTarget(blackhole);</span>
+<span class="fc" id="L268">			}</span>
 
 			@Benchmark
 			public void benchInEdges(Blackhole blackhole) {
-<span class="fc" id="L273">				super.benchInEdges(blackhole);</span>
-<span class="fc" id="L274">			}</span>
+<span class="fc" id="L272">				super.benchInEdges(blackhole);</span>
+<span class="fc" id="L273">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L278">				super.benchInEdgesSize(blackhole);</span>
-<span class="fc" id="L279">			}</span>
+<span class="fc" id="L277">				super.benchInEdgesSize(blackhole);</span>
+<span class="fc" id="L278">			}</span>
 
 			@Benchmark
 			public void benchInEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L283">				super.benchInEdgesIteration(blackhole);</span>
-<span class="fc" id="L284">			}</span>
+<span class="fc" id="L282">				super.benchInEdgesIteration(blackhole);</span>
+<span class="fc" id="L283">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L288">				super.benchInEdgesSource(blackhole);</span>
-<span class="fc" id="L289">			}</span>
+<span class="fc" id="L287">				super.benchInEdgesSource(blackhole);</span>
+<span class="fc" id="L288">			}</span>
 
 			@Benchmark
 			public void benchInEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L293">				super.benchInEdgesTarget(blackhole);</span>
-<span class="fc" id="L294">			}</span>
+<span class="fc" id="L292">				super.benchInEdgesTarget(blackhole);</span>
+<span class="fc" id="L293">			}</span>
 
 			@Benchmark
 			public void benchGetEdge(Blackhole blackhole) {
-<span class="fc" id="L298">				super.benchGetEdge(blackhole);</span>
-<span class="fc" id="L299">			}</span>
+<span class="fc" id="L297">				super.benchGetEdge(blackhole);</span>
+<span class="fc" id="L298">			}</span>
 
 			@Benchmark
 			public void benchGetEdges(Blackhole blackhole) {
-<span class="fc" id="L303">				super.benchGetEdges(blackhole);</span>
-<span class="fc" id="L304">			}</span>
+<span class="fc" id="L302">				super.benchGetEdges(blackhole);</span>
+<span class="fc" id="L303">			}</span>
 
 			@Benchmark
 			public void benchGetEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L308">				super.benchGetEdgesIteration(blackhole);</span>
-<span class="fc" id="L309">			}</span>
+<span class="fc" id="L307">				super.benchGetEdgesIteration(blackhole);</span>
+<span class="fc" id="L308">			}</span>
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -315,80 +314,80 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L318">		public static class ArrayUndirected extends GraphBench.EdgesRead {</span>
+<span class="fc" id="L317">		public static class ArrayUndirected extends GraphBench.EdgesRead {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setup() {
-<span class="fc" id="L325">				setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;array&quot;)::newGraph, false, true, false);</span>
-<span class="fc" id="L326">			}</span>
+<span class="fc" id="L324">				setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;array&quot;)::newGraph, false, true, false);</span>
+<span class="fc" id="L325">			}</span>
 
 			@Benchmark
 			public void benchOutEdges(Blackhole blackhole) {
-<span class="fc" id="L330">				super.benchOutEdges(blackhole);</span>
-<span class="fc" id="L331">			}</span>
+<span class="fc" id="L329">				super.benchOutEdges(blackhole);</span>
+<span class="fc" id="L330">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L335">				super.benchOutEdgesSize(blackhole);</span>
-<span class="fc" id="L336">			}</span>
+<span class="fc" id="L334">				super.benchOutEdgesSize(blackhole);</span>
+<span class="fc" id="L335">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L340">				super.benchOutEdgesIteration(blackhole);</span>
-<span class="fc" id="L341">			}</span>
+<span class="fc" id="L339">				super.benchOutEdgesIteration(blackhole);</span>
+<span class="fc" id="L340">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L345">				super.benchOutEdgesSource(blackhole);</span>
-<span class="fc" id="L346">			}</span>
+<span class="fc" id="L344">				super.benchOutEdgesSource(blackhole);</span>
+<span class="fc" id="L345">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L350">				super.benchOutEdgesTarget(blackhole);</span>
-<span class="fc" id="L351">			}</span>
+<span class="fc" id="L349">				super.benchOutEdgesTarget(blackhole);</span>
+<span class="fc" id="L350">			}</span>
 
 			@Benchmark
 			public void benchInEdges(Blackhole blackhole) {
-<span class="fc" id="L355">				super.benchInEdges(blackhole);</span>
-<span class="fc" id="L356">			}</span>
+<span class="fc" id="L354">				super.benchInEdges(blackhole);</span>
+<span class="fc" id="L355">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L360">				super.benchInEdgesSize(blackhole);</span>
-<span class="fc" id="L361">			}</span>
+<span class="fc" id="L359">				super.benchInEdgesSize(blackhole);</span>
+<span class="fc" id="L360">			}</span>
 
 			@Benchmark
 			public void benchInEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L365">				super.benchInEdgesIteration(blackhole);</span>
-<span class="fc" id="L366">			}</span>
+<span class="fc" id="L364">				super.benchInEdgesIteration(blackhole);</span>
+<span class="fc" id="L365">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L370">				super.benchInEdgesSource(blackhole);</span>
-<span class="fc" id="L371">			}</span>
+<span class="fc" id="L369">				super.benchInEdgesSource(blackhole);</span>
+<span class="fc" id="L370">			}</span>
 
 			@Benchmark
 			public void benchInEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L375">				super.benchInEdgesTarget(blackhole);</span>
-<span class="fc" id="L376">			}</span>
+<span class="fc" id="L374">				super.benchInEdgesTarget(blackhole);</span>
+<span class="fc" id="L375">			}</span>
 
 			@Benchmark
 			public void benchGetEdge(Blackhole blackhole) {
-<span class="fc" id="L380">				super.benchGetEdge(blackhole);</span>
-<span class="fc" id="L381">			}</span>
+<span class="fc" id="L379">				super.benchGetEdge(blackhole);</span>
+<span class="fc" id="L380">			}</span>
 
 			@Benchmark
 			public void benchGetEdges(Blackhole blackhole) {
-<span class="fc" id="L385">				super.benchGetEdges(blackhole);</span>
-<span class="fc" id="L386">			}</span>
+<span class="fc" id="L384">				super.benchGetEdges(blackhole);</span>
+<span class="fc" id="L385">			}</span>
 
 			@Benchmark
 			public void benchGetEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L390">				super.benchGetEdgesIteration(blackhole);</span>
-<span class="fc" id="L391">			}</span>
+<span class="fc" id="L389">				super.benchGetEdgesIteration(blackhole);</span>
+<span class="fc" id="L390">			}</span>
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -397,80 +396,80 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L400">		public static class LinkedDirected extends GraphBench.EdgesRead {</span>
+<span class="fc" id="L399">		public static class LinkedDirected extends GraphBench.EdgesRead {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setup() {
-<span class="fc" id="L407">				setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;linked-list&quot;)::newGraph, true, true, false);</span>
-<span class="fc" id="L408">			}</span>
+<span class="fc" id="L406">				setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;linked-list&quot;)::newGraph, true, true, false);</span>
+<span class="fc" id="L407">			}</span>
 
 			@Benchmark
 			public void benchOutEdges(Blackhole blackhole) {
-<span class="fc" id="L412">				super.benchOutEdges(blackhole);</span>
-<span class="fc" id="L413">			}</span>
+<span class="fc" id="L411">				super.benchOutEdges(blackhole);</span>
+<span class="fc" id="L412">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L417">				super.benchOutEdgesSize(blackhole);</span>
-<span class="fc" id="L418">			}</span>
+<span class="fc" id="L416">				super.benchOutEdgesSize(blackhole);</span>
+<span class="fc" id="L417">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L422">				super.benchOutEdgesIteration(blackhole);</span>
-<span class="fc" id="L423">			}</span>
+<span class="fc" id="L421">				super.benchOutEdgesIteration(blackhole);</span>
+<span class="fc" id="L422">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L427">				super.benchOutEdgesSource(blackhole);</span>
-<span class="fc" id="L428">			}</span>
+<span class="fc" id="L426">				super.benchOutEdgesSource(blackhole);</span>
+<span class="fc" id="L427">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L432">				super.benchOutEdgesTarget(blackhole);</span>
-<span class="fc" id="L433">			}</span>
+<span class="fc" id="L431">				super.benchOutEdgesTarget(blackhole);</span>
+<span class="fc" id="L432">			}</span>
 
 			@Benchmark
 			public void benchInEdges(Blackhole blackhole) {
-<span class="fc" id="L437">				super.benchInEdges(blackhole);</span>
-<span class="fc" id="L438">			}</span>
+<span class="fc" id="L436">				super.benchInEdges(blackhole);</span>
+<span class="fc" id="L437">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L442">				super.benchInEdgesSize(blackhole);</span>
-<span class="fc" id="L443">			}</span>
+<span class="fc" id="L441">				super.benchInEdgesSize(blackhole);</span>
+<span class="fc" id="L442">			}</span>
 
 			@Benchmark
 			public void benchInEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L447">				super.benchInEdgesIteration(blackhole);</span>
-<span class="fc" id="L448">			}</span>
+<span class="fc" id="L446">				super.benchInEdgesIteration(blackhole);</span>
+<span class="fc" id="L447">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L452">				super.benchInEdgesSource(blackhole);</span>
-<span class="fc" id="L453">			}</span>
+<span class="fc" id="L451">				super.benchInEdgesSource(blackhole);</span>
+<span class="fc" id="L452">			}</span>
 
 			@Benchmark
 			public void benchInEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L457">				super.benchInEdgesTarget(blackhole);</span>
-<span class="fc" id="L458">			}</span>
+<span class="fc" id="L456">				super.benchInEdgesTarget(blackhole);</span>
+<span class="fc" id="L457">			}</span>
 
 			@Benchmark
 			public void benchGetEdge(Blackhole blackhole) {
-<span class="fc" id="L462">				super.benchGetEdge(blackhole);</span>
-<span class="fc" id="L463">			}</span>
+<span class="fc" id="L461">				super.benchGetEdge(blackhole);</span>
+<span class="fc" id="L462">			}</span>
 
 			@Benchmark
 			public void benchGetEdges(Blackhole blackhole) {
-<span class="fc" id="L467">				super.benchGetEdges(blackhole);</span>
-<span class="fc" id="L468">			}</span>
+<span class="fc" id="L466">				super.benchGetEdges(blackhole);</span>
+<span class="fc" id="L467">			}</span>
 
 			@Benchmark
 			public void benchGetEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L472">				super.benchGetEdgesIteration(blackhole);</span>
-<span class="fc" id="L473">			}</span>
+<span class="fc" id="L471">				super.benchGetEdgesIteration(blackhole);</span>
+<span class="fc" id="L472">			}</span>
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -479,81 +478,81 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L482">		public static class LinkedUndirected extends GraphBench.EdgesRead {</span>
+<span class="fc" id="L481">		public static class LinkedUndirected extends GraphBench.EdgesRead {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setup() {
-<span class="fc" id="L489">				setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;linked-list&quot;)::newGraph, false, true,</span>
+<span class="fc" id="L488">				setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;linked-list&quot;)::newGraph, false, true,</span>
 						false);
-<span class="fc" id="L491">			}</span>
+<span class="fc" id="L490">			}</span>
 
 			@Benchmark
 			public void benchOutEdges(Blackhole blackhole) {
-<span class="fc" id="L495">				super.benchOutEdges(blackhole);</span>
-<span class="fc" id="L496">			}</span>
+<span class="fc" id="L494">				super.benchOutEdges(blackhole);</span>
+<span class="fc" id="L495">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L500">				super.benchOutEdgesSize(blackhole);</span>
-<span class="fc" id="L501">			}</span>
+<span class="fc" id="L499">				super.benchOutEdgesSize(blackhole);</span>
+<span class="fc" id="L500">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L505">				super.benchOutEdgesIteration(blackhole);</span>
-<span class="fc" id="L506">			}</span>
+<span class="fc" id="L504">				super.benchOutEdgesIteration(blackhole);</span>
+<span class="fc" id="L505">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L510">				super.benchOutEdgesSource(blackhole);</span>
-<span class="fc" id="L511">			}</span>
+<span class="fc" id="L509">				super.benchOutEdgesSource(blackhole);</span>
+<span class="fc" id="L510">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L515">				super.benchOutEdgesTarget(blackhole);</span>
-<span class="fc" id="L516">			}</span>
+<span class="fc" id="L514">				super.benchOutEdgesTarget(blackhole);</span>
+<span class="fc" id="L515">			}</span>
 
 			@Benchmark
 			public void benchInEdges(Blackhole blackhole) {
-<span class="fc" id="L520">				super.benchInEdges(blackhole);</span>
-<span class="fc" id="L521">			}</span>
+<span class="fc" id="L519">				super.benchInEdges(blackhole);</span>
+<span class="fc" id="L520">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L525">				super.benchInEdgesSize(blackhole);</span>
-<span class="fc" id="L526">			}</span>
+<span class="fc" id="L524">				super.benchInEdgesSize(blackhole);</span>
+<span class="fc" id="L525">			}</span>
 
 			@Benchmark
 			public void benchInEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L530">				super.benchInEdgesIteration(blackhole);</span>
-<span class="fc" id="L531">			}</span>
+<span class="fc" id="L529">				super.benchInEdgesIteration(blackhole);</span>
+<span class="fc" id="L530">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L535">				super.benchInEdgesSource(blackhole);</span>
-<span class="fc" id="L536">			}</span>
+<span class="fc" id="L534">				super.benchInEdgesSource(blackhole);</span>
+<span class="fc" id="L535">			}</span>
 
 			@Benchmark
 			public void benchInEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L540">				super.benchInEdgesTarget(blackhole);</span>
-<span class="fc" id="L541">			}</span>
+<span class="fc" id="L539">				super.benchInEdgesTarget(blackhole);</span>
+<span class="fc" id="L540">			}</span>
 
 			@Benchmark
 			public void benchGetEdge(Blackhole blackhole) {
-<span class="fc" id="L545">				super.benchGetEdge(blackhole);</span>
-<span class="fc" id="L546">			}</span>
+<span class="fc" id="L544">				super.benchGetEdge(blackhole);</span>
+<span class="fc" id="L545">			}</span>
 
 			@Benchmark
 			public void benchGetEdges(Blackhole blackhole) {
-<span class="fc" id="L550">				super.benchGetEdges(blackhole);</span>
-<span class="fc" id="L551">			}</span>
+<span class="fc" id="L549">				super.benchGetEdges(blackhole);</span>
+<span class="fc" id="L550">			}</span>
 
 			@Benchmark
 			public void benchGetEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L555">				super.benchGetEdgesIteration(blackhole);</span>
-<span class="fc" id="L556">			}</span>
+<span class="fc" id="L554">				super.benchGetEdgesIteration(blackhole);</span>
+<span class="fc" id="L555">			}</span>
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -562,81 +561,81 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L565">		public static class LinkedPtrDirected extends GraphBench.EdgesRead {</span>
+<span class="fc" id="L564">		public static class LinkedPtrDirected extends GraphBench.EdgesRead {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setup() {
-<span class="fc" id="L572">				setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;linked-list-ptr&quot;)::newGraph, true, true,</span>
+<span class="fc" id="L571">				setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;linked-list-ptr&quot;)::newGraph, true, true,</span>
 						false);
-<span class="fc" id="L574">			}</span>
+<span class="fc" id="L573">			}</span>
 
 			@Benchmark
 			public void benchOutEdges(Blackhole blackhole) {
-<span class="fc" id="L578">				super.benchOutEdges(blackhole);</span>
-<span class="fc" id="L579">			}</span>
+<span class="fc" id="L577">				super.benchOutEdges(blackhole);</span>
+<span class="fc" id="L578">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L583">				super.benchOutEdgesSize(blackhole);</span>
-<span class="fc" id="L584">			}</span>
+<span class="fc" id="L582">				super.benchOutEdgesSize(blackhole);</span>
+<span class="fc" id="L583">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L588">				super.benchOutEdgesIteration(blackhole);</span>
-<span class="fc" id="L589">			}</span>
+<span class="fc" id="L587">				super.benchOutEdgesIteration(blackhole);</span>
+<span class="fc" id="L588">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L593">				super.benchOutEdgesSource(blackhole);</span>
-<span class="fc" id="L594">			}</span>
+<span class="fc" id="L592">				super.benchOutEdgesSource(blackhole);</span>
+<span class="fc" id="L593">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L598">				super.benchOutEdgesTarget(blackhole);</span>
-<span class="fc" id="L599">			}</span>
+<span class="fc" id="L597">				super.benchOutEdgesTarget(blackhole);</span>
+<span class="fc" id="L598">			}</span>
 
 			@Benchmark
 			public void benchInEdges(Blackhole blackhole) {
-<span class="fc" id="L603">				super.benchInEdges(blackhole);</span>
-<span class="fc" id="L604">			}</span>
+<span class="fc" id="L602">				super.benchInEdges(blackhole);</span>
+<span class="fc" id="L603">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L608">				super.benchInEdgesSize(blackhole);</span>
-<span class="fc" id="L609">			}</span>
+<span class="fc" id="L607">				super.benchInEdgesSize(blackhole);</span>
+<span class="fc" id="L608">			}</span>
 
 			@Benchmark
 			public void benchInEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L613">				super.benchInEdgesIteration(blackhole);</span>
-<span class="fc" id="L614">			}</span>
+<span class="fc" id="L612">				super.benchInEdgesIteration(blackhole);</span>
+<span class="fc" id="L613">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L618">				super.benchInEdgesSource(blackhole);</span>
-<span class="fc" id="L619">			}</span>
+<span class="fc" id="L617">				super.benchInEdgesSource(blackhole);</span>
+<span class="fc" id="L618">			}</span>
 
 			@Benchmark
 			public void benchInEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L623">				super.benchInEdgesTarget(blackhole);</span>
-<span class="fc" id="L624">			}</span>
+<span class="fc" id="L622">				super.benchInEdgesTarget(blackhole);</span>
+<span class="fc" id="L623">			}</span>
 
 			@Benchmark
 			public void benchGetEdge(Blackhole blackhole) {
-<span class="fc" id="L628">				super.benchGetEdge(blackhole);</span>
-<span class="fc" id="L629">			}</span>
+<span class="fc" id="L627">				super.benchGetEdge(blackhole);</span>
+<span class="fc" id="L628">			}</span>
 
 			@Benchmark
 			public void benchGetEdges(Blackhole blackhole) {
-<span class="fc" id="L633">				super.benchGetEdges(blackhole);</span>
-<span class="fc" id="L634">			}</span>
+<span class="fc" id="L632">				super.benchGetEdges(blackhole);</span>
+<span class="fc" id="L633">			}</span>
 
 			@Benchmark
 			public void benchGetEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L638">				super.benchGetEdgesIteration(blackhole);</span>
-<span class="fc" id="L639">			}</span>
+<span class="fc" id="L637">				super.benchGetEdgesIteration(blackhole);</span>
+<span class="fc" id="L638">			}</span>
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -645,81 +644,81 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L648">		public static class LinkedPtrUndirected extends GraphBench.EdgesRead {</span>
+<span class="fc" id="L647">		public static class LinkedPtrUndirected extends GraphBench.EdgesRead {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setup() {
-<span class="fc" id="L655">				setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;linked-list-ptr&quot;)::newGraph, false, true,</span>
+<span class="fc" id="L654">				setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;linked-list-ptr&quot;)::newGraph, false, true,</span>
 						false);
-<span class="fc" id="L657">			}</span>
+<span class="fc" id="L656">			}</span>
 
 			@Benchmark
 			public void benchOutEdges(Blackhole blackhole) {
-<span class="fc" id="L661">				super.benchOutEdges(blackhole);</span>
-<span class="fc" id="L662">			}</span>
+<span class="fc" id="L660">				super.benchOutEdges(blackhole);</span>
+<span class="fc" id="L661">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L666">				super.benchOutEdgesSize(blackhole);</span>
-<span class="fc" id="L667">			}</span>
+<span class="fc" id="L665">				super.benchOutEdgesSize(blackhole);</span>
+<span class="fc" id="L666">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L671">				super.benchOutEdgesIteration(blackhole);</span>
-<span class="fc" id="L672">			}</span>
+<span class="fc" id="L670">				super.benchOutEdgesIteration(blackhole);</span>
+<span class="fc" id="L671">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L676">				super.benchOutEdgesSource(blackhole);</span>
-<span class="fc" id="L677">			}</span>
+<span class="fc" id="L675">				super.benchOutEdgesSource(blackhole);</span>
+<span class="fc" id="L676">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L681">				super.benchOutEdgesTarget(blackhole);</span>
-<span class="fc" id="L682">			}</span>
+<span class="fc" id="L680">				super.benchOutEdgesTarget(blackhole);</span>
+<span class="fc" id="L681">			}</span>
 
 			@Benchmark
 			public void benchInEdges(Blackhole blackhole) {
-<span class="fc" id="L686">				super.benchInEdges(blackhole);</span>
-<span class="fc" id="L687">			}</span>
+<span class="fc" id="L685">				super.benchInEdges(blackhole);</span>
+<span class="fc" id="L686">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L691">				super.benchInEdgesSize(blackhole);</span>
-<span class="fc" id="L692">			}</span>
+<span class="fc" id="L690">				super.benchInEdgesSize(blackhole);</span>
+<span class="fc" id="L691">			}</span>
 
 			@Benchmark
 			public void benchInEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L696">				super.benchInEdgesIteration(blackhole);</span>
-<span class="fc" id="L697">			}</span>
+<span class="fc" id="L695">				super.benchInEdgesIteration(blackhole);</span>
+<span class="fc" id="L696">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L701">				super.benchInEdgesSource(blackhole);</span>
-<span class="fc" id="L702">			}</span>
+<span class="fc" id="L700">				super.benchInEdgesSource(blackhole);</span>
+<span class="fc" id="L701">			}</span>
 
 			@Benchmark
 			public void benchInEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L706">				super.benchInEdgesTarget(blackhole);</span>
-<span class="fc" id="L707">			}</span>
+<span class="fc" id="L705">				super.benchInEdgesTarget(blackhole);</span>
+<span class="fc" id="L706">			}</span>
 
 			@Benchmark
 			public void benchGetEdge(Blackhole blackhole) {
-<span class="fc" id="L711">				super.benchGetEdge(blackhole);</span>
-<span class="fc" id="L712">			}</span>
+<span class="fc" id="L710">				super.benchGetEdge(blackhole);</span>
+<span class="fc" id="L711">			}</span>
 
 			@Benchmark
 			public void benchGetEdges(Blackhole blackhole) {
-<span class="fc" id="L716">				super.benchGetEdges(blackhole);</span>
-<span class="fc" id="L717">			}</span>
+<span class="fc" id="L715">				super.benchGetEdges(blackhole);</span>
+<span class="fc" id="L716">			}</span>
 
 			@Benchmark
 			public void benchGetEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L721">				super.benchGetEdgesIteration(blackhole);</span>
-<span class="fc" id="L722">			}</span>
+<span class="fc" id="L720">				super.benchGetEdgesIteration(blackhole);</span>
+<span class="fc" id="L721">			}</span>
 		}
 
 		@BenchmarkMode(Mode.AverageTime)
@@ -728,14 +727,15 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L731">		public static class HashtableDirected extends GraphBench.EdgesRead {</span>
+<span class="fc" id="L730">		public static class HashtableMultiDirected extends GraphBench.EdgesRead {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setup() {
-<span class="fc" id="L738">				setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;hashtable&quot;)::newGraph, true, false, false);</span>
+<span class="fc" id="L737">				setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;hashtable-multi&quot;)::newGraph, true, false,</span>
+						false);
 <span class="fc" id="L739">			}</span>
 
 			@Benchmark
@@ -810,14 +810,14 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L813">		public static class HashtableUndirected extends GraphBench.EdgesRead {</span>
+<span class="fc" id="L813">		public static class HashtableMultiUndirected extends GraphBench.EdgesRead {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setup() {
-<span class="fc" id="L820">				setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;hashtable&quot;)::newGraph, false, false,</span>
+<span class="fc" id="L820">				setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;hashtable-multi&quot;)::newGraph, false, false,</span>
 						false);
 <span class="fc" id="L822">			}</span>
 
@@ -893,14 +893,14 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L896">		public static class MatrixDirected extends GraphBench.EdgesRead {</span>
+<span class="fc" id="L896">		public static class HashtableDirected extends GraphBench.EdgesRead {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setup() {
-<span class="fc" id="L903">				setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;matrix&quot;)::newGraph, true, false, false);</span>
+<span class="fc" id="L903">				setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;hashtable&quot;)::newGraph, true, false, false);</span>
 <span class="fc" id="L904">			}</span>
 
 			@Benchmark
@@ -975,370 +975,532 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L978">		public static class MatrixUndirected extends GraphBench.EdgesRead {</span>
+<span class="fc" id="L978">		public static class HashtableUndirected extends GraphBench.EdgesRead {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setup() {
-<span class="fc" id="L985">				setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;matrix&quot;)::newGraph, false, false, false);</span>
-<span class="fc" id="L986">			}</span>
+<span class="fc" id="L985">				setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;hashtable&quot;)::newGraph, false, false,</span>
+						false);
+<span class="fc" id="L987">			}</span>
 
 			@Benchmark
 			public void benchOutEdges(Blackhole blackhole) {
-<span class="fc" id="L990">				super.benchOutEdges(blackhole);</span>
-<span class="fc" id="L991">			}</span>
+<span class="fc" id="L991">				super.benchOutEdges(blackhole);</span>
+<span class="fc" id="L992">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L995">				super.benchOutEdgesSize(blackhole);</span>
-<span class="fc" id="L996">			}</span>
+<span class="fc" id="L996">				super.benchOutEdgesSize(blackhole);</span>
+<span class="fc" id="L997">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L1000">				super.benchOutEdgesIteration(blackhole);</span>
-<span class="fc" id="L1001">			}</span>
+<span class="fc" id="L1001">				super.benchOutEdgesIteration(blackhole);</span>
+<span class="fc" id="L1002">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L1005">				super.benchOutEdgesSource(blackhole);</span>
-<span class="fc" id="L1006">			}</span>
+<span class="fc" id="L1006">				super.benchOutEdgesSource(blackhole);</span>
+<span class="fc" id="L1007">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L1010">				super.benchOutEdgesTarget(blackhole);</span>
-<span class="fc" id="L1011">			}</span>
+<span class="fc" id="L1011">				super.benchOutEdgesTarget(blackhole);</span>
+<span class="fc" id="L1012">			}</span>
 
 			@Benchmark
 			public void benchInEdges(Blackhole blackhole) {
-<span class="fc" id="L1015">				super.benchInEdges(blackhole);</span>
-<span class="fc" id="L1016">			}</span>
+<span class="fc" id="L1016">				super.benchInEdges(blackhole);</span>
+<span class="fc" id="L1017">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L1020">				super.benchInEdgesSize(blackhole);</span>
-<span class="fc" id="L1021">			}</span>
+<span class="fc" id="L1021">				super.benchInEdgesSize(blackhole);</span>
+<span class="fc" id="L1022">			}</span>
 
 			@Benchmark
 			public void benchInEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L1025">				super.benchInEdgesIteration(blackhole);</span>
-<span class="fc" id="L1026">			}</span>
+<span class="fc" id="L1026">				super.benchInEdgesIteration(blackhole);</span>
+<span class="fc" id="L1027">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L1030">				super.benchInEdgesSource(blackhole);</span>
-<span class="fc" id="L1031">			}</span>
+<span class="fc" id="L1031">				super.benchInEdgesSource(blackhole);</span>
+<span class="fc" id="L1032">			}</span>
 
 			@Benchmark
 			public void benchInEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L1035">				super.benchInEdgesTarget(blackhole);</span>
-<span class="fc" id="L1036">			}</span>
+<span class="fc" id="L1036">				super.benchInEdgesTarget(blackhole);</span>
+<span class="fc" id="L1037">			}</span>
 
 			@Benchmark
 			public void benchGetEdge(Blackhole blackhole) {
-<span class="fc" id="L1040">				super.benchGetEdge(blackhole);</span>
-<span class="fc" id="L1041">			}</span>
+<span class="fc" id="L1041">				super.benchGetEdge(blackhole);</span>
+<span class="fc" id="L1042">			}</span>
 
 			@Benchmark
 			public void benchGetEdges(Blackhole blackhole) {
-<span class="fc" id="L1045">				super.benchGetEdges(blackhole);</span>
-<span class="fc" id="L1046">			}</span>
+<span class="fc" id="L1046">				super.benchGetEdges(blackhole);</span>
+<span class="fc" id="L1047">			}</span>
 
 			@Benchmark
 			public void benchGetEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L1050">				super.benchGetEdgesIteration(blackhole);</span>
-<span class="fc" id="L1051">			}</span>
+<span class="fc" id="L1051">				super.benchGetEdgesIteration(blackhole);</span>
+<span class="fc" id="L1052">			}</span>
 		}
 
-<span class="fc" id="L1054">		@BenchmarkMode(Mode.AverageTime)</span>
+		@BenchmarkMode(Mode.AverageTime)
 		@OutputTimeUnit(TimeUnit.NANOSECONDS)
 		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L1060">		public static class CsrDirected extends GraphBench.EdgesRead {</span>
+<span class="fc" id="L1061">		public static class MatrixDirected extends GraphBench.EdgesRead {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setup() {
-<span class="fc" id="L1067">				final boolean directed = true;</span>
-<span class="fc" id="L1068">				final boolean allowParallelEdges = true;</span>
-<span class="fc" id="L1069">				final boolean allowSelfEdges = true;</span>
-<span class="fc" id="L1070">				setup(args, g -&gt; {</span>
-<span class="pc bnc" id="L1071" title="All 2 branches missed.">					assert g.isDirected() == directed;</span>
-<span class="fc" id="L1072">					IndexGraphBuilder g1 = IndexGraphBuilder.directed();</span>
-<span class="fc bfc" id="L1073" title="All 2 branches covered.">					for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L1074">						g1.addVertex();</span>
-<span class="fc bfc" id="L1075" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L1076">						g1.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L1077">					IndexGraph g1Graph = g1.build();</span>
-<span class="pc bnc" id="L1078" title="All 2 branches missed.">					assert g1Graph.isDirected() == directed;</span>
-<span class="fc" id="L1079">					return g1Graph;</span>
-				}, directed, allowParallelEdges, allowSelfEdges);
-<span class="fc" id="L1081">			}</span>
+<span class="fc" id="L1068">				setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;matrix&quot;)::newGraph, true, false, false);</span>
+<span class="fc" id="L1069">			}</span>
 
 			@Benchmark
 			public void benchOutEdges(Blackhole blackhole) {
-<span class="fc" id="L1085">				super.benchOutEdges(blackhole);</span>
-<span class="fc" id="L1086">			}</span>
+<span class="fc" id="L1073">				super.benchOutEdges(blackhole);</span>
+<span class="fc" id="L1074">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L1090">				super.benchOutEdgesSize(blackhole);</span>
-<span class="fc" id="L1091">			}</span>
+<span class="fc" id="L1078">				super.benchOutEdgesSize(blackhole);</span>
+<span class="fc" id="L1079">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L1095">				super.benchOutEdgesIteration(blackhole);</span>
-<span class="fc" id="L1096">			}</span>
+<span class="fc" id="L1083">				super.benchOutEdgesIteration(blackhole);</span>
+<span class="fc" id="L1084">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L1100">				super.benchOutEdgesSource(blackhole);</span>
-<span class="fc" id="L1101">			}</span>
+<span class="fc" id="L1088">				super.benchOutEdgesSource(blackhole);</span>
+<span class="fc" id="L1089">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L1105">				super.benchOutEdgesTarget(blackhole);</span>
-<span class="fc" id="L1106">			}</span>
+<span class="fc" id="L1093">				super.benchOutEdgesTarget(blackhole);</span>
+<span class="fc" id="L1094">			}</span>
 
 			@Benchmark
 			public void benchInEdges(Blackhole blackhole) {
-<span class="fc" id="L1110">				super.benchInEdges(blackhole);</span>
-<span class="fc" id="L1111">			}</span>
+<span class="fc" id="L1098">				super.benchInEdges(blackhole);</span>
+<span class="fc" id="L1099">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L1115">				super.benchInEdgesSize(blackhole);</span>
-<span class="fc" id="L1116">			}</span>
+<span class="fc" id="L1103">				super.benchInEdgesSize(blackhole);</span>
+<span class="fc" id="L1104">			}</span>
 
 			@Benchmark
 			public void benchInEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L1120">				super.benchInEdgesIteration(blackhole);</span>
-<span class="fc" id="L1121">			}</span>
+<span class="fc" id="L1108">				super.benchInEdgesIteration(blackhole);</span>
+<span class="fc" id="L1109">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L1125">				super.benchInEdgesSource(blackhole);</span>
-<span class="fc" id="L1126">			}</span>
+<span class="fc" id="L1113">				super.benchInEdgesSource(blackhole);</span>
+<span class="fc" id="L1114">			}</span>
 
 			@Benchmark
 			public void benchInEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L1130">				super.benchInEdgesTarget(blackhole);</span>
-<span class="fc" id="L1131">			}</span>
+<span class="fc" id="L1118">				super.benchInEdgesTarget(blackhole);</span>
+<span class="fc" id="L1119">			}</span>
 
 			@Benchmark
 			public void benchGetEdge(Blackhole blackhole) {
-<span class="fc" id="L1135">				super.benchGetEdge(blackhole);</span>
-<span class="fc" id="L1136">			}</span>
+<span class="fc" id="L1123">				super.benchGetEdge(blackhole);</span>
+<span class="fc" id="L1124">			}</span>
 
 			@Benchmark
 			public void benchGetEdges(Blackhole blackhole) {
-<span class="fc" id="L1140">				super.benchGetEdges(blackhole);</span>
-<span class="fc" id="L1141">			}</span>
+<span class="fc" id="L1128">				super.benchGetEdges(blackhole);</span>
+<span class="fc" id="L1129">			}</span>
 
 			@Benchmark
 			public void benchGetEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L1145">				super.benchGetEdgesIteration(blackhole);</span>
-<span class="fc" id="L1146">			}</span>
+<span class="fc" id="L1133">				super.benchGetEdgesIteration(blackhole);</span>
+<span class="fc" id="L1134">			}</span>
 		}
 
-<span class="fc" id="L1149">		@BenchmarkMode(Mode.AverageTime)</span>
+		@BenchmarkMode(Mode.AverageTime)
 		@OutputTimeUnit(TimeUnit.NANOSECONDS)
 		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L1155">		public static class CsrUndirected extends GraphBench.EdgesRead {</span>
+<span class="fc" id="L1143">		public static class MatrixUndirected extends GraphBench.EdgesRead {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setup() {
-<span class="fc" id="L1162">				final boolean directed = false;</span>
-<span class="fc" id="L1163">				final boolean allowParallelEdges = true;</span>
-<span class="fc" id="L1164">				final boolean allowSelfEdges = true;</span>
-<span class="fc" id="L1165">				setup(args, g -&gt; {</span>
-<span class="pc bnc" id="L1166" title="All 2 branches missed.">					assert g.isDirected() == directed;</span>
-<span class="fc" id="L1167">					IndexGraphBuilder g1 = IndexGraphBuilder.undirected();</span>
-<span class="fc bfc" id="L1168" title="All 2 branches covered.">					for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L1169">						g1.addVertex();</span>
-<span class="fc bfc" id="L1170" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L1171">						g1.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L1172">					IndexGraph g1Graph = g1.build();</span>
-<span class="pc bnc" id="L1173" title="All 2 branches missed.">					assert g1Graph.isDirected() == directed;</span>
-<span class="fc" id="L1174">					return g1Graph;</span>
-				}, directed, allowParallelEdges, allowSelfEdges);
+<span class="fc" id="L1150">				setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;matrix&quot;)::newGraph, false, false, false);</span>
+<span class="fc" id="L1151">			}</span>
+
+			@Benchmark
+			public void benchOutEdges(Blackhole blackhole) {
+<span class="fc" id="L1155">				super.benchOutEdges(blackhole);</span>
+<span class="fc" id="L1156">			}</span>
+
+			@Benchmark
+			public void benchOutEdgesSize(Blackhole blackhole) {
+<span class="fc" id="L1160">				super.benchOutEdgesSize(blackhole);</span>
+<span class="fc" id="L1161">			}</span>
+
+			@Benchmark
+			public void benchOutEdgesIteration(Blackhole blackhole) {
+<span class="fc" id="L1165">				super.benchOutEdgesIteration(blackhole);</span>
+<span class="fc" id="L1166">			}</span>
+
+			@Benchmark
+			public void benchOutEdgesSource(Blackhole blackhole) {
+<span class="fc" id="L1170">				super.benchOutEdgesSource(blackhole);</span>
+<span class="fc" id="L1171">			}</span>
+
+			@Benchmark
+			public void benchOutEdgesTarget(Blackhole blackhole) {
+<span class="fc" id="L1175">				super.benchOutEdgesTarget(blackhole);</span>
 <span class="fc" id="L1176">			}</span>
 
 			@Benchmark
-			public void benchOutEdges(Blackhole blackhole) {
-<span class="fc" id="L1180">				super.benchOutEdges(blackhole);</span>
+			public void benchInEdges(Blackhole blackhole) {
+<span class="fc" id="L1180">				super.benchInEdges(blackhole);</span>
 <span class="fc" id="L1181">			}</span>
 
 			@Benchmark
-			public void benchOutEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L1185">				super.benchOutEdgesSize(blackhole);</span>
+			public void benchInEdgesSize(Blackhole blackhole) {
+<span class="fc" id="L1185">				super.benchInEdgesSize(blackhole);</span>
 <span class="fc" id="L1186">			}</span>
 
 			@Benchmark
-			public void benchOutEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L1190">				super.benchOutEdgesIteration(blackhole);</span>
+			public void benchInEdgesIteration(Blackhole blackhole) {
+<span class="fc" id="L1190">				super.benchInEdgesIteration(blackhole);</span>
 <span class="fc" id="L1191">			}</span>
 
 			@Benchmark
-			public void benchOutEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L1195">				super.benchOutEdgesSource(blackhole);</span>
+			public void benchInEdgesSource(Blackhole blackhole) {
+<span class="fc" id="L1195">				super.benchInEdgesSource(blackhole);</span>
 <span class="fc" id="L1196">			}</span>
 
 			@Benchmark
-			public void benchOutEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L1200">				super.benchOutEdgesTarget(blackhole);</span>
+			public void benchInEdgesTarget(Blackhole blackhole) {
+<span class="fc" id="L1200">				super.benchInEdgesTarget(blackhole);</span>
 <span class="fc" id="L1201">			}</span>
 
 			@Benchmark
-			public void benchInEdges(Blackhole blackhole) {
-<span class="fc" id="L1205">				super.benchInEdges(blackhole);</span>
+			public void benchGetEdge(Blackhole blackhole) {
+<span class="fc" id="L1205">				super.benchGetEdge(blackhole);</span>
 <span class="fc" id="L1206">			}</span>
 
 			@Benchmark
-			public void benchInEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L1210">				super.benchInEdgesSize(blackhole);</span>
+			public void benchGetEdges(Blackhole blackhole) {
+<span class="fc" id="L1210">				super.benchGetEdges(blackhole);</span>
 <span class="fc" id="L1211">			}</span>
 
 			@Benchmark
-			public void benchInEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L1215">				super.benchInEdgesIteration(blackhole);</span>
-<span class="fc" id="L1216">			}</span>
-
-			@Benchmark
-			public void benchInEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L1220">				super.benchInEdgesSource(blackhole);</span>
-<span class="fc" id="L1221">			}</span>
-
-			@Benchmark
-			public void benchInEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L1225">				super.benchInEdgesTarget(blackhole);</span>
-<span class="fc" id="L1226">			}</span>
-
-			@Benchmark
-			public void benchGetEdge(Blackhole blackhole) {
-<span class="fc" id="L1230">				super.benchGetEdge(blackhole);</span>
-<span class="fc" id="L1231">			}</span>
-
-			@Benchmark
-			public void benchGetEdges(Blackhole blackhole) {
-<span class="fc" id="L1235">				super.benchGetEdges(blackhole);</span>
-<span class="fc" id="L1236">			}</span>
-
-			@Benchmark
 			public void benchGetEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L1240">				super.benchGetEdgesIteration(blackhole);</span>
-<span class="fc" id="L1241">			}</span>
+<span class="fc" id="L1215">				super.benchGetEdgesIteration(blackhole);</span>
+<span class="fc" id="L1216">			}</span>
 		}
 
-<span class="fc" id="L1244">		@BenchmarkMode(Mode.AverageTime)</span>
+<span class="fc" id="L1219">		@BenchmarkMode(Mode.AverageTime)</span>
 		@OutputTimeUnit(TimeUnit.NANOSECONDS)
 		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
 		@Fork(value = 1, warmups = 0)
 		@State(Scope.Benchmark)
-<span class="fc" id="L1250">		public static class CsrDirectedReindexed extends GraphBench.EdgesRead {</span>
+<span class="fc" id="L1225">		public static class CsrDirected extends GraphBench.EdgesRead {</span>
 
 			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
 			public String args;
 
 			@Setup(Level.Trial)
 			public void setup() {
-<span class="fc" id="L1257">				final boolean directed = true;</span>
-<span class="fc" id="L1258">				final boolean allowParallelEdges = true;</span>
-<span class="fc" id="L1259">				final boolean allowSelfEdges = true;</span>
-<span class="fc" id="L1260">				setup(args, g -&gt; {</span>
-<span class="pc bnc" id="L1261" title="All 2 branches missed.">					assert g.isDirected() == directed;</span>
-<span class="fc" id="L1262">					IndexGraphBuilder g1 = IndexGraphBuilder.directed();</span>
-<span class="fc bfc" id="L1263" title="All 2 branches covered.">					for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L1264">						g1.addVertex();</span>
-<span class="fc bfc" id="L1265" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L1266">						g1.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L1267">					IndexGraph g1Graph = g1.reIndexAndBuild(true, true).graph();</span>
-<span class="pc bnc" id="L1268" title="All 2 branches missed.">					assert g1Graph.isDirected() == directed;</span>
-<span class="fc" id="L1269">					return g1Graph;</span>
+<span class="fc" id="L1232">				final boolean directed = true;</span>
+<span class="fc" id="L1233">				final boolean allowParallelEdges = true;</span>
+<span class="fc" id="L1234">				final boolean allowSelfEdges = true;</span>
+<span class="fc" id="L1235">				setup(args, g -&gt; {</span>
+<span class="pc bnc" id="L1236" title="All 2 branches missed.">					assert g.isDirected() == directed;</span>
+<span class="fc" id="L1237">					IndexGraphBuilder g1 = IndexGraphBuilder.directed();</span>
+<span class="fc" id="L1238">					g1.addVertices(g.vertices());</span>
+<span class="fc bfc" id="L1239" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L1240">						g1.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L1241">					IndexGraph g1Graph = g1.build();</span>
+<span class="pc bnc" id="L1242" title="All 2 branches missed.">					assert g1Graph.isDirected() == directed;</span>
+<span class="fc" id="L1243">					return g1Graph;</span>
 				}, directed, allowParallelEdges, allowSelfEdges);
-<span class="fc" id="L1271">			}</span>
+<span class="fc" id="L1245">			}</span>
 
 			@Benchmark
 			public void benchOutEdges(Blackhole blackhole) {
-<span class="fc" id="L1275">				super.benchOutEdges(blackhole);</span>
-<span class="fc" id="L1276">			}</span>
+<span class="fc" id="L1249">				super.benchOutEdges(blackhole);</span>
+<span class="fc" id="L1250">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L1280">				super.benchOutEdgesSize(blackhole);</span>
-<span class="fc" id="L1281">			}</span>
+<span class="fc" id="L1254">				super.benchOutEdgesSize(blackhole);</span>
+<span class="fc" id="L1255">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L1285">				super.benchOutEdgesIteration(blackhole);</span>
-<span class="fc" id="L1286">			}</span>
+<span class="fc" id="L1259">				super.benchOutEdgesIteration(blackhole);</span>
+<span class="fc" id="L1260">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L1290">				super.benchOutEdgesSource(blackhole);</span>
-<span class="fc" id="L1291">			}</span>
+<span class="fc" id="L1264">				super.benchOutEdgesSource(blackhole);</span>
+<span class="fc" id="L1265">			}</span>
 
 			@Benchmark
 			public void benchOutEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L1295">				super.benchOutEdgesTarget(blackhole);</span>
-<span class="fc" id="L1296">			}</span>
+<span class="fc" id="L1269">				super.benchOutEdgesTarget(blackhole);</span>
+<span class="fc" id="L1270">			}</span>
 
 			@Benchmark
 			public void benchInEdges(Blackhole blackhole) {
-<span class="fc" id="L1300">				super.benchInEdges(blackhole);</span>
-<span class="fc" id="L1301">			}</span>
+<span class="fc" id="L1274">				super.benchInEdges(blackhole);</span>
+<span class="fc" id="L1275">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSize(Blackhole blackhole) {
-<span class="fc" id="L1305">				super.benchInEdgesSize(blackhole);</span>
-<span class="fc" id="L1306">			}</span>
+<span class="fc" id="L1279">				super.benchInEdgesSize(blackhole);</span>
+<span class="fc" id="L1280">			}</span>
 
 			@Benchmark
 			public void benchInEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L1310">				super.benchInEdgesIteration(blackhole);</span>
-<span class="fc" id="L1311">			}</span>
+<span class="fc" id="L1284">				super.benchInEdgesIteration(blackhole);</span>
+<span class="fc" id="L1285">			}</span>
 
 			@Benchmark
 			public void benchInEdgesSource(Blackhole blackhole) {
-<span class="fc" id="L1315">				super.benchInEdgesSource(blackhole);</span>
-<span class="fc" id="L1316">			}</span>
+<span class="fc" id="L1289">				super.benchInEdgesSource(blackhole);</span>
+<span class="fc" id="L1290">			}</span>
 
 			@Benchmark
 			public void benchInEdgesTarget(Blackhole blackhole) {
-<span class="fc" id="L1320">				super.benchInEdgesTarget(blackhole);</span>
-<span class="fc" id="L1321">			}</span>
+<span class="fc" id="L1294">				super.benchInEdgesTarget(blackhole);</span>
+<span class="fc" id="L1295">			}</span>
 
 			@Benchmark
 			public void benchGetEdge(Blackhole blackhole) {
-<span class="fc" id="L1325">				super.benchGetEdge(blackhole);</span>
-<span class="fc" id="L1326">			}</span>
+<span class="fc" id="L1299">				super.benchGetEdge(blackhole);</span>
+<span class="fc" id="L1300">			}</span>
 
 			@Benchmark
 			public void benchGetEdges(Blackhole blackhole) {
-<span class="fc" id="L1330">				super.benchGetEdges(blackhole);</span>
-<span class="fc" id="L1331">			}</span>
+<span class="fc" id="L1304">				super.benchGetEdges(blackhole);</span>
+<span class="fc" id="L1305">			}</span>
 
 			@Benchmark
 			public void benchGetEdgesIteration(Blackhole blackhole) {
-<span class="fc" id="L1335">				super.benchGetEdgesIteration(blackhole);</span>
-<span class="fc" id="L1336">			}</span>
+<span class="fc" id="L1309">				super.benchGetEdgesIteration(blackhole);</span>
+<span class="fc" id="L1310">			}</span>
+		}
+
+<span class="fc" id="L1313">		@BenchmarkMode(Mode.AverageTime)</span>
+		@OutputTimeUnit(TimeUnit.NANOSECONDS)
+		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Fork(value = 1, warmups = 0)
+		@State(Scope.Benchmark)
+<span class="fc" id="L1319">		public static class CsrUndirected extends GraphBench.EdgesRead {</span>
+
+			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
+			public String args;
+
+			@Setup(Level.Trial)
+			public void setup() {
+<span class="fc" id="L1326">				final boolean directed = false;</span>
+<span class="fc" id="L1327">				final boolean allowParallelEdges = true;</span>
+<span class="fc" id="L1328">				final boolean allowSelfEdges = true;</span>
+<span class="fc" id="L1329">				setup(args, g -&gt; {</span>
+<span class="pc bnc" id="L1330" title="All 2 branches missed.">					assert g.isDirected() == directed;</span>
+<span class="fc" id="L1331">					IndexGraphBuilder g1 = IndexGraphBuilder.undirected();</span>
+<span class="fc" id="L1332">					g1.addVertices(g.vertices());</span>
+<span class="fc bfc" id="L1333" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L1334">						g1.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L1335">					IndexGraph g1Graph = g1.build();</span>
+<span class="pc bnc" id="L1336" title="All 2 branches missed.">					assert g1Graph.isDirected() == directed;</span>
+<span class="fc" id="L1337">					return g1Graph;</span>
+				}, directed, allowParallelEdges, allowSelfEdges);
+<span class="fc" id="L1339">			}</span>
+
+			@Benchmark
+			public void benchOutEdges(Blackhole blackhole) {
+<span class="fc" id="L1343">				super.benchOutEdges(blackhole);</span>
+<span class="fc" id="L1344">			}</span>
+
+			@Benchmark
+			public void benchOutEdgesSize(Blackhole blackhole) {
+<span class="fc" id="L1348">				super.benchOutEdgesSize(blackhole);</span>
+<span class="fc" id="L1349">			}</span>
+
+			@Benchmark
+			public void benchOutEdgesIteration(Blackhole blackhole) {
+<span class="fc" id="L1353">				super.benchOutEdgesIteration(blackhole);</span>
+<span class="fc" id="L1354">			}</span>
+
+			@Benchmark
+			public void benchOutEdgesSource(Blackhole blackhole) {
+<span class="fc" id="L1358">				super.benchOutEdgesSource(blackhole);</span>
+<span class="fc" id="L1359">			}</span>
+
+			@Benchmark
+			public void benchOutEdgesTarget(Blackhole blackhole) {
+<span class="fc" id="L1363">				super.benchOutEdgesTarget(blackhole);</span>
+<span class="fc" id="L1364">			}</span>
+
+			@Benchmark
+			public void benchInEdges(Blackhole blackhole) {
+<span class="fc" id="L1368">				super.benchInEdges(blackhole);</span>
+<span class="fc" id="L1369">			}</span>
+
+			@Benchmark
+			public void benchInEdgesSize(Blackhole blackhole) {
+<span class="fc" id="L1373">				super.benchInEdgesSize(blackhole);</span>
+<span class="fc" id="L1374">			}</span>
+
+			@Benchmark
+			public void benchInEdgesIteration(Blackhole blackhole) {
+<span class="fc" id="L1378">				super.benchInEdgesIteration(blackhole);</span>
+<span class="fc" id="L1379">			}</span>
+
+			@Benchmark
+			public void benchInEdgesSource(Blackhole blackhole) {
+<span class="fc" id="L1383">				super.benchInEdgesSource(blackhole);</span>
+<span class="fc" id="L1384">			}</span>
+
+			@Benchmark
+			public void benchInEdgesTarget(Blackhole blackhole) {
+<span class="fc" id="L1388">				super.benchInEdgesTarget(blackhole);</span>
+<span class="fc" id="L1389">			}</span>
+
+			@Benchmark
+			public void benchGetEdge(Blackhole blackhole) {
+<span class="fc" id="L1393">				super.benchGetEdge(blackhole);</span>
+<span class="fc" id="L1394">			}</span>
+
+			@Benchmark
+			public void benchGetEdges(Blackhole blackhole) {
+<span class="fc" id="L1398">				super.benchGetEdges(blackhole);</span>
+<span class="fc" id="L1399">			}</span>
+
+			@Benchmark
+			public void benchGetEdgesIteration(Blackhole blackhole) {
+<span class="fc" id="L1403">				super.benchGetEdgesIteration(blackhole);</span>
+<span class="fc" id="L1404">			}</span>
+		}
+
+<span class="fc" id="L1407">		@BenchmarkMode(Mode.AverageTime)</span>
+		@OutputTimeUnit(TimeUnit.NANOSECONDS)
+		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Fork(value = 1, warmups = 0)
+		@State(Scope.Benchmark)
+<span class="fc" id="L1413">		public static class CsrDirectedReindexed extends GraphBench.EdgesRead {</span>
+
+			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
+			public String args;
+
+			@Setup(Level.Trial)
+			public void setup() {
+<span class="fc" id="L1420">				final boolean directed = true;</span>
+<span class="fc" id="L1421">				final boolean allowParallelEdges = true;</span>
+<span class="fc" id="L1422">				final boolean allowSelfEdges = true;</span>
+<span class="fc" id="L1423">				setup(args, g -&gt; {</span>
+<span class="pc bnc" id="L1424" title="All 2 branches missed.">					assert g.isDirected() == directed;</span>
+<span class="fc" id="L1425">					IndexGraphBuilder g1 = IndexGraphBuilder.directed();</span>
+<span class="fc" id="L1426">					g1.addVertices(g.vertices());</span>
+<span class="fc bfc" id="L1427" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L1428">						g1.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L1429">					IndexGraph g1Graph = g1.reIndexAndBuild(true, true).graph();</span>
+<span class="pc bnc" id="L1430" title="All 2 branches missed.">					assert g1Graph.isDirected() == directed;</span>
+<span class="fc" id="L1431">					return g1Graph;</span>
+				}, directed, allowParallelEdges, allowSelfEdges);
+<span class="fc" id="L1433">			}</span>
+
+			@Benchmark
+			public void benchOutEdges(Blackhole blackhole) {
+<span class="fc" id="L1437">				super.benchOutEdges(blackhole);</span>
+<span class="fc" id="L1438">			}</span>
+
+			@Benchmark
+			public void benchOutEdgesSize(Blackhole blackhole) {
+<span class="fc" id="L1442">				super.benchOutEdgesSize(blackhole);</span>
+<span class="fc" id="L1443">			}</span>
+
+			@Benchmark
+			public void benchOutEdgesIteration(Blackhole blackhole) {
+<span class="fc" id="L1447">				super.benchOutEdgesIteration(blackhole);</span>
+<span class="fc" id="L1448">			}</span>
+
+			@Benchmark
+			public void benchOutEdgesSource(Blackhole blackhole) {
+<span class="fc" id="L1452">				super.benchOutEdgesSource(blackhole);</span>
+<span class="fc" id="L1453">			}</span>
+
+			@Benchmark
+			public void benchOutEdgesTarget(Blackhole blackhole) {
+<span class="fc" id="L1457">				super.benchOutEdgesTarget(blackhole);</span>
+<span class="fc" id="L1458">			}</span>
+
+			@Benchmark
+			public void benchInEdges(Blackhole blackhole) {
+<span class="fc" id="L1462">				super.benchInEdges(blackhole);</span>
+<span class="fc" id="L1463">			}</span>
+
+			@Benchmark
+			public void benchInEdgesSize(Blackhole blackhole) {
+<span class="fc" id="L1467">				super.benchInEdgesSize(blackhole);</span>
+<span class="fc" id="L1468">			}</span>
+
+			@Benchmark
+			public void benchInEdgesIteration(Blackhole blackhole) {
+<span class="fc" id="L1472">				super.benchInEdgesIteration(blackhole);</span>
+<span class="fc" id="L1473">			}</span>
+
+			@Benchmark
+			public void benchInEdgesSource(Blackhole blackhole) {
+<span class="fc" id="L1477">				super.benchInEdgesSource(blackhole);</span>
+<span class="fc" id="L1478">			}</span>
+
+			@Benchmark
+			public void benchInEdgesTarget(Blackhole blackhole) {
+<span class="fc" id="L1482">				super.benchInEdgesTarget(blackhole);</span>
+<span class="fc" id="L1483">			}</span>
+
+			@Benchmark
+			public void benchGetEdge(Blackhole blackhole) {
+<span class="fc" id="L1487">				super.benchGetEdge(blackhole);</span>
+<span class="fc" id="L1488">			}</span>
+
+			@Benchmark
+			public void benchGetEdges(Blackhole blackhole) {
+<span class="fc" id="L1492">				super.benchGetEdges(blackhole);</span>
+<span class="fc" id="L1493">			}</span>
+
+			@Benchmark
+			public void benchGetEdgesIteration(Blackhole blackhole) {
+<span class="fc" id="L1497">				super.benchGetEdgesIteration(blackhole);</span>
+<span class="fc" id="L1498">			}</span>
 		}
 
 	}
 
-<span class="fc" id="L1341">	public static class Remove {</span>
+<span class="fc" id="L1503">	public static class Remove {</span>
 
 		IndexGraph g;
 		int n, m;
@@ -1346,68 +1508,66 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 
 		void setup(String args, Function&lt;IndexGraph, IndexGraph&gt; graphImplementation, boolean directed,
 				boolean allowParallelEdges, boolean allowSelfEdges) {
-<span class="fc" id="L1349">			final long seed = 0x850a14ff3dad400cL;</span>
-<span class="fc" id="L1350">			rand = new Random(seed);</span>
-<span class="fc" id="L1351">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L1352">			n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L1353">			m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+<span class="fc" id="L1511">			final long seed = 0x850a14ff3dad400cL;</span>
+<span class="fc" id="L1512">			rand = new Random(seed);</span>
+<span class="fc" id="L1513">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L1514">			n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L1515">			m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
 
-<span class="fc" id="L1355">			g = IndexGraphFactory.newInstance(directed).allowSelfEdges(allowSelfEdges)</span>
-<span class="fc" id="L1356">					.allowParallelEdges(allowParallelEdges).newGraph();</span>
-<span class="fc bfc" id="L1357" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L1358">				g.addVertex();</span>
-<span class="fc bfc" id="L1359" title="All 2 branches covered.">			LongSet existingEdges = allowParallelEdges ? null : new LongOpenHashSet();</span>
-<span class="fc bfc" id="L1360" title="All 2 branches covered.">			for (int e = 0; e &lt; m;) {</span>
-<span class="fc" id="L1361">				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);</span>
-<span class="pc bpc" id="L1362" title="1 of 4 branches missed.">				if (!allowSelfEdges &amp;&amp; u == v)</span>
-<span class="fc" id="L1363">					continue;</span>
-<span class="fc bfc" id="L1364" title="All 2 branches covered.">				if (!allowParallelEdges) {</span>
-<span class="fc" id="L1365">					int u1 = u, v1 = v;</span>
-<span class="fc bfc" id="L1366" title="All 4 branches covered.">					if (!directed &amp;&amp; u1 &lt; v1) {</span>
-<span class="fc" id="L1367">						int tmp = u1;</span>
-<span class="fc" id="L1368">						u1 = v1;</span>
-<span class="fc" id="L1369">						v1 = tmp;</span>
+<span class="fc" id="L1517">			g = IndexGraphFactory.newInstance(directed).allowSelfEdges(allowSelfEdges)</span>
+<span class="fc" id="L1518">					.allowParallelEdges(allowParallelEdges).newGraph();</span>
+<span class="fc" id="L1519">			g.addVertices(range(n));</span>
+<span class="fc bfc" id="L1520" title="All 2 branches covered.">			LongSet existingEdges = allowParallelEdges ? null : new LongOpenHashSet();</span>
+<span class="fc bfc" id="L1521" title="All 2 branches covered.">			for (int e = 0; e &lt; m;) {</span>
+<span class="fc" id="L1522">				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);</span>
+<span class="pc bpc" id="L1523" title="1 of 4 branches missed.">				if (!allowSelfEdges &amp;&amp; u == v)</span>
+<span class="fc" id="L1524">					continue;</span>
+<span class="fc bfc" id="L1525" title="All 2 branches covered.">				if (!allowParallelEdges) {</span>
+<span class="fc" id="L1526">					int u1 = u, v1 = v;</span>
+<span class="fc bfc" id="L1527" title="All 4 branches covered.">					if (!directed &amp;&amp; u1 &lt; v1) {</span>
+<span class="fc" id="L1528">						int tmp = u1;</span>
+<span class="fc" id="L1529">						u1 = v1;</span>
+<span class="fc" id="L1530">						v1 = tmp;</span>
 					}
-<span class="fc" id="L1371">					long key = JGAlgoUtils.longPack(u1, v1);</span>
-<span class="fc bfc" id="L1372" title="All 2 branches covered.">					if (!existingEdges.add(key))</span>
-<span class="fc" id="L1373">						continue;</span>
+<span class="fc" id="L1532">					long key = JGAlgoUtils.longPack(u1, v1);</span>
+<span class="fc bfc" id="L1533" title="All 2 branches covered.">					if (!existingEdges.add(key))</span>
+<span class="fc" id="L1534">						continue;</span>
 				}
-<span class="fc" id="L1375">				g.addEdge(u, v);</span>
-<span class="fc" id="L1376">				e++;</span>
-<span class="fc" id="L1377">			}</span>
-<span class="fc" id="L1378">			g = graphImplementation.apply(g);</span>
-<span class="fc" id="L1379">		}</span>
+<span class="fc" id="L1536">				g.addEdge(u, v);</span>
+<span class="fc" id="L1537">				e++;</span>
+<span class="fc" id="L1538">			}</span>
+<span class="fc" id="L1539">			g = graphImplementation.apply(g);</span>
+<span class="fc" id="L1540">		}</span>
 
 		void setup(String args, Supplier&lt;IndexGraph&gt; graphImplementation, boolean directed, boolean allowParallelEdges,
 				boolean allowSelfEdges) {
-<span class="fc" id="L1383">			setup(args, g -&gt; {</span>
-<span class="pc bnc" id="L1384" title="All 2 branches missed.">				assert g.isDirected() == directed;</span>
-<span class="fc" id="L1385">				IndexGraph g1 = graphImplementation.get();</span>
-<span class="pc bnc" id="L1386" title="All 2 branches missed.">				assert g1.isDirected() == directed;</span>
-<span class="fc bfc" id="L1387" title="All 2 branches covered.">				for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L1388">					g1.addVertex();</span>
-<span class="fc bfc" id="L1389" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L1390">					g1.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L1391">				return g1;</span>
+<span class="fc" id="L1544">			setup(args, g -&gt; {</span>
+<span class="pc bnc" id="L1545" title="All 2 branches missed.">				assert g.isDirected() == directed;</span>
+<span class="fc" id="L1546">				IndexGraph g1 = graphImplementation.get();</span>
+<span class="pc bnc" id="L1547" title="All 2 branches missed.">				assert g1.isDirected() == directed;</span>
+<span class="fc" id="L1548">				g1.addVertices(g.vertices());</span>
+<span class="fc bfc" id="L1549" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L1550">					g1.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L1551">				return g1;</span>
 			}, directed, allowParallelEdges, allowSelfEdges);
-<span class="fc" id="L1393">		}</span>
+<span class="fc" id="L1553">		}</span>
 
 		void restoreGraph() {
-<span class="fc" id="L1396">			final boolean allowSelfEdges = g.isAllowSelfEdges();</span>
-<span class="fc" id="L1397">			final boolean allowParallelEdges = g.isAllowParallelEdges();</span>
-<span class="pc bpc" id="L1398" title="1 of 2 branches missed.">			while (g.vertices().size() &lt; n)</span>
-<span class="nc" id="L1399">				g.addVertex();</span>
-<span class="pc bpc" id="L1400" title="1 of 2 branches missed.">			while (g.edges().size() &lt; m) {</span>
-<span class="nc" id="L1401">				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);</span>
-<span class="nc bnc" id="L1402" title="All 4 branches missed.">				if (!allowSelfEdges &amp;&amp; u == v)</span>
-<span class="nc" id="L1403">					continue;</span>
-<span class="nc bnc" id="L1404" title="All 4 branches missed.">				if (!allowParallelEdges &amp;&amp; g.getEdge(u, v) != -1)</span>
-<span class="nc" id="L1405">					continue;</span>
-<span class="nc" id="L1406">				g.addEdge(u, v);</span>
-<span class="nc" id="L1407">			}</span>
-<span class="fc" id="L1408">		}</span>
+<span class="fc" id="L1556">			final boolean allowSelfEdges = g.isAllowSelfEdges();</span>
+<span class="fc" id="L1557">			final boolean allowParallelEdges = g.isAllowParallelEdges();</span>
+<span class="pc bpc" id="L1558" title="1 of 2 branches missed.">			while (g.vertices().size() &lt; n)</span>
+<span class="nc" id="L1559">				g.addVertex();</span>
+<span class="pc bpc" id="L1560" title="1 of 2 branches missed.">			while (g.edges().size() &lt; m) {</span>
+<span class="nc" id="L1561">				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);</span>
+<span class="nc bnc" id="L1562" title="All 4 branches missed.">				if (!allowSelfEdges &amp;&amp; u == v)</span>
+<span class="nc" id="L1563">					continue;</span>
+<span class="nc bnc" id="L1564" title="All 4 branches missed.">				if (!allowParallelEdges &amp;&amp; g.getEdge(u, v) != -1)</span>
+<span class="nc" id="L1565">					continue;</span>
+<span class="nc" id="L1566">				g.addEdge(u, v);</span>
+<span class="nc" id="L1567">			}</span>
+<span class="fc" id="L1568">		}</span>
 
-<span class="fc" id="L1410">		public static class Edge extends Remove {</span>
+<span class="fc" id="L1570">		public static class Edge extends Remove {</span>
 
 			private IntIterator removeEIter;
 
@@ -1416,21 +1576,21 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Override
 			void setup(String args, Function&lt;IndexGraph, IndexGraph&gt; graphImplementation, boolean directed,
 					boolean allowParallelEdges, boolean allowSelfEdges) {
-<span class="fc" id="L1419">				super.setup(args, graphImplementation, directed, allowParallelEdges, allowSelfEdges);</span>
+<span class="fc" id="L1579">				super.setup(args, graphImplementation, directed, allowParallelEdges, allowSelfEdges);</span>
 
-<span class="pc bnc" id="L1421" title="All 2 branches missed.">				assert m &gt; OperationsPerInvocation;</span>
-<span class="fc" id="L1422">				int[] removeEdges = TestUtils.randArray(m * 16, 0, m - OperationsPerInvocation, rand.nextLong());</span>
-<span class="fc" id="L1423">				removeEIter = circularIterator(IntImmutableList.of(removeEdges));</span>
-<span class="fc" id="L1424">			}</span>
+<span class="pc bnc" id="L1581" title="All 2 branches missed.">				assert m &gt; OperationsPerInvocation;</span>
+<span class="fc" id="L1582">				int[] removeEdges = TestUtils.randArray(m * 16, 0, m - OperationsPerInvocation, rand.nextLong());</span>
+<span class="fc" id="L1583">				removeEIter = circularIterator(IntImmutableList.of(removeEdges));</span>
+<span class="fc" id="L1584">			}</span>
 
 			private void bench(Blackhole blackhole) {
-<span class="fc bfc" id="L1427" title="All 2 branches covered.">				for (int o = 0; o &lt; OperationsPerInvocation; o++) {</span>
-<span class="fc" id="L1428">					int e = removeEIter.nextInt();</span>
-<span class="fc" id="L1429">					g.removeEdge(e);</span>
-<span class="fc" id="L1430">					blackhole.consume(e);</span>
-<span class="fc" id="L1431">					blackhole.consume(g);</span>
+<span class="fc bfc" id="L1587" title="All 2 branches covered.">				for (int o = 0; o &lt; OperationsPerInvocation; o++) {</span>
+<span class="fc" id="L1588">					int e = removeEIter.nextInt();</span>
+<span class="fc" id="L1589">					g.removeEdge(e);</span>
+<span class="fc" id="L1590">					blackhole.consume(e);</span>
+<span class="fc" id="L1591">					blackhole.consume(g);</span>
 				}
-<span class="fc" id="L1433">			}</span>
+<span class="fc" id="L1593">			}</span>
 
 			@BenchmarkMode(Mode.AverageTime)
 			@OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -1438,27 +1598,27 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1441">			public static class ArrayDirected extends GraphBench.Remove.Edge {</span>
+<span class="fc" id="L1601">			public static class ArrayDirected extends GraphBench.Remove.Edge {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1448">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;array&quot;)::newGraph, true, true, false);</span>
-<span class="fc" id="L1449">				}</span>
+<span class="fc" id="L1608">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;array&quot;)::newGraph, true, true, false);</span>
+<span class="fc" id="L1609">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1454">					super.restoreGraph();</span>
-<span class="fc" id="L1455">				}</span>
+<span class="fc" id="L1614">					super.restoreGraph();</span>
+<span class="fc" id="L1615">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Edge.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1460">					super.bench(blackhole);</span>
-<span class="fc" id="L1461">				}</span>
+<span class="fc" id="L1620">					super.bench(blackhole);</span>
+<span class="fc" id="L1621">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1467,28 +1627,28 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1470">			public static class ArrayUndirected extends GraphBench.Remove.Edge {</span>
+<span class="fc" id="L1630">			public static class ArrayUndirected extends GraphBench.Remove.Edge {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1477">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;array&quot;)::newGraph, false, true,</span>
+<span class="fc" id="L1637">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;array&quot;)::newGraph, false, true,</span>
 							false);
-<span class="fc" id="L1479">				}</span>
+<span class="fc" id="L1639">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1484">					super.restoreGraph();</span>
-<span class="fc" id="L1485">				}</span>
+<span class="fc" id="L1644">					super.restoreGraph();</span>
+<span class="fc" id="L1645">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Edge.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1490">					super.bench(blackhole);</span>
-<span class="fc" id="L1491">				}</span>
+<span class="fc" id="L1650">					super.bench(blackhole);</span>
+<span class="fc" id="L1651">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1497,28 +1657,28 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1500">			public static class LinkedDirected extends GraphBench.Remove.Edge {</span>
+<span class="fc" id="L1660">			public static class LinkedDirected extends GraphBench.Remove.Edge {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1507">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;linked-list&quot;)::newGraph, true, true,</span>
+<span class="fc" id="L1667">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;linked-list&quot;)::newGraph, true, true,</span>
 							false);
-<span class="fc" id="L1509">				}</span>
+<span class="fc" id="L1669">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1514">					super.restoreGraph();</span>
-<span class="fc" id="L1515">				}</span>
+<span class="fc" id="L1674">					super.restoreGraph();</span>
+<span class="fc" id="L1675">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Edge.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1520">					super.bench(blackhole);</span>
-<span class="fc" id="L1521">				}</span>
+<span class="fc" id="L1680">					super.bench(blackhole);</span>
+<span class="fc" id="L1681">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1527,28 +1687,28 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1530">			public static class LinkedUndirected extends GraphBench.Remove.Edge {</span>
+<span class="fc" id="L1690">			public static class LinkedUndirected extends GraphBench.Remove.Edge {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1537">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;linked-list&quot;)::newGraph, false, true,</span>
+<span class="fc" id="L1697">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;linked-list&quot;)::newGraph, false, true,</span>
 							false);
-<span class="fc" id="L1539">				}</span>
+<span class="fc" id="L1699">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1544">					super.restoreGraph();</span>
-<span class="fc" id="L1545">				}</span>
+<span class="fc" id="L1704">					super.restoreGraph();</span>
+<span class="fc" id="L1705">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Edge.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1550">					super.bench(blackhole);</span>
-<span class="fc" id="L1551">				}</span>
+<span class="fc" id="L1710">					super.bench(blackhole);</span>
+<span class="fc" id="L1711">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1557,28 +1717,28 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1560">			public static class LinkedPtrDirected extends GraphBench.Remove.Edge {</span>
+<span class="fc" id="L1720">			public static class LinkedPtrDirected extends GraphBench.Remove.Edge {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1567">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;linked-list-ptr&quot;)::newGraph, true, true,</span>
+<span class="fc" id="L1727">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;linked-list-ptr&quot;)::newGraph, true, true,</span>
 							false);
-<span class="fc" id="L1569">				}</span>
+<span class="fc" id="L1729">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1574">					super.restoreGraph();</span>
-<span class="fc" id="L1575">				}</span>
+<span class="fc" id="L1734">					super.restoreGraph();</span>
+<span class="fc" id="L1735">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Edge.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1580">					super.bench(blackhole);</span>
-<span class="fc" id="L1581">				}</span>
+<span class="fc" id="L1740">					super.bench(blackhole);</span>
+<span class="fc" id="L1741">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1587,28 +1747,28 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1590">			public static class LinkedPtrUndirected extends GraphBench.Remove.Edge {</span>
+<span class="fc" id="L1750">			public static class LinkedPtrUndirected extends GraphBench.Remove.Edge {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1597">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;linked-list-ptr&quot;)::newGraph, false,</span>
+<span class="fc" id="L1757">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;linked-list-ptr&quot;)::newGraph, false,</span>
 							true, false);
-<span class="fc" id="L1599">				}</span>
+<span class="fc" id="L1759">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1604">					super.restoreGraph();</span>
-<span class="fc" id="L1605">				}</span>
+<span class="fc" id="L1764">					super.restoreGraph();</span>
+<span class="fc" id="L1765">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Edge.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1610">					super.bench(blackhole);</span>
-<span class="fc" id="L1611">				}</span>
+<span class="fc" id="L1770">					super.bench(blackhole);</span>
+<span class="fc" id="L1771">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1617,28 +1777,28 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1620">			public static class HashtableDirected extends GraphBench.Remove.Edge {</span>
+<span class="fc" id="L1780">			public static class HashtableDirected extends GraphBench.Remove.Edge {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1627">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;hashtable&quot;)::newGraph, true, false,</span>
+<span class="fc" id="L1787">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;hashtable&quot;)::newGraph, true, false,</span>
 							false);
-<span class="fc" id="L1629">				}</span>
+<span class="fc" id="L1789">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1634">					super.restoreGraph();</span>
-<span class="fc" id="L1635">				}</span>
+<span class="fc" id="L1794">					super.restoreGraph();</span>
+<span class="fc" id="L1795">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Edge.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1640">					super.bench(blackhole);</span>
-<span class="fc" id="L1641">				}</span>
+<span class="fc" id="L1800">					super.bench(blackhole);</span>
+<span class="fc" id="L1801">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1647,28 +1807,28 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1650">			public static class HashtableUndirected extends GraphBench.Remove.Edge {</span>
+<span class="fc" id="L1810">			public static class HashtableUndirected extends GraphBench.Remove.Edge {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1657">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;hashtable&quot;)::newGraph, false, false,</span>
+<span class="fc" id="L1817">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;hashtable&quot;)::newGraph, false, false,</span>
 							false);
-<span class="fc" id="L1659">				}</span>
+<span class="fc" id="L1819">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1664">					super.restoreGraph();</span>
-<span class="fc" id="L1665">				}</span>
+<span class="fc" id="L1824">					super.restoreGraph();</span>
+<span class="fc" id="L1825">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Edge.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1670">					super.bench(blackhole);</span>
-<span class="fc" id="L1671">				}</span>
+<span class="fc" id="L1830">					super.bench(blackhole);</span>
+<span class="fc" id="L1831">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1677,27 +1837,28 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1680">			public static class MatrixDirected extends GraphBench.Remove.Edge {</span>
+<span class="fc" id="L1840">			public static class HashtableMultiDirected extends GraphBench.Remove.Edge {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1687">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;matrix&quot;)::newGraph, true, false, false);</span>
-<span class="fc" id="L1688">				}</span>
+<span class="fc" id="L1847">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;hashtable-multi&quot;)::newGraph, true,</span>
+							false, false);
+<span class="fc" id="L1849">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1693">					super.restoreGraph();</span>
-<span class="fc" id="L1694">				}</span>
+<span class="fc" id="L1854">					super.restoreGraph();</span>
+<span class="fc" id="L1855">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Edge.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1699">					super.bench(blackhole);</span>
-<span class="fc" id="L1700">				}</span>
+<span class="fc" id="L1860">					super.bench(blackhole);</span>
+<span class="fc" id="L1861">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1706,33 +1867,92 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1709">			public static class MatrixUndirected extends GraphBench.Remove.Edge {</span>
+<span class="fc" id="L1870">			public static class HashtableMultiUndirected extends GraphBench.Remove.Edge {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1716">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;matrix&quot;)::newGraph, false, false,</span>
+<span class="fc" id="L1877">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;hashtable-multi&quot;)::newGraph, false,</span>
+							false, false);
+<span class="fc" id="L1879">				}</span>
+
+				@Override
+				@Setup(Level.Invocation)
+				public void restoreGraph() {
+<span class="fc" id="L1884">					super.restoreGraph();</span>
+<span class="fc" id="L1885">				}</span>
+
+				@Benchmark
+				@OperationsPerInvocation(GraphBench.Remove.Edge.OperationsPerInvocation)
+				public void bench(Blackhole blackhole) {
+<span class="fc" id="L1890">					super.bench(blackhole);</span>
+<span class="fc" id="L1891">				}</span>
+			}
+
+			@BenchmarkMode(Mode.AverageTime)
+			@OutputTimeUnit(TimeUnit.NANOSECONDS)
+			@Warmup(iterations = 2, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Fork(value = 1, warmups = 0)
+			@State(Scope.Benchmark)
+<span class="fc" id="L1900">			public static class MatrixDirected extends GraphBench.Remove.Edge {</span>
+
+				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
+				public String args;
+
+				@Setup(Level.Trial)
+				public void setup() {
+<span class="fc" id="L1907">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;matrix&quot;)::newGraph, true, false, false);</span>
+<span class="fc" id="L1908">				}</span>
+
+				@Override
+				@Setup(Level.Invocation)
+				public void restoreGraph() {
+<span class="fc" id="L1913">					super.restoreGraph();</span>
+<span class="fc" id="L1914">				}</span>
+
+				@Benchmark
+				@OperationsPerInvocation(GraphBench.Remove.Edge.OperationsPerInvocation)
+				public void bench(Blackhole blackhole) {
+<span class="fc" id="L1919">					super.bench(blackhole);</span>
+<span class="fc" id="L1920">				}</span>
+			}
+
+			@BenchmarkMode(Mode.AverageTime)
+			@OutputTimeUnit(TimeUnit.NANOSECONDS)
+			@Warmup(iterations = 2, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Fork(value = 1, warmups = 0)
+			@State(Scope.Benchmark)
+<span class="fc" id="L1929">			public static class MatrixUndirected extends GraphBench.Remove.Edge {</span>
+
+				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
+				public String args;
+
+				@Setup(Level.Trial)
+				public void setup() {
+<span class="fc" id="L1936">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;matrix&quot;)::newGraph, false, false,</span>
 							false);
-<span class="fc" id="L1718">				}</span>
+<span class="fc" id="L1938">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1723">					super.restoreGraph();</span>
-<span class="fc" id="L1724">				}</span>
+<span class="fc" id="L1943">					super.restoreGraph();</span>
+<span class="fc" id="L1944">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Edge.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1729">					super.bench(blackhole);</span>
-<span class="fc" id="L1730">				}</span>
+<span class="fc" id="L1949">					super.bench(blackhole);</span>
+<span class="fc" id="L1950">				}</span>
 			}
 
 		}
 
-<span class="fc" id="L1735">		public static class Vertex extends Remove {</span>
+<span class="fc" id="L1955">		public static class Vertex extends Remove {</span>
 
 			private IntIterator removeVIter;
 
@@ -1741,21 +1961,21 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Override
 			void setup(String args, Function&lt;IndexGraph, IndexGraph&gt; graphImplementation, boolean directed,
 					boolean allowParallelEdges, boolean allowSelfEdges) {
-<span class="fc" id="L1744">				super.setup(args, graphImplementation, directed, allowParallelEdges, allowSelfEdges);</span>
+<span class="fc" id="L1964">				super.setup(args, graphImplementation, directed, allowParallelEdges, allowSelfEdges);</span>
 
-<span class="pc bnc" id="L1746" title="All 2 branches missed.">				assert n &gt; OperationsPerInvocation;</span>
-<span class="fc" id="L1747">				int[] removeVertices = TestUtils.randArray(n * 16, 0, n - OperationsPerInvocation, rand.nextLong());</span>
-<span class="fc" id="L1748">				removeVIter = circularIterator(IntImmutableList.of(removeVertices));</span>
-<span class="fc" id="L1749">			}</span>
+<span class="pc bnc" id="L1966" title="All 2 branches missed.">				assert n &gt; OperationsPerInvocation;</span>
+<span class="fc" id="L1967">				int[] removeVertices = TestUtils.randArray(n * 16, 0, n - OperationsPerInvocation, rand.nextLong());</span>
+<span class="fc" id="L1968">				removeVIter = circularIterator(IntImmutableList.of(removeVertices));</span>
+<span class="fc" id="L1969">			}</span>
 
 			private void bench(Blackhole blackhole) {
-<span class="fc bfc" id="L1752" title="All 2 branches covered.">				for (int o = 0; o &lt; OperationsPerInvocation; o++) {</span>
-<span class="fc" id="L1753">					int v = removeVIter.nextInt();</span>
-<span class="fc" id="L1754">					g.removeEdge(v);</span>
-<span class="fc" id="L1755">					blackhole.consume(v);</span>
-<span class="fc" id="L1756">					blackhole.consume(g);</span>
+<span class="fc bfc" id="L1972" title="All 2 branches covered.">				for (int o = 0; o &lt; OperationsPerInvocation; o++) {</span>
+<span class="fc" id="L1973">					int v = removeVIter.nextInt();</span>
+<span class="fc" id="L1974">					g.removeEdge(v);</span>
+<span class="fc" id="L1975">					blackhole.consume(v);</span>
+<span class="fc" id="L1976">					blackhole.consume(g);</span>
 				}
-<span class="fc" id="L1758">			}</span>
+<span class="fc" id="L1978">			}</span>
 
 			@BenchmarkMode(Mode.AverageTime)
 			@OutputTimeUnit(TimeUnit.NANOSECONDS)
@@ -1763,27 +1983,27 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1766">			public static class ArrayDirected extends GraphBench.Remove.Vertex {</span>
+<span class="fc" id="L1986">			public static class ArrayDirected extends GraphBench.Remove.Vertex {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1773">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;array&quot;)::newGraph, true, true, false);</span>
-<span class="fc" id="L1774">				}</span>
+<span class="fc" id="L1993">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;array&quot;)::newGraph, true, true, false);</span>
+<span class="fc" id="L1994">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1779">					super.restoreGraph();</span>
-<span class="fc" id="L1780">				}</span>
+<span class="fc" id="L1999">					super.restoreGraph();</span>
+<span class="fc" id="L2000">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Vertex.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1785">					super.bench(blackhole);</span>
-<span class="fc" id="L1786">				}</span>
+<span class="fc" id="L2005">					super.bench(blackhole);</span>
+<span class="fc" id="L2006">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1792,29 +2012,29 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1795">			public static class ArrayUndirected extends GraphBench.Remove.Vertex {</span>
+<span class="fc" id="L2015">			public static class ArrayUndirected extends GraphBench.Remove.Vertex {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1802">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;array&quot;)::newGraph, false, true,</span>
+<span class="fc" id="L2022">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;array&quot;)::newGraph, false, true,</span>
 							false);
-<span class="fc" id="L1804">				}</span>
+<span class="fc" id="L2024">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1809">					super.restoreGraph();</span>
+<span class="fc" id="L2029">					super.restoreGraph();</span>
 
-<span class="fc" id="L1811">				}</span>
+<span class="fc" id="L2031">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Vertex.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1816">					super.bench(blackhole);</span>
-<span class="fc" id="L1817">				}</span>
+<span class="fc" id="L2036">					super.bench(blackhole);</span>
+<span class="fc" id="L2037">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1823,29 +2043,29 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1826">			public static class LinkedDirected extends GraphBench.Remove.Vertex {</span>
+<span class="fc" id="L2046">			public static class LinkedDirected extends GraphBench.Remove.Vertex {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1833">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;linked-list&quot;)::newGraph, true, true,</span>
+<span class="fc" id="L2053">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;linked-list&quot;)::newGraph, true, true,</span>
 							false);
-<span class="fc" id="L1835">				}</span>
+<span class="fc" id="L2055">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1840">					super.restoreGraph();</span>
+<span class="fc" id="L2060">					super.restoreGraph();</span>
 
-<span class="fc" id="L1842">				}</span>
+<span class="fc" id="L2062">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Vertex.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1847">					super.bench(blackhole);</span>
-<span class="fc" id="L1848">				}</span>
+<span class="fc" id="L2067">					super.bench(blackhole);</span>
+<span class="fc" id="L2068">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1854,29 +2074,29 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1857">			public static class LinkedUndirected extends GraphBench.Remove.Vertex {</span>
+<span class="fc" id="L2077">			public static class LinkedUndirected extends GraphBench.Remove.Vertex {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1864">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;linked-list&quot;)::newGraph, false, true,</span>
+<span class="fc" id="L2084">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;linked-list&quot;)::newGraph, false, true,</span>
 							false);
-<span class="fc" id="L1866">				}</span>
+<span class="fc" id="L2086">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1871">					super.restoreGraph();</span>
+<span class="fc" id="L2091">					super.restoreGraph();</span>
 
-<span class="fc" id="L1873">				}</span>
+<span class="fc" id="L2093">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Vertex.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1878">					super.bench(blackhole);</span>
-<span class="fc" id="L1879">				}</span>
+<span class="fc" id="L2098">					super.bench(blackhole);</span>
+<span class="fc" id="L2099">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1885,29 +2105,29 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1888">			public static class LinkedPtrDirected extends GraphBench.Remove.Vertex {</span>
+<span class="fc" id="L2108">			public static class LinkedPtrDirected extends GraphBench.Remove.Vertex {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1895">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;linked-list-ptr&quot;)::newGraph, true, true,</span>
+<span class="fc" id="L2115">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;linked-list-ptr&quot;)::newGraph, true, true,</span>
 							false);
-<span class="fc" id="L1897">				}</span>
+<span class="fc" id="L2117">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1902">					super.restoreGraph();</span>
+<span class="fc" id="L2122">					super.restoreGraph();</span>
 
-<span class="fc" id="L1904">				}</span>
+<span class="fc" id="L2124">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Vertex.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1909">					super.bench(blackhole);</span>
-<span class="fc" id="L1910">				}</span>
+<span class="fc" id="L2129">					super.bench(blackhole);</span>
+<span class="fc" id="L2130">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1916,29 +2136,29 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1919">			public static class LinkedPtrUndirected extends GraphBench.Remove.Vertex {</span>
+<span class="fc" id="L2139">			public static class LinkedPtrUndirected extends GraphBench.Remove.Vertex {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1926">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;linked-list-ptr&quot;)::newGraph, false,</span>
+<span class="fc" id="L2146">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;linked-list-ptr&quot;)::newGraph, false,</span>
 							true, false);
-<span class="fc" id="L1928">				}</span>
+<span class="fc" id="L2148">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1933">					super.restoreGraph();</span>
+<span class="fc" id="L2153">					super.restoreGraph();</span>
 
-<span class="fc" id="L1935">				}</span>
+<span class="fc" id="L2155">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Vertex.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1940">					super.bench(blackhole);</span>
-<span class="fc" id="L1941">				}</span>
+<span class="fc" id="L2160">					super.bench(blackhole);</span>
+<span class="fc" id="L2161">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1947,29 +2167,29 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1950">			public static class HashtableDirected extends GraphBench.Remove.Vertex {</span>
+<span class="fc" id="L2170">			public static class HashtableDirected extends GraphBench.Remove.Vertex {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1957">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;hashtable&quot;)::newGraph, true, false,</span>
+<span class="fc" id="L2177">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;hashtable&quot;)::newGraph, true, false,</span>
 							false);
-<span class="fc" id="L1959">				}</span>
+<span class="fc" id="L2179">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1964">					super.restoreGraph();</span>
+<span class="fc" id="L2184">					super.restoreGraph();</span>
 
-<span class="fc" id="L1966">				}</span>
+<span class="fc" id="L2186">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Vertex.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L1971">					super.bench(blackhole);</span>
-<span class="fc" id="L1972">				}</span>
+<span class="fc" id="L2191">					super.bench(blackhole);</span>
+<span class="fc" id="L2192">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -1978,29 +2198,29 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L1981">			public static class HashtableUndirected extends GraphBench.Remove.Vertex {</span>
+<span class="fc" id="L2201">			public static class HashtableUndirected extends GraphBench.Remove.Vertex {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L1988">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;hashtable&quot;)::newGraph, false, false,</span>
+<span class="fc" id="L2208">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;hashtable&quot;)::newGraph, false, false,</span>
 							false);
-<span class="fc" id="L1990">				}</span>
+<span class="fc" id="L2210">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L1995">					super.restoreGraph();</span>
+<span class="fc" id="L2215">					super.restoreGraph();</span>
 
-<span class="fc" id="L1997">				}</span>
+<span class="fc" id="L2217">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Vertex.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L2002">					super.bench(blackhole);</span>
-<span class="fc" id="L2003">				}</span>
+<span class="fc" id="L2222">					super.bench(blackhole);</span>
+<span class="fc" id="L2223">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -2009,28 +2229,29 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L2012">			public static class MatrixDirected extends GraphBench.Remove.Vertex {</span>
+<span class="fc" id="L2232">			public static class HashtableMultiDirected extends GraphBench.Remove.Vertex {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L2019">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;matrix&quot;)::newGraph, true, false, false);</span>
-<span class="fc" id="L2020">				}</span>
+<span class="fc" id="L2239">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;hashtable-multi&quot;)::newGraph, true,</span>
+							false, false);
+<span class="fc" id="L2241">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L2025">					super.restoreGraph();</span>
+<span class="fc" id="L2246">					super.restoreGraph();</span>
 
-<span class="fc" id="L2027">				}</span>
+<span class="fc" id="L2248">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Vertex.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L2032">					super.bench(blackhole);</span>
-<span class="fc" id="L2033">				}</span>
+<span class="fc" id="L2253">					super.bench(blackhole);</span>
+<span class="fc" id="L2254">				}</span>
 			}
 
 			@BenchmarkMode(Mode.AverageTime)
@@ -2039,68 +2260,129 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
 			@Fork(value = 1, warmups = 0)
 			@State(Scope.Benchmark)
-<span class="fc" id="L2042">			public static class MatrixUndirected extends GraphBench.Remove.Vertex {</span>
+<span class="fc" id="L2263">			public static class HashtableMultiUndirected extends GraphBench.Remove.Vertex {</span>
 
 				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
 				public String args;
 
 				@Setup(Level.Trial)
 				public void setup() {
-<span class="fc" id="L2049">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;matrix&quot;)::newGraph, false, false,</span>
+<span class="fc" id="L2270">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;hashtable-multi&quot;)::newGraph, false,</span>
+							false, false);
+<span class="fc" id="L2272">				}</span>
+
+				@Override
+				@Setup(Level.Invocation)
+				public void restoreGraph() {
+<span class="fc" id="L2277">					super.restoreGraph();</span>
+
+<span class="fc" id="L2279">				}</span>
+
+				@Benchmark
+				@OperationsPerInvocation(GraphBench.Remove.Vertex.OperationsPerInvocation)
+				public void bench(Blackhole blackhole) {
+<span class="fc" id="L2284">					super.bench(blackhole);</span>
+<span class="fc" id="L2285">				}</span>
+			}
+
+			@BenchmarkMode(Mode.AverageTime)
+			@OutputTimeUnit(TimeUnit.NANOSECONDS)
+			@Warmup(iterations = 2, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Fork(value = 1, warmups = 0)
+			@State(Scope.Benchmark)
+<span class="fc" id="L2294">			public static class MatrixDirected extends GraphBench.Remove.Vertex {</span>
+
+				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
+				public String args;
+
+				@Setup(Level.Trial)
+				public void setup() {
+<span class="fc" id="L2301">					setup(args, IndexGraphFactory.directed().setOption(&quot;impl&quot;, &quot;matrix&quot;)::newGraph, true, false, false);</span>
+<span class="fc" id="L2302">				}</span>
+
+				@Override
+				@Setup(Level.Invocation)
+				public void restoreGraph() {
+<span class="fc" id="L2307">					super.restoreGraph();</span>
+
+<span class="fc" id="L2309">				}</span>
+
+				@Benchmark
+				@OperationsPerInvocation(GraphBench.Remove.Vertex.OperationsPerInvocation)
+				public void bench(Blackhole blackhole) {
+<span class="fc" id="L2314">					super.bench(blackhole);</span>
+<span class="fc" id="L2315">				}</span>
+			}
+
+			@BenchmarkMode(Mode.AverageTime)
+			@OutputTimeUnit(TimeUnit.NANOSECONDS)
+			@Warmup(iterations = 2, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Measurement(iterations = 3, time = 300, timeUnit = TimeUnit.MILLISECONDS)
+			@Fork(value = 1, warmups = 0)
+			@State(Scope.Benchmark)
+<span class="fc" id="L2324">			public static class MatrixUndirected extends GraphBench.Remove.Vertex {</span>
+
+				@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=1300 |E|=50000&quot; })
+				public String args;
+
+				@Setup(Level.Trial)
+				public void setup() {
+<span class="fc" id="L2331">					setup(args, IndexGraphFactory.undirected().setOption(&quot;impl&quot;, &quot;matrix&quot;)::newGraph, false, false,</span>
 							false);
-<span class="fc" id="L2051">				}</span>
+<span class="fc" id="L2333">				}</span>
 
 				@Override
 				@Setup(Level.Invocation)
 				public void restoreGraph() {
-<span class="fc" id="L2056">					super.restoreGraph();</span>
+<span class="fc" id="L2338">					super.restoreGraph();</span>
 
-<span class="fc" id="L2058">				}</span>
+<span class="fc" id="L2340">				}</span>
 
 				@Benchmark
 				@OperationsPerInvocation(GraphBench.Remove.Edge.OperationsPerInvocation)
 				public void bench(Blackhole blackhole) {
-<span class="fc" id="L2063">					super.bench(blackhole);</span>
-<span class="fc" id="L2064">				}</span>
+<span class="fc" id="L2345">					super.bench(blackhole);</span>
+<span class="fc" id="L2346">				}</span>
 			}
 
 		}
 	}
 
 	static IntIterator circularIterator(IntIterable iterable) {
-<span class="fc" id="L2071">		return new IntIterator() {</span>
-<span class="fc" id="L2072">			IntIterator it = iterable.iterator();</span>
+<span class="fc" id="L2353">		return new IntIterator() {</span>
+<span class="fc" id="L2354">			IntIterator it = iterable.iterator();</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="nc" id="L2076">				return true;</span>
+<span class="nc" id="L2358">				return true;</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="fc" id="L2081">				int res = it.nextInt();</span>
-<span class="pc bpc" id="L2082" title="1 of 2 branches missed.">				if (!it.hasNext())</span>
-<span class="nc" id="L2083">					it = iterable.iterator();</span>
-<span class="fc" id="L2084">				return res;</span>
+<span class="fc" id="L2363">				int res = it.nextInt();</span>
+<span class="pc bpc" id="L2364" title="1 of 2 branches missed.">				if (!it.hasNext())</span>
+<span class="nc" id="L2365">					it = iterable.iterator();</span>
+<span class="fc" id="L2366">				return res;</span>
 			}
 		};
 	}
 
 	static LongIterator circularIterator(LongIterable iterable) {
-<span class="fc" id="L2090">		return new LongIterator() {</span>
-<span class="fc" id="L2091">			LongIterator it = iterable.iterator();</span>
+<span class="fc" id="L2372">		return new LongIterator() {</span>
+<span class="fc" id="L2373">			LongIterator it = iterable.iterator();</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="nc" id="L2095">				return true;</span>
+<span class="nc" id="L2377">				return true;</span>
 			}
 
 			@Override
 			public long nextLong() {
-<span class="fc" id="L2100">				long res = it.nextLong();</span>
-<span class="pc bpc" id="L2101" title="1 of 2 branches missed.">				if (!it.hasNext())</span>
-<span class="nc" id="L2102">					it = iterable.iterator();</span>
-<span class="fc" id="L2103">				return res;</span>
+<span class="fc" id="L2382">				long res = it.nextLong();</span>
+<span class="pc bpc" id="L2383" title="1 of 2 branches missed.">				if (!it.hasNext())</span>
+<span class="nc" id="L2384">					it = iterable.iterator();</span>
+<span class="fc" id="L2385">				return res;</span>
 			}
 		};
 	}

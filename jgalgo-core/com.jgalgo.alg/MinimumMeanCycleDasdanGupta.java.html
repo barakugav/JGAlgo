@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IEdgeIter;
@@ -41,8 +42,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  */
 class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 
-<span class="fc" id="L44">	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();</span>
-	private static final double EPS = 0.00001;
+<span class="fc" id="L45">	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();</span>
 
 	/* Although the paper suggest a value of 10, this seems only to slow us down */
 	private static final int SourceChoosingUnfoldingDepth = 0;
@@ -187,18 +187,22 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 <span class="fc bfc" id="L187" title="All 2 branches covered.">		for (int k = 1; k &lt; ccSize + 1; k++)</span>
 <span class="fc" id="L188">			pathWeights[k] = pathWeights[k - 1] + w.weight(path[k - 1]);</span>
 
-<span class="pc bpc" id="L190" title="1 of 2 branches missed.">		for (int len : bestCycleLengths) {</span>
-<span class="pc bpc" id="L191" title="1 of 2 branches missed.">			for (int k = 0; k &lt;= ccSize - len; k++) {</span>
-<span class="fc bfc" id="L192" title="All 2 branches covered.">				if (g.edgeSource(path[k]) != g.edgeTarget(path[k + len - 1]))</span>
-<span class="fc" id="L193">					continue;</span>
-<span class="pc bpc" id="L194" title="1 of 2 branches missed.">				if (Math.abs((pathWeights[k + len] - pathWeights[k]) - bestCycleMeanWeight * len) &lt; EPS) {</span>
-<span class="fc" id="L195">					IntList cycleList = new IntArrayList(path, k, len);</span>
-<span class="fc" id="L196">					int cycleVertex = g.edgeSource(cycleList.getInt(0));</span>
-<span class="fc" id="L197">					return new PathImpl(g, cycleVertex, cycleVertex, cycleList);</span>
+<span class="fc" id="L190">		final double eps =</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">				range(g.edges().size()).mapToDouble(e -&gt; Math.abs(w.weight(e))).filter(c -&gt; c &gt; 0).min().orElse(0)</span>
+						* 1e-8;
+
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">		for (int len : bestCycleLengths) {</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">			for (int k = 0; k &lt;= ccSize - len; k++) {</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">				if (g.edgeSource(path[k]) != g.edgeTarget(path[k + len - 1]))</span>
+<span class="fc" id="L197">					continue;</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">				if (Math.abs((pathWeights[k + len] - pathWeights[k]) - bestCycleMeanWeight * len) &lt; eps) {</span>
+<span class="fc" id="L199">					IntList cycleList = new IntArrayList(path, k, len);</span>
+<span class="fc" id="L200">					int cycleVertex = g.edgeSource(cycleList.getInt(0));</span>
+<span class="fc" id="L201">					return new PathImpl(g, cycleVertex, cycleVertex, cycleList);</span>
 				}
 			}
-<span class="nc" id="L200">		}</span>
-<span class="nc" id="L201">		throw new AssertionError(&quot;shouldn't happen! implementation bug&quot;);</span>
+<span class="nc" id="L204">		}</span>
+<span class="nc" id="L205">		throw new AssertionError(&quot;shouldn't happen! implementation bug&quot;);</span>
 	}
 
 	@SuppressWarnings(&quot;unused&quot;)
@@ -210,9 +214,9 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 		final int[] f;
 		final int[] l;
 
-<span class="fc" id="L213">		SourceChooser(IndexGraph g, IVertexPartition cc) {</span>
-<span class="fc" id="L214">			this.g = g;</span>
-<span class="fc" id="L215">			this.cc = cc;</span>
+<span class="fc" id="L217">		SourceChooser(IndexGraph g, IVertexPartition cc) {</span>
+<span class="fc" id="L218">			this.g = g;</span>
+<span class="fc" id="L219">			this.cc = cc;</span>
 
 			if (SourceChoosingUnfoldingDepth &gt; 0) {
 				final int n = g.vertices().size();
@@ -229,14 +233,14 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 					}
 				}
 			} else {
-<span class="fc" id="L232">				interCcDegree = null;</span>
-<span class="fc" id="L233">				f = null;</span>
-<span class="fc" id="L234">				l = null;</span>
+<span class="fc" id="L236">				interCcDegree = null;</span>
+<span class="fc" id="L237">				f = null;</span>
+<span class="fc" id="L238">				l = null;</span>
 			}
-<span class="fc" id="L236">		}</span>
+<span class="fc" id="L240">		}</span>
 
 		int chooseSource(int ccIdx) {
-<span class="fc" id="L239">			int source = cc.blockVertices(ccIdx).iterator().nextInt();</span>
+<span class="fc" id="L243">			int source = cc.blockVertices(ccIdx).iterator().nextInt();</span>
 			if (SourceChoosingUnfoldingDepth &gt; 0) {
 				/* choose a source by unfolding the graph N layers from each possible source */
 				for (int v : cc.blockVertices(ccIdx))
@@ -259,7 +263,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 					if (l[source] &gt; l[u])
 						source = u;
 			}
-<span class="fc" id="L262">			return source;</span>
+<span class="fc" id="L266">			return source;</span>
 		}
 	}
 

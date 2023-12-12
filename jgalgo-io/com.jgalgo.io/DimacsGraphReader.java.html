@@ -15,6 +15,7 @@
  */
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.io.BufferedReader;
 import java.io.Reader;
 import java.util.Objects;
@@ -78,12 +79,12 @@ import com.jgalgo.graph.WeightsInt;
  */
 public class DimacsGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
-<span class="fc" id="L81">	private String weightsKey = &quot;weight&quot;;</span>
+<span class="fc" id="L82">	private String weightsKey = &quot;weight&quot;;</span>
 
 	/**
 	 * Create a new reader.
 	 */
-<span class="fc" id="L86">	public DimacsGraphReader() {}</span>
+<span class="fc" id="L87">	public DimacsGraphReader() {}</span>
 
 	/**
 	 * Sets the key of the edge weights that will be read.
@@ -96,113 +97,111 @@ public class DimacsGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 	 * @see              Graph#getEdgesWeights(String)
 	 */
 	public void setEdgeWeightsKey(String weightsKey) {
-<span class="fc" id="L99">		this.weightsKey = Objects.requireNonNull(weightsKey);</span>
-<span class="fc" id="L100">	}</span>
+<span class="fc" id="L100">		this.weightsKey = Objects.requireNonNull(weightsKey);</span>
+<span class="fc" id="L101">	}</span>
 
 	@Override
 	public IntGraphBuilder readIntoBuilderImpl(Reader reader) {
-<span class="fc" id="L104">		BufferedReader br = GraphIoUtils.bufferedReader(reader);</span>
-<span class="fc" id="L105">		IntGraphBuilder gb = IntGraphFactory.undirected().allowSelfEdges().newBuilder();</span>
-<span class="fc" id="L106">		boolean problemLineSeen = false;</span>
-<span class="fc" id="L107">		boolean hasWeights = false;</span>
-<span class="fc" id="L108">		IWeightsInt w = null;</span>
-<span class="fc" id="L109">		int n = -1, m = -1;</span>
+<span class="fc" id="L105">		BufferedReader br = GraphIoUtils.bufferedReader(reader);</span>
+<span class="fc" id="L106">		IntGraphBuilder gb = IntGraphFactory.undirected().allowSelfEdges().newBuilder();</span>
+<span class="fc" id="L107">		boolean problemLineSeen = false;</span>
+<span class="fc" id="L108">		boolean hasWeights = false;</span>
+<span class="fc" id="L109">		IWeightsInt w = null;</span>
+<span class="fc" id="L110">		int n = -1, m = -1;</span>
 
-<span class="fc bfc" id="L111" title="All 2 branches covered.">		for (String line : GraphIoUtils.lines(br, true)) {</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">			if (line.isEmpty())</span>
-<span class="fc" id="L113">				continue;</span>
-<span class="fc bfc" id="L114" title="All 4 branches covered.">			switch (line.charAt(0)) {</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		for (String line : GraphIoUtils.lines(br, true)) {</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			if (line.isEmpty())</span>
+<span class="fc" id="L114">				continue;</span>
+<span class="fc bfc" id="L115" title="All 4 branches covered.">			switch (line.charAt(0)) {</span>
 				case 'c': /* comment line */
-<span class="fc bfc" id="L116" title="All 2 branches covered.">					if (!line.startsWith(&quot;c &quot;))</span>
-<span class="fc" id="L117">						throw new IllegalArgumentException(&quot;comment line must start with 'c '&quot;);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">					if (!line.startsWith(&quot;c &quot;))</span>
+<span class="fc" id="L118">						throw new IllegalArgumentException(&quot;comment line must start with 'c '&quot;);</span>
 					continue;
 
 				case 'p': /* problem line */ {
-<span class="fc bfc" id="L121" title="All 2 branches covered.">					if (!line.startsWith(&quot;p &quot;))</span>
-<span class="fc" id="L122">						throw new IllegalArgumentException(&quot;problem line must start with 'p '&quot;);</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">					if (problemLineSeen)</span>
-<span class="fc" id="L124">						throw new IllegalArgumentException(&quot;more than one problem line ('p' prefix) in file&quot;);</span>
-<span class="fc" id="L125">					problemLineSeen = true;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">					if (!line.startsWith(&quot;p &quot;))</span>
+<span class="fc" id="L123">						throw new IllegalArgumentException(&quot;problem line must start with 'p '&quot;);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">					if (problemLineSeen)</span>
+<span class="fc" id="L125">						throw new IllegalArgumentException(&quot;more than one problem line ('p' prefix) in file&quot;);</span>
+<span class="fc" id="L126">					problemLineSeen = true;</span>
 
-<span class="fc" id="L127">					String[] arr = line.split(&quot; &quot;);</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">					if (arr.length != 4)</span>
-<span class="fc" id="L129">						throw new IllegalArgumentException(</span>
+<span class="fc" id="L128">					String[] arr = line.split(&quot; &quot;);</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">					if (arr.length != 4)</span>
+<span class="fc" id="L130">						throw new IllegalArgumentException(</span>
 								&quot;expected problem line in format: p (edge | sp) &lt;NumVertices&gt; &lt;NumEdges&gt;&quot;);
-<span class="fc" id="L131">					String graphFormat = arr[1].toLowerCase();</span>
-<span class="fc bfc" id="L132" title="All 3 branches covered.">					switch (graphFormat) {</span>
+<span class="fc" id="L132">					String graphFormat = arr[1].toLowerCase();</span>
+<span class="fc bfc" id="L133" title="All 3 branches covered.">					switch (graphFormat) {</span>
 						case &quot;edge&quot;:
-<span class="fc" id="L134">							hasWeights = false;</span>
-<span class="fc" id="L135">							break;</span>
+<span class="fc" id="L135">							hasWeights = false;</span>
+<span class="fc" id="L136">							break;</span>
 						case &quot;sp&quot;:
-<span class="fc" id="L137">							hasWeights = true;</span>
-<span class="fc" id="L138">							break;</span>
+<span class="fc" id="L138">							hasWeights = true;</span>
+<span class="fc" id="L139">							break;</span>
 						default:
-<span class="fc" id="L140">							throw new IllegalArgumentException(</span>
+<span class="fc" id="L141">							throw new IllegalArgumentException(</span>
 									&quot;Support formats 'sp' and 'edge'. Unknown format: '&quot; + graphFormat + &quot;'&quot;);
 					}
 
 					try {
-<span class="fc" id="L145">						n = Integer.parseInt(arr[2]);</span>
-<span class="fc" id="L146">						m = Integer.parseInt(arr[3]);</span>
-<span class="fc" id="L147">					} catch (NumberFormatException e) {</span>
-<span class="fc" id="L148">						throw new IllegalArgumentException(&quot;Invalid number of vertices or edges&quot;, e);</span>
-<span class="fc" id="L149">					}</span>
+<span class="fc" id="L146">						n = Integer.parseInt(arr[2]);</span>
+<span class="fc" id="L147">						m = Integer.parseInt(arr[3]);</span>
+<span class="fc" id="L148">					} catch (NumberFormatException e) {</span>
+<span class="fc" id="L149">						throw new IllegalArgumentException(&quot;Invalid number of vertices or edges&quot;, e);</span>
+<span class="fc" id="L150">					}</span>
 
-<span class="fc bfc" id="L151" title="All 4 branches covered.">					if (n &lt; 0 || m &lt; 0)</span>
-<span class="fc" id="L152">						throw new IllegalArgumentException(&quot;negative vertices/edges num: &quot; + n + &quot; &quot; + m);</span>
-<span class="fc" id="L153">					gb.expectedVerticesNum(n);</span>
+<span class="fc bfc" id="L152" title="All 4 branches covered.">					if (n &lt; 0 || m &lt; 0)</span>
+<span class="fc" id="L153">						throw new IllegalArgumentException(&quot;negative vertices/edges num: &quot; + n + &quot; &quot; + m);</span>
 <span class="fc" id="L154">					gb.expectedEdgesNum(m);</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">					for (int v = 1; v &lt;= n; v++)</span>
-<span class="fc" id="L156">						gb.addVertex(v); // vertices are labeled as 1,2,3,4...</span>
+<span class="fc" id="L155">					gb.addVertices(range(1, n + 1)); /* vertices are labeled as 1,2,3,4... */</span>
 
-<span class="fc bfc" id="L158" title="All 2 branches covered.">					if (hasWeights)</span>
-<span class="fc" id="L159">						w = gb.addEdgesWeights(weightsKey, int.class);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">					if (hasWeights)</span>
+<span class="fc" id="L158">						w = gb.addEdgesWeights(weightsKey, int.class);</span>
 					break;
 				}
 
 				case 'e': /* edge line */ {
-<span class="fc bfc" id="L164" title="All 2 branches covered.">					if (!problemLineSeen)</span>
-<span class="fc" id="L165">						throw new IllegalArgumentException(&quot;problem line ('p' prefix) was not seen yet&quot;);</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">					if (!problemLineSeen)</span>
+<span class="fc" id="L164">						throw new IllegalArgumentException(&quot;problem line ('p' prefix) was not seen yet&quot;);</span>
 
-<span class="fc" id="L167">					String[] arr = line.split(&quot; &quot;);</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">					if (!hasWeights) {</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">						if (arr.length != 3)</span>
-<span class="fc" id="L170">							throw new IllegalArgumentException(</span>
+<span class="fc" id="L166">					String[] arr = line.split(&quot; &quot;);</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">					if (!hasWeights) {</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">						if (arr.length != 3)</span>
+<span class="fc" id="L169">							throw new IllegalArgumentException(</span>
 									&quot;expect edge definition: e &lt;source_vertex&gt; &lt;destination_vertex&gt;&quot;);
 					} else {
-<span class="fc bfc" id="L173" title="All 2 branches covered.">						if (arr.length != 4)</span>
-<span class="fc" id="L174">							throw new IllegalArgumentException(</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">						if (arr.length != 4)</span>
+<span class="fc" id="L173">							throw new IllegalArgumentException(</span>
 									&quot;expect edge definition: e &lt;source_vertex&gt; &lt;destination_vertex&gt; &lt;weight&gt;&quot;);
 					}
 
 					/* parse edge source and target vertices */
 					int source, target;
 					try {
-<span class="fc" id="L181">						source = Integer.parseInt(arr[1]);</span>
-<span class="fc" id="L182">						target = Integer.parseInt(arr[2]);</span>
-<span class="fc" id="L183">					} catch (NumberFormatException e) {</span>
-<span class="fc" id="L184">						throw new IllegalArgumentException(&quot;edge must have 2 vertices as numbers&quot;, e);</span>
-<span class="fc" id="L185">					}</span>
-<span class="fc" id="L186">					final int e = gb.edges().size() + 1;</span>
-<span class="fc" id="L187">					gb.addEdge(source, target, e);</span>
+<span class="fc" id="L180">						source = Integer.parseInt(arr[1]);</span>
+<span class="fc" id="L181">						target = Integer.parseInt(arr[2]);</span>
+<span class="fc" id="L182">					} catch (NumberFormatException e) {</span>
+<span class="fc" id="L183">						throw new IllegalArgumentException(&quot;edge must have 2 vertices as numbers&quot;, e);</span>
+<span class="fc" id="L184">					}</span>
+<span class="fc" id="L185">					final int e = gb.edges().size() + 1;</span>
+<span class="fc" id="L186">					gb.addEdge(source, target, e);</span>
 
 					/* parse edge weight */
-<span class="fc bfc" id="L190" title="All 2 branches covered.">					if (hasWeights) {</span>
-<span class="fc" id="L191">						int edgeWeight = -1;</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">					if (hasWeights) {</span>
+<span class="fc" id="L190">						int edgeWeight = -1;</span>
 						try {
-<span class="fc" id="L193">							edgeWeight = Integer.parseInt(arr[3]);</span>
-<span class="fc" id="L194">						} catch (NumberFormatException ex) {</span>
-<span class="fc" id="L195">							throw new IllegalArgumentException(&quot;edge must have 2 vertices as numbers and a weight&quot;, ex);</span>
-<span class="fc" id="L196">						}</span>
-<span class="fc" id="L197">						w.set(e, edgeWeight);</span>
-<span class="fc" id="L198">					}</span>
+<span class="fc" id="L192">							edgeWeight = Integer.parseInt(arr[3]);</span>
+<span class="fc" id="L193">						} catch (NumberFormatException ex) {</span>
+<span class="fc" id="L194">							throw new IllegalArgumentException(&quot;edge must have 2 vertices as numbers and a weight&quot;, ex);</span>
+<span class="fc" id="L195">						}</span>
+<span class="fc" id="L196">						w.set(e, edgeWeight);</span>
+<span class="fc" id="L197">					}</span>
 					break;
 				}
 				default:
-<span class="fc" id="L202">					throw new IllegalArgumentException(&quot;unknown line: &quot; + line);</span>
+<span class="fc" id="L201">					throw new IllegalArgumentException(&quot;unknown line: &quot; + line);</span>
 			}
-<span class="fc" id="L204">		}</span>
-<span class="fc" id="L205">		return gb;</span>
+<span class="fc" id="L203">		}</span>
+<span class="fc" id="L204">		return gb;</span>
 	}
 
 }

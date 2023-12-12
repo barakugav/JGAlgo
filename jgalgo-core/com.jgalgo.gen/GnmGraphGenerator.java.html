@@ -247,68 +247,65 @@ public class GnmGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 <span class="fc" id="L247">			factory = GraphFactory.newInstance(directed);</span>
 		}
 <span class="fc" id="L249">		GraphBuilder&lt;V, E&gt; g = factory.allowSelfEdges(selfEdges).newBuilder();</span>
-<span class="fc" id="L250">		g.expectedVerticesNum(n);</span>
+<span class="fc" id="L250">		g.addVertices(vertices);</span>
 <span class="fc" id="L251">		g.expectedEdgesNum(m);</span>
 
-<span class="fc bfc" id="L253" title="All 2 branches covered.">		for (V v : vertices)</span>
-<span class="fc" id="L254">			g.addVertex(v);</span>
-
-<span class="fc bfc" id="L256" title="All 4 branches covered.">		if (parallelEdges || m &lt;= maxNumberOfEdges / 2) {</span>
+<span class="fc bfc" id="L253" title="All 4 branches covered.">		if (parallelEdges || m &lt;= maxNumberOfEdges / 2) {</span>
 			/* Start with an empty graph and add edges one by one */
 
-<span class="fc bfc" id="L259" title="All 2 branches covered.">			LongSet edges = parallelEdges ? null : new LongOpenHashSet(m);</span>
-<span class="fc bfc" id="L260" title="All 2 branches covered.">			while (g.edges().size() &lt; m) {</span>
-<span class="fc" id="L261">				int uIdx = rand.nextInt(n), vIdx = rand.nextInt(n);</span>
-<span class="fc bfc" id="L262" title="All 4 branches covered.">				if (!selfEdges &amp;&amp; uIdx == vIdx)</span>
-<span class="fc" id="L263">					continue;</span>
-<span class="fc bfc" id="L264" title="All 2 branches covered.">				if (!parallelEdges) {</span>
-<span class="fc bfc" id="L265" title="All 4 branches covered.">					if (!directed &amp;&amp; uIdx &gt; vIdx) {</span>
-<span class="fc" id="L266">						int tmp = uIdx;</span>
-<span class="fc" id="L267">						uIdx = vIdx;</span>
-<span class="fc" id="L268">						vIdx = tmp;</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">			LongSet edges = parallelEdges ? null : new LongOpenHashSet(m);</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">			while (g.edges().size() &lt; m) {</span>
+<span class="fc" id="L258">				int uIdx = rand.nextInt(n), vIdx = rand.nextInt(n);</span>
+<span class="fc bfc" id="L259" title="All 4 branches covered.">				if (!selfEdges &amp;&amp; uIdx == vIdx)</span>
+<span class="fc" id="L260">					continue;</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">				if (!parallelEdges) {</span>
+<span class="fc bfc" id="L262" title="All 4 branches covered.">					if (!directed &amp;&amp; uIdx &gt; vIdx) {</span>
+<span class="fc" id="L263">						int tmp = uIdx;</span>
+<span class="fc" id="L264">						uIdx = vIdx;</span>
+<span class="fc" id="L265">						vIdx = tmp;</span>
 					}
-<span class="fc bfc" id="L270" title="All 2 branches covered.">					if (!edges.add(JGAlgoUtils.longPack(uIdx, vIdx)))</span>
-<span class="fc" id="L271">						continue;</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">					if (!edges.add(JGAlgoUtils.longPack(uIdx, vIdx)))</span>
+<span class="fc" id="L268">						continue;</span>
 				}
-<span class="fc" id="L273">				V u = vertices.get(uIdx), v = vertices.get(vIdx);</span>
-<span class="fc" id="L274">				g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
-<span class="fc" id="L275">			}</span>
+<span class="fc" id="L270">				V u = vertices.get(uIdx), v = vertices.get(vIdx);</span>
+<span class="fc" id="L271">				g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc" id="L272">			}</span>
 
-<span class="fc" id="L277">		} else {</span>
+<span class="fc" id="L274">		} else {</span>
 			/* Start with a complete graph and remove edges one by one */
 
-<span class="fc" id="L280">			Bitmap edges = new Bitmap(maxNumberOfEdges);</span>
-<span class="fc" id="L281">			edges.setAll();</span>
-<span class="fc bfc" id="L282" title="All 2 branches covered.">			for (int edgesNum = maxNumberOfEdges; edgesNum &gt; m;) {</span>
-<span class="fc" id="L283">				int i = rand.nextInt(maxNumberOfEdges);</span>
-<span class="fc bfc" id="L284" title="All 2 branches covered.">				if (edges.get(i)) {</span>
-<span class="fc" id="L285">					edges.clear(i);</span>
-<span class="fc" id="L286">					edgesNum--;</span>
+<span class="fc" id="L277">			Bitmap edges = new Bitmap(maxNumberOfEdges);</span>
+<span class="fc" id="L278">			edges.setAll();</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">			for (int edgesNum = maxNumberOfEdges; edgesNum &gt; m;) {</span>
+<span class="fc" id="L280">				int i = rand.nextInt(maxNumberOfEdges);</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">				if (edges.get(i)) {</span>
+<span class="fc" id="L282">					edges.clear(i);</span>
+<span class="fc" id="L283">					edgesNum--;</span>
 				}
-<span class="fc" id="L288">			}</span>
+<span class="fc" id="L285">			}</span>
 
-<span class="fc bfc" id="L290" title="All 2 branches covered.">			for (int i = 0, uIdx = 0; uIdx &lt; n; uIdx++) {</span>
-<span class="fc" id="L291">				V u = vertices.get(uIdx);</span>
-<span class="fc bfc" id="L292" title="All 2 branches covered.">				if (directed) {</span>
-<span class="fc bfc" id="L293" title="All 2 branches covered.">					for (int vIdx = 0; vIdx &lt; uIdx; vIdx++, i++) {</span>
-<span class="fc bfc" id="L294" title="All 2 branches covered.">						if (edges.get(i)) {</span>
-<span class="fc" id="L295">							V v = vertices.get(vIdx);</span>
-<span class="fc" id="L296">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">			for (int i = 0, uIdx = 0; uIdx &lt; n; uIdx++) {</span>
+<span class="fc" id="L288">				V u = vertices.get(uIdx);</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">				if (directed) {</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">					for (int vIdx = 0; vIdx &lt; uIdx; vIdx++, i++) {</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">						if (edges.get(i)) {</span>
+<span class="fc" id="L292">							V v = vertices.get(vIdx);</span>
+<span class="fc" id="L293">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
 						}
 					}
 				}
-<span class="fc bfc" id="L300" title="All 4 branches covered.">				if (selfEdges &amp;&amp; edges.get(i++))</span>
-<span class="fc" id="L301">					g.addEdge(u, u, edgeBuilder.apply(u, u));</span>
-<span class="fc bfc" id="L302" title="All 2 branches covered.">				for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++, i++) {</span>
-<span class="fc bfc" id="L303" title="All 2 branches covered.">					if (edges.get(i)) {</span>
-<span class="fc" id="L304">						V v = vertices.get(vIdx);</span>
-<span class="fc" id="L305">						g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc bfc" id="L297" title="All 4 branches covered.">				if (selfEdges &amp;&amp; edges.get(i++))</span>
+<span class="fc" id="L298">					g.addEdge(u, u, edgeBuilder.apply(u, u));</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">				for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++, i++) {</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">					if (edges.get(i)) {</span>
+<span class="fc" id="L301">						V v = vertices.get(vIdx);</span>
+<span class="fc" id="L302">						g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
 					}
 				}
 			}
 		}
 
-<span class="fc" id="L311">		return g;</span>
+<span class="fc" id="L308">		return g;</span>
 	}
 
 }

@@ -155,10 +155,15 @@ public interface ShortestPathSingleSource {
 		 */
 		public double distance(int target);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #distance(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default double distance(Integer target) {
-<span class="fc" id="L161">			return distance(target.intValue());</span>
+<span class="fc" id="L166">			return distance(target.intValue());</span>
 		}
 
 		/**
@@ -169,10 +174,15 @@ public interface ShortestPathSingleSource {
 		 */
 		public IPath getPath(int target);
 
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #getPath(int)} instead to avoid un/boxing.
+		 */
 		@Deprecated
 		@Override
 		default IPath getPath(Integer target) {
-<span class="fc" id="L175">			return getPath(target.intValue());</span>
+<span class="fc" id="L185">			return getPath(target.intValue());</span>
 		}
 	}
 
@@ -186,7 +196,7 @@ public interface ShortestPathSingleSource {
 	 * @return a default implementation of {@link ShortestPathSingleSource}
 	 */
 	static ShortestPathSingleSource newInstance() {
-<span class="fc" id="L189">		return builder().build();</span>
+<span class="fc" id="L199">		return builder().build();</span>
 	}
 
 	/**
@@ -198,7 +208,7 @@ public interface ShortestPathSingleSource {
 	 * @return a new builder that can build {@link ShortestPathSingleSource} objects
 	 */
 	static ShortestPathSingleSource.Builder builder() {
-<span class="fc" id="L201">		return new ShortestPathSingleSourceUtils.BuilderImpl();</span>
+<span class="fc" id="L211">		return new ShortestPathSingleSourceUtils.BuilderImpl();</span>
 	}
 
 	/**
