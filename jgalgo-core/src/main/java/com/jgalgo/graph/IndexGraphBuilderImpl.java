@@ -120,7 +120,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public void addVertices(Collection<? extends Integer> vertices) {
-		if (!GraphBaseMutable.isRangeStartingFrom(this.vertices.size, vertices))
+		if (!GraphBaseMutable.isRange(this.vertices.size, vertices))
 			throw new IllegalArgumentException("added vertices must be a consecutive range of integers starting from "
 					+ this.vertices.size + " but was " + vertices);
 
@@ -139,7 +139,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	@Override
 	public int addEdge(int source, int target) {
 		if (!canAddEdgeWithoutId())
-			throw new IllegalArgumentException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
+			throw new IllegalStateException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
 					+ "if IDs are provided for some of the edges, they must be provided for all");
 		if (!vertices().contains(source))
 			throw NoSuchVertexException.ofIndex(source);
@@ -153,11 +153,11 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public void addEdge(int source, int target, int edge) {
+		if (!canAddEdgeWithId())
+			throw new IllegalStateException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
+					+ "if IDs are provided for some of the edges, they must be provided for all");
 		if (edge < 0)
 			throw new IllegalArgumentException("edge ID must be non negative integer");
-		if (!canAddEdgeWithId())
-			throw new IllegalArgumentException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
-					+ "if IDs are provided for some of the edges, they must be provided for all");
 		if (!vertices().contains(source))
 			throw NoSuchVertexException.ofIndex(source);
 		if (!vertices().contains(target))
@@ -167,6 +167,87 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		ensureEdgeCapacity(eIdx + 1);
 		setEdgeEndpoints(eIdx, source, target);
 		edgesUserIds[eIdx] = edge;
+	}
+
+	@Override
+	public void addEdges(EdgeSet<? extends Integer, ? extends Integer> edges) {
+		if (!canAddEdgeWithId())
+			throw new IllegalStateException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
+					+ "if IDs are provided for some of the edges, they must be provided for all");
+		@SuppressWarnings("unchecked")
+		EdgeSet<Integer, Integer> edges0 = (EdgeSet<Integer, Integer>) edges;
+		if (edges instanceof IEdgeSet) {
+			for (IEdgeIter eit = ((IEdgeSet) edges).iterator(); eit.hasNext();) {
+				eit.nextInt();
+				int source = eit.sourceInt();
+				int target = eit.targetInt();
+				if (!vertices().contains(source))
+					throw NoSuchVertexException.ofIndex(source);
+				if (!vertices().contains(target))
+					throw NoSuchVertexException.ofIndex(target);
+			}
+		} else {
+			for (EdgeIter<Integer, Integer> eit = edges0.iterator(); eit.hasNext();) {
+				eit.next();
+				int source = eit.source().intValue();
+				int target = eit.target().intValue();
+				if (!vertices().contains(source))
+					throw NoSuchVertexException.ofIndex(source);
+				if (!vertices().contains(target))
+					throw NoSuchVertexException.ofIndex(target);
+			}
+		}
+
+		final int addedNum = edges.size();
+		userProvideEdgesIds = true;
+		int eIdx = this.edges.size;
+		this.edges.addAll(addedNum);
+		ensureEdgeCapacity(this.edges.size);
+		if (edges instanceof IEdgeSet) {
+			for (IEdgeIter eit = ((IEdgeSet) edges).iterator(); eit.hasNext(); eIdx++) {
+				int edge = eit.nextInt();
+				int source = eit.sourceInt();
+				int target = eit.targetInt();
+				setEdgeEndpoints(eIdx, source, target);
+				edgesUserIds[eIdx] = edge;
+			}
+		} else {
+			for (EdgeIter<Integer, Integer> eit = edges0.iterator(); eit.hasNext(); eIdx++) {
+				int edge = eit.next().intValue();
+				int source = eit.source().intValue();
+				int target = eit.target().intValue();
+				setEdgeEndpoints(eIdx, source, target);
+				edgesUserIds[eIdx] = edge;
+			}
+		}
+	}
+
+	@Override
+	public IntSet addEdgesReassignIds(IEdgeSet edges) {
+		if (!canAddEdgeWithoutId())
+			throw new IllegalStateException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
+					+ "if IDs are provided for some of the edges, they must be provided for all");
+		for (IEdgeIter eit = edges.iterator(); eit.hasNext();) {
+			eit.nextInt();
+			int source = eit.sourceInt();
+			int target = eit.targetInt();
+			if (!vertices().contains(source))
+				throw NoSuchVertexException.ofIndex(source);
+			if (!vertices().contains(target))
+				throw NoSuchVertexException.ofIndex(target);
+		}
+
+		final int addedNum = edges.size();
+		int eIdx = this.edges.size;
+		this.edges.addAll(addedNum);
+		ensureEdgeCapacity(this.edges.size);
+		for (IEdgeIter eit = edges.iterator(); eit.hasNext(); eIdx++) {
+			eit.nextInt(); /* ignore edge ID */
+			int source = eit.sourceInt();
+			int target = eit.targetInt();
+			setEdgeEndpoints(eIdx, source, target);
+		}
+		return range(this.edges.size - addedNum, this.edges.size);
 	}
 
 	@Override

@@ -37,6 +37,7 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.TestUtils;
+import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IEdgeSet;
@@ -124,8 +125,7 @@ public class GraphBench {
 				IndexGraph g1 = graphImplementation.get();
 				assert g1.isDirected() == directed;
 				g1.addVertices(g.vertices());
-				for (int m = g.edges().size(), e = 0; e < m; e++)
-					g1.addEdge(g.edgeSource(e), g.edgeTarget(e));
+				g1.addEdges(EdgeSet.allOf(g));
 				return g1;
 			}, directed, allowParallelEdges, allowSelfEdges);
 		}
@@ -1236,8 +1236,7 @@ public class GraphBench {
 					assert g.isDirected() == directed;
 					IndexGraphBuilder g1 = IndexGraphBuilder.directed();
 					g1.addVertices(g.vertices());
-					for (int m = g.edges().size(), e = 0; e < m; e++)
-						g1.addEdge(g.edgeSource(e), g.edgeTarget(e));
+					g1.addEdges(EdgeSet.allOf(g));
 					IndexGraph g1Graph = g1.build();
 					assert g1Graph.isDirected() == directed;
 					return g1Graph;
@@ -1330,8 +1329,7 @@ public class GraphBench {
 					assert g.isDirected() == directed;
 					IndexGraphBuilder g1 = IndexGraphBuilder.undirected();
 					g1.addVertices(g.vertices());
-					for (int m = g.edges().size(), e = 0; e < m; e++)
-						g1.addEdge(g.edgeSource(e), g.edgeTarget(e));
+					g1.addEdges(EdgeSet.allOf(g));
 					IndexGraph g1Graph = g1.build();
 					assert g1Graph.isDirected() == directed;
 					return g1Graph;
@@ -1424,8 +1422,7 @@ public class GraphBench {
 					assert g.isDirected() == directed;
 					IndexGraphBuilder g1 = IndexGraphBuilder.directed();
 					g1.addVertices(g.vertices());
-					for (int m = g.edges().size(), e = 0; e < m; e++)
-						g1.addEdge(g.edgeSource(e), g.edgeTarget(e));
+					g1.addEdges(EdgeSet.allOf(g));
 					IndexGraph g1Graph = g1.reIndexAndBuild(true, true).graph();
 					assert g1Graph.isDirected() == directed;
 					return g1Graph;
@@ -1546,8 +1543,7 @@ public class GraphBench {
 				IndexGraph g1 = graphImplementation.get();
 				assert g1.isDirected() == directed;
 				g1.addVertices(g.vertices());
-				for (int e = 0; e < m; e++)
-					g1.addEdge(g.edgeSource(e), g.edgeTarget(e));
+				g1.addEdges(EdgeSet.allOf(g));
 				return g1;
 			}, directed, allowParallelEdges, allowSelfEdges);
 		}

@@ -17,6 +17,7 @@ package com.jgalgo.graph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -31,6 +32,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 
 public class UndirectedViewTest extends TestBase {
@@ -285,6 +287,92 @@ public class UndirectedViewTest extends TestBase {
 			}
 			assertEquals(g.edges(), undirectedG.edges());
 		});
+	}
+
+	@Test
+	public void addEdges() {
+		foreachBoolConfig((intGraph, index) -> {
+			Graph<Integer, Integer> g0 = createGraph(intGraph);
+			Graph<Integer, Integer> undirectedG0 = g0.undirectedView();
+			Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
+			Graph<Integer, Integer> undirectedG = index ? undirectedG0.indexGraph() : undirectedG0;
+
+			Iterator<Integer> vit = undirectedG.vertices().iterator();
+			Integer u = vit.next();
+			Integer v = vit.next();
+
+			Integer nonExistingEdge, newEdge;
+			if (undirectedG instanceof IndexGraph) {
+				for (int e = 0;; e++) {
+					if (!undirectedG0.edges().contains(Integer.valueOf(e))) {
+						nonExistingEdge = Integer.valueOf(e);
+						break;
+					}
+				}
+				newEdge = nonExistingEdge;
+
+				/* index graphs should not support adding edges with user defined identifiers */
+				int newEdge0 = newEdge.intValue();
+				if (newEdge0 != undirectedG.edges().size()) {
+					IntGraph gTemp = IntGraph.newDirected();
+					gTemp.addVertices(IntList.of(u.intValue(), v.intValue()));
+					gTemp.addEdge(u.intValue(), v.intValue(), newEdge0);
+					IEdgeSet edgesToAdd = IEdgeSet.allOf(gTemp);
+					assertThrows(IllegalArgumentException.class, () -> ((IndexGraph) undirectedG).addEdges(edgesToAdd));
+				}
+
+				/* can't add new edge directly to IndexGraph, only via wrapper Int/Obj Graph */
+				IndexIdMap<Integer> viMap = undirectedG0.indexGraphVerticesMap();
+				IndexIdMap<Integer> eiMap = undirectedG0.indexGraphEdgesMap();
+				Graph<Integer, Integer> gTemp = IntGraph.newDirected();
+				gTemp.addVertices(List.of(viMap.indexToId(u.intValue()), viMap.indexToId(v.intValue())));
+				gTemp.addEdge(viMap.indexToId(u.intValue()), viMap.indexToId(v.intValue()), newEdge);
+				EdgeSet<Integer, Integer> edgesToAdd = EdgeSet.allOf(gTemp);
+				undirectedG0.addEdges(edgesToAdd);
+				newEdge = eiMap.indexToId(newEdge.intValue());
+
+			} else {
+				for (int e = 0;; e++) {
+					if (!undirectedG.edges().contains(Integer.valueOf(e))) {
+						nonExistingEdge = Integer.valueOf(e);
+						break;
+					}
+				}
+				newEdge = nonExistingEdge;
+
+				IntGraph gTemp = IntGraph.newDirected();
+				gTemp.addVertices(IntList.of(u.intValue(), v.intValue()));
+				gTemp.addEdge(u.intValue(), v.intValue(), nonExistingEdge.intValue());
+				IEdgeSet edgesToAdd = IEdgeSet.allOf(gTemp);
+				undirectedG.addEdges(edgesToAdd);
+			}
+			assertTrue(g.edges().contains(newEdge));
+			assertTrue(undirectedG.edges().contains(newEdge));
+			assertEquals(g.edges(), undirectedG.edges());
+		});
+	}
+
+	@Test
+	public void addEdgesReassignIds() {
+		IndexGraph gOrig = IndexGraph.newDirected();
+		gOrig.addVertices(range(10));
+		IndexGraph undirectedG = gOrig.undirectedView();
+
+		IntGraph gTemp = IntGraph.newDirected();
+		gTemp.addVertices(range(10));
+		gTemp.addEdge(0, 1, 111121);
+		gTemp.addEdge(0, 2, 3252);
+		gTemp.addEdge(5, 3, 546854);
+		IEdgeSet edgesToAdd = IEdgeSet.allOf(gTemp);
+
+		undirectedG.addEdgesReassignIds(edgesToAdd);
+
+		IndexGraph expected = IndexGraph.newUndirected();
+		expected.addVertices(range(10));
+		for (int e : gTemp.edges())
+			expected.addEdge(gTemp.edgeSource(e), gTemp.edgeTarget(e));
+
+		assertEquals(expected, undirectedG);
 	}
 
 	@Test

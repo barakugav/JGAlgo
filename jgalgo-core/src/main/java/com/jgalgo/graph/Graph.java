@@ -300,6 +300,52 @@ public interface Graph<V, E> {
 	void addEdge(V source, V target, E edge);
 
 	/**
+	 * Add multiple edges to the graph.
+	 *
+	 * <p>
+	 * The {@link EdgeSet} passed to this method contains both the edges themselves (the identifiers) and their
+	 * endpoints (sources and targets), see {@link EdgeSet#iterator()}, {@link EdgeIter#source()},
+	 * {@link EdgeIter#target()}. An {@link EdgeSet} can be obtained from one of the methods of another {@link Graph},
+	 * or using {@link EdgeSet#of(Set, Graph)}.
+	 *
+	 * <p>
+	 * If the graph does not support self edges and one of the added edges have the same vertex as source and target, an
+	 * exception will be thrown. If the graph does not support parallel edges, and one of the added edges have the same
+	 * source and target as one of the existing edges in the graph, or if two of the added edges have the same source
+	 * and target, an exception will be thrown.
+	 *
+	 * <p>
+	 * An edge can be any non null hashable object, namely it must implement the {@link Object#hashCode()} and
+	 * {@link Object#equals(Object)} methods. Duplicate edges are not allowed.
+	 *
+	 * <p>
+	 * In the following snippet, a maximum cardinality matching is computed on a graph, and a new graph containing only
+	 * the matching edges is created:
+	 *
+	 * <pre> {@code
+	 * Graph<V, E> g = ...;
+	 * Set<E> matching = MatchingAlgo.newInstance().computeMaximumMatching(g, null).edges();
+	 *
+	 * Graph<V,E> matchingGraph = Graph.newUndirected();
+	 * matchingGraph.addVertices(g.vertices());
+	 * matchingGraph.addEdges(EdgeSet.of(matching, g));
+	 * }</pre>
+	 *
+	 * @param  edges                    the set of new edges, from which the edges identifiers as well as the endpoints
+	 *                                      (source and target) of each edge are accessible (see
+	 *                                      {@link EdgeSet#iterator()}, {@link EdgeIter#source()},
+	 *                                      {@link EdgeIter#target()}).
+	 * @throws IllegalArgumentException if {@code edges} contains duplications, or if any of the edges is already in the
+	 *                                      graph, or if the graph does not support self edges and one the added edges
+	 *                                      has the same source and target vertices, or if the graph does not support
+	 *                                      parallel edges and by adding all the given edges there will be two or more
+	 *                                      edges with the same source and target vertices
+	 * @throws NullPointerException     if {@code edges} is {@code null} or if any of the edges is {@code null}
+	 * @throws NoSuchVertexException    if any of the edges endpoint is not a vertex in the graph
+	 */
+	void addEdges(EdgeSet<? extends V, ? extends E> edges);
+
+	/**
 	 * Remove an edge from the graph.
 	 *
 	 * @param  edge                the edge to remove

@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 
 class GraphImpl<V, E> extends GraphBase<V, E> {
 
@@ -105,19 +106,14 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 		final int verticesNumBefore = indexGraph.vertices().size();
 		ensureVertexCapacity(verticesNumBefore + vertices.size());
 		int nextIdx = verticesNumBefore;
-		V duplicateVertex = null;
 		for (V vertex : vertices) {
 			boolean added = viMap.addIdIfNotDuplicate(vertex, nextIdx);
 			if (!added) {
-				duplicateVertex = vertex;
-				break;
+				for (; nextIdx-- > verticesNumBefore;)
+					viMap.rollBackRemove(nextIdx);
+				throw new IllegalArgumentException("Duplicate vertex: " + vertex);
 			}
 			nextIdx++;
-		}
-		if (duplicateVertex != null) {
-			for (; nextIdx-- > verticesNumBefore;)
-				viMap.rollBackRemove(nextIdx);
-			throw new IllegalArgumentException("Duplicate vertex: " + duplicateVertex);
 		}
 		indexGraph.addVertices(range(verticesNumBefore, nextIdx));
 	}
@@ -177,6 +173,81 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 		} catch (RuntimeException e) {
 			eiMap.rollBackRemove(eIdx);
 			throw e;
+		}
+	}
+
+	@Override
+	public void addEdges(EdgeSet<? extends V, ? extends E> edges) {
+		final int edgesNumBefore = indexGraph.edges().size();
+		ensureEdgeCapacity(edgesNumBefore + edges.size());
+		int nextMapIdx = edgesNumBefore;
+		try {
+			for (E edge : edges) {
+				if (edge == null)
+					throw new NullPointerException("Edge must be non null");
+				boolean added = eiMap.addIdIfNotDuplicate(edge, nextMapIdx);
+				if (!added)
+					throw new IllegalArgumentException("Duplicate edge: " + edge);
+				nextMapIdx++;
+			}
+
+			indexGraph.addEdgesReassignIds(new AddEdgesIgnoreIdsIndexSet<>(edges, viMap));
+
+		} catch (RuntimeException e) {
+			for (; nextMapIdx-- > edgesNumBefore;)
+				eiMap.rollBackRemove(nextMapIdx);
+			throw e;
+		}
+	}
+
+	static class AddEdgesIgnoreIdsIndexSet<V> extends AbstractIntSet implements IEdgeSet {
+
+		private final EdgeSet<? extends V, ?> idSet;
+		private final IndexIdMap<V> viMap;
+
+		AddEdgesIgnoreIdsIndexSet(EdgeSet<? extends V, ?> idSet, IndexIdMap<V> viMap) {
+			this.idSet = idSet;
+			this.viMap = viMap;
+		}
+
+		@Override
+		public int size() {
+			return idSet.size();
+		}
+
+		@Override
+		public IEdgeIter iterator() {
+			return new IEdgeIter() {
+
+				EdgeIter<? extends V, ?> idIter = idSet.iterator();
+
+				@Override
+				public boolean hasNext() {
+					return idIter.hasNext();
+				}
+
+				@Override
+				public int nextInt() {
+					idIter.next();
+					return -1; /* ignore edges IDs */
+				}
+
+				@Override
+				public int peekNextInt() {
+					idIter.peekNext();
+					return -1; /* ignore edges IDs */
+				}
+
+				@Override
+				public int sourceInt() {
+					return viMap.idToIndex(idIter.source());
+				}
+
+				@Override
+				public int targetInt() {
+					return viMap.idToIndex(idIter.target());
+				}
+			};
 		}
 	}
 

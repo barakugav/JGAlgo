@@ -437,8 +437,7 @@ public class GraphsTest extends TestBase {
 			}
 			Graph<Integer, Integer> g2 = factory.allowSelfEdges().allowParallelEdges().newGraph();
 			g2.addVertices(g1.vertices());
-			for (Integer e : g1.edges())
-				g2.addEdge(g1.edgeSource(e), g1.edgeTarget(e), e);
+			g2.addEdges(EdgeSet.allOf(g1));
 
 			assertNotEquals(g1, g2);
 		});
@@ -468,8 +467,7 @@ public class GraphsTest extends TestBase {
 					break;
 				}
 			}
-			for (Integer e : g1.edges())
-				g2.addEdge(g1.edgeSource(e), g1.edgeTarget(e), e);
+			g2.addEdges(EdgeSet.allOf(g1));
 
 			assertNotEquals(g1, g2);
 		});
@@ -492,8 +490,7 @@ public class GraphsTest extends TestBase {
 			}
 			Graph<Integer, Integer> g2 = factory.allowSelfEdges().allowParallelEdges().newGraph();
 			g2.addVertices(g1.vertices());
-			for (Integer e : g1.edges())
-				g2.addEdge(g1.edgeSource(e), g1.edgeTarget(e), e);
+			g2.addEdges(EdgeSet.allOf(g1));
 			for (;;) {
 				int e = rand.nextInt();
 				if (e >= 1 && !g1.edges().contains(Integer.valueOf(e))) {

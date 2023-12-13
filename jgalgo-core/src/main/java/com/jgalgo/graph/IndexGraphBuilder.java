@@ -17,6 +17,7 @@ package com.jgalgo.graph;
 
 import java.util.Collection;
 import java.util.Optional;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A builder for {@linkplain IndexGraph Index graphs}.
@@ -95,11 +96,62 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * {@inheritDoc}
 	 *
 	 * <p>
-	 * As the built graph is an Index graph, the edges must be {@code 0,1,2,...,edgesNum-1}. This constraint is
-	 * validated when the graph is actually created by the builder.
+	 * As the built graph is an Index graph, the edges must be {@code 0,1,2,...,edgesNum-1}. Nevertheless, the edges can
+	 * be added in any order to the graph as long they form a valid sequence of indices at the time of constructing the
+	 * graph.
 	 */
 	@Override
 	void addEdge(int source, int target, int edge);
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * As the built graph is an Index graph, the edges must be {@code 0,1,2,...,edgesNum-1}. Nevertheless, the edges can
+	 * be added in any order to the graph as long they form a valid sequence of indices at the time of constructing the
+	 * graph.
+	 */
+	@Override
+	void addEdges(EdgeSet<? extends Integer, ? extends Integer> edges);
+
+	/**
+	 * Add multiple edges to the built graph and re-assign ids for them.
+	 *
+	 * <p>
+	 * The {@link IEdgeSet} passed to this method contains the endpoints (sources and targets) of the edges, see
+	 * {@link EdgeSet#iterator()}, {@link EdgeIter#source()}, {@link EdgeIter#target()}. The identifiers of the edges,
+	 * which are also accessible via {@link IEdgeSet} are ignored, and new identifiers (indices) are assigned to the
+	 * added edges. An {@link IEdgeSet} can be obtained from one of the methods of an {@link IntGraph}, or using
+	 * {@link IEdgeSet#of(IntSet, IntGraph)}.
+	 *
+	 * <p>
+	 * The identifiers assigned to the newly added edges are {@code (edgesNum,edgesNum+1,edgesNum+2, ...)} matching the
+	 * iteration order of the provided set. This method different than {@link #addEdges(EdgeSet)} in a similar way that
+	 * {@link #addEdge(int, int)} is different than {@link #addEdge(int, int, int)}.
+	 *
+	 * <p>
+	 * In the following snippet, a maximum cardinality matching is computed on a graph, and a new graph containing only
+	 * the matching edges is created. It would be wrong to use {@link #addEdges(EdgeSet)} in this example, as there is
+	 * no guarantee that the added edges ids are {@code (0, 1, 2, ...)}, which is required to build an
+	 * {@link IndexGraph}.
+	 *
+	 * <pre> {@code
+	 * IndexGraph g = ...;
+	 * IntSet matching = (IntSet) MatchingAlgo.newInstance().computeMaximumMatching(g, null).edges();
+	 *
+	 * IndexGraphBuilder matchingGraphBuilder = IndexGraphBuilder.undirected();
+	 * matchingGraphBuilder.addVertices(g.vertices());
+	 * matchingGraphBuilder.addEdgesReassignIds(IEdgeSet.of(matching, g));
+	 * IndexGraph matchingGraph = matchingGraphBuilder.build();
+	 * }</pre>
+	 *
+	 * @param  edges the set of edges to add. Only the endpoints of the edges is considered, while the edges identifiers
+	 *                   are ignored.
+	 * @return       the set of newly edge identifiers added to the graph,
+	 *               {@code (edgesNum,edgesNum+1,edgesNum+2, ...)}. The edges are assigned the indices in the order they
+	 *               are iterated in the given set
+	 */
+	IntSet addEdgesReassignIds(IEdgeSet edges);
 
 	@Override
 	IndexGraph build();

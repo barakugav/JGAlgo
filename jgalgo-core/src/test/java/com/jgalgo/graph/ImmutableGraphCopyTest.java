@@ -177,6 +177,37 @@ public class ImmutableGraphCopyTest extends TestBase {
 	}
 
 	@Test
+	public void testAddEdges() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed);
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+			Graph<Integer, Integer> gImmutable = gOrig.immutableCopy();
+
+			Iterator<Integer> vit = gImmutable.vertices().iterator();
+			Integer u = vit.next();
+			Integer v = vit.next();
+			Integer nonExistingEdge;
+			for (int e0 = 0;; e0++) {
+				Integer e = Integer.valueOf(e0);
+				if (!gImmutable.edges().contains(e)) {
+					nonExistingEdge = e;
+					break;
+				}
+			}
+			IntGraph g1 = IntGraph.newDirected();
+			g1.addVertices(List.of(u, v));
+			g1.addEdge(u.intValue(), v.intValue(), nonExistingEdge.intValue());
+			IEdgeSet edges = IEdgeSet.allOf(g1);
+
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addEdges(edges));
+			if (gImmutable instanceof IndexGraph)
+				assertThrows(UnsupportedOperationException.class,
+						() -> ((IndexGraph) gImmutable).addEdgesReassignIds(edges));
+		});
+
+	}
+
+	@Test
 	public void renameEdge() {
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed);

@@ -164,6 +164,37 @@ public class ImmutableGraphViewTest extends TestBase {
 				}
 			}
 
+			IntGraph g1 = IntGraph.newDirected();
+			g1.addVertices(List.of(u, v));
+			g1.addEdge(u.intValue(), v.intValue(), nonExistingEdge.intValue());
+			IEdgeSet edges = IEdgeSet.allOf(g1);
+
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addEdges(edges));
+			if (gImmutable instanceof IndexGraph)
+				assertThrows(UnsupportedOperationException.class,
+						() -> ((IndexGraph) gImmutable).addEdgesReassignIds(edges));
+		});
+	}
+
+	@Test
+	public void addEdges() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+			Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+
+			Iterator<Integer> vit = gImmutable.vertices().iterator();
+			Integer u = vit.next();
+			Integer v = vit.next();
+
+			Integer nonExistingEdge;
+			for (int e = 0;; e++) {
+				if (!gImmutable.edges().contains(Integer.valueOf(e))) {
+					nonExistingEdge = Integer.valueOf(e);
+					break;
+				}
+			}
+
 			if (gImmutable instanceof IntGraph)
 				assertThrows(UnsupportedOperationException.class,
 						() -> ((IntGraph) gImmutable).addEdge(u.intValue(), v.intValue()));

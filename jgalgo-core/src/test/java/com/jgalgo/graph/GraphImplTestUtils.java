@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -39,6 +40,7 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -55,6 +57,7 @@ import com.jgalgo.alg.MinimumSpanningTreeTestUtils;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -206,6 +209,7 @@ class GraphImplTestUtils extends TestUtils {
 						vertices.addAll(vs);
 					} else {
 						vs.add(randElement(vs, rand)); /* duplicate element */
+						Collections.shuffle(vs, rand);
 						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs));
 					}
 				}
@@ -234,6 +238,7 @@ class GraphImplTestUtils extends TestUtils {
 						vertices.addAll(vs);
 					} else {
 						vs.add(Graphs.randVertex(g, rand)); /* duplicate element */
+						Collections.shuffle(vs, rand);
 						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs));
 					}
 				}
@@ -262,6 +267,7 @@ class GraphImplTestUtils extends TestUtils {
 						vertices.addAll(vs);
 					} else {
 						vs.add(null);
+						Collections.shuffle(vs, rand);
 						assertThrows(NullPointerException.class, () -> g.addVertices(vs));
 					}
 				}
@@ -294,7 +300,7 @@ class GraphImplTestUtils extends TestUtils {
 				int verticesNum = 0;
 				while (verticesNum < n) {
 					int num = Math.min(rand.nextInt(5), n - verticesNum);
-					if (rand.nextBoolean()) {
+					if (num == 0 || rand.nextBoolean()) {
 						g.addVertices(range(verticesNum, verticesNum + num));
 						verticesNum += num;
 					} else {
@@ -321,7 +327,7 @@ class GraphImplTestUtils extends TestUtils {
 					if (verticesNum == 0) {
 						g.addVertices(g0.vertices());
 						verticesNum += num;
-					} else if (rand.nextBoolean()) {
+					} else if (num > 0 && rand.nextBoolean()) {
 						assertThrows(IllegalArgumentException.class, () -> g.addVertices(g0.vertices()));
 					} else {
 						g.addVertices(range(verticesNum, verticesNum + num));
@@ -384,6 +390,7 @@ class GraphImplTestUtils extends TestUtils {
 					} else {
 						IntList vs0 = new IntArrayList(vs);
 						vs0.add(vs[rand.nextInt(vs.length)]); /* duplicate element */
+						Collections.shuffle(vs0, rand);
 						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
 					}
 				}
@@ -408,6 +415,7 @@ class GraphImplTestUtils extends TestUtils {
 					} else {
 						IntList vs0 = new IntArrayList(vs);
 						vs0.add(Graphs.randVertex(g, rand));
+						Collections.shuffle(vs0, rand);
 						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
 					}
 				}
@@ -432,10 +440,12 @@ class GraphImplTestUtils extends TestUtils {
 					} else if (rand.nextBoolean()) {
 						IntList vs0 = new IntArrayList(vs);
 						vs0.add(verticesNum - 1);
+						Collections.shuffle(vs0, rand);
 						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
 					} else {
 						IntList vs0 = new IntArrayList(vs);
 						vs0.add(verticesNum + num + 1);
+						Collections.shuffle(vs0, rand);
 						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
 					}
 				}
@@ -516,6 +526,727 @@ class GraphImplTestUtils extends TestUtils {
 		}
 		assertEquals(source, g.edgeEndpoint(e, target));
 		assertEquals(target, g.edgeEndpoint(e, source));
+	}
+
+	static EdgeSet<Integer, Integer> edgeSetFromList(List<Integer> ids, List<Pair<Integer, Integer>> endpoints,
+			Random rand) {
+		boolean containsNull = false;
+		containsNull |= ids.contains(null);
+		containsNull |= endpoints.stream().anyMatch(e -> e.first() == null || e.second() == null);
+		if (containsNull || rand.nextBoolean()) {
+			return new EdgeSetFromList<>(ids, endpoints);
+		} else {
+			return new IEdgeSetFromList(ids, endpoints);
+		}
+	}
+
+	private static class EdgeSetFromList<V, E> extends AbstractSet<E> implements EdgeSet<V, E> {
+
+		private final List<E> ids;
+		private final List<Pair<V, V>> endpoints;
+
+		EdgeSetFromList(List<E> ids, List<Pair<V, V>> endpoints) {
+			this.ids = ids;
+			this.endpoints = endpoints;
+			assert ids.size() == endpoints.size();
+		}
+
+		@Override
+		public int size() {
+			return ids.size();
+		}
+
+		@Override
+		public EdgeIter<V, E> iterator() {
+			return new EdgeIter<>() {
+				int idx;
+
+				@Override
+				public boolean hasNext() {
+					return idx < ids.size();
+				}
+
+				@Override
+				public E next() {
+					return ids.get(idx++);
+				}
+
+				@Override
+				public E peekNext() {
+					return ids.get(idx);
+				}
+
+				@Override
+				public V source() {
+					return endpoints.get(idx - 1).first();
+				}
+
+				@Override
+				public V target() {
+					return endpoints.get(idx - 1).second();
+				}
+			};
+		}
+	}
+
+	private static class IEdgeSetFromList extends AbstractIntSet implements IEdgeSet {
+
+		private final List<Integer> ids;
+		private final List<Pair<Integer, Integer>> endpoints;
+
+		IEdgeSetFromList(List<Integer> ids, List<Pair<Integer, Integer>> endpoints) {
+			this.ids = ids;
+			this.endpoints = endpoints;
+			assert ids.size() == endpoints.size();
+		}
+
+		@Override
+		public int size() {
+			return ids.size();
+		}
+
+		@SuppressWarnings("boxing")
+		@Override
+		public IEdgeIter iterator() {
+			return new IEdgeIter() {
+				int idx;
+
+				@Override
+				public boolean hasNext() {
+					return idx < ids.size();
+				}
+
+				@Override
+				public int nextInt() {
+					return ids.get(idx++);
+				}
+
+				@Override
+				public int peekNextInt() {
+					return ids.get(idx);
+				}
+
+				@Override
+				public int sourceInt() {
+					return endpoints.get(idx - 1).first();
+				}
+
+				@Override
+				public int targetInt() {
+					return endpoints.get(idx - 1).second();
+				}
+			};
+		}
+	}
+
+	private static List<Pair<Integer, Integer>> randEndpoints(Graph<Integer, Integer> g, int numberOfEdges,
+			Random rand) {
+		List<Pair<Integer, Integer>> edges = new ArrayList<>();
+		while (edges.size() < numberOfEdges) {
+			Integer u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
+			if (!g.isAllowSelfEdges() && u.equals(v))
+				continue;
+			if (!g.isDirected() && u.intValue() > v.intValue()) {
+				Integer tmp = u;
+				u = v;
+				v = tmp;
+			}
+			Pair<Integer, Integer> endpoints = Pair.of(u, v);
+			if (!g.isAllowParallelEdges() && (g.getEdge(u, v) != null || edges.contains(endpoints)))
+				continue;
+			edges.add(endpoints);
+		}
+		return edges;
+	}
+
+	private static List<Integer> randEdgesIds(Graph<Integer, Integer> g, int numberOfEdges, Random rand) {
+		List<Integer> ids = new ArrayList<>();
+		if (g instanceof IndexGraph) {
+			ids.addAll(range(g.edges().size(), g.edges().size() + numberOfEdges));
+			if (rand.nextBoolean())
+				Collections.shuffle(ids, rand);
+		} else {
+			while (ids.size() < numberOfEdges) {
+				Integer e = Integer.valueOf(rand.nextInt());
+				if (e.intValue() < 0 || g.edges().contains(e) || ids.contains(e))
+					continue;
+				ids.add(e);
+			}
+		}
+		return ids;
+	}
+
+	private static void addEdgesToExpected(Map<Integer, Pair<Integer, Integer>> edgesMap,
+			EdgeSet<Integer, Integer> edgeSet) {
+		for (EdgeIter<Integer, Integer> eit = edgeSet.iterator(); eit.hasNext();) {
+			Integer e = eit.next();
+			Pair<Integer, Integer> endpoints = Pair.of(eit.source(), eit.target());
+			Object oldVal = edgesMap.put(e, endpoints);
+			assertNull(oldVal);
+		}
+	}
+
+	private static void assertExpectedEdges(Map<Integer, Pair<Integer, Integer>> expectedEdges,
+			Graph<Integer, Integer> g) {
+		assertEquals(expectedEdges.keySet(), g.edges());
+		for (Integer e : expectedEdges.keySet()) {
+			Pair<Integer, Integer> endpoints = expectedEdges.get(e);
+			assertEndpoints(g, e, endpoints.first(), endpoints.second());
+		}
+		Map<Integer, Set<Integer>> outEdges = new Int2ObjectOpenHashMap<>();
+		Map<Integer, Set<Integer>> inEdges;
+		if (g.isDirected()) {
+			inEdges = new Int2ObjectOpenHashMap<>();
+			for (var entry : expectedEdges.entrySet()) {
+				Integer edge = entry.getKey();
+				Integer source = entry.getValue().first();
+				Integer target = entry.getValue().second();
+				outEdges.computeIfAbsent(source, k -> new IntOpenHashSet()).add(edge);
+				inEdges.computeIfAbsent(target, k -> new IntOpenHashSet()).add(edge);
+			}
+		} else {
+			inEdges = outEdges;
+			for (var entry : expectedEdges.entrySet()) {
+				Integer edge = entry.getKey();
+				Integer source = entry.getValue().first();
+				Integer target = entry.getValue().second();
+				outEdges.computeIfAbsent(source, k -> new IntOpenHashSet()).add(edge);
+				outEdges.computeIfAbsent(target, k -> new IntOpenHashSet()).add(edge);
+			}
+		}
+		for (Integer v : g.vertices()) {
+			assertEquals(outEdges.getOrDefault(v, Set.of()), g.outEdges(v));
+			assertEquals(inEdges.getOrDefault(v, Set.of()), g.inEdges(v));
+		}
+	}
+
+	static void addEdgesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+		final Random rand = new Random(0xa6e1e4b317a0d1c1L);
+
+		/* addEdges() valid */
+		foreachBoolConfig((directed, index) -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size());
+					List<Integer> addedIds = randEdgesIds(g, num, rand);
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+					g.addEdges(addedEdges);
+					addEdgesToExpected(expectedEdges, addedEdges);
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+
+		/* addEdges() sometimes with duplicate edge id (in added list) */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g = graphImpl.get(directed);
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final boolean duplicateEdge = rand.nextBoolean();
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size()) + (duplicateEdge ? 2 : 0);
+					List<Integer> addedIds = randEdgesIds(g, num, rand);
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					if (!duplicateEdge) {
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						g.addEdges(addedEdges);
+						addEdgesToExpected(expectedEdges, addedEdges);
+					} else {
+						addedIds.set(0, addedIds.get(1)); /* duplicate id */
+						Collections.shuffle(addedIds, rand);
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						assertThrows(IllegalArgumentException.class, () -> g.addEdges(addedEdges));
+					}
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+
+		/* addEdges() sometimes with existing edge */
+		foreachBoolConfig((directed, index) -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final boolean duplicateEdge = !expectedEdges.isEmpty() && rand.nextBoolean();
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size()) + (duplicateEdge ? 1 : 0);
+					List<Integer> addedIds = randEdgesIds(g, num, rand);
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					if (!duplicateEdge) {
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						g.addEdges(addedEdges);
+						addEdgesToExpected(expectedEdges, addedEdges);
+					} else {
+						addedIds.set(0, Graphs.randEdge(g, rand)); /* duplicate edge */
+						Collections.shuffle(addedIds, rand);
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						assertThrows(IllegalArgumentException.class, () -> g.addEdges(addedEdges));
+					}
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+
+		/* addEdges() sometimes with null edge */
+		foreachBoolConfig((directed, index) -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final boolean nullEdge = rand.nextBoolean();
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size()) + (nullEdge ? 1 : 0);
+					List<Integer> addedIds = randEdgesIds(g, num, rand);
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					if (!nullEdge) {
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						g.addEdges(addedEdges);
+						addEdgesToExpected(expectedEdges, addedEdges);
+					} else {
+						addedIds.set(0, null); /* null edge */
+						Collections.shuffle(addedIds, rand);
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						assertThrows(NullPointerException.class, () -> g.addEdges(addedEdges));
+					}
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+
+		/* addEdges() int graph sometimes with negative edge */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				if (!(g0 instanceof IntGraph))
+					return;
+				IntGraph g = (IntGraph) g0;
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final boolean nullEdge = rand.nextBoolean();
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size()) + (nullEdge ? 1 : 0);
+					List<Integer> addedIds = randEdgesIds(g, num, rand);
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					if (!nullEdge) {
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						g.addEdges(addedEdges);
+						addEdgesToExpected(expectedEdges, addedEdges);
+					} else {
+						addedIds.set(0, Integer.valueOf(-1)); /* negative edge */
+						Collections.shuffle(addedIds, rand);
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						assertThrows(IllegalArgumentException.class, () -> g.addEdges(addedEdges));
+					}
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+
+		/* addEdges() sometimes with invalid endpoint */
+		foreachBoolConfig((directed, index) -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final boolean invalidEndpoint = rand.nextBoolean();
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size()) + (invalidEndpoint ? 1 : 0);
+					List<Integer> addedIds = randEdgesIds(g, num, rand);
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					if (!invalidEndpoint) {
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						g.addEdges(addedEdges);
+						addEdgesToExpected(expectedEdges, addedEdges);
+					} else {
+						Integer nonExistingVertex;
+						do {
+							nonExistingVertex = Integer.valueOf(rand.nextInt());
+						} while (g.vertices().contains(nonExistingVertex));
+						if (rand.nextBoolean()) {
+							addedEndpoints.set(0, Pair.of(nonExistingVertex, addedEndpoints.get(0).second()));
+						} else {
+							addedEndpoints.set(0, Pair.of(addedEndpoints.get(0).first(), nonExistingVertex));
+						}
+						Collections.shuffle(addedEndpoints, rand);
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						assertThrows(NoSuchVertexException.class, () -> g.addEdges(addedEdges));
+					}
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+
+		/* addEdges() sometimes with self edge */
+		foreachBoolConfig((directed, index) -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
+				if (g.isAllowSelfEdges())
+					return;
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final boolean selfEdge = rand.nextBoolean();
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size()) + (selfEdge ? 1 : 0);
+					List<Integer> addedIds = randEdgesIds(g, num, rand);
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					if (!selfEdge) {
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						g.addEdges(addedEdges);
+						addEdgesToExpected(expectedEdges, addedEdges);
+					} else {
+						addedEndpoints.set(0, Pair.of(addedEndpoints.get(0).first(), addedEndpoints.get(0).first()));
+						Collections.shuffle(addedEndpoints, rand);
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						assertThrows(IllegalArgumentException.class, () -> g.addEdges(addedEdges));
+					}
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+
+		/* addEdges() sometimes with parallel edges with existing */
+		foreachBoolConfig((directed, index) -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
+				if (g.isAllowParallelEdges())
+					return;
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final boolean parallelEdge = !expectedEdges.isEmpty() && rand.nextBoolean();
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size()) + (parallelEdge ? 1 : 0);
+					List<Integer> addedIds = randEdgesIds(g, num, rand);
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					if (!parallelEdge) {
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						g.addEdges(addedEdges);
+						addEdgesToExpected(expectedEdges, addedEdges);
+					} else {
+						addedEndpoints.set(0, expectedEdges.get(Graphs.randEdge(g, rand))); /* parallel */
+						Collections.shuffle(addedEndpoints, rand);
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						assertThrows(IllegalArgumentException.class, () -> g.addEdges(addedEdges));
+					}
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+
+		/* addEdges() sometimes with parallel edges in added list */
+		foreachBoolConfig((directed, index) -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
+				if (g.isAllowParallelEdges())
+					return;
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final boolean parallelEdge = rand.nextBoolean();
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size()) + (parallelEdge ? 2 : 0);
+					List<Integer> addedIds = randEdgesIds(g, num, rand);
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					if (!parallelEdge) {
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						g.addEdges(addedEdges);
+						addEdgesToExpected(expectedEdges, addedEdges);
+					} else {
+						addedEndpoints.set(0, addedEndpoints.get(1)); /* parallel */
+						Collections.shuffle(addedEndpoints, rand);
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						assertThrows(IllegalArgumentException.class, () -> g.addEdges(addedEdges));
+					}
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+
+		/* addEdges() index graph unsorted sometimes not in range */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final boolean notInRange = rand.nextBoolean();
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size()) + (notInRange ? 1 : 0);
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					if (!notInRange) {
+						List<Integer> addedIds = randEdgesIds(g, num, rand);
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						g.addEdges(addedEdges);
+						addEdgesToExpected(expectedEdges, addedEdges);
+					} else if (rand.nextBoolean()) {
+						List<Integer> addedIds =
+								new ArrayList<>(range(g.edges().size() - 1, g.edges().size() + num - 1));
+						Collections.shuffle(addedEndpoints, rand);
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						assertThrows(IllegalArgumentException.class, () -> g.addEdges(addedEdges));
+					} else {
+						List<Integer> addedIds =
+								new ArrayList<>(range(g.edges().size() + 1, g.edges().size() + num + 1));
+						Collections.shuffle(addedEndpoints, rand);
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						assertThrows(IllegalArgumentException.class, () -> g.addEdges(addedEdges));
+					}
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+
+		/* addEdges() index graph unsorted sometimes duplicate id in list */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final boolean duplicateEdge = rand.nextBoolean();
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size()) + (duplicateEdge ? 2 : 0);
+					List<Integer> addedIds = randEdgesIds(g, num, rand);
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					if (!duplicateEdge) {
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						g.addEdges(addedEdges);
+						addEdgesToExpected(expectedEdges, addedEdges);
+					} else {
+						addedIds.set(0, addedIds.get(1)); /* duplicate id */
+						Collections.shuffle(addedEndpoints, rand);
+						EdgeSet<Integer, Integer> addedEdges = edgeSetFromList(addedIds, addedEndpoints, rand);
+						assertThrows(IllegalArgumentException.class, () -> g.addEdges(addedEdges));
+					}
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+
+		/* addEdges() index graph from EdgeSet.of() */
+		foreachBoolConfig((directed, fromIntGraph) -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size());
+					List<Integer> addedIds = randEdgesIds(g, num, rand);
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					EdgeSet<Integer, Integer> addedEdges0 = edgeSetFromList(addedIds, addedEndpoints, rand);
+
+					GraphFactory<Integer, Integer> factory =
+							fromIntGraph ? IntGraphFactory.directed() : GraphFactory.directed();
+					Graph<Integer, Integer> g0 = factory.allowSelfEdges().allowParallelEdges().newGraph();
+					g0.addVertices(g.vertices());
+					g0.addEdges(addedEdges0);
+					EdgeSet<Integer, Integer> addedEdges = EdgeSet.allOf(g0);
+
+					g.addEdges(addedEdges);
+					addEdgesToExpected(expectedEdges, addedEdges);
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+	}
+
+	@SuppressWarnings("boxing")
+	static void addEdgesReassignIdsTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+		final Random rand = new Random(0x96a8f7d4731b5c5cL);
+
+		BiConsumer<Map<Integer, Pair<Integer, Integer>>, IEdgeSet> addEdgesToExpected = (edgesMap, edgeSet) -> {
+			for (EdgeIter<Integer, Integer> eit = edgeSet.iterator(); eit.hasNext();) {
+				eit.next(); /* edge id is ignored */
+				int edgeId = edgesMap.size();
+				Pair<Integer, Integer> endpoints = Pair.of(eit.source(), eit.target());
+				Object oldVal = edgesMap.put(Integer.valueOf(edgeId), endpoints);
+				assertNull(oldVal);
+			}
+		};
+
+		/* addEdgesReassignIds() valid */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size());
+					/* completely random ids, they should be ignored */
+					List<Integer> addedIds = new IntArrayList(randArray(num, rand.nextLong()));
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					IEdgeSet addedEdges = new IEdgeSetFromList(addedIds, addedEndpoints);
+					g.addEdgesReassignIds(addedEdges);
+					addEdgesToExpected.accept(expectedEdges, addedEdges);
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+
+		/* addEdgesReassignIds() sometimes with invalid endpoint */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final boolean invalidEndpoint = rand.nextBoolean();
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size()) + (invalidEndpoint ? 1 : 0);
+					/* completely random ids, they should be ignored */
+					List<Integer> addedIds = new IntArrayList(randArray(num, rand.nextLong()));
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					if (!invalidEndpoint) {
+						IEdgeSet addedEdges = new IEdgeSetFromList(addedIds, addedEndpoints);
+						g.addEdgesReassignIds(addedEdges);
+						addEdgesToExpected.accept(expectedEdges, addedEdges);
+					} else {
+						Integer nonExistingVertex;
+						do {
+							nonExistingVertex = Integer.valueOf(rand.nextInt());
+						} while (g.vertices().contains(nonExistingVertex.intValue()));
+						if (rand.nextBoolean()) {
+							addedEndpoints.set(0, Pair.of(nonExistingVertex, addedEndpoints.get(0).second()));
+						} else {
+							addedEndpoints.set(0, Pair.of(addedEndpoints.get(0).first(), nonExistingVertex));
+						}
+						Collections.shuffle(addedEndpoints, rand);
+						IEdgeSet addedEdges = new IEdgeSetFromList(addedIds, addedEndpoints);
+						assertThrows(NoSuchVertexException.class, () -> g.addEdgesReassignIds(addedEdges));
+					}
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+
+		/* addEdgesReassignIds() sometimes with self edge */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+				if (g.isAllowSelfEdges())
+					return;
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final boolean selfEdge = rand.nextBoolean();
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size()) + (selfEdge ? 1 : 0);
+					/* completely random ids, they should be ignored */
+					List<Integer> addedIds = new IntArrayList(randArray(num, rand.nextLong()));
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					if (!selfEdge) {
+						IEdgeSet addedEdges = new IEdgeSetFromList(addedIds, addedEndpoints);
+						g.addEdgesReassignIds(addedEdges);
+						addEdgesToExpected.accept(expectedEdges, addedEdges);
+					} else {
+						addedEndpoints.set(0, Pair.of(addedEndpoints.get(0).first(), addedEndpoints.get(0).first()));
+						Collections.shuffle(addedEndpoints, rand);
+						IEdgeSet addedEdges = new IEdgeSetFromList(addedIds, addedEndpoints);
+						assertThrows(IllegalArgumentException.class, () -> g.addEdgesReassignIds(addedEdges));
+					}
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+
+		/* addEdgesReassignIds() sometimes with parallel edges with existing */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+				if (g.isAllowParallelEdges())
+					return;
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final boolean parallelEdge = !expectedEdges.isEmpty() && rand.nextBoolean();
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size()) + (parallelEdge ? 1 : 0);
+					/* completely random ids, they should be ignored */
+					List<Integer> addedIds = new IntArrayList(randArray(num, rand.nextLong()));
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					if (!parallelEdge) {
+						IEdgeSet addedEdges = new IEdgeSetFromList(addedIds, addedEndpoints);
+						g.addEdgesReassignIds(addedEdges);
+						addEdgesToExpected.accept(expectedEdges, addedEdges);
+					} else {
+						addedEndpoints.set(0, expectedEdges.get(Graphs.randEdge(g, rand))); /* parallel */
+						Collections.shuffle(addedEndpoints, rand);
+						IEdgeSet addedEdges = new IEdgeSetFromList(addedIds, addedEndpoints);
+						assertThrows(IllegalArgumentException.class, () -> g.addEdgesReassignIds(addedEdges));
+					}
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+
+		/* addEdgesReassignIds() sometimes with parallel edges in added list */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				IndexGraph g = graphImpl.get(directed).indexGraph();
+				if (g.isAllowParallelEdges())
+					return;
+				g.addVertices(range(50 + rand.nextInt(100)));
+				final int m = rand.nextInt(100);
+
+				Map<Integer, Pair<Integer, Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
+				while (expectedEdges.size() < m) {
+					final boolean parallelEdge = rand.nextBoolean();
+					final int num = Math.min(rand.nextInt(5), m - expectedEdges.size()) + (parallelEdge ? 2 : 0);
+					/* completely random ids, they should be ignored */
+					List<Integer> addedIds = new IntArrayList(randArray(num, rand.nextLong()));
+					List<Pair<Integer, Integer>> addedEndpoints = randEndpoints(g, num, rand);
+					if (!parallelEdge) {
+						IEdgeSet addedEdges = new IEdgeSetFromList(addedIds, addedEndpoints);
+						g.addEdgesReassignIds(addedEdges);
+						addEdgesToExpected.accept(expectedEdges, addedEdges);
+					} else {
+						addedEndpoints.set(0, addedEndpoints.get(1)); /* parallel */
+						Collections.shuffle(addedEndpoints, rand);
+						IEdgeSet addedEdges = new IEdgeSetFromList(addedIds, addedEndpoints);
+						assertThrows(IllegalArgumentException.class, () -> g.addEdgesReassignIds(addedEdges));
+					}
+				}
+				assertExpectedEdges(expectedEdges, g);
+			}
+		});
 	}
 
 	@SuppressWarnings("deprecation")

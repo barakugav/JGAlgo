@@ -215,8 +215,7 @@ public class GraphsTestUtils extends TestUtils {
 			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		Graph<Integer, Integer> g2 = graphImpl.apply(g.isDirected());
 		g2.addVertices(g.vertices());
-		for (int e : g.edges())
-			g2.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
+		g2.addEdges(EdgeSet.allOf(g));
 		for (String weightKey : g.getVerticesWeightsKeys()) {
 			Weights<Integer, Object> w1 = g.getVerticesWeights(weightKey);
 			Weights<Integer, Object> w2 = g2.addVerticesWeights(weightKey, (Class<Object>) getWeightsType(w1));

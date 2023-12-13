@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 
 public class ReversedGraphViewTest extends TestBase {
@@ -276,6 +277,99 @@ public class ReversedGraphViewTest extends TestBase {
 				assertFalse(gRev.edges().contains(edgeToRemove));
 			}
 			assertEquals(gOrig.edges(), gRev.edges());
+		});
+	}
+
+	@Test
+	public void addEdges() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gRev0 = gOrig0.reverseView();
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+			Graph<Integer, Integer> gRev = index ? gRev0.indexGraph() : gRev0;
+
+			Iterator<Integer> vit = gRev.vertices().iterator();
+			Integer u = vit.next();
+			Integer v = vit.next();
+
+			Integer nonExistingEdge, newEdge;
+			if (gRev instanceof IndexGraph) {
+				for (int e = 0;; e++) {
+					if (!gRev0.edges().contains(Integer.valueOf(e))) {
+						nonExistingEdge = Integer.valueOf(e);
+						break;
+					}
+				}
+				newEdge = nonExistingEdge;
+
+				/* index graphs should not support adding edges with user defined identifiers */
+				int newEdge0 = newEdge.intValue();
+				if (newEdge0 != gRev.edges().size()) {
+					IntGraph gTemp = IntGraph.newDirected();
+					gTemp.addVertices(IntList.of(u.intValue(), v.intValue()));
+					gTemp.addEdge(u.intValue(), v.intValue(), newEdge0);
+					IEdgeSet edgesToAdd = IEdgeSet.allOf(gTemp);
+					assertThrows(IllegalArgumentException.class, () -> ((IndexGraph) gRev).addEdges(edgesToAdd));
+				}
+
+				/* can't add new edge directly to IndexGraph, only via wrapper Int/Obj Graph */
+				IndexIdMap<Integer> viMap = gRev0.indexGraphVerticesMap();
+				IndexIdMap<Integer> eiMap = gRev0.indexGraphEdgesMap();
+				Graph<Integer, Integer> gTemp = IntGraph.newDirected();
+				gTemp.addVertices(List.of(viMap.indexToId(u.intValue()), viMap.indexToId(v.intValue())));
+				gTemp.addEdge(viMap.indexToId(u.intValue()), viMap.indexToId(v.intValue()), newEdge);
+				EdgeSet<Integer, Integer> edgesToAdd = EdgeSet.allOf(gTemp);
+				gRev0.addEdges(edgesToAdd);
+				newEdge = eiMap.indexToId(newEdge.intValue());
+
+			} else {
+				for (int e = 0;; e++) {
+					if (!gRev.edges().contains(Integer.valueOf(e))) {
+						nonExistingEdge = Integer.valueOf(e);
+						break;
+					}
+				}
+				newEdge = nonExistingEdge;
+
+				IntGraph gTemp = IntGraph.newDirected();
+				gTemp.addVertices(IntList.of(u.intValue(), v.intValue()));
+				gTemp.addEdge(u.intValue(), v.intValue(), nonExistingEdge.intValue());
+				IEdgeSet edgesToAdd = IEdgeSet.allOf(gTemp);
+				gRev.addEdges(edgesToAdd);
+			}
+			assertTrue(gOrig.edges().contains(newEdge));
+			assertTrue(gRev.edges().contains(newEdge));
+			assertEquals(gOrig.edges(), gRev.edges());
+		});
+	}
+
+	@Test
+	public void addEdgesReassignIds() {
+		foreachBoolConfig(directed -> {
+			IndexGraph gOrig = directed ? IndexGraph.newDirected() : IndexGraph.newUndirected();
+			gOrig.addVertices(range(10));
+			IndexGraph gRev = gOrig.reverseView();
+
+			IntGraph gTemp = IntGraph.newDirected();
+			gTemp.addVertices(range(10));
+			gTemp.addEdge(0, 1, 111121);
+			gTemp.addEdge(0, 2, 3252);
+			gTemp.addEdge(5, 3, 546854);
+			IEdgeSet edgesToAdd = IEdgeSet.allOf(gTemp);
+
+			gRev.addEdgesReassignIds(edgesToAdd);
+
+			IndexGraph expectedOrig = directed ? IndexGraph.newDirected() : IndexGraph.newUndirected();
+			expectedOrig.addVertices(range(10));
+			for (int e : gTemp.edges())
+				expectedOrig.addEdge(gTemp.edgeTarget(e), gTemp.edgeSource(e));
+			IndexGraph expected = directed ? IndexGraph.newDirected() : IndexGraph.newUndirected();
+			expected.addVertices(range(10));
+			for (int e : gTemp.edges())
+				expected.addEdge(gTemp.edgeSource(e), gTemp.edgeTarget(e));
+
+			assertEquals(expectedOrig, gOrig);
+			assertEquals(expected, gRev);
 		});
 	}
 

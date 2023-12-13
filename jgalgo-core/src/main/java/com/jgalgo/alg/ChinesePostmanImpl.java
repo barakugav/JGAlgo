@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IEdgeSet;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
@@ -83,11 +84,9 @@ class ChinesePostmanImpl implements ChinesePostman {
 
 		/* Create a graph with the original vertices and edges, and add edges resulted from the perfect matching */
 		IndexGraphBuilder b = IndexGraphBuilder.undirected();
-		b.ensureVertexCapacity(g.vertices().size());
 		b.ensureEdgeCapacity(g.edges().size() + oddMatching.edges().size());
 		b.addVertices(g.vertices());
-		for (int m = g.edges().size(), e = 0; e < m; e++)
-			b.addEdge(g.edgeSource(e), g.edgeTarget(e));
+		b.addEdgesReassignIds(IEdgeSet.allOf(g));
 		final int originalEdgesThreshold = b.edges().size();
 		for (int e : oddMatching.edges()) {
 			int u = oddVertices[oddGraph.edgeSource(e)];

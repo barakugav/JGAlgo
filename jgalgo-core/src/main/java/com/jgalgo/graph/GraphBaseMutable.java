@@ -17,11 +17,14 @@
 package com.jgalgo.graph;
 
 import static com.jgalgo.internal.util.Range.range;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Consumer;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.Range;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphBaseMutable extends IndexGraphBase {
 
@@ -160,34 +163,43 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	@Override
 	public final void addVertices(Collection<? extends Integer> vertices) {
 		int currentNum = this.vertices.size();
-		if (!isRangeStartingFrom(currentNum, vertices))
+		if (!isRange(currentNum, vertices))
 			throw new IllegalArgumentException("added vertices must be a consecutive range of integers starting from "
 					+ currentNum + " but was " + vertices);
 		addVerticesImpl(vertices.size());
 	}
 
-	static boolean isRangeStartingFrom(int from, Collection<? extends Integer> elements) {
+	static boolean isSortedRange(int from, Collection<? extends Integer> elements) {
+		if (elements.isEmpty())
+			return true;
+
 		/* GraphElementSet are 0,1,2,3,... */
 		if (elements instanceof GraphElementSet)
 			return from == 0;
 
-		/* If the given collection is a set, we know there are no duplications, compare to Range obj */
+		/* If the given collection is a range, Range.equals() will simply compare 'from' and 'to' */
 		int num = elements.size();
-		if (elements instanceof Set)
+		if (elements instanceof Range)
 			return range(from, from + num).equals(elements);
 
-		/* Check optimistically if the elements are sorted range */
-		boolean isSortedRange = true;
+		/* Check naively if the elements are sorted range */
 		int expectedNextElm = from;
 		for (int elm : elements) {
-			if (elm != expectedNextElm) {
-				isSortedRange = false;
-				break;
-			}
+			if (elm != expectedNextElm)
+				return false;
 			expectedNextElm = elm + 1;
 		}
-		if (isSortedRange)
+		return true;
+	}
+
+	static boolean isRange(int from, Collection<? extends Integer> elements) {
+		if (isSortedRange(from, elements))
 			return true;
+		int num = elements.size();
+
+		/* If the given collection is a set, we know there are no duplications, compare to Range obj */
+		if (elements instanceof Set)
+			return range(from, from + num).equals(elements);
 
 		/* Lastly, use the robust method which uses non constant memory */
 		Bitmap bitmap = new Bitmap(num);
@@ -243,6 +255,113 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		return e;
 	}
 
+	@Override
+	public final void addEdges(EdgeSet<? extends Integer, ? extends Integer> edges) {
+		@SuppressWarnings("unchecked")
+		EdgeSet<Integer, Integer> edges0 = (EdgeSet<Integer, Integer>) edges;
+		final Set<Integer> edgesIds;
+		if (edges instanceof IEdgeSetView) {
+			edgesIds = ((IEdgeSetView) edges).idsSet();
+		} else if (edges instanceof EdgeSetView) {
+			edgesIds = ((EdgeSetView<Integer, Integer>) edges0).idsSet();
+		} else {
+			edgesIds = edges0;
+		}
+		if (isSortedRange(this.edges.size, edgesIds)) {
+			if (edges instanceof IEdgeSet) {
+				/* the variant with 're-assign ids' assigns indices by the iteration order */
+				addEdgesReassignIds((IEdgeSet) edges);
+				return;
+			}
+
+			int addedEdges = 0;
+			try {
+				for (EdgeIter<Integer, Integer> iter = edges0.iterator(); iter.hasNext();) {
+					Integer e = iter.next();
+					assert e.intValue() == this.edges.size; /* isSortedRange() */
+					int source = iter.source().intValue();
+					int target = iter.target().intValue();
+					addEdge(source, target);
+					addedEdges++;
+				}
+			} catch (RuntimeException e) {
+				while (addedEdges-- > 0)
+					rollBackLastEdge();
+				throw e;
+			}
+
+		} else {
+			/* Given edges ids are not a sorted range. They may still be the valid range, simply unsorted. */
+			/* Unfortunately, the following implementation requires an allocation. */
+
+			int currentNum = this.edges.size();
+			long[] newEdgesEndpoints = new long[edges.size()];
+			Arrays.fill(newEdgesEndpoints, EndpointNone);
+			var op = new Object() {
+				void accept(int edge, int source, int target) {
+					if (source < 0)
+						throw NoSuchVertexException.ofIndex(source);
+					if (target < 0)
+						throw NoSuchVertexException.ofIndex(target);
+					int eIdx = edge - currentNum;
+					if (eIdx < 0 || eIdx >= newEdgesEndpoints.length || newEdgesEndpoints[eIdx] != EndpointNone)
+						throw new IllegalArgumentException(
+								"added edges must be a consecutive range of integers starting from " + currentNum
+										+ " but was " + edges);
+					newEdgesEndpoints[eIdx] = sourceTarget2Endpoints(source, target);
+				}
+			};
+			if (edges instanceof IEdgeSet) {
+				for (IEdgeIter iter = ((IEdgeSet) edges).iterator(); iter.hasNext();) {
+					int e = iter.nextInt();
+					int source = iter.sourceInt();
+					int target = iter.targetInt();
+					op.accept(e, source, target);
+				}
+			} else {
+				for (EdgeIter<Integer, Integer> iter = edges0.iterator(); iter.hasNext();) {
+					int e = iter.next().intValue();
+					int source = iter.source().intValue();
+					int target = iter.target().intValue();
+					op.accept(e, source, target);
+				}
+			}
+
+			int addedEdges = 0;
+			try {
+				for (long endpoints : newEdgesEndpoints) {
+					int source = endpoints2Source(endpoints);
+					int target = endpoints2Target(endpoints);
+					addEdge(source, target);
+					addedEdges++;
+				}
+			} catch (RuntimeException e) {
+				while (addedEdges-- > 0)
+					rollBackLastEdge();
+				throw e;
+			}
+		}
+	}
+
+	@Override
+	public final IntSet addEdgesReassignIds(IEdgeSet edges) {
+		int addedEdges = 0;
+		try {
+			for (IEdgeIter iter = edges.iterator(); iter.hasNext();) {
+				iter.nextInt(); /* ignore edge ID */
+				int source = iter.sourceInt();
+				int target = iter.targetInt();
+				addEdge(source, target);
+				addedEdges++;
+			}
+		} catch (RuntimeException e) {
+			while (addedEdges-- > 0)
+				rollBackLastEdge();
+			throw e;
+		}
+		return range(this.edges.size - addedEdges, this.edges.size);
+	}
+
 	void checkNewEdgeEndpoints(int source, int target) {
 		if (!isAllowSelfEdges() && source == target)
 			throw new IllegalArgumentException("Self edges are not allowed");
@@ -257,13 +376,28 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		if (edge == edges.size - 1) {
 			removeEdgeLast(edge);
 		} else {
-			edgeSwapAndRemove(edge, edges.size - 1);
+			int swappedIdx = edges.size - 1;
+			edgeSwapAndRemove(edge, swappedIdx);
 		}
 	}
 
+	/* identical to removeEdge, without notifying listeners, and always last edge */
+	private void rollBackLastEdge() {
+		int edge = edges.size - 1;
+		rollBackEdge = true;
+		removeEdgeLast(edge);
+		rollBackEdge = false;
+	}
+
+	private boolean rollBackEdge;
+
 	void removeEdgeLast(int edge) {
 		edgesUserWeights.clearElement(edge);
-		edges0().removeIdx(edge);
+		if (rollBackEdge) {
+			edges0().rollBackAdd(edge);
+		} else {
+			edges0().removeIdx(edge);
+		}
 		clear(edgeEndpoints, edge, DefaultEndpoints);
 	}
 

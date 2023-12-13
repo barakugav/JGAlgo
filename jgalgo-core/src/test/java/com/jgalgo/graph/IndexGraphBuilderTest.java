@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -87,7 +88,7 @@ public class IndexGraphBuilderTest extends TestBase {
 	}
 
 	@Test
-	static void addVertices() {
+	void addVertices() {
 		final Random rand = new Random(0x7b329816727ad7e8L);
 
 		/* addVertices() from range() */
@@ -115,7 +116,7 @@ public class IndexGraphBuilderTest extends TestBase {
 				int verticesNum = 0;
 				while (verticesNum < n) {
 					int num = Math.min(rand.nextInt(5), n - verticesNum);
-					if (rand.nextBoolean()) {
+					if (num == 0 || rand.nextBoolean()) {
 						g.addVertices(range(verticesNum, verticesNum + num));
 						verticesNum += num;
 					} else {
@@ -139,7 +140,7 @@ public class IndexGraphBuilderTest extends TestBase {
 					IndexGraph g0 = IndexGraph.newUndirected();
 					g0.addVertices(range(num));
 
-					if (verticesNum == 0) {
+					if (num == 0 || verticesNum == 0) {
 						g.addVertices(g0.vertices());
 						verticesNum += num;
 					} else if (rand.nextBoolean()) {
@@ -205,6 +206,7 @@ public class IndexGraphBuilderTest extends TestBase {
 					} else {
 						IntList vs0 = new IntArrayList(vs);
 						vs0.add(vs[rand.nextInt(vs.length)]); /* duplicate element */
+						Collections.shuffle(vs0, rand);
 						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
 					}
 				}
@@ -229,6 +231,7 @@ public class IndexGraphBuilderTest extends TestBase {
 					} else {
 						IntList vs0 = new IntArrayList(vs);
 						vs0.add(rand.nextInt(g.vertices().size()));
+						Collections.shuffle(vs0, rand);
 						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
 					}
 				}
@@ -253,10 +256,12 @@ public class IndexGraphBuilderTest extends TestBase {
 					} else if (rand.nextBoolean()) {
 						IntList vs0 = new IntArrayList(vs);
 						vs0.add(verticesNum - 1);
+						Collections.shuffle(vs0, rand);
 						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
 					} else {
 						IntList vs0 = new IntArrayList(vs);
 						vs0.add(verticesNum + num + 1);
+						Collections.shuffle(vs0, rand);
 						assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs0));
 					}
 				}
@@ -361,7 +366,7 @@ public class IndexGraphBuilderTest extends TestBase {
 			int v4 = b.addVertex();
 
 			b.addEdge(v1, v2);
-			assertThrows(IllegalArgumentException.class, () -> b.addEdge(v3, v4, 37));
+			assertThrows(IllegalStateException.class, () -> b.addEdge(v3, v4, 37));
 		});
 		foreachBoolConfig(directed -> {
 			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
@@ -371,7 +376,147 @@ public class IndexGraphBuilderTest extends TestBase {
 			int v4 = b.addVertex();
 
 			b.addEdge(v1, v2, 37);
-			assertThrows(IllegalArgumentException.class, () -> b.addEdge(v3, v4));
+			assertThrows(IllegalStateException.class, () -> b.addEdge(v3, v4));
+		});
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void addEdges() {
+		foreachBoolConfig((directed, fromIntGraph) -> {
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
+			b.addVertices(range(50));
+
+			Graph<Integer, Integer> g1 =
+					(fromIntGraph ? IntGraphFactory.directed() : GraphFactory.<Integer, Integer>directed()).newGraph();
+			g1.addVertices(range(50));
+			g1.addEdge(2, 3, 2);
+			g1.addEdge(3, 4, 1);
+			b.addEdges(EdgeSet.allOf(g1));
+
+			Graph<Integer, Integer> g2 =
+					(fromIntGraph ? IntGraphFactory.directed() : GraphFactory.<Integer, Integer>directed()).newGraph();
+			g2.addVertices(range(50));
+			g2.addEdge(0, 1, 0);
+			g2.addEdge(1, 2, 3);
+			b.addEdges(EdgeSet.allOf(g2));
+
+			IntGraph g = b.build();
+			IntGraph g0 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+			g0.addVertices(range(50));
+			g0.addEdge(0, 1, 0);
+			g0.addEdge(1, 2, 3);
+			g0.addEdge(2, 3, 2);
+			g0.addEdge(3, 4, 1);
+			assertEquals(g0, g);
+		});
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void addEdgesInvalidEndpoint() {
+		foreachBoolConfig((directed, fromIntGraph) -> {
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
+			b.addVertices(range(1));
+
+			Graph<Integer, Integer> g1 =
+					(fromIntGraph ? IntGraphFactory.directed() : GraphFactory.<Integer, Integer>directed()).newGraph();
+			g1.addVertices(range(50));
+			g1.addEdge(0, 1, 0);
+			assertThrows(NoSuchVertexException.class, () -> b.addEdges(EdgeSet.allOf(g1)));
+		});
+		foreachBoolConfig((directed, fromIntGraph) -> {
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
+			b.addVertices(range(1));
+
+			Graph<Integer, Integer> g1 =
+					(fromIntGraph ? IntGraphFactory.directed() : GraphFactory.<Integer, Integer>directed()).newGraph();
+			g1.addVertices(range(50));
+			g1.addEdge(1, 0, 0);
+			assertThrows(NoSuchVertexException.class, () -> b.addEdges(EdgeSet.allOf(g1)));
+		});
+	}
+
+	@Test
+	public void addEdgesAfterUserNonProvidedIdEdge() {
+		foreachBoolConfig(directed -> {
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
+			b.addVertices(range(50));
+
+			b.addEdge(0, 1);
+
+			IntGraph g1 = IntGraph.newDirected();
+			g1.addVertices(range(50));
+			g1.addEdge(2, 3, 2);
+			g1.addEdge(3, 4, 1);
+			assertThrows(IllegalStateException.class, () -> b.addEdges(EdgeSet.allOf(g1)));
+		});
+	}
+
+	@Test
+	public void addEdgesReassignIds() {
+		foreachBoolConfig(directed -> {
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
+			b.addVertices(range(50));
+
+			IntGraph g1 = IntGraph.newDirected();
+			g1.addVertices(range(50));
+			g1.addEdge(2, 3, 28946351);
+			g1.addEdge(3, 4, 11);
+			b.addEdgesReassignIds(IEdgeSet.allOf(g1));
+
+			IntGraph g2 = IntGraph.newDirected();
+			g2.addVertices(range(50));
+			g2.addEdge(0, 1, 186);
+			g2.addEdge(1, 2, 643);
+			b.addEdgesReassignIds(IEdgeSet.allOf(g2));
+
+			IntGraph g = b.build();
+			IntGraph g0 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+			g0.addVertices(range(50));
+			g0.addEdge(2, 3, 0);
+			g0.addEdge(3, 4, 1);
+			g0.addEdge(0, 1, 2);
+			g0.addEdge(1, 2, 3);
+			assertEquals(g0, g);
+		});
+	}
+
+	@Test
+	public void addEdgesReassignIdsInvalidEndpoint() {
+		foreachBoolConfig(directed -> {
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
+			b.addVertices(range(1));
+
+			IntGraph g1 = IntGraph.newDirected();
+			g1.addVertices(range(50));
+			g1.addEdge(0, 1, 0);
+			assertThrows(NoSuchVertexException.class, () -> b.addEdgesReassignIds(IEdgeSet.allOf(g1)));
+		});
+		foreachBoolConfig(directed -> {
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
+			b.addVertices(range(1));
+
+			IntGraph g1 = IntGraph.newDirected();
+			g1.addVertices(range(50));
+			g1.addEdge(1, 0, 831564);
+			assertThrows(NoSuchVertexException.class, () -> b.addEdgesReassignIds(IEdgeSet.allOf(g1)));
+		});
+	}
+
+	@Test
+	public void addEdgesReassignIdsAfterUserProvidedIdEdge() {
+		foreachBoolConfig(directed -> {
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
+			b.addVertices(range(50));
+
+			b.addEdge(0, 1, 0);
+
+			IntGraph g1 = IntGraph.newDirected();
+			g1.addVertices(range(50));
+			g1.addEdge(2, 3, 2221);
+			g1.addEdge(3, 4, 189768);
+			assertThrows(IllegalStateException.class, () -> b.addEdgesReassignIds(IEdgeSet.allOf(g1)));
 		});
 	}
 
@@ -381,8 +526,7 @@ public class IndexGraphBuilderTest extends TestBase {
 			IndexGraph g = createGraph(directed);
 			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			b.addVertices(g.vertices());
-			for (int m = g.edges().size(), e = 0; e < m; e++)
-				b.addEdge(g.edgeSource(e), g.edgeTarget(e));
+			b.addEdges(EdgeSet.allOf(g));
 
 			b.clear();
 			assertEquals(IntSets.emptySet(), b.vertices());
@@ -497,8 +641,7 @@ public class IndexGraphBuilderTest extends TestBase {
 			b.ensureEdgeCapacity(g.edges().size());
 			b.ensureEdgeCapacity(g.edges().size());
 			b.addVertices(g.vertices());
-			for (int m = g.edges().size(), e = 0; e < m; e++)
-				b.addEdge(g.edgeSource(e), g.edgeTarget(e));
+			b.addEdges(EdgeSet.allOf(g));
 			for (String key : g.getVerticesWeightsKeys()) {
 				IWeightsInt w = g.getVerticesIWeights(key);
 				IWeightsInt bw = b.addVerticesWeights(key, int.class, Integer.valueOf(w.defaultWeight()));

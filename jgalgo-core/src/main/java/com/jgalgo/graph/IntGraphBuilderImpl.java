@@ -117,19 +117,14 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		final int verticesNumBefore = ibuilder.vertices().size();
 		ensureVertexCapacity(verticesNumBefore + vertices.size());
 		int nextIdx = verticesNumBefore;
-		int duplicateVertex = -1;
 		for (int vertex : vertices) {
 			boolean added = viMap.addIdIfNotDuplicate(vertex, nextIdx);
 			if (!added) {
-				duplicateVertex = vertex;
-				break;
+				for (; nextIdx-- > verticesNumBefore;)
+					viMap.rollBackRemove(nextIdx);
+				throw new IllegalArgumentException("Duplicate vertex: " + vertex);
 			}
 			nextIdx++;
-		}
-		if (duplicateVertex >= 0) {
-			for (; nextIdx-- > verticesNumBefore;)
-				viMap.rollBackRemove(nextIdx);
-			throw new IllegalArgumentException("Duplicate vertex: " + duplicateVertex);
 		}
 		ibuilder.addVertices(range(verticesNumBefore, nextIdx));
 
@@ -139,7 +134,7 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	@Override
 	public int addEdge(int source, int target) {
 		if (!canAddEdgeWithoutId())
-			throw new IllegalArgumentException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
+			throw new IllegalStateException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
 					+ "if IDs are provided for some of the edges, they must be provided for all");
 
 		int uIdx = viMap.idToIndex(source);
@@ -153,7 +148,7 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	@Override
 	public void addEdge(int source, int target, int edge) {
 		if (!canAddEdgeWithId())
-			throw new IllegalArgumentException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
+			throw new IllegalStateException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
 					+ "if IDs are provided for some of the edges, they must be provided for all");
 		if (edge < 0)
 			throw new IllegalArgumentException("Edge must be non negative");
@@ -164,6 +159,34 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		eiMap.addId(edge, eIdx);
 		int eIdx2 = ibuilder.addEdge(uIdx, vIdx);
 		assert eIdx == eIdx2;
+
+		userProvideEdgesIds = true;
+	}
+
+	@Override
+	public void addEdges(EdgeSet<? extends Integer, ? extends Integer> edges) {
+		final int edgesNumBefore = ibuilder.edges().size();
+		ensureEdgeCapacity(edgesNumBefore + edges.size());
+		int nextMapIdx = edgesNumBefore;
+		try {
+			for (int edge : edges) {
+				if (edge < 0)
+					throw new IllegalArgumentException("Edge must be non negative");
+				boolean added = eiMap.addIdIfNotDuplicate(edge, nextMapIdx);
+				if (!added)
+					throw new IllegalArgumentException("Duplicate edge: " + edge);
+				nextMapIdx++;
+			}
+
+			@SuppressWarnings("unchecked")
+			EdgeSet<Integer, Integer> edges0 = (EdgeSet<Integer, Integer>) edges;
+			ibuilder.addEdgesReassignIds(new IntGraphImpl.AddEdgesIgnoreIdsIndexSet(edges0, viMap));
+
+		} catch (RuntimeException e) {
+			for (; nextMapIdx-- > edgesNumBefore;)
+				eiMap.rollBackRemove(nextMapIdx);
+			throw e;
+		}
 
 		userProvideEdgesIds = true;
 	}

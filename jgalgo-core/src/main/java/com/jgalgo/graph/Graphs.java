@@ -110,6 +110,11 @@ public class Graphs {
 		}
 
 		@Override
+		public void addEdges(EdgeSet<? extends V, ? extends E> edges) {
+			throw new UnsupportedOperationException("graph is immutable, cannot add edges");
+		}
+
+		@Override
 		public void removeEdge(E edge) {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
 		}
@@ -286,6 +291,11 @@ public class Graphs {
 		}
 
 		@Override
+		public void addEdges(EdgeSet<? extends Integer, ? extends Integer> edges) {
+			throw new UnsupportedOperationException("graph is immutable, cannot add edges");
+		}
+
+		@Override
 		public void removeEdge(int edge) {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
 		}
@@ -441,6 +451,11 @@ public class Graphs {
 		@Override
 		IndexGraph graph() {
 			return (IndexGraph) super.graph();
+		}
+
+		@Override
+		public IntSet addEdgesReassignIds(IEdgeSet edges) {
+			throw new UnsupportedOperationException("graph is immutable, cannot add edges");
 		}
 
 		@Override
@@ -616,6 +631,11 @@ public class Graphs {
 		@Override
 		public void addVertices(Collection<? extends V> vertices) {
 			graph().addVertices(vertices);
+		}
+
+		@Override
+		public void addEdges(EdgeSet<? extends V, ? extends E> edges) {
+			graph().addEdges(edges);
 		}
 
 		@Override
@@ -1020,12 +1040,12 @@ public class Graphs {
 
 		@Override
 		public EdgeSet<V, E> outEdges(V source) {
-			return new ReversedEdgeSet<>(graph().inEdges(source));
+			return reverseEdgeSet(graph().inEdges(source));
 		}
 
 		@Override
 		public EdgeSet<V, E> inEdges(V target) {
-			return new ReversedEdgeSet<>(graph().outEdges(target));
+			return reverseEdgeSet(graph().outEdges(target));
 		}
 
 		@Override
@@ -1035,12 +1055,17 @@ public class Graphs {
 
 		@Override
 		public EdgeSet<V, E> getEdges(V source, V target) {
-			return new ReversedEdgeSet<>(graph().getEdges(target, source));
+			return reverseEdgeSet(graph().getEdges(target, source));
 		}
 
 		@Override
 		public void addEdge(V source, V target, E edge) {
 			graph().addEdge(target, source, edge);
+		}
+
+		@Override
+		public void addEdges(EdgeSet<? extends V, ? extends E> edges) {
+			graph().addEdges(reverseEdgeSet(edges));
 		}
 
 		@Override
@@ -1104,6 +1129,11 @@ public class Graphs {
 		@Override
 		public int addEdge(int source, int target) {
 			return graph().addEdge(target, source);
+		}
+
+		@Override
+		public void addEdges(EdgeSet<? extends Integer, ? extends Integer> edges) {
+			graph().addEdges(reverseEdgeSet(edges));
 		}
 
 		@Override
@@ -1186,6 +1216,11 @@ public class Graphs {
 		}
 
 		@Override
+		public IntSet addEdgesReassignIds(IEdgeSet edges) {
+			return graph().addEdgesReassignIds(new ReversedIEdgeSet(edges));
+		}
+
+		@Override
 		public void addVertexRemoveListener(IndexRemoveListener listener) {
 			graph().addVertexRemoveListener(listener);
 		}
@@ -1215,6 +1250,15 @@ public class Graphs {
 		@Override
 		public IndexIntIdMap indexGraphEdgesMap() {
 			return graph().indexGraphEdgesMap();
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> EdgeSet<V, E> reverseEdgeSet(EdgeSet<V, E> set) {
+		if (set instanceof IEdgeSet) {
+			return (EdgeSet<V, E>) new ReversedIEdgeSet((IEdgeSet) set);
+		} else {
+			return new ReversedEdgeSet<>(set);
 		}
 	}
 
@@ -1960,6 +2004,11 @@ public class Graphs {
 		@Override
 		public IndexGraph graph() {
 			return (IndexGraph) super.graph();
+		}
+
+		@Override
+		public IntSet addEdgesReassignIds(IEdgeSet edges) {
+			return graph().addEdgesReassignIds(edges);
 		}
 
 		@Override

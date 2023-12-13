@@ -191,6 +191,70 @@ public interface IndexGraph extends IntGraph {
 	 * {@inheritDoc}
 	 *
 	 * <p>
+	 * Index graphs edges IDs are always {@code (0,1,2, ...,edgesNum-1)} therefore the only edges that can be added are
+	 * {@code (edgesNum,edgesNum+1,edgesNum+2, ...)}. For any other edges passed to this method, an exception will be
+	 * thrown. If there is no need to keep the identifiers of the edges, consider using
+	 * {@link #addEdgesReassignIds(IEdgeSet)}.
+	 *
+	 * <p>
+	 * If this index graph object was obtained from a regular {@link Graph} using {@link Graph#indexGraph()}, this
+	 * method should not be called. Use the original graph instead.
+	 */
+	@Override
+	void addEdges(EdgeSet<? extends Integer, ? extends Integer> edges);
+
+	/**
+	 * Add multiple edges to the graph and re-assign ids for them.
+	 *
+	 * <p>
+	 * The {@link IEdgeSet} passed to this method contains the endpoints (sources and targets) of the edges, see
+	 * {@link EdgeSet#iterator()}, {@link EdgeIter#source()}, {@link EdgeIter#target()}. The identifiers of the edges,
+	 * which are also accessible via {@link IEdgeSet} are ignored, and new identifiers (indices) are assigned to the
+	 * added edges. An {@link IEdgeSet} can be obtained from one of the methods of another {@link IntGraph}, or using
+	 * {@link IEdgeSet#of(IntSet, IntGraph)}.
+	 *
+	 * <p>
+	 * The identifiers assigned to the newly added edges are {@code (edgesNum,edgesNum+1,edgesNum+2, ...)} matching the
+	 * iteration order of the provided set. This method different than {@link #addEdges(EdgeSet)} in a similar way that
+	 * {@link #addEdge(int, int)} is different than {@link #addEdge(int, int, int)}.
+	 *
+	 * <p>
+	 * If the graph does not support self edges and one of the added edges have the same vertex as source and target, an
+	 * exception will be thrown. If the graph does not support parallel edges, and one of the added edges have the same
+	 * source and target as one of the existing edges in the graph, or if two of the added edges have the same source
+	 * and target, an exception will be thrown.
+	 *
+	 * <p>
+	 * In the following snippet, a maximum cardinality matching is computed on a graph, and a new graph containing only
+	 * the matching edges is created. It would be wrong to use {@link #addEdges(EdgeSet)} in this example, as there is
+	 * no guarantee that the added edges ids are {@code (0, 1, 2, ...)}, which is a requirement to maintain the index
+	 * graph invariants.
+	 *
+	 * <pre> {@code
+	 * IndexGraph g = ...;
+	 * IntSet matching = (IntSet) MatchingAlgo.newInstance().computeMaximumMatching(g, null).edges();
+	 *
+	 * IndexGraph matchingGraph = IndexGraph.newUndirected();
+	 * matchingGraph.addVertices(g.vertices());
+	 * matchingGraph.addEdgesReassignIds(IEdgeSet.of(matching, g));
+	 * }</pre>
+	 *
+	 * <p>
+	 * If this index graph object was obtained from a regular {@link Graph} using {@link Graph#indexGraph()}, this
+	 * method should not be called. Use the original graph instead.
+	 *
+	 * @param  edges the set of edges to add. Only the endpoints of the edges is considered, while the edges identifiers
+	 *                   are ignored.
+	 * @return       the set of newly edge identifiers added to the graph,
+	 *               {@code (edgesNum,edgesNum+1,edgesNum+2, ...)}. The edges are assigned the indices in the order they
+	 *               are iterated in the given set
+	 */
+	IntSet addEdgesReassignIds(IEdgeSet edges);
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
 	 * After removing an edge, the graph implementation may swap and rename edges to maintain its invariants. Theses
 	 * renames can be subscribed using {@link #addEdgeRemoveListener(IndexRemoveListener)}.
 	 *

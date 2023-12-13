@@ -73,19 +73,14 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 		final int verticesNumBefore = ibuilder.vertices().size();
 		ensureVertexCapacity(verticesNumBefore + vertices.size());
 		int nextIdx = verticesNumBefore;
-		V duplicateVertex = null;
 		for (V vertex : vertices) {
 			boolean added = viMap.addIdIfNotDuplicate(vertex, nextIdx);
 			if (!added) {
-				duplicateVertex = vertex;
-				break;
+				for (; nextIdx-- > verticesNumBefore;)
+					viMap.rollBackRemove(nextIdx);
+				throw new IllegalArgumentException("Duplicate vertex: " + vertex);
 			}
 			nextIdx++;
-		}
-		if (duplicateVertex != null) {
-			for (; nextIdx-- > verticesNumBefore;)
-				viMap.rollBackRemove(nextIdx);
-			throw new IllegalArgumentException("Duplicate vertex: " + duplicateVertex);
 		}
 		ibuilder.addVertices(range(verticesNumBefore, nextIdx));
 	}
@@ -101,6 +96,30 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 
 		int eIdx2 = ibuilder.addEdge(uIdx, vIdx);
 		assert eIdx == eIdx2;
+	}
+
+	@Override
+	public void addEdges(EdgeSet<? extends V, ? extends E> edges) {
+		final int edgesNumBefore = ibuilder.edges().size();
+		ensureEdgeCapacity(edgesNumBefore + edges.size());
+		int nextMapIdx = edgesNumBefore;
+		try {
+			for (E edge : edges) {
+				if (edge == null)
+					throw new NullPointerException("Edge must be non null");
+				boolean added = eiMap.addIdIfNotDuplicate(edge, nextMapIdx);
+				if (!added)
+					throw new IllegalArgumentException("Duplicate edge: " + edge);
+				nextMapIdx++;
+			}
+
+			ibuilder.addEdgesReassignIds(new GraphImpl.AddEdgesIgnoreIdsIndexSet<>(edges, viMap));
+
+		} catch (RuntimeException e) {
+			for (; nextMapIdx-- > edgesNumBefore;)
+				eiMap.rollBackRemove(nextMapIdx);
+			throw e;
+		}
 	}
 
 	@Override

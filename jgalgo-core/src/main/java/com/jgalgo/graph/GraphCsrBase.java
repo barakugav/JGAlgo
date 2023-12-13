@@ -24,6 +24,7 @@ import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 
@@ -190,6 +191,16 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	@Override
 	public int addEdge(int source, int target) {
 		throw new UnsupportedOperationException("graph is immutable, can't add edge");
+	}
+
+	@Override
+	public void addEdges(EdgeSet<? extends Integer, ? extends Integer> edges) {
+		throw new UnsupportedOperationException("graph is immutable, cannot add edges");
+	}
+
+	@Override
+	public IntSet addEdgesReassignIds(IEdgeSet edges) {
+		throw new UnsupportedOperationException("graph is immutable, cannot add edges");
 	}
 
 	@Override

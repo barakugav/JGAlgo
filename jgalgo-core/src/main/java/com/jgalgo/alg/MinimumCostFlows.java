@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Objects;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IEdgeSet;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeights;
@@ -364,8 +365,7 @@ class MinimumCostFlows {
 
 			/* Add all original vertices and edges */
 			builder.addVertices(gOrig.vertices());
-			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
-				builder.addEdge(gOrig.edgeSource(e), gOrig.edgeTarget(e));
+			builder.addEdgesReassignIds(IEdgeSet.allOf(gOrig));
 			/* any edge with index smaller than this threshold is an original edge of the graph */
 			final int origEdgesThreshold = builder.edges().size();
 
@@ -474,8 +474,7 @@ class MinimumCostFlows {
 
 			/* Add all original vertices and edges */
 			builder.addVertices(gOrig.vertices());
-			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
-				builder.addEdge(gOrig.edgeSource(e), gOrig.edgeTarget(e));
+			builder.addEdgesReassignIds(IEdgeSet.allOf(gOrig));
 			/* any edge with index smaller than this threshold is an original edge of the graph */
 			final int origEdgesThreshold = builder.edges().size();
 
@@ -646,8 +645,7 @@ class MinimumCostFlows {
 
 			/* Add all original vertices and edges */
 			builder.addVertices(gOrig.vertices());
-			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
-				builder.addEdge(gOrig.edgeSource(e), gOrig.edgeTarget(e));
+			builder.addEdgesReassignIds(IEdgeSet.allOf(gOrig));
 			/* any edge with index greater than this threshold is not an original edge of the graph */
 			final int origEdgesThreshold = builder.edges().size();
 
@@ -762,8 +760,7 @@ class MinimumCostFlows {
 			builder.ensureEdgeCapacity(gOrig.edges().size() + sources.size() + sinks.size() + 2);
 
 			builder.addVertices(gOrig.vertices());
-			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
-				builder.addEdge(gOrig.edgeSource(e), gOrig.edgeTarget(e));
+			builder.addEdgesReassignIds(IEdgeSet.allOf(gOrig));
 			/* any edge with index smaller than this threshold is an original edge of the graph */
 			final int origEdgesThreshold = builder.edges().size();
 

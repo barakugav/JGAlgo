@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -76,12 +77,15 @@ public class GraphImplTest extends TestBase {
 					verticesList.addAll(vs);
 				} else if (r % 4 == 1) {
 					vs.add(null);
+					Collections.shuffle(vs, rand);
 					assertThrows(NullPointerException.class, () -> g.addVertices(vs));
 				} else if (r % 4 == 2 && vs.size() > 0) {
 					vs.add(randElement(vs, rand));
+					Collections.shuffle(vs, rand);
 					assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs));
 				} else if (r % 4 == 3 && vertices.size() > 0) {
 					vs.add(randElement(verticesList, rand));
+					Collections.shuffle(vs, rand);
 					assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs));
 				}
 				assertEquals(vertices, g.vertices());
@@ -154,6 +158,14 @@ public class GraphImplTest extends TestBase {
 		g.addVertex("B");
 		g.addEdge("A", "B", "AB");
 		assertThrows(IllegalArgumentException.class, () -> g.addEdge("B", "A", "AB"));
+	}
+
+	@Test
+	public void addEdges() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.addEdgesTest(directed -> GraphFactory.<Integer, Integer>newInstance(directed)
+					.allowSelfEdges(selfEdges).newGraph());
+		});
 	}
 
 	@Test

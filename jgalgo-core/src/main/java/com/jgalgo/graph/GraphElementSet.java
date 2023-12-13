@@ -132,6 +132,13 @@ abstract class GraphElementSet extends AbstractIntSet {
 			size--;
 		}
 
+		/* identical to removeIdx without notifying listeners */
+		void rollBackAdd(int idx) {
+			assert idx == size - 1;
+			assert size > 0;
+			size--;
+		}
+
 		@Override
 		public void clear() {
 			size = 0;

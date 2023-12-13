@@ -57,6 +57,20 @@ public class GraphLinkedTest extends TestBase {
 	}
 
 	@Test
+	public void addEdges() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.addEdgesTest(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
+	public void addEdgesReassignIds() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.addEdgesReassignIdsTest(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
 	public void edges() {
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.edgesTest(graphImpl(selfEdges));

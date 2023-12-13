@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
+import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
@@ -30,7 +32,7 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.TestUtils;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 
 public class TreePathMaximaTestUtils extends TestUtils {
 
@@ -164,12 +166,11 @@ public class TreePathMaximaTestUtils extends TestUtils {
 			Graph<Integer, Integer> g = GraphsTestUtils.randConnectedGraph(n, m, false, seedGen.nextSeed());
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());
 
-			Collection<Integer> mstEdges =
-					new IntArrayList(new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges());
+			Set<Integer> mstEdges =
+					new IntOpenHashSet(new MinimumSpanningTreeKruskal().computeMinimumSpanningTree(g, w).edges());
 			Graph<Integer, Integer> mst = Graph.newUndirected();
 			mst.addVertices(g.vertices());
-			for (Integer e : mstEdges)
-				mst.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
+			mst.addEdges(EdgeSet.of(mstEdges, g));
 
 			Random rand = new Random(seedGen.nextSeed());
 			for (;;) {

@@ -16,21 +16,27 @@
 package com.jgalgo.graph;
 
 import static com.jgalgo.internal.util.Range.range;
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -112,12 +118,15 @@ public class GraphBuilderTest extends TestBase {
 					verticesList.addAll(vs);
 				} else if (r % 4 == 1) {
 					vs.add(null);
+					Collections.shuffle(vs, rand);
 					assertThrows(NullPointerException.class, () -> b.addVertices(vs));
 				} else if (r % 4 == 2 && vs.size() > 0) {
 					vs.add(randElement(vs, rand));
+					Collections.shuffle(vs, rand);
 					assertThrows(IllegalArgumentException.class, () -> b.addVertices(vs));
 				} else if (r % 4 == 3 && vertices.size() > 0) {
 					vs.add(randElement(verticesList, rand));
+					Collections.shuffle(vs, rand);
 					assertThrows(IllegalArgumentException.class, () -> b.addVertices(vs));
 				}
 				assertEquals(vertices, b.vertices());
@@ -172,6 +181,86 @@ public class GraphBuilderTest extends TestBase {
 			b.addVertex(0);
 			b.addVertex(1);
 			assertThrows(NullPointerException.class, () -> b.addEdge(0, 1, null));
+		});
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void addEdges() {
+		final Random rand = new Random(0x3a886c0cebe85403L);
+
+		Function<List<Pair<Integer, Pair<Integer, Integer>>>, EdgeSet<Integer, Integer>> toEdgeSet = es -> {
+			List<Integer> ids = es.stream().map(Pair::first).collect(toList());
+			List<Pair<Integer, Integer>> endpoints = es.stream().map(Pair::second).collect(toList());
+			return GraphImplTestUtils.edgeSetFromList(ids, endpoints, rand);
+		};
+		BiConsumer<Map<Integer, Pair<Integer, Integer>>, EdgeSet<Integer, Integer>> addEdges = (edgesMap, edgeSet) -> {
+			for (EdgeIter<Integer, Integer> eit = edgeSet.iterator(); eit.hasNext();) {
+				Integer e = eit.next();
+				Pair<Integer, Integer> endpoints = Pair.of(eit.source(), eit.target());
+				Object oldVal = edgesMap.put(e, endpoints);
+				assert oldVal == null;
+			}
+		};
+
+		foreachBoolConfig(directed -> {
+			GraphBuilder<Integer, Integer> b = GraphFactory.<Integer, Integer>newInstance(directed).allowSelfEdges(true)
+					.allowParallelEdges(true).newBuilder();
+			b.addVertices(range(1000));
+
+			Map<Integer, Pair<Integer, Integer>> edges = new HashMap<>();
+			List<Integer> edgesList = new ArrayList<>();
+			for (int r = 0; r < 50; r++) {
+				int num = rand.nextInt(5);
+				List<Integer> esIds = new ArrayList<>();
+				while (esIds.size() < num) {
+					int e = rand.nextInt();
+					if (e < 0 || edges.containsKey(e) || esIds.contains(e))
+						continue;
+					esIds.add(e);
+				}
+				List<Pair<Integer, Pair<Integer, Integer>>> esList = esIds.stream()
+						.map(e -> Pair.of(e, Pair.of(rand.nextInt(1000), rand.nextInt(1000)))).collect(toList());
+
+				if (r % 4 == 0) {
+					EdgeSet<Integer, Integer> es = toEdgeSet.apply(esList);
+					b.addEdges(es);
+					addEdges.accept(edges, es);
+					edgesList.addAll(es);
+				} else if (r % 4 == 1) {
+					esList.add(Pair.of(null, Pair.of(rand.nextInt(1000), rand.nextInt(1000))));
+					Collections.shuffle(esList, rand);
+					EdgeSet<Integer, Integer> es = toEdgeSet.apply(esList);
+					assertThrows(NullPointerException.class, () -> b.addEdges(es));
+				} else if (r % 4 == 2 && esList.size() > 0) {
+					esList.add(randElement(esList, rand));
+					Collections.shuffle(esList, rand);
+					EdgeSet<Integer, Integer> es = toEdgeSet.apply(esList);
+					assertThrows(IllegalArgumentException.class, () -> b.addEdges(es));
+				} else if (r % 4 == 3 && edgesList.size() > 0) {
+					Integer dupEdge = randElement(edgesList, rand);
+					esList.add(Pair.of(dupEdge, edges.get(dupEdge)));
+					Collections.shuffle(esList, rand);
+					EdgeSet<Integer, Integer> es = toEdgeSet.apply(esList);
+					assertThrows(IllegalArgumentException.class, () -> b.addEdges(es));
+				}
+				Graph<Integer, Integer> g = b.build();
+				assertEquals(edges.keySet(), g.edges());
+				for (Integer e : edges.keySet()) {
+					Pair<Integer, Integer> endpoints = edges.get(e);
+					Integer expectedSource = endpoints.first();
+					Integer expectedTarget = endpoints.second();
+					Integer actualSource = g.edgeSource(e);
+					Integer actualTarget = g.edgeTarget(e);
+					if (directed) {
+						assertEquals(expectedSource, actualSource);
+						assertEquals(expectedTarget, actualTarget);
+					} else {
+						assertTrue((expectedSource.equals(actualSource) && expectedTarget.equals(actualTarget))
+								|| (expectedSource.equals(actualTarget) && expectedTarget.equals(actualSource)));
+					}
+				}
+			}
 		});
 	}
 

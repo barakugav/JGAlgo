@@ -86,6 +86,44 @@ public interface GraphBuilder<V, E> {
 	void addEdge(V source, V target, E edge);
 
 	/**
+	 * Add multiple edges to the built graph.
+	 *
+	 * <p>
+	 * The {@link EdgeSet} passed to this method contains both the edges themselves (the identifiers) and their
+	 * endpoints (sources and targets), see {@link EdgeSet#iterator()}, {@link EdgeIter#source()},
+	 * {@link EdgeIter#target()}. An {@link EdgeSet} can be obtained from one of the methods of a {@link Graph}, or
+	 * using {@link EdgeSet#of(Set, Graph)}.
+	 *
+	 * <p>
+	 * An edge can be any non null hashable object, namely it must implement the {@link Object#hashCode()} and
+	 * {@link Object#equals(Object)} methods. Duplicate edges are not allowed.
+	 *
+	 * <p>
+	 * In the following snippet, a maximum cardinality matching is computed on a graph, and a new graph containing only
+	 * the matching edges is created:
+	 *
+	 * <pre> {@code
+	 * Graph<V, E> g = ...;
+	 * Set<E> matching = MatchingAlgo.newInstance().computeMaximumMatching(g, null).edges();
+	 *
+	 * GraphBuilder<V,E> matchingGraphBuilder = GraphBuilder.undirected();
+	 * matchingGraphBuilder.addVertices(g.vertices());
+	 * matchingGraphBuilder.addEdges(EdgeSet.of(matching, g));
+	 * Graph<V,E> matchingGraph = matchingGraphBuilder.build()
+	 * }</pre>
+	 *
+	 * @param  edges                    the set of new edges, from which the edges identifiers as well as the endpoints
+	 *                                      (source and target) of each edge are accessible (see
+	 *                                      {@link EdgeSet#iterator()}, {@link EdgeIter#source()},
+	 *                                      {@link EdgeIter#target()}).
+	 * @throws IllegalArgumentException if {@code edges} contains duplications, or if any of the edges is already in the
+	 *                                      graph
+	 * @throws NullPointerException     if {@code edges} is {@code null} or if any of the edges is {@code null}
+	 * @throws NoSuchVertexException    if any of the edges endpoint is not a vertex in the graph
+	 */
+	void addEdges(EdgeSet<? extends V, ? extends E> edges);
+
+	/**
 	 * Hint the implementation to allocate space for at least {@code vertexCapacity} vertices.
 	 *
 	 * <p>

@@ -16,6 +16,7 @@
 package com.jgalgo.alg;
 
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.GraphsTestUtils;
@@ -44,8 +45,7 @@ public class WeaklyConnectedComponentsAlgoTest extends TestBase {
 			/* create a undirected copy of the original directed graph */
 			GraphBuilder<Integer, Integer> gb = GraphBuilder.undirected();
 			gb.addVertices(g.vertices());
-			for (Integer e : g.edges())
-				gb.addEdge(g.edgeSource(e), g.edgeTarget(e), e);
+			gb.addEdges(EdgeSet.allOf(g));
 			VertexPartition<Integer, Integer> expected =
 					WeaklyConnectedComponentsAlgo.newInstance().findWeaklyConnectedComponents(gb.build());
 			Object2IntMap<Integer> expectedMap = new Object2IntOpenHashMap<>(n);

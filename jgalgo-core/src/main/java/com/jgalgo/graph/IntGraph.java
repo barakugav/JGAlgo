@@ -351,6 +351,16 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	}
 
 	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * Prefer to pass {@link IEdgeSet} instead of {@link EdgeSet}&lt;{@link Integer}, {@link Integer}&gt; as set of
+	 * edges. See {@link IEdgeSet#of(IntSet, IntGraph)}.
+	 */
+	@Override
+	void addEdges(EdgeSet<? extends Integer, ? extends Integer> edges);
+
+	/**
 	 * Remove an edge from the graph.
 	 *
 	 * @param  edge                the edge identifier

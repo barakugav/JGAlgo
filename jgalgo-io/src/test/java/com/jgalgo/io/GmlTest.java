@@ -461,7 +461,7 @@ public class GmlTest {
 		text.addLine("    target 1");
 		text.addLine("  ]");
 		text.addLine("]");
-		assertThrows(IllegalArgumentException.class, () -> reader.readGraph(new StringReader(text.getAndClear())));
+		assertThrows(IllegalStateException.class, () -> reader.readGraph(new StringReader(text.getAndClear())));
 	}
 
 	@Test

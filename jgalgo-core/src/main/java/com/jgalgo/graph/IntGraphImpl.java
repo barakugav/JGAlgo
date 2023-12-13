@@ -167,8 +167,6 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 
 	@Override
 	public void addVertices(Collection<? extends Integer> vertices) {
-		if (vertices.isEmpty())
-			return;
 		if (!(vertices instanceof IntCollection))
 			for (Integer vertex : vertices)
 				if (vertex == null)
@@ -180,19 +178,14 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 		final int verticesNumBefore = indexGraph.vertices().size();
 		ensureVertexCapacity(verticesNumBefore + vertices.size());
 		int nextIdx = verticesNumBefore;
-		int duplicateVertex = -1;
 		for (int vertex : vertices) {
 			boolean added = viMap.addIdIfNotDuplicate(vertex, nextIdx);
 			if (!added) {
-				duplicateVertex = vertex;
-				break;
+				for (; nextIdx-- > verticesNumBefore;)
+					viMap.rollBackRemove(nextIdx);
+				throw new IllegalArgumentException("Duplicate vertex: " + vertex);
 			}
 			nextIdx++;
-		}
-		if (duplicateVertex >= 0) {
-			for (; nextIdx-- > verticesNumBefore;)
-				viMap.rollBackRemove(nextIdx);
-			throw new IllegalArgumentException("Duplicate vertex: " + duplicateVertex);
 		}
 		indexGraph.addVertices(range(verticesNumBefore, nextIdx));
 	}
@@ -212,12 +205,14 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 
 	@Override
 	public IEdgeSet outEdges(int source) {
-		return new EdgeSetMapped(indexGraph.outEdges(viMap.idToIndex(source)));
+		IEdgeSet indexSet = indexGraph.outEdges(viMap.idToIndex(source));
+		return new IndexToIdEdgeSet(indexSet, viMap, eiMap);
 	}
 
 	@Override
 	public IEdgeSet inEdges(int target) {
-		return new EdgeSetMapped(indexGraph.inEdges(viMap.idToIndex(target)));
+		IEdgeSet indexSet = indexGraph.inEdges(viMap.idToIndex(target));
+		return new IndexToIdEdgeSet(indexSet, viMap, eiMap);
 	}
 
 	@Override
@@ -232,8 +227,8 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	public IEdgeSet getEdges(int source, int target) {
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
-		IEdgeSet s = indexGraph.getEdges(uIdx, vIdx);
-		return new EdgeSetMapped(s);
+		IEdgeSet indexSet = indexGraph.getEdges(uIdx, vIdx);
+		return new IndexToIdEdgeSet(indexSet, viMap, eiMap);
 	}
 
 	@Override
@@ -262,6 +257,83 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 		} catch (RuntimeException e) {
 			eiMap.rollBackRemove(eIdx);
 			throw e;
+		}
+	}
+
+	@Override
+	public void addEdges(EdgeSet<? extends Integer, ? extends Integer> edges) {
+		final int edgesNumBefore = indexGraph.edges().size();
+		ensureEdgeCapacity(edgesNumBefore + edges.size());
+		int nextMapIdx = edgesNumBefore;
+		try {
+			for (int edge : edges) {
+				if (edge < 0)
+					throw new IllegalArgumentException("Edge must be non negative");
+				boolean added = eiMap.addIdIfNotDuplicate(edge, nextMapIdx);
+				if (!added)
+					throw new IllegalArgumentException("Duplicate edge: " + edge);
+				nextMapIdx++;
+			}
+
+			@SuppressWarnings("unchecked")
+			EdgeSet<Integer, Integer> edges0 = (EdgeSet<Integer, Integer>) edges;
+			indexGraph.addEdgesReassignIds(new AddEdgesIgnoreIdsIndexSet(edges0, viMap));
+
+		} catch (RuntimeException e) {
+			for (; nextMapIdx-- > edgesNumBefore;)
+				eiMap.rollBackRemove(nextMapIdx);
+			throw e;
+		}
+	}
+
+	static class AddEdgesIgnoreIdsIndexSet extends AbstractIntSet implements IEdgeSet {
+
+		private final EdgeSet<Integer, Integer> idSet;
+		private final IndexIntIdMap viMap;
+
+		AddEdgesIgnoreIdsIndexSet(EdgeSet<Integer, Integer> idSet, IndexIntIdMap viMap) {
+			this.idSet = idSet;
+			this.viMap = viMap;
+		}
+
+		@Override
+		public int size() {
+			return idSet.size();
+		}
+
+		@Override
+		public IEdgeIter iterator() {
+			return new IEdgeIter() {
+
+				EdgeIter<Integer, Integer> idIter = idSet.iterator();
+
+				@Override
+				public boolean hasNext() {
+					return idIter.hasNext();
+				}
+
+				@Override
+				public int nextInt() {
+					idIter.next();
+					return -1; /* ignore edges IDs */
+				}
+
+				@Override
+				public int peekNextInt() {
+					idIter.peekNext();
+					return -1; /* ignore edges IDs */
+				}
+
+				@Override
+				public int sourceInt() {
+					return viMap.idToIndex(idIter.source().intValue());
+				}
+
+				@Override
+				public int targetInt() {
+					return viMap.idToIndex(idIter.target().intValue());
+				}
+			};
 		}
 	}
 
@@ -400,84 +472,92 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 		indexGraph.removeEdgesWeights(key);
 	}
 
-	class EdgeSetMapped extends AbstractIntSet implements IEdgeSet {
+	static class IndexToIdEdgeSet extends AbstractIntSet implements IEdgeSet {
 
-		private final IEdgeSet set;
+		private final IEdgeSet indexSet;
+		private final IndexIntIdMap viMap;
+		private final IndexIntIdMap eiMap;
 
-		EdgeSetMapped(IEdgeSet set) {
-			this.set = Objects.requireNonNull(set);
+		IndexToIdEdgeSet(IEdgeSet indexSet, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+			this.indexSet = Objects.requireNonNull(indexSet);
+			this.viMap = viMap;
+			this.eiMap = eiMap;
 		}
 
 		@Override
 		public boolean remove(int edge) {
-			return set.remove(eiMap.idToIndexIfExist(edge));
+			return indexSet.remove(eiMap.idToIndexIfExist(edge));
 		}
 
 		@Override
 		public boolean contains(int edge) {
-			return set.contains(eiMap.idToIndexIfExist(edge));
+			return indexSet.contains(eiMap.idToIndexIfExist(edge));
 		}
 
 		@Override
 		public int size() {
-			return set.size();
+			return indexSet.size();
 		}
 
 		@Override
 		public boolean isEmpty() {
-			return set.isEmpty();
+			return indexSet.isEmpty();
 		}
 
 		@Override
 		public void clear() {
-			set.clear();
+			indexSet.clear();
 		}
 
 		@Override
 		public IEdgeIter iterator() {
-			return new EdgeIterMapped(set.iterator());
+			return new IndexToIdEdgeIter(indexSet.iterator(), viMap, eiMap);
 		}
 	}
 
-	class EdgeIterMapped implements IEdgeIter {
+	static class IndexToIdEdgeIter implements IEdgeIter {
 
-		private final IEdgeIter it;
+		private final IEdgeIter indexIter;
+		private final IndexIntIdMap viMap;
+		private final IndexIntIdMap eiMap;
 
-		EdgeIterMapped(IEdgeIter it) {
-			this.it = it;
+		IndexToIdEdgeIter(IEdgeIter indexIter, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
+			this.indexIter = indexIter;
+			this.viMap = viMap;
+			this.eiMap = eiMap;
 		}
 
 		@Override
 		public boolean hasNext() {
-			return it.hasNext();
+			return indexIter.hasNext();
 		}
 
 		@Override
 		public int nextInt() {
-			int eIdx = it.nextInt();
+			int eIdx = indexIter.nextInt();
 			return eiMap.indexToIdInt(eIdx);
 		}
 
 		@Override
 		public int peekNextInt() {
-			int eIdx = it.peekNextInt();
+			int eIdx = indexIter.peekNextInt();
 			return eiMap.indexToIdInt(eIdx);
 		}
 
 		@Override
 		public void remove() {
-			it.remove();
+			indexIter.remove();
 		}
 
 		@Override
 		public int targetInt() {
-			int vIdx = it.targetInt();
+			int vIdx = indexIter.targetInt();
 			return viMap.indexToIdInt(vIdx);
 		}
 
 		@Override
 		public int sourceInt() {
-			int uIdx = it.sourceInt();
+			int uIdx = indexIter.sourceInt();
 			return viMap.indexToIdInt(uIdx);
 		}
 	}

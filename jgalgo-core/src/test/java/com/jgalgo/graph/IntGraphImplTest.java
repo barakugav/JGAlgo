@@ -19,7 +19,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -68,19 +71,27 @@ public class IntGraphImplTest extends TestBase {
 						continue;
 					vs.add(v);
 				}
-				if (r % 4 == 0) {
+				if (r % 5 == 0) {
 					g.addVertices(vs);
 					vertices.addAll(vs);
 					verticesList.addAll(vs);
-				} else if (r % 4 == 1) {
+				} else if (r % 5 == 1) {
 					vs.add(-1);
+					Collections.shuffle(vs, rand);
 					assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs));
-				} else if (r % 4 == 2 && vs.size() > 0) {
+				} else if (r % 5 == 2 && vs.size() > 0) {
 					vs.add(randElement(vs, rand));
+					Collections.shuffle(vs, rand);
 					assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs));
-				} else if (r % 4 == 3 && vertices.size() > 0) {
+				} else if (r % 5 == 3 && vertices.size() > 0) {
 					vs.add(randElement(verticesList, rand));
+					Collections.shuffle(vs, rand);
 					assertThrows(IllegalArgumentException.class, () -> g.addVertices(vs));
+				} else if (r % 5 == 4) {
+					List<Integer> vs0 = new ArrayList<>(vs);
+					vs0.add(null);
+					Collections.shuffle(vs0, rand);
+					assertThrows(NullPointerException.class, () -> g.addVertices(vs0));
 				}
 				assertEquals(vertices, g.vertices());
 			}
@@ -167,6 +178,14 @@ public class IntGraphImplTest extends TestBase {
 		g.addVertex(8);
 		g.addEdge(7, 8, 3);
 		assertThrows(IllegalArgumentException.class, () -> g.addEdge(8, 7, 3));
+	}
+
+	@Test
+	public void addEdges() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.addEdgesTest(
+					directed -> IntGraphFactory.newInstance(directed).allowSelfEdges(selfEdges).newGraph());
+		});
 	}
 
 	@Test
