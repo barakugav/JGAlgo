@@ -30,7 +30,6 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	private final boolean directed;
-	private int m;
 	final GraphElementSet.Mutable vertices;
 	final GraphElementSet.Mutable edges;
 	private int[] endpoints = IntArrays.EMPTY_ARRAY;
@@ -56,7 +55,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	IndexGraphBuilderImpl(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		this.directed = g.isDirected();
 		final int n = g.vertices().size();
-		m = g.edges().size();
+		final int m = g.edges().size();
 
 		vertices = GraphElementSet.Mutable.ofVertices(n);
 		edges = GraphElementSet.Mutable.ofEdges(m);
@@ -103,7 +102,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	@Override
 	public IntSet edges() {
 		if (edgesSetView == null) {
-			if (m == 0)
+			if (edges.isEmpty())
 				return edges;
 			if (userProvideEdgesIds) {
 				edgesSetView = new EdgesSetProvidedIdx();
@@ -132,11 +131,11 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	private boolean canAddEdgeWithoutId() {
-		return m == 0 || !userProvideEdgesIds;
+		return edges.isEmpty() || !userProvideEdgesIds;
 	}
 
 	private boolean canAddEdgeWithId() {
-		return m == 0 || userProvideEdgesIds;
+		return edges.isEmpty() || userProvideEdgesIds;
 	}
 
 	@Override
@@ -148,14 +147,10 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			throw NoSuchVertexException.ofIndex(source);
 		if (!vertices().contains(target))
 			throw NoSuchVertexException.ofIndex(target);
-		int e = m++;
-		int eFromEdgesSet = edges.add();
-		assert e == eFromEdgesSet;
-		if (e * 2 == endpoints.length)
-			endpoints = Arrays.copyOf(endpoints, Math.max(4, 2 * endpoints.length));
+		int e = edges.add();
+		ensureEdgeCapacity(e + 1);
 		setEdgeSource(e, source);
 		setEdgeTarget(e, target);
-		edgesUserWeights.ensureCapacity(e + 1);
 		return e;
 	}
 
@@ -170,18 +165,12 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			throw NoSuchVertexException.ofIndex(source);
 		if (!vertices().contains(target))
 			throw NoSuchVertexException.ofIndex(target);
-		int eIdx = m++;
-		while (eIdx >= edges.size())
-			edges.add();
-		if (eIdx * 2 >= endpoints.length)
-			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, (eIdx + 1) * 2)));
-		if (eIdx >= edgesUserIds.length)
-			edgesUserIds = Arrays.copyOf(edgesUserIds, Math.max(2, Math.max(2 * edgesUserIds.length, eIdx + 1)));
+		userProvideEdgesIds = true;
+		int eIdx = edges.add();
+		ensureEdgeCapacity(eIdx + 1);
 		setEdgeSource(eIdx, source);
 		setEdgeTarget(eIdx, target);
 		edgesUserIds[eIdx] = edge;
-		edgesUserWeights.ensureCapacity(edge + 1);
-		userProvideEdgesIds = true;
 	}
 
 	@Override
@@ -194,13 +183,12 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		edgesUserWeights.ensureCapacity(edgesNum);
 		if (edgesNum * 2 > endpoints.length)
 			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, edgesNum * 2)));
-		if (edgesNum > edgesUserIds.length)
+		if (edges.size > 0 && userProvideEdgesIds && edgesNum > edgesUserIds.length)
 			edgesUserIds = Arrays.copyOf(edgesUserIds, Math.max(2, Math.max(2 * edgesUserIds.length, edgesNum)));
 	}
 
 	@Override
 	public void clear() {
-		m = 0;
 		vertices.clear();
 		edges.clear();
 		edgesSetView = null;
@@ -243,6 +231,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			return;
 
 		/* Rearrange edges such that edgesUserIds[e]==e */
+		final int m = edges.size;
 		for (int startIdx = 0; startIdx < m; startIdx++) {
 			if (startIdx == edgesUserIds[startIdx])
 				continue;
@@ -347,7 +336,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	private class EdgesSetProvidedIdx extends AbstractIntSet {
 		@Override
 		public int size() {
-			return m;
+			return edges.size;
 		}
 
 		@Override
@@ -358,7 +347,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 				@Override
 				public boolean hasNext() {
-					return idx < m;
+					return idx < edges.size;
 				}
 
 				@Override
