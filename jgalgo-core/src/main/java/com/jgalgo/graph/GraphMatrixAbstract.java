@@ -62,15 +62,15 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 		}
 	}
 
-	GraphMatrixAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+	GraphMatrixAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl.Artifacts builder) {
 		super(capabilities, builder);
 
 		edgesContainer = newVerticesContainer(null, EmptyEdgesArr, newArr -> edges = newArr);
-		for (int n = builder.vertices().size(), u = 0; u < n; u++)
+		for (int n = builder.vertices.size(), u = 0; u < n; u++)
 			edges[u] = newVerticesIntContainer(EdgeNone, JGAlgoUtils.<int[]>consumerNoOp());
 
-		if (builder.isDirected()) {
-			for (int m = builder.edges().size(), e = 0; e < m; e++) {
+		if (builder.isDirected) {
+			for (int m = builder.edges.size(), e = 0; e < m; e++) {
 				int source = builder.edgeSource(e), target = builder.edgeTarget(e);
 				DataContainer.Int uEdges = edges[source];
 				int existingEdge = uEdges.data[target];
@@ -80,7 +80,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 			}
 
 		} else {
-			for (int m = builder.edges().size(), e = 0; e < m; e++) {
+			for (int m = builder.edges.size(), e = 0; e < m; e++) {
 				int source = builder.edgeSource(e), target = builder.edgeTarget(e);
 				DataContainer.Int uEdges = edges[source];
 				DataContainer.Int vEdges = edges[target];

@@ -84,16 +84,16 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract {
 		}
 	}
 
-	GraphHashmapMultiDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+	GraphHashmapMultiDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
 		super(capabilities(selfEdges), builder);
-		assert builder.isDirected();
+		assert builder.isDirected;
 
 		edgesOutContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
 		edgesInContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
 		edgesOutNumContainer = newVerticesIntContainer(0, newArr -> edgesOutNum = newArr);
 		edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);
 
-		for (int m = builder.edges().size(), e = 0; e < m; e++) {
+		for (int m = builder.edges.size(), e = 0; e < m; e++) {
 			int source = builder.edgeSource(e), target = builder.edgeTarget(e);
 			addEdgeToMaps(e, source, target);
 		}

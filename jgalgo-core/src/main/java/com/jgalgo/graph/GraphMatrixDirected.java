@@ -70,14 +70,14 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 		}
 	}
 
-	GraphMatrixDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+	GraphMatrixDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
 		super(capabilities(selfEdges), builder);
-		assert builder.isDirected();
+		assert builder.isDirected;
 
 		edgesOutNumContainer = newVerticesIntContainer(0, newArr -> edgesOutNum = newArr);
 		edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);
 
-		for (int m = builder.edges().size(), e = 0; e < m; e++) {
+		for (int m = builder.edges.size(), e = 0; e < m; e++) {
 			edgesOutNum[builder.edgeSource(e)]++;
 			edgesInNum[builder.edgeTarget(e)]++;
 		}

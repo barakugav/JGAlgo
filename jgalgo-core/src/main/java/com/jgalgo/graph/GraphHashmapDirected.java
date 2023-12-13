@@ -86,14 +86,14 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		}
 	}
 
-	GraphHashmapDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+	GraphHashmapDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
 		super(capabilities(selfEdges), builder);
-		assert builder.isDirected();
+		assert builder.isDirected;
 
 		edgesOutContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
 		edgesInContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
 
-		for (int m = builder.edges().size(), e = 0; e < m; e++) {
+		for (int m = builder.edges.size(), e = 0; e < m; e++) {
 			int source = builder.edgeSource(e), target = builder.edgeTarget(e);
 			int oldVal1 = ensureEdgesMapMutable(edgesOut, source).put(target, e);
 			int oldVal2 = ensureEdgesMapMutable(edgesIn, target).put(source, e);

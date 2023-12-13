@@ -187,10 +187,10 @@ public class GraphLinkedPtrTest extends TestBase {
 		final long seed = 0xcc8121b9ca48ddd1L;
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testBuilderConstructor(builder -> {
-				if (builder.isDirected()) {
-					return new GraphLinkedPtrDirected(selfEdges, (IndexGraphBuilderImpl) builder);
+				if (builder.isDirected) {
+					return new GraphLinkedPtrDirected(selfEdges, builder);
 				} else {
-					return new GraphLinkedPtrUndirected(selfEdges, (IndexGraphBuilderImpl) builder);
+					return new GraphLinkedPtrUndirected(selfEdges, builder);
 				}
 			}, seed);
 		});

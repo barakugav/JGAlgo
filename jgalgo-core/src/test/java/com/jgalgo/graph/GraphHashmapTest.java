@@ -187,10 +187,10 @@ public class GraphHashmapTest extends TestBase {
 		final long seed = 0x5b8c06921e025dabL;
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testBuilderConstructor(builder -> {
-				if (builder.isDirected()) {
-					return new GraphHashmapDirected(selfEdges, (IndexGraphBuilderImpl) builder);
+				if (builder.isDirected) {
+					return new GraphHashmapDirected(selfEdges, builder);
 				} else {
-					return new GraphHashmapUndirected(selfEdges, (IndexGraphBuilderImpl) builder);
+					return new GraphHashmapUndirected(selfEdges, builder);
 				}
 			}, seed);
 		});

@@ -30,7 +30,7 @@ abstract class GraphArrayAbstract extends GraphBaseMutable {
 		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
 	}
 
-	GraphArrayAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+	GraphArrayAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl.Artifacts builder) {
 		super(capabilities, builder);
 	}
 

@@ -21,11 +21,12 @@ abstract class GraphCsrAbstractUnindexed extends GraphCsrBase {
 
 	final int[] edgesOut;
 
-	GraphCsrAbstractUnindexed(boolean directed, IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges) {
+	GraphCsrAbstractUnindexed(boolean directed, IndexGraphBuilderImpl.Artifacts builder,
+			BuilderProcessEdges processEdges) {
 		super(directed, Variant.Of2.withB(builder), processEdges, null, true, true);
 		edgesOut = processEdges.edgesOut;
 
-		for (int m = builder.edges().size(), e = 0; e < m; e++)
+		for (int m = builder.edges.size(), e = 0; e < m; e++)
 			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
 	}
 

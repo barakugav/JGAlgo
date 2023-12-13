@@ -71,16 +71,16 @@ class GraphLinkedPtrDirected extends GraphLinkedPtrAbstract {
 			addEdgeToLists(getEdge(e));
 	}
 
-	GraphLinkedPtrDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+	GraphLinkedPtrDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
 		super(capabilities(selfEdges), builder);
-		assert builder.isDirected();
+		assert builder.isDirected;
 
 		edgesOutContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edgesIn = newArr);
 		edgesInContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edgesOut = newArr);
 		edgesOutNumContainer = newVerticesIntContainer(0, newArr -> edgesOutNum = newArr);
 		edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);
 
-		final int m = builder.edges().size();
+		final int m = builder.edges.size();
 		for (int e = 0; e < m; e++)
 			addEdgeToLists(getEdge(e));
 	}

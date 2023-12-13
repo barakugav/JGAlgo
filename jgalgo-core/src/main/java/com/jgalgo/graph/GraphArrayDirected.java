@@ -110,9 +110,9 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		}
 	}
 
-	GraphArrayDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+	GraphArrayDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
 		super(capabilities(selfEdges), builder);
-		assert builder.isDirected();
+		assert builder.isDirected;
 
 		edgesOutContainer =
 				newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edgesOut = newArr);
@@ -121,7 +121,7 @@ class GraphArrayDirected extends GraphArrayAbstract {
 				newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edgesIn = newArr);
 		edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);
 
-		for (int m = builder.edges().size(), e = 0; e < m; e++) {
+		for (int m = builder.edges.size(), e = 0; e < m; e++) {
 			addEdgeToList(edgesOut, edgesOutNum, builder.edgeSource(e), e);
 			addEdgeToList(edgesIn, edgesInNum, builder.edgeTarget(e), e);
 		}

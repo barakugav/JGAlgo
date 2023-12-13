@@ -69,13 +69,13 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		}
 	}
 
-	GraphHashmapUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+	GraphHashmapUndirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
 		super(capabilities(selfEdges), builder);
-		assert !builder.isDirected();
+		assert !builder.isDirected;
 
 		edgesContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edges = newArr);
 
-		for (int m = builder.edges().size(), e = 0; e < m; e++) {
+		for (int m = builder.edges.size(), e = 0; e < m; e++) {
 			int source = builder.edgeSource(e), target = builder.edgeTarget(e);
 			int oldVal1 = ensureEdgesMapMutable(edges, source).put(target, e);
 			int oldVal2 = ensureEdgesMapMutable(edges, target).put(source, e);

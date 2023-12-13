@@ -82,9 +82,9 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 			addEdgeToLists(e);
 	}
 
-	GraphLinkedUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+	GraphLinkedUndirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
 		super(capabilities(selfEdges), builder);
-		assert !builder.isDirected();
+		assert !builder.isDirected;
 
 		edgesHeadContainer = newVerticesIntContainer(-1, newArr -> edgesHead = newArr);
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
@@ -94,7 +94,7 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		nextvContainer = newEdgesIntContainer(-1, newArr -> nextv = newArr);
 		prevvContainer = newEdgesIntContainer(-1, newArr -> prevv = newArr);
 
-		final int m = builder.edges().size();
+		final int m = builder.edges.size();
 		for (int e = 0; e < m; e++)
 			addEdgeToLists(e);
 	}

@@ -61,10 +61,8 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		edges = GraphElementSet.Mutable.ofEdges(m);
 
 		endpoints = new int[m * 2];
-		for (int e = 0; e < m; e++) {
-			setEdgeSource(e, g.edgeSource(e));
-			setEdgeTarget(e, g.edgeTarget(e));
-		}
+		for (int e = 0; e < m; e++)
+			setEdgeEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), false);
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), true);
@@ -149,8 +147,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			throw NoSuchVertexException.ofIndex(target);
 		int e = edges.add();
 		ensureEdgeCapacity(e + 1);
-		setEdgeSource(e, source);
-		setEdgeTarget(e, target);
+		setEdgeEndpoints(e, source, target);
 		return e;
 	}
 
@@ -168,8 +165,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		userProvideEdgesIds = true;
 		int eIdx = edges.add();
 		ensureEdgeCapacity(eIdx + 1);
-		setEdgeSource(eIdx, source);
-		setEdgeTarget(eIdx, target);
+		setEdgeEndpoints(eIdx, source, target);
 		edgesUserIds[eIdx] = edge;
 	}
 
@@ -202,19 +198,8 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		return directed;
 	}
 
-	int edgeSource(int e) {
-		return endpoints[edgeSourceIndex(e)];
-	}
-
-	int edgeTarget(int e) {
-		return endpoints[edgeTargetIndex(e)];
-	}
-
-	private void setEdgeSource(int e, int source) {
+	private void setEdgeEndpoints(int e, int source, int target) {
 		endpoints[edgeSourceIndex(e)] = source;
-	}
-
-	private void setEdgeTarget(int e, int target) {
 		endpoints[edgeTargetIndex(e)] = target;
 	}
 
@@ -238,25 +223,24 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			int e = edgesUserIds[startIdx];
 			if (e >= m)
 				throw new IllegalArgumentException("Edges IDs should be 0,1,2,...,m-1. id >= m: " + e + " >= " + m);
-			int u = edgeSource(startIdx), v = edgeTarget(startIdx);
+			int u = endpoints[edgeSourceIndex(startIdx)];
+			int v = endpoints[edgeTargetIndex(startIdx)];
 			edgesUserIds[startIdx] = -1;
 			for (;;) {
 				int nextE = edgesUserIds[e];
 				if (nextE == -1) {
 					/* we completed a cycle */
 					edgesUserIds[e] = e;
-					setEdgeSource(e, u);
-					setEdgeTarget(e, v);
+					setEdgeEndpoints(e, u, v);
 					break;
 				} else if (nextE == e)
 					throw new IllegalArgumentException("duplicate edge id: " + e);
 				if (nextE >= m)
 					throw new IllegalArgumentException(
 							"Edges IDs should be 0,1,2,...,m-1. id >= m: " + nextE + " >= " + m);
-				int nextU = edgeSource(e);
-				int nextV = edgeTarget(e);
-				setEdgeSource(e, u);
-				setEdgeTarget(e, v);
+				int nextU = endpoints[edgeSourceIndex(e)];
+				int nextV = endpoints[edgeTargetIndex(e)];
+				setEdgeEndpoints(e, u, v);
 				edgesUserIds[e] = e;
 				u = nextU;
 				v = nextV;
@@ -269,20 +253,20 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	@Override
 	public IndexGraph build() {
 		validateUserProvidedIdsBeforeBuild();
-		return immutableImpl.newFromBuilder(this);
+		return immutableImpl.newFromBuilder(new IndexGraphBuilderImpl.Artifacts(this));
 	}
 
 	@Override
 	public IndexGraph buildMutable() {
 		validateUserProvidedIdsBeforeBuild();
-		return mutableImpl.newFromBuilder(this);
+		return mutableImpl.newFromBuilder(new IndexGraphBuilderImpl.Artifacts(this));
 	}
 
 	@Override
 	public IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges) {
 		if (directed && reIndexEdges) {
 			validateUserProvidedIdsBeforeBuild();
-			return GraphCsrDirectedReindexed.newInstance(this);
+			return GraphCsrDirectedReindexed.newInstance(new IndexGraphBuilderImpl.Artifacts(this));
 		} else {
 			return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());
 		}
@@ -357,6 +341,33 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 				}
 
 			};
+		}
+	}
+
+	static class Artifacts {
+
+		final boolean isDirected;
+		final GraphElementSet.Mutable vertices;
+		final GraphElementSet.Mutable edges;
+		private final int[] endpoints;
+		final WeightsImpl.IndexMutable.Manager verticesUserWeights;
+		final WeightsImpl.IndexMutable.Manager edgesUserWeights;
+
+		Artifacts(IndexGraphBuilderImpl builder) {
+			isDirected = builder.directed;
+			vertices = builder.vertices;
+			edges = builder.edges;
+			endpoints = builder.endpoints;
+			verticesUserWeights = builder.verticesUserWeights;
+			edgesUserWeights = builder.edgesUserWeights;
+		}
+
+		int edgeSource(int edge) {
+			return endpoints[edgeSourceIndex(edge)];
+		}
+
+		int edgeTarget(int edge) {
+			return endpoints[edgeTargetIndex(edge)];
 		}
 	}
 

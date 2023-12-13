@@ -90,9 +90,9 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 			addEdgeToLists(e);
 	}
 
-	GraphLinkedDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+	GraphLinkedDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
 		super(capabilities(selfEdges), builder);
-		assert builder.isDirected();
+		assert builder.isDirected;
 
 		edgesHeadOutContainer = newVerticesIntContainer(-1, newArr -> edgesOutHead = newArr);
 		edgesHeadInContainer = newVerticesIntContainer(-1, newArr -> edgesInHead = newArr);
@@ -104,7 +104,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		edgePrevOutContainer = newEdgesIntContainer(-1, newArr -> edgePrevOut = newArr);
 		edgePrevInContainer = newEdgesIntContainer(-1, newArr -> edgePrevIn = newArr);
 
-		final int m = builder.edges().size();
+		final int m = builder.edges.size();
 		for (int e = 0; e < m; e++)
 			addEdgeToLists(e);
 	}

@@ -37,7 +37,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	private boolean containsParallelEdges;
 	private boolean containsParallelEdgesValid;
 
-	GraphCsrBase(boolean directed, Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
+	GraphCsrBase(boolean directed, Variant.Of2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder,
 			BuilderProcessEdges processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(directed, verticesNum(graphOrBuilder), edgesNum(graphOrBuilder), false);
@@ -56,7 +56,8 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 				for (String weightKey : g.getVerticesWeightsKeys())
 					verticesUserWeightsBuilder.copyAndAddWeights(weightKey, g.getVerticesIWeights(weightKey));
 			} else {
-				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();
+				IndexGraphBuilderImpl.Artifacts builder =
+						graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class).get();
 				for (String key : builder.verticesUserWeights.weightsKeys())
 					verticesUserWeightsBuilder.copyAndAddWeights(key, builder.verticesUserWeights.getWeights(key));
 			}
@@ -73,7 +74,8 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 								edgesReIndexing);
 				}
 			} else {
-				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();
+				IndexGraphBuilderImpl.Artifacts builder =
+						graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class).get();
 				if (edgesReIndexing == null) {
 					for (String key : builder.edgesUserWeights.weightsKeys())
 						edgesUserWeightsBuilder.copyAndAddWeights(key, builder.edgesUserWeights.getWeights(key));
@@ -325,7 +327,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 
 	static class BuilderProcessEdgesUndirected extends BuilderProcessEdges {
 
-		static BuilderProcessEdgesUndirected valueOf(IndexGraphBuilderImpl builder) {
+		static BuilderProcessEdgesUndirected valueOf(IndexGraphBuilderImpl.Artifacts builder) {
 			return new BuilderProcessEdgesUndirected(Variant.Of2.withB(builder));
 		}
 
@@ -333,7 +335,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			return new BuilderProcessEdgesUndirected(Variant.Of2.withA(g));
 		}
 
-		private BuilderProcessEdgesUndirected(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
+		private BuilderProcessEdgesUndirected(Variant.Of2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder) {
 			final int n = verticesNum(graphOrBuilder);
 			final int m = edgesNum(graphOrBuilder);
 
@@ -348,7 +350,8 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 						edgesOutBegin[v]++;
 				}
 			} else {
-				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();
+				IndexGraphBuilderImpl.Artifacts builder =
+						graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class).get();
 				for (int e = 0; e < m; e++) {
 					int u = builder.edgeSource(e), v = builder.edgeTarget(e);
 					edgesOutBegin[u]++;
@@ -387,7 +390,8 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 					}
 				}
 			} else {
-				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();
+				IndexGraphBuilderImpl.Artifacts builder =
+						graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class).get();
 				for (int e = 0; e < m; e++) {
 					int u = builder.edgeSource(e), v = builder.edgeTarget(e);
 					int uOutIdx = edgesOutBegin[u]++;
@@ -411,7 +415,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 		int[] edgesIn;
 		int[] edgesInBegin;
 
-		static BuilderProcessEdgesDirected valueOf(IndexGraphBuilderImpl builder) {
+		static BuilderProcessEdgesDirected valueOf(IndexGraphBuilderImpl.Artifacts builder) {
 			return new BuilderProcessEdgesDirected(Variant.Of2.withB(builder));
 		}
 
@@ -419,7 +423,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			return new BuilderProcessEdgesDirected(Variant.Of2.withA(g));
 		}
 
-		BuilderProcessEdgesDirected(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
+		BuilderProcessEdgesDirected(Variant.Of2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder) {
 			final int n = verticesNum(graphOrBuilder);
 			final int m = edgesNum(graphOrBuilder);
 
@@ -436,7 +440,8 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 					edgesInBegin[g.edgeTarget(e)]++;
 				}
 			} else {
-				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();
+				IndexGraphBuilderImpl.Artifacts builder =
+						graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class).get();
 				for (int e = 0; e < m; e++) {
 					edgesOutBegin[builder.edgeSource(e)]++;
 					edgesInBegin[builder.edgeTarget(e)]++;
@@ -471,7 +476,8 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 					edgesIn[vInIdx] = e;
 				}
 			} else {
-				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class).get();
+				IndexGraphBuilderImpl.Artifacts builder =
+						graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class).get();
 				for (int e = 0; e < m; e++) {
 					int uOutIdx = edgesOutBegin[builder.edgeSource(e)]++;
 					int vInIdx = edgesInBegin[builder.edgeTarget(e)]++;
@@ -490,14 +496,14 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 
 	}
 
-	static int verticesNum(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
+	static int verticesNum(Variant.Of2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder) {
 		return graphOrBuilder.contains(IndexGraph.class) ? graphOrBuilder.get(IndexGraph.class).get().vertices().size()
-				: graphOrBuilder.get(IndexGraphBuilderImpl.class).get().vertices().size();
+				: graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class).get().vertices.size();
 	}
 
-	static int edgesNum(Variant.Of2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
+	static int edgesNum(Variant.Of2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder) {
 		return graphOrBuilder.contains(IndexGraph.class) ? graphOrBuilder.get(IndexGraph.class).get().edges().size()
-				: graphOrBuilder.get(IndexGraphBuilderImpl.class).get().edges().size();
+				: graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class).get().edges.size();
 	}
 
 }
