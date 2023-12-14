@@ -63,16 +63,19 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * <p>
 	 * This function is similar to {@link #addVertex()}, but let the user to choose the the identifier of the new
 	 * vertex. Only one of {@link #addVertex()} and {@link #addVertex(int)} can be used during the construction of a
-	 * graph.
+	 * graph. Negative identifiers are not allowed.
 	 *
-	 * @param vertex the new vertex identifier
+	 * @param  vertex                   the new vertex identifier
+	 * @throws IllegalArgumentException if the given vertex is already in the graph or if it is negative
 	 */
 	void addVertex(int vertex);
 
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated Please use {@link #addVertex(int)} instead to avoid un/boxing.
+	 * @throws     IllegalArgumentException if the given vertex is negative or any of reasons specified in
+	 *                                          {@link GraphBuilder#addVertex(Object)}
+	 * @deprecated                          Please use {@link #addVertex(int)} instead to avoid un/boxing.
 	 */
 	@Deprecated
 	@Override
@@ -98,9 +101,15 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * a new edge and choose its identifier by using {@link #addEdge(int, int, int)}. Only one of
 	 * {@link #addEdge(int, int)} and {@link #addEdge(int, int, int)} can be used during the construction of a graph.
 	 *
-	 * @param  source the source vertex of the new edge
-	 * @param  target the target vertex of the new edge
-	 * @return        the new edge identifier
+	 * <p>
+	 * If the graph does not support self or parallel edges and the added edge is such edge, an exception will
+	 * <b>not</b> be thrown. The edges are validated only when the graph is built, and an exception will be thrown only
+	 * then.
+	 *
+	 * @param  source                the source vertex of the new edge
+	 * @param  target                the target vertex of the new edge
+	 * @return                       the new edge identifier
+	 * @throws NoSuchVertexException if {@code source} or {@code target} are not vertices in the graph
 	 */
 	int addEdge(int source, int target);
 
@@ -112,16 +121,26 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * edge. Only one of {@link #addEdge(int, int)} and {@link #addEdge(int, int, int)} can be used during the
 	 * construction of a graph.
 	 *
-	 * @param source the source vertex of the new edge
-	 * @param target the target vertex of the new edge
-	 * @param edge   the identifier of the new edge
+	 * <p>
+	 * If the graph does not support self or parallel edges and the added edge is such edge, an exception will
+	 * <b>not</b> be thrown. The edges are validated only when the graph is built, and an exception will be thrown only
+	 * then.
+	 *
+	 * @param  source                   the source vertex of the new edge
+	 * @param  target                   the target vertex of the new edge
+	 * @param  edge                     the identifier of the new edge
+	 * @throws IllegalArgumentException if {@code edge} is already in the graph or if if {@code edge} is negative, as
+	 *                                      negative identifiers are not allowed
+	 * @throws NoSuchVertexException    if {@code source} or {@code target} are not vertices in the graph
 	 */
 	void addEdge(int source, int target, int edge);
 
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @deprecated Please use {@link #addEdge(int, int, int)} instead to avoid un/boxing.
+	 * @throws     IllegalArgumentException if the given edge is negative or any of reasons specified in
+	 *                                          {@link GraphBuilder#addEdge(Object, Object, Object)}
+	 * @deprecated                          Please use {@link #addEdge(int, int, int)} instead to avoid un/boxing.
 	 */
 	@Deprecated
 	@Override
@@ -135,6 +154,9 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * <p>
 	 * Prefer to pass {@link IEdgeSet} instead of {@link EdgeSet}&lt;{@link Integer}, {@link Integer}&gt; as set of
 	 * edges. See {@link IEdgeSet#of(IntSet, IntGraph)}.
+	 *
+	 * @throws IllegalArgumentException if any of the given edges are negative or any of reasons specified in
+	 *                                      {@link GraphBuilder#addEdges(EdgeSet)}
 	 */
 	@Override
 	void addEdges(EdgeSet<? extends Integer, ? extends Integer> edges);

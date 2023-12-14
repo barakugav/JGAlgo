@@ -87,7 +87,12 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * It is possible to construct a graph by inserting the edges in a different order than their indices (IDs), by
 	 * using {@link #addEdge(int, int, int)} in which the ID of the inserted edge is specified along with the source and
 	 * target vertices. If this method is used, the set of edges will be validated when a new graph is created, and it
-	 * must be equal {@code 0,1,2,...,edgesNum-1}.
+	 * must be equal {@code 0,1,2,...,edgesNum-1}. But, it is not allowed to mix between the two methods, namely to use
+	 * {@link #addEdge(int, int)} (or {@link #addEdgesReassignIds(IEdgeSet)}) and {@link #addEdge(int, int, int)} (or
+	 * {@link #addEdges(EdgeSet)}) in the same builder without {@linkplain #clear() clearing} it.
+	 *
+	 * @throws IllegalStateException if {@link #addEdge(int, int, int)} (or {@link #addEdges(EdgeSet)}) was used to add
+	 *                                   edges to the builder without {@linkplain #clear() clearing} it.
 	 */
 	@Override
 	int addEdge(int source, int target);
@@ -98,7 +103,12 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * <p>
 	 * As the built graph is an Index graph, the edges must be {@code 0,1,2,...,edgesNum-1}. Nevertheless, the edges can
 	 * be added in any order to the graph as long they form a valid sequence of indices at the time of constructing the
-	 * graph.
+	 * graph. But, it is not allowed to mix between the two methods, namely to use {@link #addEdge(int, int)} (or
+	 * {@link #addEdgesReassignIds(IEdgeSet)}) and {@link #addEdge(int, int, int)} (or {@link #addEdges(EdgeSet)}) in
+	 * the same builder without {@linkplain #clear() clearing} it.
+	 *
+	 * @throws IllegalStateException if {@link #addEdge(int, int)} (or {@link #addEdgesReassignIds(IEdgeSet)}) was used
+	 *                                   to add edges to the builder without {@linkplain #clear() clearing} it.
 	 */
 	@Override
 	void addEdge(int source, int target, int edge);
@@ -109,7 +119,12 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * <p>
 	 * As the built graph is an Index graph, the edges must be {@code 0,1,2,...,edgesNum-1}. Nevertheless, the edges can
 	 * be added in any order to the graph as long they form a valid sequence of indices at the time of constructing the
-	 * graph.
+	 * graph. But, it is not allowed to mix between the two methods, namely to use {@link #addEdge(int, int)} (or
+	 * {@link #addEdgesReassignIds(IEdgeSet)}) and {@link #addEdge(int, int, int)} (or {@link #addEdges(EdgeSet)}) in
+	 * the same builder without {@linkplain #clear() clearing} it.
+	 *
+	 * @throws IllegalStateException if {@link #addEdge(int, int)} (or {@link #addEdgesReassignIds(IEdgeSet)}) was used
+	 *                                   to add edges to the builder without {@linkplain #clear() clearing} it.
 	 */
 	@Override
 	void addEdges(EdgeSet<? extends Integer, ? extends Integer> edges);
@@ -127,7 +142,10 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * <p>
 	 * The identifiers assigned to the newly added edges are {@code (edgesNum,edgesNum+1,edgesNum+2, ...)} matching the
 	 * iteration order of the provided set. This method different than {@link #addEdges(EdgeSet)} in a similar way that
-	 * {@link #addEdge(int, int)} is different than {@link #addEdge(int, int, int)}.
+	 * {@link #addEdge(int, int)} is different than {@link #addEdge(int, int, int)}. It is not allowed to mix between
+	 * the two methods, namely to use {@link #addEdge(int, int)} (or {@link #addEdgesReassignIds(IEdgeSet)}) and
+	 * {@link #addEdge(int, int, int)} (or {@link #addEdges(EdgeSet)}) in the same builder without {@linkplain #clear()
+	 * clearing} it.
 	 *
 	 * <p>
 	 * In the following snippet, a maximum cardinality matching is computed on a graph, and a new graph containing only
@@ -145,17 +163,41 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * IndexGraph matchingGraph = matchingGraphBuilder.build();
 	 * }</pre>
 	 *
-	 * @param  edges the set of edges to add. Only the endpoints of the edges is considered, while the edges identifiers
-	 *                   are ignored.
-	 * @return       the set of newly edge identifiers added to the graph,
-	 *               {@code (edgesNum,edgesNum+1,edgesNum+2, ...)}. The edges are assigned the indices in the order they
-	 *               are iterated in the given set
+	 * @param  edges                 the set of edges to add. Only the endpoints of the edges is considered, while the
+	 *                                   edges identifiers are ignored.
+	 * @return                       the set of newly edge identifiers added to the graph,
+	 *                               {@code (edgesNum,edgesNum+1,edgesNum+2, ...)}. The edges are assigned the indices
+	 *                               in the order they are iterated in the given set
+	 * @throws IllegalStateException if {@link #addEdge(int, int, int)} (or {@link #addEdges(EdgeSet)}) was used to add
+	 *                                   edges to the builder without {@linkplain #clear() clearing} it.
 	 */
 	IntSet addEdgesReassignIds(IEdgeSet edges);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * If edges were added to the builder using {@link #addEdge(int, int, int)} (or {@link #addEdges(EdgeSet)}), a
+	 * validation step is performed to ensure that the edges identifiers are {@code (0,1,2,...,edgesNum-1)}. If the
+	 * validation fails, an exception is thrown.
+	 *
+	 * @throws IllegalArgumentException if the edges in the builder are not {@code (0,1,2,...,edgesNum-1)} or any of the
+	 *                                      reasons described in {@link GraphBuilder#build()}
+	 */
 	@Override
 	IndexGraph build();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * If edges were added to the builder using {@link #addEdge(int, int, int)} (or {@link #addEdges(EdgeSet)}), a
+	 * validation step is performed to ensure that the edges identifiers are {@code (0,1,2,...,edgesNum-1)}. If the
+	 * validation fails, an exception is thrown.
+	 *
+	 * @throws IllegalArgumentException if the edges in the builder are not {@code (0,1,2,...,edgesNum-1)} or any of the
+	 *                                      reasons described in {@link GraphBuilder#buildMutable()}
+	 */
 	@Override
 	IndexGraph buildMutable();
 
@@ -172,16 +214,28 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * ({@code reIndexEdges}) is {@code true}, it is simply allowed to. Whether or not a re-indexing was performed can
 	 * be checked via the {@link ReIndexedGraph} return value.
 	 *
-	 * @param  reIndexVertices if {@code true}, the implementation is allowed to (note that it is not required) to
-	 *                             re-index the vertices of the graph. If {@code false}, the original vertices
-	 *                             identifiers are used. Whether or not re-indexing was performed can be checked via
-	 *                             {@link ReIndexedGraph#verticesReIndexing()}.
-	 * @param  reIndexEdges    if {@code true}, the implementation is allowed to (note that it is not required) to
-	 *                             re-index the edges of the graph. If {@code false}, the original edges identifiers are
-	 *                             used. Whether or not re-indexing was performed can be checked via
-	 *                             {@link ReIndexedGraph#edgesReIndexing()}.
-	 * @return                 the re-indexed immutable graph, along with the re-indexing mapping to the original
-	 *                         indices
+	 * <p>
+	 * Before the graph is built, the edges are validated. If the graph does not support self or parallel edges and such
+	 * edges were added to the builder, an exception will be thrown.
+	 *
+	 * <p>
+	 * If edges were added to the builder using {@link #addEdge(int, int, int)} (or {@link #addEdges(EdgeSet)}), a
+	 * validation step is performed to ensure that the edges identifiers are {@code (0,1,2,...,edgesNum-1)}. If the
+	 * validation fails, an exception is thrown.
+	 *
+	 * @param  reIndexVertices          if {@code true}, the implementation is allowed to (note that it is not required)
+	 *                                      to re-index the vertices of the graph. If {@code false}, the original
+	 *                                      vertices identifiers are used. Whether or not re-indexing was performed can
+	 *                                      be checked via {@link ReIndexedGraph#verticesReIndexing()}.
+	 * @param  reIndexEdges             if {@code true}, the implementation is allowed to (note that it is not required)
+	 *                                      to re-index the edges of the graph. If {@code false}, the original edges
+	 *                                      identifiers are used. Whether or not re-indexing was performed can be
+	 *                                      checked via {@link ReIndexedGraph#edgesReIndexing()}.
+	 * @return                          the re-indexed immutable graph, along with the re-indexing mapping to the
+	 *                                  original indices
+	 * @throws IllegalArgumentException if the edges in the builder are not {@code (0,1,2,...,edgesNum-1)} or if the
+	 *                                      built graph does not support self or parallel edges and such edges were
+	 *                                      added to the builder
 	 */
 	IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges);
 
@@ -198,15 +252,28 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * ({@code reIndexEdges}) is {@code true}, it is simply allowed to. Whether or not a re-indexing was performed can
 	 * be checked via the {@link ReIndexedGraph} return value.
 	 *
-	 * @param  reIndexVertices if {@code true}, the implementation is allowed to (note that it is not required) to
-	 *                             re-index the vertices of the graph. If {@code false}, the original vertices
-	 *                             identifiers are used. Whether or not re-indexing was performed can be checked via
-	 *                             {@link ReIndexedGraph#verticesReIndexing()}.
-	 * @param  reIndexEdges    if {@code true}, the implementation is allowed to (note that it is not required) to
-	 *                             re-index the edges of the graph. If {@code false}, the original edges identifiers are
-	 *                             used. Whether or not re-indexing was performed can be checked via
-	 *                             {@link ReIndexedGraph#edgesReIndexing()}.
-	 * @return                 the re-indexed mutable graph, along with the re-indexing mapping to the original indices
+	 * <p>
+	 * Before the graph is built, the edges are validated. If the graph does not support self or parallel edges and such
+	 * edges were added to the builder, an exception will be thrown.
+	 *
+	 * <p>
+	 * If edges were added to the builder using {@link #addEdge(int, int, int)} (or {@link #addEdges(EdgeSet)}), a
+	 * validation step is performed to ensure that the edges identifiers are {@code (0,1,2,...,edgesNum-1)}. If the
+	 * validation fails, an exception is thrown.
+	 *
+	 * @param  reIndexVertices          if {@code true}, the implementation is allowed to (note that it is not required)
+	 *                                      to re-index the vertices of the graph. If {@code false}, the original
+	 *                                      vertices identifiers are used. Whether or not re-indexing was performed can
+	 *                                      be checked via {@link ReIndexedGraph#verticesReIndexing()}.
+	 * @param  reIndexEdges             if {@code true}, the implementation is allowed to (note that it is not required)
+	 *                                      to re-index the edges of the graph. If {@code false}, the original edges
+	 *                                      identifiers are used. Whether or not re-indexing was performed can be
+	 *                                      checked via {@link ReIndexedGraph#edgesReIndexing()}.
+	 * @return                          the re-indexed mutable graph, along with the re-indexing mapping to the original
+	 *                                  indices
+	 * @throws IllegalArgumentException if the edges in the builder are not {@code (0,1,2,...,edgesNum-1)} or if the
+	 *                                      built graph does not support self or parallel edges and such edges were
+	 *                                      added to the builder
 	 */
 	IndexGraphBuilder.ReIndexedGraph reIndexAndBuildMutable(boolean reIndexVertices, boolean reIndexEdges);
 

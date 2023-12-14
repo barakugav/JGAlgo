@@ -79,9 +79,17 @@ public interface GraphBuilder<V, E> {
 	/**
 	 * Add a new edge to the graph.
 	 *
-	 * @param source the source vertex of the new edge
-	 * @param target the target vertex of the new edge
-	 * @param edge   the new edge
+	 * <p>
+	 * If the graph does not support self or parallel edges and the added edge is such edge, an exception will
+	 * <b>not</b> be thrown. The edges are validated only when the graph is built, and an exception will be thrown only
+	 * then.
+	 *
+	 * @param  source                   the source vertex of the new edge
+	 * @param  target                   the target vertex of the new edge
+	 * @param  edge                     the new edge
+	 * @throws IllegalArgumentException if {@code edge} is already in the graph
+	 * @throws NullPointerException     if {@code edge} is {@code null}, as {@code null} identifiers are not allowed
+	 * @throws NoSuchVertexException    if {@code source} or {@code target} are not vertices in the graph
 	 */
 	void addEdge(V source, V target, E edge);
 
@@ -276,14 +284,27 @@ public interface GraphBuilder<V, E> {
 	/**
 	 * Build a new immutable graph with the builder vertices and edges.
 	 *
-	 * @return a new immutable graph with the vertices and edges that were added to the builder.
+	 * <p>
+	 * Before the graph is built, the edges are validated. If the graph does not support self or parallel edges and such
+	 * edges were added to the builder, an exception will be thrown.
+	 *
+	 * @return                          a new immutable graph with the vertices and edges that were added to the
+	 *                                  builder.
+	 * @throws IllegalArgumentException if the built graph does not support self or parallel edges and such edges were
+	 *                                      added to the builder
 	 */
 	Graph<V, E> build();
 
 	/**
 	 * Build a new mutable graph with the builder vertices and edges.
 	 *
-	 * @return a new mutable graph with the vertices and edges that were added to the builder.
+	 * <p>
+	 * Before the graph is built, the edges are validated. If the graph does not support self or parallel edges and such
+	 * edges were added to the builder, an exception will be thrown.
+	 *
+	 * @return                          a new mutable graph with the vertices and edges that were added to the builder.
+	 * @throws IllegalArgumentException if the built graph does not support self or parallel edges and such edges were
+	 *                                      added to the builder
 	 */
 	Graph<V, E> buildMutable();
 
