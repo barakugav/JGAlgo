@@ -53,6 +53,35 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	@Override
 	IndexGraphBuilder newBuilder();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * The given graph vertices and edges must be {@code 0,1,2,...,verticesNum-1} and {@code 0,1,2,...,edgesNum-1}
+	 * respectively.
+	 *
+	 * @throws IllegalArgumentException if the vertices are not {@code 0,1,2,...,verticesNum-1} or if the edges are not
+	 *                                      {@code 0,1,2,...,edgesNum-1}
+	 */
+	@Override
+	default IndexGraphBuilder newBuilderCopyOf(Graph<Integer, Integer> g) {
+		return (IndexGraphBuilder) IntGraphFactory.super.newBuilderCopyOf(g);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * The given graph vertices and edges must be {@code 0,1,2,...,verticesNum-1} and {@code 0,1,2,...,edgesNum-1}
+	 * respectively.
+	 *
+	 * @throws IllegalArgumentException if the vertices are not {@code 0,1,2,...,verticesNum-1} or if the edges are not
+	 *                                      {@code 0,1,2,...,edgesNum-1}
+	 */
+	@Override
+	IndexGraphBuilder newBuilderCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights);
+
 	@Override
 	default IndexGraphFactory allowSelfEdges() {
 		return (IndexGraphFactory) IntGraphFactory.super.allowSelfEdges();

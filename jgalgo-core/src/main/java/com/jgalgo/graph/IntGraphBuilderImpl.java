@@ -40,8 +40,9 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		eiMap = IndexIntIdMapImpl.newEmpty(ibuilder.edges(), true, 0);
 	}
 
-	IntGraphBuilderImpl(IntGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		this.ibuilder = IndexGraphBuilder.fromGraph(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
+	IntGraphBuilderImpl(IndexGraphFactory indexFactory, Graph<Integer, Integer> g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
+		this.ibuilder = indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
 		viMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), null, ibuilder.vertices(), false, false);
 		eiMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), null, ibuilder.edges(), true, false);
 	}

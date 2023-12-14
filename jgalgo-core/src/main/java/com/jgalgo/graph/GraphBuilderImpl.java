@@ -36,8 +36,9 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 		eiMap = IndexIdMapImpl.newEmpty(ibuilder.edges(), true, 0);
 	}
 
-	GraphBuilderImpl(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		this.ibuilder = IndexGraphBuilder.fromGraph(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
+	GraphBuilderImpl(IndexGraphFactory indexFactory, Graph<V, E> g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
+		this.ibuilder = indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
 		viMap = IndexIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), null, ibuilder.vertices(), false, false);
 		eiMap = IndexIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), null, ibuilder.edges(), true, false);
 	}

@@ -16,6 +16,7 @@
 package com.jgalgo.graph;
 
 import java.util.Arrays;
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -111,7 +112,7 @@ interface WeightsImpl {
 			return container0;
 		}
 
-		static WeightsImpl.IndexMutable<?> copyOf(IWeights<?> weights, IntSet elements, boolean isEdges) {
+		static WeightsImpl.IndexMutable<?> copyOf(Weights<Integer, ?> weights, IntSet elements, boolean isEdges) {
 			if (weights instanceof WeightsImpl.IntImmutableView<?>)
 				weights = ((WeightsImpl.IntImmutableView<?>) weights).weights();
 			if (weights instanceof WeightsImplByte.IndexImpl) {
@@ -132,8 +133,82 @@ interface WeightsImpl {
 				return new WeightsImplChar.IndexMutable((WeightsImplChar.IndexImpl) weights, elements, isEdges);
 			} else if (weights instanceof WeightsImplObj.IndexImpl) {
 				return new WeightsImplObj.IndexMutable<>((WeightsImplObj.IndexImpl<?>) weights, elements, isEdges);
+			}
+
+			/* not an index weights or unknown implementation */
+			assert range(elements.size()).equals(elements);
+			if (weights instanceof WeightsByte) {
+				@SuppressWarnings("unchecked")
+				WeightsByte<Integer> weightsByte = (WeightsByte<Integer>) weights;
+				WeightsImplByte.IndexMutable newWeights =
+						new WeightsImplByte.IndexMutable(elements, isEdges, weightsByte.defaultWeight());
+				for (int elm : range(elements.size()))
+					newWeights.set(elm, weightsByte.get(Integer.valueOf(elm)));
+				return newWeights;
+			} else if (weights instanceof WeightsShort) {
+				@SuppressWarnings("unchecked")
+				WeightsShort<Integer> weightsShort = (WeightsShort<Integer>) weights;
+				WeightsImplShort.IndexMutable newWeights =
+						new WeightsImplShort.IndexMutable(elements, isEdges, weightsShort.defaultWeight());
+				for (int elm : range(elements.size()))
+					newWeights.set(elm, weightsShort.get(Integer.valueOf(elm)));
+				return newWeights;
+			} else if (weights instanceof WeightsInt) {
+				@SuppressWarnings("unchecked")
+				WeightsInt<Integer> weightsInt = (WeightsInt<Integer>) weights;
+				WeightsImplInt.IndexMutable newWeights =
+						new WeightsImplInt.IndexMutable(elements, isEdges, weightsInt.defaultWeight());
+				for (int elm : range(elements.size()))
+					newWeights.set(elm, weightsInt.get(Integer.valueOf(elm)));
+				return newWeights;
+			} else if (weights instanceof WeightsLong) {
+				@SuppressWarnings("unchecked")
+				WeightsLong<Integer> weightsLong = (WeightsLong<Integer>) weights;
+				WeightsImplLong.IndexMutable newWeights =
+						new WeightsImplLong.IndexMutable(elements, isEdges, weightsLong.defaultWeight());
+				for (int elm : range(elements.size()))
+					newWeights.set(elm, weightsLong.get(Integer.valueOf(elm)));
+				return newWeights;
+			} else if (weights instanceof WeightsFloat) {
+				@SuppressWarnings("unchecked")
+				WeightsFloat<Integer> weightsFloat = (WeightsFloat<Integer>) weights;
+				WeightsImplFloat.IndexMutable newWeights =
+						new WeightsImplFloat.IndexMutable(elements, isEdges, weightsFloat.defaultWeight());
+				for (int elm : range(elements.size()))
+					newWeights.set(elm, weightsFloat.get(Integer.valueOf(elm)));
+				return newWeights;
+			} else if (weights instanceof WeightsDouble) {
+				@SuppressWarnings("unchecked")
+				WeightsDouble<Integer> weightsDouble = (WeightsDouble<Integer>) weights;
+				WeightsImplDouble.IndexMutable newWeights =
+						new WeightsImplDouble.IndexMutable(elements, isEdges, weightsDouble.defaultWeight());
+				for (int elm : range(elements.size()))
+					newWeights.set(elm, weightsDouble.get(Integer.valueOf(elm)));
+				return newWeights;
+			} else if (weights instanceof WeightsBool) {
+				@SuppressWarnings("unchecked")
+				WeightsBool<Integer> weightsBool = (WeightsBool<Integer>) weights;
+				WeightsImplBool.IndexMutable newWeights =
+						new WeightsImplBool.IndexMutable(elements, isEdges, weightsBool.defaultWeight());
+				for (int elm : range(elements.size()))
+					newWeights.set(elm, weightsBool.get(Integer.valueOf(elm)));
+				return newWeights;
+			} else if (weights instanceof WeightsChar) {
+				@SuppressWarnings("unchecked")
+				WeightsChar<Integer> weightsChar = (WeightsChar<Integer>) weights;
+				WeightsImplChar.IndexMutable newWeights =
+						new WeightsImplChar.IndexMutable(elements, isEdges, weightsChar.defaultWeight());
+				for (int elm : range(elements.size()))
+					newWeights.set(elm, weightsChar.get(Integer.valueOf(elm)));
+				return newWeights;
 			} else {
-				throw new IllegalArgumentException("unknown weights implementation: " + weights.getClass());
+				@SuppressWarnings("unchecked")
+				WeightsObj<Integer, Object> weightsObj = (WeightsObj<Integer, Object>) weights;
+				WeightsImplObj.IndexMutable<Object> newWeights =
+						new WeightsImplObj.IndexMutable<>(elements, isEdges, weightsObj.defaultWeight());
+				for (int elm : range(elements.size()))
+					newWeights.set(elm, weightsObj.get(Integer.valueOf(elm)));
+				return newWeights;
 			}
 		}
 

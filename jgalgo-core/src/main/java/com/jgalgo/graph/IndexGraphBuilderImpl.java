@@ -52,29 +52,48 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		setDefaultImpls();
 	}
 
-	IndexGraphBuilderImpl(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+	IndexGraphBuilderImpl(Graph<Integer, Integer> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		this.directed = g.isDirected();
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
+
+		if (!(g instanceof IndexGraph)) {
+			if (!range(n).equals(g.vertices()))
+				throw new IllegalArgumentException("vertices must be 0,1,2,...,n-1 but was " + g.vertices());
+			if (!range(m).equals(g.edges()))
+				throw new IllegalArgumentException("edges must be 0,1,2,...,m-1 but was " + g.edges());
+		}
 
 		vertices = GraphElementSet.Mutable.ofVertices(n);
 		edges = GraphElementSet.Mutable.ofEdges(m);
 
 		endpoints = new int[m * 2];
-		for (int e = 0; e < m; e++)
-			setEdgeEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
+
+		if (g instanceof IntGraph) {
+			IntGraph g0 = (IntGraph) g;
+			for (int e = 0; e < m; e++) {
+				int u = g0.edgeSource(e);
+				int v = g0.edgeTarget(e);
+				setEdgeEndpoints(e, u, v);
+			}
+		} else {
+			for (int e = 0; e < m; e++) {
+				Integer e0 = Integer.valueOf(e);
+				int u = g.edgeSource(e0).intValue();
+				int v = g.edgeTarget(e0).intValue();
+				setEdgeEndpoints(e, u, v);
+			}
+		}
 
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), false);
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), true);
-		if (copyVerticesWeights) {
+		if (copyVerticesWeights)
 			for (String key : g.getVerticesWeightsKeys())
 				verticesUserWeights.addWeights(key,
-						WeightsImpl.IndexMutable.copyOf(g.getVerticesIWeights(key), vertices, false));
-		}
-		if (copyEdgesWeights) {
+						WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), vertices, false));
+		if (copyEdgesWeights)
 			for (String key : g.getEdgesWeightsKeys())
-				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesIWeights(key), edges, true));
-		}
+				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edges, true));
 
 		setDefaultImpls();
 	}

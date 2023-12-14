@@ -681,7 +681,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	@Override
 	default IntGraph immutableCopy() {
-		return IntGraphBuilder.fromGraph(this).build();
+		return IntGraphBuilder.newCopyOf(this).build();
 	}
 
 	@Override

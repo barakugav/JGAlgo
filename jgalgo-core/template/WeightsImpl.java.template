@@ -34,6 +34,10 @@ class WEIGHTS_IMPL {
 
 			weights = FASTUTIL_TYPEArrays.EMPTY_ARRAY;
 			defaultWeight = defVal;
+			if (!elements.isEmpty()) {
+				weights = Arrays.copyOf(weights, elements.size());
+				Arrays.fill(weights, defaultWeight);
+			}
 		}
 
 		IndexImpl(WEIGHTS_IMPL.IndexImpl TYPE_GENERIC orig, IntSet elements, boolean isEdges) {

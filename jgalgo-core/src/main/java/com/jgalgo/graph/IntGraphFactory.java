@@ -54,6 +54,14 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	IntGraphBuilder newBuilder();
 
 	@Override
+	default IntGraphBuilder newBuilderCopyOf(Graph<Integer, Integer> g) {
+		return (IntGraphBuilder) GraphFactory.super.newBuilderCopyOf(g);
+	}
+
+	@Override
+	IntGraphBuilder newBuilderCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights, boolean copyEdgesWeights);
+
+	@Override
 	default IntGraphFactory allowSelfEdges() {
 		return (IntGraphFactory) GraphFactory.super.allowSelfEdges();
 	}

@@ -28,6 +28,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * is required to create immutable graphs, but can also be used to build mutable graph and may gain a performance boost
  * compared to creating an empty graph and adding the same vertices and edges.
  *
+ * <p>
+ * To create a new builder, use one of the static methods {@link #undirected()}, {@link #directed()} or
+ * {@link #newInstance(boolean)}. For more options, create a new {@link IndexGraphFactory} and use
+ * {@link IndexGraphFactory#newBuilder()}, or use {@link IndexGraphFactory#newBuilderCopyOf(Graph)} to create a builder
+ * initialized with an existing graph vertices and edges.
+ *
+ * <p>
+ * This interface is a specific version of {@link IntGraphBuilder} for {@link IndexGraph}.
+ *
  * @see    IndexGraphBuilder#undirected()
  * @see    IndexGraphBuilder#directed()
  * @see    IntGraphBuilder
@@ -377,6 +386,10 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * they will not support self edges and will support parallel edges. See the factory documentation for more
 	 * information.
 	 *
+	 * <p>
+	 * For more options to instantiate a builder, create a new {@link IndexGraphFactory} and use one of its
+	 * {@code newBuilder} methods.
+	 *
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IndexGraphBuilder undirected() {
@@ -390,6 +403,10 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * The graphs built by this builder will have the same default capabilities as {@link IndexGraphFactory}, namely
 	 * they will not support self edges and will support parallel edges. See the factory documentation for more
 	 * information.
+	 *
+	 * <p>
+	 * For more options to instantiate a builder, create a new {@link IndexGraphFactory} and use one of its
+	 * {@code newBuilder} methods.
 	 *
 	 * @return a new empty builder for directed graphs
 	 */
@@ -405,6 +422,10 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * they will not support self edges and will support parallel edges. See the factory documentation for more
 	 * information.
 	 *
+	 * <p>
+	 * For more options to instantiate a builder, create a new {@link IndexGraphFactory} and use one of its
+	 * {@code newBuilder} methods.
+	 *
 	 * @param  directed if {@code true}, the new builder will build directed graphs, otherwise it will build undirected
 	 *                      graphs
 	 * @return          a new empty builder for un/directed graphs
@@ -419,12 +440,16 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * <p>
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
+	 * <p>
+	 * For more options to instantiate a builder, create a new {@link IndexGraphFactory} and use one of its
+	 * {@code newBuilder} methods.
+	 *
 	 * @param  g a graph
 	 * @return   a builder initialized with the given graph vertices and edges, without the original graph
 	 *           vertices/edges weights.
 	 */
-	static IndexGraphBuilder fromGraph(IndexGraph g) {
-		return fromGraph(g, false, false);
+	static IndexGraphBuilder newCopyOf(IndexGraph g) {
+		return newCopyOf(g, false, false);
 	}
 
 	/**
@@ -432,6 +457,10 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *
 	 * <p>
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
+	 *
+	 * <p>
+	 * For more options to instantiate a builder, create a new {@link IndexGraphFactory} and use one of its
+	 * {@code newBuilder} methods.
 	 *
 	 * @param  g                   a graph
 	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied from the graph to the
@@ -441,8 +470,8 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return                     a builder initialized with the given graph vertices and edges, with/without the
 	 *                             original graph vertices/edges weights.
 	 */
-	static IndexGraphBuilder fromGraph(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		return new IndexGraphBuilderImpl(g, copyVerticesWeights, copyEdgesWeights);
+	static IndexGraphBuilder newCopyOf(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		return IndexGraphFactory.newInstance(g.isDirected()).newBuilderCopyOf(g, copyVerticesWeights, copyEdgesWeights);
 	}
 
 }

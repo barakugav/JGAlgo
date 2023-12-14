@@ -49,17 +49,17 @@ public class GraphBuilderTest extends TestBase {
 	}
 
 	@Test
-	public void fromGraph() {
+	public void newCopyOf() {
 		foreachBoolConfig(directed -> {
 			Graph<Integer, Integer> g = createGraph(directed);
 
 			/* With weights */
-			GraphBuilder<Integer, Integer> b2 = GraphBuilder.fromGraph(g, true, true);
+			GraphBuilder<Integer, Integer> b2 = GraphBuilder.newCopyOf(g, true, true);
 			assertEqualsBool(directed, b2.isDirected());
 			assertEquals(g, b2.build());
 
 			/* Without weights */
-			GraphBuilder<Integer, Integer> b1 = GraphBuilder.fromGraph(g);
+			GraphBuilder<Integer, Integer> b1 = GraphBuilder.newCopyOf(g);
 			assertEqualsBool(directed, b1.isDirected());
 			assertEquals(g.copy(/* no weights */), b1.build());
 		});

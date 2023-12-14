@@ -29,6 +29,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * compared to creating an empty graph and adding the same vertices and edges.
  *
  * <p>
+ * To create a new builder, use one of the static methods {@link #undirected()}, {@link #directed()} or
+ * {@link #newInstance(boolean)}. For more options, create a new {@link IntGraphFactory} and use
+ * {@link IntGraphFactory#newBuilder()}, or use {@link IntGraphFactory#newBuilderCopyOf(Graph)} to create a builder
+ * initialized with an existing graph vertices and edges.
+ *
+ * <p>
  * This interface is a specific version of {@link GraphBuilder} for {@link IntGraph}.
  *
  * @see    IntGraphBuilder#undirected()
@@ -212,6 +218,10 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * The graphs built by this builder will have the same default capabilities as {@link IntGraphFactory}, namely they
 	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
 	 *
+	 * <p>
+	 * For more options to instantiate a builder, create a new {@link IntGraphFactory} and use one of its
+	 * {@code newBuilder} methods.
+	 *
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IntGraphBuilder undirected() {
@@ -225,6 +235,10 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * The graphs built by this builder will have the same default capabilities as {@link IntGraphFactory}, namely they
 	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
 	 *
+	 * <p>
+	 * For more options to instantiate a builder, create a new {@link IntGraphFactory} and use one of its
+	 * {@code newBuilder} methods.
+	 *
 	 * @return a new empty builder for directed graphs
 	 */
 	static IntGraphBuilder directed() {
@@ -237,6 +251,10 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * <p>
 	 * The graphs built by this builder will have the same default capabilities as {@link IntGraphFactory}, namely they
 	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
+	 *
+	 * <p>
+	 * For more options to instantiate a builder, create a new {@link IntGraphFactory} and use one of its
+	 * {@code newBuilder} methods.
 	 *
 	 * @param  directed if {@code true}, the new builder will build directed graphs, otherwise it will build undirected
 	 *                      graphs
@@ -252,12 +270,16 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * <p>
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
+	 * <p>
+	 * For more options to instantiate a builder, create a new {@link IntGraphFactory} and use one of its
+	 * {@code newBuilder} methods.
+	 *
 	 * @param  g a graph
 	 * @return   a builder initialized with the given graph vertices and edges, without the original graph
 	 *           vertices/edges weights.
 	 */
-	static IntGraphBuilder fromGraph(IntGraph g) {
-		return fromGraph(g, false, false);
+	static IntGraphBuilder newCopyOf(IntGraph g) {
+		return newCopyOf(g, false, false);
 	}
 
 	/**
@@ -265,6 +287,10 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 *
 	 * <p>
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
+	 *
+	 * <p>
+	 * For more options to instantiate a builder, create a new {@link IntGraphFactory} and use one of its
+	 * {@code newBuilder} methods.
 	 *
 	 * @param  g                   a graph
 	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied from the graph to the
@@ -274,8 +300,8 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * @return                     a builder initialized with the given graph vertices and edges, with/without the
 	 *                             original graph vertices/edges weights.
 	 */
-	static IntGraphBuilder fromGraph(IntGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		return new IntGraphBuilderImpl(g, copyVerticesWeights, copyEdgesWeights);
+	static IntGraphBuilder newCopyOf(IntGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		return IntGraphFactory.newInstance(g.isDirected()).newBuilderCopyOf(g, copyVerticesWeights, copyEdgesWeights);
 	}
 
 }

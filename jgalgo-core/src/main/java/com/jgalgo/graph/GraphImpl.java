@@ -508,6 +508,12 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 		}
 
 		@Override
+		public GraphBuilder<V, E> newBuilderCopyOf(Graph<V, E> g, boolean copyVerticesWeights,
+				boolean copyEdgesWeights) {
+			return new GraphBuilderImpl<>(factory, g, copyVerticesWeights, copyEdgesWeights);
+		}
+
+		@Override
 		public GraphFactory<V, E> allowSelfEdges(boolean selfEdges) {
 			factory.allowSelfEdges(selfEdges);
 			return this;

@@ -600,6 +600,12 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 		}
 
 		@Override
+		public IntGraphBuilder newBuilderCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights,
+				boolean copyEdgesWeights) {
+			return new IntGraphBuilderImpl(factory, g, copyVerticesWeights, copyEdgesWeights);
+		}
+
+		@Override
 		public IntGraphFactory allowSelfEdges(boolean selfEdges) {
 			factory.allowSelfEdges(selfEdges);
 			return this;

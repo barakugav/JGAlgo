@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.IntUnaryOperator;
@@ -46,17 +47,17 @@ public class IndexGraphBuilderTest extends TestBase {
 	}
 
 	@Test
-	public void fromGraph() {
+	public void newCopyOf() {
 		foreachBoolConfig(directed -> {
 			IndexGraph g = createGraph(directed);
 
 			/* With weights */
-			IndexGraphBuilder b2 = IndexGraphBuilder.fromGraph(g, true, true);
+			IndexGraphBuilder b2 = IndexGraphBuilder.newCopyOf(g, true, true);
 			assertEqualsBool(directed, b2.isDirected());
 			assertEquals(g, b2.build());
 
 			/* Without weights */
-			IndexGraphBuilder b1 = IndexGraphBuilder.fromGraph(g);
+			IndexGraphBuilder b1 = IndexGraphBuilder.newCopyOf(g);
 			assertEqualsBool(directed, b1.isDirected());
 			assertEquals(g.copy(/* no weights */), b1.build());
 		});
@@ -731,6 +732,121 @@ public class IndexGraphBuilderTest extends TestBase {
 			eWeights.set(eId, rand.nextInt(10000));
 		}
 		return g;
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void newBuilderCopyOfGraph() {
+		foreachBoolConfig((directed, intGraph, index) -> {
+			IndexGraph ig = createGraph(directed);
+			GraphFactory<Integer, Integer> factory;
+			if (index) {
+				factory = IndexGraphFactory.newInstance(directed);
+			} else if (intGraph) {
+				factory = IntGraphFactory.newInstance(directed);
+			} else {
+				factory = GraphFactory.newInstance(directed);
+			}
+			Graph<Integer, Integer> g = factory.allowSelfEdges().allowParallelEdges().newGraph();
+			g.addVertices(ig.vertices());
+			g.addEdges(EdgeSet.allOf(ig));
+
+			WeightsByte<Integer> vByteWeights = g.addVerticesWeights("vByteWeights", byte.class);
+			WeightsShort<Integer> vShortWeights = g.addVerticesWeights("vShortWeights", short.class);
+			WeightsInt<Integer> vIntWeights = g.addVerticesWeights("vIntWeights", int.class);
+			WeightsLong<Integer> vLongWeights = g.addVerticesWeights("vLongWeights", long.class);
+			WeightsFloat<Integer> vFloatWeights = g.addVerticesWeights("vFloatWeights", float.class);
+			WeightsDouble<Integer> vDoubleWeights = g.addVerticesWeights("vDoubleWeights", double.class);
+			WeightsBool<Integer> vBoolWeights = g.addVerticesWeights("vBoolWeights", boolean.class);
+			WeightsChar<Integer> vCharWeights = g.addVerticesWeights("vCharWeights", char.class);
+			WeightsObj<Integer, String> vStringWeights = g.addVerticesWeights("vStringWeights", String.class);
+			for (int v : g.vertices()) {
+				vByteWeights.set(v, (byte) v);
+				vShortWeights.set(v, (short) v);
+				vIntWeights.set(v, v);
+				vLongWeights.set(v, v);
+				vFloatWeights.set(v, v);
+				vDoubleWeights.set(v, v);
+				vBoolWeights.set(v, v % 2 == 0);
+				vCharWeights.set(v, (char) v);
+				vStringWeights.set(v, String.valueOf(v));
+			}
+			WeightsByte<Integer> eByteWeights = g.addEdgesWeights("eByteWeights", byte.class);
+			WeightsShort<Integer> eShortWeights = g.addEdgesWeights("eShortWeights", short.class);
+			WeightsInt<Integer> eIntWeights = g.addEdgesWeights("eIntWeights", int.class);
+			WeightsLong<Integer> eLongWeights = g.addEdgesWeights("eLongWeights", long.class);
+			WeightsFloat<Integer> eFloatWeights = g.addEdgesWeights("eFloatWeights", float.class);
+			WeightsDouble<Integer> eDoubleWeights = g.addEdgesWeights("eDoubleWeights", double.class);
+			WeightsBool<Integer> eBoolWeights = g.addEdgesWeights("eBoolWeights", boolean.class);
+			WeightsChar<Integer> eCharWeights = g.addEdgesWeights("eCharWeights", char.class);
+			WeightsObj<Integer, String> eStringWeights = g.addEdgesWeights("eStringWeights", String.class);
+			for (int e : g.edges()) {
+				eByteWeights.set(e, (byte) e);
+				eShortWeights.set(e, (short) e);
+				eIntWeights.set(e, e);
+				eLongWeights.set(e, e);
+				eFloatWeights.set(e, e);
+				eDoubleWeights.set(e, e);
+				eBoolWeights.set(e, e % 2 == 0);
+				eCharWeights.set(e, (char) e);
+				eStringWeights.set(e, String.valueOf(e));
+			}
+
+			foreachBoolConfig((copyVerticesWeights, copyEdgesWeights) -> {
+				IndexGraphFactory builderFactory =
+						IndexGraphFactory.newInstance(g.isDirected()).allowSelfEdges().allowParallelEdges();
+				IndexGraphBuilder b;
+				if (!copyEdgesWeights && !copyVerticesWeights) {
+					b = builderFactory.newBuilderCopyOf(g);
+				} else {
+					b = builderFactory.newBuilderCopyOf(g, copyVerticesWeights, copyEdgesWeights);
+				}
+				IndexGraph bg = b.build();
+				if (copyVerticesWeights) {
+					assertEquals(
+							Set.of("vByteWeights", "vShortWeights", "vIntWeights", "vLongWeights", "vFloatWeights",
+									"vDoubleWeights", "vBoolWeights", "vCharWeights", "vStringWeights"),
+							bg.getVerticesWeightsKeys());
+				} else {
+					assertEquals(Set.of(), bg.getVerticesWeightsKeys());
+				}
+				if (copyEdgesWeights) {
+					assertEquals(
+							Set.of("eByteWeights", "eShortWeights", "eIntWeights", "eLongWeights", "eFloatWeights",
+									"eDoubleWeights", "eBoolWeights", "eCharWeights", "eStringWeights"),
+							bg.getEdgesWeightsKeys());
+				} else {
+					assertEquals(Set.of(), bg.getEdgesWeightsKeys());
+				}
+				assertEquals(g.copy(copyVerticesWeights, copyEdgesWeights), bg);
+			});
+		});
+		foreachBoolConfig((directed, intGraph) -> {
+			GraphFactory<Integer, Integer> factory;
+			if (intGraph) {
+				factory = IntGraphFactory.newInstance(directed);
+			} else {
+				factory = GraphFactory.newInstance(directed);
+			}
+			Graph<Integer, Integer> g = factory.newGraph();
+			g.addVertices(IntList.of(0, 2));
+			assertThrows(IllegalArgumentException.class,
+					() -> IndexGraphFactory.newInstance(directed).newBuilderCopyOf(g));
+		});
+		foreachBoolConfig((directed, intGraph) -> {
+			GraphFactory<Integer, Integer> factory;
+			if (intGraph) {
+				factory = IntGraphFactory.newInstance(directed);
+			} else {
+				factory = GraphFactory.newInstance(directed);
+			}
+			Graph<Integer, Integer> g = factory.newGraph();
+			g.addVertices(IntList.of(0, 1));
+			g.addEdge(0, 1, 3);
+			assertThrows(IllegalArgumentException.class,
+					() -> IndexGraphFactory.newInstance(directed).newBuilderCopyOf(g));
+		});
+
 	}
 
 }

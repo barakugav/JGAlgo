@@ -2359,7 +2359,7 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* check builder constructor */
-			assertEquals(g, copyConstructor.apply(IndexGraphBuilder.fromGraph(g, true, true)));
+			assertEquals(g, copyConstructor.apply(IndexGraphBuilder.newCopyOf(g, true, true)));
 
 			if (!selfEdges) {
 				IndexGraphBuilder g1 = IndexGraphBuilder.newInstance(directed);

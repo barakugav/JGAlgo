@@ -103,6 +103,38 @@ public interface GraphFactory<V, E> {
 	GraphBuilder<V, E> newBuilder();
 
 	/**
+	 * Create a new graph builder with the factory parameters initialized with an existing graph vertices and edges,
+	 * without copying the weights.
+	 *
+	 * <p>
+	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
+	 *
+	 * @param  g a graph
+	 * @return   a graph builder with the factory parameters initialized with the given graph vertices and edges,
+	 *           without the original graph vertices/edges weights.
+	 */
+	default GraphBuilder<V, E> newBuilderCopyOf(Graph<V, E> g) {
+		return newBuilderCopyOf(g, false, false);
+	}
+
+	/**
+	 * Create a new graph builder with the factory parameters initialized with an existing graph vertices and edges,
+	 * with/without copying the weights.
+	 *
+	 * <p>
+	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
+	 *
+	 * @param  g                   a graph
+	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied from the graph to the
+	 *                                 builder
+	 * @param  copyEdgesWeights    if {@code true}, the weights of the edges will be copied from the graph to the
+	 *                                 builder
+	 * @return                     a graph builder with the factory parameters initialized with the given graph vertices
+	 *                             and edges, with/without the original graph vertices/edges weights.
+	 */
+	GraphBuilder<V, E> newBuilderCopyOf(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights);
+
+	/**
 	 * Change the config of this factory so that the built graphs will support self edges.
 	 *
 	 * <p>

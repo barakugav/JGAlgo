@@ -51,17 +51,17 @@ public class IntGraphBuilderTest extends TestBase {
 	}
 
 	@Test
-	public void fromGraph() {
+	public void newCopyOf() {
 		foreachBoolConfig(directed -> {
 			IntGraph g = createGraph(directed);
 
 			/* With weights */
-			IntGraphBuilder b2 = IntGraphBuilder.fromGraph(g, true, true);
+			IntGraphBuilder b2 = IntGraphBuilder.newCopyOf(g, true, true);
 			assertEqualsBool(directed, b2.isDirected());
 			assertEquals(g, b2.build());
 
 			/* Without weights */
-			IntGraphBuilder b1 = IntGraphBuilder.fromGraph(g);
+			IntGraphBuilder b1 = IntGraphBuilder.newCopyOf(g);
 			assertEqualsBool(directed, b1.isDirected());
 			assertEquals(g.copy(/* no weights */), b1.build());
 		});

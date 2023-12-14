@@ -53,6 +53,15 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 		return builder;
 	}
 
+	@Override
+	public IndexGraphBuilder newBuilderCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
+		IndexGraphBuilderImpl builder = new IndexGraphBuilderImpl(g, copyVerticesWeights, copyEdgesWeights);
+		builder.setMutableImpl(mutableImpl());
+		builder.setImmutableImpl(immutableImpl());
+		return builder;
+	}
+
 	static interface Impl {
 
 		IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum);
