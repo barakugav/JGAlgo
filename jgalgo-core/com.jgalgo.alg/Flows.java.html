@@ -216,14 +216,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 			void addAllOriginalEdges() {
 <span class="pc bnc" id="L218" title="All 2 branches missed.">				assert gBuilder.vertices().isEmpty();</span>
-<span class="fc" id="L219">				gBuilder.expectedVerticesNum(gOrig.vertices().size());</span>
+<span class="fc" id="L219">				gBuilder.ensureVertexCapacity(gOrig.vertices().size());</span>
 <span class="fc bfc" id="L220" title="All 2 branches covered.">				for (int n = gOrig.vertices().size(), u = 0; u &lt; n; u++) {</span>
 <span class="fc" id="L221">					int vBuilder = gBuilder.addVertex();</span>
 <span class="pc bnc" id="L222" title="All 2 branches missed.">					assert u == vBuilder;</span>
 				}
 
 <span class="pc bnc" id="L225" title="All 2 branches missed.">				assert gBuilder.edges().isEmpty();</span>
-<span class="fc" id="L226">				gBuilder.expectedEdgesNum(gOrig.edges().size() * 2);</span>
+<span class="fc" id="L226">				gBuilder.ensureEdgeCapacity(gOrig.edges().size() * 2);</span>
 <span class="fc bfc" id="L227" title="All 2 branches covered.">				for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L228">					int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);</span>
 <span class="fc bfc" id="L229" title="All 2 branches covered.">					if (u != v)</span>

@@ -292,7 +292,7 @@ public class BarabasiAlbertGraphGenerator&lt;V, E&gt; implements GraphGenerator&
 <span class="fc" id="L292">			final int[] vertices = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.vertices).toIntArray();</span>
 <span class="fc" id="L293">			g.addVertices(IntList.of(vertices));</span>
 
-<span class="fc" id="L295">			g.expectedEdgesNum(edgeNum);</span>
+<span class="fc" id="L295">			g.ensureEdgeCapacity(edgeNum);</span>
 <span class="fc" id="L296">			IntBinaryOperator edgeBuilder =</span>
 <span class="fc" id="L297">					IntAdapters.asIntBiOperator((BiFunction&lt;Integer, Integer, Integer&gt;) this.edgeBuilder);</span>
 <span class="fc bfc" id="L298" title="All 2 branches covered.">			for (int eIdx = 0; eIdx &lt; edgeNum; eIdx++) {</span>
@@ -308,7 +308,7 @@ public class BarabasiAlbertGraphGenerator&lt;V, E&gt; implements GraphGenerator&
 <span class="fc" id="L308">			final V[] vertices = (V[]) this.vertices.toArray();</span>
 <span class="fc" id="L309">			g.addVertices(ObjectList.of(vertices));</span>
 
-<span class="fc" id="L311">			g.expectedEdgesNum(edgeNum);</span>
+<span class="fc" id="L311">			g.ensureEdgeCapacity(edgeNum);</span>
 <span class="fc bfc" id="L312" title="All 2 branches covered.">			for (int eIdx = 0; eIdx &lt; edgeNum; eIdx++) {</span>
 <span class="fc" id="L313">				V u = vertices[endpoints[eIdx * 2 + 0]];</span>
 <span class="fc" id="L314">				V v = vertices[endpoints[eIdx * 2 + 1]];</span>

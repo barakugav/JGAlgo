@@ -248,7 +248,7 @@ public class GnmGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 		}
 <span class="fc" id="L249">		GraphBuilder&lt;V, E&gt; g = factory.allowSelfEdges(selfEdges).newBuilder();</span>
 <span class="fc" id="L250">		g.addVertices(vertices);</span>
-<span class="fc" id="L251">		g.expectedEdgesNum(m);</span>
+<span class="fc" id="L251">		g.ensureEdgeCapacity(m);</span>
 
 <span class="fc bfc" id="L253" title="All 4 branches covered.">		if (parallelEdges || m &lt;= maxNumberOfEdges / 2) {</span>
 			/* Start with an empty graph and add edges one by one */

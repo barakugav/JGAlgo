@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EdgeSet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">EdgeSet.java</span></div><h1>EdgeSet.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.graph;
+
+import java.util.Set;
+import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+/**
+ * Set of graph edges.
+ *
+ * &lt;pre&gt; {@code
+ * Graph&lt;String, Integer&gt; g = ...;
+ * String vertex = ...;
+ * for (EdgeIter&lt;String, Integer&gt; eit = g.outEdges(vertex).iterator(); eit.hasNext();) {
+ * 	Integer e = eit.next();
+ * 	String u = eit.source();
+ * 	String v = eit.target();
+ * 	assert vertex.equals(u);
+ * 	System.out.println(&quot;Out edge of &quot; + vertex + &quot;: &quot; + e + &quot;(&quot; + u + &quot;, &quot; + v + &quot;)&quot;);
+ * }
+ * }&lt;/pre&gt;
+ *
+ * &lt;p&gt;
+ * Note that sets implementing this interface should define {@link Object#equals(Object)}, {@link Object#hashCode()} and
+ * {@link Object#toString()} compatible with the {@link Set} interface. Namely, the above methods should not take into
+ * account the endpoints of the edges, only the edges identifiers themselves.
+ *
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @see        EdgeIter
+ * @author     Barak Ugav
+ */
+public interface EdgeSet&lt;V, E&gt; extends Set&lt;E&gt; {
+
+	/**
+	 * Return an edge iterator that iterate over the edges in this set.
+	 */
+	@Override
+	EdgeIter&lt;V, E&gt; iterator();
+
+	/**
+	 * Create an edge set object from a plain set of edges.
+	 *
+	 * &lt;p&gt;
+	 * A 'plain' set of edges is a set of the edges identifiers. It does not include any information about the endpoints
+	 * (source and target) of each edge. This method creates an {@link EdgeSet}, which does contains information about
+	 * the endpoints, given a plain set of edges and the graph in which the edges are defined in.
+	 *
+	 * &lt;p&gt;
+	 * The returned set is a view of the given set and graph. Namely, its updated when the original set is updated and
+	 * visa vera, and the endpoints in the {@link EdgeSet} will be up to date with the given graph.
+	 *
+	 * &lt;p&gt;
+	 * No validation is performed to ensure that all the given edges are actually in the given graph. If this is not the
+	 * case, an exception may be thrown later when the graph is queried for an edge source and target.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, a {@link IEdgeSet} is returned. In that case, prefer to pass {@link IntSet} as
+	 * {@code edges} to avoid un/boxing, or use {@link IEdgeSet#of(IntSet, IntGraph)} instead.
+	 *
+	 * &lt;p&gt;
+	 * Usually an {@link EdgeSet} object is obtained via one of the method of a {@link Graph}, and rarely a user need to
+	 * a create one, but it may be used to add multiple edges to a graph using the {@link Graph#addEdges(EdgeSet)}
+	 * method. In the following snippet, a maximum cardinality matching is computed on a graph, and a new graph
+	 * containing only the matching edges is created:
+	 *
+	 * &lt;pre&gt; {@code
+	 * Graph&lt;V, E&gt; g = ...;
+	 * Set&lt;E&gt; matching = MatchingAlgo.newInstance().computeMaximumMatching(g, null).edges();
+	 *
+	 * Graph&lt;V,E&gt; matchingGraph = Graph.newUndirected();
+	 * matchingGraph.addVertices(g.vertices());
+	 * matchingGraph.addEdges(EdgeSet.of(matching, g));
+	 * }&lt;/pre&gt;
+	 *
+	 * @param  &lt;V&gt;   the vertices type
+	 * @param  &lt;E&gt;   the edges type
+	 * @param  edges a set of edges identifiers
+	 * @param  g     the graph in which the edges are defined in, and from which the endpoints of the edges should be
+	 *                   retrieved
+	 * @return       an {@link EdgeSet} with the given edges, containing the endpoints information from the graph
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	static &lt;V, E&gt; EdgeSet&lt;V, E&gt; of(Set&lt;E&gt; edges, Graph&lt;V, E&gt; g) {
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L100">			return (EdgeSet&lt;V, E&gt;) IEdgeSet.of(IntAdapters.asIntSet((Set&lt;Integer&gt;) edges), (IntGraph) g);</span>
+		} else {
+<span class="fc" id="L102">			return new EdgeSetView&lt;&gt;(edges, g);</span>
+		}
+	}
+
+	/**
+	 * Create an edge set object of all the edges in a graph.
+	 *
+	 * &lt;p&gt;
+	 * The edge set returned by {@link Graph#edges()} is a 'plain' set of edges, namely it is a set of the edge
+	 * identifiers themselves but does not include any information about the endpoints (source and target) of each edge.
+	 * This method creates an {@link EdgeSet}, which does contains information about the endpoints, of all the edges in
+	 * a given graph.
+	 *
+	 * &lt;p&gt;
+	 * The returned set is a view of the given set and graph. Namely, its updated when the original set is updated and
+	 * visa vera, and the endpoints in the {@link EdgeSet} will be up to date with the given graph.
+	 *
+	 * &lt;p&gt;
+	 * If {@code g} is {@link IntGraph}, a {@link IEdgeSet} is returned. In that case, prefer to pass {@link IntSet} as
+	 * {@code edges} to avoid un/boxing, or use {@link IEdgeSet#allOf(IntGraph)} instead.
+	 *
+	 * &lt;p&gt;
+	 * Usually an {@link EdgeSet} object is obtained via one of the method of a {@link Graph}, and rarely a user need to
+	 * a create one, but it may be used to add multiple edges to a graph using the {@link Graph#addEdges(EdgeSet)}
+	 * method. In the following snippet, an auxillary graph is created which is a copy of an original graph {@code g}
+	 * with additional vertex connected to all the original vertices, for shortest path potential function computation
+	 * (used in Johnson APSP):
+	 *
+	 * &lt;pre&gt; {@code
+	 * V auxillaryVertex = ...;
+	 * Graph&lt;V, E&gt; auxillaryGraph = Graph.newDirected();
+	 * auxillaryGraph.addVertices(g.vertices());
+	 * auxillaryGraph.addVertex(auxillaryVertex);
+	 * auxillaryGraph.addEdges(EdgeSet.allOf(g));
+	 * for (V v : g.vertices())
+	 * 	auxillaryGraph.addEdge(auxillaryVertex, v, ...
+	 * }&lt;/pre&gt;
+	 *
+	 * @param  &lt;V&gt; the vertices type
+	 * @param  &lt;E&gt; the edges type
+	 * @param  g   a graph
+	 * @return     an {@link EdgeSet} of all the edges in the graph
+	 */
+	static &lt;V, E&gt; EdgeSet&lt;V, E&gt; allOf(Graph&lt;V, E&gt; g) {
+<span class="fc" id="L146">		return of(g.edges(), g);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

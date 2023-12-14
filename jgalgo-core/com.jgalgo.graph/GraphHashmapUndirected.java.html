@@ -69,13 +69,13 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		}
 <span class="fc" id="L70">	}</span>
 
-	GraphHashmapUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+	GraphHashmapUndirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
 <span class="fc" id="L73">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L74" title="All 2 branches missed.">		assert !builder.isDirected();</span>
+<span class="pc bnc" id="L74" title="All 2 branches missed.">		assert !builder.isDirected;</span>
 
 <span class="fc" id="L76">		edgesContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -&gt; edges = newArr);</span>
 
-<span class="fc bfc" id="L78" title="All 2 branches covered.">		for (int m = builder.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		for (int m = builder.edges.size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L79">			int source = builder.edgeSource(e), target = builder.edgeTarget(e);</span>
 <span class="fc" id="L80">			int oldVal1 = ensureEdgesMapMutable(edges, source).put(target, e);</span>
 <span class="fc" id="L81">			int oldVal2 = ensureEdgesMapMutable(edges, target).put(source, e);</span>

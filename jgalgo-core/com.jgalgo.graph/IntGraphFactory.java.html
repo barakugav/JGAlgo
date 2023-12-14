@@ -44,7 +44,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 
 	@Override
 	default IntGraph newCopyOf(Graph&lt;Integer, Integer&gt; g) {
-<span class="fc" id="L47">		return (IntGraph) GraphFactory.super.newCopyOf(g);</span>
+<span class="nc" id="L47">		return (IntGraph) GraphFactory.super.newCopyOf(g);</span>
 	}
 
 	@Override
@@ -54,8 +54,16 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	IntGraphBuilder newBuilder();
 
 	@Override
+	default IntGraphBuilder newBuilderCopyOf(Graph&lt;Integer, Integer&gt; g) {
+<span class="fc" id="L58">		return (IntGraphBuilder) GraphFactory.super.newBuilderCopyOf(g);</span>
+	}
+
+	@Override
+	IntGraphBuilder newBuilderCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights);
+
+	@Override
 	default IntGraphFactory allowSelfEdges() {
-<span class="fc" id="L58">		return (IntGraphFactory) GraphFactory.super.allowSelfEdges();</span>
+<span class="fc" id="L66">		return (IntGraphFactory) GraphFactory.super.allowSelfEdges();</span>
 	}
 
 	@Override
@@ -63,7 +71,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 
 	@Override
 	default IntGraphFactory allowParallelEdges() {
-<span class="fc" id="L66">		return (IntGraphFactory) GraphFactory.super.allowParallelEdges();</span>
+<span class="fc" id="L74">		return (IntGraphFactory) GraphFactory.super.allowParallelEdges();</span>
 	}
 
 	@Override
@@ -87,7 +95,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 * @return a new factory that can build undirected int graphs
 	 */
 	public static IntGraphFactory undirected() {
-<span class="fc" id="L90">		return new IntGraphImpl.Factory(false);</span>
+<span class="fc" id="L98">		return new IntGraphImpl.Factory(false);</span>
 	}
 
 	/**
@@ -96,7 +104,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 * @return a new factory that can build directed int graphs
 	 */
 	public static IntGraphFactory directed() {
-<span class="fc" id="L99">		return new IntGraphImpl.Factory(true);</span>
+<span class="fc" id="L107">		return new IntGraphImpl.Factory(true);</span>
 	}
 
 	/**
@@ -106,27 +114,12 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 * @return          a new factory that can build un/directed int graphs
 	 */
 	public static IntGraphFactory newInstance(boolean directed) {
-<span class="fc" id="L109">		return new IntGraphImpl.Factory(directed);</span>
-	}
-
-	/**
-	 * Create a new graph factory based on a given implementation.
-	 *
-	 * &lt;p&gt;
-	 * The new factory will build graphs with the same capabilities (inclusive) as the given graph, possibly choosing to
-	 * use a similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for
-	 * such use case see {@link IntGraph#copy()} or {@link IntGraphFactory#newCopyOf(Graph)}.
-	 *
-	 * @param  g a graph from which the factory should copy its capabilities (inclusive)
-	 * @return   a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
-	 */
-	public static IntGraphFactory newFrom(IntGraph g) {
-<span class="fc" id="L124">		return new IntGraphImpl.Factory(g);</span>
+<span class="fc" id="L117">		return new IntGraphImpl.Factory(directed);</span>
 	}
 
 	@Override
 	default IntGraphFactory setOption(String key, Object value) {
-<span class="nc" id="L129">		return (IndexGraphFactory) GraphFactory.super.setOption(key, value);</span>
+<span class="nc" id="L122">		return (IndexGraphFactory) GraphFactory.super.setOption(key, value);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

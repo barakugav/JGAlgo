@@ -90,9 +90,9 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 <span class="fc" id="L90">			addEdgeToLists(e);</span>
 <span class="fc" id="L91">	}</span>
 
-	GraphLinkedDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+	GraphLinkedDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
 <span class="fc" id="L94">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L95" title="All 2 branches missed.">		assert builder.isDirected();</span>
+<span class="pc bnc" id="L95" title="All 2 branches missed.">		assert builder.isDirected;</span>
 
 <span class="fc" id="L97">		edgesHeadOutContainer = newVerticesIntContainer(-1, newArr -&gt; edgesOutHead = newArr);</span>
 <span class="fc" id="L98">		edgesHeadInContainer = newVerticesIntContainer(-1, newArr -&gt; edgesInHead = newArr);</span>
@@ -104,7 +104,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 <span class="fc" id="L104">		edgePrevOutContainer = newEdgesIntContainer(-1, newArr -&gt; edgePrevOut = newArr);</span>
 <span class="fc" id="L105">		edgePrevInContainer = newEdgesIntContainer(-1, newArr -&gt; edgePrevIn = newArr);</span>
 
-<span class="fc" id="L107">		final int m = builder.edges().size();</span>
+<span class="fc" id="L107">		final int m = builder.edges.size();</span>
 <span class="fc bfc" id="L108" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
 <span class="fc" id="L109">			addEdgeToLists(e);</span>
 <span class="fc" id="L110">	}</span>

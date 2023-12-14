@@ -408,7 +408,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="pc bpc" id="L408" title="1 of 2 branches missed.">			if (blockGraph == null) {</span>
 <span class="fc" id="L409">				final int blockNum = getNumberOfBiCcs();</span>
 <span class="fc" id="L410">				IntGraphBuilder g = IntGraphBuilder.undirected();</span>
-<span class="fc" id="L411">				g.expectedVerticesNum(blockNum);</span>
+<span class="fc" id="L411">				g.ensureVertexCapacity(blockNum);</span>
 <span class="fc" id="L412">				g.addVertices(range(blockNum));</span>
 <span class="fc bfc" id="L413" title="All 2 branches covered.">				for (int cutVertex : getCutVertices())</span>
 <span class="fc bfc" id="L414" title="All 2 branches covered.">					for (int b1 : getVertexBiCcs(cutVertex))</span>

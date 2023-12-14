@@ -69,14 +69,14 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract {
 		}
 <span class="fc" id="L70">	}</span>
 
-	GraphHashmapMultiUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+	GraphHashmapMultiUndirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
 <span class="fc" id="L73">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L74" title="All 2 branches missed.">		assert !builder.isDirected();</span>
+<span class="pc bnc" id="L74" title="All 2 branches missed.">		assert !builder.isDirected;</span>
 
 <span class="fc" id="L76">		edgesContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -&gt; edgesMap = newArr);</span>
 <span class="fc" id="L77">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
 
-<span class="fc bfc" id="L79" title="All 2 branches covered.">		for (int m = builder.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">		for (int m = builder.edges.size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L80">			int source = builder.edgeSource(e), target = builder.edgeTarget(e);</span>
 <span class="fc" id="L81">			addEdgeToMaps(e, source, target);</span>
 		}

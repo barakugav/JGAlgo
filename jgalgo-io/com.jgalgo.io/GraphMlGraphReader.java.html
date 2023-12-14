@@ -252,8 +252,8 @@ public class GraphMlGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphRe
 <span class="fc" id="L252">				factory = GraphFactory.newInstance(directed);</span>
 			}
 <span class="fc" id="L254">			GraphBuilder&lt;V, E&gt; g = factory.allowSelfEdges().allowParallelEdges().newBuilder();</span>
-<span class="fc" id="L255">			XmlUtils.optionalAttribute(graph, &quot;parse.nodes&quot;).map(Integer::parseInt).ifPresent(g::expectedVerticesNum);</span>
-<span class="fc" id="L256">			XmlUtils.optionalAttribute(graph, &quot;parse.edges&quot;).map(Integer::parseInt).ifPresent(g::expectedEdgesNum);</span>
+<span class="fc" id="L255">			XmlUtils.optionalAttribute(graph, &quot;parse.nodes&quot;).map(Integer::parseInt).ifPresent(g::ensureVertexCapacity);</span>
+<span class="fc" id="L256">			XmlUtils.optionalAttribute(graph, &quot;parse.edges&quot;).map(Integer::parseInt).ifPresent(g::ensureEdgeCapacity);</span>
 
 <span class="fc" id="L258">			Map&lt;String, BiConsumer&lt;V, String&gt;&gt; vWeights = new HashMap&lt;&gt;();</span>
 <span class="fc" id="L259">			Map&lt;String, BiConsumer&lt;E, String&gt;&gt; eWeights = new HashMap&lt;&gt;();</span>

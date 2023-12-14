@@ -175,7 +175,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 		/* Build the residual network of the graph */
 <span class="fc" id="L177">		IndexGraphBuilder residual0 = IndexGraphBuilder.directed();</span>
-<span class="fc" id="L178">		residual0.expectedVerticesNum(n);</span>
+<span class="fc" id="L178">		residual0.ensureVertexCapacity(n);</span>
 <span class="fc" id="L179">		int[] vToResV = new int[n];</span>
 <span class="fc" id="L180">		int[] resVToV = new int[n];</span>
 <span class="fc" id="L181">		Arrays.fill(vToResV, -1);</span>

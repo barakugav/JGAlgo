@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import java.util.Collection;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IEdgeSet;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
@@ -31,26 +32,26 @@ import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
-<span class="fc" id="L34">abstract class MaximumFlowAbstract extends MinimumEdgeCutUtils.AbstractImplST implements MaximumFlow {</span>
+<span class="fc" id="L35">abstract class MaximumFlowAbstract extends MinimumEdgeCutUtils.AbstractImplST implements MaximumFlow {</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;V, E&gt; Flow&lt;V, E&gt; computeMaximumFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity, V source, V sink) {
-<span class="fc bfc" id="L39" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L40">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
-<span class="fc" id="L41">			int source0 = ((Integer) source).intValue();</span>
-<span class="fc" id="L42">			int sink0 = ((Integer) sink).intValue();</span>
-<span class="fc" id="L43">			return (Flow&lt;V, E&gt;) computeMaximumFlow((IndexGraph) g, capacity0, source0, sink0);</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L41">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
+<span class="fc" id="L42">			int source0 = ((Integer) source).intValue();</span>
+<span class="fc" id="L43">			int sink0 = ((Integer) sink).intValue();</span>
+<span class="fc" id="L44">			return (Flow&lt;V, E&gt;) computeMaximumFlow((IndexGraph) g, capacity0, source0, sink0);</span>
 
 		} else {
-<span class="fc" id="L46">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L47">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L48">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L49">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
-<span class="fc" id="L50">			int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L51">			int iSink = viMap.idToIndex(sink);</span>
-<span class="fc" id="L52">			IFlow indexFlow = computeMaximumFlow(iGraph, iCapacity, iSource, iSink);</span>
-<span class="fc" id="L53">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
+<span class="fc" id="L47">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L48">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L49">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L50">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
+<span class="fc" id="L51">			int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L52">			int iSink = viMap.idToIndex(sink);</span>
+<span class="fc" id="L53">			IFlow indexFlow = computeMaximumFlow(iGraph, iCapacity, iSource, iSink);</span>
+<span class="fc" id="L54">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
 		}
 	}
 
@@ -58,21 +59,21 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 	@Override
 	public &lt;V, E&gt; Flow&lt;V, E&gt; computeMaximumFlow(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; capacity, Collection&lt;V&gt; sources,
 			Collection&lt;V&gt; sinks) {
-<span class="fc bfc" id="L61" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L62">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
-<span class="fc" id="L63">			IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
-<span class="fc" id="L64">			IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
-<span class="fc" id="L65">			return (Flow&lt;V, E&gt;) computeMaximumFlow((IndexGraph) g, capacity0, sources0, sinks0);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L63">			IWeightFunction capacity0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) capacity);</span>
+<span class="fc" id="L64">			IntCollection sources0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sources);</span>
+<span class="fc" id="L65">			IntCollection sinks0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) sinks);</span>
+<span class="fc" id="L66">			return (Flow&lt;V, E&gt;) computeMaximumFlow((IndexGraph) g, capacity0, sources0, sinks0);</span>
 
 		} else {
-<span class="fc" id="L68">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L69">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L70">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L71">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
-<span class="fc" id="L72">			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);</span>
-<span class="fc" id="L73">			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);</span>
-<span class="fc" id="L74">			IFlow indexFlow = computeMaximumFlow(iGraph, iCapacity, iSources, iSinks);</span>
-<span class="fc" id="L75">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
+<span class="fc" id="L69">			IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L70">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L71">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L72">			IWeightFunction iCapacity = IndexIdMaps.idToIndexWeightFunc(capacity, eiMap);</span>
+<span class="fc" id="L73">			IntCollection iSources = IndexIdMaps.idToIndexCollection(sources, viMap);</span>
+<span class="fc" id="L74">			IntCollection iSinks = IndexIdMaps.idToIndexCollection(sinks, viMap);</span>
+<span class="fc" id="L75">			IFlow indexFlow = computeMaximumFlow(iGraph, iCapacity, iSources, iSinks);</span>
+<span class="fc" id="L76">			return Flows.flowFromIndexFlow(g, indexFlow);</span>
 		}
 	}
 
@@ -83,15 +84,15 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 
 	@Override
 	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, int source, int sink) {
-<span class="fc" id="L86">		return MinimumEdgeCutUtils.computeMinimumCutUsingMaxFlow(g, w, source, sink, this);</span>
+<span class="fc" id="L87">		return MinimumEdgeCutUtils.computeMinimumCutUsingMaxFlow(g, w, source, sink, this);</span>
 	}
 
 	@Override
 	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w, IntCollection sources, IntCollection sinks) {
-<span class="fc" id="L91">		return MinimumEdgeCutUtils.computeMinimumCutUsingMaxFlow(g, w, sources, sinks, this);</span>
+<span class="fc" id="L92">		return MinimumEdgeCutUtils.computeMinimumCutUsingMaxFlow(g, w, sources, sinks, this);</span>
 	}
 
-<span class="fc" id="L94">	abstract static class WithoutResidualGraph extends MaximumFlowAbstract {</span>
+<span class="fc" id="L95">	abstract static class WithoutResidualGraph extends MaximumFlowAbstract {</span>
 
 		static class Worker {
 			final IndexGraph g;
@@ -101,48 +102,48 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 			final IWeightFunction capacity;
 			final boolean directed;
 
-<span class="fc" id="L104">			Worker(IndexGraph g, IWeightFunction capacity, int source, int sink) {</span>
-<span class="fc" id="L105">				Assertions.Flows.sourceSinkNotTheSame(source, sink);</span>
-<span class="fc" id="L106">				Assertions.Flows.positiveCapacities(g, capacity);</span>
-<span class="fc" id="L107">				this.g = g;</span>
-<span class="fc" id="L108">				this.source = source;</span>
-<span class="fc" id="L109">				this.sink = sink;</span>
-<span class="fc" id="L110">				this.n = g.vertices().size();</span>
-<span class="fc" id="L111">				this.capacity = capacity;</span>
-<span class="fc" id="L112">				directed = g.isDirected();</span>
-<span class="fc" id="L113">			}</span>
+<span class="fc" id="L105">			Worker(IndexGraph g, IWeightFunction capacity, int source, int sink) {</span>
+<span class="fc" id="L106">				Assertions.Flows.sourceSinkNotTheSame(source, sink);</span>
+<span class="fc" id="L107">				Assertions.Flows.positiveCapacities(g, capacity);</span>
+<span class="fc" id="L108">				this.g = g;</span>
+<span class="fc" id="L109">				this.source = source;</span>
+<span class="fc" id="L110">				this.sink = sink;</span>
+<span class="fc" id="L111">				this.n = g.vertices().size();</span>
+<span class="fc" id="L112">				this.capacity = capacity;</span>
+<span class="fc" id="L113">				directed = g.isDirected();</span>
+<span class="fc" id="L114">			}</span>
 
 			void initCapacities(int[] capacities) {
-<span class="fc bfc" id="L116" title="All 2 branches covered.">				if (WeightFunction.isCardinality(capacity)) {</span>
-<span class="fc" id="L117">					Arrays.fill(capacities, 1);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">				if (WeightFunction.isCardinality(capacity)) {</span>
+<span class="fc" id="L118">					Arrays.fill(capacities, 1);</span>
 				} else {
-<span class="fc" id="L119">					IWeightFunctionInt capacity = (IWeightFunctionInt) this.capacity;</span>
-<span class="fc bfc" id="L120" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L121">						capacities[e] = capacity.weightInt(e);</span>
+<span class="fc" id="L120">					IWeightFunctionInt capacity = (IWeightFunctionInt) this.capacity;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L122">						capacities[e] = capacity.weightInt(e);</span>
 				}
-<span class="fc" id="L123">			}</span>
+<span class="fc" id="L124">			}</span>
 
 			void initCapacities(double[] capacities) {
-<span class="pc bpc" id="L126" title="1 of 2 branches missed.">				if (WeightFunction.isCardinality(capacity)) {</span>
-<span class="nc" id="L127">					Arrays.fill(capacities, 1);</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">				if (WeightFunction.isCardinality(capacity)) {</span>
+<span class="nc" id="L128">					Arrays.fill(capacities, 1);</span>
 				} else {
-<span class="fc bfc" id="L129" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L130">						capacities[e] = capacity.weight(e);</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L131">						capacities[e] = capacity.weight(e);</span>
 				}
-<span class="fc" id="L132">			}</span>
+<span class="fc" id="L133">			}</span>
 
 			IFlow constructResult(double[] capacity, double[] residualCapacity) {
-<span class="fc" id="L135">				double[] flow = new double[g.edges().size()];</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L137">					flow[e] = capacity[e] - residualCapacity[e];</span>
-<span class="fc" id="L138">				return new Flows.FlowImpl(g, flow);</span>
+<span class="fc" id="L136">				double[] flow = new double[g.edges().size()];</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L138">					flow[e] = capacity[e] - residualCapacity[e];</span>
+<span class="fc" id="L139">				return new Flows.FlowImpl(g, flow);</span>
 			}
 
 			IFlow constructResult(int[] capacity, int[] residualCapacity) {
-<span class="fc" id="L142">				double[] flow = new double[g.edges().size()];</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L144">					flow[e] = capacity[e] - residualCapacity[e];</span>
-<span class="fc" id="L145">				return new Flows.FlowImpl(g, flow);</span>
+<span class="fc" id="L143">				double[] flow = new double[g.edges().size()];</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L145">					flow[e] = capacity[e] - residualCapacity[e];</span>
+<span class="fc" id="L146">				return new Flows.FlowImpl(g, flow);</span>
 			}
 
 		}
@@ -150,18 +151,17 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 		@Override
 		IFlow computeMaximumFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IntCollection sources,
 				IntCollection sinks) {
-<span class="fc bfc" id="L153" title="All 4 branches covered.">			if (sources.size() == 1 &amp;&amp; sinks.size() == 1)</span>
-<span class="fc" id="L154">				return computeMaximumFlow(gOrig, capacityOrig, sources.iterator().nextInt(),</span>
-<span class="fc" id="L155">						sinks.iterator().nextInt());</span>
-<span class="fc" id="L156">			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);</span>
+<span class="fc bfc" id="L154" title="All 4 branches covered.">			if (sources.size() == 1 &amp;&amp; sinks.size() == 1)</span>
+<span class="fc" id="L155">				return computeMaximumFlow(gOrig, capacityOrig, sources.iterator().nextInt(),</span>
+<span class="fc" id="L156">						sinks.iterator().nextInt());</span>
+<span class="fc" id="L157">			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);</span>
 
-<span class="fc" id="L158">			IndexGraphBuilder builder = IndexGraphBuilder.newInstance(gOrig.isDirected());</span>
-<span class="fc" id="L159">			builder.expectedVerticesNum(gOrig.vertices().size() + 2);</span>
-<span class="fc" id="L160">			builder.expectedEdgesNum(gOrig.edges().size() + sources.size() + sinks.size());</span>
+<span class="fc" id="L159">			IndexGraphBuilder builder = IndexGraphBuilder.newInstance(gOrig.isDirected());</span>
+<span class="fc" id="L160">			builder.ensureVertexCapacity(gOrig.vertices().size() + 2);</span>
+<span class="fc" id="L161">			builder.ensureEdgeCapacity(gOrig.edges().size() + sources.size() + sinks.size());</span>
 
-<span class="fc" id="L162">			builder.addVertices(gOrig.vertices());</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">			for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L164">				builder.addEdge(gOrig.edgeSource(e), gOrig.edgeTarget(e));</span>
+<span class="fc" id="L163">			builder.addVertices(gOrig.vertices());</span>
+<span class="fc" id="L164">			builder.addEdgesReassignIds(IEdgeSet.allOf(gOrig));</span>
 <span class="fc" id="L165">			final int originalEdgesThreshold = builder.edges().size();</span>
 
 <span class="fc" id="L167">			final int source = builder.addVertex();</span>

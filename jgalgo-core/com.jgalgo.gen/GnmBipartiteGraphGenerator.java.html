@@ -358,8 +358,8 @@ public class GnmBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 <span class="fc" id="L358">		} else {</span>
 <span class="fc bfc" id="L359" title="All 2 branches covered.">			g = GraphBuilder.newInstance(direction != Direction.Undirected);</span>
 		}
-<span class="fc" id="L361">		g.expectedVerticesNum(leftVertices.size() + rightVertices.size());</span>
-<span class="fc" id="L362">		g.expectedEdgesNum(m);</span>
+<span class="fc" id="L361">		g.ensureVertexCapacity(leftVertices.size() + rightVertices.size());</span>
+<span class="fc" id="L362">		g.ensureEdgeCapacity(m);</span>
 
 <span class="fc" id="L364">		WeightsBool&lt;V&gt; partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);</span>
 <span class="fc bfc" id="L365" title="All 2 branches covered.">		for (V v : leftVertices) {</span>

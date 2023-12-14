@@ -132,34 +132,41 @@ abstract class GraphElementSet extends AbstractIntSet {
 <span class="fc" id="L132">			size--;</span>
 <span class="fc" id="L133">		}</span>
 
+		/* identical to removeIdx without notifying listeners */
+		void rollBackAdd(int idx) {
+<span class="pc bnc" id="L137" title="All 2 branches missed.">			assert idx == size - 1;</span>
+<span class="pc bnc" id="L138" title="All 2 branches missed.">			assert size &gt; 0;</span>
+<span class="fc" id="L139">			size--;</span>
+<span class="fc" id="L140">		}</span>
+
 		@Override
 		public void clear() {
-<span class="fc" id="L137">			size = 0;</span>
-<span class="fc" id="L138">		}</span>
+<span class="fc" id="L144">			size = 0;</span>
+<span class="fc" id="L145">		}</span>
 
 		void swapAndRemove(int removedIdx, int swappedIdx) {
-<span class="fc" id="L141">			checkIdx(removedIdx);</span>
-<span class="fc" id="L142">			checkIdx(swappedIdx);</span>
-<span class="pc bnc" id="L143" title="All 2 branches missed.">			assert swappedIdx == size - 1;</span>
-<span class="pc bnc" id="L144" title="All 2 branches missed.">			assert size &gt; 0;</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (IndexRemoveListener listener : removeListeners)</span>
-<span class="fc" id="L146">				listener.swapAndRemove(removedIdx, swappedIdx);</span>
-<span class="fc" id="L147">			size--;</span>
-<span class="fc" id="L148">		}</span>
+<span class="fc" id="L148">			checkIdx(removedIdx);</span>
+<span class="fc" id="L149">			checkIdx(swappedIdx);</span>
+<span class="pc bnc" id="L150" title="All 2 branches missed.">			assert swappedIdx == size - 1;</span>
+<span class="pc bnc" id="L151" title="All 2 branches missed.">			assert size &gt; 0;</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">			for (IndexRemoveListener listener : removeListeners)</span>
+<span class="fc" id="L153">				listener.swapAndRemove(removedIdx, swappedIdx);</span>
+<span class="fc" id="L154">			size--;</span>
+<span class="fc" id="L155">		}</span>
 
 		GraphElementSet.Mutable copy() {
-<span class="fc" id="L151">			return new GraphElementSet.Mutable(size, isEdges);</span>
+<span class="fc" id="L158">			return new GraphElementSet.Mutable(size, isEdges);</span>
 		}
 
 		@Override
 		void addRemoveListener(IndexRemoveListener listener) {
-<span class="fc" id="L156">			removeListeners.add(Objects.requireNonNull(listener));</span>
-<span class="fc" id="L157">		}</span>
+<span class="fc" id="L163">			removeListeners.add(Objects.requireNonNull(listener));</span>
+<span class="fc" id="L164">		}</span>
 
 		@Override
 		void removeRemoveListener(IndexRemoveListener listener) {
-<span class="fc" id="L161">			removeListeners.remove(listener);</span>
-<span class="fc" id="L162">		}</span>
+<span class="fc" id="L168">			removeListeners.remove(listener);</span>
+<span class="fc" id="L169">		}</span>
 	}
 
 }

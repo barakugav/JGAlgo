@@ -303,7 +303,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L303">			final int[] vertices = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.vertices).toIntArray();</span>
 <span class="fc" id="L304">			g.addVertices(IntList.of(vertices));</span>
 
-<span class="fc" id="L306">			g.expectedEdgesNum(m);</span>
+<span class="fc" id="L306">			g.ensureEdgeCapacity(m);</span>
 <span class="fc" id="L307">			IntBinaryOperator edgeBuilder =</span>
 <span class="fc" id="L308">					IntAdapters.asIntBiOperator((BiFunction&lt;Integer, Integer, Integer&gt;) this.edgeBuilder);</span>
 <span class="fc bfc" id="L309" title="All 2 branches covered.">			if (directed) {</span>
@@ -335,7 +335,7 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L335">			final V[] vertices = (V[]) this.vertices.toArray();</span>
 <span class="fc" id="L336">			g.addVertices(ObjectList.of(vertices));</span>
 
-<span class="fc" id="L338">			g.expectedEdgesNum(m);</span>
+<span class="fc" id="L338">			g.ensureEdgeCapacity(m);</span>
 <span class="fc bfc" id="L339" title="All 2 branches covered.">			if (directed) {</span>
 <span class="fc bfc" id="L340" title="All 2 branches covered.">				for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
 <span class="fc bfc" id="L341" title="All 2 branches covered.">					for (int vIdx = 0; vIdx &lt; n; vIdx++) {</span>

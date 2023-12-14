@@ -193,7 +193,7 @@ public class CompleteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, 
 <span class="fc" id="L193">			final int[] vertices = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.vertices).toIntArray();</span>
 <span class="fc" id="L194">			g.addVertices(IntList.of(vertices));</span>
 
-<span class="fc" id="L196">			g.expectedEdgesNum(m);</span>
+<span class="fc" id="L196">			g.ensureEdgeCapacity(m);</span>
 <span class="fc" id="L197">			IntBinaryOperator edgeBuilder =</span>
 <span class="fc" id="L198">					IntAdapters.asIntBiOperator((BiFunction&lt;Integer, Integer, Integer&gt;) this.edgeBuilder);</span>
 <span class="fc bfc" id="L199" title="All 2 branches covered.">			for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
@@ -218,7 +218,7 @@ public class CompleteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, 
 <span class="fc" id="L218">			final V[] vertices = (V[]) this.vertices.toArray();</span>
 <span class="fc" id="L219">			g.addVertices(ObjectList.of(vertices));</span>
 
-<span class="fc" id="L221">			g.expectedEdgesNum(m);</span>
+<span class="fc" id="L221">			g.ensureEdgeCapacity(m);</span>
 <span class="fc bfc" id="L222" title="All 2 branches covered.">			for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
 <span class="fc" id="L223">				V u = vertices[uIdx];</span>
 <span class="fc bfc" id="L224" title="All 2 branches covered.">				if (directed) {</span>

@@ -70,14 +70,14 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 		}
 <span class="fc" id="L71">	}</span>
 
-	GraphMatrixDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+	GraphMatrixDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
 <span class="fc" id="L74">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L75" title="All 2 branches missed.">		assert builder.isDirected();</span>
+<span class="pc bnc" id="L75" title="All 2 branches missed.">		assert builder.isDirected;</span>
 
 <span class="fc" id="L77">		edgesOutNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesOutNum = newArr);</span>
 <span class="fc" id="L78">		edgesInNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesInNum = newArr);</span>
 
-<span class="fc bfc" id="L80" title="All 2 branches covered.">		for (int m = builder.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		for (int m = builder.edges.size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L81">			edgesOutNum[builder.edgeSource(e)]++;</span>
 <span class="fc" id="L82">			edgesInNum[builder.edgeTarget(e)]++;</span>
 		}

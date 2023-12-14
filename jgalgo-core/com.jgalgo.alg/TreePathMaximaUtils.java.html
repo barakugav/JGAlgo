@@ -288,8 +288,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L288">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L289">		int n = g.vertices().size();</span>
 <span class="fc" id="L290">		IndexGraphBuilder mstBuilder = IndexGraphBuilder.undirected();</span>
-<span class="fc" id="L291">		mstBuilder.expectedVerticesNum(n);</span>
-<span class="fc" id="L292">		mstBuilder.expectedEdgesNum(mstEdges.size());</span>
+<span class="fc" id="L291">		mstBuilder.ensureVertexCapacity(n);</span>
+<span class="fc" id="L292">		mstBuilder.ensureEdgeCapacity(mstEdges.size());</span>
 
 <span class="fc bfc" id="L294" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L295">			int vBuilder = mstBuilder.addVertex();</span>

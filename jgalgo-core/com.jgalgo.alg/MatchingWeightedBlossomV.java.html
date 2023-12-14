@@ -69,8 +69,8 @@ import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 
 <span class="fc" id="L70">		Assertions.Graphs.onlyUndirected(g);</span>
 <span class="fc" id="L71">		IndexGraphBuilder b = IndexGraphBuilder.undirected();</span>
-<span class="fc" id="L72">		b.expectedVerticesNum(g.vertices().size() * 2);</span>
-<span class="fc" id="L73">		b.expectedEdgesNum(g.edges().size() * 2 + g.vertices().size());</span>
+<span class="fc" id="L72">		b.ensureVertexCapacity(g.vertices().size() * 2);</span>
+<span class="fc" id="L73">		b.ensureEdgeCapacity(g.edges().size() * 2 + g.vertices().size());</span>
 
 		/* Add two vertices for each original vertex */
 <span class="fc bfc" id="L76" title="All 2 branches covered.">		for (int n = g.vertices().size(), v = 0; v &lt; n; v++) {</span>

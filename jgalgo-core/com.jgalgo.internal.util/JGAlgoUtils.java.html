@@ -250,24 +250,28 @@ public class JGAlgoUtils {
 <span class="fc" id="L250">			return type.isInstance(val);</span>
 		}
 
+		public &lt;E&gt; E get(Class&lt;E&gt; type) {
+<span class="fc" id="L254">			return getOptional(type).get();</span>
+		}
+
 		@SuppressWarnings(&quot;unchecked&quot;)
-		public &lt;E&gt; Optional&lt;E&gt; get(Class&lt;E&gt; type) {
-<span class="pc bpc" id="L255" title="1 of 2 branches missed.">			return contains(type) ? Optional.of((E) val) : Optional.empty();</span>
+		public &lt;E&gt; Optional&lt;E&gt; getOptional(Class&lt;E&gt; type) {
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">			return contains(type) ? Optional.of((E) val) : Optional.empty();</span>
 		}
 
 		@SuppressWarnings(&quot;unused&quot;)
 		public static class Of2&lt;A, B&gt; extends Variant {
 
 			private Of2(Object val) {
-<span class="fc" id="L262">				super(val);</span>
-<span class="fc" id="L263">			}</span>
+<span class="fc" id="L266">				super(val);</span>
+<span class="fc" id="L267">			}</span>
 
 			public static &lt;A, B&gt; Variant.Of2&lt;A, B&gt; withA(A val) {
-<span class="fc" id="L266">				return new Variant.Of2&lt;&gt;(val);</span>
+<span class="fc" id="L270">				return new Variant.Of2&lt;&gt;(val);</span>
 			}
 
 			public static &lt;A, B&gt; Variant.Of2&lt;A, B&gt; withB(B val) {
-<span class="fc" id="L270">				return new Variant.Of2&lt;&gt;(val);</span>
+<span class="fc" id="L274">				return new Variant.Of2&lt;&gt;(val);</span>
 			}
 
 		}
@@ -275,45 +279,45 @@ public class JGAlgoUtils {
 	}
 
 	public static long longPack(int low, int high) {
-<span class="fc" id="L278">		return ((high &amp; 0xffffffffL) &lt;&lt; 32) | ((low &amp; 0xffffffffL) &lt;&lt; 0);</span>
+<span class="fc" id="L282">		return ((high &amp; 0xffffffffL) &lt;&lt; 32) | ((low &amp; 0xffffffffL) &lt;&lt; 0);</span>
 	}
 
 	public static int long2low(long val) {
-<span class="fc" id="L282">		return (int) ((val &gt;&gt; 0) &amp; 0xffffffffL);</span>
+<span class="fc" id="L286">		return (int) ((val &gt;&gt; 0) &amp; 0xffffffffL);</span>
 	}
 
 	public static int long2high(long val) {
-<span class="fc" id="L286">		return (int) ((val &gt;&gt; 32) &amp; 0xffffffffL);</span>
+<span class="fc" id="L290">		return (int) ((val &gt;&gt; 32) &amp; 0xffffffffL);</span>
 	}
 
 	public static &lt;T&gt; void clearAllUnsafe(T[] arr, IntCollection nonNullIndices) {
 		/* TODO: need to benchmark when its better to clear each entry independently */
-<span class="fc bfc" id="L291" title="All 2 branches covered.">		if (nonNullIndices.size() &lt; arr.length / 8) {</span>
-<span class="fc bfc" id="L292" title="All 2 branches covered.">			for (int v : nonNullIndices)</span>
-<span class="fc" id="L293">				arr[v] = null;</span>
-<span class="pc bnc" id="L294" title="All 2 branches missed.">			assert Arrays.stream(arr).allMatch(Objects::isNull);</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">		if (nonNullIndices.size() &lt; arr.length / 8) {</span>
+<span class="fc bfc" id="L296" title="All 2 branches covered.">			for (int v : nonNullIndices)</span>
+<span class="fc" id="L297">				arr[v] = null;</span>
+<span class="pc bnc" id="L298" title="All 2 branches missed.">			assert Arrays.stream(arr).allMatch(Objects::isNull);</span>
 		} else {
-<span class="fc" id="L296">			Arrays.fill(arr, null);</span>
+<span class="fc" id="L300">			Arrays.fill(arr, null);</span>
 		}
-<span class="fc" id="L298">	}</span>
+<span class="fc" id="L302">	}</span>
 
 	public static &lt;T&gt; Iterator&lt;T&gt; queueIter(Collection&lt;T&gt; elements) {
-<span class="fc" id="L301">		PriorityQueue&lt;T&gt; queue = new ObjectArrayFIFOQueue&lt;&gt;(elements.size());</span>
-<span class="fc bfc" id="L302" title="All 2 branches covered.">		for (T elm : elements)</span>
-<span class="fc" id="L303">			queue.enqueue(elm);</span>
-<span class="fc" id="L304">		return dequeueIter(queue);</span>
+<span class="fc" id="L305">		PriorityQueue&lt;T&gt; queue = new ObjectArrayFIFOQueue&lt;&gt;(elements.size());</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">		for (T elm : elements)</span>
+<span class="fc" id="L307">			queue.enqueue(elm);</span>
+<span class="fc" id="L308">		return dequeueIter(queue);</span>
 	}
 
 	public static &lt;T&gt; Iterator&lt;T&gt; dequeueIter(PriorityQueue&lt;T&gt; queue) {
-<span class="fc" id="L308">		return new Iterator&lt;&gt;() {</span>
+<span class="fc" id="L312">		return new Iterator&lt;&gt;() {</span>
 			@Override
 			public boolean hasNext() {
-<span class="fc bfc" id="L311" title="All 2 branches covered.">				return !queue.isEmpty();</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">				return !queue.isEmpty();</span>
 			}
 
 			@Override
 			public T next() {
-<span class="fc" id="L316">				return queue.dequeue();</span>
+<span class="fc" id="L320">				return queue.dequeue();</span>
 			}
 		};
 	}

@@ -44,7 +44,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 
 	@Override
 	default IndexGraph newCopyOf(Graph&lt;Integer, Integer&gt; g) {
-<span class="fc" id="L47">		return (IndexGraph) IntGraphFactory.super.newCopyOf(g);</span>
+<span class="nc" id="L47">		return (IndexGraph) IntGraphFactory.super.newCopyOf(g);</span>
 	}
 
 	@Override
@@ -53,9 +53,38 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	@Override
 	IndexGraphBuilder newBuilder();
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * &lt;p&gt;
+	 * The given graph vertices and edges must be {@code 0,1,2,...,verticesNum-1} and {@code 0,1,2,...,edgesNum-1}
+	 * respectively.
+	 *
+	 * @throws IllegalArgumentException if the vertices are not {@code 0,1,2,...,verticesNum-1} or if the edges are not
+	 *                                      {@code 0,1,2,...,edgesNum-1}
+	 */
+	@Override
+	default IndexGraphBuilder newBuilderCopyOf(Graph&lt;Integer, Integer&gt; g) {
+<span class="fc" id="L68">		return (IndexGraphBuilder) IntGraphFactory.super.newBuilderCopyOf(g);</span>
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * &lt;p&gt;
+	 * The given graph vertices and edges must be {@code 0,1,2,...,verticesNum-1} and {@code 0,1,2,...,edgesNum-1}
+	 * respectively.
+	 *
+	 * @throws IllegalArgumentException if the vertices are not {@code 0,1,2,...,verticesNum-1} or if the edges are not
+	 *                                      {@code 0,1,2,...,edgesNum-1}
+	 */
+	@Override
+	IndexGraphBuilder newBuilderCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights);
+
 	@Override
 	default IndexGraphFactory allowSelfEdges() {
-<span class="fc" id="L58">		return (IndexGraphFactory) IntGraphFactory.super.allowSelfEdges();</span>
+<span class="fc" id="L87">		return (IndexGraphFactory) IntGraphFactory.super.allowSelfEdges();</span>
 	}
 
 	@Override
@@ -63,7 +92,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 
 	@Override
 	default IndexGraphFactory allowParallelEdges() {
-<span class="fc" id="L66">		return (IndexGraphFactory) IntGraphFactory.super.allowParallelEdges();</span>
+<span class="fc" id="L95">		return (IndexGraphFactory) IntGraphFactory.super.allowParallelEdges();</span>
 	}
 
 	@Override
@@ -87,7 +116,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 * @return a new factory that can build undirected index graphs
 	 */
 	public static IndexGraphFactory undirected() {
-<span class="fc" id="L90">		return new IndexGraphFactoryImpl(false);</span>
+<span class="fc" id="L119">		return new IndexGraphFactoryImpl(false);</span>
 	}
 
 	/**
@@ -96,7 +125,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 * @return a new factory that can build directed index graphs
 	 */
 	public static IndexGraphFactory directed() {
-<span class="fc" id="L99">		return new IndexGraphFactoryImpl(true);</span>
+<span class="fc" id="L128">		return new IndexGraphFactoryImpl(true);</span>
 	}
 
 	/**
@@ -106,27 +135,12 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 * @return          a new factory that can build un/directed index graphs
 	 */
 	public static IndexGraphFactory newInstance(boolean directed) {
-<span class="fc" id="L109">		return new IndexGraphFactoryImpl(directed);</span>
-	}
-
-	/**
-	 * Create a new index graph factory based on a given implementation.
-	 *
-	 * &lt;p&gt;
-	 * The new factory will build graphs with the same capabilities as the given graph, possibly choosing to use a
-	 * similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for such
-	 * use case see {@link IndexGraph#copy()} or {@link IndexGraphFactory#newCopyOf(Graph)}.
-	 *
-	 * @param  g a graph from which the factory should copy its capabilities
-	 * @return   a new graph factory that will create graphs with the same capabilities of the given graph
-	 */
-	public static IndexGraphFactory newFrom(IndexGraph g) {
-<span class="fc" id="L124">		return new IndexGraphFactoryImpl(g);</span>
+<span class="fc" id="L138">		return new IndexGraphFactoryImpl(directed);</span>
 	}
 
 	@Override
 	default IndexGraphFactory setOption(String key, Object value) {
-<span class="nc" id="L129">		return (IndexGraphFactory) IntGraphFactory.super.setOption(key, value);</span>
+<span class="nc" id="L143">		return (IndexGraphFactory) IntGraphFactory.super.setOption(key, value);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

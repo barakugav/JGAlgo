@@ -60,7 +60,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L60">				int selfEdges = Graphs.selfEdges(g).size();</span>
 <span class="fc bfc" id="L61" title="All 2 branches covered.">				if (selfEdges &gt; 0) {</span>
 <span class="fc" id="L62">					IndexGraphBuilder g0 = IndexGraphBuilder.directed();</span>
-<span class="fc" id="L63">					g0.expectedEdgesNum(g.edges().size() - selfEdges);</span>
+<span class="fc" id="L63">					g0.ensureEdgeCapacity(g.edges().size() - selfEdges);</span>
 <span class="fc" id="L64">					g0.addVertices(g.vertices());</span>
 <span class="fc bfc" id="L65" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
 <span class="fc bfc" id="L66" title="All 2 branches covered.">						if (g.edgeSource(e) != g.edgeTarget(e))</span>

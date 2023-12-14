@@ -149,8 +149,8 @@ public class Assertions {
 
 		public static void checkVertex(int vertexIdx, int n) {
 <span class="pc bpc" id="L151" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsGraphIdCheck) {</span>
-<span class="pc bpc" id="L152" title="2 of 4 branches missed.">				if (vertexIdx &lt; 0 || vertexIdx &gt;= n)</span>
-<span class="nc" id="L153">					throw NoSuchVertexException.ofIndex(vertexIdx);</span>
+<span class="fc bfc" id="L152" title="All 4 branches covered.">				if (vertexIdx &lt; 0 || vertexIdx &gt;= n)</span>
+<span class="fc" id="L153">					throw NoSuchVertexException.ofIndex(vertexIdx);</span>
 			}
 <span class="fc" id="L155">		}</span>
 

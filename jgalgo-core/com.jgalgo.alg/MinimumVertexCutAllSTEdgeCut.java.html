@@ -49,7 +49,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 	@Override
 	Iterator&lt;IntSet&gt; minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink) {
 <span class="fc" id="L51">		AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, w);</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (g.getEdge(source, sink) != -1)</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		if (g.containsEdge(source, sink))</span>
 <span class="fc" id="L53">			return null;</span>
 
 <span class="fc" id="L55">		IndexGraph g0 = auxiliaryGraph.graph;</span>

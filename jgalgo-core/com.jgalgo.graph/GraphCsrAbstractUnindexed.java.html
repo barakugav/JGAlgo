@@ -21,39 +21,40 @@ abstract class GraphCsrAbstractUnindexed extends GraphCsrBase {
 
 	final int[] edgesOut;
 
-	GraphCsrAbstractUnindexed(boolean directed, IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges) {
-<span class="fc" id="L25">		super(directed, Variant.Of2.withB(builder), processEdges, null, true, true);</span>
-<span class="fc" id="L26">		edgesOut = processEdges.edgesOut;</span>
+	GraphCsrAbstractUnindexed(boolean directed, IndexGraphBuilderImpl.Artifacts builder,
+			BuilderProcessEdges processEdges) {
+<span class="fc" id="L26">		super(directed, Variant.Of2.withB(builder), processEdges, null, true, true);</span>
+<span class="fc" id="L27">		edgesOut = processEdges.edgesOut;</span>
 
-<span class="fc bfc" id="L28" title="All 2 branches covered.">		for (int m = builder.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L29">			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));</span>
-<span class="fc" id="L30">	}</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">		for (int m = builder.edges.size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L30">			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));</span>
+<span class="fc" id="L31">	}</span>
 
 	GraphCsrAbstractUnindexed(boolean directed, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L33">		super(directed, g, copyVerticesWeights, copyEdgesWeights);</span>
-<span class="fc" id="L34">		final int n = g.vertices().size();</span>
-<span class="fc" id="L35">		final int m = g.edges().size();</span>
+<span class="fc" id="L34">		super(directed, g, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L35">		final int n = g.vertices().size();</span>
+<span class="fc" id="L36">		final int m = g.edges().size();</span>
 
 		int edgesOutArrLen;
-<span class="fc bfc" id="L38" title="All 2 branches covered.">		if (isDirected()) {</span>
-<span class="fc" id="L39">			edgesOutArrLen = m;</span>
+<span class="fc bfc" id="L39" title="All 2 branches covered.">		if (isDirected()) {</span>
+<span class="fc" id="L40">			edgesOutArrLen = m;</span>
 		} else {
-<span class="fc" id="L41">			edgesOutArrLen = 0;</span>
-<span class="fc bfc" id="L42" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L43">				edgesOutArrLen += g.outEdges(u).size();</span>
+<span class="fc" id="L42">			edgesOutArrLen = 0;</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc" id="L44">				edgesOutArrLen += g.outEdges(u).size();</span>
 		}
-<span class="fc" id="L45">		edgesOut = new int[edgesOutArrLen];</span>
+<span class="fc" id="L46">		edgesOut = new int[edgesOutArrLen];</span>
 
-<span class="fc bfc" id="L47" title="All 2 branches covered.">		for (int eIdx = 0, u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L48">			edgesOutBegin[u] = eIdx;</span>
-<span class="fc bfc" id="L49" title="All 2 branches covered.">			for (int e : g.outEdges(u))</span>
-<span class="fc" id="L50">				edgesOut[eIdx++] = e;</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		for (int eIdx = 0, u = 0; u &lt; n; u++) {</span>
+<span class="fc" id="L49">			edgesOutBegin[u] = eIdx;</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">			for (int e : g.outEdges(u))</span>
+<span class="fc" id="L51">				edgesOut[eIdx++] = e;</span>
 		}
-<span class="fc" id="L52">		edgesOutBegin[n] = edgesOutArrLen;</span>
+<span class="fc" id="L53">		edgesOutBegin[n] = edgesOutArrLen;</span>
 
-<span class="fc bfc" id="L54" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L55">			setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));</span>
-<span class="fc" id="L56">	}</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L56">			setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));</span>
+<span class="fc" id="L57">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

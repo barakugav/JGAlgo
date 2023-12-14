@@ -67,8 +67,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 
 		/* Build a graph with each MST edge duplicated */
 <span class="fc" id="L69">		IndexGraphBuilder g1Builder = IndexGraphBuilder.undirected();</span>
-<span class="fc" id="L70">		g1Builder.expectedVerticesNum(n);</span>
-<span class="fc" id="L71">		g1Builder.expectedEdgesNum(mst.size() + mst.size() * 2);</span>
+<span class="fc" id="L70">		g1Builder.ensureVertexCapacity(n);</span>
+<span class="fc" id="L71">		g1Builder.ensureEdgeCapacity(mst.size() + mst.size() * 2);</span>
 <span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L73">			int vBuilder = g1Builder.addVertex();</span>
 <span class="pc bnc" id="L74" title="All 2 branches missed.">			assert v == vBuilder;</span>

@@ -86,15 +86,15 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		}
 <span class="fc" id="L87">	}</span>
 
-	GraphArrayUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+	GraphArrayUndirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
 <span class="fc" id="L90">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L91" title="All 2 branches missed.">		assert !builder.isDirected();</span>
+<span class="pc bnc" id="L91" title="All 2 branches missed.">		assert !builder.isDirected;</span>
 
 <span class="fc" id="L93">		edgesContainer =</span>
 <span class="fc" id="L94">				newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -&gt; edges = newArr);</span>
 <span class="fc" id="L95">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
 
-<span class="fc bfc" id="L97" title="All 2 branches covered.">		for (int m = builder.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">		for (int m = builder.edges.size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L98">			int source = builder.edgeSource(e);</span>
 <span class="fc" id="L99">			int target = builder.edgeTarget(e);</span>
 

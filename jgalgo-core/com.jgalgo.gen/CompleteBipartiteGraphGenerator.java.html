@@ -293,8 +293,8 @@ public class CompleteBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerat
 <span class="fc" id="L293">					IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.leftVertices).toIntArray();</span>
 <span class="fc" id="L294">			final int[] rightVertices =</span>
 <span class="fc" id="L295">					IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.rightVertices).toIntArray();</span>
-<span class="fc" id="L296">			g.expectedVerticesNum(leftVertices.length + rightVertices.length);</span>
-<span class="fc" id="L297">			g.expectedEdgesNum(m);</span>
+<span class="fc" id="L296">			g.ensureVertexCapacity(leftVertices.length + rightVertices.length);</span>
+<span class="fc" id="L297">			g.ensureEdgeCapacity(m);</span>
 
 <span class="fc" id="L299">			IWeightsBool partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);</span>
 <span class="fc bfc" id="L300" title="All 2 branches covered.">			for (int v : leftVertices) {</span>
@@ -322,8 +322,8 @@ public class CompleteBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerat
 <span class="fc bfc" id="L322" title="All 2 branches covered.">			GraphBuilder&lt;V, E&gt; g = GraphBuilder.newInstance(direction != Direction.Undirected);</span>
 <span class="fc" id="L323">			final V[] leftVertices = (V[]) this.leftVertices.toArray();</span>
 <span class="fc" id="L324">			final V[] rightVertices = (V[]) this.rightVertices.toArray();</span>
-<span class="fc" id="L325">			g.expectedVerticesNum(leftVertices.length + rightVertices.length);</span>
-<span class="fc" id="L326">			g.expectedEdgesNum(m);</span>
+<span class="fc" id="L325">			g.ensureVertexCapacity(leftVertices.length + rightVertices.length);</span>
+<span class="fc" id="L326">			g.ensureEdgeCapacity(m);</span>
 
 <span class="fc" id="L328">			WeightsBool&lt;V&gt; partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);</span>
 <span class="fc bfc" id="L329" title="All 2 branches covered.">			for (V v : leftVertices) {</span>

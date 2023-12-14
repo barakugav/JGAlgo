@@ -61,7 +61,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 		}
 <span class="fc" id="L62">	}</span>
 
-	GraphHashmapMultiAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
+	GraphHashmapMultiAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl.Artifacts builder) {
 <span class="fc" id="L65">		super(capabilities, builder);</span>
 <span class="fc" id="L66">		edgeNextContainer = newEdgesIntContainer(-1, newArr -&gt; edgeNext = newArr);</span>
 <span class="fc" id="L67">		edgePrevContainer = newEdgesIntContainer(-1, newArr -&gt; edgePrev = newArr);</span>

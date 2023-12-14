@@ -53,7 +53,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 <span class="fc" id="L54">		IndexGraphBuilder auxGraph = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L55">		auxGraph.addVertices(g.vertices());</span>
-<span class="fc" id="L56">		auxGraph.expectedEdgesNum(n - 1);</span>
+<span class="fc" id="L56">		auxGraph.ensureEdgeCapacity(n - 1);</span>
 <span class="fc" id="L57">		int[] auxWeights = new int[n - 1];</span>
 
 <span class="fc" id="L59">		IntStack stack = new IntArrayList();</span>

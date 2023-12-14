@@ -54,7 +54,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	}
 
 	int[] computeMinCut(IndexGraph g, int source, int sink, AuxiliaryGraph auxiliaryGraph) {
-<span class="fc bfc" id="L57" title="All 2 branches covered.">		if (g.getEdge(source, sink) != -1)</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">		if (g.containsEdge(source, sink))</span>
 <span class="fc" id="L58">			return null;</span>
 
 <span class="fc" id="L60">		IndexGraph g0 = auxiliaryGraph.graph;</span>

@@ -73,7 +73,7 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 <span class="fc" id="L73">				mVtoV[mGn++] = u;</span>
 <span class="fc" id="L74">		IndexGraphBuilder mG0 = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L75">		mG0.addVertices(range(mGn));</span>
-<span class="fc" id="L76">		mG0.expectedEdgesNum(mGn * (mGn - 1) / 2);</span>
+<span class="fc" id="L76">		mG0.ensureEdgeCapacity(mGn * (mGn - 1) / 2);</span>
 <span class="fc bfc" id="L77" title="All 2 branches covered.">		for (int v = 0; v &lt; mGn; v++)</span>
 <span class="fc bfc" id="L78" title="All 2 branches covered.">			for (int u = v + 1; u &lt; mGn; u++)</span>
 <span class="fc" id="L79">				mG0.addEdge(v, u);</span>
@@ -91,7 +91,7 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 		/* Build a graph of the union of the MST and the matching result */
 <span class="fc" id="L92">		IndexGraphBuilder g1Builder = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L93">		g1Builder.addVertices(g.vertices());</span>
-<span class="fc" id="L94">		g1Builder.expectedEdgesNum(mst.size() + matching.edges().size());</span>
+<span class="fc" id="L94">		g1Builder.ensureEdgeCapacity(mst.size() + matching.edges().size());</span>
 <span class="fc" id="L95">		int[] g1EdgeRef = new int[mst.size() + matching.edges().size()];</span>
 <span class="fc bfc" id="L96" title="All 2 branches covered.">		for (int e : mst) {</span>
 <span class="fc" id="L97">			int g1Edge = g1Builder.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>

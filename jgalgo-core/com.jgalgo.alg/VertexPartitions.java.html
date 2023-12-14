@@ -298,7 +298,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 <span class="fc" id="L298">		final int m = g.edges().size();</span>
 <span class="fc bfc" id="L299" title="All 2 branches covered.">		if (parallelEdges) {</span>
 <span class="fc bfc" id="L300" title="All 2 branches covered.">			if (selfEdges)</span>
-<span class="fc" id="L301">				gb.expectedEdgesNum(m);</span>
+<span class="fc" id="L301">				gb.ensureEdgeCapacity(m);</span>
 <span class="fc bfc" id="L302" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L303">				int b1 = partition.vertexBlock(g.edgeSource(e));</span>
 <span class="fc" id="L304">				int b2 = partition.vertexBlock(g.edgeTarget(e));</span>
@@ -383,7 +383,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 <span class="fc" id="L383">			IntGraph ig = VertexPartitions.blocksGraph(g.indexGraph(), indexPartition, parallelEdges, selfEdges);</span>
 <span class="fc" id="L384">			IntGraphBuilder gb = IntGraphBuilder.newInstance(g.isDirected());</span>
 <span class="fc" id="L385">			gb.addVertices(ig.vertices());</span>
-<span class="fc" id="L386">			gb.expectedEdgesNum(ig.edges().size());</span>
+<span class="fc" id="L386">			gb.ensureEdgeCapacity(ig.edges().size());</span>
 <span class="fc bfc" id="L387" title="All 2 branches covered.">			for (int e : ig.edges())</span>
 <span class="fc" id="L388">				gb.addEdge(ig.edgeSource(e), ig.edgeTarget(e), eiMap.indexToIdInt(e));</span>
 <span class="fc" id="L389">			return gb.build();</span>
@@ -446,7 +446,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 <span class="fc" id="L446">			IntGraph ig = VertexPartitions.blocksGraph(g.indexGraph(), indexPartition, parallelEdges, selfEdges);</span>
 <span class="fc" id="L447">			GraphBuilder&lt;Integer, E&gt; gb = GraphBuilder.newInstance(g.isDirected());</span>
 <span class="fc" id="L448">			gb.addVertices(ig.vertices());</span>
-<span class="fc" id="L449">			gb.expectedEdgesNum(ig.edges().size());</span>
+<span class="fc" id="L449">			gb.ensureEdgeCapacity(ig.edges().size());</span>
 <span class="fc bfc" id="L450" title="All 2 branches covered.">			for (int e : ig.edges())</span>
 <span class="fc" id="L451">				gb.addEdge(Integer.valueOf(ig.edgeSource(e)), Integer.valueOf(ig.edgeTarget(e)), eiMap.indexToId(e));</span>
 <span class="fc" id="L452">			return gb.build();</span>

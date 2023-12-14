@@ -245,6 +245,29 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	}
 
 	/**
+	 * Check whether the graph contains an edge with the given source and target.
+	 *
+	 * &lt;p&gt;
+	 * If the graph is undirected, the method will return {@code true} if there is an edge whose end-points are
+	 * {@code source} and {@code target}, regardless of which is the source and which is the target.
+	 *
+	 * @param  source                the source vertex
+	 * @param  target                the target vertex
+	 * @return                       {@code true} if the graph contains an edge with the given source and target,
+	 *                               {@code false} otherwise
+	 * @throws NoSuchVertexException if {@code source} or {@code target} are not valid vertices identifiers
+	 */
+	default boolean containsEdge(int source, int target) {
+<span class="fc bfc" id="L261" title="All 2 branches covered.">		return getEdge(source, target) != -1;</span>
+	}
+
+	@Deprecated
+	@Override
+	default boolean containsEdge(Integer source, Integer target) {
+<span class="fc bfc" id="L267" title="All 2 branches covered.">		return getEdge(source.intValue(), target.intValue()) != -1;</span>
+	}
+
+	/**
 	 * Get the edge whose source is {@code source} and target is {@code target}.
 	 *
 	 * &lt;p&gt;
@@ -261,12 +284,12 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @throws NoSuchVertexException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	default int getEdge(int source, int target) {
-<span class="fc bfc" id="L264" title="All 2 branches covered.">		for (IEdgeIter it = outEdges(source).iterator(); it.hasNext();) {</span>
-<span class="fc" id="L265">			int e = it.nextInt();</span>
-<span class="fc bfc" id="L266" title="All 2 branches covered.">			if (it.targetInt() == target)</span>
-<span class="fc" id="L267">				return e;</span>
-<span class="fc" id="L268">		}</span>
-<span class="fc" id="L269">		return -1;</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">		for (IEdgeIter it = outEdges(source).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L288">			int e = it.nextInt();</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">			if (it.targetInt() == target)</span>
+<span class="fc" id="L290">				return e;</span>
+<span class="fc" id="L291">		}</span>
+<span class="fc" id="L292">		return -1;</span>
 	}
 
 	/**
@@ -277,8 +300,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer getEdge(Integer source, Integer target) {
-<span class="fc" id="L280">		int e = getEdge(source.intValue(), target.intValue());</span>
-<span class="fc bfc" id="L281" title="All 2 branches covered.">		return e == -1 ? null : Integer.valueOf(e);</span>
+<span class="fc" id="L303">		int e = getEdge(source.intValue(), target.intValue());</span>
+<span class="pc bpc" id="L304" title="1 of 2 branches missed.">		return e == -1 ? null : Integer.valueOf(e);</span>
 	}
 
 	/**
@@ -299,7 +322,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default IEdgeSet getEdges(Integer source, Integer target) {
-<span class="fc" id="L302">		return getEdges(source.intValue(), target.intValue());</span>
+<span class="fc" id="L325">		return getEdges(source.intValue(), target.intValue());</span>
 	}
 
 	/**
@@ -347,8 +370,18 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void addEdge(Integer source, Integer target, Integer edge) {
-<span class="fc" id="L350">		addEdge(source.intValue(), target.intValue(), edge.intValue());</span>
-<span class="fc" id="L351">	}</span>
+<span class="fc" id="L373">		addEdge(source.intValue(), target.intValue(), edge.intValue());</span>
+<span class="fc" id="L374">	}</span>
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * &lt;p&gt;
+	 * Prefer to pass {@link IEdgeSet} instead of {@link EdgeSet}&amp;lt;{@link Integer}, {@link Integer}&amp;gt; as set of
+	 * edges. See {@link IEdgeSet#of(IntSet, IntGraph)}.
+	 */
+	@Override
+	void addEdges(EdgeSet&lt;? extends Integer, ? extends Integer&gt; edges);
 
 	/**
 	 * Remove an edge from the graph.
@@ -366,8 +399,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void removeEdge(Integer edge) {
-<span class="fc" id="L369">		removeEdge(edge.intValue());</span>
-<span class="fc" id="L370">	}</span>
+<span class="fc" id="L402">		removeEdge(edge.intValue());</span>
+<span class="fc" id="L403">	}</span>
 
 	/**
 	 * Remove all the edges of a vertex.
@@ -376,9 +409,9 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier
 	 */
 	default void removeEdgesOf(int vertex) {
-<span class="fc" id="L379">		removeOutEdgesOf(vertex);</span>
-<span class="fc" id="L380">		removeInEdgesOf(vertex);</span>
-<span class="fc" id="L381">	}</span>
+<span class="fc" id="L412">		removeOutEdgesOf(vertex);</span>
+<span class="fc" id="L413">		removeInEdgesOf(vertex);</span>
+<span class="fc" id="L414">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -388,8 +421,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void removeEdgesOf(Integer vertex) {
-<span class="fc" id="L391">		removeEdgesOf(vertex.intValue());</span>
-<span class="fc" id="L392">	}</span>
+<span class="fc" id="L424">		removeEdgesOf(vertex.intValue());</span>
+<span class="fc" id="L425">	}</span>
 
 	/**
 	 * Remove all edges whose source is {@code source}.
@@ -398,11 +431,11 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @throws NoSuchVertexException if {@code source} is not a valid vertex identifier
 	 */
 	default void removeOutEdgesOf(int source) {
-<span class="fc bfc" id="L401" title="All 2 branches covered.">		for (IEdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L402">			eit.nextInt();</span>
-<span class="fc" id="L403">			eit.remove();</span>
+<span class="fc bfc" id="L434" title="All 2 branches covered.">		for (IEdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L435">			eit.nextInt();</span>
+<span class="fc" id="L436">			eit.remove();</span>
 		}
-<span class="fc" id="L405">	}</span>
+<span class="fc" id="L438">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -412,8 +445,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void removeOutEdgesOf(Integer vertex) {
-<span class="fc" id="L415">		removeOutEdgesOf(vertex.intValue());</span>
-<span class="fc" id="L416">	}</span>
+<span class="fc" id="L448">		removeOutEdgesOf(vertex.intValue());</span>
+<span class="fc" id="L449">	}</span>
 
 	/**
 	 * Remove all edges whose target is {@code target}.
@@ -422,11 +455,11 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @throws NoSuchVertexException if {@code target} is not a valid vertex identifier
 	 */
 	default void removeInEdgesOf(int target) {
-<span class="fc bfc" id="L425" title="All 2 branches covered.">		for (IEdgeIter eit = inEdges(target).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L426">			eit.nextInt();</span>
-<span class="fc" id="L427">			eit.remove();</span>
+<span class="fc bfc" id="L458" title="All 2 branches covered.">		for (IEdgeIter eit = inEdges(target).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L459">			eit.nextInt();</span>
+<span class="fc" id="L460">			eit.remove();</span>
 		}
-<span class="fc" id="L429">	}</span>
+<span class="fc" id="L462">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -436,8 +469,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void removeInEdgesOf(Integer vertex) {
-<span class="fc" id="L439">		removeInEdgesOf(vertex.intValue());</span>
-<span class="fc" id="L440">	}</span>
+<span class="fc" id="L472">		removeInEdgesOf(vertex.intValue());</span>
+<span class="fc" id="L473">	}</span>
 
 	/**
 	 * Set a new identifier for an existing edge.
@@ -461,8 +494,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void renameEdge(Integer edge, Integer newId) {
-<span class="fc" id="L464">		renameEdge(edge.intValue(), newId.intValue());</span>
-<span class="fc" id="L465">	}</span>
+<span class="fc" id="L497">		renameEdge(edge.intValue(), newId.intValue());</span>
+<span class="fc" id="L498">	}</span>
 
 	/**
 	 * Move an existing edge to new source and target vertices.
@@ -490,8 +523,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void moveEdge(Integer edge, Integer newSource, Integer newTarget) {
-<span class="fc" id="L493">		moveEdge(edge.intValue(), newSource.intValue(), newTarget.intValue());</span>
-<span class="fc" id="L494">	}</span>
+<span class="fc" id="L526">		moveEdge(edge.intValue(), newSource.intValue(), newTarget.intValue());</span>
+<span class="fc" id="L527">	}</span>
 
 	/**
 	 * Reverse an edge by switching its source and target.
@@ -502,8 +535,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 *                                      reverse of {@code edge} already exists in the graph
 	 */
 	default void reverseEdge(int edge) {
-<span class="fc" id="L505">		moveEdge(edge, edgeTarget(edge), edgeSource(edge));</span>
-<span class="fc" id="L506">	}</span>
+<span class="fc" id="L538">		moveEdge(edge, edgeTarget(edge), edgeSource(edge));</span>
+<span class="fc" id="L539">	}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -513,8 +546,8 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default void reverseEdge(Integer edge) {
-<span class="fc" id="L516">		reverseEdge(edge.intValue());</span>
-<span class="fc" id="L517">	}</span>
+<span class="fc" id="L549">		reverseEdge(edge.intValue());</span>
+<span class="fc" id="L550">	}</span>
 
 	/**
 	 * Get the source vertex of an edge.
@@ -537,7 +570,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer edgeSource(Integer edge) {
-<span class="fc" id="L540">		return Integer.valueOf(edgeSource(edge.intValue()));</span>
+<span class="fc" id="L573">		return Integer.valueOf(edgeSource(edge.intValue()));</span>
 	}
 
 	/**
@@ -561,7 +594,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer edgeTarget(Integer edge) {
-<span class="fc" id="L564">		return Integer.valueOf(edgeTarget(edge.intValue()));</span>
+<span class="fc" id="L597">		return Integer.valueOf(edgeTarget(edge.intValue()));</span>
 	}
 
 	/**
@@ -589,46 +622,26 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer edgeEndpoint(Integer edge, Integer endpoint) {
-<span class="fc" id="L592">		return Integer.valueOf(edgeEndpoint(edge.intValue(), endpoint.intValue()));</span>
+<span class="fc" id="L625">		return Integer.valueOf(edgeEndpoint(edge.intValue(), endpoint.intValue()));</span>
 	}
 
 	/**
-	 * Get the vertices weights of some key.
+	 * {@inheritDoc}
 	 *
-	 * &lt;p&gt;
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  key        key of the weights
-	 * @return            vertices weights of the key, or {@code null} if no container found with the specified key
-	 * @param  &lt;T&gt;        The weight data type
-	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
-	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
+	 * The return object is always some sub class of {@link IWeights}, such as {@link IWeightsInt} or
+	 * {@link IWeightsDouble}.
 	 */
-	&lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT getVerticesIWeights(String key);
-
 	@Override
-	default &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getVerticesWeights(String key) {
-<span class="fc" id="L611">		return getVerticesIWeights(key);</span>
-	}
+	&lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getVerticesWeights(String key);
 
 	/**
-	 * Get the edges weights of some key.
+	 * {@inheritDoc}
 	 *
-	 * &lt;p&gt;
-	 * See {@link IWeights} for a complete documentation of the weights containers.
-	 *
-	 * @param  &lt;T&gt;        The weight data type
-	 * @param  &lt;WeightsT&gt; the weights container, used to avoid casts of containers of primitive types such as
-	 *                        {@link IWeightsInt}, {@link IWeightsDouble} ect.
-	 * @param  key        key of the weights
-	 * @return            edges weights of the key, or {@code null} if no container found with the specified key
+	 * The return object is always some sub class of {@link IWeights}, such as {@link IWeightsInt} or
+	 * {@link IWeightsDouble}.
 	 */
-	&lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT getEdgesIWeights(String key);
-
 	@Override
-	default &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getEdgesWeights(String key) {
-<span class="fc" id="L630">		return getEdgesIWeights(key);</span>
-	}
+	&lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getEdgesWeights(String key);
 
 	@Override
 	IndexIntIdMap indexGraphVerticesMap();
@@ -638,49 +651,49 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 
 	@Override
 	default IntGraph copy() {
-<span class="fc" id="L641">		return (IntGraph) Graph.super.copy();</span>
+<span class="fc" id="L654">		return (IntGraph) Graph.super.copy();</span>
 	}
 
 	@Override
 	default IntGraph copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L646">		return IntGraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L659">		return (IntGraph) Graph.super.copy(copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	@Override
 	default IntGraph immutableCopy() {
-<span class="fc" id="L651">		return IntGraphBuilder.fromGraph(this).build();</span>
+<span class="fc" id="L664">		return IntGraphBuilder.newCopyOf(this).build();</span>
 	}
 
 	@Override
 	default IntGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L656">		IndexIntIdMap viMap = indexGraphVerticesMap();</span>
-<span class="fc" id="L657">		IndexIntIdMap eiMap = indexGraphEdgesMap();</span>
-<span class="fc bfc" id="L658" title="All 2 branches covered.">		if (isDirected()) {</span>
-<span class="fc" id="L659">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
-<span class="fc" id="L660">					GraphCsrDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
-<span class="fc" id="L661">			IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="fc" id="L662">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="fc" id="L663">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="fc" id="L664">			return new IntGraphImpl(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
+<span class="fc" id="L669">		IndexIntIdMap viMap = indexGraphVerticesMap();</span>
+<span class="fc" id="L670">		IndexIntIdMap eiMap = indexGraphEdgesMap();</span>
+<span class="fc bfc" id="L671" title="All 2 branches covered.">		if (isDirected()) {</span>
+<span class="fc" id="L672">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
+<span class="fc" id="L673">					GraphCsrDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L674">			IndexGraph iGraph = reIndexedGraph.graph();</span>
+<span class="fc" id="L675">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
+<span class="fc" id="L676">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="fc" id="L677">			return new IntGraphImpl(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
 		} else {
-<span class="fc" id="L666">			IndexGraph iGraph = new GraphCsrUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
-<span class="fc" id="L667">			return new IntGraphImpl(iGraph, viMap, eiMap, null, null);</span>
+<span class="fc" id="L679">			IndexGraph iGraph = new GraphCsrUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L680">			return new IntGraphImpl(iGraph, viMap, eiMap, null, null);</span>
 		}
 	}
 
 	@Override
 	default IntGraph immutableView() {
-<span class="fc" id="L673">		return (IntGraph) Graph.super.immutableView();</span>
+<span class="fc" id="L686">		return (IntGraph) Graph.super.immutableView();</span>
 	}
 
 	@Override
 	default IntGraph reverseView() {
-<span class="fc" id="L678">		return (IntGraph) Graph.super.reverseView();</span>
+<span class="fc" id="L691">		return (IntGraph) Graph.super.reverseView();</span>
 	}
 
 	@Override
 	default IntGraph undirectedView() {
-<span class="fc" id="L683">		return (IntGraph) Graph.super.undirectedView();</span>
+<span class="fc" id="L696">		return (IntGraph) Graph.super.undirectedView();</span>
 	}
 
 	/**
@@ -691,7 +704,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 */
 	@Override
 	default IntGraph subGraphCopy(Collection&lt;Integer&gt; vertices, Collection&lt;Integer&gt; edges) {
-<span class="fc" id="L694">		return (IntGraph) Graph.super.subGraphCopy(vertices, edges);</span>
+<span class="fc" id="L707">		return (IntGraph) Graph.super.subGraphCopy(vertices, edges);</span>
 	}
 
 	/**
@@ -704,7 +717,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @return a new undirected empty graph
 	 */
 	static IntGraph newUndirected() {
-<span class="fc" id="L707">		return IntGraphFactory.undirected().newGraph();</span>
+<span class="fc" id="L720">		return IntGraphFactory.undirected().newGraph();</span>
 	}
 
 	/**
@@ -717,7 +730,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @return a new directed empty graph
 	 */
 	static IntGraph newDirected() {
-<span class="fc" id="L720">		return IntGraphFactory.directed().newGraph();</span>
+<span class="fc" id="L733">		return IntGraphFactory.directed().newGraph();</span>
 	}
 
 }

@@ -183,7 +183,7 @@ class CyclesEnumeratorJohnson extends CyclesEnumeratorAbstract {
 <span class="fc" id="L183">				int nSub = nFull - subToFull;</span>
 
 <span class="fc" id="L185">				IndexGraphBuilder gSubBuilder = IndexGraphBuilder.directed();</span>
-<span class="fc" id="L186">				gSubBuilder.expectedVerticesNum(nSub);</span>
+<span class="fc" id="L186">				gSubBuilder.ensureVertexCapacity(nSub);</span>
 <span class="fc bfc" id="L187" title="All 2 branches covered.">				for (int uSubIdx = 0; uSubIdx &lt; nSub; uSubIdx++) {</span>
 <span class="fc" id="L188">					int uIdx = gSubBuilder.addVertex();</span>
 <span class="pc bnc" id="L189" title="All 2 branches missed.">					assert uIdx == uSubIdx;</span>
@@ -231,7 +231,7 @@ class CyclesEnumeratorJohnson extends CyclesEnumeratorAbstract {
 	}
 
 	private static boolean hasSelfEdge(IndexGraph g, int u) {
-<span class="fc bfc" id="L234" title="All 2 branches covered.">		return g.getEdge(u, u) != -1;</span>
+<span class="fc" id="L234">		return g.containsEdge(u, u);</span>
 	}
 
 	private static class StronglyConnectedComponent {

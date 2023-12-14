@@ -27,6 +27,13 @@ import java.util.Set;
  * to create immutable graphs, but can also be used to build mutable graph and may gain a performance boost compared to
  * creating an empty graph and adding the same vertices and edges.
  *
+ * &lt;p&gt;
+ * To create a new builder, use one of the static methods {@link #undirected()}, {@link #directed()} or
+ * {@link #newInstance(boolean)}. For more options, create a new {@link GraphFactory} and use
+ * {@link GraphFactory#newBuilder()}, or use {@link GraphFactory#newBuilderCopyOf(Graph)} to create a builder
+ * initialized with an existing graph vertices and edges.
+ *
+ *
  * @param  &lt;V&gt; the vertices type
  * @param  &lt;E&gt; the edges type
  * @see        GraphBuilder#undirected()
@@ -79,31 +86,77 @@ public interface GraphBuilder&lt;V, E&gt; {
 	/**
 	 * Add a new edge to the graph.
 	 *
-	 * @param source the source vertex of the new edge
-	 * @param target the target vertex of the new edge
-	 * @param edge   the new edge
+	 * &lt;p&gt;
+	 * If the graph does not support self or parallel edges and the added edge is such edge, an exception will
+	 * &lt;b&gt;not&lt;/b&gt; be thrown. The edges are validated only when the graph is built, and an exception will be thrown only
+	 * then.
+	 *
+	 * @param  source                   the source vertex of the new edge
+	 * @param  target                   the target vertex of the new edge
+	 * @param  edge                     the new edge
+	 * @throws IllegalArgumentException if {@code edge} is already in the graph
+	 * @throws NullPointerException     if {@code edge} is {@code null}, as {@code null} identifiers are not allowed
+	 * @throws NoSuchVertexException    if {@code source} or {@code target} are not vertices in the graph
 	 */
 	void addEdge(V source, V target, E edge);
 
 	/**
-	 * Hint about the number of vertices expected to be added to the builder.
+	 * Add multiple edges to the built graph.
 	 *
 	 * &lt;p&gt;
-	 * This method does not affect the built graph, only the builder itself.
+	 * The {@link EdgeSet} passed to this method contains both the edges themselves (the identifiers) and their
+	 * endpoints (sources and targets), see {@link EdgeSet#iterator()}, {@link EdgeIter#source()},
+	 * {@link EdgeIter#target()}. An {@link EdgeSet} can be obtained from one of the methods of a {@link Graph}, or
+	 * using {@link EdgeSet#of(Set, Graph)}.
 	 *
-	 * @param verticesNum the expected number of vertices to be added to the builder
+	 * &lt;p&gt;
+	 * An edge can be any non null hashable object, namely it must implement the {@link Object#hashCode()} and
+	 * {@link Object#equals(Object)} methods. Duplicate edges are not allowed.
+	 *
+	 * &lt;p&gt;
+	 * In the following snippet, a maximum cardinality matching is computed on a graph, and a new graph containing only
+	 * the matching edges is created:
+	 *
+	 * &lt;pre&gt; {@code
+	 * Graph&lt;V, E&gt; g = ...;
+	 * Set&lt;E&gt; matching = MatchingAlgo.newInstance().computeMaximumMatching(g, null).edges();
+	 *
+	 * GraphBuilder&lt;V,E&gt; matchingGraphBuilder = GraphBuilder.undirected();
+	 * matchingGraphBuilder.addVertices(g.vertices());
+	 * matchingGraphBuilder.addEdges(EdgeSet.of(matching, g));
+	 * Graph&lt;V,E&gt; matchingGraph = matchingGraphBuilder.build()
+	 * }&lt;/pre&gt;
+	 *
+	 * @param  edges                    the set of new edges, from which the edges identifiers as well as the endpoints
+	 *                                      (source and target) of each edge are accessible (see
+	 *                                      {@link EdgeSet#iterator()}, {@link EdgeIter#source()},
+	 *                                      {@link EdgeIter#target()}).
+	 * @throws IllegalArgumentException if {@code edges} contains duplications, or if any of the edges is already in the
+	 *                                      graph
+	 * @throws NullPointerException     if {@code edges} is {@code null} or if any of the edges is {@code null}
+	 * @throws NoSuchVertexException    if any of the edges endpoint is not a vertex in the graph
 	 */
-	void expectedVerticesNum(int verticesNum);
+	void addEdges(EdgeSet&lt;? extends V, ? extends E&gt; edges);
 
 	/**
-	 * Hint about the number of edges expected to be added to the builder.
+	 * Hint the implementation to allocate space for at least {@code vertexCapacity} vertices.
 	 *
 	 * &lt;p&gt;
-	 * This method does not affect the built graph, only the builder itself.
+	 * The implementation may ignore any calls to this function.
 	 *
-	 * @param edgesNum the expected number of edges to be added to the builder
+	 * @param vertexCapacity the minimum number of vertices to allocate space for
 	 */
-	void expectedEdgesNum(int edgesNum);
+	void ensureVertexCapacity(int vertexCapacity);
+
+	/**
+	 * Hint the implementation to allocate space for at least {@code edgeCapacity} edges.
+	 *
+	 * &lt;p&gt;
+	 * The implementation may ignore any calls to this function.
+	 *
+	 * @param edgeCapacity the minimum number of edges to allocate space for
+	 */
+	void ensureEdgeCapacity(int edgeCapacity);
 
 	/**
 	 * Get the vertices weights of some key.
@@ -134,7 +187,7 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 */
 	default &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type) {
-<span class="fc" id="L137">		return addVerticesWeights(key, type, null);</span>
+<span class="fc" id="L190">		return addVerticesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -193,7 +246,7 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
 	 */
 	default &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type) {
-<span class="fc" id="L196">		return addEdgesWeights(key, type, null);</span>
+<span class="fc" id="L249">		return addEdgesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -238,14 +291,27 @@ public interface GraphBuilder&lt;V, E&gt; {
 	/**
 	 * Build a new immutable graph with the builder vertices and edges.
 	 *
-	 * @return a new immutable graph with the vertices and edges that were added to the builder.
+	 * &lt;p&gt;
+	 * Before the graph is built, the edges are validated. If the graph does not support self or parallel edges and such
+	 * edges were added to the builder, an exception will be thrown.
+	 *
+	 * @return                          a new immutable graph with the vertices and edges that were added to the
+	 *                                  builder.
+	 * @throws IllegalArgumentException if the built graph does not support self or parallel edges and such edges were
+	 *                                      added to the builder
 	 */
 	Graph&lt;V, E&gt; build();
 
 	/**
 	 * Build a new mutable graph with the builder vertices and edges.
 	 *
-	 * @return a new mutable graph with the vertices and edges that were added to the builder.
+	 * &lt;p&gt;
+	 * Before the graph is built, the edges are validated. If the graph does not support self or parallel edges and such
+	 * edges were added to the builder, an exception will be thrown.
+	 *
+	 * @return                          a new mutable graph with the vertices and edges that were added to the builder.
+	 * @throws IllegalArgumentException if the built graph does not support self or parallel edges and such edges were
+	 *                                      added to the builder
 	 */
 	Graph&lt;V, E&gt; buildMutable();
 
@@ -256,12 +322,16 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * The graphs built by this builder will have the same default capabilities as {@link GraphFactory}, namely they
 	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
 	 *
+	 * &lt;p&gt;
+	 * For more options to instantiate a builder, create a new {@link GraphFactory} and use one of its
+	 * {@code newBuilder} methods.
+	 *
 	 * @param  &lt;V&gt; the vertices type
 	 * @param  &lt;E&gt; the edges type
 	 * @return     a new empty builder for undirected graphs
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; undirected() {
-<span class="fc" id="L264">		return GraphFactory.&lt;V, E&gt;undirected().newBuilder();</span>
+<span class="fc" id="L334">		return GraphFactory.&lt;V, E&gt;undirected().newBuilder();</span>
 	}
 
 	/**
@@ -271,12 +341,16 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * The graphs built by this builder will have the same default capabilities as {@link GraphFactory}, namely they
 	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
 	 *
+	 * &lt;p&gt;
+	 * For more options to instantiate a builder, create a new {@link GraphFactory} and use one of its
+	 * {@code newBuilder} methods.
+	 *
 	 * @param  &lt;V&gt; the vertices type
 	 * @param  &lt;E&gt; the edges type
 	 * @return     a new empty builder for directed graphs
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; directed() {
-<span class="fc" id="L279">		return GraphFactory.&lt;V, E&gt;directed().newBuilder();</span>
+<span class="fc" id="L353">		return GraphFactory.&lt;V, E&gt;directed().newBuilder();</span>
 	}
 
 	/**
@@ -286,6 +360,10 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * The graphs built by this builder will have the same default capabilities as {@link GraphFactory}, namely they
 	 * will not support self edges and will support parallel edges. See the factory documentation for more information.
 	 *
+	 * &lt;p&gt;
+	 * For more options to instantiate a builder, create a new {@link GraphFactory} and use one of its
+	 * {@code newBuilder} methods.
+	 *
 	 * @param  &lt;V&gt;      the vertices type
 	 * @param  &lt;E&gt;      the edges type
 	 * @param  directed if {@code true}, the new builder will build directed graphs, otherwise it will build undirected
@@ -293,7 +371,7 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @return          a new empty builder for un/directed graphs
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newInstance(boolean directed) {
-<span class="fc" id="L296">		return GraphFactory.&lt;V, E&gt;newInstance(directed).newBuilder();</span>
+<span class="fc" id="L374">		return GraphFactory.&lt;V, E&gt;newInstance(directed).newBuilder();</span>
 	}
 
 	/**
@@ -302,14 +380,18 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * &lt;p&gt;
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
 	 *
+	 * &lt;p&gt;
+	 * For more options to instantiate a builder, create a new {@link GraphFactory} and use one of its
+	 * {@code newBuilder} methods.
+	 *
 	 * @param  &lt;V&gt; the vertices type
 	 * @param  &lt;E&gt; the edges type
 	 * @param  g   a graph
 	 * @return     a builder initialized with the given graph vertices and edges, without the original graph
 	 *             vertices/edges weights.
 	 */
-	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; fromGraph(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L312">		return fromGraph(g, false, false);</span>
+	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newCopyOf(Graph&lt;V, E&gt; g) {
+<span class="fc" id="L394">		return newCopyOf(g, false, false);</span>
 	}
 
 	/**
@@ -317,6 +399,10 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 *
 	 * &lt;p&gt;
 	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
+	 *
+	 * &lt;p&gt;
+	 * For more options to instantiate a builder, create a new {@link GraphFactory} and use one of its
+	 * {@code newBuilder} methods.
 	 *
 	 * @param  &lt;V&gt;                 the vertices type
 	 * @param  &lt;E&gt;                 the edges type
@@ -328,8 +414,9 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @return                     a builder initialized with the given graph vertices and edges, with/without the
 	 *                             original graph vertices/edges weights.
 	 */
-	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; fromGraph(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L332">		return new GraphBuilderImpl&lt;&gt;(g, copyVerticesWeights, copyEdgesWeights);</span>
+	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newCopyOf(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L418">		return GraphFactory.&lt;V, E&gt;newInstance(g.isDirected()).newBuilderCopyOf(g, copyVerticesWeights,</span>
+				copyEdgesWeights);
 	}
 
 }

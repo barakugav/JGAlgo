@@ -39,7 +39,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="fc" id="L40">		IndexGraphBuilder gb = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L41">		gb.addVertices(range(n * 2));</span>
-<span class="fc" id="L42">		gb.expectedEdgesNum(m * 2 + n);</span>
+<span class="fc" id="L42">		gb.ensureEdgeCapacity(m * 2 + n);</span>
 <span class="fc bfc" id="L43" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L44">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc" id="L45">			gb.addEdge(u * 2 + 0, v * 2 + 0);</span>

@@ -151,7 +151,7 @@ public class DimacsGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
 <span class="fc bfc" id="L152" title="All 4 branches covered.">					if (n &lt; 0 || m &lt; 0)</span>
 <span class="fc" id="L153">						throw new IllegalArgumentException(&quot;negative vertices/edges num: &quot; + n + &quot; &quot; + m);</span>
-<span class="fc" id="L154">					gb.expectedEdgesNum(m);</span>
+<span class="fc" id="L154">					gb.ensureEdgeCapacity(m);</span>
 <span class="fc" id="L155">					gb.addVertices(range(1, n + 1)); /* vertices are labeled as 1,2,3,4... */</span>
 
 <span class="fc bfc" id="L157" title="All 2 branches covered.">					if (hasWeights)</span>

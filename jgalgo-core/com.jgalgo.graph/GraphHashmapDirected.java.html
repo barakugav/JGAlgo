@@ -86,14 +86,14 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		}
 <span class="fc" id="L87">	}</span>
 
-	GraphHashmapDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
+	GraphHashmapDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
 <span class="fc" id="L90">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L91" title="All 2 branches missed.">		assert builder.isDirected();</span>
+<span class="pc bnc" id="L91" title="All 2 branches missed.">		assert builder.isDirected;</span>
 
 <span class="fc" id="L93">		edgesOutContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -&gt; edgesOut = newArr);</span>
 <span class="fc" id="L94">		edgesInContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -&gt; edgesIn = newArr);</span>
 
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		for (int m = builder.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">		for (int m = builder.edges.size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L97">			int source = builder.edgeSource(e), target = builder.edgeTarget(e);</span>
 <span class="fc" id="L98">			int oldVal1 = ensureEdgesMapMutable(edgesOut, source).put(target, e);</span>
 <span class="fc" id="L99">			int oldVal2 = ensureEdgesMapMutable(edgesIn, target).put(source, e);</span>

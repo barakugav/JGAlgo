@@ -103,6 +103,38 @@ public interface GraphFactory&lt;V, E&gt; {
 	GraphBuilder&lt;V, E&gt; newBuilder();
 
 	/**
+	 * Create a new graph builder with the factory parameters initialized with an existing graph vertices and edges,
+	 * without copying the weights.
+	 *
+	 * &lt;p&gt;
+	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
+	 *
+	 * @param  g a graph
+	 * @return   a graph builder with the factory parameters initialized with the given graph vertices and edges,
+	 *           without the original graph vertices/edges weights.
+	 */
+	default GraphBuilder&lt;V, E&gt; newBuilderCopyOf(Graph&lt;V, E&gt; g) {
+<span class="fc" id="L117">		return newBuilderCopyOf(g, false, false);</span>
+	}
+
+	/**
+	 * Create a new graph builder with the factory parameters initialized with an existing graph vertices and edges,
+	 * with/without copying the weights.
+	 *
+	 * &lt;p&gt;
+	 * If the given graph is directed, the new builder will build directed graphs, and similarly for undirected graphs.
+	 *
+	 * @param  g                   a graph
+	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied from the graph to the
+	 *                                 builder
+	 * @param  copyEdgesWeights    if {@code true}, the weights of the edges will be copied from the graph to the
+	 *                                 builder
+	 * @return                     a graph builder with the factory parameters initialized with the given graph vertices
+	 *                             and edges, with/without the original graph vertices/edges weights.
+	 */
+	GraphBuilder&lt;V, E&gt; newBuilderCopyOf(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights);
+
+	/**
 	 * Change the config of this factory so that the built graphs will support self edges.
 	 *
 	 * &lt;p&gt;
@@ -111,7 +143,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return this factory
 	 */
 	default GraphFactory&lt;V, E&gt; allowSelfEdges() {
-<span class="fc" id="L114">		return allowSelfEdges(true);</span>
+<span class="fc" id="L146">		return allowSelfEdges(true);</span>
 	}
 
 	/**
@@ -137,7 +169,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return this factory
 	 */
 	default GraphFactory&lt;V, E&gt; allowParallelEdges() {
-<span class="fc" id="L140">		return allowParallelEdges(true);</span>
+<span class="fc" id="L172">		return allowParallelEdges(true);</span>
 	}
 
 	/**
@@ -201,19 +233,19 @@ public interface GraphFactory&lt;V, E&gt; {
 	 *
 	 * @author Barak Ugav
 	 */
-<span class="fc" id="L204">	static enum Hint {</span>
+<span class="fc" id="L236">	static enum Hint {</span>
 
 		/** The graph should support fast edge removal via {@link Graph#removeEdge(Object)}. */
-<span class="fc" id="L207">		FastEdgeRemoval,</span>
+<span class="fc" id="L239">		FastEdgeRemoval,</span>
 
 		/**
 		 * The graph should support fast edge lookup via {@link Graph#getEdge(Object, Object)} and
 		 * {@link Graph#getEdges(Object, Object)}.
 		 */
-<span class="fc" id="L213">		FastEdgeLookup,</span>
+<span class="fc" id="L245">		FastEdgeLookup,</span>
 
 		/** The graph density (# of edges) will be high, a constant fraction of \(O(n^2)\). */
-<span class="fc" id="L216">		DenseGraph,</span>
+<span class="fc" id="L248">		DenseGraph,</span>
 	}
 
 	/**
@@ -224,7 +256,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return     a new factory that can build undirected graphs
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; undirected() {
-<span class="fc" id="L227">		return new GraphImpl.Factory&lt;&gt;(false);</span>
+<span class="fc" id="L259">		return new GraphImpl.Factory&lt;&gt;(false);</span>
 	}
 
 	/**
@@ -235,7 +267,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return     a new factory that can build directed graphs
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; directed() {
-<span class="fc" id="L238">		return new GraphImpl.Factory&lt;&gt;(true);</span>
+<span class="fc" id="L270">		return new GraphImpl.Factory&lt;&gt;(true);</span>
 	}
 
 	/**
@@ -247,24 +279,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return          a new factory that can build un/directed graphs
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newInstance(boolean directed) {
-<span class="fc" id="L250">		return new GraphImpl.Factory&lt;&gt;(directed);</span>
-	}
-
-	/**
-	 * Create a new graph factory based on a given implementation.
-	 *
-	 * &lt;p&gt;
-	 * The new factory will build graphs with the same capabilities (inclusive) as the given graph, possibly choosing to
-	 * use a similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for
-	 * such use case see {@link Graph#copy()} or {@link GraphFactory#newCopyOf(Graph)}.
-	 *
-	 * @param  &lt;V&gt; the vertices type
-	 * @param  &lt;E&gt; the edges type
-	 * @param  g   a graph from which the factory should copy its capabilities (inclusive)
-	 * @return     a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
-	 */
-	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newFrom(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L267">		return new GraphImpl.Factory&lt;&gt;(g);</span>
+<span class="fc" id="L282">		return new GraphImpl.Factory&lt;&gt;(directed);</span>
 	}
 
 	/**
@@ -283,7 +298,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return       this builder
 	 */
 	default GraphFactory&lt;V, E&gt; setOption(String key, Object value) {
-<span class="nc" id="L286">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="nc" id="L301">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

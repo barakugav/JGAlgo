@@ -86,7 +86,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 			/* not all vertices are reachable from the root, operate on the subgraph of these vertices */
 <span class="fc" id="L87">			IndexGraphBuilder builder = IndexGraphBuilder.directed();</span>
 
-<span class="fc" id="L89">			builder.expectedVerticesNum(vertices.size());</span>
+<span class="fc" id="L89">			builder.ensureVertexCapacity(vertices.size());</span>
 <span class="fc" id="L90">			int[] vRefToOrig = vertices.toIntArray();</span>
 <span class="fc" id="L91">			int[] vOrigToRef = new int[g.vertices().size()];</span>
 <span class="fc" id="L92">			Arrays.fill(vOrigToRef, -1);</span>
@@ -99,7 +99,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="pc bpc" id="L99" title="1 of 4 branches missed.">				if (vertices.contains(g.edgeSource(e)) &amp;&amp; vertices.contains(g.edgeTarget(e)))</span>
 <span class="fc" id="L100">					subGraphEdgesNum++;</span>
 <span class="fc" id="L101">			int[] edgeRef = new int[subGraphEdgesNum];</span>
-<span class="fc" id="L102">			builder.expectedEdgesNum(subGraphEdgesNum);</span>
+<span class="fc" id="L102">			builder.ensureEdgeCapacity(subGraphEdgesNum);</span>
 <span class="fc bfc" id="L103" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L104">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="pc bpc" id="L105" title="1 of 6 branches missed.">				if (u != v &amp;&amp; vertices.contains(u) &amp;&amp; vertices.contains(v))</span>
