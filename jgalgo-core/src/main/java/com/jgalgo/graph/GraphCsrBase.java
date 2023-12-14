@@ -17,6 +17,7 @@ package com.jgalgo.graph;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
@@ -275,23 +276,19 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 
 	@Override
 	public void addVertexRemoveListener(IndexRemoveListener listener) {
-		vertices.addRemoveListener(listener);
+		Objects.requireNonNull(listener);
 	}
 
 	@Override
-	public void removeVertexRemoveListener(IndexRemoveListener listener) {
-		vertices.removeRemoveListener(listener);
-	}
+	public void removeVertexRemoveListener(IndexRemoveListener listener) {}
 
 	@Override
 	public void addEdgeRemoveListener(IndexRemoveListener listener) {
-		edges.addRemoveListener(listener);
+		Objects.requireNonNull(listener);
 	}
 
 	@Override
-	public void removeEdgeRemoveListener(IndexRemoveListener listener) {
-		edges.removeRemoveListener(listener);
-	}
+	public void removeEdgeRemoveListener(IndexRemoveListener listener) {}
 
 	@Override
 	public IndexGraph immutableCopy() {

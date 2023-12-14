@@ -458,4 +458,38 @@ public class ImmutableGraphCopyTest extends TestBase {
 		});
 	}
 
+	@Test
+	public void immutableCopyOfImmutableCopy() {
+		foreachBoolConfig((intGraph, directed) -> {
+			IndexGraph gOrig = createGraph(intGraph, directed).indexGraph();
+			IndexGraph gImmutable = gOrig.immutableCopy();
+
+			assertTrue(gImmutable == gImmutable.immutableCopy());
+		});
+	}
+
+	@Test
+	public void removeListener() {
+		foreachBoolConfig((intGraph, directed) -> {
+			IndexGraph gOrig = createGraph(intGraph, directed).indexGraph();
+			IndexGraph gImmutable = gOrig.immutableCopy();
+
+			assertThrows(NullPointerException.class, () -> gImmutable.addVertexRemoveListener(null));
+			assertThrows(NullPointerException.class, () -> gImmutable.addEdgeRemoveListener(null));
+			IndexRemoveListener listener = new IndexRemoveListener() {
+				@Override
+				public void removeLast(int removedIdx) {}
+
+				@Override
+				public void swapAndRemove(int removedIdx, int swappedIdx) {}
+			};
+
+			/* these listeners should do nothing and never be called, graph is immutable */
+			gImmutable.addVertexRemoveListener(listener);
+			gImmutable.addEdgeRemoveListener(listener);
+			gImmutable.removeVertexRemoveListener(listener);
+			gImmutable.removeEdgeRemoveListener(listener);
+		});
+	}
+
 }
