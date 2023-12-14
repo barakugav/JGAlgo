@@ -250,8 +250,12 @@ public class JGAlgoUtils {
 			return type.isInstance(val);
 		}
 
+		public <E> E get(Class<E> type) {
+			return getOptional(type).get();
+		}
+
 		@SuppressWarnings("unchecked")
-		public <E> Optional<E> get(Class<E> type) {
+		public <E> Optional<E> getOptional(Class<E> type) {
 			return contains(type) ? Optional.of((E) val) : Optional.empty();
 		}
 
