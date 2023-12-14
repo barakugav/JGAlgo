@@ -420,8 +420,8 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T, WeightsT extends IWeights<T>> WeightsT getVerticesIWeights(String key) {
-		WeightsImpl.Index<T> indexWeights = indexGraph.getVerticesIWeights(key);
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT getVerticesWeights(String key) {
+		WeightsImpl.Index<T> indexWeights = indexGraph.getVerticesWeights(key);
 		if (indexWeights == null)
 			return null;
 		return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,
@@ -440,8 +440,8 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T, WeightsT extends IWeights<T>> WeightsT getEdgesIWeights(String key) {
-		WeightsImpl.Index<T> indexWeights = indexGraph.getEdgesIWeights(key);
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key) {
+		WeightsImpl.Index<T> indexWeights = indexGraph.getEdgesWeights(key);
 		if (indexWeights == null)
 			return null;
 		return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,

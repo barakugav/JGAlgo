@@ -65,11 +65,11 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		if (copyVerticesWeights) {
 			for (String key : g.getVerticesWeightsKeys())
 				verticesUserWeights.addWeights(key,
-						WeightsImpl.IndexMutable.copyOf(g.getVerticesIWeights(key), vertices, false));
+						WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), vertices, false));
 		}
 		if (copyEdgesWeights) {
 			for (String key : g.getEdgesWeightsKeys())
-				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesIWeights(key), edges, true));
+				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edges, true));
 		}
 
 		/* internal data containers should be copied manually */
@@ -463,7 +463,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	}
 
 	@Override
-	public <T, WeightsT extends IWeights<T>> WeightsT getVerticesIWeights(String key) {
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT getVerticesWeights(String key) {
 		return verticesUserWeights.getWeights(key);
 	}
 
@@ -478,9 +478,8 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public <T, WeightsT extends IWeights<T>> WeightsT getEdgesIWeights(String key) {
-		return (WeightsT) edgesUserWeights.getWeights(key);
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key) {
+		return edgesUserWeights.getWeights(key);
 	}
 
 	@Override

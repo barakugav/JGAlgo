@@ -206,7 +206,7 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T, WeightsT extends IWeights<T>> WeightsT getVerticesIWeights(String key) {
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT getVerticesWeights(String key) {
 		WeightsImpl.Index<T> indexWeights = ibuilder.getVerticesWeights(key);
 		if (indexWeights == null)
 			return null;
@@ -228,7 +228,7 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <T, WeightsT extends IWeights<T>> WeightsT getEdgesIWeights(String key) {
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key) {
 		WeightsImpl.Index<T> indexWeights = ibuilder.getEdgesWeights(key);
 		if (indexWeights == null)
 			return null;

@@ -378,7 +378,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	@Override
-	public <T, WeightsT extends IWeights<T>> WeightsT getVerticesIWeights(String key) {
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT getVerticesWeights(String key) {
 		return verticesUserWeights.getWeights(key);
 	}
 
@@ -398,7 +398,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	@Override
-	public <T, WeightsT extends IWeights<T>> WeightsT getEdgesIWeights(String key) {
+	public <T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key) {
 		return edgesUserWeights.getWeights(key);
 	}
 

@@ -644,13 +644,13 @@ public class IndexGraphBuilderTest extends TestBase {
 			b.addVertices(g.vertices());
 			b.addEdges(EdgeSet.allOf(g));
 			for (String key : g.getVerticesWeightsKeys()) {
-				IWeightsInt w = g.getVerticesIWeights(key);
+				IWeightsInt w = g.getVerticesWeights(key);
 				IWeightsInt bw = b.addVerticesWeights(key, int.class, Integer.valueOf(w.defaultWeight()));
 				for (int v : g.vertices())
 					bw.set(v, w.get(v));
 			}
 			for (String key : g.getEdgesWeightsKeys()) {
-				IWeightsInt w = g.getEdgesIWeights(key);
+				IWeightsInt w = g.getEdgesWeights(key);
 				IWeightsInt bw = b.addEdgesWeights(key, int.class, Integer.valueOf(w.defaultWeight()));
 				for (int e : g.edges())
 					bw.set(e, w.get(e));
@@ -689,14 +689,14 @@ public class IndexGraphBuilderTest extends TestBase {
 					gReIndexedExpected.addEdge(u, v);
 				}
 				for (String key : g.getVerticesWeightsKeys()) {
-					IWeightsInt w = g.getVerticesIWeights(key);
+					IWeightsInt w = g.getVerticesWeights(key);
 					IWeightsInt wReIndexed =
 							gReIndexedExpected.addVerticesWeights(key, int.class, Integer.valueOf(w.defaultWeight()));
 					for (int v : gReIndexed.vertices())
 						wReIndexed.set(v, w.get(vReIndexedToOrig.applyAsInt(v)));
 				}
 				for (String key : g.getEdgesWeightsKeys()) {
-					IWeightsInt w = g.getEdgesIWeights(key);
+					IWeightsInt w = g.getEdgesWeights(key);
 					IWeightsInt wReIndexed =
 							gReIndexedExpected.addEdgesWeights(key, int.class, Integer.valueOf(w.defaultWeight()));
 					for (int e : gReIndexed.edges())
