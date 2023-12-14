@@ -109,21 +109,6 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 		return new IntGraphImpl.Factory(directed);
 	}
 
-	/**
-	 * Create a new graph factory based on a given implementation.
-	 *
-	 * <p>
-	 * The new factory will build graphs with the same capabilities (inclusive) as the given graph, possibly choosing to
-	 * use a similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for
-	 * such use case see {@link IntGraph#copy()} or {@link IntGraphFactory#newCopyOf(Graph)}.
-	 *
-	 * @param  g a graph from which the factory should copy its capabilities (inclusive)
-	 * @return   a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
-	 */
-	public static IntGraphFactory newFrom(IntGraph g) {
-		return new IntGraphImpl.Factory(g);
-	}
-
 	@Override
 	default IntGraphFactory setOption(String key, Object value) {
 		return (IndexGraphFactory) GraphFactory.super.setOption(key, value);

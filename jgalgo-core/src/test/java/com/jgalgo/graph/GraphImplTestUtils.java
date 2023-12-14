@@ -2007,7 +2007,8 @@ class GraphImplTestUtils extends TestUtils {
 				if (copyType.equals("origImpl")) {
 					copy = g.copy();
 				} else {
-					copy = GraphFactory.newFrom(g).setOption("impl", copyType).newCopyOf(g);
+					copy = GraphFactory.<Integer, Integer>newInstance(g.isDirected()).setOption("impl", copyType)
+							.newCopyOf(g);
 				}
 
 				/* Assert vertices and edges are the same */

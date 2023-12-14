@@ -584,10 +584,6 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 			this.factory = new IndexGraphFactoryImpl(directed);
 		}
 
-		Factory(IntGraph g) {
-			this.factory = new IndexGraphFactoryImpl(g.indexGraph());
-		}
-
 		@Override
 		public IntGraph newGraph() {
 			return new IntGraphImpl(factory.newGraph(), factory.expectedVerticesNum, factory.expectedEdgesNum);

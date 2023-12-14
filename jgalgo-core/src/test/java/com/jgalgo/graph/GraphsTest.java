@@ -22,7 +22,6 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -30,12 +29,10 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -662,104 +659,6 @@ public class GraphsTest extends TestBase {
 
 		g.addEdge(0, 1, 1);
 		assertTrue(Graphs.containsParallelEdges(g));
-	}
-
-	@Test
-	public void getIndexGraphImpl() {
-		List<String> impls = new ArrayList<>();
-		impls.add("array");
-		impls.add("array-selfedges");
-		impls.add("linked-list");
-		impls.add("linked-list-selfedges");
-		impls.add("linked-list-ptr");
-		impls.add("linked-list-ptr-selfedges");
-		impls.add("hashtable");
-		impls.add("hashtable-selfedges");
-		impls.add("hashtable-multi");
-		impls.add("hashtable-multi-selfedges");
-		impls.add("matrix");
-		impls.add("matrix-selfedges");
-		for (String impl : impls) {
-			foreachBoolConfig(directed -> {
-				IndexGraph g = IndexGraphFactory.newInstance(directed).setOption("impl", impl).newGraph();
-				assertEquals(impl, Graphs.getIndexGraphImpl(g));
-				assertEquals(impl, Graphs.getIndexGraphImpl(g.copy()));
-
-				foreachBoolConfig((immutable, reverse, undirected) -> {
-					List<Function<IndexGraph, IndexGraph>> views = new ArrayList<>();
-					if (immutable)
-						views.add(IndexGraph::immutableView);
-					if (reverse)
-						views.add(IndexGraph::reverseView);
-					if (undirected)
-						views.add(IndexGraph::undirectedView);
-
-					for (List<Function<IndexGraph, IndexGraph>> permutation : permutations(views)) {
-						IndexGraph g1 = g;
-						for (Function<IndexGraph, IndexGraph> view : permutation)
-							g1 = view.apply(g1);
-						assertEquals(impl, Graphs.getIndexGraphImpl(g1));
-					}
-				});
-			});
-		}
-
-		/* unknown implementation */
-		IndexGraph g = new GraphBaseMutable(GraphBaseMutable.Capabilities.of(false, false, false), 0, 0) {
-
-			@Override
-			public void moveEdge(int edge, int newSource, int newTarget) {
-				throw new UnsupportedOperationException();
-			}
-
-			@Override
-			public IEdgeSet outEdges(int source) {
-				return new EmptyEdgeSet();
-			}
-
-			@Override
-			public IEdgeSet inEdges(int target) {
-				return new EmptyEdgeSet();
-			}
-
-			class EmptyEdgeSet extends AbstractIntSet implements IEdgeSet {
-				@Override
-				public int size() {
-					return 0;
-				}
-
-				@Override
-				public IEdgeIter iterator() {
-					return new IEdgeIter() {
-						@Override
-						public boolean hasNext() {
-							return false;
-						}
-
-						@Override
-						public int nextInt() {
-							throw new NoSuchElementException();
-						}
-
-						@Override
-						public int peekNextInt() {
-							throw new NoSuchElementException();
-						}
-
-						@Override
-						public int sourceInt() {
-							throw new IllegalStateException();
-						}
-
-						@Override
-						public int targetInt() {
-							throw new IllegalStateException();
-						}
-					};
-				}
-			}
-		};
-		assertNull(Graphs.getIndexGraphImpl(g));
 	}
 
 	@SuppressWarnings("unchecked")

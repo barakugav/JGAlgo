@@ -43,6 +43,23 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 public class Graphs {
 	private Graphs() {}
 
+	@SuppressWarnings("unchecked")
+	static <V, E> Graph<V, E> copy(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		GraphFactory<V, E> factory;
+		if (g instanceof IndexGraph) {
+			factory = (GraphFactory<V, E>) IndexGraphFactory.newInstance(g.isDirected());
+		} else if (g instanceof IntGraph) {
+			factory = (GraphFactory<V, E>) IntGraphFactory.newInstance(g.isDirected());
+		} else {
+			factory = GraphFactory.newInstance(g.isDirected());
+		}
+		if (g.isAllowSelfEdges())
+			factory.allowSelfEdges();
+		if (g.isAllowParallelEdges())
+			factory.allowParallelEdges();
+		return factory.newCopyOf(g, copyVerticesWeights, copyEdgesWeights);
+	}
+
 	/**
 	 * Tag interface for graphs that can not be muted/changed/altered.
 	 *
@@ -2054,32 +2071,6 @@ public class Graphs {
 			return (Graph<V, E>) new UndirectedViewInt((IntGraph) g);
 		} else {
 			return new UndirectedView<>(g);
-		}
-	}
-
-	static String getIndexGraphImpl(IndexGraph g) {
-		for (;;) {
-			IndexGraph g0 = g;
-			if (g instanceof ReverseIndexGraph)
-				g = ((ReverseIndexGraph) g).graph();
-			if (g instanceof ImmutableIndexGraphView)
-				g = ((ImmutableIndexGraphView) g).graph();
-			if (g instanceof UndirectedViewIndex)
-				g = ((UndirectedViewIndex) g).graph();
-			if (g instanceof GraphArrayAbstract)
-				return g.isAllowSelfEdges() ? "array-selfedges" : "array";
-			if (g instanceof GraphLinkedAbstract)
-				return g.isAllowSelfEdges() ? "linked-list-selfedges" : "linked-list";
-			if (g instanceof GraphLinkedPtrAbstract)
-				return g.isAllowSelfEdges() ? "linked-list-ptr-selfedges" : "linked-list-ptr";
-			if (g instanceof GraphHashmapAbstract)
-				return g.isAllowSelfEdges() ? "hashtable-selfedges" : "hashtable";
-			if (g instanceof GraphHashmapMultiAbstract)
-				return g.isAllowSelfEdges() ? "hashtable-multi-selfedges" : "hashtable-multi";
-			if (g instanceof GraphMatrixAbstract)
-				return g.isAllowSelfEdges() ? "matrix-selfedges" : "matrix";
-			if (g == g0)
-				return null;
 		}
 	}
 

@@ -494,12 +494,12 @@ public interface IndexGraph extends IntGraph {
 
 	@Override
 	default IndexGraph copy() {
-		return IndexGraphFactory.newFrom(this).newCopyOf(this);
+		return (IndexGraph) IntGraph.super.copy();
 	}
 
 	@Override
 	default IndexGraph copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		return IndexGraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);
+		return (IndexGraph) IntGraph.super.copy(copyVerticesWeights, copyEdgesWeights);
 	}
 
 	@Override

@@ -109,21 +109,6 @@ public interface IndexGraphFactory extends IntGraphFactory {
 		return new IndexGraphFactoryImpl(directed);
 	}
 
-	/**
-	 * Create a new index graph factory based on a given implementation.
-	 *
-	 * <p>
-	 * The new factory will build graphs with the same capabilities as the given graph, possibly choosing to use a
-	 * similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for such
-	 * use case see {@link IndexGraph#copy()} or {@link IndexGraphFactory#newCopyOf(Graph)}.
-	 *
-	 * @param  g a graph from which the factory should copy its capabilities
-	 * @return   a new graph factory that will create graphs with the same capabilities of the given graph
-	 */
-	public static IndexGraphFactory newFrom(IndexGraph g) {
-		return new IndexGraphFactoryImpl(g);
-	}
-
 	@Override
 	default IndexGraphFactory setOption(String key, Object value) {
 		return (IndexGraphFactory) IntGraphFactory.super.setOption(key, value);

@@ -676,7 +676,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	@Override
 	default IntGraph copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		return IntGraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);
+		return (IntGraph) Graph.super.copy(copyVerticesWeights, copyEdgesWeights);
 	}
 
 	@Override

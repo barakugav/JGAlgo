@@ -491,10 +491,6 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 			this.factory = new IndexGraphFactoryImpl(directed);
 		}
 
-		Factory(Graph<V, E> g) {
-			this.factory = new IndexGraphFactoryImpl(g.indexGraph());
-		}
-
 		@Override
 		public Graph<V, E> newGraph() {
 			IndexGraph indexGraph = factory.newGraph();

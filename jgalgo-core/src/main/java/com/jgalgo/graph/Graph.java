@@ -868,9 +868,10 @@ public interface Graph<V, E> {
 	 * always be modifiable, with no side affects on the original graph.
 	 *
 	 * <p>
-	 * Note that although {@code g.equals(g.copy())} is always {@code true} if {@code copyWeights} is {@code true},
-	 * there is no guarantee that {@code g.indexGraph().equals(g.copy().indexGraph())}. Namely, when the graph is
-	 * copied, new indices may be assigned to the vertices and edges.
+	 * Note that although {@code g.equals(g.copy())} is always {@code true} if both {@code copyVerticesWeights}
+	 * {@code copyEdgesWeights} are {@code true}, there is no guarantee that
+	 * {@code g.indexGraph().equals(g.copy().indexGraph())}. Namely, when the graph is copied, new indices may be
+	 * assigned to the vertices and edges.
 	 *
 	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied to the new graph
 	 * @param  copyEdgesWeights    if {@code true}, the weights of the edges will be copied to the new graph
@@ -878,7 +879,7 @@ public interface Graph<V, E> {
 	 *                             this graph weights
 	 */
 	default Graph<V, E> copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		return GraphFactory.newFrom(this).newCopyOf(this, copyVerticesWeights, copyEdgesWeights);
+		return Graphs.copy(this, copyVerticesWeights, copyEdgesWeights);
 	}
 
 	/**
@@ -919,9 +920,10 @@ public interface Graph<V, E> {
 	 * instead of using the original graph.
 	 *
 	 * <p>
-	 * Note that although {@code g.equals(g.immutableCopy())} is always {@code true} if {@code copyWeights} is
-	 * {@code true}, there is no guarantee that {@code g.indexGraph().equals(g.immutableCopy().indexGraph())}. Namely,
-	 * when the graph is copied, new indices may be assigned to the vertices and edges.
+	 * Note that although {@code g.equals(g.immutableCopy())} is always {@code true} if both {@code copyVerticesWeights}
+	 * and {@code copyEdgesWeights} are {@code true}, there is no guarantee that
+	 * {@code g.indexGraph().equals(g.immutableCopy().indexGraph())}. Namely, when the graph is copied, new indices may
+	 * be assigned to the vertices and edges.
 	 *
 	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied to the new graph
 	 * @param  copyEdgesWeights    if {@code true}, the weights of the edges will be copied to the new graph

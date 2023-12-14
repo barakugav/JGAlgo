@@ -251,23 +251,6 @@ public interface GraphFactory<V, E> {
 	}
 
 	/**
-	 * Create a new graph factory based on a given implementation.
-	 *
-	 * <p>
-	 * The new factory will build graphs with the same capabilities (inclusive) as the given graph, possibly choosing to
-	 * use a similar implementation. The factory will NOT copy the graph itself (the vertices, edges and weights), for
-	 * such use case see {@link Graph#copy()} or {@link GraphFactory#newCopyOf(Graph)}.
-	 *
-	 * @param  <V> the vertices type
-	 * @param  <E> the edges type
-	 * @param  g   a graph from which the factory should copy its capabilities (inclusive)
-	 * @return     a new graph factory that will create graphs with the same capabilities (inclusive) of the given graph
-	 */
-	public static <V, E> GraphFactory<V, E> newFrom(Graph<V, E> g) {
-		return new GraphImpl.Factory<>(g);
-	}
-
-	/**
 	 * <b>[TL;DR Don't call me!]</b> Set an option.
 	 *
 	 * <p>

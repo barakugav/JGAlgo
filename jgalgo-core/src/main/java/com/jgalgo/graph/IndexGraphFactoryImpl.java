@@ -32,13 +32,6 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 		this.directed = directed;
 	}
 
-	IndexGraphFactoryImpl(IndexGraph g) {
-		this.directed = g.isDirected();
-		this.selfEdges = g.isAllowSelfEdges();
-		this.parallelEdges = g.isAllowParallelEdges();
-		impl = Graphs.getIndexGraphImpl(g);
-	}
-
 	@Override
 	public IndexGraph newGraph() {
 		return mutableImpl().newGraph(expectedVerticesNum, expectedEdgesNum);
