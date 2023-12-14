@@ -18,7 +18,6 @@ package com.jgalgo.graph;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Iterator;
@@ -306,7 +305,7 @@ public class ImmutableGraphViewTest extends TestBase {
 					assertEquals(gOrig.getEdges(u, v), edges);
 
 					if (edges.isEmpty()) {
-						assertNull(gImmutable.getEdge(u, v));
+						assertFalse(gImmutable.containsEdge(u, v));
 					} else {
 						Integer e = gImmutable.getEdge(u, v);
 						assertNotNull(e);

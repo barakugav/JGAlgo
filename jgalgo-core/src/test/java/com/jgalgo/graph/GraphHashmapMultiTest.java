@@ -87,7 +87,7 @@ public class GraphHashmapMultiTest extends TestBase {
 	@Test
 	public void testGetEdge() {
 		foreachBoolConfig(selfEdges -> {
-			GraphImplTestUtils.testGetEdge(graphImpl(selfEdges));
+			GraphImplTestUtils.getEdgeTest(graphImpl(selfEdges));
 		});
 	}
 

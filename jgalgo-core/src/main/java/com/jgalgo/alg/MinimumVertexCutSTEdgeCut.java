@@ -54,7 +54,7 @@ class MinimumVertexCutSTEdgeCut extends MinimumVertexCutUtils.AbstractImplST {
 	}
 
 	int[] computeMinCut(IndexGraph g, int source, int sink, AuxiliaryGraph auxiliaryGraph) {
-		if (g.getEdge(source, sink) != -1)
+		if (g.containsEdge(source, sink))
 			return null;
 
 		IndexGraph g0 = auxiliaryGraph.graph;

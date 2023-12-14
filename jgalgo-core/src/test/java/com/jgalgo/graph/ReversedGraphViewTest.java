@@ -19,7 +19,6 @@ import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Iterator;
@@ -513,7 +512,7 @@ public class ReversedGraphViewTest extends TestBase {
 					assertEquals(gOrig.getEdges(v, u), edges);
 
 					if (edges.isEmpty()) {
-						assertNull(gRev.getEdge(u, v));
+						assertFalse(gRev.containsEdge(u, v));
 					} else {
 						Integer e = gRev.getEdge(u, v);
 						assertNotNull(e);

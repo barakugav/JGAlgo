@@ -95,7 +95,7 @@ public class MinimumVertexCutAllSTEdgeCutTest extends TestBase {
 	private static <V, E> void testMinCuts(Graph<V, E> g, WeightFunction<V> w, V source, V sink,
 			MinimumVertexCutAllST alg) {
 		List<Set<V>> minCuts = alg.allMinimumCuts(g, w, source, sink);
-		if (g.getEdge(source, sink) != null) {
+		if (g.containsEdge(source, sink)) {
 			assertNull(minCuts);
 			return;
 		}

@@ -231,7 +231,7 @@ class CyclesEnumeratorJohnson extends CyclesEnumeratorAbstract {
 	}
 
 	private static boolean hasSelfEdge(IndexGraph g, int u) {
-		return g.getEdge(u, u) != -1;
+		return g.containsEdge(u, u);
 	}
 
 	private static class StronglyConnectedComponent {

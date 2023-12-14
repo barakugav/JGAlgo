@@ -306,7 +306,7 @@ public class ImmutableGraphCopyTest extends TestBase {
 					assertEquals(gOrig.getEdges(u, v), edges);
 
 					if (edges.isEmpty()) {
-						assertEquals(null, gImmutable.getEdge(u, v));
+						assertFalse(gImmutable.containsEdge(u, v));
 					} else {
 						Integer e = gImmutable.getEdge(u, v);
 						assertNotEquals(null, e);

@@ -366,7 +366,7 @@ public class EdgeSetViewTest extends TestBase {
 			int v = Graphs.randVertex(g, rand);
 			if (!g.isAllowSelfEdges() && u == v)
 				continue;
-			if (!g.isAllowParallelEdges() && g.getEdge(u, v) != -1)
+			if (!g.isAllowParallelEdges() && g.containsEdge(u, v))
 				continue;
 			int e = rand.nextInt(1 + g.edges().size() * 2);
 			if (g.edges().contains(e))

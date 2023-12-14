@@ -652,7 +652,7 @@ class GraphImplTestUtils extends TestUtils {
 				v = tmp;
 			}
 			Pair<Integer, Integer> endpoints = Pair.of(u, v);
-			if (!g.isAllowParallelEdges() && (g.getEdge(u, v) != null || edges.contains(endpoints)))
+			if (!g.isAllowParallelEdges() && (g.containsEdge(u, v) || edges.contains(endpoints)))
 				continue;
 			edges.add(endpoints);
 		}
@@ -1309,7 +1309,7 @@ class GraphImplTestUtils extends TestUtils {
 				Integer u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
 				if (!g.isAllowSelfEdges() && u.equals(v))
 					continue;
-				if (!g.isAllowParallelEdges() && g.getEdge(u, v) != null)
+				if (!g.isAllowParallelEdges() && g.containsEdge(u, v))
 					continue;
 				Integer e = Integer.valueOf(g.edges().size() + 1);
 				g.addEdge(u, v, e);
@@ -1334,7 +1334,7 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testGetEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void getEdgeTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
@@ -1363,6 +1363,7 @@ class GraphImplTestUtils extends TestUtils {
 				Integer u = endpointsIt.next(), v = endpointsIt.hasNext() ? endpointsIt.next() : u;
 				Integer e = edge.getValue();
 				assertEquals(e, g.getEdge(u, v));
+				assertEqualsBool(e.intValue() != -1, g.containsEdge(u, v));
 			}
 		});
 	}
@@ -1902,7 +1903,7 @@ class GraphImplTestUtils extends TestUtils {
 							v = Graphs.randVertex(g, rand);
 							if (u.equals(v))
 								continue;
-							if (!parallelEdges && g.getEdge(u, v) != null)
+							if (!parallelEdges && g.containsEdge(u, v))
 								continue;
 							break;
 						}
@@ -1950,7 +1951,7 @@ class GraphImplTestUtils extends TestUtils {
 							v = Graphs.randVertex(g, rand);
 							if (u.equals(v))
 								continue;
-							if (!parallelEdges && g.getEdge(u, v) != null)
+							if (!parallelEdges && g.containsEdge(u, v))
 								continue;
 							break;
 						}
@@ -2469,7 +2470,7 @@ class GraphImplTestUtils extends TestUtils {
 			Integer e;
 			do {
 				e = Graphs.randEdge(g1, rand);
-			} while (!parallelEdges && g1.getEdge(g1.edgeTarget(e), g1.edgeSource(e)) != null);
+			} while (!parallelEdges && g1.containsEdge(g1.edgeTarget(e), g1.edgeSource(e)));
 
 			Integer u = g1.edgeSource(e), v = g1.edgeTarget(e);
 			g1.reverseEdge(e);
@@ -2483,7 +2484,7 @@ class GraphImplTestUtils extends TestUtils {
 
 		if (!parallelEdges) {
 			Integer e = Graphs.randEdge(g1, rand);
-			if (g1.getEdge(g1.edgeTarget(e), g1.edgeSource(e)) == null) {
+			if (!g1.containsEdge(g1.edgeTarget(e), g1.edgeSource(e))) {
 				Integer nonExistingEdge;
 				do {
 					nonExistingEdge = Integer.valueOf(rand.nextInt());
@@ -2520,7 +2521,7 @@ class GraphImplTestUtils extends TestUtils {
 					newTarget = Graphs.randVertex(g1, rand);
 					if (!selfEdges && newSource.equals(newTarget))
 						continue;
-					if (!parallelEdges && g1.getEdge(newSource, newTarget) != null)
+					if (!parallelEdges && g1.containsEdge(newSource, newTarget))
 						continue;
 					break;
 				}
@@ -2579,7 +2580,7 @@ class GraphImplTestUtils extends TestUtils {
 					newTarget = Graphs.randVertex(g1, rand);
 					if (!selfEdges && newSource.equals(newTarget))
 						continue;
-					if (!parallelEdges && g1.getEdge(newSource, newTarget) != null)
+					if (!parallelEdges && g1.containsEdge(newSource, newTarget))
 						continue;
 					break;
 				}
@@ -3280,7 +3281,7 @@ class GraphImplTestUtils extends TestUtils {
 					if (tracker.edgesNum() == 0)
 						continue;
 					GraphTracker.Edge edge = tracker.getRandEdge(rand);
-					if (edge.u != edge.v && g.getEdge(Integer.valueOf(edge.v.id), Integer.valueOf(edge.u.id)) != null
+					if (edge.u != edge.v && g.containsEdge(Integer.valueOf(edge.v.id), Integer.valueOf(edge.u.id))
 							&& !g.isAllowParallelEdges())
 						continue;
 					int e = getEdge.applyAsInt(edge);

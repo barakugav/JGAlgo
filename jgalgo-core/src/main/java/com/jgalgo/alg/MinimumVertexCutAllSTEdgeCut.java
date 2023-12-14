@@ -49,7 +49,7 @@ class MinimumVertexCutAllSTEdgeCut extends MinimumVertexCutUtils.AbstractImplAll
 	@Override
 	Iterator<IntSet> minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink) {
 		AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, w);
-		if (g.getEdge(source, sink) != -1)
+		if (g.containsEdge(source, sink))
 			return null;
 
 		IndexGraph g0 = auxiliaryGraph.graph;

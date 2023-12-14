@@ -423,7 +423,7 @@ public class IntGraphBuilderTest extends TestBase {
 					int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
 					if (!selfEdges && u == v)
 						continue;
-					if (g.getEdge(u, v) != -1)
+					if (g.containsEdge(u, v))
 						continue; /* avoid parallel edges */
 					g.addEdge(u, v, e);
 					b.addEdge(u, v, e);

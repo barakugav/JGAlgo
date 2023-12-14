@@ -1557,7 +1557,7 @@ public class GraphBench {
 				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
 				if (!allowSelfEdges && u == v)
 					continue;
-				if (!allowParallelEdges && g.getEdge(u, v) != -1)
+				if (!allowParallelEdges && g.containsEdge(u, v))
 					continue;
 				g.addEdge(u, v);
 			}

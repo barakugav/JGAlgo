@@ -121,7 +121,7 @@ public class Digraph6Test extends TestUtils {
 				while (g.edges().size() < m) {
 					int source = Graphs.randVertex(g, rand);
 					int target = Graphs.randVertex(g, rand);
-					if (g.getEdge(source, target) != -1)
+					if (g.containsEdge(source, target))
 						continue; /* parallel edges are not supported */
 					g.addEdge(source, target, g.edges().size()); /* edges ids are 0,1,2,...,m-1 */
 				}

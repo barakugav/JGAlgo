@@ -66,7 +66,7 @@ class MinimumVertexCutSTTestUtils extends TestUtils {
 	private static <V, E> void testMinCut(Graph<V, E> g, WeightFunction<V> w, V source, V sink,
 			MinimumVertexCutST alg) {
 		Set<V> minCut = alg.computeMinimumCut(g, w, source, sink);
-		if (g.getEdge(source, sink) != null) {
+		if (g.containsEdge(source, sink)) {
 			assertNull(minCut);
 			return;
 		}

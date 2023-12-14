@@ -18,7 +18,6 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -123,7 +122,7 @@ public class VertexPartitionTest extends TestBase {
 
 					/* test blocksGraph */
 					assertEquals(expected, blocksGraph.getEdges(Integer.valueOf(b), Integer.valueOf(b)));
-					assertNull(blocksGraphNonSelf.getEdge(Integer.valueOf(b), Integer.valueOf(b)));
+					assertFalse(blocksGraphNonSelf.containsEdge(Integer.valueOf(b), Integer.valueOf(b)));
 					assertEquals(0, blocksGraphNonSelf.getEdges(Integer.valueOf(b), Integer.valueOf(b)).size());
 				}
 			});
@@ -174,7 +173,7 @@ public class VertexPartitionTest extends TestBase {
 
 						assertEquals(expected, blocksGraph.getEdges(Integer.valueOf(b1), Integer.valueOf(b2)));
 						if (expected.isEmpty()) {
-							assertNull(blocksGraphNonParallel.getEdge(Integer.valueOf(b1), Integer.valueOf(b2)));
+							assertFalse(blocksGraphNonParallel.containsEdge(Integer.valueOf(b1), Integer.valueOf(b2)));
 						} else {
 							assertEquals(1,
 									blocksGraphNonParallel.getEdges(Integer.valueOf(b1), Integer.valueOf(b2)).size());

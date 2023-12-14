@@ -15,11 +15,10 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.HashSet;
@@ -499,7 +498,7 @@ public class UndirectedViewTest extends TestBase {
 					assertEquals(expectedEdges, edges);
 
 					if (edges.isEmpty()) {
-						assertNull(undirectedG.getEdge(u, v));
+						assertFalse(undirectedG.containsEdge(u, v));
 					} else {
 						Integer e = undirectedG.getEdge(u, v);
 						assertNotNull(e);

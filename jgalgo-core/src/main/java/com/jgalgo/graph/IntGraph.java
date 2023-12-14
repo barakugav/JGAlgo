@@ -245,6 +245,29 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	}
 
 	/**
+	 * Check whether the graph contains an edge with the given source and target.
+	 *
+	 * <p>
+	 * If the graph is undirected, the method will return {@code true} if there is an edge whose end-points are
+	 * {@code source} and {@code target}, regardless of which is the source and which is the target.
+	 *
+	 * @param  source                the source vertex
+	 * @param  target                the target vertex
+	 * @return                       {@code true} if the graph contains an edge with the given source and target,
+	 *                               {@code false} otherwise
+	 * @throws NoSuchVertexException if {@code source} or {@code target} are not valid vertices identifiers
+	 */
+	default boolean containsEdge(int source, int target) {
+		return getEdge(source, target) != -1;
+	}
+
+	@Deprecated
+	@Override
+	default boolean containsEdge(Integer source, Integer target) {
+		return getEdge(source.intValue(), target.intValue()) != -1;
+	}
+
+	/**
 	 * Get the edge whose source is {@code source} and target is {@code target}.
 	 *
 	 * <p>
