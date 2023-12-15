@@ -17,8 +17,8 @@ package com.jgalgo.alg;
 
 import java.util.Arrays;
 import java.util.Collection;
+import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.IEdgeSet;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
@@ -161,7 +161,7 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutUtils.AbstractImplST im
 			builder.ensureEdgeCapacity(gOrig.edges().size() + sources.size() + sinks.size());
 
 			builder.addVertices(gOrig.vertices());
-			builder.addEdgesReassignIds(IEdgeSet.allOf(gOrig));
+			builder.addEdges(EdgeSet.allOf(gOrig));
 			final int originalEdgesThreshold = builder.edges().size();
 
 			final int source = builder.addVertex();

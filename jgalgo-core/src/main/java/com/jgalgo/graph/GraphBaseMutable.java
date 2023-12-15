@@ -291,7 +291,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 			}
 
 		} else {
-			/* Given edges ids are not a sorted range. They may still be the valid range, simply unsorted. */
+			/* The edges are not a sorted range. They may still be the valid range, simply unsorted. */
 			/* Unfortunately, the following implementation requires an allocation. */
 
 			int currentNum = this.edges.size();

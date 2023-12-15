@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveAction;
-import com.jgalgo.graph.IEdgeSet;
+import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
@@ -151,7 +151,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		refgBuilder.ensureEdgeCapacity(m + n);
 		refgBuilder.addVertices(g.vertices());
 		final int fakeV = refgBuilder.addVertex();
-		refgBuilder.addEdgesReassignIds(IEdgeSet.allOf(g));
+		refgBuilder.addEdges(EdgeSet.allOf(g));
 		final int fakeEdgesThreshold = refgBuilder.edges().size();
 		for (int v = 0; v < n; v++) {
 			int e = refgBuilder.addEdge(fakeV, v);

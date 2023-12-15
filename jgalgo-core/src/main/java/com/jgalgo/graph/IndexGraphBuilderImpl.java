@@ -21,10 +21,7 @@ import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import com.jgalgo.internal.util.Assertions;
-import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class IndexGraphBuilderImpl implements IndexGraphBuilder {
@@ -33,9 +30,6 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	final GraphElementSet.Mutable vertices;
 	final GraphElementSet.Mutable edges;
 	private int[] endpoints = IntArrays.EMPTY_ARRAY;
-	private int[] edgesUserIds = IntArrays.EMPTY_ARRAY;
-	private IntSet edgesSetView;
-	private boolean userProvideEdgesIds;
 
 	final WeightsImpl.IndexMutable.Manager verticesUserWeights;
 	final WeightsImpl.IndexMutable.Manager edgesUserWeights;
@@ -118,16 +112,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public IntSet edges() {
-		if (edgesSetView == null) {
-			if (edges.isEmpty())
-				return edges;
-			if (userProvideEdgesIds) {
-				edgesSetView = new EdgesSetProvidedIdx();
-			} else {
-				edgesSetView = edges;
-			}
-		}
-		return edgesSetView;
+		return edges;
 	}
 
 	@Override
@@ -147,19 +132,8 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		verticesUserWeights.ensureCapacity(this.vertices.size);
 	}
 
-	private boolean canAddEdgeWithoutId() {
-		return edges.isEmpty() || !userProvideEdgesIds;
-	}
-
-	private boolean canAddEdgeWithId() {
-		return edges.isEmpty() || userProvideEdgesIds;
-	}
-
 	@Override
 	public int addEdge(int source, int target) {
-		if (!canAddEdgeWithoutId())
-			throw new IllegalStateException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
-					+ "if IDs are provided for some of the edges, they must be provided for all");
 		if (!vertices().contains(source))
 			throw NoSuchVertexException.ofIndex(source);
 		if (!vertices().contains(target))
@@ -171,90 +145,87 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	@Override
-	public void addEdge(int source, int target, int edge) {
-		if (!canAddEdgeWithId())
-			throw new IllegalStateException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
-					+ "if IDs are provided for some of the edges, they must be provided for all");
-		if (edge < 0)
-			throw new IllegalArgumentException("edge ID must be non negative integer");
-		if (!vertices().contains(source))
-			throw NoSuchVertexException.ofIndex(source);
-		if (!vertices().contains(target))
-			throw NoSuchVertexException.ofIndex(target);
-		userProvideEdgesIds = true;
-		int eIdx = edges.add();
-		ensureEdgeCapacity(eIdx + 1);
-		setEdgeEndpoints(eIdx, source, target);
-		edgesUserIds[eIdx] = edge;
-	}
-
-	@Override
 	public void addEdges(EdgeSet<? extends Integer, ? extends Integer> edges) {
-		if (!canAddEdgeWithId())
-			throw new IllegalStateException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
-					+ "if IDs are provided for some of the edges, they must be provided for all");
 		@SuppressWarnings("unchecked")
 		EdgeSet<Integer, Integer> edges0 = (EdgeSet<Integer, Integer>) edges;
-		if (edges instanceof IEdgeSet) {
-			for (IEdgeIter eit = ((IEdgeSet) edges).iterator(); eit.hasNext();) {
-				eit.nextInt();
-				int source = eit.sourceInt();
-				int target = eit.targetInt();
-				if (!vertices().contains(source))
-					throw NoSuchVertexException.ofIndex(source);
-				if (!vertices().contains(target))
-					throw NoSuchVertexException.ofIndex(target);
-			}
+		final Set<Integer> edgesIds;
+		if (edges instanceof IEdgeSetView) {
+			edgesIds = ((IEdgeSetView) edges).idsSet();
+		} else if (edges instanceof EdgeSetView) {
+			edgesIds = ((EdgeSetView<Integer, Integer>) edges0).idsSet();
 		} else {
-			for (EdgeIter<Integer, Integer> eit = edges0.iterator(); eit.hasNext();) {
-				eit.next();
-				int source = eit.source().intValue();
-				int target = eit.target().intValue();
-				if (!vertices().contains(source))
-					throw NoSuchVertexException.ofIndex(source);
-				if (!vertices().contains(target))
-					throw NoSuchVertexException.ofIndex(target);
-			}
+			edgesIds = edges0;
 		}
-
-		final int addedNum = edges.size();
-		userProvideEdgesIds = true;
-		int eIdx = this.edges.size;
-		this.edges.addAll(addedNum);
-		ensureEdgeCapacity(this.edges.size);
-		if (edges instanceof IEdgeSet) {
-			for (IEdgeIter eit = ((IEdgeSet) edges).iterator(); eit.hasNext(); eIdx++) {
-				int edge = eit.nextInt();
-				int source = eit.sourceInt();
-				int target = eit.targetInt();
-				setEdgeEndpoints(eIdx, source, target);
-				edgesUserIds[eIdx] = edge;
+		if (GraphBaseMutable.isSortedRange(this.edges.size, edgesIds)) {
+			if (edges instanceof IEdgeSet) {
+				/* the variant with 're-assign ids' assigns indices by the iteration order */
+				addEdgesReassignIds((IEdgeSet) edges);
+				return;
 			}
+
+			checkEndpoints(edges0);
+			int eIdx = this.edges.size;
+			this.edges.addAll(edges.size());
+			ensureEdgeCapacity(this.edges.size);
+			for (EdgeIter<Integer, Integer> iter = edges0.iterator(); iter.hasNext();) {
+				Integer e = iter.next();
+				assert e.intValue() == eIdx; /* isSortedRange() */
+				int source = iter.source().intValue();
+				int target = iter.target().intValue();
+				setEdgeEndpoints(eIdx++, source, target);
+			}
+
 		} else {
-			for (EdgeIter<Integer, Integer> eit = edges0.iterator(); eit.hasNext(); eIdx++) {
-				int edge = eit.next().intValue();
-				int source = eit.source().intValue();
-				int target = eit.target().intValue();
-				setEdgeEndpoints(eIdx, source, target);
-				edgesUserIds[eIdx] = edge;
+			/* The edges are not a sorted range. They may still be the valid range, simply unsorted. */
+			/* Unfortunately, the following implementation requires an allocation. */
+
+			int currentNum = this.edges.size();
+			int[] newEdgesEndpoints = new int[edges.size() * 2];
+			Arrays.fill(newEdgesEndpoints, -1);
+			var op = new Object() {
+				void accept(int edge, int source, int target) {
+					if (!vertices().contains(source))
+						throw NoSuchVertexException.ofIndex(source);
+					if (!vertices().contains(target))
+						throw NoSuchVertexException.ofIndex(target);
+					int eIdx = edge - currentNum;
+					if (eIdx < 0 || eIdx * 2 >= newEdgesEndpoints.length || newEdgesEndpoints[2 * eIdx] != -1)
+						throw new IllegalArgumentException(
+								"added edges must be a consecutive range of integers starting from " + currentNum
+										+ " but was " + edges);
+					newEdgesEndpoints[eIdx * 2 + 0] = source;
+					newEdgesEndpoints[eIdx * 2 + 1] = target;
+				}
+			};
+			if (edges instanceof IEdgeSet) {
+				for (IEdgeIter iter = ((IEdgeSet) edges).iterator(); iter.hasNext();) {
+					int e = iter.nextInt();
+					int source = iter.sourceInt();
+					int target = iter.targetInt();
+					op.accept(e, source, target);
+				}
+			} else {
+				for (EdgeIter<Integer, Integer> iter = edges0.iterator(); iter.hasNext();) {
+					int e = iter.next().intValue();
+					int source = iter.source().intValue();
+					int target = iter.target().intValue();
+					op.accept(e, source, target);
+				}
+			}
+
+			this.edges.addAll(edges.size());
+			ensureEdgeCapacity(this.edges.size);
+			for (int eIdx = 0; eIdx < newEdgesEndpoints.length / 2; eIdx++) {
+				int source = newEdgesEndpoints[eIdx * 2 + 0];
+				int target = newEdgesEndpoints[eIdx * 2 + 1];
+				setEdgeEndpoints(currentNum + eIdx, source, target);
 			}
 		}
 	}
 
 	@Override
 	public IntSet addEdgesReassignIds(IEdgeSet edges) {
-		if (!canAddEdgeWithoutId())
-			throw new IllegalStateException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
-					+ "if IDs are provided for some of the edges, they must be provided for all");
-		for (IEdgeIter eit = edges.iterator(); eit.hasNext();) {
-			eit.nextInt();
-			int source = eit.sourceInt();
-			int target = eit.targetInt();
-			if (!vertices().contains(source))
-				throw NoSuchVertexException.ofIndex(source);
-			if (!vertices().contains(target))
-				throw NoSuchVertexException.ofIndex(target);
-		}
+		checkEndpoints(edges);
 
 		final int addedNum = edges.size();
 		int eIdx = this.edges.size;
@@ -269,6 +240,30 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		return range(this.edges.size - addedNum, this.edges.size);
 	}
 
+	private void checkEndpoints(EdgeSet<Integer, Integer> edges) {
+		if (edges instanceof IEdgeSet) {
+			for (IEdgeIter iter = ((IEdgeSet) edges).iterator(); iter.hasNext();) {
+				iter.nextInt();
+				int source = iter.sourceInt();
+				int target = iter.targetInt();
+				if (!vertices().contains(source))
+					throw NoSuchVertexException.ofIndex(source);
+				if (!vertices().contains(target))
+					throw NoSuchVertexException.ofIndex(target);
+			}
+		} else {
+			for (EdgeIter<Integer, Integer> iter = edges.iterator(); iter.hasNext();) {
+				iter.next();
+				int source = iter.source().intValue();
+				int target = iter.target().intValue();
+				if (!vertices().contains(source))
+					throw NoSuchVertexException.ofIndex(source);
+				if (!vertices().contains(target))
+					throw NoSuchVertexException.ofIndex(target);
+			}
+		}
+	}
+
 	@Override
 	public void ensureVertexCapacity(int verticesNum) {
 		verticesUserWeights.ensureCapacity(verticesNum);
@@ -279,16 +274,12 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		edgesUserWeights.ensureCapacity(edgesNum);
 		if (edgesNum * 2 > endpoints.length)
 			endpoints = Arrays.copyOf(endpoints, Math.max(4, Math.max(2 * endpoints.length, edgesNum * 2)));
-		if (edges.size > 0 && userProvideEdgesIds && edgesNum > edgesUserIds.length)
-			edgesUserIds = Arrays.copyOf(edgesUserIds, Math.max(2, Math.max(2 * edgesUserIds.length, edgesNum)));
 	}
 
 	@Override
 	public void clear() {
 		vertices.clear();
 		edges.clear();
-		edgesSetView = null;
-		userProvideEdgesIds = false;
 		verticesUserWeights.clearContainers();
 		edgesUserWeights.clearContainers();
 	}
@@ -311,61 +302,19 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		return e * 2 + 1;
 	}
 
-	void validateUserProvidedIdsBeforeBuild() {
-		if (!userProvideEdgesIds)
-			return;
-
-		/* Rearrange edges such that edgesUserIds[e]==e */
-		final int m = edges.size;
-		for (int startIdx = 0; startIdx < m; startIdx++) {
-			if (startIdx == edgesUserIds[startIdx])
-				continue;
-			int e = edgesUserIds[startIdx];
-			if (e >= m)
-				throw new IllegalArgumentException("Edges IDs should be 0,1,2,...,m-1. id >= m: " + e + " >= " + m);
-			int u = endpoints[edgeSourceIndex(startIdx)];
-			int v = endpoints[edgeTargetIndex(startIdx)];
-			edgesUserIds[startIdx] = -1;
-			for (;;) {
-				int nextE = edgesUserIds[e];
-				if (nextE == -1) {
-					/* we completed a cycle */
-					edgesUserIds[e] = e;
-					setEdgeEndpoints(e, u, v);
-					break;
-				} else if (nextE == e)
-					throw new IllegalArgumentException("duplicate edge id: " + e);
-				if (nextE >= m)
-					throw new IllegalArgumentException(
-							"Edges IDs should be 0,1,2,...,m-1. id >= m: " + nextE + " >= " + m);
-				int nextU = endpoints[edgeSourceIndex(e)];
-				int nextV = endpoints[edgeTargetIndex(e)];
-				setEdgeEndpoints(e, u, v);
-				edgesUserIds[e] = e;
-				u = nextU;
-				v = nextV;
-				e = nextE;
-			}
-		}
-		assert range(m).allMatch(e -> e == edgesUserIds[e]);
-	}
-
 	@Override
 	public IndexGraph build() {
-		validateUserProvidedIdsBeforeBuild();
 		return immutableImpl.newFromBuilder(new IndexGraphBuilderImpl.Artifacts(this));
 	}
 
 	@Override
 	public IndexGraph buildMutable() {
-		validateUserProvidedIdsBeforeBuild();
 		return mutableImpl.newFromBuilder(new IndexGraphBuilderImpl.Artifacts(this));
 	}
 
 	@Override
 	public IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges) {
 		if (directed && reIndexEdges) {
-			validateUserProvidedIdsBeforeBuild();
 			return GraphCsrDirectedReindexed.newInstance(new IndexGraphBuilderImpl.Artifacts(this));
 		} else {
 			return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());
@@ -415,33 +364,6 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	@Override
 	public Set<String> getEdgesWeightsKeys() {
 		return edgesUserWeights.weightsKeys();
-	}
-
-	private class EdgesSetProvidedIdx extends AbstractIntSet {
-		@Override
-		public int size() {
-			return edges.size;
-		}
-
-		@Override
-		public IntIterator iterator() {
-			return new IntIterator() {
-
-				int idx = 0;
-
-				@Override
-				public boolean hasNext() {
-					return idx < edges.size;
-				}
-
-				@Override
-				public int nextInt() {
-					Assertions.Iters.hasNext(this);
-					return edgesUserIds[idx++];
-				}
-
-			};
-		}
 	}
 
 	static class Artifacts {

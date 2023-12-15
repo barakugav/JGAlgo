@@ -16,9 +16,9 @@
 package com.jgalgo.alg;
 
 import static com.jgalgo.internal.util.Range.range;
+import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IEdgeSet;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
@@ -86,7 +86,7 @@ class ChinesePostmanImpl implements ChinesePostman {
 		IndexGraphBuilder b = IndexGraphBuilder.undirected();
 		b.ensureEdgeCapacity(g.edges().size() + oddMatching.edges().size());
 		b.addVertices(g.vertices());
-		b.addEdgesReassignIds(IEdgeSet.allOf(g));
+		b.addEdges(EdgeSet.allOf(g));
 		final int originalEdgesThreshold = b.edges().size();
 		for (int e : oddMatching.edges()) {
 			int u = oddVertices[oddGraph.edgeSource(e)];
