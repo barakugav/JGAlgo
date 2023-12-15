@@ -173,12 +173,10 @@ public interface IWeights&lt;T&gt; extends Weights&lt;Integer, T&gt; {
 			Class&lt;? super T&gt; type, T defVal) {
 <span class="fc" id="L174">		IntSet vertices = g.indexGraph().vertices();</span>
 <span class="fc" id="L175">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(vertices, false, type, defVal);</span>
-<span class="fc bfc" id="L176" title="All 2 branches covered.">		if (vertices.size() &gt; 0)</span>
-<span class="fc" id="L177">			weights.expand(vertices.size());</span>
-<span class="fc bfc" id="L178" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L179">			return (WeightsT) weights;</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L177">			return (WeightsT) weights;</span>
 		} else {
-<span class="fc" id="L181">			return (WeightsT) WeightsImpl.IntMapped.newInstance(weights, g.indexGraphVerticesMap());</span>
+<span class="fc" id="L179">			return (WeightsT) WeightsImpl.IntMapped.newInstance(weights, g.indexGraphVerticesMap());</span>
 		}
 	}
 
@@ -198,7 +196,7 @@ public interface IWeights&lt;T&gt; extends Weights&lt;Integer, T&gt; {
 	 */
 	public static &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT createExternalEdgesWeights(IntGraph g,
 			Class&lt;? super T&gt; type) {
-<span class="fc" id="L201">		return createExternalEdgesWeights(g, type, null);</span>
+<span class="fc" id="L199">		return createExternalEdgesWeights(g, type, null);</span>
 	}
 
 	/**
@@ -219,14 +217,12 @@ public interface IWeights&lt;T&gt; extends Weights&lt;Integer, T&gt; {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;T, WeightsT extends IWeights&lt;T&gt;&gt; WeightsT createExternalEdgesWeights(IntGraph g,
 			Class&lt;? super T&gt; type, T defVal) {
-<span class="fc" id="L222">		IntSet edges = g.indexGraph().edges();</span>
-<span class="fc" id="L223">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, true, type, defVal);</span>
-<span class="fc bfc" id="L224" title="All 2 branches covered.">		if (edges.size() &gt; 0)</span>
-<span class="fc" id="L225">			weights.expand(edges.size());</span>
-<span class="fc bfc" id="L226" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L227">			return (WeightsT) weights;</span>
+<span class="fc" id="L220">		IntSet edges = g.indexGraph().edges();</span>
+<span class="fc" id="L221">		WeightsImpl.IndexMutable&lt;T&gt; weights = WeightsImpl.IndexMutable.newInstance(edges, true, type, defVal);</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L223">			return (WeightsT) weights;</span>
 		} else {
-<span class="fc" id="L229">			return (WeightsT) WeightsImpl.IntMapped.newInstance(weights, g.indexGraphEdgesMap());</span>
+<span class="fc" id="L225">			return (WeightsT) WeightsImpl.IntMapped.newInstance(weights, g.indexGraphEdgesMap());</span>
 		}
 	}
 

@@ -19,9 +19,9 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
-import com.jgalgo.graph.IEdgeSet;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeights;
@@ -365,7 +365,7 @@ class MinimumCostFlows {
 
 			/* Add all original vertices and edges */
 <span class="fc" id="L367">			builder.addVertices(gOrig.vertices());</span>
-<span class="fc" id="L368">			builder.addEdgesReassignIds(IEdgeSet.allOf(gOrig));</span>
+<span class="fc" id="L368">			builder.addEdges(EdgeSet.allOf(gOrig));</span>
 			/* any edge with index smaller than this threshold is an original edge of the graph */
 <span class="fc" id="L370">			final int origEdgesThreshold = builder.edges().size();</span>
 
@@ -474,7 +474,7 @@ class MinimumCostFlows {
 
 			/* Add all original vertices and edges */
 <span class="fc" id="L476">			builder.addVertices(gOrig.vertices());</span>
-<span class="fc" id="L477">			builder.addEdgesReassignIds(IEdgeSet.allOf(gOrig));</span>
+<span class="fc" id="L477">			builder.addEdges(EdgeSet.allOf(gOrig));</span>
 			/* any edge with index smaller than this threshold is an original edge of the graph */
 <span class="fc" id="L479">			final int origEdgesThreshold = builder.edges().size();</span>
 
@@ -645,7 +645,7 @@ class MinimumCostFlows {
 
 			/* Add all original vertices and edges */
 <span class="fc" id="L647">			builder.addVertices(gOrig.vertices());</span>
-<span class="fc" id="L648">			builder.addEdgesReassignIds(IEdgeSet.allOf(gOrig));</span>
+<span class="fc" id="L648">			builder.addEdges(EdgeSet.allOf(gOrig));</span>
 			/* any edge with index greater than this threshold is not an original edge of the graph */
 <span class="fc" id="L650">			final int origEdgesThreshold = builder.edges().size();</span>
 
@@ -760,7 +760,7 @@ class MinimumCostFlows {
 <span class="fc" id="L760">			builder.ensureEdgeCapacity(gOrig.edges().size() + sources.size() + sinks.size() + 2);</span>
 
 <span class="fc" id="L762">			builder.addVertices(gOrig.vertices());</span>
-<span class="fc" id="L763">			builder.addEdgesReassignIds(IEdgeSet.allOf(gOrig));</span>
+<span class="fc" id="L763">			builder.addEdges(EdgeSet.allOf(gOrig));</span>
 			/* any edge with index smaller than this threshold is an original edge of the graph */
 <span class="fc" id="L765">			final int origEdgesThreshold = builder.edges().size();</span>
 

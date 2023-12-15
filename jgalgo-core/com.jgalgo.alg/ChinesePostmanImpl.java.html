@@ -16,9 +16,9 @@
 package com.jgalgo.alg;
 
 import static com.jgalgo.internal.util.Range.range;
+import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
-import com.jgalgo.graph.IEdgeSet;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
@@ -86,7 +86,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L86">		IndexGraphBuilder b = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L87">		b.ensureEdgeCapacity(g.edges().size() + oddMatching.edges().size());</span>
 <span class="fc" id="L88">		b.addVertices(g.vertices());</span>
-<span class="fc" id="L89">		b.addEdgesReassignIds(IEdgeSet.allOf(g));</span>
+<span class="fc" id="L89">		b.addEdges(EdgeSet.allOf(g));</span>
 <span class="fc" id="L90">		final int originalEdgesThreshold = b.edges().size();</span>
 <span class="fc bfc" id="L91" title="All 2 branches covered.">		for (int e : oddMatching.edges()) {</span>
 <span class="fc" id="L92">			int u = oddVertices[oddGraph.edgeSource(e)];</span>
