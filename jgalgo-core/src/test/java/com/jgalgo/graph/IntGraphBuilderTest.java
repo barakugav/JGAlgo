@@ -438,8 +438,8 @@ public class IntGraphBuilderTest extends TestBase {
 					int e = rand.nextInt(2 * m);
 					if (!g.vertices().contains(v) && !g.edges().contains(e)) {
 						int u = Graphs.randVertex(g, rand);
-						assertThrows(RuntimeException.class, () -> b.addEdge(u, v, e));
-						assertThrows(RuntimeException.class, () -> b.addEdge(v, u, e));
+						assertThrows(NoSuchVertexException.class, () -> b.addEdge(u, v, e));
+						assertThrows(NoSuchVertexException.class, () -> b.addEdge(v, u, e));
 						break;
 					}
 				}

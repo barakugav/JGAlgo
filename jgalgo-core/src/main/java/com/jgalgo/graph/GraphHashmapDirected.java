@@ -311,4 +311,26 @@ class GraphHashmapDirected extends GraphHashmapAbstract {
 		}
 	}
 
+	@Override
+	void markVertex(int vertex) {
+		if (edgesOut[vertex] == EmptyEdgeMap) {
+			edgesOut[vertex] = null;
+		} else {
+			edgesOut[vertex].defaultReturnValue(-2);
+		}
+	}
+
+	@Override
+	void unmarkVertex(int vertex) {
+		if (edgesOut[vertex] == null) {
+			edgesOut[vertex] = EmptyEdgeMap;
+		} else {
+			edgesOut[vertex].defaultReturnValue(-1);
+		}
+	}
+
+	@Override
+	boolean isMarkedVertex(int vertex) {
+		return edgesOut[vertex] == null || edgesOut[vertex].defaultReturnValue() == -2;
+	}
 }

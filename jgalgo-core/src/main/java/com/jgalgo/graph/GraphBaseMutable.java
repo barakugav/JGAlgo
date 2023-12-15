@@ -21,9 +21,15 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
+import java.util.function.IntPredicate;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.IntAdapters;
 import com.jgalgo.internal.util.Range;
+import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphBaseMutable extends IndexGraphBase {
@@ -240,6 +246,72 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		vertices0().swapAndRemove(removedIdx, swappedIdx);
 	}
 
+	abstract void markVertex(int vertex);
+
+	abstract void unmarkVertex(int vertex);
+
+	abstract boolean isMarkedVertex(int vertex);
+
+	@Override
+	public void removeVertices(Collection<? extends Integer> vertices) {
+		/*
+		 * We want to remove multiple elements at once, but due to the index graph invariants, we can't simply remove
+		 * them in any order, as swaps may be required. If we want to remove k elements, we first mark the the ones
+		 * which are in the last k positions, and then iterate over the last k elements (out of all the elements) one
+		 * after another, and either remove it if it is marked, or swap it with an element which is not in the last k
+		 * positions. Unfortunately, this requires an allocation of size k.
+		 */
+
+		@SuppressWarnings("unchecked")
+		IntCollection vertices0 = IntAdapters.asIntCollection((Collection<Integer>) vertices);
+		final int removeSize = vertices.size();
+		final int removeUpTo = this.vertices.size - removeSize;
+		Bitmap lastVerticesMarks = new Bitmap(removeSize);
+		int markedVerticesNum = 0;
+		try {
+			for (int v : vertices0) {
+				checkVertex(v);
+				if (isMarkedVertex(v))
+					throw new IllegalArgumentException("duplicate vertex in removed collection: " + v);
+				if (v >= removeUpTo)
+					lastVerticesMarks.set(v - removeUpTo);
+				markVertex(v);
+				markedVerticesNum++;
+			}
+		} finally {
+			for (IntIterator vit = vertices0.iterator(); markedVerticesNum-- > 0;)
+				unmarkVertex(vit.nextInt());
+		}
+
+		if (lastVerticesMarks.cardinality() == removeSize) {
+			/* simply remove last k vertices */
+			for (int lastVertex = this.vertices.size - 1; lastVertex >= removeUpTo; lastVertex--) {
+				removeEdgesOf(lastVertex);
+				removeVertexLast(lastVertex);
+			}
+
+		} else {
+			/* we must copy the indices, as the given collection of vertices may relay on the current indexing */
+			IntArrayList nonLastVertices = new IntArrayList(removeSize);
+			for (int v : vertices0)
+				if (v < removeUpTo)
+					nonLastVertices.add(v);
+			for (int lastVertex = this.vertices.size - 1; lastVertex >= removeUpTo; lastVertex--) {
+				if (lastVerticesMarks.get(lastVertex - removeUpTo)) {
+					/* remove last vertex */
+					removeEdgesOf(lastVertex);
+					removeVertexLast(lastVertex);
+				} else {
+					/* swap and remove */
+					int removedVertex = nonLastVertices.popInt();
+					removeEdgesOf(removedVertex);
+					vertexSwapAndRemove(removedVertex, lastVertex);
+				}
+			}
+			assert nonLastVertices.isEmpty();
+		}
+	}
+
 	@Override
 	public int addEdge(int source, int target) {
 		checkVertex(source);
@@ -407,6 +479,65 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		edgesUserWeights.swapAndClear(removedIdx, swappedIdx);
 		edges0().swapAndRemove(removedIdx, swappedIdx);
 		swapAndClear(edgeEndpoints, removedIdx, swappedIdx, DefaultEndpoints);
+	}
+
+	@Override
+	public final void removeEdges(Collection<? extends Integer> edges) {
+		/*
+		 * We want to remove multiple elements at once, but due to the index graph invariants, we can't simply remove
+		 * them in any order, as swaps may be required. If we want to remove k elements, we first mark the the ones
+		 * which are in the last k positions, and then iterate over the last k elements (out of all the elements) one
+		 * after another, and either remove it if it is marked, or swap it with an element which is not in the last k
+		 * positions. Unfortunately, this requires an allocation of size k.
+		 */
+
+		@SuppressWarnings("unchecked")
+		IntCollection edges0 = IntAdapters.asIntCollection((Collection<Integer>) edges);
+		final int removeSize = edges.size();
+		final int removeUpTo = this.edges.size - removeSize;
+		Bitmap lastEdgesMarks = new Bitmap(removeSize);
+		IntConsumer mark = e -> replaceEdgeSource(e, -source(e) - 1);
+		IntConsumer unmark = e -> replaceEdgeSource(e, -source(e) - 1);
+		IntPredicate isMarked = e -> source(e) < 0;
+		int markedEdgesNum = 0;
+		try {
+			for (int e : edges0) {
+				checkEdge(e);
+				if (isMarked.test(e))
+					throw new IllegalArgumentException("duplicate edge in removed collection: " + e);
+				if (e >= removeUpTo)
+					lastEdgesMarks.set(e - removeUpTo);
+				mark.accept(e);
+				markedEdgesNum++;
+			}
+		} finally {
+			for (IntIterator eit = edges0.iterator(); markedEdgesNum-- > 0;)
+				unmark.accept(eit.nextInt());
+		}
+
+		if (lastEdgesMarks.cardinality() == removeSize) {
+			/* simply remove last k edges */
+			for (int lastEdge = this.edges.size - 1; lastEdge >= removeUpTo; lastEdge--)
+				removeEdgeLast(lastEdge);
+
+		} else {
+			/* we must copy the indices, as the given collection of edges may relay on the current indexing */
+			IntArrayList nonLastEdges = new IntArrayList(removeSize);
+			for (int e : edges0)
+				if (e < removeUpTo)
+					nonLastEdges.add(e);
+			for (int lastEdge = this.edges.size - 1; lastEdge >= removeUpTo; lastEdge--) {
+				if (lastEdgesMarks.get(lastEdge - removeUpTo)) {
+					/* remove last edge */
+					removeEdgeLast(lastEdge);
+				} else {
+					/* swap and remove */
+					int removedEdge = nonLastEdges.popInt();
+					edgeSwapAndRemove(removedEdge, lastEdge);
+				}
+			}
+			assert nonLastEdges.isEmpty();
+		}
 	}
 
 	void replaceEdgeSource(int edge, int newSource) {

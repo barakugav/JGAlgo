@@ -45,6 +45,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
+import org.junit.jupiter.api.Test;
 import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.alg.MatchingBipartiteTestUtils;
 import com.jgalgo.alg.MatchingWeightedTestUtils;
@@ -115,48 +116,6 @@ class GraphImplTestUtils extends TestUtils {
 				} else {
 					assertThrows(IllegalArgumentException.class, () -> g.addVertex(g.vertices().size() * 2 + 7));
 				}
-			}
-		});
-	}
-
-	@SuppressWarnings({ "deprecation" })
-	static void verticesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
-		foreachBoolConfig((directed, index) -> {
-			Graph<Integer, Integer> g = graphImpl.get(directed);
-			if (index)
-				g = g.indexGraph();
-			final int n = 100;
-			IntSet verticesSet = new IntOpenHashSet();
-			for (int v = 0; v < n; v++) {
-				g.addVertex(Integer.valueOf(v));
-				verticesSet.add(v);
-			}
-			assertEquals(verticesSet, g.vertices());
-			assertEquals(g.vertices(), verticesSet);
-			assertEquals(verticesSet.hashCode(), g.vertices().hashCode());
-			assertEquals(IntSets.emptySet(), g.edges());
-
-			/* toArray() */
-			Object[] arr1 = g.vertices().toArray();
-			Integer[] arr2 = g.vertices().toArray(new Integer[0]);
-			assertEquals(g.vertices(), Set.of(arr1)); /* Set.of() checks that there are no duplications */
-			assertEquals(g.vertices(), Set.of(arr2));
-			if (g.vertices() instanceof IntSet) {
-				int[] arr3 = ((IntSet) g.vertices()).toIntArray();
-				int[] arr4 = ((IntSet) g.vertices()).toIntArray(new int[0]);
-				int[] arr5Input = new int[g.vertices().size()];
-				int[] arr5 = ((IntSet) g.vertices()).toIntArray(arr5Input);
-				int[] arr6Input = new int[g.vertices().size() + 7];
-				Arrays.fill(arr6Input, -18);
-				int[] arr6 = ((IntSet) g.vertices()).toIntArray(arr6Input);
-				assertEquals(g.vertices(), IntSet.of(arr3)); /* IntSet.of() checks that there are no duplications */
-				assertEquals(g.vertices(), IntSet.of(arr4));
-				assertEquals(g.vertices(), IntSet.of(arr5));
-				assertEquals(g.vertices(), IntSet.of(Arrays.copyOf(arr6, g.vertices().size())));
-				assertTrue(arr5Input == arr5);
-				assertTrue(arr6Input == arr6);
-				for (int i = g.vertices().size(); i < arr6Input.length; i++)
-					assertEquals(-18, arr6[i]);
 			}
 		});
 	}
@@ -450,6 +409,186 @@ class GraphImplTestUtils extends TestUtils {
 					}
 				}
 				assertEquals(range(verticesNum), g.vertices());
+			}
+		});
+	}
+
+	@Test
+	static void removeVerticesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+		final Random rand = new Random(0x36f43a2a1e51d79dL);
+
+		Boolean2ObjectFunction<Graph<Integer, Integer>> createGraph = directed -> {
+			Graph<Integer, Integer> g = graphImpl.get(directed);
+			g.addVertices(range(50 + rand.nextInt(100)));
+			final int m = 100 + rand.nextInt(100);
+			while (g.edges().size() < m) {
+				Integer u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
+				if (!g.isAllowSelfEdges() && u.equals(v))
+					continue;
+				if (!g.isAllowParallelEdges() && g.containsEdge(u, v))
+					continue;
+				if (!g.isDirected() && u.intValue() > v.intValue()) {
+					Integer tmp = u;
+					u = v;
+					v = tmp;
+				}
+				g.addEdge(u, v, Integer.valueOf(g.edges().size()));
+			}
+			return g;
+		};
+
+		/* removeVertices() valid */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> expectedGraph = g.copy();
+
+				Set<Integer> vertices = new IntOpenHashSet(expectedGraph.vertices());
+				while (vertices.size() > 0) {
+					int num = Math.min(rand.nextInt(5), vertices.size());
+					Set<Integer> vs = new HashSet<>();
+					while (vs.size() < num)
+						vs.add(Graphs.randVertex(g, rand));
+					g.removeVertices(vs);
+					vertices.removeAll(vs);
+					for (Integer v : vs)
+						expectedGraph.removeVertex(v);
+					assertEquals(vertices, g.vertices());
+					assertEquals(expectedGraph, g);
+				}
+			}
+		});
+
+		/* removeVertices() sometimes with duplicate vertex (in removed list) */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> expectedGraph = g.copy();
+
+				Set<Integer> vertices = new IntOpenHashSet(expectedGraph.vertices());
+				while (vertices.size() > 0) {
+					int num = Math.min(rand.nextInt(5), vertices.size());
+					Set<Integer> vs = new HashSet<>();
+					while (vs.size() < num)
+						vs.add(Graphs.randVertex(g, rand));
+					if (vs.isEmpty() || rand.nextBoolean()) {
+						g.removeVertices(vs);
+						vertices.removeAll(vs);
+						for (Integer v : vs)
+							expectedGraph.removeVertex(v);
+						assertEquals(vertices, g.vertices());
+						assertEquals(expectedGraph, g);
+					} else {
+						List<Integer> vs0 = new ArrayList<>(vs);
+						vs0.add(randElement(vs0, rand)); /* duplicate element */
+						Collections.shuffle(vs0, rand);
+						assertThrows(IllegalArgumentException.class, () -> g.removeVertices(vs0));
+					}
+				}
+			}
+		});
+
+		/* removeVertices() sometimes with non existing vertex */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> expectedGraph = g.copy();
+
+				Set<Integer> vertices = new IntOpenHashSet(expectedGraph.vertices());
+				while (vertices.size() > 0) {
+					int num = Math.min(rand.nextInt(5), vertices.size());
+					Set<Integer> vs = new HashSet<>();
+					while (vs.size() < num)
+						vs.add(Graphs.randVertex(g, rand));
+					if (rand.nextBoolean()) {
+						g.removeVertices(vs);
+						vertices.removeAll(vs);
+						for (Integer v : vs)
+							expectedGraph.removeVertex(v);
+						assertEquals(vertices, g.vertices());
+						assertEquals(expectedGraph, g);
+					} else {
+						Integer nonExistingVertex;
+						do {
+							nonExistingVertex = Integer.valueOf(rand.nextInt());
+						} while (vertices.contains(nonExistingVertex));
+						vs.add(nonExistingVertex); /* non existing element */
+						List<Integer> vs0 = new ArrayList<>(vs);
+						Collections.shuffle(vs0, rand);
+						assertThrows(NoSuchVertexException.class, () -> g.removeVertices(vs0));
+					}
+				}
+			}
+		});
+
+		/* removeVertices() sometimes with null vertex */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> expectedGraph = g.copy();
+
+				Set<Integer> vertices = new IntOpenHashSet(expectedGraph.vertices());
+				while (vertices.size() > 0) {
+					int num = Math.min(rand.nextInt(5), vertices.size());
+					Set<Integer> vs = new HashSet<>();
+					while (vs.size() < num)
+						vs.add(Graphs.randVertex(g, rand));
+					if (rand.nextBoolean()) {
+						g.removeVertices(vs);
+						vertices.removeAll(vs);
+						for (Integer v : vs)
+							expectedGraph.removeVertex(v);
+						assertEquals(vertices, g.vertices());
+						assertEquals(expectedGraph, g);
+					} else {
+						List<Integer> vs0 = new ArrayList<>(vs);
+						vs0.add(null);
+						Collections.shuffle(vs0, rand);
+						assertThrows(NullPointerException.class, () -> g.removeVertices(vs0));
+					}
+				}
+			}
+		});
+	}
+
+	@SuppressWarnings({ "deprecation" })
+	static void verticesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+		foreachBoolConfig((directed, index) -> {
+			Graph<Integer, Integer> g = graphImpl.get(directed);
+			if (index)
+				g = g.indexGraph();
+			final int n = 100;
+			IntSet verticesSet = new IntOpenHashSet();
+			for (int v = 0; v < n; v++) {
+				g.addVertex(Integer.valueOf(v));
+				verticesSet.add(v);
+			}
+			assertEquals(verticesSet, g.vertices());
+			assertEquals(g.vertices(), verticesSet);
+			assertEquals(verticesSet.hashCode(), g.vertices().hashCode());
+			assertEquals(IntSets.emptySet(), g.edges());
+
+			/* toArray() */
+			Object[] arr1 = g.vertices().toArray();
+			Integer[] arr2 = g.vertices().toArray(new Integer[0]);
+			assertEquals(g.vertices(), Set.of(arr1)); /* Set.of() checks that there are no duplications */
+			assertEquals(g.vertices(), Set.of(arr2));
+			if (g.vertices() instanceof IntSet) {
+				int[] arr3 = ((IntSet) g.vertices()).toIntArray();
+				int[] arr4 = ((IntSet) g.vertices()).toIntArray(new int[0]);
+				int[] arr5Input = new int[g.vertices().size()];
+				int[] arr5 = ((IntSet) g.vertices()).toIntArray(arr5Input);
+				int[] arr6Input = new int[g.vertices().size() + 7];
+				Arrays.fill(arr6Input, -18);
+				int[] arr6 = ((IntSet) g.vertices()).toIntArray(arr6Input);
+				assertEquals(g.vertices(), IntSet.of(arr3)); /* IntSet.of() checks that there are no duplications */
+				assertEquals(g.vertices(), IntSet.of(arr4));
+				assertEquals(g.vertices(), IntSet.of(arr5));
+				assertEquals(g.vertices(), IntSet.of(Arrays.copyOf(arr6, g.vertices().size())));
+				assertTrue(arr5Input == arr5);
+				assertTrue(arr6Input == arr6);
+				for (int i = g.vertices().size(); i < arr6Input.length; i++)
+					assertEquals(-18, arr6[i]);
 			}
 		});
 	}
@@ -1245,6 +1384,143 @@ class GraphImplTestUtils extends TestUtils {
 					}
 				}
 				assertExpectedEdges(expectedEdges, g);
+			}
+		});
+	}
+
+	static void removeEdgesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+		final Random rand = new Random(0x9bf6ef1f132fa70eL);
+
+		Boolean2ObjectFunction<Graph<Integer, Integer>> createGraph = directed -> {
+			Graph<Integer, Integer> g = graphImpl.get(directed);
+			g.addVertices(range(50 + rand.nextInt(100)));
+			final int m = 100 + rand.nextInt(100);
+			while (g.edges().size() < m) {
+				Integer u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
+				if (!g.isAllowSelfEdges() && u.equals(v))
+					continue;
+				if (!g.isAllowParallelEdges() && g.containsEdge(u, v))
+					continue;
+				if (!g.isDirected() && u.intValue() > v.intValue()) {
+					Integer tmp = u;
+					u = v;
+					v = tmp;
+				}
+				g.addEdge(u, v, Integer.valueOf(g.edges().size()));
+			}
+			return g;
+		};
+
+		/* removeEdges() valid */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> expectedGraph = g.copy();
+
+				Set<Integer> edges = new IntOpenHashSet(expectedGraph.edges());
+				while (edges.size() > 0) {
+					int num = Math.min(rand.nextInt(5), edges.size());
+					Set<Integer> es = new HashSet<>();
+					while (es.size() < num)
+						es.add(Graphs.randEdge(g, rand));
+					g.removeEdges(es);
+					edges.removeAll(es);
+					for (Integer v : es)
+						expectedGraph.removeEdge(v);
+					assertEquals(edges, g.edges());
+					assertEquals(expectedGraph, g);
+				}
+			}
+		});
+
+		/* removeEdges() sometimes with duplicate edge (in removed list) */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> expectedGraph = g.copy();
+
+				Set<Integer> edges = new IntOpenHashSet(expectedGraph.edges());
+				while (edges.size() > 0) {
+					int num = Math.min(rand.nextInt(5), edges.size());
+					Set<Integer> es = new HashSet<>();
+					while (es.size() < num)
+						es.add(Graphs.randEdge(g, rand));
+					if (es.isEmpty() || rand.nextBoolean()) {
+						g.removeEdges(es);
+						edges.removeAll(es);
+						for (Integer v : es)
+							expectedGraph.removeEdge(v);
+						assertEquals(edges, g.edges());
+						assertEquals(expectedGraph, g);
+					} else {
+						List<Integer> es0 = new ArrayList<>(es);
+						es0.add(randElement(es0, rand)); /* duplicate element */
+						Collections.shuffle(es0, rand);
+						assertThrows(IllegalArgumentException.class, () -> g.removeEdges(es0));
+					}
+				}
+			}
+		});
+
+		/* removeEdges() sometimes with non existing edge */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> expectedGraph = g.copy();
+
+				Set<Integer> edges = new IntOpenHashSet(expectedGraph.edges());
+				while (edges.size() > 0) {
+					int num = Math.min(rand.nextInt(5), edges.size());
+					Set<Integer> es = new HashSet<>();
+					while (es.size() < num)
+						es.add(Graphs.randEdge(g, rand));
+					if (rand.nextBoolean()) {
+						g.removeEdges(es);
+						edges.removeAll(es);
+						for (Integer v : es)
+							expectedGraph.removeEdge(v);
+						assertEquals(edges, g.edges());
+						assertEquals(expectedGraph, g);
+					} else {
+						Integer nonExistingEdge;
+						do {
+							nonExistingEdge = Integer.valueOf(rand.nextInt());
+						} while (edges.contains(nonExistingEdge));
+						es.add(nonExistingEdge); /* non existing element */
+						List<Integer> es0 = new ArrayList<>(es);
+						Collections.shuffle(es0, rand);
+						assertThrows(NoSuchEdgeException.class, () -> g.removeEdges(es0));
+					}
+				}
+			}
+		});
+
+		/* removeEdges() sometimes with null edge */
+		foreachBoolConfig(directed -> {
+			for (int repeat = 0; repeat < 25; repeat++) {
+				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> expectedGraph = g.copy();
+
+				Set<Integer> edges = new IntOpenHashSet(expectedGraph.edges());
+				while (edges.size() > 0) {
+					int num = Math.min(rand.nextInt(5), edges.size());
+					Set<Integer> es = new HashSet<>();
+					while (es.size() < num)
+						es.add(Graphs.randEdge(g, rand));
+					if (rand.nextBoolean()) {
+						g.removeEdges(es);
+						edges.removeAll(es);
+						for (Integer v : es)
+							expectedGraph.removeEdge(v);
+						assertEquals(edges, g.edges());
+						assertEquals(expectedGraph, g);
+					} else {
+						List<Integer> es0 = new ArrayList<>(es);
+						es0.add(null);
+						Collections.shuffle(es0, rand);
+						assertThrows(NullPointerException.class, () -> g.removeEdges(es0));
+					}
+				}
 			}
 		});
 	}
@@ -2912,7 +3188,7 @@ class GraphImplTestUtils extends TestUtils {
 
 		AddEdge,
 
-		RemoveEdge, RemoveEdgeUsingOutIter, RemoveEdgeUsingInIter, RemoveEdgeUsingOutEdgeSet, RemoveEdgeUsingInEdgeSet, RemoveEdgeUsingSourceTargetEdgeSet,
+		RemoveEdge, RemoveEdges, RemoveEdgeUsingOutIter, RemoveEdgeUsingInIter, RemoveEdgeUsingOutEdgeSet, RemoveEdgeUsingInEdgeSet, RemoveEdgeUsingSourceTargetEdgeSet,
 
 		RemoveEdgesOfVertex, RemoveEdgesOfVertexUsingEdgeSet, RemoveEdgesOfVertexUsingIter,
 
@@ -2924,7 +3200,7 @@ class GraphImplTestUtils extends TestUtils {
 
 		// ClearEdges,
 
-		AddVertex, RemoveVertex,
+		AddVertex, RemoveVertex, RemoveVertices,
 	}
 
 	private static class UniqueGenerator {
@@ -2954,10 +3230,12 @@ class GraphImplTestUtils extends TestUtils {
 
 		opRand.add(GraphOp.AddVertex, 20);
 		opRand.add(GraphOp.RemoveVertex, 3);
+		opRand.add(GraphOp.RemoveVertices, 1);
 
 		opRand.add(GraphOp.AddEdge, 80);
 
 		opRand.add(GraphOp.RemoveEdge, 3);
+		opRand.add(GraphOp.RemoveEdges, 1);
 		opRand.add(GraphOp.RemoveEdgeUsingOutIter, 2);
 		opRand.add(GraphOp.RemoveEdgeUsingInIter, 2);
 		opRand.add(GraphOp.RemoveEdgeUsingOutEdgeSet, 2);
@@ -3053,6 +3331,21 @@ class GraphImplTestUtils extends TestUtils {
 
 					g.removeEdge(Integer.valueOf(e));
 					tracker.removeEdge(edge);
+					break;
+				}
+				case RemoveEdges: {
+					if (tracker.edgesNum() <= 1)
+						continue;
+					GraphTracker.Edge edge1 = tracker.getRandEdge(rand), edge2;
+					int e1 = getEdge.applyAsInt(edge1), e2;
+					do {
+						edge2 = tracker.getRandEdge(rand);
+						e2 = getEdge.applyAsInt(edge2);
+					} while (e1 == e2);
+
+					g.removeEdges(IntList.of(e1, e2));
+					tracker.removeEdge(edge1);
+					tracker.removeEdge(edge2);
 					break;
 				}
 				case RemoveEdgeUsingOutIter: {
@@ -3304,28 +3597,26 @@ class GraphImplTestUtils extends TestUtils {
 					tracker.addVertex(v.intValue());
 					break;
 				}
-				case RemoveVertex:
+				case RemoveVertex: {
 					if (tracker.verticesNum() == 0)
 						continue;
 					GraphTracker.Vertex v = tracker.getRandVertex(rand);
 					g.removeVertex(Integer.valueOf(v.id));
 					tracker.removeVertex(v);
 					break;
-				// case RemoveVertices: {
-				// if (tracker.verticesNum() < 3)
-				// continue;
-				// Set<GraphTracker.Vertex> vertices = new ObjectOpenHashSet<>(3);
-				// while (vertices.size() < 3)
-				// vertices.add(tracker.getRandVertex(rand));
-				// IntSet verticesInt = new IntOpenHashSet(3);
-				// for (GraphTracker.Vertex vertex : vertices)
-				// verticesInt.add(vertex.id);
-				// g.removeVertices(verticesInt);
-				// for (GraphTracker.Vertex vertex : vertices)
-				// tracker.removeVertex(vertex);
-				// break;
-				// }
-
+				}
+				case RemoveVertices: {
+					if (tracker.verticesNum() <= 1)
+						continue;
+					GraphTracker.Vertex v1 = tracker.getRandVertex(rand), v2;
+					do {
+						v2 = tracker.getRandVertex(rand);
+					} while (v1 == v2);
+					g.removeVertices(List.of(Integer.valueOf(v1.id), Integer.valueOf(v2.id)));
+					tracker.removeVertex(v1);
+					tracker.removeVertex(v2);
+					break;
+				}
 				default:
 					throw new IllegalArgumentException("Unexpected value: " + op);
 			}

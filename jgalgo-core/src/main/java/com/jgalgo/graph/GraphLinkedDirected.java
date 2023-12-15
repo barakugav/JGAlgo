@@ -381,4 +381,18 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		}
 	}
 
+	@Override
+	void markVertex(int vertex) {
+		edgesOutNum[vertex] = -edgesOutNum[vertex] - 1;
+	}
+
+	@Override
+	void unmarkVertex(int vertex) {
+		edgesOutNum[vertex] = -edgesOutNum[vertex] - 1;
+	}
+
+	@Override
+	boolean isMarkedVertex(int vertex) {
+		return edgesOutNum[vertex] < 0;
+	}
 }

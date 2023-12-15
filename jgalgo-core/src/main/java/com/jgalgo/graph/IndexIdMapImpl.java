@@ -17,6 +17,7 @@ package com.jgalgo.graph;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -192,6 +193,7 @@ class IndexIdMapImpl<K> implements IndexIdMap<K> {
 	public int idToIndex(K id) {
 		int idx = idToIndex.getInt(id);
 		if (idx < 0) {
+			Objects.requireNonNull(id);
 			if (isEdges) {
 				throw NoSuchEdgeException.ofEdge(id);
 			} else {
@@ -203,7 +205,7 @@ class IndexIdMapImpl<K> implements IndexIdMap<K> {
 
 	@Override
 	public int idToIndexIfExist(K id) {
-		return idToIndex.getInt(id);
+		return idToIndex.getInt(Objects.requireNonNull(id));
 	}
 
 	void renameId(K oldId, K newId) {

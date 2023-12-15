@@ -172,6 +172,24 @@ public class ReversedGraphViewTest extends TestBase {
 	}
 
 	@Test
+	public void removeVertices() {
+		foreachBoolConfig((intGraph, directed) -> {
+			Graph<Integer, Integer> gOrig = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gRev = gOrig.reverseView();
+
+			Iterator<Integer> vit = gRev.vertices().iterator();
+			Integer v1 = vit.next(), v2 = vit.next();
+			List<Integer> verticesToRemove = List.of(v1, v2);
+			gRev.removeVertices(verticesToRemove);
+			for (Integer v : verticesToRemove) {
+				assertFalse(gRev.vertices().contains(v));
+				assertFalse(gOrig.vertices().contains(v));
+			}
+			assertEquals(gOrig.vertices(), gRev.vertices());
+		});
+	}
+
+	@Test
 	public void renameVertex() {
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
@@ -369,6 +387,24 @@ public class ReversedGraphViewTest extends TestBase {
 
 			assertEquals(expectedOrig, gOrig);
 			assertEquals(expected, gRev);
+		});
+	}
+
+	@Test
+	public void removeEdges() {
+		foreachBoolConfig((intGraph, directed) -> {
+			Graph<Integer, Integer> gOrig = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gRev = gOrig.reverseView();
+
+			Iterator<Integer> eit = gRev.edges().iterator();
+			Integer e1 = eit.next(), e2 = eit.next();
+			List<Integer> edgesToRemove = List.of(e1, e2);
+			gRev.removeEdges(edgesToRemove);
+			for (Integer e : edgesToRemove) {
+				assertFalse(gRev.edges().contains(e));
+				assertFalse(gOrig.edges().contains(e));
+			}
+			assertEquals(gOrig.edges(), gRev.edges());
 		});
 	}
 

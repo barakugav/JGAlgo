@@ -275,4 +275,26 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		}
 	}
 
+	@Override
+	void markVertex(int vertex) {
+		if (edges[vertex] == EmptyEdgeMap) {
+			edges[vertex] = null;
+		} else {
+			edges[vertex].defaultReturnValue(-2);
+		}
+	}
+
+	@Override
+	void unmarkVertex(int vertex) {
+		if (edges[vertex] == null) {
+			edges[vertex] = EmptyEdgeMap;
+		} else {
+			edges[vertex].defaultReturnValue(-1);
+		}
+	}
+
+	@Override
+	boolean isMarkedVertex(int vertex) {
+		return edges[vertex] == null || edges[vertex].defaultReturnValue() == -2;
+	}
 }

@@ -145,6 +145,13 @@ public class GraphImplTest extends TestBase {
 	}
 
 	@Test
+	public void removeVertices() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.removeVerticesTest(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
 	public void addEdgeNull() {
 		Graph<String, String> g = Graph.newUndirected();
 		g.addVertex("A");
@@ -172,6 +179,13 @@ public class GraphImplTest extends TestBase {
 	public void getEdge() {
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.getEdgeTest(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
+	public void removeEdges() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.removeEdgesTest(graphImpl(selfEdges));
 		});
 	}
 

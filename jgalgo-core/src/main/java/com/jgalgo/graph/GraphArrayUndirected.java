@@ -293,4 +293,18 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		}
 	}
 
+	@Override
+	void markVertex(int vertex) {
+		edgesNum[vertex] = -edgesNum[vertex] - 1;
+	}
+
+	@Override
+	void unmarkVertex(int vertex) {
+		edgesNum[vertex] = -edgesNum[vertex] - 1;
+	}
+
+	@Override
+	boolean isMarkedVertex(int vertex) {
+		return edgesNum[vertex] < 0;
+	}
 }

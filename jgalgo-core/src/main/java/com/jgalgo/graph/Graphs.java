@@ -102,6 +102,11 @@ public class Graphs {
 		}
 
 		@Override
+		public void removeVertices(Collection<? extends V> vertices) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove vertices");
+		}
+
+		@Override
 		public void renameVertex(V vertex, V newId) {
 			throw new UnsupportedOperationException("graph is immutable, cannot rename vertices");
 		}
@@ -133,6 +138,11 @@ public class Graphs {
 
 		@Override
 		public void removeEdge(E edge) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
+		}
+
+		@Override
+		public void removeEdges(Collection<? extends E> edges) {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
 		}
 
@@ -288,6 +298,11 @@ public class Graphs {
 		}
 
 		@Override
+		public void removeVertices(Collection<? extends Integer> vertices) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove vertices");
+		}
+
+		@Override
 		public IEdgeSet outEdges(int source) {
 			return new ImmutableIEdgeSet(graph.outEdges(source));
 		}
@@ -314,6 +329,11 @@ public class Graphs {
 
 		@Override
 		public void removeEdge(int edge) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
+		}
+
+		@Override
+		public void removeEdges(Collection<? extends Integer> edges) {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
 		}
 
@@ -651,8 +671,18 @@ public class Graphs {
 		}
 
 		@Override
+		public void removeVertices(Collection<? extends V> vertices) {
+			graph().removeVertices(vertices);
+		}
+
+		@Override
 		public void addEdges(EdgeSet<? extends V, ? extends E> edges) {
 			graph().addEdges(edges);
+		}
+
+		@Override
+		public void removeEdges(Collection<? extends E> edges) {
+			graph().removeEdges(edges);
 		}
 
 		@Override

@@ -190,6 +190,11 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	}
 
 	@Override
+	public void removeVertices(Collection<? extends Integer> vertices) {
+		throw new UnsupportedOperationException("graph is immutable, can't remove ");
+	}
+
+	@Override
 	public int addEdge(int source, int target) {
 		throw new UnsupportedOperationException("graph is immutable, can't add edge");
 	}
@@ -207,6 +212,11 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	@Override
 	public void removeEdge(int edge) {
 		throw new UnsupportedOperationException("graph is immutable, can't remove edge");
+	}
+
+	@Override
+	public void removeEdges(Collection<? extends Integer> edges) {
+		throw new UnsupportedOperationException("graph is immutable, can't remove edges");
 	}
 
 	@Override

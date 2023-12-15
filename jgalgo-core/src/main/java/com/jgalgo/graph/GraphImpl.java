@@ -24,6 +24,7 @@ import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 
 class GraphImpl<V, E> extends GraphBase<V, E> {
 
@@ -122,6 +123,13 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	public void removeVertex(V vertex) {
 		int vIdx = viMap.idToIndex(vertex);
 		indexGraph.removeVertex(vIdx);
+	}
+
+	@Override
+	public void removeVertices(Collection<? extends V> vertices) {
+		@SuppressWarnings("unchecked")
+		IntCollection vIdxs = IndexIdMaps.idToIndexCollection((Collection<V>) vertices, viMap);
+		indexGraph.removeVertices(vIdxs);
 	}
 
 	@Override
@@ -255,6 +263,13 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	public void removeEdge(E edge) {
 		int eIdx = eiMap.idToIndex(edge);
 		indexGraph.removeEdge(eIdx);
+	}
+
+	@Override
+	public void removeEdges(Collection<? extends E> edges) {
+		@SuppressWarnings("unchecked")
+		IntCollection eIdxs = IndexIdMaps.idToIndexCollection((Collection<E>) edges, eiMap);
+		indexGraph.removeEdges(eIdxs);
 	}
 
 	@Override

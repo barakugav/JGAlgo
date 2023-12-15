@@ -36,16 +36,23 @@ public class GraphHashmapTest extends TestBase {
 	}
 
 	@Test
-	public void vertices() {
+	public void addVertices() {
 		foreachBoolConfig(selfEdges -> {
-			GraphImplTestUtils.verticesTest(graphImpl(selfEdges));
+			GraphImplTestUtils.addVerticesTest(graphImpl(selfEdges));
 		});
 	}
 
 	@Test
-	public void addVertices() {
+	public void removeVertices() {
 		foreachBoolConfig(selfEdges -> {
-			GraphImplTestUtils.addVerticesTest(graphImpl(selfEdges));
+			GraphImplTestUtils.removeVerticesTest(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
+	public void vertices() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.verticesTest(graphImpl(selfEdges));
 		});
 	}
 
@@ -67,6 +74,13 @@ public class GraphHashmapTest extends TestBase {
 	public void addEdgesReassignIds() {
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.addEdgesReassignIdsTest(graphImpl(selfEdges));
+		});
+	}
+
+	@Test
+	public void removeEdges() {
+		foreachBoolConfig(selfEdges -> {
+			GraphImplTestUtils.removeEdgesTest(graphImpl(selfEdges));
 		});
 	}
 

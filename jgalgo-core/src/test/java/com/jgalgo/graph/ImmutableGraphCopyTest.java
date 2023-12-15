@@ -106,6 +106,18 @@ public class ImmutableGraphCopyTest extends TestBase {
 	}
 
 	@Test
+	public void removeVertices() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed);
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+			Graph<Integer, Integer> gImmutable = gOrig.immutableCopy();
+
+			assertThrows(UnsupportedOperationException.class,
+					() -> gImmutable.removeVertices(List.of(gImmutable.vertices().iterator().next())));
+		});
+	}
+
+	@Test
 	public void addVertices() {
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed);
@@ -327,6 +339,18 @@ public class ImmutableGraphCopyTest extends TestBase {
 					}
 				}
 			}
+		});
+	}
+
+	@Test
+	public void removeEdges() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed);
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+			Graph<Integer, Integer> gImmutable = gOrig.immutableCopy();
+
+			assertThrows(UnsupportedOperationException.class,
+					() -> gImmutable.removeEdges(List.of(gImmutable.edges().iterator().next())));
 		});
 	}
 

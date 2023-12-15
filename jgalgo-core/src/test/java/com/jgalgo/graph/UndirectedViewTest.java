@@ -180,6 +180,24 @@ public class UndirectedViewTest extends TestBase {
 	}
 
 	@Test
+	public void removeVertices() {
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> gOrig = createGraph(intGraph);
+			Graph<Integer, Integer> undirectedG = gOrig.undirectedView();
+
+			Iterator<Integer> vit = undirectedG.vertices().iterator();
+			Integer v1 = vit.next(), v2 = vit.next();
+			List<Integer> verticesToRemove = List.of(v1, v2);
+			undirectedG.removeVertices(verticesToRemove);
+			for (Integer v : verticesToRemove) {
+				assertFalse(undirectedG.vertices().contains(v));
+				assertFalse(gOrig.vertices().contains(v));
+			}
+			assertEquals(gOrig.vertices(), undirectedG.vertices());
+		});
+	}
+
+	@Test
 	public void renameVertex() {
 		foreachBoolConfig((intGraph, index) -> {
 			Graph<Integer, Integer> g0 = createGraph(intGraph);
@@ -372,6 +390,24 @@ public class UndirectedViewTest extends TestBase {
 			expected.addEdge(gTemp.edgeSource(e), gTemp.edgeTarget(e));
 
 		assertEquals(expected, undirectedG);
+	}
+
+	@Test
+	public void removeEdges() {
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> gOrig = createGraph(intGraph);
+			Graph<Integer, Integer> undirectedG = gOrig.undirectedView();
+
+			Iterator<Integer> eit = undirectedG.edges().iterator();
+			Integer e1 = eit.next(), e2 = eit.next();
+			List<Integer> edgesToRemove = List.of(e1, e2);
+			undirectedG.removeEdges(edgesToRemove);
+			for (Integer e : edgesToRemove) {
+				assertFalse(undirectedG.edges().contains(e));
+				assertFalse(gOrig.edges().contains(e));
+			}
+			assertEquals(gOrig.edges(), undirectedG.edges());
+		});
 	}
 
 	@Test

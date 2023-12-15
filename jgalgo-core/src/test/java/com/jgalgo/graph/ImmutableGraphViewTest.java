@@ -205,6 +205,30 @@ public class ImmutableGraphViewTest extends TestBase {
 	}
 
 	@Test
+	public void removeVertices() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+			Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+
+			assertThrows(UnsupportedOperationException.class,
+					() -> gImmutable.removeVertices(List.of(gImmutable.vertices().iterator().next())));
+		});
+	}
+
+	@Test
+	public void removeEdges() {
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gImmutable0 = gOrig0.immutableView();
+			Graph<Integer, Integer> gImmutable = index ? gImmutable0.indexGraph() : gImmutable0;
+
+			assertThrows(UnsupportedOperationException.class,
+					() -> gImmutable.removeEdges(List.of(gImmutable.edges().iterator().next())));
+		});
+	}
+
+	@Test
 	public void renameEdge() {
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);

@@ -197,6 +197,13 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	}
 
 	@Override
+	public void removeVertices(Collection<? extends Integer> vertices) {
+		@SuppressWarnings("unchecked")
+		IntCollection vIdxs = IndexIdMaps.idToIndexCollection((Collection<Integer>) vertices, viMap);
+		indexGraph.removeVertices(vIdxs);
+	}
+
+	@Override
 	public void renameVertex(int vertex, int newId) {
 		if (newId < 0)
 			throw new IllegalArgumentException("Vertex must be non negative");
@@ -341,6 +348,13 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	public void removeEdge(int edge) {
 		int eIdx = eiMap.idToIndex(edge);
 		indexGraph.removeEdge(eIdx);
+	}
+
+	@Override
+	public void removeEdges(Collection<? extends Integer> edges) {
+		@SuppressWarnings("unchecked")
+		IntCollection eIdxs = IndexIdMaps.idToIndexCollection((Collection<Integer>) edges, eiMap);
+		indexGraph.removeEdges(eIdxs);
 	}
 
 	@Override

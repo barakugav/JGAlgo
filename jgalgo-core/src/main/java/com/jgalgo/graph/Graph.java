@@ -194,6 +194,16 @@ public interface Graph<V, E> {
 	void removeVertex(V vertex);
 
 	/**
+	 * Remove multiple vertices and all their edges from the graph.
+	 *
+	 * @param  vertices                 the vertices to remove
+	 * @throws NoSuchVertexException    if any of the vertices is not a valid vertex identifier
+	 * @throws NullPointerException     if {@code vertices} is {@code null} or if any of the vertices is {@code null}
+	 * @throws IllegalArgumentException if {@code vertices} contains duplications
+	 */
+	void removeVertices(Collection<? extends V> vertices);
+
+	/**
 	 * Set a new identifier for an existing vertex.
 	 *
 	 * <p>
@@ -369,6 +379,16 @@ public interface Graph<V, E> {
 	 * @throws NoSuchEdgeException if {@code edge} is not a valid edge identifier
 	 */
 	void removeEdge(E edge);
+
+	/**
+	 * Remove multiple edges from the graph.
+	 *
+	 * @param  edges                    the edges to remove
+	 * @throws NoSuchEdgeException      if any of the edges is not a valid edge identifier
+	 * @throws NullPointerException     if {@code edges} is {@code null} or if any of the edges is {@code null}
+	 * @throws IllegalArgumentException if {@code edges} contains duplications
+	 */
+	void removeEdges(Collection<? extends E> edges);
 
 	/**
 	 * Remove all the edges of a vertex.
