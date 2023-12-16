@@ -165,7 +165,7 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 		int[] vToVnew = allocatedMem.vToVnew;
 		for (int u = 0; u < n; u++) {
 			int ut = vToTree.applyAsInt(u);
-			vToVnew[u] = trees[ut].addVertex();
+			vToVnew[u] = trees[ut].addVertexInt();
 		}
 
 		for (int m = f.edges().size(), e = 0; e < m; e++) {

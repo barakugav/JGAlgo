@@ -1552,7 +1552,7 @@ public class GraphBench {
 			final boolean allowSelfEdges = g.isAllowSelfEdges();
 			final boolean allowParallelEdges = g.isAllowParallelEdges();
 			while (g.vertices().size() < n)
-				g.addVertex();
+				g.addVertexInt();
 			while (g.edges().size() < m) {
 				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
 				if (!allowSelfEdges && u == v)

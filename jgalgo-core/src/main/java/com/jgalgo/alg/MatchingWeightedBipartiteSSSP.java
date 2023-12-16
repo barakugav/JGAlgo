@@ -85,7 +85,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 		IndexGraph g = IndexGraphFactory.directed().allowSelfEdges().allowParallelEdges().expectedVerticesNum(n + 2)
 				.expectedEdgesNum(gOrig.edges().size() + n).newGraph();
 		g.addVertices(gOrig.vertices());
-		final int s = g.addVertex(), t = g.addVertex();
+		final int s = g.addVertexInt(), t = g.addVertexInt();
 		IWeightsDouble w = g.addEdgesWeights("weight", double.class);
 
 		for (int m = gOrig.edges().size(), e = 0; e < m; e++) {

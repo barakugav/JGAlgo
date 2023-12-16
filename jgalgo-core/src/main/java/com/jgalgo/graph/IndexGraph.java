@@ -88,7 +88,7 @@ public interface IndexGraph extends IntGraph {
 	 * method should not be called. Use the original graph instead.
 	 */
 	@Override
-	int addVertex();
+	int addVertexInt();
 
 	/**
 	 * {@inheritDoc}
@@ -96,21 +96,21 @@ public interface IndexGraph extends IntGraph {
 	 * <p>
 	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} therefore the only vertex ID that can be
 	 * added is {@code verticesNum}. For any other vertex passed to this method, an exception will be thrown. If
-	 * {@code verticesNum} is passed, this method is equivalent to {@link #addVertex()}.
+	 * {@code verticesNum} is passed, this method is equivalent to {@link #addVertexInt()}.
 	 *
 	 * <p>
 	 * If this index graph object was obtained from a regular {@link Graph} using {@link Graph#indexGraph()}, this
 	 * method should not be called. Use the original graph instead.
 	 *
 	 * @throws     IllegalArgumentException if {@code vertex} is not {@code verticesNum}
-	 * @deprecated                          use {@link #addVertex()} instead
+	 * @deprecated                          use {@link #addVertexInt()} instead
 	 */
 	@Override
 	@Deprecated
 	default void addVertex(int vertex) {
 		if (vertex != vertices().size())
 			throw new IllegalArgumentException("Only vertex ID " + vertices().size() + " can be added");
-		addVertex();
+		addVertexInt();
 	}
 
 	/**

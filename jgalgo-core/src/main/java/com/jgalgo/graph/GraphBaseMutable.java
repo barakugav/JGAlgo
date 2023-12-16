@@ -159,7 +159,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	}
 
 	@Override
-	public int addVertex() {
+	public int addVertexInt() {
 		int u = vertices0().add();
 		assert u >= 0;
 		ensureVertexCapacity(u + 1);

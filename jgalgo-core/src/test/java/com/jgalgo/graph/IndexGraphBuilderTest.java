@@ -529,7 +529,7 @@ public class IndexGraphBuilderTest extends TestBase {
 			final int n = 12 + rand.nextInt(12);
 			final int m = 20 + rand.nextInt(20);
 			while (g.vertices().size() < n) {
-				int vG = g.addVertex();
+				int vG = g.addVertexInt();
 				int vB = b.addVertex();
 				assertEquals(vG, vB);
 			}
@@ -679,10 +679,10 @@ public class IndexGraphBuilderTest extends TestBase {
 				assertEquals(gReIndexedExpected, gReIndexed);
 
 				if (mutable) {
-					int v = gReIndexed.addVertex();
+					int v = gReIndexed.addVertexInt();
 					assertTrue(v >= 0);
 				} else {
-					assertThrows(UnsupportedOperationException.class, () -> gReIndexed.addVertex());
+					assertThrows(UnsupportedOperationException.class, () -> gReIndexed.addVertexInt());
 				}
 			});
 		});

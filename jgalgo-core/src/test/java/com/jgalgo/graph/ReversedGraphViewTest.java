@@ -105,7 +105,7 @@ public class ReversedGraphViewTest extends TestBase {
 				newVertex = viMap.indexToId(newVertex.intValue());
 
 			} else if (gRev instanceof IntGraph) {
-				newVertex = Integer.valueOf(((IntGraph) gRev).addVertex());
+				newVertex = Integer.valueOf(((IntGraph) gRev).addVertexInt());
 			} else {
 				for (int v = 0;; v++) {
 					if (!gRev.vertices().contains(Integer.valueOf(v))) {

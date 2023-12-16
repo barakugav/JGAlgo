@@ -148,9 +148,9 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	}
 
 	@Override
-	public int addVertex() {
+	public int addVertexInt() {
 		int id = vIdStrategy.applyAsInt(vertices());
-		int vIdx = indexGraph.addVertex();
+		int vIdx = indexGraph.addVertexInt();
 		viMap.addId(id, vIdx);
 		return id;
 	}
@@ -161,7 +161,7 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 			throw new IllegalArgumentException("Vertex must be non negative");
 		int vIdx = indexGraph.vertices().size();
 		viMap.addId(vertex, vIdx);
-		int vIdx2 = indexGraph.addVertex();
+		int vIdx2 = indexGraph.addVertexInt();
 		assert vIdx == vIdx2;
 	}
 

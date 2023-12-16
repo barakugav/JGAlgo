@@ -175,7 +175,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	}
 
 	@Override
-	public int addVertex() {
+	public int addVertexInt() {
 		throw new UnsupportedOperationException("graph is immutable, can't add vertex");
 	}
 

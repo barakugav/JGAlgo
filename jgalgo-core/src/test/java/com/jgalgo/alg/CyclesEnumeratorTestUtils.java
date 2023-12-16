@@ -36,9 +36,9 @@ class CyclesEnumeratorTestUtils extends TestUtils {
 
 	static void testSimpleGraph(CyclesEnumerator cyclesFinder) {
 		IndexGraph g = IndexGraph.newDirected();
-		int v0 = g.addVertex();
-		int v1 = g.addVertex();
-		int v2 = g.addVertex();
+		int v0 = g.addVertexInt();
+		int v1 = g.addVertexInt();
+		int v2 = g.addVertexInt();
 		int e0 = g.addEdge(v0, v1);
 		int e1 = g.addEdge(v1, v2);
 		int e2 = g.addEdge(v2, v1);

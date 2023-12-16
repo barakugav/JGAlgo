@@ -77,10 +77,10 @@ public class PathTest extends TestBase {
 	@Test
 	public void testIsPathUndirected() {
 		IntGraph g = IntGraph.newUndirected();
-		int v1 = g.addVertex();
-		int v2 = g.addVertex();
-		int v3 = g.addVertex();
-		int v4 = g.addVertex();
+		int v1 = g.addVertexInt();
+		int v2 = g.addVertexInt();
+		int v3 = g.addVertexInt();
+		int v4 = g.addVertexInt();
 		int e1 = g.addEdge(v1, v2);
 		int e2 = g.addEdge(v2, v3);
 		int e3 = g.addEdge(v3, v4);
@@ -107,10 +107,10 @@ public class PathTest extends TestBase {
 	@Test
 	public void testIsPathDirected() {
 		IntGraph g = IntGraph.newDirected();
-		int v1 = g.addVertex();
-		int v2 = g.addVertex();
-		int v3 = g.addVertex();
-		int v4 = g.addVertex();
+		int v1 = g.addVertexInt();
+		int v2 = g.addVertexInt();
+		int v3 = g.addVertexInt();
+		int v4 = g.addVertexInt();
 		int e1 = g.addEdge(v1, v2);
 		int e2 = g.addEdge(v2, v3);
 		int e3 = g.addEdge(v3, v4);
@@ -137,10 +137,10 @@ public class PathTest extends TestBase {
 	@Test
 	public void testIsSimple() {
 		IntGraph g = IntGraph.newUndirected();
-		int v1 = g.addVertex();
-		int v2 = g.addVertex();
-		int v3 = g.addVertex();
-		int v4 = g.addVertex();
+		int v1 = g.addVertexInt();
+		int v2 = g.addVertexInt();
+		int v3 = g.addVertexInt();
+		int v4 = g.addVertexInt();
 		int e1 = g.addEdge(v1, v2);
 		int e2 = g.addEdge(v2, v3);
 		int e3 = g.addEdge(v3, v4);

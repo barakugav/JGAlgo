@@ -283,7 +283,7 @@ public class Graphs {
 		}
 
 		@Override
-		public int addVertex() {
+		public int addVertexInt() {
 			throw new UnsupportedOperationException("graph is immutable, cannot add vertices");
 		}
 
@@ -904,8 +904,8 @@ public class Graphs {
 		}
 
 		@Override
-		public int addVertex() {
-			return graph().addVertex();
+		public int addVertexInt() {
+			return graph().addVertexInt();
 		}
 
 		@Override

@@ -36,7 +36,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * <p>
  * Each vertex and edge in the graph is identified by a unique non negative {@code int} identifier. Vertices and edges
- * may be created by {@link #addVertex()} and {@link #addEdge(int, int)}, in which case the graph implementation will
+ * may be created by {@link #addVertexInt()} and {@link #addEdge(int, int)}, in which case the graph implementation will
  * choose the {@code int} identifier and will return it to the user. Alternatively, the methods {@link #addVertex(int)}
  * and {@link #addEdge(int, int, int)} (similar the regular {@link Graph} methods) can be used to add new vertices and
  * edges with user chosen identifiers.
@@ -106,14 +106,14 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 *
 	 * @return the new vertex identifier
 	 */
-	int addVertex();
+	int addVertexInt();
 
 	/**
 	 * Add a new vertex to the graph with user chosen ID.
 	 *
 	 * <p>
-	 * In contrast to {@link #addVertex()}, in which the implementation chooses the new vertex identifier, the user can
-	 * specified what {@code int} ID the new vertex should be assigned. The set of graph vertices must not contain
+	 * In contrast to {@link #addVertexInt()}, in which the implementation chooses the new vertex identifier, the user
+	 * can specified what {@code int} ID the new vertex should be assigned. The set of graph vertices must not contain
 	 * duplications, therefore the provided identifier must not be currently used as one of the graph vertices IDs.
 	 *
 	 * <p>

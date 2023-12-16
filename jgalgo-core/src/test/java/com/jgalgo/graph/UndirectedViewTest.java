@@ -113,7 +113,7 @@ public class UndirectedViewTest extends TestBase {
 				newVertex = viMap.indexToId(newVertex.intValue());
 
 			} else if (undirectedG instanceof IntGraph) {
-				newVertex = Integer.valueOf(((IntGraph) undirectedG).addVertex());
+				newVertex = Integer.valueOf(((IntGraph) undirectedG).addVertexInt());
 			} else {
 				for (int v = 0;; v++) {
 					if (!undirectedG.vertices().contains(Integer.valueOf(v))) {

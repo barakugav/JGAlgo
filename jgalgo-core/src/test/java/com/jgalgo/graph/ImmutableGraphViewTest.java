@@ -99,7 +99,7 @@ public class ImmutableGraphViewTest extends TestBase {
 			}
 
 			if (gImmutable instanceof IntGraph)
-				assertThrows(UnsupportedOperationException.class, () -> ((IntGraph) gImmutable).addVertex());
+				assertThrows(UnsupportedOperationException.class, () -> ((IntGraph) gImmutable).addVertexInt());
 			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertex(nonExistingVertex));
 
 			Integer vertexToRemove = gImmutable.vertices().iterator().next();

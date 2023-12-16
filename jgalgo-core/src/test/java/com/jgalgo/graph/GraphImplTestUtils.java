@@ -107,7 +107,7 @@ class GraphImplTestUtils extends TestUtils {
 			IndexGraph g = graphImpl.get(directed).indexGraph();
 			final int n = 87;
 			for (int i = 0; i < n; i++)
-				g.addVertex();
+				g.addVertexInt();
 			assertEquals(range(n), g.vertices());
 
 			for (int i = 0; i < 20; i++) {
@@ -643,7 +643,7 @@ class GraphImplTestUtils extends TestUtils {
 			IndexGraph g = graphImpl.get(directed).indexGraph();
 			final int n = 87;
 			for (int i = 0; i < n; i++)
-				g.addVertex();
+				g.addVertexInt();
 
 			for (int i = 0; i < 20; i++) {
 				int u = i, v = i + 1;
@@ -2578,22 +2578,22 @@ class GraphImplTestUtils extends TestUtils {
 			if (!selfEdges) {
 				IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
 				IndexGraph g1 = factory.allowSelfEdges().newGraph();
-				g1.addVertex();
+				g1.addVertexInt();
 				g1.addEdge(0, 0);
 				assertThrows(IllegalArgumentException.class, () -> copyConstructor.apply(g1));
 			}
 			if (!parallelEdges) {
 				IndexGraph g1 = directed ? IndexGraph.newDirected() : IndexGraph.newUndirected();
-				g1.addVertex();
-				g1.addVertex();
+				g1.addVertexInt();
+				g1.addVertexInt();
 				g1.addEdge(0, 1);
 				g1.addEdge(0, 1);
 				assertThrows(IllegalArgumentException.class, () -> copyConstructor.apply(g1));
 			}
 			if (!parallelEdges) {
 				IndexGraph g1 = directed ? IndexGraph.newDirected() : IndexGraph.newUndirected();
-				g1.addVertex();
-				g1.addVertex();
+				g1.addVertexInt();
+				g1.addVertexInt();
 				g1.addEdge(1, 0);
 				g1.addEdge(1, 0);
 				assertThrows(IllegalArgumentException.class, () -> copyConstructor.apply(g1));

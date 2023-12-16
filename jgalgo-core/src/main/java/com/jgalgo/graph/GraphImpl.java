@@ -92,7 +92,7 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 			throw new NullPointerException("Vertex must be non null");
 		int vIdx = indexGraph.vertices().size();
 		viMap.addId(vertex, vIdx);
-		int vIdx2 = indexGraph.addVertex();
+		int vIdx2 = indexGraph.addVertexInt();
 		assert vIdx == vIdx2;
 	}
 

@@ -214,7 +214,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 				}
 
 				// Create a fake vertex S, connect with 0 edges to all and calc distances
-				int fakeS1 = G.addVertex();
+				int fakeS1 = G.addVertexInt();
 				for (int U = 0; U < N; U++)
 					GWeights.set(G.addEdge(fakeS1, U), 0);
 				ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) dagSssp
@@ -255,7 +255,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 					 * all vertices, with edge r-i to negative vertex v_i on the path and with edge r to all other
 					 * vertices
 					 */
-					int fakeS2 = G.addVertex();
+					int fakeS2 = G.addVertexInt();
 					connected.clear();
 					int assignedWeight = layerNum - 2;
 					for (IEdgeIter it = ssspRes.getPath(vertexInMaxLayer).edgeIter(); it.hasNext();) {

@@ -26,10 +26,10 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 	@Test
 	public void testSimpleNoBlossomsUnweighted() {
 		IndexGraph g = IndexGraph.newUndirected();
-		int v0 = g.addVertex();
-		int v1 = g.addVertex();
-		int v2 = g.addVertex();
-		int v3 = g.addVertex();
+		int v0 = g.addVertexInt();
+		int v1 = g.addVertexInt();
+		int v2 = g.addVertexInt();
+		int v3 = g.addVertexInt();
 		g.addEdge(v0, v1);
 		g.addEdge(v1, v2);
 		g.addEdge(v2, v3);
@@ -44,10 +44,10 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 	@Test
 	public void testSimpleNoBlossomsWeighted() {
 		IndexGraph g = IndexGraph.newUndirected();
-		int v0 = g.addVertex();
-		int v1 = g.addVertex();
-		int v2 = g.addVertex();
-		int v3 = g.addVertex();
+		int v0 = g.addVertexInt();
+		int v1 = g.addVertexInt();
+		int v2 = g.addVertexInt();
+		int v3 = g.addVertexInt();
 		int e0 = g.addEdge(v0, v1);
 		int e1 = g.addEdge(v1, v2);
 		int e2 = g.addEdge(v2, v3);
@@ -67,22 +67,22 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 	@Test
 	public void testSimpleWithBlossomsUnweighted() {
 		IndexGraph g = IndexGraph.newUndirected();
-		int v00 = g.addVertex();
-		int v01 = g.addVertex();
-		int v02 = g.addVertex();
-		int v03 = g.addVertex();
-		int v04 = g.addVertex();
+		int v00 = g.addVertexInt();
+		int v01 = g.addVertexInt();
+		int v02 = g.addVertexInt();
+		int v03 = g.addVertexInt();
+		int v04 = g.addVertexInt();
 		g.addEdge(v00, v01);
 		g.addEdge(v00, v02);
 		g.addEdge(v01, v03);
 		g.addEdge(v02, v04);
 		g.addEdge(v03, v04);
 
-		int v10 = g.addVertex();
-		int v11 = g.addVertex();
-		int v12 = g.addVertex();
-		int v13 = g.addVertex();
-		int v14 = g.addVertex();
+		int v10 = g.addVertexInt();
+		int v11 = g.addVertexInt();
+		int v12 = g.addVertexInt();
+		int v13 = g.addVertexInt();
+		int v14 = g.addVertexInt();
 		g.addEdge(v10, v11);
 		g.addEdge(v10, v12);
 		g.addEdge(v11, v13);
@@ -100,22 +100,22 @@ public class MatchingWeightedBlossomVTest extends TestBase {
 	@Test
 	public void testSimpleWithBlossomsWeighted() {
 		IndexGraph g = IndexGraph.newUndirected();
-		int v00 = g.addVertex();
-		int v01 = g.addVertex();
-		int v02 = g.addVertex();
-		int v03 = g.addVertex();
-		int v04 = g.addVertex();
+		int v00 = g.addVertexInt();
+		int v01 = g.addVertexInt();
+		int v02 = g.addVertexInt();
+		int v03 = g.addVertexInt();
+		int v04 = g.addVertexInt();
 		int e00 = g.addEdge(v00, v01);
 		int e01 = g.addEdge(v00, v02);
 		int e02 = g.addEdge(v01, v03);
 		int e03 = g.addEdge(v02, v04);
 		int e04 = g.addEdge(v03, v04);
 
-		int v10 = g.addVertex();
-		int v11 = g.addVertex();
-		int v12 = g.addVertex();
-		int v13 = g.addVertex();
-		int v14 = g.addVertex();
+		int v10 = g.addVertexInt();
+		int v11 = g.addVertexInt();
+		int v12 = g.addVertexInt();
+		int v13 = g.addVertexInt();
+		int v14 = g.addVertexInt();
 		int e10 = g.addEdge(v10, v11);
 		int e11 = g.addEdge(v10, v12);
 		int e12 = g.addEdge(v11, v13);

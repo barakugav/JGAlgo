@@ -48,9 +48,9 @@ class ColoringTestUtils extends TestUtils {
 
 	static void testWithSelfLoops(ColoringAlgo algo) {
 		IntGraph g = IntGraphFactory.undirected().allowSelfEdges().newGraph();
-		int v1 = g.addVertex();
-		int v2 = g.addVertex();
-		int v3 = g.addVertex();
+		int v1 = g.addVertexInt();
+		int v2 = g.addVertexInt();
+		int v3 = g.addVertexInt();
 		g.addEdge(v1, v2);
 		g.addEdge(v2, v3);
 		g.addEdge(v3, v1);
@@ -60,9 +60,9 @@ class ColoringTestUtils extends TestUtils {
 
 	static void testDirectedGraph(ColoringAlgo algo) {
 		IntGraph g = IntGraph.newDirected();
-		int v1 = g.addVertex();
-		int v2 = g.addVertex();
-		int v3 = g.addVertex();
+		int v1 = g.addVertexInt();
+		int v2 = g.addVertexInt();
+		int v3 = g.addVertexInt();
 		g.addEdge(v1, v2);
 		g.addEdge(v2, v3);
 		g.addEdge(v3, v1);
