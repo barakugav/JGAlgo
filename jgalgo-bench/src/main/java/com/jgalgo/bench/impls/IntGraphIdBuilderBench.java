@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-import java.util.function.ToIntFunction;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
@@ -37,12 +36,12 @@ import org.openjdk.jmh.annotations.Warmup;
 import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IdBuilderInt;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.JGAlgoConfigNonFrozen;
 import it.unimi.dsi.fastutil.HashCommon;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
-public class GraphIdsBench {
+public class IntGraphIdBuilderBench {
 
 	public static class Query {
 
@@ -98,7 +97,7 @@ public class GraphIdsBench {
 
 			@Setup(Level.Trial)
 			public void setupCreateGraph() {
-				JGAlgoConfigNonFrozen.setOption("GraphIdStrategy", "counter");
+				JGAlgoConfigNonFrozen.setOption("IntGraphDefaultIdBuilder", "counter");
 				super.setupCreateGraph(args);
 			}
 
@@ -129,7 +128,7 @@ public class GraphIdsBench {
 
 			@Setup(Level.Trial)
 			public void setupCreateGraph() {
-				JGAlgoConfigNonFrozen.setOption("GraphIdStrategy", "rand");
+				JGAlgoConfigNonFrozen.setOption("IntGraphDefaultIdBuilder", "rand");
 				super.setupCreateGraph(args);
 			}
 
@@ -160,7 +159,7 @@ public class GraphIdsBench {
 
 			@Setup(Level.Trial)
 			public void setupCreateGraph() {
-				Supplier<ToIntFunction<IntSet>> strat = () -> {
+				Supplier<IdBuilderInt> builder = () -> {
 					var state = new Object() {
 						int nextId = 1;
 					};
@@ -175,7 +174,7 @@ public class GraphIdsBench {
 						}
 					};
 				};
-				JGAlgoConfigNonFrozen.setOption("GraphIdStrategy", strat);
+				JGAlgoConfigNonFrozen.setOption("IntGraphDefaultIdBuilder", builder);
 				super.setupCreateGraph(args);
 			}
 
@@ -206,7 +205,7 @@ public class GraphIdsBench {
 
 			@Setup(Level.Trial)
 			public void setupCreateGraph() {
-				Supplier<ToIntFunction<IntSet>> strat = () -> {
+				Supplier<IdBuilderInt> builder = () -> {
 					var state = new Object() {
 						long nextId = 1;
 					};
@@ -221,7 +220,7 @@ public class GraphIdsBench {
 						}
 					};
 				};
-				JGAlgoConfigNonFrozen.setOption("GraphIdStrategy", strat);
+				JGAlgoConfigNonFrozen.setOption("IntGraphDefaultIdBuilder", builder);
 				super.setupCreateGraph(args);
 			}
 
@@ -252,7 +251,7 @@ public class GraphIdsBench {
 
 			@Setup(Level.Trial)
 			public void setupCreateGraph() {
-				Supplier<ToIntFunction<IntSet>> strat = () -> {
+				Supplier<IdBuilderInt> builder = () -> {
 					var state = new Object() {
 						long nextId = 1;
 					};
@@ -267,7 +266,7 @@ public class GraphIdsBench {
 						}
 					};
 				};
-				JGAlgoConfigNonFrozen.setOption("GraphIdStrategy", strat);
+				JGAlgoConfigNonFrozen.setOption("IntGraphDefaultIdBuilder", builder);
 				super.setupCreateGraph(args);
 			}
 

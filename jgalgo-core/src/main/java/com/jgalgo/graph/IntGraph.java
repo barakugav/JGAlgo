@@ -101,25 +101,14 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * Add a new vertex to the graph.
 	 *
 	 * <p>
-	 * The graph implementation will choose a new {@code int} identifier which is not currently used as one of the graph
-	 * edges, and will return it as the new vertex ID.
-	 *
-	 * @return the new vertex identifier
-	 */
-	int addVertexInt();
-
-	/**
-	 * Add a new vertex to the graph with user chosen ID.
+	 * Vertices must be non negative integers.
 	 *
 	 * <p>
-	 * In contrast to {@link #addVertexInt()}, in which the implementation chooses the new vertex identifier, the user
-	 * can specified what {@code int} ID the new vertex should be assigned. The set of graph vertices must not contain
-	 * duplications, therefore the provided identifier must not be currently used as one of the graph vertices IDs.
+	 * If the graph have a vertex builder, namely if {@link #vertexBuilder()} does not return {@code null}, the method
+	 * {@link #addVertexInt()()} can be used, which uses the vertex builder to create the new vertex object instead of
+	 * requiring the user to provide it.
 	 *
-	 * <p>
-	 * Note that vertices IDs must be non negative.
-	 *
-	 * @param  vertex                   a user chosen identifier for the new vertex
+	 * @param  vertex                   new vertex
 	 * @throws IllegalArgumentException if the provided identifier is already used as identifier of one of the graph
 	 *                                      vertices, or if its negative
 	 */
@@ -134,6 +123,46 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	@Override
 	default void addVertex(Integer vertex) {
 		addVertex(vertex.intValue());
+	}
+
+	/**
+	 * Add a new vertex to the graph, using the vertex builder.
+	 *
+	 * <p>
+	 * Unlike {@link #addVertex(int)} in which the vertex is provided by the user, this method uses the vertex builder
+	 * obtained by {@link #vertexBuilder()} to create the new vertex object and adds it to the graph.
+	 *
+	 * <p>
+	 * This method is equivalent to:
+	 *
+	 * <pre> {@code
+	 * int vertex = vertexBuilder().build(vertices());
+	 * addVertex(vertex);
+	 * return vertex;
+	 * }</pre>
+	 *
+	 * @return                               the new vertex
+	 * @throws UnsupportedOperationException if the graph does not have a vertex builder, namely if
+	 *                                           {@link #vertexBuilder()} returns {@code null}
+	 */
+	default int addVertexInt() {
+		IdBuilderInt vertexBuilder = vertexBuilder();
+		if (vertexBuilder == null)
+			throw new UnsupportedOperationException();
+		int vertex = vertexBuilder.build(vertices());
+		addVertex(vertex);
+		return vertex;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #addVertexInt()} instead to avoid un/boxing.
+	 */
+	@Deprecated
+	@Override
+	default Integer addVertex() {
+		return Integer.valueOf(addVertexInt());
 	}
 
 	/**
@@ -329,36 +358,27 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * Add a new edge to the graph.
 	 *
 	 * <p>
-	 * The graph implementation will choose a new {@code int} identifier which is not currently used as one of the graph
-	 * edges, and will return it as the new edge ID.
-	 *
-	 * @param  source                   a source vertex
-	 * @param  target                   a target vertex
-	 * @return                          the new edge identifier
-	 * @throws IllegalArgumentException if the graph does not support parallel edges and an edge between {@code source}
-	 *                                      and {@code target} already exists or if the graph does not support self
-	 *                                      edges and {@code source} and {@code target} are the same vertex
-	 * @throws NoSuchVertexException    if {@code source} or {@code target} are not valid vertices identifiers
-	 */
-	int addEdge(int source, int target);
-
-	/**
-	 * Add a new edge to the graph with user chosen ID.
+	 * If the graph does not support parallel edges, and an edge between {@code source} and {@code target} already
+	 * exists, an exception will be raised. If the graph does not support self edges, and {@code source} and
+	 * {@code target} are the same vertex, an exception will be raised.
 	 *
 	 * <p>
-	 * In contrast to {@link #addEdge(int, int)}, in which the implementation chooses the new edge identifier, the user
-	 * can specified what {@code int} ID the new edge should be assigned. The set of graph edges must not contain
-	 * duplications, therefore the provided identifier must not be currently used as one of the graph edges IDs.
+	 * Edges must be non negative integers.
+	 *
+	 * <p>
+	 * If the graph have an edge builder, namely if {@link #edgeBuilder()} does not return {@code null}, the method
+	 * {@link #addEdge(int, int)} can be used, which uses the edge builder to create the new edge object instead of
+	 * requiring the user to provide it.
 	 *
 	 * @param  source                   a source vertex
 	 * @param  target                   a target vertex
-	 * @param  edge                     a user chosen identifier for the new edge
-	 * @throws IllegalArgumentException if {@code edge} is already in the graph, or if {@code edge} is {@code null} or
-	 *                                      if the graph does not support parallel edges and an edge between
-	 *                                      {@code source} and {@code target} already exists or if the graph does not
-	 *                                      support self edges and {@code source} and {@code target} are the same vertex
-	 * @throws IllegalArgumentException if the provided identifier is already used as identifier of one of the graph
-	 *                                      edges, or if its negative
+	 * @param  edge                     a new edge identifier
+	 * @throws IllegalArgumentException if {@code edge} is already in the graph or if the graph does not support
+	 *                                      parallel edges and an edge between {@code source} and {@code target} already
+	 *                                      exists or if the graph does not support self edges and {@code source} and
+	 *                                      {@code target} are the same vertex
+	 * @throws NullPointerException     if {@code edge} is {@code null}
+	 * @throws NoSuchVertexException    if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	void addEdge(int source, int target, int edge);
 
@@ -371,6 +391,56 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	@Override
 	default void addEdge(Integer source, Integer target, Integer edge) {
 		addEdge(source.intValue(), target.intValue(), edge.intValue());
+	}
+
+	/**
+	 * Add a new edge to the graph, using the edge builder.
+	 *
+	 * <p>
+	 * Unlike {@link #addEdge(int, int, int)} in which the edge (identifier) is provided by the user, this method uses
+	 * the edge builder obtained by {@link #edgeBuilder()} to create the new edge object and adds it to the graph.
+	 *
+	 * <p>
+	 * If the graph does not support parallel edges, and an edge between {@code source} and {@code target} already
+	 * exists, an exception will be raised. If the graph does not support self edges, and {@code source} and
+	 * {@code target} are the same vertex, an exception will be raised.
+	 *
+	 * <p>
+	 * This method is equivalent to:
+	 *
+	 * <pre> {@code
+	 * int edge = edgeBuilder().build(edges());
+	 * addEdge(source, target, edge);
+	 * return edge;
+	 * }</pre>
+	 *
+	 * @return                               the new edge
+	 * @throws UnsupportedOperationException if the graph does not have an edge builder, namely if
+	 *                                           {@link #edgeBuilder()} returns {@code null}
+	 * @throws IllegalArgumentException      if the graph does not support parallel edges and an edge between
+	 *                                           {@code source} and {@code target} already exists or if the graph does
+	 *                                           not support self edges and {@code source} and {@code target} are the
+	 *                                           same vertex
+	 * @throws NoSuchVertexException         if {@code source} or {@code target} are not valid vertices identifiers
+	 */
+	default int addEdge(int source, int target) {
+		IdBuilderInt edgeBuilder = edgeBuilder();
+		if (edgeBuilder == null)
+			throw new UnsupportedOperationException();
+		int edge = edgeBuilder.build(edges());
+		addEdge(source, target, edge);
+		return edge;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #addEdge(int, int)} instead to avoid un/boxing.
+	 */
+	@Deprecated
+	@Override
+	default Integer addEdge(Integer source, Integer target) {
+		return Integer.valueOf(addEdge(source.intValue(), target.intValue()));
 	}
 
 	/**
@@ -625,6 +695,12 @@ public interface IntGraph extends Graph<Integer, Integer> {
 		return Integer.valueOf(edgeEndpoint(edge.intValue(), endpoint.intValue()));
 	}
 
+	@Override
+	IdBuilderInt vertexBuilder();
+
+	@Override
+	IdBuilderInt edgeBuilder();
+
 	/**
 	 * {@inheritDoc}
 	 *
@@ -668,16 +744,20 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	default IntGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		IndexIntIdMap viMap = indexGraphVerticesMap();
 		IndexIntIdMap eiMap = indexGraphEdgesMap();
+		/* create a new factory with no vertex and edge builders */
+		IntGraphFactoryImpl factory = new IntGraphFactoryImpl(isDirected());
+		factory.setVertexBuilder(null);
+		factory.setEdgeBuilder(null);
 		if (isDirected()) {
 			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =
 					GraphCsrDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);
 			IndexGraph iGraph = reIndexedGraph.graph();
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-			return new IntGraphImpl(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
+			return new IntGraphImpl(factory, iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
 		} else {
 			IndexGraph iGraph = new GraphCsrUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);
-			return new IntGraphImpl(iGraph, viMap, eiMap, null, null);
+			return new IntGraphImpl(factory, iGraph, viMap, eiMap, null, null);
 		}
 	}
 

@@ -83,6 +83,24 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	@Override
 	IntGraphFactory expectedEdgesNum(int expectedEdgesNum);
 
+	/**
+	 * {@inheritDoc}
+	 *
+	 * By default, graphs created by this factory will have a vertex builder that uses a counter and assign the next id
+	 * to each new vertex by incrementing the counter until there is no vertex with that id.
+	 */
+	@Override
+	IntGraphFactory setVertexBuilder(IdBuilder<Integer> vertexBuilder);
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * By default, graphs created by this factory will have an edge builder that uses a counter and assign the next id
+	 * to each new edge by incrementing the counter until there is no edge with that id.
+	 */
+	@Override
+	IntGraphFactory setEdgeBuilder(IdBuilder<Integer> edgeBuilder);
+
 	@Override
 	IntGraphFactory addHint(GraphFactory.Hint hint);
 
@@ -95,7 +113,7 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	 * @return a new factory that can build undirected int graphs
 	 */
 	public static IntGraphFactory undirected() {
-		return new IntGraphImpl.Factory(false);
+		return new IntGraphFactoryImpl(false);
 	}
 
 	/**
@@ -104,7 +122,7 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	 * @return a new factory that can build directed int graphs
 	 */
 	public static IntGraphFactory directed() {
-		return new IntGraphImpl.Factory(true);
+		return new IntGraphFactoryImpl(true);
 	}
 
 	/**
@@ -114,7 +132,7 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	 * @return          a new factory that can build un/directed int graphs
 	 */
 	public static IntGraphFactory newInstance(boolean directed) {
-		return new IntGraphImpl.Factory(directed);
+		return new IntGraphFactoryImpl(directed);
 	}
 
 	@Override

@@ -437,4 +437,12 @@ public class GraphBuilderTest extends TestBase {
 		return g;
 	}
 
+	@Test
+	public void factorySetOptionUnknownOption() {
+		foreachBoolConfig(directed -> {
+			GraphFactory<String, String> factory = GraphFactory.newInstance(directed);
+			assertThrows(IllegalArgumentException.class, () -> factory.setOption("unknown-option", "value"));
+		});
+	}
+
 }

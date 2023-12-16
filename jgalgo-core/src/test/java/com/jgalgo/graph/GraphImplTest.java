@@ -16,6 +16,7 @@
 package com.jgalgo.graph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -145,6 +146,38 @@ public class GraphImplTest extends TestBase {
 	}
 
 	@Test
+	public void addVertexWithVertexBuilder() {
+		assertNull(Graph.newUndirected().vertexBuilder());
+		assertThrows(UnsupportedOperationException.class, () -> Graph.newUndirected().addVertex());
+
+		GraphFactory<String, String> factory = GraphFactory.undirected();
+		factory.setVertexBuilder(vertices -> String.valueOf(101 + vertices.size()));
+		Graph<String, String> g = factory.newGraph();
+		assertNotNull(g.vertexBuilder());
+		String v1 = g.addVertex();
+		String v2 = g.addVertex();
+		String v3 = "333";
+		g.addVertex(v3);
+		String v4 = g.addVertex();
+		assertEquals("101", v1);
+		assertEquals("102", v2);
+		assertEquals("104", v4);
+		assertEquals(Set.of("101", "102", "104", "333"), g.vertices());
+	}
+
+	@Test
+	public void addVertexWithVertexBuilderNull() {
+		GraphFactory<Integer, String> factory = GraphFactory.undirected();
+		IdBuilderInt vBuilder = vertices -> Integer.valueOf(1 + vertices.size());
+		factory.setVertexBuilder(vBuilder);
+		Graph<Integer, String> g = factory.newGraph();
+		assertEquals(1, g.addVertex());
+		assertEquals(2, g.addVertex());
+		assertEquals(3, g.addVertex());
+		assertEquals(4, g.addVertex());
+	}
+
+	@Test
 	public void removeVertices() {
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.removeVerticesTest(graphImpl(selfEdges));
@@ -166,6 +199,32 @@ public class GraphImplTest extends TestBase {
 		g.addVertex("B");
 		g.addEdge("A", "B", "AB");
 		assertThrows(IllegalArgumentException.class, () -> g.addEdge("B", "A", "AB"));
+	}
+
+	@Test
+	public void addEdgeWithEdgeBuilder() {
+		assertNull(Graph.newUndirected().edgeBuilder());
+		assertThrows(UnsupportedOperationException.class, () -> {
+			Graph<String, String> g = Graph.newUndirected();
+			g.addVertex("A");
+			g.addVertex("B");
+			g.addEdge("A", "B");
+		});
+
+		GraphFactory<String, String> factory = GraphFactory.undirected();
+		factory.setEdgeBuilder(edges -> String.valueOf(101 + edges.size()));
+		Graph<String, String> g = factory.newGraph();
+		assertNotNull(g.edgeBuilder());
+		g.addVertices(List.of("A", "B", "C", "D", "E"));
+		String e1 = g.addEdge("A", "B");
+		String e2 = g.addEdge("B", "C");
+		String e3 = "333";
+		g.addEdge("C", "D", e3);
+		String e4 = g.addEdge("D", "E");
+		assertEquals("101", e1);
+		assertEquals("102", e2);
+		assertEquals("104", e4);
+		assertEquals(Set.of("101", "102", "104", "333"), g.edges());
 	}
 
 	@Test

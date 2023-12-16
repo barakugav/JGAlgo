@@ -33,16 +33,20 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	final IndexIdMapImpl<E> eiMap;
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.ObjMapped<V, ?>> verticesWeights = new IdentityHashMap<>();
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.ObjMapped<E, ?>> edgesWeights = new IdentityHashMap<>();
+	private final IdBuilder<V> vertexBuilder;
+	private final IdBuilder<E> edgeBuilder;
 
-	GraphImpl(IndexGraph g, int expectedVerticesNum, int expectedEdgesNum) {
-		indexGraph = g;
-		viMap = IndexIdMapImpl.newEmpty(indexGraph.vertices(), false, expectedVerticesNum);
-		eiMap = IndexIdMapImpl.newEmpty(indexGraph.edges(), true, expectedEdgesNum);
+	GraphImpl(GraphFactoryImpl<V, E> factory) {
+		indexGraph = factory.indexFactory.newGraph();
+		viMap = IndexIdMapImpl.newEmpty(indexGraph.vertices(), false, factory.indexFactory.expectedVerticesNum);
+		eiMap = IndexIdMapImpl.newEmpty(indexGraph.edges(), true, factory.indexFactory.expectedEdgesNum);
 		viMap.initListeners(indexGraph);
 		eiMap.initListeners(indexGraph);
+		vertexBuilder = factory.vertexBuilder;
+		edgeBuilder = factory.edgeBuilder;
 	}
 
-	GraphImpl(IndexGraph indexGraph, IndexIdMap<V> viMap, IndexIdMap<E> eiMap,
+	GraphImpl(GraphFactoryImpl<V, E> factory, IndexGraph indexGraph, IndexIdMap<V> viMap, IndexIdMap<E> eiMap,
 			IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
 		this.indexGraph = Objects.requireNonNull(indexGraph);
 		boolean immutable = this.indexGraph instanceof ImmutableGraph;
@@ -52,12 +56,13 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 			this.viMap.initListeners(this.indexGraph);
 			this.eiMap.initListeners(this.indexGraph);
 		}
+		vertexBuilder = factory.vertexBuilder;
+		edgeBuilder = factory.edgeBuilder;
 	}
 
 	/* copy constructor */
-	GraphImpl(Graph<V, E> orig, IndexGraphFactory indexGraphFactory, boolean copyVerticesWeights,
-			boolean copyEdgesWeights) {
-		this(indexGraphFactory.newCopyOf(orig.indexGraph(), copyVerticesWeights, copyEdgesWeights),
+	GraphImpl(GraphFactoryImpl<V, E> factory, Graph<V, E> orig, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		this(factory, factory.indexFactory.newCopyOf(orig.indexGraph(), copyVerticesWeights, copyEdgesWeights),
 				orig.indexGraphVerticesMap(), orig.indexGraphEdgesMap(), null, null);
 	}
 
@@ -336,6 +341,16 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	}
 
 	@Override
+	public IdBuilder<V> vertexBuilder() {
+		return vertexBuilder;
+	}
+
+	@Override
+	public IdBuilder<E> edgeBuilder() {
+		return edgeBuilder;
+	}
+
+	@Override
 	public void ensureVertexCapacity(int vertexCapacity) {
 		indexGraph.ensureVertexCapacity(vertexCapacity);
 		viMap.ensureCapacity(vertexCapacity);
@@ -497,78 +512,6 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	@Override
 	public boolean isAllowParallelEdges() {
 		return indexGraph.isAllowParallelEdges();
-	}
-
-	static class Factory<V, E> implements GraphFactory<V, E> {
-		private final IndexGraphFactoryImpl factory;
-
-		Factory(boolean directed) {
-			this.factory = new IndexGraphFactoryImpl(directed);
-		}
-
-		@Override
-		public Graph<V, E> newGraph() {
-			IndexGraph indexGraph = factory.newGraph();
-			return new GraphImpl<>(indexGraph, factory.expectedVerticesNum, factory.expectedEdgesNum);
-		}
-
-		@Override
-		public Graph<V, E> newCopyOf(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-			return new GraphImpl<>(g, factory, copyVerticesWeights, copyEdgesWeights);
-		}
-
-		@Override
-		public GraphBuilder<V, E> newBuilder() {
-			return new GraphBuilderImpl<>(factory.newBuilder());
-		}
-
-		@Override
-		public GraphBuilder<V, E> newBuilderCopyOf(Graph<V, E> g, boolean copyVerticesWeights,
-				boolean copyEdgesWeights) {
-			return new GraphBuilderImpl<>(factory, g, copyVerticesWeights, copyEdgesWeights);
-		}
-
-		@Override
-		public GraphFactory<V, E> allowSelfEdges(boolean selfEdges) {
-			factory.allowSelfEdges(selfEdges);
-			return this;
-		}
-
-		@Override
-		public GraphFactory<V, E> allowParallelEdges(boolean parallelEdges) {
-			factory.allowParallelEdges(parallelEdges);
-			return this;
-		}
-
-		@Override
-		public GraphFactory<V, E> expectedVerticesNum(int expectedVerticesNum) {
-			factory.expectedVerticesNum(expectedVerticesNum);
-			return this;
-		}
-
-		@Override
-		public GraphFactory<V, E> expectedEdgesNum(int expectedEdgesNum) {
-			factory.expectedEdgesNum(expectedEdgesNum);
-			return this;
-		}
-
-		@Override
-		public GraphFactory<V, E> addHint(GraphFactory.Hint hint) {
-			factory.addHint(hint);
-			return this;
-		}
-
-		@Override
-		public GraphFactory<V, E> removeHint(GraphFactory.Hint hint) {
-			factory.removeHint(hint);
-			return this;
-		}
-
-		@Override
-		public GraphFactory<V, E> setOption(String key, Object value) {
-			factory.setOption(key, value);
-			return this;
-		}
 	}
 
 }

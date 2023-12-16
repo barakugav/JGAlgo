@@ -16,6 +16,7 @@
 package com.jgalgo.graph;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -163,6 +164,33 @@ public class IntGraphImplTest extends TestBase {
 		assertThrows(IllegalArgumentException.class, () -> g.addVertex(7));
 	}
 
+	@SuppressWarnings("boxing")
+	@Test
+	public void addVertexWithVertexBuilder() {
+		assertNotNull(IntGraph.newUndirected().vertexBuilder());
+
+		assertThrows(UnsupportedOperationException.class, () -> {
+			IntGraphFactory factory = IntGraphFactory.undirected();
+			factory.setVertexBuilder(null);
+			factory.newGraph().addVertexInt();
+		});
+
+		IntGraphFactory factory = IntGraphFactory.undirected();
+		factory.setVertexBuilder(vertices -> 101 + vertices.size());
+		IntGraph g = factory.newGraph();
+		assertNotNull(g.vertexBuilder());
+		int v1 = g.addVertexInt();
+		int v2 = g.addVertexInt();
+		int v3 = 333;
+		g.addVertex(v3);
+		@SuppressWarnings("deprecation")
+		int v4 = g.addVertex().intValue();
+		assertEquals(101, v1);
+		assertEquals(102, v2);
+		assertEquals(104, v4);
+		assertEquals(Set.of(101, 102, 104, 333), g.vertices());
+	}
+
 	@Test
 	public void addEdgeNegative() {
 		IntGraph g = IntGraph.newUndirected();
@@ -178,6 +206,37 @@ public class IntGraphImplTest extends TestBase {
 		g.addVertex(8);
 		g.addEdge(7, 8, 3);
 		assertThrows(IllegalArgumentException.class, () -> g.addEdge(8, 7, 3));
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void addEdgeWithEdgeBuilder() {
+		assertNotNull(IntGraph.newUndirected().edgeBuilder());
+
+		assertThrows(UnsupportedOperationException.class, () -> {
+			IntGraphFactory factory = IntGraphFactory.undirected();
+			factory.setEdgeBuilder(null);
+			IntGraph g = factory.newGraph();
+			int u = g.addVertexInt();
+			int v = g.addVertexInt();
+			g.addEdge(u, v);
+		});
+
+		IntGraphFactory factory = IntGraphFactory.undirected();
+		factory.setEdgeBuilder(edges -> 101 + edges.size());
+		IntGraph g = factory.newGraph();
+		assertNotNull(g.edgeBuilder());
+		g.addVertices(List.of(21, 22, 23, 24, 25));
+		int e1 = g.addEdge(21, 22);
+		int e2 = g.addEdge(22, 23);
+		int e3 = 333;
+		g.addEdge(23, 24, e3);
+		@SuppressWarnings("deprecation")
+		int e4 = g.addEdge(Integer.valueOf(24), Integer.valueOf(25)).intValue();
+		assertEquals(101, e1);
+		assertEquals(102, e2);
+		assertEquals(104, e4);
+		assertEquals(Set.of(101, 102, 104, 333), g.edges());
 	}
 
 	@Test

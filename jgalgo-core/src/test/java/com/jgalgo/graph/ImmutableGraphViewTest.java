@@ -98,8 +98,7 @@ public class ImmutableGraphViewTest extends TestBase {
 				}
 			}
 
-			if (gImmutable instanceof IntGraph)
-				assertThrows(UnsupportedOperationException.class, () -> ((IntGraph) gImmutable).addVertexInt());
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertex());
 			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertex(nonExistingVertex));
 
 			Integer vertexToRemove = gImmutable.vertices().iterator().next();
@@ -194,9 +193,7 @@ public class ImmutableGraphViewTest extends TestBase {
 				}
 			}
 
-			if (gImmutable instanceof IntGraph)
-				assertThrows(UnsupportedOperationException.class,
-						() -> ((IntGraph) gImmutable).addEdge(u.intValue(), v.intValue()));
+			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addEdge(u, v));
 			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addEdge(u, v, nonExistingEdge));
 
 			Integer edgeToRemove = gImmutable.edges().iterator().next();

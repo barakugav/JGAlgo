@@ -165,11 +165,45 @@ public interface Graph<V, E> {
 	 * A vertex can be any non null hashable object, namely it must implement the {@link Object#hashCode()} and
 	 * {@link Object#equals(Object)} methods. Duplicate vertices are not allowed.
 	 *
+	 * <p>
+	 * If the graph have a vertex builder, namely if {@link #vertexBuilder()} does not return {@code null}, the method
+	 * {@link #addVertex()} can be used, which uses the vertex builder to create the new vertex object instead of
+	 * requiring the user to provide it.
+	 *
 	 * @param  vertex                   new vertex
 	 * @throws IllegalArgumentException if {@code vertex} is already in the graph
 	 * @throws NullPointerException     if {@code vertex} is {@code null}
 	 */
 	void addVertex(V vertex);
+
+	/**
+	 * Add a new vertex to the graph, using the vertex builder.
+	 *
+	 * <p>
+	 * Unlike {@link #addVertex(Object)} in which the vertex is provided by the user, this method uses the vertex
+	 * builder obtained by {@link #vertexBuilder()} to create the new vertex object and adds it to the graph.
+	 *
+	 * <p>
+	 * This method is equivalent to:
+	 *
+	 * <pre> {@code
+	 * V vertex = vertexBuilder().build(vertices());
+	 * addVertex(vertex);
+	 * return vertex;
+	 * }</pre>
+	 *
+	 * @return                               the new vertex
+	 * @throws UnsupportedOperationException if the graph does not have a vertex builder, namely if
+	 *                                           {@link #vertexBuilder()} returns {@code null}
+	 */
+	default V addVertex() {
+		IdBuilder<V> vertexBuilder = vertexBuilder();
+		if (vertexBuilder == null)
+			throw new UnsupportedOperationException("Graph does not have a vertex builder");
+		V vertex = vertexBuilder.build(vertices());
+		addVertex(vertex);
+		return vertex;
+	}
 
 	/**
 	 * Add multiple vertices to the graph.
@@ -314,6 +348,11 @@ public interface Graph<V, E> {
 	 * An edge can be any non null hashable object, namely it must implement the {@link Object#hashCode()} and
 	 * {@link Object#equals(Object)} methods. Duplicate edges are not allowed.
 	 *
+	 * <p>
+	 * If the graph have an edge builder, namely if {@link #edgeBuilder()} does not return {@code null}, the method
+	 * {@link #addEdge(Object, Object)} can be used, which uses the edge builder to create the new edge object instead
+	 * of requiring the user to provide it.
+	 *
 	 * @param  source                   a source vertex
 	 * @param  target                   a target vertex
 	 * @param  edge                     a new edge identifier
@@ -325,6 +364,46 @@ public interface Graph<V, E> {
 	 * @throws NoSuchVertexException    if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	void addEdge(V source, V target, E edge);
+
+	/**
+	 * Add a new edge to the graph, using the edge builder.
+	 *
+	 * <p>
+	 * Unlike {@link #addEdge(Object, Object, Object)} in which the edge (identifier) is provided by the user, this
+	 * method uses the edge builder obtained by {@link #edgeBuilder()} to create the new edge object and adds it to the
+	 * graph.
+	 *
+	 * <p>
+	 * If the graph does not support parallel edges, and an edge between {@code source} and {@code target} already
+	 * exists, an exception will be raised. If the graph does not support self edges, and {@code source} and
+	 * {@code target} are the same vertex, an exception will be raised.
+	 *
+	 * <p>
+	 * This method is equivalent to:
+	 *
+	 * <pre> {@code
+	 * E edge = edgeBuilder().build(edges());
+	 * addEdge(source, target, edge);
+	 * return edge;
+	 * }</pre>
+	 *
+	 * @return                               the new edge
+	 * @throws UnsupportedOperationException if the graph does not have an edge builder, namely if
+	 *                                           {@link #edgeBuilder()} returns {@code null}
+	 * @throws IllegalArgumentException      if the graph does not support parallel edges and an edge between
+	 *                                           {@code source} and {@code target} already exists or if the graph does
+	 *                                           not support self edges and {@code source} and {@code target} are the
+	 *                                           same vertex
+	 * @throws NoSuchVertexException         if {@code source} or {@code target} are not valid vertices identifiers
+	 */
+	default E addEdge(V source, V target) {
+		IdBuilder<E> edgeBuilder = edgeBuilder();
+		if (edgeBuilder == null)
+			throw new UnsupportedOperationException();
+		E edge = edgeBuilder.build(edges());
+		addEdge(source, target, edge);
+		return edge;
+	}
 
 	/**
 	 * Add multiple edges to the graph.
@@ -533,6 +612,31 @@ public interface Graph<V, E> {
 	 * Note that this function also clears any weights associated with the edges.
 	 */
 	void clearEdges();
+
+	/**
+	 * Get the vertex builder of this graph.
+	 *
+	 * <p>
+	 * The vertex builder is used to create new vertices in the graph during the execution of {@link #addVertex()}, in
+	 * which the vertex identifier is not provided by the user. Not all graphs have a vertex builder, and may return a
+	 * {@code null} value. In that case, {@link #addVertex()} cannot be used, only {@link #addVertex(Object)}.
+	 *
+	 * @return the vertex builder of this graph, or {@code null} if the graph does not have a vertex builder
+	 */
+	IdBuilder<V> vertexBuilder();
+
+	/**
+	 * Get the edge builder of this graph.
+	 *
+	 * <p>
+	 * The edge builder is used to create new edges in the graph during the execution of
+	 * {@link #addEdge(Object, Object)}, in which the edge identifier is not provided by the user. Not all graphs have
+	 * an edge builder, and may return a {@code null} value. In that case, {@link #addEdge(Object, Object)} cannot be
+	 * used, only {@link #addEdge(Object, Object, Object)}.
+	 *
+	 * @return the edge builder of this graph, or {@code null} if the graph does not have an edge builder
+	 */
+	IdBuilder<E> edgeBuilder();
 
 	/**
 	 * Hint the implementation to allocate space for at least {@code vertexCapacity} vertices.
@@ -953,16 +1057,20 @@ public interface Graph<V, E> {
 	default Graph<V, E> immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		IndexIdMap<V> viMap = indexGraphVerticesMap();
 		IndexIdMap<E> eiMap = indexGraphEdgesMap();
+		/* create a new factory with no vertex and edge builders */
+		GraphFactoryImpl<V, E> factory = new GraphFactoryImpl<>(isDirected());
+		factory.setVertexBuilder(null);
+		factory.setEdgeBuilder(null);
 		if (isDirected()) {
 			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =
 					GraphCsrDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);
 			IndexGraph iGraph = reIndexedGraph.graph();
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-			return new GraphImpl<>(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
+			return new GraphImpl<>(factory, iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
 		} else {
 			IndexGraph iGraph = new GraphCsrUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);
-			return new GraphImpl<>(iGraph, viMap, eiMap, null, null);
+			return new GraphImpl<>(factory, iGraph, viMap, eiMap, null, null);
 		}
 	}
 

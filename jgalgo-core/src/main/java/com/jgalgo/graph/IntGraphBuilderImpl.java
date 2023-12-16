@@ -26,6 +26,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 class IntGraphBuilderImpl implements IntGraphBuilder {
 
+	private final IntGraphFactoryImpl factory;
 	final IndexGraphBuilder ibuilder;
 	private boolean userProvideVerticesIds;
 	private boolean userProvideEdgesIds;
@@ -34,15 +35,17 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> verticesWeights = new IdentityHashMap<>();
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> edgesWeights = new IdentityHashMap<>();
 
-	IntGraphBuilderImpl(IndexGraphBuilder ibuilder) {
-		this.ibuilder = ibuilder;
+	IntGraphBuilderImpl(IntGraphFactoryImpl factory) {
+		this.factory = factory;
+		this.ibuilder = factory.indexFactory.newBuilder();
 		viMap = IndexIntIdMapImpl.newEmpty(ibuilder.vertices(), false, 0);
 		eiMap = IndexIntIdMapImpl.newEmpty(ibuilder.edges(), true, 0);
 	}
 
-	IntGraphBuilderImpl(IndexGraphFactory indexFactory, Graph<Integer, Integer> g, boolean copyVerticesWeights,
+	IntGraphBuilderImpl(IntGraphFactoryImpl factory, Graph<Integer, Integer> g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
-		this.ibuilder = indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
+		this.factory = factory;
+		this.ibuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
 		viMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), null, ibuilder.vertices(), false, false);
 		eiMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), null, ibuilder.edges(), true, false);
 	}
@@ -278,7 +281,7 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		IndexGraph iGraph = reIndexedGraph.graph();
 		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-		return new IntGraphImpl(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
+		return new IntGraphImpl(factory, iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
 	}
 
 }

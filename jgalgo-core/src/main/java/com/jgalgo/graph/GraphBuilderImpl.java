@@ -24,21 +24,24 @@ import java.util.Set;
 
 class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 
+	private final GraphFactoryImpl<V, E> factory;
 	final IndexGraphBuilder ibuilder;
 	final IndexIdMapImpl<V> viMap;
 	final IndexIdMapImpl<E> eiMap;
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.ObjMapped<V, ?>> verticesWeights = new IdentityHashMap<>();
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.ObjMapped<E, ?>> edgesWeights = new IdentityHashMap<>();
 
-	GraphBuilderImpl(IndexGraphBuilder ibuilder) {
-		this.ibuilder = ibuilder;
+	GraphBuilderImpl(GraphFactoryImpl<V, E> factory) {
+		this.factory = factory;
+		this.ibuilder = factory.indexFactory.newBuilder();
 		viMap = IndexIdMapImpl.newEmpty(ibuilder.vertices(), false, 0);
 		eiMap = IndexIdMapImpl.newEmpty(ibuilder.edges(), true, 0);
 	}
 
-	GraphBuilderImpl(IndexGraphFactory indexFactory, Graph<V, E> g, boolean copyVerticesWeights,
+	GraphBuilderImpl(GraphFactoryImpl<V, E> factory, Graph<V, E> g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
-		this.ibuilder = indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
+		this.factory = factory;
+		this.ibuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
 		viMap = IndexIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), null, ibuilder.vertices(), false, false);
 		eiMap = IndexIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), null, ibuilder.edges(), true, false);
 	}
@@ -206,7 +209,7 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 		IndexGraph iGraph = reIndexedGraph.graph();
 		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-		return new GraphImpl<>(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
+		return new GraphImpl<>(factory, iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
 	}
 
 }

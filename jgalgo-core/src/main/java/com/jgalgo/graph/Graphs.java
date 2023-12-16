@@ -182,6 +182,16 @@ public class Graphs {
 		}
 
 		@Override
+		public IdBuilder<V> vertexBuilder() {
+			return null;
+		}
+
+		@Override
+		public IdBuilder<E> edgeBuilder() {
+			return null;
+		}
+
+		@Override
 		public void ensureVertexCapacity(int vertexCapacity) {}
 
 		@Override
@@ -283,11 +293,6 @@ public class Graphs {
 		}
 
 		@Override
-		public int addVertexInt() {
-			throw new UnsupportedOperationException("graph is immutable, cannot add vertices");
-		}
-
-		@Override
 		public void addVertices(Collection<? extends Integer> vertices) {
 			throw new UnsupportedOperationException("graph is immutable, cannot add vertices");
 		}
@@ -315,11 +320,6 @@ public class Graphs {
 		@Override
 		public IEdgeSet getEdges(int source, int target) {
 			return new ImmutableIEdgeSet(graph.getEdges(source, target));
-		}
-
-		@Override
-		public int addEdge(int source, int target) {
-			throw new UnsupportedOperationException("graph is immutable, cannot add edges");
 		}
 
 		@Override
@@ -464,6 +464,16 @@ public class Graphs {
 		}
 
 		@Override
+		public IdBuilderInt vertexBuilder() {
+			return graph().vertexBuilder();
+		}
+
+		@Override
+		public IdBuilderInt edgeBuilder() {
+			return graph().edgeBuilder();
+		}
+
+		@Override
 		public IndexGraph indexGraph() {
 			return graph().indexGraph().immutableView();
 		}
@@ -488,6 +498,16 @@ public class Graphs {
 		@Override
 		IndexGraph graph() {
 			return (IndexGraph) super.graph();
+		}
+
+		@Override
+		public int addVertexInt() {
+			throw new UnsupportedOperationException("graph is immutable, cannot add vertices");
+		}
+
+		@Override
+		public int addEdge(int source, int target) {
+			throw new UnsupportedOperationException("graph is immutable, cannot add edges");
 		}
 
 		@Override
@@ -862,6 +882,16 @@ public class Graphs {
 		}
 
 		@Override
+		public IdBuilder<V> vertexBuilder() {
+			return graph().vertexBuilder();
+		}
+
+		@Override
+		public IdBuilder<E> edgeBuilder() {
+			return graph().edgeBuilder();
+		}
+
+		@Override
 		public <T, WeightsT extends Weights<V, T>> WeightsT getVerticesWeights(String key) {
 			return graph().getVerticesWeights(key);
 		}
@@ -1233,6 +1263,16 @@ public class Graphs {
 		@Override
 		public void renameEdge(int edge, int newId) {
 			graph().renameEdge(edge, newId);
+		}
+
+		@Override
+		public IdBuilderInt vertexBuilder() {
+			return graph().vertexBuilder();
+		}
+
+		@Override
+		public IdBuilderInt edgeBuilder() {
+			return graph().edgeBuilder();
 		}
 
 		@Override
@@ -2024,6 +2064,16 @@ public class Graphs {
 		@Override
 		public void renameEdge(int edge, int newId) {
 			graph().renameEdge(edge, newId);
+		}
+
+		@Override
+		public IdBuilderInt vertexBuilder() {
+			return graph().vertexBuilder();
+		}
+
+		@Override
+		public IdBuilderInt edgeBuilder() {
+			return graph().edgeBuilder();
 		}
 
 		@Override
@@ -3131,5 +3181,7 @@ public class Graphs {
 		}
 		return false;
 	}
+
+	static IdBuilderInt IndexGraphIdBuilder = existingIds -> existingIds.size();
 
 }

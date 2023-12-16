@@ -104,6 +104,30 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	@Override
 	IndexGraphFactory expectedEdgesNum(int expectedEdgesNum);
 
+	/**
+	 * Unsupported operation, index graphs does not support custom vertex builder.
+	 *
+	 * @throws     UnsupportedOperationException always
+	 * @deprecated                               Index graphs does not support custom vertex builder
+	 */
+	@Deprecated
+	@Override
+	default IndexGraphFactory setVertexBuilder(IdBuilder<Integer> vertexBuilder) {
+		throw new UnsupportedOperationException("Index graphs does not support custom vertex builder");
+	}
+
+	/**
+	 * Unsupported operation, index graphs does not support custom edge builder.
+	 *
+	 * @throws     UnsupportedOperationException always
+	 * @deprecated                               Index graphs does not support custom edge builder
+	 */
+	@Deprecated
+	@Override
+	default IndexGraphFactory setEdgeBuilder(IdBuilder<Integer> edgeBuilder) {
+		throw new UnsupportedOperationException("Index graphs does not support custom edge builder");
+	}
+
 	@Override
 	IndexGraphFactory addHint(GraphFactory.Hint hint);
 

@@ -204,6 +204,38 @@ public interface GraphFactory<V, E> {
 	GraphFactory<V, E> expectedEdgesNum(int expectedEdgesNum);
 
 	/**
+	 * Set the vertex builder used by the built graph(s).
+	 *
+	 * <p>
+	 * The vertex builder is used by graphs to create new vertices when the user does not provide them explicitly, see
+	 * {@link Graph#addVertex()}. The same vertex builder will be used for all graphs built by this factory, and graphs
+	 * built by {@link GraphBuilder} created by this factory.
+	 *
+	 * <p>
+	 * By default, graphs built by this factory will not have a vertex builder, namely a {@code null} vertex builder.
+	 *
+	 * @param  vertexBuilder the vertex builder, or {@code null} if no vertex builder should be used
+	 * @return               this factory
+	 */
+	GraphFactory<V, E> setVertexBuilder(IdBuilder<V> vertexBuilder);
+
+	/**
+	 * Set the edge builder used by the built graph(s).
+	 *
+	 * <p>
+	 * The edge builder is used by graphs to create new edges when the user does not provide them explicitly, see
+	 * {@link Graph#addEdge(Object, Object)}. The same edge builder will be used for all graphs built by this factory,
+	 * and graphs built by {@link GraphBuilder} created by this factory.
+	 *
+	 * <p>
+	 * By default, graphs built by this factory will not have an edge builder, namely a {@code null} edge builder.
+	 *
+	 * @param  edgeBuilder the edge builder, or {@code null} if no edge builder should be used
+	 * @return             this factory
+	 */
+	GraphFactory<V, E> setEdgeBuilder(IdBuilder<E> edgeBuilder);
+
+	/**
 	 * Add a hint to this factory.
 	 *
 	 * <p>
@@ -256,7 +288,7 @@ public interface GraphFactory<V, E> {
 	 * @return     a new factory that can build undirected graphs
 	 */
 	public static <V, E> GraphFactory<V, E> undirected() {
-		return new GraphImpl.Factory<>(false);
+		return new GraphFactoryImpl<>(false);
 	}
 
 	/**
@@ -267,7 +299,7 @@ public interface GraphFactory<V, E> {
 	 * @return     a new factory that can build directed graphs
 	 */
 	public static <V, E> GraphFactory<V, E> directed() {
-		return new GraphImpl.Factory<>(true);
+		return new GraphFactoryImpl<>(true);
 	}
 
 	/**
@@ -279,7 +311,7 @@ public interface GraphFactory<V, E> {
 	 * @return          a new factory that can build un/directed graphs
 	 */
 	public static <V, E> GraphFactory<V, E> newInstance(boolean directed) {
-		return new GraphImpl.Factory<>(directed);
+		return new GraphFactoryImpl<>(directed);
 	}
 
 	/**

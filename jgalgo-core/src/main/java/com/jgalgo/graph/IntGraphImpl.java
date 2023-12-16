@@ -20,12 +20,8 @@ import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Random;
 import java.util.Set;
-import java.util.function.Supplier;
-import java.util.function.ToIntFunction;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
-import com.jgalgo.internal.JGAlgoConfigImpl;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -37,74 +33,22 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	final IndexIntIdMapImpl eiMap;
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> verticesWeights = new IdentityHashMap<>();
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> edgesWeights = new IdentityHashMap<>();
-	private final ToIntFunction<IntSet> vIdStrategy = IdStrategy.get();
-	private final ToIntFunction<IntSet> eIdStrategy = IdStrategy.get();
+	private final IdBuilderInt vertexBuilder;
+	private final IdBuilderInt edgeBuilder;
 
-	private static final Supplier<ToIntFunction<IntSet>> IdStrategy;
-
-	static {
-		Object strat = JGAlgoConfigImpl.GraphIdStrategy;
-		if (strat == null)
-			strat = "counter"; // default
-		if (strat instanceof String) {
-			String strategyName = (String) strat;
-
-			switch (strategyName.toLowerCase()) {
-				case "counter":
-					IdStrategy = () -> {
-						return new ToIntFunction<>() {
-							private int counter;
-
-							@Override
-							public int applyAsInt(IntSet ids) {
-								for (;;) {
-									int id = ++counter;
-									if (!ids.contains(id))
-										return id;
-								}
-							}
-						};
-					};
-					break;
-				case "rand":
-				case "random":
-					IdStrategy = () -> {
-						final Random rand = new Random();
-						return (IntSet idSet) -> {
-							for (;;) {
-								int id = rand.nextInt();
-								if (id >= 1 && !idSet.contains(id))
-									// We prefer non zero IDs because fastutil handle zero (null) keys
-									// separately
-									return id;
-							}
-						};
-					};
-					break;
-
-				default:
-					throw new IllegalArgumentException("unknown id strategy: " + strategyName);
-			}
-
-		} else if (strat instanceof Supplier) {
-			@SuppressWarnings("unchecked")
-			Supplier<ToIntFunction<IntSet>> stratFunc = (Supplier<ToIntFunction<IntSet>>) strat;
-			IdStrategy = stratFunc;
-		} else {
-			throw new IllegalArgumentException("Unknown graph ID strategy: " + JGAlgoConfigImpl.GraphIdStrategy);
-		}
-	}
-
-	IntGraphImpl(IndexGraph g, int expectedVerticesNum, int expectedEdgesNum) {
-		indexGraph = g;
-		viMap = IndexIntIdMapImpl.newEmpty(indexGraph.vertices(), false, expectedVerticesNum);
-		eiMap = IndexIntIdMapImpl.newEmpty(indexGraph.edges(), true, expectedEdgesNum);
+	IntGraphImpl(IntGraphFactoryImpl factory) {
+		indexGraph = factory.indexFactory.newGraph();
+		viMap = IndexIntIdMapImpl.newEmpty(indexGraph.vertices(), false, factory.indexFactory.expectedVerticesNum);
+		eiMap = IndexIntIdMapImpl.newEmpty(indexGraph.edges(), true, factory.indexFactory.expectedEdgesNum);
 		viMap.initListeners(indexGraph);
 		eiMap.initListeners(indexGraph);
+		vertexBuilder = factory.vertexBuilder;
+		edgeBuilder = factory.edgeBuilder;
 	}
 
-	IntGraphImpl(IndexGraph indexGraph, IndexIdMap<Integer> viMap, IndexIdMap<Integer> eiMap,
-			IndexGraphBuilder.ReIndexingMap vReIndexing, IndexGraphBuilder.ReIndexingMap eReIndexing) {
+	IntGraphImpl(IntGraphFactoryImpl factory, IndexGraph indexGraph, IndexIdMap<Integer> viMap,
+			IndexIdMap<Integer> eiMap, IndexGraphBuilder.ReIndexingMap vReIndexing,
+			IndexGraphBuilder.ReIndexingMap eReIndexing) {
 		this.indexGraph = indexGraph;
 		boolean immutable = this.indexGraph instanceof ImmutableGraph;
 		this.viMap = IndexIntIdMapImpl.newCopyOf(viMap, vReIndexing, this.indexGraph.vertices(), false, immutable);
@@ -113,12 +57,14 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 			this.viMap.initListeners(this.indexGraph);
 			this.eiMap.initListeners(this.indexGraph);
 		}
+		vertexBuilder = factory.vertexBuilder;
+		edgeBuilder = factory.edgeBuilder;
 	}
 
 	/* copy constructor */
-	IntGraphImpl(Graph<Integer, Integer> orig, IndexGraphFactory indexGraphFactory, boolean copyVerticesWeights,
+	IntGraphImpl(IntGraphFactoryImpl factory, Graph<Integer, Integer> orig, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
-		this(indexGraphFactory.newCopyOf(orig.indexGraph(), copyVerticesWeights, copyEdgesWeights),
+		this(factory, factory.indexFactory.newCopyOf(orig.indexGraph(), copyVerticesWeights, copyEdgesWeights),
 				orig.indexGraphVerticesMap(), orig.indexGraphEdgesMap(), null, null);
 	}
 
@@ -148,21 +94,18 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	}
 
 	@Override
-	public int addVertexInt() {
-		int id = vIdStrategy.applyAsInt(vertices());
-		int vIdx = indexGraph.addVertexInt();
-		viMap.addId(id, vIdx);
-		return id;
-	}
-
-	@Override
 	public void addVertex(int vertex) {
 		if (vertex < 0)
 			throw new IllegalArgumentException("Vertex must be non negative");
 		int vIdx = indexGraph.vertices().size();
 		viMap.addId(vertex, vIdx);
-		int vIdx2 = indexGraph.addVertexInt();
-		assert vIdx == vIdx2;
+		try {
+			int vIdx2 = indexGraph.addVertexInt();
+			assert vIdx == vIdx2;
+		} catch (RuntimeException e) {
+			viMap.rollBackRemove(vIdx);
+			throw e;
+		}
 	}
 
 	@Override
@@ -236,16 +179,6 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 		int vIdx = viMap.idToIndex(target);
 		IEdgeSet indexSet = indexGraph.getEdges(uIdx, vIdx);
 		return new IndexToIdEdgeSet(indexSet, viMap, eiMap);
-	}
-
-	@Override
-	public int addEdge(int source, int target) {
-		int uIdx = viMap.idToIndex(source);
-		int vIdx = viMap.idToIndex(target);
-		int id = eIdStrategy.applyAsInt(edges());
-		int eIdx = indexGraph.addEdge(uIdx, vIdx);
-		eiMap.addId(id, eIdx);
-		return id;
 	}
 
 	@Override
@@ -421,6 +354,16 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	}
 
 	@Override
+	public IdBuilderInt vertexBuilder() {
+		return vertexBuilder;
+	}
+
+	@Override
+	public IdBuilderInt edgeBuilder() {
+		return edgeBuilder;
+	}
+
+	@Override
 	public void ensureVertexCapacity(int vertexCapacity) {
 		indexGraph.ensureVertexCapacity(vertexCapacity);
 		viMap.ensureCapacity(vertexCapacity);
@@ -589,77 +532,6 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	@Override
 	public boolean isAllowParallelEdges() {
 		return indexGraph.isAllowParallelEdges();
-	}
-
-	static class Factory implements IntGraphFactory {
-		private final IndexGraphFactoryImpl factory;
-
-		Factory(boolean directed) {
-			this.factory = new IndexGraphFactoryImpl(directed);
-		}
-
-		@Override
-		public IntGraph newGraph() {
-			return new IntGraphImpl(factory.newGraph(), factory.expectedVerticesNum, factory.expectedEdgesNum);
-		}
-
-		@Override
-		public IntGraph newCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-			return new IntGraphImpl(g, factory, copyVerticesWeights, copyEdgesWeights);
-		}
-
-		@Override
-		public IntGraphBuilder newBuilder() {
-			return new IntGraphBuilderImpl(factory.newBuilder());
-		}
-
-		@Override
-		public IntGraphBuilder newBuilderCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights,
-				boolean copyEdgesWeights) {
-			return new IntGraphBuilderImpl(factory, g, copyVerticesWeights, copyEdgesWeights);
-		}
-
-		@Override
-		public IntGraphFactory allowSelfEdges(boolean selfEdges) {
-			factory.allowSelfEdges(selfEdges);
-			return this;
-		}
-
-		@Override
-		public IntGraphFactory allowParallelEdges(boolean parallelEdges) {
-			factory.allowParallelEdges(parallelEdges);
-			return this;
-		}
-
-		@Override
-		public IntGraphFactory expectedVerticesNum(int expectedVerticesNum) {
-			factory.expectedVerticesNum(expectedVerticesNum);
-			return this;
-		}
-
-		@Override
-		public IntGraphFactory expectedEdgesNum(int expectedEdgesNum) {
-			factory.expectedEdgesNum(expectedEdgesNum);
-			return this;
-		}
-
-		@Override
-		public IntGraphFactory addHint(GraphFactory.Hint hint) {
-			factory.addHint(hint);
-			return this;
-		}
-
-		@Override
-		public IntGraphFactory removeHint(GraphFactory.Hint hint) {
-			factory.removeHint(hint);
-			return this;
-		}
-
-		@Override
-		public IntGraphFactory setOption(String key, Object value) {
-			factory.setOption(key, value);
-			return this;
-		}
 	}
 
 }

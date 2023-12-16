@@ -916,4 +916,22 @@ public class ReversedGraphViewTest extends TestBase {
 		});
 	}
 
+	@Test
+	public void vertexBuilder() {
+		foreachBoolConfig((intGraph, directed) -> {
+			Graph<Integer, Integer> gOrig = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gRev = gOrig.reverseView();
+			assertTrue(gOrig.vertexBuilder() == gRev.vertexBuilder());
+		});
+	}
+
+	@Test
+	public void edgeBuilder() {
+		foreachBoolConfig((intGraph, directed) -> {
+			Graph<Integer, Integer> gOrig = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gRev = gOrig.reverseView();
+			assertTrue(gOrig.edgeBuilder() == gRev.edgeBuilder());
+		});
+	}
+
 }

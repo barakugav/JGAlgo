@@ -953,4 +953,22 @@ public class UndirectedViewTest extends TestBase {
 		});
 	}
 
+	@Test
+	public void vertexBuilder() {
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> gOrig = createGraph(intGraph);
+			Graph<Integer, Integer> undirectedG = gOrig.undirectedView();
+			assertTrue(gOrig.vertexBuilder() == undirectedG.vertexBuilder());
+		});
+	}
+
+	@Test
+	public void edgeBuilder() {
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> gOrig = createGraph(intGraph);
+			Graph<Integer, Integer> undirectedG = gOrig.undirectedView();
+			assertTrue(gOrig.edgeBuilder() == undirectedG.edgeBuilder());
+		});
+	}
+
 }

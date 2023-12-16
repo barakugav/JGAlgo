@@ -105,9 +105,15 @@ class GraphImplTestUtils extends TestUtils {
 		});
 		foreachBoolConfig(directed -> {
 			IndexGraph g = graphImpl.get(directed).indexGraph();
+			IdBuilderInt vBuilder = g.vertexBuilder();
 			final int n = 87;
-			for (int i = 0; i < n; i++)
-				g.addVertexInt();
+			for (int i = 0; i < n; i++) {
+				int expected = i;
+				int actual1 = vBuilder.build(g.vertices());
+				int actual2 = g.addVertexInt();
+				assertEquals(expected, actual1);
+				assertEquals(expected, actual2);
+			}
 			assertEquals(range(n), g.vertices());
 
 			for (int i = 0; i < 20; i++) {
@@ -618,6 +624,20 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			assertThrows(NoSuchEdgeException.class, () -> g.edgeSource(6687));
+		});
+		foreachBoolConfig(directed -> {
+			final int n = 100;
+			IndexGraph g = graphImpl.get(directed).indexGraph();
+			g.addVertices(range(n));
+			IdBuilderInt eBuilder = g.edgeBuilder();
+			for (int i = 0; i < n; i++) {
+				int u = i, v = (i + 1) % n;
+				int expected = g.edges().size();
+				int actual1 = eBuilder.build(g.edges());
+				int actual2 = g.addEdge(u, v);
+				assertEquals(expected, actual1);
+				assertEquals(expected, actual2);
+			}
 		});
 
 		foreachBoolConfig(directed -> {
