@@ -28,8 +28,8 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 	private final boolean isDirected;
 	final GraphElementSet vertices;
 	final GraphElementSet edges;
-	private final IdentityIndexIdMap verticesIdMap;
-	private final IdentityIndexIdMap edgesIdMap;
+	private final IndexIntIdMap verticesIdMap;
+	private final IndexIntIdMap edgesIdMap;
 	long[] edgeEndpoints;
 
 	static final int EndpointNone = -1;
@@ -39,8 +39,8 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 		this.isDirected = isDirected;
 		this.vertices = Objects.requireNonNull(vertices);
 		this.edges = Objects.requireNonNull(edges);
-		verticesIdMap = new IdentityIndexIdMap(vertices, false);
-		edgesIdMap = new IdentityIndexIdMap(edges, true);
+		verticesIdMap = IndexIntIdMap.identityVerticesMap(vertices);
+		edgesIdMap = IndexIntIdMap.identityEdgesMap(edges);
 	}
 
 	IndexGraphBase(boolean isDirected, int n, int m, boolean mutable) {
@@ -52,8 +52,8 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 			this.vertices = GraphElementSet.Immutable.ofVertices(n);
 			this.edges = GraphElementSet.Immutable.ofEdges(m);
 		}
-		verticesIdMap = new IdentityIndexIdMap(vertices, false);
-		edgesIdMap = new IdentityIndexIdMap(edges, true);
+		verticesIdMap = IndexIntIdMap.identityVerticesMap(vertices);
+		edgesIdMap = IndexIntIdMap.identityEdgesMap(edges);
 	}
 
 	@Override

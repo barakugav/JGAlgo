@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 /**
  * A mapping between {@link IntGraph} IDs to {@link IndexGraph} indices.
  *
@@ -140,6 +142,44 @@ public interface IndexIntIdMap extends IndexIdMap<Integer> {
 	@Override
 	default int idToIndexIfExist(Integer id) {
 		return idToIndexIfExist(id.intValue());
+	}
+
+	/**
+	 * Create an identity mapping between the elements IDs and indices.
+	 *
+	 * <p>
+	 * The identity mapping is a mapping in which the ID of an element is equal to its index. This mapping is used by
+	 * {@linkplain IndexGraph index graphs}. The passed set of vertices is expected to be {@code 0,1,2, ..., n-1} where
+	 * {@code n} is the number of vertices in the graph, as only for this set of vertices the identity mapping is
+	 * possible. The given set is not validated for this condition. The number of vertices, {@code n}, is accessible to
+	 * the mapping by {@code vertexSet.size()}, and it is used to determine if an index/id is in range. If the graph is
+	 * mutable and the mapping should be used during the graph lifetime, the given set should be a view of the graph
+	 * vertices, so the range checks will be valid.
+	 *
+	 * @param  vertexSet the set of vertices in the graph. The set will be used t
+	 * @return           an identity mapping of the vertices
+	 */
+	static IndexIntIdMap identityVerticesMap(IntSet vertexSet) {
+		return new IdentityIndexIdMap(vertexSet, false);
+	}
+
+	/**
+	 * Create an identity mapping between the elements IDs and indices.
+	 *
+	 * <p>
+	 * The identity mapping is a mapping in which the ID of an element is equal to its index. This mapping is used by
+	 * {@linkplain IndexGraph index graphs}. The passed set of edges is expected to be {@code 0,1,2, ..., m-1} where
+	 * {@code m} is the number of edges in the graph, as only for this set of edges the identity mapping is possible.
+	 * The given set is not validated for this condition. The number of edges, {@code m}, is accessible to the mapping
+	 * by {@code edgeSet.size()}, and it is used to determine if an index/id is in range. If the graph is mutable and
+	 * the mapping should be used during the graph lifetime, the given set should be a view of the graph edges, so the
+	 * range checks will be valid.
+	 *
+	 * @param  edgeSet the set of edges in the graph. The set will be used t
+	 * @return         an identity mapping of the edges
+	 */
+	static IndexIntIdMap identityEdgesMap(IntSet edgeSet) {
+		return new IdentityIndexIdMap(edgeSet, true);
 	}
 
 }

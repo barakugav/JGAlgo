@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Objects;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -32,7 +33,7 @@ class IdentityIndexIdMap implements IndexIntIdMap {
 	private final boolean isEdges;
 
 	IdentityIndexIdMap(IntSet elementsSet, boolean isEdges) {
-		this.elementsSet = elementsSet;
+		this.elementsSet = Objects.requireNonNull(elementsSet);
 		this.isEdges = isEdges;
 	}
 
