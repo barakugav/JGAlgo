@@ -165,7 +165,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L165">		int[] vToVnew = allocatedMem.vToVnew;</span>
 <span class="fc bfc" id="L166" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
 <span class="fc" id="L167">			int ut = vToTree.applyAsInt(u);</span>
-<span class="fc" id="L168">			vToVnew[u] = trees[ut].addVertex();</span>
+<span class="fc" id="L168">			vToVnew[u] = trees[ut].addVertexInt();</span>
 		}
 
 <span class="fc bfc" id="L171" title="All 2 branches covered.">		for (int m = f.edges().size(), e = 0; e &lt; m; e++) {</span>

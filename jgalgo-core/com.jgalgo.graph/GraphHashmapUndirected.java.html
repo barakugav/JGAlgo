@@ -275,5 +275,27 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		}
 	}
 
+	@Override
+	void markVertex(int vertex) {
+<span class="fc bfc" id="L280" title="All 2 branches covered.">		if (edges[vertex] == EmptyEdgeMap) {</span>
+<span class="fc" id="L281">			edges[vertex] = null;</span>
+		} else {
+<span class="fc" id="L283">			edges[vertex].defaultReturnValue(-2);</span>
+		}
+<span class="fc" id="L285">	}</span>
+
+	@Override
+	void unmarkVertex(int vertex) {
+<span class="fc bfc" id="L289" title="All 2 branches covered.">		if (edges[vertex] == null) {</span>
+<span class="fc" id="L290">			edges[vertex] = EmptyEdgeMap;</span>
+		} else {
+<span class="fc" id="L292">			edges[vertex].defaultReturnValue(-1);</span>
+		}
+<span class="fc" id="L294">	}</span>
+
+	@Override
+	boolean isMarkedVertex(int vertex) {
+<span class="fc bfc" id="L298" title="All 4 branches covered.">		return edges[vertex] == null || edges[vertex].defaultReturnValue() == -2;</span>
+	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

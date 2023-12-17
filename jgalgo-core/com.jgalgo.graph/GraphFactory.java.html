@@ -204,6 +204,38 @@ public interface GraphFactory&lt;V, E&gt; {
 	GraphFactory&lt;V, E&gt; expectedEdgesNum(int expectedEdgesNum);
 
 	/**
+	 * Set the vertex builder used by the built graph(s).
+	 *
+	 * &lt;p&gt;
+	 * The vertex builder is used by graphs to create new vertices when the user does not provide them explicitly, see
+	 * {@link Graph#addVertex()}. The same vertex builder will be used for all graphs built by this factory, and graphs
+	 * built by {@link GraphBuilder} created by this factory.
+	 *
+	 * &lt;p&gt;
+	 * By default, graphs built by this factory will not have a vertex builder, namely a {@code null} vertex builder.
+	 *
+	 * @param  vertexBuilder the vertex builder, or {@code null} if no vertex builder should be used
+	 * @return               this factory
+	 */
+	GraphFactory&lt;V, E&gt; setVertexBuilder(IdBuilder&lt;V&gt; vertexBuilder);
+
+	/**
+	 * Set the edge builder used by the built graph(s).
+	 *
+	 * &lt;p&gt;
+	 * The edge builder is used by graphs to create new edges when the user does not provide them explicitly, see
+	 * {@link Graph#addEdge(Object, Object)}. The same edge builder will be used for all graphs built by this factory,
+	 * and graphs built by {@link GraphBuilder} created by this factory.
+	 *
+	 * &lt;p&gt;
+	 * By default, graphs built by this factory will not have an edge builder, namely a {@code null} edge builder.
+	 *
+	 * @param  edgeBuilder the edge builder, or {@code null} if no edge builder should be used
+	 * @return             this factory
+	 */
+	GraphFactory&lt;V, E&gt; setEdgeBuilder(IdBuilder&lt;E&gt; edgeBuilder);
+
+	/**
 	 * Add a hint to this factory.
 	 *
 	 * &lt;p&gt;
@@ -233,19 +265,19 @@ public interface GraphFactory&lt;V, E&gt; {
 	 *
 	 * @author Barak Ugav
 	 */
-<span class="fc" id="L236">	static enum Hint {</span>
+<span class="fc" id="L268">	static enum Hint {</span>
 
 		/** The graph should support fast edge removal via {@link Graph#removeEdge(Object)}. */
-<span class="fc" id="L239">		FastEdgeRemoval,</span>
+<span class="fc" id="L271">		FastEdgeRemoval,</span>
 
 		/**
 		 * The graph should support fast edge lookup via {@link Graph#getEdge(Object, Object)} and
 		 * {@link Graph#getEdges(Object, Object)}.
 		 */
-<span class="fc" id="L245">		FastEdgeLookup,</span>
+<span class="fc" id="L277">		FastEdgeLookup,</span>
 
 		/** The graph density (# of edges) will be high, a constant fraction of \(O(n^2)\). */
-<span class="fc" id="L248">		DenseGraph,</span>
+<span class="fc" id="L280">		DenseGraph,</span>
 	}
 
 	/**
@@ -256,7 +288,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return     a new factory that can build undirected graphs
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; undirected() {
-<span class="fc" id="L259">		return new GraphImpl.Factory&lt;&gt;(false);</span>
+<span class="fc" id="L291">		return new GraphFactoryImpl&lt;&gt;(false);</span>
 	}
 
 	/**
@@ -267,7 +299,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return     a new factory that can build directed graphs
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; directed() {
-<span class="fc" id="L270">		return new GraphImpl.Factory&lt;&gt;(true);</span>
+<span class="fc" id="L302">		return new GraphFactoryImpl&lt;&gt;(true);</span>
 	}
 
 	/**
@@ -279,7 +311,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return          a new factory that can build un/directed graphs
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newInstance(boolean directed) {
-<span class="fc" id="L282">		return new GraphImpl.Factory&lt;&gt;(directed);</span>
+<span class="fc" id="L314">		return new GraphFactoryImpl&lt;&gt;(directed);</span>
 	}
 
 	/**
@@ -298,7 +330,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return       this builder
 	 */
 	default GraphFactory&lt;V, E&gt; setOption(String key, Object value) {
-<span class="nc" id="L301">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="fc" id="L333">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

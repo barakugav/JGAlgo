@@ -28,8 +28,8 @@ abstract class IndexGraphBase extends GraphBase&lt;Integer, Integer&gt; implemen
 	private final boolean isDirected;
 	final GraphElementSet vertices;
 	final GraphElementSet edges;
-	private final IdentityIndexIdMap verticesIdMap;
-	private final IdentityIndexIdMap edgesIdMap;
+	private final IndexIntIdMap verticesIdMap;
+	private final IndexIntIdMap edgesIdMap;
 	long[] edgeEndpoints;
 
 	static final int EndpointNone = -1;
@@ -39,8 +39,8 @@ abstract class IndexGraphBase extends GraphBase&lt;Integer, Integer&gt; implemen
 <span class="fc" id="L39">		this.isDirected = isDirected;</span>
 <span class="fc" id="L40">		this.vertices = Objects.requireNonNull(vertices);</span>
 <span class="fc" id="L41">		this.edges = Objects.requireNonNull(edges);</span>
-<span class="fc" id="L42">		verticesIdMap = new IdentityIndexIdMap(vertices, false);</span>
-<span class="fc" id="L43">		edgesIdMap = new IdentityIndexIdMap(edges, true);</span>
+<span class="fc" id="L42">		verticesIdMap = IndexIntIdMap.identityVerticesMap(vertices);</span>
+<span class="fc" id="L43">		edgesIdMap = IndexIntIdMap.identityEdgesMap(edges);</span>
 <span class="fc" id="L44">	}</span>
 
 <span class="fc" id="L46">	IndexGraphBase(boolean isDirected, int n, int m, boolean mutable) {</span>
@@ -52,8 +52,8 @@ abstract class IndexGraphBase extends GraphBase&lt;Integer, Integer&gt; implemen
 <span class="fc" id="L52">			this.vertices = GraphElementSet.Immutable.ofVertices(n);</span>
 <span class="fc" id="L53">			this.edges = GraphElementSet.Immutable.ofEdges(m);</span>
 		}
-<span class="fc" id="L55">		verticesIdMap = new IdentityIndexIdMap(vertices, false);</span>
-<span class="fc" id="L56">		edgesIdMap = new IdentityIndexIdMap(edges, true);</span>
+<span class="fc" id="L55">		verticesIdMap = IndexIntIdMap.identityVerticesMap(vertices);</span>
+<span class="fc" id="L56">		edgesIdMap = IndexIntIdMap.identityEdgesMap(edges);</span>
 <span class="fc" id="L57">	}</span>
 
 	@Override

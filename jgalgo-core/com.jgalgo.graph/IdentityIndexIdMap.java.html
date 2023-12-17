@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Objects;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -31,30 +32,30 @@ class IdentityIndexIdMap implements IndexIntIdMap {
 	private final IntSet elementsSet;
 	private final boolean isEdges;
 
-<span class="fc" id="L34">	IdentityIndexIdMap(IntSet elementsSet, boolean isEdges) {</span>
-<span class="fc" id="L35">		this.elementsSet = elementsSet;</span>
-<span class="fc" id="L36">		this.isEdges = isEdges;</span>
-<span class="fc" id="L37">	}</span>
+<span class="fc" id="L35">	IdentityIndexIdMap(IntSet elementsSet, boolean isEdges) {</span>
+<span class="fc" id="L36">		this.elementsSet = Objects.requireNonNull(elementsSet);</span>
+<span class="fc" id="L37">		this.isEdges = isEdges;</span>
+<span class="fc" id="L38">	}</span>
 
 	@Override
 	public int indexToIdInt(int index) {
-<span class="fc" id="L41">		Assertions.Graphs.checkId(index, elementsSet.size(), isEdges);</span>
-<span class="fc" id="L42">		return index;</span>
+<span class="fc" id="L42">		Assertions.Graphs.checkId(index, elementsSet.size(), isEdges);</span>
+<span class="fc" id="L43">		return index;</span>
 	}
 
 	@Override
 	public int indexToIdIfExistInt(int index) {
-<span class="fc bfc" id="L47" title="All 4 branches covered.">		return 0 &lt;= index &amp;&amp; index &lt; elementsSet.size() ? index : -1;</span>
+<span class="fc bfc" id="L48" title="All 4 branches covered.">		return 0 &lt;= index &amp;&amp; index &lt; elementsSet.size() ? index : -1;</span>
 	}
 
 	@Override
 	public int idToIndex(int id) {
-<span class="fc" id="L52">		return indexToIdInt(id);</span>
+<span class="fc" id="L53">		return indexToIdInt(id);</span>
 	}
 
 	@Override
 	public int idToIndexIfExist(int id) {
-<span class="fc" id="L57">		return indexToIdIfExistInt(id);</span>
+<span class="fc" id="L58">		return indexToIdIfExistInt(id);</span>
 	}
 
 }

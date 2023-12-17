@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IntGraphIdBuilderBench.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Benchmarks</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.bench.impls</a> &gt; <span class="el_source">IntGraphIdBuilderBench.java</span></div><h1>IntGraphIdBuilderBench.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.bench.impls;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
+import org.openjdk.jmh.annotations.Benchmark;
+import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Fork;
+import org.openjdk.jmh.annotations.Level;
+import org.openjdk.jmh.annotations.Measurement;
+import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.OperationsPerInvocation;
+import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
+import org.openjdk.jmh.annotations.Scope;
+import org.openjdk.jmh.annotations.Setup;
+import org.openjdk.jmh.annotations.State;
+import org.openjdk.jmh.annotations.Warmup;
+import org.openjdk.jmh.infra.Blackhole;
+import com.jgalgo.bench.util.BenchUtils;
+import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IdBuilderInt;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
+import it.unimi.dsi.fastutil.HashCommon;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+<span class="nc" id="L45">public class IntGraphIdBuilderBench {</span>
+
+<span class="fc" id="L47">	public static class Query {</span>
+
+		private Random rand;
+		private IntGraph g;
+
+		void setupCreateGraph(String args, Supplier&lt;IdBuilderInt&gt; IdBuilderSupplier) {
+<span class="fc" id="L53">			final long seed = 0x7a1521bf6435883cL;</span>
+<span class="fc" id="L54">			rand = new Random(seed);</span>
+<span class="fc" id="L55">			Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L56">			final int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L57">			final int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+
+<span class="fc" id="L59">			IntGraphFactory factory = IntGraphFactory.directed().allowSelfEdges().allowParallelEdges();</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">			if (IdBuilderSupplier != null) {</span>
+<span class="fc" id="L61">				factory.setVertexBuilder(IdBuilderSupplier.get());</span>
+<span class="fc" id="L62">				factory.setEdgeBuilder(IdBuilderSupplier.get());</span>
+			}
+<span class="fc" id="L64">			g = factory.newGraph();</span>
+<span class="fc" id="L65">			g.addVertices(range(n));</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">			for (int i = 0; i &lt; m; i++)</span>
+<span class="fc" id="L67">				g.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand));</span>
+<span class="fc" id="L68">		}</span>
+
+		private static final int OperationsPerInvocation = 1000;
+<span class="fc" id="L71">		private final int[] queries = new int[OperationsPerInvocation];</span>
+
+		void setupCreateQueries() {
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			for (int q = 0; q &lt; OperationsPerInvocation; q++)</span>
+<span class="fc" id="L75">				queries[q] = Graphs.randEdge(g, rand);</span>
+<span class="fc" id="L76">		}</span>
+
+		void bench(Blackhole blackhole) {
+			// assert OperationsPerInvocation % 2 == 0;
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			for (int q = 0; q &lt; OperationsPerInvocation / 2; q++) {</span>
+<span class="fc" id="L81">				blackhole.consume(g.edgeSource(queries[q * 2 + 0]));</span>
+<span class="fc" id="L82">				blackhole.consume(g.edgeTarget(queries[q * 2 + 1]));</span>
+			}
+<span class="fc" id="L84">		}</span>
+
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.NANOSECONDS)
+		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Fork(value = 1, warmups = 0)
+		@State(Scope.Benchmark)
+<span class="fc" id="L92">		public static class Counter extends Query {</span>
+
+			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
+			public String args;
+
+			@Setup(Level.Trial)
+			public void setupCreateGraph() {
+<span class="fc" id="L99">				super.setupCreateGraph(args, null);</span>
+<span class="fc" id="L100">			}</span>
+
+			@Override
+			@Setup(Level.Invocation)
+			public void setupCreateQueries() {
+<span class="fc" id="L105">				super.setupCreateQueries();</span>
+<span class="fc" id="L106">			}</span>
+
+			@Override
+			@Benchmark
+			@OperationsPerInvocation(Query.OperationsPerInvocation)
+			public void bench(Blackhole blackhole) {
+<span class="fc" id="L112">				super.bench(blackhole);</span>
+<span class="fc" id="L113">			}</span>
+		}
+
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.NANOSECONDS)
+		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Fork(value = 1, warmups = 0)
+		@State(Scope.Benchmark)
+<span class="fc" id="L122">		public static class Rand extends Query {</span>
+
+			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
+			public String args;
+
+			@Setup(Level.Trial)
+			public void setupCreateGraph() {
+<span class="fc" id="L129">				super.setupCreateGraph(args, () -&gt; {</span>
+<span class="fc" id="L130">					final Random rand = new Random();</span>
+<span class="fc" id="L131">					return (IntSet idSet) -&gt; {</span>
+						for (;;) {
+<span class="fc" id="L133">							int id = rand.nextInt();</span>
+<span class="pc bpc" id="L134" title="1 of 4 branches missed.">							if (id &gt;= 1 &amp;&amp; !idSet.contains(id))</span>
+								// We prefer non zero IDs because fastutil handle zero (null) keys
+								// separately
+<span class="fc" id="L137">								return id;</span>
+<span class="fc" id="L138">						}</span>
+					};
+				});
+<span class="fc" id="L141">			}</span>
+
+			@Override
+			@Setup(Level.Invocation)
+			public void setupCreateQueries() {
+<span class="fc" id="L146">				super.setupCreateQueries();</span>
+<span class="fc" id="L147">			}</span>
+
+			@Override
+			@Benchmark
+			@OperationsPerInvocation(Query.OperationsPerInvocation)
+			public void bench(Blackhole blackhole) {
+<span class="fc" id="L153">				super.bench(blackhole);</span>
+<span class="fc" id="L154">			}</span>
+		}
+
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.NANOSECONDS)
+		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Fork(value = 1, warmups = 0)
+		@State(Scope.Benchmark)
+<span class="fc" id="L163">		public static class Increment0x61c88647 extends Query {</span>
+
+			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
+			public String args;
+
+			@Setup(Level.Trial)
+			public void setupCreateGraph() {
+<span class="fc" id="L170">				super.setupCreateGraph(args, () -&gt; {</span>
+<span class="fc" id="L171">					var state = new Object() {</span>
+<span class="fc" id="L172">						int nextId = 1;</span>
+					};
+<span class="fc" id="L174">					return idSet -&gt; {</span>
+						for (;;) {
+<span class="fc" id="L176">							int id = state.nextId;</span>
+<span class="fc" id="L177">							state.nextId += 0x61c88647;</span>
+<span class="pc bpc" id="L178" title="1 of 4 branches missed.">							if (id &gt;= 1 &amp;&amp; !idSet.contains(id))</span>
+								// We prefer non zero IDs because fastutil handle zero (null) keys
+								// separately
+<span class="fc" id="L181">								return id;</span>
+<span class="fc" id="L182">						}</span>
+					};
+				});
+<span class="fc" id="L185">			}</span>
+
+			@Override
+			@Setup(Level.Invocation)
+			public void setupCreateQueries() {
+<span class="fc" id="L190">				super.setupCreateQueries();</span>
+<span class="fc" id="L191">			}</span>
+
+			@Override
+			@Benchmark
+			@OperationsPerInvocation(Query.OperationsPerInvocation)
+			public void bench(Blackhole blackhole) {
+<span class="fc" id="L197">				super.bench(blackhole);</span>
+<span class="fc" id="L198">			}</span>
+		}
+
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.NANOSECONDS)
+		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Fork(value = 1, warmups = 0)
+		@State(Scope.Benchmark)
+<span class="fc" id="L207">		public static class MurmurHash3 extends Query {</span>
+
+			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
+			public String args;
+
+			@Setup(Level.Trial)
+			public void setupCreateGraph() {
+<span class="fc" id="L214">				super.setupCreateGraph(args, () -&gt; {</span>
+<span class="fc" id="L215">					var state = new Object() {</span>
+<span class="fc" id="L216">						long nextId = 1;</span>
+					};
+<span class="fc" id="L218">					return idSet -&gt; {</span>
+						for (;;) {
+<span class="fc" id="L220">							int id = Long.hashCode(state.nextId);</span>
+<span class="fc" id="L221">							state.nextId = HashCommon.murmurHash3(state.nextId);</span>
+<span class="pc bpc" id="L222" title="1 of 4 branches missed.">							if (id &gt;= 1 &amp;&amp; !idSet.contains(id))</span>
+								// We prefer non zero IDs because fastutil handle zero (null) keys
+								// separately
+<span class="fc" id="L225">								return id;</span>
+<span class="fc" id="L226">						}</span>
+					};
+				});
+<span class="fc" id="L229">			}</span>
+
+			@Override
+			@Setup(Level.Invocation)
+			public void setupCreateQueries() {
+<span class="fc" id="L234">				super.setupCreateQueries();</span>
+<span class="fc" id="L235">			}</span>
+
+			@Override
+			@Benchmark
+			@OperationsPerInvocation(Query.OperationsPerInvocation)
+			public void bench(Blackhole blackhole) {
+<span class="fc" id="L241">				super.bench(blackhole);</span>
+<span class="fc" id="L242">			}</span>
+		}
+
+		@BenchmarkMode(Mode.AverageTime)
+		@OutputTimeUnit(TimeUnit.NANOSECONDS)
+		@Warmup(iterations = 2, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Measurement(iterations = 3, time = 100, timeUnit = TimeUnit.MILLISECONDS)
+		@Fork(value = 1, warmups = 0)
+		@State(Scope.Benchmark)
+<span class="fc" id="L251">		public static class Mult0x7ffb01f extends Query {</span>
+
+			@Param({ &quot;|V|=100 |E|=300&quot;, &quot;|V|=100 |E|=3000&quot;, &quot;|V|=13000 |E|=50000&quot; })
+			public String args;
+
+			@Setup(Level.Trial)
+			public void setupCreateGraph() {
+<span class="fc" id="L258">				super.setupCreateGraph(args, () -&gt; {</span>
+<span class="fc" id="L259">					var state = new Object() {</span>
+<span class="fc" id="L260">						long nextId = 1;</span>
+					};
+<span class="fc" id="L262">					return idSet -&gt; {</span>
+						for (;;) {
+<span class="fc" id="L264">							int id = Long.hashCode(state.nextId);</span>
+<span class="fc" id="L265">							state.nextId *= 0x7ffb01f;</span>
+<span class="pc bpc" id="L266" title="1 of 4 branches missed.">							if (id &gt;= 1 &amp;&amp; !idSet.contains(id))</span>
+								// We prefer non zero IDs because fastutil handle zero (null) keys
+								// separately
+<span class="fc" id="L269">								return id;</span>
+<span class="fc" id="L270">						}</span>
+					};
+				});
+<span class="fc" id="L273">			}</span>
+
+			@Override
+			@Setup(Level.Invocation)
+			public void setupCreateQueries() {
+<span class="fc" id="L278">				super.setupCreateQueries();</span>
+<span class="fc" id="L279">			}</span>
+
+			@Override
+			@Benchmark
+			@OperationsPerInvocation(Query.OperationsPerInvocation)
+			public void bench(Blackhole blackhole) {
+<span class="fc" id="L285">				super.bench(blackhole);</span>
+<span class="fc" id="L286">			}</span>
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

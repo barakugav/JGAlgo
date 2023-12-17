@@ -165,11 +165,45 @@ public interface Graph&lt;V, E&gt; {
 	 * A vertex can be any non null hashable object, namely it must implement the {@link Object#hashCode()} and
 	 * {@link Object#equals(Object)} methods. Duplicate vertices are not allowed.
 	 *
+	 * &lt;p&gt;
+	 * If the graph have a vertex builder, namely if {@link #vertexBuilder()} does not return {@code null}, the method
+	 * {@link #addVertex()} can be used, which uses the vertex builder to create the new vertex object instead of
+	 * requiring the user to provide it.
+	 *
 	 * @param  vertex                   new vertex
 	 * @throws IllegalArgumentException if {@code vertex} is already in the graph
 	 * @throws NullPointerException     if {@code vertex} is {@code null}
 	 */
 	void addVertex(V vertex);
+
+	/**
+	 * Add a new vertex to the graph, using the vertex builder.
+	 *
+	 * &lt;p&gt;
+	 * Unlike {@link #addVertex(Object)} in which the vertex is provided by the user, this method uses the vertex
+	 * builder obtained by {@link #vertexBuilder()} to create the new vertex object and adds it to the graph.
+	 *
+	 * &lt;p&gt;
+	 * This method is equivalent to:
+	 *
+	 * &lt;pre&gt; {@code
+	 * V vertex = vertexBuilder().build(vertices());
+	 * addVertex(vertex);
+	 * return vertex;
+	 * }&lt;/pre&gt;
+	 *
+	 * @return                               the new vertex
+	 * @throws UnsupportedOperationException if the graph does not have a vertex builder, namely if
+	 *                                           {@link #vertexBuilder()} returns {@code null}
+	 */
+	default V addVertex() {
+<span class="fc" id="L200">		IdBuilder&lt;V&gt; vertexBuilder = vertexBuilder();</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">		if (vertexBuilder == null)</span>
+<span class="fc" id="L202">			throw new UnsupportedOperationException(&quot;Graph does not have a vertex builder&quot;);</span>
+<span class="fc" id="L203">		V vertex = vertexBuilder.build(vertices());</span>
+<span class="fc" id="L204">		addVertex(vertex);</span>
+<span class="fc" id="L205">		return vertex;</span>
+	}
 
 	/**
 	 * Add multiple vertices to the graph.
@@ -192,6 +226,16 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier
 	 */
 	void removeVertex(V vertex);
+
+	/**
+	 * Remove multiple vertices and all their edges from the graph.
+	 *
+	 * @param  vertices                 the vertices to remove
+	 * @throws NoSuchVertexException    if any of the vertices is not a valid vertex identifier
+	 * @throws NullPointerException     if {@code vertices} is {@code null} or if any of the vertices is {@code null}
+	 * @throws IllegalArgumentException if {@code vertices} contains duplications
+	 */
+	void removeVertices(Collection&lt;? extends V&gt; vertices);
 
 	/**
 	 * Set a new identifier for an existing vertex.
@@ -254,7 +298,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws NoSuchVertexException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	default boolean containsEdge(V source, V target) {
-<span class="fc bfc" id="L257" title="All 2 branches covered.">		return getEdge(source, target) != null;</span>
+<span class="fc bfc" id="L301" title="All 2 branches covered.">		return getEdge(source, target) != null;</span>
 	}
 
 	/**
@@ -274,12 +318,12 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws NoSuchVertexException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	default E getEdge(V source, V target) {
-<span class="fc bfc" id="L277" title="All 2 branches covered.">		for (EdgeIter&lt;V, E&gt; it = outEdges(source).iterator(); it.hasNext();) {</span>
-<span class="fc" id="L278">			E e = it.next();</span>
-<span class="fc bfc" id="L279" title="All 2 branches covered.">			if (target.equals(it.target()))</span>
-<span class="fc" id="L280">				return e;</span>
-<span class="fc" id="L281">		}</span>
-<span class="fc" id="L282">		return null;</span>
+<span class="fc bfc" id="L321" title="All 2 branches covered.">		for (EdgeIter&lt;V, E&gt; it = outEdges(source).iterator(); it.hasNext();) {</span>
+<span class="fc" id="L322">			E e = it.next();</span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">			if (target.equals(it.target()))</span>
+<span class="fc" id="L324">				return e;</span>
+<span class="fc" id="L325">		}</span>
+<span class="fc" id="L326">		return null;</span>
 	}
 
 	/**
@@ -304,6 +348,11 @@ public interface Graph&lt;V, E&gt; {
 	 * An edge can be any non null hashable object, namely it must implement the {@link Object#hashCode()} and
 	 * {@link Object#equals(Object)} methods. Duplicate edges are not allowed.
 	 *
+	 * &lt;p&gt;
+	 * If the graph have an edge builder, namely if {@link #edgeBuilder()} does not return {@code null}, the method
+	 * {@link #addEdge(Object, Object)} can be used, which uses the edge builder to create the new edge object instead
+	 * of requiring the user to provide it.
+	 *
 	 * @param  source                   a source vertex
 	 * @param  target                   a target vertex
 	 * @param  edge                     a new edge identifier
@@ -315,6 +364,48 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws NoSuchVertexException    if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	void addEdge(V source, V target, E edge);
+
+	/**
+	 * Add a new edge to the graph, using the edge builder.
+	 *
+	 * &lt;p&gt;
+	 * Unlike {@link #addEdge(Object, Object, Object)} in which the edge (identifier) is provided by the user, this
+	 * method uses the edge builder obtained by {@link #edgeBuilder()} to create the new edge object and adds it to the
+	 * graph.
+	 *
+	 * &lt;p&gt;
+	 * If the graph does not support parallel edges, and an edge between {@code source} and {@code target} already
+	 * exists, an exception will be raised. If the graph does not support self edges, and {@code source} and
+	 * {@code target} are the same vertex, an exception will be raised.
+	 *
+	 * &lt;p&gt;
+	 * This method is equivalent to:
+	 *
+	 * &lt;pre&gt; {@code
+	 * E edge = edgeBuilder().build(edges());
+	 * addEdge(source, target, edge);
+	 * return edge;
+	 * }&lt;/pre&gt;
+	 *
+	 * @param  source                        a source vertex
+	 * @param  target                        a target vertex
+	 * @return                               the new edge
+	 * @throws UnsupportedOperationException if the graph does not have an edge builder, namely if
+	 *                                           {@link #edgeBuilder()} returns {@code null}
+	 * @throws IllegalArgumentException      if the graph does not support parallel edges and an edge between
+	 *                                           {@code source} and {@code target} already exists or if the graph does
+	 *                                           not support self edges and {@code source} and {@code target} are the
+	 *                                           same vertex
+	 * @throws NoSuchVertexException         if {@code source} or {@code target} are not valid vertices identifiers
+	 */
+	default E addEdge(V source, V target) {
+<span class="fc" id="L402">		IdBuilder&lt;E&gt; edgeBuilder = edgeBuilder();</span>
+<span class="fc bfc" id="L403" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
+<span class="fc" id="L404">			throw new UnsupportedOperationException();</span>
+<span class="fc" id="L405">		E edge = edgeBuilder.build(edges());</span>
+<span class="fc" id="L406">		addEdge(source, target, edge);</span>
+<span class="fc" id="L407">		return edge;</span>
+	}
 
 	/**
 	 * Add multiple edges to the graph.
@@ -371,15 +462,25 @@ public interface Graph&lt;V, E&gt; {
 	void removeEdge(E edge);
 
 	/**
+	 * Remove multiple edges from the graph.
+	 *
+	 * @param  edges                    the edges to remove
+	 * @throws NoSuchEdgeException      if any of the edges is not a valid edge identifier
+	 * @throws NullPointerException     if {@code edges} is {@code null} or if any of the edges is {@code null}
+	 * @throws IllegalArgumentException if {@code edges} contains duplications
+	 */
+	void removeEdges(Collection&lt;? extends E&gt; edges);
+
+	/**
 	 * Remove all the edges of a vertex.
 	 *
 	 * @param  vertex                a vertex in the graph
 	 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier
 	 */
 	default void removeEdgesOf(V vertex) {
-<span class="nc" id="L380">		removeOutEdgesOf(vertex);</span>
-<span class="nc" id="L381">		removeInEdgesOf(vertex);</span>
-<span class="nc" id="L382">	}</span>
+<span class="nc" id="L481">		removeOutEdgesOf(vertex);</span>
+<span class="nc" id="L482">		removeInEdgesOf(vertex);</span>
+<span class="nc" id="L483">	}</span>
 
 	/**
 	 * Remove all edges whose source is {@code source}.
@@ -388,11 +489,11 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws NoSuchVertexException if {@code source} is not a valid vertex identifier
 	 */
 	default void removeOutEdgesOf(V source) {
-<span class="pc bpc" id="L391" title="1 of 2 branches missed.">		for (EdgeIter&lt;V, E&gt; eit = outEdges(source).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L392">			eit.next();</span>
-<span class="nc" id="L393">			eit.remove();</span>
+<span class="pc bpc" id="L492" title="1 of 2 branches missed.">		for (EdgeIter&lt;V, E&gt; eit = outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L493">			eit.next();</span>
+<span class="nc" id="L494">			eit.remove();</span>
 		}
-<span class="nc" id="L395">	}</span>
+<span class="nc" id="L496">	}</span>
 
 	/**
 	 * Remove all edges whose target is {@code target}.
@@ -401,11 +502,11 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws NoSuchVertexException if {@code target} is not a valid vertex identifier
 	 */
 	default void removeInEdgesOf(V target) {
-<span class="pc bpc" id="L404" title="1 of 2 branches missed.">		for (EdgeIter&lt;V, E&gt; eit = inEdges(target).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L405">			eit.next();</span>
-<span class="nc" id="L406">			eit.remove();</span>
+<span class="pc bpc" id="L505" title="1 of 2 branches missed.">		for (EdgeIter&lt;V, E&gt; eit = inEdges(target).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L506">			eit.next();</span>
+<span class="nc" id="L507">			eit.remove();</span>
 		}
-<span class="nc" id="L408">	}</span>
+<span class="nc" id="L509">	}</span>
 
 	/**
 	 * Set a new identifier for an existing edge.
@@ -449,8 +550,8 @@ public interface Graph&lt;V, E&gt; {
 	 *                                      reverse of {@code edge} already exists in the graph
 	 */
 	default void reverseEdge(E edge) {
-<span class="fc" id="L452">		moveEdge(edge, edgeTarget(edge), edgeSource(edge));</span>
-<span class="fc" id="L453">	}</span>
+<span class="fc" id="L553">		moveEdge(edge, edgeTarget(edge), edgeSource(edge));</span>
+<span class="fc" id="L554">	}</span>
 
 	/**
 	 * Get the source vertex of an edge.
@@ -513,6 +614,31 @@ public interface Graph&lt;V, E&gt; {
 	 * Note that this function also clears any weights associated with the edges.
 	 */
 	void clearEdges();
+
+	/**
+	 * Get the vertex builder of this graph.
+	 *
+	 * &lt;p&gt;
+	 * The vertex builder is used to create new vertices in the graph during the execution of {@link #addVertex()}, in
+	 * which the vertex identifier is not provided by the user. Not all graphs have a vertex builder, and may return a
+	 * {@code null} value. In that case, {@link #addVertex()} cannot be used, only {@link #addVertex(Object)}.
+	 *
+	 * @return the vertex builder of this graph, or {@code null} if the graph does not have a vertex builder
+	 */
+	IdBuilder&lt;V&gt; vertexBuilder();
+
+	/**
+	 * Get the edge builder of this graph.
+	 *
+	 * &lt;p&gt;
+	 * The edge builder is used to create new edges in the graph during the execution of
+	 * {@link #addEdge(Object, Object)}, in which the edge identifier is not provided by the user. Not all graphs have
+	 * an edge builder, and may return a {@code null} value. In that case, {@link #addEdge(Object, Object)} cannot be
+	 * used, only {@link #addEdge(Object, Object, Object)}.
+	 *
+	 * @return the edge builder of this graph, or {@code null} if the graph does not have an edge builder
+	 */
+	IdBuilder&lt;E&gt; edgeBuilder();
 
 	/**
 	 * Hint the implementation to allocate space for at least {@code vertexCapacity} vertices.
@@ -582,7 +708,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 */
 	default &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type) {
-<span class="fc" id="L585">		return addVerticesWeights(key, type, null);</span>
+<span class="fc" id="L711">		return addVerticesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -694,7 +820,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
 	 */
 	default &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type) {
-<span class="fc" id="L697">		return addEdgesWeights(key, type, null);</span>
+<span class="fc" id="L823">		return addEdgesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -856,7 +982,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an identical copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph&lt;V, E&gt; copy() {
-<span class="fc" id="L859">		return copy(false, false);</span>
+<span class="fc" id="L985">		return copy(false, false);</span>
 	}
 
 	/**
@@ -879,7 +1005,7 @@ public interface Graph&lt;V, E&gt; {
 	 *                             this graph weights
 	 */
 	default Graph&lt;V, E&gt; copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L882">		return Graphs.copy(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L1008">		return Graphs.copy(this, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	/**
@@ -903,7 +1029,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an immutable copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph&lt;V, E&gt; immutableCopy() {
-<span class="fc" id="L906">		return GraphBuilder.newCopyOf(this).build();</span>
+<span class="fc" id="L1032">		return GraphBuilder.newCopyOf(this).build();</span>
 	}
 
 	/**
@@ -931,18 +1057,22 @@ public interface Graph&lt;V, E&gt; {
 	 *                             graph weights
 	 */
 	default Graph&lt;V, E&gt; immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L934">		IndexIdMap&lt;V&gt; viMap = indexGraphVerticesMap();</span>
-<span class="fc" id="L935">		IndexIdMap&lt;E&gt; eiMap = indexGraphEdgesMap();</span>
-<span class="fc bfc" id="L936" title="All 2 branches covered.">		if (isDirected()) {</span>
-<span class="fc" id="L937">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
-<span class="fc" id="L938">					GraphCsrDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
-<span class="fc" id="L939">			IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="fc" id="L940">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="fc" id="L941">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="fc" id="L942">			return new GraphImpl&lt;&gt;(iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
+<span class="fc" id="L1060">		IndexIdMap&lt;V&gt; viMap = indexGraphVerticesMap();</span>
+<span class="fc" id="L1061">		IndexIdMap&lt;E&gt; eiMap = indexGraphEdgesMap();</span>
+		/* create a new factory with no vertex and edge builders */
+<span class="fc" id="L1063">		GraphFactoryImpl&lt;V, E&gt; factory = new GraphFactoryImpl&lt;&gt;(isDirected());</span>
+<span class="fc" id="L1064">		factory.setVertexBuilder(null);</span>
+<span class="fc" id="L1065">		factory.setEdgeBuilder(null);</span>
+<span class="fc bfc" id="L1066" title="All 2 branches covered.">		if (isDirected()) {</span>
+<span class="fc" id="L1067">			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =</span>
+<span class="fc" id="L1068">					GraphCsrDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L1069">			IndexGraph iGraph = reIndexedGraph.graph();</span>
+<span class="fc" id="L1070">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
+<span class="fc" id="L1071">			Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="fc" id="L1072">			return new GraphImpl&lt;&gt;(factory, iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
 		} else {
-<span class="fc" id="L944">			IndexGraph iGraph = new GraphCsrUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
-<span class="fc" id="L945">			return new GraphImpl&lt;&gt;(iGraph, viMap, eiMap, null, null);</span>
+<span class="fc" id="L1074">			IndexGraph iGraph = new GraphCsrUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L1075">			return new GraphImpl&lt;&gt;(factory, iGraph, viMap, eiMap, null, null);</span>
 		}
 	}
 
@@ -957,7 +1087,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an immutable view of this graph
 	 */
 	default Graph&lt;V, E&gt; immutableView() {
-<span class="fc" id="L960">		return Graphs.immutableView(this);</span>
+<span class="fc" id="L1090">		return Graphs.immutableView(this);</span>
 	}
 
 	/**
@@ -974,7 +1104,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return a reversed view of this graph
 	 */
 	default Graph&lt;V, E&gt; reverseView() {
-<span class="fc" id="L977">		return Graphs.reverseView(this);</span>
+<span class="fc" id="L1107">		return Graphs.reverseView(this);</span>
 	}
 
 	/**
@@ -998,7 +1128,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an undirected view of this graph
 	 */
 	default Graph&lt;V, E&gt; undirectedView() {
-<span class="fc" id="L1001">		return Graphs.undirectedView(this);</span>
+<span class="fc" id="L1131">		return Graphs.undirectedView(this);</span>
 	}
 
 	/**
@@ -1030,7 +1160,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
 	 */
 	default Graph&lt;V, E&gt; subGraphCopy(Collection&lt;V&gt; vertices, Collection&lt;E&gt; edges) {
-<span class="fc" id="L1033">		return Graphs.subGraph(this, vertices, edges);</span>
+<span class="fc" id="L1163">		return Graphs.subGraph(this, vertices, edges);</span>
 	}
 
 	/**
@@ -1045,7 +1175,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return     a new undirected empty graph
 	 */
 	static &lt;V, E&gt; Graph&lt;V, E&gt; newUndirected() {
-<span class="fc" id="L1048">		return GraphFactory.&lt;V, E&gt;undirected().newGraph();</span>
+<span class="fc" id="L1178">		return GraphFactory.&lt;V, E&gt;undirected().newGraph();</span>
 	}
 
 	/**
@@ -1060,7 +1190,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return     a new directed empty graph
 	 */
 	static &lt;V, E&gt; Graph&lt;V, E&gt; newDirected() {
-<span class="fc" id="L1063">		return GraphFactory.&lt;V, E&gt;directed().newGraph();</span>
+<span class="fc" id="L1193">		return GraphFactory.&lt;V, E&gt;directed().newGraph();</span>
 	}
 
 }

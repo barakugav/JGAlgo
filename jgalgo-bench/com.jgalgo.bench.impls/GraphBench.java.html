@@ -1552,7 +1552,7 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 <span class="fc" id="L1552">			final boolean allowSelfEdges = g.isAllowSelfEdges();</span>
 <span class="fc" id="L1553">			final boolean allowParallelEdges = g.isAllowParallelEdges();</span>
 <span class="pc bpc" id="L1554" title="1 of 2 branches missed.">			while (g.vertices().size() &lt; n)</span>
-<span class="nc" id="L1555">				g.addVertex();</span>
+<span class="nc" id="L1555">				g.addVertexInt();</span>
 <span class="pc bpc" id="L1556" title="1 of 2 branches missed.">			while (g.edges().size() &lt; m) {</span>
 <span class="nc" id="L1557">				int u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);</span>
 <span class="nc bnc" id="L1558" title="All 4 branches missed.">				if (!allowSelfEdges &amp;&amp; u == v)</span>

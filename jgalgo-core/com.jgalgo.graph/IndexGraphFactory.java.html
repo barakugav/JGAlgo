@@ -104,6 +104,30 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	@Override
 	IndexGraphFactory expectedEdgesNum(int expectedEdgesNum);
 
+	/**
+	 * Unsupported operation, index graphs does not support custom vertex builder.
+	 *
+	 * @throws     UnsupportedOperationException always
+	 * @deprecated                               Index graphs does not support custom vertex builder
+	 */
+	@Deprecated
+	@Override
+	default IndexGraphFactory setVertexBuilder(IdBuilder&lt;Integer&gt; vertexBuilder) {
+<span class="fc" id="L116">		throw new UnsupportedOperationException(&quot;Index graphs does not support custom vertex builder&quot;);</span>
+	}
+
+	/**
+	 * Unsupported operation, index graphs does not support custom edge builder.
+	 *
+	 * @throws     UnsupportedOperationException always
+	 * @deprecated                               Index graphs does not support custom edge builder
+	 */
+	@Deprecated
+	@Override
+	default IndexGraphFactory setEdgeBuilder(IdBuilder&lt;Integer&gt; edgeBuilder) {
+<span class="fc" id="L128">		throw new UnsupportedOperationException(&quot;Index graphs does not support custom edge builder&quot;);</span>
+	}
+
 	@Override
 	IndexGraphFactory addHint(GraphFactory.Hint hint);
 
@@ -116,7 +140,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 * @return a new factory that can build undirected index graphs
 	 */
 	public static IndexGraphFactory undirected() {
-<span class="fc" id="L119">		return new IndexGraphFactoryImpl(false);</span>
+<span class="fc" id="L143">		return new IndexGraphFactoryImpl(false);</span>
 	}
 
 	/**
@@ -125,7 +149,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 * @return a new factory that can build directed index graphs
 	 */
 	public static IndexGraphFactory directed() {
-<span class="fc" id="L128">		return new IndexGraphFactoryImpl(true);</span>
+<span class="fc" id="L152">		return new IndexGraphFactoryImpl(true);</span>
 	}
 
 	/**
@@ -135,12 +159,12 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 * @return          a new factory that can build un/directed index graphs
 	 */
 	public static IndexGraphFactory newInstance(boolean directed) {
-<span class="fc" id="L138">		return new IndexGraphFactoryImpl(directed);</span>
+<span class="fc" id="L162">		return new IndexGraphFactoryImpl(directed);</span>
 	}
 
 	@Override
 	default IndexGraphFactory setOption(String key, Object value) {
-<span class="nc" id="L143">		return (IndexGraphFactory) IntGraphFactory.super.setOption(key, value);</span>
+<span class="nc" id="L167">		return (IndexGraphFactory) IntGraphFactory.super.setOption(key, value);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

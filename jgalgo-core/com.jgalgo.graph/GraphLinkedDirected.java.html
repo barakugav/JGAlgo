@@ -381,5 +381,19 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		}
 	}
 
+	@Override
+	void markVertex(int vertex) {
+<span class="fc" id="L386">		edgesOutNum[vertex] = -edgesOutNum[vertex] - 1;</span>
+<span class="fc" id="L387">	}</span>
+
+	@Override
+	void unmarkVertex(int vertex) {
+<span class="fc" id="L391">		edgesOutNum[vertex] = -edgesOutNum[vertex] - 1;</span>
+<span class="fc" id="L392">	}</span>
+
+	@Override
+	boolean isMarkedVertex(int vertex) {
+<span class="fc bfc" id="L396" title="All 2 branches covered.">		return edgesOutNum[vertex] &lt; 0;</span>
+	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

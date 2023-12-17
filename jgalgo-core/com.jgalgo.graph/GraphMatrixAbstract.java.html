@@ -95,8 +95,8 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 <span class="fc" id="L95">	}</span>
 
 	@Override
-	public int addVertex() {
-<span class="fc" id="L99">		int v = super.addVertex();</span>
+	public int addVertexInt() {
+<span class="fc" id="L99">		int v = super.addVertexInt();</span>
 <span class="fc bfc" id="L100" title="All 2 branches covered.">		if (edges[v] == null)</span>
 <span class="fc" id="L101">			edges[v] = newVerticesIntContainer(EdgeNone, JGAlgoUtils.&lt;int[]&gt;consumerNoOp());</span>
 <span class="fc" id="L102">		return v;</span>

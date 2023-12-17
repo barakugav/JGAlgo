@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphFactoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">GraphFactoryImpl.java</span></div><h1>GraphFactoryImpl.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.graph;
+
+class GraphFactoryImpl&lt;V, E&gt; implements GraphFactory&lt;V, E&gt; {
+
+	final IndexGraphFactoryImpl indexFactory;
+	IdBuilder&lt;V&gt; vertexBuilder;
+	IdBuilder&lt;E&gt; edgeBuilder;
+
+<span class="fc" id="L24">	GraphFactoryImpl(boolean directed) {</span>
+<span class="fc" id="L25">		this.indexFactory = new IndexGraphFactoryImpl(directed);</span>
+<span class="fc" id="L26">	}</span>
+
+	@Override
+	public Graph&lt;V, E&gt; newGraph() {
+<span class="fc" id="L30">		return new GraphImpl&lt;&gt;(this);</span>
+	}
+
+	@Override
+	public Graph&lt;V, E&gt; newCopyOf(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L35">		return new GraphImpl&lt;&gt;(this, g, copyVerticesWeights, copyEdgesWeights);</span>
+	}
+
+	@Override
+	public GraphBuilder&lt;V, E&gt; newBuilder() {
+<span class="fc" id="L40">		return new GraphBuilderImpl&lt;&gt;(this);</span>
+	}
+
+	@Override
+	public GraphBuilder&lt;V, E&gt; newBuilderCopyOf(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L45">		return new GraphBuilderImpl&lt;&gt;(this, g, copyVerticesWeights, copyEdgesWeights);</span>
+	}
+
+	@Override
+	public GraphFactory&lt;V, E&gt; allowSelfEdges(boolean selfEdges) {
+<span class="fc" id="L50">		indexFactory.allowSelfEdges(selfEdges);</span>
+<span class="fc" id="L51">		return this;</span>
+	}
+
+	@Override
+	public GraphFactory&lt;V, E&gt; allowParallelEdges(boolean parallelEdges) {
+<span class="fc" id="L56">		indexFactory.allowParallelEdges(parallelEdges);</span>
+<span class="fc" id="L57">		return this;</span>
+	}
+
+	@Override
+	public GraphFactory&lt;V, E&gt; expectedVerticesNum(int expectedVerticesNum) {
+<span class="nc" id="L62">		indexFactory.expectedVerticesNum(expectedVerticesNum);</span>
+<span class="nc" id="L63">		return this;</span>
+	}
+
+	@Override
+	public GraphFactory&lt;V, E&gt; expectedEdgesNum(int expectedEdgesNum) {
+<span class="nc" id="L68">		indexFactory.expectedEdgesNum(expectedEdgesNum);</span>
+<span class="nc" id="L69">		return this;</span>
+	}
+
+	@Override
+	public GraphFactory&lt;V, E&gt; setVertexBuilder(IdBuilder&lt;V&gt; vertexBuilder) {
+<span class="fc" id="L74">		this.vertexBuilder = vertexBuilder;</span>
+<span class="fc" id="L75">		return this;</span>
+	}
+
+	@Override
+	public GraphFactory&lt;V, E&gt; setEdgeBuilder(IdBuilder&lt;E&gt; edgeBuilder) {
+<span class="fc" id="L80">		this.edgeBuilder = edgeBuilder;</span>
+<span class="fc" id="L81">		return this;</span>
+	}
+
+	@Override
+	public GraphFactory&lt;V, E&gt; addHint(GraphFactory.Hint hint) {
+<span class="fc" id="L86">		indexFactory.addHint(hint);</span>
+<span class="fc" id="L87">		return this;</span>
+	}
+
+	@Override
+	public GraphFactory&lt;V, E&gt; removeHint(GraphFactory.Hint hint) {
+<span class="nc" id="L92">		indexFactory.removeHint(hint);</span>
+<span class="nc" id="L93">		return this;</span>
+	}
+
+	@Override
+	public GraphFactory&lt;V, E&gt; setOption(String key, Object value) {
+<span class="fc" id="L98">		indexFactory.setOption(key, value);</span>
+<span class="fc" id="L99">		return this;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

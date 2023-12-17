@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import it.unimi.dsi.fastutil.ints.IntSet;
+
 /**
  * A mapping between {@link IntGraph} IDs to {@link IndexGraph} indices.
  *
@@ -66,7 +68,7 @@ public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer indexToId(int index) {
-<span class="fc" id="L69">		return Integer.valueOf(indexToIdInt(index));</span>
+<span class="fc" id="L71">		return Integer.valueOf(indexToIdInt(index));</span>
 	}
 
 	/**
@@ -89,8 +91,8 @@ public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer indexToIdIfExist(int index) {
-<span class="fc" id="L92">		int id = indexToIdIfExistInt(index);</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">		return id == -1 ? null : Integer.valueOf(id);</span>
+<span class="fc" id="L94">		int id = indexToIdIfExistInt(index);</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		return id == -1 ? null : Integer.valueOf(id);</span>
 	}
 
 	/**
@@ -116,7 +118,7 @@ public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
 	@Deprecated
 	@Override
 	default int idToIndex(Integer id) {
-<span class="fc" id="L119">		return idToIndex(id.intValue());</span>
+<span class="fc" id="L121">		return idToIndex(id.intValue());</span>
 	}
 
 	/**
@@ -139,7 +141,45 @@ public interface IndexIntIdMap extends IndexIdMap&lt;Integer&gt; {
 	@Deprecated
 	@Override
 	default int idToIndexIfExist(Integer id) {
-<span class="fc" id="L142">		return idToIndexIfExist(id.intValue());</span>
+<span class="fc" id="L144">		return idToIndexIfExist(id.intValue());</span>
+	}
+
+	/**
+	 * Create an identity mapping between the elements IDs and indices.
+	 *
+	 * &lt;p&gt;
+	 * The identity mapping is a mapping in which the ID of an element is equal to its index. This mapping is used by
+	 * {@linkplain IndexGraph index graphs}. The passed set of vertices is expected to be {@code 0,1,2, ..., n-1} where
+	 * {@code n} is the number of vertices in the graph, as only for this set of vertices the identity mapping is
+	 * possible. The given set is not validated for this condition. The number of vertices, {@code n}, is accessible to
+	 * the mapping by {@code vertexSet.size()}, and it is used to determine if an index/id is in range. If the graph is
+	 * mutable and the mapping should be used during the graph lifetime, the given set should be a view of the graph
+	 * vertices, so the range checks will be valid.
+	 *
+	 * @param  vertexSet the set of vertices in the graph. The set will be used t
+	 * @return           an identity mapping of the vertices
+	 */
+	static IndexIntIdMap identityVerticesMap(IntSet vertexSet) {
+<span class="fc" id="L163">		return new IdentityIndexIdMap(vertexSet, false);</span>
+	}
+
+	/**
+	 * Create an identity mapping between the elements IDs and indices.
+	 *
+	 * &lt;p&gt;
+	 * The identity mapping is a mapping in which the ID of an element is equal to its index. This mapping is used by
+	 * {@linkplain IndexGraph index graphs}. The passed set of edges is expected to be {@code 0,1,2, ..., m-1} where
+	 * {@code m} is the number of edges in the graph, as only for this set of edges the identity mapping is possible.
+	 * The given set is not validated for this condition. The number of edges, {@code m}, is accessible to the mapping
+	 * by {@code edgeSet.size()}, and it is used to determine if an index/id is in range. If the graph is mutable and
+	 * the mapping should be used during the graph lifetime, the given set should be a view of the graph edges, so the
+	 * range checks will be valid.
+	 *
+	 * @param  edgeSet the set of edges in the graph. The set will be used t
+	 * @return         an identity mapping of the edges
+	 */
+	static IndexIntIdMap identityEdgesMap(IntSet edgeSet) {
+<span class="fc" id="L182">		return new IdentityIndexIdMap(edgeSet, true);</span>
 	}
 
 }

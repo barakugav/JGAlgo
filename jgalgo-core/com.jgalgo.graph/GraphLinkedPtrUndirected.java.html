@@ -374,5 +374,20 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract {
 <span class="fc" id="L374">			return target;</span>
 		}
 	}
+
+	@Override
+	void markVertex(int vertex) {
+<span class="fc" id="L380">		edgesNum[vertex] = -edgesNum[vertex] - 1;</span>
+<span class="fc" id="L381">	}</span>
+
+	@Override
+	void unmarkVertex(int vertex) {
+<span class="fc" id="L385">		edgesNum[vertex] = -edgesNum[vertex] - 1;</span>
+<span class="fc" id="L386">	}</span>
+
+	@Override
+	boolean isMarkedVertex(int vertex) {
+<span class="fc bfc" id="L390" title="All 2 branches covered.">		return edgesNum[vertex] &lt; 0;</span>
+	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

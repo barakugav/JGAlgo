@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IntGraphFactoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">IntGraphFactoryImpl.java</span></div><h1>IntGraphFactoryImpl.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.graph;
+
+import java.util.function.Supplier;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+class IntGraphFactoryImpl implements IntGraphFactory {
+
+	final IndexGraphFactoryImpl indexFactory;
+<span class="fc" id="L24">	IdBuilderInt vertexBuilder = DefaultIdBuilder.get();</span>
+<span class="fc" id="L25">	IdBuilderInt edgeBuilder = DefaultIdBuilder.get();</span>
+
+<span class="fc" id="L27">	IntGraphFactoryImpl(boolean directed) {</span>
+<span class="fc" id="L28">		this.indexFactory = new IndexGraphFactoryImpl(directed);</span>
+<span class="fc" id="L29">	}</span>
+
+	@Override
+	public IntGraph newGraph() {
+<span class="fc" id="L33">		return new IntGraphImpl(this);</span>
+	}
+
+	@Override
+	public IntGraph newCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L38">		return new IntGraphImpl(this, g, copyVerticesWeights, copyEdgesWeights);</span>
+	}
+
+	@Override
+	public IntGraphBuilder newBuilder() {
+<span class="fc" id="L43">		return new IntGraphBuilderImpl(this);</span>
+	}
+
+	@Override
+	public IntGraphBuilder newBuilderCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
+<span class="fc" id="L49">		return new IntGraphBuilderImpl(this, g, copyVerticesWeights, copyEdgesWeights);</span>
+	}
+
+	@Override
+	public IntGraphFactory allowSelfEdges(boolean selfEdges) {
+<span class="fc" id="L54">		indexFactory.allowSelfEdges(selfEdges);</span>
+<span class="fc" id="L55">		return this;</span>
+	}
+
+	@Override
+	public IntGraphFactory allowParallelEdges(boolean parallelEdges) {
+<span class="fc" id="L60">		indexFactory.allowParallelEdges(parallelEdges);</span>
+<span class="fc" id="L61">		return this;</span>
+	}
+
+	@Override
+	public IntGraphFactory expectedVerticesNum(int expectedVerticesNum) {
+<span class="fc" id="L66">		indexFactory.expectedVerticesNum(expectedVerticesNum);</span>
+<span class="fc" id="L67">		return this;</span>
+	}
+
+	@Override
+	public IntGraphFactory expectedEdgesNum(int expectedEdgesNum) {
+<span class="fc" id="L72">		indexFactory.expectedEdgesNum(expectedEdgesNum);</span>
+<span class="fc" id="L73">		return this;</span>
+	}
+
+	@Override
+	public IntGraphFactory setVertexBuilder(IdBuilder&lt;Integer&gt; vertexBuilder) {
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		if (vertexBuilder == null) {</span>
+<span class="fc" id="L79">			this.vertexBuilder = null;</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		} else if (vertexBuilder instanceof IdBuilderInt) {</span>
+<span class="nc" id="L81">			this.vertexBuilder = (IdBuilderInt) vertexBuilder;</span>
+		} else {
+<span class="fc" id="L83">			this.vertexBuilder = existingIds -&gt; vertexBuilder.build(existingIds).intValue();</span>
+		}
+<span class="fc" id="L85">		return this;</span>
+	}
+
+	@Override
+	public IntGraphFactory setEdgeBuilder(IdBuilder&lt;Integer&gt; edgeBuilder) {
+<span class="fc bfc" id="L90" title="All 2 branches covered.">		if (edgeBuilder == null) {</span>
+<span class="fc" id="L91">			this.edgeBuilder = null;</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">		} else if (edgeBuilder instanceof IdBuilderInt) {</span>
+<span class="nc" id="L93">			this.edgeBuilder = (IdBuilderInt) edgeBuilder;</span>
+		} else {
+<span class="fc" id="L95">			this.edgeBuilder = existingIds -&gt; edgeBuilder.build(existingIds).intValue();</span>
+		}
+<span class="fc" id="L97">		return this;</span>
+	}
+
+	@Override
+	public IntGraphFactory addHint(GraphFactory.Hint hint) {
+<span class="fc" id="L102">		indexFactory.addHint(hint);</span>
+<span class="fc" id="L103">		return this;</span>
+	}
+
+	@Override
+	public IntGraphFactory removeHint(GraphFactory.Hint hint) {
+<span class="nc" id="L108">		indexFactory.removeHint(hint);</span>
+<span class="nc" id="L109">		return this;</span>
+	}
+
+	@Override
+	public IntGraphFactory setOption(String key, Object value) {
+<span class="fc" id="L114">		indexFactory.setOption(key, value);</span>
+<span class="fc" id="L115">		return this;</span>
+	}
+
+<span class="fc" id="L118">	private static final Supplier&lt;IdBuilderInt&gt; DefaultIdBuilder = () -&gt; {</span>
+<span class="fc" id="L119">		return new IdBuilderInt() {</span>
+			private int counter;
+
+			@Override
+			public int build(IntSet ids) {
+				for (;;) {
+<span class="fc" id="L125">					int id = ++counter;</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">					if (!ids.contains(id))</span>
+<span class="fc" id="L127">						return id;</span>
+<span class="fc" id="L128">				}</span>
+			}
+		};
+	};
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -76,7 +76,7 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 <span class="fc bfc" id="L76" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
 <span class="fc" id="L77">				IEdgeSet edgeSet = g.outEdges(v);</span>
 <span class="fc" id="L78">				int edgeSetSize = edgesNum[v] = edgeSet.size();</span>
-<span class="pc bpc" id="L79" title="1 of 2 branches missed.">				if (edgeSetSize != 0) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				if (edgeSetSize != 0) {</span>
 <span class="fc" id="L80">					int[] edgesArr = edges[v] = new int[edgeSetSize];</span>
 <span class="fc" id="L81">					int i = 0;</span>
 <span class="fc bfc" id="L82" title="All 2 branches covered.">					for (int e : edgeSet)</span>
@@ -293,5 +293,19 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		}
 	}
 
+	@Override
+	void markVertex(int vertex) {
+<span class="fc" id="L298">		edgesNum[vertex] = -edgesNum[vertex] - 1;</span>
+<span class="fc" id="L299">	}</span>
+
+	@Override
+	void unmarkVertex(int vertex) {
+<span class="fc" id="L303">		edgesNum[vertex] = -edgesNum[vertex] - 1;</span>
+<span class="fc" id="L304">	}</span>
+
+	@Override
+	boolean isMarkedVertex(int vertex) {
+<span class="fc bfc" id="L308" title="All 2 branches covered.">		return edgesNum[vertex] &lt; 0;</span>
+	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
