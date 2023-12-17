@@ -15,9 +15,7 @@
  */
 package com.jgalgo.graph;
 
-import java.util.Random;
 import java.util.function.Supplier;
-import com.jgalgo.internal.JGAlgoConfigImpl;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class IntGraphFactoryImpl implements IntGraphFactory {
@@ -117,59 +115,19 @@ class IntGraphFactoryImpl implements IntGraphFactory {
 		return this;
 	}
 
-	private static final Supplier<IdBuilderInt> DefaultIdBuilder;
+	private static final Supplier<IdBuilderInt> DefaultIdBuilder = () -> {
+		return new IdBuilderInt() {
+			private int counter;
 
-	static {
-		Object builder = JGAlgoConfigImpl.IntGraphDefaultIdBuilder;
-		if (builder == null)
-			builder = "counter"; // default
-		if (builder instanceof String) {
-			String builderName = (String) builder;
-
-			switch (builderName.toLowerCase()) {
-				case "counter":
-					DefaultIdBuilder = () -> {
-						return new IdBuilderInt() {
-							private int counter;
-
-							@Override
-							public int build(IntSet ids) {
-								for (;;) {
-									int id = ++counter;
-									if (!ids.contains(id))
-										return id;
-								}
-							}
-						};
-					};
-					break;
-				case "rand":
-				case "random":
-					DefaultIdBuilder = () -> {
-						final Random rand = new Random();
-						return (IntSet idSet) -> {
-							for (;;) {
-								int id = rand.nextInt();
-								if (id >= 1 && !idSet.contains(id))
-									// We prefer non zero IDs because fastutil handle zero (null) keys
-									// separately
-									return id;
-							}
-						};
-					};
-					break;
-
-				default:
-					throw new IllegalArgumentException("unknown id builder name: " + builderName);
+			@Override
+			public int build(IntSet ids) {
+				for (;;) {
+					int id = ++counter;
+					if (!ids.contains(id))
+						return id;
+				}
 			}
+		};
+	};
 
-		} else if (builder instanceof Supplier) {
-			@SuppressWarnings("unchecked")
-			Supplier<IdBuilderInt> builderSupplier = (Supplier<IdBuilderInt>) builder;
-			DefaultIdBuilder = builderSupplier;
-		} else {
-			throw new IllegalArgumentException(
-					"Unknown int graph ID builder: " + JGAlgoConfigImpl.IntGraphDefaultIdBuilder);
-		}
-	}
 }

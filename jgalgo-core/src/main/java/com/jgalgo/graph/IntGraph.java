@@ -105,7 +105,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 *
 	 * <p>
 	 * If the graph have a vertex builder, namely if {@link #vertexBuilder()} does not return {@code null}, the method
-	 * {@link #addVertexInt()()} can be used, which uses the vertex builder to create the new vertex object instead of
+	 * {@link #addVertexInt()} can be used, which uses the vertex builder to create the new vertex object instead of
 	 * requiring the user to provide it.
 	 *
 	 * @param  vertex                   new vertex
@@ -414,6 +414,8 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * return edge;
 	 * }</pre>
 	 *
+	 * @param  source                        a source vertex
+	 * @param  target                        a target vertex
 	 * @return                               the new edge
 	 * @throws UnsupportedOperationException if the graph does not have an edge builder, namely if
 	 *                                           {@link #edgeBuilder()} returns {@code null}

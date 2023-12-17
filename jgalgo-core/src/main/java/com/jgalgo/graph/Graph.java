@@ -387,6 +387,8 @@ public interface Graph<V, E> {
 	 * return edge;
 	 * }</pre>
 	 *
+	 * @param  source                        a source vertex
+	 * @param  target                        a target vertex
 	 * @return                               the new edge
 	 * @throws UnsupportedOperationException if the graph does not have an edge builder, namely if
 	 *                                           {@link #edgeBuilder()} returns {@code null}

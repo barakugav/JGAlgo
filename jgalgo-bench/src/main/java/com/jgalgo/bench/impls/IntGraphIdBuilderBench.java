@@ -38,8 +38,9 @@ import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IdBuilderInt;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.JGAlgoConfigNonFrozen;
+import com.jgalgo.graph.IntGraphFactory;
 import it.unimi.dsi.fastutil.HashCommon;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class IntGraphIdBuilderBench {
 
@@ -48,24 +49,22 @@ public class IntGraphIdBuilderBench {
 		private Random rand;
 		private IntGraph g;
 
-		void setupCreateGraph(String args) {
+		void setupCreateGraph(String args, Supplier<IdBuilderInt> IdBuilderSupplier) {
 			final long seed = 0x7a1521bf6435883cL;
 			rand = new Random(seed);
 			Map<String, String> argsMap = BenchUtils.parseArgsStr(args);
 			final int n = Integer.parseInt(argsMap.get("|V|"));
 			final int m = Integer.parseInt(argsMap.get("|E|"));
 
-			g = IntGraph.newDirected();
+			IntGraphFactory factory = IntGraphFactory.directed().allowSelfEdges().allowParallelEdges();
+			if (IdBuilderSupplier != null) {
+				factory.setVertexBuilder(IdBuilderSupplier.get());
+				factory.setEdgeBuilder(IdBuilderSupplier.get());
+			}
+			g = factory.newGraph();
 			g.addVertices(range(n));
 			for (int i = 0; i < m; i++)
 				g.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand));
-			System.out.println(g.indexGraphVerticesMap().getClass());
-			System.out.println(g.indexGraphVerticesMap().getClass());
-			System.out.println(g.indexGraphVerticesMap().getClass());
-			System.out.println(g.indexGraphVerticesMap().getClass());
-			System.out.println(g.indexGraphVerticesMap().getClass());
-			System.out.println(g.indexGraphVerticesMap().getClass());
-			System.out.println(g.indexGraphVerticesMap().getClass());
 		}
 
 		private static final int OperationsPerInvocation = 1000;
@@ -97,8 +96,7 @@ public class IntGraphIdBuilderBench {
 
 			@Setup(Level.Trial)
 			public void setupCreateGraph() {
-				JGAlgoConfigNonFrozen.setOption("IntGraphDefaultIdBuilder", "counter");
-				super.setupCreateGraph(args);
+				super.setupCreateGraph(args, null);
 			}
 
 			@Override
@@ -128,8 +126,18 @@ public class IntGraphIdBuilderBench {
 
 			@Setup(Level.Trial)
 			public void setupCreateGraph() {
-				JGAlgoConfigNonFrozen.setOption("IntGraphDefaultIdBuilder", "rand");
-				super.setupCreateGraph(args);
+				super.setupCreateGraph(args, () -> {
+					final Random rand = new Random();
+					return (IntSet idSet) -> {
+						for (;;) {
+							int id = rand.nextInt();
+							if (id >= 1 && !idSet.contains(id))
+								// We prefer non zero IDs because fastutil handle zero (null) keys
+								// separately
+								return id;
+						}
+					};
+				});
 			}
 
 			@Override
@@ -159,7 +167,7 @@ public class IntGraphIdBuilderBench {
 
 			@Setup(Level.Trial)
 			public void setupCreateGraph() {
-				Supplier<IdBuilderInt> builder = () -> {
+				super.setupCreateGraph(args, () -> {
 					var state = new Object() {
 						int nextId = 1;
 					};
@@ -173,9 +181,7 @@ public class IntGraphIdBuilderBench {
 								return id;
 						}
 					};
-				};
-				JGAlgoConfigNonFrozen.setOption("IntGraphDefaultIdBuilder", builder);
-				super.setupCreateGraph(args);
+				});
 			}
 
 			@Override
@@ -205,7 +211,7 @@ public class IntGraphIdBuilderBench {
 
 			@Setup(Level.Trial)
 			public void setupCreateGraph() {
-				Supplier<IdBuilderInt> builder = () -> {
+				super.setupCreateGraph(args, () -> {
 					var state = new Object() {
 						long nextId = 1;
 					};
@@ -219,9 +225,7 @@ public class IntGraphIdBuilderBench {
 								return id;
 						}
 					};
-				};
-				JGAlgoConfigNonFrozen.setOption("IntGraphDefaultIdBuilder", builder);
-				super.setupCreateGraph(args);
+				});
 			}
 
 			@Override
@@ -251,7 +255,7 @@ public class IntGraphIdBuilderBench {
 
 			@Setup(Level.Trial)
 			public void setupCreateGraph() {
-				Supplier<IdBuilderInt> builder = () -> {
+				super.setupCreateGraph(args, () -> {
 					var state = new Object() {
 						long nextId = 1;
 					};
@@ -265,9 +269,7 @@ public class IntGraphIdBuilderBench {
 								return id;
 						}
 					};
-				};
-				JGAlgoConfigNonFrozen.setOption("IntGraphDefaultIdBuilder", builder);
-				super.setupCreateGraph(args);
+				});
 			}
 
 			@Override

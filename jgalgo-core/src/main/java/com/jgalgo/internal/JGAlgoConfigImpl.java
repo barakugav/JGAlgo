@@ -18,7 +18,6 @@ package com.jgalgo.internal;
 public class JGAlgoConfigImpl {
 
 	public static final boolean ParallelByDefault = JGAlgoConfigNonFrozen.parallelByDefault;
-	public static final Object IntGraphDefaultIdBuilder = JGAlgoConfigNonFrozen.intGraphDefaultIdBuilder;
 	public static final boolean AssertionsGraphsBipartitePartition =
 			JGAlgoConfigNonFrozen.assertionsGraphsBipartitePartition;
 	public static final boolean AssertionsGraphsPositiveWeights = JGAlgoConfigNonFrozen.assertionsGraphsPositiveWeights;

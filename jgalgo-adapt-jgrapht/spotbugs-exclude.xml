@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <Match>
+    <!-- Intended -->
+    <Class name="com.jgalgo.adapt.jgrapht.JGraphTAdapter" />
+    <Constructor />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+</FindBugsFilter>

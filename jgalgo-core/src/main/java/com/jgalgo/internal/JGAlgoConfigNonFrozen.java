@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class JGAlgoConfigNonFrozen {
 
 	static boolean parallelByDefault = true;
-	static Object intGraphDefaultIdBuilder = null;
 	static boolean assertionsGraphsBipartitePartition = true;
 	static boolean assertionsGraphsPositiveWeights = true;
 	static boolean assertionsGraphsIsTree = true;
@@ -37,9 +36,6 @@ public class JGAlgoConfigNonFrozen {
 		switch (key) {
 			case "ParallelByDefault":
 				parallelByDefault = ((Boolean) value).booleanValue();
-				break;
-			case "IntGraphDefaultIdBuilder":
-				intGraphDefaultIdBuilder = value;
 				break;
 			case "AssertionsGraphsBipartitePartition":
 				assertionsGraphsBipartitePartition = ((Boolean) value).booleanValue();

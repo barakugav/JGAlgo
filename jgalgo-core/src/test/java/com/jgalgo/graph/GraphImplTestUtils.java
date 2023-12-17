@@ -419,7 +419,6 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	@Test
 	static void removeVerticesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
 		final Random rand = new Random(0x36f43a2a1e51d79dL);
 
