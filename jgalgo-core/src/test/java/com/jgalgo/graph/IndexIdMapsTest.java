@@ -110,6 +110,46 @@ public class IndexIdMapsTest extends TestBase {
 	}
 
 	@Test
+	public void indexToIdToIndexIterator() {
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			Iterator<Integer> idIter = g.vertices().iterator();
+			IntIterator indexIter = IndexIdMaps.idToIndexIterator(idIter, viMap);
+			Iterator<Integer> idIter2 = IndexIdMaps.indexToIdIterator(indexIter, viMap);
+			assertTrue(idIter == idIter2);
+		});
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			Iterator<Integer> idIter = g.vertices().iterator();
+			IntIterator indexIter = IndexIdMaps.idToIndexIterator(idIter, viMap);
+			Iterator<Integer> idIter2 = IndexIdMaps.indexToIdIterator(indexIter, wrapIndexIdMap(viMap));
+			assertFalse(idIter == idIter2);
+		});
+	}
+
+	@Test
+	public void idToIndexToIdIterator() {
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			IntIterator indexIter1 = g.indexGraph().vertices().iterator();
+			Iterator<Integer> idIter = IndexIdMaps.indexToIdIterator(indexIter1, viMap);
+			IntIterator indexIter2 = IndexIdMaps.idToIndexIterator(idIter, viMap);
+			assertTrue(indexIter1 == indexIter2);
+		});
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			IntIterator indexIter1 = g.indexGraph().vertices().iterator();
+			Iterator<Integer> idIter = IndexIdMaps.indexToIdIterator(indexIter1, viMap);
+			IntIterator indexIter2 = IndexIdMaps.idToIndexIterator(idIter, wrapIndexIdMap(viMap));
+			assertFalse(indexIter1 == indexIter2);
+		});
+	}
+
+	@Test
 	public void indexToIdEdgeIter() {
 		final long seed = 0x7b422697871558a8L;
 		final Random rand = new Random(seed);
@@ -480,6 +520,126 @@ public class IndexIdMapsTest extends TestBase {
 		});
 	}
 
+	@Test
+	public void indexToIdToIndexCollection() {
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			Collection<Integer> idCol1 = copyToRealCollection(g.vertices());
+			IntCollection indexCol = IndexIdMaps.idToIndexCollection(idCol1, viMap);
+			Collection<Integer> idCol2 = IndexIdMaps.indexToIdCollection(indexCol, viMap);
+			assertTrue(idCol1 == idCol2);
+		});
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			Collection<Integer> idCol1 = copyToRealCollection(g.vertices());
+			IntCollection indexCol = IndexIdMaps.idToIndexCollection(idCol1, viMap);
+			Collection<Integer> idCol2 = IndexIdMaps.indexToIdCollection(indexCol, wrapIndexIdMap(viMap));
+			assertFalse(idCol1 == idCol2);
+		});
+	}
+
+	@Test
+	public void idToIndexToIdCollection() {
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			IntCollection indexCol1 = (IntCollection) copyToRealCollection(g.indexGraph().vertices());
+			Collection<Integer> idCol = IndexIdMaps.indexToIdCollection(indexCol1, viMap);
+			IntCollection indexCol2 = IndexIdMaps.idToIndexCollection(idCol, viMap);
+			assertTrue(indexCol1 == indexCol2);
+		});
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			IntCollection indexCol1 = (IntCollection) copyToRealCollection(g.indexGraph().vertices());
+			Collection<Integer> idCol = IndexIdMaps.indexToIdCollection(indexCol1, viMap);
+			IntCollection indexCol2 = IndexIdMaps.idToIndexCollection(idCol, wrapIndexIdMap(viMap));
+			assertFalse(indexCol1 == indexCol2);
+		});
+	}
+
+	@Test
+	public void indexToIdToIndexSet() {
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			Set<Integer> idSet = g.vertices();
+			IntSet indexSet = IndexIdMaps.idToIndexSet(idSet, viMap);
+			Set<Integer> idSet2 = IndexIdMaps.indexToIdSet(indexSet, viMap);
+			assertTrue(idSet == idSet2);
+		});
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			Set<Integer> idSet = g.vertices();
+			IntSet indexSet = IndexIdMaps.idToIndexSet(idSet, viMap);
+			Set<Integer> idSet2 = IndexIdMaps.indexToIdSet(indexSet, wrapIndexIdMap(viMap));
+			assertFalse(idSet == idSet2);
+		});
+	}
+
+	@Test
+	public void idToIndexToIdSet() {
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			IntSet indexSet1 = g.indexGraph().vertices();
+			Set<Integer> idSet = IndexIdMaps.indexToIdSet(indexSet1, viMap);
+			IntSet indexSet2 = IndexIdMaps.idToIndexSet(idSet, viMap);
+			assertTrue(indexSet1 == indexSet2);
+		});
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			IntSet indexSet1 = g.indexGraph().vertices();
+			Set<Integer> idSet = IndexIdMaps.indexToIdSet(indexSet1, viMap);
+			IntSet indexSet2 = IndexIdMaps.idToIndexSet(idSet, wrapIndexIdMap(viMap));
+			assertFalse(indexSet1 == indexSet2);
+		});
+	}
+
+	@Test
+	public void indexToIdToIndexList() {
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			List<Integer> idList = new IntArrayList(g.vertices());
+			IntList indexList = IndexIdMaps.idToIndexList(idList, viMap);
+			List<Integer> idList2 = IndexIdMaps.indexToIdList(indexList, viMap);
+			assertTrue(idList == idList2);
+		});
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			List<Integer> idList = new IntArrayList(g.vertices());
+			IntList indexList = IndexIdMaps.idToIndexList(idList, viMap);
+			List<Integer> idList2 = IndexIdMaps.indexToIdList(indexList, wrapIndexIdMap(viMap));
+			assertFalse(idList == idList2);
+		});
+	}
+
+	@Test
+	public void idToIndexToIdList() {
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			IntList indexList1 = new IntArrayList(g.indexGraph().vertices());
+			List<Integer> idList = IndexIdMaps.indexToIdList(indexList1, viMap);
+			IntList indexList2 = IndexIdMaps.idToIndexList(idList, viMap);
+			assertTrue(indexList1 == indexList2);
+		});
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = createGraph(intGraph);
+			IndexIdMap<Integer> viMap = g.indexGraphVerticesMap();
+			IntList indexList1 = new IntArrayList(g.indexGraph().vertices());
+			List<Integer> idList = IndexIdMaps.indexToIdList(indexList1, viMap);
+			IntList indexList2 = IndexIdMaps.idToIndexList(idList, wrapIndexIdMap(viMap));
+			assertFalse(indexList1 == indexList2);
+		});
+	}
+
 	private static Graph<Integer, Integer> createGraph(boolean intGraph) {
 		final long seed = 0x97fa28ae01bfaf23L;
 		GnpGraphGenerator<Integer, Integer> g =
@@ -513,6 +673,56 @@ public class IndexIdMapsTest extends TestBase {
 		for (T t : collection)
 			map.put(map.size() + 1, t);
 		return map.values();
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <K> IndexIdMap<K> wrapIndexIdMap(IndexIdMap<K> map) {
+		if (map instanceof IndexIntIdMap) {
+			IndexIntIdMap map0 = (IndexIntIdMap) map;
+			return (IndexIdMap<K>) new IndexIntIdMap() {
+				@Override
+				public int indexToIdInt(int index) {
+					return map0.indexToIdInt(index);
+				}
+
+				@Override
+				public int indexToIdIfExistInt(int index) {
+					return map0.indexToIdIfExistInt(index);
+				}
+
+				@Override
+				public int idToIndex(int id) {
+					return map0.idToIndex(id);
+				}
+
+				@Override
+				public int idToIndexIfExist(int id) {
+					return map0.idToIndexIfExist(id);
+				}
+			};
+		} else {
+			return new IndexIdMap<>() {
+				@Override
+				public K indexToId(int index) {
+					return map.indexToId(index);
+				}
+
+				@Override
+				public K indexToIdIfExist(int index) {
+					return map.indexToIdIfExist(index);
+				}
+
+				@Override
+				public int idToIndex(K id) {
+					return map.idToIndex(id);
+				}
+
+				@Override
+				public int idToIndexIfExist(K id) {
+					return map.idToIndexIfExist(id);
+				}
+			};
+		}
 	}
 
 }

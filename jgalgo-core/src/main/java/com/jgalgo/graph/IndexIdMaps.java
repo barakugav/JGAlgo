@@ -54,11 +54,14 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K> Iterator<K> indexToIdIterator(IntIterator indexIter, IndexIdMap<K> map) {
-		if (map instanceof IndexIntIdMap) {
+		if (map instanceof IndexIntIdMap)
 			return (Iterator<K>) indexToIdIterator(indexIter, (IndexIntIdMap) map);
-		} else {
-			return new IndexToIdIterator<>(indexIter, map);
+		if (indexIter instanceof IdToIndexIterator) {
+			IdToIndexIterator<K> indexIter0 = (IdToIndexIterator<K>) indexIter;
+			if (indexIter0.map == map)
+				return indexIter0.idIt;
 		}
+		return new IndexToIdIterator<>(indexIter, map);
 	}
 
 	/**
@@ -70,6 +73,11 @@ public class IndexIdMaps {
 	 *                   index-iterator
 	 */
 	public static IntIterator indexToIdIterator(IntIterator indexIter, IndexIntIdMap map) {
+		if (indexIter instanceof IntIdToIndexIterator) {
+			IntIdToIndexIterator indexIter0 = (IntIdToIndexIterator) indexIter;
+			if (indexIter0.map == map)
+				return indexIter0.idIt;
+		}
 		return new IndexToIntIdIterator(indexIter, map);
 	}
 
@@ -84,8 +92,18 @@ public class IndexIdMaps {
 	@SuppressWarnings("unchecked")
 	public static <K> IntIterator idToIndexIterator(Iterator<K> idIter, IndexIdMap<K> map) {
 		if (map instanceof IndexIntIdMap) {
+			if (idIter instanceof IndexToIntIdIterator) {
+				IndexToIntIdIterator idIter0 = (IndexToIntIdIterator) idIter;
+				if (idIter0.map == map)
+					return idIter0.indexIt;
+			}
 			return new IntIdToIndexIterator(IntAdapters.asIntIterator((Iterator<Integer>) idIter), (IndexIntIdMap) map);
 		} else {
+			if (idIter instanceof IndexToIdIterator) {
+				IndexToIdIterator<K> idIter0 = (IndexToIdIterator<K>) idIter;
+				if (idIter0.map == map)
+					return idIter0.indexIt;
+			}
 			return new IdToIndexIterator<>(idIter, map);
 		}
 	}
@@ -407,8 +425,18 @@ public class IndexIdMaps {
 		} else if (indexCollection instanceof IntList) {
 			return indexToIdList((IntList) indexCollection, map);
 		} else if (map instanceof IndexIntIdMap) {
+			if (indexCollection instanceof IntIdToIndexCollection) {
+				IntIdToIndexCollection indexCollection0 = (IntIdToIndexCollection) indexCollection;
+				if (indexCollection0.map == map)
+					return (Collection<K>) indexCollection0.idC;
+			}
 			return (Collection<K>) new IndexToIntIdCollection(indexCollection, (IndexIntIdMap) map);
 		} else {
+			if (indexCollection instanceof IdToIndexCollection) {
+				IdToIndexCollection<K> indexCollection0 = (IdToIndexCollection<K>) indexCollection;
+				if (indexCollection0.map == map)
+					return indexCollection0.idC;
+			}
 			return new IndexToIdCollection<>(indexCollection, map);
 		}
 	}
@@ -519,11 +547,14 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K> Set<K> indexToIdSet(IntSet indexSet, IndexIdMap<K> map) {
-		if (map instanceof IndexIntIdMap) {
+		if (map instanceof IndexIntIdMap)
 			return (Set<K>) indexToIdSet(indexSet, (IndexIntIdMap) map);
-		} else {
-			return new IndexToIdSet<>(indexSet, map);
+		if (indexSet instanceof IdToIndexSet) {
+			IdToIndexSet<K> indexSet0 = (IdToIndexSet<K>) indexSet;
+			if (indexSet0.map == map)
+				return indexSet0.idC;
 		}
+		return new IndexToIdSet<>(indexSet, map);
 	}
 
 	/**
@@ -534,12 +565,17 @@ public class IndexIdMaps {
 	 * @return          a set that contain IDs matching the indices contained in the original index-set
 	 */
 	public static IntSet indexToIdSet(IntSet indexSet, IndexIntIdMap map) {
+		if (indexSet instanceof IntIdToIndexSet) {
+			IntIdToIndexSet indexSet0 = (IntIdToIndexSet) indexSet;
+			if (indexSet0.map == map)
+				return indexSet0.idC;
+		}
 		return new IndexToIntIdSet(indexSet, map);
 	}
 
 	private static class IndexToIdSet<K> extends AbstractSet<K> {
 
-		final IntCollection idxSet;
+		final IntSet idxSet;
 		final IndexIdMap<K> map;
 
 		IndexToIdSet(IntSet idxSet, IndexIdMap<K> map) {
@@ -576,13 +612,13 @@ public class IndexIdMaps {
 		@SuppressWarnings("unchecked")
 		@Override
 		public boolean remove(Object key) {
-			return idxSet.rem(map.idToIndexIfExist((K) key));
+			return idxSet.remove(map.idToIndexIfExist((K) key));
 		}
 	}
 
 	private static class IndexToIntIdSet extends AbstractIntSet {
 
-		final IntCollection idxSet;
+		final IntSet idxSet;
 		final IndexIntIdMap map;
 
 		IndexToIntIdSet(IntSet idxSet, IndexIntIdMap map) {
@@ -633,9 +669,19 @@ public class IndexIdMaps {
 			return idToIndexList((List<K>) idCollection, map);
 
 		if (map instanceof IndexIntIdMap) {
+			if (idCollection instanceof IndexToIntIdCollection) {
+				IndexToIntIdCollection idCollection0 = (IndexToIntIdCollection) idCollection;
+				if (idCollection0.map == map)
+					return idCollection0.indexC;
+			}
 			return new IntIdToIndexCollection(IntAdapters.asIntCollection((Collection<Integer>) idCollection),
 					(IndexIntIdMap) map);
 		} else {
+			if (idCollection instanceof IndexToIdCollection) {
+				IndexToIdCollection<K> idCollection0 = (IndexToIdCollection<K>) idCollection;
+				if (idCollection0.map == map)
+					return idCollection0.indexC;
+			}
 			return new IdToIndexCollection<>(idCollection, map);
 		}
 	}
@@ -651,8 +697,18 @@ public class IndexIdMaps {
 	@SuppressWarnings("unchecked")
 	public static <K> IntSet idToIndexSet(Set<K> idSet, IndexIdMap<K> map) {
 		if (map instanceof IndexIntIdMap) {
+			if (idSet instanceof IndexToIntIdSet) {
+				IndexToIntIdSet idSet0 = (IndexToIntIdSet) idSet;
+				if (idSet0.map == map)
+					return idSet0.idxSet;
+			}
 			return new IntIdToIndexSet(IntAdapters.asIntSet((Set<Integer>) idSet), (IndexIntIdMap) map);
 		} else {
+			if (idSet instanceof IndexToIdSet) {
+				IndexToIdSet<K> idSet0 = (IndexToIdSet<K>) idSet;
+				if (idSet0.map == map)
+					return idSet0.idxSet;
+			}
 			return new IdToIndexSet<>(idSet, map);
 		}
 	}
@@ -668,8 +724,18 @@ public class IndexIdMaps {
 	@SuppressWarnings("unchecked")
 	public static <K> IntList idToIndexList(List<K> idList, IndexIdMap<K> map) {
 		if (map instanceof IndexIntIdMap) {
+			if (idList instanceof IndexToIntIdList) {
+				IndexToIntIdList idList0 = (IndexToIntIdList) idList;
+				if (idList0.map == map)
+					return idList0.indexList;
+			}
 			return new IntIdToIndexList(IntAdapters.asIntList((List<Integer>) idList), (IndexIntIdMap) map);
 		} else {
+			if (idList instanceof IndexToIdList) {
+				IndexToIdList<K> idList0 = (IndexToIdList<K>) idList;
+				if (idList0.map == map)
+					return idList0.indexList;
+			}
 			return new IdToIndexList<>(idList, map);
 		}
 	}
@@ -966,11 +1032,14 @@ public class IndexIdMaps {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <K> List<K> indexToIdList(IntList indexList, IndexIdMap<K> map) {
-		if (map instanceof IndexIntIdMap) {
+		if (map instanceof IndexIntIdMap)
 			return (List<K>) indexToIdList(indexList, (IndexIntIdMap) map);
-		} else {
-			return new IndexToIdList<>(indexList, map);
+		if (indexList instanceof IdToIndexList) {
+			IdToIndexList<K> indexList0 = (IdToIndexList<K>) indexList;
+			if (indexList0.map == map)
+				return indexList0.idList;
 		}
+		return new IndexToIdList<>(indexList, map);
 	}
 
 	/**
@@ -981,6 +1050,11 @@ public class IndexIdMaps {
 	 * @return           a list that contain IDs matching the indices contained in the original index-list
 	 */
 	public static IntList indexToIdList(IntList indexList, IndexIntIdMap map) {
+		if (indexList instanceof IntIdToIndexList) {
+			IntIdToIndexList indexList0 = (IntIdToIndexList) indexList;
+			if (indexList0.map == map)
+				return indexList0.idList;
+		}
 		return new IndexToIntIdList(indexList, map);
 	}
 
