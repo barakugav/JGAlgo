@@ -438,7 +438,7 @@ class Matchings {
 		@Override
 		public E getMatchedEdge(V vertex) {
 			int e = match.getMatchedEdge(viMap.idToIndex(vertex));
-			return e == -1 ? null : eiMap.indexToId(e);
+			return eiMap.indexToIdIfExist(e);
 		}
 
 		@Override
@@ -492,7 +492,7 @@ class Matchings {
 		@Override
 		public int getMatchedEdge(int vertex) {
 			int e = match.getMatchedEdge(viMap.idToIndex(vertex));
-			return e == -1 ? -1 : eiMap.indexToIdInt(e);
+			return eiMap.indexToIdIfExistInt(e);
 		}
 
 		@Override

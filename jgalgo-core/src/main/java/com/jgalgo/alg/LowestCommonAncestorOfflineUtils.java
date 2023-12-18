@@ -285,7 +285,7 @@ class LowestCommonAncestorOfflineUtils {
 		@Override
 		public V getLca(int queryIdx) {
 			int vIdx = indexRes.getLcaInt(queryIdx);
-			return vIdx == -1 ? null : viMap.indexToId(vIdx);
+			return viMap.indexToIdIfExist(vIdx);
 		}
 
 		@Override
@@ -307,7 +307,7 @@ class LowestCommonAncestorOfflineUtils {
 		@Override
 		public int getLcaInt(int queryIdx) {
 			int vIdx = indexRes.getLcaInt(queryIdx);
-			return vIdx == -1 ? -1 : viMap.indexToIdInt(vIdx);
+			return viMap.indexToIdIfExistInt(vIdx);
 		}
 
 		@Override

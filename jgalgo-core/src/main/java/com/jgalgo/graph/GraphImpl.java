@@ -159,7 +159,7 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
 		int eIdx = indexGraph.getEdge(uIdx, vIdx);
-		return eIdx == -1 ? null : eiMap.indexToId(eIdx);
+		return eiMap.indexToIdIfExist(eIdx);
 	}
 
 	@Override

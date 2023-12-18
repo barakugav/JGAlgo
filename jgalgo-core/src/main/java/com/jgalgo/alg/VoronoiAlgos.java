@@ -145,13 +145,13 @@ class VoronoiAlgos {
 		@Override
 		public V blockSite(int block) {
 			int site = indexRes().blockSiteInt(block);
-			return site != -1 ? viMap.indexToId(site) : null;
+			return viMap.indexToIdIfExist(site);
 		}
 
 		@Override
 		public V vertexSite(V vertex) {
 			int site = indexRes().vertexSite(viMap.idToIndex(vertex));
-			return site != -1 ? viMap.indexToId(site) : null;
+			return viMap.indexToIdIfExist(site);
 		}
 	}
 
@@ -180,13 +180,13 @@ class VoronoiAlgos {
 		@Override
 		public int blockSiteInt(int block) {
 			int site = indexRes().blockSiteInt(block);
-			return site != -1 ? viMap.indexToIdInt(site) : -1;
+			return viMap.indexToIdIfExistInt(site);
 		}
 
 		@Override
 		public int vertexSite(int vertex) {
 			int site = indexRes().vertexSite(viMap.idToIndex(vertex));
-			return site != -1 ? viMap.indexToIdInt(site) : -1;
+			return viMap.indexToIdIfExistInt(site);
 		}
 	}
 

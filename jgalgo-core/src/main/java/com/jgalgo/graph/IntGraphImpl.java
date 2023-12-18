@@ -170,7 +170,7 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
 		int eIdx = indexGraph.getEdge(uIdx, vIdx);
-		return eIdx == -1 ? -1 : eiMap.indexToIdInt(eIdx);
+		return eiMap.indexToIdIfExistInt(eIdx);
 	}
 
 	@Override

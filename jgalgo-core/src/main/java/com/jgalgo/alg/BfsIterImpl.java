@@ -185,7 +185,7 @@ class BfsIterImpl {
 		@Override
 		public int lastEdgeInt() {
 			int e = indexIter.lastEdgeInt();
-			return e == -1 ? -1 : eiMap.indexToIdInt(e);
+			return eiMap.indexToIdIfExistInt(e);
 		}
 
 		@Override
@@ -219,7 +219,7 @@ class BfsIterImpl {
 		@Override
 		public E lastEdge() {
 			int e = indexIter.lastEdgeInt();
-			return e == -1 ? null : eiMap.indexToId(e);
+			return eiMap.indexToIdIfExist(e);
 		}
 
 		@Override

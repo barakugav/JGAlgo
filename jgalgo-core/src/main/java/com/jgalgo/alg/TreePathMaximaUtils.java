@@ -242,7 +242,7 @@ class TreePathMaximaUtils {
 		@Override
 		public E getHeaviestEdge(int queryIdx) {
 			int eIdx = indexRes.getHeaviestEdgeInt(queryIdx);
-			return eIdx == -1 ? null : eiMap.indexToId(eIdx);
+			return eiMap.indexToIdIfExist(eIdx);
 		}
 
 		@Override
@@ -264,7 +264,7 @@ class TreePathMaximaUtils {
 		@Override
 		public int getHeaviestEdgeInt(int queryIdx) {
 			int eIdx = indexRes.getHeaviestEdgeInt(queryIdx);
-			return eIdx == -1 ? -1 : eiMap.indexToIdInt(eIdx);
+			return eiMap.indexToIdIfExistInt(eIdx);
 		}
 
 		@Override
