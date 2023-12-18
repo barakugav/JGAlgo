@@ -21,7 +21,7 @@ package com.jgalgo.graph;
  * @see    NoSuchEdgeException
  * @author Barak Ugav
  */
-public class NoSuchVertexException extends RuntimeException {
+public class NoSuchVertexException extends IllegalArgumentException {
 
 	private static final long serialVersionUID = -743969638589879515L;
 
