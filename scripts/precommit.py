@@ -40,7 +40,7 @@ def main(args):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(prog="ProgramName")
+    parser = argparse.ArgumentParser(prog="Pre-Commit Check")
     parser.add_argument(
         "--skip-rebuild", action="store_true", help="skip clean and build"
     )
