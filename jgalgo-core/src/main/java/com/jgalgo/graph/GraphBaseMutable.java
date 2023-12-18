@@ -710,14 +710,6 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		edges.removeRemoveListener(listener);
 	}
 
-	void checkVertex(int vertex) {
-		Assertions.Graphs.checkVertex(vertex, vertices.size);
-	}
-
-	void checkEdge(int edge) {
-		Assertions.Graphs.checkEdge(edge, edges.size);
-	}
-
 	static void clear(int[] dataContainer, int idx, int defaultVal) {
 		dataContainer[idx] = defaultVal;
 	}

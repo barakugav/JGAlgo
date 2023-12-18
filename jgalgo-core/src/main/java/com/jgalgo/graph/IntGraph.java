@@ -312,14 +312,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * @return                       id of the edge or {@code -1} if no such edge exists
 	 * @throws NoSuchVertexException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
-	default int getEdge(int source, int target) {
-		for (IEdgeIter it = outEdges(source).iterator(); it.hasNext();) {
-			int e = it.nextInt();
-			if (it.targetInt() == target)
-				return e;
-		}
-		return -1;
-	}
+	int getEdge(int source, int target);
 
 	/**
 	 * {@inheritDoc}
@@ -480,10 +473,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * @param  vertex                a vertex in the graph
 	 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier
 	 */
-	default void removeEdgesOf(int vertex) {
-		removeOutEdgesOf(vertex);
-		removeInEdgesOf(vertex);
-	}
+	void removeEdgesOf(int vertex);
 
 	/**
 	 * {@inheritDoc}
@@ -502,12 +492,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * @param  source                a vertex in the graph
 	 * @throws NoSuchVertexException if {@code source} is not a valid vertex identifier
 	 */
-	default void removeOutEdgesOf(int source) {
-		for (IEdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {
-			eit.nextInt();
-			eit.remove();
-		}
-	}
+	void removeOutEdgesOf(int source);
 
 	/**
 	 * {@inheritDoc}
@@ -526,12 +511,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	 * @param  target                a vertex in the graph
 	 * @throws NoSuchVertexException if {@code target} is not a valid vertex identifier
 	 */
-	default void removeInEdgesOf(int target) {
-		for (IEdgeIter eit = inEdges(target).iterator(); eit.hasNext();) {
-			eit.nextInt();
-			eit.remove();
-		}
-	}
+	void removeInEdgesOf(int target);
 
 	/**
 	 * {@inheritDoc}

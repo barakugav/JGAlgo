@@ -285,9 +285,7 @@ public interface IndexGraph extends IntGraph {
 	 * method should not be called. Use the original graph instead.
 	 */
 	@Override
-	default void removeEdgesOf(int vertex) {
-		IntGraph.super.removeEdgesOf(vertex);
-	}
+	void removeEdgesOf(int vertex);
 
 	/**
 	 * {@inheritDoc}
@@ -301,9 +299,7 @@ public interface IndexGraph extends IntGraph {
 	 * method should not be called. Use the original graph instead.
 	 */
 	@Override
-	default void removeOutEdgesOf(int source) {
-		IntGraph.super.removeOutEdgesOf(source);
-	}
+	void removeOutEdgesOf(int source);
 
 	/**
 	 * {@inheritDoc}
@@ -317,9 +313,7 @@ public interface IndexGraph extends IntGraph {
 	 * method should not be called. Use the original graph instead.
 	 */
 	@Override
-	default void removeInEdgesOf(int target) {
-		IntGraph.super.removeInEdgesOf(target);
-	}
+	void removeInEdgesOf(int target);
 
 	/**
 	 * Unsupported operation.

@@ -48,12 +48,27 @@ class GraphCsrDirected extends GraphCsrAbstractUnindexed {
 	}
 
 	@Override
+	public int getEdge(int source, int target) {
+		checkVertex(source);
+		final int begin = edgesOutBegin[source], end = edgesOutBegin[source + 1];
+		for (int i = begin; i < end; i++) {
+			int e = edgesOut[i];
+			if (target == target(e))
+				return e;
+		}
+		checkVertex(target);
+		return -1;
+	}
+
+	@Override
 	public IEdgeSet outEdges(int source) {
+		checkVertex(source);
 		return new EdgeSetOut(source);
 	}
 
 	@Override
 	public IEdgeSet inEdges(int target) {
+		checkVertex(target);
 		return new EdgeSetIn(target);
 	}
 
@@ -70,11 +85,6 @@ class GraphCsrDirected extends GraphCsrAbstractUnindexed {
 		@Override
 		public int size() {
 			return end - begin;
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return size() == 0;
 		}
 
 		@Override
@@ -96,11 +106,6 @@ class GraphCsrDirected extends GraphCsrAbstractUnindexed {
 		@Override
 		public int size() {
 			return edgesInBegin[target + 1] - edgesInBegin[target];
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return size() == 0;
 		}
 
 		@Override

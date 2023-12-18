@@ -821,7 +821,7 @@ public class IndexGraphBuilderTest extends TestBase {
 		});
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "boxing" })
 	@Test
 	public void factorySetVertexBuilder() {
 		foreachBoolConfig(directed -> {
@@ -830,7 +830,7 @@ public class IndexGraphBuilderTest extends TestBase {
 		});
 	}
 
-	@SuppressWarnings("deprecation")
+	@SuppressWarnings({ "deprecation", "boxing" })
 	@Test
 	public void factorySetEdgeBuilder() {
 		foreachBoolConfig(directed -> {

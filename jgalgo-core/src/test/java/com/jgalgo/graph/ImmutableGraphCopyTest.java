@@ -235,6 +235,7 @@ public class ImmutableGraphCopyTest extends TestBase {
 
 	@Test
 	public void testEdgesOutIn() {
+		final Random rand = new Random(0xa415bd8a8246c2e5L);
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed);
 			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
@@ -243,6 +244,7 @@ public class ImmutableGraphCopyTest extends TestBase {
 			for (Integer u : gImmutable.vertices()) {
 				EdgeSet<Integer, Integer> edges = gImmutable.outEdges(u);
 				assertEquals(gOrig.outEdges(u).size(), edges.size());
+				assertEqualsBool(gOrig.outEdges(u).isEmpty(), edges.isEmpty());
 				assertEquals(gOrig.outEdges(u), edges);
 
 				Set<Integer> iteratedEdges = new IntOpenHashSet();
@@ -295,6 +297,14 @@ public class ImmutableGraphCopyTest extends TestBase {
 						assertFalse(edges.contains(e));
 					}
 				}
+			}
+
+			for (int i = 0; i < 10; i++) {
+				Integer nonExistingVertex = Integer.valueOf(rand.nextInt());
+				if (gImmutable.vertices().contains(nonExistingVertex))
+					continue;
+				assertThrows(NoSuchVertexException.class, () -> gImmutable.outEdges(nonExistingVertex));
+				assertThrows(NoSuchVertexException.class, () -> gImmutable.inEdges(nonExistingVertex));
 			}
 		});
 	}

@@ -27,7 +27,7 @@ package com.jgalgo.graph;
  * @see    GraphArrayUndirected
  * @author Barak Ugav
  */
-class GraphLinkedUndirected extends GraphLinkedAbstract {
+class GraphLinkedUndirected extends GraphLinkedAbstract implements GraphDefaultsUndirected {
 
 	private int[] edgesHead;
 	private int[] edgesNum;
@@ -121,6 +121,16 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		swapAndClear(edgesNum, removedIdx, swappedIdx, 0);
 
 		super.vertexSwapAndRemove(removedIdx, swappedIdx);
+	}
+
+	@Override
+	public int getEdge(int source, int target) {
+		checkVertex(source);
+		for (int e = edgesHead[source]; e >= 0; e = next(e, source))
+			if (target == edgeEndpoint(e, source))
+				return e;
+		checkVertex(target);
+		return -1;
 	}
 
 	@Override
@@ -251,16 +261,6 @@ class GraphLinkedUndirected extends GraphLinkedAbstract {
 		}
 		edgesHead[source] = -1;
 		edgesNum[source] = 0;
-	}
-
-	@Override
-	public void removeOutEdgesOf(int source) {
-		removeEdgesOf(source);
-	}
-
-	@Override
-	public void removeInEdgesOf(int target) {
-		removeEdgesOf(target);
 	}
 
 	@Override

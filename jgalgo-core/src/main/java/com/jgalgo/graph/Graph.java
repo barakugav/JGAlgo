@@ -317,14 +317,7 @@ public interface Graph<V, E> {
 	 * @return                       id of the edge or {@code null} if no such edge exists
 	 * @throws NoSuchVertexException if {@code source} or {@code target} are not valid vertices identifiers
 	 */
-	default E getEdge(V source, V target) {
-		for (EdgeIter<V, E> it = outEdges(source).iterator(); it.hasNext();) {
-			E e = it.next();
-			if (target.equals(it.target()))
-				return e;
-		}
-		return null;
-	}
+	E getEdge(V source, V target);
 
 	/**
 	 * Get the edges whose source is {@code source} and target is {@code target}.
@@ -477,10 +470,7 @@ public interface Graph<V, E> {
 	 * @param  vertex                a vertex in the graph
 	 * @throws NoSuchVertexException if {@code vertex} is not a valid vertex identifier
 	 */
-	default void removeEdgesOf(V vertex) {
-		removeOutEdgesOf(vertex);
-		removeInEdgesOf(vertex);
-	}
+	void removeEdgesOf(V vertex);
 
 	/**
 	 * Remove all edges whose source is {@code source}.
@@ -488,12 +478,7 @@ public interface Graph<V, E> {
 	 * @param  source                a vertex in the graph
 	 * @throws NoSuchVertexException if {@code source} is not a valid vertex identifier
 	 */
-	default void removeOutEdgesOf(V source) {
-		for (EdgeIter<V, E> eit = outEdges(source).iterator(); eit.hasNext();) {
-			eit.next();
-			eit.remove();
-		}
-	}
+	void removeOutEdgesOf(V source);
 
 	/**
 	 * Remove all edges whose target is {@code target}.
@@ -501,12 +486,7 @@ public interface Graph<V, E> {
 	 * @param  target                a vertex in the graph
 	 * @throws NoSuchVertexException if {@code target} is not a valid vertex identifier
 	 */
-	default void removeInEdgesOf(V target) {
-		for (EdgeIter<V, E> eit = inEdges(target).iterator(); eit.hasNext();) {
-			eit.next();
-			eit.remove();
-		}
-	}
+	void removeInEdgesOf(V target);
 
 	/**
 	 * Set a new identifier for an existing edge.

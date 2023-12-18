@@ -21,7 +21,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
-class GraphHashmapUndirected extends GraphHashmapAbstract {
+class GraphHashmapUndirected extends GraphHashmapAbstract implements GraphDefaultsUndirected {
 
 	private Int2IntMap[] edges;
 	private final DataContainer.Obj<Int2IntMap> edgesContainer;
@@ -185,16 +185,6 @@ class GraphHashmapUndirected extends GraphHashmapAbstract {
 		IntCollection sEdges = edges[source].values();
 		while (!sEdges.isEmpty())
 			removeEdge(sEdges.iterator().nextInt());
-	}
-
-	@Override
-	public void removeOutEdgesOf(int source) {
-		removeEdgesOf(source);
-	}
-
-	@Override
-	public void removeInEdgesOf(int target) {
-		removeEdgesOf(target);
 	}
 
 	@Override

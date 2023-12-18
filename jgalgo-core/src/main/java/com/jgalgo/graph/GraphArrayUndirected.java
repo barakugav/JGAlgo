@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntBigArrays;
  * @see    GraphArrayDirected
  * @author Barak Ugav
  */
-class GraphArrayUndirected extends GraphArrayAbstract {
+class GraphArrayUndirected extends GraphArrayAbstract implements GraphDefaultsUndirected {
 
 	private int[][] edges;
 	private int[] edgesNum;
@@ -129,6 +129,18 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 	}
 
 	@Override
+	public int getEdge(int source, int target) {
+		checkVertex(source);
+		int[] uEdges = edges[source];
+		for (int uEdgesNum = edgesNum[source], i = 0; i < uEdgesNum; i++) {
+			if (target == edgeEndpoint(uEdges[i], source))
+				return uEdges[i];
+		}
+		checkVertex(target);
+		return -1;
+	}
+
+	@Override
 	public IEdgeSet outEdges(int source) {
 		checkVertex(source);
 		return new EdgeSetOut(source);
@@ -191,16 +203,6 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 	}
 
 	@Override
-	public void removeOutEdgesOf(int source) {
-		removeEdgesOf(source);
-	}
-
-	@Override
-	public void removeInEdgesOf(int target) {
-		removeEdgesOf(target);
-	}
-
-	@Override
 	public void moveEdge(int edge, int newSource, int newTarget) {
 		checkEdge(edge);
 		checkNewEdgeEndpoints(newSource, newTarget);
@@ -238,11 +240,6 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		}
 
 		@Override
-		public boolean isEmpty() {
-			return size() == 0;
-		}
-
-		@Override
 		public IEdgeIter iterator() {
 			return new EdgeIterOut(source, edges[source], edgesNum[source]);
 		}
@@ -256,11 +253,6 @@ class GraphArrayUndirected extends GraphArrayAbstract {
 		@Override
 		public int size() {
 			return edgesNum[target];
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return size() == 0;
 		}
 
 		@Override

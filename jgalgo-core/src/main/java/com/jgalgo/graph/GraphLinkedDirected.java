@@ -27,7 +27,7 @@ package com.jgalgo.graph;
  * @see    GraphArrayDirected
  * @author Barak Ugav
  */
-class GraphLinkedDirected extends GraphLinkedAbstract {
+class GraphLinkedDirected extends GraphLinkedAbstract implements GraphDefaultsDirected {
 
 	private int[] edgesOutHead;
 	private int[] edgesOutNum;
@@ -130,6 +130,16 @@ class GraphLinkedDirected extends GraphLinkedAbstract {
 		swapAndClear(edgesInNum, removedIdx, swappedIdx, 0);
 
 		super.vertexSwapAndRemove(removedIdx, swappedIdx);
+	}
+
+	@Override
+	public int getEdge(int source, int target) {
+		checkVertex(source);
+		for (int e = edgesOutHead[source]; e >= 0; e = edgeNextOut[e])
+			if (target == target(e))
+				return e;
+		checkVertex(target);
+		return -1;
 	}
 
 	@Override

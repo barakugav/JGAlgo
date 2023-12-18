@@ -71,15 +71,23 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 		return edges;
 	}
 
+	void checkVertex(int vertex) {
+		Assertions.Graphs.checkVertex(vertex, vertices.size);
+	}
+
+	void checkEdge(int edge) {
+		Assertions.Graphs.checkEdge(edge, edges.size);
+	}
+
 	@Override
 	public final int edgeSource(int edge) {
-		Assertions.Graphs.checkId(edge, edges().size(), true);
+		checkEdge(edge);
 		return source(edge);
 	}
 
 	@Override
 	public final int edgeTarget(int edge) {
-		Assertions.Graphs.checkId(edge, edges().size(), true);
+		checkEdge(edge);
 		return target(edge);
 	}
 
@@ -95,7 +103,7 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 
 	@Override
 	public int edgeEndpoint(int edge, int endpoint) {
-		Assertions.Graphs.checkId(edge, edges().size(), true);
+		checkEdge(edge);
 		long endpoints = edgeEndpoints[edge];
 		int u = endpoints2Source(endpoints);
 		int v = endpoints2Target(endpoints);
@@ -104,6 +112,7 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 		} else if (endpoint == v) {
 			return u;
 		} else {
+			checkVertex(endpoint);
 			throw new IllegalArgumentException("The given vertex (idx=" + endpoint
 					+ ") is not an endpoint of the edge (idx=" + u + ", idx=" + v + ")");
 		}
@@ -127,8 +136,8 @@ abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements Ind
 
 	@Override
 	public IEdgeSet getEdges(int source, int target) {
-		Assertions.Graphs.checkVertex(source, vertices().size());
-		Assertions.Graphs.checkVertex(target, vertices().size());
+		checkVertex(source);
+		checkVertex(target);
 		return isDirected() ? new EdgeSetSourceTargetDirected(source, target)
 				: new EdgeSetSourceTargetUndirected(source, target);
 	}

@@ -33,7 +33,7 @@ import it.unimi.dsi.fastutil.ints.IntBigArrays;
  * @see    GraphArrayUndirected
  * @author Barak Ugav
  */
-class GraphArrayDirected extends GraphArrayAbstract {
+class GraphArrayDirected extends GraphArrayAbstract implements GraphDefaultsDirected {
 
 	private int[][] edgesOut;
 	private int[] edgesOutNum;
@@ -157,6 +157,18 @@ class GraphArrayDirected extends GraphArrayAbstract {
 	}
 
 	@Override
+	public int getEdge(int source, int target) {
+		checkVertex(source);
+		int[] uEdges = edgesOut[source];
+		for (int edgesNum = edgesOutNum[source], i = 0; i < edgesNum; i++) {
+			if (target == target(uEdges[i]))
+				return uEdges[i];
+		}
+		checkVertex(target);
+		return -1;
+	}
+
+	@Override
 	public IEdgeSet outEdges(int source) {
 		checkVertex(source);
 		return new EdgeSetOut(source);
@@ -253,11 +265,6 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		}
 
 		@Override
-		public boolean isEmpty() {
-			return size() == 0;
-		}
-
-		@Override
 		public IEdgeIter iterator() {
 			return new EdgeIterOut(source, edgesOut[source], edgesOutNum[source]);
 		}
@@ -271,11 +278,6 @@ class GraphArrayDirected extends GraphArrayAbstract {
 		@Override
 		public int size() {
 			return edgesInNum[target];
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return size() == 0;
 		}
 
 		@Override

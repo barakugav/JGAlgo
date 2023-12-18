@@ -168,7 +168,7 @@ public class GraphImplTest extends TestBase {
 	@Test
 	public void addVertexWithVertexBuilderNull() {
 		GraphFactory<Integer, String> factory = GraphFactory.undirected();
-		IdBuilderInt vBuilder = vertices -> Integer.valueOf(1 + vertices.size());
+		IdBuilderInt vBuilder = vertices -> 1 + vertices.size();
 		factory.setVertexBuilder(vBuilder);
 		Graph<Integer, String> g = factory.newGraph();
 		assertEquals(1, g.addVertex());

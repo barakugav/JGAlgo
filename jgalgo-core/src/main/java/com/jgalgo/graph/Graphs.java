@@ -122,6 +122,11 @@ public class Graphs {
 		}
 
 		@Override
+		public E getEdge(V source, V target) {
+			return graph.getEdge(source, target);
+		}
+
+		@Override
 		public EdgeSet<V, E> getEdges(V source, V target) {
 			return new ImmutableEdgeSet<>(graph.getEdges(source, target));
 		}
@@ -143,6 +148,21 @@ public class Graphs {
 
 		@Override
 		public void removeEdges(Collection<? extends E> edges) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
+		}
+
+		@Override
+		public void removeEdgesOf(V vertex) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
+		}
+
+		@Override
+		public void removeOutEdgesOf(V source) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
+		}
+
+		@Override
+		public void removeInEdgesOf(V target) {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
 		}
 
@@ -318,6 +338,11 @@ public class Graphs {
 		}
 
 		@Override
+		public int getEdge(int source, int target) {
+			return graph.getEdge(source, target);
+		}
+
+		@Override
 		public IEdgeSet getEdges(int source, int target) {
 			return new ImmutableIEdgeSet(graph.getEdges(source, target));
 		}
@@ -334,6 +359,21 @@ public class Graphs {
 
 		@Override
 		public void removeEdges(Collection<? extends Integer> edges) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
+		}
+
+		@Override
+		public void removeEdgesOf(int vertex) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
+		}
+
+		@Override
+		public void removeOutEdgesOf(int source) {
+			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
+		}
+
+		@Override
+		public void removeInEdgesOf(int target) {
 			throw new UnsupportedOperationException("graph is immutable, cannot remove edges");
 		}
 
@@ -1552,16 +1592,6 @@ public class Graphs {
 				out.clear();
 				in.clear();
 			}
-		}
-
-		private abstract class EdgeSetOutOrInBase extends EdgeSetBase {
-
-			final V vertex;
-
-			EdgeSetOutOrInBase(V vertex) {
-				super(graph().outEdges(vertex), graph().inEdges(vertex));
-				this.vertex = vertex;
-			}
 
 			@Override
 			public int size() {
@@ -1571,6 +1601,16 @@ public class Graphs {
 			@Override
 			public boolean isEmpty() {
 				return !iterator().hasNext();
+			}
+		}
+
+		private abstract class EdgeSetOutOrInBase extends EdgeSetBase {
+
+			final V vertex;
+
+			EdgeSetOutOrInBase(V vertex) {
+				super(graph().outEdges(vertex), graph().inEdges(vertex));
+				this.vertex = vertex;
 			}
 		}
 
@@ -1853,11 +1893,6 @@ public class Graphs {
 			@Override
 			public int size() {
 				return (int) ObjectIterables.size(this);
-			}
-
-			@Override
-			public boolean isEmpty() {
-				return !iterator().hasNext();
 			}
 		}
 

@@ -20,7 +20,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
-class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract {
+class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract implements GraphDefaultsUndirected {
 
 	private Int2IntMap[] edgesMap;
 	private int[] edgesNum;
@@ -232,16 +232,6 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract {
 		checkVertex(source);
 		while (!edgesMap[source].isEmpty())
 			removeAllEdgesInList(edgesMap[source].values().iterator().nextInt());
-	}
-
-	@Override
-	public void removeOutEdgesOf(int source) {
-		removeEdgesOf(source);
-	}
-
-	@Override
-	public void removeInEdgesOf(int target) {
-		removeEdgesOf(target);
 	}
 
 	@Override

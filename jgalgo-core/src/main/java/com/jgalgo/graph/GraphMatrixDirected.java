@@ -30,7 +30,7 @@ package com.jgalgo.graph;
  * @see    GraphMatrixUndirected
  * @author Barak Ugav
  */
-class GraphMatrixDirected extends GraphMatrixAbstract {
+class GraphMatrixDirected extends GraphMatrixAbstract implements GraphDefaultsDirected {
 
 	private int[] edgesOutNum;
 	private int[] edgesInNum;
@@ -97,11 +97,13 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 
 	@Override
 	public IEdgeSet outEdges(int source) {
+		checkVertex(source);
 		return new EdgeSetOut(source);
 	}
 
 	@Override
 	public IEdgeSet inEdges(int target) {
+		checkVertex(target);
 		return new EdgeSetIn(target);
 	}
 
@@ -132,6 +134,22 @@ class GraphMatrixDirected extends GraphMatrixAbstract {
 		edgesOutNum[ur]--;
 		edgesInNum[vr]--;
 		super.edgeSwapAndRemove(removedIdx, swappedIdx);
+	}
+
+	@Override
+	public void removeOutEdgesOf(int source) {
+		for (IEdgeIter eit = outEdges(source).iterator(); eit.hasNext();) {
+			eit.nextInt();
+			eit.remove();
+		}
+	}
+
+	@Override
+	public void removeInEdgesOf(int target) {
+		for (IEdgeIter eit = inEdges(target).iterator(); eit.hasNext();) {
+			eit.nextInt();
+			eit.remove();
+		}
 	}
 
 	@Override

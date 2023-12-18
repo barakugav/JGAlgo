@@ -45,7 +45,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
-import org.junit.jupiter.api.Test;
 import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.alg.MatchingBipartiteTestUtils;
 import com.jgalgo.alg.MatchingWeightedTestUtils;
@@ -1630,6 +1629,7 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	static void getEdgeTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+		final Random rand = new Random(0xe2cdb0023327cb42L);
 		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
@@ -1640,6 +1640,8 @@ class GraphImplTestUtils extends TestUtils {
 			for (int uIdx = 0; uIdx < n; uIdx++) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					if (uIdx == vIdx && !g.isAllowSelfEdges())
+						continue;
+					if (rand.nextBoolean())
 						continue;
 					Integer u = vs.get(uIdx), v = vs.get(vIdx);
 					Integer e = Integer.valueOf(g.edges().size() + 1);
@@ -1660,11 +1662,38 @@ class GraphImplTestUtils extends TestUtils {
 				assertEquals(e, g.getEdge(u, v));
 				assertEqualsBool(e.intValue() != -1, g.containsEdge(u, v));
 			}
+			for (int i = 0; i < 10; i++) {
+				Integer u = Graphs.randVertex(g, rand), v = Graphs.randVertex(g, rand);
+				boolean expectedContains = g.edges().stream().anyMatch(e -> {
+					Integer u0 = g.edgeSource(e), v0 = g.edgeTarget(e);
+					if (g.isDirected()) {
+						return u.equals(u0) && v.equals(v0);
+					} else {
+						return (u.equals(u0) && v.equals(v0)) || (u.equals(v0) && v.equals(u0));
+					}
+				});
+				if (expectedContains) {
+					assertNotNull(g.getEdge(u, v));
+				} else {
+					assertNull(g.getEdge(u, v));
+				}
+				assertEqualsBool(expectedContains, g.containsEdge(u, v));
+			}
+			for (int i = 0; i < 10; i++) {
+				Integer nonExistingVertex = Integer.valueOf(rand.nextInt());
+				if (g.vertices().contains(nonExistingVertex))
+					continue;
+				assertThrows(NoSuchVertexException.class,
+						() -> g.getEdge(nonExistingVertex, Graphs.randVertex(g, rand)));
+				assertThrows(NoSuchVertexException.class,
+						() -> g.getEdge(Graphs.randVertex(g, rand), nonExistingVertex));
+			}
 		});
 	}
 
 	@SuppressWarnings("boxing")
 	static void testGetEdgesOutIn(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+		final Random rand = new Random(0x55785cf48eb6bf43L);
 		foreachBoolConfig(directed -> {
 			final int n = 100;
 			Graph<Integer, Integer> g = graphImpl.get(directed);
@@ -1726,6 +1755,14 @@ class GraphImplTestUtils extends TestUtils {
 					}
 					assertEquals(inEdges.get(v), vEdges);
 				}
+			}
+
+			for (int i = 0; i < 10; i++) {
+				int nonExistingVertex = rand.nextInt();
+				if (g.vertices().contains(nonExistingVertex))
+					continue;
+				assertThrows(NoSuchVertexException.class, () -> g.outEdges(nonExistingVertex));
+				assertThrows(NoSuchVertexException.class, () -> g.inEdges(nonExistingVertex));
 			}
 		});
 	}
