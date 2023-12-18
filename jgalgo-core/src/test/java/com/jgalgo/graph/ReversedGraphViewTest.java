@@ -934,4 +934,17 @@ public class ReversedGraphViewTest extends TestBase {
 		});
 	}
 
+	@Test
+	public void ensureCapacity() {
+		/* can't real test anything, just cover and see no exception is thrown */
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gRev0 = gOrig0.reverseView();
+			Graph<Integer, Integer> gRev = index ? gRev0.indexGraph() : gRev0;
+
+			gRev.ensureVertexCapacity(gRev.vertices().size() + 10);
+			gRev.ensureEdgeCapacity(gRev.edges().size() + 10);
+		});
+	}
+
 }

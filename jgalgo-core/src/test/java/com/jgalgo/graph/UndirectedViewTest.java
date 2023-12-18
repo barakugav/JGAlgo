@@ -971,4 +971,16 @@ public class UndirectedViewTest extends TestBase {
 		});
 	}
 
+	@Test
+	public void ensureCapacity() {
+		/* can't real test anything, just cover and see no exception is thrown */
+		foreachBoolConfig((intGraph, index) -> {
+			Graph<Integer, Integer> g = index ? createGraph(intGraph).indexGraph() : createGraph(intGraph);
+			Graph<Integer, Integer> undirectedG = g.undirectedView();
+
+			undirectedG.ensureVertexCapacity(undirectedG.vertices().size() + 10);
+			undirectedG.ensureEdgeCapacity(undirectedG.edges().size() + 10);
+		});
+	}
+
 }

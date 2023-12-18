@@ -521,4 +521,17 @@ public class ImmutableGraphCopyTest extends TestBase {
 		});
 	}
 
+	@Test
+	public void ensureCapacity() {
+		/* can't real test anything, just cover and see no exception is thrown */
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed);
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+			Graph<Integer, Integer> gImmutable = gOrig.immutableCopy();
+
+			gImmutable.ensureVertexCapacity(gImmutable.vertices().size() + 10);
+			gImmutable.ensureEdgeCapacity(gImmutable.edges().size() + 10);
+		});
+	}
+
 }

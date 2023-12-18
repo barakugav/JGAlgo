@@ -603,7 +603,19 @@ public class ImmutableGraphViewTest extends TestBase {
 			assertEquals(gOrig.toString(), gImmutable.toString());
 			assertEquals(gOrig.immutableView().toString(), gImmutable.toString());
 		});
+	}
 
+	@Test
+	public void ensureCapacity() {
+		/* can't real test anything, just cover and see no exception is thrown */
+		foreachBoolConfig((intGraph, directed, index) -> {
+			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
+			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
+			Graph<Integer, Integer> gImmutable = gOrig.immutableView();
+
+			gImmutable.ensureVertexCapacity(gImmutable.vertices().size() + 10);
+			gImmutable.ensureEdgeCapacity(gImmutable.edges().size() + 10);
+		});
 	}
 
 }
