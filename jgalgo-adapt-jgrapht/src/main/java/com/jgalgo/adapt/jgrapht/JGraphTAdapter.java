@@ -39,6 +39,12 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
  * {@link com.jgalgo.graph.Graph#getEdgesWeights(String)}. Although JGAlgo graphs support multiple types of weights,
  * both for vertices and edges, JGraphT graphs support only one double weight type, for edges.
  *
+ * <p>
+ * For adapting the other way around, from JGraphT to JGAlgo, see {@link JGraphTWrapper}.
+ *
+ * @see        org.jgrapht.Graph
+ * @see        com.jgalgo.graph.Graph
+ * @see        JGraphTWrapper
  * @param  <V> the vertices type
  * @param  <E> the edges type
  * @author     Barak Ugav

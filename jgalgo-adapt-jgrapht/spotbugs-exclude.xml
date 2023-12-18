@@ -1,9 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FindBugsFilter>
   <Match>
-    <!-- Intended -->
+    <!-- We don't have ownership over the accepted graph -->
     <Class name="com.jgalgo.adapt.jgrapht.JGraphTAdapter" />
     <Constructor />
     <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- We don't have ownership over the accepted graph -->
+    <Class name="com.jgalgo.adapt.jgrapht.JGraphTWrapper" />
+    <Constructor />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- The returned weights are not internal data, they should be modified by the user -->
+    <Class name="com.jgalgo.adapt.jgrapht.JGraphTWrapper" />
+    <Method name="getEdgesWeights" />
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+  <Match>
+    <!-- The returned index graph and IndexIdMap(s) are not internal data, they are API for the user -->
+    <Class name="com.jgalgo.adapt.jgrapht.JGraphTWrapper" />
+    <Or>
+      <Method name="indexGraph" />
+      <Method name="indexGraphVerticesMap" />
+      <Method name="indexGraphEdgesMap" />
+    </Or>
+    <Bug pattern="EI_EXPOSE_REP" />
   </Match>
 </FindBugsFilter>
