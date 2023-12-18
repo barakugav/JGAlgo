@@ -27,7 +27,7 @@ package com.jgalgo.graph;
  * @see    GraphArrayDirected
  * @author Barak Ugav
  */
-class GraphLinkedPtrDirected extends GraphLinkedPtrAbstract {
+class GraphLinkedPtrDirected extends GraphLinkedPtrAbstract implements GraphDefaultsDirected {
 
 	private Edge[] edgesOut;
 	private Edge[] edgesIn;
@@ -110,226 +110,236 @@ class GraphLinkedPtrDirected extends GraphLinkedPtrAbstract {
 <span class="fc" id="L110">	}</span>
 
 	@Override
-	public IEdgeSet outEdges(int source) {
+	public int getEdge(int source, int target) {
 <span class="fc" id="L114">		checkVertex(source);</span>
-<span class="fc" id="L115">		return new EdgeSetOut(source);</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">		for (Edge e = edgesOut[source]; e != null; e = e.nextOut)</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">			if (target == target(e.id))</span>
+<span class="fc" id="L117">				return e.id;</span>
+<span class="fc" id="L118">		checkVertex(target);</span>
+<span class="fc" id="L119">		return -1;</span>
+	}
+
+	@Override
+	public IEdgeSet outEdges(int source) {
+<span class="fc" id="L124">		checkVertex(source);</span>
+<span class="fc" id="L125">		return new EdgeSetOut(source);</span>
 	}
 
 	@Override
 	public IEdgeSet inEdges(int target) {
-<span class="fc" id="L120">		checkVertex(target);</span>
-<span class="fc" id="L121">		return new EdgeSetIn(target);</span>
+<span class="fc" id="L130">		checkVertex(target);</span>
+<span class="fc" id="L131">		return new EdgeSetIn(target);</span>
 	}
 
 	@Override
 	public int addEdge(int source, int target) {
-<span class="fc" id="L126">		Edge e = (Edge) addEdgeObj(source, target);</span>
-<span class="fc" id="L127">		addEdgeToLists(e);</span>
-<span class="fc" id="L128">		return e.id;</span>
+<span class="fc" id="L136">		Edge e = (Edge) addEdgeObj(source, target);</span>
+<span class="fc" id="L137">		addEdgeToLists(e);</span>
+<span class="fc" id="L138">		return e.id;</span>
 	}
 
 	private void addEdgeToLists(Edge e) {
-<span class="fc" id="L132">		int u = source(e.id), v = target(e.id);</span>
+<span class="fc" id="L142">		int u = source(e.id), v = target(e.id);</span>
 		Edge next;
-<span class="fc" id="L134">		next = edgesOut[u];</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">		if (next != null) {</span>
-<span class="fc" id="L136">			next.prevOut = e;</span>
-<span class="fc" id="L137">			e.nextOut = next;</span>
+<span class="fc" id="L144">		next = edgesOut[u];</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">		if (next != null) {</span>
+<span class="fc" id="L146">			next.prevOut = e;</span>
+<span class="fc" id="L147">			e.nextOut = next;</span>
 		}
-<span class="fc" id="L139">		edgesOut[u] = e;</span>
-<span class="fc" id="L140">		next = edgesIn[v];</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">		if (next != null) {</span>
-<span class="fc" id="L142">			next.prevIn = e;</span>
-<span class="fc" id="L143">			e.nextIn = next;</span>
+<span class="fc" id="L149">		edgesOut[u] = e;</span>
+<span class="fc" id="L150">		next = edgesIn[v];</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">		if (next != null) {</span>
+<span class="fc" id="L152">			next.prevIn = e;</span>
+<span class="fc" id="L153">			e.nextIn = next;</span>
 		}
-<span class="fc" id="L145">		edgesIn[v] = e;</span>
-<span class="fc" id="L146">		edgesOutNum[u]++;</span>
-<span class="fc" id="L147">		edgesInNum[v]++;</span>
-<span class="fc" id="L148">	}</span>
+<span class="fc" id="L155">		edgesIn[v] = e;</span>
+<span class="fc" id="L156">		edgesOutNum[u]++;</span>
+<span class="fc" id="L157">		edgesInNum[v]++;</span>
+<span class="fc" id="L158">	}</span>
 
 	@Override
 	Edge allocEdge(int id) {
-<span class="fc" id="L152">		return new Edge(id);</span>
+<span class="fc" id="L162">		return new Edge(id);</span>
 	}
 
 	@Override
 	Edge getEdge(int edge) {
-<span class="fc" id="L157">		return (Edge) super.getEdge(edge);</span>
+<span class="fc" id="L167">		return (Edge) super.getEdge(edge);</span>
 	}
 
 	@Override
 	void removeEdgeLast(int edge) {
-<span class="fc" id="L162">		Edge e = getEdge(edge);</span>
-<span class="fc" id="L163">		removeEdgeOutPointers(e);</span>
-<span class="fc" id="L164">		removeEdgeInPointers(e);</span>
-<span class="fc" id="L165">		super.removeEdgeLast(edge);</span>
-<span class="fc" id="L166">	}</span>
+<span class="fc" id="L172">		Edge e = getEdge(edge);</span>
+<span class="fc" id="L173">		removeEdgeOutPointers(e);</span>
+<span class="fc" id="L174">		removeEdgeInPointers(e);</span>
+<span class="fc" id="L175">		super.removeEdgeLast(edge);</span>
+<span class="fc" id="L176">	}</span>
 
 	@Override
 	void edgeSwapAndRemove(int removedIdx, int swappedIdx) {
-<span class="fc" id="L170">		Edge removed = getEdge(removedIdx);</span>
-<span class="fc" id="L171">		removeEdgeOutPointers(removed);</span>
-<span class="fc" id="L172">		removeEdgeInPointers(removed);</span>
-<span class="fc" id="L173">		super.edgeSwapAndRemove(removedIdx, swappedIdx);</span>
-<span class="fc" id="L174">	}</span>
+<span class="fc" id="L180">		Edge removed = getEdge(removedIdx);</span>
+<span class="fc" id="L181">		removeEdgeOutPointers(removed);</span>
+<span class="fc" id="L182">		removeEdgeInPointers(removed);</span>
+<span class="fc" id="L183">		super.edgeSwapAndRemove(removedIdx, swappedIdx);</span>
+<span class="fc" id="L184">	}</span>
 
 	@Override
 	public void removeOutEdgesOf(int source) {
-<span class="fc" id="L178">		checkVertex(source);</span>
-<span class="fc bfc" id="L179" title="All 2 branches covered.">		for (Edge p = edgesOut[source], next; p != null; p = next) {</span>
-<span class="fc" id="L180">			next = p.nextOut;</span>
-<span class="fc" id="L181">			p.nextOut = p.prevOut = null;</span>
-<span class="fc" id="L182">			removeEdgeInPointers(p);</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">			if (p.id == edges().size() - 1) {</span>
-<span class="fc" id="L184">				super.removeEdgeLast(p.id);</span>
+<span class="fc" id="L188">		checkVertex(source);</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">		for (Edge p = edgesOut[source], next; p != null; p = next) {</span>
+<span class="fc" id="L190">			next = p.nextOut;</span>
+<span class="fc" id="L191">			p.nextOut = p.prevOut = null;</span>
+<span class="fc" id="L192">			removeEdgeInPointers(p);</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">			if (p.id == edges().size() - 1) {</span>
+<span class="fc" id="L194">				super.removeEdgeLast(p.id);</span>
 			} else {
-<span class="fc" id="L186">				super.edgeSwapAndRemove(p.id, edges().size() - 1);</span>
+<span class="fc" id="L196">				super.edgeSwapAndRemove(p.id, edges().size() - 1);</span>
 			}
 		}
-<span class="fc" id="L189">		edgesOut[source] = null;</span>
-<span class="fc" id="L190">		edgesOutNum[source] = 0;</span>
-<span class="fc" id="L191">	}</span>
+<span class="fc" id="L199">		edgesOut[source] = null;</span>
+<span class="fc" id="L200">		edgesOutNum[source] = 0;</span>
+<span class="fc" id="L201">	}</span>
 
 	@Override
 	public void removeInEdgesOf(int target) {
-<span class="fc" id="L195">		checkVertex(target);</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">		for (Edge p = edgesIn[target], next; p != null; p = next) {</span>
-<span class="fc" id="L197">			next = p.nextIn;</span>
-<span class="fc" id="L198">			p.nextIn = p.prevIn = null;</span>
-<span class="fc" id="L199">			removeEdgeOutPointers(p);</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">			if (p.id == edges().size() - 1) {</span>
-<span class="fc" id="L201">				super.removeEdgeLast(p.id);</span>
+<span class="fc" id="L205">		checkVertex(target);</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">		for (Edge p = edgesIn[target], next; p != null; p = next) {</span>
+<span class="fc" id="L207">			next = p.nextIn;</span>
+<span class="fc" id="L208">			p.nextIn = p.prevIn = null;</span>
+<span class="fc" id="L209">			removeEdgeOutPointers(p);</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">			if (p.id == edges().size() - 1) {</span>
+<span class="fc" id="L211">				super.removeEdgeLast(p.id);</span>
 			} else {
-<span class="fc" id="L203">				super.edgeSwapAndRemove(p.id, edges().size() - 1);</span>
+<span class="fc" id="L213">				super.edgeSwapAndRemove(p.id, edges().size() - 1);</span>
 			}
 		}
-<span class="fc" id="L206">		edgesIn[target] = null;</span>
-<span class="fc" id="L207">		edgesInNum[target] = 0;</span>
-<span class="fc" id="L208">	}</span>
+<span class="fc" id="L216">		edgesIn[target] = null;</span>
+<span class="fc" id="L217">		edgesInNum[target] = 0;</span>
+<span class="fc" id="L218">	}</span>
 
 	private void removeEdgeOutPointers(Edge e) {
-<span class="fc" id="L211">		Edge next = e.nextOut, prev = e.prevOut;</span>
-<span class="fc" id="L212">		int source = source(e.id);</span>
-<span class="fc bfc" id="L213" title="All 2 branches covered.">		if (prev == null) {</span>
-<span class="fc" id="L214">			edgesOut[source] = next;</span>
+<span class="fc" id="L221">		Edge next = e.nextOut, prev = e.prevOut;</span>
+<span class="fc" id="L222">		int source = source(e.id);</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">		if (prev == null) {</span>
+<span class="fc" id="L224">			edgesOut[source] = next;</span>
 		} else {
-<span class="fc" id="L216">			prev.nextOut = next;</span>
-<span class="fc" id="L217">			e.prevOut = null;</span>
+<span class="fc" id="L226">			prev.nextOut = next;</span>
+<span class="fc" id="L227">			e.prevOut = null;</span>
 		}
-<span class="fc bfc" id="L219" title="All 2 branches covered.">		if (next != null) {</span>
-<span class="fc" id="L220">			next.prevOut = prev;</span>
-<span class="fc" id="L221">			e.nextOut = null;</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">		if (next != null) {</span>
+<span class="fc" id="L230">			next.prevOut = prev;</span>
+<span class="fc" id="L231">			e.nextOut = null;</span>
 		}
-<span class="fc" id="L223">		edgesOutNum[source]--;</span>
-<span class="fc" id="L224">	}</span>
+<span class="fc" id="L233">		edgesOutNum[source]--;</span>
+<span class="fc" id="L234">	}</span>
 
 	private void removeEdgeInPointers(Edge e) {
-<span class="fc" id="L227">		Edge next = e.nextIn, prev = e.prevIn;</span>
-<span class="fc" id="L228">		int target = target(e.id);</span>
-<span class="fc bfc" id="L229" title="All 2 branches covered.">		if (prev == null) {</span>
-<span class="fc" id="L230">			edgesIn[target] = next;</span>
+<span class="fc" id="L237">		Edge next = e.nextIn, prev = e.prevIn;</span>
+<span class="fc" id="L238">		int target = target(e.id);</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">		if (prev == null) {</span>
+<span class="fc" id="L240">			edgesIn[target] = next;</span>
 		} else {
-<span class="fc" id="L232">			prev.nextIn = next;</span>
-<span class="fc" id="L233">			e.prevIn = null;</span>
+<span class="fc" id="L242">			prev.nextIn = next;</span>
+<span class="fc" id="L243">			e.prevIn = null;</span>
 		}
-<span class="fc bfc" id="L235" title="All 2 branches covered.">		if (next != null) {</span>
-<span class="fc" id="L236">			next.prevIn = prev;</span>
-<span class="fc" id="L237">			e.nextIn = null;</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">		if (next != null) {</span>
+<span class="fc" id="L246">			next.prevIn = prev;</span>
+<span class="fc" id="L247">			e.nextIn = null;</span>
 		}
-<span class="fc" id="L239">		edgesInNum[target]--;</span>
-<span class="fc" id="L240">	}</span>
+<span class="fc" id="L249">		edgesInNum[target]--;</span>
+<span class="fc" id="L250">	}</span>
 
 	@Override
 	public void moveEdge(int edge, int newSource, int newTarget) {
-<span class="fc" id="L244">		checkEdge(edge);</span>
-<span class="fc" id="L245">		checkNewEdgeEndpoints(newSource, newTarget);</span>
-<span class="fc" id="L246">		Edge n = getEdge(edge);</span>
-<span class="fc" id="L247">		removeEdgeOutPointers(n);</span>
-<span class="fc" id="L248">		removeEdgeInPointers(n);</span>
-<span class="fc" id="L249">		setEndpoints(edge, newSource, newTarget);</span>
-<span class="fc" id="L250">		addEdgeToLists(n);</span>
-<span class="fc" id="L251">	}</span>
+<span class="fc" id="L254">		checkEdge(edge);</span>
+<span class="fc" id="L255">		checkNewEdgeEndpoints(newSource, newTarget);</span>
+<span class="fc" id="L256">		Edge n = getEdge(edge);</span>
+<span class="fc" id="L257">		removeEdgeOutPointers(n);</span>
+<span class="fc" id="L258">		removeEdgeInPointers(n);</span>
+<span class="fc" id="L259">		setEndpoints(edge, newSource, newTarget);</span>
+<span class="fc" id="L260">		addEdgeToLists(n);</span>
+<span class="fc" id="L261">	}</span>
 
 	@Override
 	public void clearEdges() {
-<span class="fc bfc" id="L255" title="All 2 branches covered.">		for (int m = edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L256">			Edge p = getEdge(e);</span>
-<span class="fc" id="L257">			p.nextOut = p.prevOut = p.nextIn = p.prevIn = null;</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">		for (int m = edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L266">			Edge p = getEdge(e);</span>
+<span class="fc" id="L267">			p.nextOut = p.prevOut = p.nextIn = p.prevIn = null;</span>
 		}
-<span class="fc" id="L259">		edgesOutContainer.clear();</span>
-<span class="fc" id="L260">		edgesInContainer.clear();</span>
-<span class="fc" id="L261">		edgesOutNumContainer.clear();</span>
-<span class="fc" id="L262">		edgesInNumContainer.clear();</span>
-<span class="fc" id="L263">		super.clearEdges();</span>
-<span class="fc" id="L264">	}</span>
+<span class="fc" id="L269">		edgesOutContainer.clear();</span>
+<span class="fc" id="L270">		edgesInContainer.clear();</span>
+<span class="fc" id="L271">		edgesOutNumContainer.clear();</span>
+<span class="fc" id="L272">		edgesInNumContainer.clear();</span>
+<span class="fc" id="L273">		super.clearEdges();</span>
+<span class="fc" id="L274">	}</span>
 
 	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutDirected {
-<span class="fc" id="L267">		EdgeSetOut(int source) {</span>
-<span class="fc" id="L268">			super(source);</span>
-<span class="fc" id="L269">		}</span>
+<span class="fc" id="L277">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L278">			super(source);</span>
+<span class="fc" id="L279">		}</span>
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L273">			return new EdgeIterOut(edgesOut[source]);</span>
+<span class="fc" id="L283">			return new EdgeIterOut(edgesOut[source]);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L278">			return edgesOutNum[source];</span>
+<span class="fc" id="L288">			return edgesOutNum[source];</span>
 		}
 	}
 
 	private class EdgeSetIn extends IndexGraphBase.EdgeSetInDirected {
-<span class="fc" id="L283">		EdgeSetIn(int target) {</span>
-<span class="fc" id="L284">			super(target);</span>
-<span class="fc" id="L285">		}</span>
+<span class="fc" id="L293">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L294">			super(target);</span>
+<span class="fc" id="L295">		}</span>
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L289">			return new EdgeIterIn(edgesIn[target]);</span>
+<span class="fc" id="L299">			return new EdgeIterIn(edgesIn[target]);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L294">			return edgesInNum[target];</span>
+<span class="fc" id="L304">			return edgesInNum[target];</span>
 		}
 	}
 
 	private abstract class EdgeIterImpl extends GraphLinkedPtrAbstract.EdgeItr {
-<span class="fc" id="L299">		EdgeIterImpl(Edge p) {</span>
-<span class="fc" id="L300">			super(p);</span>
-<span class="fc" id="L301">		}</span>
+<span class="fc" id="L309">		EdgeIterImpl(Edge p) {</span>
+<span class="fc" id="L310">			super(p);</span>
+<span class="fc" id="L311">		}</span>
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L305">			return GraphLinkedPtrDirected.this.source(last.id);</span>
+<span class="fc" id="L315">			return GraphLinkedPtrDirected.this.source(last.id);</span>
 		}
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L310">			return GraphLinkedPtrDirected.this.target(last.id);</span>
+<span class="fc" id="L320">			return GraphLinkedPtrDirected.this.target(last.id);</span>
 		}
 	}
 
 	private class EdgeIterOut extends EdgeIterImpl {
-<span class="fc" id="L315">		EdgeIterOut(Edge p) {</span>
-<span class="fc" id="L316">			super(p);</span>
-<span class="fc" id="L317">		}</span>
+<span class="fc" id="L325">		EdgeIterOut(Edge p) {</span>
+<span class="fc" id="L326">			super(p);</span>
+<span class="fc" id="L327">		}</span>
 
 		@Override
 		Edge nextEdge(GraphLinkedPtrAbstract.Edge n) {
-<span class="fc" id="L321">			return ((Edge) n).nextOut;</span>
+<span class="fc" id="L331">			return ((Edge) n).nextOut;</span>
 		}
 	}
 
 	private class EdgeIterIn extends EdgeIterImpl {
-<span class="fc" id="L326">		EdgeIterIn(Edge p) {</span>
-<span class="fc" id="L327">			super(p);</span>
-<span class="fc" id="L328">		}</span>
+<span class="fc" id="L336">		EdgeIterIn(Edge p) {</span>
+<span class="fc" id="L337">			super(p);</span>
+<span class="fc" id="L338">		}</span>
 
 		@Override
 		Edge nextEdge(GraphLinkedPtrAbstract.Edge n) {
-<span class="fc" id="L332">			return ((Edge) n).nextIn;</span>
+<span class="fc" id="L342">			return ((Edge) n).nextIn;</span>
 		}
 	}
 
@@ -341,23 +351,23 @@ class GraphLinkedPtrDirected extends GraphLinkedPtrAbstract {
 		private Edge prevIn;
 
 		Edge(int id) {
-<span class="fc" id="L344">			super(id);</span>
-<span class="fc" id="L345">		}</span>
+<span class="fc" id="L354">			super(id);</span>
+<span class="fc" id="L355">		}</span>
 	}
 
 	@Override
 	void markVertex(int vertex) {
-<span class="fc" id="L350">		edgesOutNum[vertex] = -edgesOutNum[vertex] - 1;</span>
-<span class="fc" id="L351">	}</span>
+<span class="fc" id="L360">		edgesOutNum[vertex] = -edgesOutNum[vertex] - 1;</span>
+<span class="fc" id="L361">	}</span>
 
 	@Override
 	void unmarkVertex(int vertex) {
-<span class="fc" id="L355">		edgesOutNum[vertex] = -edgesOutNum[vertex] - 1;</span>
-<span class="fc" id="L356">	}</span>
+<span class="fc" id="L365">		edgesOutNum[vertex] = -edgesOutNum[vertex] - 1;</span>
+<span class="fc" id="L366">	}</span>
 
 	@Override
 	boolean isMarkedVertex(int vertex) {
-<span class="fc bfc" id="L360" title="All 2 branches covered.">		return edgesOutNum[vertex] &lt; 0;</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">		return edgesOutNum[vertex] &lt; 0;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

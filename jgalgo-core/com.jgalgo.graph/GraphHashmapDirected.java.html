@@ -20,7 +20,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
-class GraphHashmapDirected extends GraphHashmapAbstract {
+class GraphHashmapDirected extends GraphHashmapAbstract implements GraphDefaultsDirected {
 
 	private Int2IntMap[] edgesOut;
 	private Int2IntMap[] edgesIn;

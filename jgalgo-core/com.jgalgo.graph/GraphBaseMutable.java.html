@@ -710,42 +710,34 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L710">		edges.removeRemoveListener(listener);</span>
 <span class="fc" id="L711">	}</span>
 
-	void checkVertex(int vertex) {
-<span class="fc" id="L714">		Assertions.Graphs.checkVertex(vertex, vertices.size);</span>
+	static void clear(int[] dataContainer, int idx, int defaultVal) {
+<span class="fc" id="L714">		dataContainer[idx] = defaultVal;</span>
 <span class="fc" id="L715">	}</span>
 
-	void checkEdge(int edge) {
-<span class="fc" id="L718">		Assertions.Graphs.checkEdge(edge, edges.size);</span>
+	static void clear(long[] dataContainer, int idx, long defaultVal) {
+<span class="fc" id="L718">		dataContainer[idx] = defaultVal;</span>
 <span class="fc" id="L719">	}</span>
 
-	static void clear(int[] dataContainer, int idx, int defaultVal) {
-<span class="fc" id="L722">		dataContainer[idx] = defaultVal;</span>
-<span class="fc" id="L723">	}</span>
-
-	static void clear(long[] dataContainer, int idx, long defaultVal) {
-<span class="fc" id="L726">		dataContainer[idx] = defaultVal;</span>
-<span class="fc" id="L727">	}</span>
-
 	void swapAndClear(int[] dataContainer, int removedIdx, int swappedIdx, int defaultVal) {
-<span class="fc" id="L730">		dataContainer[removedIdx] = dataContainer[swappedIdx];</span>
-<span class="fc" id="L731">		dataContainer[swappedIdx] = defaultVal;</span>
-<span class="fc" id="L732">	}</span>
+<span class="fc" id="L722">		dataContainer[removedIdx] = dataContainer[swappedIdx];</span>
+<span class="fc" id="L723">		dataContainer[swappedIdx] = defaultVal;</span>
+<span class="fc" id="L724">	}</span>
 
 	void swapAndClear(long[] dataContainer, int removedIdx, int swappedIdx, long defaultVal) {
-<span class="fc" id="L735">		dataContainer[removedIdx] = dataContainer[swappedIdx];</span>
-<span class="fc" id="L736">		dataContainer[swappedIdx] = defaultVal;</span>
-<span class="fc" id="L737">	}</span>
+<span class="fc" id="L727">		dataContainer[removedIdx] = dataContainer[swappedIdx];</span>
+<span class="fc" id="L728">		dataContainer[swappedIdx] = defaultVal;</span>
+<span class="fc" id="L729">	}</span>
 
 	&lt;T&gt; void swapAndClear(T[] dataContainer, int removedIdx, int swappedIdx, T defaultVal) {
-<span class="fc" id="L740">		dataContainer[removedIdx] = dataContainer[swappedIdx];</span>
-<span class="fc" id="L741">		dataContainer[swappedIdx] = defaultVal;</span>
-<span class="fc" id="L742">	}</span>
+<span class="fc" id="L732">		dataContainer[removedIdx] = dataContainer[swappedIdx];</span>
+<span class="fc" id="L733">		dataContainer[swappedIdx] = defaultVal;</span>
+<span class="fc" id="L734">	}</span>
 
 	private boolean checkNoSelfEdges() {
-<span class="fc bfc" id="L745" title="All 2 branches covered.">		for (int m = edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc bfc" id="L746" title="All 2 branches covered.">			if (source(e) == target(e))</span>
-<span class="fc" id="L747">				throw new IllegalArgumentException(&quot;Self edges are not allowed&quot;);</span>
-<span class="fc" id="L748">		return true;</span>
+<span class="fc bfc" id="L737" title="All 2 branches covered.">		for (int m = edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L738" title="All 2 branches covered.">			if (source(e) == target(e))</span>
+<span class="fc" id="L739">				throw new IllegalArgumentException(&quot;Self edges are not allowed&quot;);</span>
+<span class="fc" id="L740">		return true;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
