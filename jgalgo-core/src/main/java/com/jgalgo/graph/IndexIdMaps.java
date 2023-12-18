@@ -409,6 +409,123 @@ public class IndexIdMaps {
 		}
 	}
 
+	private static class IndexToIdEdgeSet<V, E> extends AbstractSet<E> implements EdgeSet<V, E> {
+
+		private final IEdgeSet indexSet;
+		private final Graph<V, E> g;
+		private final IndexIdMap<E> eiMap;
+
+		IndexToIdEdgeSet(IEdgeSet indexSet, Graph<V, E> g) {
+			this.indexSet = Objects.requireNonNull(indexSet);
+			this.g = g;
+			this.eiMap = g.indexGraphEdgesMap();
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean remove(Object edge) {
+			return indexSet.remove(eiMap.idToIndexIfExist((E) edge));
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean contains(Object edge) {
+			return indexSet.contains(eiMap.idToIndexIfExist((E) edge));
+		}
+
+		@Override
+		public int size() {
+			return indexSet.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return indexSet.isEmpty();
+		}
+
+		@Override
+		public void clear() {
+			indexSet.clear();
+		}
+
+		@Override
+		public EdgeIter<V, E> iterator() {
+			return indexToIdEdgeIter(g, indexSet.iterator());
+		}
+	}
+
+	static class IndexToIntIdEdgeSet extends AbstractIntSet implements IEdgeSet {
+
+		private final IEdgeSet indexSet;
+		private final IntGraph g;
+		private final IndexIntIdMap eiMap;
+
+		IndexToIntIdEdgeSet(IEdgeSet indexSet, IntGraph g) {
+			this.indexSet = Objects.requireNonNull(indexSet);
+			this.g = g;
+			this.eiMap = g.indexGraphEdgesMap();
+		}
+
+		@Override
+		public boolean remove(int edge) {
+			return indexSet.remove(eiMap.idToIndexIfExist(edge));
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return indexSet.contains(eiMap.idToIndexIfExist(edge));
+		}
+
+		@Override
+		public int size() {
+			return indexSet.size();
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return indexSet.isEmpty();
+		}
+
+		@Override
+		public void clear() {
+			indexSet.clear();
+		}
+
+		@Override
+		public IEdgeIter iterator() {
+			return indexToIdEdgeIter(g, indexSet.iterator());
+		}
+	}
+
+	/**
+	 * Create an edge set of IDs from an edge set of indices.
+	 *
+	 * @param  <V>      the vertices type
+	 * @param  <E>      the edges type
+	 * @param  indexSet an indices edge set
+	 * @param  g        the graph
+	 * @return          an edge set of IDs matching the indices contained in the original index-set
+	 */
+	@SuppressWarnings("unchecked")
+	public static <V, E> EdgeSet<V, E> indexToIdEdgeSet(IEdgeSet indexSet, Graph<V, E> g) {
+		if (g instanceof IntGraph) {
+			return (EdgeSet<V, E>) indexToIdEdgeSet(indexSet, (IntGraph) g);
+		} else {
+			return new IndexToIdEdgeSet<>(indexSet, g);
+		}
+	}
+
+	/**
+	 * Create an edge set of IDs from an edge set of indices in an {@link IntGraph}.
+	 *
+	 * @param  indexSet an indices edge set
+	 * @param  g        the graph
+	 * @return          an edge set of IDs matching the indices contained in the original index-set
+	 */
+	public static IEdgeSet indexToIdEdgeSet(IEdgeSet indexSet, IntGraph g) {
+		return new IndexToIntIdEdgeSet(indexSet, g);
+	}
+
 	/**
 	 * Create an IDs collection from a collection of indices.
 	 *

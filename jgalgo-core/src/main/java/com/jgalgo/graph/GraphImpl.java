@@ -16,7 +16,6 @@
 package com.jgalgo.graph;
 
 import static com.jgalgo.internal.util.Range.range;
-import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -146,12 +145,16 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 
 	@Override
 	public EdgeSet<V, E> outEdges(V source) {
-		return new EdgeSetMapped(indexGraph.outEdges(viMap.idToIndex(source)));
+		int uIdx = viMap.idToIndex(source);
+		IEdgeSet indexSet = indexGraph.outEdges(uIdx);
+		return IndexIdMaps.indexToIdEdgeSet(indexSet, this);
 	}
 
 	@Override
 	public EdgeSet<V, E> inEdges(V target) {
-		return new EdgeSetMapped(indexGraph.inEdges(viMap.idToIndex(target)));
+		int vIdx = viMap.idToIndex(target);
+		IEdgeSet indexSet = indexGraph.inEdges(vIdx);
+		return IndexIdMaps.indexToIdEdgeSet(indexSet, this);
 	}
 
 	@Override
@@ -166,8 +169,8 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	public EdgeSet<V, E> getEdges(V source, V target) {
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
-		IEdgeSet s = indexGraph.getEdges(uIdx, vIdx);
-		return new EdgeSetMapped(s);
+		IEdgeSet indexSet = indexGraph.getEdges(uIdx, vIdx);
+		return IndexIdMaps.indexToIdEdgeSet(indexSet, this);
 	}
 
 	@Override
@@ -413,90 +416,6 @@ class GraphImpl<V, E> extends GraphBase<V, E> {
 	@Override
 	public void removeEdgesWeights(String key) {
 		indexGraph.removeEdgesWeights(key);
-	}
-
-	class EdgeSetMapped extends AbstractSet<E> implements EdgeSet<V, E> {
-
-		private final IEdgeSet set;
-
-		EdgeSetMapped(IEdgeSet set) {
-			this.set = Objects.requireNonNull(set);
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public boolean remove(Object edge) {
-			return set.remove(eiMap.idToIndexIfExist((E) edge));
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public boolean contains(Object edge) {
-			return set.contains(eiMap.idToIndexIfExist((E) edge));
-		}
-
-		@Override
-		public int size() {
-			return set.size();
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return set.isEmpty();
-		}
-
-		@Override
-		public void clear() {
-			set.clear();
-		}
-
-		@Override
-		public EdgeIter<V, E> iterator() {
-			return new EdgeIterMapped(set.iterator());
-		}
-	}
-
-	class EdgeIterMapped implements EdgeIter<V, E> {
-
-		private final IEdgeIter it;
-
-		EdgeIterMapped(IEdgeIter it) {
-			this.it = it;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return it.hasNext();
-		}
-
-		@Override
-		public E next() {
-			int eIdx = it.nextInt();
-			return eiMap.indexToId(eIdx);
-		}
-
-		@Override
-		public E peekNext() {
-			int eIdx = it.peekNextInt();
-			return eiMap.indexToId(eIdx);
-		}
-
-		@Override
-		public void remove() {
-			it.remove();
-		}
-
-		@Override
-		public V target() {
-			int vIdx = it.targetInt();
-			return viMap.indexToId(vIdx);
-		}
-
-		@Override
-		public V source() {
-			int uIdx = it.sourceInt();
-			return viMap.indexToId(uIdx);
-		}
 	}
 
 	@Override

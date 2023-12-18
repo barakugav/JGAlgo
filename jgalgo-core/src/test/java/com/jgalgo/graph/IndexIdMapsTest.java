@@ -640,6 +640,13 @@ public class IndexIdMapsTest extends TestBase {
 		});
 	}
 
+	@Test
+	public void indexToIdEdgeSetOfIntGraph() {
+		Graph<Integer, Integer> g = createGraph(true);
+		EdgeSet<Integer, Integer> edges = IndexIdMaps.indexToIdEdgeSet(g.indexGraph().outEdges(0), g);
+		assertTrue(edges instanceof IEdgeSet);
+	}
+
 	private static Graph<Integer, Integer> createGraph(boolean intGraph) {
 		final long seed = 0x97fa28ae01bfaf23L;
 		GnpGraphGenerator<Integer, Integer> g =

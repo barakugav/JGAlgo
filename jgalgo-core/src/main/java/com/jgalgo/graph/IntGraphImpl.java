@@ -19,7 +19,6 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
@@ -155,14 +154,16 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 
 	@Override
 	public IEdgeSet outEdges(int source) {
-		IEdgeSet indexSet = indexGraph.outEdges(viMap.idToIndex(source));
-		return new IndexToIdEdgeSet(indexSet, viMap, eiMap);
+		int uIdx = viMap.idToIndex(source);
+		IEdgeSet indexSet = indexGraph.outEdges(uIdx);
+		return IndexIdMaps.indexToIdEdgeSet(indexSet, this);
 	}
 
 	@Override
 	public IEdgeSet inEdges(int target) {
-		IEdgeSet indexSet = indexGraph.inEdges(viMap.idToIndex(target));
-		return new IndexToIdEdgeSet(indexSet, viMap, eiMap);
+		int vIdx = viMap.idToIndex(target);
+		IEdgeSet indexSet = indexGraph.inEdges(vIdx);
+		return IndexIdMaps.indexToIdEdgeSet(indexSet, this);
 	}
 
 	@Override
@@ -178,7 +179,7 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 		int uIdx = viMap.idToIndex(source);
 		int vIdx = viMap.idToIndex(target);
 		IEdgeSet indexSet = indexGraph.getEdges(uIdx, vIdx);
-		return new IndexToIdEdgeSet(indexSet, viMap, eiMap);
+		return IndexIdMaps.indexToIdEdgeSet(indexSet, this);
 	}
 
 	@Override
@@ -427,96 +428,6 @@ class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
 	@Override
 	public void removeEdgesWeights(String key) {
 		indexGraph.removeEdgesWeights(key);
-	}
-
-	static class IndexToIdEdgeSet extends AbstractIntSet implements IEdgeSet {
-
-		private final IEdgeSet indexSet;
-		private final IndexIntIdMap viMap;
-		private final IndexIntIdMap eiMap;
-
-		IndexToIdEdgeSet(IEdgeSet indexSet, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
-			this.indexSet = Objects.requireNonNull(indexSet);
-			this.viMap = viMap;
-			this.eiMap = eiMap;
-		}
-
-		@Override
-		public boolean remove(int edge) {
-			return indexSet.remove(eiMap.idToIndexIfExist(edge));
-		}
-
-		@Override
-		public boolean contains(int edge) {
-			return indexSet.contains(eiMap.idToIndexIfExist(edge));
-		}
-
-		@Override
-		public int size() {
-			return indexSet.size();
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return indexSet.isEmpty();
-		}
-
-		@Override
-		public void clear() {
-			indexSet.clear();
-		}
-
-		@Override
-		public IEdgeIter iterator() {
-			return new IndexToIdEdgeIter(indexSet.iterator(), viMap, eiMap);
-		}
-	}
-
-	static class IndexToIdEdgeIter implements IEdgeIter {
-
-		private final IEdgeIter indexIter;
-		private final IndexIntIdMap viMap;
-		private final IndexIntIdMap eiMap;
-
-		IndexToIdEdgeIter(IEdgeIter indexIter, IndexIntIdMap viMap, IndexIntIdMap eiMap) {
-			this.indexIter = indexIter;
-			this.viMap = viMap;
-			this.eiMap = eiMap;
-		}
-
-		@Override
-		public boolean hasNext() {
-			return indexIter.hasNext();
-		}
-
-		@Override
-		public int nextInt() {
-			int eIdx = indexIter.nextInt();
-			return eiMap.indexToIdInt(eIdx);
-		}
-
-		@Override
-		public int peekNextInt() {
-			int eIdx = indexIter.peekNextInt();
-			return eiMap.indexToIdInt(eIdx);
-		}
-
-		@Override
-		public void remove() {
-			indexIter.remove();
-		}
-
-		@Override
-		public int targetInt() {
-			int vIdx = indexIter.targetInt();
-			return viMap.indexToIdInt(vIdx);
-		}
-
-		@Override
-		public int sourceInt() {
-			int uIdx = indexIter.sourceInt();
-			return viMap.indexToIdInt(uIdx);
-		}
 	}
 
 	@Override
