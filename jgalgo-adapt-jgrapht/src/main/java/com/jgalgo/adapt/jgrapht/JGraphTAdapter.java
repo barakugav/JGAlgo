@@ -15,10 +15,15 @@
  */
 package com.jgalgo.adapt.jgrapht;
 
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Supplier;
 import org.jgrapht.GraphType;
 import org.jgrapht.graph.DefaultGraphType;
+import com.jgalgo.graph.IEdgeSet;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightsDouble;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -52,6 +57,9 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 public class JGraphTAdapter<V, E> extends org.jgrapht.graph.AbstractGraph<V, E> {
 
 	private final com.jgalgo.graph.Graph<V, E> graph;
+	private final IndexGraph g;
+	private final IndexIdMap<V> viMap;
+	private final IndexIdMap<E> eiMap;
 	private final WeightsDouble<E> weights;
 	private Supplier<V> vertexSupplier;
 	private Supplier<E> edgeSupplier;
@@ -78,6 +86,9 @@ public class JGraphTAdapter<V, E> extends org.jgrapht.graph.AbstractGraph<V, E> 
 	 */
 	public JGraphTAdapter(com.jgalgo.graph.Graph<V, E> graph, String edgeWeightKey) {
 		this.graph = graph;
+		g = graph.indexGraph();
+		viMap = graph.indexGraphVerticesMap();
+		eiMap = graph.indexGraphEdgesMap();
 		if (edgeWeightKey == null) {
 			weights = null;
 		} else {
@@ -121,16 +132,26 @@ public class JGraphTAdapter<V, E> extends org.jgrapht.graph.AbstractGraph<V, E> 
 
 	@Override
 	public Set<E> getAllEdges(V sourceVertex, V targetVertex) {
-		if (!containsVertex(sourceVertex) || !containsVertex(targetVertex))
+		int uIdx = viMap.idToIndexIfExist(sourceVertex);
+		if (uIdx < 0)
 			return null;
-		return graph.getEdges(sourceVertex, targetVertex);
+		int vIdx = viMap.idToIndexIfExist(targetVertex);
+		if (vIdx < 0)
+			return null;
+		IEdgeSet es = g.getEdges(uIdx, vIdx);
+		return IndexIdMaps.indexToIdEdgeSet(es, graph);
 	}
 
 	@Override
 	public E getEdge(V sourceVertex, V targetVertex) {
-		if (!containsVertex(sourceVertex) || !containsVertex(targetVertex))
+		int uIdx = viMap.idToIndexIfExist(sourceVertex);
+		if (uIdx < 0)
 			return null;
-		return graph.getEdge(sourceVertex, targetVertex);
+		int vIdx = viMap.idToIndexIfExist(targetVertex);
+		if (vIdx < 0)
+			return null;
+		int eIdx = g.getEdge(uIdx, vIdx);
+		return eiMap.indexToIdIfExist(eIdx);
 	}
 
 	@Override
@@ -143,16 +164,20 @@ public class JGraphTAdapter<V, E> extends org.jgrapht.graph.AbstractGraph<V, E> 
 		return edgeSupplier;
 	}
 
+	private int vertexIdxNonNull(V vertex) {
+		return viMap.idToIndex(Objects.requireNonNull(vertex));
+	}
+
 	@Override
 	public E addEdge(V sourceVertex, V targetVertex) {
-		assertVertexExist(sourceVertex);
-		assertVertexExist(targetVertex);
+		int uIdx = vertexIdxNonNull(sourceVertex);
+		int vIdx = vertexIdxNonNull(targetVertex);
 		if (edgeSupplier == null)
 			throw new UnsupportedOperationException("graph does not have an edge supplier");
 		E edge = edgeSupplier.get();
 		if (containsEdge(edge))
 			return null;
-		if (!graph.isAllowParallelEdges() && containsEdge(sourceVertex, targetVertex))
+		if (!g.isAllowParallelEdges() && g.containsEdge(uIdx, vIdx))
 			return null;
 		graph.addEdge(sourceVertex, targetVertex, edge);
 		return edge;
@@ -160,11 +185,11 @@ public class JGraphTAdapter<V, E> extends org.jgrapht.graph.AbstractGraph<V, E> 
 
 	@Override
 	public boolean addEdge(V sourceVertex, V targetVertex, E e) {
-		assertVertexExist(sourceVertex);
-		assertVertexExist(targetVertex);
+		int uIdx = vertexIdxNonNull(sourceVertex);
+		int vIdx = vertexIdxNonNull(targetVertex);
 		if (containsEdge(e))
 			return false;
-		if (!graph.isAllowParallelEdges() && containsEdge(sourceVertex, targetVertex))
+		if (!g.isAllowParallelEdges() && g.containsEdge(uIdx, vIdx))
 			return false;
 		graph.addEdge(sourceVertex, targetVertex, e);
 		return true;
@@ -189,8 +214,13 @@ public class JGraphTAdapter<V, E> extends org.jgrapht.graph.AbstractGraph<V, E> 
 
 	@Override
 	public boolean containsEdge(V sourceVertex, V targetVertex) {
-		return containsVertex(sourceVertex) && containsVertex(targetVertex)
-				&& graph.containsEdge(sourceVertex, targetVertex);
+		int uIdx = viMap.idToIndexIfExist(sourceVertex);
+		if (uIdx < 0)
+			return false;
+		int vIdx = viMap.idToIndexIfExist(targetVertex);
+		if (vIdx < 0)
+			return false;
+		return g.containsEdge(uIdx, vIdx);
 	}
 
 	@Override
@@ -210,38 +240,33 @@ public class JGraphTAdapter<V, E> extends org.jgrapht.graph.AbstractGraph<V, E> 
 
 	@Override
 	public int degreeOf(V vertex) {
-		assertVertexExist(vertex);
-		if (graph.isDirected())
-			return graph.outEdges(vertex).size() + graph.inEdges(vertex).size();
-		if (!graph.isAllowSelfEdges())
-			return graph.outEdges(vertex).size();
+		int vIdx = vertexIdxNonNull(vertex);
+		if (g.isDirected())
+			return g.outEdges(vIdx).size() + g.inEdges(vIdx).size();
+		if (!g.isAllowSelfEdges())
+			return g.outEdges(vIdx).size();
 		/* self edges are counted twice in JGraphT graphs */
-		int degree = graph.outEdges(vertex).size();
-		for (E edge : graph.outEdges(vertex))
-			if (graph.edgeSource(edge).equals(graph.edgeTarget(edge)))
+		int degree = g.outEdges(vIdx).size();
+		for (int edge : g.outEdges(vIdx))
+			if (g.edgeSource(edge) == g.edgeTarget(edge))
 				degree++;
 		return degree;
 	}
 
 	@Override
 	public Set<E> edgesOf(V vertex) {
-		assertVertexExist(vertex);
-		if (!graph.isDirected())
-			return graph.outEdges(vertex);
-		return graph.undirectedView().outEdges(vertex);
+		return graph.undirectedView().outEdges(Objects.requireNonNull(vertex));
 	}
 
 	@Override
 	public int inDegreeOf(V vertex) {
-		if (!graph.isDirected())
+		if (!g.isDirected())
 			return degreeOf(vertex);
-		assertVertexExist(vertex);
-		return graph.inEdges(vertex).size();
+		return graph.inEdges(Objects.requireNonNull(vertex)).size();
 	}
 
 	@Override
 	public Set<E> incomingEdgesOf(V vertex) {
-		assertVertexExist(vertex);
 		return graph.inEdges(vertex);
 	}
 
@@ -249,34 +274,42 @@ public class JGraphTAdapter<V, E> extends org.jgrapht.graph.AbstractGraph<V, E> 
 	public int outDegreeOf(V vertex) {
 		if (!graph.isDirected())
 			return degreeOf(vertex);
-		assertVertexExist(vertex);
-		return graph.outEdges(vertex).size();
+		return graph.outEdges(Objects.requireNonNull(vertex)).size();
 	}
 
 	@Override
 	public Set<E> outgoingEdgesOf(V vertex) {
-		assertVertexExist(vertex);
 		return graph.outEdges(vertex);
 	}
 
 	@Override
 	public Set<E> removeAllEdges(V sourceVertex, V targetVertex) {
-		if (!containsVertex(sourceVertex) || !containsVertex(targetVertex))
+		int uIdx = viMap.idToIndexIfExist(sourceVertex);
+		if (uIdx < 0)
 			return null;
-		Set<E> edges = new ObjectOpenHashSet<>(graph.getEdges(sourceVertex, targetVertex));
+		int vIdx = viMap.idToIndexIfExist(targetVertex);
+		if (vIdx < 0)
+			return null;
+
+		Set<E> edges = new ObjectOpenHashSet<>(IndexIdMaps.indexToIdEdgeSet(g.getEdges(uIdx, vIdx), graph));
 		removeAllEdges(edges);
 		return edges;
 	}
 
 	@Override
 	public E removeEdge(V sourceVertex, V targetVertex) {
-		if (!containsVertex(sourceVertex) || !containsVertex(targetVertex))
+		int uIdx = viMap.idToIndexIfExist(sourceVertex);
+		if (uIdx < 0)
 			return null;
-		E edge = graph.getEdge(sourceVertex, targetVertex);
-		if (edge == null)
+		int vIdx = viMap.idToIndexIfExist(targetVertex);
+		if (vIdx < 0)
 			return null;
-		graph.removeEdge(edge);
-		return edge;
+		int eIdx = g.getEdge(uIdx, vIdx);
+		if (eIdx < 0)
+			return null;
+		E e = eiMap.indexToId(eIdx);
+		graph.removeEdge(e);
+		return e;
 	}
 
 	@Override

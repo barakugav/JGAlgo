@@ -17,12 +17,6 @@
       <version>${project.version}</version>
     </dependency>
 
-    <!-- <dependency>
-      <groupId>it.unimi.dsi</groupId>
-      <artifactId>fastutil</artifactId>
-      <version>${fastutil.version}</version>
-    </dependency> -->
-
     <dependency>
       <groupId>org.jgrapht</groupId>
       <artifactId>jgrapht-core</artifactId>
