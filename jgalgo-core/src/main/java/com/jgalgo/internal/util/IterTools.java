@@ -18,6 +18,7 @@ package com.jgalgo.internal.util;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.function.IntFunction;
 import java.util.function.IntUnaryOperator;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -135,11 +136,11 @@ public class IterTools {
 
 	}
 
-	private static class MappedIter<A, B> implements Iterator<B> {
+	private static class IterMapObjObj<A, B> implements Iterator<B> {
 		private final Iterator<A> it;
 		private final Function<A, B> map;
 
-		MappedIter(Iterator<A> it, Function<A, B> map) {
+		IterMapObjObj(Iterator<A> it, Function<A, B> map) {
 			this.it = Objects.requireNonNull(it);
 			this.map = Objects.requireNonNull(map);
 		}
@@ -156,14 +157,38 @@ public class IterTools {
 	}
 
 	public static <A, B> Iterator<B> map(Iterator<A> it, Function<A, B> map) {
-		return new MappedIter<>(it, map);
+		return new IterMapObjObj<>(it, map);
 	}
 
-	private static class MappedIntIter implements IntIterator {
+	private static class IterMapIntObj<B> implements Iterator<B> {
+		private final IntIterator it;
+		private final IntFunction<B> map;
+
+		IterMapIntObj(IntIterator it, IntFunction<B> map) {
+			this.it = Objects.requireNonNull(it);
+			this.map = Objects.requireNonNull(map);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return it.hasNext();
+		}
+
+		@Override
+		public B next() {
+			return map.apply(it.nextInt());
+		}
+	}
+
+	public static <B> Iterator<B> map(IntIterator it, IntFunction<B> map) {
+		return new IterMapIntObj<>(it, map);
+	}
+
+	private static class IterMapIntInt implements IntIterator {
 		private final IntIterator it;
 		private final IntUnaryOperator map;
 
-		MappedIntIter(IntIterator it, IntUnaryOperator map) {
+		IterMapIntInt(IntIterator it, IntUnaryOperator map) {
 			this.it = Objects.requireNonNull(it);
 			this.map = Objects.requireNonNull(map);
 		}
@@ -180,7 +205,7 @@ public class IterTools {
 	}
 
 	public static IntIterator mapInt(IntIterator it, IntUnaryOperator map) {
-		return new MappedIntIter(it, map);
+		return new IterMapIntInt(it, map);
 	}
 
 }
