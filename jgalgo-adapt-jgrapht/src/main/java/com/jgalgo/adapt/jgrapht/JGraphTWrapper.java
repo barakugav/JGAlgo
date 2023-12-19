@@ -86,7 +86,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @param  <E> the edges type
  * @author     Barak Ugav
  */
-public class JGraphTWrapper<V, E> implements com.jgalgo.graph.Graph<V, E> {
+public class JGraphTWrapper<V, E> extends com.jgalgo.graph.AbstractGraph<V, E> {
 
 	private final org.jgrapht.Graph<V, E> graph;
 	private final String edgeWeightKey;
@@ -665,7 +665,8 @@ public class JGraphTWrapper<V, E> implements com.jgalgo.graph.Graph<V, E> {
 		}
 	}
 
-	private static class IndexGraphImpl<V, E> implements IndexGraph {
+	private static class IndexGraphImpl<V, E> extends com.jgalgo.graph.AbstractGraph<Integer, Integer>
+			implements IndexGraph {
 
 		private final org.jgrapht.Graph<V, E> graph;
 		private final IndexIdMap<V> viMap;
