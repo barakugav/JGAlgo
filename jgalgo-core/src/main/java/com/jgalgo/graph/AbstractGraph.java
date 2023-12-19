@@ -15,7 +15,17 @@
  */
 package com.jgalgo.graph;
 
-abstract class GraphBase<V, E> implements Graph<V, E> {
+/**
+ * Abstract implementation of {@link Graph}.
+ *
+ * <p>
+ * This class provides default implementations for {@link #equals(Object)}, {@link #hashCode()} and {@link #toString()}.
+ *
+ * @param  <V> the vertices type
+ * @param  <E> the edges type
+ * @author     Barak Ugav
+ */
+public abstract class AbstractGraph<V, E> implements Graph<V, E> {
 
 	@Override
 	public boolean equals(Object other) {

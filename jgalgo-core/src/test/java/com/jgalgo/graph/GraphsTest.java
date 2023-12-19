@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -788,6 +789,52 @@ public class GraphsTest extends TestBase {
 		assertThrows(IllegalArgumentException.class, () -> Graphs.randEdge(IntGraph.newUndirected(), new Random()));
 		assertThrows(IllegalArgumentException.class, () -> Graphs.randEdge(Graph.newDirected(), new Random()));
 		assertThrows(IllegalArgumentException.class, () -> Graphs.randEdge(Graph.newUndirected(), new Random()));
+	}
+
+	@SuppressWarnings("boxing")
+	@Test
+	public void toStringTest() {
+		foreachBoolConfig(intGraph -> {
+			GraphFactory<Integer, Integer> factory = intGraph ? IntGraphFactory.directed() : GraphFactory.directed();
+			Graph<Integer, Integer> g = factory.newGraph();
+			assertEquals("{}", g.toString());
+
+			g.addVertices(range(6));
+			assertEquals("{0: [], 1: [], 2: [], 3: [], 4: [], 5: []}", g.toString());
+
+			WeightsInt<Integer> vWeights = g.addVerticesWeights("weights", int.class);
+			vWeights.set(0, 20);
+			vWeights.set(1, 21);
+			vWeights.set(2, 22);
+			vWeights.set(3, 23);
+			vWeights.set(4, 24);
+			vWeights.set(5, 25);
+			assertEquals("{0{20}: [], 1{21}: [], 2{22}: [], 3{23}: [], 4{24}: [], 5{25}: []}", g.toString());
+
+			g.addEdge(0, 1, 50);
+			g.addEdge(0, 2, 51);
+			g.addEdge(3, 5, 52);
+			assertEquals("{0{20}: [50(0, 1), 51(0, 2)], 1{21}: [], 2{22}: [], 3{23}: [52(3, 5)], 4{24}: [], 5{25}: []}",
+					g.toString());
+
+			WeightsDouble<Integer> eWeights = g.addEdgesWeights("weights", double.class);
+			eWeights.set(50, 0.5);
+			eWeights.set(51, 0.51);
+			assertEquals(
+					"{0{20}: [50(0, 1, {0.5}), 51(0, 2, {0.51})], 1{21}: [], 2{22}: [], 3{23}: [52(3, 5, {0.0})], 4{24}: [], 5{25}: []}",
+					g.toString());
+
+			WeightsInt<Integer> vWeights2 = g.addVerticesWeights("weights2", int.class);
+			vWeights2.set(0, 20);
+			vWeights2.set(1, 21);
+			vWeights2.set(2, 22);
+			vWeights2.set(3, 23);
+			vWeights2.set(4, 24);
+			vWeights2.set(5, 25);
+			assertEquals(
+					"{0{20, 20}: [50(0, 1, {0.5}), 51(0, 2, {0.51})], 1{21, 21}: [], 2{22, 22}: [], 3{23, 23}: [52(3, 5, {0.0})], 4{24, 24}: [], 5{25, 25}: []}",
+					g.toString());
+		});
 	}
 
 }

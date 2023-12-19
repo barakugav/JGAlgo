@@ -25,7 +25,7 @@ import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-class IntGraphImpl extends GraphBase<Integer, Integer> implements IntGraph {
+class IntGraphImpl extends AbstractGraph<Integer, Integer> implements IntGraph {
 
 	final IndexGraph indexGraph;
 	final IndexIntIdMapImpl viMap;

@@ -23,7 +23,7 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterables;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
-abstract class IndexGraphBase extends GraphBase<Integer, Integer> implements IndexGraph {
+abstract class IndexGraphBase extends AbstractGraph<Integer, Integer> implements IndexGraph {
 
 	private final boolean isDirected;
 	final GraphElementSet vertices;

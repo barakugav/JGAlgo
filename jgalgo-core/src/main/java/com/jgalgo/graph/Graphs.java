@@ -17,10 +17,13 @@ package com.jgalgo.graph;
 
 import java.util.AbstractSet;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 import java.util.function.ObjIntConsumer;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IntAdapters;
@@ -68,7 +71,7 @@ public class Graphs {
 	static interface ImmutableGraph {
 	}
 
-	private static class ImmutableGraphView<V, E> extends GraphBase<V, E> implements ImmutableGraph {
+	private static class ImmutableGraphView<V, E> extends AbstractGraph<V, E> implements ImmutableGraph {
 
 		private final Graph<V, E> graph;
 
@@ -293,7 +296,7 @@ public class Graphs {
 
 	}
 
-	private abstract static class ImmutableIntGraphViewBase extends GraphBase<Integer, Integer>
+	private abstract static class ImmutableIntGraphViewBase extends AbstractGraph<Integer, Integer>
 			implements IntGraph, ImmutableGraph {
 
 		private final IntGraph graph;
@@ -713,7 +716,7 @@ public class Graphs {
 		return new ImmutableGraphView<>(g);
 	}
 
-	private abstract static class GraphViewBase<V, E> extends GraphBase<V, E> {
+	private abstract static class GraphViewBase<V, E> extends AbstractGraph<V, E> {
 
 		private final Graph<V, E> graph;
 
@@ -2965,45 +2968,42 @@ public class Graphs {
 			return toString((IntGraph) g);
 
 		StringBuilder s = new StringBuilder();
-		s.append('{');
 
 		Set<String> verticesWeightsKeys = g.getVerticesWeightsKeys();
-		Collection<Weights<V, ?>> verticesWeights = new ObjectArrayList<>(verticesWeightsKeys.size());
+		List<Weights<V, ?>> verticesWeights = new ObjectArrayList<>(verticesWeightsKeys.size());
 		for (String key : verticesWeightsKeys)
 			verticesWeights.add(g.getVerticesWeights(key));
 
 		Set<String> edgesWeightsKeys = g.getEdgesWeightsKeys();
-		Collection<Weights<E, ?>> edgesWeights = new ObjectArrayList<>(edgesWeightsKeys.size());
+		List<Weights<E, ?>> edgesWeights = new ObjectArrayList<>(edgesWeightsKeys.size());
 		for (String key : edgesWeightsKeys)
 			edgesWeights.add(g.getEdgesWeights(key));
 
-		BiConsumer<Collection<Weights<V, ?>>, V> appendVertexWeights = (weights, vertex) -> {
-			s.append('[');
+		BiConsumer<Collection<Weights<Object, ?>>, Object> appendWeights = (weights, id) -> {
+			s.append('{');
 			boolean firstData = true;
-			for (Weights<V, ?> weight : weights) {
+			for (Weights<Object, ?> weight : weights) {
 				if (firstData) {
 					firstData = false;
 				} else {
 					s.append(", ");
 				}
-				s.append(weight.getAsObj(vertex));
+				s.append(weight.getAsObj(id));
 			}
-			s.append(']');
+			s.append('}');
 		};
-		BiConsumer<Collection<Weights<E, ?>>, E> appendEdgeWeights = (weights, edge) -> {
-			s.append('[');
-			boolean firstData = true;
-			for (Weights<E, ?> weight : weights) {
-				if (firstData) {
-					firstData = false;
-				} else {
-					s.append(", ");
-				}
-				s.append(weight.getAsObj(edge));
-			}
-			s.append(']');
+		Consumer<V> appendVertexWeights = vertex -> {
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			Collection<Weights<Object, ?>> weights0 = (Collection) verticesWeights;
+			appendWeights.accept(weights0, vertex);
+		};
+		Consumer<E> appendEdgeWeights = edge -> {
+			@SuppressWarnings({ "unchecked", "rawtypes" })
+			Collection<Weights<Object, ?>> weights0 = (Collection) edgesWeights;
+			appendWeights.accept(weights0, edge);
 		};
 
+		s.append('{');
 		boolean firstVertex = true;
 		for (V u : g.vertices()) {
 			if (firstVertex) {
@@ -3011,9 +3011,9 @@ public class Graphs {
 			} else {
 				s.append(", ");
 			}
-			s.append('v').append(u);
+			s.append(u);
 			if (!verticesWeights.isEmpty())
-				appendVertexWeights.accept(verticesWeights, u);
+				appendVertexWeights.accept(u);
 
 			s.append(": [");
 			boolean firstEdge = true;
@@ -3027,7 +3027,7 @@ public class Graphs {
 				s.append(e).append('(').append(u).append(", ").append(v);
 				if (!edgesWeights.isEmpty()) {
 					s.append(", ");
-					appendEdgeWeights.accept(edgesWeights, e);
+					appendEdgeWeights.accept(e);
 				}
 				s.append(')');
 			}
@@ -3039,7 +3039,6 @@ public class Graphs {
 
 	private static String toString(IntGraph g) {
 		StringBuilder s = new StringBuilder();
-		s.append('{');
 
 		Set<String> verticesWeightsKeys = g.getVerticesWeightsKeys();
 		Collection<IWeights<?>> verticesWeights = new ObjectArrayList<>(verticesWeightsKeys.size());
@@ -3051,8 +3050,8 @@ public class Graphs {
 		for (String key : edgesWeightsKeys)
 			edgesWeights.add((IWeights<?>) g.getEdgesWeights(key));
 
-		ObjIntConsumer<Collection<IWeights<?>>> appendWeights = (weights, elm) -> {
-			s.append('[');
+		ObjIntConsumer<Collection<IWeights<?>>> appendWeights = (weights, id) -> {
+			s.append('{');
 			boolean firstData = true;
 			for (IWeights<?> weight : weights) {
 				if (firstData) {
@@ -3060,11 +3059,14 @@ public class Graphs {
 				} else {
 					s.append(", ");
 				}
-				s.append(weight.getAsObj(elm));
+				s.append(weight.getAsObj(id));
 			}
-			s.append(']');
+			s.append('}');
 		};
+		IntConsumer appendVertexWeights = vertex -> appendWeights.accept(verticesWeights, vertex);
+		IntConsumer appendEdgeWeights = edge -> appendWeights.accept(edgesWeights, edge);
 
+		s.append('{');
 		boolean firstVertex = true;
 		for (int u : g.vertices()) {
 			if (firstVertex) {
@@ -3072,9 +3074,9 @@ public class Graphs {
 			} else {
 				s.append(", ");
 			}
-			s.append('v').append(u);
+			s.append(u);
 			if (!verticesWeights.isEmpty())
-				appendWeights.accept(verticesWeights, u);
+				appendVertexWeights.accept(u);
 
 			s.append(": [");
 			boolean firstEdge = true;
@@ -3088,7 +3090,7 @@ public class Graphs {
 				s.append(e).append('(').append(u).append(", ").append(v);
 				if (!edgesWeights.isEmpty()) {
 					s.append(", ");
-					appendWeights.accept(edgesWeights, e);
+					appendEdgeWeights.accept(e);
 				}
 				s.append(')');
 			}
