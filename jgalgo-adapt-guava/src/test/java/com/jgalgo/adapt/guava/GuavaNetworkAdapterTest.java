@@ -16,85 +16,64 @@
 package com.jgalgo.adapt.guava;
 
 import static com.jgalgo.internal.util.Range.range;
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import com.google.common.graph.ElementOrder;
 import com.google.common.graph.EndpointPair;
-import com.google.common.graph.Graph;
-import com.google.common.graph.MutableGraph;
+import com.google.common.graph.MutableNetwork;
+import com.google.common.graph.Network;
 import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IntGraphFactory;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 @SuppressWarnings("boxing")
-public class GuavaGraphAdapterTest {
-
-	@Test
-	public void adapterOfGraphWithParallelEdges() {
-		com.jgalgo.graph.Graph<Integer, Integer> gOrig =
-				IntGraphFactory.directed().allowParallelEdges().allowSelfEdges().newGraph();
-		assertThrows(UnsupportedOperationException.class, () -> new GuavaGraphAdapter<>(gOrig));
-	}
+public class GuavaNetworkAdapterTest {
 
 	@Test
 	public void nodes() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
-			Graph<Integer> g = new GuavaGraphAdapter<>(gOrig);
+			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 			assertEquals(gOrig.vertices(), g.nodes());
 		}
 	}
 
 	@Test
 	public void edges() {
-		final Random rand = new Random(0x5c82fa80c4cec01fL);
 		for (boolean directed : BooleanList.of(false, true)) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
-			Graph<Integer> g = new GuavaGraphAdapter<>(gOrig);
+			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
+			assertEquals(gOrig.edges(), g.edges());
+		}
+	}
 
-			assertEquals(gOrig.edges().size(), g.edges().size());
-
-			Set<Integer> iteratedEdges = new IntOpenHashSet();
-			for (EndpointPair<Integer> e : g.edges()) {
-				assertEquals(directed, e.isOrdered());
-				Integer u = e.nodeU(), v = e.nodeV();
-				Integer eOrig = gOrig.getEdge(u, v);
-				assertNotNull(eOrig);
-				boolean dup = !iteratedEdges.add(eOrig);
-				assertFalse(dup);
-			}
-			assertEquals(gOrig.edges(), iteratedEdges);
-
-			for (int e : gOrig.edges()) {
+	@Test
+	public void incidentNodes() {
+		final Random rand = new Random(0xe2715882c3c98be1L);
+		for (boolean directed : BooleanList.of(false, true)) {
+			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
+			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
+			for (Integer e : g.edges()) {
 				Integer u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
-				if (!directed && rand.nextBoolean()) {
-					Integer tmp = u;
-					u = v;
-					v = tmp;
-				}
-				EndpointPair<Integer> endpoints = endpoints(u, v, directed);
-				assertTrue(g.edges().contains(endpoints));
+				EndpointPair<Integer> expected = endpoints(u, v, directed);
+				assertEquals(expected, g.incidentNodes(e));
 			}
-			for (int i = 0; i < 20; i++) {
-				Integer u = Graphs.randVertex(gOrig, rand);
-				Integer v = Graphs.randVertex(gOrig, rand);
-				EndpointPair<Integer> endpoints = endpoints(u, v, directed);
-				assertEquals(gOrig.containsEdge(u, v), g.edges().contains(endpoints));
-			}
-			assertFalse(g.edges().contains((Object) "wrong type"));
+			assertThrows(IllegalArgumentException.class, () -> g.incidentNodes(nonExistingEdge(gOrig, rand)));
 		}
 	}
 
@@ -103,7 +82,7 @@ public class GuavaGraphAdapterTest {
 		final Random rand = new Random(0x7727d19a01718ddL);
 		for (boolean directed : BooleanList.of(false, true)) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
-			Graph<Integer> g = new GuavaGraphAdapter<>(gOrig);
+			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
 			for (Integer u : g.nodes()) {
 				Set<Integer> actual = g.successors(u);
@@ -129,7 +108,7 @@ public class GuavaGraphAdapterTest {
 		final Random rand = new Random(0x7d5adfa3e4cff2feL);
 		for (boolean directed : BooleanList.of(false, true)) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
-			Graph<Integer> g = new GuavaGraphAdapter<>(gOrig);
+			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
 			for (Integer u : g.nodes()) {
 				Set<Integer> actual = g.predecessors(u);
@@ -155,7 +134,7 @@ public class GuavaGraphAdapterTest {
 		final Random rand = new Random(0x7d5adfa3e4cff2feL);
 		for (boolean directed : BooleanList.of(false, true)) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
-			Graph<Integer> g = new GuavaGraphAdapter<>(gOrig);
+			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
 			for (Integer u : g.nodes()) {
 				Set<Integer> actual = g.adjacentNodes(u);
@@ -178,11 +157,43 @@ public class GuavaGraphAdapterTest {
 	}
 
 	@Test
+	public void adjacentEdges() {
+		final Random rand = new Random(0xe5f4970282966bfdL);
+		for (boolean directed : BooleanList.of(false, true)) {
+			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
+			System.out.println(Graphs.selfEdges(gOrig));
+			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
+
+			for (Integer e : g.edges()) {
+				Set<Integer> actual = g.adjacentEdges(e);
+				Set<Integer> expected = new IntOpenHashSet();
+				expected.addAll(gOrig.outEdges(gOrig.edgeSource(e)));
+				expected.addAll(gOrig.inEdges(gOrig.edgeSource(e)));
+				expected.addAll(gOrig.outEdges(gOrig.edgeTarget(e)));
+				expected.addAll(gOrig.inEdges(gOrig.edgeTarget(e)));
+				expected.remove(e);
+				assertEquals(expected, actual);
+				assertEquals(actual, expected);
+
+				for (int i = 0; i < 20; i++) {
+					Integer e1 = Graphs.randEdge(gOrig, rand);
+					assertEquals(expected.contains(e1), actual.contains(e1));
+				}
+				for (int i = 0; i < 20; i++) {
+					Integer e1 = Integer.valueOf(rand.nextInt());
+					assertEquals(expected.contains(e1), actual.contains(e1));
+				}
+			}
+			assertThrows(IllegalArgumentException.class, () -> g.adjacentEdges(nonExistingVertex(gOrig, rand)));
+		}
+	}
+
+	@Test
 	public void hasEdgeConnecting() {
 		final Random rand = new Random(0x7d5adfa3e4cff2feL);
 		for (boolean directed : BooleanList.of(false, true)) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
-			Graph<Integer> g = new GuavaGraphAdapter<>(gOrig);
+			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
 			for (Integer e : gOrig.edges()) {
 				Integer u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
@@ -194,6 +205,9 @@ public class GuavaGraphAdapterTest {
 				assertTrue(g.hasEdgeConnecting(u, v));
 				EndpointPair<Integer> endpoints = endpoints(u, v, directed);
 				assertTrue(g.hasEdgeConnecting(endpoints));
+
+				Integer e1 = g.edgeConnectingOrNull(u, v);
+				assertEquals(endpoints, g.incidentNodes(e1));
 			}
 			for (int i = 0; i < 20; i++) {
 				Integer u = Graphs.randVertex(gOrig, rand);
@@ -221,43 +235,35 @@ public class GuavaGraphAdapterTest {
 		final Random rand = new Random(0x4ba6b5de1d87b179L);
 		for (boolean directed : BooleanList.of(false, true)) {
 			for (boolean selfEdges : BooleanList.of(false, true)) {
-				com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges);
-				Graph<Integer> g = new GuavaGraphAdapter<>(gOrig);
+				for (boolean parallelEdges : BooleanList.of(false, true)) {
+					com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges, parallelEdges);
+					Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
-				for (Integer u : g.nodes()) {
-					Set<EndpointPair<Integer>> actual = g.incidentEdges(u);
-					Set<EndpointPair<Integer>> expected = Stream
-							.concat(gOrig.outEdges(u).stream(), gOrig.inEdges(u).stream())
-							.map(e -> endpoints(gOrig.edgeSource(e), gOrig.edgeTarget(e), directed)).collect(toSet());
-					assertEquals(expected.size(), actual.size());
-					assertEquals(expected.isEmpty(), actual.isEmpty());
-					assertEquals(expected, actual);
-					assertEquals(actual, expected);
+					for (Integer u : g.nodes()) {
+						Set<Integer> actual = g.incidentEdges(u);
+						Set<Integer> expected =
+								Stream.concat(gOrig.outEdges(u).stream(), gOrig.inEdges(u).stream()).collect(toSet());
+						assertEquals(expected.size(), actual.size());
+						assertEquals(expected.isEmpty(), actual.isEmpty());
+						assertEquals(expected, actual);
+						assertEquals(actual, expected);
 
-					for (int i = 0; i < 20; i++) {
-						Integer v = Graphs.randVertex(gOrig, rand);
-						Integer w = Graphs.randVertex(gOrig, rand);
-						EndpointPair<Integer> endpoints = endpoints(v, w, directed);
-						assertEquals(expected.contains(endpoints), actual.contains(endpoints));
-					}
-					for (int i = 0; i < 20; i++) {
-						Integer v = Integer.valueOf(rand.nextInt());
-						Integer w = Graphs.randVertex(gOrig, rand);
-						if (rand.nextBoolean()) {
-							Integer tmp = v;
-							v = w;
-							w = tmp;
+						for (int i = 0; i < 20; i++) {
+							Integer e = Graphs.randEdge(gOrig, rand);
+							assertEquals(expected.contains(e), actual.contains(e));
 						}
-						EndpointPair<Integer> endpoints = endpoints(v, w, directed);
-						assertEquals(expected.contains(endpoints), actual.contains(endpoints));
+						for (int i = 0; i < 20; i++) {
+							Integer e = nonExistingEdge(gOrig, rand);
+							assertEquals(expected.contains(e), actual.contains(e));
+						}
+						try {
+							assertFalse(actual.contains((Object) "wrong type"));
+						} catch (ClassCastException e) {
+							/* also fine */
+						}
 					}
-					try {
-						assertFalse(actual.contains((Object) "wrong type"));
-					} catch (ClassCastException e) {
-						/* also fine */
-					}
+					assertThrows(IllegalArgumentException.class, () -> g.incidentEdges(nonExistingVertex(gOrig, rand)));
 				}
-				assertThrows(IllegalArgumentException.class, () -> g.incidentEdges(nonExistingVertex(gOrig, rand)));
 			}
 		}
 	}
@@ -267,19 +273,21 @@ public class GuavaGraphAdapterTest {
 		final Random rand = new Random(0x65e5ac02fd8c2c2bL);
 		for (boolean directed : BooleanList.of(false, true)) {
 			for (boolean selfEdges : BooleanList.of(false, true)) {
-				com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges);
-				Graph<Integer> g = new GuavaGraphAdapter<>(gOrig);
+				for (boolean parallelEdges : BooleanList.of(false, true)) {
+					com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges, parallelEdges);
+					Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
-				for (Integer v : g.nodes()) {
-					int expected;
-					if (gOrig.isDirected()) {
-						expected = gOrig.outEdges(v).size() + gOrig.inEdges(v).size();
-					} else {
-						expected = expectedDegreeUndirected(gOrig, v);
+					for (Integer v : g.nodes()) {
+						int expected;
+						if (gOrig.isDirected()) {
+							expected = gOrig.outEdges(v).size() + gOrig.inEdges(v).size();
+						} else {
+							expected = expectedDegreeUndirected(gOrig, v);
+						}
+						assertEquals(expected, g.degree(v));
 					}
-					assertEquals(expected, g.degree(v));
+					assertThrows(IllegalArgumentException.class, () -> g.degree(nonExistingVertex(gOrig, rand)));
 				}
-				assertThrows(IllegalArgumentException.class, () -> g.degree(nonExistingVertex(gOrig, rand)));
 			}
 		}
 	}
@@ -289,19 +297,21 @@ public class GuavaGraphAdapterTest {
 		final Random rand = new Random(0x8f32ab1776e1546L);
 		for (boolean directed : BooleanList.of(false, true)) {
 			for (boolean selfEdges : BooleanList.of(false, true)) {
-				com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges);
-				Graph<Integer> g = new GuavaGraphAdapter<>(gOrig);
+				for (boolean parallelEdges : BooleanList.of(false, true)) {
+					com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges, parallelEdges);
+					Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
-				for (Integer v : g.nodes()) {
-					int expected;
-					if (gOrig.isDirected()) {
-						expected = gOrig.outEdges(v).size();
-					} else {
-						expected = expectedDegreeUndirected(gOrig, v);
+					for (Integer v : g.nodes()) {
+						int expected;
+						if (gOrig.isDirected()) {
+							expected = gOrig.outEdges(v).size();
+						} else {
+							expected = expectedDegreeUndirected(gOrig, v);
+						}
+						assertEquals(expected, g.outDegree(v));
 					}
-					assertEquals(expected, g.outDegree(v));
+					assertThrows(IllegalArgumentException.class, () -> g.outDegree(nonExistingVertex(gOrig, rand)));
 				}
-				assertThrows(IllegalArgumentException.class, () -> g.outDegree(nonExistingVertex(gOrig, rand)));
 			}
 		}
 	}
@@ -311,19 +321,21 @@ public class GuavaGraphAdapterTest {
 		final Random rand = new Random(0x303e9d43e4c1d785L);
 		for (boolean directed : BooleanList.of(false, true)) {
 			for (boolean selfEdges : BooleanList.of(false, true)) {
-				com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges);
-				Graph<Integer> g = new GuavaGraphAdapter<>(gOrig);
+				for (boolean parallelEdges : BooleanList.of(false, true)) {
+					com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges, parallelEdges);
+					Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
-				for (Integer v : g.nodes()) {
-					int expected;
-					if (gOrig.isDirected()) {
-						expected = gOrig.inEdges(v).size();
-					} else {
-						expected = expectedDegreeUndirected(gOrig, v);
+					for (Integer v : g.nodes()) {
+						int expected;
+						if (gOrig.isDirected()) {
+							expected = gOrig.inEdges(v).size();
+						} else {
+							expected = expectedDegreeUndirected(gOrig, v);
+						}
+						assertEquals(expected, g.inDegree(v));
 					}
-					assertEquals(expected, g.inDegree(v));
+					assertThrows(IllegalArgumentException.class, () -> g.inDegree(nonExistingVertex(gOrig, rand)));
 				}
-				assertThrows(IllegalArgumentException.class, () -> g.inDegree(nonExistingVertex(gOrig, rand)));
 			}
 		}
 	}
@@ -340,23 +352,18 @@ public class GuavaGraphAdapterTest {
 	public void capabilities() {
 		for (boolean directed : BooleanList.of(false, true)) {
 			for (boolean selfEdges : BooleanList.of(false, true)) {
-				com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges);
-				Graph<Integer> g = new GuavaGraphAdapter<>(gOrig);
+				for (boolean parallelEdges : BooleanList.of(false, true)) {
+					com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges, parallelEdges);
+					Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
-				assertEquals(gOrig.isDirected(), g.isDirected());
-				assertEquals(gOrig.isAllowSelfEdges(), g.allowsSelfLoops());
-				assertEquals(ElementOrder.Type.UNORDERED, g.nodeOrder().type());
-				assertEquals(ElementOrder.Type.UNORDERED, g.incidentEdgeOrder().type());
+					assertEquals(gOrig.isDirected(), g.isDirected());
+					assertEquals(gOrig.isAllowSelfEdges(), g.allowsSelfLoops());
+					assertEquals(gOrig.isAllowParallelEdges(), g.allowsParallelEdges());
+					assertEquals(ElementOrder.Type.UNORDERED, g.nodeOrder().type());
+					assertEquals(ElementOrder.Type.UNORDERED, g.edgeOrder().type());
+				}
 			}
 		}
-	}
-
-	@Test
-	public void mutableAdapterWithoutEdgeBuilder() {
-		GraphFactory<Integer, Integer> factory = GraphFactory.directed();
-		factory.allowSelfEdges(false).allowParallelEdges(false);
-		com.jgalgo.graph.Graph<Integer, Integer> gOrig = factory.newGraph();
-		assertThrows(IllegalArgumentException.class, () -> new GuavaMutableGraphAdapter<>(gOrig));
 	}
 
 	@Test
@@ -364,8 +371,8 @@ public class GuavaGraphAdapterTest {
 		final Random rand = new Random(0x68360559fa787b0L);
 		for (boolean directed : BooleanList.of(false, true)) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig =
-					IntGraphFactory.newInstance(directed).allowSelfEdges().allowParallelEdges(false).newGraph();
-			MutableGraph<Integer> g = new GuavaMutableGraphAdapter<>(gOrig);
+					IntGraphFactory.newInstance(directed).allowSelfEdges().allowParallelEdges().newGraph();
+			MutableNetwork<Integer, Integer> g = new GuavaMutableNetworkAdapter<>(gOrig);
 
 			Set<Integer> expectedVertices = new IntOpenHashSet();
 			for (int i = 0; i < 100; i++) {
@@ -392,7 +399,7 @@ public class GuavaGraphAdapterTest {
 		final Random rand = new Random(0x356ed8856308022bL);
 		for (boolean directed : BooleanList.of(false, true)) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
-			MutableGraph<Integer> g = new GuavaMutableGraphAdapter<>(gOrig);
+			MutableNetwork<Integer, Integer> g = new GuavaMutableNetworkAdapter<>(gOrig);
 
 			Integer[] originalVertices = gOrig.vertices().toArray(Integer[]::new);
 			Set<Integer> expectedVertices = new IntOpenHashSet(gOrig.vertices());
@@ -409,15 +416,15 @@ public class GuavaGraphAdapterTest {
 					int edgesNumBefore = g.edges().size();
 					assertTrue(g.removeNode(v));
 					assertEquals(verticesNumBefore - 1, g.nodes().size());
-					assertEquals(edgesNumBefore - expectedRemoveEndpoints.size(), g.edges().size());
+					assertEquals(edgesNumBefore - expectedRemoveEdges.size(), g.edges().size());
 					assertFalse(g.nodes().contains(v));
 					assertFalse(gOrig.vertices().contains(v));
-					for (EndpointPair<Integer> e : expectedRemoveEndpoints) {
+					for (EndpointPair<Integer> e : expectedRemoveEndpoints)
 						assertFalse(g.hasEdgeConnecting(e));
+					for (Integer e : expectedRemoveEdges) {
 						assertFalse(g.edges().contains(e));
-					}
-					for (Integer e : expectedRemoveEdges)
 						assertFalse(gOrig.edges().contains(e));
+					}
 					expectedVertices.remove(v);
 				} else {
 					int verticesNumBefore = g.nodes().size();
@@ -435,25 +442,31 @@ public class GuavaGraphAdapterTest {
 		final Random rand = new Random(0xeef076eb5b67e4ecL);
 		for (boolean directed : BooleanList.of(false, true)) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig =
-					IntGraphFactory.newInstance(directed).allowSelfEdges().allowParallelEdges(false).newGraph();
+					IntGraphFactory.newInstance(directed).allowSelfEdges().allowParallelEdges().newGraph();
 			gOrig.addVertices(range(20));
-			MutableGraph<Integer> g = new GuavaMutableGraphAdapter<>(gOrig);
+			MutableNetwork<Integer, Integer> g = new GuavaMutableNetworkAdapter<>(gOrig);
 
 			/* put edges valid */
-			Set<EndpointPair<Integer>> expectedEdges = new ObjectOpenHashSet<>();
+			Map<Integer, EndpointPair<Integer>> expectedEdges = new Object2ObjectOpenHashMap<>();
 			for (int i = 0; i < 30; i++) {
 				EndpointPair<Integer> endpoints = validEndpointsToAdd(gOrig, rand);
 				int verticesNumBefore = g.nodes().size();
 				int edgesNumBefore = g.edges().size();
-				boolean modified = g.putEdge(endpoints);
+				Integer e = nonExistingEdge(gOrig, rand);
+				boolean modified = g.addEdge(endpoints, e);
 				assertTrue(modified);
 				assertEquals(verticesNumBefore, g.nodes().size());
 				assertEquals(edgesNumBefore + 1, g.edges().size());
-				expectedEdges.add(endpoints);
+				Object oldVal = expectedEdges.put(e, endpoints);
+				assertNull(oldVal);
 			}
-			assertEquals(expectedEdges, g.edges());
+			assertEquals(expectedEdges.keySet(), g.edges());
+			for (Integer e : expectedEdges.keySet()) {
+				EndpointPair<Integer> endpoints = expectedEdges.get(e);
+				assertEquals(endpoints, g.incidentNodes(e));
+			}
 
-			/* put parallel edge, should not modify */
+			/* re-put edge, should not modify */
 			for (int i = 0; i < 10; i++) {
 				Integer e = Graphs.randEdge(gOrig, rand);
 				Integer u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
@@ -465,30 +478,52 @@ public class GuavaGraphAdapterTest {
 				EndpointPair<Integer> endpoints = endpoints(u, v, directed);
 				int verticesNumBefore = g.nodes().size();
 				int edgesNumBefore = g.edges().size();
-				boolean modified = g.putEdge(endpoints);
+				boolean modified = g.addEdge(endpoints, e);
 				assertFalse(modified);
 				assertEquals(verticesNumBefore, g.nodes().size());
 				assertEquals(edgesNumBefore, g.edges().size());
+			}
+
+			/* re-put edge, different endpoints */
+			for (int i = 0; i < 10; i++) {
+				Integer e = Graphs.randEdge(gOrig, rand);
+				Integer u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
+				if (!directed && rand.nextBoolean()) {
+					Integer tmp = u;
+					u = v;
+					v = tmp;
+				}
+				EndpointPair<Integer> oldEndpoints = endpoints(u, v, directed);
+				EndpointPair<Integer> endpoints = validEndpointsToAdd(gOrig, rand);
+				if (endpoints.equals(oldEndpoints))
+					continue;
+				assertThrows(IllegalArgumentException.class, () -> g.addEdge(endpoints, e));
 			}
 		}
 
 		/* on missing endpoint, node should be added silently */
 		for (boolean directed : BooleanList.of(false, true)) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig =
-					IntGraphFactory.newInstance(directed).allowSelfEdges().allowParallelEdges(false).newGraph();
-			MutableGraph<Integer> g = new GuavaMutableGraphAdapter<>(gOrig);
-			Set<EndpointPair<Integer>> expectedEdges = new ObjectOpenHashSet<>();
+					IntGraphFactory.newInstance(directed).allowSelfEdges().allowParallelEdges().newGraph();
+			MutableNetwork<Integer, Integer> g = new GuavaMutableNetworkAdapter<>(gOrig);
+			Map<Integer, EndpointPair<Integer>> expectedEdges = new Object2ObjectOpenHashMap<>();
 			for (int i = 0; i < 10; i++) {
 				EndpointPair<Integer> endpoints = endpoints(i * 2 + 0, i * 2 + 1, directed);
 				int verticesNumBefore = g.nodes().size();
 				int edgesNumBefore = g.edges().size();
-				boolean modified = g.putEdge(endpoints);
+				Integer e = nonExistingEdge(gOrig, rand);
+				boolean modified = g.addEdge(endpoints, e);
 				assertTrue(modified);
 				assertEquals(verticesNumBefore + 2, g.nodes().size());
 				assertEquals(edgesNumBefore + 1, g.edges().size());
-				expectedEdges.add(endpoints);
+				Object oldVal = expectedEdges.put(e, endpoints);
+				assertNull(oldVal);
 			}
-			assertEquals(expectedEdges, g.edges());
+			assertEquals(expectedEdges.keySet(), g.edges());
+			for (Integer e : expectedEdges.keySet()) {
+				EndpointPair<Integer> endpoints = expectedEdges.get(e);
+				assertEquals(endpoints, g.incidentNodes(e));
+			}
 			assertEquals(range(20), g.nodes());
 			assertEquals(range(20), gOrig.vertices());
 		}
@@ -499,36 +534,40 @@ public class GuavaGraphAdapterTest {
 		final Random rand = new Random(0x17ef03cedc99e735L);
 		for (boolean directed : BooleanList.of(false, true)) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
-			MutableGraph<Integer> g = new GuavaMutableGraphAdapter<>(gOrig);
+			MutableNetwork<Integer, Integer> g = new GuavaMutableNetworkAdapter<>(gOrig);
 
-			List<EndpointPair<Integer>> originalEdges = new ArrayList<>(g.edges());
-			Set<EndpointPair<Integer>> expectedEdges = new ObjectOpenHashSet<>(g.edges());
+			List<Pair<Integer, EndpointPair<Integer>>> originalEdges =
+					g.edges().stream().map(e -> Pair.of(e, g.incidentNodes(e))).collect(toList());
+			Map<Integer, EndpointPair<Integer>> expectedEdges = new Object2ObjectOpenHashMap<>();
+			for (Pair<Integer, EndpointPair<Integer>> p : originalEdges)
+				expectedEdges.put(p.left(), p.right());
 			for (int i = 0; i < 100; i++) {
-				EndpointPair<Integer> endpoints;
+				Integer edgeToRemove;
 				if (rand.nextBoolean()) {
-					Integer e = Graphs.randEdge(gOrig, rand);
-					endpoints = endpoints(gOrig.edgeSource(e), gOrig.edgeTarget(e), directed);
+					edgeToRemove = Graphs.randEdge(gOrig, rand);
 				} else {
-					endpoints = originalEdges.get(rand.nextInt(originalEdges.size()));
+					edgeToRemove = originalEdges.get(rand.nextInt(originalEdges.size())).first();
 				}
-				if (expectedEdges.contains(endpoints)) {
+				if (expectedEdges.containsKey(edgeToRemove)) {
 					int verticesNumBefore = g.nodes().size();
 					int edgesNumBefore = g.edges().size();
-					assertTrue(g.removeEdge(endpoints));
+					assertTrue(g.removeEdge(edgeToRemove));
 					assertEquals(verticesNumBefore, g.nodes().size());
 					assertEquals(edgesNumBefore - 1, g.edges().size());
-					assertFalse(g.edges().contains(endpoints));
-					assertFalse(gOrig.containsEdge(endpoints.nodeU(), endpoints.nodeV()));
-					expectedEdges.remove(endpoints);
+					assertFalse(g.edges().contains(edgeToRemove));
+					assertFalse(gOrig.edges().contains(edgeToRemove));
+					expectedEdges.remove(edgeToRemove);
 				} else {
 					int edgesNumBefore = g.edges().size();
-					assertFalse(g.removeEdge(endpoints));
+					assertFalse(g.removeEdge(edgeToRemove));
 					assertEquals(edgesNumBefore, g.edges().size());
 				}
 			}
-			assertEquals(expectedEdges, g.edges());
-			assertEquals(expectedEdges, gOrig.edges().stream()
-					.map(e -> endpoints(gOrig.edgeSource(e), gOrig.edgeTarget(e), directed)).collect(toSet()));
+			assertEquals(expectedEdges.keySet(), g.edges());
+			for (Integer e : expectedEdges.keySet()) {
+				EndpointPair<Integer> endpoints = expectedEdges.get(e);
+				assertEquals(endpoints, g.incidentNodes(e));
+			}
 		}
 	}
 
@@ -537,14 +576,15 @@ public class GuavaGraphAdapterTest {
 	}
 
 	private static com.jgalgo.graph.Graph<Integer, Integer> createGraph(boolean directed) {
-		return createGraph(directed, true);
+		return createGraph(directed, true, true);
 	}
 
-	private static com.jgalgo.graph.Graph<Integer, Integer> createGraph(boolean directed, boolean selfEdges) {
+	private static com.jgalgo.graph.Graph<Integer, Integer> createGraph(boolean directed, boolean selfEdges,
+			boolean parallelEdges) {
 		final Random rand = new Random(0x2bf4b83f64d13c33L);
 		GraphFactory<Integer, Integer> factory = IntGraphFactory.newInstance(directed);
 		com.jgalgo.graph.Graph<Integer, Integer> g =
-				factory.allowSelfEdges(selfEdges).allowParallelEdges(false).newGraph();
+				factory.allowSelfEdges(selfEdges).allowParallelEdges(parallelEdges).newGraph();
 		g.addVertices(range(50 + rand.nextInt(50)));
 		for (int m = 300 + rand.nextInt(100); g.edges().size() < m;) {
 			EndpointPair<Integer> endpoints = validEndpointsToAdd(g, rand);
@@ -576,8 +616,16 @@ public class GuavaGraphAdapterTest {
 	private static Integer nonExistingVertex(com.jgalgo.graph.Graph<Integer, Integer> g, Random rand) {
 		for (;;) {
 			Integer v = Integer.valueOf(rand.nextInt());
-			if (!g.vertices().contains(v))
+			if (v.intValue() >= 0 && !g.vertices().contains(v))
 				return v;
+		}
+	}
+
+	private static Integer nonExistingEdge(com.jgalgo.graph.Graph<Integer, Integer> g, Random rand) {
+		for (;;) {
+			Integer e = Integer.valueOf(rand.nextInt());
+			if (e.intValue() >= 0 && !g.edges().contains(e))
+				return e;
 		}
 	}
 

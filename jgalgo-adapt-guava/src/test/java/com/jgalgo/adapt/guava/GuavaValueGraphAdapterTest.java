@@ -241,6 +241,8 @@ public class GuavaValueGraphAdapterTest {
 					Set<EndpointPair<Integer>> expected = Stream
 							.concat(gOrig.outEdges(u).stream(), gOrig.inEdges(u).stream())
 							.map(e -> endpoints(gOrig.edgeSource(e), gOrig.edgeTarget(e), directed)).collect(toSet());
+					assertEquals(expected.size(), actual.size());
+					assertEquals(expected.isEmpty(), actual.isEmpty());
 					assertEquals(expected, actual);
 					assertEquals(actual, expected);
 
@@ -260,6 +262,11 @@ public class GuavaValueGraphAdapterTest {
 						}
 						EndpointPair<Integer> endpoints = endpoints(v, w, directed);
 						assertEquals(expected.contains(endpoints), actual.contains(endpoints));
+					}
+					try {
+						assertFalse(actual.contains((Object) "wrong type"));
+					} catch (ClassCastException e) {
+						/* also fine */
 					}
 				}
 				assertThrows(IllegalArgumentException.class, () -> g.incidentEdges(nonExistingVertex(gOrig, rand)));
@@ -366,13 +373,15 @@ public class GuavaValueGraphAdapterTest {
 	@Test
 	public void capabilities() {
 		for (boolean directed : BooleanList.of(false, true)) {
-			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
-			ValueGraph<Integer, Double> g = new GuavaValueGraphAdapter<>(gOrig, "weights");
+			for (boolean selfEdges : BooleanList.of(false, true)) {
+				com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges);
+				ValueGraph<Integer, Double> g = new GuavaValueGraphAdapter<>(gOrig, "weights");
 
-			assertEquals(gOrig.isDirected(), g.isDirected());
-			assertEquals(gOrig.isAllowSelfEdges(), g.allowsSelfLoops());
-			assertEquals(ElementOrder.Type.UNORDERED, g.nodeOrder().type());
-			assertEquals(ElementOrder.Type.UNORDERED, g.incidentEdgeOrder().type());
+				assertEquals(gOrig.isDirected(), g.isDirected());
+				assertEquals(gOrig.isAllowSelfEdges(), g.allowsSelfLoops());
+				assertEquals(ElementOrder.Type.UNORDERED, g.nodeOrder().type());
+				assertEquals(ElementOrder.Type.UNORDERED, g.incidentEdgeOrder().type());
+			}
 		}
 	}
 
@@ -612,7 +621,7 @@ public class GuavaValueGraphAdapterTest {
 		com.jgalgo.graph.Graph<Integer, Integer> g =
 				factory.allowSelfEdges(selfEdges).allowParallelEdges(false).newGraph();
 		g.addVertices(range(50 + rand.nextInt(50)));
-		for (int m = 100 + rand.nextInt(100); g.edges().size() < m;) {
+		for (int m = 300 + rand.nextInt(100); g.edges().size() < m;) {
 			EndpointPair<Integer> endpoints = validEndpointsToAdd(g, rand);
 			int u = endpoints.nodeU();
 			int v = endpoints.nodeV();

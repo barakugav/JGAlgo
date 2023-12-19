@@ -50,6 +50,14 @@ import com.google.common.graph.EndpointPair;
  * addressing the edges themselves. The edge generic type {@code E} is not reflected in the Guava graph, and is only
  * internally for safe access to the underlying JGAlgo graph.
  *
+ * <p>
+ * Among Guava {@link com.google.common.graph.Graph}, {@link com.google.common.graph.ValueGraph} and
+ * {@link com.google.common.graph.Network}, the network is the most similar to JGAlgo graphs, as vertices and edges have
+ * unique identifiers, and queries of edges are answered with the edges identifiers. On the other had, the Graph and
+ * ValueGraph do not support unique identifiers for the edges, and operations on edges are addressed by a pair of nodes.
+ * The ValueGraph does associate a value with each edge, be it does not have to be unique, and it is more similar to
+ * weights in JGAlgo graphs.
+ *
  * @see        com.jgalgo.graph.Graph
  * @see        com.google.common.graph.Graph
  * @see        GuavaMutableGraphAdapter

@@ -634,8 +634,13 @@ public class JGraphTAdapterTest {
 					Integer v = g.getEdgeTarget(eEndpoints);
 					Integer e = g.removeEdge(u, v);
 					assertNotNull(e);
-					assertEquals(u, gOrig.edgeSource(e));
-					assertEquals(v, gOrig.edgeTarget(e));
+					if (directed) {
+						assertEquals(u, gOrig.edgeSource(e));
+						assertEquals(v, gOrig.edgeTarget(e));
+					} else {
+						assertTrue(u.equals(gOrig.edgeSource(e)) && v.equals(gOrig.edgeTarget(e))
+								|| u.equals(gOrig.edgeTarget(e)) && v.equals(gOrig.edgeSource(e)));
+					}
 					gOrig.removeEdge(e);
 
 				} else if (i % 4 == 1) {
@@ -832,7 +837,7 @@ public class JGraphTAdapterTest {
 		com.jgalgo.graph.Graph<Integer, Integer> g =
 				factory.allowSelfEdges(selfEdges).allowParallelEdges(parallelEdges).newGraph();
 		g.addVertices(range(50 + rand.nextInt(50)));
-		for (int m = 100 + rand.nextInt(100); g.edges().size() < m;) {
+		for (int m = 300 + rand.nextInt(100); g.edges().size() < m;) {
 			Pair<Integer, Integer> endpoints = validEndpointsToAdd(g, rand);
 			int u = endpoints.left();
 			int v = endpoints.right();

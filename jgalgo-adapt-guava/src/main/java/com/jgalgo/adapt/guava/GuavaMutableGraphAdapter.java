@@ -15,7 +15,6 @@
  */
 package com.jgalgo.adapt.guava;
 
-import java.util.Objects;
 import com.google.common.graph.EndpointPair;
 import com.google.common.graph.MutableGraph;
 import com.jgalgo.graph.Graph;
@@ -53,6 +52,14 @@ import com.jgalgo.graph.Graph;
  * {@linkplain com.jgalgo.graph.Graph#edgeBuilder() edge builder}, which is a requirement for creating a mutable
  * adapter.
  *
+ * <p>
+ * Among Guava {@link com.google.common.graph.Graph}, {@link com.google.common.graph.ValueGraph} and
+ * {@link com.google.common.graph.Network}, the network is the most similar to JGAlgo graphs, as vertices and edges have
+ * unique identifiers, and queries of edges are answered with the edges identifiers. On the other had, the Graph and
+ * ValueGraph do not support unique identifiers for the edges, and operations on edges are addressed by a pair of nodes.
+ * The ValueGraph does associate a value with each edge, be it does not have to be unique, and it is more similar to
+ * weights in JGAlgo graphs.
+ *
  * @see        com.jgalgo.graph.Graph
  * @see        com.google.common.graph.MutableGraph
  * @see        GuavaGraphAdapter
@@ -81,10 +88,7 @@ public class GuavaMutableGraphAdapter<V, E> extends GuavaGraphAdapter<V, E> impl
 
 	@Override
 	public boolean addNode(V node) {
-		if (graph.vertices().contains(Objects.requireNonNull(node)))
-			return false;
-		graph.addVertex(node);
-		return true;
+		return GuavaAdapters.addNode(graph, node);
 	}
 
 	@Override
@@ -107,10 +111,7 @@ public class GuavaMutableGraphAdapter<V, E> extends GuavaGraphAdapter<V, E> impl
 
 	@Override
 	public boolean removeNode(V node) {
-		if (!graph.vertices().contains(Objects.requireNonNull(node)))
-			return false;
-		graph.removeVertex(node);
-		return true;
+		return GuavaAdapters.removeNode(graph, node);
 	}
 
 	@Override

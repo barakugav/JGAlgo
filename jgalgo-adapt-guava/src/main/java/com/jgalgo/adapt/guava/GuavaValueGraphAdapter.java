@@ -57,6 +57,14 @@ import com.jgalgo.graph.Weights;
  * incident edges. This adapter uses the default element order, which is unordered, and cannot be changed as the
  * underlying JGAlgo graph does not support any other order.
  *
+ * <p>
+ * Among Guava {@link com.google.common.graph.Graph}, {@link com.google.common.graph.ValueGraph} and
+ * {@link com.google.common.graph.Network}, the network is the most similar to JGAlgo graphs, as vertices and edges have
+ * unique identifiers, and queries of edges are answered with the edges identifiers. On the other had, the Graph and
+ * ValueGraph do not support unique identifiers for the edges, and operations on edges are addressed by a pair of nodes.
+ * The ValueGraph does associate a value with each edge, be it does not have to be unique, and it is more similar to
+ * weights in JGAlgo graphs.
+ *
  * @see             com.jgalgo.graph.Graph
  * @see             com.google.common.graph.ValueGraph
  * @see             GuavaMutableValueGraphAdapter

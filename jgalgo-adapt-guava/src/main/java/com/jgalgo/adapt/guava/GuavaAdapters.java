@@ -18,6 +18,7 @@ package com.jgalgo.adapt.guava;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.AbstractSet;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.IntFunction;
 import com.google.common.collect.Iterators;
@@ -40,37 +41,50 @@ class GuavaAdapters {
 		IndexIdMap<V> viMap = graph.indexGraphVerticesMap();
 		int uIdx = viMap.idToIndex(node);
 		IEdgeSet es = g.outEdges(uIdx);
-		return new AbstractSet<>() {
-			@Override
-			public int size() {
-				return es.size();
+		if (graph.isAllowParallelEdges()) {
+			IntSet successors = new IntOpenHashSet();
+			if (graph.isDirected()) {
+				for (int e : es)
+					successors.add(g.edgeTarget(e));
+			} else {
+				for (int e : es)
+					successors.add(g.edgeEndpoint(e, uIdx));
 			}
+			return IndexIdMaps.indexToIdSet(successors, viMap);
 
-			@Override
-			public boolean contains(Object o) {
-				@SuppressWarnings("unchecked")
-				int vIdx = viMap.idToIndexIfExist((V) o);
-				return vIdx >= 0 && g.containsEdge(uIdx, vIdx);
-			}
+		} else {
+			return new AbstractSet<>() {
+				@Override
+				public int size() {
+					return es.size();
+				}
 
-			@Override
-			public Iterator<V> iterator() {
-				return new Iterator<>() {
-					IEdgeIter it = es.iterator();
+				@Override
+				public boolean contains(Object o) {
+					@SuppressWarnings("unchecked")
+					int vIdx = viMap.idToIndexIfExist((V) o);
+					return vIdx >= 0 && g.containsEdge(uIdx, vIdx);
+				}
 
-					@Override
-					public boolean hasNext() {
-						return it.hasNext();
-					}
+				@Override
+				public Iterator<V> iterator() {
+					return new Iterator<>() {
+						IEdgeIter it = es.iterator();
 
-					@Override
-					public V next() {
-						it.nextInt();
-						return viMap.indexToId(it.targetInt());
-					}
-				};
-			}
-		};
+						@Override
+						public boolean hasNext() {
+							return it.hasNext();
+						}
+
+						@Override
+						public V next() {
+							it.nextInt();
+							return viMap.indexToId(it.targetInt());
+						}
+					};
+				}
+			};
+		}
 	}
 
 	static <V> Set<V> predecessors(com.jgalgo.graph.Graph<V, ?> graph, V node) {
@@ -78,37 +92,50 @@ class GuavaAdapters {
 		IndexIdMap<V> viMap = graph.indexGraphVerticesMap();
 		int vIdx = viMap.idToIndex(node);
 		IEdgeSet es = g.inEdges(vIdx);
-		return new AbstractSet<>() {
-			@Override
-			public int size() {
-				return es.size();
+		if (graph.isAllowParallelEdges()) {
+			IntSet successors = new IntOpenHashSet();
+			if (graph.isDirected()) {
+				for (int e : es)
+					successors.add(g.edgeSource(e));
+			} else {
+				for (int e : es)
+					successors.add(g.edgeEndpoint(e, vIdx));
 			}
+			return IndexIdMaps.indexToIdSet(successors, viMap);
 
-			@Override
-			public boolean contains(Object o) {
-				@SuppressWarnings("unchecked")
-				int uIdx = viMap.idToIndexIfExist((V) o);
-				return uIdx >= 0 && g.containsEdge(uIdx, vIdx);
-			}
+		} else {
+			return new AbstractSet<>() {
+				@Override
+				public int size() {
+					return es.size();
+				}
 
-			@Override
-			public Iterator<V> iterator() {
-				return new Iterator<>() {
-					IEdgeIter it = es.iterator();
+				@Override
+				public boolean contains(Object o) {
+					@SuppressWarnings("unchecked")
+					int uIdx = viMap.idToIndexIfExist((V) o);
+					return uIdx >= 0 && g.containsEdge(uIdx, vIdx);
+				}
 
-					@Override
-					public boolean hasNext() {
-						return it.hasNext();
-					}
+				@Override
+				public Iterator<V> iterator() {
+					return new Iterator<>() {
+						IEdgeIter it = es.iterator();
 
-					@Override
-					public V next() {
-						it.nextInt();
-						return viMap.indexToId(it.sourceInt());
-					}
-				};
-			}
-		};
+						@Override
+						public boolean hasNext() {
+							return it.hasNext();
+						}
+
+						@Override
+						public V next() {
+							it.nextInt();
+							return viMap.indexToId(it.sourceInt());
+						}
+					};
+				}
+			};
+		}
 	}
 
 	static <V> Set<EndpointPair<V>> edgesEndpoints(com.jgalgo.graph.Graph<V, ?> graph) {
@@ -150,12 +177,20 @@ class GuavaAdapters {
 		IndexGraph g = graph.indexGraph();
 		IndexIdMap<V> viMap = graph.indexGraphVerticesMap();
 		int uIdx = viMap.idToIndex(node);
-		if (g.isDirected()) {
+		if (g.isDirected() || g.isAllowParallelEdges()) {
 			IntSet adjacentNodes = new IntOpenHashSet();
-			for (int e : g.outEdges(uIdx))
-				adjacentNodes.add(g.edgeTarget(e));
-			for (int e : g.inEdges(uIdx))
-				adjacentNodes.add(g.edgeSource(e));
+			if (g.isDirected()) {
+				for (int e : g.outEdges(uIdx))
+					adjacentNodes.add(g.edgeTarget(e));
+				for (int e : g.inEdges(uIdx))
+					adjacentNodes.add(g.edgeSource(e));
+			} else {
+				for (int e : g.outEdges(uIdx))
+					adjacentNodes.add(g.edgeEndpoint(e, uIdx));
+				for (int e : g.inEdges(uIdx))
+					adjacentNodes.add(g.edgeEndpoint(e, uIdx));
+
+			}
 			return IndexIdMaps.indexToIdSet(adjacentNodes, viMap);
 
 		} else {
@@ -212,8 +247,14 @@ class GuavaAdapters {
 					return s;
 				}
 
+				public boolean isEmpty() {
+					return outEs.isEmpty() && inEs.isEmpty();
+				}
+
 				@Override
 				public boolean contains(Object o) {
+					if (!(o instanceof EndpointPair))
+						return false;
 					@SuppressWarnings("unchecked")
 					EndpointPair<V> ep = (EndpointPair<V>) o;
 					int vIdx = viMap.idToIndexIfExist(ep.nodeU());
@@ -255,6 +296,8 @@ class GuavaAdapters {
 
 				@Override
 				public boolean contains(Object o) {
+					if (!(o instanceof EndpointPair))
+						return false;
 					@SuppressWarnings("unchecked")
 					EndpointPair<V> ep = (EndpointPair<V>) o;
 					int vIdx = viMap.idToIndexIfExist(ep.nodeU());
@@ -331,6 +374,20 @@ class GuavaAdapters {
 		IndexGraph g = graph.indexGraph();
 		int eIdx = g.getEdge(uIdx, vIdx);
 		return graph.indexGraphEdgesMap().indexToIdIfExist(eIdx);
+	}
+
+	static <V> boolean addNode(com.jgalgo.graph.Graph<V, ?> graph, V node) {
+		if (graph.vertices().contains(Objects.requireNonNull(node)))
+			return false;
+		graph.addVertex(node);
+		return true;
+	}
+
+	static <V> boolean removeNode(com.jgalgo.graph.Graph<V, ?> graph, V node) {
+		if (!graph.vertices().contains(Objects.requireNonNull(node)))
+			return false;
+		graph.removeVertex(node);
+		return true;
 	}
 
 }
