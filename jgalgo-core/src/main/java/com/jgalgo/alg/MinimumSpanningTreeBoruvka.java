@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -81,11 +82,7 @@ class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndire
 		Res mstRes = computeMST(g, w, numberOfRounds);
 
 		IndexGraphBuilder contractedGBuilder = IndexGraphBuilder.undirected();
-		contractedGBuilder.ensureVertexCapacity(mstRes.treeNum);
-		for (int v = 0; v < mstRes.treeNum; v++) {
-			int vBuilder = contractedGBuilder.addVertex();
-			assert v == vBuilder;
-		}
+		contractedGBuilder.addVertices(range(mstRes.treeNum));
 		int[] edgeRef = IntArrays.EMPTY_ARRAY;
 		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int u = mstRes.vToTree[g.edgeSource(e)];

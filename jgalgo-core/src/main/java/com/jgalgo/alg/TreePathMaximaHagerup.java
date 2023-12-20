@@ -274,7 +274,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			depths.ensureCapacity(depths.size() + n);
 			parents.ensureCapacity(parents.size() + n);
 			for (int v = 0; v < n; v++) {
-				int vBuilder = vTv[v] = treeBuilder.addVertex();
+				int vBuilder = vTv[v] = treeBuilder.addVertexInt();
 				assert v == vBuilder;
 				depths.add(0);
 				parents.add(-1);
@@ -353,7 +353,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 				depths.ensureCapacity(depths.size() + nNext);
 				parents.ensureCapacity(parents.size() + nNext);
 				for (int V = 0; V < nNext; V++) {
-					int nextV = treeBuilder.addVertex();
+					int nextV = treeBuilder.addVertexInt();
 					vTvNext[V] = nextV;
 
 					/*

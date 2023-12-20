@@ -16,13 +16,14 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Random;
-import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsDouble;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.Pair;
@@ -115,12 +116,8 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 	static Pair<IndexGraph, int[]> subGraph(IndexGraph g, IntCollection edgeSet, int[] edgeRef) {
 		final int n = g.vertices().size();
 		IndexGraphBuilder subBuilder = IndexGraphBuilder.undirected();
-		subBuilder.ensureVertexCapacity(n);
+		subBuilder.addVertices(range(n));
 		subBuilder.ensureEdgeCapacity(edgeSet.size());
-		for (int v = 0; v < n; v++) {
-			int vSub = subBuilder.addVertex();
-			assert v == vSub;
-		}
 		int[] edgeRefSub = new int[edgeSet.size()];
 		for (int e : edgeSet) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);

@@ -150,7 +150,7 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		refgBuilder.ensureVertexCapacity(n + 1);
 		refgBuilder.ensureEdgeCapacity(m + n);
 		refgBuilder.addVertices(g.vertices());
-		final int fakeV = refgBuilder.addVertex();
+		final int fakeV = refgBuilder.addVertexInt();
 		refgBuilder.addEdges(EdgeSet.allOf(g));
 		final int fakeEdgesThreshold = refgBuilder.edges().size();
 		for (int v = 0; v < n; v++) {

@@ -77,11 +77,11 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	}
 
 	@Override
-	public int addVertex() {
+	public int addVertexInt() {
 		if (!canAddVertexWithoutId())
 			throw new IllegalArgumentException("Can't mix addVertex() and addVertex(id), "
 					+ "if IDs are provided for some of the vertices, they must be provided for all");
-		int vIndex = ibuilder.addVertex();
+		int vIndex = ibuilder.addVertexInt();
 		int vId = vIndex + 1; // +1 because we want to avoid 0 in fastutil open hash maps
 		viMap.addId(vId, vIndex);
 		return vId;
@@ -97,7 +97,7 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 
 		int vIdx = ibuilder.vertices().size();
 		viMap.addId(vertex, vIdx);
-		int vIdx2 = ibuilder.addVertex();
+		int vIdx2 = ibuilder.addVertexInt();
 		assert vIdx == vIdx2;
 
 		userProvideVerticesIds = true;

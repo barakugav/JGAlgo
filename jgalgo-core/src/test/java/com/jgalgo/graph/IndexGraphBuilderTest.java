@@ -70,7 +70,7 @@ public class IndexGraphBuilderTest extends TestBase {
 		foreachBoolConfig(directed -> {
 			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			for (int v = 0; v < 10; v++)
-				b.addVertex();
+				b.addVertexInt();
 			assertEquals(range(10), b.vertices());
 		});
 	}
@@ -530,7 +530,7 @@ public class IndexGraphBuilderTest extends TestBase {
 			final int m = 20 + rand.nextInt(20);
 			while (g.vertices().size() < n) {
 				int vG = g.addVertexInt();
-				int vB = b.addVertex();
+				int vB = b.addVertexInt();
 				assertEquals(vG, vB);
 			}
 			while (g.edges().size() < m) {

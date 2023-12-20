@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.List;
 import java.util.Objects;
 import com.jgalgo.graph.Graph;
@@ -291,10 +292,7 @@ class TreePathMaximaUtils {
 		mstBuilder.ensureVertexCapacity(n);
 		mstBuilder.ensureEdgeCapacity(mstEdges.size());
 
-		for (int v = 0; v < n; v++) {
-			int vBuilder = mstBuilder.addVertex();
-			assert v == vBuilder;
-		}
+		mstBuilder.addVertices(range(n));
 		double[] mstWeights = new double[mstEdges.size()];
 		for (int e : mstEdges) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);

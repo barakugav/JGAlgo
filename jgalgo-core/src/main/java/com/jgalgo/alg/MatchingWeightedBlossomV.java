@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -69,16 +70,10 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 
 		Assertions.Graphs.onlyUndirected(g);
 		IndexGraphBuilder b = IndexGraphBuilder.undirected();
-		b.ensureVertexCapacity(g.vertices().size() * 2);
 		b.ensureEdgeCapacity(g.edges().size() * 2 + g.vertices().size());
 
 		/* Add two vertices for each original vertex */
-		for (int n = g.vertices().size(), v = 0; v < n; v++) {
-			int v1 = b.addVertex();
-			int v2 = b.addVertex();
-			assert v1 == v * 2 + 0;
-			assert v2 == v * 2 + 1;
-		}
+		b.addVertices(range(g.vertices().size() * 2));
 		/* Add two edges for each original edge */
 		final int dummyEdgesThreshold = g.edges().size() * 2;
 		for (int m = g.edges().size(), e = 0; e < m; e++) {

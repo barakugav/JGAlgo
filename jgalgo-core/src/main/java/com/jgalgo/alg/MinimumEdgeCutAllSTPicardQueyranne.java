@@ -183,7 +183,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 		for (int v = 0; v < n; v++) {
 			if (removedVertices.get(v))
 				continue;
-			int resV = residual0.addVertex();
+			int resV = residual0.addVertexInt();
 			vToResV[v] = resV;
 			resVToV[resV] = v;
 		}

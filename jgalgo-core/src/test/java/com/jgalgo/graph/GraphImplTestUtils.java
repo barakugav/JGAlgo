@@ -2695,22 +2695,22 @@ class GraphImplTestUtils extends TestUtils {
 
 			if (!selfEdges) {
 				IndexGraphBuilder g1 = IndexGraphBuilder.newInstance(directed);
-				g1.addVertex();
+				g1.addVertexInt();
 				g1.addEdge(0, 0);
 				assertThrows(IllegalArgumentException.class, () -> copyConstructor.apply(g1));
 			}
 			if (!parallelEdges) {
 				IndexGraphBuilder g1 = IndexGraphBuilder.newInstance(directed);
-				g1.addVertex();
-				g1.addVertex();
+				g1.addVertexInt();
+				g1.addVertexInt();
 				g1.addEdge(0, 1);
 				g1.addEdge(0, 1);
 				assertThrows(IllegalArgumentException.class, () -> copyConstructor.apply(g1));
 			}
 			if (!parallelEdges) {
 				IndexGraphBuilder g1 = IndexGraphBuilder.newInstance(directed);
-				g1.addVertex();
-				g1.addVertex();
+				g1.addVertexInt();
+				g1.addVertexInt();
 				g1.addEdge(1, 0);
 				g1.addEdge(1, 0);
 				assertThrows(IllegalArgumentException.class, () -> copyConstructor.apply(g1));

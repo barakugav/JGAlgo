@@ -116,7 +116,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	}
 
 	@Override
-	public int addVertex() {
+	public int addVertexInt() {
 		int u = vertices.add();
 		verticesUserWeights.ensureCapacity(u + 1);
 		return u;

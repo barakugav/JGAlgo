@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.Objects;
 import com.jgalgo.graph.Graph;
@@ -216,11 +217,7 @@ class Flows {
 
 			void addAllOriginalEdges() {
 				assert gBuilder.vertices().isEmpty();
-				gBuilder.ensureVertexCapacity(gOrig.vertices().size());
-				for (int n = gOrig.vertices().size(), u = 0; u < n; u++) {
-					int vBuilder = gBuilder.addVertex();
-					assert u == vBuilder;
-				}
+				gBuilder.addVertices(range(gOrig.vertices().size()));
 
 				assert gBuilder.edges().isEmpty();
 				gBuilder.ensureEdgeCapacity(gOrig.edges().size() * 2);
@@ -232,7 +229,7 @@ class Flows {
 			}
 
 			int addVertex() {
-				return gBuilder.addVertex();
+				return gBuilder.addVertexInt();
 			}
 
 			void addEdge(int u, int v, int e) {

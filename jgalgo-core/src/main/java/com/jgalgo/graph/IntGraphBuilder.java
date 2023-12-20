@@ -56,19 +56,19 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 *
 	 * <p>
 	 * The builder will choose identifier not used for any existing vertex, and will return it. It is also possible to
-	 * add a new vertex and choose its identifier by using {@link #addVertex(int)}. Only one of {@link #addVertex()} and
-	 * {@link #addVertex(int)} can be used during the construction of a graph.
+	 * add a new vertex and choose its identifier by using {@link #addVertex(int)}. Only one of {@link #addVertexInt()}
+	 * and {@link #addVertex(int)} can be used during the construction of a graph.
 	 *
 	 * @return the new vertex identifier
 	 */
-	int addVertex();
+	int addVertexInt();
 
 	/**
 	 * Add a new vertex to the graph, with user-chosen identifier.
 	 *
 	 * <p>
-	 * This function is similar to {@link #addVertex()}, but let the user to choose the the identifier of the new
-	 * vertex. Only one of {@link #addVertex()} and {@link #addVertex(int)} can be used during the construction of a
+	 * This function is similar to {@link #addVertexInt()}, but let the user to choose the the identifier of the new
+	 * vertex. Only one of {@link #addVertexInt()} and {@link #addVertex(int)} can be used during the construction of a
 	 * graph. Negative identifiers are not allowed.
 	 *
 	 * @param  vertex                   the new vertex identifier

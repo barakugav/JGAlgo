@@ -53,7 +53,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * are not supported. A new vertex will be assigned ID of value {@code vertices().size()}.
 	 */
 	@Override
-	int addVertex();
+	int addVertexInt();
 
 	/**
 	 * {@inheritDoc}
@@ -61,17 +61,17 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * <p>
 	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} therefore the only vertex ID that can be
 	 * added is {@code verticesNum}. For any other vertex passed to this method, an exception will be thrown. If
-	 * {@code verticesNum} is passed, this method is equivalent to {@link #addVertex()}.
+	 * {@code verticesNum} is passed, this method is equivalent to {@link #addVertexInt()}.
 	 *
 	 * @throws     IllegalArgumentException if {@code vertex} is not {@code verticesNum}
-	 * @deprecated                          use {@link #addVertex()} instead
+	 * @deprecated                          use {@link #addVertexInt()} instead
 	 */
 	@Deprecated
 	@Override
 	default void addVertex(int vertex) {
 		if (vertex != vertices().size())
 			throw new IllegalArgumentException("Only vertex ID " + vertices().size() + " can be added");
-		addVertex();
+		addVertexInt();
 	}
 
 	/**

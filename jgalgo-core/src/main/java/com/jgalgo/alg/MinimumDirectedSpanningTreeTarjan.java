@@ -91,7 +91,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			int[] vOrigToRef = new int[g.vertices().size()];
 			Arrays.fill(vOrigToRef, -1);
 			for (int v : vRefToOrig)
-				vOrigToRef[v] = builder.addVertex();
+				vOrigToRef[v] = builder.addVertexInt();
 			root = vOrigToRef[root];
 
 			int subGraphEdgesNum = 0;

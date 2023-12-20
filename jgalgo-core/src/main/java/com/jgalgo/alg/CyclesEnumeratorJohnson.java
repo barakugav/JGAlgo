@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Iterator;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -183,11 +184,7 @@ class CyclesEnumeratorJohnson extends CyclesEnumeratorAbstract {
 				int nSub = nFull - subToFull;
 
 				IndexGraphBuilder gSubBuilder = IndexGraphBuilder.directed();
-				gSubBuilder.ensureVertexCapacity(nSub);
-				for (int uSubIdx = 0; uSubIdx < nSub; uSubIdx++) {
-					int uIdx = gSubBuilder.addVertex();
-					assert uIdx == uSubIdx;
-				}
+				gSubBuilder.addVertices(range(nSub));
 				for (int uSub = 0; uSub < nSub; uSub++) {
 					int uFull = uSub + subToFull;
 					for (IEdgeIter it = g.outEdges(uFull).iterator(); it.hasNext();) {

@@ -164,8 +164,8 @@ abstract class MaximumFlowAbstract extends MinimumEdgeCutUtils.AbstractImplST im
 			builder.addEdges(EdgeSet.allOf(gOrig));
 			final int originalEdgesThreshold = builder.edges().size();
 
-			final int source = builder.addVertex();
-			final int sink = builder.addVertex();
+			final int source = builder.addVertexInt();
+			final int sink = builder.addVertexInt();
 			Object capacities;
 			if (WeightFunction.isInteger(capacityOrig)) {
 				IWeightFunctionInt capacityOrigInt = (IWeightFunctionInt) capacityOrig;

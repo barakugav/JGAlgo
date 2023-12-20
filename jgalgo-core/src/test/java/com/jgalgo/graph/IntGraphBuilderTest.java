@@ -73,7 +73,7 @@ public class IntGraphBuilderTest extends TestBase {
 			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			IntSet vertices = new IntOpenHashSet();
 			for (int i = 0; i < 15; i++)
-				assertTrue(vertices.add(b.addVertex()));;
+				assertTrue(vertices.add(b.addVertexInt()));;
 			assertEquals(vertices, b.vertices());
 		});
 	}
@@ -95,12 +95,12 @@ public class IntGraphBuilderTest extends TestBase {
 			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			for (int v : IntList.of(48, 84, 66, 91, 3, 7))
 				b.addVertex(v);
-			assertThrows(IllegalArgumentException.class, () -> b.addVertex());
+			assertThrows(IllegalArgumentException.class, () -> b.addVertexInt());
 		});
 		foreachBoolConfig(directed -> {
 			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			for (int i = 0; i < 15; i++)
-				b.addVertex();
+				b.addVertexInt();
 			assertThrows(IllegalArgumentException.class, () -> b.addVertex(66));
 		});
 	}
@@ -175,7 +175,7 @@ public class IntGraphBuilderTest extends TestBase {
 		});
 		foreachBoolConfig(directed -> {
 			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
-			b.addVertex();
+			b.addVertexInt();
 			assertThrows(IllegalArgumentException.class, () -> b.addVertices(IntList.of(1, 2)));
 		});
 	}

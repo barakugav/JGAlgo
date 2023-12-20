@@ -21,6 +21,7 @@ import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntCollection;
+import static com.jgalgo.internal.util.Range.range;
 
 /**
  * TSP \(2\)-approximation using MST.
@@ -67,12 +68,8 @@ public class TspMetricMSTAppx extends TspMetricUtils.AbstractImpl {
 
 		/* Build a graph with each MST edge duplicated */
 		IndexGraphBuilder g1Builder = IndexGraphBuilder.undirected();
-		g1Builder.ensureVertexCapacity(n);
+		g1Builder.addVertices(range(n));
 		g1Builder.ensureEdgeCapacity(mst.size() + mst.size() * 2);
-		for (int v = 0; v < n; v++) {
-			int vBuilder = g1Builder.addVertex();
-			assert v == vBuilder;
-		}
 		int[] edgeRef = new int[mst.size() * 2];
 		for (int e : mst) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);

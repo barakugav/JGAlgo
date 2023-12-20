@@ -62,7 +62,7 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 			throw new NullPointerException("Vertex must be non null");
 		int vIdx = ibuilder.vertices().size();
 		viMap.addId(vertex, vIdx);
-		int vIdx2 = ibuilder.addVertex();
+		int vIdx2 = ibuilder.addVertexInt();
 		assert vIdx == vIdx2;
 	}
 

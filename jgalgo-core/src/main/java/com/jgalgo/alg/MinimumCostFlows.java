@@ -370,8 +370,8 @@ class MinimumCostFlows {
 			final int origEdgesThreshold = builder.edges().size();
 
 			/* Add two artificial terminal vertices, a source and a sink */
-			final int source = builder.addVertex();
-			final int sink = builder.addVertex();
+			final int source = builder.addVertexInt();
+			final int sink = builder.addVertexInt();
 
 			/* Connect the source to the sources with high capacity edges */
 			/* Connect the sinks to the sink with high capacity edges */
@@ -481,8 +481,8 @@ class MinimumCostFlows {
 			/* determine a great enough capacity ('infinite') for edges to sources (from sinks) */
 
 			/* Add two artificial terminal vertices, a source and a sink */
-			final int source = builder.addVertex();
-			final int sink = builder.addVertex();
+			final int source = builder.addVertexInt();
+			final int sink = builder.addVertexInt();
 
 			/* Connect the source to the sources with high capacity edges */
 			/* Connect the sinks to the sink with high capacity edges */
@@ -650,8 +650,8 @@ class MinimumCostFlows {
 			final int origEdgesThreshold = builder.edges().size();
 
 			/* Add two artificial vertices, source and sink */
-			final int source = builder.addVertex();
-			final int sink = builder.addVertex();
+			final int source = builder.addVertexInt();
+			final int sink = builder.addVertexInt();
 
 			/* Connect the source to vertices with positive supply and vertices with negative supply to the sink */
 			List<?> capacities;
@@ -764,8 +764,8 @@ class MinimumCostFlows {
 			/* any edge with index smaller than this threshold is an original edge of the graph */
 			final int origEdgesThreshold = builder.edges().size();
 
-			final int source = builder.addVertex();
-			final int sink = builder.addVertex();
+			final int source = builder.addVertexInt();
+			final int sink = builder.addVertexInt();
 			for (int v : sources)
 				builder.addEdge(source, v);
 			for (int v : sinks)
