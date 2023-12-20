@@ -175,9 +175,10 @@
           <show>protected</show>
           <source>${java.version}</source>
 
-          <!-- Link fastutil from our documentation -->
           <links>
             <link>https://fastutil.di.unimi.it/docs/</link>
+            <link>https://javadoc.io/doc/com.google.guava/guava/${com.google.guava.version}/</link>
+            <link>https://jgrapht.org/javadoc/</link>
           </links>
 
           <!-- Allow javascipts for Latex -->
