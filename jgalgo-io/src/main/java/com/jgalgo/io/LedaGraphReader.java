@@ -93,7 +93,7 @@ public class LedaGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 	}
 
 	@Override
-	public IntGraphBuilder readIntoBuilderImpl(Reader reader) {
+	IntGraphBuilder readIntoBuilderImpl(Reader reader) {
 		BufferedReader br = GraphIoUtils.bufferedReader(reader);
 		Iterator<String> lineIter = GraphIoUtils.lines(br, true).iterator();
 		Supplier<String> next = () -> {

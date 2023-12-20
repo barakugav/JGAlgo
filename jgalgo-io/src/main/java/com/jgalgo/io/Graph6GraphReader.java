@@ -60,7 +60,7 @@ public class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 	public Graph6GraphReader() {}
 
 	@Override
-	public IntGraphBuilder readIntoBuilderImpl(Reader reader) throws IOException {
+	IntGraphBuilder readIntoBuilderImpl(Reader reader) throws IOException {
 		BufferedReader br = GraphIoUtils.bufferedReader(reader);
 		IntGraphBuilder g = IntGraphBuilder.undirected();
 

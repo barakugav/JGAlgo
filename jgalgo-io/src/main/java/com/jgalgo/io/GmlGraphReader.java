@@ -207,7 +207,7 @@ public class GmlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E>
 	}
 
 	@Override
-	public GraphBuilder<V, E> readIntoBuilderImpl(Reader reader) throws IOException {
+	GraphBuilder<V, E> readIntoBuilderImpl(Reader reader) throws IOException {
 		if (vType == null)
 			throw new IllegalStateException("Type of vertices was not set");
 		if (eType == null)

@@ -101,7 +101,7 @@ public class DimacsGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 	}
 
 	@Override
-	public IntGraphBuilder readIntoBuilderImpl(Reader reader) {
+	IntGraphBuilder readIntoBuilderImpl(Reader reader) {
 		BufferedReader br = GraphIoUtils.bufferedReader(reader);
 		IntGraphBuilder gb = IntGraphFactory.undirected().allowSelfEdges().newBuilder();
 		boolean problemLineSeen = false;
