@@ -29,6 +29,8 @@ jobs:
         mkdir coverage
         mv jgalgo-core/target/site/jacoco coverage/jgalgo-core
         mv jgalgo-io/target/site/jacoco coverage/jgalgo-io
+        mv jgalgo-adapt-guava/target/site/jacoco coverage/jgalgo-adapt-guava
+        mv jgalgo-adapt-jgrapht/target/site/jacoco coverage/jgalgo-adapt-jgrapht
         mv jgalgo-example/target/site/jacoco coverage/jgalgo-example
         mv jgalgo-bench/target/site/jacoco coverage/jgalgo-bench
 
@@ -38,6 +40,9 @@ jobs:
         jacoco-csv-file: >
           coverage/jgalgo-core/jacoco.csv
           coverage/jgalgo-io/jacoco.csv
+          coverage/jgalgo-adapt-guava/jacoco.csv
+          coverage/jgalgo-adapt-jgrapht/jacoco.csv
+          coverage/jgalgo-example/jacoco.csv
 
         generate-coverage-badge: true
         badges-directory: coverage/badges
@@ -47,6 +52,8 @@ jobs:
         mkdir artifacts/
         tar -czf artifacts/jgalgo-core.tar.gz coverage/jgalgo-core/
         tar -czf artifacts/jgalgo-io.tar.gz coverage/jgalgo-io/
+        tar -czf artifacts/jgalgo-adapt-guava.tar.gz coverage/jgalgo-adapt-guava/
+        tar -czf artifacts/jgalgo-adapt-jgrapht.tar.gz coverage/jgalgo-adapt-jgrapht/
         tar -czf artifacts/jgalgo-example.tar.gz coverage/jgalgo-example/
         tar -czf artifacts/jgalgo-bench.tar.gz coverage/jgalgo-bench/
 
@@ -61,6 +68,18 @@ jobs:
       with:
         name: jgalgo-io-jacoco-coverage-report
         path: artifacts/jgalgo-io.tar.gz
+
+    - name: Upload jgalgo-adapt-guava artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: jgalgo-adapt-guava-jacoco-coverage-report
+        path: artifacts/jgalgo-adapt-guava.tar.gz
+
+    - name: Upload jgalgo-adapt-jgrapht artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: jgalgo-adapt-jgrapht-jacoco-coverage-report
+        path: artifacts/jgalgo-adapt-jgrapht.tar.gz
 
     - name: Upload jgalgo-example artifacts
       uses: actions/upload-artifact@v3
