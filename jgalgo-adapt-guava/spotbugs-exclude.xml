@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+  <Match>
+    <!-- We don't have ownership over the accepted graph -->
+    <Or>
+      <Class name="com.jgalgo.adapt.guava.GuavaGraphAdapter" />
+      <Class name="com.jgalgo.adapt.guava.GuavaNetworkAdapter" />
+      <Class name="com.jgalgo.adapt.guava.GuavaValueGraphAdapter" />
+    </Or>
+    <Constructor />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
+  <Match>
+    <!-- The returned index graph and IndexIdMap(s) are not internal data, they are API for the user -->
+    <Class name="com.jgalgo.adapt.guava.GuavaNetworkWrapper" />
+    <Or>
+      <Method name="indexGraph" />
+      <Method name="indexGraphVerticesMap" />
+      <Method name="indexGraphEdgesMap" />
+    </Or>
+    <Bug pattern="EI_EXPOSE_REP" />
+  </Match>
+</FindBugsFilter>

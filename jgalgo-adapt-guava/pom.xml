@@ -74,6 +74,14 @@
         <artifactId>maven-site-plugin</artifactId>
         <version>${maven-site-plugin.version}</version>
       </plugin>
+
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <configuration>
+          <excludeFilterFile>spotbugs-exclude.xml</excludeFilterFile>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>
