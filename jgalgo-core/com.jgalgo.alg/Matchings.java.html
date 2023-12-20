@@ -438,7 +438,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		@Override
 		public E getMatchedEdge(V vertex) {
 <span class="fc" id="L440">			int e = match.getMatchedEdge(viMap.idToIndex(vertex));</span>
-<span class="fc bfc" id="L441" title="All 2 branches covered.">			return e == -1 ? null : eiMap.indexToId(e);</span>
+<span class="fc" id="L441">			return eiMap.indexToIdIfExist(e);</span>
 		}
 
 		@Override
@@ -492,7 +492,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		@Override
 		public int getMatchedEdge(int vertex) {
 <span class="fc" id="L494">			int e = match.getMatchedEdge(viMap.idToIndex(vertex));</span>
-<span class="fc bfc" id="L495" title="All 2 branches covered.">			return e == -1 ? -1 : eiMap.indexToIdInt(e);</span>
+<span class="fc" id="L495">			return eiMap.indexToIdIfExistInt(e);</span>
 		}
 
 		@Override

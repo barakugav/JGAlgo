@@ -285,7 +285,7 @@ import it.unimi.dsi.fastutil.longs.LongList;
 		@Override
 		public V getLca(int queryIdx) {
 <span class="fc" id="L287">			int vIdx = indexRes.getLcaInt(queryIdx);</span>
-<span class="pc bpc" id="L288" title="1 of 2 branches missed.">			return vIdx == -1 ? null : viMap.indexToId(vIdx);</span>
+<span class="fc" id="L288">			return viMap.indexToIdIfExist(vIdx);</span>
 		}
 
 		@Override
@@ -307,7 +307,7 @@ import it.unimi.dsi.fastutil.longs.LongList;
 		@Override
 		public int getLcaInt(int queryIdx) {
 <span class="fc" id="L309">			int vIdx = indexRes.getLcaInt(queryIdx);</span>
-<span class="pc bpc" id="L310" title="1 of 2 branches missed.">			return vIdx == -1 ? -1 : viMap.indexToIdInt(vIdx);</span>
+<span class="fc" id="L310">			return viMap.indexToIdIfExistInt(vIdx);</span>
 		}
 
 		@Override

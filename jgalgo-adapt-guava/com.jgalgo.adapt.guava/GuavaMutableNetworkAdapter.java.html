@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GuavaMutableNetworkAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Guava Adapters</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.adapt.guava</a> &gt; <span class="el_source">GuavaMutableNetworkAdapter.java</span></div><h1>GuavaMutableNetworkAdapter.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.adapt.guava;
+
+import com.google.common.graph.EndpointPair;
+import com.google.common.graph.MutableNetwork;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+
+/**
+ * An adapter from a JGAlgo graph to a Guava network.
+ *
+ * &lt;p&gt;
+ * The adapter is constructed with a {@linkplain com.jgalgo.graph.Graph JGAlgo graph} and implements the
+ * {@linkplain com.google.common.graph.MutableNetwork mutable Guava network} interface, and can be used with any Guava
+ * algorithm. The adapter is a live view, so any change in the JGAlgo graph is reflected in the Guava network and vice
+ * versa, but the underlying JGAlgo graph should not be modified directly.
+ *
+ * &lt;p&gt;
+ * The {@linkplain com.google.common.graph.MutableNetwork mutable Guava network} is a mutable variant of the
+ * {@linkplain com.google.common.graph.Network Guava value graph}. If mutability is not required, consider using the
+ * {@linkplain GuavaNetworkAdapter immutable adapter} instead.
+ *
+ * &lt;p&gt;
+ * The capabilities of the Guava network, such as parallel and self edges or whether the network is directed or
+ * undirected, are determined by the underlying JGAlgo graph.
+ *
+ * &lt;p&gt;
+ * Guava support different {@linkplain com.google.common.graph.ElementOrder element orders} for the nodes and the
+ * incident edges. This adapter uses the default element order, which is unordered, and cannot be changed as the
+ * underlying JGAlgo graph does not support any other order.
+ *
+ * &lt;p&gt;
+ * Among Guava {@link com.google.common.graph.Graph}, {@link com.google.common.graph.ValueGraph} and
+ * {@link com.google.common.graph.Network}, the network is the most similar to JGAlgo graphs, as vertices and edges have
+ * unique identifiers, and queries of edges are answered with the edges identifiers. On the other had, the Graph and
+ * ValueGraph do not support unique identifiers for the edges, and operations on edges are addressed by a pair of nodes.
+ * The ValueGraph does associate a value with each edge, be it does not have to be unique, and it is more similar to
+ * weights in JGAlgo graphs.
+ *
+ * &lt;p&gt;
+ * For adapting the other way around, from Guava Network to JGAlgo, see {@link GuavaNetworkWrapper}.
+ *
+ * @see        com.jgalgo.graph.Graph
+ * @see        com.google.common.graph.MutableNetwork
+ * @see        GuavaNetworkAdapter
+ * @see        GuavaNetworkWrapper
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
+ */
+public class GuavaMutableNetworkAdapter&lt;V, E&gt; extends GuavaNetworkAdapter&lt;V, E&gt; implements MutableNetwork&lt;V, E&gt; {
+
+	/**
+	 * Constructs a new mutable adapter from the given JGAlgo graph.
+	 *
+	 * @param graph the JGAlgo graph
+	 */
+	public GuavaMutableNetworkAdapter(Graph&lt;V, E&gt; graph) {
+<span class="fc" id="L74">		super(graph);</span>
+<span class="fc" id="L75">	}</span>
+
+	@Override
+	public boolean addNode(V node) {
+<span class="fc" id="L79">		return GuavaAdapters.addNode(graph, node);</span>
+	}
+
+	private EndpointPair&lt;V&gt; endpoints(V u, V v) {
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		return graph.isDirected() ? EndpointPair.ordered(u, v) : EndpointPair.unordered(u, v);</span>
+	}
+
+	@Override
+	public boolean addEdge(V nodeU, V nodeV, E edge) {
+<span class="fc" id="L88">		IndexGraph g = graph.indexGraph();</span>
+<span class="fc" id="L89">		IndexIdMap&lt;V&gt; viMap = graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L90">		IndexIdMap&lt;E&gt; eiMap = graph.indexGraphEdgesMap();</span>
+
+<span class="fc" id="L92">		int existingIdx = eiMap.idToIndexIfExist(edge);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		if (existingIdx &gt;= 0) {</span>
+<span class="fc" id="L94">			V u = viMap.indexToId(g.edgeSource(existingIdx));</span>
+<span class="fc" id="L95">			V v = viMap.indexToId(g.edgeTarget(existingIdx));</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			if (!endpoints(u, v).equals(endpoints(nodeU, nodeV)))</span>
+<span class="fc" id="L97">				throw new IllegalArgumentException(&quot;Edge &quot; + edge + &quot; already exists between the following nodes: &quot;</span>
+<span class="fc" id="L98">						+ endpoints(u, v) + &quot;, &quot; + &quot;so it cannot be reused to connect the following nodes: &quot;</span>
+<span class="fc" id="L99">						+ endpoints(nodeU, nodeV) + &quot;.&quot;);</span>
+<span class="fc" id="L100">			return false;</span>
+		}
+
+<span class="fc" id="L103">		addNode(nodeU);</span>
+<span class="fc" id="L104">		addNode(nodeV);</span>
+<span class="fc" id="L105">		graph.addEdge(nodeU, nodeV, edge);</span>
+<span class="fc" id="L106">		return true;</span>
+	}
+
+	@Override
+	public boolean addEdge(EndpointPair&lt;V&gt; endpoints, E edge) {
+<span class="fc" id="L111">		validateEndpoints(endpoints);</span>
+<span class="fc" id="L112">		return addEdge(endpoints.nodeU(), endpoints.nodeV(), edge);</span>
+	}
+
+	@Override
+	public boolean removeNode(V node) {
+<span class="fc" id="L117">		return GuavaAdapters.removeNode(graph, node);</span>
+	}
+
+	@Override
+	public boolean removeEdge(E edge) {
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		if (!graph.edges().contains(edge))</span>
+<span class="fc" id="L123">			return false;</span>
+<span class="fc" id="L124">		graph.removeEdge(edge);</span>
+<span class="fc" id="L125">		return true;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -185,7 +185,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 		@Override
 		public int lastEdgeInt() {
 <span class="fc" id="L187">			int e = indexIter.lastEdgeInt();</span>
-<span class="fc bfc" id="L188" title="All 2 branches covered.">			return e == -1 ? -1 : eiMap.indexToIdInt(e);</span>
+<span class="fc" id="L188">			return eiMap.indexToIdIfExistInt(e);</span>
 		}
 
 		@Override
@@ -219,7 +219,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 		@Override
 		public E lastEdge() {
 <span class="fc" id="L221">			int e = indexIter.lastEdgeInt();</span>
-<span class="fc bfc" id="L222" title="All 2 branches covered.">			return e == -1 ? null : eiMap.indexToId(e);</span>
+<span class="fc" id="L222">			return eiMap.indexToIdIfExist(e);</span>
 		}
 
 		@Override

@@ -1,0 +1,1238 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GuavaNetworkWrapper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Guava Adapters</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.adapt.guava</a> &gt; <span class="el_source">GuavaNetworkWrapper.java</span></div><h1>GuavaNetworkWrapper.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.adapt.guava;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.AbstractSet;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
+import com.google.common.graph.MutableNetwork;
+import com.jgalgo.graph.AbstractGraph;
+import com.jgalgo.graph.EdgeIter;
+import com.jgalgo.graph.EdgeSet;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IEdgeSet;
+import com.jgalgo.graph.IdBuilder;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IndexRemoveListener;
+import com.jgalgo.graph.NoSuchEdgeException;
+import com.jgalgo.graph.NoSuchVertexException;
+import com.jgalgo.graph.Weights;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntCollection;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectList;
+
+/**
+ * An adapter from Guava Network to JGAlgo Graph.
+ *
+ * &lt;p&gt;
+ * The adapter is constructed with a {@linkplain com.google.common.graph.Network Guava network} and implements the
+ * {@linkplain com.jgalgo.graph.Graph JGAlgo graph} interface, and can be used with any JGAlgo algorithm. The adapter is
+ * a live view, so any change in the JGAlgo graph is reflected in the JGraphT graph and vice versa, but the underlying
+ * Guava network should &lt;b&gt;not be modified&lt;/b&gt; directly. Modifying the original Guava network will invalidate the
+ * adapter.
+ *
+ * &lt;p&gt;
+ * The capabilities of the graph ({@link com.jgalgo.graph.Graph#isDirected()},
+ * {@link com.jgalgo.graph.Graph#isAllowParallelEdges()}, and {@link com.jgalgo.graph.Graph#isAllowSelfEdges()}) are
+ * determined by the corresponding capabilities of the underlying Guava network. Weights are not supported.
+ *
+ * &lt;p&gt;
+ * Guava networks are mutable only they implement the {@link com.google.common.graph.MutableNetwork} interface. This
+ * interface can be used for mutable and immutable networks. Whether or not the adapter is mutable is determined by the
+ * constructor {@link #GuavaNetworkWrapper(com.google.common.graph.Network, boolean)}, which accept a {@code mutable}
+ * flag. An immutable adapter can be constructed with either a mutable or an immutable Guava network. A mutable adapter
+ * can be constructed only with a mutable Guava network. The constructor
+ * {@link #GuavaNetworkWrapper(com.google.common.graph.Network)} determine the mutability of the adapter according to
+ * the mutability of the Guava network, namely the adapter will be mutable if the network implements
+ * {@link com.google.common.graph.MutableNetwork}. If this adapter is immutable, any attempt to modify it will throw an
+ * {@link UnsupportedOperationException}.
+ *
+ * &lt;p&gt;
+ * The adapter has much worse performance than the a regular JGAlgo graph. If memory is not an issue, it is probably
+ * better to copy the adapter to a regular JGAlgo graph and use it instead. For example:
+ *
+ * &lt;pre&gt; {@code
+ * com.google.common.graph.Network&lt;V,E&gt; originalNetwork = ...;
+ * com.jgalgo.graph.Graph&lt;V,E&gt; wrappedGraph = new GuavaNetworkWrapper&lt;&gt;(originalGraph);
+ * com.jgalgo.graph.Graph&lt;V,E&gt; regularGraph = wrappedGraph.immutableCopy(); // or just copy()
+ * ...
+ * }&lt;/pre&gt;
+ *
+ * &lt;p&gt;
+ * For adapting the other way around, from JGAlgo to Guava Network, see {@link GuavaNetworkAdapter}.
+ *
+ * @see        com.jgalgo.graph.Graph
+ * @see        com.google.common.graph.Network
+ * @see        com.google.common.graph.MutableNetwork
+ * @see        GuavaNetworkAdapter
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
+ */
+<span class="fc" id="L98">public class GuavaNetworkWrapper&lt;V, E&gt; extends AbstractGraph&lt;V, E&gt; {</span>
+
+	private final com.google.common.graph.Network&lt;V, E&gt; network;
+	private final boolean mutable;
+
+	private final IndexIdMapImpl&lt;V&gt; indexGraphVerticesMap;
+	private final IndexIdMapImpl&lt;E&gt; indexGraphEdgesMap;
+	private final IndexGraph indexGraph;
+
+	/**
+	 * Constructs a new adapter from the given Guava network.
+	 *
+	 * &lt;p&gt;
+	 * Whether or not the adapter is mutable is determined by the mutability of the Guava network, namely the adapter
+	 * will be mutable if the network implements {@link com.google.common.graph.MutableNetwork}. If this adapter is
+	 * immutable, any attempt to modify it will throw an {@link UnsupportedOperationException}.
+	 *
+	 * @param network the Guava network
+	 */
+	public GuavaNetworkWrapper(com.google.common.graph.Network&lt;V, E&gt; network) {
+<span class="fc" id="L118">		this(network, network instanceof MutableNetwork);</span>
+<span class="fc" id="L119">	}</span>
+
+	/**
+	 * Constructs a new adapter from the given Guava network.
+	 *
+	 * &lt;p&gt;
+	 * The adapter will be mutable if {@code mutable} is {@code true}, and immutable otherwise. If {@code mutable} is
+	 * {@code true}, the Guava network must implement {@link com.google.common.graph.MutableNetwork}. If {@code mutable}
+	 * is {@code false}, the Guava network can be either mutable or immutable. If this adapter is immutable, any attempt
+	 * to modify it will throw an {@link UnsupportedOperationException}.
+	 *
+	 * @param  network                  the Guava network
+	 * @param  mutable                  whether the adapter is mutable
+	 * @throws IllegalArgumentException if {@code mutable} is {@code true} and the Guava network does not implement
+	 *                                      {@link com.google.common.graph.MutableNetwork}
+	 */
+<span class="fc" id="L135">	public GuavaNetworkWrapper(com.google.common.graph.Network&lt;V, E&gt; network, boolean mutable) {</span>
+<span class="fc bfc" id="L136" title="All 4 branches covered.">		if (mutable &amp;&amp; !(network instanceof MutableNetwork))</span>
+<span class="fc" id="L137">			throw new IllegalArgumentException(&quot;network is not mutable&quot;);</span>
+<span class="fc" id="L138">		this.network = Objects.requireNonNull(network);</span>
+<span class="fc" id="L139">		this.mutable = mutable;</span>
+
+<span class="fc" id="L141">		indexGraphVerticesMap = new IndexIdMapImpl&lt;&gt;(false);</span>
+<span class="fc" id="L142">		indexGraphEdgesMap = new IndexIdMapImpl&lt;&gt;(true);</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">		for (V vertex : network.nodes())</span>
+<span class="fc" id="L144">			indexGraphVerticesMap.add(vertex);</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">		for (E edge : network.edges())</span>
+<span class="fc" id="L146">			indexGraphEdgesMap.add(edge);</span>
+<span class="fc" id="L147">		indexGraph = new IndexGraphImpl&lt;&gt;(network, indexGraphVerticesMap, indexGraphEdgesMap);</span>
+<span class="fc" id="L148">	}</span>
+
+	@Override
+	public Set&lt;V&gt; vertices() {
+<span class="fc" id="L152">		return network.nodes();</span>
+	}
+
+	@Override
+	public Set&lt;E&gt; edges() {
+<span class="fc" id="L157">		return network.edges();</span>
+	}
+
+	@Override
+	public EdgeSet&lt;V, E&gt; outEdges(V source) {
+		Set&lt;E&gt; edges;
+		try {
+<span class="fc" id="L164">			edges = network.outEdges(source);</span>
+<span class="fc" id="L165">		} catch (IllegalArgumentException e) {</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">			if (!network.nodes().contains(source))</span>
+<span class="fc" id="L167">				e = NoSuchVertexException.ofVertex(source);</span>
+<span class="fc" id="L168">			throw e;</span>
+<span class="fc" id="L169">		}</span>
+<span class="fc" id="L170">		return new OutEdges&lt;&gt;(source, edges, network);</span>
+	}
+
+	@Override
+	public EdgeSet&lt;V, E&gt; inEdges(V target) {
+		Set&lt;E&gt; edges;
+		try {
+<span class="fc" id="L177">			edges = network.inEdges(target);</span>
+<span class="fc" id="L178">		} catch (IllegalArgumentException e) {</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">			if (!network.nodes().contains(target))</span>
+<span class="fc" id="L180">				e = NoSuchVertexException.ofVertex(target);</span>
+<span class="fc" id="L181">			throw e;</span>
+<span class="fc" id="L182">		}</span>
+<span class="fc" id="L183">		return new InEdges&lt;&gt;(target, edges, network);</span>
+	}
+
+	@Override
+	public E getEdge(V source, V target) {
+		try {
+<span class="fc" id="L189">			return network.edgeConnectingOrNull(source, target);</span>
+<span class="fc" id="L190">		} catch (IllegalArgumentException e) {</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">			if (!network.nodes().contains(source))</span>
+<span class="fc" id="L192">				e = NoSuchVertexException.ofVertex(source);</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">			if (!network.nodes().contains(target))</span>
+<span class="fc" id="L194">				e = NoSuchVertexException.ofVertex(target);</span>
+<span class="fc" id="L195">			throw e;</span>
+		}
+	}
+
+	@Override
+	public EdgeSet&lt;V, E&gt; getEdges(V source, V target) {
+		Set&lt;E&gt; edges;
+		try {
+<span class="fc" id="L203">			edges = network.edgesConnecting(source, target);</span>
+<span class="fc" id="L204">		} catch (IllegalArgumentException e) {</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">			if (!network.nodes().contains(source))</span>
+<span class="fc" id="L206">				e = NoSuchVertexException.ofVertex(source);</span>
+<span class="fc bfc" id="L207" title="All 2 branches covered.">			if (!network.nodes().contains(target))</span>
+<span class="fc" id="L208">				e = NoSuchVertexException.ofVertex(target);</span>
+<span class="fc" id="L209">			throw e;</span>
+<span class="fc" id="L210">		}</span>
+<span class="fc" id="L211">		return new SourceTargetEdgeSet&lt;&gt;(source, target, edges, network);</span>
+	}
+
+	private abstract static class EdgeSetBase&lt;V, E&gt; extends AbstractSet&lt;E&gt; implements EdgeSet&lt;V, E&gt; {
+
+		final Set&lt;E&gt; edges;
+		final com.google.common.graph.Network&lt;V, E&gt; network;
+
+<span class="fc" id="L219">		EdgeSetBase(Set&lt;E&gt; edges, com.google.common.graph.Network&lt;V, E&gt; network) {</span>
+<span class="fc" id="L220">			this.edges = edges;</span>
+<span class="fc" id="L221">			this.network = network;</span>
+<span class="fc" id="L222">		}</span>
+
+		@Override
+		public int size() {
+<span class="fc" id="L226">			return edges.size();</span>
+		}
+
+		@Override
+		public boolean isEmpty() {
+<span class="fc" id="L231">			return edges.isEmpty();</span>
+		}
+
+		@Override
+		public boolean contains(Object o) {
+<span class="fc" id="L236">			return edges.contains(o);</span>
+		}
+
+		@Override
+		public boolean containsAll(Collection&lt;?&gt; c) {
+<span class="fc" id="L241">			return edges.containsAll(c);</span>
+		}
+
+<span class="fc" id="L244">		abstract class IterBase implements EdgeIter&lt;V, E&gt; {</span>
+
+<span class="fc" id="L246">			private final Iterator&lt;E&gt; iter = edges.iterator();</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">			private E nextEdge = iter.hasNext() ? iter.next() : null;</span>
+<span class="fc" id="L248">			E lastEdge = null;</span>
+
+			@Override
+			public boolean hasNext() {
+<span class="fc bfc" id="L252" title="All 2 branches covered.">				return nextEdge != null;</span>
+			}
+
+			@Override
+			public E next() {
+<span class="fc bfc" id="L257" title="All 2 branches covered.">				if (!hasNext())</span>
+<span class="fc" id="L258">					throw new NoSuchElementException();</span>
+<span class="fc" id="L259">				lastEdge = nextEdge;</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">				nextEdge = iter.hasNext() ? iter.next() : null;</span>
+<span class="fc" id="L261">				return lastEdge;</span>
+			}
+
+			@Override
+			public E peekNext() {
+<span class="fc bfc" id="L266" title="All 2 branches covered.">				if (!hasNext())</span>
+<span class="fc" id="L267">					throw new NoSuchElementException();</span>
+<span class="fc" id="L268">				return nextEdge;</span>
+			}
+		}
+	}
+
+	private static class OutEdges&lt;V, E&gt; extends EdgeSetBase&lt;V, E&gt; {
+
+		private final V source;
+
+		OutEdges(V source, Set&lt;E&gt; edges, com.google.common.graph.Network&lt;V, E&gt; network) {
+<span class="fc" id="L278">			super(edges, network);</span>
+<span class="fc" id="L279">			this.source = source;</span>
+<span class="fc" id="L280">		}</span>
+
+		@Override
+		public EdgeIter&lt;V, E&gt; iterator() {
+<span class="fc" id="L284">			return new IterBase() {</span>
+				@Override
+				public V source() {
+<span class="fc bfc" id="L287" title="All 2 branches covered.">					if (lastEdge == null)</span>
+<span class="fc" id="L288">						throw new IllegalStateException();</span>
+<span class="fc" id="L289">					return source;</span>
+				}
+
+				@Override
+				public V target() {
+<span class="fc bfc" id="L294" title="All 2 branches covered.">					if (lastEdge == null)</span>
+<span class="fc" id="L295">						throw new IllegalStateException();</span>
+<span class="fc" id="L296">					return network.incidentNodes(lastEdge).adjacentNode(source);</span>
+				}
+			};
+		}
+	}
+
+	private static class InEdges&lt;V, E&gt; extends EdgeSetBase&lt;V, E&gt; {
+
+		private final V target;
+
+		InEdges(V target, Set&lt;E&gt; edges, com.google.common.graph.Network&lt;V, E&gt; network) {
+<span class="fc" id="L307">			super(edges, network);</span>
+<span class="fc" id="L308">			this.target = target;</span>
+<span class="fc" id="L309">		}</span>
+
+		@Override
+		public EdgeIter&lt;V, E&gt; iterator() {
+<span class="fc" id="L313">			return new IterBase() {</span>
+				@Override
+				public V source() {
+<span class="fc bfc" id="L316" title="All 2 branches covered.">					if (lastEdge == null)</span>
+<span class="fc" id="L317">						throw new IllegalStateException();</span>
+<span class="fc" id="L318">					return network.incidentNodes(lastEdge).adjacentNode(target);</span>
+				}
+
+				@Override
+				public V target() {
+<span class="fc bfc" id="L323" title="All 2 branches covered.">					if (lastEdge == null)</span>
+<span class="fc" id="L324">						throw new IllegalStateException();</span>
+<span class="fc" id="L325">					return target;</span>
+				}
+			};
+		}
+	}
+
+	private static class SourceTargetEdgeSet&lt;V, E&gt; extends EdgeSetBase&lt;V, E&gt; {
+
+		private final V source;
+		private final V target;
+
+		public SourceTargetEdgeSet(V source, V target, Set&lt;E&gt; edges, com.google.common.graph.Network&lt;V, E&gt; network) {
+<span class="fc" id="L337">			super(edges, network);</span>
+<span class="fc" id="L338">			this.source = source;</span>
+<span class="fc" id="L339">			this.target = target;</span>
+<span class="fc" id="L340">		}</span>
+
+		@Override
+		public EdgeIter&lt;V, E&gt; iterator() {
+<span class="fc" id="L344">			return new IterBase() {</span>
+				@Override
+				public V source() {
+<span class="fc bfc" id="L347" title="All 2 branches covered.">					if (lastEdge == null)</span>
+<span class="fc" id="L348">						throw new IllegalStateException();</span>
+<span class="fc" id="L349">					return source;</span>
+				}
+
+				@Override
+				public V target() {
+<span class="fc bfc" id="L354" title="All 2 branches covered.">					if (lastEdge == null)</span>
+<span class="fc" id="L355">						throw new IllegalStateException();</span>
+<span class="fc" id="L356">					return target;</span>
+				}
+			};
+		}
+	}
+
+	@Override
+	public V edgeSource(E edge) {
+		try {
+<span class="fc" id="L365">			return network.incidentNodes(edge).nodeU();</span>
+<span class="fc" id="L366">		} catch (IllegalArgumentException e) {</span>
+<span class="pc bpc" id="L367" title="1 of 2 branches missed.">			if (!network.edges().contains(edge))</span>
+<span class="fc" id="L368">				e = NoSuchEdgeException.ofEdge(edge);</span>
+<span class="fc" id="L369">			throw e;</span>
+		}
+	}
+
+	@Override
+	public V edgeTarget(E edge) {
+		try {
+<span class="fc" id="L376">			return network.incidentNodes(edge).nodeV();</span>
+<span class="fc" id="L377">		} catch (IllegalArgumentException e) {</span>
+<span class="pc bpc" id="L378" title="1 of 2 branches missed.">			if (!network.edges().contains(edge))</span>
+<span class="fc" id="L379">				e = NoSuchEdgeException.ofEdge(edge);</span>
+<span class="fc" id="L380">			throw e;</span>
+		}
+	}
+
+	@Override
+	public V edgeEndpoint(E edge, V endpoint) {
+		try {
+<span class="fc" id="L387">			return network.incidentNodes(edge).adjacentNode(endpoint);</span>
+<span class="fc" id="L388">		} catch (IllegalArgumentException e) {</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">			if (!network.edges().contains(edge))</span>
+<span class="fc" id="L390">				e = NoSuchEdgeException.ofEdge(edge);</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">			if (!network.nodes().contains(endpoint))</span>
+<span class="fc" id="L392">				e = NoSuchVertexException.ofVertex(endpoint);</span>
+<span class="fc" id="L393">			throw e;</span>
+		}
+	}
+
+	@Override
+	public IdBuilder&lt;V&gt; vertexBuilder() {
+<span class="fc" id="L399">		return null;</span>
+	}
+
+	@Override
+	public IdBuilder&lt;E&gt; edgeBuilder() {
+<span class="fc" id="L404">		return null;</span>
+	}
+
+	@Override
+<span class="fc" id="L408">	public void ensureVertexCapacity(int vertexCapacity) {}</span>
+
+	@Override
+<span class="fc" id="L411">	public void ensureEdgeCapacity(int edgeCapacity) {}</span>
+
+	@Override
+	public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT getVerticesWeights(String key) {
+<span class="fc" id="L415">		return null;</span>
+	}
+
+	@Override
+	public Set&lt;String&gt; getVerticesWeightsKeys() {
+<span class="fc" id="L420">		return Set.of();</span>
+	}
+
+	@Override
+	public &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
+			T defVal) {
+<span class="fc" id="L426">		throw new UnsupportedOperationException(&quot;Guava Network does not support vertices weights&quot;);</span>
+	}
+
+	@Override
+	public void removeVerticesWeights(String key) {
+<span class="fc" id="L431">		throw new IllegalArgumentException(&quot;no vertices weights with key '&quot; + key + &quot;'&quot;);</span>
+	}
+
+	@Override
+	public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT getEdgesWeights(String key) {
+<span class="fc" id="L436">		return null;</span>
+	}
+
+	@Override
+	public Set&lt;String&gt; getEdgesWeightsKeys() {
+<span class="fc" id="L441">		return Set.of();</span>
+	}
+
+	@Override
+	public &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type, T defVal) {
+<span class="fc" id="L446">		throw new UnsupportedOperationException(&quot;Guava Network does not support edges weights&quot;);</span>
+	}
+
+	@Override
+	public void removeEdgesWeights(String key) {
+<span class="fc" id="L451">		throw new IllegalArgumentException(&quot;no edges weights with key '&quot; + key + &quot;'&quot;);</span>
+	}
+
+	@Override
+	public boolean isDirected() {
+<span class="fc" id="L456">		return network.isDirected();</span>
+	}
+
+	@Override
+	public boolean isAllowSelfEdges() {
+<span class="fc" id="L461">		return network.allowsSelfLoops();</span>
+	}
+
+	@Override
+	public boolean isAllowParallelEdges() {
+<span class="fc" id="L466">		return network.allowsParallelEdges();</span>
+	}
+
+	@Override
+	public IndexGraph indexGraph() {
+<span class="fc" id="L471">		return indexGraph;</span>
+	}
+
+	@Override
+	public IndexIdMap&lt;V&gt; indexGraphVerticesMap() {
+<span class="fc" id="L476">		return indexGraphVerticesMap;</span>
+	}
+
+	@Override
+	public IndexIdMap&lt;E&gt; indexGraphEdgesMap() {
+<span class="fc" id="L481">		return indexGraphEdgesMap;</span>
+	}
+
+	/* ------------------------- */
+	/* --- mutable functions --- */
+	/* ------------------------- */
+
+	private MutableNetwork&lt;V, E&gt; mutableNetwork(String errMsg) {
+<span class="fc bfc" id="L489" title="All 2 branches covered.">		if (!mutable)</span>
+<span class="fc" id="L490">			throw new UnsupportedOperationException(errMsg);</span>
+<span class="fc" id="L491">		return (MutableNetwork&lt;V, E&gt;) network;</span>
+	}
+
+	@Override
+	public void addVertex(V vertex) {
+<span class="fc" id="L496">		MutableNetwork&lt;V, E&gt; net = mutableNetwork(&quot;graph is immutable, can't add vertices&quot;);</span>
+<span class="fc" id="L497">		boolean modified = net.addNode(vertex);</span>
+<span class="fc bfc" id="L498" title="All 2 branches covered.">		if (!modified)</span>
+<span class="fc" id="L499">			throw new IllegalArgumentException(&quot;vertex already in the graph: &quot; + vertex);</span>
+<span class="fc" id="L500">		indexGraphVerticesMap.add(vertex);</span>
+<span class="fc" id="L501">	}</span>
+
+	@Override
+	public void addVertices(Collection&lt;? extends V&gt; vertices) {
+<span class="fc" id="L505">		MutableNetwork&lt;V, E&gt; net = mutableNetwork(&quot;graph is immutable, can't add vertices&quot;);</span>
+<span class="fc" id="L506">		int addVertices = 0;</span>
+<span class="fc bfc" id="L507" title="All 2 branches covered.">		for (V vertex : vertices) {</span>
+<span class="fc" id="L508">			boolean modified = net.addNode(vertex);</span>
+<span class="fc bfc" id="L509" title="All 2 branches covered.">			if (!modified) {</span>
+				/* roll back */
+<span class="fc" id="L511">				for (Iterator&lt;? extends V&gt; it = vertices.iterator();;) {</span>
+<span class="fc bfc" id="L512" title="All 2 branches covered.">					if (addVertices-- &lt;= 0)</span>
+<span class="fc" id="L513">						break;</span>
+<span class="fc" id="L514">					boolean removed = net.removeNode(it.next());</span>
+<span class="pc bnc" id="L515" title="All 2 branches missed.">					assert removed;</span>
+<span class="fc" id="L516">				}</span>
+<span class="fc" id="L517">				throw new IllegalArgumentException(&quot;duplicate vertex: &quot; + vertex);</span>
+			}
+<span class="fc" id="L519">			addVertices++;</span>
+<span class="fc" id="L520">		}</span>
+<span class="fc bfc" id="L521" title="All 2 branches covered.">		for (V vertex : vertices)</span>
+<span class="fc" id="L522">			indexGraphVerticesMap.add(vertex);</span>
+<span class="fc" id="L523">	}</span>
+
+	@Override
+	public void removeVertex(V vertex) {
+<span class="fc" id="L527">		MutableNetwork&lt;V, E&gt; net = mutableNetwork(&quot;graph is immutable, can't remove vertices&quot;);</span>
+<span class="fc bfc" id="L528" title="All 2 branches covered.">		if (!net.nodes().contains(vertex))</span>
+<span class="fc" id="L529">			throw NoSuchVertexException.ofVertex(vertex);</span>
+<span class="fc bfc" id="L530" title="All 2 branches covered.">		for (E e : net.incidentEdges(vertex))</span>
+<span class="fc" id="L531">			indexGraphEdgesMap.remove(e);</span>
+<span class="fc" id="L532">		net.removeNode(vertex);</span>
+<span class="fc" id="L533">		indexGraphVerticesMap.remove(vertex);</span>
+<span class="fc" id="L534">	}</span>
+
+	@Override
+	public void removeVertices(Collection&lt;? extends V&gt; vertices) {
+<span class="fc" id="L538">		MutableNetwork&lt;V, E&gt; net = mutableNetwork(&quot;graph is immutable, can't remove vertices&quot;);</span>
+<span class="fc bfc" id="L539" title="All 2 branches covered.">		for (V vertex : vertices)</span>
+<span class="fc bfc" id="L540" title="All 2 branches covered.">			if (!net.nodes().contains(vertex))</span>
+<span class="fc" id="L541">				throw NoSuchVertexException.ofVertex(vertex);</span>
+<span class="fc bfc" id="L542" title="All 2 branches covered.">		if (!(vertices instanceof Set)) {</span>
+<span class="fc" id="L543">			Set&lt;V&gt; vertices0 = new HashSet&lt;&gt;(vertices.size());</span>
+<span class="fc bfc" id="L544" title="All 2 branches covered.">			for (V vertex : vertices) {</span>
+<span class="fc" id="L545">				boolean added = vertices0.add(vertex);</span>
+<span class="fc bfc" id="L546" title="All 2 branches covered.">				if (!added)</span>
+<span class="fc" id="L547">					throw new IllegalArgumentException(&quot;duplicate vertex: &quot; + vertex);</span>
+<span class="fc" id="L548">			}</span>
+		}
+<span class="fc bfc" id="L550" title="All 2 branches covered.">		for (V vertex : vertices) {</span>
+<span class="fc bfc" id="L551" title="All 2 branches covered.">			for (E e : net.incidentEdges(vertex))</span>
+<span class="fc" id="L552">				indexGraphEdgesMap.remove(e);</span>
+<span class="fc" id="L553">			net.removeNode(vertex);</span>
+<span class="fc" id="L554">			indexGraphVerticesMap.remove(vertex);</span>
+<span class="fc" id="L555">		}</span>
+<span class="fc" id="L556">	}</span>
+
+	@Override
+	public void renameVertex(V vertex, V newId) {
+<span class="fc" id="L560">		throw new UnsupportedOperationException(&quot;Not supported by Guava Network&quot;);</span>
+	}
+
+	@Override
+	public void addEdge(V source, V target, E edge) {
+<span class="fc" id="L565">		MutableNetwork&lt;V, E&gt; net = mutableNetwork(&quot;graph is immutable, can't add edges&quot;);</span>
+<span class="fc bfc" id="L566" title="All 2 branches covered.">		if (!net.nodes().contains(source))</span>
+<span class="fc" id="L567">			throw NoSuchVertexException.ofVertex(source);</span>
+<span class="fc bfc" id="L568" title="All 2 branches covered.">		if (!net.nodes().contains(target))</span>
+<span class="fc" id="L569">			throw NoSuchVertexException.ofVertex(target);</span>
+<span class="fc" id="L570">		boolean modified = net.addEdge(source, target, edge);</span>
+<span class="fc bfc" id="L571" title="All 2 branches covered.">		if (!modified)</span>
+<span class="fc" id="L572">			throw new IllegalArgumentException(&quot;edge already in the graph: &quot; + edge);</span>
+<span class="fc" id="L573">		indexGraphEdgesMap.add(edge);</span>
+<span class="fc" id="L574">	}</span>
+
+	@Override
+	public void addEdges(EdgeSet&lt;? extends V, ? extends E&gt; edges) {
+<span class="fc" id="L578">		MutableNetwork&lt;V, E&gt; net = mutableNetwork(&quot;graph is immutable, can't add edges&quot;);</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L580">		EdgeSet&lt;V, E&gt; es = (EdgeSet&lt;V, E&gt;) edges;</span>
+<span class="fc" id="L581">		int addedEdges = 0;</span>
+<span class="fc bfc" id="L582" title="All 2 branches covered.">		for (EdgeIter&lt;V, E&gt; eit = es.iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L583">			E e = eit.next();</span>
+<span class="fc" id="L584">			V u = eit.source();</span>
+<span class="fc" id="L585">			V v = eit.target();</span>
+			try {
+<span class="fc" id="L587">				addEdge(u, v, e);</span>
+<span class="fc" id="L588">			} catch (RuntimeException ex) {</span>
+				/* roll back */
+<span class="fc" id="L590">				for (Iterator&lt;E&gt; it = es.iterator();;) {</span>
+<span class="fc bfc" id="L591" title="All 2 branches covered.">					if (addedEdges-- &lt;= 0)</span>
+<span class="fc" id="L592">						break;</span>
+<span class="fc" id="L593">					E e1 = it.next();</span>
+<span class="fc" id="L594">					boolean removed = net.removeEdge(e1);</span>
+<span class="pc bnc" id="L595" title="All 2 branches missed.">					assert removed;</span>
+<span class="fc" id="L596">					indexGraphEdgesMap.remove(e1);</span>
+<span class="fc" id="L597">				}</span>
+<span class="fc" id="L598">				throw ex;</span>
+<span class="fc" id="L599">			}</span>
+<span class="fc" id="L600">			addedEdges++;</span>
+<span class="fc" id="L601">		}</span>
+<span class="fc" id="L602">	}</span>
+
+	@Override
+	public void removeEdge(E edge) {
+<span class="fc" id="L606">		MutableNetwork&lt;V, E&gt; net = mutableNetwork(&quot;graph is immutable, can't remove edges&quot;);</span>
+<span class="fc" id="L607">		boolean modified = net.removeEdge(edge);</span>
+<span class="fc bfc" id="L608" title="All 2 branches covered.">		if (!modified)</span>
+<span class="fc" id="L609">			throw NoSuchEdgeException.ofEdge(edge);</span>
+<span class="fc" id="L610">		indexGraphEdgesMap.remove(edge);</span>
+<span class="fc" id="L611">	}</span>
+
+	@Override
+	public void removeEdges(Collection&lt;? extends E&gt; edges) {
+<span class="fc" id="L615">		MutableNetwork&lt;V, E&gt; net = mutableNetwork(&quot;graph is immutable, can't remove edges&quot;);</span>
+<span class="fc bfc" id="L616" title="All 2 branches covered.">		for (E edge : edges)</span>
+<span class="fc bfc" id="L617" title="All 2 branches covered.">			if (!net.edges().contains(edge))</span>
+<span class="fc" id="L618">				throw NoSuchEdgeException.ofEdge(edge);</span>
+<span class="fc bfc" id="L619" title="All 2 branches covered.">		if (!(edges instanceof Set)) {</span>
+<span class="fc" id="L620">			Set&lt;E&gt; edges0 = new HashSet&lt;&gt;(edges.size());</span>
+<span class="fc bfc" id="L621" title="All 2 branches covered.">			for (E edge : edges) {</span>
+<span class="fc" id="L622">				boolean added = edges0.add(edge);</span>
+<span class="fc bfc" id="L623" title="All 2 branches covered.">				if (!added)</span>
+<span class="fc" id="L624">					throw new IllegalArgumentException(&quot;duplicate edge: &quot; + edge);</span>
+<span class="fc" id="L625">			}</span>
+		}
+<span class="fc" id="L627">		removeEdgesImpl(edges);</span>
+<span class="fc" id="L628">	}</span>
+
+	private void removeEdgesImpl(Collection&lt;? extends E&gt; edges) {
+<span class="fc" id="L631">		MutableNetwork&lt;V, E&gt; net = mutableNetwork(&quot;graph is immutable, can't remove edges&quot;);</span>
+<span class="fc bfc" id="L632" title="All 2 branches covered.">		for (E edge : edges) {</span>
+<span class="fc" id="L633">			boolean removed = net.removeEdge(edge);</span>
+<span class="pc bnc" id="L634" title="All 2 branches missed.">			assert removed;</span>
+<span class="fc" id="L635">			indexGraphEdgesMap.remove(edge);</span>
+<span class="fc" id="L636">		}</span>
+<span class="fc" id="L637">	}</span>
+
+	@Override
+	public void removeEdgesOf(V vertex) {
+<span class="fc" id="L641">		Object[] edges = network.incidentEdges(vertex).toArray();</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L643">		List&lt;E&gt; edges0 = ObjectList.of((E[]) edges);</span>
+<span class="fc" id="L644">		removeEdgesImpl(edges0);</span>
+<span class="fc" id="L645">	}</span>
+
+	@Override
+	public void removeOutEdgesOf(V source) {
+<span class="fc" id="L649">		Object[] edges = network.outEdges(source).toArray();</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L651">		List&lt;E&gt; edges0 = ObjectList.of((E[]) edges);</span>
+<span class="fc" id="L652">		removeEdgesImpl(edges0);</span>
+<span class="fc" id="L653">	}</span>
+
+	@Override
+	public void removeInEdgesOf(V target) {
+<span class="fc" id="L657">		Object[] edges = network.inEdges(target).toArray();</span>
+		@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L659">		List&lt;E&gt; edges0 = ObjectList.of((E[]) edges);</span>
+<span class="fc" id="L660">		removeEdgesImpl(edges0);</span>
+<span class="fc" id="L661">	}</span>
+
+	@Override
+	public void renameEdge(E edge, E newId) {
+<span class="fc" id="L665">		throw new UnsupportedOperationException(&quot;Not supported by Guava Network&quot;);</span>
+	}
+
+	@Override
+	public void moveEdge(E edge, V newSource, V newTarget) {
+<span class="fc" id="L670">		throw new UnsupportedOperationException(&quot;Not supported by Guava Network&quot;);</span>
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public void clear() {
+<span class="fc" id="L676">		MutableNetwork&lt;V, E&gt; net = mutableNetwork(&quot;graph is immutable, can't remove vertices&quot;);</span>
+<span class="fc bfc" id="L677" title="All 2 branches covered.">		for (Object vertex : net.nodes().toArray())</span>
+<span class="fc" id="L678">			net.removeNode((V) vertex);</span>
+<span class="fc" id="L679">		indexGraphVerticesMap.clear();</span>
+<span class="fc" id="L680">		indexGraphEdgesMap.clear();</span>
+<span class="fc" id="L681">	}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public void clearEdges() {
+<span class="fc" id="L686">		MutableNetwork&lt;V, E&gt; net = mutableNetwork(&quot;graph is immutable, can't remove edges&quot;);</span>
+<span class="fc bfc" id="L687" title="All 2 branches covered.">		for (Object edge : net.edges().toArray())</span>
+<span class="fc" id="L688">			net.removeEdge((E) edge);</span>
+<span class="fc" id="L689">		indexGraphEdgesMap.clear();</span>
+<span class="fc" id="L690">	}</span>
+
+<span class="fc" id="L692">	private static class IndexIdMapImpl&lt;K&gt; implements IndexIdMap&lt;K&gt; {</span>
+
+		private final Object2IntMap&lt;K&gt; idToIdx;
+		private final List&lt;K&gt; idxToId;
+		private final boolean isEdges;
+
+<span class="fc" id="L698">		public IndexIdMapImpl(boolean isEdges) {</span>
+<span class="fc" id="L699">			idToIdx = new Object2IntOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L700">			idToIdx.defaultReturnValue(-1);</span>
+<span class="fc" id="L701">			idxToId = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L702">			this.isEdges = isEdges;</span>
+<span class="fc" id="L703">		}</span>
+
+		void add(K id) {
+<span class="fc" id="L706">			int idx = idxToId.size();</span>
+<span class="fc" id="L707">			idxToId.add(id);</span>
+<span class="fc" id="L708">			int oldVal = idToIdx.put(id, idx);</span>
+<span class="pc bnc" id="L709" title="All 2 branches missed.">			assert oldVal == -1;</span>
+<span class="fc" id="L710">		}</span>
+
+		void remove(K id) {
+<span class="fc" id="L713">			int idx = idToIdx.removeInt(id);</span>
+<span class="fc" id="L714">			int lastIdx = idxToId.size() - 1;</span>
+<span class="fc bfc" id="L715" title="All 2 branches covered.">			if (idx == lastIdx) {</span>
+<span class="fc" id="L716">				idxToId.remove(lastIdx);</span>
+			} else {
+<span class="fc" id="L718">				K lastId = idxToId.remove(lastIdx);</span>
+<span class="fc" id="L719">				idxToId.set(idx, lastId);</span>
+<span class="fc" id="L720">				int oldIdx = idToIdx.put(lastId, idx);</span>
+<span class="pc bnc" id="L721" title="All 2 branches missed.">				assert oldIdx == lastIdx;</span>
+			}
+<span class="fc" id="L723">		}</span>
+
+		void clear() {
+<span class="fc" id="L726">			idToIdx.clear();</span>
+<span class="fc" id="L727">			idxToId.clear();</span>
+<span class="fc" id="L728">		}</span>
+
+		@Override
+		public K indexToId(int index) {
+<span class="fc bfc" id="L732" title="All 4 branches covered.">			if (!(0 &lt;= index &amp;&amp; index &lt; idxToId.size())) {</span>
+<span class="fc bfc" id="L733" title="All 2 branches covered.">				if (isEdges) {</span>
+<span class="fc" id="L734">					throw NoSuchEdgeException.ofIndex(index);</span>
+				} else {
+<span class="fc" id="L736">					throw NoSuchVertexException.ofIndex(index);</span>
+				}
+			}
+<span class="fc" id="L739">			return idxToId.get(index);</span>
+		}
+
+		@Override
+		public K indexToIdIfExist(int index) {
+<span class="fc bfc" id="L744" title="All 4 branches covered.">			if (!(0 &lt;= index &amp;&amp; index &lt; idxToId.size()))</span>
+<span class="fc" id="L745">				return null;</span>
+<span class="fc" id="L746">			return idxToId.get(index);</span>
+		}
+
+		@Override
+		public int idToIndex(K id) {
+<span class="fc" id="L751">			int idx = idToIdx.getInt(id);</span>
+<span class="fc bfc" id="L752" title="All 2 branches covered.">			if (idx == -1) {</span>
+<span class="fc bfc" id="L753" title="All 2 branches covered.">				if (isEdges) {</span>
+<span class="fc" id="L754">					throw NoSuchEdgeException.ofEdge(id);</span>
+				} else {
+<span class="fc" id="L756">					throw NoSuchVertexException.ofVertex(id);</span>
+				}
+			}
+<span class="fc" id="L759">			return idx;</span>
+		}
+
+		@Override
+		public int idToIndexIfExist(K id) {
+<span class="fc" id="L764">			return idToIdx.getInt(id);</span>
+		}
+	}
+
+	private static class IndexGraphImpl&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&lt;Integer, Integer&gt;
+			implements IndexGraph {
+
+		private final com.google.common.graph.Network&lt;V, E&gt; network;
+		private final IndexIdMap&lt;V&gt; viMap;
+		private final IndexIdMap&lt;E&gt; eiMap;
+		private final IndexIntIdMap verticesIdentityIndexMap;
+		private final IndexIntIdMap edgesIdentityIndexMap;
+		private final IntSet vertices;
+		private final IntSet edges;
+
+<span class="fc" id="L779">		public IndexGraphImpl(com.google.common.graph.Network&lt;V, E&gt; network, IndexIdMap&lt;V&gt; viMap, IndexIdMap&lt;E&gt; eiMap) {</span>
+<span class="fc" id="L780">			this.network = network;</span>
+<span class="fc" id="L781">			this.viMap = viMap;</span>
+<span class="fc" id="L782">			this.eiMap = eiMap;</span>
+<span class="fc" id="L783">			vertices = new IndicesSet(network.nodes()); // TODO network.nodes() might not be a view</span>
+<span class="fc" id="L784">			edges = new IndicesSet(network.edges()); // TODO network.nodes() might not be a view</span>
+<span class="fc" id="L785">			this.verticesIdentityIndexMap = IndexIntIdMap.identityVerticesMap(vertices);</span>
+<span class="fc" id="L786">			this.edgesIdentityIndexMap = IndexIntIdMap.identityEdgesMap(edges);</span>
+<span class="fc" id="L787">		}</span>
+
+		private static class IndicesSet extends AbstractIntSet {
+
+			private final Set&lt;?&gt; idSet;
+
+<span class="fc" id="L793">			public IndicesSet(Set&lt;?&gt; idSet) {</span>
+<span class="fc" id="L794">				this.idSet = idSet;</span>
+<span class="fc" id="L795">			}</span>
+
+			@Override
+			public int size() {
+<span class="fc" id="L799">				return idSet.size();</span>
+			}
+
+			@Override
+			public boolean contains(int key) {
+<span class="fc bfc" id="L804" title="All 4 branches covered.">				return 0 &lt;= key &amp;&amp; key &lt; idSet.size();</span>
+			}
+
+			@Override
+			public boolean containsAll(IntCollection c) {
+<span class="fc" id="L809">				return range(idSet.size()).containsAll(c);</span>
+			}
+
+			@Override
+			public boolean containsAll(Collection&lt;?&gt; c) {
+<span class="fc" id="L814">				return range(idSet.size()).containsAll(c);</span>
+			}
+
+			@Override
+			public int[] toIntArray() {
+<span class="fc" id="L819">				return range(idSet.size()).toIntArray();</span>
+			}
+
+			@Override
+			public int[] toArray(int[] a) {
+<span class="fc" id="L824">				return range(idSet.size()).toArray(a);</span>
+			}
+
+			@Override
+			public Object[] toArray() {
+<span class="fc" id="L829">				return range(idSet.size()).toArray();</span>
+			}
+
+			@Override
+			public &lt;T&gt; T[] toArray(T[] a) {
+<span class="fc" id="L834">				return range(idSet.size()).toArray(a);</span>
+			}
+
+			@Override
+			public IntIterator iterator() {
+<span class="fc" id="L839">				return range(idSet.size()).iterator();</span>
+			}
+		}
+
+		@Override
+		public IEdgeSet outEdges(int source) {
+<span class="fc" id="L845">			V source0 = viMap.indexToId(source);</span>
+<span class="fc" id="L846">			Set&lt;E&gt; edges = network.outEdges(source0);</span>
+<span class="fc" id="L847">			return new OutEdges(source0, source, edges);</span>
+		}
+
+		@Override
+		public IEdgeSet inEdges(int target) {
+<span class="fc" id="L852">			V target0 = viMap.indexToId(target);</span>
+<span class="fc" id="L853">			Set&lt;E&gt; edges = network.inEdges(target0);</span>
+<span class="fc" id="L854">			return new InEdges(target0, target, edges);</span>
+		}
+
+		@Override
+		public int getEdge(int source, int target) {
+<span class="fc" id="L859">			V source0 = viMap.indexToId(source);</span>
+<span class="fc" id="L860">			V target0 = viMap.indexToId(target);</span>
+<span class="fc" id="L861">			Set&lt;E&gt; edges = network.edgesConnecting(source0, target0);</span>
+<span class="fc bfc" id="L862" title="All 2 branches covered.">			return edges.isEmpty() ? -1 : eiMap.idToIndex(edges.iterator().next());</span>
+		}
+
+		@Override
+		public IEdgeSet getEdges(int source, int target) {
+<span class="fc" id="L867">			V source0 = viMap.indexToId(source);</span>
+<span class="fc" id="L868">			V target0 = viMap.indexToId(target);</span>
+<span class="fc" id="L869">			Set&lt;E&gt; edges = network.edgesConnecting(source0, target0);</span>
+<span class="fc" id="L870">			return new SourceTargetEdgeSet(source, target, edges);</span>
+		}
+
+		@Override
+		public void moveEdge(int edge, int newSource, int newTarget) {
+<span class="fc" id="L875">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public int edgeSource(int edge) {
+<span class="fc" id="L880">			E edge0 = eiMap.indexToId(edge);</span>
+<span class="fc" id="L881">			V source = network.incidentNodes(edge0).nodeU();</span>
+<span class="fc" id="L882">			return viMap.idToIndex(source);</span>
+		}
+
+		@Override
+		public int edgeTarget(int edge) {
+<span class="fc" id="L887">			E edge0 = eiMap.indexToId(edge);</span>
+<span class="fc" id="L888">			V target = network.incidentNodes(edge0).nodeV();</span>
+<span class="fc" id="L889">			return viMap.idToIndex(target);</span>
+		}
+
+		@Override
+		public int edgeEndpoint(int edge, int endpoint) {
+<span class="fc" id="L894">			E edge0 = eiMap.indexToId(edge);</span>
+<span class="fc" id="L895">			V endpoint0 = viMap.indexToId(endpoint);</span>
+<span class="fc" id="L896">			V otherEndpoint = network.incidentNodes(edge0).adjacentNode(endpoint0);</span>
+<span class="fc" id="L897">			return viMap.idToIndex(otherEndpoint);</span>
+		}
+
+		@Override
+		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getVerticesWeights(String key) {
+<span class="fc" id="L902">			return null;</span>
+		}
+
+		@Override
+		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getEdgesWeights(String key) {
+<span class="fc" id="L907">			return null;</span>
+		}
+
+		@Override
+		public void removeVertices(Collection&lt;? extends Integer&gt; vertices) {
+<span class="fc" id="L912">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public void removeEdges(Collection&lt;? extends Integer&gt; edges) {
+<span class="fc" id="L917">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+<span class="fc" id="L921">		public void ensureVertexCapacity(int vertexCapacity) {}</span>
+
+		@Override
+<span class="fc" id="L924">		public void ensureEdgeCapacity(int edgeCapacity) {}</span>
+
+		@Override
+		public Set&lt;String&gt; getVerticesWeightsKeys() {
+<span class="fc" id="L928">			return Set.of();</span>
+		}
+
+		@Override
+		public Set&lt;String&gt; getEdgesWeightsKeys() {
+<span class="fc" id="L933">			return Set.of();</span>
+		}
+
+		@Override
+		public boolean isDirected() {
+<span class="fc" id="L938">			return network.isDirected();</span>
+		}
+
+		@Override
+		public boolean isAllowSelfEdges() {
+<span class="fc" id="L943">			return network.allowsSelfLoops();</span>
+		}
+
+		@Override
+		public boolean isAllowParallelEdges() {
+<span class="fc" id="L948">			return network.allowsParallelEdges();</span>
+		}
+
+		@Override
+		public IntSet vertices() {
+<span class="fc" id="L953">			return vertices;</span>
+		}
+
+		@Override
+		public IntSet edges() {
+<span class="fc" id="L958">			return edges;</span>
+		}
+
+		@Override
+		public int addVertexInt() {
+<span class="fc" id="L963">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public void addVertices(Collection&lt;? extends Integer&gt; vertices) {
+<span class="fc" id="L968">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public void removeVertex(int vertex) {
+<span class="fc" id="L973">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public int addEdge(int source, int target) {
+<span class="fc" id="L978">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public void addEdges(EdgeSet&lt;? extends Integer, ? extends Integer&gt; edges) {
+<span class="fc" id="L983">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public IntSet addEdgesReassignIds(IEdgeSet edges) {
+<span class="fc" id="L988">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public void removeEdge(int edge) {
+<span class="fc" id="L993">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public void removeEdgesOf(int vertex) {
+<span class="fc" id="L998">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public void removeOutEdgesOf(int source) {
+<span class="fc" id="L1003">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public void removeInEdgesOf(int target) {
+<span class="fc" id="L1008">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public void clear() {
+<span class="fc" id="L1013">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public void clearEdges() {
+<span class="fc" id="L1018">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
+				T defVal) {
+<span class="fc" id="L1024">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public void removeVerticesWeights(String key) {
+<span class="fc" id="L1029">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
+				T defVal) {
+<span class="fc" id="L1035">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public void removeEdgesWeights(String key) {
+<span class="fc" id="L1040">			throw new UnsupportedOperationException(&quot;modifying the graph via the IndexGraph is not supported&quot;);</span>
+		}
+
+		@Override
+		public void addVertexRemoveListener(IndexRemoveListener listener) {
+			/* TODO its possible to support this */
+<span class="fc" id="L1046">			throw new UnsupportedOperationException(&quot;not supported by &quot; + GuavaNetworkWrapper.class.getSimpleName());</span>
+		}
+
+		@Override
+		public void removeVertexRemoveListener(IndexRemoveListener listener) {
+			/* TODO its possible to support this */
+<span class="fc" id="L1052">			throw new UnsupportedOperationException(&quot;not supported by &quot; + GuavaNetworkWrapper.class.getSimpleName());</span>
+		}
+
+		@Override
+		public void addEdgeRemoveListener(IndexRemoveListener listener) {
+			/* TODO its possible to support this */
+<span class="fc" id="L1058">			throw new UnsupportedOperationException(&quot;not supported by &quot; + GuavaNetworkWrapper.class.getSimpleName());</span>
+		}
+
+		@Override
+		public void removeEdgeRemoveListener(IndexRemoveListener listener) {
+			/* TODO its possible to support this */
+<span class="fc" id="L1064">			throw new UnsupportedOperationException(&quot;not supported by &quot; + GuavaNetworkWrapper.class.getSimpleName());</span>
+		}
+
+		@Override
+		public IndexIntIdMap indexGraphVerticesMap() {
+<span class="fc" id="L1069">			return verticesIdentityIndexMap;</span>
+		}
+
+		@Override
+		public IndexIntIdMap indexGraphEdgesMap() {
+<span class="fc" id="L1074">			return edgesIdentityIndexMap;</span>
+		}
+
+		private abstract class EdgeSetBase extends AbstractIntSet implements IEdgeSet {
+
+			private final Set&lt;E&gt; edges;
+
+<span class="fc" id="L1081">			public EdgeSetBase(Set&lt;E&gt; edges) {</span>
+<span class="fc" id="L1082">				this.edges = Objects.requireNonNull(edges);</span>
+<span class="fc" id="L1083">			}</span>
+
+			@Override
+			public int size() {
+<span class="fc" id="L1087">				return edges.size();</span>
+			}
+
+			@Override
+			public boolean contains(int edge) {
+<span class="fc" id="L1092">				return edges.contains(eiMap.indexToIdIfExist(edge));</span>
+			}
+
+<span class="fc" id="L1095">			abstract class IterBase implements IEdgeIter {</span>
+
+<span class="fc" id="L1097">				Iterator&lt;E&gt; it = edges.iterator();</span>
+				E nextEdge;
+				E lastEdge;
+
+				{
+<span class="fc" id="L1102">					advance();</span>
+<span class="fc" id="L1103">				}</span>
+
+				private void advance() {
+<span class="fc bfc" id="L1106" title="All 2 branches covered.">					if (it.hasNext()) {</span>
+<span class="fc" id="L1107">						nextEdge = it.next();</span>
+					} else {
+<span class="fc" id="L1109">						nextEdge = null;</span>
+					}
+<span class="fc" id="L1111">				}</span>
+
+				@Override
+				public boolean hasNext() {
+<span class="fc bfc" id="L1115" title="All 2 branches covered.">					return nextEdge != null;</span>
+				}
+
+				@Override
+				public int nextInt() {
+<span class="fc bfc" id="L1120" title="All 2 branches covered.">					if (!hasNext())</span>
+<span class="fc" id="L1121">						throw new NoSuchElementException();</span>
+<span class="fc" id="L1122">					lastEdge = nextEdge;</span>
+<span class="fc" id="L1123">					advance();</span>
+<span class="fc" id="L1124">					return eiMap.idToIndex(lastEdge);</span>
+				}
+
+				@Override
+				public int peekNextInt() {
+<span class="fc bfc" id="L1129" title="All 2 branches covered.">					if (!hasNext())</span>
+<span class="fc" id="L1130">						throw new NoSuchElementException();</span>
+<span class="fc" id="L1131">					return eiMap.idToIndex(nextEdge);</span>
+				}
+
+			}
+
+		}
+
+		private class OutEdges extends EdgeSetBase {
+
+			private final V source;
+			private final int sourceIdx;
+
+<span class="fc" id="L1143">			public OutEdges(V source, int sourceIdx, Set&lt;E&gt; edges) {</span>
+<span class="fc" id="L1144">				super(edges);</span>
+<span class="fc" id="L1145">				this.source = source;</span>
+<span class="fc" id="L1146">				this.sourceIdx = sourceIdx;</span>
+<span class="fc" id="L1147">			}</span>
+
+			@Override
+			public IEdgeIter iterator() {
+<span class="fc" id="L1151">				return new IterBase() {</span>
+
+					@Override
+					public int sourceInt() {
+<span class="fc bfc" id="L1155" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1156">							throw new IllegalStateException();</span>
+<span class="fc" id="L1157">						return sourceIdx;</span>
+					}
+
+					@Override
+					public int targetInt() {
+<span class="fc bfc" id="L1162" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1163">							throw new IllegalStateException();</span>
+<span class="fc" id="L1164">						V target = network.incidentNodes(lastEdge).adjacentNode(source);</span>
+<span class="fc" id="L1165">						return viMap.idToIndex(target);</span>
+					}
+				};
+			}
+		}
+
+		private class InEdges extends EdgeSetBase {
+
+			private final V target;
+			private final int targetIdx;
+
+<span class="fc" id="L1176">			public InEdges(V target, int targetIdx, Set&lt;E&gt; edges) {</span>
+<span class="fc" id="L1177">				super(edges);</span>
+<span class="fc" id="L1178">				this.target = target;</span>
+<span class="fc" id="L1179">				this.targetIdx = targetIdx;</span>
+<span class="fc" id="L1180">			}</span>
+
+			@Override
+			public IEdgeIter iterator() {
+<span class="fc" id="L1184">				return new IterBase() {</span>
+
+					@Override
+					public int sourceInt() {
+<span class="fc bfc" id="L1188" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1189">							throw new IllegalStateException();</span>
+<span class="fc" id="L1190">						V source = network.incidentNodes(lastEdge).adjacentNode(target);</span>
+<span class="fc" id="L1191">						return viMap.idToIndex(source);</span>
+					}
+
+					@Override
+					public int targetInt() {
+<span class="fc bfc" id="L1196" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1197">							throw new IllegalStateException();</span>
+<span class="fc" id="L1198">						return targetIdx;</span>
+					}
+				};
+			}
+		}
+
+		private class SourceTargetEdgeSet extends EdgeSetBase {
+
+			private final int sourceIdx;
+			private final int targetIdx;
+
+<span class="fc" id="L1209">			public SourceTargetEdgeSet(int sourceIdx, int targetIdx, Set&lt;E&gt; edges) {</span>
+<span class="fc" id="L1210">				super(edges);</span>
+<span class="fc" id="L1211">				this.sourceIdx = sourceIdx;</span>
+<span class="fc" id="L1212">				this.targetIdx = targetIdx;</span>
+<span class="fc" id="L1213">			}</span>
+
+			@Override
+			public IEdgeIter iterator() {
+<span class="fc" id="L1217">				return new IterBase() {</span>
+
+					@Override
+					public int sourceInt() {
+<span class="fc bfc" id="L1221" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1222">							throw new IllegalStateException();</span>
+<span class="fc" id="L1223">						return sourceIdx;</span>
+					}
+
+					@Override
+					public int targetInt() {
+<span class="fc bfc" id="L1228" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1229">							throw new IllegalStateException();</span>
+<span class="fc" id="L1230">						return targetIdx;</span>
+					}
+				};
+			}
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

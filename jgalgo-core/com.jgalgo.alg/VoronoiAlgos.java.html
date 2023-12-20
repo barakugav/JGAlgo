@@ -145,13 +145,13 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 		@Override
 		public V blockSite(int block) {
 <span class="fc" id="L147">			int site = indexRes().blockSiteInt(block);</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">			return site != -1 ? viMap.indexToId(site) : null;</span>
+<span class="fc" id="L148">			return viMap.indexToIdIfExist(site);</span>
 		}
 
 		@Override
 		public V vertexSite(V vertex) {
 <span class="fc" id="L153">			int site = indexRes().vertexSite(viMap.idToIndex(vertex));</span>
-<span class="fc bfc" id="L154" title="All 2 branches covered.">			return site != -1 ? viMap.indexToId(site) : null;</span>
+<span class="fc" id="L154">			return viMap.indexToIdIfExist(site);</span>
 		}
 	}
 
@@ -180,13 +180,13 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 		@Override
 		public int blockSiteInt(int block) {
 <span class="fc" id="L182">			int site = indexRes().blockSiteInt(block);</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">			return site != -1 ? viMap.indexToIdInt(site) : -1;</span>
+<span class="fc" id="L183">			return viMap.indexToIdIfExistInt(site);</span>
 		}
 
 		@Override
 		public int vertexSite(int vertex) {
 <span class="fc" id="L188">			int site = indexRes().vertexSite(viMap.idToIndex(vertex));</span>
-<span class="fc bfc" id="L189" title="All 2 branches covered.">			return site != -1 ? viMap.indexToIdInt(site) : -1;</span>
+<span class="fc" id="L189">			return viMap.indexToIdIfExistInt(site);</span>
 		}
 	}
 

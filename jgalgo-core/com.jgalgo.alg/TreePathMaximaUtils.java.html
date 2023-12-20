@@ -242,7 +242,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		@Override
 		public E getHeaviestEdge(int queryIdx) {
 <span class="fc" id="L244">			int eIdx = indexRes.getHeaviestEdgeInt(queryIdx);</span>
-<span class="pc bpc" id="L245" title="1 of 2 branches missed.">			return eIdx == -1 ? null : eiMap.indexToId(eIdx);</span>
+<span class="fc" id="L245">			return eiMap.indexToIdIfExist(eIdx);</span>
 		}
 
 		@Override
@@ -264,7 +264,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		@Override
 		public int getHeaviestEdgeInt(int queryIdx) {
 <span class="fc" id="L266">			int eIdx = indexRes.getHeaviestEdgeInt(queryIdx);</span>
-<span class="pc bpc" id="L267" title="1 of 2 branches missed.">			return eIdx == -1 ? -1 : eiMap.indexToIdInt(eIdx);</span>
+<span class="fc" id="L267">			return eiMap.indexToIdIfExistInt(eIdx);</span>
 		}
 
 		@Override

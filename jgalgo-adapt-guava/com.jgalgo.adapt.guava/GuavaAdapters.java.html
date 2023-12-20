@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GuavaAdapters.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Guava Adapters</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.adapt.guava</a> &gt; <span class="el_source">GuavaAdapters.java</span></div><h1>GuavaAdapters.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.adapt.guava;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.AbstractSet;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.IntFunction;
+import com.google.common.collect.Iterators;
+import com.google.common.graph.EndpointPair;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IEdgeSet;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.internal.util.IterTools;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+class GuavaAdapters {
+
+	private GuavaAdapters() {}
+
+	static &lt;V&gt; Set&lt;V&gt; successors(com.jgalgo.graph.Graph&lt;V, ?&gt; graph, V node) {
+<span class="fc" id="L40">		IndexGraph g = graph.indexGraph();</span>
+<span class="fc" id="L41">		IndexIdMap&lt;V&gt; viMap = graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L42">		int uIdx = viMap.idToIndex(node);</span>
+<span class="fc" id="L43">		IEdgeSet es = g.outEdges(uIdx);</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		if (graph.isAllowParallelEdges()) {</span>
+<span class="fc" id="L45">			IntSet successors = new IntOpenHashSet();</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">			if (graph.isDirected()) {</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">				for (int e : es)</span>
+<span class="fc" id="L48">					successors.add(g.edgeTarget(e));</span>
+			} else {
+<span class="fc bfc" id="L50" title="All 2 branches covered.">				for (int e : es)</span>
+<span class="fc" id="L51">					successors.add(g.edgeEndpoint(e, uIdx));</span>
+			}
+<span class="fc" id="L53">			return IndexIdMaps.indexToIdSet(successors, viMap);</span>
+
+		} else {
+<span class="fc" id="L56">			return new AbstractSet&lt;&gt;() {</span>
+				@Override
+				public int size() {
+<span class="fc" id="L59">					return es.size();</span>
+				}
+
+				@Override
+				public boolean contains(Object o) {
+					@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L65">					int vIdx = viMap.idToIndexIfExist((V) o);</span>
+<span class="fc bfc" id="L66" title="All 4 branches covered.">					return vIdx &gt;= 0 &amp;&amp; g.containsEdge(uIdx, vIdx);</span>
+				}
+
+				@Override
+				public Iterator&lt;V&gt; iterator() {
+<span class="fc" id="L71">					return new Iterator&lt;&gt;() {</span>
+<span class="fc" id="L72">						IEdgeIter it = es.iterator();</span>
+
+						@Override
+						public boolean hasNext() {
+<span class="fc" id="L76">							return it.hasNext();</span>
+						}
+
+						@Override
+						public V next() {
+<span class="fc" id="L81">							it.nextInt();</span>
+<span class="fc" id="L82">							return viMap.indexToId(it.targetInt());</span>
+						}
+					};
+				}
+			};
+		}
+	}
+
+	static &lt;V&gt; Set&lt;V&gt; predecessors(com.jgalgo.graph.Graph&lt;V, ?&gt; graph, V node) {
+<span class="fc" id="L91">		IndexGraph g = graph.indexGraph();</span>
+<span class="fc" id="L92">		IndexIdMap&lt;V&gt; viMap = graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L93">		int vIdx = viMap.idToIndex(node);</span>
+<span class="fc" id="L94">		IEdgeSet es = g.inEdges(vIdx);</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		if (graph.isAllowParallelEdges()) {</span>
+<span class="fc" id="L96">			IntSet successors = new IntOpenHashSet();</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">			if (graph.isDirected()) {</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">				for (int e : es)</span>
+<span class="fc" id="L99">					successors.add(g.edgeSource(e));</span>
+			} else {
+<span class="fc bfc" id="L101" title="All 2 branches covered.">				for (int e : es)</span>
+<span class="fc" id="L102">					successors.add(g.edgeEndpoint(e, vIdx));</span>
+			}
+<span class="fc" id="L104">			return IndexIdMaps.indexToIdSet(successors, viMap);</span>
+
+		} else {
+<span class="fc" id="L107">			return new AbstractSet&lt;&gt;() {</span>
+				@Override
+				public int size() {
+<span class="fc" id="L110">					return es.size();</span>
+				}
+
+				@Override
+				public boolean contains(Object o) {
+					@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L116">					int uIdx = viMap.idToIndexIfExist((V) o);</span>
+<span class="fc bfc" id="L117" title="All 4 branches covered.">					return uIdx &gt;= 0 &amp;&amp; g.containsEdge(uIdx, vIdx);</span>
+				}
+
+				@Override
+				public Iterator&lt;V&gt; iterator() {
+<span class="fc" id="L122">					return new Iterator&lt;&gt;() {</span>
+<span class="fc" id="L123">						IEdgeIter it = es.iterator();</span>
+
+						@Override
+						public boolean hasNext() {
+<span class="fc" id="L127">							return it.hasNext();</span>
+						}
+
+						@Override
+						public V next() {
+<span class="fc" id="L132">							it.nextInt();</span>
+<span class="fc" id="L133">							return viMap.indexToId(it.sourceInt());</span>
+						}
+					};
+				}
+			};
+		}
+	}
+
+	static &lt;V&gt; Set&lt;EndpointPair&lt;V&gt;&gt; edgesEndpoints(com.jgalgo.graph.Graph&lt;V, ?&gt; graph) {
+<span class="fc" id="L142">		IndexGraph g = graph.indexGraph();</span>
+<span class="fc" id="L143">		IndexIdMap&lt;V&gt; viMap = graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L144">		return new AbstractSet&lt;&gt;() {</span>
+
+			@Override
+			public int size() {
+<span class="fc" id="L148">				return g.edges().size();</span>
+			}
+
+			@SuppressWarnings(&quot;unchecked&quot;)
+			@Override
+			public boolean contains(Object o) {
+<span class="fc bfc" id="L154" title="All 4 branches covered.">				return o instanceof EndpointPair &amp;&amp; hasEdgeConnecting(graph, (EndpointPair&lt;V&gt;) o);</span>
+			}
+
+			@Override
+			public Iterator&lt;EndpointPair&lt;V&gt;&gt; iterator() {
+				IntFunction&lt;EndpointPair&lt;V&gt;&gt; mapper;
+<span class="fc bfc" id="L160" title="All 2 branches covered.">				if (g.isDirected()) {</span>
+<span class="fc" id="L161">					mapper = e -&gt; {</span>
+<span class="fc" id="L162">						int uIdx = g.edgeSource(e), vIdx = g.edgeTarget(e);</span>
+<span class="fc" id="L163">						return EndpointPair.ordered(viMap.indexToId(uIdx), viMap.indexToId(vIdx));</span>
+					};
+				} else {
+<span class="fc" id="L166">					mapper = e -&gt; {</span>
+<span class="fc" id="L167">						int uIdx = g.edgeSource(e), vIdx = g.edgeTarget(e);</span>
+<span class="fc" id="L168">						return EndpointPair.unordered(viMap.indexToId(uIdx), viMap.indexToId(vIdx));</span>
+					};
+				}
+<span class="fc" id="L171">				return IterTools.map(range(g.edges().size()).iterator(), mapper);</span>
+			}
+		};
+	}
+
+	static &lt;V&gt; Set&lt;V&gt; adjacentNodes(com.jgalgo.graph.Graph&lt;V, ?&gt; graph, V node) {
+<span class="fc" id="L177">		IndexGraph g = graph.indexGraph();</span>
+<span class="fc" id="L178">		IndexIdMap&lt;V&gt; viMap = graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L179">		int uIdx = viMap.idToIndex(node);</span>
+<span class="fc bfc" id="L180" title="All 4 branches covered.">		if (g.isDirected() || g.isAllowParallelEdges()) {</span>
+<span class="fc" id="L181">			IntSet adjacentNodes = new IntOpenHashSet();</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">				for (int e : g.outEdges(uIdx))</span>
+<span class="fc" id="L184">					adjacentNodes.add(g.edgeTarget(e));</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">				for (int e : g.inEdges(uIdx))</span>
+<span class="fc" id="L186">					adjacentNodes.add(g.edgeSource(e));</span>
+			} else {
+<span class="fc bfc" id="L188" title="All 2 branches covered.">				for (int e : g.outEdges(uIdx))</span>
+<span class="fc" id="L189">					adjacentNodes.add(g.edgeEndpoint(e, uIdx));</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">				for (int e : g.inEdges(uIdx))</span>
+<span class="fc" id="L191">					adjacentNodes.add(g.edgeEndpoint(e, uIdx));</span>
+
+			}
+<span class="fc" id="L194">			return IndexIdMaps.indexToIdSet(adjacentNodes, viMap);</span>
+
+		} else {
+<span class="fc" id="L197">			IEdgeSet es = g.outEdges(uIdx);</span>
+<span class="fc" id="L198">			return new AbstractSet&lt;&gt;() {</span>
+				@Override
+				public int size() {
+<span class="fc" id="L201">					return es.size();</span>
+				}
+
+				@Override
+				public boolean contains(Object o) {
+					@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L207">					int vIdx = viMap.idToIndexIfExist((V) o);</span>
+<span class="fc bfc" id="L208" title="All 4 branches covered.">					return vIdx &gt;= 0 &amp;&amp; g.containsEdge(uIdx, vIdx);</span>
+				}
+
+				@Override
+				public Iterator&lt;V&gt; iterator() {
+<span class="fc" id="L213">					return new Iterator&lt;&gt;() {</span>
+<span class="fc" id="L214">						IEdgeIter it = es.iterator();</span>
+
+						@Override
+						public boolean hasNext() {
+<span class="fc" id="L218">							return it.hasNext();</span>
+						}
+
+						@Override
+						public V next() {
+<span class="fc" id="L223">							it.nextInt();</span>
+<span class="fc" id="L224">							return viMap.indexToId(it.targetInt());</span>
+						}
+					};
+				}
+			};
+		}
+	}
+
+	static &lt;V&gt; Set&lt;EndpointPair&lt;V&gt;&gt; incidentEdges(com.jgalgo.graph.Graph&lt;V, ?&gt; graph, V node) {
+<span class="fc" id="L233">		IndexGraph g = graph.indexGraph();</span>
+<span class="fc" id="L234">		IndexIdMap&lt;V&gt; viMap = graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L235">		int uIdx = viMap.idToIndex(node);</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc" id="L237">			IEdgeSet outEs = g.outEdges(uIdx);</span>
+<span class="fc" id="L238">			IEdgeSet inEs = g.inEdges(uIdx);</span>
+<span class="fc" id="L239">			return new AbstractSet&lt;&gt;() {</span>
+				@Override
+				public int size() {
+<span class="fc" id="L242">					int s = outEs.size() + inEs.size();</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">					if (g.isAllowSelfEdges())</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">						for (int e : outEs)</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">							if (g.edgeSource(e) == g.edgeTarget(e))</span>
+<span class="fc" id="L246">								s--;</span>
+<span class="fc" id="L247">					return s;</span>
+				}
+
+				public boolean isEmpty() {
+<span class="pc bpc" id="L251" title="1 of 4 branches missed.">					return outEs.isEmpty() &amp;&amp; inEs.isEmpty();</span>
+				}
+
+				@Override
+				public boolean contains(Object o) {
+<span class="fc bfc" id="L256" title="All 2 branches covered.">					if (!(o instanceof EndpointPair))</span>
+<span class="fc" id="L257">						return false;</span>
+					@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L259">					EndpointPair&lt;V&gt; ep = (EndpointPair&lt;V&gt;) o;</span>
+<span class="fc" id="L260">					int vIdx = viMap.idToIndexIfExist(ep.nodeU());</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">					if (vIdx &lt; 0)</span>
+<span class="fc" id="L262">						return false;</span>
+<span class="fc" id="L263">					int wIdx = viMap.idToIndexIfExist(ep.nodeV());</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">					if (wIdx &lt; 0)</span>
+<span class="fc" id="L265">						return false;</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">					if (uIdx == vIdx) {</span>
+<span class="fc" id="L267">						return g.containsEdge(uIdx, wIdx);</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">					} else if (uIdx == wIdx) {</span>
+<span class="fc" id="L269">						return g.containsEdge(vIdx, uIdx);</span>
+					} else {
+<span class="fc" id="L271">						return false;</span>
+					}
+				}
+
+				@Override
+				public Iterator&lt;EndpointPair&lt;V&gt;&gt; iterator() {
+<span class="fc" id="L277">					IntFunction&lt;EndpointPair&lt;V&gt;&gt; outMapper =</span>
+<span class="fc" id="L278">							e -&gt; EndpointPair.ordered(node, viMap.indexToId(g.edgeTarget(e)));</span>
+<span class="fc" id="L279">					Iterator&lt;EndpointPair&lt;V&gt;&gt; outEdges = IterTools.map(outEs.iterator(), outMapper);</span>
+<span class="fc" id="L280">					IntFunction&lt;EndpointPair&lt;V&gt;&gt; inMapper =</span>
+<span class="fc" id="L281">							e -&gt; EndpointPair.ordered(viMap.indexToId(g.edgeSource(e)), node);</span>
+<span class="fc" id="L282">					Iterator&lt;EndpointPair&lt;V&gt;&gt; inEdges = IterTools.map(inEs.iterator(), inMapper);</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">					if (g.isAllowSelfEdges())</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">						inEdges = Iterators.filter(inEdges, ep -&gt; ep.nodeU() != ep.nodeV());</span>
+<span class="fc" id="L285">					return Iterators.concat(outEdges, inEdges);</span>
+				}
+			};
+
+		} else {
+<span class="fc" id="L290">			IEdgeSet es = g.outEdges(uIdx);</span>
+<span class="fc" id="L291">			return new AbstractSet&lt;&gt;() {</span>
+				@Override
+				public int size() {
+<span class="fc" id="L294">					return es.size();</span>
+				}
+
+				@Override
+				public boolean contains(Object o) {
+<span class="fc bfc" id="L299" title="All 2 branches covered.">					if (!(o instanceof EndpointPair))</span>
+<span class="fc" id="L300">						return false;</span>
+					@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L302">					EndpointPair&lt;V&gt; ep = (EndpointPair&lt;V&gt;) o;</span>
+<span class="fc" id="L303">					int vIdx = viMap.idToIndexIfExist(ep.nodeU());</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">					if (vIdx &lt; 0)</span>
+<span class="fc" id="L305">						return false;</span>
+<span class="fc" id="L306">					int wIdx = viMap.idToIndexIfExist(ep.nodeV());</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">					if (wIdx &lt; 0)</span>
+<span class="fc" id="L308">						return false;</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">					if (uIdx == vIdx) {</span>
+<span class="fc" id="L310">						return g.containsEdge(uIdx, wIdx);</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">					} else if (uIdx == wIdx) {</span>
+<span class="fc" id="L312">						return g.containsEdge(vIdx, uIdx);</span>
+					} else {
+<span class="fc" id="L314">						return false;</span>
+					}
+				}
+
+				@Override
+				public Iterator&lt;EndpointPair&lt;V&gt;&gt; iterator() {
+<span class="fc" id="L320">					IntFunction&lt;EndpointPair&lt;V&gt;&gt; mapper =</span>
+<span class="fc" id="L321">							e -&gt; EndpointPair.unordered(node, viMap.indexToId(g.edgeEndpoint(e, uIdx)));</span>
+<span class="fc" id="L322">					return IterTools.map(es.iterator(), mapper);</span>
+				}
+			};
+		}
+	}
+
+	static &lt;V&gt; int degree(com.jgalgo.graph.Graph&lt;V, ?&gt; graph, V node) {
+<span class="fc" id="L329">		IndexGraph g = graph.indexGraph();</span>
+<span class="fc" id="L330">		IndexIdMap&lt;V&gt; viMap = graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L331">		int vIdx = viMap.idToIndex(node);</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">		if (g.isDirected())</span>
+<span class="fc" id="L333">			return g.outEdges(vIdx).size() + g.inEdges(vIdx).size();</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">		if (!g.isAllowSelfEdges())</span>
+<span class="fc" id="L335">			return g.outEdges(vIdx).size();</span>
+		/* self edges are counted twice in Guava graphs */
+<span class="fc" id="L337">		int degree = g.outEdges(vIdx).size();</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">		for (int edge : g.outEdges(vIdx))</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">			if (g.edgeSource(edge) == g.edgeTarget(edge))</span>
+<span class="fc" id="L340">				degree++;</span>
+<span class="fc" id="L341">		return degree;</span>
+	}
+
+	static &lt;V&gt; int outDegree(com.jgalgo.graph.Graph&lt;V, ?&gt; graph, V node) {
+<span class="fc bfc" id="L345" title="All 2 branches covered.">		return graph.isDirected() ? graph.outEdges(node).size() : degree(graph, node);</span>
+	}
+
+	static &lt;V&gt; int inDegree(com.jgalgo.graph.Graph&lt;V, ?&gt; graph, V node) {
+<span class="fc bfc" id="L349" title="All 2 branches covered.">		return graph.isDirected() ? graph.inEdges(node).size() : degree(graph, node);</span>
+	}
+
+	static &lt;V&gt; boolean hasEdgeConnecting(com.jgalgo.graph.Graph&lt;V, ?&gt; graph, EndpointPair&lt;V&gt; endpoints) {
+<span class="fc bfc" id="L353" title="All 2 branches covered.">		return getEdge(graph, endpoints) != null;</span>
+	}
+
+	static &lt;V&gt; boolean hasEdgeConnecting(com.jgalgo.graph.Graph&lt;V, ?&gt; graph, V nodeU, V nodeV) {
+<span class="fc bfc" id="L357" title="All 2 branches covered.">		return getEdge(graph, nodeU, nodeV) != null;</span>
+	}
+
+	static &lt;V, E&gt; E getEdge(com.jgalgo.graph.Graph&lt;V, E&gt; graph, EndpointPair&lt;V&gt; endpoints) {
+<span class="fc bfc" id="L361" title="All 4 branches covered.">		if (graph.isDirected() &amp;&amp; !endpoints.isOrdered())</span>
+<span class="fc" id="L362">			return null;</span>
+<span class="fc" id="L363">		return getEdge(graph, endpoints.nodeU(), endpoints.nodeV());</span>
+	}
+
+	static &lt;V, E&gt; E getEdge(com.jgalgo.graph.Graph&lt;V, E&gt; graph, V nodeU, V nodeV) {
+<span class="fc" id="L367">		IndexIdMap&lt;V&gt; viMap = graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L368">		int uIdx = viMap.idToIndexIfExist(nodeU);</span>
+<span class="fc bfc" id="L369" title="All 2 branches covered.">		if (uIdx &lt; 0)</span>
+<span class="fc" id="L370">			return null;</span>
+<span class="fc" id="L371">		int vIdx = viMap.idToIndexIfExist(nodeV);</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">		if (vIdx &lt; 0)</span>
+<span class="fc" id="L373">			return null;</span>
+<span class="fc" id="L374">		IndexGraph g = graph.indexGraph();</span>
+<span class="fc" id="L375">		int eIdx = g.getEdge(uIdx, vIdx);</span>
+<span class="fc" id="L376">		return graph.indexGraphEdgesMap().indexToIdIfExist(eIdx);</span>
+	}
+
+	static &lt;V&gt; boolean addNode(com.jgalgo.graph.Graph&lt;V, ?&gt; graph, V node) {
+<span class="fc bfc" id="L380" title="All 2 branches covered.">		if (graph.vertices().contains(Objects.requireNonNull(node)))</span>
+<span class="fc" id="L381">			return false;</span>
+<span class="fc" id="L382">		graph.addVertex(node);</span>
+<span class="fc" id="L383">		return true;</span>
+	}
+
+	static &lt;V&gt; boolean removeNode(com.jgalgo.graph.Graph&lt;V, ?&gt; graph, V node) {
+<span class="fc bfc" id="L387" title="All 2 branches covered.">		if (!graph.vertices().contains(Objects.requireNonNull(node)))</span>
+<span class="fc" id="L388">			return false;</span>
+<span class="fc" id="L389">		graph.removeVertex(node);</span>
+<span class="fc" id="L390">		return true;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

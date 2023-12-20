@@ -1,0 +1,364 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JGraphTAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - JGraphT Adapters</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.adapt.jgrapht</a> &gt; <span class="el_source">JGraphTAdapter.java</span></div><h1>JGraphTAdapter.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.adapt.jgrapht;
+
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Supplier;
+import org.jgrapht.GraphType;
+import org.jgrapht.graph.DefaultGraphType;
+import com.jgalgo.graph.IEdgeSet;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import com.jgalgo.graph.WeightsDouble;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+
+/**
+ * An adapter from JGAlgo graph to JGraphT graph.
+ *
+ * &lt;p&gt;
+ * The adapter is constructed with a {@linkplain com.jgalgo.graph.Graph JGAlgo graph} and implements the
+ * {@linkplain org.jgrapht.Graph JGraphT graph} interface, and can be used with any JGraphT algorithm. The adapter is a
+ * live view, so any change in the JGraphT graph is reflected in the JGAlgo graph and vice versa, but the underlying
+ * JGAlgo graph should not be modified directly.
+ *
+ * &lt;p&gt;
+ * The {@link GraphType} of the adapter determined by the capabilities of the underlying JGAlgo graph (see
+ * {@link com.jgalgo.graph.Graph#isDirected()}, {@link com.jgalgo.graph.Graph#isAllowParallelEdges()},
+ * {@link com.jgalgo.graph.Graph#isAllowSelfEdges()}). Wether the adapter is weighted or not is determined in the
+ * {@linkplain #JGraphTAdapter(com.jgalgo.graph.Graph, String) constructor} by passing the edge weight key, see
+ * {@link com.jgalgo.graph.Graph#getEdgesWeights(String)}. Although JGAlgo graphs support multiple types of weights,
+ * both for vertices and edges, JGraphT graphs support only one double weight type, for edges.
+ *
+ * &lt;p&gt;
+ * For adapting the other way around, from JGraphT to JGAlgo, see {@link JGraphTWrapper}.
+ *
+ * @see        org.jgrapht.Graph
+ * @see        com.jgalgo.graph.Graph
+ * @see        JGraphTWrapper
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
+ */
+public class JGraphTAdapter&lt;V, E&gt; extends org.jgrapht.graph.AbstractGraph&lt;V, E&gt; {
+
+	private final com.jgalgo.graph.Graph&lt;V, E&gt; graph;
+	private final IndexGraph g;
+	private final IndexIdMap&lt;V&gt; viMap;
+	private final IndexIdMap&lt;E&gt; eiMap;
+	private final WeightsDouble&lt;E&gt; weights;
+	private Supplier&lt;V&gt; vertexSupplier;
+	private Supplier&lt;E&gt; edgeSupplier;
+	private final GraphType type;
+
+	/**
+	 * Constructs a new unweighted adapter from the given JGAlgo graph.
+	 *
+	 * @param graph the JGAlgo graph
+	 */
+	public JGraphTAdapter(com.jgalgo.graph.Graph&lt;V, E&gt; graph) {
+<span class="fc" id="L74">		this(graph, null);</span>
+<span class="fc" id="L75">	}</span>
+
+	/**
+	 * Constructs a new adapter from the given JGAlgo graph, optionally weighted.
+	 *
+	 * @param  graph                    the JGAlgo graph
+	 * @param  edgeWeightKey            the edge weight key of the {@linkplain WeightsDouble double weights} of the
+	 *                                      JGAlgo graph (see {@link com.jgalgo.graph.Graph#getEdgesWeights(String)}),
+	 *                                      or {@code null} for unweighted
+	 * @throws IllegalArgumentException if the edge weight key is not {@code null} and it is not found in the JGAlgo
+	 *                                      graph
+	 */
+<span class="fc" id="L87">	public JGraphTAdapter(com.jgalgo.graph.Graph&lt;V, E&gt; graph, String edgeWeightKey) {</span>
+<span class="fc" id="L88">		this.graph = graph;</span>
+<span class="fc" id="L89">		g = graph.indexGraph();</span>
+<span class="fc" id="L90">		viMap = graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L91">		eiMap = graph.indexGraphEdgesMap();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		if (edgeWeightKey == null) {</span>
+<span class="fc" id="L93">			weights = null;</span>
+		} else {
+<span class="fc" id="L95">			weights = graph.getEdgesWeights(edgeWeightKey);</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			if (weights == null)</span>
+<span class="fc" id="L97">				throw new IllegalArgumentException(&quot;No edges weights for key '&quot; + edgeWeightKey + &quot;'&quot;);</span>
+		}
+
+<span class="fc" id="L100">		DefaultGraphType.Builder typeBuilder = new DefaultGraphType.Builder();</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">		if (graph.isDirected()) {</span>
+<span class="fc" id="L102">			typeBuilder.directed();</span>
+		} else {
+<span class="fc" id="L104">			typeBuilder.undirected();</span>
+		}
+<span class="fc" id="L106">		typeBuilder.allowMultipleEdges(graph.isAllowParallelEdges());</span>
+<span class="fc" id="L107">		typeBuilder.allowSelfLoops(graph.isAllowSelfEdges());</span>
+<span class="fc" id="L108">		typeBuilder.allowCycles(true);</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">		typeBuilder.weighted(weights != null);</span>
+<span class="fc" id="L110">		type = typeBuilder.build();</span>
+<span class="fc" id="L111">	}</span>
+
+	/**
+	 * Set the vertex supplier of the adapter.
+	 *
+	 * @param vertexSupplier the vertex supplier, or {@code null} to not support adding vertices via
+	 *                           {@link #addVertex()}
+	 */
+	public void setVertexSupplier(Supplier&lt;V&gt; vertexSupplier) {
+<span class="fc" id="L120">		this.vertexSupplier = vertexSupplier;</span>
+<span class="fc" id="L121">	}</span>
+
+	/**
+	 * Set the edge supplier of the adapter.
+	 *
+	 * @param edgeSupplier the edge supplier, or {@code null} to not support adding edges via
+	 *                         {@link #addEdge(Object, Object)}
+	 */
+	public void setEdgeSupplier(Supplier&lt;E&gt; edgeSupplier) {
+<span class="fc" id="L130">		this.edgeSupplier = edgeSupplier;</span>
+<span class="fc" id="L131">	}</span>
+
+	@Override
+	public Set&lt;E&gt; getAllEdges(V sourceVertex, V targetVertex) {
+<span class="fc" id="L135">		int uIdx = viMap.idToIndexIfExist(sourceVertex);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">		if (uIdx &lt; 0)</span>
+<span class="fc" id="L137">			return null;</span>
+<span class="fc" id="L138">		int vIdx = viMap.idToIndexIfExist(targetVertex);</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">		if (vIdx &lt; 0)</span>
+<span class="fc" id="L140">			return null;</span>
+<span class="fc" id="L141">		IEdgeSet es = g.getEdges(uIdx, vIdx);</span>
+<span class="fc" id="L142">		return IndexIdMaps.indexToIdEdgeSet(es, graph);</span>
+	}
+
+	@Override
+	public E getEdge(V sourceVertex, V targetVertex) {
+<span class="fc" id="L147">		int uIdx = viMap.idToIndexIfExist(sourceVertex);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		if (uIdx &lt; 0)</span>
+<span class="fc" id="L149">			return null;</span>
+<span class="fc" id="L150">		int vIdx = viMap.idToIndexIfExist(targetVertex);</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">		if (vIdx &lt; 0)</span>
+<span class="fc" id="L152">			return null;</span>
+<span class="fc" id="L153">		int eIdx = g.getEdge(uIdx, vIdx);</span>
+<span class="fc" id="L154">		return eiMap.indexToIdIfExist(eIdx);</span>
+	}
+
+	@Override
+	public Supplier&lt;V&gt; getVertexSupplier() {
+<span class="fc" id="L159">		return vertexSupplier;</span>
+	}
+
+	@Override
+	public Supplier&lt;E&gt; getEdgeSupplier() {
+<span class="fc" id="L164">		return edgeSupplier;</span>
+	}
+
+	private int vertexIdxNonNull(V vertex) {
+<span class="fc" id="L168">		return viMap.idToIndex(Objects.requireNonNull(vertex));</span>
+	}
+
+	@Override
+	public E addEdge(V sourceVertex, V targetVertex) {
+<span class="fc" id="L173">		int uIdx = vertexIdxNonNull(sourceVertex);</span>
+<span class="fc" id="L174">		int vIdx = vertexIdxNonNull(targetVertex);</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">		if (edgeSupplier == null)</span>
+<span class="fc" id="L176">			throw new UnsupportedOperationException(&quot;graph does not have an edge supplier&quot;);</span>
+<span class="fc" id="L177">		E edge = edgeSupplier.get();</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">		if (containsEdge(edge))</span>
+<span class="fc" id="L179">			return null;</span>
+<span class="fc bfc" id="L180" title="All 4 branches covered.">		if (!g.isAllowParallelEdges() &amp;&amp; g.containsEdge(uIdx, vIdx))</span>
+<span class="fc" id="L181">			return null;</span>
+<span class="fc" id="L182">		graph.addEdge(sourceVertex, targetVertex, edge);</span>
+<span class="fc" id="L183">		return edge;</span>
+	}
+
+	@Override
+	public boolean addEdge(V sourceVertex, V targetVertex, E e) {
+<span class="fc" id="L188">		int uIdx = vertexIdxNonNull(sourceVertex);</span>
+<span class="fc" id="L189">		int vIdx = vertexIdxNonNull(targetVertex);</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">		if (containsEdge(e))</span>
+<span class="fc" id="L191">			return false;</span>
+<span class="fc bfc" id="L192" title="All 4 branches covered.">		if (!g.isAllowParallelEdges() &amp;&amp; g.containsEdge(uIdx, vIdx))</span>
+<span class="fc" id="L193">			return false;</span>
+<span class="fc" id="L194">		graph.addEdge(sourceVertex, targetVertex, e);</span>
+<span class="fc" id="L195">		return true;</span>
+	}
+
+	@Override
+	public V addVertex() {
+<span class="fc bfc" id="L200" title="All 2 branches covered.">		if (vertexSupplier == null)</span>
+<span class="fc" id="L201">			throw new UnsupportedOperationException(&quot;graph does not have an vertex supplier&quot;);</span>
+<span class="fc" id="L202">		V vertex = vertexSupplier.get();</span>
+<span class="fc" id="L203">		graph.addVertex(vertex);</span>
+<span class="fc" id="L204">		return vertex;</span>
+	}
+
+	@Override
+	public boolean addVertex(V v) {
+<span class="fc bfc" id="L209" title="All 2 branches covered.">		if (containsVertex(v))</span>
+<span class="fc" id="L210">			return false;</span>
+<span class="fc" id="L211">		graph.addVertex(v);</span>
+<span class="fc" id="L212">		return true;</span>
+	}
+
+	@Override
+	public boolean containsEdge(V sourceVertex, V targetVertex) {
+<span class="fc" id="L217">		int uIdx = viMap.idToIndexIfExist(sourceVertex);</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">		if (uIdx &lt; 0)</span>
+<span class="fc" id="L219">			return false;</span>
+<span class="fc" id="L220">		int vIdx = viMap.idToIndexIfExist(targetVertex);</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">		if (vIdx &lt; 0)</span>
+<span class="fc" id="L222">			return false;</span>
+<span class="fc" id="L223">		return g.containsEdge(uIdx, vIdx);</span>
+	}
+
+	@Override
+	public boolean containsEdge(E e) {
+<span class="fc" id="L228">		return graph.edges().contains(e);</span>
+	}
+
+	@Override
+	public boolean containsVertex(V v) {
+<span class="fc" id="L233">		return graph.vertices().contains(v);</span>
+	}
+
+	@Override
+	public Set&lt;E&gt; edgeSet() {
+<span class="fc" id="L238">		return graph.edges();</span>
+	}
+
+	@Override
+	public int degreeOf(V vertex) {
+<span class="fc" id="L243">		int vIdx = vertexIdxNonNull(vertex);</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">		if (g.isDirected())</span>
+<span class="fc" id="L245">			return g.outEdges(vIdx).size() + g.inEdges(vIdx).size();</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">		if (!g.isAllowSelfEdges())</span>
+<span class="fc" id="L247">			return g.outEdges(vIdx).size();</span>
+		/* self edges are counted twice in JGraphT graphs */
+<span class="fc" id="L249">		int degree = g.outEdges(vIdx).size();</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">		for (int edge : g.outEdges(vIdx))</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">			if (g.edgeSource(edge) == g.edgeTarget(edge))</span>
+<span class="fc" id="L252">				degree++;</span>
+<span class="fc" id="L253">		return degree;</span>
+	}
+
+	@Override
+	public Set&lt;E&gt; edgesOf(V vertex) {
+<span class="fc" id="L258">		return graph.undirectedView().outEdges(Objects.requireNonNull(vertex));</span>
+	}
+
+	@Override
+	public int inDegreeOf(V vertex) {
+<span class="fc bfc" id="L263" title="All 2 branches covered.">		if (!g.isDirected())</span>
+<span class="fc" id="L264">			return degreeOf(vertex);</span>
+<span class="fc" id="L265">		return graph.inEdges(Objects.requireNonNull(vertex)).size();</span>
+	}
+
+	@Override
+	public Set&lt;E&gt; incomingEdgesOf(V vertex) {
+<span class="fc" id="L270">		return graph.inEdges(vertex);</span>
+	}
+
+	@Override
+	public int outDegreeOf(V vertex) {
+<span class="fc bfc" id="L275" title="All 2 branches covered.">		if (!graph.isDirected())</span>
+<span class="fc" id="L276">			return degreeOf(vertex);</span>
+<span class="fc" id="L277">		return graph.outEdges(Objects.requireNonNull(vertex)).size();</span>
+	}
+
+	@Override
+	public Set&lt;E&gt; outgoingEdgesOf(V vertex) {
+<span class="fc" id="L282">		return graph.outEdges(vertex);</span>
+	}
+
+	@Override
+	public Set&lt;E&gt; removeAllEdges(V sourceVertex, V targetVertex) {
+<span class="fc" id="L287">		int uIdx = viMap.idToIndexIfExist(sourceVertex);</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">		if (uIdx &lt; 0)</span>
+<span class="fc" id="L289">			return null;</span>
+<span class="fc" id="L290">		int vIdx = viMap.idToIndexIfExist(targetVertex);</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">		if (vIdx &lt; 0)</span>
+<span class="fc" id="L292">			return null;</span>
+
+<span class="fc" id="L294">		Set&lt;E&gt; edges = new ObjectOpenHashSet&lt;&gt;(IndexIdMaps.indexToIdEdgeSet(g.getEdges(uIdx, vIdx), graph));</span>
+<span class="fc" id="L295">		removeAllEdges(edges);</span>
+<span class="fc" id="L296">		return edges;</span>
+	}
+
+	@Override
+	public E removeEdge(V sourceVertex, V targetVertex) {
+<span class="fc" id="L301">		int uIdx = viMap.idToIndexIfExist(sourceVertex);</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">		if (uIdx &lt; 0)</span>
+<span class="fc" id="L303">			return null;</span>
+<span class="fc" id="L304">		int vIdx = viMap.idToIndexIfExist(targetVertex);</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">		if (vIdx &lt; 0)</span>
+<span class="fc" id="L306">			return null;</span>
+<span class="fc" id="L307">		int eIdx = g.getEdge(uIdx, vIdx);</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">		if (eIdx &lt; 0)</span>
+<span class="fc" id="L309">			return null;</span>
+<span class="fc" id="L310">		E e = eiMap.indexToId(eIdx);</span>
+<span class="fc" id="L311">		graph.removeEdge(e);</span>
+<span class="fc" id="L312">		return e;</span>
+	}
+
+	@Override
+	public boolean removeEdge(E e) {
+<span class="fc bfc" id="L317" title="All 2 branches covered.">		if (!containsEdge(e))</span>
+<span class="fc" id="L318">			return false;</span>
+<span class="fc" id="L319">		graph.removeEdge(e);</span>
+<span class="fc" id="L320">		return true;</span>
+	}
+
+	@Override
+	public boolean removeVertex(V v) {
+<span class="fc bfc" id="L325" title="All 2 branches covered.">		if (!containsVertex(v))</span>
+<span class="fc" id="L326">			return false;</span>
+<span class="fc" id="L327">		graph.removeVertex(v);</span>
+<span class="fc" id="L328">		return true;</span>
+	}
+
+	@Override
+	public Set&lt;V&gt; vertexSet() {
+<span class="fc" id="L333">		return graph.vertices();</span>
+	}
+
+	@Override
+	public V getEdgeSource(E e) {
+<span class="fc" id="L338">		return graph.edgeSource(e);</span>
+	}
+
+	@Override
+	public V getEdgeTarget(E e) {
+<span class="fc" id="L343">		return graph.edgeTarget(e);</span>
+	}
+
+	@Override
+	public GraphType getType() {
+<span class="fc" id="L348">		return type;</span>
+	}
+
+	@Override
+	public double getEdgeWeight(E e) {
+<span class="fc bfc" id="L353" title="All 2 branches covered.">		return weights != null ? weights.get(e) : 1.0;</span>
+	}
+
+	@Override
+	public void setEdgeWeight(E e, double weight) {
+<span class="fc bfc" id="L358" title="All 2 branches covered.">		if (weights == null)</span>
+<span class="fc" id="L359">			throw new UnsupportedOperationException(&quot;graph is unweighted&quot;);</span>
+<span class="fc" id="L360">		weights.set(e, weight);</span>
+<span class="fc" id="L361">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

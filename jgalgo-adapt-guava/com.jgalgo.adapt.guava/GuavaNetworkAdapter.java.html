@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GuavaNetworkAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Guava Adapters</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.adapt.guava</a> &gt; <span class="el_source">GuavaNetworkAdapter.java</span></div><h1>GuavaNetworkAdapter.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.adapt.guava;
+
+import java.util.Objects;
+import java.util.Set;
+import com.google.common.graph.AbstractNetwork;
+import com.google.common.graph.ElementOrder;
+import com.google.common.graph.EndpointPair;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
+
+/**
+ * An adapter from a JGAlgo graph to a Guava network.
+ *
+ * &lt;p&gt;
+ * The adapter is constructed with a {@linkplain com.jgalgo.graph.Graph JGAlgo graph} and implements the
+ * {@linkplain com.google.common.graph.Network Guava network} interface, and can be used with any Guava algorithm. The
+ * adapter is a live view, so any change in the JGAlgo graph is reflected in the Guava network and vice versa, but the
+ * underlying JGAlgo graph should not be modified directly.
+ *
+ * &lt;p&gt;
+ * The {@linkplain com.google.common.graph.Network Guava network} is immutable, so as this adapter. A subclass of this
+ * adapter, {@link GuavaMutableNetworkAdapter}, is a mutable adapter that implements the
+ * {@linkplain com.google.common.graph.MutableNetwork Guava mutable network} interface.
+ *
+ * &lt;p&gt;
+ * The capabilities of the Guava network, such as parallel and self edges or whether the network is directed or
+ * undirected, are determined by the underlying JGAlgo graph.
+ *
+ * &lt;p&gt;
+ * Guava support different {@linkplain com.google.common.graph.ElementOrder element orders} for the nodes and the
+ * incident edges. This adapter uses the default element order, which is unordered, and cannot be changed as the
+ * underlying JGAlgo graph does not support any other order.
+ *
+ * &lt;p&gt;
+ * Among Guava {@link com.google.common.graph.Graph}, {@link com.google.common.graph.ValueGraph} and
+ * {@link com.google.common.graph.Network}, the network is the most similar to JGAlgo graphs, as vertices and edges have
+ * unique identifiers, and queries of edges are answered with the edges identifiers. On the other had, the Graph and
+ * ValueGraph do not support unique identifiers for the edges, and operations on edges are addressed by a pair of nodes.
+ * The ValueGraph does associate a value with each edge, be it does not have to be unique, and it is more similar to
+ * weights in JGAlgo graphs.
+ *
+ * &lt;p&gt;
+ * For adapting the other way around, from Guava Network to JGAlgo, see {@link GuavaNetworkWrapper}.
+ *
+ * @see        com.jgalgo.graph.Graph
+ * @see        com.google.common.graph.Network
+ * @see        GuavaMutableNetworkAdapter
+ * @see        GuavaNetworkWrapper
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
+ */
+<span class="fc" id="L71">public class GuavaNetworkAdapter&lt;V, E&gt; extends AbstractNetwork&lt;V, E&gt; {</span>
+
+	final com.jgalgo.graph.Graph&lt;V, E&gt; graph;
+<span class="fc" id="L74">	private final ElementOrder&lt;V&gt; nodeOrder = ElementOrder.unordered();</span>
+<span class="fc" id="L75">	private final ElementOrder&lt;E&gt; edgeOrder = ElementOrder.unordered();</span>
+
+	/**
+	 * Constructs a new adapter from the given JGAlgo graph.
+	 *
+	 * @param graph the JGAlgo graph
+	 */
+<span class="fc" id="L82">	public GuavaNetworkAdapter(com.jgalgo.graph.Graph&lt;V, E&gt; graph) {</span>
+<span class="fc" id="L83">		this.graph = Objects.requireNonNull(graph);</span>
+<span class="fc" id="L84">	}</span>
+
+	@Override
+	public Set&lt;V&gt; nodes() {
+<span class="fc" id="L88">		return graph.vertices();</span>
+	}
+
+	@Override
+	public Set&lt;E&gt; edges() {
+<span class="fc" id="L93">		return graph.edges();</span>
+	}
+
+	@Override
+	public Set&lt;V&gt; successors(V node) {
+<span class="fc" id="L98">		return GuavaAdapters.successors(graph, node);</span>
+	}
+
+	@Override
+	public Set&lt;V&gt; predecessors(V node) {
+<span class="fc" id="L103">		return GuavaAdapters.predecessors(graph, node);</span>
+	}
+
+	@Override
+	public Set&lt;V&gt; adjacentNodes(V node) {
+<span class="fc" id="L108">		return GuavaAdapters.adjacentNodes(graph, node);</span>
+	}
+
+	@Override
+	public Set&lt;E&gt; incidentEdges(V node) {
+<span class="fc" id="L113">		return graph.undirectedView().outEdges(node);</span>
+	}
+
+	@Override
+	public Set&lt;E&gt; inEdges(V node) {
+<span class="fc" id="L118">		return graph.inEdges(node);</span>
+	}
+
+	@Override
+	public Set&lt;E&gt; outEdges(V node) {
+<span class="fc" id="L123">		return graph.outEdges(node);</span>
+	}
+
+	@Override
+	public EndpointPair&lt;V&gt; incidentNodes(E edge) {
+<span class="fc" id="L128">		IndexGraph g = graph.indexGraph();</span>
+<span class="fc" id="L129">		IndexIdMap&lt;V&gt; viMap = graph.indexGraphVerticesMap();</span>
+<span class="fc" id="L130">		int eIdx = graph.indexGraphEdgesMap().idToIndex(edge);</span>
+<span class="fc" id="L131">		int uIdx = g.edgeSource(eIdx), vIdx = g.edgeTarget(eIdx);</span>
+<span class="fc" id="L132">		V u = viMap.indexToId(uIdx), v = viMap.indexToId(vIdx);</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">		return g.isDirected() ? EndpointPair.ordered(u, v) : EndpointPair.unordered(u, v);</span>
+	}
+
+	@Override
+	public Set&lt;E&gt; adjacentEdges(E edge) {
+<span class="fc" id="L138">		IndexGraph g = graph.indexGraph();</span>
+<span class="fc" id="L139">		IndexIdMap&lt;E&gt; eiMap = graph.indexGraphEdgesMap();</span>
+<span class="fc" id="L140">		int eIdx = eiMap.idToIndex(edge);</span>
+<span class="fc" id="L141">		int uIdx = g.edgeSource(eIdx), vIdx = g.edgeTarget(eIdx);</span>
+
+<span class="fc" id="L143">		IntSet adjEdges = new IntOpenHashSet();</span>
+<span class="fc" id="L144">		adjEdges.addAll(g.outEdges(uIdx));</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">		if (g.isDirected())</span>
+<span class="fc" id="L146">			adjEdges.addAll(g.inEdges(uIdx));</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">		if (uIdx != vIdx) {</span>
+<span class="fc" id="L148">			adjEdges.addAll(g.outEdges(vIdx));</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">			if (g.isDirected())</span>
+<span class="fc" id="L150">				adjEdges.addAll(g.inEdges(vIdx));</span>
+		}
+<span class="fc" id="L152">		boolean removed = adjEdges.remove(eIdx);</span>
+<span class="pc bnc" id="L153" title="All 2 branches missed.">		assert removed;</span>
+
+<span class="fc" id="L155">		return IndexIdMaps.indexToIdSet(adjEdges, eiMap);</span>
+	}
+
+	@Override
+	public Set&lt;E&gt; edgesConnecting(V nodeU, V nodeV) {
+<span class="fc" id="L160">		return graph.getEdges(nodeU, nodeV);</span>
+	}
+
+	@Override
+	public E edgeConnectingOrNull(V nodeU, V nodeV) {
+<span class="fc" id="L165">		return graph.getEdge(nodeU, nodeV);</span>
+	}
+
+	@Override
+	public boolean hasEdgeConnecting(V nodeU, V nodeV) {
+<span class="fc" id="L170">		return GuavaAdapters.hasEdgeConnecting(graph, nodeU, nodeV);</span>
+	}
+
+	@Override
+	public boolean hasEdgeConnecting(EndpointPair&lt;V&gt; endpoints) {
+<span class="fc" id="L175">		return GuavaAdapters.hasEdgeConnecting(graph, endpoints);</span>
+	}
+
+	@Override
+	public boolean isDirected() {
+<span class="fc" id="L180">		return graph.isDirected();</span>
+	}
+
+	@Override
+	public boolean allowsParallelEdges() {
+<span class="fc" id="L185">		return graph.isAllowParallelEdges();</span>
+	}
+
+	@Override
+	public boolean allowsSelfLoops() {
+<span class="fc" id="L190">		return graph.isAllowSelfEdges();</span>
+	}
+
+	@Override
+	public ElementOrder&lt;V&gt; nodeOrder() {
+<span class="fc" id="L195">		return nodeOrder;</span>
+	}
+
+	@Override
+	public ElementOrder&lt;E&gt; edgeOrder() {
+<span class="fc" id="L200">		return edgeOrder;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
