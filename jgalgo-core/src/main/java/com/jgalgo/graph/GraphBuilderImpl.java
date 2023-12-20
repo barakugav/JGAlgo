@@ -30,12 +30,15 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 	final IndexIdMapImpl<E> eiMap;
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.ObjMapped<V, ?>> verticesWeights = new IdentityHashMap<>();
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.ObjMapped<E, ?>> edgesWeights = new IdentityHashMap<>();
+	private IdBuilder<V> vertexBuilder;
+	private IdBuilder<E> edgeBuilder;
 
 	GraphBuilderImpl(GraphFactoryImpl<V, E> factory) {
 		this.factory = factory;
 		this.ibuilder = factory.indexFactory.newBuilder();
 		viMap = IndexIdMapImpl.newEmpty(ibuilder.vertices(), false, 0);
 		eiMap = IndexIdMapImpl.newEmpty(ibuilder.edges(), true, 0);
+		resetVertexAndEdgeBuilders();
 	}
 
 	GraphBuilderImpl(GraphFactoryImpl<V, E> factory, Graph<V, E> g, boolean copyVerticesWeights,
@@ -44,6 +47,7 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 		this.ibuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
 		viMap = IndexIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), null, ibuilder.vertices(), false, false);
 		eiMap = IndexIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), null, ibuilder.edges(), true, false);
+		resetVertexAndEdgeBuilders();
 	}
 
 	@Override
@@ -68,8 +72,6 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 
 	@Override
 	public void addVertices(Collection<? extends V> vertices) {
-		if (vertices.isEmpty())
-			return;
 		for (V vertex : vertices)
 			if (vertex == null)
 				throw new NullPointerException("Vertex must be non null");
@@ -182,12 +184,28 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 	}
 
 	@Override
+	public IdBuilder<V> vertexBuilder() {
+		return vertexBuilder;
+	}
+
+	@Override
+	public IdBuilder<E> edgeBuilder() {
+		return edgeBuilder;
+	}
+
+	@Override
 	public void clear() {
 		ibuilder.clear();
 		viMap.idsClear();
 		eiMap.idsClear();
 		verticesWeights.clear();
 		edgesWeights.clear();
+		resetVertexAndEdgeBuilders();
+	}
+
+	private void resetVertexAndEdgeBuilders() {
+		vertexBuilder = factory.vertexFactory != null ? factory.vertexFactory.get() : null;
+		edgeBuilder = factory.edgeFactory != null ? factory.edgeFactory.get() : null;
 	}
 
 	@Override

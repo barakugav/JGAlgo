@@ -74,6 +74,19 @@ public class GraphBuilderTest extends TestBase {
 				b.addVertex(v);
 			assertEquals(new HashSet<>(vertices), b.vertices());
 		});
+		foreachBoolConfig(directed -> {
+			GraphFactory<Integer, Integer> factory = GraphFactory.newInstance(directed);
+			factory.setVertexFactory(IdBuilder.defaultFactory(Integer.class));
+			GraphBuilder<Integer, Integer> b = factory.newBuilder();
+			Integer v1 = b.addVertex();
+			Integer v2 = b.addVertex();
+			Integer v3 = b.addVertex();
+			assertEquals(Set.of(v1, v2, v3), b.build().vertices());
+		});
+		foreachBoolConfig(directed -> {
+			GraphBuilder<Integer, Integer> b = GraphBuilder.newInstance(directed);
+			assertThrows(UnsupportedOperationException.class, () -> b.addVertex());
+		});
 	}
 
 	@SuppressWarnings("boxing")
@@ -146,6 +159,21 @@ public class GraphBuilderTest extends TestBase {
 			b.addEdge(0, 2, 1);
 			b.addEdge(0, 3, 2);
 			assertEquals(range(3), b.edges());
+		});
+		foreachBoolConfig(directed -> {
+			GraphFactory<Integer, Integer> factory = GraphFactory.newInstance(directed);
+			factory.setEdgeFactory(IdBuilder.defaultFactory(Integer.class));
+			GraphBuilder<Integer, Integer> b = factory.newBuilder();
+			b.addVertices(range(10));
+			Integer e1 = b.addEdge(0, 1);
+			Integer e2 = b.addEdge(1, 2);
+			Integer e3 = b.addEdge(2, 3);
+			assertEquals(Set.of(e1, e2, e3), b.build().edges());
+		});
+		foreachBoolConfig(directed -> {
+			GraphBuilder<Integer, Integer> b = GraphBuilder.newInstance(directed);
+			b.addVertices(range(10));
+			assertThrows(UnsupportedOperationException.class, () -> b.addEdge(0 ,1));
 		});
 	}
 

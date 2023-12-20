@@ -109,8 +109,8 @@ public interface IndexGraph extends IntGraph {
 	 * @throws     IllegalArgumentException if {@code vertex} is not {@code verticesNum}
 	 * @deprecated                          use {@link #addVertexInt()} instead
 	 */
-	@Override
 	@Deprecated
+	@Override
 	default void addVertex(int vertex) {
 		if (vertex != vertices().size())
 			throw new IllegalArgumentException("Only vertex ID " + vertices().size() + " can be added");
@@ -187,8 +187,8 @@ public interface IndexGraph extends IntGraph {
 	 * @throws     IllegalArgumentException if {@code edge} is not {@code edgesNum}
 	 * @deprecated                          use {@link #addEdge(int, int)} instead
 	 */
-	@Override
 	@Deprecated
+	@Override
 	default void addEdge(int source, int target, int edge) {
 		if (edge != edges().size())
 			throw new IllegalArgumentException("Only edge ID " + edges().size() + " can be added");
@@ -498,8 +498,8 @@ public interface IndexGraph extends IntGraph {
 	 * @return     this graph
 	 * @deprecated this function will always return the same graph, no reason to call it
 	 */
-	@Override
 	@Deprecated
+	@Override
 	default IndexGraph indexGraph() {
 		return this;
 	}
@@ -509,8 +509,8 @@ public interface IndexGraph extends IntGraph {
 	 *
 	 * @deprecated this function will always return the identity mapping, no reason to call it
 	 */
-	@Override
 	@Deprecated
+	@Override
 	IndexIntIdMap indexGraphVerticesMap();
 
 	/**
@@ -518,8 +518,8 @@ public interface IndexGraph extends IntGraph {
 	 *
 	 * @deprecated this function will always return the identity mapping, no reason to call it
 	 */
-	@Override
 	@Deprecated
+	@Override
 	IndexIntIdMap indexGraphEdgesMap();
 
 	@Override

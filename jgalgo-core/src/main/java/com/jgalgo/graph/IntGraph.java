@@ -148,7 +148,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	default int addVertexInt() {
 		IdBuilderInt vertexBuilder = vertexBuilder();
 		if (vertexBuilder == null)
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("No vertex builder");
 		int vertex = vertexBuilder.build(vertices());
 		addVertex(vertex);
 		return vertex;
@@ -421,7 +421,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	default int addEdge(int source, int target) {
 		IdBuilderInt edgeBuilder = edgeBuilder();
 		if (edgeBuilder == null)
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("No edge builder");
 		int edge = edgeBuilder.build(edges());
 		addEdge(source, target, edge);
 		return edge;

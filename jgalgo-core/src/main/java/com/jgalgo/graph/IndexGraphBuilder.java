@@ -49,8 +49,8 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * {@inheritDoc}
 	 *
 	 * <p>
-	 * As the built graph is an Index graph, the vertices must be {@code 0,1,2,...,verticesNum-1} and user-chosen IDs
-	 * are not supported. A new vertex will be assigned ID of value {@code vertices().size()}.
+	 * The vertex created by this method will be assigned the next available index, {@code verticesNum}. For example, if
+	 * the graph currently contains the vertices {@code 0,1,2}, the next vertex added will be {@code 3}.
 	 */
 	@Override
 	int addVertexInt();
@@ -89,8 +89,8 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * {@inheritDoc}
 	 *
 	 * <p>
-	 * As the built graph is an Index graph, the edges must be {@code 0,1,2,...,edgesNum-1}. A new edge will be assigned
-	 * ID of value {@code edges().size()}.
+	 * The edge created by this method will be assigned the next available index, {@code edgesNum}. For example, if the
+	 * graph currently contains the edges {@code 0,1,2}, the next edge added will be {@code 3}.
 	 */
 	@Override
 	int addEdge(int source, int target);
@@ -165,6 +165,34 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *               are iterated in the given set
 	 */
 	IntSet addEdgesReassignIds(IEdgeSet edges);
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * The vertex builder returned by this method always assign the next available index, {@code verticesNum}, given the
+	 * current set of vertices {@code (0,1,2, ...,verticesNum-1)}. For example, if the graph currently contains the
+	 * vertices {@code 0,1,2}, the next vertex added will be {@code 3}. The builder simply returns the current vertices
+	 * set size, without validating that the set is actually {@code (0,1,2, ...,verticesNum-1)}.
+	 */
+	@Override
+	default IdBuilderInt vertexBuilder() {
+		return Graphs.IndexGraphIdBuilder;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>
+	 * The edge builder returned by this method always assign the next available index, {@code edgesNum}, given the
+	 * current set of edges {@code (0,1,2, ...,edgesNum-1)}. For example, if the graph currently contains the edges
+	 * {@code 0,1,2}, the next edge added will be {@code 3}. The builder simply returns the current edges set size,
+	 * without validating that the set is actually {@code (0,1,2, ...,edgesNum-1)}.
+	 */
+	@Override
+	default IdBuilderInt edgeBuilder() {
+		return Graphs.IndexGraphIdBuilder;
+	}
 
 	@Override
 	IndexGraph build();

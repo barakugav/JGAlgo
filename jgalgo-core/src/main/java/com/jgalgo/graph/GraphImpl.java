@@ -102,8 +102,6 @@ class GraphImpl<V, E> extends AbstractGraph<V, E> {
 
 	@Override
 	public void addVertices(Collection<? extends V> vertices) {
-		if (vertices.isEmpty())
-			return;
 		for (V vertex : vertices)
 			if (vertex == null)
 				throw new NullPointerException("Vertex must be non null");

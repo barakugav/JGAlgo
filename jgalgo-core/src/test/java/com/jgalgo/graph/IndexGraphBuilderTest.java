@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -818,6 +819,29 @@ public class IndexGraphBuilderTest extends TestBase {
 			g.addEdge(0, 1, 3);
 			assertThrows(IllegalArgumentException.class,
 					() -> IndexGraphFactory.newInstance(directed).newBuilderCopyOf(g));
+		});
+	}
+
+	@Test
+	public void vertexBuilder() {
+		foreachBoolConfig(directed -> {
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
+			b.addVertices(range(10));
+			IdBuilderInt vertexBuilder = b.vertexBuilder();
+			assertNotNull(vertexBuilder);
+			assertEquals(b.vertices().size(), vertexBuilder.build(b.vertices()));
+		});
+	}
+
+	@Test
+	public void edgeBuilder() {
+		foreachBoolConfig(directed -> {
+			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
+			b.addVertices(range(10));
+			b.addEdge(0, 1);
+			IdBuilderInt edgeBuilder = b.edgeBuilder();
+			assertNotNull(edgeBuilder);
+			assertEquals(b.edges().size(), edgeBuilder.build(b.edges()));
 		});
 	}
 

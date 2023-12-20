@@ -76,6 +76,21 @@ public class IntGraphBuilderTest extends TestBase {
 				assertTrue(vertices.add(b.addVertexInt()));;
 			assertEquals(vertices, b.vertices());
 		});
+		foreachBoolConfig(directed -> {
+			IntGraphFactory factory = IntGraphFactory.newInstance(directed);
+			factory.setVertexFactory(IdBuilder.defaultFactory(Integer.class));
+			GraphBuilder<Integer, Integer> b = factory.newBuilder();
+			Integer v1 = b.addVertex();
+			Integer v2 = b.addVertex();
+			Integer v3 = b.addVertex();
+			assertEquals(Set.of(v1, v2, v3), b.build().vertices());
+		});
+		foreachBoolConfig(directed -> {
+			IntGraphFactory factory = IntGraphFactory.newInstance(directed);
+			factory.setVertexFactory(null);
+			GraphBuilder<Integer, Integer> b = factory.newBuilder();
+			assertThrows(UnsupportedOperationException.class, () -> b.addVertex());
+		});
 	}
 
 	@Test
@@ -86,22 +101,6 @@ public class IntGraphBuilderTest extends TestBase {
 			for (int v : vertices)
 				b.addVertex(v);
 			assertEquals(new IntOpenHashSet(vertices), b.vertices());
-		});
-	}
-
-	@Test
-	public void addVertexMixUserIdsAndImplIds() {
-		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
-			for (int v : IntList.of(48, 84, 66, 91, 3, 7))
-				b.addVertex(v);
-			assertThrows(IllegalArgumentException.class, () -> b.addVertexInt());
-		});
-		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
-			for (int i = 0; i < 15; i++)
-				b.addVertexInt();
-			assertThrows(IllegalArgumentException.class, () -> b.addVertex(66));
 		});
 	}
 
@@ -149,7 +148,7 @@ public class IntGraphBuilderTest extends TestBase {
 					vs.add(v);
 				}
 				if (r % 5 == 0) {
-					b.addVertices(vs);
+					b.addVertices(rand.nextBoolean() ? vs : new ArrayList<>(vs));
 					vertices.addAll(vs);
 					verticesList.addAll(vs);
 				} else if (r % 5 == 1) {
@@ -180,6 +179,7 @@ public class IntGraphBuilderTest extends TestBase {
 		});
 	}
 
+	@SuppressWarnings("boxing")
 	@Test
 	public void addEdge() {
 		foreachBoolConfig(directed -> {
@@ -191,6 +191,23 @@ public class IntGraphBuilderTest extends TestBase {
 			int e2 = b.addEdge(0, 2);
 			int e3 = b.addEdge(0, 3);
 			assertEquals(IntSet.of(e1, e2, e3), b.edges());
+		});
+		foreachBoolConfig(directed -> {
+			GraphFactory<Integer, Integer> factory = IntGraphFactory.newInstance(directed);
+			factory.setEdgeFactory(IdBuilder.defaultFactory(Integer.class));
+			GraphBuilder<Integer, Integer> b = factory.newBuilder();
+			b.addVertices(range(10));
+			Integer e1 = b.addEdge(0, 1);
+			Integer e2 = b.addEdge(1, 2);
+			Integer e3 = b.addEdge(2, 3);
+			assertEquals(Set.of(e1, e2, e3), b.build().edges());
+		});
+		foreachBoolConfig(directed -> {
+			GraphFactory<Integer, Integer> factory = IntGraphFactory.newInstance(directed);
+			factory.setEdgeFactory(null);
+			GraphBuilder<Integer, Integer> b = factory.newBuilder();
+			b.addVertices(range(10));
+			assertThrows(UnsupportedOperationException.class, () -> b.addEdge(0, 1));
 		});
 	}
 
@@ -205,30 +222,6 @@ public class IntGraphBuilderTest extends TestBase {
 			b.addEdge(0, 2, 1);
 			b.addEdge(0, 3, 2);
 			assertEquals(range(3), b.edges());
-		});
-	}
-
-	@Test
-	public void addEdgeMixUserIdsAndImplIds() {
-		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
-			b.ensureVertexCapacity(10);
-			b.ensureEdgeCapacity(3);
-			range(10).forEach(b::addVertex);
-			b.addEdge(0, 1, 0);
-			b.addEdge(0, 2, 1);
-			b.addEdge(0, 3, 2);
-			assertThrows(IllegalStateException.class, () -> b.addEdge(0, 4));
-		});
-		foreachBoolConfig(directed -> {
-			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
-			b.ensureVertexCapacity(10);
-			b.ensureEdgeCapacity(3);
-			range(10).forEach(b::addVertex);
-			b.addEdge(0, 1);
-			b.addEdge(0, 2);
-			b.addEdge(0, 3);
-			assertThrows(IllegalStateException.class, () -> b.addEdge(0, 4, 77));
 		});
 	}
 

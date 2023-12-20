@@ -52,27 +52,19 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	IntSet edges();
 
 	/**
-	 * Add a new vertex to the graph.
+	 * Add a new vertex to the built graph.
 	 *
 	 * <p>
-	 * The builder will choose identifier not used for any existing vertex, and will return it. It is also possible to
-	 * add a new vertex and choose its identifier by using {@link #addVertex(int)}. Only one of {@link #addVertexInt()}
-	 * and {@link #addVertex(int)} can be used during the construction of a graph.
-	 *
-	 * @return the new vertex identifier
-	 */
-	int addVertexInt();
-
-	/**
-	 * Add a new vertex to the graph, with user-chosen identifier.
+	 * Vertices must be non negative integers.
 	 *
 	 * <p>
-	 * This function is similar to {@link #addVertexInt()}, but let the user to choose the the identifier of the new
-	 * vertex. Only one of {@link #addVertexInt()} and {@link #addVertex(int)} can be used during the construction of a
-	 * graph. Negative identifiers are not allowed.
+	 * If there is a vertex builder, namely if {@link #vertexBuilder()} does not return {@code null}, the method
+	 * {@link #addVertexInt()} can be used, which uses the vertex builder to create the new vertex object instead of
+	 * requiring the user to provide it.
 	 *
-	 * @param  vertex                   the new vertex identifier
-	 * @throws IllegalArgumentException if the given vertex is already in the graph or if it is negative
+	 * @param  vertex                   new vertex
+	 * @throws IllegalArgumentException if {@code vertex} is already in the built graph, or if {@code vertex} is
+	 *                                      negative, as negative identifiers are not allowed
 	 */
 	void addVertex(int vertex);
 
@@ -90,6 +82,46 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	}
 
 	/**
+	 * Add a new vertex to the built graph, using the vertex builder.
+	 *
+	 * <p>
+	 * Unlike {@link #addVertex(int)} in which the vertex is provided by the user, this method uses the vertex builder
+	 * obtained by {@link #vertexBuilder()} to create the new vertex and adds it to the graph.
+	 *
+	 * <p>
+	 * This method is equivalent to:
+	 *
+	 * <pre> {@code
+	 * int vertex = vertexBuilder().build(vertices());
+	 * addVertex(vertex);
+	 * return vertex;
+	 * }</pre>
+	 *
+	 * @return                               the new vertex
+	 * @throws UnsupportedOperationException if the builder does not have a vertex builder, namely if
+	 *                                           {@link #vertexBuilder()} returns {@code null}
+	 */
+	default int addVertexInt() {
+		IdBuilderInt vertexBuilder = vertexBuilder();
+		if (vertexBuilder == null)
+			throw new UnsupportedOperationException("No vertex builder");
+		int vertex = vertexBuilder.build(vertices());
+		addVertex(vertex);
+		return vertex;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #addVertexInt()} instead to avoid un/boxing.
+	 */
+	@Deprecated
+	@Override
+	default Integer addVertex() {
+		return Integer.valueOf(addVertexInt());
+	}
+
+	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>
@@ -100,58 +132,87 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	void addVertices(Collection<? extends Integer> vertices);
 
 	/**
-	 * Add a new edge to the graph.
+	 * Add a new edge to the built graph.
 	 *
 	 * <p>
-	 * The builder will choose identifier not used for any existing edge, and will return it. It is also possible to add
-	 * a new edge and choose its identifier by using {@link #addEdge(int, int, int)}. Only one of
-	 * {@link #addEdge(int, int)} and {@link #addEdge(int, int, int)} can be used during the construction of a graph.
-	 *
-	 * <p>
-	 * If the graph does not support self or parallel edges and the added edge is such edge, an exception will
+	 * If the built graph does not support self or parallel edges and the added edge is such edge, an exception will
 	 * <b>not</b> be thrown. The edges are validated only when the graph is built, and an exception will be thrown only
 	 * then.
 	 *
-	 * @param  source                the source vertex of the new edge
-	 * @param  target                the target vertex of the new edge
-	 * @return                       the new edge identifier
-	 * @throws NoSuchVertexException if {@code source} or {@code target} are not vertices in the graph
-	 */
-	int addEdge(int source, int target);
-
-	/**
-	 * Add a new edge to the graph, with user-chosen identifier.
+	 * <p>
+	 * Edges must be non negative integers.
 	 *
 	 * <p>
-	 * This function is similar to {@link #addEdge(int, int)}, but let the user to choose the identifier of the new
-	 * edge. Only one of {@link #addEdge(int, int)} and {@link #addEdge(int, int, int)} can be used during the
-	 * construction of a graph.
+	 * If there is an edge builder, namely if {@link #edgeBuilder()} does not return {@code null}, the method
+	 * {@link #addEdge(int, int)} can be used, which uses the edge builder to create the new edge object instead of
+	 * requiring the user to provide it.
 	 *
-	 * <p>
-	 * If the graph does not support self or parallel edges and the added edge is such edge, an exception will
-	 * <b>not</b> be thrown. The edges are validated only when the graph is built, and an exception will be thrown only
-	 * then.
-	 *
-	 * @param  source                   the source vertex of the new edge
-	 * @param  target                   the target vertex of the new edge
-	 * @param  edge                     the identifier of the new edge
-	 * @throws IllegalArgumentException if {@code edge} is already in the graph or if if {@code edge} is negative, as
-	 *                                      negative identifiers are not allowed
-	 * @throws NoSuchVertexException    if {@code source} or {@code target} are not vertices in the graph
+	 * @param  source                   a source vertex
+	 * @param  target                   a target vertex
+	 * @param  edge                     a new edge identifier
+	 * @throws IllegalArgumentException if {@code edge} is already in the graph or if it is negative, as negative
+	 *                                      identifiers are not allowed
+	 * @throws NoSuchVertexException    if {@code source} or {@code target} are not valid vertices identifiers
 	 */
 	void addEdge(int source, int target, int edge);
 
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws     IllegalArgumentException if the given edge is negative or any of reasons specified in
-	 *                                          {@link GraphBuilder#addEdge(Object, Object, Object)}
-	 * @deprecated                          Please use {@link #addEdge(int, int, int)} instead to avoid un/boxing.
+	 * @deprecated Please use {@link #addEdge(int, int, int)} instead to avoid un/boxing.
 	 */
 	@Deprecated
 	@Override
 	default void addEdge(Integer source, Integer target, Integer edge) {
 		addEdge(source.intValue(), target.intValue(), edge.intValue());
+	}
+
+	/**
+	 * Add a new edge to the built graph, using the edge builder.
+	 *
+	 * <p>
+	 * Unlike {@link #addEdge(int, int, int)} in which the edge (identifier) is provided by the user, this method uses
+	 * the edge builder obtained by {@link #edgeBuilder()} to create the new edge object and adds it to the graph.
+	 *
+	 * <p>
+	 * If the graph does not support self or parallel edges and the added edge is such edge, an exception will
+	 * <b>not</b> be thrown. The edges are validated only when the graph is built, and an exception will be thrown only
+	 * then.
+	 *
+	 * <p>
+	 * This method is equivalent to:
+	 *
+	 * <pre> {@code
+	 * int edge = edgeBuilder().build(edges());
+	 * addEdge(source, target, edge);
+	 * return edge;
+	 * }</pre>
+	 *
+	 * @param  source                        a source vertex
+	 * @param  target                        a target vertex
+	 * @return                               the new edge
+	 * @throws UnsupportedOperationException if the builder does not have an edge builder, namely if
+	 *                                           {@link #edgeBuilder()} returns {@code null}
+	 * @throws NoSuchVertexException         if {@code source} or {@code target} are not valid vertices identifiers
+	 */
+	default int addEdge(int source, int target) {
+		IdBuilderInt edgeBuilder = edgeBuilder();
+		if (edgeBuilder == null)
+			throw new UnsupportedOperationException("No edge builder");
+		int edge = edgeBuilder.build(edges());
+		addEdge(source, target, edge);
+		return edge;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @deprecated Please use {@link #addEdge(int, int)} instead to avoid un/boxing.
+	 */
+	@Deprecated
+	@Override
+	default Integer addEdge(Integer source, Integer target) {
+		return Integer.valueOf(addEdge(source.intValue(), target.intValue()));
 	}
 
 	/**
@@ -184,6 +245,12 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 */
 	@Override
 	<T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key);
+
+	@Override
+	IdBuilderInt vertexBuilder();
+
+	@Override
+	IdBuilderInt edgeBuilder();
 
 	@Override
 	IntGraph build();

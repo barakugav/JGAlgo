@@ -28,18 +28,19 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 
 	private final IntGraphFactoryImpl factory;
 	final IndexGraphBuilder ibuilder;
-	private boolean userProvideVerticesIds;
-	private boolean userProvideEdgesIds;
 	final IndexIntIdMapImpl viMap;
 	final IndexIntIdMapImpl eiMap;
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> verticesWeights = new IdentityHashMap<>();
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> edgesWeights = new IdentityHashMap<>();
+	private IdBuilderInt vertexBuilder;
+	private IdBuilderInt edgeBuilder;
 
 	IntGraphBuilderImpl(IntGraphFactoryImpl factory) {
 		this.factory = factory;
 		this.ibuilder = factory.indexFactory.newBuilder();
 		viMap = IndexIntIdMapImpl.newEmpty(ibuilder.vertices(), false, 0);
 		eiMap = IndexIntIdMapImpl.newEmpty(ibuilder.edges(), true, 0);
+		resetVertexAndEdgeBuilders();
 	}
 
 	IntGraphBuilderImpl(IntGraphFactoryImpl factory, Graph<Integer, Integer> g, boolean copyVerticesWeights,
@@ -48,6 +49,7 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		this.ibuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
 		viMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), null, ibuilder.vertices(), false, false);
 		eiMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), null, ibuilder.edges(), true, false);
+		resetVertexAndEdgeBuilders();
 	}
 
 	@Override
@@ -60,38 +62,8 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		return eiMap.idSet();
 	}
 
-	private boolean canAddVertexWithoutId() {
-		return vertices().isEmpty() || !userProvideVerticesIds;
-	}
-
-	private boolean canAddVertexWithId() {
-		return vertices().isEmpty() || userProvideVerticesIds;
-	}
-
-	private boolean canAddEdgeWithoutId() {
-		return edges().isEmpty() || !userProvideEdgesIds;
-	}
-
-	private boolean canAddEdgeWithId() {
-		return edges().isEmpty() || userProvideEdgesIds;
-	}
-
-	@Override
-	public int addVertexInt() {
-		if (!canAddVertexWithoutId())
-			throw new IllegalArgumentException("Can't mix addVertex() and addVertex(id), "
-					+ "if IDs are provided for some of the vertices, they must be provided for all");
-		int vIndex = ibuilder.addVertexInt();
-		int vId = vIndex + 1; // +1 because we want to avoid 0 in fastutil open hash maps
-		viMap.addId(vId, vIndex);
-		return vId;
-	}
-
 	@Override
 	public void addVertex(int vertex) {
-		if (!canAddVertexWithId())
-			throw new IllegalArgumentException("Can't mix addVertex() and addVertex(id), "
-					+ "if IDs are provided for some of the vertices, they must be provided for all");
 		if (vertex < 0)
 			throw new IllegalArgumentException("Vertex must be non negative");
 
@@ -99,15 +71,10 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		viMap.addId(vertex, vIdx);
 		int vIdx2 = ibuilder.addVertexInt();
 		assert vIdx == vIdx2;
-
-		userProvideVerticesIds = true;
 	}
 
 	@Override
 	public void addVertices(Collection<? extends Integer> vertices) {
-		if (!canAddVertexWithId())
-			throw new IllegalArgumentException("Can't mix addVertex() and addVertex(id), "
-					+ "if IDs are provided for some of the vertices, they must be provided for all");
 		if (vertices.isEmpty())
 			return;
 		if (!(vertices instanceof IntCollection))
@@ -131,29 +98,10 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 			nextIdx++;
 		}
 		ibuilder.addVertices(range(verticesNumBefore, nextIdx));
-
-		userProvideVerticesIds = true;
-	}
-
-	@Override
-	public int addEdge(int source, int target) {
-		if (!canAddEdgeWithoutId())
-			throw new IllegalStateException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
-					+ "if IDs are provided for some of the edges, they must be provided for all");
-
-		int uIdx = viMap.idToIndex(source);
-		int vIdx = viMap.idToIndex(target);
-		int eIdx = ibuilder.addEdge(uIdx, vIdx);
-		int id = eIdx + 1; // avoid null key in open hash maps
-		eiMap.addId(id, eIdx);
-		return id;
 	}
 
 	@Override
 	public void addEdge(int source, int target, int edge) {
-		if (!canAddEdgeWithId())
-			throw new IllegalStateException("Can't mix addEdge(u,v) and addEdge(u,v,id), "
-					+ "if IDs are provided for some of the edges, they must be provided for all");
 		if (edge < 0)
 			throw new IllegalArgumentException("Edge must be non negative");
 
@@ -163,8 +111,6 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		eiMap.addId(edge, eIdx);
 		int eIdx2 = ibuilder.addEdge(uIdx, vIdx);
 		assert eIdx == eIdx2;
-
-		userProvideEdgesIds = true;
 	}
 
 	@Override
@@ -191,8 +137,6 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 				eiMap.rollBackRemove(nextMapIdx);
 			throw e;
 		}
-
-		userProvideEdgesIds = true;
 	}
 
 	@Override
@@ -252,14 +196,28 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 	}
 
 	@Override
+	public IdBuilderInt vertexBuilder() {
+		return vertexBuilder;
+	}
+
+	@Override
+	public IdBuilderInt edgeBuilder() {
+		return edgeBuilder;
+	}
+
+	@Override
 	public void clear() {
 		ibuilder.clear();
 		viMap.idsClear();
 		eiMap.idsClear();
 		verticesWeights.clear();
 		edgesWeights.clear();
-		userProvideVerticesIds = false;
-		userProvideEdgesIds = false;
+		resetVertexAndEdgeBuilders();
+	}
+
+	private void resetVertexAndEdgeBuilders() {
+		vertexBuilder = factory.vertexFactory != null ? factory.vertexFactory.get() : null;
+		edgeBuilder = factory.edgeFactory != null ? factory.edgeFactory.get() : null;
 	}
 
 	@Override

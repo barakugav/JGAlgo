@@ -33,7 +33,6 @@ import java.util.Set;
  * {@link GraphFactory#newBuilder()}, or use {@link GraphFactory#newBuilderCopyOf(Graph)} to create a builder
  * initialized with an existing graph vertices and edges.
  *
- *
  * @param  <V> the vertices type
  * @param  <E> the edges type
  * @see        GraphBuilder#undirected()
@@ -64,10 +63,45 @@ public interface GraphBuilder<V, E> {
 	 * A vertex can be any non null hashable object, namely it must implement the {@link Object#hashCode()} and
 	 * {@link Object#equals(Object)} methods. Duplicate vertices are not allowed.
 	 *
-	 * @param  vertex                   the new vertex
+	 * <p>
+	 * If there is a vertex builder, namely if {@link #vertexBuilder()} does not return {@code null}, the method
+	 * {@link #addVertex()} can be used, which uses the vertex builder to create the new vertex object instead of
+	 * requiring the user to provide it.
+	 *
+	 * @param  vertex                   new vertex
 	 * @throws IllegalArgumentException if {@code vertex} is already in the built graph
+	 * @throws NullPointerException     if {@code vertex} is {@code null}
 	 */
 	void addVertex(V vertex);
+
+	/**
+	 * Add a new vertex to the built graph, using the vertex builder.
+	 *
+	 * <p>
+	 * Unlike {@link #addVertex(Object)} in which the vertex is provided by the user, this method uses the vertex
+	 * builder obtained by {@link #vertexBuilder()} to create the new vertex object and adds it to the graph.
+	 *
+	 * <p>
+	 * This method is equivalent to:
+	 *
+	 * <pre> {@code
+	 * V vertex = vertexBuilder().build(vertices());
+	 * addVertex(vertex);
+	 * return vertex;
+	 * }</pre>
+	 *
+	 * @return                               the new vertex
+	 * @throws UnsupportedOperationException if the builder does not have a vertex builder, namely if
+	 *                                           {@link #vertexBuilder()} returns {@code null}
+	 */
+	default V addVertex() {
+		IdBuilder<V> vertexBuilder = vertexBuilder();
+		if (vertexBuilder == null)
+			throw new UnsupportedOperationException("No vertex builder");
+		V vertex = vertexBuilder.build(vertices());
+		addVertex(vertex);
+		return vertex;
+	}
 
 	/**
 	 * Add multiple vertices to the built graph.
@@ -84,21 +118,68 @@ public interface GraphBuilder<V, E> {
 	void addVertices(Collection<? extends V> vertices);
 
 	/**
-	 * Add a new edge to the graph.
+	 * Add a new edge to the built graph.
 	 *
 	 * <p>
-	 * If the graph does not support self or parallel edges and the added edge is such edge, an exception will
+	 * If the built graph does not support self or parallel edges and the added edge is such edge, an exception will
 	 * <b>not</b> be thrown. The edges are validated only when the graph is built, and an exception will be thrown only
 	 * then.
 	 *
-	 * @param  source                   the source vertex of the new edge
-	 * @param  target                   the target vertex of the new edge
-	 * @param  edge                     the new edge
-	 * @throws IllegalArgumentException if {@code edge} is already in the graph
+	 * <p>
+	 * An edge can be any non null hashable object, namely it must implement the {@link Object#hashCode()} and
+	 * {@link Object#equals(Object)} methods. Duplicate edges are not allowed.
+	 *
+	 * <p>
+	 * If there is an edge builder, namely if {@link #edgeBuilder()} does not return {@code null}, the method
+	 * {@link #addEdge(Object, Object)} can be used, which uses the edge builder to create the new edge object instead
+	 * of requiring the user to provide it.
+	 *
+	 * @param  source                   a source vertex
+	 * @param  target                   a target vertex
+	 * @param  edge                     a new edge identifier
+	 * @throws IllegalArgumentException if {@code edge} is already in the built graph
 	 * @throws NullPointerException     if {@code edge} is {@code null}, as {@code null} identifiers are not allowed
 	 * @throws NoSuchVertexException    if {@code source} or {@code target} are not vertices in the graph
 	 */
 	void addEdge(V source, V target, E edge);
+
+	/**
+	 * Add a new edge to the built graph, using the edge builder.
+	 *
+	 * <p>
+	 * Unlike {@link #addEdge(Object, Object, Object)} in which the edge (identifier) is provided by the user, this
+	 * method uses the edge builder obtained by {@link #edgeBuilder()} to create the new edge object and adds it to the
+	 * graph.
+	 *
+	 * <p>
+	 * If the built graph does not support self or parallel edges and the added edge is such edge, an exception will
+	 * <b>not</b> be thrown. The edges are validated only when the graph is built, and an exception will be thrown only
+	 * then.
+	 *
+	 * <p>
+	 * This method is equivalent to:
+	 *
+	 * <pre> {@code
+	 * E edge = edgeBuilder().build(edges());
+	 * addEdge(source, target, edge);
+	 * return edge;
+	 * }</pre>
+	 *
+	 * @param  source                        a source vertex
+	 * @param  target                        a target vertex
+	 * @return                               the new edge
+	 * @throws UnsupportedOperationException if the builder does not have an edge builder, namely if
+	 *                                           {@link #edgeBuilder()} returns {@code null}
+	 * @throws NoSuchVertexException         if {@code source} or {@code target} are not valid vertices identifiers
+	 */
+	default E addEdge(V source, V target) {
+		IdBuilder<E> edgeBuilder = edgeBuilder();
+		if (edgeBuilder == null)
+			throw new UnsupportedOperationException("No edge builder");
+		E edge = edgeBuilder.build(edges());
+		addEdge(source, target, edge);
+		return edge;
+	}
 
 	/**
 	 * Add multiple edges to the built graph.
@@ -280,6 +361,31 @@ public interface GraphBuilder<V, E> {
 	 * Clear the builder by removing all vertices and edges added to it.
 	 */
 	void clear();
+
+	/**
+	 * Get the vertex builder of this builder.
+	 *
+	 * <p>
+	 * The vertex builder is used to create new vertices during the execution of {@link #addVertex()}, in which the
+	 * vertex identifier is not provided by the user. No vertex builder necessarily exists, and this method may return a
+	 * {@code null} value. In that case, {@link #addVertex()} cannot be used, only {@link #addVertex(Object)}.
+	 *
+	 * @return the vertex builder, or {@code null} if the there is no vertex builder
+	 */
+	IdBuilder<V> vertexBuilder();
+
+	/**
+	 * Get the edge builder of this builder.
+	 *
+	 * <p>
+	 * The edge builder is used to create new edges during the execution of {@link #addEdge(Object, Object)}, in which
+	 * the edge identifier is not provided by the user. No edge builder necessarily exists, and this method may return a
+	 * {@code null} value. In that case, {@link #addEdge(Object, Object)} cannot be used, only
+	 * {@link #addEdge(Object, Object, Object)}.
+	 *
+	 * @return the edge builder, or {@code null} if the there is no edge builder
+	 */
+	IdBuilder<E> edgeBuilder();
 
 	/**
 	 * Check if the graph built by this builder is directed or undirected.

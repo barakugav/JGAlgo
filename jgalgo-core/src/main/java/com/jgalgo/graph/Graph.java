@@ -199,7 +199,7 @@ public interface Graph<V, E> {
 	default V addVertex() {
 		IdBuilder<V> vertexBuilder = vertexBuilder();
 		if (vertexBuilder == null)
-			throw new UnsupportedOperationException("Graph does not have a vertex builder");
+			throw new UnsupportedOperationException("No vertex builder");
 		V vertex = vertexBuilder.build(vertices());
 		addVertex(vertex);
 		return vertex;
@@ -394,7 +394,7 @@ public interface Graph<V, E> {
 	default E addEdge(V source, V target) {
 		IdBuilder<E> edgeBuilder = edgeBuilder();
 		if (edgeBuilder == null)
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException("No edge builder");
 		E edge = edgeBuilder.build(edges());
 		addEdge(source, target, edge);
 		return edge;
