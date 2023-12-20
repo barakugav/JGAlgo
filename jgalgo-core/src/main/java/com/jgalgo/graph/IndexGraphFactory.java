@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import java.util.function.Supplier;
+
 /**
  * A factory for {@linkplain IndexGraph Index graphs}.
  *
@@ -117,6 +119,18 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	}
 
 	/**
+	 * Unsupported operation, index graphs does not support custom vertex builder.
+	 *
+	 * @throws     UnsupportedOperationException always
+	 * @deprecated                               Index graphs does not support custom vertex builder
+	 */
+	@Deprecated
+	@Override
+	default IndexGraphFactory setVertexFactory(Supplier<? extends IdBuilder<Integer>> vertexFactory) {
+		throw new UnsupportedOperationException("Index graphs does not support custom vertex builder");
+	}
+
+	/**
 	 * Unsupported operation, index graphs does not support custom edge builder.
 	 *
 	 * @throws     UnsupportedOperationException always
@@ -125,6 +139,18 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	@Deprecated
 	@Override
 	default IndexGraphFactory setEdgeBuilder(IdBuilder<Integer> edgeBuilder) {
+		throw new UnsupportedOperationException("Index graphs does not support custom edge builder");
+	}
+
+	/**
+	 * Unsupported operation, index graphs does not support custom edge builder.
+	 *
+	 * @throws     UnsupportedOperationException always
+	 * @deprecated                               Index graphs does not support custom edge builder
+	 */
+	@Deprecated
+	@Override
+	default IndexGraphFactory setEdgeFactory(Supplier<? extends IdBuilder<Integer>> edgeFactory) {
 		throw new UnsupportedOperationException("Index graphs does not support custom edge builder");
 	}
 

@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import java.util.function.Supplier;
+
 /**
  * A factory for {@link IntGraph} objects.
  *
@@ -90,7 +92,12 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	 * to each new vertex by incrementing the counter until there is no vertex with that id.
 	 */
 	@Override
-	IntGraphFactory setVertexBuilder(IdBuilder<Integer> vertexBuilder);
+	default IntGraphFactory setVertexBuilder(IdBuilder<Integer> vertexBuilder) {
+		return (IntGraphFactory) GraphFactory.super.setVertexBuilder(vertexBuilder);
+	}
+
+	@Override
+	IntGraphFactory setVertexFactory(Supplier<? extends IdBuilder<Integer>> vertexFactory);
 
 	/**
 	 * {@inheritDoc}
@@ -99,7 +106,12 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	 * to each new edge by incrementing the counter until there is no edge with that id.
 	 */
 	@Override
-	IntGraphFactory setEdgeBuilder(IdBuilder<Integer> edgeBuilder);
+	default IntGraphFactory setEdgeBuilder(IdBuilder<Integer> edgeBuilder) {
+		return (IntGraphFactory) GraphFactory.super.setEdgeBuilder(edgeBuilder);
+	}
+
+	@Override
+	IntGraphFactory setEdgeFactory(Supplier<? extends IdBuilder<Integer>> edgeFactory);
 
 	@Override
 	IntGraphFactory addHint(GraphFactory.Hint hint);

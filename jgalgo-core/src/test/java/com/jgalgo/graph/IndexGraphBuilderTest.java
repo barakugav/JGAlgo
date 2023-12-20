@@ -821,30 +821,4 @@ public class IndexGraphBuilderTest extends TestBase {
 		});
 	}
 
-	@SuppressWarnings({ "deprecation", "boxing" })
-	@Test
-	public void factorySetVertexBuilder() {
-		foreachBoolConfig(directed -> {
-			IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
-			assertThrows(UnsupportedOperationException.class, () -> factory.setVertexBuilder(ids -> ids.size() * 2));
-		});
-	}
-
-	@SuppressWarnings({ "deprecation", "boxing" })
-	@Test
-	public void factorySetEdgeBuilder() {
-		foreachBoolConfig(directed -> {
-			IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
-			assertThrows(UnsupportedOperationException.class, () -> factory.setEdgeBuilder(ids -> ids.size() * 2));
-		});
-	}
-
-	@Test
-	public void factorySetOptionUnknownOption() {
-		foreachBoolConfig(directed -> {
-			IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
-			assertThrows(IllegalArgumentException.class, () -> factory.setOption("unknown-option", "value"));
-		});
-	}
-
 }

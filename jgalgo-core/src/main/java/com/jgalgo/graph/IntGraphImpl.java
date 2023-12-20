@@ -41,8 +41,8 @@ class IntGraphImpl extends AbstractGraph<Integer, Integer> implements IntGraph {
 		eiMap = IndexIntIdMapImpl.newEmpty(indexGraph.edges(), true, factory.indexFactory.expectedEdgesNum);
 		viMap.initListeners(indexGraph);
 		eiMap.initListeners(indexGraph);
-		vertexBuilder = factory.vertexBuilder;
-		edgeBuilder = factory.edgeBuilder;
+		vertexBuilder = factory.vertexFactory != null ? factory.vertexFactory.get() : null;
+		edgeBuilder = factory.edgeFactory != null ? factory.edgeFactory.get() : null;
 	}
 
 	IntGraphImpl(IntGraphFactoryImpl factory, IndexGraph indexGraph, IndexIdMap<Integer> viMap,
@@ -56,8 +56,8 @@ class IntGraphImpl extends AbstractGraph<Integer, Integer> implements IntGraph {
 			this.viMap.initListeners(this.indexGraph);
 			this.eiMap.initListeners(this.indexGraph);
 		}
-		vertexBuilder = factory.vertexBuilder;
-		edgeBuilder = factory.edgeBuilder;
+		vertexBuilder = factory.vertexFactory != null ? factory.vertexFactory.get() : null;
+		edgeBuilder = factory.edgeFactory != null ? factory.edgeFactory.get() : null;
 	}
 
 	/* copy constructor */

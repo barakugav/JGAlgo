@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import java.util.function.Supplier;
+
 /**
  * A factory for {@link Graph} objects.
  *
@@ -209,7 +211,8 @@ public interface GraphFactory<V, E> {
 	 * <p>
 	 * The vertex builder is used by graphs to create new vertices when the user does not provide them explicitly, see
 	 * {@link Graph#addVertex()}. The same vertex builder will be used for all graphs built by this factory, and graphs
-	 * built by {@link GraphBuilder} created by this factory.
+	 * built by {@link GraphBuilder} created by this factory. If a different instance of a vertex builder is required
+	 * for each graph, consider using {@link #setVertexFactory(Supplier)} instead.
 	 *
 	 * <p>
 	 * By default, graphs built by this factory will not have a vertex builder, namely a {@code null} vertex builder.
@@ -217,7 +220,31 @@ public interface GraphFactory<V, E> {
 	 * @param  vertexBuilder the vertex builder, or {@code null} if no vertex builder should be used
 	 * @return               this factory
 	 */
-	GraphFactory<V, E> setVertexBuilder(IdBuilder<V> vertexBuilder);
+	default GraphFactory<V, E> setVertexBuilder(IdBuilder<V> vertexBuilder) {
+		if (vertexBuilder == null) {
+			setVertexFactory(null);
+		} else {
+			setVertexFactory(() -> vertexBuilder);
+		}
+		return this;
+	}
+
+	/**
+	 * Set the vertex factory which create builders for the vertices of the built graph(s).
+	 *
+	 * <p>
+	 * The vertex builder is used by graphs to create new vertices when the user does not provide them explicitly, see
+	 * {@link Graph#addVertex()}. The factory will be used to insatiate a new vertex builder for each graph built by
+	 * this factory, and graphs built by {@link GraphBuilder} created by this factory. If the same vertex builder can be
+	 * used for all graphs, consider using {@link #setVertexBuilder(IdBuilder)} instead.
+	 *
+	 * <p>
+	 * By default, graphs built by this factory will not have a vertex builder, namely a {@code null} vertex builder.
+	 *
+	 * @param  vertexFactory the vertex factory, or {@code null} if no vertex builder should be used
+	 * @return               this factory
+	 */
+	GraphFactory<V, E> setVertexFactory(Supplier<? extends IdBuilder<V>> vertexFactory);
 
 	/**
 	 * Set the edge builder used by the built graph(s).
@@ -225,7 +252,8 @@ public interface GraphFactory<V, E> {
 	 * <p>
 	 * The edge builder is used by graphs to create new edges when the user does not provide them explicitly, see
 	 * {@link Graph#addEdge(Object, Object)}. The same edge builder will be used for all graphs built by this factory,
-	 * and graphs built by {@link GraphBuilder} created by this factory.
+	 * and graphs built by {@link GraphBuilder} created by this factory. If a different instance of an edge builder is
+	 * required for each graph, consider using {@link #setEdgeFactory(Supplier)} instead.
 	 *
 	 * <p>
 	 * By default, graphs built by this factory will not have an edge builder, namely a {@code null} edge builder.
@@ -233,7 +261,31 @@ public interface GraphFactory<V, E> {
 	 * @param  edgeBuilder the edge builder, or {@code null} if no edge builder should be used
 	 * @return             this factory
 	 */
-	GraphFactory<V, E> setEdgeBuilder(IdBuilder<E> edgeBuilder);
+	default GraphFactory<V, E> setEdgeBuilder(IdBuilder<E> edgeBuilder) {
+		if (edgeBuilder == null) {
+			setEdgeFactory(null);
+		} else {
+			setEdgeFactory(() -> edgeBuilder);
+		}
+		return this;
+	}
+
+	/**
+	 * Set the edge factory which create builders for the edges of the built graph(s).
+	 *
+	 * <p>
+	 * The edge builder is used by graphs to create new edges when the user does not provide them explicitly, see
+	 * {@link Graph#addEdge(Object, Object)}. The factory will be used to insatiate a new edge builder for each graph
+	 * built by this factory, and graphs built by {@link GraphBuilder} created by this factory. If the same edge builder
+	 * can be used for all graphs, consider using {@link #setEdgeBuilder(IdBuilder)} instead.
+	 *
+	 * <p>
+	 * By default, graphs built by this factory will not have an edge builder, namely a {@code null} edge builder.
+	 *
+	 * @param  edgeFactory the edge factory, or {@code null} if no edge builder should be used
+	 * @return             this factory
+	 */
+	GraphFactory<V, E> setEdgeFactory(Supplier<? extends IdBuilder<E>> edgeFactory);
 
 	/**
 	 * Add a hint to this factory.

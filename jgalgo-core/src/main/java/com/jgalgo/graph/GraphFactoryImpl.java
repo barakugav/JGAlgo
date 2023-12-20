@@ -15,11 +15,13 @@
  */
 package com.jgalgo.graph;
 
+import java.util.function.Supplier;
+
 class GraphFactoryImpl<V, E> implements GraphFactory<V, E> {
 
 	final IndexGraphFactoryImpl indexFactory;
-	IdBuilder<V> vertexBuilder;
-	IdBuilder<E> edgeBuilder;
+	Supplier<? extends IdBuilder<V>> vertexFactory;
+	Supplier<? extends IdBuilder<E>> edgeFactory;
 
 	GraphFactoryImpl(boolean directed) {
 		this.indexFactory = new IndexGraphFactoryImpl(directed);
@@ -70,14 +72,14 @@ class GraphFactoryImpl<V, E> implements GraphFactory<V, E> {
 	}
 
 	@Override
-	public GraphFactory<V, E> setVertexBuilder(IdBuilder<V> vertexBuilder) {
-		this.vertexBuilder = vertexBuilder;
+	public GraphFactory<V, E> setVertexFactory(Supplier<? extends IdBuilder<V>> vertexFactory) {
+		this.vertexFactory = vertexFactory;
 		return this;
 	}
 
 	@Override
-	public GraphFactory<V, E> setEdgeBuilder(IdBuilder<E> edgeBuilder) {
-		this.edgeBuilder = edgeBuilder;
+	public GraphFactory<V, E> setEdgeFactory(Supplier<? extends IdBuilder<E>> edgeFactory) {
+		this.edgeFactory = edgeFactory;
 		return this;
 	}
 

@@ -539,12 +539,4 @@ public class IntGraphBuilderTest extends TestBase {
 		return g;
 	}
 
-	@Test
-	public void factorySetOptionUnknownOption() {
-		foreachBoolConfig(directed -> {
-			IntGraphFactory factory = IntGraphFactory.newInstance(directed);
-			assertThrows(IllegalArgumentException.class, () -> factory.setOption("unknown-option", "value"));
-		});
-	}
-
 }

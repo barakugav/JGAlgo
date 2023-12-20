@@ -15,14 +15,15 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Objects;
 import java.util.function.Supplier;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class IntGraphFactoryImpl implements IntGraphFactory {
 
 	final IndexGraphFactoryImpl indexFactory;
-	IdBuilderInt vertexBuilder = DefaultIdBuilder.get();
-	IdBuilderInt edgeBuilder = DefaultIdBuilder.get();
+	Supplier<IdBuilderInt> vertexFactory = DefaultIdBuilder;
+	Supplier<IdBuilderInt> edgeFactory = DefaultIdBuilder;
 
 	IntGraphFactoryImpl(boolean directed) {
 		this.indexFactory = new IndexGraphFactoryImpl(directed);
@@ -74,25 +75,35 @@ class IntGraphFactoryImpl implements IntGraphFactory {
 	}
 
 	@Override
-	public IntGraphFactory setVertexBuilder(IdBuilder<Integer> vertexBuilder) {
-		if (vertexBuilder == null) {
-			this.vertexBuilder = null;
-		} else if (vertexBuilder instanceof IdBuilderInt) {
-			this.vertexBuilder = (IdBuilderInt) vertexBuilder;
+	public IntGraphFactory setVertexFactory(Supplier<? extends IdBuilder<Integer>> vertexFactory) {
+		if (vertexFactory == null) {
+			this.vertexFactory = null;
 		} else {
-			this.vertexBuilder = existingIds -> vertexBuilder.build(existingIds).intValue();
+			this.vertexFactory = () -> {
+				IdBuilder<Integer> vertexBuilder = Objects.requireNonNull(vertexFactory.get());
+				if (vertexBuilder instanceof IdBuilderInt) {
+					return (IdBuilderInt) vertexBuilder;
+				} else {
+					return existingIds -> vertexBuilder.build(existingIds).intValue();
+				}
+			};
 		}
 		return this;
 	}
 
 	@Override
-	public IntGraphFactory setEdgeBuilder(IdBuilder<Integer> edgeBuilder) {
-		if (edgeBuilder == null) {
-			this.edgeBuilder = null;
-		} else if (edgeBuilder instanceof IdBuilderInt) {
-			this.edgeBuilder = (IdBuilderInt) edgeBuilder;
+	public IntGraphFactory setEdgeFactory(Supplier<? extends IdBuilder<Integer>> edgeFactory) {
+		if (edgeFactory == null) {
+			this.edgeFactory = null;
 		} else {
-			this.edgeBuilder = existingIds -> edgeBuilder.build(existingIds).intValue();
+			this.edgeFactory = () -> {
+				IdBuilder<Integer> edgeBuilder = Objects.requireNonNull(edgeFactory.get());
+				if (edgeBuilder instanceof IdBuilderInt) {
+					return (IdBuilderInt) edgeBuilder;
+				} else {
+					return existingIds -> edgeBuilder.build(existingIds).intValue();
+				}
+			};
 		}
 		return this;
 	}
