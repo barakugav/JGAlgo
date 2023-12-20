@@ -60,6 +60,10 @@ import com.jgalgo.graph.Graph;
  * The ValueGraph does associate a value with each edge, be it does not have to be unique, and it is more similar to
  * weights in JGAlgo graphs.
  *
+ * <p>
+ * For adapting the other way around, from Guava to JGAlgo, only from {@linkplain com.google.common.graph.Network Guava
+ * Network} is supported, see {@link GuavaNetworkWrapper}.
+ *
  * @see        com.jgalgo.graph.Graph
  * @see        com.google.common.graph.MutableGraph
  * @see        GuavaGraphAdapter

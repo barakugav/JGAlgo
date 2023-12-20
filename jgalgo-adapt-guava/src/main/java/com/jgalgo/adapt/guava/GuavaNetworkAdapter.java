@@ -57,9 +57,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * The ValueGraph does associate a value with each edge, be it does not have to be unique, and it is more similar to
  * weights in JGAlgo graphs.
  *
+ * <p>
+ * For adapting the other way around, from Guava Network to JGAlgo, see {@link GuavaNetworkWrapper}.
+ *
  * @see        com.jgalgo.graph.Graph
  * @see        com.google.common.graph.Network
  * @see        GuavaMutableNetworkAdapter
+ * @see        GuavaNetworkWrapper
  * @param  <V> the vertices type
  * @param  <E> the edges type
  * @author     Barak Ugav

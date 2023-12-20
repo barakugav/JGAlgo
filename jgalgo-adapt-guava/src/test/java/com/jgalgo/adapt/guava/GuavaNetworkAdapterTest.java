@@ -161,7 +161,6 @@ public class GuavaNetworkAdapterTest {
 		final Random rand = new Random(0xe5f4970282966bfdL);
 		for (boolean directed : BooleanList.of(false, true)) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
-			System.out.println(Graphs.selfEdges(gOrig));
 			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
 			for (Integer e : g.edges()) {

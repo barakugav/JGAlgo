@@ -30,7 +30,6 @@ import com.jgalgo.graph.IndexIdMap;
  * algorithm. The adapter is a live view, so any change in the JGAlgo graph is reflected in the Guava network and vice
  * versa, but the underlying JGAlgo graph should not be modified directly.
  *
- *
  * <p>
  * The {@linkplain com.google.common.graph.MutableNetwork mutable Guava network} is a mutable variant of the
  * {@linkplain com.google.common.graph.Network Guava value graph}. If mutability is not required, consider using the
@@ -53,9 +52,13 @@ import com.jgalgo.graph.IndexIdMap;
  * The ValueGraph does associate a value with each edge, be it does not have to be unique, and it is more similar to
  * weights in JGAlgo graphs.
  *
+ * <p>
+ * For adapting the other way around, from Guava Network to JGAlgo, see {@link GuavaNetworkWrapper}.
+ *
  * @see        com.jgalgo.graph.Graph
  * @see        com.google.common.graph.MutableNetwork
  * @see        GuavaNetworkAdapter
+ * @see        GuavaNetworkWrapper
  * @param  <V> the vertices type
  * @param  <E> the edges type
  * @author     Barak Ugav
