@@ -70,4 +70,14 @@ public class GraphFactoryTest extends TestBase {
 		});
 	}
 
+	@Test
+	public void setDirected() {
+		foreachBoolConfig(directed -> {
+			GraphFactory<Integer, Integer> factory = GraphFactory.newInstance(directed);
+			assertEqualsBool(directed, factory.newGraph().isDirected());
+			factory.setDirected(!directed);
+			assertEqualsBool(!directed, factory.newGraph().isDirected());
+		});
+	}
+
 }

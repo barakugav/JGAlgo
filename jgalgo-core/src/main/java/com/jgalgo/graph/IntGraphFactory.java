@@ -64,6 +64,9 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	IntGraphBuilder newBuilderCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights, boolean copyEdgesWeights);
 
 	@Override
+	IntGraphFactory setDirected(boolean directed);
+
+	@Override
 	default IntGraphFactory allowSelfEdges() {
 		return (IntGraphFactory) GraphFactory.super.allowSelfEdges();
 	}

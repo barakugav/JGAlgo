@@ -85,6 +85,9 @@ public interface IndexGraphFactory extends IntGraphFactory {
 			boolean copyEdgesWeights);
 
 	@Override
+	IndexGraphFactory setDirected(boolean directed);
+
+	@Override
 	default IndexGraphFactory allowSelfEdges() {
 		return (IndexGraphFactory) IntGraphFactory.super.allowSelfEdges();
 	}

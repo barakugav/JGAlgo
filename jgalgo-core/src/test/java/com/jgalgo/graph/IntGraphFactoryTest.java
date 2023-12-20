@@ -72,6 +72,16 @@ public class IntGraphFactoryTest extends TestBase {
 	}
 
 	@Test
+	public void setDirected() {
+		foreachBoolConfig(directed -> {
+			IntGraphFactory factory = IntGraphFactory.newInstance(directed);
+			assertEqualsBool(directed, factory.newGraph().isDirected());
+			factory.setDirected(!directed);
+			assertEqualsBool(!directed, factory.newGraph().isDirected());
+		});
+	}
+
+	@Test
 	public void setVertexFactory() {
 		Supplier<IdBuilderInt> vertexFactory = () -> existingIds -> existingIds.size() + 11;
 		IntGraphFactory factory = IntGraphFactory.directed();

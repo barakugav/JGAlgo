@@ -48,6 +48,12 @@ class GraphFactoryImpl<V, E> implements GraphFactory<V, E> {
 	}
 
 	@Override
+	public GraphFactory<V, E> setDirected(boolean directed) {
+		indexFactory.setDirected(directed);
+		return this;
+	}
+
+	@Override
 	public GraphFactory<V, E> allowSelfEdges(boolean selfEdges) {
 		indexFactory.allowSelfEdges(selfEdges);
 		return this;

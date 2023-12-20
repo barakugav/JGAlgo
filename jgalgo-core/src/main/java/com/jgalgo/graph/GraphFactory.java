@@ -137,6 +137,21 @@ public interface GraphFactory<V, E> {
 	GraphBuilder<V, E> newBuilderCopyOf(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights);
 
 	/**
+	 * Determine if graphs built by this factory should be directed.
+	 *
+	 * <p>
+	 * Usually the factory will be created using either {@link #directed()} or {@link #undirected()}, and there will be
+	 * no need to call this method. However, it is sometimes useful use the same factory to build both directed and
+	 * undirected graphs, and this method can be used to change the factory configuration. For example, a factory can be
+	 * passed to a random graph generator, which can generated both directed and undirected graphs, depending on the
+	 * generator parameters.
+	 *
+	 * @param  directed if {@code true} graphs built by this factory will be directed, else they will be undirected
+	 * @return          this factory
+	 */
+	GraphFactory<V, E> setDirected(boolean directed);
+
+	/**
 	 * Change the config of this factory so that the built graphs will support self edges.
 	 *
 	 * <p>

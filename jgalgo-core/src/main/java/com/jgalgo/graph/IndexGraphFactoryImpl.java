@@ -20,7 +20,7 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 class IndexGraphFactoryImpl implements IndexGraphFactory {
 
-	final boolean directed;
+	private boolean directed;
 	private boolean selfEdges;
 	private boolean parallelEdges = true;
 	int expectedVerticesNum;
@@ -380,6 +380,12 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 		};
 		return csrImpl;
+	}
+
+	@Override
+	public IndexGraphFactory setDirected(boolean directed) {
+		this.directed = directed;
+		return this;
 	}
 
 	@Override

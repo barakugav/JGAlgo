@@ -61,6 +61,16 @@ public class IndexGraphFactoryTest extends TestBase {
 		});
 	}
 
+	@Test
+	public void setDirected() {
+		foreachBoolConfig(directed -> {
+			IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
+			assertEqualsBool(directed, factory.newGraph().isDirected());
+			factory.setDirected(!directed);
+			assertEqualsBool(!directed, factory.newGraph().isDirected());
+		});
+	}
+
 	@SuppressWarnings("deprecation")
 	@Test
 	public void setVertexFactory() {

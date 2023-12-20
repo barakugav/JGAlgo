@@ -51,6 +51,12 @@ class IntGraphFactoryImpl implements IntGraphFactory {
 	}
 
 	@Override
+	public IntGraphFactory setDirected(boolean directed) {
+		indexFactory.setDirected(directed);
+		return this;
+	}
+
+	@Override
 	public IntGraphFactory allowSelfEdges(boolean selfEdges) {
 		indexFactory.allowSelfEdges(selfEdges);
 		return this;
