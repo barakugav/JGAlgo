@@ -57,6 +57,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
+@SuppressWarnings("boxing")
 public class GuavaNetworkWrapperTest {
 
 	@Test
