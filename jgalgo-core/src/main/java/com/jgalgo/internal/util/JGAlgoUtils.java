@@ -28,6 +28,7 @@ import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 import java.util.concurrent.RecursiveTask;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.IntUnaryOperator;
 import java.util.function.Supplier;
 import it.unimi.dsi.fastutil.PriorityQueue;
@@ -238,7 +239,7 @@ public class JGAlgoUtils {
 		return null;
 	}
 
-	public static class Variant {
+	private static class Variant {
 
 		final Object val;
 
@@ -250,32 +251,41 @@ public class JGAlgoUtils {
 			return type.isInstance(val);
 		}
 
-		public <E> E get(Class<E> type) {
+		public <T> T get(Class<T> type) {
 			return getOptional(type).get();
 		}
 
 		@SuppressWarnings("unchecked")
-		public <E> Optional<E> getOptional(Class<E> type) {
-			return contains(type) ? Optional.of((E) val) : Optional.empty();
+		public <T> Optional<T> getOptional(Class<T> type) {
+			return contains(type) ? Optional.of((T) val) : Optional.empty();
+		}
+	}
+
+	public static class Variant2<A, B> extends Variant {
+
+		private final boolean isA;
+
+		private Variant2(Object val, boolean isA) {
+			super(val);
+			this.isA = isA;
 		}
 
-		@SuppressWarnings("unused")
-		public static class Of2<A, B> extends Variant {
-
-			private Of2(Object val) {
-				super(val);
-			}
-
-			public static <A, B> Variant.Of2<A, B> withA(A val) {
-				return new Variant.Of2<>(val);
-			}
-
-			public static <A, B> Variant.Of2<A, B> withB(B val) {
-				return new Variant.Of2<>(val);
-			}
-
+		public static <A, B> Variant2<A, B> ofA(A val) {
+			return new Variant2<>(val, true);
 		}
 
+		public static <A, B> Variant2<A, B> ofB(B val) {
+			return new Variant2<>(val, false);
+		}
+
+		@SuppressWarnings("unchecked")
+		public <R> R map(Function<A, R> a, Function<B, R> b) {
+			if (isA) {
+				return a.apply((A) val);
+			} else {
+				return b.apply((B) val);
+			}
+		}
 	}
 
 	public static long longPack(int low, int high) {

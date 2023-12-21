@@ -16,15 +16,20 @@
 package com.jgalgo.internal.util;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.Optional;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 
-public class UtilsTest extends TestBase {
+public class JGAlgoUtilsTest extends TestBase {
 
 	@Test
-	public void testEqualRange() {
+	public void equalRange() {
 		final long seed = 0xde27d22e9c129139L;
 		Random rand = new Random(seed);
 		for (int iters = 100; iters-- > 0;) {
@@ -63,6 +68,28 @@ public class UtilsTest extends TestBase {
 				assertEquals(rangeExpected, rangeActual);
 			}
 		}
+	}
+
+	@Test
+	public void variant2OfA() {
+		Variant2<String, Integer> v = Variant2.ofA("hello");
+		assertTrue(v.contains(String.class));
+		assertFalse(v.contains(Integer.class));
+		assertNotEquals(Optional.empty(), v.getOptional(String.class));
+		assertEquals(Optional.empty(), v.getOptional(Integer.class));
+		assertEquals("hello", v.get(String.class));
+		assertEquals("hello", v.map(s -> s, x -> String.valueOf(x)));
+	}
+
+	@Test
+	public void variant2OfB() {
+		Variant2<String, Integer> v = Variant2.ofB(Integer.valueOf(55));
+		assertFalse(v.contains(String.class));
+		assertTrue(v.contains(Integer.class));
+		assertEquals(Optional.empty(), v.getOptional(String.class));
+		assertNotEquals(Optional.empty(), v.getOptional(Integer.class));
+		assertEquals(55, v.get(Integer.class));
+		assertEquals("55", v.map(s -> s, x -> String.valueOf(x)));
 	}
 
 }

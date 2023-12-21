@@ -17,14 +17,14 @@ package com.jgalgo.graph;
 
 import java.util.Optional;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils.Variant;
+import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 
 class GraphCsrDirectedReindexed extends GraphCsrBase {
 
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
-	private GraphCsrDirectedReindexed(Variant.Of2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder,
+	private GraphCsrDirectedReindexed(Variant2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder,
 			BuilderProcessEdgesDirected processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(true, graphOrBuilder, processEdges, edgesReIndexing, copyVerticesWeights, copyEdgesWeights);
@@ -65,16 +65,16 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 	}
 
 	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraphBuilderImpl.Artifacts builder) {
-		return newInstance(Variant.Of2.withB(builder), true, true);
+		return newInstance(Variant2.ofB(builder), true, true);
 	}
 
 	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
-		return newInstance(Variant.Of2.withA(g), copyVerticesWeights, copyEdgesWeights);
+		return newInstance(Variant2.ofA(g), copyVerticesWeights, copyEdgesWeights);
 	}
 
 	private static IndexGraphBuilder.ReIndexedGraph newInstance(
-			Variant.Of2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder, boolean copyVerticesWeights,
+			Variant2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 		GraphCsrBase.BuilderProcessEdgesDirected processEdges =
 				new GraphCsrBase.BuilderProcessEdgesDirected(graphOrBuilder);
