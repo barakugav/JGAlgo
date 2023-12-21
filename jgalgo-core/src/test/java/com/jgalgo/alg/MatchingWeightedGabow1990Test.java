@@ -18,10 +18,10 @@ package com.jgalgo.alg;
 
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.gen.CompleteGraphGenerator;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IdBuilderInt;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.TestBase;
 
@@ -47,9 +47,8 @@ public class MatchingWeightedGabow1990Test extends TestBase {
 
 	@Test
 	public void testRandBipartiteGraphsWeightedPerfect() {
-		CompleteGraphGenerator<Integer, Integer> gen = CompleteGraphGenerator.newInstance();
-		gen.setVertices(range(10));
-		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		CompleteGraphGenerator<Integer, Integer> gen = new CompleteGraphGenerator<>();
+		gen.vertices(range(10)).edges(IdBuilderInt.defaultBuilder());
 		Graph<Integer, Integer> g = gen.generate();
 		WeightFunction<Integer> w = e -> 5;
 

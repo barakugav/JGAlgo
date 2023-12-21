@@ -18,7 +18,6 @@ package com.jgalgo.graph;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 import com.jgalgo.gen.GnmBipartiteGraphGenerator;
 import com.jgalgo.gen.GnmGraphGenerator;
 import com.jgalgo.gen.UniformTreeGenerator;
@@ -52,13 +51,9 @@ public class GraphsTestUtils extends TestUtils {
 	public static Graph<Integer, Integer> randGraph(int n, int m, boolean directed, boolean selfEdges,
 			boolean parallelEdges, boolean intGraph, long seed) {
 		GnmGraphGenerator<Integer, Integer> gen =
-				intGraph ? GnmGraphGenerator.newInstance() : GnmGraphGenerator.newIntInstance();
-		gen.setSeed(seed);
-		gen.setDirected(directed);
-		gen.setSelfEdges(selfEdges);
-		gen.setParallelEdges(parallelEdges);
-		gen.setVertices(range(n));
-		gen.setEdges(m, new AtomicInteger()::getAndIncrement);
+				intGraph ? new GnmGraphGenerator<>(IntGraphFactory.undirected()) : new GnmGraphGenerator<>();
+		gen.seed(seed).directed(directed).selfEdges(selfEdges).parallelEdges(parallelEdges);
+		gen.vertices(range(n)).edges(m, IdBuilderInt.defaultBuilder());
 		return gen.generateMutable();
 	}
 
@@ -79,11 +74,11 @@ public class GraphsTestUtils extends TestUtils {
 
 		Graph<Integer, Integer> g;
 		if (!directed) {
-			UniformTreeGenerator<Integer, Integer> gen =
-					rand.nextBoolean() ? UniformTreeGenerator.newInstance() : UniformTreeGenerator.newIntInstance();
-			gen.setSeed(rand.nextLong() ^ 0xb14ff0d42e1e9f91L);
-			gen.setVertices(range(n));
-			gen.setEdges(new AtomicInteger()::getAndIncrement);
+			UniformTreeGenerator<Integer, Integer> gen = rand.nextBoolean() ? new UniformTreeGenerator<>()
+					: new UniformTreeGenerator<>(IntGraphFactory.undirected());
+			gen.seed(rand.nextLong() ^ 0xb14ff0d42e1e9f91L);
+			gen.vertices(range(n));
+			gen.edges(IdBuilderInt.defaultBuilder());
 			g = graphFactory.newCopyOf(gen.generateMutable(), true, true);
 			if (g.edges().size() > m)
 				throw new IllegalArgumentException();
@@ -101,7 +96,7 @@ public class GraphsTestUtils extends TestUtils {
 					continue;
 				if (!parallelEdges && !edges.add(u > v ? JGAlgoUtils.longPack(u, v) : JGAlgoUtils.longPack(v, u)))
 					continue;
-				g.addEdge(u, v, g.edges().size());
+				g.addEdge(u, v, g.edges().size() + 1);
 			}
 
 		} else {
@@ -160,17 +155,17 @@ public class GraphsTestUtils extends TestUtils {
 	public static Graph<Integer, Integer> randBipartiteGraph(int n1, int n2, int m, boolean directed,
 			boolean parallelEdges, long seed) {
 		Random rand = new Random(seed ^ 0xffcc43f8e915afd3L);
-		GnmBipartiteGraphGenerator<Integer, Integer> gen = rand.nextBoolean() ? GnmBipartiteGraphGenerator.newInstance()
-				: GnmBipartiteGraphGenerator.newIntInstance();
-		gen.setSeed(rand.nextLong() ^ 0xc4d03e052f81a257L);
+		GnmBipartiteGraphGenerator<Integer, Integer> gen = rand.nextBoolean() ? new GnmBipartiteGraphGenerator<>()
+				: new GnmBipartiteGraphGenerator<>(IntGraphFactory.undirected());
+		gen.seed(rand.nextLong() ^ 0xc4d03e052f81a257L);
 		if (directed) {
-			gen.setDirectedAll();
+			gen.directedAll();
 		} else {
-			gen.setUndirected();
+			gen.undirected();
 		}
-		gen.setVertices(range(n1), range(n1, n1 + n2));
-		gen.setEdges(m, new AtomicInteger()::getAndIncrement);
-		gen.setParallelEdges(parallelEdges);
+		gen.vertices(range(n1), range(n1, n1 + n2));
+		gen.edges(m, IdBuilderInt.defaultBuilder());
+		gen.parallelEdges(parallelEdges);
 		return gen.generateMutable();
 	}
 
@@ -192,11 +187,11 @@ public class GraphsTestUtils extends TestUtils {
 
 	public static Graph<Integer, Integer> randTree(int n, long seed) {
 		Random rand = new Random(seed ^ 0xb7d49b2e6d194893L);
-		UniformTreeGenerator<Integer, Integer> gen =
-				rand.nextBoolean() ? UniformTreeGenerator.newInstance() : UniformTreeGenerator.newIntInstance();
-		gen.setSeed(rand.nextLong() ^ 0xce76e209073639caL);
-		gen.setVertices(range(n));
-		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		UniformTreeGenerator<Integer, Integer> gen = rand.nextBoolean() ? new UniformTreeGenerator<>()
+				: new UniformTreeGenerator<>(IntGraphFactory.undirected());
+		gen.seed(rand.nextLong() ^ 0xce76e209073639caL);
+		gen.vertices(range(n));
+		gen.edges(IdBuilderInt.defaultBuilder());
 		return gen.generateMutable();
 	}
 

@@ -27,73 +27,89 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IdBuilderInt;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.TestBase;
 
 public class GnmGraphGeneratorTest extends TestBase {
 
 	@Test
-	public void testVertices() {
+	public void vertices() {
 		final long seed = 0x2b73d420f1841822L;
-		GnmGraphGenerator<String, Integer> g = GnmGraphGenerator.newInstance();
-		g.setSeed(seed);
-		g.setEdges(5, new AtomicInteger()::getAndIncrement);
+		GnmGraphGenerator<String, Integer> g = new GnmGraphGenerator<>();
+		g.seed(seed);
+		g.edges(5, IdBuilderInt.defaultBuilder());
 
 		/* vertices were not set yet */
 		assertThrows(IllegalStateException.class, () -> g.generate());
 
-		g.setVertices(Set.of("a", "b", "c"));
+		g.vertices(Set.of("a", "b", "c"));
 		assertEquals(Set.of("a", "b", "c"), g.generate().vertices());
 		/* assert the vertices are reused */
 		assertEquals(Set.of("a", "b", "c"), g.generate().vertices());
 
 		AtomicInteger vertexId = new AtomicInteger();
-		g.setVertices(4, () -> String.valueOf(vertexId.getAndIncrement()));
+		g.vertices(4, existingIds -> String.valueOf(vertexId.getAndIncrement()));
 		assertEquals(Set.of("0", "1", "2", "3"), g.generate().vertices());
-		/* assert the vertices are reused */
-		assertEquals(Set.of("0", "1", "2", "3"), g.generate().vertices());
+		assertEquals(Set.of("4", "5", "6", "7"), g.generate().vertices());
+
+		g.vertices(5); /* default vertex builder */
+		assertThrows(IllegalStateException.class, () -> g.generate());
 	}
 
 	@SuppressWarnings("boxing")
 	@Test
-	public void testVerticesIntGraph() {
+	public void verticesIntGraph() {
 		final long seed = 0xb814112bc86db5e5L;
-		GnmGraphGenerator<Integer, Integer> g = GnmGraphGenerator.newIntInstance();
-		g.setSeed(seed);
-		g.setEdges(5, new AtomicInteger()::getAndIncrement);
+		GnmGraphGenerator<Integer, Integer> g = new GnmGraphGenerator<>(IntGraphFactory.undirected());
+		g.seed(seed);
+		g.edges(5, IdBuilderInt.defaultBuilder());
 
 		/* vertices were not set yet */
 		assertThrows(IllegalStateException.class, () -> g.generate());
 
-		g.setVertices(Set.of(17, 86, 5));
+		g.vertices(Set.of(17, 86, 5));
 		assertEquals(Set.of(17, 86, 5), g.generate().vertices());
 		/* assert the vertices are reused */
 		assertEquals(Set.of(17, 86, 5), g.generate().vertices());
 
 		AtomicInteger vertexId = new AtomicInteger();
-		g.setVertices(4, () -> vertexId.getAndIncrement());
+		g.vertices(4, existingIds -> vertexId.getAndIncrement());
 		assertEquals(Set.of(0, 1, 2, 3), g.generate().vertices());
-		/* assert the vertices are reused */
-		assertEquals(Set.of(0, 1, 2, 3), g.generate().vertices());
+		assertEquals(Set.of(4, 5, 6, 7), g.generate().vertices());
+
+		g.vertices(5); /* default vertex builder */
+		assertEquals(5, g.generate().vertices().size());
+
+		assertThrows(IllegalArgumentException.class, () -> g.vertices(-3));
 	}
 
 	@Test
-	public void testEdges() {
+	public void edges() {
 		foreachBoolConfig((intGraph, directed, selfEdges) -> {
 			final long seed = 0x247dbba1a14aabacL;
 			GnmGraphGenerator<Integer, Integer> g =
-					intGraph ? GnmGraphGenerator.newIntInstance() : GnmGraphGenerator.newInstance();
-			g.setSeed(seed);
-			g.setDirected(directed);
-			g.setSelfEdges(selfEdges);
-			g.setVertices(range(10));
+					intGraph ? new GnmGraphGenerator<>(IntGraphFactory.undirected()) : new GnmGraphGenerator<>();
+			g.seed(seed);
+			g.directed(directed);
+			g.selfEdges(selfEdges);
+			g.vertices(range(10));
 
 			/* edges were not set yet */
 			assertThrows(IllegalStateException.class, () -> g.generate());
 
-			g.setEdges(5, new AtomicInteger()::getAndIncrement);
+			g.edges(5, IdBuilderInt.defaultBuilder());
 			Graph<Integer, Integer> g1 = g.generate();
-			assertEquals(range(5), g1.edges());
+			assertEquals(range(1, 1 + 5), g1.edges());
+
+			g.edges(5); /* default vertex builder */
+			if (intGraph) {
+				assertEquals(5, g.generate().edges().size());
+			} else {
+				assertThrows(IllegalStateException.class, () -> g.generate());
+			}
 		});
 	}
 
@@ -102,20 +118,20 @@ public class GnmGraphGeneratorTest extends TestBase {
 		foreachBoolConfig(intGraph -> {
 			final long seed = 0x188be689e819c512L;
 			GnmGraphGenerator<Integer, Integer> g =
-					intGraph ? GnmGraphGenerator.newIntInstance() : GnmGraphGenerator.newInstance();
-			g.setSeed(seed);
-			g.setVertices(10, new AtomicInteger()::getAndIncrement);
-			g.setEdges(5, new AtomicInteger()::getAndIncrement);
+					intGraph ? new GnmGraphGenerator<>(IntGraphFactory.undirected()) : new GnmGraphGenerator<>();
+			g.seed(seed);
+			g.vertices(10, IdBuilderInt.defaultBuilder());
+			g.edges(5, IdBuilderInt.defaultBuilder());
 
 			/* check default */
 			assertFalse(g.generate().isDirected());
 
 			/* check directed */
-			g.setDirected(true);
+			g.directed(true);
 			assertTrue(g.generate().isDirected());
 
 			/* check undirected */
-			g.setDirected(false);
+			g.directed(false);
 			assertFalse(g.generate().isDirected());
 		});
 	}
@@ -124,13 +140,13 @@ public class GnmGraphGeneratorTest extends TestBase {
 	public void testEdgeNum() {
 		foreachBoolConfig(intGraph -> {
 			GnmGraphGenerator<Integer, Integer> g =
-					intGraph ? GnmGraphGenerator.newIntInstance() : GnmGraphGenerator.newInstance();
-			g.setVertices(5, new AtomicInteger()::getAndIncrement);
-			g.setParallelEdges(false);
-			assertThrows(IllegalArgumentException.class, () -> g.setEdges(-1, new AtomicInteger()::getAndIncrement));
-			g.setEdges(500, new AtomicInteger()::getAndIncrement);
+					intGraph ? new GnmGraphGenerator<>(IntGraphFactory.undirected()) : new GnmGraphGenerator<>();
+			g.vertices(5, IdBuilderInt.defaultBuilder());
+			g.parallelEdges(false);
+			assertThrows(IllegalArgumentException.class, () -> g.edges(-1, IdBuilderInt.defaultBuilder()));
+			g.edges(500, IdBuilderInt.defaultBuilder());
 			assertThrows(IllegalArgumentException.class, () -> g.generate());
-			g.setEdges(5, new AtomicInteger()::getAndIncrement);
+			g.edges(5, IdBuilderInt.defaultBuilder());
 			assertNotNull(g.generate());
 		});
 	}
@@ -140,22 +156,22 @@ public class GnmGraphGeneratorTest extends TestBase {
 		foreachBoolConfig(intGraph -> {
 			final long seed = 0x113bd1ca591efcd8L;
 			GnmGraphGenerator<Integer, Integer> g =
-					intGraph ? GnmGraphGenerator.newIntInstance() : GnmGraphGenerator.newInstance();
-			g.setSeed(seed);
-			g.setVertices(20, new AtomicInteger()::getAndIncrement);
-			g.setEdges(190, new AtomicInteger()::getAndIncrement);
+					intGraph ? new GnmGraphGenerator<>(IntGraphFactory.undirected()) : new GnmGraphGenerator<>();
+			g.seed(seed);
+			g.vertices(20, IdBuilderInt.defaultBuilder());
+			g.edges(190, IdBuilderInt.defaultBuilder());
 
 			/* check default */
 			Graph<Integer, Integer> g1 = g.generate();
 			assertFalse(g1.edges().stream().anyMatch(e -> g1.edgeSource(e).equals(g1.edgeTarget(e))));
 
 			/* check self-edges enabled */
-			g.setSelfEdges(true);
+			g.selfEdges(true);
 			Graph<Integer, Integer> g2 = g.generate();
 			assertTrue(g2.edges().stream().anyMatch(e -> g2.edgeSource(e).equals(g2.edgeTarget(e))));
 
 			/* check self-edges disabled */
-			g.setSelfEdges(false);
+			g.selfEdges(false);
 			Graph<Integer, Integer> g3 = g.generate();
 			assertFalse(g3.edges().stream().anyMatch(e -> g3.edgeSource(e).equals(g3.edgeTarget(e))));
 		});
@@ -166,13 +182,13 @@ public class GnmGraphGeneratorTest extends TestBase {
 		foreachBoolConfig((intGraph, directed, selfEdges) -> {
 			final long seed = 0x22026362f398235fL;
 			GnmGraphGenerator<Integer, Integer> g =
-					intGraph ? GnmGraphGenerator.newIntInstance() : GnmGraphGenerator.newInstance();
-			g.setSeed(seed);
-			g.setDirected(directed);
-			g.setSelfEdges(selfEdges);
+					intGraph ? new GnmGraphGenerator<>(IntGraphFactory.undirected()) : new GnmGraphGenerator<>();
+			g.seed(seed);
+			g.directed(directed);
+			g.selfEdges(selfEdges);
 
 			final int n = 4;
-			g.setVertices(n, new AtomicInteger()::getAndIncrement);
+			g.vertices(n, IdBuilderInt.defaultBuilder());
 
 			int maxNumberOfEdges = n * (n - 1);
 			if (!directed)
@@ -181,27 +197,27 @@ public class GnmGraphGeneratorTest extends TestBase {
 				maxNumberOfEdges += n;
 
 			/* check default */
-			g.setEdges(maxNumberOfEdges + 1, new AtomicInteger()::getAndIncrement);
+			g.edges(maxNumberOfEdges + 1, IdBuilderInt.defaultBuilder());
 			Graph<Integer, Integer> g1 = g.generate();
 			assertTrue(Graphs.containsParallelEdges(g1));
 
 			/* check parallel-edges disabled */
 			for (int repeat = 0; repeat < 20; repeat++) {
-				g.setParallelEdges(false);
-				g.setEdges(maxNumberOfEdges, new AtomicInteger()::getAndIncrement);
+				g.parallelEdges(false);
+				g.edges(maxNumberOfEdges, IdBuilderInt.defaultBuilder());
 				Graph<Integer, Integer> g2 = g.generate();
 				assertFalse(Graphs.containsParallelEdges(g2));
 			}
 
 			/* check parallel-edges enabled */
-			g.setParallelEdges(true);
-			g.setEdges(maxNumberOfEdges + 1, new AtomicInteger()::getAndIncrement);
+			g.parallelEdges(true);
+			g.edges(maxNumberOfEdges + 1, IdBuilderInt.defaultBuilder());
 			Graph<Integer, Integer> g3 = g.generate();
 			assertTrue(Graphs.containsParallelEdges(g3));
 
 			/* Too much edges to enforce non-parallel edges */
-			g.setParallelEdges(false);
-			g.setEdges(maxNumberOfEdges + 1, new AtomicInteger()::getAndIncrement);
+			g.parallelEdges(false);
+			g.edges(maxNumberOfEdges + 1, IdBuilderInt.defaultBuilder());
 			assertThrows(IllegalArgumentException.class, () -> g.generate());
 		});
 	}
@@ -212,14 +228,14 @@ public class GnmGraphGeneratorTest extends TestBase {
 		final Random rand = new Random(seed);
 		foreachBoolConfig((intGraph, directed, selfEdges, parallelEdges) -> {
 			GnmGraphGenerator<Integer, Integer> g =
-					intGraph ? GnmGraphGenerator.newIntInstance() : GnmGraphGenerator.newInstance();
-			g.setSeed(rand.nextLong());
-			g.setDirected(directed);
-			g.setSelfEdges(selfEdges);
-			g.setParallelEdges(parallelEdges);
+					intGraph ? new GnmGraphGenerator<>(IntGraphFactory.undirected()) : new GnmGraphGenerator<>();
+			g.seed(rand.nextLong());
+			g.directed(directed);
+			g.selfEdges(selfEdges);
+			g.parallelEdges(parallelEdges);
 
 			final int n = 100;
-			g.setVertices(n, new AtomicInteger()::getAndIncrement);
+			g.vertices(n, IdBuilderInt.defaultBuilder());
 
 			int maxNumberOfEdges = n * (n - 1);
 			if (!directed)
@@ -229,7 +245,7 @@ public class GnmGraphGeneratorTest extends TestBase {
 
 			for (int repeat = 50; repeat-- > 0;) {
 				final int m = rand.nextInt(maxNumberOfEdges + 1);
-				g.setEdges(m, new AtomicInteger()::getAndIncrement);
+				g.edges(m, IdBuilderInt.defaultBuilder());
 				Graph<Integer, Integer> g1 = g.generate();
 				assertEquals(n, g1.vertices().size());
 				assertEquals(m, g1.edges().size());
@@ -244,12 +260,20 @@ public class GnmGraphGeneratorTest extends TestBase {
 
 	@Test
 	public void emptyVerticesSetAndNonEmptyEdgeSet() {
-		GnmGraphGenerator<Integer, Integer> g = GnmGraphGenerator.newIntInstance();
-		g.setVertices(Set.of());
-		g.setEdges(6, new AtomicInteger()::getAndIncrement);
+		GnmGraphGenerator<Integer, Integer> g = new GnmGraphGenerator<>(IntGraphFactory.undirected());
+		g.vertices(Set.of());
+		g.edges(6, IdBuilderInt.defaultBuilder());
 		assertThrows(IllegalArgumentException.class, () -> g.generate());
-		g.setEdges(0, new AtomicInteger()::getAndIncrement);
+		g.edges(0, IdBuilderInt.defaultBuilder());
 		assertDoesNotThrow(() -> g.generate());
+	}
+
+	@Test
+	public void graphFactory() {
+		assertNotNull(new GnmGraphGenerator<>().graphFactory());
+		GraphFactory<Integer, Integer> gf = GraphFactory.undirected();
+		GnmGraphGenerator<Integer, Integer> g = new GnmGraphGenerator<>(gf);
+		assertTrue(gf == g.graphFactory());
 	}
 
 }

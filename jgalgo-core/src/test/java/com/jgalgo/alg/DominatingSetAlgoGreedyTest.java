@@ -20,6 +20,7 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.gen.EmptyGraphGenerator;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.TestBase;
 
 public class DominatingSetAlgoGreedyTest extends TestBase {
@@ -63,7 +64,7 @@ public class DominatingSetAlgoGreedyTest extends TestBase {
 	@Test
 	public void testRandEmptyGraph() {
 		DominatingSetAlgoGreedy algo = new DominatingSetAlgoGreedy();
-		Graph<Integer, Integer> g = EmptyGraphGenerator.newIntInstance().generate();
+		Graph<Integer, Integer> g = new EmptyGraphGenerator<>(IntGraphFactory.undirected()).generate();
 		Set<Integer> dominatingSet = algo.computeMinimumDominationSet(g, null);
 		assertEquals(Set.of(), dominatingSet);
 	}

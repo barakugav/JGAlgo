@@ -18,6 +18,7 @@ package com.jgalgo.gen;
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Optional;
@@ -27,65 +28,85 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.alg.BipartiteGraphs;
 import com.jgalgo.alg.VertexBiPartition;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IdBuilderInt;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.TestBase;
 
 public class GnpBipartiteGraphGeneratorTest extends TestBase {
 
 	@Test
-	public void testVertices() {
-		GnpBipartiteGraphGenerator<String, Integer> g = GnpBipartiteGraphGenerator.newInstance();
-		g.setSeed(0xf28cd577e4d753b2L);
-		g.setEdges(new AtomicInteger()::getAndIncrement);
+	public void vertices() {
+		GnpBipartiteGraphGenerator<String, Integer> g = new GnpBipartiteGraphGenerator<>();
+		g.seed(0xf28cd577e4d753b2L);
+		g.edges(IdBuilderInt.defaultBuilder());
 
 		/* vertices were not set yet */
 		assertThrows(IllegalStateException.class, () -> g.generate());
 
-		g.setVertices(Set.of("a", "b"), Set.of("c", "d"));
+		g.vertices(Set.of("a", "b"), Set.of("c", "d"));
 		assertEquals(Set.of("a", "b", "c", "d"), g.generate().vertices());
+		/* assert the vertices are reused */
 		assertEquals(Set.of("a", "b", "c", "d"), g.generate().vertices());
 
 		AtomicInteger vertexId = new AtomicInteger();
-		g.setVertices(2, 2, () -> String.valueOf(vertexId.getAndIncrement()));
+		g.vertices(2, 2, existingIds -> String.valueOf(vertexId.getAndIncrement()));
 		assertEquals(Set.of("0", "1", "2", "3"), g.generate().vertices());
-		assertEquals(Set.of("0", "1", "2", "3"), g.generate().vertices());
+		assertEquals(Set.of("4", "5", "6", "7"), g.generate().vertices());
+
+		g.vertices(5, 4); /* default vertex builder */
+		assertThrows(IllegalStateException.class, () -> g.generate());
 	}
 
 	@SuppressWarnings("boxing")
 	@Test
-	public void testVerticesIntGraph() {
+	public void verticesIntGraph() {
 		final long seed = 0x5aa45d619a1262edL;
-		GnpBipartiteGraphGenerator<Integer, Integer> g = GnpBipartiteGraphGenerator.newIntInstance();
-		g.setSeed(seed);
-		g.setEdges(new AtomicInteger()::getAndIncrement);
+		GnpBipartiteGraphGenerator<Integer, Integer> g = new GnpBipartiteGraphGenerator<>(IntGraphFactory.undirected());
+		g.seed(seed);
+		g.edges(IdBuilderInt.defaultBuilder());
 
 		/* vertices were not set yet */
 		assertThrows(IllegalStateException.class, () -> g.generate());
 
-		g.setVertices(Set.of(17, 86), Set.of(5, 55));
+		g.vertices(Set.of(17, 86), Set.of(5, 55));
 		assertEquals(Set.of(17, 86, 5, 55), g.generate().vertices());
+		/* assert the vertices are reused */
 		assertEquals(Set.of(17, 86, 5, 55), g.generate().vertices());
 
 		AtomicInteger vertexId = new AtomicInteger();
-		g.setVertices(2, 3, () -> vertexId.getAndIncrement());
+		g.vertices(2, 3, existingIds -> vertexId.getAndIncrement());
 		assertEquals(Set.of(0, 1, 2, 3, 4), g.generate().vertices());
-		assertEquals(Set.of(0, 1, 2, 3, 4), g.generate().vertices());
+		assertEquals(Set.of(5, 6, 7, 8, 9), g.generate().vertices());
+
+		g.vertices(5, 4); /* default vertex builder */
+		assertEquals(9, g.generate().vertices().size());
+
+		assertThrows(IllegalArgumentException.class, () -> g.vertices(-3, 3));
+		assertThrows(IllegalArgumentException.class, () -> g.vertices(3, -3));
 	}
 
 	@Test
-	public void testEdges() {
+	public void edges() {
 		final long seed = 0x66054b864cf83d5dL;
 		foreachBoolConfig(intGraph -> {
 			GnpBipartiteGraphGenerator<Integer, Integer> g =
-					intGraph ? GnpBipartiteGraphGenerator.newIntInstance() : GnpBipartiteGraphGenerator.newInstance();
-			g.setSeed(seed);
-			g.setVertices(range(5), range(5, 10));
+					intGraph ? new GnpBipartiteGraphGenerator<>(IntGraphFactory.undirected())
+							: new GnpBipartiteGraphGenerator<>();
+			g.seed(seed);
+			g.vertices(range(5), range(5, 10));
 
 			/* edges were not set yet */
-			assertThrows(IllegalStateException.class, () -> g.generate());
+			if (!intGraph) {
+				assertThrows(IllegalStateException.class, () -> g.generate());
+			} else {
+				/* int graph factory should have a default id builder */
+				assertNotNull(g.generate());
+			}
 
-			g.setEdges(new AtomicInteger()::getAndIncrement);
+			g.edges(IdBuilderInt.defaultBuilder());
 			Graph<Integer, Integer> g1 = g.generate();
-			assertEquals(range(g1.edges().size()), g1.edges());
+			assertEquals(range(1, 1 + g1.edges().size()), g1.edges());
 		});
 	}
 
@@ -94,10 +115,11 @@ public class GnpBipartiteGraphGeneratorTest extends TestBase {
 		final long seed = 0xa42a8b1ef0ba4412L;
 		foreachBoolConfig(intGraph -> {
 			GnpBipartiteGraphGenerator<Integer, Integer> g =
-					intGraph ? GnpBipartiteGraphGenerator.newIntInstance() : GnpBipartiteGraphGenerator.newInstance();
-			g.setSeed(seed);
-			g.setVertices(6, 4, new AtomicInteger()::getAndIncrement);
-			g.setEdges(new AtomicInteger()::getAndIncrement);
+					intGraph ? new GnpBipartiteGraphGenerator<>(IntGraphFactory.undirected())
+							: new GnpBipartiteGraphGenerator<>();
+			g.seed(seed);
+			g.vertices(6, 4, IdBuilderInt.defaultBuilder());
+			g.edges(IdBuilderInt.defaultBuilder());
 
 			/* check default */
 			Graph<Integer, Integer> g1 = g.generate();
@@ -113,7 +135,7 @@ public class GnpBipartiteGraphGeneratorTest extends TestBase {
 			}
 
 			/* check directed all */
-			g.setDirectedAll();
+			g.directedAll();
 			Graph<Integer, Integer> g2 = g.generate();
 			assertTrue(g2.isDirected());
 			assertTrue(BipartiteGraphs.isBipartite(g2));
@@ -127,7 +149,7 @@ public class GnpBipartiteGraphGeneratorTest extends TestBase {
 			}
 
 			/* check undirected */
-			g.setUndirected();
+			g.undirected();
 			Graph<Integer, Integer> g3 = g.generate();
 			assertFalse(g3.isDirected());
 			assertTrue(BipartiteGraphs.isBipartite(g3));
@@ -141,7 +163,7 @@ public class GnpBipartiteGraphGeneratorTest extends TestBase {
 			}
 
 			/* check directed with edges left to right */
-			g.setDirectedLeftToRight();
+			g.directedLeftToRight();
 			Graph<Integer, Integer> g4 = g.generate();
 			assertTrue(g4.isDirected());
 			assertTrue(BipartiteGraphs.isBipartite(g4));
@@ -154,7 +176,7 @@ public class GnpBipartiteGraphGeneratorTest extends TestBase {
 			}
 
 			/* check directed with edges right to left */
-			g.setDirectedRightToLeft();;
+			g.directedRightToLeft();;
 			Graph<Integer, Integer> g5 = g.generate();
 			assertTrue(g5.isDirected());
 			assertTrue(BipartiteGraphs.isBipartite(g5));
@@ -172,10 +194,11 @@ public class GnpBipartiteGraphGeneratorTest extends TestBase {
 	public void testEdgeProbabilities() {
 		foreachBoolConfig(intGraph -> {
 			GnpBipartiteGraphGenerator<Integer, Integer> g =
-					intGraph ? GnpBipartiteGraphGenerator.newIntInstance() : GnpBipartiteGraphGenerator.newInstance();
-			assertThrows(IllegalArgumentException.class, () -> g.setEdgeProbability(1.1));
-			assertThrows(IllegalArgumentException.class, () -> g.setEdgeProbability(-0.1));
-			g.setEdgeProbability(0.5);
+					intGraph ? new GnpBipartiteGraphGenerator<>(IntGraphFactory.undirected())
+							: new GnpBipartiteGraphGenerator<>();
+			assertThrows(IllegalArgumentException.class, () -> g.edgeProbability(1.1));
+			assertThrows(IllegalArgumentException.class, () -> g.edgeProbability(-0.1));
+			g.edgeProbability(0.5);
 		});
 	}
 
@@ -183,14 +206,23 @@ public class GnpBipartiteGraphGeneratorTest extends TestBase {
 	public void probabilityZero() {
 		foreachBoolConfig(intGraph -> {
 			GnpBipartiteGraphGenerator<Integer, Integer> g =
-					intGraph ? GnpBipartiteGraphGenerator.newIntInstance() : GnpBipartiteGraphGenerator.newInstance();
-			g.setEdgeProbability(0);
-			g.setVertices(range(5), range(5, 10));
-			g.setEdges(new AtomicInteger()::getAndIncrement);
+					intGraph ? new GnpBipartiteGraphGenerator<>(IntGraphFactory.undirected())
+							: new GnpBipartiteGraphGenerator<>();
+			g.edgeProbability(0);
+			g.vertices(range(5), range(5, 10));
+			g.edges(IdBuilderInt.defaultBuilder());
 
 			for (int repeat = 0; repeat < 20; repeat++)
 				assertTrue(g.generate().edges().isEmpty());
 		});
+	}
+
+	@Test
+	public void graphFactory() {
+		assertNotNull(new GnpBipartiteGraphGenerator<>().graphFactory());
+		GraphFactory<Integer, Integer> gf = GraphFactory.undirected();
+		GnpBipartiteGraphGenerator<Integer, Integer> g = new GnpBipartiteGraphGenerator<>(gf);
+		assertTrue(gf == g.graphFactory());
 	}
 
 }

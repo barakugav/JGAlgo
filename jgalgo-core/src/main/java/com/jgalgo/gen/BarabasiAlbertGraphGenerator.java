@@ -19,20 +19,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.function.BiFunction;
-import java.util.function.IntBinaryOperator;
-import java.util.function.IntSupplier;
-import java.util.function.Supplier;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IdBuilder;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
-import com.jgalgo.internal.util.IntAdapters;
+import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
 
 /**
  * Generates a Barabási–Albert graph.
@@ -40,16 +36,16 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
  * <p>
  * A Barabási–Albert graph is a random graph with a power law degree distribution, which is a good model for many real
  * networks. The graph begins with an initial clique of size {@code initCliqueSize}, and then adds vertices one by one,
- * each with {@code k} edges that are attached to existing vertices. The probability that a new vertex is connected to
- * vertex \(v\) is proportional to the degree of \(v\) divided by the sum of degrees of all vertices in the graph.
+ * each with {@code edgesPerStep} edges that are attached to existing vertices. The probability that a new vertex is
+ * connected to vertex \(v\) is proportional to the degree of \(v\) divided by the sum of degrees of all vertices in the
+ * graph.
  *
  * <p>
- * By default the initial clique size is \(20\) and the number of edges added each time step (denoted {@code k}) is
- * \(10\). The generated graph(s) may be directed or undirected, and by default it is undirected. Self edges are never
- * created.
+ * By default the initial clique size is \(20\) and the number of edges added each step is \(10\). The generated
+ * graph(s) may be directed or undirected, and by default it is undirected. Self edges are never created.
  *
  * <p>
- * For deterministic behavior, set the seed of the generator using {@link #setSeed(long)}.
+ * For deterministic behavior, set the seed of the generator using {@link #seed(long)}.
  *
  * <p>
  * Based on 'Emergence of scaling in random networks' by Albert-László Barabási and Réka Albert.
@@ -60,109 +56,159 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
  */
 public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
-	private final boolean intGraph;
-	private Collection<V> vertices;
+	private final GraphFactory<V, E> factory;
+	private Variant2<List<V>, IntObjectPair<IdBuilder<V>>> vertices;
+	private IdBuilder<E> edgeBuilder;
 	private int initCliqueSize = 20;
-	private int k = 10;
-	private BiFunction<V, V, E> edgeBuilder;
+	private int edgesPerStep = 10;
 	private boolean directed = false;
 	private Random rand = new Random();
 
-	private BarabasiAlbertGraphGenerator(boolean intGraph) {
-		this.intGraph = intGraph;
-	}
-
 	/**
-	 * Creates a new Barabási–Albert graph generator.
-	 *
-	 * @param  <V> the vertices type
-	 * @param  <E> the edges type
-	 * @return     a new Barabási–Albert graph generator
-	 */
-	public static <V, E> BarabasiAlbertGraphGenerator<V, E> newInstance() {
-		return new BarabasiAlbertGraphGenerator<>(false);
-	}
-
-	/**
-	 * Creates a new Barabási–Albert graph generator for {@link IntGraph}.
-	 *
-	 * @return a new Barabási–Albert graph generator for {@link IntGraph}
-	 */
-	public static BarabasiAlbertGraphGenerator<Integer, Integer> newIntInstance() {
-		return new BarabasiAlbertGraphGenerator<>(true);
-	}
-
-	/**
-	 * Set the vertices of the generated graph(s).
+	 * Create a new Barabasi-Albert graph generator that will use the default graph factory.
 	 *
 	 * <p>
-	 * If the generator is used to generate multiple graphs, the same vertices set is used for all of them.
+	 * The default graph factory does not have vertex builder, so if only the number of vertices is set using
+	 * {@link #vertices(int)}, the vertex builder must be set explicitly using
+	 * {@code graphFactory().setVertexBuilder(...)}. Same holds for edges, for which the number of them is determine by
+	 * {@link #edgesPerStep(int)} and {@link #initialCliqueSize(int)}. Alternatively, the methods
+	 * {@link #vertices(int, IdBuilder)} and {@link #edges(IdBuilder)} can be used to set the number of vertices and
+	 * provide a vertex/edge builder that will override the (maybe non existing) vertex/edge builder of the graph
+	 * factory. The vertex set can also be set explicitly using {@link #vertices(Collection)}.
+	 */
+	public BarabasiAlbertGraphGenerator() {
+		this(GraphFactory.undirected());
+	}
+
+	/**
+	 * Create a new Barabasi-Albert graph generator that will use the given graph factory.
 	 *
-	 * @param vertices the vertices set
+	 * <p>
+	 * If the factory has a vertex builder it will be used to generate the vertices of the generated graph(s) if only
+	 * the number of vertices is set using {@link #vertices(int)}. If the factory has an edge builder it will be used to
+	 * generate the edges of the generated graph(s) if it will not be overridden by {@link #edges(IdBuilder)}.
+	 *
+	 * <p>
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration. Parallel edges can always be generated by
+	 * this generator, therefore also {@link GraphFactory#allowParallelEdges()} will be called.
+	 *
+	 * <p>
+	 * To generate {@linkplain IntGraph int graphs}, pass an instance of {@linkplain IntGraphFactory} to this
+	 * constructor.
+	 *
+	 * @param factory the graph factory that will be used to create the generated graph(s)
+	 */
+	public BarabasiAlbertGraphGenerator(GraphFactory<V, E> factory) {
+		this.factory = Objects.requireNonNull(factory);
+	}
+
+	/**
+	 * Get the graph factory that will be used to create the generated graph(s).
+	 *
+	 * <p>
+	 * It's possible to customize the factory before generating the graph(s), for example by using
+	 * {@link GraphFactory#addHint(GraphFactory.Hint)} to optimize the generated graph(s) for a specific algorithm. If
+	 * the factory has a vertex builder it will be used to generate the vertices of the generated graph(s) if only the
+	 * number of vertices is set using {@link #vertices(int)}. If the factory has an edge builder it will be used to
+	 * generate the edges of the generated graph(s) if it will not be overridden by {@link #edges(IdBuilder)}.
+	 *
+	 * <p>
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration. Parallel edges can always be generated by
+	 * this generator, therefore also {@link GraphFactory#allowParallelEdges()} will be called.
+	 *
+	 * @return the graph factory that will be used to create the generated graph(s)
+	 */
+	public GraphFactory<V, E> graphFactory() {
+		return factory;
+	}
+
+	/**
+	 * Set the vertices set of the generated graph(s).
+	 *
+	 * <p>
+	 * If the generator is used to generate multiple graphs, the same vertex set will be used for all of them. This
+	 * method override all previous calls to any of {@link #vertices(Collection)}, {@link #vertices(int)} or
+	 * {@link #vertices(int, IdBuilder)}.
+	 *
+	 * @param  vertices the vertices set
+	 * @return          this generator
 	 */
 	@SuppressWarnings("unchecked")
-	public void setVertices(Collection<V> vertices) {
-		if (intGraph) {
-			this.vertices =
-					(Collection<V>) new IntArrayList(IntAdapters.asIntCollection((Collection<Integer>) vertices));
+	public BarabasiAlbertGraphGenerator<V, E> vertices(Collection<? extends V> vertices) {
+		if (factory instanceof IntGraphFactory) {
+			vertices = (List<V>) new IntArrayList((Collection<Integer>) vertices);
 		} else {
-			this.vertices = new ObjectArrayList<>(vertices);
+			vertices = new ObjectArrayList<>(vertices);
 		}
+		this.vertices = Variant2.ofA((List<V>) vertices);
+		return this;
 	}
 
 	/**
-	 * Set the vertices set of the generated graph(s) from a supplier.
+	 * Set the number of vertices that will be generated for each graph.
 	 *
 	 * <p>
-	 * The supplier will be called exactly {@code verticesNum} times, and the same set of vertices created will be used
-	 * for multiple graphs if {@link #generate()} is called multiple times.
+	 * The vertices will be generated using the vertex builder of the graph factory, see
+	 * {@link GraphFactory#setVertexBuilder(IdBuilder)}. The default graph factory does not have a vertex builder, so it
+	 * must be set explicitly, or {@link IntGraphFactory}, which does have such builder, should be passed in the
+	 * {@linkplain #BarabasiAlbertGraphGenerator(GraphFactory) constructor}. Another alternative is to use
+	 * {@link #vertices(int, IdBuilder)} which set the number of vertices and provide a vertex builder that will
+	 * override the (maybe non existing) vertex builder of the graph factory. The generation will happen independently
+	 * for each graph generated. If there is no vertex builder, an exception will be thrown during generation. This
+	 * method override all previous calls to any of {@link #vertices(Collection)}, {@link #vertices(int)} or
+	 * {@link #vertices(int, IdBuilder)}.
 	 *
-	 * @param verticesNum    the number of vertices
-	 * @param vertexSupplier the supplier of vertices
+	 * @param  verticesNum              the number of vertices that will be generated for each graph
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code verticesNum} is negative
 	 */
-	@SuppressWarnings("unchecked")
-	public void setVertices(int verticesNum, Supplier<V> vertexSupplier) {
-		if (intGraph) {
-			IntList vertices = new IntArrayList(verticesNum);
-			IntSupplier vSupplier = IntAdapters.asIntSupplier((Supplier<Integer>) vertexSupplier);
-			for (int i = 0; i < verticesNum; i++)
-				vertices.add(vSupplier.getAsInt());
-			this.vertices = (Collection<V>) vertices;
-		} else {
-			List<V> vertices = new ObjectArrayList<>(verticesNum);
-			for (int i = 0; i < verticesNum; i++)
-				vertices.add(vertexSupplier.get());
-			this.vertices = vertices;
-		}
+	public BarabasiAlbertGraphGenerator<V, E> vertices(int verticesNum) {
+		vertices(verticesNum, null);
+		return this;
 	}
 
 	/**
-	 * Set the edge supplier of the generated graph(s).
+	 * Set the number of vertices that will be generated for each graph, and the vertex builder that will be used to
+	 * generate them.
 	 *
 	 * <p>
-	 * The supplier will be called for any edge created, for any graph generated. This behavior is different from
-	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
-	 * any generated graph.
+	 * The vertices will be generated using the provided vertex builder, and the vertex generator provided by the
+	 * {@linkplain #graphFactory() graph factory} (if exists) will be ignored. The generation will happen independently
+	 * for each graph generated. This method override all previous calls to any of {@link #vertices(Collection)},
+	 * {@link #vertices(int)} or {@link #vertices(int, IdBuilder)}.
 	 *
-	 * @param edgeSupplier the edge supplier
+	 * @param  verticesNum              the number of vertices that will be generated for each graph
+	 * @param  vertexBuilder            the vertex builder, or {@code null} to use the vertex builder of the
+	 *                                      {@linkplain #graphFactory() graph factory}
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code verticesNum} is negative
 	 */
-	public void setEdges(Supplier<E> edgeSupplier) {
-		Objects.requireNonNull(edgeSupplier);
-		setEdges((u, v) -> edgeSupplier.get());
+	public BarabasiAlbertGraphGenerator<V, E> vertices(int verticesNum, IdBuilder<V> vertexBuilder) {
+		if (verticesNum < 0)
+			throw new IllegalArgumentException("number of vertices must be non-negative");
+		this.vertices = Variant2.ofB(IntObjectPair.of(verticesNum, vertexBuilder));
+		return this;
 	}
 
 	/**
-	 * Set the edge builder function of the generated graph(s).
+	 * Set the edge builder that will be used to generate edges.
 	 *
 	 * <p>
-	 * The function will be called for any edge created, for any graph generated. This behavior is different from
-	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
-	 * any generated graph.
+	 * The edges will be generated using the provided edge builder, and the edge generator provided by the
+	 * {@linkplain #graphFactory() graph factory} (if exists) will be ignored. The generation will happen independently
+	 * for each graph generated. If this method is not called, or called with a {@code null} argument, the edge builder
+	 * of the graph factory will be used. If the graph factory does not have an edge builder, an exception will be
+	 * thrown during generation.
 	 *
-	 * @param edgeBuilder the edge builder function
+	 * @param  edgeBuilder the edge builder, or {@code null} to use the edge builder of the {@linkplain #graphFactory()
+	 *                         graph factory}
+	 * @return             this generator
 	 */
-	public void setEdges(BiFunction<V, V, E> edgeBuilder) {
-		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);
+	public BarabasiAlbertGraphGenerator<V, E> edges(IdBuilder<E> edgeBuilder) {
+		this.edgeBuilder = edgeBuilder;
+		return this;
 	}
 
 	/**
@@ -170,41 +216,45 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 	 *
 	 * <p>
 	 * The initial clique is a complete graph of size {@code initCliqueSize}. After the initial clique is created, the
-	 * generator adds vertices one by one, each with {@code k} edges that are attached to existing vertices. The
-	 * probability that a new vertex is connected to vertex \(v\) is proportional to the degree of \(v\) divided by the
-	 * sum of degrees of all vertices in the graph.
+	 * generator adds vertices one by one, each with {@code edgesPerStep} edges that are attached to existing vertices.
+	 * The probability that a new vertex is connected to vertex \(v\) is proportional to the degree of \(v\) divided by
+	 * the sum of degrees of all vertices in the graph.
 	 *
 	 * <p>
 	 * By default, the initial clique size is \(20\). The initial clique size must not be greater than the number of
-	 * vertices provided by {@link #setVertices}
+	 * vertices, which is validated during the graph generation.
 	 *
-	 * @param initCliqueSize the initial clique size
+	 * @param  initCliqueSize the initial clique size
+	 * @return                this generator
 	 */
-	public void setInitialCliqueSize(int initCliqueSize) {
+	public BarabasiAlbertGraphGenerator<V, E> initialCliqueSize(int initCliqueSize) {
 		if (initCliqueSize < 0)
 			throw new IllegalArgumentException("initCliqueSize must be non-negative: " + initCliqueSize);
 		this.initCliqueSize = initCliqueSize;
+		return this;
 	}
 
 	/**
-	 * Set the number of edges added each time step (k) when generated graph(s).
+	 * Set the number of edges added each step when generated graph(s).
 	 *
 	 * <p>
-	 * The initial clique is a complete graph of size {@link #setInitialCliqueSize}. After the initial clique is
-	 * created, the generator adds vertices one by one, each with {@code k} edges that are attached to existing
-	 * vertices. The probability that a new vertex is connected to vertex \(v\) is proportional to the degree of \(v\)
-	 * divided by the sum of degrees of all vertices in the graph.
+	 * The initial clique is a complete graph of size {@link #initialCliqueSize(int)}. After the initial clique is
+	 * created, the generator adds vertices one by one, each with {@code edgesPerStep} edges that are attached to
+	 * existing vertices. The probability that a new vertex is connected to vertex \(v\) is proportional to the degree
+	 * of \(v\) divided by the sum of degrees of all vertices in the graph.
 	 *
 	 * <p>
-	 * By default, the number of edges added per time step is \(10\). The number of edges per time step must not be
-	 * greater than the initial clique size provided by {@link #setInitialCliqueSize}.
+	 * By default, the number of edges added per step is \(10\). The number of edges per step must not be greater than
+	 * the initial clique size provided by {@link #initialCliqueSize(int)}.
 	 *
-	 * @param k the number of edges added to each vertex added to the graph after the initial clique
+	 * @param  edgesPerStep the number of edges added to each vertex added to the graph after the initial clique
+	 * @return              this generator
 	 */
-	public void setEdgesToAddPerStep(int k) {
-		if (k < 0)
-			throw new IllegalArgumentException("k must be non-negative: " + k);
-		this.k = k;
+	public BarabasiAlbertGraphGenerator<V, E> edgesPerStep(int edgesPerStep) {
+		if (edgesPerStep < 0)
+			throw new IllegalArgumentException("edges per step must be non-negative: " + edgesPerStep);
+		this.edgesPerStep = edgesPerStep;
+		return this;
 	}
 
 	/**
@@ -213,10 +263,12 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 	 * <p>
 	 * By default, the generated graph(s) is undirected.
 	 *
-	 * @param directed {@code true} if the generated graph(s) will be directed, {@code false} if undirected
+	 * @param  directed {@code true} if the generated graph(s) will be directed, {@code false} if undirected
+	 * @return          this generator
 	 */
-	public void setDirected(boolean directed) {
+	public BarabasiAlbertGraphGenerator<V, E> directed(boolean directed) {
 		this.directed = directed;
+		return this;
 	}
 
 	/**
@@ -225,28 +277,60 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 	 * <p>
 	 * By default, a random seed is used. For deterministic behavior, set the seed of the generator.
 	 *
-	 * @param seed the seed of the random number generator
+	 * @param  seed the seed of the random number generator
+	 * @return      this generator
 	 */
-	public void setSeed(long seed) {
+	public BarabasiAlbertGraphGenerator<V, E> seed(long seed) {
 		rand = new Random(seed);
+		return this;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public GraphBuilder<V, E> generateIntoBuilder() {
 		if (vertices == null)
 			throw new IllegalStateException("Vertices not set");
-		if (edgeBuilder == null)
-			throw new IllegalStateException("Edge supplier not set");
-		if (initCliqueSize > vertices.size())
+		final int n = vertices.map(List::size, IntObjectPair::firstInt).intValue();
+		if (initCliqueSize > n)
 			throw new IllegalStateException(
-					"initCliqueSize must be smaller than vertices num: " + initCliqueSize + " > " + vertices.size());
-		if (k > initCliqueSize)
-			throw new IllegalStateException("k must be smaller than initCliqueSize: " + k + " > " + initCliqueSize);
-		final int n = vertices.size();
+					"initCliqueSize must be smaller than vertices num: " + initCliqueSize + " > " + n);
+		if (edgesPerStep > initCliqueSize)
+			throw new IllegalStateException(
+					"k must be smaller than initCliqueSize: " + edgesPerStep + " > " + initCliqueSize);
+
+		GraphBuilder<V, E> g = factory.setDirected(directed).allowParallelEdges().newBuilder();
+		IdBuilder<E> edgeBuilder = this.edgeBuilder != null ? this.edgeBuilder : g.edgeBuilder();
+		if (edgeBuilder == null)
+			throw new IllegalStateException("Edge builder not provided and graph factory does not have one");
+
+		final List<V> vertices;
+		if (this.vertices.contains(List.class)) {
+			@SuppressWarnings("unchecked")
+			List<V> vertices0 = this.vertices.get(List.class);
+			g.addVertices(vertices = vertices0);
+		} else {
+			@SuppressWarnings("unchecked")
+			IntObjectPair<IdBuilder<V>> p = this.vertices.get(IntObjectPair.class);
+			int verticesNum = p.firstInt();
+			IdBuilder<V> vertexBuilder = p.second() != null ? p.second() : g.vertexBuilder();
+			if (vertexBuilder == null)
+				throw new IllegalStateException("Vertex builder not provided and graph factory does not have one");
+			if (g instanceof IntGraphBuilder) {
+				@SuppressWarnings("unchecked")
+				List<V> vertices0 = (List<V>) new IntArrayList(verticesNum);
+				vertices = vertices0;
+			} else {
+				vertices = new ObjectArrayList<>(verticesNum);
+			}
+			g.ensureVertexCapacity(verticesNum);
+			for (int i = 0; i < verticesNum; i++) {
+				V vertex = vertexBuilder.build(g.vertices());
+				g.addVertex(vertex);
+				vertices.add(vertex);
+			}
+		}
 
 		int initEdgesNum = initCliqueSize * (initCliqueSize - 1) / (directed ? 1 : 2);
-		int addedEdgesNum = (vertices.size() - initCliqueSize) * k;
+		int addedEdgesNum = (n - initCliqueSize) * edgesPerStep;
 		int[] endpoints = new int[(initEdgesNum + addedEdgesNum) * 2];
 		int edgeNum = 0;
 
@@ -270,7 +354,7 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 		for (int vNum = initCliqueSize; vNum < n; vNum++) {
 			final int edgeNumAtStart = edgeNum;
 			final int u = vNum;
-			for (int i = 0; i < k; i++) {
+			for (int i = 0; i < edgesPerStep; i++) {
 				/* by sampling from the current endpoints, we sample a vertex with prob of its degree */
 				int v = endpoints[rand.nextInt(edgeNumAtStart * 2)];
 				int e = edgeNum++;
@@ -287,35 +371,13 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 			}
 		}
 
-		if (intGraph) {
-			IntGraphBuilder g = IntGraphFactory.newInstance(directed).allowParallelEdges().newBuilder();
-			final int[] vertices = IntAdapters.asIntCollection((Collection<Integer>) this.vertices).toIntArray();
-			g.addVertices(IntList.of(vertices));
-
-			g.ensureEdgeCapacity(edgeNum);
-			IntBinaryOperator edgeBuilder =
-					IntAdapters.asIntBiOperator((BiFunction<Integer, Integer, Integer>) this.edgeBuilder);
-			for (int eIdx = 0; eIdx < edgeNum; eIdx++) {
-				int u = vertices[endpoints[eIdx * 2 + 0]];
-				int v = vertices[endpoints[eIdx * 2 + 1]];
-				g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));
-			}
-			return (GraphBuilder<V, E>) g;
-
-		} else {
-			GraphFactory<V, E> factory = GraphFactory.newInstance(directed);
-			GraphBuilder<V, E> g = factory.allowParallelEdges().newBuilder();
-			final V[] vertices = (V[]) this.vertices.toArray();
-			g.addVertices(ObjectList.of(vertices));
-
-			g.ensureEdgeCapacity(edgeNum);
-			for (int eIdx = 0; eIdx < edgeNum; eIdx++) {
-				V u = vertices[endpoints[eIdx * 2 + 0]];
-				V v = vertices[endpoints[eIdx * 2 + 1]];
-				g.addEdge(u, v, edgeBuilder.apply(u, v));
-			}
-			return g;
+		g.ensureEdgeCapacity(edgeNum);
+		for (int eIdx = 0; eIdx < edgeNum; eIdx++) {
+			V u = vertices.get(endpoints[eIdx * 2 + 0]);
+			V v = vertices.get(endpoints[eIdx * 2 + 1]);
+			g.addEdge(u, v, edgeBuilder.build(g.edges()));
 		}
+		return g;
 	}
 
 }

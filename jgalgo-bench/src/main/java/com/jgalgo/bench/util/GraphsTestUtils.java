@@ -18,7 +18,6 @@ package com.jgalgo.bench.util;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 import com.jgalgo.gen.BarabasiAlbertGraphGenerator;
 import com.jgalgo.gen.GnmBipartiteGraphGenerator;
 import com.jgalgo.gen.GnmGraphGenerator;
@@ -28,6 +27,7 @@ import com.jgalgo.gen.UniformTreeGenerator;
 import com.jgalgo.graph.IWeights;
 import com.jgalgo.graph.IWeightsDouble;
 import com.jgalgo.graph.IWeightsInt;
+import com.jgalgo.graph.IdBuilderInt;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
@@ -42,13 +42,13 @@ public class GraphsTestUtils extends TestUtils {
 
 	public static IntGraph randGraph(int n, int m, boolean directed, boolean selfEdges, boolean parallelEdges,
 			long seed) {
-		GnmGraphGenerator<Integer, Integer> gen = GnmGraphGenerator.newIntInstance();
-		gen.setSeed(seed);
-		gen.setDirected(directed);
-		gen.setSelfEdges(selfEdges);
-		gen.setParallelEdges(parallelEdges);
-		gen.setVertices(range(n));
-		gen.setEdges(m, new AtomicInteger()::getAndIncrement);
+		GnmGraphGenerator<Integer, Integer> gen = new GnmGraphGenerator<>(IntGraphFactory.undirected());
+		gen.seed(seed);
+		gen.directed(directed);
+		gen.selfEdges(selfEdges);
+		gen.parallelEdges(parallelEdges);
+		gen.vertices(range(n));
+		gen.edges(m, IdBuilderInt.defaultBuilder());
 		return (IntGraph) gen.generateMutable();
 	}
 
@@ -58,24 +58,25 @@ public class GraphsTestUtils extends TestUtils {
 
 	public static IntGraph randBipartiteGraph(int n1, int n2, int m, boolean directed, boolean parallelEdges,
 			long seed) {
-		GnmBipartiteGraphGenerator<Integer, Integer> gen = GnmBipartiteGraphGenerator.newIntInstance();
-		gen.setSeed(seed);
+		GnmBipartiteGraphGenerator<Integer, Integer> gen =
+				new GnmBipartiteGraphGenerator<>(IntGraphFactory.undirected());
+		gen.seed(seed);
 		if (directed) {
-			gen.setDirectedAll();
+			gen.directedAll();
 		} else {
-			gen.setUndirected();
+			gen.undirected();
 		}
-		gen.setVertices(range(n1), range(n1, n1 + n2));
-		gen.setEdges(m, new AtomicInteger()::getAndIncrement);
-		gen.setParallelEdges(parallelEdges);
+		gen.vertices(range(n1), range(n1, n1 + n2));
+		gen.edges(m, IdBuilderInt.defaultBuilder());
+		gen.parallelEdges(parallelEdges);
 		return (IntGraph) gen.generateMutable();
 	}
 
 	public static IntGraph randTree(int n, long seed) {
-		UniformTreeGenerator<Integer, Integer> gen = UniformTreeGenerator.newIntInstance();
-		gen.setSeed(seed);
-		gen.setVertices(range(n));
-		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		UniformTreeGenerator<Integer, Integer> gen = new UniformTreeGenerator<>(IntGraphFactory.undirected());
+		gen.seed(seed);
+		gen.vertices(range(n));
+		gen.edges(IdBuilderInt.defaultBuilder());
 		return (IntGraph) gen.generateMutable();
 	}
 
@@ -123,29 +124,31 @@ public class GraphsTestUtils extends TestUtils {
 	}
 
 	public static IntGraph randomGraphGnp(int n, boolean directed, long seed) {
-		GnpGraphGenerator<Integer, Integer> gen = GnpGraphGenerator.newIntInstance();
-		gen.setSeed(seed);
-		gen.setDirected(directed);
-		gen.setVertices(range(n));
-		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		GnpGraphGenerator<Integer, Integer> gen = new GnpGraphGenerator<>(IntGraphFactory.undirected());
+		gen.seed(seed);
+		gen.directed(directed);
+		gen.vertices(range(n));
+		gen.edges(IdBuilderInt.defaultBuilder());
 		return gen.generate().indexGraph();
 	}
 
 	public static IntGraph randomGraphBarabasiAlbert(int n, boolean directed, long seed) {
-		BarabasiAlbertGraphGenerator<Integer, Integer> gen = BarabasiAlbertGraphGenerator.newIntInstance();
-		gen.setSeed(seed);
-		gen.setDirected(directed);
-		gen.setVertices(range(n));
-		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		BarabasiAlbertGraphGenerator<Integer, Integer> gen =
+				new BarabasiAlbertGraphGenerator<>(IntGraphFactory.undirected());
+		gen.seed(seed);
+		gen.directed(directed);
+		gen.vertices(range(n));
+		gen.edges(IdBuilderInt.defaultBuilder());
 		return gen.generate().indexGraph();
 	}
 
 	public static IntGraph randomGraphRecursiveMatrix(int n, int m, boolean directed, long seed) {
-		RecursiveMatrixGraphGenerator<Integer, Integer> gen = RecursiveMatrixGraphGenerator.newIntInstance();
-		gen.setSeed(seed);
-		gen.setDirected(directed);
-		gen.setVertices(range(n));
-		gen.setEdges(m, new AtomicInteger()::getAndIncrement);
+		RecursiveMatrixGraphGenerator<Integer, Integer> gen =
+				new RecursiveMatrixGraphGenerator<>(IntGraphFactory.undirected());
+		gen.seed(seed);
+		gen.directed(directed);
+		gen.vertices(range(n));
+		gen.edges(m, IdBuilderInt.defaultBuilder());
 		return gen.generate().indexGraph();
 	}
 

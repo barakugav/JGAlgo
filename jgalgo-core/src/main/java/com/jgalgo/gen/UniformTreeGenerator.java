@@ -20,17 +20,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.function.BiFunction;
-import java.util.function.IntSupplier;
-import java.util.function.Supplier;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IdBuilder;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.Bitmap;
-import com.jgalgo.internal.util.IntAdapters;
+import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
@@ -46,7 +45,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * The generator generate undirected graphs only. If zero vertices are set, an empty graph is generated.
  *
  * <p>
- * For deterministic behavior, set the seed of the generator using {@link #setSeed(long)}.
+ * For deterministic behavior, set the seed of the generator using {@link #seed(long)}.
  *
  * @param  <V> the vertices type
  * @param  <E> the edges type
@@ -54,105 +53,154 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 public class UniformTreeGenerator<V, E> implements GraphGenerator<V, E> {
 
-	private final boolean intGraph;
-	private List<V> vertices;
-	private BiFunction<V, V, E> edgeBuilder;
+	private final GraphFactory<V, E> factory;
+	private Variant2<List<V>, IntObjectPair<IdBuilder<V>>> vertices;
+	private IdBuilder<E> edgeBuilder;
 	private Random rand = new Random();
 
-	private UniformTreeGenerator(boolean intGraph) {
-		this.intGraph = intGraph;
-	}
-
 	/**
-	 * Creates a new uniform tree generator.
-	 *
-	 * @param  <V> the vertices type
-	 * @param  <E> the edges type
-	 * @return     a new uniform tree generator
-	 */
-	public static <V, E> UniformTreeGenerator<V, E> newInstance() {
-		return new UniformTreeGenerator<>(false);
-	}
-
-	/**
-	 * Creates a new uniform tree generator for {@link IntGraph}.
-	 *
-	 * @return a new uniform tree generator for {@link IntGraph}
-	 */
-	public static UniformTreeGenerator<Integer, Integer> newIntInstance() {
-		return new UniformTreeGenerator<>(true);
-	}
-
-	/**
-	 * Set the vertices of the generated graph(s).
+	 * Create a new uniform tree generator that will use the default graph factory.
 	 *
 	 * <p>
-	 * If the generator is used to generate multiple graphs, the same vertex set will be used for all of them.
+	 * The default graph factory does not have vertex builder, so if only the number of vertices is set using
+	 * {@link #vertices(int)}, the vertex builder must be set explicitly using
+	 * {@code graphFactory().setVertexBuilder(...)}. Alternatively, the method {@link #vertices(int, IdBuilder)} can be
+	 * used to set the number of vertices and provide a vertex builder that will override the (maybe non existing)
+	 * vertex builder of the graph factory. The vertex set can also be set explicitly using
+	 * {@link #vertices(Collection)}. For edges, an edge builder is mandatory and it can be set using
+	 * {@link #edges(IdBuilder)}.
+	 */
+	public UniformTreeGenerator() {
+		this(GraphFactory.undirected());
+	}
+
+	/**
+	 * Create a new uniform tree generator that will use the given graph factory.
 	 *
-	 * @param vertices the vertices of the generated graph(s)
+	 * <p>
+	 * If the factory has a vertex builder it will be used to generate the vertices of the generated graph(s) if only
+	 * the number of vertices is set using {@link #vertices(int)}. If the factory has an edge builder it will be used to
+	 * generate the edges of the generated graph(s) if it will not be overridden by {@link #edges(IdBuilder)}.
+	 *
+	 * <p>
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration.
+	 *
+	 * <p>
+	 * To generate {@linkplain IntGraph int graphs}, pass an instance of {@linkplain IntGraphFactory} to this
+	 * constructor.
+	 *
+	 * @param factory the graph factory that will be used to create the generated graph(s)
+	 */
+	public UniformTreeGenerator(GraphFactory<V, E> factory) {
+		this.factory = Objects.requireNonNull(factory);
+	}
+
+	/**
+	 * Get the graph factory that will be used to create the generated graph(s).
+	 *
+	 * <p>
+	 * It's possible to customize the factory before generating the graph(s), for example by using
+	 * {@link GraphFactory#addHint(GraphFactory.Hint)} to optimize the generated graph(s) for a specific algorithm. If
+	 * the factory has a vertex builder it will be used to generate the vertices of the generated graph(s) if only the
+	 * number of vertices is set using {@link #vertices(int)}. If the factory has an edge builder it will be used to
+	 * generate the edges of the generated graph(s) if it will not be overridden by {@link #edges(IdBuilder)}.
+	 *
+	 * <p>
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration.
+	 *
+	 * @return the graph factory that will be used to create the generated graph(s)
+	 */
+	public GraphFactory<V, E> graphFactory() {
+		return factory;
+	}
+
+	/**
+	 * Set the vertices set of the generated graph(s).
+	 *
+	 * <p>
+	 * If the generator is used to generate multiple graphs, the same vertex set will be used for all of them. This
+	 * method override all previous calls to any of {@link #vertices(Collection)}, {@link #vertices(int)} or
+	 * {@link #vertices(int, IdBuilder)}.
+	 *
+	 * @param  vertices the vertices set
+	 * @return          this generator
 	 */
 	@SuppressWarnings("unchecked")
-	public void setVertices(Collection<V> vertices) {
-		if (intGraph) {
-			this.vertices = (List<V>) new IntArrayList(IntAdapters.asIntCollection((Collection<Integer>) vertices));
+	public UniformTreeGenerator<V, E> vertices(Collection<? extends V> vertices) {
+		if (factory instanceof IntGraphFactory) {
+			vertices = (List<V>) new IntArrayList((Collection<Integer>) vertices);
 		} else {
-			this.vertices = new ObjectArrayList<>(vertices);
+			vertices = new ObjectArrayList<>(vertices);
 		}
+		this.vertices = Variant2.ofA((List<V>) vertices);
+		return this;
 	}
 
 	/**
-	 * Set the vertices set of the generated graph(s) from a supplier.
+	 * Set the number of vertices that will be generated for each graph.
 	 *
 	 * <p>
-	 * The supplier will be called exactly {@code verticesNum} times, and the same set of vertices created will be used
-	 * for multiple graphs if {@link #generate()} is called multiple times.
+	 * The vertices will be generated using the vertex builder of the graph factory, see
+	 * {@link GraphFactory#setVertexBuilder(IdBuilder)}. The default graph factory does not have a vertex builder, so it
+	 * must be set explicitly, or {@link IntGraphFactory}, which does have such builder, should be passed in the
+	 * {@linkplain #UniformTreeGenerator(GraphFactory) constructor}. Another alternative is to use
+	 * {@link #vertices(int, IdBuilder)} which set the number of vertices and provide a vertex builder that will
+	 * override the (maybe non existing) vertex builder of the graph factory. The generation will happen independently
+	 * for each graph generated. If there is no vertex builder, an exception will be thrown during generation. This
+	 * method override all previous calls to any of {@link #vertices(Collection)}, {@link #vertices(int)} or
+	 * {@link #vertices(int, IdBuilder)}.
 	 *
-	 * @param verticesNum    the number of vertices
-	 * @param vertexSupplier the supplier of vertices
+	 * @param  verticesNum              the number of vertices that will be generated for each graph
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code verticesNum} is negative
 	 */
-	@SuppressWarnings("unchecked")
-	public void setVertices(int verticesNum, Supplier<V> vertexSupplier) {
-		if (intGraph) {
-			IntList vertices = new IntArrayList(verticesNum);
-			IntSupplier vSupplier = IntAdapters.asIntSupplier((Supplier<Integer>) vertexSupplier);
-			for (int i = 0; i < verticesNum; i++)
-				vertices.add(vSupplier.getAsInt());
-			this.vertices = (List<V>) vertices;
-		} else {
-			List<V> vertices = new ObjectArrayList<>(verticesNum);
-			for (int i = 0; i < verticesNum; i++)
-				vertices.add(vertexSupplier.get());
-			this.vertices = vertices;
-		}
+	public UniformTreeGenerator<V, E> vertices(int verticesNum) {
+		vertices(verticesNum, null);
+		return this;
 	}
 
 	/**
-	 * Set the edge supplier of the generated graph(s).
+	 * Set the number of vertices that will be generated for each graph, and the vertex builder that will be used to
+	 * generate them.
 	 *
 	 * <p>
-	 * The supplier will be called for any edge created, for any graph generated. This behavior is different from
-	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
-	 * any generated graph.
+	 * The vertices will be generated using the provided vertex builder, and the vertex generator provided by the
+	 * {@linkplain #graphFactory() graph factory} (if exists) will be ignored. The generation will happen independently
+	 * for each graph generated. This method override all previous calls to any of {@link #vertices(Collection)},
+	 * {@link #vertices(int)} or {@link #vertices(int, IdBuilder)}.
 	 *
-	 * @param edgeSupplier the edge supplier
+	 * @param  verticesNum              the number of vertices that will be generated for each graph
+	 * @param  vertexBuilder            the vertex builder, or {@code null} to use the vertex builder of the
+	 *                                      {@linkplain #graphFactory() graph factory}
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code verticesNum} is negative
 	 */
-	public void setEdges(Supplier<E> edgeSupplier) {
-		Objects.requireNonNull(edgeSupplier);
-		setEdges((u, v) -> edgeSupplier.get());
+	public UniformTreeGenerator<V, E> vertices(int verticesNum, IdBuilder<V> vertexBuilder) {
+		if (verticesNum < 0)
+			throw new IllegalArgumentException("number of vertices must be non-negative");
+		this.vertices = Variant2.ofB(IntObjectPair.of(verticesNum, vertexBuilder));
+		return this;
 	}
 
 	/**
-	 * Set the edge builder function of the generated graph(s).
+	 * Set the edge builder that will be used to generate edges.
 	 *
 	 * <p>
-	 * The function will be called for any edge created, for any graph generated. This behavior is different from
-	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
-	 * any generated graph.
+	 * The edges will be generated using the provided edge builder, and the edge generator provided by the
+	 * {@linkplain #graphFactory() graph factory} (if exists) will be ignored. The generation will happen independently
+	 * for each graph generated. If this method is not called, or called with a {@code null} argument, the edge builder
+	 * of the graph factory will be used. If the graph factory does not have an edge builder, an exception will be
+	 * thrown during generation.
 	 *
-	 * @param edgeBuilder the edge builder function
+	 * @param  edgeBuilder the edge builder, or {@code null} to use the edge builder of the {@linkplain #graphFactory()
+	 *                         graph factory}
+	 * @return             this generator
 	 */
-	public void setEdges(BiFunction<V, V, E> edgeBuilder) {
-		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);
+	public UniformTreeGenerator<V, E> edges(IdBuilder<E> edgeBuilder) {
+		this.edgeBuilder = edgeBuilder;
+		return this;
 	}
 
 	/**
@@ -161,28 +209,53 @@ public class UniformTreeGenerator<V, E> implements GraphGenerator<V, E> {
 	 * <p>
 	 * By default, a random seed is used. For deterministic behavior, set the seed of the generator.
 	 *
-	 * @param seed the seed of the random number generator
+	 * @param  seed the seed of the random number generator
+	 * @return      this generator
 	 */
-	public void setSeed(long seed) {
+	public UniformTreeGenerator<V, E> seed(long seed) {
 		rand = new Random(seed);
+		return this;
 	}
 
 	@Override
 	public GraphBuilder<V, E> generateIntoBuilder() {
 		if (vertices == null)
 			throw new IllegalStateException("Vertices not set");
+		final int n = vertices.map(List::size, IntObjectPair::firstInt).intValue();
+
+		GraphBuilder<V, E> g = factory.setDirected(false).newBuilder();
+		IdBuilder<E> edgeBuilder = this.edgeBuilder != null ? this.edgeBuilder : g.edgeBuilder();
 		if (edgeBuilder == null)
-			throw new IllegalStateException("Edge supplier not set");
+			throw new IllegalStateException("Edge builder not provided and graph factory does not have one");
 
-		@SuppressWarnings("unchecked")
-		GraphFactory<V, E> factory =
-				intGraph ? ((GraphFactory<V, E>) IntGraphFactory.undirected()) : GraphFactory.undirected();
-		GraphBuilder<V, E> g = factory.newBuilder();
-
-		final int n = vertices.size();
 		if (n == 0)
 			return g;
-		g.addVertices(vertices);
+		final List<V> vertices;
+		if (this.vertices.contains(List.class)) {
+			@SuppressWarnings("unchecked")
+			List<V> vertices0 = this.vertices.get(List.class);
+			g.addVertices(vertices = vertices0);
+		} else {
+			@SuppressWarnings("unchecked")
+			IntObjectPair<IdBuilder<V>> p = this.vertices.get(IntObjectPair.class);
+			int verticesNum = p.firstInt();
+			IdBuilder<V> vertexBuilder = p.second() != null ? p.second() : g.vertexBuilder();
+			if (vertexBuilder == null)
+				throw new IllegalStateException("Vertex builder not provided and graph factory does not have one");
+			if (g instanceof IntGraphBuilder) {
+				@SuppressWarnings("unchecked")
+				List<V> vertices0 = (List<V>) new IntArrayList(verticesNum);
+				vertices = vertices0;
+			} else {
+				vertices = new ObjectArrayList<>(verticesNum);
+			}
+			g.ensureVertexCapacity(verticesNum);
+			for (int i = 0; i < verticesNum; i++) {
+				V vertex = vertexBuilder.build(g.vertices());
+				g.addVertex(vertex);
+				vertices.add(vertex);
+			}
+		}
 		if (n == 1)
 			return g;
 
@@ -200,7 +273,7 @@ public class UniformTreeGenerator<V, E> implements GraphGenerator<V, E> {
 		Bitmap hasParent = new Bitmap(n);
 		for (int vIdx : pruferCode) {
 			V v = vertices.get(vIdx);
-			g.addEdge(u, v, edgeBuilder.apply(u, v));
+			g.addEdge(u, v, edgeBuilder.build(g.edges()));
 			hasParent.set(uIdx);
 
 			degree[vIdx]--;
@@ -218,7 +291,7 @@ public class UniformTreeGenerator<V, E> implements GraphGenerator<V, E> {
 		int root2Idx = hasParent.nextClearBit(root1Idx + 1);
 		V root1 = vertices.get(root1Idx);
 		V root2 = vertices.get(root2Idx);
-		g.addEdge(root1, root2, edgeBuilder.apply(root1, root2));
+		g.addEdge(root1, root2, edgeBuilder.build(g.edges()));
 
 		return g;
 	}

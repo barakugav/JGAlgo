@@ -23,12 +23,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.gen.CompleteGraphGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IdBuilderInt;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.TestBase;
@@ -235,15 +235,13 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		Graph<Integer, Integer> g;
 		ShortestPathSingleSource.Result<Integer, Integer> res;
 
-		CompleteGraphGenerator<Integer, Integer> gen = CompleteGraphGenerator.newInstance();
-		gen.setVertices(range(25));
-		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		CompleteGraphGenerator<Integer, Integer> gen = new CompleteGraphGenerator<>();
+		gen.vertices(range(25)).edges(IdBuilderInt.defaultBuilder());
 		g = gen.generate();
 		res = builder.build().computeShortestPaths(g, null, 0);
 		validateResult(g, null, 0, res, new ShortestPathSingleSourceDijkstra());
 
-		gen.setVertices(range(2));
-		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		gen.vertices(range(2)).edges(IdBuilderInt.defaultBuilder());
 		g = gen.generate();
 		res = builder.build().computeShortestPaths(g, null, 0);
 		validateResult(g, null, 0, res, new ShortestPathSingleSourceDijkstra());

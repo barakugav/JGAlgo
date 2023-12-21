@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
@@ -411,7 +410,7 @@ public class IndexIdMapsTest extends TestBase {
 			assertEqualsBool(expectedModified, actualModified);
 			assertEquals(sizeBeforeRemove - 1, idList.size());
 			assertEquals(sizeBeforeRemove - 1, indexList.size());
-			assertEquals(idList.stream().map(map::indexToId).collect(Collectors.toList()), new ArrayList<>(indexList));
+			assertEquals(idList.stream().map(map::idToIndex).collect(Collectors.toList()), new ArrayList<>(indexList));
 			for (int i = 0; i < 10; i++) {
 				int nonExistingIdx = rand.nextInt();
 				if (allIndices.contains(nonExistingIdx))
@@ -420,7 +419,7 @@ public class IndexIdMapsTest extends TestBase {
 			}
 			for (int i = 0; i < 10; i++) {
 				int nonExistingIdx = allIndices.toIntArray()[rand.nextInt(allIndices.size())];
-				if (idsSet.contains(nonExistingIdx))
+				if (indexList.contains(nonExistingIdx))
 					continue;
 				assertFalse(indexList.rem(nonExistingIdx));
 			}
@@ -650,11 +649,11 @@ public class IndexIdMapsTest extends TestBase {
 	private static Graph<Integer, Integer> createGraph(boolean intGraph) {
 		final long seed = 0x97fa28ae01bfaf23L;
 		GnpGraphGenerator<Integer, Integer> g =
-				intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
-		g.setSeed(seed);
-		g.setVertices(range(24));
-		g.setEdges(new AtomicInteger()::getAndIncrement);
-		g.setEdgeProbability(0.1);
+				intGraph ? new GnpGraphGenerator<>(IntGraphFactory.undirected()) : new GnpGraphGenerator<>();
+		g.seed(seed);
+		g.vertices(range(24));
+		g.edges(IdBuilderInt.defaultBuilder());
+		g.edgeProbability(0.1);
 		return g.generateMutable();
 	}
 

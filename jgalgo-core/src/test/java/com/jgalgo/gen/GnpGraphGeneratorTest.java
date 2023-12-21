@@ -18,69 +18,87 @@ package com.jgalgo.gen;
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IdBuilderInt;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.TestBase;
 
 public class GnpGraphGeneratorTest extends TestBase {
 
 	@Test
-	public void testVertices() {
-		GnpGraphGenerator<String, Integer> g = GnpGraphGenerator.newInstance();
-		g.setSeed(0xf36cd36da8801a6cL);
-		g.setEdges(new AtomicInteger()::getAndIncrement);
+	public void vertices() {
+		GnpGraphGenerator<String, Integer> g = new GnpGraphGenerator<>();
+		g.seed(0xf36cd36da8801a6cL);
+		g.edges(IdBuilderInt.defaultBuilder());
 
 		/* vertices were not set yet */
 		assertThrows(IllegalStateException.class, () -> g.generate());
 
-		g.setVertices(Set.of("a", "b", "c"));
+		g.vertices(Set.of("a", "b", "c"));
 		assertEquals(Set.of("a", "b", "c"), g.generate().vertices());
+		/* assert the vertices are reused */
 		assertEquals(Set.of("a", "b", "c"), g.generate().vertices());
 
 		AtomicInteger vertexId = new AtomicInteger();
-		g.setVertices(4, () -> String.valueOf(vertexId.getAndIncrement()));
+		g.vertices(4, existingIds -> String.valueOf(vertexId.getAndIncrement()));
 		assertEquals(Set.of("0", "1", "2", "3"), g.generate().vertices());
-		assertEquals(Set.of("0", "1", "2", "3"), g.generate().vertices());
+		assertEquals(Set.of("4", "5", "6", "7"), g.generate().vertices());
+
+		g.vertices(5); /* default vertex builder */
+		assertThrows(IllegalStateException.class, () -> g.generate());
 	}
 
 	@SuppressWarnings("boxing")
 	@Test
-	public void testVerticesIntGraph() {
-		GnpGraphGenerator<Integer, Integer> g = GnpGraphGenerator.newIntInstance();
-		g.setSeed(0x430f4b24893b9f43L);
-		g.setEdges(new AtomicInteger()::getAndIncrement);
+	public void verticesIntGraph() {
+		GnpGraphGenerator<Integer, Integer> g = new GnpGraphGenerator<>(IntGraphFactory.undirected());
+		g.seed(0x430f4b24893b9f43L);
+		g.edges(IdBuilderInt.defaultBuilder());
 
 		/* vertices were not set yet */
 		assertThrows(IllegalStateException.class, () -> g.generate());
 
-		g.setVertices(Set.of(17, 86, 5));
+		g.vertices(Set.of(17, 86, 5));
 		assertEquals(Set.of(17, 86, 5), g.generate().vertices());
+		/* assert the vertices are reused */
 		assertEquals(Set.of(17, 86, 5), g.generate().vertices());
 
 		AtomicInteger vertexId = new AtomicInteger();
-		g.setVertices(4, () -> vertexId.getAndIncrement());
+		g.vertices(4, existingIds -> vertexId.getAndIncrement());
 		assertEquals(Set.of(0, 1, 2, 3), g.generate().vertices());
-		assertEquals(Set.of(0, 1, 2, 3), g.generate().vertices());
+		assertEquals(Set.of(4, 5, 6, 7), g.generate().vertices());
+
+		g.vertices(5); /* default vertex builder */
+		assertEquals(5, g.generate().vertices().size());
+
+		assertThrows(IllegalArgumentException.class, () -> g.vertices(-3));
 	}
 
 	@Test
-	public void testEdges() {
+	public void edges() {
 		foreachBoolConfig(intGraph -> {
 			GnpGraphGenerator<Integer, Integer> g =
-					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
-			g.setSeed(0x2157279ef75b0caaL);
-			g.setVertices(range(10));
+					intGraph ? new GnpGraphGenerator<>(IntGraphFactory.undirected()) : new GnpGraphGenerator<>();
+			g.seed(0x2157279ef75b0caaL);
+			g.vertices(range(10));
 
 			/* edges were not set yet */
-			assertThrows(IllegalStateException.class, () -> g.generate());
+			if (intGraph) {
+				assertNotNull(g.generate());
+			} else {
+				assertThrows(IllegalStateException.class, () -> g.generate());
+			}
 
-			g.setEdges(new AtomicInteger()::getAndIncrement);
+			g.edges(IdBuilderInt.defaultBuilder());
 			Graph<Integer, Integer> g1 = g.generate();
-			assertEquals(range(g1.edges().size()), g1.edges());
+			assertEquals(range(1, 1 + g1.edges().size()), g1.edges());
 		});
 	}
 
@@ -88,20 +106,20 @@ public class GnpGraphGeneratorTest extends TestBase {
 	public void testDirected() {
 		foreachBoolConfig(intGraph -> {
 			GnpGraphGenerator<Integer, Integer> g =
-					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
-			g.setSeed(0x2d3d96ffc9c5d464L);
-			g.setVertices(10, new AtomicInteger()::getAndIncrement);
-			g.setEdges(new AtomicInteger()::getAndIncrement);
+					intGraph ? new GnpGraphGenerator<>(IntGraphFactory.undirected()) : new GnpGraphGenerator<>();
+			g.seed(0x2d3d96ffc9c5d464L);
+			g.vertices(10, IdBuilderInt.defaultBuilder());
+			g.edges(IdBuilderInt.defaultBuilder());
 
 			/* check default */
 			assertFalse(g.generate().isDirected());
 
 			/* check directed */
-			g.setDirected(true);
+			g.directed(true);
 			assertTrue(g.generate().isDirected());
 
 			/* check undirected */
-			g.setDirected(false);
+			g.directed(false);
 			assertFalse(g.generate().isDirected());
 		});
 	}
@@ -110,10 +128,10 @@ public class GnpGraphGeneratorTest extends TestBase {
 	public void testEdgeProbabilities() {
 		foreachBoolConfig(intGraph -> {
 			GnpGraphGenerator<Integer, Integer> g =
-					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
-			assertThrows(IllegalArgumentException.class, () -> g.setEdgeProbability(1.1));
-			assertThrows(IllegalArgumentException.class, () -> g.setEdgeProbability(-0.1));
-			g.setEdgeProbability(0.5);
+					intGraph ? new GnpGraphGenerator<>(IntGraphFactory.undirected()) : new GnpGraphGenerator<>();
+			assertThrows(IllegalArgumentException.class, () -> g.edgeProbability(1.1));
+			assertThrows(IllegalArgumentException.class, () -> g.edgeProbability(-0.1));
+			g.edgeProbability(0.5);
 		});
 	}
 
@@ -121,22 +139,22 @@ public class GnpGraphGeneratorTest extends TestBase {
 	public void testSelfEdges() {
 		foreachBoolConfig(intGraph -> {
 			GnpGraphGenerator<Integer, Integer> g =
-					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
-			g.setVertices(12, new AtomicInteger()::getAndIncrement);
-			g.setEdges(new AtomicInteger()::getAndIncrement);
-			g.setEdgeProbability(0.98);
+					intGraph ? new GnpGraphGenerator<>(IntGraphFactory.undirected()) : new GnpGraphGenerator<>();
+			g.vertices(12, IdBuilderInt.defaultBuilder());
+			g.edges(IdBuilderInt.defaultBuilder());
+			g.edgeProbability(0.98);
 
 			/* check default */
 			Graph<Integer, Integer> g1 = g.generate();
 			assertFalse(g1.edges().stream().anyMatch(e -> g1.edgeSource(e).equals(g1.edgeTarget(e))));
 
 			/* check self-edges enabled */
-			g.setSelfEdges(true);
+			g.selfEdges(true);
 			Graph<Integer, Integer> g2 = g.generate();
 			assertTrue(g2.edges().stream().anyMatch(e -> g2.edgeSource(e).equals(g2.edgeTarget(e))));
 
 			/* check self-edges disabled */
-			g.setSelfEdges(false);
+			g.selfEdges(false);
 			Graph<Integer, Integer> g3 = g.generate();
 			assertFalse(g3.edges().stream().anyMatch(e -> g3.edgeSource(e).equals(g3.edgeTarget(e))));
 		});
@@ -147,10 +165,10 @@ public class GnpGraphGeneratorTest extends TestBase {
 	public void testMutability() {
 		foreachBoolConfig(intGraph -> {
 			GnpGraphGenerator<Integer, Integer> g =
-					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
-			g.setVertices(12, new AtomicInteger()::getAndIncrement);
-			g.setEdges(new AtomicInteger()::getAndIncrement);
-			g.setEdgeProbability(0.98);
+					intGraph ? new GnpGraphGenerator<>(IntGraphFactory.undirected()) : new GnpGraphGenerator<>();
+			g.vertices(12, IdBuilderInt.defaultBuilder());
+			g.edges(IdBuilderInt.defaultBuilder());
+			g.edgeProbability(0.98);
 
 			Graph<Integer, Integer> gImmutable = g.generate();
 			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertex(50));
@@ -165,14 +183,22 @@ public class GnpGraphGeneratorTest extends TestBase {
 	public void probabilityZero() {
 		foreachBoolConfig(intGraph -> {
 			GnpGraphGenerator<Integer, Integer> g =
-					intGraph ? GnpGraphGenerator.newIntInstance() : GnpGraphGenerator.newInstance();
-			g.setEdgeProbability(0);
-			g.setVertices(range(10));
-			g.setEdges(new AtomicInteger()::getAndIncrement);
+					intGraph ? new GnpGraphGenerator<>(IntGraphFactory.undirected()) : new GnpGraphGenerator<>();
+			g.edgeProbability(0);
+			g.vertices(range(10));
+			g.edges(IdBuilderInt.defaultBuilder());
 
 			for (int repeat = 0; repeat < 20; repeat++)
 				assertTrue(g.generate().edges().isEmpty());
 		});
+	}
+
+	@Test
+	public void graphFactory() {
+		assertNotNull(new GnpGraphGenerator<>().graphFactory());
+		GraphFactory<Integer, Integer> gf = GraphFactory.undirected();
+		GnpGraphGenerator<Integer, Integer> g = new GnpGraphGenerator<>(gf);
+		assertTrue(gf == g.graphFactory());
 	}
 
 }

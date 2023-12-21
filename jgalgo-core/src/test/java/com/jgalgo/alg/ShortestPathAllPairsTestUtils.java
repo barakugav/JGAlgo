@@ -24,12 +24,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collection;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.gen.CompleteGraphGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IdBuilderInt;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.TestBase;
@@ -180,9 +180,8 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 	public void testDefaultImpl() {
 		ShortestPathAllPairs algo = ShortestPathAllPairs.newInstance();
 
-		CompleteGraphGenerator<Integer, Integer> gen = CompleteGraphGenerator.newInstance();
-		gen.setVertices(range(25));
-		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		CompleteGraphGenerator<Integer, Integer> gen = new CompleteGraphGenerator<>();
+		gen.vertices(range(25)).edges(IdBuilderInt.defaultBuilder());
 		Graph<Integer, Integer> g = gen.generate();
 
 		testAPSP(g, g.vertices(), true, null, algo, new ShortestPathSingleSourceDijkstra());

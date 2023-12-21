@@ -18,22 +18,21 @@ package com.jgalgo.gen;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.BiFunction;
-import java.util.function.IntBinaryOperator;
-import java.util.function.IntSupplier;
-import java.util.function.Supplier;
 import com.jgalgo.alg.BipartiteGraphs;
 import com.jgalgo.alg.VertexBiPartition;
 import com.jgalgo.gen.BipartiteGenerators.Direction;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
-import com.jgalgo.graph.IWeightsBool;
+import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IdBuilder;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.WeightsBool;
-import com.jgalgo.internal.util.IntAdapters;
+import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
@@ -48,7 +47,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * Both undirected and directed graphs can be generated. If the graph is directed, there are three options for the
  * generated edges between each pair of left and right vertices: generate two edges in both directions, generate one
  * edge from the left vertex to the right vertex, or generate one edge from the right vertex to the left vertex. See
- * {@link #setDirectedAll()}, {@link #setDirectedLeftToRight()} and {@link #setDirectedRightToLeft()} for more details.
+ * {@link #directedAll()}, {@link #directedLeftToRight()} and {@link #directedRightToLeft()} for more details.
  *
  * <p>
  * The generated graph(s) will have vertex {@linkplain WeightsBool boolean weights} with key
@@ -63,39 +62,74 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * <p>
  * This generator is the bipartite version of {@link CompleteGraphGenerator}.
  *
- * @see    BipartiteGraphs
- * @author Barak Ugav
+ * @param  <V> the vertices type
+ * @param  <E> the edges type
+ * @see        BipartiteGraphs
+ * @author     Barak Ugav
  */
 public class CompleteBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 
-	private final boolean intGraph;
-	private Collection<V> leftVertices;
-	private Collection<V> rightVertices;
-	private BiFunction<V, V, E> edgeBuilder;
+	private final GraphFactory<V, E> factory;
+	private Variant2<List<V>[], Pair<IntIntPair, IdBuilder<V>>> vertices;
+	private IdBuilder<E> edgeBuilder;
 	private Direction direction = Direction.Undirected;
 
-	private CompleteBipartiteGraphGenerator(boolean intGraph) {
-		this.intGraph = intGraph;
+	/**
+	 * Create a new complete bipartite graph generator that will use the default graph factory.
+	 *
+	 * <p>
+	 * The default graph factory does not have vertex builder, so if only the number of vertices is set using
+	 * {@link #vertices(int, int)}, the vertex builder must be set explicitly using
+	 * {@code graphFactory().setVertexBuilder(...)}. Same holds for edges, for which the number of them is determine by
+	 * the number of vertices and the direction of the generated edges. Alternatively, the methods
+	 * {@link #vertices(int, int, IdBuilder)} and {@link #edges(IdBuilder)} can be used to set the number of vertices
+	 * and provide a vertex/edge builder that will override the (maybe non existing) vertex/edge builder of the graph
+	 * factory. The vertex set can also be set explicitly using {@link #vertices(Collection, Collection)}.
+	 */
+	public CompleteBipartiteGraphGenerator() {
+		this(GraphFactory.undirected());
 	}
 
 	/**
-	 * Creates a new complete bipartite graph generator.
+	 * Create a new complete bipartite graph generator that will use the given graph factory.
 	 *
-	 * @param  <V> the vertices type
-	 * @param  <E> the edges type
-	 * @return     a new complete graph generator
+	 * <p>
+	 * If the factory has a vertex builder it will be used to generate the vertices of the generated graph(s) if only
+	 * the number of vertices is set using {@link #vertices(int, int)}. If the factory has an edge builder it will be
+	 * used to generate the edges of the generated graph(s) if it will not be overridden by {@link #edges(IdBuilder)}.
+	 *
+	 * <p>
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration.
+	 *
+	 * <p>
+	 * To generate {@linkplain IntGraph int graphs}, pass an instance of {@linkplain IntGraphFactory} to this
+	 * constructor.
+	 *
+	 * @param factory the graph factory that will be used to create the generated graph(s)
 	 */
-	public static <V, E> CompleteBipartiteGraphGenerator<V, E> newInstance() {
-		return new CompleteBipartiteGraphGenerator<>(false);
+	public CompleteBipartiteGraphGenerator(GraphFactory<V, E> factory) {
+		this.factory = Objects.requireNonNull(factory);
 	}
 
 	/**
-	 * Creates a new complete bipartite graph generator for {@link IntGraph}.
+	 * Get the graph factory that will be used to create the generated graph(s).
 	 *
-	 * @return a new complete bipartite graph generator for {@link IntGraph}
+	 * <p>
+	 * It's possible to customize the factory before generating the graph(s), for example by using
+	 * {@link GraphFactory#addHint(GraphFactory.Hint)} to optimize the generated graph(s) for a specific algorithm. If
+	 * the factory has a vertex builder it will be used to generate the vertices of the generated graph(s) if only the
+	 * number of vertices is set using {@link #vertices(int, int)}. If the factory has an edge builder it will be used
+	 * to generate the edges of the generated graph(s) if it will not be overridden by {@link #edges(IdBuilder)}.
+	 *
+	 * <p>
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration.
+	 *
+	 * @return the graph factory that will be used to create the generated graph(s)
 	 */
-	public static CompleteBipartiteGraphGenerator<Integer, Integer> newIntInstance() {
-		return new CompleteBipartiteGraphGenerator<>(true);
+	public GraphFactory<V, E> graphFactory() {
+		return factory;
 	}
 
 	/**
@@ -107,26 +141,31 @@ public class CompleteBipartiteGraphGenerator<V, E> implements GraphGenerator<V, 
 	 * This method sets these two sets.
 	 *
 	 * <p>
-	 * If the generator is used to generate multiple graphs, the same vertex sets will be used for all of them.
+	 * If the generator is used to generate multiple graphs, the same vertex sets will be used for all of them. This
+	 * method override all previous calls to any of {@link #vertices(Collection, Collection)},
+	 * {@link #vertices(int, int)} or {@link #vertices(int, int, IdBuilder)}.
 	 *
-	 * @param leftVertices  the set of left vertices of the generated graph(s)
-	 * @param rightVertices the set of right vertices of the generated graph(s)
+	 * @param  leftVertices  the set of left vertices of the generated graph(s)
+	 * @param  rightVertices the set of right vertices of the generated graph(s)
+	 * @return               this generator
 	 */
 	@SuppressWarnings("unchecked")
-	public void setVertices(Collection<V> leftVertices, Collection<V> rightVertices) {
-		if (intGraph) {
-			this.leftVertices =
-					(Collection<V>) new IntArrayList(IntAdapters.asIntCollection((Collection<Integer>) leftVertices));
-			this.rightVertices =
-					(Collection<V>) new IntArrayList(IntAdapters.asIntCollection((Collection<Integer>) rightVertices));
+	public CompleteBipartiteGraphGenerator<V, E> vertices(Collection<? extends V> leftVertices,
+			Collection<? extends V> rightVertices) {
+		if (factory instanceof IntGraphFactory) {
+			leftVertices = (List<V>) new IntArrayList((Collection<Integer>) leftVertices);
+			rightVertices = (List<V>) new IntArrayList((Collection<Integer>) rightVertices);
 		} else {
-			this.leftVertices = new ObjectArrayList<>(leftVertices);
-			this.rightVertices = new ObjectArrayList<>(rightVertices);
+			leftVertices = new ObjectArrayList<>(leftVertices);
+			rightVertices = new ObjectArrayList<>(rightVertices);
 		}
+		List<V>[] vertices = new List[] { (List<V>) leftVertices, (List<V>) rightVertices };
+		this.vertices = Variant2.ofA(vertices);
+		return this;
 	}
 
 	/**
-	 * Set the vertices set of the generated graph(s) from a supplier.
+	 * Set the number of vertices that will be generated for each graph.
 	 *
 	 * <p>
 	 * A bipartite graph is a graph whose vertices can be divided into two disjoint sets \(U\) and \(V\) such that every
@@ -134,64 +173,73 @@ public class CompleteBipartiteGraphGenerator<V, E> implements GraphGenerator<V, 
 	 * This method sets these two sets.
 	 *
 	 * <p>
-	 * The supplier will be called exactly {@code leftVerticesNum+rightVerticesNum} times, and the same sets of vertices
-	 * created will be used for multiple graphs if {@link #generate()} is called multiple times.
+	 * The vertices will be generated using the vertex builder of the graph factory, see
+	 * {@link GraphFactory#setVertexBuilder(IdBuilder)}. The default graph factory does not have a vertex builder, so it
+	 * must be set explicitly, or {@link IntGraphFactory}, which does have such builder, should be passed in the
+	 * {@linkplain #CompleteBipartiteGraphGenerator(GraphFactory) constructor}. Another alternative is to use
+	 * {@link #vertices(int, int, IdBuilder)} which set the number of vertices and provide a vertex builder that will
+	 * override the (maybe non existing) vertex builder of the graph factory. The generation will happen independently
+	 * for each graph generated. If there is no vertex builder, an exception will be thrown during generation. This
+	 * method override all previous calls to any of {@link #vertices(Collection, Collection)},
+	 * {@link #vertices(int, int)} or {@link #vertices(int, int, IdBuilder)}.
 	 *
-	 * @param leftVerticesNum  the number of vertices in the left set
-	 * @param rightVerticesNum the number of vertices in the right set
-	 * @param vertexSupplier   the supplier of vertices
+	 * @param  leftVerticesNum          the number of vertices that will be generated in the left set for each graph
+	 * @param  rightVerticesNum         the number of vertices that will be generated in the right set for each graph
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code leftVerticesNum} or {@code rightVerticesNum} are negative
 	 */
-	@SuppressWarnings("unchecked")
-	public void setVertices(int leftVerticesNum, int rightVerticesNum, Supplier<V> vertexSupplier) {
-		if (intGraph) {
-			IntList leftVertices = new IntArrayList(leftVerticesNum);
-			IntList rightVertices = new IntArrayList(rightVerticesNum);
-			IntSupplier vSupplier = IntAdapters.asIntSupplier((Supplier<Integer>) vertexSupplier);
-			for (int i = 0; i < leftVerticesNum; i++)
-				leftVertices.add(vSupplier.getAsInt());
-			for (int i = 0; i < rightVerticesNum; i++)
-				rightVertices.add(vSupplier.getAsInt());
-			this.leftVertices = (Collection<V>) leftVertices;
-			this.rightVertices = (Collection<V>) rightVertices;
-		} else {
-			List<V> leftVertices = new ObjectArrayList<>(leftVerticesNum);
-			List<V> rightVertices = new ObjectArrayList<>(rightVerticesNum);
-			for (int i = 0; i < leftVerticesNum; i++)
-				leftVertices.add(vertexSupplier.get());
-			for (int i = 0; i < rightVerticesNum; i++)
-				rightVertices.add(vertexSupplier.get());
-			this.leftVertices = leftVertices;
-			this.rightVertices = rightVertices;
-		}
+	public CompleteBipartiteGraphGenerator<V, E> vertices(int leftVerticesNum, int rightVerticesNum) {
+		vertices(leftVerticesNum, rightVerticesNum, null);
+		return this;
 	}
 
 	/**
-	 * Set the edge supplier of the generated graph(s).
+	 * Set the number of vertices that will be generated for each graph, and the vertex builder that will be used to
+	 * generate them.
 	 *
 	 * <p>
-	 * The supplier will be called for any edge created, for any graph generated. This behavior is different from
-	 * {@link #setVertices(int, int, Supplier)}, where the supplier is used to generate sets of vertices which are
-	 * reused for any generated graph.
+	 * A bipartite graph is a graph whose vertices can be divided into two disjoint sets \(U\) and \(V\) such that every
+	 * edge connects a vertex in \(U\) to one in \(V\). The two sets are usually called the left and right vertices.
+	 * This method sets these two sets.
 	 *
-	 * @param edgeSupplier the edge supplier
+	 * <p>
+	 * The vertices will be generated using the provided vertex builder, and the vertex generator provided by the
+	 * {@linkplain #graphFactory() graph factory} (if exists) will be ignored. The generation will happen independently
+	 * for each graph generated. This method override all previous calls to any of
+	 * {@link #vertices(Collection, Collection)}, {@link #vertices(int, int)} or {@link #vertices(int, int, IdBuilder)}.
+	 *
+	 * @param  leftVerticesNum          the number of vertices that will be generated in the left set for each graph
+	 * @param  rightVerticesNum         the number of vertices that will be generated in the right set for each graph
+	 * @param  vertexBuilder            the vertex builder, or {@code null} to use the vertex builder of the
+	 *                                      {@linkplain #graphFactory() graph factory}
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code leftVerticesNum} or {@code rightVerticesNum} are negative
 	 */
-	public void setEdges(Supplier<E> edgeSupplier) {
-		Objects.requireNonNull(edgeSupplier);
-		setEdges((u, v) -> edgeSupplier.get());
+	public CompleteBipartiteGraphGenerator<V, E> vertices(int leftVerticesNum, int rightVerticesNum,
+			IdBuilder<V> vertexBuilder) {
+		if (leftVerticesNum < 0 || rightVerticesNum < 0)
+			throw new IllegalArgumentException("number of vertices must be non-negative");
+		vertices = Variant2.ofB(Pair.of(IntIntPair.of(leftVerticesNum, rightVerticesNum), vertexBuilder));
+		return this;
 	}
 
 	/**
-	 * Set the edge builder function of the generated graph(s).
+	 * Set the edge builder that will be used to generate edges.
 	 *
 	 * <p>
-	 * The function will be called for any edge created, for any graph generated. This behavior is different from
-	 * {@link #setVertices(int, int, Supplier)}, where the supplier is used to generate sets of vertices which are
-	 * reused for any generated graph.
+	 * The edges will be generated using the provided edge builder, and the edge generator provided by the
+	 * {@linkplain #graphFactory() graph factory} (if exists) will be ignored. The generation will happen independently
+	 * for each graph generated. If this method is not called, or called with a {@code null} argument, the edge builder
+	 * of the graph factory will be used. If the graph factory does not have an edge builder, an exception will be
+	 * thrown during generation.
 	 *
-	 * @param edgeBuilder the edge builder function
+	 * @param  edgeBuilder the edge builder, or {@code null} to use the edge builder of the {@linkplain #graphFactory()
+	 *                         graph factory}
+	 * @return             this generator
 	 */
-	public void setEdges(BiFunction<V, V, E> edgeBuilder) {
-		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);
+	public CompleteBipartiteGraphGenerator<V, E> edges(IdBuilder<E> edgeBuilder) {
+		this.edgeBuilder = edgeBuilder;
+		return this;
 	}
 
 	/**
@@ -206,12 +254,14 @@ public class CompleteBipartiteGraphGenerator<V, E> implements GraphGenerator<V, 
 	 * <p>
 	 * By default, the generated graph(s) is undirected.
 	 *
-	 * @see #setDirectedAll()
-	 * @see #setDirectedLeftToRight()
-	 * @see #setDirectedRightToLeft()
+	 * @see    #directedAll()
+	 * @see    #directedLeftToRight()
+	 * @see    #directedRightToLeft()
+	 * @return this generator
 	 */
-	public void setUndirected() {
+	public CompleteBipartiteGraphGenerator<V, E> undirected() {
 		direction = Direction.Undirected;
+		return this;
 	}
 
 	/**
@@ -227,12 +277,14 @@ public class CompleteBipartiteGraphGenerator<V, E> implements GraphGenerator<V, 
 	 * <p>
 	 * By default, the generated graph(s) is undirected.
 	 *
-	 * @see #setUndirected()
-	 * @see #setDirectedLeftToRight()
-	 * @see #setDirectedRightToLeft()
+	 * @see    #undirected()
+	 * @see    #directedLeftToRight()
+	 * @see    #directedRightToLeft()
+	 * @return this generator
 	 */
-	public void setDirectedAll() {
+	public CompleteBipartiteGraphGenerator<V, E> directedAll() {
 		direction = Direction.DirectedAll;
+		return this;
 	}
 
 	/**
@@ -247,12 +299,14 @@ public class CompleteBipartiteGraphGenerator<V, E> implements GraphGenerator<V, 
 	 * <p>
 	 * By default, the generated graph(s) is undirected.
 	 *
-	 * @see #setUndirected()
-	 * @see #setDirectedAll()
-	 * @see #setDirectedRightToLeft()
+	 * @see    #undirected()
+	 * @see    #directedAll()
+	 * @see    #directedRightToLeft()
+	 * @return this generator
 	 */
-	public void setDirectedLeftToRight() {
+	public CompleteBipartiteGraphGenerator<V, E> directedLeftToRight() {
 		direction = Direction.DirectedLeftToRight;
+		return this;
 	}
 
 	/**
@@ -267,83 +321,83 @@ public class CompleteBipartiteGraphGenerator<V, E> implements GraphGenerator<V, 
 	 * <p>
 	 * By default, the generated graph(s) is undirected.
 	 *
-	 * @see #setUndirected()
-	 * @see #setDirectedAll()
-	 * @see #setDirectedLeftToRight()
+	 * @see    #undirected()
+	 * @see    #directedAll()
+	 * @see    #directedLeftToRight()
+	 * @return this generator
 	 */
-	public void setDirectedRightToLeft() {
+	public CompleteBipartiteGraphGenerator<V, E> directedRightToLeft() {
 		direction = Direction.DirectedRightToLeft;
+		return this;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public GraphBuilder<V, E> generateIntoBuilder() {
-		if (leftVertices == null)
+		if (vertices == null)
 			throw new IllegalStateException("Vertices not set");
+		@SuppressWarnings("boxing")
+		final int leftSize = vertices.map(p -> p[0].size(), p -> p.first().firstInt()).intValue();
+		@SuppressWarnings("boxing")
+		final int rightSize = vertices.map(p -> p[1].size(), p -> p.first().secondInt()).intValue();
+		final int edgeNum = leftSize * rightSize / (direction != Direction.DirectedAll ? 2 : 1);
+
+		GraphBuilder<V, E> g = factory.setDirected(direction != Direction.Undirected).newBuilder();
+		IdBuilder<E> edgeBuilder = this.edgeBuilder != null ? this.edgeBuilder : g.edgeBuilder();
 		if (edgeBuilder == null)
-			throw new IllegalStateException("Edge supplier not set");
+			throw new IllegalStateException("Edge builder not provided and graph factory does not have one");
 
-		int m = leftVertices.size() * rightVertices.size();
-		if (direction != Direction.DirectedAll)
-			m /= 2;
-
-		if (intGraph) {
-			IntGraphBuilder g = IntGraphBuilder.newInstance(direction != Direction.Undirected);
-			final int[] leftVertices =
-					IntAdapters.asIntCollection((Collection<Integer>) this.leftVertices).toIntArray();
-			final int[] rightVertices =
-					IntAdapters.asIntCollection((Collection<Integer>) this.rightVertices).toIntArray();
-			g.ensureVertexCapacity(leftVertices.length + rightVertices.length);
-			g.ensureEdgeCapacity(m);
-
-			IWeightsBool partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);
-			for (int v : leftVertices) {
-				g.addVertex(v);
-				partition.set(v, true);
-			}
-			for (int v : rightVertices) {
-				g.addVertex(v);
-				partition.set(v, false);
-			}
-
-			IntBinaryOperator edgeBuilder =
-					IntAdapters.asIntBiOperator((BiFunction<Integer, Integer, Integer>) this.edgeBuilder);
-			if (direction != Direction.DirectedRightToLeft)
-				for (int vLeft : leftVertices)
-					for (int vRight : rightVertices)
-						g.addEdge(vLeft, vRight, edgeBuilder.applyAsInt(vLeft, vRight));
-			if (direction == Direction.DirectedAll || direction == Direction.DirectedRightToLeft)
-				for (int vRight : rightVertices)
-					for (int vLeft : leftVertices)
-						g.addEdge(vRight, vLeft, edgeBuilder.applyAsInt(vRight, vLeft));
-			return (GraphBuilder<V, E>) g;
-
+		final List<V> leftVertices;
+		final List<V> rightVertices;
+		g.ensureVertexCapacity(leftSize + rightSize);
+		if (this.vertices.contains(List[].class)) {
+			@SuppressWarnings("unchecked")
+			List<V>[] vertices = this.vertices.get(List[].class);
+			g.addVertices(leftVertices = vertices[0]);
+			g.addVertices(rightVertices = vertices[1]);
 		} else {
-			GraphBuilder<V, E> g = GraphBuilder.newInstance(direction != Direction.Undirected);
-			final V[] leftVertices = (V[]) this.leftVertices.toArray();
-			final V[] rightVertices = (V[]) this.rightVertices.toArray();
-			g.ensureVertexCapacity(leftVertices.length + rightVertices.length);
-			g.ensureEdgeCapacity(m);
-
-			WeightsBool<V> partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);
-			for (V v : leftVertices) {
-				g.addVertex(v);
-				partition.set(v, true);
+			@SuppressWarnings("unchecked")
+			Pair<IntIntPair, IdBuilder<V>> p = this.vertices.get(Pair.class);
+			IdBuilder<V> vertexBuilder = p.second() != null ? p.second() : g.vertexBuilder();
+			if (vertexBuilder == null)
+				throw new IllegalStateException("Vertex builder not provided and graph factory does not have one");
+			if (g instanceof IntGraphBuilder) {
+				@SuppressWarnings("unchecked")
+				List<V> leftVertices0 = (List<V>) new IntArrayList(leftSize);
+				@SuppressWarnings("unchecked")
+				List<V> rightVertices0 = (List<V>) new IntArrayList(rightSize);
+				leftVertices = leftVertices0;
+				rightVertices = rightVertices0;
+			} else {
+				leftVertices = new ObjectArrayList<>(leftSize);
+				rightVertices = new ObjectArrayList<>(rightSize);
 			}
-			for (V v : rightVertices) {
-				g.addVertex(v);
-				partition.set(v, false);
+			for (int i = 0; i < leftSize; i++) {
+				V vertex = vertexBuilder.build(g.vertices());
+				g.addVertex(vertex);
+				leftVertices.add(vertex);
 			}
-			if (direction != Direction.DirectedRightToLeft)
-				for (V vLeft : leftVertices)
-					for (V vRight : rightVertices)
-						g.addEdge(vLeft, vRight, edgeBuilder.apply(vLeft, vRight));
-			if (direction == Direction.DirectedAll || direction == Direction.DirectedRightToLeft)
-				for (V vRight : rightVertices)
-					for (V vLeft : leftVertices)
-						g.addEdge(vRight, vLeft, edgeBuilder.apply(vRight, vLeft));
-			return g;
+			for (int i = 0; i < rightSize; i++) {
+				V vertex = vertexBuilder.build(g.vertices());
+				g.addVertex(vertex);
+				rightVertices.add(vertex);
+			}
 		}
+		WeightsBool<V> partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);
+		for (V v : leftVertices)
+			partition.set(v, true);
+		for (V v : rightVertices)
+			partition.set(v, false);
+
+		g.ensureEdgeCapacity(edgeNum);
+		if (direction != Direction.DirectedRightToLeft)
+			for (V vLeft : leftVertices)
+				for (V vRight : rightVertices)
+					g.addEdge(vLeft, vRight, edgeBuilder.build(g.edges()));
+		if (direction == Direction.DirectedAll || direction == Direction.DirectedRightToLeft)
+			for (V vRight : rightVertices)
+				for (V vLeft : leftVertices)
+					g.addEdge(vRight, vLeft, edgeBuilder.build(g.edges()));
+		return g;
 	}
 
 }

@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
@@ -33,6 +32,7 @@ import com.jgalgo.gen.CompleteGraphGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IdBuilderInt;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
@@ -48,9 +48,8 @@ public class SteinerTreeMehlhornTest extends TestBase {
 	public void testEmptyTerminals() {
 		final SteinerTreeAlgo algo = new SteinerTreeMehlhorn();
 
-		CompleteGraphGenerator<Integer, Integer> gen = CompleteGraphGenerator.newInstance();
-		gen.setVertices(range(7));
-		gen.setEdges(new AtomicInteger()::getAndIncrement);
+		CompleteGraphGenerator<Integer, Integer> gen = new CompleteGraphGenerator<>();
+		gen.vertices(range(7)).edges(IdBuilderInt.defaultBuilder());
 		Graph<Integer, Integer> g = gen.generate();
 
 		/* empty terminal set */

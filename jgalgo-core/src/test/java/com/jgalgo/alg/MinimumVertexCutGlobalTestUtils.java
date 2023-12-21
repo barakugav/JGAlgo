@@ -22,10 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
 import com.jgalgo.gen.CompleteGraphGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IdBuilderInt;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
@@ -73,10 +74,9 @@ class MinimumVertexCutGlobalTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64);
 		tester.addPhase().withArgs(128);
 		tester.run((n) -> {
-			CompleteGraphGenerator<Integer, Integer> gen =
-					rand.nextBoolean() ? CompleteGraphGenerator.newInstance() : CompleteGraphGenerator.newIntInstance();
-			gen.setVertices(range(n));
-			gen.setEdges(new AtomicInteger()::getAndIncrement);
+			CompleteGraphGenerator<Integer, Integer> gen = rand.nextBoolean() ? new CompleteGraphGenerator<>()
+					: new CompleteGraphGenerator<>(IntGraphFactory.undirected());
+			gen.vertices(range(n)).edges(IdBuilderInt.defaultBuilder());
 			Graph<Integer, Integer> g = gen.generateMutable();
 
 			WeightFunction<Integer> w = null;

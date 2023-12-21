@@ -25,67 +25,87 @@ import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IdBuilderInt;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.TestBase;
 
 public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 
 	@Test
-	public void testVertices() {
-		RecursiveMatrixGraphGenerator<String, Integer> g = RecursiveMatrixGraphGenerator.newInstance();
-		g.setSeed(0x69bd6fdb73f97870L);
-		g.setEdges(1, new AtomicInteger()::getAndIncrement);
+	public void vertices() {
+		RecursiveMatrixGraphGenerator<String, Integer> g = new RecursiveMatrixGraphGenerator<>();
+		g.seed(0x69bd6fdb73f97870L);
+		g.edges(1, IdBuilderInt.defaultBuilder());
 
 		/* vertices were not set yet */
 		assertThrows(IllegalStateException.class, () -> g.generate());
 
-		g.setVertices(Set.of("a", "b", "c"));
+		g.vertices(Set.of("a", "b", "c"));
 		assertEquals(Set.of("a", "b", "c"), g.generate().vertices());
+		/* assert the vertices are reused */
 		assertEquals(Set.of("a", "b", "c"), g.generate().vertices());
 
 		AtomicInteger vertexId = new AtomicInteger();
-		g.setVertices(4, () -> String.valueOf(vertexId.getAndIncrement()));
+		g.vertices(4, existingIds -> String.valueOf(vertexId.getAndIncrement()));
 		assertEquals(Set.of("0", "1", "2", "3"), g.generate().vertices());
-		assertEquals(Set.of("0", "1", "2", "3"), g.generate().vertices());
+		assertEquals(Set.of("4", "5", "6", "7"), g.generate().vertices());
+
+		g.vertices(5); /* default vertex builder */
+		assertThrows(IllegalStateException.class, () -> g.generate());
 	}
 
 	@SuppressWarnings("boxing")
 	@Test
-	public void testVerticesIntGraph() {
-		RecursiveMatrixGraphGenerator<Integer, Integer> g = RecursiveMatrixGraphGenerator.newIntInstance();
-		g.setSeed(0xa542c7970abb70b9L);
-		g.setEdges(1, new AtomicInteger()::getAndIncrement);
+	public void verticesIntGraph() {
+		RecursiveMatrixGraphGenerator<Integer, Integer> g =
+				new RecursiveMatrixGraphGenerator<>(IntGraphFactory.undirected());
+		g.seed(0xa542c7970abb70b9L);
+		g.edges(1, IdBuilderInt.defaultBuilder());
 
 		/* vertices were not set yet */
 		assertThrows(IllegalStateException.class, () -> g.generate());
 
-		g.setVertices(Set.of(88, 99, 1678));
+		g.vertices(Set.of(88, 99, 1678));
 		assertEquals(Set.of(88, 99, 1678), g.generate().vertices());
+		/* assert the vertices are reused */
 		assertEquals(Set.of(88, 99, 1678), g.generate().vertices());
 
 		AtomicInteger vertexId = new AtomicInteger();
-		g.setVertices(4, () -> vertexId.getAndIncrement());
+		g.vertices(4, existingIds -> vertexId.getAndIncrement());
 		assertEquals(Set.of(0, 1, 2, 3), g.generate().vertices());
-		assertEquals(Set.of(0, 1, 2, 3), g.generate().vertices());
+		assertEquals(Set.of(4, 5, 6, 7), g.generate().vertices());
+
+		g.vertices(5); /* default vertex builder */
+		assertEquals(5, g.generate().vertices().size());
+
+		assertThrows(IllegalArgumentException.class, () -> g.vertices(-3));
 	}
 
 	@Test
-	public void testEdges() {
+	public void edges() {
 		foreachBoolConfig((intGraph, directed) -> {
 			RecursiveMatrixGraphGenerator<Integer, Integer> g =
-					intGraph ? RecursiveMatrixGraphGenerator.newIntInstance()
-							: RecursiveMatrixGraphGenerator.newInstance();
-			g.setSeed(0x28522dc13436389fL);
-			g.setDirected(directed);
-			g.setVertices(range(100));
+					intGraph ? new RecursiveMatrixGraphGenerator<>(IntGraphFactory.undirected())
+							: new RecursiveMatrixGraphGenerator<>();
+			g.seed(0x28522dc13436389fL);
+			g.directed(directed);
+			g.vertices(range(100));
 
 			/* edges were not set yet */
 			assertThrows(IllegalStateException.class, () -> g.generate());
 
-			g.setEdges(5, new AtomicInteger()::getAndIncrement);
-			assertEquals(range(0, 5), g.generate().edges());
-			assertEquals(range(5, 10), g.generate().edges());
+			g.edges(5, IdBuilderInt.defaultBuilder());
+			assertEquals(range(1, 6), g.generate().edges());
+			assertEquals(range(6, 11), g.generate().edges());
 
-			assertThrows(IllegalArgumentException.class, () -> g.setEdges(-5, new AtomicInteger()::getAndIncrement));
+			g.edges(5); /* default vertex builder */
+			if (intGraph) {
+				assertEquals(5, g.generate().edges().size());
+			} else {
+				assertThrows(IllegalStateException.class, () -> g.generate());
+			}
+			assertThrows(IllegalArgumentException.class, () -> g.edges(-5));
 		});
 	}
 
@@ -93,21 +113,21 @@ public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 	public void testDirected() {
 		foreachBoolConfig(intGraph -> {
 			RecursiveMatrixGraphGenerator<Integer, Integer> g =
-					intGraph ? RecursiveMatrixGraphGenerator.newIntInstance()
-							: RecursiveMatrixGraphGenerator.newInstance();
-			g.setSeed(0x86c8f3658c4c34f6L);
-			g.setVertices(range(100));
-			g.setEdges(5, new AtomicInteger()::getAndIncrement);
+					intGraph ? new RecursiveMatrixGraphGenerator<>(IntGraphFactory.undirected())
+							: new RecursiveMatrixGraphGenerator<>();
+			g.seed(0x86c8f3658c4c34f6L);
+			g.vertices(range(100));
+			g.edges(5, IdBuilderInt.defaultBuilder());
 
 			/* check default */
 			assertFalse(g.generate().isDirected());
 
 			/* check directed */
-			g.setDirected(true);
+			g.directed(true);
 			assertTrue(g.generate().isDirected());
 
 			/* check undirected */
-			g.setDirected(false);
+			g.directed(false);
 			assertFalse(g.generate().isDirected());
 		});
 	}
@@ -116,24 +136,31 @@ public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 	public void testEdgeProbabilities() {
 		foreachBoolConfig(intGraph -> {
 			RecursiveMatrixGraphGenerator<Integer, Integer> g =
-					intGraph ? RecursiveMatrixGraphGenerator.newIntInstance()
-							: RecursiveMatrixGraphGenerator.newInstance();
-			g.setSeed(0x7d5f093080604661L);
-			g.setVertices(range(10));
-			g.setEdges(30, new AtomicInteger()::getAndIncrement);
-			assertThrows(IllegalArgumentException.class, () -> g.setEdgeProbabilities(0.2, 0.2, 0.2, 0.2));
-			assertThrows(IllegalArgumentException.class, () -> g.setEdgeProbabilities(-0.2, 0.2, 0.5, 0.5));
+					intGraph ? new RecursiveMatrixGraphGenerator<>(IntGraphFactory.undirected())
+							: new RecursiveMatrixGraphGenerator<>();
+			g.seed(0x7d5f093080604661L);
+			g.vertices(range(10));
+			g.edges(30, IdBuilderInt.defaultBuilder());
+			assertThrows(IllegalArgumentException.class, () -> g.edgeProbabilities(0.2, 0.2, 0.2, 0.2));
+			assertThrows(IllegalArgumentException.class,
+					() -> g.edgeProbabilities(-1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0));
+			assertThrows(IllegalArgumentException.class,
+					() -> g.edgeProbabilities(1.0 / 3.0, -1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0));
+			assertThrows(IllegalArgumentException.class,
+					() -> g.edgeProbabilities(1.0 / 3.0, 1.0 / 3.0, -1.0 / 3.0, 1.0 / 3.0));
+			assertThrows(IllegalArgumentException.class,
+					() -> g.edgeProbabilities(1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0, -1.0 / 3.0));
 
-			g.setEdgeProbabilities(0.3, 0.3, 0.3, 0.1);
+			g.edgeProbabilities(0.3, 0.3, 0.3, 0.1);
 			assertNotNull(g.generate());
 
 			/* b and c must be equal in undirected graphs */
-			g.setDirected(false);
-			g.setEdgeProbabilities(0.3, 0.2, 0.4, 0.1);
+			g.directed(false);
+			g.edgeProbabilities(0.3, 0.2, 0.4, 0.1);
 			assertThrows(IllegalArgumentException.class, () -> g.generate());
 
-			g.setDirected(true);
-			g.setEdgeProbabilities(0.3, 0.2, 0.4, 0.1);
+			g.directed(true);
+			g.edgeProbabilities(0.3, 0.2, 0.4, 0.1);
 			assertNotNull(g.generate());
 		});
 	}
@@ -142,11 +169,11 @@ public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 	public void testTooManyEdges() {
 		foreachBoolConfig(intGraph -> {
 			RecursiveMatrixGraphGenerator<Integer, Integer> g =
-					intGraph ? RecursiveMatrixGraphGenerator.newIntInstance()
-							: RecursiveMatrixGraphGenerator.newInstance();
-			g.setSeed(0x28522dc13436389fL);
-			g.setVertices(range(10));
-			g.setEdges(100, new AtomicInteger()::getAndIncrement);
+					intGraph ? new RecursiveMatrixGraphGenerator<>(IntGraphFactory.undirected())
+							: new RecursiveMatrixGraphGenerator<>();
+			g.seed(0x28522dc13436389fL);
+			g.vertices(range(10));
+			g.edges(100, IdBuilderInt.defaultBuilder());
 
 			assertThrows(IllegalArgumentException.class, () -> g.generate());
 		});
@@ -157,11 +184,11 @@ public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 	public void testMutability() {
 		foreachBoolConfig(intGraph -> {
 			RecursiveMatrixGraphGenerator<Integer, Integer> g =
-					intGraph ? RecursiveMatrixGraphGenerator.newIntInstance()
-							: RecursiveMatrixGraphGenerator.newInstance();
-			g.setSeed(0x29362bc2fa3dddc3L);
-			g.setVertices(range(10));
-			g.setEdges(30, new AtomicInteger()::getAndIncrement);
+					intGraph ? new RecursiveMatrixGraphGenerator<>(IntGraphFactory.undirected())
+							: new RecursiveMatrixGraphGenerator<>();
+			g.seed(0x29362bc2fa3dddc3L);
+			g.vertices(range(10));
+			g.edges(30, IdBuilderInt.defaultBuilder());
 
 			Graph<Integer, Integer> gImmutable = g.generate();
 			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertex(50));
@@ -170,6 +197,14 @@ public class RecursiveMatrixGraphGeneratorTest extends TestBase {
 			gMutable.addVertex(50);
 			assertTrue(gMutable.vertices().contains(50));
 		});
+	}
+
+	@Test
+	public void graphFactory() {
+		assertNotNull(new RecursiveMatrixGraphGenerator<>().graphFactory());
+		GraphFactory<Integer, Integer> gf = GraphFactory.undirected();
+		RecursiveMatrixGraphGenerator<Integer, Integer> g = new RecursiveMatrixGraphGenerator<>(gf);
+		assertTrue(gf == g.graphFactory());
 	}
 
 }

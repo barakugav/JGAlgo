@@ -18,6 +18,7 @@ package com.jgalgo.gen;
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Set;
@@ -25,7 +26,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IdBuilderInt;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -34,62 +38,74 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 public class CompleteGraphGeneratorTest extends TestBase {
 
 	@Test
-	public void testVertices() {
-		CompleteGraphGenerator<String, Integer> g = CompleteGraphGenerator.newInstance();
-		g.setEdges(new AtomicInteger()::getAndIncrement);
+	public void vertices() {
+		CompleteGraphGenerator<String, Integer> g = new CompleteGraphGenerator<>();
+		g.edges(IdBuilderInt.defaultBuilder());
 
 		/* vertices were not set yet */
 		assertThrows(IllegalStateException.class, () -> g.generate());
 
 		Set<String> vertices = range(7).mapToObj(String::valueOf).collect(Collectors.toSet());
-		g.setVertices(vertices);
+		g.vertices(vertices);
 		assertEquals(vertices, g.generate().vertices());
 		/* assert the vertices are reused */
 		assertEquals(vertices, g.generate().vertices());
 
 		AtomicInteger vertexId = new AtomicInteger();
-		g.setVertices(4, () -> String.valueOf(vertexId.getAndIncrement()));
+		g.vertices(4, existingIds -> String.valueOf(vertexId.getAndIncrement()));
 		assertEquals(Set.of("0", "1", "2", "3"), g.generate().vertices());
-		/* assert the vertices are reused */
-		assertEquals(Set.of("0", "1", "2", "3"), g.generate().vertices());
+		assertEquals(Set.of("4", "5", "6", "7"), g.generate().vertices());
+
+		g.vertices(5); /* default vertex builder */
+		assertThrows(IllegalStateException.class, () -> g.generate());
 	}
 
 	@SuppressWarnings("boxing")
 	@Test
-	public void testVerticesIntGraph() {
-		CompleteGraphGenerator<Integer, Integer> g = CompleteGraphGenerator.newIntInstance();
-		g.setEdges(new AtomicInteger()::getAndIncrement);
+	public void verticesIntGraph() {
+		CompleteGraphGenerator<Integer, Integer> g = new CompleteGraphGenerator<>(IntGraphFactory.undirected());
+		g.edges(IdBuilderInt.defaultBuilder());
 
 		/* vertices were not set yet */
 		assertThrows(IllegalStateException.class, () -> g.generate());
 
 		Set<Integer> vertices = range(7);
-		g.setVertices(range(7));
+		g.vertices(range(7));
 		assertEquals(vertices, g.generate().vertices());
 		/* assert the vertices are reused */
 		assertEquals(vertices, g.generate().vertices());
 
 		AtomicInteger vertexId = new AtomicInteger();
-		g.setVertices(4, () -> vertexId.getAndIncrement());
+		g.vertices(4, existingIds -> vertexId.getAndIncrement());
 		assertEquals(Set.of(0, 1, 2, 3), g.generate().vertices());
-		/* assert the vertices are reused */
-		assertEquals(Set.of(0, 1, 2, 3), g.generate().vertices());
+		assertEquals(Set.of(4, 5, 6, 7), g.generate().vertices());
+
+		g.vertices(5); /* default vertex builder */
+		assertEquals(5, g.generate().vertices().size());
+
+		assertThrows(IllegalArgumentException.class, () -> g.vertices(-3));
 	}
 
 	@Test
-	public void testEdges() {
+	public void edges() {
 		foreachBoolConfig((intGraph, directed, selfEdges) -> {
 			CompleteGraphGenerator<Integer, Integer> g0 =
-					intGraph ? CompleteGraphGenerator.newIntInstance() : CompleteGraphGenerator.newInstance();
+					intGraph ? new CompleteGraphGenerator<>(IntGraphFactory.undirected())
+							: new CompleteGraphGenerator<>();
 			final int n = 7;
-			g0.setVertices(range(n));
+			g0.vertices(range(n));
 
 			/* edges were not set yet */
-			assertThrows(IllegalStateException.class, () -> g0.generate());
+			if (!intGraph) {
+				assertThrows(IllegalStateException.class, () -> g0.generate());
+			} else {
+				/* int graph factory should have a default id builder */
+				assertNotNull(g0.generate());
+			}
 
-			g0.setEdges(new AtomicInteger()::getAndIncrement);
-			g0.setDirected(directed);
-			g0.setSelfEdges(selfEdges);
+			g0.edges(IdBuilderInt.defaultBuilder());
+			g0.directed(directed);
+			g0.selfEdges(selfEdges);
 			Graph<Integer, Integer> g = g0.generate();
 
 			assertEqualsBool(intGraph, g instanceof IntGraph);
@@ -97,7 +113,7 @@ public class CompleteGraphGeneratorTest extends TestBase {
 			int expectedNumEdges = 0;
 			expectedNumEdges += directed ? n * (n - 1) : n * (n - 1) / 2;
 			expectedNumEdges += selfEdges ? n : 0;
-			assertEquals(range(expectedNumEdges), g.edges());
+			assertEquals(range(1, 1 + expectedNumEdges), g.edges());
 
 			Set<Pair<Integer, Integer>> edges = new ObjectOpenHashSet<>();
 			for (Integer e : g.edges()) {
@@ -128,19 +144,20 @@ public class CompleteGraphGeneratorTest extends TestBase {
 	public void testDirected() {
 		foreachBoolConfig(intGraph -> {
 			CompleteGraphGenerator<Integer, Integer> g =
-					intGraph ? CompleteGraphGenerator.newIntInstance() : CompleteGraphGenerator.newInstance();
-			g.setVertices(IntList.of(1, 9, 3, 4, 5));
-			g.setEdges(new AtomicInteger()::incrementAndGet);
+					intGraph ? new CompleteGraphGenerator<>(IntGraphFactory.undirected())
+							: new CompleteGraphGenerator<>();
+			g.vertices(IntList.of(1, 9, 3, 4, 5));
+			g.edges(IdBuilderInt.defaultBuilder());
 
 			/* check default */
 			assertFalse(g.generate().isDirected());
 
 			/* check directed */
-			g.setDirected(true);
+			g.directed(true);
 			assertTrue(g.generate().isDirected());
 
 			/* check undirected */
-			g.setDirected(false);
+			g.directed(false);
 			assertFalse(g.generate().isDirected());
 		});
 	}
@@ -150,9 +167,10 @@ public class CompleteGraphGeneratorTest extends TestBase {
 	public void testMutability() {
 		foreachBoolConfig(intGraph -> {
 			CompleteGraphGenerator<Integer, Integer> g =
-					intGraph ? CompleteGraphGenerator.newIntInstance() : CompleteGraphGenerator.newInstance();
-			g.setVertices(IntList.of(1, 9, 3, 4, 5));
-			g.setEdges(new AtomicInteger()::incrementAndGet);
+					intGraph ? new CompleteGraphGenerator<>(IntGraphFactory.undirected())
+							: new CompleteGraphGenerator<>();
+			g.vertices(IntList.of(1, 9, 3, 4, 5));
+			g.edges(IdBuilderInt.defaultBuilder());
 
 			Graph<Integer, Integer> gImmutable = g.generate();
 			assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertex(50));
@@ -161,6 +179,14 @@ public class CompleteGraphGeneratorTest extends TestBase {
 			gMutable.addVertex(50);
 			assertTrue(gMutable.vertices().contains(50));
 		});
+	}
+
+	@Test
+	public void graphFactory() {
+		assertNotNull(new CompleteGraphGenerator<>().graphFactory());
+		GraphFactory<Integer, Integer> gf = GraphFactory.undirected();
+		CompleteGraphGenerator<Integer, Integer> g = new CompleteGraphGenerator<>(gf);
+		assertTrue(gf == g.graphFactory());
 	}
 
 }
