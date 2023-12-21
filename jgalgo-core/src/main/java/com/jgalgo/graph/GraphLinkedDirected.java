@@ -90,9 +90,9 @@ class GraphLinkedDirected extends GraphLinkedAbstract implements GraphDefaultsDi
 			addEdgeToLists(e);
 	}
 
-	GraphLinkedDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphLinkedDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 		super(capabilities(selfEdges), builder);
-		assert builder.isDirected;
+		assert builder.isDirected();
 
 		edgesHeadOutContainer = newVerticesIntContainer(-1, newArr -> edgesOutHead = newArr);
 		edgesHeadInContainer = newVerticesIntContainer(-1, newArr -> edgesInHead = newArr);

@@ -29,7 +29,7 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
 	}
 
-	GraphLinkedAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphLinkedAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 		super(capabilities, builder);
 	}
 

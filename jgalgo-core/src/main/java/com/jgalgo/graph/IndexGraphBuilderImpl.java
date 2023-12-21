@@ -134,10 +134,8 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public int addEdge(int source, int target) {
-		if (!vertices().contains(source))
-			throw NoSuchVertexException.ofIndex(source);
-		if (!vertices().contains(target))
-			throw NoSuchVertexException.ofIndex(target);
+		checkVertex(source);
+		checkVertex(target);
 		int e = edges.add();
 		ensureEdgeCapacity(e + 1);
 		setEdgeEndpoints(e, source, target);
@@ -184,10 +182,8 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 			Arrays.fill(newEdgesEndpoints, -1);
 			var op = new Object() {
 				void accept(int edge, int source, int target) {
-					if (!vertices().contains(source))
-						throw NoSuchVertexException.ofIndex(source);
-					if (!vertices().contains(target))
-						throw NoSuchVertexException.ofIndex(target);
+					checkVertex(source);
+					checkVertex(target);
 					int eIdx = edge - currentNum;
 					if (eIdx < 0 || eIdx * 2 >= newEdgesEndpoints.length || newEdgesEndpoints[2 * eIdx] != -1)
 						throw new IllegalArgumentException(
@@ -244,22 +240,14 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		if (edges instanceof IEdgeSet) {
 			for (IEdgeIter iter = ((IEdgeSet) edges).iterator(); iter.hasNext();) {
 				iter.nextInt();
-				int source = iter.sourceInt();
-				int target = iter.targetInt();
-				if (!vertices().contains(source))
-					throw NoSuchVertexException.ofIndex(source);
-				if (!vertices().contains(target))
-					throw NoSuchVertexException.ofIndex(target);
+				checkVertex(iter.sourceInt());
+				checkVertex(iter.targetInt());
 			}
 		} else {
 			for (EdgeIter<Integer, Integer> iter = edges.iterator(); iter.hasNext();) {
 				iter.next();
-				int source = iter.source().intValue();
-				int target = iter.target().intValue();
-				if (!vertices().contains(source))
-					throw NoSuchVertexException.ofIndex(source);
-				if (!vertices().contains(target))
-					throw NoSuchVertexException.ofIndex(target);
+				checkVertex(iter.source().intValue());
+				checkVertex(iter.target().intValue());
 			}
 		}
 	}
@@ -302,20 +290,30 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		return e * 2 + 1;
 	}
 
+	int edgeSource(int edge) {
+		checkEdge(edge);
+		return endpoints[edgeSourceIndex(edge)];
+	}
+
+	int edgeTarget(int edge) {
+		checkEdge(edge);
+		return endpoints[edgeTargetIndex(edge)];
+	}
+
 	@Override
 	public IndexGraph build() {
-		return immutableImpl.newFromBuilder(new IndexGraphBuilderImpl.Artifacts(this));
+		return immutableImpl.newFromBuilder(this);
 	}
 
 	@Override
 	public IndexGraph buildMutable() {
-		return mutableImpl.newFromBuilder(new IndexGraphBuilderImpl.Artifacts(this));
+		return mutableImpl.newFromBuilder(this);
 	}
 
 	@Override
 	public IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges) {
 		if (directed && reIndexEdges) {
-			return GraphCsrDirectedReindexed.newInstance(new IndexGraphBuilderImpl.Artifacts(this));
+			return GraphCsrDirectedReindexed.newInstance(this);
 		} else {
 			return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());
 		}
@@ -366,31 +364,14 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		return edgesUserWeights.weightsKeys();
 	}
 
-	static class Artifacts {
+	private void checkVertex(int vertex) {
+		if (!vertices().contains(vertex))
+			throw NoSuchVertexException.ofIndex(vertex);
+	}
 
-		final boolean isDirected;
-		final GraphElementSet.Mutable vertices;
-		final GraphElementSet.Mutable edges;
-		private final int[] endpoints;
-		final WeightsImpl.IndexMutable.Manager verticesUserWeights;
-		final WeightsImpl.IndexMutable.Manager edgesUserWeights;
-
-		Artifacts(IndexGraphBuilderImpl builder) {
-			isDirected = builder.directed;
-			vertices = builder.vertices;
-			edges = builder.edges;
-			endpoints = builder.endpoints;
-			verticesUserWeights = builder.verticesUserWeights;
-			edgesUserWeights = builder.edgesUserWeights;
-		}
-
-		int edgeSource(int edge) {
-			return endpoints[edgeSourceIndex(edge)];
-		}
-
-		int edgeTarget(int edge) {
-			return endpoints[edgeTargetIndex(edge)];
-		}
+	private void checkEdge(int edge) {
+		if (!edges().contains(edge))
+			throw NoSuchEdgeException.ofIndex(edge);
 	}
 
 	static class ReIndexedGraphImpl implements IndexGraphBuilder.ReIndexedGraph {

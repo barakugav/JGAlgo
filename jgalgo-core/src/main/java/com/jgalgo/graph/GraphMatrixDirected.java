@@ -70,9 +70,9 @@ class GraphMatrixDirected extends GraphMatrixAbstract implements GraphDefaultsDi
 		}
 	}
 
-	GraphMatrixDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphMatrixDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 		super(capabilities(selfEdges), builder);
-		assert builder.isDirected;
+		assert builder.isDirected();
 
 		edgesOutNumContainer = newVerticesIntContainer(0, newArr -> edgesOutNum = newArr);
 		edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);

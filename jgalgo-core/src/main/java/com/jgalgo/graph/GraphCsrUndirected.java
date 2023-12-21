@@ -19,9 +19,9 @@ import com.jgalgo.internal.util.Assertions;
 
 class GraphCsrUndirected extends GraphCsrAbstractUnindexed {
 
-	GraphCsrUndirected(IndexGraphBuilderImpl.Artifacts builder, BuilderProcessEdgesUndirected processEdges) {
+	GraphCsrUndirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesUndirected processEdges) {
 		super(false, builder, processEdges);
-		assert !builder.isDirected;
+		assert !builder.isDirected();
 	}
 
 	GraphCsrUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {

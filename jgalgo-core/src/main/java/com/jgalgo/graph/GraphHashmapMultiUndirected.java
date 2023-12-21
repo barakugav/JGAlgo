@@ -69,9 +69,9 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract implements G
 		}
 	}
 
-	GraphHashmapMultiUndirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphHashmapMultiUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 		super(capabilities(selfEdges), builder);
-		assert !builder.isDirected;
+		assert !builder.isDirected();
 
 		edgesContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesMap = newArr);
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);

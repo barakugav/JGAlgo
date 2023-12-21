@@ -68,7 +68,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 		IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights);
 
-		IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder);
+		IndexGraph newFromBuilder(IndexGraphBuilderImpl builder);
 
 	}
 
@@ -87,7 +87,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphArrayDirected(selfEdges, builder);
 				}
 			} : new Impl() {
@@ -103,7 +103,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphArrayUndirected(selfEdges, builder);
 				}
 			};
@@ -125,7 +125,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphLinkedDirected(selfEdges, builder);
 				}
 			} : new Impl() {
@@ -141,7 +141,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphLinkedUndirected(selfEdges, builder);
 				}
 			};
@@ -162,7 +162,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphLinkedPtrDirected(selfEdges, builder);
 				}
 			} : new Impl() {
@@ -178,7 +178,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphLinkedPtrUndirected(selfEdges, builder);
 				}
 			};
@@ -199,7 +199,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphHashmapDirected(selfEdges, builder);
 				}
 			} : new Impl() {
@@ -215,7 +215,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphHashmapUndirected(selfEdges, builder);
 				}
 			};
@@ -236,7 +236,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphHashmapMultiDirected(selfEdges, builder);
 				}
 			} : new Impl() {
@@ -252,7 +252,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphHashmapMultiUndirected(selfEdges, builder);
 				}
 			};
@@ -273,7 +273,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphMatrixDirected(selfEdges, builder);
 				}
 			} : new Impl() {
@@ -289,7 +289,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphMatrixUndirected(selfEdges, builder);
 				}
 			};
@@ -361,7 +361,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 				GraphCsrBase.BuilderProcessEdgesDirected processEdges =
 						GraphCsrBase.BuilderProcessEdgesDirected.valueOf(builder);
 				return new GraphCsrDirected(builder, processEdges);
@@ -373,7 +373,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 				GraphCsrBase.BuilderProcessEdgesUndirected processEdges =
 						GraphCsrBase.BuilderProcessEdgesUndirected.valueOf(builder);
 				return new GraphCsrUndirected(builder, processEdges);

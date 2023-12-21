@@ -110,9 +110,9 @@ class GraphArrayDirected extends GraphArrayAbstract implements GraphDefaultsDire
 		}
 	}
 
-	GraphArrayDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphArrayDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 		super(capabilities(selfEdges), builder);
-		assert builder.isDirected;
+		assert builder.isDirected();
 
 		edgesOutContainer =
 				newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edgesOut = newArr);

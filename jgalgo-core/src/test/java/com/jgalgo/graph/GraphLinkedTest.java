@@ -215,7 +215,7 @@ public class GraphLinkedTest extends TestBase {
 		final long seed = 0x6b6cb8916d75ad80L;
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testBuilderConstructor(builder -> {
-				if (builder.isDirected) {
+				if (builder.isDirected()) {
 					return new GraphLinkedDirected(selfEdges, builder);
 				} else {
 					return new GraphLinkedUndirected(selfEdges, builder);

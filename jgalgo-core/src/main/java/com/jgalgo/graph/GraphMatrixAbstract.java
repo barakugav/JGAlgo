@@ -62,14 +62,14 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 		}
 	}
 
-	GraphMatrixAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphMatrixAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 		super(capabilities, builder);
 
 		edgesContainer = newVerticesContainer(null, EmptyEdgesArr, newArr -> edges = newArr);
 		for (int n = builder.vertices.size(), u = 0; u < n; u++)
 			edges[u] = newVerticesIntContainer(EdgeNone, JGAlgoUtils.<int[]>consumerNoOp());
 
-		if (builder.isDirected) {
+		if (builder.isDirected()) {
 			for (int m = builder.edges.size(), e = 0; e < m; e++) {
 				int source = builder.edgeSource(e), target = builder.edgeTarget(e);
 				DataContainer.Int uEdges = edges[source];

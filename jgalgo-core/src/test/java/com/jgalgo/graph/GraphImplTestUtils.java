@@ -2657,10 +2657,9 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testBuilderConstructor(Function<IndexGraphBuilderImpl.Artifacts, IndexGraph> copyConstructor0,
-			long seed) {
+	static void testBuilderConstructor(Function<IndexGraphBuilderImpl, IndexGraph> copyConstructor0, long seed) {
 		Function<IndexGraphBuilder, IndexGraph> copyConstructor =
-				builder -> copyConstructor0.apply(new IndexGraphBuilderImpl.Artifacts((IndexGraphBuilderImpl) builder));
+				builder -> copyConstructor0.apply((IndexGraphBuilderImpl) builder);
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */

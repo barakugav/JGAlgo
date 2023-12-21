@@ -104,7 +104,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		}
 	}
 
-	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 		super(capabilities.isDirected, builder.vertices.copy(), builder.edges.copy());
 		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
 		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;

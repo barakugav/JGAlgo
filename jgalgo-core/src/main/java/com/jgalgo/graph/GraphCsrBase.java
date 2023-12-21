@@ -39,7 +39,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	private boolean containsParallelEdges;
 	private boolean containsParallelEdgesValid;
 
-	GraphCsrBase(boolean directed, Variant2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder,
+	GraphCsrBase(boolean directed, Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
 			BuilderProcessEdges processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(directed, verticesNum(graphOrBuilder), edgesNum(graphOrBuilder), false);
@@ -59,7 +59,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 					verticesUserWeightsBuilder.copyAndAddWeights(weightKey,
 							(IWeights<?>) g.getVerticesWeights(weightKey));
 			} else {
-				IndexGraphBuilderImpl.Artifacts builder = graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class);
+				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
 				for (String key : builder.verticesUserWeights.weightsKeys())
 					verticesUserWeightsBuilder.copyAndAddWeights(key, builder.verticesUserWeights.getWeights(key));
 			}
@@ -77,7 +77,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 								(IWeights<?>) g.getEdgesWeights(weightKey), edgesReIndexing);
 				}
 			} else {
-				IndexGraphBuilderImpl.Artifacts builder = graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class);
+				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
 				if (edgesReIndexing == null) {
 					for (String key : builder.edgesUserWeights.weightsKeys())
 						edgesUserWeightsBuilder.copyAndAddWeights(key, builder.edgesUserWeights.getWeights(key));
@@ -360,7 +360,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 
 	static class BuilderProcessEdgesUndirected extends BuilderProcessEdges {
 
-		static BuilderProcessEdgesUndirected valueOf(IndexGraphBuilderImpl.Artifacts builder) {
+		static BuilderProcessEdgesUndirected valueOf(IndexGraphBuilderImpl builder) {
 			return new BuilderProcessEdgesUndirected(Variant2.ofB(builder));
 		}
 
@@ -368,7 +368,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			return new BuilderProcessEdgesUndirected(Variant2.ofA(g));
 		}
 
-		private BuilderProcessEdgesUndirected(Variant2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder) {
+		private BuilderProcessEdgesUndirected(Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
 			final int n = verticesNum(graphOrBuilder);
 			final int m = edgesNum(graphOrBuilder);
 
@@ -383,7 +383,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 						edgesOutBegin[v]++;
 				}
 			} else {
-				IndexGraphBuilderImpl.Artifacts builder = graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class);
+				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
 				for (int e = 0; e < m; e++) {
 					int u = builder.edgeSource(e), v = builder.edgeTarget(e);
 					edgesOutBegin[u]++;
@@ -422,7 +422,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 					}
 				}
 			} else {
-				IndexGraphBuilderImpl.Artifacts builder = graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class);
+				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
 				for (int e = 0; e < m; e++) {
 					int u = builder.edgeSource(e), v = builder.edgeTarget(e);
 					int uOutIdx = edgesOutBegin[u]++;
@@ -446,7 +446,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 		int[] edgesIn;
 		int[] edgesInBegin;
 
-		static BuilderProcessEdgesDirected valueOf(IndexGraphBuilderImpl.Artifacts builder) {
+		static BuilderProcessEdgesDirected valueOf(IndexGraphBuilderImpl builder) {
 			return new BuilderProcessEdgesDirected(Variant2.ofB(builder));
 		}
 
@@ -454,7 +454,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			return new BuilderProcessEdgesDirected(Variant2.ofA(g));
 		}
 
-		BuilderProcessEdgesDirected(Variant2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder) {
+		BuilderProcessEdgesDirected(Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
 			final int n = verticesNum(graphOrBuilder);
 			final int m = edgesNum(graphOrBuilder);
 
@@ -471,7 +471,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 					edgesInBegin[g.edgeTarget(e)]++;
 				}
 			} else {
-				IndexGraphBuilderImpl.Artifacts builder = graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class);
+				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
 				for (int e = 0; e < m; e++) {
 					edgesOutBegin[builder.edgeSource(e)]++;
 					edgesInBegin[builder.edgeTarget(e)]++;
@@ -506,7 +506,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 					edgesIn[vInIdx] = e;
 				}
 			} else {
-				IndexGraphBuilderImpl.Artifacts builder = graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class);
+				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
 				for (int e = 0; e < m; e++) {
 					int uOutIdx = edgesOutBegin[builder.edgeSource(e)]++;
 					int vInIdx = edgesInBegin[builder.edgeTarget(e)]++;
@@ -525,12 +525,12 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 
 	}
 
-	static int verticesNum(Variant2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder) {
-		return graphOrBuilder.map(IndexGraph::vertices, artifacts -> artifacts.vertices).size();
+	static int verticesNum(Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
+		return graphOrBuilder.map(IndexGraph::vertices, IndexGraphBuilder::vertices).size();
 	}
 
-	static int edgesNum(Variant2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder) {
-		return graphOrBuilder.map(IndexGraph::edges, artifacts -> artifacts.edges).size();
+	static int edgesNum(Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
+		return graphOrBuilder.map(IndexGraph::edges, IndexGraphBuilder::edges).size();
 	}
 
 }

@@ -215,7 +215,7 @@ public class GraphMatrixTest extends TestBase {
 		final long seed = 0xd95f38700240f660L;
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testBuilderConstructor(builder -> {
-				if (builder.isDirected) {
+				if (builder.isDirected()) {
 					return new GraphMatrixDirected(selfEdges, builder);
 				} else {
 					return new GraphMatrixUndirected(selfEdges, builder);

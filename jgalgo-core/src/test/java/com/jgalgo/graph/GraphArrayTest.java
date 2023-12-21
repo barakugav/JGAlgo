@@ -215,7 +215,7 @@ public class GraphArrayTest extends TestBase {
 		final long seed = 0x5cb8ee914578a252L;
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils.testBuilderConstructor(builder -> {
-				if (builder.isDirected) {
+				if (builder.isDirected()) {
 					return new GraphArrayDirected(selfEdges, builder);
 				} else {
 					return new GraphArrayUndirected(selfEdges, builder);

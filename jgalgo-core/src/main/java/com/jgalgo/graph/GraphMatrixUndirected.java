@@ -62,9 +62,9 @@ class GraphMatrixUndirected extends GraphMatrixAbstract implements GraphDefaults
 		}
 	}
 
-	GraphMatrixUndirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphMatrixUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 		super(capabilities(selfEdges), builder);
-		assert !builder.isDirected;
+		assert !builder.isDirected();
 
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 

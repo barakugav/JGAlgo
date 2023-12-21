@@ -86,9 +86,9 @@ class GraphHashmapDirected extends GraphHashmapAbstract implements GraphDefaults
 		}
 	}
 
-	GraphHashmapDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphHashmapDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 		super(capabilities(selfEdges), builder);
-		assert builder.isDirected;
+		assert builder.isDirected();
 
 		edgesOutContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
 		edgesInContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);

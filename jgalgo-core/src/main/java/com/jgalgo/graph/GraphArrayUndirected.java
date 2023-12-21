@@ -86,9 +86,9 @@ class GraphArrayUndirected extends GraphArrayAbstract implements GraphDefaultsUn
 		}
 	}
 
-	GraphArrayUndirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphArrayUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 		super(capabilities(selfEdges), builder);
-		assert !builder.isDirected;
+		assert !builder.isDirected();
 
 		edgesContainer =
 				newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edges = newArr);

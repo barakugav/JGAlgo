@@ -69,9 +69,9 @@ class GraphHashmapUndirected extends GraphHashmapAbstract implements GraphDefaul
 		}
 	}
 
-	GraphHashmapUndirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphHashmapUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 		super(capabilities(selfEdges), builder);
-		assert !builder.isDirected;
+		assert !builder.isDirected();
 
 		edgesContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edges = newArr);
 

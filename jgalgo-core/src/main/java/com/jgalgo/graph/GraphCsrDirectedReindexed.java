@@ -24,7 +24,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
-	private GraphCsrDirectedReindexed(Variant2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder,
+	private GraphCsrDirectedReindexed(Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
 			BuilderProcessEdgesDirected processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(true, graphOrBuilder, processEdges, edgesReIndexing, copyVerticesWeights, copyEdgesWeights);
@@ -54,8 +54,8 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 				setEndpoints(eCsr, g.edgeSource(eOrig), g.edgeTarget(eOrig));
 			}
 		} else {
-			IndexGraphBuilderImpl.Artifacts builder = graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class);
-			assert builder.isDirected;
+			IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
+			assert builder.isDirected();
 
 			for (int eCsr = 0; eCsr < m; eCsr++) {
 				int eOrig = edgesReIndexing.reIndexedToOrig(eCsr);
@@ -64,7 +64,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		}
 	}
 
-	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraphBuilderImpl.Artifacts builder) {
+	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraphBuilderImpl builder) {
 		return newInstance(Variant2.ofB(builder), true, true);
 	}
 
@@ -74,7 +74,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 	}
 
 	private static IndexGraphBuilder.ReIndexedGraph newInstance(
-			Variant2<IndexGraph, IndexGraphBuilderImpl.Artifacts> graphOrBuilder, boolean copyVerticesWeights,
+			Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 		GraphCsrBase.BuilderProcessEdgesDirected processEdges =
 				new GraphCsrBase.BuilderProcessEdgesDirected(graphOrBuilder);

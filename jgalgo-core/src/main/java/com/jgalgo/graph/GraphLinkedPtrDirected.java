@@ -71,9 +71,9 @@ class GraphLinkedPtrDirected extends GraphLinkedPtrAbstract implements GraphDefa
 			addEdgeToLists(getEdge(e));
 	}
 
-	GraphLinkedPtrDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphLinkedPtrDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 		super(capabilities(selfEdges), builder);
-		assert builder.isDirected;
+		assert builder.isDirected();
 
 		edgesOutContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edgesIn = newArr);
 		edgesInContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edgesOut = newArr);

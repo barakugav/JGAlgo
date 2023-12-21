@@ -22,9 +22,9 @@ class GraphCsrDirected extends GraphCsrAbstractUnindexed {
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
-	GraphCsrDirected(IndexGraphBuilderImpl.Artifacts builder, BuilderProcessEdgesDirected processEdges) {
+	GraphCsrDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges) {
 		super(true, builder, processEdges);
-		assert builder.isDirected;
+		assert builder.isDirected();
 
 		edgesIn = processEdges.edgesIn;
 		edgesInBegin = processEdges.edgesInBegin;

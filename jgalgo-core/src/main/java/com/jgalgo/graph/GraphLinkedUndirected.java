@@ -82,9 +82,9 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements GraphDefaults
 			addEdgeToLists(e);
 	}
 
-	GraphLinkedUndirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphLinkedUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 		super(capabilities(selfEdges), builder);
-		assert !builder.isDirected;
+		assert !builder.isDirected();
 
 		edgesHeadContainer = newVerticesIntContainer(-1, newArr -> edgesHead = newArr);
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);

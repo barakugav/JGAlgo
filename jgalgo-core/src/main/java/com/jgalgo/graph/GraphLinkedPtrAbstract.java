@@ -40,7 +40,7 @@ abstract class GraphLinkedPtrAbstract extends GraphBaseMutable {
 		}
 	}
 
-	GraphLinkedPtrAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphLinkedPtrAbstract(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 		super(capabilities, builder);
 		edgesContainer = newEdgesContainer(null, EmptyEdgeArr, newArr -> edges = newArr);
 
