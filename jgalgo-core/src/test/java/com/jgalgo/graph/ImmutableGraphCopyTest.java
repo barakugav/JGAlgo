@@ -489,9 +489,16 @@ public class ImmutableGraphCopyTest extends TestBase {
 
 	@Test
 	public void immutableCopyOfImmutableCopy() {
-		foreachBoolConfig((intGraph, directed) -> {
-			IndexGraph gOrig = createGraph(intGraph, directed).indexGraph();
-			IndexGraph gImmutable = gOrig.immutableCopy(true, true);
+		/* immutable copy index graph */
+		foreachBoolConfig((intGraph, directed, reindexing) -> {
+			IndexGraph gImmutable;
+			if (reindexing) {
+				Graph<Integer, Integer> gOrig = createGraph(intGraph, directed);
+				gImmutable = gOrig.immutableCopy(true, true).indexGraph();
+			} else {
+				IndexGraph gOrig = createGraph(intGraph, directed).indexGraph();
+				gImmutable = gOrig.immutableCopy(true, true);
+			}
 
 			foreachBoolConfig((copyVerticesWeights, copyEdgesWeights) -> {
 				IndexGraph gImmutable2;
@@ -500,7 +507,7 @@ public class ImmutableGraphCopyTest extends TestBase {
 				} else {
 					gImmutable2 = gImmutable.immutableCopy(copyVerticesWeights, copyEdgesWeights);
 				}
-				assertEquals(gOrig.copy(copyVerticesWeights, copyEdgesWeights), gImmutable2);
+				assertEquals(gImmutable.copy(copyVerticesWeights, copyEdgesWeights), gImmutable2);
 
 				if (copyVerticesWeights) {
 					assertEquals(gImmutable.getVerticesWeightsKeys(), gImmutable2.getVerticesWeightsKeys());
@@ -514,6 +521,34 @@ public class ImmutableGraphCopyTest extends TestBase {
 				}
 
 				assertEqualsBool(copyVerticesWeights && copyEdgesWeights, gImmutable == gImmutable2);
+
+				assertEquals(gImmutable2, gImmutable2.immutableCopy(true, true));
+			});
+		});
+		/* immutable copy regular graph */
+		foreachBoolConfig((intGraph, directed, reindexing) -> {
+			Graph<Integer, Integer> gOrig = createGraph(intGraph, directed);
+			Graph<Integer, Integer> gImmutable = gOrig.immutableCopy(true, true);
+
+			foreachBoolConfig((copyVerticesWeights, copyEdgesWeights) -> {
+				Graph<Integer, Integer> gImmutable2;
+				if (!copyVerticesWeights && !copyEdgesWeights) {
+					gImmutable2 = gImmutable.immutableCopy();
+				} else {
+					gImmutable2 = gImmutable.immutableCopy(copyVerticesWeights, copyEdgesWeights);
+				}
+				assertEquals(gImmutable.copy(copyVerticesWeights, copyEdgesWeights), gImmutable2);
+
+				if (copyVerticesWeights) {
+					assertEquals(gImmutable.getVerticesWeightsKeys(), gImmutable2.getVerticesWeightsKeys());
+				} else {
+					assertEquals(Set.of(), gImmutable2.getVerticesWeightsKeys());
+				}
+				if (copyEdgesWeights) {
+					assertEquals(gImmutable.getEdgesWeightsKeys(), gImmutable2.getEdgesWeightsKeys());
+				} else {
+					assertEquals(Set.of(), gImmutable2.getEdgesWeightsKeys());
+				}
 
 				assertEquals(gImmutable2, gImmutable2.immutableCopy(true, true));
 			});

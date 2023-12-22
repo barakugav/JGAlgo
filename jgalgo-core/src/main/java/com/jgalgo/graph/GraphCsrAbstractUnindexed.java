@@ -31,28 +31,31 @@ abstract class GraphCsrAbstractUnindexed extends GraphCsrBase {
 
 	GraphCsrAbstractUnindexed(boolean directed, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(directed, g, copyVerticesWeights, copyEdgesWeights);
-		final int n = g.vertices().size();
-		final int m = g.edges().size();
 
-		int edgesOutArrLen;
-		if (isDirected()) {
-			edgesOutArrLen = m;
+		if (g instanceof GraphCsrAbstractUnindexed) {
+			GraphCsrAbstractUnindexed gCsr = (GraphCsrAbstractUnindexed) g;
+			edgesOut = gCsr.edgesOut;
+
 		} else {
-			edgesOutArrLen = 0;
-			for (int u = 0; u < n; u++)
-				edgesOutArrLen += g.outEdges(u).size();
-		}
-		edgesOut = new int[edgesOutArrLen];
+			final int n = g.vertices().size();
+			final int m = g.edges().size();
+			int edgesOutArrLen;
+			if (isDirected()) {
+				edgesOutArrLen = m;
+			} else {
+				edgesOutArrLen = 0;
+				for (int u = 0; u < n; u++)
+					edgesOutArrLen += g.outEdges(u).size();
+			}
+			edgesOut = new int[edgesOutArrLen];
 
-		for (int eIdx = 0, u = 0; u < n; u++) {
-			edgesOutBegin[u] = eIdx;
-			for (int e : g.outEdges(u))
-				edgesOut[eIdx++] = e;
+			for (int eIdx = 0, u = 0; u < n; u++) {
+				edgesOutBegin[u] = eIdx;
+				for (int e : g.outEdges(u))
+					edgesOut[eIdx++] = e;
+			}
+			edgesOutBegin[n] = edgesOutArrLen;
 		}
-		edgesOutBegin[n] = edgesOutArrLen;
-
-		for (int e = 0; e < m; e++)
-			setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 	}
 
 }

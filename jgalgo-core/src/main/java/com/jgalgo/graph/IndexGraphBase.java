@@ -15,9 +15,9 @@
  */
 package com.jgalgo.graph;
 
-import java.util.Objects;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterables;
@@ -35,25 +35,48 @@ abstract class IndexGraphBase extends AbstractGraph<Integer, Integer> implements
 	static final int EndpointNone = -1;
 	static final long DefaultEndpoints = sourceTarget2Endpoints(EndpointNone, EndpointNone);
 
-	IndexGraphBase(boolean isDirected, GraphElementSet vertices, GraphElementSet edges) {
+	IndexGraphBase(boolean isDirected, int n, int m) {
 		this.isDirected = isDirected;
-		this.vertices = Objects.requireNonNull(vertices);
-		this.edges = Objects.requireNonNull(edges);
+		this.vertices = GraphElementSet.Mutable.ofVertices(n);
+		this.edges = GraphElementSet.Mutable.ofEdges(m);
 		verticesIdMap = IndexIntIdMap.identityVerticesMap(vertices);
 		edgesIdMap = IndexIntIdMap.identityEdgesMap(edges);
 	}
 
-	IndexGraphBase(boolean isDirected, int n, int m, boolean mutable) {
-		this.isDirected = isDirected;
-		if (mutable) {
-			this.vertices = GraphElementSet.Mutable.ofVertices(n);
-			this.edges = GraphElementSet.Mutable.ofEdges(m);
+	IndexGraphBase(Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, boolean mutable) {
+		this.isDirected = graphOrBuilder.map(IndexGraph::isDirected, IndexGraphBuilderImpl::isDirected).booleanValue();
+		final int n = verticesNum(graphOrBuilder);
+		final int m = edgesNum(graphOrBuilder);
+
+		if (graphOrBuilder.contains(IndexGraph.class) && graphOrBuilder.get(IndexGraph.class) instanceof IndexGraphBase
+				&& !mutable) {
+			IndexGraphBase g = (IndexGraphBase) graphOrBuilder.get(IndexGraph.class);
+			if (g.vertices instanceof GraphElementSet.Immutable) {
+				this.vertices = g.vertices;
+				this.verticesIdMap = g.verticesIdMap;
+			} else {
+				this.vertices = GraphElementSet.Immutable.ofVertices(n);
+				this.verticesIdMap = IndexIntIdMap.identityVerticesMap(vertices);
+			}
+			if (g.edges instanceof GraphElementSet.Immutable) {
+				this.edges = g.edges;
+				this.edgesIdMap = g.edgesIdMap;
+			} else {
+				this.edges = GraphElementSet.Immutable.ofEdges(m);
+				this.edgesIdMap = IndexIntIdMap.identityEdgesMap(edges);
+			}
+
 		} else {
-			this.vertices = GraphElementSet.Immutable.ofVertices(n);
-			this.edges = GraphElementSet.Immutable.ofEdges(m);
+			if (mutable) {
+				this.vertices = GraphElementSet.Mutable.ofVertices(n);
+				this.edges = GraphElementSet.Mutable.ofEdges(m);
+			} else {
+				this.vertices = GraphElementSet.Immutable.ofVertices(n);
+				this.edges = GraphElementSet.Immutable.ofEdges(m);
+			}
+			verticesIdMap = IndexIntIdMap.identityVerticesMap(vertices);
+			edgesIdMap = IndexIntIdMap.identityEdgesMap(edges);
 		}
-		verticesIdMap = IndexIntIdMap.identityVerticesMap(vertices);
-		edgesIdMap = IndexIntIdMap.identityEdgesMap(edges);
 	}
 
 	@Override
@@ -363,6 +386,14 @@ abstract class IndexGraphBase extends AbstractGraph<Integer, Integer> implements
 	@Override
 	public IndexIntIdMap indexGraphEdgesMap() {
 		return edgesIdMap;
+	}
+
+	static int verticesNum(Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
+		return graphOrBuilder.map(IndexGraph::vertices, IndexGraphBuilder::vertices).size();
+	}
+
+	static int edgesNum(Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder) {
+		return graphOrBuilder.map(IndexGraph::edges, IndexGraphBuilder::edges).size();
 	}
 
 }

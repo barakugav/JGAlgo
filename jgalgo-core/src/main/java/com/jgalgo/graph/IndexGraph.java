@@ -534,7 +534,7 @@ public interface IndexGraph extends IntGraph {
 
 	@Override
 	default IndexGraph immutableCopy() {
-		return immutableCopy(false, false);
+		return (IndexGraph) IntGraph.super.immutableCopy();
 	}
 
 	@Override

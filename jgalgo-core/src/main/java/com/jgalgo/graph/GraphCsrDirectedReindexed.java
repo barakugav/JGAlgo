@@ -31,20 +31,28 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		final int n = verticesNum(graphOrBuilder);
 		final int m = edgesNum(graphOrBuilder);
 
+		if (graphOrBuilder.contains(IndexGraph.class)
+				&& graphOrBuilder.get(IndexGraph.class) instanceof GraphCsrDirectedReindexed) {
+			assert edgesReIndexing == null;
+			GraphCsrDirectedReindexed g = (GraphCsrDirectedReindexed) graphOrBuilder.get(IndexGraph.class);
+			edgesIn = g.edgesIn;
+			edgesInBegin = g.edgesInBegin;
+			return;
+		}
+
 		edgesIn = processEdges.edgesIn;
 		edgesInBegin = processEdges.edgesInBegin;
-		int[] edgesOut = processEdges.edgesOut;
-		assert edgesOut.length == m;
+		assert processEdges.edgesOut.length == m;
 		assert edgesIn.length == m;
 		assert edgesInBegin.length == n + 1;
 
+		assert edgesReIndexing != null;
 		for (int eIdx = 0; eIdx < m; eIdx++) {
 			int eOrig = edgesIn[eIdx];
 			int eCsr = edgesReIndexing.origToReIndexed(eOrig);
 			edgesIn[eIdx] = eCsr;
 		}
 
-		edgeEndpoints = new long[m];
 		if (graphOrBuilder.contains(IndexGraph.class)) {
 			IndexGraph g = graphOrBuilder.get(IndexGraph.class);
 			assert g.isDirected();
@@ -64,6 +72,13 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		}
 	}
 
+	private GraphCsrDirectedReindexed(GraphCsrDirectedReindexed g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
+		super(true, g, copyVerticesWeights, copyEdgesWeights);
+		edgesIn = g.edgesIn;
+		edgesInBegin = g.edgesInBegin;
+	}
+
 	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraphBuilderImpl builder) {
 		return newInstance(Variant2.ofB(builder), true, true);
 	}
@@ -77,20 +92,22 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 			Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 		GraphCsrBase.BuilderProcessEdgesDirected processEdges =
-				new GraphCsrBase.BuilderProcessEdgesDirected(graphOrBuilder);
+				GraphCsrBase.BuilderProcessEdgesDirected.valueOf(graphOrBuilder);
 
-		final int m = edgesNum(graphOrBuilder);
-		int[] edgesCsrToOrig = processEdges.edgesOut;
-		int[] edgesOrigToCsr = new int[m];
-		for (int eCsr = 0; eCsr < m; eCsr++)
-			edgesOrigToCsr[edgesCsrToOrig[eCsr]] = eCsr;
-
-		IndexGraphBuilder.ReIndexingMap edgesReIndexing =
-				new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig);
+		IndexGraphBuilder.ReIndexingMap edgesReIndexing = null;
+		if (!graphOrBuilder.contains(IndexGraph.class)
+				|| !(graphOrBuilder.get(IndexGraph.class) instanceof GraphCsrDirectedReindexed)) {
+			final int m = edgesNum(graphOrBuilder);
+			int[] edgesCsrToOrig = processEdges.edgesOut;
+			int[] edgesOrigToCsr = new int[m];
+			for (int eCsr = 0; eCsr < m; eCsr++)
+				edgesOrigToCsr[edgesCsrToOrig[eCsr]] = eCsr;
+			edgesReIndexing = new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig);
+		}
 
 		GraphCsrDirectedReindexed g = new GraphCsrDirectedReindexed(graphOrBuilder, processEdges, edgesReIndexing,
 				copyVerticesWeights, copyEdgesWeights);
-		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), Optional.of(edgesReIndexing));
+		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), Optional.ofNullable(edgesReIndexing));
 	}
 
 	@Override
@@ -222,6 +239,17 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		public int targetInt() {
 			return target;
 		}
+	}
+
+	@Override
+	public IndexGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		if (verticesUserWeights.isEmpty())
+			copyVerticesWeights = true;
+		if (edgesUserWeights.isEmpty())
+			copyEdgesWeights = true;
+		if (copyVerticesWeights && copyEdgesWeights)
+			return this;
+		return new GraphCsrDirectedReindexed(this, copyVerticesWeights, copyEdgesWeights);
 	}
 
 }

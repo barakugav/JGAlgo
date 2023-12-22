@@ -27,6 +27,7 @@ import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
 import com.jgalgo.internal.util.Range;
+import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -44,7 +45,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	private final DataContainer.Long edgeEndpointsContainer;
 
 	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, int expectedVerticesNum, int expectedEdgesNum) {
-		super(capabilities.isDirected, 0, 0, true);
+		super(capabilities.isDirected, 0, 0);
 		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
 		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
 		verticesInternalContainers = new DataContainer.Manager(expectedVerticesNum);
@@ -57,7 +58,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
-		super(capabilities.isDirected, g.vertices().size(), g.edges().size(), true);
+		super(Variant2.ofA(g), true);
 		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
 		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
 		if (isDirected()) {
@@ -105,7 +106,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	}
 
 	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
-		super(capabilities.isDirected, builder.vertices.copy(), builder.edges.copy());
+		super(capabilities.isDirected, builder.vertices.size, builder.edges.size);
 		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
 		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(builder.verticesUserWeights, vertices);

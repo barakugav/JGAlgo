@@ -33,18 +33,25 @@ class GraphCsrDirected extends GraphCsrAbstractUnindexed {
 	GraphCsrDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(true, g, copyVerticesWeights, copyEdgesWeights);
 		Assertions.Graphs.onlyDirected(g);
-		final int n = g.vertices().size();
-		final int m = g.edges().size();
 
-		edgesIn = new int[m];
-		edgesInBegin = new int[n + 1];
+		if (g instanceof GraphCsrDirected) {
+			GraphCsrDirected gCsr = (GraphCsrDirected) g;
+			edgesIn = gCsr.edgesIn;
+			edgesInBegin = gCsr.edgesInBegin;
 
-		for (int eIdx = 0, v = 0; v < n; v++) {
-			edgesInBegin[v] = eIdx;
-			for (int e : g.inEdges(v))
-				edgesIn[eIdx++] = e;
+		} else {
+			final int n = g.vertices().size();
+			final int m = g.edges().size();
+			edgesIn = new int[m];
+			edgesInBegin = new int[n + 1];
+
+			for (int eIdx = 0, v = 0; v < n; v++) {
+				edgesInBegin[v] = eIdx;
+				for (int e : g.inEdges(v))
+					edgesIn[eIdx++] = e;
+			}
+			edgesInBegin[n] = m;
 		}
-		edgesInBegin[n] = m;
 	}
 
 	@Override
