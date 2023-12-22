@@ -491,9 +491,32 @@ public class ImmutableGraphCopyTest extends TestBase {
 	public void immutableCopyOfImmutableCopy() {
 		foreachBoolConfig((intGraph, directed) -> {
 			IndexGraph gOrig = createGraph(intGraph, directed).indexGraph();
-			IndexGraph gImmutable = gOrig.immutableCopy();
+			IndexGraph gImmutable = gOrig.immutableCopy(true, true);
 
-			assertTrue(gImmutable == gImmutable.immutableCopy());
+			foreachBoolConfig((copyVerticesWeights, copyEdgesWeights) -> {
+				IndexGraph gImmutable2;
+				if (!copyVerticesWeights && !copyEdgesWeights) {
+					gImmutable2 = gImmutable.immutableCopy();
+				} else {
+					gImmutable2 = gImmutable.immutableCopy(copyVerticesWeights, copyEdgesWeights);
+				}
+				assertEquals(gOrig.copy(copyVerticesWeights, copyEdgesWeights), gImmutable2);
+
+				if (copyVerticesWeights) {
+					assertEquals(gImmutable.getVerticesWeightsKeys(), gImmutable2.getVerticesWeightsKeys());
+				} else {
+					assertEquals(Set.of(), gImmutable2.getVerticesWeightsKeys());
+				}
+				if (copyEdgesWeights) {
+					assertEquals(gImmutable.getEdgesWeightsKeys(), gImmutable2.getEdgesWeightsKeys());
+				} else {
+					assertEquals(Set.of(), gImmutable2.getEdgesWeightsKeys());
+				}
+
+				assertEqualsBool(copyVerticesWeights && copyEdgesWeights, gImmutable == gImmutable2);
+
+				assertEquals(gImmutable2, gImmutable2.immutableCopy(true, true));
+			});
 		});
 	}
 

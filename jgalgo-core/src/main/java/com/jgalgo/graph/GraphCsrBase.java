@@ -316,8 +316,14 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	public void removeEdgeRemoveListener(IndexRemoveListener listener) {}
 
 	@Override
-	public IndexGraph immutableCopy() {
-		return this;
+	public IndexGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		if (verticesUserWeights.isEmpty())
+			copyVerticesWeights = true;
+		if (edgesUserWeights.isEmpty())
+			copyEdgesWeights = true;
+		if (copyVerticesWeights && copyEdgesWeights)
+			return this;
+		return super.immutableCopy(copyVerticesWeights, copyEdgesWeights);
 	}
 
 	abstract static class EdgeIterAbstract implements IEdgeIter {
