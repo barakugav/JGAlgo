@@ -230,6 +230,9 @@ public interface GraphFactory<V, E> {
 	 * for each graph, consider using {@link #setVertexFactory(Supplier)} instead.
 	 *
 	 * <p>
+	 * For some types there is a default vertex builder, see {@link IdBuilder#defaultBuilder(Class)}.
+	 *
+	 * <p>
 	 * By default, graphs built by this factory will not have a vertex builder, namely a {@code null} vertex builder.
 	 *
 	 * @param  vertexBuilder the vertex builder, or {@code null} if no vertex builder should be used
@@ -254,6 +257,9 @@ public interface GraphFactory<V, E> {
 	 * used for all graphs, consider using {@link #setVertexBuilder(IdBuilder)} instead.
 	 *
 	 * <p>
+	 * For some types there is a default vertex factory, see {@link IdBuilder#defaultFactory(Class)}.
+	 *
+	 * <p>
 	 * By default, graphs built by this factory will not have a vertex builder, namely a {@code null} vertex builder.
 	 *
 	 * @param  vertexFactory the vertex factory, or {@code null} if no vertex builder should be used
@@ -269,6 +275,9 @@ public interface GraphFactory<V, E> {
 	 * {@link Graph#addEdge(Object, Object)}. The same edge builder will be used for all graphs built by this factory,
 	 * and graphs built by {@link GraphBuilder} created by this factory. If a different instance of an edge builder is
 	 * required for each graph, consider using {@link #setEdgeFactory(Supplier)} instead.
+	 *
+	 * <p>
+	 * For some types there is a default edge builder, see {@link IdBuilder#defaultBuilder(Class)}.
 	 *
 	 * <p>
 	 * By default, graphs built by this factory will not have an edge builder, namely a {@code null} edge builder.
@@ -293,6 +302,9 @@ public interface GraphFactory<V, E> {
 	 * {@link Graph#addEdge(Object, Object)}. The factory will be used to insatiate a new edge builder for each graph
 	 * built by this factory, and graphs built by {@link GraphBuilder} created by this factory. If the same edge builder
 	 * can be used for all graphs, consider using {@link #setEdgeBuilder(IdBuilder)} instead.
+	 *
+	 * <p>
+	 * For some types there is a default edge factory, see {@link IdBuilder#defaultFactory(Class)}.
 	 *
 	 * <p>
 	 * By default, graphs built by this factory will not have an edge builder, namely a {@code null} edge builder.

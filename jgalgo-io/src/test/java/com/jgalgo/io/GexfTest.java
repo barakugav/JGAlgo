@@ -121,11 +121,11 @@ public class GexfTest {
 		g.addVertex("1");
 		g.addVertex("2");
 		g.addVertex("3");
-		g.addEdge("0", "1", "e0");
-		g.addEdge("0", "2", "e1");
-		g.addEdge("1", "0", "e2");
-		g.addEdge("2", "1", "e3");
-		g.addEdge("0", "3", "e4");
+		g.addEdge("0", "1", "0");
+		g.addEdge("0", "2", "1");
+		g.addEdge("1", "0", "2");
+		g.addEdge("2", "1", "3");
+		g.addEdge("0", "3", "4");
 
 		TextBuilder text = new TextBuilder();
 		text.addLine("<?xml version=\"1.0\" encoding=\"UTF−8\"?>");
@@ -501,7 +501,7 @@ public class GexfTest {
 		text.addLine("</gexf>");
 		GexfGraphReader<String, Integer> reader = new GexfGraphReader<>();
 		reader.setVertexParserDefault(String.class);
-		reader.setEdgeSupplier(Set::size);
+		reader.setEdgeBuilder(Set::size);
 
 		Graph<String, Integer> g = Graph.newDirected();
 		g.addVertex("0");
@@ -539,9 +539,9 @@ public class GexfTest {
 			g.addEdge("0", "1", Byte.valueOf((byte) 0));
 			GexfGraphReader<String, Byte> reader = new GexfGraphReader<>();
 			reader.setVertexParserDefault(String.class);
-			reader.setEdgeSupplierDefault(byte.class);
+			reader.setEdgeBuilderDefault(byte.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
-			reader.setEdgeSupplierDefault(Byte.class);
+			reader.setEdgeBuilderDefault(Byte.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
 		}
 		{
@@ -551,21 +551,21 @@ public class GexfTest {
 			g.addEdge("0", "1", Short.valueOf((short) 0));
 			GexfGraphReader<String, Short> reader = new GexfGraphReader<>();
 			reader.setVertexParserDefault(String.class);
-			reader.setEdgeSupplierDefault(short.class);
+			reader.setEdgeBuilderDefault(short.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
-			reader.setEdgeSupplierDefault(Short.class);
+			reader.setEdgeBuilderDefault(Short.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
 		}
 		{
 			Graph<String, Integer> g = Graph.newDirected();
 			g.addVertex("0");
 			g.addVertex("1");
-			g.addEdge("0", "1", Integer.valueOf(0));
+			g.addEdge("0", "1", Integer.valueOf(1));
 			GexfGraphReader<String, Integer> reader = new GexfGraphReader<>();
 			reader.setVertexParserDefault(String.class);
-			reader.setEdgeSupplierDefault(int.class);
+			reader.setEdgeBuilderDefault(int.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
-			reader.setEdgeSupplierDefault(Integer.class);
+			reader.setEdgeBuilderDefault(Integer.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
 		}
 		{
@@ -575,9 +575,9 @@ public class GexfTest {
 			g.addEdge("0", "1", Long.valueOf(0));
 			GexfGraphReader<String, Long> reader = new GexfGraphReader<>();
 			reader.setVertexParserDefault(String.class);
-			reader.setEdgeSupplierDefault(long.class);
+			reader.setEdgeBuilderDefault(long.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
-			reader.setEdgeSupplierDefault(Long.class);
+			reader.setEdgeBuilderDefault(Long.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
 		}
 		{
@@ -587,9 +587,9 @@ public class GexfTest {
 			g.addEdge("0", "1", Float.valueOf(0));
 			GexfGraphReader<String, Float> reader = new GexfGraphReader<>();
 			reader.setVertexParserDefault(String.class);
-			reader.setEdgeSupplierDefault(float.class);
+			reader.setEdgeBuilderDefault(float.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
-			reader.setEdgeSupplierDefault(Float.class);
+			reader.setEdgeBuilderDefault(Float.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
 		}
 		{
@@ -599,24 +599,24 @@ public class GexfTest {
 			g.addEdge("0", "1", Double.valueOf(0));
 			GexfGraphReader<String, Double> reader = new GexfGraphReader<>();
 			reader.setVertexParserDefault(String.class);
-			reader.setEdgeSupplierDefault(double.class);
+			reader.setEdgeBuilderDefault(double.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
-			reader.setEdgeSupplierDefault(Double.class);
+			reader.setEdgeBuilderDefault(Double.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
 		}
 		{
 			Graph<String, String> g = Graph.newDirected();
 			g.addVertex("0");
 			g.addVertex("1");
-			g.addEdge("0", "1", "e0");
+			g.addEdge("0", "1", "0");
 			GexfGraphReader<String, String> reader = new GexfGraphReader<>();
 			reader.setVertexParserDefault(String.class);
-			reader.setEdgeSupplierDefault(String.class);
+			reader.setEdgeBuilderDefault(String.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
 		}
 		{
 			GexfGraphReader<String, IntList> reader = new GexfGraphReader<>();
-			assertThrows(IllegalArgumentException.class, () -> reader.setEdgeSupplierDefault(IntList.class));
+			assertThrows(IllegalArgumentException.class, () -> reader.setEdgeBuilderDefault(IntList.class));
 		}
 	}
 
@@ -639,7 +639,7 @@ public class GexfTest {
 
 		GexfGraphReader<String, Byte> reader = new GexfGraphReader<>();
 		reader.setVertexParserDefault(String.class);
-		reader.setEdgeSupplierDefault(byte.class);
+		reader.setEdgeBuilderDefault(byte.class);
 		assertThrows(IllegalArgumentException.class, () -> reader.readGraph(new StringReader(text.get())));
 	}
 
@@ -673,7 +673,7 @@ public class GexfTest {
 		GexfGraphReader<String, Integer> reader = new GexfGraphReader<>();
 		reader.setVertexParserDefault(String.class);
 		reader.setEdgeParserDefault(int.class);
-		reader.setEdgeSupplierDefault(int.class);
+		reader.setEdgeBuilderDefault(int.class);
 
 		Graph<String, Integer> g = Graph.newDirected();
 		g.addVertex("0");

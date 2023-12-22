@@ -509,7 +509,7 @@ public class GraphMlTest {
 		text.addLine("</graphml>");
 		GraphMlGraphReader<String, Integer> reader = new GraphMlGraphReader<>();
 		reader.setVertexParserDefault(String.class);
-		reader.setEdgeSupplier(Set::size);
+		reader.setEdgeBuilder(Set::size);
 
 		Graph<String, Integer> g = Graph.newDirected();
 		g.addVertex("0");
@@ -543,9 +543,9 @@ public class GraphMlTest {
 			g.addEdge("0", "1", Byte.valueOf((byte) 0));
 			GraphMlGraphReader<String, Byte> reader = new GraphMlGraphReader<>();
 			reader.setVertexParserDefault(String.class);
-			reader.setEdgeSupplierDefault(byte.class);
+			reader.setEdgeBuilderDefault(byte.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
-			reader.setEdgeSupplierDefault(Byte.class);
+			reader.setEdgeBuilderDefault(Byte.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
 		}
 		{
@@ -555,21 +555,21 @@ public class GraphMlTest {
 			g.addEdge("0", "1", Short.valueOf((short) 0));
 			GraphMlGraphReader<String, Short> reader = new GraphMlGraphReader<>();
 			reader.setVertexParserDefault(String.class);
-			reader.setEdgeSupplierDefault(short.class);
+			reader.setEdgeBuilderDefault(short.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
-			reader.setEdgeSupplierDefault(Short.class);
+			reader.setEdgeBuilderDefault(Short.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
 		}
 		{
 			Graph<String, Integer> g = Graph.newDirected();
 			g.addVertex("0");
 			g.addVertex("1");
-			g.addEdge("0", "1", Integer.valueOf(0));
+			g.addEdge("0", "1", Integer.valueOf(1));
 			GraphMlGraphReader<String, Integer> reader = new GraphMlGraphReader<>();
 			reader.setVertexParserDefault(String.class);
-			reader.setEdgeSupplierDefault(int.class);
+			reader.setEdgeBuilderDefault(int.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
-			reader.setEdgeSupplierDefault(Integer.class);
+			reader.setEdgeBuilderDefault(Integer.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
 		}
 		{
@@ -579,9 +579,9 @@ public class GraphMlTest {
 			g.addEdge("0", "1", Long.valueOf(0));
 			GraphMlGraphReader<String, Long> reader = new GraphMlGraphReader<>();
 			reader.setVertexParserDefault(String.class);
-			reader.setEdgeSupplierDefault(long.class);
+			reader.setEdgeBuilderDefault(long.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
-			reader.setEdgeSupplierDefault(Long.class);
+			reader.setEdgeBuilderDefault(Long.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
 		}
 		{
@@ -591,9 +591,9 @@ public class GraphMlTest {
 			g.addEdge("0", "1", Float.valueOf(0));
 			GraphMlGraphReader<String, Float> reader = new GraphMlGraphReader<>();
 			reader.setVertexParserDefault(String.class);
-			reader.setEdgeSupplierDefault(float.class);
+			reader.setEdgeBuilderDefault(float.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
-			reader.setEdgeSupplierDefault(Float.class);
+			reader.setEdgeBuilderDefault(Float.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
 		}
 		{
@@ -603,24 +603,24 @@ public class GraphMlTest {
 			g.addEdge("0", "1", Double.valueOf(0));
 			GraphMlGraphReader<String, Double> reader = new GraphMlGraphReader<>();
 			reader.setVertexParserDefault(String.class);
-			reader.setEdgeSupplierDefault(double.class);
+			reader.setEdgeBuilderDefault(double.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
-			reader.setEdgeSupplierDefault(Double.class);
+			reader.setEdgeBuilderDefault(Double.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
 		}
 		{
 			Graph<String, String> g = Graph.newDirected();
 			g.addVertex("0");
 			g.addVertex("1");
-			g.addEdge("0", "1", "e0");
+			g.addEdge("0", "1", "0");
 			GraphMlGraphReader<String, String> reader = new GraphMlGraphReader<>();
 			reader.setVertexParserDefault(String.class);
-			reader.setEdgeSupplierDefault(String.class);
+			reader.setEdgeBuilderDefault(String.class);
 			assertEquals(g, reader.readGraph(new StringReader(text.get())));
 		}
 		{
 			GraphMlGraphReader<String, IntList> reader = new GraphMlGraphReader<>();
-			assertThrows(IllegalArgumentException.class, () -> reader.setEdgeSupplierDefault(IntList.class));
+			assertThrows(IllegalArgumentException.class, () -> reader.setEdgeBuilderDefault(IntList.class));
 		}
 	}
 
@@ -639,7 +639,7 @@ public class GraphMlTest {
 
 		GraphMlGraphReader<String, Byte> reader = new GraphMlGraphReader<>();
 		reader.setVertexParserDefault(String.class);
-		reader.setEdgeSupplierDefault(byte.class);
+		reader.setEdgeBuilderDefault(byte.class);
 		assertThrows(IllegalArgumentException.class, () -> reader.readGraph(new StringReader(text.get())));
 	}
 
@@ -669,7 +669,7 @@ public class GraphMlTest {
 		GraphMlGraphReader<String, Integer> reader = new GraphMlGraphReader<>();
 		reader.setVertexParserDefault(String.class);
 		reader.setEdgeParserDefault(int.class);
-		reader.setEdgeSupplierDefault(int.class);
+		reader.setEdgeBuilderDefault(int.class);
 
 		Graph<String, Integer> g = Graph.newDirected();
 		g.addVertex("0");

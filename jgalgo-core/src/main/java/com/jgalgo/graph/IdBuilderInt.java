@@ -16,6 +16,7 @@
 package com.jgalgo.graph;
 
 import java.util.Set;
+import java.util.function.Supplier;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -60,5 +61,29 @@ public interface IdBuilderInt extends IdBuilder<Integer> {
 	 * @return          a unique identifier
 	 */
 	int build(IntSet existing);
+
+	/**
+	 * Get an default builder for {@code int} identifiers.
+	 *
+	 * <p>
+	 * The returned factory may be passed to {@link GraphFactory#setVertexBuilder(IdBuilder)}.
+	 *
+	 * @return a default builder for {@code int} identifiers
+	 */
+	static IdBuilderInt defaultBuilder() {
+		return defaultFactory().get();
+	}
+
+	/**
+	 * Get an default factory for {@code int} identifiers.
+	 *
+	 * <p>
+	 * The returned factory may be passed to {@link GraphFactory#setVertexFactory(Supplier)}.
+	 *
+	 * @return a default factory for {@code int} identifiers
+	 */
+	static Supplier<IdBuilderInt> defaultFactory() {
+		return IdBuilders.DefaultIntIdFactory;
+	}
 
 }

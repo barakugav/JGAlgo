@@ -16,6 +16,7 @@
 package com.jgalgo.graph;
 
 import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * Builder for unique identifiers of vertices or edges in a graph.
@@ -44,5 +45,67 @@ public interface IdBuilder<K> {
 	 * @return          a unique identifier
 	 */
 	K build(Set<K> existing);
+
+	/**
+	 * Get an default builder for identifiers of the given type.
+	 *
+	 * <p>
+	 * A default builder existing for the following types:
+	 * <ul>
+	 * <li>{@code byte} and {@link Byte}</li>
+	 * <li>{@code short} and {@link Short}</li>
+	 * <li>{@code int} and {@link Integer}</li>
+	 * <li>{@code long} and {@link Long}</li>
+	 * <li>{@code float} and {@link Float}</li>
+	 * <li>{@code double} and {@link Double}</li>
+	 * <li>{@link String}</li>
+	 * <li>any other type that has a public constructor with no arguments</li>
+	 * </ul>
+	 * For the latter case, the builder will create a new instance using the constructor, and the newly created instance
+	 * must no be equal to any of the existing identifiers. This is most suitable for types that do not override the
+	 * default {@link Object#equals(Object)} method.
+	 *
+	 * <p>
+	 * The returned builder may be passed to {@link GraphFactory#setVertexBuilder(IdBuilder)}.
+	 *
+	 * @param  <K>                      the type of the identifiers
+	 * @param  idType                   the id type class
+	 * @return                          a default builder for identifiers of {@code idType}
+	 * @throws IllegalArgumentException if the type is not supported
+	 */
+	static <K> IdBuilder<K> defaultBuilder(Class<K> idType) {
+		return IdBuilder.<K>defaultFactory(idType).get();
+	}
+
+	/**
+	 * Get an default factory for identifiers of the given type.
+	 *
+	 * <p>
+	 * A default factory existing for the following types:
+	 * <ul>
+	 * <li>{@code byte} and {@link Byte}</li>
+	 * <li>{@code short} and {@link Short}</li>
+	 * <li>{@code int} and {@link Integer}</li>
+	 * <li>{@code long} and {@link Long}</li>
+	 * <li>{@code float} and {@link Float}</li>
+	 * <li>{@code double} and {@link Double}</li>
+	 * <li>{@link String}</li>
+	 * <li>any other type that has a public constructor with no arguments</li>
+	 * </ul>
+	 * For the latter case, the factory will create a new instance using the constructor, and the newly created instance
+	 * must no be equal to any of the existing identifiers. This is most suitable for types that do not override the
+	 * default {@link Object#equals(Object)} method.
+	 *
+	 * <p>
+	 * The returned factory may be passed to {@link GraphFactory#setVertexFactory(Supplier)}.
+	 *
+	 * @param  <K>                      the type of the identifiers
+	 * @param  idType                   the id type class
+	 * @return                          a default factory for identifiers of {@code idType}
+	 * @throws IllegalArgumentException if the type is not supported
+	 */
+	static <K> Supplier<IdBuilder<K>> defaultFactory(Class<K> idType) {
+		return IdBuilders.defaultFactory(idType);
+	}
 
 }

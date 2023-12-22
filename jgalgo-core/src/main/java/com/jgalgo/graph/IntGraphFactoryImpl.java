@@ -17,13 +17,12 @@ package com.jgalgo.graph;
 
 import java.util.Objects;
 import java.util.function.Supplier;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 class IntGraphFactoryImpl implements IntGraphFactory {
 
 	final IndexGraphFactoryImpl indexFactory;
-	Supplier<IdBuilderInt> vertexFactory = DefaultIdBuilder;
-	Supplier<IdBuilderInt> edgeFactory = DefaultIdBuilder;
+	Supplier<IdBuilderInt> vertexFactory = IdBuilderInt.defaultFactory();
+	Supplier<IdBuilderInt> edgeFactory = IdBuilderInt.defaultFactory();
 
 	IntGraphFactoryImpl(boolean directed) {
 		this.indexFactory = new IndexGraphFactoryImpl(directed);
@@ -131,20 +130,5 @@ class IntGraphFactoryImpl implements IntGraphFactory {
 		indexFactory.setOption(key, value);
 		return this;
 	}
-
-	private static final Supplier<IdBuilderInt> DefaultIdBuilder = () -> {
-		return new IdBuilderInt() {
-			private int counter;
-
-			@Override
-			public int build(IntSet ids) {
-				for (;;) {
-					int id = ++counter;
-					if (!ids.contains(id))
-						return id;
-				}
-			}
-		};
-	};
 
 }
