@@ -24,7 +24,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntSpliterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public final class Range extends AbstractIntSet {
 
@@ -36,10 +36,14 @@ public final class Range extends AbstractIntSet {
 	}
 
 	public static Range range(int to) {
+		if (0 > to)
+			throw new IllegalArgumentException("negative 'to': " + to);
 		return new Range(0, to);
 	}
 
 	public static Range range(int from, int to) {
+		if (from > to)
+			throw new IllegalArgumentException("from > to: " + from + " > " + to);
 		return new Range(from, to);
 	}
 
@@ -59,16 +63,34 @@ public final class Range extends AbstractIntSet {
 	}
 
 	@Override
-	public IntSpliterator spliterator() {
-		return super.spliterator();
-	}
-
-	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof Range))
+		if (o instanceof Range) {
+			Range r = (Range) o;
+			return from == r.from && to == r.to;
+
+		} else if (o instanceof IntSet) {
+			IntSet s = (IntSet) o;
+			int size = size();
+			if (size != s.size())
+				return false;
+			if (size == 0)
+				return true;
+			int min, max;
+			IntIterator it = s.iterator();
+			min = max = it.nextInt();
+			while (--size > 0) {
+				int x = it.nextInt();
+				if (max < x) {
+					max = x;
+				} else if (min > x) {
+					min = x;
+				}
+			}
+			return min == from && max == to - 1;
+
+		} else {
 			return super.equals(o);
-		Range r = (Range) o;
-		return from == r.from && to == r.to;
+		}
 	}
 
 	@Override

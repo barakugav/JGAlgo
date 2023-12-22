@@ -82,7 +82,7 @@ public class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
 		/* Read all edges R(x) */
 		Graph6.BitsReader bitsReader = new Graph6.BitsReader(bytes, cursor);
-		for (int u : range(1, n)) {
+		for (int u : range(1, Math.max(1, n))) {
 			for (int v : range(0, u)) {
 				if (!bitsReader.hasNext())
 					throw new IllegalArgumentException("Too few bits for edges bit vector");

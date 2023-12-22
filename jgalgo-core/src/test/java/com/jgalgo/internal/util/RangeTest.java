@@ -19,6 +19,10 @@ import static com.jgalgo.internal.util.Range.range;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
@@ -28,8 +32,19 @@ import org.junit.jupiter.api.Test;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class RangeTest extends TestBase {
+
+	@Test
+	public void negativeTo() {
+		assertThrows(IllegalArgumentException.class, () -> range(-1));
+	}
+
+	@Test
+	public void fromGreaterThanTo() {
+		assertThrows(IllegalArgumentException.class, () -> range(1, 0));
+	}
 
 	@Test
 	public void iterator() {
@@ -121,34 +136,55 @@ public class RangeTest extends TestBase {
 		for (int repeat = 0; repeat < 25; repeat++) {
 			final int to = rand.nextInt(100);
 			Range range = range(to);
-			assertEquals(range, range);
-			assertEquals(range(to), range);
-			assertEquals(new IntOpenHashSet(range), range);
-			assertEquals(range, new IntOpenHashSet(range));
-			assertNotEquals(range(to + 1), range);
-			assertNotEquals(range, range(to + 1));
-			if (to != 0) {
-				assertNotEquals(range(to - 1), range);
-				assertNotEquals(range, range(to - 1));
+			List<Object> equal = List.of(range, range(to), new IntOpenHashSet(range), new HashSet<>(range));
+			List<Object> notEqual = new ArrayList<>();
+			notEqual.addAll(List.of(range(to + 1), new IntOpenHashSet(range(to + 1)), new HashSet<>(range(to + 1))));
+			if (to != 0)
+				notEqual.addAll(
+						List.of(range(to - 1), new IntOpenHashSet(range(to - 1)), new HashSet<>(range(to - 1))));
+
+			for (Object o : equal) {
+				assertEquals(range, o);
+				assertEquals(o, range);
+			}
+			for (Object o : notEqual) {
+				assertNotEquals(range, o);
+				assertNotEquals(o, range);
 			}
 		}
 		for (int repeat = 0; repeat < 25; repeat++) {
 			final int from = rand.nextInt(100);
 			final int to = from + rand.nextInt(100);
 			Range range = range(from, to);
-			assertEquals(range, range);
-			assertEquals(range(from, to), range);
-			assertEquals(new IntOpenHashSet(range), range);
-			assertEquals(range, new IntOpenHashSet(range));
-			assertNotEquals(range(from - 1, to), range);
-			assertNotEquals(range, range(from - 1, to));
-			assertNotEquals(range(from, to + 1), range);
-			assertNotEquals(range, range(from, to + 1));
+
+			List<Object> equal = List.of(range, range(from, to), new IntOpenHashSet(range), new HashSet<>(range));
+			List<Object> notEqual = new ArrayList<>();
+			notEqual.addAll(List.of(range(from - 1, to), new IntOpenHashSet(range(from - 1, to)),
+					new HashSet<>(range(from - 1, to))));
+			notEqual.addAll(List.of(range(from, to + 1), new IntOpenHashSet(range(from, to + 1)),
+					new HashSet<>(range(from, to + 1))));
 			if (from != to) {
-				assertNotEquals(range(from + 1, to), range);
-				assertNotEquals(range, range(from + 1, to));
-				assertNotEquals(range(from, to - 1), range);
-				assertNotEquals(range, range(from, to - 1));
+				notEqual.addAll(List.of(range(from + 1, to), new IntOpenHashSet(range(from + 1, to)),
+						new HashSet<>(range(from + 1, to))));
+				notEqual.addAll(List.of(range(from, to - 1), new IntOpenHashSet(range(from, to - 1)),
+						new HashSet<>(range(from, to - 1))));
+				IntSet notEqual1 = new IntOpenHashSet();
+				notEqual1.addAll(range(from, to - 1));
+				notEqual1.add(to);
+				notEqual.addAll(List.of(notEqual1, new HashSet<>(notEqual1)));
+				IntSet notEqual2 = new IntOpenHashSet();
+				notEqual2.addAll(range(from + 1, to));
+				notEqual2.add(from - 1);
+				notEqual.addAll(List.of(notEqual2, new HashSet<>(notEqual2)));
+			}
+
+			for (Object o : equal) {
+				assertEquals(range, o);
+				assertEquals(o, range);
+			}
+			for (Object o : notEqual) {
+				assertNotEquals(range, o);
+				assertNotEquals(o, range);
 			}
 		}
 	}
