@@ -41,8 +41,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L41">		eiMap = IndexIntIdMapImpl.newEmpty(indexGraph.edges(), true, factory.indexFactory.expectedEdgesNum);</span>
 <span class="fc" id="L42">		viMap.initListeners(indexGraph);</span>
 <span class="fc" id="L43">		eiMap.initListeners(indexGraph);</span>
-<span class="fc" id="L44">		vertexBuilder = factory.vertexBuilder;</span>
-<span class="fc" id="L45">		edgeBuilder = factory.edgeBuilder;</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">		vertexBuilder = factory.vertexFactory != null ? factory.vertexFactory.get() : null;</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		edgeBuilder = factory.edgeFactory != null ? factory.edgeFactory.get() : null;</span>
 <span class="fc" id="L46">	}</span>
 
 	IntGraphImpl(IntGraphFactoryImpl factory, IndexGraph indexGraph, IndexIdMap&lt;Integer&gt; viMap,
@@ -56,8 +56,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L56">			this.viMap.initListeners(this.indexGraph);</span>
 <span class="fc" id="L57">			this.eiMap.initListeners(this.indexGraph);</span>
 		}
-<span class="fc" id="L59">		vertexBuilder = factory.vertexBuilder;</span>
-<span class="fc" id="L60">		edgeBuilder = factory.edgeBuilder;</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		vertexBuilder = factory.vertexFactory != null ? factory.vertexFactory.get() : null;</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">		edgeBuilder = factory.edgeFactory != null ? factory.edgeFactory.get() : null;</span>
 <span class="fc" id="L61">	}</span>
 
 	/* copy constructor */

@@ -22,9 +22,9 @@ import com.jgalgo.internal.util.Assertions;
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
-	GraphCsrDirected(IndexGraphBuilderImpl.Artifacts builder, BuilderProcessEdgesDirected processEdges) {
+	GraphCsrDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges) {
 <span class="fc" id="L26">		super(true, builder, processEdges);</span>
-<span class="pc bnc" id="L27" title="All 2 branches missed.">		assert builder.isDirected;</span>
+<span class="pc bnc" id="L27" title="All 2 branches missed.">		assert builder.isDirected();</span>
 
 <span class="fc" id="L29">		edgesIn = processEdges.edgesIn;</span>
 <span class="fc" id="L30">		edgesInBegin = processEdges.edgesInBegin;</span>

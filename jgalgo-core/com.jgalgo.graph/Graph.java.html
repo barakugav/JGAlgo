@@ -199,7 +199,7 @@ public interface Graph&lt;V, E&gt; {
 	default V addVertex() {
 <span class="fc" id="L200">		IdBuilder&lt;V&gt; vertexBuilder = vertexBuilder();</span>
 <span class="fc bfc" id="L201" title="All 2 branches covered.">		if (vertexBuilder == null)</span>
-<span class="fc" id="L202">			throw new UnsupportedOperationException(&quot;Graph does not have a vertex builder&quot;);</span>
+<span class="fc" id="L202">			throw new UnsupportedOperationException(&quot;No vertex builder&quot;);</span>
 <span class="fc" id="L203">		V vertex = vertexBuilder.build(vertices());</span>
 <span class="fc" id="L204">		addVertex(vertex);</span>
 <span class="fc" id="L205">		return vertex;</span>
@@ -394,7 +394,7 @@ public interface Graph&lt;V, E&gt; {
 	default E addEdge(V source, V target) {
 <span class="fc" id="L395">		IdBuilder&lt;E&gt; edgeBuilder = edgeBuilder();</span>
 <span class="fc bfc" id="L396" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
-<span class="fc" id="L397">			throw new UnsupportedOperationException();</span>
+<span class="fc" id="L397">			throw new UnsupportedOperationException(&quot;No edge builder&quot;);</span>
 <span class="fc" id="L398">		E edge = edgeBuilder.build(edges());</span>
 <span class="fc" id="L399">		addEdge(source, target, edge);</span>
 <span class="fc" id="L400">		return edge;</span>

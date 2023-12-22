@@ -104,7 +104,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		}
 <span class="fc" id="L105">	}</span>
 
-	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphBaseMutable(GraphBaseMutable.Capabilities capabilities, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L108">		super(capabilities.isDirected, builder.vertices.copy(), builder.edges.copy());</span>
 <span class="fc" id="L109">		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;</span>
 <span class="fc" id="L110">		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;</span>

@@ -84,9 +84,9 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract implements Gra
 		}
 <span class="fc" id="L85">	}</span>
 
-	GraphHashmapMultiDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphHashmapMultiDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L88">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L89" title="All 2 branches missed.">		assert builder.isDirected;</span>
+<span class="pc bnc" id="L89" title="All 2 branches missed.">		assert builder.isDirected();</span>
 
 <span class="fc" id="L91">		edgesOutContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -&gt; edgesOut = newArr);</span>
 <span class="fc" id="L92">		edgesInContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -&gt; edgesIn = newArr);</span>

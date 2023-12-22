@@ -86,9 +86,9 @@ class GraphArrayUndirected extends GraphArrayAbstract implements GraphDefaultsUn
 		}
 <span class="fc" id="L87">	}</span>
 
-	GraphArrayUndirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphArrayUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L90">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L91" title="All 2 branches missed.">		assert !builder.isDirected;</span>
+<span class="pc bnc" id="L91" title="All 2 branches missed.">		assert !builder.isDirected();</span>
 
 <span class="fc" id="L93">		edgesContainer =</span>
 <span class="fc" id="L94">				newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -&gt; edges = newArr);</span>

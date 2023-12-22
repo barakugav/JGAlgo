@@ -71,9 +71,9 @@ class GraphLinkedPtrDirected extends GraphLinkedPtrAbstract implements GraphDefa
 <span class="fc" id="L71">			addEdgeToLists(getEdge(e));</span>
 <span class="fc" id="L72">	}</span>
 
-	GraphLinkedPtrDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphLinkedPtrDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L75">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L76" title="All 2 branches missed.">		assert builder.isDirected;</span>
+<span class="pc bnc" id="L76" title="All 2 branches missed.">		assert builder.isDirected();</span>
 
 <span class="fc" id="L78">		edgesOutContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -&gt; edgesIn = newArr);</span>
 <span class="fc" id="L79">		edgesInContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -&gt; edgesOut = newArr);</span>

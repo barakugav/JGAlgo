@@ -62,9 +62,9 @@ class GraphMatrixUndirected extends GraphMatrixAbstract implements GraphDefaults
 		}
 <span class="fc" id="L63">	}</span>
 
-	GraphMatrixUndirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphMatrixUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L66">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L67" title="All 2 branches missed.">		assert !builder.isDirected;</span>
+<span class="pc bnc" id="L67" title="All 2 branches missed.">		assert !builder.isDirected();</span>
 
 <span class="fc" id="L69">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
 

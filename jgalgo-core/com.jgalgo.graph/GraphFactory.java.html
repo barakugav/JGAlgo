@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import java.util.function.Supplier;
+
 /**
  * A factory for {@link Graph} objects.
  *
@@ -64,7 +66,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 *           weights
 	 */
 	default Graph&lt;V, E&gt; newCopyOf(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L67">		return newCopyOf(g, false, false);</span>
+<span class="fc" id="L69">		return newCopyOf(g, false, false);</span>
 	}
 
 	/**
@@ -114,7 +116,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 *           without the original graph vertices/edges weights.
 	 */
 	default GraphBuilder&lt;V, E&gt; newBuilderCopyOf(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L117">		return newBuilderCopyOf(g, false, false);</span>
+<span class="fc" id="L119">		return newBuilderCopyOf(g, false, false);</span>
 	}
 
 	/**
@@ -135,6 +137,21 @@ public interface GraphFactory&lt;V, E&gt; {
 	GraphBuilder&lt;V, E&gt; newBuilderCopyOf(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights);
 
 	/**
+	 * Determine if graphs built by this factory should be directed.
+	 *
+	 * &lt;p&gt;
+	 * Usually the factory will be created using either {@link #directed()} or {@link #undirected()}, and there will be
+	 * no need to call this method. However, it is sometimes useful use the same factory to build both directed and
+	 * undirected graphs, and this method can be used to change the factory configuration. For example, a factory can be
+	 * passed to a random graph generator, which can generated both directed and undirected graphs, depending on the
+	 * generator parameters.
+	 *
+	 * @param  directed if {@code true} graphs built by this factory will be directed, else they will be undirected
+	 * @return          this factory
+	 */
+	GraphFactory&lt;V, E&gt; setDirected(boolean directed);
+
+	/**
 	 * Change the config of this factory so that the built graphs will support self edges.
 	 *
 	 * &lt;p&gt;
@@ -143,7 +160,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return this factory
 	 */
 	default GraphFactory&lt;V, E&gt; allowSelfEdges() {
-<span class="fc" id="L146">		return allowSelfEdges(true);</span>
+<span class="fc" id="L163">		return allowSelfEdges(true);</span>
 	}
 
 	/**
@@ -169,7 +186,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return this factory
 	 */
 	default GraphFactory&lt;V, E&gt; allowParallelEdges() {
-<span class="fc" id="L172">		return allowParallelEdges(true);</span>
+<span class="fc" id="L189">		return allowParallelEdges(true);</span>
 	}
 
 	/**
@@ -209,7 +226,11 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * &lt;p&gt;
 	 * The vertex builder is used by graphs to create new vertices when the user does not provide them explicitly, see
 	 * {@link Graph#addVertex()}. The same vertex builder will be used for all graphs built by this factory, and graphs
-	 * built by {@link GraphBuilder} created by this factory.
+	 * built by {@link GraphBuilder} created by this factory. If a different instance of a vertex builder is required
+	 * for each graph, consider using {@link #setVertexFactory(Supplier)} instead.
+	 *
+	 * &lt;p&gt;
+	 * For some types there is a default vertex builder, see {@link IdBuilder#defaultBuilder(Class)}.
 	 *
 	 * &lt;p&gt;
 	 * By default, graphs built by this factory will not have a vertex builder, namely a {@code null} vertex builder.
@@ -217,7 +238,34 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @param  vertexBuilder the vertex builder, or {@code null} if no vertex builder should be used
 	 * @return               this factory
 	 */
-	GraphFactory&lt;V, E&gt; setVertexBuilder(IdBuilder&lt;V&gt; vertexBuilder);
+	default GraphFactory&lt;V, E&gt; setVertexBuilder(IdBuilder&lt;V&gt; vertexBuilder) {
+<span class="fc bfc" id="L242" title="All 2 branches covered.">		if (vertexBuilder == null) {</span>
+<span class="fc" id="L243">			setVertexFactory(null);</span>
+		} else {
+<span class="fc" id="L245">			setVertexFactory(() -&gt; vertexBuilder);</span>
+		}
+<span class="fc" id="L247">		return this;</span>
+	}
+
+	/**
+	 * Set the vertex factory which create builders for the vertices of the built graph(s).
+	 *
+	 * &lt;p&gt;
+	 * The vertex builder is used by graphs to create new vertices when the user does not provide them explicitly, see
+	 * {@link Graph#addVertex()}. The factory will be used to insatiate a new vertex builder for each graph built by
+	 * this factory, and graphs built by {@link GraphBuilder} created by this factory. If the same vertex builder can be
+	 * used for all graphs, consider using {@link #setVertexBuilder(IdBuilder)} instead.
+	 *
+	 * &lt;p&gt;
+	 * For some types there is a default vertex factory, see {@link IdBuilder#defaultFactory(Class)}.
+	 *
+	 * &lt;p&gt;
+	 * By default, graphs built by this factory will not have a vertex builder, namely a {@code null} vertex builder.
+	 *
+	 * @param  vertexFactory the vertex factory, or {@code null} if no vertex builder should be used
+	 * @return               this factory
+	 */
+	GraphFactory&lt;V, E&gt; setVertexFactory(Supplier&lt;? extends IdBuilder&lt;V&gt;&gt; vertexFactory);
 
 	/**
 	 * Set the edge builder used by the built graph(s).
@@ -225,7 +273,11 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * &lt;p&gt;
 	 * The edge builder is used by graphs to create new edges when the user does not provide them explicitly, see
 	 * {@link Graph#addEdge(Object, Object)}. The same edge builder will be used for all graphs built by this factory,
-	 * and graphs built by {@link GraphBuilder} created by this factory.
+	 * and graphs built by {@link GraphBuilder} created by this factory. If a different instance of an edge builder is
+	 * required for each graph, consider using {@link #setEdgeFactory(Supplier)} instead.
+	 *
+	 * &lt;p&gt;
+	 * For some types there is a default edge builder, see {@link IdBuilder#defaultBuilder(Class)}.
 	 *
 	 * &lt;p&gt;
 	 * By default, graphs built by this factory will not have an edge builder, namely a {@code null} edge builder.
@@ -233,7 +285,34 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @param  edgeBuilder the edge builder, or {@code null} if no edge builder should be used
 	 * @return             this factory
 	 */
-	GraphFactory&lt;V, E&gt; setEdgeBuilder(IdBuilder&lt;E&gt; edgeBuilder);
+	default GraphFactory&lt;V, E&gt; setEdgeBuilder(IdBuilder&lt;E&gt; edgeBuilder) {
+<span class="fc bfc" id="L289" title="All 2 branches covered.">		if (edgeBuilder == null) {</span>
+<span class="fc" id="L290">			setEdgeFactory(null);</span>
+		} else {
+<span class="fc" id="L292">			setEdgeFactory(() -&gt; edgeBuilder);</span>
+		}
+<span class="fc" id="L294">		return this;</span>
+	}
+
+	/**
+	 * Set the edge factory which create builders for the edges of the built graph(s).
+	 *
+	 * &lt;p&gt;
+	 * The edge builder is used by graphs to create new edges when the user does not provide them explicitly, see
+	 * {@link Graph#addEdge(Object, Object)}. The factory will be used to insatiate a new edge builder for each graph
+	 * built by this factory, and graphs built by {@link GraphBuilder} created by this factory. If the same edge builder
+	 * can be used for all graphs, consider using {@link #setEdgeBuilder(IdBuilder)} instead.
+	 *
+	 * &lt;p&gt;
+	 * For some types there is a default edge factory, see {@link IdBuilder#defaultFactory(Class)}.
+	 *
+	 * &lt;p&gt;
+	 * By default, graphs built by this factory will not have an edge builder, namely a {@code null} edge builder.
+	 *
+	 * @param  edgeFactory the edge factory, or {@code null} if no edge builder should be used
+	 * @return             this factory
+	 */
+	GraphFactory&lt;V, E&gt; setEdgeFactory(Supplier&lt;? extends IdBuilder&lt;E&gt;&gt; edgeFactory);
 
 	/**
 	 * Add a hint to this factory.
@@ -265,19 +344,19 @@ public interface GraphFactory&lt;V, E&gt; {
 	 *
 	 * @author Barak Ugav
 	 */
-<span class="fc" id="L268">	static enum Hint {</span>
+<span class="fc" id="L347">	static enum Hint {</span>
 
 		/** The graph should support fast edge removal via {@link Graph#removeEdge(Object)}. */
-<span class="fc" id="L271">		FastEdgeRemoval,</span>
+<span class="fc" id="L350">		FastEdgeRemoval,</span>
 
 		/**
 		 * The graph should support fast edge lookup via {@link Graph#getEdge(Object, Object)} and
 		 * {@link Graph#getEdges(Object, Object)}.
 		 */
-<span class="fc" id="L277">		FastEdgeLookup,</span>
+<span class="fc" id="L356">		FastEdgeLookup,</span>
 
 		/** The graph density (# of edges) will be high, a constant fraction of \(O(n^2)\). */
-<span class="fc" id="L280">		DenseGraph,</span>
+<span class="fc" id="L359">		DenseGraph,</span>
 	}
 
 	/**
@@ -288,7 +367,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return     a new factory that can build undirected graphs
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; undirected() {
-<span class="fc" id="L291">		return new GraphFactoryImpl&lt;&gt;(false);</span>
+<span class="fc" id="L370">		return new GraphFactoryImpl&lt;&gt;(false);</span>
 	}
 
 	/**
@@ -299,7 +378,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return     a new factory that can build directed graphs
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; directed() {
-<span class="fc" id="L302">		return new GraphFactoryImpl&lt;&gt;(true);</span>
+<span class="fc" id="L381">		return new GraphFactoryImpl&lt;&gt;(true);</span>
 	}
 
 	/**
@@ -311,7 +390,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return          a new factory that can build un/directed graphs
 	 */
 	public static &lt;V, E&gt; GraphFactory&lt;V, E&gt; newInstance(boolean directed) {
-<span class="fc" id="L314">		return new GraphFactoryImpl&lt;&gt;(directed);</span>
+<span class="fc" id="L393">		return new GraphFactoryImpl&lt;&gt;(directed);</span>
 	}
 
 	/**
@@ -330,7 +409,7 @@ public interface GraphFactory&lt;V, E&gt; {
 	 * @return       this builder
 	 */
 	default GraphFactory&lt;V, E&gt; setOption(String key, Object value) {
-<span class="fc" id="L333">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
+<span class="fc" id="L412">		throw new IllegalArgumentException(&quot;unknown option key: &quot; + key);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

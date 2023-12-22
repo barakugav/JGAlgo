@@ -15,88 +15,96 @@
  */
 package com.jgalgo.graph;
 
+import java.util.function.Supplier;
+
 class GraphFactoryImpl&lt;V, E&gt; implements GraphFactory&lt;V, E&gt; {
 
 	final IndexGraphFactoryImpl indexFactory;
-	IdBuilder&lt;V&gt; vertexBuilder;
-	IdBuilder&lt;E&gt; edgeBuilder;
+	Supplier&lt;? extends IdBuilder&lt;V&gt;&gt; vertexFactory;
+	Supplier&lt;? extends IdBuilder&lt;E&gt;&gt; edgeFactory;
 
-<span class="fc" id="L24">	GraphFactoryImpl(boolean directed) {</span>
-<span class="fc" id="L25">		this.indexFactory = new IndexGraphFactoryImpl(directed);</span>
-<span class="fc" id="L26">	}</span>
+<span class="fc" id="L26">	GraphFactoryImpl(boolean directed) {</span>
+<span class="fc" id="L27">		this.indexFactory = new IndexGraphFactoryImpl(directed);</span>
+<span class="fc" id="L28">	}</span>
 
 	@Override
 	public Graph&lt;V, E&gt; newGraph() {
-<span class="fc" id="L30">		return new GraphImpl&lt;&gt;(this);</span>
+<span class="fc" id="L32">		return new GraphImpl&lt;&gt;(this);</span>
 	}
 
 	@Override
 	public Graph&lt;V, E&gt; newCopyOf(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L35">		return new GraphImpl&lt;&gt;(this, g, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L37">		return new GraphImpl&lt;&gt;(this, g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	@Override
 	public GraphBuilder&lt;V, E&gt; newBuilder() {
-<span class="fc" id="L40">		return new GraphBuilderImpl&lt;&gt;(this);</span>
+<span class="fc" id="L42">		return new GraphBuilderImpl&lt;&gt;(this);</span>
 	}
 
 	@Override
 	public GraphBuilder&lt;V, E&gt; newBuilderCopyOf(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L45">		return new GraphBuilderImpl&lt;&gt;(this, g, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L47">		return new GraphBuilderImpl&lt;&gt;(this, g, copyVerticesWeights, copyEdgesWeights);</span>
+	}
+
+	@Override
+	public GraphFactory&lt;V, E&gt; setDirected(boolean directed) {
+<span class="fc" id="L52">		indexFactory.setDirected(directed);</span>
+<span class="fc" id="L53">		return this;</span>
 	}
 
 	@Override
 	public GraphFactory&lt;V, E&gt; allowSelfEdges(boolean selfEdges) {
-<span class="fc" id="L50">		indexFactory.allowSelfEdges(selfEdges);</span>
-<span class="fc" id="L51">		return this;</span>
+<span class="fc" id="L58">		indexFactory.allowSelfEdges(selfEdges);</span>
+<span class="fc" id="L59">		return this;</span>
 	}
 
 	@Override
 	public GraphFactory&lt;V, E&gt; allowParallelEdges(boolean parallelEdges) {
-<span class="fc" id="L56">		indexFactory.allowParallelEdges(parallelEdges);</span>
-<span class="fc" id="L57">		return this;</span>
+<span class="fc" id="L64">		indexFactory.allowParallelEdges(parallelEdges);</span>
+<span class="fc" id="L65">		return this;</span>
 	}
 
 	@Override
 	public GraphFactory&lt;V, E&gt; expectedVerticesNum(int expectedVerticesNum) {
-<span class="nc" id="L62">		indexFactory.expectedVerticesNum(expectedVerticesNum);</span>
-<span class="nc" id="L63">		return this;</span>
+<span class="nc" id="L70">		indexFactory.expectedVerticesNum(expectedVerticesNum);</span>
+<span class="nc" id="L71">		return this;</span>
 	}
 
 	@Override
 	public GraphFactory&lt;V, E&gt; expectedEdgesNum(int expectedEdgesNum) {
-<span class="nc" id="L68">		indexFactory.expectedEdgesNum(expectedEdgesNum);</span>
-<span class="nc" id="L69">		return this;</span>
+<span class="nc" id="L76">		indexFactory.expectedEdgesNum(expectedEdgesNum);</span>
+<span class="nc" id="L77">		return this;</span>
 	}
 
 	@Override
-	public GraphFactory&lt;V, E&gt; setVertexBuilder(IdBuilder&lt;V&gt; vertexBuilder) {
-<span class="fc" id="L74">		this.vertexBuilder = vertexBuilder;</span>
-<span class="fc" id="L75">		return this;</span>
+	public GraphFactory&lt;V, E&gt; setVertexFactory(Supplier&lt;? extends IdBuilder&lt;V&gt;&gt; vertexFactory) {
+<span class="fc" id="L82">		this.vertexFactory = vertexFactory;</span>
+<span class="fc" id="L83">		return this;</span>
 	}
 
 	@Override
-	public GraphFactory&lt;V, E&gt; setEdgeBuilder(IdBuilder&lt;E&gt; edgeBuilder) {
-<span class="fc" id="L80">		this.edgeBuilder = edgeBuilder;</span>
-<span class="fc" id="L81">		return this;</span>
+	public GraphFactory&lt;V, E&gt; setEdgeFactory(Supplier&lt;? extends IdBuilder&lt;E&gt;&gt; edgeFactory) {
+<span class="fc" id="L88">		this.edgeFactory = edgeFactory;</span>
+<span class="fc" id="L89">		return this;</span>
 	}
 
 	@Override
 	public GraphFactory&lt;V, E&gt; addHint(GraphFactory.Hint hint) {
-<span class="fc" id="L86">		indexFactory.addHint(hint);</span>
-<span class="fc" id="L87">		return this;</span>
+<span class="fc" id="L94">		indexFactory.addHint(hint);</span>
+<span class="fc" id="L95">		return this;</span>
 	}
 
 	@Override
 	public GraphFactory&lt;V, E&gt; removeHint(GraphFactory.Hint hint) {
-<span class="nc" id="L92">		indexFactory.removeHint(hint);</span>
-<span class="nc" id="L93">		return this;</span>
+<span class="nc" id="L100">		indexFactory.removeHint(hint);</span>
+<span class="nc" id="L101">		return this;</span>
 	}
 
 	@Override
 	public GraphFactory&lt;V, E&gt; setOption(String key, Object value) {
-<span class="fc" id="L98">		indexFactory.setOption(key, value);</span>
-<span class="fc" id="L99">		return this;</span>
+<span class="fc" id="L106">		indexFactory.setOption(key, value);</span>
+<span class="fc" id="L107">		return this;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

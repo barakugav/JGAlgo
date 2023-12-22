@@ -20,7 +20,7 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 class IndexGraphFactoryImpl implements IndexGraphFactory {
 
-	final boolean directed;
+	private boolean directed;
 	private boolean selfEdges;
 <span class="fc" id="L25">	private boolean parallelEdges = true;</span>
 	int expectedVerticesNum;
@@ -39,9 +39,9 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	@Override
 	public IndexGraph newCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="pc bpc" id="L42" title="1 of 2 branches missed.">		if (directed != g.isDirected())</span>
-<span class="nc bnc" id="L43" title="All 2 branches missed.">			throw new IllegalArgumentException(&quot;graph is &quot; + (g.isDirected() ? &quot;directed&quot; : &quot;undirected&quot;)</span>
-<span class="nc bnc" id="L44" title="All 2 branches missed.">					+ &quot; while factory is &quot; + (directed ? &quot;directed&quot; : &quot;undirected&quot;));</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		if (directed != g.isDirected())</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">			throw new IllegalArgumentException(&quot;graph is &quot; + (g.isDirected() ? &quot;directed&quot; : &quot;undirected&quot;)</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">					+ &quot; while factory is &quot; + (directed ? &quot;directed&quot; : &quot;undirected&quot;));</span>
 <span class="fc" id="L45">		return mutableImpl().newCopyOf((IndexGraph) g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
@@ -68,7 +68,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 		IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights);
 
-		IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder);
+		IndexGraph newFromBuilder(IndexGraphBuilderImpl builder);
 
 	}
 
@@ -87,7 +87,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L91">					return new GraphArrayDirected(selfEdges, builder);</span>
 				}
 <span class="fc" id="L93">			} : new Impl() {</span>
@@ -103,7 +103,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L107">					return new GraphArrayUndirected(selfEdges, builder);</span>
 				}
 			};
@@ -125,7 +125,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L129">					return new GraphLinkedDirected(selfEdges, builder);</span>
 				}
 <span class="fc" id="L131">			} : new Impl() {</span>
@@ -141,7 +141,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L145">					return new GraphLinkedUndirected(selfEdges, builder);</span>
 				}
 			};
@@ -162,7 +162,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L166">					return new GraphLinkedPtrDirected(selfEdges, builder);</span>
 				}
 <span class="fc" id="L168">			} : new Impl() {</span>
@@ -178,7 +178,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L182">					return new GraphLinkedPtrUndirected(selfEdges, builder);</span>
 				}
 			};
@@ -199,7 +199,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L203">					return new GraphHashmapDirected(selfEdges, builder);</span>
 				}
 <span class="fc" id="L205">			} : new Impl() {</span>
@@ -215,7 +215,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L219">					return new GraphHashmapUndirected(selfEdges, builder);</span>
 				}
 			};
@@ -236,7 +236,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L240">					return new GraphHashmapMultiDirected(selfEdges, builder);</span>
 				}
 <span class="fc" id="L242">			} : new Impl() {</span>
@@ -252,7 +252,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L256">					return new GraphHashmapMultiUndirected(selfEdges, builder);</span>
 				}
 			};
@@ -273,7 +273,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L277">					return new GraphMatrixDirected(selfEdges, builder);</span>
 				}
 <span class="fc" id="L279">			} : new Impl() {</span>
@@ -289,7 +289,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 
 				@Override
-				public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L293">					return new GraphMatrixUndirected(selfEdges, builder);</span>
 				}
 			};
@@ -361,7 +361,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L365">				GraphCsrBase.BuilderProcessEdgesDirected processEdges =</span>
 <span class="fc" id="L366">						GraphCsrBase.BuilderProcessEdgesDirected.valueOf(builder);</span>
 <span class="fc" id="L367">				return new GraphCsrDirected(builder, processEdges);</span>
@@ -373,7 +373,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 			}
 
 			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl.Artifacts builder) {
+			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 <span class="fc" id="L377">				GraphCsrBase.BuilderProcessEdgesUndirected processEdges =</span>
 <span class="fc" id="L378">						GraphCsrBase.BuilderProcessEdgesUndirected.valueOf(builder);</span>
 <span class="fc" id="L379">				return new GraphCsrUndirected(builder, processEdges);</span>
@@ -383,55 +383,61 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	}
 
 	@Override
-	public IndexGraphFactory allowSelfEdges(boolean selfEdges) {
-<span class="fc" id="L387">		this.selfEdges = selfEdges;</span>
+	public IndexGraphFactory setDirected(boolean directed) {
+<span class="fc" id="L387">		this.directed = directed;</span>
 <span class="fc" id="L388">		return this;</span>
 	}
 
 	@Override
-	public IndexGraphFactory allowParallelEdges(boolean parallelEdges) {
-<span class="fc" id="L393">		this.parallelEdges = parallelEdges;</span>
+	public IndexGraphFactory allowSelfEdges(boolean selfEdges) {
+<span class="fc" id="L393">		this.selfEdges = selfEdges;</span>
 <span class="fc" id="L394">		return this;</span>
 	}
 
 	@Override
+	public IndexGraphFactory allowParallelEdges(boolean parallelEdges) {
+<span class="fc" id="L399">		this.parallelEdges = parallelEdges;</span>
+<span class="fc" id="L400">		return this;</span>
+	}
+
+	@Override
 	public IndexGraphFactory expectedVerticesNum(int expectedVerticesNum) {
-<span class="pc bpc" id="L399" title="1 of 2 branches missed.">		if (expectedVerticesNum &lt; 0)</span>
-<span class="nc" id="L400">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedVerticesNum);</span>
-<span class="fc" id="L401">		this.expectedVerticesNum = expectedVerticesNum;</span>
-<span class="fc" id="L402">		return this;</span>
+<span class="pc bpc" id="L405" title="1 of 2 branches missed.">		if (expectedVerticesNum &lt; 0)</span>
+<span class="nc" id="L406">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedVerticesNum);</span>
+<span class="fc" id="L407">		this.expectedVerticesNum = expectedVerticesNum;</span>
+<span class="fc" id="L408">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory expectedEdgesNum(int expectedEdgesNum) {
-<span class="pc bpc" id="L407" title="1 of 2 branches missed.">		if (expectedEdgesNum &lt; 0)</span>
-<span class="nc" id="L408">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedEdgesNum);</span>
-<span class="fc" id="L409">		this.expectedEdgesNum = expectedEdgesNum;</span>
-<span class="fc" id="L410">		return this;</span>
-	}
-
-	@Override
-	public IndexGraphFactory addHint(GraphFactory.Hint hint) {
-<span class="fc" id="L415">		hints.add(hint);</span>
+<span class="pc bpc" id="L413" title="1 of 2 branches missed.">		if (expectedEdgesNum &lt; 0)</span>
+<span class="nc" id="L414">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedEdgesNum);</span>
+<span class="fc" id="L415">		this.expectedEdgesNum = expectedEdgesNum;</span>
 <span class="fc" id="L416">		return this;</span>
 	}
 
 	@Override
+	public IndexGraphFactory addHint(GraphFactory.Hint hint) {
+<span class="fc" id="L421">		hints.add(hint);</span>
+<span class="fc" id="L422">		return this;</span>
+	}
+
+	@Override
 	public IndexGraphFactory removeHint(GraphFactory.Hint hint) {
-<span class="nc" id="L421">		hints.remove(hint);</span>
-<span class="nc" id="L422">		return this;</span>
+<span class="nc" id="L427">		hints.remove(hint);</span>
+<span class="nc" id="L428">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory setOption(String key, Object value) {
-<span class="pc bpc" id="L427" title="1 of 2 branches missed.">		switch (key) {</span>
+<span class="pc bpc" id="L433" title="1 of 2 branches missed.">		switch (key) {</span>
 			case &quot;impl&quot;:
-<span class="fc" id="L429">				impl = (String) value;</span>
-<span class="fc" id="L430">				break;</span>
+<span class="fc" id="L435">				impl = (String) value;</span>
+<span class="fc" id="L436">				break;</span>
 			default:
-<span class="nc" id="L432">				IndexGraphFactory.super.setOption(key, value);</span>
+<span class="nc" id="L438">				IndexGraphFactory.super.setOption(key, value);</span>
 		}
-<span class="fc" id="L434">		return this;</span>
+<span class="fc" id="L440">		return this;</span>
 	}
 
 }

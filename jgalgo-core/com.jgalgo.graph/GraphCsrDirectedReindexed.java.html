@@ -17,14 +17,14 @@ package com.jgalgo.graph;
 
 import java.util.Optional;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils.Variant;
+import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 
 <span class="fc" id="L22">class GraphCsrDirectedReindexed extends GraphCsrBase {</span>
 
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
-	private GraphCsrDirectedReindexed(Variant.Of2&lt;IndexGraph, IndexGraphBuilderImpl.Artifacts&gt; graphOrBuilder,
+	private GraphCsrDirectedReindexed(Variant2&lt;IndexGraph, IndexGraphBuilderImpl&gt; graphOrBuilder,
 			BuilderProcessEdgesDirected processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 <span class="fc" id="L30">		super(true, graphOrBuilder, processEdges, edgesReIndexing, copyVerticesWeights, copyEdgesWeights);</span>
@@ -54,8 +54,8 @@ import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 <span class="fc" id="L54">				setEndpoints(eCsr, g.edgeSource(eOrig), g.edgeTarget(eOrig));</span>
 			}
 <span class="fc" id="L56">		} else {</span>
-<span class="fc" id="L57">			IndexGraphBuilderImpl.Artifacts builder = graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class);</span>
-<span class="pc bnc" id="L58" title="All 2 branches missed.">			assert builder.isDirected;</span>
+<span class="fc" id="L57">			IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);</span>
+<span class="pc bnc" id="L58" title="All 2 branches missed.">			assert builder.isDirected();</span>
 
 <span class="fc bfc" id="L60" title="All 2 branches covered.">			for (int eCsr = 0; eCsr &lt; m; eCsr++) {</span>
 <span class="fc" id="L61">				int eOrig = edgesReIndexing.reIndexedToOrig(eCsr);</span>
@@ -64,17 +64,17 @@ import com.jgalgo.internal.util.JGAlgoUtils.Variant;
 		}
 <span class="fc" id="L65">	}</span>
 
-	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraphBuilderImpl.Artifacts builder) {
-<span class="fc" id="L68">		return newInstance(Variant.Of2.withB(builder), true, true);</span>
+	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraphBuilderImpl builder) {
+<span class="fc" id="L68">		return newInstance(Variant2.ofB(builder), true, true);</span>
 	}
 
 	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
-<span class="fc" id="L73">		return newInstance(Variant.Of2.withA(g), copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L73">		return newInstance(Variant2.ofA(g), copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	private static IndexGraphBuilder.ReIndexedGraph newInstance(
-			Variant.Of2&lt;IndexGraph, IndexGraphBuilderImpl.Artifacts&gt; graphOrBuilder, boolean copyVerticesWeights,
+			Variant2&lt;IndexGraph, IndexGraphBuilderImpl&gt; graphOrBuilder, boolean copyVerticesWeights,
 			boolean copyEdgesWeights) {
 <span class="fc" id="L79">		GraphCsrBase.BuilderProcessEdgesDirected processEdges =</span>
 				new GraphCsrBase.BuilderProcessEdgesDirected(graphOrBuilder);

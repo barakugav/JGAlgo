@@ -41,6 +41,7 @@ import org.xml.sax.SAXException;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IdBuilder;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.Weights;
 import com.jgalgo.graph.WeightsBool;
@@ -84,8 +85,8 @@ import it.unimi.dsi.fastutil.shorts.ShortUnaryOperator;
  *
  * &lt;p&gt;
  * Identifiers of vertices are mandatory, and must be unique. Identifiers of edges are optional, if not specified the
- * reader will try generate them using a supplier provided by the user, or a default supplier for certain types (see
- * {@link #setEdgeSupplier(Function)} and {@link #setEdgeSupplierDefault(Class)}). Vertices identifiers (and edges
+ * reader will try generate them using a builder provided by the user, or a default builder for certain types (see
+ * {@link #setEdgeBuilder(IdBuilder)} and {@link #setEdgeBuilderDefault(Class)}). Vertices identifiers (and edges
  * identifiers if specified) are parsed using a parser provided by the user, or a default parser for certain types (see
  * {@link #setVertexParserDefault(Class)} and {@link #setEdgeParserDefault(Class)}).
  *
@@ -116,48 +117,49 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 	private Class&lt;E&gt; edgeType;
 	private Function&lt;String, V&gt; vertexParser;
 	private Function&lt;String, E&gt; edgeParser;
-	private Function&lt;Set&lt;E&gt;, E&gt; edgeSupplier;
-<span class="fc" id="L120">	private final SimpleDateFormat dateFormat = new SimpleDateFormat(Gexf.DateFormat);</span>
+	private IdBuilder&lt;E&gt; edgeBuilder;
+<span class="fc" id="L121">	private final SimpleDateFormat dateFormat = new SimpleDateFormat(Gexf.DateFormat);</span>
 
 	/**
 	 * Create a new reader.
 	 *
 	 * &lt;p&gt;
-	 * The user should set the vertex/edge parsers and edge supplier manually using {@link #setVertexParser(Function)},
-	 * {@link #setEdgeParser(Function)} and {@link #setEdgeSupplier(Function)}. Setting the vertex parser is mandatory,
+	 * The user should set the vertex/edge parsers and edge builder manually using {@link #setVertexParser(Function)},
+	 * {@link #setEdgeParser(Function)} and {@link #setEdgeBuilder(IdBuilder)}. Setting the vertex parser is mandatory,
 	 * while setting the edge parser is only required if edges identifiers are specified. Similarly, setting the edge
-	 * supplier is only required if edges identifiers are not specified.
+	 * builder is only required if edges identifiers are not specified.
 	 */
-<span class="fc" id="L131">	public GexfGraphReader() {}</span>
+<span class="fc" id="L132">	public GexfGraphReader() {}</span>
 
 	/**
-	 * Create a new reader with default parsers and suppliers for the given vertex and edge types.
+	 * Create a new reader with default parsers and builders for the given vertex and edge types.
 	 *
 	 * &lt;p&gt;
 	 * During the reading process, the reader will use the parser to convert the vertex identifiers from string to the
 	 * given type, and similarly for edges if edges identifiers are specified. If edges identifiers are not specified,
-	 * the reader will use the supplier to generate them. Default parsers and edge supplier exists for types
-	 * {@code byte}, {@code short}, {@code int}, {@code long}, {@code float}, {@code double} and {@code String}, which
-	 * will be used by the reader for the given types. If the given types are not supported by the default parsers and
-	 * supplier, the reader will throw an exception. In such case, the constructor {@link #GexfGraphReader()} should be
-	 * used, and the user should set the vertex/edge parsers and edge supplier manually using
-	 * {@link #setVertexParser(Function)}, {@link #setEdgeParser(Function)} and {@link #setEdgeSupplier(Function)}.
+	 * the reader will use the builder to generate them. Default parsers exist for types {@code byte}, {@code short},
+	 * {@code int}, {@code long}, {@code float}, {@code double} and {@code String}. Default edge builder is instantiated
+	 * using {@link IdBuilder#defaultBuilder(Class)}, see it documentation for supported types. If the given types are
+	 * not supported by the default parsers and builder, the reader will throw an exception. In such case, the
+	 * constructor {@link #GexfGraphReader()} should be used, and the user should set the vertex/edge parsers and edge
+	 * builder manually using {@link #setVertexParser(Function)}, {@link #setEdgeParser(Function)} and
+	 * {@link #setEdgeBuilder(IdBuilder)}.
 	 *
 	 *
 	 * @param  vertexType               the type of the vertices
 	 * @param  edgeType                 the type of the edges
 	 * @throws IllegalArgumentException if the given types are not supported by the default vertex/edge parsers and edge
-	 *                                      supplier. The supported types are {@code byte}, {@code short}, {@code int},
+	 *                                      builder. The supported types are {@code byte}, {@code short}, {@code int},
 	 *                                      {@code long}, {@code float}, {@code double} and {@code String}.
 	 * @see                             #setVertexParserDefault(Class)
 	 * @see                             #setEdgeParserDefault(Class)
-	 * @see                             #setEdgeSupplierDefault(Class)
+	 * @see                             #setEdgeBuilderDefault(Class)
 	 */
-<span class="fc" id="L156">	public GexfGraphReader(Class&lt;V&gt; vertexType, Class&lt;E&gt; edgeType) {</span>
-<span class="fc" id="L157">		setVertexParserDefault(this.vertexType = vertexType);</span>
-<span class="fc" id="L158">		setEdgeParserDefault(this.edgeType = edgeType);</span>
-<span class="fc" id="L159">		setEdgeSupplierDefault(this.edgeType);</span>
-<span class="fc" id="L160">	}</span>
+<span class="fc" id="L158">	public GexfGraphReader(Class&lt;V&gt; vertexType, Class&lt;E&gt; edgeType) {</span>
+<span class="fc" id="L159">		setVertexParserDefault(this.vertexType = vertexType);</span>
+<span class="fc" id="L160">		setEdgeParserDefault(this.edgeType = edgeType);</span>
+<span class="fc" id="L161">		setEdgeBuilderDefault(this.edgeType);</span>
+<span class="fc" id="L162">	}</span>
 
 	/**
 	 * Set the parser for the vertices identifiers.
@@ -170,8 +172,8 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 	 * @param vertexParser a parser for the vertices identifiers
 	 */
 	public void setVertexParser(Function&lt;String, V&gt; vertexParser) {
-<span class="fc" id="L173">		this.vertexParser = Objects.requireNonNull(vertexParser);</span>
-<span class="fc" id="L174">	}</span>
+<span class="fc" id="L175">		this.vertexParser = Objects.requireNonNull(vertexParser);</span>
+<span class="fc" id="L176">	}</span>
 
 	/**
 	 * Set the parser for the vertices identifiers, using a default parser for the given vertex type.
@@ -189,32 +191,32 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 	 *                                      {@code double} and {@code String}.
 	 */
 	public void setVertexParserDefault(Class&lt;V&gt; vertexType) {
-<span class="fc" id="L192">		this.vertexParser = GraphIoUtils.defaultParser(vertexType);</span>
-<span class="fc" id="L193">		this.vertexType = vertexType;</span>
-<span class="fc" id="L194">	}</span>
+<span class="fc" id="L194">		this.vertexParser = GraphIoUtils.defaultParser(vertexType);</span>
+<span class="fc" id="L195">		this.vertexType = vertexType;</span>
+<span class="fc" id="L196">	}</span>
 
 	/**
 	 * Set the parser for the edges identifiers.
 	 *
 	 * &lt;p&gt;
 	 * The parser is used to convert the edges identifiers from string to the given edge type. The parser is mandatory
-	 * if edges identifiers are specified. In case edge identifiers are not specified, an edge supplier must be set (see
-	 * {@link #setEdgeSupplier(Function)}). For default parsers for certain types, see
+	 * if edges identifiers are specified. In case edge identifiers are not specified, an edge builder must be set (see
+	 * {@link #setEdgeBuilder(IdBuilder)}). For default parsers for certain types, see
 	 * {@link #setEdgeParserDefault(Class)}.
 	 *
 	 * @param edgeParser a parser for the edges identifiers
 	 */
 	public void setEdgeParser(Function&lt;String, E&gt; edgeParser) {
-<span class="fc" id="L208">		this.edgeParser = Objects.requireNonNull(edgeParser);</span>
-<span class="fc" id="L209">	}</span>
+<span class="fc" id="L210">		this.edgeParser = Objects.requireNonNull(edgeParser);</span>
+<span class="fc" id="L211">	}</span>
 
 	/**
 	 * Set the parser for the edges identifiers, using a default parser for the given edge type.
 	 *
 	 * &lt;p&gt;
 	 * The parser is used to convert the edges identifiers from string to the given edge type. The parser is mandatory
-	 * if edges identifiers are specified. In case edge identifiers are not specified, an edge supplier must be set (see
-	 * {@link #setEdgeSupplier(Function)}). The default parser exists for types {@code byte}, {@code short},
+	 * if edges identifiers are specified. In case edge identifiers are not specified, an edge builder must be set (see
+	 * {@link #setEdgeBuilder(IdBuilder)}). The default parser exists for types {@code byte}, {@code short},
 	 * {@code int}, {@code long}, {@code float}, {@code double} and {@code String}. If the given type is not supported
 	 * by the default parser, the reader will throw an exception. In such case, the method
 	 * {@link #setEdgeParser(Function)} should be used for custom parsing.
@@ -225,47 +227,45 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 	 *                                      {@code double} and {@code String}.
 	 */
 	public void setEdgeParserDefault(Class&lt;E&gt; edgeType) {
-<span class="fc" id="L228">		this.edgeParser = GraphIoUtils.defaultParser(edgeType);</span>
-<span class="fc" id="L229">		this.edgeType = edgeType;</span>
-<span class="fc" id="L230">	}</span>
+<span class="fc" id="L230">		this.edgeParser = GraphIoUtils.defaultParser(edgeType);</span>
+<span class="fc" id="L231">		this.edgeType = edgeType;</span>
+<span class="fc" id="L232">	}</span>
 
 	/**
-	 * Set the supplier for the edges identifiers.
+	 * Set the builder for the edges identifiers.
 	 *
 	 * &lt;p&gt;
-	 * The supplier is used to generate edges identifiers if edges identifiers are not specified. The supplier is
+	 * The builder is used to generate edges identifiers if edges identifiers are not specified. The builder is
 	 * mandatory if edges identifiers are not specified. In case edge identifiers are specified, an edge parser must be
-	 * set (see {@link #setEdgeParser(Function)}). For default suppliers for certain types, see
-	 * {@link #setEdgeSupplierDefault(Class)}.
+	 * set (see {@link #setEdgeParser(Function)}). For default builders for certain types, see
+	 * {@link #setEdgeBuilderDefault(Class)}.
 	 *
 	 * &lt;p&gt;
-	 * The edge supplier accepts a set of existing edges, and should return a new edge identifier that is not in the
-	 * set.
+	 * The edge builder accepts a set of existing edges, and should return a new edge identifier that is not in the set.
 	 *
-	 * @param edgeSupplier a supplier for the edges identifiers
+	 * @param edgeBuilder a builder for the edges identifiers
 	 */
-	public void setEdgeSupplier(Function&lt;Set&lt;E&gt;, E&gt; edgeSupplier) {
-<span class="fc" id="L248">		this.edgeSupplier = Objects.requireNonNull(edgeSupplier);</span>
-<span class="fc" id="L249">	}</span>
+	public void setEdgeBuilder(IdBuilder&lt;E&gt; edgeBuilder) {
+<span class="fc" id="L249">		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);</span>
+<span class="fc" id="L250">	}</span>
 
 	/**
-	 * Set the supplier for the edges identifiers, using a default supplier for the given edge type.
+	 * Set the builder for the edges identifiers, using a default builder for the given edge type.
 	 *
 	 * &lt;p&gt;
-	 * The supplier is used to generate edges identifiers if edges identifiers are not specified. The supplier is
+	 * The builder is used to generate edges identifiers if edges identifiers are not specified. The builder is
 	 * mandatory if edges identifiers are not specified. In case edge identifiers are specified, an edge parser must be
-	 * set (see {@link #setEdgeParser(Function)}). The default supplier exists for types {@code byte}, {@code short},
-	 * {@code int}, {@code long}, {@code float}, {@code double} and {@code String}. If the given type is not supported
-	 * by the default supplier, the reader will throw an exception. In such case, the method
-	 * {@link #setEdgeSupplier(Function)} should be used for custom supplier.
+	 * set (see {@link #setEdgeParser(Function)}). The default builder is instantiated using
+	 * {@link IdBuilder#defaultBuilder(Class)}, see it documentation for supported types. If the given type is not
+	 * supported by the default builder, the reader will throw an exception. In such case, the method
+	 * {@link #setEdgeBuilder(IdBuilder)} should be used for custom builder.
 	 *
 	 * @param  edgeType                 the type of the edges
-	 * @throws IllegalArgumentException if the given type is not supported by the default supplier. The supported types
-	 *                                      are {@code byte}, {@code short}, {@code int}, {@code long}, {@code float},
-	 *                                      {@code double} and {@code String}.
+	 * @throws IllegalArgumentException if the given type is not supported by the default builder. See
+	 *                                      {@link IdBuilder#defaultBuilder(Class)} for supported types
 	 */
-	public void setEdgeSupplierDefault(Class&lt;E&gt; edgeType) {
-<span class="fc" id="L268">		edgeSupplier = GraphIoUtils.defaultEdgeSupplier(edgeType);</span>
+	public void setEdgeBuilderDefault(Class&lt;E&gt; edgeType) {
+<span class="fc" id="L268">		edgeBuilder = IdBuilder.defaultBuilder(edgeType);</span>
 <span class="fc" id="L269">		this.edgeType = edgeType;</span>
 <span class="fc" id="L270">	}</span>
 
@@ -793,9 +793,9 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 <span class="fc" id="L793">						throw new IllegalStateException(&quot;Edge parser was not set&quot;);</span>
 <span class="fc" id="L794">					e = edgeParser.apply(id.get());</span>
 				} else {
-<span class="fc bfc" id="L796" title="All 2 branches covered.">					if (edgeSupplier == null)</span>
-<span class="fc" id="L797">						throw new IllegalStateException(&quot;Edge supplier was not set&quot;);</span>
-<span class="fc" id="L798">					e = edgeSupplier.apply(g.edges());</span>
+<span class="fc bfc" id="L796" title="All 2 branches covered.">					if (edgeBuilder == null)</span>
+<span class="fc" id="L797">						throw new IllegalStateException(&quot;Edge builder was not set&quot;);</span>
+<span class="fc" id="L798">					e = edgeBuilder.build(g.edges());</span>
 				}
 <span class="fc" id="L800">				V u = vertexParser.apply(XmlUtils.requiredAttribute(eElm, &quot;source&quot;));</span>
 <span class="fc" id="L801">				V v = vertexParser.apply(XmlUtils.requiredAttribute(eElm, &quot;target&quot;));</span>

@@ -61,9 +61,9 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract implements GraphDe
 <span class="fc" id="L61">			addEdgeToLists(getEdge(e));</span>
 <span class="fc" id="L62">	}</span>
 
-	GraphLinkedPtrUndirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphLinkedPtrUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L65">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L66" title="All 2 branches missed.">		assert !builder.isDirected;</span>
+<span class="pc bnc" id="L66" title="All 2 branches missed.">		assert !builder.isDirected();</span>
 
 <span class="fc" id="L68">		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
 <span class="fc" id="L69">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>

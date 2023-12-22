@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IdBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.graph</a> &gt; <span class="el_source">IdBuilder.java</span></div><h1>IdBuilder.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.graph;
+
+import java.util.Set;
+import java.util.function.Supplier;
+
+/**
+ * Builder for unique identifiers of vertices or edges in a graph.
+ *
+ * &lt;p&gt;
+ * A {@link Graph} allows adding vertices by either providing an identifier ({@link Graph#addVertex(Object)}) or without
+ * ({@link Graph#addVertex()}). If no identifier is provided, the graph will generate one using an instance of this
+ * interface. The same is true for edges, see {@link Graph#addEdge(Object, Object, Object)} and
+ * {@link Graph#addEdge(Object, Object)}. The graph expose its vertex and edge builders using
+ * {@link Graph#vertexBuilder()} and {@link Graph#edgeBuilder()}, which may return {@code null}. The identifiers
+ * returned by this interface must be unique in the graph.
+ *
+ * &lt;p&gt;
+ * This interface is shared for both vertices and edges, but an instance of this interface is used only for one of them
+ * at a time.
+ *
+ * @author Barak Ugav
+ */
+@FunctionalInterface
+public interface IdBuilder&lt;K&gt; {
+
+	/**
+	 * Builds a unique identifier for a vertex or an edge.
+	 *
+	 * @param  existing the identifiers of the vertices or edges already in the graph
+	 * @return          a unique identifier
+	 */
+	K build(Set&lt;K&gt; existing);
+
+	/**
+	 * Get an default builder for identifiers of the given type.
+	 *
+	 * &lt;p&gt;
+	 * A default builder existing for the following types:
+	 * &lt;ul&gt;
+	 * &lt;li&gt;{@code byte} and {@link Byte}&lt;/li&gt;
+	 * &lt;li&gt;{@code short} and {@link Short}&lt;/li&gt;
+	 * &lt;li&gt;{@code int} and {@link Integer}&lt;/li&gt;
+	 * &lt;li&gt;{@code long} and {@link Long}&lt;/li&gt;
+	 * &lt;li&gt;{@code float} and {@link Float}&lt;/li&gt;
+	 * &lt;li&gt;{@code double} and {@link Double}&lt;/li&gt;
+	 * &lt;li&gt;{@link String}&lt;/li&gt;
+	 * &lt;li&gt;any other type that has a public constructor with no arguments&lt;/li&gt;
+	 * &lt;/ul&gt;
+	 * For the latter case, the builder will create a new instance using the constructor, and the newly created instance
+	 * must no be equal to any of the existing identifiers. This is most suitable for types that do not override the
+	 * default {@link Object#equals(Object)} method.
+	 *
+	 * &lt;p&gt;
+	 * The returned builder may be passed to {@link GraphFactory#setVertexBuilder(IdBuilder)}.
+	 *
+	 * @param  &lt;K&gt;                      the type of the identifiers
+	 * @param  idType                   the id type class
+	 * @return                          a default builder for identifiers of {@code idType}
+	 * @throws IllegalArgumentException if the type is not supported
+	 */
+	static &lt;K&gt; IdBuilder&lt;K&gt; defaultBuilder(Class&lt;K&gt; idType) {
+<span class="fc" id="L77">		return IdBuilder.&lt;K&gt;defaultFactory(idType).get();</span>
+	}
+
+	/**
+	 * Get an default factory for identifiers of the given type.
+	 *
+	 * &lt;p&gt;
+	 * A default factory existing for the following types:
+	 * &lt;ul&gt;
+	 * &lt;li&gt;{@code byte} and {@link Byte}&lt;/li&gt;
+	 * &lt;li&gt;{@code short} and {@link Short}&lt;/li&gt;
+	 * &lt;li&gt;{@code int} and {@link Integer}&lt;/li&gt;
+	 * &lt;li&gt;{@code long} and {@link Long}&lt;/li&gt;
+	 * &lt;li&gt;{@code float} and {@link Float}&lt;/li&gt;
+	 * &lt;li&gt;{@code double} and {@link Double}&lt;/li&gt;
+	 * &lt;li&gt;{@link String}&lt;/li&gt;
+	 * &lt;li&gt;any other type that has a public constructor with no arguments&lt;/li&gt;
+	 * &lt;/ul&gt;
+	 * For the latter case, the factory will create a new instance using the constructor, and the newly created instance
+	 * must no be equal to any of the existing identifiers. This is most suitable for types that do not override the
+	 * default {@link Object#equals(Object)} method.
+	 *
+	 * &lt;p&gt;
+	 * The returned factory may be passed to {@link GraphFactory#setVertexFactory(Supplier)}.
+	 *
+	 * @param  &lt;K&gt;                      the type of the identifiers
+	 * @param  idType                   the id type class
+	 * @return                          a default factory for identifiers of {@code idType}
+	 * @throws IllegalArgumentException if the type is not supported
+	 */
+	static &lt;K&gt; Supplier&lt;IdBuilder&lt;K&gt;&gt; defaultFactory(Class&lt;K&gt; idType) {
+<span class="fc" id="L108">		return IdBuilders.defaultFactory(idType);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

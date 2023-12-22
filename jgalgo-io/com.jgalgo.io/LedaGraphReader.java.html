@@ -93,7 +93,7 @@ public class LedaGraphReader extends GraphIoUtils.AbstractIntGraphReader {
 <span class="fc" id="L93">	}</span>
 
 	@Override
-	public IntGraphBuilder readIntoBuilderImpl(Reader reader) {
+	IntGraphBuilder readIntoBuilderImpl(Reader reader) {
 <span class="fc" id="L97">		BufferedReader br = GraphIoUtils.bufferedReader(reader);</span>
 <span class="fc" id="L98">		Iterator&lt;String&gt; lineIter = GraphIoUtils.lines(br, true).iterator();</span>
 <span class="fc" id="L99">		Supplier&lt;String&gt; next = () -&gt; {</span>

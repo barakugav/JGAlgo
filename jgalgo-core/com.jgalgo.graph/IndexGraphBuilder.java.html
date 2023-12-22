@@ -49,11 +49,11 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * {@inheritDoc}
 	 *
 	 * &lt;p&gt;
-	 * As the built graph is an Index graph, the vertices must be {@code 0,1,2,...,verticesNum-1} and user-chosen IDs
-	 * are not supported. A new vertex will be assigned ID of value {@code vertices().size()}.
+	 * The vertex created by this method will be assigned the next available index, {@code verticesNum}. For example, if
+	 * the graph currently contains the vertices {@code 0,1,2}, the next vertex added will be {@code 3}.
 	 */
 	@Override
-	int addVertex();
+	int addVertexInt();
 
 	/**
 	 * {@inheritDoc}
@@ -61,17 +61,17 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * &lt;p&gt;
 	 * Index graphs vertices IDs are always {@code (0,1,2, ...,verticesNum-1)} therefore the only vertex ID that can be
 	 * added is {@code verticesNum}. For any other vertex passed to this method, an exception will be thrown. If
-	 * {@code verticesNum} is passed, this method is equivalent to {@link #addVertex()}.
+	 * {@code verticesNum} is passed, this method is equivalent to {@link #addVertexInt()}.
 	 *
 	 * @throws     IllegalArgumentException if {@code vertex} is not {@code verticesNum}
-	 * @deprecated                          use {@link #addVertex()} instead
+	 * @deprecated                          use {@link #addVertexInt()} instead
 	 */
 	@Deprecated
 	@Override
 	default void addVertex(int vertex) {
 <span class="fc bfc" id="L72" title="All 2 branches covered.">		if (vertex != vertices().size())</span>
 <span class="fc" id="L73">			throw new IllegalArgumentException(&quot;Only vertex ID &quot; + vertices().size() + &quot; can be added&quot;);</span>
-<span class="fc" id="L74">		addVertex();</span>
+<span class="fc" id="L74">		addVertexInt();</span>
 <span class="fc" id="L75">	}</span>
 
 	/**
@@ -89,8 +89,8 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * {@inheritDoc}
 	 *
 	 * &lt;p&gt;
-	 * As the built graph is an Index graph, the edges must be {@code 0,1,2,...,edgesNum-1}. A new edge will be assigned
-	 * ID of value {@code edges().size()}.
+	 * The edge created by this method will be assigned the next available index, {@code edgesNum}. For example, if the
+	 * graph currently contains the edges {@code 0,1,2}, the next edge added will be {@code 3}.
 	 */
 	@Override
 	int addEdge(int source, int target);
@@ -165,6 +165,34 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *               are iterated in the given set
 	 */
 	IntSet addEdgesReassignIds(IEdgeSet edges);
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * &lt;p&gt;
+	 * The vertex builder returned by this method always assign the next available index, {@code verticesNum}, given the
+	 * current set of vertices {@code (0,1,2, ...,verticesNum-1)}. For example, if the graph currently contains the
+	 * vertices {@code 0,1,2}, the next vertex added will be {@code 3}. The builder simply returns the current vertices
+	 * set size, without validating that the set is actually {@code (0,1,2, ...,verticesNum-1)}.
+	 */
+	@Override
+	default IdBuilderInt vertexBuilder() {
+<span class="fc" id="L180">		return Graphs.IndexGraphIdBuilder;</span>
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * &lt;p&gt;
+	 * The edge builder returned by this method always assign the next available index, {@code edgesNum}, given the
+	 * current set of edges {@code (0,1,2, ...,edgesNum-1)}. For example, if the graph currently contains the edges
+	 * {@code 0,1,2}, the next edge added will be {@code 3}. The builder simply returns the current edges set size,
+	 * without validating that the set is actually {@code (0,1,2, ...,edgesNum-1)}.
+	 */
+	@Override
+	default IdBuilderInt edgeBuilder() {
+<span class="fc" id="L194">		return Graphs.IndexGraphIdBuilder;</span>
+	}
 
 	@Override
 	IndexGraph build();
@@ -338,7 +366,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IndexGraphBuilder undirected() {
-<span class="fc" id="L341">		return IndexGraphFactory.undirected().newBuilder();</span>
+<span class="fc" id="L369">		return IndexGraphFactory.undirected().newBuilder();</span>
 	}
 
 	/**
@@ -356,7 +384,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return a new empty builder for directed graphs
 	 */
 	static IndexGraphBuilder directed() {
-<span class="fc" id="L359">		return IndexGraphFactory.directed().newBuilder();</span>
+<span class="fc" id="L387">		return IndexGraphFactory.directed().newBuilder();</span>
 	}
 
 	/**
@@ -376,7 +404,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 * @return          a new empty builder for un/directed graphs
 	 */
 	static IndexGraphBuilder newInstance(boolean directed) {
-<span class="fc" id="L379">		return IndexGraphFactory.newInstance(directed).newBuilder();</span>
+<span class="fc" id="L407">		return IndexGraphFactory.newInstance(directed).newBuilder();</span>
 	}
 
 	/**
@@ -394,7 +422,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *           vertices/edges weights.
 	 */
 	static IndexGraphBuilder newCopyOf(IndexGraph g) {
-<span class="fc" id="L397">		return newCopyOf(g, false, false);</span>
+<span class="fc" id="L425">		return newCopyOf(g, false, false);</span>
 	}
 
 	/**
@@ -416,7 +444,7 @@ public interface IndexGraphBuilder extends IntGraphBuilder {
 	 *                             original graph vertices/edges weights.
 	 */
 	static IndexGraphBuilder newCopyOf(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L419">		return IndexGraphFactory.newInstance(g.isDirected()).newBuilderCopyOf(g, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L447">		return IndexGraphFactory.newInstance(g.isDirected()).newBuilderCopyOf(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 }

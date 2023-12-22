@@ -370,8 +370,8 @@ class MinimumCostFlows {
 <span class="fc" id="L370">			final int origEdgesThreshold = builder.edges().size();</span>
 
 			/* Add two artificial terminal vertices, a source and a sink */
-<span class="fc" id="L373">			final int source = builder.addVertex();</span>
-<span class="fc" id="L374">			final int sink = builder.addVertex();</span>
+<span class="fc" id="L373">			final int source = builder.addVertexInt();</span>
+<span class="fc" id="L374">			final int sink = builder.addVertexInt();</span>
 
 			/* Connect the source to the sources with high capacity edges */
 			/* Connect the sinks to the sink with high capacity edges */
@@ -481,8 +481,8 @@ class MinimumCostFlows {
 			/* determine a great enough capacity ('infinite') for edges to sources (from sinks) */
 
 			/* Add two artificial terminal vertices, a source and a sink */
-<span class="fc" id="L484">			final int source = builder.addVertex();</span>
-<span class="fc" id="L485">			final int sink = builder.addVertex();</span>
+<span class="fc" id="L484">			final int source = builder.addVertexInt();</span>
+<span class="fc" id="L485">			final int sink = builder.addVertexInt();</span>
 
 			/* Connect the source to the sources with high capacity edges */
 			/* Connect the sinks to the sink with high capacity edges */
@@ -650,8 +650,8 @@ class MinimumCostFlows {
 <span class="fc" id="L650">			final int origEdgesThreshold = builder.edges().size();</span>
 
 			/* Add two artificial vertices, source and sink */
-<span class="fc" id="L653">			final int source = builder.addVertex();</span>
-<span class="fc" id="L654">			final int sink = builder.addVertex();</span>
+<span class="fc" id="L653">			final int source = builder.addVertexInt();</span>
+<span class="fc" id="L654">			final int sink = builder.addVertexInt();</span>
 
 			/* Connect the source to vertices with positive supply and vertices with negative supply to the sink */
 			List&lt;?&gt; capacities;
@@ -764,8 +764,8 @@ class MinimumCostFlows {
 			/* any edge with index smaller than this threshold is an original edge of the graph */
 <span class="fc" id="L765">			final int origEdgesThreshold = builder.edges().size();</span>
 
-<span class="fc" id="L767">			final int source = builder.addVertex();</span>
-<span class="fc" id="L768">			final int sink = builder.addVertex();</span>
+<span class="fc" id="L767">			final int source = builder.addVertexInt();</span>
+<span class="fc" id="L768">			final int sink = builder.addVertexInt();</span>
 <span class="fc bfc" id="L769" title="All 2 branches covered.">			for (int v : sources)</span>
 <span class="fc" id="L770">				builder.addEdge(source, v);</span>
 <span class="fc bfc" id="L771" title="All 2 branches covered.">			for (int v : sinks)</span>

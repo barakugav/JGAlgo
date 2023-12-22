@@ -16,6 +16,7 @@
 package com.jgalgo.graph;
 
 import java.util.Set;
+import java.util.function.Supplier;
 import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -50,7 +51,7 @@ public interface IdBuilderInt extends IdBuilder&lt;Integer&gt; {
 	@Deprecated
 	@Override
 	default Integer build(Set&lt;Integer&gt; existing) {
-<span class="fc" id="L53">		return Integer.valueOf(build(IntAdapters.asIntSet(existing)));</span>
+<span class="fc" id="L54">		return Integer.valueOf(build(IntAdapters.asIntSet(existing)));</span>
 	}
 
 	/**
@@ -60,6 +61,30 @@ public interface IdBuilderInt extends IdBuilder&lt;Integer&gt; {
 	 * @return          a unique identifier
 	 */
 	int build(IntSet existing);
+
+	/**
+	 * Get an default builder for {@code int} identifiers.
+	 *
+	 * &lt;p&gt;
+	 * The returned factory may be passed to {@link GraphFactory#setVertexBuilder(IdBuilder)}.
+	 *
+	 * @return a default builder for {@code int} identifiers
+	 */
+	static IdBuilderInt defaultBuilder() {
+<span class="fc" id="L74">		return defaultFactory().get();</span>
+	}
+
+	/**
+	 * Get an default factory for {@code int} identifiers.
+	 *
+	 * &lt;p&gt;
+	 * The returned factory may be passed to {@link GraphFactory#setVertexFactory(Supplier)}.
+	 *
+	 * @return a default factory for {@code int} identifiers
+	 */
+	static Supplier&lt;IdBuilderInt&gt; defaultFactory() {
+<span class="fc" id="L86">		return IdBuilders.DefaultIntIdFactory;</span>
+	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

@@ -150,7 +150,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L150">		refgBuilder.ensureVertexCapacity(n + 1);</span>
 <span class="fc" id="L151">		refgBuilder.ensureEdgeCapacity(m + n);</span>
 <span class="fc" id="L152">		refgBuilder.addVertices(g.vertices());</span>
-<span class="fc" id="L153">		final int fakeV = refgBuilder.addVertex();</span>
+<span class="fc" id="L153">		final int fakeV = refgBuilder.addVertexInt();</span>
 <span class="fc" id="L154">		refgBuilder.addEdges(EdgeSet.allOf(g));</span>
 <span class="fc" id="L155">		final int fakeEdgesThreshold = refgBuilder.edges().size();</span>
 <span class="fc bfc" id="L156" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>

@@ -82,9 +82,9 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements GraphDefaults
 <span class="fc" id="L82">			addEdgeToLists(e);</span>
 <span class="fc" id="L83">	}</span>
 
-	GraphLinkedUndirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphLinkedUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L86">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L87" title="All 2 branches missed.">		assert !builder.isDirected;</span>
+<span class="pc bnc" id="L87" title="All 2 branches missed.">		assert !builder.isDirected();</span>
 
 <span class="fc" id="L89">		edgesHeadContainer = newVerticesIntContainer(-1, newArr -&gt; edgesHead = newArr);</span>
 <span class="fc" id="L90">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>

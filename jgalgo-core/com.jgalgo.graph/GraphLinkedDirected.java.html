@@ -90,9 +90,9 @@ class GraphLinkedDirected extends GraphLinkedAbstract implements GraphDefaultsDi
 <span class="fc" id="L90">			addEdgeToLists(e);</span>
 <span class="fc" id="L91">	}</span>
 
-	GraphLinkedDirected(boolean selfEdges, IndexGraphBuilderImpl.Artifacts builder) {
+	GraphLinkedDirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
 <span class="fc" id="L94">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L95" title="All 2 branches missed.">		assert builder.isDirected;</span>
+<span class="pc bnc" id="L95" title="All 2 branches missed.">		assert builder.isDirected();</span>
 
 <span class="fc" id="L97">		edgesHeadOutContainer = newVerticesIntContainer(-1, newArr -&gt; edgesOutHead = newArr);</span>
 <span class="fc" id="L98">		edgesHeadInContainer = newVerticesIntContainer(-1, newArr -&gt; edgesInHead = newArr);</span>

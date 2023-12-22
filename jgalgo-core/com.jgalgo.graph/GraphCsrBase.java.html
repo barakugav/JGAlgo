@@ -22,7 +22,7 @@ import java.util.Set;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
-import com.jgalgo.internal.util.JGAlgoUtils.Variant;
+import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -39,7 +39,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	private boolean containsParallelEdges;
 	private boolean containsParallelEdgesValid;
 
-	GraphCsrBase(boolean directed, Variant.Of2&lt;IndexGraph, IndexGraphBuilderImpl.Artifacts&gt; graphOrBuilder,
+	GraphCsrBase(boolean directed, Variant2&lt;IndexGraph, IndexGraphBuilderImpl&gt; graphOrBuilder,
 			BuilderProcessEdges processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 <span class="fc" id="L45">		super(directed, verticesNum(graphOrBuilder), edgesNum(graphOrBuilder), false);</span>
@@ -59,7 +59,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L59">					verticesUserWeightsBuilder.copyAndAddWeights(weightKey,</span>
 <span class="fc" id="L60">							(IWeights&lt;?&gt;) g.getVerticesWeights(weightKey));</span>
 <span class="fc" id="L61">			} else {</span>
-<span class="fc" id="L62">				IndexGraphBuilderImpl.Artifacts builder = graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class);</span>
+<span class="fc" id="L62">				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);</span>
 <span class="fc bfc" id="L63" title="All 2 branches covered.">				for (String key : builder.verticesUserWeights.weightsKeys())</span>
 <span class="fc" id="L64">					verticesUserWeightsBuilder.copyAndAddWeights(key, builder.verticesUserWeights.getWeights(key));</span>
 			}
@@ -77,7 +77,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L77">								(IWeights&lt;?&gt;) g.getEdgesWeights(weightKey), edgesReIndexing);</span>
 				}
 <span class="fc" id="L79">			} else {</span>
-<span class="fc" id="L80">				IndexGraphBuilderImpl.Artifacts builder = graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class);</span>
+<span class="fc" id="L80">				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);</span>
 <span class="fc bfc" id="L81" title="All 2 branches covered.">				if (edgesReIndexing == null) {</span>
 <span class="fc bfc" id="L82" title="All 2 branches covered.">					for (String key : builder.edgesUserWeights.weightsKeys())</span>
 <span class="fc" id="L83">						edgesUserWeightsBuilder.copyAndAddWeights(key, builder.edgesUserWeights.getWeights(key));</span>
@@ -360,15 +360,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="fc" id="L361">	static class BuilderProcessEdgesUndirected extends BuilderProcessEdges {</span>
 
-		static BuilderProcessEdgesUndirected valueOf(IndexGraphBuilderImpl.Artifacts builder) {
-<span class="fc" id="L364">			return new BuilderProcessEdgesUndirected(Variant.Of2.withB(builder));</span>
+		static BuilderProcessEdgesUndirected valueOf(IndexGraphBuilderImpl builder) {
+<span class="fc" id="L364">			return new BuilderProcessEdgesUndirected(Variant2.ofB(builder));</span>
 		}
 
 		static BuilderProcessEdgesUndirected valueOf(IndexGraph g) {
-<span class="nc" id="L368">			return new BuilderProcessEdgesUndirected(Variant.Of2.withA(g));</span>
+<span class="nc" id="L368">			return new BuilderProcessEdgesUndirected(Variant2.ofA(g));</span>
 		}
 
-<span class="fc" id="L371">		private BuilderProcessEdgesUndirected(Variant.Of2&lt;IndexGraph, IndexGraphBuilderImpl.Artifacts&gt; graphOrBuilder) {</span>
+<span class="fc" id="L371">		private BuilderProcessEdgesUndirected(Variant2&lt;IndexGraph, IndexGraphBuilderImpl&gt; graphOrBuilder) {</span>
 <span class="fc" id="L372">			final int n = verticesNum(graphOrBuilder);</span>
 <span class="fc" id="L373">			final int m = edgesNum(graphOrBuilder);</span>
 
@@ -383,7 +383,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="nc" id="L383">						edgesOutBegin[v]++;</span>
 				}
 <span class="nc" id="L385">			} else {</span>
-<span class="fc" id="L386">				IndexGraphBuilderImpl.Artifacts builder = graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class);</span>
+<span class="fc" id="L386">				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);</span>
 <span class="fc bfc" id="L387" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L388">					int u = builder.edgeSource(e), v = builder.edgeTarget(e);</span>
 <span class="fc" id="L389">					edgesOutBegin[u]++;</span>
@@ -422,7 +422,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 					}
 				}
 <span class="nc" id="L424">			} else {</span>
-<span class="fc" id="L425">				IndexGraphBuilderImpl.Artifacts builder = graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class);</span>
+<span class="fc" id="L425">				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);</span>
 <span class="fc bfc" id="L426" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L427">					int u = builder.edgeSource(e), v = builder.edgeTarget(e);</span>
 <span class="fc" id="L428">					int uOutIdx = edgesOutBegin[u]++;</span>
@@ -446,15 +446,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		int[] edgesIn;
 		int[] edgesInBegin;
 
-		static BuilderProcessEdgesDirected valueOf(IndexGraphBuilderImpl.Artifacts builder) {
-<span class="fc" id="L450">			return new BuilderProcessEdgesDirected(Variant.Of2.withB(builder));</span>
+		static BuilderProcessEdgesDirected valueOf(IndexGraphBuilderImpl builder) {
+<span class="fc" id="L450">			return new BuilderProcessEdgesDirected(Variant2.ofB(builder));</span>
 		}
 
 		static BuilderProcessEdgesDirected valueOf(IndexGraph g) {
-<span class="nc" id="L454">			return new BuilderProcessEdgesDirected(Variant.Of2.withA(g));</span>
+<span class="nc" id="L454">			return new BuilderProcessEdgesDirected(Variant2.ofA(g));</span>
 		}
 
-<span class="fc" id="L457">		BuilderProcessEdgesDirected(Variant.Of2&lt;IndexGraph, IndexGraphBuilderImpl.Artifacts&gt; graphOrBuilder) {</span>
+<span class="fc" id="L457">		BuilderProcessEdgesDirected(Variant2&lt;IndexGraph, IndexGraphBuilderImpl&gt; graphOrBuilder) {</span>
 <span class="fc" id="L458">			final int n = verticesNum(graphOrBuilder);</span>
 <span class="fc" id="L459">			final int m = edgesNum(graphOrBuilder);</span>
 
@@ -471,7 +471,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L471">					edgesInBegin[g.edgeTarget(e)]++;</span>
 				}
 <span class="fc" id="L473">			} else {</span>
-<span class="fc" id="L474">				IndexGraphBuilderImpl.Artifacts builder = graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class);</span>
+<span class="fc" id="L474">				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);</span>
 <span class="fc bfc" id="L475" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L476">					edgesOutBegin[builder.edgeSource(e)]++;</span>
 <span class="fc" id="L477">					edgesInBegin[builder.edgeTarget(e)]++;</span>
@@ -506,7 +506,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L506">					edgesIn[vInIdx] = e;</span>
 				}
 <span class="fc" id="L508">			} else {</span>
-<span class="fc" id="L509">				IndexGraphBuilderImpl.Artifacts builder = graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class);</span>
+<span class="fc" id="L509">				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);</span>
 <span class="fc bfc" id="L510" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
 <span class="fc" id="L511">					int uOutIdx = edgesOutBegin[builder.edgeSource(e)]++;</span>
 <span class="fc" id="L512">					int vInIdx = edgesInBegin[builder.edgeTarget(e)]++;</span>
@@ -525,14 +525,12 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	}
 
-	static int verticesNum(Variant.Of2&lt;IndexGraph, IndexGraphBuilderImpl.Artifacts&gt; graphOrBuilder) {
-<span class="fc bfc" id="L529" title="All 2 branches covered.">		return graphOrBuilder.contains(IndexGraph.class) ? graphOrBuilder.get(IndexGraph.class).vertices().size()</span>
-<span class="fc" id="L530">				: graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class).vertices.size();</span>
+	static int verticesNum(Variant2&lt;IndexGraph, IndexGraphBuilderImpl&gt; graphOrBuilder) {
+<span class="fc" id="L529">		return graphOrBuilder.map(IndexGraph::vertices, IndexGraphBuilder::vertices).size();</span>
 	}
 
-	static int edgesNum(Variant.Of2&lt;IndexGraph, IndexGraphBuilderImpl.Artifacts&gt; graphOrBuilder) {
-<span class="fc bfc" id="L534" title="All 2 branches covered.">		return graphOrBuilder.contains(IndexGraph.class) ? graphOrBuilder.get(IndexGraph.class).edges().size()</span>
-<span class="fc" id="L535">				: graphOrBuilder.get(IndexGraphBuilderImpl.Artifacts.class).edges.size();</span>
+	static int edgesNum(Variant2&lt;IndexGraph, IndexGraphBuilderImpl&gt; graphOrBuilder) {
+<span class="fc" id="L533">		return graphOrBuilder.map(IndexGraph::edges, IndexGraphBuilder::edges).size();</span>
 	}
 
 }

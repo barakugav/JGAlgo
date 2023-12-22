@@ -19,9 +19,9 @@ import com.jgalgo.internal.util.Assertions;
 
 <span class="fc" id="L20">class GraphCsrUndirected extends GraphCsrAbstractUnindexed {</span>
 
-	GraphCsrUndirected(IndexGraphBuilderImpl.Artifacts builder, BuilderProcessEdgesUndirected processEdges) {
+	GraphCsrUndirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesUndirected processEdges) {
 <span class="fc" id="L23">		super(false, builder, processEdges);</span>
-<span class="pc bnc" id="L24" title="All 2 branches missed.">		assert !builder.isDirected;</span>
+<span class="pc bnc" id="L24" title="All 2 branches missed.">		assert !builder.isDirected();</span>
 <span class="fc" id="L25">	}</span>
 
 	GraphCsrUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {

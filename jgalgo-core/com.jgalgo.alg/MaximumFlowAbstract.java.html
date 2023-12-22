@@ -164,8 +164,8 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L164">			builder.addEdges(EdgeSet.allOf(gOrig));</span>
 <span class="fc" id="L165">			final int originalEdgesThreshold = builder.edges().size();</span>
 
-<span class="fc" id="L167">			final int source = builder.addVertex();</span>
-<span class="fc" id="L168">			final int sink = builder.addVertex();</span>
+<span class="fc" id="L167">			final int source = builder.addVertexInt();</span>
+<span class="fc" id="L168">			final int sink = builder.addVertexInt();</span>
 			Object capacities;
 <span class="fc bfc" id="L170" title="All 2 branches covered.">			if (WeightFunction.isInteger(capacityOrig)) {</span>
 <span class="fc" id="L171">				IWeightFunctionInt capacityOrigInt = (IWeightFunctionInt) capacityOrig;</span>

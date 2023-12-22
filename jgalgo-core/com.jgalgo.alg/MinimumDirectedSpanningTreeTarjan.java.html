@@ -91,7 +91,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L91">			int[] vOrigToRef = new int[g.vertices().size()];</span>
 <span class="fc" id="L92">			Arrays.fill(vOrigToRef, -1);</span>
 <span class="fc bfc" id="L93" title="All 2 branches covered.">			for (int v : vRefToOrig)</span>
-<span class="fc" id="L94">				vOrigToRef[v] = builder.addVertex();</span>
+<span class="fc" id="L94">				vOrigToRef[v] = builder.addVertexInt();</span>
 <span class="fc" id="L95">			root = vOrigToRef[root];</span>
 
 <span class="fc" id="L97">			int subGraphEdgesNum = 0;</span>

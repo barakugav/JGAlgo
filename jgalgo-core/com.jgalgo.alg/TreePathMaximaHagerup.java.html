@@ -274,7 +274,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 <span class="fc" id="L274">			depths.ensureCapacity(depths.size() + n);</span>
 <span class="fc" id="L275">			parents.ensureCapacity(parents.size() + n);</span>
 <span class="fc bfc" id="L276" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L277">				int vBuilder = vTv[v] = treeBuilder.addVertex();</span>
+<span class="fc" id="L277">				int vBuilder = vTv[v] = treeBuilder.addVertexInt();</span>
 <span class="pc bnc" id="L278" title="All 2 branches missed.">				assert v == vBuilder;</span>
 <span class="fc" id="L279">				depths.add(0);</span>
 <span class="fc" id="L280">				parents.add(-1);</span>
@@ -353,7 +353,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 <span class="fc" id="L353">				depths.ensureCapacity(depths.size() + nNext);</span>
 <span class="fc" id="L354">				parents.ensureCapacity(parents.size() + nNext);</span>
 <span class="fc bfc" id="L355" title="All 2 branches covered.">				for (int V = 0; V &lt; nNext; V++) {</span>
-<span class="fc" id="L356">					int nextV = treeBuilder.addVertex();</span>
+<span class="fc" id="L356">					int nextV = treeBuilder.addVertexInt();</span>
 <span class="fc" id="L357">					vTvNext[V] = nextV;</span>
 
 					/*

@@ -15,14 +15,14 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Objects;
 import java.util.function.Supplier;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 class IntGraphFactoryImpl implements IntGraphFactory {
 
 	final IndexGraphFactoryImpl indexFactory;
-<span class="fc" id="L24">	IdBuilderInt vertexBuilder = DefaultIdBuilder.get();</span>
-<span class="fc" id="L25">	IdBuilderInt edgeBuilder = DefaultIdBuilder.get();</span>
+<span class="fc" id="L24">	Supplier&lt;IdBuilderInt&gt; vertexFactory = IdBuilderInt.defaultFactory();</span>
+<span class="fc" id="L25">	Supplier&lt;IdBuilderInt&gt; edgeFactory = IdBuilderInt.defaultFactory();</span>
 
 <span class="fc" id="L27">	IntGraphFactoryImpl(boolean directed) {</span>
 <span class="fc" id="L28">		this.indexFactory = new IndexGraphFactoryImpl(directed);</span>
@@ -50,85 +50,86 @@ class IntGraphFactoryImpl implements IntGraphFactory {
 	}
 
 	@Override
-	public IntGraphFactory allowSelfEdges(boolean selfEdges) {
-<span class="fc" id="L54">		indexFactory.allowSelfEdges(selfEdges);</span>
+	public IntGraphFactory setDirected(boolean directed) {
+<span class="fc" id="L54">		indexFactory.setDirected(directed);</span>
 <span class="fc" id="L55">		return this;</span>
 	}
 
 	@Override
-	public IntGraphFactory allowParallelEdges(boolean parallelEdges) {
-<span class="fc" id="L60">		indexFactory.allowParallelEdges(parallelEdges);</span>
+	public IntGraphFactory allowSelfEdges(boolean selfEdges) {
+<span class="fc" id="L60">		indexFactory.allowSelfEdges(selfEdges);</span>
 <span class="fc" id="L61">		return this;</span>
 	}
 
 	@Override
-	public IntGraphFactory expectedVerticesNum(int expectedVerticesNum) {
-<span class="fc" id="L66">		indexFactory.expectedVerticesNum(expectedVerticesNum);</span>
+	public IntGraphFactory allowParallelEdges(boolean parallelEdges) {
+<span class="fc" id="L66">		indexFactory.allowParallelEdges(parallelEdges);</span>
 <span class="fc" id="L67">		return this;</span>
 	}
 
 	@Override
-	public IntGraphFactory expectedEdgesNum(int expectedEdgesNum) {
-<span class="fc" id="L72">		indexFactory.expectedEdgesNum(expectedEdgesNum);</span>
+	public IntGraphFactory expectedVerticesNum(int expectedVerticesNum) {
+<span class="fc" id="L72">		indexFactory.expectedVerticesNum(expectedVerticesNum);</span>
 <span class="fc" id="L73">		return this;</span>
 	}
 
 	@Override
-	public IntGraphFactory setVertexBuilder(IdBuilder&lt;Integer&gt; vertexBuilder) {
-<span class="fc bfc" id="L78" title="All 2 branches covered.">		if (vertexBuilder == null) {</span>
-<span class="fc" id="L79">			this.vertexBuilder = null;</span>
-<span class="pc bpc" id="L80" title="1 of 2 branches missed.">		} else if (vertexBuilder instanceof IdBuilderInt) {</span>
-<span class="nc" id="L81">			this.vertexBuilder = (IdBuilderInt) vertexBuilder;</span>
-		} else {
-<span class="fc" id="L83">			this.vertexBuilder = existingIds -&gt; vertexBuilder.build(existingIds).intValue();</span>
-		}
-<span class="fc" id="L85">		return this;</span>
+	public IntGraphFactory expectedEdgesNum(int expectedEdgesNum) {
+<span class="fc" id="L78">		indexFactory.expectedEdgesNum(expectedEdgesNum);</span>
+<span class="fc" id="L79">		return this;</span>
 	}
 
 	@Override
-	public IntGraphFactory setEdgeBuilder(IdBuilder&lt;Integer&gt; edgeBuilder) {
-<span class="fc bfc" id="L90" title="All 2 branches covered.">		if (edgeBuilder == null) {</span>
-<span class="fc" id="L91">			this.edgeBuilder = null;</span>
-<span class="pc bpc" id="L92" title="1 of 2 branches missed.">		} else if (edgeBuilder instanceof IdBuilderInt) {</span>
-<span class="nc" id="L93">			this.edgeBuilder = (IdBuilderInt) edgeBuilder;</span>
+	public IntGraphFactory setVertexFactory(Supplier&lt;? extends IdBuilder&lt;Integer&gt;&gt; vertexFactory) {
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		if (vertexFactory == null) {</span>
+<span class="fc" id="L85">			this.vertexFactory = null;</span>
 		} else {
-<span class="fc" id="L95">			this.edgeBuilder = existingIds -&gt; edgeBuilder.build(existingIds).intValue();</span>
+<span class="fc" id="L87">			this.vertexFactory = () -&gt; {</span>
+<span class="fc" id="L88">				IdBuilder&lt;Integer&gt; vertexBuilder = Objects.requireNonNull(vertexFactory.get());</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">				if (vertexBuilder instanceof IdBuilderInt) {</span>
+<span class="fc" id="L90">					return (IdBuilderInt) vertexBuilder;</span>
+				} else {
+<span class="fc" id="L92">					return existingIds -&gt; vertexBuilder.build(existingIds).intValue();</span>
+				}
+			};
 		}
-<span class="fc" id="L97">		return this;</span>
+<span class="fc" id="L96">		return this;</span>
+	}
+
+	@Override
+	public IntGraphFactory setEdgeFactory(Supplier&lt;? extends IdBuilder&lt;Integer&gt;&gt; edgeFactory) {
+<span class="fc bfc" id="L101" title="All 2 branches covered.">		if (edgeFactory == null) {</span>
+<span class="fc" id="L102">			this.edgeFactory = null;</span>
+		} else {
+<span class="fc" id="L104">			this.edgeFactory = () -&gt; {</span>
+<span class="fc" id="L105">				IdBuilder&lt;Integer&gt; edgeBuilder = Objects.requireNonNull(edgeFactory.get());</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">				if (edgeBuilder instanceof IdBuilderInt) {</span>
+<span class="fc" id="L107">					return (IdBuilderInt) edgeBuilder;</span>
+				} else {
+<span class="fc" id="L109">					return existingIds -&gt; edgeBuilder.build(existingIds).intValue();</span>
+				}
+			};
+		}
+<span class="fc" id="L113">		return this;</span>
 	}
 
 	@Override
 	public IntGraphFactory addHint(GraphFactory.Hint hint) {
-<span class="fc" id="L102">		indexFactory.addHint(hint);</span>
-<span class="fc" id="L103">		return this;</span>
+<span class="fc" id="L118">		indexFactory.addHint(hint);</span>
+<span class="fc" id="L119">		return this;</span>
 	}
 
 	@Override
 	public IntGraphFactory removeHint(GraphFactory.Hint hint) {
-<span class="nc" id="L108">		indexFactory.removeHint(hint);</span>
-<span class="nc" id="L109">		return this;</span>
+<span class="nc" id="L124">		indexFactory.removeHint(hint);</span>
+<span class="nc" id="L125">		return this;</span>
 	}
 
 	@Override
 	public IntGraphFactory setOption(String key, Object value) {
-<span class="fc" id="L114">		indexFactory.setOption(key, value);</span>
-<span class="fc" id="L115">		return this;</span>
+<span class="fc" id="L130">		indexFactory.setOption(key, value);</span>
+<span class="fc" id="L131">		return this;</span>
 	}
-
-<span class="fc" id="L118">	private static final Supplier&lt;IdBuilderInt&gt; DefaultIdBuilder = () -&gt; {</span>
-<span class="fc" id="L119">		return new IdBuilderInt() {</span>
-			private int counter;
-
-			@Override
-			public int build(IntSet ids) {
-				for (;;) {
-<span class="fc" id="L125">					int id = ++counter;</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">					if (!ids.contains(id))</span>
-<span class="fc" id="L127">						return id;</span>
-<span class="fc" id="L128">				}</span>
-			}
-		};
-	};
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
