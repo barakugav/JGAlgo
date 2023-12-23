@@ -197,13 +197,25 @@ public class Sparse6Test extends TestUtils {
 				assertEquals(g.edges(), g1.edges());
 
 				for (int u : g.vertices()) {
-					Set<Integer> outNeighbors = g.outEdges(u).intStream().map(e -> g.edgeEndpoint(e, u)).boxed()
+					Set<Integer> outNeighbors = g
+							.outEdges(u)
+							.intStream()
+							.map(e -> g.edgeEndpoint(e, u))
+							.boxed()
 							.collect(Collectors.toSet());
 					Set<Integer> inNeighbors =
 							g.inEdges(u).intStream().map(e -> g.edgeEndpoint(e, u)).boxed().collect(Collectors.toSet());
-					Set<Integer> outNeighbors1 = g1.outEdges(u).intStream().map(e -> g1.edgeEndpoint(e, u)).boxed()
+					Set<Integer> outNeighbors1 = g1
+							.outEdges(u)
+							.intStream()
+							.map(e -> g1.edgeEndpoint(e, u))
+							.boxed()
 							.collect(Collectors.toSet());
-					Set<Integer> inNeighbors1 = g1.inEdges(u).intStream().map(e -> g1.edgeEndpoint(e, u)).boxed()
+					Set<Integer> inNeighbors1 = g1
+							.inEdges(u)
+							.intStream()
+							.map(e -> g1.edgeEndpoint(e, u))
+							.boxed()
 							.collect(Collectors.toSet());
 					assertEquals(outNeighbors, outNeighbors1);
 					assertEquals(inNeighbors, inNeighbors1);

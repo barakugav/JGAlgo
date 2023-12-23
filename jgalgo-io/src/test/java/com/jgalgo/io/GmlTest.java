@@ -648,7 +648,8 @@ public class GmlTest {
 		text.addLine("    weight 1");
 		text.addLine("  ]");
 		text.addLine("]");
-		assertTrue(reader.readGraph(new StringReader(text.getAndClear()))
+		assertTrue(reader
+				.readGraph(new StringReader(text.getAndClear()))
 				.getVerticesWeights("weight") instanceof WeightsInt);
 
 		text.addLine("graph [");
@@ -662,7 +663,8 @@ public class GmlTest {
 		text.addLine("    weight 1");
 		text.addLine("  ]");
 		text.addLine("]");
-		assertTrue(reader.readGraph(new StringReader(text.getAndClear()))
+		assertTrue(reader
+				.readGraph(new StringReader(text.getAndClear()))
 				.getVerticesWeights("weight") instanceof WeightsDouble);
 
 		text.addLine("graph [");
@@ -676,7 +678,8 @@ public class GmlTest {
 		text.addLine("    weight 1.1");
 		text.addLine("  ]");
 		text.addLine("]");
-		assertTrue(reader.readGraph(new StringReader(text.getAndClear()))
+		assertTrue(reader
+				.readGraph(new StringReader(text.getAndClear()))
 				.getVerticesWeights("weight") instanceof WeightsDouble);
 
 		text.addLine("graph [");
@@ -690,7 +693,8 @@ public class GmlTest {
 		text.addLine("    weight 1.1");
 		text.addLine("  ]");
 		text.addLine("]");
-		assertTrue(reader.readGraph(new StringReader(text.getAndClear()))
+		assertTrue(reader
+				.readGraph(new StringReader(text.getAndClear()))
 				.getVerticesWeights("weight") instanceof WeightsDouble);
 
 		text.addLine("graph [");
@@ -704,7 +708,8 @@ public class GmlTest {
 		text.addLine("    weight \"hello\"");
 		text.addLine("  ]");
 		text.addLine("]");
-		assertTrue(reader.readGraph(new StringReader(text.getAndClear()))
+		assertTrue(reader
+				.readGraph(new StringReader(text.getAndClear()))
 				.getVerticesWeights("weight") instanceof WeightsObj);
 
 		text.addLine("graph [");
@@ -718,7 +723,8 @@ public class GmlTest {
 		text.addLine("    weight \"hello\"");
 		text.addLine("  ]");
 		text.addLine("]");
-		assertTrue(reader.readGraph(new StringReader(text.getAndClear()))
+		assertTrue(reader
+				.readGraph(new StringReader(text.getAndClear()))
 				.getVerticesWeights("weight") instanceof WeightsObj);
 
 		text.addLine("graph [");
@@ -732,7 +738,8 @@ public class GmlTest {
 		text.addLine("    weight 1");
 		text.addLine("  ]");
 		text.addLine("]");
-		assertTrue(reader.readGraph(new StringReader(text.getAndClear()))
+		assertTrue(reader
+				.readGraph(new StringReader(text.getAndClear()))
 				.getVerticesWeights("weight") instanceof WeightsObj);
 
 		text.addLine("graph [");
@@ -746,7 +753,8 @@ public class GmlTest {
 		text.addLine("    weight 1.1");
 		text.addLine("  ]");
 		text.addLine("]");
-		assertTrue(reader.readGraph(new StringReader(text.getAndClear()))
+		assertTrue(reader
+				.readGraph(new StringReader(text.getAndClear()))
 				.getVerticesWeights("weight") instanceof WeightsObj);
 	}
 

@@ -1269,12 +1269,15 @@ public class GexfTest {
 		text.addLine("          <attvalue for=\"41\" value=\"[m, n, o, p, q]\"/>\n");
 		text.addLine("          <attvalue for=\"42\" value=\"[rst, uvw, xyz, abc, def]\"/>\n");
 		text.addLine("          <attvalue for=\"43\" value=\"[ghi, jkl, mno, pqr, stu]\"/>\n");
-		text.addLine(
-				"          <attvalue for=\"44\" value=\"[1326452364.67, 456546547.02, 8888886783568.46, 2345456747.39, 4573457]\"/>\n");
-		text.addLine(
-				"          <attvalue for=\"45\" value=\"[3333, 2345254, 23642547547.2455874457457, 236346262734575367.351564568547, 245785678735746586]\"/>\n");
-		text.addLine(
-				"          <attvalue for=\"46\" value=\"[541564646546, 6542317544532678547854354674574, 25632896357845,444444444444]\"/>\n");
+		text
+				.addLine(
+						"          <attvalue for=\"44\" value=\"[1326452364.67, 456546547.02, 8888886783568.46, 2345456747.39, 4573457]\"/>\n");
+		text
+				.addLine(
+						"          <attvalue for=\"45\" value=\"[3333, 2345254, 23642547547.2455874457457, 236346262734575367.351564568547, 245785678735746586]\"/>\n");
+		text
+				.addLine(
+						"          <attvalue for=\"46\" value=\"[541564646546, 6542317544532678547854354674574, 25632896357845,444444444444]\"/>\n");
 		text.addLine("          <attvalue for=\"47\" value=\"[45674586342]\"/>\n");
 		text.addLine("        </attvalues>\n");
 		text.addLine("      </node>\n");
@@ -1327,14 +1330,18 @@ public class GexfTest {
 		text.addLine("          <attvalue for=\"7\" value=\"[z, a, b, c, d]\"/>\n");
 		text.addLine("          <attvalue for=\"6\" value=\"[efg, hij, klm, nop, qrs]\"/>\n");
 		text.addLine("          <attvalue for=\"5\" value=\"[tuv, wxy, zab, cde, fgh]\"/>\n");
-		text.addLine(
-				"		  <attvalue for=\"4\" value=\"[8967236905782930568290678.54654968465, 910263509570831456,13462462456, 56823541352456, 234987234.1]\"/>\n");
-		text.addLine(
-				"		  <attvalue for=\"3\" value=\"[8888888889182391754123.54, 1.2589739468723094898647, 238423433333333]\"/>\n");
-		text.addLine(
-				"		  <attvalue for=\"2\" value=\"[67093857982768926749031850345, 5719356758398457938457345, 45354345346245672392211110001]\"/>\n");
-		text.addLine(
-				"		  <attvalue for=\"1\" value=\"[13467218190275345, 34895672458967134098234, 45545454545454545454454545]\"/>\n");
+		text
+				.addLine(
+						"		  <attvalue for=\"4\" value=\"[8967236905782930568290678.54654968465, 910263509570831456,13462462456, 56823541352456, 234987234.1]\"/>\n");
+		text
+				.addLine(
+						"		  <attvalue for=\"3\" value=\"[8888888889182391754123.54, 1.2589739468723094898647, 238423433333333]\"/>\n");
+		text
+				.addLine(
+						"		  <attvalue for=\"2\" value=\"[67093857982768926749031850345, 5719356758398457938457345, 45354345346245672392211110001]\"/>\n");
+		text
+				.addLine(
+						"		  <attvalue for=\"1\" value=\"[13467218190275345, 34895672458967134098234, 45545454545454545454454545]\"/>\n");
 		text.addLine("        </attvalues>\n");
 		text.addLine("      </edge>\n");
 		text.addLine("    </edges>\n");
@@ -1376,12 +1383,14 @@ public class GexfTest {
 				g.addVerticesWeights("v-uri-weights2", URI.class, new URI("http://example.com"));
 		WeightsObj<String, BigDecimal> vBigDecimalWeights1 =
 				g.addVerticesWeights("v-bigdecimal-weights1", BigDecimal.class);
-		WeightsObj<String, BigDecimal> vBigDecimalWeights2 = g.addVerticesWeights("v-bigdecimal-weights2",
-				BigDecimal.class, new BigDecimal("12345678901234567890123456789012345678.90"));
+		WeightsObj<String, BigDecimal> vBigDecimalWeights2 = g
+				.addVerticesWeights("v-bigdecimal-weights2", BigDecimal.class,
+						new BigDecimal("12345678901234567890123456789012345678.90"));
 		WeightsObj<String, BigInteger> vBigIntegerWeights1 =
 				g.addVerticesWeights("v-biginteger-weights1", BigInteger.class);
-		WeightsObj<String, BigInteger> vBigIntegerWeights2 = g.addVerticesWeights("v-biginteger-weights2",
-				BigInteger.class, new BigInteger("1234567890123456745678901234567890"));
+		WeightsObj<String, BigInteger> vBigIntegerWeights2 = g
+				.addVerticesWeights("v-biginteger-weights2", BigInteger.class,
+						new BigInteger("1234567890123456745678901234567890"));
 		WeightsObj<String, byte[]> vListByteWeights1 = g.addVerticesWeights("v-listbyte-weights1", byte[].class);
 		WeightsObj<String, byte[]> vListByteWeights2 =
 				g.addVerticesWeights("v-listbyte-weights2", byte[].class, new byte[] { 0, 1, 2 });
@@ -1414,14 +1423,16 @@ public class GexfTest {
 				g.addVerticesWeights("v-liststring-weights2", String[].class, new String[] { "abc", "def", "ghi" });
 		WeightsObj<String, BigDecimal[]> vListBigDecimalWeights1 =
 				g.addVerticesWeights("v-listbigdecimal-weights1", BigDecimal[].class);
-		WeightsObj<String, BigDecimal[]> vListBigDecimalWeights2 = g.addVerticesWeights("v-listbigdecimal-weights2",
-				BigDecimal[].class, new BigDecimal[] { new BigDecimal("5497489789789.86"),
-						new BigDecimal("54874465465498.98"), new BigDecimal("68728936740730000000010000.01") });
+		WeightsObj<String, BigDecimal[]> vListBigDecimalWeights2 = g
+				.addVerticesWeights("v-listbigdecimal-weights2", BigDecimal[].class,
+						new BigDecimal[] { new BigDecimal("5497489789789.86"), new BigDecimal("54874465465498.98"),
+								new BigDecimal("68728936740730000000010000.01") });
 		WeightsObj<String, BigInteger[]> vListBigIntegerWeights1 =
 				g.addVerticesWeights("v-listbiginteger-weights1", BigInteger[].class);
-		WeightsObj<String, BigInteger[]> vListBigIntegerWeights2 = g.addVerticesWeights("v-listbiginteger-weights2",
-				BigInteger[].class, new BigInteger[] { new BigInteger("1234567867894230706490"),
-						new BigInteger("123528974567890"), new BigInteger("123495941321324586567890") });
+		WeightsObj<String, BigInteger[]> vListBigIntegerWeights2 = g
+				.addVerticesWeights("v-listbiginteger-weights2", BigInteger[].class,
+						new BigInteger[] { new BigInteger("1234567867894230706490"), new BigInteger("123528974567890"),
+								new BigInteger("123495941321324586567890") });
 
 		WeightsByte<String> eByteWeights1 = g.addEdgesWeights("e-byte-weights1", byte.class);
 		WeightsByte<String> eByteWeights2 = g.addEdgesWeights("e-byte-weights2", byte.class, Byte.valueOf((byte) 101));
@@ -1451,8 +1462,8 @@ public class GexfTest {
 				g.addEdgesWeights("e-uri-weights2", URI.class, new URI("http://example2.com"));
 		WeightsObj<String, BigDecimal> eBigDecimalWeights1 =
 				g.addEdgesWeights("e-bigdecimal-weights1", BigDecimal.class);
-		WeightsObj<String, BigDecimal> eBigDecimalWeights2 = g.addEdgesWeights("e-bigdecimal-weights2",
-				BigDecimal.class, new BigDecimal("274602789672307293670.39"));
+		WeightsObj<String, BigDecimal> eBigDecimalWeights2 = g
+				.addEdgesWeights("e-bigdecimal-weights2", BigDecimal.class, new BigDecimal("274602789672307293670.39"));
 		WeightsObj<String, BigInteger> eBigIntegerWeights1 =
 				g.addEdgesWeights("e-biginteger-weights1", BigInteger.class);
 		WeightsObj<String, BigInteger> eBigIntegerWeights2 =
@@ -1487,14 +1498,16 @@ public class GexfTest {
 				g.addEdgesWeights("e-liststring-weights2", String[].class, new String[] { "ghi", "jkl", "mno" });
 		WeightsObj<String, BigDecimal[]> eListBigDecimalWeights1 =
 				g.addEdgesWeights("e-listbigdecimal-weights1", BigDecimal[].class);
-		WeightsObj<String, BigDecimal[]> eListBigDecimalWeights2 = g.addEdgesWeights("e-listbigdecimal-weights2",
-				BigDecimal[].class, new BigDecimal[] { new BigDecimal("7015938769324.67"),
-						new BigDecimal("8909000045689674.02"), new BigDecimal("1111111111235.46") });
+		WeightsObj<String, BigDecimal[]> eListBigDecimalWeights2 = g
+				.addEdgesWeights("e-listbigdecimal-weights2", BigDecimal[].class,
+						new BigDecimal[] { new BigDecimal("7015938769324.67"), new BigDecimal("8909000045689674.02"),
+								new BigDecimal("1111111111235.46") });
 		WeightsObj<String, BigInteger[]> eListBigIntegerWeights1 =
 				g.addEdgesWeights("e-listbiginteger-weights1", BigInteger[].class);
-		WeightsObj<String, BigInteger[]> eListBigIntegerWeights2 = g.addEdgesWeights("e-listbiginteger-weights2",
-				BigInteger[].class, new BigInteger[] { new BigInteger("582790273698"), new BigInteger("16549699999"),
-						new BigInteger("88888436549874") });
+		WeightsObj<String, BigInteger[]> eListBigIntegerWeights2 = g
+				.addEdgesWeights("e-listbiginteger-weights2", BigInteger[].class,
+						new BigInteger[] { new BigInteger("582790273698"), new BigInteger("16549699999"),
+								new BigInteger("88888436549874") });
 
 		vByteWeights1.set("n1", (byte) 60);
 		vByteWeights2.set("n1", (byte) 61);
@@ -1540,17 +1553,20 @@ public class GexfTest {
 		vListCharWeights2.set("n1", new char[] { 'm', 'n', 'o', 'p', 'q' });
 		vListStringWeights1.set("n1", new String[] { "rst", "uvw", "xyz", "abc", "def" });
 		vListStringWeights2.set("n1", new String[] { "ghi", "jkl", "mno", "pqr", "stu" });
-		vListBigDecimalWeights1.set("n1",
-				new BigDecimal[] { new BigDecimal("1326452364.67"), new BigDecimal("456546547.02"),
-						new BigDecimal("8888886783568.46"), new BigDecimal("2345456747.39"),
-						new BigDecimal("4573457") });
-		vListBigDecimalWeights2.set("n1",
-				new BigDecimal[] { new BigDecimal("3333"), new BigDecimal("2345254"),
+		vListBigDecimalWeights1
+				.set("n1",
+						new BigDecimal[] { new BigDecimal("1326452364.67"), new BigDecimal("456546547.02"),
+								new BigDecimal("8888886783568.46"), new BigDecimal("2345456747.39"),
+								new BigDecimal("4573457") });
+		vListBigDecimalWeights2
+				.set("n1", new BigDecimal[] { new BigDecimal("3333"), new BigDecimal("2345254"),
 						new BigDecimal("23642547547.2455874457457"), new BigDecimal("236346262734575367.351564568547"),
 						new BigDecimal("245785678735746586") });
-		vListBigIntegerWeights1.set("n1",
-				new BigInteger[] { new BigInteger("541564646546"), new BigInteger("6542317544532678547854354674574"),
-						new BigInteger("25632896357845"), new BigInteger("444444444444") });
+		vListBigIntegerWeights1
+				.set("n1",
+						new BigInteger[] { new BigInteger("541564646546"),
+								new BigInteger("6542317544532678547854354674574"), new BigInteger("25632896357845"),
+								new BigInteger("444444444444") });
 		vListBigIntegerWeights2.set("n1", new BigInteger[] { new BigInteger("45674586342") });
 
 		eByteWeights1.set("e1", (byte) 111);
@@ -1597,16 +1613,20 @@ public class GexfTest {
 		eListCharWeights2.set("e1", new char[] { 'z', 'a', 'b', 'c', 'd' });
 		eListStringWeights1.set("e1", new String[] { "efg", "hij", "klm", "nop", "qrs" });
 		eListStringWeights2.set("e1", new String[] { "tuv", "wxy", "zab", "cde", "fgh" });
-		eListBigDecimalWeights1.set("e1",
-				new BigDecimal[] { new BigDecimal("8967236905782930568290678.54654968465"),
-						new BigDecimal("910263509570831456"), new BigDecimal("13462462456"),
-						new BigDecimal("56823541352456"), new BigDecimal("234987234.1") });
-		eListBigDecimalWeights2.set("e1", new BigDecimal[] { new BigDecimal("8888888889182391754123.54"),
-				new BigDecimal("1.2589739468723094898647"), new BigDecimal("238423433333333") });
-		eListBigIntegerWeights1.set("e1", new BigInteger[] { new BigInteger("67093857982768926749031850345"),
-				new BigInteger("5719356758398457938457345"), new BigInteger("45354345346245672392211110001") });
-		eListBigIntegerWeights2.set("e1", new BigInteger[] { new BigInteger("13467218190275345"),
-				new BigInteger("34895672458967134098234"), new BigInteger("45545454545454545454454545") });
+		eListBigDecimalWeights1
+				.set("e1",
+						new BigDecimal[] { new BigDecimal("8967236905782930568290678.54654968465"),
+								new BigDecimal("910263509570831456"), new BigDecimal("13462462456"),
+								new BigDecimal("56823541352456"), new BigDecimal("234987234.1") });
+		eListBigDecimalWeights2
+				.set("e1", new BigDecimal[] { new BigDecimal("8888888889182391754123.54"),
+						new BigDecimal("1.2589739468723094898647"), new BigDecimal("238423433333333") });
+		eListBigIntegerWeights1
+				.set("e1", new BigInteger[] { new BigInteger("67093857982768926749031850345"),
+						new BigInteger("5719356758398457938457345"), new BigInteger("45354345346245672392211110001") });
+		eListBigIntegerWeights2
+				.set("e1", new BigInteger[] { new BigInteger("13467218190275345"),
+						new BigInteger("34895672458967134098234"), new BigInteger("45545454545454545454454545") });
 
 		GexfGraphReader<String, String> reader = new GexfGraphReader<>(String.class, String.class);
 		Graph<String, String> g2 = reader.readGraph(new StringReader(text.toString()));
@@ -2611,8 +2631,9 @@ public class GexfTest {
 		IWeightsObj<ShortList> weightsShortList4 =
 				g.addVerticesWeights("vShortList4", ShortList.class, ShortList.of((short) 9, (short) 10));
 		IWeightsObj<List<Short>> weightsShortList5 = g.addVerticesWeights("vShortList5", List.class);
-		IWeightsObj<List<Short>> weightsShortList6 = g.addVerticesWeights("vShortList6", List.class,
-				List.of(Short.valueOf((short) 11), Short.valueOf((short) 12)));
+		IWeightsObj<List<Short>> weightsShortList6 = g
+				.addVerticesWeights("vShortList6", List.class,
+						List.of(Short.valueOf((short) 11), Short.valueOf((short) 12)));
 		IWeightsObj<int[]> weightsIntList1 = g.addVerticesWeights("vIntList1", int[].class);
 		IWeightsObj<int[]> weightsIntList2 = g.addVerticesWeights("vIntList2", int[].class, new int[] { 13, 14 });
 		IWeightsObj<IntList> weightsIntList3 = g.addVerticesWeights("vIntList3", IntList.class);
@@ -2653,8 +2674,9 @@ public class GexfTest {
 		IWeightsObj<BooleanList> weightsBooleanList4 =
 				g.addVerticesWeights("vBooleanList4", BooleanList.class, BooleanList.of(true, false));
 		IWeightsObj<List<Boolean>> weightsBooleanList5 = g.addVerticesWeights("vBooleanList5", List.class);
-		IWeightsObj<List<Boolean>> weightsBooleanList6 = g.addVerticesWeights("vBooleanList6", List.class,
-				List.of(Boolean.valueOf(true), Boolean.valueOf(false)));
+		IWeightsObj<List<Boolean>> weightsBooleanList6 = g
+				.addVerticesWeights("vBooleanList6", List.class,
+						List.of(Boolean.valueOf(true), Boolean.valueOf(false)));
 		IWeightsObj<char[]> weightsCharList1 = g.addVerticesWeights("vCharList1", char[].class);
 		IWeightsObj<char[]> weightsCharList2 =
 				g.addVerticesWeights("vCharList2", char[].class, new char[] { 'a', 'b' });
@@ -2671,17 +2693,21 @@ public class GexfTest {
 		IWeightsObj<List<String>> weightsStringList4 =
 				g.addVerticesWeights("vStringList4", List.class, List.of("ghi", "jkl"));
 		IWeightsObj<BigDecimal[]> weightsBigDecimalList1 = g.addVerticesWeights("vBigDecimalList1", BigDecimal[].class);
-		IWeightsObj<BigDecimal[]> weightsBigDecimalList2 = g.addVerticesWeights("vBigDecimalList2", BigDecimal[].class,
-				new BigDecimal[] { new BigDecimal("123.123"), new BigDecimal("456.456") });
+		IWeightsObj<BigDecimal[]> weightsBigDecimalList2 = g
+				.addVerticesWeights("vBigDecimalList2", BigDecimal[].class,
+						new BigDecimal[] { new BigDecimal("123.123"), new BigDecimal("456.456") });
 		IWeightsObj<List<BigDecimal>> weightsBigDecimalList3 = g.addVerticesWeights("vBigDecimalList3", List.class);
-		IWeightsObj<List<BigDecimal>> weightsBigDecimalList4 = g.addVerticesWeights("vBigDecimalList4", List.class,
-				List.of(new BigDecimal("789.789"), new BigDecimal("987.987")));
+		IWeightsObj<List<BigDecimal>> weightsBigDecimalList4 = g
+				.addVerticesWeights("vBigDecimalList4", List.class,
+						List.of(new BigDecimal("789.789"), new BigDecimal("987.987")));
 		IWeightsObj<BigInteger[]> weightsBigIntegerList1 = g.addVerticesWeights("vBigIntegerList1", BigInteger[].class);
-		IWeightsObj<BigInteger[]> weightsBigIntegerList2 = g.addVerticesWeights("vBigIntegerList2", BigInteger[].class,
-				new BigInteger[] { new BigInteger("12345678901234567890"), new BigInteger("98765432109876543210") });
+		IWeightsObj<BigInteger[]> weightsBigIntegerList2 = g
+				.addVerticesWeights("vBigIntegerList2", BigInteger[].class, new BigInteger[] {
+						new BigInteger("12345678901234567890"), new BigInteger("98765432109876543210") });
 		IWeightsObj<List<BigInteger>> weightsBigIntegerList3 = g.addVerticesWeights("vBigIntegerList3", List.class);
-		IWeightsObj<List<BigInteger>> weightsBigIntegerList4 = g.addVerticesWeights("vBigIntegerList4", List.class,
-				List.of(new BigInteger("12345678901234567890"), new BigInteger("98765432109876543210")));
+		IWeightsObj<List<BigInteger>> weightsBigIntegerList4 = g
+				.addVerticesWeights("vBigIntegerList4", List.class,
+						List.of(new BigInteger("12345678901234567890"), new BigInteger("98765432109876543210")));
 
 		weightsByte3.set(0, Byte.valueOf((byte) 51));
 		weightsShort3.set(0, Short.valueOf((short) 52));
@@ -2724,10 +2750,11 @@ public class GexfTest {
 		weightsStringList3.set(0, List.of("vwx", "yz"));
 		weightsBigDecimalList1.set(0, new BigDecimal[] { new BigDecimal("123.123"), new BigDecimal("456.456") });
 		weightsBigDecimalList3.set(0, List.of(new BigDecimal("789.789"), new BigDecimal("987.987")));
-		weightsBigIntegerList1.set(0,
-				new BigInteger[] { new BigInteger("12345678901234567890"), new BigInteger("98765432109876543210") });
-		weightsBigIntegerList3.set(0,
-				List.of(new BigInteger("12345678901234567890"), new BigInteger("98765432109876543210")));
+		weightsBigIntegerList1
+				.set(0, new BigInteger[] { new BigInteger("12345678901234567890"),
+						new BigInteger("98765432109876543210") });
+		weightsBigIntegerList3
+				.set(0, List.of(new BigInteger("12345678901234567890"), new BigInteger("98765432109876543210")));
 
 		GexfGraphWriter<Integer, Integer> writer = new GexfGraphWriter<>();
 		StringWriter sw = new StringWriter();

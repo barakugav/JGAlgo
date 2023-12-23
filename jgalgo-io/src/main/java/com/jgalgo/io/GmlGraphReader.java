@@ -253,7 +253,8 @@ public class GmlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E>
 					/* add all other children as weights */
 					for (Pair<String, Object> prop : children(n))
 						if (!ObjectList.of("id").contains(prop.first()))
-							vWeights.computeIfAbsent(prop.first(), k -> new ArrayList<>())
+							vWeights
+									.computeIfAbsent(prop.first(), k -> new ArrayList<>())
 									.add(Pair.of(id, prop.second()));
 					break;
 				}
@@ -284,7 +285,8 @@ public class GmlGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E>
 					/* add all other children as weights */
 					for (Pair<String, Object> prop : children(n))
 						if (!ObjectList.of("id", "source", "target").contains(prop.first()))
-							eWeights.computeIfAbsent(prop.first(), k -> new ArrayList<>())
+							eWeights
+									.computeIfAbsent(prop.first(), k -> new ArrayList<>())
 									.add(Pair.of(id, prop.second()));
 					break;
 				}

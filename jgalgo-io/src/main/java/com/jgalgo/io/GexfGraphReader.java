@@ -756,8 +756,10 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 			WeightsObj<E, String> eLabels = null;
 			WeightsDouble<E> eWeight = null;
 
-			Iterable<Element> nodes = XmlUtils.optionalChild(graph, "nodes")
-					.map(nodesElm -> XmlUtils.children(nodesElm, "node")).orElse(Collections.emptyList());
+			Iterable<Element> nodes = XmlUtils
+					.optionalChild(graph, "nodes")
+					.map(nodesElm -> XmlUtils.children(nodesElm, "node"))
+					.orElse(Collections.emptyList());
 			for (Element vElm : nodes) {
 				V v = vertexParser.apply(XmlUtils.requiredAttribute(vElm, "id"));
 				g.addVertex(v);
@@ -783,8 +785,10 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 				}
 			}
 
-			Iterable<Element> edges = XmlUtils.optionalChild(graph, "edges")
-					.map(edgesElm -> XmlUtils.children(edgesElm, "edge")).orElse(Collections.emptyList());
+			Iterable<Element> edges = XmlUtils
+					.optionalChild(graph, "edges")
+					.map(edgesElm -> XmlUtils.children(edgesElm, "edge"))
+					.orElse(Collections.emptyList());
 			for (Element eElm : edges) {
 				E e;
 				Optional<String> id = XmlUtils.optionalAttribute(eElm, "id");

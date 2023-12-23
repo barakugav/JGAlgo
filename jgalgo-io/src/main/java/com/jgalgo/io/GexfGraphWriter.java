@@ -119,8 +119,9 @@ public class GexfGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V, E
 			document.appendChild(rootElm);
 
 			Element metaElm = document.createElement("meta");
-			metaElm.setAttribute("lastmodifieddate",
-					new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime()));
+			metaElm
+					.setAttribute("lastmodifieddate",
+							new SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime()));
 			Element creatorElm = document.createElement("creator");
 			creatorElm.setTextContent("jgalgo.com");
 			metaElm.appendChild(creatorElm);
@@ -218,7 +219,10 @@ public class GexfGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V, E
 				Element nodeElm = document.createElement("node");
 				nodeElm.setAttribute("id", String.valueOf(vertex));
 
-				List<Element> ws = vWeightsWriters.stream().map(w -> w.apply(vertex)).filter(Objects::nonNull)
+				List<Element> ws = vWeightsWriters
+						.stream()
+						.map(w -> w.apply(vertex))
+						.filter(Objects::nonNull)
 						.collect(Collectors.toList());
 				if (!ws.isEmpty()) {
 					Element attvaluesElm = document.createElement("attvalues");
@@ -238,7 +242,10 @@ public class GexfGraphWriter<V, E> extends GraphIoUtils.AbstractGraphWriter<V, E
 				edgeElm.setAttribute("source", String.valueOf(graph.edgeSource(edge)));
 				edgeElm.setAttribute("target", String.valueOf(graph.edgeTarget(edge)));
 
-				List<Element> ws = eWeightsWriters.stream().map(w -> w.apply(edge)).filter(Objects::nonNull)
+				List<Element> ws = eWeightsWriters
+						.stream()
+						.map(w -> w.apply(edge))
+						.filter(Objects::nonNull)
 						.collect(Collectors.toList());
 				if (!ws.isEmpty()) {
 					Element attvaluesElm = document.createElement("attvalues");

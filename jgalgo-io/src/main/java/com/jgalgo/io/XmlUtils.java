@@ -28,7 +28,9 @@ class XmlUtils {
 	private XmlUtils() {}
 
 	static Iterable<Element> children(Node parent, String tag) {
-		return () -> StreamSupport.stream(children(parent).spliterator(), false).filter(e -> e.getTagName().equals(tag))
+		return () -> StreamSupport
+				.stream(children(parent).spliterator(), false)
+				.filter(e -> e.getTagName().equals(tag))
 				.iterator();
 	}
 
