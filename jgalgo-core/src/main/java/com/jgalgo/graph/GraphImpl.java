@@ -365,8 +365,8 @@ class GraphImpl<V, E> extends AbstractGraph<V, E> {
 		WeightsImpl.Index<T> indexWeights = indexGraph.getVerticesWeights(key);
 		if (indexWeights == null)
 			return null;
-		return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,
-				iw -> WeightsImpl.ObjMapped.newInstance(iw, indexGraphVerticesMap()));
+		return (WeightsT) verticesWeights
+				.computeIfAbsent(indexWeights, iw -> WeightsImpl.ObjMapped.newInstance(iw, indexGraphVerticesMap()));
 	}
 
 	@Override
@@ -385,8 +385,8 @@ class GraphImpl<V, E> extends AbstractGraph<V, E> {
 		WeightsImpl.Index<T> indexWeights = indexGraph.getEdgesWeights(key);
 		if (indexWeights == null)
 			return null;
-		return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,
-				iw -> WeightsImpl.ObjMapped.newInstance(iw, indexGraphEdgesMap()));
+		return (WeightsT) edgesWeights
+				.computeIfAbsent(indexWeights, iw -> WeightsImpl.ObjMapped.newInstance(iw, indexGraphEdgesMap()));
 	}
 
 	@Override

@@ -125,8 +125,11 @@ public class IndexIntIdMapImplTest extends TestBase {
 		int[] origToReIndexed = indices.toIntArray();
 		IntArrays.shuffle(origToReIndexed, rand);
 		@SuppressWarnings("boxing")
-		int[] reIndexedToOrig = range(n).mapToObj(x -> Pair.of(x, origToReIndexed[x]))
-				.sorted((p1, p2) -> Integer.compare(p1.second(), p2.second())).mapToInt(p -> p.first()).toArray();
+		int[] reIndexedToOrig = range(n)
+				.mapToObj(x -> Pair.of(x, origToReIndexed[x]))
+				.sorted((p1, p2) -> Integer.compare(p1.second(), p2.second()))
+				.mapToInt(p -> p.first())
+				.toArray();
 
 		IndexGraphBuilderImpl.ReIndexingMapImpl reindexing =
 				new IndexGraphBuilderImpl.ReIndexingMapImpl(origToReIndexed, reIndexedToOrig);
@@ -227,9 +230,12 @@ public class IndexIntIdMapImplTest extends TestBase {
 	private static IndexIntIdMap fromMap(Int2IntMap map) {
 		return new IndexIntIdMap() {
 
-			int[] indexToId = map.int2IntEntrySet().stream()
+			int[] indexToId = map
+					.int2IntEntrySet()
+					.stream()
 					.sorted((e1, e2) -> Integer.compare(e1.getIntValue(), e2.getIntValue()))
-					.mapToInt(Int2IntMap.Entry::getIntKey).toArray();
+					.mapToInt(Int2IntMap.Entry::getIntKey)
+					.toArray();
 
 			@Override
 			public int indexToIdInt(int index) {

@@ -242,8 +242,9 @@ public class IntGraphImplTest extends TestBase {
 	@Test
 	public void addEdges() {
 		foreachBoolConfig(selfEdges -> {
-			GraphImplTestUtils.addEdgesTest(
-					directed -> IntGraphFactory.newInstance(directed).allowSelfEdges(selfEdges).newGraph());
+			GraphImplTestUtils
+					.addEdgesTest(
+							directed -> IntGraphFactory.newInstance(directed).allowSelfEdges(selfEdges).newGraph());
 		});
 	}
 

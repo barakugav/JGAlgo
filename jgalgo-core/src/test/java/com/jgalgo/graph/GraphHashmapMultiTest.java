@@ -24,8 +24,10 @@ import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 public class GraphHashmapMultiTest extends TestBase {
 
 	private static Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl(boolean selfEdges) {
-		return directed -> IntGraphFactory.newInstance(directed)
-				.setOption("impl", selfEdges ? "hashtable-multi-selfedges" : "hashtable-multi").newGraph();
+		return directed -> IntGraphFactory
+				.newInstance(directed)
+				.setOption("impl", selfEdges ? "hashtable-multi-selfedges" : "hashtable-multi")
+				.newGraph();
 	}
 
 	@Test

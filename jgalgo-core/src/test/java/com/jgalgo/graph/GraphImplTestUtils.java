@@ -1817,7 +1817,8 @@ class GraphImplTestUtils extends TestUtils {
 				Integer nonParallelEdge;
 				do {
 					nonParallelEdge = Graphs.randEdge(g, rand);
-				} while (key.apply(u, v)
+				} while (key
+						.apply(u, v)
 						.equals(key.apply(g.edgeSource(nonParallelEdge), g.edgeTarget(nonParallelEdge))));
 				assertFalse(edges0.contains(nonParallelEdge));
 
@@ -1843,7 +1844,8 @@ class GraphImplTestUtils extends TestUtils {
 				Integer nonParallelEdge;
 				do {
 					nonParallelEdge = Graphs.randEdge(g, rand);
-				} while (key.apply(u, v)
+				} while (key
+						.apply(u, v)
 						.equals(key.apply(g.edgeSource(nonParallelEdge), g.edgeTarget(nonParallelEdge))));
 				assertFalse(edges0.remove(nonParallelEdge));
 
@@ -2016,9 +2018,11 @@ class GraphImplTestUtils extends TestUtils {
 			final boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
 			final boolean parallelEdges = graphImpl.get(directed).isAllowParallelEdges();
 			for (int ops = 0; ops < 20; ops++) {
-				Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
-						GraphsTestUtils.randGraph(10, 30, directed, selfEdges, parallelEdges, seedGen.nextSeed()),
-						graphImpl);
+				Graph<Integer, Integer> g = GraphsTestUtils
+						.withImpl(
+								GraphsTestUtils
+										.randGraph(10, 30, directed, selfEdges, parallelEdges, seedGen.nextSeed()),
+								graphImpl);
 
 				Map<Integer, Set<Integer>> expectedOutEdges = new Object2ObjectOpenHashMap<>();
 				Map<Integer, Set<Integer>> expectedInEdges = new Object2ObjectOpenHashMap<>();
@@ -2101,9 +2105,11 @@ class GraphImplTestUtils extends TestUtils {
 			final boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
 			final boolean parallelEdges = graphImpl.get(directed).isAllowParallelEdges();
 			for (int ops = 0; ops < 20; ops++) {
-				Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
-						GraphsTestUtils.randGraph(10, 30, directed, selfEdges, parallelEdges, seedGen.nextSeed()),
-						graphImpl);
+				Graph<Integer, Integer> g = GraphsTestUtils
+						.withImpl(
+								GraphsTestUtils
+										.randGraph(10, 30, directed, selfEdges, parallelEdges, seedGen.nextSeed()),
+								graphImpl);
 
 				Map<Integer, Set<Integer>> expectedOutEdges = new Object2ObjectOpenHashMap<>();
 				Map<Integer, Set<Integer>> expectedInEdges = new Object2ObjectOpenHashMap<>();
@@ -2308,12 +2314,13 @@ class GraphImplTestUtils extends TestUtils {
 
 	static void testCopy(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		for (String copyType : List.of("origImpl", "array", "linked-list", "linked-list-ptr", "hashtable",
-				"hashtable-multi", "matrix")) {
+		for (String copyType : List
+				.of("origImpl", "array", "linked-list", "linked-list-ptr", "hashtable", "hashtable-multi", "matrix")) {
 			foreachBoolConfig(directed -> {
 				/* Create a random graph g */
-				Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
-						GraphsTestUtils.randGraph(100, 300, directed, false, false, seedGen.nextSeed()), graphImpl);
+				Graph<Integer, Integer> g = GraphsTestUtils
+						.withImpl(GraphsTestUtils.randGraph(100, 300, directed, false, false, seedGen.nextSeed()),
+								graphImpl);
 
 				/* assign some weights to the vertices of g */
 				final String gVDataKey = "vData";
@@ -2340,7 +2347,9 @@ class GraphImplTestUtils extends TestUtils {
 				if (copyType.equals("origImpl")) {
 					copy = g.copy();
 				} else {
-					copy = GraphFactory.<Integer, Integer>newInstance(g.isDirected()).setOption("impl", copyType)
+					copy = GraphFactory
+							.<Integer, Integer>newInstance(g.isDirected())
+							.setOption("impl", copyType)
 							.newCopyOf(g);
 				}
 
@@ -2370,8 +2379,9 @@ class GraphImplTestUtils extends TestUtils {
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
-			Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
-					GraphsTestUtils.randGraph(100, 300, directed, false, false, seedGen.nextSeed()), graphImpl);
+			Graph<Integer, Integer> g = GraphsTestUtils
+					.withImpl(GraphsTestUtils.randGraph(100, 300, directed, false, false, seedGen.nextSeed()),
+							graphImpl);
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -2465,8 +2475,9 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
 			boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
-			Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
-					GraphsTestUtils.randGraph(100, 300, directed, selfEdges, false, seedGen.nextSeed()), graphImpl);
+			Graph<Integer, Integer> g = GraphsTestUtils
+					.withImpl(GraphsTestUtils.randGraph(100, 300, directed, selfEdges, false, seedGen.nextSeed()),
+							graphImpl);
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -2517,8 +2528,9 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
 			boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
-			Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
-					GraphsTestUtils.randGraph(100, 300, directed, selfEdges, false, seedGen.nextSeed()), graphImpl);
+			Graph<Integer, Integer> g = GraphsTestUtils
+					.withImpl(GraphsTestUtils.randGraph(100, 300, directed, selfEdges, false, seedGen.nextSeed()),
+							graphImpl);
 
 			/* assign some weights to the vertices of g */
 			final String gVDataKey = "vData";
@@ -2600,10 +2612,13 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig((directed, mutable) -> {
 			/* Create a random graph g */
 			final boolean selfEdges = copyConstructor
-					.apply(directed ? IndexGraph.newDirected() : IndexGraph.newUndirected()).isAllowSelfEdges();
+					.apply(directed ? IndexGraph.newDirected() : IndexGraph.newUndirected())
+					.isAllowSelfEdges();
 			final boolean parallelEdges = copyConstructor
-					.apply(directed ? IndexGraph.newDirected() : IndexGraph.newUndirected()).isAllowParallelEdges();
-			IndexGraph g = GraphsTestUtils.randGraph(100, 300, directed, selfEdges, parallelEdges, seedGen.nextSeed())
+					.apply(directed ? IndexGraph.newDirected() : IndexGraph.newUndirected())
+					.isAllowParallelEdges();
+			IndexGraph g = GraphsTestUtils
+					.randGraph(100, 300, directed, selfEdges, parallelEdges, seedGen.nextSeed())
 					.indexGraph();
 
 			/* assign some weights to the vertices of g */
@@ -2673,7 +2688,8 @@ class GraphImplTestUtils extends TestUtils {
 			final boolean selfEdges = copyConstructor.apply(IndexGraphBuilder.newInstance(directed)).isAllowSelfEdges();
 			final boolean parallelEdges =
 					copyConstructor.apply(IndexGraphBuilder.newInstance(directed)).isAllowParallelEdges();
-			IndexGraph g = GraphsTestUtils.randGraph(100, 300, directed, selfEdges, parallelEdges, seedGen.nextSeed())
+			IndexGraph g = GraphsTestUtils
+					.randGraph(100, 300, directed, selfEdges, parallelEdges, seedGen.nextSeed())
 					.indexGraph();
 
 			/* assign some weights to the vertices of g */
@@ -2733,9 +2749,11 @@ class GraphImplTestUtils extends TestUtils {
 			final boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
 			final boolean parallelEdges = graphImpl.get(directed).isAllowParallelEdges();
 			for (int ops = 0; ops < 20; ops++) {
-				Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
-						GraphsTestUtils.randGraph(10, 30, directed, selfEdges, parallelEdges, seedGen.nextSeed()),
-						graphImpl);
+				Graph<Integer, Integer> g = GraphsTestUtils
+						.withImpl(
+								GraphsTestUtils
+										.randGraph(10, 30, directed, selfEdges, parallelEdges, seedGen.nextSeed()),
+								graphImpl);
 
 				Map<Integer, Set<Integer>> expectedOutEdges = new Object2ObjectOpenHashMap<>();
 				Map<Integer, Set<Integer>> expectedInEdges = new Object2ObjectOpenHashMap<>();
@@ -2801,8 +2819,9 @@ class GraphImplTestUtils extends TestUtils {
 
 		final boolean selfEdges = graphImpl.get(true).isAllowSelfEdges();
 		final boolean parallelEdges = graphImpl.get(true).isAllowParallelEdges();
-		Graph<Integer, Integer> g1 = GraphsTestUtils.withImpl(
-				GraphsTestUtils.randGraph(100, 300, true, selfEdges, parallelEdges, seedGen.nextSeed()), graphImpl);
+		Graph<Integer, Integer> g1 = GraphsTestUtils
+				.withImpl(GraphsTestUtils.randGraph(100, 300, true, selfEdges, parallelEdges, seedGen.nextSeed()),
+						graphImpl);
 		Graph<Integer, Integer> g2 = g1.copy(true, true);
 
 		for (int ops = 0; ops < 10; ops++) {
@@ -2843,9 +2862,10 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			final boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
 			final boolean parallelEdges = graphImpl.get(directed).isAllowParallelEdges();
-			Graph<Integer, Integer> g1 = GraphsTestUtils.withImpl(
-					GraphsTestUtils.randGraph(100, 300, directed, selfEdges, parallelEdges, seedGen.nextSeed()),
-					graphImpl);
+			Graph<Integer, Integer> g1 = GraphsTestUtils
+					.withImpl(
+							GraphsTestUtils.randGraph(100, 300, directed, selfEdges, parallelEdges, seedGen.nextSeed()),
+							graphImpl);
 			Graph<Integer, Integer> g2 = g1.copy(true, true);
 
 			for (int ops = 0; ops < 20; ops++) {
@@ -2953,14 +2973,15 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	static void testUndirectedBipartiteMatching(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
-		MatchingBipartiteTestUtils.randBipartiteGraphs(
-				MatchingAlgo.builder().setBipartite(true).setCardinality(true).build(), graphImpl, seed);
+		MatchingBipartiteTestUtils
+				.randBipartiteGraphs(MatchingAlgo.builder().setBipartite(true).setCardinality(true).build(), graphImpl,
+						seed);
 	}
 
 	static void testUndirectedBipartiteMatchingWeighted(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl,
 			long seed) {
-		MatchingWeightedTestUtils.randGraphsBipartiteWeighted(MatchingAlgo.builder().setBipartite(true).build(),
-				graphImpl, seed);
+		MatchingWeightedTestUtils
+				.randGraphsBipartiteWeighted(MatchingAlgo.builder().setBipartite(true).build(), graphImpl, seed);
 	}
 
 	static void testRandOps(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, boolean directed, long seed) {

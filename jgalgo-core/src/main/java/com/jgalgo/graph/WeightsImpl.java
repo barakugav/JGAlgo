@@ -413,8 +413,8 @@ interface WeightsImpl {
 
 			void copyAndAddWeightsReindexed(String key, IWeights<?> weights,
 					IndexGraphBuilder.ReIndexingMap reIndexMap) {
-				Object oldWeights = this.weights.put(key,
-						WeightsImpl.IndexImmutable.copyOfReindexed(weights, elements, isEdges, reIndexMap));
+				Object oldWeights = this.weights
+						.put(key, WeightsImpl.IndexImmutable.copyOfReindexed(weights, elements, isEdges, reIndexMap));
 				if (oldWeights != null)
 					throw new IllegalArgumentException("duplicate key: " + key);
 			}

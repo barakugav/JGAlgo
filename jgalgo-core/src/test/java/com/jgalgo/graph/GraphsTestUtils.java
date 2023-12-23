@@ -44,8 +44,8 @@ public class GraphsTestUtils extends TestUtils {
 			boolean parallelEdges, long seed) {
 		Random rand = new Random(seed ^ 0xf0a3f27bf417a821L);
 		boolean intGraph = rand.nextBoolean();
-		return GraphsTestUtils.randGraph(n, m, directed, selfEdges, parallelEdges, intGraph,
-				rand.nextLong() ^ 0xfca82e59f2c2acb3L);
+		return GraphsTestUtils
+				.randGraph(n, m, directed, selfEdges, parallelEdges, intGraph, rand.nextLong() ^ 0xfca82e59f2c2acb3L);
 	}
 
 	public static Graph<Integer, Integer> randGraph(int n, int m, boolean directed, boolean selfEdges,

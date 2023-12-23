@@ -47,8 +47,8 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 			boolean copyEdgesWeights) {
 		this.factory = factory;
 		this.ibuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
-		viMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), ibuilder.vertices(), false,
-				false);
+		viMap = IndexIntIdMapImpl
+				.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), ibuilder.vertices(), false, false);
 		eiMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), Optional.empty(), ibuilder.edges(), true, false);
 		resetVertexAndEdgeBuilders();
 	}
@@ -158,8 +158,8 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		WeightsImpl.Index<T> indexWeights = ibuilder.getVerticesWeights(key);
 		if (indexWeights == null)
 			return null;
-		return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,
-				iw -> WeightsImpl.IntMapped.newInstance(iw, viMap));
+		return (WeightsT) verticesWeights
+				.computeIfAbsent(indexWeights, iw -> WeightsImpl.IntMapped.newInstance(iw, viMap));
 	}
 
 	@Override
@@ -180,8 +180,8 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		WeightsImpl.Index<T> indexWeights = ibuilder.getEdgesWeights(key);
 		if (indexWeights == null)
 			return null;
-		return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,
-				iw -> WeightsImpl.IntMapped.newInstance(iw, eiMap));
+		return (WeightsT) edgesWeights
+				.computeIfAbsent(indexWeights, iw -> WeightsImpl.IntMapped.newInstance(iw, eiMap));
 	}
 
 	@Override

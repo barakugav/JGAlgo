@@ -376,8 +376,8 @@ class IntGraphImpl extends AbstractGraph<Integer, Integer> implements IntGraph {
 		WeightsImpl.Index<T> indexWeights = indexGraph.getVerticesWeights(key);
 		if (indexWeights == null)
 			return null;
-		return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,
-				iw -> WeightsImpl.IntMapped.newInstance(iw, indexGraphVerticesMap()));
+		return (WeightsT) verticesWeights
+				.computeIfAbsent(indexWeights, iw -> WeightsImpl.IntMapped.newInstance(iw, indexGraphVerticesMap()));
 	}
 
 	@Override
@@ -396,8 +396,8 @@ class IntGraphImpl extends AbstractGraph<Integer, Integer> implements IntGraph {
 		WeightsImpl.Index<T> indexWeights = indexGraph.getEdgesWeights(key);
 		if (indexWeights == null)
 			return null;
-		return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,
-				iw -> WeightsImpl.IntMapped.newInstance(iw, indexGraphEdgesMap()));
+		return (WeightsT) edgesWeights
+				.computeIfAbsent(indexWeights, iw -> WeightsImpl.IntMapped.newInstance(iw, indexGraphEdgesMap()));
 	}
 
 	@Override

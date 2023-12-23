@@ -43,7 +43,8 @@ class GraphFactoryImpl<V, E> implements GraphFactory<V, E> {
 
 	@Override
 	public Graph<V, E> newImmutableCopyOf(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		IndexGraphBuilder.ReIndexedGraph reIndexedGraph = indexFactory.immutableImpl()
+		IndexGraphBuilder.ReIndexedGraph reIndexedGraph = indexFactory
+				.immutableImpl()
 				.newCopyOfWithReIndex(g.indexGraph(), true, true, copyVerticesWeights, copyEdgesWeights);
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 		IndexIdMap<E> eiMap = g.indexGraphEdgesMap();

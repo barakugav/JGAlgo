@@ -65,7 +65,9 @@ public class GraphsTest extends TestBase {
 				Graph<Integer, Integer> subGraph = Graphs.subGraph(g, subVs);
 
 				assertEquals(subVs, subGraph.vertices());
-				assertEquals(g.edges().stream()
+				assertEquals(g
+						.edges()
+						.stream()
 						.filter(e -> subVs.contains(g.edgeSource(e)) && subVs.contains(g.edgeTarget(e)))
 						.collect(Collectors.toSet()), subGraph.edges());
 			});
@@ -93,7 +95,10 @@ public class GraphsTest extends TestBase {
 					subEs.add(Graphs.randEdge(g, rand));
 				Graph<Integer, Integer> subGraph = Graphs.subGraph(g, null, subEs);
 
-				assertEquals(subEs.stream().flatMap(e -> Stream.of(g.edgeSource(e), g.edgeTarget(e))).distinct()
+				assertEquals(subEs
+						.stream()
+						.flatMap(e -> Stream.of(g.edgeSource(e), g.edgeTarget(e)))
+						.distinct()
 						.collect(Collectors.toSet()), subGraph.vertices());
 				assertEquals(subEs, subGraph.edges());
 			});

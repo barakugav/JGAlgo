@@ -383,8 +383,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				@Override
 				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 					if (graph instanceof GraphCsrDirectedReindexed) {
-						IndexGraphBuilder.ReIndexedGraph reIndexedGraph = GraphCsrDirectedReindexed.newInstance(graph,
-								copyVerticesWeights, copyEdgesWeights, fastLookup);
+						IndexGraphBuilder.ReIndexedGraph reIndexedGraph = GraphCsrDirectedReindexed
+								.newInstance(graph, copyVerticesWeights, copyEdgesWeights, fastLookup);
 						assert reIndexedGraph.verticesReIndexing().isEmpty()
 								&& reIndexedGraph.edgesReIndexing().isEmpty();
 						return reIndexedGraph.graph();
@@ -397,8 +397,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				public IndexGraphBuilder.ReIndexedGraph newCopyOfWithReIndex(IndexGraph graph, boolean reIndexVertices,
 						boolean reIndexEdges, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 					if (reIndexEdges) {
-						return GraphCsrDirectedReindexed.newInstance(graph, copyVerticesWeights, copyEdgesWeights,
-								fastLookup);
+						return GraphCsrDirectedReindexed
+								.newInstance(graph, copyVerticesWeights, copyEdgesWeights, fastLookup);
 					} else {
 						return new ReIndexedGraphImpl(newCopyOf(graph, copyVerticesWeights, copyEdgesWeights),
 								Optional.empty(), Optional.empty());

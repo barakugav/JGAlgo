@@ -778,16 +778,18 @@ public class IndexGraphBuilderTest extends TestBase {
 				IndexGraph bg = b.build();
 				if (copyVerticesWeights) {
 					assertEquals(
-							Set.of("vByteWeights", "vShortWeights", "vIntWeights", "vLongWeights", "vFloatWeights",
-									"vDoubleWeights", "vBoolWeights", "vCharWeights", "vStringWeights"),
+							Set
+									.of("vByteWeights", "vShortWeights", "vIntWeights", "vLongWeights", "vFloatWeights",
+											"vDoubleWeights", "vBoolWeights", "vCharWeights", "vStringWeights"),
 							bg.getVerticesWeightsKeys());
 				} else {
 					assertEquals(Set.of(), bg.getVerticesWeightsKeys());
 				}
 				if (copyEdgesWeights) {
 					assertEquals(
-							Set.of("eByteWeights", "eShortWeights", "eIntWeights", "eLongWeights", "eFloatWeights",
-									"eDoubleWeights", "eBoolWeights", "eCharWeights", "eStringWeights"),
+							Set
+									.of("eByteWeights", "eShortWeights", "eIntWeights", "eLongWeights", "eFloatWeights",
+											"eDoubleWeights", "eBoolWeights", "eCharWeights", "eStringWeights"),
 							bg.getEdgesWeightsKeys());
 				} else {
 					assertEquals(Set.of(), bg.getEdgesWeightsKeys());

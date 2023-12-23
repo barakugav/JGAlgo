@@ -83,8 +83,8 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), true);
 		if (copyVerticesWeights)
 			for (String key : g.getVerticesWeightsKeys())
-				verticesUserWeights.addWeights(key,
-						WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), vertices, false));
+				verticesUserWeights
+						.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), vertices, false));
 		if (copyEdgesWeights)
 			for (String key : g.getEdgesWeightsKeys())
 				edgesUserWeights.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getEdgesWeights(key), edges, true));

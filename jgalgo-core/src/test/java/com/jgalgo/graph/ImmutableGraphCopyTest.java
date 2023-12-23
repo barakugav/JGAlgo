@@ -42,8 +42,13 @@ public class ImmutableGraphCopyTest extends TestBase {
 		final int n = 47, m = parallelEdges ? 1345 : 120;
 		GnmGraphGenerator<Integer, Integer> gen =
 				intGraph ? new GnmGraphGenerator<>(IntGraphFactory.undirected()) : new GnmGraphGenerator<>();
-		Graph<Integer, Integer> g = gen.seed(rand.nextLong()).directed(directed).parallelEdges(parallelEdges)
-				.vertices(n, IdBuilderInt.defaultBuilder()).edges(m, IdBuilderInt.defaultBuilder()).generateMutable();
+		Graph<Integer, Integer> g = gen
+				.seed(rand.nextLong())
+				.directed(directed)
+				.parallelEdges(parallelEdges)
+				.vertices(n, IdBuilderInt.defaultBuilder())
+				.edges(m, IdBuilderInt.defaultBuilder())
+				.generateMutable();
 
 		WeightsInt<Integer> vWeights = g.addVerticesWeights(VerticesWeightsKey, int.class);
 		for (int v : g.vertices())
@@ -58,7 +63,9 @@ public class ImmutableGraphCopyTest extends TestBase {
 	private static IndexGraph immutableCopy(IndexGraph g, boolean fastLookup) {
 		if (!fastLookup)
 			return g.immutableCopy();
-		return IndexGraphFactory.newInstance(g.isDirected()).addHint(GraphFactory.Hint.FastEdgeLookup)
+		return IndexGraphFactory
+				.newInstance(g.isDirected())
+				.addHint(GraphFactory.Hint.FastEdgeLookup)
 				.newImmutableCopyOf(g);
 	}
 
@@ -66,7 +73,9 @@ public class ImmutableGraphCopyTest extends TestBase {
 			boolean fastLookup) {
 		if (!fastLookup)
 			return g.immutableCopy(copyVerticesWeights, copyEdgesWeights);
-		return IndexGraphFactory.newInstance(g.isDirected()).addHint(GraphFactory.Hint.FastEdgeLookup)
+		return IndexGraphFactory
+				.newInstance(g.isDirected())
+				.addHint(GraphFactory.Hint.FastEdgeLookup)
 				.newImmutableCopyOf(g, copyVerticesWeights, copyEdgesWeights);
 	}
 
@@ -92,8 +101,9 @@ public class ImmutableGraphCopyTest extends TestBase {
 			boolean copyEdgesWeights, boolean fastLookup) {
 		if (!fastLookup)
 			return g.immutableCopy(copyVerticesWeights, copyEdgesWeights);
-		return factory(g).addHint(GraphFactory.Hint.FastEdgeLookup).newImmutableCopyOf(g, copyVerticesWeights,
-				copyEdgesWeights);
+		return factory(g)
+				.addHint(GraphFactory.Hint.FastEdgeLookup)
+				.newImmutableCopyOf(g, copyVerticesWeights, copyEdgesWeights);
 	}
 
 	@SuppressWarnings("unchecked")

@@ -109,8 +109,8 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 					edgesUserWeightsBuilder.copyAndAddWeights(key, getWeights.apply(key));
 			} else {
 				for (String key : edgesWeightsKeys)
-					edgesUserWeightsBuilder.copyAndAddWeightsReindexed(key, getWeights.apply(key),
-							edgesReIndexing.get());
+					edgesUserWeightsBuilder
+							.copyAndAddWeightsReindexed(key, getWeights.apply(key), edgesReIndexing.get());
 			}
 			edgesUserWeights = edgesUserWeightsBuilder.build();
 

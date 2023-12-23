@@ -45,8 +45,8 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 			boolean copyEdgesWeights) {
 		this.factory = factory;
 		this.ibuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
-		viMap = IndexIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), ibuilder.vertices(), false,
-				false);
+		viMap = IndexIdMapImpl
+				.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), ibuilder.vertices(), false, false);
 		eiMap = IndexIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), Optional.empty(), ibuilder.edges(), true, false);
 		resetVertexAndEdgeBuilders();
 	}
@@ -147,8 +147,8 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 		WeightsImpl.Index<T> indexWeights = ibuilder.getVerticesWeights(key);
 		if (indexWeights == null)
 			return null;
-		return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,
-				iw -> WeightsImpl.ObjMapped.newInstance(iw, viMap));
+		return (WeightsT) verticesWeights
+				.computeIfAbsent(indexWeights, iw -> WeightsImpl.ObjMapped.newInstance(iw, viMap));
 	}
 
 	@Override
@@ -169,8 +169,8 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 		WeightsImpl.Index<T> indexWeights = ibuilder.getEdgesWeights(key);
 		if (indexWeights == null)
 			return null;
-		return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,
-				iw -> WeightsImpl.ObjMapped.newInstance(iw, eiMap));
+		return (WeightsT) edgesWeights
+				.computeIfAbsent(indexWeights, iw -> WeightsImpl.ObjMapped.newInstance(iw, eiMap));
 	}
 
 	@Override

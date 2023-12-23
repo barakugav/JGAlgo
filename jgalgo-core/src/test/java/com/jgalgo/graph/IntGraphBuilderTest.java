@@ -305,8 +305,10 @@ public class IntGraphBuilderTest extends TestBase {
 						continue;
 					esIds.add(e);
 				}
-				List<Pair<Integer, Pair<Integer, Integer>>> esList = esIds.stream()
-						.map(e -> Pair.of(e, Pair.of(rand.nextInt(1000), rand.nextInt(1000)))).collect(toList());
+				List<Pair<Integer, Pair<Integer, Integer>>> esList = esIds
+						.stream()
+						.map(e -> Pair.of(e, Pair.of(rand.nextInt(1000), rand.nextInt(1000))))
+						.collect(toList());
 
 				if (r % 5 == 0) {
 					EdgeSet<Integer, Integer> es = toEdgeSet.apply(esList);
@@ -433,8 +435,8 @@ public class IntGraphBuilderTest extends TestBase {
 				}
 
 				/* duplicate edge */
-				assertThrows(IllegalArgumentException.class, () -> b.addEdge(Graphs.randVertex(g, rand),
-						Graphs.randVertex(g, rand), Graphs.randEdge(g, rand)));
+				assertThrows(IllegalArgumentException.class, () -> b
+						.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand), Graphs.randEdge(g, rand)));
 				/* non existing endpoints */
 				for (;;) {
 					int v = rand.nextInt(2 * n);

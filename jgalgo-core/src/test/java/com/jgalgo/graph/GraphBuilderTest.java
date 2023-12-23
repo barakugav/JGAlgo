@@ -173,7 +173,7 @@ public class GraphBuilderTest extends TestBase {
 		foreachBoolConfig(directed -> {
 			GraphBuilder<Integer, Integer> b = GraphBuilder.newInstance(directed);
 			b.addVertices(range(10));
-			assertThrows(UnsupportedOperationException.class, () -> b.addEdge(0 ,1));
+			assertThrows(UnsupportedOperationException.class, () -> b.addEdge(0, 1));
 		});
 	}
 
@@ -232,8 +232,11 @@ public class GraphBuilderTest extends TestBase {
 		};
 
 		foreachBoolConfig(directed -> {
-			GraphBuilder<Integer, Integer> b = GraphFactory.<Integer, Integer>newInstance(directed).allowSelfEdges(true)
-					.allowParallelEdges(true).newBuilder();
+			GraphBuilder<Integer, Integer> b = GraphFactory
+					.<Integer, Integer>newInstance(directed)
+					.allowSelfEdges(true)
+					.allowParallelEdges(true)
+					.newBuilder();
 			b.addVertices(range(1000));
 
 			Map<Integer, Pair<Integer, Integer>> edges = new HashMap<>();
@@ -247,8 +250,10 @@ public class GraphBuilderTest extends TestBase {
 						continue;
 					esIds.add(e);
 				}
-				List<Pair<Integer, Pair<Integer, Integer>>> esList = esIds.stream()
-						.map(e -> Pair.of(e, Pair.of(rand.nextInt(1000), rand.nextInt(1000)))).collect(toList());
+				List<Pair<Integer, Pair<Integer, Integer>>> esList = esIds
+						.stream()
+						.map(e -> Pair.of(e, Pair.of(rand.nextInt(1000), rand.nextInt(1000))))
+						.collect(toList());
 
 				if (r % 4 == 0) {
 					EdgeSet<Integer, Integer> es = toEdgeSet.apply(esList);
