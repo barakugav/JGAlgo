@@ -74,8 +74,8 @@ class ShortestPathAllPairsUtils {
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 				IntCollection iVerticesSubset = IndexIdMaps.idToIndexCollection(verticesSubset, viMap);
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-				ShortestPathAllPairs.IResult indexResult = NegativeCycleException.runAndConvertException(g,
-						() -> computeSubsetShortestPaths(iGraph, iVerticesSubset, iw));
+				ShortestPathAllPairs.IResult indexResult = NegativeCycleException
+						.runAndConvertException(g, () -> computeSubsetShortestPaths(iGraph, iVerticesSubset, iw));
 				return resultFromIndexResult(g, indexResult);
 			}
 		}

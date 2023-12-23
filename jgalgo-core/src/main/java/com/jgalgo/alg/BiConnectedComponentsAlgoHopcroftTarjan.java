@@ -378,7 +378,9 @@ class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoA
 
 		@Override
 		public String toString() {
-			return range(getNumberOfBiCcs()).mapToObj(this::getBiCcVertices).map(Object::toString)
+			return range(getNumberOfBiCcs())
+					.mapToObj(this::getBiCcVertices)
+					.map(Object::toString)
 					.collect(Collectors.joining(", ", "[", "]"));
 		}
 

@@ -106,8 +106,8 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 	@Test
 	public void testRandGraphUndirected() {
 		final long seed = 0x9234356819f0ea1dL;
-		MinimumSpanningTreeTestUtils.testRandGraph(new MdstUndirectedWrapper(new MinimumDirectedSpanningTreeTarjan()),
-				seed);
+		MinimumSpanningTreeTestUtils
+				.testRandGraph(new MdstUndirectedWrapper(new MinimumDirectedSpanningTreeTarjan()), seed);
 	}
 
 	@Test

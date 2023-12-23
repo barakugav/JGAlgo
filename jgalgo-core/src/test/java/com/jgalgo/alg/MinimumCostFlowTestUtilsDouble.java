@@ -432,9 +432,9 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 	private static <V, E> void testMinCostFlowWithSupply(Graph<V, E> g, WeightFunction<E> capacity,
 			WeightFunction<E> cost, WeightFunction<V> supply, MinimumCostFlow algo) {
 		Flow<V, E> flow = algo.computeMinCostFlow(g, capacity, cost, supply);
-		MaximumFlowTestUtils.assertValidFlow(g, flow,
-				FlowCirculationTestUtils.verticesWithPositiveSupply(g.vertices(), supply),
-				FlowCirculationTestUtils.verticesWithNegativeSupply(g.vertices(), supply));
+		MaximumFlowTestUtils
+				.assertValidFlow(g, flow, FlowCirculationTestUtils.verticesWithPositiveSupply(g.vertices(), supply),
+						FlowCirculationTestUtils.verticesWithNegativeSupply(g.vertices(), supply));
 
 		FlowCirculationTestUtils.assertSupplySatisfied(g, supply, flow);
 		assertOptimalCirculation(g, capacity, cost, null, flow);
@@ -443,9 +443,9 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 	private static <V, E> void testMinCostFlowWithSupplyLowerBound(Graph<V, E> g, WeightFunction<E> capacity,
 			WeightFunction<E> cost, WeightFunction<E> lowerBound, WeightFunction<V> supply, MinimumCostFlow algo) {
 		Flow<V, E> flow = algo.computeMinCostFlow(g, capacity, cost, lowerBound, supply);
-		MaximumFlowTestUtils.assertValidFlow(g, flow,
-				FlowCirculationTestUtils.verticesWithPositiveSupply(g.vertices(), supply),
-				FlowCirculationTestUtils.verticesWithNegativeSupply(g.vertices(), supply));
+		MaximumFlowTestUtils
+				.assertValidFlow(g, flow, FlowCirculationTestUtils.verticesWithPositiveSupply(g.vertices(), supply),
+						FlowCirculationTestUtils.verticesWithNegativeSupply(g.vertices(), supply));
 
 		FlowCirculationTestUtils.assertSupplySatisfied(g, supply, flow);
 		assertLowerBound(g, lowerBound, flow);

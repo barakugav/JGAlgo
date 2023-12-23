@@ -43,8 +43,8 @@ class ShortestPathSTs {
 				int iSource = viMap.idToIndex(source);
 				int iTarget = viMap.idToIndex(target);
 
-				IPath indexPath = NegativeCycleException.runAndConvertException(g,
-						() -> computeShortestPath(iGraph, iw, iSource, iTarget));
+				IPath indexPath = NegativeCycleException
+						.runAndConvertException(g, () -> computeShortestPath(iGraph, iw, iSource, iTarget));
 				return PathImpl.pathFromIndexPath(g, indexPath);
 			}
 		}

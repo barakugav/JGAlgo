@@ -606,8 +606,11 @@ class MinimumCostFlows {
 			IFlow flow0 = computeMinCostMaxFlow(g, capacity, cost, source, sink);
 
 			/* assert all supply was provided */
-			double eps = range(sourcesSinksThreshold, g.edges().size()).mapToDouble(capacity::weight).filter(c -> c > 0)
-					.min().orElse(0);
+			double eps = range(sourcesSinksThreshold, g.edges().size())
+					.mapToDouble(capacity::weight)
+					.filter(c -> c > 0)
+					.min()
+					.orElse(0);
 			assert range(sourcesSinksThreshold, g.edges().size())
 					.allMatch(e -> Math.abs(flow0.getFlow(e) - capacity.weight(e)) < eps);
 

@@ -104,7 +104,9 @@ class KVertexConnectedComponentsUtils {
 
 		@Override
 		public String toString() {
-			return range(componentsNum()).mapToObj(this::componentVertices).map(Object::toString)
+			return range(componentsNum())
+					.mapToObj(this::componentVertices)
+					.map(Object::toString)
 					.collect(Collectors.joining(", ", "[", "]"));
 		}
 	}
@@ -136,7 +138,9 @@ class KVertexConnectedComponentsUtils {
 
 		@Override
 		public String toString() {
-			return range(componentsNum()).mapToObj(this::componentVertices).map(Object::toString)
+			return range(componentsNum())
+					.mapToObj(this::componentVertices)
+					.map(Object::toString)
 					.collect(Collectors.joining(", ", "[", "]"));
 		}
 	}

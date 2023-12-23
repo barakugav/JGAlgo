@@ -49,8 +49,9 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		tester.addPhase().withArgs(256, 256, 1200).repeat(2);
 		tester.run((sn, tn, m) -> {
 			boolean parallelEdges = graphImpl.get(false).isAllowParallelEdges();
-			Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
-					GraphsTestUtils.randBipartiteGraph(sn, tn, m, false, parallelEdges, seedGen.nextSeed()), graphImpl);
+			Graph<Integer, Integer> g = GraphsTestUtils
+					.withImpl(GraphsTestUtils.randBipartiteGraph(sn, tn, m, false, parallelEdges, seedGen.nextSeed()),
+							graphImpl);
 			WeightFunctionInt<Integer> w = GraphsTestUtils.assignRandWeightsIntNeg(g, seedGen.nextSeed());
 
 			MatchingAlgo validationAlgo =
@@ -211,8 +212,9 @@ public class MatchingWeightedTestUtils extends TestUtils {
 
 		int expectedSize = validationUnweightedAlgo.computeMaximumMatching(g, null).edges().size();
 		if (actualSize > expectedSize) {
-			System.err.println(
-					"matching size is better than validation algo found: " + actualSize + " > " + expectedSize);
+			System.err
+					.println(
+							"matching size is better than validation algo found: " + actualSize + " > " + expectedSize);
 			throw new IllegalStateException();
 		}
 		assertEquals(expectedSize, actualSize, "unexpected match size");
@@ -220,8 +222,9 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		Matching<V, E> expected = validationWeightedAlgo.computeMaximumPerfectMatching(g, w);
 		double expectedWeight = w.weightSum(expected.edges());
 		if (actualWeight > expectedWeight) {
-			System.err.println(
-					"matching weight is better than validation algo found: " + actualWeight + " > " + expectedWeight);
+			System.err
+					.println("matching weight is better than validation algo found: " + actualWeight + " > "
+							+ expectedWeight);
 			throw new IllegalStateException();
 		}
 		assertEquals(expectedWeight, actualWeight, "unexpected match weight");

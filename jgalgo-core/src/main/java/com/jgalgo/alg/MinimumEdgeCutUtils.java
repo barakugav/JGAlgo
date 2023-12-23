@@ -109,8 +109,8 @@ class MinimumEdgeCutUtils {
 				int iSource = viMap.idToIndex(source);
 				int iSink = viMap.idToIndex(sink);
 				Iterator<IVertexBiPartition> indexIter = minimumCutsIter(iGraph, iw, iSource, iSink);
-				return IterTools.map(indexIter,
-						iPartition -> VertexBiPartitions.partitionFromIndexPartition(g, iPartition));
+				return IterTools
+						.map(indexIter, iPartition -> VertexBiPartitions.partitionFromIndexPartition(g, iPartition));
 			}
 		}
 
@@ -253,8 +253,8 @@ class MinimumEdgeCutUtils {
 				double bestCutWeight = Double.MAX_VALUE;
 				final int source = 0;
 				for (int sink = 1; sink < n; sink++) {
-					IVertexBiPartition cut = (IVertexBiPartition) stMinCut.computeMinimumCut(g, w,
-							Integer.valueOf(source), Integer.valueOf(sink));
+					IVertexBiPartition cut = (IVertexBiPartition) stMinCut
+							.computeMinimumCut(g, w, Integer.valueOf(source), Integer.valueOf(sink));
 					double cutWeight = w.weightSum(cut.crossEdges());
 					if (bestCutWeight > cutWeight) {
 						bestCutWeight = cutWeight;

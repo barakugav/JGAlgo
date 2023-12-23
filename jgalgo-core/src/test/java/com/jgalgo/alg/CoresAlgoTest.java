@@ -151,12 +151,24 @@ public class CoresAlgoTest extends TestBase {
 			assertEquals(res.coreVertices(k).size(), res.coreVertices(k).stream().distinct().count());
 			assertEquals(res.coreShell(k).size(), res.coreShell(k).stream().distinct().count());
 			assertEquals(res.coreCrust(k).size(), res.coreCrust(k).stream().distinct().count());
-			Set<V> expectedCore = vertex2core.object2IntEntrySet().stream().filter(e -> e.getIntValue() >= k)
-					.map(e -> e.getKey()).collect(Collectors.toSet());
-			Set<V> expectedShell = vertex2core.object2IntEntrySet().stream().filter(e -> e.getIntValue() == k)
-					.map(e -> e.getKey()).collect(Collectors.toSet());
-			Set<V> expectedCrust = vertex2core.object2IntEntrySet().stream().filter(e -> e.getIntValue() < k)
-					.map(e -> e.getKey()).collect(Collectors.toSet());
+			Set<V> expectedCore = vertex2core
+					.object2IntEntrySet()
+					.stream()
+					.filter(e -> e.getIntValue() >= k)
+					.map(e -> e.getKey())
+					.collect(Collectors.toSet());
+			Set<V> expectedShell = vertex2core
+					.object2IntEntrySet()
+					.stream()
+					.filter(e -> e.getIntValue() == k)
+					.map(e -> e.getKey())
+					.collect(Collectors.toSet());
+			Set<V> expectedCrust = vertex2core
+					.object2IntEntrySet()
+					.stream()
+					.filter(e -> e.getIntValue() < k)
+					.map(e -> e.getKey())
+					.collect(Collectors.toSet());
 			assertEquals(expectedCore, res.coreVertices(k));
 			assertEquals(expectedShell, res.coreShell(k));
 			assertEquals(expectedCrust, res.coreCrust(k));

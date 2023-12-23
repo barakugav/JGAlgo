@@ -102,8 +102,9 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 					IntList path = new IntArrayList(rootPath.size() + shortestPath.first().edges().size());
 					path.addAll(rootPath);
 					path.addAll(shortestPath.first().edges());
-					heap.insert(w.weightSum(path),
-							ObjectIntPair.of(new PathImpl(g, source, target, path), deviationIdx));
+					heap
+							.insert(w.weightSum(path),
+									ObjectIntPair.of(new PathImpl(g, source, target, path), deviationIdx));
 
 					assert heap.stream().map(r -> r.value().left().edges()).distinct().count() == ObjectIterables
 							.size(heap) : "heap contains duplicate paths";

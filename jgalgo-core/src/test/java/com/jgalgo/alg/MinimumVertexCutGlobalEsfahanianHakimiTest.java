@@ -29,8 +29,8 @@ public class MinimumVertexCutGlobalEsfahanianHakimiTest extends TestBase {
 	@Test
 	public void testRandGraphUndirected() {
 		final long seed = 0x614412691bc1bfbaL;
-		MinimumVertexCutGlobalTestUtils.testRandGraphs(new MinimumVertexCutGlobalEsfahanianHakimi(), false, false,
-				seed);
+		MinimumVertexCutGlobalTestUtils
+				.testRandGraphs(new MinimumVertexCutGlobalEsfahanianHakimi(), false, false, seed);
 	}
 
 	@Test

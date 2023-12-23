@@ -88,12 +88,12 @@ class KEdgeConnectedComponentsWang extends KEdgeConnectedComponentsUtils.Abstrac
 					sink = temp;
 				}
 
-				IVertexBiPartition minCut = (IVertexBiPartition) minCutAlgo.computeMinimumCut(g, null,
-						Integer.valueOf(source), Integer.valueOf(sink));
+				IVertexBiPartition minCut = (IVertexBiPartition) minCutAlgo
+						.computeMinimumCut(g, null, Integer.valueOf(source), Integer.valueOf(sink));
 				int cutWeight = minCut.crossEdges().size();
 				if (g.isDirected()) {
-					IVertexBiPartition minCut2 = (IVertexBiPartition) minCutAlgo.computeMinimumCut(g, null,
-							Integer.valueOf(sink), Integer.valueOf(source));
+					IVertexBiPartition minCut2 = (IVertexBiPartition) minCutAlgo
+							.computeMinimumCut(g, null, Integer.valueOf(sink), Integer.valueOf(source));
 					int cutWeight2 = minCut2.crossEdges().size();
 					if (cutWeight > cutWeight2) {
 						cutWeight = cutWeight2;

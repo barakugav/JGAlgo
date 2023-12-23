@@ -56,8 +56,8 @@ public class ShortestPathSingleSourceDagTest extends TestBase {
 			Graph<Integer, Integer> g = GraphsTestUtils.randDag(n, m, seedGen.nextSeed());
 			Integer source = g.vertices().iterator().next();
 
-			ShortestPathSingleSourceTestUtils.testAlgo(g, null, source, ssspAlgo,
-					new ShortestPathSingleSourceDijkstra());
+			ShortestPathSingleSourceTestUtils
+					.testAlgo(g, null, source, ssspAlgo, new ShortestPathSingleSourceDijkstra());
 		});
 	}
 

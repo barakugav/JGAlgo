@@ -79,8 +79,10 @@ class KShortestPathsSTTestUtils extends TestBase {
 			List<Path<V, E>> pathsExpected = StreamSupport
 					.stream(Spliterators.spliteratorUnknownSize(simplePathsIter, Spliterator.ORDERED), false)
 					.map(p -> ObjectDoublePair.of(p, w0.weightSum(p.edges())))
-					.sorted((p1, p2) -> Double.compare(p1.secondDouble(), p2.secondDouble())).limit(k)
-					.map(ObjectDoublePair::first).collect(Collectors.toList());
+					.sorted((p1, p2) -> Double.compare(p1.secondDouble(), p2.secondDouble()))
+					.limit(k)
+					.map(ObjectDoublePair::first)
+					.collect(Collectors.toList());
 
 			assertEquals(pathsExpected.size(), pathsActual.size());
 			for (int i = 0; i < pathsExpected.size(); i++)

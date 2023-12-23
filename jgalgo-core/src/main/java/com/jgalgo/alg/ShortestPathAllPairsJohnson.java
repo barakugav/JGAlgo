@@ -124,9 +124,12 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 					ThreadLocal.withInitial(() -> ShortestPathSingleSource.newInstance());
 			for (int source : verticesSubset) {
 				final int source0 = source;
-				tasks.add(JGAlgoUtils
-						.recursiveAction(() -> ssspResults[vToResIdx[source0]] = (ShortestPathSingleSource.IResult) sssp
-								.get().computeShortestPaths(g, w, Integer.valueOf(source0))));
+				tasks
+						.add(JGAlgoUtils
+								.recursiveAction(
+										() -> ssspResults[vToResIdx[source0]] = (ShortestPathSingleSource.IResult) sssp
+												.get()
+												.computeShortestPaths(g, w, Integer.valueOf(source0))));
 			}
 			for (RecursiveAction task : tasks)
 				pool.execute(task);
@@ -169,8 +172,8 @@ class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl
 		}
 		ShortestPathSingleSource.IResult res;
 		try {
-			res = (ShortestPathSingleSource.IResult) negativeSssp.computeShortestPaths(refG, refW,
-					Integer.valueOf(fakeV));
+			res = (ShortestPathSingleSource.IResult) negativeSssp
+					.computeShortestPaths(refG, refW, Integer.valueOf(fakeV));
 		} catch (NegativeCycleException e) {
 			IPath p = (IPath) e.cycle();
 			throw new NegativeCycleException(g, new PathImpl(g, p.sourceInt(), p.targetInt(), p.edges()));

@@ -67,8 +67,9 @@ class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutUtils.AbstractIm
 		int[] vertices = g.vertices().toIntArray();
 		/* Get (n-k)-th element in-place. After the computation the last k elements have the highest degrees */
 		IndexGraph g0 = g;
-		ArraysUtils.getKthElement(vertices, 0, n, n - k,
-				(v1, v2) -> Integer.compare(g0.outEdges(v1).size(), g0.outEdges(v2).size()), true);
+		ArraysUtils
+				.getKthElement(vertices, 0, n, n - k,
+						(v1, v2) -> Integer.compare(g0.outEdges(v1).size(), g0.outEdges(v2).size()), true);
 		IntSet kVertices = ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, IntIterators.wrap(vertices, n - k, k)));
 
 		/*
@@ -95,8 +96,8 @@ class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutUtils.AbstractIm
 
 			for (int v : nonAdjacent) {
 				int xAux = x * 2 + 1, vAux = v * 2 + 0;
-				IFlow maxFlow = (IFlow) maxFlowAlgo.computeMaximumFlow(auxGraph.graph, null, Integer.valueOf(xAux),
-						Integer.valueOf(vAux));
+				IFlow maxFlow = (IFlow) maxFlowAlgo
+						.computeMaximumFlow(auxGraph.graph, null, Integer.valueOf(xAux), Integer.valueOf(vAux));
 				int xvConnectivity = (int) maxFlow.getSupply(xAux);
 				if (xvConnectivity == k) {
 					Iterator<IVertexBiPartition> minEdgeCuts =

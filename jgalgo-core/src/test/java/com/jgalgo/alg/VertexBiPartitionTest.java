@@ -73,10 +73,14 @@ public class VertexBiPartitionTest extends TestBase {
 				Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
 				VertexBiPartition<Integer, Integer> partition = randPartition(g, seedGen.nextSeed());
 
-				Set<Integer> leftExpected = g.edges().stream()
+				Set<Integer> leftExpected = g
+						.edges()
+						.stream()
 						.filter(e -> partition.isLeft(g.edgeSource(e)) && partition.isLeft(g.edgeTarget(e)))
 						.collect(Collectors.toSet());
-				Set<Integer> rightExpected = g.edges().stream()
+				Set<Integer> rightExpected = g
+						.edges()
+						.stream()
 						.filter(e -> partition.isRight(g.edgeSource(e)) && partition.isRight(g.edgeTarget(e)))
 						.collect(Collectors.toSet());
 				assertEquals(leftExpected, partition.blockEdges(0));
@@ -106,14 +110,20 @@ public class VertexBiPartitionTest extends TestBase {
 				Set<Integer> crossEdgesLeftRightExpected;
 				Set<Integer> crossEdgesRightLeftExpected;
 				if (directed) {
-					crossEdgesLeftRightExpected = g.edges().stream()
+					crossEdgesLeftRightExpected = g
+							.edges()
+							.stream()
 							.filter(e -> partition.isLeft(g.edgeSource(e)) && partition.isRight(g.edgeTarget(e)))
 							.collect(Collectors.toSet());
-					crossEdgesRightLeftExpected = g.edges().stream()
+					crossEdgesRightLeftExpected = g
+							.edges()
+							.stream()
 							.filter(e -> partition.isRight(g.edgeSource(e)) && partition.isLeft(g.edgeTarget(e)))
 							.collect(Collectors.toSet());
 				} else {
-					crossEdgesLeftRightExpected = crossEdgesRightLeftExpected = g.edges().stream()
+					crossEdgesLeftRightExpected = crossEdgesRightLeftExpected = g
+							.edges()
+							.stream()
 							.filter(e -> (partition.isLeft(g.edgeSource(e)) && partition.isRight(g.edgeTarget(e)))
 									|| (partition.isRight(g.edgeSource(e)) && partition.isLeft(g.edgeTarget(e))))
 							.collect(Collectors.toSet());

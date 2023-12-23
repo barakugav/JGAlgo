@@ -186,18 +186,34 @@ class DominatingSetAlgoGreedy extends DominatingSetAlgos.AbstractImpl implements
 
 			/* some vertices might not be dominated if they have no in/out edges */
 			if (!directed || dominanceDirection == EdgeDirection.In) {
-				assert range(n).filter(u -> !dominated.get(u)).allMatch(u -> g.outEdges(u).intStream()
-						.filter(e -> g.edgeSource(e) != g.edgeTarget(e)).findAny().isEmpty());
+				assert range(n)
+						.filter(u -> !dominated.get(u))
+						.allMatch(u -> g
+								.outEdges(u)
+								.intStream()
+								.filter(e -> g.edgeSource(e) != g.edgeTarget(e))
+								.findAny()
+								.isEmpty());
 
 			} else if (dominanceDirection == EdgeDirection.Out) {
-				assert range(n).filter(u -> !dominated.get(u)).allMatch(u -> g.inEdges(u).intStream()
-						.filter(e -> g.edgeSource(e) != g.edgeTarget(e)).findAny().isEmpty());
+				assert range(n)
+						.filter(u -> !dominated.get(u))
+						.allMatch(u -> g
+								.inEdges(u)
+								.intStream()
+								.filter(e -> g.edgeSource(e) != g.edgeTarget(e))
+								.findAny()
+								.isEmpty());
 
 			} else {
 				assert dominanceDirection == EdgeDirection.All;
-				assert range(n).filter(u -> !dominated.get(u))
-						.allMatch(u -> IntStream.concat(g.outEdges(u).intStream(), g.inEdges(u).intStream())
-								.filter(e -> g.edgeSource(e) != g.edgeTarget(e)).findAny().isEmpty());
+				assert range(n)
+						.filter(u -> !dominated.get(u))
+						.allMatch(u -> IntStream
+								.concat(g.outEdges(u).intStream(), g.inEdges(u).intStream())
+								.filter(e -> g.edgeSource(e) != g.edgeTarget(e))
+								.findAny()
+								.isEmpty());
 			}
 			for (int u = 0; u < n; u++)
 				if (!dominated.get(u))

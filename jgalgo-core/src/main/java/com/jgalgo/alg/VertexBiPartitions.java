@@ -212,7 +212,9 @@ class VertexBiPartitions {
 
 		@Override
 		public String toString() {
-			return range(numberOfBlocks()).mapToObj(this::blockVertices).map(Object::toString)
+			return range(numberOfBlocks())
+					.mapToObj(this::blockVertices)
+					.map(Object::toString)
 					.collect(Collectors.joining(", ", "[", "]"));
 		}
 	}

@@ -117,7 +117,10 @@ public class MinimumVertexCutAllGlobalKanevskyTest extends TestBase {
 		cuts.sort((p1, p2) -> Double.compare(p1.secondDouble(), p2.secondDouble()));
 		double minCutWeight = cuts.get(0).rightDouble();
 		final double eps = 1e-4;
-		return cuts.stream().filter(p -> p.secondDouble() <= minCutWeight + eps).map(ObjectDoublePair::first)
+		return cuts
+				.stream()
+				.filter(p -> p.secondDouble() <= minCutWeight + eps)
+				.map(ObjectDoublePair::first)
 				.collect(Collectors.toList());
 	}
 

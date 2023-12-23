@@ -36,8 +36,8 @@ public class MatchingWeightedBipartiteHungarianMethodTest extends TestBase {
 	@Test
 	public void testRandBipartiteGraphsWeightedPerfect() {
 		final long seed = 0x3b7892e59492d431L;
-		MatchingWeightedTestUtils.randBipartiteGraphsWeightedPerfect(new MatchingWeightedBipartiteHungarianMethod(),
-				seed);
+		MatchingWeightedTestUtils
+				.randBipartiteGraphsWeightedPerfect(new MatchingWeightedBipartiteHungarianMethod(), seed);
 	}
 
 }

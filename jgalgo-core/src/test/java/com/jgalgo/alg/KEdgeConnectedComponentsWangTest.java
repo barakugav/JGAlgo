@@ -119,16 +119,23 @@ public class KEdgeConnectedComponentsWangTest extends TestBase {
 		gb.addVertices(range(n));
 		for (int u = 0; u < n; u++) {
 			for (int v = u + 1; v < n; v++) {
-				int connectivity = minCutAlgo.computeMinimumCut(g, null, viMap.indexToId(u), viMap.indexToId(v))
-						.crossEdges().size();
+				int connectivity = minCutAlgo
+						.computeMinimumCut(g, null, viMap.indexToId(u), viMap.indexToId(v))
+						.crossEdges()
+						.size();
 				if (g.isDirected())
-					connectivity = Math.min(connectivity, minCutAlgo
-							.computeMinimumCut(g, null, viMap.indexToId(v), viMap.indexToId(u)).crossEdges().size());
+					connectivity = Math
+							.min(connectivity,
+									minCutAlgo
+											.computeMinimumCut(g, null, viMap.indexToId(v), viMap.indexToId(u))
+											.crossEdges()
+											.size());
 				if (connectivity >= k)
 					gb.addEdge(u, v);
 			}
 		}
-		IVertexPartition partition = (IVertexPartition) WeaklyConnectedComponentsAlgo.newInstance()
+		IVertexPartition partition = (IVertexPartition) WeaklyConnectedComponentsAlgo
+				.newInstance()
 				.findWeaklyConnectedComponents(gb.build());
 		Object2IntMap<V> partition0 = new Object2IntOpenHashMap<>();
 		for (int v = 0; v < n; v++)

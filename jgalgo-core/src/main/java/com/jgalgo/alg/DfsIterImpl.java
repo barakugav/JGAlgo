@@ -75,8 +75,9 @@ class DfsIterImpl implements Dfs.IntIter {
 		final int ret = nextV;
 		/* sync edgePath to naxEdgePath */
 		edgePath.removeElements(edgePathAndNextEdgePathCommonElmsNum, edgePath.size());
-		edgePath.addElements(edgePath.size(), nextEdgePath.elements(), edgePathAndNextEdgePathCommonElmsNum,
-				nextEdgePath.size() - edgePathAndNextEdgePathCommonElmsNum);
+		edgePath
+				.addElements(edgePath.size(), nextEdgePath.elements(), edgePathAndNextEdgePathCommonElmsNum,
+						nextEdgePath.size() - edgePathAndNextEdgePathCommonElmsNum);
 		assert edgePath.equals(nextEdgePath);
 		edgePathAndNextEdgePathCommonElmsNum = edgePath.size();
 

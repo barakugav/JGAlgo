@@ -236,8 +236,8 @@ public interface Path<V, E> {
 	@SuppressWarnings("unchecked")
 	static <V, E> Path<V, E> findPath(Graph<V, E> g, V source, V target) {
 		if (g instanceof IntGraph)
-			return (Path<V, E>) IPath.findPath((IntGraph) g, ((Integer) source).intValue(),
-					((Integer) target).intValue());
+			return (Path<V, E>) IPath
+					.findPath((IntGraph) g, ((Integer) source).intValue(), ((Integer) target).intValue());
 
 		IndexGraph iGraph = g.indexGraph();
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();

@@ -82,8 +82,13 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 		if (wOrig == null)
 			wOrig = IWeightFunction.CardinalityWeightFunction;
 		final int n = gOrig.vertices().size();
-		IndexGraph g = IndexGraphFactory.directed().allowSelfEdges().allowParallelEdges().expectedVerticesNum(n + 2)
-				.expectedEdgesNum(gOrig.edges().size() + n).newGraph();
+		IndexGraph g = IndexGraphFactory
+				.directed()
+				.allowSelfEdges()
+				.allowParallelEdges()
+				.expectedVerticesNum(n + 2)
+				.expectedEdgesNum(gOrig.edges().size() + n)
+				.newGraph();
 		g.addVertices(gOrig.vertices());
 		final int s = g.addVertexInt(), t = g.addVertexInt();
 		IWeightsDouble w = g.addEdgesWeights("weight", double.class);
@@ -146,8 +151,8 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 			potential[v] = sp.distance(v);
 
 		for (;;) {
-			sp = (ShortestPathSingleSource.IResult) ssspPositive.computeShortestPaths(g, spWeightFunc,
-					Integer.valueOf(s));
+			sp = (ShortestPathSingleSource.IResult) ssspPositive
+					.computeShortestPaths(g, spWeightFunc, Integer.valueOf(s));
 			IPath augPath = sp.getPath(t);
 			double augPathWeight = -(sp.distance(t) + potential[t]);
 			if (augPath == null || augPathWeight >= RemovedEdgeWeight || augPathWeight < 0)

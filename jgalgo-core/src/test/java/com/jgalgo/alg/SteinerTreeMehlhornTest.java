@@ -152,8 +152,8 @@ public class SteinerTreeMehlhornTest extends TestBase {
 			}
 
 			assertNotNull(bestTree);
-			assertTrue(treeWeight.applyAsDouble(bestTree) / appxFactor <= WeightFunction.weightSum(w,
-					steinerEdges.edges()));
+			assertTrue(treeWeight.applyAsDouble(bestTree) / appxFactor <= WeightFunction
+					.weightSum(w, steinerEdges.edges()));
 
 		}
 	}

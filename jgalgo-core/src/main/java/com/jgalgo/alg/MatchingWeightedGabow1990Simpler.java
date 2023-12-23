@@ -91,9 +91,10 @@ class MatchingWeightedGabow1990Simpler extends MatchingWeightedGabow1990Abstract
 
 		@Override
 		void growStep() {
-			debug.print("growStep (root=",
-					Integer.valueOf(evens.findBlossom(g.edgeSource(growEvents.findMin().key().e)).root), "): ",
-					Integer.valueOf(growEvents.findMin().key().e));
+			debug
+					.print("growStep (root=",
+							Integer.valueOf(evens.findBlossom(g.edgeSource(growEvents.findMin().key().e)).root), "): ",
+							Integer.valueOf(growEvents.findMin().key().e));
 
 			// Grow step
 			assert delta == growEventsKey(growEvents.findMin().key());

@@ -53,8 +53,8 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		Assertions.Flows.sourceSinkNotTheSame(source, sink);
 
 		/* Compute maximum flow */
-		IFlow flowOrig = (IFlow) maxFlowAlg.computeMaximumFlow(gOrig, capacityOrig, Integer.valueOf(source),
-				Integer.valueOf(sink));
+		IFlow flowOrig = (IFlow) maxFlowAlg
+				.computeMaximumFlow(gOrig, capacityOrig, Integer.valueOf(source), Integer.valueOf(sink));
 
 		/* Construct the residual graph from the maximum flow */
 		Flows.ResidualGraph.Builder builder = new Flows.ResidualGraph.Builder(gOrig);

@@ -56,7 +56,10 @@ public class VertexPartitionTest extends TestBase {
 
 				for (int b = 0; b < k; b++) {
 					final int b0 = b;
-					Set<Integer> expected = g.vertices().stream().filter(v -> partition.vertexBlock(v) == b0)
+					Set<Integer> expected = g
+							.vertices()
+							.stream()
+							.filter(v -> partition.vertexBlock(v) == b0)
 							.collect(Collectors.toSet());
 					Set<Integer> actual = partition.blockVertices(b);
 					assertEquals(expected, actual);
@@ -101,11 +104,12 @@ public class VertexPartitionTest extends TestBase {
 
 				for (int b = 0; b < k; b++) {
 					final int b0 = b;
-					Set<Integer> expected =
-							g.edges().stream()
-									.filter(e -> partition.vertexBlock(g.edgeSource(e)) == b0
-											&& partition.vertexBlock(g.edgeTarget(e)) == b0)
-									.collect(Collectors.toSet());
+					Set<Integer> expected = g
+							.edges()
+							.stream()
+							.filter(e -> partition.vertexBlock(g.edgeSource(e)) == b0
+									&& partition.vertexBlock(g.edgeTarget(e)) == b0)
+							.collect(Collectors.toSet());
 					Set<Integer> actual = partition.blockEdges(b);
 					assertEquals(expected, actual);
 
@@ -156,12 +160,16 @@ public class VertexPartitionTest extends TestBase {
 						final int b20 = b2;
 						Set<Integer> expected;
 						if (directed) {
-							expected = g.edges().stream()
+							expected = g
+									.edges()
+									.stream()
 									.filter(e -> partition.vertexBlock(g.edgeSource(e)) == b10
 											&& partition.vertexBlock(g.edgeTarget(e)) == b20)
 									.collect(Collectors.toSet());
 						} else {
-							expected = g.edges().stream()
+							expected = g
+									.edges()
+									.stream()
 									.filter(e -> (partition.vertexBlock(g.edgeSource(e)) == b10
 											&& partition.vertexBlock(g.edgeTarget(e)) == b20)
 											|| (partition.vertexBlock(g.edgeSource(e)) == b20

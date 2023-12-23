@@ -165,7 +165,8 @@ class MaximalCliquesEnumeratorBronKerboschPivot extends MaximalCliquesEnumerator
 						IntList potentialFiltered =
 								new IntArrayList(potentialArr, right + 1, potential.size() - right - 1);
 						assert potentialFiltered.intStream().allMatch(u -> !containsEdge(pivot, u));
-						assert new IntArrayList(potentialArr, 0, left).intStream()
+						assert new IntArrayList(potentialArr, 0, left)
+								.intStream()
 								.allMatch(u -> containsEdge(pivot, u));
 						return potentialFiltered;
 					}

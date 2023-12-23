@@ -249,7 +249,8 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 							Edge minEdge = e.pqEvenEven.findMin().key();
 							if (minEdge.slack - tree.eps <= t2.eps) {
 								augment(minEdge);
-								assert e.pqEvenEven.isEmpty() || e.pqEvenEven.findMin()
+								assert e.pqEvenEven.isEmpty() || e.pqEvenEven
+										.findMin()
 										.key() != minEdge : "edge was not removed during augment";
 								continue treesLoop;
 							}

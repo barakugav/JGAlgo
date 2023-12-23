@@ -61,7 +61,8 @@ class MinimumVertexCutSTEdgeCut extends MinimumVertexCutUtils.AbstractImplST {
 		IWeightFunction w0 = auxiliaryGraph.weights;
 
 		IntSet edgesCut = (IntSet) minEdgeCutAlgo
-				.computeMinimumCut(g0, w0, Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0)).crossEdges();
+				.computeMinimumCut(g0, w0, Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0))
+				.crossEdges();
 		int[] cut = edgesCut.toIntArray();
 		auxiliaryGraph.edgeCutToVertexCut(cut);
 		return cut;

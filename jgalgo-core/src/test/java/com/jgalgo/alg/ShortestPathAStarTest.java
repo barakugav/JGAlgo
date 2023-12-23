@@ -45,48 +45,54 @@ public class ShortestPathAStarTest extends TestBase {
 	public void testRandGraphDirectedNoHeuristic() {
 		final long seed = 0x4c6096c679a03079L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithNoHeuristic(seedGen.nextSeed()), true,
-				seedGen.nextSeed(), SsspPhases);
+		ShortestPathSingleSourceTestUtils
+				.testSSSPPositiveInt(AStarAsSSSPWithNoHeuristic(seedGen.nextSeed()), true, seedGen.nextSeed(),
+						SsspPhases);
 	}
 
 	@Test
 	public void testSSSPUndirectedNoHeuristic() {
 		final long seed = 0x97997bc1c8243730L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithNoHeuristic(seedGen.nextSeed()), false,
-				seedGen.nextSeed(), SsspPhases);
+		ShortestPathSingleSourceTestUtils
+				.testSSSPPositiveInt(AStarAsSSSPWithNoHeuristic(seedGen.nextSeed()), false, seedGen.nextSeed(),
+						SsspPhases);
 	}
 
 	@Test
 	public void testRandGraphDirectedPerfectHeuristic() {
 		final long seed = 0xf84561a561971620L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithPerfectHeuristic(seedGen.nextSeed()), true,
-				seedGen.nextSeed(), SsspPhases);
+		ShortestPathSingleSourceTestUtils
+				.testSSSPPositiveInt(AStarAsSSSPWithPerfectHeuristic(seedGen.nextSeed()), true, seedGen.nextSeed(),
+						SsspPhases);
 	}
 
 	@Test
 	public void testSSSPUndirectedPerfectHeuristic() {
 		final long seed = 0xf33456751c101f3bL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(AStarAsSSSPWithPerfectHeuristic(seedGen.nextSeed()),
-				false, seedGen.nextSeed(), SsspPhases);
+		ShortestPathSingleSourceTestUtils
+				.testSSSPPositiveInt(AStarAsSSSPWithPerfectHeuristic(seedGen.nextSeed()), false, seedGen.nextSeed(),
+						SsspPhases);
 	}
 
 	@Test
 	public void testRandGraphDirectedRandAdmissibleHeuristic() {
 		final long seed = 0xb5366e9088af7540L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(
-				AStarAsSSSPWithRandAdmissibleHeuristic(seedGen.nextSeed()), true, seedGen.nextSeed(), SsspPhases);
+		ShortestPathSingleSourceTestUtils
+				.testSSSPPositiveInt(AStarAsSSSPWithRandAdmissibleHeuristic(seedGen.nextSeed()), true,
+						seedGen.nextSeed(), SsspPhases);
 	}
 
 	@Test
 	public void testSSSPUndirectedRandAdmissibleHeuristic() {
 		final long seed = 0x7a8fb412a411ca7bL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		ShortestPathSingleSourceTestUtils.testSSSPPositiveInt(
-				AStarAsSSSPWithRandAdmissibleHeuristic(seedGen.nextSeed()), false, seedGen.nextSeed(), SsspPhases);
+		ShortestPathSingleSourceTestUtils
+				.testSSSPPositiveInt(AStarAsSSSPWithRandAdmissibleHeuristic(seedGen.nextSeed()), false,
+						seedGen.nextSeed(), SsspPhases);
 	}
 
 	private static ShortestPathSingleSource AStarAsSSSPWithNoHeuristic(long seed) {
@@ -178,8 +184,8 @@ public class ShortestPathAStarTest extends TestBase {
 						int source0 = ((Integer) source).intValue();
 						int target0 = ((Integer) target).intValue();
 						IntToDoubleFunction vHeuristicInt = v -> vHeuristic.applyAsDouble((V) Integer.valueOf(v));
-						path = (Path<V, E>) aStar.computeShortestPath((IntGraph) g, w0, source0, target0,
-								vHeuristicInt);
+						path = (Path<V, E>) aStar
+								.computeShortestPath((IntGraph) g, w0, source0, target0, vHeuristicInt);
 					} else {
 						path = aStar.computeShortestPath(g, w, source, target, vHeuristic);
 					}

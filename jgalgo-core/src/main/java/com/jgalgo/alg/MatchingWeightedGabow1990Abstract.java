@@ -602,15 +602,26 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 					delta = deltaNext;
 
 					debug.printExec(() -> {
-						debug.print(" ", Arrays.asList(blossoms).stream().map(b -> String.valueOf(dualVal(b.base)))
-								.collect(Collectors.joining(", ", "[", "]")));
+						debug
+								.print(" ",
+										Arrays
+												.asList(blossoms)
+												.stream()
+												.map(b -> String.valueOf(dualVal(b.base)))
+												.collect(Collectors.joining(", ", "[", "]")));
 						List<Blossom> topLevelBlossoms = new ObjectArrayList<>();
 						for (Blossom b : blossoms) {
 							for (; b.parent != null; b = b.parent);
 							topLevelBlossoms.add(b);
 						}
-						debug.print(" ", topLevelBlossoms.stream().distinct().filter(b -> !b.isSingleton())
-								.map(b -> "" + b + " " + dualVal(b)).collect(Collectors.joining(", ", "[", "]")));
+						debug
+								.print(" ",
+										topLevelBlossoms
+												.stream()
+												.distinct()
+												.filter(b -> !b.isSingleton())
+												.map(b -> "" + b + " " + dualVal(b))
+												.collect(Collectors.joining(", ", "[", "]")));
 
 						debug.print("\nMatched: ");
 						debug.println(Arrays.toString(matched));

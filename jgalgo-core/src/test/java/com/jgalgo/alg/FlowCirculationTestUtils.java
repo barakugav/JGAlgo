@@ -63,8 +63,9 @@ class FlowCirculationTestUtils extends TestUtils {
 			WeightFunctionInt<V> supply, FlowCirculation algo) {
 		Flow<V, E> flow = algo.computeCirculation(g, capacity, supply);
 
-		MaximumFlowTestUtils.assertValidFlow(g, flow, verticesWithPositiveSupply(g.vertices(), supply),
-				verticesWithNegativeSupply(g.vertices(), supply));
+		MaximumFlowTestUtils
+				.assertValidFlow(g, flow, verticesWithPositiveSupply(g.vertices(), supply),
+						verticesWithNegativeSupply(g.vertices(), supply));
 		assertSupplySatisfied(g, supply, flow);
 	}
 
@@ -91,8 +92,9 @@ class FlowCirculationTestUtils extends TestUtils {
 			FlowCirculation algo) {
 		Flow<V, E> flow = algo.computeCirculation(g, capacity, supply);
 
-		MaximumFlowTestUtils.assertValidFlow(g, flow, verticesWithPositiveSupply(g.vertices(), supply),
-				verticesWithNegativeSupply(g.vertices(), supply));
+		MaximumFlowTestUtils
+				.assertValidFlow(g, flow, verticesWithPositiveSupply(g.vertices(), supply),
+						verticesWithNegativeSupply(g.vertices(), supply));
 		assertSupplySatisfied(g, supply, flow);
 	}
 

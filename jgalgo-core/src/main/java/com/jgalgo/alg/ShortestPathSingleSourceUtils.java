@@ -53,8 +53,8 @@ class ShortestPathSingleSourceUtils {
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 				int iSource = viMap.idToIndex(source);
-				ShortestPathSingleSource.IResult indexResult = NegativeCycleException.runAndConvertException(g,
-						() -> computeShortestPaths(iGraph, iw, iSource));
+				ShortestPathSingleSource.IResult indexResult = NegativeCycleException
+						.runAndConvertException(g, () -> computeShortestPaths(iGraph, iw, iSource));
 				return resultFromIndexResult(g, indexResult);
 			}
 		}

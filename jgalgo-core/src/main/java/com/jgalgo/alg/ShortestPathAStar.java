@@ -94,8 +94,9 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 			int iSource = viMap.idToIndex(source);
 			int iTarget = viMap.idToIndex(target);
 			IntToDoubleFunction indexVHeuristic = vIdx -> vHeuristic.applyAsDouble(viMap.indexToId(vIdx));
-			IPath indexPath = NegativeCycleException.runAndConvertException(g,
-					() -> computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic));
+			IPath indexPath = NegativeCycleException
+					.runAndConvertException(g,
+							() -> computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic));
 			return PathImpl.pathFromIndexPath(g, indexPath);
 		}
 	}
@@ -115,8 +116,9 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 			int iSource = viMap.idToIndex(source);
 			int iTarget = viMap.idToIndex(target);
 			IntToDoubleFunction indexVHeuristic = vIdx -> vHeuristic.applyAsDouble(viMap.indexToIdInt(vIdx));
-			IPath indexPath = NegativeCycleException.runAndConvertException(g,
-					() -> computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic));
+			IPath indexPath = NegativeCycleException
+					.runAndConvertException(g,
+							() -> computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic));
 			return PathImpl.intPathFromIndexPath(g, indexPath);
 		}
 

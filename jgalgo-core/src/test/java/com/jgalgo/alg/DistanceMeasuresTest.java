@@ -82,8 +82,8 @@ public class DistanceMeasuresTest extends TestBase {
 		Object2DoubleMap<V> expectedEccentricity = new Object2DoubleOpenHashMap<>();
 		for (V v : g.vertices()) {
 			ShortestPathSingleSource.Result<V, E> sp = sssp.computeShortestPaths(g, w, v);
-			expectedEccentricity.put(v,
-					g.vertices().stream().mapToDouble(sp::distance).max().orElse(Double.POSITIVE_INFINITY));
+			expectedEccentricity
+					.put(v, g.vertices().stream().mapToDouble(sp::distance).max().orElse(Double.POSITIVE_INFINITY));
 		}
 
 		for (V v : g.vertices())
@@ -92,13 +92,25 @@ public class DistanceMeasuresTest extends TestBase {
 				measures.radius(), 1e-9);
 		assertEquals(expectedEccentricity.values().doubleStream().max().orElse(Double.POSITIVE_INFINITY),
 				measures.diameter(), 1e-9);
-		assertEquals(g.vertices().stream().filter(v -> expectedEccentricity.getDouble(v) <= measures.radius() + 1e-9)
+		assertEquals(g
+				.vertices()
+				.stream()
+				.filter(v -> expectedEccentricity.getDouble(v) <= measures.radius() + 1e-9)
 				.collect(Collectors.toSet()), measures.center());
-		assertEquals(g.vertices().stream().filter(v -> measures.eccentricity(v) <= measures.radius() + 1e-9)
+		assertEquals(g
+				.vertices()
+				.stream()
+				.filter(v -> measures.eccentricity(v) <= measures.radius() + 1e-9)
 				.collect(Collectors.toSet()), measures.center());
-		assertEquals(g.vertices().stream().filter(v -> expectedEccentricity.getDouble(v) >= measures.diameter() - 1e-9)
+		assertEquals(g
+				.vertices()
+				.stream()
+				.filter(v -> expectedEccentricity.getDouble(v) >= measures.diameter() - 1e-9)
 				.collect(Collectors.toSet()), measures.periphery());
-		assertEquals(g.vertices().stream().filter(v -> measures.eccentricity(v) >= measures.diameter() - 1e-9)
+		assertEquals(g
+				.vertices()
+				.stream()
+				.filter(v -> measures.eccentricity(v) >= measures.diameter() - 1e-9)
 				.collect(Collectors.toSet()), measures.periphery());
 	}
 

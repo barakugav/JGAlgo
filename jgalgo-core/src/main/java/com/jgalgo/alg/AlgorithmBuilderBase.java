@@ -39,8 +39,8 @@ public interface AlgorithmBuilderBase {
 	 * <p>
 	 * These options are mainly for debug and benchmark purposes.
 	 *
-	 * @param  key   the option key
-	 * @param  value the option value
+	 * @param key   the option key
+	 * @param value the option value
 	 */
 	default void setOption(String key, Object value) {
 		throw new IllegalArgumentException("unknown option key: " + key);

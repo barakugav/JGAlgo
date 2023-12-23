@@ -56,8 +56,8 @@ class MinimumVertexCutAllSTEdgeCut extends MinimumVertexCutUtils.AbstractImplAll
 		IWeightFunction w0 = auxiliaryGraph.weights;
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
-		Iterator<IVertexBiPartition> edgesCuts = (Iterator) minEdgeCutAlgo.minimumCutsIter(g0, w0,
-				Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0));
+		Iterator<IVertexBiPartition> edgesCuts = (Iterator) minEdgeCutAlgo
+				.minimumCutsIter(g0, w0, Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0));
 
 		/*
 		 * The iterator returned by the minimum edge cut algorithm returns cuts which are unique with respect to the
