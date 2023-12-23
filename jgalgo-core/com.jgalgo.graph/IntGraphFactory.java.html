@@ -53,11 +53,19 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	IntGraph newCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights);
 
 	@Override
+	default IntGraph newImmutableCopyOf(Graph&lt;Integer, Integer&gt; g) {
+<span class="fc" id="L57">		return (IntGraph) GraphFactory.super.newImmutableCopyOf(g);</span>
+	}
+
+	@Override
+	IntGraph newImmutableCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights);
+
+	@Override
 	IntGraphBuilder newBuilder();
 
 	@Override
 	default IntGraphBuilder newBuilderCopyOf(Graph&lt;Integer, Integer&gt; g) {
-<span class="fc" id="L60">		return (IntGraphBuilder) GraphFactory.super.newBuilderCopyOf(g);</span>
+<span class="fc" id="L68">		return (IntGraphBuilder) GraphFactory.super.newBuilderCopyOf(g);</span>
 	}
 
 	@Override
@@ -68,7 +76,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 
 	@Override
 	default IntGraphFactory allowSelfEdges() {
-<span class="fc" id="L71">		return (IntGraphFactory) GraphFactory.super.allowSelfEdges();</span>
+<span class="fc" id="L79">		return (IntGraphFactory) GraphFactory.super.allowSelfEdges();</span>
 	}
 
 	@Override
@@ -76,7 +84,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 
 	@Override
 	default IntGraphFactory allowParallelEdges() {
-<span class="fc" id="L79">		return (IntGraphFactory) GraphFactory.super.allowParallelEdges();</span>
+<span class="fc" id="L87">		return (IntGraphFactory) GraphFactory.super.allowParallelEdges();</span>
 	}
 
 	@Override
@@ -96,7 +104,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 */
 	@Override
 	default IntGraphFactory setVertexBuilder(IdBuilder&lt;Integer&gt; vertexBuilder) {
-<span class="fc" id="L99">		return (IntGraphFactory) GraphFactory.super.setVertexBuilder(vertexBuilder);</span>
+<span class="fc" id="L107">		return (IntGraphFactory) GraphFactory.super.setVertexBuilder(vertexBuilder);</span>
 	}
 
 	@Override
@@ -110,7 +118,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 */
 	@Override
 	default IntGraphFactory setEdgeBuilder(IdBuilder&lt;Integer&gt; edgeBuilder) {
-<span class="fc" id="L113">		return (IntGraphFactory) GraphFactory.super.setEdgeBuilder(edgeBuilder);</span>
+<span class="fc" id="L121">		return (IntGraphFactory) GraphFactory.super.setEdgeBuilder(edgeBuilder);</span>
 	}
 
 	@Override
@@ -128,7 +136,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 * @return a new factory that can build undirected int graphs
 	 */
 	public static IntGraphFactory undirected() {
-<span class="fc" id="L131">		return new IntGraphFactoryImpl(false);</span>
+<span class="fc" id="L139">		return new IntGraphFactoryImpl(false);</span>
 	}
 
 	/**
@@ -137,7 +145,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 * @return a new factory that can build directed int graphs
 	 */
 	public static IntGraphFactory directed() {
-<span class="fc" id="L140">		return new IntGraphFactoryImpl(true);</span>
+<span class="fc" id="L148">		return new IntGraphFactoryImpl(true);</span>
 	}
 
 	/**
@@ -147,12 +155,12 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 * @return          a new factory that can build un/directed int graphs
 	 */
 	public static IntGraphFactory newInstance(boolean directed) {
-<span class="fc" id="L150">		return new IntGraphFactoryImpl(directed);</span>
+<span class="fc" id="L158">		return new IntGraphFactoryImpl(directed);</span>
 	}
 
 	@Override
 	default IntGraphFactory setOption(String key, Object value) {
-<span class="nc" id="L155">		return (IndexGraphFactory) GraphFactory.super.setOption(key, value);</span>
+<span class="nc" id="L163">		return (IndexGraphFactory) GraphFactory.super.setOption(key, value);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

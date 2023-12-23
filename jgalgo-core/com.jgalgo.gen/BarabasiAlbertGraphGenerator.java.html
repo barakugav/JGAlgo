@@ -19,20 +19,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.function.BiFunction;
-import java.util.function.IntBinaryOperator;
-import java.util.function.IntSupplier;
-import java.util.function.Supplier;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IdBuilder;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
-import com.jgalgo.internal.util.IntAdapters;
+import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectList;
 
 /**
  * Generates a Barabási–Albert graph.
@@ -40,16 +36,16 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
  * &lt;p&gt;
  * A Barabási–Albert graph is a random graph with a power law degree distribution, which is a good model for many real
  * networks. The graph begins with an initial clique of size {@code initCliqueSize}, and then adds vertices one by one,
- * each with {@code k} edges that are attached to existing vertices. The probability that a new vertex is connected to
- * vertex \(v\) is proportional to the degree of \(v\) divided by the sum of degrees of all vertices in the graph.
+ * each with {@code edgesPerStep} edges that are attached to existing vertices. The probability that a new vertex is
+ * connected to vertex \(v\) is proportional to the degree of \(v\) divided by the sum of degrees of all vertices in the
+ * graph.
  *
  * &lt;p&gt;
- * By default the initial clique size is \(20\) and the number of edges added each time step (denoted {@code k}) is
- * \(10\). The generated graph(s) may be directed or undirected, and by default it is undirected. Self edges are never
- * created.
+ * By default the initial clique size is \(20\) and the number of edges added each step is \(10\). The generated
+ * graph(s) may be directed or undirected, and by default it is undirected. Self edges are never created.
  *
  * &lt;p&gt;
- * For deterministic behavior, set the seed of the generator using {@link #setSeed(long)}.
+ * For deterministic behavior, set the seed of the generator using {@link #seed(long)}.
  *
  * &lt;p&gt;
  * Based on 'Emergence of scaling in random networks' by Albert-László Barabási and Réka Albert.
@@ -60,152 +56,206 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
  */
 public class BarabasiAlbertGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {
 
-	private final boolean intGraph;
-	private Collection&lt;V&gt; vertices;
-<span class="fc" id="L65">	private int initCliqueSize = 20;</span>
-<span class="fc" id="L66">	private int k = 10;</span>
-	private BiFunction&lt;V, V, E&gt; edgeBuilder;
-<span class="fc" id="L68">	private boolean directed = false;</span>
-<span class="fc" id="L69">	private Random rand = new Random();</span>
-
-<span class="fc" id="L71">	private BarabasiAlbertGraphGenerator(boolean intGraph) {</span>
-<span class="fc" id="L72">		this.intGraph = intGraph;</span>
-<span class="fc" id="L73">	}</span>
+	private final GraphFactory&lt;V, E&gt; factory;
+	private Variant2&lt;List&lt;V&gt;, IntObjectPair&lt;IdBuilder&lt;V&gt;&gt;&gt; vertices;
+	private IdBuilder&lt;E&gt; edgeBuilder;
+<span class="fc" id="L62">	private int initCliqueSize = 20;</span>
+<span class="fc" id="L63">	private int edgesPerStep = 10;</span>
+<span class="fc" id="L64">	private boolean directed = false;</span>
+<span class="fc" id="L65">	private Random rand = new Random();</span>
 
 	/**
-	 * Creates a new Barabási–Albert graph generator.
-	 *
-	 * @param  &lt;V&gt; the vertices type
-	 * @param  &lt;E&gt; the edges type
-	 * @return     a new Barabási–Albert graph generator
-	 */
-	public static &lt;V, E&gt; BarabasiAlbertGraphGenerator&lt;V, E&gt; newInstance() {
-<span class="fc" id="L83">		return new BarabasiAlbertGraphGenerator&lt;&gt;(false);</span>
-	}
-
-	/**
-	 * Creates a new Barabási–Albert graph generator for {@link IntGraph}.
-	 *
-	 * @return a new Barabási–Albert graph generator for {@link IntGraph}
-	 */
-	public static BarabasiAlbertGraphGenerator&lt;Integer, Integer&gt; newIntInstance() {
-<span class="fc" id="L92">		return new BarabasiAlbertGraphGenerator&lt;&gt;(true);</span>
-	}
-
-	/**
-	 * Set the vertices of the generated graph(s).
+	 * Create a new Barabasi-Albert graph generator that will use the default graph factory.
 	 *
 	 * &lt;p&gt;
-	 * If the generator is used to generate multiple graphs, the same vertices set is used for all of them.
+	 * The default graph factory does not have vertex builder, so if only the number of vertices is set using
+	 * {@link #vertices(int)}, the vertex builder must be set explicitly using
+	 * {@code graphFactory().setVertexBuilder(...)}. Same holds for edges, for which the number of them is determine by
+	 * {@link #edgesPerStep(int)} and {@link #initialCliqueSize(int)}. Alternatively, the methods
+	 * {@link #vertices(int, IdBuilder)} and {@link #edges(IdBuilder)} can be used to set the number of vertices and
+	 * provide a vertex/edge builder that will override the (maybe non existing) vertex/edge builder of the graph
+	 * factory. The vertex set can also be set explicitly using {@link #vertices(Collection)}.
+	 */
+	public BarabasiAlbertGraphGenerator() {
+<span class="fc" id="L80">		this(GraphFactory.undirected());</span>
+<span class="fc" id="L81">	}</span>
+
+	/**
+	 * Create a new Barabasi-Albert graph generator that will use the given graph factory.
 	 *
-	 * @param vertices the vertices set
+	 * &lt;p&gt;
+	 * If the factory has a vertex builder it will be used to generate the vertices of the generated graph(s) if only
+	 * the number of vertices is set using {@link #vertices(int)}. If the factory has an edge builder it will be used to
+	 * generate the edges of the generated graph(s) if it will not be overridden by {@link #edges(IdBuilder)}.
+	 *
+	 * &lt;p&gt;
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration. Parallel edges can always be generated by
+	 * this generator, therefore also {@link GraphFactory#allowParallelEdges()} will be called.
+	 *
+	 * &lt;p&gt;
+	 * To generate {@linkplain IntGraph int graphs}, pass an instance of {@linkplain IntGraphFactory} to this
+	 * constructor.
+	 *
+	 * @param factory the graph factory that will be used to create the generated graph(s)
+	 */
+<span class="fc" id="L102">	public BarabasiAlbertGraphGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
+<span class="fc" id="L103">		this.factory = Objects.requireNonNull(factory);</span>
+<span class="fc" id="L104">	}</span>
+
+	/**
+	 * Get the graph factory that will be used to create the generated graph(s).
+	 *
+	 * &lt;p&gt;
+	 * It's possible to customize the factory before generating the graph(s), for example by using
+	 * {@link GraphFactory#addHint(GraphFactory.Hint)} to optimize the generated graph(s) for a specific algorithm. If
+	 * the factory has a vertex builder it will be used to generate the vertices of the generated graph(s) if only the
+	 * number of vertices is set using {@link #vertices(int)}. If the factory has an edge builder it will be used to
+	 * generate the edges of the generated graph(s) if it will not be overridden by {@link #edges(IdBuilder)}.
+	 *
+	 * &lt;p&gt;
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration. Parallel edges can always be generated by
+	 * this generator, therefore also {@link GraphFactory#allowParallelEdges()} will be called.
+	 *
+	 * @return the graph factory that will be used to create the generated graph(s)
+	 */
+	public GraphFactory&lt;V, E&gt; graphFactory() {
+<span class="fc" id="L124">		return factory;</span>
+	}
+
+	/**
+	 * Set the vertices set of the generated graph(s).
+	 *
+	 * &lt;p&gt;
+	 * If the generator is used to generate multiple graphs, the same vertex set will be used for all of them. This
+	 * method override all previous calls to any of {@link #vertices(Collection)}, {@link #vertices(int)} or
+	 * {@link #vertices(int, IdBuilder)}.
+	 *
+	 * @param  vertices the vertices set
+	 * @return          this generator
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
-	public void setVertices(Collection&lt;V&gt; vertices) {
-<span class="fc bfc" id="L105" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc" id="L106">			this.vertices =</span>
-<span class="fc" id="L107">					(Collection&lt;V&gt;) new IntArrayList(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices));</span>
+	public BarabasiAlbertGraphGenerator&lt;V, E&gt; vertices(Collection&lt;? extends V&gt; vertices) {
+<span class="fc bfc" id="L140" title="All 2 branches covered.">		if (factory instanceof IntGraphFactory) {</span>
+<span class="fc" id="L141">			vertices = (List&lt;V&gt;) new IntArrayList((Collection&lt;Integer&gt;) vertices);</span>
 		} else {
-<span class="fc" id="L109">			this.vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
+<span class="fc" id="L143">			vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
 		}
-<span class="fc" id="L111">	}</span>
+<span class="fc" id="L145">		this.vertices = Variant2.ofA((List&lt;V&gt;) vertices);</span>
+<span class="fc" id="L146">		return this;</span>
+	}
 
 	/**
-	 * Set the vertices set of the generated graph(s) from a supplier.
+	 * Set the number of vertices that will be generated for each graph.
 	 *
 	 * &lt;p&gt;
-	 * The supplier will be called exactly {@code verticesNum} times, and the same set of vertices created will be used
-	 * for multiple graphs if {@link #generate()} is called multiple times.
+	 * The vertices will be generated using the vertex builder of the graph factory, see
+	 * {@link GraphFactory#setVertexBuilder(IdBuilder)}. The default graph factory does not have a vertex builder, so it
+	 * must be set explicitly, or {@link IntGraphFactory}, which does have such builder, should be passed in the
+	 * {@linkplain #BarabasiAlbertGraphGenerator(GraphFactory) constructor}. Another alternative is to use
+	 * {@link #vertices(int, IdBuilder)} which set the number of vertices and provide a vertex builder that will
+	 * override the (maybe non existing) vertex builder of the graph factory. The generation will happen independently
+	 * for each graph generated. If there is no vertex builder, an exception will be thrown during generation. This
+	 * method override all previous calls to any of {@link #vertices(Collection)}, {@link #vertices(int)} or
+	 * {@link #vertices(int, IdBuilder)}.
 	 *
-	 * @param verticesNum    the number of vertices
-	 * @param vertexSupplier the supplier of vertices
+	 * @param  verticesNum              the number of vertices that will be generated for each graph
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code verticesNum} is negative
 	 */
-	@SuppressWarnings(&quot;unchecked&quot;)
-	public void setVertices(int verticesNum, Supplier&lt;V&gt; vertexSupplier) {
-<span class="fc bfc" id="L125" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc" id="L126">			IntList vertices = new IntArrayList(verticesNum);</span>
-<span class="fc" id="L127">			IntSupplier vSupplier = IntAdapters.asIntSupplier((Supplier&lt;Integer&gt;) vertexSupplier);</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++)</span>
-<span class="fc" id="L129">				vertices.add(vSupplier.getAsInt());</span>
-<span class="fc" id="L130">			this.vertices = (Collection&lt;V&gt;) vertices;</span>
-<span class="fc" id="L131">		} else {</span>
-<span class="fc" id="L132">			List&lt;V&gt; vertices = new ObjectArrayList&lt;&gt;(verticesNum);</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++)</span>
-<span class="fc" id="L134">				vertices.add(vertexSupplier.get());</span>
-<span class="fc" id="L135">			this.vertices = vertices;</span>
-		}
-<span class="fc" id="L137">	}</span>
+	public BarabasiAlbertGraphGenerator&lt;V, E&gt; vertices(int verticesNum) {
+<span class="fc" id="L168">		vertices(verticesNum, null);</span>
+<span class="fc" id="L169">		return this;</span>
+	}
 
 	/**
-	 * Set the edge supplier of the generated graph(s).
+	 * Set the number of vertices that will be generated for each graph, and the vertex builder that will be used to
+	 * generate them.
 	 *
 	 * &lt;p&gt;
-	 * The supplier will be called for any edge created, for any graph generated. This behavior is different from
-	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
-	 * any generated graph.
+	 * The vertices will be generated using the provided vertex builder, and the vertex generator provided by the
+	 * {@linkplain #graphFactory() graph factory} (if exists) will be ignored. The generation will happen independently
+	 * for each graph generated. This method override all previous calls to any of {@link #vertices(Collection)},
+	 * {@link #vertices(int)} or {@link #vertices(int, IdBuilder)}.
 	 *
-	 * @param edgeSupplier the edge supplier
+	 * @param  verticesNum              the number of vertices that will be generated for each graph
+	 * @param  vertexBuilder            the vertex builder, or {@code null} to use the vertex builder of the
+	 *                                      {@linkplain #graphFactory() graph factory}
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code verticesNum} is negative
 	 */
-	public void setEdges(Supplier&lt;E&gt; edgeSupplier) {
-<span class="fc" id="L150">		Objects.requireNonNull(edgeSupplier);</span>
-<span class="fc" id="L151">		setEdges((u, v) -&gt; edgeSupplier.get());</span>
-<span class="fc" id="L152">	}</span>
+	public BarabasiAlbertGraphGenerator&lt;V, E&gt; vertices(int verticesNum, IdBuilder&lt;V&gt; vertexBuilder) {
+<span class="fc bfc" id="L189" title="All 2 branches covered.">		if (verticesNum &lt; 0)</span>
+<span class="fc" id="L190">			throw new IllegalArgumentException(&quot;number of vertices must be non-negative&quot;);</span>
+<span class="fc" id="L191">		this.vertices = Variant2.ofB(IntObjectPair.of(verticesNum, vertexBuilder));</span>
+<span class="fc" id="L192">		return this;</span>
+	}
 
 	/**
-	 * Set the edge builder function of the generated graph(s).
+	 * Set the edge builder that will be used to generate edges.
 	 *
 	 * &lt;p&gt;
-	 * The function will be called for any edge created, for any graph generated. This behavior is different from
-	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
-	 * any generated graph.
+	 * The edges will be generated using the provided edge builder, and the edge generator provided by the
+	 * {@linkplain #graphFactory() graph factory} (if exists) will be ignored. The generation will happen independently
+	 * for each graph generated. If this method is not called, or called with a {@code null} argument, the edge builder
+	 * of the graph factory will be used. If the graph factory does not have an edge builder, an exception will be
+	 * thrown during generation.
 	 *
-	 * @param edgeBuilder the edge builder function
+	 * @param  edgeBuilder the edge builder, or {@code null} to use the edge builder of the {@linkplain #graphFactory()
+	 *                         graph factory}
+	 * @return             this generator
 	 */
-	public void setEdges(BiFunction&lt;V, V, E&gt; edgeBuilder) {
-<span class="fc" id="L165">		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);</span>
-<span class="fc" id="L166">	}</span>
+	public BarabasiAlbertGraphGenerator&lt;V, E&gt; edges(IdBuilder&lt;E&gt; edgeBuilder) {
+<span class="fc" id="L210">		this.edgeBuilder = edgeBuilder;</span>
+<span class="fc" id="L211">		return this;</span>
+	}
 
 	/**
 	 * Set the initial clique size of the generated graph(s).
 	 *
 	 * &lt;p&gt;
 	 * The initial clique is a complete graph of size {@code initCliqueSize}. After the initial clique is created, the
-	 * generator adds vertices one by one, each with {@code k} edges that are attached to existing vertices. The
-	 * probability that a new vertex is connected to vertex \(v\) is proportional to the degree of \(v\) divided by the
-	 * sum of degrees of all vertices in the graph.
+	 * generator adds vertices one by one, each with {@code edgesPerStep} edges that are attached to existing vertices.
+	 * The probability that a new vertex is connected to vertex \(v\) is proportional to the degree of \(v\) divided by
+	 * the sum of degrees of all vertices in the graph.
 	 *
 	 * &lt;p&gt;
 	 * By default, the initial clique size is \(20\). The initial clique size must not be greater than the number of
-	 * vertices provided by {@link #setVertices}
+	 * vertices, which is validated during the graph generation.
 	 *
-	 * @param initCliqueSize the initial clique size
+	 * @param  initCliqueSize the initial clique size
+	 * @return                this generator
 	 */
-	public void setInitialCliqueSize(int initCliqueSize) {
-<span class="fc bfc" id="L184" title="All 2 branches covered.">		if (initCliqueSize &lt; 0)</span>
-<span class="fc" id="L185">			throw new IllegalArgumentException(&quot;initCliqueSize must be non-negative: &quot; + initCliqueSize);</span>
-<span class="fc" id="L186">		this.initCliqueSize = initCliqueSize;</span>
-<span class="fc" id="L187">	}</span>
+	public BarabasiAlbertGraphGenerator&lt;V, E&gt; initialCliqueSize(int initCliqueSize) {
+<span class="fc bfc" id="L231" title="All 2 branches covered.">		if (initCliqueSize &lt; 0)</span>
+<span class="fc" id="L232">			throw new IllegalArgumentException(&quot;initCliqueSize must be non-negative: &quot; + initCliqueSize);</span>
+<span class="fc" id="L233">		this.initCliqueSize = initCliqueSize;</span>
+<span class="fc" id="L234">		return this;</span>
+	}
 
 	/**
-	 * Set the number of edges added each time step (k) when generated graph(s).
+	 * Set the number of edges added each step when generated graph(s).
 	 *
 	 * &lt;p&gt;
-	 * The initial clique is a complete graph of size {@link #setInitialCliqueSize}. After the initial clique is
-	 * created, the generator adds vertices one by one, each with {@code k} edges that are attached to existing
-	 * vertices. The probability that a new vertex is connected to vertex \(v\) is proportional to the degree of \(v\)
-	 * divided by the sum of degrees of all vertices in the graph.
+	 * The initial clique is a complete graph of size {@link #initialCliqueSize(int)}. After the initial clique is
+	 * created, the generator adds vertices one by one, each with {@code edgesPerStep} edges that are attached to
+	 * existing vertices. The probability that a new vertex is connected to vertex \(v\) is proportional to the degree
+	 * of \(v\) divided by the sum of degrees of all vertices in the graph.
 	 *
 	 * &lt;p&gt;
-	 * By default, the number of edges added per time step is \(10\). The number of edges per time step must not be
-	 * greater than the initial clique size provided by {@link #setInitialCliqueSize}.
+	 * By default, the number of edges added per step is \(10\). The number of edges per step must not be greater than
+	 * the initial clique size provided by {@link #initialCliqueSize(int)}.
 	 *
-	 * @param k the number of edges added to each vertex added to the graph after the initial clique
+	 * @param  edgesPerStep the number of edges added to each vertex added to the graph after the initial clique
+	 * @return              this generator
 	 */
-	public void setEdgesToAddPerStep(int k) {
-<span class="fc bfc" id="L205" title="All 2 branches covered.">		if (k &lt; 0)</span>
-<span class="fc" id="L206">			throw new IllegalArgumentException(&quot;k must be non-negative: &quot; + k);</span>
-<span class="fc" id="L207">		this.k = k;</span>
-<span class="fc" id="L208">	}</span>
+	public BarabasiAlbertGraphGenerator&lt;V, E&gt; edgesPerStep(int edgesPerStep) {
+<span class="fc bfc" id="L254" title="All 2 branches covered.">		if (edgesPerStep &lt; 0)</span>
+<span class="fc" id="L255">			throw new IllegalArgumentException(&quot;edges per step must be non-negative: &quot; + edgesPerStep);</span>
+<span class="fc" id="L256">		this.edgesPerStep = edgesPerStep;</span>
+<span class="fc" id="L257">		return this;</span>
+	}
 
 	/**
 	 * Determine if the generated graph(s) is directed or undirected.
@@ -213,11 +263,13 @@ public class BarabasiAlbertGraphGenerator&lt;V, E&gt; implements GraphGenerator&
 	 * &lt;p&gt;
 	 * By default, the generated graph(s) is undirected.
 	 *
-	 * @param directed {@code true} if the generated graph(s) will be directed, {@code false} if undirected
+	 * @param  directed {@code true} if the generated graph(s) will be directed, {@code false} if undirected
+	 * @return          this generator
 	 */
-	public void setDirected(boolean directed) {
-<span class="fc" id="L219">		this.directed = directed;</span>
-<span class="fc" id="L220">	}</span>
+	public BarabasiAlbertGraphGenerator&lt;V, E&gt; directed(boolean directed) {
+<span class="fc" id="L270">		this.directed = directed;</span>
+<span class="fc" id="L271">		return this;</span>
+	}
 
 	/**
 	 * Set the seed of the random number generator used to generate the graph(s).
@@ -225,97 +277,107 @@ public class BarabasiAlbertGraphGenerator&lt;V, E&gt; implements GraphGenerator&
 	 * &lt;p&gt;
 	 * By default, a random seed is used. For deterministic behavior, set the seed of the generator.
 	 *
-	 * @param seed the seed of the random number generator
+	 * @param  seed the seed of the random number generator
+	 * @return      this generator
 	 */
-	public void setSeed(long seed) {
-<span class="fc" id="L231">		rand = new Random(seed);</span>
-<span class="fc" id="L232">	}</span>
+	public BarabasiAlbertGraphGenerator&lt;V, E&gt; seed(long seed) {
+<span class="fc" id="L284">		rand = new Random(seed);</span>
+<span class="fc" id="L285">		return this;</span>
+	}
 
-	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
-<span class="fc bfc" id="L237" title="All 2 branches covered.">		if (vertices == null)</span>
-<span class="fc" id="L238">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
-<span class="fc bfc" id="L239" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
-<span class="fc" id="L240">			throw new IllegalStateException(&quot;Edge supplier not set&quot;);</span>
-<span class="fc bfc" id="L241" title="All 2 branches covered.">		if (initCliqueSize &gt; vertices.size())</span>
-<span class="fc" id="L242">			throw new IllegalStateException(</span>
-<span class="fc" id="L243">					&quot;initCliqueSize must be smaller than vertices num: &quot; + initCliqueSize + &quot; &gt; &quot; + vertices.size());</span>
-<span class="fc bfc" id="L244" title="All 2 branches covered.">		if (k &gt; initCliqueSize)</span>
-<span class="fc" id="L245">			throw new IllegalStateException(&quot;k must be smaller than initCliqueSize: &quot; + k + &quot; &gt; &quot; + initCliqueSize);</span>
-<span class="fc" id="L246">		final int n = vertices.size();</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">		if (vertices == null)</span>
+<span class="fc" id="L291">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
+<span class="fc" id="L292">		final int n = vertices.map(List::size, IntObjectPair::firstInt).intValue();</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">		if (initCliqueSize &gt; n)</span>
+<span class="fc" id="L294">			throw new IllegalStateException(</span>
+					&quot;initCliqueSize must be smaller than vertices num: &quot; + initCliqueSize + &quot; &gt; &quot; + n);
+<span class="fc bfc" id="L296" title="All 2 branches covered.">		if (edgesPerStep &gt; initCliqueSize)</span>
+<span class="fc" id="L297">			throw new IllegalStateException(</span>
+					&quot;k must be smaller than initCliqueSize: &quot; + edgesPerStep + &quot; &gt; &quot; + initCliqueSize);
 
-<span class="fc bfc" id="L248" title="All 2 branches covered.">		int initEdgesNum = initCliqueSize * (initCliqueSize - 1) / (directed ? 1 : 2);</span>
-<span class="fc" id="L249">		int addedEdgesNum = (vertices.size() - initCliqueSize) * k;</span>
-<span class="fc" id="L250">		int[] endpoints = new int[(initEdgesNum + addedEdgesNum) * 2];</span>
-<span class="fc" id="L251">		int edgeNum = 0;</span>
+<span class="fc" id="L300">		GraphBuilder&lt;V, E&gt; g = factory.setDirected(directed).allowParallelEdges().newBuilder();</span>
+<span class="fc bfc" id="L301" title="All 2 branches covered.">		IdBuilder&lt;E&gt; edgeBuilder = this.edgeBuilder != null ? this.edgeBuilder : g.edgeBuilder();</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
+<span class="fc" id="L303">			throw new IllegalStateException(&quot;Edge builder not provided and graph factory does not have one&quot;);</span>
+
+		final List&lt;V&gt; vertices;
+<span class="fc bfc" id="L306" title="All 2 branches covered.">		if (this.vertices.contains(List.class)) {</span>
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L308">			List&lt;V&gt; vertices0 = this.vertices.get(List.class);</span>
+<span class="fc" id="L309">			g.addVertices(vertices = vertices0);</span>
+<span class="fc" id="L310">		} else {</span>
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L312">			IntObjectPair&lt;IdBuilder&lt;V&gt;&gt; p = this.vertices.get(IntObjectPair.class);</span>
+<span class="fc" id="L313">			int verticesNum = p.firstInt();</span>
+<span class="fc bfc" id="L314" title="All 2 branches covered.">			IdBuilder&lt;V&gt; vertexBuilder = p.second() != null ? p.second() : g.vertexBuilder();</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">			if (vertexBuilder == null)</span>
+<span class="fc" id="L316">				throw new IllegalStateException(&quot;Vertex builder not provided and graph factory does not have one&quot;);</span>
+<span class="fc bfc" id="L317" title="All 2 branches covered.">			if (g instanceof IntGraphBuilder) {</span>
+				@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L319">				List&lt;V&gt; vertices0 = (List&lt;V&gt;) new IntArrayList(verticesNum);</span>
+<span class="fc" id="L320">				vertices = vertices0;</span>
+<span class="fc" id="L321">			} else {</span>
+<span class="fc" id="L322">				vertices = new ObjectArrayList&lt;&gt;(verticesNum);</span>
+			}
+<span class="fc" id="L324">			g.ensureVertexCapacity(verticesNum);</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++) {</span>
+<span class="fc" id="L326">				V vertex = vertexBuilder.build(g.vertices());</span>
+<span class="fc" id="L327">				g.addVertex(vertex);</span>
+<span class="fc" id="L328">				vertices.add(vertex);</span>
+			}
+		}
+
+<span class="fc bfc" id="L332" title="All 2 branches covered.">		int initEdgesNum = initCliqueSize * (initCliqueSize - 1) / (directed ? 1 : 2);</span>
+<span class="fc" id="L333">		int addedEdgesNum = (n - initCliqueSize) * edgesPerStep;</span>
+<span class="fc" id="L334">		int[] endpoints = new int[(initEdgesNum + addedEdgesNum) * 2];</span>
+<span class="fc" id="L335">		int edgeNum = 0;</span>
 
 		/* start with a complete graph of size initCliqueSize */
-<span class="fc bfc" id="L254" title="All 2 branches covered.">		for (int u = 0; u &lt; initCliqueSize; u++) {</span>
-<span class="fc bfc" id="L255" title="All 2 branches covered.">			if (directed) {</span>
-<span class="fc bfc" id="L256" title="All 2 branches covered.">				for (int v = 0; v &lt; u; v++) {</span>
-<span class="fc" id="L257">					int e = edgeNum++;</span>
-<span class="fc" id="L258">					endpoints[e * 2 + 0] = u;</span>
-<span class="fc" id="L259">					endpoints[e * 2 + 1] = v;</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">		for (int u = 0; u &lt; initCliqueSize; u++) {</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">				for (int v = 0; v &lt; u; v++) {</span>
+<span class="fc" id="L341">					int e = edgeNum++;</span>
+<span class="fc" id="L342">					endpoints[e * 2 + 0] = u;</span>
+<span class="fc" id="L343">					endpoints[e * 2 + 1] = v;</span>
 				}
 			}
-<span class="fc bfc" id="L262" title="All 2 branches covered.">			for (int v = u + 1; v &lt; initCliqueSize; v++) {</span>
-<span class="fc" id="L263">				int e = edgeNum++;</span>
-<span class="fc" id="L264">				endpoints[e * 2 + 0] = u;</span>
-<span class="fc" id="L265">				endpoints[e * 2 + 1] = v;</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">			for (int v = u + 1; v &lt; initCliqueSize; v++) {</span>
+<span class="fc" id="L347">				int e = edgeNum++;</span>
+<span class="fc" id="L348">				endpoints[e * 2 + 0] = u;</span>
+<span class="fc" id="L349">				endpoints[e * 2 + 1] = v;</span>
 			}
 		}
 
 		/* add n-initCliqueSize vertices, each with m edges */
-<span class="fc bfc" id="L270" title="All 2 branches covered.">		for (int vNum = initCliqueSize; vNum &lt; n; vNum++) {</span>
-<span class="fc" id="L271">			final int edgeNumAtStart = edgeNum;</span>
-<span class="fc" id="L272">			final int u = vNum;</span>
-<span class="fc bfc" id="L273" title="All 2 branches covered.">			for (int i = 0; i &lt; k; i++) {</span>
+<span class="fc bfc" id="L354" title="All 2 branches covered.">		for (int vNum = initCliqueSize; vNum &lt; n; vNum++) {</span>
+<span class="fc" id="L355">			final int edgeNumAtStart = edgeNum;</span>
+<span class="fc" id="L356">			final int u = vNum;</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">			for (int i = 0; i &lt; edgesPerStep; i++) {</span>
 				/* by sampling from the current endpoints, we sample a vertex with prob of its degree */
-<span class="fc" id="L275">				int v = endpoints[rand.nextInt(edgeNumAtStart * 2)];</span>
-<span class="fc" id="L276">				int e = edgeNum++;</span>
+<span class="fc" id="L359">				int v = endpoints[rand.nextInt(edgeNumAtStart * 2)];</span>
+<span class="fc" id="L360">				int e = edgeNum++;</span>
 				int u0, v0;
-<span class="fc bfc" id="L278" title="All 4 branches covered.">				if (directed &amp;&amp; rand.nextBoolean()) {</span>
-<span class="fc" id="L279">					u0 = u;</span>
-<span class="fc" id="L280">					v0 = v;</span>
+<span class="fc bfc" id="L362" title="All 4 branches covered.">				if (directed &amp;&amp; rand.nextBoolean()) {</span>
+<span class="fc" id="L363">					u0 = u;</span>
+<span class="fc" id="L364">					v0 = v;</span>
 				} else {
-<span class="fc" id="L282">					u0 = v;</span>
-<span class="fc" id="L283">					v0 = u;</span>
+<span class="fc" id="L366">					u0 = v;</span>
+<span class="fc" id="L367">					v0 = u;</span>
 				}
-<span class="fc" id="L285">				endpoints[e * 2 + 0] = u0;</span>
-<span class="fc" id="L286">				endpoints[e * 2 + 1] = v0;</span>
+<span class="fc" id="L369">				endpoints[e * 2 + 0] = u0;</span>
+<span class="fc" id="L370">				endpoints[e * 2 + 1] = v0;</span>
 			}
 		}
 
-<span class="fc bfc" id="L290" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc" id="L291">			IntGraphBuilder g = IntGraphFactory.newInstance(directed).allowParallelEdges().newBuilder();</span>
-<span class="fc" id="L292">			final int[] vertices = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) this.vertices).toIntArray();</span>
-<span class="fc" id="L293">			g.addVertices(IntList.of(vertices));</span>
-
-<span class="fc" id="L295">			g.ensureEdgeCapacity(edgeNum);</span>
-<span class="fc" id="L296">			IntBinaryOperator edgeBuilder =</span>
-<span class="fc" id="L297">					IntAdapters.asIntBiOperator((BiFunction&lt;Integer, Integer, Integer&gt;) this.edgeBuilder);</span>
-<span class="fc bfc" id="L298" title="All 2 branches covered.">			for (int eIdx = 0; eIdx &lt; edgeNum; eIdx++) {</span>
-<span class="fc" id="L299">				int u = vertices[endpoints[eIdx * 2 + 0]];</span>
-<span class="fc" id="L300">				int v = vertices[endpoints[eIdx * 2 + 1]];</span>
-<span class="fc" id="L301">				g.addEdge(u, v, edgeBuilder.applyAsInt(u, v));</span>
-			}
-<span class="fc" id="L303">			return (GraphBuilder&lt;V, E&gt;) g;</span>
-
-		} else {
-<span class="fc" id="L306">			GraphFactory&lt;V, E&gt; factory = GraphFactory.newInstance(directed);</span>
-<span class="fc" id="L307">			GraphBuilder&lt;V, E&gt; g = factory.allowParallelEdges().newBuilder();</span>
-<span class="fc" id="L308">			final V[] vertices = (V[]) this.vertices.toArray();</span>
-<span class="fc" id="L309">			g.addVertices(ObjectList.of(vertices));</span>
-
-<span class="fc" id="L311">			g.ensureEdgeCapacity(edgeNum);</span>
-<span class="fc bfc" id="L312" title="All 2 branches covered.">			for (int eIdx = 0; eIdx &lt; edgeNum; eIdx++) {</span>
-<span class="fc" id="L313">				V u = vertices[endpoints[eIdx * 2 + 0]];</span>
-<span class="fc" id="L314">				V v = vertices[endpoints[eIdx * 2 + 1]];</span>
-<span class="fc" id="L315">				g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
-			}
-<span class="fc" id="L317">			return g;</span>
+<span class="fc" id="L374">		g.ensureEdgeCapacity(edgeNum);</span>
+<span class="fc bfc" id="L375" title="All 2 branches covered.">		for (int eIdx = 0; eIdx &lt; edgeNum; eIdx++) {</span>
+<span class="fc" id="L376">			V u = vertices.get(endpoints[eIdx * 2 + 0]);</span>
+<span class="fc" id="L377">			V v = vertices.get(endpoints[eIdx * 2 + 1]);</span>
+<span class="fc" id="L378">			g.addEdge(u, v, edgeBuilder.build(g.edges()));</span>
 		}
+<span class="fc" id="L380">		return g;</span>
 	}
 
 }

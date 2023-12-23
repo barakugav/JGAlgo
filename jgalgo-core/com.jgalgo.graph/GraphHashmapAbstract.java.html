@@ -112,7 +112,7 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 			 * choose to clone the map, it will not be updated when edges are swapped, so we have to update it manually.
 			 */
 <span class="fc bfc" id="L114" title="All 2 branches covered.">			if (clonedMap == null) {</span>
-<span class="fc" id="L115">				clonedMap = new Int2IntOpenHashMap(1);</span>
+<span class="fc" id="L115">				clonedMap = new Int2IntOpenHashMap(0);</span>
 <span class="fc" id="L116">				clonedMap.defaultReturnValue(-1);</span>
 <span class="fc bfc" id="L117" title="All 2 branches covered.">				while (eit.hasNext()) {</span>
 <span class="fc" id="L118">					Int2IntMap.Entry entry = eit.next();</span>
@@ -185,7 +185,7 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 
 	static Int2IntMap ensureEdgesMapMutable(Int2IntMap[] edgesArr, int idx) {
 <span class="fc bfc" id="L187" title="All 2 branches covered.">		if (edgesArr[idx] == EmptyEdgeMap) {</span>
-<span class="fc" id="L188">			edgesArr[idx] = new Int2IntOpenHashMap();</span>
+<span class="fc" id="L188">			edgesArr[idx] = new Int2IntOpenHashMap(0);</span>
 <span class="fc" id="L189">			edgesArr[idx].defaultReturnValue(-1);</span>
 		}
 <span class="fc" id="L191">		return edgesArr[idx];</span>

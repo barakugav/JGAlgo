@@ -20,17 +20,16 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.function.BiFunction;
-import java.util.function.IntSupplier;
-import java.util.function.Supplier;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IdBuilder;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.Bitmap;
-import com.jgalgo.internal.util.IntAdapters;
+import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
@@ -46,114 +45,163 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * The generator generate undirected graphs only. If zero vertices are set, an empty graph is generated.
  *
  * &lt;p&gt;
- * For deterministic behavior, set the seed of the generator using {@link #setSeed(long)}.
+ * For deterministic behavior, set the seed of the generator using {@link #seed(long)}.
  *
  * @param  &lt;V&gt; the vertices type
  * @param  &lt;E&gt; the edges type
  * @author     Barak Ugav
  */
-<span class="fc" id="L55">public class UniformTreeGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {</span>
+<span class="fc" id="L54">public class UniformTreeGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {</span>
 
-	private final boolean intGraph;
-	private List&lt;V&gt; vertices;
-	private BiFunction&lt;V, V, E&gt; edgeBuilder;
-<span class="fc" id="L60">	private Random rand = new Random();</span>
-
-<span class="fc" id="L62">	private UniformTreeGenerator(boolean intGraph) {</span>
-<span class="fc" id="L63">		this.intGraph = intGraph;</span>
-<span class="fc" id="L64">	}</span>
+	private final GraphFactory&lt;V, E&gt; factory;
+	private Variant2&lt;List&lt;V&gt;, IntObjectPair&lt;IdBuilder&lt;V&gt;&gt;&gt; vertices;
+	private IdBuilder&lt;E&gt; edgeBuilder;
+<span class="fc" id="L59">	private Random rand = new Random();</span>
 
 	/**
-	 * Creates a new uniform tree generator.
-	 *
-	 * @param  &lt;V&gt; the vertices type
-	 * @param  &lt;E&gt; the edges type
-	 * @return     a new uniform tree generator
-	 */
-	public static &lt;V, E&gt; UniformTreeGenerator&lt;V, E&gt; newInstance() {
-<span class="fc" id="L74">		return new UniformTreeGenerator&lt;&gt;(false);</span>
-	}
-
-	/**
-	 * Creates a new uniform tree generator for {@link IntGraph}.
-	 *
-	 * @return a new uniform tree generator for {@link IntGraph}
-	 */
-	public static UniformTreeGenerator&lt;Integer, Integer&gt; newIntInstance() {
-<span class="fc" id="L83">		return new UniformTreeGenerator&lt;&gt;(true);</span>
-	}
-
-	/**
-	 * Set the vertices of the generated graph(s).
+	 * Create a new uniform tree generator that will use the default graph factory.
 	 *
 	 * &lt;p&gt;
-	 * If the generator is used to generate multiple graphs, the same vertex set will be used for all of them.
+	 * The default graph factory does not have vertex builder, so if only the number of vertices is set using
+	 * {@link #vertices(int)}, the vertex builder must be set explicitly using
+	 * {@code graphFactory().setVertexBuilder(...)}. Alternatively, the method {@link #vertices(int, IdBuilder)} can be
+	 * used to set the number of vertices and provide a vertex builder that will override the (maybe non existing)
+	 * vertex builder of the graph factory. The vertex set can also be set explicitly using
+	 * {@link #vertices(Collection)}. For edges, an edge builder is mandatory and it can be set using
+	 * {@link #edges(IdBuilder)}.
+	 */
+	public UniformTreeGenerator() {
+<span class="fc" id="L74">		this(GraphFactory.undirected());</span>
+<span class="fc" id="L75">	}</span>
+
+	/**
+	 * Create a new uniform tree generator that will use the given graph factory.
 	 *
-	 * @param vertices the vertices of the generated graph(s)
+	 * &lt;p&gt;
+	 * If the factory has a vertex builder it will be used to generate the vertices of the generated graph(s) if only
+	 * the number of vertices is set using {@link #vertices(int)}. If the factory has an edge builder it will be used to
+	 * generate the edges of the generated graph(s) if it will not be overridden by {@link #edges(IdBuilder)}.
+	 *
+	 * &lt;p&gt;
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration.
+	 *
+	 * &lt;p&gt;
+	 * To generate {@linkplain IntGraph int graphs}, pass an instance of {@linkplain IntGraphFactory} to this
+	 * constructor.
+	 *
+	 * @param factory the graph factory that will be used to create the generated graph(s)
+	 */
+<span class="fc" id="L95">	public UniformTreeGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
+<span class="fc" id="L96">		this.factory = Objects.requireNonNull(factory);</span>
+<span class="fc" id="L97">	}</span>
+
+	/**
+	 * Get the graph factory that will be used to create the generated graph(s).
+	 *
+	 * &lt;p&gt;
+	 * It's possible to customize the factory before generating the graph(s), for example by using
+	 * {@link GraphFactory#addHint(GraphFactory.Hint)} to optimize the generated graph(s) for a specific algorithm. If
+	 * the factory has a vertex builder it will be used to generate the vertices of the generated graph(s) if only the
+	 * number of vertices is set using {@link #vertices(int)}. If the factory has an edge builder it will be used to
+	 * generate the edges of the generated graph(s) if it will not be overridden by {@link #edges(IdBuilder)}.
+	 *
+	 * &lt;p&gt;
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration.
+	 *
+	 * @return the graph factory that will be used to create the generated graph(s)
+	 */
+	public GraphFactory&lt;V, E&gt; graphFactory() {
+<span class="fc" id="L116">		return factory;</span>
+	}
+
+	/**
+	 * Set the vertices set of the generated graph(s).
+	 *
+	 * &lt;p&gt;
+	 * If the generator is used to generate multiple graphs, the same vertex set will be used for all of them. This
+	 * method override all previous calls to any of {@link #vertices(Collection)}, {@link #vertices(int)} or
+	 * {@link #vertices(int, IdBuilder)}.
+	 *
+	 * @param  vertices the vertices set
+	 * @return          this generator
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
-	public void setVertices(Collection&lt;V&gt; vertices) {
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc" id="L97">			this.vertices = (List&lt;V&gt;) new IntArrayList(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices));</span>
+	public UniformTreeGenerator&lt;V, E&gt; vertices(Collection&lt;? extends V&gt; vertices) {
+<span class="fc bfc" id="L132" title="All 2 branches covered.">		if (factory instanceof IntGraphFactory) {</span>
+<span class="fc" id="L133">			vertices = (List&lt;V&gt;) new IntArrayList((Collection&lt;Integer&gt;) vertices);</span>
 		} else {
-<span class="fc" id="L99">			this.vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
+<span class="fc" id="L135">			vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
 		}
-<span class="fc" id="L101">	}</span>
+<span class="fc" id="L137">		this.vertices = Variant2.ofA((List&lt;V&gt;) vertices);</span>
+<span class="fc" id="L138">		return this;</span>
+	}
 
 	/**
-	 * Set the vertices set of the generated graph(s) from a supplier.
+	 * Set the number of vertices that will be generated for each graph.
 	 *
 	 * &lt;p&gt;
-	 * The supplier will be called exactly {@code verticesNum} times, and the same set of vertices created will be used
-	 * for multiple graphs if {@link #generate()} is called multiple times.
+	 * The vertices will be generated using the vertex builder of the graph factory, see
+	 * {@link GraphFactory#setVertexBuilder(IdBuilder)}. The default graph factory does not have a vertex builder, so it
+	 * must be set explicitly, or {@link IntGraphFactory}, which does have such builder, should be passed in the
+	 * {@linkplain #UniformTreeGenerator(GraphFactory) constructor}. Another alternative is to use
+	 * {@link #vertices(int, IdBuilder)} which set the number of vertices and provide a vertex builder that will
+	 * override the (maybe non existing) vertex builder of the graph factory. The generation will happen independently
+	 * for each graph generated. If there is no vertex builder, an exception will be thrown during generation. This
+	 * method override all previous calls to any of {@link #vertices(Collection)}, {@link #vertices(int)} or
+	 * {@link #vertices(int, IdBuilder)}.
 	 *
-	 * @param verticesNum    the number of vertices
-	 * @param vertexSupplier the supplier of vertices
+	 * @param  verticesNum              the number of vertices that will be generated for each graph
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code verticesNum} is negative
 	 */
-	@SuppressWarnings(&quot;unchecked&quot;)
-	public void setVertices(int verticesNum, Supplier&lt;V&gt; vertexSupplier) {
-<span class="fc bfc" id="L115" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc" id="L116">			IntList vertices = new IntArrayList(verticesNum);</span>
-<span class="fc" id="L117">			IntSupplier vSupplier = IntAdapters.asIntSupplier((Supplier&lt;Integer&gt;) vertexSupplier);</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++)</span>
-<span class="fc" id="L119">				vertices.add(vSupplier.getAsInt());</span>
-<span class="fc" id="L120">			this.vertices = (List&lt;V&gt;) vertices;</span>
-<span class="fc" id="L121">		} else {</span>
-<span class="fc" id="L122">			List&lt;V&gt; vertices = new ObjectArrayList&lt;&gt;(verticesNum);</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++)</span>
-<span class="fc" id="L124">				vertices.add(vertexSupplier.get());</span>
-<span class="fc" id="L125">			this.vertices = vertices;</span>
-		}
-<span class="fc" id="L127">	}</span>
+	public UniformTreeGenerator&lt;V, E&gt; vertices(int verticesNum) {
+<span class="fc" id="L160">		vertices(verticesNum, null);</span>
+<span class="fc" id="L161">		return this;</span>
+	}
 
 	/**
-	 * Set the edge supplier of the generated graph(s).
+	 * Set the number of vertices that will be generated for each graph, and the vertex builder that will be used to
+	 * generate them.
 	 *
 	 * &lt;p&gt;
-	 * The supplier will be called for any edge created, for any graph generated. This behavior is different from
-	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
-	 * any generated graph.
+	 * The vertices will be generated using the provided vertex builder, and the vertex generator provided by the
+	 * {@linkplain #graphFactory() graph factory} (if exists) will be ignored. The generation will happen independently
+	 * for each graph generated. This method override all previous calls to any of {@link #vertices(Collection)},
+	 * {@link #vertices(int)} or {@link #vertices(int, IdBuilder)}.
 	 *
-	 * @param edgeSupplier the edge supplier
+	 * @param  verticesNum              the number of vertices that will be generated for each graph
+	 * @param  vertexBuilder            the vertex builder, or {@code null} to use the vertex builder of the
+	 *                                      {@linkplain #graphFactory() graph factory}
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code verticesNum} is negative
 	 */
-	public void setEdges(Supplier&lt;E&gt; edgeSupplier) {
-<span class="fc" id="L140">		Objects.requireNonNull(edgeSupplier);</span>
-<span class="fc" id="L141">		setEdges((u, v) -&gt; edgeSupplier.get());</span>
-<span class="fc" id="L142">	}</span>
+	public UniformTreeGenerator&lt;V, E&gt; vertices(int verticesNum, IdBuilder&lt;V&gt; vertexBuilder) {
+<span class="fc bfc" id="L181" title="All 2 branches covered.">		if (verticesNum &lt; 0)</span>
+<span class="fc" id="L182">			throw new IllegalArgumentException(&quot;number of vertices must be non-negative&quot;);</span>
+<span class="fc" id="L183">		this.vertices = Variant2.ofB(IntObjectPair.of(verticesNum, vertexBuilder));</span>
+<span class="fc" id="L184">		return this;</span>
+	}
 
 	/**
-	 * Set the edge builder function of the generated graph(s).
+	 * Set the edge builder that will be used to generate edges.
 	 *
 	 * &lt;p&gt;
-	 * The function will be called for any edge created, for any graph generated. This behavior is different from
-	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
-	 * any generated graph.
+	 * The edges will be generated using the provided edge builder, and the edge generator provided by the
+	 * {@linkplain #graphFactory() graph factory} (if exists) will be ignored. The generation will happen independently
+	 * for each graph generated. If this method is not called, or called with a {@code null} argument, the edge builder
+	 * of the graph factory will be used. If the graph factory does not have an edge builder, an exception will be
+	 * thrown during generation.
 	 *
-	 * @param edgeBuilder the edge builder function
+	 * @param  edgeBuilder the edge builder, or {@code null} to use the edge builder of the {@linkplain #graphFactory()
+	 *                         graph factory}
+	 * @return             this generator
 	 */
-	public void setEdges(BiFunction&lt;V, V, E&gt; edgeBuilder) {
-<span class="fc" id="L155">		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);</span>
-<span class="fc" id="L156">	}</span>
+	public UniformTreeGenerator&lt;V, E&gt; edges(IdBuilder&lt;E&gt; edgeBuilder) {
+<span class="fc" id="L202">		this.edgeBuilder = edgeBuilder;</span>
+<span class="fc" id="L203">		return this;</span>
+	}
 
 	/**
 	 * Set the seed of the random number generator used to generate the graph(s).
@@ -161,66 +209,91 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 * &lt;p&gt;
 	 * By default, a random seed is used. For deterministic behavior, set the seed of the generator.
 	 *
-	 * @param seed the seed of the random number generator
+	 * @param  seed the seed of the random number generator
+	 * @return      this generator
 	 */
-	public void setSeed(long seed) {
-<span class="fc" id="L167">		rand = new Random(seed);</span>
-<span class="fc" id="L168">	}</span>
+	public UniformTreeGenerator&lt;V, E&gt; seed(long seed) {
+<span class="fc" id="L216">		rand = new Random(seed);</span>
+<span class="fc" id="L217">		return this;</span>
+	}
 
 	@Override
 	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
-<span class="fc bfc" id="L172" title="All 2 branches covered.">		if (vertices == null)</span>
-<span class="fc" id="L173">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
-<span class="fc bfc" id="L174" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
-<span class="fc" id="L175">			throw new IllegalStateException(&quot;Edge supplier not set&quot;);</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">		if (vertices == null)</span>
+<span class="fc" id="L223">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
+<span class="fc" id="L224">		final int n = vertices.map(List::size, IntObjectPair::firstInt).intValue();</span>
 
-		@SuppressWarnings(&quot;unchecked&quot;)
-		GraphFactory&lt;V, E&gt; factory =
-<span class="fc bfc" id="L179" title="All 2 branches covered.">				intGraph ? ((GraphFactory&lt;V, E&gt;) IntGraphFactory.undirected()) : GraphFactory.undirected();</span>
-<span class="fc" id="L180">		GraphBuilder&lt;V, E&gt; g = factory.newBuilder();</span>
+<span class="fc" id="L226">		GraphBuilder&lt;V, E&gt; g = factory.setDirected(false).newBuilder();</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">		IdBuilder&lt;E&gt; edgeBuilder = this.edgeBuilder != null ? this.edgeBuilder : g.edgeBuilder();</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
+<span class="fc" id="L229">			throw new IllegalStateException(&quot;Edge builder not provided and graph factory does not have one&quot;);</span>
 
-<span class="fc" id="L182">		final int n = vertices.size();</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">		if (n == 0)</span>
-<span class="fc" id="L184">			return g;</span>
-<span class="fc" id="L185">		g.addVertices(vertices);</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">		if (n == 1)</span>
-<span class="fc" id="L187">			return g;</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">		if (n == 0)</span>
+<span class="fc" id="L232">			return g;</span>
+		final List&lt;V&gt; vertices;
+<span class="fc bfc" id="L234" title="All 2 branches covered.">		if (this.vertices.contains(List.class)) {</span>
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L236">			List&lt;V&gt; vertices0 = this.vertices.get(List.class);</span>
+<span class="fc" id="L237">			g.addVertices(vertices = vertices0);</span>
+<span class="fc" id="L238">		} else {</span>
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L240">			IntObjectPair&lt;IdBuilder&lt;V&gt;&gt; p = this.vertices.get(IntObjectPair.class);</span>
+<span class="fc" id="L241">			int verticesNum = p.firstInt();</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">			IdBuilder&lt;V&gt; vertexBuilder = p.second() != null ? p.second() : g.vertexBuilder();</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">			if (vertexBuilder == null)</span>
+<span class="fc" id="L244">				throw new IllegalStateException(&quot;Vertex builder not provided and graph factory does not have one&quot;);</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">			if (g instanceof IntGraphBuilder) {</span>
+				@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L247">				List&lt;V&gt; vertices0 = (List&lt;V&gt;) new IntArrayList(verticesNum);</span>
+<span class="fc" id="L248">				vertices = vertices0;</span>
+<span class="fc" id="L249">			} else {</span>
+<span class="fc" id="L250">				vertices = new ObjectArrayList&lt;&gt;(verticesNum);</span>
+			}
+<span class="fc" id="L252">			g.ensureVertexCapacity(verticesNum);</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++) {</span>
+<span class="fc" id="L254">				V vertex = vertexBuilder.build(g.vertices());</span>
+<span class="fc" id="L255">				g.addVertex(vertex);</span>
+<span class="fc" id="L256">				vertices.add(vertex);</span>
+			}
+		}
+<span class="fc bfc" id="L259" title="All 2 branches covered.">		if (n == 1)</span>
+<span class="fc" id="L260">			return g;</span>
 
 		/* generate a random Prufer code of length n-2 */
-<span class="fc" id="L190">		int[] pruferCode = new int[n - 2];</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">		for (int i = 0; i &lt; n - 2; i++)</span>
-<span class="fc" id="L192">			pruferCode[i] = rand.nextInt(n);</span>
+<span class="fc" id="L263">		int[] pruferCode = new int[n - 2];</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">		for (int i = 0; i &lt; n - 2; i++)</span>
+<span class="fc" id="L265">			pruferCode[i] = rand.nextInt(n);</span>
 
 		/* 'decode' the Prufer code to a tree of size n */
-<span class="fc" id="L195">		int[] degree = new int[n];</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">		for (int c : pruferCode)</span>
-<span class="fc" id="L197">			degree[c]++;</span>
+<span class="fc" id="L268">		int[] degree = new int[n];</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">		for (int c : pruferCode)</span>
+<span class="fc" id="L270">			degree[c]++;</span>
 		int index, uIdx;
-<span class="fc bfc" id="L199" title="All 2 branches covered.">		V u = vertices.get(uIdx = index = range(n).filter(i -&gt; degree[i] == 0).findFirst().getAsInt());</span>
-<span class="fc" id="L200">		Bitmap hasParent = new Bitmap(n);</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">		for (int vIdx : pruferCode) {</span>
-<span class="fc" id="L202">			V v = vertices.get(vIdx);</span>
-<span class="fc" id="L203">			g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
-<span class="fc" id="L204">			hasParent.set(uIdx);</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">		V u = vertices.get(uIdx = index = range(n).filter(i -&gt; degree[i] == 0).findFirst().getAsInt());</span>
+<span class="fc" id="L273">		Bitmap hasParent = new Bitmap(n);</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">		for (int vIdx : pruferCode) {</span>
+<span class="fc" id="L275">			V v = vertices.get(vIdx);</span>
+<span class="fc" id="L276">			g.addEdge(u, v, edgeBuilder.build(g.edges()));</span>
+<span class="fc" id="L277">			hasParent.set(uIdx);</span>
 
-<span class="fc" id="L206">			degree[vIdx]--;</span>
-<span class="fc bfc" id="L207" title="All 4 branches covered.">			if (vIdx &lt; index &amp;&amp; degree[vIdx] == 0) {</span>
-<span class="fc" id="L208">				u = v;</span>
-<span class="fc" id="L209">				uIdx = vIdx;</span>
+<span class="fc" id="L279">			degree[vIdx]--;</span>
+<span class="fc bfc" id="L280" title="All 4 branches covered.">			if (vIdx &lt; index &amp;&amp; degree[vIdx] == 0) {</span>
+<span class="fc" id="L281">				u = v;</span>
+<span class="fc" id="L282">				uIdx = vIdx;</span>
 			} else {
-<span class="fc bfc" id="L211" title="All 2 branches covered.">				u = vertices.get(uIdx = index = range(index + 1, n).filter(i -&gt; degree[i] == 0).findFirst().getAsInt());</span>
+<span class="fc bfc" id="L284" title="All 2 branches covered.">				u = vertices.get(uIdx = index = range(index + 1, n).filter(i -&gt; degree[i] == 0).findFirst().getAsInt());</span>
 			}
 		}
 
 		/* After the above loop, there should be two vertices with no parent. Connect them */
-<span class="pc bnc" id="L216" title="All 4 branches missed.">		assert Bitmap.fromPredicate(n, v -&gt; !hasParent.get(v)).cardinality() == 2;</span>
-<span class="fc" id="L217">		int root1Idx = hasParent.nextClearBit(0);</span>
-<span class="fc" id="L218">		int root2Idx = hasParent.nextClearBit(root1Idx + 1);</span>
-<span class="fc" id="L219">		V root1 = vertices.get(root1Idx);</span>
-<span class="fc" id="L220">		V root2 = vertices.get(root2Idx);</span>
-<span class="fc" id="L221">		g.addEdge(root1, root2, edgeBuilder.apply(root1, root2));</span>
+<span class="pc bnc" id="L289" title="All 4 branches missed.">		assert Bitmap.fromPredicate(n, v -&gt; !hasParent.get(v)).cardinality() == 2;</span>
+<span class="fc" id="L290">		int root1Idx = hasParent.nextClearBit(0);</span>
+<span class="fc" id="L291">		int root2Idx = hasParent.nextClearBit(root1Idx + 1);</span>
+<span class="fc" id="L292">		V root1 = vertices.get(root1Idx);</span>
+<span class="fc" id="L293">		V root2 = vertices.get(root2Idx);</span>
+<span class="fc" id="L294">		g.addEdge(root1, root2, edgeBuilder.build(g.edges()));</span>
 
-<span class="fc" id="L223">		return g;</span>
+<span class="fc" id="L296">		return g;</span>
 	}
 
 }

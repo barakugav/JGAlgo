@@ -124,7 +124,7 @@ JGAlgo - Benchmarks,com.jgalgo.bench.impls,IntGraphIdBuilderBench.Query,0,130,0,
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SSSPPositiveWeightsBench.Gnp,0,83,0,2,0,17,0,5,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,SSSPPositiveWeightsBench.RecursiveMatrix,0,90,0,2,0,18,0,5,0,4
 JGAlgo - Benchmarks,com.jgalgo.bench.impls,GraphBench.Remove.Edge.LinkedUndirected,0,26,0,0,0,7,0,4,0,4
-JGAlgo - Benchmarks,com.jgalgo.bench.util,GraphsTestUtils,64,244,8,6,11,54,10,12,4,11
+JGAlgo - Benchmarks,com.jgalgo.bench.util,GraphsTestUtils,65,270,8,6,11,57,10,12,4,11
 JGAlgo - Benchmarks,com.jgalgo.bench.util,TestUtils.new Iterable() {...},9,0,0,0,2,0,2,0,2,0
 JGAlgo - Benchmarks,com.jgalgo.bench.util,TestUtils.SeedGenerator,0,17,0,0,0,4,0,2,0,2
 JGAlgo - Benchmarks,com.jgalgo.bench.util,TestUtils,42,45,2,2,8,7,5,5,4,4

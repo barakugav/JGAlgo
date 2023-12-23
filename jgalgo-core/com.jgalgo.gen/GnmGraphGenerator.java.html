@@ -19,18 +19,17 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Random;
-import java.util.function.BiFunction;
-import java.util.function.IntSupplier;
-import java.util.function.Supplier;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IdBuilder;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.Bitmap;
-import com.jgalgo.internal.util.IntAdapters;
 import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -44,90 +43,165 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * the generated graph(s) is undirected, does not contain self-edges and may contain parallel-edges.
  *
  * &lt;p&gt;
- * For deterministic behavior, set the seed of the generator using {@link #setSeed(long)}.
+ * A {@link GraphFactory} is used to create the generated graph(s). The factory can be set in the
+ * {@linkplain #GnmGraphGenerator(GraphFactory) constructor}, or a default one will be used, which is still available
+ * for customization using {@link #graphFactory()}. Vertices and edges can either be provided explicitly, or the number
+ * of vertices/edges is passed and they are generated using a {@linkplain IdBuilder vertex/edge builder}. The vertex and
+ * edge builders can be set when the number of vertices or edges is set using {@link #vertices(int, IdBuilder)} or
+ * {@link #edges(int, IdBuilder)}, or the builders of the graph factory will be used. Note that the default graph
+ * factory does not have default vertex and edge builders, unless set explicitly. The {@linkplain IntGraphFactory
+ * IntGraph factory} does have these builders by default, pass an instance of it to the constructor to use it (and to
+ * generate {@linkplain IntGraph int graphs}).
  *
- * @author Barak Ugav
+ * &lt;p&gt;
+ * For deterministic behavior, set the seed of the generator using {@link #seed(long)}.
+ *
+ * @param  &lt;V&gt; the vertices type
+ * @param  &lt;E&gt; the edges type
+ * @author     Barak Ugav
  */
 public class GnmGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {
 
-	private final boolean intGraph;
-	private List&lt;V&gt; vertices;
-	private int m;
-	private BiFunction&lt;V, V, E&gt; edgeBuilder;
-<span class="fc" id="L57">	private boolean directed = false;</span>
-<span class="fc" id="L58">	private boolean selfEdges = false;</span>
-<span class="fc" id="L59">	private boolean parallelEdges = true;</span>
-<span class="fc" id="L60">	private Random rand = new Random();</span>
-
-<span class="fc" id="L62">	private GnmGraphGenerator(boolean intGraph) {</span>
-<span class="fc" id="L63">		this.intGraph = intGraph;</span>
-<span class="fc" id="L64">	}</span>
+	private final GraphFactory&lt;V, E&gt; factory;
+	private Variant2&lt;List&lt;V&gt;, IntObjectPair&lt;IdBuilder&lt;V&gt;&gt;&gt; vertices;
+	private IntObjectPair&lt;IdBuilder&lt;E&gt;&gt; edges;
+<span class="fc" id="L68">	private boolean directed = false;</span>
+<span class="fc" id="L69">	private boolean selfEdges = false;</span>
+<span class="fc" id="L70">	private boolean parallelEdges = true;</span>
+<span class="fc" id="L71">	private Random rand = new Random();</span>
 
 	/**
-	 * Creates a new \(G(n,m)\) generator.
+	 * Create a new \(G(n,m)\) generator that will use the default graph factory.
 	 *
-	 * @param  &lt;V&gt; the vertices type
-	 * @param  &lt;E&gt; the edges type
-	 * @return     a new \(G(n,m)\) generator
+	 * &lt;p&gt;
+	 * The default graph factory does not have default vertex and edge builders, so if only the number of vertices and
+	 * edges is set using {@link #vertices(int)} and {@link #edges(int)}, the vertex and edge builders must be set
+	 * explicitly using {@code graphFactory().setVertexBuilder(...)} and {@code graphFactory().setEdgeBuilder(...)}.
+	 * Alternatively, the methods {@link #vertices(int, IdBuilder)} and {@link #edges(int, IdBuilder)} can be used to
+	 * set the number of vertices and edges and provide a vertex/edge builder that will override the (maybe non
+	 * existing) vertex/edge builder of the graph factory. The vertex set can also be set explicitly using
+	 * {@link #vertices(Collection)}.
 	 */
-	public static &lt;V, E&gt; GnmGraphGenerator&lt;V, E&gt; newInstance() {
-<span class="fc" id="L74">		return new GnmGraphGenerator&lt;&gt;(false);</span>
-	}
+	public GnmGraphGenerator() {
+<span class="fc" id="L86">		this(GraphFactory.undirected());</span>
+<span class="fc" id="L87">	}</span>
 
 	/**
-	 * Creates a new \(G(n,m)\) generator for {@link IntGraph}.
+	 * Create a new \(G(n,m)\) generator that will use the given graph factory.
 	 *
-	 * @return a new \(G(n,m)\) generator for {@link IntGraph}
+	 * &lt;p&gt;
+	 * If the factory has vertex and/or edge builders, they will be used to generate the vertices and edges of the
+	 * generated graph(s) if only the number of vertices or edges is set using {@link #vertices(int)} or
+	 * {@link #edges(int)}.
+	 *
+	 * &lt;p&gt;
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration. If self or parallel edges are generated (see
+	 * {@link #selfEdges(boolean)} and {@link #parallelEdges(boolean)}), the methods
+	 * {@link GraphFactory#allowSelfEdges()} and {@link GraphFactory#allowParallelEdges()} will also be called, resp.
+	 *
+	 * &lt;p&gt;
+	 * To generate {@linkplain IntGraph int graphs}, pass an instance of {@linkplain IntGraphFactory} to this
+	 * constructor.
+	 *
+	 * @param factory the graph factory that will be used to create the generated graph(s)
 	 */
-	public static GnmGraphGenerator&lt;Integer, Integer&gt; newIntInstance() {
-<span class="fc" id="L83">		return new GnmGraphGenerator&lt;&gt;(true);</span>
+<span class="fc" id="L109">	public GnmGraphGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
+<span class="fc" id="L110">		this.factory = Objects.requireNonNull(factory);</span>
+<span class="fc" id="L111">	}</span>
+
+	/**
+	 * Get the graph factory that will be used to create the generated graph(s).
+	 *
+	 * &lt;p&gt;
+	 * It's possible to customize the factory before generating the graph(s), for example by using
+	 * {@link GraphFactory#addHint(GraphFactory.Hint)} to optimize the generated graph(s) for a specific algorithm. The
+	 * vertex and edge builders will be used to generate the vertices and edges of the generated graph(s) if only the
+	 * number of vertices or edges is set using {@link #vertices(int)} or {@link #edges(int)}. Set the vertex/edge
+	 * builder of the factory to use these functions.
+	 *
+	 * &lt;p&gt;
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration. If self or parallel edges are generated (see
+	 * {@link #selfEdges(boolean)} and {@link #parallelEdges(boolean)}), the methods
+	 * {@link GraphFactory#allowSelfEdges()} and {@link GraphFactory#allowParallelEdges()} will also be called, resp.
+	 *
+	 * @return the graph factory that will be used to create the generated graph(s)
+	 */
+	public GraphFactory&lt;V, E&gt; graphFactory() {
+<span class="fc" id="L132">		return factory;</span>
 	}
 
 	/**
 	 * Set the vertices set of the generated graph(s).
 	 *
 	 * &lt;p&gt;
-	 * If the generator is used to generate multiple graphs, the same vertex set will be used for all of them.
+	 * If the generator is used to generate multiple graphs, the same vertex set will be used for all of them. This
+	 * method override all previous calls to any of {@link #vertices(Collection)}, {@link #vertices(int)} or
+	 * {@link #vertices(int, IdBuilder)}.
 	 *
-	 * @param vertices the vertices set
+	 * @param  vertices the vertices set
+	 * @return          this generator
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
-	public void setVertices(Collection&lt;V&gt; vertices) {
-<span class="fc bfc" id="L96" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc" id="L97">			this.vertices = (List&lt;V&gt;) new IntArrayList(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices));</span>
+	public GnmGraphGenerator&lt;V, E&gt; vertices(Collection&lt;? extends V&gt; vertices) {
+<span class="fc bfc" id="L148" title="All 2 branches covered.">		if (factory instanceof IntGraphFactory) {</span>
+<span class="fc" id="L149">			vertices = (List&lt;V&gt;) new IntArrayList((Collection&lt;Integer&gt;) vertices);</span>
 		} else {
-<span class="fc" id="L99">			this.vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
+<span class="fc" id="L151">			vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
 		}
-<span class="fc" id="L101">	}</span>
+<span class="fc" id="L153">		this.vertices = Variant2.ofA((List&lt;V&gt;) vertices);</span>
+<span class="fc" id="L154">		return this;</span>
+	}
 
 	/**
-	 * Set the vertices set of the generated graph(s) from a supplier.
+	 * Set the number of vertices that will be generated for each graph.
 	 *
 	 * &lt;p&gt;
-	 * The supplier will be called exactly {@code verticesNum} times, and the same set of vertices created will be used
-	 * for multiple graphs if {@link #generate()} is called multiple times.
+	 * The vertices will be generated using the vertex builder of the graph factory, see
+	 * {@link GraphFactory#setVertexBuilder(IdBuilder)}. The default graph factory does not have a vertex builder, so it
+	 * must be set explicitly, or {@link IntGraphFactory}, which does have such builder, should be passed in the
+	 * {@linkplain #GnmGraphGenerator(GraphFactory) constructor}. Another alternative is to use
+	 * {@link #vertices(int, IdBuilder)} which set the number of vertices and provide a vertex builder that will
+	 * override the (maybe non existing) vertex builder of the graph factory. The generation will happen independently
+	 * for each graph generated. If there is no vertex builder, an exception will be thrown during generation. This
+	 * method override all previous calls to any of {@link #vertices(Collection)}, {@link #vertices(int)} or
+	 * {@link #vertices(int, IdBuilder)}.
 	 *
-	 * @param verticesNum    the number of vertices
-	 * @param vertexSupplier the supplier of vertices
+	 * @param  verticesNum              the number of vertices that will be generated for each graph
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code verticesNum} is negative
 	 */
-	@SuppressWarnings(&quot;unchecked&quot;)
-	public void setVertices(int verticesNum, Supplier&lt;V&gt; vertexSupplier) {
-<span class="fc bfc" id="L115" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc" id="L116">			IntList vertices = new IntArrayList(verticesNum);</span>
-<span class="fc" id="L117">			IntSupplier vSupplier = IntAdapters.asIntSupplier((Supplier&lt;Integer&gt;) vertexSupplier);</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++)</span>
-<span class="fc" id="L119">				vertices.add(vSupplier.getAsInt());</span>
-<span class="fc" id="L120">			this.vertices = (List&lt;V&gt;) vertices;</span>
-<span class="fc" id="L121">		} else {</span>
-<span class="fc" id="L122">			List&lt;V&gt; vertices = new ObjectArrayList&lt;&gt;(verticesNum);</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++)</span>
-<span class="fc" id="L124">				vertices.add(vertexSupplier.get());</span>
-<span class="fc" id="L125">			this.vertices = vertices;</span>
-		}
-<span class="fc" id="L127">	}</span>
+	public GnmGraphGenerator&lt;V, E&gt; vertices(int verticesNum) {
+<span class="fc" id="L176">		vertices(verticesNum, null);</span>
+<span class="fc" id="L177">		return this;</span>
+	}
 
 	/**
-	 * Set the number of edges and the edge supplier of the generated graph(s).
+	 * Set the number of vertices that will be generated for each graph, and the vertex builder that will be used to
+	 * generate them.
+	 *
+	 * &lt;p&gt;
+	 * The vertices will be generated using the provided vertex builder, and the vertex generator provided by the
+	 * {@linkplain #graphFactory() graph factory} (if exists) will be ignored. The generation will happen independently
+	 * for each graph generated. This method override all previous calls to any of {@link #vertices(Collection)},
+	 * {@link #vertices(int)} or {@link #vertices(int, IdBuilder)}.
+	 *
+	 * @param  verticesNum              the number of vertices that will be generated for each graph
+	 * @param  vertexBuilder            the vertex builder, or {@code null} to use the vertex builder of the
+	 *                                      {@linkplain #graphFactory() graph factory}
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code verticesNum} is negative
+	 */
+	public GnmGraphGenerator&lt;V, E&gt; vertices(int verticesNum, IdBuilder&lt;V&gt; vertexBuilder) {
+<span class="fc bfc" id="L197" title="All 2 branches covered.">		if (verticesNum &lt; 0)</span>
+<span class="fc" id="L198">			throw new IllegalArgumentException(&quot;number of vertices must be non-negative&quot;);</span>
+<span class="fc" id="L199">		this.vertices = Variant2.ofB(IntObjectPair.of(verticesNum, vertexBuilder));</span>
+<span class="fc" id="L200">		return this;</span>
+	}
+
+	/**
+	 * Set the number of edges what will be generated for each graph.
 	 *
 	 * &lt;p&gt;
 	 * The number of edges must be non-negative, and if parallel edges are not allowed, it must be at most \(n(n-1) /
@@ -135,20 +209,27 @@ public class GnmGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * allowed.
 	 *
 	 * &lt;p&gt;
-	 * The supplier will be called for any edge created, for any graph generated. This behavior is different from
-	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
-	 * any generated graph.
+	 * The edges will be generated using the edge builder of the graph factory, see
+	 * {@link GraphFactory#setEdgeBuilder(IdBuilder)}. The default graph factory does not have an edge builder, so it
+	 * must be set explicitly, or {@link IntGraphFactory}, which does have such builder, should be passed in the
+	 * {@linkplain #GnmGraphGenerator(GraphFactory) constructor}. Another alternative is to use
+	 * {@link #edges(int, IdBuilder)} which set the number of edges and provide an edge builder that will override the
+	 * (maybe non existing) edge builder of the graph factory. The generation will happen independently for each graph
+	 * generated. If there is no edge builder, an exception will be thrown during generation. This method override all
+	 * previous calls to {@link #edges(int)} or {@link #edges(int, IdBuilder)}.
 	 *
-	 * @param m            the number of edges
-	 * @param edgeSupplier the edge supplier
+	 * @param  edgesNum                 the number of edges
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code edgesNum} is negative
 	 */
-	public void setEdges(int m, Supplier&lt;E&gt; edgeSupplier) {
-<span class="fc" id="L146">		Objects.requireNonNull(edgeSupplier);</span>
-<span class="fc" id="L147">		setEdges(m, (u, v) -&gt; edgeSupplier.get());</span>
-<span class="fc" id="L148">	}</span>
+	public GnmGraphGenerator&lt;V, E&gt; edges(int edgesNum) {
+<span class="fc" id="L226">		edges(edgesNum, null);</span>
+<span class="fc" id="L227">		return this;</span>
+	}
 
 	/**
-	 * Set the number of edges and the edge builder function of the generated graph(s).
+	 * Set the number of edges what will be generated for each graph, and the edge builder that will be used to generate
+	 * them.
 	 *
 	 * &lt;p&gt;
 	 * The number of edges must be non-negative, and if parallel edges are not allowed, it must be at most \(n(n-1) /
@@ -156,19 +237,23 @@ public class GnmGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * allowed.
 	 *
 	 * &lt;p&gt;
-	 * The edge builder will be called for any edge created, for any graph generated. This behavior is different from
-	 * {@link #setVertices(int, Supplier)}, where the supplier is used to generate a set of vertices which is reused for
-	 * any generated graph.
+	 * The edges will be generated using the provided edge builder, and the edge generator provided by the
+	 * {@linkplain #graphFactory() graph factory} (if exists) will be ignored. The generation will happen independently
+	 * for each graph generated. This method override all previous calls to {@link #edges(int)} or
+	 * {@link #edges(int, IdBuilder)}.
 	 *
-	 * @param m           the number of edges
-	 * @param edgeBuilder the edge builder function
+	 * @param  edgesNum                 the number of edges
+	 * @param  edgeBuilder              the edge builder, or {@code null} to use the edge builder of the
+	 *                                      {@linkplain #graphFactory() graph factory}
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code edgesNum} is negative
 	 */
-	public void setEdges(int m, BiFunction&lt;V, V, E&gt; edgeBuilder) {
-<span class="fc bfc" id="L167" title="All 2 branches covered.">		if (m &lt; 0)</span>
-<span class="fc" id="L168">			throw new IllegalArgumentException(&quot;number of edges must be non-negative&quot;);</span>
-<span class="fc" id="L169">		this.m = m;</span>
-<span class="fc" id="L170">		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);</span>
-<span class="fc" id="L171">	}</span>
+	public GnmGraphGenerator&lt;V, E&gt; edges(int edgesNum, IdBuilder&lt;E&gt; edgeBuilder) {
+<span class="fc bfc" id="L252" title="All 2 branches covered.">		if (edgesNum &lt; 0)</span>
+<span class="fc" id="L253">			throw new IllegalArgumentException(&quot;number of edges must be non-negative&quot;);</span>
+<span class="fc" id="L254">		this.edges = IntObjectPair.of(edgesNum, edgeBuilder);</span>
+<span class="fc" id="L255">		return this;</span>
+	}
 
 	/**
 	 * Determine if the generated graph(s) is directed or undirected.
@@ -176,11 +261,13 @@ public class GnmGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * &lt;p&gt;
 	 * By default, the generated graph(s) is undirected.
 	 *
-	 * @param directed {@code true} if the generated graph(s) will be directed, {@code false} if undirected
+	 * @param  directed {@code true} if the generated graph(s) will be directed, {@code false} if undirected
+	 * @return          this generator
 	 */
-	public void setDirected(boolean directed) {
-<span class="fc" id="L182">		this.directed = directed;</span>
-<span class="fc" id="L183">	}</span>
+	public GnmGraphGenerator&lt;V, E&gt; directed(boolean directed) {
+<span class="fc" id="L268">		this.directed = directed;</span>
+<span class="fc" id="L269">		return this;</span>
+	}
 
 	/**
 	 * Determine if the generated graph(s) will contain self-edges.
@@ -189,11 +276,13 @@ public class GnmGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * Self edges are edges with the same source and target vertex. By default, the generated graph(s) will not contain
 	 * self-edges.
 	 *
-	 * @param selfEdges {@code true} if the generated graph(s) will contain self-edges, {@code false} otherwise
+	 * @param  selfEdges {@code true} if the generated graph(s) will contain self-edges, {@code false} otherwise
+	 * @return           this generator
 	 */
-	public void setSelfEdges(boolean selfEdges) {
-<span class="fc" id="L195">		this.selfEdges = selfEdges;</span>
-<span class="fc" id="L196">	}</span>
+	public GnmGraphGenerator&lt;V, E&gt; selfEdges(boolean selfEdges) {
+<span class="fc" id="L283">		this.selfEdges = selfEdges;</span>
+<span class="fc" id="L284">		return this;</span>
+	}
 
 	/**
 	 * Determine if the generated graph(s) will contain parallel-edges.
@@ -202,11 +291,13 @@ public class GnmGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * Parallel edges are a set of edges that connect the same two vertices. By default, the generated graph(s) will
 	 * contain parallel-edges.
 	 *
-	 * @param parallelEdges {@code true} if the generated graph(s) will contain parallel-edges, {@code false} otherwise
+	 * @param  parallelEdges {@code true} if the generated graph(s) will contain parallel-edges, {@code false} otherwise
+	 * @return               this generator
 	 */
-	public void setParallelEdges(boolean parallelEdges) {
-<span class="fc" id="L208">		this.parallelEdges = parallelEdges;</span>
-<span class="fc" id="L209">	}</span>
+	public GnmGraphGenerator&lt;V, E&gt; parallelEdges(boolean parallelEdges) {
+<span class="fc" id="L298">		this.parallelEdges = parallelEdges;</span>
+<span class="fc" id="L299">		return this;</span>
+	}
 
 	/**
 	 * Set the seed of the random number generator used to generate the graph(s).
@@ -214,98 +305,128 @@ public class GnmGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * &lt;p&gt;
 	 * By default, a random seed is used. For deterministic behavior, set the seed of the generator.
 	 *
-	 * @param seed the seed of the random number generator
+	 * @param  seed the seed of the random number generator
+	 * @return      this generator
 	 */
-	public void setSeed(long seed) {
-<span class="fc" id="L220">		rand = new Random(seed);</span>
-<span class="fc" id="L221">	}</span>
+	public GnmGraphGenerator&lt;V, E&gt; seed(long seed) {
+<span class="fc" id="L312">		rand = new Random(seed);</span>
+<span class="fc" id="L313">		return this;</span>
+	}
 
 	@Override
 	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
-<span class="fc bfc" id="L225" title="All 2 branches covered.">		if (vertices == null)</span>
-<span class="fc" id="L226">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
-<span class="fc" id="L228">			throw new IllegalStateException(&quot;Number of edges and edge supplier were not set&quot;);</span>
-<span class="fc" id="L229">		final int n = vertices.size();</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">		if (vertices == null)</span>
+<span class="fc" id="L319">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
+<span class="fc bfc" id="L320" title="All 2 branches covered.">		if (edges == null)</span>
+<span class="fc" id="L321">			throw new IllegalStateException(&quot;Edges not set&quot;);</span>
+<span class="fc" id="L322">		final int n = vertices.map(List::size, IntObjectPair::firstInt).intValue();</span>
+<span class="fc" id="L323">		final int m = edges.firstInt();</span>
 
-<span class="fc" id="L231">		int maxNumberOfEdges = n * (n - 1);</span>
-<span class="fc bfc" id="L232" title="All 2 branches covered.">		if (!directed)</span>
-<span class="fc" id="L233">			maxNumberOfEdges /= 2;</span>
-<span class="fc bfc" id="L234" title="All 2 branches covered.">		if (selfEdges)</span>
-<span class="fc" id="L235">			maxNumberOfEdges += n;</span>
-<span class="fc bfc" id="L236" title="All 4 branches covered.">		if (vertices.isEmpty() &amp;&amp; m &gt; 0)</span>
-<span class="fc" id="L237">			throw new IllegalArgumentException(&quot;number of edges must be zero if vertices set is empty&quot;);</span>
-<span class="fc bfc" id="L238" title="All 4 branches covered.">		if (!parallelEdges &amp;&amp; m &gt; maxNumberOfEdges)</span>
-<span class="fc" id="L239">			throw new IllegalArgumentException(&quot;number of edges must be at most &quot; + maxNumberOfEdges);</span>
+<span class="fc" id="L325">		int maxNumberOfEdges = n * (n - 1);</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">		if (!directed)</span>
+<span class="fc" id="L327">			maxNumberOfEdges /= 2;</span>
+<span class="fc bfc" id="L328" title="All 2 branches covered.">		if (selfEdges)</span>
+<span class="fc" id="L329">			maxNumberOfEdges += n;</span>
+<span class="fc bfc" id="L330" title="All 4 branches covered.">		if (n == 0 &amp;&amp; m &gt; 0)</span>
+<span class="fc" id="L331">			throw new IllegalArgumentException(&quot;number of edges must be zero if vertices set is empty&quot;);</span>
+<span class="fc bfc" id="L332" title="All 4 branches covered.">		if (!parallelEdges &amp;&amp; m &gt; maxNumberOfEdges)</span>
+<span class="fc" id="L333">			throw new IllegalArgumentException(&quot;number of edges must be at most &quot; + maxNumberOfEdges);</span>
 
-		GraphFactory&lt;V, E&gt; factory;
-<span class="fc bfc" id="L242" title="All 2 branches covered.">		if (intGraph) {</span>
+<span class="fc" id="L335">		factory.setDirected(directed);</span>
+<span class="fc bfc" id="L336" title="All 2 branches covered.">		if (selfEdges)</span>
+<span class="fc" id="L337">			factory.allowSelfEdges(selfEdges);</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">		if (parallelEdges)</span>
+<span class="fc" id="L339">			factory.allowParallelEdges(parallelEdges);</span>
+<span class="fc" id="L340">		GraphBuilder&lt;V, E&gt; g = factory.newBuilder();</span>
+
+<span class="fc bfc" id="L342" title="All 2 branches covered.">		IdBuilder&lt;E&gt; edgeBuilder = edges.second() != null ? edges.second() : g.edgeBuilder();</span>
+<span class="fc bfc" id="L343" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
+<span class="fc" id="L344">			throw new IllegalStateException(&quot;Edge builder not provided and graph factory does not have one&quot;);</span>
+
+		final List&lt;V&gt; vertices;
+<span class="fc bfc" id="L347" title="All 2 branches covered.">		if (this.vertices.contains(List.class)) {</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L244">			GraphFactory&lt;V, E&gt; factory0 = (GraphFactory&lt;V, E&gt;) IntGraphFactory.newInstance(directed);</span>
-<span class="fc" id="L245">			factory = factory0;</span>
-<span class="fc" id="L246">		} else {</span>
-<span class="fc" id="L247">			factory = GraphFactory.newInstance(directed);</span>
+<span class="fc" id="L349">			List&lt;V&gt; vertices0 = this.vertices.get(List.class);</span>
+<span class="fc" id="L350">			g.addVertices(vertices = vertices0);</span>
+<span class="fc" id="L351">		} else {</span>
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L353">			IntObjectPair&lt;IdBuilder&lt;V&gt;&gt; p = this.vertices.get(IntObjectPair.class);</span>
+<span class="fc" id="L354">			int verticesNum = p.firstInt();</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">			IdBuilder&lt;V&gt; vertexBuilder = p.second() != null ? p.second() : g.vertexBuilder();</span>
+<span class="fc bfc" id="L356" title="All 2 branches covered.">			if (vertexBuilder == null)</span>
+<span class="fc" id="L357">				throw new IllegalStateException(&quot;Vertex builder not provided and graph factory does not have one&quot;);</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">			if (g instanceof IntGraphBuilder) {</span>
+				@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L360">				List&lt;V&gt; vertices0 = (List&lt;V&gt;) new IntArrayList(verticesNum);</span>
+<span class="fc" id="L361">				vertices = vertices0;</span>
+<span class="fc" id="L362">			} else {</span>
+<span class="fc" id="L363">				vertices = new ObjectArrayList&lt;&gt;(verticesNum);</span>
+			}
+<span class="fc" id="L365">			g.ensureVertexCapacity(verticesNum);</span>
+<span class="fc bfc" id="L366" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++) {</span>
+<span class="fc" id="L367">				V vertex = vertexBuilder.build(g.vertices());</span>
+<span class="fc" id="L368">				g.addVertex(vertex);</span>
+<span class="fc" id="L369">				vertices.add(vertex);</span>
+			}
 		}
-<span class="fc" id="L249">		GraphBuilder&lt;V, E&gt; g = factory.allowSelfEdges(selfEdges).newBuilder();</span>
-<span class="fc" id="L250">		g.addVertices(vertices);</span>
-<span class="fc" id="L251">		g.ensureEdgeCapacity(m);</span>
 
-<span class="fc bfc" id="L253" title="All 4 branches covered.">		if (parallelEdges || m &lt;= maxNumberOfEdges / 2) {</span>
+<span class="fc" id="L373">		g.ensureEdgeCapacity(m);</span>
+<span class="fc bfc" id="L374" title="All 4 branches covered.">		if (parallelEdges || m &lt;= maxNumberOfEdges / 2) {</span>
 			/* Start with an empty graph and add edges one by one */
 
-<span class="fc bfc" id="L256" title="All 2 branches covered.">			LongSet edges = parallelEdges ? null : new LongOpenHashSet(m);</span>
-<span class="fc bfc" id="L257" title="All 2 branches covered.">			while (g.edges().size() &lt; m) {</span>
-<span class="fc" id="L258">				int uIdx = rand.nextInt(n), vIdx = rand.nextInt(n);</span>
-<span class="fc bfc" id="L259" title="All 4 branches covered.">				if (!selfEdges &amp;&amp; uIdx == vIdx)</span>
-<span class="fc" id="L260">					continue;</span>
-<span class="fc bfc" id="L261" title="All 2 branches covered.">				if (!parallelEdges) {</span>
-<span class="fc bfc" id="L262" title="All 4 branches covered.">					if (!directed &amp;&amp; uIdx &gt; vIdx) {</span>
-<span class="fc" id="L263">						int tmp = uIdx;</span>
-<span class="fc" id="L264">						uIdx = vIdx;</span>
-<span class="fc" id="L265">						vIdx = tmp;</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">			LongSet edges = parallelEdges ? null : new LongOpenHashSet(m);</span>
+<span class="fc bfc" id="L378" title="All 2 branches covered.">			while (g.edges().size() &lt; m) {</span>
+<span class="fc" id="L379">				int uIdx = rand.nextInt(n), vIdx = rand.nextInt(n);</span>
+<span class="fc bfc" id="L380" title="All 4 branches covered.">				if (!selfEdges &amp;&amp; uIdx == vIdx)</span>
+<span class="fc" id="L381">					continue;</span>
+<span class="fc bfc" id="L382" title="All 2 branches covered.">				if (!parallelEdges) {</span>
+<span class="fc bfc" id="L383" title="All 4 branches covered.">					if (!directed &amp;&amp; uIdx &gt; vIdx) {</span>
+<span class="fc" id="L384">						int tmp = uIdx;</span>
+<span class="fc" id="L385">						uIdx = vIdx;</span>
+<span class="fc" id="L386">						vIdx = tmp;</span>
 					}
-<span class="fc bfc" id="L267" title="All 2 branches covered.">					if (!edges.add(JGAlgoUtils.longPack(uIdx, vIdx)))</span>
-<span class="fc" id="L268">						continue;</span>
+<span class="fc bfc" id="L388" title="All 2 branches covered.">					if (!edges.add(JGAlgoUtils.longPack(uIdx, vIdx)))</span>
+<span class="fc" id="L389">						continue;</span>
 				}
-<span class="fc" id="L270">				V u = vertices.get(uIdx), v = vertices.get(vIdx);</span>
-<span class="fc" id="L271">				g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
-<span class="fc" id="L272">			}</span>
+<span class="fc" id="L391">				V u = vertices.get(uIdx), v = vertices.get(vIdx);</span>
+<span class="fc" id="L392">				g.addEdge(u, v, edgeBuilder.build(g.edges()));</span>
+<span class="fc" id="L393">			}</span>
 
-<span class="fc" id="L274">		} else {</span>
+<span class="fc" id="L395">		} else {</span>
 			/* Start with a complete graph and remove edges one by one */
 
-<span class="fc" id="L277">			Bitmap edges = new Bitmap(maxNumberOfEdges);</span>
-<span class="fc" id="L278">			edges.setAll();</span>
-<span class="fc bfc" id="L279" title="All 2 branches covered.">			for (int edgesNum = maxNumberOfEdges; edgesNum &gt; m;) {</span>
-<span class="fc" id="L280">				int i = rand.nextInt(maxNumberOfEdges);</span>
-<span class="fc bfc" id="L281" title="All 2 branches covered.">				if (edges.get(i)) {</span>
-<span class="fc" id="L282">					edges.clear(i);</span>
-<span class="fc" id="L283">					edgesNum--;</span>
+<span class="fc" id="L398">			Bitmap edges = new Bitmap(maxNumberOfEdges);</span>
+<span class="fc" id="L399">			edges.setAll();</span>
+<span class="fc bfc" id="L400" title="All 2 branches covered.">			for (int edgesNum = maxNumberOfEdges; edgesNum &gt; m;) {</span>
+<span class="fc" id="L401">				int i = rand.nextInt(maxNumberOfEdges);</span>
+<span class="fc bfc" id="L402" title="All 2 branches covered.">				if (edges.get(i)) {</span>
+<span class="fc" id="L403">					edges.clear(i);</span>
+<span class="fc" id="L404">					edgesNum--;</span>
 				}
-<span class="fc" id="L285">			}</span>
+<span class="fc" id="L406">			}</span>
 
-<span class="fc bfc" id="L287" title="All 2 branches covered.">			for (int i = 0, uIdx = 0; uIdx &lt; n; uIdx++) {</span>
-<span class="fc" id="L288">				V u = vertices.get(uIdx);</span>
-<span class="fc bfc" id="L289" title="All 2 branches covered.">				if (directed) {</span>
-<span class="fc bfc" id="L290" title="All 2 branches covered.">					for (int vIdx = 0; vIdx &lt; uIdx; vIdx++, i++) {</span>
-<span class="fc bfc" id="L291" title="All 2 branches covered.">						if (edges.get(i)) {</span>
-<span class="fc" id="L292">							V v = vertices.get(vIdx);</span>
-<span class="fc" id="L293">							g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc bfc" id="L408" title="All 2 branches covered.">			for (int i = 0, uIdx = 0; uIdx &lt; n; uIdx++) {</span>
+<span class="fc" id="L409">				V u = vertices.get(uIdx);</span>
+<span class="fc bfc" id="L410" title="All 2 branches covered.">				if (directed) {</span>
+<span class="fc bfc" id="L411" title="All 2 branches covered.">					for (int vIdx = 0; vIdx &lt; uIdx; vIdx++, i++) {</span>
+<span class="fc bfc" id="L412" title="All 2 branches covered.">						if (edges.get(i)) {</span>
+<span class="fc" id="L413">							V v = vertices.get(vIdx);</span>
+<span class="fc" id="L414">							g.addEdge(u, v, edgeBuilder.build(g.edges()));</span>
 						}
 					}
 				}
-<span class="fc bfc" id="L297" title="All 4 branches covered.">				if (selfEdges &amp;&amp; edges.get(i++))</span>
-<span class="fc" id="L298">					g.addEdge(u, u, edgeBuilder.apply(u, u));</span>
-<span class="fc bfc" id="L299" title="All 2 branches covered.">				for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++, i++) {</span>
-<span class="fc bfc" id="L300" title="All 2 branches covered.">					if (edges.get(i)) {</span>
-<span class="fc" id="L301">						V v = vertices.get(vIdx);</span>
-<span class="fc" id="L302">						g.addEdge(u, v, edgeBuilder.apply(u, v));</span>
+<span class="fc bfc" id="L418" title="All 4 branches covered.">				if (selfEdges &amp;&amp; edges.get(i++))</span>
+<span class="fc" id="L419">					g.addEdge(u, u, edgeBuilder.build(g.edges()));</span>
+<span class="fc bfc" id="L420" title="All 2 branches covered.">				for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++, i++) {</span>
+<span class="fc bfc" id="L421" title="All 2 branches covered.">					if (edges.get(i)) {</span>
+<span class="fc" id="L422">						V v = vertices.get(vIdx);</span>
+<span class="fc" id="L423">						g.addEdge(u, v, edgeBuilder.build(g.edges()));</span>
 					}
 				}
 			}
 		}
 
-<span class="fc" id="L308">		return g;</span>
+<span class="fc" id="L429">		return g;</span>
 	}
 
 }

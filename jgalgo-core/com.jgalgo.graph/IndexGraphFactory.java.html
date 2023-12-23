@@ -53,6 +53,14 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	IndexGraph newCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights);
 
 	@Override
+	default IndexGraph newImmutableCopyOf(Graph&lt;Integer, Integer&gt; g) {
+<span class="fc" id="L57">		return (IndexGraph) IntGraphFactory.super.newImmutableCopyOf(g);</span>
+	}
+
+	@Override
+	IndexGraph newImmutableCopyOf(Graph&lt;Integer, Integer&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights);
+
+	@Override
 	IndexGraphBuilder newBuilder();
 
 	/**
@@ -67,7 +75,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 */
 	@Override
 	default IndexGraphBuilder newBuilderCopyOf(Graph&lt;Integer, Integer&gt; g) {
-<span class="fc" id="L70">		return (IndexGraphBuilder) IntGraphFactory.super.newBuilderCopyOf(g);</span>
+<span class="fc" id="L78">		return (IndexGraphBuilder) IntGraphFactory.super.newBuilderCopyOf(g);</span>
 	}
 
 	/**
@@ -89,7 +97,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 
 	@Override
 	default IndexGraphFactory allowSelfEdges() {
-<span class="fc" id="L92">		return (IndexGraphFactory) IntGraphFactory.super.allowSelfEdges();</span>
+<span class="fc" id="L100">		return (IndexGraphFactory) IntGraphFactory.super.allowSelfEdges();</span>
 	}
 
 	@Override
@@ -97,7 +105,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 
 	@Override
 	default IndexGraphFactory allowParallelEdges() {
-<span class="fc" id="L100">		return (IndexGraphFactory) IntGraphFactory.super.allowParallelEdges();</span>
+<span class="fc" id="L108">		return (IndexGraphFactory) IntGraphFactory.super.allowParallelEdges();</span>
 	}
 
 	@Override
@@ -118,7 +126,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	@Deprecated
 	@Override
 	default IndexGraphFactory setVertexBuilder(IdBuilder&lt;Integer&gt; vertexBuilder) {
-<span class="fc" id="L121">		throw new UnsupportedOperationException(&quot;Index graphs does not support custom vertex builder&quot;);</span>
+<span class="fc" id="L129">		throw new UnsupportedOperationException(&quot;Index graphs does not support custom vertex builder&quot;);</span>
 	}
 
 	/**
@@ -130,7 +138,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	@Deprecated
 	@Override
 	default IndexGraphFactory setVertexFactory(Supplier&lt;? extends IdBuilder&lt;Integer&gt;&gt; vertexFactory) {
-<span class="fc" id="L133">		throw new UnsupportedOperationException(&quot;Index graphs does not support custom vertex builder&quot;);</span>
+<span class="fc" id="L141">		throw new UnsupportedOperationException(&quot;Index graphs does not support custom vertex builder&quot;);</span>
 	}
 
 	/**
@@ -142,7 +150,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	@Deprecated
 	@Override
 	default IndexGraphFactory setEdgeBuilder(IdBuilder&lt;Integer&gt; edgeBuilder) {
-<span class="fc" id="L145">		throw new UnsupportedOperationException(&quot;Index graphs does not support custom edge builder&quot;);</span>
+<span class="fc" id="L153">		throw new UnsupportedOperationException(&quot;Index graphs does not support custom edge builder&quot;);</span>
 	}
 
 	/**
@@ -154,7 +162,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	@Deprecated
 	@Override
 	default IndexGraphFactory setEdgeFactory(Supplier&lt;? extends IdBuilder&lt;Integer&gt;&gt; edgeFactory) {
-<span class="fc" id="L157">		throw new UnsupportedOperationException(&quot;Index graphs does not support custom edge builder&quot;);</span>
+<span class="fc" id="L165">		throw new UnsupportedOperationException(&quot;Index graphs does not support custom edge builder&quot;);</span>
 	}
 
 	@Override
@@ -169,7 +177,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 * @return a new factory that can build undirected index graphs
 	 */
 	public static IndexGraphFactory undirected() {
-<span class="fc" id="L172">		return new IndexGraphFactoryImpl(false);</span>
+<span class="fc" id="L180">		return new IndexGraphFactoryImpl(false);</span>
 	}
 
 	/**
@@ -178,7 +186,7 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 * @return a new factory that can build directed index graphs
 	 */
 	public static IndexGraphFactory directed() {
-<span class="fc" id="L181">		return new IndexGraphFactoryImpl(true);</span>
+<span class="fc" id="L189">		return new IndexGraphFactoryImpl(true);</span>
 	}
 
 	/**
@@ -188,12 +196,12 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	 * @return          a new factory that can build un/directed index graphs
 	 */
 	public static IndexGraphFactory newInstance(boolean directed) {
-<span class="fc" id="L191">		return new IndexGraphFactoryImpl(directed);</span>
+<span class="fc" id="L199">		return new IndexGraphFactoryImpl(directed);</span>
 	}
 
 	@Override
 	default IndexGraphFactory setOption(String key, Object value) {
-<span class="nc" id="L196">		return (IndexGraphFactory) IntGraphFactory.super.setOption(key, value);</span>
+<span class="nc" id="L204">		return (IndexGraphFactory) IntGraphFactory.super.setOption(key, value);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

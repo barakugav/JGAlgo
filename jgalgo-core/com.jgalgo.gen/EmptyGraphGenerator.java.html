@@ -16,12 +16,17 @@
 package com.jgalgo.gen;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
+import com.jgalgo.graph.GraphFactory;
+import com.jgalgo.graph.IdBuilder;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IntGraphBuilder;
-import com.jgalgo.internal.util.IntAdapters;
+import com.jgalgo.graph.IntGraphFactory;
+import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
@@ -36,32 +41,63 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  */
 public class EmptyGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {
 
-	private final boolean intGraph;
-	private Collection&lt;V&gt; vertices;
-<span class="fc" id="L41">	private boolean directed = false;</span>
-
-<span class="fc" id="L43">	private EmptyGraphGenerator(boolean intGraph) {</span>
-<span class="fc" id="L44">		this.intGraph = intGraph;</span>
-<span class="fc" id="L45">	}</span>
+	private final GraphFactory&lt;V, E&gt; factory;
+	private Variant2&lt;List&lt;V&gt;, IntObjectPair&lt;IdBuilder&lt;V&gt;&gt;&gt; vertices;
+<span class="fc" id="L46">	private boolean directed = false;</span>
 
 	/**
-	 * Creates a new empty graph generator.
+	 * Create a new empty generator that will use the default graph factory.
 	 *
-	 * @param  &lt;V&gt; the vertices type
-	 * @param  &lt;E&gt; the edges type
-	 * @return     a new empty graph generator
+	 * &lt;p&gt;
+	 * The default graph factory does not have a default vertex builder, so if only the number of vertices is set using
+	 * {@link #vertices(int)}, the vertex builder must be set explicitly using
+	 * {@code graphFactory().setVertexBuilder(...)}. Alternatively, the methods {@link #vertices(int, IdBuilder)} can be
+	 * used to set the number of vertices and provide a vertex/edge builder that will override the (maybe non existing)
+	 * vertex builder of the graph factory. The vertex set can also be set explicitly using
+	 * {@link #vertices(Collection)}.
 	 */
-	public static &lt;V, E&gt; EmptyGraphGenerator&lt;V, E&gt; newInstance() {
-<span class="fc" id="L55">		return new EmptyGraphGenerator&lt;&gt;(false);</span>
-	}
+	public EmptyGraphGenerator() {
+<span class="fc" id="L60">		this(GraphFactory.undirected());</span>
+<span class="fc" id="L61">	}</span>
 
 	/**
-	 * Creates a new empty graph generator for {@link IntGraph}.
+	 * Create a new empty generator that will use the given graph factory.
 	 *
-	 * @return a new empty graph generator for {@link IntGraph}
+	 * &lt;p&gt;
+	 * If the factory has a vertex builder, it will be used to generate the vertices of the generated graph(s) if only
+	 * the number of vertices is set using {@link #vertices(int)}. Set
+	 *
+	 * &lt;p&gt;
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration.
+	 *
+	 * &lt;p&gt;
+	 * To generate {@linkplain IntGraph int graphs}, pass an instance of {@linkplain IntGraphFactory} to this
+	 * constructor.
+	 *
+	 * @param factory the graph factory that will be used to create the generated graph(s)
 	 */
-	public static EmptyGraphGenerator&lt;Integer, Integer&gt; newIntInstance() {
-<span class="fc" id="L64">		return new EmptyGraphGenerator&lt;&gt;(true);</span>
+<span class="fc" id="L80">	public EmptyGraphGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
+<span class="fc" id="L81">		this.factory = Objects.requireNonNull(factory);</span>
+<span class="fc" id="L82">	}</span>
+
+	/**
+	 * Get the graph factory that will be used to create the generated graph(s).
+	 *
+	 * &lt;p&gt;
+	 * It's possible to customize the factory before generating the graph(s), for example by using
+	 * {@link GraphFactory#addHint(GraphFactory.Hint)} to optimize the generated graph(s) for a specific algorithm. The
+	 * vertex builder will be used to generate the vertices of the generated graph(s) if only the number of vertices is
+	 * set using {@link #vertices(int)}. Set the vertex builder of the factory to use these functions.
+	 *
+	 * &lt;p&gt;
+	 * During the graph(s) generation, the method {@link GraphFactory#setDirected(boolean)} of the given factory will be
+	 * called to align the created graph with the generator configuration.
+	 *
+	 * @return the graph factory that will be used to create the generated graph(s)
+	 */
+	public GraphFactory&lt;V, E&gt; graphFactory() {
+<span class="fc" id="L100">		return factory;</span>
 	}
 
 	/**
@@ -72,29 +108,77 @@ public class EmptyGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 * @param  vertices the vertices of the generated graph
 	 * @return          a new empty undirected graph
 	 */
-	public static &lt;V, E&gt; Graph&lt;V, E&gt; emptyGraph(Collection&lt;V&gt; vertices) {
-<span class="fc" id="L76">		EmptyGraphGenerator&lt;V, E&gt; gen = EmptyGraphGenerator.newInstance();</span>
-<span class="fc" id="L77">		gen.setVertices(vertices);</span>
-<span class="fc" id="L78">		return gen.generate();</span>
+	public static &lt;V, E&gt; Graph&lt;V, E&gt; emptyGraph(Collection&lt;? extends V&gt; vertices) {
+<span class="fc" id="L112">		return new EmptyGraphGenerator&lt;V, E&gt;().vertices(vertices).generate();</span>
 	}
 
 	/**
-	 * Set the vertices of the generated graph(s).
+	 * Set the vertices set of the generated graph(s).
 	 *
 	 * &lt;p&gt;
-	 * If this function is not called before generating a graph, no vertices will be added to the graph.
+	 * If the generator is used to generate multiple graphs, the same vertex set will be used for all of them. This
+	 * method override all previous calls to any of {@link #vertices(Collection)}, {@link #vertices(int)} or
+	 * {@link #vertices(int, IdBuilder)}.
 	 *
-	 * @param vertices the vertices of the generated graph(s)
+	 * @param  vertices the vertices set
+	 * @return          this generator
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
-	public void setVertices(Collection&lt;V&gt; vertices) {
-<span class="fc bfc" id="L91" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc" id="L92">			this.vertices =</span>
-<span class="fc" id="L93">					(Collection&lt;V&gt;) new IntArrayList(IntAdapters.asIntCollection((Collection&lt;Integer&gt;) vertices));</span>
+	public EmptyGraphGenerator&lt;V, E&gt; vertices(Collection&lt;? extends V&gt; vertices) {
+<span class="fc bfc" id="L128" title="All 2 branches covered.">		if (factory instanceof IntGraphFactory) {</span>
+<span class="fc" id="L129">			vertices = (List&lt;V&gt;) new IntArrayList((Collection&lt;Integer&gt;) vertices);</span>
 		} else {
-<span class="fc" id="L95">			this.vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
+<span class="fc" id="L131">			vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
 		}
-<span class="fc" id="L97">	}</span>
+<span class="fc" id="L133">		this.vertices = Variant2.ofA((List&lt;V&gt;) vertices);</span>
+<span class="fc" id="L134">		return this;</span>
+	}
+
+	/**
+	 * Set the number of vertices that will be generated for each graph.
+	 *
+	 * &lt;p&gt;
+	 * The vertices will be generated using the vertex builder of the graph factory, see
+	 * {@link GraphFactory#setVertexBuilder(IdBuilder)}. The default graph factory does not have a vertex builder, so it
+	 * must be set explicitly, or {@link IntGraphFactory}, which does have such builder, should be passed in the
+	 * {@linkplain #EmptyGraphGenerator(GraphFactory) constructor}. Another alternative is to use
+	 * {@link #vertices(int, IdBuilder)} which set the number of vertices and provide a vertex builder that will
+	 * override the (maybe non existing) vertex builder of the graph factory. The generation will happen independently
+	 * for each graph generated. If there is no vertex builder, an exception will be thrown during generation. This
+	 * method override all previous calls to any of {@link #vertices(Collection)}, {@link #vertices(int)} or
+	 * {@link #vertices(int, IdBuilder)}.
+	 *
+	 * @param  verticesNum              the number of vertices that will be generated for each graph
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code verticesNum} is negative
+	 */
+	public EmptyGraphGenerator&lt;V, E&gt; vertices(int verticesNum) {
+<span class="fc" id="L156">		vertices(verticesNum, null);</span>
+<span class="fc" id="L157">		return this;</span>
+	}
+
+	/**
+	 * Set the number of vertices that will be generated for each graph, and the vertex builder that will be used to
+	 * generate them.
+	 *
+	 * &lt;p&gt;
+	 * The vertices will be generated using the provided vertex builder, and the vertex generator provided by the
+	 * {@linkplain #graphFactory() graph factory} (if exists) will be ignored. The generation will happen independently
+	 * for each graph generated. This method override all previous calls to any of {@link #vertices(Collection)},
+	 * {@link #vertices(int)} or {@link #vertices(int, IdBuilder)}.
+	 *
+	 * @param  verticesNum              the number of vertices that will be generated for each graph
+	 * @param  vertexBuilder            the vertex builder, or {@code null} to use the vertex builder of the
+	 *                                      {@linkplain #graphFactory() graph factory}
+	 * @return                          this generator
+	 * @throws IllegalArgumentException if {@code verticesNum} is negative
+	 */
+	public EmptyGraphGenerator&lt;V, E&gt; vertices(int verticesNum, IdBuilder&lt;V&gt; vertexBuilder) {
+<span class="fc bfc" id="L177" title="All 2 branches covered.">		if (verticesNum &lt; 0)</span>
+<span class="fc" id="L178">			throw new IllegalArgumentException(&quot;number of vertices must be non-negative&quot;);</span>
+<span class="fc" id="L179">		this.vertices = Variant2.ofB(IntObjectPair.of(verticesNum, vertexBuilder));</span>
+<span class="fc" id="L180">		return this;</span>
+	}
 
 	/**
 	 * Determine if the generated graph(s) is directed or undirected.
@@ -102,26 +186,35 @@ public class EmptyGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&g
 	 * &lt;p&gt;
 	 * By default, the generated graph(s) is undirected.
 	 *
-	 * @param directed {@code true} if the generated graph(s) will be directed, {@code false} if undirected
+	 * @param  directed {@code true} if the generated graph(s) will be directed, {@code false} if undirected
+	 * @return          this generator
 	 */
-	public void setDirected(boolean directed) {
-<span class="fc" id="L108">		this.directed = directed;</span>
-<span class="fc" id="L109">	}</span>
+	public EmptyGraphGenerator&lt;V, E&gt; directed(boolean directed) {
+<span class="fc" id="L193">		this.directed = directed;</span>
+<span class="fc" id="L194">		return this;</span>
+	}
 
-	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
-<span class="fc bfc" id="L114" title="All 2 branches covered.">		if (intGraph) {</span>
-<span class="fc" id="L115">			IntGraphBuilder g = IntGraphBuilder.newInstance(directed);</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">			if (vertices != null)</span>
-<span class="fc" id="L117">				g.addVertices((Collection&lt;Integer&gt;) vertices);</span>
-<span class="fc" id="L118">			return (GraphBuilder&lt;V, E&gt;) g;</span>
-		} else {
-<span class="fc" id="L120">			GraphBuilder&lt;V, E&gt; g = GraphBuilder.newInstance(directed);</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">			if (vertices != null)</span>
-<span class="fc" id="L122">				g.addVertices(vertices);</span>
-<span class="fc" id="L123">			return g;</span>
+<span class="fc" id="L199">		GraphBuilder&lt;V, E&gt; g = factory.setDirected(directed).newBuilder();</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">		if (vertices != null) {</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">			if (this.vertices.contains(List.class)) {</span>
+				@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L203">				List&lt;V&gt; vertices = this.vertices.get(List.class);</span>
+<span class="fc" id="L204">				g.addVertices(vertices);</span>
+<span class="fc" id="L205">			} else {</span>
+				@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L207">				IntObjectPair&lt;IdBuilder&lt;V&gt;&gt; p = this.vertices.get(IntObjectPair.class);</span>
+<span class="fc" id="L208">				int verticesNum = p.firstInt();</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">				IdBuilder&lt;V&gt; vertexBuilder = p.second() != null ? p.second() : g.vertexBuilder();</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">				if (vertexBuilder == null)</span>
+<span class="fc" id="L211">					throw new IllegalStateException(&quot;Vertex builder not provided and graph factory does not have one&quot;);</span>
+<span class="fc" id="L212">				g.ensureVertexCapacity(verticesNum);</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">				for (int i = 0; i &lt; verticesNum; i++)</span>
+<span class="fc" id="L214">					g.addVertex(vertexBuilder.build(g.vertices()));</span>
+			}
 		}
+<span class="fc" id="L217">		return g;</span>
 	}
 
 }

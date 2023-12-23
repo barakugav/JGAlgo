@@ -47,199 +47,200 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L47">			boolean copyEdgesWeights) {</span>
 <span class="fc" id="L48">		this.factory = factory;</span>
 <span class="fc" id="L49">		this.ibuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
-<span class="fc" id="L50">		viMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), null, ibuilder.vertices(), false, false);</span>
-<span class="fc" id="L51">		eiMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), null, ibuilder.edges(), true, false);</span>
-<span class="fc" id="L52">		resetVertexAndEdgeBuilders();</span>
-<span class="fc" id="L53">	}</span>
+<span class="fc" id="L50">		viMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), ibuilder.vertices(), false,</span>
+				false);
+<span class="fc" id="L52">		eiMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), Optional.empty(), ibuilder.edges(), true, false);</span>
+<span class="fc" id="L53">		resetVertexAndEdgeBuilders();</span>
+<span class="fc" id="L54">	}</span>
 
 	@Override
 	public IntSet vertices() {
-<span class="fc" id="L57">		return viMap.idSet();</span>
+<span class="fc" id="L58">		return viMap.idSet();</span>
 	}
 
 	@Override
 	public IntSet edges() {
-<span class="fc" id="L62">		return eiMap.idSet();</span>
+<span class="fc" id="L63">		return eiMap.idSet();</span>
 	}
 
 	@Override
 	public void addVertex(int vertex) {
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (vertex &lt; 0)</span>
-<span class="fc" id="L68">			throw new IllegalArgumentException(&quot;Vertex must be non negative&quot;);</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (vertex &lt; 0)</span>
+<span class="fc" id="L69">			throw new IllegalArgumentException(&quot;Vertex must be non negative&quot;);</span>
 
-<span class="fc" id="L70">		int vIdx = ibuilder.vertices().size();</span>
-<span class="fc" id="L71">		viMap.addId(vertex, vIdx);</span>
-<span class="fc" id="L72">		int vIdx2 = ibuilder.addVertexInt();</span>
-<span class="pc bnc" id="L73" title="All 2 branches missed.">		assert vIdx == vIdx2;</span>
-<span class="fc" id="L74">	}</span>
+<span class="fc" id="L71">		int vIdx = ibuilder.vertices().size();</span>
+<span class="fc" id="L72">		viMap.addId(vertex, vIdx);</span>
+<span class="fc" id="L73">		int vIdx2 = ibuilder.addVertexInt();</span>
+<span class="pc bnc" id="L74" title="All 2 branches missed.">		assert vIdx == vIdx2;</span>
+<span class="fc" id="L75">	}</span>
 
 	@Override
 	public void addVertices(Collection&lt;? extends Integer&gt; vertices) {
-<span class="fc bfc" id="L78" title="All 2 branches covered.">		if (vertices.isEmpty())</span>
-<span class="fc" id="L79">			return;</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">		if (!(vertices instanceof IntCollection))</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">			for (Integer vertex : vertices)</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">				if (vertex == null)</span>
-<span class="fc" id="L83">					throw new NullPointerException(&quot;Vertex must be non null&quot;);</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">		for (int vertex : vertices)</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (vertex &lt; 0)</span>
-<span class="fc" id="L86">				throw new IllegalArgumentException(&quot;Vertex must be non negative&quot;);</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">		if (vertices.isEmpty())</span>
+<span class="fc" id="L80">			return;</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">		if (!(vertices instanceof IntCollection))</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">			for (Integer vertex : vertices)</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">				if (vertex == null)</span>
+<span class="fc" id="L84">					throw new NullPointerException(&quot;Vertex must be non null&quot;);</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		for (int vertex : vertices)</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">			if (vertex &lt; 0)</span>
+<span class="fc" id="L87">				throw new IllegalArgumentException(&quot;Vertex must be non negative&quot;);</span>
 
-<span class="fc" id="L88">		final int verticesNumBefore = ibuilder.vertices().size();</span>
-<span class="fc" id="L89">		ensureVertexCapacity(verticesNumBefore + vertices.size());</span>
-<span class="fc" id="L90">		int nextIdx = verticesNumBefore;</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (int vertex : vertices) {</span>
-<span class="fc" id="L92">			boolean added = viMap.addIdIfNotDuplicate(vertex, nextIdx);</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">			if (!added) {</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">				for (; nextIdx-- &gt; verticesNumBefore;)</span>
-<span class="fc" id="L95">					viMap.rollBackRemove(nextIdx);</span>
-<span class="fc" id="L96">				throw new IllegalArgumentException(&quot;Duplicate vertex: &quot; + vertex);</span>
+<span class="fc" id="L89">		final int verticesNumBefore = ibuilder.vertices().size();</span>
+<span class="fc" id="L90">		ensureVertexCapacity(verticesNumBefore + vertices.size());</span>
+<span class="fc" id="L91">		int nextIdx = verticesNumBefore;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int vertex : vertices) {</span>
+<span class="fc" id="L93">			boolean added = viMap.addIdIfNotDuplicate(vertex, nextIdx);</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">			if (!added) {</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">				for (; nextIdx-- &gt; verticesNumBefore;)</span>
+<span class="fc" id="L96">					viMap.rollBackRemove(nextIdx);</span>
+<span class="fc" id="L97">				throw new IllegalArgumentException(&quot;Duplicate vertex: &quot; + vertex);</span>
 			}
-<span class="fc" id="L98">			nextIdx++;</span>
-<span class="fc" id="L99">		}</span>
-<span class="fc" id="L100">		ibuilder.addVertices(range(verticesNumBefore, nextIdx));</span>
-<span class="fc" id="L101">	}</span>
+<span class="fc" id="L99">			nextIdx++;</span>
+<span class="fc" id="L100">		}</span>
+<span class="fc" id="L101">		ibuilder.addVertices(range(verticesNumBefore, nextIdx));</span>
+<span class="fc" id="L102">	}</span>
 
 	@Override
 	public void addEdge(int source, int target, int edge) {
-<span class="fc bfc" id="L105" title="All 2 branches covered.">		if (edge &lt; 0)</span>
-<span class="fc" id="L106">			throw new IllegalArgumentException(&quot;Edge must be non negative&quot;);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">		if (edge &lt; 0)</span>
+<span class="fc" id="L107">			throw new IllegalArgumentException(&quot;Edge must be non negative&quot;);</span>
 
-<span class="fc" id="L108">		int uIdx = viMap.idToIndex(source);</span>
-<span class="fc" id="L109">		int vIdx = viMap.idToIndex(target);</span>
-<span class="fc" id="L110">		int eIdx = ibuilder.edges().size();</span>
-<span class="fc" id="L111">		eiMap.addId(edge, eIdx);</span>
-<span class="fc" id="L112">		int eIdx2 = ibuilder.addEdge(uIdx, vIdx);</span>
-<span class="pc bnc" id="L113" title="All 2 branches missed.">		assert eIdx == eIdx2;</span>
-<span class="fc" id="L114">	}</span>
+<span class="fc" id="L109">		int uIdx = viMap.idToIndex(source);</span>
+<span class="fc" id="L110">		int vIdx = viMap.idToIndex(target);</span>
+<span class="fc" id="L111">		int eIdx = ibuilder.edges().size();</span>
+<span class="fc" id="L112">		eiMap.addId(edge, eIdx);</span>
+<span class="fc" id="L113">		int eIdx2 = ibuilder.addEdge(uIdx, vIdx);</span>
+<span class="pc bnc" id="L114" title="All 2 branches missed.">		assert eIdx == eIdx2;</span>
+<span class="fc" id="L115">	}</span>
 
 	@Override
 	public void addEdges(EdgeSet&lt;? extends Integer, ? extends Integer&gt; edges) {
-<span class="fc" id="L118">		final int edgesNumBefore = ibuilder.edges().size();</span>
-<span class="fc" id="L119">		ensureEdgeCapacity(edgesNumBefore + edges.size());</span>
-<span class="fc" id="L120">		int nextMapIdx = edgesNumBefore;</span>
+<span class="fc" id="L119">		final int edgesNumBefore = ibuilder.edges().size();</span>
+<span class="fc" id="L120">		ensureEdgeCapacity(edgesNumBefore + edges.size());</span>
+<span class="fc" id="L121">		int nextMapIdx = edgesNumBefore;</span>
 		try {
-<span class="fc bfc" id="L122" title="All 2 branches covered.">			for (int edge : edges) {</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">				if (edge &lt; 0)</span>
-<span class="fc" id="L124">					throw new IllegalArgumentException(&quot;Edge must be non negative&quot;);</span>
-<span class="fc" id="L125">				boolean added = eiMap.addIdIfNotDuplicate(edge, nextMapIdx);</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">				if (!added)</span>
-<span class="fc" id="L127">					throw new IllegalArgumentException(&quot;Duplicate edge: &quot; + edge);</span>
-<span class="fc" id="L128">				nextMapIdx++;</span>
-<span class="fc" id="L129">			}</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">			for (int edge : edges) {</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">				if (edge &lt; 0)</span>
+<span class="fc" id="L125">					throw new IllegalArgumentException(&quot;Edge must be non negative&quot;);</span>
+<span class="fc" id="L126">				boolean added = eiMap.addIdIfNotDuplicate(edge, nextMapIdx);</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">				if (!added)</span>
+<span class="fc" id="L128">					throw new IllegalArgumentException(&quot;Duplicate edge: &quot; + edge);</span>
+<span class="fc" id="L129">				nextMapIdx++;</span>
+<span class="fc" id="L130">			}</span>
 
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L132">			EdgeSet&lt;Integer, Integer&gt; edges0 = (EdgeSet&lt;Integer, Integer&gt;) edges;</span>
-<span class="fc" id="L133">			ibuilder.addEdgesReassignIds(new IntGraphImpl.AddEdgesIgnoreIdsIndexSet(edges0, viMap));</span>
+<span class="fc" id="L133">			EdgeSet&lt;Integer, Integer&gt; edges0 = (EdgeSet&lt;Integer, Integer&gt;) edges;</span>
+<span class="fc" id="L134">			ibuilder.addEdgesReassignIds(new IntGraphImpl.AddEdgesIgnoreIdsIndexSet(edges0, viMap));</span>
 
-<span class="fc" id="L135">		} catch (RuntimeException e) {</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">			for (; nextMapIdx-- &gt; edgesNumBefore;)</span>
-<span class="fc" id="L137">				eiMap.rollBackRemove(nextMapIdx);</span>
-<span class="fc" id="L138">			throw e;</span>
-<span class="fc" id="L139">		}</span>
-<span class="fc" id="L140">	}</span>
+<span class="fc" id="L136">		} catch (RuntimeException e) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			for (; nextMapIdx-- &gt; edgesNumBefore;)</span>
+<span class="fc" id="L138">				eiMap.rollBackRemove(nextMapIdx);</span>
+<span class="fc" id="L139">			throw e;</span>
+<span class="fc" id="L140">		}</span>
+<span class="fc" id="L141">	}</span>
 
 	@Override
 	public void ensureVertexCapacity(int verticesNum) {
-<span class="fc" id="L144">		ibuilder.ensureVertexCapacity(verticesNum);</span>
-<span class="fc" id="L145">		viMap.ensureCapacity(verticesNum);</span>
-<span class="fc" id="L146">	}</span>
+<span class="fc" id="L145">		ibuilder.ensureVertexCapacity(verticesNum);</span>
+<span class="fc" id="L146">		viMap.ensureCapacity(verticesNum);</span>
+<span class="fc" id="L147">	}</span>
 
 	@Override
 	public void ensureEdgeCapacity(int edgesNum) {
-<span class="fc" id="L150">		ibuilder.ensureEdgeCapacity(edgesNum);</span>
-<span class="fc" id="L151">		eiMap.ensureCapacity(edgesNum);</span>
-<span class="fc" id="L152">	}</span>
+<span class="fc" id="L151">		ibuilder.ensureEdgeCapacity(edgesNum);</span>
+<span class="fc" id="L152">		eiMap.ensureCapacity(edgesNum);</span>
+<span class="fc" id="L153">	}</span>
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getVerticesWeights(String key) {
-<span class="fc" id="L157">		WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.getVerticesWeights(key);</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">		if (indexWeights == null)</span>
-<span class="fc" id="L159">			return null;</span>
-<span class="fc" id="L160">		return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,</span>
-<span class="fc" id="L161">				iw -&gt; WeightsImpl.IntMapped.newInstance(iw, viMap));</span>
+<span class="fc" id="L158">		WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.getVerticesWeights(key);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">		if (indexWeights == null)</span>
+<span class="fc" id="L160">			return null;</span>
+<span class="fc" id="L161">		return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,</span>
+<span class="fc" id="L162">				iw -&gt; WeightsImpl.IntMapped.newInstance(iw, viMap));</span>
 	}
 
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
-<span class="fc" id="L167">		ibuilder.addVerticesWeights(key, type, defVal);</span>
-<span class="fc" id="L168">		return getVerticesWeights(key);</span>
+<span class="fc" id="L168">		ibuilder.addVerticesWeights(key, type, defVal);</span>
+<span class="fc" id="L169">		return getVerticesWeights(key);</span>
 	}
 
 	@Override
 	public Set&lt;String&gt; getVerticesWeightsKeys() {
-<span class="fc" id="L173">		return ibuilder.getVerticesWeightsKeys();</span>
+<span class="fc" id="L174">		return ibuilder.getVerticesWeightsKeys();</span>
 	}
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getEdgesWeights(String key) {
-<span class="fc" id="L179">		WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.getEdgesWeights(key);</span>
-<span class="fc bfc" id="L180" title="All 2 branches covered.">		if (indexWeights == null)</span>
-<span class="fc" id="L181">			return null;</span>
-<span class="fc" id="L182">		return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,</span>
-<span class="fc" id="L183">				iw -&gt; WeightsImpl.IntMapped.newInstance(iw, eiMap));</span>
+<span class="fc" id="L180">		WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.getEdgesWeights(key);</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">		if (indexWeights == null)</span>
+<span class="fc" id="L182">			return null;</span>
+<span class="fc" id="L183">		return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,</span>
+<span class="fc" id="L184">				iw -&gt; WeightsImpl.IntMapped.newInstance(iw, eiMap));</span>
 	}
 
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
-<span class="fc" id="L189">		ibuilder.addEdgesWeights(key, type, defVal);</span>
-<span class="fc" id="L190">		return getEdgesWeights(key);</span>
+<span class="fc" id="L190">		ibuilder.addEdgesWeights(key, type, defVal);</span>
+<span class="fc" id="L191">		return getEdgesWeights(key);</span>
 	}
 
 	@Override
 	public Set&lt;String&gt; getEdgesWeightsKeys() {
-<span class="fc" id="L195">		return ibuilder.getEdgesWeightsKeys();</span>
+<span class="fc" id="L196">		return ibuilder.getEdgesWeightsKeys();</span>
 	}
 
 	@Override
 	public IdBuilderInt vertexBuilder() {
-<span class="fc" id="L200">		return vertexBuilder;</span>
+<span class="fc" id="L201">		return vertexBuilder;</span>
 	}
 
 	@Override
 	public IdBuilderInt edgeBuilder() {
-<span class="fc" id="L205">		return edgeBuilder;</span>
+<span class="fc" id="L206">		return edgeBuilder;</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc" id="L210">		ibuilder.clear();</span>
-<span class="fc" id="L211">		viMap.idsClear();</span>
-<span class="fc" id="L212">		eiMap.idsClear();</span>
-<span class="fc" id="L213">		verticesWeights.clear();</span>
-<span class="fc" id="L214">		edgesWeights.clear();</span>
-<span class="fc" id="L215">		resetVertexAndEdgeBuilders();</span>
-<span class="fc" id="L216">	}</span>
+<span class="fc" id="L211">		ibuilder.clear();</span>
+<span class="fc" id="L212">		viMap.idsClear();</span>
+<span class="fc" id="L213">		eiMap.idsClear();</span>
+<span class="fc" id="L214">		verticesWeights.clear();</span>
+<span class="fc" id="L215">		edgesWeights.clear();</span>
+<span class="fc" id="L216">		resetVertexAndEdgeBuilders();</span>
+<span class="fc" id="L217">	}</span>
 
 	private void resetVertexAndEdgeBuilders() {
-<span class="fc bfc" id="L219" title="All 2 branches covered.">		vertexBuilder = factory.vertexFactory != null ? factory.vertexFactory.get() : null;</span>
-<span class="fc bfc" id="L220" title="All 2 branches covered.">		edgeBuilder = factory.edgeFactory != null ? factory.edgeFactory.get() : null;</span>
-<span class="fc" id="L221">	}</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">		vertexBuilder = factory.vertexFactory != null ? factory.vertexFactory.get() : null;</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">		edgeBuilder = factory.edgeFactory != null ? factory.edgeFactory.get() : null;</span>
+<span class="fc" id="L222">	}</span>
 
 	@Override
 	public boolean isDirected() {
-<span class="fc" id="L225">		return ibuilder.isDirected();</span>
+<span class="fc" id="L226">		return ibuilder.isDirected();</span>
 	}
 
 	@Override
 	public IntGraph build() {
-<span class="fc" id="L230">		return buildFromReIndexed(ibuilder.reIndexAndBuild(true, true));</span>
+<span class="fc" id="L231">		return buildFromReIndexed(ibuilder.reIndexAndBuild(true, true));</span>
 	}
 
 	@Override
 	public IntGraph buildMutable() {
-<span class="fc" id="L235">		return buildFromReIndexed(ibuilder.reIndexAndBuildMutable(true, true));</span>
+<span class="fc" id="L236">		return buildFromReIndexed(ibuilder.reIndexAndBuildMutable(true, true));</span>
 	}
 
 	private IntGraph buildFromReIndexed(IndexGraphBuilder.ReIndexedGraph reIndexedGraph) {
-<span class="fc" id="L239">		IndexGraph iGraph = reIndexedGraph.graph();</span>
-<span class="fc" id="L240">		Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
-<span class="fc" id="L241">		Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
-<span class="fc" id="L242">		return new IntGraphImpl(factory, iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));</span>
+<span class="fc" id="L240">		IndexGraph iGraph = reIndexedGraph.graph();</span>
+<span class="fc" id="L241">		Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; vReIndexing = reIndexedGraph.verticesReIndexing();</span>
+<span class="fc" id="L242">		Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; eReIndexing = reIndexedGraph.edgesReIndexing();</span>
+<span class="fc" id="L243">		return new IntGraphImpl(factory, iGraph, viMap, eiMap, vReIndexing, eReIndexing);</span>
 	}
 
 }

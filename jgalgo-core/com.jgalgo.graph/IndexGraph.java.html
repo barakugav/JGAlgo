@@ -534,31 +534,27 @@ public interface IndexGraph extends IntGraph {
 
 	@Override
 	default IndexGraph immutableCopy() {
-<span class="fc" id="L537">		return immutableCopy(false, false);</span>
+<span class="fc" id="L537">		return (IndexGraph) IntGraph.super.immutableCopy();</span>
 	}
 
 	@Override
 	default IndexGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc bfc" id="L542" title="All 2 branches covered.">		if (isDirected()) {</span>
-<span class="fc" id="L543">			return new GraphCsrDirected(this, copyVerticesWeights, copyEdgesWeights);</span>
-		} else {
-<span class="fc" id="L545">			return new GraphCsrUndirected(this, copyVerticesWeights, copyEdgesWeights);</span>
-		}
+<span class="fc" id="L542">		return (IndexGraph) IntGraph.super.immutableCopy(copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	@Override
 	default IndexGraph immutableView() {
-<span class="fc" id="L551">		return (IndexGraph) IntGraph.super.immutableView();</span>
+<span class="fc" id="L547">		return (IndexGraph) IntGraph.super.immutableView();</span>
 	}
 
 	@Override
 	default IndexGraph reverseView() {
-<span class="fc" id="L556">		return (IndexGraph) IntGraph.super.reverseView();</span>
+<span class="fc" id="L552">		return (IndexGraph) IntGraph.super.reverseView();</span>
 	}
 
 	@Override
 	default IndexGraph undirectedView() {
-<span class="fc" id="L561">		return (IndexGraph) IntGraph.super.undirectedView();</span>
+<span class="fc" id="L557">		return (IndexGraph) IntGraph.super.undirectedView();</span>
 	}
 
 	/**
@@ -571,7 +567,7 @@ public interface IndexGraph extends IntGraph {
 	 * @return a new undirected empty index graph
 	 */
 	static IndexGraph newUndirected() {
-<span class="fc" id="L574">		return IndexGraphFactory.undirected().newGraph();</span>
+<span class="fc" id="L570">		return IndexGraphFactory.undirected().newGraph();</span>
 	}
 
 	/**
@@ -584,7 +580,7 @@ public interface IndexGraph extends IntGraph {
 	 * @return a new directed empty index graph
 	 */
 	static IndexGraph newDirected() {
-<span class="fc" id="L587">		return IndexGraphFactory.directed().newGraph();</span>
+<span class="fc" id="L583">		return IndexGraphFactory.directed().newGraph();</span>
 	}
 
 }
