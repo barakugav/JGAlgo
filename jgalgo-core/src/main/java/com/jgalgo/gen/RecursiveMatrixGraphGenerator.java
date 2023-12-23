@@ -49,6 +49,21 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * graphs and \((0.57,0.19,0.19,0.05)\) for undirected graphs. The generator will generate undirected graphs by default.
  *
  * <p>
+ * In the following example, a graph with \(9\) vertices and \(23\) edges is generated using the R-MAT model. The
+ * probabilities \((a,b,c,d)\) are \((0.52,0.26,0.17,0.5)\), and the seed of the random number generator is set to some
+ * fixed value to get deterministic behavior.
+ *
+ * <pre> {@code
+ * Graph<Integer, Integer> g = new RecursiveMatrixGraphGenerator<>(IntGraphFactory.directed())
+ * 		.directed(true)
+ * 		.vertices(9)
+ * 		.edges(23)
+ * 		.edgeProbabilities(0.52, 0.26, 0.17, 0.5)
+ * 		.seed(0x7d0c16fa09e05751L)
+ * 		.generate();
+ * } </pre>
+ *
+ * <p>
  * For deterministic behavior, set the seed of the generator using {@link #seed(long)}.
  *
  * <p>

@@ -62,6 +62,20 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * By default, the value of \(p\) is \(0.1\) and the graph is undirected. Self and parallel edges are never created.
  *
  * <p>
+ * In the following example, a bipartite graph with four left vertices and six right vertices is generated. Each edge is
+ * created with probability \(0.15\). The graph is directed from left to right, and the seed of the random number
+ * generator is set to some fixed value for deterministic behavior.
+ *
+ * <pre> {@code
+ * Graph<Integer, Integer> g = new GnpBipartiteGraphGenerator<>(IntGraphFactory.directed())
+ * 		.directedLeftToRight()
+ * 		.vertices(4, 6)
+ * 		.edgeProbability(0.15)
+ * 		.seed(0x7d0c16fa09e05751L)
+ * 		.generate();
+ * } </pre>
+ *
+ * <p>
  * For deterministic behavior, set the seed of the generator using {@link #seed(long)}.
  *
  * <p>

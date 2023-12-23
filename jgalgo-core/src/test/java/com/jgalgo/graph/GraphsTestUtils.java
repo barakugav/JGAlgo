@@ -50,11 +50,14 @@ public class GraphsTestUtils extends TestUtils {
 
 	public static Graph<Integer, Integer> randGraph(int n, int m, boolean directed, boolean selfEdges,
 			boolean parallelEdges, boolean intGraph, long seed) {
-		GnmGraphGenerator<Integer, Integer> gen =
-				intGraph ? new GnmGraphGenerator<>(IntGraphFactory.undirected()) : new GnmGraphGenerator<>();
-		gen.seed(seed).directed(directed).selfEdges(selfEdges).parallelEdges(parallelEdges);
-		gen.vertices(range(n)).edges(m, IdBuilderInt.defaultBuilder());
-		return gen.generateMutable();
+		return new GnmGraphGenerator<>(intGraph ? IntGraphFactory.undirected() : GraphFactory.undirected())
+				.seed(seed)
+				.directed(directed)
+				.selfEdges(selfEdges)
+				.parallelEdges(parallelEdges)
+				.vertices(range(n))
+				.edges(m, IdBuilderInt.defaultBuilder())
+				.generateMutable();
 	}
 
 	public static Graph<Integer, Integer> randConnectedGraph(int n, int m, boolean directed, long seed) {
@@ -76,10 +79,12 @@ public class GraphsTestUtils extends TestUtils {
 		if (!directed) {
 			UniformTreeGenerator<Integer, Integer> gen = rand.nextBoolean() ? new UniformTreeGenerator<>()
 					: new UniformTreeGenerator<>(IntGraphFactory.undirected());
-			gen.seed(rand.nextLong() ^ 0xb14ff0d42e1e9f91L);
-			gen.vertices(range(n));
-			gen.edges(IdBuilderInt.defaultBuilder());
-			g = graphFactory.newCopyOf(gen.generateMutable(), true, true);
+			g = graphFactory
+					.newCopyOf(gen
+							.seed(rand.nextLong() ^ 0xb14ff0d42e1e9f91L)
+							.vertices(range(n))
+							.edges(IdBuilderInt.defaultBuilder())
+							.generateMutable(), true, true);
 			if (g.edges().size() > m)
 				throw new IllegalArgumentException();
 
@@ -157,16 +162,17 @@ public class GraphsTestUtils extends TestUtils {
 		Random rand = new Random(seed ^ 0xffcc43f8e915afd3L);
 		GnmBipartiteGraphGenerator<Integer, Integer> gen = rand.nextBoolean() ? new GnmBipartiteGraphGenerator<>()
 				: new GnmBipartiteGraphGenerator<>(IntGraphFactory.undirected());
-		gen.seed(rand.nextLong() ^ 0xc4d03e052f81a257L);
 		if (directed) {
 			gen.directedAll();
 		} else {
 			gen.undirected();
 		}
-		gen.vertices(range(n1), range(n1, n1 + n2));
-		gen.edges(m, IdBuilderInt.defaultBuilder());
-		gen.parallelEdges(parallelEdges);
-		return gen.generateMutable();
+		return gen
+				.seed(rand.nextLong() ^ 0xc4d03e052f81a257L)
+				.vertices(range(n1), range(n1, n1 + n2))
+				.edges(m, IdBuilderInt.defaultBuilder())
+				.parallelEdges(parallelEdges)
+				.generateMutable();
 	}
 
 	@SuppressWarnings("boxing")
@@ -189,10 +195,11 @@ public class GraphsTestUtils extends TestUtils {
 		Random rand = new Random(seed ^ 0xb7d49b2e6d194893L);
 		UniformTreeGenerator<Integer, Integer> gen = rand.nextBoolean() ? new UniformTreeGenerator<>()
 				: new UniformTreeGenerator<>(IntGraphFactory.undirected());
-		gen.seed(rand.nextLong() ^ 0xce76e209073639caL);
-		gen.vertices(range(n));
-		gen.edges(IdBuilderInt.defaultBuilder());
-		return gen.generateMutable();
+		return gen
+				.seed(rand.nextLong() ^ 0xce76e209073639caL)
+				.vertices(range(n))
+				.edges(IdBuilderInt.defaultBuilder())
+				.generateMutable();
 	}
 
 	public static Graph<Integer, Integer> randForest(int n, int m, long seed) {

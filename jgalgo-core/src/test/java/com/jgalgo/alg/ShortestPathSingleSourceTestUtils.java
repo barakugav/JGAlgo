@@ -235,14 +235,17 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		Graph<Integer, Integer> g;
 		ShortestPathSingleSource.Result<Integer, Integer> res;
 
-		CompleteGraphGenerator<Integer, Integer> gen = new CompleteGraphGenerator<>();
-		gen.vertices(range(25)).edges(IdBuilderInt.defaultBuilder());
-		g = gen.generate();
+		g = new CompleteGraphGenerator<Integer, Integer>()
+				.vertices(range(25))
+				.edges(IdBuilderInt.defaultBuilder())
+				.generate();
 		res = builder.build().computeShortestPaths(g, null, 0);
 		validateResult(g, null, 0, res, new ShortestPathSingleSourceDijkstra());
 
-		gen.vertices(range(2)).edges(IdBuilderInt.defaultBuilder());
-		g = gen.generate();
+		g = new CompleteGraphGenerator<Integer, Integer>()
+				.vertices(range(2))
+				.edges(IdBuilderInt.defaultBuilder())
+				.generate();
 		res = builder.build().computeShortestPaths(g, null, 0);
 		validateResult(g, null, 0, res, new ShortestPathSingleSourceDijkstra());
 	}

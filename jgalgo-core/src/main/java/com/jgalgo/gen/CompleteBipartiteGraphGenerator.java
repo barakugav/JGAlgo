@@ -57,6 +57,17 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * {@link BipartiteGraphs#getExistingPartition(Graph)}.
  *
  * <p>
+ * In the following example, a complete bipartite graph with four left and six right vertices is generated:
+ *
+ * <pre> {@code
+ * Graph<Integer, Integer> g = new CompleteBipartiteGraphGenerator<>(IntGraphFactory.directed())
+ * 		.directedAll()
+ * 		.vertices(4, 6)
+ * 		.edges(IdBuilderInt.defaultBuilder())
+ * 		.generate();
+ * } </pre>
+ *
+ * <p>
  * By default, the generated graph(s) is undirected. Self and parallel edges are never created.
  *
  * <p>

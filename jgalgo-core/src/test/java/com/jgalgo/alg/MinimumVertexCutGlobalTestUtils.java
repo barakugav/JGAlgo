@@ -24,6 +24,7 @@ import java.util.Random;
 import java.util.Set;
 import com.jgalgo.gen.CompleteGraphGenerator;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IdBuilderInt;
 import com.jgalgo.graph.IntGraphFactory;
@@ -74,10 +75,11 @@ class MinimumVertexCutGlobalTestUtils extends TestUtils {
 		tester.addPhase().withArgs(64);
 		tester.addPhase().withArgs(128);
 		tester.run((n) -> {
-			CompleteGraphGenerator<Integer, Integer> gen = rand.nextBoolean() ? new CompleteGraphGenerator<>()
-					: new CompleteGraphGenerator<>(IntGraphFactory.undirected());
-			gen.vertices(range(n)).edges(IdBuilderInt.defaultBuilder());
-			Graph<Integer, Integer> g = gen.generateMutable();
+			Graph<Integer, Integer> g = new CompleteGraphGenerator<>(
+					rand.nextBoolean() ? GraphFactory.undirected() : IntGraphFactory.undirected())
+							.vertices(range(n))
+							.edges(IdBuilderInt.defaultBuilder())
+							.generateMutable();
 
 			WeightFunction<Integer> w = null;
 			if (weighted && rand.nextBoolean()) {

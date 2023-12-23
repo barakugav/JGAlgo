@@ -45,6 +45,21 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * graph(s) may be directed or undirected, and by default it is undirected. Self edges are never created.
  *
  * <p>
+ * In the following example, an undirected graph with \(10\) vertices is generated. The initial clique size is \(3\),
+ * and at each step \(4\) edges are added. The seed is set to some fixed value to get deterministic behavior.
+ *
+ * <pre> {@code
+ * Graph<Integer, Integer> g = new BarabasiAlbertGraphGenerator<>(IntGraphFactory.undirected())
+ * 		.directed(false)
+ * 		.vertices(10)
+ * 		.edges(IdBuilderInt.defaultBuilder())
+ * 		.initialCliqueSize(3)
+ * 		.edgesPerStep(4)
+ * 		.seed(0x7d0c16fa09e05751L)
+ * 		.generate();
+ * } </pre>
+ *
+ * <p>
  * For deterministic behavior, set the seed of the generator using {@link #seed(long)}.
  *
  * <p>

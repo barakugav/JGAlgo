@@ -179,10 +179,10 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 	@Test
 	public void testDefaultImpl() {
 		ShortestPathAllPairs algo = ShortestPathAllPairs.newInstance();
-
-		CompleteGraphGenerator<Integer, Integer> gen = new CompleteGraphGenerator<>();
-		gen.vertices(range(25)).edges(IdBuilderInt.defaultBuilder());
-		Graph<Integer, Integer> g = gen.generate();
+		Graph<Integer, Integer> g = new CompleteGraphGenerator<Integer, Integer>()
+				.vertices(range(25))
+				.edges(IdBuilderInt.defaultBuilder())
+				.generate();
 
 		testAPSP(g, g.vertices(), true, null, algo, new ShortestPathSingleSourceDijkstra());
 		testAPSP(g, g.vertices(), true, e -> 78 + e.intValue(), algo, new ShortestPathSingleSourceDijkstra());

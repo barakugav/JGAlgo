@@ -37,6 +37,18 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * then there are two edges between two pair of vertices, one in each direction. Self edges are optional, but are
  * disabled by default. Parallel edges are never created.
  *
+ * <p>
+ * In the following example, a complete graph with 10 vertices is generated:
+ *
+ * <pre> {@code
+ * Graph<Integer, Integer> g = new CompleteGraphGenerator<>(IntGraphFactory.undirected())
+ * 		.directed(false)
+ * 		.vertices(10)
+ * 		.edges(IdBuilderInt.defaultBuilder())
+ * 		.selfEdges(false)
+ * 		.generate();
+ * } </pre>
+ *
  * @param  <V> the vertices type
  * @param  <E> the edges type
  * @author     Barak Ugav

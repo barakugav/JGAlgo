@@ -47,9 +47,10 @@ public class MatchingWeightedGabow1990Test extends TestBase {
 
 	@Test
 	public void testRandBipartiteGraphsWeightedPerfect() {
-		CompleteGraphGenerator<Integer, Integer> gen = new CompleteGraphGenerator<>();
-		gen.vertices(range(10)).edges(IdBuilderInt.defaultBuilder());
-		Graph<Integer, Integer> g = gen.generate();
+		Graph<Integer, Integer> g = new CompleteGraphGenerator<Integer, Integer>()
+				.vertices(range(10))
+				.edges(IdBuilderInt.defaultBuilder())
+				.generate();
 		WeightFunction<Integer> w = e -> 5;
 
 		MatchingAlgo algo = new MatchingWeightedGabow1990();

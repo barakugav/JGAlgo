@@ -53,13 +53,12 @@ public class UniformTreeGeneratorTest extends TestBase {
 			while (vertices.size() < n)
 				vertices.add(rand.nextInt(2 * n));
 
-			UniformTreeGenerator<Integer, Integer> gen = rand.nextBoolean() ? new UniformTreeGenerator<>()
-					: new UniformTreeGenerator<>(IntGraphFactory.undirected());
-			gen.seed(seedGen.nextSeed());
-			gen.vertices(vertices);
-			gen.edges(IdBuilderInt.defaultBuilder());
-
-			Graph<Integer, Integer> g = gen.generate();
+			Graph<Integer, Integer> g = (rand.nextBoolean() ? new UniformTreeGenerator<Integer, Integer>()
+					: new UniformTreeGenerator<>(IntGraphFactory.undirected()))
+							.seed(seedGen.nextSeed())
+							.vertices(vertices)
+							.edges(IdBuilderInt.defaultBuilder())
+							.generate();
 			assertTrue(Trees.isTree(g));
 		});
 	}

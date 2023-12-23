@@ -48,9 +48,10 @@ public class SteinerTreeMehlhornTest extends TestBase {
 	public void testEmptyTerminals() {
 		final SteinerTreeAlgo algo = new SteinerTreeMehlhorn();
 
-		CompleteGraphGenerator<Integer, Integer> gen = new CompleteGraphGenerator<>();
-		gen.vertices(range(7)).edges(IdBuilderInt.defaultBuilder());
-		Graph<Integer, Integer> g = gen.generate();
+		Graph<Integer, Integer> g = new CompleteGraphGenerator<Integer, Integer>()
+				.vertices(range(7))
+				.edges(IdBuilderInt.defaultBuilder())
+				.generate();
 
 		/* empty terminal set */
 		assertThrows(IllegalArgumentException.class, () -> algo.computeSteinerTree(g, null, IntList.of()));

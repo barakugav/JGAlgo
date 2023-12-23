@@ -43,6 +43,21 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * By default, the value of \(p\) is \(0.1\) and the graph is undirected and does not generate self-edges.
  *
  * <p>
+ * In the following example, a graph with nine vertices is generated. Each edge is included in the graph with
+ * probability \(0.15\). The graph is directed and self-edges are allowed. The seed of the random number generator is
+ * set to some fixed value to get deterministic behavior.
+ *
+ * <pre> {@code
+ * Graph<Integer, Integer> g = new GnpGraphGenerator<>(IntGraphFactory.directed())
+ * 		.directed(true)
+ * 		.vertices(9)
+ * 		.edgeProbability(0.15)
+ * 		.selfEdges(true)
+ * 		.seed(0x7d0c16fa09e05751L)
+ * 		.generate();
+ * } </pre>
+ *
+ * <p>
  * For deterministic behavior, set the seed of the generator using {@link #seed(long)}.
  *
  * <p>

@@ -69,6 +69,21 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * By default, the generated graph(s) will be undirected without parallel edges. Self edges are never generated.
  *
  * <p>
+ * In the following example, a bipartite graph with four left vertices and six right vertices is generated. The graph
+ * will have ten edges, and will be undirected without parallel edges. The seed of the generator is set to ensure
+ * deterministic behavior.
+ *
+ * <pre> {@code
+ * Graph<Integer, Integer> g = new GnmBipartiteGraphGenerator<>(IntGraphFactory.undirected())
+ * 		.undirected()
+ * 		.vertices(4, 6)
+ * 		.edges(10)
+ * 		.parallelEdges(false)
+ * 		.seed(0x7d0c16fa09e05751L)
+ * 		.generate();
+ * } </pre>
+ *
+ * <p>
  * For deterministic behavior, set the seed of the generator using {@link #seed(long)}.
  *
  * <p>

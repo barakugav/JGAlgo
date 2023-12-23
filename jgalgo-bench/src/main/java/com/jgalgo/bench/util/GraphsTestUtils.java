@@ -42,14 +42,14 @@ public class GraphsTestUtils extends TestUtils {
 
 	public static IntGraph randGraph(int n, int m, boolean directed, boolean selfEdges, boolean parallelEdges,
 			long seed) {
-		GnmGraphGenerator<Integer, Integer> gen = new GnmGraphGenerator<>(IntGraphFactory.undirected());
-		gen.seed(seed);
-		gen.directed(directed);
-		gen.selfEdges(selfEdges);
-		gen.parallelEdges(parallelEdges);
-		gen.vertices(range(n));
-		gen.edges(m, IdBuilderInt.defaultBuilder());
-		return (IntGraph) gen.generateMutable();
+		return (IntGraph) new GnmGraphGenerator<>(IntGraphFactory.undirected())
+				.seed(seed)
+				.directed(directed)
+				.selfEdges(selfEdges)
+				.parallelEdges(parallelEdges)
+				.vertices(range(n))
+				.edges(m, IdBuilderInt.defaultBuilder())
+				.generateMutable();
 	}
 
 	public static IntGraph randBipartiteGraph(int n1, int n2, int m, boolean directed, long seed) {
@@ -60,24 +60,25 @@ public class GraphsTestUtils extends TestUtils {
 			long seed) {
 		GnmBipartiteGraphGenerator<Integer, Integer> gen =
 				new GnmBipartiteGraphGenerator<>(IntGraphFactory.undirected());
-		gen.seed(seed);
 		if (directed) {
 			gen.directedAll();
 		} else {
 			gen.undirected();
 		}
-		gen.vertices(range(n1), range(n1, n1 + n2));
-		gen.edges(m, IdBuilderInt.defaultBuilder());
-		gen.parallelEdges(parallelEdges);
-		return (IntGraph) gen.generateMutable();
+		return (IntGraph) gen
+				.seed(seed)
+				.vertices(range(n1), range(n1, n1 + n2))
+				.edges(m, IdBuilderInt.defaultBuilder())
+				.parallelEdges(parallelEdges)
+				.generateMutable();
 	}
 
 	public static IntGraph randTree(int n, long seed) {
-		UniformTreeGenerator<Integer, Integer> gen = new UniformTreeGenerator<>(IntGraphFactory.undirected());
-		gen.seed(seed);
-		gen.vertices(range(n));
-		gen.edges(IdBuilderInt.defaultBuilder());
-		return (IntGraph) gen.generateMutable();
+		return (IntGraph) new UniformTreeGenerator<>(IntGraphFactory.undirected())
+				.seed(seed)
+				.vertices(range(n))
+				.edges(IdBuilderInt.defaultBuilder())
+				.generateMutable();
 	}
 
 	public static Boolean2ObjectFunction<IntGraph> defaultGraphImpl() {
@@ -124,32 +125,33 @@ public class GraphsTestUtils extends TestUtils {
 	}
 
 	public static IntGraph randomGraphGnp(int n, boolean directed, long seed) {
-		GnpGraphGenerator<Integer, Integer> gen = new GnpGraphGenerator<>(IntGraphFactory.undirected());
-		gen.seed(seed);
-		gen.directed(directed);
-		gen.vertices(range(n));
-		gen.edges(IdBuilderInt.defaultBuilder());
-		return gen.generate().indexGraph();
+		return new GnpGraphGenerator<>(IntGraphFactory.undirected())
+				.seed(seed)
+				.directed(directed)
+				.vertices(range(n))
+				.edges(IdBuilderInt.defaultBuilder())
+				.generate()
+				.indexGraph();
 	}
 
 	public static IntGraph randomGraphBarabasiAlbert(int n, boolean directed, long seed) {
-		BarabasiAlbertGraphGenerator<Integer, Integer> gen =
-				new BarabasiAlbertGraphGenerator<>(IntGraphFactory.undirected());
-		gen.seed(seed);
-		gen.directed(directed);
-		gen.vertices(range(n));
-		gen.edges(IdBuilderInt.defaultBuilder());
-		return gen.generate().indexGraph();
+		return new BarabasiAlbertGraphGenerator<>(IntGraphFactory.undirected())
+				.seed(seed)
+				.directed(directed)
+				.vertices(range(n))
+				.edges(IdBuilderInt.defaultBuilder())
+				.generate()
+				.indexGraph();
 	}
 
 	public static IntGraph randomGraphRecursiveMatrix(int n, int m, boolean directed, long seed) {
-		RecursiveMatrixGraphGenerator<Integer, Integer> gen =
-				new RecursiveMatrixGraphGenerator<>(IntGraphFactory.undirected());
-		gen.seed(seed);
-		gen.directed(directed);
-		gen.vertices(range(n));
-		gen.edges(m, IdBuilderInt.defaultBuilder());
-		return gen.generate().indexGraph();
+		return new RecursiveMatrixGraphGenerator<>(IntGraphFactory.undirected())
+				.seed(seed)
+				.directed(directed)
+				.vertices(range(n))
+				.edges(m, IdBuilderInt.defaultBuilder())
+				.generate()
+				.indexGraph();
 	}
 
 }

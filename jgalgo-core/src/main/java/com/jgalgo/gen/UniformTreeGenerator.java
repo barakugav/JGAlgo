@@ -42,6 +42,19 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * Codes" by Xiaodong Wang, Lei Wang and Yingjie Wu. The algorithm runs in linear time.
  *
  * <p>
+ * In the following example, a tree with \(24\) vertices is generated using the vertex builder of the graph factory,
+ * while the edges are generated using a custom identifier builder. The seed of the generator is set to some fixed value
+ * to get deterministic behavior.
+ *
+ * <pre> {@code
+ * Graph<Integer, Integer> g = new UniformTreeGenerator<>(IntGraphFactory.undirected())
+ * 		.vertices(24)
+ * 		.edges(IdBuilderInt.defaultBuilder())
+ * 		.seed(0x7d0c16fa09e05751L)
+ * 		.generate();
+ * } </pre>
+ *
+ * <p>
  * The generator generate undirected graphs only. If zero vertices are set, an empty graph is generated.
  *
  * <p>

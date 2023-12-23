@@ -54,6 +54,21 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * generate {@linkplain IntGraph int graphs}).
  *
  * <p>
+ * In the following example, a graph with ten vertices and fourteen edges is generated. The graph is directed, contains
+ * self-edges and does not contain parallel-edges. The seed of the generator is set to ensure deterministic behavior.
+ *
+ * <pre> {@code
+ * Graph<Integer, Integer> g = new GnmGraphGenerator<>(IntGraphFactory.directed())
+ * 		.directed(true)
+ * 		.vertices(10)
+ * 		.edges(14)
+ * 		.selfEdges(true)
+ * 		.parallelEdges(false)
+ * 		.seed(0x7d0c16fa09e05751L)
+ * 		.generate();
+ * } </pre>
+ *
+ * <p>
  * For deterministic behavior, set the seed of the generator using {@link #seed(long)}.
  *
  * @param  <V> the vertices type
