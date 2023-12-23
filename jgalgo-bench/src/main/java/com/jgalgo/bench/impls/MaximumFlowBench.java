@@ -59,8 +59,9 @@ public class MaximumFlowBench {
 
 	void benchMaxFlow(MaximumFlow algo, Blackhole blackhole) {
 		MaxFlowTask graph = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		IFlow flow = (IFlow) algo.computeMaximumFlow(graph.g, graph.capacity, Integer.valueOf(graph.source),
-				Integer.valueOf(graph.sink));
+		IFlow flow = (IFlow) algo
+				.computeMaximumFlow(graph.g, graph.capacity, Integer.valueOf(graph.source),
+						Integer.valueOf(graph.sink));
 		blackhole.consume(flow);
 	}
 

@@ -51,8 +51,8 @@ public class SSSPPositiveWeightsBench {
 
 	void benchSSSP(ShortestPathSingleSource algo, Blackhole blackhole) {
 		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -> (i + 1) % graphsNum));
-		ShortestPathSingleSource.IResult result = (ShortestPathSingleSource.IResult) algo.computeShortestPaths(args.g,
-				args.w, Integer.valueOf(args.source));
+		ShortestPathSingleSource.IResult result = (ShortestPathSingleSource.IResult) algo
+				.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));
 		blackhole.consume(result);
 	}
 

@@ -198,7 +198,9 @@ public class JMHTester {
 	}
 
 	private static Collection<Class<?>> getClassSubClasses(Class<?> clazz) {
-		return getPackageClasses(clazz.getPackageName()).stream().filter(c -> clazz.isAssignableFrom(c))
+		return getPackageClasses(clazz.getPackageName())
+				.stream()
+				.filter(c -> clazz.isAssignableFrom(c))
 				.collect(Collectors.toList());
 	}
 
@@ -213,8 +215,9 @@ public class JMHTester {
 				assert !file.getName().contains(".");
 				// classes.addAll(findClasses(file, packageName + "." + file.getName()));
 			} else if (file.getName().endsWith(".class")) {
-				classes.add(
-						Class.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6)));
+				classes
+						.add(Class
+								.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6)));
 			}
 		}
 		return classes;

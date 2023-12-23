@@ -67,8 +67,8 @@ public class ShortestPathSTBench {
 		if (algo instanceof ShortestPathHeuristicST) {
 			result = ((ShortestPathHeuristicST) algo).computeShortestPath(g, w, source, target, heuristic);
 		} else if (algo instanceof ShortestPathST) {
-			result = ((ShortestPathST) algo).computeShortestPath(g, w, Integer.valueOf(source),
-					Integer.valueOf(target));
+			result = ((ShortestPathST) algo)
+					.computeShortestPath(g, w, Integer.valueOf(source), Integer.valueOf(target));
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -234,7 +234,8 @@ public class ShortestPathSTBench {
 			w0.set(e, w.weight(e) * (0.5 + rand.nextDouble() / 2));
 
 		ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) ShortestPathSingleSource
-				.newInstance().computeShortestPaths(g, w0, Integer.valueOf(target));
+				.newInstance()
+				.computeShortestPaths(g, w0, Integer.valueOf(target));
 		return ssspRes::distance;
 	}
 

@@ -1511,8 +1511,11 @@ public class GraphBench {
 			n = Integer.parseInt(argsMap.get("|V|"));
 			m = Integer.parseInt(argsMap.get("|E|"));
 
-			g = IndexGraphFactory.newInstance(directed).allowSelfEdges(allowSelfEdges)
-					.allowParallelEdges(allowParallelEdges).newGraph();
+			g = IndexGraphFactory
+					.newInstance(directed)
+					.allowSelfEdges(allowSelfEdges)
+					.allowParallelEdges(allowParallelEdges)
+					.newGraph();
 			g.addVertices(range(n));
 			LongSet existingEdges = allowParallelEdges ? null : new LongOpenHashSet();
 			for (int e = 0; e < m;) {
