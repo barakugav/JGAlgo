@@ -86,7 +86,7 @@ abstract class GraphElementSet extends AbstractIntSet {
 
 	}
 
-	static class Mutable extends GraphElementSet.Immutable {
+	static class Mutable extends GraphElementSet {
 
 		private final List<IndexRemoveListener> removeListeners = new CopyOnWriteArrayList<>();
 
