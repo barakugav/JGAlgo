@@ -48,8 +48,9 @@ class RMQStaticUtils extends TestUtils {
 			int actual = a[actualIdx];
 
 			if (actual != expected) {
-				System.err.println(" [" + i + "," + j + "] -> expected[" + expectedIdx + "]=" + expected + " actual["
-						+ actualIdx + "]=" + actual);
+				System.err
+						.println(" [" + i + "," + j + "] -> expected[" + expectedIdx + "]=" + expected + " actual["
+								+ actualIdx + "]=" + actual);
 				System.err.println("data size: " + a.length);
 				System.err.println("queries num: " + queries.length);
 				System.err.println(formatRMQDataAndQueries(a, queries));

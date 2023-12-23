@@ -44,8 +44,9 @@ public class RedBlackTreeExtendedTest extends TestBase {
 			RedBlackTreeExtension.Size<Integer, Void> sizeExt = new RedBlackTreeExtension.Size<>();
 			ObjObjRedBlackTree<Integer, Void> tree = new RedBlackTreeExtended<>(compare, List.of(sizeExt));
 
-			IntReferenceableHeapTestUtils.testHeap(intRefHeapFromObjObjRefHeap(tree), n, m,
-					IntReferenceableHeapTestUtils.TestMode.Normal, false, compare, seedGen.nextSeed());
+			IntReferenceableHeapTestUtils
+					.testHeap(intRefHeapFromObjObjRefHeap(tree), n, m, IntReferenceableHeapTestUtils.TestMode.Normal,
+							false, compare, seedGen.nextSeed());
 
 			for (ObjObjReferenceableHeap.Ref<Integer, Void> node : tree) {
 				int expectedSize = 0;
@@ -75,8 +76,9 @@ public class RedBlackTreeExtendedTest extends TestBase {
 			RedBlackTreeExtension.Min<Integer, Void> minExt = new RedBlackTreeExtension.Min<>();
 			ObjObjRedBlackTree<Integer, Void> tree = new RedBlackTreeExtended<>(compare, List.of(minExt));
 
-			IntReferenceableHeapTestUtils.testHeap(intRefHeapFromObjObjRefHeap(tree), n, m,
-					IntReferenceableHeapTestUtils.TestMode.Normal, false, compare, seedGen.nextSeed());
+			IntReferenceableHeapTestUtils
+					.testHeap(intRefHeapFromObjObjRefHeap(tree), n, m, IntReferenceableHeapTestUtils.TestMode.Normal,
+							false, compare, seedGen.nextSeed());
 
 			for (ObjObjReferenceableHeap.Ref<Integer, Void> node : tree) {
 				int expectedMin = Integer.MAX_VALUE;
@@ -105,8 +107,9 @@ public class RedBlackTreeExtendedTest extends TestBase {
 			RedBlackTreeExtension.Max<Integer, Void> maxExt = new RedBlackTreeExtension.Max<>();
 			ObjObjRedBlackTree<Integer, Void> tree = new RedBlackTreeExtended<>(compare, List.of(maxExt));
 
-			IntReferenceableHeapTestUtils.testHeap(intRefHeapFromObjObjRefHeap(tree), n, m,
-					IntReferenceableHeapTestUtils.TestMode.Normal, false, compare, seedGen.nextSeed());
+			IntReferenceableHeapTestUtils
+					.testHeap(intRefHeapFromObjObjRefHeap(tree), n, m, IntReferenceableHeapTestUtils.TestMode.Normal,
+							false, compare, seedGen.nextSeed());
 			for (ObjObjReferenceableHeap.Ref<Integer, Void> node : tree) {
 				int expectedMax = Integer.MIN_VALUE;
 				for (ObjObjReferenceableHeap.Ref<Integer, Void> descendant : IterTools

@@ -140,8 +140,9 @@ public class RangeTest extends TestBase {
 			List<Object> notEqual = new ArrayList<>();
 			notEqual.addAll(List.of(range(to + 1), new IntOpenHashSet(range(to + 1)), new HashSet<>(range(to + 1))));
 			if (to != 0)
-				notEqual.addAll(
-						List.of(range(to - 1), new IntOpenHashSet(range(to - 1)), new HashSet<>(range(to - 1))));
+				notEqual
+						.addAll(List
+								.of(range(to - 1), new IntOpenHashSet(range(to - 1)), new HashSet<>(range(to - 1))));
 
 			for (Object o : equal) {
 				assertEquals(range, o);
@@ -159,15 +160,23 @@ public class RangeTest extends TestBase {
 
 			List<Object> equal = List.of(range, range(from, to), new IntOpenHashSet(range), new HashSet<>(range));
 			List<Object> notEqual = new ArrayList<>();
-			notEqual.addAll(List.of(range(from - 1, to), new IntOpenHashSet(range(from - 1, to)),
-					new HashSet<>(range(from - 1, to))));
-			notEqual.addAll(List.of(range(from, to + 1), new IntOpenHashSet(range(from, to + 1)),
-					new HashSet<>(range(from, to + 1))));
+			notEqual
+					.addAll(List
+							.of(range(from - 1, to), new IntOpenHashSet(range(from - 1, to)),
+									new HashSet<>(range(from - 1, to))));
+			notEqual
+					.addAll(List
+							.of(range(from, to + 1), new IntOpenHashSet(range(from, to + 1)),
+									new HashSet<>(range(from, to + 1))));
 			if (from != to) {
-				notEqual.addAll(List.of(range(from + 1, to), new IntOpenHashSet(range(from + 1, to)),
-						new HashSet<>(range(from + 1, to))));
-				notEqual.addAll(List.of(range(from, to - 1), new IntOpenHashSet(range(from, to - 1)),
-						new HashSet<>(range(from, to - 1))));
+				notEqual
+						.addAll(List
+								.of(range(from + 1, to), new IntOpenHashSet(range(from + 1, to)),
+										new HashSet<>(range(from + 1, to))));
+				notEqual
+						.addAll(List
+								.of(range(from, to - 1), new IntOpenHashSet(range(from, to - 1)),
+										new HashSet<>(range(from, to - 1))));
 				IntSet notEqual1 = new IntOpenHashSet();
 				notEqual1.addAll(range(from, to - 1));
 				notEqual1.add(to);

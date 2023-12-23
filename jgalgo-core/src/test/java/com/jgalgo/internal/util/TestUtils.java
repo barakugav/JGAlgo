@@ -82,8 +82,9 @@ public class TestUtils {
 					try {
 						test.accept(phase);
 					} catch (Throwable ex) {
-						System.err.println("failed at phase " + pIdx + " args=" + Arrays.toString(phase.args)
-								+ " iteration " + repeat);
+						System.err
+								.println("failed at phase " + pIdx + " args=" + Arrays.toString(phase.args)
+										+ " iteration " + repeat);
 						throw ex;
 					}
 				}

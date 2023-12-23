@@ -73,9 +73,10 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 				}
 			}
 
-			xlogxTableDS = outerRMQ.preProcessSequence(
-					(i, j) -> cmpOrig.compare(i * blockSize + blockMinimum(i), j * blockSize + blockMinimum(j)),
-					blockNum);
+			xlogxTableDS = outerRMQ
+					.preProcessSequence(
+							(i, j) -> cmpOrig.compare(i * blockSize + blockMinimum(i), j * blockSize + blockMinimum(j)),
+							blockNum);
 
 		}
 
