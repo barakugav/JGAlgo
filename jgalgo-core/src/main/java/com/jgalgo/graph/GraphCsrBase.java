@@ -42,7 +42,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	private boolean containsParallelEdgesValid;
 
 	GraphCsrBase(boolean directed, Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
-			BuilderProcessEdges processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
+			BuilderProcessEdges processEdges, Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(graphOrBuilder, false);
 		final int n = verticesNum(graphOrBuilder);
@@ -83,7 +83,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 		}
 
 		if (copyEdgesWeights && inputCsrGraph.isPresent()) {
-			assert edgesReIndexing == null;
+			assert edgesReIndexing.isEmpty();
 			edgesUserWeights = inputCsrGraph.get().edgesUserWeights;
 
 		} else if (copyEdgesWeights) {
@@ -94,12 +94,13 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 
 			WeightsImpl.IndexImmutable.Builder edgesUserWeightsBuilder =
 					new WeightsImpl.IndexImmutable.Builder(edges, true);
-			if (edgesReIndexing == null) {
+			if (edgesReIndexing.isEmpty()) {
 				for (String key : edgesWeightsKeys)
 					edgesUserWeightsBuilder.copyAndAddWeights(key, getWeights.apply(key));
 			} else {
 				for (String key : edgesWeightsKeys)
-					edgesUserWeightsBuilder.copyAndAddWeightsReindexed(key, getWeights.apply(key), edgesReIndexing);
+					edgesUserWeightsBuilder.copyAndAddWeightsReindexed(key, getWeights.apply(key),
+							edgesReIndexing.get());
 			}
 			edgesUserWeights = edgesUserWeightsBuilder.build();
 

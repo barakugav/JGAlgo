@@ -18,7 +18,6 @@ package com.jgalgo.graph;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Optional;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -724,23 +723,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 
 	@Override
 	default IntGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		IndexIntIdMap viMap = indexGraphVerticesMap();
-		IndexIntIdMap eiMap = indexGraphEdgesMap();
-		/* create a new factory with no vertex and edge builders */
-		IntGraphFactoryImpl factory = new IntGraphFactoryImpl(isDirected());
-		factory.setVertexBuilder(null);
-		factory.setEdgeBuilder(null);
-		if (isDirected()) {
-			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =
-					GraphCsrDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);
-			IndexGraph iGraph = reIndexedGraph.graph();
-			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
-			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-			return new IntGraphImpl(factory, iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
-		} else {
-			IndexGraph iGraph = new GraphCsrUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);
-			return new IntGraphImpl(factory, iGraph, viMap, eiMap, null, null);
-		}
+		return (IntGraph) Graph.super.immutableCopy(copyVerticesWeights, copyEdgesWeights);
 	}
 
 	@Override

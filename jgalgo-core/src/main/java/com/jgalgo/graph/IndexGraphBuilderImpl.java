@@ -34,8 +34,8 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 	final WeightsImpl.IndexMutable.Manager verticesUserWeights;
 	final WeightsImpl.IndexMutable.Manager edgesUserWeights;
 
-	IndexGraphFactoryImpl.Impl mutableImpl;
-	IndexGraphFactoryImpl.Impl immutableImpl;
+	IndexGraphFactoryImpl.MutableImpl mutableImpl;
+	IndexGraphFactoryImpl.ImmutableImpl immutableImpl;
 
 	IndexGraphBuilderImpl(boolean directed) {
 		this.directed = directed;
@@ -97,11 +97,11 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 		immutableImpl = new IndexGraphFactoryImpl(directed).immutableImpl();
 	}
 
-	void setMutableImpl(IndexGraphFactoryImpl.Impl mutableImpl) {
+	void setMutableImpl(IndexGraphFactoryImpl.MutableImpl mutableImpl) {
 		this.mutableImpl = Objects.requireNonNull(mutableImpl);
 	}
 
-	void setImmutableImpl(IndexGraphFactoryImpl.Impl immutableImpl) {
+	void setImmutableImpl(IndexGraphFactoryImpl.ImmutableImpl immutableImpl) {
 		this.immutableImpl = Objects.requireNonNull(immutableImpl);
 	}
 
@@ -312,16 +312,12 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 	@Override
 	public IndexGraphBuilder.ReIndexedGraph reIndexAndBuild(boolean reIndexVertices, boolean reIndexEdges) {
-		if (directed && reIndexEdges) {
-			return GraphCsrDirectedReindexed.newInstance(this);
-		} else {
-			return new ReIndexedGraphImpl(build(), Optional.empty(), Optional.empty());
-		}
+		return immutableImpl.newFromBuilderWithReIndex(this, reIndexVertices, reIndexEdges);
 	}
 
 	@Override
 	public IndexGraphBuilder.ReIndexedGraph reIndexAndBuildMutable(boolean reIndexVertices, boolean reIndexEdges) {
-		return new ReIndexedGraphImpl(buildMutable(), Optional.empty(), Optional.empty());
+		return mutableImpl.newFromBuilderWithReIndex(this, reIndexVertices, reIndexEdges);
 	}
 
 	@Override

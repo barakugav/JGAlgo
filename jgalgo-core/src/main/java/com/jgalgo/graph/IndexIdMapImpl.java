@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -46,11 +47,11 @@ class IndexIdMapImpl<K> implements IndexIdMap<K> {
 		immutable = false;
 	}
 
-	private IndexIdMapImpl(IndexIdMap<K> orig, IndexGraphBuilder.ReIndexingMap reIndexing, IntSet indicesSet,
+	private IndexIdMapImpl(IndexIdMap<K> orig, Optional<IndexGraphBuilder.ReIndexingMap> reIndexing, IntSet indicesSet,
 			boolean isEdges, boolean immutable) {
 		this.indicesSet = indicesSet;
 		int elementsSize = this.indicesSet.size();
-		if (orig instanceof IndexIdMapImpl && reIndexing == null) {
+		if (orig instanceof IndexIdMapImpl && reIndexing.isEmpty()) {
 			IndexIdMapImpl<K> orig0 = (IndexIdMapImpl<K>) orig;
 			idToIndex = new Object2IntOpenHashMap<>(orig0.idToIndex);
 			idToIndex.defaultReturnValue(-1);
@@ -63,7 +64,7 @@ class IndexIdMapImpl<K> implements IndexIdMap<K> {
 				indexToId = ObjectArrays.DEFAULT_EMPTY_ARRAY;
 			} else {
 				indexToId = new Object[elementsSize];
-				if (reIndexing == null) {
+				if (reIndexing.isEmpty()) {
 					for (int idx : this.indicesSet) {
 						K id = orig.indexToId(idx);
 						if (id == null)
@@ -76,8 +77,9 @@ class IndexIdMapImpl<K> implements IndexIdMap<K> {
 					}
 
 				} else {
+					IndexGraphBuilder.ReIndexingMap reIndexing0 = reIndexing.get();
 					for (int idx : this.indicesSet) {
-						K id = orig.indexToId(reIndexing.reIndexedToOrig(idx));
+						K id = orig.indexToId(reIndexing0.reIndexedToOrig(idx));
 						if (id == null)
 							throw new NullPointerException("null id");
 						indexToId[idx] = id;
@@ -97,7 +99,7 @@ class IndexIdMapImpl<K> implements IndexIdMap<K> {
 		return new IndexIdMapImpl<>(indicesSet, isEdges, expectedSize);
 	}
 
-	static <K> IndexIdMapImpl<K> newCopyOf(IndexIdMap<K> orig, IndexGraphBuilder.ReIndexingMap reIndexing,
+	static <K> IndexIdMapImpl<K> newCopyOf(IndexIdMap<K> orig, Optional<IndexGraphBuilder.ReIndexingMap> reIndexing,
 			IntSet indicesSet, boolean isEdges, boolean immutable) {
 		return new IndexIdMapImpl<>(orig, reIndexing, indicesSet, isEdges, immutable);
 	}

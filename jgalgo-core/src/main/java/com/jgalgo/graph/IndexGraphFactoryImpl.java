@@ -16,6 +16,9 @@
 package com.jgalgo.graph;
 
 import java.util.EnumSet;
+import java.util.Optional;
+import com.jgalgo.graph.IndexGraphBuilder.ReIndexedGraph;
+import com.jgalgo.graph.IndexGraphBuilderImpl.ReIndexedGraphImpl;
 import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 class IndexGraphFactoryImpl implements IndexGraphFactory {
@@ -46,6 +49,15 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	}
 
 	@Override
+	public IndexGraph newImmutableCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights,
+			boolean copyEdgesWeights) {
+		if (directed != g.isDirected())
+			throw new IllegalArgumentException("graph is " + (g.isDirected() ? "directed" : "undirected")
+					+ " while factory is " + (directed ? "directed" : "undirected"));
+		return immutableImpl().newCopyOf((IndexGraph) g, copyVerticesWeights, copyEdgesWeights);
+	}
+
+	@Override
 	public IndexGraphBuilder newBuilder() {
 		IndexGraphBuilderImpl builder = new IndexGraphBuilderImpl(directed);
 		builder.setMutableImpl(mutableImpl());
@@ -62,7 +74,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 		return builder;
 	}
 
-	static interface Impl {
+	static interface MutableImpl {
 
 		IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum);
 
@@ -70,11 +82,16 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 		IndexGraph newFromBuilder(IndexGraphBuilderImpl builder);
 
+		default IndexGraphBuilder.ReIndexedGraph newFromBuilderWithReIndex(IndexGraphBuilderImpl builder,
+				boolean reIndexVertices, boolean reIndexEdges) {
+			return new ReIndexedGraphImpl(newFromBuilder(builder), Optional.empty(), Optional.empty());
+		}
+
 	}
 
-	Impl mutableImpl() {
-		Boolean2ObjectFunction<Impl> arrayImplFactory = selfEdges -> {
-			return directed ? new Impl() {
+	MutableImpl mutableImpl() {
+		Boolean2ObjectFunction<MutableImpl> arrayImplFactory = selfEdges -> {
+			return directed ? new MutableImpl() {
 
 				@Override
 				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
@@ -90,7 +107,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphArrayDirected(selfEdges, builder);
 				}
-			} : new Impl() {
+			} : new MutableImpl() {
 
 				@Override
 				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
@@ -108,11 +125,11 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 			};
 		};
-		Impl arrayImpl = arrayImplFactory.get(false);
-		Impl arrayImplWithSelfEdges = arrayImplFactory.get(true);
+		MutableImpl arrayImpl = arrayImplFactory.get(false);
+		MutableImpl arrayImplWithSelfEdges = arrayImplFactory.get(true);
 
-		Boolean2ObjectFunction<Impl> linkedImplFactory = selfEdges -> {
-			return directed ? new Impl() {
+		Boolean2ObjectFunction<MutableImpl> linkedImplFactory = selfEdges -> {
+			return directed ? new MutableImpl() {
 
 				@Override
 				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
@@ -128,7 +145,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphLinkedDirected(selfEdges, builder);
 				}
-			} : new Impl() {
+			} : new MutableImpl() {
 
 				@Override
 				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
@@ -146,10 +163,10 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 			};
 		};
-		Impl linkedImpl = linkedImplFactory.get(false);
-		Impl linkedImplWithSelfEdges = linkedImplFactory.get(true);
-		Boolean2ObjectFunction<Impl> linkedPtrImplFactory = selfEdges -> {
-			return directed ? new Impl() {
+		MutableImpl linkedImpl = linkedImplFactory.get(false);
+		MutableImpl linkedImplWithSelfEdges = linkedImplFactory.get(true);
+		Boolean2ObjectFunction<MutableImpl> linkedPtrImplFactory = selfEdges -> {
+			return directed ? new MutableImpl() {
 
 				@Override
 				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
@@ -165,7 +182,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphLinkedPtrDirected(selfEdges, builder);
 				}
-			} : new Impl() {
+			} : new MutableImpl() {
 
 				@Override
 				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
@@ -183,10 +200,10 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 			};
 		};
-		Impl linkedPtrImpl = linkedPtrImplFactory.get(false);
-		Impl linkedPtrImplWithSelfEdges = linkedPtrImplFactory.get(true);
-		Boolean2ObjectFunction<Impl> hashtableImplFactory = selfEdges -> {
-			return directed ? new Impl() {
+		MutableImpl linkedPtrImpl = linkedPtrImplFactory.get(false);
+		MutableImpl linkedPtrImplWithSelfEdges = linkedPtrImplFactory.get(true);
+		Boolean2ObjectFunction<MutableImpl> hashtableImplFactory = selfEdges -> {
+			return directed ? new MutableImpl() {
 
 				@Override
 				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
@@ -202,7 +219,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphHashmapDirected(selfEdges, builder);
 				}
-			} : new Impl() {
+			} : new MutableImpl() {
 
 				@Override
 				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
@@ -220,10 +237,10 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 			};
 		};
-		Impl hashtableImpl = hashtableImplFactory.get(false);
-		Impl hashtableImplWithSelfEdges = hashtableImplFactory.get(true);
-		Boolean2ObjectFunction<Impl> hashtableMultiImplFactory = selfEdges -> {
-			return directed ? new Impl() {
+		MutableImpl hashtableImpl = hashtableImplFactory.get(false);
+		MutableImpl hashtableImplWithSelfEdges = hashtableImplFactory.get(true);
+		Boolean2ObjectFunction<MutableImpl> hashtableMultiImplFactory = selfEdges -> {
+			return directed ? new MutableImpl() {
 
 				@Override
 				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
@@ -239,7 +256,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphHashmapMultiDirected(selfEdges, builder);
 				}
-			} : new Impl() {
+			} : new MutableImpl() {
 
 				@Override
 				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
@@ -257,10 +274,10 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 			};
 		};
-		Impl hashtableMultiImpl = hashtableMultiImplFactory.get(false);
-		Impl hashtableMultiImplWithSelfEdges = hashtableMultiImplFactory.get(true);
-		Boolean2ObjectFunction<Impl> matrixImplFactory = selfEdges -> {
-			return directed ? new Impl() {
+		MutableImpl hashtableMultiImpl = hashtableMultiImplFactory.get(false);
+		MutableImpl hashtableMultiImplWithSelfEdges = hashtableMultiImplFactory.get(true);
+		Boolean2ObjectFunction<MutableImpl> matrixImplFactory = selfEdges -> {
+			return directed ? new MutableImpl() {
 
 				@Override
 				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
@@ -276,7 +293,7 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
 					return new GraphMatrixDirected(selfEdges, builder);
 				}
-			} : new Impl() {
+			} : new MutableImpl() {
 
 				@Override
 				public IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
@@ -294,8 +311,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 			};
 		};
-		Impl matrixImpl = matrixImplFactory.get(false);
-		Impl matrixImplWithSelfEdges = matrixImplFactory.get(true);
+		MutableImpl matrixImpl = matrixImplFactory.get(false);
+		MutableImpl matrixImplWithSelfEdges = matrixImplFactory.get(true);
 
 		if (impl != null) {
 			switch (impl) {
@@ -346,18 +363,36 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 		}
 	}
 
-	private static interface ImplImmutable extends Impl {
-		@Override
-		default IndexGraph newGraph(int expectedVerticesNum, int expectedEdgesNum) {
-			throw new UnsupportedOperationException();
-		}
+	static interface ImmutableImpl {
+
+		IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights);
+
+		IndexGraph newFromBuilder(IndexGraphBuilderImpl builder);
+
+		IndexGraphBuilder.ReIndexedGraph newCopyOfWithReIndex(IndexGraph graph, boolean reIndexVertices,
+				boolean reIndexEdges, boolean copyVerticesWeights, boolean copyEdgesWeights);
+
+		IndexGraphBuilder.ReIndexedGraph newFromBuilderWithReIndex(IndexGraphBuilderImpl builder,
+				boolean reIndexVertices, boolean reIndexEdges);
+
 	}
 
-	Impl immutableImpl() {
-		Impl csrImpl = directed ? new ImplImmutable() {
+	ImmutableImpl immutableImpl() {
+		ImmutableImpl csrImpl = directed ? new ImmutableImpl() {
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 				return new GraphCsrDirected(graph, copyVerticesWeights, copyEdgesWeights);
+			}
+
+			@Override
+			public IndexGraphBuilder.ReIndexedGraph newCopyOfWithReIndex(IndexGraph graph, boolean reIndexVertices,
+					boolean reIndexEdges, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+				if (reIndexEdges) {
+					return GraphCsrDirectedReindexed.newInstance(graph, copyVerticesWeights, copyEdgesWeights);
+				} else {
+					return new ReIndexedGraphImpl(newCopyOf(graph, copyVerticesWeights, copyEdgesWeights),
+							Optional.empty(), Optional.empty());
+				}
 			}
 
 			@Override
@@ -366,10 +401,28 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 						GraphCsrBase.BuilderProcessEdgesDirected.valueOf(builder);
 				return new GraphCsrDirected(builder, processEdges);
 			}
-		} : new ImplImmutable() {
+
+			@Override
+			public ReIndexedGraph newFromBuilderWithReIndex(IndexGraphBuilderImpl builder, boolean reIndexVertices,
+					boolean reIndexEdges) {
+				if (reIndexEdges) {
+					return GraphCsrDirectedReindexed.newInstance(builder);
+				} else {
+					return new ReIndexedGraphImpl(newFromBuilder(builder), Optional.empty(), Optional.empty());
+				}
+			}
+		} : new ImmutableImpl() {
 			@Override
 			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 				return new GraphCsrUndirected(graph, copyVerticesWeights, copyEdgesWeights);
+			}
+
+			@Override
+			public IndexGraphBuilder.ReIndexedGraph newCopyOfWithReIndex(IndexGraph graph, boolean reIndexVertices,
+					boolean reIndexEdges, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+				/* no re-indexing for undirected graph */
+				return new ReIndexedGraphImpl(newCopyOf(graph, copyVerticesWeights, copyEdgesWeights), Optional.empty(),
+						Optional.empty());
 			}
 
 			@Override
@@ -377,6 +430,13 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				GraphCsrBase.BuilderProcessEdgesUndirected processEdges =
 						GraphCsrBase.BuilderProcessEdgesUndirected.valueOf(builder);
 				return new GraphCsrUndirected(builder, processEdges);
+			}
+
+			@Override
+			public ReIndexedGraph newFromBuilderWithReIndex(IndexGraphBuilderImpl builder, boolean reIndexVertices,
+					boolean reIndexEdges) {
+				/* no re-indexing for undirected graph */
+				return new ReIndexedGraphImpl(newFromBuilder(builder), Optional.empty(), Optional.empty());
 			}
 		};
 		return csrImpl;
@@ -439,5 +499,4 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 		}
 		return this;
 	}
-
 }

@@ -45,8 +45,9 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 			boolean copyEdgesWeights) {
 		this.factory = factory;
 		this.ibuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
-		viMap = IndexIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), null, ibuilder.vertices(), false, false);
-		eiMap = IndexIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), null, ibuilder.edges(), true, false);
+		viMap = IndexIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), ibuilder.vertices(), false,
+				false);
+		eiMap = IndexIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), Optional.empty(), ibuilder.edges(), true, false);
 		resetVertexAndEdgeBuilders();
 	}
 
@@ -227,7 +228,7 @@ class GraphBuilderImpl<V, E> implements GraphBuilder<V, E> {
 		IndexGraph iGraph = reIndexedGraph.graph();
 		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-		return new GraphImpl<>(factory, iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
+		return new GraphImpl<>(factory, iGraph, viMap, eiMap, vReIndexing, eReIndexing);
 	}
 
 }

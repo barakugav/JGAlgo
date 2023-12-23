@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Optional;
+
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 
 abstract class GraphCsrAbstractUnindexed extends GraphCsrBase {
@@ -22,7 +24,7 @@ abstract class GraphCsrAbstractUnindexed extends GraphCsrBase {
 	final int[] edgesOut;
 
 	GraphCsrAbstractUnindexed(boolean directed, IndexGraphBuilderImpl builder, BuilderProcessEdges processEdges) {
-		super(directed, Variant2.ofB(builder), processEdges, null, true, true);
+		super(directed, Variant2.ofB(builder), processEdges, Optional.empty(), true, true);
 		edgesOut = processEdges.edgesOut;
 
 		for (int m = builder.edges.size(), e = 0; e < m; e++)

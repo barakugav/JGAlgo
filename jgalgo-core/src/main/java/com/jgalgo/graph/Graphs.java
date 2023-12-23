@@ -46,8 +46,16 @@ import it.unimi.dsi.fastutil.objects.ObjectSets;
 public class Graphs {
 	private Graphs() {}
 
-	@SuppressWarnings("unchecked")
 	static <V, E> Graph<V, E> copy(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		return factoryForCopy(g).newCopyOf(g, copyVerticesWeights, copyEdgesWeights);
+	}
+
+	static <V, E> Graph<V, E> immutableCopy(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		return factoryForCopy(g).newImmutableCopyOf(g, copyVerticesWeights, copyEdgesWeights);
+	}
+
+	@SuppressWarnings("unchecked")
+	private static <V, E> GraphFactory<V, E> factoryForCopy(Graph<V, E> g) {
 		GraphFactory<V, E> factory;
 		if (g instanceof IndexGraph) {
 			factory = (GraphFactory<V, E>) IndexGraphFactory.newInstance(g.isDirected());
@@ -60,7 +68,7 @@ public class Graphs {
 			factory.allowSelfEdges();
 		if (g.isAllowParallelEdges())
 			factory.allowParallelEdges();
-		return factory.newCopyOf(g, copyVerticesWeights, copyEdgesWeights);
+		return factory;
 	}
 
 	/**

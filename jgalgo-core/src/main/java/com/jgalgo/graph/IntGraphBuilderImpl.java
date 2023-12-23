@@ -47,8 +47,9 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 			boolean copyEdgesWeights) {
 		this.factory = factory;
 		this.ibuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
-		viMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), null, ibuilder.vertices(), false, false);
-		eiMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), null, ibuilder.edges(), true, false);
+		viMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), ibuilder.vertices(), false,
+				false);
+		eiMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), Optional.empty(), ibuilder.edges(), true, false);
 		resetVertexAndEdgeBuilders();
 	}
 
@@ -239,7 +240,7 @@ class IntGraphBuilderImpl implements IntGraphBuilder {
 		IndexGraph iGraph = reIndexedGraph.graph();
 		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
 		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-		return new IntGraphImpl(factory, iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
+		return new IntGraphImpl(factory, iGraph, viMap, eiMap, vReIndexing, eReIndexing);
 	}
 
 }

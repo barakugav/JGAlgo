@@ -52,14 +52,16 @@ public interface GraphFactory<V, E> {
 	 *
 	 * <p>
 	 * An identical copy of the given graph will be created, with the same vertices and edges, without copying the
-	 * vertices/edges weights. The returned Graph will always be modifiable, with no side affects on the original graph.
+	 * vertices/edges weights. The returned Graph will always be mutable, with no side affects on the original graph.
 	 *
 	 * <p>
 	 * Differing from {@link Graph#copy()}, the capabilities of the new graph are determined by the factory
 	 * configuration, rather than copied from the given graph. Note for example that if the factory chooses to use an
-	 * implementation that does not (have to) support self edges (if {@link #allowSelfEdges(boolean)} was not called
-	 * with {@code true}), attempting to create a copy of a graph that does contains self edges will result in an
-	 * exception.
+	 * implementation that does not support self edges (if {@link #allowSelfEdges(boolean)} was not called with
+	 * {@code true}), attempting to create a copy of a graph that does contains self edges will result in an exception.
+	 *
+	 * <p>
+	 * For an immutable copy of a graph, see {@link #newImmutableCopyOf(Graph, boolean, boolean)}.
 	 *
 	 * @param  g the original graph to copy
 	 * @return   an identical copy of the given graph, with the same vertices and edges, without the original graph
@@ -74,14 +76,16 @@ public interface GraphFactory<V, E> {
 	 *
 	 * <p>
 	 * An identical copy of the given graph will be created, with the same vertices and edges, with/without copying the
-	 * vertices/edges weights. The returned Graph will always be modifiable, with no side affects on the original graph.
+	 * vertices/edges weights. The returned Graph will always be mutable, with no side affects on the original graph.
 	 *
 	 * <p>
 	 * Differing from {@link Graph#copy(boolean, boolean)}, the capabilities of the new graph are determined by the
 	 * factory configuration, rather than copied from the given graph. Note for example that if the factory chooses to
-	 * use an implementation that does not (have to) support self edges (if {@link #allowSelfEdges(boolean)} was not
-	 * called with {@code true}), attempting to create a copy of a graph that does contains self edges will result in an
-	 * exception.
+	 * use an implementation that does not support self edges (if {@link #allowSelfEdges(boolean)} was not called with
+	 * {@code true}), attempting to create a copy of a graph that does contains self edges will result in an exception.
+	 *
+	 * <p>
+	 * For an immutable copy of a graph, see {@link #newImmutableCopyOf(Graph, boolean, boolean)}.
 	 *
 	 * @param  g                   the original graph to copy
 	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied to the new graph
@@ -90,6 +94,55 @@ public interface GraphFactory<V, E> {
 	 *                             the original graph weights
 	 */
 	Graph<V, E> newCopyOf(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights);
+
+	/**
+	 * Create a new immutable copy of a given graph, with the same vertices and edges, without copying weights.
+	 *
+	 * <p>
+	 * An identical copy of the given graph will be created, with the same vertices and edges, without copying the
+	 * vertices/edges weights. The returned Graph will be immutable, with no side affects on the original graph.
+	 *
+	 * <p>
+	 * Differing from {@link Graph#immutableCopy()}, the capabilities of the new graph are determined by the factory
+	 * configuration, rather than copied from the given graph. Note for example that if the factory chooses to use an
+	 * implementation that does not support self edges (if {@link #allowSelfEdges(boolean)} was not called with
+	 * {@code true}), attempting to create a copy of a graph that does contains self edges will result in an exception.
+	 *
+	 * <p>
+	 * For a mutable copy of a graph, see {@link #newCopyOf(Graph, boolean, boolean)}.
+	 *
+	 * @param  g the original graph to copy
+	 * @return   an identical immutable copy of the given graph, with the same vertices and edges, without the original
+	 *           graph weights
+	 */
+	default Graph<V, E> newImmutableCopyOf(Graph<V, E> g) {
+		return newImmutableCopyOf(g, false, false);
+	}
+
+	/**
+	 * Create a new immutable copy of a given graph, with the same vertices and edges, with/without copying weights.
+	 *
+	 * <p>
+	 * An identical copy of the given graph will be created, with the same vertices and edges, with/without copying the
+	 * vertices/edges weights. The returned Graph will be immutable, with no side affects on the original graph.
+	 *
+	 * <p>
+	 * Differing from {@link Graph#immutableCopy(boolean, boolean)}, the capabilities of the new graph are determined by
+	 * the factory configuration, rather than copied from the given graph. Note for example that if the factory chooses
+	 * to use an implementation that does not support self edges (if {@link #allowSelfEdges(boolean)} was not called
+	 * with {@code true}), attempting to create a copy of a graph that does contains self edges will result in an
+	 * exception.
+	 *
+	 * <p>
+	 * For a mutable copy of a graph, see {@link #newCopyOf(Graph, boolean, boolean)}.
+	 *
+	 * @param  g                   the original graph to copy
+	 * @param  copyVerticesWeights if {@code true}, the weights of the vertices will be copied to the new graph
+	 * @param  copyEdgesWeights    if {@code true}, the weights of the edges will be copied to the new graph
+	 * @return                     an identical immutable copy of the given graph, with the same vertices and edges,
+	 *                             without the original graph weights
+	 */
+	Graph<V, E> newImmutableCopyOf(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights);
 
 	/**
 	 * Create a new graph builder with the factory parameters.

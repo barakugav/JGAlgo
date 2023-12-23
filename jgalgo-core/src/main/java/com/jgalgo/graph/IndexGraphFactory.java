@@ -53,6 +53,14 @@ public interface IndexGraphFactory extends IntGraphFactory {
 	IndexGraph newCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights, boolean copyEdgesWeights);
 
 	@Override
+	default IndexGraph newImmutableCopyOf(Graph<Integer, Integer> g) {
+		return (IndexGraph) IntGraphFactory.super.newImmutableCopyOf(g);
+	}
+
+	@Override
+	IndexGraph newImmutableCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights, boolean copyEdgesWeights);
+
+	@Override
 	IndexGraphBuilder newBuilder();
 
 	/**

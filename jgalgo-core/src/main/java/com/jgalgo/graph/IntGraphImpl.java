@@ -19,6 +19,7 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
@@ -46,8 +47,8 @@ class IntGraphImpl extends AbstractGraph<Integer, Integer> implements IntGraph {
 	}
 
 	IntGraphImpl(IntGraphFactoryImpl factory, IndexGraph indexGraph, IndexIdMap<Integer> viMap,
-			IndexIdMap<Integer> eiMap, IndexGraphBuilder.ReIndexingMap vReIndexing,
-			IndexGraphBuilder.ReIndexingMap eReIndexing) {
+			IndexIdMap<Integer> eiMap, Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing,
+			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing) {
 		this.indexGraph = indexGraph;
 		boolean immutable = this.indexGraph instanceof ImmutableGraph;
 		this.viMap = IndexIntIdMapImpl.newCopyOf(viMap, vReIndexing, this.indexGraph.vertices(), false, immutable);
@@ -58,13 +59,6 @@ class IntGraphImpl extends AbstractGraph<Integer, Integer> implements IntGraph {
 		}
 		vertexBuilder = factory.vertexFactory != null ? factory.vertexFactory.get() : null;
 		edgeBuilder = factory.edgeFactory != null ? factory.edgeFactory.get() : null;
-	}
-
-	/* copy constructor */
-	IntGraphImpl(IntGraphFactoryImpl factory, Graph<Integer, Integer> orig, boolean copyVerticesWeights,
-			boolean copyEdgesWeights) {
-		this(factory, factory.indexFactory.newCopyOf(orig.indexGraph(), copyVerticesWeights, copyEdgesWeights),
-				orig.indexGraphVerticesMap(), orig.indexGraphEdgesMap(), null, null);
 	}
 
 	@Override

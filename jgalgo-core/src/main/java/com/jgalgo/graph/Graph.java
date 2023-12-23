@@ -17,7 +17,6 @@
 package com.jgalgo.graph;
 
 import java.util.Collection;
-import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -957,7 +956,7 @@ public interface Graph<V, E> {
 	 * <p>
 	 * An identical copy of this graph will be created, with the same vertices, edges, capabilities (inclusive) such as
 	 * self edges and parallel edges support, without copying the vertices/edges weights. The returned graph will always
-	 * be modifiable, with no side affects on the original graph.
+	 * be mutable, with no side affects on the original graph.
 	 *
 	 * @return an identical copy of this graph, with the same vertices and edges, without this graph weights
 	 */
@@ -971,7 +970,7 @@ public interface Graph<V, E> {
 	 * <p>
 	 * An identical copy of this graph will be created, with the same vertices, edges, capabilities (inclusive) such as
 	 * self edges and parallel edges support, with/without copying the vertices/edges weights. The returned graph will
-	 * always be modifiable, with no side affects on the original graph.
+	 * always be mutable, with no side affects on the original graph.
 	 *
 	 * <p>
 	 * Note that although {@code g.equals(g.copy())} is always {@code true} if both {@code copyVerticesWeights}
@@ -1037,23 +1036,7 @@ public interface Graph<V, E> {
 	 *                             graph weights
 	 */
 	default Graph<V, E> immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		IndexIdMap<V> viMap = indexGraphVerticesMap();
-		IndexIdMap<E> eiMap = indexGraphEdgesMap();
-		/* create a new factory with no vertex and edge builders */
-		GraphFactoryImpl<V, E> factory = new GraphFactoryImpl<>(isDirected());
-		factory.setVertexBuilder(null);
-		factory.setEdgeBuilder(null);
-		if (isDirected()) {
-			IndexGraphBuilder.ReIndexedGraph reIndexedGraph =
-					GraphCsrDirectedReindexed.newInstance(indexGraph(), copyVerticesWeights, copyEdgesWeights);
-			IndexGraph iGraph = reIndexedGraph.graph();
-			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
-			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
-			return new GraphImpl<>(factory, iGraph, viMap, eiMap, vReIndexing.orElse(null), eReIndexing.orElse(null));
-		} else {
-			IndexGraph iGraph = new GraphCsrUndirected(indexGraph(), copyVerticesWeights, copyEdgesWeights);
-			return new GraphImpl<>(factory, iGraph, viMap, eiMap, null, null);
-		}
+		return Graphs.immutableCopy(this, copyVerticesWeights, copyEdgesWeights);
 	}
 
 	/**

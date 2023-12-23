@@ -73,7 +73,17 @@ public class IntGraphBuilderTest extends TestBase {
 			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
 			IntSet vertices = new IntOpenHashSet();
 			for (int i = 0; i < 15; i++)
-				assertTrue(vertices.add(b.addVertexInt()));;
+				assertTrue(vertices.add(b.addVertexInt()));
+			assertEquals(vertices, b.vertices());
+		});
+		foreachBoolConfig(directed -> {
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
+			IntSet vertices = new IntOpenHashSet();
+			for (int i = 0; i < 15; i++) {
+				@SuppressWarnings("deprecation")
+				int v = b.addVertex().intValue();
+				assertTrue(vertices.add(v));
+			}
 			assertEquals(vertices, b.vertices());
 		});
 		foreachBoolConfig(directed -> {

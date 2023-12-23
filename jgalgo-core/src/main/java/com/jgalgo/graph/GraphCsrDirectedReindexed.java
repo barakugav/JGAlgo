@@ -25,7 +25,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 	private final int[] edgesInBegin;
 
 	private GraphCsrDirectedReindexed(Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
-			BuilderProcessEdgesDirected processEdges, IndexGraphBuilder.ReIndexingMap edgesReIndexing,
+			BuilderProcessEdgesDirected processEdges, Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(true, graphOrBuilder, processEdges, edgesReIndexing, copyVerticesWeights, copyEdgesWeights);
 		final int n = verticesNum(graphOrBuilder);
@@ -33,7 +33,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 
 		if (graphOrBuilder.contains(IndexGraph.class)
 				&& graphOrBuilder.get(IndexGraph.class) instanceof GraphCsrDirectedReindexed) {
-			assert edgesReIndexing == null;
+			assert edgesReIndexing.isEmpty();
 			GraphCsrDirectedReindexed g = (GraphCsrDirectedReindexed) graphOrBuilder.get(IndexGraph.class);
 			edgesIn = g.edgesIn;
 			edgesInBegin = g.edgesInBegin;
@@ -46,10 +46,10 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		assert edgesIn.length == m;
 		assert edgesInBegin.length == n + 1;
 
-		assert edgesReIndexing != null;
+		IndexGraphBuilder.ReIndexingMap edgesReIndexing0 = edgesReIndexing.get();
 		for (int eIdx = 0; eIdx < m; eIdx++) {
 			int eOrig = edgesIn[eIdx];
-			int eCsr = edgesReIndexing.origToReIndexed(eOrig);
+			int eCsr = edgesReIndexing0.origToReIndexed(eOrig);
 			edgesIn[eIdx] = eCsr;
 		}
 
@@ -58,7 +58,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 			assert g.isDirected();
 
 			for (int eCsr = 0; eCsr < m; eCsr++) {
-				int eOrig = edgesReIndexing.reIndexedToOrig(eCsr);
+				int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);
 				setEndpoints(eCsr, g.edgeSource(eOrig), g.edgeTarget(eOrig));
 			}
 		} else {
@@ -66,7 +66,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 			assert builder.isDirected();
 
 			for (int eCsr = 0; eCsr < m; eCsr++) {
-				int eOrig = edgesReIndexing.reIndexedToOrig(eCsr);
+				int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);
 				setEndpoints(eCsr, builder.edgeSource(eOrig), builder.edgeTarget(eOrig));
 			}
 		}
@@ -94,7 +94,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		GraphCsrBase.BuilderProcessEdgesDirected processEdges =
 				GraphCsrBase.BuilderProcessEdgesDirected.valueOf(graphOrBuilder);
 
-		IndexGraphBuilder.ReIndexingMap edgesReIndexing = null;
+		Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing = Optional.empty();
 		if (!graphOrBuilder.contains(IndexGraph.class)
 				|| !(graphOrBuilder.get(IndexGraph.class) instanceof GraphCsrDirectedReindexed)) {
 			final int m = edgesNum(graphOrBuilder);
@@ -102,12 +102,12 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 			int[] edgesOrigToCsr = new int[m];
 			for (int eCsr = 0; eCsr < m; eCsr++)
 				edgesOrigToCsr[edgesCsrToOrig[eCsr]] = eCsr;
-			edgesReIndexing = new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig);
+			edgesReIndexing = Optional.of(new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig));
 		}
 
 		GraphCsrDirectedReindexed g = new GraphCsrDirectedReindexed(graphOrBuilder, processEdges, edgesReIndexing,
 				copyVerticesWeights, copyEdgesWeights);
-		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), Optional.ofNullable(edgesReIndexing));
+		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), edgesReIndexing);
 	}
 
 	@Override

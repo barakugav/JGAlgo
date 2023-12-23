@@ -17,6 +17,7 @@ package com.jgalgo.graph;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Optional;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -45,11 +46,11 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 		immutable = false;
 	}
 
-	private IndexIntIdMapImpl(IndexIdMap<Integer> orig, IndexGraphBuilder.ReIndexingMap reIndexing, IntSet indicesSet,
-			boolean isEdges, boolean immutable) {
+	private IndexIntIdMapImpl(IndexIdMap<Integer> orig, Optional<IndexGraphBuilder.ReIndexingMap> reIndexing,
+			IntSet indicesSet, boolean isEdges, boolean immutable) {
 		this.indicesSet = indicesSet;
 		int elementsSize = this.indicesSet.size();
-		if (orig instanceof IndexIntIdMapImpl && reIndexing == null) {
+		if (orig instanceof IndexIntIdMapImpl && reIndexing.isEmpty()) {
 			IndexIntIdMapImpl orig0 = (IndexIntIdMapImpl) orig;
 			idToIndex = new Int2IntOpenHashMap(orig0.idToIndex);
 			idToIndex.defaultReturnValue(-1);
@@ -62,7 +63,7 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 				indexToId = IntArrays.DEFAULT_EMPTY_ARRAY;
 			} else {
 				indexToId = new int[elementsSize];
-				if (reIndexing == null) {
+				if (reIndexing.isEmpty()) {
 					for (int idx = 0; idx < elementsSize; idx++) {
 						int id = orig.indexToId(idx).intValue();
 						if (id < 0)
@@ -75,8 +76,9 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 					}
 
 				} else {
+					IndexGraphBuilder.ReIndexingMap reIndexing0 = reIndexing.get();
 					for (int idx = 0; idx < elementsSize; idx++) {
-						int id = orig.indexToId(reIndexing.reIndexedToOrig(idx)).intValue();
+						int id = orig.indexToId(reIndexing0.reIndexedToOrig(idx)).intValue();
 						if (id < 0)
 							throw new IllegalArgumentException("negative id: " + id);
 						indexToId[idx] = id;
@@ -96,7 +98,7 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 		return new IndexIntIdMapImpl(indicesSet, isEdges, expectedSize);
 	}
 
-	static IndexIntIdMapImpl newCopyOf(IndexIdMap<Integer> orig, IndexGraphBuilder.ReIndexingMap reIndexing,
+	static IndexIntIdMapImpl newCopyOf(IndexIdMap<Integer> orig, Optional<IndexGraphBuilder.ReIndexingMap> reIndexing,
 			IntSet indicesSet, boolean isEdges, boolean immutable) {
 		return new IndexIntIdMapImpl(orig, reIndexing, indicesSet, isEdges, immutable);
 	}

@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import java.util.Optional;
 import java.util.function.Supplier;
 
 class GraphFactoryImpl<V, E> implements GraphFactory<V, E> {
@@ -34,7 +35,22 @@ class GraphFactoryImpl<V, E> implements GraphFactory<V, E> {
 
 	@Override
 	public Graph<V, E> newCopyOf(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		return new GraphImpl<>(this, g, copyVerticesWeights, copyEdgesWeights);
+		IndexGraph ig = indexFactory.newCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);
+		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+		IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+		return new GraphImpl<>(this, ig, viMap, eiMap, Optional.empty(), Optional.empty());
+	}
+
+	@Override
+	public Graph<V, E> newImmutableCopyOf(Graph<V, E> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+		IndexGraphBuilder.ReIndexedGraph reIndexedGraph = indexFactory.immutableImpl()
+				.newCopyOfWithReIndex(g.indexGraph(), true, true, copyVerticesWeights, copyEdgesWeights);
+		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+		IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+		IndexGraph iGraph = reIndexedGraph.graph();
+		Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing = reIndexedGraph.verticesReIndexing();
+		Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing = reIndexedGraph.edgesReIndexing();
+		return new GraphImpl<>(this, iGraph, viMap, eiMap, vReIndexing, eReIndexing);
 	}
 
 	@Override

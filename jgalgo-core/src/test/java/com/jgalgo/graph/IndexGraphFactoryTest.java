@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 
@@ -37,6 +38,10 @@ public class IndexGraphFactoryTest extends TestBase {
 
 			IndexGraph g2 = factory.newCopyOf(g1);
 			assertEquals(g1, g2);
+
+			/* check mutable */
+			int v = g2.addVertexInt();
+			assertTrue(g2.vertices().contains(v));
 		});
 		foreachBoolConfig(directed -> {
 			IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
@@ -59,6 +64,46 @@ public class IndexGraphFactoryTest extends TestBase {
 			IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
 			IndexGraph g1 = IndexGraphFactory.newInstance(!directed).newGraph();
 			assertThrows(IllegalArgumentException.class, () -> factory.newCopyOf(g1));
+		});
+	}
+
+	@Test
+	public void newImmutableCopyOf() {
+		foreachBoolConfig(directed -> {
+			IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
+
+			IndexGraph g1 = factory.newGraph();
+			g1.addVertices(range(10));
+			g1.addEdge(1, 2);
+			g1.addEdge(3, 4);
+
+			IndexGraph g2 = factory.newImmutableCopyOf(g1);
+			assertEquals(g1, g2);
+
+			/* check immutable */
+			assertThrows(UnsupportedOperationException.class, () -> g2.addVertexInt());
+		});
+		foreachBoolConfig(directed -> {
+			IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
+
+			IndexGraph g1 = factory.newGraph();
+			g1.addVertices(range(10));
+			g1.addEdge(1, 2);
+			g1.addEdge(3, 4);
+			IWeightsDouble weights1 = g1.addEdgesWeights("weights", double.class);
+			weights1.set(0, 1.0);
+			weights1.set(1, 2.0);
+
+			IndexGraph g2 = factory.newImmutableCopyOf(g1, true, true);
+			assertEquals(g1, g2);
+
+			IndexGraph g3 = factory.newImmutableCopyOf(g1, false, false);
+			assertNotEquals(g1, g3);
+		});
+		foreachBoolConfig(directed -> {
+			IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
+			IndexGraph g1 = IndexGraphFactory.newInstance(!directed).newGraph();
+			assertThrows(IllegalArgumentException.class, () -> factory.newImmutableCopyOf(g1));
 		});
 	}
 

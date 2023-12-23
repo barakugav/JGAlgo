@@ -539,11 +539,7 @@ public interface IndexGraph extends IntGraph {
 
 	@Override
 	default IndexGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		if (isDirected()) {
-			return new GraphCsrDirected(this, copyVerticesWeights, copyEdgesWeights);
-		} else {
-			return new GraphCsrUndirected(this, copyVerticesWeights, copyEdgesWeights);
-		}
+		return (IndexGraph) IntGraph.super.immutableCopy(copyVerticesWeights, copyEdgesWeights);
 	}
 
 	@Override

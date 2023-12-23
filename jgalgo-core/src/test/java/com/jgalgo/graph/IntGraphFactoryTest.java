@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
@@ -39,6 +40,10 @@ public class IntGraphFactoryTest extends TestBase {
 
 			IntGraph g2 = factory.newCopyOf(g1);
 			assertEquals(g1, g2);
+
+			/* check mutable */
+			g2.addVertex(100);
+			assertTrue(g2.vertices().contains(100));
 		});
 		foreachBoolConfig(directed -> {
 			IntGraphFactory factory = IntGraphFactory.newInstance(directed);
@@ -69,6 +74,41 @@ public class IntGraphFactoryTest extends TestBase {
 			assertEquals(IntSet.of(11, 12), g2.vertices());
 			g2.addEdge(11, 12);
 			assertEquals(IntSet.of(80), g2.edges());
+		});
+	}
+
+	@Test
+	public void newImmutableCopyOf() {
+		foreachBoolConfig(directed -> {
+			IntGraphFactory factory = IntGraphFactory.newInstance(directed);
+
+			IntGraph g1 = factory.newGraph();
+			g1.addVertices(range(10, 20));
+			g1.addEdge(10, 11, 5);
+			g1.addEdge(11, 12, 6);
+
+			IntGraph g2 = factory.newImmutableCopyOf(g1);
+			assertEquals(g1, g2);
+
+			/* check immutable */
+			assertThrows(UnsupportedOperationException.class, () -> g2.addVertex(100));
+		});
+		foreachBoolConfig(directed -> {
+			IntGraphFactory factory = IntGraphFactory.newInstance(directed);
+
+			IntGraph g1 = factory.newGraph();
+			g1.addVertices(range(10, 20));
+			g1.addEdge(10, 11, 5);
+			g1.addEdge(11, 12, 6);
+			IWeightsDouble weights1 = g1.addEdgesWeights("weights", double.class);
+			weights1.set(5, 1.0);
+			weights1.set(6, 2.0);
+
+			IntGraph g2 = factory.newImmutableCopyOf(g1, true, true);
+			assertEquals(g1, g2);
+
+			IntGraph g3 = factory.newImmutableCopyOf(g1, false, false);
+			assertNotEquals(g1, g3);
 		});
 	}
 
