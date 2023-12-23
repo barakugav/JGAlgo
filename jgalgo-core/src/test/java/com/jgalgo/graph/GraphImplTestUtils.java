@@ -2308,7 +2308,8 @@ class GraphImplTestUtils extends TestUtils {
 
 	static void testCopy(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		for (String copyType : List.of("origImpl", "array", "linked-list", "linked-list-ptr", "hashtable", "matrix")) {
+		for (String copyType : List.of("origImpl", "array", "linked-list", "linked-list-ptr", "hashtable",
+				"hashtable-multi", "matrix")) {
 			foreachBoolConfig(directed -> {
 				/* Create a random graph g */
 				Graph<Integer, Integer> g = GraphsTestUtils.withImpl(
@@ -2596,7 +2597,7 @@ class GraphImplTestUtils extends TestUtils {
 
 	static void testCopyConstructor(Function<IndexGraph, IndexGraph> copyConstructor, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		foreachBoolConfig(directed -> {
+		foreachBoolConfig((directed, mutable) -> {
 			/* Create a random graph g */
 			final boolean selfEdges = copyConstructor
 					.apply(directed ? IndexGraph.newDirected() : IndexGraph.newUndirected()).isAllowSelfEdges();
@@ -2623,6 +2624,12 @@ class GraphImplTestUtils extends TestUtils {
 				Object data = labeledObj("data" + e);
 				gEData.set(e, data);
 				gEDataMap.put(e, data);
+			}
+
+			if (mutable) {
+				g = g.copy(true, true);
+			} else {
+				g = g.immutableCopy(true, true);
 			}
 
 			/* check copy constructor */

@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
@@ -108,10 +109,80 @@ public class IndexGraphFactoryTest extends TestBase {
 	}
 
 	@Test
+	public void setOptionUnknownImpl() {
+		foreachBoolConfig(directed -> {
+			IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
+			assertThrows(IllegalArgumentException.class, () -> factory.setOption("impl", "unknown-impl").newGraph());
+		});
+	}
+
+	@Test
 	public void setOptionUnknownOption() {
 		foreachBoolConfig(directed -> {
 			IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
 			assertThrows(IllegalArgumentException.class, () -> factory.setOption("unknown-option", "value"));
+		});
+	}
+
+	@Test
+	public void expectedVerticesNum() {
+		foreachBoolConfig(directed -> {
+			/* nothing to check really, just call and make sure no exception is thrown */
+			IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
+			factory.expectedVerticesNum(100);
+			assertNotNull(factory.newGraph());
+
+			assertThrows(IllegalArgumentException.class, () -> factory.expectedVerticesNum(-1));
+		});
+	}
+
+	@Test
+	public void expectedEdgesNum() {
+		foreachBoolConfig(directed -> {
+			/* nothing to check really, just call and make sure no exception is thrown */
+			IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
+			factory.expectedEdgesNum(100);
+			assertNotNull(factory.newGraph());
+
+			assertThrows(IllegalArgumentException.class, () -> factory.expectedEdgesNum(-1));
+		});
+	}
+
+	@Test
+	public void hints() {
+		foreachBoolConfig((directed, selfEdges, parallelEdges) -> {
+			foreachBoolConfig((fastRemove, fastLookup, denseGraph) -> {
+				IndexGraphFactory factory = IndexGraphFactory.newInstance(directed);
+				factory.allowSelfEdges(selfEdges);
+				factory.allowParallelEdges(parallelEdges);
+				if (fastRemove)
+					factory.addHint(GraphFactory.Hint.FastEdgeRemoval);
+				if (fastLookup)
+					factory.addHint(GraphFactory.Hint.FastEdgeLookup);
+				if (denseGraph)
+					factory.addHint(GraphFactory.Hint.DenseGraph);
+
+				IndexGraph g = factory.newGraph();
+				assertEqualsBool(directed, g.isDirected());
+				assertEqualsBool(selfEdges, g.isAllowSelfEdges());
+				assertEqualsBool(parallelEdges, g.isAllowParallelEdges());
+
+				Class<?> expectedImp;
+				if (fastLookup || !parallelEdges) {
+					if (parallelEdges) {
+						expectedImp = directed ? GraphHashmapMultiDirected.class : GraphHashmapMultiUndirected.class;
+					} else if (denseGraph) {
+						expectedImp = directed ? GraphMatrixDirected.class : GraphMatrixUndirected.class;
+					} else {
+						expectedImp = directed ? GraphHashmapDirected.class : GraphHashmapUndirected.class;
+					}
+				} else if (fastRemove) {
+					expectedImp = directed ? GraphLinkedDirected.class : GraphLinkedUndirected.class;
+				} else {
+					expectedImp = directed ? GraphArrayDirected.class : GraphArrayUndirected.class;
+				}
+				assertEquals(expectedImp, g.getClass());
+			});
 		});
 	}
 

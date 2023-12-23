@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
@@ -114,6 +115,42 @@ public class IntGraphFactoryTest extends TestBase {
 		foreachBoolConfig(directed -> {
 			IntGraphFactory factory = IntGraphFactory.newInstance(directed);
 			assertThrows(IllegalArgumentException.class, () -> factory.setOption("unknown-option", "value"));
+		});
+	}
+
+	@Test
+	public void expectedVerticesNum() {
+		foreachBoolConfig(directed -> {
+			/* nothing to check really, just call and make sure no exception is thrown */
+			IntGraphFactory factory = IntGraphFactory.newInstance(directed);
+			factory.expectedVerticesNum(100);
+			assertNotNull(factory.newGraph());
+
+			assertThrows(IllegalArgumentException.class, () -> factory.expectedVerticesNum(-1));
+		});
+	}
+
+	@Test
+	public void expectedEdgesNum() {
+		foreachBoolConfig(directed -> {
+			/* nothing to check really, just call and make sure no exception is thrown */
+			IntGraphFactory factory = IntGraphFactory.newInstance(directed);
+			factory.expectedEdgesNum(100);
+			assertNotNull(factory.newGraph());
+
+			assertThrows(IllegalArgumentException.class, () -> factory.expectedEdgesNum(-1));
+		});
+	}
+
+	@Test
+	public void hints() {
+		foreachBoolConfig(directed -> {
+			IntGraphFactory factory = IntGraphFactory.newInstance(directed);
+			Class<?> defaultImpl = factory.newGraph().indexGraph().getClass();
+			factory.addHint(GraphFactory.Hint.FastEdgeLookup);
+			assertNotEquals(defaultImpl, factory.newGraph().indexGraph().getClass());
+			factory.removeHint(GraphFactory.Hint.FastEdgeLookup);
+			assertEquals(defaultImpl, factory.newGraph().indexGraph().getClass());
 		});
 	}
 
