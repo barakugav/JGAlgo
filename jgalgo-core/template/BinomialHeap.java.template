@@ -32,14 +32,15 @@ import com.jgalgo.internal.util.Assertions;
  *
  * <p>
  * Pointer based data structure that support user references to the internal nodes, allowing efficient \(O(\log n)\)
- * implementation of the {@link #remove} and {@link #decreaseKey} operations. The regular operations like
- * {@link #insert}, {@link #extractMin()} and {@link #findMin()} are also implemented in \(O(\log n)\) time. Another
- * advantage of the binomial heap is its ability to merge with another binomial heap in \(O(\log n)\) time, which is
- * much faster than the required \(O(n)\) time of binary heaps.
+ * implementation of the {@link #remove(HEAP_REFERENCE)} and
+ * {@link #decreaseKey(HEAP_REFERENCE, PRIMITIVE_KEY_TYPE_REAL)} operations. The regular operations like
+ * {@link #insert(PRIMITIVE_KEY_TYPE_REAL)}, {@link #extractMin()} and {@link #findMin()} are also implemented in \(O(\log n)\) time.
+ * Another advantage of the binomial heap is its ability to merge with another binomial heap in \(O(\log n)\) time,
+ * which is much faster than the required \(O(n)\) time of binary heaps.
  *
  * <p>
- * Although it has great complexities bounds, {@link #decreaseKey} can is implemented in faster times by Fibonnachi and
- * Pairing heaps.
+ * Although it has great complexities bounds, {@link #decreaseKey(HEAP_REFERENCE, PRIMITIVE_KEY_TYPE_REAL)} can is
+ * implemented in faster times by Fibonnachi and Pairing heaps.
  *
 #if PRIMITIVE_KEY_TYPE_REAL == "Object"
  * @param  <K> the keys type

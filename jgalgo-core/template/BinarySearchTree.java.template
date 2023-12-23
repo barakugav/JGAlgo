@@ -161,7 +161,8 @@ public interface BINARY_SEARCH_TREE KEY_VALUE_GENERIC extends REFERENCEABLE_HEAP
 	 * After this operation, all elements keys in this tree will be smaller or equal to the given element's key, and the
 	 * returned new tree will contain elements with keys greater than the given element's key. If the tree contains
 	 * duplications of the given element's key, the elements keys in the returned tree will be greater or equal (rather
-	 * than strictly greater). To split a tree more precisely, use {@link #splitSmaller} or {@link #splitGreater}.
+	 * than strictly greater). To split a tree more precisely, use {@link #splitSmaller(PRIMITIVE_KEY_TYPE_REAL)} or
+	 * {@link #splitGreater(PRIMITIVE_KEY_TYPE_REAL)}.
 	 *
 	 * <p>
 	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already

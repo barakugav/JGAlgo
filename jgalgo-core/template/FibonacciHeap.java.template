@@ -31,11 +31,12 @@ import com.jgalgo.internal.util.Assertions;
  *
  * <p>
  * A pointer based heap implementation that support almost any operation in \(O(1)\) amortized time, except
- * {@link #remove} which takes \(O(\log n)\) time amortized.
+ * {@link #remove(HEAP_REFERENCE)} which takes \(O(\log n)\) time amortized.
  *
  * <p>
  * Using this heap, Dijkstra's shortest-path algorithm can be implemented in time \(O(m + n \log n)\) rather than \(O(m
- * \log n)\) as the {@link #decreaseKey} operation is performed in \(O(1)\) time amortized.
+ * \log n)\) as the {@link #decreaseKey(HEAP_REFERENCE, PRIMITIVE_KEY_TYPE_REAL)} operation is performed in \(O(1)\) time
+ * amortized.
  *
  * <p>
  * In practice, the Fibonacci heaps are quite complex, and in some cases is better to use a Oairing heap.

@@ -33,12 +33,13 @@ import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
  *
  * <p>
  * A pointer based heap implementation that support almost any operation in \(O(1)\) amortized time, except
- * {@link #remove} and {@link #decreaseKey} which takes \(O(\log n)\) time
- * amortized.
+ * {@link #remove(HEAP_REFERENCE)} and {@link #decreaseKey(HEAP_REFERENCE, PRIMITIVE_KEY_TYPE_REAL)}
+ * which takes \(O(\log n)\) time amortized.
  *
  * <p>
  * Using this heap, {@link ShortestPathSingleSourceDijkstra} can be implemented in time \(O(m + n \log n)\) rather than
- * \(O(m \log n)\) as the {@link #decreaseKey} operation is performed in \(O(1)\) time amortized.
+ * \(O(m \log n)\) as the {@link #decreaseKey(HEAP_REFERENCE, PRIMITIVE_KEY_TYPE_REAL)} operation is performed in
+ * \(O(1)\) time amortized.
  *
  * <p>
  * Pairing heaps are one of the best pointer based heaps implementations in practice, and should be used as a default
