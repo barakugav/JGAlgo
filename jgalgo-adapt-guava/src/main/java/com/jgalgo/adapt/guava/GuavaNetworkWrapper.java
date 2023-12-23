@@ -1064,11 +1064,13 @@ public class GuavaNetworkWrapper<V, E> extends AbstractGraph<V, E> {
 			throw new UnsupportedOperationException("not supported by " + GuavaNetworkWrapper.class.getSimpleName());
 		}
 
+		@Deprecated
 		@Override
 		public IndexIntIdMap indexGraphVerticesMap() {
 			return verticesIdentityIndexMap;
 		}
 
+		@Deprecated
 		@Override
 		public IndexIntIdMap indexGraphEdgesMap() {
 			return edgesIdentityIndexMap;

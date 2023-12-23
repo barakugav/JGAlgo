@@ -997,11 +997,13 @@ public class JGraphTWrapper<V, E> extends com.jgalgo.graph.AbstractGraph<V, E> {
 			throw new UnsupportedOperationException("not supported by " + JGraphTWrapper.class.getSimpleName());
 		}
 
+		@Deprecated
 		@Override
 		public IndexIntIdMap indexGraphVerticesMap() {
 			return verticesIdentityIndexMap;
 		}
 
+		@Deprecated
 		@Override
 		public IndexIntIdMap indexGraphEdgesMap() {
 			return edgesIdentityIndexMap;
