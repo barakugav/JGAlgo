@@ -1582,7 +1582,10 @@ public class JGraphTWrapperTest {
 	private static <V, E> org.jgrapht.Graph<V, E> newJGraphTGraph(boolean directed, boolean selfEdges,
 			boolean parallelEdges, boolean weighted) {
 		GraphTypeBuilder<V, E> builder = directed ? GraphTypeBuilder.directed() : GraphTypeBuilder.undirected();
-		return builder.allowingSelfLoops(selfEdges).allowingMultipleEdges(parallelEdges).weighted(weighted)
+		return builder
+				.allowingSelfLoops(selfEdges)
+				.allowingMultipleEdges(parallelEdges)
+				.weighted(weighted)
 				.buildGraph();
 	}
 
