@@ -693,22 +693,22 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 	@Override
 	public void addVertexRemoveListener(IndexRemoveListener listener) {
-		vertices.addRemoveListener(listener);
+		((GraphElementSet.Mutable) vertices).addRemoveListener(listener);
 	}
 
 	@Override
 	public void removeVertexRemoveListener(IndexRemoveListener listener) {
-		vertices.removeRemoveListener(listener);
+		((GraphElementSet.Mutable) vertices).removeRemoveListener(listener);
 	}
 
 	@Override
 	public void addEdgeRemoveListener(IndexRemoveListener listener) {
-		edges.addRemoveListener(listener);
+		((GraphElementSet.Mutable) edges).addRemoveListener(listener);
 	}
 
 	@Override
 	public void removeEdgeRemoveListener(IndexRemoveListener listener) {
-		edges.removeRemoveListener(listener);
+		((GraphElementSet.Mutable) edges).removeRemoveListener(listener);
 	}
 
 	static void clear(int[] dataContainer, int idx, int defaultVal) {

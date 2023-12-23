@@ -70,10 +70,6 @@ abstract class GraphElementSet extends AbstractIntSet {
 		Assertions.Graphs.checkId(idx, size, isEdges);
 	}
 
-	abstract void addRemoveListener(IndexRemoveListener listener);
-
-	abstract void removeRemoveListener(IndexRemoveListener listener);
-
 	static class Immutable extends GraphElementSet {
 
 		private Immutable(int size, boolean isEdges) {
@@ -87,14 +83,6 @@ abstract class GraphElementSet extends AbstractIntSet {
 		static GraphElementSet.Immutable ofVertices(int size) {
 			return new GraphElementSet.Immutable(size, false);
 		}
-
-		@Override
-		void addRemoveListener(IndexRemoveListener listener) {
-			Objects.requireNonNull(listener);
-		}
-
-		@Override
-		void removeRemoveListener(IndexRemoveListener listener) {}
 
 	}
 
@@ -154,16 +142,10 @@ abstract class GraphElementSet extends AbstractIntSet {
 			size--;
 		}
 
-		GraphElementSet.Mutable copy() {
-			return new GraphElementSet.Mutable(size, isEdges);
-		}
-
-		@Override
 		void addRemoveListener(IndexRemoveListener listener) {
 			removeListeners.add(Objects.requireNonNull(listener));
 		}
 
-		@Override
 		void removeRemoveListener(IndexRemoveListener listener) {
 			removeListeners.remove(listener);
 		}
