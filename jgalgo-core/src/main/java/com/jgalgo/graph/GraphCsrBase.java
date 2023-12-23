@@ -25,6 +25,8 @@ import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -40,6 +42,14 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	private boolean containsSelfEdgesValid;
 	private boolean containsParallelEdges;
 	private boolean containsParallelEdgesValid;
+
+	static final Int2IntMap EmptyEdgeMap;
+	static {
+		Int2IntMap emptyEdgeMap = new Int2IntOpenHashMap(0);
+		emptyEdgeMap.defaultReturnValue(-1);
+		// emptyEdgeMap = Int2IntMaps.unmodifiable(emptyEdgeMap);
+		EmptyEdgeMap = emptyEdgeMap;
+	}
 
 	GraphCsrBase(boolean directed, Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
 			BuilderProcessEdges processEdges, Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing,
@@ -191,8 +201,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 		return containsSelfEdges;
 	}
 
-	@Override
-	public boolean isAllowParallelEdges() {
+	boolean containsParallelEdges() {
 		if (!containsParallelEdgesValid) {
 			final int n = vertices().size();
 			Bitmap neighborsBitmap = new Bitmap(n);
@@ -215,6 +224,11 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			containsParallelEdgesValid = true;
 		}
 		return containsParallelEdges;
+	}
+
+	@Override
+	public boolean isAllowParallelEdges() {
+		return containsParallelEdges();
 	}
 
 	@Override
@@ -535,7 +549,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			final int[] edgesOutBegin = new int[n + 1];
 			final int[] edgesIn = new int[m];
 			final int[] edgesInBegin = new int[n + 1];
-			if (n == 0)
+			if (m == 0)
 				return new BuilderProcessEdgesDirected(edgesOut, edgesOutBegin, edgesIn, edgesInBegin);
 
 			/* Count how many out/in edges each vertex has */
@@ -555,7 +569,9 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 
 			/*
 			 * Arrange all the out-edges in a single continues array, where the out-edges of u are
-			 * edgesOutBegin[u]...edgesOutBegin[u+1]-1 and similarly all in-edges edgesInBegin[v]...edgesInBegin[v+1]-1
+			 * edgesOutBegin[u]...edgesOutBegin[u+1]-1 and similarly all in-edges edgesInBegin[v]...edgesInBegin[v+1]-1.
+			 * In addition, sort the out-edges of each vertex by target. This is done in linear time by two (stable)
+			 * bucket sorts, first by target and than by source.
 			 */
 			int nextOutNum = edgesOutBegin[0], nextInNum = edgesInBegin[0];
 			edgesOutBegin[0] = edgesInBegin[0] = 0;
@@ -570,19 +586,27 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			edgesOutBegin[n] = edgesInBegin[n] = m;
 			if (graphOrBuilder.contains(IndexGraph.class)) {
 				IndexGraph g = graphOrBuilder.get(IndexGraph.class);
+				/* firsts bucket sort by target */
 				for (int e = 0; e < m; e++) {
-					int uOutIdx = edgesOutBegin[g.edgeSource(e)]++;
 					int vInIdx = edgesInBegin[g.edgeTarget(e)]++;
-					edgesOut[uOutIdx] = e;
 					edgesIn[vInIdx] = e;
+				}
+				/* than bucket sort by source, stable sorting after the first sort */
+				for (int e : edgesIn) {
+					int uOutIdx = edgesOutBegin[g.edgeSource(e)]++;
+					edgesOut[uOutIdx] = e;
 				}
 			} else {
 				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
+				/* firsts bucket sort by target */
 				for (int e = 0; e < m; e++) {
-					int uOutIdx = edgesOutBegin[builder.edgeSource(e)]++;
 					int vInIdx = edgesInBegin[builder.edgeTarget(e)]++;
-					edgesOut[uOutIdx] = e;
 					edgesIn[vInIdx] = e;
+				}
+				/* than bucket sort by source, stable sorting after the first sort */
+				for (int e : edgesIn) {
+					int uOutIdx = edgesOutBegin[builder.edgeSource(e)]++;
+					edgesOut[uOutIdx] = e;
 				}
 			}
 			assert edgesOutBegin[n - 1] == m;

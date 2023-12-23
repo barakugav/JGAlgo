@@ -19,19 +19,24 @@ import com.jgalgo.internal.util.Assertions;
 
 class GraphCsrUndirected extends GraphCsrAbstractUnindexed {
 
-	GraphCsrUndirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesUndirected processEdges) {
-		super(false, builder, processEdges);
+	GraphCsrUndirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesUndirected processEdges, boolean fastLookup) {
+		super(false, builder, processEdges, fastLookup);
 		assert !builder.isDirected();
 	}
 
-	GraphCsrUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		super(false, g, copyVerticesWeights, copyEdgesWeights);
+	GraphCsrUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights, boolean fastLookup) {
+		super(false, g, copyVerticesWeights, copyEdgesWeights, fastLookup);
 		Assertions.Graphs.onlyUndirected(g);
 	}
 
 	@Override
 	public int getEdge(int source, int target) {
 		checkVertex(source);
+		if (fastLookup) {
+			checkVertex(target);
+			return super.fastGetEdge(source, target);
+		}
+
 		final int begin = edgesOutBegin[source], end = edgesOutBegin[source + 1];
 		for (int i = begin; i < end; i++) {
 			int e = edgesOut[i];

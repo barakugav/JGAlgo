@@ -15,82 +15,128 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Optional;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.Int2IntMap;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 class GraphCsrDirectedReindexed extends GraphCsrBase {
 
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
+	final boolean fastLookup;
+	private final Int2IntMap[] edgesLookupTable;
+
 	private GraphCsrDirectedReindexed(Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder,
 			BuilderProcessEdgesDirected processEdges, Optional<IndexGraphBuilder.ReIndexingMap> edgesReIndexing,
-			boolean copyVerticesWeights, boolean copyEdgesWeights) {
+			boolean copyVerticesWeights, boolean copyEdgesWeights, boolean fastLookup) {
 		super(true, graphOrBuilder, processEdges, edgesReIndexing, copyVerticesWeights, copyEdgesWeights);
 		final int n = verticesNum(graphOrBuilder);
 		final int m = edgesNum(graphOrBuilder);
 
-		if (graphOrBuilder.contains(IndexGraph.class)
-				&& graphOrBuilder.get(IndexGraph.class) instanceof GraphCsrDirectedReindexed) {
+		Optional<GraphCsrDirectedReindexed> csrGraph = graphOrBuilder.contains(IndexGraph.class)
+				&& graphOrBuilder.get(IndexGraph.class) instanceof GraphCsrDirectedReindexed
+						? Optional.of((GraphCsrDirectedReindexed) graphOrBuilder.get(IndexGraph.class))
+						: Optional.empty();
+
+		if (csrGraph.isPresent()) {
 			assert edgesReIndexing.isEmpty();
-			GraphCsrDirectedReindexed g = (GraphCsrDirectedReindexed) graphOrBuilder.get(IndexGraph.class);
-			edgesIn = g.edgesIn;
-			edgesInBegin = g.edgesInBegin;
-			return;
-		}
+			edgesIn = csrGraph.get().edgesIn;
+			edgesInBegin = csrGraph.get().edgesInBegin;
 
-		edgesIn = processEdges.edgesIn;
-		edgesInBegin = processEdges.edgesInBegin;
-		assert processEdges.edgesOut.length == m;
-		assert edgesIn.length == m;
-		assert edgesInBegin.length == n + 1;
-
-		IndexGraphBuilder.ReIndexingMap edgesReIndexing0 = edgesReIndexing.get();
-		for (int eIdx = 0; eIdx < m; eIdx++) {
-			int eOrig = edgesIn[eIdx];
-			int eCsr = edgesReIndexing0.origToReIndexed(eOrig);
-			edgesIn[eIdx] = eCsr;
-		}
-
-		if (graphOrBuilder.contains(IndexGraph.class)) {
-			IndexGraph g = graphOrBuilder.get(IndexGraph.class);
-			assert g.isDirected();
-
-			for (int eCsr = 0; eCsr < m; eCsr++) {
-				int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);
-				setEndpoints(eCsr, g.edgeSource(eOrig), g.edgeTarget(eOrig));
-			}
 		} else {
-			IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
-			assert builder.isDirected();
+			edgesIn = processEdges.edgesIn;
+			edgesInBegin = processEdges.edgesInBegin;
+			assert processEdges.edgesOut.length == m;
+			assert edgesIn.length == m;
+			assert edgesInBegin.length == n + 1;
 
-			for (int eCsr = 0; eCsr < m; eCsr++) {
-				int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);
-				setEndpoints(eCsr, builder.edgeSource(eOrig), builder.edgeTarget(eOrig));
+			IndexGraphBuilder.ReIndexingMap edgesReIndexing0 = edgesReIndexing.get();
+			for (int eIdx = 0; eIdx < m; eIdx++) {
+				int eOrig = edgesIn[eIdx];
+				int eCsr = edgesReIndexing0.origToReIndexed(eOrig);
+				edgesIn[eIdx] = eCsr;
+			}
+
+			if (graphOrBuilder.contains(IndexGraph.class)) {
+				IndexGraph g = graphOrBuilder.get(IndexGraph.class);
+				assert g.isDirected();
+
+				for (int eCsr = 0; eCsr < m; eCsr++) {
+					int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);
+					setEndpoints(eCsr, g.edgeSource(eOrig), g.edgeTarget(eOrig));
+				}
+			} else {
+				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
+				assert builder.isDirected();
+
+				for (int eCsr = 0; eCsr < m; eCsr++) {
+					int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);
+					setEndpoints(eCsr, builder.edgeSource(eOrig), builder.edgeTarget(eOrig));
+				}
+			}
+		}
+
+		this.fastLookup = fastLookup;
+		if (!fastLookup) {
+			edgesLookupTable = null;
+
+		} else if (csrGraph.isPresent() && csrGraph.get().fastLookup) {
+			edgesLookupTable = csrGraph.get().edgesLookupTable;
+
+		} else {
+			edgesLookupTable = new Int2IntMap[vertices().size()];
+			initLookupTables();
+		}
+	}
+
+	private void initLookupTables() {
+		final int n = vertices().size();
+		for (int u : range(n)) {
+			int eBegin = edgesOutBegin[u];
+			int eEnd = edgesOutBegin[u + 1];
+			if (eBegin == eEnd) {
+				edgesLookupTable[u] = EmptyEdgeMap;
+			} else {
+				int uniqueTargets = 0;
+				for (int lastTarget = -1, e = eBegin; e < eEnd; e++) {
+					int v = target(e);
+					assert lastTarget <= v;
+					if (v != lastTarget) {
+						lastTarget = v;
+						uniqueTargets++;
+					}
+				}
+				edgesLookupTable[u] = new Int2IntOpenHashMap(uniqueTargets);
+				edgesLookupTable[u].defaultReturnValue(-1);
+				for (int lastTarget = -1, e = eBegin; e < eEnd; e++) {
+					int v = target(e);
+					if (v == lastTarget)
+						continue; /* store in the map the first edge only of same target */
+					int oldEdge = edgesLookupTable[u].put(v, e);
+					assert oldEdge < 0;
+					lastTarget = v;
+				}
 			}
 		}
 	}
 
-	private GraphCsrDirectedReindexed(GraphCsrDirectedReindexed g, boolean copyVerticesWeights,
-			boolean copyEdgesWeights) {
-		super(true, g, copyVerticesWeights, copyEdgesWeights);
-		edgesIn = g.edgesIn;
-		edgesInBegin = g.edgesInBegin;
-	}
-
-	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraphBuilderImpl builder) {
-		return newInstance(Variant2.ofB(builder), true, true);
+	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraphBuilderImpl builder, boolean fastLookup) {
+		return newInstance(Variant2.ofB(builder), true, true, fastLookup);
 	}
 
 	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraph g, boolean copyVerticesWeights,
-			boolean copyEdgesWeights) {
-		return newInstance(Variant2.ofA(g), copyVerticesWeights, copyEdgesWeights);
+			boolean copyEdgesWeights, boolean fastLookup) {
+		return newInstance(Variant2.ofA(g), copyVerticesWeights, copyEdgesWeights, fastLookup);
 	}
 
 	private static IndexGraphBuilder.ReIndexedGraph newInstance(
 			Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, boolean copyVerticesWeights,
-			boolean copyEdgesWeights) {
+			boolean copyEdgesWeights, boolean fastLookup) {
 		GraphCsrBase.BuilderProcessEdgesDirected processEdges =
 				GraphCsrBase.BuilderProcessEdgesDirected.valueOf(graphOrBuilder);
 
@@ -106,13 +152,18 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		}
 
 		GraphCsrDirectedReindexed g = new GraphCsrDirectedReindexed(graphOrBuilder, processEdges, edgesReIndexing,
-				copyVerticesWeights, copyEdgesWeights);
+				copyVerticesWeights, copyEdgesWeights, fastLookup);
 		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), edgesReIndexing);
 	}
 
 	@Override
 	public int getEdge(int source, int target) {
 		checkVertex(source);
+		if (fastLookup) {
+			checkVertex(target);
+			return edgesLookupTable[source].get(target);
+		}
+
 		final int begin = edgesOutBegin[source], end = edgesOutBegin[source + 1];
 		for (int e = begin; e < end; e++) {
 			if (target == target(e))
@@ -120,6 +171,16 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		}
 		checkVertex(target);
 		return -1;
+	}
+
+	@Override
+	public IEdgeSet getEdges(int source, int target) {
+		if (!fastLookup)
+			return super.getEdges(source, target);
+
+		checkVertex(source);
+		checkVertex(target);
+		return new SourceTargetEdgesSetFastLookup(source, target);
 	}
 
 	@Override
@@ -241,15 +302,83 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		}
 	}
 
-	@Override
-	public IndexGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		if (verticesUserWeights.isEmpty())
-			copyVerticesWeights = true;
-		if (edgesUserWeights.isEmpty())
-			copyEdgesWeights = true;
-		if (copyVerticesWeights && copyEdgesWeights)
-			return this;
-		return new GraphCsrDirectedReindexed(this, copyVerticesWeights, copyEdgesWeights);
+	private class SourceTargetEdgesSetFastLookup extends AbstractIntSet implements IEdgeSet {
+
+		private final int source, target;
+
+		SourceTargetEdgesSetFastLookup(int source, int target) {
+			this.source = source;
+			this.target = target;
+		}
+
+		@Override
+		public int size() {
+			int firstEdge = edgesLookupTable[source].get(target);
+			if (firstEdge < 0)
+				return 0;
+			for (int e = firstEdge, m = edges.size;;) {
+				e++;
+				if (e == m || target(e) != target)
+					return e - firstEdge;
+			}
+		}
+
+		@Override
+		public boolean isEmpty() {
+			return edgesLookupTable[source].get(target) < 0;
+		}
+
+		@Override
+		public boolean contains(int key) {
+			return edges().contains(key) && source(key) == source && target(key) == target;
+		}
+
+		@Override
+		public IEdgeIter iterator() {
+			return new SourceTargetEdgesIterFastLookup(source, target);
+		}
 	}
 
+	private class SourceTargetEdgesIterFastLookup implements IEdgeIter {
+
+		private final int source, target;
+		private int edge;
+
+		SourceTargetEdgesIterFastLookup(int source, int target) {
+			this.source = source;
+			this.target = target;
+			this.edge = edgesLookupTable[source].get(target);
+		}
+
+		@Override
+		public boolean hasNext() {
+			return edge >= 0;
+		}
+
+		@Override
+		public int nextInt() {
+			Assertions.Iters.hasNext(this);
+			int e = edge;
+			edge++;
+			if (edge == edges.size || GraphCsrDirectedReindexed.this.target(edge) != target)
+				edge = -1;
+			return e;
+		}
+
+		@Override
+		public int peekNextInt() {
+			Assertions.Iters.hasNext(this);
+			return edge;
+		}
+
+		@Override
+		public int sourceInt() {
+			return source;
+		}
+
+		@Override
+		public int targetInt() {
+			return target;
+		}
+	}
 }

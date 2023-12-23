@@ -232,12 +232,12 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 			this.target = target;
 		}
 
-		abstract Int2IntMap edgesOut(int source);
+		abstract Int2IntMap edgesMap(int source);
 
 		@Override
 		public int size() {
 			int s = 0;
-			for (int e = edgesOut(source).get(target); e >= 0; e = edgeNext[e])
+			for (int e = edgesMap(source).get(target); e >= 0; e = edgeNext[e])
 				s++;
 			return s;
 		}
@@ -252,7 +252,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 		@Override
 		public void clear() {
-			int firstEdge = edgesOut(source).get(target);
+			int firstEdge = edgesMap(source).get(target);
 			if (firstEdge >= 0)
 				removeAllEdgesInList(firstEdge);
 		}
@@ -261,7 +261,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 		public IEdgeIter iterator() {
 			return new IEdgeIter() {
 
-				int nextEdge = edgesOut(source).get(target);
+				int nextEdge = edgesMap(source).get(target);
 				int prevEdge;
 
 				@Override

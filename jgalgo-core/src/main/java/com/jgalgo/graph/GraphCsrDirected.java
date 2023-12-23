@@ -22,16 +22,16 @@ class GraphCsrDirected extends GraphCsrAbstractUnindexed {
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
 
-	GraphCsrDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges) {
-		super(true, builder, processEdges);
+	GraphCsrDirected(IndexGraphBuilderImpl builder, BuilderProcessEdgesDirected processEdges, boolean fastLookup) {
+		super(true, builder, processEdges, fastLookup);
 		assert builder.isDirected();
 
 		edgesIn = processEdges.edgesIn;
 		edgesInBegin = processEdges.edgesInBegin;
 	}
 
-	GraphCsrDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-		super(true, g, copyVerticesWeights, copyEdgesWeights);
+	GraphCsrDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights, boolean fastLookup) {
+		super(true, g, copyVerticesWeights, copyEdgesWeights, fastLookup);
 		Assertions.Graphs.onlyDirected(g);
 
 		if (g instanceof GraphCsrDirected) {
@@ -57,6 +57,11 @@ class GraphCsrDirected extends GraphCsrAbstractUnindexed {
 	@Override
 	public int getEdge(int source, int target) {
 		checkVertex(source);
+		if (fastLookup) {
+			checkVertex(target);
+			return super.fastGetEdge(source, target);
+		}
+
 		final int begin = edgesOutBegin[source], end = edgesOutBegin[source + 1];
 		for (int i = begin; i < end; i++) {
 			int e = edgesOut[i];

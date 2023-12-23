@@ -378,68 +378,85 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	}
 
 	ImmutableImpl immutableImpl() {
-		ImmutableImpl csrImpl = directed ? new ImmutableImpl() {
-			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				return new GraphCsrDirected(graph, copyVerticesWeights, copyEdgesWeights);
-			}
+		Boolean2ObjectFunction<ImmutableImpl> csrImplFactory = fastLookup -> {
+			return directed ? new ImmutableImpl() {
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					if (graph instanceof GraphCsrDirectedReindexed) {
+						IndexGraphBuilder.ReIndexedGraph reIndexedGraph = GraphCsrDirectedReindexed.newInstance(graph,
+								copyVerticesWeights, copyEdgesWeights, fastLookup);
+						assert reIndexedGraph.verticesReIndexing().isEmpty()
+								&& reIndexedGraph.edgesReIndexing().isEmpty();
+						return reIndexedGraph.graph();
+					} else {
+						return new GraphCsrDirected(graph, copyVerticesWeights, copyEdgesWeights, fastLookup);
+					}
+				}
 
-			@Override
-			public IndexGraphBuilder.ReIndexedGraph newCopyOfWithReIndex(IndexGraph graph, boolean reIndexVertices,
-					boolean reIndexEdges, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				if (reIndexEdges) {
-					return GraphCsrDirectedReindexed.newInstance(graph, copyVerticesWeights, copyEdgesWeights);
-				} else {
+				@Override
+				public IndexGraphBuilder.ReIndexedGraph newCopyOfWithReIndex(IndexGraph graph, boolean reIndexVertices,
+						boolean reIndexEdges, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					if (reIndexEdges) {
+						return GraphCsrDirectedReindexed.newInstance(graph, copyVerticesWeights, copyEdgesWeights,
+								fastLookup);
+					} else {
+						return new ReIndexedGraphImpl(newCopyOf(graph, copyVerticesWeights, copyEdgesWeights),
+								Optional.empty(), Optional.empty());
+					}
+				}
+
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+					GraphCsrBase.BuilderProcessEdgesDirected processEdges =
+							GraphCsrBase.BuilderProcessEdgesDirected.valueOf(builder);
+					return new GraphCsrDirected(builder, processEdges, fastLookup);
+				}
+
+				@Override
+				public ReIndexedGraph newFromBuilderWithReIndex(IndexGraphBuilderImpl builder, boolean reIndexVertices,
+						boolean reIndexEdges) {
+					if (reIndexEdges) {
+						return GraphCsrDirectedReindexed.newInstance(builder, fastLookup);
+					} else {
+						return new ReIndexedGraphImpl(newFromBuilder(builder), Optional.empty(), Optional.empty());
+					}
+				}
+			} : new ImmutableImpl() {
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					return new GraphCsrUndirected(graph, copyVerticesWeights, copyEdgesWeights, fastLookup);
+				}
+
+				@Override
+				public IndexGraphBuilder.ReIndexedGraph newCopyOfWithReIndex(IndexGraph graph, boolean reIndexVertices,
+						boolean reIndexEdges, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					/* no re-indexing for undirected graph */
 					return new ReIndexedGraphImpl(newCopyOf(graph, copyVerticesWeights, copyEdgesWeights),
 							Optional.empty(), Optional.empty());
 				}
-			}
 
-			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				GraphCsrBase.BuilderProcessEdgesDirected processEdges =
-						GraphCsrBase.BuilderProcessEdgesDirected.valueOf(builder);
-				return new GraphCsrDirected(builder, processEdges);
-			}
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+					GraphCsrBase.BuilderProcessEdgesUndirected processEdges =
+							GraphCsrBase.BuilderProcessEdgesUndirected.valueOf(builder);
+					return new GraphCsrUndirected(builder, processEdges, fastLookup);
+				}
 
-			@Override
-			public ReIndexedGraph newFromBuilderWithReIndex(IndexGraphBuilderImpl builder, boolean reIndexVertices,
-					boolean reIndexEdges) {
-				if (reIndexEdges) {
-					return GraphCsrDirectedReindexed.newInstance(builder);
-				} else {
+				@Override
+				public ReIndexedGraph newFromBuilderWithReIndex(IndexGraphBuilderImpl builder, boolean reIndexVertices,
+						boolean reIndexEdges) {
+					/* no re-indexing for undirected graph */
 					return new ReIndexedGraphImpl(newFromBuilder(builder), Optional.empty(), Optional.empty());
 				}
-			}
-		} : new ImmutableImpl() {
-			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				return new GraphCsrUndirected(graph, copyVerticesWeights, copyEdgesWeights);
-			}
-
-			@Override
-			public IndexGraphBuilder.ReIndexedGraph newCopyOfWithReIndex(IndexGraph graph, boolean reIndexVertices,
-					boolean reIndexEdges, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				/* no re-indexing for undirected graph */
-				return new ReIndexedGraphImpl(newCopyOf(graph, copyVerticesWeights, copyEdgesWeights), Optional.empty(),
-						Optional.empty());
-			}
-
-			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-				GraphCsrBase.BuilderProcessEdgesUndirected processEdges =
-						GraphCsrBase.BuilderProcessEdgesUndirected.valueOf(builder);
-				return new GraphCsrUndirected(builder, processEdges);
-			}
-
-			@Override
-			public ReIndexedGraph newFromBuilderWithReIndex(IndexGraphBuilderImpl builder, boolean reIndexVertices,
-					boolean reIndexEdges) {
-				/* no re-indexing for undirected graph */
-				return new ReIndexedGraphImpl(newFromBuilder(builder), Optional.empty(), Optional.empty());
-			}
+			};
 		};
-		return csrImpl;
+		ImmutableImpl csrImpl = csrImplFactory.get(false);
+		ImmutableImpl csrImplWithFastLookup = csrImplFactory.get(true);
+		if (hints.contains(GraphFactory.Hint.FastEdgeLookup)) {
+			return csrImplWithFastLookup;
+		} else {
+			return csrImpl;
+		}
 	}
 
 	@Override

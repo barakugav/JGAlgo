@@ -308,7 +308,7 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract implements G
 		}
 
 		@Override
-		Int2IntMap edgesOut(int source) {
+		Int2IntMap edgesMap(int source) {
 			return edgesMap[source];
 		}
 
