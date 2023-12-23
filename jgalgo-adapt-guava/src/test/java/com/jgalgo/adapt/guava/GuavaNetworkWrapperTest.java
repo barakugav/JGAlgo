@@ -645,8 +645,8 @@ public class GuavaNetworkWrapperTest {
 		for (boolean directed : BooleanList.of(false, true)) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig, false);
-			assertThrows(UnsupportedOperationException.class, () -> g.addEdge(Graphs.randVertex(g, rand),
-					Graphs.randVertex(g, rand), nonExistingEdge(gOrig, rand)));
+			assertThrows(UnsupportedOperationException.class, () -> g
+					.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand), nonExistingEdge(gOrig, rand)));
 		}
 	}
 
@@ -725,8 +725,9 @@ public class GuavaNetworkWrapperTest {
 					}
 
 				} else {
-					gToAdd.addEdge(Graphs.randVertex(gToAdd, rand), Graphs.randVertex(gToAdd, rand),
-							Graphs.randEdge(g, rand));
+					gToAdd
+							.addEdge(Graphs.randVertex(gToAdd, rand), Graphs.randVertex(gToAdd, rand),
+									Graphs.randEdge(g, rand));
 					EdgeSet<Integer, Integer> edgesToAdd = EdgeSet.allOf(gToAdd);
 					assertThrows(IllegalArgumentException.class, () -> g.addEdges(edgesToAdd));
 				}

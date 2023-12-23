@@ -159,8 +159,10 @@ public class GuavaGraphAdapterTest {
 
 			for (Integer u : g.nodes()) {
 				Set<Integer> actual = g.adjacentNodes(u);
-				Set<Integer> expected = Stream.concat(gOrig.outEdges(u).stream(), gOrig.inEdges(u).stream())
-						.map(e -> gOrig.edgeEndpoint(e, u)).collect(toSet());
+				Set<Integer> expected = Stream
+						.concat(gOrig.outEdges(u).stream(), gOrig.inEdges(u).stream())
+						.map(e -> gOrig.edgeEndpoint(e, u))
+						.collect(toSet());
 				assertEquals(expected, actual);
 				assertEquals(actual, expected);
 
@@ -228,7 +230,8 @@ public class GuavaGraphAdapterTest {
 					Set<EndpointPair<Integer>> actual = g.incidentEdges(u);
 					Set<EndpointPair<Integer>> expected = Stream
 							.concat(gOrig.outEdges(u).stream(), gOrig.inEdges(u).stream())
-							.map(e -> endpoints(gOrig.edgeSource(e), gOrig.edgeTarget(e), directed)).collect(toSet());
+							.map(e -> endpoints(gOrig.edgeSource(e), gOrig.edgeTarget(e), directed))
+							.collect(toSet());
 					assertEquals(expected.size(), actual.size());
 					assertEquals(expected.isEmpty(), actual.isEmpty());
 					assertEquals(expected, actual);
@@ -400,11 +403,15 @@ public class GuavaGraphAdapterTest {
 				Integer v = rand.nextBoolean() ? Graphs.randVertex(gOrig, rand)
 						: originalVertices[rand.nextInt(originalVertices.length)];
 				if (expectedVertices.contains(v)) {
-					Set<Integer> expectedRemoveEdges = gOrig.edges().stream()
+					Set<Integer> expectedRemoveEdges = gOrig
+							.edges()
+							.stream()
 							.filter(e -> v.equals(gOrig.edgeSource(e)) || v.equals(gOrig.edgeTarget(e)))
 							.collect(toSet());
-					Set<EndpointPair<Integer>> expectedRemoveEndpoints = expectedRemoveEdges.stream()
-							.map(e -> endpoints(gOrig.edgeSource(e), gOrig.edgeTarget(e), directed)).collect(toSet());
+					Set<EndpointPair<Integer>> expectedRemoveEndpoints = expectedRemoveEdges
+							.stream()
+							.map(e -> endpoints(gOrig.edgeSource(e), gOrig.edgeTarget(e), directed))
+							.collect(toSet());
 					int verticesNumBefore = g.nodes().size();
 					int edgesNumBefore = g.edges().size();
 					assertTrue(g.removeNode(v));
@@ -527,8 +534,12 @@ public class GuavaGraphAdapterTest {
 				}
 			}
 			assertEquals(expectedEdges, g.edges());
-			assertEquals(expectedEdges, gOrig.edges().stream()
-					.map(e -> endpoints(gOrig.edgeSource(e), gOrig.edgeTarget(e), directed)).collect(toSet()));
+			assertEquals(expectedEdges,
+					gOrig
+							.edges()
+							.stream()
+							.map(e -> endpoints(gOrig.edgeSource(e), gOrig.edgeTarget(e), directed))
+							.collect(toSet()));
 		}
 	}
 
