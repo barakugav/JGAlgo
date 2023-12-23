@@ -54,8 +54,10 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract implements G
 
 			for (int v = 0; v < n; v++) {
 				if (!g0.edgesMap[v].isEmpty()) {
-					edgesMap[v] = new Int2IntOpenHashMap(g0.edgesMap[v]);
+					/* Int2IntOpenHashMap refuse to shrink below the initial size, so we use expected=0 here */
+					edgesMap[v] = new Int2IntOpenHashMap(0);
 					edgesMap[v].defaultReturnValue(-1);
+					edgesMap[v].putAll(g0.edgesMap[v]);
 				}
 			}
 		} else {

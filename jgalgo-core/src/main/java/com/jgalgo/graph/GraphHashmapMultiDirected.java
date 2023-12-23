@@ -63,12 +63,16 @@ class GraphHashmapMultiDirected extends GraphHashmapMultiAbstract implements Gra
 
 			for (int v = 0; v < n; v++) {
 				if (!g0.edgesOut[v].isEmpty()) {
-					edgesOut[v] = new Int2IntOpenHashMap(g0.edgesOut[v]);
+					/* Int2IntOpenHashMap refuse to shrink below the initial size, so we use expected=0 here */
+					edgesOut[v] = new Int2IntOpenHashMap(0);
 					edgesOut[v].defaultReturnValue(-1);
+					edgesOut[v].putAll(g0.edgesOut[v]);
 				}
 				if (!g0.edgesIn[v].isEmpty()) {
-					edgesIn[v] = new Int2IntOpenHashMap(g0.edgesIn[v]);
+					/* Int2IntOpenHashMap refuse to shrink below the initial size, so we use expected=0 here */
+					edgesIn[v] = new Int2IntOpenHashMap(0);
 					edgesIn[v].defaultReturnValue(-1);
+					edgesIn[v].putAll(g0.edgesIn[v]);
 				}
 			}
 		} else {

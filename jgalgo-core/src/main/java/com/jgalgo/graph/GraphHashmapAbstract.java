@@ -112,7 +112,7 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 			 * choose to clone the map, it will not be updated when edges are swapped, so we have to update it manually.
 			 */
 			if (clonedMap == null) {
-				clonedMap = new Int2IntOpenHashMap(1);
+				clonedMap = new Int2IntOpenHashMap(0);
 				clonedMap.defaultReturnValue(-1);
 				while (eit.hasNext()) {
 					Int2IntMap.Entry entry = eit.next();
@@ -185,7 +185,7 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 
 	static Int2IntMap ensureEdgesMapMutable(Int2IntMap[] edgesArr, int idx) {
 		if (edgesArr[idx] == EmptyEdgeMap) {
-			edgesArr[idx] = new Int2IntOpenHashMap();
+			edgesArr[idx] = new Int2IntOpenHashMap(0);
 			edgesArr[idx].defaultReturnValue(-1);
 		}
 		return edgesArr[idx];

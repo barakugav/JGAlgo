@@ -50,8 +50,10 @@ class GraphHashmapUndirected extends GraphHashmapAbstract implements GraphDefaul
 
 			for (int v = 0; v < n; v++) {
 				if (!g0.edges[v].isEmpty()) {
-					edges[v] = new Int2IntOpenHashMap(g0.edges[v]);
+					/* Int2IntOpenHashMap refuse to shrink below the initial size, so we use expected=0 here */
+					edges[v] = new Int2IntOpenHashMap(0);
 					edges[v].defaultReturnValue(-1);
+					edges[v].putAll(g0.edges[v]);
 				}
 			}
 		} else {
