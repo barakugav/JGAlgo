@@ -66,7 +66,9 @@ public final class Range extends AbstractIntSet {
 	public boolean equals(Object o) {
 		if (o instanceof Range) {
 			Range r = (Range) o;
-			return from == r.from && to == r.to;
+			if (isEmpty())
+				return r.isEmpty();
+			return to == r.to && from == r.from;
 
 		} else if (o instanceof IntSet) {
 			IntSet s = (IntSet) o;

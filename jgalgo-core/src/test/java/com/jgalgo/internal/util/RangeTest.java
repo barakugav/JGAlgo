@@ -187,6 +187,7 @@ public class RangeTest extends TestBase {
 				assertNotEquals(o, range);
 			}
 		}
+		assertEquals(range(0, 0), range(1, 1));
 	}
 
 	@Test
