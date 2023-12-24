@@ -187,7 +187,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	}
 
 	@Override
-	public boolean isAllowSelfEdges() {
+	public final boolean isAllowSelfEdges() {
 		if (!containsSelfEdgesValid) {
 			containsSelfEdges = false;
 			for (int m = edges().size(), e = 0; e < m; e++) {
@@ -201,33 +201,35 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 		return containsSelfEdges;
 	}
 
-	boolean containsParallelEdges() {
+	final boolean containsParallelEdges() {
 		if (!containsParallelEdgesValid) {
-			final int n = vertices().size();
-			Bitmap neighborsBitmap = new Bitmap(n);
-			IntList neighbors = new IntArrayList();
-			containsParallelEdges = false;
-			mainLoop: for (int u = 0; u < n; u++) {
-				for (IEdgeIter eit = outEdges(u).iterator(); eit.hasNext();) {
-					eit.nextInt();
-					int v = eit.targetInt();
-					if (neighborsBitmap.get(v)) {
-						containsParallelEdges = true;
-						break mainLoop;
-					}
-					neighborsBitmap.set(v);
-					neighbors.add(v);
-				}
-				neighborsBitmap.clearAllUnsafe(neighbors);
-				neighbors.clear();
-			}
+			containsParallelEdges = containsParallelEdgesImpl();
 			containsParallelEdgesValid = true;
 		}
 		return containsParallelEdges;
 	}
 
+	boolean containsParallelEdgesImpl() {
+		final int n = vertices().size();
+		Bitmap neighborsBitmap = new Bitmap(n);
+		IntList neighbors = new IntArrayList();
+		for (int u = 0; u < n; u++) {
+			for (IEdgeIter eit = outEdges(u).iterator(); eit.hasNext();) {
+				eit.nextInt();
+				int v = eit.targetInt();
+				if (neighborsBitmap.get(v))
+					return true;
+				neighborsBitmap.set(v);
+				neighbors.add(v);
+			}
+			neighborsBitmap.clearAllUnsafe(neighbors);
+			neighbors.clear();
+		}
+		return false;
+	}
+
 	@Override
-	public boolean isAllowParallelEdges() {
+	public final boolean isAllowParallelEdges() {
 		return containsParallelEdges();
 	}
 

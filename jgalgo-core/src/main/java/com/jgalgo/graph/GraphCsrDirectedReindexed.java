@@ -101,28 +101,44 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 			int eEnd = edgesOutBegin[u + 1];
 			if (eBegin == eEnd) {
 				edgesLookupTable[u] = EmptyEdgeMap;
-			} else {
-				int uniqueTargets = 0;
-				for (int lastTarget = -1, e = eBegin; e < eEnd; e++) {
-					int v = target(e);
-					assert lastTarget <= v;
-					if (v != lastTarget) {
-						lastTarget = v;
-						uniqueTargets++;
-					}
-				}
-				edgesLookupTable[u] = new Int2IntOpenHashMap(uniqueTargets);
-				edgesLookupTable[u].defaultReturnValue(-1);
-				for (int lastTarget = -1, e = eBegin; e < eEnd; e++) {
-					int v = target(e);
-					if (v == lastTarget)
-						continue; /* store in the map the first edge only of same target */
-					int oldEdge = edgesLookupTable[u].put(v, e);
-					assert oldEdge < 0;
+				continue;
+			}
+			int uniqueTargets = 0;
+			for (int lastTarget = -1, e = eBegin; e < eEnd; e++) {
+				int v = target(e);
+				assert lastTarget <= v;
+				if (v != lastTarget) {
 					lastTarget = v;
+					uniqueTargets++;
 				}
 			}
+			edgesLookupTable[u] = new Int2IntOpenHashMap(uniqueTargets);
+			edgesLookupTable[u].defaultReturnValue(-1);
+			for (int lastTarget = -1, e = eBegin; e < eEnd; e++) {
+				int v = target(e);
+				if (v == lastTarget)
+					continue; /* store in the map the first edge only of same target */
+				int oldEdge = edgesLookupTable[u].put(v, e);
+				assert oldEdge < 0;
+				lastTarget = v;
+			}
 		}
+	}
+
+	@Override
+	boolean containsParallelEdgesImpl() {
+		for (int u : range(vertices().size())) {
+			int eBegin = edgesOutBegin[u];
+			int eEnd = edgesOutBegin[u + 1];
+			for (int lastTarget = -1, e = eBegin; e < eEnd; e++) {
+				int v = target(e);
+				assert lastTarget <= v;
+				if (v == lastTarget)
+					return true;
+				lastTarget = v;
+			}
+		}
+		return false;
 	}
 
 	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraphBuilderImpl builder, boolean fastLookup) {
