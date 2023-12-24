@@ -105,8 +105,8 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 <span class="fc" id="L105">			minWeight = Math.min(minWeight, w.weightInt(e));</span>
 <span class="fc bfc" id="L106" title="All 2 branches covered.">		if (minWeight &gt;= 0)</span>
 			// All weights are positive, use Dijkstra
-<span class="fc" id="L108">			return (ShortestPathSingleSource.IResult) positiveSsspAlgo.computeShortestPaths(g, w,</span>
-<span class="fc" id="L109">					Integer.valueOf(source));</span>
+<span class="fc" id="L108">			return (ShortestPathSingleSource.IResult) positiveSsspAlgo</span>
+<span class="fc" id="L109">					.computeShortestPaths(g, w, Integer.valueOf(source));</span>
 
 		/* calculate a potential function (or find a negative cycle) */
 <span class="fc" id="L112">		int[] potential = calcPotential(g, w, minWeight);</span>

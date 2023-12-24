@@ -45,8 +45,8 @@ import java.util.Set;
 <span class="fc" id="L45">			boolean copyEdgesWeights) {</span>
 <span class="fc" id="L46">		this.factory = factory;</span>
 <span class="fc" id="L47">		this.ibuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
-<span class="fc" id="L48">		viMap = IndexIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), ibuilder.vertices(), false,</span>
-				false);
+<span class="fc" id="L48">		viMap = IndexIdMapImpl</span>
+<span class="fc" id="L49">				.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), ibuilder.vertices(), false, false);</span>
 <span class="fc" id="L50">		eiMap = IndexIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), Optional.empty(), ibuilder.edges(), true, false);</span>
 <span class="fc" id="L51">		resetVertexAndEdgeBuilders();</span>
 <span class="fc" id="L52">	}</span>
@@ -147,8 +147,8 @@ import java.util.Set;
 <span class="fc" id="L147">		WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.getVerticesWeights(key);</span>
 <span class="fc bfc" id="L148" title="All 2 branches covered.">		if (indexWeights == null)</span>
 <span class="fc" id="L149">			return null;</span>
-<span class="fc" id="L150">		return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,</span>
-<span class="fc" id="L151">				iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, viMap));</span>
+<span class="fc" id="L150">		return (WeightsT) verticesWeights</span>
+<span class="fc" id="L151">				.computeIfAbsent(indexWeights, iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, viMap));</span>
 	}
 
 	@Override
@@ -169,8 +169,8 @@ import java.util.Set;
 <span class="fc" id="L169">		WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.getEdgesWeights(key);</span>
 <span class="fc bfc" id="L170" title="All 2 branches covered.">		if (indexWeights == null)</span>
 <span class="fc" id="L171">			return null;</span>
-<span class="fc" id="L172">		return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,</span>
-<span class="fc" id="L173">				iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, eiMap));</span>
+<span class="fc" id="L172">		return (WeightsT) edgesWeights</span>
+<span class="fc" id="L173">				.computeIfAbsent(indexWeights, iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, eiMap));</span>
 	}
 
 	@Override

@@ -51,8 +51,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	void benchSSSP(ShortestPathSingleSource algo, Blackhole blackhole) {
 <span class="fc" id="L53">		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
-<span class="fc" id="L54">		ShortestPathSingleSource.IResult result = (ShortestPathSingleSource.IResult) algo.computeShortestPaths(args.g,</span>
-<span class="fc" id="L55">				args.w, Integer.valueOf(args.source));</span>
+<span class="fc" id="L54">		ShortestPathSingleSource.IResult result = (ShortestPathSingleSource.IResult) algo</span>
+<span class="fc" id="L55">				.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));</span>
 <span class="fc" id="L56">		blackhole.consume(result);</span>
 <span class="fc" id="L57">	}</span>
 

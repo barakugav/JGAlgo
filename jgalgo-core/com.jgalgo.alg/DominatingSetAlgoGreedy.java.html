@@ -186,73 +186,89 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 			/* some vertices might not be dominated if they have no in/out edges */
 <span class="fc bfc" id="L188" title="All 4 branches covered.">			if (!directed || dominanceDirection == EdgeDirection.In) {</span>
-<span class="pc bnc" id="L189" title="All 4 branches missed.">				assert range(n).filter(u -&gt; !dominated.get(u)).allMatch(u -&gt; g.outEdges(u).intStream()</span>
-<span class="nc bnc" id="L190" title="All 2 branches missed.">						.filter(e -&gt; g.edgeSource(e) != g.edgeTarget(e)).findAny().isEmpty());</span>
+<span class="pc" id="L189">				assert range(n)</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">						.filter(u -&gt; !dominated.get(u))</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">						.allMatch(u -&gt; g</span>
+<span class="nc" id="L192">								.outEdges(u)</span>
+<span class="nc" id="L193">								.intStream()</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">								.filter(e -&gt; g.edgeSource(e) != g.edgeTarget(e))</span>
+<span class="nc" id="L195">								.findAny()</span>
+<span class="nc" id="L196">								.isEmpty());</span>
 
-<span class="fc bfc" id="L192" title="All 2 branches covered.">			} else if (dominanceDirection == EdgeDirection.Out) {</span>
-<span class="pc bnc" id="L193" title="All 4 branches missed.">				assert range(n).filter(u -&gt; !dominated.get(u)).allMatch(u -&gt; g.inEdges(u).intStream()</span>
-<span class="nc bnc" id="L194" title="All 2 branches missed.">						.filter(e -&gt; g.edgeSource(e) != g.edgeTarget(e)).findAny().isEmpty());</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">			} else if (dominanceDirection == EdgeDirection.Out) {</span>
+<span class="pc" id="L199">				assert range(n)</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">						.filter(u -&gt; !dominated.get(u))</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">						.allMatch(u -&gt; g</span>
+<span class="nc" id="L202">								.inEdges(u)</span>
+<span class="nc" id="L203">								.intStream()</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">								.filter(e -&gt; g.edgeSource(e) != g.edgeTarget(e))</span>
+<span class="nc" id="L205">								.findAny()</span>
+<span class="nc" id="L206">								.isEmpty());</span>
 
 			} else {
-<span class="pc bnc" id="L197" title="All 2 branches missed.">				assert dominanceDirection == EdgeDirection.All;</span>
-<span class="pc bnc" id="L198" title="All 2 branches missed.">				assert range(n).filter(u -&gt; !dominated.get(u))</span>
-<span class="nc bnc" id="L199" title="All 2 branches missed.">						.allMatch(u -&gt; IntStream.concat(g.outEdges(u).intStream(), g.inEdges(u).intStream())</span>
-<span class="nc bnc" id="L200" title="All 2 branches missed.">								.filter(e -&gt; g.edgeSource(e) != g.edgeTarget(e)).findAny().isEmpty());</span>
+<span class="pc bnc" id="L209" title="All 2 branches missed.">				assert dominanceDirection == EdgeDirection.All;</span>
+<span class="pc" id="L210">				assert range(n)</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">						.filter(u -&gt; !dominated.get(u))</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">						.allMatch(u -&gt; IntStream</span>
+<span class="nc" id="L213">								.concat(g.outEdges(u).intStream(), g.inEdges(u).intStream())</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">								.filter(e -&gt; g.edgeSource(e) != g.edgeTarget(e))</span>
+<span class="nc" id="L215">								.findAny()</span>
+<span class="nc" id="L216">								.isEmpty());</span>
 			}
-<span class="fc bfc" id="L202" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
-<span class="fc bfc" id="L203" title="All 2 branches covered.">				if (!dominated.get(u))</span>
-<span class="fc" id="L204">					dominating.set(u);</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">				if (!dominated.get(u))</span>
+<span class="fc" id="L220">					dominating.set(u);</span>
 
-<span class="fc" id="L206">			return ImmutableIntArraySet.ofBitmap(dominating);</span>
+<span class="fc" id="L222">			return ImmutableIntArraySet.ofBitmap(dominating);</span>
 		}
 
 		private void removeOutEdges(int source) {
-<span class="fc bfc" id="L210" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L211">				int e = eit.nextInt();</span>
-<span class="fc" id="L212">				int idx = edgeToIdx[e];</span>
-<span class="fc bfc" id="L213" title="All 2 branches covered.">				if (idx != -1)</span>
-<span class="fc" id="L214">					removeEdge(e, idx);</span>
-<span class="fc" id="L215">			}</span>
-<span class="fc" id="L216">		}</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L227">				int e = eit.nextInt();</span>
+<span class="fc" id="L228">				int idx = edgeToIdx[e];</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">				if (idx != -1)</span>
+<span class="fc" id="L230">					removeEdge(e, idx);</span>
+<span class="fc" id="L231">			}</span>
+<span class="fc" id="L232">		}</span>
 
 		private void removeOutEdges2(int source) {
-<span class="fc bfc" id="L219" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L220">				int e = eit.nextInt();</span>
-<span class="fc bfc" id="L221" title="All 2 branches covered.">				if (!dominated.get(eit.targetInt()))</span>
-<span class="fc" id="L222">					continue;</span>
-<span class="fc" id="L223">				int idx = edgeToIdx[e];</span>
-<span class="fc bfc" id="L224" title="All 2 branches covered.">				if (idx != -1)</span>
-<span class="fc" id="L225">					removeEdge(e, idx);</span>
-<span class="fc" id="L226">			}</span>
-<span class="fc" id="L227">		}</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L236">				int e = eit.nextInt();</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">				if (!dominated.get(eit.targetInt()))</span>
+<span class="fc" id="L238">					continue;</span>
+<span class="fc" id="L239">				int idx = edgeToIdx[e];</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">				if (idx != -1)</span>
+<span class="fc" id="L241">					removeEdge(e, idx);</span>
+<span class="fc" id="L242">			}</span>
+<span class="fc" id="L243">		}</span>
 
 		private void removeInEdges(int target) {
-<span class="fc bfc" id="L230" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(target).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L231">				int e = eit.nextInt();</span>
-<span class="fc" id="L232">				int idx = edgeToIdx[e];</span>
-<span class="fc bfc" id="L233" title="All 2 branches covered.">				if (idx != -1)</span>
-<span class="fc" id="L234">					removeEdge(e, idx);</span>
-<span class="fc" id="L235">			}</span>
-<span class="fc" id="L236">		}</span>
+<span class="fc bfc" id="L246" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(target).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L247">				int e = eit.nextInt();</span>
+<span class="fc" id="L248">				int idx = edgeToIdx[e];</span>
+<span class="fc bfc" id="L249" title="All 2 branches covered.">				if (idx != -1)</span>
+<span class="fc" id="L250">					removeEdge(e, idx);</span>
+<span class="fc" id="L251">			}</span>
+<span class="fc" id="L252">		}</span>
 
 		private void removeInEdges2(int target) {
-<span class="fc bfc" id="L239" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(target).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L240">				int e = eit.nextInt();</span>
-<span class="fc bfc" id="L241" title="All 2 branches covered.">				if (!dominated.get(eit.sourceInt()))</span>
-<span class="fc" id="L242">					continue;</span>
-<span class="fc" id="L243">				int idx = edgeToIdx[e];</span>
-<span class="fc bfc" id="L244" title="All 2 branches covered.">				if (idx != -1)</span>
-<span class="fc" id="L245">					removeEdge(e, idx);</span>
-<span class="fc" id="L246">			}</span>
-<span class="fc" id="L247">		}</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(target).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L256">				int e = eit.nextInt();</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">				if (!dominated.get(eit.sourceInt()))</span>
+<span class="fc" id="L258">					continue;</span>
+<span class="fc" id="L259">				int idx = edgeToIdx[e];</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">				if (idx != -1)</span>
+<span class="fc" id="L261">					removeEdge(e, idx);</span>
+<span class="fc" id="L262">			}</span>
+<span class="fc" id="L263">		}</span>
 
 		private void removeEdge(int edge, int edgeIdx) {
-<span class="fc" id="L250">			int swappedEdge = edges[edgeIdx] = edges[edgesNum - 1];</span>
-<span class="fc" id="L251">			edges[edgesNum - 1] = -1;</span>
-<span class="fc" id="L252">			edgeToIdx[swappedEdge] = edgeIdx;</span>
-<span class="fc" id="L253">			edgeToIdx[edge] = -1;</span>
-<span class="fc" id="L254">			edgesNum--;</span>
-<span class="fc" id="L255">		}</span>
+<span class="fc" id="L266">			int swappedEdge = edges[edgeIdx] = edges[edgesNum - 1];</span>
+<span class="fc" id="L267">			edges[edgesNum - 1] = -1;</span>
+<span class="fc" id="L268">			edgeToIdx[swappedEdge] = edgeIdx;</span>
+<span class="fc" id="L269">			edgeToIdx[edge] = -1;</span>
+<span class="fc" id="L270">			edgesNum--;</span>
+<span class="fc" id="L271">		}</span>
 
 	}
 

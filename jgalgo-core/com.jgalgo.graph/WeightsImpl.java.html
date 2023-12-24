@@ -413,8 +413,8 @@ interface WeightsImpl {
 
 			void copyAndAddWeightsReindexed(String key, IWeights&lt;?&gt; weights,
 					IndexGraphBuilder.ReIndexingMap reIndexMap) {
-<span class="fc" id="L416">				Object oldWeights = this.weights.put(key,</span>
-<span class="fc" id="L417">						WeightsImpl.IndexImmutable.copyOfReindexed(weights, elements, isEdges, reIndexMap));</span>
+<span class="fc" id="L416">				Object oldWeights = this.weights</span>
+<span class="fc" id="L417">						.put(key, WeightsImpl.IndexImmutable.copyOfReindexed(weights, elements, isEdges, reIndexMap));</span>
 <span class="pc bpc" id="L418" title="1 of 2 branches missed.">				if (oldWeights != null)</span>
 <span class="nc" id="L419">					throw new IllegalArgumentException(&quot;duplicate key: &quot; + key);</span>
 <span class="fc" id="L420">			}</span>

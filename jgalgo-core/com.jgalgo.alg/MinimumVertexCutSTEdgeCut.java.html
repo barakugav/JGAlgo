@@ -61,10 +61,11 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L61">		IWeightFunction w0 = auxiliaryGraph.weights;</span>
 
 <span class="fc" id="L63">		IntSet edgesCut = (IntSet) minEdgeCutAlgo</span>
-<span class="fc" id="L64">				.computeMinimumCut(g0, w0, Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0)).crossEdges();</span>
-<span class="fc" id="L65">		int[] cut = edgesCut.toIntArray();</span>
-<span class="fc" id="L66">		auxiliaryGraph.edgeCutToVertexCut(cut);</span>
-<span class="fc" id="L67">		return cut;</span>
+<span class="fc" id="L64">				.computeMinimumCut(g0, w0, Integer.valueOf(source * 2 + 1), Integer.valueOf(sink * 2 + 0))</span>
+<span class="fc" id="L65">				.crossEdges();</span>
+<span class="fc" id="L66">		int[] cut = edgesCut.toIntArray();</span>
+<span class="fc" id="L67">		auxiliaryGraph.edgeCutToVertexCut(cut);</span>
+<span class="fc" id="L68">		return cut;</span>
 	}
 
 }

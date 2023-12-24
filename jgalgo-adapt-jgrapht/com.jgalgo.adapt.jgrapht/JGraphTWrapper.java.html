@@ -997,71 +997,73 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 <span class="fc" id="L997">			throw new UnsupportedOperationException(&quot;not supported by &quot; + JGraphTWrapper.class.getSimpleName());</span>
 		}
 
+		@Deprecated
 		@Override
 		public IndexIntIdMap indexGraphVerticesMap() {
-<span class="fc" id="L1002">			return verticesIdentityIndexMap;</span>
+<span class="fc" id="L1003">			return verticesIdentityIndexMap;</span>
 		}
 
+		@Deprecated
 		@Override
 		public IndexIntIdMap indexGraphEdgesMap() {
-<span class="fc" id="L1007">			return edgesIdentityIndexMap;</span>
+<span class="fc" id="L1009">			return edgesIdentityIndexMap;</span>
 		}
 
 		private abstract class EdgeSetBase extends AbstractIntSet implements IEdgeSet {
 
 			private final Set&lt;E&gt; edges;
 
-<span class="fc" id="L1014">			public EdgeSetBase(Set&lt;E&gt; edges) {</span>
-<span class="fc" id="L1015">				this.edges = Objects.requireNonNull(edges);</span>
-<span class="fc" id="L1016">			}</span>
+<span class="fc" id="L1016">			public EdgeSetBase(Set&lt;E&gt; edges) {</span>
+<span class="fc" id="L1017">				this.edges = Objects.requireNonNull(edges);</span>
+<span class="fc" id="L1018">			}</span>
 
 			@Override
 			public int size() {
-<span class="fc" id="L1020">				return edges.size();</span>
+<span class="fc" id="L1022">				return edges.size();</span>
 			}
 
 			@Override
 			public boolean contains(int edge) {
-<span class="fc" id="L1025">				return edges.contains(eiMap.indexToIdIfExist(edge));</span>
+<span class="fc" id="L1027">				return edges.contains(eiMap.indexToIdIfExist(edge));</span>
 			}
 
-<span class="fc" id="L1028">			abstract class IterBase implements IEdgeIter {</span>
+<span class="fc" id="L1030">			abstract class IterBase implements IEdgeIter {</span>
 
-<span class="fc" id="L1030">				Iterator&lt;E&gt; it = edges.iterator();</span>
+<span class="fc" id="L1032">				Iterator&lt;E&gt; it = edges.iterator();</span>
 				E nextEdge;
 				E lastEdge;
 
 				{
-<span class="fc" id="L1035">					advance();</span>
-<span class="fc" id="L1036">				}</span>
+<span class="fc" id="L1037">					advance();</span>
+<span class="fc" id="L1038">				}</span>
 
 				private void advance() {
-<span class="fc bfc" id="L1039" title="All 2 branches covered.">					if (it.hasNext()) {</span>
-<span class="fc" id="L1040">						nextEdge = it.next();</span>
+<span class="fc bfc" id="L1041" title="All 2 branches covered.">					if (it.hasNext()) {</span>
+<span class="fc" id="L1042">						nextEdge = it.next();</span>
 					} else {
-<span class="fc" id="L1042">						nextEdge = null;</span>
+<span class="fc" id="L1044">						nextEdge = null;</span>
 					}
-<span class="fc" id="L1044">				}</span>
+<span class="fc" id="L1046">				}</span>
 
 				@Override
 				public boolean hasNext() {
-<span class="fc bfc" id="L1048" title="All 2 branches covered.">					return nextEdge != null;</span>
+<span class="fc bfc" id="L1050" title="All 2 branches covered.">					return nextEdge != null;</span>
 				}
 
 				@Override
 				public int nextInt() {
-<span class="fc bfc" id="L1053" title="All 2 branches covered.">					if (!hasNext())</span>
-<span class="fc" id="L1054">						throw new NoSuchElementException();</span>
-<span class="fc" id="L1055">					lastEdge = nextEdge;</span>
-<span class="fc" id="L1056">					advance();</span>
-<span class="fc" id="L1057">					return eiMap.idToIndex(lastEdge);</span>
+<span class="fc bfc" id="L1055" title="All 2 branches covered.">					if (!hasNext())</span>
+<span class="fc" id="L1056">						throw new NoSuchElementException();</span>
+<span class="fc" id="L1057">					lastEdge = nextEdge;</span>
+<span class="fc" id="L1058">					advance();</span>
+<span class="fc" id="L1059">					return eiMap.idToIndex(lastEdge);</span>
 				}
 
 				@Override
 				public int peekNextInt() {
-<span class="fc bfc" id="L1062" title="All 2 branches covered.">					if (!hasNext())</span>
-<span class="fc" id="L1063">						throw new NoSuchElementException();</span>
-<span class="fc" id="L1064">					return eiMap.idToIndex(nextEdge);</span>
+<span class="fc bfc" id="L1064" title="All 2 branches covered.">					if (!hasNext())</span>
+<span class="fc" id="L1065">						throw new NoSuchElementException();</span>
+<span class="fc" id="L1066">					return eiMap.idToIndex(nextEdge);</span>
 				}
 
 			}
@@ -1074,31 +1076,31 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 			private final int sourceIdx;
 			private final boolean directed;
 
-<span class="fc" id="L1077">			public OutEdges(V source, int sourceIdx, Set&lt;E&gt; edges) {</span>
-<span class="fc" id="L1078">				super(edges);</span>
-<span class="fc" id="L1079">				this.source = source;</span>
-<span class="fc" id="L1080">				this.sourceIdx = sourceIdx;</span>
-<span class="fc" id="L1081">				this.directed = graph.getType().isDirected();</span>
-<span class="fc" id="L1082">			}</span>
+<span class="fc" id="L1079">			public OutEdges(V source, int sourceIdx, Set&lt;E&gt; edges) {</span>
+<span class="fc" id="L1080">				super(edges);</span>
+<span class="fc" id="L1081">				this.source = source;</span>
+<span class="fc" id="L1082">				this.sourceIdx = sourceIdx;</span>
+<span class="fc" id="L1083">				this.directed = graph.getType().isDirected();</span>
+<span class="fc" id="L1084">			}</span>
 
 			@Override
 			public IEdgeIter iterator() {
-<span class="fc" id="L1086">				return new IterBase() {</span>
+<span class="fc" id="L1088">				return new IterBase() {</span>
 
 					@Override
 					public int sourceInt() {
-<span class="fc bfc" id="L1090" title="All 2 branches covered.">						if (lastEdge == null)</span>
-<span class="fc" id="L1091">							throw new IllegalStateException();</span>
-<span class="fc" id="L1092">						return sourceIdx;</span>
+<span class="fc bfc" id="L1092" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1093">							throw new IllegalStateException();</span>
+<span class="fc" id="L1094">						return sourceIdx;</span>
 					}
 
 					@Override
 					public int targetInt() {
-<span class="fc bfc" id="L1097" title="All 2 branches covered.">						if (lastEdge == null)</span>
-<span class="fc" id="L1098">							throw new IllegalStateException();</span>
-<span class="fc" id="L1099">						V target = graph.getEdgeTarget(lastEdge);</span>
-<span class="fc bfc" id="L1100" title="All 4 branches covered.">						return directed || !source.equals(target) ? viMap.idToIndex(target)</span>
-<span class="fc" id="L1101">								: viMap.idToIndex(graph.getEdgeSource(lastEdge));</span>
+<span class="fc bfc" id="L1099" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1100">							throw new IllegalStateException();</span>
+<span class="fc" id="L1101">						V target = graph.getEdgeTarget(lastEdge);</span>
+<span class="fc bfc" id="L1102" title="All 4 branches covered.">						return directed || !source.equals(target) ? viMap.idToIndex(target)</span>
+<span class="fc" id="L1103">								: viMap.idToIndex(graph.getEdgeSource(lastEdge));</span>
 					}
 				};
 			}
@@ -1110,31 +1112,31 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 			private final int targetIdx;
 			private final boolean directed;
 
-<span class="fc" id="L1113">			public InEdges(V target, int targetIdx, Set&lt;E&gt; edges) {</span>
-<span class="fc" id="L1114">				super(edges);</span>
-<span class="fc" id="L1115">				this.target = target;</span>
-<span class="fc" id="L1116">				this.targetIdx = targetIdx;</span>
-<span class="fc" id="L1117">				this.directed = graph.getType().isDirected();</span>
-<span class="fc" id="L1118">			}</span>
+<span class="fc" id="L1115">			public InEdges(V target, int targetIdx, Set&lt;E&gt; edges) {</span>
+<span class="fc" id="L1116">				super(edges);</span>
+<span class="fc" id="L1117">				this.target = target;</span>
+<span class="fc" id="L1118">				this.targetIdx = targetIdx;</span>
+<span class="fc" id="L1119">				this.directed = graph.getType().isDirected();</span>
+<span class="fc" id="L1120">			}</span>
 
 			@Override
 			public IEdgeIter iterator() {
-<span class="fc" id="L1122">				return new IterBase() {</span>
+<span class="fc" id="L1124">				return new IterBase() {</span>
 
 					@Override
 					public int sourceInt() {
-<span class="fc bfc" id="L1126" title="All 2 branches covered.">						if (lastEdge == null)</span>
-<span class="fc" id="L1127">							throw new IllegalStateException();</span>
-<span class="fc" id="L1128">						V source = graph.getEdgeSource(lastEdge);</span>
-<span class="fc bfc" id="L1129" title="All 4 branches covered.">						return directed || !target.equals(source) ? viMap.idToIndex(source)</span>
-<span class="fc" id="L1130">								: viMap.idToIndex(graph.getEdgeTarget(lastEdge));</span>
+<span class="fc bfc" id="L1128" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1129">							throw new IllegalStateException();</span>
+<span class="fc" id="L1130">						V source = graph.getEdgeSource(lastEdge);</span>
+<span class="fc bfc" id="L1131" title="All 4 branches covered.">						return directed || !target.equals(source) ? viMap.idToIndex(source)</span>
+<span class="fc" id="L1132">								: viMap.idToIndex(graph.getEdgeTarget(lastEdge));</span>
 					}
 
 					@Override
 					public int targetInt() {
-<span class="fc bfc" id="L1135" title="All 2 branches covered.">						if (lastEdge == null)</span>
-<span class="fc" id="L1136">							throw new IllegalStateException();</span>
-<span class="fc" id="L1137">						return targetIdx;</span>
+<span class="fc bfc" id="L1137" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1138">							throw new IllegalStateException();</span>
+<span class="fc" id="L1139">						return targetIdx;</span>
 					}
 				};
 			}
@@ -1145,28 +1147,28 @@ public class JGraphTWrapper&lt;V, E&gt; extends com.jgalgo.graph.AbstractGraph&l
 			private final int sourceIdx;
 			private final int targetIdx;
 
-<span class="fc" id="L1148">			public SourceTargetEdgeSet(int sourceIdx, int targetIdx, Set&lt;E&gt; edges) {</span>
-<span class="fc" id="L1149">				super(edges);</span>
-<span class="fc" id="L1150">				this.sourceIdx = sourceIdx;</span>
-<span class="fc" id="L1151">				this.targetIdx = targetIdx;</span>
-<span class="fc" id="L1152">			}</span>
+<span class="fc" id="L1150">			public SourceTargetEdgeSet(int sourceIdx, int targetIdx, Set&lt;E&gt; edges) {</span>
+<span class="fc" id="L1151">				super(edges);</span>
+<span class="fc" id="L1152">				this.sourceIdx = sourceIdx;</span>
+<span class="fc" id="L1153">				this.targetIdx = targetIdx;</span>
+<span class="fc" id="L1154">			}</span>
 
 			@Override
 			public IEdgeIter iterator() {
-<span class="fc" id="L1156">				return new IterBase() {</span>
+<span class="fc" id="L1158">				return new IterBase() {</span>
 
 					@Override
 					public int sourceInt() {
-<span class="fc bfc" id="L1160" title="All 2 branches covered.">						if (lastEdge == null)</span>
-<span class="fc" id="L1161">							throw new IllegalStateException();</span>
-<span class="fc" id="L1162">						return sourceIdx;</span>
+<span class="fc bfc" id="L1162" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1163">							throw new IllegalStateException();</span>
+<span class="fc" id="L1164">						return sourceIdx;</span>
 					}
 
 					@Override
 					public int targetInt() {
-<span class="fc bfc" id="L1167" title="All 2 branches covered.">						if (lastEdge == null)</span>
-<span class="fc" id="L1168">							throw new IllegalStateException();</span>
-<span class="fc" id="L1169">						return targetIdx;</span>
+<span class="fc bfc" id="L1169" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1170">							throw new IllegalStateException();</span>
+<span class="fc" id="L1171">						return targetIdx;</span>
 					}
 				};
 			}

@@ -67,8 +67,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L67" title="All 2 branches covered.">		if (algo instanceof ShortestPathHeuristicST) {</span>
 <span class="fc" id="L68">			result = ((ShortestPathHeuristicST) algo).computeShortestPath(g, w, source, target, heuristic);</span>
 <span class="pc bpc" id="L69" title="1 of 2 branches missed.">		} else if (algo instanceof ShortestPathST) {</span>
-<span class="fc" id="L70">			result = ((ShortestPathST) algo).computeShortestPath(g, w, Integer.valueOf(source),</span>
-<span class="fc" id="L71">					Integer.valueOf(target));</span>
+<span class="fc" id="L70">			result = ((ShortestPathST) algo)</span>
+<span class="fc" id="L71">					.computeShortestPath(g, w, Integer.valueOf(source), Integer.valueOf(target));</span>
 		} else {
 <span class="nc" id="L73">			throw new IllegalArgumentException();</span>
 		}
@@ -234,8 +234,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L234">			w0.set(e, w.weight(e) * (0.5 + rand.nextDouble() / 2));</span>
 
 		ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) ShortestPathSingleSource
-<span class="fc" id="L237">				.newInstance().computeShortestPaths(g, w0, Integer.valueOf(target));</span>
-<span class="fc" id="L238">		return ssspRes::distance;</span>
+<span class="fc" id="L237">				.newInstance()</span>
+<span class="fc" id="L238">				.computeShortestPaths(g, w0, Integer.valueOf(target));</span>
+<span class="fc" id="L239">		return ssspRes::distance;</span>
 	}
 
 }

@@ -232,12 +232,12 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 <span class="fc" id="L232">			this.target = target;</span>
 <span class="fc" id="L233">		}</span>
 
-		abstract Int2IntMap edgesOut(int source);
+		abstract Int2IntMap edgesMap(int source);
 
 		@Override
 		public int size() {
 <span class="fc" id="L239">			int s = 0;</span>
-<span class="fc bfc" id="L240" title="All 2 branches covered.">			for (int e = edgesOut(source).get(target); e &gt;= 0; e = edgeNext[e])</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">			for (int e = edgesMap(source).get(target); e &gt;= 0; e = edgeNext[e])</span>
 <span class="fc" id="L241">				s++;</span>
 <span class="fc" id="L242">			return s;</span>
 		}
@@ -252,7 +252,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 		@Override
 		public void clear() {
-<span class="fc" id="L255">			int firstEdge = edgesOut(source).get(target);</span>
+<span class="fc" id="L255">			int firstEdge = edgesMap(source).get(target);</span>
 <span class="fc bfc" id="L256" title="All 2 branches covered.">			if (firstEdge &gt;= 0)</span>
 <span class="fc" id="L257">				removeAllEdgesInList(firstEdge);</span>
 <span class="fc" id="L258">		}</span>
@@ -261,7 +261,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 		public IEdgeIter iterator() {
 <span class="fc" id="L262">			return new IEdgeIter() {</span>
 
-<span class="fc" id="L264">				int nextEdge = edgesOut(source).get(target);</span>
+<span class="fc" id="L264">				int nextEdge = edgesMap(source).get(target);</span>
 				int prevEdge;
 
 				@Override

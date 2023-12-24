@@ -25,16 +25,17 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
  * references to the underling elements.
  *
  * &lt;p&gt;
- * In addition to the regular Heap operations, the user can obtain a {@linkplain IntReferenceableHeap.Ref reference} to
- * each inserted element via the return value of the {@link #insert} function. The reference will be valid as
- * long as the element is still in the heap. By passing the reference to the heap implementation to functions such as
- * {@link #decreaseKey} or {@link #remove} the heap implementation can perform the operations efficiently as is does
- * not need to search for the element.
+ * In addition to the regular Heap operations, the user can obtain a {@linkplain IntReferenceableHeap.Ref
+ * reference} to each inserted element via the return value of the {@link #insert(int)} function. The reference will
+ * be valid as long as the element is still in the heap. By passing the reference to the heap implementation to
+ * functions such as {@link #decreaseKey(IntReferenceableHeap.Ref, int)} or
+ * {@link #remove(IntReferenceableHeap.Ref, int)} the heap implementation can perform the operations efficiently as is
+ * does not need to search for the element.
  *
  * &lt;p&gt;
- * Another difference from the regular Heap, is the existent of both keys and values, rather than just
- * 'elements'. A key may be changed using {@link #decreaseKey} while the &lt;b&gt;value&lt;/b&gt; is the same. This matches the
- * common use case of these heaps.
+ * Another difference from the regular Heap, is the existent of both keys and values, rather than just 'elements'. A key
+ * may be changed using {@link #decreaseKey(IntReferenceableHeap.Ref, int)} while the &lt;b&gt;value&lt;/b&gt; is the same.
+ * This matches the common use case of these heaps.
  *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface.
@@ -65,7 +66,7 @@ public interface IntReferenceableHeap  extends ReferenceableHeap, Iterable&lt;In
 	 *
 	 * &lt;p&gt;
 	 * Only a key is passed to this method, and a {@code null} value (or {@code 0} if values are primitive) will be
-	 * used. To insert a new element with both a key and a value use {@link #insert}.
+	 * used. To insert a new element with both a key and a value use {@link #insert(int)}.
 	 *
 	 * @param  key the key of the new element
 	 * @return     reference to the new element
@@ -125,25 +126,25 @@ public interface IntReferenceableHeap  extends ReferenceableHeap, Iterable&lt;In
 	 *
 	 * &lt;p&gt;
 	 * Note that this method uses the comparator of the heap to determine if two keys are equal, rather than
-	 * {@link Object#equals} or primitive comparison for primitive types.
+	 * {@link Object#equals(Object)} or primitive comparison for primitive types.
 	 *
 	 * @param  key a key
 	 * @return     a reference to an element with the given key or {@code null} if such element was not found
 	 */
 	default IntReferenceableHeap.Ref  find(int key) {
-<span class="fc" id="L134">		IntComparator  c = comparator();</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">		if (c == null) {</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">			for (IntReferenceableHeap.Ref  p : this) {</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">				if (key == p.key())</span>
-<span class="fc" id="L138">					return p;</span>
-<span class="fc" id="L139">			}</span>
+<span class="fc" id="L135">		IntComparator  c = comparator();</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			for (IntReferenceableHeap.Ref  p : this) {</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">				if (key == p.key())</span>
+<span class="fc" id="L139">					return p;</span>
+<span class="fc" id="L140">			}</span>
 		} else {
-<span class="fc bfc" id="L141" title="All 2 branches covered.">			for (IntReferenceableHeap.Ref  p : this) {</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">				if (c.compare(key, p.key()) == 0)</span>
-<span class="fc" id="L143">					return p;</span>
-<span class="fc" id="L144">			}</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">			for (IntReferenceableHeap.Ref  p : this) {</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">				if (c.compare(key, p.key()) == 0)</span>
+<span class="fc" id="L144">					return p;</span>
+<span class="fc" id="L145">			}</span>
 		}
-<span class="fc" id="L146">		return null;</span>
+<span class="fc" id="L147">		return null;</span>
 	}
 
 	/**
@@ -189,7 +190,7 @@ public interface IntReferenceableHeap  extends ReferenceableHeap, Iterable&lt;In
 	 * @return a stream over the elements in this heap
 	 */
 	default Stream&lt;IntReferenceableHeap.Ref &gt; stream() {
-<span class="fc" id="L192">		return StreamSupport.stream(spliterator(), false);</span>
+<span class="fc" id="L193">		return StreamSupport.stream(spliterator(), false);</span>
 	}
 
 	/**
@@ -204,7 +205,7 @@ public interface IntReferenceableHeap  extends ReferenceableHeap, Iterable&lt;In
 		*
 		* &lt;p&gt;
 		* There is no {@code setKey} method, but the key of an element can be changed (decrease only) by
-		* {@link IntReferenceableHeap#decreaseKey}.
+		* {@link IntReferenceableHeap#decreaseKey(IntReferenceableHeap.Ref, int)}.
 		*
 		* @return the element's key
 		*/
@@ -218,7 +219,7 @@ public interface IntReferenceableHeap  extends ReferenceableHeap, Iterable&lt;In
 	 * @return an instance of this interface with the default implementation
 	 */
 	static  IntReferenceableHeap  newInstance() {
-<span class="fc" id="L221">		return newInstance(null);</span>
+<span class="fc" id="L222">		return newInstance(null);</span>
 	}
 
 	/**
@@ -228,7 +229,7 @@ public interface IntReferenceableHeap  extends ReferenceableHeap, Iterable&lt;In
 	 * @return an instance of this interface with the default implementation
 	 */
 	static  IntReferenceableHeap  newInstance(IntComparator  c) {
-<span class="fc" id="L231">		return new IntPairingHeap  (c);</span>
+<span class="fc" id="L232">		return new IntPairingHeap  (c);</span>
 	}
 
 }

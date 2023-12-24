@@ -756,208 +756,212 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 <span class="fc" id="L756">			WeightsObj&lt;E, String&gt; eLabels = null;</span>
 <span class="fc" id="L757">			WeightsDouble&lt;E&gt; eWeight = null;</span>
 
-<span class="fc" id="L759">			Iterable&lt;Element&gt; nodes = XmlUtils.optionalChild(graph, &quot;nodes&quot;)</span>
-<span class="fc" id="L760">					.map(nodesElm -&gt; XmlUtils.children(nodesElm, &quot;node&quot;)).orElse(Collections.emptyList());</span>
-<span class="fc bfc" id="L761" title="All 2 branches covered.">			for (Element vElm : nodes) {</span>
-<span class="fc" id="L762">				V v = vertexParser.apply(XmlUtils.requiredAttribute(vElm, &quot;id&quot;));</span>
-<span class="fc" id="L763">				g.addVertex(v);</span>
+<span class="fc" id="L759">			Iterable&lt;Element&gt; nodes = XmlUtils</span>
+<span class="fc" id="L760">					.optionalChild(graph, &quot;nodes&quot;)</span>
+<span class="fc" id="L761">					.map(nodesElm -&gt; XmlUtils.children(nodesElm, &quot;node&quot;))</span>
+<span class="fc" id="L762">					.orElse(Collections.emptyList());</span>
+<span class="fc bfc" id="L763" title="All 2 branches covered.">			for (Element vElm : nodes) {</span>
+<span class="fc" id="L764">				V v = vertexParser.apply(XmlUtils.requiredAttribute(vElm, &quot;id&quot;));</span>
+<span class="fc" id="L765">				g.addVertex(v);</span>
 
-<span class="fc" id="L765">				Optional&lt;String&gt; label = XmlUtils.optionalAttribute(vElm, &quot;label&quot;);</span>
-<span class="fc bfc" id="L766" title="All 2 branches covered.">				if (label.isPresent()) {</span>
-<span class="fc bfc" id="L767" title="All 2 branches covered.">					if (vLabels == null)</span>
-<span class="fc" id="L768">						vLabels = g.addVerticesWeights(&quot;label&quot;, String.class);</span>
-<span class="fc" id="L769">					vLabels.set(v, label.get());</span>
+<span class="fc" id="L767">				Optional&lt;String&gt; label = XmlUtils.optionalAttribute(vElm, &quot;label&quot;);</span>
+<span class="fc bfc" id="L768" title="All 2 branches covered.">				if (label.isPresent()) {</span>
+<span class="fc bfc" id="L769" title="All 2 branches covered.">					if (vLabels == null)</span>
+<span class="fc" id="L770">						vLabels = g.addVerticesWeights(&quot;label&quot;, String.class);</span>
+<span class="fc" id="L771">					vLabels.set(v, label.get());</span>
 				}
 
-<span class="fc" id="L772">				Optional&lt;Element&gt; attvaluesElm0 = XmlUtils.optionalChild(vElm, &quot;attvalues&quot;);</span>
-<span class="fc bfc" id="L773" title="All 2 branches covered.">				if (attvaluesElm0.isPresent()) {</span>
-<span class="fc" id="L774">					Element attvaluesElm = attvaluesElm0.get();</span>
-<span class="fc bfc" id="L775" title="All 2 branches covered.">					for (Element attvalueElm : XmlUtils.children(attvaluesElm, &quot;attvalue&quot;)) {</span>
-<span class="fc" id="L776">						String weightsId = XmlUtils.requiredAttribute(attvalueElm, &quot;for&quot;);</span>
-<span class="fc" id="L777">						String value = XmlUtils.requiredAttribute(attvalueElm, &quot;value&quot;);</span>
-<span class="fc" id="L778">						BiConsumer&lt;V, String&gt; setter = vWeights.get(weightsId);</span>
-<span class="fc bfc" id="L779" title="All 2 branches covered.">						if (setter == null)</span>
-<span class="fc" id="L780">							throw new IllegalArgumentException(&quot;unknown attribute id: &quot; + weightsId);</span>
-<span class="fc" id="L781">						setter.accept(v, value);</span>
-<span class="fc" id="L782">					}</span>
+<span class="fc" id="L774">				Optional&lt;Element&gt; attvaluesElm0 = XmlUtils.optionalChild(vElm, &quot;attvalues&quot;);</span>
+<span class="fc bfc" id="L775" title="All 2 branches covered.">				if (attvaluesElm0.isPresent()) {</span>
+<span class="fc" id="L776">					Element attvaluesElm = attvaluesElm0.get();</span>
+<span class="fc bfc" id="L777" title="All 2 branches covered.">					for (Element attvalueElm : XmlUtils.children(attvaluesElm, &quot;attvalue&quot;)) {</span>
+<span class="fc" id="L778">						String weightsId = XmlUtils.requiredAttribute(attvalueElm, &quot;for&quot;);</span>
+<span class="fc" id="L779">						String value = XmlUtils.requiredAttribute(attvalueElm, &quot;value&quot;);</span>
+<span class="fc" id="L780">						BiConsumer&lt;V, String&gt; setter = vWeights.get(weightsId);</span>
+<span class="fc bfc" id="L781" title="All 2 branches covered.">						if (setter == null)</span>
+<span class="fc" id="L782">							throw new IllegalArgumentException(&quot;unknown attribute id: &quot; + weightsId);</span>
+<span class="fc" id="L783">						setter.accept(v, value);</span>
+<span class="fc" id="L784">					}</span>
 				}
-<span class="fc" id="L784">			}</span>
+<span class="fc" id="L786">			}</span>
 
-<span class="fc" id="L786">			Iterable&lt;Element&gt; edges = XmlUtils.optionalChild(graph, &quot;edges&quot;)</span>
-<span class="fc" id="L787">					.map(edgesElm -&gt; XmlUtils.children(edgesElm, &quot;edge&quot;)).orElse(Collections.emptyList());</span>
-<span class="fc bfc" id="L788" title="All 2 branches covered.">			for (Element eElm : edges) {</span>
+<span class="fc" id="L788">			Iterable&lt;Element&gt; edges = XmlUtils</span>
+<span class="fc" id="L789">					.optionalChild(graph, &quot;edges&quot;)</span>
+<span class="fc" id="L790">					.map(edgesElm -&gt; XmlUtils.children(edgesElm, &quot;edge&quot;))</span>
+<span class="fc" id="L791">					.orElse(Collections.emptyList());</span>
+<span class="fc bfc" id="L792" title="All 2 branches covered.">			for (Element eElm : edges) {</span>
 				E e;
-<span class="fc" id="L790">				Optional&lt;String&gt; id = XmlUtils.optionalAttribute(eElm, &quot;id&quot;);</span>
-<span class="fc bfc" id="L791" title="All 2 branches covered.">				if (id.isPresent()) {</span>
-<span class="fc bfc" id="L792" title="All 2 branches covered.">					if (edgeParser == null)</span>
-<span class="fc" id="L793">						throw new IllegalStateException(&quot;Edge parser was not set&quot;);</span>
-<span class="fc" id="L794">					e = edgeParser.apply(id.get());</span>
+<span class="fc" id="L794">				Optional&lt;String&gt; id = XmlUtils.optionalAttribute(eElm, &quot;id&quot;);</span>
+<span class="fc bfc" id="L795" title="All 2 branches covered.">				if (id.isPresent()) {</span>
+<span class="fc bfc" id="L796" title="All 2 branches covered.">					if (edgeParser == null)</span>
+<span class="fc" id="L797">						throw new IllegalStateException(&quot;Edge parser was not set&quot;);</span>
+<span class="fc" id="L798">					e = edgeParser.apply(id.get());</span>
 				} else {
-<span class="fc bfc" id="L796" title="All 2 branches covered.">					if (edgeBuilder == null)</span>
-<span class="fc" id="L797">						throw new IllegalStateException(&quot;Edge builder was not set&quot;);</span>
-<span class="fc" id="L798">					e = edgeBuilder.build(g.edges());</span>
+<span class="fc bfc" id="L800" title="All 2 branches covered.">					if (edgeBuilder == null)</span>
+<span class="fc" id="L801">						throw new IllegalStateException(&quot;Edge builder was not set&quot;);</span>
+<span class="fc" id="L802">					e = edgeBuilder.build(g.edges());</span>
 				}
-<span class="fc" id="L800">				V u = vertexParser.apply(XmlUtils.requiredAttribute(eElm, &quot;source&quot;));</span>
-<span class="fc" id="L801">				V v = vertexParser.apply(XmlUtils.requiredAttribute(eElm, &quot;target&quot;));</span>
-<span class="fc" id="L802">				g.addEdge(u, v, e);</span>
+<span class="fc" id="L804">				V u = vertexParser.apply(XmlUtils.requiredAttribute(eElm, &quot;source&quot;));</span>
+<span class="fc" id="L805">				V v = vertexParser.apply(XmlUtils.requiredAttribute(eElm, &quot;target&quot;));</span>
+<span class="fc" id="L806">				g.addEdge(u, v, e);</span>
 
-<span class="fc bfc" id="L804" title="All 2 branches covered.">				if (eElm.hasAttribute(&quot;type&quot;))</span>
-<span class="fc" id="L805">					throw new IllegalArgumentException(&quot;directed attribute per-edge is not supported&quot;);</span>
+<span class="fc bfc" id="L808" title="All 2 branches covered.">				if (eElm.hasAttribute(&quot;type&quot;))</span>
+<span class="fc" id="L809">					throw new IllegalArgumentException(&quot;directed attribute per-edge is not supported&quot;);</span>
 
-<span class="fc" id="L807">				Optional&lt;String&gt; label = XmlUtils.optionalAttribute(eElm, &quot;label&quot;);</span>
-<span class="fc bfc" id="L808" title="All 2 branches covered.">				if (label.isPresent()) {</span>
-<span class="fc bfc" id="L809" title="All 2 branches covered.">					if (eLabels == null)</span>
-<span class="fc" id="L810">						eLabels = g.addEdgesWeights(&quot;label&quot;, String.class);</span>
-<span class="fc" id="L811">					eLabels.set(e, label.get());</span>
-				}
-
-<span class="fc" id="L814">				Optional&lt;String&gt; weight = XmlUtils.optionalAttribute(eElm, &quot;weight&quot;);</span>
-<span class="fc bfc" id="L815" title="All 2 branches covered.">				if (weight.isPresent()) {</span>
-<span class="fc bfc" id="L816" title="All 2 branches covered.">					if (eWeight == null)</span>
-<span class="fc" id="L817">						eWeight = g.addEdgesWeights(&quot;weight&quot;, double.class, Double.valueOf(1.0));</span>
-<span class="fc" id="L818">					eWeight.set(e, Double.parseDouble(weight.get()));</span>
+<span class="fc" id="L811">				Optional&lt;String&gt; label = XmlUtils.optionalAttribute(eElm, &quot;label&quot;);</span>
+<span class="fc bfc" id="L812" title="All 2 branches covered.">				if (label.isPresent()) {</span>
+<span class="fc bfc" id="L813" title="All 2 branches covered.">					if (eLabels == null)</span>
+<span class="fc" id="L814">						eLabels = g.addEdgesWeights(&quot;label&quot;, String.class);</span>
+<span class="fc" id="L815">					eLabels.set(e, label.get());</span>
 				}
 
-<span class="fc" id="L821">				Optional&lt;Element&gt; attvaluesElm0 = XmlUtils.optionalChild(eElm, &quot;attvalues&quot;);</span>
-<span class="fc bfc" id="L822" title="All 2 branches covered.">				if (attvaluesElm0.isPresent()) {</span>
-<span class="fc" id="L823">					Element attvaluesElm = attvaluesElm0.get();</span>
-<span class="fc bfc" id="L824" title="All 2 branches covered.">					for (Element attvalueElm : XmlUtils.children(attvaluesElm, &quot;attvalue&quot;)) {</span>
-<span class="fc" id="L825">						String weightsId = XmlUtils.requiredAttribute(attvalueElm, &quot;for&quot;);</span>
-<span class="fc" id="L826">						String value = XmlUtils.requiredAttribute(attvalueElm, &quot;value&quot;);</span>
-<span class="fc" id="L827">						BiConsumer&lt;E, String&gt; setter = eWeights.get(weightsId);</span>
-<span class="fc bfc" id="L828" title="All 2 branches covered.">						if (setter == null)</span>
-<span class="fc" id="L829">							throw new IllegalArgumentException(&quot;unknown attribute id: &quot; + weightsId);</span>
-<span class="fc" id="L830">						setter.accept(e, value);</span>
-<span class="fc" id="L831">					}</span>
+<span class="fc" id="L818">				Optional&lt;String&gt; weight = XmlUtils.optionalAttribute(eElm, &quot;weight&quot;);</span>
+<span class="fc bfc" id="L819" title="All 2 branches covered.">				if (weight.isPresent()) {</span>
+<span class="fc bfc" id="L820" title="All 2 branches covered.">					if (eWeight == null)</span>
+<span class="fc" id="L821">						eWeight = g.addEdgesWeights(&quot;weight&quot;, double.class, Double.valueOf(1.0));</span>
+<span class="fc" id="L822">					eWeight.set(e, Double.parseDouble(weight.get()));</span>
 				}
-<span class="fc" id="L833">			}</span>
 
-<span class="fc" id="L835">			return g;</span>
-<span class="fc" id="L836">		} catch (SAXException | ParserConfigurationException e) {</span>
-<span class="fc" id="L837">			throw new IllegalArgumentException(e);</span>
+<span class="fc" id="L825">				Optional&lt;Element&gt; attvaluesElm0 = XmlUtils.optionalChild(eElm, &quot;attvalues&quot;);</span>
+<span class="fc bfc" id="L826" title="All 2 branches covered.">				if (attvaluesElm0.isPresent()) {</span>
+<span class="fc" id="L827">					Element attvaluesElm = attvaluesElm0.get();</span>
+<span class="fc bfc" id="L828" title="All 2 branches covered.">					for (Element attvalueElm : XmlUtils.children(attvaluesElm, &quot;attvalue&quot;)) {</span>
+<span class="fc" id="L829">						String weightsId = XmlUtils.requiredAttribute(attvalueElm, &quot;for&quot;);</span>
+<span class="fc" id="L830">						String value = XmlUtils.requiredAttribute(attvalueElm, &quot;value&quot;);</span>
+<span class="fc" id="L831">						BiConsumer&lt;E, String&gt; setter = eWeights.get(weightsId);</span>
+<span class="fc bfc" id="L832" title="All 2 branches covered.">						if (setter == null)</span>
+<span class="fc" id="L833">							throw new IllegalArgumentException(&quot;unknown attribute id: &quot; + weightsId);</span>
+<span class="fc" id="L834">						setter.accept(e, value);</span>
+<span class="fc" id="L835">					}</span>
+				}
+<span class="fc" id="L837">			}</span>
+
+<span class="fc" id="L839">			return g;</span>
+<span class="fc" id="L840">		} catch (SAXException | ParserConfigurationException e) {</span>
+<span class="fc" id="L841">			throw new IllegalArgumentException(e);</span>
 		}
 	}
 
 	private Date parseDate(String s) {
 		try {
-<span class="fc" id="L843">			return dateFormat.parse(s);</span>
-<span class="fc" id="L844">		} catch (ParseException e) {</span>
-<span class="fc" id="L845">			throw new IllegalArgumentException(e);</span>
+<span class="fc" id="L847">			return dateFormat.parse(s);</span>
+<span class="fc" id="L848">		} catch (ParseException e) {</span>
+<span class="fc" id="L849">			throw new IllegalArgumentException(e);</span>
 		}
 	}
 
 	private static URI parseURI(String s) {
 		try {
-<span class="fc" id="L851">			return new URI(s);</span>
-<span class="fc" id="L852">		} catch (URISyntaxException e) {</span>
-<span class="fc" id="L853">			throw new IllegalArgumentException(e);</span>
+<span class="fc" id="L855">			return new URI(s);</span>
+<span class="fc" id="L856">		} catch (URISyntaxException e) {</span>
+<span class="fc" id="L857">			throw new IllegalArgumentException(e);</span>
 		}
 	}
 
 	private static byte[] parseListByte(String val) {
-<span class="fc" id="L858">		String[] words = splitList(val);</span>
-<span class="fc" id="L859">		byte[] list = new byte[words.length];</span>
-<span class="fc bfc" id="L860" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L861">			list[i] = Byte.parseByte(words[i]);</span>
-<span class="fc" id="L862">		return list;</span>
+<span class="fc" id="L862">		String[] words = splitList(val);</span>
+<span class="fc" id="L863">		byte[] list = new byte[words.length];</span>
+<span class="fc bfc" id="L864" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L865">			list[i] = Byte.parseByte(words[i]);</span>
+<span class="fc" id="L866">		return list;</span>
 	}
 
 	private static short[] parseListShort(String val) {
-<span class="fc" id="L866">		String[] words = splitList(val);</span>
-<span class="fc" id="L867">		short[] list = new short[words.length];</span>
-<span class="fc bfc" id="L868" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L869">			list[i] = Short.parseShort(words[i]);</span>
-<span class="fc" id="L870">		return list;</span>
+<span class="fc" id="L870">		String[] words = splitList(val);</span>
+<span class="fc" id="L871">		short[] list = new short[words.length];</span>
+<span class="fc bfc" id="L872" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L873">			list[i] = Short.parseShort(words[i]);</span>
+<span class="fc" id="L874">		return list;</span>
 	}
 
 	private static int[] parseListInt(String val) {
-<span class="fc" id="L874">		String[] words = splitList(val);</span>
-<span class="fc" id="L875">		int[] list = new int[words.length];</span>
-<span class="fc bfc" id="L876" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L877">			list[i] = Integer.parseInt(words[i]);</span>
-<span class="fc" id="L878">		return list;</span>
+<span class="fc" id="L878">		String[] words = splitList(val);</span>
+<span class="fc" id="L879">		int[] list = new int[words.length];</span>
+<span class="fc bfc" id="L880" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L881">			list[i] = Integer.parseInt(words[i]);</span>
+<span class="fc" id="L882">		return list;</span>
 	}
 
 	private static long[] parseListLong(String val) {
-<span class="fc" id="L882">		String[] words = splitList(val);</span>
-<span class="fc" id="L883">		long[] list = new long[words.length];</span>
-<span class="fc bfc" id="L884" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L885">			list[i] = Long.parseLong(words[i]);</span>
-<span class="fc" id="L886">		return list;</span>
+<span class="fc" id="L886">		String[] words = splitList(val);</span>
+<span class="fc" id="L887">		long[] list = new long[words.length];</span>
+<span class="fc bfc" id="L888" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L889">			list[i] = Long.parseLong(words[i]);</span>
+<span class="fc" id="L890">		return list;</span>
 	}
 
 	private static float[] parseListFloat(String val) {
-<span class="fc" id="L890">		String[] words = splitList(val);</span>
-<span class="fc" id="L891">		float[] list = new float[words.length];</span>
-<span class="fc bfc" id="L892" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L893">			list[i] = Float.parseFloat(words[i]);</span>
-<span class="fc" id="L894">		return list;</span>
+<span class="fc" id="L894">		String[] words = splitList(val);</span>
+<span class="fc" id="L895">		float[] list = new float[words.length];</span>
+<span class="fc bfc" id="L896" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L897">			list[i] = Float.parseFloat(words[i]);</span>
+<span class="fc" id="L898">		return list;</span>
 	}
 
 	private static double[] parseListDouble(String val) {
-<span class="fc" id="L898">		String[] words = splitList(val);</span>
-<span class="fc" id="L899">		double[] list = new double[words.length];</span>
-<span class="fc bfc" id="L900" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L901">			list[i] = Double.parseDouble(words[i]);</span>
-<span class="fc" id="L902">		return list;</span>
+<span class="fc" id="L902">		String[] words = splitList(val);</span>
+<span class="fc" id="L903">		double[] list = new double[words.length];</span>
+<span class="fc bfc" id="L904" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L905">			list[i] = Double.parseDouble(words[i]);</span>
+<span class="fc" id="L906">		return list;</span>
 	}
 
 	private static boolean[] parseListBool(String val) {
-<span class="fc" id="L906">		String[] words = splitList(val);</span>
-<span class="fc" id="L907">		boolean[] list = new boolean[words.length];</span>
-<span class="fc bfc" id="L908" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L909">			list[i] = Boolean.parseBoolean(words[i]);</span>
-<span class="fc" id="L910">		return list;</span>
+<span class="fc" id="L910">		String[] words = splitList(val);</span>
+<span class="fc" id="L911">		boolean[] list = new boolean[words.length];</span>
+<span class="fc bfc" id="L912" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L913">			list[i] = Boolean.parseBoolean(words[i]);</span>
+<span class="fc" id="L914">		return list;</span>
 	}
 
 	private static char[] parseListChar(String val) {
-<span class="fc" id="L914">		String[] words = splitList(val);</span>
-<span class="fc" id="L915">		char[] list = new char[words.length];</span>
-<span class="fc bfc" id="L916" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L917">			list[i] = GraphIoUtils.parseChar(words[i]);</span>
-<span class="fc" id="L918">		return list;</span>
+<span class="fc" id="L918">		String[] words = splitList(val);</span>
+<span class="fc" id="L919">		char[] list = new char[words.length];</span>
+<span class="fc bfc" id="L920" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L921">			list[i] = GraphIoUtils.parseChar(words[i]);</span>
+<span class="fc" id="L922">		return list;</span>
 	}
 
 	private static BigDecimal[] parseListBigDecimal(String val) {
-<span class="fc" id="L922">		String[] words = splitList(val);</span>
-<span class="fc" id="L923">		BigDecimal[] list = new BigDecimal[words.length];</span>
-<span class="fc bfc" id="L924" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L925">			list[i] = new BigDecimal(words[i]);</span>
-<span class="fc" id="L926">		return list;</span>
+<span class="fc" id="L926">		String[] words = splitList(val);</span>
+<span class="fc" id="L927">		BigDecimal[] list = new BigDecimal[words.length];</span>
+<span class="fc bfc" id="L928" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L929">			list[i] = new BigDecimal(words[i]);</span>
+<span class="fc" id="L930">		return list;</span>
 	}
 
 	private static BigInteger[] parseListBigInteger(String val) {
-<span class="fc" id="L930">		String[] words = splitList(val);</span>
-<span class="fc" id="L931">		BigInteger[] list = new BigInteger[words.length];</span>
-<span class="fc bfc" id="L932" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L933">			list[i] = new BigInteger(words[i]);</span>
-<span class="fc" id="L934">		return list;</span>
+<span class="fc" id="L934">		String[] words = splitList(val);</span>
+<span class="fc" id="L935">		BigInteger[] list = new BigInteger[words.length];</span>
+<span class="fc bfc" id="L936" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L937">			list[i] = new BigInteger(words[i]);</span>
+<span class="fc" id="L938">		return list;</span>
 	}
 
 	private static URI[] parseListURI(String val) {
-<span class="fc" id="L938">		String[] words = splitList(val);</span>
-<span class="fc" id="L939">		URI[] list = new URI[words.length];</span>
-<span class="fc bfc" id="L940" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L941">			list[i] = parseURI(words[i]);</span>
-<span class="fc" id="L942">		return list;</span>
+<span class="fc" id="L942">		String[] words = splitList(val);</span>
+<span class="fc" id="L943">		URI[] list = new URI[words.length];</span>
+<span class="fc bfc" id="L944" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L945">			list[i] = parseURI(words[i]);</span>
+<span class="fc" id="L946">		return list;</span>
 	}
 
 	private Date[] parseListDate(String val) {
-<span class="fc" id="L946">		String[] words = splitList(val);</span>
-<span class="fc" id="L947">		Date[] list = new Date[words.length];</span>
-<span class="fc bfc" id="L948" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L949">			list[i] = parseDate(words[i]);</span>
-<span class="fc" id="L950">		return list;</span>
+<span class="fc" id="L950">		String[] words = splitList(val);</span>
+<span class="fc" id="L951">		Date[] list = new Date[words.length];</span>
+<span class="fc bfc" id="L952" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L953">			list[i] = parseDate(words[i]);</span>
+<span class="fc" id="L954">		return list;</span>
 	}
 
 	private static String[] splitList(String s) {
-<span class="fc bfc" id="L954" title="All 4 branches covered.">		if (!s.startsWith(&quot;[&quot;) || !s.endsWith(&quot;]&quot;))</span>
-<span class="fc" id="L955">			throw new IllegalArgumentException(&quot;list attribute must be of the form [val1, val2,...]&quot;);</span>
-<span class="fc" id="L956">		s = s.substring(1, s.length() - 1);</span>
-<span class="fc" id="L957">		String[] words = s.split(&quot;,&quot;);</span>
-<span class="fc bfc" id="L958" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L959">			words[i] = words[i].trim();</span>
-<span class="fc" id="L960">		return words;</span>
+<span class="fc bfc" id="L958" title="All 4 branches covered.">		if (!s.startsWith(&quot;[&quot;) || !s.endsWith(&quot;]&quot;))</span>
+<span class="fc" id="L959">			throw new IllegalArgumentException(&quot;list attribute must be of the form [val1, val2,...]&quot;);</span>
+<span class="fc" id="L960">		s = s.substring(1, s.length() - 1);</span>
+<span class="fc" id="L961">		String[] words = s.split(&quot;,&quot;);</span>
+<span class="fc bfc" id="L962" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L963">			words[i] = words[i].trim();</span>
+<span class="fc" id="L964">		return words;</span>
 	}
 
 }

@@ -71,8 +71,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L71">		edgesUserWeights = new WeightsImpl.IndexMutable.Manager(edges.size(), true);</span>
 <span class="fc bfc" id="L72" title="All 2 branches covered.">		if (copyVerticesWeights) {</span>
 <span class="fc bfc" id="L73" title="All 2 branches covered.">			for (String key : g.getVerticesWeightsKeys())</span>
-<span class="fc" id="L74">				verticesUserWeights.addWeights(key,</span>
-<span class="fc" id="L75">						WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), vertices, false));</span>
+<span class="fc" id="L74">				verticesUserWeights</span>
+<span class="fc" id="L75">						.addWeights(key, WeightsImpl.IndexMutable.copyOf(g.getVerticesWeights(key), vertices, false));</span>
 		}
 <span class="fc bfc" id="L77" title="All 2 branches covered.">		if (copyEdgesWeights) {</span>
 <span class="fc bfc" id="L78" title="All 2 branches covered.">			for (String key : g.getEdgesWeightsKeys())</span>

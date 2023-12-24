@@ -53,8 +53,8 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 <span class="fc" id="L53">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
 <span class="fc" id="L54">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
 <span class="fc" id="L55">				int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L56">				ShortestPathSingleSource.IResult indexResult = NegativeCycleException.runAndConvertException(g,</span>
-<span class="fc" id="L57">						() -&gt; computeShortestPaths(iGraph, iw, iSource));</span>
+<span class="fc" id="L56">				ShortestPathSingleSource.IResult indexResult = NegativeCycleException</span>
+<span class="fc" id="L57">						.runAndConvertException(g, () -&gt; computeShortestPaths(iGraph, iw, iSource));</span>
 <span class="fc" id="L58">				return resultFromIndexResult(g, indexResult);</span>
 			}
 		}

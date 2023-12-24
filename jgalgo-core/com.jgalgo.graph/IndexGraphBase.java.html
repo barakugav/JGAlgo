@@ -291,10 +291,10 @@ abstract class IndexGraphBase extends AbstractGraph&lt;Integer, Integer&gt; impl
 
 		@Override
 		public boolean contains(int edge) {
-<span class="pc bpc" id="L294" title="1 of 4 branches missed.">			if (!(0 &lt;= edge &amp;&amp; edge &lt; edges().size()))</span>
+<span class="fc bfc" id="L294" title="All 4 branches covered.">			if (!(0 &lt;= edge &amp;&amp; edge &lt; edges().size()))</span>
 <span class="fc" id="L295">				return false;</span>
 <span class="fc" id="L296">			int s = source(edge), t = target(edge);</span>
-<span class="pc bpc" id="L297" title="2 of 8 branches missed.">			return (source == s &amp;&amp; target == t) || (source == t &amp;&amp; target == s);</span>
+<span class="fc bfc" id="L297" title="All 8 branches covered.">			return (source == s &amp;&amp; target == t) || (source == t &amp;&amp; target == s);</span>
 		}
 	}
 
@@ -305,7 +305,7 @@ abstract class IndexGraphBase extends AbstractGraph&lt;Integer, Integer&gt; impl
 
 		@Override
 		public boolean contains(int edge) {
-<span class="pc bpc" id="L308" title="2 of 8 branches missed.">			return 0 &lt;= edge &amp;&amp; edge &lt; edges().size() &amp;&amp; source == source(edge) &amp;&amp; target == target(edge);</span>
+<span class="fc bfc" id="L308" title="All 8 branches covered.">			return 0 &lt;= edge &amp;&amp; edge &lt; edges().size() &amp;&amp; source == source(edge) &amp;&amp; target == target(edge);</span>
 		}
 	}
 

@@ -88,12 +88,12 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L88">					sink = temp;</span>
 				}
 
-<span class="fc" id="L91">				IVertexBiPartition minCut = (IVertexBiPartition) minCutAlgo.computeMinimumCut(g, null,</span>
-<span class="fc" id="L92">						Integer.valueOf(source), Integer.valueOf(sink));</span>
+<span class="fc" id="L91">				IVertexBiPartition minCut = (IVertexBiPartition) minCutAlgo</span>
+<span class="fc" id="L92">						.computeMinimumCut(g, null, Integer.valueOf(source), Integer.valueOf(sink));</span>
 <span class="fc" id="L93">				int cutWeight = minCut.crossEdges().size();</span>
 <span class="fc bfc" id="L94" title="All 2 branches covered.">				if (g.isDirected()) {</span>
-<span class="fc" id="L95">					IVertexBiPartition minCut2 = (IVertexBiPartition) minCutAlgo.computeMinimumCut(g, null,</span>
-<span class="fc" id="L96">							Integer.valueOf(sink), Integer.valueOf(source));</span>
+<span class="fc" id="L95">					IVertexBiPartition minCut2 = (IVertexBiPartition) minCutAlgo</span>
+<span class="fc" id="L96">							.computeMinimumCut(g, null, Integer.valueOf(sink), Integer.valueOf(source));</span>
 <span class="fc" id="L97">					int cutWeight2 = minCut2.crossEdges().size();</span>
 <span class="fc bfc" id="L98" title="All 2 branches covered.">					if (cutWeight &gt; cutWeight2) {</span>
 <span class="fc" id="L99">						cutWeight = cutWeight2;</span>

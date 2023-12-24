@@ -74,8 +74,8 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L74">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
 <span class="fc" id="L75">				IntCollection iVerticesSubset = IndexIdMaps.idToIndexCollection(verticesSubset, viMap);</span>
 <span class="fc" id="L76">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L77">				ShortestPathAllPairs.IResult indexResult = NegativeCycleException.runAndConvertException(g,</span>
-<span class="fc" id="L78">						() -&gt; computeSubsetShortestPaths(iGraph, iVerticesSubset, iw));</span>
+<span class="fc" id="L77">				ShortestPathAllPairs.IResult indexResult = NegativeCycleException</span>
+<span class="fc" id="L78">						.runAndConvertException(g, () -&gt; computeSubsetShortestPaths(iGraph, iVerticesSubset, iw));</span>
 <span class="fc" id="L79">				return resultFromIndexResult(g, indexResult);</span>
 			}
 		}

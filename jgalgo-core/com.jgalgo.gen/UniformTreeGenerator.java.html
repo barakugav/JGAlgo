@@ -42,6 +42,19 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * Codes&quot; by Xiaodong Wang, Lei Wang and Yingjie Wu. The algorithm runs in linear time.
  *
  * &lt;p&gt;
+ * In the following example, a tree with \(24\) vertices is generated using the vertex builder of the graph factory,
+ * while the edges are generated using a custom identifier builder. The seed of the generator is set to some fixed value
+ * to get deterministic behavior.
+ *
+ * &lt;pre&gt; {@code
+ * Graph&lt;Integer, Integer&gt; g = new UniformTreeGenerator&lt;&gt;(IntGraphFactory.undirected())
+ * 		.vertices(24)
+ * 		.edges(IdBuilderInt.defaultBuilder())
+ * 		.seed(0x7d0c16fa09e05751L)
+ * 		.generate();
+ * } &lt;/pre&gt;
+ *
+ * &lt;p&gt;
  * The generator generate undirected graphs only. If zero vertices are set, an empty graph is generated.
  *
  * &lt;p&gt;
@@ -51,12 +64,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @param  &lt;E&gt; the edges type
  * @author     Barak Ugav
  */
-<span class="fc" id="L54">public class UniformTreeGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {</span>
+<span class="fc" id="L67">public class UniformTreeGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt; {</span>
 
 	private final GraphFactory&lt;V, E&gt; factory;
 	private Variant2&lt;List&lt;V&gt;, IntObjectPair&lt;IdBuilder&lt;V&gt;&gt;&gt; vertices;
 	private IdBuilder&lt;E&gt; edgeBuilder;
-<span class="fc" id="L59">	private Random rand = new Random();</span>
+<span class="fc" id="L72">	private Random rand = new Random();</span>
 
 	/**
 	 * Create a new uniform tree generator that will use the default graph factory.
@@ -71,8 +84,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 * {@link #edges(IdBuilder)}.
 	 */
 	public UniformTreeGenerator() {
-<span class="fc" id="L74">		this(GraphFactory.undirected());</span>
-<span class="fc" id="L75">	}</span>
+<span class="fc" id="L87">		this(GraphFactory.undirected());</span>
+<span class="fc" id="L88">	}</span>
 
 	/**
 	 * Create a new uniform tree generator that will use the given graph factory.
@@ -92,9 +105,9 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 *
 	 * @param factory the graph factory that will be used to create the generated graph(s)
 	 */
-<span class="fc" id="L95">	public UniformTreeGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
-<span class="fc" id="L96">		this.factory = Objects.requireNonNull(factory);</span>
-<span class="fc" id="L97">	}</span>
+<span class="fc" id="L108">	public UniformTreeGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
+<span class="fc" id="L109">		this.factory = Objects.requireNonNull(factory);</span>
+<span class="fc" id="L110">	}</span>
 
 	/**
 	 * Get the graph factory that will be used to create the generated graph(s).
@@ -113,7 +126,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 * @return the graph factory that will be used to create the generated graph(s)
 	 */
 	public GraphFactory&lt;V, E&gt; graphFactory() {
-<span class="fc" id="L116">		return factory;</span>
+<span class="fc" id="L129">		return factory;</span>
 	}
 
 	/**
@@ -129,13 +142,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public UniformTreeGenerator&lt;V, E&gt; vertices(Collection&lt;? extends V&gt; vertices) {
-<span class="fc bfc" id="L132" title="All 2 branches covered.">		if (factory instanceof IntGraphFactory) {</span>
-<span class="fc" id="L133">			vertices = (List&lt;V&gt;) new IntArrayList((Collection&lt;Integer&gt;) vertices);</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">		if (factory instanceof IntGraphFactory) {</span>
+<span class="fc" id="L146">			vertices = (List&lt;V&gt;) new IntArrayList((Collection&lt;Integer&gt;) vertices);</span>
 		} else {
-<span class="fc" id="L135">			vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
+<span class="fc" id="L148">			vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
 		}
-<span class="fc" id="L137">		this.vertices = Variant2.ofA((List&lt;V&gt;) vertices);</span>
-<span class="fc" id="L138">		return this;</span>
+<span class="fc" id="L150">		this.vertices = Variant2.ofA((List&lt;V&gt;) vertices);</span>
+<span class="fc" id="L151">		return this;</span>
 	}
 
 	/**
@@ -157,8 +170,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 * @throws IllegalArgumentException if {@code verticesNum} is negative
 	 */
 	public UniformTreeGenerator&lt;V, E&gt; vertices(int verticesNum) {
-<span class="fc" id="L160">		vertices(verticesNum, null);</span>
-<span class="fc" id="L161">		return this;</span>
+<span class="fc" id="L173">		vertices(verticesNum, null);</span>
+<span class="fc" id="L174">		return this;</span>
 	}
 
 	/**
@@ -178,10 +191,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 * @throws IllegalArgumentException if {@code verticesNum} is negative
 	 */
 	public UniformTreeGenerator&lt;V, E&gt; vertices(int verticesNum, IdBuilder&lt;V&gt; vertexBuilder) {
-<span class="fc bfc" id="L181" title="All 2 branches covered.">		if (verticesNum &lt; 0)</span>
-<span class="fc" id="L182">			throw new IllegalArgumentException(&quot;number of vertices must be non-negative&quot;);</span>
-<span class="fc" id="L183">		this.vertices = Variant2.ofB(IntObjectPair.of(verticesNum, vertexBuilder));</span>
-<span class="fc" id="L184">		return this;</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">		if (verticesNum &lt; 0)</span>
+<span class="fc" id="L195">			throw new IllegalArgumentException(&quot;number of vertices must be non-negative&quot;);</span>
+<span class="fc" id="L196">		this.vertices = Variant2.ofB(IntObjectPair.of(verticesNum, vertexBuilder));</span>
+<span class="fc" id="L197">		return this;</span>
 	}
 
 	/**
@@ -199,8 +212,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 * @return             this generator
 	 */
 	public UniformTreeGenerator&lt;V, E&gt; edges(IdBuilder&lt;E&gt; edgeBuilder) {
-<span class="fc" id="L202">		this.edgeBuilder = edgeBuilder;</span>
-<span class="fc" id="L203">		return this;</span>
+<span class="fc" id="L215">		this.edgeBuilder = edgeBuilder;</span>
+<span class="fc" id="L216">		return this;</span>
 	}
 
 	/**
@@ -213,87 +226,87 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 * @return      this generator
 	 */
 	public UniformTreeGenerator&lt;V, E&gt; seed(long seed) {
-<span class="fc" id="L216">		rand = new Random(seed);</span>
-<span class="fc" id="L217">		return this;</span>
+<span class="fc" id="L229">		rand = new Random(seed);</span>
+<span class="fc" id="L230">		return this;</span>
 	}
 
 	@Override
 	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
-<span class="fc bfc" id="L222" title="All 2 branches covered.">		if (vertices == null)</span>
-<span class="fc" id="L223">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
-<span class="fc" id="L224">		final int n = vertices.map(List::size, IntObjectPair::firstInt).intValue();</span>
+<span class="fc bfc" id="L235" title="All 2 branches covered.">		if (vertices == null)</span>
+<span class="fc" id="L236">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
+<span class="fc" id="L237">		final int n = vertices.map(List::size, IntObjectPair::firstInt).intValue();</span>
 
-<span class="fc" id="L226">		GraphBuilder&lt;V, E&gt; g = factory.setDirected(false).newBuilder();</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">		IdBuilder&lt;E&gt; edgeBuilder = this.edgeBuilder != null ? this.edgeBuilder : g.edgeBuilder();</span>
-<span class="fc bfc" id="L228" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
-<span class="fc" id="L229">			throw new IllegalStateException(&quot;Edge builder not provided and graph factory does not have one&quot;);</span>
+<span class="fc" id="L239">		GraphBuilder&lt;V, E&gt; g = factory.setDirected(false).newBuilder();</span>
+<span class="fc bfc" id="L240" title="All 2 branches covered.">		IdBuilder&lt;E&gt; edgeBuilder = this.edgeBuilder != null ? this.edgeBuilder : g.edgeBuilder();</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
+<span class="fc" id="L242">			throw new IllegalStateException(&quot;Edge builder not provided and graph factory does not have one&quot;);</span>
 
-<span class="fc bfc" id="L231" title="All 2 branches covered.">		if (n == 0)</span>
-<span class="fc" id="L232">			return g;</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">		if (n == 0)</span>
+<span class="fc" id="L245">			return g;</span>
 		final List&lt;V&gt; vertices;
-<span class="fc bfc" id="L234" title="All 2 branches covered.">		if (this.vertices.contains(List.class)) {</span>
+<span class="fc bfc" id="L247" title="All 2 branches covered.">		if (this.vertices.contains(List.class)) {</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L236">			List&lt;V&gt; vertices0 = this.vertices.get(List.class);</span>
-<span class="fc" id="L237">			g.addVertices(vertices = vertices0);</span>
-<span class="fc" id="L238">		} else {</span>
+<span class="fc" id="L249">			List&lt;V&gt; vertices0 = this.vertices.get(List.class);</span>
+<span class="fc" id="L250">			g.addVertices(vertices = vertices0);</span>
+<span class="fc" id="L251">		} else {</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L240">			IntObjectPair&lt;IdBuilder&lt;V&gt;&gt; p = this.vertices.get(IntObjectPair.class);</span>
-<span class="fc" id="L241">			int verticesNum = p.firstInt();</span>
-<span class="fc bfc" id="L242" title="All 2 branches covered.">			IdBuilder&lt;V&gt; vertexBuilder = p.second() != null ? p.second() : g.vertexBuilder();</span>
-<span class="fc bfc" id="L243" title="All 2 branches covered.">			if (vertexBuilder == null)</span>
-<span class="fc" id="L244">				throw new IllegalStateException(&quot;Vertex builder not provided and graph factory does not have one&quot;);</span>
-<span class="fc bfc" id="L245" title="All 2 branches covered.">			if (g instanceof IntGraphBuilder) {</span>
+<span class="fc" id="L253">			IntObjectPair&lt;IdBuilder&lt;V&gt;&gt; p = this.vertices.get(IntObjectPair.class);</span>
+<span class="fc" id="L254">			int verticesNum = p.firstInt();</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">			IdBuilder&lt;V&gt; vertexBuilder = p.second() != null ? p.second() : g.vertexBuilder();</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">			if (vertexBuilder == null)</span>
+<span class="fc" id="L257">				throw new IllegalStateException(&quot;Vertex builder not provided and graph factory does not have one&quot;);</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">			if (g instanceof IntGraphBuilder) {</span>
 				@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L247">				List&lt;V&gt; vertices0 = (List&lt;V&gt;) new IntArrayList(verticesNum);</span>
-<span class="fc" id="L248">				vertices = vertices0;</span>
-<span class="fc" id="L249">			} else {</span>
-<span class="fc" id="L250">				vertices = new ObjectArrayList&lt;&gt;(verticesNum);</span>
+<span class="fc" id="L260">				List&lt;V&gt; vertices0 = (List&lt;V&gt;) new IntArrayList(verticesNum);</span>
+<span class="fc" id="L261">				vertices = vertices0;</span>
+<span class="fc" id="L262">			} else {</span>
+<span class="fc" id="L263">				vertices = new ObjectArrayList&lt;&gt;(verticesNum);</span>
 			}
-<span class="fc" id="L252">			g.ensureVertexCapacity(verticesNum);</span>
-<span class="fc bfc" id="L253" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++) {</span>
-<span class="fc" id="L254">				V vertex = vertexBuilder.build(g.vertices());</span>
-<span class="fc" id="L255">				g.addVertex(vertex);</span>
-<span class="fc" id="L256">				vertices.add(vertex);</span>
+<span class="fc" id="L265">			g.ensureVertexCapacity(verticesNum);</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++) {</span>
+<span class="fc" id="L267">				V vertex = vertexBuilder.build(g.vertices());</span>
+<span class="fc" id="L268">				g.addVertex(vertex);</span>
+<span class="fc" id="L269">				vertices.add(vertex);</span>
 			}
 		}
-<span class="fc bfc" id="L259" title="All 2 branches covered.">		if (n == 1)</span>
-<span class="fc" id="L260">			return g;</span>
+<span class="fc bfc" id="L272" title="All 2 branches covered.">		if (n == 1)</span>
+<span class="fc" id="L273">			return g;</span>
 
 		/* generate a random Prufer code of length n-2 */
-<span class="fc" id="L263">		int[] pruferCode = new int[n - 2];</span>
-<span class="fc bfc" id="L264" title="All 2 branches covered.">		for (int i = 0; i &lt; n - 2; i++)</span>
-<span class="fc" id="L265">			pruferCode[i] = rand.nextInt(n);</span>
+<span class="fc" id="L276">		int[] pruferCode = new int[n - 2];</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">		for (int i = 0; i &lt; n - 2; i++)</span>
+<span class="fc" id="L278">			pruferCode[i] = rand.nextInt(n);</span>
 
 		/* 'decode' the Prufer code to a tree of size n */
-<span class="fc" id="L268">		int[] degree = new int[n];</span>
-<span class="fc bfc" id="L269" title="All 2 branches covered.">		for (int c : pruferCode)</span>
-<span class="fc" id="L270">			degree[c]++;</span>
+<span class="fc" id="L281">		int[] degree = new int[n];</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">		for (int c : pruferCode)</span>
+<span class="fc" id="L283">			degree[c]++;</span>
 		int index, uIdx;
-<span class="fc bfc" id="L272" title="All 2 branches covered.">		V u = vertices.get(uIdx = index = range(n).filter(i -&gt; degree[i] == 0).findFirst().getAsInt());</span>
-<span class="fc" id="L273">		Bitmap hasParent = new Bitmap(n);</span>
-<span class="fc bfc" id="L274" title="All 2 branches covered.">		for (int vIdx : pruferCode) {</span>
-<span class="fc" id="L275">			V v = vertices.get(vIdx);</span>
-<span class="fc" id="L276">			g.addEdge(u, v, edgeBuilder.build(g.edges()));</span>
-<span class="fc" id="L277">			hasParent.set(uIdx);</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">		V u = vertices.get(uIdx = index = range(n).filter(i -&gt; degree[i] == 0).findFirst().getAsInt());</span>
+<span class="fc" id="L286">		Bitmap hasParent = new Bitmap(n);</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">		for (int vIdx : pruferCode) {</span>
+<span class="fc" id="L288">			V v = vertices.get(vIdx);</span>
+<span class="fc" id="L289">			g.addEdge(u, v, edgeBuilder.build(g.edges()));</span>
+<span class="fc" id="L290">			hasParent.set(uIdx);</span>
 
-<span class="fc" id="L279">			degree[vIdx]--;</span>
-<span class="fc bfc" id="L280" title="All 4 branches covered.">			if (vIdx &lt; index &amp;&amp; degree[vIdx] == 0) {</span>
-<span class="fc" id="L281">				u = v;</span>
-<span class="fc" id="L282">				uIdx = vIdx;</span>
+<span class="fc" id="L292">			degree[vIdx]--;</span>
+<span class="fc bfc" id="L293" title="All 4 branches covered.">			if (vIdx &lt; index &amp;&amp; degree[vIdx] == 0) {</span>
+<span class="fc" id="L294">				u = v;</span>
+<span class="fc" id="L295">				uIdx = vIdx;</span>
 			} else {
-<span class="fc bfc" id="L284" title="All 2 branches covered.">				u = vertices.get(uIdx = index = range(index + 1, n).filter(i -&gt; degree[i] == 0).findFirst().getAsInt());</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">				u = vertices.get(uIdx = index = range(index + 1, n).filter(i -&gt; degree[i] == 0).findFirst().getAsInt());</span>
 			}
 		}
 
 		/* After the above loop, there should be two vertices with no parent. Connect them */
-<span class="pc bnc" id="L289" title="All 4 branches missed.">		assert Bitmap.fromPredicate(n, v -&gt; !hasParent.get(v)).cardinality() == 2;</span>
-<span class="fc" id="L290">		int root1Idx = hasParent.nextClearBit(0);</span>
-<span class="fc" id="L291">		int root2Idx = hasParent.nextClearBit(root1Idx + 1);</span>
-<span class="fc" id="L292">		V root1 = vertices.get(root1Idx);</span>
-<span class="fc" id="L293">		V root2 = vertices.get(root2Idx);</span>
-<span class="fc" id="L294">		g.addEdge(root1, root2, edgeBuilder.build(g.edges()));</span>
+<span class="pc bnc" id="L302" title="All 4 branches missed.">		assert Bitmap.fromPredicate(n, v -&gt; !hasParent.get(v)).cardinality() == 2;</span>
+<span class="fc" id="L303">		int root1Idx = hasParent.nextClearBit(0);</span>
+<span class="fc" id="L304">		int root2Idx = hasParent.nextClearBit(root1Idx + 1);</span>
+<span class="fc" id="L305">		V root1 = vertices.get(root1Idx);</span>
+<span class="fc" id="L306">		V root2 = vertices.get(root2Idx);</span>
+<span class="fc" id="L307">		g.addEdge(root1, root2, edgeBuilder.build(g.edges()));</span>
 
-<span class="fc" id="L296">		return g;</span>
+<span class="fc" id="L309">		return g;</span>
 	}
 
 }

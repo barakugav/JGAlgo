@@ -236,8 +236,8 @@ public interface Path&lt;V, E&gt; {
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; Path&lt;V, E&gt; findPath(Graph&lt;V, E&gt; g, V source, V target) {
 <span class="fc bfc" id="L238" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
-<span class="fc" id="L239">			return (Path&lt;V, E&gt;) IPath.findPath((IntGraph) g, ((Integer) source).intValue(),</span>
-<span class="fc" id="L240">					((Integer) target).intValue());</span>
+<span class="fc" id="L239">			return (Path&lt;V, E&gt;) IPath</span>
+<span class="fc" id="L240">					.findPath((IntGraph) g, ((Integer) source).intValue(), ((Integer) target).intValue());</span>
 
 <span class="fc" id="L242">		IndexGraph iGraph = g.indexGraph();</span>
 <span class="fc" id="L243">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>

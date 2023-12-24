@@ -26,16 +26,17 @@ import java.util.Comparator;
  * references to the underling elements.
  *
  * &lt;p&gt;
- * In addition to the regular Heap operations, the user can obtain a {@linkplain ObjReferenceableHeap.Ref reference} to
- * each inserted element via the return value of the {@link #insert} function. The reference will be valid as
- * long as the element is still in the heap. By passing the reference to the heap implementation to functions such as
- * {@link #decreaseKey} or {@link #remove} the heap implementation can perform the operations efficiently as is does
- * not need to search for the element.
+ * In addition to the regular Heap operations, the user can obtain a {@linkplain ObjReferenceableHeap.Ref
+ * reference} to each inserted element via the return value of the {@link #insert(Object)} function. The reference will
+ * be valid as long as the element is still in the heap. By passing the reference to the heap implementation to
+ * functions such as {@link #decreaseKey(ObjReferenceableHeap.Ref, Object)} or
+ * {@link #remove(ObjReferenceableHeap.Ref, Object)} the heap implementation can perform the operations efficiently as is
+ * does not need to search for the element.
  *
  * &lt;p&gt;
- * Another difference from the regular Heap, is the existent of both keys and values, rather than just
- * 'elements'. A key may be changed using {@link #decreaseKey} while the &lt;b&gt;value&lt;/b&gt; is the same. This matches the
- * common use case of these heaps.
+ * Another difference from the regular Heap, is the existent of both keys and values, rather than just 'elements'. A key
+ * may be changed using {@link #decreaseKey(ObjReferenceableHeap.Ref, Object)} while the &lt;b&gt;value&lt;/b&gt; is the same.
+ * This matches the common use case of these heaps.
  *
  * &lt;p&gt;
  * Use {@link #newInstance()} to get a default implementation of this interface.
@@ -67,7 +68,7 @@ public interface ObjReferenceableHeap &lt;K&gt; extends ReferenceableHeap, Itera
 	 *
 	 * &lt;p&gt;
 	 * Only a key is passed to this method, and a {@code null} value (or {@code 0} if values are primitive) will be
-	 * used. To insert a new element with both a key and a value use {@link #insert}.
+	 * used. To insert a new element with both a key and a value use {@link #insert(Object)}.
 	 *
 	 * @param  key the key of the new element
 	 * @return     reference to the new element
@@ -127,25 +128,25 @@ public interface ObjReferenceableHeap &lt;K&gt; extends ReferenceableHeap, Itera
 	 *
 	 * &lt;p&gt;
 	 * Note that this method uses the comparator of the heap to determine if two keys are equal, rather than
-	 * {@link Object#equals} or primitive comparison for primitive types.
+	 * {@link Object#equals(Object)} or primitive comparison for primitive types.
 	 *
 	 * @param  key a key
 	 * @return     a reference to an element with the given key or {@code null} if such element was not found
 	 */
 	default ObjReferenceableHeap.Ref &lt;K&gt; find(K key) {
-<span class="fc" id="L136">		Comparator &lt;K&gt; c = comparator();</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">		if (c == null) {</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">			for (ObjReferenceableHeap.Ref &lt;K&gt; p : this) {</span>
-<span class="fc bfc" id="L139" title="All 2 branches covered.">				if (JGAlgoUtils.cmpDefault(key, p.key()) == 0)</span>
-<span class="fc" id="L140">					return p;</span>
-<span class="fc" id="L141">			}</span>
+<span class="fc" id="L137">		Comparator &lt;K&gt; c = comparator();</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">			for (ObjReferenceableHeap.Ref &lt;K&gt; p : this) {</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">				if (JGAlgoUtils.cmpDefault(key, p.key()) == 0)</span>
+<span class="fc" id="L141">					return p;</span>
+<span class="fc" id="L142">			}</span>
 		} else {
-<span class="fc bfc" id="L143" title="All 2 branches covered.">			for (ObjReferenceableHeap.Ref &lt;K&gt; p : this) {</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">				if (c.compare(key, p.key()) == 0)</span>
-<span class="fc" id="L145">					return p;</span>
-<span class="fc" id="L146">			}</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">			for (ObjReferenceableHeap.Ref &lt;K&gt; p : this) {</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">				if (c.compare(key, p.key()) == 0)</span>
+<span class="fc" id="L146">					return p;</span>
+<span class="fc" id="L147">			}</span>
 		}
-<span class="fc" id="L148">		return null;</span>
+<span class="fc" id="L149">		return null;</span>
 	}
 
 	/**
@@ -191,7 +192,7 @@ public interface ObjReferenceableHeap &lt;K&gt; extends ReferenceableHeap, Itera
 	 * @return a stream over the elements in this heap
 	 */
 	default Stream&lt;ObjReferenceableHeap.Ref &lt;K&gt;&gt; stream() {
-<span class="fc" id="L194">		return StreamSupport.stream(spliterator(), false);</span>
+<span class="fc" id="L195">		return StreamSupport.stream(spliterator(), false);</span>
 	}
 
 	/**
@@ -207,7 +208,7 @@ public interface ObjReferenceableHeap &lt;K&gt; extends ReferenceableHeap, Itera
 		*
 		* &lt;p&gt;
 		* There is no {@code setKey} method, but the key of an element can be changed (decrease only) by
-		* {@link ObjReferenceableHeap#decreaseKey}.
+		* {@link ObjReferenceableHeap#decreaseKey(ObjReferenceableHeap.Ref, Object)}.
 		*
 		* @return the element's key
 		*/
@@ -221,7 +222,7 @@ public interface ObjReferenceableHeap &lt;K&gt; extends ReferenceableHeap, Itera
 	 * @return an instance of this interface with the default implementation
 	 */
 	static &lt;K&gt; ObjReferenceableHeap &lt;K&gt; newInstance() {
-<span class="fc" id="L224">		return newInstance(null);</span>
+<span class="fc" id="L225">		return newInstance(null);</span>
 	}
 
 	/**
@@ -231,7 +232,7 @@ public interface ObjReferenceableHeap &lt;K&gt; extends ReferenceableHeap, Itera
 	 * @return an instance of this interface with the default implementation
 	 */
 	static &lt;K&gt; ObjReferenceableHeap &lt;K&gt; newInstance(Comparator &lt;K&gt; c) {
-<span class="fc" id="L234">		return new ObjPairingHeap &lt;&gt; (c);</span>
+<span class="fc" id="L235">		return new ObjPairingHeap &lt;&gt; (c);</span>
 	}
 
 }

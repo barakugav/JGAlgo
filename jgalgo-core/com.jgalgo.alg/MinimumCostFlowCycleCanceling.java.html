@@ -53,8 +53,8 @@ import com.jgalgo.internal.util.Bitmap;
 <span class="fc" id="L53">		Assertions.Flows.sourceSinkNotTheSame(source, sink);</span>
 
 		/* Compute maximum flow */
-<span class="fc" id="L56">		IFlow flowOrig = (IFlow) maxFlowAlg.computeMaximumFlow(gOrig, capacityOrig, Integer.valueOf(source),</span>
-<span class="fc" id="L57">				Integer.valueOf(sink));</span>
+<span class="fc" id="L56">		IFlow flowOrig = (IFlow) maxFlowAlg</span>
+<span class="fc" id="L57">				.computeMaximumFlow(gOrig, capacityOrig, Integer.valueOf(source), Integer.valueOf(sink));</span>
 
 		/* Construct the residual graph from the maximum flow */
 <span class="fc" id="L60">		Flows.ResidualGraph.Builder builder = new Flows.ResidualGraph.Builder(gOrig);</span>

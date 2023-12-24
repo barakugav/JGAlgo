@@ -42,14 +42,14 @@ public class GraphsTestUtils extends TestUtils {
 
 	public static IntGraph randGraph(int n, int m, boolean directed, boolean selfEdges, boolean parallelEdges,
 			long seed) {
-<span class="fc" id="L45">		GnmGraphGenerator&lt;Integer, Integer&gt; gen = new GnmGraphGenerator&lt;&gt;(IntGraphFactory.undirected());</span>
-<span class="fc" id="L46">		gen.seed(seed);</span>
-<span class="fc" id="L47">		gen.directed(directed);</span>
-<span class="fc" id="L48">		gen.selfEdges(selfEdges);</span>
-<span class="fc" id="L49">		gen.parallelEdges(parallelEdges);</span>
-<span class="fc" id="L50">		gen.vertices(range(n));</span>
-<span class="fc" id="L51">		gen.edges(m, IdBuilderInt.defaultBuilder());</span>
-<span class="fc" id="L52">		return (IntGraph) gen.generateMutable();</span>
+<span class="fc" id="L45">		return (IntGraph) new GnmGraphGenerator&lt;&gt;(IntGraphFactory.undirected())</span>
+<span class="fc" id="L46">				.seed(seed)</span>
+<span class="fc" id="L47">				.directed(directed)</span>
+<span class="fc" id="L48">				.selfEdges(selfEdges)</span>
+<span class="fc" id="L49">				.parallelEdges(parallelEdges)</span>
+<span class="fc" id="L50">				.vertices(range(n))</span>
+<span class="fc" id="L51">				.edges(m, IdBuilderInt.defaultBuilder())</span>
+<span class="fc" id="L52">				.generateMutable();</span>
 	}
 
 	public static IntGraph randBipartiteGraph(int n1, int n2, int m, boolean directed, long seed) {
@@ -60,96 +60,98 @@ public class GraphsTestUtils extends TestUtils {
 			long seed) {
 <span class="fc" id="L61">		GnmBipartiteGraphGenerator&lt;Integer, Integer&gt; gen =</span>
 <span class="fc" id="L62">				new GnmBipartiteGraphGenerator&lt;&gt;(IntGraphFactory.undirected());</span>
-<span class="fc" id="L63">		gen.seed(seed);</span>
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		if (directed) {</span>
-<span class="nc" id="L65">			gen.directedAll();</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">		if (directed) {</span>
+<span class="nc" id="L64">			gen.directedAll();</span>
 		} else {
-<span class="fc" id="L67">			gen.undirected();</span>
+<span class="fc" id="L66">			gen.undirected();</span>
 		}
-<span class="fc" id="L69">		gen.vertices(range(n1), range(n1, n1 + n2));</span>
-<span class="fc" id="L70">		gen.edges(m, IdBuilderInt.defaultBuilder());</span>
-<span class="fc" id="L71">		gen.parallelEdges(parallelEdges);</span>
-<span class="fc" id="L72">		return (IntGraph) gen.generateMutable();</span>
+<span class="fc" id="L68">		return (IntGraph) gen</span>
+<span class="fc" id="L69">				.seed(seed)</span>
+<span class="fc" id="L70">				.vertices(range(n1), range(n1, n1 + n2))</span>
+<span class="fc" id="L71">				.edges(m, IdBuilderInt.defaultBuilder())</span>
+<span class="fc" id="L72">				.parallelEdges(parallelEdges)</span>
+<span class="fc" id="L73">				.generateMutable();</span>
 	}
 
 	public static IntGraph randTree(int n, long seed) {
-<span class="fc" id="L76">		UniformTreeGenerator&lt;Integer, Integer&gt; gen = new UniformTreeGenerator&lt;&gt;(IntGraphFactory.undirected());</span>
-<span class="fc" id="L77">		gen.seed(seed);</span>
-<span class="fc" id="L78">		gen.vertices(range(n));</span>
-<span class="fc" id="L79">		gen.edges(IdBuilderInt.defaultBuilder());</span>
-<span class="fc" id="L80">		return (IntGraph) gen.generateMutable();</span>
+<span class="fc" id="L77">		return (IntGraph) new UniformTreeGenerator&lt;&gt;(IntGraphFactory.undirected())</span>
+<span class="fc" id="L78">				.seed(seed)</span>
+<span class="fc" id="L79">				.vertices(range(n))</span>
+<span class="fc" id="L80">				.edges(IdBuilderInt.defaultBuilder())</span>
+<span class="fc" id="L81">				.generateMutable();</span>
 	}
 
 	public static Boolean2ObjectFunction&lt;IntGraph&gt; defaultGraphImpl() {
-<span class="nc" id="L84">		return directed -&gt; IntGraphFactory.newInstance(directed).newGraph();</span>
+<span class="nc" id="L85">		return directed -&gt; IntGraphFactory.newInstance(directed).newGraph();</span>
 	}
 
 	public static IWeightsDouble assignRandWeights(IntGraph g, long seed) {
-<span class="nc" id="L88">		return assignRandWeights(g, 1.0, 100.0, seed);</span>
+<span class="nc" id="L89">		return assignRandWeights(g, 1.0, 100.0, seed);</span>
 	}
 
 	public static IWeightsDouble assignRandWeights(IntGraph g, double minWeight, double maxWeight, long seed) {
-<span class="nc bnc" id="L92" title="All 2 branches missed.">		if (minWeight &gt;= maxWeight)</span>
-<span class="nc" id="L93">			throw new IllegalArgumentException();</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">		if (minWeight &gt;= maxWeight)</span>
+<span class="nc" id="L94">			throw new IllegalArgumentException();</span>
 
-<span class="nc" id="L95">		Random rand = new Random(seed);</span>
-<span class="nc" id="L96">		IWeightsDouble weight = g.addEdgesWeights(&quot;weight&quot;, double.class);</span>
-<span class="nc bnc" id="L97" title="All 2 branches missed.">		for (int e : g.edges())</span>
-<span class="nc" id="L98">			weight.set(e, nextDouble(rand, minWeight, maxWeight));</span>
-<span class="nc" id="L99">		return weight;</span>
+<span class="nc" id="L96">		Random rand = new Random(seed);</span>
+<span class="nc" id="L97">		IWeightsDouble weight = g.addEdgesWeights(&quot;weight&quot;, double.class);</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">		for (int e : g.edges())</span>
+<span class="nc" id="L99">			weight.set(e, nextDouble(rand, minWeight, maxWeight));</span>
+<span class="nc" id="L100">		return weight;</span>
 	}
 
 	public static IWeightsInt assignRandWeightsIntPos(IntGraph g, long seed) {
-<span class="fc" id="L103">		int m = g.edges().size();</span>
-<span class="fc" id="L104">		int minWeight = 1;</span>
-<span class="pc bpc" id="L105" title="1 of 2 branches missed.">		int maxWeight = m &lt; 50 ? 100 : m * 2 + 2;</span>
-<span class="fc" id="L106">		return assignRandWeightsInt(g, minWeight, maxWeight, seed);</span>
+<span class="fc" id="L104">		int m = g.edges().size();</span>
+<span class="fc" id="L105">		int minWeight = 1;</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">		int maxWeight = m &lt; 50 ? 100 : m * 2 + 2;</span>
+<span class="fc" id="L107">		return assignRandWeightsInt(g, minWeight, maxWeight, seed);</span>
 	}
 
 	public static IWeightsInt assignRandWeightsIntNeg(IntGraph g, long seed) {
-<span class="fc" id="L110">		int m = g.edges().size();</span>
-<span class="pc bpc" id="L111" title="1 of 2 branches missed.">		int maxWeight = m &lt; 50 ? 100 : m * 2 + 2;</span>
-<span class="fc" id="L112">		return assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seed);</span>
+<span class="fc" id="L111">		int m = g.edges().size();</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">		int maxWeight = m &lt; 50 ? 100 : m * 2 + 2;</span>
+<span class="fc" id="L113">		return assignRandWeightsInt(g, -maxWeight / 8, maxWeight, seed);</span>
 	}
 
 	public static IWeightsInt assignRandWeightsInt(IntGraph g, int minWeight, int maxWeight, long seed) {
-<span class="pc bpc" id="L116" title="1 of 2 branches missed.">		if (minWeight &gt;= maxWeight)</span>
-<span class="nc" id="L117">			throw new IllegalArgumentException();</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">		if (minWeight &gt;= maxWeight)</span>
+<span class="nc" id="L118">			throw new IllegalArgumentException();</span>
 
-<span class="fc" id="L119">		Random rand = new Random(seed);</span>
-<span class="fc" id="L120">		IWeightsInt weight = IWeights.createExternalEdgesWeights(g, int.class);</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		for (int e : g.edges())</span>
-<span class="fc" id="L122">			weight.set(e, rand.nextInt(maxWeight - minWeight) + minWeight);</span>
-<span class="fc" id="L123">		return weight;</span>
+<span class="fc" id="L120">		Random rand = new Random(seed);</span>
+<span class="fc" id="L121">		IWeightsInt weight = IWeights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		for (int e : g.edges())</span>
+<span class="fc" id="L123">			weight.set(e, rand.nextInt(maxWeight - minWeight) + minWeight);</span>
+<span class="fc" id="L124">		return weight;</span>
 	}
 
 	public static IntGraph randomGraphGnp(int n, boolean directed, long seed) {
-<span class="fc" id="L127">		GnpGraphGenerator&lt;Integer, Integer&gt; gen = new GnpGraphGenerator&lt;&gt;(IntGraphFactory.undirected());</span>
-<span class="fc" id="L128">		gen.seed(seed);</span>
-<span class="fc" id="L129">		gen.directed(directed);</span>
-<span class="fc" id="L130">		gen.vertices(range(n));</span>
-<span class="fc" id="L131">		gen.edges(IdBuilderInt.defaultBuilder());</span>
-<span class="fc" id="L132">		return gen.generate().indexGraph();</span>
+<span class="fc" id="L128">		return new GnpGraphGenerator&lt;&gt;(IntGraphFactory.undirected())</span>
+<span class="fc" id="L129">				.seed(seed)</span>
+<span class="fc" id="L130">				.directed(directed)</span>
+<span class="fc" id="L131">				.vertices(range(n))</span>
+<span class="fc" id="L132">				.edges(IdBuilderInt.defaultBuilder())</span>
+<span class="fc" id="L133">				.generate()</span>
+<span class="fc" id="L134">				.indexGraph();</span>
 	}
 
 	public static IntGraph randomGraphBarabasiAlbert(int n, boolean directed, long seed) {
-<span class="fc" id="L136">		BarabasiAlbertGraphGenerator&lt;Integer, Integer&gt; gen =</span>
-<span class="fc" id="L137">				new BarabasiAlbertGraphGenerator&lt;&gt;(IntGraphFactory.undirected());</span>
-<span class="fc" id="L138">		gen.seed(seed);</span>
-<span class="fc" id="L139">		gen.directed(directed);</span>
-<span class="fc" id="L140">		gen.vertices(range(n));</span>
-<span class="fc" id="L141">		gen.edges(IdBuilderInt.defaultBuilder());</span>
-<span class="fc" id="L142">		return gen.generate().indexGraph();</span>
+<span class="fc" id="L138">		return new BarabasiAlbertGraphGenerator&lt;&gt;(IntGraphFactory.undirected())</span>
+<span class="fc" id="L139">				.seed(seed)</span>
+<span class="fc" id="L140">				.directed(directed)</span>
+<span class="fc" id="L141">				.vertices(range(n))</span>
+<span class="fc" id="L142">				.edges(IdBuilderInt.defaultBuilder())</span>
+<span class="fc" id="L143">				.generate()</span>
+<span class="fc" id="L144">				.indexGraph();</span>
 	}
 
 	public static IntGraph randomGraphRecursiveMatrix(int n, int m, boolean directed, long seed) {
-<span class="fc" id="L146">		RecursiveMatrixGraphGenerator&lt;Integer, Integer&gt; gen =</span>
-<span class="fc" id="L147">				new RecursiveMatrixGraphGenerator&lt;&gt;(IntGraphFactory.undirected());</span>
-<span class="fc" id="L148">		gen.seed(seed);</span>
-<span class="fc" id="L149">		gen.directed(directed);</span>
-<span class="fc" id="L150">		gen.vertices(range(n));</span>
-<span class="fc" id="L151">		gen.edges(m, IdBuilderInt.defaultBuilder());</span>
-<span class="fc" id="L152">		return gen.generate().indexGraph();</span>
+<span class="fc" id="L148">		return new RecursiveMatrixGraphGenerator&lt;&gt;(IntGraphFactory.undirected())</span>
+<span class="fc" id="L149">				.seed(seed)</span>
+<span class="fc" id="L150">				.directed(directed)</span>
+<span class="fc" id="L151">				.vertices(range(n))</span>
+<span class="fc" id="L152">				.edges(m, IdBuilderInt.defaultBuilder())</span>
+<span class="fc" id="L153">				.generate()</span>
+<span class="fc" id="L154">				.indexGraph();</span>
 	}
 
 }

@@ -212,8 +212,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 		@Override
 		public String toString() {
-<span class="nc" id="L215">			return range(numberOfBlocks()).mapToObj(this::blockVertices).map(Object::toString)</span>
-<span class="nc" id="L216">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
+<span class="nc" id="L215">			return range(numberOfBlocks())</span>
+<span class="nc" id="L216">					.mapToObj(this::blockVertices)</span>
+<span class="nc" id="L217">					.map(Object::toString)</span>
+<span class="nc" id="L218">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
 		}
 	}
 
@@ -222,13 +224,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final Bitmap bitSet;
 
 		FromBitmap(IndexGraph g, Bitmap bitSet) {
-<span class="fc" id="L225">			super(g);</span>
-<span class="fc" id="L226">			this.bitSet = Objects.requireNonNull(bitSet);</span>
-<span class="fc" id="L227">		}</span>
+<span class="fc" id="L227">			super(g);</span>
+<span class="fc" id="L228">			this.bitSet = Objects.requireNonNull(bitSet);</span>
+<span class="fc" id="L229">		}</span>
 
 		@Override
 		boolean isLeft0(int vertex) {
-<span class="fc" id="L231">			return bitSet.get(vertex);</span>
+<span class="fc" id="L233">			return bitSet.get(vertex);</span>
 		}
 	}
 
@@ -237,13 +239,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final IWeightsBool weights;
 
 		FromWeights(IndexGraph g, IWeightsBool weights) {
-<span class="fc" id="L240">			super(g);</span>
-<span class="fc" id="L241">			this.weights = Objects.requireNonNull(weights);</span>
-<span class="fc" id="L242">		}</span>
+<span class="fc" id="L242">			super(g);</span>
+<span class="fc" id="L243">			this.weights = Objects.requireNonNull(weights);</span>
+<span class="fc" id="L244">		}</span>
 
 		@Override
 		boolean isLeft0(int vertex) {
-<span class="fc" id="L246">			return weights.get(vertex);</span>
+<span class="fc" id="L248">			return weights.get(vertex);</span>
 		}
 	}
 
@@ -251,16 +253,16 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 			implements IVertexBiPartition {
 
 		IntBiPartitionFromIndexBiPartition(IntGraph g, IVertexBiPartition indexPartition) {
-<span class="fc" id="L254">			super(g, indexPartition);</span>
-<span class="fc" id="L255">		}</span>
+<span class="fc" id="L256">			super(g, indexPartition);</span>
+<span class="fc" id="L257">		}</span>
 
 		IVertexBiPartition indexPartition() {
-<span class="fc" id="L258">			return (IVertexBiPartition) indexPartition;</span>
+<span class="fc" id="L260">			return (IVertexBiPartition) indexPartition;</span>
 		}
 
 		@Override
 		public boolean isLeft(int vertex) {
-<span class="fc" id="L263">			return indexPartition().isLeft(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L265">			return indexPartition().isLeft(viMap.idToIndex(vertex));</span>
 		}
 	}
 
@@ -268,27 +270,27 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 			implements VertexBiPartition&lt;V, E&gt; {
 
 		ObjBiPartitionFromIndexBiPartition(Graph&lt;V, E&gt; g, IVertexBiPartition indexPartition) {
-<span class="fc" id="L271">			super(g, indexPartition);</span>
-<span class="fc" id="L272">		}</span>
+<span class="fc" id="L273">			super(g, indexPartition);</span>
+<span class="fc" id="L274">		}</span>
 
 		IVertexBiPartition indexPartition() {
-<span class="fc" id="L275">			return (IVertexBiPartition) indexPartition;</span>
+<span class="fc" id="L277">			return (IVertexBiPartition) indexPartition;</span>
 		}
 
 		@Override
 		public boolean isLeft(V vertex) {
-<span class="fc" id="L280">			return indexPartition().isLeft(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L282">			return indexPartition().isLeft(viMap.idToIndex(vertex));</span>
 		}
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; VertexBiPartition&lt;V, E&gt; partitionFromIndexPartition(Graph&lt;V, E&gt; g,
 			IVertexBiPartition indexPartition) {
-<span class="pc bnc" id="L287" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
-<span class="fc bfc" id="L288" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L289">			return (VertexBiPartition&lt;V, E&gt;) new IntBiPartitionFromIndexBiPartition((IntGraph) g, indexPartition);</span>
+<span class="pc bnc" id="L289" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L291">			return (VertexBiPartition&lt;V, E&gt;) new IntBiPartitionFromIndexBiPartition((IntGraph) g, indexPartition);</span>
 		} else {
-<span class="fc" id="L291">			return new ObjBiPartitionFromIndexBiPartition&lt;&gt;(g, indexPartition);</span>
+<span class="fc" id="L293">			return new ObjBiPartitionFromIndexBiPartition&lt;&gt;(g, indexPartition);</span>
 		}
 	}
 

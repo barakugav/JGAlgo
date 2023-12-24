@@ -66,57 +66,59 @@ public final class Range extends AbstractIntSet {
 	public boolean equals(Object o) {
 <span class="fc bfc" id="L67" title="All 2 branches covered.">		if (o instanceof Range) {</span>
 <span class="fc" id="L68">			Range r = (Range) o;</span>
-<span class="fc bfc" id="L69" title="All 4 branches covered.">			return from == r.from &amp;&amp; to == r.to;</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">			if (isEmpty())</span>
+<span class="fc" id="L70">				return r.isEmpty();</span>
+<span class="fc bfc" id="L71" title="All 4 branches covered.">			return to == r.to &amp;&amp; from == r.from;</span>
 
-<span class="fc bfc" id="L71" title="All 2 branches covered.">		} else if (o instanceof IntSet) {</span>
-<span class="fc" id="L72">			IntSet s = (IntSet) o;</span>
-<span class="fc" id="L73">			int size = size();</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">			if (size != s.size())</span>
-<span class="fc" id="L75">				return false;</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">			if (size == 0)</span>
-<span class="fc" id="L77">				return true;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		} else if (o instanceof IntSet) {</span>
+<span class="fc" id="L74">			IntSet s = (IntSet) o;</span>
+<span class="fc" id="L75">			int size = size();</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			if (size != s.size())</span>
+<span class="fc" id="L77">				return false;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (size == 0)</span>
+<span class="fc" id="L79">				return true;</span>
 			int min, max;
-<span class="fc" id="L79">			IntIterator it = s.iterator();</span>
-<span class="fc" id="L80">			min = max = it.nextInt();</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">			while (--size &gt; 0) {</span>
-<span class="fc" id="L82">				int x = it.nextInt();</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">				if (max &lt; x) {</span>
-<span class="fc" id="L84">					max = x;</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">				} else if (min &gt; x) {</span>
-<span class="fc" id="L86">					min = x;</span>
+<span class="fc" id="L81">			IntIterator it = s.iterator();</span>
+<span class="fc" id="L82">			min = max = it.nextInt();</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">			while (--size &gt; 0) {</span>
+<span class="fc" id="L84">				int x = it.nextInt();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">				if (max &lt; x) {</span>
+<span class="fc" id="L86">					max = x;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">				} else if (min &gt; x) {</span>
+<span class="fc" id="L88">					min = x;</span>
 				}
-<span class="fc" id="L88">			}</span>
-<span class="fc bfc" id="L89" title="All 4 branches covered.">			return min == from &amp;&amp; max == to - 1;</span>
+<span class="fc" id="L90">			}</span>
+<span class="fc bfc" id="L91" title="All 4 branches covered.">			return min == from &amp;&amp; max == to - 1;</span>
 
 		} else {
-<span class="fc" id="L92">			return super.equals(o);</span>
+<span class="fc" id="L94">			return super.equals(o);</span>
 		}
 	}
 
 	@Override
 	public int hashCode() {
 		/* hash code compatible with IntSet */
-<span class="fc" id="L99">		return (from + to - 1) * (to - from) / 2;</span>
+<span class="fc" id="L101">		return (from + to - 1) * (to - from) / 2;</span>
 	}
 
 	public IntStream map(IntUnaryOperator mapper) {
-<span class="fc" id="L103">		return intStream().map(mapper);</span>
+<span class="fc" id="L105">		return intStream().map(mapper);</span>
 	}
 
 	public &lt;U&gt; Stream&lt;U&gt; mapToObj(IntFunction&lt;? extends U&gt; mapper) {
-<span class="fc" id="L107">		return intStream().mapToObj(mapper);</span>
+<span class="fc" id="L109">		return intStream().mapToObj(mapper);</span>
 	}
 
 	public DoubleStream mapToDouble(IntToDoubleFunction mapper) {
-<span class="fc" id="L111">		return intStream().mapToDouble(mapper);</span>
+<span class="fc" id="L113">		return intStream().mapToDouble(mapper);</span>
 	}
 
 	public IntStream filter(IntPredicate predicate) {
-<span class="fc" id="L115">		return intStream().filter(predicate);</span>
+<span class="fc" id="L117">		return intStream().filter(predicate);</span>
 	}
 
 	public boolean allMatch(IntPredicate allMatch) {
-<span class="fc" id="L119">		return intStream().allMatch(allMatch);</span>
+<span class="fc" id="L121">		return intStream().allMatch(allMatch);</span>
 	}
 
 	private static class Iter implements IntIterator {
@@ -124,20 +126,20 @@ public final class Range extends AbstractIntSet {
 		int x;
 		final int to;
 
-<span class="fc" id="L127">		Iter(int from, int to) {</span>
-<span class="fc" id="L128">			this.x = from;</span>
-<span class="fc" id="L129">			this.to = to;</span>
-<span class="fc" id="L130">		}</span>
+<span class="fc" id="L129">		Iter(int from, int to) {</span>
+<span class="fc" id="L130">			this.x = from;</span>
+<span class="fc" id="L131">			this.to = to;</span>
+<span class="fc" id="L132">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L134" title="All 2 branches covered.">			return x &lt; to;</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">			return x &lt; to;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L139">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L140">			return x++;</span>
+<span class="fc" id="L141">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L142">			return x++;</span>
 		}
 	}
 

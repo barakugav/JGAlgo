@@ -47,8 +47,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L47">			boolean copyEdgesWeights) {</span>
 <span class="fc" id="L48">		this.factory = factory;</span>
 <span class="fc" id="L49">		this.ibuilder = factory.indexFactory.newBuilderCopyOf(g.indexGraph(), copyVerticesWeights, copyEdgesWeights);</span>
-<span class="fc" id="L50">		viMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), ibuilder.vertices(), false,</span>
-				false);
+<span class="fc" id="L50">		viMap = IndexIntIdMapImpl</span>
+<span class="fc" id="L51">				.newCopyOf(g.indexGraphVerticesMap(), Optional.empty(), ibuilder.vertices(), false, false);</span>
 <span class="fc" id="L52">		eiMap = IndexIntIdMapImpl.newCopyOf(g.indexGraphEdgesMap(), Optional.empty(), ibuilder.edges(), true, false);</span>
 <span class="fc" id="L53">		resetVertexAndEdgeBuilders();</span>
 <span class="fc" id="L54">	}</span>
@@ -158,8 +158,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L158">		WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.getVerticesWeights(key);</span>
 <span class="fc bfc" id="L159" title="All 2 branches covered.">		if (indexWeights == null)</span>
 <span class="fc" id="L160">			return null;</span>
-<span class="fc" id="L161">		return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,</span>
-<span class="fc" id="L162">				iw -&gt; WeightsImpl.IntMapped.newInstance(iw, viMap));</span>
+<span class="fc" id="L161">		return (WeightsT) verticesWeights</span>
+<span class="fc" id="L162">				.computeIfAbsent(indexWeights, iw -&gt; WeightsImpl.IntMapped.newInstance(iw, viMap));</span>
 	}
 
 	@Override
@@ -180,8 +180,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L180">		WeightsImpl.Index&lt;T&gt; indexWeights = ibuilder.getEdgesWeights(key);</span>
 <span class="fc bfc" id="L181" title="All 2 branches covered.">		if (indexWeights == null)</span>
 <span class="fc" id="L182">			return null;</span>
-<span class="fc" id="L183">		return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,</span>
-<span class="fc" id="L184">				iw -&gt; WeightsImpl.IntMapped.newInstance(iw, eiMap));</span>
+<span class="fc" id="L183">		return (WeightsT) edgesWeights</span>
+<span class="fc" id="L184">				.computeIfAbsent(indexWeights, iw -&gt; WeightsImpl.IntMapped.newInstance(iw, eiMap));</span>
 	}
 
 	@Override

@@ -104,8 +104,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 		@Override
 		public String toString() {
-<span class="nc" id="L107">			return range(componentsNum()).mapToObj(this::componentVertices).map(Object::toString)</span>
-<span class="nc" id="L108">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
+<span class="nc" id="L107">			return range(componentsNum())</span>
+<span class="nc" id="L108">					.mapToObj(this::componentVertices)</span>
+<span class="nc" id="L109">					.map(Object::toString)</span>
+<span class="nc" id="L110">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
 		}
 	}
 
@@ -114,41 +116,43 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final IntGraph g;
 		private final KVertexConnectedComponentsAlgo.IResult indexRes;
 
-<span class="fc" id="L117">		IntResultFromIndexResult(IntGraph g, KVertexConnectedComponentsAlgo.IResult indexRes) {</span>
-<span class="fc" id="L118">			this.g = g;</span>
-<span class="fc" id="L119">			this.indexRes = indexRes;</span>
-<span class="fc" id="L120">		}</span>
+<span class="fc" id="L119">		IntResultFromIndexResult(IntGraph g, KVertexConnectedComponentsAlgo.IResult indexRes) {</span>
+<span class="fc" id="L120">			this.g = g;</span>
+<span class="fc" id="L121">			this.indexRes = indexRes;</span>
+<span class="fc" id="L122">		}</span>
 
 		@Override
 		public int componentsNum() {
-<span class="fc" id="L124">			return indexRes.componentsNum();</span>
+<span class="fc" id="L126">			return indexRes.componentsNum();</span>
 		}
 
 		@Override
 		public IntSet componentVertices(int compIndex) {
-<span class="fc" id="L129">			return IndexIdMaps.indexToIdSet(indexRes.componentVertices(compIndex), g.indexGraphVerticesMap());</span>
+<span class="fc" id="L131">			return IndexIdMaps.indexToIdSet(indexRes.componentVertices(compIndex), g.indexGraphVerticesMap());</span>
 		}
 
 		@Override
 		public IntGraph graph() {
-<span class="fc" id="L134">			return g;</span>
+<span class="fc" id="L136">			return g;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L139">			return range(componentsNum()).mapToObj(this::componentVertices).map(Object::toString)</span>
-<span class="nc" id="L140">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
+<span class="nc" id="L141">			return range(componentsNum())</span>
+<span class="nc" id="L142">					.mapToObj(this::componentVertices)</span>
+<span class="nc" id="L143">					.map(Object::toString)</span>
+<span class="nc" id="L144">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
 		}
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; KVertexConnectedComponentsAlgo.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
 			KVertexConnectedComponentsAlgo.IResult indexRes) {
-<span class="pc bnc" id="L147" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L149">			return (KVertexConnectedComponentsAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexRes);</span>
+<span class="pc bnc" id="L151" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L153">			return (KVertexConnectedComponentsAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexRes);</span>
 		} else {
-<span class="fc" id="L151">			return new ObjResultFromIndexResult&lt;&gt;(g, indexRes);</span>
+<span class="fc" id="L155">			return new ObjResultFromIndexResult&lt;&gt;(g, indexRes);</span>
 		}
 	}
 

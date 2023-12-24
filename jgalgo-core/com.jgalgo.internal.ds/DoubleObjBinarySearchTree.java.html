@@ -152,7 +152,8 @@ public interface DoubleObjBinarySearchTree &lt;V&gt; extends DoubleObjReferencea
 	 * After this operation, all elements keys in this tree will be smaller or equal to the given element's key, and the
 	 * returned new tree will contain elements with keys greater than the given element's key. If the tree contains
 	 * duplications of the given element's key, the elements keys in the returned tree will be greater or equal (rather
-	 * than strictly greater). To split a tree more precisely, use {@link #splitSmaller} or {@link #splitGreater}.
+	 * than strictly greater). To split a tree more precisely, use {@link #splitSmaller(double)} or
+	 * {@link #splitGreater(double)}.
 	 *
 	 * &lt;p&gt;
 	 * This method behavior is undefined if the reference is not valid, namely if it refer to an element already
@@ -173,7 +174,7 @@ public interface DoubleObjBinarySearchTree &lt;V&gt; extends DoubleObjReferencea
 	 * @return a default implementation of {@link DoubleObjBinarySearchTree}
 	 */
 	static &lt;V&gt; DoubleObjBinarySearchTree &lt;V&gt; newInstance() {
-<span class="fc" id="L176">		return newInstance(null);</span>
+<span class="fc" id="L177">		return newInstance(null);</span>
 	}
 
 	/**
@@ -186,7 +187,7 @@ public interface DoubleObjBinarySearchTree &lt;V&gt; extends DoubleObjReferencea
 	 * @return a default implementation of {@link DoubleObjBinarySearchTree}
 	 */
 	static &lt;V&gt; DoubleObjBinarySearchTree &lt;V&gt; newInstance(DoubleComparator  cmp) {
-<span class="fc" id="L189">		return new DoubleObjRedBlackTree &lt;&gt;(cmp);</span>
+<span class="fc" id="L190">		return new DoubleObjRedBlackTree &lt;&gt;(cmp);</span>
 	}
 
 }

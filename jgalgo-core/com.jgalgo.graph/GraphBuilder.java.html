@@ -521,8 +521,9 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 *                             original graph vertices/edges weights.
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newCopyOf(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L524">		return GraphFactory.&lt;V, E&gt;newInstance(g.isDirected()).newBuilderCopyOf(g, copyVerticesWeights,</span>
-				copyEdgesWeights);
+<span class="fc" id="L524">		return GraphFactory</span>
+<span class="fc" id="L525">				.&lt;V, E&gt;newInstance(g.isDirected())</span>
+<span class="fc" id="L526">				.newBuilderCopyOf(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 }

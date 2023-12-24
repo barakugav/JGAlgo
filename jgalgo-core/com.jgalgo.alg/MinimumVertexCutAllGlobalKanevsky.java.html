@@ -67,62 +67,63 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 <span class="fc" id="L67">		int[] vertices = g.vertices().toIntArray();</span>
 		/* Get (n-k)-th element in-place. After the computation the last k elements have the highest degrees */
 <span class="fc" id="L69">		IndexGraph g0 = g;</span>
-<span class="fc" id="L70">		ArraysUtils.getKthElement(vertices, 0, n, n - k,</span>
-<span class="fc" id="L71">				(v1, v2) -&gt; Integer.compare(g0.outEdges(v1).size(), g0.outEdges(v2).size()), true);</span>
-<span class="fc" id="L72">		IntSet kVertices = ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, IntIterators.wrap(vertices, n - k, k)));</span>
+<span class="fc" id="L70">		ArraysUtils</span>
+<span class="fc" id="L71">				.getKthElement(vertices, 0, n, n - k,</span>
+<span class="fc" id="L72">						(v1, v2) -&gt; Integer.compare(g0.outEdges(v1).size(), g0.outEdges(v2).size()), true);</span>
+<span class="fc" id="L73">		IntSet kVertices = ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, IntIterators.wrap(vertices, n - k, k)));</span>
 
 		/*
 		 * Unfortunately, we must check for duplicates cuts during the iteration. This require us to maintain a set of
 		 * cuts. If we already use space proportional to the number of cuts, its simpler to implement the algorithm as a
 		 * single run over all cuts instead of implementing the Iterator interface.
 		 */
-<span class="fc" id="L79">		Set&lt;IntSet&gt; cuts = new ObjectOpenHashSet&lt;&gt;();</span>
+<span class="fc" id="L80">		Set&lt;IntSet&gt; cuts = new ObjectOpenHashSet&lt;&gt;();</span>
 
-<span class="fc bfc" id="L81" title="All 2 branches covered.">		if (MinimumVertexCutGlobal.isCut(g0, kVertices)) {</span>
-<span class="fc" id="L82">			int[] cut = kVertices.toIntArray();</span>
-<span class="fc" id="L83">			cuts.add(ImmutableIntArraySet.withNaiveContains(cut));</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		if (MinimumVertexCutGlobal.isCut(g0, kVertices)) {</span>
+<span class="fc" id="L83">			int[] cut = kVertices.toIntArray();</span>
+<span class="fc" id="L84">			cuts.add(ImmutableIntArraySet.withNaiveContains(cut));</span>
 		}
 
-<span class="fc" id="L86">		AuxiliaryGraph auxGraph = new AuxiliaryGraph(g, null, true);</span>
-<span class="fc bfc" id="L87" title="All 2 branches covered.">		for (int x : kVertices) {</span>
-<span class="fc" id="L88">			Bitmap nonAdjacent = new Bitmap(n);</span>
-<span class="fc" id="L89">			nonAdjacent.setAll();</span>
-<span class="fc" id="L90">			nonAdjacent.clear(x);</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(x).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L92">				eit.nextInt();</span>
-<span class="fc" id="L93">				nonAdjacent.clear(eit.targetInt());</span>
+<span class="fc" id="L87">		AuxiliaryGraph auxGraph = new AuxiliaryGraph(g, null, true);</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">		for (int x : kVertices) {</span>
+<span class="fc" id="L89">			Bitmap nonAdjacent = new Bitmap(n);</span>
+<span class="fc" id="L90">			nonAdjacent.setAll();</span>
+<span class="fc" id="L91">			nonAdjacent.clear(x);</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(x).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L93">				eit.nextInt();</span>
+<span class="fc" id="L94">				nonAdjacent.clear(eit.targetInt());</span>
 			}
 
-<span class="fc bfc" id="L96" title="All 2 branches covered.">			for (int v : nonAdjacent) {</span>
-<span class="fc" id="L97">				int xAux = x * 2 + 1, vAux = v * 2 + 0;</span>
-<span class="fc" id="L98">				IFlow maxFlow = (IFlow) maxFlowAlgo.computeMaximumFlow(auxGraph.graph, null, Integer.valueOf(xAux),</span>
-<span class="fc" id="L99">						Integer.valueOf(vAux));</span>
-<span class="fc" id="L100">				int xvConnectivity = (int) maxFlow.getSupply(xAux);</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">				if (xvConnectivity == k) {</span>
-<span class="fc" id="L102">					Iterator&lt;IVertexBiPartition&gt; minEdgeCuts =</span>
-<span class="fc" id="L103">							minEdgeCutAllStAlgo.minimumCutsIter(auxGraph.graph, null, xAux, vAux, maxFlow);</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">			for (int v : nonAdjacent) {</span>
+<span class="fc" id="L98">				int xAux = x * 2 + 1, vAux = v * 2 + 0;</span>
+<span class="fc" id="L99">				IFlow maxFlow = (IFlow) maxFlowAlgo</span>
+<span class="fc" id="L100">						.computeMaximumFlow(auxGraph.graph, null, Integer.valueOf(xAux), Integer.valueOf(vAux));</span>
+<span class="fc" id="L101">				int xvConnectivity = (int) maxFlow.getSupply(xAux);</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">				if (xvConnectivity == k) {</span>
+<span class="fc" id="L103">					Iterator&lt;IVertexBiPartition&gt; minEdgeCuts =</span>
+<span class="fc" id="L104">							minEdgeCutAllStAlgo.minimumCutsIter(auxGraph.graph, null, xAux, vAux, maxFlow);</span>
 
-<span class="fc bfc" id="L105" title="All 2 branches covered.">					for (IVertexBiPartition minEdgeCut : IterTools.foreach(minEdgeCuts)) {</span>
-<span class="fc" id="L106">						int[] cut = minEdgeCut.crossEdges().toIntArray();</span>
-<span class="fc" id="L107">						auxGraph.edgeCutToVertexCut(cut);</span>
-<span class="fc" id="L108">						cuts.add(ImmutableIntArraySet.withNaiveContains(cut));</span>
-<span class="fc" id="L109">					}</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">					for (IVertexBiPartition minEdgeCut : IterTools.foreach(minEdgeCuts)) {</span>
+<span class="fc" id="L107">						int[] cut = minEdgeCut.crossEdges().toIntArray();</span>
+<span class="fc" id="L108">						auxGraph.edgeCutToVertexCut(cut);</span>
+<span class="fc" id="L109">						cuts.add(ImmutableIntArraySet.withNaiveContains(cut));</span>
+<span class="fc" id="L110">					}</span>
 
 					/* add edge (x,v) to g */
-<span class="fc" id="L112">					g.addEdge(x, v);</span>
-<span class="fc" id="L113">					auxGraph.graph.addEdge(x * 2 + 1, v * 2 + 0);</span>
+<span class="fc" id="L113">					g.addEdge(x, v);</span>
 <span class="fc" id="L114">					auxGraph.graph.addEdge(x * 2 + 1, v * 2 + 0);</span>
-<span class="fc" id="L115">					auxGraph.graph.addEdge(v * 2 + 1, x * 2 + 0);</span>
+<span class="fc" id="L115">					auxGraph.graph.addEdge(x * 2 + 1, v * 2 + 0);</span>
 <span class="fc" id="L116">					auxGraph.graph.addEdge(v * 2 + 1, x * 2 + 0);</span>
+<span class="fc" id="L117">					auxGraph.graph.addEdge(v * 2 + 1, x * 2 + 0);</span>
 				}
 
-<span class="fc" id="L119">			}</span>
-<span class="fc" id="L120">		}</span>
+<span class="fc" id="L120">			}</span>
+<span class="fc" id="L121">		}</span>
 
 		/* The queue iterator stores the cuts and use less and less memory as the elements are consumed */
-<span class="fc" id="L123">		Iterator&lt;IntSet&gt; cutsIter = JGAlgoUtils.queueIter(cuts);</span>
-<span class="fc" id="L124">		cuts.clear();</span>
-<span class="fc" id="L125">		return IterTools.map(cutsIter, cut -&gt; ImmutableIntArraySet.ofBitmap(cut, n));</span>
+<span class="fc" id="L124">		Iterator&lt;IntSet&gt; cutsIter = JGAlgoUtils.queueIter(cuts);</span>
+<span class="fc" id="L125">		cuts.clear();</span>
+<span class="fc" id="L126">		return IterTools.map(cutsIter, cut -&gt; ImmutableIntArraySet.ofBitmap(cut, n));</span>
 	}
 
 }

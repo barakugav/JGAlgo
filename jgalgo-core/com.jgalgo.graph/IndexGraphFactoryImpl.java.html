@@ -378,126 +378,143 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 	}
 
 	ImmutableImpl immutableImpl() {
-<span class="fc bfc" id="L381" title="All 2 branches covered.">		ImmutableImpl csrImpl = directed ? new ImmutableImpl() {</span>
-			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L384">				return new GraphCsrDirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
-			}
-
-			@Override
-			public IndexGraphBuilder.ReIndexedGraph newCopyOfWithReIndex(IndexGraph graph, boolean reIndexVertices,
-					boolean reIndexEdges, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="pc bpc" id="L390" title="1 of 2 branches missed.">				if (reIndexEdges) {</span>
-<span class="fc" id="L391">					return GraphCsrDirectedReindexed.newInstance(graph, copyVerticesWeights, copyEdgesWeights);</span>
-				} else {
-<span class="nc" id="L393">					return new ReIndexedGraphImpl(newCopyOf(graph, copyVerticesWeights, copyEdgesWeights),</span>
-<span class="nc" id="L394">							Optional.empty(), Optional.empty());</span>
+<span class="fc" id="L381">		Boolean2ObjectFunction&lt;ImmutableImpl&gt; csrImplFactory = fastLookup -&gt; {</span>
+<span class="fc bfc" id="L382" title="All 2 branches covered.">			return directed ? new ImmutableImpl() {</span>
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc bfc" id="L385" title="All 2 branches covered.">					if (graph instanceof GraphCsrDirectedReindexed) {</span>
+<span class="fc" id="L386">						IndexGraphBuilder.ReIndexedGraph reIndexedGraph = GraphCsrDirectedReindexed</span>
+<span class="fc" id="L387">								.newInstance(graph, copyVerticesWeights, copyEdgesWeights, fastLookup);</span>
+<span class="pc bnc" id="L388" title="All 2 branches missed.">						assert reIndexedGraph.verticesReIndexing().isEmpty()</span>
+<span class="nc bnc" id="L389" title="All 2 branches missed.">								&amp;&amp; reIndexedGraph.edgesReIndexing().isEmpty();</span>
+<span class="fc" id="L390">						return reIndexedGraph.graph();</span>
+					} else {
+<span class="fc" id="L392">						return new GraphCsrDirected(graph, copyVerticesWeights, copyEdgesWeights, fastLookup);</span>
+					}
 				}
-			}
 
-			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-<span class="fc" id="L400">				GraphCsrBase.BuilderProcessEdgesDirected processEdges =</span>
-<span class="fc" id="L401">						GraphCsrBase.BuilderProcessEdgesDirected.valueOf(builder);</span>
-<span class="fc" id="L402">				return new GraphCsrDirected(builder, processEdges);</span>
-			}
-
-			@Override
-			public ReIndexedGraph newFromBuilderWithReIndex(IndexGraphBuilderImpl builder, boolean reIndexVertices,
-					boolean reIndexEdges) {
-<span class="fc bfc" id="L408" title="All 2 branches covered.">				if (reIndexEdges) {</span>
-<span class="fc" id="L409">					return GraphCsrDirectedReindexed.newInstance(builder);</span>
-				} else {
-<span class="fc" id="L411">					return new ReIndexedGraphImpl(newFromBuilder(builder), Optional.empty(), Optional.empty());</span>
+				@Override
+				public IndexGraphBuilder.ReIndexedGraph newCopyOfWithReIndex(IndexGraph graph, boolean reIndexVertices,
+						boolean reIndexEdges, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="pc bpc" id="L399" title="1 of 2 branches missed.">					if (reIndexEdges) {</span>
+<span class="fc" id="L400">						return GraphCsrDirectedReindexed</span>
+<span class="fc" id="L401">								.newInstance(graph, copyVerticesWeights, copyEdgesWeights, fastLookup);</span>
+					} else {
+<span class="nc" id="L403">						return new ReIndexedGraphImpl(newCopyOf(graph, copyVerticesWeights, copyEdgesWeights),</span>
+<span class="nc" id="L404">								Optional.empty(), Optional.empty());</span>
+					}
 				}
-			}
-<span class="fc" id="L414">		} : new ImmutableImpl() {</span>
-			@Override
-			public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L417">				return new GraphCsrUndirected(graph, copyVerticesWeights, copyEdgesWeights);</span>
-			}
 
-			@Override
-			public IndexGraphBuilder.ReIndexedGraph newCopyOfWithReIndex(IndexGraph graph, boolean reIndexVertices,
-					boolean reIndexEdges, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-				/* no re-indexing for undirected graph */
-<span class="fc" id="L424">				return new ReIndexedGraphImpl(newCopyOf(graph, copyVerticesWeights, copyEdgesWeights), Optional.empty(),</span>
-<span class="fc" id="L425">						Optional.empty());</span>
-			}
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+<span class="fc" id="L410">					GraphCsrBase.BuilderProcessEdgesDirected processEdges =</span>
+<span class="fc" id="L411">							GraphCsrBase.BuilderProcessEdgesDirected.valueOf(builder);</span>
+<span class="fc" id="L412">					return new GraphCsrDirected(builder, processEdges, fastLookup);</span>
+				}
 
-			@Override
-			public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
-<span class="fc" id="L430">				GraphCsrBase.BuilderProcessEdgesUndirected processEdges =</span>
-<span class="fc" id="L431">						GraphCsrBase.BuilderProcessEdgesUndirected.valueOf(builder);</span>
-<span class="fc" id="L432">				return new GraphCsrUndirected(builder, processEdges);</span>
-			}
+				@Override
+				public ReIndexedGraph newFromBuilderWithReIndex(IndexGraphBuilderImpl builder, boolean reIndexVertices,
+						boolean reIndexEdges) {
+<span class="fc bfc" id="L418" title="All 2 branches covered.">					if (reIndexEdges) {</span>
+<span class="fc" id="L419">						return GraphCsrDirectedReindexed.newInstance(builder, fastLookup);</span>
+					} else {
+<span class="fc" id="L421">						return new ReIndexedGraphImpl(newFromBuilder(builder), Optional.empty(), Optional.empty());</span>
+					}
+				}
+<span class="fc" id="L424">			} : new ImmutableImpl() {</span>
+				@Override
+				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+<span class="fc" id="L427">					return new GraphCsrUndirected(graph, copyVerticesWeights, copyEdgesWeights, fastLookup);</span>
+				}
 
-			@Override
-			public ReIndexedGraph newFromBuilderWithReIndex(IndexGraphBuilderImpl builder, boolean reIndexVertices,
-					boolean reIndexEdges) {
-				/* no re-indexing for undirected graph */
-<span class="fc" id="L439">				return new ReIndexedGraphImpl(newFromBuilder(builder), Optional.empty(), Optional.empty());</span>
-			}
+				@Override
+				public IndexGraphBuilder.ReIndexedGraph newCopyOfWithReIndex(IndexGraph graph, boolean reIndexVertices,
+						boolean reIndexEdges, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+					/* no re-indexing for undirected graph */
+<span class="fc" id="L434">					return new ReIndexedGraphImpl(newCopyOf(graph, copyVerticesWeights, copyEdgesWeights),</span>
+<span class="fc" id="L435">							Optional.empty(), Optional.empty());</span>
+				}
+
+				@Override
+				public IndexGraph newFromBuilder(IndexGraphBuilderImpl builder) {
+<span class="fc" id="L440">					GraphCsrBase.BuilderProcessEdgesUndirected processEdges =</span>
+<span class="fc" id="L441">							GraphCsrBase.BuilderProcessEdgesUndirected.valueOf(builder);</span>
+<span class="fc" id="L442">					return new GraphCsrUndirected(builder, processEdges, fastLookup);</span>
+				}
+
+				@Override
+				public ReIndexedGraph newFromBuilderWithReIndex(IndexGraphBuilderImpl builder, boolean reIndexVertices,
+						boolean reIndexEdges) {
+					/* no re-indexing for undirected graph */
+<span class="fc" id="L449">					return new ReIndexedGraphImpl(newFromBuilder(builder), Optional.empty(), Optional.empty());</span>
+				}
+			};
 		};
-<span class="fc" id="L442">		return csrImpl;</span>
+<span class="fc" id="L453">		ImmutableImpl csrImpl = csrImplFactory.get(false);</span>
+<span class="fc" id="L454">		ImmutableImpl csrImplWithFastLookup = csrImplFactory.get(true);</span>
+<span class="fc bfc" id="L455" title="All 2 branches covered.">		if (hints.contains(GraphFactory.Hint.FastEdgeLookup)) {</span>
+<span class="fc" id="L456">			return csrImplWithFastLookup;</span>
+		} else {
+<span class="fc" id="L458">			return csrImpl;</span>
+		}
 	}
 
 	@Override
 	public IndexGraphFactory setDirected(boolean directed) {
-<span class="fc" id="L447">		this.directed = directed;</span>
-<span class="fc" id="L448">		return this;</span>
+<span class="fc" id="L464">		this.directed = directed;</span>
+<span class="fc" id="L465">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory allowSelfEdges(boolean selfEdges) {
-<span class="fc" id="L453">		this.selfEdges = selfEdges;</span>
-<span class="fc" id="L454">		return this;</span>
+<span class="fc" id="L470">		this.selfEdges = selfEdges;</span>
+<span class="fc" id="L471">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory allowParallelEdges(boolean parallelEdges) {
-<span class="fc" id="L459">		this.parallelEdges = parallelEdges;</span>
-<span class="fc" id="L460">		return this;</span>
+<span class="fc" id="L476">		this.parallelEdges = parallelEdges;</span>
+<span class="fc" id="L477">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory expectedVerticesNum(int expectedVerticesNum) {
-<span class="fc bfc" id="L465" title="All 2 branches covered.">		if (expectedVerticesNum &lt; 0)</span>
-<span class="fc" id="L466">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedVerticesNum);</span>
-<span class="fc" id="L467">		this.expectedVerticesNum = expectedVerticesNum;</span>
-<span class="fc" id="L468">		return this;</span>
+<span class="fc bfc" id="L482" title="All 2 branches covered.">		if (expectedVerticesNum &lt; 0)</span>
+<span class="fc" id="L483">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedVerticesNum);</span>
+<span class="fc" id="L484">		this.expectedVerticesNum = expectedVerticesNum;</span>
+<span class="fc" id="L485">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory expectedEdgesNum(int expectedEdgesNum) {
-<span class="fc bfc" id="L473" title="All 2 branches covered.">		if (expectedEdgesNum &lt; 0)</span>
-<span class="fc" id="L474">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedEdgesNum);</span>
-<span class="fc" id="L475">		this.expectedEdgesNum = expectedEdgesNum;</span>
-<span class="fc" id="L476">		return this;</span>
+<span class="fc bfc" id="L490" title="All 2 branches covered.">		if (expectedEdgesNum &lt; 0)</span>
+<span class="fc" id="L491">			throw new IllegalArgumentException(&quot;invalid expected size: &quot; + expectedEdgesNum);</span>
+<span class="fc" id="L492">		this.expectedEdgesNum = expectedEdgesNum;</span>
+<span class="fc" id="L493">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory addHint(GraphFactory.Hint hint) {
-<span class="fc" id="L481">		hints.add(hint);</span>
-<span class="fc" id="L482">		return this;</span>
+<span class="fc" id="L498">		hints.add(hint);</span>
+<span class="fc" id="L499">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory removeHint(GraphFactory.Hint hint) {
-<span class="fc" id="L487">		hints.remove(hint);</span>
-<span class="fc" id="L488">		return this;</span>
+<span class="fc" id="L504">		hints.remove(hint);</span>
+<span class="fc" id="L505">		return this;</span>
 	}
 
 	@Override
 	public IndexGraphFactory setOption(String key, Object value) {
-<span class="pc bpc" id="L493" title="1 of 2 branches missed.">		switch (key) {</span>
+<span class="pc bpc" id="L510" title="1 of 2 branches missed.">		switch (key) {</span>
 			case &quot;impl&quot;:
-<span class="fc" id="L495">				impl = (String) value;</span>
-<span class="fc" id="L496">				break;</span>
+<span class="fc" id="L512">				impl = (String) value;</span>
+<span class="fc" id="L513">				break;</span>
 			default:
-<span class="nc" id="L498">				IndexGraphFactory.super.setOption(key, value);</span>
+<span class="nc" id="L515">				IndexGraphFactory.super.setOption(key, value);</span>
 		}
-<span class="fc" id="L500">		return this;</span>
+<span class="fc" id="L517">		return this;</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

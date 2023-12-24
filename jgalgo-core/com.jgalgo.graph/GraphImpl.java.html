@@ -365,8 +365,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L365">		WeightsImpl.Index&lt;T&gt; indexWeights = indexGraph.getVerticesWeights(key);</span>
 <span class="fc bfc" id="L366" title="All 2 branches covered.">		if (indexWeights == null)</span>
 <span class="fc" id="L367">			return null;</span>
-<span class="fc" id="L368">		return (WeightsT) verticesWeights.computeIfAbsent(indexWeights,</span>
-<span class="fc" id="L369">				iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, indexGraphVerticesMap()));</span>
+<span class="fc" id="L368">		return (WeightsT) verticesWeights</span>
+<span class="fc" id="L369">				.computeIfAbsent(indexWeights, iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, indexGraphVerticesMap()));</span>
 	}
 
 	@Override
@@ -385,8 +385,8 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc" id="L385">		WeightsImpl.Index&lt;T&gt; indexWeights = indexGraph.getEdgesWeights(key);</span>
 <span class="fc bfc" id="L386" title="All 2 branches covered.">		if (indexWeights == null)</span>
 <span class="fc" id="L387">			return null;</span>
-<span class="fc" id="L388">		return (WeightsT) edgesWeights.computeIfAbsent(indexWeights,</span>
-<span class="fc" id="L389">				iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, indexGraphEdgesMap()));</span>
+<span class="fc" id="L388">		return (WeightsT) edgesWeights</span>
+<span class="fc" id="L389">				.computeIfAbsent(indexWeights, iw -&gt; WeightsImpl.ObjMapped.newInstance(iw, indexGraphEdgesMap()));</span>
 	}
 
 	@Override

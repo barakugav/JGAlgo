@@ -1064,71 +1064,73 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 <span class="fc" id="L1064">			throw new UnsupportedOperationException(&quot;not supported by &quot; + GuavaNetworkWrapper.class.getSimpleName());</span>
 		}
 
+		@Deprecated
 		@Override
 		public IndexIntIdMap indexGraphVerticesMap() {
-<span class="fc" id="L1069">			return verticesIdentityIndexMap;</span>
+<span class="fc" id="L1070">			return verticesIdentityIndexMap;</span>
 		}
 
+		@Deprecated
 		@Override
 		public IndexIntIdMap indexGraphEdgesMap() {
-<span class="fc" id="L1074">			return edgesIdentityIndexMap;</span>
+<span class="fc" id="L1076">			return edgesIdentityIndexMap;</span>
 		}
 
 		private abstract class EdgeSetBase extends AbstractIntSet implements IEdgeSet {
 
 			private final Set&lt;E&gt; edges;
 
-<span class="fc" id="L1081">			public EdgeSetBase(Set&lt;E&gt; edges) {</span>
-<span class="fc" id="L1082">				this.edges = Objects.requireNonNull(edges);</span>
-<span class="fc" id="L1083">			}</span>
+<span class="fc" id="L1083">			public EdgeSetBase(Set&lt;E&gt; edges) {</span>
+<span class="fc" id="L1084">				this.edges = Objects.requireNonNull(edges);</span>
+<span class="fc" id="L1085">			}</span>
 
 			@Override
 			public int size() {
-<span class="fc" id="L1087">				return edges.size();</span>
+<span class="fc" id="L1089">				return edges.size();</span>
 			}
 
 			@Override
 			public boolean contains(int edge) {
-<span class="fc" id="L1092">				return edges.contains(eiMap.indexToIdIfExist(edge));</span>
+<span class="fc" id="L1094">				return edges.contains(eiMap.indexToIdIfExist(edge));</span>
 			}
 
-<span class="fc" id="L1095">			abstract class IterBase implements IEdgeIter {</span>
+<span class="fc" id="L1097">			abstract class IterBase implements IEdgeIter {</span>
 
-<span class="fc" id="L1097">				Iterator&lt;E&gt; it = edges.iterator();</span>
+<span class="fc" id="L1099">				Iterator&lt;E&gt; it = edges.iterator();</span>
 				E nextEdge;
 				E lastEdge;
 
 				{
-<span class="fc" id="L1102">					advance();</span>
-<span class="fc" id="L1103">				}</span>
+<span class="fc" id="L1104">					advance();</span>
+<span class="fc" id="L1105">				}</span>
 
 				private void advance() {
-<span class="fc bfc" id="L1106" title="All 2 branches covered.">					if (it.hasNext()) {</span>
-<span class="fc" id="L1107">						nextEdge = it.next();</span>
+<span class="fc bfc" id="L1108" title="All 2 branches covered.">					if (it.hasNext()) {</span>
+<span class="fc" id="L1109">						nextEdge = it.next();</span>
 					} else {
-<span class="fc" id="L1109">						nextEdge = null;</span>
+<span class="fc" id="L1111">						nextEdge = null;</span>
 					}
-<span class="fc" id="L1111">				}</span>
+<span class="fc" id="L1113">				}</span>
 
 				@Override
 				public boolean hasNext() {
-<span class="fc bfc" id="L1115" title="All 2 branches covered.">					return nextEdge != null;</span>
+<span class="fc bfc" id="L1117" title="All 2 branches covered.">					return nextEdge != null;</span>
 				}
 
 				@Override
 				public int nextInt() {
-<span class="fc bfc" id="L1120" title="All 2 branches covered.">					if (!hasNext())</span>
-<span class="fc" id="L1121">						throw new NoSuchElementException();</span>
-<span class="fc" id="L1122">					lastEdge = nextEdge;</span>
-<span class="fc" id="L1123">					advance();</span>
-<span class="fc" id="L1124">					return eiMap.idToIndex(lastEdge);</span>
+<span class="fc bfc" id="L1122" title="All 2 branches covered.">					if (!hasNext())</span>
+<span class="fc" id="L1123">						throw new NoSuchElementException();</span>
+<span class="fc" id="L1124">					lastEdge = nextEdge;</span>
+<span class="fc" id="L1125">					advance();</span>
+<span class="fc" id="L1126">					return eiMap.idToIndex(lastEdge);</span>
 				}
 
 				@Override
 				public int peekNextInt() {
-<span class="fc bfc" id="L1129" title="All 2 branches covered.">					if (!hasNext())</span>
-<span class="fc" id="L1130">						throw new NoSuchElementException();</span>
-<span class="fc" id="L1131">					return eiMap.idToIndex(nextEdge);</span>
+<span class="fc bfc" id="L1131" title="All 2 branches covered.">					if (!hasNext())</span>
+<span class="fc" id="L1132">						throw new NoSuchElementException();</span>
+<span class="fc" id="L1133">					return eiMap.idToIndex(nextEdge);</span>
 				}
 
 			}
@@ -1140,29 +1142,29 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 			private final V source;
 			private final int sourceIdx;
 
-<span class="fc" id="L1143">			public OutEdges(V source, int sourceIdx, Set&lt;E&gt; edges) {</span>
-<span class="fc" id="L1144">				super(edges);</span>
-<span class="fc" id="L1145">				this.source = source;</span>
-<span class="fc" id="L1146">				this.sourceIdx = sourceIdx;</span>
-<span class="fc" id="L1147">			}</span>
+<span class="fc" id="L1145">			public OutEdges(V source, int sourceIdx, Set&lt;E&gt; edges) {</span>
+<span class="fc" id="L1146">				super(edges);</span>
+<span class="fc" id="L1147">				this.source = source;</span>
+<span class="fc" id="L1148">				this.sourceIdx = sourceIdx;</span>
+<span class="fc" id="L1149">			}</span>
 
 			@Override
 			public IEdgeIter iterator() {
-<span class="fc" id="L1151">				return new IterBase() {</span>
+<span class="fc" id="L1153">				return new IterBase() {</span>
 
 					@Override
 					public int sourceInt() {
-<span class="fc bfc" id="L1155" title="All 2 branches covered.">						if (lastEdge == null)</span>
-<span class="fc" id="L1156">							throw new IllegalStateException();</span>
-<span class="fc" id="L1157">						return sourceIdx;</span>
+<span class="fc bfc" id="L1157" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1158">							throw new IllegalStateException();</span>
+<span class="fc" id="L1159">						return sourceIdx;</span>
 					}
 
 					@Override
 					public int targetInt() {
-<span class="fc bfc" id="L1162" title="All 2 branches covered.">						if (lastEdge == null)</span>
-<span class="fc" id="L1163">							throw new IllegalStateException();</span>
-<span class="fc" id="L1164">						V target = network.incidentNodes(lastEdge).adjacentNode(source);</span>
-<span class="fc" id="L1165">						return viMap.idToIndex(target);</span>
+<span class="fc bfc" id="L1164" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1165">							throw new IllegalStateException();</span>
+<span class="fc" id="L1166">						V target = network.incidentNodes(lastEdge).adjacentNode(source);</span>
+<span class="fc" id="L1167">						return viMap.idToIndex(target);</span>
 					}
 				};
 			}
@@ -1173,29 +1175,29 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 			private final V target;
 			private final int targetIdx;
 
-<span class="fc" id="L1176">			public InEdges(V target, int targetIdx, Set&lt;E&gt; edges) {</span>
-<span class="fc" id="L1177">				super(edges);</span>
-<span class="fc" id="L1178">				this.target = target;</span>
-<span class="fc" id="L1179">				this.targetIdx = targetIdx;</span>
-<span class="fc" id="L1180">			}</span>
+<span class="fc" id="L1178">			public InEdges(V target, int targetIdx, Set&lt;E&gt; edges) {</span>
+<span class="fc" id="L1179">				super(edges);</span>
+<span class="fc" id="L1180">				this.target = target;</span>
+<span class="fc" id="L1181">				this.targetIdx = targetIdx;</span>
+<span class="fc" id="L1182">			}</span>
 
 			@Override
 			public IEdgeIter iterator() {
-<span class="fc" id="L1184">				return new IterBase() {</span>
+<span class="fc" id="L1186">				return new IterBase() {</span>
 
 					@Override
 					public int sourceInt() {
-<span class="fc bfc" id="L1188" title="All 2 branches covered.">						if (lastEdge == null)</span>
-<span class="fc" id="L1189">							throw new IllegalStateException();</span>
-<span class="fc" id="L1190">						V source = network.incidentNodes(lastEdge).adjacentNode(target);</span>
-<span class="fc" id="L1191">						return viMap.idToIndex(source);</span>
+<span class="fc bfc" id="L1190" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1191">							throw new IllegalStateException();</span>
+<span class="fc" id="L1192">						V source = network.incidentNodes(lastEdge).adjacentNode(target);</span>
+<span class="fc" id="L1193">						return viMap.idToIndex(source);</span>
 					}
 
 					@Override
 					public int targetInt() {
-<span class="fc bfc" id="L1196" title="All 2 branches covered.">						if (lastEdge == null)</span>
-<span class="fc" id="L1197">							throw new IllegalStateException();</span>
-<span class="fc" id="L1198">						return targetIdx;</span>
+<span class="fc bfc" id="L1198" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1199">							throw new IllegalStateException();</span>
+<span class="fc" id="L1200">						return targetIdx;</span>
 					}
 				};
 			}
@@ -1206,28 +1208,28 @@ import it.unimi.dsi.fastutil.objects.ObjectList;
 			private final int sourceIdx;
 			private final int targetIdx;
 
-<span class="fc" id="L1209">			public SourceTargetEdgeSet(int sourceIdx, int targetIdx, Set&lt;E&gt; edges) {</span>
-<span class="fc" id="L1210">				super(edges);</span>
-<span class="fc" id="L1211">				this.sourceIdx = sourceIdx;</span>
-<span class="fc" id="L1212">				this.targetIdx = targetIdx;</span>
-<span class="fc" id="L1213">			}</span>
+<span class="fc" id="L1211">			public SourceTargetEdgeSet(int sourceIdx, int targetIdx, Set&lt;E&gt; edges) {</span>
+<span class="fc" id="L1212">				super(edges);</span>
+<span class="fc" id="L1213">				this.sourceIdx = sourceIdx;</span>
+<span class="fc" id="L1214">				this.targetIdx = targetIdx;</span>
+<span class="fc" id="L1215">			}</span>
 
 			@Override
 			public IEdgeIter iterator() {
-<span class="fc" id="L1217">				return new IterBase() {</span>
+<span class="fc" id="L1219">				return new IterBase() {</span>
 
 					@Override
 					public int sourceInt() {
-<span class="fc bfc" id="L1221" title="All 2 branches covered.">						if (lastEdge == null)</span>
-<span class="fc" id="L1222">							throw new IllegalStateException();</span>
-<span class="fc" id="L1223">						return sourceIdx;</span>
+<span class="fc bfc" id="L1223" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1224">							throw new IllegalStateException();</span>
+<span class="fc" id="L1225">						return sourceIdx;</span>
 					}
 
 					@Override
 					public int targetInt() {
-<span class="fc bfc" id="L1228" title="All 2 branches covered.">						if (lastEdge == null)</span>
-<span class="fc" id="L1229">							throw new IllegalStateException();</span>
-<span class="fc" id="L1230">						return targetIdx;</span>
+<span class="fc bfc" id="L1230" title="All 2 branches covered.">						if (lastEdge == null)</span>
+<span class="fc" id="L1231">							throw new IllegalStateException();</span>
+<span class="fc" id="L1232">						return targetIdx;</span>
 					}
 				};
 			}
