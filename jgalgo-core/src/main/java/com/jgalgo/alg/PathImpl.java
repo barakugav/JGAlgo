@@ -88,7 +88,8 @@ class PathImpl implements IPath {
 	public IntList vertices() {
 		if (vertices == null) {
 			if (edges.isEmpty()) {
-				vertices = IntLists.emptyList();
+				assert isCycle();
+				vertices = IntList.of(source);
 			} else {
 				int[] res = new int[edges().size() + (isCycle() ? 0 : 1)];
 				int resIdx = 0;
@@ -114,12 +115,8 @@ class PathImpl implements IPath {
 		if (!isSimpleValid) {
 			final int n = g.vertices().size();
 			IntList vs;
-			if (edges().isEmpty()) {
-				assert source == target;
-				isSimple = true; /* a single vertex */
-
-			} else if (source == target) {
-				isSimple = false; /* a cycle */
+			if (source == target) {
+				isSimple = edges().isEmpty(); /* a cycle or isolated vertex */
 
 			} else if ((vs = vertices()).size() > n) {
 				isSimple = false; /* path with length greater than the vertices num */
@@ -139,11 +136,10 @@ class PathImpl implements IPath {
 				IntSet visited = new IntOpenHashSet();
 				isSimple = true;
 				for (int v : vs) {
-					if (visited.contains(v)) {
+					if (!visited.add(v)) {
 						isSimple = false;
 						break;
 					}
-					visited.add(v);
 				}
 
 			}
@@ -173,7 +169,6 @@ class PathImpl implements IPath {
 		@Override
 		public int nextInt() {
 			e = it.nextInt();
-			assert v == g.edgeSource(e) || v == g.edgeTarget(e);
 			v = g.edgeEndpoint(e, v);
 			return e;
 		}
