@@ -32,4 +32,9 @@ public class KShortestPathsSTYenTest extends TestBase {
 		KShortestPathsSTTestUtils.randGraphs(new KShortestPathsSTYen(), true, seed);
 	}
 
+	@Test
+	public void invalidArgsTest() {
+		KShortestPathsSTTestUtils.invalidArgsTest(new KShortestPathsSTYen());
+	}
+
 }

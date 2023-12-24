@@ -15,7 +15,9 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Iterator;
 import java.util.List;
@@ -28,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.TestBase;
@@ -88,6 +91,24 @@ class KShortestPathsSTTestUtils extends TestBase {
 			for (int i = 0; i < pathsExpected.size(); i++)
 				assertEquals(w.weightSum(pathsExpected.get(i).edges()), w.weightSum(pathsActual.get(i).edges()));
 		}
+	}
+
+	@SuppressWarnings("boxing")
+	static void invalidArgsTest(KShortestPathsST algo) {
+		foreachBoolConfig((intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g0 = intGraph ? IntGraph.newDirected() : Graph.newDirected();
+			Graph<Integer, Integer> g = indexGraph ? g0.indexGraph() : g0;
+			g.addVertices(range(10));
+			g.addEdge(0, 1, 0);
+			/* invalid source/target */
+			assertThrows(IllegalArgumentException.class, () -> algo.computeKShortestPaths(g, null, 0, 100, 1));
+			assertThrows(IllegalArgumentException.class, () -> algo.computeKShortestPaths(g, null, 100, 1, 1));
+			/* invalid k */
+			assertThrows(IllegalArgumentException.class, () -> algo.computeKShortestPaths(g, null, 0, 1, -5));
+			assertThrows(IllegalArgumentException.class, () -> algo.computeKShortestPaths(g, null, 0, 1, 0));
+			/* negative weights */
+			assertThrows(IllegalArgumentException.class, () -> algo.computeKShortestPaths(g, e -> -1, 0, 1, 1));
+		});
 	}
 
 	@Test

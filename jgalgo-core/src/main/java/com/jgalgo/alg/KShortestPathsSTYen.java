@@ -15,14 +15,15 @@
  */
 package com.jgalgo.alg;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.DoubleIntReferenceableHeap;
+import com.jgalgo.internal.ds.DoubleObjBinarySearchTree;
 import com.jgalgo.internal.ds.DoubleObjReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
@@ -30,9 +31,10 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 import it.unimi.dsi.fastutil.objects.ObjectIntPair;
-import it.unimi.dsi.fastutil.objects.ObjectIterables;
+import it.unimi.dsi.fastutil.objects.ObjectList;
 import it.unimi.dsi.fastutil.objects.ObjectLists;
 
 /**
@@ -53,68 +55,127 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 
 	@Override
 	List<IPath> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
-		if (source == target)
-			return List.of(new PathImpl(g, source, target, IntList.of()));
+		if (!g.vertices().contains(source) || !g.vertices().contains(target))
+			throw new IllegalArgumentException("source or target not in graph");
+		if (k < 1)
+			throw new IllegalArgumentException("k must be positive");
 		if (w == null)
 			w = IWeightFunction.CardinalityWeightFunction;
+		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);
+		if (source == target)
+			return ObjectList.of(new PathImpl(g, source, target, IntList.of()));
+
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
-		DoubleObjReferenceableHeap<ObjectIntPair<IPath>> heap = DoubleObjReferenceableHeap.newInstance();
+		final DoubleObjBinarySearchTree<ObjectIntPair<IntList>> heap = DoubleObjBinarySearchTree.newInstance();
+		int heapSize = 0;
+
 		Bitmap verticesMask = new Bitmap(n);
 		Bitmap edgesMask = new Bitmap(m);
+		IntList maskedVertices = new IntArrayList(k <= n ? k : 16);
+		IntList maskedEdges = new IntArrayList(k <= m ? k : 16);
 		ShortestPathSubroutine spFunc = new ShortestPathSubroutine(g, w, target, verticesMask, edgesMask);
 
 		/* compute the shortest path from source to target */
-		ObjectDoublePair<IPath> shortestPath = spFunc.computeShortestPath(source);
+		ObjectDoublePair<IntList> shortestPath = spFunc.computeShortestPath(source);
 		if (shortestPath == null)
 			return ObjectLists.emptyList();
 		heap.insert(shortestPath.secondDouble(), ObjectIntPair.of(shortestPath.first(), 0));
+		heapSize++;
 
-		List<IPath> paths = k <= m ? new ArrayList<>(k) : new ArrayList<>();
+		List<IntList> paths = new ObjectArrayList<>(k <= m ? k : 16);
+		List<IntList> relevantPaths = new ObjectArrayList<>();
 		while (heap.isNotEmpty()) {
-			DoubleObjReferenceableHeap.Ref<ObjectIntPair<IPath>> min = heap.extractMin();
-			IPath kthPath = min.value().first();
+			DoubleObjReferenceableHeap.Ref<ObjectIntPair<IntList>> min = heap.extractMin();
+			heapSize--;
+			IntList kthPath = min.value().first();
 			final int kthPathDeviationIdx = min.value().secondInt();
-			assert kthPath.isSimple();
 			paths.add(kthPath);
 			if (paths.size() == k)
 				break;
 
-			IntList kthPathEdges = kthPath.edges();
-			IntList kthPathVertices = kthPath.vertices();
+			IntList kthPathVertices = new PathImpl(g, source, target, kthPath).vertices();
 			assert kthPathVertices.getInt(kthPathVertices.size() - 1) == target;
-			for (int deviationIdx = kthPathDeviationIdx; deviationIdx < kthPathVertices.size() - 1; deviationIdx++) {
-				int spurNode = kthPathVertices.getInt(deviationIdx);
-				IntList rootPath = kthPathEdges.subList(0, deviationIdx);
+			assert relevantPaths.isEmpty();
+			if (kthPathDeviationIdx < 1) {
+				relevantPaths.addAll(paths);
+			} else {
+
+				/* remove vertices that are part of the root path to enforce simple paths */
+				for (int v : kthPathVertices.subList(0, kthPathDeviationIdx - 1)) {
+					assert !verticesMask.get(v);
+					verticesMask.set(v);
+					maskedVertices.add(v);
+				}
 
 				/* remove edges that are part of the previous shortest paths */
-				for (IPath p1 : paths) {
-					IntList p1Edges = p1.edges();
-					if (p1Edges.size() > rootPath.size() && p1Edges.subList(0, deviationIdx).equals(rootPath))
-						edgesMask.set(p1Edges.getInt(deviationIdx));
-				}
+				IntList baseRootPath = kthPath.subList(0, kthPathDeviationIdx - 1);
+				paths
+						.stream()
+						.filter(path -> path.size() > baseRootPath.size()
+								&& path.subList(0, kthPathDeviationIdx - 1).equals(baseRootPath))
+						.forEach(relevantPaths::add);
+			}
+
+			for (int deviationIdx = kthPathDeviationIdx; deviationIdx < kthPathVertices.size() - 1; deviationIdx++) {
+				final int spurNode = kthPathVertices.getInt(deviationIdx);
+				final int lastEdge = deviationIdx == 0 ? -1 : kthPath.getInt(deviationIdx - 1);
+				IntList rootPath = kthPath.subList(0, deviationIdx);
+
+				/* remove edges that are part of the previous shortest paths */
+				/* relevant paths contains all the paths that are equal up to deviationIdx-1 */
+				final int finalDeviationIdx = deviationIdx;
+				relevantPaths.removeIf(path -> {
+					if (path.size() <= rootPath.size())
+						return true;
+					int lastEdge0 = finalDeviationIdx == 0 ? -1 : path.getInt(finalDeviationIdx - 1);
+					boolean commonSubPath = lastEdge0 == lastEdge;
+					if (commonSubPath) {
+						int e = path.getInt(finalDeviationIdx);
+						if (!edgesMask.get(e)) {
+							edgesMask.set(e);
+							maskedEdges.add(e);
+						}
+					}
+					return !commonSubPath;
+				});
+
 				/* remove vertices that are part of the root path to enforce simple paths */
-				for (int v : kthPathVertices.subList(0, deviationIdx))
+				/* up to deviationIdx-1 already masked, mask prev vertex only */
+				if (deviationIdx > 0) {
+					int v = kthPathVertices.getInt(deviationIdx - 1);
+					assert !verticesMask.get(v);
 					verticesMask.set(v);
+					maskedVertices.add(v);
+				}
 
 				shortestPath = spFunc.computeShortestPath(spurNode);
 				if (shortestPath != null) {
-					IntList path = new IntArrayList(rootPath.size() + shortestPath.first().edges().size());
+					IntList path = new IntArrayList(rootPath.size() + shortestPath.first().size());
 					path.addAll(rootPath);
-					path.addAll(shortestPath.first().edges());
-					heap
-							.insert(w.weightSum(path),
-									ObjectIntPair.of(new PathImpl(g, source, target, path), deviationIdx));
+					path.addAll(shortestPath.first());
+					heap.insert(w.weightSum(path), ObjectIntPair.of(path, deviationIdx));
+					heapSize++;
 
-					assert heap.stream().map(r -> r.value().left().edges()).distinct().count() == ObjectIterables
-							.size(heap) : "heap contains duplicate paths";
+					// assert heap.stream().map(r -> r.value().left().edges()).distinct().count()
+					// == heapSize : "heap contains duplicate paths";
+
+					/* no need to keep more than k-#{already found} best paths in heap */
+					for (; heapSize > k - paths.size(); heapSize--)
+						heap.extractMax();
 				}
 
-				verticesMask.clear();
-				edgesMask.clear();
+				edgesMask.clearAllUnsafe(maskedEdges);
+				maskedEdges.clear();
 			}
+			verticesMask.clearAllUnsafe(maskedVertices);
+			maskedVertices.clear();
+			relevantPaths.clear();
 		}
-		return paths;
+
+		List<IPath> res = paths.stream().map(p -> new PathImpl(g, source, target, p)).collect(Collectors.toList());
+		assert res.stream().allMatch(IPath::isSimple);
+		return res;
 	}
 
 	private static class ShortestPathSubroutine {
@@ -173,8 +234,8 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 			visitedT = new Bitmap(n);
 		}
 
-		ObjectDoublePair<IPath> computeShortestPath(int source) {
-			final ObjectDoublePair<IPath> res = computeShortestPath0(source);
+		ObjectDoublePair<IntList> computeShortestPath(int source) {
+			final ObjectDoublePair<IntList> res = computeShortestPath0(source);
 			heapS.clear();
 			heapT.clear();
 			JGAlgoUtils.clearAllUnsafe(heapPtrsS, toClearS);
@@ -186,7 +247,7 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 			return res;
 		}
 
-		private ObjectDoublePair<IPath> computeShortestPath0(int source) {
+		private ObjectDoublePair<IntList> computeShortestPath0(int source) {
 			assert source != target;
 			assert !verticesMask.get(source);
 			assert !verticesMask.get(target);
@@ -230,7 +291,6 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 					if (visitedS.get(v))
 						continue;
 					double ew = w.weight(e);
-					Assertions.Graphs.onlyPositiveWeight(ew);
 					double vDistance = uDistanceS + ew;
 					if (visitedT.get(v)) {
 						if (mu > vDistance + distanceT[v]) {
@@ -260,7 +320,6 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 					if (visitedT.get(v))
 						continue;
 					double ew = w.weight(e);
-					Assertions.Graphs.onlyPositiveWeight(ew);
 					double vDistance = uDistanceT + ew;
 					if (visitedS.get(v)) {
 						if (mu > vDistance + distanceS[v]) {
@@ -306,7 +365,7 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 				for (int u = middle, e; u != target; u = g.edgeEndpoint(e, u))
 					path.add(e = backtrackT[u]);
 			}
-			return ObjectDoublePair.of(new PathImpl(g, source, target, path), mu);
+			return ObjectDoublePair.of(path, mu);
 		}
 
 	}
