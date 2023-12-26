@@ -91,8 +91,7 @@ class ShortestPathSingleSourceGoldberg extends ShortestPathSingleSourceUtils.Abs
 	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.Graphs.onlyDirected(g);
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
-		if (w == null)
-			w = IWeightFunction.CardinalityWeightFunction;
+		w = IWeightFunction.replaceNullWeightFunc(w);
 		if (!WeightFunction.isInteger(w))
 			throw new IllegalArgumentException("Only integer weights are supported");
 		return computeShortestPaths0(g, (IWeightFunctionInt) w, source);

@@ -79,8 +79,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 	}
 
 	private int[] computeMaxMatching(IndexGraph gOrig, IWeightFunction wOrig, IWeightsBool partition) {
-		if (wOrig == null)
-			wOrig = IWeightFunction.CardinalityWeightFunction;
+		wOrig = IWeightFunction.replaceNullWeightFunc(wOrig);
 		final int n = gOrig.vertices().size();
 		IndexGraph g = IndexGraphFactory
 				.directed()

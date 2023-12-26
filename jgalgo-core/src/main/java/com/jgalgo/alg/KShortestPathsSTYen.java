@@ -59,8 +59,7 @@ class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
 			throw new IllegalArgumentException("source or target not in graph");
 		if (k < 1)
 			throw new IllegalArgumentException("k must be positive");
-		if (w == null)
-			w = IWeightFunction.CardinalityWeightFunction;
+		w = IWeightFunction.replaceNullWeightFunc(w);
 		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);
 		if (source == target)
 			return ObjectList.of(new PathImpl(g, source, target, IntList.of()));

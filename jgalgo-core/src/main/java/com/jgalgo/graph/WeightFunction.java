@@ -22,6 +22,7 @@ import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.alg.VertexCover;
+import it.unimi.dsi.fastutil.objects.ObjectIterables;
 
 /**
  * Weight function that maps graph edges or vertices to weights.
@@ -119,15 +120,7 @@ public interface WeightFunction<K> extends Comparator<K> {
 	 */
 	static <K> double weightSum(WeightFunction<K> weightFunc, Iterable<K> elements) {
 		if (isCardinality(weightFunc)) {
-			if (elements instanceof Collection) {
-				return ((Collection<?>) elements).size();
-			} else {
-				int s = 0;
-				for (@SuppressWarnings("unused")
-				K elm : elements)
-					s++;
-				return s;
-			}
+			return elements instanceof Collection ? ((Collection<?>) elements).size() : ObjectIterables.size(elements);
 		} else {
 			return weightFunc.weightSum(elements);
 		}
@@ -152,6 +145,30 @@ public interface WeightFunction<K> extends Comparator<K> {
 	@SuppressWarnings("unchecked")
 	public static <K> WeightFunctionInt<K> cardinalityWeightFunction() {
 		return (WeightFunctionInt<K>) CardinalityWeightFunction;
+	}
+
+	/**
+	 * Replace {@code null} weight function with {@link #CardinalityWeightFunction}.
+	 *
+	 * @param  <K>        the elements (vertices/edges) type
+	 * @param  weightFunc the weight function to replace
+	 * @return            {@link #CardinalityWeightFunction} if {@code weightFunc} is {@code null}, otherwise
+	 *                    {@code weightFunc}
+	 */
+	public static <K> WeightFunction<K> replaceNullWeightFunc(WeightFunction<K> weightFunc) {
+		return weightFunc == null ? cardinalityWeightFunction() : weightFunc;
+	}
+
+	/**
+	 * Replace {@code null} weight function with {@link #CardinalityWeightFunction}.
+	 *
+	 * @param  <K>        the elements (vertices/edges) type
+	 * @param  weightFunc the weight function to replace
+	 * @return            {@link #CardinalityWeightFunction} if {@code weightFunc} is {@code null}, otherwise
+	 *                    {@code weightFunc}
+	 */
+	public static <K> WeightFunctionInt<K> replaceNullWeightFunc(WeightFunctionInt<K> weightFunc) {
+		return weightFunc == null ? cardinalityWeightFunction() : weightFunc;
 	}
 
 	/**

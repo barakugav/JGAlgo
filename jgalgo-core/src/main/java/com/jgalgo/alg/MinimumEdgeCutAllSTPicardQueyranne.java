@@ -51,8 +51,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 
 	Iterator<IVertexBiPartition> minimumCutsIter(IndexGraph g, IWeightFunction w, int source, int sink, IFlow maxFlow) {
 		final int n = g.vertices().size();
-		if (w == null)
-			w = IWeightFunction.CardinalityWeightFunction;
+		w = IWeightFunction.replaceNullWeightFunc(w);
 		final double eps = range(g.edges().size()).mapToDouble(w::weight).filter(c -> c > 0).min().orElse(0) * 1e-8;
 
 		/* Identify all the vertices reachable from the source and the reverse-reachable from the sink */

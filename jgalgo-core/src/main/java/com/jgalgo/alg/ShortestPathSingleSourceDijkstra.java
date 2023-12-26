@@ -72,8 +72,7 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 	 */
 	@Override
 	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
-		if (w == null)
-			w = IWeightFunction.CardinalityWeightFunction;
+		w = IWeightFunction.replaceNullWeightFunc(w);
 		if (WeightFunction.isInteger(w)) {
 			return computeSsspInts(g, (IWeightFunctionInt) w, source);
 		} else {

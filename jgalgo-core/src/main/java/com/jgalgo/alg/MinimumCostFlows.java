@@ -231,10 +231,8 @@ class MinimumCostFlows {
 			Assertions.Graphs.onlyDirected(g);
 			Assertions.Flows.checkLowerBound(g, capacityOrig, lowerBound);
 			Assertions.Flows.checkSupply(g, supply);
-			if (capacityOrig == null)
-				capacityOrig = IWeightFunction.CardinalityWeightFunction;
-			if (cost == null)
-				cost = IWeightFunction.CardinalityWeightFunction;
+			capacityOrig = IWeightFunction.replaceNullWeightFunc(capacityOrig);
+			cost = IWeightFunction.replaceNullWeightFunc(cost);
 
 			final boolean integerFlow = WeightFunction.isInteger(capacityOrig) && WeightFunction.isInteger(lowerBound);
 
@@ -625,12 +623,9 @@ class MinimumCostFlows {
 				IWeightFunction supply) {
 			Assertions.Graphs.onlyDirected(gOrig);
 			Assertions.Flows.checkSupply(gOrig, supply);
-			if (capacityOrig == null)
-				capacityOrig = IWeightFunction.CardinalityWeightFunction;
-			if (costOrig == null)
-				costOrig = IWeightFunction.CardinalityWeightFunction;
-			if (supply == null)
-				supply = IWeightFunction.CardinalityWeightFunction;
+			capacityOrig = IWeightFunction.replaceNullWeightFunc(capacityOrig);
+			costOrig = IWeightFunction.replaceNullWeightFunc(costOrig);
+			supply = IWeightFunction.replaceNullWeightFunc(supply);
 
 			final boolean integerFlow = WeightFunction.isInteger(capacityOrig) && WeightFunction.isInteger(supply);
 			final boolean integerCost = WeightFunction.isInteger(costOrig);

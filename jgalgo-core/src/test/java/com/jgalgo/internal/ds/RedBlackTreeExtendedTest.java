@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.objects.ObjectIterables;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
 @SuppressWarnings("boxing")
@@ -49,12 +50,7 @@ public class RedBlackTreeExtendedTest extends TestBase {
 							false, compare, seedGen.nextSeed());
 
 			for (ObjObjReferenceableHeap.Ref<Integer, Void> node : tree) {
-				int expectedSize = 0;
-
-				for (@SuppressWarnings("unused")
-				ObjObjReferenceableHeap.Ref<Integer, Void> descendant : IterTools.foreach(tree.subTreeIterator(node)))
-					expectedSize++;
-
+				int expectedSize = (int) ObjectIterables.size(IterTools.foreach(tree.subTreeIterator(node)));
 				int actualSize = sizeExt.getSubTreeSize(node);
 				assertEquals(expectedSize, actualSize, "Size extension reported wrong value");
 			}

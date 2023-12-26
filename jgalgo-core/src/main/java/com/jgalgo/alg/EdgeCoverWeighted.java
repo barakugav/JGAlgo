@@ -32,8 +32,7 @@ class EdgeCoverWeighted extends EdgeCovers.AbstractImpl {
 
 	@Override
 	IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
-		if (w == null)
-			w = IWeightFunction.CardinalityWeightFunction;
+		w = IWeightFunction.replaceNullWeightFunc(w);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 

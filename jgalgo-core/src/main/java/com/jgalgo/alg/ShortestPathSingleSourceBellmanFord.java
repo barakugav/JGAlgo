@@ -54,8 +54,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 		Assertions.Graphs.onlyDirected(g);
 
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
-		if (w == null)
-			w = IWeightFunction.CardinalityWeightFunction;
+		w = IWeightFunction.replaceNullWeightFunc(w);
 
 		/*
 		 * The implementation is based on the classical Bellman-Ford algorithm, with an additional heuristic. When we

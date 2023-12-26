@@ -23,6 +23,7 @@ import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.alg.VertexCover;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterable;
+import it.unimi.dsi.fastutil.ints.IntIterables;
 
 /**
  * Weight function that maps graph edges or vertices of {@link IntGraph} to weights.
@@ -146,15 +147,7 @@ public interface IWeightFunction extends WeightFunction<Integer>, IntComparator 
 	 */
 	static double weightSum(IWeightFunction weightFunc, IntIterable elements) {
 		if (WeightFunction.isCardinality(weightFunc)) {
-			if (elements instanceof Collection) {
-				return ((Collection<?>) elements).size();
-			} else {
-				int s = 0;
-				for (@SuppressWarnings("unused")
-				int elm : elements)
-					s++;
-				return s;
-			}
+			return elements instanceof Collection ? ((Collection<?>) elements).size() : IntIterables.size(elements);
 		} else {
 			return weightFunc.weightSum(elements);
 		}
@@ -164,5 +157,27 @@ public interface IWeightFunction extends WeightFunction<Integer>, IntComparator 
 	 * A weight function that assign a weight of {@code 1} to any element.
 	 */
 	public static IWeightFunctionInt CardinalityWeightFunction = e -> 1;
+
+	/**
+	 * Replace {@code null} weight function with {@link #CardinalityWeightFunction}.
+	 *
+	 * @param  weightFunc the weight function to replace
+	 * @return            {@link #CardinalityWeightFunction} if {@code weightFunc} is {@code null}, otherwise
+	 *                    {@code weightFunc}
+	 */
+	public static IWeightFunction replaceNullWeightFunc(IWeightFunction weightFunc) {
+		return weightFunc == null ? CardinalityWeightFunction : weightFunc;
+	}
+
+	/**
+	 * Replace {@code null} weight function with {@link #CardinalityWeightFunction}.
+	 *
+	 * @param  weightFunc the weight function to replace
+	 * @return            {@link #CardinalityWeightFunction} if {@code weightFunc} is {@code null}, otherwise
+	 *                    {@code weightFunc}
+	 */
+	public static IWeightFunctionInt replaceNullWeightFunc(IWeightFunctionInt weightFunc) {
+		return weightFunc == null ? CardinalityWeightFunction : weightFunc;
+	}
 
 }

@@ -37,8 +37,7 @@ class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {
 			throw NoSuchVertexException.ofIndex(target);
 		if (source == target)
 			return new PathImpl(g, source, target, IntLists.emptyList());
-		if (w == null)
-			w = IWeightFunction.CardinalityWeightFunction;
+		w = IWeightFunction.replaceNullWeightFunc(w);
 
 		DoubleIntReferenceableHeap heapS = DoubleIntReferenceableHeap.newInstance();
 		DoubleIntReferenceableHeap heapT = DoubleIntReferenceableHeap.newInstance();

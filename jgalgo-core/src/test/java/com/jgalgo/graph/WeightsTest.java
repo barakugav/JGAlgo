@@ -16,9 +16,12 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.function.BiFunction;
@@ -189,16 +192,29 @@ public class WeightsTest extends TestBase {
 			Supplier<T> weightFactory, T defaultWeight, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seed);
-		final int n = 1024;
-		final int m = 5000;
 
-		foreachBoolConfig((intGraph, removeEdges) -> {
+		foreachBoolConfig((intGraph, removeEdges, expand) -> {
 			Graph<Integer, Integer> g =
-					GraphsTestUtils.randGraph(n, m, false, true, false, intGraph, seedGen.nextSeed());
+					GraphsTestUtils.randGraph(1024, 5000, false, true, true, intGraph, seedGen.nextSeed());
 
 			String wKey = "edgeWeight";
 			Weights<Integer, T> weights = edgeWeightsAdder.apply(g, wKey);
 			assertEquals(defaultWeight, weights.defaultWeightAsObj());
+
+			if (expand) {
+				/* cause the vertices weights container to expand */
+				for (int n = g.vertices().size() * 2 + 1; g.vertices().size() < n;) {
+					int v = rand.nextInt(n * 2);
+					if (!g.vertices().contains(v))
+						g.addVertex(v);
+				}
+				/* cause the edges weights container to expand */
+				for (int m = g.edges().size() * 2 + 1; g.edges().size() < m;) {
+					int e = rand.nextInt(m * 2);
+					if (!g.edges().contains(e))
+						g.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand), e);
+				}
+			}
 
 			Int2ObjectMap<T> assignedEdges = new Int2ObjectOpenHashMap<>();
 			assignedEdges.defaultReturnValue(defaultWeight);
@@ -228,25 +244,85 @@ public class WeightsTest extends TestBase {
 
 				} else {
 					int e = Graphs.randEdge(g, rand);
-					T actual = weights.getAsObj(e);
+					T val;
+					if (weights instanceof WeightsByte) {
+						@SuppressWarnings("unchecked")
+						T actual0 = (T) Byte.valueOf(((WeightsByte<Integer>) weights).get(e));
+						val = actual0;
+					} else if (weights instanceof WeightsShort) {
+						@SuppressWarnings("unchecked")
+						T actual0 = (T) Short.valueOf(((WeightsShort<Integer>) weights).get(e));
+						val = actual0;
+					} else if (weights instanceof WeightsInt) {
+						@SuppressWarnings("unchecked")
+						T actual0 = (T) Integer.valueOf(((WeightsInt<Integer>) weights).get(e));
+						val = actual0;
+					} else if (weights instanceof WeightsLong) {
+						@SuppressWarnings("unchecked")
+						T actual0 = (T) Long.valueOf(((WeightsLong<Integer>) weights).get(e));
+						val = actual0;
+					} else if (weights instanceof WeightsFloat) {
+						@SuppressWarnings("unchecked")
+						T actual0 = (T) Float.valueOf(((WeightsFloat<Integer>) weights).get(e));
+						val = actual0;
+					} else if (weights instanceof WeightsDouble) {
+						@SuppressWarnings("unchecked")
+						T actual0 = (T) Double.valueOf(((WeightsDouble<Integer>) weights).get(e));
+						val = actual0;
+					} else if (weights instanceof WeightsBool) {
+						@SuppressWarnings("unchecked")
+						T actual0 = (T) Boolean.valueOf(((WeightsBool<Integer>) weights).get(e));
+						val = actual0;
+					} else if (weights instanceof WeightsChar) {
+						@SuppressWarnings("unchecked")
+						T actual0 = (T) Character.valueOf(((WeightsChar<Integer>) weights).get(e));
+						val = actual0;
+					} else {
+						val = ((WeightsObj<Integer, T>) weights).get(e);
+					}
+					T valAsObj = weights.getAsObj(e);
+					assertEquals(val, valAsObj);
+
 					T expected = assignedEdges.get(e);
-					assertEquals(expected, actual);
+					assertEquals(expected, val);
+
+					int e2;
+					do {
+						e2 = Graphs.randEdge(g, rand);
+					} while (assignedEdges.containsKey(e2));
+
 					if (weights instanceof WeightFunction) {
 						@SuppressWarnings("unchecked")
 						WeightFunction<Integer> weights0 = ((WeightFunction<Integer>) weights);
-
-						int e2;
-						do {
-							e2 = Graphs.randEdge(g, rand);
-						} while (assignedEdges.containsKey(e2));
-
-						assertEquals(((Number) weights.getAsObj(e)).doubleValue(), weights0.weight(e));
-						if (weights instanceof WeightFunctionInt)
-							assertEquals(((Number) weights.getAsObj(e)).intValue(),
-									((WeightFunctionInt<Integer>) weights0).weightInt(e));
+						double expectedNumber = ((Number) weights.getAsObj(e)).doubleValue();
+						double actualNumber = weights0.weight(e);
+						assertEquals(expectedNumber, actualNumber);
 						assertEquals(Double.compare(weights0.weight(e), weights0.weight(e2)), weights0.compare(e, e2));
 					}
+					if (weights instanceof WeightFunctionInt) {
+						@SuppressWarnings("unchecked")
+						WeightFunctionInt<Integer> weights0 = ((WeightFunctionInt<Integer>) weights);
+						int expectedNumber = ((Number) weights.getAsObj(e)).intValue();
+						int actualNumber = weights0.weightInt(e);
+						assertEquals(expectedNumber, actualNumber);
 
+						@SuppressWarnings("deprecation")
+						int actualNumber2 = (int) weights0.weight(e);
+						@SuppressWarnings("deprecation")
+						int actualNumber3 = (int) weights0.weight(Integer.valueOf(e));
+						assertEquals(actualNumber, actualNumber2);
+						assertEquals(actualNumber, actualNumber3);
+					}
+					if (weights instanceof IWeightFunction) {
+						IWeightFunction weights0 = ((IWeightFunction) weights);
+						double expectedNumber = ((Number) weights.getAsObj(e)).doubleValue();
+						double actualNumber = weights0.weight(e);
+						assertEquals(expectedNumber, actualNumber);
+
+						@SuppressWarnings("deprecation")
+						double actualNumber2 = weights0.weight(Integer.valueOf(e));
+						assertEquals(actualNumber, actualNumber2);
+					}
 				}
 			}
 
@@ -283,7 +359,44 @@ public class WeightsTest extends TestBase {
 			for (int e : g.edges()) {
 				switch (rand.nextInt(3)) {
 					case 0:
-						weights.setAsObj(e, weightFactory.get());
+						if (rand.nextBoolean()) {
+							weights.setAsObj(e, weightFactory.get());
+						} else if (weights instanceof WeightsByte) {
+							@SuppressWarnings("unchecked")
+							WeightsByte<Integer> weights0 = (WeightsByte<Integer>) weights;
+							weights0.set(e, ((Byte) weightFactory.get()).byteValue());
+						} else if (weights instanceof WeightsShort) {
+							@SuppressWarnings("unchecked")
+							WeightsShort<Integer> weights0 = (WeightsShort<Integer>) weights;
+							weights0.set(e, ((Short) weightFactory.get()).shortValue());
+						} else if (weights instanceof WeightsInt) {
+							@SuppressWarnings("unchecked")
+							WeightsInt<Integer> weights0 = (WeightsInt<Integer>) weights;
+							weights0.set(e, ((Integer) weightFactory.get()).intValue());
+						} else if (weights instanceof WeightsLong) {
+							@SuppressWarnings("unchecked")
+							WeightsLong<Integer> weights0 = (WeightsLong<Integer>) weights;
+							weights0.set(e, ((Long) weightFactory.get()).longValue());
+						} else if (weights instanceof WeightsFloat) {
+							@SuppressWarnings("unchecked")
+							WeightsFloat<Integer> weights0 = (WeightsFloat<Integer>) weights;
+							weights0.set(e, ((Float) weightFactory.get()).floatValue());
+						} else if (weights instanceof WeightsDouble) {
+							@SuppressWarnings("unchecked")
+							WeightsDouble<Integer> weights0 = (WeightsDouble<Integer>) weights;
+							weights0.set(e, ((Double) weightFactory.get()).doubleValue());
+						} else if (weights instanceof WeightsBool) {
+							@SuppressWarnings("unchecked")
+							WeightsBool<Integer> weights0 = (WeightsBool<Integer>) weights;
+							weights0.set(e, ((Boolean) weightFactory.get()).booleanValue());
+						} else if (weights instanceof WeightsChar) {
+							@SuppressWarnings("unchecked")
+							WeightsChar<Integer> weights0 = (WeightsChar<Integer>) weights;
+							weights0.set(e, ((Character) weightFactory.get()).charValue());
+						} else {
+							WeightsObj<Integer, T> weights0 = (WeightsObj<Integer, T>) weights;
+							weights0.set(e, weightFactory.get());
+						}
 						break;
 					case 1:
 						indexWeights.setAsObj(eiMap.idToIndex(e), weightFactory.get());
@@ -395,6 +508,138 @@ public class WeightsTest extends TestBase {
 				return (char) rand.nextInt();
 			}
 		};
+	}
+
+	@Test
+	public void weightsSum() {
+		WeightFunction<Integer> w1 = e -> e * 2;
+		WeightFunctionInt<Integer> w2 = e -> e * 2;
+		IWeightFunction w3 = e -> e * 2;
+		IWeightFunctionInt w4 = e -> e * 2;
+		assertEquals(WeightFunction.weightSum(w1, range(6)), 30);
+		assertEquals(WeightFunction.weightSum(w2, range(6)), 30);
+		assertEquals(IWeightFunction.weightSum(w3, range(6)), 30);
+		assertEquals(IWeightFunction.weightSum(w4, range(6)), 30);
+		assertEquals(WeightFunction.weightSum(w3, new ArrayList<>(range(6))), 30);
+		assertEquals(WeightFunction.weightSum(w4, new ArrayList<>(range(6))), 30);
+		assertEquals(WeightFunction.weightSum(null, range(6)), 6);
+		assertEquals(WeightFunction.weightSum(null, () -> range(6).iterator()), 6);
+		assertEquals(IWeightFunction.weightSum(null, range(6)), 6);
+		assertEquals(IWeightFunction.weightSum(null, () -> range(6).iterator()), 6);
+	}
+
+	@Test
+	public void weightDeprecated() {
+		IWeightFunction w1 = e -> e * 2;
+		for (int i = 0; i < 20; i++) {
+			@SuppressWarnings("deprecation")
+			double val = w1.weight(Integer.valueOf(i));
+			assertEquals(w1.weight(i), val);
+		}
+
+		IWeightFunctionInt w2 = e -> e * 2;
+		for (int i = 0; i < 20; i++) {
+			int expected = w2.weightInt(i);
+			@SuppressWarnings("deprecation")
+			double val1 = w2.weightInt(Integer.valueOf(i));
+			@SuppressWarnings("deprecation")
+			double val2 = w2.weight(i);
+			@SuppressWarnings("deprecation")
+			double val3 = w2.weight(Integer.valueOf(i));
+			assertEquals(expected, val1);
+			assertEquals(expected, val2);
+			assertEquals(expected, val3);
+		}
+	}
+
+	@Test
+	public void compare() {
+		final Random rand = new Random(0x38080271f0c3ae2dL);
+
+		WeightFunction<Integer> w1 = e -> e * 2;
+		for (int i = 0; i < 20; i++) {
+			int x = rand.nextInt(100), y = rand.nextInt(100);
+			int cExpected = Double.compare(w1.weight(x), w1.weight(y));
+			int c1 = w1.compare(x, y);
+			assertEquals(cExpected, c1);
+		}
+
+		WeightFunctionInt<Integer> w2 = e -> e * 2;
+		for (int i = 0; i < 20; i++) {
+			int x = rand.nextInt(100), y = rand.nextInt(100);
+			int cExpected = Double.compare(w2.weightInt(x), w2.weightInt(y));
+			int c1 = w2.compare(x, y);
+			assertEquals(cExpected, c1);
+		}
+
+		IWeightFunction w3 = e -> e * 2;
+		for (int i = 0; i < 20; i++) {
+			int x = rand.nextInt(100), y = rand.nextInt(100);
+			int cExpected = Double.compare(w3.weight(x), w3.weight(y));
+			int c1 = w3.compare(x, y);
+			@SuppressWarnings("deprecation")
+			int c2 = w3.compare(Integer.valueOf(x), Integer.valueOf(y));
+			assertEquals(cExpected, c1);
+			assertEquals(cExpected, c2);
+		}
+
+		IWeightFunctionInt w4 = e -> e * 2;
+		for (int i = 0; i < 20; i++) {
+			int x = rand.nextInt(100), y = rand.nextInt(100);
+			int cExpected = Double.compare(w4.weightInt(x), w4.weightInt(y));
+			int c1 = w4.compare(x, y);
+			@SuppressWarnings("deprecation")
+			int c2 = w4.compare(Integer.valueOf(x), Integer.valueOf(y));
+			assertEquals(cExpected, c1);
+			assertEquals(cExpected, c2);
+		}
+	}
+
+	@Test
+	public void cardinalityWeightFunction() {
+		assertEquals(1, WeightFunction.cardinalityWeightFunction().weightInt(new Object()));
+		assertEquals(1, WeightFunction.cardinalityWeightFunction().weightInt(null));
+		assertEquals(1, IWeightFunction.CardinalityWeightFunction.weightInt(0));
+		assertEquals(1, IWeightFunction.CardinalityWeightFunction.weightInt(1));
+		assertEquals(1, IWeightFunction.CardinalityWeightFunction.weightInt(-1));
+	}
+
+	@Test
+	public void isCardinality() {
+		assertTrue(WeightFunction.isCardinality(WeightFunction.cardinalityWeightFunction()));
+		assertTrue(WeightFunction.isCardinality(IWeightFunction.CardinalityWeightFunction));
+		assertTrue(WeightFunction.isCardinality(null));
+		assertFalse(WeightFunction.isCardinality(e -> 8));
+		assertFalse(WeightFunction.isCardinality(e -> 1));
+	}
+
+	@Test
+	public void isInteger() {
+		assertTrue(WeightFunction.isInteger(WeightFunction.cardinalityWeightFunction()));
+		assertTrue(WeightFunction.isInteger(IWeightFunction.CardinalityWeightFunction));
+		assertTrue(WeightFunction.isInteger(null));
+		assertFalse(WeightFunction.isInteger(e -> 2.1));
+		assertTrue(WeightFunction.isInteger((WeightFunctionInt<Object>) e -> 2));
+	}
+
+	@Test
+	public void replaceNullWeightFunc() {
+		assertTrue(WeightFunction.replaceNullWeightFunc((WeightFunction<?>) null) == WeightFunction
+				.cardinalityWeightFunction());
+		assertTrue(WeightFunction.replaceNullWeightFunc((WeightFunctionInt<?>) null) == WeightFunction
+				.cardinalityWeightFunction());
+		assertTrue(IWeightFunction
+				.replaceNullWeightFunc((IWeightFunction) null) == IWeightFunction.CardinalityWeightFunction);
+		assertTrue(IWeightFunction
+				.replaceNullWeightFunc((IWeightFunctionInt) null) == IWeightFunction.CardinalityWeightFunction);
+		WeightFunction<Integer> w1 = e -> 1;
+		assertTrue(WeightFunction.replaceNullWeightFunc(w1) == w1);
+		WeightFunctionInt<Integer> w2 = e -> 1;
+		assertTrue(WeightFunction.replaceNullWeightFunc(w2) == w2);
+		IWeightFunction w3 = e -> 1;
+		assertTrue(IWeightFunction.replaceNullWeightFunc(w3) == w3);
+		IWeightFunctionInt w4 = e -> 1;
+		assertTrue(IWeightFunction.replaceNullWeightFunc(w4) == w4);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -727,5 +972,4 @@ public class WeightsTest extends TestBase {
 			throw new AssertionError("unknown weights type: " + w.getClass().getName());
 		}
 	}
-
 }
