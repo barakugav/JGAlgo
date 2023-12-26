@@ -18,10 +18,12 @@ package com.jgalgo.graph;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Optional;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 class GraphCsrDirectedReindexed extends GraphCsrBase {
 
@@ -174,29 +176,35 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 
 	@Override
 	public int getEdge(int source, int target) {
-		checkVertex(source);
 		if (fastLookup) {
+			checkVertex(source);
 			checkVertex(target);
 			return edgesLookupTable[source].get(target);
-		}
+		} else {
 
-		final int begin = edgesOutBegin[source], end = edgesOutBegin[source + 1];
-		for (int e = begin; e < end; e++) {
-			if (target == target(e))
-				return e;
+			int eBegin = edgesOutBegin[source], eEnd = edgesOutBegin[source + 1];
+			int e = JGAlgoUtils.lowerBound(eBegin, eEnd, target, this::edgeTarget);
+			return e < eEnd && target(e) == target ? e : -1;
 		}
-		checkVertex(target);
-		return -1;
 	}
 
 	@Override
 	public IEdgeSet getEdges(int source, int target) {
-		if (!fastLookup)
-			return super.getEdges(source, target);
+		if (fastLookup) {
+			checkVertex(source);
+			checkVertex(target);
+			return new SourceTargetEdgesSetFastLookup(source, target);
 
-		checkVertex(source);
-		checkVertex(target);
-		return new SourceTargetEdgesSetFastLookup(source, target);
+		} else {
+			checkVertex(source);
+			int eBegin = edgesOutBegin[source], eEnd = edgesOutBegin[source + 1];
+			IntIntPair edgeRange = JGAlgoUtils.equalRange(eBegin, eEnd, target, this::edgeTarget);
+			if (edgeRange == null) {
+				checkVertex(target);
+				edgeRange = IntIntPair.of(eBegin, eBegin);
+			}
+			return new EdgeSetSourceTarget(source, target, edgeRange.firstInt(), edgeRange.secondInt());
+		}
 	}
 
 	@Override
@@ -253,12 +261,12 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		}
 	}
 
-	private abstract static class EdgeIterOutAbstract implements IEdgeIter {
+	private class EdgeIterOut implements IEdgeIter {
 		private final int source;
 		int nextEdge;
 		private final int endIdx;
 
-		EdgeIterOutAbstract(int source, int beginEdge, int endEdge) {
+		EdgeIterOut(int source, int beginEdge, int endEdge) {
 			this.source = source;
 			this.nextEdge = beginEdge;
 			this.endIdx = endEdge;
@@ -285,12 +293,6 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		public int sourceInt() {
 			return source;
 		}
-	}
-
-	private class EdgeIterOut extends EdgeIterOutAbstract {
-		EdgeIterOut(int source, int beginEdge, int endEdge) {
-			super(source, beginEdge, endEdge);
-		}
 
 		@Override
 		public int targetInt() {
@@ -315,6 +317,36 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 		@Override
 		public int targetInt() {
 			return target;
+		}
+	}
+
+	private class EdgeSetSourceTarget extends AbstractIntSet implements IEdgeSet {
+
+		private final int source;
+		private final int target;
+		private final int begin;
+		private final int end;
+
+		EdgeSetSourceTarget(int source, int target, int start, int end) {
+			this.source = source;
+			this.target = target;
+			this.begin = start;
+			this.end = end;
+		}
+
+		@Override
+		public boolean contains(int edge) {
+			return edges.contains(edge) && source == edgeSource(edge) && target == edgeTarget(edge);
+		}
+
+		@Override
+		public int size() {
+			return end - begin;
+		}
+
+		@Override
+		public IEdgeIter iterator() {
+			return new EdgeIterOut(source, begin, end);
 		}
 	}
 
