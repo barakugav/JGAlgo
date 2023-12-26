@@ -308,12 +308,21 @@ public class Assertions {
 	public static class Arrays {
 		private Arrays() {}
 
+		public static void checkFromTo(int from, int to) {
+			if (from > to)
+				throw new IndexOutOfBoundsException("from > to: " + from + " > " + to);
+		}
+
 		public static void checkFromTo(int from, int to, int length) {
-			Objects.checkFromToIndex(from, to, length);
+			checkFromTo(from, to);
+			if (from < 0)
+				throw new IndexOutOfBoundsException("from < 0: " + from);
+			if (to > length)
+				throw new IndexOutOfBoundsException("to > length: " + to + " > " + length);
 		}
 
 		public static void checkIndex(int index, int from, int to) {
-			if (index < from || index >= to)
+			if (!(from <= index && index < to))
 				throw new IndexOutOfBoundsException(
 						"Index " + index + " out of bounds for range Range [" + from + ", " + to + ")");
 		}

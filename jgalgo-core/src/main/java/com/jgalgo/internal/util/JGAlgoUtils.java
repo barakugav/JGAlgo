@@ -191,9 +191,15 @@ public class JGAlgoUtils {
 		return ConsumerNoOp;
 	}
 
-	private static int lowerBound(int from, int to, int key, IntUnaryOperator idx2key) {
+	public static int lowerBound(int from, int to, int key, IntUnaryOperator idx2key) {
+		if (from > to)
+			throw new IllegalArgumentException("from > to: " + from + " > " + to);
+		return lowerBound0(from, to, key, idx2key);
+	}
+
+	private static int lowerBound0(int from, int to, int key, IntUnaryOperator idx2key) {
 		for (int len = to - from; len > 0;) {
-			int half = len >> 1;
+			int half = len / 2;
 			int mid = from + half;
 			if (idx2key.applyAsInt(mid) < key) {
 				from = mid + 1;
@@ -205,23 +211,31 @@ public class JGAlgoUtils {
 		return from;
 	}
 
-	private static int upperBound(int to, int from, int key, IntUnaryOperator idx2key) {
-		for (int len = from - to; len > 0;) {
+	public static int upperBound(int from, int to, int key, IntUnaryOperator idx2key) {
+		if (from > to)
+			throw new IllegalArgumentException("from > to: " + from + " > " + to);
+		return upperBound0(from, to, key, idx2key);
+	}
+
+	private static int upperBound0(int from, int to, int key, IntUnaryOperator idx2key) {
+		for (int len = to - from; len > 0;) {
 			int half = len >> 1;
-			int mid = to + half;
+			int mid = from + half;
 			if (key < idx2key.applyAsInt(mid)) {
 				len = half;
 			} else {
-				to = mid + 1;
+				from = mid + 1;
 				len = len - half - 1;
 			}
 		}
-		return to;
+		return from;
 	}
 
 	public static IntIntPair equalRange(int from, int to, int key, IntUnaryOperator idx2key) {
+		if (from > to)
+			throw new IllegalArgumentException("from > to: " + from + " > " + to);
 		for (int len = to - from; len > 0;) {
-			int half = len >> 1;
+			int half = len / 2;
 			int mid = from + half;
 			int midKey = idx2key.applyAsInt(mid);
 			if (midKey < key) {
@@ -230,9 +244,8 @@ public class JGAlgoUtils {
 			} else if (key < midKey) {
 				len = half;
 			} else {
-				int left = lowerBound(from, mid, key, idx2key);
-				from += len;
-				int right = upperBound(++mid, from, key, idx2key);
+				int left = lowerBound0(from, mid, key, idx2key);
+				int right = upperBound0(mid + 1, from + len, key, idx2key);
 				return IntIntPair.of(left, right);
 			}
 		}
