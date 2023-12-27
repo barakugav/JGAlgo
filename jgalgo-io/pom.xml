@@ -19,8 +19,9 @@
       <version>${project.version}</version>
       <exclusions>
         <exclusion>
+          <!-- exclude fastutil-core, we include the full fastutil jar -->
           <groupId>it.unimi.dsi</groupId>
-          <artifactId>fastutil</artifactId>
+          <artifactId>fastutil-core</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
