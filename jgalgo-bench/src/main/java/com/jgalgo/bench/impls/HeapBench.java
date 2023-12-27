@@ -41,12 +41,12 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.internal.ds.Heap;
-import com.jgalgo.internal.ds.IntBinomialHeap;
-import com.jgalgo.internal.ds.IntFibonacciHeap;
-import com.jgalgo.internal.ds.IntPairingHeap;
-import com.jgalgo.internal.ds.IntRedBlackTree;
-import com.jgalgo.internal.ds.IntReferenceableHeap;
-import com.jgalgo.internal.ds.IntSplayTree;
+import com.jgalgo.internal.ds.IntIntBinomialHeap;
+import com.jgalgo.internal.ds.IntIntFibonacciHeap;
+import com.jgalgo.internal.ds.IntIntPairingHeap;
+import com.jgalgo.internal.ds.IntIntRedBlackTree;
+import com.jgalgo.internal.ds.IntIntReferenceableHeap;
+import com.jgalgo.internal.ds.IntIntSplayTree;
 import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -138,31 +138,31 @@ public class HeapBench {
 
 	@Benchmark
 	public void Pairing(Blackhole blackhole) {
-		benchHeap(heapBuilder(IntPairingHeap::new), blackhole);
+		benchHeap(heapBuilder(IntIntPairingHeap::new), blackhole);
 	}
 
 	@Benchmark
 	public void Fibonacci(Blackhole blackhole) {
-		benchHeap(heapBuilder(IntFibonacciHeap::new), blackhole);
+		benchHeap(heapBuilder(IntIntFibonacciHeap::new), blackhole);
 	}
 
 	@Benchmark
 	public void Binomial(Blackhole blackhole) {
-		benchHeap(heapBuilder(IntBinomialHeap::new), blackhole);
+		benchHeap(heapBuilder(IntIntBinomialHeap::new), blackhole);
 	}
 
 	@Benchmark
 	public void RedBlackTree(Blackhole blackhole) {
-		benchHeap(heapBuilder(IntRedBlackTree::new), blackhole);
+		benchHeap(heapBuilder(IntIntRedBlackTree::new), blackhole);
 	}
 
 	@Benchmark
 	public void SplayTree(Blackhole blackhole) {
-		benchHeap(heapBuilder(IntSplayTree::new), blackhole);
+		benchHeap(heapBuilder(IntIntSplayTree::new), blackhole);
 	}
 
 	@SuppressWarnings("unchecked")
-	private static Heap.Builder heapBuilder(Function<IntComparator, IntReferenceableHeap> builder) {
+	private static Heap.Builder heapBuilder(Function<IntComparator, IntIntReferenceableHeap> builder) {
 		return new Heap.Builder() {
 			@Override
 			public <E> Heap<E> build(Comparator<? super E> cmp) {
@@ -173,15 +173,15 @@ public class HeapBench {
 
 	static class HeapFromReferenceableHeap implements Heap<Integer> {
 
-		private final IntReferenceableHeap heap;
+		private final IntIntReferenceableHeap heap;
 
-		HeapFromReferenceableHeap(IntReferenceableHeap heap) {
+		HeapFromReferenceableHeap(IntIntReferenceableHeap heap) {
 			this.heap = heap;
 		}
 
 		@Override
 		public Iterator<Integer> iterator() {
-			return IterTools.map(heap.iterator(), IntReferenceableHeap.Ref::key);
+			return IterTools.map(heap.iterator(), IntIntReferenceableHeap.Ref::key);
 		}
 
 		@Override
@@ -207,7 +207,7 @@ public class HeapBench {
 
 		@Override
 		public boolean remove(Integer elm) {
-			IntReferenceableHeap.Ref ref = heap.find(elm.intValue());
+			IntIntReferenceableHeap.Ref ref = heap.find(elm.intValue());
 			if (ref == null)
 				return false;
 			heap.remove(ref);

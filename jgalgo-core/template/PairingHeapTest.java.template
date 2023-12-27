@@ -27,6 +27,7 @@ import java.util.Comparator;
 #else
 import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
 #endif
+import java.util.Iterator;
 
 public class PAIRING_HEAP_TEST extends TestBase {
 
@@ -91,7 +92,71 @@ public class PAIRING_HEAP_TEST extends TestBase {
 	@Test
 	public void meldWithDifferentImpl() {
 		REFERENCEABLE_HEAP KEY_VALUE_GENERIC h1 = new PAIRING_HEAP KEY_VALUE_GENERIC_EMPTY(null);
-		REFERENCEABLE_HEAP KEY_VALUE_GENERIC h2 = new RED_BLACK_TREE KEY_VALUE_GENERIC_EMPTY(null);
+		REFERENCEABLE_HEAP KEY_VALUE_GENERIC h2 = new REFERENCEABLE_HEAP KEY_VALUE_GENERIC_EMPTY() {
+
+			@Override
+			public void clear() {}
+
+			@Override
+			public boolean isEmpty() { return true; }
+
+			@Override
+			public boolean isNotEmpty() { return false; }
+
+			@Override
+			public Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> iterator() {
+				// TODO Auto-generated method stub
+				throw new UnsupportedOperationException("Unimplemented method 'iterator'");
+			}
+
+			@Override
+			public HEAP_REFERENCE KEY_VALUE_GENERIC insert(PRIMITIVE_KEY_TYPE key) {
+				// TODO Auto-generated method stub
+				throw new UnsupportedOperationException("Unimplemented method 'insert'");
+			}
+
+			@Override
+			public HEAP_REFERENCE KEY_VALUE_GENERIC findMin() {
+				// TODO Auto-generated method stub
+				throw new UnsupportedOperationException("Unimplemented method 'findMin'");
+			}
+
+			@Override
+			public HEAP_REFERENCE KEY_VALUE_GENERIC extractMin() {
+				// TODO Auto-generated method stub
+				throw new UnsupportedOperationException("Unimplemented method 'extractMin'");
+			}
+
+			@Override
+			public void meld(REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap) {
+				// TODO Auto-generated method stub
+				throw new UnsupportedOperationException("Unimplemented method 'meld'");
+			}
+
+			@Override
+			public KEY_COMPARATOR KEY_TYPE_GENERIC comparator() {
+				return null;
+			}
+
+			@Override
+			public void decreaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
+				// TODO Auto-generated method stub
+				throw new UnsupportedOperationException("Unimplemented method 'decreaseKey'");
+			}
+
+			@Override
+			public void increaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
+				// TODO Auto-generated method stub
+				throw new UnsupportedOperationException("Unimplemented method 'increaseKey'");
+			}
+
+			@Override
+			public void remove(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
+				// TODO Auto-generated method stub
+				throw new UnsupportedOperationException("Unimplemented method 'remove'");
+			}
+		};
+
 		assertThrows(IllegalArgumentException.class, () -> h1.meld(h2));
 	}
 

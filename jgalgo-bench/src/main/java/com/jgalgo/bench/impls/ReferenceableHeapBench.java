@@ -42,33 +42,12 @@ import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.ds.DoubleIntBinomialHeap;
-import com.jgalgo.internal.ds.DoubleIntFibonacciHeap;
-import com.jgalgo.internal.ds.DoubleIntPairingHeap;
-import com.jgalgo.internal.ds.DoubleIntRedBlackTree;
-import com.jgalgo.internal.ds.DoubleIntSplayTree;
-import com.jgalgo.internal.ds.DoubleObjBinomialHeap;
-import com.jgalgo.internal.ds.DoubleObjFibonacciHeap;
-import com.jgalgo.internal.ds.DoubleObjPairingHeap;
-import com.jgalgo.internal.ds.DoubleObjRedBlackTree;
-import com.jgalgo.internal.ds.DoubleObjSplayTree;
-import com.jgalgo.internal.ds.IntBinomialHeap;
-import com.jgalgo.internal.ds.IntFibonacciHeap;
 import com.jgalgo.internal.ds.IntIntBinomialHeap;
 import com.jgalgo.internal.ds.IntIntFibonacciHeap;
 import com.jgalgo.internal.ds.IntIntPairingHeap;
 import com.jgalgo.internal.ds.IntIntRedBlackTree;
 import com.jgalgo.internal.ds.IntIntSplayTree;
-import com.jgalgo.internal.ds.IntPairingHeap;
-import com.jgalgo.internal.ds.IntRedBlackTree;
-import com.jgalgo.internal.ds.IntSplayTree;
-import com.jgalgo.internal.ds.ObjBinomialHeap;
-import com.jgalgo.internal.ds.ObjFibonacciHeap;
-import com.jgalgo.internal.ds.ObjPairingHeap;
-import com.jgalgo.internal.ds.ObjRedBlackTree;
-import com.jgalgo.internal.ds.ObjSplayTree;
 import com.jgalgo.internal.ds.ReferenceableHeap;
-import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -129,14 +108,6 @@ public class ReferenceableHeapBench {
 		benchHeap((keyType, valueType, comparator) -> {
 			if (keyType == int.class && valueType == int.class)
 				return new IntIntPairingHeap((IntComparator) comparator);
-			if (keyType == int.class && valueType == void.class)
-				return new IntPairingHeap((IntComparator) comparator);
-			if (keyType == double.class && valueType == int.class)
-				return new DoubleIntPairingHeap((DoubleComparator) comparator);
-			if (keyType == double.class && valueType == Object.class)
-				return new DoubleObjPairingHeap<>((DoubleComparator) comparator);
-			if (keyType == Object.class && valueType == void.class)
-				return new ObjPairingHeap<>(comparator);
 			throw new UnsupportedOperationException("Unsupported heap type: " + keyType + ", " + valueType);
 		}, blackhole);
 	}
@@ -146,14 +117,6 @@ public class ReferenceableHeapBench {
 		benchHeap((keyType, valueType, comparator) -> {
 			if (keyType == int.class && valueType == int.class)
 				return new IntIntFibonacciHeap((IntComparator) comparator);
-			if (keyType == int.class && valueType == void.class)
-				return new IntFibonacciHeap((IntComparator) comparator);
-			if (keyType == double.class && valueType == int.class)
-				return new DoubleIntFibonacciHeap((DoubleComparator) comparator);
-			if (keyType == double.class && valueType == Object.class)
-				return new DoubleObjFibonacciHeap<>((DoubleComparator) comparator);
-			if (keyType == Object.class && valueType == void.class)
-				return new ObjFibonacciHeap<>(comparator);
 			throw new UnsupportedOperationException("Unsupported heap type: " + keyType + ", " + valueType);
 		}, blackhole);
 	}
@@ -163,14 +126,6 @@ public class ReferenceableHeapBench {
 		benchHeap((keyType, valueType, comparator) -> {
 			if (keyType == int.class && valueType == int.class)
 				return new IntIntBinomialHeap((IntComparator) comparator);
-			if (keyType == int.class && valueType == void.class)
-				return new IntBinomialHeap((IntComparator) comparator);
-			if (keyType == double.class && valueType == int.class)
-				return new DoubleIntBinomialHeap((DoubleComparator) comparator);
-			if (keyType == double.class && valueType == Object.class)
-				return new DoubleObjBinomialHeap<>((DoubleComparator) comparator);
-			if (keyType == Object.class && valueType == void.class)
-				return new ObjBinomialHeap<>(comparator);
 			throw new UnsupportedOperationException("Unsupported heap type: " + keyType + ", " + valueType);
 		}, blackhole);
 	}
@@ -180,14 +135,6 @@ public class ReferenceableHeapBench {
 		benchHeap((keyType, valueType, comparator) -> {
 			if (keyType == int.class && valueType == int.class)
 				return new IntIntRedBlackTree((IntComparator) comparator);
-			if (keyType == int.class && valueType == void.class)
-				return new IntRedBlackTree((IntComparator) comparator);
-			if (keyType == double.class && valueType == int.class)
-				return new DoubleIntRedBlackTree((DoubleComparator) comparator);
-			if (keyType == double.class && valueType == Object.class)
-				return new DoubleObjRedBlackTree<>((DoubleComparator) comparator);
-			if (keyType == Object.class && valueType == void.class)
-				return new ObjRedBlackTree<>(comparator);
 			throw new UnsupportedOperationException("Unsupported heap type: " + keyType + ", " + valueType);
 		}, blackhole);
 	}
@@ -197,14 +144,6 @@ public class ReferenceableHeapBench {
 		benchHeap((keyType, valueType, comparator) -> {
 			if (keyType == int.class && valueType == int.class)
 				return new IntIntSplayTree((IntComparator) comparator);
-			if (keyType == int.class && valueType == void.class)
-				return new IntSplayTree((IntComparator) comparator);
-			if (keyType == double.class && valueType == int.class)
-				return new DoubleIntSplayTree((DoubleComparator) comparator);
-			if (keyType == double.class && valueType == Object.class)
-				return new DoubleObjSplayTree<>((DoubleComparator) comparator);
-			if (keyType == Object.class && valueType == void.class)
-				return new ObjSplayTree<>(comparator);
 			throw new UnsupportedOperationException("Unsupported heap type: " + keyType + ", " + valueType);
 		}, blackhole);
 	}

@@ -543,17 +543,16 @@ def generate_referenceable_heap(key_type, value_type, constants, functions):
     constants["PAIRING_HEAP"] = prefix + "PairingHeap"
 
 
-REFERENCEABLE_HEAP_TYPES = [
-    ("Int", "Int"),
-    ("Int", "Void"),
-    ("Double", "Int"),
-    ("Double", "Obj"),
-    ("Obj", "Void"),
-    ("Obj", "Obj"),
-]
 register_template(
     "ReferenceableHeap",
-    REFERENCEABLE_HEAP_TYPES,
+    [
+        ("Int", "Int"),
+        ("Int", "Void"),
+        ("Double", "Int"),
+        ("Double", "Obj"),
+        ("Obj", "Void"),
+        ("Obj", "Obj"),
+    ],
     generate_referenceable_heap,
     lambda key_type, value_type: os.path.join(
         PACKAGE_DIR,
@@ -590,7 +589,14 @@ def generate_referenceable_heap_test_utils(key_type, value_type, constants, func
 
 register_template(
     "ReferenceableHeapTestUtils",
-    REFERENCEABLE_HEAP_TYPES,
+    [
+        ("Int", "Int"),
+        ("Int", "Void"),
+        ("Double", "Int"),
+        ("Double", "Obj"),
+        ("Obj", "Void"),
+        ("Obj", "Obj"),
+    ],
     generate_referenceable_heap_test_utils,
     lambda key_type, value_type: os.path.join(
         TEST_PACKAGE_DIR,
@@ -610,7 +616,14 @@ def generate_pairing_heap(key_type, value_type, constants, functions):
 
 register_template(
     "PairingHeap",
-    REFERENCEABLE_HEAP_TYPES,
+    [
+        ("Int", "Int"),
+        ("Int", "Void"),
+        ("Double", "Int"),
+        ("Double", "Obj"),
+        ("Obj", "Void"),
+        ("Obj", "Obj"),
+    ],
     generate_pairing_heap,
     lambda key_type, value_type: os.path.join(
         PACKAGE_DIR,
@@ -626,9 +639,10 @@ def generate_pairing_heap_test(key_type, value_type, constants, functions):
     constants["PAIRING_HEAP"] = prefix + "PairingHeap"
     constants["PAIRING_HEAP_TEST"] = prefix + "PairingHeapTest"
     constants["REFERENCEABLE_HEAP"] = prefix + "ReferenceableHeap"
+    constants["HEAP_REFERENCE"] = prefix + "ReferenceableHeap.Ref"
     constants["REFERENCEABLE_HEAP_TEST_UTILS"] = prefix + "ReferenceableHeapTestUtils"
-    constants["RED_BLACK_TREE"] = prefix + "RedBlackTree"
     if key_type == "Obj":
+        constants["PRIMITIVE_KEY_TYPE"] = "String"
         constants["KEY_TYPE_GENERIC"] = "<String>"
     if key_type == "Obj" and value_type == "Obj":
         constants["KEY_VALUE_GENERIC"] = "<String, String>"
@@ -642,7 +656,14 @@ def generate_pairing_heap_test(key_type, value_type, constants, functions):
 
 register_template(
     "PairingHeapTest",
-    REFERENCEABLE_HEAP_TYPES,
+    [
+        ("Int", "Int"),
+        ("Int", "Void"),
+        ("Double", "Int"),
+        ("Double", "Obj"),
+        ("Obj", "Void"),
+        ("Obj", "Obj"),
+    ],
     generate_pairing_heap_test,
     lambda key_type, value_type: os.path.join(
         TEST_PACKAGE_DIR,
@@ -662,7 +683,7 @@ def generate_binomial_heap(key_type, value_type, constants, functions):
 
 register_template(
     "BinomialHeap",
-    REFERENCEABLE_HEAP_TYPES,
+    [("Int", "Int"), ("Obj", "Obj")],
     generate_binomial_heap,
     lambda key_type, value_type: os.path.join(
         PACKAGE_DIR,
@@ -694,7 +715,7 @@ def generate_binomial_heap_test(key_type, value_type, constants, functions):
 
 register_template(
     "BinomialHeapTest",
-    REFERENCEABLE_HEAP_TYPES,
+    [("Int", "Int"), ("Obj", "Obj")],
     generate_binomial_heap_test,
     lambda key_type, value_type: os.path.join(
         TEST_PACKAGE_DIR,
@@ -714,7 +735,7 @@ def generate_fibonacci_heap(key_type, value_type, constants, functions):
 
 register_template(
     "FibonacciHeap",
-    REFERENCEABLE_HEAP_TYPES,
+    [("Int", "Int"), ("Obj", "Obj")],
     generate_fibonacci_heap,
     lambda key_type, value_type: os.path.join(
         PACKAGE_DIR,
@@ -746,7 +767,7 @@ def generate_fibonacci_heap_test(key_type, value_type, constants, functions):
 
 register_template(
     "FibonacciHeapTest",
-    REFERENCEABLE_HEAP_TYPES,
+    [("Int", "Int"), ("Obj", "Obj")],
     generate_fibonacci_heap_test,
     lambda key_type, value_type: os.path.join(
         TEST_PACKAGE_DIR,
@@ -767,7 +788,7 @@ def generate_binary_search_tree(key_type, value_type, constants, functions):
 
 register_template(
     "BinarySearchTree",
-    REFERENCEABLE_HEAP_TYPES,
+    [("Int", "Int"), ("Obj", "Obj"), ("Double", "Obj")],
     generate_binary_search_tree,
     lambda key_type, value_type: os.path.join(
         PACKAGE_DIR,
@@ -806,7 +827,7 @@ def generate_binary_search_tree_test_utils(key_type, value_type, constants, func
 
 register_template(
     "BinarySearchTreeTestUtils",
-    REFERENCEABLE_HEAP_TYPES,
+    [("Int", "Int"), ("Obj", "Obj"), ("Double", "Obj")],
     generate_binary_search_tree_test_utils,
     lambda key_type, value_type: os.path.join(
         TEST_PACKAGE_DIR,
@@ -851,7 +872,7 @@ def generate_red_black_tree(key_type, value_type, constants, functions):
 
 register_template(
     "RedBlackTree",
-    REFERENCEABLE_HEAP_TYPES,
+    [("Int", "Int"), ("Obj", "Obj"), ("Double", "Obj")],
     generate_red_black_tree,
     lambda key_type, value_type: os.path.join(
         PACKAGE_DIR,
@@ -885,7 +906,7 @@ def generate_red_black_tree_test(key_type, value_type, constants, functions):
 
 register_template(
     "RedBlackTreeTest",
-    REFERENCEABLE_HEAP_TYPES,
+    [("Int", "Int"), ("Obj", "Obj"), ("Double", "Obj")],
     generate_red_black_tree_test,
     lambda key_type, value_type: os.path.join(
         TEST_PACKAGE_DIR,
@@ -911,7 +932,7 @@ def generate_splay_tree(key_type, value_type, constants, functions):
 
 register_template(
     "SplayTree",
-    REFERENCEABLE_HEAP_TYPES,
+    [("Int", "Int"), ("Obj", "Obj")],
     generate_splay_tree,
     lambda key_type, value_type: os.path.join(
         PACKAGE_DIR,
@@ -944,7 +965,7 @@ def generate_splay_tree_test(key_type, value_type, constants, functions):
 
 register_template(
     "SplayTreeTest",
-    REFERENCEABLE_HEAP_TYPES,
+    [("Int", "Int"), ("Obj", "Obj")],
     generate_splay_tree_test,
     lambda key_type, value_type: os.path.join(
         TEST_PACKAGE_DIR,
