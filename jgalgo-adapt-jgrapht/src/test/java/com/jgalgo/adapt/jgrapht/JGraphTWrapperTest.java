@@ -48,7 +48,6 @@ import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightsDouble;
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -61,21 +60,21 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void constructor() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			assertEquals(directed, g.isDirected());
 			assertEquals(Set.of(), g.getEdgesWeightsKeys());
 			assertIndexGraphValid(g);
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig, null);
 			assertEquals(directed, g.isDirected());
 			assertEquals(Set.of(), g.getEdgesWeightsKeys());
 			assertIndexGraphValid(g);
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig, "weights");
 			assertEquals(directed, g.isDirected());
@@ -87,7 +86,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void vertices() {
 		final Random rand = new Random(0x2c3dfefd3970b9b7L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			assertEquals(gOrig.vertexSet(), g.vertices());
@@ -101,7 +100,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void edges() {
 		final Random rand = new Random(0xd3c4747c2c850fe3L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			assertEquals(gOrig.edgeSet(), g.edges());
@@ -115,7 +114,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void edgeSource() {
 		final Random rand = new Random(0xe9aabe356d0a5fe4L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			for (Integer e : gOrig.edgeSet())
@@ -128,7 +127,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void edgeTarget() {
 		final Random rand = new Random(0x671cf8c5c138aa5L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			for (Integer e : gOrig.edgeSet())
@@ -141,7 +140,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void edgeEndpoint() {
 		final Random rand = new Random(0xc6d4ba0ee6f4a2beL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed, true, true, false);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			for (Integer e : gOrig.edgeSet()) {
@@ -164,7 +163,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void getEdge() {
 		final Random rand = new Random(0x9374223c18e15ff7L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed, true, false, false);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			for (Integer e : gOrig.edgeSet())
@@ -180,7 +179,7 @@ public class JGraphTWrapperTest {
 			assertThrows(NoSuchVertexException.class, () -> g.getEdge(nonExistingVertex, existingVertex));
 			assertIndexGraphValid(g);
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed, true, true, false);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			for (Integer eEndpoints : gOrig.edgeSet()) {
@@ -202,7 +201,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void getEdges() {
 		final Random rand = new Random(0xcd7cca642e51ffb7L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed, true, true, false);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			for (Integer u : gOrig.vertexSet()) {
@@ -252,7 +251,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void outEdges() {
 		final Random rand = new Random(0x6e634575741fc3bdL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			for (Integer u : gOrig.vertexSet()) {
@@ -307,7 +306,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void inEdges() {
 		final Random rand = new Random(0x97049eb841916575L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			for (Integer u : gOrig.vertexSet()) {
@@ -361,9 +360,9 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void capabilities() {
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
-				for (boolean parallelEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
+				for (boolean parallelEdges : new boolean[] { false, true }) {
 					org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges, parallelEdges, false);
 					Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 					assertEquals(directed, g.isDirected());
@@ -378,7 +377,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void addVertex() {
 		final Random rand = new Random(0x6e634575741fc3bdL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			for (int i = 0; i < 10; i++) {
@@ -392,7 +391,7 @@ public class JGraphTWrapperTest {
 			}
 			assertThrows(IllegalArgumentException.class, () -> g.addVertex(Graphs.randVertex(g, rand)));
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			assertNull(g.vertexBuilder());
@@ -403,7 +402,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void addVertices() {
 		final Random rand = new Random(0x733d781fed52657bL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			for (int i = 0; i < 10; i++) {
 				org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 				Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
@@ -425,7 +424,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void removeVertex() {
 		final Random rand = new Random(0x35cb0b2a1678dac0L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 
@@ -446,7 +445,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void removeVertices() {
 		final Random rand = new Random(0xce23cf4ecfd8eac1L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 
@@ -469,7 +468,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void renameVertex() {
 		final Random rand = new Random(0x7bc30111633c945eL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			assertThrows(UnsupportedOperationException.class,
@@ -480,7 +479,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void addEdge() {
 		final Random rand = new Random(0x90d91fc7350b8357L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			for (int i = 0; i < 10; i++) {
@@ -506,7 +505,7 @@ public class JGraphTWrapperTest {
 				g.addEdge(u, v, Graphs.randEdge(g, rand));
 			});
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			assertNull(g.edgeBuilder());
@@ -518,7 +517,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void addEdges() {
 		final Random rand = new Random(0x3dd1d1628c28d086L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			for (int i = 0; i < 10; i++) {
 				org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed, true, true, false);
 				Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
@@ -560,7 +559,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void removeEdge() {
 		final Random rand = new Random(0x457feb00dce39a72L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			while (gOrig.edgeSet().size() > 0) {
@@ -579,7 +578,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void removeEdges() {
 		final Random rand = new Random(0xdc79a2b120e708daL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			while (gOrig.edgeSet().size() > 0) {
@@ -602,7 +601,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void removeEdgesOf() {
 		final Random rand = new Random(0x89b961a8efdd34L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			while (gOrig.edgeSet().size() > 0) {
@@ -627,7 +626,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void removeOutEdgesOf() {
 		final Random rand = new Random(0x9bf18a64c3812b86L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			while (gOrig.edgeSet().size() > 0) {
@@ -649,7 +648,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void removeInEdgesOf() {
 		final Random rand = new Random(0x9bf18a64c3812b86L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			while (gOrig.edgeSet().size() > 0) {
@@ -671,7 +670,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void renameEdge() {
 		final Random rand = new Random(0x16304de85b9e702aL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			assertThrows(UnsupportedOperationException.class,
@@ -682,7 +681,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void moveEdge() {
 		final Random rand = new Random(0x742cfb6935114b5dL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			assertThrows(UnsupportedOperationException.class,
@@ -692,7 +691,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void clear() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			for (int i = 0; i < 10; i++) {
 				org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 				Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
@@ -708,7 +707,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void clearEdges() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			for (int i = 0; i < 10; i++) {
 				org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 				Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
@@ -726,7 +725,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void weights() {
 		final Random rand = new Random(0x7ba17beb69ef3b9aL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig, "weights");
 
@@ -749,12 +748,12 @@ public class JGraphTWrapperTest {
 				assertEquals(expectedWeights.getDouble(e), gOrig.getEdgeWeight(e));
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed, true, true, false);
 			assertThrows(IllegalArgumentException.class, () -> new JGraphTWrapper<>(gOrig, "weights"));
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean weighted : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean weighted : new boolean[] { false, true }) {
 				org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed, true, true, weighted);
 				Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig, weighted ? "weights" : null);
 
@@ -781,7 +780,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void ensureCapacity() {
 		/* can't real test anything, just cover and see no exception is thrown */
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			g.ensureVertexCapacity(gOrig.vertexSet().size() + 10);
@@ -792,7 +791,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void verticesIndexGraph() {
 		final Random rand = new Random(0xe03d4253f135a0e3L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			final int n = gOrig.vertexSet().size();
@@ -818,7 +817,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void edgesIndexGraph() {
 		final Random rand = new Random(0xf6706cd69781812aL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			final int m = gOrig.edgeSet().size();
@@ -843,7 +842,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void edgeSourceIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -861,7 +860,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void edgeTargetIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -880,7 +879,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void edgeEndpointIndexGraph() {
 		final Random rand = new Random(0xe029331e9ed608bbL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed, true, true, false);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -904,7 +903,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void getEdgeIndexGraph() {
 		final Random rand = new Random(0xd1dcd8612d17b796L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed, true, false, false);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -927,7 +926,7 @@ public class JGraphTWrapperTest {
 			assertThrows(NoSuchVertexException.class, () -> ig.getEdge(existingVertex, nonExistingVertex));
 			assertThrows(NoSuchVertexException.class, () -> ig.getEdge(nonExistingVertex, existingVertex));
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed, true, true, false);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -949,7 +948,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void getEdgesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed, true, true, false);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1010,7 +1009,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void outEdgesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1070,7 +1069,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void inEdgesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1129,9 +1128,9 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void capabilitiesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
-				for (boolean parallelEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
+				for (boolean parallelEdges : new boolean[] { false, true }) {
 					org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges, parallelEdges, false);
 					Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 					IndexGraph ig = g.indexGraph();
@@ -1147,13 +1146,13 @@ public class JGraphTWrapperTest {
 	@SuppressWarnings("deprecation")
 	@Test
 	public void addVertexIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
 			assertThrows(UnsupportedOperationException.class, () -> ig.addVertex(ig.vertices().size()));
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1163,7 +1162,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void addVerticesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1174,7 +1173,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void removeVertexIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1184,7 +1183,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void removeVerticesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1195,13 +1194,13 @@ public class JGraphTWrapperTest {
 	@SuppressWarnings("deprecation")
 	@Test
 	public void addEdgeIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
 			assertThrows(UnsupportedOperationException.class, () -> ig.addEdge(0, 1, ig.edges().size()));
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1211,7 +1210,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void addEdgesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1229,7 +1228,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void removeEdgeIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1239,7 +1238,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void removeEdgesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1249,7 +1248,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void removeEdgesOfIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1259,7 +1258,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void removeOutEdgesOfIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1269,7 +1268,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void removeInEdgesOfIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1279,7 +1278,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void moveEdgeIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1289,7 +1288,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void clearIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1299,7 +1298,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void clearEdgesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1310,7 +1309,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void weightsIndexGraph() {
 		final Random rand = new Random(0x2b7e7f7d7cd46401L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig, "weights");
 			IndexGraph ig = g.indexGraph();
@@ -1335,8 +1334,8 @@ public class JGraphTWrapperTest {
 				assertEquals(expectedWeights.getDouble(e), gOrig.getEdgeWeight(e));
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean weighted : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean weighted : new boolean[] { false, true }) {
 				org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed, true, true, weighted);
 				Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig, weighted ? "weights" : null);
 				IndexGraph ig = g.indexGraph();
@@ -1363,7 +1362,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void ensureCapacityIndexGraph() {
 		/* can't real test anything, just cover and see no exception is thrown */
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1374,7 +1373,7 @@ public class JGraphTWrapperTest {
 
 	@Test
 	public void indexGraphRemoveListeners() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1395,7 +1394,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void indexGraphVerticesMap() {
 		final Random rand = new Random(0xa1fac4326855753aL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1440,7 +1439,7 @@ public class JGraphTWrapperTest {
 	@Test
 	public void indexGraphEdgesMap() {
 		final Random rand = new Random(0xada6daca8802e6e2L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			org.jgrapht.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();

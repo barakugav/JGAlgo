@@ -38,7 +38,6 @@ import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.WeightsDouble;
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 
 @SuppressWarnings("boxing")
@@ -46,25 +45,25 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void constructor() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			assertFalse(g.getType().isWeighted());
 			assertEquals(directed, g.getType().isDirected());
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig, null);
 			assertFalse(g.getType().isWeighted());
 			assertEquals(directed, g.getType().isDirected());
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig, "weights");
 			assertTrue(g.getType().isWeighted());
 			assertEquals(directed, g.getType().isDirected());
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			assertThrows(IllegalArgumentException.class, () -> new JGraphTAdapter<>(gOrig, "non-existing-weights"));
 		}
@@ -72,7 +71,7 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void vertexSet() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			assertEquals(gOrig.vertices(), g.vertexSet());
@@ -81,7 +80,7 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void edgeSet() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			assertEquals(gOrig.edges(), g.edgeSet());
@@ -90,7 +89,7 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void containsVertex() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			for (Integer v : gOrig.vertices())
@@ -102,7 +101,7 @@ public class JGraphTAdapterTest {
 	@Test
 	public void containsEdge() {
 		final Random rand = new Random(0xc1dfdcacf76522a0L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 
@@ -128,7 +127,7 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void getEdgeSource() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			for (Integer e : gOrig.edges())
@@ -140,7 +139,7 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void getEdgeTarget() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			for (Integer e : gOrig.edges())
@@ -153,7 +152,7 @@ public class JGraphTAdapterTest {
 	@Test
 	public void getEdge() {
 		final Random rand = new Random(0xebeda915b31eebb5L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, true, false);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			for (Integer e : gOrig.edges())
@@ -174,7 +173,7 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void getAllEdges() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			for (Integer u : gOrig.vertices())
@@ -190,7 +189,7 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void edgesOf() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			for (Integer v : gOrig.vertices()) {
@@ -206,7 +205,7 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void outgoingEdgesOf() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			for (Integer v : gOrig.vertices())
@@ -218,7 +217,7 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void incomingEdgesOf() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			for (Integer v : gOrig.vertices())
@@ -230,8 +229,8 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void degreeOf() {
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
 				com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges, true);
 				Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 				for (Integer v : gOrig.vertices()) {
@@ -254,7 +253,7 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void outDegreeOf() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			for (Integer v : gOrig.vertices()) {
@@ -276,7 +275,7 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void inDegreeOf() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			for (Integer v : gOrig.vertices()) {
@@ -298,7 +297,7 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void addVertex() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			assertGraph(gOrig, g);
@@ -310,7 +309,7 @@ public class JGraphTAdapterTest {
 				assertGraph(gOrig, g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			assertGraph(gOrig, g);
@@ -324,7 +323,7 @@ public class JGraphTAdapterTest {
 			}
 			assertGraph(gOrig, g);
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			JGraphTAdapter<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			Supplier<Integer> vertexSupplier = new AtomicInteger(10000)::getAndIncrement;
@@ -341,7 +340,7 @@ public class JGraphTAdapterTest {
 				assertGraph(gOrig, g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			/* remove all vertices with odd id */
 			gOrig.removeVertices(gOrig.vertices().stream().filter(v -> v % 2 != 0).collect(toList()));
@@ -370,7 +369,7 @@ public class JGraphTAdapterTest {
 	@Test
 	public void removeVertex() {
 		final Random rand = new Random(0xf485d9e60f98b995L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			assertGraph(gOrig, g);
@@ -391,7 +390,7 @@ public class JGraphTAdapterTest {
 			}
 			assertTrue(g.vertexSet().isEmpty());
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			assertGraph(gOrig, g);
@@ -404,7 +403,7 @@ public class JGraphTAdapterTest {
 			assertEquals(verticesNumBefore, g.vertexSet().size());
 			assertFalse(g.containsVertex(nonExistingVertex));
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			assertThrows(UnsupportedOperationException.class, () -> g.addVertex());
@@ -414,7 +413,7 @@ public class JGraphTAdapterTest {
 	@Test
 	public void removeAllVertices() {
 		final Random rand = new Random(0x41abc77e1bc382a3L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, true, true);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			assertGraph(gOrig, g);
@@ -456,8 +455,8 @@ public class JGraphTAdapterTest {
 	@Test
 	public void addEdge() {
 		final Random rand = new Random(0x2223aee3dc4b0886L);
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean parallelEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean parallelEdges : new boolean[] { false, true }) {
 				com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, true, parallelEdges);
 				Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 				assertGraph(gOrig, g);
@@ -512,8 +511,8 @@ public class JGraphTAdapterTest {
 				assertGraph(gOrig, g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean parallelEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean parallelEdges : new boolean[] { false, true }) {
 				com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, true, parallelEdges);
 				JGraphTAdapter<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 				AtomicInteger edgeSupplierNext = new AtomicInteger(10000);
@@ -578,7 +577,7 @@ public class JGraphTAdapterTest {
 				assertGraph(gOrig, g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			Pair<Integer, Integer> endpoints = validEndpointsToAdd(gOrig, rand);
@@ -591,7 +590,7 @@ public class JGraphTAdapterTest {
 	@Test
 	public void removeEdge() {
 		final Random rand = new Random(0x24d502e7f38069fcL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			assertGraph(gOrig, g);
@@ -607,7 +606,7 @@ public class JGraphTAdapterTest {
 			}
 			assertTrue(g.edgeSet().isEmpty());
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			assertGraph(gOrig, g);
@@ -621,7 +620,7 @@ public class JGraphTAdapterTest {
 			assertFalse(g.containsEdge(nonExistingEdge));
 			assertGraph(gOrig, g);
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			assertGraph(gOrig, g);
@@ -669,7 +668,7 @@ public class JGraphTAdapterTest {
 	@Test
 	public void removeAllEdges() {
 		final Random rand = new Random(0x65fb4d38d4809b8L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			assertGraph(gOrig, g);
@@ -698,7 +697,7 @@ public class JGraphTAdapterTest {
 			}
 			assertTrue(g.edgeSet().isEmpty());
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			assertGraph(gOrig, g);
@@ -767,10 +766,10 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void getType() {
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
-				for (boolean parallelEdges : BooleanList.of(false, true)) {
-					for (boolean weighted : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
+				for (boolean parallelEdges : new boolean[] { false, true }) {
+					for (boolean weighted : new boolean[] { false, true }) {
 						com.jgalgo.graph.Graph<Integer, Integer> gOrig =
 								createGraph(directed, selfEdges, parallelEdges);
 						Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig, weighted ? "weights" : null);
@@ -786,7 +785,7 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void getEdgeWeight() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig, "weights");
 			WeightsDouble<Integer> weights = gOrig.getEdgesWeights("weights");
@@ -795,7 +794,7 @@ public class JGraphTAdapterTest {
 
 			assertThrows(RuntimeException.class, () -> g.getEdgeWeight(nonExistingEdge(gOrig)));
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			for (Integer e : gOrig.edges())
@@ -805,7 +804,7 @@ public class JGraphTAdapterTest {
 
 	@Test
 	public void setEdgeWeight() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, false, false);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig, "weights");
 			WeightsDouble<Integer> weights = gOrig.getEdgesWeights("weights");
@@ -818,7 +817,7 @@ public class JGraphTAdapterTest {
 
 			assertThrows(RuntimeException.class, () -> g.setEdgeWeight(nonExistingEdge(gOrig), 0));
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			assertThrows(UnsupportedOperationException.class,
