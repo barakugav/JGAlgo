@@ -18,6 +18,7 @@ package com.jgalgo.bench.util;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Random;
+import java.util.function.Function;
 import com.jgalgo.gen.BarabasiAlbertGraphGenerator;
 import com.jgalgo.gen.GnmBipartiteGraphGenerator;
 import com.jgalgo.gen.GnmGraphGenerator;
@@ -30,7 +31,6 @@ import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IdBuilderInt;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
-import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphsTestUtils extends TestUtils {
 
@@ -81,8 +81,8 @@ public class GraphsTestUtils extends TestUtils {
 				.generateMutable();
 	}
 
-	public static Boolean2ObjectFunction<IntGraph> defaultGraphImpl() {
-		return directed -> IntGraphFactory.newInstance(directed).newGraph();
+	public static Function<Boolean, IntGraph> defaultGraphImpl() {
+		return directed -> IntGraphFactory.newInstance(directed.booleanValue()).newGraph();
 	}
 
 	public static IWeightsDouble assignRandWeights(IntGraph g, long seed) {
