@@ -37,7 +37,6 @@ import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IntGraphFactory;
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
@@ -46,7 +45,7 @@ public class GuavaNetworkAdapterTest {
 
 	@Test
 	public void nodes() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 			assertEquals(gOrig.vertices(), g.nodes());
@@ -55,7 +54,7 @@ public class GuavaNetworkAdapterTest {
 
 	@Test
 	public void edges() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 			assertEquals(gOrig.edges(), g.edges());
@@ -65,7 +64,7 @@ public class GuavaNetworkAdapterTest {
 	@Test
 	public void incidentNodes() {
 		final Random rand = new Random(0xe2715882c3c98be1L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 			for (Integer e : g.edges()) {
@@ -80,7 +79,7 @@ public class GuavaNetworkAdapterTest {
 	@Test
 	public void successors() {
 		final Random rand = new Random(0x7727d19a01718ddL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
@@ -106,7 +105,7 @@ public class GuavaNetworkAdapterTest {
 	@Test
 	public void predecessors() {
 		final Random rand = new Random(0x7d5adfa3e4cff2feL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
@@ -132,7 +131,7 @@ public class GuavaNetworkAdapterTest {
 	@Test
 	public void adjacentNodes() {
 		final Random rand = new Random(0x7d5adfa3e4cff2feL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
@@ -161,7 +160,7 @@ public class GuavaNetworkAdapterTest {
 	@Test
 	public void adjacentEdges() {
 		final Random rand = new Random(0xe5f4970282966bfdL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
@@ -192,7 +191,7 @@ public class GuavaNetworkAdapterTest {
 	@Test
 	public void hasEdgeConnecting() {
 		final Random rand = new Random(0x7d5adfa3e4cff2feL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
@@ -234,9 +233,9 @@ public class GuavaNetworkAdapterTest {
 	@Test
 	public void incidentEdges() {
 		final Random rand = new Random(0x4ba6b5de1d87b179L);
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
-				for (boolean parallelEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
+				for (boolean parallelEdges : new boolean[] { false, true }) {
 					com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges, parallelEdges);
 					Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
@@ -272,9 +271,9 @@ public class GuavaNetworkAdapterTest {
 	@Test
 	public void degree() {
 		final Random rand = new Random(0x65e5ac02fd8c2c2bL);
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
-				for (boolean parallelEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
+				for (boolean parallelEdges : new boolean[] { false, true }) {
 					com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges, parallelEdges);
 					Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
@@ -296,9 +295,9 @@ public class GuavaNetworkAdapterTest {
 	@Test
 	public void outDegree() {
 		final Random rand = new Random(0x8f32ab1776e1546L);
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
-				for (boolean parallelEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
+				for (boolean parallelEdges : new boolean[] { false, true }) {
 					com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges, parallelEdges);
 					Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
@@ -320,9 +319,9 @@ public class GuavaNetworkAdapterTest {
 	@Test
 	public void inDegree() {
 		final Random rand = new Random(0x303e9d43e4c1d785L);
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
-				for (boolean parallelEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
+				for (boolean parallelEdges : new boolean[] { false, true }) {
 					com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges, parallelEdges);
 					Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
@@ -351,9 +350,9 @@ public class GuavaNetworkAdapterTest {
 
 	@Test
 	public void capabilities() {
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
-				for (boolean parallelEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
+				for (boolean parallelEdges : new boolean[] { false, true }) {
 					com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges, parallelEdges);
 					Network<Integer, Integer> g = new GuavaNetworkAdapter<>(gOrig);
 
@@ -370,7 +369,7 @@ public class GuavaNetworkAdapterTest {
 	@Test
 	public void addNode() {
 		final Random rand = new Random(0x68360559fa787b0L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig =
 					IntGraphFactory.newInstance(directed).allowSelfEdges().allowParallelEdges().newGraph();
 			MutableNetwork<Integer, Integer> g = new GuavaMutableNetworkAdapter<>(gOrig);
@@ -398,7 +397,7 @@ public class GuavaNetworkAdapterTest {
 	@Test
 	public void removeNode() {
 		final Random rand = new Random(0x356ed8856308022bL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			MutableNetwork<Integer, Integer> g = new GuavaMutableNetworkAdapter<>(gOrig);
 
@@ -445,7 +444,7 @@ public class GuavaNetworkAdapterTest {
 	@Test
 	public void putEdge() {
 		final Random rand = new Random(0xeef076eb5b67e4ecL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig =
 					IntGraphFactory.newInstance(directed).allowSelfEdges().allowParallelEdges().newGraph();
 			gOrig.addVertices(range(20));
@@ -507,7 +506,7 @@ public class GuavaNetworkAdapterTest {
 		}
 
 		/* on missing endpoint, node should be added silently */
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig =
 					IntGraphFactory.newInstance(directed).allowSelfEdges().allowParallelEdges().newGraph();
 			MutableNetwork<Integer, Integer> g = new GuavaMutableNetworkAdapter<>(gOrig);
@@ -537,7 +536,7 @@ public class GuavaNetworkAdapterTest {
 	@Test
 	public void removeEdge() {
 		final Random rand = new Random(0x17ef03cedc99e735L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			MutableNetwork<Integer, Integer> g = new GuavaMutableNetworkAdapter<>(gOrig);
 

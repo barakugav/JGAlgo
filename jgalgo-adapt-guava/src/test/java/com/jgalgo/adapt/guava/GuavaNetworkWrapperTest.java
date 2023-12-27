@@ -50,7 +50,6 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.NoSuchVertexException;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -69,7 +68,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void vertices() {
 		final Random rand = new Random(0xee0fe0aff09bd445L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			assertEquals(gOrig.nodes(), g.vertices());
@@ -83,7 +82,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void edges() {
 		final Random rand = new Random(0xdaacd665c80f0277L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			assertEquals(gOrig.edges(), g.edges());
@@ -97,7 +96,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void edgeSource() {
 		final Random rand = new Random(0x23266c9685421effL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			for (Integer e : gOrig.edges())
@@ -110,7 +109,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void edgeTarget() {
 		final Random rand = new Random(0xa202bb0cfd590188L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			for (Integer e : gOrig.edges())
@@ -123,7 +122,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void edgeEndpoint() {
 		final Random rand = new Random(0x350d412f62601cf1L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			for (Integer e : gOrig.edges()) {
@@ -146,7 +145,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void getEdge() {
 		final Random rand = new Random(0x30e0c2a4e3186c80L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed, true, false);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			for (Integer e : gOrig.edges())
@@ -162,7 +161,7 @@ public class GuavaNetworkWrapperTest {
 			assertThrows(NoSuchVertexException.class, () -> g.getEdge(nonExistingVertex, existingVertex));
 			assertIndexGraphValid(g);
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed, true, true);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			for (Integer eEndpoints : gOrig.edges()) {
@@ -184,7 +183,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void getEdges() {
 		final Random rand = new Random(0xbcca7e883cd9c66dL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed, true, true);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			for (Integer u : gOrig.nodes()) {
@@ -234,7 +233,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void outEdges() {
 		final Random rand = new Random(0xf2c8368fe6310cc2L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			for (Integer u : gOrig.nodes()) {
@@ -290,7 +289,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void inEdges() {
 		final Random rand = new Random(0x1378308b855a19b5L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			for (Integer u : gOrig.nodes()) {
@@ -345,9 +344,9 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void capabilities() {
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
-				for (boolean parallelEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
+				for (boolean parallelEdges : new boolean[] { false, true }) {
 					MutableNetwork<Integer, Integer> gOrig = createGraph(directed, selfEdges, parallelEdges);
 					Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 					assertEquals(directed, g.isDirected());
@@ -362,7 +361,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void addVertex() {
 		final Random rand = new Random(0x12d379bcfc0d8e52L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			for (int i = 0; i < 10; i++) {
@@ -376,13 +375,13 @@ public class GuavaNetworkWrapperTest {
 			}
 			assertThrows(IllegalArgumentException.class, () -> g.addVertex(Graphs.randVertex(g, rand)));
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			assertNull(g.vertexBuilder());
 			assertThrows(UnsupportedOperationException.class, () -> g.addVertex());
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig, false);
 			assertThrows(UnsupportedOperationException.class, () -> g.addVertex(nonExistingVertex(gOrig, rand)));
@@ -392,7 +391,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void addVertices() {
 		final Random rand = new Random(0x60b3f7d78bcbbef0L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			for (int i = 0; i < 10; i++) {
 				MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 				Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
@@ -409,7 +408,7 @@ public class GuavaNetworkWrapperTest {
 				assertIndexGraphValid(g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			Set<Integer> expectedVertices = new IntOpenHashSet(g.vertices());
@@ -442,7 +441,7 @@ public class GuavaNetworkWrapperTest {
 				assertIndexGraphValid(g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig, false);
 			assertThrows(UnsupportedOperationException.class,
@@ -453,7 +452,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void removeVertex() {
 		final Random rand = new Random(0x7884014ec0a91891L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 
@@ -469,7 +468,7 @@ public class GuavaNetworkWrapperTest {
 				assertIndexGraphValid(g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig, false);
 			assertThrows(UnsupportedOperationException.class, () -> g.removeVertex(Graphs.randVertex(g, rand)));
@@ -479,7 +478,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void removeVertices() {
 		final Random rand = new Random(0x24666d0fe1dbc304L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 
@@ -497,7 +496,7 @@ public class GuavaNetworkWrapperTest {
 				assertIndexGraphValid(g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			Set<Integer> expectedVertices = new IntOpenHashSet(g.vertices());
@@ -531,7 +530,7 @@ public class GuavaNetworkWrapperTest {
 				assertIndexGraphValid(g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig, false);
 			assertThrows(UnsupportedOperationException.class,
@@ -542,7 +541,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void renameVertex() {
 		final Random rand = new Random(0x78387f223c9b44eaL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			assertThrows(UnsupportedOperationException.class,
@@ -553,7 +552,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void addEdge() {
 		final Random rand = new Random(0x8aab5a5aa163bf8L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			for (int i = 0; i < 10; i++) {
@@ -578,7 +577,7 @@ public class GuavaNetworkWrapperTest {
 			});
 		}
 		/* duplicate edge id */
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			Integer e = Graphs.randEdge(g, rand);
@@ -588,7 +587,7 @@ public class GuavaNetworkWrapperTest {
 			assertThrows(IllegalArgumentException.class, () -> g.addEdge(u, v, e));
 		}
 		/* duplicate edge including endpoints */
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			Integer e = Graphs.randEdge(g, rand);
@@ -597,7 +596,7 @@ public class GuavaNetworkWrapperTest {
 			assertThrows(IllegalArgumentException.class, () -> g.addEdge(u, v, e));
 		}
 		/* invalid source */
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			Integer e = nonExistingEdge(gOrig, rand);
@@ -606,7 +605,7 @@ public class GuavaNetworkWrapperTest {
 			assertThrows(NoSuchVertexException.class, () -> g.addEdge(u, v, e));
 		}
 		/* invalid target */
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			Integer e = nonExistingEdge(gOrig, rand);
@@ -615,7 +614,7 @@ public class GuavaNetworkWrapperTest {
 			assertThrows(NoSuchVertexException.class, () -> g.addEdge(u, v, e));
 		}
 		/* invalid self edge */
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed, false, false);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			Integer e = nonExistingEdge(gOrig, rand);
@@ -624,7 +623,7 @@ public class GuavaNetworkWrapperTest {
 			assertThrows(IllegalArgumentException.class, () -> g.addEdge(u, v, e));
 		}
 		/* invalid parallel edge */
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed, false, false);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			Integer e = nonExistingEdge(gOrig, rand);
@@ -634,7 +633,7 @@ public class GuavaNetworkWrapperTest {
 			assertThrows(IllegalArgumentException.class, () -> g.addEdge(u, v, e));
 		}
 		/* no edge builder */
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			assertNull(g.edgeBuilder());
@@ -642,7 +641,7 @@ public class GuavaNetworkWrapperTest {
 					() -> g.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand)));
 		}
 		/* immutable graph */
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig, false);
 			assertThrows(UnsupportedOperationException.class, () -> g
@@ -653,7 +652,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void addEdges() {
 		final Random rand = new Random(0x111310f44f770461L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			for (int i = 0; i < 10; i++) {
 				MutableNetwork<Integer, Integer> gOrig = createGraph(directed, true, true);
 				Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
@@ -688,7 +687,7 @@ public class GuavaNetworkWrapperTest {
 				assertIndexGraphValid(g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed, true, true);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			Map<Integer, EndpointPair<Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
@@ -740,7 +739,7 @@ public class GuavaNetworkWrapperTest {
 				assertIndexGraphValid(g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig, false);
 
@@ -758,7 +757,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void removeEdge() {
 		final Random rand = new Random(0x1a261a4f2f5784b2L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			while (gOrig.edges().size() > 0) {
@@ -772,7 +771,7 @@ public class GuavaNetworkWrapperTest {
 			}
 			assertThrows(NoSuchEdgeException.class, () -> g.removeEdge(nonExistingEdge(gOrig, rand)));
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig, false);
 			assertThrows(UnsupportedOperationException.class, () -> g.removeEdge(Graphs.randEdge(g, rand)));
@@ -782,7 +781,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void removeEdges() {
 		final Random rand = new Random(0x34c380bce9a2bca7L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			Map<Integer, EndpointPair<Integer>> expectedEdges = new Int2ObjectOpenHashMap<>();
@@ -826,7 +825,7 @@ public class GuavaNetworkWrapperTest {
 				assertIndexGraphValid(g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig, false);
 			assertThrows(UnsupportedOperationException.class,
@@ -837,7 +836,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void removeEdgesOf() {
 		final Random rand = new Random(0x4d2b2cab867fbd31L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			while (gOrig.edges().size() > 0) {
@@ -857,7 +856,7 @@ public class GuavaNetworkWrapperTest {
 				assertIndexGraphValid(g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig, false);
 			assertThrows(UnsupportedOperationException.class, () -> g.removeEdgesOf(Graphs.randVertex(g, rand)));
@@ -867,7 +866,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void removeOutEdgesOf() {
 		final Random rand = new Random(0xf264145055d1a5c0L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			while (gOrig.edges().size() > 0) {
@@ -884,7 +883,7 @@ public class GuavaNetworkWrapperTest {
 				assertIndexGraphValid(g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig, false);
 			assertThrows(UnsupportedOperationException.class, () -> g.removeOutEdgesOf(Graphs.randVertex(g, rand)));
@@ -894,7 +893,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void removeInEdgesOf() {
 		final Random rand = new Random(0xac2a0bf3c8dfb7ccL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			while (gOrig.edges().size() > 0) {
@@ -911,7 +910,7 @@ public class GuavaNetworkWrapperTest {
 				assertIndexGraphValid(g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig, false);
 			assertThrows(UnsupportedOperationException.class, () -> g.removeInEdgesOf(Graphs.randVertex(g, rand)));
@@ -921,7 +920,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void renameEdge() {
 		final Random rand = new Random(0xf788f10c47780050L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			assertThrows(UnsupportedOperationException.class,
@@ -932,7 +931,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void moveEdge() {
 		final Random rand = new Random(0xd5b504228e62b8e3L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			assertThrows(UnsupportedOperationException.class,
@@ -942,7 +941,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void clear() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			for (int i = 0; i < 10; i++) {
 				MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 				Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
@@ -954,7 +953,7 @@ public class GuavaNetworkWrapperTest {
 				assertIndexGraphValid(g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig, false);
 			assertThrows(UnsupportedOperationException.class, () -> g.clear());
@@ -963,7 +962,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void clearEdges() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			for (int i = 0; i < 10; i++) {
 				MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 				Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
@@ -976,7 +975,7 @@ public class GuavaNetworkWrapperTest {
 				assertIndexGraphValid(g);
 			}
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig, false);
 			assertThrows(UnsupportedOperationException.class, () -> g.clearEdges());
@@ -985,7 +984,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void weights() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			assertEquals(Set.of(), g.getVerticesWeightsKeys());
@@ -1002,7 +1001,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void ensureCapacity() {
 		/* can't real test anything, just cover and see no exception is thrown */
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			g.ensureVertexCapacity(gOrig.nodes().size() + 10);
@@ -1013,7 +1012,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void verticesIndexGraph() {
 		final Random rand = new Random(0xf8d0400a5f128c84L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			final int n = gOrig.nodes().size();
@@ -1039,7 +1038,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void edgesIndexGraph() {
 		final Random rand = new Random(0x3db5c525cff3d2b7L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			final int m = gOrig.edges().size();
@@ -1064,7 +1063,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void edgeSourceIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1082,7 +1081,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void edgeTargetIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1101,7 +1100,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void edgeEndpointIndexGraph() {
 		final Random rand = new Random(0x8568cc8e526b7badL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed, true, true);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1125,7 +1124,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void getEdgeIndexGraph() {
 		final Random rand = new Random(0xd1eedec2d7cc050bL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed, true, false);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1148,7 +1147,7 @@ public class GuavaNetworkWrapperTest {
 			assertThrows(NoSuchVertexException.class, () -> ig.getEdge(existingVertex, nonExistingVertex));
 			assertThrows(NoSuchVertexException.class, () -> ig.getEdge(nonExistingVertex, existingVertex));
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed, true, true);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1170,7 +1169,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void getEdgesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed, true, true);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1231,7 +1230,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void outEdgesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1291,7 +1290,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void inEdgesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1351,9 +1350,9 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void capabilitiesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
-				for (boolean parallelEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
+				for (boolean parallelEdges : new boolean[] { false, true }) {
 					MutableNetwork<Integer, Integer> gOrig = createGraph(directed, selfEdges, parallelEdges);
 					Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 					IndexGraph ig = g.indexGraph();
@@ -1369,13 +1368,13 @@ public class GuavaNetworkWrapperTest {
 	@SuppressWarnings("deprecation")
 	@Test
 	public void addVertexIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
 			assertThrows(UnsupportedOperationException.class, () -> ig.addVertex(ig.vertices().size()));
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1385,7 +1384,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void addVerticesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1396,7 +1395,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void removeVertexIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1406,7 +1405,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void removeVerticesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1417,13 +1416,13 @@ public class GuavaNetworkWrapperTest {
 	@SuppressWarnings("deprecation")
 	@Test
 	public void addEdgeIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
 			assertThrows(UnsupportedOperationException.class, () -> ig.addEdge(0, 1, ig.edges().size()));
 		}
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1433,7 +1432,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void addEdgesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1451,7 +1450,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void removeEdgeIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1461,7 +1460,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void removeEdgesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1471,7 +1470,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void removeEdgesOfIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1481,7 +1480,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void removeOutEdgesOfIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1491,7 +1490,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void removeInEdgesOfIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1501,7 +1500,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void moveEdgeIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1511,7 +1510,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void clearIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1521,7 +1520,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void clearEdgesIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1531,7 +1530,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void weightsIndexGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1549,7 +1548,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void ensureCapacityIndexGraph() {
 		/* can't real test anything, just cover and see no exception is thrown */
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1560,7 +1559,7 @@ public class GuavaNetworkWrapperTest {
 
 	@Test
 	public void indexGraphRemoveListeners() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1581,7 +1580,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void indexGraphVerticesMap() {
 		final Random rand = new Random(0x68face870c8e859dL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();
@@ -1626,7 +1625,7 @@ public class GuavaNetworkWrapperTest {
 	@Test
 	public void indexGraphEdgesMap() {
 		final Random rand = new Random(0x867fa9e746ef6206L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			MutableNetwork<Integer, Integer> gOrig = createGraph(directed);
 			Graph<Integer, Integer> g = new GuavaNetworkWrapper<>(gOrig);
 			IndexGraph ig = g.indexGraph();

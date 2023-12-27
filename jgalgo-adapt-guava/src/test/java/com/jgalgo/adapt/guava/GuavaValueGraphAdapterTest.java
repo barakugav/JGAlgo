@@ -39,7 +39,6 @@ import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.WeightsDouble;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -63,7 +62,7 @@ public class GuavaValueGraphAdapterTest {
 
 	@Test
 	public void nodes() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			ValueGraph<Integer, Double> g = new GuavaValueGraphAdapter<>(gOrig, "weights");
 			assertEquals(gOrig.vertices(), g.nodes());
@@ -73,7 +72,7 @@ public class GuavaValueGraphAdapterTest {
 	@Test
 	public void edges() {
 		final Random rand = new Random(0xa3c60794d5723a88L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			ValueGraph<Integer, Double> g = new GuavaValueGraphAdapter<>(gOrig, "weights");
 
@@ -113,7 +112,7 @@ public class GuavaValueGraphAdapterTest {
 	@Test
 	public void successors() {
 		final Random rand = new Random(0x61f3311581791dd4L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			ValueGraph<Integer, Double> g = new GuavaValueGraphAdapter<>(gOrig, "weights");
 
@@ -139,7 +138,7 @@ public class GuavaValueGraphAdapterTest {
 	@Test
 	public void predecessors() {
 		final Random rand = new Random(0x9f4ad8f981413b36L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			ValueGraph<Integer, Double> g = new GuavaValueGraphAdapter<>(gOrig, "weights");
 
@@ -165,7 +164,7 @@ public class GuavaValueGraphAdapterTest {
 	@Test
 	public void adjacentNodes() {
 		final Random rand = new Random(0x17e3589767979baaL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			ValueGraph<Integer, Double> g = new GuavaValueGraphAdapter<>(gOrig, "weights");
 
@@ -194,7 +193,7 @@ public class GuavaValueGraphAdapterTest {
 	@Test
 	public void hasEdgeConnecting() {
 		final Random rand = new Random(0x887781f49e315a7cL);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			ValueGraph<Integer, Double> g = new GuavaValueGraphAdapter<>(gOrig, "weights");
 
@@ -233,8 +232,8 @@ public class GuavaValueGraphAdapterTest {
 	@Test
 	public void incidentEdges() {
 		final Random rand = new Random(0x488d87682f6c9639L);
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
 				com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges);
 				ValueGraph<Integer, Double> g = new GuavaValueGraphAdapter<>(gOrig, "weights");
 
@@ -280,8 +279,8 @@ public class GuavaValueGraphAdapterTest {
 	@Test
 	public void degree() {
 		final Random rand = new Random(0x82020fb5caf888a3L);
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
 				com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges);
 				ValueGraph<Integer, Double> g = new GuavaValueGraphAdapter<>(gOrig, "weights");
 
@@ -302,8 +301,8 @@ public class GuavaValueGraphAdapterTest {
 	@Test
 	public void outDegree() {
 		final Random rand = new Random(0x31d935db775158c4L);
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
 				com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges);
 				ValueGraph<Integer, Double> g = new GuavaValueGraphAdapter<>(gOrig, "weights");
 
@@ -324,8 +323,8 @@ public class GuavaValueGraphAdapterTest {
 	@Test
 	public void inDegree() {
 		final Random rand = new Random(0xebf6dd79be54fc7eL);
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
 				com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges);
 				ValueGraph<Integer, Double> g = new GuavaValueGraphAdapter<>(gOrig, "weights");
 
@@ -354,7 +353,7 @@ public class GuavaValueGraphAdapterTest {
 	@Test
 	public void edgeValueOrDefault() {
 		final Random rand = new Random(0x78520be26e536bc6L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			WeightsDouble<Integer> weights = gOrig.getEdgesWeights("weights");
 			ValueGraph<Integer, Double> g = new GuavaValueGraphAdapter<>(gOrig, "weights");
@@ -375,8 +374,8 @@ public class GuavaValueGraphAdapterTest {
 
 	@Test
 	public void capabilities() {
-		for (boolean directed : BooleanList.of(false, true)) {
-			for (boolean selfEdges : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
+			for (boolean selfEdges : new boolean[] { false, true }) {
 				com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, selfEdges);
 				ValueGraph<Integer, Double> g = new GuavaValueGraphAdapter<>(gOrig, "weights");
 
@@ -390,7 +389,7 @@ public class GuavaValueGraphAdapterTest {
 
 	@Test
 	public void asGraph() {
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			ValueGraph<Integer, Double> g0 = new GuavaValueGraphAdapter<>(gOrig, "weights");
 			Graph<Integer> g = g0.asGraph();
@@ -426,7 +425,7 @@ public class GuavaValueGraphAdapterTest {
 	@Test
 	public void addNode() {
 		final Random rand = new Random(0x9c05ec24986155b3L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig =
 					IntGraphFactory.newInstance(directed).allowSelfEdges().allowParallelEdges(false).newGraph();
 			gOrig.addEdgesWeights("weights", double.class);
@@ -455,7 +454,7 @@ public class GuavaValueGraphAdapterTest {
 	@Test
 	public void removeNode() {
 		final Random rand = new Random(0x1ab24976d9d62627L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			MutableValueGraph<Integer, Double> g = new GuavaMutableValueGraphAdapter<>(gOrig, "weights");
 
@@ -502,7 +501,7 @@ public class GuavaValueGraphAdapterTest {
 	@Test
 	public void putEdge() {
 		final Random rand = new Random(0xbfd3de3d04588814L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig =
 					IntGraphFactory.newInstance(directed).allowSelfEdges().allowParallelEdges(false).newGraph();
 			gOrig.addVertices(range(20));
@@ -549,7 +548,7 @@ public class GuavaValueGraphAdapterTest {
 		}
 
 		/* on missing endpoint, node should be added silently */
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig =
 					IntGraphFactory.newInstance(directed).allowSelfEdges().allowParallelEdges(false).newGraph();
 			WeightsDouble<Integer> weights = gOrig.addEdgesWeights("weights", double.class);
@@ -579,7 +578,7 @@ public class GuavaValueGraphAdapterTest {
 	@Test
 	public void removeEdge() {
 		final Random rand = new Random(0x50ed947de5c08a58L);
-		for (boolean directed : BooleanList.of(false, true)) {
+		for (boolean directed : new boolean[] { false, true }) {
 			com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed);
 			MutableValueGraph<Integer, Double> g = new GuavaMutableValueGraphAdapter<>(gOrig, "weights");
 
