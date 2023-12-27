@@ -17,15 +17,15 @@
 package com.jgalgo.graph;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 public class GraphLinkedTest extends TestBase {
 
-	private static Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl(boolean selfEdges) {
+	private static Function<Boolean, Graph<Integer, Integer>> graphImpl(boolean selfEdges) {
 		return directed -> IntGraphFactory
-				.newInstance(directed)
+				.newInstance(directed.booleanValue())
 				.setOption("impl", selfEdges ? "linked-list-selfedges" : "linked-list")
 				.newGraph();
 	}

@@ -27,9 +27,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 
 public class GraphImplTest extends TestBase {
@@ -248,8 +248,11 @@ public class GraphImplTest extends TestBase {
 		});
 	}
 
-	private static Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl(boolean selfEdges) {
-		return directed -> GraphFactory.<Integer, Integer>newInstance(directed).allowSelfEdges(selfEdges).newGraph();
+	private static Function<Boolean, Graph<Integer, Integer>> graphImpl(boolean selfEdges) {
+		return directed -> GraphFactory
+				.<Integer, Integer>newInstance(directed.booleanValue())
+				.allowSelfEdges(selfEdges)
+				.newGraph();
 	}
 
 	@Test

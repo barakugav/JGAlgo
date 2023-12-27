@@ -24,7 +24,6 @@ import java.util.Random;
 import java.util.function.Consumer;
 import org.junit.jupiter.api.Assertions;
 import com.jgalgo.graph.Graph;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -189,28 +188,28 @@ public class TestUtils {
 	}
 
 	public static void foreachBoolConfig(RunnableWith1BoolConfig test) {
-		for (boolean cfg1 : BooleanList.of(false, true))
+		for (boolean cfg1 : new boolean[] { false, true })
 			test.run(cfg1);
 	}
 
 	public static void foreachBoolConfig(RunnableWith2BoolConfig test) {
-		for (boolean cfg1 : BooleanList.of(false, true))
-			for (boolean cfg2 : BooleanList.of(false, true))
+		for (boolean cfg1 : new boolean[] { false, true })
+			for (boolean cfg2 : new boolean[] { false, true })
 				test.run(cfg1, cfg2);
 	}
 
 	public static void foreachBoolConfig(RunnableWith3BoolConfig test) {
-		for (boolean cfg1 : BooleanList.of(false, true))
-			for (boolean cfg2 : BooleanList.of(false, true))
-				for (boolean cfg3 : BooleanList.of(false, true))
+		for (boolean cfg1 : new boolean[] { false, true })
+			for (boolean cfg2 : new boolean[] { false, true })
+				for (boolean cfg3 : new boolean[] { false, true })
 					test.run(cfg1, cfg2, cfg3);
 	}
 
 	public static void foreachBoolConfig(RunnableWith4BoolConfig test) {
-		for (boolean cfg1 : BooleanList.of(false, true))
-			for (boolean cfg2 : BooleanList.of(false, true))
-				for (boolean cfg3 : BooleanList.of(false, true))
-					for (boolean cfg4 : BooleanList.of(false, true))
+		for (boolean cfg1 : new boolean[] { false, true })
+			for (boolean cfg2 : new boolean[] { false, true })
+				for (boolean cfg3 : new boolean[] { false, true })
+					for (boolean cfg4 : new boolean[] { false, true })
 						test.run(cfg1, cfg2, cfg3, cfg4);
 	}
 

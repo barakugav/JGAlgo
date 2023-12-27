@@ -24,6 +24,7 @@ import java.util.NavigableSet;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
@@ -35,7 +36,6 @@ import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
 import it.unimi.dsi.fastutil.objects.Object2DoubleOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -50,9 +50,9 @@ public class MaximumFlowTestUtils extends TestUtils {
 				directed);
 	}
 
-	private static Graph<Integer, Integer> randGraph(int n, int m,
-			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed, boolean directed) {
-		boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
+	private static Graph<Integer, Integer> randGraph(int n, int m, Function<Boolean, Graph<Integer, Integer>> graphImpl,
+			long seed, boolean directed) {
+		boolean selfEdges = graphImpl.apply(directed).isAllowSelfEdges();
 		for (SeedGenerator seedGen = new SeedGenerator(seed);;) {
 			Graph<Integer, Integer> g = GraphsTestUtils
 					.withImpl(GraphsTestUtils.randGraph(n, m, directed, selfEdges, false, seedGen.nextSeed()),
@@ -108,8 +108,8 @@ public class MaximumFlowTestUtils extends TestUtils {
 		testRandGraphsInt(algo, GraphsTestUtils.defaultGraphImpl(seed), seed, directed);
 	}
 
-	public static void testRandGraphs(MaximumFlow algo, Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl,
-			long seed, boolean directed) {
+	public static void testRandGraphs(MaximumFlow algo, Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed,
+			boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
@@ -155,8 +155,8 @@ public class MaximumFlowTestUtils extends TestUtils {
 		});
 	}
 
-	static void testRandGraphsInt(MaximumFlow algo, Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl,
-			long seed, boolean directed) {
+	static void testRandGraphsInt(MaximumFlow algo, Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed,
+			boolean directed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();

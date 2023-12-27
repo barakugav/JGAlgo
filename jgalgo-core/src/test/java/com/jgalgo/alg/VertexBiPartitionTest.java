@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,8 +30,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
-import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
 
 public class VertexBiPartitionTest extends TestBase {
 
@@ -152,8 +152,8 @@ public class VertexBiPartitionTest extends TestBase {
 			foreachBoolConfig((directed, index) -> {
 				Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
 
-				Object2BooleanMap<Integer> partition = randPartitionMap(g, seedGen.nextSeed());
-				assertTrue(VertexBiPartition.isPartition(g, partition::getBoolean));
+				Map<Integer, Boolean> partition = randPartitionMap(g, seedGen.nextSeed());
+				assertTrue(VertexBiPartition.isPartition(g, partition::get));
 
 				assertFalse(VertexBiPartition.isPartition(g, v -> true));
 				assertFalse(VertexBiPartition.isPartition(g, v -> false));
@@ -165,13 +165,14 @@ public class VertexBiPartitionTest extends TestBase {
 		return VertexBiPartition.fromMap(g, randPartitionMap(g, seed));
 	}
 
-	private static <V, E> Object2BooleanMap<V> randPartitionMap(Graph<V, E> g, long seed) {
+	@SuppressWarnings("boxing")
+	private static <V, E> Map<V, Boolean> randPartitionMap(Graph<V, E> g, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		final int n = g.vertices().size();
 		if (2 > n)
 			throw new IllegalArgumentException();
-		Object2BooleanMap<V> partition = new Object2BooleanOpenHashMap<>();
+		Map<V, Boolean> partition = new Object2ObjectOpenHashMap<>();
 
 		List<V> vs = new ArrayList<>(g.vertices());
 		Collections.shuffle(vs, rand);

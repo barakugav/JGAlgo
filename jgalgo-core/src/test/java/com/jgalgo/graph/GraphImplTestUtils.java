@@ -56,7 +56,6 @@ import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.alg.MinimumSpanningTreeTestUtils;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
@@ -76,6 +75,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import it.unimi.dsi.fastutil.objects.ObjectSets;
 
+@SuppressWarnings("boxing")
 class GraphImplTestUtils extends TestUtils {
 
 	@SafeVarargs
@@ -86,10 +86,10 @@ class GraphImplTestUtils extends TestUtils {
 		return ObjectSets.unmodifiable(set);
 	}
 
-	@SuppressWarnings({ "boxing", "deprecation" })
-	static void testAddVertex(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	@SuppressWarnings("deprecation")
+	static void testAddVertex(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		foreachBoolConfig(directed -> {
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			final int n = 100;
 			IntSet verticesSet = new IntOpenHashSet();
 			for (int i = 0; i < n; i++) {
@@ -103,7 +103,7 @@ class GraphImplTestUtils extends TestUtils {
 			assertThrows(NoSuchVertexException.class, () -> g.outEdges(6687));
 		});
 		foreachBoolConfig(directed -> {
-			IndexGraph g = graphImpl.get(directed).indexGraph();
+			IndexGraph g = graphImpl.apply(directed).indexGraph();
 			IdBuilderInt vBuilder = g.vertexBuilder();
 			final int n = 87;
 			for (int i = 0; i < n; i++) {
@@ -125,15 +125,14 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	@SuppressWarnings("boxing")
-	static void addVerticesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void addVerticesTest(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		final Random rand = new Random(0x4a4735619a4c9042L);
 
 		/* addVertices() valid */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
 				final int n = rand.nextInt(100);
-				Graph<Integer, Integer> g = graphImpl.get(directed);
+				Graph<Integer, Integer> g = graphImpl.apply(directed);
 
 				Set<Integer> vertices = new IntOpenHashSet();
 				while (vertices.size() < n) {
@@ -156,7 +155,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
 				final int n = rand.nextInt(100);
-				Graph<Integer, Integer> g = graphImpl.get(directed);
+				Graph<Integer, Integer> g = graphImpl.apply(directed);
 
 				Set<Integer> vertices = new IntOpenHashSet();
 				while (vertices.size() < n) {
@@ -185,7 +184,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
 				final int n = rand.nextInt(100);
-				Graph<Integer, Integer> g = graphImpl.get(directed);
+				Graph<Integer, Integer> g = graphImpl.apply(directed);
 
 				Set<Integer> vertices = new IntOpenHashSet();
 				while (vertices.size() < n) {
@@ -214,7 +213,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
 				final int n = rand.nextInt(100);
-				Graph<Integer, Integer> g = graphImpl.get(directed);
+				Graph<Integer, Integer> g = graphImpl.apply(directed);
 
 				Set<Integer> vertices = new IntOpenHashSet();
 				while (vertices.size() < n) {
@@ -243,7 +242,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
 				final int n = rand.nextInt(100);
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 
 				int verticesNum = 0;
 				while (verticesNum < n) {
@@ -259,7 +258,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
 				final int n = rand.nextInt(100);
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 
 				int verticesNum = 0;
 				while (verticesNum < n) {
@@ -280,7 +279,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
 				final int n = rand.nextInt(100);
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 
 				int verticesNum = 0;
 				while (verticesNum < n) {
@@ -306,7 +305,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
 				final int n = rand.nextInt(100);
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 
 				int verticesNum = 0;
 				while (verticesNum < n) {
@@ -323,7 +322,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
 				final int n = rand.nextInt(100);
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 
 				int verticesNum = 0;
 				while (verticesNum < n) {
@@ -341,7 +340,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
 				final int n = rand.nextInt(100);
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 
 				int verticesNum = 0;
 				while (verticesNum < n) {
@@ -366,7 +365,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
 				final int n = rand.nextInt(100);
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 
 				int verticesNum = 0;
 				while (verticesNum < n) {
@@ -391,7 +390,7 @@ class GraphImplTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
 				final int n = rand.nextInt(100);
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 
 				int verticesNum = 0;
 				while (verticesNum < n) {
@@ -418,11 +417,11 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void removeVerticesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void removeVerticesTest(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		final Random rand = new Random(0x36f43a2a1e51d79dL);
 
-		Boolean2ObjectFunction<Graph<Integer, Integer>> createGraph = directed -> {
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+		Function<Boolean, Graph<Integer, Integer>> createGraph = directed -> {
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			g.addVertices(range(50 + rand.nextInt(100)));
 			final int m = 100 + rand.nextInt(100);
 			while (g.edges().size() < m) {
@@ -444,7 +443,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* removeVertices() valid */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> g = createGraph.apply(directed);
 				Graph<Integer, Integer> expectedGraph = g.copy();
 
 				Set<Integer> vertices = new IntOpenHashSet(expectedGraph.vertices());
@@ -466,7 +465,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* removeVertices() sometimes with duplicate vertex (in removed list) */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> g = createGraph.apply(directed);
 				Graph<Integer, Integer> expectedGraph = g.copy();
 
 				Set<Integer> vertices = new IntOpenHashSet(expectedGraph.vertices());
@@ -495,7 +494,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* removeVertices() sometimes with non existing vertex */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> g = createGraph.apply(directed);
 				Graph<Integer, Integer> expectedGraph = g.copy();
 
 				Set<Integer> vertices = new IntOpenHashSet(expectedGraph.vertices());
@@ -528,7 +527,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* removeVertices() sometimes with null vertex */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> g = createGraph.apply(directed);
 				Graph<Integer, Integer> expectedGraph = g.copy();
 
 				Set<Integer> vertices = new IntOpenHashSet(expectedGraph.vertices());
@@ -555,10 +554,10 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	@SuppressWarnings({ "deprecation" })
-	static void verticesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	@SuppressWarnings("deprecation")
+	static void verticesTest(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		foreachBoolConfig((directed, index) -> {
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			if (index)
 				g = g.indexGraph();
 			final int n = 100;
@@ -597,11 +596,11 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	@SuppressWarnings({ "boxing", "deprecation" })
-	static void testAddEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	@SuppressWarnings("deprecation")
+	static void testAddEdge(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		foreachBoolConfig(directed -> {
 			final int n = 100;
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			g.addVertices(range(1, n + 1));
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
@@ -625,7 +624,7 @@ class GraphImplTestUtils extends TestUtils {
 		});
 		foreachBoolConfig(directed -> {
 			final int n = 100;
-			IndexGraph g = graphImpl.get(directed).indexGraph();
+			IndexGraph g = graphImpl.apply(directed).indexGraph();
 			g.addVertices(range(n));
 			IdBuilderInt eBuilder = g.edgeBuilder();
 			for (int i = 0; i < n; i++) {
@@ -639,7 +638,7 @@ class GraphImplTestUtils extends TestUtils {
 		});
 
 		foreachBoolConfig(directed -> {
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			if (!g.isAllowSelfEdges()) {
 				g.addVertex(0);
 				assertThrows(IllegalArgumentException.class, () -> g.addEdge(0, 0, 0));
@@ -647,7 +646,7 @@ class GraphImplTestUtils extends TestUtils {
 		});
 
 		foreachBoolConfig(directed -> {
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			if (!g.isAllowParallelEdges()) {
 				g.addVertex(0);
 				g.addVertex(1);
@@ -658,7 +657,7 @@ class GraphImplTestUtils extends TestUtils {
 			}
 		});
 		foreachBoolConfig(directed -> {
-			IndexGraph g = graphImpl.get(directed).indexGraph();
+			IndexGraph g = graphImpl.apply(directed).indexGraph();
 			final int n = 87;
 			for (int i = 0; i < n; i++)
 				g.addVertexInt();
@@ -762,7 +761,6 @@ class GraphImplTestUtils extends TestUtils {
 			return ids.size();
 		}
 
-		@SuppressWarnings("boxing")
 		@Override
 		public IEdgeIter iterator() {
 			return new IEdgeIter() {
@@ -877,13 +875,13 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void addEdgesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void addEdgesTest(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		final Random rand = new Random(0xa6e1e4b317a0d1c1L);
 
 		/* addEdges() valid */
 		foreachBoolConfig((directed, index) -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				Graph<Integer, Integer> g0 = graphImpl.apply(directed);
 				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 				g.addVertices(range(50 + rand.nextInt(100)));
 				final int m = rand.nextInt(100);
@@ -904,7 +902,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdges() sometimes with duplicate edge id (in added list) */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g = graphImpl.get(directed);
+				Graph<Integer, Integer> g = graphImpl.apply(directed);
 				g.addVertices(range(50 + rand.nextInt(100)));
 				final int m = rand.nextInt(100);
 
@@ -932,7 +930,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdges() sometimes with existing edge */
 		foreachBoolConfig((directed, index) -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				Graph<Integer, Integer> g0 = graphImpl.apply(directed);
 				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 				g.addVertices(range(50 + rand.nextInt(100)));
 				final int m = rand.nextInt(100);
@@ -961,7 +959,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdges() sometimes with null edge */
 		foreachBoolConfig((directed, index) -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				Graph<Integer, Integer> g0 = graphImpl.apply(directed);
 				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 				g.addVertices(range(50 + rand.nextInt(100)));
 				final int m = rand.nextInt(100);
@@ -990,7 +988,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdges() int graph sometimes with negative edge */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				Graph<Integer, Integer> g0 = graphImpl.apply(directed);
 				if (!(g0 instanceof IntGraph))
 					return;
 				IntGraph g = (IntGraph) g0;
@@ -1021,7 +1019,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdges() sometimes with invalid endpoint */
 		foreachBoolConfig((directed, index) -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				Graph<Integer, Integer> g0 = graphImpl.apply(directed);
 				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 				g.addVertices(range(50 + rand.nextInt(100)));
 				final int m = rand.nextInt(100);
@@ -1058,7 +1056,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdges() sometimes with self edge */
 		foreachBoolConfig((directed, index) -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				Graph<Integer, Integer> g0 = graphImpl.apply(directed);
 				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 				if (g.isAllowSelfEdges())
 					return;
@@ -1089,7 +1087,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdges() sometimes with parallel edges with existing */
 		foreachBoolConfig((directed, index) -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				Graph<Integer, Integer> g0 = graphImpl.apply(directed);
 				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 				if (g.isAllowParallelEdges())
 					return;
@@ -1120,7 +1118,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdges() sometimes with parallel edges in added list */
 		foreachBoolConfig((directed, index) -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g0 = graphImpl.get(directed);
+				Graph<Integer, Integer> g0 = graphImpl.apply(directed);
 				Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 				if (g.isAllowParallelEdges())
 					return;
@@ -1151,7 +1149,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdges() index graph unsorted sometimes not in range */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 				g.addVertices(range(50 + rand.nextInt(100)));
 				final int m = rand.nextInt(100);
 
@@ -1186,7 +1184,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdges() index graph unsorted sometimes duplicate id in list */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 				g.addVertices(range(50 + rand.nextInt(100)));
 				final int m = rand.nextInt(100);
 
@@ -1214,7 +1212,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdges() index graph from EdgeSet.of() */
 		foreachBoolConfig((directed, fromIntGraph) -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 				g.addVertices(range(50 + rand.nextInt(100)));
 				final int m = rand.nextInt(100);
 
@@ -1240,8 +1238,7 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	@SuppressWarnings("boxing")
-	static void addEdgesReassignIdsTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void addEdgesReassignIdsTest(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		final Random rand = new Random(0x96a8f7d4731b5c5cL);
 
 		BiConsumer<Map<Integer, Pair<Integer, Integer>>, IEdgeSet> addEdgesToExpected = (edgesMap, edgeSet) -> {
@@ -1257,7 +1254,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdgesReassignIds() valid */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 				g.addVertices(range(50 + rand.nextInt(100)));
 				final int m = rand.nextInt(100);
 
@@ -1278,7 +1275,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdgesReassignIds() sometimes with invalid endpoint */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 				g.addVertices(range(50 + rand.nextInt(100)));
 				final int m = rand.nextInt(100);
 
@@ -1315,7 +1312,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdgesReassignIds() sometimes with self edge */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 				if (g.isAllowSelfEdges())
 					return;
 				g.addVertices(range(50 + rand.nextInt(100)));
@@ -1346,7 +1343,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdgesReassignIds() sometimes with parallel edges with existing */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 				if (g.isAllowParallelEdges())
 					return;
 				g.addVertices(range(50 + rand.nextInt(100)));
@@ -1377,7 +1374,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* addEdgesReassignIds() sometimes with parallel edges in added list */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				IndexGraph g = graphImpl.get(directed).indexGraph();
+				IndexGraph g = graphImpl.apply(directed).indexGraph();
 				if (g.isAllowParallelEdges())
 					return;
 				g.addVertices(range(50 + rand.nextInt(100)));
@@ -1406,11 +1403,11 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void removeEdgesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void removeEdgesTest(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		final Random rand = new Random(0x9bf6ef1f132fa70eL);
 
-		Boolean2ObjectFunction<Graph<Integer, Integer>> createGraph = directed -> {
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+		Function<Boolean, Graph<Integer, Integer>> createGraph = directed -> {
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			g.addVertices(range(50 + rand.nextInt(100)));
 			final int m = 100 + rand.nextInt(100);
 			while (g.edges().size() < m) {
@@ -1432,7 +1429,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* removeEdges() valid */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> g = createGraph.apply(directed);
 				Graph<Integer, Integer> expectedGraph = g.copy();
 
 				Set<Integer> edges = new IntOpenHashSet(expectedGraph.edges());
@@ -1454,7 +1451,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* removeEdges() sometimes with duplicate edge (in removed list) */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> g = createGraph.apply(directed);
 				Graph<Integer, Integer> expectedGraph = g.copy();
 
 				Set<Integer> edges = new IntOpenHashSet(expectedGraph.edges());
@@ -1483,7 +1480,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* removeEdges() sometimes with non existing edge */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> g = createGraph.apply(directed);
 				Graph<Integer, Integer> expectedGraph = g.copy();
 
 				Set<Integer> edges = new IntOpenHashSet(expectedGraph.edges());
@@ -1516,7 +1513,7 @@ class GraphImplTestUtils extends TestUtils {
 		/* removeEdges() sometimes with null edge */
 		foreachBoolConfig(directed -> {
 			for (int repeat = 0; repeat < 25; repeat++) {
-				Graph<Integer, Integer> g = createGraph.get(directed);
+				Graph<Integer, Integer> g = createGraph.apply(directed);
 				Graph<Integer, Integer> expectedGraph = g.copy();
 
 				Set<Integer> edges = new IntOpenHashSet(expectedGraph.edges());
@@ -1544,10 +1541,10 @@ class GraphImplTestUtils extends TestUtils {
 	}
 
 	@SuppressWarnings("deprecation")
-	static void edgesTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void edgesTest(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		foreachBoolConfig((directed, index) -> {
 			final int n = 30;
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			if (index)
 				g = g.indexGraph();
 			g.addVertices(range(n));
@@ -1591,12 +1588,12 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testEndpoints(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void testEndpoints(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		final long seed = 0x62f7c169c6fbd294L;
 		Random rand = new Random(seed);
 		foreachBoolConfig(directed -> {
 			final int n = 30;
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			g.addVertices(range(1, n + 1));
 			Map<Integer, IntIntPair> edges = new HashMap<>();
 			while (g.edges().size() < 60) {
@@ -1628,11 +1625,11 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void getEdgeTest(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void getEdgeTest(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		final Random rand = new Random(0xe2cdb0023327cb42L);
 		foreachBoolConfig(directed -> {
 			final int n = 100;
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			g.addVertices(range(1, n + 1));
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
@@ -1691,12 +1688,11 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	@SuppressWarnings("boxing")
-	static void testGetEdgesOutIn(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void testGetEdgesOutIn(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		final Random rand = new Random(0x55785cf48eb6bf43L);
 		foreachBoolConfig(directed -> {
 			final int n = 100;
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			g.addVertices(range(1, n + 1));
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
@@ -1767,11 +1763,11 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testGetEdgesSourceTarget(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+	static void testGetEdgesSourceTarget(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		Random rand = new Random(seed);
 		foreachBoolConfig(directed -> {
 			final int n = 100;
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			g.addVertices(range(1, n + 1));
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
@@ -1900,10 +1896,10 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testEdgeIter(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void testEdgeIter(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		foreachBoolConfig(directed -> {
 			final int n = 100;
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			g.addVertices(range(1, n + 1));
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
@@ -2010,13 +2006,12 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	@SuppressWarnings("boxing")
-	static void testEdgeIterRemoveSingle(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void testEdgeIterRemoveSingle(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		final SeedGenerator seedGen = new SeedGenerator(0x95a73506247fe12L);
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig((directed, outIn) -> {
-			final boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
-			final boolean parallelEdges = graphImpl.get(directed).isAllowParallelEdges();
+			final boolean selfEdges = graphImpl.apply(directed).isAllowSelfEdges();
+			final boolean parallelEdges = graphImpl.apply(directed).isAllowParallelEdges();
 			for (int ops = 0; ops < 20; ops++) {
 				Graph<Integer, Integer> g = GraphsTestUtils
 						.withImpl(
@@ -2097,13 +2092,12 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	@SuppressWarnings("boxing")
-	static void testEdgeIterRemoveAll(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void testEdgeIterRemoveAll(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		final SeedGenerator seedGen = new SeedGenerator(0x95a73506247fe12L);
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig((directed, outIn) -> {
-			final boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
-			final boolean parallelEdges = graphImpl.get(directed).isAllowParallelEdges();
+			final boolean selfEdges = graphImpl.apply(directed).isAllowSelfEdges();
+			final boolean parallelEdges = graphImpl.apply(directed).isAllowParallelEdges();
 			for (int ops = 0; ops < 20; ops++) {
 				Graph<Integer, Integer> g = GraphsTestUtils
 						.withImpl(
@@ -2179,10 +2173,10 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testDegree(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void testDegree(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		foreachBoolConfig(directed -> {
 			final int n = 100;
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			g.addVertices(range(1, n + 1));
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
@@ -2210,10 +2204,10 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testClear(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+	static void testClear(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		Random rand = new Random(seed);
 		foreachBoolConfig(directed -> {
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			boolean parallelEdges = g.isAllowParallelEdges();
 
 			int totalOpNum = 1000;
@@ -2258,10 +2252,10 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testClearEdges(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+	static void testClearEdges(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		Random rand = new Random(seed);
 		foreachBoolConfig(directed -> {
-			Graph<Integer, Integer> g = graphImpl.get(directed);
+			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			boolean parallelEdges = g.isAllowParallelEdges();
 
 			int totalOpNum = 1000;
@@ -2312,7 +2306,7 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testCopy(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+	static void testCopy(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		for (String copyType : List
 				.of("origImpl", "array", "linked-list", "linked-list-ptr", "hashtable", "hashtable-multi", "matrix")) {
@@ -2374,7 +2368,7 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testCopyWithWeights(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+	static void testCopyWithWeights(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig(directed -> {
@@ -2470,11 +2464,11 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testImmutableCopy(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+	static void testImmutableCopy(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
-			boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
+			boolean selfEdges = graphImpl.apply(directed).isAllowSelfEdges();
 			Graph<Integer, Integer> g = GraphsTestUtils
 					.withImpl(GraphsTestUtils.randGraph(100, 300, directed, selfEdges, false, seedGen.nextSeed()),
 							graphImpl);
@@ -2522,12 +2516,12 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testImmutableCopyWithWeights(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+	static void testImmutableCopyWithWeights(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		foreachBoolConfig(directed -> {
 			/* Create a random graph g */
-			boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
+			boolean selfEdges = graphImpl.apply(directed).isAllowSelfEdges();
 			Graph<Integer, Integer> g = GraphsTestUtils
 					.withImpl(GraphsTestUtils.randGraph(100, 300, directed, selfEdges, false, seedGen.nextSeed()),
 							graphImpl);
@@ -2740,14 +2734,13 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	@SuppressWarnings("boxing")
-	static void testRemoveEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void testRemoveEdge(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		final SeedGenerator seedGen = new SeedGenerator(0x95a73506247fe12L);
 		final Random rand = new Random(seedGen.nextSeed());
 
 		foreachBoolConfig(directed -> {
-			final boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
-			final boolean parallelEdges = graphImpl.get(directed).isAllowParallelEdges();
+			final boolean selfEdges = graphImpl.apply(directed).isAllowSelfEdges();
+			final boolean parallelEdges = graphImpl.apply(directed).isAllowParallelEdges();
 			for (int ops = 0; ops < 20; ops++) {
 				Graph<Integer, Integer> g = GraphsTestUtils
 						.withImpl(
@@ -2813,12 +2806,12 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testReverseEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+	static void testReverseEdge(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 
-		final boolean selfEdges = graphImpl.get(true).isAllowSelfEdges();
-		final boolean parallelEdges = graphImpl.get(true).isAllowParallelEdges();
+		final boolean selfEdges = graphImpl.apply(true).isAllowSelfEdges();
+		final boolean parallelEdges = graphImpl.apply(true).isAllowParallelEdges();
 		Graph<Integer, Integer> g1 = GraphsTestUtils
 				.withImpl(GraphsTestUtils.randGraph(100, 300, true, selfEdges, parallelEdges, seedGen.nextSeed()),
 						graphImpl);
@@ -2854,14 +2847,14 @@ class GraphImplTestUtils extends TestUtils {
 		}
 	}
 
-	static void testMoveEdge(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+	static void testMoveEdge(Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		final long seed = 0x5aaa87a14dbb6a83L;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 
 		foreachBoolConfig(directed -> {
-			final boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
-			final boolean parallelEdges = graphImpl.get(directed).isAllowParallelEdges();
+			final boolean selfEdges = graphImpl.apply(directed).isAllowSelfEdges();
+			final boolean parallelEdges = graphImpl.apply(directed).isAllowParallelEdges();
 			Graph<Integer, Integer> g1 = GraphsTestUtils
 					.withImpl(
 							GraphsTestUtils.randGraph(100, 300, directed, selfEdges, parallelEdges, seedGen.nextSeed()),
@@ -2960,31 +2953,31 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	static void testUndirectedMST(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+	static void testUndirectedMST(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		MinimumSpanningTreeTestUtils.testRandGraph(MinimumSpanningTree.newInstance(), graphImpl, seed);
 	}
 
-	static void testDirectedMDST(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+	static void testDirectedMDST(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		MinimumDirectedSpanningTreeTarjanTest.testRandGraph(MinimumDirectedSpanningTree.newInstance(), graphImpl, seed);
 	}
 
-	static void testDirectedMaxFlow(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+	static void testDirectedMaxFlow(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		MaximumFlowTestUtils.testRandGraphs(MaximumFlow.newInstance(), graphImpl, seed, /* directed= */ true);
 	}
 
-	static void testUndirectedBipartiteMatching(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+	static void testUndirectedBipartiteMatching(Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		MatchingBipartiteTestUtils
 				.randBipartiteGraphs(MatchingAlgo.builder().setBipartite(true).setCardinality(true).build(), graphImpl,
 						seed);
 	}
 
-	static void testUndirectedBipartiteMatchingWeighted(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl,
+	static void testUndirectedBipartiteMatchingWeighted(Function<Boolean, Graph<Integer, Integer>> graphImpl,
 			long seed) {
 		MatchingWeightedTestUtils
 				.randGraphsBipartiteWeighted(MatchingAlgo.builder().setBipartite(true).build(), graphImpl, seed);
 	}
 
-	static void testRandOps(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, boolean directed, long seed) {
+	static void testRandOps(Function<Boolean, Graph<Integer, Integer>> graphImpl, boolean directed, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(6, 6).repeat(2056);
@@ -3000,10 +2993,10 @@ class GraphImplTestUtils extends TestUtils {
 		});
 	}
 
-	private static void testRandOps(Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, boolean directed, int n,
+	private static void testRandOps(Function<Boolean, Graph<Integer, Integer>> graphImpl, boolean directed, int n,
 			int m, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
-		boolean selfEdges = graphImpl.get(directed).isAllowSelfEdges();
+		boolean selfEdges = graphImpl.apply(directed).isAllowSelfEdges();
 		Graph<Integer, Integer> g = GraphsTestUtils
 				.withImpl(GraphsTestUtils.randGraph(n, m, directed, selfEdges, false, seedGen.nextSeed()), graphImpl);
 		final int opsNum = 128;

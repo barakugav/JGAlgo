@@ -35,10 +35,10 @@ import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.ds.Heap;
 import com.jgalgo.internal.ds.ReferenceableHeap;
 import it.unimi.dsi.fastutil.doubles.DoubleComparator;
-import it.unimi.dsi.fastutil.ints.Int2ByteMap;
-import it.unimi.dsi.fastutil.ints.Int2ByteOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 public class Assertions {
 	private Assertions() {}
@@ -176,24 +176,31 @@ public class Assertions {
 				throw new IllegalArgumentException("no sources vertices provided");
 			if (sinks.isEmpty())
 				throw new IllegalArgumentException("no sinks vertices provided");
-			final byte UNSEEN = 0;
-			final byte SOURCE = 1;
-			final byte TARGET = 2;
-			Int2ByteMap types = new Int2ByteOpenHashMap(sources.size() + sinks.size());
-			types.defaultReturnValue(UNSEEN);
-			for (int v : sources) {
-				int vType = types.put(v, SOURCE);
-				if (vType != UNSEEN)
-					throw new IllegalArgumentException("Source vertex appear twice (idx=" + v + ")");
+			IntSet sourcesSet;
+			if (sources instanceof IntSet) {
+				sourcesSet = (IntSet) sources;
+			} else {
+				sourcesSet = new IntOpenHashSet(sources.size());
+				for (int v : sources) {
+					boolean added = sourcesSet.add(v);
+					if (!added)
+						throw new IllegalArgumentException("Source vertex appear twice (idx=" + v + ")");
+				}
 			}
-			for (int v : sinks) {
-				int vType = types.put(v, TARGET);
-				if (vType != UNSEEN) {
-					if (vType == SOURCE)
+			if (sinks instanceof IntSet) {
+				for (int sink : sinks) {
+					if (sourcesSet.contains(sink))
 						throw new IllegalArgumentException(
-								"A vertex can't be both a source and target (idx=" + v + ")");
-					if (vType == TARGET)
-						throw new IllegalArgumentException("Target vertex appear twice (idx=" + v + ")");
+								"A vertex can't be both a source and sink (idx=" + sink + ")");
+				}
+			} else {
+				IntSet verticesSet = new IntOpenHashSet(sinks.size());
+				for (int v : sinks) {
+					boolean added = verticesSet.add(v);
+					if (!added)
+						throw new IllegalArgumentException("Sink vertex appear twice (idx=" + v + ")");
+					if (sourcesSet.contains(v))
+						throw new IllegalArgumentException("A vertex can't be both a source and sink (idx=" + v + ")");
 				}
 			}
 		}

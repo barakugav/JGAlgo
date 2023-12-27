@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
@@ -27,7 +28,6 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.WeightsBool;
 import com.jgalgo.internal.util.TestUtils;
-import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 
 public class MatchingWeightedTestUtils extends TestUtils {
@@ -39,7 +39,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 	}
 
 	public static void randGraphsBipartiteWeighted(MatchingAlgo algo,
-			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+			Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
@@ -48,7 +48,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 		tester.addPhase().withArgs(128, 128, 128).repeat(12);
 		tester.addPhase().withArgs(256, 256, 1200).repeat(2);
 		tester.run((sn, tn, m) -> {
-			boolean parallelEdges = graphImpl.get(false).isAllowParallelEdges();
+			boolean parallelEdges = graphImpl.apply(Boolean.FALSE).isAllowParallelEdges();
 			Graph<Integer, Integer> g = GraphsTestUtils
 					.withImpl(GraphsTestUtils.randBipartiteGraph(sn, tn, m, false, parallelEdges, seedGen.nextSeed()),
 							graphImpl);

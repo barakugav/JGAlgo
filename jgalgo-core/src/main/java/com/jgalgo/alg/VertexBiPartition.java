@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Map;
 import java.util.Set;
 import java.util.function.IntPredicate;
 import java.util.function.Predicate;
@@ -23,7 +24,6 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
-import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 
 /**
  * A partition of the vertices of a graph into two blocks.
@@ -149,8 +149,8 @@ public interface VertexBiPartition<V, E> extends VertexPartition<V, E> {
 	 * @param  map a map from vertex to either {@code true} or {@code false}
 	 * @return     a new vertex bi-partition
 	 */
-	static <V, E> VertexBiPartition<V, E> fromMap(Graph<V, E> g, Object2BooleanMap<V> map) {
-		return fromMapping(g, map::getBoolean);
+	static <V, E> VertexBiPartition<V, E> fromMap(Graph<V, E> g, Map<V, Boolean> map) {
+		return fromMapping(g, map::get);
 	}
 
 	/**

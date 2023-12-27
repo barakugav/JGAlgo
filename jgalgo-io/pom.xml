@@ -17,6 +17,12 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>jgalgo-core</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>it.unimi.dsi</groupId>
+          <artifactId>fastutil</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>

@@ -17,6 +17,7 @@
 package com.jgalgo.internal.ds;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.IdentityHashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +26,6 @@ import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.objects.ObjectIterables;
-import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 
 @SuppressWarnings("boxing")
 public class RedBlackTreeExtendedTest extends TestBase {
@@ -122,9 +122,9 @@ public class RedBlackTreeExtendedTest extends TestBase {
 		return new IntReferenceableHeap() {
 
 			final Map<IntReferenceableHeap.Ref, ObjObjReferenceableHeap.Ref<Integer, Void>> refIntToObj =
-					new Reference2ObjectOpenHashMap<>();
+					new IdentityHashMap<>();
 			final Map<ObjObjReferenceableHeap.Ref<Integer, Void>, IntReferenceableHeap.Ref> refObjToRef =
-					new Reference2ObjectOpenHashMap<>();
+					new IdentityHashMap<>();
 
 			@Override
 			public void clear() {

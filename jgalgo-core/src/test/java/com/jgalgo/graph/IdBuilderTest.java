@@ -19,32 +19,30 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.bytes.ByteOpenHashSet;
 import it.unimi.dsi.fastutil.doubles.DoubleOpenHashSet;
-import it.unimi.dsi.fastutil.floats.FloatOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import it.unimi.dsi.fastutil.shorts.ShortOpenHashSet;
 
 public class IdBuilderTest extends TestBase {
 
 	@Test
 	public void defaultBuilderByte() {
 		foreachBoolConfig(boxedType -> {
-			Set<Byte> ids = new ByteOpenHashSet();
+			Set<Byte> ids = new HashSet<>();
 			IdBuilder<Byte> builder = IdBuilder.defaultBuilder(boxedType ? Byte.class : byte.class);
 			for (int i = 0; i < 100; i++)
 				ids.add(builder.build(ids));
 			assertEquals(100, ids.size());
 		});
 		foreachBoolConfig(boxedType -> {
-			Set<Byte> ids = new ByteOpenHashSet();
+			Set<Byte> ids = new HashSet<>();
 			IdBuilder<Byte> builder = IdBuilder.defaultBuilder(boxedType ? Byte.class : byte.class);
 			for (int i = 0; i < 256; i++)
 				ids.add(builder.build(ids));
@@ -56,7 +54,7 @@ public class IdBuilderTest extends TestBase {
 	@Test
 	public void defaultBuilderShort() {
 		foreachBoolConfig(boxedType -> {
-			Set<Short> ids = new ShortOpenHashSet();
+			Set<Short> ids = new HashSet<>();
 			IdBuilder<Short> builder = IdBuilder.defaultBuilder(boxedType ? Short.class : short.class);
 			for (int i = 0; i < 100; i++)
 				ids.add(builder.build(ids));
@@ -103,7 +101,7 @@ public class IdBuilderTest extends TestBase {
 	@Test
 	public void defaultBuilderFloat() {
 		foreachBoolConfig(boxedType -> {
-			Set<Float> ids = new FloatOpenHashSet();
+			Set<Float> ids = new HashSet<>();
 			IdBuilder<Float> builder = IdBuilder.defaultBuilder(boxedType ? Float.class : float.class);
 			for (int i = 0; i < 100; i++)
 				ids.add(builder.build(ids));

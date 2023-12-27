@@ -243,8 +243,10 @@ public class IntGraphImplTest extends TestBase {
 	public void addEdges() {
 		foreachBoolConfig(selfEdges -> {
 			GraphImplTestUtils
-					.addEdgesTest(
-							directed -> IntGraphFactory.newInstance(directed).allowSelfEdges(selfEdges).newGraph());
+					.addEdgesTest(directed -> IntGraphFactory
+							.newInstance(directed.booleanValue())
+							.allowSelfEdges(selfEdges)
+							.newGraph());
 		});
 	}
 

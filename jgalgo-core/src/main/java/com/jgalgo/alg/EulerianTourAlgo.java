@@ -24,7 +24,6 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -148,7 +147,7 @@ public interface EulerianTourAlgo {
 		} else {
 			int firstEdge = tour0.getInt(0);
 			boolean foundValidStartingEndpoint = false;
-			startingEndpointLoop: for (boolean startingEndpoint : BooleanList.of(true, false)) {
+			startingEndpointLoop: for (boolean startingEndpoint : new boolean[] { true, false }) {
 				visited.clear();
 				int u = startingEndpoint ? ig.edgeSource(firstEdge) : ig.edgeTarget(firstEdge);
 				IntIterator it = tour0.iterator();

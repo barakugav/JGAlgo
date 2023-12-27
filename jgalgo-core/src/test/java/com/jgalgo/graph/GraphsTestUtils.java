@@ -18,6 +18,7 @@ package com.jgalgo.graph;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Random;
+import java.util.function.Function;
 import com.jgalgo.gen.GnmBipartiteGraphGenerator;
 import com.jgalgo.gen.GnmGraphGenerator;
 import com.jgalgo.gen.UniformTreeGenerator;
@@ -25,7 +26,6 @@ import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.RandomIntUnique;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Stack;
-import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -214,7 +214,7 @@ public class GraphsTestUtils extends TestUtils {
 
 	@SuppressWarnings({ "unchecked", "boxing" })
 	public static Graph<Integer, Integer> withImpl(Graph<Integer, Integer> g,
-			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl) {
+			Function<Boolean, Graph<Integer, Integer>> graphImpl) {
 		Graph<Integer, Integer> g2 = graphImpl.apply(g.isDirected());
 		g2.addVertices(g.vertices());
 		g2.addEdges(EdgeSet.allOf(g));
@@ -254,11 +254,11 @@ public class GraphsTestUtils extends TestUtils {
 		return Object.class;
 	}
 
-	public static Boolean2ObjectFunction<Graph<Integer, Integer>> defaultGraphImpl(long seed) {
+	public static Function<Boolean, Graph<Integer, Integer>> defaultGraphImpl(long seed) {
 		if (new Random(seed).nextBoolean()) {
-			return directed -> IntGraphFactory.newInstance(directed).newGraph();
+			return directed -> IntGraphFactory.newInstance(directed.booleanValue()).newGraph();
 		} else {
-			return directed -> GraphFactory.<Integer, Integer>newInstance(directed).newGraph();
+			return directed -> GraphFactory.<Integer, Integer>newInstance(directed.booleanValue()).newGraph();
 		}
 	}
 

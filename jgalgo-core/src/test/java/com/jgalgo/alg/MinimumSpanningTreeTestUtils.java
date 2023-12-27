@@ -21,6 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Comparator;
 import java.util.Set;
+import java.util.function.Function;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IndexIdMap;
@@ -28,7 +29,6 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.TestUtils;
-import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.objects.ObjectAVLTreeSet;
 
 public class MinimumSpanningTreeTestUtils extends TestUtils {
@@ -39,8 +39,9 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 		testRandGraph(algo, GraphsTestUtils.defaultGraphImpl(seed), seed);
 	}
 
-	public static void testRandGraph(MinimumSpanningTree algo,
-			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
+	@SuppressWarnings("boxing")
+	public static void testRandGraph(MinimumSpanningTree algo, Function<Boolean, Graph<Integer, Integer>> graphImpl,
+			long seed) {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32).repeat(128);
@@ -49,8 +50,8 @@ public class MinimumSpanningTreeTestUtils extends TestUtils {
 		tester.addPhase().withArgs(1024, 4096).repeat(8);
 		tester.addPhase().withArgs(4096, 16384).repeat(2);
 		tester.run((n, m) -> {
-			boolean selfEdges = graphImpl.get(false).isAllowSelfEdges();
-			boolean parallelEdges = graphImpl.get(false).isAllowParallelEdges();
+			boolean selfEdges = graphImpl.apply(false).isAllowSelfEdges();
+			boolean parallelEdges = graphImpl.apply(false).isAllowParallelEdges();
 			Graph<Integer, Integer> g = GraphsTestUtils
 					.withImpl(GraphsTestUtils.randGraph(n, m, false, selfEdges, parallelEdges, seedGen.nextSeed()),
 							graphImpl);

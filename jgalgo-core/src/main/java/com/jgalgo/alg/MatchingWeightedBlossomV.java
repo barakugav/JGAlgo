@@ -31,8 +31,8 @@ import com.jgalgo.internal.ds.ObjReferenceableHeap;
 import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.DebugPrinter;
-import it.unimi.dsi.fastutil.objects.Reference2IntMap;
-import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2IntMap;
+import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 /**
  * Blossom V implementation for maximum weighted matching.
@@ -2783,7 +2783,7 @@ class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {
 
 		private static class Impl {
 			private int nextBlossomId;
-			private final Reference2IntMap<Blossom> blossomIds = new Reference2IntOpenHashMap<>();
+			private final Object2IntMap<Blossom> blossomIds = new Object2IntOpenHashMap<>();
 		}
 
 		static String blossomId(Blossom b) {

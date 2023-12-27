@@ -36,7 +36,6 @@ import java.util.function.Supplier;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.booleans.BooleanList;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
@@ -453,7 +452,7 @@ public class IntGraphBuilderTest extends TestBase {
 				AtomicInteger weightIdx = new AtomicInteger();
 				@SuppressWarnings("rawtypes")
 				BiConsumer<Class, Supplier> addWeights = (type, valSupplier) -> {
-					for (boolean edgesWeights : BooleanList.of(false, true)) {
+					foreachBoolConfig(edgesWeights -> {
 						for (int repeat = 1 + rand.nextInt(2); repeat > 0; repeat--) {
 							String key = "weight" + weightIdx.getAndIncrement();
 							Object defVal = valSupplier.get();
@@ -474,7 +473,7 @@ public class IntGraphBuilderTest extends TestBase {
 								wB.setAsObj(elm, w);
 							}
 						}
-					}
+					});
 				};
 				addWeights.accept(byte.class, () -> Byte.valueOf((byte) rand.nextInt()));
 				addWeights.accept(short.class, () -> Short.valueOf((short) rand.nextInt()));

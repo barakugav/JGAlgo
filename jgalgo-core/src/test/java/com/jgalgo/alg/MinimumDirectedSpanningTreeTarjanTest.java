@@ -20,6 +20,7 @@ import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Iterator;
 import java.util.Random;
+import java.util.function.Function;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
@@ -31,7 +32,6 @@ import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -116,9 +116,10 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 		testRandGraph(new MinimumDirectedSpanningTreeTarjan(), GraphsTestUtils.defaultGraphImpl(seed), seed);
 	}
 
+	@SuppressWarnings("boxing")
 	public static void testRandGraph(MinimumDirectedSpanningTree algo,
-			Boolean2ObjectFunction<Graph<Integer, Integer>> graphImpl, long seed) {
-		boolean selfEdges = graphImpl.get(true).isAllowSelfEdges();
+			Function<Boolean, Graph<Integer, Integer>> graphImpl, long seed) {
+		boolean selfEdges = graphImpl.apply(true).isAllowSelfEdges();
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		final Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();

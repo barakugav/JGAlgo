@@ -17,12 +17,8 @@
 package com.jgalgo.internal.ds;
 
 import com.jgalgo.internal.util.Bitmap;
-import it.unimi.dsi.fastutil.bytes.Byte2IntMap;
-import it.unimi.dsi.fastutil.bytes.Byte2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.shorts.Short2IntMap;
-import it.unimi.dsi.fastutil.shorts.Short2IntOpenHashMap;
 
 abstract class RMQStaticLinearAbstract implements RMQStatic {
 
@@ -81,78 +77,31 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 		}
 
 		void preProcessInnerBlocks() {
-			int keySize = getBlockKeySize();
 			var innerBlocksIdx = new Object() {
 				int val = 0;
 			};
 			blockToInnerIdx = new int[blockNum];
 			final int innerBlockAllocSize = blockSize * (blockSize - 1) / 2;
-			if (keySize < Byte.SIZE) {
-				Byte2IntMap tables = new Byte2IntOpenHashMap();
-				for (int b = 0; b < blockNum; b++) {
-					byte key = (byte) calcBlockKey(b);
-					blockToInnerIdx[b] = key;
-					tables.computeIfAbsent(key, k -> innerBlocksIdx.val++);
-				}
-				final int innerBlockNum = tables.size();
-				Bitmap builtInnerBlocks = new Bitmap(innerBlockNum);
-				innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];
-				for (int b = 0; b < blockNum; b++) {
-					byte key = (byte) blockToInnerIdx[b];
-					int innerIdx = tables.get(key);
-					blockToInnerIdx[b] = innerIdx;
-					if (!builtInnerBlocks.get(innerIdx)) {
-						byte[] demoBlock = calcDemoBlock(key & 0xff);
-						buildInnerBlock(innerIdx, demoBlock);
-						builtInnerBlocks.set(innerIdx);
-					}
-				}
-				tables.clear();
-
-			} else if (keySize < Short.SIZE) {
-				Short2IntMap tables = new Short2IntOpenHashMap();
-				for (int b = 0; b < blockNum; b++) {
-					short key = (short) calcBlockKey(b);
-					blockToInnerIdx[b] = key;
-					tables.computeIfAbsent(key, k -> innerBlocksIdx.val++);
-				}
-				final int innerBlockNum = tables.size();
-				Bitmap builtInnerBlocks = new Bitmap(innerBlockNum);
-				innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];
-				for (int b = 0; b < blockNum; b++) {
-					short key = (short) blockToInnerIdx[b];
-					int innerIdx = tables.get(key);
-					blockToInnerIdx[b] = innerIdx;
-					if (!builtInnerBlocks.get(innerIdx)) {
-						byte[] demoBlock = calcDemoBlock(key & 0xffff);
-						buildInnerBlock(innerIdx, demoBlock);
-						builtInnerBlocks.set(innerIdx);
-					}
-				}
-				tables.clear();
-
-			} else {
-				Int2IntMap tables = new Int2IntOpenHashMap();
-				for (int b = 0; b < blockNum; b++) {
-					int key = calcBlockKey(b);
-					blockToInnerIdx[b] = key;
-					tables.computeIfAbsent(key, k -> innerBlocksIdx.val++);
-				}
-				final int innerBlockNum = tables.size();
-				Bitmap builtInnerBlocks = new Bitmap(innerBlockNum);
-				innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];
-				for (int b = 0; b < blockNum; b++) {
-					int key = blockToInnerIdx[b];
-					int innerIdx = tables.get(key);
-					blockToInnerIdx[b] = innerIdx;
-					if (!builtInnerBlocks.get(innerIdx)) {
-						byte[] demoBlock = calcDemoBlock(key);
-						buildInnerBlock(innerIdx, demoBlock);
-						builtInnerBlocks.set(innerIdx);
-					}
-				}
-				tables.clear();
+			Int2IntMap tables = new Int2IntOpenHashMap();
+			for (int b = 0; b < blockNum; b++) {
+				int key = calcBlockKey(b);
+				blockToInnerIdx[b] = key;
+				tables.computeIfAbsent(key, k -> innerBlocksIdx.val++);
 			}
+			final int innerBlockNum = tables.size();
+			Bitmap builtInnerBlocks = new Bitmap(innerBlockNum);
+			innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];
+			for (int b = 0; b < blockNum; b++) {
+				int key = blockToInnerIdx[b];
+				int innerIdx = tables.get(key);
+				blockToInnerIdx[b] = innerIdx;
+				if (!builtInnerBlocks.get(innerIdx)) {
+					byte[] demoBlock = calcDemoBlock(key);
+					buildInnerBlock(innerIdx, demoBlock);
+					builtInnerBlocks.set(innerIdx);
+				}
+			}
+			tables.clear();
 		}
 
 		private void buildInnerBlock(int innerBlock, byte[] demoBlock) {

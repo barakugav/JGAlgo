@@ -17,9 +17,9 @@ package com.jgalgo.graph;
 
 import java.util.EnumSet;
 import java.util.Optional;
+import java.util.function.Function;
 import com.jgalgo.graph.IndexGraphBuilder.ReIndexedGraph;
 import com.jgalgo.graph.IndexGraphBuilderImpl.ReIndexedGraphImpl;
-import it.unimi.dsi.fastutil.booleans.Boolean2ObjectFunction;
 
 class IndexGraphFactoryImpl implements IndexGraphFactory {
 
@@ -89,8 +89,9 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	}
 
+	@SuppressWarnings("boxing")
 	MutableImpl mutableImpl() {
-		Boolean2ObjectFunction<MutableImpl> arrayImplFactory = selfEdges -> {
+		Function<Boolean, MutableImpl> arrayImplFactory = selfEdges -> {
 			return directed ? new MutableImpl() {
 
 				@Override
@@ -125,10 +126,10 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 			};
 		};
-		MutableImpl arrayImpl = arrayImplFactory.get(false);
-		MutableImpl arrayImplWithSelfEdges = arrayImplFactory.get(true);
+		MutableImpl arrayImpl = arrayImplFactory.apply(false);
+		MutableImpl arrayImplWithSelfEdges = arrayImplFactory.apply(true);
 
-		Boolean2ObjectFunction<MutableImpl> linkedImplFactory = selfEdges -> {
+		Function<Boolean, MutableImpl> linkedImplFactory = selfEdges -> {
 			return directed ? new MutableImpl() {
 
 				@Override
@@ -163,9 +164,9 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 			};
 		};
-		MutableImpl linkedImpl = linkedImplFactory.get(false);
-		MutableImpl linkedImplWithSelfEdges = linkedImplFactory.get(true);
-		Boolean2ObjectFunction<MutableImpl> linkedPtrImplFactory = selfEdges -> {
+		MutableImpl linkedImpl = linkedImplFactory.apply(false);
+		MutableImpl linkedImplWithSelfEdges = linkedImplFactory.apply(true);
+		Function<Boolean, MutableImpl> linkedPtrImplFactory = selfEdges -> {
 			return directed ? new MutableImpl() {
 
 				@Override
@@ -200,9 +201,9 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 			};
 		};
-		MutableImpl linkedPtrImpl = linkedPtrImplFactory.get(false);
-		MutableImpl linkedPtrImplWithSelfEdges = linkedPtrImplFactory.get(true);
-		Boolean2ObjectFunction<MutableImpl> hashtableImplFactory = selfEdges -> {
+		MutableImpl linkedPtrImpl = linkedPtrImplFactory.apply(false);
+		MutableImpl linkedPtrImplWithSelfEdges = linkedPtrImplFactory.apply(true);
+		Function<Boolean, MutableImpl> hashtableImplFactory = selfEdges -> {
 			return directed ? new MutableImpl() {
 
 				@Override
@@ -237,9 +238,9 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 			};
 		};
-		MutableImpl hashtableImpl = hashtableImplFactory.get(false);
-		MutableImpl hashtableImplWithSelfEdges = hashtableImplFactory.get(true);
-		Boolean2ObjectFunction<MutableImpl> hashtableMultiImplFactory = selfEdges -> {
+		MutableImpl hashtableImpl = hashtableImplFactory.apply(false);
+		MutableImpl hashtableImplWithSelfEdges = hashtableImplFactory.apply(true);
+		Function<Boolean, MutableImpl> hashtableMultiImplFactory = selfEdges -> {
 			return directed ? new MutableImpl() {
 
 				@Override
@@ -274,9 +275,9 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 			};
 		};
-		MutableImpl hashtableMultiImpl = hashtableMultiImplFactory.get(false);
-		MutableImpl hashtableMultiImplWithSelfEdges = hashtableMultiImplFactory.get(true);
-		Boolean2ObjectFunction<MutableImpl> matrixImplFactory = selfEdges -> {
+		MutableImpl hashtableMultiImpl = hashtableMultiImplFactory.apply(false);
+		MutableImpl hashtableMultiImplWithSelfEdges = hashtableMultiImplFactory.apply(true);
+		Function<Boolean, MutableImpl> matrixImplFactory = selfEdges -> {
 			return directed ? new MutableImpl() {
 
 				@Override
@@ -311,8 +312,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 			};
 		};
-		MutableImpl matrixImpl = matrixImplFactory.get(false);
-		MutableImpl matrixImplWithSelfEdges = matrixImplFactory.get(true);
+		MutableImpl matrixImpl = matrixImplFactory.apply(false);
+		MutableImpl matrixImplWithSelfEdges = matrixImplFactory.apply(true);
 
 		if (impl != null) {
 			switch (impl) {
@@ -377,8 +378,9 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 
 	}
 
+	@SuppressWarnings("boxing")
 	ImmutableImpl immutableImpl() {
-		Boolean2ObjectFunction<ImmutableImpl> csrImplFactory = fastLookup -> {
+		Function<Boolean, ImmutableImpl> csrImplFactory = fastLookup -> {
 			return directed ? new ImmutableImpl() {
 				@Override
 				public IndexGraph newCopyOf(IndexGraph graph, boolean copyVerticesWeights, boolean copyEdgesWeights) {
@@ -450,8 +452,8 @@ class IndexGraphFactoryImpl implements IndexGraphFactory {
 				}
 			};
 		};
-		ImmutableImpl csrImpl = csrImplFactory.get(false);
-		ImmutableImpl csrImplWithFastLookup = csrImplFactory.get(true);
+		ImmutableImpl csrImpl = csrImplFactory.apply(false);
+		ImmutableImpl csrImplWithFastLookup = csrImplFactory.apply(true);
 		if (hints.contains(GraphFactory.Hint.FastEdgeLookup)) {
 			return csrImplWithFastLookup;
 		} else {
