@@ -18,12 +18,14 @@ package com.jgalgo.graph;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Optional;
 import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.IntIntPair;
 
-<span class="fc" id="L26">class GraphCsrDirectedReindexed extends GraphCsrBase {</span>
+<span class="fc" id="L28">class GraphCsrDirectedReindexed extends GraphCsrBase {</span>
 
 	private final int[] edgesIn;
 	private final int[] edgesInBegin;
@@ -34,185 +36,207 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 	private GraphCsrDirectedReindexed(Variant2&lt;IndexGraph, IndexGraphBuilderImpl&gt; graphOrBuilder,
 			BuilderProcessEdgesDirected processEdges, Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing,
 			boolean copyVerticesWeights, boolean copyEdgesWeights, boolean fastLookup) {
-<span class="fc" id="L37">		super(true, graphOrBuilder, processEdges, edgesReIndexing, copyVerticesWeights, copyEdgesWeights);</span>
-<span class="fc" id="L38">		final int n = verticesNum(graphOrBuilder);</span>
-<span class="fc" id="L39">		final int m = edgesNum(graphOrBuilder);</span>
+<span class="fc" id="L39">		super(true, graphOrBuilder, processEdges, edgesReIndexing, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L40">		final int n = verticesNum(graphOrBuilder);</span>
+<span class="fc" id="L41">		final int m = edgesNum(graphOrBuilder);</span>
 
-<span class="fc bfc" id="L41" title="All 2 branches covered.">		Optional&lt;GraphCsrDirectedReindexed&gt; csrGraph = graphOrBuilder.contains(IndexGraph.class)</span>
-<span class="fc bfc" id="L42" title="All 2 branches covered.">				&amp;&amp; graphOrBuilder.get(IndexGraph.class) instanceof GraphCsrDirectedReindexed</span>
-<span class="fc" id="L43">						? Optional.of((GraphCsrDirectedReindexed) graphOrBuilder.get(IndexGraph.class))</span>
-<span class="fc" id="L44">						: Optional.empty();</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">		Optional&lt;GraphCsrDirectedReindexed&gt; csrGraph = graphOrBuilder.contains(IndexGraph.class)</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">				&amp;&amp; graphOrBuilder.get(IndexGraph.class) instanceof GraphCsrDirectedReindexed</span>
+<span class="fc" id="L45">						? Optional.of((GraphCsrDirectedReindexed) graphOrBuilder.get(IndexGraph.class))</span>
+<span class="fc" id="L46">						: Optional.empty();</span>
 
-<span class="fc bfc" id="L46" title="All 2 branches covered.">		if (csrGraph.isPresent()) {</span>
-<span class="pc bnc" id="L47" title="All 2 branches missed.">			assert edgesReIndexing.isEmpty();</span>
-<span class="fc" id="L48">			edgesIn = csrGraph.get().edgesIn;</span>
-<span class="fc" id="L49">			edgesInBegin = csrGraph.get().edgesInBegin;</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (csrGraph.isPresent()) {</span>
+<span class="pc bnc" id="L49" title="All 2 branches missed.">			assert edgesReIndexing.isEmpty();</span>
+<span class="fc" id="L50">			edgesIn = csrGraph.get().edgesIn;</span>
+<span class="fc" id="L51">			edgesInBegin = csrGraph.get().edgesInBegin;</span>
 
 		} else {
-<span class="fc" id="L52">			edgesIn = processEdges.edgesIn;</span>
-<span class="fc" id="L53">			edgesInBegin = processEdges.edgesInBegin;</span>
-<span class="pc bnc" id="L54" title="All 2 branches missed.">			assert processEdges.edgesOut.length == m;</span>
-<span class="pc bnc" id="L55" title="All 2 branches missed.">			assert edgesIn.length == m;</span>
-<span class="pc bnc" id="L56" title="All 2 branches missed.">			assert edgesInBegin.length == n + 1;</span>
+<span class="fc" id="L54">			edgesIn = processEdges.edgesIn;</span>
+<span class="fc" id="L55">			edgesInBegin = processEdges.edgesInBegin;</span>
+<span class="pc bnc" id="L56" title="All 2 branches missed.">			assert processEdges.edgesOut.length == m;</span>
+<span class="pc bnc" id="L57" title="All 2 branches missed.">			assert edgesIn.length == m;</span>
+<span class="pc bnc" id="L58" title="All 2 branches missed.">			assert edgesInBegin.length == n + 1;</span>
 
-<span class="fc" id="L58">			IndexGraphBuilder.ReIndexingMap edgesReIndexing0 = edgesReIndexing.get();</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">			for (int eIdx = 0; eIdx &lt; m; eIdx++) {</span>
-<span class="fc" id="L60">				int eOrig = edgesIn[eIdx];</span>
-<span class="fc" id="L61">				int eCsr = edgesReIndexing0.origToReIndexed(eOrig);</span>
-<span class="fc" id="L62">				edgesIn[eIdx] = eCsr;</span>
+<span class="fc" id="L60">			IndexGraphBuilder.ReIndexingMap edgesReIndexing0 = edgesReIndexing.get();</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">			for (int eIdx = 0; eIdx &lt; m; eIdx++) {</span>
+<span class="fc" id="L62">				int eOrig = edgesIn[eIdx];</span>
+<span class="fc" id="L63">				int eCsr = edgesReIndexing0.origToReIndexed(eOrig);</span>
+<span class="fc" id="L64">				edgesIn[eIdx] = eCsr;</span>
 			}
 
-<span class="fc bfc" id="L65" title="All 2 branches covered.">			if (graphOrBuilder.contains(IndexGraph.class)) {</span>
-<span class="fc" id="L66">				IndexGraph g = graphOrBuilder.get(IndexGraph.class);</span>
-<span class="pc bnc" id="L67" title="All 2 branches missed.">				assert g.isDirected();</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">			if (graphOrBuilder.contains(IndexGraph.class)) {</span>
+<span class="fc" id="L68">				IndexGraph g = graphOrBuilder.get(IndexGraph.class);</span>
+<span class="pc bnc" id="L69" title="All 2 branches missed.">				assert g.isDirected();</span>
 
-<span class="fc bfc" id="L69" title="All 2 branches covered.">				for (int eCsr = 0; eCsr &lt; m; eCsr++) {</span>
-<span class="fc" id="L70">					int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);</span>
-<span class="fc" id="L71">					setEndpoints(eCsr, g.edgeSource(eOrig), g.edgeTarget(eOrig));</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">				for (int eCsr = 0; eCsr &lt; m; eCsr++) {</span>
+<span class="fc" id="L72">					int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);</span>
+<span class="fc" id="L73">					setEndpoints(eCsr, g.edgeSource(eOrig), g.edgeTarget(eOrig));</span>
 				}
-<span class="fc" id="L73">			} else {</span>
-<span class="fc" id="L74">				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);</span>
-<span class="pc bnc" id="L75" title="All 2 branches missed.">				assert builder.isDirected();</span>
+<span class="fc" id="L75">			} else {</span>
+<span class="fc" id="L76">				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);</span>
+<span class="pc bnc" id="L77" title="All 2 branches missed.">				assert builder.isDirected();</span>
 
-<span class="fc bfc" id="L77" title="All 2 branches covered.">				for (int eCsr = 0; eCsr &lt; m; eCsr++) {</span>
-<span class="fc" id="L78">					int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);</span>
-<span class="fc" id="L79">					setEndpoints(eCsr, builder.edgeSource(eOrig), builder.edgeTarget(eOrig));</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				for (int eCsr = 0; eCsr &lt; m; eCsr++) {</span>
+<span class="fc" id="L80">					int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);</span>
+<span class="fc" id="L81">					setEndpoints(eCsr, builder.edgeSource(eOrig), builder.edgeTarget(eOrig));</span>
 				}
 			}
 		}
 
-<span class="fc" id="L84">		this.fastLookup = fastLookup;</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">		if (!fastLookup) {</span>
-<span class="fc" id="L86">			edgesLookupTable = null;</span>
+<span class="fc" id="L86">		this.fastLookup = fastLookup;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		if (!fastLookup) {</span>
+<span class="fc" id="L88">			edgesLookupTable = null;</span>
 
-<span class="fc bfc" id="L88" title="All 4 branches covered.">		} else if (csrGraph.isPresent() &amp;&amp; csrGraph.get().fastLookup) {</span>
-<span class="fc" id="L89">			edgesLookupTable = csrGraph.get().edgesLookupTable;</span>
+<span class="fc bfc" id="L90" title="All 4 branches covered.">		} else if (csrGraph.isPresent() &amp;&amp; csrGraph.get().fastLookup) {</span>
+<span class="fc" id="L91">			edgesLookupTable = csrGraph.get().edgesLookupTable;</span>
 
 		} else {
-<span class="fc" id="L92">			edgesLookupTable = new Int2IntMap[vertices().size()];</span>
-<span class="fc" id="L93">			initLookupTables();</span>
+<span class="fc" id="L94">			edgesLookupTable = new Int2IntMap[vertices().size()];</span>
+<span class="fc" id="L95">			initLookupTables();</span>
 		}
-<span class="fc" id="L95">	}</span>
+<span class="fc" id="L97">	}</span>
 
 	private void initLookupTables() {
-<span class="fc" id="L98">		final int n = vertices().size();</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int u : range(n)) {</span>
-<span class="fc" id="L100">			int eBegin = edgesOutBegin[u];</span>
-<span class="fc" id="L101">			int eEnd = edgesOutBegin[u + 1];</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">			if (eBegin == eEnd) {</span>
-<span class="fc" id="L103">				edgesLookupTable[u] = EmptyEdgeMap;</span>
-			} else {
-<span class="fc" id="L105">				int uniqueTargets = 0;</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">				for (int lastTarget = -1, e = eBegin; e &lt; eEnd; e++) {</span>
-<span class="fc" id="L107">					int v = target(e);</span>
-<span class="pc bnc" id="L108" title="All 2 branches missed.">					assert lastTarget &lt;= v;</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">					if (v != lastTarget) {</span>
-<span class="fc" id="L110">						lastTarget = v;</span>
-<span class="fc" id="L111">						uniqueTargets++;</span>
-					}
-				}
-<span class="fc" id="L114">				edgesLookupTable[u] = new Int2IntOpenHashMap(uniqueTargets);</span>
-<span class="fc" id="L115">				edgesLookupTable[u].defaultReturnValue(-1);</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">				for (int lastTarget = -1, e = eBegin; e &lt; eEnd; e++) {</span>
-<span class="fc" id="L117">					int v = target(e);</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">					if (v == lastTarget)</span>
-<span class="fc" id="L119">						continue; /* store in the map the first edge only of same target */</span>
-<span class="fc" id="L120">					int oldEdge = edgesLookupTable[u].put(v, e);</span>
-<span class="pc bnc" id="L121" title="All 2 branches missed.">					assert oldEdge &lt; 0;</span>
-<span class="fc" id="L122">					lastTarget = v;</span>
+<span class="fc" id="L100">		final int n = vertices().size();</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">		for (int u : range(n)) {</span>
+<span class="fc" id="L102">			int eBegin = edgesOutBegin[u];</span>
+<span class="fc" id="L103">			int eEnd = edgesOutBegin[u + 1];</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			if (eBegin == eEnd) {</span>
+<span class="fc" id="L105">				edgesLookupTable[u] = EmptyEdgeMap;</span>
+<span class="fc" id="L106">				continue;</span>
+			}
+<span class="fc" id="L108">			int uniqueTargets = 0;</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">			for (int lastTarget = -1, e = eBegin; e &lt; eEnd; e++) {</span>
+<span class="fc" id="L110">				int v = target(e);</span>
+<span class="pc bnc" id="L111" title="All 2 branches missed.">				assert lastTarget &lt;= v;</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">				if (v != lastTarget) {</span>
+<span class="fc" id="L113">					lastTarget = v;</span>
+<span class="fc" id="L114">					uniqueTargets++;</span>
 				}
 			}
-<span class="fc" id="L125">		}</span>
-<span class="fc" id="L126">	}</span>
+<span class="fc" id="L117">			edgesLookupTable[u] = new Int2IntOpenHashMap(uniqueTargets);</span>
+<span class="fc" id="L118">			edgesLookupTable[u].defaultReturnValue(-1);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">			for (int lastTarget = -1, e = eBegin; e &lt; eEnd; e++) {</span>
+<span class="fc" id="L120">				int v = target(e);</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">				if (v == lastTarget)</span>
+<span class="fc" id="L122">					continue; /* store in the map the first edge only of same target */</span>
+<span class="fc" id="L123">				int oldEdge = edgesLookupTable[u].put(v, e);</span>
+<span class="pc bnc" id="L124" title="All 2 branches missed.">				assert oldEdge &lt; 0;</span>
+<span class="fc" id="L125">				lastTarget = v;</span>
+			}
+<span class="fc" id="L127">		}</span>
+<span class="fc" id="L128">	}</span>
+
+	@Override
+	boolean containsParallelEdgesImpl() {
+<span class="fc bfc" id="L132" title="All 2 branches covered.">		for (int u : range(vertices().size())) {</span>
+<span class="fc" id="L133">			int eBegin = edgesOutBegin[u];</span>
+<span class="fc" id="L134">			int eEnd = edgesOutBegin[u + 1];</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">			for (int lastTarget = -1, e = eBegin; e &lt; eEnd; e++) {</span>
+<span class="fc" id="L136">				int v = target(e);</span>
+<span class="pc bnc" id="L137" title="All 2 branches missed.">				assert lastTarget &lt;= v;</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">				if (v == lastTarget)</span>
+<span class="fc" id="L139">					return true;</span>
+<span class="fc" id="L140">				lastTarget = v;</span>
+			}
+<span class="fc" id="L142">		}</span>
+<span class="fc" id="L143">		return false;</span>
+	}
 
 	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraphBuilderImpl builder, boolean fastLookup) {
-<span class="fc" id="L129">		return newInstance(Variant2.ofB(builder), true, true, fastLookup);</span>
+<span class="fc" id="L147">		return newInstance(Variant2.ofB(builder), true, true, fastLookup);</span>
 	}
 
 	static IndexGraphBuilder.ReIndexedGraph newInstance(IndexGraph g, boolean copyVerticesWeights,
 			boolean copyEdgesWeights, boolean fastLookup) {
-<span class="fc" id="L134">		return newInstance(Variant2.ofA(g), copyVerticesWeights, copyEdgesWeights, fastLookup);</span>
+<span class="fc" id="L152">		return newInstance(Variant2.ofA(g), copyVerticesWeights, copyEdgesWeights, fastLookup);</span>
 	}
 
 	private static IndexGraphBuilder.ReIndexedGraph newInstance(
 			Variant2&lt;IndexGraph, IndexGraphBuilderImpl&gt; graphOrBuilder, boolean copyVerticesWeights,
 			boolean copyEdgesWeights, boolean fastLookup) {
-<span class="fc" id="L140">		GraphCsrBase.BuilderProcessEdgesDirected processEdges =</span>
-<span class="fc" id="L141">				GraphCsrBase.BuilderProcessEdgesDirected.valueOf(graphOrBuilder);</span>
+<span class="fc" id="L158">		GraphCsrBase.BuilderProcessEdgesDirected processEdges =</span>
+<span class="fc" id="L159">				GraphCsrBase.BuilderProcessEdgesDirected.valueOf(graphOrBuilder);</span>
 
-<span class="fc" id="L143">		Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing = Optional.empty();</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">		if (!graphOrBuilder.contains(IndexGraph.class)</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">				|| !(graphOrBuilder.get(IndexGraph.class) instanceof GraphCsrDirectedReindexed)) {</span>
-<span class="fc" id="L146">			final int m = edgesNum(graphOrBuilder);</span>
-<span class="fc" id="L147">			int[] edgesCsrToOrig = processEdges.edgesOut;</span>
-<span class="fc" id="L148">			int[] edgesOrigToCsr = new int[m];</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">			for (int eCsr = 0; eCsr &lt; m; eCsr++)</span>
-<span class="fc" id="L150">				edgesOrigToCsr[edgesCsrToOrig[eCsr]] = eCsr;</span>
-<span class="fc" id="L151">			edgesReIndexing = Optional.of(new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig));</span>
+<span class="fc" id="L161">		Optional&lt;IndexGraphBuilder.ReIndexingMap&gt; edgesReIndexing = Optional.empty();</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">		if (!graphOrBuilder.contains(IndexGraph.class)</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">				|| !(graphOrBuilder.get(IndexGraph.class) instanceof GraphCsrDirectedReindexed)) {</span>
+<span class="fc" id="L164">			final int m = edgesNum(graphOrBuilder);</span>
+<span class="fc" id="L165">			int[] edgesCsrToOrig = processEdges.edgesOut;</span>
+<span class="fc" id="L166">			int[] edgesOrigToCsr = new int[m];</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">			for (int eCsr = 0; eCsr &lt; m; eCsr++)</span>
+<span class="fc" id="L168">				edgesOrigToCsr[edgesCsrToOrig[eCsr]] = eCsr;</span>
+<span class="fc" id="L169">			edgesReIndexing = Optional.of(new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig));</span>
 		}
 
-<span class="fc" id="L154">		GraphCsrDirectedReindexed g = new GraphCsrDirectedReindexed(graphOrBuilder, processEdges, edgesReIndexing,</span>
+<span class="fc" id="L172">		GraphCsrDirectedReindexed g = new GraphCsrDirectedReindexed(graphOrBuilder, processEdges, edgesReIndexing,</span>
 				copyVerticesWeights, copyEdgesWeights, fastLookup);
-<span class="fc" id="L156">		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), edgesReIndexing);</span>
+<span class="fc" id="L174">		return new IndexGraphBuilderImpl.ReIndexedGraphImpl(g, Optional.empty(), edgesReIndexing);</span>
 	}
 
 	@Override
 	public int getEdge(int source, int target) {
-<span class="fc" id="L161">		checkVertex(source);</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">		if (fastLookup) {</span>
-<span class="fc" id="L163">			checkVertex(target);</span>
-<span class="fc" id="L164">			return edgesLookupTable[source].get(target);</span>
-		}
+<span class="fc bfc" id="L179" title="All 2 branches covered.">		if (fastLookup) {</span>
+<span class="fc" id="L180">			checkVertex(source);</span>
+<span class="fc" id="L181">			checkVertex(target);</span>
+<span class="fc" id="L182">			return edgesLookupTable[source].get(target);</span>
+		} else {
 
-<span class="fc" id="L167">		final int begin = edgesOutBegin[source], end = edgesOutBegin[source + 1];</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">		for (int e = begin; e &lt; end; e++) {</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">			if (target == target(e))</span>
-<span class="fc" id="L170">				return e;</span>
+<span class="fc" id="L185">			int eBegin = edgesOutBegin[source], eEnd = edgesOutBegin[source + 1];</span>
+<span class="fc" id="L186">			int e = JGAlgoUtils.lowerBound(eBegin, eEnd, target, this::edgeTarget);</span>
+<span class="fc bfc" id="L187" title="All 4 branches covered.">			return e &lt; eEnd &amp;&amp; target(e) == target ? e : -1;</span>
 		}
-<span class="fc" id="L172">		checkVertex(target);</span>
-<span class="fc" id="L173">		return -1;</span>
 	}
 
 	@Override
 	public IEdgeSet getEdges(int source, int target) {
-<span class="fc bfc" id="L178" title="All 2 branches covered.">		if (!fastLookup)</span>
-<span class="fc" id="L179">			return super.getEdges(source, target);</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">		if (fastLookup) {</span>
+<span class="fc" id="L194">			checkVertex(source);</span>
+<span class="fc" id="L195">			checkVertex(target);</span>
+<span class="fc" id="L196">			return new SourceTargetEdgesSetFastLookup(source, target);</span>
 
-<span class="fc" id="L181">		checkVertex(source);</span>
-<span class="fc" id="L182">		checkVertex(target);</span>
-<span class="fc" id="L183">		return new SourceTargetEdgesSetFastLookup(source, target);</span>
+		} else {
+<span class="fc" id="L199">			checkVertex(source);</span>
+<span class="fc" id="L200">			int eBegin = edgesOutBegin[source], eEnd = edgesOutBegin[source + 1];</span>
+<span class="fc" id="L201">			IntIntPair edgeRange = JGAlgoUtils.equalRange(eBegin, eEnd, target, this::edgeTarget);</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">			if (edgeRange == null) {</span>
+<span class="fc" id="L203">				checkVertex(target);</span>
+<span class="fc" id="L204">				edgeRange = IntIntPair.of(eBegin, eBegin);</span>
+			}
+<span class="fc" id="L206">			return new EdgeSetSourceTarget(source, target, edgeRange.firstInt(), edgeRange.secondInt());</span>
+		}
 	}
 
 	@Override
 	public IEdgeSet outEdges(int source) {
-<span class="fc" id="L188">		checkVertex(source);</span>
-<span class="fc" id="L189">		return new EdgeSetOut(source);</span>
+<span class="fc" id="L212">		checkVertex(source);</span>
+<span class="fc" id="L213">		return new EdgeSetOut(source);</span>
 	}
 
 	@Override
 	public IEdgeSet inEdges(int target) {
-<span class="fc" id="L194">		checkVertex(target);</span>
-<span class="fc" id="L195">		return new EdgeSetIn(target);</span>
+<span class="fc" id="L218">		checkVertex(target);</span>
+<span class="fc" id="L219">		return new EdgeSetIn(target);</span>
 	}
 
 	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutDirected {
 
 		final int begin, end;
 
-<span class="fc" id="L202">		EdgeSetOut(int source) {</span>
-<span class="fc" id="L203">			super(source);</span>
-<span class="fc" id="L204">			begin = edgesOutBegin[source];</span>
-<span class="fc" id="L205">			end = edgesOutBegin[source + 1];</span>
-<span class="fc" id="L206">		}</span>
+<span class="fc" id="L226">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L227">			super(source);</span>
+<span class="fc" id="L228">			begin = edgesOutBegin[source];</span>
+<span class="fc" id="L229">			end = edgesOutBegin[source + 1];</span>
+<span class="fc" id="L230">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L210">			return end - begin;</span>
+<span class="fc" id="L234">			return end - begin;</span>
 		}
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L215">			return new EdgeIterOut(source, begin, end);</span>
+<span class="fc" id="L239">			return new EdgeIterOut(source, begin, end);</span>
 		}
 	}
 
@@ -220,85 +244,109 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 		final int begin, end;
 
-<span class="fc" id="L223">		EdgeSetIn(int target) {</span>
-<span class="fc" id="L224">			super(target);</span>
-<span class="fc" id="L225">			begin = edgesInBegin[target];</span>
-<span class="fc" id="L226">			end = edgesInBegin[target + 1];</span>
-<span class="fc" id="L227">		}</span>
+<span class="fc" id="L247">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L248">			super(target);</span>
+<span class="fc" id="L249">			begin = edgesInBegin[target];</span>
+<span class="fc" id="L250">			end = edgesInBegin[target + 1];</span>
+<span class="fc" id="L251">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L231">			return end - begin;</span>
+<span class="fc" id="L255">			return end - begin;</span>
 		}
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L236">			return new EdgeIterIn(target, edgesIn, begin, end);</span>
+<span class="fc" id="L260">			return new EdgeIterIn(target, edgesIn, begin, end);</span>
 		}
 	}
 
-	private abstract static class EdgeIterOutAbstract implements IEdgeIter {
+	private class EdgeIterOut implements IEdgeIter {
 		private final int source;
 		int nextEdge;
 		private final int endIdx;
 
-<span class="fc" id="L245">		EdgeIterOutAbstract(int source, int beginEdge, int endEdge) {</span>
-<span class="fc" id="L246">			this.source = source;</span>
-<span class="fc" id="L247">			this.nextEdge = beginEdge;</span>
-<span class="fc" id="L248">			this.endIdx = endEdge;</span>
-<span class="fc" id="L249">		}</span>
+<span class="fc" id="L269">		EdgeIterOut(int source, int beginEdge, int endEdge) {</span>
+<span class="fc" id="L270">			this.source = source;</span>
+<span class="fc" id="L271">			this.nextEdge = beginEdge;</span>
+<span class="fc" id="L272">			this.endIdx = endEdge;</span>
+<span class="fc" id="L273">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L253" title="All 2 branches covered.">			return nextEdge &lt; endIdx;</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">			return nextEdge &lt; endIdx;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L258">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L259">			return nextEdge++;</span>
+<span class="fc" id="L282">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L283">			return nextEdge++;</span>
 		}
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L264">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L265">			return nextEdge;</span>
+<span class="fc" id="L288">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L289">			return nextEdge;</span>
 		}
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L270">			return source;</span>
+<span class="fc" id="L294">			return source;</span>
 		}
-	}
-
-	private class EdgeIterOut extends EdgeIterOutAbstract {
-<span class="fc" id="L275">		EdgeIterOut(int source, int beginEdge, int endEdge) {</span>
-<span class="fc" id="L276">			super(source, beginEdge, endEdge);</span>
-<span class="fc" id="L277">		}</span>
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L281">			int lastEdge = nextEdge - 1; // undefined behavior if nextInt() wasn't called</span>
-<span class="fc" id="L282">			return GraphCsrDirectedReindexed.this.target(lastEdge);</span>
+<span class="fc" id="L299">			int lastEdge = nextEdge - 1; // undefined behavior if nextInt() wasn't called</span>
+<span class="fc" id="L300">			return GraphCsrDirectedReindexed.this.target(lastEdge);</span>
 		}
 	}
 
 	private class EdgeIterIn extends EdgeIterAbstract {
 		private final int target;
 
-<span class="fc" id="L289">		EdgeIterIn(int target, int[] edges, int beginIdx, int endIdx) {</span>
-<span class="fc" id="L290">			super(edges, beginIdx, endIdx);</span>
-<span class="fc" id="L291">			this.target = target;</span>
-<span class="fc" id="L292">		}</span>
+<span class="fc" id="L307">		EdgeIterIn(int target, int[] edges, int beginIdx, int endIdx) {</span>
+<span class="fc" id="L308">			super(edges, beginIdx, endIdx);</span>
+<span class="fc" id="L309">			this.target = target;</span>
+<span class="fc" id="L310">		}</span>
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L296">			return GraphCsrDirectedReindexed.this.source(lastEdge);</span>
+<span class="fc" id="L314">			return GraphCsrDirectedReindexed.this.source(lastEdge);</span>
 		}
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L301">			return target;</span>
+<span class="fc" id="L319">			return target;</span>
+		}
+	}
+
+	private class EdgeSetSourceTarget extends AbstractIntSet implements IEdgeSet {
+
+		private final int source;
+		private final int target;
+		private final int begin;
+		private final int end;
+
+<span class="fc" id="L330">		EdgeSetSourceTarget(int source, int target, int start, int end) {</span>
+<span class="fc" id="L331">			this.source = source;</span>
+<span class="fc" id="L332">			this.target = target;</span>
+<span class="fc" id="L333">			this.begin = start;</span>
+<span class="fc" id="L334">			this.end = end;</span>
+<span class="fc" id="L335">		}</span>
+
+		@Override
+		public boolean contains(int edge) {
+<span class="fc bfc" id="L339" title="All 6 branches covered.">			return edges.contains(edge) &amp;&amp; source == edgeSource(edge) &amp;&amp; target == edgeTarget(edge);</span>
+		}
+
+		@Override
+		public int size() {
+<span class="fc" id="L344">			return end - begin;</span>
+		}
+
+		@Override
+		public IEdgeIter iterator() {
+<span class="fc" id="L349">			return new EdgeIterOut(source, begin, end);</span>
 		}
 	}
 
@@ -306,36 +354,36 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 		private final int source, target;
 
-<span class="fc" id="L309">		SourceTargetEdgesSetFastLookup(int source, int target) {</span>
-<span class="fc" id="L310">			this.source = source;</span>
-<span class="fc" id="L311">			this.target = target;</span>
-<span class="fc" id="L312">		}</span>
+<span class="fc" id="L357">		SourceTargetEdgesSetFastLookup(int source, int target) {</span>
+<span class="fc" id="L358">			this.source = source;</span>
+<span class="fc" id="L359">			this.target = target;</span>
+<span class="fc" id="L360">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L316">			int firstEdge = edgesLookupTable[source].get(target);</span>
-<span class="fc bfc" id="L317" title="All 2 branches covered.">			if (firstEdge &lt; 0)</span>
-<span class="fc" id="L318">				return 0;</span>
-<span class="fc" id="L319">			for (int e = firstEdge, m = edges.size;;) {</span>
-<span class="fc" id="L320">				e++;</span>
-<span class="fc bfc" id="L321" title="All 4 branches covered.">				if (e == m || target(e) != target)</span>
-<span class="fc" id="L322">					return e - firstEdge;</span>
+<span class="fc" id="L364">			int firstEdge = edgesLookupTable[source].get(target);</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">			if (firstEdge &lt; 0)</span>
+<span class="fc" id="L366">				return 0;</span>
+<span class="fc" id="L367">			for (int e = firstEdge, m = edges.size;;) {</span>
+<span class="fc" id="L368">				e++;</span>
+<span class="fc bfc" id="L369" title="All 4 branches covered.">				if (e == m || target(e) != target)</span>
+<span class="fc" id="L370">					return e - firstEdge;</span>
 			}
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc bfc" id="L328" title="All 2 branches covered.">			return edgesLookupTable[source].get(target) &lt; 0;</span>
+<span class="fc bfc" id="L376" title="All 2 branches covered.">			return edgesLookupTable[source].get(target) &lt; 0;</span>
 		}
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc bfc" id="L333" title="All 6 branches covered.">			return edges().contains(key) &amp;&amp; source(key) == source &amp;&amp; target(key) == target;</span>
+<span class="fc bfc" id="L381" title="All 6 branches covered.">			return edges().contains(key) &amp;&amp; source(key) == source &amp;&amp; target(key) == target;</span>
 		}
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L338">			return new SourceTargetEdgesIterFastLookup(source, target);</span>
+<span class="fc" id="L386">			return new SourceTargetEdgesIterFastLookup(source, target);</span>
 		}
 	}
 
@@ -344,41 +392,41 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 		private final int source, target;
 		private int edge;
 
-<span class="fc" id="L347">		SourceTargetEdgesIterFastLookup(int source, int target) {</span>
-<span class="fc" id="L348">			this.source = source;</span>
-<span class="fc" id="L349">			this.target = target;</span>
-<span class="fc" id="L350">			this.edge = edgesLookupTable[source].get(target);</span>
-<span class="fc" id="L351">		}</span>
+<span class="fc" id="L395">		SourceTargetEdgesIterFastLookup(int source, int target) {</span>
+<span class="fc" id="L396">			this.source = source;</span>
+<span class="fc" id="L397">			this.target = target;</span>
+<span class="fc" id="L398">			this.edge = edgesLookupTable[source].get(target);</span>
+<span class="fc" id="L399">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L355" title="All 2 branches covered.">			return edge &gt;= 0;</span>
+<span class="fc bfc" id="L403" title="All 2 branches covered.">			return edge &gt;= 0;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L360">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L361">			int e = edge;</span>
-<span class="fc" id="L362">			edge++;</span>
-<span class="fc bfc" id="L363" title="All 4 branches covered.">			if (edge == edges.size || GraphCsrDirectedReindexed.this.target(edge) != target)</span>
-<span class="fc" id="L364">				edge = -1;</span>
-<span class="fc" id="L365">			return e;</span>
+<span class="fc" id="L408">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L409">			int e = edge;</span>
+<span class="fc" id="L410">			edge++;</span>
+<span class="fc bfc" id="L411" title="All 4 branches covered.">			if (edge == edges.size || GraphCsrDirectedReindexed.this.target(edge) != target)</span>
+<span class="fc" id="L412">				edge = -1;</span>
+<span class="fc" id="L413">			return e;</span>
 		}
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L370">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L371">			return edge;</span>
+<span class="fc" id="L418">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L419">			return edge;</span>
 		}
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L376">			return source;</span>
+<span class="fc" id="L424">			return source;</span>
 		}
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L381">			return target;</span>
+<span class="fc" id="L429">			return target;</span>
 		}
 	}
 }

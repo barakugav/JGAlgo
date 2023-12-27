@@ -187,7 +187,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 <span class="fc" id="L187">	}</span>
 
 	@Override
-	public boolean isAllowSelfEdges() {
+	public final boolean isAllowSelfEdges() {
 <span class="fc bfc" id="L191" title="All 2 branches covered.">		if (!containsSelfEdgesValid) {</span>
 <span class="fc" id="L192">			containsSelfEdges = false;</span>
 <span class="fc bfc" id="L193" title="All 2 branches covered.">			for (int m = edges().size(), e = 0; e &lt; m; e++) {</span>
@@ -201,186 +201,188 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 <span class="fc" id="L201">		return containsSelfEdges;</span>
 	}
 
-	boolean containsParallelEdges() {
+	final boolean containsParallelEdges() {
 <span class="fc bfc" id="L205" title="All 2 branches covered.">		if (!containsParallelEdgesValid) {</span>
-<span class="fc" id="L206">			final int n = vertices().size();</span>
-<span class="fc" id="L207">			Bitmap neighborsBitmap = new Bitmap(n);</span>
-<span class="fc" id="L208">			IntList neighbors = new IntArrayList();</span>
-<span class="fc" id="L209">			containsParallelEdges = false;</span>
-<span class="fc bfc" id="L210" title="All 2 branches covered.">			mainLoop: for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L211" title="All 2 branches covered.">				for (IEdgeIter eit = outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L212">					eit.nextInt();</span>
-<span class="fc" id="L213">					int v = eit.targetInt();</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">					if (neighborsBitmap.get(v)) {</span>
-<span class="fc" id="L215">						containsParallelEdges = true;</span>
-<span class="fc" id="L216">						break mainLoop;</span>
-					}
-<span class="fc" id="L218">					neighborsBitmap.set(v);</span>
-<span class="fc" id="L219">					neighbors.add(v);</span>
-<span class="fc" id="L220">				}</span>
-<span class="fc" id="L221">				neighborsBitmap.clearAllUnsafe(neighbors);</span>
-<span class="fc" id="L222">				neighbors.clear();</span>
-			}
-<span class="fc" id="L224">			containsParallelEdgesValid = true;</span>
+<span class="fc" id="L206">			containsParallelEdges = containsParallelEdgesImpl();</span>
+<span class="fc" id="L207">			containsParallelEdgesValid = true;</span>
 		}
-<span class="fc" id="L226">		return containsParallelEdges;</span>
+<span class="fc" id="L209">		return containsParallelEdges;</span>
+	}
+
+	boolean containsParallelEdgesImpl() {
+<span class="fc" id="L213">		final int n = vertices().size();</span>
+<span class="fc" id="L214">		Bitmap neighborsBitmap = new Bitmap(n);</span>
+<span class="fc" id="L215">		IntList neighbors = new IntArrayList();</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">			for (IEdgeIter eit = outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L218">				eit.nextInt();</span>
+<span class="fc" id="L219">				int v = eit.targetInt();</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">				if (neighborsBitmap.get(v))</span>
+<span class="fc" id="L221">					return true;</span>
+<span class="fc" id="L222">				neighborsBitmap.set(v);</span>
+<span class="fc" id="L223">				neighbors.add(v);</span>
+<span class="fc" id="L224">			}</span>
+<span class="fc" id="L225">			neighborsBitmap.clearAllUnsafe(neighbors);</span>
+<span class="fc" id="L226">			neighbors.clear();</span>
+		}
+<span class="fc" id="L228">		return false;</span>
 	}
 
 	@Override
-	public boolean isAllowParallelEdges() {
-<span class="fc" id="L231">		return containsParallelEdges();</span>
+	public final boolean isAllowParallelEdges() {
+<span class="fc" id="L233">		return containsParallelEdges();</span>
 	}
 
 	@Override
 	public int addVertexInt() {
-<span class="fc" id="L236">		throw new UnsupportedOperationException(&quot;graph is immutable, can't add vertex&quot;);</span>
+<span class="fc" id="L238">		throw new UnsupportedOperationException(&quot;graph is immutable, can't add vertex&quot;);</span>
 	}
 
 	@Override
 	public void addVertices(Collection&lt;? extends Integer&gt; vertices) {
-<span class="fc" id="L241">		throw new UnsupportedOperationException(&quot;graph is immutable, can't add vertices&quot;);</span>
+<span class="fc" id="L243">		throw new UnsupportedOperationException(&quot;graph is immutable, can't add vertices&quot;);</span>
 	}
 
 	@Override
 	public void removeVertex(int vertex) {
-<span class="fc" id="L246">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove vertex&quot;);</span>
+<span class="fc" id="L248">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove vertex&quot;);</span>
 	}
 
 	@Override
 	public void removeVertices(Collection&lt;? extends Integer&gt; vertices) {
-<span class="fc" id="L251">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove &quot;);</span>
+<span class="fc" id="L253">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove &quot;);</span>
 	}
 
 	@Override
 	public int addEdge(int source, int target) {
-<span class="fc" id="L256">		throw new UnsupportedOperationException(&quot;graph is immutable, can't add edge&quot;);</span>
+<span class="fc" id="L258">		throw new UnsupportedOperationException(&quot;graph is immutable, can't add edge&quot;);</span>
 	}
 
 	@Override
 	public void addEdges(EdgeSet&lt;? extends Integer, ? extends Integer&gt; edges) {
-<span class="fc" id="L261">		throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
+<span class="fc" id="L263">		throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
 	}
 
 	@Override
 	public IntSet addEdgesReassignIds(IEdgeSet edges) {
-<span class="fc" id="L266">		throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
+<span class="fc" id="L268">		throw new UnsupportedOperationException(&quot;graph is immutable, cannot add edges&quot;);</span>
 	}
 
 	@Override
 	public void removeEdge(int edge) {
-<span class="fc" id="L271">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove edge&quot;);</span>
+<span class="fc" id="L273">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove edge&quot;);</span>
 	}
 
 	@Override
 	public void removeEdges(Collection&lt;? extends Integer&gt; edges) {
-<span class="fc" id="L276">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove edges&quot;);</span>
+<span class="fc" id="L278">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove edges&quot;);</span>
 	}
 
 	@Override
 	public void removeEdgesOf(int vertex) {
-<span class="fc" id="L281">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove edges&quot;);</span>
+<span class="fc" id="L283">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove edges&quot;);</span>
 	}
 
 	@Override
 	public void removeOutEdgesOf(int source) {
-<span class="fc" id="L286">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove edges&quot;);</span>
+<span class="fc" id="L288">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove edges&quot;);</span>
 	}
 
 	@Override
 	public void removeInEdgesOf(int target) {
-<span class="fc" id="L291">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove edges&quot;);</span>
+<span class="fc" id="L293">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove edges&quot;);</span>
 	}
 
 	@Override
 	public void moveEdge(int edge, int newSource, int newTarget) {
-<span class="fc" id="L296">		throw new UnsupportedOperationException(&quot;graph is immutable, can't move edge&quot;);</span>
+<span class="fc" id="L298">		throw new UnsupportedOperationException(&quot;graph is immutable, can't move edge&quot;);</span>
 	}
 
 	@Override
 	public void clear() {
-<span class="fc" id="L301">		throw new UnsupportedOperationException(&quot;graph is immutable, can't clear&quot;);</span>
+<span class="fc" id="L303">		throw new UnsupportedOperationException(&quot;graph is immutable, can't clear&quot;);</span>
 	}
 
 	@Override
 	public void clearEdges() {
-<span class="fc" id="L306">		throw new UnsupportedOperationException(&quot;graph is immutable, can't clear edges&quot;);</span>
+<span class="fc" id="L308">		throw new UnsupportedOperationException(&quot;graph is immutable, can't clear edges&quot;);</span>
 	}
 
 	@Override
-<span class="fc" id="L310">	public void ensureVertexCapacity(int vertexCapacity) {}</span>
+<span class="fc" id="L312">	public void ensureVertexCapacity(int vertexCapacity) {}</span>
 
 	@Override
-<span class="fc" id="L313">	public void ensureEdgeCapacity(int edgeCapacity) {}</span>
+<span class="fc" id="L315">	public void ensureEdgeCapacity(int edgeCapacity) {}</span>
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getVerticesWeights(String key) {
-<span class="fc" id="L318">		return (WeightsT) verticesUserWeights.get(key);</span>
+<span class="fc" id="L320">		return (WeightsT) verticesUserWeights.get(key);</span>
 	}
 
 	@Override
 	public Set&lt;String&gt; getVerticesWeightsKeys() {
-<span class="fc" id="L323">		return verticesUserWeights.keySet();</span>
+<span class="fc" id="L325">		return verticesUserWeights.keySet();</span>
 	}
 
 	@Override
 	public void removeVerticesWeights(String key) {
-<span class="fc" id="L328">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove vertices weights&quot;);</span>
+<span class="fc" id="L330">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove vertices weights&quot;);</span>
 	}
 
 	@Override
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT getEdgesWeights(String key) {
-<span class="fc" id="L334">		return (WeightsT) edgesUserWeights.get(key);</span>
+<span class="fc" id="L336">		return (WeightsT) edgesUserWeights.get(key);</span>
 	}
 
 	@Override
 	public Set&lt;String&gt; getEdgesWeightsKeys() {
-<span class="fc" id="L339">		return edgesUserWeights.keySet();</span>
+<span class="fc" id="L341">		return edgesUserWeights.keySet();</span>
 	}
 
 	@Override
 	public void removeEdgesWeights(String key) {
-<span class="fc" id="L344">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove edges weights&quot;);</span>
+<span class="fc" id="L346">		throw new UnsupportedOperationException(&quot;graph is immutable, can't remove edges weights&quot;);</span>
 	}
 
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
-<span class="fc" id="L350">		throw new UnsupportedOperationException(&quot;graph is immutable, can't add vertices weights&quot;);</span>
+<span class="fc" id="L352">		throw new UnsupportedOperationException(&quot;graph is immutable, can't add vertices weights&quot;);</span>
 	}
 
 	@Override
 	public &lt;T, WeightsT extends Weights&lt;Integer, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type,
 			T defVal) {
-<span class="fc" id="L356">		throw new UnsupportedOperationException(&quot;graph is immutable, can't add edges weights&quot;);</span>
+<span class="fc" id="L358">		throw new UnsupportedOperationException(&quot;graph is immutable, can't add edges weights&quot;);</span>
 	}
 
 	@Override
 	public void addVertexRemoveListener(IndexRemoveListener listener) {
-<span class="fc" id="L361">		Objects.requireNonNull(listener);</span>
-<span class="fc" id="L362">	}</span>
+<span class="fc" id="L363">		Objects.requireNonNull(listener);</span>
+<span class="fc" id="L364">	}</span>
 
 	@Override
-<span class="fc" id="L365">	public void removeVertexRemoveListener(IndexRemoveListener listener) {}</span>
+<span class="fc" id="L367">	public void removeVertexRemoveListener(IndexRemoveListener listener) {}</span>
 
 	@Override
 	public void addEdgeRemoveListener(IndexRemoveListener listener) {
-<span class="fc" id="L369">		Objects.requireNonNull(listener);</span>
-<span class="fc" id="L370">	}</span>
+<span class="fc" id="L371">		Objects.requireNonNull(listener);</span>
+<span class="fc" id="L372">	}</span>
 
 	@Override
-<span class="fc" id="L373">	public void removeEdgeRemoveListener(IndexRemoveListener listener) {}</span>
+<span class="fc" id="L375">	public void removeEdgeRemoveListener(IndexRemoveListener listener) {}</span>
 
 	@Override
 	public IndexGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc bfc" id="L377" title="All 2 branches covered.">		if (verticesUserWeights.isEmpty())</span>
-<span class="fc" id="L378">			copyVerticesWeights = true;</span>
-<span class="fc bfc" id="L379" title="All 2 branches covered.">		if (edgesUserWeights.isEmpty())</span>
-<span class="fc" id="L380">			copyEdgesWeights = true;</span>
-<span class="fc bfc" id="L381" title="All 4 branches covered.">		if (copyVerticesWeights &amp;&amp; copyEdgesWeights)</span>
-<span class="fc" id="L382">			return this;</span>
-<span class="fc" id="L383">		return super.immutableCopy(copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc bfc" id="L379" title="All 2 branches covered.">		if (verticesUserWeights.isEmpty())</span>
+<span class="fc" id="L380">			copyVerticesWeights = true;</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">		if (edgesUserWeights.isEmpty())</span>
+<span class="fc" id="L382">			copyEdgesWeights = true;</span>
+<span class="fc bfc" id="L383" title="All 4 branches covered.">		if (copyVerticesWeights &amp;&amp; copyEdgesWeights)</span>
+<span class="fc" id="L384">			return this;</span>
+<span class="fc" id="L385">		return super.immutableCopy(copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	abstract static class EdgeIterAbstract implements IEdgeIter {
@@ -388,29 +390,29 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 		private final int[] edges;
 		private int idx;
 		private final int endIdx;
-<span class="fc" id="L391">		int lastEdge = -1;</span>
+<span class="fc" id="L393">		int lastEdge = -1;</span>
 
-<span class="fc" id="L393">		EdgeIterAbstract(int[] edges, int beginIdx, int endIdx) {</span>
-<span class="fc" id="L394">			this.edges = edges;</span>
-<span class="fc" id="L395">			this.idx = beginIdx;</span>
-<span class="fc" id="L396">			this.endIdx = endIdx;</span>
-<span class="fc" id="L397">		}</span>
+<span class="fc" id="L395">		EdgeIterAbstract(int[] edges, int beginIdx, int endIdx) {</span>
+<span class="fc" id="L396">			this.edges = edges;</span>
+<span class="fc" id="L397">			this.idx = beginIdx;</span>
+<span class="fc" id="L398">			this.endIdx = endIdx;</span>
+<span class="fc" id="L399">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L401" title="All 2 branches covered.">			return idx &lt; endIdx;</span>
+<span class="fc bfc" id="L403" title="All 2 branches covered.">			return idx &lt; endIdx;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L406">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L407">			return lastEdge = edges[idx++];</span>
+<span class="fc" id="L408">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L409">			return lastEdge = edges[idx++];</span>
 		}
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L412">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L413">			return edges[idx];</span>
+<span class="fc" id="L414">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L415">			return edges[idx];</span>
 		}
 	}
 
@@ -419,18 +421,18 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 		final int[] edgesOut;
 		final int[] edgesOutBegin;
 
-<span class="fc" id="L422">		BuilderProcessEdges(int[] edgesOut, int[] edgesOutBegin) {</span>
-<span class="fc" id="L423">			this.edgesOut = edgesOut;</span>
-<span class="fc" id="L424">			this.edgesOutBegin = edgesOutBegin;</span>
-<span class="fc" id="L425">		}</span>
+<span class="fc" id="L424">		BuilderProcessEdges(int[] edgesOut, int[] edgesOutBegin) {</span>
+<span class="fc" id="L425">			this.edgesOut = edgesOut;</span>
+<span class="fc" id="L426">			this.edgesOutBegin = edgesOutBegin;</span>
+<span class="fc" id="L427">		}</span>
 
 	}
 
-<span class="fc" id="L429">	static class BuilderProcessEdgesUndirected extends BuilderProcessEdges {</span>
+<span class="fc" id="L431">	static class BuilderProcessEdgesUndirected extends BuilderProcessEdges {</span>
 
 		private BuilderProcessEdgesUndirected(int[] edgesOut, int[] edgesOutBegin) {
-<span class="fc" id="L432">			super(edgesOut, edgesOutBegin);</span>
-<span class="fc" id="L433">		}</span>
+<span class="fc" id="L434">			super(edgesOut, edgesOutBegin);</span>
+<span class="fc" id="L435">		}</span>
 
 		static BuilderProcessEdgesUndirected valueOf(IndexGraphBuilderImpl builder) {
 			// return valueOf(Variant2.ofB(builder));
@@ -442,13 +444,13 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 
 			// private static BuilderProcessEdgesUndirected valueOf(
 			// Variant2&lt;IndexGraph, IndexGraphBuilderImpl&gt; graphOrBuilder) {
-<span class="fc" id="L445">			final int n = builder.vertices().size();</span>
-<span class="fc" id="L446">			final int m = builder.edges().size();</span>
+<span class="fc" id="L447">			final int n = builder.vertices().size();</span>
+<span class="fc" id="L448">			final int m = builder.edges().size();</span>
 			// final int n = verticesNum(graphOrBuilder);
 			// final int m = edgesNum(graphOrBuilder);
 
 			/* Count how many out/in edges each vertex has */
-<span class="fc" id="L451">			final int[] edgesOutBegin = new int[n + 1];</span>
+<span class="fc" id="L453">			final int[] edgesOutBegin = new int[n + 1];</span>
 			// if (graphOrBuilder.contains(IndexGraph.class)) {
 			// IndexGraph g = graphOrBuilder.get(IndexGraph.class);
 			// for (int e = 0; e &lt; m; e++) {
@@ -459,32 +461,32 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			// }
 			// } else {
 			// IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
-<span class="fc bfc" id="L462" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L463">				int u = builder.edgeSource(e), v = builder.edgeTarget(e);</span>
-<span class="fc" id="L464">				edgesOutBegin[u]++;</span>
-<span class="fc bfc" id="L465" title="All 2 branches covered.">				if (u != v)</span>
-<span class="fc" id="L466">					edgesOutBegin[v]++;</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L465">				int u = builder.edgeSource(e), v = builder.edgeTarget(e);</span>
+<span class="fc" id="L466">				edgesOutBegin[u]++;</span>
+<span class="fc bfc" id="L467" title="All 2 branches covered.">				if (u != v)</span>
+<span class="fc" id="L468">					edgesOutBegin[v]++;</span>
 			}
 			// }
-<span class="fc" id="L469">			int outNumSum = 0;</span>
-<span class="fc bfc" id="L470" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L471">				outNumSum += edgesOutBegin[v];</span>
-<span class="fc" id="L472">			final int[] edgesOut = new int[outNumSum];</span>
-<span class="fc bfc" id="L473" title="All 2 branches covered.">			if (n == 0)</span>
-<span class="fc" id="L474">				return new BuilderProcessEdgesUndirected(edgesOut, edgesOutBegin);</span>
+<span class="fc" id="L471">			int outNumSum = 0;</span>
+<span class="fc bfc" id="L472" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L473">				outNumSum += edgesOutBegin[v];</span>
+<span class="fc" id="L474">			final int[] edgesOut = new int[outNumSum];</span>
+<span class="fc bfc" id="L475" title="All 2 branches covered.">			if (n == 0)</span>
+<span class="fc" id="L476">				return new BuilderProcessEdgesUndirected(edgesOut, edgesOutBegin);</span>
 
 			/*
 			 * Arrange all the out-edges in a single continues array, where the out- edges of u are
 			 * edgesOutBegin[u]...edgesOutBegin[u+1]-1
 			 */
-<span class="fc" id="L480">			int nextOutNum = edgesOutBegin[0];</span>
-<span class="fc" id="L481">			edgesOutBegin[0] = 0;</span>
-<span class="fc bfc" id="L482" title="All 2 branches covered.">			for (int v = 1; v &lt; n; v++) {</span>
-<span class="fc" id="L483">				int nextOutNum0 = edgesOutBegin[v];</span>
-<span class="fc" id="L484">				edgesOutBegin[v] = edgesOutBegin[v - 1] + nextOutNum;</span>
-<span class="fc" id="L485">				nextOutNum = nextOutNum0;</span>
+<span class="fc" id="L482">			int nextOutNum = edgesOutBegin[0];</span>
+<span class="fc" id="L483">			edgesOutBegin[0] = 0;</span>
+<span class="fc bfc" id="L484" title="All 2 branches covered.">			for (int v = 1; v &lt; n; v++) {</span>
+<span class="fc" id="L485">				int nextOutNum0 = edgesOutBegin[v];</span>
+<span class="fc" id="L486">				edgesOutBegin[v] = edgesOutBegin[v - 1] + nextOutNum;</span>
+<span class="fc" id="L487">				nextOutNum = nextOutNum0;</span>
 			}
-<span class="fc" id="L487">			edgesOutBegin[n] = outNumSum;</span>
+<span class="fc" id="L489">			edgesOutBegin[n] = outNumSum;</span>
 			// if (graphOrBuilder.contains(IndexGraph.class)) {
 			// IndexGraph g = graphOrBuilder.get(IndexGraph.class);
 			// for (int e = 0; e &lt; m; e++) {
@@ -498,72 +500,72 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			// }
 			// } else {
 			// IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
-<span class="fc bfc" id="L501" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L502">				int u = builder.edgeSource(e), v = builder.edgeTarget(e);</span>
-<span class="fc" id="L503">				int uOutIdx = edgesOutBegin[u]++;</span>
-<span class="fc" id="L504">				edgesOut[uOutIdx] = e;</span>
-<span class="fc bfc" id="L505" title="All 2 branches covered.">				if (u != v) {</span>
-<span class="fc" id="L506">					int vInIdx = edgesOutBegin[v]++;</span>
-<span class="fc" id="L507">					edgesOut[vInIdx] = e;</span>
+<span class="fc bfc" id="L503" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L504">				int u = builder.edgeSource(e), v = builder.edgeTarget(e);</span>
+<span class="fc" id="L505">				int uOutIdx = edgesOutBegin[u]++;</span>
+<span class="fc" id="L506">				edgesOut[uOutIdx] = e;</span>
+<span class="fc bfc" id="L507" title="All 2 branches covered.">				if (u != v) {</span>
+<span class="fc" id="L508">					int vInIdx = edgesOutBegin[v]++;</span>
+<span class="fc" id="L509">					edgesOut[vInIdx] = e;</span>
 				}
 			}
 			// }
-<span class="pc bnc" id="L511" title="All 2 branches missed.">			assert edgesOutBegin[n - 1] == outNumSum;</span>
-<span class="fc bfc" id="L512" title="All 2 branches covered.">			for (int v = n - 1; v &gt; 0; v--)</span>
-<span class="fc" id="L513">				edgesOutBegin[v] = edgesOutBegin[v - 1];</span>
-<span class="fc" id="L514">			edgesOutBegin[0] = 0;</span>
+<span class="pc bnc" id="L513" title="All 2 branches missed.">			assert edgesOutBegin[n - 1] == outNumSum;</span>
+<span class="fc bfc" id="L514" title="All 2 branches covered.">			for (int v = n - 1; v &gt; 0; v--)</span>
+<span class="fc" id="L515">				edgesOutBegin[v] = edgesOutBegin[v - 1];</span>
+<span class="fc" id="L516">			edgesOutBegin[0] = 0;</span>
 
-<span class="fc" id="L516">			return new BuilderProcessEdgesUndirected(edgesOut, edgesOutBegin);</span>
+<span class="fc" id="L518">			return new BuilderProcessEdgesUndirected(edgesOut, edgesOutBegin);</span>
 		}
 
 	}
 
-<span class="fc" id="L521">	static class BuilderProcessEdgesDirected extends BuilderProcessEdges {</span>
+<span class="fc" id="L523">	static class BuilderProcessEdgesDirected extends BuilderProcessEdges {</span>
 
 		final int[] edgesIn;
 		final int[] edgesInBegin;
 
 		private BuilderProcessEdgesDirected(int[] edgesOut, int[] edgesOutBegin, int[] edgesIn, int[] edgesInBegin) {
-<span class="fc" id="L527">			super(edgesOut, edgesOutBegin);</span>
-<span class="fc" id="L528">			this.edgesIn = edgesIn;</span>
-<span class="fc" id="L529">			this.edgesInBegin = edgesInBegin;</span>
-<span class="fc" id="L530">		}</span>
+<span class="fc" id="L529">			super(edgesOut, edgesOutBegin);</span>
+<span class="fc" id="L530">			this.edgesIn = edgesIn;</span>
+<span class="fc" id="L531">			this.edgesInBegin = edgesInBegin;</span>
+<span class="fc" id="L532">		}</span>
 
 		static BuilderProcessEdgesDirected valueOf(IndexGraphBuilderImpl builder) {
-<span class="fc" id="L533">			return valueOf(Variant2.ofB(builder));</span>
+<span class="fc" id="L535">			return valueOf(Variant2.ofB(builder));</span>
 		}
 
 		static BuilderProcessEdgesDirected valueOf(IndexGraph g) {
-<span class="nc" id="L537">			return valueOf(Variant2.ofA(g));</span>
+<span class="nc" id="L539">			return valueOf(Variant2.ofA(g));</span>
 		}
 
 		static BuilderProcessEdgesDirected valueOf(Variant2&lt;IndexGraph, IndexGraphBuilderImpl&gt; graphOrBuilder) {
-<span class="fc bfc" id="L541" title="All 2 branches covered.">			if (graphOrBuilder.contains(IndexGraph.class)</span>
-<span class="fc bfc" id="L542" title="All 2 branches covered.">					&amp;&amp; graphOrBuilder.get(IndexGraph.class) instanceof GraphCsrDirectedReindexed)</span>
-<span class="fc" id="L543">				return null;</span>
+<span class="fc bfc" id="L543" title="All 2 branches covered.">			if (graphOrBuilder.contains(IndexGraph.class)</span>
+<span class="fc bfc" id="L544" title="All 2 branches covered.">					&amp;&amp; graphOrBuilder.get(IndexGraph.class) instanceof GraphCsrDirectedReindexed)</span>
+<span class="fc" id="L545">				return null;</span>
 
-<span class="fc" id="L545">			final int n = verticesNum(graphOrBuilder);</span>
-<span class="fc" id="L546">			final int m = edgesNum(graphOrBuilder);</span>
+<span class="fc" id="L547">			final int n = verticesNum(graphOrBuilder);</span>
+<span class="fc" id="L548">			final int m = edgesNum(graphOrBuilder);</span>
 
-<span class="fc" id="L548">			final int[] edgesOut = new int[m];</span>
-<span class="fc" id="L549">			final int[] edgesOutBegin = new int[n + 1];</span>
-<span class="fc" id="L550">			final int[] edgesIn = new int[m];</span>
-<span class="fc" id="L551">			final int[] edgesInBegin = new int[n + 1];</span>
-<span class="fc bfc" id="L552" title="All 2 branches covered.">			if (m == 0)</span>
-<span class="fc" id="L553">				return new BuilderProcessEdgesDirected(edgesOut, edgesOutBegin, edgesIn, edgesInBegin);</span>
+<span class="fc" id="L550">			final int[] edgesOut = new int[m];</span>
+<span class="fc" id="L551">			final int[] edgesOutBegin = new int[n + 1];</span>
+<span class="fc" id="L552">			final int[] edgesIn = new int[m];</span>
+<span class="fc" id="L553">			final int[] edgesInBegin = new int[n + 1];</span>
+<span class="fc bfc" id="L554" title="All 2 branches covered.">			if (m == 0)</span>
+<span class="fc" id="L555">				return new BuilderProcessEdgesDirected(edgesOut, edgesOutBegin, edgesIn, edgesInBegin);</span>
 
 			/* Count how many out/in edges each vertex has */
-<span class="fc bfc" id="L556" title="All 2 branches covered.">			if (graphOrBuilder.contains(IndexGraph.class)) {</span>
-<span class="fc" id="L557">				IndexGraph g = graphOrBuilder.get(IndexGraph.class);</span>
-<span class="fc bfc" id="L558" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L559">					edgesOutBegin[g.edgeSource(e)]++;</span>
-<span class="fc" id="L560">					edgesInBegin[g.edgeTarget(e)]++;</span>
+<span class="fc bfc" id="L558" title="All 2 branches covered.">			if (graphOrBuilder.contains(IndexGraph.class)) {</span>
+<span class="fc" id="L559">				IndexGraph g = graphOrBuilder.get(IndexGraph.class);</span>
+<span class="fc bfc" id="L560" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L561">					edgesOutBegin[g.edgeSource(e)]++;</span>
+<span class="fc" id="L562">					edgesInBegin[g.edgeTarget(e)]++;</span>
 				}
-<span class="fc" id="L562">			} else {</span>
-<span class="fc" id="L563">				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);</span>
-<span class="fc bfc" id="L564" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L565">					edgesOutBegin[builder.edgeSource(e)]++;</span>
-<span class="fc" id="L566">					edgesInBegin[builder.edgeTarget(e)]++;</span>
+<span class="fc" id="L564">			} else {</span>
+<span class="fc" id="L565">				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);</span>
+<span class="fc bfc" id="L566" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L567">					edgesOutBegin[builder.edgeSource(e)]++;</span>
+<span class="fc" id="L568">					edgesInBegin[builder.edgeTarget(e)]++;</span>
 				}
 			}
 
@@ -573,51 +575,51 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			 * In addition, sort the out-edges of each vertex by target. This is done in linear time by two (stable)
 			 * bucket sorts, first by target and than by source.
 			 */
-<span class="fc" id="L576">			int nextOutNum = edgesOutBegin[0], nextInNum = edgesInBegin[0];</span>
-<span class="fc" id="L577">			edgesOutBegin[0] = edgesInBegin[0] = 0;</span>
-<span class="fc bfc" id="L578" title="All 2 branches covered.">			for (int v = 1; v &lt; n; v++) {</span>
-<span class="fc" id="L579">				int nextOutNum0 = edgesOutBegin[v];</span>
-<span class="fc" id="L580">				int nextInNum0 = edgesInBegin[v];</span>
-<span class="fc" id="L581">				edgesOutBegin[v] = edgesOutBegin[v - 1] + nextOutNum;</span>
-<span class="fc" id="L582">				edgesInBegin[v] = edgesInBegin[v - 1] + nextInNum;</span>
-<span class="fc" id="L583">				nextOutNum = nextOutNum0;</span>
-<span class="fc" id="L584">				nextInNum = nextInNum0;</span>
+<span class="fc" id="L578">			int nextOutNum = edgesOutBegin[0], nextInNum = edgesInBegin[0];</span>
+<span class="fc" id="L579">			edgesOutBegin[0] = edgesInBegin[0] = 0;</span>
+<span class="fc bfc" id="L580" title="All 2 branches covered.">			for (int v = 1; v &lt; n; v++) {</span>
+<span class="fc" id="L581">				int nextOutNum0 = edgesOutBegin[v];</span>
+<span class="fc" id="L582">				int nextInNum0 = edgesInBegin[v];</span>
+<span class="fc" id="L583">				edgesOutBegin[v] = edgesOutBegin[v - 1] + nextOutNum;</span>
+<span class="fc" id="L584">				edgesInBegin[v] = edgesInBegin[v - 1] + nextInNum;</span>
+<span class="fc" id="L585">				nextOutNum = nextOutNum0;</span>
+<span class="fc" id="L586">				nextInNum = nextInNum0;</span>
 			}
-<span class="fc" id="L586">			edgesOutBegin[n] = edgesInBegin[n] = m;</span>
-<span class="fc bfc" id="L587" title="All 2 branches covered.">			if (graphOrBuilder.contains(IndexGraph.class)) {</span>
-<span class="fc" id="L588">				IndexGraph g = graphOrBuilder.get(IndexGraph.class);</span>
+<span class="fc" id="L588">			edgesOutBegin[n] = edgesInBegin[n] = m;</span>
+<span class="fc bfc" id="L589" title="All 2 branches covered.">			if (graphOrBuilder.contains(IndexGraph.class)) {</span>
+<span class="fc" id="L590">				IndexGraph g = graphOrBuilder.get(IndexGraph.class);</span>
 				/* firsts bucket sort by target */
-<span class="fc bfc" id="L590" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L591">					int vInIdx = edgesInBegin[g.edgeTarget(e)]++;</span>
-<span class="fc" id="L592">					edgesIn[vInIdx] = e;</span>
+<span class="fc bfc" id="L592" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L593">					int vInIdx = edgesInBegin[g.edgeTarget(e)]++;</span>
+<span class="fc" id="L594">					edgesIn[vInIdx] = e;</span>
 				}
 				/* than bucket sort by source, stable sorting after the first sort */
-<span class="fc bfc" id="L595" title="All 2 branches covered.">				for (int e : edgesIn) {</span>
-<span class="fc" id="L596">					int uOutIdx = edgesOutBegin[g.edgeSource(e)]++;</span>
-<span class="fc" id="L597">					edgesOut[uOutIdx] = e;</span>
+<span class="fc bfc" id="L597" title="All 2 branches covered.">				for (int e : edgesIn) {</span>
+<span class="fc" id="L598">					int uOutIdx = edgesOutBegin[g.edgeSource(e)]++;</span>
+<span class="fc" id="L599">					edgesOut[uOutIdx] = e;</span>
 				}
-<span class="fc" id="L599">			} else {</span>
-<span class="fc" id="L600">				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);</span>
+<span class="fc" id="L601">			} else {</span>
+<span class="fc" id="L602">				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);</span>
 				/* firsts bucket sort by target */
-<span class="fc bfc" id="L602" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L603">					int vInIdx = edgesInBegin[builder.edgeTarget(e)]++;</span>
-<span class="fc" id="L604">					edgesIn[vInIdx] = e;</span>
+<span class="fc bfc" id="L604" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L605">					int vInIdx = edgesInBegin[builder.edgeTarget(e)]++;</span>
+<span class="fc" id="L606">					edgesIn[vInIdx] = e;</span>
 				}
 				/* than bucket sort by source, stable sorting after the first sort */
-<span class="fc bfc" id="L607" title="All 2 branches covered.">				for (int e : edgesIn) {</span>
-<span class="fc" id="L608">					int uOutIdx = edgesOutBegin[builder.edgeSource(e)]++;</span>
-<span class="fc" id="L609">					edgesOut[uOutIdx] = e;</span>
+<span class="fc bfc" id="L609" title="All 2 branches covered.">				for (int e : edgesIn) {</span>
+<span class="fc" id="L610">					int uOutIdx = edgesOutBegin[builder.edgeSource(e)]++;</span>
+<span class="fc" id="L611">					edgesOut[uOutIdx] = e;</span>
 				}
 			}
-<span class="pc bnc" id="L612" title="All 2 branches missed.">			assert edgesOutBegin[n - 1] == m;</span>
-<span class="pc bnc" id="L613" title="All 2 branches missed.">			assert edgesInBegin[n - 1] == m;</span>
-<span class="fc bfc" id="L614" title="All 2 branches covered.">			for (int v = n - 1; v &gt; 0; v--) {</span>
-<span class="fc" id="L615">				edgesOutBegin[v] = edgesOutBegin[v - 1];</span>
-<span class="fc" id="L616">				edgesInBegin[v] = edgesInBegin[v - 1];</span>
+<span class="pc bnc" id="L614" title="All 2 branches missed.">			assert edgesOutBegin[n - 1] == m;</span>
+<span class="pc bnc" id="L615" title="All 2 branches missed.">			assert edgesInBegin[n - 1] == m;</span>
+<span class="fc bfc" id="L616" title="All 2 branches covered.">			for (int v = n - 1; v &gt; 0; v--) {</span>
+<span class="fc" id="L617">				edgesOutBegin[v] = edgesOutBegin[v - 1];</span>
+<span class="fc" id="L618">				edgesInBegin[v] = edgesInBegin[v - 1];</span>
 			}
-<span class="fc" id="L618">			edgesOutBegin[0] = edgesInBegin[0] = 0;</span>
+<span class="fc" id="L620">			edgesOutBegin[0] = edgesInBegin[0] = 0;</span>
 
-<span class="fc" id="L620">			return new BuilderProcessEdgesDirected(edgesOut, edgesOutBegin, edgesIn, edgesInBegin);</span>
+<span class="fc" id="L622">			return new BuilderProcessEdgesDirected(edgesOut, edgesOutBegin, edgesIn, edgesInBegin);</span>
 		}
 
 	}

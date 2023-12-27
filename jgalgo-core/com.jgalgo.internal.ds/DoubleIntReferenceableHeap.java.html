@@ -202,7 +202,7 @@ public interface DoubleIntReferenceableHeap  extends ReferenceableHeap, Iterable
 	 * @return a stream over the elements in this heap
 	 */
 	default Stream&lt;DoubleIntReferenceableHeap.Ref &gt; stream() {
-<span class="fc" id="L205">		return StreamSupport.stream(spliterator(), false);</span>
+<span class="nc" id="L205">		return StreamSupport.stream(spliterator(), false);</span>
 	}
 
 	/**

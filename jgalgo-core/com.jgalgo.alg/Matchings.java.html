@@ -262,50 +262,49 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	}
 
 	static IWeightFunction negate(IWeightFunction w) {
-<span class="fc bfc" id="L265" title="All 2 branches covered.">		if (w == null)</span>
-<span class="fc" id="L266">			w = IWeightFunction.CardinalityWeightFunction;</span>
-<span class="fc bfc" id="L267" title="All 2 branches covered.">		if (WeightFunction.isInteger(w)) {</span>
-<span class="fc" id="L268">			IWeightFunctionInt w0 = (IWeightFunctionInt) w;</span>
-<span class="fc" id="L269">			IWeightFunctionInt w1 = e -&gt; -w0.weightInt(e);</span>
-<span class="fc" id="L270">			return w1;</span>
+<span class="fc" id="L265">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">		if (WeightFunction.isInteger(w)) {</span>
+<span class="fc" id="L267">			IWeightFunctionInt w0 = (IWeightFunctionInt) w;</span>
+<span class="fc" id="L268">			IWeightFunctionInt w1 = e -&gt; -w0.weightInt(e);</span>
+<span class="fc" id="L269">			return w1;</span>
 		} else {
-<span class="fc" id="L272">			IWeightFunction w0 = w;</span>
-<span class="fc" id="L273">			return e -&gt; -w0.weight(e);</span>
+<span class="fc" id="L271">			IWeightFunction w0 = w;</span>
+<span class="fc" id="L272">			return e -&gt; -w0.weight(e);</span>
 		}
 	}
 
-<span class="fc" id="L277">	abstract static class AbstractMaximumMatchingImpl extends AbstractMatchingImpl {</span>
+<span class="fc" id="L276">	abstract static class AbstractMaximumMatchingImpl extends AbstractMatchingImpl {</span>
 
 		@Override
 		IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L281">			return computeMaximumWeightedMatching(g, negate(w));</span>
+<span class="fc" id="L280">			return computeMaximumWeightedMatching(g, negate(w));</span>
 		}
 
 		@Override
 		IMatching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-<span class="fc bfc" id="L286" title="All 2 branches covered.">			if (WeightFunction.isCardinality(w)) {</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">			if (WeightFunction.isCardinality(w)) {</span>
 				/* minimum and maximum weighted perfect matching are equivalent for unweighed graphs */
-<span class="fc" id="L288">				return computeMaximumWeightedPerfectMatching(g, null);</span>
+<span class="fc" id="L287">				return computeMaximumWeightedPerfectMatching(g, null);</span>
 			} else {
-<span class="fc" id="L290">				return computeMaximumWeightedPerfectMatching(g, negate(w));</span>
+<span class="fc" id="L289">				return computeMaximumWeightedPerfectMatching(g, negate(w));</span>
 			}
 		}
 	}
 
-<span class="fc" id="L295">	abstract static class AbstractMinimumMatchingImpl extends AbstractMatchingImpl {</span>
+<span class="fc" id="L294">	abstract static class AbstractMinimumMatchingImpl extends AbstractMatchingImpl {</span>
 
 		@Override
 		IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L299">			return computeMinimumWeightedMatching(g, negate(w));</span>
+<span class="fc" id="L298">			return computeMinimumWeightedMatching(g, negate(w));</span>
 		}
 
 		@Override
 		IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-<span class="fc bfc" id="L304" title="All 2 branches covered.">			if (WeightFunction.isCardinality(w)) {</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">			if (WeightFunction.isCardinality(w)) {</span>
 				/* minimum and maximum weighted perfect matching are equivalent for unweighed graphs */
-<span class="fc" id="L306">				return computeMinimumWeightedPerfectMatching(g, null);</span>
+<span class="fc" id="L305">				return computeMinimumWeightedPerfectMatching(g, null);</span>
 			} else {
-<span class="fc" id="L308">				return computeMinimumWeightedPerfectMatching(g, negate(w));</span>
+<span class="fc" id="L307">				return computeMinimumWeightedPerfectMatching(g, negate(w));</span>
 			}
 		}
 
@@ -319,91 +318,91 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final MatchingAlgo weightedBipartiteAlgo;
 
 		SuperImpl(MatchingAlgo cardinalityGeneralAlgo, MatchingAlgo cardinalityBipartiteAlgo,
-<span class="fc" id="L322">				MatchingAlgo weightedGeneralAlgo, MatchingAlgo weightedBipartiteAlgo) {</span>
-<span class="fc" id="L323">			this.cardinalityGeneralAlgo = Objects.requireNonNull(cardinalityGeneralAlgo);</span>
-<span class="fc" id="L324">			this.cardinalityBipartiteAlgo = Objects.requireNonNull(cardinalityBipartiteAlgo);</span>
-<span class="fc" id="L325">			this.weightedGeneralAlgo = Objects.requireNonNull(weightedGeneralAlgo);</span>
-<span class="fc" id="L326">			this.weightedBipartiteAlgo = Objects.requireNonNull(weightedBipartiteAlgo);</span>
-<span class="fc" id="L327">		}</span>
+<span class="fc" id="L321">				MatchingAlgo weightedGeneralAlgo, MatchingAlgo weightedBipartiteAlgo) {</span>
+<span class="fc" id="L322">			this.cardinalityGeneralAlgo = Objects.requireNonNull(cardinalityGeneralAlgo);</span>
+<span class="fc" id="L323">			this.cardinalityBipartiteAlgo = Objects.requireNonNull(cardinalityBipartiteAlgo);</span>
+<span class="fc" id="L324">			this.weightedGeneralAlgo = Objects.requireNonNull(weightedGeneralAlgo);</span>
+<span class="fc" id="L325">			this.weightedBipartiteAlgo = Objects.requireNonNull(weightedBipartiteAlgo);</span>
+<span class="fc" id="L326">		}</span>
 
 		@Override
 		public &lt;V, E&gt; Matching&lt;V, E&gt; computeMaximumMatching(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
-<span class="fc" id="L331">			boolean cardinality = WeightFunction.isCardinality(w);</span>
-<span class="fc" id="L332">			boolean bipartite = isBipartite(g);</span>
-<span class="fc bfc" id="L333" title="All 2 branches covered.">			if (cardinality) {</span>
-<span class="fc bfc" id="L334" title="All 2 branches covered.">				if (bipartite) {</span>
-<span class="fc" id="L335">					return cardinalityBipartiteAlgo.computeMaximumMatching(g, w);</span>
+<span class="fc" id="L330">			boolean cardinality = WeightFunction.isCardinality(w);</span>
+<span class="fc" id="L331">			boolean bipartite = isBipartite(g);</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">			if (cardinality) {</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">				if (bipartite) {</span>
+<span class="fc" id="L334">					return cardinalityBipartiteAlgo.computeMaximumMatching(g, w);</span>
 				} else {
-<span class="fc" id="L337">					return cardinalityGeneralAlgo.computeMaximumMatching(g, w);</span>
+<span class="fc" id="L336">					return cardinalityGeneralAlgo.computeMaximumMatching(g, w);</span>
 				}
 			} else {
-<span class="fc bfc" id="L340" title="All 2 branches covered.">				if (bipartite) {</span>
-<span class="fc" id="L341">					return weightedBipartiteAlgo.computeMaximumMatching(g, w);</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">				if (bipartite) {</span>
+<span class="fc" id="L340">					return weightedBipartiteAlgo.computeMaximumMatching(g, w);</span>
 				} else {
-<span class="fc" id="L343">					return weightedGeneralAlgo.computeMaximumMatching(g, w);</span>
+<span class="fc" id="L342">					return weightedGeneralAlgo.computeMaximumMatching(g, w);</span>
 				}
 			}
 		}
 
 		@Override
 		public &lt;V, E&gt; Matching&lt;V, E&gt; computeMinimumMatching(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
-<span class="fc" id="L350">			boolean cardinality = WeightFunction.isCardinality(w);</span>
-<span class="fc" id="L351">			boolean bipartite = isBipartite(g);</span>
-<span class="pc bpc" id="L352" title="1 of 2 branches missed.">			if (cardinality) {</span>
-<span class="nc bnc" id="L353" title="All 2 branches missed.">				if (bipartite) {</span>
-<span class="nc" id="L354">					return cardinalityBipartiteAlgo.computeMinimumMatching(g, w);</span>
+<span class="fc" id="L349">			boolean cardinality = WeightFunction.isCardinality(w);</span>
+<span class="fc" id="L350">			boolean bipartite = isBipartite(g);</span>
+<span class="pc bpc" id="L351" title="1 of 2 branches missed.">			if (cardinality) {</span>
+<span class="nc bnc" id="L352" title="All 2 branches missed.">				if (bipartite) {</span>
+<span class="nc" id="L353">					return cardinalityBipartiteAlgo.computeMinimumMatching(g, w);</span>
 				} else {
-<span class="nc" id="L356">					return cardinalityGeneralAlgo.computeMinimumMatching(g, w);</span>
+<span class="nc" id="L355">					return cardinalityGeneralAlgo.computeMinimumMatching(g, w);</span>
 				}
 			} else {
-<span class="fc bfc" id="L359" title="All 2 branches covered.">				if (bipartite) {</span>
-<span class="fc" id="L360">					return weightedBipartiteAlgo.computeMinimumMatching(g, w);</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">				if (bipartite) {</span>
+<span class="fc" id="L359">					return weightedBipartiteAlgo.computeMinimumMatching(g, w);</span>
 				} else {
-<span class="fc" id="L362">					return weightedGeneralAlgo.computeMinimumMatching(g, w);</span>
+<span class="fc" id="L361">					return weightedGeneralAlgo.computeMinimumMatching(g, w);</span>
 				}
 			}
 		}
 
 		@Override
 		public &lt;V, E&gt; Matching&lt;V, E&gt; computeMaximumPerfectMatching(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
-<span class="fc" id="L369">			boolean cardinality = WeightFunction.isCardinality(w);</span>
-<span class="fc" id="L370">			boolean bipartite = isBipartite(g);</span>
-<span class="fc bfc" id="L371" title="All 2 branches covered.">			if (cardinality) {</span>
-<span class="pc bpc" id="L372" title="1 of 2 branches missed.">				if (bipartite) {</span>
-<span class="fc" id="L373">					return cardinalityBipartiteAlgo.computeMaximumPerfectMatching(g, w);</span>
+<span class="fc" id="L368">			boolean cardinality = WeightFunction.isCardinality(w);</span>
+<span class="fc" id="L369">			boolean bipartite = isBipartite(g);</span>
+<span class="fc bfc" id="L370" title="All 2 branches covered.">			if (cardinality) {</span>
+<span class="pc bpc" id="L371" title="1 of 2 branches missed.">				if (bipartite) {</span>
+<span class="fc" id="L372">					return cardinalityBipartiteAlgo.computeMaximumPerfectMatching(g, w);</span>
 				} else {
-<span class="nc" id="L375">					return cardinalityGeneralAlgo.computeMaximumPerfectMatching(g, w);</span>
+<span class="nc" id="L374">					return cardinalityGeneralAlgo.computeMaximumPerfectMatching(g, w);</span>
 				}
 			} else {
-<span class="fc bfc" id="L378" title="All 2 branches covered.">				if (bipartite) {</span>
-<span class="fc" id="L379">					return weightedBipartiteAlgo.computeMaximumPerfectMatching(g, w);</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">				if (bipartite) {</span>
+<span class="fc" id="L378">					return weightedBipartiteAlgo.computeMaximumPerfectMatching(g, w);</span>
 				} else {
-<span class="fc" id="L381">					return weightedGeneralAlgo.computeMaximumPerfectMatching(g, w);</span>
+<span class="fc" id="L380">					return weightedGeneralAlgo.computeMaximumPerfectMatching(g, w);</span>
 				}
 			}
 		}
 
 		@Override
 		public &lt;V, E&gt; Matching&lt;V, E&gt; computeMinimumPerfectMatching(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
-<span class="fc" id="L388">			boolean cardinality = WeightFunction.isCardinality(w);</span>
-<span class="fc" id="L389">			boolean bipartite = isBipartite(g);</span>
-<span class="fc bfc" id="L390" title="All 2 branches covered.">			if (cardinality) {</span>
-<span class="pc bpc" id="L391" title="1 of 2 branches missed.">				if (bipartite) {</span>
-<span class="fc" id="L392">					return cardinalityBipartiteAlgo.computeMinimumPerfectMatching(g, w);</span>
+<span class="fc" id="L387">			boolean cardinality = WeightFunction.isCardinality(w);</span>
+<span class="fc" id="L388">			boolean bipartite = isBipartite(g);</span>
+<span class="fc bfc" id="L389" title="All 2 branches covered.">			if (cardinality) {</span>
+<span class="pc bpc" id="L390" title="1 of 2 branches missed.">				if (bipartite) {</span>
+<span class="fc" id="L391">					return cardinalityBipartiteAlgo.computeMinimumPerfectMatching(g, w);</span>
 				} else {
-<span class="nc" id="L394">					return cardinalityGeneralAlgo.computeMinimumPerfectMatching(g, w);</span>
+<span class="nc" id="L393">					return cardinalityGeneralAlgo.computeMinimumPerfectMatching(g, w);</span>
 				}
 			} else {
-<span class="fc bfc" id="L397" title="All 2 branches covered.">				if (bipartite) {</span>
-<span class="fc" id="L398">					return weightedBipartiteAlgo.computeMinimumPerfectMatching(g, w);</span>
+<span class="fc bfc" id="L396" title="All 2 branches covered.">				if (bipartite) {</span>
+<span class="fc" id="L397">					return weightedBipartiteAlgo.computeMinimumPerfectMatching(g, w);</span>
 				} else {
-<span class="fc" id="L400">					return weightedGeneralAlgo.computeMinimumPerfectMatching(g, w);</span>
+<span class="fc" id="L399">					return weightedGeneralAlgo.computeMinimumPerfectMatching(g, w);</span>
 				}
 			}
 		}
 
 		private static boolean isBipartite(Graph&lt;?, ?&gt; g) {
-<span class="fc" id="L406">			return BipartiteGraphs.getExistingPartition(g).isPresent();</span>
+<span class="fc" id="L405">			return BipartiteGraphs.getExistingPartition(g).isPresent();</span>
 		}
 
 	}
@@ -414,51 +413,51 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final IndexIdMap&lt;V&gt; viMap;
 		private final IndexIdMap&lt;E&gt; eiMap;
 
-<span class="fc" id="L417">		ObjMatchingFromIndexMatching(Graph&lt;V, E&gt; g, IMatching match) {</span>
-<span class="fc" id="L418">			this.match = Objects.requireNonNull(match);</span>
-<span class="fc" id="L419">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L420">			this.eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L421">		}</span>
+<span class="fc" id="L416">		ObjMatchingFromIndexMatching(Graph&lt;V, E&gt; g, IMatching match) {</span>
+<span class="fc" id="L417">			this.match = Objects.requireNonNull(match);</span>
+<span class="fc" id="L418">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L419">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L420">		}</span>
 
 		@Override
 		public boolean isVertexMatched(V vertex) {
-<span class="fc" id="L425">			return match.isVertexMatched(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L424">			return match.isVertexMatched(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public Set&lt;V&gt; matchedVertices() {
-<span class="fc" id="L430">			return IndexIdMaps.indexToIdSet(match.matchedVertices(), viMap);</span>
+<span class="fc" id="L429">			return IndexIdMaps.indexToIdSet(match.matchedVertices(), viMap);</span>
 		}
 
 		@Override
 		public Set&lt;V&gt; unmatchedVertices() {
-<span class="fc" id="L435">			return IndexIdMaps.indexToIdSet(match.unmatchedVertices(), viMap);</span>
+<span class="fc" id="L434">			return IndexIdMaps.indexToIdSet(match.unmatchedVertices(), viMap);</span>
 		}
 
 		@Override
 		public E getMatchedEdge(V vertex) {
-<span class="fc" id="L440">			int e = match.getMatchedEdge(viMap.idToIndex(vertex));</span>
-<span class="fc" id="L441">			return eiMap.indexToIdIfExist(e);</span>
+<span class="fc" id="L439">			int e = match.getMatchedEdge(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L440">			return eiMap.indexToIdIfExist(e);</span>
 		}
 
 		@Override
 		public boolean containsEdge(E edge) {
-<span class="fc" id="L446">			return match.containsEdge(eiMap.idToIndex(edge));</span>
+<span class="fc" id="L445">			return match.containsEdge(eiMap.idToIndex(edge));</span>
 		}
 
 		@Override
 		public Set&lt;E&gt; edges() {
-<span class="fc" id="L451">			return IndexIdMaps.indexToIdSet(match.edges(), eiMap);</span>
+<span class="fc" id="L450">			return IndexIdMaps.indexToIdSet(match.edges(), eiMap);</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L456">			return edges().toString();</span>
+<span class="nc" id="L455">			return edges().toString();</span>
 		}
 
 		@Override
 		public boolean isPerfect() {
-<span class="fc" id="L461">			return match.isPerfect();</span>
+<span class="fc" id="L460">			return match.isPerfect();</span>
 		}
 	}
 
@@ -468,61 +467,61 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-<span class="fc" id="L471">		IntMatchingFromIndexMatching(IntGraph g, IMatching match) {</span>
-<span class="fc" id="L472">			this.match = Objects.requireNonNull(match);</span>
-<span class="fc" id="L473">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L474">			this.eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L475">		}</span>
+<span class="fc" id="L470">		IntMatchingFromIndexMatching(IntGraph g, IMatching match) {</span>
+<span class="fc" id="L471">			this.match = Objects.requireNonNull(match);</span>
+<span class="fc" id="L472">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L473">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L474">		}</span>
 
 		@Override
 		public boolean isVertexMatched(int vertex) {
-<span class="fc" id="L479">			return match.isVertexMatched(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L478">			return match.isVertexMatched(viMap.idToIndex(vertex));</span>
 		}
 
 		@Override
 		public IntSet matchedVertices() {
-<span class="fc" id="L484">			return IndexIdMaps.indexToIdSet(match.matchedVertices(), viMap);</span>
+<span class="fc" id="L483">			return IndexIdMaps.indexToIdSet(match.matchedVertices(), viMap);</span>
 		}
 
 		@Override
 		public IntSet unmatchedVertices() {
-<span class="fc" id="L489">			return IndexIdMaps.indexToIdSet(match.unmatchedVertices(), viMap);</span>
+<span class="fc" id="L488">			return IndexIdMaps.indexToIdSet(match.unmatchedVertices(), viMap);</span>
 		}
 
 		@Override
 		public int getMatchedEdge(int vertex) {
-<span class="fc" id="L494">			int e = match.getMatchedEdge(viMap.idToIndex(vertex));</span>
-<span class="fc" id="L495">			return eiMap.indexToIdIfExistInt(e);</span>
+<span class="fc" id="L493">			int e = match.getMatchedEdge(viMap.idToIndex(vertex));</span>
+<span class="fc" id="L494">			return eiMap.indexToIdIfExistInt(e);</span>
 		}
 
 		@Override
 		public boolean containsEdge(int edge) {
-<span class="fc" id="L500">			return match.containsEdge(eiMap.idToIndex(edge));</span>
+<span class="fc" id="L499">			return match.containsEdge(eiMap.idToIndex(edge));</span>
 		}
 
 		@Override
 		public IntSet edges() {
-<span class="fc" id="L505">			return IndexIdMaps.indexToIdSet(match.edges(), eiMap);</span>
+<span class="fc" id="L504">			return IndexIdMaps.indexToIdSet(match.edges(), eiMap);</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L510">			return edges().toString();</span>
+<span class="nc" id="L509">			return edges().toString();</span>
 		}
 
 		@Override
 		public boolean isPerfect() {
-<span class="fc" id="L515">			return match.isPerfect();</span>
+<span class="fc" id="L514">			return match.isPerfect();</span>
 		}
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static &lt;V, E&gt; Matching&lt;V, E&gt; matchingFromIndexMatching(Graph&lt;V, E&gt; g, IMatching indexResult) {
-<span class="pc bnc" id="L521" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
-<span class="fc bfc" id="L522" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L523">			return (Matching&lt;V, E&gt;) new IntMatchingFromIndexMatching((IntGraph) g, indexResult);</span>
+<span class="pc bnc" id="L520" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
+<span class="fc bfc" id="L521" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L522">			return (Matching&lt;V, E&gt;) new IntMatchingFromIndexMatching((IntGraph) g, indexResult);</span>
 		} else {
-<span class="fc" id="L525">			return new ObjMatchingFromIndexMatching&lt;&gt;(g, indexResult);</span>
+<span class="fc" id="L524">			return new ObjMatchingFromIndexMatching&lt;&gt;(g, indexResult);</span>
 		}
 	}
 

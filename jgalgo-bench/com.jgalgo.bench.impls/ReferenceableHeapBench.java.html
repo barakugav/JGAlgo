@@ -42,33 +42,12 @@ import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.ds.DoubleIntBinomialHeap;
-import com.jgalgo.internal.ds.DoubleIntFibonacciHeap;
-import com.jgalgo.internal.ds.DoubleIntPairingHeap;
-import com.jgalgo.internal.ds.DoubleIntRedBlackTree;
-import com.jgalgo.internal.ds.DoubleIntSplayTree;
-import com.jgalgo.internal.ds.DoubleObjBinomialHeap;
-import com.jgalgo.internal.ds.DoubleObjFibonacciHeap;
-import com.jgalgo.internal.ds.DoubleObjPairingHeap;
-import com.jgalgo.internal.ds.DoubleObjRedBlackTree;
-import com.jgalgo.internal.ds.DoubleObjSplayTree;
-import com.jgalgo.internal.ds.IntBinomialHeap;
-import com.jgalgo.internal.ds.IntFibonacciHeap;
 import com.jgalgo.internal.ds.IntIntBinomialHeap;
 import com.jgalgo.internal.ds.IntIntFibonacciHeap;
 import com.jgalgo.internal.ds.IntIntPairingHeap;
 import com.jgalgo.internal.ds.IntIntRedBlackTree;
 import com.jgalgo.internal.ds.IntIntSplayTree;
-import com.jgalgo.internal.ds.IntPairingHeap;
-import com.jgalgo.internal.ds.IntRedBlackTree;
-import com.jgalgo.internal.ds.IntSplayTree;
-import com.jgalgo.internal.ds.ObjBinomialHeap;
-import com.jgalgo.internal.ds.ObjFibonacciHeap;
-import com.jgalgo.internal.ds.ObjPairingHeap;
-import com.jgalgo.internal.ds.ObjRedBlackTree;
-import com.jgalgo.internal.ds.ObjSplayTree;
 import com.jgalgo.internal.ds.ReferenceableHeap;
-import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
@@ -78,147 +57,107 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 @Measurement(iterations = 3, time = 1, timeUnit = TimeUnit.SECONDS)
 @Fork(value = 1, warmups = 0)
 @State(Scope.Benchmark)
-<span class="fc" id="L81">public class ReferenceableHeapBench {</span>
+<span class="fc" id="L60">public class ReferenceableHeapBench {</span>
 
 	@Param({ &quot;|V|=64 |E|=256&quot;, &quot;|V|=512 |E|=4096&quot;, &quot;|V|=4096 |E|=16384&quot; })
 	public String args;
 
 	private List&lt;GraphArgs&gt; graphs;
-<span class="fc" id="L87">	private final int graphsNum = 31;</span>
-<span class="fc" id="L88">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
+<span class="fc" id="L66">	private final int graphsNum = 31;</span>
+<span class="fc" id="L67">	private final AtomicInteger graphIdx = new AtomicInteger();</span>
 
 	@Setup(Level.Iteration)
 	public void setup() {
-<span class="fc" id="L92">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
-<span class="fc" id="L93">		int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
-<span class="fc" id="L94">		int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
+<span class="fc" id="L71">		Map&lt;String, String&gt; argsMap = BenchUtils.parseArgsStr(args);</span>
+<span class="fc" id="L72">		int n = Integer.parseInt(argsMap.get(&quot;|V|&quot;));</span>
+<span class="fc" id="L73">		int m = Integer.parseInt(argsMap.get(&quot;|E|&quot;));</span>
 
-<span class="fc" id="L96">		final SeedGenerator seedGen = new SeedGenerator(0x88da246e71ef3dacL);</span>
-<span class="fc" id="L97">		Random rand = new Random(seedGen.nextSeed());</span>
-<span class="fc" id="L98">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
-<span class="fc" id="L100">			IntGraph g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());</span>
-<span class="fc" id="L101">			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
-<span class="fc" id="L102">			int source = Graphs.randVertex(g, rand);</span>
-<span class="fc" id="L103">			graphs.add(new GraphArgs(g, w, source));</span>
+<span class="fc" id="L75">		final SeedGenerator seedGen = new SeedGenerator(0x88da246e71ef3dacL);</span>
+<span class="fc" id="L76">		Random rand = new Random(seedGen.nextSeed());</span>
+<span class="fc" id="L77">		graphs = new ObjectArrayList&lt;&gt;(graphsNum);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		for (int gIdx = 0; gIdx &lt; graphsNum; gIdx++) {</span>
+<span class="fc" id="L79">			IntGraph g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());</span>
+<span class="fc" id="L80">			IWeightFunctionInt w = GraphsTestUtils.assignRandWeightsIntPos(g, seedGen.nextSeed());</span>
+<span class="fc" id="L81">			int source = Graphs.randVertex(g, rand);</span>
+<span class="fc" id="L82">			graphs.add(new GraphArgs(g, w, source));</span>
 		}
-<span class="fc" id="L105">	}</span>
+<span class="fc" id="L84">	}</span>
 
 	private void benchHeap(ReferenceableHeap.Builder heapBuilder, Blackhole blackhole) {
-<span class="fc" id="L108">		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
+<span class="fc" id="L87">		GraphArgs args = graphs.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % graphsNum));</span>
 
 		/* SSSP */
-<span class="fc" id="L111">		ShortestPathSingleSource.Builder ssspBuilder = ShortestPathSingleSource.builder();</span>
-<span class="fc" id="L112">		ssspBuilder.setOption(&quot;heap-builder&quot;, heapBuilder);</span>
-<span class="fc" id="L113">		ShortestPathSingleSource ssspAlgo = ssspBuilder.build();</span>
-<span class="fc" id="L114">		ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) ssspAlgo</span>
-<span class="fc" id="L115">				.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));</span>
-<span class="fc" id="L116">		blackhole.consume(ssspRes);</span>
+<span class="fc" id="L90">		ShortestPathSingleSource.Builder ssspBuilder = ShortestPathSingleSource.builder();</span>
+<span class="fc" id="L91">		ssspBuilder.setOption(&quot;heap-builder&quot;, heapBuilder);</span>
+<span class="fc" id="L92">		ShortestPathSingleSource ssspAlgo = ssspBuilder.build();</span>
+<span class="fc" id="L93">		ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) ssspAlgo</span>
+<span class="fc" id="L94">				.computeShortestPaths(args.g, args.w, Integer.valueOf(args.source));</span>
+<span class="fc" id="L95">		blackhole.consume(ssspRes);</span>
 
 		/* Prim MST */
-<span class="fc" id="L119">		MinimumSpanningTree.Builder mstBuilder = MinimumSpanningTree.builder();</span>
-<span class="fc" id="L120">		mstBuilder.setOption(&quot;heap-builder&quot;, heapBuilder);</span>
-<span class="fc" id="L121">		MinimumSpanningTree mstAlgo = mstBuilder.build();</span>
-<span class="fc" id="L122">		MinimumSpanningTree.IResult mst =</span>
-<span class="fc" id="L123">				(MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(args.g, args.w);</span>
-<span class="fc" id="L124">		blackhole.consume(mst);</span>
-<span class="fc" id="L125">	}</span>
+<span class="fc" id="L98">		MinimumSpanningTree.Builder mstBuilder = MinimumSpanningTree.builder();</span>
+<span class="fc" id="L99">		mstBuilder.setOption(&quot;heap-builder&quot;, heapBuilder);</span>
+<span class="fc" id="L100">		MinimumSpanningTree mstAlgo = mstBuilder.build();</span>
+<span class="fc" id="L101">		MinimumSpanningTree.IResult mst =</span>
+<span class="fc" id="L102">				(MinimumSpanningTree.IResult) mstAlgo.computeMinimumSpanningTree(args.g, args.w);</span>
+<span class="fc" id="L103">		blackhole.consume(mst);</span>
+<span class="fc" id="L104">	}</span>
 
 	@Benchmark
 	public void Pairings(Blackhole blackhole) {
-<span class="fc" id="L129">		benchHeap((keyType, valueType, comparator) -&gt; {</span>
-<span class="pc bpc" id="L130" title="2 of 4 branches missed.">			if (keyType == int.class &amp;&amp; valueType == int.class)</span>
-<span class="fc" id="L131">				return new IntIntPairingHeap((IntComparator) comparator);</span>
-<span class="nc bnc" id="L132" title="All 4 branches missed.">			if (keyType == int.class &amp;&amp; valueType == void.class)</span>
-<span class="nc" id="L133">				return new IntPairingHeap((IntComparator) comparator);</span>
-<span class="nc bnc" id="L134" title="All 4 branches missed.">			if (keyType == double.class &amp;&amp; valueType == int.class)</span>
-<span class="nc" id="L135">				return new DoubleIntPairingHeap((DoubleComparator) comparator);</span>
-<span class="nc bnc" id="L136" title="All 4 branches missed.">			if (keyType == double.class &amp;&amp; valueType == Object.class)</span>
-<span class="nc" id="L137">				return new DoubleObjPairingHeap&lt;&gt;((DoubleComparator) comparator);</span>
-<span class="nc bnc" id="L138" title="All 4 branches missed.">			if (keyType == Object.class &amp;&amp; valueType == void.class)</span>
-<span class="nc" id="L139">				return new ObjPairingHeap&lt;&gt;(comparator);</span>
-<span class="nc" id="L140">			throw new UnsupportedOperationException(&quot;Unsupported heap type: &quot; + keyType + &quot;, &quot; + valueType);</span>
+<span class="fc" id="L108">		benchHeap((keyType, valueType, comparator) -&gt; {</span>
+<span class="pc bpc" id="L109" title="2 of 4 branches missed.">			if (keyType == int.class &amp;&amp; valueType == int.class)</span>
+<span class="fc" id="L110">				return new IntIntPairingHeap((IntComparator) comparator);</span>
+<span class="nc" id="L111">			throw new UnsupportedOperationException(&quot;Unsupported heap type: &quot; + keyType + &quot;, &quot; + valueType);</span>
 		}, blackhole);
-<span class="fc" id="L142">	}</span>
+<span class="fc" id="L113">	}</span>
 
 	@Benchmark
 	public void Fibonacci(Blackhole blackhole) {
-<span class="fc" id="L146">		benchHeap((keyType, valueType, comparator) -&gt; {</span>
-<span class="pc bpc" id="L147" title="2 of 4 branches missed.">			if (keyType == int.class &amp;&amp; valueType == int.class)</span>
-<span class="fc" id="L148">				return new IntIntFibonacciHeap((IntComparator) comparator);</span>
-<span class="nc bnc" id="L149" title="All 4 branches missed.">			if (keyType == int.class &amp;&amp; valueType == void.class)</span>
-<span class="nc" id="L150">				return new IntFibonacciHeap((IntComparator) comparator);</span>
-<span class="nc bnc" id="L151" title="All 4 branches missed.">			if (keyType == double.class &amp;&amp; valueType == int.class)</span>
-<span class="nc" id="L152">				return new DoubleIntFibonacciHeap((DoubleComparator) comparator);</span>
-<span class="nc bnc" id="L153" title="All 4 branches missed.">			if (keyType == double.class &amp;&amp; valueType == Object.class)</span>
-<span class="nc" id="L154">				return new DoubleObjFibonacciHeap&lt;&gt;((DoubleComparator) comparator);</span>
-<span class="nc bnc" id="L155" title="All 4 branches missed.">			if (keyType == Object.class &amp;&amp; valueType == void.class)</span>
-<span class="nc" id="L156">				return new ObjFibonacciHeap&lt;&gt;(comparator);</span>
-<span class="nc" id="L157">			throw new UnsupportedOperationException(&quot;Unsupported heap type: &quot; + keyType + &quot;, &quot; + valueType);</span>
+<span class="fc" id="L117">		benchHeap((keyType, valueType, comparator) -&gt; {</span>
+<span class="pc bpc" id="L118" title="2 of 4 branches missed.">			if (keyType == int.class &amp;&amp; valueType == int.class)</span>
+<span class="fc" id="L119">				return new IntIntFibonacciHeap((IntComparator) comparator);</span>
+<span class="nc" id="L120">			throw new UnsupportedOperationException(&quot;Unsupported heap type: &quot; + keyType + &quot;, &quot; + valueType);</span>
 		}, blackhole);
-<span class="fc" id="L159">	}</span>
+<span class="fc" id="L122">	}</span>
 
 	@Benchmark
 	public void Binomial(Blackhole blackhole) {
-<span class="fc" id="L163">		benchHeap((keyType, valueType, comparator) -&gt; {</span>
-<span class="pc bpc" id="L164" title="2 of 4 branches missed.">			if (keyType == int.class &amp;&amp; valueType == int.class)</span>
-<span class="fc" id="L165">				return new IntIntBinomialHeap((IntComparator) comparator);</span>
-<span class="nc bnc" id="L166" title="All 4 branches missed.">			if (keyType == int.class &amp;&amp; valueType == void.class)</span>
-<span class="nc" id="L167">				return new IntBinomialHeap((IntComparator) comparator);</span>
-<span class="nc bnc" id="L168" title="All 4 branches missed.">			if (keyType == double.class &amp;&amp; valueType == int.class)</span>
-<span class="nc" id="L169">				return new DoubleIntBinomialHeap((DoubleComparator) comparator);</span>
-<span class="nc bnc" id="L170" title="All 4 branches missed.">			if (keyType == double.class &amp;&amp; valueType == Object.class)</span>
-<span class="nc" id="L171">				return new DoubleObjBinomialHeap&lt;&gt;((DoubleComparator) comparator);</span>
-<span class="nc bnc" id="L172" title="All 4 branches missed.">			if (keyType == Object.class &amp;&amp; valueType == void.class)</span>
-<span class="nc" id="L173">				return new ObjBinomialHeap&lt;&gt;(comparator);</span>
-<span class="nc" id="L174">			throw new UnsupportedOperationException(&quot;Unsupported heap type: &quot; + keyType + &quot;, &quot; + valueType);</span>
+<span class="fc" id="L126">		benchHeap((keyType, valueType, comparator) -&gt; {</span>
+<span class="pc bpc" id="L127" title="2 of 4 branches missed.">			if (keyType == int.class &amp;&amp; valueType == int.class)</span>
+<span class="fc" id="L128">				return new IntIntBinomialHeap((IntComparator) comparator);</span>
+<span class="nc" id="L129">			throw new UnsupportedOperationException(&quot;Unsupported heap type: &quot; + keyType + &quot;, &quot; + valueType);</span>
 		}, blackhole);
-<span class="fc" id="L176">	}</span>
+<span class="fc" id="L131">	}</span>
 
 	@Benchmark
 	public void RedBlackTree(Blackhole blackhole) {
-<span class="fc" id="L180">		benchHeap((keyType, valueType, comparator) -&gt; {</span>
-<span class="pc bpc" id="L181" title="2 of 4 branches missed.">			if (keyType == int.class &amp;&amp; valueType == int.class)</span>
-<span class="fc" id="L182">				return new IntIntRedBlackTree((IntComparator) comparator);</span>
-<span class="nc bnc" id="L183" title="All 4 branches missed.">			if (keyType == int.class &amp;&amp; valueType == void.class)</span>
-<span class="nc" id="L184">				return new IntRedBlackTree((IntComparator) comparator);</span>
-<span class="nc bnc" id="L185" title="All 4 branches missed.">			if (keyType == double.class &amp;&amp; valueType == int.class)</span>
-<span class="nc" id="L186">				return new DoubleIntRedBlackTree((DoubleComparator) comparator);</span>
-<span class="nc bnc" id="L187" title="All 4 branches missed.">			if (keyType == double.class &amp;&amp; valueType == Object.class)</span>
-<span class="nc" id="L188">				return new DoubleObjRedBlackTree&lt;&gt;((DoubleComparator) comparator);</span>
-<span class="nc bnc" id="L189" title="All 4 branches missed.">			if (keyType == Object.class &amp;&amp; valueType == void.class)</span>
-<span class="nc" id="L190">				return new ObjRedBlackTree&lt;&gt;(comparator);</span>
-<span class="nc" id="L191">			throw new UnsupportedOperationException(&quot;Unsupported heap type: &quot; + keyType + &quot;, &quot; + valueType);</span>
+<span class="fc" id="L135">		benchHeap((keyType, valueType, comparator) -&gt; {</span>
+<span class="pc bpc" id="L136" title="2 of 4 branches missed.">			if (keyType == int.class &amp;&amp; valueType == int.class)</span>
+<span class="fc" id="L137">				return new IntIntRedBlackTree((IntComparator) comparator);</span>
+<span class="nc" id="L138">			throw new UnsupportedOperationException(&quot;Unsupported heap type: &quot; + keyType + &quot;, &quot; + valueType);</span>
 		}, blackhole);
-<span class="fc" id="L193">	}</span>
+<span class="fc" id="L140">	}</span>
 
 	@Benchmark
 	public void SplayTree(Blackhole blackhole) {
-<span class="fc" id="L197">		benchHeap((keyType, valueType, comparator) -&gt; {</span>
-<span class="pc bpc" id="L198" title="2 of 4 branches missed.">			if (keyType == int.class &amp;&amp; valueType == int.class)</span>
-<span class="fc" id="L199">				return new IntIntSplayTree((IntComparator) comparator);</span>
-<span class="nc bnc" id="L200" title="All 4 branches missed.">			if (keyType == int.class &amp;&amp; valueType == void.class)</span>
-<span class="nc" id="L201">				return new IntSplayTree((IntComparator) comparator);</span>
-<span class="nc bnc" id="L202" title="All 4 branches missed.">			if (keyType == double.class &amp;&amp; valueType == int.class)</span>
-<span class="nc" id="L203">				return new DoubleIntSplayTree((DoubleComparator) comparator);</span>
-<span class="nc bnc" id="L204" title="All 4 branches missed.">			if (keyType == double.class &amp;&amp; valueType == Object.class)</span>
-<span class="nc" id="L205">				return new DoubleObjSplayTree&lt;&gt;((DoubleComparator) comparator);</span>
-<span class="nc bnc" id="L206" title="All 4 branches missed.">			if (keyType == Object.class &amp;&amp; valueType == void.class)</span>
-<span class="nc" id="L207">				return new ObjSplayTree&lt;&gt;(comparator);</span>
-<span class="nc" id="L208">			throw new UnsupportedOperationException(&quot;Unsupported heap type: &quot; + keyType + &quot;, &quot; + valueType);</span>
+<span class="fc" id="L144">		benchHeap((keyType, valueType, comparator) -&gt; {</span>
+<span class="pc bpc" id="L145" title="2 of 4 branches missed.">			if (keyType == int.class &amp;&amp; valueType == int.class)</span>
+<span class="fc" id="L146">				return new IntIntSplayTree((IntComparator) comparator);</span>
+<span class="nc" id="L147">			throw new UnsupportedOperationException(&quot;Unsupported heap type: &quot; + keyType + &quot;, &quot; + valueType);</span>
 		}, blackhole);
-<span class="fc" id="L210">	}</span>
+<span class="fc" id="L149">	}</span>
 
 	private static class GraphArgs {
 		final IntGraph g;
 		final IWeightFunctionInt w;
 		final int source;
 
-<span class="fc" id="L217">		GraphArgs(IntGraph g, IWeightFunctionInt w, int source) {</span>
-<span class="fc" id="L218">			this.g = g;</span>
-<span class="fc" id="L219">			this.w = w;</span>
-<span class="fc" id="L220">			this.source = source;</span>
-<span class="fc" id="L221">		}</span>
+<span class="fc" id="L156">		GraphArgs(IntGraph g, IWeightFunctionInt w, int source) {</span>
+<span class="fc" id="L157">			this.g = g;</span>
+<span class="fc" id="L158">			this.w = w;</span>
+<span class="fc" id="L159">			this.source = source;</span>
+<span class="fc" id="L160">		}</span>
 	}
 
 }

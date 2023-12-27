@@ -192,7 +192,7 @@ public interface ObjReferenceableHeap &lt;K&gt; extends ReferenceableHeap, Itera
 	 * @return a stream over the elements in this heap
 	 */
 	default Stream&lt;ObjReferenceableHeap.Ref &lt;K&gt;&gt; stream() {
-<span class="fc" id="L195">		return StreamSupport.stream(spliterator(), false);</span>
+<span class="nc" id="L195">		return StreamSupport.stream(spliterator(), false);</span>
 	}
 
 	/**

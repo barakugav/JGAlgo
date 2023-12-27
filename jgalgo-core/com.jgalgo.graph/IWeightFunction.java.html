@@ -23,6 +23,7 @@ import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.alg.VertexCover;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterable;
+import it.unimi.dsi.fastutil.ints.IntIterables;
 
 /**
  * Weight function that maps graph edges or vertices of {@link IntGraph} to weights.
@@ -98,7 +99,7 @@ public interface IWeightFunction extends WeightFunction&lt;Integer&gt;, IntCompa
 	@Deprecated
 	@Override
 	default double weight(Integer element) {
-<span class="nc" id="L101">		return weight(element.intValue());</span>
+<span class="fc" id="L102">		return weight(element.intValue());</span>
 	}
 
 	/**
@@ -106,7 +107,7 @@ public interface IWeightFunction extends WeightFunction&lt;Integer&gt;, IntCompa
 	 */
 	@Override
 	default int compare(int e1, int e2) {
-<span class="fc" id="L109">		return Double.compare(weight(e1), weight(e2));</span>
+<span class="fc" id="L110">		return Double.compare(weight(e1), weight(e2));</span>
 	}
 
 	/**
@@ -117,20 +118,20 @@ public interface IWeightFunction extends WeightFunction&lt;Integer&gt;, IntCompa
 	@Deprecated
 	@Override
 	default int compare(Integer e1, Integer e2) {
-<span class="nc" id="L120">		return Double.compare(weight(e1), weight(e2));</span>
+<span class="fc" id="L121">		return Double.compare(weight(e1), weight(e2));</span>
 	}
 
 	@Override
 	default double weightSum(Iterable&lt;Integer&gt; elements) {
-<span class="fc" id="L125">		double sum = 0;</span>
-<span class="fc bfc" id="L126" title="All 2 branches covered.">		if (elements instanceof IntIterable) {</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">			for (int e : (IntIterable) elements)</span>
-<span class="fc" id="L128">				sum += weight(e);</span>
+<span class="fc" id="L126">		double sum = 0;</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">		if (elements instanceof IntIterable) {</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			for (int e : (IntIterable) elements)</span>
+<span class="fc" id="L129">				sum += weight(e);</span>
 		} else {
-<span class="fc bfc" id="L130" title="All 2 branches covered.">			for (Integer e : elements)</span>
-<span class="fc" id="L131">				sum += weight(e.intValue());</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">			for (Integer e : elements)</span>
+<span class="fc" id="L132">				sum += weight(e.intValue());</span>
 		}
-<span class="fc" id="L133">		return sum;</span>
+<span class="fc" id="L134">		return sum;</span>
 	}
 
 	/**
@@ -145,25 +146,39 @@ public interface IWeightFunction extends WeightFunction&lt;Integer&gt;, IntCompa
 	 * @return            the sum of the weights of the elements
 	 */
 	static double weightSum(IWeightFunction weightFunc, IntIterable elements) {
-<span class="nc bnc" id="L148" title="All 2 branches missed.">		if (WeightFunction.isCardinality(weightFunc)) {</span>
-<span class="nc bnc" id="L149" title="All 2 branches missed.">			if (elements instanceof Collection) {</span>
-<span class="nc" id="L150">				return ((Collection&lt;?&gt;) elements).size();</span>
-			} else {
-<span class="nc" id="L152">				int s = 0;</span>
-				for (@SuppressWarnings(&quot;unused&quot;)
-<span class="nc bnc" id="L154" title="All 2 branches missed.">				int elm : elements)</span>
-<span class="nc" id="L155">					s++;</span>
-<span class="nc" id="L156">				return s;</span>
-			}
+<span class="fc bfc" id="L149" title="All 2 branches covered.">		if (WeightFunction.isCardinality(weightFunc)) {</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">			return elements instanceof Collection ? ((Collection&lt;?&gt;) elements).size() : IntIterables.size(elements);</span>
 		} else {
-<span class="nc" id="L159">			return weightFunc.weightSum(elements);</span>
+<span class="fc" id="L152">			return weightFunc.weightSum(elements);</span>
 		}
 	}
 
 	/**
 	 * A weight function that assign a weight of {@code 1} to any element.
 	 */
-<span class="fc" id="L166">	public static IWeightFunctionInt CardinalityWeightFunction = e -&gt; 1;</span>
+<span class="fc" id="L159">	public static IWeightFunctionInt CardinalityWeightFunction = e -&gt; 1;</span>
+
+	/**
+	 * Replace {@code null} weight function with {@link #CardinalityWeightFunction}.
+	 *
+	 * @param  weightFunc the weight function to replace
+	 * @return            {@link #CardinalityWeightFunction} if {@code weightFunc} is {@code null}, otherwise
+	 *                    {@code weightFunc}
+	 */
+	public static IWeightFunction replaceNullWeightFunc(IWeightFunction weightFunc) {
+<span class="fc bfc" id="L169" title="All 2 branches covered.">		return weightFunc == null ? CardinalityWeightFunction : weightFunc;</span>
+	}
+
+	/**
+	 * Replace {@code null} weight function with {@link #CardinalityWeightFunction}.
+	 *
+	 * @param  weightFunc the weight function to replace
+	 * @return            {@link #CardinalityWeightFunction} if {@code weightFunc} is {@code null}, otherwise
+	 *                    {@code weightFunc}
+	 */
+	public static IWeightFunctionInt replaceNullWeightFunc(IWeightFunctionInt weightFunc) {
+<span class="fc bfc" id="L180" title="All 2 branches covered.">		return weightFunc == null ? CardinalityWeightFunction : weightFunc;</span>
+	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

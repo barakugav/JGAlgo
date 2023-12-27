@@ -159,22 +159,22 @@ public interface Path&lt;V, E&gt; {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; Path&lt;V, E&gt; newInstance(Graph&lt;V, E&gt; g, V source, V target, List&lt;E&gt; edges) {
-<span class="nc bnc" id="L162" title="All 2 branches missed.">		if (g instanceof IntGraph) {</span>
-<span class="nc" id="L163">			int iSource = ((Integer) source).intValue();</span>
-<span class="nc" id="L164">			int iTarget = ((Integer) target).intValue();</span>
-<span class="nc" id="L165">			IntList iEdges = IntAdapters.asIntList((List&lt;Integer&gt;) edges);</span>
-<span class="nc" id="L166">			return (Path&lt;V, E&gt;) IPath.newInstance((IntGraph) g, iSource, iTarget, iEdges);</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L163">			int iSource = ((Integer) source).intValue();</span>
+<span class="fc" id="L164">			int iTarget = ((Integer) target).intValue();</span>
+<span class="fc" id="L165">			IntList iEdges = IntAdapters.asIntList((List&lt;Integer&gt;) edges);</span>
+<span class="fc" id="L166">			return (Path&lt;V, E&gt;) IPath.newInstance((IntGraph) g, iSource, iTarget, iEdges);</span>
 		}
 
-<span class="nc" id="L169">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="nc" id="L170">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L171">		IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="nc" id="L172">		int iSource = viMap.idToIndex(source);</span>
-<span class="nc" id="L173">		int iTarget = viMap.idToIndex(target);</span>
-<span class="nc" id="L174">		IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());</span>
+<span class="fc" id="L169">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L170">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L171">		IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L172">		int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L173">		int iTarget = viMap.idToIndex(target);</span>
+<span class="fc" id="L174">		IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());</span>
 
-<span class="nc" id="L176">		IPath indexPath = new PathImpl(iGraph, iSource, iTarget, iEdges);</span>
-<span class="nc" id="L177">		return PathImpl.objPathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L176">		IPath indexPath = new PathImpl(iGraph, iSource, iTarget, iEdges);</span>
+<span class="fc" id="L177">		return PathImpl.objPathFromIndexPath(g, indexPath);</span>
 	}
 
 	/**

@@ -203,7 +203,7 @@ public interface DoubleObjReferenceableHeap &lt;V&gt; extends ReferenceableHeap,
 	 * @return a stream over the elements in this heap
 	 */
 	default Stream&lt;DoubleObjReferenceableHeap.Ref &lt;V&gt;&gt; stream() {
-<span class="fc" id="L206">		return StreamSupport.stream(spliterator(), false);</span>
+<span class="nc" id="L206">		return StreamSupport.stream(spliterator(), false);</span>
 	}
 
 	/**

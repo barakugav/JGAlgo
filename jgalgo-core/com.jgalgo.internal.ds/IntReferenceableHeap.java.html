@@ -190,7 +190,7 @@ public interface IntReferenceableHeap  extends ReferenceableHeap, Iterable&lt;In
 	 * @return a stream over the elements in this heap
 	 */
 	default Stream&lt;IntReferenceableHeap.Ref &gt; stream() {
-<span class="fc" id="L193">		return StreamSupport.stream(spliterator(), false);</span>
+<span class="nc" id="L193">		return StreamSupport.stream(spliterator(), false);</span>
 	}
 
 	/**

@@ -22,6 +22,7 @@ import com.jgalgo.alg.MatchingAlgo;
 import com.jgalgo.alg.MinimumSpanningTree;
 import com.jgalgo.alg.ShortestPathSingleSource;
 import com.jgalgo.alg.VertexCover;
+import it.unimi.dsi.fastutil.objects.ObjectIterables;
 
 /**
  * Weight function that maps graph edges or vertices to weights.
@@ -89,7 +90,7 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 */
 	@Override
 	default int compare(K e1, K e2) {
-<span class="fc" id="L92">		return Double.compare(weight(e1), weight(e2));</span>
+<span class="fc" id="L93">		return Double.compare(weight(e1), weight(e2));</span>
 	}
 
 	/**
@@ -99,10 +100,10 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 * @return          the sum of the weights of the elements
 	 */
 	default double weightSum(Iterable&lt;K&gt; elements) {
-<span class="fc" id="L102">		double sum = 0;</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">		for (K e : elements)</span>
-<span class="fc" id="L104">			sum += weight(e);</span>
-<span class="fc" id="L105">		return sum;</span>
+<span class="fc" id="L103">		double sum = 0;</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">		for (K e : elements)</span>
+<span class="fc" id="L105">			sum += weight(e);</span>
+<span class="fc" id="L106">		return sum;</span>
 	}
 
 	/**
@@ -118,25 +119,17 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 * @return            the sum of the weights of the elements
 	 */
 	static &lt;K&gt; double weightSum(WeightFunction&lt;K&gt; weightFunc, Iterable&lt;K&gt; elements) {
-<span class="fc bfc" id="L121" title="All 2 branches covered.">		if (isCardinality(weightFunc)) {</span>
-<span class="pc bpc" id="L122" title="1 of 2 branches missed.">			if (elements instanceof Collection) {</span>
-<span class="fc" id="L123">				return ((Collection&lt;?&gt;) elements).size();</span>
-			} else {
-<span class="nc" id="L125">				int s = 0;</span>
-				for (@SuppressWarnings(&quot;unused&quot;)
-<span class="nc bnc" id="L127" title="All 2 branches missed.">				K elm : elements)</span>
-<span class="nc" id="L128">					s++;</span>
-<span class="nc" id="L129">				return s;</span>
-			}
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		if (isCardinality(weightFunc)) {</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">			return elements instanceof Collection ? ((Collection&lt;?&gt;) elements).size() : ObjectIterables.size(elements);</span>
 		} else {
-<span class="fc" id="L132">			return weightFunc.weightSum(elements);</span>
+<span class="fc" id="L125">			return weightFunc.weightSum(elements);</span>
 		}
 	}
 
 	/**
 	 * A weight function that assign a weight of {@code 1} to any element.
 	 */
-<span class="fc" id="L139">	public static WeightFunctionInt&lt;?&gt; CardinalityWeightFunction = e -&gt; 1;</span>
+<span class="fc" id="L132">	public static WeightFunctionInt&lt;?&gt; CardinalityWeightFunction = e -&gt; 1;</span>
 
 	/**
 	 * Get the cardinality weight function.
@@ -151,7 +144,31 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;K&gt; WeightFunctionInt&lt;K&gt; cardinalityWeightFunction() {
-<span class="fc" id="L154">		return (WeightFunctionInt&lt;K&gt;) CardinalityWeightFunction;</span>
+<span class="fc" id="L147">		return (WeightFunctionInt&lt;K&gt;) CardinalityWeightFunction;</span>
+	}
+
+	/**
+	 * Replace {@code null} weight function with {@link #CardinalityWeightFunction}.
+	 *
+	 * @param  &lt;K&gt;        the elements (vertices/edges) type
+	 * @param  weightFunc the weight function to replace
+	 * @return            {@link #CardinalityWeightFunction} if {@code weightFunc} is {@code null}, otherwise
+	 *                    {@code weightFunc}
+	 */
+	public static &lt;K&gt; WeightFunction&lt;K&gt; replaceNullWeightFunc(WeightFunction&lt;K&gt; weightFunc) {
+<span class="fc bfc" id="L159" title="All 2 branches covered.">		return weightFunc == null ? cardinalityWeightFunction() : weightFunc;</span>
+	}
+
+	/**
+	 * Replace {@code null} weight function with {@link #CardinalityWeightFunction}.
+	 *
+	 * @param  &lt;K&gt;        the elements (vertices/edges) type
+	 * @param  weightFunc the weight function to replace
+	 * @return            {@link #CardinalityWeightFunction} if {@code weightFunc} is {@code null}, otherwise
+	 *                    {@code weightFunc}
+	 */
+	public static &lt;K&gt; WeightFunctionInt&lt;K&gt; replaceNullWeightFunc(WeightFunctionInt&lt;K&gt; weightFunc) {
+<span class="fc bfc" id="L171" title="All 2 branches covered.">		return weightFunc == null ? cardinalityWeightFunction() : weightFunc;</span>
 	}
 
 	/**
@@ -166,7 +183,7 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 * @return            {@code true} if the weight function is the cardinality weight function, {@code false}
 	 */
 	public static boolean isCardinality(WeightFunction&lt;?&gt; weightFunc) {
-<span class="fc bfc" id="L169" title="All 6 branches covered.">		return weightFunc == null || weightFunc == CardinalityWeightFunction</span>
+<span class="fc bfc" id="L186" title="All 6 branches covered.">		return weightFunc == null || weightFunc == CardinalityWeightFunction</span>
 				|| weightFunc == IWeightFunction.CardinalityWeightFunction;
 	}
 
@@ -181,7 +198,7 @@ public interface WeightFunction&lt;K&gt; extends Comparator&lt;K&gt; {
 	 * @return            {@code true} if the weight function is an integer weight function, {@code false}
 	 */
 	public static boolean isInteger(WeightFunction&lt;?&gt; weightFunc) {
-<span class="fc bfc" id="L184" title="All 4 branches covered.">		return weightFunc == null || weightFunc instanceof WeightFunctionInt&lt;?&gt;;</span>
+<span class="fc bfc" id="L201" title="All 4 branches covered.">		return weightFunc == null || weightFunc instanceof WeightFunctionInt&lt;?&gt;;</span>
 	}
 
 }

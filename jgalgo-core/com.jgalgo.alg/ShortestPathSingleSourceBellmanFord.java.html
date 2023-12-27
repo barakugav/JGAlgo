@@ -54,8 +54,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 <span class="fc" id="L54">		Assertions.Graphs.onlyDirected(g);</span>
 
 <span class="fc" id="L56">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
-<span class="pc bpc" id="L57" title="1 of 2 branches missed.">		if (w == null)</span>
-<span class="nc" id="L58">			w = IWeightFunction.CardinalityWeightFunction;</span>
+<span class="fc" id="L57">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
 
 		/*
 		 * The implementation is based on the classical Bellman-Ford algorithm, with an additional heuristic. When we
@@ -73,134 +72,134 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 		 * TODO Yen's improvement: https://en.wikipedia.org/wiki/Yen%27s_algorithm
 		 */
 
-<span class="fc" id="L76">		final int n = g.vertices().size();</span>
-<span class="fc" id="L77">		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);</span>
-<span class="fc" id="L78">		res.distances[source] = 0;</span>
+<span class="fc" id="L75">		final int n = g.vertices().size();</span>
+<span class="fc" id="L76">		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);</span>
+<span class="fc" id="L77">		res.distances[source] = 0;</span>
 
-<span class="fc" id="L80">		FIFOQueueIntNoReduce modified = new FIFOQueueIntNoReduce();</span>
-<span class="fc" id="L81">		Bitmap isModified = new Bitmap(n);</span>
-<span class="fc" id="L82">		isModified.set(source);</span>
-<span class="fc" id="L83">		modified.enqueue(source);</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">		for (int nextOptRound = 0, nextOptGap = 1, round = 0; round &lt; n; round++) {</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (modified.isEmpty()) {</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">				if (round != nextOptRound) {</span>
+<span class="fc" id="L79">		FIFOQueueIntNoReduce modified = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L80">		Bitmap isModified = new Bitmap(n);</span>
+<span class="fc" id="L81">		isModified.set(source);</span>
+<span class="fc" id="L82">		modified.enqueue(source);</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (int nextOptRound = 0, nextOptGap = 1, round = 0; round &lt; n; round++) {</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">			if (modified.isEmpty()) {</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">				if (round != nextOptRound) {</span>
 					/* classical by-the-book Bellman-Ford */
-<span class="fc bfc" id="L88" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L89">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L90">						double d = res.distances[u] + w.weight(e);</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">						if (d &lt; res.distances[v]) {</span>
-<span class="fc" id="L92">							res.distances[v] = d;</span>
-<span class="fc" id="L93">							res.backtrack[v] = e;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L88">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L89">						double d = res.distances[u] + w.weight(e);</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">						if (d &lt; res.distances[v]) {</span>
+<span class="fc" id="L91">							res.distances[v] = d;</span>
+<span class="fc" id="L92">							res.backtrack[v] = e;</span>
 						}
 					}
 				} else {
 					/* identical to the classic implementation, but we record the vertices we update */
-<span class="fc bfc" id="L98" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L99">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc" id="L100">						double d = res.distances[u] + w.weight(e);</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">						if (d &lt; res.distances[v]) {</span>
-<span class="fc" id="L102">							res.distances[v] = d;</span>
-<span class="fc" id="L103">							res.backtrack[v] = e;</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">							if (!isModified.get(v)) {</span>
-<span class="fc" id="L105">								isModified.set(v);</span>
-<span class="fc" id="L106">								modified.enqueue(v);</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L98">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc" id="L99">						double d = res.distances[u] + w.weight(e);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">						if (d &lt; res.distances[v]) {</span>
+<span class="fc" id="L101">							res.distances[v] = d;</span>
+<span class="fc" id="L102">							res.backtrack[v] = e;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">							if (!isModified.get(v)) {</span>
+<span class="fc" id="L104">								isModified.set(v);</span>
+<span class="fc" id="L105">								modified.enqueue(v);</span>
 							}
 						}
 					}
-<span class="fc bfc" id="L110" title="All 2 branches covered.">					if (modified.isEmpty())</span>
-<span class="fc" id="L111">						break; /* no vertices were updated, we are done */</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">					if (modified.size() &lt;= n / 4) {</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">					if (modified.isEmpty())</span>
+<span class="fc" id="L110">						break; /* no vertices were updated, we are done */</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">					if (modified.size() &lt;= n / 4) {</span>
 						/* few vertices were updated, seems worth it, perform the same optimization next round */
-<span class="fc" id="L114">						nextOptGap = 1;</span>
+<span class="fc" id="L113">						nextOptGap = 1;</span>
 					} else {
 						/* too many vertices were updated, avoid this optimization */
-<span class="fc" id="L117">						nextOptGap *= 2;</span>
+<span class="fc" id="L116">						nextOptGap *= 2;</span>
 					}
-<span class="fc" id="L119">					nextOptRound = round + nextOptGap;</span>
+<span class="fc" id="L118">					nextOptRound = round + nextOptGap;</span>
 				}
 			} else {
-<span class="fc bfc" id="L122" title="All 2 branches covered.">				for (int u : modified)</span>
-<span class="fc" id="L123">					isModified.clear(u);</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">				if (round != nextOptRound) {</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">				for (int u : modified)</span>
+<span class="fc" id="L122">					isModified.clear(u);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">				if (round != nextOptRound) {</span>
 					/* Iterate only over the vertices that were updated last round */
 					/* (not the classical implementation) */
-<span class="fc bfc" id="L127" title="All 2 branches covered.">					for (int k = modified.size(); k-- &gt; 0;) {</span>
-<span class="fc" id="L128">						int u = modified.dequeueInt();</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L130">							int e = eit.nextInt();</span>
-<span class="fc" id="L131">							int v = eit.targetInt();</span>
-<span class="fc" id="L132">							double d = res.distances[u] + w.weight(e);</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">							if (d &lt; res.distances[v]) {</span>
-<span class="fc" id="L134">								res.distances[v] = d;</span>
-<span class="fc" id="L135">								res.backtrack[v] = e;</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">					for (int k = modified.size(); k-- &gt; 0;) {</span>
+<span class="fc" id="L127">						int u = modified.dequeueInt();</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L129">							int e = eit.nextInt();</span>
+<span class="fc" id="L130">							int v = eit.targetInt();</span>
+<span class="fc" id="L131">							double d = res.distances[u] + w.weight(e);</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">							if (d &lt; res.distances[v]) {</span>
+<span class="fc" id="L133">								res.distances[v] = d;</span>
+<span class="fc" id="L134">								res.backtrack[v] = e;</span>
 							}
-<span class="fc" id="L137">						}</span>
-<span class="fc" id="L138">					}</span>
+<span class="fc" id="L136">						}</span>
+<span class="fc" id="L137">					}</span>
 				} else {
 					/* Iterate only over the vertices that were updated last round, and record the vertices we update */
 					/* (not the classical implementation) */
-<span class="fc bfc" id="L142" title="All 2 branches covered.">					for (int k = modified.size(); k-- &gt; 0;) {</span>
-<span class="fc" id="L143">						int u = modified.dequeueInt();</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L145">							int e = eit.nextInt();</span>
-<span class="fc" id="L146">							int v = eit.targetInt();</span>
-<span class="fc" id="L147">							double d = res.distances[u] + w.weight(e);</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">							if (d &lt; res.distances[v]) {</span>
-<span class="fc" id="L149">								res.distances[v] = d;</span>
-<span class="fc" id="L150">								res.backtrack[v] = e;</span>
-<span class="fc bfc" id="L151" title="All 2 branches covered.">								if (!isModified.get(v)) {</span>
-<span class="fc" id="L152">									isModified.set(v);</span>
-<span class="fc" id="L153">									modified.enqueue(v);</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">					for (int k = modified.size(); k-- &gt; 0;) {</span>
+<span class="fc" id="L142">						int u = modified.dequeueInt();</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">						for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L144">							int e = eit.nextInt();</span>
+<span class="fc" id="L145">							int v = eit.targetInt();</span>
+<span class="fc" id="L146">							double d = res.distances[u] + w.weight(e);</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">							if (d &lt; res.distances[v]) {</span>
+<span class="fc" id="L148">								res.distances[v] = d;</span>
+<span class="fc" id="L149">								res.backtrack[v] = e;</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">								if (!isModified.get(v)) {</span>
+<span class="fc" id="L151">									isModified.set(v);</span>
+<span class="fc" id="L152">									modified.enqueue(v);</span>
 								}
 							}
-<span class="fc" id="L156">						}</span>
-<span class="fc" id="L157">					}</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">					if (modified.isEmpty())</span>
-<span class="fc" id="L159">						break; /* no vertices were updated, we are done */</span>
-<span class="fc bfc" id="L160" title="All 2 branches covered.">					if (modified.size() &lt;= n / 4) {</span>
+<span class="fc" id="L155">						}</span>
+<span class="fc" id="L156">					}</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">					if (modified.isEmpty())</span>
+<span class="fc" id="L158">						break; /* no vertices were updated, we are done */</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">					if (modified.size() &lt;= n / 4) {</span>
 						/* few vertices were updated, seems worth it, perform the same optimization next round */
-<span class="fc" id="L162">						nextOptGap = 1;</span>
+<span class="fc" id="L161">						nextOptGap = 1;</span>
 					} else {
 						/* too many vertices were updated, avoid this optimization */
-<span class="fc" id="L165">						nextOptGap *= 2;</span>
+<span class="fc" id="L164">						nextOptGap *= 2;</span>
 					}
-<span class="fc" id="L167">					nextOptRound = round + nextOptGap;</span>
+<span class="fc" id="L166">					nextOptRound = round + nextOptGap;</span>
 				}
 			}
 		}
 
 		/* search for a negative cycle */
-<span class="fc bfc" id="L173" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L174">			int e = res.backtrack[v];</span>
-<span class="fc bfc" id="L175" title="All 2 branches covered.">			if (e == -1)</span>
-<span class="fc" id="L176">				continue;</span>
-<span class="fc" id="L177">			int u = g.edgeSource(e);</span>
-<span class="fc" id="L178">			double d = res.distances[u] + w.weight(e);</span>
-<span class="fc bfc" id="L179" title="All 2 branches covered.">			if (d &lt; res.distances[v]) {</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L173">			int e = res.backtrack[v];</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			if (e == -1)</span>
+<span class="fc" id="L175">				continue;</span>
+<span class="fc" id="L176">			int u = g.edgeSource(e);</span>
+<span class="fc" id="L177">			double d = res.distances[u] + w.weight(e);</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">			if (d &lt; res.distances[v]) {</span>
 				/* negative cycle found */
 
-<span class="fc" id="L182">				Bitmap visited = new Bitmap(n);</span>
-<span class="fc" id="L183">				visited.set(v);</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">				while (!visited.get(u)) {</span>
-<span class="fc" id="L185">					visited.set(u);</span>
-<span class="fc" id="L186">					e = res.backtrack[u];</span>
-<span class="fc" id="L187">					u = g.edgeSource(e);</span>
+<span class="fc" id="L181">				Bitmap visited = new Bitmap(n);</span>
+<span class="fc" id="L182">				visited.set(v);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">				while (!visited.get(u)) {</span>
+<span class="fc" id="L184">					visited.set(u);</span>
+<span class="fc" id="L185">					e = res.backtrack[u];</span>
+<span class="fc" id="L186">					u = g.edgeSource(e);</span>
 				}
 
-<span class="fc" id="L190">				IntArrayList negCycle = new IntArrayList();</span>
-<span class="fc" id="L191">				for (int p = u;;) {</span>
-<span class="fc" id="L192">					e = res.backtrack[p];</span>
-<span class="fc" id="L193">					negCycle.add(e);</span>
-<span class="fc" id="L194">					p = g.edgeSource(e);</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">					if (p == u)</span>
-<span class="fc" id="L196">						break;</span>
+<span class="fc" id="L189">				IntArrayList negCycle = new IntArrayList();</span>
+<span class="fc" id="L190">				for (int p = u;;) {</span>
+<span class="fc" id="L191">					e = res.backtrack[p];</span>
+<span class="fc" id="L192">					negCycle.add(e);</span>
+<span class="fc" id="L193">					p = g.edgeSource(e);</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">					if (p == u)</span>
+<span class="fc" id="L195">						break;</span>
 				}
-<span class="fc" id="L198">				IntArrays.reverse(negCycle.elements(), 0, negCycle.size());</span>
-<span class="fc" id="L199">				throw new NegativeCycleException(g, new PathImpl(g, u, u, negCycle));</span>
+<span class="fc" id="L197">				IntArrays.reverse(negCycle.elements(), 0, negCycle.size());</span>
+<span class="fc" id="L198">				throw new NegativeCycleException(g, new PathImpl(g, u, u, negCycle));</span>
 			}
 		}
 
-<span class="fc" id="L203">		return res;</span>
+<span class="fc" id="L202">		return res;</span>
 	}
 
 }

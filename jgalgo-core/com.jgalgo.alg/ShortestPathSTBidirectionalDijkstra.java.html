@@ -37,138 +37,137 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="nc" id="L37">			throw NoSuchVertexException.ofIndex(target);</span>
 <span class="fc bfc" id="L38" title="All 2 branches covered.">		if (source == target)</span>
 <span class="fc" id="L39">			return new PathImpl(g, source, target, IntLists.emptyList());</span>
-<span class="fc bfc" id="L40" title="All 2 branches covered.">		if (w == null)</span>
-<span class="fc" id="L41">			w = IWeightFunction.CardinalityWeightFunction;</span>
+<span class="fc" id="L40">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
 
-<span class="fc" id="L43">		DoubleIntReferenceableHeap heapS = DoubleIntReferenceableHeap.newInstance();</span>
-<span class="fc" id="L44">		DoubleIntReferenceableHeap heapT = DoubleIntReferenceableHeap.newInstance();</span>
+<span class="fc" id="L42">		DoubleIntReferenceableHeap heapS = DoubleIntReferenceableHeap.newInstance();</span>
+<span class="fc" id="L43">		DoubleIntReferenceableHeap heapT = DoubleIntReferenceableHeap.newInstance();</span>
 
-<span class="fc" id="L46">		Int2ObjectMap&lt;Info&gt; infoS = new Int2ObjectOpenHashMap&lt;&gt;();</span>
-<span class="fc" id="L47">		Int2ObjectMap&lt;Info&gt; infoT = new Int2ObjectOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L45">		Int2ObjectMap&lt;Info&gt; infoS = new Int2ObjectOpenHashMap&lt;&gt;();</span>
+<span class="fc" id="L46">		Int2ObjectMap&lt;Info&gt; infoT = new Int2ObjectOpenHashMap&lt;&gt;();</span>
 
-<span class="fc" id="L49">		int middle = -1;</span>
-<span class="fc" id="L50">		double mu = Double.POSITIVE_INFINITY;</span>
-<span class="fc" id="L51">		infoS.put(source, new Info());</span>
-<span class="fc" id="L52">		infoT.put(target, new Info());</span>
-<span class="fc" id="L53">		heapS.insert(.0, source);</span>
-<span class="fc" id="L54">		heapT.insert(.0, target);</span>
-<span class="fc bfc" id="L55" title="All 4 branches covered.">		while (heapS.isNotEmpty() &amp;&amp; heapT.isNotEmpty()) {</span>
+<span class="fc" id="L48">		int middle = -1;</span>
+<span class="fc" id="L49">		double mu = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L50">		infoS.put(source, new Info());</span>
+<span class="fc" id="L51">		infoT.put(target, new Info());</span>
+<span class="fc" id="L52">		heapS.insert(.0, source);</span>
+<span class="fc" id="L53">		heapT.insert(.0, target);</span>
+<span class="fc bfc" id="L54" title="All 4 branches covered.">		while (heapS.isNotEmpty() &amp;&amp; heapT.isNotEmpty()) {</span>
 
-<span class="fc" id="L57">			DoubleIntReferenceableHeap.Ref min = heapS.extractMin();</span>
-<span class="fc" id="L58">			double uDistanceS = min.key();</span>
-<span class="fc" id="L59">			int uS = min.value();</span>
-<span class="fc" id="L60">			Info uInfoS = infoS.get(uS);</span>
-<span class="fc" id="L61">			uInfoS.heapPtr = null;</span>
-<span class="fc" id="L62">			uInfoS.markVisited();</span>
-<span class="fc" id="L63">			uInfoS.distance = uDistanceS;</span>
+<span class="fc" id="L56">			DoubleIntReferenceableHeap.Ref min = heapS.extractMin();</span>
+<span class="fc" id="L57">			double uDistanceS = min.key();</span>
+<span class="fc" id="L58">			int uS = min.value();</span>
+<span class="fc" id="L59">			Info uInfoS = infoS.get(uS);</span>
+<span class="fc" id="L60">			uInfoS.heapPtr = null;</span>
+<span class="fc" id="L61">			uInfoS.markVisited();</span>
+<span class="fc" id="L62">			uInfoS.distance = uDistanceS;</span>
 
-<span class="fc" id="L65">			min = heapT.extractMin();</span>
-<span class="fc" id="L66">			double uDistanceT = min.key();</span>
-<span class="fc" id="L67">			int uT = min.value();</span>
-<span class="fc" id="L68">			Info uInfoT = infoT.get(uT);</span>
-<span class="fc" id="L69">			uInfoT.heapPtr = null;</span>
-<span class="fc" id="L70">			uInfoT.markVisited();</span>
-<span class="fc" id="L71">			uInfoT.distance = uDistanceT;</span>
+<span class="fc" id="L64">			min = heapT.extractMin();</span>
+<span class="fc" id="L65">			double uDistanceT = min.key();</span>
+<span class="fc" id="L66">			int uT = min.value();</span>
+<span class="fc" id="L67">			Info uInfoT = infoT.get(uT);</span>
+<span class="fc" id="L68">			uInfoT.heapPtr = null;</span>
+<span class="fc" id="L69">			uInfoT.markVisited();</span>
+<span class="fc" id="L70">			uInfoT.distance = uDistanceT;</span>
 
-<span class="fc bfc" id="L73" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L74">				int e = eit.nextInt();</span>
-<span class="fc" id="L75">				int v = eit.targetInt();</span>
-<span class="fc" id="L76">				Info vInfoS = infoS.computeIfAbsent(v, k -&gt; new Info());</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">				if (vInfoS.isVisited())</span>
-<span class="fc" id="L78">					continue;</span>
-<span class="fc" id="L79">				double ew = w.weight(e);</span>
-<span class="fc" id="L80">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
-<span class="fc" id="L81">				double vDistance = uDistanceS + ew;</span>
-<span class="fc" id="L82">				Info vInfoT = infoT.get(v);</span>
-<span class="fc bfc" id="L83" title="All 4 branches covered.">				if (vInfoT != null &amp;&amp; vInfoT.isVisited()) {</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">					if (mu &gt; vDistance + vInfoT.distance) {</span>
-<span class="fc" id="L85">						mu = vDistance + vInfoT.distance;</span>
-<span class="fc" id="L86">						middle = v;</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(uS).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L73">				int e = eit.nextInt();</span>
+<span class="fc" id="L74">				int v = eit.targetInt();</span>
+<span class="fc" id="L75">				Info vInfoS = infoS.computeIfAbsent(v, k -&gt; new Info());</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">				if (vInfoS.isVisited())</span>
+<span class="fc" id="L77">					continue;</span>
+<span class="fc" id="L78">				double ew = w.weight(e);</span>
+<span class="fc" id="L79">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L80">				double vDistance = uDistanceS + ew;</span>
+<span class="fc" id="L81">				Info vInfoT = infoT.get(v);</span>
+<span class="fc bfc" id="L82" title="All 4 branches covered.">				if (vInfoT != null &amp;&amp; vInfoT.isVisited()) {</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">					if (mu &gt; vDistance + vInfoT.distance) {</span>
+<span class="fc" id="L84">						mu = vDistance + vInfoT.distance;</span>
+<span class="fc" id="L85">						middle = v;</span>
 					}
 				}
 
-<span class="fc" id="L90">				DoubleIntReferenceableHeap.Ref vPtr = vInfoS.heapPtr;</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">				if (vPtr == null) {</span>
-<span class="fc" id="L92">					vInfoS.heapPtr = heapS.insert(vDistance, v);</span>
-<span class="fc" id="L93">					vInfoS.backtrack = e;</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">				} else if (vDistance &lt; vPtr.key()) {</span>
-<span class="fc" id="L95">					heapS.decreaseKey(vPtr, vDistance);</span>
-<span class="fc" id="L96">					vInfoS.backtrack = e;</span>
+<span class="fc" id="L89">				DoubleIntReferenceableHeap.Ref vPtr = vInfoS.heapPtr;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">				if (vPtr == null) {</span>
+<span class="fc" id="L91">					vInfoS.heapPtr = heapS.insert(vDistance, v);</span>
+<span class="fc" id="L92">					vInfoS.backtrack = e;</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">				} else if (vDistance &lt; vPtr.key()) {</span>
+<span class="fc" id="L94">					heapS.decreaseKey(vPtr, vDistance);</span>
+<span class="fc" id="L95">					vInfoS.backtrack = e;</span>
 				}
-<span class="fc" id="L98">			}</span>
+<span class="fc" id="L97">			}</span>
 
-<span class="fc bfc" id="L100" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(uT).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L101">				int e = eit.nextInt();</span>
-<span class="fc" id="L102">				int v = eit.sourceInt();</span>
-<span class="fc" id="L103">				Info vInfoT = infoT.computeIfAbsent(v, k -&gt; new Info());</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">				if (vInfoT.isVisited())</span>
-<span class="fc" id="L105">					continue;</span>
-<span class="fc" id="L106">				double ew = w.weight(e);</span>
-<span class="fc" id="L107">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
-<span class="fc" id="L108">				double vDistance = uDistanceT + ew;</span>
-<span class="fc" id="L109">				Info vInfoS = infoS.get(v);</span>
-<span class="fc bfc" id="L110" title="All 4 branches covered.">				if (vInfoS != null &amp;&amp; vInfoS.isVisited()) {</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">					if (mu &gt; vDistance + vInfoS.distance) {</span>
-<span class="fc" id="L112">						mu = vDistance + vInfoS.distance;</span>
-<span class="fc" id="L113">						middle = v;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(uT).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L100">				int e = eit.nextInt();</span>
+<span class="fc" id="L101">				int v = eit.sourceInt();</span>
+<span class="fc" id="L102">				Info vInfoT = infoT.computeIfAbsent(v, k -&gt; new Info());</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">				if (vInfoT.isVisited())</span>
+<span class="fc" id="L104">					continue;</span>
+<span class="fc" id="L105">				double ew = w.weight(e);</span>
+<span class="fc" id="L106">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L107">				double vDistance = uDistanceT + ew;</span>
+<span class="fc" id="L108">				Info vInfoS = infoS.get(v);</span>
+<span class="fc bfc" id="L109" title="All 4 branches covered.">				if (vInfoS != null &amp;&amp; vInfoS.isVisited()) {</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">					if (mu &gt; vDistance + vInfoS.distance) {</span>
+<span class="fc" id="L111">						mu = vDistance + vInfoS.distance;</span>
+<span class="fc" id="L112">						middle = v;</span>
 					}
 				}
 
-<span class="fc" id="L117">				DoubleIntReferenceableHeap.Ref vPtr = vInfoT.heapPtr;</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">				if (vPtr == null) {</span>
-<span class="fc" id="L119">					vInfoT.heapPtr = heapT.insert(vDistance, v);</span>
-<span class="fc" id="L120">					vInfoT.backtrack = e;</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">				} else if (vDistance &lt; vPtr.key()) {</span>
-<span class="fc" id="L122">					heapT.decreaseKey(vPtr, vDistance);</span>
-<span class="fc" id="L123">					vInfoT.backtrack = e;</span>
+<span class="fc" id="L116">				DoubleIntReferenceableHeap.Ref vPtr = vInfoT.heapPtr;</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">				if (vPtr == null) {</span>
+<span class="fc" id="L118">					vInfoT.heapPtr = heapT.insert(vDistance, v);</span>
+<span class="fc" id="L119">					vInfoT.backtrack = e;</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">				} else if (vDistance &lt; vPtr.key()) {</span>
+<span class="fc" id="L121">					heapT.decreaseKey(vPtr, vDistance);</span>
+<span class="fc" id="L122">					vInfoT.backtrack = e;</span>
 				}
-<span class="fc" id="L125">			}</span>
+<span class="fc" id="L124">			}</span>
 
-<span class="fc bfc" id="L127" title="All 2 branches covered.">			if (uDistanceS + uDistanceT &gt;= mu)</span>
-<span class="fc" id="L128">				break;</span>
-<span class="fc" id="L129">		}</span>
-<span class="fc bfc" id="L130" title="All 2 branches covered.">		if (middle == -1)</span>
-<span class="fc" id="L131">			return null;</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">			if (uDistanceS + uDistanceT &gt;= mu)</span>
+<span class="fc" id="L127">				break;</span>
+<span class="fc" id="L128">		}</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">		if (middle == -1)</span>
+<span class="fc" id="L130">			return null;</span>
 
-<span class="fc" id="L133">		IntArrayList path = new IntArrayList();</span>
+<span class="fc" id="L132">		IntArrayList path = new IntArrayList();</span>
 
 		/* add edges from source to middle */
-<span class="fc bfc" id="L136" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">			for (int u = middle, e; u != source; u = g.edgeSource(e))</span>
-<span class="fc" id="L138">				path.add(e = infoS.get(u).backtrack);</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">			for (int u = middle, e; u != source; u = g.edgeSource(e))</span>
+<span class="fc" id="L137">				path.add(e = infoS.get(u).backtrack);</span>
 		} else {
-<span class="fc bfc" id="L140" title="All 2 branches covered.">			for (int u = middle, e; u != source; u = g.edgeEndpoint(e, u))</span>
-<span class="fc" id="L141">				path.add(e = infoS.get(u).backtrack);</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">			for (int u = middle, e; u != source; u = g.edgeEndpoint(e, u))</span>
+<span class="fc" id="L140">				path.add(e = infoS.get(u).backtrack);</span>
 		}
-<span class="fc" id="L143">		IntArrays.reverse(path.elements(), 0, path.size());</span>
+<span class="fc" id="L142">		IntArrays.reverse(path.elements(), 0, path.size());</span>
 
 		/* add edges from middle to target */
-<span class="fc bfc" id="L146" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">			for (int u = middle, e; u != target; u = g.edgeTarget(e))</span>
-<span class="fc" id="L148">				path.add(e = infoT.get(u).backtrack);</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">		if (g.isDirected()) {</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			for (int u = middle, e; u != target; u = g.edgeTarget(e))</span>
+<span class="fc" id="L147">				path.add(e = infoT.get(u).backtrack);</span>
 		} else {
-<span class="fc bfc" id="L150" title="All 2 branches covered.">			for (int u = middle, e; u != target; u = g.edgeEndpoint(e, u))</span>
-<span class="fc" id="L151">				path.add(e = infoT.get(u).backtrack);</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">			for (int u = middle, e; u != target; u = g.edgeEndpoint(e, u))</span>
+<span class="fc" id="L150">				path.add(e = infoT.get(u).backtrack);</span>
 		}
-<span class="fc" id="L153">		return new PathImpl(g, source, target, path);</span>
+<span class="fc" id="L152">		return new PathImpl(g, source, target, path);</span>
 	}
 
-<span class="fc" id="L156">	static class Info {</span>
-<span class="fc" id="L157">		int backtrack = -1;</span>
-<span class="fc" id="L158">		double distance = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L155">	static class Info {</span>
+<span class="fc" id="L156">		int backtrack = -1;</span>
+<span class="fc" id="L157">		double distance = Double.POSITIVE_INFINITY;</span>
 		DoubleIntReferenceableHeap.Ref heapPtr;
 
 		void markVisited() {
-<span class="pc bnc" id="L162" title="All 2 branches missed.">			assert heapPtr != VisitedMark : &quot;already visited&quot;;</span>
-<span class="fc" id="L163">			heapPtr = VisitedMark;</span>
-<span class="fc" id="L164">		}</span>
+<span class="pc bnc" id="L161" title="All 2 branches missed.">			assert heapPtr != VisitedMark : &quot;already visited&quot;;</span>
+<span class="fc" id="L162">			heapPtr = VisitedMark;</span>
+<span class="fc" id="L163">		}</span>
 
 		boolean isVisited() {
-<span class="fc bfc" id="L167" title="All 2 branches covered.">			return heapPtr == VisitedMark;</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">			return heapPtr == VisitedMark;</span>
 		}
 
-<span class="fc" id="L170">		private static final DoubleIntReferenceableHeap.Ref VisitedMark =</span>
-<span class="fc" id="L171">				DoubleIntReferenceableHeap.newInstance().insert(0.0, 0);</span>
+<span class="fc" id="L169">		private static final DoubleIntReferenceableHeap.Ref VisitedMark =</span>
+<span class="fc" id="L170">				DoubleIntReferenceableHeap.newInstance().insert(0.0, 0);</span>
 	}
 
 }

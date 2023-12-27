@@ -15,12 +15,12 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Map;
 import java.util.function.IntPredicate;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Bitmap;
-import it.unimi.dsi.fastutil.ints.Int2BooleanMap;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -125,7 +125,7 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition&
 	 * @param  map a map from vertex to either {@code true} or {@code false}
 	 * @return     a new vertex bi-partition
 	 */
-	static IVertexBiPartition fromMap(IntGraph g, Int2BooleanMap map) {
+	static IVertexBiPartition fromMap(IntGraph g, Map&lt;Integer, Boolean&gt; map) {
 <span class="nc" id="L129">		return fromMapping(g, map::get);</span>
 	}
 

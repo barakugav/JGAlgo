@@ -28,20 +28,20 @@ public class WeightFunctions {
 	 * Get a 'local' version of a given weight function.
 	 *
 	 * &lt;p&gt;
-	 * A {@link IWeightFunction} is a functional interface, and may be implemented in many mays, and querying the weight
-	 * of a single edge may be arbitrarily costly. In scenarios in which the weights of the edges are needed multiple
-	 * times, it may be more efficient to query the weights of each edge once and store the result &lt;i&gt;locally&lt;/i&gt;, to
-	 * ensure the potentially heavy computations occur few as possible.
+	 * A {@link IWeightFunction} is a functional interface, and may be implemented in many mays, querying the weight of
+	 * a single vertex/edge may be arbitrarily costly. In scenarios in which the weights of the vertices/edges are
+	 * needed multiple times, it may be more efficient to query the weights of each vertex/edge once and store the
+	 * result &lt;i&gt;locally&lt;/i&gt;, to ensure the potentially heavy computations occur few as possible.
 	 *
 	 * &lt;p&gt;
 	 * This method accept a weight function, and return a 'local' version of it. If the original weight function is
-	 * already some 'local' implementation of a weight function, it will be returned as is without duplication. In other
-	 * cases, in which the implementation decide to, the weights of the edges are computed onces and stored in a local
-	 * weight function, which is than returned. In all cases, the returned weight function is local.
+	 * already some 'local' implementation of a weight function, it will simply be returned without duplication. In
+	 * other cases, in which the implementation decide to, the weights of all the vertex/edges are computed onces and
+	 * stored in a local weight function, which is than returned. In all cases, the returned weight function is local.
 	 *
 	 * &lt;p&gt;
 	 * This function is used only for performance boost, it does not change any functionally over using the original
-	 * weight function.
+	 * weight function as long the original weight function or the graph are not changed.
 	 *
 	 * @param  g a graph
 	 * @param  w a weight function
@@ -49,7 +49,7 @@ public class WeightFunctions {
 	 */
 	public static IWeightFunction localEdgeWeightFunction(IndexGraph g, IWeightFunction w) {
 <span class="fc bfc" id="L51" title="All 2 branches covered.">		if (WeightFunction.isCardinality(w))</span>
-<span class="fc" id="L52">			return null;</span>
+<span class="fc" id="L52">			return w;</span>
 <span class="fc bfc" id="L53" title="All 2 branches covered.">		if (w instanceof WeightsImpl.Index)</span>
 <span class="fc" id="L54">			return w;</span>
 <span class="fc bfc" id="L55" title="All 2 branches covered.">		if (WeightFunction.isInteger(w)) {</span>

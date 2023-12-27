@@ -61,13 +61,12 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	 */
 	@Override
 	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
-<span class="fc bfc" id="L64" title="All 2 branches covered.">		if (w == null)</span>
-<span class="fc" id="L65">			w = IWeightFunction.CardinalityWeightFunction;</span>
-<span class="pc bpc" id="L66" title="1 of 2 branches missed.">		if (!WeightFunction.isInteger(w))</span>
-<span class="nc" id="L67">			throw new IllegalArgumentException(&quot;only int weights are supported&quot;);</span>
-<span class="fc" id="L68">		IWeightFunctionInt w0 = (IWeightFunctionInt) w;</span>
+<span class="fc" id="L64">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">		if (!WeightFunction.isInteger(w))</span>
+<span class="nc" id="L66">			throw new IllegalArgumentException(&quot;only int weights are supported&quot;);</span>
+<span class="fc" id="L67">		IWeightFunctionInt w0 = (IWeightFunctionInt) w;</span>
 
-<span class="fc" id="L70">		return computeShortestPaths(g, w0, source, -1);</span>
+<span class="fc" id="L69">		return computeShortestPaths(g, w0, source, -1);</span>
 	}
 
 	/**
@@ -84,42 +83,41 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	 */
 	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunctionInt w, int source,
 			int maxDistance) {
-<span class="pc bpc" id="L87" title="1 of 2 branches missed.">		if (w == null)</span>
-<span class="nc" id="L88">			w = IWeightFunction.CardinalityWeightFunction;</span>
-<span class="fc" id="L89">		DialHeap heap = new DialHeap(g.vertices().size(), maxDistance);</span>
-<span class="fc" id="L90">		heap.distances[source] = 0;</span>
-<span class="fc" id="L91">		int[] backtrack = new int[g.vertices().size()];</span>
-<span class="fc" id="L92">		Arrays.fill(backtrack, -1);</span>
+<span class="fc" id="L86">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
+<span class="fc" id="L87">		DialHeap heap = new DialHeap(g.vertices().size(), maxDistance);</span>
+<span class="fc" id="L88">		heap.distances[source] = 0;</span>
+<span class="fc" id="L89">		int[] backtrack = new int[g.vertices().size()];</span>
+<span class="fc" id="L90">		Arrays.fill(backtrack, -1);</span>
 
-<span class="fc" id="L94">		for (int u = source;;) {</span>
-<span class="fc" id="L95">			final int uDistance = heap.distances[u];</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L97">				int e = eit.nextInt();</span>
-<span class="fc" id="L98">				int v = eit.targetInt();</span>
+<span class="fc" id="L92">		for (int u = source;;) {</span>
+<span class="fc" id="L93">			final int uDistance = heap.distances[u];</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L95">				int e = eit.nextInt();</span>
+<span class="fc" id="L96">				int v = eit.targetInt();</span>
 
-<span class="fc" id="L100">				int ew = w.weightInt(e);</span>
-<span class="fc" id="L101">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
-<span class="fc" id="L102">				int distance = uDistance + ew;</span>
+<span class="fc" id="L98">				int ew = w.weightInt(e);</span>
+<span class="fc" id="L99">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L100">				int distance = uDistance + ew;</span>
 
-<span class="fc bfc" id="L104" title="All 2 branches covered.">				if (!heap.containsVertex(v)) {</span>
-<span class="fc" id="L105">					heap.insert(v, distance);</span>
-<span class="fc" id="L106">					backtrack[v] = e;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">				if (!heap.containsVertex(v)) {</span>
+<span class="fc" id="L103">					heap.insert(v, distance);</span>
+<span class="fc" id="L104">					backtrack[v] = e;</span>
 				} else {
-<span class="fc bfc" id="L108" title="All 2 branches covered.">					if (distance &lt; heap.getCurrentDistance(v)) {</span>
-<span class="fc" id="L109">						backtrack[v] = e;</span>
-<span class="fc" id="L110">						heap.decreaseKey(v, distance);</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">					if (distance &lt; heap.getCurrentDistance(v)) {</span>
+<span class="fc" id="L107">						backtrack[v] = e;</span>
+<span class="fc" id="L108">						heap.decreaseKey(v, distance);</span>
 					}
 				}
-<span class="fc" id="L113">			}</span>
+<span class="fc" id="L111">			}</span>
 
-<span class="fc" id="L115">			u = heap.extractMin();</span>
-<span class="fc bfc" id="L116" title="All 2 branches covered.">			if (u == -1)</span>
-<span class="fc" id="L117">				break;</span>
-<span class="fc" id="L118">		}</span>
-<span class="fc" id="L119">		return new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source, heap.distances, backtrack);</span>
+<span class="fc" id="L113">			u = heap.extractMin();</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">			if (u == -1)</span>
+<span class="fc" id="L115">				break;</span>
+<span class="fc" id="L116">		}</span>
+<span class="fc" id="L117">		return new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source, heap.distances, backtrack);</span>
 	}
 
-<span class="fc" id="L122">	private static class DialHeap {</span>
+<span class="fc" id="L120">	private static class DialHeap {</span>
 
 		private final LinkedListFixedSize.Doubly heapBucketsNodes;
 		private int[] heapBucketsHead;
@@ -127,65 +125,65 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 		private int heapScanIdx;
 		private int maxDistance;
 
-<span class="fc" id="L130">		DialHeap(int n, int initialSize) {</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">			heapBucketsHead = initialSize &lt;= 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[initialSize];</span>
-<span class="fc" id="L132">			Arrays.fill(heapBucketsHead, LinkedListFixedSize.None);</span>
-<span class="fc" id="L133">			heapBucketsNodes = new LinkedListFixedSize.Doubly(n);</span>
-<span class="fc" id="L134">			distances = new int[n];</span>
-<span class="fc" id="L135">			Arrays.fill(distances, 0, n, Integer.MAX_VALUE);</span>
+<span class="fc" id="L128">		DialHeap(int n, int initialSize) {</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">			heapBucketsHead = initialSize &lt;= 0 ? IntArrays.DEFAULT_EMPTY_ARRAY : new int[initialSize];</span>
+<span class="fc" id="L130">			Arrays.fill(heapBucketsHead, LinkedListFixedSize.None);</span>
+<span class="fc" id="L131">			heapBucketsNodes = new LinkedListFixedSize.Doubly(n);</span>
+<span class="fc" id="L132">			distances = new int[n];</span>
+<span class="fc" id="L133">			Arrays.fill(distances, 0, n, Integer.MAX_VALUE);</span>
 
-<span class="fc" id="L137">			maxDistance = -1;</span>
-<span class="fc" id="L138">			heapScanIdx = 0;</span>
-<span class="fc" id="L139">		}</span>
+<span class="fc" id="L135">			maxDistance = -1;</span>
+<span class="fc" id="L136">			heapScanIdx = 0;</span>
+<span class="fc" id="L137">		}</span>
 
 		void insert(int v, int distance) {
-<span class="fc" id="L142">			distances[v] = distance;</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">			if (distance &gt;= heapBucketsHead.length) {</span>
-<span class="fc" id="L144">				int oldLength = heapBucketsHead.length;</span>
-<span class="fc" id="L145">				int newLength = Math.max(distance + 1, oldLength * 2);</span>
-<span class="fc" id="L146">				heapBucketsHead = Arrays.copyOf(heapBucketsHead, newLength);</span>
-<span class="fc" id="L147">				Arrays.fill(heapBucketsHead, oldLength, newLength, LinkedListFixedSize.None);</span>
+<span class="fc" id="L140">			distances[v] = distance;</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			if (distance &gt;= heapBucketsHead.length) {</span>
+<span class="fc" id="L142">				int oldLength = heapBucketsHead.length;</span>
+<span class="fc" id="L143">				int newLength = Math.max(distance + 1, oldLength * 2);</span>
+<span class="fc" id="L144">				heapBucketsHead = Arrays.copyOf(heapBucketsHead, newLength);</span>
+<span class="fc" id="L145">				Arrays.fill(heapBucketsHead, oldLength, newLength, LinkedListFixedSize.None);</span>
+<span class="fc" id="L146">				maxDistance = distance;</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">			} else if (distance &gt; maxDistance) {</span>
 <span class="fc" id="L148">				maxDistance = distance;</span>
-<span class="fc bfc" id="L149" title="All 2 branches covered.">			} else if (distance &gt; maxDistance) {</span>
-<span class="fc" id="L150">				maxDistance = distance;</span>
 			}
 
-<span class="fc" id="L153">			int h = heapBucketsHead[distance];</span>
-<span class="fc" id="L154">			heapBucketsHead[distance] = v;</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">			if (h != LinkedListFixedSize.None)</span>
-<span class="fc" id="L156">				heapBucketsNodes.connect(v, h);</span>
-<span class="fc" id="L157">		}</span>
+<span class="fc" id="L151">			int h = heapBucketsHead[distance];</span>
+<span class="fc" id="L152">			heapBucketsHead[distance] = v;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">			if (h != LinkedListFixedSize.None)</span>
+<span class="fc" id="L154">				heapBucketsNodes.connect(v, h);</span>
+<span class="fc" id="L155">		}</span>
 
 		void decreaseKey(int v, int distance) {
-<span class="fc" id="L160">			int oldDistance = distances[v];</span>
-<span class="pc bnc" id="L161" title="All 2 branches missed.">			assert distance &lt; oldDistance;</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">			if (v == heapBucketsHead[oldDistance])</span>
-<span class="fc" id="L163">				heapBucketsHead[oldDistance] = heapBucketsNodes.next(v);</span>
-<span class="fc" id="L164">			heapBucketsNodes.disconnect(v);</span>
+<span class="fc" id="L158">			int oldDistance = distances[v];</span>
+<span class="pc bnc" id="L159" title="All 2 branches missed.">			assert distance &lt; oldDistance;</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">			if (v == heapBucketsHead[oldDistance])</span>
+<span class="fc" id="L161">				heapBucketsHead[oldDistance] = heapBucketsNodes.next(v);</span>
+<span class="fc" id="L162">			heapBucketsNodes.disconnect(v);</span>
 
-<span class="fc" id="L166">			insert(v, distance);</span>
-<span class="fc" id="L167">		}</span>
+<span class="fc" id="L164">			insert(v, distance);</span>
+<span class="fc" id="L165">		}</span>
 
 		int extractMin() {
-<span class="fc bfc" id="L170" title="All 2 branches covered.">			for (int distance = heapScanIdx; distance &lt;= maxDistance; distance++) {</span>
-<span class="fc" id="L171">				int v = heapBucketsHead[distance];</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">				if (v != LinkedListFixedSize.None) {</span>
-<span class="fc" id="L173">					heapBucketsHead[distance] = heapBucketsNodes.next(v);</span>
-<span class="fc" id="L174">					heapBucketsNodes.disconnect(v);</span>
-<span class="fc" id="L175">					heapScanIdx = distance;</span>
-<span class="fc" id="L176">					return v;</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">			for (int distance = heapScanIdx; distance &lt;= maxDistance; distance++) {</span>
+<span class="fc" id="L169">				int v = heapBucketsHead[distance];</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">				if (v != LinkedListFixedSize.None) {</span>
+<span class="fc" id="L171">					heapBucketsHead[distance] = heapBucketsNodes.next(v);</span>
+<span class="fc" id="L172">					heapBucketsNodes.disconnect(v);</span>
+<span class="fc" id="L173">					heapScanIdx = distance;</span>
+<span class="fc" id="L174">					return v;</span>
 				}
 			}
-<span class="fc" id="L179">			heapScanIdx = maxDistance;</span>
-<span class="fc" id="L180">			return -1;</span>
+<span class="fc" id="L177">			heapScanIdx = maxDistance;</span>
+<span class="fc" id="L178">			return -1;</span>
 		}
 
 		boolean containsVertex(int v) {
-<span class="fc bfc" id="L184" title="All 2 branches covered.">			return distances[v] != Integer.MAX_VALUE;</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">			return distances[v] != Integer.MAX_VALUE;</span>
 		}
 
 		int getCurrentDistance(int v) {
-<span class="fc" id="L188">			return distances[v];</span>
+<span class="fc" id="L186">			return distances[v];</span>
 		}
 
 	}

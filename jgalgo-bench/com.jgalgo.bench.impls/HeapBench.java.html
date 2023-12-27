@@ -41,12 +41,12 @@ import org.openjdk.jmh.infra.Blackhole;
 import com.jgalgo.bench.util.BenchUtils;
 import com.jgalgo.bench.util.TestUtils.SeedGenerator;
 import com.jgalgo.internal.ds.Heap;
-import com.jgalgo.internal.ds.IntBinomialHeap;
-import com.jgalgo.internal.ds.IntFibonacciHeap;
-import com.jgalgo.internal.ds.IntPairingHeap;
-import com.jgalgo.internal.ds.IntRedBlackTree;
-import com.jgalgo.internal.ds.IntReferenceableHeap;
-import com.jgalgo.internal.ds.IntSplayTree;
+import com.jgalgo.internal.ds.IntIntBinomialHeap;
+import com.jgalgo.internal.ds.IntIntFibonacciHeap;
+import com.jgalgo.internal.ds.IntIntPairingHeap;
+import com.jgalgo.internal.ds.IntIntRedBlackTree;
+import com.jgalgo.internal.ds.IntIntReferenceableHeap;
+import com.jgalgo.internal.ds.IntIntSplayTree;
 import com.jgalgo.internal.util.IterTools;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -138,31 +138,31 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	@Benchmark
 	public void Pairing(Blackhole blackhole) {
-<span class="fc" id="L141">		benchHeap(heapBuilder(IntPairingHeap::new), blackhole);</span>
+<span class="fc" id="L141">		benchHeap(heapBuilder(IntIntPairingHeap::new), blackhole);</span>
 <span class="fc" id="L142">	}</span>
 
 	@Benchmark
 	public void Fibonacci(Blackhole blackhole) {
-<span class="fc" id="L146">		benchHeap(heapBuilder(IntFibonacciHeap::new), blackhole);</span>
+<span class="fc" id="L146">		benchHeap(heapBuilder(IntIntFibonacciHeap::new), blackhole);</span>
 <span class="fc" id="L147">	}</span>
 
 	@Benchmark
 	public void Binomial(Blackhole blackhole) {
-<span class="fc" id="L151">		benchHeap(heapBuilder(IntBinomialHeap::new), blackhole);</span>
+<span class="fc" id="L151">		benchHeap(heapBuilder(IntIntBinomialHeap::new), blackhole);</span>
 <span class="fc" id="L152">	}</span>
 
 	@Benchmark
 	public void RedBlackTree(Blackhole blackhole) {
-<span class="fc" id="L156">		benchHeap(heapBuilder(IntRedBlackTree::new), blackhole);</span>
+<span class="fc" id="L156">		benchHeap(heapBuilder(IntIntRedBlackTree::new), blackhole);</span>
 <span class="fc" id="L157">	}</span>
 
 	@Benchmark
 	public void SplayTree(Blackhole blackhole) {
-<span class="fc" id="L161">		benchHeap(heapBuilder(IntSplayTree::new), blackhole);</span>
+<span class="fc" id="L161">		benchHeap(heapBuilder(IntIntSplayTree::new), blackhole);</span>
 <span class="fc" id="L162">	}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
-	private static Heap.Builder heapBuilder(Function&lt;IntComparator, IntReferenceableHeap&gt; builder) {
+	private static Heap.Builder heapBuilder(Function&lt;IntComparator, IntIntReferenceableHeap&gt; builder) {
 <span class="fc" id="L166">		return new Heap.Builder() {</span>
 			@Override
 			public &lt;E&gt; Heap&lt;E&gt; build(Comparator&lt;? super E&gt; cmp) {
@@ -173,15 +173,15 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	static class HeapFromReferenceableHeap implements Heap&lt;Integer&gt; {
 
-		private final IntReferenceableHeap heap;
+		private final IntIntReferenceableHeap heap;
 
-<span class="fc" id="L178">		HeapFromReferenceableHeap(IntReferenceableHeap heap) {</span>
+<span class="fc" id="L178">		HeapFromReferenceableHeap(IntIntReferenceableHeap heap) {</span>
 <span class="fc" id="L179">			this.heap = heap;</span>
 <span class="fc" id="L180">		}</span>
 
 		@Override
 		public Iterator&lt;Integer&gt; iterator() {
-<span class="nc" id="L184">			return IterTools.map(heap.iterator(), IntReferenceableHeap.Ref::key);</span>
+<span class="nc" id="L184">			return IterTools.map(heap.iterator(), IntIntReferenceableHeap.Ref::key);</span>
 		}
 
 		@Override
@@ -207,7 +207,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		@Override
 		public boolean remove(Integer elm) {
-<span class="nc" id="L210">			IntReferenceableHeap.Ref ref = heap.find(elm.intValue());</span>
+<span class="nc" id="L210">			IntIntReferenceableHeap.Ref ref = heap.find(elm.intValue());</span>
 <span class="nc bnc" id="L211" title="All 2 branches missed.">			if (ref == null)</span>
 <span class="nc" id="L212">				return false;</span>
 <span class="nc" id="L213">			heap.remove(ref);</span>
