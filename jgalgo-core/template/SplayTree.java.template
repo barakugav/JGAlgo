@@ -121,7 +121,7 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> iterator() {
-		return (Iterator) new BINARY_SEARCH_TREES.BSTIterator <>(root);
+		return (Iterator) new BinarySearchTrees.BSTIterator <>(root);
 	}
 
 	@Override
@@ -146,7 +146,7 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 
 		/* If the node has two children, swap with successor */
 		if (n.hasLeftChild() && n.hasRightChild())
-			BINARY_SEARCH_TREES.swap(n, BINARY_SEARCH_TREES.getSuccessor(n));
+			BinarySearchTrees.swap(n, BinarySearchTrees.getSuccessor(n));
 
 		SplayBSTNode KEY_VALUE_GENERIC child;
 		if (!n.hasLeftChild()) {
@@ -203,13 +203,13 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 	@Override
 	public HEAP_REFERENCE KEY_VALUE_GENERIC findMin() {
 		checkTreeNotEmpty();
-		return root = impl.splay(BINARY_SEARCH_TREES.findMin(root));
+		return root = impl.splay(BinarySearchTrees.findMin(root));
 	}
 
 	@Override
 	public HEAP_REFERENCE KEY_VALUE_GENERIC findMax() {
 		checkTreeNotEmpty();
-		return root = impl.splay(BINARY_SEARCH_TREES.findMax(root));
+		return root = impl.splay(BinarySearchTrees.findMax(root));
 	}
 
 	@Override
@@ -238,13 +238,13 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 
 	@Override
 	public HEAP_REFERENCE KEY_VALUE_GENERIC getPredecessor(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
-		SplayBSTNode KEY_VALUE_GENERIC n = BINARY_SEARCH_TREES.getPredecessor((SplayBSTNode KEY_VALUE_GENERIC) ref);
+		SplayBSTNode KEY_VALUE_GENERIC n = BinarySearchTrees.getPredecessor((SplayBSTNode KEY_VALUE_GENERIC) ref);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
 	@Override
 	public HEAP_REFERENCE KEY_VALUE_GENERIC getSuccessor(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
-		SplayBSTNode KEY_VALUE_GENERIC n = BINARY_SEARCH_TREES.getSuccessor((SplayBSTNode KEY_VALUE_GENERIC) ref);
+		SplayBSTNode KEY_VALUE_GENERIC n = BinarySearchTrees.getSuccessor((SplayBSTNode KEY_VALUE_GENERIC) ref);
 		return n == null ? null : (root = impl.splay(n));
 	}
 
@@ -386,7 +386,7 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 	public void clear() {
 		if (root == null)
 			return;
-		BINARY_SEARCH_TREES.clear(root);
+		BinarySearchTrees.clear(root);
 		root = null;
 	}
 

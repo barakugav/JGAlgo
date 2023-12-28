@@ -67,7 +67,7 @@ class DynamicTreeSplay implements DynamicTree {
 		if (!n.isLinked())
 			return n;
 		splay(n);
-		return splay(ObjBinarySearchTrees.findMax(n));
+		return splay(BinarySearchTrees.findMax(n));
 	}
 
 	@Override

@@ -108,14 +108,14 @@ public class RED_BLACK_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> iterator() {
-		return (Iterator) new BINARY_SEARCH_TREES.BSTIterator<>(root);
+		return (Iterator) new BinarySearchTrees.BSTIterator<>(root);
 	}
 
 	@Override
 	public void clear() {
 		if (root == null)
 			return;
-		BINARY_SEARCH_TREES.clear(root);
+		BinarySearchTrees.clear(root);
 		root = null;
 	}
 
@@ -216,14 +216,14 @@ public class RED_BLACK_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_
 	public HEAP_REFERENCE KEY_VALUE_GENERIC findMin() {
 		if (root == null)
 			throw new IllegalStateException();
-		return BINARY_SEARCH_TREES.findMin(root);
+		return BinarySearchTrees.findMin(root);
 	}
 
 	@Override
 	public HEAP_REFERENCE KEY_VALUE_GENERIC findMax() {
 		if (root == null)
 			throw new IllegalStateException();
-		return BINARY_SEARCH_TREES.findMax(root);
+		return BinarySearchTrees.findMax(root);
 	}
 
 	@Override
@@ -361,7 +361,7 @@ public class RED_BLACK_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_
 
 		/* 2 children, switch place with a single child node */
 		if (n.left != null && n.right != null)
-			swap(n, BINARY_SEARCH_TREES.getSuccessor(n));
+			swap(n, BinarySearchTrees.getSuccessor(n));
 		assert n.left == null || n.right == null;
 		Node KEY_VALUE_GENERIC parent = n.parent;
 
@@ -523,7 +523,7 @@ public class RED_BLACK_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_
 	}
 
 	void swap(Node KEY_VALUE_GENERIC n1, Node KEY_VALUE_GENERIC n2) {
-		BINARY_SEARCH_TREES.swap(n1, n2);
+		BinarySearchTrees.swap(n1, n2);
 		if (n1 == root)
 			root = n2;
 		else if (n2 == root)
@@ -555,12 +555,12 @@ public class RED_BLACK_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_
 
 	@Override
 	public HEAP_REFERENCE KEY_VALUE_GENERIC getPredecessor(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
-		return BINARY_SEARCH_TREES.getPredecessor((Node KEY_VALUE_GENERIC) ref);
+		return BinarySearchTrees.getPredecessor((Node KEY_VALUE_GENERIC) ref);
 	}
 
 	@Override
 	public HEAP_REFERENCE KEY_VALUE_GENERIC getSuccessor(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
-		return BINARY_SEARCH_TREES.getSuccessor((Node KEY_VALUE_GENERIC) ref);
+		return BinarySearchTrees.getSuccessor((Node KEY_VALUE_GENERIC) ref);
 	}
 
 	/**
@@ -571,7 +571,7 @@ public class RED_BLACK_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> subTreeIterator(HEAP_REFERENCE KEY_VALUE_GENERIC ref) {
-		return (Iterator) (new BINARY_SEARCH_TREES.BSTIterator<>((Node KEY_VALUE_GENERIC) ref));
+		return (Iterator) (new BinarySearchTrees.BSTIterator<>((Node KEY_VALUE_GENERIC) ref));
 	}
 
 	static class Node KEY_VALUE_GENERIC extends BINARY_SEARCH_TREES.Node<KEY_GENERIC_LIST_START Node KEY_VALUE_GENERIC> implements HEAP_REFERENCE KEY_VALUE_GENERIC {
