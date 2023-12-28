@@ -81,14 +81,14 @@ import com.jgalgo.internal.util.Assertions;
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	@Override
 	public Iterator&lt;IntIntReferenceableHeap.Ref &gt; iterator() {
-<span class="fc" id="L84">		return (Iterator) new IntBinarySearchTrees.BSTIterator&lt;&gt;(root);</span>
+<span class="fc" id="L84">		return (Iterator) new BinarySearchTrees.BSTIterator&lt;&gt;(root);</span>
 	}
 
 	@Override
 	public void clear() {
 <span class="fc bfc" id="L89" title="All 2 branches covered.">		if (root == null)</span>
 <span class="fc" id="L90">			return;</span>
-<span class="fc" id="L91">		IntBinarySearchTrees.clear(root);</span>
+<span class="fc" id="L91">		BinarySearchTrees.clear(root);</span>
 <span class="fc" id="L92">		root = null;</span>
 <span class="fc" id="L93">	}</span>
 
@@ -189,14 +189,14 @@ import com.jgalgo.internal.util.Assertions;
 	public IntIntReferenceableHeap.Ref  findMin() {
 <span class="fc bfc" id="L190" title="All 2 branches covered.">		if (root == null)</span>
 <span class="fc" id="L191">			throw new IllegalStateException();</span>
-<span class="fc" id="L192">		return IntBinarySearchTrees.findMin(root);</span>
+<span class="fc" id="L192">		return BinarySearchTrees.findMin(root);</span>
 	}
 
 	@Override
 	public IntIntReferenceableHeap.Ref  findMax() {
 <span class="pc bpc" id="L197" title="1 of 2 branches missed.">		if (root == null)</span>
 <span class="nc" id="L198">			throw new IllegalStateException();</span>
-<span class="fc" id="L199">		return IntBinarySearchTrees.findMax(root);</span>
+<span class="fc" id="L199">		return BinarySearchTrees.findMax(root);</span>
 	}
 
 	@Override
@@ -334,7 +334,7 @@ import com.jgalgo.internal.util.Assertions;
 
 		/* 2 children, switch place with a single child node */
 <span class="fc bfc" id="L336" title="All 4 branches covered.">		if (n.left != null &amp;&amp; n.right != null)</span>
-<span class="fc" id="L337">			swap(n, IntBinarySearchTrees.getSuccessor(n));</span>
+<span class="fc" id="L337">			swap(n, BinarySearchTrees.getSuccessor(n));</span>
 <span class="pc bnc" id="L338" title="All 4 branches missed.">		assert n.left == null || n.right == null;</span>
 <span class="fc" id="L339">		Node  parent = n.parent;</span>
 
@@ -496,7 +496,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L496">	}</span>
 
 	void swap(Node  n1, Node  n2) {
-<span class="fc" id="L499">		IntBinarySearchTrees.swap(n1, n2);</span>
+<span class="fc" id="L499">		BinarySearchTrees.swap(n1, n2);</span>
 <span class="fc bfc" id="L500" title="All 2 branches covered.">		if (n1 == root)</span>
 <span class="fc" id="L501">			root = n2;</span>
 <span class="pc bpc" id="L502" title="1 of 2 branches missed.">		else if (n2 == root)</span>
@@ -528,12 +528,12 @@ import com.jgalgo.internal.util.Assertions;
 
 	@Override
 	public IntIntReferenceableHeap.Ref  getPredecessor(IntIntReferenceableHeap.Ref  ref) {
-<span class="fc" id="L531">		return IntBinarySearchTrees.getPredecessor((Node ) ref);</span>
+<span class="fc" id="L531">		return BinarySearchTrees.getPredecessor((Node ) ref);</span>
 	}
 
 	@Override
 	public IntIntReferenceableHeap.Ref  getSuccessor(IntIntReferenceableHeap.Ref  ref) {
-<span class="fc" id="L536">		return IntBinarySearchTrees.getSuccessor((Node ) ref);</span>
+<span class="fc" id="L536">		return BinarySearchTrees.getSuccessor((Node ) ref);</span>
 	}
 
 	/**
@@ -544,7 +544,7 @@ import com.jgalgo.internal.util.Assertions;
 	 */
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	Iterator&lt;IntIntReferenceableHeap.Ref &gt; subTreeIterator(IntIntReferenceableHeap.Ref  ref) {
-<span class="nc" id="L547">		return (Iterator) (new IntBinarySearchTrees.BSTIterator&lt;&gt;((Node ) ref));</span>
+<span class="nc" id="L547">		return (Iterator) (new BinarySearchTrees.BSTIterator&lt;&gt;((Node ) ref));</span>
 	}
 
 	static class Node  extends IntBinarySearchTrees.Node&lt; Node &gt; implements IntIntReferenceableHeap.Ref  {

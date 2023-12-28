@@ -96,14 +96,14 @@ import com.jgalgo.internal.util.Assertions;
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	@Override
 	public Iterator&lt;ObjObjReferenceableHeap.Ref &lt;K, V&gt;&gt; iterator() {
-<span class="fc" id="L99">		return (Iterator) new ObjBinarySearchTrees.BSTIterator&lt;&gt;(root);</span>
+<span class="fc" id="L99">		return (Iterator) new BinarySearchTrees.BSTIterator&lt;&gt;(root);</span>
 	}
 
 	@Override
 	public void clear() {
 <span class="fc bfc" id="L104" title="All 2 branches covered.">		if (root == null)</span>
 <span class="fc" id="L105">			return;</span>
-<span class="fc" id="L106">		ObjBinarySearchTrees.clear(root);</span>
+<span class="fc" id="L106">		BinarySearchTrees.clear(root);</span>
 <span class="fc" id="L107">		root = null;</span>
 <span class="fc" id="L108">	}</span>
 
@@ -204,14 +204,14 @@ import com.jgalgo.internal.util.Assertions;
 	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; findMin() {
 <span class="fc bfc" id="L205" title="All 2 branches covered.">		if (root == null)</span>
 <span class="fc" id="L206">			throw new IllegalStateException();</span>
-<span class="fc" id="L207">		return ObjBinarySearchTrees.findMin(root);</span>
+<span class="fc" id="L207">		return BinarySearchTrees.findMin(root);</span>
 	}
 
 	@Override
 	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; findMax() {
 <span class="pc bpc" id="L212" title="1 of 2 branches missed.">		if (root == null)</span>
 <span class="nc" id="L213">			throw new IllegalStateException();</span>
-<span class="fc" id="L214">		return ObjBinarySearchTrees.findMax(root);</span>
+<span class="fc" id="L214">		return BinarySearchTrees.findMax(root);</span>
 	}
 
 	@Override
@@ -349,7 +349,7 @@ import com.jgalgo.internal.util.Assertions;
 
 		/* 2 children, switch place with a single child node */
 <span class="fc bfc" id="L351" title="All 4 branches covered.">		if (n.left != null &amp;&amp; n.right != null)</span>
-<span class="fc" id="L352">			swap(n, ObjBinarySearchTrees.getSuccessor(n));</span>
+<span class="fc" id="L352">			swap(n, BinarySearchTrees.getSuccessor(n));</span>
 <span class="pc bnc" id="L353" title="All 4 branches missed.">		assert n.left == null || n.right == null;</span>
 <span class="fc" id="L354">		Node &lt;K, V&gt; parent = n.parent;</span>
 
@@ -511,7 +511,7 @@ import com.jgalgo.internal.util.Assertions;
 <span class="fc" id="L511">	}</span>
 
 	void swap(Node &lt;K, V&gt; n1, Node &lt;K, V&gt; n2) {
-<span class="fc" id="L514">		ObjBinarySearchTrees.swap(n1, n2);</span>
+<span class="fc" id="L514">		BinarySearchTrees.swap(n1, n2);</span>
 <span class="fc bfc" id="L515" title="All 2 branches covered.">		if (n1 == root)</span>
 <span class="fc" id="L516">			root = n2;</span>
 <span class="pc bpc" id="L517" title="1 of 2 branches missed.">		else if (n2 == root)</span>
@@ -543,12 +543,12 @@ import com.jgalgo.internal.util.Assertions;
 
 	@Override
 	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; getPredecessor(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref) {
-<span class="fc" id="L546">		return ObjBinarySearchTrees.getPredecessor((Node &lt;K, V&gt;) ref);</span>
+<span class="fc" id="L546">		return BinarySearchTrees.getPredecessor((Node &lt;K, V&gt;) ref);</span>
 	}
 
 	@Override
 	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; getSuccessor(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref) {
-<span class="fc" id="L551">		return ObjBinarySearchTrees.getSuccessor((Node &lt;K, V&gt;) ref);</span>
+<span class="fc" id="L551">		return BinarySearchTrees.getSuccessor((Node &lt;K, V&gt;) ref);</span>
 	}
 
 	/**
@@ -559,7 +559,7 @@ import com.jgalgo.internal.util.Assertions;
 	 */
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	Iterator&lt;ObjObjReferenceableHeap.Ref &lt;K, V&gt;&gt; subTreeIterator(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref) {
-<span class="fc" id="L562">		return (Iterator) (new ObjBinarySearchTrees.BSTIterator&lt;&gt;((Node &lt;K, V&gt;) ref));</span>
+<span class="fc" id="L562">		return (Iterator) (new BinarySearchTrees.BSTIterator&lt;&gt;((Node &lt;K, V&gt;) ref));</span>
 	}
 
 	static class Node &lt;K, V&gt; extends ObjBinarySearchTrees.Node&lt;K,  Node &lt;K, V&gt;&gt; implements ObjObjReferenceableHeap.Ref &lt;K, V&gt; {

@@ -93,7 +93,7 @@ import com.jgalgo.internal.util.Assertions;
 	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	@Override
 	public Iterator&lt;IntIntReferenceableHeap.Ref &gt; iterator() {
-<span class="fc" id="L96">		return (Iterator) new IntBinarySearchTrees.BSTIterator &lt;&gt;(root);</span>
+<span class="fc" id="L96">		return (Iterator) new BinarySearchTrees.BSTIterator &lt;&gt;(root);</span>
 	}
 
 	@Override
@@ -118,7 +118,7 @@ import com.jgalgo.internal.util.Assertions;
 
 		/* If the node has two children, swap with successor */
 <span class="fc bfc" id="L120" title="All 4 branches covered.">		if (n.hasLeftChild() &amp;&amp; n.hasRightChild())</span>
-<span class="fc" id="L121">			IntBinarySearchTrees.swap(n, IntBinarySearchTrees.getSuccessor(n));</span>
+<span class="fc" id="L121">			BinarySearchTrees.swap(n, BinarySearchTrees.getSuccessor(n));</span>
 
 		SplayBSTNode  child;
 <span class="fc bfc" id="L124" title="All 2 branches covered.">		if (!n.hasLeftChild()) {</span>
@@ -175,13 +175,13 @@ import com.jgalgo.internal.util.Assertions;
 	@Override
 	public IntIntReferenceableHeap.Ref  findMin() {
 <span class="fc" id="L177">		checkTreeNotEmpty();</span>
-<span class="fc" id="L178">		return root = impl.splay(IntBinarySearchTrees.findMin(root));</span>
+<span class="fc" id="L178">		return root = impl.splay(BinarySearchTrees.findMin(root));</span>
 	}
 
 	@Override
 	public IntIntReferenceableHeap.Ref  findMax() {
 <span class="fc" id="L183">		checkTreeNotEmpty();</span>
-<span class="fc" id="L184">		return root = impl.splay(IntBinarySearchTrees.findMax(root));</span>
+<span class="fc" id="L184">		return root = impl.splay(BinarySearchTrees.findMax(root));</span>
 	}
 
 	@Override
@@ -210,13 +210,13 @@ import com.jgalgo.internal.util.Assertions;
 
 	@Override
 	public IntIntReferenceableHeap.Ref  getPredecessor(IntIntReferenceableHeap.Ref  ref) {
-<span class="fc" id="L213">		SplayBSTNode  n = IntBinarySearchTrees.getPredecessor((SplayBSTNode ) ref);</span>
+<span class="fc" id="L213">		SplayBSTNode  n = BinarySearchTrees.getPredecessor((SplayBSTNode ) ref);</span>
 <span class="fc bfc" id="L214" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
 	@Override
 	public IntIntReferenceableHeap.Ref  getSuccessor(IntIntReferenceableHeap.Ref  ref) {
-<span class="fc" id="L219">		SplayBSTNode  n = IntBinarySearchTrees.getSuccessor((SplayBSTNode ) ref);</span>
+<span class="fc" id="L219">		SplayBSTNode  n = BinarySearchTrees.getSuccessor((SplayBSTNode ) ref);</span>
 <span class="fc bfc" id="L220" title="All 2 branches covered.">		return n == null ? null : (root = impl.splay(n));</span>
 	}
 
@@ -358,7 +358,7 @@ import com.jgalgo.internal.util.Assertions;
 	public void clear() {
 <span class="fc bfc" id="L359" title="All 2 branches covered.">		if (root == null)</span>
 <span class="fc" id="L360">			return;</span>
-<span class="fc" id="L361">		IntBinarySearchTrees.clear(root);</span>
+<span class="fc" id="L361">		BinarySearchTrees.clear(root);</span>
 <span class="fc" id="L362">		root = null;</span>
 <span class="fc" id="L363">	}</span>
 

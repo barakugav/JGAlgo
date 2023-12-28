@@ -18,8 +18,6 @@ package com.jgalgo.internal.ds;
 
 import java.util.Iterator;
 import com.jgalgo.internal.util.Assertions;
-import it.unimi.dsi.fastutil.Stack;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import java.util.Comparator;
 
@@ -46,364 +44,264 @@ import java.util.Comparator;
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Pairing_heap&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-<span class="fc" id="L49">public class ObjObjPairingHeap &lt;K, V&gt; implements ObjObjReferenceableHeap &lt;K, V&gt; {</span>
+<span class="fc" id="L47">public class ObjObjPairingHeap &lt;K, V&gt; extends PairingHeapBase&lt;ObjObjPairingHeap.Node &lt;K, V&gt;&gt; implements ObjObjReferenceableHeap &lt;K, V&gt; {</span>
 
 	private final Comparator &lt;K&gt; c;
-	private Node &lt;K, V&gt; minRoot;
 
-<span class="fc" id="L54">	public ObjObjPairingHeap(Comparator &lt;K&gt; c) {</span>
-<span class="fc" id="L55">		this.c = c;</span>
-<span class="fc" id="L56">	}</span>
+<span class="fc" id="L51">	public ObjObjPairingHeap(Comparator &lt;K&gt; c) {</span>
+<span class="fc" id="L52">		this.c = c;</span>
+<span class="fc" id="L53">	}</span>
 
 	@Override
 	public Comparator &lt;K&gt; comparator() {
-<span class="fc" id="L60">		return c;</span>
+<span class="fc" id="L57">		return c;</span>
 	}
 
 	@Override
 	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; findMin() {
-<span class="fc" id="L65">		Assertions.Heaps.notEmpty(this);</span>
-<span class="fc" id="L66">		return minRoot;</span>
+<span class="fc" id="L62">		Assertions.Heaps.notEmpty(this);</span>
+<span class="fc" id="L63">		return minRoot;</span>
 	}
-
-	@Override
-	public boolean isEmpty() {
-<span class="fc bfc" id="L71" title="All 2 branches covered.">		return minRoot == null;</span>
-	}
-
-	@Override
-	public boolean isNotEmpty() {
-<span class="fc bfc" id="L76" title="All 2 branches covered.">		return minRoot != null;</span>
-	}
-
-	private static &lt;K, V&gt; void cut(Node &lt;K, V&gt; n) {
-<span class="fc" id="L80">		Node &lt;K, V&gt; next = n.next;</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">		if (next != null) {</span>
-<span class="fc" id="L82">			next.prevOrParent = n.prevOrParent;</span>
-<span class="fc" id="L83">			n.next = null;</span>
-		}
-<span class="fc bfc" id="L85" title="All 2 branches covered.">		if (n.prevOrParent.child == n) { /* n.parent.child == n */</span>
-<span class="fc" id="L86">			n.prevOrParent.child = next;</span>
-		} else {
-<span class="fc" id="L88">			n.prevOrParent.next = next;</span>
-		}
-<span class="fc" id="L90">		n.prevOrParent = null;</span>
-<span class="fc" id="L91">	}</span>
-
-	void addChild(Node &lt;K, V&gt; parent, Node &lt;K, V&gt; newChild) {
-<span class="pc bnc" id="L94" title="All 2 branches missed.">		assert newChild.prevOrParent == null;</span>
-<span class="pc bnc" id="L95" title="All 2 branches missed.">		assert newChild.next == null;</span>
-<span class="fc" id="L96">		Node &lt;K, V&gt; oldChild = parent.child;</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">		if (oldChild != null) {</span>
-<span class="fc" id="L98">			oldChild.prevOrParent = newChild;</span>
-<span class="fc" id="L99">			newChild.next = oldChild;</span>
-		}
-<span class="fc" id="L101">		parent.child = newChild;</span>
-<span class="fc" id="L102">		newChild.prevOrParent = parent;</span>
-<span class="fc" id="L103">	}</span>
 
 	void insertNode(Node &lt;K, V&gt; n) {
-<span class="fc bfc" id="L106" title="All 2 branches covered.">		if (minRoot == null) {</span>
-<span class="fc" id="L107">			minRoot = n;</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (minRoot == null) {</span>
+<span class="fc" id="L68">			minRoot = n;</span>
 		} else {
-<span class="fc" id="L109">			minRoot = meld(minRoot, n);</span>
+<span class="fc" id="L70">			minRoot = meld(minRoot, n);</span>
 		}
-<span class="fc" id="L111">	}</span>
+<span class="fc" id="L72">	}</span>
 
 	void afterKeyDecrease(Node &lt;K, V&gt; n) {
-<span class="fc bfc" id="L114" title="All 2 branches covered.">		if (n == minRoot)</span>
-<span class="fc" id="L115">			return;</span>
-<span class="fc" id="L116">		cut(n);</span>
-<span class="fc" id="L117">		minRoot = meld(minRoot, n);</span>
-<span class="fc" id="L118">	}</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">		if (n == minRoot)</span>
+<span class="fc" id="L76">			return;</span>
+<span class="fc" id="L77">		cut(n);</span>
+<span class="fc" id="L78">		minRoot = meld(minRoot, n);</span>
+<span class="fc" id="L79">	}</span>
 
 	@Override
 	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; extractMin() {
-<span class="fc" id="L122">		Node &lt;K, V&gt; min = minRoot;</span>
-<span class="fc" id="L123">		removeRoot();</span>
-<span class="fc" id="L124">		return min;</span>
+<span class="fc" id="L83">		Node &lt;K, V&gt; min = minRoot;</span>
+<span class="fc" id="L84">		removeRoot();</span>
+<span class="fc" id="L85">		return min;</span>
 	}
 
 	@Override
 	public void remove(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref) {
-<span class="fc" id="L129">		Node &lt;K, V&gt; n = (Node &lt;K, V&gt;) ref;</span>
-<span class="pc bnc" id="L130" title="All 2 branches missed.">		assert minRoot != null;</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">		if (n != minRoot) {</span>
-<span class="fc" id="L132">			cut(n);</span>
-<span class="fc" id="L133">			addChild(n, minRoot);</span>
-<span class="fc" id="L134">			minRoot = n;</span>
+<span class="fc" id="L90">		Node &lt;K, V&gt; n = (Node &lt;K, V&gt;) ref;</span>
+<span class="pc bnc" id="L91" title="All 2 branches missed.">		assert minRoot != null;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		if (n != minRoot) {</span>
+<span class="fc" id="L93">			cut(n);</span>
+<span class="fc" id="L94">			addChild(n, minRoot);</span>
+<span class="fc" id="L95">			minRoot = n;</span>
 		}
-<span class="fc" id="L136">		removeRoot();</span>
-<span class="fc" id="L137">	}</span>
+<span class="fc" id="L97">		removeRoot();</span>
+<span class="fc" id="L98">	}</span>
 
 	@Override
 	public void meld(ObjObjReferenceableHeap &lt;K, V&gt; heap) {
-<span class="fc" id="L141">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
-<span class="fc" id="L142">		Assertions.Heaps.meldWithSameImpl(getClass(), heap);</span>
-<span class="fc" id="L143">		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());</span>
-<span class="fc" id="L144">		ObjObjPairingHeap &lt;K, V&gt; h = (ObjObjPairingHeap &lt;K, V&gt;) heap;</span>
+<span class="fc" id="L102">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
+<span class="fc" id="L103">		Assertions.Heaps.meldWithSameImpl(getClass(), heap);</span>
+<span class="fc" id="L104">		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());</span>
+<span class="fc" id="L105">		ObjObjPairingHeap &lt;K, V&gt; h = (ObjObjPairingHeap &lt;K, V&gt;) heap;</span>
 
-<span class="fc bfc" id="L146" title="All 2 branches covered.">		if (minRoot == null) {</span>
-<span class="fc" id="L147">			minRoot = h.minRoot;</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">		} else if (h.minRoot != null) {</span>
-<span class="fc" id="L149">			minRoot = meld(minRoot, h.minRoot);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">		if (minRoot == null) {</span>
+<span class="fc" id="L108">			minRoot = h.minRoot;</span>
+<span class="fc bfc" id="L109" title="All 2 branches covered.">		} else if (h.minRoot != null) {</span>
+<span class="fc" id="L110">			minRoot = meld(minRoot, h.minRoot);</span>
 		}
 
-<span class="fc" id="L152">		h.minRoot = null;</span>
-<span class="fc" id="L153">	}</span>
+<span class="fc" id="L113">		h.minRoot = null;</span>
+<span class="fc" id="L114">	}</span>
 
 	private Node &lt;K, V&gt; meld(Node &lt;K, V&gt; n1, Node &lt;K, V&gt; n2) {
-<span class="fc bfc" id="L156" title="All 2 branches covered.">		return c == null ? meldDefaultCmp(n1, n2) : meldCustomCmp(n1, n2);</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">		return c == null ? meldDefaultCmp(n1, n2) : meldCustomCmp(n1, n2);</span>
 	}
 
 	Node &lt;K, V&gt; meldDefaultCmp(Node &lt;K, V&gt; n1, Node &lt;K, V&gt; n2) {
-<span class="pc bnc" id="L160" title="All 4 branches missed.">		assert n1.prevOrParent == null &amp;&amp; n1.next == null;</span>
-<span class="pc bnc" id="L161" title="All 4 branches missed.">		assert n2.prevOrParent == null &amp;&amp; n2.next == null;</span>
+<span class="pc bnc" id="L121" title="All 4 branches missed.">		assert n1.prevOrParent == null &amp;&amp; n1.next == null;</span>
+<span class="pc bnc" id="L122" title="All 4 branches missed.">		assert n2.prevOrParent == null &amp;&amp; n2.next == null;</span>
 
 		/* assume n1 has smaller key than n2 */
-<span class="fc bfc" id="L164" title="All 2 branches covered.">		if (JGAlgoUtils.cmpDefault(n1.key, n2.key) &gt; 0) {</span>
-<span class="fc" id="L165">			Node &lt;K, V&gt; temp = n1;</span>
-<span class="fc" id="L166">			n1 = n2;</span>
-<span class="fc" id="L167">			n2 = temp;</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">		if (JGAlgoUtils.cmpDefault(n1.key, n2.key) &gt; 0) {</span>
+<span class="fc" id="L126">			Node &lt;K, V&gt; temp = n1;</span>
+<span class="fc" id="L127">			n1 = n2;</span>
+<span class="fc" id="L128">			n2 = temp;</span>
 		}
 
-<span class="fc" id="L170">		addChild(n1, n2);</span>
-<span class="fc" id="L171">		return n1;</span>
+<span class="fc" id="L131">		addChild(n1, n2);</span>
+<span class="fc" id="L132">		return n1;</span>
 	}
 
 	Node &lt;K, V&gt; meldCustomCmp(Node &lt;K, V&gt; n1, Node &lt;K, V&gt; n2) {
-<span class="pc bnc" id="L175" title="All 4 branches missed.">		assert n1.prevOrParent == null &amp;&amp; n1.next == null;</span>
-<span class="pc bnc" id="L176" title="All 4 branches missed.">		assert n2.prevOrParent == null &amp;&amp; n2.next == null;</span>
+<span class="pc bnc" id="L136" title="All 4 branches missed.">		assert n1.prevOrParent == null &amp;&amp; n1.next == null;</span>
+<span class="pc bnc" id="L137" title="All 4 branches missed.">		assert n2.prevOrParent == null &amp;&amp; n2.next == null;</span>
 
 		/* assume n1 has smaller key than n2 */
-<span class="fc bfc" id="L179" title="All 2 branches covered.">		if (c.compare(n1.key, n2.key) &gt; 0) {</span>
-<span class="fc" id="L180">			Node &lt;K, V&gt; temp = n1;</span>
-<span class="fc" id="L181">			n1 = n2;</span>
-<span class="fc" id="L182">			n2 = temp;</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">		if (c.compare(n1.key, n2.key) &gt; 0) {</span>
+<span class="fc" id="L141">			Node &lt;K, V&gt; temp = n1;</span>
+<span class="fc" id="L142">			n1 = n2;</span>
+<span class="fc" id="L143">			n2 = temp;</span>
 		}
 
-<span class="fc" id="L185">		addChild(n1, n2);</span>
-<span class="fc" id="L186">		return n1;</span>
+<span class="fc" id="L146">		addChild(n1, n2);</span>
+<span class="fc" id="L147">		return n1;</span>
 	}
 
-	@Override
-	public void clear() {
-<span class="fc bfc" id="L191" title="All 2 branches covered.">		if (minRoot == null)</span>
-<span class="fc" id="L192">			return;</span>
-
-<span class="fc" id="L194">		for (Node &lt;K, V&gt; p = minRoot;;) {</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">			while (p.child != null) {</span>
-<span class="fc" id="L196">				p = p.child;</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">				while (p.next != null)</span>
-<span class="fc" id="L198">					p = p.next;</span>
-			}
-<span class="fc" id="L200">			p.key = null;</span>
-<span class="fc" id="L201">			p.value = null;</span>
-<span class="fc" id="L202">			Node &lt;K, V&gt; prev = p.prevOrParent;</span>
-<span class="fc bfc" id="L203" title="All 2 branches covered.">			if (prev == null)</span>
-<span class="fc" id="L204">				break;</span>
-<span class="fc" id="L205">			p.prevOrParent = null;</span>
-<span class="fc bfc" id="L206" title="All 2 branches covered.">			if (prev.next == p) {</span>
-<span class="fc" id="L207">				prev.next = null;</span>
-			} else {
-<span class="fc" id="L209">				prev.child = null;</span>
-			}
-<span class="fc" id="L211">			p = prev;</span>
-<span class="fc" id="L212">		}</span>
-
-<span class="fc" id="L214">		minRoot = null;</span>
-<span class="fc" id="L215">	}</span>
-
+	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
 	@Override
 	public Iterator&lt;ObjObjReferenceableHeap.Ref &lt;K, V&gt;&gt; iterator() {
-<span class="fc" id="L219">		return new PreOrderIter &lt;&gt;(minRoot);</span>
-	}
-
-	static class PreOrderIter &lt;K, V&gt; implements Iterator&lt;ObjObjReferenceableHeap.Ref &lt;K, V&gt;&gt; {
-
-<span class="fc" id="L224">		private final Stack&lt;Node &lt;K, V&gt;&gt; path = new ObjectArrayList&lt;&gt;();</span>
-
-<span class="fc" id="L226">		PreOrderIter(Node &lt;K, V&gt; p) {</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">			if (p != null)</span>
-<span class="fc" id="L228">				path.push(p);</span>
-<span class="fc" id="L229">		}</span>
-
-		@Override
-		public boolean hasNext() {
-<span class="fc bfc" id="L233" title="All 2 branches covered.">			return !path.isEmpty();</span>
-		}
-
-		@Override
-		public Node &lt;K, V&gt; next() {
-<span class="fc" id="L238">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L239">			final Node &lt;K, V&gt; ret = path.top();</span>
-
-			Node &lt;K, V&gt; next;
-<span class="fc bfc" id="L242" title="All 2 branches covered.">			if ((next = ret.child) != null) {</span>
-<span class="fc" id="L243">				path.push(next);</span>
-			} else {
-				Node &lt;K, V&gt; p0;
-				do {
-<span class="fc" id="L247">					p0 = path.pop();</span>
-<span class="fc bfc" id="L248" title="All 2 branches covered.">					if ((next = p0.next) != null) {</span>
-<span class="fc" id="L249">						path.push(next);</span>
-<span class="fc" id="L250">						break;</span>
-					}
-<span class="fc bfc" id="L252" title="All 2 branches covered.">				} while (!path.isEmpty());</span>
-			}
-
-<span class="fc" id="L255">			return ret;</span>
-		}
-
+<span class="fc" id="L153">		return (Iterator) new PairingHeapBase.PreOrderIter&lt;&gt;(minRoot);</span>
 	}
 
 	@Override
 	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; insert(K key) {
-<span class="fc" id="L262">		Node &lt;K, V&gt; n = new Node &lt;&gt;(key);</span>
-<span class="fc" id="L263">		insertNode(n);</span>
-<span class="fc" id="L264">		return n;</span>
+<span class="fc" id="L158">		Node &lt;K, V&gt; n = new Node &lt;&gt;(key);</span>
+<span class="fc" id="L159">		insertNode(n);</span>
+<span class="fc" id="L160">		return n;</span>
 	}
 
 
 	private void removeRoot() {
-<span class="fc bfc" id="L269" title="All 2 branches covered.">		if (minRoot.child == null) {</span>
-<span class="fc" id="L270">			minRoot = null;</span>
-<span class="fc" id="L271">			return;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">		if (minRoot.child == null) {</span>
+<span class="fc" id="L166">			minRoot = null;</span>
+<span class="fc" id="L167">			return;</span>
 		}
 
-<span class="fc bfc" id="L274" title="All 2 branches covered.">		if (c == null) {</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">		if (c == null) {</span>
 			/* meld pairs from left to right */
 			Node &lt;K, V&gt; tail;
-<span class="fc" id="L277">			for (Node &lt;K, V&gt; prev = minRoot, next = minRoot.child;;) {</span>
-<span class="fc" id="L278">				Node &lt;K, V&gt; n1 = next;</span>
-<span class="fc bfc" id="L279" title="All 2 branches covered.">				if (n1 == null) {</span>
-<span class="fc" id="L280">					tail = prev;</span>
-<span class="fc" id="L281">					break;</span>
+<span class="fc" id="L173">			for (Node &lt;K, V&gt; prev = minRoot, next = minRoot.child;;) {</span>
+<span class="fc" id="L174">				Node &lt;K, V&gt; n1 = next;</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">				if (n1 == null) {</span>
+<span class="fc" id="L176">					tail = prev;</span>
+<span class="fc" id="L177">					break;</span>
 				}
 
-<span class="fc" id="L284">				Node &lt;K, V&gt; n2 = n1.next;</span>
-<span class="fc bfc" id="L285" title="All 2 branches covered.">				if (n2 == null) {</span>
-<span class="fc" id="L286">					n1.prevOrParent = prev;</span>
-<span class="fc" id="L287">					tail = n1;</span>
-<span class="fc" id="L288">					break;</span>
+<span class="fc" id="L180">				Node &lt;K, V&gt; n2 = n1.next;</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">				if (n2 == null) {</span>
+<span class="fc" id="L182">					n1.prevOrParent = prev;</span>
+<span class="fc" id="L183">					tail = n1;</span>
+<span class="fc" id="L184">					break;</span>
 				}
-<span class="fc" id="L290">				next = n2.next;</span>
-<span class="fc" id="L291">				n1.next = null;</span>
-<span class="fc" id="L292">				n2.next = null;</span>
-<span class="fc" id="L293">				n1.prevOrParent = null;</span>
-<span class="fc" id="L294">				n2.prevOrParent = null;</span>
-<span class="fc" id="L295">				n1 = meldDefaultCmp(n1, n2);</span>
+<span class="fc" id="L186">				next = n2.next;</span>
+<span class="fc" id="L187">				n1.next = null;</span>
+<span class="fc" id="L188">				n2.next = null;</span>
+<span class="fc" id="L189">				n1.prevOrParent = null;</span>
+<span class="fc" id="L190">				n2.prevOrParent = null;</span>
+<span class="fc" id="L191">				n1 = meldDefaultCmp(n1, n2);</span>
 
-<span class="fc" id="L297">				n1.prevOrParent = prev;</span>
-<span class="fc" id="L298">				prev = n1;</span>
-<span class="fc" id="L299">			}</span>
-<span class="fc" id="L300">			minRoot.child = null;</span>
+<span class="fc" id="L193">				n1.prevOrParent = prev;</span>
+<span class="fc" id="L194">				prev = n1;</span>
+<span class="fc" id="L195">			}</span>
+<span class="fc" id="L196">			minRoot.child = null;</span>
 
 			/* meld all from right to left */
-<span class="fc" id="L303">			Node &lt;K, V&gt; root = tail, prev = root.prevOrParent;</span>
-<span class="fc" id="L304">			root.prevOrParent = null;</span>
+<span class="fc" id="L199">			Node &lt;K, V&gt; root = tail, prev = root.prevOrParent;</span>
+<span class="fc" id="L200">			root.prevOrParent = null;</span>
 			for (;;) {
-<span class="fc" id="L306">				Node &lt;K, V&gt; other = prev;</span>
-<span class="fc bfc" id="L307" title="All 2 branches covered.">				if (other == minRoot) {</span>
-<span class="fc" id="L308">					minRoot = root;</span>
-<span class="fc" id="L309">					break;</span>
+<span class="fc" id="L202">				Node &lt;K, V&gt; other = prev;</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">				if (other == minRoot) {</span>
+<span class="fc" id="L204">					minRoot = root;</span>
+<span class="fc" id="L205">					break;</span>
 				}
-<span class="fc" id="L311">				prev = other.prevOrParent;</span>
-<span class="fc" id="L312">				other.prevOrParent = null;</span>
-<span class="fc" id="L313">				root = meldDefaultCmp(root, other);</span>
-<span class="fc" id="L314">			}</span>
-<span class="fc" id="L315">		} else {</span>
+<span class="fc" id="L207">				prev = other.prevOrParent;</span>
+<span class="fc" id="L208">				other.prevOrParent = null;</span>
+<span class="fc" id="L209">				root = meldDefaultCmp(root, other);</span>
+<span class="fc" id="L210">			}</span>
+<span class="fc" id="L211">		} else {</span>
 
 			/* meld pairs from left to right */
 			Node &lt;K, V&gt; tail;
-<span class="fc" id="L319">			for (Node &lt;K, V&gt; prev = minRoot, next = minRoot.child;;) {</span>
-<span class="fc" id="L320">				Node &lt;K, V&gt; n1 = next;</span>
-<span class="fc bfc" id="L321" title="All 2 branches covered.">				if (n1 == null) {</span>
-<span class="fc" id="L322">					tail = prev;</span>
-<span class="fc" id="L323">					break;</span>
+<span class="fc" id="L215">			for (Node &lt;K, V&gt; prev = minRoot, next = minRoot.child;;) {</span>
+<span class="fc" id="L216">				Node &lt;K, V&gt; n1 = next;</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">				if (n1 == null) {</span>
+<span class="fc" id="L218">					tail = prev;</span>
+<span class="fc" id="L219">					break;</span>
 				}
 
-<span class="fc" id="L326">				Node &lt;K, V&gt; n2 = n1.next;</span>
-<span class="fc bfc" id="L327" title="All 2 branches covered.">				if (n2 == null) {</span>
-<span class="fc" id="L328">					n1.prevOrParent = prev;</span>
-<span class="fc" id="L329">					tail = n1;</span>
-<span class="fc" id="L330">					break;</span>
+<span class="fc" id="L222">				Node &lt;K, V&gt; n2 = n1.next;</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">				if (n2 == null) {</span>
+<span class="fc" id="L224">					n1.prevOrParent = prev;</span>
+<span class="fc" id="L225">					tail = n1;</span>
+<span class="fc" id="L226">					break;</span>
 				}
-<span class="fc" id="L332">				next = n2.next;</span>
-<span class="fc" id="L333">				n1.next = null;</span>
-<span class="fc" id="L334">				n2.next = null;</span>
-<span class="fc" id="L335">				n1.prevOrParent = null;</span>
-<span class="fc" id="L336">				n2.prevOrParent = null;</span>
-<span class="fc" id="L337">				n1 = meldCustomCmp(n1, n2);</span>
+<span class="fc" id="L228">				next = n2.next;</span>
+<span class="fc" id="L229">				n1.next = null;</span>
+<span class="fc" id="L230">				n2.next = null;</span>
+<span class="fc" id="L231">				n1.prevOrParent = null;</span>
+<span class="fc" id="L232">				n2.prevOrParent = null;</span>
+<span class="fc" id="L233">				n1 = meldCustomCmp(n1, n2);</span>
 
-<span class="fc" id="L339">				n1.prevOrParent = prev;</span>
-<span class="fc" id="L340">				prev = n1;</span>
-<span class="fc" id="L341">			}</span>
-<span class="fc" id="L342">			minRoot.child = null;</span>
+<span class="fc" id="L235">				n1.prevOrParent = prev;</span>
+<span class="fc" id="L236">				prev = n1;</span>
+<span class="fc" id="L237">			}</span>
+<span class="fc" id="L238">			minRoot.child = null;</span>
 
 			/* meld all from right to left */
-<span class="fc" id="L345">			Node &lt;K, V&gt; root = tail, prev = root.prevOrParent;</span>
-<span class="fc" id="L346">			root.prevOrParent = null;</span>
+<span class="fc" id="L241">			Node &lt;K, V&gt; root = tail, prev = root.prevOrParent;</span>
+<span class="fc" id="L242">			root.prevOrParent = null;</span>
 			for (;;) {
-<span class="fc" id="L348">				Node &lt;K, V&gt; other = prev;</span>
-<span class="fc bfc" id="L349" title="All 2 branches covered.">				if (other == minRoot) {</span>
-<span class="fc" id="L350">					minRoot = root;</span>
-<span class="fc" id="L351">					break;</span>
+<span class="fc" id="L244">				Node &lt;K, V&gt; other = prev;</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">				if (other == minRoot) {</span>
+<span class="fc" id="L246">					minRoot = root;</span>
+<span class="fc" id="L247">					break;</span>
 				}
-<span class="fc" id="L353">				prev = other.prevOrParent;</span>
-<span class="fc" id="L354">				other.prevOrParent = null;</span>
-<span class="fc" id="L355">				root = meldCustomCmp(root, other);</span>
-<span class="fc" id="L356">			}</span>
+<span class="fc" id="L249">				prev = other.prevOrParent;</span>
+<span class="fc" id="L250">				other.prevOrParent = null;</span>
+<span class="fc" id="L251">				root = meldCustomCmp(root, other);</span>
+<span class="fc" id="L252">			}</span>
 		}
-<span class="fc" id="L358">	}</span>
+<span class="fc" id="L254">	}</span>
 
 	@Override
 	public void decreaseKey(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref, K newKey) {
-<span class="fc" id="L362">		Node &lt;K, V&gt; n = (Node &lt;K, V&gt;) ref;</span>
-<span class="fc" id="L363">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
-<span class="fc" id="L364">		n.key = newKey;</span>
-<span class="fc" id="L365">		afterKeyDecrease(n);</span>
-<span class="fc" id="L366">	}</span>
+<span class="fc" id="L258">		Node &lt;K, V&gt; n = (Node &lt;K, V&gt;) ref;</span>
+<span class="fc" id="L259">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
+<span class="fc" id="L260">		n.key = newKey;</span>
+<span class="fc" id="L261">		afterKeyDecrease(n);</span>
+<span class="fc" id="L262">	}</span>
 
 	@Override
 	public void increaseKey(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref, K newKey) {
-<span class="fc" id="L370">		Node &lt;K, V&gt; n = (Node &lt;K, V&gt;) ref;</span>
-<span class="fc" id="L371">		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);</span>
-<span class="fc" id="L372">		remove(n);</span>
-<span class="fc" id="L373">		n.key = newKey;</span>
-<span class="fc" id="L374">		insertNode(n);</span>
-<span class="fc" id="L375">	}</span>
+<span class="fc" id="L266">		Node &lt;K, V&gt; n = (Node &lt;K, V&gt;) ref;</span>
+<span class="fc" id="L267">		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);</span>
+<span class="fc" id="L268">		remove(n);</span>
+<span class="fc" id="L269">		n.key = newKey;</span>
+<span class="fc" id="L270">		insertNode(n);</span>
+<span class="fc" id="L271">	}</span>
 
-	private static class Node &lt;K, V&gt; implements ObjObjReferenceableHeap.Ref &lt;K, V&gt; {
+	static class Node &lt;K, V&gt; extends PairingHeapBase.NodeBase&lt;Node &lt;K, V&gt;&gt; implements ObjObjReferenceableHeap.Ref &lt;K, V&gt; {
 		K key;
 		private V value;
 
-		Node &lt;K, V&gt; prevOrParent;
-		Node &lt;K, V&gt; next;
-		Node &lt;K, V&gt; child;
-
-<span class="fc" id="L385">		Node(K key) {</span>
-<span class="fc" id="L386">			this.key = key;</span>
-<span class="fc" id="L387">		}</span>
+<span class="fc" id="L277">		Node(K key) {</span>
+<span class="fc" id="L278">			this.key = key;</span>
+<span class="fc" id="L279">		}</span>
 
 		@Override
 		public K key() {
-<span class="fc" id="L391">			return key;</span>
+<span class="fc" id="L283">			return key;</span>
 		}
 
 		@Override
 		public V value() {
-<span class="fc" id="L396">			return value;</span>
+<span class="fc" id="L288">			return value;</span>
 		}
 
 		@Override
 		public void setValue(V val) {
-<span class="fc" id="L401">			value = val;</span>
-<span class="fc" id="L402">		}</span>
+<span class="fc" id="L293">			value = val;</span>
+<span class="fc" id="L294">		}</span>
+
+		@Override
+		void clearKeyData() {
+<span class="fc" id="L298">			key = null;</span>
+<span class="fc" id="L299">			value = null;</span>
+<span class="fc" id="L300">		}</span>
 
 		@Override
 		public String toString() {
-<span class="fc" id="L406">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
+<span class="fc" id="L304">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
 		}
 	}
 
