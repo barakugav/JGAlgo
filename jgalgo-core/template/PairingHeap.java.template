@@ -18,8 +18,6 @@ package com.jgalgo.internal.ds;
 
 import java.util.Iterator;
 import com.jgalgo.internal.util.Assertions;
-import it.unimi.dsi.fastutil.Stack;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 #if PRIMITIVE_KEY_TYPE_REAL == "Object"
 import com.jgalgo.internal.util.JGAlgoUtils;
 import java.util.Comparator;
@@ -54,10 +52,9 @@ import FASTUTIL_KEY_PACKAGE.KEY_COMPARATOR;
  * @see    <a href="https://en.wikipedia.org/wiki/Pairing_heap">Wikipedia</a>
  * @author Barak Ugav
  */
-public class PAIRING_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_VALUE_GENERIC {
+public class PAIRING_HEAP KEY_VALUE_GENERIC extends PairingHeapBase<PAIRING_HEAP.Node KEY_VALUE_GENERIC> implements REFERENCEABLE_HEAP KEY_VALUE_GENERIC {
 
 	private final KEY_COMPARATOR KEY_TYPE_GENERIC c;
-	private Node KEY_VALUE_GENERIC minRoot;
 
 	public PAIRING_HEAP(KEY_COMPARATOR KEY_TYPE_GENERIC c) {
 		this.c = c;
@@ -72,42 +69,6 @@ public class PAIRING_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_VA
 	public HEAP_REFERENCE KEY_VALUE_GENERIC findMin() {
 		Assertions.Heaps.notEmpty(this);
 		return minRoot;
-	}
-
-	@Override
-	public boolean isEmpty() {
-		return minRoot == null;
-	}
-
-	@Override
-	public boolean isNotEmpty() {
-		return minRoot != null;
-	}
-
-	private static KEY_VALUE_GENERIC void cut(Node KEY_VALUE_GENERIC n) {
-		Node KEY_VALUE_GENERIC next = n.next;
-		if (next != null) {
-			next.prevOrParent = n.prevOrParent;
-			n.next = null;
-		}
-		if (n.prevOrParent.child == n) { /* n.parent.child == n */
-			n.prevOrParent.child = next;
-		} else {
-			n.prevOrParent.next = next;
-		}
-		n.prevOrParent = null;
-	}
-
-	void addChild(Node KEY_VALUE_GENERIC parent, Node KEY_VALUE_GENERIC newChild) {
-		assert newChild.prevOrParent == null;
-		assert newChild.next == null;
-		Node KEY_VALUE_GENERIC oldChild = parent.child;
-		if (oldChild != null) {
-			oldChild.prevOrParent = newChild;
-			newChild.next = oldChild;
-		}
-		parent.child = newChild;
-		newChild.prevOrParent = parent;
 	}
 
 	void insertNode(Node KEY_VALUE_GENERIC n) {
@@ -194,79 +155,10 @@ public class PAIRING_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_VA
 		return n1;
 	}
 
-	@Override
-	public void clear() {
-		if (minRoot == null)
-			return;
-
-		for (Node KEY_VALUE_GENERIC p = minRoot;;) {
-			while (p.child != null) {
-				p = p.child;
-				while (p.next != null)
-					p = p.next;
-			}
-#if PRIMITIVE_KEY_TYPE_REAL == "Object"
-			p.key = null;
-#endif
-#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
-			p.value = null;
-#endif
-			Node KEY_VALUE_GENERIC prev = p.prevOrParent;
-			if (prev == null)
-				break;
-			p.prevOrParent = null;
-			if (prev.next == p) {
-				prev.next = null;
-			} else {
-				prev.child = null;
-			}
-			p = prev;
-		}
-
-		minRoot = null;
-	}
-
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
 	public Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> iterator() {
-		return new PreOrderIter KEY_VALUE_GENERIC_EMPTY(minRoot);
-	}
-
-	static class PreOrderIter KEY_VALUE_GENERIC implements Iterator<HEAP_REFERENCE KEY_VALUE_GENERIC> {
-
-		private final Stack<Node KEY_VALUE_GENERIC> path = new ObjectArrayList<>();
-
-		PreOrderIter(Node KEY_VALUE_GENERIC p) {
-			if (p != null)
-				path.push(p);
-		}
-
-		@Override
-		public boolean hasNext() {
-			return !path.isEmpty();
-		}
-
-		@Override
-		public Node KEY_VALUE_GENERIC next() {
-			Assertions.Iters.hasNext(this);
-			final Node KEY_VALUE_GENERIC ret = path.top();
-
-			Node KEY_VALUE_GENERIC next;
-			if ((next = ret.child) != null) {
-				path.push(next);
-			} else {
-				Node KEY_VALUE_GENERIC p0;
-				do {
-					p0 = path.pop();
-					if ((next = p0.next) != null) {
-						path.push(next);
-						break;
-					}
-				} while (!path.isEmpty());
-			}
-
-			return ret;
-		}
-
+		return (Iterator) new PairingHeapBase.PreOrderIter<>(minRoot);
 	}
 
 	@Override
@@ -386,15 +278,11 @@ public class PAIRING_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_VA
 		insertNode(n);
 	}
 
-	private static class Node KEY_VALUE_GENERIC implements HEAP_REFERENCE KEY_VALUE_GENERIC {
+	static class Node KEY_VALUE_GENERIC extends PairingHeapBase.NodeBase<Node KEY_VALUE_GENERIC> implements HEAP_REFERENCE KEY_VALUE_GENERIC {
 		PRIMITIVE_KEY_TYPE key;
 #if PRIMITIVE_VALUE_TYPE_REAL != "Void"
 		private PRIMITIVE_VALUE_TYPE value;
 #endif
-
-		Node KEY_VALUE_GENERIC prevOrParent;
-		Node KEY_VALUE_GENERIC next;
-		Node KEY_VALUE_GENERIC child;
 
 		Node(PRIMITIVE_KEY_TYPE key) {
 			this.key = key;
@@ -414,6 +302,18 @@ public class PAIRING_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_VA
 		@Override
 		public void setValue(PRIMITIVE_VALUE_TYPE val) {
 			value = val;
+		}
+#endif
+
+#if PRIMITIVE_KEY_TYPE_REAL == "Object" or PRIMITIVE_VALUE_TYPE_REAL == "Object"
+		@Override
+		void clearKeyData() {
+#if PRIMITIVE_KEY_TYPE_REAL == "Object"
+			key = null;
+#endif
+#if PRIMITIVE_VALUE_TYPE_REAL == "Object"
+			value = null;
+#endif
 		}
 #endif
 
