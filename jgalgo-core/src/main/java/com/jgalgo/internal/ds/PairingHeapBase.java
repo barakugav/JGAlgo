@@ -20,9 +20,9 @@ import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-class PairingHeapBase<Node extends PairingHeapBase.NodeBase<Node>> {
+class PairingHeapBase<NodeT extends PairingHeapBase.NodeBase<NodeT>> {
 
-	Node minRoot;
+	NodeT minRoot;
 
 	public boolean isEmpty() {
 		return minRoot == null;
@@ -32,8 +32,8 @@ class PairingHeapBase<Node extends PairingHeapBase.NodeBase<Node>> {
 		return minRoot != null;
 	}
 
-	void cut(Node n) {
-		Node next = n.next;
+	void cut(NodeT n) {
+		NodeT next = n.next;
 		if (next != null) {
 			next.prevOrParent = n.prevOrParent;
 			n.next = null;
@@ -46,10 +46,10 @@ class PairingHeapBase<Node extends PairingHeapBase.NodeBase<Node>> {
 		n.prevOrParent = null;
 	}
 
-	void addChild(Node parent, Node newChild) {
+	void addChild(NodeT parent, NodeT newChild) {
 		assert newChild.prevOrParent == null;
 		assert newChild.next == null;
-		Node oldChild = parent.child;
+		NodeT oldChild = parent.child;
 		if (oldChild != null) {
 			oldChild.prevOrParent = newChild;
 			newChild.next = oldChild;
@@ -62,14 +62,14 @@ class PairingHeapBase<Node extends PairingHeapBase.NodeBase<Node>> {
 		if (minRoot == null)
 			return;
 
-		for (Node p = minRoot;;) {
+		for (NodeT p = minRoot;;) {
 			while (p.child != null) {
 				p = p.child;
 				while (p.next != null)
 					p = p.next;
 			}
 			p.clearKeyData();
-			Node prev = p.prevOrParent;
+			NodeT prev = p.prevOrParent;
 			if (prev == null)
 				break;
 			p.prevOrParent = null;
@@ -84,11 +84,11 @@ class PairingHeapBase<Node extends PairingHeapBase.NodeBase<Node>> {
 		minRoot = null;
 	}
 
-	static class PreOrderIter<Node extends NodeBase<Node>> implements Iterator<Node> {
+	static class PreOrderIter<NodeT extends NodeBase<NodeT>> implements Iterator<NodeT> {
 
-		private final Stack<Node> path = new ObjectArrayList<>();
+		private final Stack<NodeT> path = new ObjectArrayList<>();
 
-		PreOrderIter(Node p) {
+		PreOrderIter(NodeT p) {
 			if (p != null)
 				path.push(p);
 		}
@@ -99,15 +99,15 @@ class PairingHeapBase<Node extends PairingHeapBase.NodeBase<Node>> {
 		}
 
 		@Override
-		public Node next() {
+		public NodeT next() {
 			Assertions.Iters.hasNext(this);
-			final Node ret = path.top();
+			final NodeT ret = path.top();
 
-			Node next;
+			NodeT next;
 			if ((next = ret.child) != null) {
 				path.push(next);
 			} else {
-				Node p0;
+				NodeT p0;
 				do {
 					p0 = path.pop();
 					if ((next = p0.next) != null) {
@@ -122,10 +122,10 @@ class PairingHeapBase<Node extends PairingHeapBase.NodeBase<Node>> {
 
 	}
 
-	static class NodeBase<Node extends NodeBase<Node>> {
-		Node prevOrParent;
-		Node next;
-		Node child;
+	static class NodeBase<NodeT extends NodeBase<NodeT>> {
+		NodeT prevOrParent;
+		NodeT next;
+		NodeT child;
 
 		void clearKeyData() {}
 	}
