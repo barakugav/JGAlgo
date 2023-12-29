@@ -93,7 +93,7 @@ public class TspMetricTest extends TestBase {
 		Path<V, E> appxMatch = new TspMetricMatchingAppx().computeShortestTour(g, distances);
 
 		Predicate<Path<V, E>> isPathVisitAllVertices =
-				path -> new HashSet<>(path.vertices()).size() == g.vertices().size();;
+				path -> new HashSet<>(path.vertices()).size() == g.vertices().size();
 		assertTrue(isPathVisitAllVertices.test(appxMst), "MST approximation result doesn't visit every vertex");
 		assertTrue(isPathVisitAllVertices.test(appxMatch), "Matching approximation result doesn't visit every vertex");
 

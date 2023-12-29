@@ -91,7 +91,7 @@ final class EdgeSetView<V, E> implements EdgeSet<V, E> {
 
 	@Override
 	public void clear() {
-		edges.clear();;
+		edges.clear();
 	}
 
 	@Override

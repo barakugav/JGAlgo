@@ -184,7 +184,7 @@ public class GnmBipartiteGraphGeneratorTest extends TestBase {
 			}
 
 			/* check directed with edges right to left */
-			g.directedRightToLeft();;
+			g.directedRightToLeft();
 			Graph<Integer, Integer> g5 = g.generate();
 			assertTrue(g5.isDirected());
 			assertTrue(BipartiteGraphs.isBipartite(g5));

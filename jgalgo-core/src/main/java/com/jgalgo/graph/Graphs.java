@@ -1158,7 +1158,7 @@ public class Graphs {
 
 	private static interface ReverseGraph<V, E> {
 		Graph<V, E> graph();
-	};
+	}
 
 	private static class ObjReverseGraph<V, E> extends GraphView<V, E> implements ReverseGraph<V, E> {
 
