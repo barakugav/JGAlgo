@@ -10,13 +10,12 @@ import logging
 
 TOP_DIR = os.path.dirname(os.path.realpath(__file__))
 TEMPLATE_DIR = os.path.join(TOP_DIR, "template")
-PACKAGE_DIR = os.path.join(TOP_DIR, "src-generated", "main", "java", "com", "jgalgo")
-TEST_PACKAGE_DIR = os.path.join(
-    TOP_DIR, "src-generated", "test", "java", "com", "jgalgo"
-)
+GENERATED_SOURCES_DIR = os.path.join(TOP_DIR, "src-generated")
+PACKAGE_DIR = os.path.join(GENERATED_SOURCES_DIR, "main", "java", "com", "jgalgo")
+TEST_PACKAGE_DIR = os.path.join(GENERATED_SOURCES_DIR, "test", "java", "com", "jgalgo")
 TYPE_ALL = {"Obj", "Byte", "Short", "Int", "Long", "Float", "Double", "Bool", "Char"}
 
-HASHES_FILENAME = os.path.join(TOP_DIR, "src-generated", ".gen", "hashes.json")
+HASHES_FILENAME = os.path.join(GENERATED_SOURCES_DIR, ".gen", "hashes.json")
 
 
 def find_eclipse():
@@ -474,22 +473,6 @@ def generate_template_sources(template_entry):
             raise Exception("Failed to generate " + filename) from e
         generated_files.append(filename)
     return generated_files
-
-
-def clean_template_sources(template_entry):
-    is_key_value = type(next(iter(template_entry["types"]))) is tuple
-    files = []
-    if is_key_value:
-        for key_type in TYPE_ALL - {"Bool"}:
-            for value_type in TYPE_ALL | {"Void"}:
-                files.append(template_entry["file_name_func"](key_type, value_type))
-    else:
-        for type_ in TYPE_ALL:
-            files.append(template_entry["file_name_func"](type_))
-    for filename in files:
-        if os.path.exists(filename):
-            logging.debug("Removing %s", filename)
-            os.remove(filename)
 
 
 def key_value_prefix(key_type, value_type):
@@ -980,9 +963,7 @@ def clean():
     logging.info("Cleaning generated sources...")
     if os.path.exists(HASHES_FILENAME):
         os.remove(HASHES_FILENAME)
-
-    for template_entry in TEMPLATES:
-        clean_template_sources(template_entry)
+    shutil.rmtree(GENERATED_SOURCES_DIR, ignore_errors=True)
 
 
 def compute_template_hash(template_filename):
