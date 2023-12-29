@@ -90,6 +90,7 @@ class IdBuilders {
 	/* we want to have a single instance of bytes default factory, using static nested class create it lazily */
 	private static class DefaultByteFactory {
 		static final Supplier<IdBuilder<Byte>> Instance;
+
 		static {
 			long min = Byte.MIN_VALUE, max = Byte.MAX_VALUE, maxEdgesSize = 1 << Byte.SIZE;
 			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -> Byte.valueOf((byte) x));
@@ -99,6 +100,7 @@ class IdBuilders {
 	/* we want to have a single instance of shorts default factory, using static nested class create it lazily */
 	private static class DefaultShortFactory {
 		static final Supplier<IdBuilder<Short>> Instance;
+
 		static {
 			long min = Short.MIN_VALUE, max = Short.MAX_VALUE, maxEdgesSize = 1 << Short.SIZE;
 			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -> Short.valueOf((short) x));
@@ -108,6 +110,7 @@ class IdBuilders {
 	/* we want to have a single instance of longs default factory, using static nested class create it lazily */
 	private static class DefaultLongFactory {
 		static final Supplier<IdBuilder<Long>> Instance;
+
 		static {
 			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L << 48;
 			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -> Long.valueOf(x));
@@ -117,6 +120,7 @@ class IdBuilders {
 	/* we want to have a single instance of floats default factory, using static nested class create it lazily */
 	private static class DefaultFloatFactory {
 		static final Supplier<IdBuilder<Float>> Instance;
+
 		static {
 			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L << 48;
 			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -> Float.valueOf(x));
@@ -126,6 +130,7 @@ class IdBuilders {
 	/* we want to have a single instance of doubles default factory, using static nested class create it lazily */
 	private static class DefaultDoubleFactory {
 		static final Supplier<IdBuilder<Double>> Instance;
+
 		static {
 			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L << 48;
 			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -> Double.valueOf(x));
@@ -135,6 +140,7 @@ class IdBuilders {
 	/* we want to have a single instance of strings default factory, using static nested class create it lazily */
 	private static class DefaultStringFactory {
 		static final Supplier<IdBuilder<String>> Instance;
+
 		static {
 			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L << 48;
 			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -> Long.toString(x));

@@ -26,6 +26,7 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 
 	static final Int2IntMap[] EMPTY_MAP_ARRAY = new Int2IntMap[0];
 	static final Int2IntMap EmptyEdgeMap;
+
 	static {
 		Int2IntMap emptyEdgeMap = new Int2IntOpenHashMap(0);
 		emptyEdgeMap.defaultReturnValue(-1);

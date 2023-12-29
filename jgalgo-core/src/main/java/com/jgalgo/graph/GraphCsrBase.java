@@ -44,6 +44,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	private boolean containsParallelEdgesValid;
 
 	static final Int2IntMap EmptyEdgeMap;
+
 	static {
 		Int2IntMap emptyEdgeMap = new Int2IntOpenHashMap(0);
 		emptyEdgeMap.defaultReturnValue(-1);
