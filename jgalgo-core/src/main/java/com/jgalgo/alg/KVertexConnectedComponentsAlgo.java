@@ -61,7 +61,6 @@ public interface KVertexConnectedComponentsAlgo {
 	<V, E> KVertexConnectedComponentsAlgo.Result<V, E> findKVertexConnectedComponents(Graph<V, E> g, int k);
 
 	/**
-	 *
 	 * Result of a {@link KVertexConnectedComponentsAlgo} computation.
 	 *
 	 * @param  <V> the vertices type

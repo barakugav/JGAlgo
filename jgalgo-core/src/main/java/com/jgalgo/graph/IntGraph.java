@@ -685,6 +685,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * <p>
 	 * The return object is always some sub class of {@link IWeights}, such as {@link IWeightsInt} or
 	 * {@link IWeightsDouble}.
 	 */
@@ -694,6 +695,7 @@ public interface IntGraph extends Graph<Integer, Integer> {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * <p>
 	 * The return object is always some sub class of {@link IWeights}, such as {@link IWeightsInt} or
 	 * {@link IWeightsDouble}.
 	 */

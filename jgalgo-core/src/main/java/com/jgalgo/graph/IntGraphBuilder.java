@@ -231,6 +231,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * <p>
 	 * The return object is always some sub class of {@link IWeights}, such as {@link IWeightsInt} or
 	 * {@link IWeightsDouble}.
 	 */
@@ -240,6 +241,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * <p>
 	 * The return object is always some sub class of {@link IWeights}, such as {@link IWeightsInt} or
 	 * {@link IWeightsDouble}.
 	 */

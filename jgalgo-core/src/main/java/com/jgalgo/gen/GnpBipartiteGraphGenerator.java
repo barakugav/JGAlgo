@@ -40,6 +40,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * Generates a random bipartite graph using the \(G(n_1,n_2,p)\) model in which every edge exists with probability
  * \(p\).
  *
+ * <p>
  * The \(G(n_1,n_2,p)\) model generates a bipartite graph by connecting each pair of a left vertex and a right vertex
  * with probability \(p\). Each edge is created with probability independent of the others. The generator accept two
  * sets of vertices, the left and right vertices sets of the bipartite graph, and the probability \(p\).

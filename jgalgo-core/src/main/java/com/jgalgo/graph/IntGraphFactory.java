@@ -99,6 +99,7 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * <p>
 	 * By default, graphs created by this factory will have a vertex builder that uses a counter and assign the next id
 	 * to each new vertex by incrementing the counter until there is no vertex with that id.
 	 */
@@ -113,6 +114,7 @@ public interface IntGraphFactory extends GraphFactory<Integer, Integer> {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * <p>
 	 * By default, graphs created by this factory will have an edge builder that uses a counter and assign the next id
 	 * to each new edge by incrementing the counter until there is no edge with that id.
 	 */
