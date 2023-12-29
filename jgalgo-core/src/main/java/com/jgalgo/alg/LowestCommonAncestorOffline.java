@@ -80,7 +80,8 @@ public interface LowestCommonAncestorOffline {
 		@SuppressWarnings("unchecked")
 		static <V, E> LowestCommonAncestorOffline.Queries<V, E> newInstance(Graph<V, E> g) {
 			if (g instanceof IndexGraph) {
-				return (LowestCommonAncestorOffline.Queries<V, E>) new LowestCommonAncestorOfflineUtils.IntQueriesImpl();
+				LowestCommonAncestorOffline.IQueries queries = new LowestCommonAncestorOfflineUtils.IntQueriesImpl();
+				return (LowestCommonAncestorOffline.Queries<V, E>) queries;
 			} else {
 				return new LowestCommonAncestorOfflineUtils.ObjQueriesImpl<>(g);
 			}
