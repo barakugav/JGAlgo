@@ -38,18 +38,6 @@ package com.jgalgo.graph;
 public interface IndexRemoveListener {
 
 	/**
-	 * A callback that is called when {@code idx1} and {@code idx2} are swapped.
-	 *
-	 * <p>
-	 * The same swap listener interface is used for both vertices and edges (a specific instance is only used to one of
-	 * them, which can be determined by the context), and we use a unified term <i>element</i> in the documentation to
-	 * refer to either of them.
-	 *
-	 * @param idx1 the first element index
-	 * @param idx2 the second element index
-	 */
-
-	/**
 	 * A callback that is called when the last element is removed.
 	 *
 	 * <p>
