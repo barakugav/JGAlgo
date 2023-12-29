@@ -99,8 +99,10 @@ public class HeapBench {
 				this.x = x;
 			}
 		}
+
 		private static class FindMin extends Op {
 		}
+
 		private static class ExtractMin extends Op {
 		}
 	}
