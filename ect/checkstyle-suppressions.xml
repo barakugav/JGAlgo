@@ -2,7 +2,15 @@
 <!DOCTYPE suppressions PUBLIC "-//Checkstyle//DTD SuppressionFilter Configuration 1.2//EN" "https://checkstyle.org/dtds/suppressions_1_2.dtd">
 
 <suppressions>
-	<suppress files="(I|)Weights(Impl|)[A-Z][a-z]+\.java" checks=".*Whitespace.*" />
-	<suppress files="com[\\/]jgalgo[\\/]internal[\\/][a-zA-Z0-9\\/]+\.java"
+	<!-- Suppress formatting warnings of auto-generated code -->
+	<suppress files="[\\/]src-generated[\\/]"
+		checks="(.*Whitespace.*|MethodParamPad|LineLength|LeftCurly|SeparatorWrap)" />
+	<!-- No need for javadoc for com.jgalgo.internal.** -->
+	<suppress files="com[\\/]jgalgo[\\/]internal[\\/]"
 		checks="(MissingJavadocMethod|MissingJavadocType)" />
+	<!-- Benchmarks are not released, suppress a lot of checks -->
+	<suppress files="com[\\/]jgalgo[\\/]bench[\\/]"
+		checks="(MissingJavadocMethod|MissingJavadocType|MethodName)" />
+	<!-- Completely ignore JMH generated sources -->
+	<suppress files="[\\/]jmh_generated[\\/]" checks="[a-zA-Z0-9]*" />
 </suppressions>

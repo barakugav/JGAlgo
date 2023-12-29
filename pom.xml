@@ -69,6 +69,8 @@
     <org.jgrapht.version>1.5.2</org.jgrapht.version>
 
     <asserts.enable>false</asserts.enable>
+
+    <checkstyle.config.location>ect/checkstyle.xml</checkstyle.config.location>
   </properties>
 
   <modules>
@@ -249,20 +251,17 @@
         <artifactId>spotbugs-maven-plugin</artifactId>
         <version>${spotbugs-maven-plugin.version}</version>
       </plugin>
-    </plugins>
-  </build>
 
-  <reporting>
-    <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-checkstyle-plugin</artifactId>
         <version>${maven-checkstyle-plugin.version}</version>
         <configuration>
-          <configLocation>ect/checkstyle.xml</configLocation>
+          <failsOnError>true</failsOnError>
+          <violationSeverity>warning</violationSeverity>
+          <consoleOutput>true</consoleOutput>
         </configuration>
       </plugin>
     </plugins>
-  </reporting>
-
+  </build>
 </project>

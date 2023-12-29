@@ -30,6 +30,12 @@ def main(args):
     else:
         print("skipping...")
 
+    print("\n\n ============ Checkstyle ============\n")
+    if not args.skip_style:
+        run_cmd("mvn compile checkstyle:check")
+    else:
+        print("skipping...")
+
     print("\n\n ============ Javadoc ============\n")
     if not args.skip_javadoc:
         run_cmd("mvn javadoc:aggregate")
@@ -47,6 +53,9 @@ if __name__ == "__main__":
     parser.add_argument("--skip-tests", action="store_true", help="skip all unit tests")
     parser.add_argument(
         "--skip-static", action="store_true", help="skip static analysis"
+    )
+    parser.add_argument(
+        "--skip-style", action="store_true", help="skip Checkstyle checks"
     )
     parser.add_argument(
         "--skip-javadoc", action="store_true", help="skip Javadoc generation"
