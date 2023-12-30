@@ -61,7 +61,6 @@ public interface KVertexConnectedComponentsAlgo {
 	&lt;V, E&gt; KVertexConnectedComponentsAlgo.Result&lt;V, E&gt; findKVertexConnectedComponents(Graph&lt;V, E&gt; g, int k);
 
 	/**
-	 *
 	 * Result of a {@link KVertexConnectedComponentsAlgo} computation.
 	 *
 	 * @param  &lt;V&gt; the vertices type
@@ -92,7 +91,7 @@ public interface KVertexConnectedComponentsAlgo {
 		 * @return           the subgraph of the component
 		 */
 		default Graph&lt;V, E&gt; componentSubGraph(int compIndex) {
-<span class="fc" id="L95">			return graph().subGraphCopy(componentVertices(compIndex), null);</span>
+<span class="fc" id="L94">			return graph().subGraphCopy(componentVertices(compIndex), null);</span>
 		}
 
 		/**
@@ -116,7 +115,7 @@ public interface KVertexConnectedComponentsAlgo {
 
 		@Override
 		default IntGraph componentSubGraph(int compIndex) {
-<span class="fc" id="L119">			return (IntGraph) KVertexConnectedComponentsAlgo.Result.super.componentSubGraph(compIndex);</span>
+<span class="fc" id="L118">			return (IntGraph) KVertexConnectedComponentsAlgo.Result.super.componentSubGraph(compIndex);</span>
 		}
 
 		@Override
@@ -132,7 +131,7 @@ public interface KVertexConnectedComponentsAlgo {
 	 * @return a default implementation of {@link KVertexConnectedComponentsAlgo}
 	 */
 	static KVertexConnectedComponentsAlgo newInstance() {
-<span class="fc" id="L135">		return new KVertexConnectedComponentsWhiteMoody();</span>
+<span class="fc" id="L134">		return new KVertexConnectedComponentsWhiteMoody();</span>
 	}
 
 }

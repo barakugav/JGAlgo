@@ -231,6 +231,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * &lt;p&gt;
 	 * The return object is always some sub class of {@link IWeights}, such as {@link IWeightsInt} or
 	 * {@link IWeightsDouble}.
 	 */
@@ -240,6 +241,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * &lt;p&gt;
 	 * The return object is always some sub class of {@link IWeights}, such as {@link IWeightsInt} or
 	 * {@link IWeightsDouble}.
 	 */
@@ -272,7 +274,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 * @return a new empty builder for undirected graphs
 	 */
 	static IntGraphBuilder undirected() {
-<span class="fc" id="L275">		return IntGraphFactory.undirected().newBuilder();</span>
+<span class="fc" id="L277">		return IntGraphFactory.undirected().newBuilder();</span>
 	}
 
 	/**
@@ -289,7 +291,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 * @return a new empty builder for directed graphs
 	 */
 	static IntGraphBuilder directed() {
-<span class="fc" id="L292">		return IntGraphFactory.directed().newBuilder();</span>
+<span class="fc" id="L294">		return IntGraphFactory.directed().newBuilder();</span>
 	}
 
 	/**
@@ -308,7 +310,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 * @return          a new empty builder for un/directed graphs
 	 */
 	static IntGraphBuilder newInstance(boolean directed) {
-<span class="fc" id="L311">		return IntGraphFactory.newInstance(directed).newBuilder();</span>
+<span class="fc" id="L313">		return IntGraphFactory.newInstance(directed).newBuilder();</span>
 	}
 
 	/**
@@ -326,7 +328,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 *           vertices/edges weights.
 	 */
 	static IntGraphBuilder newCopyOf(IntGraph g) {
-<span class="fc" id="L329">		return newCopyOf(g, false, false);</span>
+<span class="fc" id="L331">		return newCopyOf(g, false, false);</span>
 	}
 
 	/**
@@ -348,7 +350,7 @@ public interface IntGraphBuilder extends GraphBuilder&lt;Integer, Integer&gt; {
 	 *                             original graph vertices/edges weights.
 	 */
 	static IntGraphBuilder newCopyOf(IntGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L351">		return IntGraphFactory.newInstance(g.isDirected()).newBuilderCopyOf(g, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L353">		return IntGraphFactory.newInstance(g.isDirected()).newBuilderCopyOf(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 }

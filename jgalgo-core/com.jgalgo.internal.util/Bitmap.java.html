@@ -82,8 +82,8 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
 	/**
 	 * Creates a new bitmap of the specified size, with the specified initial values provided from a predicate.
 	 *
-	 * @param size          the number of bits
-	 * @param initialValues a provider that determine the initial value of each bit
+	 * @param size      the number of bits
+	 * @param predicate the predicate to provide the initial value of each bit
 	 */
 	public static Bitmap fromPredicate(int size, IntPredicate predicate) {
 <span class="fc" id="L89">		Bitmap bitmap = new Bitmap(size);</span>
@@ -171,6 +171,7 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
 
 	/**
 	 * Set all bits to {@code false}, given a collection of {@code true} bits in this bitmap.
+	 *
 	 * &lt;p&gt;
 	 * This method is unsafe, and should be used only when the user is certain that the given collection contains only
 	 * {@code true} bits in this bitmap.
@@ -179,33 +180,33 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
 	 */
 	public void clearAllUnsafe(IntCollection setBits) {
 		/* TODO: need to benchmark when its better to clear each bit independently */
-<span class="fc bfc" id="L182" title="All 2 branches covered.">		boolean perBitClear = setBits.size() &lt; size / WordSize;</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">		if (perBitClear) {</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">			for (int idx : setBits)</span>
-<span class="fc" id="L185">				clear(idx);</span>
-<span class="pc bnc" id="L186" title="All 2 branches missed.">			assert isEmpty();</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">		boolean perBitClear = setBits.size() &lt; size / WordSize;</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">		if (perBitClear) {</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">			for (int idx : setBits)</span>
+<span class="fc" id="L186">				clear(idx);</span>
+<span class="pc bnc" id="L187" title="All 2 branches missed.">			assert isEmpty();</span>
 		} else {
-<span class="fc" id="L188">			clear();</span>
+<span class="fc" id="L189">			clear();</span>
 		}
-<span class="fc" id="L190">	}</span>
+<span class="fc" id="L191">	}</span>
 
 	/**
 	 * Set all bits to {@code false}.
 	 */
 	public void clear() {
-<span class="fc" id="L196">		Arrays.fill(words, 0L);</span>
-<span class="fc" id="L197">	}</span>
+<span class="fc" id="L197">		Arrays.fill(words, 0L);</span>
+<span class="fc" id="L198">	}</span>
 
 	/**
 	 * Flip every bit in this bitmap.
 	 */
 	public void not() {
-<span class="fc bfc" id="L203" title="All 2 branches covered.">		if (words.length == 0)</span>
-<span class="fc" id="L204">			return;</span>
-<span class="fc bfc" id="L205" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L206">			words[i] = ~words[i];</span>
-<span class="fc" id="L207">		words[words.length - 1] &amp;= lastWordMask();</span>
-<span class="fc" id="L208">	}</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">		if (words.length == 0)</span>
+<span class="fc" id="L205">			return;</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L207">			words[i] = ~words[i];</span>
+<span class="fc" id="L208">		words[words.length - 1] &amp;= lastWordMask();</span>
+<span class="fc" id="L209">	}</span>
 
 	/**
 	 * Perform a bitwise or with another bitmap.
@@ -216,18 +217,18 @@ import it.unimi.dsi.fastutil.ints.IntIterators;
 	 * @param b the other bitmap
 	 */
 	public void or(Bitmap b) {
-<span class="fc" id="L219">		checkSize(this, b);</span>
-<span class="fc bfc" id="L220" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
-<span class="fc" id="L221">			words[i] |= b.words[i];</span>
-<span class="fc" id="L222">	}</span>
+<span class="fc" id="L220">		checkSize(this, b);</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">		for (int i = 0; i &lt; words.length; i++)</span>
+<span class="fc" id="L222">			words[i] |= b.words[i];</span>
+<span class="fc" id="L223">	}</span>
 
 	private static void checkSize(Bitmap a, Bitmap b) {
-<span class="fc bfc" id="L225" title="All 2 branches covered.">		if (a.size != b.size)</span>
-<span class="fc" id="L226">			throw new IllegalArgumentException(&quot;Bitmaps must be of the same size&quot;);</span>
-<span class="fc" id="L227">	}</span>
+<span class="fc bfc" id="L226" title="All 2 branches covered.">		if (a.size != b.size)</span>
+<span class="fc" id="L227">			throw new IllegalArgumentException(&quot;Bitmaps must be of the same size&quot;);</span>
+<span class="fc" id="L228">	}</span>
 
 	private long lastWordMask() {
-<span class="fc bfc" id="L230" title="All 2 branches covered.">		return size % WordSize == 0 ? ~0L : (1L &lt;&lt; (size % WordSize)) - 1;</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">		return size % WordSize == 0 ? ~0L : (1L &lt;&lt; (size % WordSize)) - 1;</span>
 	}
 
 }

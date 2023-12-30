@@ -99,74 +99,76 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L99">				this.x = x;</span>
 <span class="fc" id="L100">			}</span>
 		}
+
 		private static class FindMin extends Op {
 		}
+
 		private static class ExtractMin extends Op {
 		}
 	}
 
 	private void benchHeap(Heap.Builder heapBuilder, Blackhole blackhole) {
-<span class="fc" id="L109">		Heap&lt;Integer&gt; heap = heapBuilder.build();</span>
+<span class="fc" id="L111">		Heap&lt;Integer&gt; heap = heapBuilder.build();</span>
 
-<span class="fc" id="L111">		List&lt;Op&gt; sequence = sequences.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % sequencesNum));</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">		for (Op op : sequence) {</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">			if (op instanceof Op.Insert) {</span>
-<span class="fc" id="L114">				heap.insert(Integer.valueOf(((Op.Insert) op).x));</span>
+<span class="fc" id="L113">		List&lt;Op&gt; sequence = sequences.get(graphIdx.getAndUpdate(i -&gt; (i + 1) % sequencesNum));</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">		for (Op op : sequence) {</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">			if (op instanceof Op.Insert) {</span>
+<span class="fc" id="L116">				heap.insert(Integer.valueOf(((Op.Insert) op).x));</span>
 
-<span class="fc bfc" id="L116" title="All 2 branches covered.">			} else if (op instanceof Op.FindMin) {</span>
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">				if (heap.isEmpty())</span>
-<span class="nc" id="L118">					continue;</span>
-<span class="fc" id="L119">				Integer min = heap.findMin();</span>
-<span class="fc" id="L120">				blackhole.consume(min);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">			} else if (op instanceof Op.FindMin) {</span>
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">				if (heap.isEmpty())</span>
+<span class="nc" id="L120">					continue;</span>
+<span class="fc" id="L121">				Integer min = heap.findMin();</span>
+<span class="fc" id="L122">				blackhole.consume(min);</span>
 
-<span class="pc bpc" id="L122" title="1 of 2 branches missed.">			} else if (op instanceof Op.ExtractMin) {</span>
-<span class="pc bpc" id="L123" title="1 of 2 branches missed.">				if (heap.isEmpty())</span>
-<span class="nc" id="L124">					continue;</span>
-<span class="fc" id="L125">				Integer min = heap.extractMin();</span>
-<span class="fc" id="L126">				blackhole.consume(min);</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">			} else if (op instanceof Op.ExtractMin) {</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">				if (heap.isEmpty())</span>
+<span class="nc" id="L126">					continue;</span>
+<span class="fc" id="L127">				Integer min = heap.extractMin();</span>
+<span class="fc" id="L128">				blackhole.consume(min);</span>
 
-<span class="fc" id="L128">			} else {</span>
-<span class="nc" id="L129">				throw new IllegalArgumentException(&quot;unknown op: &quot; + op);</span>
+<span class="fc" id="L130">			} else {</span>
+<span class="nc" id="L131">				throw new IllegalArgumentException(&quot;unknown op: &quot; + op);</span>
 			}
-<span class="fc" id="L131">		}</span>
-<span class="fc" id="L132">	}</span>
+<span class="fc" id="L133">		}</span>
+<span class="fc" id="L134">	}</span>
 
 	@Benchmark
 	public void Binary(Blackhole blackhole) {
-<span class="fc" id="L136">		benchHeap(Heap.builder(), blackhole);</span>
-<span class="fc" id="L137">	}</span>
+<span class="fc" id="L138">		benchHeap(Heap.builder(), blackhole);</span>
+<span class="fc" id="L139">	}</span>
 
 	@Benchmark
 	public void Pairing(Blackhole blackhole) {
-<span class="fc" id="L141">		benchHeap(heapBuilder(IntIntPairingHeap::new), blackhole);</span>
-<span class="fc" id="L142">	}</span>
+<span class="fc" id="L143">		benchHeap(heapBuilder(IntIntPairingHeap::new), blackhole);</span>
+<span class="fc" id="L144">	}</span>
 
 	@Benchmark
 	public void Fibonacci(Blackhole blackhole) {
-<span class="fc" id="L146">		benchHeap(heapBuilder(IntIntFibonacciHeap::new), blackhole);</span>
-<span class="fc" id="L147">	}</span>
+<span class="fc" id="L148">		benchHeap(heapBuilder(IntIntFibonacciHeap::new), blackhole);</span>
+<span class="fc" id="L149">	}</span>
 
 	@Benchmark
 	public void Binomial(Blackhole blackhole) {
-<span class="fc" id="L151">		benchHeap(heapBuilder(IntIntBinomialHeap::new), blackhole);</span>
-<span class="fc" id="L152">	}</span>
+<span class="fc" id="L153">		benchHeap(heapBuilder(IntIntBinomialHeap::new), blackhole);</span>
+<span class="fc" id="L154">	}</span>
 
 	@Benchmark
 	public void RedBlackTree(Blackhole blackhole) {
-<span class="fc" id="L156">		benchHeap(heapBuilder(IntIntRedBlackTree::new), blackhole);</span>
-<span class="fc" id="L157">	}</span>
+<span class="fc" id="L158">		benchHeap(heapBuilder(IntIntRedBlackTree::new), blackhole);</span>
+<span class="fc" id="L159">	}</span>
 
 	@Benchmark
 	public void SplayTree(Blackhole blackhole) {
-<span class="fc" id="L161">		benchHeap(heapBuilder(IntIntSplayTree::new), blackhole);</span>
-<span class="fc" id="L162">	}</span>
+<span class="fc" id="L163">		benchHeap(heapBuilder(IntIntSplayTree::new), blackhole);</span>
+<span class="fc" id="L164">	}</span>
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	private static Heap.Builder heapBuilder(Function&lt;IntComparator, IntIntReferenceableHeap&gt; builder) {
-<span class="fc" id="L166">		return new Heap.Builder() {</span>
+<span class="fc" id="L168">		return new Heap.Builder() {</span>
 			@Override
 			public &lt;E&gt; Heap&lt;E&gt; build(Comparator&lt;? super E&gt; cmp) {
-<span class="fc" id="L169">				return (Heap&lt;E&gt;) new HeapFromReferenceableHeap(builder.apply((IntComparator) cmp));</span>
+<span class="fc" id="L171">				return (Heap&lt;E&gt;) new HeapFromReferenceableHeap(builder.apply((IntComparator) cmp));</span>
 			}
 		};
 	}
@@ -175,68 +177,68 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		private final IntIntReferenceableHeap heap;
 
-<span class="fc" id="L178">		HeapFromReferenceableHeap(IntIntReferenceableHeap heap) {</span>
-<span class="fc" id="L179">			this.heap = heap;</span>
-<span class="fc" id="L180">		}</span>
+<span class="fc" id="L180">		HeapFromReferenceableHeap(IntIntReferenceableHeap heap) {</span>
+<span class="fc" id="L181">			this.heap = heap;</span>
+<span class="fc" id="L182">		}</span>
 
 		@Override
 		public Iterator&lt;Integer&gt; iterator() {
-<span class="nc" id="L184">			return IterTools.map(heap.iterator(), IntIntReferenceableHeap.Ref::key);</span>
+<span class="nc" id="L186">			return IterTools.map(heap.iterator(), IntIntReferenceableHeap.Ref::key);</span>
 		}
 
 		@Override
 		public void insert(Integer elm) {
-<span class="fc" id="L189">			heap.insert(elm.intValue());</span>
-<span class="fc" id="L190">		}</span>
+<span class="fc" id="L191">			heap.insert(elm.intValue());</span>
+<span class="fc" id="L192">		}</span>
 
 		@Override
 		public void insertAll(Collection&lt;? extends Integer&gt; elms) {
-<span class="nc bnc" id="L194" title="All 2 branches missed.">			for (Integer elm : elms)</span>
-<span class="nc" id="L195">				heap.insert(elm.intValue());</span>
-<span class="nc" id="L196">		}</span>
+<span class="nc bnc" id="L196" title="All 2 branches missed.">			for (Integer elm : elms)</span>
+<span class="nc" id="L197">				heap.insert(elm.intValue());</span>
+<span class="nc" id="L198">		}</span>
 
 		@Override
 		public Integer findMin() {
-<span class="fc" id="L200">			return Integer.valueOf(heap.findMin().key());</span>
+<span class="fc" id="L202">			return Integer.valueOf(heap.findMin().key());</span>
 		}
 
 		@Override
 		public Integer extractMin() {
-<span class="fc" id="L205">			return Integer.valueOf(heap.extractMin().key());</span>
+<span class="fc" id="L207">			return Integer.valueOf(heap.extractMin().key());</span>
 		}
 
 		@Override
 		public boolean remove(Integer elm) {
-<span class="nc" id="L210">			IntIntReferenceableHeap.Ref ref = heap.find(elm.intValue());</span>
-<span class="nc bnc" id="L211" title="All 2 branches missed.">			if (ref == null)</span>
-<span class="nc" id="L212">				return false;</span>
-<span class="nc" id="L213">			heap.remove(ref);</span>
-<span class="nc" id="L214">			return true;</span>
+<span class="nc" id="L212">			IntIntReferenceableHeap.Ref ref = heap.find(elm.intValue());</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">			if (ref == null)</span>
+<span class="nc" id="L214">				return false;</span>
+<span class="nc" id="L215">			heap.remove(ref);</span>
+<span class="nc" id="L216">			return true;</span>
 		}
 
 		@Override
 		public void meld(Heap&lt;? extends Integer&gt; heap) {
-<span class="nc" id="L219">			throw new UnsupportedOperationException(&quot;Unimplemented method 'meld'&quot;);</span>
+<span class="nc" id="L221">			throw new UnsupportedOperationException(&quot;Unimplemented method 'meld'&quot;);</span>
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc" id="L224">			return heap.isEmpty();</span>
+<span class="fc" id="L226">			return heap.isEmpty();</span>
 		}
 
 		@Override
 		public boolean isNotEmpty() {
-<span class="nc" id="L229">			return heap.isNotEmpty();</span>
+<span class="nc" id="L231">			return heap.isNotEmpty();</span>
 		}
 
 		@Override
 		public void clear() {
-<span class="nc" id="L234">			heap.clear();</span>
-<span class="nc" id="L235">		}</span>
+<span class="nc" id="L236">			heap.clear();</span>
+<span class="nc" id="L237">		}</span>
 
 		@Override
 		public Comparator&lt;? super Integer&gt; comparator() {
-<span class="nc" id="L239">			return heap.comparator();</span>
+<span class="nc" id="L241">			return heap.comparator();</span>
 		}
 	}
 

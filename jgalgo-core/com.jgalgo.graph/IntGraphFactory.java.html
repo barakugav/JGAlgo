@@ -99,12 +99,13 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * &lt;p&gt;
 	 * By default, graphs created by this factory will have a vertex builder that uses a counter and assign the next id
 	 * to each new vertex by incrementing the counter until there is no vertex with that id.
 	 */
 	@Override
 	default IntGraphFactory setVertexBuilder(IdBuilder&lt;Integer&gt; vertexBuilder) {
-<span class="fc" id="L107">		return (IntGraphFactory) GraphFactory.super.setVertexBuilder(vertexBuilder);</span>
+<span class="fc" id="L108">		return (IntGraphFactory) GraphFactory.super.setVertexBuilder(vertexBuilder);</span>
 	}
 
 	@Override
@@ -113,12 +114,13 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * &lt;p&gt;
 	 * By default, graphs created by this factory will have an edge builder that uses a counter and assign the next id
 	 * to each new edge by incrementing the counter until there is no edge with that id.
 	 */
 	@Override
 	default IntGraphFactory setEdgeBuilder(IdBuilder&lt;Integer&gt; edgeBuilder) {
-<span class="fc" id="L121">		return (IntGraphFactory) GraphFactory.super.setEdgeBuilder(edgeBuilder);</span>
+<span class="fc" id="L123">		return (IntGraphFactory) GraphFactory.super.setEdgeBuilder(edgeBuilder);</span>
 	}
 
 	@Override
@@ -136,7 +138,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 * @return a new factory that can build undirected int graphs
 	 */
 	public static IntGraphFactory undirected() {
-<span class="fc" id="L139">		return new IntGraphFactoryImpl(false);</span>
+<span class="fc" id="L141">		return new IntGraphFactoryImpl(false);</span>
 	}
 
 	/**
@@ -145,7 +147,7 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 * @return a new factory that can build directed int graphs
 	 */
 	public static IntGraphFactory directed() {
-<span class="fc" id="L148">		return new IntGraphFactoryImpl(true);</span>
+<span class="fc" id="L150">		return new IntGraphFactoryImpl(true);</span>
 	}
 
 	/**
@@ -155,12 +157,12 @@ public interface IntGraphFactory extends GraphFactory&lt;Integer, Integer&gt; {
 	 * @return          a new factory that can build un/directed int graphs
 	 */
 	public static IntGraphFactory newInstance(boolean directed) {
-<span class="fc" id="L158">		return new IntGraphFactoryImpl(directed);</span>
+<span class="fc" id="L160">		return new IntGraphFactoryImpl(directed);</span>
 	}
 
 	@Override
 	default IntGraphFactory setOption(String key, Object value) {
-<span class="nc" id="L163">		return (IndexGraphFactory) GraphFactory.super.setOption(key, value);</span>
+<span class="nc" id="L165">		return (IndexGraphFactory) GraphFactory.super.setOption(key, value);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

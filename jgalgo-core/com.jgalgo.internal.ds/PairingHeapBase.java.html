@@ -20,9 +20,9 @@ import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-<span class="fc" id="L23">class PairingHeapBase&lt;Node extends PairingHeapBase.NodeBase&lt;Node&gt;&gt; {</span>
+<span class="fc" id="L23">class PairingHeapBase&lt;NodeT extends PairingHeapBase.NodeBase&lt;NodeT&gt;&gt; {</span>
 
-	Node minRoot;
+	NodeT minRoot;
 
 	public boolean isEmpty() {
 <span class="fc bfc" id="L28" title="All 2 branches covered.">		return minRoot == null;</span>
@@ -32,8 +32,8 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L32" title="All 2 branches covered.">		return minRoot != null;</span>
 	}
 
-	void cut(Node n) {
-<span class="fc" id="L36">		Node next = n.next;</span>
+	void cut(NodeT n) {
+<span class="fc" id="L36">		NodeT next = n.next;</span>
 <span class="fc bfc" id="L37" title="All 2 branches covered.">		if (next != null) {</span>
 <span class="fc" id="L38">			next.prevOrParent = n.prevOrParent;</span>
 <span class="fc" id="L39">			n.next = null;</span>
@@ -46,10 +46,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L46">		n.prevOrParent = null;</span>
 <span class="fc" id="L47">	}</span>
 
-	void addChild(Node parent, Node newChild) {
+	void addChild(NodeT parent, NodeT newChild) {
 <span class="pc bnc" id="L50" title="All 2 branches missed.">		assert newChild.prevOrParent == null;</span>
 <span class="pc bnc" id="L51" title="All 2 branches missed.">		assert newChild.next == null;</span>
-<span class="fc" id="L52">		Node oldChild = parent.child;</span>
+<span class="fc" id="L52">		NodeT oldChild = parent.child;</span>
 <span class="fc bfc" id="L53" title="All 2 branches covered.">		if (oldChild != null) {</span>
 <span class="fc" id="L54">			oldChild.prevOrParent = newChild;</span>
 <span class="fc" id="L55">			newChild.next = oldChild;</span>
@@ -62,14 +62,14 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc bfc" id="L62" title="All 2 branches covered.">		if (minRoot == null)</span>
 <span class="fc" id="L63">			return;</span>
 
-<span class="fc" id="L65">		for (Node p = minRoot;;) {</span>
+<span class="fc" id="L65">		for (NodeT p = minRoot;;) {</span>
 <span class="fc bfc" id="L66" title="All 2 branches covered.">			while (p.child != null) {</span>
 <span class="fc" id="L67">				p = p.child;</span>
 <span class="fc bfc" id="L68" title="All 2 branches covered.">				while (p.next != null)</span>
 <span class="fc" id="L69">					p = p.next;</span>
 			}
 <span class="fc" id="L71">			p.clearKeyData();</span>
-<span class="fc" id="L72">			Node prev = p.prevOrParent;</span>
+<span class="fc" id="L72">			NodeT prev = p.prevOrParent;</span>
 <span class="fc bfc" id="L73" title="All 2 branches covered.">			if (prev == null)</span>
 <span class="fc" id="L74">				break;</span>
 <span class="fc" id="L75">			p.prevOrParent = null;</span>
@@ -84,11 +84,11 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L84">		minRoot = null;</span>
 <span class="fc" id="L85">	}</span>
 
-	static class PreOrderIter&lt;Node extends NodeBase&lt;Node&gt;&gt; implements Iterator&lt;Node&gt; {
+	static class PreOrderIter&lt;NodeT extends NodeBase&lt;NodeT&gt;&gt; implements Iterator&lt;NodeT&gt; {
 
-<span class="fc" id="L89">		private final Stack&lt;Node&gt; path = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L89">		private final Stack&lt;NodeT&gt; path = new ObjectArrayList&lt;&gt;();</span>
 
-<span class="fc" id="L91">		PreOrderIter(Node p) {</span>
+<span class="fc" id="L91">		PreOrderIter(NodeT p) {</span>
 <span class="fc bfc" id="L92" title="All 2 branches covered.">			if (p != null)</span>
 <span class="fc" id="L93">				path.push(p);</span>
 <span class="fc" id="L94">		}</span>
@@ -99,15 +99,15 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		}
 
 		@Override
-		public Node next() {
+		public NodeT next() {
 <span class="fc" id="L103">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L104">			final Node ret = path.top();</span>
+<span class="fc" id="L104">			final NodeT ret = path.top();</span>
 
-			Node next;
+			NodeT next;
 <span class="fc bfc" id="L107" title="All 2 branches covered.">			if ((next = ret.child) != null) {</span>
 <span class="fc" id="L108">				path.push(next);</span>
 			} else {
-				Node p0;
+				NodeT p0;
 				do {
 <span class="fc" id="L112">					p0 = path.pop();</span>
 <span class="fc bfc" id="L113" title="All 2 branches covered.">					if ((next = p0.next) != null) {</span>
@@ -122,10 +122,10 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	}
 
-<span class="fc" id="L125">	static class NodeBase&lt;Node extends NodeBase&lt;Node&gt;&gt; {</span>
-		Node prevOrParent;
-		Node next;
-		Node child;
+<span class="fc" id="L125">	static class NodeBase&lt;NodeT extends NodeBase&lt;NodeT&gt;&gt; {</span>
+		NodeT prevOrParent;
+		NodeT next;
+		NodeT child;
 
 <span class="fc" id="L130">		void clearKeyData() {}</span>
 	}

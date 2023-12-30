@@ -90,79 +90,85 @@ class IdBuilders {
 	/* we want to have a single instance of bytes default factory, using static nested class create it lazily */
 	private static class DefaultByteFactory {
 		static final Supplier&lt;IdBuilder&lt;Byte&gt;&gt; Instance;
+
 		static {
-<span class="fc" id="L94">			long min = Byte.MIN_VALUE, max = Byte.MAX_VALUE, maxEdgesSize = 1 &lt;&lt; Byte.SIZE;</span>
-<span class="fc" id="L95">			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -&gt; Byte.valueOf((byte) x));</span>
-<span class="fc" id="L96">		}</span>
+<span class="fc" id="L95">			long min = Byte.MIN_VALUE, max = Byte.MAX_VALUE, maxEdgesSize = 1 &lt;&lt; Byte.SIZE;</span>
+<span class="fc" id="L96">			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -&gt; Byte.valueOf((byte) x));</span>
+<span class="fc" id="L97">		}</span>
 	}
 
 	/* we want to have a single instance of shorts default factory, using static nested class create it lazily */
 	private static class DefaultShortFactory {
 		static final Supplier&lt;IdBuilder&lt;Short&gt;&gt; Instance;
+
 		static {
-<span class="fc" id="L103">			long min = Short.MIN_VALUE, max = Short.MAX_VALUE, maxEdgesSize = 1 &lt;&lt; Short.SIZE;</span>
-<span class="fc" id="L104">			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -&gt; Short.valueOf((short) x));</span>
-<span class="fc" id="L105">		}</span>
+<span class="fc" id="L105">			long min = Short.MIN_VALUE, max = Short.MAX_VALUE, maxEdgesSize = 1 &lt;&lt; Short.SIZE;</span>
+<span class="fc" id="L106">			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -&gt; Short.valueOf((short) x));</span>
+<span class="fc" id="L107">		}</span>
 	}
 
 	/* we want to have a single instance of longs default factory, using static nested class create it lazily */
 	private static class DefaultLongFactory {
 		static final Supplier&lt;IdBuilder&lt;Long&gt;&gt; Instance;
+
 		static {
-<span class="fc" id="L112">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
-<span class="fc" id="L113">			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -&gt; Long.valueOf(x));</span>
-<span class="fc" id="L114">		}</span>
+<span class="fc" id="L115">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
+<span class="fc" id="L116">			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -&gt; Long.valueOf(x));</span>
+<span class="fc" id="L117">		}</span>
 	}
 
 	/* we want to have a single instance of floats default factory, using static nested class create it lazily */
 	private static class DefaultFloatFactory {
 		static final Supplier&lt;IdBuilder&lt;Float&gt;&gt; Instance;
+
 		static {
-<span class="fc" id="L121">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
-<span class="fc" id="L122">			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -&gt; Float.valueOf(x));</span>
-<span class="fc" id="L123">		}</span>
+<span class="fc" id="L125">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
+<span class="fc" id="L126">			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -&gt; Float.valueOf(x));</span>
+<span class="fc" id="L127">		}</span>
 	}
 
 	/* we want to have a single instance of doubles default factory, using static nested class create it lazily */
 	private static class DefaultDoubleFactory {
 		static final Supplier&lt;IdBuilder&lt;Double&gt;&gt; Instance;
+
 		static {
-<span class="fc" id="L130">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
-<span class="fc" id="L131">			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -&gt; Double.valueOf(x));</span>
-<span class="fc" id="L132">		}</span>
+<span class="fc" id="L135">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
+<span class="fc" id="L136">			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -&gt; Double.valueOf(x));</span>
+<span class="fc" id="L137">		}</span>
 	}
 
 	/* we want to have a single instance of strings default factory, using static nested class create it lazily */
 	private static class DefaultStringFactory {
 		static final Supplier&lt;IdBuilder&lt;String&gt;&gt; Instance;
+
 		static {
-<span class="fc" id="L139">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
-<span class="fc" id="L140">			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -&gt; Long.toString(x));</span>
-<span class="fc" id="L141">		}</span>
+<span class="fc" id="L145">			long min = Long.MIN_VALUE, max = Long.MAX_VALUE, maxEdgesSize = 1L &lt;&lt; 48;</span>
+<span class="fc" id="L146">			Instance = defaultPrimitiveFactory(min, max, maxEdgesSize, x -&gt; Long.toString(x));</span>
+<span class="fc" id="L147">		}</span>
 	}
 
 	private static &lt;E&gt; Supplier&lt;IdBuilder&lt;E&gt;&gt; defaultPrimitiveFactory(long minVal, long maxVal, long maxEdgesSize,
 			LongFunction&lt;E&gt; idBuilder) {
-<span class="fc" id="L146">		return () -&gt; new IdBuilder&lt;&gt;() {</span>
+<span class="fc" id="L152">		return () -&gt; new IdBuilder&lt;&gt;() {</span>
 			long nextId;
 
 			@Override
 			public E build(Set&lt;E&gt; existingEdges) {
-<span class="fc bfc" id="L151" title="All 2 branches covered.">				if (existingEdges.size() &gt;= maxEdgesSize)</span>
-<span class="fc" id="L152">					throw new IllegalArgumentException(&quot;too many edges&quot;);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">				if (existingEdges.size() &gt;= maxEdgesSize)</span>
+<span class="fc" id="L158">					throw new IllegalArgumentException(&quot;too many edges&quot;);</span>
 				for (E id;;)
-<span class="fc bfc" id="L154" title="All 2 branches covered.">					if (!existingEdges.contains(id = idBuilder.apply(getAndInc())))</span>
-<span class="fc" id="L155">						return id;</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">					if (!existingEdges.contains(id = idBuilder.apply(getAndInc())))</span>
+<span class="fc" id="L161">						return id;</span>
 			}
 
 			private long getAndInc() {
-<span class="fc" id="L159">				long ret = nextId;</span>
-<span class="fc bfc" id="L160" title="All 2 branches covered.">				if (nextId &lt; maxVal) {</span>
-<span class="fc" id="L161">					nextId++;</span>
+<span class="fc" id="L165">				long ret = nextId;</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">				if (nextId &lt; maxVal) {</span>
+<span class="fc" id="L167">					nextId++;</span>
 				} else {
-<span class="fc" id="L163">					nextId = minVal;</span>
+<span class="fc" id="L169">					nextId = minVal;</span>
 				}
-<span class="fc" id="L165">				return ret;</span>
+<span class="fc" id="L171">				return ret;</span>
 			}
 		};
 	}

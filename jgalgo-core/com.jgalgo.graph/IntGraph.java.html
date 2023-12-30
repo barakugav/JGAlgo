@@ -685,6 +685,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * &lt;p&gt;
 	 * The return object is always some sub class of {@link IWeights}, such as {@link IWeightsInt} or
 	 * {@link IWeightsDouble}.
 	 */
@@ -694,6 +695,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	/**
 	 * {@inheritDoc}
 	 *
+	 * &lt;p&gt;
 	 * The return object is always some sub class of {@link IWeights}, such as {@link IWeightsInt} or
 	 * {@link IWeightsDouble}.
 	 */
@@ -708,37 +710,37 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 
 	@Override
 	default IntGraph copy() {
-<span class="fc" id="L711">		return (IntGraph) Graph.super.copy();</span>
+<span class="fc" id="L713">		return (IntGraph) Graph.super.copy();</span>
 	}
 
 	@Override
 	default IntGraph copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L716">		return (IntGraph) Graph.super.copy(copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L718">		return (IntGraph) Graph.super.copy(copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	@Override
 	default IntGraph immutableCopy() {
-<span class="fc" id="L721">		return (IntGraph) Graph.super.immutableCopy();</span>
+<span class="fc" id="L723">		return (IntGraph) Graph.super.immutableCopy();</span>
 	}
 
 	@Override
 	default IntGraph immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L726">		return (IntGraph) Graph.super.immutableCopy(copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L728">		return (IntGraph) Graph.super.immutableCopy(copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	@Override
 	default IntGraph immutableView() {
-<span class="fc" id="L731">		return (IntGraph) Graph.super.immutableView();</span>
+<span class="fc" id="L733">		return (IntGraph) Graph.super.immutableView();</span>
 	}
 
 	@Override
 	default IntGraph reverseView() {
-<span class="fc" id="L736">		return (IntGraph) Graph.super.reverseView();</span>
+<span class="fc" id="L738">		return (IntGraph) Graph.super.reverseView();</span>
 	}
 
 	@Override
 	default IntGraph undirectedView() {
-<span class="fc" id="L741">		return (IntGraph) Graph.super.undirectedView();</span>
+<span class="fc" id="L743">		return (IntGraph) Graph.super.undirectedView();</span>
 	}
 
 	/**
@@ -749,7 +751,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 */
 	@Override
 	default IntGraph subGraphCopy(Collection&lt;Integer&gt; vertices, Collection&lt;Integer&gt; edges) {
-<span class="fc" id="L752">		return (IntGraph) Graph.super.subGraphCopy(vertices, edges);</span>
+<span class="fc" id="L754">		return (IntGraph) Graph.super.subGraphCopy(vertices, edges);</span>
 	}
 
 	/**
@@ -762,7 +764,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @return a new undirected empty graph
 	 */
 	static IntGraph newUndirected() {
-<span class="fc" id="L765">		return IntGraphFactory.undirected().newGraph();</span>
+<span class="fc" id="L767">		return IntGraphFactory.undirected().newGraph();</span>
 	}
 
 	/**
@@ -775,7 +777,7 @@ public interface IntGraph extends Graph&lt;Integer, Integer&gt; {
 	 * @return a new directed empty graph
 	 */
 	static IntGraph newDirected() {
-<span class="fc" id="L778">		return IntGraphFactory.directed().newGraph();</span>
+<span class="fc" id="L780">		return IntGraphFactory.directed().newGraph();</span>
 	}
 
 }

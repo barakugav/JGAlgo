@@ -40,6 +40,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * Generates a random bipartite graph using the \(G(n_1,n_2,p)\) model in which every edge exists with probability
  * \(p\).
  *
+ * &lt;p&gt;
  * The \(G(n_1,n_2,p)\) model generates a bipartite graph by connecting each pair of a left vertex and a right vertex
  * with probability \(p\). Each edge is created with probability independent of the others. The generator accept two
  * sets of vertices, the left and right vertices sets of the bipartite graph, and the probability \(p\).
@@ -91,9 +92,9 @@ public class GnpBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 	private final GraphFactory&lt;V, E&gt; factory;
 	private Variant2&lt;List&lt;V&gt;[], Pair&lt;IntIntPair, IdBuilder&lt;V&gt;&gt;&gt; vertices;
 	private IdBuilder&lt;E&gt; edgeBuilder;
-<span class="fc" id="L94">	private Direction direction = Direction.Undirected;</span>
-<span class="fc" id="L95">	private double p = 0.1;</span>
-<span class="fc" id="L96">	private Random rand = new Random();</span>
+<span class="fc" id="L95">	private Direction direction = Direction.Undirected;</span>
+<span class="fc" id="L96">	private double p = 0.1;</span>
+<span class="fc" id="L97">	private Random rand = new Random();</span>
 
 	/**
 	 * Create a new \(G(n_1,n_2,p)\) graph generator that will use the default graph factory.
@@ -108,8 +109,8 @@ public class GnpBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 	 * {@link #vertices(Collection, Collection)}.
 	 */
 	public GnpBipartiteGraphGenerator() {
-<span class="fc" id="L111">		this(GraphFactory.undirected());</span>
-<span class="fc" id="L112">	}</span>
+<span class="fc" id="L112">		this(GraphFactory.undirected());</span>
+<span class="fc" id="L113">	}</span>
 
 	/**
 	 * Create a new \(G(n_1,n_2,p)\) graph generator that will use the given graph factory.
@@ -129,9 +130,9 @@ public class GnpBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 	 *
 	 * @param factory the graph factory that will be used to create the generated graph(s)
 	 */
-<span class="fc" id="L132">	public GnpBipartiteGraphGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
-<span class="fc" id="L133">		this.factory = Objects.requireNonNull(factory);</span>
-<span class="fc" id="L134">	}</span>
+<span class="fc" id="L133">	public GnpBipartiteGraphGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
+<span class="fc" id="L134">		this.factory = Objects.requireNonNull(factory);</span>
+<span class="fc" id="L135">	}</span>
 
 	/**
 	 * Get the graph factory that will be used to create the generated graph(s).
@@ -150,7 +151,7 @@ public class GnpBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 	 * @return the graph factory that will be used to create the generated graph(s)
 	 */
 	public GraphFactory&lt;V, E&gt; graphFactory() {
-<span class="fc" id="L153">		return factory;</span>
+<span class="fc" id="L154">		return factory;</span>
 	}
 
 	/**
@@ -173,16 +174,16 @@ public class GnpBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public GnpBipartiteGraphGenerator&lt;V, E&gt; vertices(Collection&lt;? extends V&gt; leftVertices,
 			Collection&lt;? extends V&gt; rightVertices) {
-<span class="fc bfc" id="L176" title="All 2 branches covered.">		if (factory instanceof IntGraphFactory) {</span>
-<span class="fc" id="L177">			leftVertices = (List&lt;V&gt;) new IntArrayList((Collection&lt;Integer&gt;) leftVertices);</span>
-<span class="fc" id="L178">			rightVertices = (List&lt;V&gt;) new IntArrayList((Collection&lt;Integer&gt;) rightVertices);</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">		if (factory instanceof IntGraphFactory) {</span>
+<span class="fc" id="L178">			leftVertices = (List&lt;V&gt;) new IntArrayList((Collection&lt;Integer&gt;) leftVertices);</span>
+<span class="fc" id="L179">			rightVertices = (List&lt;V&gt;) new IntArrayList((Collection&lt;Integer&gt;) rightVertices);</span>
 		} else {
-<span class="fc" id="L180">			leftVertices = new ObjectArrayList&lt;&gt;(leftVertices);</span>
-<span class="fc" id="L181">			rightVertices = new ObjectArrayList&lt;&gt;(rightVertices);</span>
+<span class="fc" id="L181">			leftVertices = new ObjectArrayList&lt;&gt;(leftVertices);</span>
+<span class="fc" id="L182">			rightVertices = new ObjectArrayList&lt;&gt;(rightVertices);</span>
 		}
-<span class="fc" id="L183">		List&lt;V&gt;[] vertices = new List[] { (List&lt;V&gt;) leftVertices, (List&lt;V&gt;) rightVertices };</span>
-<span class="fc" id="L184">		this.vertices = Variant2.ofA(vertices);</span>
-<span class="fc" id="L185">		return this;</span>
+<span class="fc" id="L184">		List&lt;V&gt;[] vertices = new List[] { (List&lt;V&gt;) leftVertices, (List&lt;V&gt;) rightVertices };</span>
+<span class="fc" id="L185">		this.vertices = Variant2.ofA(vertices);</span>
+<span class="fc" id="L186">		return this;</span>
 	}
 
 	/**
@@ -210,8 +211,8 @@ public class GnpBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 	 * @throws IllegalArgumentException if {@code leftVerticesNum} or {@code rightVerticesNum} are negative
 	 */
 	public GnpBipartiteGraphGenerator&lt;V, E&gt; vertices(int leftVerticesNum, int rightVerticesNum) {
-<span class="fc" id="L213">		vertices(leftVerticesNum, rightVerticesNum, null);</span>
-<span class="fc" id="L214">		return this;</span>
+<span class="fc" id="L214">		vertices(leftVerticesNum, rightVerticesNum, null);</span>
+<span class="fc" id="L215">		return this;</span>
 	}
 
 	/**
@@ -238,10 +239,10 @@ public class GnpBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 	 */
 	public GnpBipartiteGraphGenerator&lt;V, E&gt; vertices(int leftVerticesNum, int rightVerticesNum,
 			IdBuilder&lt;V&gt; vertexBuilder) {
-<span class="fc bfc" id="L241" title="All 4 branches covered.">		if (leftVerticesNum &lt; 0 || rightVerticesNum &lt; 0)</span>
-<span class="fc" id="L242">			throw new IllegalArgumentException(&quot;number of vertices must be non-negative&quot;);</span>
-<span class="fc" id="L243">		vertices = Variant2.ofB(Pair.of(IntIntPair.of(leftVerticesNum, rightVerticesNum), vertexBuilder));</span>
-<span class="fc" id="L244">		return this;</span>
+<span class="fc bfc" id="L242" title="All 4 branches covered.">		if (leftVerticesNum &lt; 0 || rightVerticesNum &lt; 0)</span>
+<span class="fc" id="L243">			throw new IllegalArgumentException(&quot;number of vertices must be non-negative&quot;);</span>
+<span class="fc" id="L244">		vertices = Variant2.ofB(Pair.of(IntIntPair.of(leftVerticesNum, rightVerticesNum), vertexBuilder));</span>
+<span class="fc" id="L245">		return this;</span>
 	}
 
 	/**
@@ -259,8 +260,8 @@ public class GnpBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 	 * @return             this generator
 	 */
 	public GnpBipartiteGraphGenerator&lt;V, E&gt; edges(IdBuilder&lt;E&gt; edgeBuilder) {
-<span class="fc" id="L262">		this.edgeBuilder = edgeBuilder;</span>
-<span class="fc" id="L263">		return this;</span>
+<span class="fc" id="L263">		this.edgeBuilder = edgeBuilder;</span>
+<span class="fc" id="L264">		return this;</span>
 	}
 
 	/**
@@ -282,8 +283,8 @@ public class GnpBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 	 * @return this generator
 	 */
 	public GnpBipartiteGraphGenerator&lt;V, E&gt; undirected() {
-<span class="fc" id="L285">		direction = Direction.Undirected;</span>
-<span class="fc" id="L286">		return this;</span>
+<span class="fc" id="L286">		direction = Direction.Undirected;</span>
+<span class="fc" id="L287">		return this;</span>
 	}
 
 	/**
@@ -305,8 +306,8 @@ public class GnpBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 	 * @return this generator
 	 */
 	public GnpBipartiteGraphGenerator&lt;V, E&gt; directedAll() {
-<span class="fc" id="L308">		direction = Direction.DirectedAll;</span>
-<span class="fc" id="L309">		return this;</span>
+<span class="fc" id="L309">		direction = Direction.DirectedAll;</span>
+<span class="fc" id="L310">		return this;</span>
 	}
 
 	/**
@@ -328,8 +329,8 @@ public class GnpBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 	 * @return this generator
 	 */
 	public GnpBipartiteGraphGenerator&lt;V, E&gt; directedLeftToRight() {
-<span class="fc" id="L331">		direction = Direction.DirectedLeftToRight;</span>
-<span class="fc" id="L332">		return this;</span>
+<span class="fc" id="L332">		direction = Direction.DirectedLeftToRight;</span>
+<span class="fc" id="L333">		return this;</span>
 	}
 
 	/**
@@ -351,8 +352,8 @@ public class GnpBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 	 * @return this generator
 	 */
 	public GnpBipartiteGraphGenerator&lt;V, E&gt; directedRightToLeft() {
-<span class="fc" id="L354">		direction = Direction.DirectedRightToLeft;</span>
-<span class="fc" id="L355">		return this;</span>
+<span class="fc" id="L355">		direction = Direction.DirectedRightToLeft;</span>
+<span class="fc" id="L356">		return this;</span>
 	}
 
 	/**
@@ -371,10 +372,10 @@ public class GnpBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 	 * @return   this generator
 	 */
 	public GnpBipartiteGraphGenerator&lt;V, E&gt; edgeProbability(double p) {
-<span class="fc bfc" id="L374" title="All 4 branches covered.">		if (!(0 &lt;= p &amp;&amp; p &lt;= 1))</span>
-<span class="fc" id="L375">			throw new IllegalArgumentException(&quot;edge probability must be in [0,1]&quot;);</span>
-<span class="fc" id="L376">		this.p = p;</span>
-<span class="fc" id="L377">		return this;</span>
+<span class="fc bfc" id="L375" title="All 4 branches covered.">		if (!(0 &lt;= p &amp;&amp; p &lt;= 1))</span>
+<span class="fc" id="L376">			throw new IllegalArgumentException(&quot;edge probability must be in [0,1]&quot;);</span>
+<span class="fc" id="L377">		this.p = p;</span>
+<span class="fc" id="L378">		return this;</span>
 	}
 
 	/**
@@ -387,77 +388,77 @@ public class GnpBipartiteGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt
 	 * @return      this generator
 	 */
 	public GnpBipartiteGraphGenerator&lt;V, E&gt; seed(long seed) {
-<span class="fc" id="L390">		rand = new Random(seed);</span>
-<span class="fc" id="L391">		return this;</span>
+<span class="fc" id="L391">		rand = new Random(seed);</span>
+<span class="fc" id="L392">		return this;</span>
 	}
 
 	@Override
 	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
-<span class="fc bfc" id="L396" title="All 2 branches covered.">		if (vertices == null)</span>
-<span class="fc" id="L397">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
+<span class="fc bfc" id="L397" title="All 2 branches covered.">		if (vertices == null)</span>
+<span class="fc" id="L398">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
 		@SuppressWarnings(&quot;boxing&quot;)
-<span class="fc" id="L399">		final int leftSize = vertices.map(p -&gt; p[0].size(), p -&gt; p.first().firstInt()).intValue();</span>
+<span class="fc" id="L400">		final int leftSize = vertices.map(p -&gt; p[0].size(), p -&gt; p.first().firstInt()).intValue();</span>
 		@SuppressWarnings(&quot;boxing&quot;)
-<span class="fc" id="L401">		final int rightSize = vertices.map(p -&gt; p[1].size(), p -&gt; p.first().secondInt()).intValue();</span>
+<span class="fc" id="L402">		final int rightSize = vertices.map(p -&gt; p[1].size(), p -&gt; p.first().secondInt()).intValue();</span>
 
-<span class="fc bfc" id="L403" title="All 2 branches covered.">		GraphBuilder&lt;V, E&gt; g = factory.setDirected(direction != Direction.Undirected).newBuilder();</span>
-<span class="fc bfc" id="L404" title="All 2 branches covered.">		IdBuilder&lt;E&gt; edgeBuilder = this.edgeBuilder != null ? this.edgeBuilder : g.edgeBuilder();</span>
-<span class="fc bfc" id="L405" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
-<span class="fc" id="L406">			throw new IllegalStateException(&quot;Edge builder not provided and graph factory does not have one&quot;);</span>
+<span class="fc bfc" id="L404" title="All 2 branches covered.">		GraphBuilder&lt;V, E&gt; g = factory.setDirected(direction != Direction.Undirected).newBuilder();</span>
+<span class="fc bfc" id="L405" title="All 2 branches covered.">		IdBuilder&lt;E&gt; edgeBuilder = this.edgeBuilder != null ? this.edgeBuilder : g.edgeBuilder();</span>
+<span class="fc bfc" id="L406" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
+<span class="fc" id="L407">			throw new IllegalStateException(&quot;Edge builder not provided and graph factory does not have one&quot;);</span>
 
 		final List&lt;V&gt; leftVertices;
 		final List&lt;V&gt; rightVertices;
-<span class="fc" id="L410">		g.ensureVertexCapacity(leftSize + rightSize);</span>
-<span class="fc bfc" id="L411" title="All 2 branches covered.">		if (this.vertices.contains(List[].class)) {</span>
+<span class="fc" id="L411">		g.ensureVertexCapacity(leftSize + rightSize);</span>
+<span class="fc bfc" id="L412" title="All 2 branches covered.">		if (this.vertices.contains(List[].class)) {</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L413">			List&lt;V&gt;[] vertices = this.vertices.get(List[].class);</span>
-<span class="fc" id="L414">			g.addVertices(leftVertices = vertices[0]);</span>
-<span class="fc" id="L415">			g.addVertices(rightVertices = vertices[1]);</span>
-<span class="fc" id="L416">		} else {</span>
+<span class="fc" id="L414">			List&lt;V&gt;[] vertices = this.vertices.get(List[].class);</span>
+<span class="fc" id="L415">			g.addVertices(leftVertices = vertices[0]);</span>
+<span class="fc" id="L416">			g.addVertices(rightVertices = vertices[1]);</span>
+<span class="fc" id="L417">		} else {</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L418">			Pair&lt;IntIntPair, IdBuilder&lt;V&gt;&gt; p = this.vertices.get(Pair.class);</span>
-<span class="fc bfc" id="L419" title="All 2 branches covered.">			IdBuilder&lt;V&gt; vertexBuilder = p.second() != null ? p.second() : g.vertexBuilder();</span>
-<span class="fc bfc" id="L420" title="All 2 branches covered.">			if (vertexBuilder == null)</span>
-<span class="fc" id="L421">				throw new IllegalStateException(&quot;Vertex builder not provided and graph factory does not have one&quot;);</span>
-<span class="fc bfc" id="L422" title="All 2 branches covered.">			if (g instanceof IntGraphBuilder) {</span>
+<span class="fc" id="L419">			Pair&lt;IntIntPair, IdBuilder&lt;V&gt;&gt; p = this.vertices.get(Pair.class);</span>
+<span class="fc bfc" id="L420" title="All 2 branches covered.">			IdBuilder&lt;V&gt; vertexBuilder = p.second() != null ? p.second() : g.vertexBuilder();</span>
+<span class="fc bfc" id="L421" title="All 2 branches covered.">			if (vertexBuilder == null)</span>
+<span class="fc" id="L422">				throw new IllegalStateException(&quot;Vertex builder not provided and graph factory does not have one&quot;);</span>
+<span class="fc bfc" id="L423" title="All 2 branches covered.">			if (g instanceof IntGraphBuilder) {</span>
 				@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L424">				List&lt;V&gt; leftVertices0 = (List&lt;V&gt;) new IntArrayList(leftSize);</span>
+<span class="fc" id="L425">				List&lt;V&gt; leftVertices0 = (List&lt;V&gt;) new IntArrayList(leftSize);</span>
 				@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L426">				List&lt;V&gt; rightVertices0 = (List&lt;V&gt;) new IntArrayList(rightSize);</span>
-<span class="fc" id="L427">				leftVertices = leftVertices0;</span>
-<span class="fc" id="L428">				rightVertices = rightVertices0;</span>
-<span class="fc" id="L429">			} else {</span>
-<span class="fc" id="L430">				leftVertices = new ObjectArrayList&lt;&gt;(leftSize);</span>
-<span class="fc" id="L431">				rightVertices = new ObjectArrayList&lt;&gt;(rightSize);</span>
+<span class="fc" id="L427">				List&lt;V&gt; rightVertices0 = (List&lt;V&gt;) new IntArrayList(rightSize);</span>
+<span class="fc" id="L428">				leftVertices = leftVertices0;</span>
+<span class="fc" id="L429">				rightVertices = rightVertices0;</span>
+<span class="fc" id="L430">			} else {</span>
+<span class="fc" id="L431">				leftVertices = new ObjectArrayList&lt;&gt;(leftSize);</span>
+<span class="fc" id="L432">				rightVertices = new ObjectArrayList&lt;&gt;(rightSize);</span>
 			}
-<span class="fc bfc" id="L433" title="All 2 branches covered.">			for (int i = 0; i &lt; leftSize; i++) {</span>
-<span class="fc" id="L434">				V vertex = vertexBuilder.build(g.vertices());</span>
-<span class="fc" id="L435">				g.addVertex(vertex);</span>
-<span class="fc" id="L436">				leftVertices.add(vertex);</span>
+<span class="fc bfc" id="L434" title="All 2 branches covered.">			for (int i = 0; i &lt; leftSize; i++) {</span>
+<span class="fc" id="L435">				V vertex = vertexBuilder.build(g.vertices());</span>
+<span class="fc" id="L436">				g.addVertex(vertex);</span>
+<span class="fc" id="L437">				leftVertices.add(vertex);</span>
 			}
-<span class="fc bfc" id="L438" title="All 2 branches covered.">			for (int i = 0; i &lt; rightSize; i++) {</span>
-<span class="fc" id="L439">				V vertex = vertexBuilder.build(g.vertices());</span>
-<span class="fc" id="L440">				g.addVertex(vertex);</span>
-<span class="fc" id="L441">				rightVertices.add(vertex);</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">			for (int i = 0; i &lt; rightSize; i++) {</span>
+<span class="fc" id="L440">				V vertex = vertexBuilder.build(g.vertices());</span>
+<span class="fc" id="L441">				g.addVertex(vertex);</span>
+<span class="fc" id="L442">				rightVertices.add(vertex);</span>
 			}
 		}
-<span class="fc" id="L444">		WeightsBool&lt;V&gt; partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);</span>
-<span class="fc bfc" id="L445" title="All 2 branches covered.">		for (V v : leftVertices)</span>
-<span class="fc" id="L446">			partition.set(v, true);</span>
-<span class="fc bfc" id="L447" title="All 2 branches covered.">		for (V v : rightVertices)</span>
-<span class="fc" id="L448">			partition.set(v, false);</span>
+<span class="fc" id="L445">		WeightsBool&lt;V&gt; partition = g.addVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey, boolean.class);</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">		for (V v : leftVertices)</span>
+<span class="fc" id="L447">			partition.set(v, true);</span>
+<span class="fc bfc" id="L448" title="All 2 branches covered.">		for (V v : rightVertices)</span>
+<span class="fc" id="L449">			partition.set(v, false);</span>
 
-<span class="fc bfc" id="L450" title="All 2 branches covered.">		if (direction != Direction.DirectedRightToLeft)</span>
-<span class="fc bfc" id="L451" title="All 2 branches covered.">			for (V vLeft : leftVertices)</span>
-<span class="fc bfc" id="L452" title="All 2 branches covered.">				for (V vRight : rightVertices)</span>
-<span class="fc bfc" id="L453" title="All 2 branches covered.">					if (rand.nextDouble() &lt;= p)</span>
-<span class="fc" id="L454">						g.addEdge(vLeft, vRight, edgeBuilder.build(g.edges()));</span>
-<span class="fc bfc" id="L455" title="All 4 branches covered.">		if (direction == Direction.DirectedAll || direction == Direction.DirectedRightToLeft)</span>
-<span class="fc bfc" id="L456" title="All 2 branches covered.">			for (V vRight : rightVertices)</span>
-<span class="fc bfc" id="L457" title="All 2 branches covered.">				for (V vLeft : leftVertices)</span>
-<span class="fc bfc" id="L458" title="All 2 branches covered.">					if (rand.nextDouble() &lt;= p)</span>
-<span class="fc" id="L459">						g.addEdge(vRight, vLeft, edgeBuilder.build(g.edges()));</span>
-<span class="fc" id="L460">		return g;</span>
+<span class="fc bfc" id="L451" title="All 2 branches covered.">		if (direction != Direction.DirectedRightToLeft)</span>
+<span class="fc bfc" id="L452" title="All 2 branches covered.">			for (V vLeft : leftVertices)</span>
+<span class="fc bfc" id="L453" title="All 2 branches covered.">				for (V vRight : rightVertices)</span>
+<span class="fc bfc" id="L454" title="All 2 branches covered.">					if (rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L455">						g.addEdge(vLeft, vRight, edgeBuilder.build(g.edges()));</span>
+<span class="fc bfc" id="L456" title="All 4 branches covered.">		if (direction == Direction.DirectedAll || direction == Direction.DirectedRightToLeft)</span>
+<span class="fc bfc" id="L457" title="All 2 branches covered.">			for (V vRight : rightVertices)</span>
+<span class="fc bfc" id="L458" title="All 2 branches covered.">				for (V vLeft : leftVertices)</span>
+<span class="fc bfc" id="L459" title="All 2 branches covered.">					if (rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L460">						g.addEdge(vRight, vLeft, edgeBuilder.build(g.edges()));</span>
+<span class="fc" id="L461">		return g;</span>
 	}
 
 }

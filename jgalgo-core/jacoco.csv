@@ -937,7 +937,7 @@ JGAlgo - Core,com.jgalgo.alg,ClosuresEnumerators.AbstractImpl,0,30,0,2,0,7,0,4,0
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSourceUtils.BuilderImpl.new ShortestPathSingleSourceUtils.AbstractImpl() {...},62,0,2,0,9,0,3,0,2,0
 JGAlgo - Core,com.jgalgo.alg,VertexPartition,25,156,1,15,4,31,4,10,3,3
 JGAlgo - Core,com.jgalgo.alg,ShortestPathSingleSourceUtils.BuilderImpl,92,60,16,10,22,20,16,8,3,5
-JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOffline.Queries,0,12,0,2,0,3,0,2,0,1
+JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOffline.Queries,0,14,0,2,0,4,0,2,0,1
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Abstract.Worker.new Iterator() {...},0,87,0,8,0,15,0,7,0,3
 JGAlgo - Core,com.jgalgo.alg,MatchingWeightedGabow1990Abstract.Worker.new Iterator() {...},0,109,0,10,0,21,0,8,0,3
 JGAlgo - Core,com.jgalgo.alg,LowestCommonAncestorOfflineUtils.ResultImpl,0,15,0,0,0,5,0,3,0,3
