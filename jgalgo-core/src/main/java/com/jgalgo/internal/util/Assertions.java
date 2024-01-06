@@ -27,7 +27,6 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeightsBool;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
@@ -77,12 +76,12 @@ public class Assertions {
 			}
 		}
 
-		public static void noSelfEdges(IntGraph g, String msg) {
+		public static void noSelfEdges(Graph<?, ?> g, String msg) {
 			if (!com.jgalgo.graph.Graphs.selfEdges(g).isEmpty())
 				throw new IllegalArgumentException(msg);
 		}
 
-		public static void noParallelEdges(IntGraph g, String msg) {
+		public static void noParallelEdges(Graph<?, ?> g, String msg) {
 			if (com.jgalgo.graph.Graphs.containsParallelEdges(g))
 				throw new IllegalArgumentException(msg);
 		}
