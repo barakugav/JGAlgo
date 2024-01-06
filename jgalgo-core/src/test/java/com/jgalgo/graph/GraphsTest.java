@@ -23,23 +23,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectArrays;
-import it.unimi.dsi.fastutil.objects.ObjectImmutableList;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class GraphsTest extends TestBase {
 
@@ -665,119 +655,6 @@ public class GraphsTest extends TestBase {
 
 		g.addEdge(0, 1, 1);
 		assertTrue(Graphs.containsParallelEdges(g));
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <T> Iterable<List<T>> permutations(List<T> l) {
-		return () -> new Iterator<>() {
-			final T[] elements = l.toArray((T[]) new Object[l.size()]);
-			final int n = elements.length;
-
-			int[] indexes = new int[n];
-			int i = 0;
-
-			List<T> next = new ObjectImmutableList<>(elements);
-			boolean nextValid = !next.isEmpty();
-
-			@Override
-			public boolean hasNext() {
-				if (!nextValid) {
-					for (; i < n; i++) {
-						if (indexes[i] < i) {
-							ObjectArrays.swap(elements, i % 2 == 0 ? 0 : indexes[i], i);
-							indexes[i]++;
-							i = 0;
-							nextValid = true;
-							break;
-						}
-						indexes[i] = 0;
-					}
-				}
-				return nextValid;
-			}
-
-			@Override
-			public List<T> next() {
-				if (!hasNext())
-					throw new NoSuchElementException();
-				nextValid = false;
-				return next;
-			}
-		};
-	}
-
-	@Test
-	public void permutation0() {
-		IntList l = IntList.of();
-		Set<List<Integer>> actual = new ObjectOpenHashSet<>(permutations(l).iterator());
-		Set<IntList> expected = Set.of();
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void permutation1() {
-		IntList l = IntList.of(3);
-		Set<List<Integer>> actual = new ObjectOpenHashSet<>(permutations(l).iterator());
-		Set<IntList> expected = Set.of(IntList.of(3));
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void permutation2() {
-		IntList l = IntList.of(3, 7);
-		Set<List<Integer>> actual = new ObjectOpenHashSet<>(permutations(l).iterator());
-		Set<IntList> expected = Set.of(IntList.of(3, 7), IntList.of(7, 3));
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void permutation3() {
-		IntList l = IntList.of(3, 7, 12);
-		Set<List<Integer>> actual = new ObjectOpenHashSet<>(permutations(l).iterator());
-		Set<IntList> expected = new HashSet<>();
-		expected.add(IntList.of(3, 7, 12));
-		expected.add(IntList.of(3, 12, 7));
-		expected.add(IntList.of(7, 3, 12));
-		expected.add(IntList.of(7, 12, 3));
-		expected.add(IntList.of(12, 3, 7));
-		expected.add(IntList.of(12, 7, 3));
-		assertEquals(expected, actual);
-	}
-
-	@Test
-	public void permutation4() {
-		IntList l = IntList.of(3, 7, 12, 8);
-		Set<IntList> actual = new TreeSet<>();
-		for (List<Integer> p : permutations(l)) {
-			boolean added = actual.add(new IntArrayList(p));
-			assertTrue(added, "duplicate permutation: " + p);
-		}
-		Set<IntList> expected = new TreeSet<>();
-		expected.add(IntList.of(3, 7, 12, 8));
-		expected.add(IntList.of(3, 7, 8, 12));
-		expected.add(IntList.of(3, 12, 7, 8));
-		expected.add(IntList.of(3, 12, 8, 7));
-		expected.add(IntList.of(3, 8, 7, 12));
-		expected.add(IntList.of(3, 8, 12, 7));
-		expected.add(IntList.of(7, 3, 12, 8));
-		expected.add(IntList.of(7, 3, 8, 12));
-		expected.add(IntList.of(7, 12, 3, 8));
-		expected.add(IntList.of(7, 12, 8, 3));
-		expected.add(IntList.of(7, 8, 3, 12));
-		expected.add(IntList.of(7, 8, 12, 3));
-		expected.add(IntList.of(12, 3, 7, 8));
-		expected.add(IntList.of(12, 3, 8, 7));
-		expected.add(IntList.of(12, 7, 3, 8));
-		expected.add(IntList.of(12, 7, 8, 3));
-		expected.add(IntList.of(12, 8, 3, 7));
-		expected.add(IntList.of(12, 8, 7, 3));
-		expected.add(IntList.of(8, 3, 7, 12));
-		expected.add(IntList.of(8, 3, 12, 7));
-		expected.add(IntList.of(8, 7, 3, 12));
-		expected.add(IntList.of(8, 7, 12, 3));
-		expected.add(IntList.of(8, 12, 3, 7));
-		expected.add(IntList.of(8, 12, 7, 3));
-		assertEquals(expected, actual);
 	}
 
 	@Test

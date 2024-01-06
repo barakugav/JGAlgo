@@ -172,6 +172,8 @@
       <Class name="com.jgalgo.internal.util.IterTools$IterPeekableImpl" />
       <Class name="com.jgalgo.internal.util.JGAlgoUtils$NullIterator" />
       <Class name="com.jgalgo.internal.util.JGAlgoUtils$NullListIterator" />
+      <Class name="com.jgalgo.internal.util.JGAlgoUtils$PermutationsIter" />
+      <Class name="com.jgalgo.internal.util.JGAlgoUtils$PermutationsIterInt" />
     </Or>
     <Method name="next" />
     <Bug pattern="IT_NO_SUCH_ELEMENT" />

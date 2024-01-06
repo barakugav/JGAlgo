@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ForkJoinPool;
@@ -35,8 +36,12 @@ import it.unimi.dsi.fastutil.PriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectArrayFIFOQueue;
+import it.unimi.dsi.fastutil.objects.ObjectArrays;
+import it.unimi.dsi.fastutil.objects.ObjectImmutableList;
 
 public class JGAlgoUtils {
 	private JGAlgoUtils() {}
@@ -343,6 +348,109 @@ public class JGAlgoUtils {
 				return queue.dequeue();
 			}
 		};
+	}
+
+	private static class PermutationsIter<T> implements Iterator<List<T>> {
+
+		private final T[] elements;
+		private final int n;
+
+		private final int[] indexes;
+		private int i;
+
+		private final List<T> next;
+		private boolean nextValid;
+
+		@SuppressWarnings("unchecked")
+		PermutationsIter(List<T> l) {
+			elements = l.toArray((T[]) new Object[l.size()]);
+			n = elements.length;
+			indexes = new int[n];
+			next = new ObjectImmutableList<>(elements);
+			nextValid = !next.isEmpty();
+		}
+
+		@Override
+		public boolean hasNext() {
+			if (!nextValid) {
+				for (; i < n; i++) {
+					if (indexes[i] < i) {
+						ObjectArrays.swap(elements, i % 2 == 0 ? 0 : indexes[i], i);
+						indexes[i]++;
+						i = 0;
+						nextValid = true;
+						break;
+					}
+					indexes[i] = 0;
+				}
+			}
+			return nextValid;
+		}
+
+		@Override
+		public List<T> next() {
+			Assertions.Iters.hasNext(this);
+			nextValid = false;
+			return next;
+		}
+	}
+
+	private static class PermutationsIterInt implements Iterator<IntList> {
+		private final int[] elements;
+		private final int n;
+
+		private final int[] indexes;
+		private int i;
+
+		private final IntList next;
+		private boolean nextValid;
+
+		public PermutationsIterInt(IntList l) {
+			elements = l.toIntArray();
+			n = elements.length;
+			indexes = new int[n];
+			next = new IntImmutableList(elements);
+			nextValid = !next.isEmpty();
+		}
+
+		@Override
+		public boolean hasNext() {
+			if (!nextValid) {
+				for (; i < n; i++) {
+					if (indexes[i] < i) {
+						IntArrays.swap(elements, i % 2 == 0 ? 0 : indexes[i], i);
+						indexes[i]++;
+						i = 0;
+						nextValid = true;
+						break;
+					}
+					indexes[i] = 0;
+				}
+			}
+			return nextValid;
+		}
+
+		@Override
+		public IntList next() {
+			Assertions.Iters.hasNext(this);
+			nextValid = false;
+			return next;
+		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static <T> Iterable<List<T>> permutations(List<? extends T> l) {
+		if (l instanceof IntList) {
+			return (Iterable) permutations((IntList) l);
+		} else {
+			Objects.requireNonNull(l);
+			return () -> new PermutationsIter(l);
+		}
+	}
+
+	public static Iterable<IntList> permutations(IntList l) {
+		Objects.requireNonNull(l);
+		return () -> new PermutationsIterInt(l);
 	}
 
 }

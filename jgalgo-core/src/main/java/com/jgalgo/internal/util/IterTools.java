@@ -19,6 +19,7 @@ import java.util.Iterator;
 import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.IntFunction;
+import java.util.function.IntPredicate;
 import java.util.function.IntUnaryOperator;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -206,6 +207,41 @@ public class IterTools {
 
 	public static IntIterator mapInt(IntIterator it, IntUnaryOperator map) {
 		return new IterMapIntInt(it, map);
+	}
+
+	public static IntIterator filter(IntIterator it, IntPredicate pred) {
+		return new IntIterator() {
+
+			private int next;
+			private boolean isNextValid;
+
+			{
+				advance();
+			}
+
+			private void advance() {
+				for (isNextValid = false; it.hasNext();) {
+					next = it.nextInt();
+					if (pred.test(next)) {
+						isNextValid = true;
+						break;
+					}
+				}
+			}
+
+			@Override
+			public boolean hasNext() {
+				return isNextValid;
+			}
+
+			@Override
+			public int nextInt() {
+				Assertions.Iters.hasNext(this);
+				int ret = next;
+				advance();
+				return ret;
+			}
+		};
 	}
 
 }
