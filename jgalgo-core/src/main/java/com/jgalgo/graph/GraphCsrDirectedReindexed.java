@@ -182,9 +182,15 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 			return edgesLookupTable[source].get(target);
 		} else {
 
+			checkVertex(source);
 			int eBegin = edgesOutBegin[source], eEnd = edgesOutBegin[source + 1];
 			int e = JGAlgoUtils.lowerBound(eBegin, eEnd, target, this::edgeTarget);
-			return e < eEnd && target(e) == target ? e : -1;
+			if (e < eEnd && target(e) == target) {
+				return e;
+			} else {
+				checkVertex(target);
+				return -1;
+			}
 		}
 	}
 

@@ -379,9 +379,7 @@ public class ImmutableGraphCopyTest extends TestBase {
 				}
 
 				for (int i = 0; i < 10; i++) {
-					Integer nonExistingVertex = Integer.valueOf(rand.nextInt());
-					if (gImmutable.vertices().contains(nonExistingVertex))
-						continue;
+					Integer nonExistingVertex = nonExistingVertex(gImmutable, rand);
 					assertThrows(NoSuchVertexException.class, () -> gImmutable.outEdges(nonExistingVertex));
 					assertThrows(NoSuchVertexException.class, () -> gImmutable.inEdges(nonExistingVertex));
 				}
@@ -390,7 +388,7 @@ public class ImmutableGraphCopyTest extends TestBase {
 	}
 
 	@Test
-	public void edgesSourceTarget() {
+	public void getEdges() {
 		final Random rand = new Random(0xdd41019ca74783d4L);
 		foreachBoolConfig((intGraph, index, fastLookup) -> {
 			foreachBoolConfig((directed, parallelEdges, fromBuilder) -> {
@@ -439,14 +437,26 @@ public class ImmutableGraphCopyTest extends TestBase {
 						}
 					}
 				}
+
+				assertThrows(NoSuchVertexException.class,
+						() -> gImmutable.getEdges(nonExistingVertex(gOrig, rand), Graphs.randVertex(gOrig, rand)));
+				assertThrows(NoSuchVertexException.class,
+						() -> gImmutable.getEdges(Graphs.randVertex(gOrig, rand), nonExistingVertex(gOrig, rand)));
 			});
 		});
 	}
 
-	@SuppressWarnings("boxing")
+	private static Integer nonExistingVertex(Graph<Integer, ?> g, Random rand) {
+		for (;;) {
+			Integer v = Integer.valueOf(rand.nextInt());
+			if (!g.vertices().contains(v))
+				return v;
+		}
+	}
+
 	private static Integer nonExistingEdge(Graph<Integer, Integer> g, Random rand) {
 		for (;;) {
-			int e = rand.nextInt();
+			Integer e = Integer.valueOf(rand.nextInt());
 			if (e >= 0 && !g.edges().contains(e))
 				return e;
 		}
