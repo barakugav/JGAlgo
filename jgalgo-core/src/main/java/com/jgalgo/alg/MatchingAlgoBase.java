@@ -18,7 +18,6 @@ package com.jgalgo.alg;
 import java.util.Arrays;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
@@ -146,7 +145,7 @@ interface MatchingAlgoBase extends MatchingAlgo {
 
 		@Override
 		default IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
-			return computeMaximumWeightedMatching(g, negate(w));
+			return computeMaximumWeightedMatching(g, WeightFunctions.negate(w));
 		}
 
 		@Override
@@ -155,7 +154,7 @@ interface MatchingAlgoBase extends MatchingAlgo {
 				/* minimum and maximum weighted perfect matching are equivalent for unweighed graphs */
 				return computeMaximumWeightedPerfectMatching(g, null);
 			} else {
-				return computeMaximumWeightedPerfectMatching(g, negate(w));
+				return computeMaximumWeightedPerfectMatching(g, WeightFunctions.negate(w));
 			}
 		}
 	}
@@ -164,7 +163,7 @@ interface MatchingAlgoBase extends MatchingAlgo {
 
 		@Override
 		default IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
-			return computeMinimumWeightedMatching(g, negate(w));
+			return computeMinimumWeightedMatching(g, WeightFunctions.negate(w));
 		}
 
 		@Override
@@ -173,21 +172,8 @@ interface MatchingAlgoBase extends MatchingAlgo {
 				/* minimum and maximum weighted perfect matching are equivalent for unweighed graphs */
 				return computeMinimumWeightedPerfectMatching(g, null);
 			} else {
-				return computeMinimumWeightedPerfectMatching(g, negate(w));
+				return computeMinimumWeightedPerfectMatching(g, WeightFunctions.negate(w));
 			}
-		}
-	}
-
-	// TODO move
-	static IWeightFunction negate(IWeightFunction w) {
-		w = IWeightFunction.replaceNullWeightFunc(w);
-		if (WeightFunction.isInteger(w)) {
-			IWeightFunctionInt w0 = (IWeightFunctionInt) w;
-			IWeightFunctionInt w1 = e -> -w0.weightInt(e);
-			return w1;
-		} else {
-			IWeightFunction w0 = w;
-			return e -> -w0.weight(e);
 		}
 	}
 

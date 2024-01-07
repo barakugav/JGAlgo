@@ -25,6 +25,24 @@ public class WeightFunctions {
 	private WeightFunctions() {}
 
 	/**
+	 * Get a weight function that returns the negative of the given weight function.
+	 *
+	 * @param  w a weight function
+	 * @return   a weight function that returns the negative of the given weight function
+	 */
+	public static IWeightFunction negate(IWeightFunction w) {
+		w = IWeightFunction.replaceNullWeightFunc(w);
+		if (WeightFunction.isInteger(w)) {
+			IWeightFunctionInt w0 = (IWeightFunctionInt) w;
+			IWeightFunctionInt w1 = e -> -w0.weightInt(e);
+			return w1;
+		} else {
+			IWeightFunction w0 = w;
+			return e -> -w0.weight(e);
+		}
+	}
+
+	/**
 	 * Get a 'local' version of a given weight function.
 	 *
 	 * <p>
