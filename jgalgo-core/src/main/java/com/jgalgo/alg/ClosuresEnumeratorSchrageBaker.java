@@ -40,13 +40,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class ClosuresEnumeratorSchrageBaker extends ClosuresEnumerators.AbstractImpl {
+class ClosuresEnumeratorSchrageBaker implements ClosuresEnumeratorBase {
 
 	private final StronglyConnectedComponentsAlgo sccAlgo = StronglyConnectedComponentsAlgo.newInstance();
 	private final TopologicalOrderAlgo topoAlgo = TopologicalOrderAlgo.newInstance();
 
 	@Override
-	Iterator<IntSet> closuresIter(IndexGraph g) {
+	public Iterator<IntSet> closuresIter(IndexGraph g) {
 		Assertions.Graphs.onlyDirected(g);
 		final int n = g.vertices().size();
 
