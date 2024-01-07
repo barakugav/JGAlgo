@@ -24,10 +24,10 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 
-class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {
+class FlowCirculationPushRelabel implements FlowCirculationBase {
 
 	@Override
-	IFlow computeCirculation(IndexGraph g, IWeightFunction capacity, IWeightFunction supply) {
+	public IFlow computeCirculation(IndexGraph g, IWeightFunction capacity, IWeightFunction supply) {
 		if (WeightFunction.isInteger(capacity) && WeightFunction.isInteger(supply)) {
 			return new WorkerInt(g, (IWeightFunctionInt) capacity, (IWeightFunctionInt) supply).computeCirculation();
 		} else {
