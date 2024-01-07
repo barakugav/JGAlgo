@@ -51,10 +51,10 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
  * @see    <a href="https://en.wikipedia.org/wiki/Yen%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {
+class KShortestPathsSTYen implements KShortestPathsSTBase {
 
 	@Override
-	List<IPath> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
+	public List<IPath> computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
 		if (!g.vertices().contains(source) || !g.vertices().contains(target))
 			throw new IllegalArgumentException("source or target not in graph");
 		if (k < 1)
