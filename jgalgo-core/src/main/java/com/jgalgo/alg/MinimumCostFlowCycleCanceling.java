@@ -47,7 +47,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 	private final MinimumMeanCycle minMeanCycleAlg = MinimumMeanCycle.newInstance();
 
 	@Override
-	IFlow computeMinCostMaxFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IWeightFunction cost, int source,
+	public IFlow computeMinCostMaxFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IWeightFunction cost, int source,
 			int sink) {
 		Assertions.Graphs.onlyDirected(gOrig);
 		Assertions.Flows.sourceSinkNotTheSame(source, sink);
