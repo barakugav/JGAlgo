@@ -77,7 +77,7 @@ class DistanceMeasuresImpl {
 		@Override
 		public double eccentricity(int v) {
 			computeEccentricity();
-			Assertions.Graphs.checkVertex(v, g.vertices().size());
+			Assertions.checkVertex(v, g.vertices().size());
 			return eccentricity[v];
 		}
 

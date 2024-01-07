@@ -128,9 +128,9 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	GraphCsrBase(boolean directed, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		super(Variant2.ofA(g), false);
 		if (directed) {
-			Assertions.Graphs.onlyDirected(g);
+			Assertions.onlyDirected(g);
 		} else {
-			Assertions.Graphs.onlyUndirected(g);
+			Assertions.onlyUndirected(g);
 		}
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
@@ -406,13 +406,13 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 
 		@Override
 		public int nextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return lastEdge = edges[idx++];
 		}
 
 		@Override
 		public int peekNextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return edges[idx];
 		}
 	}

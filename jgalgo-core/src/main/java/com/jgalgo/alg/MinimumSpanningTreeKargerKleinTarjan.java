@@ -69,7 +69,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTreeBase, R
 	 */
 	@Override
 	public MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 
 		IntArrayList mst = computeMST(g, w);
 		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());

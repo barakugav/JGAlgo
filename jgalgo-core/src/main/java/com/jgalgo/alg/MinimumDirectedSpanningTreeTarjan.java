@@ -66,7 +66,7 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTreeBa
 
 	@Override
 	public MinimumSpanningTree.IResult computeMinimumDirectedSpanningTree(IndexGraph g, IWeightFunction w, int root) {
-		Assertions.Graphs.onlyDirected(g);
+		Assertions.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
 			return MinimumSpanningTrees.IndexResult.Empty;
 

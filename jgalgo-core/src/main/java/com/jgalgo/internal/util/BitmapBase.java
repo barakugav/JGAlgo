@@ -173,7 +173,7 @@ public class BitmapBase implements IntIterable {
 
 			@Override
 			public int nextInt() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				int ret = bit;
 				if (bit + 1 < size) {
 					bit = nextSetBit(bit + 1);

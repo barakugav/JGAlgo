@@ -116,13 +116,13 @@ interface MatchingAlgoBase extends MatchingAlgo {
 
 		@Override
 		default IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
-			Assertions.Graphs.onlyCardinality(w);
+			Assertions.onlyCardinality(w);
 			return computeMaximumCardinalityMatching(g);
 		}
 
 		@Override
 		default IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
-			Assertions.Graphs.onlyCardinality(w);
+			Assertions.onlyCardinality(w);
 			int[] matched = new int[g.vertices().size()];
 			Arrays.fill(matched, -1);
 			return new Matchings.IndexMatching(g, matched);
@@ -130,13 +130,13 @@ interface MatchingAlgoBase extends MatchingAlgo {
 
 		@Override
 		default IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-			Assertions.Graphs.onlyCardinality(w);
+			Assertions.onlyCardinality(w);
 			return computeMaximumCardinalityMatching(g);
 		}
 
 		@Override
 		default IMatching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-			Assertions.Graphs.onlyCardinality(w);
+			Assertions.onlyCardinality(w);
 			return computeMaximumCardinalityMatching(g);
 		}
 	}

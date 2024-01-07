@@ -53,8 +53,8 @@ class CyclesEnumeratorJohnson implements CyclesEnumeratorBase {
 
 	@Override
 	public Iterator<IPath> cyclesIter(IndexGraph g) {
-		Assertions.Graphs.onlyDirected(g);
-		Assertions.Graphs.noParallelEdges(g, "graphs with parallel edges are not supported");
+		Assertions.onlyDirected(g);
+		Assertions.noParallelEdges(g, "graphs with parallel edges are not supported");
 		final int n = g.vertices().size();
 
 		return new Iterator<>() {
@@ -219,7 +219,7 @@ class CyclesEnumeratorJohnson implements CyclesEnumeratorBase {
 
 			@Override
 			public IPath next() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				IPath ret = nextCycle;
 				advance();
 				return ret;

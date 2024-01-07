@@ -38,7 +38,7 @@ class MaximalCliquesEnumeratorBronKerbosch implements MaximalCliquesEnumeratorBa
 
 	@Override
 	public Iterator<IntSet> maximalCliquesIter(IndexGraph g) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 
 		return new Iterator<>() {
 
@@ -77,7 +77,7 @@ class MaximalCliquesEnumeratorBronKerbosch implements MaximalCliquesEnumeratorBa
 
 			@Override
 			public IntSet next() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				IntSet ret = ImmutableIntArraySet.withNaiveContains(currentClique.toIntArray());
 				removeLastInsertedVertex(potentialStack.top(), excludedStack.top());
 				findNextClique();

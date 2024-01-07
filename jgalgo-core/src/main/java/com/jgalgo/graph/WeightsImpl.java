@@ -52,7 +52,7 @@ interface WeightsImpl {
 		}
 
 		void checkIdx(int idx) {
-			Assertions.Graphs.checkId(idx, elements.size(), isEdges);
+			Assertions.checkGraphId(idx, elements.size(), isEdges);
 		}
 
 	}

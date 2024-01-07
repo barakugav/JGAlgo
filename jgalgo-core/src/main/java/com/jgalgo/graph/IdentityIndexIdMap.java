@@ -39,7 +39,7 @@ class IdentityIndexIdMap implements IndexIntIdMap {
 
 	@Override
 	public int indexToIdInt(int index) {
-		Assertions.Graphs.checkId(index, elementsSet.size(), isEdges);
+		Assertions.checkGraphId(index, elementsSet.size(), isEdges);
 		return index;
 	}
 

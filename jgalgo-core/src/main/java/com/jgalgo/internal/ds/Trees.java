@@ -156,7 +156,7 @@ class Trees {
 
 		@Override
 		public NodeT next() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			NodeT ret = p;
 			advance();
 			return ret;
@@ -185,7 +185,7 @@ class Trees {
 
 	// @Override
 	// public N next() {
-	// Assertions.Iters.hasNext(this);
+	// Assertions.hasNext(this);
 	// final N ret = p;
 
 	// N next;

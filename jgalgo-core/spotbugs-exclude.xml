@@ -156,7 +156,7 @@
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
   <Match>
-    <!-- NoSuchElementException will be thrown by Assertions.Iters.hasNext(this); -->
+    <!-- NoSuchElementException will be thrown by Assertions.hasNext(this); -->
     <Or>
       <Class name="~com\.jgalgo\.internal\.ds\.[a-zA-Z]*BinarySearchTrees\$BSTIterator" />
       <Class name="com.jgalgo.internal.ds.HeapBinary$It" />

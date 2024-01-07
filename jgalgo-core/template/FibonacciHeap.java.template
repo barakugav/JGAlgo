@@ -164,9 +164,9 @@ public class FIBONACCI_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_
 
 	@Override
 	public void meld(REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap) {
-		Assertions.Heaps.noMeldWithSelf(this, heap);
-		Assertions.Heaps.meldWithSameImpl(FIBONACCI_HEAP.class, heap);
-		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());
+		Assertions.heapNoMeldWithSelf(this, heap);
+		Assertions.heapMeldWithSameImpl(FIBONACCI_HEAP.class, heap);
+		Assertions.heapEqualComparatorBeforeMeld(comparator(), heap.comparator());
 		FIBONACCI_HEAP KEY_VALUE_GENERIC h = (FIBONACCI_HEAP KEY_VALUE_GENERIC) heap;
 		if (h.isEmpty())
 			return;
@@ -189,7 +189,7 @@ public class FIBONACCI_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_
 
 	@Override
 	public HEAP_REFERENCE KEY_VALUE_GENERIC findMin() {
-		Assertions.Heaps.notEmpty(this);
+		Assertions.notEmpty(this);
 		return minRoot;
 	}
 
@@ -252,7 +252,7 @@ public class FIBONACCI_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_
 	@Override
 	public void decreaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
 		Node KEY_VALUE_GENERIC n = (Node KEY_VALUE_GENERIC) ref;
-		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);
+		Assertions.heapDecreaseKeyIsSmaller(n.key, newKey, c);
 		n.key = newKey;
 
 		Node KEY_VALUE_GENERIC parent = n.parent;
@@ -276,7 +276,7 @@ public class FIBONACCI_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_
 	@Override
 	public void increaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
 		Node KEY_VALUE_GENERIC n = (Node KEY_VALUE_GENERIC) ref;
-		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);
+		Assertions.heapIncreaseKeyIsGreater(n.key, newKey, c);
 		remove(n);
 		n.degree = 0;
 		n.marked = false;

@@ -47,8 +47,8 @@ class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutUtils.AbstractIm
 
 	@Override
 	Iterator<IntSet> minimumCutsIter(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyUndirected(g);
-		Assertions.Graphs.onlyCardinality(w);
+		Assertions.onlyUndirected(g);
+		Assertions.onlyCardinality(w);
 
 		/* Find k, the (global) connectivity of the graph */
 		final int k = globalConnectivityAlgo.computeMinimumCut(g, null).size();

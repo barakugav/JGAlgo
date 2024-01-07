@@ -39,7 +39,7 @@ class ShortestPathSTBidirectionalBfs implements ShortestPathSTBase {
 			throw NoSuchVertexException.ofIndex(target);
 		if (source == target)
 			return new PathImpl(g, source, target, IntLists.emptyList());
-		Assertions.Graphs.onlyCardinality(w);
+		Assertions.onlyCardinality(w);
 
 		final long InfoNone = info(-2, -1);
 		Int2LongMap infoS = new Int2LongOpenHashMap();

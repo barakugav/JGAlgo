@@ -121,9 +121,9 @@ public class RED_BLACK_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_
 
 	@Override
 	public void meld(REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap) {
-		Assertions.Heaps.noMeldWithSelf(this, heap);
-		Assertions.Heaps.meldWithSameImpl(RED_BLACK_TREE.class, heap);
-		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());
+		Assertions.heapNoMeldWithSelf(this, heap);
+		Assertions.heapMeldWithSameImpl(RED_BLACK_TREE.class, heap);
+		Assertions.heapEqualComparatorBeforeMeld(comparator(), heap.comparator());
 		RED_BLACK_TREE KEY_VALUE_GENERIC h = (RED_BLACK_TREE KEY_VALUE_GENERIC) heap;
 		if (h.isEmpty())
 			return;
@@ -243,7 +243,7 @@ public class RED_BLACK_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_
 	@Override
 	public void decreaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
 		Node KEY_VALUE_GENERIC n = (Node KEY_VALUE_GENERIC) ref;
-		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);
+		Assertions.heapDecreaseKeyIsSmaller(n.key, newKey, c);
 		remove(n);
 		n.key = newKey;
 		insertNode(n);
@@ -252,7 +252,7 @@ public class RED_BLACK_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_
 	@Override
 	public void increaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
 		Node KEY_VALUE_GENERIC n = (Node KEY_VALUE_GENERIC) ref;
-		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);
+		Assertions.heapIncreaseKeyIsGreater(n.key, newKey, c);
 		remove(n);
 		n.key = newKey;
 		insertNode(n);

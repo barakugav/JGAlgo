@@ -100,7 +100,7 @@ class BfsIterImpl {
 
 		@Override
 		public int nextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			long l = queue.dequeueLong();
 			final int u = JGAlgoUtils.long2low(l);
 			inEdge = JGAlgoUtils.long2high(l);
@@ -136,7 +136,7 @@ class BfsIterImpl {
 
 		@Override
 		public int nextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			long l = queue.dequeueLong();
 			final int v = JGAlgoUtils.long2low(l);
 			inEdge = JGAlgoUtils.long2high(l);

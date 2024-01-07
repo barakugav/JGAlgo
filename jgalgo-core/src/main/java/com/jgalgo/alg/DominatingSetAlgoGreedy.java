@@ -50,7 +50,7 @@ class DominatingSetAlgoGreedy implements DominatingSetAlgoBase, RandomizedAlgori
 	@Override
 	public IntSet computeMinimumDominationSet(IndexGraph g, IWeightFunction weightFunc,
 			EdgeDirection dominanceDirection) {
-		Assertions.Graphs.onlyCardinality(weightFunc);
+		Assertions.onlyCardinality(weightFunc);
 		Objects.requireNonNull(dominanceDirection);
 		final int n = g.vertices().size();
 		if (n == 0)

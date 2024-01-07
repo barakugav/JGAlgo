@@ -44,7 +44,7 @@ class VertexBiPartitions {
 
 		@Override
 		public boolean isLeft(int vertex) {
-			Assertions.Graphs.checkVertex(vertex, g.vertices().size());
+			Assertions.checkVertex(vertex, g.vertices().size());
 			return isLeft0(vertex);
 		}
 

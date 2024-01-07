@@ -179,7 +179,7 @@ class IndexIdMapImpl<K> implements IndexIdMap<K> {
 	@SuppressWarnings("unchecked")
 	@Override
 	public K indexToId(int index) {
-		Assertions.Graphs.checkId(index, indicesSet.size(), isEdges);
+		Assertions.checkGraphId(index, indicesSet.size(), isEdges);
 		return (K) indexToId[index];
 	}
 

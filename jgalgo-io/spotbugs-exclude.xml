@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FindBugsFilter>
   <Match>
-    <!-- NoSuchElementException will be thrown by Assertions.Iters.hasNext(this); -->
+    <!-- NoSuchElementException will be thrown by Assertions.hasNext(this); -->
     <Or>
       <Class name="com.jgalgo.io.Graph6GraphReader" />
       <Class name="com.jgalgo.io.Sparse6GraphReader" />

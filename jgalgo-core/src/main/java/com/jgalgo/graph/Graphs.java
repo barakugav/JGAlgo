@@ -1660,7 +1660,7 @@ public class Graphs {
 
 			@Override
 			public E next() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				E e;
 				if (outIt != null) {
 					e = outIt.next();
@@ -1675,7 +1675,7 @@ public class Graphs {
 
 			@Override
 			public E peekNext() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				return outIt != null ? outIt.peekNext() : inIt.peekNext();
 			}
 		}
@@ -1777,7 +1777,7 @@ public class Graphs {
 
 					@Override
 					public E next() {
-						Assertions.Iters.hasNext(this);
+						Assertions.hasNext(this);
 						E e = it.next();
 						advance();
 						return e;
@@ -1785,7 +1785,7 @@ public class Graphs {
 
 					@Override
 					public E peekNext() {
-						Assertions.Iters.hasNext(this);
+						Assertions.hasNext(this);
 						return it.peekNext();
 					}
 
@@ -1942,7 +1942,7 @@ public class Graphs {
 
 			@Override
 			public int nextInt() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				int e;
 				if (outIt != null) {
 					e = outIt.nextInt();
@@ -1957,7 +1957,7 @@ public class Graphs {
 
 			@Override
 			public int peekNextInt() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				return outIt != null ? outIt.peekNextInt() : inIt.peekNextInt();
 			}
 		}
@@ -2059,7 +2059,7 @@ public class Graphs {
 
 					@Override
 					public int nextInt() {
-						Assertions.Iters.hasNext(this);
+						Assertions.hasNext(this);
 						int e = it.nextInt();
 						advance();
 						return e;
@@ -2067,7 +2067,7 @@ public class Graphs {
 
 					@Override
 					public int peekNextInt() {
-						Assertions.Iters.hasNext(this);
+						Assertions.hasNext(this);
 						return it.peekNextInt();
 					}
 
@@ -2254,14 +2254,14 @@ public class Graphs {
 
 				@Override
 				public int nextInt() {
-					Assertions.Iters.hasNext(this);
+					Assertions.hasNext(this);
 					beforeNext = false;
 					return edge;
 				}
 
 				@Override
 				public int peekNextInt() {
-					Assertions.Iters.hasNext(this);
+					Assertions.hasNext(this);
 					return edge;
 				}
 
@@ -3187,7 +3187,7 @@ public class Graphs {
 
 					@Override
 					public int nextInt() {
-						Assertions.Iters.hasNext(this);
+						Assertions.hasNext(this);
 						int edge = nextEdge++;
 						advance();
 						return edge;

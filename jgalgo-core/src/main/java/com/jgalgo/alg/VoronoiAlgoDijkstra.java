@@ -63,7 +63,7 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 				if (distance[v] != Double.POSITIVE_INFINITY)
 					continue;
 				double ew = w.weight(e);
-				Assertions.Graphs.onlyPositiveWeight(ew);
+				Assertions.onlyPositiveWeight(ew);
 				double vDistance = uDistance + ew;
 
 				DoubleIntReferenceableHeap.Ref vPtr = heapVPtrs[v];

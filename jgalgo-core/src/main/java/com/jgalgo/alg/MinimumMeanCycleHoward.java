@@ -62,7 +62,7 @@ class MinimumMeanCycleHoward implements MinimumMeanCycleBase {
 	 */
 	@Override
 	public IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyDirected(g);
+		Assertions.onlyDirected(g);
 		final int n = g.vertices().size();
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 

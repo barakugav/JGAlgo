@@ -45,7 +45,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAl
 
 	@Override
 	public BiConnectedComponentsAlgo.IResult findBiConnectedComponents(IndexGraph g) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 
 		final int n = g.vertices().size();
 		int[] depths = new int[n];

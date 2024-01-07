@@ -121,7 +121,7 @@ public abstract class ImmutableIntArraySet extends AbstractIntSet {
 
 		@Override
 		public int nextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return arr[idx++];
 		}
 

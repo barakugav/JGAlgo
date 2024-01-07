@@ -49,8 +49,8 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 		final int n = g.vertices().size();
 		if (n == 0)
 			return null;
-		Assertions.Graphs.onlyUndirected(g);
-		Assertions.Graphs.noParallelEdges(g, "parallel edges are not supported");
+		Assertions.onlyUndirected(g);
+		Assertions.noParallelEdges(g, "parallel edges are not supported");
 		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 
 		/* Calculate MST */

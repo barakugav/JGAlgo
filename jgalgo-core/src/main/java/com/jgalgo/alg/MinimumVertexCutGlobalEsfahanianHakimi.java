@@ -41,7 +41,7 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 
 	@Override
 	IntSet computeMinimumCut(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyCardinality(w);
+		Assertions.onlyCardinality(w);
 		if (g.vertices().isEmpty())
 			throw new IllegalArgumentException("No vertex cut exists in an empty graph");
 

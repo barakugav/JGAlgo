@@ -285,13 +285,13 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 
 		@Override
 		public int nextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return nextEdge++;
 		}
 
 		@Override
 		public int peekNextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return nextEdge;
 		}
 
@@ -411,7 +411,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 
 		@Override
 		public int nextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			int e = edge;
 			edge++;
 			if (edge == edges.size || GraphCsrDirectedReindexed.this.target(edge) != target)
@@ -421,7 +421,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 
 		@Override
 		public int peekNextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return edge;
 		}
 

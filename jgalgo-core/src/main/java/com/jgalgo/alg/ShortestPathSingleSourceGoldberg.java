@@ -88,7 +88,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 	 */
 	@Override
 	public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
-		Assertions.Graphs.onlyDirected(g);
+		Assertions.onlyDirected(g);
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		if (!WeightFunction.isInteger(w))

@@ -110,7 +110,7 @@ public class JGAlgoUtils {
 
 		@Override
 		public E next() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			size--;
 			return null;
 		}
@@ -389,7 +389,7 @@ public class JGAlgoUtils {
 
 		@Override
 		public List<T> next() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			nextValid = false;
 			return next;
 		}
@@ -432,7 +432,7 @@ public class JGAlgoUtils {
 
 		@Override
 		public IntList next() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			nextValid = false;
 			return next;
 		}

@@ -30,8 +30,8 @@ abstract class HeapAbstract<E> implements Heap<E> {
 
 	@Override
 	public void meld(Heap<? extends E> heap) {
-		Assertions.Heaps.noMeldWithSelf(this, heap);
-		Assertions.Heaps.equalComparatorBeforeMeld(this, heap);
+		Assertions.heapNoMeldWithSelf(this, heap);
+		Assertions.heapEqualComparatorBeforeMeld(this, heap);
 		for (E elm : heap)
 			insert(elm);
 		heap.clear();

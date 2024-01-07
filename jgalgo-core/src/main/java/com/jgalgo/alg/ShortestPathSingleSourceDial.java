@@ -96,7 +96,7 @@ class ShortestPathSingleSourceDial implements ShortestPathSingleSourceBase {
 				int v = eit.targetInt();
 
 				int ew = w.weightInt(e);
-				Assertions.Graphs.onlyPositiveWeight(ew);
+				Assertions.onlyPositiveWeight(ew);
 				int distance = uDistance + ew;
 
 				if (!heap.containsVertex(v)) {

@@ -47,7 +47,7 @@ class ClosuresEnumeratorSchrageBaker implements ClosuresEnumeratorBase {
 
 	@Override
 	public Iterator<IntSet> closuresIter(IndexGraph g) {
-		Assertions.Graphs.onlyDirected(g);
+		Assertions.onlyDirected(g);
 		final int n = g.vertices().size();
 
 		IVertexPartition sccs = (IVertexPartition) sccAlgo.findStronglyConnectedComponents(g);
@@ -129,7 +129,7 @@ class ClosuresEnumeratorSchrageBaker implements ClosuresEnumeratorBase {
 				int i = nextClearBit;
 
 				/* (if m(j)=1 for j=1,...,n then all subsets have been enumerated) */
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 
 				/* Set m(i)=1 */
 				m.set(i);

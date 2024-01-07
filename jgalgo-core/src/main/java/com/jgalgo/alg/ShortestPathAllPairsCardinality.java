@@ -53,14 +53,14 @@ class ShortestPathAllPairsCardinality implements ShortestPathAllPairsBase {
 
 	@Override
 	public ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyCardinality(w);
+		Assertions.onlyCardinality(w);
 		return computeSubsetCardinalityShortestPaths(g, g.vertices(), true);
 	}
 
 	@Override
 	public ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w) {
-		Assertions.Graphs.onlyCardinality(w);
+		Assertions.onlyCardinality(w);
 		return computeSubsetCardinalityShortestPaths(g, verticesSubset, false);
 	}
 

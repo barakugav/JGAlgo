@@ -233,7 +233,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 
 			@Override
 			public IVertexBiPartition next() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				IVertexBiPartition ret = nextCut;
 
 				if (closuresIter.hasNext()) {

@@ -245,7 +245,7 @@ class BinarySearchTrees {
 
 		@Override
 		public NodeT next() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			NodeT ret = n;
 			n = getSuccessorInSubtree(n, subtreeRoot);
 			return ret;

@@ -45,8 +45,8 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 
 	@Override
 	public Iterator<IsomorphismTester.IMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2) {
-		Assertions.Graphs.noParallelEdges(g1, "parallel edges are not supported");
-		Assertions.Graphs.noParallelEdges(g2, "parallel edges are not supported");
+		Assertions.noParallelEdges(g1, "parallel edges are not supported");
+		Assertions.noParallelEdges(g2, "parallel edges are not supported");
 		final int n = g1.vertices().size();
 		final int m = g1.edges().size();
 		if (n != g2.vertices().size() || m != g2.edges().size() || g1.isDirected() != g2.isDirected())
@@ -144,7 +144,7 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 
 		@Override
 		public IsomorphismTester.IMapping next() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			IsomorphismTester.IMapping mapping =
 					new IsomorphismTesters.IndexMapping(core1.clone(), computeEdgeMapping());
 

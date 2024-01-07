@@ -80,13 +80,13 @@ abstract class GraphArrayAbstract extends GraphBaseMutable {
 
 		@Override
 		public int nextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return lastEdge = edges[idx++];
 		}
 
 		@Override
 		public int peekNextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return edges[idx];
 		}
 

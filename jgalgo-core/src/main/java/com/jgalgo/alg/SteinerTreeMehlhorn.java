@@ -55,7 +55,7 @@ class SteinerTreeMehlhorn implements SteinerTreeAlgoBase {
 
 	@Override
 	public SteinerTreeAlgo.IResult computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		final int n = g.vertices().size();
 		if (terminals.isEmpty())
 			throw new IllegalArgumentException("no terminals provided");

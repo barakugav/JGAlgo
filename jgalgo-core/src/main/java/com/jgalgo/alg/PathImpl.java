@@ -155,7 +155,7 @@ class PathImpl implements IPath {
 		private int e = -1, v = -1;
 
 		IterUndirected(IndexGraph g, IntList path, int source) {
-			Assertions.Graphs.onlyUndirected(g);
+			Assertions.onlyUndirected(g);
 			this.g = g;
 			v = source;
 			it = path.iterator();
@@ -199,7 +199,7 @@ class PathImpl implements IPath {
 		private int e = -1;
 
 		IterDirected(IndexGraph g, IntList path) {
-			Assertions.Graphs.onlyDirected(g);
+			Assertions.onlyDirected(g);
 			this.g = g;
 			it = path.iterator();
 		}

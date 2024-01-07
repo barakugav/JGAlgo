@@ -84,7 +84,7 @@ public class IterTools {
 
 		@Override
 		public E next() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			@SuppressWarnings("unchecked")
 			E ret = (E) nextElm;
 			advance();
@@ -94,7 +94,7 @@ public class IterTools {
 		@Override
 		@SuppressWarnings("unchecked")
 		public E peekNext() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return (E) nextElm;
 		}
 
@@ -121,7 +121,7 @@ public class IterTools {
 
 			@Override
 			public int nextInt() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				int ret = next;
 				advance();
 				return ret;
@@ -129,7 +129,7 @@ public class IterTools {
 
 			@Override
 			public int peekNextInt() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				return next;
 			}
 
@@ -236,7 +236,7 @@ public class IterTools {
 
 			@Override
 			public int nextInt() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				int ret = next;
 				advance();
 				return ret;

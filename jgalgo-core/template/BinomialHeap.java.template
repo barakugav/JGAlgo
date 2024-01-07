@@ -160,7 +160,7 @@ public class BINOMIAL_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_V
 	@Override
 	public void decreaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
 		Node KEY_VALUE_GENERIC node = (Node KEY_VALUE_GENERIC) ref;
-		Assertions.Heaps.decreaseKeyIsSmaller(node.key, newKey, c);
+		Assertions.heapDecreaseKeyIsSmaller(node.key, newKey, c);
 		node.key = newKey;
 
 		if (c == null) {
@@ -181,7 +181,7 @@ public class BINOMIAL_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_V
 	@Override
 	public void increaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
 		Node KEY_VALUE_GENERIC node = (Node KEY_VALUE_GENERIC) ref;
-		Assertions.Heaps.increaseKeyIsGreater(node.key, newKey, c);
+		Assertions.heapIncreaseKeyIsGreater(node.key, newKey, c);
 		remove(node);
 		node.key = newKey;
 		insertNode(node);
@@ -380,9 +380,9 @@ public class BINOMIAL_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_V
 #endif
 	@Override
 	public void meld(REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap) {
-		Assertions.Heaps.noMeldWithSelf(this, heap);
-		Assertions.Heaps.meldWithSameImpl(BINOMIAL_HEAP.class, heap);
-		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());
+		Assertions.heapNoMeldWithSelf(this, heap);
+		Assertions.heapMeldWithSameImpl(BINOMIAL_HEAP.class, heap);
+		Assertions.heapEqualComparatorBeforeMeld(comparator(), heap.comparator());
 
 		BINOMIAL_HEAP KEY_VALUE_GENERIC h = (BINOMIAL_HEAP KEY_VALUE_GENERIC) heap;
 		meld(h.roots, h.rootsLen);
@@ -393,7 +393,7 @@ public class BINOMIAL_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_V
 
 	@Override
 	public HEAP_REFERENCE KEY_VALUE_GENERIC findMin() {
-		Assertions.Heaps.notEmpty(this);
+		Assertions.notEmpty(this);
 		Node KEY_VALUE_GENERIC[] rs = roots;
 		int rsLen = rootsLen;
 		Node KEY_VALUE_GENERIC min = null;

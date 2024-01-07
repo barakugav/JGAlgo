@@ -228,7 +228,7 @@ public class FIFOQueueIntNoReduce implements IntPriorityQueue, Serializable, Int
 
 			@Override
 			public int nextInt() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				int ret = array[idx];
 				if (++idx == length)
 					idx = 0;

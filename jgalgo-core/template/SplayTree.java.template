@@ -179,7 +179,7 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 	@Override
 	public void decreaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
 		SplayBSTNode KEY_VALUE_GENERIC n = (SplayBSTNode KEY_VALUE_GENERIC) ref;
-		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);
+		Assertions.heapDecreaseKeyIsSmaller(n.key, newKey, c);
 		remove(n);
 		n.key = newKey;
 		insertNode(n);
@@ -188,7 +188,7 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 	@Override
 	public void increaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
 		SplayBSTNode KEY_VALUE_GENERIC n = (SplayBSTNode KEY_VALUE_GENERIC) ref;
-		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);
+		Assertions.heapIncreaseKeyIsGreater(n.key, newKey, c);
 		remove(n);
 		n.key = newKey;
 		insertNode(n);
@@ -250,9 +250,9 @@ public class SPLAY_TREE KEY_VALUE_GENERIC implements BINARY_SEARCH_TREE KEY_VALU
 
 	@Override
 	public void meld(REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap) {
-		Assertions.Heaps.noMeldWithSelf(this, heap);
-		Assertions.Heaps.meldWithSameImpl(SPLAY_TREE.class, heap);
-		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());
+		Assertions.heapNoMeldWithSelf(this, heap);
+		Assertions.heapMeldWithSameImpl(SPLAY_TREE.class, heap);
+		Assertions.heapEqualComparatorBeforeMeld(comparator(), heap.comparator());
 		SPLAY_TREE KEY_VALUE_GENERIC h = (SPLAY_TREE KEY_VALUE_GENERIC) heap;
 		if (h.isEmpty())
 			return;

@@ -46,7 +46,7 @@ class FlowCirculationPushRelabel implements FlowCirculationBase {
 		int maxLayerActive;
 
 		Worker(IndexGraph g, IWeightFunction capacityOrig, IWeightFunction supply) {
-			Assertions.Graphs.onlyDirected(g);
+			Assertions.onlyDirected(g);
 			this.g = g;
 			this.capacityOrig = capacityOrig;
 			final int n = g.vertices().size();

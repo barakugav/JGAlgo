@@ -51,7 +51,7 @@ class MatchingCardinalityGabow1976 implements MatchingAlgoBase.Cardinality {
 
 	@Override
 	public IMatching computeMaximumCardinalityMatching(IndexGraph g) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		int n = g.vertices().size();
 
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();

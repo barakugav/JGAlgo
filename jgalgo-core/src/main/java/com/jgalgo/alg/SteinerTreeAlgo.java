@@ -123,7 +123,7 @@ public interface SteinerTreeAlgo {
 	 */
 	@SuppressWarnings("unchecked")
 	static <V, E> boolean isSteinerTree(Graph<V, E> g, Collection<V> terminals, Collection<E> edges) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		IndexGraph ig;
 		IntCollection terminals0;
 		IntCollection edges0;

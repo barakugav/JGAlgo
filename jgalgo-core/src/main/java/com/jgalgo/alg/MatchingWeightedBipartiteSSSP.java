@@ -71,9 +71,9 @@ class MatchingWeightedBipartiteSSSP implements MatchingAlgoBase.MaximumBased {
 	 */
 	@Override
 	public IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyUndirected(g);
-		IWeightsBool partition = Assertions.Graphs.onlyBipartite(g);
-		Assertions.Graphs.onlyBipartite(g, partition);
+		Assertions.onlyUndirected(g);
+		IWeightsBool partition = Assertions.onlyBipartite(g);
+		Assertions.onlyBipartite(g, partition);
 
 		int[] match = computeMaxMatching(g, w, partition);
 		return new Matchings.IndexMatching(g, match);

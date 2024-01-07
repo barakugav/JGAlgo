@@ -186,7 +186,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 		@Override
 		public int nextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			int e = sourceEdges.data[lastTarget = target];
 			advanceUntilNext(target + 1);
 			return e;
@@ -194,7 +194,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 		@Override
 		public int peekNextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return sourceEdges.data[target];
 		}
 
@@ -247,7 +247,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 		@Override
 		public int nextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			int e = targetEdges.data[lastSource = source];
 			advanceUntilNext(source + 1);
 			return e;
@@ -255,7 +255,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 		@Override
 		public int peekNextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return targetEdges.data[source];
 		}
 
@@ -306,7 +306,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 		@Override
 		public int nextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			int e = edges[lastSource = source].data[target];
 			advanceUntilNext(source + 1);
 			return e;
@@ -314,7 +314,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 		@Override
 		public int peekNextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return edges[source].data[target];
 		}
 

@@ -81,7 +81,7 @@ class MaximumFlowDinic extends MaximumFlows.WithResidualGraph {
 		}
 
 		IFlow computeMaximumFlow() {
-			Assertions.Graphs.onlyDirected(g);
+			Assertions.onlyDirected(g);
 			Bitmap residual = new Bitmap(g.edges().size());
 
 			IntPriorityQueue bfsQueue = new FIFOQueueIntNoReduce();

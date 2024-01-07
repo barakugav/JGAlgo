@@ -69,8 +69,8 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 	 */
 	@Override
 	public IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyUndirected(g);
-		IWeightsBool partition = Assertions.Graphs.onlyBipartite(g);
+		Assertions.onlyUndirected(g);
+		IWeightsBool partition = Assertions.onlyBipartite(g);
 		return new Worker(g, partition, w).computeMaxMatching(false);
 	}
 
@@ -83,8 +83,8 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 	 */
 	@Override
 	public IMatching computeMaximumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyUndirected(g);
-		IWeightsBool partition = Assertions.Graphs.onlyBipartite(g);
+		Assertions.onlyUndirected(g);
+		IWeightsBool partition = Assertions.onlyBipartite(g);
 		return new Worker(g, partition, w).computeMaxMatching(true);
 	}
 
@@ -105,7 +105,7 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 		private final double[] dualVal0;
 
 		Worker(IndexGraph g, IWeightsBool partition, IWeightFunction w) {
-			Assertions.Graphs.onlyBipartite(g, partition);
+			Assertions.onlyBipartite(g, partition);
 
 			this.g = g;
 			this.partition = partition;

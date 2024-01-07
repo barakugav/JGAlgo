@@ -87,7 +87,7 @@ class SimplePathsEnumeratorSedgewick implements SimplePathsEnumeratorBase {
 
 			@Override
 			public IPath next() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				IPath ret = new PathImpl(g, source, target, new IntArrayList(path));
 
 				/* remove last edge to target */

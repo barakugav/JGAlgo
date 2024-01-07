@@ -63,7 +63,7 @@ class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponents
 	}
 
 	List<List<IntSet>> findVertexConnectedComponentsHierarchy(IndexGraph g) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		List<List<IntSet>> kComponents = new ArrayList<>();
 		ObjIntConsumer<IntSet> addComponent = (c, k) -> {
 			while (kComponents.size() <= k)

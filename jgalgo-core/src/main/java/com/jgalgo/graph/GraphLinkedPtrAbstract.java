@@ -102,14 +102,14 @@ abstract class GraphLinkedPtrAbstract extends GraphBaseMutable {
 
 		@Override
 		public int nextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			next = nextEdge(last = next);
 			return last.id;
 		}
 
 		@Override
 		public int peekNextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return next.id;
 		}
 

@@ -104,8 +104,8 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 		private static final int POTENTIAL_REFINEMENT_ITERATION_SKIP = 2;
 
 		Worker(IndexGraph gOrig, IWeightFunctionInt capacity, IWeightFunctionInt costOrig, IWeightFunctionInt supply) {
-			Assertions.Graphs.onlyDirected(gOrig);
-			Assertions.Flows.checkSupply(gOrig, supply);
+			Assertions.onlyDirected(gOrig);
+			Assertions.flowCheckSupply(gOrig, supply);
 			this.gOrig = gOrig;
 			this.capacity = capacity;
 			this.costOrig = costOrig;

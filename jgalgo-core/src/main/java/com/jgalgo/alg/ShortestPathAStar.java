@@ -150,7 +150,7 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 				Info vInfo = info.computeIfAbsent(v, k -> new Info());
 
 				double ew = w.weight(e);
-				Assertions.Graphs.onlyPositiveWeight(ew);
+				Assertions.onlyPositiveWeight(ew);
 				double distance = uDistance + ew;
 
 				if (distance >= vInfo.distance)

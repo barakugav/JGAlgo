@@ -43,7 +43,7 @@ class ChinesePostmanImpl implements ChinesePostmanBase {
 
 	@Override
 	public IPath computeShortestEdgeVisitorCircle(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		// if (!connectedComponentsAlgo.isWeaklyConnected(g))
 		// throw new IllegalArgumentException("Graph is not connected, cannot compute shortest edge visitor circle");
 		// If the graph is not connected, we will fail to find an Eulerian tour, so we just fail later

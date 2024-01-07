@@ -51,14 +51,14 @@ abstract class GraphLinkedAbstract extends GraphBaseMutable {
 
 		@Override
 		public int nextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			next = nextEdge(last = next);
 			return last;
 		}
 
 		@Override
 		public int peekNextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return next;
 		}
 

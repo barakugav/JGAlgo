@@ -125,7 +125,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 		@Override
 		public int nextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			prevEdge = nextEdge;
 			prevEndpoint = nextEndpoint;
 			nextEdge = edgeNext[prevEdge];
@@ -135,7 +135,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 		@Override
 		public int peekNextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return nextEdge;
 		}
 
@@ -272,7 +272,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 				@Override
 				public int nextInt() {
-					Assertions.Iters.hasNext(this);
+					Assertions.hasNext(this);
 					prevEdge = nextEdge;
 					nextEdge = edgeNext[prevEdge];
 					return prevEdge;
@@ -280,7 +280,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 				@Override
 				public int peekNextInt() {
-					Assertions.Iters.hasNext(this);
+					Assertions.hasNext(this);
 					return nextEdge;
 				}
 

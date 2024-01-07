@@ -41,8 +41,8 @@ class MaximumFlows {
 			final boolean directed;
 
 			Worker(IndexGraph g, IWeightFunction capacity, int source, int sink) {
-				Assertions.Flows.sourceSinkNotTheSame(source, sink);
-				Assertions.Flows.positiveCapacities(g, capacity);
+				Assertions.flowSourceSinkNotTheSame(source, sink);
+				Assertions.flowPositiveCapacities(g, capacity);
 				this.g = g;
 				this.source = source;
 				this.sink = sink;
@@ -92,7 +92,7 @@ class MaximumFlows {
 			if (sources.size() == 1 && sinks.size() == 1)
 				return computeMaximumFlow(gOrig, capacityOrig, sources.iterator().nextInt(),
 						sinks.iterator().nextInt());
-			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
+			Assertions.flowSourcesSinksNotTheSame(sources, sinks);
 
 			IndexGraphBuilder builder = IndexGraphBuilder.newInstance(gOrig.isDirected());
 			builder.ensureVertexCapacity(gOrig.vertices().size() + 2);
@@ -174,8 +174,8 @@ class MaximumFlows {
 			final IntCollection sinks;
 
 			Worker(IndexGraph gOrig, IWeightFunction capacityOrig, int source, int sink) {
-				Assertions.Flows.sourceSinkNotTheSame(source, sink);
-				Assertions.Flows.positiveCapacities(gOrig, capacityOrig);
+				Assertions.flowSourceSinkNotTheSame(source, sink);
+				Assertions.flowPositiveCapacities(gOrig, capacityOrig);
 				this.gOrig = gOrig;
 				this.source = source;
 				this.sink = sink;
@@ -195,8 +195,8 @@ class MaximumFlows {
 			}
 
 			Worker(IndexGraph gOrig, IWeightFunction capacityOrig, IntCollection sources, IntCollection sinks) {
-				Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
-				Assertions.Flows.positiveCapacities(gOrig, capacityOrig);
+				Assertions.flowSourcesSinksNotTheSame(sources, sinks);
+				Assertions.flowPositiveCapacities(gOrig, capacityOrig);
 				this.gOrig = gOrig;
 				this.n = gOrig.vertices().size() + 2;
 				this.sources = sources;

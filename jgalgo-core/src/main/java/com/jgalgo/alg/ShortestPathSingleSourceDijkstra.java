@@ -96,7 +96,7 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSourceBase {
 				if (res.distances[v] != Double.POSITIVE_INFINITY)
 					continue;
 				double ew = w.weight(e);
-				Assertions.Graphs.onlyPositiveWeight(ew);
+				Assertions.onlyPositiveWeight(ew);
 				double distance = uDistance + ew;
 
 				DoubleIntReferenceableHeap.Ref vPtr = verticesPtrs[v];
@@ -135,7 +135,7 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSourceBase {
 				if (res.distances[v] != Integer.MAX_VALUE)
 					continue;
 				int ew = w.weightInt(e);
-				Assertions.Graphs.onlyPositiveWeight(ew);
+				Assertions.onlyPositiveWeight(ew);
 				int distance = uDistance + ew;
 
 				IntIntReferenceableHeap.Ref vPtr = verticesPtrs[v];

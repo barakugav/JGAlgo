@@ -26,7 +26,7 @@ class GraphCsrUndirected extends GraphCsrAbstractUnindexed {
 
 	GraphCsrUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights, boolean fastLookup) {
 		super(false, g, copyVerticesWeights, copyEdgesWeights, fastLookup);
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 	}
 
 	@Override

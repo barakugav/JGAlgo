@@ -59,7 +59,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycleBase {
 	 */
 	@Override
 	public IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyDirected(g);
+		Assertions.onlyDirected(g);
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 
 		IPath cycle = computeMinimumMeanCycle0(g, w);

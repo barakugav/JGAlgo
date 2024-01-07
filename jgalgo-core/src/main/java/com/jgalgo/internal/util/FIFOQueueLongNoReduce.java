@@ -227,7 +227,7 @@ public class FIFOQueueLongNoReduce implements LongPriorityQueue, Serializable, L
 
 			@Override
 			public long nextLong() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				long ret = array[idx];
 				if (++idx == length)
 					idx = 0;

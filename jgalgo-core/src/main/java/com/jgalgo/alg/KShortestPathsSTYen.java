@@ -60,7 +60,7 @@ class KShortestPathsSTYen implements KShortestPathsSTBase {
 		if (k < 1)
 			throw new IllegalArgumentException("k must be positive");
 		w = IWeightFunction.replaceNullWeightFunc(w);
-		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);
+		Assertions.onlyPositiveEdgesWeights(g, w);
 		if (source == target)
 			return ObjectList.of(new PathImpl(g, source, target, IntList.of()));
 

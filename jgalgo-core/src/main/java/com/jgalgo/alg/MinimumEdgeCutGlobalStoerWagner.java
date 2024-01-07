@@ -39,13 +39,13 @@ class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutUtils.AbstractImplGl
 
 	@Override
 	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		final int n = g.vertices().size();
 		if (n < 2)
 			throw new IllegalArgumentException("There is no valid cut in a graph with less than two vertices");
 
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
-		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);
+		Assertions.onlyPositiveEdgesWeights(g, w);
 		w = IWeightFunction.replaceNullWeightFunc(w);
 
 		ContractableGraph cg = new ContractableGraph(g);

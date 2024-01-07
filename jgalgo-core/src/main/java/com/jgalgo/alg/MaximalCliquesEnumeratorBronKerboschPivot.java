@@ -40,7 +40,7 @@ class MaximalCliquesEnumeratorBronKerboschPivot implements MaximalCliquesEnumera
 
 	@Override
 	public Iterator<IntSet> maximalCliquesIter(IndexGraph g) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 
 		return new Iterator<>() {
 
@@ -85,7 +85,7 @@ class MaximalCliquesEnumeratorBronKerboschPivot implements MaximalCliquesEnumera
 
 			@Override
 			public IntSet next() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				IntSet ret = ImmutableIntArraySet.withNaiveContains(currentClique.toIntArray());
 				removeLastInsertedVertex(potentialStack.top(), potentialToIterStack.top(), excludedStack.top());
 				findNextClique();

@@ -53,10 +53,10 @@ class MatchingCardinalityBipartiteHopcroftKarp implements MatchingAlgoBase.Cardi
 	 */
 	@Override
 	public IMatching computeMaximumCardinalityMatching(IndexGraph g) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		int n = g.vertices().size();
 
-		IWeightsBool partition = Assertions.Graphs.onlyBipartite(g);
+		IWeightsBool partition = Assertions.onlyBipartite(g);
 
 		/* BFS */
 		int[] depths = new int[n];

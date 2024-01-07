@@ -207,7 +207,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 
 	private static <V, E> WeightFunctionInt<E> randLowerBound(Graph<V, E> g, WeightFunctionInt<E> capacity,
 			Collection<V> sources, Collection<V> sinks, Random rand) {
-		Assertions.Graphs.onlyDirected(g);
+		Assertions.onlyDirected(g);
 
 		Object2IntMap<E> caps = new Object2IntOpenHashMap<>();
 		for (E e : g.edges())
@@ -363,7 +363,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 
 	private static <V, E> void assertMaximumFlow(Graph<V, E> g, WeightFunctionInt<E> capacity,
 			WeightFunctionInt<E> lowerBound, Collection<V> sources, Collection<V> sinks, Flow<V, E> flow) {
-		Assertions.Graphs.onlyDirected(g);
+		Assertions.onlyDirected(g);
 
 		/*
 		 * a flow is a maximum flow if no augmenting path can be found in the residual network. Search for one to verify
@@ -430,7 +430,7 @@ class MinimumCostFlowTestUtilsInt extends TestUtils {
 
 	private static <V, E> void assertOptimalCirculation(Graph<V, E> g, WeightFunctionInt<E> capacity,
 			WeightFunctionInt<E> cost, WeightFunctionInt<E> lowerBound, Flow<V, E> flow) {
-		Assertions.Graphs.onlyDirected(g);
+		Assertions.onlyDirected(g);
 
 		/*
 		 * a circulation is optimal with respect to a cost function if no circle with negative mean cost exists in the

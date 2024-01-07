@@ -51,7 +51,7 @@ class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSourceBas
 	 */
 	@Override
 	public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
-		Assertions.Graphs.onlyDirected(g);
+		Assertions.onlyDirected(g);
 
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		w = IWeightFunction.replaceNullWeightFunc(w);

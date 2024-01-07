@@ -55,7 +55,7 @@ public class LinkedListFixedSize {
 		}
 
 		public IterTools.IterPeekable.Int iterator(int id) {
-			Assertions.Arrays.checkIndex(id, 0, size());
+			Assertions.checkArrayIndex(id, 0, size());
 			return new IterTools.IterPeekable.Int() {
 				int p = id;
 
@@ -66,7 +66,7 @@ public class LinkedListFixedSize {
 
 				@Override
 				public int nextInt() {
-					Assertions.Iters.hasNext(this);
+					Assertions.hasNext(this);
 					int ret = p;
 					p = LinkedListFixedSize.Singly.this.next(p);
 					return ret;
@@ -74,7 +74,7 @@ public class LinkedListFixedSize {
 
 				@Override
 				public int peekNextInt() {
-					Assertions.Iters.hasNext(this);
+					Assertions.hasNext(this);
 					return p;
 				}
 
@@ -164,7 +164,7 @@ public class LinkedListFixedSize {
 		}
 
 		public IterTools.IterPeekable.Int iterator(int id) {
-			Assertions.Arrays.checkIndex(id, 0, size());
+			Assertions.checkArrayIndex(id, 0, size());
 			return new Iter(id);
 		}
 
@@ -187,7 +187,7 @@ public class LinkedListFixedSize {
 
 			@Override
 			public int nextInt() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				int ret = p;
 				p = LinkedListFixedSize.Doubly.this.next(p);
 				return ret;
@@ -195,7 +195,7 @@ public class LinkedListFixedSize {
 
 			@Override
 			public int peekNextInt() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				return p;
 			}
 

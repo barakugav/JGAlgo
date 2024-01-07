@@ -51,9 +51,9 @@ class MinimumCostFlows {
 		@Override
 		public IFlow computeMinCostFlow(IndexGraph g, IWeightFunction capacityOrig, IWeightFunction cost,
 				IWeightFunction lowerBound, IWeightFunction supply) {
-			Assertions.Graphs.onlyDirected(g);
-			Assertions.Flows.checkLowerBound(g, capacityOrig, lowerBound);
-			Assertions.Flows.checkSupply(g, supply);
+			Assertions.onlyDirected(g);
+			Assertions.flowCheckLowerBound(g, capacityOrig, lowerBound);
+			Assertions.flowCheckSupply(g, supply);
 			capacityOrig = IWeightFunction.replaceNullWeightFunc(capacityOrig);
 			cost = IWeightFunction.replaceNullWeightFunc(cost);
 
@@ -175,7 +175,7 @@ class MinimumCostFlows {
 		@Override
 		public IFlow computeMinCostMaxFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IWeightFunction costOrig,
 				IntCollection sources, IntCollection sinks) {
-			Assertions.Graphs.onlyDirected(gOrig);
+			Assertions.onlyDirected(gOrig);
 
 			final boolean integerFlow = WeightFunction.isInteger(capacityOrig);
 			final boolean integerCost = WeightFunction.isInteger(costOrig);
@@ -267,8 +267,8 @@ class MinimumCostFlows {
 			Objects.requireNonNull(costOrig);
 			Objects.requireNonNull(lowerBound);
 
-			Assertions.Graphs.onlyDirected(gOrig);
-			Assertions.Flows.checkLowerBound(gOrig, capacityOrig, lowerBound);
+			Assertions.onlyDirected(gOrig);
+			Assertions.flowCheckLowerBound(gOrig, capacityOrig, lowerBound);
 
 			final boolean integerFlow = WeightFunction.isInteger(capacityOrig) && WeightFunction.isInteger(lowerBound);
 			final boolean integerCost = WeightFunction.isInteger(costOrig);
@@ -444,8 +444,8 @@ class MinimumCostFlows {
 		@Override
 		public IFlow computeMinCostFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IWeightFunction costOrig,
 				IWeightFunction supply) {
-			Assertions.Graphs.onlyDirected(gOrig);
-			Assertions.Flows.checkSupply(gOrig, supply);
+			Assertions.onlyDirected(gOrig);
+			Assertions.flowCheckSupply(gOrig, supply);
 			capacityOrig = IWeightFunction.replaceNullWeightFunc(capacityOrig);
 			costOrig = IWeightFunction.replaceNullWeightFunc(costOrig);
 			supply = IWeightFunction.replaceNullWeightFunc(supply);
@@ -569,8 +569,8 @@ class MinimumCostFlows {
 		@Override
 		public IFlow computeMinCostMaxFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IWeightFunction costOrig,
 				IWeightFunction lowerBoundOrig, IntCollection sources, IntCollection sinks) {
-			Assertions.Graphs.onlyDirected(gOrig);
-			Assertions.Flows.sourcesSinksNotTheSame(sources, sinks);
+			Assertions.onlyDirected(gOrig);
+			Assertions.flowSourcesSinksNotTheSame(sources, sinks);
 
 			final boolean integerFlow =
 					WeightFunction.isInteger(capacityOrig) && WeightFunction.isInteger(lowerBoundOrig);

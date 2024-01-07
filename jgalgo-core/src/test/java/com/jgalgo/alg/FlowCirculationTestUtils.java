@@ -113,7 +113,7 @@ class FlowCirculationTestUtils extends TestUtils {
 	}
 
 	static <V, E> WeightFunctionInt<V> randSupplyInt(Graph<V, E> g, WeightFunctionInt<E> capacity, Random rand) {
-		Assertions.Graphs.onlyDirected(g);
+		Assertions.onlyDirected(g);
 
 		List<V> suppliers = new ArrayList<>();
 		List<V> demanders = new ArrayList<>();
@@ -211,7 +211,7 @@ class FlowCirculationTestUtils extends TestUtils {
 	}
 
 	private static <V, E> WeightFunction<V> randSupply(Graph<V, E> g, WeightFunction<E> capacity, Random rand) {
-		Assertions.Graphs.onlyDirected(g);
+		Assertions.onlyDirected(g);
 
 		List<V> suppliers = new ArrayList<>();
 		List<V> demanders = new ArrayList<>();

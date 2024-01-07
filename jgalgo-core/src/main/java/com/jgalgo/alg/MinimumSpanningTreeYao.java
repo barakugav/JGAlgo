@@ -55,7 +55,7 @@ class MinimumSpanningTreeYao implements MinimumSpanningTreeBase {
 	 */
 	@Override
 	public MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		int n = g.vertices().size();
 
 		int[][][] edges = partitionEdgesToBuckets(g, w);

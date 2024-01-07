@@ -224,7 +224,7 @@ abstract class GraphCsrAbstractUnindexed extends GraphCsrBase {
 
 		@Override
 		public int nextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			int e = edge;
 			edge = edgeNext[e];
 			return e;
@@ -232,7 +232,7 @@ abstract class GraphCsrAbstractUnindexed extends GraphCsrBase {
 
 		@Override
 		public int peekNextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return edge;
 		}
 

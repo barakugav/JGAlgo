@@ -125,7 +125,7 @@ public interface MinimumSpanningTree {
 	 */
 	@SuppressWarnings("unchecked")
 	static <V, E> boolean isSpanningTree(Graph<V, E> g, Collection<E> edges) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		IndexGraph ig;
 		IntCollection edges0;
 		if (g instanceof IndexGraph) {
@@ -194,7 +194,7 @@ public interface MinimumSpanningTree {
 	 */
 	@SuppressWarnings("unchecked")
 	static <V, E> boolean isSpanningForest(Graph<V, E> g, Collection<E> edges) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		IndexGraph ig;
 		IntCollection edges0;
 		if (g instanceof IndexGraph) {

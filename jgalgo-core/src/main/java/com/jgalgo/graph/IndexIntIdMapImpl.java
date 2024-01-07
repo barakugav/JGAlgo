@@ -176,7 +176,7 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 
 	@Override
 	public int indexToIdInt(int index) {
-		Assertions.Graphs.checkId(index, indicesSet.size(), isEdges);
+		Assertions.checkGraphId(index, indicesSet.size(), isEdges);
 		return indexToId[index];
 	}
 

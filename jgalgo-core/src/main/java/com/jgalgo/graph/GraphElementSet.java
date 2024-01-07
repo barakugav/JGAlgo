@@ -67,7 +67,7 @@ abstract class GraphElementSet extends AbstractIntSet {
 	}
 
 	void checkIdx(int idx) {
-		Assertions.Graphs.checkId(idx, size, isEdges);
+		Assertions.checkGraphId(idx, size, isEdges);
 	}
 
 	static class Immutable extends GraphElementSet {

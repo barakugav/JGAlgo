@@ -132,7 +132,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 
 	@Override
 	public E findMin() {
-		Assertions.Heaps.notEmpty(this);
+		Assertions.notEmpty(this);
 		return arr[0];
 	}
 
@@ -151,7 +151,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 
 	@Override
 	public E extractMin() {
-		Assertions.Heaps.notEmpty(this);
+		Assertions.notEmpty(this);
 		E min = arr[0];
 		remove(0);
 		return min;
@@ -204,7 +204,7 @@ class HeapBinary<E> extends HeapAbstract<E> {
 
 		@Override
 		public E next() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return arr[i++];
 		}
 

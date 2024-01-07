@@ -57,7 +57,7 @@ class XmlUtils {
 
 			@Override
 			public Element next() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				Element element = (Element) childNodes.item(idx++);
 				advance();
 				return element;

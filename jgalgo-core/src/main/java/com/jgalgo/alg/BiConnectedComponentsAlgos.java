@@ -95,7 +95,7 @@ class BiConnectedComponentsAlgos {
 					vertexBiCcs[v] =
 							ImmutableIntArraySet.withNaiveContains(sortedBiccs, vertexOffset[v], vertexOffset[v + 1]);
 			}
-			Assertions.Graphs.checkVertex(vertex, n);
+			Assertions.checkVertex(vertex, n);
 			return vertexBiCcs[vertex];
 		}
 
@@ -241,7 +241,7 @@ class BiConnectedComponentsAlgos {
 		@Override
 		public boolean isCutVertex(int vertex) {
 			computeCutVerticesBitmap();
-			Assertions.Graphs.checkVertex(vertex, g.vertices().size());
+			Assertions.checkVertex(vertex, g.vertices().size());
 			return cutVerticesBitmap.get(vertex);
 		}
 

@@ -32,7 +32,7 @@ class GraphCsrDirected extends GraphCsrAbstractUnindexed {
 
 	GraphCsrDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights, boolean fastLookup) {
 		super(true, g, copyVerticesWeights, copyEdgesWeights, fastLookup);
-		Assertions.Graphs.onlyDirected(g);
+		Assertions.onlyDirected(g);
 
 		if (g instanceof GraphCsrDirected) {
 			GraphCsrDirected gCsr = (GraphCsrDirected) g;

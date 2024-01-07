@@ -68,7 +68,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 		 * graph. This essentially allows the algorithm to avoid matching a vertex in the original graph.
 		 */
 
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		IndexGraphBuilder b = IndexGraphBuilder.undirected();
 		b.ensureEdgeCapacity(g.edges().size() * 2 + g.vertices().size());
 
@@ -121,7 +121,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 
 	@Override
 	public IMatching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		return new Worker(g, w).solve();
 	}
@@ -1745,7 +1745,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 
 						@Override
 						public Blossom next() {
-							Assertions.Iters.hasNext(this);
+							Assertions.hasNext(this);
 							Blossom ret = root;
 							root = root.treeSiblingNext;
 							return ret;
@@ -1775,7 +1775,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 
 						@Override
 						public Blossom next() {
-							Assertions.Iters.hasNext(this);
+							Assertions.hasNext(this);
 							Blossom ret = next;
 							next = next.treeSiblingNext;
 							nextNext = next == null ? null : next.treeSiblingNext;
@@ -2191,7 +2191,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 
 						@Override
 						public Edge next() {
-							Assertions.Iters.hasNext(this);
+							Assertions.hasNext(this);
 							current = nextEdge;
 							nextEdge = nextEdge.nextOutEdge;
 							/* outEdges is a circular list of edges */
@@ -2242,7 +2242,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 
 						@Override
 						public Edge next() {
-							Assertions.Iters.hasNext(this);
+							Assertions.hasNext(this);
 							current = nextEdge;
 							nextEdge = nextEdge.nextInEdge;
 							/* inEdges is a circular list of edges */
@@ -2460,7 +2460,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 
 						@Override
 						public TreesEdge next() {
-							Assertions.Iters.hasNext(this);
+							Assertions.hasNext(this);
 							TreesEdge ret = nextEdge;
 							nextEdge = nextEdge.nextOutEdge;
 							return ret;
@@ -2485,7 +2485,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 
 						@Override
 						public TreesEdge next() {
-							Assertions.Iters.hasNext(this);
+							Assertions.hasNext(this);
 							TreesEdge ret = nextEdge;
 							nextEdge = nextEdge.nextInEdge;
 							return ret;
@@ -2527,7 +2527,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 
 						@Override
 						public TreesEdge next() {
-							Assertions.Iters.hasNext(this);
+							Assertions.hasNext(this);
 							prev = nextEdge;
 							nextEdge = nextEdge.nextOutEdge;
 							advance();
@@ -2573,7 +2573,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 
 						@Override
 						public TreesEdge next() {
-							Assertions.Iters.hasNext(this);
+							Assertions.hasNext(this);
 							prev = nextEdge;
 							nextEdge = nextEdge.nextInEdge;
 							advance();
@@ -2603,7 +2603,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 
 						@Override
 						public Blossom next() {
-							Assertions.Iters.hasNext(this);
+							Assertions.hasNext(this);
 							Blossom ret = b;
 
 							/* firstTreeChild points only to even children two levels down, skipping odd nodes */

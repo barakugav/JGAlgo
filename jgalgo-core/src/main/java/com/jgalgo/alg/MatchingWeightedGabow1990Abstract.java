@@ -53,7 +53,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 
 	@Override
 	public IMatching computeMaximumWeightedMatching(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		return newWorker(g, w, debugPrintManager).computeMaxMatching(false);
 
 	}
@@ -63,7 +63,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 		if (WeightFunction.isCardinality(w)) {
 			return computeMaximumWeightedMatching(g, null);
 		} else {
-			Assertions.Graphs.onlyUndirected(g);
+			Assertions.onlyUndirected(g);
 			return newWorker(g, w, debugPrintManager).computeMaxMatching(true);
 		}
 	}
@@ -181,7 +181,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 
 						@Override
 						public Blossom next() {
-							Assertions.Iters.hasNext(this);
+							Assertions.hasNext(this);
 							Blossom ret = c;
 							c = ret.right;
 							if (c == begin)
@@ -220,7 +220,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 
 				@Override
 				public int nextInt() {
-					Assertions.Iters.hasNext(this);
+					Assertions.hasNext(this);
 					int ret = next;
 
 					if (!stack.isEmpty()) {
@@ -908,7 +908,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 
 				@Override
 				public Blossom next() {
-					Assertions.Iters.hasNext(this);
+					Assertions.hasNext(this);
 					Blossom ret = b;
 					ret.lastVisitIdx = visitIdx;
 
@@ -947,7 +947,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 
 				@Override
 				public Blossom next() {
-					Assertions.Iters.hasNext(this);
+					Assertions.hasNext(this);
 					Blossom ret = b;
 					ret.lastVisitIdx = visitIdx;
 

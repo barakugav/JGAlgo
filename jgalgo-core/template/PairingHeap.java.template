@@ -67,7 +67,7 @@ public class PAIRING_HEAP KEY_VALUE_GENERIC extends PairingHeapBase<PAIRING_HEAP
 
 	@Override
 	public HEAP_REFERENCE KEY_VALUE_GENERIC findMin() {
-		Assertions.Heaps.notEmpty(this);
+		Assertions.notEmpty(this);
 		return minRoot;
 	}
 
@@ -107,9 +107,9 @@ public class PAIRING_HEAP KEY_VALUE_GENERIC extends PairingHeapBase<PAIRING_HEAP
 
 	@Override
 	public void meld(REFERENCEABLE_HEAP KEY_VALUE_GENERIC heap) {
-		Assertions.Heaps.noMeldWithSelf(this, heap);
-		Assertions.Heaps.meldWithSameImpl(getClass(), heap);
-		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());
+		Assertions.heapNoMeldWithSelf(this, heap);
+		Assertions.heapMeldWithSameImpl(getClass(), heap);
+		Assertions.heapEqualComparatorBeforeMeld(comparator(), heap.comparator());
 		PAIRING_HEAP KEY_VALUE_GENERIC h = (PAIRING_HEAP KEY_VALUE_GENERIC) heap;
 
 		if (minRoot == null) {
@@ -264,7 +264,7 @@ public class PAIRING_HEAP KEY_VALUE_GENERIC extends PairingHeapBase<PAIRING_HEAP
 	@Override
 	public void decreaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
 		Node KEY_VALUE_GENERIC n = (Node KEY_VALUE_GENERIC) ref;
-		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);
+		Assertions.heapDecreaseKeyIsSmaller(n.key, newKey, c);
 		n.key = newKey;
 		afterKeyDecrease(n);
 	}
@@ -272,7 +272,7 @@ public class PAIRING_HEAP KEY_VALUE_GENERIC extends PairingHeapBase<PAIRING_HEAP
 	@Override
 	public void increaseKey(HEAP_REFERENCE KEY_VALUE_GENERIC ref, PRIMITIVE_KEY_TYPE newKey) {
 		Node KEY_VALUE_GENERIC n = (Node KEY_VALUE_GENERIC) ref;
-		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);
+		Assertions.heapIncreaseKeyIsGreater(n.key, newKey, c);
 		remove(n);
 		n.key = newKey;
 		insertNode(n);

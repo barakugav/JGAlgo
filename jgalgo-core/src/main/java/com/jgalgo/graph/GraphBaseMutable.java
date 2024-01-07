@@ -62,9 +62,9 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;
 		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;
 		if (isDirected()) {
-			Assertions.Graphs.onlyDirected(g);
+			Assertions.onlyDirected(g);
 		} else {
-			Assertions.Graphs.onlyUndirected(g);
+			Assertions.onlyUndirected(g);
 		}
 
 		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), false);

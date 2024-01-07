@@ -29,7 +29,7 @@ class EdgeCoverCardinality implements EdgeCoverBase {
 
 	@Override
 	public IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyCardinality(w);
+		Assertions.onlyCardinality(w);
 		final int m = g.edges().size();
 
 		IMatching matching =

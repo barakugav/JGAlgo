@@ -100,7 +100,7 @@ class PairingHeapBase<NodeT extends PairingHeapBase.NodeBase<NodeT>> {
 
 		@Override
 		public NodeT next() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			final NodeT ret = path.top();
 
 			NodeT next;

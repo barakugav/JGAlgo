@@ -144,7 +144,7 @@ public final class Range extends AbstractIntSet {
 
 		@Override
 		public int nextInt() {
-			Assertions.Iters.hasNext(this);
+			Assertions.hasNext(this);
 			return x++;
 		}
 	}

@@ -409,7 +409,7 @@ public class MinCostFlowBench {
 
 	private static IWeightFunctionInt randLowerBound(IntGraph g, IWeightFunctionInt capacity, IntCollection sources,
 			IntCollection sinks, Random rand) {
-		Assertions.Graphs.onlyDirected(g);
+		Assertions.onlyDirected(g);
 
 		Int2IntMap caps = new Int2IntOpenHashMap();
 		for (int e : g.edges())
@@ -504,7 +504,7 @@ public class MinCostFlowBench {
 	}
 
 	private static IWeightFunctionInt randSupply(IntGraph g, IWeightFunctionInt capacity, Random rand) {
-		Assertions.Graphs.onlyDirected(g);
+		Assertions.onlyDirected(g);
 
 		IntList suppliers = new IntArrayList();
 		IntList demanders = new IntArrayList();

@@ -76,7 +76,7 @@ class ShortestPathSTBidirectionalDijkstra implements ShortestPathSTBase {
 				if (vInfoS.isVisited())
 					continue;
 				double ew = w.weight(e);
-				Assertions.Graphs.onlyPositiveWeight(ew);
+				Assertions.onlyPositiveWeight(ew);
 				double vDistance = uDistanceS + ew;
 				Info vInfoT = infoT.get(v);
 				if (vInfoT != null && vInfoT.isVisited()) {
@@ -103,7 +103,7 @@ class ShortestPathSTBidirectionalDijkstra implements ShortestPathSTBase {
 				if (vInfoT.isVisited())
 					continue;
 				double ew = w.weight(e);
-				Assertions.Graphs.onlyPositiveWeight(ew);
+				Assertions.onlyPositiveWeight(ew);
 				double vDistance = uDistanceT + ew;
 				Info vInfoS = infoS.get(v);
 				if (vInfoS != null && vInfoS.isVisited()) {

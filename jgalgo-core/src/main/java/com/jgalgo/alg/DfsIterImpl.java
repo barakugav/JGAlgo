@@ -70,7 +70,7 @@ class DfsIterImpl implements Dfs.IntIter {
 
 	@Override
 	public int nextInt() {
-		Assertions.Iters.hasNext(this);
+		Assertions.hasNext(this);
 
 		final int ret = nextV;
 		/* sync edgePath to naxEdgePath */

@@ -32,7 +32,7 @@ class ContractableGraph {
 	private int numV;
 
 	ContractableGraph(IndexGraph g) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		this.g = g;
 		int n = g.vertices().size();
 		uf = UnionFind.builder().expectedSize(n).build();
@@ -129,7 +129,7 @@ class ContractableGraph {
 
 			@Override
 			public int nextInt() {
-				Assertions.Iters.hasNext(this);
+				Assertions.hasNext(this);
 				final int e = nextEdge;
 				sourceOrig = nextSourceOrig;
 				targetOrig = nextTargetOrig;
@@ -202,7 +202,7 @@ class ContractableGraph {
 	}
 
 	private void checkSuperVertex(int U) {
-		Assertions.Graphs.checkVertex(U, numV);
+		Assertions.checkVertex(U, numV);
 	}
 
 	static interface EdgeIter extends IntIterator {

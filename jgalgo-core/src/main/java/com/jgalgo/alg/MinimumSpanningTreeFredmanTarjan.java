@@ -74,7 +74,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 	 */
 	@Override
 	public MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		int n = g.vertices().size(), m = g.edges().size();
 		if (n == 0)
 			return MinimumSpanningTrees.IndexResult.Empty;

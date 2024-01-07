@@ -67,8 +67,8 @@ class ColoringDSatur implements ColoringAlgoBase {
 
 	@Override
 	public IVertexPartition computeColoring(IndexGraph g) {
-		Assertions.Graphs.onlyUndirected(g);
-		Assertions.Graphs.noSelfEdges(g, "no valid coloring in graphs with self edges");
+		Assertions.onlyUndirected(g);
+		Assertions.noSelfEdges(g, "no valid coloring in graphs with self edges");
 
 		final int n = g.vertices().size();
 		int[] colors = new int[n];

@@ -56,7 +56,7 @@ public class Trees {
 	 * @throws IllegalArgumentException if {@code g} is a directed graph
 	 */
 	public static <V, E> boolean isTree(Graph<V, E> g) {
-		Assertions.Graphs.onlyUndirected(g);
+		Assertions.onlyUndirected(g);
 		return g.vertices().isEmpty() ? true : isTree(g, g.vertices().iterator().next());
 	}
 
