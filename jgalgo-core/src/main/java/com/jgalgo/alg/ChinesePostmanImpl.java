@@ -17,20 +17,15 @@ package com.jgalgo.alg;
 
 import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.graph.EdgeSet;
-import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
-import com.jgalgo.graph.IndexIdMap;
-import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
 
-class ChinesePostmanImpl implements ChinesePostman {
+class ChinesePostmanImpl implements ChinesePostmanBase {
 
 	// private final WeaklyConnectedComponentsAlgo connectedComponentsAlgo =
 	// WeaklyConnectedComponentsAlgo.newInstance();
@@ -46,7 +41,8 @@ class ChinesePostmanImpl implements ChinesePostman {
 		return nonSelfEdgesCount;
 	}
 
-	IPath computeShortestEdgeVisitorCircle(IndexGraph g, IWeightFunction w) {
+	@Override
+	public IPath computeShortestEdgeVisitorCircle(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		// if (!connectedComponentsAlgo.isWeaklyConnected(g))
 		// throw new IllegalArgumentException("Graph is not connected, cannot compute shortest edge visitor circle");
@@ -115,22 +111,6 @@ class ChinesePostmanImpl implements ChinesePostman {
 
 		int pathSource = eulerianTour.sourceInt();
 		return new PathImpl(g, pathSource, pathSource, path);
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <V, E> Path<V, E> computeShortestEdgeVisitorCircle(Graph<V, E> g, WeightFunction<E> w) {
-		if (g instanceof IndexGraph) {
-			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-			return (Path<V, E>) computeShortestEdgeVisitorCircle((IndexGraph) g, w0);
-
-		} else {
-			IndexGraph iGraph = g.indexGraph();
-			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-			IPath indexPath = computeShortestEdgeVisitorCircle(iGraph, iw);
-			return PathImpl.pathFromIndexPath(g, indexPath);
-		}
 	}
 
 }
