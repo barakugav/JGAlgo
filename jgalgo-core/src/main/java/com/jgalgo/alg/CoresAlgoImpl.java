@@ -16,17 +16,9 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.IntConsumer;
-import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
-import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.ImmutableIntArraySet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Linear cores computing algorithm.
@@ -43,9 +35,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class CoresAlgoImpl implements CoresAlgo {
+class CoresAlgoImpl implements CoresAlgoBase {
 
-	CoresAlgo.IResult computeCores(IndexGraph g, EdgeDirection degreeType) {
+	@Override
+	public CoresAlgo.IResult computeCores(IndexGraph g, EdgeDirection degreeType) {
 		Objects.requireNonNull(degreeType);
 
 		final int n = g.vertices().size();
@@ -149,216 +142,7 @@ class CoresAlgoImpl implements CoresAlgo {
 		}
 
 		int[] core = degree;
-		return new ResultImpl(core);
-	}
-
-	private static class ResultImpl implements CoresAlgo.IResult {
-
-		private final int[] core;
-		private final int maxCore;
-		private int[] coreOffset;
-		private int[] sortedVertices;
-		private IntSet[] coreVertices;
-		private IntSet[] coreShells;
-		private IntSet[] coreCrusts;
-
-		public ResultImpl(int[] core) {
-			this.core = Objects.requireNonNull(core);
-			int maxCore = -1;
-			for (int v = 0; v < core.length; v++)
-				maxCore = Math.max(maxCore, core[v]);
-			this.maxCore = maxCore;
-		}
-
-		@Override
-		public int vertexCoreNum(int v) {
-			return core[v];
-		}
-
-		@Override
-		public int maxCore() {
-			return maxCore;
-		}
-
-		private void computeSortedVertices() {
-			if (sortedVertices != null)
-				return;
-			final int n = this.core.length;
-			final int coreNum = maxCore + 1;
-			if (coreNum == 0)
-				return;
-
-			coreOffset = new int[coreNum + 1];
-			for (int v = 0; v < n; v++)
-				coreOffset[this.core[v]]++;
-			for (int s = 0, c = 0; c < coreNum; c++) {
-				int k = coreOffset[c];
-				coreOffset[c] = s;
-				s += k;
-			}
-			sortedVertices = new int[n];
-			for (int v = 0; v < n; v++)
-				sortedVertices[coreOffset[this.core[v]]++] = v;
-			assert coreOffset[coreNum - 1] == n;
-			for (int c = coreNum; c > 0; c--)
-				coreOffset[c] = coreOffset[c - 1];
-			coreOffset[0] = 0;
-		}
-
-		@Override
-		public IntSet coreVertices(int core) {
-			if (coreVertices == null) {
-				computeSortedVertices();
-				final int n = this.core.length;
-				final int coreNum = maxCore + 1;
-				coreVertices = new IntSet[coreNum];
-				for (int c = 0; c < coreNum; c++) {
-					final int c0 = c;
-					coreVertices[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], n) {
-						@Override
-						public boolean contains(int v) {
-							return 0 <= v && v < n && ResultImpl.this.core[v] >= c0;
-						}
-					};
-				}
-			}
-			return coreVertices[core];
-		}
-
-		@Override
-		public IntSet coreShell(int core) {
-			if (coreShells == null) {
-				computeSortedVertices();
-				final int n = this.core.length;
-				final int coreNum = maxCore + 1;
-				coreShells = new IntSet[coreNum];
-				for (int c = 0; c < coreNum; c++) {
-					final int c0 = c;
-					coreShells[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], coreOffset[c + 1]) {
-						@Override
-						public boolean contains(int v) {
-							return 0 <= v && v < n && ResultImpl.this.core[v] == c0;
-						}
-					};
-				}
-			}
-			return coreShells[core];
-		}
-
-		@Override
-		public IntSet coreCrust(int core) {
-			if (coreCrusts == null) {
-				computeSortedVertices();
-				final int n = this.core.length;
-				final int coreNum = maxCore + 1;
-				coreCrusts = new IntSet[coreNum];
-				for (int c = 0; c < coreNum; c++) {
-					final int c0 = c;
-					coreCrusts[c] = new ImmutableIntArraySet(sortedVertices, 0, coreOffset[c]) {
-						@Override
-						public boolean contains(int v) {
-							return 0 <= v && v < n && ResultImpl.this.core[v] < c0;
-						}
-					};
-				}
-			}
-			return coreCrusts[core];
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public <V, E> CoresAlgo.Result<V, E> computeCores(Graph<V, E> g, EdgeDirection degreeType) {
-		if (g instanceof IndexGraph) {
-			return (CoresAlgo.Result<V, E>) computeCores((IndexGraph) g, degreeType);
-
-		} else {
-			IndexGraph iGraph = g.indexGraph();
-			CoresAlgo.IResult iResult = computeCores(iGraph, degreeType);
-			return resultFromIndexResult(g, iResult);
-		}
-	}
-
-	private static class IntResultFromIndexResult implements CoresAlgo.IResult {
-
-		private final CoresAlgo.IResult iResult;
-		private final IndexIntIdMap viMap;
-
-		public IntResultFromIndexResult(IntGraph g, CoresAlgo.IResult iResult) {
-			this.iResult = Objects.requireNonNull(iResult);
-			this.viMap = g.indexGraphVerticesMap();
-		}
-
-		@Override
-		public int vertexCoreNum(int v) {
-			return iResult.vertexCoreNum(viMap.idToIndex(v));
-		}
-
-		@Override
-		public int maxCore() {
-			return iResult.maxCore();
-		}
-
-		@Override
-		public IntSet coreVertices(int core) {
-			return IndexIdMaps.indexToIdSet(iResult.coreVertices(core), viMap);
-		}
-
-		@Override
-		public IntSet coreShell(int core) {
-			return IndexIdMaps.indexToIdSet(iResult.coreShell(core), viMap);
-		}
-
-		@Override
-		public IntSet coreCrust(int core) {
-			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);
-		}
-	}
-
-	private static class ObjResultFromIndexResult<V, E> implements CoresAlgo.Result<V, E> {
-
-		private final CoresAlgo.IResult iResult;
-		private final IndexIdMap<V> viMap;
-
-		public ObjResultFromIndexResult(Graph<V, E> g, CoresAlgo.IResult iResult) {
-			this.iResult = Objects.requireNonNull(iResult);
-			this.viMap = g.indexGraphVerticesMap();
-		}
-
-		@Override
-		public int vertexCoreNum(V v) {
-			return iResult.vertexCoreNum(viMap.idToIndex(v));
-		}
-
-		@Override
-		public int maxCore() {
-			return iResult.maxCore();
-		}
-
-		@Override
-		public Set<V> coreVertices(int core) {
-			return IndexIdMaps.indexToIdSet(iResult.coreVertices(core), viMap);
-		}
-
-		@Override
-		public Set<V> coreShell(int core) {
-			return IndexIdMaps.indexToIdSet(iResult.coreShell(core), viMap);
-		}
-
-		@Override
-		public Set<V> coreCrust(int core) {
-			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <V, E> CoresAlgo.Result<V, E> resultFromIndexResult(Graph<V, E> g, CoresAlgo.IResult indexResult) {
-		assert !(g instanceof IndexGraph);
-		if (g instanceof IntGraph) {
-			return (CoresAlgo.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
-		} else {
-			return new ObjResultFromIndexResult<>(g, indexResult);
-		}
+		return new CoresAlgos.IndexResult(core);
 	}
 
 }
