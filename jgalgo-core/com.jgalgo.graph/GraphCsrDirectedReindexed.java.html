@@ -182,61 +182,67 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 <span class="fc" id="L182">			return edgesLookupTable[source].get(target);</span>
 		} else {
 
-<span class="fc" id="L185">			int eBegin = edgesOutBegin[source], eEnd = edgesOutBegin[source + 1];</span>
-<span class="fc" id="L186">			int e = JGAlgoUtils.lowerBound(eBegin, eEnd, target, this::edgeTarget);</span>
-<span class="fc bfc" id="L187" title="All 4 branches covered.">			return e &lt; eEnd &amp;&amp; target(e) == target ? e : -1;</span>
+<span class="fc" id="L185">			checkVertex(source);</span>
+<span class="fc" id="L186">			int eBegin = edgesOutBegin[source], eEnd = edgesOutBegin[source + 1];</span>
+<span class="fc" id="L187">			int e = JGAlgoUtils.lowerBound(eBegin, eEnd, target, this::edgeTarget);</span>
+<span class="fc bfc" id="L188" title="All 4 branches covered.">			if (e &lt; eEnd &amp;&amp; target(e) == target) {</span>
+<span class="fc" id="L189">				return e;</span>
+			} else {
+<span class="fc" id="L191">				checkVertex(target);</span>
+<span class="fc" id="L192">				return -1;</span>
+			}
 		}
 	}
 
 	@Override
 	public IEdgeSet getEdges(int source, int target) {
-<span class="fc bfc" id="L193" title="All 2 branches covered.">		if (fastLookup) {</span>
-<span class="fc" id="L194">			checkVertex(source);</span>
-<span class="fc" id="L195">			checkVertex(target);</span>
-<span class="fc" id="L196">			return new SourceTargetEdgesSetFastLookup(source, target);</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">		if (fastLookup) {</span>
+<span class="fc" id="L200">			checkVertex(source);</span>
+<span class="fc" id="L201">			checkVertex(target);</span>
+<span class="fc" id="L202">			return new SourceTargetEdgesSetFastLookup(source, target);</span>
 
 		} else {
-<span class="fc" id="L199">			checkVertex(source);</span>
-<span class="fc" id="L200">			int eBegin = edgesOutBegin[source], eEnd = edgesOutBegin[source + 1];</span>
-<span class="fc" id="L201">			IntIntPair edgeRange = JGAlgoUtils.equalRange(eBegin, eEnd, target, this::edgeTarget);</span>
-<span class="fc bfc" id="L202" title="All 2 branches covered.">			if (edgeRange == null) {</span>
-<span class="fc" id="L203">				checkVertex(target);</span>
-<span class="fc" id="L204">				edgeRange = IntIntPair.of(eBegin, eBegin);</span>
+<span class="fc" id="L205">			checkVertex(source);</span>
+<span class="fc" id="L206">			int eBegin = edgesOutBegin[source], eEnd = edgesOutBegin[source + 1];</span>
+<span class="fc" id="L207">			IntIntPair edgeRange = JGAlgoUtils.equalRange(eBegin, eEnd, target, this::edgeTarget);</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">			if (edgeRange == null) {</span>
+<span class="fc" id="L209">				checkVertex(target);</span>
+<span class="fc" id="L210">				edgeRange = IntIntPair.of(eBegin, eBegin);</span>
 			}
-<span class="fc" id="L206">			return new EdgeSetSourceTarget(source, target, edgeRange.firstInt(), edgeRange.secondInt());</span>
+<span class="fc" id="L212">			return new EdgeSetSourceTarget(source, target, edgeRange.firstInt(), edgeRange.secondInt());</span>
 		}
 	}
 
 	@Override
 	public IEdgeSet outEdges(int source) {
-<span class="fc" id="L212">		checkVertex(source);</span>
-<span class="fc" id="L213">		return new EdgeSetOut(source);</span>
+<span class="fc" id="L218">		checkVertex(source);</span>
+<span class="fc" id="L219">		return new EdgeSetOut(source);</span>
 	}
 
 	@Override
 	public IEdgeSet inEdges(int target) {
-<span class="fc" id="L218">		checkVertex(target);</span>
-<span class="fc" id="L219">		return new EdgeSetIn(target);</span>
+<span class="fc" id="L224">		checkVertex(target);</span>
+<span class="fc" id="L225">		return new EdgeSetIn(target);</span>
 	}
 
 	private class EdgeSetOut extends IndexGraphBase.EdgeSetOutDirected {
 
 		final int begin, end;
 
-<span class="fc" id="L226">		EdgeSetOut(int source) {</span>
-<span class="fc" id="L227">			super(source);</span>
-<span class="fc" id="L228">			begin = edgesOutBegin[source];</span>
-<span class="fc" id="L229">			end = edgesOutBegin[source + 1];</span>
-<span class="fc" id="L230">		}</span>
+<span class="fc" id="L232">		EdgeSetOut(int source) {</span>
+<span class="fc" id="L233">			super(source);</span>
+<span class="fc" id="L234">			begin = edgesOutBegin[source];</span>
+<span class="fc" id="L235">			end = edgesOutBegin[source + 1];</span>
+<span class="fc" id="L236">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L234">			return end - begin;</span>
+<span class="fc" id="L240">			return end - begin;</span>
 		}
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L239">			return new EdgeIterOut(source, begin, end);</span>
+<span class="fc" id="L245">			return new EdgeIterOut(source, begin, end);</span>
 		}
 	}
 
@@ -244,20 +250,20 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 		final int begin, end;
 
-<span class="fc" id="L247">		EdgeSetIn(int target) {</span>
-<span class="fc" id="L248">			super(target);</span>
-<span class="fc" id="L249">			begin = edgesInBegin[target];</span>
-<span class="fc" id="L250">			end = edgesInBegin[target + 1];</span>
-<span class="fc" id="L251">		}</span>
+<span class="fc" id="L253">		EdgeSetIn(int target) {</span>
+<span class="fc" id="L254">			super(target);</span>
+<span class="fc" id="L255">			begin = edgesInBegin[target];</span>
+<span class="fc" id="L256">			end = edgesInBegin[target + 1];</span>
+<span class="fc" id="L257">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L255">			return end - begin;</span>
+<span class="fc" id="L261">			return end - begin;</span>
 		}
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L260">			return new EdgeIterIn(target, edgesIn, begin, end);</span>
+<span class="fc" id="L266">			return new EdgeIterIn(target, edgesIn, begin, end);</span>
 		}
 	}
 
@@ -266,57 +272,57 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 		int nextEdge;
 		private final int endIdx;
 
-<span class="fc" id="L269">		EdgeIterOut(int source, int beginEdge, int endEdge) {</span>
-<span class="fc" id="L270">			this.source = source;</span>
-<span class="fc" id="L271">			this.nextEdge = beginEdge;</span>
-<span class="fc" id="L272">			this.endIdx = endEdge;</span>
-<span class="fc" id="L273">		}</span>
+<span class="fc" id="L275">		EdgeIterOut(int source, int beginEdge, int endEdge) {</span>
+<span class="fc" id="L276">			this.source = source;</span>
+<span class="fc" id="L277">			this.nextEdge = beginEdge;</span>
+<span class="fc" id="L278">			this.endIdx = endEdge;</span>
+<span class="fc" id="L279">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L277" title="All 2 branches covered.">			return nextEdge &lt; endIdx;</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">			return nextEdge &lt; endIdx;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L282">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L283">			return nextEdge++;</span>
+<span class="fc" id="L288">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L289">			return nextEdge++;</span>
 		}
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L288">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L289">			return nextEdge;</span>
+<span class="fc" id="L294">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L295">			return nextEdge;</span>
 		}
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L294">			return source;</span>
+<span class="fc" id="L300">			return source;</span>
 		}
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L299">			int lastEdge = nextEdge - 1; // undefined behavior if nextInt() wasn't called</span>
-<span class="fc" id="L300">			return GraphCsrDirectedReindexed.this.target(lastEdge);</span>
+<span class="fc" id="L305">			int lastEdge = nextEdge - 1; // undefined behavior if nextInt() wasn't called</span>
+<span class="fc" id="L306">			return GraphCsrDirectedReindexed.this.target(lastEdge);</span>
 		}
 	}
 
 	private class EdgeIterIn extends EdgeIterAbstract {
 		private final int target;
 
-<span class="fc" id="L307">		EdgeIterIn(int target, int[] edges, int beginIdx, int endIdx) {</span>
-<span class="fc" id="L308">			super(edges, beginIdx, endIdx);</span>
-<span class="fc" id="L309">			this.target = target;</span>
-<span class="fc" id="L310">		}</span>
+<span class="fc" id="L313">		EdgeIterIn(int target, int[] edges, int beginIdx, int endIdx) {</span>
+<span class="fc" id="L314">			super(edges, beginIdx, endIdx);</span>
+<span class="fc" id="L315">			this.target = target;</span>
+<span class="fc" id="L316">		}</span>
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L314">			return GraphCsrDirectedReindexed.this.source(lastEdge);</span>
+<span class="fc" id="L320">			return GraphCsrDirectedReindexed.this.source(lastEdge);</span>
 		}
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L319">			return target;</span>
+<span class="fc" id="L325">			return target;</span>
 		}
 	}
 
@@ -327,26 +333,26 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 		private final int begin;
 		private final int end;
 
-<span class="fc" id="L330">		EdgeSetSourceTarget(int source, int target, int start, int end) {</span>
-<span class="fc" id="L331">			this.source = source;</span>
-<span class="fc" id="L332">			this.target = target;</span>
-<span class="fc" id="L333">			this.begin = start;</span>
-<span class="fc" id="L334">			this.end = end;</span>
-<span class="fc" id="L335">		}</span>
+<span class="fc" id="L336">		EdgeSetSourceTarget(int source, int target, int start, int end) {</span>
+<span class="fc" id="L337">			this.source = source;</span>
+<span class="fc" id="L338">			this.target = target;</span>
+<span class="fc" id="L339">			this.begin = start;</span>
+<span class="fc" id="L340">			this.end = end;</span>
+<span class="fc" id="L341">		}</span>
 
 		@Override
 		public boolean contains(int edge) {
-<span class="fc bfc" id="L339" title="All 6 branches covered.">			return edges.contains(edge) &amp;&amp; source == edgeSource(edge) &amp;&amp; target == edgeTarget(edge);</span>
+<span class="fc bfc" id="L345" title="All 6 branches covered.">			return edges.contains(edge) &amp;&amp; source == edgeSource(edge) &amp;&amp; target == edgeTarget(edge);</span>
 		}
 
 		@Override
 		public int size() {
-<span class="fc" id="L344">			return end - begin;</span>
+<span class="fc" id="L350">			return end - begin;</span>
 		}
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L349">			return new EdgeIterOut(source, begin, end);</span>
+<span class="fc" id="L355">			return new EdgeIterOut(source, begin, end);</span>
 		}
 	}
 
@@ -354,36 +360,36 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 
 		private final int source, target;
 
-<span class="fc" id="L357">		SourceTargetEdgesSetFastLookup(int source, int target) {</span>
-<span class="fc" id="L358">			this.source = source;</span>
-<span class="fc" id="L359">			this.target = target;</span>
-<span class="fc" id="L360">		}</span>
+<span class="fc" id="L363">		SourceTargetEdgesSetFastLookup(int source, int target) {</span>
+<span class="fc" id="L364">			this.source = source;</span>
+<span class="fc" id="L365">			this.target = target;</span>
+<span class="fc" id="L366">		}</span>
 
 		@Override
 		public int size() {
-<span class="fc" id="L364">			int firstEdge = edgesLookupTable[source].get(target);</span>
-<span class="fc bfc" id="L365" title="All 2 branches covered.">			if (firstEdge &lt; 0)</span>
-<span class="fc" id="L366">				return 0;</span>
-<span class="fc" id="L367">			for (int e = firstEdge, m = edges.size;;) {</span>
-<span class="fc" id="L368">				e++;</span>
-<span class="fc bfc" id="L369" title="All 4 branches covered.">				if (e == m || target(e) != target)</span>
-<span class="fc" id="L370">					return e - firstEdge;</span>
+<span class="fc" id="L370">			int firstEdge = edgesLookupTable[source].get(target);</span>
+<span class="fc bfc" id="L371" title="All 2 branches covered.">			if (firstEdge &lt; 0)</span>
+<span class="fc" id="L372">				return 0;</span>
+<span class="fc" id="L373">			for (int e = firstEdge, m = edges.size;;) {</span>
+<span class="fc" id="L374">				e++;</span>
+<span class="fc bfc" id="L375" title="All 4 branches covered.">				if (e == m || target(e) != target)</span>
+<span class="fc" id="L376">					return e - firstEdge;</span>
 			}
 		}
 
 		@Override
 		public boolean isEmpty() {
-<span class="fc bfc" id="L376" title="All 2 branches covered.">			return edgesLookupTable[source].get(target) &lt; 0;</span>
+<span class="fc bfc" id="L382" title="All 2 branches covered.">			return edgesLookupTable[source].get(target) &lt; 0;</span>
 		}
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc bfc" id="L381" title="All 6 branches covered.">			return edges().contains(key) &amp;&amp; source(key) == source &amp;&amp; target(key) == target;</span>
+<span class="fc bfc" id="L387" title="All 6 branches covered.">			return edges().contains(key) &amp;&amp; source(key) == source &amp;&amp; target(key) == target;</span>
 		}
 
 		@Override
 		public IEdgeIter iterator() {
-<span class="fc" id="L386">			return new SourceTargetEdgesIterFastLookup(source, target);</span>
+<span class="fc" id="L392">			return new SourceTargetEdgesIterFastLookup(source, target);</span>
 		}
 	}
 
@@ -392,41 +398,41 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 		private final int source, target;
 		private int edge;
 
-<span class="fc" id="L395">		SourceTargetEdgesIterFastLookup(int source, int target) {</span>
-<span class="fc" id="L396">			this.source = source;</span>
-<span class="fc" id="L397">			this.target = target;</span>
-<span class="fc" id="L398">			this.edge = edgesLookupTable[source].get(target);</span>
-<span class="fc" id="L399">		}</span>
+<span class="fc" id="L401">		SourceTargetEdgesIterFastLookup(int source, int target) {</span>
+<span class="fc" id="L402">			this.source = source;</span>
+<span class="fc" id="L403">			this.target = target;</span>
+<span class="fc" id="L404">			this.edge = edgesLookupTable[source].get(target);</span>
+<span class="fc" id="L405">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L403" title="All 2 branches covered.">			return edge &gt;= 0;</span>
+<span class="fc bfc" id="L409" title="All 2 branches covered.">			return edge &gt;= 0;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L408">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L409">			int e = edge;</span>
-<span class="fc" id="L410">			edge++;</span>
-<span class="fc bfc" id="L411" title="All 4 branches covered.">			if (edge == edges.size || GraphCsrDirectedReindexed.this.target(edge) != target)</span>
-<span class="fc" id="L412">				edge = -1;</span>
-<span class="fc" id="L413">			return e;</span>
+<span class="fc" id="L414">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L415">			int e = edge;</span>
+<span class="fc" id="L416">			edge++;</span>
+<span class="fc bfc" id="L417" title="All 4 branches covered.">			if (edge == edges.size || GraphCsrDirectedReindexed.this.target(edge) != target)</span>
+<span class="fc" id="L418">				edge = -1;</span>
+<span class="fc" id="L419">			return e;</span>
 		}
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L418">			Assertions.Iters.hasNext(this);</span>
-<span class="fc" id="L419">			return edge;</span>
+<span class="fc" id="L424">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L425">			return edge;</span>
 		}
 
 		@Override
 		public int sourceInt() {
-<span class="fc" id="L424">			return source;</span>
+<span class="fc" id="L430">			return source;</span>
 		}
 
 		@Override
 		public int targetInt() {
-<span class="fc" id="L429">			return target;</span>
+<span class="fc" id="L435">			return target;</span>
 		}
 	}
 }

@@ -1,0 +1,789 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsomorphismTesterVf2.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">IsomorphismTesterVf2.java</span></div><h1>IsomorphismTesterVf2.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import com.jgalgo.graph.Graphs;
+import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.internal.util.Assertions;
+import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.IterTools;
+import com.jgalgo.internal.util.JGAlgoUtils;
+import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntIterators;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.ObjectIterators;
+
+/**
+ * Vf2 algorithm for testing isomorphism of two graphs.
+ *
+ * &lt;p&gt;
+ * Based on 'An Improved Algorithm for Matching Large Graphs' by L. P. Cordella, P. Foggia, C. Sansone and M. Vento.
+ *
+ * @author Barak Ugav
+ */
+<span class="fc" id="L44">class IsomorphismTesterVf2 extends IsomorphismTesterAbstract {</span>
+
+	@Override
+	Iterator&lt;IsomorphismTester.IMapping&gt; isomorphicMappingsIter(IndexGraph g1, IndexGraph g2) {
+<span class="fc" id="L48">		Assertions.Graphs.noParallelEdges(g1, &quot;parallel edges are not supported&quot;);</span>
+<span class="fc" id="L49">		Assertions.Graphs.noParallelEdges(g2, &quot;parallel edges are not supported&quot;);</span>
+<span class="fc" id="L50">		final int n = g1.vertices().size();</span>
+<span class="fc" id="L51">		final int m = g1.edges().size();</span>
+<span class="fc bfc" id="L52" title="All 6 branches covered.">		if (n != g2.vertices().size() || m != g2.edges().size() || g1.isDirected() != g2.isDirected())</span>
+<span class="fc" id="L53">			return Collections.emptyIterator();</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		if (n == 0) {</span>
+<span class="pc bnc" id="L55" title="All 2 branches missed.">			assert m == 0;</span>
+<span class="fc" id="L56">			return ObjectIterators</span>
+<span class="fc" id="L57">					.singleton(new MappingImpl(IntArrays.DEFAULT_EMPTY_ARRAY, IntArrays.DEFAULT_EMPTY_ARRAY));</span>
+		}
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		if (m == 0) {</span>
+<span class="fc" id="L60">			Iterator&lt;IntList&gt; verticesPermutations =</span>
+<span class="fc" id="L61">					JGAlgoUtils.permutations(IntList.of(g1.vertices().toIntArray())).iterator();</span>
+<span class="fc" id="L62">			return IterTools.map(verticesPermutations, permutation -&gt; {</span>
+<span class="fc" id="L63">				int[] core1 = permutation.toIntArray();</span>
+<span class="fc" id="L64">				return new MappingImpl(core1, IntArrays.DEFAULT_EMPTY_ARRAY);</span>
+			});
+		}
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		if (g1.isDirected()) {</span>
+<span class="fc" id="L68">			return new IsomorphismIterDirected(g1, g2);</span>
+		} else {
+<span class="fc" id="L70">			return new IsomorphismIterUndirected(g1, g2);</span>
+		}
+	}
+
+	private abstract static class IsomorphismIterBase implements Iterator&lt;IsomorphismTester.IMapping&gt; {
+
+		final IndexGraph g1;
+		final IndexGraph g2;
+		final int n;
+
+		private final Bitmap hasSelfEdge1;
+		private final Bitmap hasSelfEdge2;
+
+		final int[] core1;
+		final int[] core2;
+		int stateDepth;
+		final int[] statePrevV1;
+		final int[] statePrevV2;
+		final IntIterator[] stateNextV1Iter;
+		final int[] stateNextV2;
+
+<span class="fc" id="L91">		int nextVisitIdx = 1;</span>
+		final int[] visit;
+		final int[] visitData;
+
+		boolean nextIsValid;
+<span class="fc" id="L96">		int lastV1 = -1, lastV2 = -1;</span>
+
+		static final int None = -1;
+
+<span class="fc" id="L100">		IsomorphismIterBase(IndexGraph g1, IndexGraph g2) {</span>
+<span class="fc" id="L101">			this.g1 = g1;</span>
+<span class="fc" id="L102">			this.g2 = g2;</span>
+<span class="fc" id="L103">			n = g1.vertices().size();</span>
+
+<span class="fc" id="L105">			IntSet selfEdges1 = Graphs.selfEdges(g1);</span>
+<span class="fc" id="L106">			IntSet selfEdges2 = Graphs.selfEdges(g2);</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">			if (selfEdges1.isEmpty()) {</span>
+<span class="fc" id="L108">				hasSelfEdge1 = null;</span>
+			} else {
+<span class="fc" id="L110">				hasSelfEdge1 = new Bitmap(n);</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">				for (int e : selfEdges1)</span>
+<span class="fc" id="L112">					hasSelfEdge1.set(g1.edgeSource(e));</span>
+			}
+<span class="fc bfc" id="L114" title="All 2 branches covered.">			if (selfEdges2.isEmpty()) {</span>
+<span class="fc" id="L115">				hasSelfEdge2 = null;</span>
+			} else {
+<span class="fc" id="L117">				hasSelfEdge2 = new Bitmap(n);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">				for (int e : selfEdges2)</span>
+<span class="fc" id="L119">					hasSelfEdge2.set(g2.edgeSource(e));</span>
+			}
+
+<span class="fc" id="L122">			core1 = new int[n];</span>
+<span class="fc" id="L123">			core2 = new int[n];</span>
+<span class="fc" id="L124">			Arrays.fill(core1, None);</span>
+<span class="fc" id="L125">			Arrays.fill(core2, None);</span>
+
+<span class="fc" id="L127">			visit = new int[n];</span>
+<span class="fc" id="L128">			visitData = new int[n];</span>
+
+<span class="fc" id="L130">			stateDepth = 1;</span>
+<span class="fc" id="L131">			statePrevV1 = new int[n + 1];</span>
+<span class="fc" id="L132">			statePrevV2 = new int[n + 1];</span>
+<span class="fc" id="L133">			stateNextV1Iter = new IntIterator[n + 1];</span>
+<span class="fc" id="L134">			stateNextV2 = new int[n + 1];</span>
+<span class="fc" id="L135">		}</span>
+
+		abstract boolean advance();
+
+		@Override
+		public boolean hasNext() {
+<span class="fc" id="L141">			return nextIsValid;</span>
+		}
+
+		@Override
+		public IsomorphismTester.IMapping next() {
+<span class="fc" id="L146">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L147">			IsomorphismTester.IMapping mapping = new MappingImpl(core1.clone(), computeEdgeMapping());</span>
+
+<span class="fc" id="L149">			core1[lastV1] = None;</span>
+<span class="fc" id="L150">			core2[lastV2] = None;</span>
+<span class="fc" id="L151">			nextIsValid = advance();</span>
+
+<span class="fc" id="L153">			return mapping;</span>
+		}
+
+		private int[] computeEdgeMapping() {
+<span class="fc" id="L157">			final int n = g1.vertices().size();</span>
+<span class="fc" id="L158">			final int m = g1.edges().size();</span>
+<span class="fc" id="L159">			int[] edges1To2Map = new int[m];</span>
+
+<span class="fc bfc" id="L161" title="All 2 branches covered.">			for (int u1 = 0; u1 &lt; n; u1++) {</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">				for (IEdgeIter eit = g1.outEdges(u1).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L163">					int e1 = eit.nextInt();</span>
+<span class="fc" id="L164">					int v1 = eit.targetInt();</span>
+<span class="fc" id="L165">					visit[v1] = e1;</span>
+<span class="fc" id="L166">				}</span>
+<span class="fc" id="L167">				int u2 = core1[u1];</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">				for (IEdgeIter eit = g2.outEdges(u2).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L169">					int e2 = eit.nextInt();</span>
+<span class="fc" id="L170">					int v2 = eit.targetInt();</span>
+<span class="fc" id="L171">					int v1 = core2[v2];</span>
+<span class="fc" id="L172">					int e1 = visit[v1];</span>
+<span class="fc" id="L173">					edges1To2Map[e1] = e2;</span>
+<span class="fc" id="L174">				}</span>
+			}
+<span class="fc" id="L176">			nextVisitIdx = 1;</span>
+<span class="fc" id="L177">			Arrays.fill(visit, -1);</span>
+<span class="fc" id="L178">			return edges1To2Map;</span>
+		}
+
+		boolean hasSelfEdge1(int vertex) {
+<span class="fc bfc" id="L182" title="All 4 branches covered.">			return hasSelfEdge1 != null &amp;&amp; hasSelfEdge1.get(vertex);</span>
+		}
+
+		boolean hasSelfEdge2(int vertex) {
+<span class="fc bfc" id="L186" title="All 4 branches covered.">			return hasSelfEdge2 != null &amp;&amp; hasSelfEdge2.get(vertex);</span>
+		}
+	}
+
+<span class="fc" id="L190">	private static class IsomorphismIterDirected extends IsomorphismIterBase {</span>
+
+		private final int[] in1;
+		private final int[] in2;
+		private final int[] out1;
+		private final int[] out2;
+
+		private final int[] stateT1OutSize;
+		private final int[] stateT2OutSize;
+		private final int[] stateT1InSize;
+		private final int[] stateT2InSize;
+
+		IsomorphismIterDirected(IndexGraph g1, IndexGraph g2) {
+<span class="fc" id="L203">			super(g1, g2);</span>
+
+<span class="fc" id="L205">			in1 = new int[n];</span>
+<span class="fc" id="L206">			in2 = new int[n];</span>
+<span class="fc" id="L207">			out1 = new int[n];</span>
+<span class="fc" id="L208">			out2 = new int[n];</span>
+
+<span class="fc" id="L210">			stateT1OutSize = new int[n + 1];</span>
+<span class="fc" id="L211">			stateT2OutSize = new int[n + 1];</span>
+<span class="fc" id="L212">			stateT1InSize = new int[n + 1];</span>
+<span class="fc" id="L213">			stateT2InSize = new int[n + 1];</span>
+<span class="fc" id="L214">			newState(None, None, 0, 0, 0, 0);</span>
+
+<span class="fc" id="L216">			nextIsValid = advance();</span>
+<span class="fc" id="L217">		}</span>
+
+		private void newState(int v1, int v2, int t1OutSize, int t2OutSize, int t1InSize, int t2InSize) {
+<span class="fc" id="L220">			statePrevV1[stateDepth] = v1;</span>
+<span class="fc" id="L221">			statePrevV2[stateDepth] = v2;</span>
+<span class="fc" id="L222">			stateT1OutSize[stateDepth] = t1OutSize;</span>
+<span class="fc" id="L223">			stateT2OutSize[stateDepth] = t2OutSize;</span>
+<span class="fc" id="L224">			stateT1InSize[stateDepth] = t1InSize;</span>
+<span class="fc" id="L225">			stateT2InSize[stateDepth] = t2InSize;</span>
+
+<span class="pc bnc" id="L227" title="All 2 branches missed.">			assert t1OutSize &lt; n;</span>
+<span class="pc bnc" id="L228" title="All 2 branches missed.">			assert t2OutSize &lt; n;</span>
+<span class="pc bnc" id="L229" title="All 2 branches missed.">			assert t1InSize &lt; n;</span>
+<span class="pc bnc" id="L230" title="All 2 branches missed.">			assert t2InSize &lt; n;</span>
+
+			IntIterator nextV1Iter;
+			int nextV2;
+<span class="fc bfc" id="L234" title="All 12 branches covered.">			if ((t1OutSize == 0 ^ t2OutSize == 0) || (t1InSize == 0 ^ t2InSize == 0)) {</span>
+<span class="fc" id="L235">				nextV1Iter = IntIterators.EMPTY_ITERATOR;</span>
+<span class="fc" id="L236">				nextV2 = None;</span>
+
+			} else {
+<span class="fc bfc" id="L239" title="All 2 branches covered.">				if (t1OutSize != 0) {</span>
+					/* P(s)=T^{out}_1 (s) \times \{\min T^{out}_2(s)\} */
+<span class="fc bfc" id="L241" title="All 4 branches covered.">					nextV1Iter = IterTools.filter(range(n).iterator(), u -&gt; core1[u] == None &amp;&amp; out1[u] &gt; 0);</span>
+<span class="fc bfc" id="L242" title="All 4 branches covered.">					nextV2 = IterTools.filter(range(n).iterator(), u -&gt; core2[u] == None &amp;&amp; out2[u] &gt; 0).nextInt();</span>
+
+<span class="fc bfc" id="L244" title="All 2 branches covered.">				} else if (t1InSize != 0) {</span>
+					/* P(s)=T^{in}_1 (s) \times \{\min T^{in}_2(s)\} */
+<span class="fc bfc" id="L246" title="All 4 branches covered.">					nextV1Iter = IterTools.filter(range(n).iterator(), u -&gt; core1[u] == None &amp;&amp; in1[u] &gt; 0);</span>
+<span class="fc bfc" id="L247" title="All 4 branches covered.">					nextV2 = IterTools.filter(range(n).iterator(), u -&gt; core2[u] == None &amp;&amp; in2[u] &gt; 0).nextInt();</span>
+
+				} else {
+					/* P(s)=(N_1 - M_1(s)) \times \{\min (N_2 - M_2)\} */
+<span class="fc bfc" id="L251" title="All 2 branches covered.">					nextV1Iter = IterTools.filter(range(n).iterator(), u -&gt; core1[u] == None);</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">					nextV2 = IterTools.filter(range(n).iterator(), u -&gt; core2[u] == None).nextInt();</span>
+				}
+<span class="pc bnc" id="L254" title="All 2 branches missed.">				assert nextV1Iter.hasNext();</span>
+			}
+<span class="fc" id="L256">			stateNextV1Iter[stateDepth] = nextV1Iter;</span>
+<span class="fc" id="L257">			stateNextV2[stateDepth] = nextV2;</span>
+<span class="fc" id="L258">		}</span>
+
+		@Override
+		boolean advance() {
+<span class="fc bfc" id="L262" title="All 2 branches covered.">			dfs: while (stateDepth &gt; 0) {</span>
+				// IntList mapped1 = new IntArrayList(range(n).filter(u -&gt; core1[u] != None).iterator());
+				// IntList range1 = new IntArrayList(mapped1.intStream().map(u -&gt; core1[u]).iterator());
+				// IntList mapped2 = new IntArrayList(range(n).filter(u -&gt; core2[u] != None).iterator());
+				// IntList range2 = new IntArrayList(mapped2.intStream().map(u -&gt; core2[u]).iterator());
+				// assert mapped1.size() == new IntOpenHashSet(mapped1).size();
+				// assert mapped2.size() == new IntOpenHashSet(mapped2).size();
+				// assert range1.size() == new IntOpenHashSet(range1).size();
+				// assert range2.size() == new IntOpenHashSet(range2).size();
+				// assert new IntOpenHashSet(mapped1).equals(new IntOpenHashSet(range2));
+				// assert new IntOpenHashSet(mapped2).equals(new IntOpenHashSet(range1));
+
+				// int[] t1Out = range(n)
+				// .filter(v -&gt; core1[v] != None)
+				// .flatMap(v -&gt; g1.outEdges(v).intStream().map(g1::edgeTarget))
+				// .filter(v -&gt; core1[v] == None)
+				// .distinct()
+				// .toArray();
+				// int[] t1In = range(n)
+				// .filter(v -&gt; core1[v] != None)
+				// .flatMap(v -&gt; g1.inEdges(v).intStream().map(g1::edgeSource))
+				// .filter(v -&gt; core1[v] == None)
+				// .distinct()
+				// .toArray();
+				// int[] t2Out = range(n)
+				// .filter(v -&gt; core2[v] != None)
+				// .flatMap(v -&gt; g2.outEdges(v).intStream().map(g2::edgeTarget))
+				// .filter(v -&gt; core2[v] == None)
+				// .distinct()
+				// .toArray();
+				// int[] t2In = range(n)
+				// .filter(v -&gt; core2[v] != None)
+				// .flatMap(v -&gt; g2.inEdges(v).intStream().map(g2::edgeSource))
+				// .filter(v -&gt; core2[v] == None)
+				// .distinct()
+				// .toArray();
+				// assert state.t1OutSize == t1Out.length;
+				// assert state.t1InSize == t1In.length;
+				// assert state.t2OutSize == t2Out.length;
+				// assert state.t2InSize == t2In.length;
+
+<span class="fc" id="L303">				final int v2 = stateNextV2[stateDepth];</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">				for (IntIterator v1Iter = stateNextV1Iter[stateDepth]; v1Iter.hasNext();) {</span>
+<span class="fc" id="L305">					final int v1 = v1Iter.nextInt();</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">					if (!isFeasibleMatchVertices(v1, v2))</span>
+<span class="fc" id="L307">						continue;</span>
+
+					/* match v1 to v2 and update state */
+<span class="fc" id="L310">					core1[v1] = v2;</span>
+<span class="fc" id="L311">					core2[v2] = v1;</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">					if (stateDepth == n) {</span>
+<span class="fc" id="L313">						lastV1 = v1;</span>
+<span class="fc" id="L314">						lastV2 = v2;</span>
+<span class="fc" id="L315">						return true; /* found a valid full matching */</span>
+					}
+<span class="fc" id="L317">					stateDepth++;</span>
+<span class="fc" id="L318">					updateState(v1, v2);</span>
+
+<span class="fc bfc" id="L320" title="All 2 branches covered.">					if (!isFeasibleCurrentState()) {</span>
+<span class="fc" id="L321">						popLastState();</span>
+<span class="fc" id="L322">						continue;</span>
+					}
+					continue dfs;
+				}
+<span class="fc" id="L326">				popLastState();</span>
+<span class="fc" id="L327">			}</span>
+<span class="fc" id="L328">			return false;</span>
+		}
+
+		private boolean isFeasibleMatchVertices(int v1, int v2) {
+			/*
+			 * check that out edges connecting v1 and other mapped vertices of g1 can be mapped to out edges connecting
+			 * v2 and other mapped vertices of g2
+			 */
+<span class="fc" id="L336">			int visitIdx = nextVisitIdx++;</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">			for (IEdgeIter eit = g1.outEdges(v1).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L338">				eit.nextInt();</span>
+<span class="fc" id="L339">				int w1 = eit.targetInt();</span>
+<span class="fc" id="L340">				int w2 = core1[w1];</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">				if (w2 != None) {</span>
+<span class="fc" id="L342">					visit[w1] = visitIdx;</span>
+<span class="fc" id="L343">					visitData[w1] = w2;</span>
+				}
+<span class="fc" id="L345">			}</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">			for (IEdgeIter eit = g2.outEdges(v2).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L347">				eit.nextInt();</span>
+<span class="fc" id="L348">				int w2 = eit.targetInt();</span>
+<span class="fc" id="L349">				int w1 = core2[w2];</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">				if (w1 != None) {</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">					if (visit[w1] != visitIdx)</span>
+<span class="fc" id="L352">						return false;</span>
+<span class="pc bpc" id="L353" title="1 of 2 branches missed.">					if (visitData[w1] != w2)</span>
+<span class="nc" id="L354">						return false;</span>
+				}
+<span class="fc" id="L356">			}</span>
+
+			/*
+			 * check that in edges connecting v1 and other mapped vertices of g1 can be mapped to in edges connecting v2
+			 * and other mapped vertices of g2
+			 */
+<span class="fc" id="L362">			visitIdx = nextVisitIdx++;</span>
+<span class="fc bfc" id="L363" title="All 2 branches covered.">			for (IEdgeIter eit = g1.inEdges(v1).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L364">				eit.nextInt();</span>
+<span class="fc" id="L365">				int u1 = eit.sourceInt();</span>
+<span class="fc" id="L366">				int u2 = core1[u1];</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">				if (u2 != None) {</span>
+<span class="fc" id="L368">					visit[u1] = visitIdx;</span>
+<span class="fc" id="L369">					visitData[u1] = u2;</span>
+				}
+<span class="fc" id="L371">			}</span>
+<span class="fc bfc" id="L372" title="All 2 branches covered.">			for (IEdgeIter eit = g2.inEdges(v2).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L373">				eit.nextInt();</span>
+<span class="fc" id="L374">				int u2 = eit.sourceInt();</span>
+<span class="fc" id="L375">				int u1 = core2[u2];</span>
+<span class="fc bfc" id="L376" title="All 2 branches covered.">				if (u1 != None) {</span>
+<span class="fc bfc" id="L377" title="All 2 branches covered.">					if (visit[u1] != visitIdx)</span>
+<span class="fc" id="L378">						return false;</span>
+<span class="pc bpc" id="L379" title="1 of 2 branches missed.">					if (visitData[u1] != u2)</span>
+<span class="nc" id="L380">						return false;</span>
+				}
+<span class="fc" id="L382">			}</span>
+
+<span class="fc bfc" id="L384" title="All 2 branches covered.">			if (hasSelfEdge1(v1) != hasSelfEdge2(v2))</span>
+<span class="fc" id="L385">				return false;</span>
+
+<span class="fc" id="L387">			return true;</span>
+		}
+
+		private boolean isFeasibleCurrentState() {
+<span class="fc bfc" id="L391" title="All 2 branches covered.">			if (stateT1OutSize[stateDepth] != stateT2OutSize[stateDepth])</span>
+<span class="fc" id="L392">				return false;</span>
+<span class="fc bfc" id="L393" title="All 2 branches covered.">			if (stateT1InSize[stateDepth] != stateT2InSize[stateDepth])</span>
+<span class="fc" id="L394">				return false;</span>
+<span class="fc" id="L395">			return true;</span>
+		}
+
+		private void updateState(int v1, int v2) {
+<span class="fc" id="L399">			final int depth = stateDepth - 1;</span>
+			// assert range(n).allMatch(v -&gt; out1[v] &lt; depth);
+			// assert range(n).allMatch(v -&gt; in1[v] &lt; depth);
+			// assert range(n).allMatch(v -&gt; out2[v] &lt; depth);
+			// assert range(n).allMatch(v -&gt; in2[v] &lt; depth);
+<span class="fc" id="L404">			int t1OutSize = stateT1OutSize[depth];</span>
+<span class="fc" id="L405">			int t2OutSize = stateT2OutSize[depth];</span>
+<span class="fc" id="L406">			int t1InSize = stateT1InSize[depth];</span>
+<span class="fc" id="L407">			int t2InSize = stateT2InSize[depth];</span>
+<span class="fc bfc" id="L408" title="All 2 branches covered.">			if (in1[v1] == 0) {</span>
+<span class="fc" id="L409">				in1[v1] = depth;</span>
+			} else {
+<span class="fc" id="L411">				t1InSize--;</span>
+			}
+<span class="fc bfc" id="L413" title="All 2 branches covered.">			if (out1[v1] == 0) {</span>
+<span class="fc" id="L414">				out1[v1] = depth;</span>
+			} else {
+<span class="fc" id="L416">				t1OutSize--;</span>
+			}
+<span class="fc bfc" id="L418" title="All 2 branches covered.">			if (in2[v2] == 0) {</span>
+<span class="fc" id="L419">				in2[v2] = depth;</span>
+			} else {
+<span class="fc" id="L421">				t2InSize--;</span>
+			}
+<span class="fc bfc" id="L423" title="All 2 branches covered.">			if (out2[v2] == 0) {</span>
+<span class="fc" id="L424">				out2[v2] = depth;</span>
+			} else {
+<span class="fc" id="L426">				t2OutSize--;</span>
+			}
+<span class="fc bfc" id="L428" title="All 2 branches covered.">			for (IEdgeIter eit = g1.outEdges(v1).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L429">				eit.nextInt();</span>
+<span class="fc" id="L430">				int w = eit.targetInt();</span>
+<span class="fc bfc" id="L431" title="All 2 branches covered.">				if (out1[w] == 0) {</span>
+<span class="fc" id="L432">					out1[w] = depth;</span>
+<span class="fc" id="L433">					t1OutSize++;</span>
+				}
+<span class="fc" id="L435">			}</span>
+<span class="fc bfc" id="L436" title="All 2 branches covered.">			for (IEdgeIter eit = g1.inEdges(v1).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L437">				eit.nextInt();</span>
+<span class="fc" id="L438">				int u = eit.sourceInt();</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">				if (in1[u] == 0) {</span>
+<span class="fc" id="L440">					in1[u] = depth;</span>
+<span class="fc" id="L441">					t1InSize++;</span>
+				}
+<span class="fc" id="L443">			}</span>
+<span class="fc bfc" id="L444" title="All 2 branches covered.">			for (IEdgeIter eit = g2.outEdges(v2).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L445">				eit.nextInt();</span>
+<span class="fc" id="L446">				int w = eit.targetInt();</span>
+<span class="fc bfc" id="L447" title="All 2 branches covered.">				if (out2[w] == 0) {</span>
+<span class="fc" id="L448">					out2[w] = depth;</span>
+<span class="fc" id="L449">					t2OutSize++;</span>
+				}
+<span class="fc" id="L451">			}</span>
+<span class="fc bfc" id="L452" title="All 2 branches covered.">			for (IEdgeIter eit = g2.inEdges(v2).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L453">				eit.nextInt();</span>
+<span class="fc" id="L454">				int u = eit.sourceInt();</span>
+<span class="fc bfc" id="L455" title="All 2 branches covered.">				if (in2[u] == 0) {</span>
+<span class="fc" id="L456">					in2[u] = depth;</span>
+<span class="fc" id="L457">					t2InSize++;</span>
+				}
+<span class="fc" id="L459">			}</span>
+
+			// int[] t1Out = range(n)
+			// .filter(v -&gt; core1[v] != None)
+			// .flatMap(v -&gt; g1.outEdges(v).intStream().map(g1::edgeTarget))
+			// .filter(v -&gt; core1[v] == None)
+			// .distinct()
+			// .toArray();
+			// int[] t1In = range(n)
+			// .filter(v -&gt; core1[v] != None)
+			// .flatMap(v -&gt; g1.inEdges(v).intStream().map(g1::edgeSource))
+			// .filter(v -&gt; core1[v] == None)
+			// .distinct()
+			// .toArray();
+			// int[] t2Out = range(n)
+			// .filter(v -&gt; core2[v] != None)
+			// .flatMap(v -&gt; g2.outEdges(v).intStream().map(g2::edgeTarget))
+			// .filter(v -&gt; core2[v] == None)
+			// .distinct()
+			// .toArray();
+			// int[] t2In = range(n)
+			// .filter(v -&gt; core2[v] != None)
+			// .flatMap(v -&gt; g2.inEdges(v).intStream().map(g2::edgeSource))
+			// .filter(v -&gt; core2[v] == None)
+			// .distinct()
+			// .toArray();
+			// assert t1OutSize == t1Out.length;
+			// assert t1InSize == t1In.length;
+			// assert t2OutSize == t2Out.length;
+			// assert t2InSize == t2In.length;
+
+<span class="fc" id="L490">			newState(v1, v2, t1OutSize, t2OutSize, t1InSize, t2InSize);</span>
+<span class="fc" id="L491">		}</span>
+
+		private void popLastState() {
+<span class="fc" id="L494">			final int prevV1 = statePrevV1[stateDepth];</span>
+<span class="fc" id="L495">			final int prevV2 = statePrevV2[stateDepth];</span>
+<span class="fc bfc" id="L496" title="All 2 branches covered.">			if (prevV1 != None) {</span>
+<span class="fc" id="L497">				final int prevDepth = stateDepth - 1;</span>
+<span class="fc bfc" id="L498" title="All 2 branches covered.">				for (IEdgeIter eit = g1.outEdges(prevV1).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L499">					eit.nextInt();</span>
+<span class="fc" id="L500">					int w = eit.targetInt();</span>
+<span class="fc bfc" id="L501" title="All 2 branches covered.">					if (out1[w] == prevDepth)</span>
+<span class="fc" id="L502">						out1[w] = 0;</span>
+<span class="fc" id="L503">				}</span>
+<span class="fc bfc" id="L504" title="All 2 branches covered.">				for (IEdgeIter eit = g1.inEdges(prevV1).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L505">					eit.nextInt();</span>
+<span class="fc" id="L506">					int u = eit.sourceInt();</span>
+<span class="fc bfc" id="L507" title="All 2 branches covered.">					if (in1[u] == prevDepth)</span>
+<span class="fc" id="L508">						in1[u] = 0;</span>
+<span class="fc" id="L509">				}</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">				for (IEdgeIter eit = g2.outEdges(prevV2).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L511">					eit.nextInt();</span>
+<span class="fc" id="L512">					int w = eit.targetInt();</span>
+<span class="fc bfc" id="L513" title="All 2 branches covered.">					if (out2[w] == prevDepth)</span>
+<span class="fc" id="L514">						out2[w] = 0;</span>
+<span class="fc" id="L515">				}</span>
+<span class="fc bfc" id="L516" title="All 2 branches covered.">				for (IEdgeIter eit = g2.inEdges(prevV2).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L517">					eit.nextInt();</span>
+<span class="fc" id="L518">					int u = eit.sourceInt();</span>
+<span class="fc bfc" id="L519" title="All 2 branches covered.">					if (in2[u] == prevDepth)</span>
+<span class="fc" id="L520">						in2[u] = 0;</span>
+<span class="fc" id="L521">				}</span>
+<span class="fc bfc" id="L522" title="All 2 branches covered.">				if (in1[prevV1] == prevDepth)</span>
+<span class="fc" id="L523">					in1[prevV1] = 0;</span>
+<span class="fc bfc" id="L524" title="All 2 branches covered.">				if (out1[prevV1] == prevDepth)</span>
+<span class="fc" id="L525">					out1[prevV1] = 0;</span>
+<span class="fc bfc" id="L526" title="All 2 branches covered.">				if (in2[prevV2] == prevDepth)</span>
+<span class="fc" id="L527">					in2[prevV2] = 0;</span>
+<span class="fc bfc" id="L528" title="All 2 branches covered.">				if (out2[prevV2] == prevDepth)</span>
+<span class="fc" id="L529">					out2[prevV2] = 0;</span>
+<span class="fc" id="L530">				core1[prevV1] = None;</span>
+<span class="fc" id="L531">				core2[prevV2] = None;</span>
+			}
+
+			// assert range(n).allMatch(v -&gt; out1[v] &lt; prevDepth);
+			// assert range(n).allMatch(v -&gt; in1[v] &lt; prevDepth);
+			// assert range(n).allMatch(v -&gt; out2[v] &lt; prevDepth);
+			// assert range(n).allMatch(v -&gt; in2[v] &lt; prevDepth);
+<span class="fc" id="L538">			stateDepth--;</span>
+<span class="fc" id="L539">		}</span>
+	}
+
+<span class="fc" id="L542">	private static class IsomorphismIterUndirected extends IsomorphismIterBase {</span>
+
+		private final int[] out1;
+		private final int[] out2;
+
+		private final int[] stateT1OutSize;
+		private final int[] stateT2OutSize;
+
+		IsomorphismIterUndirected(IndexGraph g1, IndexGraph g2) {
+<span class="fc" id="L551">			super(g1, g2);</span>
+
+<span class="fc" id="L553">			out1 = new int[n];</span>
+<span class="fc" id="L554">			out2 = new int[n];</span>
+
+<span class="fc" id="L556">			stateT1OutSize = new int[n + 1];</span>
+<span class="fc" id="L557">			stateT2OutSize = new int[n + 1];</span>
+<span class="fc" id="L558">			newState(None, None, 0, 0);</span>
+
+<span class="fc" id="L560">			nextIsValid = advance();</span>
+<span class="fc" id="L561">		}</span>
+
+		private void newState(int v1, int v2, int t1OutSize, int t2OutSize) {
+<span class="fc" id="L564">			statePrevV1[stateDepth] = v1;</span>
+<span class="fc" id="L565">			statePrevV2[stateDepth] = v2;</span>
+<span class="fc" id="L566">			stateT1OutSize[stateDepth] = t1OutSize;</span>
+<span class="fc" id="L567">			stateT2OutSize[stateDepth] = t2OutSize;</span>
+
+<span class="pc bnc" id="L569" title="All 2 branches missed.">			assert t1OutSize &lt; n;</span>
+<span class="pc bnc" id="L570" title="All 2 branches missed.">			assert t2OutSize &lt; n;</span>
+
+			IntIterator nextV1Iter;
+			int nextV2;
+<span class="fc bfc" id="L574" title="All 6 branches covered.">			if ((t1OutSize == 0 ^ t2OutSize == 0)) {</span>
+<span class="fc" id="L575">				nextV1Iter = IntIterators.EMPTY_ITERATOR;</span>
+<span class="fc" id="L576">				nextV2 = None;</span>
+
+			} else {
+<span class="fc bfc" id="L579" title="All 2 branches covered.">				if (t1OutSize != 0) {</span>
+					/* P(s)=T^{out}_1 (s) \times \{\min T^{out}_2(s)\} */
+<span class="fc bfc" id="L581" title="All 4 branches covered.">					nextV1Iter = IterTools.filter(range(n).iterator(), u -&gt; core1[u] == None &amp;&amp; out1[u] &gt; 0);</span>
+<span class="fc bfc" id="L582" title="All 4 branches covered.">					nextV2 = IterTools.filter(range(n).iterator(), u -&gt; core2[u] == None &amp;&amp; out2[u] &gt; 0).nextInt();</span>
+
+				} else {
+					/* P(s)=(N_1 - M_1(s)) \times \{\min (N_2 - M_2)\} */
+<span class="fc bfc" id="L586" title="All 2 branches covered.">					nextV1Iter = IterTools.filter(range(n).iterator(), u -&gt; core1[u] == None);</span>
+<span class="fc bfc" id="L587" title="All 2 branches covered.">					nextV2 = IterTools.filter(range(n).iterator(), u -&gt; core2[u] == None).nextInt();</span>
+				}
+<span class="pc bnc" id="L589" title="All 2 branches missed.">				assert nextV1Iter.hasNext();</span>
+			}
+<span class="fc" id="L591">			stateNextV1Iter[stateDepth] = nextV1Iter;</span>
+<span class="fc" id="L592">			stateNextV2[stateDepth] = nextV2;</span>
+<span class="fc" id="L593">		}</span>
+
+		@Override
+		boolean advance() {
+<span class="fc bfc" id="L597" title="All 2 branches covered.">			dfs: while (stateDepth &gt; 0) {</span>
+				// IntList mapped1 = new IntArrayList(range(n).filter(u -&gt; core1[u] != None).iterator());
+				// IntList range1 = new IntArrayList(mapped1.intStream().map(u -&gt; core1[u]).iterator());
+				// IntList mapped2 = new IntArrayList(range(n).filter(u -&gt; core2[u] != None).iterator());
+				// IntList range2 = new IntArrayList(mapped2.intStream().map(u -&gt; core2[u]).iterator());
+				// assert mapped1.size() == new IntOpenHashSet(mapped1).size();
+				// assert mapped2.size() == new IntOpenHashSet(mapped2).size();
+				// assert range1.size() == new IntOpenHashSet(range1).size();
+				// assert range2.size() == new IntOpenHashSet(range2).size();
+				// assert new IntOpenHashSet(mapped1).equals(new IntOpenHashSet(range2));
+				// assert new IntOpenHashSet(mapped2).equals(new IntOpenHashSet(range1));
+
+				// int[] t1Out = range(n)
+				// .filter(v -&gt; core1[v] != None)
+				// .flatMap(v -&gt; g1.outEdges(v).intStream().map(g1::edgeTarget))
+				// .filter(v -&gt; core1[v] == None)
+				// .distinct()
+				// .toArray();
+				// int[] t1In = range(n)
+				// .filter(v -&gt; core1[v] != None)
+				// .flatMap(v -&gt; g1.inEdges(v).intStream().map(g1::edgeSource))
+				// .filter(v -&gt; core1[v] == None)
+				// .distinct()
+				// .toArray();
+				// int[] t2Out = range(n)
+				// .filter(v -&gt; core2[v] != None)
+				// .flatMap(v -&gt; g2.outEdges(v).intStream().map(g2::edgeTarget))
+				// .filter(v -&gt; core2[v] == None)
+				// .distinct()
+				// .toArray();
+				// int[] t2In = range(n)
+				// .filter(v -&gt; core2[v] != None)
+				// .flatMap(v -&gt; g2.inEdges(v).intStream().map(g2::edgeSource))
+				// .filter(v -&gt; core2[v] == None)
+				// .distinct()
+				// .toArray();
+				// assert state.t1OutSize == t1Out.length;
+				// assert state.t1InSize == t1In.length;
+				// assert state.t2OutSize == t2Out.length;
+				// assert state.t2InSize == t2In.length;
+
+<span class="fc" id="L638">				final int v2 = stateNextV2[stateDepth];</span>
+<span class="fc bfc" id="L639" title="All 2 branches covered.">				for (IntIterator v1Iter = stateNextV1Iter[stateDepth]; v1Iter.hasNext();) {</span>
+<span class="fc" id="L640">					final int v1 = v1Iter.nextInt();</span>
+<span class="fc bfc" id="L641" title="All 2 branches covered.">					if (!isFeasibleMatchVertices(v1, v2))</span>
+<span class="fc" id="L642">						continue;</span>
+
+					/* match v1 to v2 and update state */
+<span class="fc" id="L645">					core1[v1] = v2;</span>
+<span class="fc" id="L646">					core2[v2] = v1;</span>
+<span class="fc bfc" id="L647" title="All 2 branches covered.">					if (stateDepth == n) {</span>
+<span class="fc" id="L648">						lastV1 = v1;</span>
+<span class="fc" id="L649">						lastV2 = v2;</span>
+<span class="fc" id="L650">						return true; /* found a valid full matching */</span>
+					}
+<span class="fc" id="L652">					stateDepth++;</span>
+<span class="fc" id="L653">					updateState(v1, v2);</span>
+
+<span class="fc bfc" id="L655" title="All 2 branches covered.">					if (!isFeasibleCurrentState()) {</span>
+<span class="fc" id="L656">						popLastState();</span>
+<span class="fc" id="L657">						continue;</span>
+					}
+					continue dfs;
+				}
+<span class="fc" id="L661">				popLastState();</span>
+<span class="fc" id="L662">			}</span>
+<span class="fc" id="L663">			return false;</span>
+		}
+
+		private boolean isFeasibleMatchVertices(int v1, int v2) {
+			/*
+			 * check that out edges connecting v1 and other mapped vertices of g1 can be mapped to out edges connecting
+			 * v2 and other mapped vertices of g2
+			 */
+<span class="fc" id="L671">			int visitIdx = nextVisitIdx++;</span>
+<span class="fc bfc" id="L672" title="All 2 branches covered.">			for (IEdgeIter eit = g1.outEdges(v1).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L673">				eit.nextInt();</span>
+<span class="fc" id="L674">				int w1 = eit.targetInt();</span>
+<span class="fc" id="L675">				int w2 = core1[w1];</span>
+<span class="fc bfc" id="L676" title="All 2 branches covered.">				if (w2 != None) {</span>
+<span class="fc" id="L677">					visit[w1] = visitIdx;</span>
+<span class="fc" id="L678">					visitData[w1] = w2;</span>
+				}
+<span class="fc" id="L680">			}</span>
+<span class="fc bfc" id="L681" title="All 2 branches covered.">			for (IEdgeIter eit = g2.outEdges(v2).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L682">				eit.nextInt();</span>
+<span class="fc" id="L683">				int w2 = eit.targetInt();</span>
+<span class="fc" id="L684">				int w1 = core2[w2];</span>
+<span class="fc bfc" id="L685" title="All 2 branches covered.">				if (w1 != None) {</span>
+<span class="fc bfc" id="L686" title="All 2 branches covered.">					if (visit[w1] != visitIdx)</span>
+<span class="fc" id="L687">						return false;</span>
+<span class="pc bpc" id="L688" title="1 of 2 branches missed.">					if (visitData[w1] != w2)</span>
+<span class="nc" id="L689">						return false;</span>
+				}
+<span class="fc" id="L691">			}</span>
+
+<span class="fc bfc" id="L693" title="All 2 branches covered.">			if (hasSelfEdge1(v1) != hasSelfEdge2(v2))</span>
+<span class="fc" id="L694">				return false;</span>
+
+<span class="fc" id="L696">			return true;</span>
+		}
+
+		private boolean isFeasibleCurrentState() {
+<span class="fc bfc" id="L700" title="All 2 branches covered.">			if (stateT1OutSize[stateDepth] != stateT2OutSize[stateDepth])</span>
+<span class="fc" id="L701">				return false;</span>
+<span class="fc" id="L702">			return true;</span>
+		}
+
+		private void updateState(int v1, int v2) {
+<span class="fc" id="L706">			final int depth = stateDepth - 1;</span>
+			// assert range(n).allMatch(v -&gt; out1[v] &lt; depth);
+			// assert range(n).allMatch(v -&gt; out2[v] &lt; depth);
+<span class="fc" id="L709">			int t1OutSize = stateT1OutSize[depth];</span>
+<span class="fc" id="L710">			int t2OutSize = stateT2OutSize[depth];</span>
+<span class="fc bfc" id="L711" title="All 2 branches covered.">			if (out1[v1] == 0) {</span>
+<span class="fc" id="L712">				out1[v1] = depth;</span>
+			} else {
+<span class="fc" id="L714">				t1OutSize--;</span>
+			}
+<span class="fc bfc" id="L716" title="All 2 branches covered.">			if (out2[v2] == 0) {</span>
+<span class="fc" id="L717">				out2[v2] = depth;</span>
+			} else {
+<span class="fc" id="L719">				t2OutSize--;</span>
+			}
+<span class="fc bfc" id="L721" title="All 2 branches covered.">			for (IEdgeIter eit = g1.outEdges(v1).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L722">				eit.nextInt();</span>
+<span class="fc" id="L723">				int w = eit.targetInt();</span>
+<span class="fc bfc" id="L724" title="All 2 branches covered.">				if (out1[w] == 0) {</span>
+<span class="fc" id="L725">					out1[w] = depth;</span>
+<span class="fc" id="L726">					t1OutSize++;</span>
+				}
+<span class="fc" id="L728">			}</span>
+<span class="fc bfc" id="L729" title="All 2 branches covered.">			for (IEdgeIter eit = g2.outEdges(v2).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L730">				eit.nextInt();</span>
+<span class="fc" id="L731">				int w = eit.targetInt();</span>
+<span class="fc bfc" id="L732" title="All 2 branches covered.">				if (out2[w] == 0) {</span>
+<span class="fc" id="L733">					out2[w] = depth;</span>
+<span class="fc" id="L734">					t2OutSize++;</span>
+				}
+<span class="fc" id="L736">			}</span>
+
+			// int[] t1Out = range(n)
+			// .filter(v -&gt; core1[v] != None)
+			// .flatMap(v -&gt; g1.outEdges(v).intStream().map(g1::edgeTarget))
+			// .filter(v -&gt; core1[v] == None)
+			// .distinct()
+			// .toArray();
+			// int[] t2Out = range(n)
+			// .filter(v -&gt; core2[v] != None)
+			// .flatMap(v -&gt; g2.outEdges(v).intStream().map(g2::edgeTarget))
+			// .filter(v -&gt; core2[v] == None)
+			// .distinct()
+			// .toArray();
+			// assert t1OutSize == t1Out.length;
+			// assert t2OutSize == t2Out.length;
+
+<span class="fc" id="L753">			newState(v1, v2, t1OutSize, t2OutSize);</span>
+<span class="fc" id="L754">		}</span>
+
+		private void popLastState() {
+<span class="fc" id="L757">			final int prevV1 = statePrevV1[stateDepth];</span>
+<span class="fc" id="L758">			final int prevV2 = statePrevV2[stateDepth];</span>
+<span class="fc bfc" id="L759" title="All 2 branches covered.">			if (prevV1 != None) {</span>
+<span class="fc" id="L760">				final int prevDepth = stateDepth - 1;</span>
+<span class="fc bfc" id="L761" title="All 2 branches covered.">				for (IEdgeIter eit = g1.outEdges(prevV1).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L762">					eit.nextInt();</span>
+<span class="fc" id="L763">					int w = eit.targetInt();</span>
+<span class="fc bfc" id="L764" title="All 2 branches covered.">					if (out1[w] == prevDepth)</span>
+<span class="fc" id="L765">						out1[w] = 0;</span>
+<span class="fc" id="L766">				}</span>
+<span class="fc bfc" id="L767" title="All 2 branches covered.">				for (IEdgeIter eit = g2.outEdges(prevV2).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L768">					eit.nextInt();</span>
+<span class="fc" id="L769">					int w = eit.targetInt();</span>
+<span class="fc bfc" id="L770" title="All 2 branches covered.">					if (out2[w] == prevDepth)</span>
+<span class="fc" id="L771">						out2[w] = 0;</span>
+<span class="fc" id="L772">				}</span>
+<span class="fc bfc" id="L773" title="All 2 branches covered.">				if (out1[prevV1] == prevDepth)</span>
+<span class="fc" id="L774">					out1[prevV1] = 0;</span>
+<span class="fc bfc" id="L775" title="All 2 branches covered.">				if (out2[prevV2] == prevDepth)</span>
+<span class="fc" id="L776">					out2[prevV2] = 0;</span>
+<span class="fc" id="L777">				core1[prevV1] = None;</span>
+<span class="fc" id="L778">				core2[prevV2] = None;</span>
+			}
+
+			// assert range(n).allMatch(v -&gt; out1[v] &lt; prevDepth);
+			// assert range(n).allMatch(v -&gt; out2[v] &lt; prevDepth);
+<span class="fc" id="L783">			stateDepth--;</span>
+<span class="fc" id="L784">		}</span>
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
