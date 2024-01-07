@@ -15,72 +15,25 @@
  */
 package com.jgalgo.alg;
 
-import java.util.Iterator;
-import java.util.Optional;
+import com.jgalgo.alg.IsomorphismTester.IMapping;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.NoSuchVertexException;
-import com.jgalgo.internal.util.IterTools;
 
-abstract class IsomorphismTesterAbstract implements IsomorphismTester {
+class IsomorphismTesters {
 
-	@Override
-	public <V1, E1, V2, E2> boolean isIsomorphic(Graph<V1, E1> g1, Graph<V2, E2> g2) {
-		if (g1 instanceof IndexGraph && g2 instanceof IndexGraph) {
-			return isIsomorphic((IndexGraph) g1, (IndexGraph) g2);
-		} else {
-			return isIsomorphic(g1.indexGraph(), g2.indexGraph());
-		}
-	}
+	private IsomorphismTesters() {}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public <V1, E1, V2, E2> Optional<IsomorphismTester.Mapping<V1, E1, V2, E2>> isomorphicMapping(Graph<V1, E1> g1,
-			Graph<V2, E2> g2) {
-		if (g1 instanceof IndexGraph && g2 instanceof IndexGraph) {
-			return (Optional) isomorphicMapping((IndexGraph) g1, (IndexGraph) g2);
-		} else {
-			IndexGraph ig1 = g1.indexGraph(), ig2 = g2.indexGraph();
-			Optional<IsomorphismTester.IMapping> iMapping = isomorphicMapping(ig1, ig2);
-			return iMapping.map(m -> mappingFromIndexMapping(g1, g2, m));
-		}
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
-	public <V1, E1, V2, E2> Iterator<IsomorphismTester.Mapping<V1, E1, V2, E2>> isomorphicMappingsIter(Graph<V1, E1> g1,
-			Graph<V2, E2> g2) {
-		if (g1 instanceof IndexGraph && g2 instanceof IndexGraph) {
-			return (Iterator) isomorphicMappingsIter((IndexGraph) g1, (IndexGraph) g2);
-		} else {
-			IndexGraph ig1 = g1.indexGraph(), ig2 = g2.indexGraph();
-			Iterator<IsomorphismTester.IMapping> iMappingsIter = isomorphicMappingsIter(ig1, ig2);
-			return IterTools.map(iMappingsIter, m -> mappingFromIndexMapping(g1, g2, m));
-		}
-	}
-
-	boolean isIsomorphic(IndexGraph g1, IndexGraph g2) {
-		return isomorphicMapping(g1, g2).isPresent();
-	}
-
-	Optional<IsomorphismTester.IMapping> isomorphicMapping(IndexGraph g1, IndexGraph g2) {
-		Iterator<IsomorphismTester.IMapping> iter = isomorphicMappingsIter(g1, g2);
-		return iter.hasNext() ? Optional.of(iter.next()) : Optional.empty();
-	}
-
-	abstract Iterator<IsomorphismTester.IMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2);
-
-	static class MappingImpl implements IsomorphismTester.IMapping {
+	static class IndexMapping implements IsomorphismTester.IMapping {
 
 		private final int[] vertexMapping;
 		private final int[] edgeMapping;
-		private MappingImpl inverse;
+		private IndexMapping inverse;
 
-		MappingImpl(int[] vertexMapping, int[] edgeMapping) {
+		IndexMapping(int[] vertexMapping, int[] edgeMapping) {
 			this.vertexMapping = vertexMapping;
 			this.edgeMapping = edgeMapping;
 
@@ -117,7 +70,7 @@ abstract class IsomorphismTesterAbstract implements IsomorphismTester {
 					iVertexMapping[vertexMapping[v]] = v;
 				for (int e = 0; e < m; e++)
 					iEdgeMapping[edgeMapping[e]] = e;
-				inverse = new MappingImpl(iVertexMapping, iEdgeMapping);
+				inverse = new IndexMapping(iVertexMapping, iEdgeMapping);
 				inverse.inverse = this;
 			}
 			return inverse;
@@ -217,18 +170,6 @@ abstract class IsomorphismTesterAbstract implements IsomorphismTester {
 				inverse.inverse = this;
 			}
 			return inverse;
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <V1, E1, V2, E2> IsomorphismTester.Mapping<V1, E1, V2, E2> mappingFromIndexMapping(Graph<V1, E1> g1,
-			Graph<V2, E2> g2, IsomorphismTester.IMapping indexMapping) {
-		assert !(g1 instanceof IndexGraph && g2 instanceof IndexGraph);
-		if (g1 instanceof IntGraph && g2 instanceof IntGraph) {
-			return (IsomorphismTester.Mapping<V1, E1, V2, E2>) new IntMappingFromIndexMapping(indexMapping,
-					(IntGraph) g1, (IntGraph) g2);
-		} else {
-			return new ObjMappingFromIndexMapping<>(indexMapping, g1, g2);
 		}
 	}
 

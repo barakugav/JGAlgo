@@ -41,10 +41,10 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
  *
  * @author Barak Ugav
  */
-class IsomorphismTesterVf2 extends IsomorphismTesterAbstract {
+class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 
 	@Override
-	Iterator<IsomorphismTester.IMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2) {
+	public Iterator<IsomorphismTester.IMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2) {
 		Assertions.Graphs.noParallelEdges(g1, "parallel edges are not supported");
 		Assertions.Graphs.noParallelEdges(g2, "parallel edges are not supported");
 		final int n = g1.vertices().size();
@@ -54,14 +54,15 @@ class IsomorphismTesterVf2 extends IsomorphismTesterAbstract {
 		if (n == 0) {
 			assert m == 0;
 			return ObjectIterators
-					.singleton(new MappingImpl(IntArrays.DEFAULT_EMPTY_ARRAY, IntArrays.DEFAULT_EMPTY_ARRAY));
+					.singleton(new IsomorphismTesters.IndexMapping(IntArrays.DEFAULT_EMPTY_ARRAY,
+							IntArrays.DEFAULT_EMPTY_ARRAY));
 		}
 		if (m == 0) {
 			Iterator<IntList> verticesPermutations =
 					JGAlgoUtils.permutations(IntList.of(g1.vertices().toIntArray())).iterator();
 			return IterTools.map(verticesPermutations, permutation -> {
 				int[] core1 = permutation.toIntArray();
-				return new MappingImpl(core1, IntArrays.DEFAULT_EMPTY_ARRAY);
+				return new IsomorphismTesters.IndexMapping(core1, IntArrays.DEFAULT_EMPTY_ARRAY);
 			});
 		}
 		if (g1.isDirected()) {
@@ -144,7 +145,8 @@ class IsomorphismTesterVf2 extends IsomorphismTesterAbstract {
 		@Override
 		public IsomorphismTester.IMapping next() {
 			Assertions.Iters.hasNext(this);
-			IsomorphismTester.IMapping mapping = new MappingImpl(core1.clone(), computeEdgeMapping());
+			IsomorphismTester.IMapping mapping =
+					new IsomorphismTesters.IndexMapping(core1.clone(), computeEdgeMapping());
 
 			core1[lastV1] = None;
 			core2[lastV2] = None;
