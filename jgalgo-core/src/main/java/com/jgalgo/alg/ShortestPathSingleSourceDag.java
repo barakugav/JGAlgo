@@ -34,7 +34,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * @see    TopologicalOrderAlgo
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.AbstractImpl {
+class ShortestPathSingleSourceDag implements ShortestPathSingleSourceBase {
 
 	private final TopologicalOrderAlgo topoAlg = TopologicalOrderAlgo.newInstance();
 
@@ -49,7 +49,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 	 * @throws IllegalArgumentException if graph is not directed or contains cycles
 	 */
 	@Override
-	ShortestPathSingleSourceDag.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	public ShortestPathSingleSourceDag.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.Graphs.onlyDirected(g);
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		return WeightFunction.isInteger(w) ? computeSsspInt(g, (IWeightFunctionInt) w, source)
@@ -57,7 +57,7 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 	}
 
 	private ShortestPathSingleSourceDag.IResult computeSsspDouble(IndexGraph g, IWeightFunction w, int source) {
-		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);
+		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);
 		res.distances[source] = 0;
 
 		TopologicalOrderAlgo.IResult topoOrder = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);
@@ -81,7 +81,8 @@ class ShortestPathSingleSourceDag extends ShortestPathSingleSourceUtils.Abstract
 	}
 
 	private ShortestPathSingleSourceDag.IResult computeSsspInt(IndexGraph g, IWeightFunctionInt w, int source) {
-		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
+		ShortestPathSingleSourceUtils.IndexResult.Int res =
+				new ShortestPathSingleSourceUtils.IndexResult.Int(g, source);
 		res.distances[source] = 0;
 
 		TopologicalOrderAlgo.IResult topoOrder = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);

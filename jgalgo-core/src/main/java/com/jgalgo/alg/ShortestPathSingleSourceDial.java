@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  *
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.AbstractImpl {
+class ShortestPathSingleSourceDial implements ShortestPathSingleSourceBase {
 
 	/**
 	 * Construct a new SSSP algorithm.
@@ -60,7 +60,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	 *                                      {@link IWeightFunctionInt}
 	 */
 	@Override
-	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		if (!WeightFunction.isInteger(w))
 			throw new IllegalArgumentException("only int weights are supported");
@@ -114,7 +114,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 			if (u == -1)
 				break;
 		}
-		return new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source, heap.distances, backtrack);
+		return new ShortestPathSingleSourceUtils.IndexResult.Int(g, source, heap.distances, backtrack);
 	}
 
 	private static class DialHeap {

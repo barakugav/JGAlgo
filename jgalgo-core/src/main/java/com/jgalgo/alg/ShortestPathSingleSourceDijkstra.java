@@ -47,7 +47,7 @@ import com.jgalgo.internal.util.Assertions;
  * @see    <a href= "https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.AbstractImpl {
+class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSourceBase {
 
 	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 
@@ -71,7 +71,7 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 	 * @throws IllegalArgumentException if one of the edge weights is negative
 	 */
 	@Override
-	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		if (WeightFunction.isInteger(w)) {
 			return computeSsspInts(g, (IWeightFunctionInt) w, source);
@@ -85,7 +85,7 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 		DoubleIntReferenceableHeap heap = (DoubleIntReferenceableHeap) heapBuilder.build(double.class, int.class);
 		DoubleIntReferenceableHeap.Ref[] verticesPtrs = new DoubleIntReferenceableHeap.Ref[n];
 
-		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);
+		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);
 		res.distances[source] = 0;
 
 		for (int u = source;;) {
@@ -123,7 +123,8 @@ class ShortestPathSingleSourceDijkstra extends ShortestPathSingleSourceUtils.Abs
 		IntIntReferenceableHeap heap = (IntIntReferenceableHeap) heapBuilder.build(int.class, int.class);
 		IntIntReferenceableHeap.Ref[] verticesPtrs = new IntIntReferenceableHeap.Ref[n];
 
-		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
+		ShortestPathSingleSourceUtils.IndexResult.Int res =
+				new ShortestPathSingleSourceUtils.IndexResult.Int(g, source);
 		res.distances[source] = 0;
 
 		for (int u = source;;) {

@@ -31,7 +31,7 @@ import com.jgalgo.graph.IWeightFunction;
  * @see    Bfs
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.AbstractImpl {
+class ShortestPathSingleSourceCardinality implements ShortestPathSingleSourceBase {
 
 	/**
 	 * Construct a new cardinality SSSP algorithm.
@@ -45,9 +45,10 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 	 *                                      {@link IWeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.Graphs.onlyCardinality(w);
-		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);
+		ShortestPathSingleSourceUtils.IndexResult.Int res =
+				new ShortestPathSingleSourceUtils.IndexResult.Int(g, source);
 		for (Bfs.IntIter it = Bfs.newInstance(g, source); it.hasNext();) {
 			int v = it.nextInt();
 			res.distances[v] = it.layer();

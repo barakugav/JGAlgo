@@ -22,11 +22,8 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
-import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
@@ -36,214 +33,14 @@ class ShortestPathSingleSourceUtils {
 
 	private ShortestPathSingleSourceUtils() {}
 
-	abstract static class AbstractImpl implements ShortestPathSingleSource {
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> ShortestPathSingleSource.Result<V, E> computeShortestPaths(Graph<V, E> g, WeightFunction<E> w,
-				V source) {
-			if (g instanceof IndexGraph) {
-				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-				int source0 = ((Integer) source).intValue();
-				return (ShortestPathSingleSource.Result<V, E>) computeShortestPaths((IndexGraph) g, w0, source0);
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-				int iSource = viMap.idToIndex(source);
-				ShortestPathSingleSource.IResult indexResult = NegativeCycleException
-						.runAndConvertException(g, () -> computeShortestPaths(iGraph, iw, iSource));
-				return resultFromIndexResult(g, indexResult);
-			}
-		}
-
-		abstract ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source);
-
-	}
-
-	private static class ObjResultFromIndexResult<V, E> implements ShortestPathSingleSource.Result<V, E> {
-
-		private final ShortestPathSingleSource.IResult indexRes;
-		private final Graph<V, E> g;
-		private final IndexIdMap<V> viMap;
-
-		ObjResultFromIndexResult(Graph<V, E> g, ShortestPathSingleSource.IResult indexRes) {
-			this.indexRes = Objects.requireNonNull(indexRes);
-			this.g = Objects.requireNonNull(g);
-			this.viMap = g.indexGraphVerticesMap();
-		}
-
-		@Override
-		public double distance(V target) {
-			return indexRes.distance(viMap.idToIndex(target));
-		}
-
-		@Override
-		public Path<V, E> getPath(V target) {
-			return PathImpl.objPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));
-		}
-	}
-
-	private static class IntResultFromIndexResult implements ShortestPathSingleSource.IResult {
-
-		private final ShortestPathSingleSource.IResult indexRes;
-		private final IntGraph g;
-		private final IndexIntIdMap viMap;
-
-		IntResultFromIndexResult(IntGraph g, ShortestPathSingleSource.IResult indexRes) {
-			this.indexRes = Objects.requireNonNull(indexRes);
-			this.g = Objects.requireNonNull(g);
-			this.viMap = g.indexGraphVerticesMap();
-		}
-
-		@Override
-		public double distance(int target) {
-			return indexRes.distance(viMap.idToIndex(target));
-		}
-
-		@Override
-		public IPath getPath(int target) {
-			return PathImpl.intPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <V, E> ShortestPathSingleSource.Result<V, E> resultFromIndexResult(Graph<V, E> g,
-			ShortestPathSingleSource.IResult indexResult) {
-		assert !(g instanceof IndexGraph);
-		if (g instanceof IntGraph) {
-			return (ShortestPathSingleSource.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
-		} else {
-			return new ObjResultFromIndexResult<>(g, indexResult);
-		}
-	}
-
-	static class BuilderImpl implements ShortestPathSingleSource.Builder {
-
-		private boolean intWeights;
-		private boolean negativeWeights;
-		private double maxDistance = Double.POSITIVE_INFINITY;
-		private boolean dagGraphs;
-		private boolean cardinalityWeight;
-
-		private String impl;
-		private ReferenceableHeap.Builder heapBuilder;
-
-		@Override
-		public ShortestPathSingleSource build() {
-			if (impl != null) {
-				switch (impl) {
-					case "cardinality":
-						return new ShortestPathSingleSourceCardinality();
-					case "dag":
-						return new ShortestPathSingleSourceDag();
-					case "dijkstra":
-						return new ShortestPathSingleSourceDijkstra();
-					case "dial":
-						return new ShortestPathSingleSourceDial();
-					case "bellman-ford":
-						return new ShortestPathSingleSourceBellmanFord();
-					case "goldberg":
-						return new ShortestPathSingleSourceGoldberg();
-					default:
-						throw new IllegalArgumentException("unknown 'impl' value: " + impl);
-				}
-			}
-
-			if (cardinalityWeight)
-				return new ShortestPathSingleSourceCardinality();
-			if (dagGraphs)
-				return new ShortestPathSingleSourceDag();
-			if (negativeWeights) {
-				if (intWeights) {
-					return new ShortestPathSingleSourceGoldberg();
-				} else {
-					return new ShortestPathSingleSourceBellmanFord();
-				}
-			} else {
-				final ShortestPathSingleSourceDijkstra ssspDijkstra = new ShortestPathSingleSourceDijkstra();
-				if (heapBuilder != null)
-					ssspDijkstra.setHeapBuilder(heapBuilder);
-
-				if (intWeights && maxDistance < Integer.MAX_VALUE) {
-					return new ShortestPathSingleSourceUtils.AbstractImpl() {
-						private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();
-						private final int maxDistance = (int) BuilderImpl.this.maxDistance;
-
-						@Override
-						ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w,
-								int source) {
-							final int n = g.vertices().size(), m = g.edges().size();
-							int dialWork = n + m + maxDistance;
-							int dijkstraWork = m + n * JGAlgoUtils.log2ceil(n);
-							if (dialWork < dijkstraWork) {
-								return ssspDial.computeShortestPaths(g, (IWeightFunctionInt) w, source, maxDistance);
-							} else {
-								return ssspDijkstra.computeShortestPaths(g, w, source);
-							}
-						}
-
-					};
-				}
-				return ssspDijkstra;
-			}
-		}
-
-		@Override
-		public ShortestPathSingleSource.Builder setIntWeights(boolean enable) {
-			intWeights = enable;
-			return this;
-		}
-
-		@Override
-		public ShortestPathSingleSource.Builder setNegativeWeights(boolean enable) {
-			negativeWeights = enable;
-			return this;
-		}
-
-		@Override
-		public ShortestPathSingleSource.Builder setMaxDistance(double maxDistance) {
-			this.maxDistance = maxDistance;
-			return this;
-		}
-
-		@Override
-		public ShortestPathSingleSource.Builder setDag(boolean dagGraphs) {
-			this.dagGraphs = dagGraphs;
-			return this;
-		}
-
-		@Override
-		public ShortestPathSingleSource.Builder setCardinality(boolean cardinalityWeight) {
-			this.cardinalityWeight = cardinalityWeight;
-			return this;
-		}
-
-		@Override
-		public void setOption(String key, Object value) {
-			switch (key) {
-				case "impl":
-					impl = (String) value;
-					break;
-				case "heap-builder":
-					heapBuilder = (ReferenceableHeap.Builder) value;
-					break;
-				default:
-					ShortestPathSingleSource.Builder.super.setOption(key, value);
-			}
-		}
-	}
-
-	static class ResultImpl implements ShortestPathSingleSource.IResult {
+	static class IndexResult implements ShortestPathSingleSource.IResult {
 
 		private final IndexGraph g;
 		private final int source;
 		final double[] distances;
 		final int[] backtrack;
 
-		ResultImpl(IndexGraph g, int source) {
+		IndexResult(IndexGraph g, int source) {
 			this.g = g;
 			this.source = source;
 			int n = g.vertices().size();
@@ -346,6 +143,167 @@ class ShortestPathSingleSourceUtils {
 				return Arrays.toString(distances);
 			}
 		}
+	}
 
+	static class ObjResultFromIndexResult<V, E> implements ShortestPathSingleSource.Result<V, E> {
+
+		private final ShortestPathSingleSource.IResult indexRes;
+		private final Graph<V, E> g;
+		private final IndexIdMap<V> viMap;
+
+		ObjResultFromIndexResult(Graph<V, E> g, ShortestPathSingleSource.IResult indexRes) {
+			this.indexRes = Objects.requireNonNull(indexRes);
+			this.g = Objects.requireNonNull(g);
+			this.viMap = g.indexGraphVerticesMap();
+		}
+
+		@Override
+		public double distance(V target) {
+			return indexRes.distance(viMap.idToIndex(target));
+		}
+
+		@Override
+		public Path<V, E> getPath(V target) {
+			return PathImpl.objPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));
+		}
+	}
+
+	static class IntResultFromIndexResult implements ShortestPathSingleSource.IResult {
+
+		private final ShortestPathSingleSource.IResult indexRes;
+		private final IntGraph g;
+		private final IndexIntIdMap viMap;
+
+		IntResultFromIndexResult(IntGraph g, ShortestPathSingleSource.IResult indexRes) {
+			this.indexRes = Objects.requireNonNull(indexRes);
+			this.g = Objects.requireNonNull(g);
+			this.viMap = g.indexGraphVerticesMap();
+		}
+
+		@Override
+		public double distance(int target) {
+			return indexRes.distance(viMap.idToIndex(target));
+		}
+
+		@Override
+		public IPath getPath(int target) {
+			return PathImpl.intPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));
+		}
+	}
+
+	static class BuilderImpl implements ShortestPathSingleSource.Builder {
+
+		private boolean intWeights;
+		private boolean negativeWeights;
+		private double maxDistance = Double.POSITIVE_INFINITY;
+		private boolean dagGraphs;
+		private boolean cardinalityWeight;
+
+		private String impl;
+		private ReferenceableHeap.Builder heapBuilder;
+
+		@Override
+		public ShortestPathSingleSource build() {
+			if (impl != null) {
+				switch (impl) {
+					case "cardinality":
+						return new ShortestPathSingleSourceCardinality();
+					case "dag":
+						return new ShortestPathSingleSourceDag();
+					case "dijkstra":
+						return new ShortestPathSingleSourceDijkstra();
+					case "dial":
+						return new ShortestPathSingleSourceDial();
+					case "bellman-ford":
+						return new ShortestPathSingleSourceBellmanFord();
+					case "goldberg":
+						return new ShortestPathSingleSourceGoldberg();
+					default:
+						throw new IllegalArgumentException("unknown 'impl' value: " + impl);
+				}
+			}
+
+			if (cardinalityWeight)
+				return new ShortestPathSingleSourceCardinality();
+			if (dagGraphs)
+				return new ShortestPathSingleSourceDag();
+			if (negativeWeights) {
+				if (intWeights) {
+					return new ShortestPathSingleSourceGoldberg();
+				} else {
+					return new ShortestPathSingleSourceBellmanFord();
+				}
+			} else {
+				final ShortestPathSingleSourceDijkstra ssspDijkstra = new ShortestPathSingleSourceDijkstra();
+				if (heapBuilder != null)
+					ssspDijkstra.setHeapBuilder(heapBuilder);
+
+				if (intWeights && maxDistance < Integer.MAX_VALUE) {
+					return new ShortestPathSingleSourceBase() {
+						private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();
+						private final int maxDistance = (int) BuilderImpl.this.maxDistance;
+
+						@Override
+						public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w,
+								int source) {
+							final int n = g.vertices().size(), m = g.edges().size();
+							int dialWork = n + m + maxDistance;
+							int dijkstraWork = m + n * JGAlgoUtils.log2ceil(n);
+							if (dialWork < dijkstraWork) {
+								return ssspDial.computeShortestPaths(g, (IWeightFunctionInt) w, source, maxDistance);
+							} else {
+								return ssspDijkstra.computeShortestPaths(g, w, source);
+							}
+						}
+
+					};
+				}
+				return ssspDijkstra;
+			}
+		}
+
+		@Override
+		public ShortestPathSingleSource.Builder setIntWeights(boolean enable) {
+			intWeights = enable;
+			return this;
+		}
+
+		@Override
+		public ShortestPathSingleSource.Builder setNegativeWeights(boolean enable) {
+			negativeWeights = enable;
+			return this;
+		}
+
+		@Override
+		public ShortestPathSingleSource.Builder setMaxDistance(double maxDistance) {
+			this.maxDistance = maxDistance;
+			return this;
+		}
+
+		@Override
+		public ShortestPathSingleSource.Builder setDag(boolean dagGraphs) {
+			this.dagGraphs = dagGraphs;
+			return this;
+		}
+
+		@Override
+		public ShortestPathSingleSource.Builder setCardinality(boolean cardinalityWeight) {
+			this.cardinalityWeight = cardinalityWeight;
+			return this;
+		}
+
+		@Override
+		public void setOption(String key, Object value) {
+			switch (key) {
+				case "impl":
+					impl = (String) value;
+					break;
+				case "heap-builder":
+					heapBuilder = (ReferenceableHeap.Builder) value;
+					break;
+				default:
+					ShortestPathSingleSource.Builder.super.setOption(key, value);
+			}
+		}
 	}
 }
