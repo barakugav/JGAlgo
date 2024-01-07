@@ -16,9 +16,9 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.NoSuchVertexException;
-import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -29,10 +29,10 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-class ShortestPathSTBidirectionalBfs extends ShortestPathSTs.AbstractImpl {
+class ShortestPathSTBidirectionalBfs implements ShortestPathSTBase {
 
 	@Override
-	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
+	public IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
 		if (!g.vertices().contains(source))
 			throw NoSuchVertexException.ofIndex(source);
 		if (!g.vertices().contains(target))
