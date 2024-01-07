@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntFunction;
  * @see    <a href="https://en.wikipedia.org/wiki/DSatur">Wikipedia</a>
  * @author Barak Ugav
  */
-class ColoringDSatur extends ColoringUtils.AbstractImpl {
+class ColoringDSatur implements ColoringAlgoBase {
 
 	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 
@@ -65,7 +65,7 @@ class ColoringDSatur extends ColoringUtils.AbstractImpl {
 	}
 
 	@Override
-	IVertexPartition computeColoring(IndexGraph g) {
+	public IVertexPartition computeColoring(IndexGraph g) {
 		Assertions.Graphs.onlyUndirected(g);
 		Assertions.Graphs.noSelfEdges(g, "no valid coloring in graphs with self edges");
 

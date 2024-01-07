@@ -18,25 +18,21 @@ package com.jgalgo.alg;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 
-class ColoringUtils {
+interface ColoringAlgoBase extends ColoringAlgo {
 
-	abstract static class AbstractImpl implements ColoringAlgo {
+	@SuppressWarnings("unchecked")
+	@Override
+	default <V, E> VertexPartition<V, E> computeColoring(Graph<V, E> g) {
+		if (g instanceof IndexGraph) {
+			return (VertexPartition<V, E>) computeColoring((IndexGraph) g);
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> VertexPartition<V, E> computeColoring(Graph<V, E> g) {
-			if (g instanceof IndexGraph) {
-				return (VertexPartition<V, E>) computeColoring((IndexGraph) g);
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IVertexPartition indexResult = computeColoring(iGraph);
-				return VertexPartitions.partitionFromIndexPartition(g, indexResult);
-			}
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IVertexPartition indexResult = computeColoring(iGraph);
+			return VertexPartitions.partitionFromIndexPartition(g, indexResult);
 		}
-
-		abstract IVertexPartition computeColoring(IndexGraph g);
-
 	}
+
+	IVertexPartition computeColoring(IndexGraph g);
 
 }
