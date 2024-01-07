@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
@@ -24,11 +23,11 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 
-abstract class MinimumMeanCycleAbstract implements MinimumMeanCycle {
+interface MinimumMeanCycleBase extends MinimumMeanCycle {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <V, E> Path<V, E> computeMinimumMeanCycle(Graph<V, E> g, WeightFunction<E> w) {
+	default <V, E> Path<V, E> computeMinimumMeanCycle(Graph<V, E> g, WeightFunction<E> w) {
 		if (g instanceof IndexGraph) {
 			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
 			return (Path<V, E>) computeMinimumMeanCycle((IndexGraph) g, w0);
@@ -42,6 +41,6 @@ abstract class MinimumMeanCycleAbstract implements MinimumMeanCycle {
 		}
 	}
 
-	abstract IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w);
+	IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w);
 
 }

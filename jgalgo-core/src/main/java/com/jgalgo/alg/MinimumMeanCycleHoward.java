@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
+class MinimumMeanCycleHoward implements MinimumMeanCycleBase {
 
 	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();
 
@@ -61,7 +61,7 @@ class MinimumMeanCycleHoward extends MinimumMeanCycleAbstract {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
+	public IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyDirected(g);
 		final int n = g.vertices().size();
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
