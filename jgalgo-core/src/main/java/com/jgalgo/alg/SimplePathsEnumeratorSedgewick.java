@@ -35,10 +35,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class SimplePathsEnumeratorSedgewick extends SimplePathsEnumerators.AbstractImpl {
+class SimplePathsEnumeratorSedgewick implements SimplePathsEnumeratorBase {
 
 	@Override
-	Iterator<IPath> simplePathsIter(IndexGraph g, int source, int target) {
+	public Iterator<IPath> simplePathsIter(IndexGraph g, int source, int target) {
 		if (source == target)
 			return List.<IPath>of(new PathImpl(g, source, target, IntList.of())).iterator();
 		return new Iterator<>() {
