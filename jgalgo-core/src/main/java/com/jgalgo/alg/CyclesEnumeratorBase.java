@@ -20,11 +20,11 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.IterTools;
 
-abstract class CyclesEnumeratorAbstract implements CyclesEnumerator {
+interface CyclesEnumeratorBase extends CyclesEnumerator {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	public <V, E> Iterator<Path<V, E>> cyclesIter(Graph<V, E> g) {
+	default <V, E> Iterator<Path<V, E>> cyclesIter(Graph<V, E> g) {
 		if (g instanceof IndexGraph) {
 			return (Iterator) cyclesIter((IndexGraph) g);
 
@@ -35,6 +35,6 @@ abstract class CyclesEnumeratorAbstract implements CyclesEnumerator {
 		}
 	}
 
-	abstract Iterator<IPath> cyclesIter(IndexGraph g);
+	Iterator<IPath> cyclesIter(IndexGraph g);
 
 }

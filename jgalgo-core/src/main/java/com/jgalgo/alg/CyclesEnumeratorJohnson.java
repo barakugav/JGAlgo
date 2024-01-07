@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-class CyclesEnumeratorJohnson extends CyclesEnumeratorAbstract {
+class CyclesEnumeratorJohnson implements CyclesEnumeratorBase {
 
 	private final StronglyConnectedComponentsAlgo ccAlg = StronglyConnectedComponentsAlgo.newInstance();
 
@@ -52,7 +52,7 @@ class CyclesEnumeratorJohnson extends CyclesEnumeratorAbstract {
 	CyclesEnumeratorJohnson() {}
 
 	@Override
-	Iterator<IPath> cyclesIter(IndexGraph g) {
+	public Iterator<IPath> cyclesIter(IndexGraph g) {
 		Assertions.Graphs.onlyDirected(g);
 		Assertions.Graphs.noParallelEdges(g, "graphs with parallel edges are not supported");
 		final int n = g.vertices().size();
