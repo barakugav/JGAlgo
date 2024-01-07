@@ -45,7 +45,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  *
  * @author Barak Ugav
  */
-class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.AbstractDirected {
+class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTreeBase {
 
 	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();
@@ -65,10 +65,10 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 	}
 
 	@Override
-	MinimumSpanningTree.IResult computeMinimumDirectedSpanningTree(IndexGraph g, IWeightFunction w, int root) {
+	public MinimumSpanningTree.IResult computeMinimumDirectedSpanningTree(IndexGraph g, IWeightFunction w, int root) {
 		Assertions.Graphs.onlyDirected(g);
 		if (g.vertices().size() == 0 || g.edges().size() == 0)
-			return MinimumSpanningTreeUtils.ResultImpl.Empty;
+			return MinimumSpanningTrees.IndexResult.Empty;
 
 		IntSet vertices = IPath.reachableVertices(g, root);
 		if (vertices.size() == g.vertices().size()) {
@@ -81,7 +81,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			}
 			ContractedGraph contractedGraph = contract(g, null, w, artificialEdgesThreshold);
 			int[] mdstEdges = expand(g, contractedGraph, root, artificialEdgesThreshold);
-			return new MinimumSpanningTreeUtils.ResultImpl(mdstEdges);
+			return new MinimumSpanningTrees.IndexResult(mdstEdges);
 
 		} else {
 			/* not all vertices are reachable from the root, operate on the subgraph of these vertices */
@@ -118,7 +118,7 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 			int[] mdstEdges = expand(g, contractedGraph, root, artificialEdgesThreshold);
 			for (int i = 0; i < mdstEdges.length; i++)
 				mdstEdges[i] = edgeRef[mdstEdges[i]];
-			return new MinimumSpanningTreeUtils.ResultImpl(mdstEdges);
+			return new MinimumSpanningTrees.IndexResult(mdstEdges);
 		}
 	}
 

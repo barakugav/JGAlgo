@@ -39,7 +39,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class MinimumSpanningTreeYao extends MinimumSpanningTreeUtils.AbstractUndirected {
+class MinimumSpanningTreeYao implements MinimumSpanningTreeBase {
 
 	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;
 
@@ -54,7 +54,7 @@ class MinimumSpanningTreeYao extends MinimumSpanningTreeUtils.AbstractUndirected
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	public MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size();
 
@@ -167,7 +167,7 @@ class MinimumSpanningTreeYao extends MinimumSpanningTreeUtils.AbstractUndirected
 		}
 
 		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
-		return new MinimumSpanningTreeUtils.ResultImpl(mstSet);
+		return new MinimumSpanningTrees.IndexResult(mstSet);
 	}
 
 	private int[][][] partitionEdgesToBuckets(IndexGraph g, IWeightFunction w) {

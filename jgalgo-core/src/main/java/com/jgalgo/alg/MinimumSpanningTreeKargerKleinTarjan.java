@@ -48,8 +48,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.AbstractUndirected
-		implements RandomizedAlgorithm {
+class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTreeBase, RandomizedAlgorithm {
 
 	private final Random rand = new Random();
 	private final WeaklyConnectedComponentsAlgo ccAlg = WeaklyConnectedComponentsAlgo.newInstance();
@@ -69,12 +68,12 @@ class MinimumSpanningTreeKargerKleinTarjan extends MinimumSpanningTreeUtils.Abst
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	public MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 
 		IntArrayList mst = computeMST(g, w);
 		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
-		return new MinimumSpanningTreeUtils.ResultImpl(mstSet);
+		return new MinimumSpanningTrees.IndexResult(mstSet);
 	}
 
 	private IntArrayList computeMST(IndexGraph g, IWeightFunction w) {

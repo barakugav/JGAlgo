@@ -47,7 +47,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    <a href= "https://en.wikipedia.org/wiki/Kruskal%27s_algorithm">Wikipedia</a>
  * @author Barak Ugav
  */
-class MinimumSpanningTreeKruskal extends MinimumSpanningTreeUtils.AbstractUndirected {
+class MinimumSpanningTreeKruskal implements MinimumSpanningTreeBase {
 
 	private UnionFind.Builder unionFindBuilder = UnionFind.builder();
 	private boolean parallelEnable = JGAlgoConfigImpl.ParallelByDefault;
@@ -73,12 +73,12 @@ class MinimumSpanningTreeKruskal extends MinimumSpanningTreeUtils.AbstractUndire
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	public MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
 		if (n == 0 || m == 0)
-			return MinimumSpanningTreeUtils.ResultImpl.Empty;
+			return MinimumSpanningTrees.IndexResult.Empty;
 
 		/* sort edges */
 		int[] edges = g.edges().toIntArray();
@@ -102,7 +102,7 @@ class MinimumSpanningTreeKruskal extends MinimumSpanningTreeUtils.AbstractUndire
 		}
 		uf.clear();
 		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
-		return new MinimumSpanningTreeUtils.ResultImpl(mstSet);
+		return new MinimumSpanningTrees.IndexResult(mstSet);
 	}
 
 }

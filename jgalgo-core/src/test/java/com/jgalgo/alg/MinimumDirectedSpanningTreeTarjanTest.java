@@ -92,13 +92,13 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			}
 
 			int[] mstIndex = mst.intStream().map(e -> g.indexGraphEdgesMap().idToIndex(edgeRef.get(e))).toArray();
-			MinimumSpanningTree.IResult indexRes = new MinimumSpanningTreeUtils.ResultImpl(mstIndex);
+			MinimumSpanningTree.IResult indexRes = new MinimumSpanningTrees.IndexResult(mstIndex);
 
 			if (g instanceof IntGraph) {
-				return (MinimumSpanningTree.Result<V, E>) new MinimumSpanningTreeUtils.IntResultFromIndexResult(
+				return (MinimumSpanningTree.Result<V, E>) new MinimumSpanningTrees.IntResultFromIndexResult(
 						(IntGraph) g, indexRes);
 			} else {
-				return new MinimumSpanningTreeUtils.ObjResultFromIndexResult<>(g, indexRes);
+				return new MinimumSpanningTrees.ObjResultFromIndexResult<>(g, indexRes);
 			}
 		}
 	}

@@ -49,7 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.AbstractUndirected {
+class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 
 	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();
 
@@ -73,11 +73,11 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+	public MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyUndirected(g);
 		int n = g.vertices().size(), m = g.edges().size();
 		if (n == 0)
-			return MinimumSpanningTreeUtils.ResultImpl.Empty;
+			return MinimumSpanningTrees.IndexResult.Empty;
 
 		// following variables are used to maintain the super vertices
 
@@ -228,7 +228,7 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 		}
 
 		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());
-		return new MinimumSpanningTreeUtils.ResultImpl(mstSet);
+		return new MinimumSpanningTrees.IndexResult(mstSet);
 	}
 
 }
