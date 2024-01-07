@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.AbstractImpl {
+class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
 
 	/**
 	 * Create a new APSP algorithm object.
@@ -40,20 +40,20 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 	ShortestPathAllPairsFloydWarshall() {}
 
 	@Override
-	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
+	public ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
 		w = WeightFunctions.localEdgeWeightFunction(g, w);
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		return g.isDirected() ? computeAPSPDirected(g, w) : computeAPSPUndirected(g, w);
 	}
 
 	@Override
-	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+	public ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w) {
 		return computeAllShortestPaths(g, w);
 	}
 
 	private static ShortestPathAllPairs.IResult computeAPSPUndirected(IndexGraph g, IWeightFunction w) {
-		ShortestPathAllPairsUtils.ResultImpl.AllVertices res = new ShortestPathAllPairsUtils.ResultImpl.Undirected(g);
+		ShortestPathAllPairsUtils.IndexResult.AllVertices res = new ShortestPathAllPairsUtils.IndexResult.Undirected(g);
 		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
@@ -97,7 +97,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 	}
 
 	private static ShortestPathAllPairs.IResult computeAPSPDirected(IndexGraph g, IWeightFunction w) {
-		ShortestPathAllPairsUtils.ResultImpl.AllVertices res = new ShortestPathAllPairsUtils.ResultImpl.Directed(g);
+		ShortestPathAllPairsUtils.IndexResult.AllVertices res = new ShortestPathAllPairsUtils.IndexResult.Directed(g);
 		for (int m = g.edges().size(), e = 0; e < m; e++) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
@@ -135,7 +135,7 @@ class ShortestPathAllPairsFloydWarshall extends ShortestPathAllPairsUtils.Abstra
 		return res;
 	}
 
-	private static void detectNegCycle(ShortestPathAllPairsUtils.ResultImpl.AllVertices res, int n, int k) {
+	private static void detectNegCycle(ShortestPathAllPairsUtils.IndexResult.AllVertices res, int n, int k) {
 		for (int u = 0; u < n; u++) {
 			double d1 = res.distance(u, k);
 			double d2 = res.distance(k, u);

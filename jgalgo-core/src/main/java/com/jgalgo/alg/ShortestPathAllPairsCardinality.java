@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see    ShortestPathSingleSourceCardinality
  * @author Barak Ugav
  */
-class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.AbstractImpl {
+class ShortestPathAllPairsCardinality implements ShortestPathAllPairsBase {
 
 	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
@@ -52,13 +52,13 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 	ShortestPathAllPairsCardinality() {}
 
 	@Override
-	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
+	public ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyCardinality(w);
 		return computeSubsetCardinalityShortestPaths(g, g.vertices(), true);
 	}
 
 	@Override
-	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+	public ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w) {
 		Assertions.Graphs.onlyCardinality(w);
 		return computeSubsetCardinalityShortestPaths(g, verticesSubset, false);
@@ -99,9 +99,9 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 		}
 
 		if (allVertices) {
-			return new ShortestPathAllPairsUtils.ResFromSSSP.AllVertices(ssspResults);
+			return new ShortestPathAllPairsUtils.IndexResultFromSSSP.AllVertices(ssspResults);
 		} else {
-			return new ShortestPathAllPairsUtils.ResFromSSSP.VerticesSubset(ssspResults, vToResIdx);
+			return new ShortestPathAllPairsUtils.IndexResultFromSSSP.VerticesSubset(ssspResults, vToResIdx);
 		}
 	}
 
