@@ -18,9 +18,11 @@ package com.jgalgo.internal.util;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
 import java.util.function.IntToDoubleFunction;
+import java.util.function.IntToLongFunction;
 import java.util.function.IntUnaryOperator;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
+import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -111,6 +113,10 @@ public final class Range extends AbstractIntSet {
 
 	public DoubleStream mapToDouble(IntToDoubleFunction mapper) {
 		return intStream().mapToDouble(mapper);
+	}
+
+	public LongStream mapToLong(IntToLongFunction mapper) {
+		return intStream().mapToLong(mapper);
 	}
 
 	public IntStream filter(IntPredicate predicate) {

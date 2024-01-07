@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import com.jgalgo.graph.IWeightFunction;
@@ -120,9 +121,7 @@ class MatchingWeightedBipartiteSSSP extends Matchings.AbstractMaximumMatchingImp
 		int[] match = new int[n];
 		Arrays.fill(match, -1);
 
-		double maxWeight = 1;
-		for (int m = g.edges().size(), e = 0; e < m; e++)
-			maxWeight = Math.max(maxWeight, w.weight(e));
+		final double maxWeight = range(g.edges().size()).mapToDouble(w::weight).max().orElse(Double.MIN_VALUE);
 		if (!Double.isFinite(maxWeight))
 			throw new IllegalArgumentException("non finite weights");
 		final double RemovedEdgeWeight = maxWeight * n;

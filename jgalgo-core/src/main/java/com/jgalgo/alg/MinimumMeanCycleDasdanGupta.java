@@ -97,9 +97,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 		SourceChooser sourceChooser = new SourceChooser(g, cc);
 
 		/* init distances and policy */
-		int maxCcSize = -1;
-		for (int c = 0; c < ccNum; c++)
-			maxCcSize = Math.max(maxCcSize, cc.blockVertices(c).size());
+		final int maxCcSize = range(ccNum).map(c -> cc.blockVertices(c).size()).max().orElse(-1);
 		double[][] d = new double[maxCcSize + 1][n];
 		int[][] policy = new int[maxCcSize + 1][n];
 		for (int k = 0; k < maxCcSize + 1; k++) {

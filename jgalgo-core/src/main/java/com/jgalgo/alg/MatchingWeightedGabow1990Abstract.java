@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -538,9 +539,7 @@ abstract class MatchingWeightedGabow1990Abstract extends Matchings.AbstractMaxim
 			int n = g.vertices().size();
 
 			// init dual value of all vertices as maxWeight / 2
-			double maxWeight = Double.MIN_VALUE;
-			for (int m = g.edges().size(), e = 0; e < m; e++)
-				maxWeight = Math.max(maxWeight, w.weight(e));
+			final double maxWeight = range(g.edges().size()).mapToDouble(w::weight).max().orElse(Double.MIN_VALUE);
 			double delta1Threshold = maxWeight / 2;
 			for (int u = 0; u < n; u++)
 				vertexDualValBase[u] = delta1Threshold;

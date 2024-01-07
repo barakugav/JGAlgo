@@ -202,21 +202,15 @@ class MinimumVertexCutUtils {
 
 				if (WeightFunction.isInteger(w)) {
 					IWeightFunctionInt wInt = (IWeightFunctionInt) w;
-					long hugeWeight = 1;
-					for (int v = 0; v < n; v++)
-						hugeWeight = Math.max(hugeWeight, wInt.weightInt(v));
-					hugeWeight = hugeWeight * n + 1;
-					int hugeWeight0 = (int) Math.min(hugeWeight, Integer.MAX_VALUE);
+					long hugeWeight0 = 1 + n * range(n).mapToLong(wInt::weightInt).sum();
+					final int hugeWeight = (int) Math.min(hugeWeight0, Integer.MAX_VALUE);
 					IWeightFunctionInt w0Int =
-							e -> e < verticesEdgesThreshold ? hugeWeight0 : wInt.weightInt(e - verticesEdgesThreshold);
+							e -> e < verticesEdgesThreshold ? hugeWeight : wInt.weightInt(e - verticesEdgesThreshold);
 					weights = w0Int;
 
 				} else {
-					double hugeWeight = 1;
-					for (int v = 0; v < n; v++)
-						hugeWeight = Math.max(hugeWeight, w.weight(v));
-					double hugeWeight0 = hugeWeight * n + 1;
-					weights = e -> e < verticesEdgesThreshold ? hugeWeight0 : w.weight(e - verticesEdgesThreshold);
+					final double hugeWeight = 1 + n * range(n).mapToDouble(w::weight).sum();
+					weights = e -> e < verticesEdgesThreshold ? hugeWeight : w.weight(e - verticesEdgesThreshold);
 				}
 
 			}

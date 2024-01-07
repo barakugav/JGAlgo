@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
@@ -212,25 +213,21 @@ class MinimumDirectedSpanningTreeTarjan extends MinimumSpanningTreeUtils.Abstrac
 		IWeightFunction w;
 		if (WeightFunction.isInteger(wOrig)) {
 			IWeightFunctionInt wInt = (IWeightFunctionInt) wOrig;
-			long hugeWeight = 1;
-			for (int e = 0; e < artificialEdgesThreshold; e++)
-				hugeWeight = Math.max(hugeWeight, wInt.weightInt(e));
-			int hugeWeight0 = hugeWeight > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) hugeWeight;
+			long hugeWeight0 = Math.max(1, range(artificialEdgesThreshold).mapToLong(wInt::weightInt).max().orElse(0));
+			final int hugeWeight = hugeWeight0 > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) hugeWeight0;
 			if (edgeRef == null) {
-				w = e -> (e < artificialEdgesThreshold ? wOrig.weight(e) : hugeWeight0) + uf.getValue(g.edgeTarget(e));
+				w = e -> (e < artificialEdgesThreshold ? wOrig.weight(e) : hugeWeight) + uf.getValue(g.edgeTarget(e));
 			} else {
-				w = e -> (e < artificialEdgesThreshold ? wOrig.weight(edgeRef[e]) : hugeWeight0)
+				w = e -> (e < artificialEdgesThreshold ? wOrig.weight(edgeRef[e]) : hugeWeight)
 						+ uf.getValue(g.edgeTarget(e));
 			}
 		} else {
-			double hugeWeight = 1;
-			for (int e = 0; e < artificialEdgesThreshold; e++)
-				hugeWeight = Math.max(hugeWeight, wOrig.weight(e));
-			double hugeWeight0 = hugeWeight;
+			final double hugeWeight =
+					Math.max(1, range(artificialEdgesThreshold).mapToDouble(wOrig::weight).max().orElse(0));
 			if (edgeRef == null) {
-				w = e -> (e < artificialEdgesThreshold ? wOrig.weight(e) : hugeWeight0) + uf.getValue(g.edgeTarget(e));
+				w = e -> (e < artificialEdgesThreshold ? wOrig.weight(e) : hugeWeight) + uf.getValue(g.edgeTarget(e));
 			} else {
-				w = e -> (e < artificialEdgesThreshold ? wOrig.weight(edgeRef[e]) : hugeWeight0)
+				w = e -> (e < artificialEdgesThreshold ? wOrig.weight(edgeRef[e]) : hugeWeight)
 						+ uf.getValue(g.edgeTarget(e));
 			}
 		}

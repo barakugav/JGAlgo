@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import com.jgalgo.graph.IWeightFunction;
@@ -130,9 +131,7 @@ class MatchingWeightedBipartiteHungarianMethod extends Matchings.AbstractMaximum
 			int[] matched = new int[n];
 			Arrays.fill(matched, EdgeNone);
 
-			double maxWeight = Double.MIN_VALUE;
-			for (int m = g.edges().size(), e = 0; e < m; e++)
-				maxWeight = Math.max(maxWeight, w.weight(e));
+			final double maxWeight = range(g.edges().size()).mapToDouble(w::weight).max().orElse(Double.MIN_VALUE);
 			final double delta1Threshold = maxWeight;
 			for (int u = 0; u < n; u++)
 				if (partition.get(u))

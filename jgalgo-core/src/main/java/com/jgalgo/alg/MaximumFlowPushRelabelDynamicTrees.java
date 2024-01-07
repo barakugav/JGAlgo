@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
@@ -351,10 +352,8 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 
 		@Override
 		double getMaxCapacity() {
-			double maxCapacity = 100;
-			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
-				maxCapacity = Math.max(maxCapacity, capacityOrig.weight(e));
-			return maxCapacity;
+			double m = range(gOrig.edges().size()).mapToDouble(capacityOrig::weight).max().orElse(Double.MIN_VALUE);
+			return Math.max(100, m);
 		}
 
 		private void pushFlow(int e, double f) {
@@ -480,10 +479,8 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlowAbstract.WithResidua
 		@Override
 		double getMaxCapacity() {
 			IWeightFunctionInt capacity = (IWeightFunctionInt) this.capacityOrig;
-			int maxCapacity = 100;
-			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
-				maxCapacity = Math.max(maxCapacity, capacity.weightInt(e));
-			return maxCapacity;
+			int m = range(gOrig.edges().size()).map(capacity::weightInt).max().orElse(0);
+			return Math.max(100, m);
 		}
 
 		private void pushFlow(int e, int f) {

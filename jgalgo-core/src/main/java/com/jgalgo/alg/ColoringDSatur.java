@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
@@ -76,9 +77,7 @@ class ColoringDSatur implements ColoringAlgoBase {
 		Arrays.fill(colors, -1);
 
 		/* We want to compose both the saturationDegree and uncoloredDegree in a key int key, using 'toKey' func */
-		int maxDegree = 0;
-		for (int u = 0; u < n; u++)
-			maxDegree = Math.max(maxDegree, g.outEdges(u).size());
+		final int maxDegree = range(n).map(u -> g.outEdges(u).size()).max().orElse(0);
 		final int maxDegreeFactor = maxDegree + 1;
 		/* negate saturationDegree, more neighbor colors should be extracted from the heap first */
 		BiInt2IntFunc createKey =
