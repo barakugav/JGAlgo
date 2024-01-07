@@ -45,7 +45,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-class KVertexConnectedComponentsWhiteMoody extends KVertexConnectedComponentsUtils.AbstractImpl {
+class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponentsAlgoBase {
 
 	private final WeaklyConnectedComponentsAlgo unaryConnectedComponentsAlgo =
 			WeaklyConnectedComponentsAlgo.newInstance();
@@ -54,12 +54,12 @@ class KVertexConnectedComponentsWhiteMoody extends KVertexConnectedComponentsUti
 	private final MinimumVertexCutAllGlobalKanevsky allGlobalConnectivityAlgo = new MinimumVertexCutAllGlobalKanevsky();
 
 	@Override
-	KVertexConnectedComponentsAlgo.IResult findKVertexConnectedComponents(IndexGraph g, int k) {
+	public KVertexConnectedComponentsAlgo.IResult findKVertexConnectedComponents(IndexGraph g, int k) {
 		if (k < 0)
 			throw new IllegalArgumentException("k must be non negative");
 		List<List<IntSet>> hierarchy = findVertexConnectedComponentsHierarchy(g);
 		List<IntSet> components = k >= hierarchy.size() ? List.of() : hierarchy.get(k);
-		return new KVertexConnectedComponentsUtils.ResultImpl(g, components);
+		return new KVertexConnectedComponentsAlgos.IndexResult(g, components);
 	}
 
 	List<List<IntSet>> findVertexConnectedComponentsHierarchy(IndexGraph g) {
