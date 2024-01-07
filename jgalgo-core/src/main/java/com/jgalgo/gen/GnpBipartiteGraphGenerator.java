@@ -94,7 +94,7 @@ public class GnpBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	private IdBuilder<E> edgeBuilder;
 	private Direction direction = Direction.Undirected;
 	private double p = 0.1;
-	private Random rand = new Random();
+	private final Random rand = new Random();
 
 	/**
 	 * Create a new \(G(n_1,n_2,p)\) graph generator that will use the default graph factory.
@@ -388,7 +388,7 @@ public class GnpBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 * @return      this generator
 	 */
 	public GnpBipartiteGraphGenerator<V, E> seed(long seed) {
-		rand = new Random(seed);
+		rand.setSeed(seed);
 		return this;
 	}
 

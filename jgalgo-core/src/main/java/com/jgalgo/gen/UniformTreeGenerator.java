@@ -69,7 +69,7 @@ public class UniformTreeGenerator<V, E> implements GraphGenerator<V, E> {
 	private final GraphFactory<V, E> factory;
 	private Variant2<List<V>, IntObjectPair<IdBuilder<V>>> vertices;
 	private IdBuilder<E> edgeBuilder;
-	private Random rand = new Random();
+	private final Random rand = new Random();
 
 	/**
 	 * Create a new uniform tree generator that will use the default graph factory.
@@ -226,7 +226,7 @@ public class UniformTreeGenerator<V, E> implements GraphGenerator<V, E> {
 	 * @return      this generator
 	 */
 	public UniformTreeGenerator<V, E> seed(long seed) {
-		rand = new Random(seed);
+		rand.setSeed(seed);
 		return this;
 	}
 

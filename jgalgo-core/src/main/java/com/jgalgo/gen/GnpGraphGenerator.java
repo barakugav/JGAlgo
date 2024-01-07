@@ -75,7 +75,7 @@ public class GnpGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	private boolean directed = false;
 	private boolean selfEdges = false;
 	private double p = 0.1;
-	private Random rand = new Random();
+	private final Random rand = new Random();
 
 	/**
 	 * Create a new \(G(n,p)\) graph generator that will use the default graph factory.
@@ -285,7 +285,7 @@ public class GnpGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 * @return      this generator
 	 */
 	public GnpGraphGenerator<V, E> seed(long seed) {
-		rand = new Random(seed);
+		rand.setSeed(seed);
 		return this;
 	}
 

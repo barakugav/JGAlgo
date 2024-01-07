@@ -81,7 +81,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 	private boolean directed = false;
 	private double a, b, c, d;
 	private boolean abcdDefault = true;
-	private Random rand = new Random();
+	private final Random rand = new Random();
 
 	/**
 	 * Create a new R-MAT generator that will use the default graph factory.
@@ -323,7 +323,7 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 	 * @return      this generator
 	 */
 	public RecursiveMatrixGraphGenerator<V, E> seed(long seed) {
-		rand = new Random(seed);
+		rand.setSeed(seed);
 		return this;
 	}
 

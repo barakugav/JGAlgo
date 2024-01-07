@@ -99,7 +99,7 @@ public class GnmBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	private IntObjectPair<IdBuilder<E>> edges;
 	private Direction direction = Direction.Undirected;
 	private boolean parallelEdges = true;
-	private Random rand = new Random();
+	private final Random rand = new Random();
 
 	/**
 	 * Create a new \(G(n_1,n_2,m)\) generator that will use the default graph factory.
@@ -428,7 +428,7 @@ public class GnmBipartiteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 * @return      this generator
 	 */
 	public GnmBipartiteGraphGenerator<V, E> seed(long seed) {
-		rand = new Random(seed);
+		rand.setSeed(seed);
 		return this;
 	}
 
