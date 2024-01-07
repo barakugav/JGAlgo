@@ -15,64 +15,32 @@
  */
 package com.jgalgo.alg;
 
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
 class SteinerTrees {
 
-	abstract static class AbstractImpl implements SteinerTreeAlgo {
+	private SteinerTrees() {}
 
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> SteinerTreeAlgo.Result<V, E> computeSteinerTree(Graph<V, E> g, WeightFunction<E> w,
-				Collection<V> terminals) {
-			if (g instanceof IndexGraph) {
-				IntCollection terminals0 = IntAdapters.asIntCollection((Collection<Integer>) terminals);
-				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-				return (SteinerTreeAlgo.Result<V, E>) computeSteinerTree((IndexGraph) g, w0, terminals0);
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-				IntCollection iTerminals = IndexIdMaps.idToIndexCollection(terminals, viMap);
-
-				SteinerTreeAlgo.IResult indexResult = computeSteinerTree(iGraph, iw, iTerminals);
-				return resultFromIndexResult(g, indexResult);
-			}
-		}
-
-		abstract SteinerTreeAlgo.IResult computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals);
-
-	}
-
-	static class ResultImpl implements SteinerTreeAlgo.IResult {
+	static class IndexResult implements SteinerTreeAlgo.IResult {
 
 		private final IntSet edges;
-		static final SteinerTreeAlgo.IResult Empty = new ResultImpl(IntArrays.EMPTY_ARRAY);
+		static final SteinerTreeAlgo.IResult Empty = new IndexResult(IntArrays.EMPTY_ARRAY);
 
-		ResultImpl(IntSet edges) {
+		IndexResult(IntSet edges) {
 			this.edges = IntSets.unmodifiable(Objects.requireNonNull(edges));
 		}
 
-		ResultImpl(int[] edges) {
+		IndexResult(int[] edges) {
 			this.edges = ImmutableIntArraySet.withNaiveContains(edges);
 		}
 
@@ -85,10 +53,9 @@ class SteinerTrees {
 		public String toString() {
 			return edges().toString();
 		}
-
 	}
 
-	private static class ObjResultFromIndexResult<V, E> implements SteinerTreeAlgo.Result<V, E> {
+	static class ObjResultFromIndexResult<V, E> implements SteinerTreeAlgo.Result<V, E> {
 
 		private final SteinerTreeAlgo.IResult indexRes;
 		private final IndexIdMap<E> eiMap;
@@ -104,7 +71,7 @@ class SteinerTrees {
 		}
 	}
 
-	private static class IntResultFromIndexResult implements SteinerTreeAlgo.IResult {
+	static class IntResultFromIndexResult implements SteinerTreeAlgo.IResult {
 
 		private final SteinerTreeAlgo.IResult indexRes;
 		private final IndexIntIdMap eiMap;
@@ -117,17 +84,6 @@ class SteinerTrees {
 		@Override
 		public IntSet edges() {
 			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private static <V, E> SteinerTreeAlgo.Result<V, E> resultFromIndexResult(Graph<V, E> g,
-			SteinerTreeAlgo.IResult indexResult) {
-		assert !(g instanceof IndexGraph);
-		if (g instanceof IntGraph) {
-			return (SteinerTreeAlgo.Result<V, E>) new IntResultFromIndexResult((IntGraph) g, indexResult);
-		} else {
-			return new ObjResultFromIndexResult<>(g, indexResult);
 		}
 	}
 
