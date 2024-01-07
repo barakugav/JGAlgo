@@ -25,30 +25,24 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-class EdgeCovers {
+interface EdgeCoverBase extends EdgeCover {
 
-	private EdgeCovers() {}
+	@SuppressWarnings("unchecked")
+	@Override
+	default <V, E> Set<E> computeMinimumEdgeCover(Graph<V, E> g, WeightFunction<E> w) {
+		if (g instanceof IndexGraph) {
+			IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
+			return (Set<E>) computeMinimumEdgeCover((IndexGraph) g, w0);
 
-	abstract static class AbstractImpl implements EdgeCover {
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <V, E> Set<E> computeMinimumEdgeCover(Graph<V, E> g, WeightFunction<E> w) {
-			if (g instanceof IndexGraph) {
-				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction<Integer>) w);
-				return (Set<E>) computeMinimumEdgeCover((IndexGraph) g, w0);
-
-			} else {
-				IndexGraph iGraph = g.indexGraph();
-				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
-				IntSet indexResult = computeMinimumEdgeCover(iGraph, iw);
-				return IndexIdMaps.indexToIdSet(indexResult, eiMap);
-			}
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
+			IntSet indexResult = computeMinimumEdgeCover(iGraph, iw);
+			return IndexIdMaps.indexToIdSet(indexResult, eiMap);
 		}
-
-		abstract IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w);
-
 	}
+
+	IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w);
 
 }

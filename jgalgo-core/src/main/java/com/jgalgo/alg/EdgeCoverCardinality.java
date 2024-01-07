@@ -23,12 +23,12 @@ import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-class EdgeCoverCardinality extends EdgeCovers.AbstractImpl {
+class EdgeCoverCardinality implements EdgeCoverBase {
 
 	private final MatchingAlgo matchingAlgo = MatchingAlgo.builder().setCardinality(true).build();
 
 	@Override
-	IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
+	public IntSet computeMinimumEdgeCover(IndexGraph g, IWeightFunction w) {
 		Assertions.Graphs.onlyCardinality(w);
 		final int m = g.edges().size();
 
