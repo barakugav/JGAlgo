@@ -25,7 +25,7 @@ import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
- * Bread first search (BFS) iterator.
+ * Bread first search (BFS) iterators static class.
  *
  * <p>
  * The BFS iterator is used to iterate over the vertices of a graph in a bread first manner, namely by the cardinality
