@@ -125,7 +125,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L128">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L128">			Assertions.hasNext(this);</span>
 <span class="fc" id="L129">			prevEdge = nextEdge;</span>
 <span class="fc" id="L130">			prevEndpoint = nextEndpoint;</span>
 <span class="fc" id="L131">			nextEdge = edgeNext[prevEdge];</span>
@@ -135,7 +135,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L138">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L138">			Assertions.hasNext(this);</span>
 <span class="fc" id="L139">			return nextEdge;</span>
 		}
 
@@ -272,7 +272,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 				@Override
 				public int nextInt() {
-<span class="fc" id="L275">					Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L275">					Assertions.hasNext(this);</span>
 <span class="fc" id="L276">					prevEdge = nextEdge;</span>
 <span class="fc" id="L277">					nextEdge = edgeNext[prevEdge];</span>
 <span class="fc" id="L278">					return prevEdge;</span>
@@ -280,7 +280,7 @@ abstract class GraphHashmapMultiAbstract extends GraphBaseMutable {
 
 				@Override
 				public int peekNextInt() {
-<span class="fc" id="L283">					Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L283">					Assertions.hasNext(this);</span>
 <span class="fc" id="L284">					return nextEdge;</span>
 				}
 

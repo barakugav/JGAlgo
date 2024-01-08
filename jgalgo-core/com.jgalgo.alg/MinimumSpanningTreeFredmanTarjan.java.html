@@ -49,7 +49,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.AbstractUndirected {
+class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 
 <span class="fc" id="L54">	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();</span>
 
@@ -73,11 +73,11 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L77">		Assertions.Graphs.onlyUndirected(g);</span>
+	public MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L77">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L78">		int n = g.vertices().size(), m = g.edges().size();</span>
 <span class="pc bpc" id="L79" title="1 of 2 branches missed.">		if (n == 0)</span>
-<span class="nc" id="L80">			return MinimumSpanningTreeUtils.ResultImpl.Empty;</span>
+<span class="nc" id="L80">			return MinimumSpanningTrees.IndexResult.Empty;</span>
 
 		// following variables are used to maintain the super vertices
 
@@ -228,7 +228,7 @@ class MinimumSpanningTreeFredmanTarjan extends MinimumSpanningTreeUtils.Abstract
 		}
 
 <span class="fc" id="L230">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
-<span class="fc" id="L231">		return new MinimumSpanningTreeUtils.ResultImpl(mstSet);</span>
+<span class="fc" id="L231">		return new MinimumSpanningTrees.IndexResult(mstSet);</span>
 	}
 
 }

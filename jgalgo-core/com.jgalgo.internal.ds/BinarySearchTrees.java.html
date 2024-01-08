@@ -245,7 +245,7 @@ import com.jgalgo.internal.util.Assertions;
 
 		@Override
 		public NodeT next() {
-<span class="fc" id="L248">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L248">			Assertions.hasNext(this);</span>
 <span class="fc" id="L249">			NodeT ret = n;</span>
 <span class="fc" id="L250">			n = getSuccessorInSubtree(n, subtreeRoot);</span>
 <span class="fc" id="L251">			return ret;</span>

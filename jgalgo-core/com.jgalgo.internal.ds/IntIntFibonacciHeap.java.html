@@ -124,9 +124,9 @@ public class IntIntFibonacciHeap  implements IntIntReferenceableHeap  {
 
 	@Override
 	public void meld(IntIntReferenceableHeap  heap) {
-<span class="fc" id="L127">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
-<span class="fc" id="L128">		Assertions.Heaps.meldWithSameImpl(IntIntFibonacciHeap.class, heap);</span>
-<span class="fc" id="L129">		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());</span>
+<span class="fc" id="L127">		Assertions.heapNoMeldWithSelf(this, heap);</span>
+<span class="fc" id="L128">		Assertions.heapMeldWithSameImpl(IntIntFibonacciHeap.class, heap);</span>
+<span class="fc" id="L129">		Assertions.heapEqualComparatorBeforeMeld(comparator(), heap.comparator());</span>
 <span class="fc" id="L130">		IntIntFibonacciHeap  h = (IntIntFibonacciHeap ) heap;</span>
 <span class="fc bfc" id="L131" title="All 2 branches covered.">		if (h.isEmpty())</span>
 <span class="fc" id="L132">			return;</span>
@@ -149,7 +149,7 @@ public class IntIntFibonacciHeap  implements IntIntReferenceableHeap  {
 
 	@Override
 	public IntIntReferenceableHeap.Ref  findMin() {
-<span class="fc" id="L152">		Assertions.Heaps.notEmpty(this);</span>
+<span class="fc" id="L152">		Assertions.notEmpty(this);</span>
 <span class="fc" id="L153">		return minRoot;</span>
 	}
 
@@ -212,7 +212,7 @@ public class IntIntFibonacciHeap  implements IntIntReferenceableHeap  {
 	@Override
 	public void decreaseKey(IntIntReferenceableHeap.Ref  ref, int newKey) {
 <span class="fc" id="L214">		Node  n = (Node ) ref;</span>
-<span class="fc" id="L215">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
+<span class="fc" id="L215">		Assertions.heapDecreaseKeyIsSmaller(n.key, newKey, c);</span>
 <span class="fc" id="L216">		n.key = newKey;</span>
 
 <span class="fc" id="L218">		Node  parent = n.parent;</span>
@@ -236,7 +236,7 @@ public class IntIntFibonacciHeap  implements IntIntReferenceableHeap  {
 	@Override
 	public void increaseKey(IntIntReferenceableHeap.Ref  ref, int newKey) {
 <span class="fc" id="L238">		Node  n = (Node ) ref;</span>
-<span class="fc" id="L239">		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);</span>
+<span class="fc" id="L239">		Assertions.heapIncreaseKeyIsGreater(n.key, newKey, c);</span>
 <span class="fc" id="L240">		remove(n);</span>
 <span class="fc" id="L241">		n.degree = 0;</span>
 <span class="fc" id="L242">		n.marked = false;</span>

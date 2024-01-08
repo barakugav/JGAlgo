@@ -77,7 +77,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		@Override
 		public double eccentricity(int v) {
 <span class="fc" id="L79">			computeEccentricity();</span>
-<span class="fc" id="L80">			Assertions.Graphs.checkVertex(v, g.vertices().size());</span>
+<span class="fc" id="L80">			Assertions.checkVertex(v, g.vertices().size());</span>
 <span class="fc" id="L81">			return eccentricity[v];</span>
 		}
 

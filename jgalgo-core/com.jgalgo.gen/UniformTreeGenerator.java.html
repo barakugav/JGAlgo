@@ -69,7 +69,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	private final GraphFactory&lt;V, E&gt; factory;
 	private Variant2&lt;List&lt;V&gt;, IntObjectPair&lt;IdBuilder&lt;V&gt;&gt;&gt; vertices;
 	private IdBuilder&lt;E&gt; edgeBuilder;
-<span class="fc" id="L72">	private Random rand = new Random();</span>
+<span class="fc" id="L72">	private final Random rand = new Random();</span>
 
 	/**
 	 * Create a new uniform tree generator that will use the default graph factory.
@@ -226,7 +226,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 * @return      this generator
 	 */
 	public UniformTreeGenerator&lt;V, E&gt; seed(long seed) {
-<span class="fc" id="L229">		rand = new Random(seed);</span>
+<span class="fc" id="L229">		rand.setSeed(seed);</span>
 <span class="fc" id="L230">		return this;</span>
 	}
 

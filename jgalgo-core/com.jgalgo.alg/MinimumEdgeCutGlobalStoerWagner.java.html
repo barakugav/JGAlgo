@@ -39,13 +39,13 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 
 	@Override
 	IVertexBiPartition computeMinimumCut(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L42">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L42">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L43">		final int n = g.vertices().size();</span>
 <span class="pc bpc" id="L44" title="1 of 2 branches missed.">		if (n &lt; 2)</span>
 <span class="nc" id="L45">			throw new IllegalArgumentException(&quot;There is no valid cut in a graph with less than two vertices&quot;);</span>
 
 <span class="fc" id="L47">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
-<span class="fc" id="L48">		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);</span>
+<span class="fc" id="L48">		Assertions.onlyPositiveEdgesWeights(g, w);</span>
 <span class="fc" id="L49">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
 
 <span class="fc" id="L51">		ContractableGraph cg = new ContractableGraph(g);</span>

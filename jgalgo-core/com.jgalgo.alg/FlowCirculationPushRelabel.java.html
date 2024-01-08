@@ -24,10 +24,10 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 
-<span class="fc" id="L27">class FlowCirculationPushRelabel extends FlowCirculations.AbstractImpl {</span>
+<span class="fc" id="L27">class FlowCirculationPushRelabel implements FlowCirculationBase {</span>
 
 	@Override
-	IFlow computeCirculation(IndexGraph g, IWeightFunction capacity, IWeightFunction supply) {
+	public IFlow computeCirculation(IndexGraph g, IWeightFunction capacity, IWeightFunction supply) {
 <span class="pc bpc" id="L31" title="1 of 4 branches missed.">		if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(supply)) {</span>
 <span class="fc" id="L32">			return new WorkerInt(g, (IWeightFunctionInt) capacity, (IWeightFunctionInt) supply).computeCirculation();</span>
 		} else {
@@ -46,7 +46,7 @@ import com.jgalgo.internal.util.Assertions;
 		int maxLayerActive;
 
 <span class="fc" id="L48">		Worker(IndexGraph g, IWeightFunction capacityOrig, IWeightFunction supply) {</span>
-<span class="fc" id="L49">			Assertions.Graphs.onlyDirected(g);</span>
+<span class="fc" id="L49">			Assertions.onlyDirected(g);</span>
 <span class="fc" id="L50">			this.g = g;</span>
 <span class="fc" id="L51">			this.capacityOrig = capacityOrig;</span>
 <span class="fc" id="L52">			final int n = g.vertices().size();</span>

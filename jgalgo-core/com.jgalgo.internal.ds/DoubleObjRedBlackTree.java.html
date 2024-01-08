@@ -95,9 +95,9 @@ import com.jgalgo.internal.util.Assertions;
 
 	@Override
 	public void meld(DoubleObjReferenceableHeap &lt;V&gt; heap) {
-<span class="fc" id="L98">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
-<span class="fc" id="L99">		Assertions.Heaps.meldWithSameImpl(DoubleObjRedBlackTree.class, heap);</span>
-<span class="fc" id="L100">		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());</span>
+<span class="fc" id="L98">		Assertions.heapNoMeldWithSelf(this, heap);</span>
+<span class="fc" id="L99">		Assertions.heapMeldWithSameImpl(DoubleObjRedBlackTree.class, heap);</span>
+<span class="fc" id="L100">		Assertions.heapEqualComparatorBeforeMeld(comparator(), heap.comparator());</span>
 <span class="fc" id="L101">		DoubleObjRedBlackTree &lt;V&gt; h = (DoubleObjRedBlackTree &lt;V&gt;) heap;</span>
 <span class="fc bfc" id="L102" title="All 2 branches covered.">		if (h.isEmpty())</span>
 <span class="fc" id="L103">			return;</span>
@@ -217,7 +217,7 @@ import com.jgalgo.internal.util.Assertions;
 	@Override
 	public void decreaseKey(DoubleObjReferenceableHeap.Ref &lt;V&gt; ref, double newKey) {
 <span class="fc" id="L219">		Node &lt;V&gt; n = (Node &lt;V&gt;) ref;</span>
-<span class="fc" id="L220">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
+<span class="fc" id="L220">		Assertions.heapDecreaseKeyIsSmaller(n.key, newKey, c);</span>
 <span class="fc" id="L221">		remove(n);</span>
 <span class="fc" id="L222">		n.key = newKey;</span>
 <span class="fc" id="L223">		insertNode(n);</span>
@@ -226,7 +226,7 @@ import com.jgalgo.internal.util.Assertions;
 	@Override
 	public void increaseKey(DoubleObjReferenceableHeap.Ref &lt;V&gt; ref, double newKey) {
 <span class="fc" id="L228">		Node &lt;V&gt; n = (Node &lt;V&gt;) ref;</span>
-<span class="fc" id="L229">		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);</span>
+<span class="fc" id="L229">		Assertions.heapIncreaseKeyIsGreater(n.key, newKey, c);</span>
 <span class="fc" id="L230">		remove(n);</span>
 <span class="fc" id="L231">		n.key = newKey;</span>
 <span class="fc" id="L232">		insertNode(n);</span>

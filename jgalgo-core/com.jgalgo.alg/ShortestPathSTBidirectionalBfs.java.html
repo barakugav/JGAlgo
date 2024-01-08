@@ -16,9 +16,9 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.IEdgeIter;
+import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.NoSuchVertexException;
-import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -29,17 +29,17 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
-<span class="fc" id="L32">class ShortestPathSTBidirectionalBfs extends ShortestPathSTs.AbstractImpl {</span>
+<span class="fc" id="L32">class ShortestPathSTBidirectionalBfs implements ShortestPathSTBase {</span>
 
 	@Override
-	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
+	public IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
 <span class="pc bpc" id="L36" title="1 of 2 branches missed.">		if (!g.vertices().contains(source))</span>
 <span class="nc" id="L37">			throw NoSuchVertexException.ofIndex(source);</span>
 <span class="pc bpc" id="L38" title="1 of 2 branches missed.">		if (!g.vertices().contains(target))</span>
 <span class="nc" id="L39">			throw NoSuchVertexException.ofIndex(target);</span>
 <span class="fc bfc" id="L40" title="All 2 branches covered.">		if (source == target)</span>
 <span class="fc" id="L41">			return new PathImpl(g, source, target, IntLists.emptyList());</span>
-<span class="fc" id="L42">		Assertions.Graphs.onlyCardinality(w);</span>
+<span class="fc" id="L42">		Assertions.onlyCardinality(w);</span>
 
 <span class="fc" id="L44">		final long InfoNone = info(-2, -1);</span>
 <span class="fc" id="L45">		Int2LongMap infoS = new Int2LongOpenHashMap();</span>

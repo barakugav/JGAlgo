@@ -202,36 +202,30 @@ class MinimumVertexCutUtils {
 
 <span class="fc bfc" id="L203" title="All 2 branches covered.">				if (WeightFunction.isInteger(w)) {</span>
 <span class="fc" id="L204">					IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
-<span class="fc" id="L205">					long hugeWeight = 1;</span>
-<span class="fc bfc" id="L206" title="All 2 branches covered.">					for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L207">						hugeWeight = Math.max(hugeWeight, wInt.weightInt(v));</span>
-<span class="fc" id="L208">					hugeWeight = hugeWeight * n + 1;</span>
-<span class="fc" id="L209">					int hugeWeight0 = (int) Math.min(hugeWeight, Integer.MAX_VALUE);</span>
-<span class="fc" id="L210">					IWeightFunctionInt w0Int =</span>
-<span class="fc bfc" id="L211" title="All 2 branches covered.">							e -&gt; e &lt; verticesEdgesThreshold ? hugeWeight0 : wInt.weightInt(e - verticesEdgesThreshold);</span>
-<span class="fc" id="L212">					weights = w0Int;</span>
+<span class="fc" id="L205">					long hugeWeight0 = 1 + n * range(n).mapToLong(wInt::weightInt).sum();</span>
+<span class="fc" id="L206">					final int hugeWeight = (int) Math.min(hugeWeight0, Integer.MAX_VALUE);</span>
+<span class="fc" id="L207">					IWeightFunctionInt w0Int =</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">							e -&gt; e &lt; verticesEdgesThreshold ? hugeWeight : wInt.weightInt(e - verticesEdgesThreshold);</span>
+<span class="fc" id="L209">					weights = w0Int;</span>
 
-<span class="fc" id="L214">				} else {</span>
-<span class="fc" id="L215">					double hugeWeight = 1;</span>
-<span class="fc bfc" id="L216" title="All 2 branches covered.">					for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L217">						hugeWeight = Math.max(hugeWeight, w.weight(v));</span>
-<span class="fc" id="L218">					double hugeWeight0 = hugeWeight * n + 1;</span>
-<span class="fc bfc" id="L219" title="All 2 branches covered.">					weights = e -&gt; e &lt; verticesEdgesThreshold ? hugeWeight0 : w.weight(e - verticesEdgesThreshold);</span>
+<span class="fc" id="L211">				} else {</span>
+<span class="fc" id="L212">					final double hugeWeight = 1 + n * range(n).mapToDouble(w::weight).sum();</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">					weights = e -&gt; e &lt; verticesEdgesThreshold ? hugeWeight : w.weight(e - verticesEdgesThreshold);</span>
 				}
 
 			}
 
-<span class="fc bfc" id="L224" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L225">				builder.addEdge(v * 2 + 0, v * 2 + 1);</span>
-<span class="fc bfc" id="L226" title="All 2 branches covered.">			graph = mutable ? builder.buildMutable() : builder.build();</span>
-<span class="fc" id="L227">		}</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L219">				builder.addEdge(v * 2 + 0, v * 2 + 1);</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">			graph = mutable ? builder.buildMutable() : builder.build();</span>
+<span class="fc" id="L221">		}</span>
 
 		void edgeCutToVertexCut(int[] edgeCut) {
-<span class="fc bfc" id="L230" title="All 2 branches covered.">			for (int i = 0; i &lt; edgeCut.length; i++) {</span>
-<span class="pc bnc" id="L231" title="All 2 branches missed.">				assert edgeCut[i] &gt;= verticesEdgesThreshold;</span>
-<span class="fc" id="L232">				edgeCut[i] -= verticesEdgesThreshold;</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">			for (int i = 0; i &lt; edgeCut.length; i++) {</span>
+<span class="pc bnc" id="L225" title="All 2 branches missed.">				assert edgeCut[i] &gt;= verticesEdgesThreshold;</span>
+<span class="fc" id="L226">				edgeCut[i] -= verticesEdgesThreshold;</span>
 			}
-<span class="fc" id="L234">		}</span>
+<span class="fc" id="L228">		}</span>
 	}
 
 }

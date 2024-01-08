@@ -409,7 +409,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 	private static IWeightFunctionInt randLowerBound(IntGraph g, IWeightFunctionInt capacity, IntCollection sources,
 			IntCollection sinks, Random rand) {
-<span class="fc" id="L412">		Assertions.Graphs.onlyDirected(g);</span>
+<span class="fc" id="L412">		Assertions.onlyDirected(g);</span>
 
 <span class="fc" id="L414">		Int2IntMap caps = new Int2IntOpenHashMap();</span>
 <span class="fc bfc" id="L415" title="All 2 branches covered.">		for (int e : g.edges())</span>
@@ -504,7 +504,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	}
 
 	private static IWeightFunctionInt randSupply(IntGraph g, IWeightFunctionInt capacity, Random rand) {
-<span class="fc" id="L507">		Assertions.Graphs.onlyDirected(g);</span>
+<span class="fc" id="L507">		Assertions.onlyDirected(g);</span>
 
 <span class="fc" id="L509">		IntList suppliers = new IntArrayList();</span>
 <span class="fc" id="L510">		IntList demanders = new IntArrayList();</span>

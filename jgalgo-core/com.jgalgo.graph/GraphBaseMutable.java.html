@@ -62,9 +62,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L62">		this.isAllowSelfEdges = capabilities.isAllowSelfEdges;</span>
 <span class="fc" id="L63">		this.isAllowParallelEdges = capabilities.isAllowParallelEdges;</span>
 <span class="fc bfc" id="L64" title="All 2 branches covered.">		if (isDirected()) {</span>
-<span class="fc" id="L65">			Assertions.Graphs.onlyDirected(g);</span>
+<span class="fc" id="L65">			Assertions.onlyDirected(g);</span>
 		} else {
-<span class="fc" id="L67">			Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L67">			Assertions.onlyUndirected(g);</span>
 		}
 
 <span class="fc" id="L70">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), false);</span>

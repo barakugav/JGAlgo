@@ -26,7 +26,7 @@ import com.jgalgo.internal.util.Assertions;
 
 	GraphCsrUndirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights, boolean fastLookup) {
 <span class="fc" id="L28">		super(false, g, copyVerticesWeights, copyEdgesWeights, fastLookup);</span>
-<span class="fc" id="L29">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L29">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L30">	}</span>
 
 	@Override

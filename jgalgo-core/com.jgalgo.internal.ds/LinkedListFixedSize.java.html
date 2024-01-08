@@ -55,7 +55,7 @@ public class LinkedListFixedSize {
 <span class="nc" id="L55">		}</span>
 
 		public IterTools.IterPeekable.Int iterator(int id) {
-<span class="fc" id="L58">			Assertions.Arrays.checkIndex(id, 0, size());</span>
+<span class="fc" id="L58">			Assertions.checkArrayIndex(id, 0, size());</span>
 <span class="fc" id="L59">			return new IterTools.IterPeekable.Int() {</span>
 <span class="fc" id="L60">				int p = id;</span>
 
@@ -66,7 +66,7 @@ public class LinkedListFixedSize {
 
 				@Override
 				public int nextInt() {
-<span class="fc" id="L69">					Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L69">					Assertions.hasNext(this);</span>
 <span class="fc" id="L70">					int ret = p;</span>
 <span class="fc" id="L71">					p = LinkedListFixedSize.Singly.this.next(p);</span>
 <span class="fc" id="L72">					return ret;</span>
@@ -74,7 +74,7 @@ public class LinkedListFixedSize {
 
 				@Override
 				public int peekNextInt() {
-<span class="nc" id="L77">					Assertions.Iters.hasNext(this);</span>
+<span class="nc" id="L77">					Assertions.hasNext(this);</span>
 <span class="nc" id="L78">					return p;</span>
 				}
 
@@ -164,7 +164,7 @@ public class LinkedListFixedSize {
 <span class="fc" id="L164">		}</span>
 
 		public IterTools.IterPeekable.Int iterator(int id) {
-<span class="fc" id="L167">			Assertions.Arrays.checkIndex(id, 0, size());</span>
+<span class="fc" id="L167">			Assertions.checkArrayIndex(id, 0, size());</span>
 <span class="fc" id="L168">			return new Iter(id);</span>
 		}
 
@@ -187,7 +187,7 @@ public class LinkedListFixedSize {
 
 			@Override
 			public int nextInt() {
-<span class="fc" id="L190">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L190">				Assertions.hasNext(this);</span>
 <span class="fc" id="L191">				int ret = p;</span>
 <span class="fc" id="L192">				p = LinkedListFixedSize.Doubly.this.next(p);</span>
 <span class="fc" id="L193">				return ret;</span>
@@ -195,7 +195,7 @@ public class LinkedListFixedSize {
 
 			@Override
 			public int peekNextInt() {
-<span class="fc" id="L198">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L198">				Assertions.hasNext(this);</span>
 <span class="fc" id="L199">				return p;</span>
 			}
 

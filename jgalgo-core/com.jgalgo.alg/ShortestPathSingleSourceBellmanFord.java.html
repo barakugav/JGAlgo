@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Bellman%E2%80%93Ford_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.AbstractImpl {
+class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSourceBase {
 
 <span class="fc" id="L45">	ShortestPathSingleSourceBellmanFord() {}</span>
 
@@ -50,8 +50,8 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
-<span class="fc" id="L54">		Assertions.Graphs.onlyDirected(g);</span>
+	public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+<span class="fc" id="L54">		Assertions.onlyDirected(g);</span>
 
 <span class="fc" id="L56">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
 <span class="fc" id="L57">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
@@ -73,7 +73,7 @@ class ShortestPathSingleSourceBellmanFord extends ShortestPathSingleSourceUtils.
 		 */
 
 <span class="fc" id="L75">		final int n = g.vertices().size();</span>
-<span class="fc" id="L76">		ShortestPathSingleSourceUtils.ResultImpl res = new ShortestPathSingleSourceUtils.ResultImpl(g, source);</span>
+<span class="fc" id="L76">		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);</span>
 <span class="fc" id="L77">		res.distances[source] = 0;</span>
 
 <span class="fc" id="L79">		FIFOQueueIntNoReduce modified = new FIFOQueueIntNoReduce();</span>

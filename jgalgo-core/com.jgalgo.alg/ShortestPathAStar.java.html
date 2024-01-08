@@ -150,7 +150,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc" id="L150">				Info vInfo = info.computeIfAbsent(v, k -&gt; new Info());</span>
 
 <span class="fc" id="L152">				double ew = w.weight(e);</span>
-<span class="fc" id="L153">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L153">				Assertions.onlyPositiveWeight(ew);</span>
 <span class="fc" id="L154">				double distance = uDistance + ew;</span>
 
 <span class="fc bfc" id="L156" title="All 2 branches covered.">				if (distance &gt;= vInfo.distance)</span>

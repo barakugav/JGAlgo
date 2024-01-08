@@ -144,9 +144,9 @@ public class ObjObjFibonacciHeap &lt;K, V&gt; implements ObjObjReferenceableHeap
 
 	@Override
 	public void meld(ObjObjReferenceableHeap &lt;K, V&gt; heap) {
-<span class="fc" id="L147">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
-<span class="fc" id="L148">		Assertions.Heaps.meldWithSameImpl(ObjObjFibonacciHeap.class, heap);</span>
-<span class="fc" id="L149">		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());</span>
+<span class="fc" id="L147">		Assertions.heapNoMeldWithSelf(this, heap);</span>
+<span class="fc" id="L148">		Assertions.heapMeldWithSameImpl(ObjObjFibonacciHeap.class, heap);</span>
+<span class="fc" id="L149">		Assertions.heapEqualComparatorBeforeMeld(comparator(), heap.comparator());</span>
 <span class="fc" id="L150">		ObjObjFibonacciHeap &lt;K, V&gt; h = (ObjObjFibonacciHeap &lt;K, V&gt;) heap;</span>
 <span class="fc bfc" id="L151" title="All 2 branches covered.">		if (h.isEmpty())</span>
 <span class="fc" id="L152">			return;</span>
@@ -169,7 +169,7 @@ public class ObjObjFibonacciHeap &lt;K, V&gt; implements ObjObjReferenceableHeap
 
 	@Override
 	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; findMin() {
-<span class="fc" id="L172">		Assertions.Heaps.notEmpty(this);</span>
+<span class="fc" id="L172">		Assertions.notEmpty(this);</span>
 <span class="fc" id="L173">		return minRoot;</span>
 	}
 
@@ -232,7 +232,7 @@ public class ObjObjFibonacciHeap &lt;K, V&gt; implements ObjObjReferenceableHeap
 	@Override
 	public void decreaseKey(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref, K newKey) {
 <span class="fc" id="L234">		Node &lt;K, V&gt; n = (Node &lt;K, V&gt;) ref;</span>
-<span class="fc" id="L235">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
+<span class="fc" id="L235">		Assertions.heapDecreaseKeyIsSmaller(n.key, newKey, c);</span>
 <span class="fc" id="L236">		n.key = newKey;</span>
 
 <span class="fc" id="L238">		Node &lt;K, V&gt; parent = n.parent;</span>
@@ -256,7 +256,7 @@ public class ObjObjFibonacciHeap &lt;K, V&gt; implements ObjObjReferenceableHeap
 	@Override
 	public void increaseKey(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref, K newKey) {
 <span class="fc" id="L258">		Node &lt;K, V&gt; n = (Node &lt;K, V&gt;) ref;</span>
-<span class="fc" id="L259">		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);</span>
+<span class="fc" id="L259">		Assertions.heapIncreaseKeyIsGreater(n.key, newKey, c);</span>
 <span class="fc" id="L260">		remove(n);</span>
 <span class="fc" id="L261">		n.degree = 0;</span>
 <span class="fc" id="L262">		n.marked = false;</span>

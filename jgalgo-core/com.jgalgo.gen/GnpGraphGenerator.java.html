@@ -75,7 +75,7 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 <span class="fc" id="L75">	private boolean directed = false;</span>
 <span class="fc" id="L76">	private boolean selfEdges = false;</span>
 <span class="fc" id="L77">	private double p = 0.1;</span>
-<span class="fc" id="L78">	private Random rand = new Random();</span>
+<span class="fc" id="L78">	private final Random rand = new Random();</span>
 
 	/**
 	 * Create a new \(G(n,p)\) graph generator that will use the default graph factory.
@@ -285,7 +285,7 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * @return      this generator
 	 */
 	public GnpGraphGenerator&lt;V, E&gt; seed(long seed) {
-<span class="fc" id="L288">		rand = new Random(seed);</span>
+<span class="fc" id="L288">		rand.setSeed(seed);</span>
 <span class="fc" id="L289">		return this;</span>
 	}
 
@@ -340,7 +340,7 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 <span class="fc" id="L340">							g.addEdge(u, v, edgeBuilder.build(g.edges()));</span>
 					}
 				}
-<span class="fc bfc" id="L343" title="All 4 branches covered.">				if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
+<span class="pc bpc" id="L343" title="1 of 4 branches missed.">				if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
 <span class="fc" id="L344">					g.addEdge(u, u, edgeBuilder.build(g.edges()));</span>
 <span class="fc bfc" id="L345" title="All 2 branches covered.">				for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++) {</span>
 <span class="fc" id="L346">					V v = vertices.get(vIdx);</span>

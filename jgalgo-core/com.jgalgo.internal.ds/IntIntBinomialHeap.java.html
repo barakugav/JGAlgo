@@ -123,7 +123,7 @@ public class IntIntBinomialHeap  implements IntIntReferenceableHeap  {
 	@Override
 	public void decreaseKey(IntIntReferenceableHeap.Ref  ref, int newKey) {
 <span class="fc" id="L125">		Node  node = (Node ) ref;</span>
-<span class="fc" id="L126">		Assertions.Heaps.decreaseKeyIsSmaller(node.key, newKey, c);</span>
+<span class="fc" id="L126">		Assertions.heapDecreaseKeyIsSmaller(node.key, newKey, c);</span>
 <span class="fc" id="L127">		node.key = newKey;</span>
 
 <span class="fc bfc" id="L129" title="All 2 branches covered.">		if (c == null) {</span>
@@ -144,7 +144,7 @@ public class IntIntBinomialHeap  implements IntIntReferenceableHeap  {
 	@Override
 	public void increaseKey(IntIntReferenceableHeap.Ref  ref, int newKey) {
 <span class="fc" id="L146">		Node  node = (Node ) ref;</span>
-<span class="fc" id="L147">		Assertions.Heaps.increaseKeyIsGreater(node.key, newKey, c);</span>
+<span class="fc" id="L147">		Assertions.heapIncreaseKeyIsGreater(node.key, newKey, c);</span>
 <span class="fc" id="L148">		remove(node);</span>
 <span class="fc" id="L149">		node.key = newKey;</span>
 <span class="fc" id="L150">		insertNode(node);</span>
@@ -334,9 +334,9 @@ public class IntIntBinomialHeap  implements IntIntReferenceableHeap  {
 
 	@Override
 	public void meld(IntIntReferenceableHeap  heap) {
-<span class="fc" id="L337">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
-<span class="fc" id="L338">		Assertions.Heaps.meldWithSameImpl(IntIntBinomialHeap.class, heap);</span>
-<span class="fc" id="L339">		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());</span>
+<span class="fc" id="L337">		Assertions.heapNoMeldWithSelf(this, heap);</span>
+<span class="fc" id="L338">		Assertions.heapMeldWithSameImpl(IntIntBinomialHeap.class, heap);</span>
+<span class="fc" id="L339">		Assertions.heapEqualComparatorBeforeMeld(comparator(), heap.comparator());</span>
 
 <span class="fc" id="L341">		IntIntBinomialHeap  h = (IntIntBinomialHeap ) heap;</span>
 <span class="fc" id="L342">		meld(h.roots, h.rootsLen);</span>
@@ -347,7 +347,7 @@ public class IntIntBinomialHeap  implements IntIntReferenceableHeap  {
 
 	@Override
 	public IntIntReferenceableHeap.Ref  findMin() {
-<span class="fc" id="L350">		Assertions.Heaps.notEmpty(this);</span>
+<span class="fc" id="L350">		Assertions.notEmpty(this);</span>
 <span class="fc" id="L351">		Node [] rs = roots;</span>
 <span class="fc" id="L352">		int rsLen = rootsLen;</span>
 <span class="fc" id="L353">		Node  min = null;</span>

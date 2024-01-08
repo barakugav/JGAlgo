@@ -47,7 +47,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Bor%C5%AFvka%27s_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-<span class="fc" id="L50">class MinimumSpanningTreeBoruvka extends MinimumSpanningTreeUtils.AbstractUndirected {</span>
+<span class="fc" id="L50">class MinimumSpanningTreeBoruvka implements MinimumSpanningTreeBase {</span>
 
 	/**
 	 * Construct a new MST algorithm object.
@@ -60,8 +60,8 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L64">		return new MinimumSpanningTreeUtils.ResultImpl(computeMST(g, w, Integer.MAX_VALUE).mst);</span>
+	public MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L64">		return new MinimumSpanningTrees.IndexResult(computeMST(g, w, Integer.MAX_VALUE).mst);</span>
 	}
 
 	static class RunBoruvkaResult {
@@ -99,7 +99,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 	}
 
 	private static Res computeMST(IndexGraph g, IWeightFunction w, int numberOfRounds) {
-<span class="fc" id="L102">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L102">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L103">		final int n = g.vertices().size();</span>
 
 <span class="fc" id="L105">		int[] vTree = new int[n];</span>

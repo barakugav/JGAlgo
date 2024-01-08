@@ -47,10 +47,10 @@ import com.jgalgo.internal.util.Bitmap;
 <span class="fc" id="L47">	private final MinimumMeanCycle minMeanCycleAlg = MinimumMeanCycle.newInstance();</span>
 
 	@Override
-	IFlow computeMinCostMaxFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IWeightFunction cost, int source,
+	public IFlow computeMinCostMaxFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IWeightFunction cost, int source,
 			int sink) {
-<span class="fc" id="L52">		Assertions.Graphs.onlyDirected(gOrig);</span>
-<span class="fc" id="L53">		Assertions.Flows.sourceSinkNotTheSame(source, sink);</span>
+<span class="fc" id="L52">		Assertions.onlyDirected(gOrig);</span>
+<span class="fc" id="L53">		Assertions.flowSourceSinkNotTheSame(source, sink);</span>
 
 		/* Compute maximum flow */
 <span class="fc" id="L56">		IFlow flowOrig = (IFlow) maxFlowAlg</span>

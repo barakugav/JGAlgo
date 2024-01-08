@@ -79,8 +79,8 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 	@Override
 	TreePathMaxima.IResult computeHeaviestEdgeInTreePaths(IndexGraph tree, IWeightFunction w,
 			TreePathMaxima.IQueries queries) {
-<span class="fc" id="L82">		Assertions.Graphs.onlyUndirected(tree);</span>
-<span class="fc" id="L83">		Assertions.Graphs.onlyTree(tree);</span>
+<span class="fc" id="L82">		Assertions.onlyUndirected(tree);</span>
+<span class="fc" id="L83">		Assertions.onlyTree(tree);</span>
 <span class="fc" id="L84">		return new Worker(tree, w, useBitsLookupTables).calcTPM(queries);</span>
 	}
 

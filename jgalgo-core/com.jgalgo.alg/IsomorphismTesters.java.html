@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>IsomorphismTesters.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.alg</a> &gt; <span class="el_source">IsomorphismTesters.java</span></div><h1>IsomorphismTesters.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.alg;
+
+import com.jgalgo.alg.IsomorphismTester.IMapping;
+import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIntIdMap;
+import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchEdgeException;
+import com.jgalgo.graph.NoSuchVertexException;
+
+class IsomorphismTesters {
+
+	private IsomorphismTesters() {}
+
+	static class IndexMapping implements IsomorphismTester.IMapping {
+
+		private final int[] vertexMapping;
+		private final int[] edgeMapping;
+		private IndexMapping inverse;
+
+<span class="fc" id="L36">		IndexMapping(int[] vertexMapping, int[] edgeMapping) {</span>
+<span class="fc" id="L37">			this.vertexMapping = vertexMapping;</span>
+<span class="fc" id="L38">			this.edgeMapping = edgeMapping;</span>
+
+			// final int n = vertexMapping.length;
+			// final int m = edgeMapping.length;
+			// assert range(n).allMatch(v -&gt; 0 &lt;= vertexMapping[v] &amp;&amp; vertexMapping[v] &lt; n);
+			// assert range(m).allMatch(e -&gt; 0 &lt;= edgeMapping[e] &amp;&amp; edgeMapping[e] &lt; m);
+			// assert range(n).map(v -&gt; vertexMapping[v]).distinct().count() == n;
+			// assert range(m).map(e -&gt; edgeMapping[e]).distinct().count() == m;
+<span class="fc" id="L46">		}</span>
+
+		@Override
+		public int mapVertex(int vertex) {
+<span class="fc bfc" id="L50" title="All 4 branches covered.">			if (!(0 &lt;= vertex &amp;&amp; vertex &lt; vertexMapping.length))</span>
+<span class="fc" id="L51">				throw NoSuchVertexException.ofIndex(vertex);</span>
+<span class="fc" id="L52">			return vertexMapping[vertex];</span>
+		}
+
+		@Override
+		public int mapEdge(int edge) {
+<span class="fc bfc" id="L57" title="All 4 branches covered.">			if (!(0 &lt;= edge &amp;&amp; edge &lt; edgeMapping.length))</span>
+<span class="fc" id="L58">				throw NoSuchEdgeException.ofIndex(edge);</span>
+<span class="fc" id="L59">			return edgeMapping[edge];</span>
+		}
+
+		@Override
+		public IMapping inverse() {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			if (inverse == null) {</span>
+<span class="fc" id="L65">				final int n = vertexMapping.length;</span>
+<span class="fc" id="L66">				final int m = edgeMapping.length;</span>
+<span class="fc" id="L67">				int[] iVertexMapping = new int[n];</span>
+<span class="fc" id="L68">				int[] iEdgeMapping = new int[m];</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L70">					iVertexMapping[vertexMapping[v]] = v;</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L72">					iEdgeMapping[edgeMapping[e]] = e;</span>
+<span class="fc" id="L73">				inverse = new IndexMapping(iVertexMapping, iEdgeMapping);</span>
+<span class="fc" id="L74">				inverse.inverse = this;</span>
+			}
+<span class="fc" id="L76">			return inverse;</span>
+		}
+	}
+
+	static class ObjMappingFromIndexMapping&lt;V1, E1, V2, E2&gt; implements IsomorphismTester.Mapping&lt;V1, E1, V2, E2&gt; {
+
+		private final IsomorphismTester.IMapping indexMapping;
+		private final IndexIdMap&lt;V1&gt; v1Map;
+		private final IndexIdMap&lt;E1&gt; e1Map;
+		private final IndexIdMap&lt;V2&gt; v2Map;
+		private final IndexIdMap&lt;E2&gt; e2Map;
+		private ObjMappingFromIndexMapping&lt;V2, E2, V1, E1&gt; inverse;
+
+		ObjMappingFromIndexMapping(IsomorphismTester.IMapping indexMapping, Graph&lt;V1, E1&gt; g1, Graph&lt;V2, E2&gt; g2) {
+<span class="fc" id="L90">			this(indexMapping, g1.indexGraphVerticesMap(), g1.indexGraphEdgesMap(), g2.indexGraphVerticesMap(),</span>
+<span class="fc" id="L91">					g2.indexGraphEdgesMap());</span>
+<span class="fc" id="L92">		}</span>
+
+		private ObjMappingFromIndexMapping(IsomorphismTester.IMapping indexMapping, IndexIdMap&lt;V1&gt; v1Map,
+<span class="fc" id="L95">				IndexIdMap&lt;E1&gt; e1Map, IndexIdMap&lt;V2&gt; v2Map, IndexIdMap&lt;E2&gt; e2Map) {</span>
+<span class="fc" id="L96">			this.indexMapping = indexMapping;</span>
+<span class="fc" id="L97">			this.v1Map = v1Map;</span>
+<span class="fc" id="L98">			this.e1Map = e1Map;</span>
+<span class="fc" id="L99">			this.v2Map = v2Map;</span>
+<span class="fc" id="L100">			this.e2Map = e2Map;</span>
+<span class="fc" id="L101">		}</span>
+
+		@Override
+		public V2 mapVertex(V1 vertex) {
+<span class="fc" id="L105">			int v1 = v1Map.idToIndex(vertex);</span>
+<span class="fc" id="L106">			int v2 = indexMapping.mapVertex(v1);</span>
+<span class="fc" id="L107">			return v2Map.indexToId(v2);</span>
+
+		}
+
+		@Override
+		public E2 mapEdge(E1 edge) {
+<span class="fc" id="L113">			int e1 = e1Map.idToIndex(edge);</span>
+<span class="fc" id="L114">			int e2 = indexMapping.mapEdge(e1);</span>
+<span class="fc" id="L115">			return e2Map.indexToId(e2);</span>
+		}
+
+		@Override
+		public IsomorphismTester.Mapping&lt;V2, E2, V1, E1&gt; inverse() {
+<span class="fc bfc" id="L120" title="All 2 branches covered.">			if (inverse == null) {</span>
+<span class="fc" id="L121">				inverse = new ObjMappingFromIndexMapping&lt;&gt;(indexMapping.inverse(), v2Map, e2Map, v1Map, e1Map);</span>
+<span class="fc" id="L122">				inverse.inverse = this;</span>
+			}
+<span class="fc" id="L124">			return inverse;</span>
+		}
+	}
+
+	static class IntMappingFromIndexMapping implements IsomorphismTester.IMapping {
+
+		private final IsomorphismTester.IMapping indexMapping;
+		private final IndexIntIdMap v1Map;
+		private final IndexIntIdMap e1Map;
+		private final IndexIntIdMap v2Map;
+		private final IndexIntIdMap e2Map;
+		private IntMappingFromIndexMapping inverse;
+
+		IntMappingFromIndexMapping(IsomorphismTester.IMapping indexMapping, IntGraph g1, IntGraph g2) {
+<span class="fc" id="L138">			this(indexMapping, g1.indexGraphVerticesMap(), g1.indexGraphEdgesMap(), g2.indexGraphVerticesMap(),</span>
+<span class="fc" id="L139">					g2.indexGraphEdgesMap());</span>
+<span class="fc" id="L140">		}</span>
+
+		private IntMappingFromIndexMapping(IsomorphismTester.IMapping indexMapping, IndexIntIdMap v1Map,
+<span class="fc" id="L143">				IndexIntIdMap e1Map, IndexIntIdMap v2Map, IndexIntIdMap e2Map) {</span>
+<span class="fc" id="L144">			this.indexMapping = indexMapping;</span>
+<span class="fc" id="L145">			this.v1Map = v1Map;</span>
+<span class="fc" id="L146">			this.e1Map = e1Map;</span>
+<span class="fc" id="L147">			this.v2Map = v2Map;</span>
+<span class="fc" id="L148">			this.e2Map = e2Map;</span>
+<span class="fc" id="L149">		}</span>
+
+		@Override
+		public int mapVertex(int vertex) {
+<span class="fc" id="L153">			int v1 = v1Map.idToIndex(vertex);</span>
+<span class="fc" id="L154">			int v2 = indexMapping.mapVertex(v1);</span>
+<span class="fc" id="L155">			return v2Map.indexToIdInt(v2);</span>
+
+		}
+
+		@Override
+		public int mapEdge(int edge) {
+<span class="fc" id="L161">			int e1 = e1Map.idToIndex(edge);</span>
+<span class="fc" id="L162">			int e2 = indexMapping.mapEdge(e1);</span>
+<span class="fc" id="L163">			return e2Map.indexToIdInt(e2);</span>
+		}
+
+		@Override
+		public IsomorphismTester.IMapping inverse() {
+<span class="fc bfc" id="L168" title="All 2 branches covered.">			if (inverse == null) {</span>
+<span class="fc" id="L169">				inverse = new IntMappingFromIndexMapping(indexMapping.inverse(), v2Map, e2Map, v1Map, e1Map);</span>
+<span class="fc" id="L170">				inverse.inverse = this;</span>
+			}
+<span class="fc" id="L172">			return inverse;</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

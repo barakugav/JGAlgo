@@ -56,7 +56,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 
 	@Override
 	public IntIntReferenceableHeap.Ref  findMin() {
-<span class="fc" id="L59">		Assertions.Heaps.notEmpty(this);</span>
+<span class="fc" id="L59">		Assertions.notEmpty(this);</span>
 <span class="fc" id="L60">		return minRoot;</span>
 	}
 
@@ -96,9 +96,9 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 
 	@Override
 	public void meld(IntIntReferenceableHeap  heap) {
-<span class="fc" id="L99">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
-<span class="fc" id="L100">		Assertions.Heaps.meldWithSameImpl(getClass(), heap);</span>
-<span class="fc" id="L101">		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());</span>
+<span class="fc" id="L99">		Assertions.heapNoMeldWithSelf(this, heap);</span>
+<span class="fc" id="L100">		Assertions.heapMeldWithSameImpl(getClass(), heap);</span>
+<span class="fc" id="L101">		Assertions.heapEqualComparatorBeforeMeld(comparator(), heap.comparator());</span>
 <span class="fc" id="L102">		IntIntPairingHeap  h = (IntIntPairingHeap ) heap;</span>
 
 <span class="fc bfc" id="L104" title="All 2 branches covered.">		if (minRoot == null) {</span>
@@ -253,7 +253,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 	@Override
 	public void decreaseKey(IntIntReferenceableHeap.Ref  ref, int newKey) {
 <span class="fc" id="L255">		Node  n = (Node ) ref;</span>
-<span class="fc" id="L256">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
+<span class="fc" id="L256">		Assertions.heapDecreaseKeyIsSmaller(n.key, newKey, c);</span>
 <span class="fc" id="L257">		n.key = newKey;</span>
 <span class="fc" id="L258">		afterKeyDecrease(n);</span>
 <span class="fc" id="L259">	}</span>
@@ -261,7 +261,7 @@ import it.unimi.dsi.fastutil.ints.IntComparator;
 	@Override
 	public void increaseKey(IntIntReferenceableHeap.Ref  ref, int newKey) {
 <span class="fc" id="L263">		Node  n = (Node ) ref;</span>
-<span class="fc" id="L264">		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);</span>
+<span class="fc" id="L264">		Assertions.heapIncreaseKeyIsGreater(n.key, newKey, c);</span>
 <span class="fc" id="L265">		remove(n);</span>
 <span class="fc" id="L266">		n.key = newKey;</span>
 <span class="fc" id="L267">		insertNode(n);</span>

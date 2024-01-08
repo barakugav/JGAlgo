@@ -51,16 +51,16 @@ import it.unimi.dsi.fastutil.objects.ObjectLists;
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Yen%27s_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-<span class="fc" id="L54">class KShortestPathsSTYen extends KShortestPathsSTs.AbstractImpl {</span>
+<span class="fc" id="L54">class KShortestPathsSTYen implements KShortestPathsSTBase {</span>
 
 	@Override
-	List&lt;IPath&gt; computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
+	public List&lt;IPath&gt; computeKShortestPaths(IndexGraph g, IWeightFunction w, int source, int target, int k) {
 <span class="fc bfc" id="L58" title="All 4 branches covered.">		if (!g.vertices().contains(source) || !g.vertices().contains(target))</span>
 <span class="fc" id="L59">			throw new IllegalArgumentException(&quot;source or target not in graph&quot;);</span>
 <span class="fc bfc" id="L60" title="All 2 branches covered.">		if (k &lt; 1)</span>
 <span class="fc" id="L61">			throw new IllegalArgumentException(&quot;k must be positive&quot;);</span>
 <span class="fc" id="L62">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
-<span class="fc" id="L63">		Assertions.Graphs.onlyPositiveEdgesWeights(g, w);</span>
+<span class="fc" id="L63">		Assertions.onlyPositiveEdgesWeights(g, w);</span>
 <span class="fc bfc" id="L64" title="All 2 branches covered.">		if (source == target)</span>
 <span class="fc" id="L65">			return ObjectList.of(new PathImpl(g, source, target, IntList.of()));</span>
 

@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  *
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.AbstractImpl {
+class ShortestPathSingleSourceDial implements ShortestPathSingleSourceBase {
 
 	/**
 	 * Construct a new SSSP algorithm.
@@ -60,7 +60,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 	 *                                      {@link IWeightFunctionInt}
 	 */
 	@Override
-	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+	public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 <span class="fc" id="L64">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
 <span class="pc bpc" id="L65" title="1 of 2 branches missed.">		if (!WeightFunction.isInteger(w))</span>
 <span class="nc" id="L66">			throw new IllegalArgumentException(&quot;only int weights are supported&quot;);</span>
@@ -96,7 +96,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 <span class="fc" id="L96">				int v = eit.targetInt();</span>
 
 <span class="fc" id="L98">				int ew = w.weightInt(e);</span>
-<span class="fc" id="L99">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L99">				Assertions.onlyPositiveWeight(ew);</span>
 <span class="fc" id="L100">				int distance = uDistance + ew;</span>
 
 <span class="fc bfc" id="L102" title="All 2 branches covered.">				if (!heap.containsVertex(v)) {</span>
@@ -114,7 +114,7 @@ class ShortestPathSingleSourceDial extends ShortestPathSingleSourceUtils.Abstrac
 <span class="fc bfc" id="L114" title="All 2 branches covered.">			if (u == -1)</span>
 <span class="fc" id="L115">				break;</span>
 <span class="fc" id="L116">		}</span>
-<span class="fc" id="L117">		return new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source, heap.distances, backtrack);</span>
+<span class="fc" id="L117">		return new ShortestPathSingleSourceUtils.IndexResult.Int(g, source, heap.distances, backtrack);</span>
 	}
 
 <span class="fc" id="L120">	private static class DialHeap {</span>

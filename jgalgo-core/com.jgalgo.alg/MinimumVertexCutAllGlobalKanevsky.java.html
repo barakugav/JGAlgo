@@ -47,8 +47,8 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 	@Override
 	Iterator&lt;IntSet&gt; minimumCutsIter(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L50">		Assertions.Graphs.onlyUndirected(g);</span>
-<span class="fc" id="L51">		Assertions.Graphs.onlyCardinality(w);</span>
+<span class="fc" id="L50">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L51">		Assertions.onlyCardinality(w);</span>
 
 		/* Find k, the (global) connectivity of the graph */
 <span class="fc" id="L54">		final int k = globalConnectivityAlgo.computeMinimumCut(g, null).size();</span>

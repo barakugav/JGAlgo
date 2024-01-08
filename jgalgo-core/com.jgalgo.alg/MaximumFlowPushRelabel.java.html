@@ -68,7 +68,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Push%E2%80%93relabel_maximum_flow_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
+class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 
 <span class="fc" id="L73">	private static enum ActiveOrderPolicy {</span>
 <span class="fc" id="L74">		FIFO, HighestFirst, LowestFirst, MoveToFront;</span>
@@ -117,7 +117,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
+	public IFlow computeMaximumFlow(IndexGraph g, IWeightFunction capacity, int source, int sink) {
 <span class="fc bfc" id="L121" title="All 2 branches covered.">		if (WeightFunction.isInteger(capacity)) {</span>
 <span class="fc" id="L122">			return new WorkerInt(g, (IWeightFunctionInt) capacity, source, sink, activeOrderPolicy, dischargePolicy)</span>
 <span class="fc" id="L123">					.computeMaxFlow();</span>
@@ -136,7 +136,7 @@ class MaximumFlowPushRelabel extends MaximumFlowAbstract.WithoutResidualGraph {
 		}
 	}
 
-	abstract static class Worker extends MaximumFlowAbstract.WithoutResidualGraph.Worker {
+	abstract static class Worker extends MaximumFlows.WithoutResidualGraph.Worker {
 
 		final int[] label;
 		final IEdgeIter[] outEdgeIters;

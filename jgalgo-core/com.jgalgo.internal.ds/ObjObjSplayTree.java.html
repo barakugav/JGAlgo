@@ -167,7 +167,7 @@ import com.jgalgo.internal.util.Assertions;
 	@Override
 	public void decreaseKey(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref, K newKey) {
 <span class="fc" id="L169">		SplayBSTNode &lt;K, V&gt; n = (SplayBSTNode &lt;K, V&gt;) ref;</span>
-<span class="fc" id="L170">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
+<span class="fc" id="L170">		Assertions.heapDecreaseKeyIsSmaller(n.key, newKey, c);</span>
 <span class="fc" id="L171">		remove(n);</span>
 <span class="fc" id="L172">		n.key = newKey;</span>
 <span class="fc" id="L173">		insertNode(n);</span>
@@ -176,7 +176,7 @@ import com.jgalgo.internal.util.Assertions;
 	@Override
 	public void increaseKey(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref, K newKey) {
 <span class="fc" id="L178">		SplayBSTNode &lt;K, V&gt; n = (SplayBSTNode &lt;K, V&gt;) ref;</span>
-<span class="fc" id="L179">		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);</span>
+<span class="fc" id="L179">		Assertions.heapIncreaseKeyIsGreater(n.key, newKey, c);</span>
 <span class="fc" id="L180">		remove(n);</span>
 <span class="fc" id="L181">		n.key = newKey;</span>
 <span class="fc" id="L182">		insertNode(n);</span>
@@ -238,9 +238,9 @@ import com.jgalgo.internal.util.Assertions;
 
 	@Override
 	public void meld(ObjObjReferenceableHeap &lt;K, V&gt; heap) {
-<span class="fc" id="L241">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
-<span class="fc" id="L242">		Assertions.Heaps.meldWithSameImpl(ObjObjSplayTree.class, heap);</span>
-<span class="fc" id="L243">		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());</span>
+<span class="fc" id="L241">		Assertions.heapNoMeldWithSelf(this, heap);</span>
+<span class="fc" id="L242">		Assertions.heapMeldWithSameImpl(ObjObjSplayTree.class, heap);</span>
+<span class="fc" id="L243">		Assertions.heapEqualComparatorBeforeMeld(comparator(), heap.comparator());</span>
 <span class="fc" id="L244">		ObjObjSplayTree &lt;K, V&gt; h = (ObjObjSplayTree &lt;K, V&gt;) heap;</span>
 <span class="fc bfc" id="L245" title="All 2 branches covered.">		if (h.isEmpty())</span>
 <span class="fc" id="L246">			return;</span>

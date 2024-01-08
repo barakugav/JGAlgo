@@ -100,7 +100,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L103">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L103">			Assertions.hasNext(this);</span>
 <span class="fc" id="L104">			long l = queue.dequeueLong();</span>
 <span class="fc" id="L105">			final int u = JGAlgoUtils.long2low(l);</span>
 <span class="fc" id="L106">			inEdge = JGAlgoUtils.long2high(l);</span>
@@ -136,7 +136,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L139">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L139">			Assertions.hasNext(this);</span>
 <span class="fc" id="L140">			long l = queue.dequeueLong();</span>
 <span class="fc" id="L141">			final int v = JGAlgoUtils.long2low(l);</span>
 <span class="fc" id="L142">			inEdge = JGAlgoUtils.long2high(l);</span>

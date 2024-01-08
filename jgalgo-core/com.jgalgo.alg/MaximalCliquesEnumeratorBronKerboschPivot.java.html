@@ -36,11 +36,11 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L39">class MaximalCliquesEnumeratorBronKerboschPivot extends MaximalCliquesEnumerators.AbstractImpl {</span>
+<span class="fc" id="L39">class MaximalCliquesEnumeratorBronKerboschPivot implements MaximalCliquesEnumeratorBase {</span>
 
 	@Override
-	Iterator&lt;IntSet&gt; maximalCliquesIter(IndexGraph g) {
-<span class="fc" id="L43">		Assertions.Graphs.onlyUndirected(g);</span>
+	public Iterator&lt;IntSet&gt; maximalCliquesIter(IndexGraph g) {
+<span class="fc" id="L43">		Assertions.onlyUndirected(g);</span>
 
 <span class="fc" id="L45">		return new Iterator&lt;&gt;() {</span>
 
@@ -85,7 +85,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 			@Override
 			public IntSet next() {
-<span class="fc" id="L88">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L88">				Assertions.hasNext(this);</span>
 <span class="fc" id="L89">				IntSet ret = ImmutableIntArraySet.withNaiveContains(currentClique.toIntArray());</span>
 <span class="fc" id="L90">				removeLastInsertedVertex(potentialStack.top(), potentialToIterStack.top(), excludedStack.top());</span>
 <span class="fc" id="L91">				findNextClique();</span>

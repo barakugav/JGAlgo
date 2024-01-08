@@ -29,7 +29,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 
 	@Override
 	TopologicalOrderAlgo.IResult computeTopologicalSorting(IndexGraph g) {
-<span class="fc" id="L32">		Assertions.Graphs.onlyDirected(g);</span>
+<span class="fc" id="L32">		Assertions.onlyDirected(g);</span>
 <span class="fc" id="L33">		int n = g.vertices().size();</span>
 <span class="fc" id="L34">		int[] inDegree = new int[n];</span>
 <span class="fc" id="L35">		IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>

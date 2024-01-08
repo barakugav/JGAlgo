@@ -224,7 +224,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L227">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L227">			Assertions.hasNext(this);</span>
 <span class="fc" id="L228">			int e = edge;</span>
 <span class="fc" id="L229">			edge = edgeNext[e];</span>
 <span class="fc" id="L230">			return e;</span>
@@ -232,7 +232,7 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L235">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L235">			Assertions.hasNext(this);</span>
 <span class="fc" id="L236">			return edge;</span>
 		}
 

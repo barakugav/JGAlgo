@@ -51,7 +51,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Prim%27s_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirected {
+class MinimumSpanningTreePrim implements MinimumSpanningTreeBase {
 
 <span class="fc" id="L56">	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();</span>
 
@@ -75,11 +75,11 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 	 * @throws IllegalArgumentException if the graph is not undirected
 	 */
 	@Override
-	MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L79">		Assertions.Graphs.onlyUndirected(g);</span>
+	public MinimumSpanningTree.IResult computeMinimumSpanningTree(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L79">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L80">		int n = g.vertices().size();</span>
 <span class="pc bpc" id="L81" title="1 of 2 branches missed.">		if (n == 0)</span>
-<span class="nc" id="L82">			return MinimumSpanningTreeUtils.ResultImpl.Empty;</span>
+<span class="nc" id="L82">			return MinimumSpanningTrees.IndexResult.Empty;</span>
 <span class="fc bfc" id="L83" title="All 2 branches covered.">		if (WeightFunction.isInteger(w)) {</span>
 <span class="fc" id="L84">			return computeMSTInt(g, (IWeightFunctionInt) w);</span>
 		} else {
@@ -140,7 +140,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 		// Help GC
 <span class="fc" id="L141">		Arrays.fill(verticesPtrs, 0, n, null);</span>
 <span class="fc" id="L142">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
-<span class="fc" id="L143">		return new MinimumSpanningTreeUtils.ResultImpl(mstSet);</span>
+<span class="fc" id="L143">		return new MinimumSpanningTrees.IndexResult(mstSet);</span>
 	}
 
 	private MinimumSpanningTree.IResult computeMSTInt(IndexGraph g, IWeightFunctionInt w) {
@@ -196,7 +196,7 @@ class MinimumSpanningTreePrim extends MinimumSpanningTreeUtils.AbstractUndirecte
 		// Help GC
 <span class="fc" id="L197">		Arrays.fill(verticesPtrs, 0, n, null);</span>
 <span class="fc" id="L198">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
-<span class="fc" id="L199">		return new MinimumSpanningTreeUtils.ResultImpl(mstSet);</span>
+<span class="fc" id="L199">		return new MinimumSpanningTrees.IndexResult(mstSet);</span>
 	}
 
 }

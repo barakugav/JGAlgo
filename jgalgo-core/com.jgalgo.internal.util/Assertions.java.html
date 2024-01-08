@@ -17,7 +17,6 @@ package com.jgalgo.internal.util;
 
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import com.jgalgo.alg.BipartiteGraphs;
@@ -42,421 +41,397 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 public class Assertions {
 	private Assertions() {}
 
-	public static class Graphs {
-		private Graphs() {}
+	public static void onlyDirected(Graph&lt;?, ?&gt; g) {
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		if (!g.isDirected())</span>
+<span class="fc" id="L46">			throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
+<span class="fc" id="L47">	}</span>
 
-		public static void onlyDirected(Graph&lt;?, ?&gt; g) {
-<span class="fc bfc" id="L49" title="All 2 branches covered.">			if (!g.isDirected())</span>
-<span class="fc" id="L50">				throw new IllegalArgumentException(&quot;only directed graphs are supported&quot;);</span>
-<span class="fc" id="L51">		}</span>
+	public static void onlyUndirected(Graph&lt;?, ?&gt; g) {
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		if (g.isDirected())</span>
+<span class="fc" id="L51">			throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
+<span class="fc" id="L52">	}</span>
 
-		public static void onlyUndirected(Graph&lt;?, ?&gt; g) {
-<span class="fc bfc" id="L54" title="All 2 branches covered.">			if (g.isDirected())</span>
-<span class="fc" id="L55">				throw new IllegalArgumentException(&quot;only undirected graphs are supported&quot;);</span>
-<span class="fc" id="L56">		}</span>
-
-		public static IWeightsBool onlyBipartite(IndexGraph g) {
-<span class="fc" id="L59">			IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">			if (partition == null)</span>
-<span class="fc" id="L61">				throw new IllegalArgumentException(</span>
-						&quot;Bipartiteness vertices weights is not found. See BipartiteGraphs.VertexBiPartitionWeightKey&quot;);
-<span class="pc bpc" id="L63" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsGraphsBipartitePartition) {</span>
-<span class="fc bfc" id="L64" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">					if (partition.get(g.edgeSource(e)) == partition.get(g.edgeTarget(e)))</span>
-<span class="fc" id="L66">						throw new IllegalArgumentException(&quot;the graph is not bipartite&quot;);</span>
-			}
-<span class="fc" id="L68">			return partition;</span>
+	public static IWeightsBool onlyBipartite(IndexGraph g) {
+<span class="fc" id="L55">		IWeightsBool partition = g.getVerticesWeights(BipartiteGraphs.VertexBiPartitionWeightKey);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		if (partition == null)</span>
+<span class="fc" id="L57">			throw new IllegalArgumentException(</span>
+					&quot;Bipartiteness vertices weights is not found. See BipartiteGraphs.VertexBiPartitionWeightKey&quot;);
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphsBipartitePartition) {</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">				if (partition.get(g.edgeSource(e)) == partition.get(g.edgeTarget(e)))</span>
+<span class="fc" id="L62">					throw new IllegalArgumentException(&quot;the graph is not bipartite&quot;);</span>
 		}
-
-		public static void onlyBipartite(IndexGraph g, IWeightsBool partition) {
-<span class="pc bpc" id="L72" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsGraphsBipartitePartition) {</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="pc bpc" id="L74" title="1 of 2 branches missed.">					if (partition.get(g.edgeSource(e)) == partition.get(g.edgeTarget(e)))</span>
-<span class="nc" id="L75">						throw new IllegalArgumentException(&quot;the graph is not bipartite&quot;);</span>
-			}
-<span class="fc" id="L77">		}</span>
-
-		public static void noSelfEdges(Graph&lt;?, ?&gt; g, String msg) {
-<span class="fc bfc" id="L80" title="All 2 branches covered.">			if (!com.jgalgo.graph.Graphs.selfEdges(g).isEmpty())</span>
-<span class="fc" id="L81">				throw new IllegalArgumentException(msg);</span>
-<span class="fc" id="L82">		}</span>
-
-		public static void noParallelEdges(Graph&lt;?, ?&gt; g, String msg) {
-<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (com.jgalgo.graph.Graphs.containsParallelEdges(g))</span>
-<span class="fc" id="L86">				throw new IllegalArgumentException(msg);</span>
-<span class="fc" id="L87">		}</span>
-
-		public static void onlyPositiveEdgesWeights(IndexGraph g, IWeightFunction w) {
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsGraphsPositiveWeights) {</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">				if (WeightFunction.isCardinality(w))</span>
-<span class="fc" id="L92">					return;</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">				if (WeightFunction.isInteger(w)) {</span>
-<span class="fc" id="L94">					IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L96">						onlyPositiveWeight(wInt.weightInt(e));</span>
-<span class="fc" id="L97">				} else {</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L99">						onlyPositiveWeight(w.weight(e));</span>
-				}
-			}
-<span class="fc" id="L102">		}</span>
-
-		public static void onlyPositiveWeight(double w) {
-<span class="pc bpc" id="L105" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsGraphsPositiveWeights) {</span>
-<span class="fc bfc" id="L106" title="All 2 branches covered.">				if (w &lt; 0)</span>
-<span class="fc" id="L107">					throw new IllegalArgumentException(&quot;only positive weights are supported: &quot; + w);</span>
-			}
-<span class="fc" id="L109">		}</span>
-
-		public static void onlyPositiveWeight(int w) {
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsGraphsPositiveWeights) {</span>
-<span class="pc bpc" id="L113" title="1 of 2 branches missed.">				if (w &lt; 0)</span>
-<span class="nc" id="L114">					throw new IllegalArgumentException(&quot;only positive weights are supported: &quot; + w);</span>
-			}
-<span class="fc" id="L116">		}</span>
-
-		public static void onlyCardinality(IWeightFunction w) {
-<span class="fc bfc" id="L119" title="All 2 branches covered.">			if (!WeightFunction.isCardinality(w))</span>
-<span class="fc" id="L120">				throw new IllegalArgumentException(&quot;only cardinality shortest path is supported by this algorithm&quot;);</span>
-<span class="fc" id="L121">		}</span>
-
-		public static void onlyTree(IndexGraph g) {
-<span class="pc bpc" id="L124" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsGraphsIsTree) {</span>
-<span class="fc bfc" id="L125" title="All 2 branches covered.">				if (!Trees.isTree(g))</span>
-<span class="fc" id="L126">					throw new IllegalArgumentException(&quot;only trees are supported&quot;);</span>
-			}
-<span class="fc" id="L128">		}</span>
-
-		public static void onlyTree(IndexGraph g, int root) {
-<span class="pc bpc" id="L131" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsGraphsIsTree) {</span>
-<span class="fc bfc" id="L132" title="All 2 branches covered.">				if (!Trees.isTree(g, Integer.valueOf(root)))</span>
-<span class="fc" id="L133">					throw new IllegalArgumentException(&quot;The given graph is not a tree rooted at the given root&quot;);</span>
-			}
-<span class="fc" id="L135">		}</span>
-
-		public static void checkId(int elementIdx, int length, boolean isEdge) {
-<span class="pc bpc" id="L138" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsGraphIdCheck) {</span>
-<span class="fc bfc" id="L139" title="All 4 branches covered.">				if (elementIdx &lt; 0 || elementIdx &gt;= length) {</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">					if (isEdge) {</span>
-<span class="fc" id="L141">						throw NoSuchEdgeException.ofIndex(elementIdx);</span>
-					} else {
-<span class="fc" id="L143">						throw NoSuchVertexException.ofIndex(elementIdx);</span>
-					}
-				}
-			}
-<span class="fc" id="L147">		}</span>
-
-		public static void checkVertex(int vertexIdx, int n) {
-<span class="pc bpc" id="L150" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsGraphIdCheck) {</span>
-<span class="fc bfc" id="L151" title="All 4 branches covered.">				if (vertexIdx &lt; 0 || vertexIdx &gt;= n)</span>
-<span class="fc" id="L152">					throw NoSuchVertexException.ofIndex(vertexIdx);</span>
-			}
-<span class="fc" id="L154">		}</span>
-
-		public static void checkEdge(int edgeIdx, int m) {
-<span class="pc bpc" id="L157" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsGraphIdCheck) {</span>
-<span class="pc bpc" id="L158" title="2 of 4 branches missed.">				if (edgeIdx &lt; 0 || edgeIdx &gt;= m)</span>
-<span class="nc" id="L159">					throw NoSuchEdgeException.ofIndex(edgeIdx);</span>
-			}
-<span class="fc" id="L161">		}</span>
-
+<span class="fc" id="L64">		return partition;</span>
 	}
 
-	public static class Flows {
-		private Flows() {}
+	public static void onlyBipartite(IndexGraph g, IWeightsBool partition) {
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphsBipartitePartition) {</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="pc bpc" id="L70" title="1 of 2 branches missed.">				if (partition.get(g.edgeSource(e)) == partition.get(g.edgeTarget(e)))</span>
+<span class="nc" id="L71">					throw new IllegalArgumentException(&quot;the graph is not bipartite&quot;);</span>
+		}
+<span class="fc" id="L73">	}</span>
 
-		public static void sourceSinkNotTheSame(int source, int sink) {
-<span class="fc bfc" id="L169" title="All 2 branches covered.">			if (source == sink)</span>
-<span class="fc" id="L170">				throw new IllegalArgumentException(&quot;Source and sink can't be the same vertex (idx=&quot; + source + &quot;)&quot;);</span>
-<span class="fc" id="L171">		}</span>
+	public static void noSelfEdges(Graph&lt;?, ?&gt; g, String msg) {
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		if (!com.jgalgo.graph.Graphs.selfEdges(g).isEmpty())</span>
+<span class="fc" id="L77">			throw new IllegalArgumentException(msg);</span>
+<span class="fc" id="L78">	}</span>
 
-		public static void sourcesSinksNotTheSame(IntCollection sources, IntCollection sinks) {
-<span class="fc bfc" id="L174" title="All 2 branches covered.">			if (sources.isEmpty())</span>
-<span class="fc" id="L175">				throw new IllegalArgumentException(&quot;no sources vertices provided&quot;);</span>
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">			if (sinks.isEmpty())</span>
-<span class="nc" id="L177">				throw new IllegalArgumentException(&quot;no sinks vertices provided&quot;);</span>
-			IntSet sourcesSet;
-<span class="fc bfc" id="L179" title="All 2 branches covered.">			if (sources instanceof IntSet) {</span>
-<span class="fc" id="L180">				sourcesSet = (IntSet) sources;</span>
-			} else {
-<span class="fc" id="L182">				sourcesSet = new IntOpenHashSet(sources.size());</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">				for (int v : sources) {</span>
-<span class="fc" id="L184">					boolean added = sourcesSet.add(v);</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">					if (!added)</span>
-<span class="fc" id="L186">						throw new IllegalArgumentException(&quot;Source vertex appear twice (idx=&quot; + v + &quot;)&quot;);</span>
-<span class="fc" id="L187">				}</span>
+	public static void noParallelEdges(Graph&lt;?, ?&gt; g, String msg) {
+<span class="fc bfc" id="L81" title="All 2 branches covered.">		if (com.jgalgo.graph.Graphs.containsParallelEdges(g))</span>
+<span class="fc" id="L82">			throw new IllegalArgumentException(msg);</span>
+<span class="fc" id="L83">	}</span>
+
+	public static void onlyPositiveEdgesWeights(IndexGraph g, IWeightFunction w) {
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphsPositiveWeights) {</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">			if (WeightFunction.isCardinality(w))</span>
+<span class="fc" id="L88">				return;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">			if (WeightFunction.isInteger(w)) {</span>
+<span class="fc" id="L90">				IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L92">					onlyPositiveWeight(wInt.weightInt(e));</span>
+<span class="fc" id="L93">			} else {</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L95">					onlyPositiveWeight(w.weight(e));</span>
 			}
-<span class="fc bfc" id="L189" title="All 2 branches covered.">			if (sinks instanceof IntSet) {</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">				for (int sink : sinks) {</span>
-<span class="pc bpc" id="L191" title="1 of 2 branches missed.">					if (sourcesSet.contains(sink))</span>
-<span class="nc" id="L192">						throw new IllegalArgumentException(</span>
-								&quot;A vertex can't be both a source and sink (idx=&quot; + sink + &quot;)&quot;);
-<span class="fc" id="L194">				}</span>
-			} else {
-<span class="fc" id="L196">				IntSet verticesSet = new IntOpenHashSet(sinks.size());</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">				for (int v : sinks) {</span>
-<span class="fc" id="L198">					boolean added = verticesSet.add(v);</span>
-<span class="fc bfc" id="L199" title="All 2 branches covered.">					if (!added)</span>
-<span class="fc" id="L200">						throw new IllegalArgumentException(&quot;Sink vertex appear twice (idx=&quot; + v + &quot;)&quot;);</span>
-<span class="fc bfc" id="L201" title="All 2 branches covered.">					if (sourcesSet.contains(v))</span>
-<span class="fc" id="L202">						throw new IllegalArgumentException(&quot;A vertex can't be both a source and sink (idx=&quot; + v + &quot;)&quot;);</span>
-<span class="fc" id="L203">				}</span>
-			}
-<span class="fc" id="L205">		}</span>
+		}
+<span class="fc" id="L98">	}</span>
 
-		public static void positiveCapacities(IndexGraph g, IWeightFunction capacity) {
-<span class="fc bfc" id="L208" title="All 2 branches covered.">			if (WeightFunction.isCardinality(capacity))</span>
-<span class="fc" id="L209">				return;</span>
-<span class="fc bfc" id="L210" title="All 2 branches covered.">			if (WeightFunction.isInteger(capacity)) {</span>
-<span class="fc" id="L211">				IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;</span>
-<span class="fc bfc" id="L212" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L213">					int cap = capacityInt.weightInt(e);</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">					if (cap &lt; 0)</span>
-<span class="fc" id="L215">						throw new IllegalArgumentException(&quot;negative capacity of edge (idx=&quot; + e + &quot;): &quot; + cap);</span>
-				}
-<span class="fc" id="L217">			} else {</span>
-<span class="fc bfc" id="L218" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L219">					double cap = capacity.weight(e);</span>
-<span class="fc bfc" id="L220" title="All 2 branches covered.">					if (cap &lt; 0)</span>
-<span class="fc" id="L221">						throw new IllegalArgumentException(&quot;negative capacity of edge (idx=&quot; + e + &quot;): &quot; + cap);</span>
-				}
-			}
-<span class="fc" id="L224">		}</span>
+	public static void onlyPositiveWeight(double w) {
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphsPositiveWeights) {</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">			if (w &lt; 0)</span>
+<span class="fc" id="L103">				throw new IllegalArgumentException(&quot;only positive weights are supported: &quot; + w);</span>
+		}
+<span class="fc" id="L105">	}</span>
 
-		public static void checkLowerBound(IndexGraph g, IWeightFunction capacity, IWeightFunction lowerBound) {
-<span class="pc bpc" id="L227" title="3 of 4 branches missed.">			if (WeightFunction.isCardinality(capacity) &amp;&amp; WeightFunction.isCardinality(lowerBound))</span>
-<span class="nc" id="L228">				return;</span>
-<span class="pc bpc" id="L229" title="1 of 2 branches missed.">			if (WeightFunction.isCardinality(capacity)) {</span>
-<span class="nc bnc" id="L230" title="All 2 branches missed.">				if (WeightFunction.isInteger(lowerBound)) {</span>
-<span class="nc" id="L231">					IWeightFunctionInt lowerBoundInt = (IWeightFunctionInt) lowerBound;</span>
-<span class="nc bnc" id="L232" title="All 2 branches missed.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L233">						int l = lowerBoundInt.weightInt(e);</span>
-<span class="nc bnc" id="L234" title="All 4 branches missed.">						if (!(0 &lt;= l &amp;&amp; l &lt;= 1))</span>
-<span class="nc" id="L235">							throw new IllegalArgumentException(</span>
-									&quot;Lower bound &quot; + l + &quot; of edge with index &quot; + e + &quot; must be in [0, &quot; + 1 + &quot;]&quot;);
-					}
-<span class="nc" id="L238">				} else {</span>
-<span class="nc bnc" id="L239" title="All 2 branches missed.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L240">						double l = lowerBound.weight(e);</span>
-<span class="nc bnc" id="L241" title="All 4 branches missed.">						if (!(0 &lt;= l &amp;&amp; l &lt;= 1))</span>
-<span class="nc" id="L242">							throw new IllegalArgumentException(</span>
-									&quot;Lower bound &quot; + l + &quot; of edge with index &quot; + e + &quot; must be in [0, &quot; + 1 + &quot;]&quot;);
-					}
-				}
+	public static void onlyPositiveWeight(int w) {
+<span class="pc bpc" id="L108" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphsPositiveWeights) {</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">			if (w &lt; 0)</span>
+<span class="nc" id="L110">				throw new IllegalArgumentException(&quot;only positive weights are supported: &quot; + w);</span>
+		}
+<span class="fc" id="L112">	}</span>
 
-<span class="pc bpc" id="L247" title="1 of 2 branches missed.">			} else if (WeightFunction.isCardinality(lowerBound)) {</span>
-<span class="nc bnc" id="L248" title="All 2 branches missed.">				if (WeightFunction.isInteger(capacity)) {</span>
-<span class="nc" id="L249">					IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;</span>
-<span class="nc bnc" id="L250" title="All 2 branches missed.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L251">						int cap = capacityInt.weightInt(e);</span>
-<span class="nc bnc" id="L252" title="All 2 branches missed.">						if (!(1 &lt;= cap))</span>
-<span class="nc" id="L253">							throw new IllegalArgumentException(</span>
-									&quot;Lower bound &quot; + 1 + &quot; of edge with index &quot; + e + &quot; must be in [0, &quot; + cap + &quot;]&quot;);
-					}
+	public static void onlyCardinality(IWeightFunction w) {
+<span class="fc bfc" id="L115" title="All 2 branches covered.">		if (!WeightFunction.isCardinality(w))</span>
+<span class="fc" id="L116">			throw new IllegalArgumentException(&quot;only cardinality shortest path is supported by this algorithm&quot;);</span>
+<span class="fc" id="L117">	}</span>
 
-<span class="nc" id="L257">				} else {</span>
-<span class="nc bnc" id="L258" title="All 2 branches missed.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L259">						double cap = capacity.weight(e);</span>
-<span class="nc bnc" id="L260" title="All 2 branches missed.">						if (!(1 &lt;= cap))</span>
-<span class="nc" id="L261">							throw new IllegalArgumentException(</span>
-									&quot;Lower bound &quot; + 1 + &quot; of edge with index &quot; + e + &quot; must be in [0, &quot; + cap + &quot;]&quot;);
-					}
+	public static void onlyTree(IndexGraph g) {
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphsIsTree) {</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">			if (!Trees.isTree(g))</span>
+<span class="fc" id="L122">				throw new IllegalArgumentException(&quot;only trees are supported&quot;);</span>
+		}
+<span class="fc" id="L124">	}</span>
 
-				}
+	public static void onlyTree(IndexGraph g, int root) {
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphsIsTree) {</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			if (!Trees.isTree(g, Integer.valueOf(root)))</span>
+<span class="fc" id="L129">				throw new IllegalArgumentException(&quot;The given graph is not a tree rooted at the given root&quot;);</span>
+		}
+<span class="fc" id="L131">	}</span>
 
-<span class="fc bfc" id="L267" title="All 4 branches covered.">			} else if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(lowerBound)) {</span>
-<span class="fc" id="L268">				IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;</span>
-<span class="fc" id="L269">				IWeightFunctionInt lowerBoundInt = (IWeightFunctionInt) lowerBound;</span>
-<span class="fc bfc" id="L270" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L271">					int l = lowerBoundInt.weightInt(e);</span>
-<span class="fc" id="L272">					int cap = capacityInt.weightInt(e);</span>
-<span class="pc bpc" id="L273" title="1 of 4 branches missed.">					if (!(0 &lt;= l &amp;&amp; l &lt;= cap))</span>
-<span class="fc" id="L274">						throw new IllegalArgumentException(</span>
-								&quot;Lower bound &quot; + l + &quot; of edge with index &quot; + e + &quot; must be in [0, &quot; + cap + &quot;]&quot;);
-				}
-<span class="fc" id="L277">			} else {</span>
-<span class="fc bfc" id="L278" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L279">					double l = lowerBound.weight(e);</span>
-<span class="fc" id="L280">					double cap = capacity.weight(e);</span>
-<span class="pc bpc" id="L281" title="1 of 4 branches missed.">					if (!(0 &lt;= l &amp;&amp; l &lt;= cap))</span>
-<span class="fc" id="L282">						throw new IllegalArgumentException(</span>
-								&quot;Lower bound &quot; + l + &quot; of edge with index &quot; + e + &quot; must be in [0, &quot; + cap + &quot;]&quot;);
+	public static void checkGraphId(int elementIdx, int length, boolean isEdge) {
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphIdCheck) {</span>
+<span class="fc bfc" id="L135" title="All 4 branches covered.">			if (elementIdx &lt; 0 || elementIdx &gt;= length) {</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">				if (isEdge) {</span>
+<span class="fc" id="L137">					throw NoSuchEdgeException.ofIndex(elementIdx);</span>
+				} else {
+<span class="fc" id="L139">					throw NoSuchVertexException.ofIndex(elementIdx);</span>
 				}
 			}
-<span class="fc" id="L286">		}</span>
+		}
+<span class="fc" id="L143">	}</span>
 
-		public static void checkSupply(IndexGraph g, IWeightFunction supply) {
-<span class="fc bfc" id="L289" title="All 2 branches covered.">			if (supply instanceof IWeightFunctionInt) {</span>
-<span class="fc" id="L290">				IWeightFunctionInt supplyInt = (IWeightFunctionInt) supply;</span>
-<span class="fc" id="L291">				long sum = 0;</span>
-<span class="fc bfc" id="L292" title="All 2 branches covered.">				for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L293">					sum += supplyInt.weightInt(v);</span>
-<span class="pc bpc" id="L294" title="1 of 2 branches missed.">				if (sum != 0)</span>
-<span class="nc" id="L295">					throw new IllegalArgumentException(&quot;Sum of supply must be zero&quot;);</span>
-<span class="fc" id="L296">			} else {</span>
-<span class="fc" id="L297">				double sum = 0;</span>
-<span class="fc" id="L298">				double minSupply = Double.POSITIVE_INFINITY;</span>
-<span class="fc bfc" id="L299" title="All 2 branches covered.">				for (int n = g.vertices().size(), v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L300">					double d = supply.weight(v);</span>
-<span class="fc bfc" id="L301" title="All 2 branches covered.">					if (!Double.isFinite(d))</span>
-<span class="fc" id="L302">						throw new IllegalArgumentException(&quot;Supply must be finite for vertex with index &quot; + v);</span>
-<span class="fc" id="L303">					sum += d;</span>
-<span class="fc bfc" id="L304" title="All 2 branches covered.">					if (d != 0)</span>
-<span class="fc" id="L305">						minSupply = Math.min(minSupply, Math.abs(d));</span>
+	public static void checkVertex(int vertexIdx, int n) {
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphIdCheck) {</span>
+<span class="fc bfc" id="L147" title="All 4 branches covered.">			if (vertexIdx &lt; 0 || vertexIdx &gt;= n)</span>
+<span class="fc" id="L148">				throw NoSuchVertexException.ofIndex(vertexIdx);</span>
+		}
+<span class="fc" id="L150">	}</span>
+
+	public static void checkEdge(int edgeIdx, int m) {
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsGraphIdCheck) {</span>
+<span class="pc bpc" id="L154" title="2 of 4 branches missed.">			if (edgeIdx &lt; 0 || edgeIdx &gt;= m)</span>
+<span class="nc" id="L155">				throw NoSuchEdgeException.ofIndex(edgeIdx);</span>
+		}
+<span class="fc" id="L157">	}</span>
+
+	public static void flowSourceSinkNotTheSame(int source, int sink) {
+<span class="fc bfc" id="L160" title="All 2 branches covered.">		if (source == sink)</span>
+<span class="fc" id="L161">			throw new IllegalArgumentException(&quot;Source and sink can't be the same vertex (idx=&quot; + source + &quot;)&quot;);</span>
+<span class="fc" id="L162">	}</span>
+
+	public static void flowSourcesSinksNotTheSame(IntCollection sources, IntCollection sinks) {
+<span class="fc bfc" id="L165" title="All 2 branches covered.">		if (sources.isEmpty())</span>
+<span class="fc" id="L166">			throw new IllegalArgumentException(&quot;no sources vertices provided&quot;);</span>
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">		if (sinks.isEmpty())</span>
+<span class="nc" id="L168">			throw new IllegalArgumentException(&quot;no sinks vertices provided&quot;);</span>
+		IntSet sourcesSet;
+<span class="fc bfc" id="L170" title="All 2 branches covered.">		if (sources instanceof IntSet) {</span>
+<span class="fc" id="L171">			sourcesSet = (IntSet) sources;</span>
+		} else {
+<span class="fc" id="L173">			sourcesSet = new IntOpenHashSet(sources.size());</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			for (int v : sources) {</span>
+<span class="fc" id="L175">				boolean added = sourcesSet.add(v);</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">				if (!added)</span>
+<span class="fc" id="L177">					throw new IllegalArgumentException(&quot;Source vertex appear twice (idx=&quot; + v + &quot;)&quot;);</span>
+<span class="fc" id="L178">			}</span>
+		}
+<span class="fc bfc" id="L180" title="All 2 branches covered.">		if (sinks instanceof IntSet) {</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">			for (int sink : sinks) {</span>
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">				if (sourcesSet.contains(sink))</span>
+<span class="nc" id="L183">					throw new IllegalArgumentException(&quot;A vertex can't be both a source and sink (idx=&quot; + sink + &quot;)&quot;);</span>
+<span class="fc" id="L184">			}</span>
+		} else {
+<span class="fc" id="L186">			IntSet verticesSet = new IntOpenHashSet(sinks.size());</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">			for (int v : sinks) {</span>
+<span class="fc" id="L188">				boolean added = verticesSet.add(v);</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">				if (!added)</span>
+<span class="fc" id="L190">					throw new IllegalArgumentException(&quot;Sink vertex appear twice (idx=&quot; + v + &quot;)&quot;);</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">				if (sourcesSet.contains(v))</span>
+<span class="fc" id="L192">					throw new IllegalArgumentException(&quot;A vertex can't be both a source and sink (idx=&quot; + v + &quot;)&quot;);</span>
+<span class="fc" id="L193">			}</span>
+		}
+<span class="fc" id="L195">	}</span>
+
+	public static void flowPositiveCapacities(IndexGraph g, IWeightFunction capacity) {
+<span class="fc bfc" id="L198" title="All 2 branches covered.">		if (WeightFunction.isCardinality(capacity))</span>
+<span class="fc" id="L199">			return;</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">		if (WeightFunction.isInteger(capacity)) {</span>
+<span class="fc" id="L201">			IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L203">				int cap = capacityInt.weightInt(e);</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">				if (cap &lt; 0)</span>
+<span class="fc" id="L205">					throw new IllegalArgumentException(&quot;negative capacity of edge (idx=&quot; + e + &quot;): &quot; + cap);</span>
+			}
+<span class="fc" id="L207">		} else {</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L209">				double cap = capacity.weight(e);</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">				if (cap &lt; 0)</span>
+<span class="fc" id="L211">					throw new IllegalArgumentException(&quot;negative capacity of edge (idx=&quot; + e + &quot;): &quot; + cap);</span>
+			}
+		}
+<span class="fc" id="L214">	}</span>
+
+	public static void flowCheckLowerBound(IndexGraph g, IWeightFunction capacity, IWeightFunction lowerBound) {
+<span class="pc bpc" id="L217" title="3 of 4 branches missed.">		if (WeightFunction.isCardinality(capacity) &amp;&amp; WeightFunction.isCardinality(lowerBound))</span>
+<span class="nc" id="L218">			return;</span>
+<span class="pc bpc" id="L219" title="1 of 2 branches missed.">		if (WeightFunction.isCardinality(capacity)) {</span>
+<span class="nc bnc" id="L220" title="All 2 branches missed.">			if (WeightFunction.isInteger(lowerBound)) {</span>
+<span class="nc" id="L221">				IWeightFunctionInt lowerBoundInt = (IWeightFunctionInt) lowerBound;</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="nc" id="L223">					int l = lowerBoundInt.weightInt(e);</span>
+<span class="nc bnc" id="L224" title="All 4 branches missed.">					if (!(0 &lt;= l &amp;&amp; l &lt;= 1))</span>
+<span class="nc" id="L225">						throw new IllegalArgumentException(</span>
+								&quot;Lower bound &quot; + l + &quot; of edge with index &quot; + e + &quot; must be in [0, &quot; + 1 + &quot;]&quot;);
 				}
-<span class="fc" id="L307">				final double eps = minSupply * 1e-8;</span>
-<span class="fc bfc" id="L308" title="All 2 branches covered.">				if (Math.abs(sum) &gt; eps)</span>
-<span class="fc" id="L309">					throw new IllegalArgumentException(&quot;Sum of supply must be zero&quot;);</span>
+<span class="nc" id="L228">			} else {</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="nc" id="L230">					double l = lowerBound.weight(e);</span>
+<span class="nc bnc" id="L231" title="All 4 branches missed.">					if (!(0 &lt;= l &amp;&amp; l &lt;= 1))</span>
+<span class="nc" id="L232">						throw new IllegalArgumentException(</span>
+								&quot;Lower bound &quot; + l + &quot; of edge with index &quot; + e + &quot; must be in [0, &quot; + 1 + &quot;]&quot;);
+				}
 			}
-<span class="fc" id="L311">		}</span>
-	}
 
-	public static class Arrays {
-		private Arrays() {}
+<span class="pc bpc" id="L237" title="1 of 2 branches missed.">		} else if (WeightFunction.isCardinality(lowerBound)) {</span>
+<span class="nc bnc" id="L238" title="All 2 branches missed.">			if (WeightFunction.isInteger(capacity)) {</span>
+<span class="nc" id="L239">				IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="nc" id="L241">					int cap = capacityInt.weightInt(e);</span>
+<span class="nc bnc" id="L242" title="All 2 branches missed.">					if (!(1 &lt;= cap))</span>
+<span class="nc" id="L243">						throw new IllegalArgumentException(</span>
+								&quot;Lower bound &quot; + 1 + &quot; of edge with index &quot; + e + &quot; must be in [0, &quot; + cap + &quot;]&quot;);
+				}
 
-		public static void checkFromTo(int from, int to) {
-<span class="fc bfc" id="L318" title="All 2 branches covered.">			if (from &gt; to)</span>
-<span class="fc" id="L319">				throw new IndexOutOfBoundsException(&quot;from &gt; to: &quot; + from + &quot; &gt; &quot; + to);</span>
-<span class="fc" id="L320">		}</span>
+<span class="nc" id="L247">			} else {</span>
+<span class="nc bnc" id="L248" title="All 2 branches missed.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="nc" id="L249">					double cap = capacity.weight(e);</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">					if (!(1 &lt;= cap))</span>
+<span class="nc" id="L251">						throw new IllegalArgumentException(</span>
+								&quot;Lower bound &quot; + 1 + &quot; of edge with index &quot; + e + &quot; must be in [0, &quot; + cap + &quot;]&quot;);
+				}
 
-		public static void checkFromTo(int from, int to, int length) {
-<span class="fc" id="L323">			checkFromTo(from, to);</span>
-<span class="fc bfc" id="L324" title="All 2 branches covered.">			if (from &lt; 0)</span>
-<span class="fc" id="L325">				throw new IndexOutOfBoundsException(&quot;from &lt; 0: &quot; + from);</span>
-<span class="fc bfc" id="L326" title="All 2 branches covered.">			if (to &gt; length)</span>
-<span class="fc" id="L327">				throw new IndexOutOfBoundsException(&quot;to &gt; length: &quot; + to + &quot; &gt; &quot; + length);</span>
-<span class="fc" id="L328">		}</span>
-
-		public static void checkIndex(int index, int from, int to) {
-<span class="pc bpc" id="L331" title="1 of 4 branches missed.">			if (!(from &lt;= index &amp;&amp; index &lt; to))</span>
-<span class="fc" id="L332">				throw new IndexOutOfBoundsException(</span>
-						&quot;Index &quot; + index + &quot; out of bounds for range Range [&quot; + from + &quot;, &quot; + to + &quot;)&quot;);
-<span class="fc" id="L334">		}</span>
-	}
-
-	public static class Iters {
-		private Iters() {}
-
-		public static final String ERR_NO_NEXT = &quot;Iterator has no next element&quot;;
-		public static final String ERR_NO_PREVIOUS = &quot;Iterator has no previous element&quot;;
-
-		public static void hasNext(Iterator&lt;?&gt; it) {
-<span class="pc bpc" id="L344" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsIterNotEmpty) {</span>
-<span class="fc bfc" id="L345" title="All 2 branches covered.">				if (!it.hasNext())</span>
-<span class="fc" id="L346">					throw new NoSuchElementException(ERR_NO_NEXT);</span>
 			}
-<span class="fc" id="L348">		}</span>
 
-		public static void hasPrevious(ListIterator&lt;?&gt; it) {
-<span class="nc bnc" id="L351" title="All 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsIterNotEmpty) {</span>
-<span class="nc bnc" id="L352" title="All 2 branches missed.">				if (!it.hasPrevious())</span>
-<span class="nc" id="L353">					throw new NoSuchElementException(ERR_NO_PREVIOUS);</span>
+<span class="fc bfc" id="L257" title="All 4 branches covered.">		} else if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(lowerBound)) {</span>
+<span class="fc" id="L258">			IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;</span>
+<span class="fc" id="L259">			IWeightFunctionInt lowerBoundInt = (IWeightFunctionInt) lowerBound;</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L261">				int l = lowerBoundInt.weightInt(e);</span>
+<span class="fc" id="L262">				int cap = capacityInt.weightInt(e);</span>
+<span class="pc bpc" id="L263" title="1 of 4 branches missed.">				if (!(0 &lt;= l &amp;&amp; l &lt;= cap))</span>
+<span class="fc" id="L264">					throw new IllegalArgumentException(</span>
+							&quot;Lower bound &quot; + l + &quot; of edge with index &quot; + e + &quot; must be in [0, &quot; + cap + &quot;]&quot;);
 			}
-<span class="nc" id="L355">		}</span>
-
-	}
-
-	public static class Heaps {
-		private Heaps() {}
-
-		public static &lt;E&gt; void decreaseKeyIsSmaller(E oldKey, E newKey, Comparator&lt;? super E&gt; cmp) {
-<span class="pc bpc" id="L363" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
-<span class="fc bfc" id="L364" title="All 2 branches covered.">				int c = cmp == null ? JGAlgoUtils.cmpDefault(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
-<span class="pc bpc" id="L365" title="1 of 2 branches missed.">				if (c &lt; 0)</span>
-<span class="nc" id="L366">					throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
+<span class="fc" id="L267">		} else {</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc" id="L269">				double l = lowerBound.weight(e);</span>
+<span class="fc" id="L270">				double cap = capacity.weight(e);</span>
+<span class="pc bpc" id="L271" title="1 of 4 branches missed.">				if (!(0 &lt;= l &amp;&amp; l &lt;= cap))</span>
+<span class="fc" id="L272">					throw new IllegalArgumentException(</span>
+							&quot;Lower bound &quot; + l + &quot; of edge with index &quot; + e + &quot; must be in [0, &quot; + cap + &quot;]&quot;);
 			}
-<span class="fc" id="L368">		}</span>
+		}
+<span class="fc" id="L276">	}</span>
 
-		public static void decreaseKeyIsSmaller(int oldKey, int newKey, IntComparator cmp) {
-<span class="pc bpc" id="L371" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
-<span class="fc bfc" id="L372" title="All 2 branches covered.">				int c = cmp == null ? Integer.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
-<span class="pc bpc" id="L373" title="1 of 2 branches missed.">				if (c &lt; 0)</span>
-<span class="nc" id="L374">					throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
+	public static void flowCheckSupply(IndexGraph g, IWeightFunction supply) {
+<span class="fc bfc" id="L279" title="All 2 branches covered.">		if (supply instanceof IWeightFunctionInt) {</span>
+<span class="fc" id="L280">			IWeightFunctionInt supplyInt = (IWeightFunctionInt) supply;</span>
+<span class="fc" id="L281">			long sum = 0;</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">			for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L283">				sum += supplyInt.weightInt(v);</span>
+<span class="pc bpc" id="L284" title="1 of 2 branches missed.">			if (sum != 0)</span>
+<span class="nc" id="L285">				throw new IllegalArgumentException(&quot;Sum of supply must be zero&quot;);</span>
+<span class="fc" id="L286">		} else {</span>
+<span class="fc" id="L287">			double sum = 0;</span>
+<span class="fc" id="L288">			double minSupply = Double.POSITIVE_INFINITY;</span>
+<span class="fc bfc" id="L289" title="All 2 branches covered.">			for (int n = g.vertices().size(), v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L290">				double d = supply.weight(v);</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">				if (!Double.isFinite(d))</span>
+<span class="fc" id="L292">					throw new IllegalArgumentException(&quot;Supply must be finite for vertex with index &quot; + v);</span>
+<span class="fc" id="L293">				sum += d;</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">				if (d != 0)</span>
+<span class="fc" id="L295">					minSupply = Math.min(minSupply, Math.abs(d));</span>
 			}
-<span class="fc" id="L376">		}</span>
+<span class="fc" id="L297">			final double eps = minSupply * 1e-8;</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">			if (Math.abs(sum) &gt; eps)</span>
+<span class="fc" id="L299">				throw new IllegalArgumentException(&quot;Sum of supply must be zero&quot;);</span>
+		}
+<span class="fc" id="L301">	}</span>
 
-		public static void decreaseKeyIsSmaller(double oldKey, double newKey, DoubleComparator cmp) {
-<span class="pc bpc" id="L379" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
-<span class="fc bfc" id="L380" title="All 2 branches covered.">				int c = cmp == null ? Double.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
-<span class="pc bpc" id="L381" title="1 of 2 branches missed.">				if (c &lt; 0)</span>
-<span class="nc" id="L382">					throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
-			}
-<span class="fc" id="L384">		}</span>
+	public static void checkArrayFromTo(int from, int to) {
+<span class="fc bfc" id="L304" title="All 2 branches covered.">		if (from &gt; to)</span>
+<span class="fc" id="L305">			throw new IndexOutOfBoundsException(&quot;from &gt; to: &quot; + from + &quot; &gt; &quot; + to);</span>
+<span class="fc" id="L306">	}</span>
 
-		public static &lt;E&gt; void increaseKeyIsGreater(E oldKey, E newKey, Comparator&lt;? super E&gt; cmp) {
-<span class="pc bpc" id="L387" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
-<span class="fc bfc" id="L388" title="All 2 branches covered.">				int c = cmp == null ? JGAlgoUtils.cmpDefault(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
-<span class="pc bpc" id="L389" title="1 of 2 branches missed.">				if (c &gt; 0)</span>
-<span class="nc" id="L390">					throw new IllegalArgumentException(&quot;New key is smaller than existing one&quot;);</span>
-			}
-<span class="fc" id="L392">		}</span>
+	public static void checkArrayFromTo(int from, int to, int length) {
+<span class="fc" id="L309">		checkArrayFromTo(from, to);</span>
+<span class="fc bfc" id="L310" title="All 2 branches covered.">		if (from &lt; 0)</span>
+<span class="fc" id="L311">			throw new IndexOutOfBoundsException(&quot;from &lt; 0: &quot; + from);</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">		if (to &gt; length)</span>
+<span class="fc" id="L313">			throw new IndexOutOfBoundsException(&quot;to &gt; length: &quot; + to + &quot; &gt; &quot; + length);</span>
+<span class="fc" id="L314">	}</span>
 
-		public static void increaseKeyIsGreater(int oldKey, int newKey, IntComparator cmp) {
-<span class="pc bpc" id="L395" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
-<span class="fc bfc" id="L396" title="All 2 branches covered.">				int c = cmp == null ? Integer.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
-<span class="pc bpc" id="L397" title="1 of 2 branches missed.">				if (c &gt; 0)</span>
-<span class="nc" id="L398">					throw new IllegalArgumentException(&quot;New key is smaller than existing one&quot;);</span>
-			}
-<span class="fc" id="L400">		}</span>
+	public static void checkArrayIndex(int index, int from, int to) {
+<span class="pc bpc" id="L317" title="1 of 4 branches missed.">		if (!(from &lt;= index &amp;&amp; index &lt; to))</span>
+<span class="fc" id="L318">			throw new IndexOutOfBoundsException(</span>
+					&quot;Index &quot; + index + &quot; out of bounds for range Range [&quot; + from + &quot;, &quot; + to + &quot;)&quot;);
+<span class="fc" id="L320">	}</span>
 
-		public static void increaseKeyIsGreater(double oldKey, double newKey, DoubleComparator cmp) {
-<span class="pc bpc" id="L403" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
-<span class="fc bfc" id="L404" title="All 2 branches covered.">				int c = cmp == null ? Double.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
-<span class="pc bpc" id="L405" title="1 of 2 branches missed.">				if (c &gt; 0)</span>
-<span class="nc" id="L406">					throw new IllegalArgumentException(&quot;New key is smaller than existing one&quot;);</span>
-			}
-<span class="fc" id="L408">		}</span>
+	public static final String ERR_NO_NEXT = &quot;Iterator has no next element&quot;;
+	public static final String ERR_NO_PREVIOUS = &quot;Iterator has no previous element&quot;;
 
-		public static &lt;E&gt; void noMeldWithSelf(Heap&lt;E&gt; heap, Heap&lt;? extends E&gt; other) {
-<span class="pc bpc" id="L411" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
-<span class="pc bpc" id="L412" title="1 of 2 branches missed.">				if (heap == other)</span>
-<span class="nc" id="L413">					throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
-			}
-<span class="fc" id="L415">		}</span>
+	public static void hasNext(Iterator&lt;?&gt; it) {
+<span class="pc bpc" id="L326" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsIterNotEmpty) {</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">			if (!it.hasNext())</span>
+<span class="fc" id="L328">				throw new NoSuchElementException(ERR_NO_NEXT);</span>
+		}
+<span class="fc" id="L330">	}</span>
 
-		public static void noMeldWithSelf(ReferenceableHeap heap, ReferenceableHeap other) {
-<span class="pc bpc" id="L418" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
-<span class="fc bfc" id="L419" title="All 2 branches covered.">				if (heap == other)</span>
-<span class="fc" id="L420">					throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
-			}
-<span class="fc" id="L422">		}</span>
+	// public static void hasPrevious(ListIterator&lt;?&gt; it) {
+	// if (JGAlgoConfigImpl.AssertionsIterNotEmpty) {
+	// if (!it.hasPrevious())
+	// throw new NoSuchElementException(ERR_NO_PREVIOUS);
+	// }
+	// }
 
-		public static void meldWithSameImpl(Class&lt;? extends ReferenceableHeap&gt; impl, ReferenceableHeap other) {
-<span class="pc bpc" id="L425" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
-<span class="fc bfc" id="L426" title="All 2 branches covered.">				if (!impl.isAssignableFrom(other.getClass()))</span>
-<span class="fc" id="L427">					throw new IllegalArgumentException(&quot;Can't meld heaps with different implementations&quot;);</span>
-			}
-<span class="fc" id="L429">		}</span>
+	public static &lt;E&gt; void heapDecreaseKeyIsSmaller(E oldKey, E newKey, Comparator&lt;? super E&gt; cmp) {
+<span class="pc bpc" id="L340" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
+<span class="fc bfc" id="L341" title="All 2 branches covered.">			int c = cmp == null ? JGAlgoUtils.cmpDefault(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L342" title="1 of 2 branches missed.">			if (c &lt; 0)</span>
+<span class="nc" id="L343">				throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
+		}
+<span class="fc" id="L345">	}</span>
 
-		public static &lt;E&gt; void equalComparatorBeforeMeld(Heap&lt;E&gt; heap, Heap&lt;? extends E&gt; other) {
-<span class="pc bpc" id="L432" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
-<span class="pc bpc" id="L433" title="1 of 2 branches missed.">				if (!Objects.equals(heap.comparator(), other.comparator()))</span>
-<span class="nc" id="L434">					throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
-			}
-<span class="fc" id="L436">		}</span>
+	public static void heapDecreaseKeyIsSmaller(int oldKey, int newKey, IntComparator cmp) {
+<span class="pc bpc" id="L348" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
+<span class="fc bfc" id="L349" title="All 2 branches covered.">			int c = cmp == null ? Integer.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L350" title="1 of 2 branches missed.">			if (c &lt; 0)</span>
+<span class="nc" id="L351">				throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
+		}
+<span class="fc" id="L353">	}</span>
 
-		public static void equalComparatorBeforeMeld(Comparator&lt;?&gt; c1, Comparator&lt;?&gt; c2) {
-<span class="pc bpc" id="L439" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
-<span class="fc bfc" id="L440" title="All 2 branches covered.">				if (!Objects.equals(c1, c2))</span>
-<span class="fc" id="L441">					throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
-			}
-<span class="fc" id="L443">		}</span>
+	public static void heapDecreaseKeyIsSmaller(double oldKey, double newKey, DoubleComparator cmp) {
+<span class="pc bpc" id="L356" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
+<span class="fc bfc" id="L357" title="All 2 branches covered.">			int c = cmp == null ? Double.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L358" title="1 of 2 branches missed.">			if (c &lt; 0)</span>
+<span class="nc" id="L359">				throw new IllegalArgumentException(&quot;New key is greater than existing one&quot;);</span>
+		}
+<span class="fc" id="L361">	}</span>
 
-		public static void notEmpty(Heap&lt;?&gt; heap) {
-<span class="pc bpc" id="L446" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsNotEmpty) {</span>
-<span class="fc bfc" id="L447" title="All 2 branches covered.">				if (heap.isEmpty())</span>
-<span class="fc" id="L448">					throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
-			}
-<span class="fc" id="L450">		}</span>
+	public static &lt;E&gt; void heapIncreaseKeyIsGreater(E oldKey, E newKey, Comparator&lt;? super E&gt; cmp) {
+<span class="pc bpc" id="L364" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">			int c = cmp == null ? JGAlgoUtils.cmpDefault(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L366" title="1 of 2 branches missed.">			if (c &gt; 0)</span>
+<span class="nc" id="L367">				throw new IllegalArgumentException(&quot;New key is smaller than existing one&quot;);</span>
+		}
+<span class="fc" id="L369">	}</span>
 
-		public static void notEmpty(ReferenceableHeap heap) {
-<span class="pc bpc" id="L453" title="1 of 2 branches missed.">			if (JGAlgoConfigImpl.AssertionsHeapsNotEmpty) {</span>
-<span class="fc bfc" id="L454" title="All 2 branches covered.">				if (heap.isEmpty())</span>
-<span class="fc" id="L455">					throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
-			}
-<span class="fc" id="L457">		}</span>
+	public static void heapIncreaseKeyIsGreater(int oldKey, int newKey, IntComparator cmp) {
+<span class="pc bpc" id="L372" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
+<span class="fc bfc" id="L373" title="All 2 branches covered.">			int c = cmp == null ? Integer.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L374" title="1 of 2 branches missed.">			if (c &gt; 0)</span>
+<span class="nc" id="L375">				throw new IllegalArgumentException(&quot;New key is smaller than existing one&quot;);</span>
+		}
+<span class="fc" id="L377">	}</span>
 
-	}
+	public static void heapIncreaseKeyIsGreater(double oldKey, double newKey, DoubleComparator cmp) {
+<span class="pc bpc" id="L380" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">			int c = cmp == null ? Double.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);</span>
+<span class="pc bpc" id="L382" title="1 of 2 branches missed.">			if (c &gt; 0)</span>
+<span class="nc" id="L383">				throw new IllegalArgumentException(&quot;New key is smaller than existing one&quot;);</span>
+		}
+<span class="fc" id="L385">	}</span>
+
+	public static &lt;E&gt; void heapNoMeldWithSelf(Heap&lt;E&gt; heap, Heap&lt;? extends E&gt; other) {
+<span class="pc bpc" id="L388" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
+<span class="pc bpc" id="L389" title="1 of 2 branches missed.">			if (heap == other)</span>
+<span class="nc" id="L390">				throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
+		}
+<span class="fc" id="L392">	}</span>
+
+	public static void heapNoMeldWithSelf(ReferenceableHeap heap, ReferenceableHeap other) {
+<span class="pc bpc" id="L395" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
+<span class="fc bfc" id="L396" title="All 2 branches covered.">			if (heap == other)</span>
+<span class="fc" id="L397">				throw new IllegalArgumentException(&quot;A heap can't meld with itself&quot;);</span>
+		}
+<span class="fc" id="L399">	}</span>
+
+	public static void heapMeldWithSameImpl(Class&lt;? extends ReferenceableHeap&gt; impl, ReferenceableHeap other) {
+<span class="pc bpc" id="L402" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
+<span class="fc bfc" id="L403" title="All 2 branches covered.">			if (!impl.isAssignableFrom(other.getClass()))</span>
+<span class="fc" id="L404">				throw new IllegalArgumentException(&quot;Can't meld heaps with different implementations&quot;);</span>
+		}
+<span class="fc" id="L406">	}</span>
+
+	public static &lt;E&gt; void heapEqualComparatorBeforeMeld(Heap&lt;E&gt; heap, Heap&lt;? extends E&gt; other) {
+<span class="pc bpc" id="L409" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
+<span class="pc bpc" id="L410" title="1 of 2 branches missed.">			if (!Objects.equals(heap.comparator(), other.comparator()))</span>
+<span class="nc" id="L411">				throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
+		}
+<span class="fc" id="L413">	}</span>
+
+	public static void heapEqualComparatorBeforeMeld(Comparator&lt;?&gt; c1, Comparator&lt;?&gt; c2) {
+<span class="pc bpc" id="L416" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsHeapsMeldLegal) {</span>
+<span class="fc bfc" id="L417" title="All 2 branches covered.">			if (!Objects.equals(c1, c2))</span>
+<span class="fc" id="L418">				throw new IllegalArgumentException(&quot;Can't meld, heaps have different comparators&quot;);</span>
+		}
+<span class="fc" id="L420">	}</span>
+
+	public static void notEmpty(Heap&lt;?&gt; heap) {
+<span class="pc bpc" id="L423" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsHeapsNotEmpty) {</span>
+<span class="fc bfc" id="L424" title="All 2 branches covered.">			if (heap.isEmpty())</span>
+<span class="fc" id="L425">				throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
+		}
+<span class="fc" id="L427">	}</span>
+
+	public static void notEmpty(ReferenceableHeap heap) {
+<span class="pc bpc" id="L430" title="1 of 2 branches missed.">		if (JGAlgoConfigImpl.AssertionsHeapsNotEmpty) {</span>
+<span class="fc bfc" id="L431" title="All 2 branches covered.">			if (heap.isEmpty())</span>
+<span class="fc" id="L432">				throw new IllegalStateException(&quot;Heap is empty&quot;);</span>
+		}
+<span class="fc" id="L434">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

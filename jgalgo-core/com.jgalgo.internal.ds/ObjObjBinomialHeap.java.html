@@ -142,7 +142,7 @@ public class ObjObjBinomialHeap &lt;K, V&gt; implements ObjObjReferenceableHeap 
 	@Override
 	public void decreaseKey(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref, K newKey) {
 <span class="fc" id="L144">		Node &lt;K, V&gt; node = (Node &lt;K, V&gt;) ref;</span>
-<span class="fc" id="L145">		Assertions.Heaps.decreaseKeyIsSmaller(node.key, newKey, c);</span>
+<span class="fc" id="L145">		Assertions.heapDecreaseKeyIsSmaller(node.key, newKey, c);</span>
 <span class="fc" id="L146">		node.key = newKey;</span>
 
 <span class="fc bfc" id="L148" title="All 2 branches covered.">		if (c == null) {</span>
@@ -163,7 +163,7 @@ public class ObjObjBinomialHeap &lt;K, V&gt; implements ObjObjReferenceableHeap 
 	@Override
 	public void increaseKey(ObjObjReferenceableHeap.Ref &lt;K, V&gt; ref, K newKey) {
 <span class="fc" id="L165">		Node &lt;K, V&gt; node = (Node &lt;K, V&gt;) ref;</span>
-<span class="fc" id="L166">		Assertions.Heaps.increaseKeyIsGreater(node.key, newKey, c);</span>
+<span class="fc" id="L166">		Assertions.heapIncreaseKeyIsGreater(node.key, newKey, c);</span>
 <span class="fc" id="L167">		remove(node);</span>
 <span class="fc" id="L168">		node.key = newKey;</span>
 <span class="fc" id="L169">		insertNode(node);</span>
@@ -356,9 +356,9 @@ public class ObjObjBinomialHeap &lt;K, V&gt; implements ObjObjReferenceableHeap 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public void meld(ObjObjReferenceableHeap &lt;K, V&gt; heap) {
-<span class="fc" id="L359">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
-<span class="fc" id="L360">		Assertions.Heaps.meldWithSameImpl(ObjObjBinomialHeap.class, heap);</span>
-<span class="fc" id="L361">		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());</span>
+<span class="fc" id="L359">		Assertions.heapNoMeldWithSelf(this, heap);</span>
+<span class="fc" id="L360">		Assertions.heapMeldWithSameImpl(ObjObjBinomialHeap.class, heap);</span>
+<span class="fc" id="L361">		Assertions.heapEqualComparatorBeforeMeld(comparator(), heap.comparator());</span>
 
 <span class="fc" id="L363">		ObjObjBinomialHeap &lt;K, V&gt; h = (ObjObjBinomialHeap &lt;K, V&gt;) heap;</span>
 <span class="fc" id="L364">		meld(h.roots, h.rootsLen);</span>
@@ -369,7 +369,7 @@ public class ObjObjBinomialHeap &lt;K, V&gt; implements ObjObjReferenceableHeap 
 
 	@Override
 	public ObjObjReferenceableHeap.Ref &lt;K, V&gt; findMin() {
-<span class="fc" id="L372">		Assertions.Heaps.notEmpty(this);</span>
+<span class="fc" id="L372">		Assertions.notEmpty(this);</span>
 <span class="fc" id="L373">		Node &lt;K, V&gt;[] rs = roots;</span>
 <span class="fc" id="L374">		int rsLen = rootsLen;</span>
 <span class="fc" id="L375">		Node &lt;K, V&gt; min = null;</span>

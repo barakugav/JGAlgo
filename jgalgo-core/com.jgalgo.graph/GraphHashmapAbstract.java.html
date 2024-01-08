@@ -88,7 +88,7 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L91">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L91">			Assertions.hasNext(this);</span>
 <span class="fc" id="L92">			prevEdge = nextEdge;</span>
 <span class="fc" id="L93">			prevEndpoint = nextEndpoint;</span>
 <span class="fc" id="L94">			advance();</span>
@@ -97,7 +97,7 @@ abstract class GraphHashmapAbstract extends GraphBaseMutable {
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L100">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L100">			Assertions.hasNext(this);</span>
 <span class="fc" id="L101">			return nextEdge;</span>
 		}
 

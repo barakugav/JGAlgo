@@ -1660,7 +1660,7 @@ public class Graphs {
 
 			@Override
 			public E next() {
-<span class="fc" id="L1663">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L1663">				Assertions.hasNext(this);</span>
 				E e;
 <span class="fc bfc" id="L1665" title="All 2 branches covered.">				if (outIt != null) {</span>
 <span class="fc" id="L1666">					e = outIt.next();</span>
@@ -1675,7 +1675,7 @@ public class Graphs {
 
 			@Override
 			public E peekNext() {
-<span class="fc" id="L1678">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L1678">				Assertions.hasNext(this);</span>
 <span class="fc bfc" id="L1679" title="All 2 branches covered.">				return outIt != null ? outIt.peekNext() : inIt.peekNext();</span>
 			}
 		}
@@ -1777,7 +1777,7 @@ public class Graphs {
 
 					@Override
 					public E next() {
-<span class="fc" id="L1780">						Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L1780">						Assertions.hasNext(this);</span>
 <span class="fc" id="L1781">						E e = it.next();</span>
 <span class="fc" id="L1782">						advance();</span>
 <span class="fc" id="L1783">						return e;</span>
@@ -1785,7 +1785,7 @@ public class Graphs {
 
 					@Override
 					public E peekNext() {
-<span class="fc" id="L1788">						Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L1788">						Assertions.hasNext(this);</span>
 <span class="fc" id="L1789">						return it.peekNext();</span>
 					}
 
@@ -1942,7 +1942,7 @@ public class Graphs {
 
 			@Override
 			public int nextInt() {
-<span class="fc" id="L1945">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L1945">				Assertions.hasNext(this);</span>
 				int e;
 <span class="fc bfc" id="L1947" title="All 2 branches covered.">				if (outIt != null) {</span>
 <span class="fc" id="L1948">					e = outIt.nextInt();</span>
@@ -1957,7 +1957,7 @@ public class Graphs {
 
 			@Override
 			public int peekNextInt() {
-<span class="fc" id="L1960">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L1960">				Assertions.hasNext(this);</span>
 <span class="fc bfc" id="L1961" title="All 2 branches covered.">				return outIt != null ? outIt.peekNextInt() : inIt.peekNextInt();</span>
 			}
 		}
@@ -2059,7 +2059,7 @@ public class Graphs {
 
 					@Override
 					public int nextInt() {
-<span class="fc" id="L2062">						Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L2062">						Assertions.hasNext(this);</span>
 <span class="fc" id="L2063">						int e = it.nextInt();</span>
 <span class="fc" id="L2064">						advance();</span>
 <span class="fc" id="L2065">						return e;</span>
@@ -2067,7 +2067,7 @@ public class Graphs {
 
 					@Override
 					public int peekNextInt() {
-<span class="fc" id="L2070">						Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L2070">						Assertions.hasNext(this);</span>
 <span class="fc" id="L2071">						return it.peekNextInt();</span>
 					}
 
@@ -2254,14 +2254,14 @@ public class Graphs {
 
 				@Override
 				public int nextInt() {
-<span class="fc" id="L2257">					Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L2257">					Assertions.hasNext(this);</span>
 <span class="fc" id="L2258">					beforeNext = false;</span>
 <span class="fc" id="L2259">					return edge;</span>
 				}
 
 				@Override
 				public int peekNextInt() {
-<span class="fc" id="L2264">					Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L2264">					Assertions.hasNext(this);</span>
 <span class="fc" id="L2265">					return edge;</span>
 				}
 
@@ -3187,7 +3187,7 @@ public class Graphs {
 
 					@Override
 					public int nextInt() {
-<span class="fc" id="L3190">						Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L3190">						Assertions.hasNext(this);</span>
 <span class="fc" id="L3191">						int edge = nextEdge++;</span>
 <span class="fc" id="L3192">						advance();</span>
 <span class="fc" id="L3193">						return edge;</span>

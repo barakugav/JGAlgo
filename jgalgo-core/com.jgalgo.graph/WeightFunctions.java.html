@@ -25,6 +25,24 @@ public class WeightFunctions {
 	private WeightFunctions() {}
 
 	/**
+	 * Get a weight function that returns the negative of the given weight function.
+	 *
+	 * @param  w a weight function
+	 * @return   a weight function that returns the negative of the given weight function
+	 */
+	public static IWeightFunction negate(IWeightFunction w) {
+<span class="fc" id="L34">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
+<span class="fc bfc" id="L35" title="All 2 branches covered.">		if (WeightFunction.isInteger(w)) {</span>
+<span class="fc" id="L36">			IWeightFunctionInt w0 = (IWeightFunctionInt) w;</span>
+<span class="fc" id="L37">			IWeightFunctionInt w1 = e -&gt; -w0.weightInt(e);</span>
+<span class="fc" id="L38">			return w1;</span>
+		} else {
+<span class="fc" id="L40">			IWeightFunction w0 = w;</span>
+<span class="fc" id="L41">			return e -&gt; -w0.weight(e);</span>
+		}
+	}
+
+	/**
 	 * Get a 'local' version of a given weight function.
 	 *
 	 * &lt;p&gt;
@@ -48,21 +66,21 @@ public class WeightFunctions {
 	 * @return   a local version of the weight function
 	 */
 	public static IWeightFunction localEdgeWeightFunction(IndexGraph g, IWeightFunction w) {
-<span class="fc bfc" id="L51" title="All 2 branches covered.">		if (WeightFunction.isCardinality(w))</span>
-<span class="fc" id="L52">			return w;</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">		if (w instanceof WeightsImpl.Index)</span>
-<span class="fc" id="L54">			return w;</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">		if (WeightFunction.isInteger(w)) {</span>
-<span class="fc" id="L56">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
-<span class="fc" id="L57">			IWeightsInt wLocal = IWeights.createExternalEdgesWeights(g, int.class);</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L59">				wLocal.set(e, wInt.weightInt(e));</span>
-<span class="fc" id="L60">			return wLocal;</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">		if (WeightFunction.isCardinality(w))</span>
+<span class="fc" id="L70">			return w;</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">		if (w instanceof WeightsImpl.Index)</span>
+<span class="fc" id="L72">			return w;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		if (WeightFunction.isInteger(w)) {</span>
+<span class="fc" id="L74">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
+<span class="fc" id="L75">			IWeightsInt wLocal = IWeights.createExternalEdgesWeights(g, int.class);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L77">				wLocal.set(e, wInt.weightInt(e));</span>
+<span class="fc" id="L78">			return wLocal;</span>
 		} else {
-<span class="fc" id="L62">			IWeightsDouble wLocal = IWeights.createExternalEdgesWeights(g, double.class);</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L64">				wLocal.set(e, w.weight(e));</span>
-<span class="fc" id="L65">			return wLocal;</span>
+<span class="fc" id="L80">			IWeightsDouble wLocal = IWeights.createExternalEdgesWeights(g, double.class);</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc" id="L82">				wLocal.set(e, w.weight(e));</span>
+<span class="fc" id="L83">			return wLocal;</span>
 		}
 	}
 
@@ -90,14 +108,14 @@ public class WeightFunctions {
 	 * @return   a local version of the weight function
 	 */
 	public static IWeightFunctionInt localEdgeWeightFunction(IndexGraph g, IWeightFunctionInt w) {
-<span class="pc bpc" id="L93" title="1 of 2 branches missed.">		if (WeightFunction.isCardinality(w))</span>
-<span class="nc" id="L94">			return null;</span>
-<span class="pc bpc" id="L95" title="1 of 2 branches missed.">		if (w instanceof WeightsImpl.Index)</span>
-<span class="fc" id="L96">			return w;</span>
-<span class="nc" id="L97">		IWeightsInt wLocal = IWeights.createExternalEdgesWeights(g, int.class);</span>
-<span class="nc bnc" id="L98" title="All 2 branches missed.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="nc" id="L99">			wLocal.set(e, w.weightInt(e));</span>
-<span class="nc" id="L100">		return wLocal;</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">		if (WeightFunction.isCardinality(w))</span>
+<span class="nc" id="L112">			return null;</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">		if (w instanceof WeightsImpl.Index)</span>
+<span class="fc" id="L114">			return w;</span>
+<span class="nc" id="L115">		IWeightsInt wLocal = IWeights.createExternalEdgesWeights(g, int.class);</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="nc" id="L117">			wLocal.set(e, w.weightInt(e));</span>
+<span class="nc" id="L118">		return wLocal;</span>
 	}
 
 	/**
@@ -107,16 +125,16 @@ public class WeightFunctions {
 	 * @return   a weight function on a graph with integer vertices
 	 */
 	public static IWeightFunction asIntGraphWeightFunc(WeightFunction&lt;Integer&gt; w) {
-<span class="fc bfc" id="L110" title="All 2 branches covered.">		if (WeightFunction.isCardinality(w))</span>
-<span class="fc" id="L111">			return null;</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">		if (w instanceof IWeightFunction) {</span>
-<span class="fc" id="L113">			return (IWeightFunction) w;</span>
-<span class="pc bpc" id="L114" title="1 of 2 branches missed.">		} else if (WeightFunction.isInteger(w)) {</span>
-<span class="nc" id="L115">			WeightFunctionInt&lt;Integer&gt; wInt = (WeightFunctionInt&lt;Integer&gt;) w;</span>
-<span class="nc" id="L116">			IWeightFunctionInt ret = elm -&gt; wInt.weightInt(Integer.valueOf(elm));</span>
-<span class="nc" id="L117">			return ret;</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">		if (WeightFunction.isCardinality(w))</span>
+<span class="fc" id="L129">			return null;</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">		if (w instanceof IWeightFunction) {</span>
+<span class="fc" id="L131">			return (IWeightFunction) w;</span>
+<span class="pc bpc" id="L132" title="1 of 2 branches missed.">		} else if (WeightFunction.isInteger(w)) {</span>
+<span class="nc" id="L133">			WeightFunctionInt&lt;Integer&gt; wInt = (WeightFunctionInt&lt;Integer&gt;) w;</span>
+<span class="nc" id="L134">			IWeightFunctionInt ret = elm -&gt; wInt.weightInt(Integer.valueOf(elm));</span>
+<span class="nc" id="L135">			return ret;</span>
 		} else {
-<span class="fc" id="L119">			return elm -&gt; w.weight(Integer.valueOf(elm));</span>
+<span class="fc" id="L137">			return elm -&gt; w.weight(Integer.valueOf(elm));</span>
 		}
 	}
 

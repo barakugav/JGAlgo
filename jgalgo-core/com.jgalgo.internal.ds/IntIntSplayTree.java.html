@@ -151,7 +151,7 @@ import com.jgalgo.internal.util.Assertions;
 	@Override
 	public void decreaseKey(IntIntReferenceableHeap.Ref  ref, int newKey) {
 <span class="fc" id="L153">		SplayBSTNode  n = (SplayBSTNode ) ref;</span>
-<span class="fc" id="L154">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
+<span class="fc" id="L154">		Assertions.heapDecreaseKeyIsSmaller(n.key, newKey, c);</span>
 <span class="fc" id="L155">		remove(n);</span>
 <span class="fc" id="L156">		n.key = newKey;</span>
 <span class="fc" id="L157">		insertNode(n);</span>
@@ -160,7 +160,7 @@ import com.jgalgo.internal.util.Assertions;
 	@Override
 	public void increaseKey(IntIntReferenceableHeap.Ref  ref, int newKey) {
 <span class="fc" id="L162">		SplayBSTNode  n = (SplayBSTNode ) ref;</span>
-<span class="fc" id="L163">		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);</span>
+<span class="fc" id="L163">		Assertions.heapIncreaseKeyIsGreater(n.key, newKey, c);</span>
 <span class="fc" id="L164">		remove(n);</span>
 <span class="fc" id="L165">		n.key = newKey;</span>
 <span class="fc" id="L166">		insertNode(n);</span>
@@ -222,9 +222,9 @@ import com.jgalgo.internal.util.Assertions;
 
 	@Override
 	public void meld(IntIntReferenceableHeap  heap) {
-<span class="fc" id="L225">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
-<span class="fc" id="L226">		Assertions.Heaps.meldWithSameImpl(IntIntSplayTree.class, heap);</span>
-<span class="fc" id="L227">		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());</span>
+<span class="fc" id="L225">		Assertions.heapNoMeldWithSelf(this, heap);</span>
+<span class="fc" id="L226">		Assertions.heapMeldWithSameImpl(IntIntSplayTree.class, heap);</span>
+<span class="fc" id="L227">		Assertions.heapEqualComparatorBeforeMeld(comparator(), heap.comparator());</span>
 <span class="fc" id="L228">		IntIntSplayTree  h = (IntIntSplayTree ) heap;</span>
 <span class="fc bfc" id="L229" title="All 2 branches covered.">		if (h.isEmpty())</span>
 <span class="fc" id="L230">			return;</span>

@@ -176,7 +176,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	@Override
 	public int indexToIdInt(int index) {
-<span class="fc" id="L179">		Assertions.Graphs.checkId(index, indicesSet.size(), isEdges);</span>
+<span class="fc" id="L179">		Assertions.checkGraphId(index, indicesSet.size(), isEdges);</span>
 <span class="fc" id="L180">		return indexToId[index];</span>
 	}
 

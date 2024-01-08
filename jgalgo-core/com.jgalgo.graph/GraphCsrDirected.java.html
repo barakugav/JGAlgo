@@ -32,7 +32,7 @@ import com.jgalgo.internal.util.Assertions;
 
 	GraphCsrDirected(IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights, boolean fastLookup) {
 <span class="fc" id="L34">		super(true, g, copyVerticesWeights, copyEdgesWeights, fastLookup);</span>
-<span class="fc" id="L35">		Assertions.Graphs.onlyDirected(g);</span>
+<span class="fc" id="L35">		Assertions.onlyDirected(g);</span>
 
 <span class="fc bfc" id="L37" title="All 2 branches covered.">		if (g instanceof GraphCsrDirected) {</span>
 <span class="fc" id="L38">			GraphCsrDirected gCsr = (GraphCsrDirected) g;</span>

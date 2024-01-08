@@ -15,119 +15,75 @@
  */
 package com.jgalgo.alg;
 
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
-import com.jgalgo.graph.IWeightFunction;
-import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.WeightFunction;
-import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import com.jgalgo.internal.util.IntAdapters;
 import it.unimi.dsi.fastutil.ints.IntArrays;
-import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 
-<span class="pc" id="L37">class SteinerTrees {</span>
+class SteinerTrees {
 
-<span class="fc" id="L39">	abstract static class AbstractImpl implements SteinerTreeAlgo {</span>
+	private SteinerTrees() {}
 
-		@SuppressWarnings(&quot;unchecked&quot;)
-		@Override
-		public &lt;V, E&gt; SteinerTreeAlgo.Result&lt;V, E&gt; computeSteinerTree(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w,
-				Collection&lt;V&gt; terminals) {
-<span class="fc bfc" id="L45" title="All 2 branches covered.">			if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L46">				IntCollection terminals0 = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) terminals);</span>
-<span class="fc" id="L47">				IWeightFunction w0 = WeightFunctions.asIntGraphWeightFunc((WeightFunction&lt;Integer&gt;) w);</span>
-<span class="fc" id="L48">				return (SteinerTreeAlgo.Result&lt;V, E&gt;) computeSteinerTree((IndexGraph) g, w0, terminals0);</span>
-
-			} else {
-<span class="fc" id="L51">				IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L52">				IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L53">				IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L54">				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L55">				IntCollection iTerminals = IndexIdMaps.idToIndexCollection(terminals, viMap);</span>
-
-<span class="fc" id="L57">				SteinerTreeAlgo.IResult indexResult = computeSteinerTree(iGraph, iw, iTerminals);</span>
-<span class="fc" id="L58">				return resultFromIndexResult(g, indexResult);</span>
-			}
-		}
-
-		abstract SteinerTreeAlgo.IResult computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals);
-
-	}
-
-	static class ResultImpl implements SteinerTreeAlgo.IResult {
+	static class IndexResult implements SteinerTreeAlgo.IResult {
 
 		private final IntSet edges;
-<span class="fc" id="L69">		static final SteinerTreeAlgo.IResult Empty = new ResultImpl(IntArrays.EMPTY_ARRAY);</span>
+<span class="fc" id="L37">		static final SteinerTreeAlgo.IResult Empty = new IndexResult(IntArrays.EMPTY_ARRAY);</span>
 
-<span class="fc" id="L71">		ResultImpl(IntSet edges) {</span>
-<span class="fc" id="L72">			this.edges = IntSets.unmodifiable(Objects.requireNonNull(edges));</span>
-<span class="fc" id="L73">		}</span>
+<span class="fc" id="L39">		IndexResult(IntSet edges) {</span>
+<span class="fc" id="L40">			this.edges = IntSets.unmodifiable(Objects.requireNonNull(edges));</span>
+<span class="fc" id="L41">		}</span>
 
-<span class="fc" id="L75">		ResultImpl(int[] edges) {</span>
-<span class="fc" id="L76">			this.edges = ImmutableIntArraySet.withNaiveContains(edges);</span>
-<span class="fc" id="L77">		}</span>
+<span class="fc" id="L43">		IndexResult(int[] edges) {</span>
+<span class="fc" id="L44">			this.edges = ImmutableIntArraySet.withNaiveContains(edges);</span>
+<span class="fc" id="L45">		}</span>
 
 		@Override
 		public IntSet edges() {
-<span class="fc" id="L81">			return edges;</span>
+<span class="fc" id="L49">			return edges;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="nc" id="L86">			return edges().toString();</span>
+<span class="nc" id="L54">			return edges().toString();</span>
 		}
-
 	}
 
-	private static class ObjResultFromIndexResult&lt;V, E&gt; implements SteinerTreeAlgo.Result&lt;V, E&gt; {
+	static class ObjResultFromIndexResult&lt;V, E&gt; implements SteinerTreeAlgo.Result&lt;V, E&gt; {
 
 		private final SteinerTreeAlgo.IResult indexRes;
 		private final IndexIdMap&lt;E&gt; eiMap;
 
-<span class="fc" id="L96">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, SteinerTreeAlgo.IResult res) {</span>
-<span class="fc" id="L97">			this.indexRes = Objects.requireNonNull(res);</span>
-<span class="fc" id="L98">			this.eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L99">		}</span>
+<span class="fc" id="L63">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, SteinerTreeAlgo.IResult res) {</span>
+<span class="fc" id="L64">			this.indexRes = Objects.requireNonNull(res);</span>
+<span class="fc" id="L65">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L66">		}</span>
 
 		@Override
 		public Set&lt;E&gt; edges() {
-<span class="fc" id="L103">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
+<span class="fc" id="L70">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
 		}
 	}
 
-	private static class IntResultFromIndexResult implements SteinerTreeAlgo.IResult {
+	static class IntResultFromIndexResult implements SteinerTreeAlgo.IResult {
 
 		private final SteinerTreeAlgo.IResult indexRes;
 		private final IndexIntIdMap eiMap;
 
-<span class="fc" id="L112">		IntResultFromIndexResult(IntGraph g, SteinerTreeAlgo.IResult res) {</span>
-<span class="fc" id="L113">			this.indexRes = Objects.requireNonNull(res);</span>
-<span class="fc" id="L114">			this.eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L115">		}</span>
+<span class="fc" id="L79">		IntResultFromIndexResult(IntGraph g, SteinerTreeAlgo.IResult res) {</span>
+<span class="fc" id="L80">			this.indexRes = Objects.requireNonNull(res);</span>
+<span class="fc" id="L81">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L82">		}</span>
 
 		@Override
 		public IntSet edges() {
-<span class="fc" id="L119">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
-		}
-	}
-
-	@SuppressWarnings(&quot;unchecked&quot;)
-	private static &lt;V, E&gt; SteinerTreeAlgo.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g,
-			SteinerTreeAlgo.IResult indexResult) {
-<span class="pc bnc" id="L126" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L128">			return (SteinerTreeAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
-		} else {
-<span class="fc" id="L130">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
+<span class="fc" id="L86">			return IndexIdMaps.indexToIdSet(indexRes.edges(), eiMap);</span>
 		}
 	}
 

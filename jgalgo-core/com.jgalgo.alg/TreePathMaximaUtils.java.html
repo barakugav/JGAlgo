@@ -286,7 +286,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	}
 
 	static boolean verifyMST(IndexGraph g, IWeightFunction w, IntCollection mstEdges, TreePathMaxima tpmAlgo) {
-<span class="fc" id="L289">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L289">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L290">		int n = g.vertices().size();</span>
 <span class="fc" id="L291">		IndexGraphBuilder mstBuilder = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L292">		mstBuilder.ensureVertexCapacity(n);</span>

@@ -94,9 +94,9 @@ import com.jgalgo.internal.util.Assertions;
 
 	@Override
 	public void meld(IntIntReferenceableHeap  heap) {
-<span class="fc" id="L97">		Assertions.Heaps.noMeldWithSelf(this, heap);</span>
-<span class="fc" id="L98">		Assertions.Heaps.meldWithSameImpl(IntIntRedBlackTree.class, heap);</span>
-<span class="fc" id="L99">		Assertions.Heaps.equalComparatorBeforeMeld(comparator(), heap.comparator());</span>
+<span class="fc" id="L97">		Assertions.heapNoMeldWithSelf(this, heap);</span>
+<span class="fc" id="L98">		Assertions.heapMeldWithSameImpl(IntIntRedBlackTree.class, heap);</span>
+<span class="fc" id="L99">		Assertions.heapEqualComparatorBeforeMeld(comparator(), heap.comparator());</span>
 <span class="fc" id="L100">		IntIntRedBlackTree  h = (IntIntRedBlackTree ) heap;</span>
 <span class="fc bfc" id="L101" title="All 2 branches covered.">		if (h.isEmpty())</span>
 <span class="fc" id="L102">			return;</span>
@@ -216,7 +216,7 @@ import com.jgalgo.internal.util.Assertions;
 	@Override
 	public void decreaseKey(IntIntReferenceableHeap.Ref  ref, int newKey) {
 <span class="fc" id="L218">		Node  n = (Node ) ref;</span>
-<span class="fc" id="L219">		Assertions.Heaps.decreaseKeyIsSmaller(n.key, newKey, c);</span>
+<span class="fc" id="L219">		Assertions.heapDecreaseKeyIsSmaller(n.key, newKey, c);</span>
 <span class="fc" id="L220">		remove(n);</span>
 <span class="fc" id="L221">		n.key = newKey;</span>
 <span class="fc" id="L222">		insertNode(n);</span>
@@ -225,7 +225,7 @@ import com.jgalgo.internal.util.Assertions;
 	@Override
 	public void increaseKey(IntIntReferenceableHeap.Ref  ref, int newKey) {
 <span class="fc" id="L227">		Node  n = (Node ) ref;</span>
-<span class="fc" id="L228">		Assertions.Heaps.increaseKeyIsGreater(n.key, newKey, c);</span>
+<span class="fc" id="L228">		Assertions.heapIncreaseKeyIsGreater(n.key, newKey, c);</span>
 <span class="fc" id="L229">		remove(n);</span>
 <span class="fc" id="L230">		n.key = newKey;</span>
 <span class="fc" id="L231">		insertNode(n);</span>

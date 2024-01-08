@@ -63,7 +63,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 <span class="fc bfc" id="L63" title="All 2 branches covered.">				if (distance[v] != Double.POSITIVE_INFINITY)</span>
 <span class="fc" id="L64">					continue;</span>
 <span class="fc" id="L65">				double ew = w.weight(e);</span>
-<span class="fc" id="L66">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L66">				Assertions.onlyPositiveWeight(ew);</span>
 <span class="fc" id="L67">				double vDistance = uDistance + ew;</span>
 
 <span class="fc" id="L69">				DoubleIntReferenceableHeap.Ref vPtr = heapVPtrs[v];</span>

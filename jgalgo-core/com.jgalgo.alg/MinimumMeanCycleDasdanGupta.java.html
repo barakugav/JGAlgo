@@ -40,7 +40,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
+class MinimumMeanCycleDasdanGupta implements MinimumMeanCycleBase {
 
 <span class="fc" id="L45">	private final StronglyConnectedComponentsAlgo sccAlg = StronglyConnectedComponentsAlgo.newInstance();</span>
 
@@ -58,8 +58,8 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L62">		Assertions.Graphs.onlyDirected(g);</span>
+	public IPath computeMinimumMeanCycle(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L62">		Assertions.onlyDirected(g);</span>
 <span class="fc" id="L63">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
 
 <span class="fc" id="L65">		IPath cycle = computeMinimumMeanCycle0(g, w);</span>
@@ -97,112 +97,110 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 <span class="fc" id="L97">		SourceChooser sourceChooser = new SourceChooser(g, cc);</span>
 
 		/* init distances and policy */
-<span class="fc" id="L100">		int maxCcSize = -1;</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">		for (int c = 0; c &lt; ccNum; c++)</span>
-<span class="fc" id="L102">			maxCcSize = Math.max(maxCcSize, cc.blockVertices(c).size());</span>
-<span class="fc" id="L103">		double[][] d = new double[maxCcSize + 1][n];</span>
-<span class="fc" id="L104">		int[][] policy = new int[maxCcSize + 1][n];</span>
-<span class="fc bfc" id="L105" title="All 2 branches covered.">		for (int k = 0; k &lt; maxCcSize + 1; k++) {</span>
-<span class="fc" id="L106">			Arrays.fill(d[k], 0, n, Double.POSITIVE_INFINITY);</span>
-<span class="fc" id="L107">			Arrays.fill(policy[k], 0, n, -1);</span>
+<span class="fc" id="L100">		final int maxCcSize = range(ccNum).map(c -&gt; cc.blockVertices(c).size()).max().orElse(-1);</span>
+<span class="fc" id="L101">		double[][] d = new double[maxCcSize + 1][n];</span>
+<span class="fc" id="L102">		int[][] policy = new int[maxCcSize + 1][n];</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		for (int k = 0; k &lt; maxCcSize + 1; k++) {</span>
+<span class="fc" id="L104">			Arrays.fill(d[k], 0, n, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L105">			Arrays.fill(policy[k], 0, n, -1);</span>
 		}
-<span class="fc" id="L109">		boolean[] visit1 = new boolean[n];</span>
-<span class="fc" id="L110">		boolean[] visit2 = new boolean[n];</span>
+<span class="fc" id="L107">		boolean[] visit1 = new boolean[n];</span>
+<span class="fc" id="L108">		boolean[] visit2 = new boolean[n];</span>
 
 		/* operate on each SCC separately */
-<span class="fc" id="L113">		double bestCycleMeanWeight = Double.POSITIVE_INFINITY;</span>
-<span class="fc" id="L114">		int bestCycleMeanWeightVertex = -1;</span>
-<span class="fc" id="L115">		final IntList bestCycleLengths = new IntArrayList();</span>
-<span class="fc" id="L116">		IntList bestVertexCycleLengths = new IntArrayList();</span>
-<span class="fc bfc" id="L117" title="All 2 branches covered.">		for (int ccIdx = 0; ccIdx &lt; ccNum; ccIdx++) {</span>
-<span class="fc" id="L118">			final int ccSize = cc.blockVertices(ccIdx).size();</span>
-<span class="fc bfc" id="L119" title="All 2 branches covered.">			if (ccSize &lt; 2)</span>
-<span class="fc" id="L120">				continue;</span>
+<span class="fc" id="L111">		double bestCycleMeanWeight = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L112">		int bestCycleMeanWeightVertex = -1;</span>
+<span class="fc" id="L113">		final IntList bestCycleLengths = new IntArrayList();</span>
+<span class="fc" id="L114">		IntList bestVertexCycleLengths = new IntArrayList();</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">		for (int ccIdx = 0; ccIdx &lt; ccNum; ccIdx++) {</span>
+<span class="fc" id="L116">			final int ccSize = cc.blockVertices(ccIdx).size();</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">			if (ccSize &lt; 2)</span>
+<span class="fc" id="L118">				continue;</span>
 
-<span class="fc" id="L122">			int source = sourceChooser.chooseSource(ccIdx);</span>
-<span class="fc" id="L123">			boolean[] firstVisit = visit1;</span>
-<span class="fc" id="L124">			d[0][source] = 0;</span>
-<span class="fc" id="L125">			policy[0][source] = -1;</span>
-<span class="fc" id="L126">			firstVisit[source] = true;</span>
+<span class="fc" id="L120">			int source = sourceChooser.chooseSource(ccIdx);</span>
+<span class="fc" id="L121">			boolean[] firstVisit = visit1;</span>
+<span class="fc" id="L122">			d[0][source] = 0;</span>
+<span class="fc" id="L123">			policy[0][source] = -1;</span>
+<span class="fc" id="L124">			firstVisit[source] = true;</span>
 
-<span class="fc bfc" id="L128" title="All 2 branches covered.">			for (int k = 0; k &lt; ccSize; k++) {</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">				boolean[] visit = k % 2 == 0 ? visit1 : visit2;</span>
-<span class="fc bfc" id="L130" title="All 2 branches covered.">				boolean[] visitNext = k % 2 == 0 ? visit2 : visit1;</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">				for (int u : cc.blockVertices(ccIdx)) {</span>
-<span class="fc bfc" id="L132" title="All 2 branches covered.">					if (!visit[u])</span>
-<span class="fc" id="L133">						continue;</span>
-<span class="fc" id="L134">					visit[u] = false;</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L136">						int e = eit.nextInt();</span>
-<span class="fc" id="L137">						int v = eit.targetInt();</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">						if (cc.vertexBlock(v) != ccIdx)</span>
-<span class="fc" id="L139">							continue;</span>
-<span class="fc" id="L140">						double newDistance = d[k][u] + w.weight(e);</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">						if (d[k + 1][v] &gt; newDistance) {</span>
-<span class="fc" id="L142">							d[k + 1][v] = newDistance;</span>
-<span class="fc" id="L143">							policy[k + 1][v] = e;</span>
-<span class="fc" id="L144">							visitNext[v] = true;</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">			for (int k = 0; k &lt; ccSize; k++) {</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">				boolean[] visit = k % 2 == 0 ? visit1 : visit2;</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">				boolean[] visitNext = k % 2 == 0 ? visit2 : visit1;</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">				for (int u : cc.blockVertices(ccIdx)) {</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">					if (!visit[u])</span>
+<span class="fc" id="L131">						continue;</span>
+<span class="fc" id="L132">					visit[u] = false;</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L134">						int e = eit.nextInt();</span>
+<span class="fc" id="L135">						int v = eit.targetInt();</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">						if (cc.vertexBlock(v) != ccIdx)</span>
+<span class="fc" id="L137">							continue;</span>
+<span class="fc" id="L138">						double newDistance = d[k][u] + w.weight(e);</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">						if (d[k + 1][v] &gt; newDistance) {</span>
+<span class="fc" id="L140">							d[k + 1][v] = newDistance;</span>
+<span class="fc" id="L141">							policy[k + 1][v] = e;</span>
+<span class="fc" id="L142">							visitNext[v] = true;</span>
 						}
-<span class="fc" id="L146">					}</span>
-<span class="fc" id="L147">				}</span>
+<span class="fc" id="L144">					}</span>
+<span class="fc" id="L145">				}</span>
 			}
 
-<span class="fc bfc" id="L150" title="All 2 branches covered.">			boolean[] lastVisit = ccSize % 2 == 0 ? visit1 : visit2;</span>
-<span class="fc bfc" id="L151" title="All 2 branches covered.">			for (int u : cc.blockVertices(ccIdx)) {</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">				if (!lastVisit[u])</span>
-<span class="fc" id="L153">					continue;</span>
-<span class="fc" id="L154">				double bestVertexCycleMeanWeight = Double.NEGATIVE_INFINITY;</span>
-<span class="fc" id="L155">				bestVertexCycleLengths.clear();</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">				for (int k = 0; k &lt; ccSize; k++) {</span>
-<span class="fc" id="L157">					int len = ccSize - k;</span>
-<span class="fc" id="L158">					double cycleMeanWeight = (d[ccSize][u] - d[k][u]) / len;</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">					if (bestVertexCycleMeanWeight &lt; cycleMeanWeight) {</span>
-<span class="fc" id="L160">						bestVertexCycleMeanWeight = cycleMeanWeight;</span>
-<span class="fc" id="L161">						bestVertexCycleLengths.clear();</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">			boolean[] lastVisit = ccSize % 2 == 0 ? visit1 : visit2;</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">			for (int u : cc.blockVertices(ccIdx)) {</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">				if (!lastVisit[u])</span>
+<span class="fc" id="L151">					continue;</span>
+<span class="fc" id="L152">				double bestVertexCycleMeanWeight = Double.NEGATIVE_INFINITY;</span>
+<span class="fc" id="L153">				bestVertexCycleLengths.clear();</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">				for (int k = 0; k &lt; ccSize; k++) {</span>
+<span class="fc" id="L155">					int len = ccSize - k;</span>
+<span class="fc" id="L156">					double cycleMeanWeight = (d[ccSize][u] - d[k][u]) / len;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">					if (bestVertexCycleMeanWeight &lt; cycleMeanWeight) {</span>
+<span class="fc" id="L158">						bestVertexCycleMeanWeight = cycleMeanWeight;</span>
+<span class="fc" id="L159">						bestVertexCycleLengths.clear();</span>
+<span class="fc" id="L160">						bestVertexCycleLengths.add(len);</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">					} else if (bestVertexCycleMeanWeight == cycleMeanWeight) {</span>
 <span class="fc" id="L162">						bestVertexCycleLengths.add(len);</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">					} else if (bestVertexCycleMeanWeight == cycleMeanWeight) {</span>
-<span class="fc" id="L164">						bestVertexCycleLengths.add(len);</span>
 					}
 				}
-<span class="fc bfc" id="L167" title="All 2 branches covered.">				if (bestCycleMeanWeight &gt; bestVertexCycleMeanWeight) {</span>
-<span class="fc" id="L168">					bestCycleMeanWeight = bestVertexCycleMeanWeight;</span>
-<span class="fc" id="L169">					bestCycleMeanWeightVertex = u;</span>
-<span class="fc" id="L170">					bestCycleLengths.clear();</span>
-<span class="fc" id="L171">					bestCycleLengths.addAll(bestVertexCycleLengths);</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">				if (bestCycleMeanWeight &gt; bestVertexCycleMeanWeight) {</span>
+<span class="fc" id="L166">					bestCycleMeanWeight = bestVertexCycleMeanWeight;</span>
+<span class="fc" id="L167">					bestCycleMeanWeightVertex = u;</span>
+<span class="fc" id="L168">					bestCycleLengths.clear();</span>
+<span class="fc" id="L169">					bestCycleLengths.addAll(bestVertexCycleLengths);</span>
 				}
-<span class="fc" id="L173">			}</span>
+<span class="fc" id="L171">			}</span>
 		}
 
-<span class="fc bfc" id="L176" title="All 2 branches covered.">		if (bestCycleMeanWeightVertex == -1)</span>
-<span class="fc" id="L177">			return null;</span>
-<span class="fc" id="L178">		final int ccIdx = cc.vertexBlock(bestCycleMeanWeightVertex);</span>
-<span class="fc" id="L179">		final int ccSize = cc.blockVertices(ccIdx).size();</span>
-<span class="fc" id="L180">		int[] path = new int[ccSize];</span>
-<span class="fc bfc" id="L181" title="All 2 branches covered.">		for (int k = ccSize, v = bestCycleMeanWeightVertex; k &gt; 0; k--) {</span>
-<span class="fc" id="L182">			int e = path[k - 1] = policy[k][v];</span>
-<span class="fc" id="L183">			v = g.edgeSource(e);</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">		if (bestCycleMeanWeightVertex == -1)</span>
+<span class="fc" id="L175">			return null;</span>
+<span class="fc" id="L176">		final int ccIdx = cc.vertexBlock(bestCycleMeanWeightVertex);</span>
+<span class="fc" id="L177">		final int ccSize = cc.blockVertices(ccIdx).size();</span>
+<span class="fc" id="L178">		int[] path = new int[ccSize];</span>
+<span class="fc bfc" id="L179" title="All 2 branches covered.">		for (int k = ccSize, v = bestCycleMeanWeightVertex; k &gt; 0; k--) {</span>
+<span class="fc" id="L180">			int e = path[k - 1] = policy[k][v];</span>
+<span class="fc" id="L181">			v = g.edgeSource(e);</span>
 		}
-<span class="fc" id="L185">		double[] pathWeights = new double[ccSize + 1];</span>
-<span class="fc" id="L186">		pathWeights[0] = 0;</span>
-<span class="fc bfc" id="L187" title="All 2 branches covered.">		for (int k = 1; k &lt; ccSize + 1; k++)</span>
-<span class="fc" id="L188">			pathWeights[k] = pathWeights[k - 1] + w.weight(path[k - 1]);</span>
+<span class="fc" id="L183">		double[] pathWeights = new double[ccSize + 1];</span>
+<span class="fc" id="L184">		pathWeights[0] = 0;</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">		for (int k = 1; k &lt; ccSize + 1; k++)</span>
+<span class="fc" id="L186">			pathWeights[k] = pathWeights[k - 1] + w.weight(path[k - 1]);</span>
 
-<span class="fc" id="L190">		final double eps =</span>
-<span class="fc bfc" id="L191" title="All 2 branches covered.">				range(g.edges().size()).mapToDouble(e -&gt; Math.abs(w.weight(e))).filter(c -&gt; c &gt; 0).min().orElse(0)</span>
+<span class="fc" id="L188">		final double eps =</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">				range(g.edges().size()).mapToDouble(e -&gt; Math.abs(w.weight(e))).filter(c -&gt; c &gt; 0).min().orElse(0)</span>
 						* 1e-8;
 
-<span class="pc bpc" id="L194" title="1 of 2 branches missed.">		for (int len : bestCycleLengths) {</span>
-<span class="pc bpc" id="L195" title="1 of 2 branches missed.">			for (int k = 0; k &lt;= ccSize - len; k++) {</span>
-<span class="fc bfc" id="L196" title="All 2 branches covered.">				if (g.edgeSource(path[k]) != g.edgeTarget(path[k + len - 1]))</span>
-<span class="fc" id="L197">					continue;</span>
-<span class="fc bfc" id="L198" title="All 2 branches covered.">				if (Math.abs((pathWeights[k + len] - pathWeights[k]) - bestCycleMeanWeight * len) &lt; eps) {</span>
-<span class="fc" id="L199">					IntList cycleList = new IntArrayList(path, k, len);</span>
-<span class="fc" id="L200">					int cycleVertex = g.edgeSource(cycleList.getInt(0));</span>
-<span class="fc" id="L201">					return new PathImpl(g, cycleVertex, cycleVertex, cycleList);</span>
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">		for (int len : bestCycleLengths) {</span>
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">			for (int k = 0; k &lt;= ccSize - len; k++) {</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">				if (g.edgeSource(path[k]) != g.edgeTarget(path[k + len - 1]))</span>
+<span class="fc" id="L195">					continue;</span>
+<span class="fc bfc" id="L196" title="All 2 branches covered.">				if (Math.abs((pathWeights[k + len] - pathWeights[k]) - bestCycleMeanWeight * len) &lt; eps) {</span>
+<span class="fc" id="L197">					IntList cycleList = new IntArrayList(path, k, len);</span>
+<span class="fc" id="L198">					int cycleVertex = g.edgeSource(cycleList.getInt(0));</span>
+<span class="fc" id="L199">					return new PathImpl(g, cycleVertex, cycleVertex, cycleList);</span>
 				}
 			}
-<span class="nc" id="L204">		}</span>
-<span class="nc" id="L205">		throw new AssertionError(&quot;shouldn't happen! implementation bug&quot;);</span>
+<span class="nc" id="L202">		}</span>
+<span class="nc" id="L203">		throw new AssertionError(&quot;shouldn't happen! implementation bug&quot;);</span>
 	}
 
 	@SuppressWarnings(&quot;unused&quot;)
@@ -214,9 +212,9 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 		final int[] f;
 		final int[] l;
 
-<span class="fc" id="L217">		SourceChooser(IndexGraph g, IVertexPartition cc) {</span>
-<span class="fc" id="L218">			this.g = g;</span>
-<span class="fc" id="L219">			this.cc = cc;</span>
+<span class="fc" id="L215">		SourceChooser(IndexGraph g, IVertexPartition cc) {</span>
+<span class="fc" id="L216">			this.g = g;</span>
+<span class="fc" id="L217">			this.cc = cc;</span>
 
 			if (SourceChoosingUnfoldingDepth &gt; 0) {
 				final int n = g.vertices().size();
@@ -233,14 +231,14 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 					}
 				}
 			} else {
-<span class="fc" id="L236">				interCcDegree = null;</span>
-<span class="fc" id="L237">				f = null;</span>
-<span class="fc" id="L238">				l = null;</span>
+<span class="fc" id="L234">				interCcDegree = null;</span>
+<span class="fc" id="L235">				f = null;</span>
+<span class="fc" id="L236">				l = null;</span>
 			}
-<span class="fc" id="L240">		}</span>
+<span class="fc" id="L238">		}</span>
 
 		int chooseSource(int ccIdx) {
-<span class="fc" id="L243">			int source = cc.blockVertices(ccIdx).iterator().nextInt();</span>
+<span class="fc" id="L241">			int source = cc.blockVertices(ccIdx).iterator().nextInt();</span>
 			if (SourceChoosingUnfoldingDepth &gt; 0) {
 				/* choose a source by unfolding the graph N layers from each possible source */
 				for (int v : cc.blockVertices(ccIdx))
@@ -263,7 +261,7 @@ class MinimumMeanCycleDasdanGupta extends MinimumMeanCycleAbstract {
 					if (l[source] &gt; l[u])
 						source = u;
 			}
-<span class="fc" id="L266">			return source;</span>
+<span class="fc" id="L264">			return source;</span>
 		}
 	}
 

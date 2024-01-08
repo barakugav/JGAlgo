@@ -35,10 +35,10 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L38">class SimplePathsEnumeratorSedgewick extends SimplePathsEnumerators.AbstractImpl {</span>
+<span class="fc" id="L38">class SimplePathsEnumeratorSedgewick implements SimplePathsEnumeratorBase {</span>
 
 	@Override
-	Iterator&lt;IPath&gt; simplePathsIter(IndexGraph g, int source, int target) {
+	public Iterator&lt;IPath&gt; simplePathsIter(IndexGraph g, int source, int target) {
 <span class="fc bfc" id="L42" title="All 2 branches covered.">		if (source == target)</span>
 <span class="fc" id="L43">			return List.&lt;IPath&gt;of(new PathImpl(g, source, target, IntList.of())).iterator();</span>
 <span class="fc" id="L44">		return new Iterator&lt;&gt;() {</span>
@@ -87,7 +87,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 			@Override
 			public IPath next() {
-<span class="fc" id="L90">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L90">				Assertions.hasNext(this);</span>
 <span class="fc" id="L91">				IPath ret = new PathImpl(g, source, target, new IntArrayList(path));</span>
 
 				/* remove last edge to target */

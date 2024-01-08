@@ -31,7 +31,7 @@ import com.jgalgo.graph.IWeightFunction;
  * @see    Bfs
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.AbstractImpl {
+class ShortestPathSingleSourceCardinality implements ShortestPathSingleSourceBase {
 
 	/**
 	 * Construct a new cardinality SSSP algorithm.
@@ -45,15 +45,16 @@ class ShortestPathSingleSourceCardinality extends ShortestPathSingleSourceUtils.
 	 *                                      {@link IWeightFunction#CardinalityWeightFunction}
 	 */
 	@Override
-	ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
-<span class="fc" id="L49">		Assertions.Graphs.onlyCardinality(w);</span>
-<span class="fc" id="L50">		ShortestPathSingleSourceUtils.ResultImpl.Int res = new ShortestPathSingleSourceUtils.ResultImpl.Int(g, source);</span>
-<span class="fc bfc" id="L51" title="All 2 branches covered.">		for (Bfs.IntIter it = Bfs.newInstance(g, source); it.hasNext();) {</span>
-<span class="fc" id="L52">			int v = it.nextInt();</span>
-<span class="fc" id="L53">			res.distances[v] = it.layer();</span>
-<span class="fc" id="L54">			res.backtrack[v] = it.lastEdgeInt();</span>
-<span class="fc" id="L55">		}</span>
-<span class="fc" id="L56">		return res;</span>
+	public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
+<span class="fc" id="L49">		Assertions.onlyCardinality(w);</span>
+<span class="fc" id="L50">		ShortestPathSingleSourceUtils.IndexResult.Int res =</span>
+				new ShortestPathSingleSourceUtils.IndexResult.Int(g, source);
+<span class="fc bfc" id="L52" title="All 2 branches covered.">		for (Bfs.IntIter it = Bfs.newInstance(g, source); it.hasNext();) {</span>
+<span class="fc" id="L53">			int v = it.nextInt();</span>
+<span class="fc" id="L54">			res.distances[v] = it.layer();</span>
+<span class="fc" id="L55">			res.backtrack[v] = it.lastEdgeInt();</span>
+<span class="fc" id="L56">		}</span>
+<span class="fc" id="L57">		return res;</span>
 	}
 
 }

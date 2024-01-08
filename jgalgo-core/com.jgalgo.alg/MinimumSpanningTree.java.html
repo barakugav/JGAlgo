@@ -125,7 +125,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; boolean isSpanningTree(Graph&lt;V, E&gt; g, Collection&lt;E&gt; edges) {
-<span class="fc" id="L128">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L128">		Assertions.onlyUndirected(g);</span>
 		IndexGraph ig;
 		IntCollection edges0;
 <span class="pc bpc" id="L131" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
@@ -194,7 +194,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; boolean isSpanningForest(Graph&lt;V, E&gt; g, Collection&lt;E&gt; edges) {
-<span class="fc" id="L197">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L197">		Assertions.onlyUndirected(g);</span>
 		IndexGraph ig;
 		IntCollection edges0;
 <span class="pc bpc" id="L200" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>

@@ -48,14 +48,14 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L51">class SteinerTreeMehlhorn extends SteinerTrees.AbstractImpl {</span>
+<span class="fc" id="L51">class SteinerTreeMehlhorn implements SteinerTreeAlgoBase {</span>
 
 <span class="fc" id="L53">	private final VoronoiAlgo voronoiAlgo = VoronoiAlgo.newInstance();</span>
 <span class="fc" id="L54">	private final MinimumSpanningTree mstAlgo = MinimumSpanningTree.newInstance();</span>
 
 	@Override
-	IResult computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals) {
-<span class="fc" id="L58">		Assertions.Graphs.onlyUndirected(g);</span>
+	public SteinerTreeAlgo.IResult computeSteinerTree(IndexGraph g, IWeightFunction w, IntCollection terminals) {
+<span class="fc" id="L58">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L59">		final int n = g.vertices().size();</span>
 <span class="fc bfc" id="L60" title="All 2 branches covered.">		if (terminals.isEmpty())</span>
 <span class="fc" id="L61">			throw new IllegalArgumentException(&quot;no terminals provided&quot;);</span>
@@ -211,7 +211,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc bfc" id="L211" title="All 2 branches covered.">		for (int e3 : g5Edges)</span>
 <span class="fc" id="L212">			g5[g5EdgeIdx++] = g3EdgeRef[e3];</span>
 
-<span class="fc" id="L214">		return new SteinerTrees.ResultImpl(ImmutableIntArraySet.withNaiveContains(g5));</span>
+<span class="fc" id="L214">		return new SteinerTrees.IndexResult(ImmutableIntArraySet.withNaiveContains(g5));</span>
 	}
 
 }

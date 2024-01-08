@@ -40,14 +40,14 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L43">class ClosuresEnumeratorSchrageBaker extends ClosuresEnumerators.AbstractImpl {</span>
+<span class="fc" id="L43">class ClosuresEnumeratorSchrageBaker implements ClosuresEnumeratorBase {</span>
 
 <span class="fc" id="L45">	private final StronglyConnectedComponentsAlgo sccAlgo = StronglyConnectedComponentsAlgo.newInstance();</span>
 <span class="fc" id="L46">	private final TopologicalOrderAlgo topoAlgo = TopologicalOrderAlgo.newInstance();</span>
 
 	@Override
-	Iterator&lt;IntSet&gt; closuresIter(IndexGraph g) {
-<span class="fc" id="L50">		Assertions.Graphs.onlyDirected(g);</span>
+	public Iterator&lt;IntSet&gt; closuresIter(IndexGraph g) {
+<span class="fc" id="L50">		Assertions.onlyDirected(g);</span>
 <span class="fc" id="L51">		final int n = g.vertices().size();</span>
 
 <span class="fc" id="L53">		IVertexPartition sccs = (IVertexPartition) sccAlgo.findStronglyConnectedComponents(g);</span>
@@ -129,7 +129,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L129">				int i = nextClearBit;</span>
 
 				/* (if m(j)=1 for j=1,...,n then all subsets have been enumerated) */
-<span class="fc" id="L132">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L132">				Assertions.hasNext(this);</span>
 
 				/* Set m(i)=1 */
 <span class="fc" id="L135">				m.set(i);</span>

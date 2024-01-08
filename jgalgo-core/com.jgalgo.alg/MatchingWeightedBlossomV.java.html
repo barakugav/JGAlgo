@@ -50,12 +50,12 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L53">class MatchingWeightedBlossomV extends Matchings.AbstractMinimumMatchingImpl {</span>
+<span class="fc" id="L53">class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {</span>
 
 <span class="fc" id="L55">	private static final Tree BfsProcessed = new Tree(null);</span>
 
 	@Override
-	IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
+	public IMatching computeMinimumWeightedMatching(IndexGraph g, IWeightFunction w) {
 		/*
 		 * The BlossomV algorithm support perfect matching only, and assume such matching always exists. To support
 		 * non-perfect matching, we perform a reduction: we create a new graph containing two identical copies of the
@@ -68,7 +68,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 		 * graph. This essentially allows the algorithm to avoid matching a vertex in the original graph.
 		 */
 
-<span class="fc" id="L71">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L71">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L72">		IndexGraphBuilder b = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L73">		b.ensureEdgeCapacity(g.edges().size() * 2 + g.vertices().size());</span>
 
@@ -116,12 +116,12 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 <span class="fc bfc" id="L116" title="All 2 branches covered.">			int e = eDup &lt; dummyEdgesThreshold ? eDup / 2 : -1;</span>
 <span class="fc" id="L117">			matched[v] = e;</span>
 		}
-<span class="fc" id="L119">		return new Matchings.MatchingImpl(g, matched);</span>
+<span class="fc" id="L119">		return new Matchings.IndexMatching(g, matched);</span>
 	}
 
 	@Override
-	IMatching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L124">		Assertions.Graphs.onlyUndirected(g);</span>
+	public IMatching computeMinimumWeightedPerfectMatching(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L124">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L125">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
 <span class="fc" id="L126">		return new Worker(g, w).solve();</span>
 	}
@@ -1584,7 +1584,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 <span class="pc bnc" id="L1584" title="All 2 branches missed.">				assert singletonNodes[u].isMatched();</span>
 <span class="fc" id="L1585">				matched[u] = singletonNodes[u].match.id;</span>
 			}
-<span class="fc" id="L1587">			return new Matchings.MatchingImpl(g, matched);</span>
+<span class="fc" id="L1587">			return new Matchings.IndexMatching(g, matched);</span>
 		}
 
 		private boolean updateDuals() {
@@ -1745,7 +1745,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 						@Override
 						public Blossom next() {
-<span class="fc" id="L1748">							Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L1748">							Assertions.hasNext(this);</span>
 <span class="fc" id="L1749">							Blossom ret = root;</span>
 <span class="fc" id="L1750">							root = root.treeSiblingNext;</span>
 <span class="fc" id="L1751">							return ret;</span>
@@ -1775,7 +1775,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 						@Override
 						public Blossom next() {
-<span class="fc" id="L1778">							Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L1778">							Assertions.hasNext(this);</span>
 <span class="fc" id="L1779">							Blossom ret = next;</span>
 <span class="fc" id="L1780">							next = next.treeSiblingNext;</span>
 <span class="fc bfc" id="L1781" title="All 2 branches covered.">							nextNext = next == null ? null : next.treeSiblingNext;</span>
@@ -2191,7 +2191,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 						@Override
 						public Edge next() {
-<span class="fc" id="L2194">							Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L2194">							Assertions.hasNext(this);</span>
 <span class="fc" id="L2195">							current = nextEdge;</span>
 <span class="fc" id="L2196">							nextEdge = nextEdge.nextOutEdge;</span>
 							/* outEdges is a circular list of edges */
@@ -2242,7 +2242,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 						@Override
 						public Edge next() {
-<span class="fc" id="L2245">							Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L2245">							Assertions.hasNext(this);</span>
 <span class="fc" id="L2246">							current = nextEdge;</span>
 <span class="fc" id="L2247">							nextEdge = nextEdge.nextInEdge;</span>
 							/* inEdges is a circular list of edges */
@@ -2460,7 +2460,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 						@Override
 						public TreesEdge next() {
-<span class="fc" id="L2463">							Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L2463">							Assertions.hasNext(this);</span>
 <span class="fc" id="L2464">							TreesEdge ret = nextEdge;</span>
 <span class="fc" id="L2465">							nextEdge = nextEdge.nextOutEdge;</span>
 <span class="fc" id="L2466">							return ret;</span>
@@ -2485,7 +2485,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 						@Override
 						public TreesEdge next() {
-<span class="fc" id="L2488">							Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L2488">							Assertions.hasNext(this);</span>
 <span class="fc" id="L2489">							TreesEdge ret = nextEdge;</span>
 <span class="fc" id="L2490">							nextEdge = nextEdge.nextInEdge;</span>
 <span class="fc" id="L2491">							return ret;</span>
@@ -2527,7 +2527,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 						@Override
 						public TreesEdge next() {
-<span class="fc" id="L2530">							Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L2530">							Assertions.hasNext(this);</span>
 <span class="fc" id="L2531">							prev = nextEdge;</span>
 <span class="fc" id="L2532">							nextEdge = nextEdge.nextOutEdge;</span>
 <span class="fc" id="L2533">							advance();</span>
@@ -2573,7 +2573,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 						@Override
 						public TreesEdge next() {
-<span class="fc" id="L2576">							Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L2576">							Assertions.hasNext(this);</span>
 <span class="fc" id="L2577">							prev = nextEdge;</span>
 <span class="fc" id="L2578">							nextEdge = nextEdge.nextInEdge;</span>
 <span class="fc" id="L2579">							advance();</span>
@@ -2603,7 +2603,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 						@Override
 						public Blossom next() {
-<span class="fc" id="L2606">							Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L2606">							Assertions.hasNext(this);</span>
 <span class="fc" id="L2607">							Blossom ret = b;</span>
 
 							/* firstTreeChild points only to even children two levels down, skipping odd nodes */

@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-class CyclesEnumeratorJohnson extends CyclesEnumeratorAbstract {
+class CyclesEnumeratorJohnson implements CyclesEnumeratorBase {
 
 <span class="fc" id="L47">	private final StronglyConnectedComponentsAlgo ccAlg = StronglyConnectedComponentsAlgo.newInstance();</span>
 
@@ -52,9 +52,9 @@ class CyclesEnumeratorJohnson extends CyclesEnumeratorAbstract {
 <span class="fc" id="L52">	CyclesEnumeratorJohnson() {}</span>
 
 	@Override
-	Iterator&lt;IPath&gt; cyclesIter(IndexGraph g) {
-<span class="fc" id="L56">		Assertions.Graphs.onlyDirected(g);</span>
-<span class="fc" id="L57">		Assertions.Graphs.noParallelEdges(g, &quot;graphs with parallel edges are not supported&quot;);</span>
+	public Iterator&lt;IPath&gt; cyclesIter(IndexGraph g) {
+<span class="fc" id="L56">		Assertions.onlyDirected(g);</span>
+<span class="fc" id="L57">		Assertions.noParallelEdges(g, &quot;graphs with parallel edges are not supported&quot;);</span>
 <span class="fc" id="L58">		final int n = g.vertices().size();</span>
 
 <span class="fc" id="L60">		return new Iterator&lt;&gt;() {</span>
@@ -219,7 +219,7 @@ class CyclesEnumeratorJohnson extends CyclesEnumeratorAbstract {
 
 			@Override
 			public IPath next() {
-<span class="fc" id="L222">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L222">				Assertions.hasNext(this);</span>
 <span class="fc" id="L223">				IPath ret = nextCycle;</span>
 <span class="fc" id="L224">				advance();</span>
 <span class="fc" id="L225">				return ret;</span>

@@ -15,25 +15,17 @@
  */
 package com.jgalgo.alg;
 
-import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
-import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 /**
@@ -49,379 +41,142 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L52">class BiConnectedComponentsAlgoHopcroftTarjan extends BiConnectedComponentsAlgoAbstract {</span>
+<span class="fc" id="L44">class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAlgoBase {</span>
 
 	@Override
-	BiConnectedComponentsAlgo.IResult findBiConnectedComponents(IndexGraph g) {
-<span class="fc" id="L56">		Assertions.Graphs.onlyUndirected(g);</span>
+	public BiConnectedComponentsAlgo.IResult findBiConnectedComponents(IndexGraph g) {
+<span class="fc" id="L48">		Assertions.onlyUndirected(g);</span>
 
-<span class="fc" id="L58">		final int n = g.vertices().size();</span>
-<span class="fc" id="L59">		int[] depths = new int[n];</span>
-<span class="fc" id="L60">		int[] edgePath = new int[n];</span>
-<span class="fc" id="L61">		int[] lowpoint = new int[n];</span>
-<span class="fc" id="L62">		IEdgeIter[] edgeIters = new IEdgeIter[n];</span>
+<span class="fc" id="L50">		final int n = g.vertices().size();</span>
+<span class="fc" id="L51">		int[] depths = new int[n];</span>
+<span class="fc" id="L52">		int[] edgePath = new int[n];</span>
+<span class="fc" id="L53">		int[] lowpoint = new int[n];</span>
+<span class="fc" id="L54">		IEdgeIter[] edgeIters = new IEdgeIter[n];</span>
 		// TODO DFS stack class
 
-<span class="fc" id="L65">		IntArrayList edgeStack = new IntArrayList();</span>
+<span class="fc" id="L57">		IntArrayList edgeStack = new IntArrayList();</span>
 
-<span class="fc" id="L67">		Arrays.fill(depths, -1);</span>
+<span class="fc" id="L59">		Arrays.fill(depths, -1);</span>
 
-<span class="fc" id="L69">		var biccVerticesFromBiccEdgesState = new Object() {</span>
-<span class="fc" id="L70">			Bitmap visited = new Bitmap(n);</span>
+<span class="fc" id="L61">		var biccVerticesFromBiccEdgesState = new Object() {</span>
+<span class="fc" id="L62">			Bitmap visited = new Bitmap(n);</span>
 		};
-<span class="fc" id="L72">		Function&lt;int[], int[]&gt; biccVerticesFromBiccEdges = biccsEdges -&gt; {</span>
-<span class="fc" id="L73">			Bitmap visited = biccVerticesFromBiccEdgesState.visited;</span>
-<span class="pc bnc" id="L74" title="All 2 branches missed.">			assert visited.isEmpty();</span>
-<span class="fc" id="L75">			int biccVerticesCount = 0;</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (int e : biccsEdges) {</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">				for (int w : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">					if (!visited.get(w)) {</span>
-<span class="fc" id="L79">						visited.set(w);</span>
-<span class="fc" id="L80">						biccVerticesCount++;</span>
+<span class="fc" id="L64">		Function&lt;int[], int[]&gt; biccVerticesFromBiccEdges = biccsEdges -&gt; {</span>
+<span class="fc" id="L65">			Bitmap visited = biccVerticesFromBiccEdgesState.visited;</span>
+<span class="pc bnc" id="L66" title="All 2 branches missed.">			assert visited.isEmpty();</span>
+<span class="fc" id="L67">			int biccVerticesCount = 0;</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">			for (int e : biccsEdges) {</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">				for (int w : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">					if (!visited.get(w)) {</span>
+<span class="fc" id="L71">						visited.set(w);</span>
+<span class="fc" id="L72">						biccVerticesCount++;</span>
 					}
 				}
 			}
-<span class="fc bfc" id="L84" title="All 2 branches covered.">			for (int e : biccsEdges)</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">				for (int w : new int[] { g.edgeSource(e), g.edgeTarget(e) })</span>
-<span class="fc" id="L86">					visited.clear(w);</span>
-<span class="fc" id="L87">			int[] biccVertices = new int[biccVerticesCount];</span>
-<span class="fc" id="L88">			biccVerticesCount = 0;</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">			for (int e : biccsEdges) {</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">				for (int w : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">					if (!visited.get(w)) {</span>
-<span class="fc" id="L92">						visited.set(w);</span>
-<span class="fc" id="L93">						biccVertices[biccVerticesCount++] = w;</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (int e : biccsEdges)</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">				for (int w : new int[] { g.edgeSource(e), g.edgeTarget(e) })</span>
+<span class="fc" id="L78">					visited.clear(w);</span>
+<span class="fc" id="L79">			int[] biccVertices = new int[biccVerticesCount];</span>
+<span class="fc" id="L80">			biccVerticesCount = 0;</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			for (int e : biccsEdges) {</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">				for (int w : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">					if (!visited.get(w)) {</span>
+<span class="fc" id="L84">						visited.set(w);</span>
+<span class="fc" id="L85">						biccVertices[biccVerticesCount++] = w;</span>
 					}
 				}
 			}
-<span class="pc bnc" id="L97" title="All 2 branches missed.">			assert biccVertices.length == biccVerticesCount;</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">			for (int w : biccVertices)</span>
-<span class="fc" id="L99">				visited.clear(w);</span>
-<span class="fc" id="L100">			return biccVertices;</span>
+<span class="pc bnc" id="L89" title="All 2 branches missed.">			assert biccVertices.length == biccVerticesCount;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">			for (int w : biccVertices)</span>
+<span class="fc" id="L91">				visited.clear(w);</span>
+<span class="fc" id="L92">			return biccVertices;</span>
 		};
 
 		// Bitmap separatingVertex = new Bitmap(n);
-<span class="fc" id="L104">		List&lt;Pair&lt;int[], int[]&gt;&gt; biccs = new ObjectArrayList&lt;&gt;();</span>
-<span class="fc" id="L105">		IntList biccEdgesTemp = new IntArrayList();</span>
+<span class="fc" id="L96">		List&lt;Pair&lt;int[], int[]&gt;&gt; biccs = new ObjectArrayList&lt;&gt;();</span>
+<span class="fc" id="L97">		IntList biccEdgesTemp = new IntArrayList();</span>
 
-<span class="fc bfc" id="L107" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (depths[root] != -1)</span>
-<span class="fc" id="L109">				continue;</span>
-<span class="fc" id="L110">			int depth = 0;</span>
-<span class="fc" id="L111">			depths[root] = depth;</span>
-<span class="fc" id="L112">			lowpoint[depth] = depth;</span>
-<span class="fc" id="L113">			edgeIters[depth] = g.outEdges(root).iterator();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">			if (depths[root] != -1)</span>
+<span class="fc" id="L101">				continue;</span>
+<span class="fc" id="L102">			int depth = 0;</span>
+<span class="fc" id="L103">			depths[root] = depth;</span>
+<span class="fc" id="L104">			lowpoint[depth] = depth;</span>
+<span class="fc" id="L105">			edgeIters[depth] = g.outEdges(root).iterator();</span>
 
-<span class="fc" id="L115">			int rootChildrenCount = 0;</span>
+<span class="fc" id="L107">			int rootChildrenCount = 0;</span>
 
-<span class="fc" id="L117">			dfs: for (int u = root;;) {</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">				final int parent = depth == 0 ? -1 : g.edgeEndpoint(edgePath[depth - 1], u);</span>
+<span class="fc" id="L109">			dfs: for (int u = root;;) {</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">				final int parent = depth == 0 ? -1 : g.edgeEndpoint(edgePath[depth - 1], u);</span>
 
-<span class="fc bfc" id="L120" title="All 2 branches covered.">				for (IEdgeIter eit = edgeIters[depth]; eit.hasNext();) {</span>
-<span class="fc" id="L121">					int e = eit.nextInt();</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">				for (IEdgeIter eit = edgeIters[depth]; eit.hasNext();) {</span>
+<span class="fc" id="L113">					int e = eit.nextInt();</span>
 
-<span class="fc" id="L123">					int v = eit.targetInt();</span>
-<span class="fc" id="L124">					final int vDepth = depths[v];</span>
-<span class="fc bfc" id="L125" title="All 2 branches covered.">					if (vDepth == -1) { /* unvisited */</span>
-<span class="fc" id="L126">						edgeStack.push(e);</span>
-<span class="fc" id="L127">						edgePath[depth] = e;</span>
-<span class="fc" id="L128">						depth++;</span>
-<span class="fc" id="L129">						depths[v] = depth;</span>
-<span class="fc" id="L130">						lowpoint[depth] = depth;</span>
-<span class="fc" id="L131">						edgeIters[depth] = g.outEdges(v).iterator();</span>
-<span class="fc" id="L132">						u = v;</span>
-<span class="fc" id="L133">						continue dfs;</span>
+<span class="fc" id="L115">					int v = eit.targetInt();</span>
+<span class="fc" id="L116">					final int vDepth = depths[v];</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">					if (vDepth == -1) { /* unvisited */</span>
+<span class="fc" id="L118">						edgeStack.push(e);</span>
+<span class="fc" id="L119">						edgePath[depth] = e;</span>
+<span class="fc" id="L120">						depth++;</span>
+<span class="fc" id="L121">						depths[v] = depth;</span>
+<span class="fc" id="L122">						lowpoint[depth] = depth;</span>
+<span class="fc" id="L123">						edgeIters[depth] = g.outEdges(v).iterator();</span>
+<span class="fc" id="L124">						u = v;</span>
+<span class="fc" id="L125">						continue dfs;</span>
 
-<span class="fc bfc" id="L135" title="All 4 branches covered.">					} else if (v != parent &amp;&amp; vDepth &lt; depth) {</span>
-<span class="fc" id="L136">						edgeStack.push(e);</span>
-<span class="fc" id="L137">						lowpoint[depth] = Math.min(lowpoint[depth], vDepth);</span>
+<span class="fc bfc" id="L127" title="All 4 branches covered.">					} else if (v != parent &amp;&amp; vDepth &lt; depth) {</span>
+<span class="fc" id="L128">						edgeStack.push(e);</span>
+<span class="fc" id="L129">						lowpoint[depth] = Math.min(lowpoint[depth], vDepth);</span>
 					}
-<span class="fc" id="L139">				}</span>
+<span class="fc" id="L131">				}</span>
 
-<span class="fc bfc" id="L141" title="All 2 branches covered.">				if (depth &gt; 0) {</span>
-<span class="fc" id="L142">					depth--;</span>
-<span class="fc bfc" id="L143" title="All 2 branches covered.">					if (lowpoint[depth + 1] &gt;= depth) {</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">				if (depth &gt; 0) {</span>
+<span class="fc" id="L134">					depth--;</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">					if (lowpoint[depth + 1] &gt;= depth) {</span>
 						// separatingVertex.set(parent);
 
-<span class="pc bnc" id="L146" title="All 2 branches missed.">						assert biccEdgesTemp.isEmpty();</span>
-<span class="pc bpc" id="L147" title="1 of 2 branches missed.">						for (int lastEdge = edgePath[depth]; !edgeStack.isEmpty();) {</span>
-<span class="fc" id="L148">							int e = edgeStack.popInt();</span>
-<span class="fc" id="L149">							biccEdgesTemp.add(e);</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">							if (e == lastEdge)</span>
-<span class="fc" id="L151">								break;</span>
-<span class="fc" id="L152">						}</span>
-<span class="pc bnc" id="L153" title="All 2 branches missed.">						assert !biccEdgesTemp.isEmpty();</span>
-<span class="fc" id="L154">						int[] biccEdges = biccEdgesTemp.toIntArray();</span>
-<span class="fc" id="L155">						int[] biccVertices = biccVerticesFromBiccEdges.apply(biccEdges);</span>
-<span class="fc" id="L156">						biccs.add(Pair.of(biccVertices, biccEdges));</span>
-<span class="fc" id="L157">						biccEdgesTemp.clear();</span>
-<span class="fc" id="L158">					} else {</span>
-<span class="fc" id="L159">						lowpoint[depth] = Math.min(lowpoint[depth], lowpoint[depth + 1]);</span>
+<span class="pc bnc" id="L138" title="All 2 branches missed.">						assert biccEdgesTemp.isEmpty();</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">						for (int lastEdge = edgePath[depth]; !edgeStack.isEmpty();) {</span>
+<span class="fc" id="L140">							int e = edgeStack.popInt();</span>
+<span class="fc" id="L141">							biccEdgesTemp.add(e);</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">							if (e == lastEdge)</span>
+<span class="fc" id="L143">								break;</span>
+<span class="fc" id="L144">						}</span>
+<span class="pc bnc" id="L145" title="All 2 branches missed.">						assert !biccEdgesTemp.isEmpty();</span>
+<span class="fc" id="L146">						int[] biccEdges = biccEdgesTemp.toIntArray();</span>
+<span class="fc" id="L147">						int[] biccVertices = biccVerticesFromBiccEdges.apply(biccEdges);</span>
+<span class="fc" id="L148">						biccs.add(Pair.of(biccVertices, biccEdges));</span>
+<span class="fc" id="L149">						biccEdgesTemp.clear();</span>
+<span class="fc" id="L150">					} else {</span>
+<span class="fc" id="L151">						lowpoint[depth] = Math.min(lowpoint[depth], lowpoint[depth + 1]);</span>
 					}
 
-<span class="fc bfc" id="L162" title="All 2 branches covered.">					if (depth == 0)</span>
-<span class="fc" id="L163">						rootChildrenCount++;</span>
-<span class="fc" id="L164">					u = parent;</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">					if (depth == 0)</span>
+<span class="fc" id="L155">						rootChildrenCount++;</span>
+<span class="fc" id="L156">					u = parent;</span>
 
 				} else {
-<span class="pc bnc" id="L167" title="All 2 branches missed.">					assert u == root;</span>
+<span class="pc bnc" id="L159" title="All 2 branches missed.">					assert u == root;</span>
 					// if (rootChildrenCount &gt; 1)
 					// separatingVertex.set(root);
 
-<span class="fc bfc" id="L171" title="All 2 branches covered.">					if (rootChildrenCount == 0) {</span>
-<span class="fc" id="L172">						biccs.add(Pair.of(new int[] { root }, IntArrays.DEFAULT_EMPTY_ARRAY));</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">					if (rootChildrenCount == 0) {</span>
+<span class="fc" id="L164">						biccs.add(Pair.of(new int[] { root }, IntArrays.DEFAULT_EMPTY_ARRAY));</span>
 
-<span class="pc bpc" id="L174" title="1 of 2 branches missed.">					} else if (!edgeStack.isEmpty()) {</span>
-<span class="nc" id="L175">						int[] biccEdges = edgeStack.toIntArray();</span>
-<span class="nc" id="L176">						int[] biccVertices = biccVerticesFromBiccEdges.apply(biccEdges);</span>
-<span class="nc" id="L177">						edgeStack.clear();</span>
-<span class="nc" id="L178">						biccs.add(Pair.of(biccVertices, biccEdges));</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">					} else if (!edgeStack.isEmpty()) {</span>
+<span class="nc" id="L167">						int[] biccEdges = edgeStack.toIntArray();</span>
+<span class="nc" id="L168">						int[] biccVertices = biccVerticesFromBiccEdges.apply(biccEdges);</span>
+<span class="nc" id="L169">						edgeStack.clear();</span>
+<span class="nc" id="L170">						biccs.add(Pair.of(biccVertices, biccEdges));</span>
 
-<span class="nc" id="L180">					}</span>
+<span class="nc" id="L172">					}</span>
 					break;
 				}
-<span class="fc" id="L183">			}</span>
+<span class="fc" id="L175">			}</span>
 		}
 
-<span class="fc" id="L186">		return new Res(g, biccs);</span>
+<span class="fc" id="L178">		return new BiConnectedComponentsAlgos.IndexResult(g, biccs);</span>
 	}
 
-<span class="fc" id="L189">	private static class Res implements BiConnectedComponentsAlgo.IResult {</span>
-
-		private final IndexGraph g;
-		private final IntSet[] biccsVertices;
-		private final int[][] biccsEdgesFromAlgo;
-		private IntSet[] biccsEdges;
-		private IntSet[] vertexBiCcs;
-		private Bitmap cutVerticesBitmap;
-		private IntSet cutVertices;
-		private IntGraph blockGraph;
-
-<span class="fc" id="L200">		Res(IndexGraph g, List&lt;Pair&lt;int[], int[]&gt;&gt; biccs) {</span>
-<span class="fc" id="L201">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L202">			final int biccsNum = biccs.size();</span>
-
-<span class="fc" id="L204">			biccsVertices = new IntSet[biccsNum];</span>
-<span class="fc bfc" id="L205" title="All 2 branches covered.">			for (int biccIdx = 0; biccIdx &lt; biccsNum; biccIdx++)</span>
-<span class="fc" id="L206">				biccsVertices[biccIdx] = ImmutableIntArraySet.withNaiveContains(biccs.get(biccIdx).first());</span>
-
-<span class="fc" id="L208">			biccsEdgesFromAlgo = new int[biccsNum][];</span>
-<span class="fc bfc" id="L209" title="All 2 branches covered.">			for (int biccIdx = 0; biccIdx &lt; biccsNum; biccIdx++)</span>
-<span class="fc" id="L210">				biccsEdgesFromAlgo[biccIdx] = biccs.get(biccIdx).second();</span>
-<span class="fc" id="L211">		}</span>
-
-		@Override
-		public IntSet getVertexBiCcs(int vertex) {
-<span class="fc" id="L215">			final int n = g.vertices().size();</span>
-<span class="fc bfc" id="L216" title="All 2 branches covered.">			if (vertexBiCcs == null) {</span>
-<span class="fc" id="L217">				int[] vertexBiCcsCount = new int[n + 1];</span>
-<span class="fc bfc" id="L218" title="All 2 branches covered.">				for (int biccIdx = 0; biccIdx &lt; biccsVertices.length; biccIdx++)</span>
-<span class="fc bfc" id="L219" title="All 2 branches covered.">					for (int v : biccsVertices[biccIdx])</span>
-<span class="fc" id="L220">						vertexBiCcsCount[v]++;</span>
-<span class="fc" id="L221">				int vertexBiCcsCountTotal = 0;</span>
-<span class="fc bfc" id="L222" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L223">					vertexBiCcsCountTotal += vertexBiCcsCount[v];</span>
-
-<span class="fc" id="L225">				int[] sortedBiccs = new int[vertexBiCcsCountTotal];</span>
-<span class="fc" id="L226">				int[] vertexOffset = vertexBiCcsCount;</span>
-<span class="fc bfc" id="L227" title="All 2 branches covered.">				for (int s = 0, v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L228">					int k = vertexOffset[v];</span>
-<span class="fc" id="L229">					vertexOffset[v] = s;</span>
-<span class="fc" id="L230">					s += k;</span>
-				}
-<span class="fc bfc" id="L232" title="All 2 branches covered.">				for (int biccIdx = 0; biccIdx &lt; biccsVertices.length; biccIdx++)</span>
-<span class="fc bfc" id="L233" title="All 2 branches covered.">					for (int v : biccsVertices[biccIdx])</span>
-<span class="fc" id="L234">						sortedBiccs[vertexOffset[v]++] = biccIdx;</span>
-<span class="fc bfc" id="L235" title="All 2 branches covered.">				for (int v = n; v &gt; 0; v--)</span>
-<span class="fc" id="L236">					vertexOffset[v] = vertexOffset[v - 1];</span>
-<span class="fc" id="L237">				vertexOffset[0] = 0;</span>
-
-<span class="fc" id="L239">				vertexBiCcs = new IntSet[n];</span>
-<span class="fc bfc" id="L240" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L241">					vertexBiCcs[v] =</span>
-<span class="fc" id="L242">							ImmutableIntArraySet.withNaiveContains(sortedBiccs, vertexOffset[v], vertexOffset[v + 1]);</span>
-			}
-<span class="fc" id="L244">			Assertions.Graphs.checkVertex(vertex, n);</span>
-<span class="fc" id="L245">			return vertexBiCcs[vertex];</span>
-		}
-
-		@Override
-		public int getNumberOfBiCcs() {
-<span class="fc" id="L250">			return biccsVertices.length;</span>
-		}
-
-		@Override
-		public IntSet getBiCcVertices(int biccIdx) {
-<span class="fc" id="L255">			return biccsVertices[biccIdx];</span>
-		}
-
-		@Override
-		public IntSet getBiCcEdges(int biccIdx) {
-<span class="fc bfc" id="L260" title="All 2 branches covered.">			if (biccsEdges == null) {</span>
-<span class="fc" id="L261">				final int biccsNum = getNumberOfBiCcs();</span>
-<span class="fc" id="L262">				biccsEdges = new IntSet[biccsNum];</span>
-
-<span class="pc bpc" id="L264" title="3 of 4 branches missed.">				if (!g.isAllowParallelEdges() &amp;&amp; !g.isAllowSelfEdges()) {</span>
-<span class="nc bnc" id="L265" title="All 2 branches missed.">					for (int b = 0; b &lt; biccsNum; b++)</span>
-<span class="nc" id="L266">						biccsEdges[b] = ImmutableIntArraySet.withNaiveContains(biccsEdgesFromAlgo[b]);</span>
-
-				} else {
-					/*
-					 * in case parallel edges exists in the graph, we may need to manually add them to the Bi-comp edges
-					 * collection, as they will not be added by the main algorithm.
-					 */
-<span class="fc" id="L273">					int[] biccExtraEdgesCount = new int[biccsNum];</span>
-<span class="fc" id="L274">					final int n = g.vertices().size();</span>
-<span class="fc" id="L275">					final int m = g.edges().size();</span>
-
-<span class="fc" id="L277">					int[] edge2bicc = new int[m];</span>
-<span class="fc" id="L278">					Arrays.fill(edge2bicc, -1);</span>
-<span class="fc bfc" id="L279" title="All 2 branches covered.">					for (int b = 0; b &lt; biccsNum; b++) {</span>
-<span class="fc bfc" id="L280" title="All 2 branches covered.">						for (int e : biccsEdgesFromAlgo[b]) {</span>
-<span class="pc bnc" id="L281" title="All 2 branches missed.">							assert edge2bicc[e] == -1;</span>
-<span class="fc" id="L282">							edge2bicc[e] = b;</span>
-						}
-					}
-
-					/* Search for parallel edges, which may not be included in the edges list by the main algorithm */
-<span class="fc" id="L287">					int[] extraEdgesBiccs = null;</span>
-<span class="pc bpc" id="L288" title="1 of 2 branches missed.">					if (g.isAllowParallelEdges()) {</span>
-<span class="fc" id="L289">						int[] target2bicc = new int[n];</span>
-<span class="fc" id="L290">						Arrays.fill(target2bicc, -1);</span>
-<span class="fc" id="L291">						extraEdgesBiccs = new int[m];</span>
-<span class="fc" id="L292">						Arrays.fill(extraEdgesBiccs, -1);</span>
-<span class="fc bfc" id="L293" title="All 2 branches covered.">						for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L294" title="All 2 branches covered.">							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L295">								int e = eit.nextInt();</span>
-<span class="fc" id="L296">								int v = eit.targetInt();</span>
-<span class="fc bfc" id="L297" title="All 2 branches covered.">								if (u == v)</span>
-<span class="fc" id="L298">									continue;</span>
-<span class="fc" id="L299">								int b = edge2bicc[e];</span>
-<span class="fc bfc" id="L300" title="All 2 branches covered.">								if (b != -1)</span>
-<span class="fc" id="L301">									target2bicc[v] = b;</span>
-<span class="fc" id="L302">							}</span>
-<span class="fc bfc" id="L303" title="All 2 branches covered.">							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L304">								int e = eit.nextInt();</span>
-<span class="fc" id="L305">								int v = eit.targetInt();</span>
-<span class="fc bfc" id="L306" title="All 2 branches covered.">								if (u == v)</span>
-<span class="fc" id="L307">									continue;</span>
-<span class="fc" id="L308">								int b = edge2bicc[e];</span>
-<span class="fc bfc" id="L309" title="All 2 branches covered.">								if (b == -1) {</span>
-<span class="fc" id="L310">									b = target2bicc[v];</span>
-<span class="fc" id="L311">									edge2bicc[e] = b;</span>
-<span class="pc bnc" id="L312" title="All 2 branches missed.">									assert extraEdgesBiccs[e] == -1;</span>
-<span class="fc" id="L313">									extraEdgesBiccs[e] = b;</span>
-<span class="fc" id="L314">									biccExtraEdgesCount[b]++;</span>
-								}
-<span class="fc" id="L316">							}</span>
-<span class="fc bfc" id="L317" title="All 2 branches covered.">							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L318">								eit.nextInt();</span>
-<span class="fc" id="L319">								target2bicc[eit.targetInt()] = -1;</span>
-							}
-						}
-					}
-
-					/* search for self edges, which are not added to any bicc */
-<span class="pc bpc" id="L325" title="1 of 2 branches missed.">					if (g.isAllowSelfEdges()) {</span>
-<span class="pc bnc" id="L326" title="All 4 branches missed.">						assert Graphs.selfEdges(g).intStream().allMatch(e -&gt; edge2bicc[e] == -1);</span>
-<span class="fc bfc" id="L327" title="All 2 branches covered.">						for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L328" title="All 2 branches covered.">							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L329">								eit.nextInt();</span>
-<span class="fc" id="L330">								int v = eit.targetInt();</span>
-<span class="fc bfc" id="L331" title="All 2 branches covered.">								if (u != v)</span>
-<span class="fc" id="L332">									continue;</span>
-<span class="fc bfc" id="L333" title="All 2 branches covered.">								for (int b : getVertexBiCcs(u))</span>
-<span class="fc" id="L334">									biccExtraEdgesCount[b]++;</span>
-<span class="fc" id="L335">							}</span>
-						}
-					}
-
-<span class="fc bfc" id="L339" title="All 2 branches covered.">					for (int b = 0; b &lt; biccsNum; b++) {</span>
-<span class="fc bfc" id="L340" title="All 2 branches covered.">						if (biccExtraEdgesCount[b] == 0)</span>
-<span class="fc" id="L341">							continue;</span>
-<span class="fc" id="L342">						int[] biccEdges = biccsEdgesFromAlgo[b];</span>
-<span class="fc" id="L343">						int oldLength = biccEdges.length;</span>
-<span class="fc" id="L344">						biccEdges = Arrays.copyOf(biccEdges, oldLength + biccExtraEdgesCount[b]);</span>
-<span class="fc" id="L345">						biccsEdgesFromAlgo[b] = biccEdges;</span>
-<span class="fc" id="L346">						biccExtraEdgesCount[b] = oldLength;</span>
-					}
-
-					/* add parallel edges */
-<span class="pc bpc" id="L350" title="1 of 2 branches missed.">					if (g.isAllowParallelEdges()) {</span>
-<span class="fc bfc" id="L351" title="All 2 branches covered.">						for (int b, e = 0; e &lt; m; e++)</span>
-<span class="fc bfc" id="L352" title="All 2 branches covered.">							if ((b = extraEdgesBiccs[e]) != -1)</span>
-<span class="fc" id="L353">								biccsEdgesFromAlgo[b][biccExtraEdgesCount[b]++] = e;</span>
-					}
-
-					/* add self edges */
-<span class="pc bpc" id="L357" title="1 of 2 branches missed.">					if (g.isAllowSelfEdges()) {</span>
-<span class="fc bfc" id="L358" title="All 2 branches covered.">						for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L359" title="All 2 branches covered.">							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L360">								int e = eit.nextInt();</span>
-<span class="fc" id="L361">								int v = eit.targetInt();</span>
-<span class="fc bfc" id="L362" title="All 2 branches covered.">								if (u != v)</span>
-<span class="fc" id="L363">									continue;</span>
-<span class="fc bfc" id="L364" title="All 2 branches covered.">								for (int b : getVertexBiCcs(u))</span>
-<span class="fc" id="L365">									biccsEdgesFromAlgo[b][biccExtraEdgesCount[b]++] = e;</span>
-<span class="fc" id="L366">							}</span>
-						}
-					}
-
-<span class="fc bfc" id="L370" title="All 2 branches covered.">					for (int b = 0; b &lt; biccsNum; b++) {</span>
-<span class="fc" id="L371">						biccsEdges[b] = ImmutableIntArraySet.withNaiveContains(biccsEdgesFromAlgo[b]);</span>
-<span class="fc" id="L372">						biccsEdgesFromAlgo[b] = null;</span>
-					}
-				}
-			}
-<span class="fc" id="L376">			return biccsEdges[biccIdx];</span>
-		}
-
-		@Override
-		public String toString() {
-<span class="nc" id="L381">			return range(getNumberOfBiCcs())</span>
-<span class="nc" id="L382">					.mapToObj(this::getBiCcVertices)</span>
-<span class="nc" id="L383">					.map(Object::toString)</span>
-<span class="nc" id="L384">					.collect(Collectors.joining(&quot;, &quot;, &quot;[&quot;, &quot;]&quot;));</span>
-		}
-
-		@Override
-		public boolean isCutVertex(int vertex) {
-<span class="fc" id="L389">			computeCutVerticesBitmap();</span>
-<span class="fc" id="L390">			Assertions.Graphs.checkVertex(vertex, g.vertices().size());</span>
-<span class="fc" id="L391">			return cutVerticesBitmap.get(vertex);</span>
-		}
-
-		private void computeCutVerticesBitmap() {
-<span class="fc bfc" id="L395" title="All 2 branches covered.">			if (cutVerticesBitmap == null)</span>
-<span class="fc bfc" id="L396" title="All 2 branches covered.">				cutVerticesBitmap = Bitmap.fromPredicate(g.vertices().size(), v -&gt; getVertexBiCcs(v).size() &gt; 1);</span>
-<span class="fc" id="L397">		}</span>
-
-		@Override
-		public IntSet getCutVertices() {
-<span class="fc bfc" id="L401" title="All 2 branches covered.">			if (cutVertices == null) {</span>
-<span class="fc" id="L402">				computeCutVerticesBitmap();</span>
-<span class="fc" id="L403">				cutVertices = ImmutableIntArraySet.ofBitmap(cutVerticesBitmap);</span>
-			}
-<span class="fc" id="L405">			return cutVertices;</span>
-		}
-
-		@Override
-		public IntGraph getBlockGraph() {
-<span class="pc bpc" id="L410" title="1 of 2 branches missed.">			if (blockGraph == null) {</span>
-<span class="fc" id="L411">				final int blockNum = getNumberOfBiCcs();</span>
-<span class="fc" id="L412">				IntGraphBuilder g = IntGraphBuilder.undirected();</span>
-<span class="fc" id="L413">				g.ensureVertexCapacity(blockNum);</span>
-<span class="fc" id="L414">				g.addVertices(range(blockNum));</span>
-<span class="fc bfc" id="L415" title="All 2 branches covered.">				for (int cutVertex : getCutVertices())</span>
-<span class="fc bfc" id="L416" title="All 2 branches covered.">					for (int b1 : getVertexBiCcs(cutVertex))</span>
-<span class="fc bfc" id="L417" title="All 2 branches covered.">						for (int b2 : getVertexBiCcs(cutVertex))</span>
-<span class="fc bfc" id="L418" title="All 2 branches covered.">							if (b1 != b2)</span>
-<span class="fc" id="L419">								g.addEdge(b1, b2);</span>
-<span class="fc" id="L420">				blockGraph = g.build();</span>
-			}
-<span class="fc" id="L422">			return blockGraph;</span>
-		}
-
-	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

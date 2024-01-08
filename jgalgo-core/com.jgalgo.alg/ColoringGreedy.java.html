@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
  * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Greedy_coloring&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-<span class="fc" id="L44">class ColoringGreedy extends ColoringUtils.AbstractImpl implements RandomizedAlgorithm {</span>
+<span class="fc" id="L44">class ColoringGreedy implements ColoringAlgoBase, RandomizedAlgorithm {</span>
 
 <span class="fc" id="L46">	private final Random rand = new Random();</span>
 
@@ -51,9 +51,9 @@ import it.unimi.dsi.fastutil.ints.IntArrays;
 <span class="fc" id="L51">	}</span>
 
 	@Override
-	IVertexPartition computeColoring(IndexGraph g) {
-<span class="fc" id="L55">		Assertions.Graphs.onlyUndirected(g);</span>
-<span class="fc" id="L56">		Assertions.Graphs.noSelfEdges(g, &quot;no valid coloring in graphs with self edges&quot;);</span>
+	public IVertexPartition computeColoring(IndexGraph g) {
+<span class="fc" id="L55">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L56">		Assertions.noSelfEdges(g, &quot;no valid coloring in graphs with self edges&quot;);</span>
 
 <span class="fc" id="L58">		final int n = g.vertices().size();</span>
 <span class="fc" id="L59">		int[] colors = new int[n];</span>

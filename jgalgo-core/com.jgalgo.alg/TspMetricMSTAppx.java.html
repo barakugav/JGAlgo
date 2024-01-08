@@ -56,8 +56,8 @@ import static com.jgalgo.internal.util.Range.range;
 <span class="fc" id="L56">		final int n = g.vertices().size();</span>
 <span class="fc bfc" id="L57" title="All 2 branches covered.">		if (n == 0)</span>
 <span class="fc" id="L58">			return null;</span>
-<span class="fc" id="L59">		Assertions.Graphs.onlyUndirected(g);</span>
-<span class="fc" id="L60">		Assertions.Graphs.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
+<span class="fc" id="L59">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L60">		Assertions.noParallelEdges(g, &quot;parallel edges are not supported&quot;);</span>
 		// if (VALIDATE_METRIC)
 		// TSPMetricUtils.checkArgDistanceTableIsMetric(distances);
 

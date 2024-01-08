@@ -84,7 +84,7 @@ public class IterTools {
 
 		@Override
 		public E next() {
-<span class="nc" id="L87">			Assertions.Iters.hasNext(this);</span>
+<span class="nc" id="L87">			Assertions.hasNext(this);</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
 <span class="nc" id="L89">			E ret = (E) nextElm;</span>
 <span class="nc" id="L90">			advance();</span>
@@ -94,7 +94,7 @@ public class IterTools {
 		@Override
 		@SuppressWarnings(&quot;unchecked&quot;)
 		public E peekNext() {
-<span class="nc" id="L97">			Assertions.Iters.hasNext(this);</span>
+<span class="nc" id="L97">			Assertions.hasNext(this);</span>
 <span class="nc" id="L98">			return (E) nextElm;</span>
 		}
 
@@ -121,7 +121,7 @@ public class IterTools {
 
 			@Override
 			public int nextInt() {
-<span class="nc" id="L124">				Assertions.Iters.hasNext(this);</span>
+<span class="nc" id="L124">				Assertions.hasNext(this);</span>
 <span class="nc" id="L125">				int ret = next;</span>
 <span class="nc" id="L126">				advance();</span>
 <span class="nc" id="L127">				return ret;</span>
@@ -129,7 +129,7 @@ public class IterTools {
 
 			@Override
 			public int peekNextInt() {
-<span class="nc" id="L132">				Assertions.Iters.hasNext(this);</span>
+<span class="nc" id="L132">				Assertions.hasNext(this);</span>
 <span class="nc" id="L133">				return next;</span>
 			}
 
@@ -236,7 +236,7 @@ public class IterTools {
 
 			@Override
 			public int nextInt() {
-<span class="fc" id="L239">				Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L239">				Assertions.hasNext(this);</span>
 <span class="fc" id="L240">				int ret = next;</span>
 <span class="fc" id="L241">				advance();</span>
 <span class="fc" id="L242">				return ret;</span>

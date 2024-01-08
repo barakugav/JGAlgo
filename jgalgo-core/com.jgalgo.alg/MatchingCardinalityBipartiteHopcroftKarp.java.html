@@ -37,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
  * @see    &lt;a href= &quot;https://en.wikipedia.org/wiki/Hopcroft%E2%80%93Karp_algorithm&quot;&gt;Wikipedia&lt;/a&gt;
  * @author Barak Ugav
  */
-class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardinalityMatchingImpl {
+class MatchingCardinalityBipartiteHopcroftKarp implements MatchingAlgoBase.Cardinality {
 
 	/**
 	 * Create a new maximum matching object.
@@ -52,11 +52,11 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 	 * @throws IllegalArgumentException if the graph is no bipartite with respect to the provided partition
 	 */
 	@Override
-	IMatching computeMaximumCardinalityMatching(IndexGraph g) {
-<span class="fc" id="L56">		Assertions.Graphs.onlyUndirected(g);</span>
+	public IMatching computeMaximumCardinalityMatching(IndexGraph g) {
+<span class="fc" id="L56">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L57">		int n = g.vertices().size();</span>
 
-<span class="fc" id="L59">		IWeightsBool partition = Assertions.Graphs.onlyBipartite(g);</span>
+<span class="fc" id="L59">		IWeightsBool partition = Assertions.onlyBipartite(g);</span>
 
 		/* BFS */
 <span class="fc" id="L62">		int[] depths = new int[n];</span>
@@ -158,7 +158,7 @@ class MatchingCardinalityBipartiteHopcroftKarp extends Matchings.AbstractCardina
 <span class="fc" id="L158">			es.clear();</span>
 <span class="fc" id="L159">		}</span>
 <span class="fc" id="L160">		Arrays.fill(edges, null);</span>
-<span class="fc" id="L161">		return new Matchings.MatchingImpl(g, matched);</span>
+<span class="fc" id="L161">		return new Matchings.IndexMatching(g, matched);</span>
 	}
 
 }

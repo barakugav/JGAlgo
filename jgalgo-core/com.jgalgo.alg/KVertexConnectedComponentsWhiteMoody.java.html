@@ -45,7 +45,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L48">class KVertexConnectedComponentsWhiteMoody extends KVertexConnectedComponentsUtils.AbstractImpl {</span>
+<span class="fc" id="L48">class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponentsAlgoBase {</span>
 
 <span class="fc" id="L50">	private final WeaklyConnectedComponentsAlgo unaryConnectedComponentsAlgo =</span>
 <span class="fc" id="L51">			WeaklyConnectedComponentsAlgo.newInstance();</span>
@@ -54,16 +54,16 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L54">	private final MinimumVertexCutAllGlobalKanevsky allGlobalConnectivityAlgo = new MinimumVertexCutAllGlobalKanevsky();</span>
 
 	@Override
-	KVertexConnectedComponentsAlgo.IResult findKVertexConnectedComponents(IndexGraph g, int k) {
+	public KVertexConnectedComponentsAlgo.IResult findKVertexConnectedComponents(IndexGraph g, int k) {
 <span class="fc bfc" id="L58" title="All 2 branches covered.">		if (k &lt; 0)</span>
 <span class="fc" id="L59">			throw new IllegalArgumentException(&quot;k must be non negative&quot;);</span>
 <span class="fc" id="L60">		List&lt;List&lt;IntSet&gt;&gt; hierarchy = findVertexConnectedComponentsHierarchy(g);</span>
 <span class="fc bfc" id="L61" title="All 2 branches covered.">		List&lt;IntSet&gt; components = k &gt;= hierarchy.size() ? List.of() : hierarchy.get(k);</span>
-<span class="fc" id="L62">		return new KVertexConnectedComponentsUtils.ResultImpl(g, components);</span>
+<span class="fc" id="L62">		return new KVertexConnectedComponentsAlgos.IndexResult(g, components);</span>
 	}
 
 	List&lt;List&lt;IntSet&gt;&gt; findVertexConnectedComponentsHierarchy(IndexGraph g) {
-<span class="fc" id="L66">		Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L66">		Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L67">		List&lt;List&lt;IntSet&gt;&gt; kComponents = new ArrayList&lt;&gt;();</span>
 <span class="fc" id="L68">		ObjIntConsumer&lt;IntSet&gt; addComponent = (c, k) -&gt; {</span>
 <span class="fc bfc" id="L69" title="All 2 branches covered.">			while (kComponents.size() &lt;= k)</span>

@@ -46,7 +46,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L49">class ShortestPathAllPairsJohnson extends ShortestPathAllPairsUtils.AbstractImpl {</span>
+<span class="fc" id="L49">class ShortestPathAllPairsJohnson implements ShortestPathAllPairsBase {</span>
 
 <span class="fc" id="L51">	private ShortestPathSingleSource negativeSssp = ShortestPathSingleSource.builder().setNegativeWeights(true).build();</span>
 <span class="fc" id="L52">	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;</span>
@@ -63,12 +63,12 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 * @throws IllegalArgumentException if the graph is not directed
 	 */
 	@Override
-	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
+	public ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
 <span class="fc" id="L67">		return computeSubsetShortestPaths0(g, g.vertices(), w, true);</span>
 	}
 
 	@Override
-	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+	public ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w) {
 <span class="fc" id="L73">		return computeSubsetShortestPaths0(g, verticesSubset, w, false);</span>
 	}

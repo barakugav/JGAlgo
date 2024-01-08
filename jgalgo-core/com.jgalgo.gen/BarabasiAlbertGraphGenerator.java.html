@@ -77,7 +77,7 @@ public class BarabasiAlbertGraphGenerator&lt;V, E&gt; implements GraphGenerator&
 <span class="fc" id="L77">	private int initCliqueSize = 20;</span>
 <span class="fc" id="L78">	private int edgesPerStep = 10;</span>
 <span class="fc" id="L79">	private boolean directed = false;</span>
-<span class="fc" id="L80">	private Random rand = new Random();</span>
+<span class="fc" id="L80">	private final Random rand = new Random();</span>
 
 	/**
 	 * Create a new Barabasi-Albert graph generator that will use the default graph factory.
@@ -296,7 +296,7 @@ public class BarabasiAlbertGraphGenerator&lt;V, E&gt; implements GraphGenerator&
 	 * @return      this generator
 	 */
 	public BarabasiAlbertGraphGenerator&lt;V, E&gt; seed(long seed) {
-<span class="fc" id="L299">		rand = new Random(seed);</span>
+<span class="fc" id="L299">		rand.setSeed(seed);</span>
 <span class="fc" id="L300">		return this;</span>
 	}
 

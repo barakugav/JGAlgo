@@ -56,8 +56,8 @@ class ArraysUtils {
 	 * @return         the Kth element
 	 */
 	static &lt;E&gt; E getKthElement(E[] a, int from, int to, int k, Comparator&lt;? super E&gt; c, boolean inPlace) {
-<span class="fc" id="L59">		Assertions.Arrays.checkFromTo(from, to, a.length);</span>
-<span class="fc" id="L60">		Assertions.Arrays.checkIndex(k, from, to);</span>
+<span class="fc" id="L59">		Assertions.checkArrayFromTo(from, to, a.length);</span>
+<span class="fc" id="L60">		Assertions.checkArrayIndex(k, from, to);</span>
 <span class="pc bpc" id="L61" title="1 of 2 branches missed.">		if (!inPlace) {</span>
 <span class="fc" id="L62">			a = Arrays.copyOfRange(a, from, to);</span>
 <span class="fc" id="L63">			from = 0;</span>
@@ -88,8 +88,8 @@ class ArraysUtils {
 	 * @return         the Kth element
 	 */
 	static int getKthElement(int[] a, int from, int to, int k, IntComparator c, boolean inPlace) {
-<span class="fc" id="L91">		Assertions.Arrays.checkFromTo(from, to, a.length);</span>
-<span class="fc" id="L92">		Assertions.Arrays.checkIndex(k, from, to);</span>
+<span class="fc" id="L91">		Assertions.checkArrayFromTo(from, to, a.length);</span>
+<span class="fc" id="L92">		Assertions.checkArrayIndex(k, from, to);</span>
 <span class="fc bfc" id="L93" title="All 2 branches covered.">		if (!inPlace) {</span>
 <span class="fc" id="L94">			a = Arrays.copyOfRange(a, from, to);</span>
 <span class="fc" id="L95">			from = 0;</span>
@@ -158,7 +158,7 @@ class ArraysUtils {
 	 * @return       the last index of element smaller or equal to the pivot (exclusive)
 	 */
 	static &lt;E&gt; int pivotPartition(E[] a, int from, int to, E pivot, Comparator&lt;? super E&gt; c) {
-<span class="fc" id="L161">		Assertions.Arrays.checkFromTo(from, to, a.length);</span>
+<span class="fc" id="L161">		Assertions.checkArrayFromTo(from, to, a.length);</span>
 <span class="pc bpc" id="L162" title="1 of 2 branches missed.">		c = c != null ? c : JGAlgoUtils.getDefaultComparator();</span>
 
 		// Find greatest element smaller than the pivot
@@ -190,7 +190,7 @@ class ArraysUtils {
 	 * @return       the last index of element smaller or equal to the pivot (exclusive)
 	 */
 	static int pivotPartition(int[] a, int from, int to, int pivot, IntComparator c) {
-<span class="fc" id="L193">		Assertions.Arrays.checkFromTo(from, to, a.length);</span>
+<span class="fc" id="L193">		Assertions.checkArrayFromTo(from, to, a.length);</span>
 <span class="pc bpc" id="L194" title="1 of 2 branches missed.">		c = c != null ? c : Integer::compare;</span>
 
 		// Find greatest element smaller than the pivot
@@ -296,7 +296,7 @@ class ArraysUtils {
 	 * @param bucketSize the size of the bucket. Last bucket may be smaller than the specified value.
 	 */
 	static &lt;E&gt; void bucketPartition(E[] a, int from, int to, Comparator&lt;? super E&gt; c, int bucketSize) {
-<span class="fc" id="L299">		Assertions.Arrays.checkFromTo(from, to, a.length);</span>
+<span class="fc" id="L299">		Assertions.checkArrayFromTo(from, to, a.length);</span>
 <span class="pc bpc" id="L300" title="1 of 2 branches missed.">		if (bucketSize &lt;= 0)</span>
 <span class="nc" id="L301">			throw new IllegalArgumentException(&quot;invalid bucket size: &quot; + bucketSize);</span>
 <span class="pc bpc" id="L302" title="1 of 2 branches missed.">		c = c != null ? c : JGAlgoUtils.getDefaultComparator();</span>
@@ -316,7 +316,7 @@ class ArraysUtils {
 	 * @param bucketSize the size of the bucket. Last bucket may be smaller than the specified value.
 	 */
 	static void bucketPartition(int[] a, int from, int to, IntComparator c, int bucketSize) {
-<span class="fc" id="L319">		Assertions.Arrays.checkFromTo(from, to, a.length);</span>
+<span class="fc" id="L319">		Assertions.checkArrayFromTo(from, to, a.length);</span>
 <span class="pc bpc" id="L320" title="1 of 2 branches missed.">		if (bucketSize &lt;= 0)</span>
 <span class="nc" id="L321">			throw new IllegalArgumentException(&quot;invalid bucket size: &quot; + bucketSize);</span>
 <span class="fc bfc" id="L322" title="All 2 branches covered.">		c = c != null ? c : Integer::compare;</span>

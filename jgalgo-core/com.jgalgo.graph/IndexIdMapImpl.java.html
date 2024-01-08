@@ -179,7 +179,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public K indexToId(int index) {
-<span class="fc" id="L182">		Assertions.Graphs.checkId(index, indicesSet.size(), isEdges);</span>
+<span class="fc" id="L182">		Assertions.checkGraphId(index, indicesSet.size(), isEdges);</span>
 <span class="fc" id="L183">		return (K) indexToId[index];</span>
 	}
 

@@ -95,11 +95,11 @@ abstract class IndexGraphBase extends AbstractGraph&lt;Integer, Integer&gt; impl
 	}
 
 	void checkVertex(int vertex) {
-<span class="fc" id="L98">		Assertions.Graphs.checkVertex(vertex, vertices.size);</span>
+<span class="fc" id="L98">		Assertions.checkVertex(vertex, vertices.size);</span>
 <span class="fc" id="L99">	}</span>
 
 	void checkEdge(int edge) {
-<span class="fc" id="L102">		Assertions.Graphs.checkEdge(edge, edges.size);</span>
+<span class="fc" id="L102">		Assertions.checkEdge(edge, edges.size);</span>
 <span class="fc" id="L103">	}</span>
 
 	@Override
@@ -341,7 +341,7 @@ abstract class IndexGraphBase extends AbstractGraph&lt;Integer, Integer&gt; impl
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L344">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L344">			Assertions.hasNext(this);</span>
 <span class="fc" id="L345">			int ret = nextEdge;</span>
 <span class="fc" id="L346">			advance();</span>
 <span class="fc" id="L347">			return lastEdge = ret;</span>
@@ -349,7 +349,7 @@ abstract class IndexGraphBase extends AbstractGraph&lt;Integer, Integer&gt; impl
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L352">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L352">			Assertions.hasNext(this);</span>
 <span class="fc" id="L353">			return nextEdge;</span>
 		}
 

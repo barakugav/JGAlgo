@@ -155,7 +155,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L155">		private int e = -1, v = -1;</span>
 
 <span class="fc" id="L157">		IterUndirected(IndexGraph g, IntList path, int source) {</span>
-<span class="fc" id="L158">			Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L158">			Assertions.onlyUndirected(g);</span>
 <span class="fc" id="L159">			this.g = g;</span>
 <span class="fc" id="L160">			v = source;</span>
 <span class="fc" id="L161">			it = path.iterator();</span>
@@ -199,7 +199,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L199">		private int e = -1;</span>
 
 <span class="fc" id="L201">		IterDirected(IndexGraph g, IntList path) {</span>
-<span class="fc" id="L202">			Assertions.Graphs.onlyDirected(g);</span>
+<span class="fc" id="L202">			Assertions.onlyDirected(g);</span>
 <span class="fc" id="L203">			this.g = g;</span>
 <span class="fc" id="L204">			it = path.iterator();</span>
 <span class="fc" id="L205">		}</span>

@@ -81,7 +81,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L81">	private boolean directed = false;</span>
 	private double a, b, c, d;
 <span class="fc" id="L83">	private boolean abcdDefault = true;</span>
-<span class="fc" id="L84">	private Random rand = new Random();</span>
+<span class="fc" id="L84">	private final Random rand = new Random();</span>
 
 	/**
 	 * Create a new R-MAT generator that will use the default graph factory.
@@ -323,7 +323,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 * @return      this generator
 	 */
 	public RecursiveMatrixGraphGenerator&lt;V, E&gt; seed(long seed) {
-<span class="fc" id="L326">		rand = new Random(seed);</span>
+<span class="fc" id="L326">		rand.setSeed(seed);</span>
 <span class="fc" id="L327">		return this;</span>
 	}
 

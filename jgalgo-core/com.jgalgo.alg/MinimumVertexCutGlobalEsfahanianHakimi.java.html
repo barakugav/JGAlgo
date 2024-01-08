@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 	@Override
 	IntSet computeMinimumCut(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L44">		Assertions.Graphs.onlyCardinality(w);</span>
+<span class="fc" id="L44">		Assertions.onlyCardinality(w);</span>
 <span class="fc bfc" id="L45" title="All 2 branches covered.">		if (g.vertices().isEmpty())</span>
 <span class="fc" id="L46">			throw new IllegalArgumentException(&quot;No vertex cut exists in an empty graph&quot;);</span>
 

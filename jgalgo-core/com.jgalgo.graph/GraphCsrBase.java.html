@@ -128,9 +128,9 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	GraphCsrBase(boolean directed, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 <span class="fc" id="L129">		super(Variant2.ofA(g), false);</span>
 <span class="fc bfc" id="L130" title="All 2 branches covered.">		if (directed) {</span>
-<span class="fc" id="L131">			Assertions.Graphs.onlyDirected(g);</span>
+<span class="fc" id="L131">			Assertions.onlyDirected(g);</span>
 		} else {
-<span class="fc" id="L133">			Assertions.Graphs.onlyUndirected(g);</span>
+<span class="fc" id="L133">			Assertions.onlyUndirected(g);</span>
 		}
 <span class="fc" id="L135">		final int n = g.vertices().size();</span>
 <span class="fc" id="L136">		final int m = g.edges().size();</span>
@@ -406,13 +406,13 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L409">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L409">			Assertions.hasNext(this);</span>
 <span class="fc" id="L410">			return lastEdge = edges[idx++];</span>
 		}
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L415">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L415">			Assertions.hasNext(this);</span>
 <span class="fc" id="L416">			return edges[idx];</span>
 		}
 	}

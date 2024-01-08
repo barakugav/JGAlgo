@@ -41,7 +41,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  * @see    ShortestPathSingleSourceCardinality
  * @author Barak Ugav
  */
-class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.AbstractImpl {
+class ShortestPathAllPairsCardinality implements ShortestPathAllPairsBase {
 
 <span class="fc" id="L46">	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;</span>
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
@@ -52,15 +52,15 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 <span class="fc" id="L52">	ShortestPathAllPairsCardinality() {}</span>
 
 	@Override
-	ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L56">		Assertions.Graphs.onlyCardinality(w);</span>
+	public ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
+<span class="fc" id="L56">		Assertions.onlyCardinality(w);</span>
 <span class="fc" id="L57">		return computeSubsetCardinalityShortestPaths(g, g.vertices(), true);</span>
 	}
 
 	@Override
-	ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
+	public ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w) {
-<span class="fc" id="L63">		Assertions.Graphs.onlyCardinality(w);</span>
+<span class="fc" id="L63">		Assertions.onlyCardinality(w);</span>
 <span class="fc" id="L64">		return computeSubsetCardinalityShortestPaths(g, verticesSubset, false);</span>
 	}
 
@@ -99,9 +99,9 @@ class ShortestPathAllPairsCardinality extends ShortestPathAllPairsUtils.Abstract
 		}
 
 <span class="fc bfc" id="L101" title="All 2 branches covered.">		if (allVertices) {</span>
-<span class="fc" id="L102">			return new ShortestPathAllPairsUtils.ResFromSSSP.AllVertices(ssspResults);</span>
+<span class="fc" id="L102">			return new ShortestPathAllPairsUtils.IndexResultFromSSSP.AllVertices(ssspResults);</span>
 		} else {
-<span class="fc" id="L104">			return new ShortestPathAllPairsUtils.ResFromSSSP.VerticesSubset(ssspResults, vToResIdx);</span>
+<span class="fc" id="L104">			return new ShortestPathAllPairsUtils.IndexResultFromSSSP.VerticesSubset(ssspResults, vToResIdx);</span>
 		}
 	}
 

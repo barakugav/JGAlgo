@@ -80,13 +80,13 @@ import com.jgalgo.internal.util.Assertions;
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L83">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L83">			Assertions.hasNext(this);</span>
 <span class="fc" id="L84">			return lastEdge = edges[idx++];</span>
 		}
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L89">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L89">			Assertions.hasNext(this);</span>
 <span class="fc" id="L90">			return edges[idx];</span>
 		}
 

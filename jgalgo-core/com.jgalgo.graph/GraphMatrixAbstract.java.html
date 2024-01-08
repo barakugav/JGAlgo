@@ -186,7 +186,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L189">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L189">			Assertions.hasNext(this);</span>
 <span class="fc" id="L190">			int e = sourceEdges.data[lastTarget = target];</span>
 <span class="fc" id="L191">			advanceUntilNext(target + 1);</span>
 <span class="fc" id="L192">			return e;</span>
@@ -194,7 +194,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L197">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L197">			Assertions.hasNext(this);</span>
 <span class="fc" id="L198">			return sourceEdges.data[target];</span>
 		}
 
@@ -247,7 +247,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L250">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L250">			Assertions.hasNext(this);</span>
 <span class="fc" id="L251">			int e = targetEdges.data[lastSource = source];</span>
 <span class="fc" id="L252">			advanceUntilNext(source + 1);</span>
 <span class="fc" id="L253">			return e;</span>
@@ -255,7 +255,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L258">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L258">			Assertions.hasNext(this);</span>
 <span class="fc" id="L259">			return targetEdges.data[source];</span>
 		}
 
@@ -306,7 +306,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L309">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L309">			Assertions.hasNext(this);</span>
 <span class="fc" id="L310">			int e = edges[lastSource = source].data[target];</span>
 <span class="fc" id="L311">			advanceUntilNext(source + 1);</span>
 <span class="fc" id="L312">			return e;</span>
@@ -314,7 +314,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 
 		@Override
 		public int peekNextInt() {
-<span class="fc" id="L317">			Assertions.Iters.hasNext(this);</span>
+<span class="fc" id="L317">			Assertions.hasNext(this);</span>
 <span class="fc" id="L318">			return edges[source].data[target];</span>
 		}
 

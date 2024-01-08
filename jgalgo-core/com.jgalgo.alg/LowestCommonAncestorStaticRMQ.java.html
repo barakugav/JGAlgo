@@ -54,7 +54,7 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 
 	@Override
 	LowestCommonAncestorStatic.IDataStructure preProcessTree(IndexGraph tree, int root) {
-<span class="fc" id="L57">		Assertions.Graphs.onlyTree(tree, root);</span>
+<span class="fc" id="L57">		Assertions.onlyTree(tree, root);</span>
 
 <span class="fc" id="L59">		final int n = tree.vertices().size();</span>
 <span class="fc" id="L60">		int[] depths = new int[n * 2];</span>
@@ -120,8 +120,8 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 
 		@Override
 		public int findLca(int u, int v) {
-<span class="fc" id="L123">			Assertions.Graphs.checkVertex(u, n);</span>
-<span class="fc" id="L124">			Assertions.Graphs.checkVertex(v, n);</span>
+<span class="fc" id="L123">			Assertions.checkVertex(u, n);</span>
+<span class="fc" id="L124">			Assertions.checkVertex(v, n);</span>
 <span class="fc" id="L125">			int uIdx = vToDepthsIdx[u];</span>
 <span class="fc" id="L126">			int vIdx = vToDepthsIdx[v];</span>
 <span class="fc bfc" id="L127" title="All 2 branches covered.">			if (uIdx &gt; vIdx) {</span>

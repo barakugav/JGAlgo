@@ -27,10 +27,10 @@ import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntLists;
 
-<span class="fc" id="L30">class ShortestPathSTBidirectionalDijkstra extends ShortestPathSTs.AbstractImpl {</span>
+<span class="fc" id="L30">class ShortestPathSTBidirectionalDijkstra implements ShortestPathSTBase {</span>
 
 	@Override
-	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
+	public IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target) {
 <span class="pc bpc" id="L34" title="1 of 2 branches missed.">		if (!g.vertices().contains(source))</span>
 <span class="nc" id="L35">			throw NoSuchVertexException.ofIndex(source);</span>
 <span class="pc bpc" id="L36" title="1 of 2 branches missed.">		if (!g.vertices().contains(target))</span>
@@ -76,7 +76,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc bfc" id="L76" title="All 2 branches covered.">				if (vInfoS.isVisited())</span>
 <span class="fc" id="L77">					continue;</span>
 <span class="fc" id="L78">				double ew = w.weight(e);</span>
-<span class="fc" id="L79">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L79">				Assertions.onlyPositiveWeight(ew);</span>
 <span class="fc" id="L80">				double vDistance = uDistanceS + ew;</span>
 <span class="fc" id="L81">				Info vInfoT = infoT.get(v);</span>
 <span class="fc bfc" id="L82" title="All 4 branches covered.">				if (vInfoT != null &amp;&amp; vInfoT.isVisited()) {</span>
@@ -103,7 +103,7 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 <span class="fc bfc" id="L103" title="All 2 branches covered.">				if (vInfoT.isVisited())</span>
 <span class="fc" id="L104">					continue;</span>
 <span class="fc" id="L105">				double ew = w.weight(e);</span>
-<span class="fc" id="L106">				Assertions.Graphs.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L106">				Assertions.onlyPositiveWeight(ew);</span>
 <span class="fc" id="L107">				double vDistance = uDistanceT + ew;</span>
 <span class="fc" id="L108">				Info vInfoS = infoS.get(v);</span>
 <span class="fc bfc" id="L109" title="All 4 branches covered.">				if (vInfoS != null &amp;&amp; vInfoS.isVisited()) {</span>

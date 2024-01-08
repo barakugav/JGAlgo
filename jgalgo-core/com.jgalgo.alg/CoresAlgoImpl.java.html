@@ -16,17 +16,9 @@
 package com.jgalgo.alg;
 
 import java.util.Objects;
-import java.util.Set;
 import java.util.function.IntConsumer;
-import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.graph.IndexIdMap;
-import com.jgalgo.graph.IndexIdMaps;
-import com.jgalgo.graph.IndexIntIdMap;
-import com.jgalgo.graph.IntGraph;
-import com.jgalgo.internal.util.ImmutableIntArraySet;
-import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Linear cores computing algorithm.
@@ -43,322 +35,114 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L46">class CoresAlgoImpl implements CoresAlgo {</span>
+<span class="fc" id="L38">class CoresAlgoImpl implements CoresAlgoBase {</span>
 
-	CoresAlgo.IResult computeCores(IndexGraph g, EdgeDirection degreeType) {
-<span class="fc" id="L49">		Objects.requireNonNull(degreeType);</span>
+	@Override
+	public CoresAlgo.IResult computeCores(IndexGraph g, EdgeDirection degreeType) {
+<span class="fc" id="L42">		Objects.requireNonNull(degreeType);</span>
 
-<span class="fc" id="L51">		final int n = g.vertices().size();</span>
-<span class="fc" id="L52">		final boolean directed = g.isDirected();</span>
+<span class="fc" id="L44">		final int n = g.vertices().size();</span>
+<span class="fc" id="L45">		final boolean directed = g.isDirected();</span>
 
 		/* cache the degree of each vertex */
-<span class="fc" id="L55">		int[] degree = new int[n];</span>
-<span class="fc" id="L56">		int maxDegree = 0;</span>
-<span class="fc bfc" id="L57" title="All 4 branches covered.">		if (!directed || degreeType == EdgeDirection.Out) {</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L59">				degree[v] = g.outEdges(v).size();</span>
-<span class="fc" id="L60">				maxDegree = Math.max(maxDegree, degree[v]);</span>
+<span class="fc" id="L48">		int[] degree = new int[n];</span>
+<span class="fc" id="L49">		int maxDegree = 0;</span>
+<span class="fc bfc" id="L50" title="All 4 branches covered.">		if (!directed || degreeType == EdgeDirection.Out) {</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L52">				degree[v] = g.outEdges(v).size();</span>
+<span class="fc" id="L53">				maxDegree = Math.max(maxDegree, degree[v]);</span>
 			}
-<span class="fc bfc" id="L62" title="All 2 branches covered.">		} else if (degreeType == EdgeDirection.In) {</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L64">				degree[v] = g.inEdges(v).size();</span>
-<span class="fc" id="L65">				maxDegree = Math.max(maxDegree, degree[v]);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		} else if (degreeType == EdgeDirection.In) {</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L57">				degree[v] = g.inEdges(v).size();</span>
+<span class="fc" id="L58">				maxDegree = Math.max(maxDegree, degree[v]);</span>
 			}
 		} else {
-<span class="pc bnc" id="L68" title="All 2 branches missed.">			assert degreeType == EdgeDirection.All;</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L70">				degree[v] = g.outEdges(v).size() + g.inEdges(v).size();</span>
-<span class="fc" id="L71">				maxDegree = Math.max(maxDegree, degree[v]);</span>
+<span class="pc bnc" id="L61" title="All 2 branches missed.">			assert degreeType == EdgeDirection.All;</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L63">				degree[v] = g.outEdges(v).size() + g.inEdges(v).size();</span>
+<span class="fc" id="L64">				maxDegree = Math.max(maxDegree, degree[v]);</span>
 			}
 		}
 
 		/* arrange the vertices in sorted bins per degree */
 		/* vertices[bin[d], bin[d+1]) are the vertices with degree d */
 		/* vertices[pos[v]] == v */
-<span class="fc" id="L78">		int[] bin = new int[maxDegree + 1];</span>
-<span class="fc" id="L79">		int[] vertices = new int[n];</span>
-<span class="fc" id="L80">		int[] pos = new int[n];</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L82">			bin[degree[v]]++;</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (int start = 0, d = 0; d &lt;= maxDegree; d++) {</span>
-<span class="fc" id="L84">			int verticesNum = bin[d];</span>
-<span class="fc" id="L85">			bin[d] = start;</span>
-<span class="fc" id="L86">			start += verticesNum;</span>
+<span class="fc" id="L71">		int[] bin = new int[maxDegree + 1];</span>
+<span class="fc" id="L72">		int[] vertices = new int[n];</span>
+<span class="fc" id="L73">		int[] pos = new int[n];</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc" id="L75">			bin[degree[v]]++;</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		for (int start = 0, d = 0; d &lt;= maxDegree; d++) {</span>
+<span class="fc" id="L77">			int verticesNum = bin[d];</span>
+<span class="fc" id="L78">			bin[d] = start;</span>
+<span class="fc" id="L79">			start += verticesNum;</span>
 		}
-<span class="fc bfc" id="L88" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L89">			pos[v] = bin[degree[v]];</span>
-<span class="fc" id="L90">			vertices[pos[v]] = v;</span>
-<span class="fc" id="L91">			bin[degree[v]]++;</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc" id="L82">			pos[v] = bin[degree[v]];</span>
+<span class="fc" id="L83">			vertices[pos[v]] = v;</span>
+<span class="fc" id="L84">			bin[degree[v]]++;</span>
 		}
-<span class="fc bfc" id="L93" title="All 2 branches covered.">		for (int i = maxDegree; i &gt; 0; i--)</span>
-<span class="fc" id="L94">			bin[i] = bin[i - 1];</span>
-<span class="fc" id="L95">		bin[0] = 0;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">		for (int i = maxDegree; i &gt; 0; i--)</span>
+<span class="fc" id="L87">			bin[i] = bin[i - 1];</span>
+<span class="fc" id="L88">		bin[0] = 0;</span>
 
-<span class="fc" id="L97">		IntConsumer decreaseDegree = v -&gt; {</span>
-<span class="fc" id="L98">			int vDegree = degree[v];</span>
-<span class="fc" id="L99">			int vPos = pos[v];</span>
-<span class="fc" id="L100">			int vBinStart = bin[vDegree];</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">			if (vPos != vBinStart) {</span>
-<span class="fc" id="L102">				int wPos = vBinStart;</span>
-<span class="fc" id="L103">				int w = vertices[wPos];</span>
-<span class="fc" id="L104">				pos[v] = wPos;</span>
-<span class="fc" id="L105">				pos[w] = vPos;</span>
-<span class="fc" id="L106">				vertices[vPos] = w;</span>
-<span class="fc" id="L107">				vertices[wPos] = v;</span>
+<span class="fc" id="L90">		IntConsumer decreaseDegree = v -&gt; {</span>
+<span class="fc" id="L91">			int vDegree = degree[v];</span>
+<span class="fc" id="L92">			int vPos = pos[v];</span>
+<span class="fc" id="L93">			int vBinStart = bin[vDegree];</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">			if (vPos != vBinStart) {</span>
+<span class="fc" id="L95">				int wPos = vBinStart;</span>
+<span class="fc" id="L96">				int w = vertices[wPos];</span>
+<span class="fc" id="L97">				pos[v] = wPos;</span>
+<span class="fc" id="L98">				pos[w] = vPos;</span>
+<span class="fc" id="L99">				vertices[vPos] = w;</span>
+<span class="fc" id="L100">				vertices[wPos] = v;</span>
 			}
-<span class="fc" id="L109">			bin[vDegree]++;</span>
-<span class="fc" id="L110">			degree[v]--;</span>
-<span class="fc" id="L111">		};</span>
+<span class="fc" id="L102">			bin[vDegree]++;</span>
+<span class="fc" id="L103">			degree[v]--;</span>
+<span class="fc" id="L104">		};</span>
 
 		/* iterate over the vertices in increase order of their degree */
-<span class="fc bfc" id="L114" title="All 2 branches covered.">		for (int p = 0; p &lt; n; p++) {</span>
-<span class="fc" id="L115">			int u = vertices[p];</span>
-<span class="pc bnc" id="L116" title="All 2 branches missed.">			assert pos[u] == p;</span>
-<span class="fc" id="L117">			int uDegree = degree[u];</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">		for (int p = 0; p &lt; n; p++) {</span>
+<span class="fc" id="L108">			int u = vertices[p];</span>
+<span class="pc bnc" id="L109" title="All 2 branches missed.">			assert pos[u] == p;</span>
+<span class="fc" id="L110">			int uDegree = degree[u];</span>
 
 			/* we 'remove' u from the graph, actually just decreasing the degree of its neighbors */
-<span class="fc bfc" id="L120" title="All 4 branches covered.">			if (!directed || degreeType == EdgeDirection.In) {</span>
-<span class="fc bfc" id="L121" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc bfc" id="L113" title="All 4 branches covered.">			if (!directed || degreeType == EdgeDirection.In) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L115">					eit.nextInt();</span>
+<span class="fc" id="L116">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
+<span class="fc" id="L118">						decreaseDegree.accept(v);</span>
+<span class="fc" id="L119">				}</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">			} else if (degreeType == EdgeDirection.Out) {</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L122">					eit.nextInt();</span>
-<span class="fc" id="L123">					int v = eit.targetInt();</span>
+<span class="fc" id="L123">					int v = eit.sourceInt();</span>
 <span class="fc bfc" id="L124" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
 <span class="fc" id="L125">						decreaseDegree.accept(v);</span>
 <span class="fc" id="L126">				}</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">			} else if (degreeType == EdgeDirection.Out) {</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L129">					eit.nextInt();</span>
-<span class="fc" id="L130">					int v = eit.sourceInt();</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
-<span class="fc" id="L132">						decreaseDegree.accept(v);</span>
-<span class="fc" id="L133">				}</span>
 			} else {
-<span class="pc bnc" id="L135" title="All 2 branches missed.">				assert degreeType == EdgeDirection.All;</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L137">					eit.nextInt();</span>
-<span class="fc" id="L138">					int v = eit.targetInt();</span>
-<span class="fc bfc" id="L139" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
-<span class="fc" id="L140">						decreaseDegree.accept(v);</span>
-<span class="fc" id="L141">				}</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L143">					eit.nextInt();</span>
-<span class="fc" id="L144">					int v = eit.sourceInt();</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
-<span class="fc" id="L146">						decreaseDegree.accept(v);</span>
-<span class="fc" id="L147">				}</span>
+<span class="pc bnc" id="L128" title="All 2 branches missed.">				assert degreeType == EdgeDirection.All;</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L130">					eit.nextInt();</span>
+<span class="fc" id="L131">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
+<span class="fc" id="L133">						decreaseDegree.accept(v);</span>
+<span class="fc" id="L134">				}</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L136">					eit.nextInt();</span>
+<span class="fc" id="L137">					int v = eit.sourceInt();</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">					if (degree[v] &gt; uDegree)</span>
+<span class="fc" id="L139">						decreaseDegree.accept(v);</span>
+<span class="fc" id="L140">				}</span>
 			}
 		}
 
-<span class="fc" id="L151">		int[] core = degree;</span>
-<span class="fc" id="L152">		return new ResultImpl(core);</span>
-	}
-
-<span class="fc" id="L155">	private static class ResultImpl implements CoresAlgo.IResult {</span>
-
-		private final int[] core;
-		private final int maxCore;
-		private int[] coreOffset;
-		private int[] sortedVertices;
-		private IntSet[] coreVertices;
-		private IntSet[] coreShells;
-		private IntSet[] coreCrusts;
-
-<span class="fc" id="L165">		public ResultImpl(int[] core) {</span>
-<span class="fc" id="L166">			this.core = Objects.requireNonNull(core);</span>
-<span class="fc" id="L167">			int maxCore = -1;</span>
-<span class="fc bfc" id="L168" title="All 2 branches covered.">			for (int v = 0; v &lt; core.length; v++)</span>
-<span class="fc" id="L169">				maxCore = Math.max(maxCore, core[v]);</span>
-<span class="fc" id="L170">			this.maxCore = maxCore;</span>
-<span class="fc" id="L171">		}</span>
-
-		@Override
-		public int vertexCoreNum(int v) {
-<span class="fc" id="L175">			return core[v];</span>
-		}
-
-		@Override
-		public int maxCore() {
-<span class="fc" id="L180">			return maxCore;</span>
-		}
-
-		private void computeSortedVertices() {
-<span class="fc bfc" id="L184" title="All 2 branches covered.">			if (sortedVertices != null)</span>
-<span class="fc" id="L185">				return;</span>
-<span class="fc" id="L186">			final int n = this.core.length;</span>
-<span class="fc" id="L187">			final int coreNum = maxCore + 1;</span>
-<span class="pc bpc" id="L188" title="1 of 2 branches missed.">			if (coreNum == 0)</span>
-<span class="nc" id="L189">				return;</span>
-
-<span class="fc" id="L191">			coreOffset = new int[coreNum + 1];</span>
-<span class="fc bfc" id="L192" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L193">				coreOffset[this.core[v]]++;</span>
-<span class="fc bfc" id="L194" title="All 2 branches covered.">			for (int s = 0, c = 0; c &lt; coreNum; c++) {</span>
-<span class="fc" id="L195">				int k = coreOffset[c];</span>
-<span class="fc" id="L196">				coreOffset[c] = s;</span>
-<span class="fc" id="L197">				s += k;</span>
-			}
-<span class="fc" id="L199">			sortedVertices = new int[n];</span>
-<span class="fc bfc" id="L200" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L201">				sortedVertices[coreOffset[this.core[v]]++] = v;</span>
-<span class="pc bnc" id="L202" title="All 2 branches missed.">			assert coreOffset[coreNum - 1] == n;</span>
-<span class="fc bfc" id="L203" title="All 2 branches covered.">			for (int c = coreNum; c &gt; 0; c--)</span>
-<span class="fc" id="L204">				coreOffset[c] = coreOffset[c - 1];</span>
-<span class="fc" id="L205">			coreOffset[0] = 0;</span>
-<span class="fc" id="L206">		}</span>
-
-		@Override
-		public IntSet coreVertices(int core) {
-<span class="fc bfc" id="L210" title="All 2 branches covered.">			if (coreVertices == null) {</span>
-<span class="fc" id="L211">				computeSortedVertices();</span>
-<span class="fc" id="L212">				final int n = this.core.length;</span>
-<span class="fc" id="L213">				final int coreNum = maxCore + 1;</span>
-<span class="fc" id="L214">				coreVertices = new IntSet[coreNum];</span>
-<span class="fc bfc" id="L215" title="All 2 branches covered.">				for (int c = 0; c &lt; coreNum; c++) {</span>
-<span class="fc" id="L216">					final int c0 = c;</span>
-<span class="fc" id="L217">					coreVertices[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], n) {</span>
-						@Override
-						public boolean contains(int v) {
-<span class="pc bpc" id="L220" title="2 of 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; ResultImpl.this.core[v] &gt;= c0;</span>
-						}
-					};
-				}
-			}
-<span class="fc" id="L225">			return coreVertices[core];</span>
-		}
-
-		@Override
-		public IntSet coreShell(int core) {
-<span class="fc bfc" id="L230" title="All 2 branches covered.">			if (coreShells == null) {</span>
-<span class="fc" id="L231">				computeSortedVertices();</span>
-<span class="fc" id="L232">				final int n = this.core.length;</span>
-<span class="fc" id="L233">				final int coreNum = maxCore + 1;</span>
-<span class="fc" id="L234">				coreShells = new IntSet[coreNum];</span>
-<span class="fc bfc" id="L235" title="All 2 branches covered.">				for (int c = 0; c &lt; coreNum; c++) {</span>
-<span class="fc" id="L236">					final int c0 = c;</span>
-<span class="fc" id="L237">					coreShells[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], coreOffset[c + 1]) {</span>
-						@Override
-						public boolean contains(int v) {
-<span class="pc bpc" id="L240" title="2 of 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; ResultImpl.this.core[v] == c0;</span>
-						}
-					};
-				}
-			}
-<span class="fc" id="L245">			return coreShells[core];</span>
-		}
-
-		@Override
-		public IntSet coreCrust(int core) {
-<span class="fc bfc" id="L250" title="All 2 branches covered.">			if (coreCrusts == null) {</span>
-<span class="fc" id="L251">				computeSortedVertices();</span>
-<span class="fc" id="L252">				final int n = this.core.length;</span>
-<span class="fc" id="L253">				final int coreNum = maxCore + 1;</span>
-<span class="fc" id="L254">				coreCrusts = new IntSet[coreNum];</span>
-<span class="fc bfc" id="L255" title="All 2 branches covered.">				for (int c = 0; c &lt; coreNum; c++) {</span>
-<span class="fc" id="L256">					final int c0 = c;</span>
-<span class="fc" id="L257">					coreCrusts[c] = new ImmutableIntArraySet(sortedVertices, 0, coreOffset[c]) {</span>
-						@Override
-						public boolean contains(int v) {
-<span class="pc bpc" id="L260" title="2 of 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; ResultImpl.this.core[v] &lt; c0;</span>
-						}
-					};
-				}
-			}
-<span class="fc" id="L265">			return coreCrusts[core];</span>
-		}
-	}
-
-	@SuppressWarnings(&quot;unchecked&quot;)
-	@Override
-	public &lt;V, E&gt; CoresAlgo.Result&lt;V, E&gt; computeCores(Graph&lt;V, E&gt; g, EdgeDirection degreeType) {
-<span class="fc bfc" id="L272" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L273">			return (CoresAlgo.Result&lt;V, E&gt;) computeCores((IndexGraph) g, degreeType);</span>
-
-		} else {
-<span class="fc" id="L276">			IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L277">			CoresAlgo.IResult iResult = computeCores(iGraph, degreeType);</span>
-<span class="fc" id="L278">			return resultFromIndexResult(g, iResult);</span>
-		}
-	}
-
-	private static class IntResultFromIndexResult implements CoresAlgo.IResult {
-
-		private final CoresAlgo.IResult iResult;
-		private final IndexIntIdMap viMap;
-
-<span class="fc" id="L287">		public IntResultFromIndexResult(IntGraph g, CoresAlgo.IResult iResult) {</span>
-<span class="fc" id="L288">			this.iResult = Objects.requireNonNull(iResult);</span>
-<span class="fc" id="L289">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L290">		}</span>
-
-		@Override
-		public int vertexCoreNum(int v) {
-<span class="fc" id="L294">			return iResult.vertexCoreNum(viMap.idToIndex(v));</span>
-		}
-
-		@Override
-		public int maxCore() {
-<span class="fc" id="L299">			return iResult.maxCore();</span>
-		}
-
-		@Override
-		public IntSet coreVertices(int core) {
-<span class="fc" id="L304">			return IndexIdMaps.indexToIdSet(iResult.coreVertices(core), viMap);</span>
-		}
-
-		@Override
-		public IntSet coreShell(int core) {
-<span class="fc" id="L309">			return IndexIdMaps.indexToIdSet(iResult.coreShell(core), viMap);</span>
-		}
-
-		@Override
-		public IntSet coreCrust(int core) {
-<span class="fc" id="L314">			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);</span>
-		}
-	}
-
-	private static class ObjResultFromIndexResult&lt;V, E&gt; implements CoresAlgo.Result&lt;V, E&gt; {
-
-		private final CoresAlgo.IResult iResult;
-		private final IndexIdMap&lt;V&gt; viMap;
-
-<span class="fc" id="L323">		public ObjResultFromIndexResult(Graph&lt;V, E&gt; g, CoresAlgo.IResult iResult) {</span>
-<span class="fc" id="L324">			this.iResult = Objects.requireNonNull(iResult);</span>
-<span class="fc" id="L325">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L326">		}</span>
-
-		@Override
-		public int vertexCoreNum(V v) {
-<span class="fc" id="L330">			return iResult.vertexCoreNum(viMap.idToIndex(v));</span>
-		}
-
-		@Override
-		public int maxCore() {
-<span class="fc" id="L335">			return iResult.maxCore();</span>
-		}
-
-		@Override
-		public Set&lt;V&gt; coreVertices(int core) {
-<span class="fc" id="L340">			return IndexIdMaps.indexToIdSet(iResult.coreVertices(core), viMap);</span>
-		}
-
-		@Override
-		public Set&lt;V&gt; coreShell(int core) {
-<span class="fc" id="L345">			return IndexIdMaps.indexToIdSet(iResult.coreShell(core), viMap);</span>
-		}
-
-		@Override
-		public Set&lt;V&gt; coreCrust(int core) {
-<span class="fc" id="L350">			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);</span>
-		}
-	}
-
-	@SuppressWarnings(&quot;unchecked&quot;)
-	private static &lt;V, E&gt; CoresAlgo.Result&lt;V, E&gt; resultFromIndexResult(Graph&lt;V, E&gt; g, CoresAlgo.IResult indexResult) {
-<span class="pc bnc" id="L356" title="All 2 branches missed.">		assert !(g instanceof IndexGraph);</span>
-<span class="fc bfc" id="L357" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L358">			return (CoresAlgo.Result&lt;V, E&gt;) new IntResultFromIndexResult((IntGraph) g, indexResult);</span>
-		} else {
-<span class="fc" id="L360">			return new ObjResultFromIndexResult&lt;&gt;(g, indexResult);</span>
-		}
+<span class="fc" id="L144">		int[] core = degree;</span>
+<span class="fc" id="L145">		return new CoresAlgos.IndexResult(core);</span>
 	}
 
 }
