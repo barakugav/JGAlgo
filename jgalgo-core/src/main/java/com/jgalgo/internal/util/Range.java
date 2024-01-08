@@ -15,6 +15,8 @@
  */
 package com.jgalgo.internal.util;
 
+import java.util.Spliterator;
+import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
 import java.util.function.IntToDoubleFunction;
@@ -25,8 +27,10 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSpliterator;
 
 public final class Range extends AbstractIntSet {
 
@@ -127,12 +131,18 @@ public final class Range extends AbstractIntSet {
 		return intStream().allMatch(allMatch);
 	}
 
+	@Override
+	public IntSpliterator spliterator() {
+		return new SplitIter(from, to);
+	}
+
 	private static class Iter implements IntIterator {
 
-		int x;
-		final int to;
+		private int x;
+		private final int to;
 
 		Iter(int from, int to) {
+			assert from <= to;
 			this.x = from;
 			this.to = to;
 		}
@@ -146,6 +156,87 @@ public final class Range extends AbstractIntSet {
 		public int nextInt() {
 			Assertions.hasNext(this);
 			return x++;
+		}
+
+		@Override
+		public int skip(final int n) {
+			if (n < 0)
+				throw new IllegalArgumentException("Argument must be nonnegative: " + n);
+			if (n < to - x) {
+				x += n;
+				return n;
+			} else {
+				int begin = x;
+				x = to;
+				return x - begin;
+			}
+		}
+	}
+
+	private static class SplitIter implements IntSpliterator {
+
+		private int x;
+		private final int to;
+
+		SplitIter(int from, int to) {
+			assert from <= to;
+			this.x = from;
+			this.to = to;
+		}
+
+		@Override
+		public int characteristics() {
+			return Spliterator.NONNULL | Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.ORDERED
+					| Spliterator.SORTED | Spliterator.DISTINCT | Spliterator.IMMUTABLE;
+		}
+
+		@Override
+		public long estimateSize() {
+			return to - x;
+		}
+
+		@Override
+		public boolean tryAdvance(IntConsumer action) {
+			if (x >= to)
+				return false;
+			action.accept(x++);
+			return true;
+		}
+
+		@Override
+		public IntSpliterator trySplit() {
+			int size = to - x;
+			if (size < 2)
+				return null;
+			int mid = x + size / 2;
+			IntSpliterator prefix = new SplitIter(x, mid);
+			x = mid;
+			return prefix;
+		}
+
+		@Override
+		public void forEachRemaining(final IntConsumer action) {
+			for (; x < to; x++)
+				action.accept(x);
+		}
+
+		@Override
+		public long skip(long n) {
+			if (n < 0)
+				throw new IllegalArgumentException("Argument must be nonnegative: " + n);
+			if (n < to - x) {
+				x += n;
+				return n;
+			} else {
+				int begin = x;
+				x = to;
+				return x - begin;
+			}
+		}
+
+		@Override
+		public IntComparator getComparator() {
+			return null;
 		}
 	}
 

@@ -20,6 +20,7 @@ import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -27,12 +28,16 @@ import java.util.Random;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
 import java.util.function.IntToDoubleFunction;
+import java.util.function.IntToLongFunction;
 import java.util.function.IntUnaryOperator;
 import org.junit.jupiter.api.Test;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSpliterator;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 public class RangeTest extends TestBase {
 
@@ -70,6 +75,29 @@ public class RangeTest extends TestBase {
 			}
 			assertEquals(to, expected);
 		}
+
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int to = rand.nextInt(100);
+			Range range = range(to);
+			int nextExpected = 0;
+			IntList expected = new IntArrayList();
+			IntList actual = new IntArrayList();
+			for (IntIterator it = range.iterator(); nextExpected < to;) {
+				assertTrue(it.hasNext());
+				if (rand.nextBoolean()) {
+					expected.add(nextExpected++);
+					actual.add(it.nextInt());
+				} else {
+					int skipSize = rand.nextInt(8);
+					int skipExpected = Math.min(skipSize, to - nextExpected);
+					int skipActual = it.skip(skipSize);
+					assertEquals(skipExpected, skipActual);
+					nextExpected += skipExpected;
+				}
+			}
+			assertEquals(expected, actual);
+		}
+		assertThrows(IllegalArgumentException.class, () -> range(5).iterator().skip(-1));
 	}
 
 	@Test
@@ -200,6 +228,84 @@ public class RangeTest extends TestBase {
 	}
 
 	@Test
+	public void spliterator() {
+		final Random rand = new Random(0x4c60eaab28b0b019L);
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int to = rand.nextInt(100);
+			Range range = range(to);
+
+			IntList expected = new IntArrayList();
+			for (int x = 0; x < to; x++)
+				expected.add(x);
+
+			IntList actual = new IntArrayList();
+			IntSpliterator spliterator = range.spliterator();
+			while (spliterator.tryAdvance(actual::add));
+
+			assertEquals(expected, actual);
+		}
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int to = rand.nextInt(100);
+			Range range = range(to);
+
+			IntList expected = new IntArrayList();
+			for (int x = 0; x < to; x++)
+				expected.add(x);
+
+			IntList actual = new IntArrayList();
+			IntSpliterator spliterator = range.spliterator();
+			spliterator.forEachRemaining(actual::add);
+
+			assertEquals(expected, actual);
+		}
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int to = rand.nextInt(100);
+			Range range = range(to);
+
+			IntList expected = new IntArrayList();
+			for (int x = 0; x < to; x++)
+				expected.add(x);
+
+			List<IntSpliterator> splits = new ObjectArrayList<>();
+			splits.add(range.spliterator());
+			for (int r = 0; r < 10; r++) {
+				int i = rand.nextInt(splits.size());
+				IntSpliterator spliterator = splits.get(i);
+				IntSpliterator split1 = spliterator.trySplit();
+				if (split1 != null)
+					splits.add(i, split1);
+			}
+			IntList actual = new IntArrayList();
+			for (IntSpliterator spliterator : splits)
+				spliterator.forEachRemaining(actual::add);
+
+			assertEquals(expected, actual);
+		}
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int to = rand.nextInt(100);
+			Range range = range(to);
+			int nextExpected = 0;
+			IntList expected = new IntArrayList();
+			IntList actual = new IntArrayList();
+			for (IntSpliterator it = range.spliterator(); nextExpected < to;) {
+				if (rand.nextBoolean()) {
+					expected.add(nextExpected++);
+					boolean advanced = it.tryAdvance(actual::add);
+					assertTrue(advanced);
+				} else {
+					int skipSize = rand.nextInt(8);
+					int skipExpected = Math.min(skipSize, to - nextExpected);
+					long skipActual = it.skip(skipSize);
+					assertEquals(skipExpected, skipActual);
+					nextExpected += skipExpected;
+				}
+			}
+			assertEquals(expected, actual);
+		}
+		assertThrows(IllegalArgumentException.class, () -> range(5).spliterator().skip(-1));
+	}
+
+	@Test
 	public void streamOperations() {
 		final Random rand = new Random(0x93c026184e885dc3L);
 		for (int repeat = 0; repeat < 25; repeat++) {
@@ -248,6 +354,11 @@ public class RangeTest extends TestBase {
 				IntUnaryOperator mapOp = x -> x + mapOpVal;
 				assertEquals(list.intStream().map(mapOp).boxed().collect(toList()),
 						range.map(mapOp).boxed().collect(toList()));
+
+				final long mapToLongVal = rand.nextLong() * 100;
+				IntToLongFunction mapToLong = x -> x + mapToLongVal;
+				assertEquals(list.intStream().mapToLong(mapToLong).boxed().collect(toList()),
+						range.mapToLong(mapToLong).boxed().collect(toList()));
 
 				final int mapToObjVal = rand.nextInt(100);
 				IntFunction<String> mapToObj = x -> Integer.toString(x + mapToObjVal);
