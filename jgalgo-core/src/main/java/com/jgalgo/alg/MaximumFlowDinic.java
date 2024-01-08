@@ -153,9 +153,7 @@ class MaximumFlowDinic extends MaximumFlows.WithResidualGraph {
 					assert path.size() > 0;
 
 					// find out what is the maximum flow we can pass
-					double f = Double.MAX_VALUE;
-					for (int e : path)
-						f = Math.min(f, capacity[e] - flow[e]);
+					double f = path.intStream().mapToDouble(e -> capacity[e] - flow[e]).min().orElse(Double.MAX_VALUE);
 
 					// update flow of all edges on path
 					for (int e : path) {

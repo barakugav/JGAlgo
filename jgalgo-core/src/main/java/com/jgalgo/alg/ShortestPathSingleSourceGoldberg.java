@@ -97,10 +97,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 	}
 
 	private ShortestPathSingleSource.IResult computeShortestPaths0(IndexGraph g, IWeightFunctionInt w, int source) {
-		int minWeight = Integer.MAX_VALUE;
-
-		for (int m = g.edges().size(), e = 0; e < m; e++)
-			minWeight = Math.min(minWeight, w.weightInt(e));
+		final int minWeight = range(g.edges().size()).map(w::weightInt).min().orElse(Integer.MAX_VALUE);
 		if (minWeight >= 0)
 			// All weights are positive, use Dijkstra
 			return (ShortestPathSingleSource.IResult) positiveSsspAlgo

@@ -144,9 +144,12 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 				break; /* no cycle or cycle that will increase the total cost */
 
 			/* find the maximum amount of flow we can push through the cycle */
-			double f = Double.POSITIVE_INFINITY;
-			for (int e : minCycle.edges())
-				f = Math.min(f, capacity[e] - flow[e]);
+			double f = minCycle
+					.edges()
+					.intStream()
+					.mapToDouble(e -> capacity[e] - flow[e])
+					.min()
+					.orElse(Double.POSITIVE_INFINITY);
 			assert f > 0;
 
 			/* Push flow along the cycle, lowering the overall cost */
