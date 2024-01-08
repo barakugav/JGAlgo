@@ -93,8 +93,7 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		final int[] visit;
 		final int[] visitData;
 
-		boolean nextIsValid;
-		int lastV1 = -1, lastV2 = -1;
+		int[] nextMapping;
 
 		static final int None = -1;
 
@@ -135,49 +134,44 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 			stateNextV2 = new int[n + 1];
 		}
 
-		abstract boolean advance();
+		abstract void advance();
 
 		@Override
 		public boolean hasNext() {
-			return nextIsValid;
+			return nextMapping != null;
 		}
 
 		@Override
 		public IsomorphismTester.IMapping next() {
 			Assertions.hasNext(this);
 			IsomorphismTester.IMapping mapping =
-					new IsomorphismTesters.IndexMapping(core1.clone(), computeEdgeMapping());
-
-			core1[lastV1] = None;
-			core2[lastV2] = None;
-			nextIsValid = advance();
-
+					new IsomorphismTesters.IndexMapping(nextMapping, computeEdgeMapping(nextMapping));
+			advance();
 			return mapping;
 		}
 
-		private int[] computeEdgeMapping() {
+		private int[] computeEdgeMapping(int[] vMapping) {
 			final int n = g1.vertices().size();
 			final int m = g1.edges().size();
-			int[] edges1To2Map = new int[m];
+			int[] eMapping = new int[m];
 
 			for (int u1 = 0; u1 < n; u1++) {
 				for (IEdgeIter eit = g1.outEdges(u1).iterator(); eit.hasNext();) {
 					int e1 = eit.nextInt();
 					int v1 = eit.targetInt();
-					visit[v1] = e1;
+					visit[vMapping[v1]] = e1;
 				}
-				int u2 = core1[u1];
+				int u2 = vMapping[u1];
 				for (IEdgeIter eit = g2.outEdges(u2).iterator(); eit.hasNext();) {
 					int e2 = eit.nextInt();
 					int v2 = eit.targetInt();
-					int v1 = core2[v2];
-					int e1 = visit[v1];
-					edges1To2Map[e1] = e2;
+					int e1 = visit[v2];
+					eMapping[e1] = e2;
 				}
 			}
 			nextVisitIdx = 1;
 			Arrays.fill(visit, -1);
-			return edges1To2Map;
+			return eMapping;
 		}
 
 		boolean hasSelfEdge1(int vertex) {
@@ -215,7 +209,7 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 			stateT2InSize = new int[n + 1];
 			newState(None, None, 0, 0, 0, 0);
 
-			nextIsValid = advance();
+			advance();
 		}
 
 		private void newState(int v1, int v2, int t1OutSize, int t2OutSize, int t1InSize, int t2InSize) {
@@ -260,7 +254,7 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		}
 
 		@Override
-		boolean advance() {
+		void advance() {
 			dfs: while (stateDepth > 0) {
 				// IntList mapped1 = new IntArrayList(range(n).filter(u -> core1[u] != None).iterator());
 				// IntList range1 = new IntArrayList(mapped1.intStream().map(u -> core1[u]).iterator());
@@ -309,13 +303,14 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 						continue;
 
 					/* match v1 to v2 and update state */
+					if (stateDepth == n) {
+						/* found a valid full matching */
+						nextMapping = core1.clone();
+						nextMapping[v1] = v2;
+						return;
+					}
 					core1[v1] = v2;
 					core2[v2] = v1;
-					if (stateDepth == n) {
-						lastV1 = v1;
-						lastV2 = v2;
-						return true; /* found a valid full matching */
-					}
 					stateDepth++;
 					updateState(v1, v2);
 
@@ -327,7 +322,7 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 				}
 				popLastState();
 			}
-			return false;
+			nextMapping = null;
 		}
 
 		private boolean isFeasibleMatchVertices(int v1, int v2) {
@@ -559,7 +554,7 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 			stateT2OutSize = new int[n + 1];
 			newState(None, None, 0, 0);
 
-			nextIsValid = advance();
+			advance();
 		}
 
 		private void newState(int v1, int v2, int t1OutSize, int t2OutSize) {
@@ -595,7 +590,7 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		}
 
 		@Override
-		boolean advance() {
+		void advance() {
 			dfs: while (stateDepth > 0) {
 				// IntList mapped1 = new IntArrayList(range(n).filter(u -> core1[u] != None).iterator());
 				// IntList range1 = new IntArrayList(mapped1.intStream().map(u -> core1[u]).iterator());
@@ -644,13 +639,14 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 						continue;
 
 					/* match v1 to v2 and update state */
+					if (stateDepth == n) {
+						/* found a valid full matching */
+						nextMapping = core1.clone();
+						nextMapping[v1] = v2;
+						return;
+					}
 					core1[v1] = v2;
 					core2[v2] = v1;
-					if (stateDepth == n) {
-						lastV1 = v1;
-						lastV2 = v2;
-						return true; /* found a valid full matching */
-					}
 					stateDepth++;
 					updateState(v1, v2);
 
@@ -662,7 +658,7 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 				}
 				popLastState();
 			}
-			return false;
+			nextMapping = null;
 		}
 
 		private boolean isFeasibleMatchVertices(int v1, int v2) {
