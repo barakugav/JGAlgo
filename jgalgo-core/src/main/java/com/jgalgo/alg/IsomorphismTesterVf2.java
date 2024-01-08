@@ -19,18 +19,16 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
-import com.jgalgo.graph.Graphs;
+import java.util.function.IntBinaryOperator;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IterTools;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntList;
-import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
 /**
@@ -44,7 +42,8 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 
 	@Override
-	public Iterator<IsomorphismTester.IMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2) {
+	public Iterator<IsomorphismTester.IMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2,
+			IntBinaryOperator vertexMatcher, IntBinaryOperator edgeMatcher) {
 		Assertions.noParallelEdges(g1, "parallel edges are not supported");
 		Assertions.noParallelEdges(g2, "parallel edges are not supported");
 		final int n = g1.vertices().size();
@@ -57,7 +56,7 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 					.singleton(new IsomorphismTesters.IndexMapping(IntArrays.DEFAULT_EMPTY_ARRAY,
 							IntArrays.DEFAULT_EMPTY_ARRAY));
 		}
-		if (m == 0) {
+		if (m == 0 && vertexMatcher == null) {
 			Iterator<IntList> verticesPermutations =
 					JGAlgoUtils.permutations(IntList.of(g1.vertices().toIntArray())).iterator();
 			return IterTools.map(verticesPermutations, permutation -> {
@@ -66,9 +65,9 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 			});
 		}
 		if (g1.isDirected()) {
-			return new IsomorphismIterDirected(g1, g2);
+			return new IsomorphismIterDirected(g1, g2, vertexMatcher, edgeMatcher);
 		} else {
-			return new IsomorphismIterUndirected(g1, g2);
+			return new IsomorphismIterUndirected(g1, g2, vertexMatcher, edgeMatcher);
 		}
 	}
 
@@ -77,9 +76,8 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		final IndexGraph g1;
 		final IndexGraph g2;
 		final int n;
-
-		private final Bitmap hasSelfEdge1;
-		private final Bitmap hasSelfEdge2;
+		private final IntBinaryOperator vertexMatcher;
+		private final IntBinaryOperator edgeMatcher;
 
 		final int[] core1;
 		final int[] core2;
@@ -97,27 +95,13 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 
 		static final int None = -1;
 
-		IsomorphismIterBase(IndexGraph g1, IndexGraph g2) {
+		IsomorphismIterBase(IndexGraph g1, IndexGraph g2, IntBinaryOperator vertexMatcher,
+				IntBinaryOperator edgeMatcher) {
 			this.g1 = g1;
 			this.g2 = g2;
 			n = g1.vertices().size();
-
-			IntSet selfEdges1 = Graphs.selfEdges(g1);
-			IntSet selfEdges2 = Graphs.selfEdges(g2);
-			if (selfEdges1.isEmpty()) {
-				hasSelfEdge1 = null;
-			} else {
-				hasSelfEdge1 = new Bitmap(n);
-				for (int e : selfEdges1)
-					hasSelfEdge1.set(g1.edgeSource(e));
-			}
-			if (selfEdges2.isEmpty()) {
-				hasSelfEdge2 = null;
-			} else {
-				hasSelfEdge2 = new Bitmap(n);
-				for (int e : selfEdges2)
-					hasSelfEdge2.set(g2.edgeSource(e));
-			}
+			this.vertexMatcher = vertexMatcher;
+			this.edgeMatcher = edgeMatcher;
 
 			core1 = new int[n];
 			core2 = new int[n];
@@ -174,12 +158,12 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 			return eMapping;
 		}
 
-		boolean hasSelfEdge1(int vertex) {
-			return hasSelfEdge1 != null && hasSelfEdge1.get(vertex);
+		boolean canMatchVertices(int v1, int v2) {
+			return vertexMatcher == null || vertexMatcher.applyAsInt(v1, v2) != 0;
 		}
 
-		boolean hasSelfEdge2(int vertex) {
-			return hasSelfEdge2 != null && hasSelfEdge2.get(vertex);
+		boolean canMatchEdges(int e1, int e2) {
+			return edgeMatcher == null || edgeMatcher.applyAsInt(e1, e2) != 0;
 		}
 	}
 
@@ -195,8 +179,9 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		private final int[] stateT1InSize;
 		private final int[] stateT2InSize;
 
-		IsomorphismIterDirected(IndexGraph g1, IndexGraph g2) {
-			super(g1, g2);
+		IsomorphismIterDirected(IndexGraph g1, IndexGraph g2, IntBinaryOperator vertexMatcher,
+				IntBinaryOperator edgeMatcher) {
+			super(g1, g2, vertexMatcher, edgeMatcher);
 
 			in1 = new int[n];
 			in2 = new int[n];
@@ -326,28 +311,35 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		}
 
 		private boolean isFeasibleMatchVertices(int v1, int v2) {
+			/* check user custom matcher */
+			if (!canMatchVertices(v1, v2))
+				return false;
+
 			/*
 			 * check that out edges connecting v1 and other mapped vertices of g1 can be mapped to out edges connecting
 			 * v2 and other mapped vertices of g2
 			 */
 			int visitIdx = nextVisitIdx++;
 			for (IEdgeIter eit = g1.outEdges(v1).iterator(); eit.hasNext();) {
-				eit.nextInt();
+				int e1 = eit.nextInt();
 				int w1 = eit.targetInt();
 				int w2 = core1[w1];
-				if (w2 != None) {
+				if (w2 != None || v1 == w1) {
 					visit[w1] = visitIdx;
-					visitData[w1] = w2;
+					visitData[w1] = e1;
 				}
 			}
 			for (IEdgeIter eit = g2.outEdges(v2).iterator(); eit.hasNext();) {
-				eit.nextInt();
+				int e2 = eit.nextInt();
 				int w2 = eit.targetInt();
 				int w1 = core2[w2];
-				if (w1 != None) {
+				if (w1 != None || v2 == w2) {
+					if (v2 == w2)
+						w1 = v1;
 					if (visit[w1] != visitIdx)
 						return false;
-					if (visitData[w1] != w2)
+					int e1 = visitData[w1];
+					if (!canMatchEdges(e1, e2))
 						return false;
 				}
 			}
@@ -358,28 +350,26 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 			 */
 			visitIdx = nextVisitIdx++;
 			for (IEdgeIter eit = g1.inEdges(v1).iterator(); eit.hasNext();) {
-				eit.nextInt();
+				int e1 = eit.nextInt();
 				int u1 = eit.sourceInt();
 				int u2 = core1[u1];
 				if (u2 != None) {
 					visit[u1] = visitIdx;
-					visitData[u1] = u2;
+					visitData[u1] = e1;
 				}
 			}
 			for (IEdgeIter eit = g2.inEdges(v2).iterator(); eit.hasNext();) {
-				eit.nextInt();
+				int e2 = eit.nextInt();
 				int u2 = eit.sourceInt();
 				int u1 = core2[u2];
 				if (u1 != None) {
 					if (visit[u1] != visitIdx)
 						return false;
-					if (visitData[u1] != u2)
+					int e1 = visitData[u1];
+					if (!canMatchEdges(e1, e2))
 						return false;
 				}
 			}
-
-			if (hasSelfEdge1(v1) != hasSelfEdge2(v2))
-				return false;
 
 			return true;
 		}
@@ -544,8 +534,9 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		private final int[] stateT1OutSize;
 		private final int[] stateT2OutSize;
 
-		IsomorphismIterUndirected(IndexGraph g1, IndexGraph g2) {
-			super(g1, g2);
+		IsomorphismIterUndirected(IndexGraph g1, IndexGraph g2, IntBinaryOperator vertexMatcher,
+				IntBinaryOperator edgeMatcher) {
+			super(g1, g2, vertexMatcher, edgeMatcher);
 
 			out1 = new int[n];
 			out2 = new int[n];
@@ -662,34 +653,38 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		}
 
 		private boolean isFeasibleMatchVertices(int v1, int v2) {
+			/* check user custom matcher */
+			if (!canMatchVertices(v1, v2))
+				return false;
+
 			/*
 			 * check that out edges connecting v1 and other mapped vertices of g1 can be mapped to out edges connecting
 			 * v2 and other mapped vertices of g2
 			 */
 			int visitIdx = nextVisitIdx++;
 			for (IEdgeIter eit = g1.outEdges(v1).iterator(); eit.hasNext();) {
-				eit.nextInt();
+				int e1 = eit.nextInt();
 				int w1 = eit.targetInt();
 				int w2 = core1[w1];
-				if (w2 != None) {
+				if (w2 != None || v1 == w1) {
 					visit[w1] = visitIdx;
-					visitData[w1] = w2;
+					visitData[w1] = e1;
 				}
 			}
 			for (IEdgeIter eit = g2.outEdges(v2).iterator(); eit.hasNext();) {
-				eit.nextInt();
+				int e2 = eit.nextInt();
 				int w2 = eit.targetInt();
 				int w1 = core2[w2];
-				if (w1 != None) {
+				if (w1 != None || v2 == w2) {
+					if (v2 == w2)
+						w1 = v1;
 					if (visit[w1] != visitIdx)
 						return false;
-					if (visitData[w1] != w2)
+					int e1 = visitData[w1];
+					if (!canMatchEdges(e1, e2))
 						return false;
 				}
 			}
-
-			if (hasSelfEdge1(v1) != hasSelfEdge2(v2))
-				return false;
 
 			return true;
 		}

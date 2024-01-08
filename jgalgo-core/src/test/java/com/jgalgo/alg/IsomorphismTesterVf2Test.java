@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.BiPredicate;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
@@ -40,7 +41,11 @@ import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -77,6 +82,7 @@ public class IsomorphismTesterVf2Test extends TestBase {
 		});
 	}
 
+	@SuppressWarnings("boxing")
 	private static void testPositive(Graph<Integer, Integer> g1, Graph<Integer, Integer> g2, IsomorphismTester algo,
 			long seed) {
 		final Random rand = new Random(seed);
@@ -84,29 +90,122 @@ public class IsomorphismTesterVf2Test extends TestBase {
 		/* isIsomorphic() */
 		assertTrue(algo.isIsomorphic(g1, g2));
 
+		/* isomorphicMapping() */
+		Optional<IsomorphismTester.Mapping<Integer, Integer, Integer, Integer>> mappingOptional =
+				algo.isomorphicMapping(g1, g2);
+		assertTrue(mappingOptional.isPresent());
+		checkMapping(g1, g2, mappingOptional.get(), rand, null, null);
+
 		/* isomorphicMappingsIter() */
-		Iterator<IsomorphismTester.Mapping<Integer, Integer, Integer, Integer>> it =
-				algo.isomorphicMappingsIter(g1, g2);
-		assertTrue(it.hasNext());
+		List<Int2IntMap> validMappings = new ArrayList<>();
+		foreachBoolConfig(withFilters -> {
+			Iterator<IsomorphismTester.Mapping<Integer, Integer, Integer, Integer>> it;
+			if (!withFilters) {
+				it = algo.isomorphicMappingsIter(g1, g2);
+			} else {
+				it = algo.isomorphicMappingsIter(g1, g2, (v1, v2) -> true, (e1, e2) -> true);
+			}
+			assertTrue(it.hasNext());
 
-		Set<Int2IntMap> seenMappings = new ObjectOpenHashSet<>();
-		while (it.hasNext()) {
-			IsomorphismTester.Mapping<Integer, Integer, Integer, Integer> m1 = it.next();
-			checkMapping(g1, g2, m1, rand);
+			Set<Int2IntMap> seenMappings = new ObjectOpenHashSet<>();
+			while (it.hasNext()) {
+				IsomorphismTester.Mapping<Integer, Integer, Integer, Integer> m1 = it.next();
+				checkMapping(g1, g2, m1, rand, null, null);
 
-			/* assert the returned mappings as unique */
-			Int2IntMap mapping = new Int2IntOpenHashMap(g1.vertices().size());
-			for (Integer v1 : g1.vertices())
-				mapping.put(v1.intValue(), m1.mapVertex(v1).intValue());
-			boolean added = seenMappings.add(mapping);
-			assertTrue(added);
+				/* assert the returned mappings as unique */
+				Int2IntMap mapping = new Int2IntOpenHashMap(g1.vertices().size());
+				for (Integer v1 : g1.vertices())
+					mapping.put(v1.intValue(), m1.mapVertex(v1).intValue());
+				boolean added = seenMappings.add(mapping);
+				assertTrue(added);
+			}
+			/* save a random mapping */
+			validMappings.add(new ArrayList<>(seenMappings).get(rand.nextInt(seenMappings.size())));
+		});
+
+		/* isomorphicMappingsIter() with custom vertex matcher */
+		{
+			Int2IntMap forcedMappingFull = validMappings.get(0);
+			Int2IntMap forcedMapping = new Int2IntOpenHashMap();
+			forcedMapping.defaultReturnValue(-1);
+			for (int forcedNum = rand.nextInt(1 + g1.vertices().size() / 4); forcedMapping.size() < forcedNum;) {
+				int v1 = Graphs.randVertex(g1, rand);
+				int v2 = forcedMappingFull.get(v1);
+				forcedMapping.putIfAbsent(v1, v2);
+			}
+			BiPredicate<Integer, Integer> vertexMatcher = (v1, v2) -> {
+				int v2Forced = forcedMapping.get(v1.intValue());
+				return v2Forced < 0 || v2Forced == v2;
+			};
+
+			Iterator<IsomorphismTester.Mapping<Integer, Integer, Integer, Integer>> it =
+					algo.isomorphicMappingsIter(g1, g2, vertexMatcher, null);
+			assertTrue(it.hasNext());
+
+			Set<Int2IntMap> seenMappings = new ObjectOpenHashSet<>();
+			while (it.hasNext()) {
+				IsomorphismTester.Mapping<Integer, Integer, Integer, Integer> m1 = it.next();
+				checkMapping(g1, g2, m1, rand, vertexMatcher, null);
+
+				/* assert the returned mappings as unique */
+				Int2IntMap mapping = new Int2IntOpenHashMap(g1.vertices().size());
+				for (Integer v1 : g1.vertices())
+					mapping.put(v1.intValue(), m1.mapVertex(v1).intValue());
+				boolean added = seenMappings.add(mapping);
+				assertTrue(added);
+			}
+			assertTrue(seenMappings.contains(forcedMappingFull));
 		}
 
-		/* isomorphicMapping() */
-		Optional<IsomorphismTester.Mapping<Integer, Integer, Integer, Integer>> mapping =
-				algo.isomorphicMapping(g1, g2);
-		assertTrue(mapping.isPresent());
-		checkMapping(g1, g2, mapping.get(), rand);
+		/* isomorphicMappingsIter() with custom edge matcher */
+		{
+			Int2IntMap forcedMappingFull = validMappings.get(0);
+			Int2ObjectMap<IntSet> forcedMapping = new Int2ObjectOpenHashMap<>();
+			IntSet mappedEdges2 = new IntOpenHashSet();
+			for (int forcedNum = rand.nextInt(Math.min(4, 1 + g1.edges().size() / 8)); forcedMapping
+					.size() < forcedNum;) {
+				int e1 = Graphs.randEdge(g1, rand);
+				if (forcedMapping.containsKey(e1))
+					continue;
+				int e2 = g2
+						.getEdge(forcedMappingFull.get(g1.edgeSource(e1).intValue()),
+								forcedMappingFull.get(g1.edgeTarget(e1).intValue()));
+				assert e2 >= 0;
+				IntSet e2s = new IntOpenHashSet();
+				e2s.add(e2);
+				mappedEdges2.add(e2);
+				for (int s = rand.nextInt(1 + Math.min(6, g2.edges().size() / forcedNum)); e2s.size() < s;) {
+					int e2New = Graphs.randEdge(g2, rand);
+					if (mappedEdges2.contains(e2New))
+						continue;
+					e2s.add(e2New);
+					mappedEdges2.add(e2New);
+				}
+				forcedMapping.putIfAbsent(e1, e2s);
+			}
+			BiPredicate<Integer, Integer> edgeMatcher = (e1, e2) -> {
+				IntSet e2Candidates = forcedMapping.get(e1.intValue());
+				return e2Candidates == null || e2Candidates.contains(e2.intValue());
+			};
+
+			Iterator<IsomorphismTester.Mapping<Integer, Integer, Integer, Integer>> it =
+					algo.isomorphicMappingsIter(g1, g2, null, edgeMatcher);
+			assertTrue(it.hasNext());
+
+			Set<Int2IntMap> seenMappings = new ObjectOpenHashSet<>();
+			while (it.hasNext()) {
+				IsomorphismTester.Mapping<Integer, Integer, Integer, Integer> m1 = it.next();
+				checkMapping(g1, g2, m1, rand, null, edgeMatcher);
+
+				/* assert the returned mappings as unique */
+				Int2IntMap mapping = new Int2IntOpenHashMap(g1.vertices().size());
+				for (Integer v1 : g1.vertices())
+					mapping.put(v1.intValue(), m1.mapVertex(v1).intValue());
+				boolean added = seenMappings.add(mapping);
+				assertTrue(added);
+			}
+			assertTrue(seenMappings.contains(forcedMappingFull));
+		}
 	}
 
 	@Test
@@ -172,14 +271,14 @@ public class IsomorphismTesterVf2Test extends TestBase {
 					new ObjectArrayList<>(algo.isomorphicMappingsIter(g1, g2));
 			assertEquals(1, mappings.size());
 			IsomorphismTester.Mapping<Integer, Integer, Integer, Integer> mapping = mappings.get(0);
-			checkMapping(g1, g2, mapping, rand);
+			checkMapping(g1, g2, mapping, rand, null, null);
 		});
 	}
 
 	@Test
 	public void noEdges() {
 		final Random rand = new Random(0x9b512bfff33abb78L);
-		foreachBoolConfig(directed -> {
+		foreachBoolConfig((directed, withFilters) -> {
 			for (final int n : IntList.of(1, 2, 3, 4, 7)) {
 				IsomorphismTester algo = new IsomorphismTesterVf2();
 				IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
@@ -188,11 +287,15 @@ public class IsomorphismTesterVf2Test extends TestBase {
 				g2.addVertices(range(n));
 
 				Set<Int2IntMap> seenMappings = new ObjectOpenHashSet<>();
-				Iterator<IsomorphismTester.Mapping<Integer, Integer, Integer, Integer>> mappings =
-						algo.isomorphicMappingsIter(g1, g2);
+				Iterator<IsomorphismTester.Mapping<Integer, Integer, Integer, Integer>> mappings;
+				if (!withFilters) {
+					mappings = algo.isomorphicMappingsIter(g1, g2);
+				} else {
+					mappings = algo.isomorphicMappingsIter(g1, g2, (v1, v2) -> true, (e1, e2) -> true);
+				}
 				while (mappings.hasNext()) {
 					IsomorphismTester.Mapping<Integer, Integer, Integer, Integer> m1 = mappings.next();
-					checkMapping(g1, g2, m1, rand);
+					checkMapping(g1, g2, m1, rand, null, null);
 
 					/* assert the returned mappings as unique */
 					Int2IntMap mapping = new Int2IntOpenHashMap(g1.vertices().size());
@@ -247,7 +350,8 @@ public class IsomorphismTesterVf2Test extends TestBase {
 	}
 
 	private static void checkMapping(Graph<Integer, Integer> g1, Graph<Integer, Integer> g2,
-			IsomorphismTester.Mapping<Integer, Integer, Integer, Integer> m1, Random rand) {
+			IsomorphismTester.Mapping<Integer, Integer, Integer, Integer> m1, Random rand,
+			BiPredicate<Integer, Integer> vertexMatcher, BiPredicate<Integer, Integer> edgeMatcher) {
 		IsomorphismTester.Mapping<Integer, Integer, Integer, Integer> m2 = m1.inverse();
 		assertTrue(m1.inverse() == m2, "inverse matching was not cached");
 
@@ -316,6 +420,19 @@ public class IsomorphismTesterVf2Test extends TestBase {
 			} else {
 				assertTrue((u2Expected.equals(u2) && v2Expected.equals(v2))
 						|| (u2Expected.equals(v2) && v2Expected.equals(u2)));
+			}
+		}
+
+		if (vertexMatcher != null) {
+			for (Integer v1 : g1.vertices()) {
+				Integer v2 = m1.mapVertex(v1);
+				assertTrue(vertexMatcher.test(v1, v2));
+			}
+		}
+		if (edgeMatcher != null) {
+			for (Integer e1 : g1.edges()) {
+				Integer e2 = m1.mapEdge(e1);
+				assertTrue(edgeMatcher.test(e1, e2));
 			}
 		}
 	}

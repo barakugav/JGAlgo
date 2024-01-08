@@ -17,6 +17,7 @@ package com.jgalgo.alg;
 
 import java.util.Iterator;
 import java.util.Optional;
+import java.util.function.BiPredicate;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchEdgeException;
@@ -32,6 +33,10 @@ import com.jgalgo.graph.NoSuchVertexException;
  * the edges. There may be more than one isomorphism (mapping) between two graphs, and there may be none.
  *
  * <p>
+ * In particular, two empty graphs are consider isomorphic with a single valid mapping, the empty one. Two graphs with
+ * different number of vertices or edges are not isomorphic.
+ *
+ * <p>
  * The isomorphism problem which asks whether two graphs are isomorphic is one of few standard problems in computational
  * complexity theory belonging to NP, but not known to belong to either of its well-known subsets: P and NP-complete.
  *
@@ -40,9 +45,7 @@ import com.jgalgo.graph.NoSuchVertexException;
  *
  * @author Barak Ugav
  */
-interface IsomorphismTester {
-
-	// TODO this file should be public API
+public interface IsomorphismTester {
 
 	/**
 	 * Check whether two graphs are isomorphic.
@@ -65,7 +68,9 @@ interface IsomorphismTester {
 	 * @param  g2   the second graph
 	 * @return      {@code true} if the two graphs are isomorphic, {@code false} otherwise
 	 */
-	<V1, E1, V2, E2> boolean isIsomorphic(Graph<V1, E1> g1, Graph<V2, E2> g2);
+	default <V1, E1, V2, E2> boolean isIsomorphic(Graph<V1, E1> g1, Graph<V2, E2> g2) {
+		return isomorphicMapping(g1, g2).isPresent();
+	}
 
 	/**
 	 * Get an isomorphism mapping between two graphs if one exists.
@@ -81,6 +86,10 @@ interface IsomorphismTester {
 	 * Note that the type of vertices and edges of the two graphs may be different. Only the structure of the graphs is
 	 * considered.
 	 *
+	 * <p>
+	 * If both {@code g1} and {@code g2} are instances of {@link IntGraph}, the optional return value will be an
+	 * instance of {@link IsomorphismTester.IMapping}.
+	 *
 	 * @param  <V1> the type of vertices of the first graph
 	 * @param  <E1> the type of edges of the first graph
 	 * @param  <V2> the type of vertices of the second graph
@@ -91,8 +100,11 @@ interface IsomorphismTester {
 	 *              returned mapping maps vertices and edges from the first graph to vertices and edges of the second
 	 *              graph. The inverse mapping can be obtained by calling {@link IsomorphismTester.Mapping#inverse()}.
 	 */
-	<V1, E1, V2, E2> Optional<IsomorphismTester.Mapping<V1, E1, V2, E2>> isomorphicMapping(Graph<V1, E1> g1,
-			Graph<V2, E2> g2);
+	default <V1, E1, V2, E2> Optional<IsomorphismTester.Mapping<V1, E1, V2, E2>> isomorphicMapping(Graph<V1, E1> g1,
+			Graph<V2, E2> g2) {
+		Iterator<IsomorphismTester.Mapping<V1, E1, V2, E2>> iter = isomorphicMappingsIter(g1, g2, null, null);
+		return iter.hasNext() ? Optional.of(iter.next()) : Optional.empty();
+	}
 
 	/**
 	 * Get an iterator over all isomorphism mappings between two graphs.
@@ -107,6 +119,10 @@ interface IsomorphismTester {
 	 * Note that the type of vertices and edges of the two graphs may be different. Only the structure of the graphs is
 	 * considered.
 	 *
+	 * <p>
+	 * If both {@code g1} and {@code g2} are instances of {@link IntGraph}, the returned iterator will iterate over
+	 * objects of {@link IsomorphismTester.IMapping}.
+	 *
 	 * @param  <V1> the type of vertices of the first graph
 	 * @param  <E1> the type of edges of the first graph
 	 * @param  <V2> the type of vertices of the second graph
@@ -117,8 +133,57 @@ interface IsomorphismTester {
 	 *              vertices and edges from the first graph to vertices and edges of the second graph. The inverse
 	 *              mapping can be obtained by calling {@link IsomorphismTester.Mapping#inverse()}.
 	 */
+	default <V1, E1, V2, E2> Iterator<IsomorphismTester.Mapping<V1, E1, V2, E2>> isomorphicMappingsIter(
+			Graph<V1, E1> g1, Graph<V2, E2> g2) {
+		return isomorphicMappingsIter(g1, g2, null, null);
+	}
+
+	/**
+	 * Get an iterator over all isomorphism mappings between two graphs, with vertex and/or edge matchers.
+	 *
+	 * <p>
+	 * Given two graphs \(G_1 = (V_1, E_1)\) and \(G_2 = (V_2, E_2)\), an isomorphism is a bijective function \(f: V_1
+	 * \rightarrow V_2\) such that \((u, v) \in E_1\) if and only if \((f(u), f(v)) \in E_2\). If such a function
+	 * exists, then the graphs are called isomorphic. In the case of a directed graph, the function must preserve the
+	 * direction of the edges.
+	 *
+	 * <p>
+	 * In addition to the structure of the graphs, this method also takes two predicates that filter pairs of vertices
+	 * and edges, one from each graph, that are not allowed to be mapped to each other. For a given pair \(v_1,v_2\)
+	 * where \(v_1 \in V_1\) and \(v_2 \in V_2\), if the vertex matcher returns {@code false}, then the pair is not
+	 * considered for mapping. The edge matchers is used similarly. If a matcher is {@code null}, all pairs of vertices
+	 * or edges are allowed. The matchers allow to compare other properties of the vertices/edge besides their
+	 * structure, such as weights.
+	 *
+	 * <p>
+	 * Note that the type of vertices and edges of the two graphs may be different. Only the structure of the graphs is
+	 * considered, along with the filtering predicates if provided.
+	 *
+	 * <p>
+	 * If both {@code g1} and {@code g2} are instances of {@link IntGraph}, the returned iterator will iterate over
+	 * objects of {@link IsomorphismTester.IMapping}.
+	 *
+	 * @param  <V1>          the type of vertices of the first graph
+	 * @param  <E1>          the type of edges of the first graph
+	 * @param  <V2>          the type of vertices of the second graph
+	 * @param  <E2>          the type of edges of the second graph
+	 * @param  g1            the first graph
+	 * @param  g2            the second graph
+	 * @param  vertexMatcher a predicate that filters pairs of vertices, one from each graph, that are not allowed to be
+	 *                           mapped to each other. For a given pair \(v_1,v_2\) where \(v_1 \in V_1\) and \(v_2 \in
+	 *                           V_2\), if the matcher returns {@code false}, then the pair is not considered for
+	 *                           mapping. If {@code null}, all pairs of vertices are allowed.
+	 * @param  edgeMatcher   a predicate that filters pairs of edges, one from each graph, that are not allowed to be
+	 *                           mapped to each other. For a given pair \(e_1,e_2\) where \(e_1 \in E_1\) and \(e_2 \in
+	 *                           E_2\), if the matcher returns {@code false}, then the pair is not considered for
+	 *                           mapping. If {@code null}, all pairs of edges are allowed.
+	 * @return               an iterator over all isomorphism mappings between the two graphs. The returned mappings
+	 *                       maps vertices and edges from the first graph to vertices and edges of the second graph. The
+	 *                       inverse mapping can be obtained by calling {@link IsomorphismTester.Mapping#inverse()}.
+	 */
 	<V1, E1, V2, E2> Iterator<IsomorphismTester.Mapping<V1, E1, V2, E2>> isomorphicMappingsIter(Graph<V1, E1> g1,
-			Graph<V2, E2> g2);
+			Graph<V2, E2> g2, BiPredicate<? super V1, ? super V2> vertexMatcher,
+			BiPredicate<? super E1, ? super E2> edgeMatcher);
 
 	/**
 	 * A mapping between two graphs that preserves the structure of the graphs.
