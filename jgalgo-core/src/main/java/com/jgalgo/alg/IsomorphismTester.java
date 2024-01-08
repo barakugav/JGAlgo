@@ -42,6 +42,8 @@ import com.jgalgo.graph.NoSuchVertexException;
  */
 interface IsomorphismTester {
 
+	// TODO this file should be public API
+
 	/**
 	 * Check whether two graphs are isomorphic.
 	 *

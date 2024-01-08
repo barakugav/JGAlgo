@@ -20,6 +20,8 @@ import com.jgalgo.graph.WeightFunction;
 
 interface FlowCirculation {
 
+	// TODO this file should be public API
+
 	<V, E> Flow<V, E> computeCirculation(Graph<V, E> g, WeightFunction<E> capacity, WeightFunction<V> supply);
 
 	// void computeCirculation(Graph g, WeightFunction capacity, WeightFunction lowerBound, WeightFunction supply);
