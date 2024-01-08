@@ -16,17 +16,14 @@
 
 package com.jgalgo.alg;
 
-import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
-import com.jgalgo.internal.ds.IntIntReferenceableHeap;
+import com.jgalgo.internal.ds.LongIntReferenceableHeap;
 import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.JGAlgoUtils.BiInt2IntFunc;
-import it.unimi.dsi.fastutil.ints.Int2IntFunction;
 
 /**
  * The DSatur coloring algorithm.
@@ -76,19 +73,10 @@ class ColoringDSatur implements ColoringAlgoBase {
 		BitSet[] neighborColors = new BitSet[n];
 		Arrays.fill(colors, -1);
 
-		/* We want to compose both the saturationDegree and uncoloredDegree in a key int key, using 'toKey' func */
-		final int maxDegree = range(n).map(u -> g.outEdges(u).size()).max().orElse(0);
-		final int maxDegreeFactor = maxDegree + 1;
-		/* negate saturationDegree, more neighbor colors should be extracted from the heap first */
-		BiInt2IntFunc createKey =
-				(saturationDegree, uncoloredDegree) -> -(saturationDegree * maxDegreeFactor + uncoloredDegree);
-		Int2IntFunction keyToSaturationDegree = key -> (-key) / maxDegreeFactor;
-		Int2IntFunction keyToUncoloredDegree = key -> (-key) % maxDegreeFactor;
-
-		IntIntReferenceableHeap heap = (IntIntReferenceableHeap) heapBuilder.build(int.class, int.class);
-		IntIntReferenceableHeap.Ref[] refs = new IntIntReferenceableHeap.Ref[n];
+		LongIntReferenceableHeap heap = (LongIntReferenceableHeap) heapBuilder.build(long.class, int.class);
+		LongIntReferenceableHeap.Ref[] refs = new LongIntReferenceableHeap.Ref[n];
 		for (int u = 0; u < n; u++) {
-			int key = createKey.apply(/* saturationDegree= */0, g.outEdges(u).size());
+			long key = heapKey(0, g.outEdges(u).size());
 			refs[u] = heap.insert(key, u);
 			neighborColors[u] = new BitSet();
 		}
@@ -103,10 +91,10 @@ class ColoringDSatur implements ColoringAlgoBase {
 				eit.nextInt();
 				int v = eit.targetInt();
 				if (colors[v] == -1) { /* v is uncolored */
-					IntIntReferenceableHeap.Ref ref = refs[v];
-					int key = ref.key();
-					int saturationDegree = keyToSaturationDegree.applyAsInt(key);
-					int uncoloredDegree = keyToUncoloredDegree.applyAsInt(key);
+					LongIntReferenceableHeap.Ref ref = refs[v];
+					long key = ref.key();
+					int saturationDegree = heapKeyToSaturationDegree(key);
+					int uncoloredDegree = heapKeyToUncoloredDegree(key);
 
 					/* we colored u, v has one less uncolored neighbor */
 					uncoloredDegree--;
@@ -116,7 +104,7 @@ class ColoringDSatur implements ColoringAlgoBase {
 						neighborColors[v].set(color);
 						saturationDegree++;
 
-						key = createKey.apply(saturationDegree, uncoloredDegree);
+						key = heapKey(saturationDegree, uncoloredDegree);
 						heap.decreaseKey(ref, key);
 					} else {
 
@@ -124,7 +112,7 @@ class ColoringDSatur implements ColoringAlgoBase {
 						 * we would prefer to use decreaseKey, but we only decrease the uncolored degree, which is
 						 * increaseKey with respect to the heap ordering. pay \(O(\log n)\) instead of \(O(1)\)
 						 */
-						key = createKey.apply(saturationDegree, uncoloredDegree);
+						key = heapKey(saturationDegree, uncoloredDegree);
 						heap.increaseKey(ref, key);
 					}
 
@@ -132,6 +120,20 @@ class ColoringDSatur implements ColoringAlgoBase {
 			}
 		}
 		return new VertexPartitions.Impl(g, colorsNum, colors);
+	}
+
+	private static long heapKey(int saturationDegree, int uncoloredDegree) {
+		/* We want to compose both the saturationDegree and uncoloredDegree in a single long key */
+		/* negate saturationDegree, more neighbor colors should be extracted from the heap first */
+		return -(((long) saturationDegree << 32) + uncoloredDegree);
+	}
+
+	private static int heapKeyToSaturationDegree(long key) {
+		return (int) (-key >> 32);
+	}
+
+	private static int heapKeyToUncoloredDegree(long key) {
+		return (int) ((-key) & ((1L << 32) - 1));
 	}
 
 }

@@ -531,6 +531,7 @@ register_template(
     [
         ("Int", "Int"),
         ("Int", "Void"),
+        ("Long", "Int"),
         ("Double", "Int"),
         ("Double", "Obj"),
         ("Obj", "Void"),
@@ -575,6 +576,7 @@ register_template(
     [
         ("Int", "Int"),
         ("Int", "Void"),
+        ("Long", "Int"),
         ("Double", "Int"),
         ("Double", "Obj"),
         ("Obj", "Void"),
@@ -602,6 +604,7 @@ register_template(
     [
         ("Int", "Int"),
         ("Int", "Void"),
+        ("Long", "Int"),
         ("Double", "Int"),
         ("Double", "Obj"),
         ("Obj", "Void"),
@@ -642,6 +645,7 @@ register_template(
     [
         ("Int", "Int"),
         ("Int", "Void"),
+        ("Long", "Int"),
         ("Double", "Int"),
         ("Double", "Obj"),
         ("Obj", "Void"),

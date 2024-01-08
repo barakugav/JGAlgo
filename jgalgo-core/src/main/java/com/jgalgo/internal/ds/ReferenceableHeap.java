@@ -19,6 +19,7 @@ import java.util.Comparator;
 import java.util.Objects;
 import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 import it.unimi.dsi.fastutil.ints.IntComparator;
+import it.unimi.dsi.fastutil.longs.LongComparator;
 
 /**
  * A collection which maintains elements in order and support efficient retrieval of the minimum value, and expose
@@ -85,6 +86,8 @@ public interface ReferenceableHeap {
 					return IntIntReferenceableHeap.newInstance((IntComparator) comparator);
 				if (keyType == int.class && valueType == void.class)
 					return IntReferenceableHeap.newInstance((IntComparator) comparator);
+				if (keyType == long.class && valueType == int.class)
+					return LongIntReferenceableHeap.newInstance((LongComparator) comparator);
 				if (keyType == double.class && valueType == int.class)
 					return DoubleIntReferenceableHeap.newInstance((DoubleComparator) comparator);
 				if (keyType == double.class && valueType == Object.class)
