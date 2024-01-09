@@ -24,7 +24,7 @@ import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IterTools;
-import com.jgalgo.internal.util.JGAlgoUtils;
+import com.jgalgo.internal.util.Permutations;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
@@ -57,8 +57,7 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 							IntArrays.DEFAULT_EMPTY_ARRAY));
 		}
 		if (m == 0 && vertexMatcher == null) {
-			Iterator<IntList> verticesPermutations =
-					JGAlgoUtils.permutations(IntList.of(g1.vertices().toIntArray())).iterator();
+			Iterator<IntList> verticesPermutations = Permutations.of(g1.vertices()).iterator();
 			return IterTools.map(verticesPermutations, permutation -> {
 				int[] core1 = permutation.toIntArray();
 				return new IsomorphismTesters.IndexMapping(core1, IntArrays.DEFAULT_EMPTY_ARRAY);
