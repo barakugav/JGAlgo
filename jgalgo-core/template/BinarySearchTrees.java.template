@@ -190,6 +190,7 @@ class BINARY_SEARCH_TREES {
 		}
 
 #if PRIMITIVE_KEY_TYPE_REAL == "Object"
+		@Override
 		void clear() {
 			super.clear();
 			key = null;

@@ -457,7 +457,7 @@ public class ImmutableGraphCopyTest extends TestBase {
 	private static Integer nonExistingEdge(Graph<Integer, Integer> g, Random rand) {
 		for (;;) {
 			Integer e = Integer.valueOf(rand.nextInt());
-			if (e >= 0 && !g.edges().contains(e))
+			if (e.intValue() >= 0 && !g.edges().contains(e))
 				return e;
 		}
 	}

@@ -38,6 +38,7 @@ import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.longs.LongComparator;
 
 public class Assertions {
 	private Assertions() {}
@@ -353,6 +354,14 @@ public class Assertions {
 		}
 	}
 
+	public static void heapDecreaseKeyIsSmaller(long oldKey, long newKey, LongComparator cmp) {
+		if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {
+			int c = cmp == null ? Long.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);
+			if (c < 0)
+				throw new IllegalArgumentException("New key is greater than existing one");
+		}
+	}
+
 	public static void heapDecreaseKeyIsSmaller(double oldKey, double newKey, DoubleComparator cmp) {
 		if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {
 			int c = cmp == null ? Double.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);
@@ -372,6 +381,14 @@ public class Assertions {
 	public static void heapIncreaseKeyIsGreater(int oldKey, int newKey, IntComparator cmp) {
 		if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {
 			int c = cmp == null ? Integer.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);
+			if (c > 0)
+				throw new IllegalArgumentException("New key is smaller than existing one");
+		}
+	}
+
+	public static void heapIncreaseKeyIsGreater(long oldKey, long newKey, LongComparator cmp) {
+		if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {
+			int c = cmp == null ? Long.compare(oldKey, newKey) : cmp.compare(oldKey, newKey);
 			if (c > 0)
 				throw new IllegalArgumentException("New key is smaller than existing one");
 		}
