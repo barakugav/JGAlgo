@@ -42,7 +42,7 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 
 	@Override
-	public Iterator<IsomorphismTester.IMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2,
+	public Iterator<IsomorphismIMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2,
 			IntBinaryOperator vertexMatcher, IntBinaryOperator edgeMatcher) {
 		Assertions.noParallelEdges(g1, "parallel edges are not supported");
 		Assertions.noParallelEdges(g2, "parallel edges are not supported");
@@ -70,7 +70,7 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		}
 	}
 
-	private abstract static class IsomorphismIterBase implements Iterator<IsomorphismTester.IMapping> {
+	private abstract static class IsomorphismIterBase implements Iterator<IsomorphismIMapping> {
 
 		final IndexGraph g1;
 		final IndexGraph g2;
@@ -125,9 +125,9 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		}
 
 		@Override
-		public IsomorphismTester.IMapping next() {
+		public IsomorphismIMapping next() {
 			Assertions.hasNext(this);
-			IsomorphismTester.IMapping mapping =
+			IsomorphismIMapping mapping =
 					new IsomorphismTesters.IndexMapping(nextMapping, computeEdgeMapping(nextMapping));
 			advance();
 			return mapping;

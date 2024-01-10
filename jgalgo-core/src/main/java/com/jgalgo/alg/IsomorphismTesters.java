@@ -15,7 +15,6 @@
  */
 package com.jgalgo.alg;
 
-import com.jgalgo.alg.IsomorphismTester.IMapping;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
@@ -27,7 +26,7 @@ class IsomorphismTesters {
 
 	private IsomorphismTesters() {}
 
-	static class IndexMapping implements IsomorphismTester.IMapping {
+	static class IndexMapping implements IsomorphismIMapping {
 
 		private final int[] vertexMapping;
 		private final int[] edgeMapping;
@@ -60,7 +59,7 @@ class IsomorphismTesters {
 		}
 
 		@Override
-		public IMapping inverse() {
+		public IsomorphismIMapping inverse() {
 			if (inverse == null) {
 				final int n = vertexMapping.length;
 				final int m = edgeMapping.length;
@@ -77,22 +76,22 @@ class IsomorphismTesters {
 		}
 	}
 
-	static class ObjMappingFromIndexMapping<V1, E1, V2, E2> implements IsomorphismTester.Mapping<V1, E1, V2, E2> {
+	static class ObjMappingFromIndexMapping<V1, E1, V2, E2> implements IsomorphismMapping<V1, E1, V2, E2> {
 
-		private final IsomorphismTester.IMapping indexMapping;
+		private final IsomorphismIMapping indexMapping;
 		private final IndexIdMap<V1> v1Map;
 		private final IndexIdMap<E1> e1Map;
 		private final IndexIdMap<V2> v2Map;
 		private final IndexIdMap<E2> e2Map;
 		private ObjMappingFromIndexMapping<V2, E2, V1, E1> inverse;
 
-		ObjMappingFromIndexMapping(IsomorphismTester.IMapping indexMapping, Graph<V1, E1> g1, Graph<V2, E2> g2) {
+		ObjMappingFromIndexMapping(IsomorphismIMapping indexMapping, Graph<V1, E1> g1, Graph<V2, E2> g2) {
 			this(indexMapping, g1.indexGraphVerticesMap(), g1.indexGraphEdgesMap(), g2.indexGraphVerticesMap(),
 					g2.indexGraphEdgesMap());
 		}
 
-		private ObjMappingFromIndexMapping(IsomorphismTester.IMapping indexMapping, IndexIdMap<V1> v1Map,
-				IndexIdMap<E1> e1Map, IndexIdMap<V2> v2Map, IndexIdMap<E2> e2Map) {
+		private ObjMappingFromIndexMapping(IsomorphismIMapping indexMapping, IndexIdMap<V1> v1Map, IndexIdMap<E1> e1Map,
+				IndexIdMap<V2> v2Map, IndexIdMap<E2> e2Map) {
 			this.indexMapping = indexMapping;
 			this.v1Map = v1Map;
 			this.e1Map = e1Map;
@@ -116,7 +115,7 @@ class IsomorphismTesters {
 		}
 
 		@Override
-		public IsomorphismTester.Mapping<V2, E2, V1, E1> inverse() {
+		public IsomorphismMapping<V2, E2, V1, E1> inverse() {
 			if (inverse == null) {
 				inverse = new ObjMappingFromIndexMapping<>(indexMapping.inverse(), v2Map, e2Map, v1Map, e1Map);
 				inverse.inverse = this;
@@ -125,22 +124,22 @@ class IsomorphismTesters {
 		}
 	}
 
-	static class IntMappingFromIndexMapping implements IsomorphismTester.IMapping {
+	static class IntMappingFromIndexMapping implements IsomorphismIMapping {
 
-		private final IsomorphismTester.IMapping indexMapping;
+		private final IsomorphismIMapping indexMapping;
 		private final IndexIntIdMap v1Map;
 		private final IndexIntIdMap e1Map;
 		private final IndexIntIdMap v2Map;
 		private final IndexIntIdMap e2Map;
 		private IntMappingFromIndexMapping inverse;
 
-		IntMappingFromIndexMapping(IsomorphismTester.IMapping indexMapping, IntGraph g1, IntGraph g2) {
+		IntMappingFromIndexMapping(IsomorphismIMapping indexMapping, IntGraph g1, IntGraph g2) {
 			this(indexMapping, g1.indexGraphVerticesMap(), g1.indexGraphEdgesMap(), g2.indexGraphVerticesMap(),
 					g2.indexGraphEdgesMap());
 		}
 
-		private IntMappingFromIndexMapping(IsomorphismTester.IMapping indexMapping, IndexIntIdMap v1Map,
-				IndexIntIdMap e1Map, IndexIntIdMap v2Map, IndexIntIdMap e2Map) {
+		private IntMappingFromIndexMapping(IsomorphismIMapping indexMapping, IndexIntIdMap v1Map, IndexIntIdMap e1Map,
+				IndexIntIdMap v2Map, IndexIntIdMap e2Map) {
 			this.indexMapping = indexMapping;
 			this.v1Map = v1Map;
 			this.e1Map = e1Map;
@@ -164,7 +163,7 @@ class IsomorphismTesters {
 		}
 
 		@Override
-		public IsomorphismTester.IMapping inverse() {
+		public IsomorphismIMapping inverse() {
 			if (inverse == null) {
 				inverse = new IntMappingFromIndexMapping(indexMapping.inverse(), v2Map, e2Map, v1Map, e1Map);
 				inverse.inverse = this;

@@ -30,8 +30,8 @@ interface IsomorphismTesterBase extends IsomorphismTester {
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
-	default <V1, E1, V2, E2> Iterator<IsomorphismTester.Mapping<V1, E1, V2, E2>> isomorphicMappingsIter(
-			Graph<V1, E1> g1, Graph<V2, E2> g2, BiPredicate<? super V1, ? super V2> vertexMatcher,
+	default <V1, E1, V2, E2> Iterator<IsomorphismMapping<V1, E1, V2, E2>> isomorphicMappingsIter(Graph<V1, E1> g1,
+			Graph<V2, E2> g2, BiPredicate<? super V1, ? super V2> vertexMatcher,
 			BiPredicate<? super E1, ? super E2> edgeMatcher) {
 		if (g1 instanceof IndexGraph && g2 instanceof IndexGraph) {
 			IntBinaryOperator vMatcher = asIntBiMatcher((BiPredicate<? super Integer, ? super Integer>) vertexMatcher);
@@ -43,7 +43,7 @@ interface IsomorphismTesterBase extends IsomorphismTester {
 			IntBinaryOperator vMatcher =
 					mapMatcher(vertexMatcher, g1.indexGraphVerticesMap(), g2.indexGraphVerticesMap());
 			IntBinaryOperator eMatcher = mapMatcher(edgeMatcher, g1.indexGraphEdgesMap(), g2.indexGraphEdgesMap());
-			Iterator<IsomorphismTester.IMapping> iMappingsIter = isomorphicMappingsIter(ig1, ig2, vMatcher, eMatcher);
+			Iterator<IsomorphismIMapping> iMappingsIter = isomorphicMappingsIter(ig1, ig2, vMatcher, eMatcher);
 			return IterTools.map(iMappingsIter, m -> mappingFromIndexMapping(g1, g2, m));
 		}
 	}
@@ -52,16 +52,16 @@ interface IsomorphismTesterBase extends IsomorphismTester {
 	 * There is no int-specific interface for BiPredicate, we use IntBinaryOperator which return 0 for false, and any
 	 * other value for true
 	 */
-	Iterator<IsomorphismTester.IMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2,
-			IntBinaryOperator vertexMatcher, IntBinaryOperator edgeMatcher);
+	Iterator<IsomorphismIMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2, IntBinaryOperator vertexMatcher,
+			IntBinaryOperator edgeMatcher);
 
 	@SuppressWarnings("unchecked")
-	private static <V1, E1, V2, E2> IsomorphismTester.Mapping<V1, E1, V2, E2> mappingFromIndexMapping(Graph<V1, E1> g1,
-			Graph<V2, E2> g2, IsomorphismTester.IMapping indexMapping) {
+	private static <V1, E1, V2, E2> IsomorphismMapping<V1, E1, V2, E2> mappingFromIndexMapping(Graph<V1, E1> g1,
+			Graph<V2, E2> g2, IsomorphismIMapping indexMapping) {
 		assert !(g1 instanceof IndexGraph && g2 instanceof IndexGraph);
 		if (g1 instanceof IntGraph && g2 instanceof IntGraph) {
-			return (IsomorphismTester.Mapping<V1, E1, V2, E2>) new IntMappingFromIndexMapping(indexMapping,
-					(IntGraph) g1, (IntGraph) g2);
+			return (IsomorphismMapping<V1, E1, V2, E2>) new IntMappingFromIndexMapping(indexMapping, (IntGraph) g1,
+					(IntGraph) g2);
 		} else {
 			return new ObjMappingFromIndexMapping<>(indexMapping, g1, g2);
 		}
