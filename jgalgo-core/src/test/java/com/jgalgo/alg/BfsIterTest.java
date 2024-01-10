@@ -50,7 +50,7 @@ public class BfsIterTest extends TestBase {
 		V source = Graphs.randVertex(g, rand);
 
 		Set<V> visited = new ObjectOpenHashSet<>(n);
-		for (Bfs.Iter<V, E> it = Bfs.newInstance(g, source); it.hasNext();) {
+		for (BfsIter<V, E> it = BfsIter.newInstance(g, source); it.hasNext();) {
 			V v = it.next();
 			E e = it.lastEdge();
 			assertFalse(visited.contains(v), "already visited vertex " + v);
@@ -64,7 +64,7 @@ public class BfsIterTest extends TestBase {
 
 		/* run BFS again without calling .hasNext() */
 		Set<V> visited2 = new ObjectOpenHashSet<>();
-		Bfs.Iter<V, E> it = Bfs.newInstance(g, source);
+		BfsIter<V, E> it = BfsIter.newInstance(g, source);
 		for (int s = visited.size(); s-- > 0;) {
 			V v = it.next();
 			E e = it.lastEdge();

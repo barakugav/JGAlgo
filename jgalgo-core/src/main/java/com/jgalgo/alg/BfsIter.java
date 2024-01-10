@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.jgalgo.alg;
 
 import java.util.Iterator;
@@ -25,7 +24,7 @@ import com.jgalgo.graph.IntGraph;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
- * Bread first search (BFS) iterators static class.
+ * Bread first search (BFS) iterator.
  *
  * <p>
  * The BFS iterator is used to iterate over the vertices of a graph in a bread first manner, namely by the cardinality
@@ -38,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * <pre> {@code
  * Graph<String, Integer> g = ...;
  * String sourceVertex = ...;
- * for (Bfs.Iter<String, Integer> iter = Bfs.newInstance(g, sourceVertex); iter.hasNext();) {
+ * for (BfsIter<String, Integer> iter = BfsIter.newInstance(g, sourceVertex); iter.hasNext();) {
  *     String v = iter.next();
  *     Integer e = iter.inEdge();
  *     int layer = iter.layer();
@@ -46,144 +45,56 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * }
  * }</pre>
  *
- * @see    Dfs
- * @see    <a href= "https://en.wikipedia.org/wiki/Breadth-first_search">Wikipedia</a>
- * @author Barak Ugav
+ * @see        DfsIter
+ * @see        <a href= "https://en.wikipedia.org/wiki/Breadth-first_search">Wikipedia</a>
+ * @param  <V> the vertices type
+ * @param  <E> the edges type
+ * @author     Barak Ugav
  */
-public interface Bfs {
+public interface BfsIter<V, E> extends Iterator<V> {
 
 	/**
-	 * Create a BFS iterator.
+	 * Check whether there is more vertices to iterate over.
+	 */
+	@Override
+	public boolean hasNext();
+
+	/**
+	 * Advance the iterator and return a vertex that was not visited by the iterator yet.
+	 */
+	@Override
+	public V next();
+
+	/**
+	 * Get the edge that led to the last vertex returned by {@link #next()}.
 	 *
 	 * <p>
-	 * If an {@link IntGraph} is passed as an argument {@link Bfs.IntIter} is returned.
+	 * The behavior is undefined if {@link #next()} was not called yet.
 	 *
-	 * @param  <V>    the vertices type
-	 * @param  <E>    the edges type
-	 * @param  g      a graph
-	 * @param  source a vertex in the graph from which the search will start from
-	 * @return        a BFS iterator that iterate over the vertices of the graph
+	 * @return the edge that led to the last vertex returned by {@link #next()}
 	 */
-	@SuppressWarnings("unchecked")
-	public static <V, E> Bfs.Iter<V, E> newInstance(Graph<V, E> g, V source) {
-		if (g instanceof IntGraph)
-			return (Bfs.Iter<V, E>) newInstance((IntGraph) g, ((Integer) source).intValue());
-		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-		Bfs.IntIter indexBfs = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.ObjBfsFromIndexBfs<>(g, indexBfs);
-	}
+	public E lastEdge();
 
 	/**
-	 * Create a BFS iterator in an int graph.
-	 *
-	 * @param  g      a graph
-	 * @param  source a vertex in the graph from which the search will start from
-	 * @return        a BFS iterator that iterate over the vertices of the graph
-	 */
-	public static Bfs.IntIter newInstance(IntGraph g, int source) {
-		if (g instanceof IndexGraph)
-			return new BfsIterImpl.Forward((IndexGraph) g, source);
-		IndexIntIdMap viMap = g.indexGraphVerticesMap();
-		Bfs.IntIter indexBfs = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBfs);
-	}
-
-	/**
-	 * Create a backward BFS iterator.
+	 * Get the layer of the last vertex returned by {@link #next()}.
 	 *
 	 * <p>
-	 * The regular BFS uses the out-edges of each vertex to explore its neighbors, while the <i>backward</i> BFS uses
-	 * the in-edges to do so.
+	 * The layer of a vertex is the cardinality distance, the number of edges in the path, from the source(s) to the
+	 * vertex.
 	 *
 	 * <p>
-	 * If an {@link IntGraph} is passed as an argument {@link Bfs.IntIter} is returned.
+	 * The behavior is undefined if {@link #next()} was not called yet.
 	 *
-	 * @param  <V>    the vertices type
-	 * @param  <E>    the edges type
-	 * @param  g      a graph
-	 * @param  source a vertex in the graph from which the search will start from
-	 * @return        a BFS iterator that iterate over the vertices of the graph using the in-edges
+	 * @return the layer of the last vertex returned by {@link #next()}.
 	 */
-	@SuppressWarnings("unchecked")
-	public static <V, E> Bfs.Iter<V, E> newInstanceBackward(Graph<V, E> g, V source) {
-		if (g instanceof IntGraph)
-			return (Bfs.Iter<V, E>) newInstanceBackward((IntGraph) g, ((Integer) source).intValue());
-		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-		Bfs.IntIter indexBfs = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.ObjBfsFromIndexBfs<>(g, indexBfs);
-	}
-
-	/**
-	 * Create a backward BFS iterator in an int graph.
-	 *
-	 * <p>
-	 * The regular BFS uses the out-edges of each vertex to explore its neighbors, while the <i>backward</i> BFS uses
-	 * the in-edges to do so.
-	 *
-	 * @param  g      a graph
-	 * @param  source a vertex in the graph from which the search will start from
-	 * @return        a BFS iterator that iterate over the vertices of the graph using the in-edges
-	 */
-	public static Bfs.IntIter newInstanceBackward(IntGraph g, int source) {
-		if (g instanceof IndexGraph)
-			return new BfsIterImpl.Backward((IndexGraph) g, source);
-		IndexIntIdMap viMap = g.indexGraphVerticesMap();
-		Bfs.IntIter indexBfs = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBfs);
-	}
-
-	/**
-	 * A BFS iterator.
-	 *
-	 * @param  <V> the vertices type
-	 * @param  <E> the edges type
-	 * @author     Barak Ugav
-	 */
-	static interface Iter<V, E> extends Iterator<V> {
-
-		/**
-		 * Check whether there is more vertices to iterate over.
-		 */
-		@Override
-		public boolean hasNext();
-
-		/**
-		 * Advance the iterator and return a vertex that was not visited by the iterator yet.
-		 */
-		@Override
-		public V next();
-
-		/**
-		 * Get the edge that led to the last vertex returned by {@link #next()}.
-		 *
-		 * <p>
-		 * The behavior is undefined if {@link #next()} was not called yet.
-		 *
-		 * @return the edge that led to the last vertex returned by {@link #next()}
-		 */
-		public E lastEdge();
-
-		/**
-		 * Get the layer of the last vertex returned by {@link #next()}.
-		 *
-		 * <p>
-		 * The layer of a vertex is the cardinality distance, the number of edges in the path, from the source(s) to the
-		 * vertex.
-		 *
-		 * <p>
-		 * The behavior is undefined if {@link #next()} was not called yet.
-		 *
-		 * @return the layer of the last vertex returned by {@link #next()}.
-		 */
-		public int layer();
-	}
+	public int layer();
 
 	/**
 	 * A BFS iterator for {@link IntGraph}.
 	 *
 	 * @author Barak Ugav
 	 */
-	static interface IntIter extends Bfs.Iter<Integer, Integer>, IntIterator {
+	static interface Int extends BfsIter<Integer, Integer>, IntIterator {
 
 		/**
 		 * Advance the iterator and return a vertex that was not visited by the iterator yet.
@@ -223,6 +134,86 @@ public interface Bfs {
 			int e = lastEdgeInt();
 			return e == -1 ? null : Integer.valueOf(e);
 		}
+	}
+
+	/**
+	 * Create a BFS iterator.
+	 *
+	 * <p>
+	 * If an {@link IntGraph} is passed as an argument {@link BfsIter.Int} is returned.
+	 *
+	 * @param  <V>    the vertices type
+	 * @param  <E>    the edges type
+	 * @param  g      a graph
+	 * @param  source a vertex in the graph from which the search will start from
+	 * @return        a BFS iterator that iterate over the vertices of the graph
+	 */
+	@SuppressWarnings("unchecked")
+	public static <V, E> BfsIter<V, E> newInstance(Graph<V, E> g, V source) {
+		if (g instanceof IntGraph)
+			return (BfsIter<V, E>) newInstance((IntGraph) g, ((Integer) source).intValue());
+		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+		BfsIter.Int indexBfs = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
+		return new BfsIterImpl.ObjBfsFromIndexBfs<>(g, indexBfs);
+	}
+
+	/**
+	 * Create a BFS iterator in an int graph.
+	 *
+	 * @param  g      a graph
+	 * @param  source a vertex in the graph from which the search will start from
+	 * @return        a BFS iterator that iterate over the vertices of the graph
+	 */
+	public static BfsIter.Int newInstance(IntGraph g, int source) {
+		if (g instanceof IndexGraph)
+			return new BfsIterImpl.Forward((IndexGraph) g, source);
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		BfsIter.Int indexBfs = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));
+		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBfs);
+	}
+
+	/**
+	 * Create a backward BFS iterator.
+	 *
+	 * <p>
+	 * The regular BFS uses the out-edges of each vertex to explore its neighbors, while the <i>backward</i> BFS uses
+	 * the in-edges to do so.
+	 *
+	 * <p>
+	 * If an {@link IntGraph} is passed as an argument {@link BfsIter.Int} is returned.
+	 *
+	 * @param  <V>    the vertices type
+	 * @param  <E>    the edges type
+	 * @param  g      a graph
+	 * @param  source a vertex in the graph from which the search will start from
+	 * @return        a BFS iterator that iterate over the vertices of the graph using the in-edges
+	 */
+	@SuppressWarnings("unchecked")
+	public static <V, E> BfsIter<V, E> newInstanceBackward(Graph<V, E> g, V source) {
+		if (g instanceof IntGraph)
+			return (BfsIter<V, E>) newInstanceBackward((IntGraph) g, ((Integer) source).intValue());
+		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+		BfsIter.Int indexBfs = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
+		return new BfsIterImpl.ObjBfsFromIndexBfs<>(g, indexBfs);
+	}
+
+	/**
+	 * Create a backward BFS iterator in an int graph.
+	 *
+	 * <p>
+	 * The regular BFS uses the out-edges of each vertex to explore its neighbors, while the <i>backward</i> BFS uses
+	 * the in-edges to do so.
+	 *
+	 * @param  g      a graph
+	 * @param  source a vertex in the graph from which the search will start from
+	 * @return        a BFS iterator that iterate over the vertices of the graph using the in-edges
+	 */
+	public static BfsIter.Int newInstanceBackward(IntGraph g, int source) {
+		if (g instanceof IndexGraph)
+			return new BfsIterImpl.Backward((IndexGraph) g, source);
+		IndexIntIdMap viMap = g.indexGraphVerticesMap();
+		BfsIter.Int indexBfs = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
+		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBfs);
 	}
 
 }

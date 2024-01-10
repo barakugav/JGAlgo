@@ -49,7 +49,7 @@ public class DfsIterTest extends TestBase {
 		V source = Graphs.randVertex(g, rand);
 
 		Set<V> visited = new ObjectOpenHashSet<>();
-		for (Dfs.Iter<V, E> it = Dfs.newInstance(g, source); it.hasNext();) {
+		for (DfsIter<V, E> it = DfsIter.newInstance(g, source); it.hasNext();) {
 			V v = it.next();
 			List<E> pathFromSource = it.edgePath();
 			E e = v.equals(source) ? null : pathFromSource.get(pathFromSource.size() - 1);
@@ -64,7 +64,7 @@ public class DfsIterTest extends TestBase {
 
 		/* run DFS again without calling .hasNext() */
 		Set<V> visited2 = new ObjectOpenHashSet<>();
-		Dfs.Iter<V, E> it = Dfs.newInstance(g, source);
+		DfsIter<V, E> it = DfsIter.newInstance(g, source);
 		for (int s = visited.size(); s-- > 0;) {
 			V v = it.next();
 			List<E> pathFromSource = it.edgePath();

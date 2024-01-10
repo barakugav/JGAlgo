@@ -16,8 +16,8 @@
 package com.jgalgo.example;
 
 import java.util.List;
-import com.jgalgo.alg.Bfs;
-import com.jgalgo.alg.Dfs;
+import com.jgalgo.alg.BfsIter;
+import com.jgalgo.alg.DfsIter;
 import com.jgalgo.graph.Graph;
 
 /**
@@ -38,7 +38,7 @@ public class BfsDfsExample {
 		String source = g.vertices().iterator().next();
 
 		/* Iterate over the graph vertices in a breadth-first search (BFS) order */
-		for (Bfs.Iter<String, Integer> iter = Bfs.newInstance(g, source); iter.hasNext();) {
+		for (BfsIter<String, Integer> iter = BfsIter.newInstance(g, source); iter.hasNext();) {
 			/* v is a vertex the iterator didn't visit before */
 			String v = iter.next();
 			/* e is the edge used to reach v */
@@ -59,7 +59,7 @@ public class BfsDfsExample {
 		String source = g.vertices().iterator().next();
 
 		/* Iterate over the graph vertices in a depth-first search (DFS) order */
-		for (Dfs.Iter<String, Integer> iter = Dfs.newInstance(g, source); iter.hasNext();) {
+		for (DfsIter<String, Integer> iter = DfsIter.newInstance(g, source); iter.hasNext();) {
 			/* v is a vertex the iterator didn't visit before */
 			String v = iter.next();
 			/* edgePath is a list of edges, forming a path from the source to v */

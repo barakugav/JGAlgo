@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-class DfsIterImpl implements Dfs.IntIter {
+class DfsIterImpl implements DfsIter.Int {
 
 	private final IndexGraph g;
 	private final Bitmap visited;
@@ -116,13 +116,13 @@ class DfsIterImpl implements Dfs.IntIter {
 		return edgePathView;
 	}
 
-	static class IntDfsFromIndexDfs implements Dfs.IntIter {
+	static class IntDfsFromIndexDfs implements DfsIter.Int {
 
-		private final Dfs.IntIter indexIter;
+		private final DfsIter.Int indexIter;
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-		IntDfsFromIndexDfs(IntGraph g, Dfs.IntIter indexIter) {
+		IntDfsFromIndexDfs(IntGraph g, DfsIter.Int indexIter) {
 			this.indexIter = Objects.requireNonNull(indexIter);
 			this.viMap = g.indexGraphVerticesMap();
 			this.eiMap = g.indexGraphEdgesMap();
@@ -144,13 +144,13 @@ class DfsIterImpl implements Dfs.IntIter {
 		}
 	}
 
-	static class ObjDfsFromIndexDfs<V, E> implements Dfs.Iter<V, E> {
+	static class ObjDfsFromIndexDfs<V, E> implements DfsIter<V, E> {
 
-		private final Dfs.IntIter indexIter;
+		private final DfsIter.Int indexIter;
 		private final IndexIdMap<V> viMap;
 		private final IndexIdMap<E> eiMap;
 
-		ObjDfsFromIndexDfs(Graph<V, E> g, Dfs.IntIter indexIter) {
+		ObjDfsFromIndexDfs(Graph<V, E> g, DfsIter.Int indexIter) {
 			this.indexIter = Objects.requireNonNull(indexIter);
 			this.viMap = g.indexGraphVerticesMap();
 			this.eiMap = g.indexGraphEdgesMap();

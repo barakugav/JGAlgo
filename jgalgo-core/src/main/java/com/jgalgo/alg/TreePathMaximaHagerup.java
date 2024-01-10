@@ -183,7 +183,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			int[] a = new int[n];
 			int[][] res = new int[tOrig.vertices().size()][];
 
-			for (Dfs.IntIter it = Dfs.newInstance(tree, root); it.hasNext();) {
+			for (DfsIter.Int it = DfsIter.newInstance(tree, root); it.hasNext();) {
 				int v = it.nextInt();
 				IntList edgesFromRoot = it.edgePath();
 				if (edgesFromRoot.isEmpty())

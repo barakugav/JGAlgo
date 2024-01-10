@@ -41,7 +41,7 @@ class ConnectedComponentsTestUtils {
 			if (vertexToCC.getInt(start) != -1)
 				continue;
 			int ccIdx = ccNum++;
-			for (Bfs.Iter<V, E> it = Bfs.newInstance(g, start); it.hasNext();)
+			for (BfsIter<V, E> it = BfsIter.newInstance(g, start); it.hasNext();)
 				vertexToCC.put(it.next(), ccIdx);
 		}
 		return IntObjectPair.of(ccNum, vertexToCC);
@@ -52,7 +52,7 @@ class ConnectedComponentsTestUtils {
 		Object2ObjectMap<V, Set<V>> reach = new Object2ObjectOpenHashMap<>();
 		for (V start : g.vertices()) {
 			Set<V> vReach = new ObjectOpenHashSet<>();
-			for (Bfs.Iter<V, E> it = Bfs.newInstance(g, start); it.hasNext();)
+			for (BfsIter<V, E> it = BfsIter.newInstance(g, start); it.hasNext();)
 				vReach.add(it.next());
 			reach.put(start, vReach);
 		}

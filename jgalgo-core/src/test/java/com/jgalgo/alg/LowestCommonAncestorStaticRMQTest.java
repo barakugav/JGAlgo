@@ -54,7 +54,7 @@ public class LowestCommonAncestorStaticRMQTest extends TestBase {
 		Object2ObjectMap<V, V> parent = new Object2ObjectOpenHashMap<>(n);
 		Object2IntMap<V> depth = new Object2IntOpenHashMap<>(n);
 
-		for (Bfs.Iter<V, E> it = Bfs.newInstance(g, root); it.hasNext();) {
+		for (BfsIter<V, E> it = BfsIter.newInstance(g, root); it.hasNext();) {
 			V v = it.next();
 			E e = it.lastEdge();
 			if (e == null) {

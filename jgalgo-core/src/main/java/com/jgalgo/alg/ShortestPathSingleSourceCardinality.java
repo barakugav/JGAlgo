@@ -49,7 +49,7 @@ class ShortestPathSingleSourceCardinality implements ShortestPathSingleSourceBas
 		Assertions.onlyCardinality(w);
 		ShortestPathSingleSourceUtils.IndexResult.Int res =
 				new ShortestPathSingleSourceUtils.IndexResult.Int(g, source);
-		for (Bfs.IntIter it = Bfs.newInstance(g, source); it.hasNext();) {
+		for (BfsIter.Int it = BfsIter.newInstance(g, source); it.hasNext();) {
 			int v = it.nextInt();
 			res.distances[v] = it.layer();
 			res.backtrack[v] = it.lastEdgeInt();

@@ -268,7 +268,7 @@ class PathImpl implements IPath {
 		Arrays.fill(backtrack, -1);
 
 		IntArrayList path = new IntArrayList();
-		for (Bfs.IntIter it = Bfs.newInstanceBackward(g, target); it.hasNext();) {
+		for (BfsIter.Int it = BfsIter.newInstanceBackward(g, target); it.hasNext();) {
 			int p = it.nextInt();
 			backtrack[p] = it.lastEdgeInt();
 			if (p == source)
