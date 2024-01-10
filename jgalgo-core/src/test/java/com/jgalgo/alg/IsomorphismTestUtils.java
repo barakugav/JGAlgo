@@ -126,6 +126,50 @@ class IsomorphismTestUtils extends TestUtils {
 				Integer v2 = mapping.mapVertex(v1);
 				return "" + v1 + ":" + v2;
 			}).collect(Collectors.joining(", ", "{", "}")), mapping.toString());
+
+			assertEquals(mapping
+					.sourceGraph()
+					.vertices()
+					.stream()
+					.filter(vertex -> mapping.mapVertex(vertex) != null)
+					.collect(toSet()), mapping.mappedVertices());
+			assertEquals(mapping
+					.sourceGraph()
+					.edges()
+					.stream()
+					.filter(edge -> mapping.mapEdge(edge) != null)
+					.collect(toSet()), mapping.mappedEdges());
+			for (int i = 0; i < 5; i++) {
+				Integer v = Graphs.randVertex(mapping.sourceGraph(), rand);
+				assertEqualsBool(mapping.mapVertex(v) != null, mapping.mappedVertices().contains(v));
+			}
+			for (int i = 0; i < 5; i++) {
+				Integer e = Graphs.randEdge(mapping.sourceGraph(), rand);
+				assertEqualsBool(mapping.mapEdge(e) != null, mapping.mappedEdges().contains(e));
+			}
+			for (int i = 0; i < 5; i++) {
+				int v = rand.nextInt();
+				if (!mapping.sourceGraph().vertices().contains(v))
+					assertFalse(mapping.mappedVertices().contains(v));
+			}
+			for (int i = 0; i < 5; i++) {
+				int e = rand.nextInt();
+				if (!mapping.sourceGraph().edges().contains(e))
+					assertFalse(mapping.mappedEdges().contains(e));
+			}
+
+			assertEquals(mapping
+					.targetGraph()
+					.vertices()
+					.stream()
+					.filter(vertex -> mapping.inverse().mapVertex(vertex) != null)
+					.collect(toSet()), mapping.inverse().mappedVertices());
+			assertEquals(mapping
+					.targetGraph()
+					.edges()
+					.stream()
+					.filter(edge -> mapping.inverse().mapEdge(edge) != null)
+					.collect(toSet()), mapping.inverse().mappedEdges());
 		}
 
 		/* isomorphicMappingsIter() */

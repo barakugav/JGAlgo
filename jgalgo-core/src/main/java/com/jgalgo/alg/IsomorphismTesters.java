@@ -17,14 +17,18 @@ package com.jgalgo.alg;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Collectors;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.NoSuchVertexException;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class IsomorphismTesters {
 
@@ -37,6 +41,8 @@ class IsomorphismTesters {
 		private final int[] vertexMapping;
 		private final int[] edgeMapping;
 		private IndexMapping inverse;
+		private IntSet mappedVertices;
+		private IntSet mappedEdges;
 
 		IndexMapping(IndexGraph g1, IndexGraph g2, int[] vertexMapping, int[] edgeMapping) {
 			this.g1 = g1;
@@ -98,6 +104,34 @@ class IsomorphismTesters {
 		@Override
 		public IntGraph targetGraph() {
 			return g2;
+		}
+
+		@Override
+		public IntSet mappedVertices() {
+			if (mappedVertices == null) {
+				int[] mappedVerticesArr = range(g1.vertices().size()).filter(v1 -> vertexMapping[v1] >= 0).toArray();
+				mappedVertices = new ImmutableIntArraySet(mappedVerticesArr) {
+					@Override
+					public boolean contains(int v) {
+						return 0 <= v && v < vertexMapping.length && vertexMapping[v] >= 0;
+					}
+				};
+			}
+			return mappedVertices;
+		}
+
+		@Override
+		public IntSet mappedEdges() {
+			if (mappedEdges == null) {
+				int[] mappedEdgesArr = range(g1.edges().size()).filter(e1 -> edgeMapping[e1] >= 0).toArray();
+				mappedEdges = new ImmutableIntArraySet(mappedEdgesArr) {
+					@Override
+					public boolean contains(int e) {
+						return 0 <= e && e < edgeMapping.length && edgeMapping[e] >= 0;
+					}
+				};
+			}
+			return mappedEdges;
 		}
 
 		@Override
@@ -166,6 +200,16 @@ class IsomorphismTesters {
 		}
 
 		@Override
+		public Set<V1> mappedVertices() {
+			return IndexIdMaps.indexToIdSet(indexMapping.mappedVertices(), v1Map);
+		}
+
+		@Override
+		public Set<E1> mappedEdges() {
+			return IndexIdMaps.indexToIdSet(indexMapping.mappedEdges(), e1Map);
+		}
+
+		@Override
 		public String toString() {
 			return range(g1.indexGraph().vertices().size()).mapToObj(v1Idx -> {
 				V1 v1 = v1Map.indexToId(v1Idx);
@@ -229,6 +273,16 @@ class IsomorphismTesters {
 		@Override
 		public IntGraph targetGraph() {
 			return g2;
+		}
+
+		@Override
+		public IntSet mappedVertices() {
+			return IndexIdMaps.indexToIdSet(indexMapping.mappedVertices(), v1Map);
+		}
+
+		@Override
+		public IntSet mappedEdges() {
+			return IndexIdMaps.indexToIdSet(indexMapping.mappedEdges(), e1Map);
 		}
 
 		@Override

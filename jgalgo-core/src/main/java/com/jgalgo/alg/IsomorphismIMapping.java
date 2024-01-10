@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.NoSuchVertexException;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * A mapping between two graphs that preserves the structure of the graphs for {@link IntGraph}.
@@ -80,4 +81,11 @@ public interface IsomorphismIMapping extends IsomorphismMapping<Integer, Integer
 
 	@Override
 	IntGraph targetGraph();
+
+	@Override
+	IntSet mappedVertices();
+
+	@Override
+	IntSet mappedEdges();
+
 }

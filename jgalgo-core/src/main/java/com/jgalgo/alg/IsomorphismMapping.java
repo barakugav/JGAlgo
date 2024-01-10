@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.NoSuchVertexException;
@@ -85,4 +86,49 @@ public interface IsomorphismMapping<V1, E1, V2, E2> {
 	 * @return the target graph
 	 */
 	Graph<V2, E2> targetGraph();
+
+	/**
+	 * Get the set of the vertices that are mapped out of all the vertices of the {@linkplain #sourceGraph() source
+	 * graph}.
+	 *
+	 * <p>
+	 * The mapping may not map all the vertices of the source graph, in cases the isomorphism is either
+	 * {@link IsomorphismType#InducedSubGraph} or {@link IsomorphismType#SubGraph}. This method can be used to get the
+	 * set of vertices for which there is a corresponding vertex in the target graph.
+	 *
+	 * <p>
+	 * Together with {@link #mappedEdges()}, this method can be used to construct the subgraph mapped to the target
+	 * graph:
+	 *
+	 * <pre> {@code
+	 * Set<V1> vertices = mapping.mappedVertices();
+	 * Set<E1> edges = mapping.mappedEdges();
+	 * Graph<V1, E1> mappedSubGraph = mapping.sourceGraph().subGraphCopy(vertices, edges);
+	 * } </pre>
+	 *
+	 * @return the set of the mapped vertices
+	 */
+	Set<V1> mappedVertices();
+
+	/**
+	 * Get the set of the edges that are mapped out of all the edges of the {@linkplain #sourceGraph() source graph}.
+	 *
+	 * <p>
+	 * The mapping may not map all the edges of the source graph, in cases the isomorphism is either
+	 * {@link IsomorphismType#InducedSubGraph} or {@link IsomorphismType#SubGraph}.
+	 *
+	 * <p>
+	 * Together with {@link #mappedVertices()}, this method can be used to construct the subgraph mapped to the target
+	 * graph:
+	 *
+	 * <pre> {@code
+	 * Set<V1> vertices = mapping.mappedVertices();
+	 * Set<E1> edges = mapping.mappedEdges();
+	 * Graph<V1, E1> mappedSubGraph = mapping.sourceGraph().subGraphCopy(vertices, edges);
+	 * } </pre>
+	 *
+	 * @return the set of the mapped edges
+	 */
+	Set<E1> mappedEdges();
+
 }
