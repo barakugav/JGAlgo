@@ -87,9 +87,6 @@ public class IsomorphismTesterVf2Test extends TestBase {
 			long seed) {
 		final Random rand = new Random(seed);
 
-		/* isIsomorphic() */
-		assertTrue(algo.isIsomorphic(g1, g2));
-
 		/* isomorphicMapping() */
 		Optional<IsomorphismTester.Mapping<Integer, Integer, Integer, Integer>> mappingOptional =
 				algo.isomorphicMapping(g1, g2);
@@ -253,7 +250,7 @@ public class IsomorphismTesterVf2Test extends TestBase {
 
 				g1 = maybeIndexGraph(g1, rand);
 				g2 = maybeIndexGraph(g2, rand);
-				assertFalse(algo.isIsomorphic(g1, g2));
+				assertFalse(algo.isomorphicMapping(g1, g2).isPresent());
 			});
 		});
 	}
@@ -265,7 +262,7 @@ public class IsomorphismTesterVf2Test extends TestBase {
 			IsomorphismTester algo = new IsomorphismTesterVf2();
 			IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 			IntGraph g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
-			assertTrue(algo.isIsomorphic(g1, g2));
+			assertTrue(algo.isomorphicMapping(g1, g2).isPresent());
 
 			List<IsomorphismTester.Mapping<Integer, Integer, Integer, Integer>> mappings =
 					new ObjectArrayList<>(algo.isomorphicMappingsIter(g1, g2));
@@ -321,7 +318,7 @@ public class IsomorphismTesterVf2Test extends TestBase {
 			IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 			IntGraph g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 			g1.addVertexInt();
-			assertFalse(algo.isIsomorphic(g1, g2));
+			assertFalse(algo.isomorphicMapping(g1, g2).isPresent());
 		});
 	}
 
@@ -336,7 +333,7 @@ public class IsomorphismTesterVf2Test extends TestBase {
 			IntGraph g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 			g2.addVertex(0);
 			g2.addVertex(1);
-			assertFalse(algo.isIsomorphic(g1, g2));
+			assertFalse(algo.isomorphicMapping(g1, g2).isPresent());
 		});
 	}
 
@@ -345,8 +342,8 @@ public class IsomorphismTesterVf2Test extends TestBase {
 		IsomorphismTester algo = new IsomorphismTesterVf2();
 		IntGraph g1 = IntGraph.newDirected();
 		IntGraph g2 = IntGraph.newUndirected();
-		assertFalse(algo.isIsomorphic(g1, g2));
-		assertFalse(algo.isIsomorphic(g2, g1));
+		assertFalse(algo.isomorphicMapping(g1, g2).isPresent());
+		assertFalse(algo.isomorphicMapping(g2, g1).isPresent());
 	}
 
 	private static void checkMapping(Graph<Integer, Integer> g1, Graph<Integer, Integer> g2,

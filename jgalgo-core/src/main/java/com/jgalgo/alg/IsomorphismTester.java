@@ -48,31 +48,6 @@ import com.jgalgo.graph.NoSuchVertexException;
 public interface IsomorphismTester {
 
 	/**
-	 * Check whether two graphs are isomorphic.
-	 *
-	 * <p>
-	 * Given two graphs \(G_1 = (V_1, E_1)\) and \(G_2 = (V_2, E_2)\), an isomorphism is a bijective function \(f: V_1
-	 * \rightarrow V_2\) such that \((u, v) \in E_1\) if and only if \((f(u), f(v)) \in E_2\). If such a function
-	 * exists, then the graphs are called isomorphic. In the case of a directed graph, the function must preserve the
-	 * direction of the edges.
-	 *
-	 * <p>
-	 * Note that the type of vertices and edges of the two graphs may be different. Only the structure of the graphs is
-	 * considered.
-	 *
-	 * @param  <V1> the type of vertices of the first graph
-	 * @param  <E1> the type of edges of the first graph
-	 * @param  <V2> the type of vertices of the second graph
-	 * @param  <E2> the type of edges of the second graph
-	 * @param  g1   the first graph
-	 * @param  g2   the second graph
-	 * @return      {@code true} if the two graphs are isomorphic, {@code false} otherwise
-	 */
-	default <V1, E1, V2, E2> boolean isIsomorphic(Graph<V1, E1> g1, Graph<V2, E2> g2) {
-		return isomorphicMapping(g1, g2).isPresent();
-	}
-
-	/**
 	 * Get an isomorphism mapping between two graphs if one exists.
 	 *
 	 * <p>
