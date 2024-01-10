@@ -26,9 +26,12 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
+import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSpliterator;
 
@@ -138,7 +141,7 @@ public final class Range extends AbstractIntSet {
 
 	private static class Iter implements IntIterator {
 
-		private int x;
+		int x;
 		private final int to;
 
 		Iter(int from, int to) {
@@ -237,6 +240,115 @@ public final class Range extends AbstractIntSet {
 		@Override
 		public IntComparator getComparator() {
 			return null;
+		}
+	}
+
+	public IntList asList() {
+		return new RangeList(from, to);
+	}
+
+	private static class RangeList extends AbstractIntList {
+
+		private final int from, to;
+		private int hash;
+
+		RangeList(int from, int to) {
+			this.from = from;
+			this.to = to;
+		}
+
+		@Override
+		public int size() {
+			return to - from;
+		}
+
+		@Override
+		public boolean contains(int key) {
+			return from <= key && key < to;
+		}
+
+		@Override
+		public int getInt(int index) {
+			Assertions.checkArrayIndex(index, 0, size());
+			return from + index;
+		}
+
+		@Override
+		public IntListIterator listIterator(int index) {
+			Assertions.checkArrayIndex(index, 0, size() + 1);
+			return new ListIter(from, to, from + index);
+		}
+
+		@Override
+		public int indexOf(int k) {
+			return contains(k) ? k - from : -1;
+		}
+
+		@Override
+		public int lastIndexOf(int k) {
+			return indexOf(k); /* there are no duplicate elements in the list */
+		}
+
+		@Override
+		public IntList subList(int from, int to) {
+			Assertions.checkArrayFromTo(from, to, size());
+			return new RangeList(this.from + from, this.from + to);
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (o instanceof RangeList) {
+				RangeList r = (RangeList) o;
+				if (isEmpty())
+					return r.isEmpty();
+				return to == r.to && from == r.from;
+
+			} else {
+				return super.equals(o);
+			}
+		}
+
+		@Override
+		public int hashCode() {
+			if (hash == 0)
+				hash = super.hashCode();
+			return hash;
+		}
+
+		@Override
+		public IntSpliterator spliterator() {
+			return new SplitIter(from, to);
+		}
+	}
+
+	private static class ListIter extends Iter implements IntListIterator {
+
+		private final int from;
+
+		ListIter(int from, int to, int startVal) {
+			super(startVal, to);
+			this.from = from;
+		}
+
+		@Override
+		public int nextIndex() {
+			return x - from;
+		}
+
+		@Override
+		public boolean hasPrevious() {
+			return from < x;
+		}
+
+		@Override
+		public int previousInt() {
+			Assertions.hasPrevious(this);
+			return --x;
+		}
+
+		@Override
+		public int previousIndex() {
+			return x - from - 1;
 		}
 	}
 

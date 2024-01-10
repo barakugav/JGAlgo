@@ -17,6 +17,7 @@ package com.jgalgo.internal.util;
 
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 import com.jgalgo.alg.BipartiteGraphs;
@@ -329,12 +330,12 @@ public class Assertions {
 		}
 	}
 
-	// public static void hasPrevious(ListIterator<?> it) {
-	// if (JGAlgoConfigImpl.AssertionsIterNotEmpty) {
-	// if (!it.hasPrevious())
-	// throw new NoSuchElementException(ERR_NO_PREVIOUS);
-	// }
-	// }
+	public static void hasPrevious(ListIterator<?> it) {
+		if (JGAlgoConfigImpl.AssertionsIterNotEmpty) {
+			if (!it.hasPrevious())
+				throw new NoSuchElementException(ERR_NO_PREVIOUS);
+		}
+	}
 
 	public static <E> void heapDecreaseKeyIsSmaller(E oldKey, E newKey, Comparator<? super E> cmp) {
 		if (JGAlgoConfigImpl.AssertionsHeapsDecreaseKeyLegal) {

@@ -18,6 +18,7 @@ package com.jgalgo.internal.util;
 import static com.jgalgo.internal.util.Range.range;
 import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.Test;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSpliterator;
@@ -380,7 +382,94 @@ public class RangeTest extends TestBase {
 				assertEqualsBool(list.intStream().allMatch(allMatchOp), range.allMatch(allMatchOp));
 			}
 		}
+	}
 
+	@Test
+	public void asList() {
+		Random rand = new Random(0x8ad61319542c505aL);
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int from = rand.nextInt(100);
+			final int to = from + rand.nextInt(100);
+			IntList range = range(from, to).asList();
+
+			/* size() */
+			assertEquals(to - from, range.size());
+
+			/* contains() */
+			for (int x = -1; x <= 100; x++) {
+				boolean expected = from <= x && x < to;
+				assertEqualsBool(expected, range.contains(x));
+			}
+
+			/* get(index) */
+			for (int i = 0; i < range.size(); i++) {
+				int expected = from + i;
+				assertEquals(expected, range.getInt(i));
+			}
+			assertThrows(IndexOutOfBoundsException.class, () -> range.getInt(-1));
+			assertThrows(IndexOutOfBoundsException.class, () -> range.getInt(to - from));
+
+			/* indexOf() */
+			for (int x = -1; x <= 100; x++) {
+				int expected = (from <= x && x < to) ? x - from : -1;
+				assertEquals(expected, range.indexOf(x));
+				assertEquals(expected, range.lastIndexOf(x));
+			}
+
+			/* equals() */
+			IntList expectedList = new IntArrayList();
+			for (int x = from; x < to; x++)
+				expectedList.add(x);
+			assertEquals(expectedList, range);
+			assertEquals(range, expectedList);
+			assertEquals(range, range);
+			assertNotEquals(range, range(from - 1, to).asList());
+			assertNotEquals(range, range(from, to + 1).asList());
+
+			/* hashCode() */
+			assertEquals(expectedList.hashCode(), range.hashCode());
+			/* call hashCode() again, hash should be cached */
+			assertEquals(expectedList.hashCode(), range.hashCode());
+
+			/* subList() */
+			for (int r = 0; r < 20; r++) {
+				int s = to - from;
+				int fromIndex = rand.nextInt(s + 1);
+				int toIndex = fromIndex + rand.nextInt(s - fromIndex + 1);
+				IntList subList = range.subList(fromIndex, toIndex);
+				IntList expectedSubList = range(from + fromIndex, from + toIndex).asList();
+				assertEquals(expectedSubList, subList);
+				assertEquals(subList, expectedSubList);
+			}
+
+			/* listIterator() */
+			for (int r = 0; r < 20; r++) {
+				int startIdx = rand.nextInt(to - from + 1);
+				IntListIterator it = range.listIterator(startIdx);
+				assertEquals(startIdx, it.nextIndex());
+				assertEquals(startIdx - 1, it.previousIndex());
+				if (rand.nextBoolean()) {
+					if (startIdx < to - from) {
+						assertTrue(it.hasNext());
+						assertEquals(from + startIdx, it.nextInt());
+					} else {
+						assertFalse(it.hasNext());
+					}
+				} else {
+					if (startIdx > 0) {
+						assertTrue(it.hasPrevious());
+						assertEquals(from + startIdx - 1, it.previousInt());
+					} else {
+						assertFalse(it.hasPrevious());
+					}
+				}
+			}
+
+			/* spliterator() */
+			IntList spliteratorElms = new IntArrayList();
+			range.spliterator().forEachRemaining(spliteratorElms::add);
+			assertEquals(expectedList, spliteratorElms);
+		}
 	}
 
 }
