@@ -16,72 +16,63 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
-import java.util.Optional;
-import com.jgalgo.alg.IsomorphismTesters.IntMappingFromIndexMapping;
-import com.jgalgo.alg.IsomorphismTesters.ObjMappingFromIndexMapping;
+import java.util.function.BiPredicate;
+import java.util.function.IntBinaryOperator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.IterTools;
 
 <span class="pc bpc" id="L27" title="1 of 2 branches missed.">interface IsomorphismTesterBase extends IsomorphismTester {</span>
 
-	@Override
-	default &lt;V1, E1, V2, E2&gt; boolean isIsomorphic(Graph&lt;V1, E1&gt; g1, Graph&lt;V2, E2&gt; g2) {
-<span class="fc bfc" id="L31" title="All 4 branches covered.">		if (g1 instanceof IndexGraph &amp;&amp; g2 instanceof IndexGraph) {</span>
-<span class="fc" id="L32">			return isIsomorphic((IndexGraph) g1, (IndexGraph) g2);</span>
-		} else {
-<span class="fc" id="L34">			return isIsomorphic(g1.indexGraph(), g2.indexGraph());</span>
-		}
-	}
-
 	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
 	@Override
-	default &lt;V1, E1, V2, E2&gt; Optional&lt;IsomorphismTester.Mapping&lt;V1, E1, V2, E2&gt;&gt; isomorphicMapping(Graph&lt;V1, E1&gt; g1,
-			Graph&lt;V2, E2&gt; g2) {
-<span class="fc bfc" id="L42" title="All 4 branches covered.">		if (g1 instanceof IndexGraph &amp;&amp; g2 instanceof IndexGraph) {</span>
-<span class="fc" id="L43">			return (Optional) isomorphicMapping((IndexGraph) g1, (IndexGraph) g2);</span>
+	default &lt;V1, E1, V2, E2&gt; Iterator&lt;IsomorphismMapping&lt;V1, E1, V2, E2&gt;&gt; isomorphicMappingsIter(Graph&lt;V1, E1&gt; g1,
+			Graph&lt;V2, E2&gt; g2, IsomorphismType type, BiPredicate&lt;? super V1, ? super V2&gt; vertexMatcher,
+			BiPredicate&lt;? super E1, ? super E2&gt; edgeMatcher) {
+<span class="fc bfc" id="L34" title="All 4 branches covered.">		if (g1 instanceof IndexGraph &amp;&amp; g2 instanceof IndexGraph) {</span>
+<span class="fc" id="L35">			IntBinaryOperator vMatcher = asIntBiMatcher((BiPredicate&lt;? super Integer, ? super Integer&gt;) vertexMatcher);</span>
+<span class="fc" id="L36">			IntBinaryOperator eMatcher = asIntBiMatcher((BiPredicate&lt;? super Integer, ? super Integer&gt;) edgeMatcher);</span>
+<span class="fc" id="L37">			return (Iterator) isomorphicMappingsIter((IndexGraph) g1, (IndexGraph) g2, type, vMatcher, eMatcher);</span>
+
 		} else {
-<span class="fc" id="L45">			IndexGraph ig1 = g1.indexGraph(), ig2 = g2.indexGraph();</span>
-<span class="fc" id="L46">			Optional&lt;IsomorphismTester.IMapping&gt; iMapping = isomorphicMapping(ig1, ig2);</span>
-<span class="fc" id="L47">			return iMapping.map(m -&gt; mappingFromIndexMapping(g1, g2, m));</span>
+<span class="fc" id="L40">			IndexGraph ig1 = g1.indexGraph(), ig2 = g2.indexGraph();</span>
+<span class="fc" id="L41">			IntBinaryOperator vMatcher =</span>
+<span class="fc" id="L42">					mapMatcher(vertexMatcher, g1.indexGraphVerticesMap(), g2.indexGraphVerticesMap());</span>
+<span class="fc" id="L43">			IntBinaryOperator eMatcher = mapMatcher(edgeMatcher, g1.indexGraphEdgesMap(), g2.indexGraphEdgesMap());</span>
+<span class="fc" id="L44">			Iterator&lt;IsomorphismIMapping&gt; iMappingsIter = isomorphicMappingsIter(ig1, ig2, type, vMatcher, eMatcher);</span>
+<span class="fc" id="L45">			return IterTools.map(iMappingsIter, m -&gt; mappingFromIndexMapping(g1, g2, m));</span>
 		}
 	}
 
-	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
-	@Override
-	default &lt;V1, E1, V2, E2&gt; Iterator&lt;IsomorphismTester.Mapping&lt;V1, E1, V2, E2&gt;&gt; isomorphicMappingsIter(
-			Graph&lt;V1, E1&gt; g1, Graph&lt;V2, E2&gt; g2) {
-<span class="fc bfc" id="L55" title="All 4 branches covered.">		if (g1 instanceof IndexGraph &amp;&amp; g2 instanceof IndexGraph) {</span>
-<span class="fc" id="L56">			return (Iterator) isomorphicMappingsIter((IndexGraph) g1, (IndexGraph) g2);</span>
-		} else {
-<span class="fc" id="L58">			IndexGraph ig1 = g1.indexGraph(), ig2 = g2.indexGraph();</span>
-<span class="fc" id="L59">			Iterator&lt;IsomorphismTester.IMapping&gt; iMappingsIter = isomorphicMappingsIter(ig1, ig2);</span>
-<span class="fc" id="L60">			return IterTools.map(iMappingsIter, m -&gt; mappingFromIndexMapping(g1, g2, m));</span>
-		}
-	}
-
-	default boolean isIsomorphic(IndexGraph g1, IndexGraph g2) {
-<span class="fc" id="L65">		return isomorphicMapping(g1, g2).isPresent();</span>
-	}
-
-	default Optional&lt;IsomorphismTester.IMapping&gt; isomorphicMapping(IndexGraph g1, IndexGraph g2) {
-<span class="fc" id="L69">		Iterator&lt;IsomorphismTester.IMapping&gt; iter = isomorphicMappingsIter(g1, g2);</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">		return iter.hasNext() ? Optional.of(iter.next()) : Optional.empty();</span>
-	}
-
-	abstract Iterator&lt;IsomorphismTester.IMapping&gt; isomorphicMappingsIter(IndexGraph g1, IndexGraph g2);
+	/*
+	 * There is no int-specific interface for BiPredicate, we use IntBinaryOperator which return 0 for false, and any
+	 * other value for true
+	 */
+	Iterator&lt;IsomorphismIMapping&gt; isomorphicMappingsIter(IndexGraph g1, IndexGraph g2, IsomorphismType type,
+			IntBinaryOperator vertexMatcher, IntBinaryOperator edgeMatcher);
 
 	@SuppressWarnings(&quot;unchecked&quot;)
-	private static &lt;V1, E1, V2, E2&gt; IsomorphismTester.Mapping&lt;V1, E1, V2, E2&gt; mappingFromIndexMapping(Graph&lt;V1, E1&gt; g1,
-			Graph&lt;V2, E2&gt; g2, IsomorphismTester.IMapping indexMapping) {
-<span class="pc bpc" id="L78" title="5 of 6 branches missed.">		assert !(g1 instanceof IndexGraph &amp;&amp; g2 instanceof IndexGraph);</span>
-<span class="fc bfc" id="L79" title="All 4 branches covered.">		if (g1 instanceof IntGraph &amp;&amp; g2 instanceof IntGraph) {</span>
-<span class="fc" id="L80">			return (IsomorphismTester.Mapping&lt;V1, E1, V2, E2&gt;) new IntMappingFromIndexMapping(indexMapping,</span>
+	private static &lt;V1, E1, V2, E2&gt; IsomorphismMapping&lt;V1, E1, V2, E2&gt; mappingFromIndexMapping(Graph&lt;V1, E1&gt; g1,
+			Graph&lt;V2, E2&gt; g2, IsomorphismIMapping indexMapping) {
+<span class="pc bpc" id="L59" title="5 of 6 branches missed.">		assert !(g1 instanceof IndexGraph &amp;&amp; g2 instanceof IndexGraph);</span>
+<span class="fc bfc" id="L60" title="All 4 branches covered.">		if (g1 instanceof IntGraph &amp;&amp; g2 instanceof IntGraph) {</span>
+<span class="fc" id="L61">			return (IsomorphismMapping&lt;V1, E1, V2, E2&gt;) new IsomorphismTesters.IntMappingFromIndexMapping(indexMapping,</span>
 					(IntGraph) g1, (IntGraph) g2);
 		} else {
-<span class="fc" id="L83">			return new ObjMappingFromIndexMapping&lt;&gt;(indexMapping, g1, g2);</span>
+<span class="fc" id="L64">			return new IsomorphismTesters.ObjMappingFromIndexMapping&lt;&gt;(indexMapping, g1, g2);</span>
 		}
+	}
+
+	private static IntBinaryOperator asIntBiMatcher(BiPredicate&lt;? super Integer, ? super Integer&gt; matcher) {
+<span class="fc bfc" id="L69" title="All 4 branches covered.">		return matcher == null ? null : (a, b) -&gt; matcher.test(Integer.valueOf(a), Integer.valueOf(b)) ? 1 : 0;</span>
+	}
+
+	private static &lt;K1, K2&gt; IntBinaryOperator mapMatcher(BiPredicate&lt;? super K1, ? super K2&gt; matcher,
+			IndexIdMap&lt;K1&gt; map1, IndexIdMap&lt;K2&gt; map2) {
+<span class="fc bfc" id="L74" title="All 2 branches covered.">		return matcher == null ? null</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">				: (aIdx, bIdx) -&gt; matcher.test(map1.indexToId(aIdx), map2.indexToId(bIdx)) ? 1 : 0;</span>
 	}
 
 }

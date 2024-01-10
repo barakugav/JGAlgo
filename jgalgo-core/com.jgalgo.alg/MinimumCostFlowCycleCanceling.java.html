@@ -144,33 +144,36 @@ import com.jgalgo.internal.util.Bitmap;
 <span class="fc" id="L144">				break; /* no cycle or cycle that will increase the total cost */</span>
 
 			/* find the maximum amount of flow we can push through the cycle */
-<span class="fc" id="L147">			double f = Double.POSITIVE_INFINITY;</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">			for (int e : minCycle.edges())</span>
-<span class="fc" id="L149">				f = Math.min(f, capacity[e] - flow[e]);</span>
-<span class="pc bnc" id="L150" title="All 2 branches missed.">			assert f &gt; 0;</span>
+<span class="fc" id="L147">			double f = minCycle</span>
+<span class="fc" id="L148">					.edges()</span>
+<span class="fc" id="L149">					.intStream()</span>
+<span class="fc" id="L150">					.mapToDouble(e -&gt; capacity[e] - flow[e])</span>
+<span class="fc" id="L151">					.min()</span>
+<span class="fc" id="L152">					.orElse(Double.POSITIVE_INFINITY);</span>
+<span class="pc bnc" id="L153" title="All 2 branches missed.">			assert f &gt; 0;</span>
 
 			/* Push flow along the cycle, lowering the overall cost */
-<span class="fc bfc" id="L153" title="All 2 branches covered.">			for (int e : minCycle.edges()) {</span>
-<span class="fc" id="L154">				int eTwin = twin[e];</span>
-<span class="fc" id="L155">				flow[e] += f;</span>
-<span class="fc" id="L156">				flow[eTwin] -= f;</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">			for (int e : minCycle.edges()) {</span>
+<span class="fc" id="L157">				int eTwin = twin[e];</span>
+<span class="fc" id="L158">				flow[e] += f;</span>
+<span class="fc" id="L159">				flow[eTwin] -= f;</span>
 
 				/* Add/remove edges to the non saturated residual net */
 				/* We use high cost edge instead of actually removing an edge */
-<span class="pc bnc" id="L160" title="All 2 branches missed.">				assert !saturated.get(e);</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">				boolean isSaturated = capacity[e] - flow[e] &lt; eps;</span>
-<span class="fc bfc" id="L162" title="All 2 branches covered.">				if (isSaturated) {</span>
-<span class="fc" id="L163">					saturated.set(e);</span>
-<span class="fc" id="L164">					cost0.set(e, saturatedCost);</span>
+<span class="pc bnc" id="L163" title="All 2 branches missed.">				assert !saturated.get(e);</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">				boolean isSaturated = capacity[e] - flow[e] &lt; eps;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">				if (isSaturated) {</span>
+<span class="fc" id="L166">					saturated.set(e);</span>
+<span class="fc" id="L167">					cost0.set(e, saturatedCost);</span>
 				}
-<span class="fc bfc" id="L166" title="All 2 branches covered.">				if (saturated.get(eTwin)) {</span>
-<span class="fc" id="L167">					saturated.clear(eTwin);</span>
-<span class="fc" id="L168">					double eTwinCost = cost.weight(edgeRef[eTwin]);</span>
-<span class="fc bfc" id="L169" title="All 2 branches covered.">					cost0.set(eTwin, resGraph.isOriginalEdge(eTwin) ? eTwinCost : -eTwinCost);</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">				if (saturated.get(eTwin)) {</span>
+<span class="fc" id="L170">					saturated.clear(eTwin);</span>
+<span class="fc" id="L171">					double eTwinCost = cost.weight(edgeRef[eTwin]);</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">					cost0.set(eTwin, resGraph.isOriginalEdge(eTwin) ? eTwinCost : -eTwinCost);</span>
 				}
-<span class="fc" id="L171">			}</span>
-<span class="fc" id="L172">		}</span>
-<span class="fc" id="L173">	}</span>
+<span class="fc" id="L174">			}</span>
+<span class="fc" id="L175">		}</span>
+<span class="fc" id="L176">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

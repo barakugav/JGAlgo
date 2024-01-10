@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LongIntPairingHeap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.ds</a> &gt; <span class="el_source">LongIntPairingHeap.java</span></div><h1>LongIntPairingHeap.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.jgalgo.internal.ds;
+
+import java.util.Iterator;
+import com.jgalgo.internal.util.Assertions;
+import it.unimi.dsi.fastutil.longs.LongComparator;
+
+
+/**
+ * A Pairing heap implementation.
+ *
+ * &lt;p&gt;
+ * A pointer based heap implementation that support almost any operation in \(O(1)\) amortized time, except
+ * {@link #remove(LongIntReferenceableHeap.Ref)} and {@link #decreaseKey(LongIntReferenceableHeap.Ref, long)}
+ * which takes \(O(\log n)\) time amortized.
+ *
+ * &lt;p&gt;
+ * Using this heap, {@link ShortestPathSingleSourceDijkstra} can be implemented in time \(O(m + n \log n)\) rather than
+ * \(O(m \log n)\) as the {@link #decreaseKey(LongIntReferenceableHeap.Ref, long)} operation is performed in
+ * \(O(1)\) time amortized.
+ *
+ * &lt;p&gt;
+ * Pairing heaps are one of the best pointer based heaps implementations in practice, and should be used as a default
+ * choice for the general use case.
+ *
+ * @see    &lt;a href=&quot;https://en.wikipedia.org/wiki/Pairing_heap&quot;&gt;Wikipedia&lt;/a&gt;
+ * @author Barak Ugav
+ */
+<span class="fc" id="L44">public class LongIntPairingHeap  extends PairingHeapBase&lt;LongIntPairingHeap.Node &gt; implements LongIntReferenceableHeap  {</span>
+
+	private final LongComparator  c;
+
+<span class="fc" id="L48">	public LongIntPairingHeap(LongComparator  c) {</span>
+<span class="fc" id="L49">		this.c = c;</span>
+<span class="fc" id="L50">	}</span>
+
+	@Override
+	public LongComparator  comparator() {
+<span class="fc" id="L54">		return c;</span>
+	}
+
+	@Override
+	public LongIntReferenceableHeap.Ref  findMin() {
+<span class="fc" id="L59">		Assertions.notEmpty(this);</span>
+<span class="fc" id="L60">		return minRoot;</span>
+	}
+
+	void insertNode(Node  n) {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		if (minRoot == null) {</span>
+<span class="fc" id="L65">			minRoot = n;</span>
+		} else {
+<span class="fc" id="L67">			minRoot = meld(minRoot, n);</span>
+		}
+<span class="fc" id="L69">	}</span>
+
+	void afterKeyDecrease(Node  n) {
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		if (n == minRoot)</span>
+<span class="fc" id="L73">			return;</span>
+<span class="fc" id="L74">		cut(n);</span>
+<span class="fc" id="L75">		minRoot = meld(minRoot, n);</span>
+<span class="fc" id="L76">	}</span>
+
+	@Override
+	public LongIntReferenceableHeap.Ref  extractMin() {
+<span class="fc" id="L80">		Node  min = minRoot;</span>
+<span class="fc" id="L81">		removeRoot();</span>
+<span class="fc" id="L82">		return min;</span>
+	}
+
+	@Override
+	public void remove(LongIntReferenceableHeap.Ref  ref) {
+<span class="fc" id="L87">		Node  n = (Node ) ref;</span>
+<span class="pc bnc" id="L88" title="All 2 branches missed.">		assert minRoot != null;</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		if (n != minRoot) {</span>
+<span class="fc" id="L90">			cut(n);</span>
+<span class="fc" id="L91">			addChild(n, minRoot);</span>
+<span class="fc" id="L92">			minRoot = n;</span>
+		}
+<span class="fc" id="L94">		removeRoot();</span>
+<span class="fc" id="L95">	}</span>
+
+	@Override
+	public void meld(LongIntReferenceableHeap  heap) {
+<span class="fc" id="L99">		Assertions.heapNoMeldWithSelf(this, heap);</span>
+<span class="fc" id="L100">		Assertions.heapMeldWithSameImpl(getClass(), heap);</span>
+<span class="fc" id="L101">		Assertions.heapEqualComparatorBeforeMeld(comparator(), heap.comparator());</span>
+<span class="fc" id="L102">		LongIntPairingHeap  h = (LongIntPairingHeap ) heap;</span>
+
+<span class="fc bfc" id="L104" title="All 2 branches covered.">		if (minRoot == null) {</span>
+<span class="fc" id="L105">			minRoot = h.minRoot;</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">		} else if (h.minRoot != null) {</span>
+<span class="fc" id="L107">			minRoot = meld(minRoot, h.minRoot);</span>
+		}
+
+<span class="fc" id="L110">		h.minRoot = null;</span>
+<span class="fc" id="L111">	}</span>
+
+	private Node  meld(Node  n1, Node  n2) {
+<span class="fc bfc" id="L114" title="All 2 branches covered.">		return c == null ? meldDefaultCmp(n1, n2) : meldCustomCmp(n1, n2);</span>
+	}
+
+	Node  meldDefaultCmp(Node  n1, Node  n2) {
+<span class="pc bnc" id="L118" title="All 4 branches missed.">		assert n1.prevOrParent == null &amp;&amp; n1.next == null;</span>
+<span class="pc bnc" id="L119" title="All 4 branches missed.">		assert n2.prevOrParent == null &amp;&amp; n2.next == null;</span>
+
+		/* assume n1 has smaller key than n2 */
+<span class="fc bfc" id="L122" title="All 2 branches covered.">		if (n1.key &gt; n2.key) {</span>
+<span class="fc" id="L123">			Node  temp = n1;</span>
+<span class="fc" id="L124">			n1 = n2;</span>
+<span class="fc" id="L125">			n2 = temp;</span>
+		}
+
+<span class="fc" id="L128">		addChild(n1, n2);</span>
+<span class="fc" id="L129">		return n1;</span>
+	}
+
+	Node  meldCustomCmp(Node  n1, Node  n2) {
+<span class="pc bnc" id="L133" title="All 4 branches missed.">		assert n1.prevOrParent == null &amp;&amp; n1.next == null;</span>
+<span class="pc bnc" id="L134" title="All 4 branches missed.">		assert n2.prevOrParent == null &amp;&amp; n2.next == null;</span>
+
+		/* assume n1 has smaller key than n2 */
+<span class="fc bfc" id="L137" title="All 2 branches covered.">		if (c.compare(n1.key, n2.key) &gt; 0) {</span>
+<span class="fc" id="L138">			Node  temp = n1;</span>
+<span class="fc" id="L139">			n1 = n2;</span>
+<span class="fc" id="L140">			n2 = temp;</span>
+		}
+
+<span class="fc" id="L143">		addChild(n1, n2);</span>
+<span class="fc" id="L144">		return n1;</span>
+	}
+
+	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+	@Override
+	public Iterator&lt;LongIntReferenceableHeap.Ref &gt; iterator() {
+<span class="fc" id="L150">		return (Iterator) new PairingHeapBase.PreOrderIter&lt;&gt;(minRoot);</span>
+	}
+
+	@Override
+	public LongIntReferenceableHeap.Ref  insert(long key) {
+<span class="fc" id="L155">		Node  n = new Node (key);</span>
+<span class="fc" id="L156">		insertNode(n);</span>
+<span class="fc" id="L157">		return n;</span>
+	}
+
+
+	private void removeRoot() {
+<span class="fc bfc" id="L162" title="All 2 branches covered.">		if (minRoot.child == null) {</span>
+<span class="fc" id="L163">			minRoot = null;</span>
+<span class="fc" id="L164">			return;</span>
+		}
+
+<span class="fc bfc" id="L167" title="All 2 branches covered.">		if (c == null) {</span>
+			/* meld pairs from left to right */
+			Node  tail;
+<span class="fc" id="L170">			for (Node  prev = minRoot, next = minRoot.child;;) {</span>
+<span class="fc" id="L171">				Node  n1 = next;</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">				if (n1 == null) {</span>
+<span class="fc" id="L173">					tail = prev;</span>
+<span class="fc" id="L174">					break;</span>
+				}
+
+<span class="fc" id="L177">				Node  n2 = n1.next;</span>
+<span class="fc bfc" id="L178" title="All 2 branches covered.">				if (n2 == null) {</span>
+<span class="fc" id="L179">					n1.prevOrParent = prev;</span>
+<span class="fc" id="L180">					tail = n1;</span>
+<span class="fc" id="L181">					break;</span>
+				}
+<span class="fc" id="L183">				next = n2.next;</span>
+<span class="fc" id="L184">				n1.next = null;</span>
+<span class="fc" id="L185">				n2.next = null;</span>
+<span class="fc" id="L186">				n1.prevOrParent = null;</span>
+<span class="fc" id="L187">				n2.prevOrParent = null;</span>
+<span class="fc" id="L188">				n1 = meldDefaultCmp(n1, n2);</span>
+
+<span class="fc" id="L190">				n1.prevOrParent = prev;</span>
+<span class="fc" id="L191">				prev = n1;</span>
+<span class="fc" id="L192">			}</span>
+<span class="fc" id="L193">			minRoot.child = null;</span>
+
+			/* meld all from right to left */
+<span class="fc" id="L196">			Node  root = tail, prev = root.prevOrParent;</span>
+<span class="fc" id="L197">			root.prevOrParent = null;</span>
+			for (;;) {
+<span class="fc" id="L199">				Node  other = prev;</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">				if (other == minRoot) {</span>
+<span class="fc" id="L201">					minRoot = root;</span>
+<span class="fc" id="L202">					break;</span>
+				}
+<span class="fc" id="L204">				prev = other.prevOrParent;</span>
+<span class="fc" id="L205">				other.prevOrParent = null;</span>
+<span class="fc" id="L206">				root = meldDefaultCmp(root, other);</span>
+<span class="fc" id="L207">			}</span>
+<span class="fc" id="L208">		} else {</span>
+
+			/* meld pairs from left to right */
+			Node  tail;
+<span class="fc" id="L212">			for (Node  prev = minRoot, next = minRoot.child;;) {</span>
+<span class="fc" id="L213">				Node  n1 = next;</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">				if (n1 == null) {</span>
+<span class="fc" id="L215">					tail = prev;</span>
+<span class="fc" id="L216">					break;</span>
+				}
+
+<span class="fc" id="L219">				Node  n2 = n1.next;</span>
+<span class="fc bfc" id="L220" title="All 2 branches covered.">				if (n2 == null) {</span>
+<span class="fc" id="L221">					n1.prevOrParent = prev;</span>
+<span class="fc" id="L222">					tail = n1;</span>
+<span class="fc" id="L223">					break;</span>
+				}
+<span class="fc" id="L225">				next = n2.next;</span>
+<span class="fc" id="L226">				n1.next = null;</span>
+<span class="fc" id="L227">				n2.next = null;</span>
+<span class="fc" id="L228">				n1.prevOrParent = null;</span>
+<span class="fc" id="L229">				n2.prevOrParent = null;</span>
+<span class="fc" id="L230">				n1 = meldCustomCmp(n1, n2);</span>
+
+<span class="fc" id="L232">				n1.prevOrParent = prev;</span>
+<span class="fc" id="L233">				prev = n1;</span>
+<span class="fc" id="L234">			}</span>
+<span class="fc" id="L235">			minRoot.child = null;</span>
+
+			/* meld all from right to left */
+<span class="fc" id="L238">			Node  root = tail, prev = root.prevOrParent;</span>
+<span class="fc" id="L239">			root.prevOrParent = null;</span>
+			for (;;) {
+<span class="fc" id="L241">				Node  other = prev;</span>
+<span class="fc bfc" id="L242" title="All 2 branches covered.">				if (other == minRoot) {</span>
+<span class="fc" id="L243">					minRoot = root;</span>
+<span class="fc" id="L244">					break;</span>
+				}
+<span class="fc" id="L246">				prev = other.prevOrParent;</span>
+<span class="fc" id="L247">				other.prevOrParent = null;</span>
+<span class="fc" id="L248">				root = meldCustomCmp(root, other);</span>
+<span class="fc" id="L249">			}</span>
+		}
+<span class="fc" id="L251">	}</span>
+
+	@Override
+	public void decreaseKey(LongIntReferenceableHeap.Ref  ref, long newKey) {
+<span class="fc" id="L255">		Node  n = (Node ) ref;</span>
+<span class="fc" id="L256">		Assertions.heapDecreaseKeyIsSmaller(n.key, newKey, c);</span>
+<span class="fc" id="L257">		n.key = newKey;</span>
+<span class="fc" id="L258">		afterKeyDecrease(n);</span>
+<span class="fc" id="L259">	}</span>
+
+	@Override
+	public void increaseKey(LongIntReferenceableHeap.Ref  ref, long newKey) {
+<span class="fc" id="L263">		Node  n = (Node ) ref;</span>
+<span class="fc" id="L264">		Assertions.heapIncreaseKeyIsGreater(n.key, newKey, c);</span>
+<span class="fc" id="L265">		remove(n);</span>
+<span class="fc" id="L266">		n.key = newKey;</span>
+<span class="fc" id="L267">		insertNode(n);</span>
+<span class="fc" id="L268">	}</span>
+
+	static class Node  extends PairingHeapBase.NodeBase&lt;Node &gt; implements LongIntReferenceableHeap.Ref  {
+		long key;
+		private int value;
+
+<span class="fc" id="L274">		Node(long key) {</span>
+<span class="fc" id="L275">			this.key = key;</span>
+<span class="fc" id="L276">		}</span>
+
+		@Override
+		public long key() {
+<span class="fc" id="L280">			return key;</span>
+		}
+
+		@Override
+		public int value() {
+<span class="fc" id="L285">			return value;</span>
+		}
+
+		@Override
+		public void setValue(int val) {
+<span class="fc" id="L290">			value = val;</span>
+<span class="fc" id="L291">		}</span>
+
+
+		@Override
+		public String toString() {
+<span class="fc" id="L296">			return &quot;{&quot; + key + &quot;:&quot; + value + &quot;}&quot;;</span>
+		}
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

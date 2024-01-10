@@ -15,6 +15,8 @@
  */
 package com.jgalgo.internal.util;
 
+import java.util.Spliterator;
+import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
 import java.util.function.IntToDoubleFunction;
@@ -24,128 +26,329 @@ import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
+import it.unimi.dsi.fastutil.ints.AbstractIntList;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.ints.IntSpliterator;
 
 public final class Range extends AbstractIntSet {
 
 	private final int from, to;
 
-<span class="fc" id="L35">	private Range(int from, int to) {</span>
-<span class="fc" id="L36">		this.from = from;</span>
-<span class="fc" id="L37">		this.to = to;</span>
-<span class="fc" id="L38">	}</span>
+<span class="fc" id="L42">	private Range(int from, int to) {</span>
+<span class="fc" id="L43">		this.from = from;</span>
+<span class="fc" id="L44">		this.to = to;</span>
+<span class="fc" id="L45">	}</span>
 
 	public static Range range(int to) {
-<span class="fc bfc" id="L41" title="All 2 branches covered.">		if (0 &gt; to)</span>
-<span class="fc" id="L42">			throw new IllegalArgumentException(&quot;negative 'to': &quot; + to);</span>
-<span class="fc" id="L43">		return new Range(0, to);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (0 &gt; to)</span>
+<span class="fc" id="L49">			throw new IllegalArgumentException(&quot;negative 'to': &quot; + to);</span>
+<span class="fc" id="L50">		return new Range(0, to);</span>
 	}
 
 	public static Range range(int from, int to) {
-<span class="fc bfc" id="L47" title="All 2 branches covered.">		if (from &gt; to)</span>
-<span class="fc" id="L48">			throw new IllegalArgumentException(&quot;from &gt; to: &quot; + from + &quot; &gt; &quot; + to);</span>
-<span class="fc" id="L49">		return new Range(from, to);</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		if (from &gt; to)</span>
+<span class="fc" id="L55">			throw new IllegalArgumentException(&quot;from &gt; to: &quot; + from + &quot; &gt; &quot; + to);</span>
+<span class="fc" id="L56">		return new Range(from, to);</span>
 	}
 
 	@Override
 	public int size() {
-<span class="fc" id="L54">		return to - from;</span>
+<span class="fc" id="L61">		return to - from;</span>
 	}
 
 	@Override
 	public boolean contains(int key) {
-<span class="fc bfc" id="L59" title="All 4 branches covered.">		return from &lt;= key &amp;&amp; key &lt; to;</span>
+<span class="fc bfc" id="L66" title="All 4 branches covered.">		return from &lt;= key &amp;&amp; key &lt; to;</span>
 	}
 
 	@Override
 	public IntIterator iterator() {
-<span class="fc" id="L64">		return new Iter(from, to);</span>
+<span class="fc" id="L71">		return new Iter(from, to);</span>
 	}
 
 	@Override
 	public boolean equals(Object o) {
-<span class="fc bfc" id="L69" title="All 2 branches covered.">		if (o instanceof Range) {</span>
-<span class="fc" id="L70">			Range r = (Range) o;</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">			if (isEmpty())</span>
-<span class="fc" id="L72">				return r.isEmpty();</span>
-<span class="fc bfc" id="L73" title="All 4 branches covered.">			return to == r.to &amp;&amp; from == r.from;</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">		if (o instanceof Range) {</span>
+<span class="fc" id="L77">			Range r = (Range) o;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (isEmpty())</span>
+<span class="fc" id="L79">				return r.isEmpty();</span>
+<span class="fc bfc" id="L80" title="All 4 branches covered.">			return to == r.to &amp;&amp; from == r.from;</span>
 
-<span class="fc bfc" id="L75" title="All 2 branches covered.">		} else if (o instanceof IntSet) {</span>
-<span class="fc" id="L76">			IntSet s = (IntSet) o;</span>
-<span class="fc" id="L77">			int size = size();</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (size != s.size())</span>
-<span class="fc" id="L79">				return false;</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">			if (size == 0)</span>
-<span class="fc" id="L81">				return true;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		} else if (o instanceof IntSet) {</span>
+<span class="fc" id="L83">			IntSet s = (IntSet) o;</span>
+<span class="fc" id="L84">			int size = size();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (size != s.size())</span>
+<span class="fc" id="L86">				return false;</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">			if (size == 0)</span>
+<span class="fc" id="L88">				return true;</span>
 			int min, max;
-<span class="fc" id="L83">			IntIterator it = s.iterator();</span>
-<span class="fc" id="L84">			min = max = it.nextInt();</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">			while (--size &gt; 0) {</span>
-<span class="fc" id="L86">				int x = it.nextInt();</span>
-<span class="fc bfc" id="L87" title="All 2 branches covered.">				if (max &lt; x) {</span>
-<span class="fc" id="L88">					max = x;</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">				} else if (min &gt; x) {</span>
-<span class="fc" id="L90">					min = x;</span>
+<span class="fc" id="L90">			IntIterator it = s.iterator();</span>
+<span class="fc" id="L91">			min = max = it.nextInt();</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">			while (--size &gt; 0) {</span>
+<span class="fc" id="L93">				int x = it.nextInt();</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">				if (max &lt; x) {</span>
+<span class="fc" id="L95">					max = x;</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">				} else if (min &gt; x) {</span>
+<span class="fc" id="L97">					min = x;</span>
 				}
-<span class="fc" id="L92">			}</span>
-<span class="fc bfc" id="L93" title="All 4 branches covered.">			return min == from &amp;&amp; max == to - 1;</span>
+<span class="fc" id="L99">			}</span>
+<span class="fc bfc" id="L100" title="All 4 branches covered.">			return min == from &amp;&amp; max == to - 1;</span>
 
 		} else {
-<span class="fc" id="L96">			return super.equals(o);</span>
+<span class="fc" id="L103">			return super.equals(o);</span>
 		}
 	}
 
 	@Override
 	public int hashCode() {
 		/* hash code compatible with IntSet */
-<span class="fc" id="L103">		return (from + to - 1) * (to - from) / 2;</span>
+<span class="fc" id="L110">		return (from + to - 1) * (to - from) / 2;</span>
 	}
 
 	public IntStream map(IntUnaryOperator mapper) {
-<span class="fc" id="L107">		return intStream().map(mapper);</span>
+<span class="fc" id="L114">		return intStream().map(mapper);</span>
 	}
 
 	public &lt;U&gt; Stream&lt;U&gt; mapToObj(IntFunction&lt;? extends U&gt; mapper) {
-<span class="fc" id="L111">		return intStream().mapToObj(mapper);</span>
+<span class="fc" id="L118">		return intStream().mapToObj(mapper);</span>
 	}
 
 	public DoubleStream mapToDouble(IntToDoubleFunction mapper) {
-<span class="fc" id="L115">		return intStream().mapToDouble(mapper);</span>
+<span class="fc" id="L122">		return intStream().mapToDouble(mapper);</span>
 	}
 
 	public LongStream mapToLong(IntToLongFunction mapper) {
-<span class="fc" id="L119">		return intStream().mapToLong(mapper);</span>
+<span class="fc" id="L126">		return intStream().mapToLong(mapper);</span>
 	}
 
 	public IntStream filter(IntPredicate predicate) {
-<span class="fc" id="L123">		return intStream().filter(predicate);</span>
+<span class="fc" id="L130">		return intStream().filter(predicate);</span>
 	}
 
 	public boolean allMatch(IntPredicate allMatch) {
-<span class="fc" id="L127">		return intStream().allMatch(allMatch);</span>
+<span class="fc" id="L134">		return intStream().allMatch(allMatch);</span>
 	}
 
-	private static class Iter implements IntIterator {
+	@Override
+	public IntSpliterator spliterator() {
+<span class="fc" id="L139">		return new SplitIter(from, to);</span>
+	}
+
+<span class="fc" id="L142">	private static class Iter implements IntIterator {</span>
 
 		int x;
-		final int to;
+		private final int to;
 
-<span class="fc" id="L135">		Iter(int from, int to) {</span>
-<span class="fc" id="L136">			this.x = from;</span>
-<span class="fc" id="L137">			this.to = to;</span>
-<span class="fc" id="L138">		}</span>
+<span class="fc" id="L147">		Iter(int from, int to) {</span>
+<span class="pc bnc" id="L148" title="All 2 branches missed.">			assert from &lt;= to;</span>
+<span class="fc" id="L149">			this.x = from;</span>
+<span class="fc" id="L150">			this.to = to;</span>
+<span class="fc" id="L151">		}</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L142" title="All 2 branches covered.">			return x &lt; to;</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">			return x &lt; to;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L147">			Assertions.hasNext(this);</span>
-<span class="fc" id="L148">			return x++;</span>
+<span class="fc" id="L160">			Assertions.hasNext(this);</span>
+<span class="fc" id="L161">			return x++;</span>
+		}
+
+		@Override
+		public int skip(final int n) {
+<span class="fc bfc" id="L166" title="All 2 branches covered.">			if (n &lt; 0)</span>
+<span class="fc" id="L167">				throw new IllegalArgumentException(&quot;Argument must be nonnegative: &quot; + n);</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">			if (n &lt; to - x) {</span>
+<span class="fc" id="L169">				x += n;</span>
+<span class="fc" id="L170">				return n;</span>
+			} else {
+<span class="fc" id="L172">				int begin = x;</span>
+<span class="fc" id="L173">				x = to;</span>
+<span class="fc" id="L174">				return x - begin;</span>
+			}
+		}
+	}
+
+<span class="fc" id="L179">	private static class SplitIter implements IntSpliterator {</span>
+
+		private int x;
+		private final int to;
+
+<span class="fc" id="L184">		SplitIter(int from, int to) {</span>
+<span class="pc bnc" id="L185" title="All 2 branches missed.">			assert from &lt;= to;</span>
+<span class="fc" id="L186">			this.x = from;</span>
+<span class="fc" id="L187">			this.to = to;</span>
+<span class="fc" id="L188">		}</span>
+
+		@Override
+		public int characteristics() {
+<span class="fc" id="L192">			return Spliterator.NONNULL | Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.ORDERED</span>
+					| Spliterator.SORTED | Spliterator.DISTINCT | Spliterator.IMMUTABLE;
+		}
+
+		@Override
+		public long estimateSize() {
+<span class="fc" id="L198">			return to - x;</span>
+		}
+
+		@Override
+		public boolean tryAdvance(IntConsumer action) {
+<span class="fc bfc" id="L203" title="All 2 branches covered.">			if (x &gt;= to)</span>
+<span class="fc" id="L204">				return false;</span>
+<span class="fc" id="L205">			action.accept(x++);</span>
+<span class="fc" id="L206">			return true;</span>
+		}
+
+		@Override
+		public IntSpliterator trySplit() {
+<span class="fc" id="L211">			int size = to - x;</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">			if (size &lt; 2)</span>
+<span class="fc" id="L213">				return null;</span>
+<span class="fc" id="L214">			int mid = x + size / 2;</span>
+<span class="fc" id="L215">			IntSpliterator prefix = new SplitIter(x, mid);</span>
+<span class="fc" id="L216">			x = mid;</span>
+<span class="fc" id="L217">			return prefix;</span>
+		}
+
+		@Override
+		public void forEachRemaining(final IntConsumer action) {
+<span class="fc bfc" id="L222" title="All 2 branches covered.">			for (; x &lt; to; x++)</span>
+<span class="fc" id="L223">				action.accept(x);</span>
+<span class="fc" id="L224">		}</span>
+
+		@Override
+		public long skip(long n) {
+<span class="fc bfc" id="L228" title="All 2 branches covered.">			if (n &lt; 0)</span>
+<span class="fc" id="L229">				throw new IllegalArgumentException(&quot;Argument must be nonnegative: &quot; + n);</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">			if (n &lt; to - x) {</span>
+<span class="fc" id="L231">				x += n;</span>
+<span class="fc" id="L232">				return n;</span>
+			} else {
+<span class="fc" id="L234">				int begin = x;</span>
+<span class="fc" id="L235">				x = to;</span>
+<span class="fc" id="L236">				return x - begin;</span>
+			}
+		}
+
+		@Override
+		public IntComparator getComparator() {
+<span class="fc" id="L242">			return null;</span>
+		}
+	}
+
+	public IntList asList() {
+<span class="fc" id="L247">		return new RangeList(from, to);</span>
+	}
+
+	private static class RangeList extends AbstractIntList {
+
+		private final int from, to;
+		private int hash;
+
+<span class="fc" id="L255">		RangeList(int from, int to) {</span>
+<span class="fc" id="L256">			this.from = from;</span>
+<span class="fc" id="L257">			this.to = to;</span>
+<span class="fc" id="L258">		}</span>
+
+		@Override
+		public int size() {
+<span class="fc" id="L262">			return to - from;</span>
+		}
+
+		@Override
+		public boolean contains(int key) {
+<span class="fc bfc" id="L267" title="All 4 branches covered.">			return from &lt;= key &amp;&amp; key &lt; to;</span>
+		}
+
+		@Override
+		public int getInt(int index) {
+<span class="fc" id="L272">			Assertions.checkArrayIndex(index, 0, size());</span>
+<span class="fc" id="L273">			return from + index;</span>
+		}
+
+		@Override
+		public IntListIterator listIterator(int index) {
+<span class="fc" id="L278">			Assertions.checkArrayIndex(index, 0, size() + 1);</span>
+<span class="fc" id="L279">			return new ListIter(from, to, from + index);</span>
+		}
+
+		@Override
+		public int indexOf(int k) {
+<span class="fc bfc" id="L284" title="All 2 branches covered.">			return contains(k) ? k - from : -1;</span>
+		}
+
+		@Override
+		public int lastIndexOf(int k) {
+<span class="fc" id="L289">			return indexOf(k); /* there are no duplicate elements in the list */</span>
+		}
+
+		@Override
+		public IntList subList(int from, int to) {
+<span class="fc" id="L294">			Assertions.checkArrayFromTo(from, to, size());</span>
+<span class="fc" id="L295">			return new RangeList(this.from + from, this.from + to);</span>
+		}
+
+		@Override
+		public boolean equals(Object o) {
+<span class="fc bfc" id="L300" title="All 2 branches covered.">			if (o instanceof RangeList) {</span>
+<span class="fc" id="L301">				RangeList r = (RangeList) o;</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">				if (isEmpty())</span>
+<span class="fc" id="L303">					return r.isEmpty();</span>
+<span class="fc bfc" id="L304" title="All 4 branches covered.">				return to == r.to &amp;&amp; from == r.from;</span>
+
+			} else {
+<span class="fc" id="L307">				return super.equals(o);</span>
+			}
+		}
+
+		@Override
+		public int hashCode() {
+<span class="fc bfc" id="L313" title="All 2 branches covered.">			if (hash == 0)</span>
+<span class="fc" id="L314">				hash = super.hashCode();</span>
+<span class="fc" id="L315">			return hash;</span>
+		}
+
+		@Override
+		public IntSpliterator spliterator() {
+<span class="fc" id="L320">			return new SplitIter(from, to);</span>
+		}
+	}
+
+	private static class ListIter extends Iter implements IntListIterator {
+
+		private final int from;
+
+		ListIter(int from, int to, int startVal) {
+<span class="fc" id="L329">			super(startVal, to);</span>
+<span class="fc" id="L330">			this.from = from;</span>
+<span class="fc" id="L331">		}</span>
+
+		@Override
+		public int nextIndex() {
+<span class="fc" id="L335">			return x - from;</span>
+		}
+
+		@Override
+		public boolean hasPrevious() {
+<span class="fc bfc" id="L340" title="All 2 branches covered.">			return from &lt; x;</span>
+		}
+
+		@Override
+		public int previousInt() {
+<span class="fc" id="L345">			Assertions.hasPrevious(this);</span>
+<span class="fc" id="L346">			return --x;</span>
+		}
+
+		@Override
+		public int previousIndex() {
+<span class="fc" id="L351">			return x - from - 1;</span>
 		}
 	}
 

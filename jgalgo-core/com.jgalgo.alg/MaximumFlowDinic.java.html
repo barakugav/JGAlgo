@@ -153,30 +153,28 @@ class MaximumFlowDinic extends MaximumFlows.WithResidualGraph {
 <span class="pc bnc" id="L153" title="All 2 branches missed.">					assert path.size() &gt; 0;</span>
 
 					// find out what is the maximum flow we can pass
-<span class="fc" id="L156">					double f = Double.MAX_VALUE;</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">					for (int e : path)</span>
-<span class="fc" id="L158">						f = Math.min(f, capacity[e] - flow[e]);</span>
+<span class="fc" id="L156">					double f = path.intStream().mapToDouble(e -&gt; capacity[e] - flow[e]).min().orElse(Double.MAX_VALUE);</span>
 
 					// update flow of all edges on path
-<span class="fc bfc" id="L161" title="All 2 branches covered.">					for (int e : path) {</span>
-<span class="fc" id="L162">						int t = twin[e];</span>
-<span class="fc" id="L163">						double newFlow = flow[e] + f;</span>
-<span class="fc" id="L164">						double cap = capacity[e];</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">						if (newFlow &lt; cap) {</span>
-<span class="fc" id="L166">							flow[e] = newFlow;</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">					for (int e : path) {</span>
+<span class="fc" id="L160">						int t = twin[e];</span>
+<span class="fc" id="L161">						double newFlow = flow[e] + f;</span>
+<span class="fc" id="L162">						double cap = capacity[e];</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">						if (newFlow &lt; cap) {</span>
+<span class="fc" id="L164">							flow[e] = newFlow;</span>
 						} else {
 							/* saturated, remove edge */
-<span class="fc" id="L169">							flow[e] = cap;</span>
-<span class="fc" id="L170">							residual.clear(e);</span>
+<span class="fc" id="L167">							flow[e] = cap;</span>
+<span class="fc" id="L168">							residual.clear(e);</span>
 						}
-<span class="fc" id="L172">						flow[t] -= f;</span>
-<span class="fc" id="L173">					}</span>
-<span class="fc" id="L174">				}</span>
-<span class="fc" id="L175">				residual.clear();</span>
-<span class="fc" id="L176">				Arrays.fill(edgeIters, null);</span>
-<span class="fc" id="L177">			}</span>
+<span class="fc" id="L170">						flow[t] -= f;</span>
+<span class="fc" id="L171">					}</span>
+<span class="fc" id="L172">				}</span>
+<span class="fc" id="L173">				residual.clear();</span>
+<span class="fc" id="L174">				Arrays.fill(edgeIters, null);</span>
+<span class="fc" id="L175">			}</span>
 
-<span class="fc" id="L179">			return constructResult(flow);</span>
+<span class="fc" id="L177">			return constructResult(flow);</span>
 		}
 
 	}
