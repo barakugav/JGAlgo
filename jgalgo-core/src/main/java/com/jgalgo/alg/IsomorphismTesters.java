@@ -15,7 +15,11 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
@@ -28,32 +32,29 @@ class IsomorphismTesters {
 
 	static class IndexMapping implements IsomorphismIMapping {
 
+		private final IndexGraph g1;
+		private final IndexGraph g2;
 		private final int[] vertexMapping;
 		private final int[] edgeMapping;
 		private IndexMapping inverse;
 
-		IndexMapping(int[] vertexMapping, int[] edgeMapping) {
+		IndexMapping(IndexGraph g1, IndexGraph g2, int[] vertexMapping, int[] edgeMapping) {
+			this.g1 = g1;
+			this.g2 = g2;
 			this.vertexMapping = vertexMapping;
 			this.edgeMapping = edgeMapping;
-
-			// final int n = vertexMapping.length;
-			// final int m = edgeMapping.length;
-			// assert range(n).allMatch(v -> 0 <= vertexMapping[v] && vertexMapping[v] < n);
-			// assert range(m).allMatch(e -> 0 <= edgeMapping[e] && edgeMapping[e] < m);
-			// assert range(n).map(v -> vertexMapping[v]).distinct().count() == n;
-			// assert range(m).map(e -> edgeMapping[e]).distinct().count() == m;
 		}
 
 		@Override
 		public int mapVertex(int vertex) {
-			if (!(0 <= vertex && vertex < vertexMapping.length))
+			if (!g1.vertices().contains(vertex))
 				throw NoSuchVertexException.ofIndex(vertex);
 			return vertexMapping[vertex];
 		}
 
 		@Override
 		public int mapEdge(int edge) {
-			if (!(0 <= edge && edge < edgeMapping.length))
+			if (!g1.edges().contains(edge))
 				throw NoSuchEdgeException.ofIndex(edge);
 			return edgeMapping[edge];
 		}
@@ -61,24 +62,59 @@ class IsomorphismTesters {
 		@Override
 		public IsomorphismIMapping inverse() {
 			if (inverse == null) {
-				final int n = vertexMapping.length;
-				final int m = edgeMapping.length;
-				int[] iVertexMapping = new int[n];
-				int[] iEdgeMapping = new int[m];
-				for (int v = 0; v < n; v++)
-					iVertexMapping[vertexMapping[v]] = v;
-				for (int e = 0; e < m; e++)
-					iEdgeMapping[edgeMapping[e]] = e;
-				inverse = new IndexMapping(iVertexMapping, iEdgeMapping);
+				final int n1 = g1.vertices().size();
+				final int m1 = g1.edges().size();
+				final int n2 = g2.vertices().size();
+				final int m2 = g2.edges().size();
+				int[] iVertexMapping = new int[n2];
+				int[] iEdgeMapping = new int[m2];
+				Arrays.fill(iVertexMapping, -1);
+				Arrays.fill(iEdgeMapping, -1);
+				for (int v1 = 0; v1 < n1; v1++) {
+					int v2 = vertexMapping[v1];
+					if (v2 >= 0) {
+						assert iVertexMapping[v2] < 0;
+						iVertexMapping[v2] = v1;
+					}
+				}
+				for (int e1 = 0; e1 < m1; e1++) {
+					int e2 = edgeMapping[e1];
+					if (e2 >= 0) {
+						assert iEdgeMapping[e2] < 0;
+						iEdgeMapping[e2] = e1;
+					}
+				}
+				inverse = new IndexMapping(g2, g1, iVertexMapping, iEdgeMapping);
 				inverse.inverse = this;
 			}
 			return inverse;
+		}
+
+		@Override
+		public IntGraph sourceGraph() {
+			return g1;
+		}
+
+		@Override
+		public IntGraph targetGraph() {
+			return g2;
+		}
+
+		@Override
+		public String toString() {
+			return range(g1.vertices().size()).mapToObj(v1 -> {
+				int v2 = vertexMapping[v1];
+				String v2Str = v2 < 0 ? "null" : String.valueOf(v2);
+				return "" + v1 + ":" + v2Str;
+			}).collect(Collectors.joining(", ", "{", "}"));
 		}
 	}
 
 	static class ObjMappingFromIndexMapping<V1, E1, V2, E2> implements IsomorphismMapping<V1, E1, V2, E2> {
 
 		private final IsomorphismIMapping indexMapping;
+		private final Graph<V1, E1> g1;
+		private final Graph<V2, E2> g2;
 		private final IndexIdMap<V1> v1Map;
 		private final IndexIdMap<E1> e1Map;
 		private final IndexIdMap<V2> v2Map;
@@ -86,24 +122,20 @@ class IsomorphismTesters {
 		private ObjMappingFromIndexMapping<V2, E2, V1, E1> inverse;
 
 		ObjMappingFromIndexMapping(IsomorphismIMapping indexMapping, Graph<V1, E1> g1, Graph<V2, E2> g2) {
-			this(indexMapping, g1.indexGraphVerticesMap(), g1.indexGraphEdgesMap(), g2.indexGraphVerticesMap(),
-					g2.indexGraphEdgesMap());
-		}
-
-		private ObjMappingFromIndexMapping(IsomorphismIMapping indexMapping, IndexIdMap<V1> v1Map, IndexIdMap<E1> e1Map,
-				IndexIdMap<V2> v2Map, IndexIdMap<E2> e2Map) {
 			this.indexMapping = indexMapping;
-			this.v1Map = v1Map;
-			this.e1Map = e1Map;
-			this.v2Map = v2Map;
-			this.e2Map = e2Map;
+			this.g1 = g1;
+			this.g2 = g2;
+			this.v1Map = g1.indexGraphVerticesMap();
+			this.e1Map = g1.indexGraphEdgesMap();
+			this.v2Map = g2.indexGraphVerticesMap();
+			this.e2Map = g2.indexGraphEdgesMap();
 		}
 
 		@Override
 		public V2 mapVertex(V1 vertex) {
 			int v1 = v1Map.idToIndex(vertex);
 			int v2 = indexMapping.mapVertex(v1);
-			return v2Map.indexToId(v2);
+			return v2 < 0 ? null : v2Map.indexToId(v2);
 
 		}
 
@@ -111,22 +143,44 @@ class IsomorphismTesters {
 		public E2 mapEdge(E1 edge) {
 			int e1 = e1Map.idToIndex(edge);
 			int e2 = indexMapping.mapEdge(e1);
-			return e2Map.indexToId(e2);
+			return e2 < 0 ? null : e2Map.indexToId(e2);
 		}
 
 		@Override
 		public IsomorphismMapping<V2, E2, V1, E1> inverse() {
 			if (inverse == null) {
-				inverse = new ObjMappingFromIndexMapping<>(indexMapping.inverse(), v2Map, e2Map, v1Map, e1Map);
+				inverse = new ObjMappingFromIndexMapping<>(indexMapping.inverse(), g2, g1);
 				inverse.inverse = this;
 			}
 			return inverse;
+		}
+
+		@Override
+		public Graph<V1, E1> sourceGraph() {
+			return g1;
+		}
+
+		@Override
+		public Graph<V2, E2> targetGraph() {
+			return g2;
+		}
+
+		@Override
+		public String toString() {
+			return range(g1.indexGraph().vertices().size()).mapToObj(v1Idx -> {
+				V1 v1 = v1Map.indexToId(v1Idx);
+				int v2Idx = indexMapping.mapVertex(v1Idx);
+				V2 v2 = v2Idx < 0 ? null : v2Map.indexToId(v2Idx);
+				return "" + v1 + ":" + v2;
+			}).collect(Collectors.joining(", ", "{", "}"));
 		}
 	}
 
 	static class IntMappingFromIndexMapping implements IsomorphismIMapping {
 
 		private final IsomorphismIMapping indexMapping;
+		private final IntGraph g1;
+		private final IntGraph g2;
 		private final IndexIntIdMap v1Map;
 		private final IndexIntIdMap e1Map;
 		private final IndexIntIdMap v2Map;
@@ -134,24 +188,20 @@ class IsomorphismTesters {
 		private IntMappingFromIndexMapping inverse;
 
 		IntMappingFromIndexMapping(IsomorphismIMapping indexMapping, IntGraph g1, IntGraph g2) {
-			this(indexMapping, g1.indexGraphVerticesMap(), g1.indexGraphEdgesMap(), g2.indexGraphVerticesMap(),
-					g2.indexGraphEdgesMap());
-		}
-
-		private IntMappingFromIndexMapping(IsomorphismIMapping indexMapping, IndexIntIdMap v1Map, IndexIntIdMap e1Map,
-				IndexIntIdMap v2Map, IndexIntIdMap e2Map) {
 			this.indexMapping = indexMapping;
-			this.v1Map = v1Map;
-			this.e1Map = e1Map;
-			this.v2Map = v2Map;
-			this.e2Map = e2Map;
+			this.g1 = g1;
+			this.g2 = g2;
+			this.v1Map = g1.indexGraphVerticesMap();
+			this.e1Map = g1.indexGraphEdgesMap();
+			this.v2Map = g2.indexGraphVerticesMap();
+			this.e2Map = g2.indexGraphEdgesMap();
 		}
 
 		@Override
 		public int mapVertex(int vertex) {
 			int v1 = v1Map.idToIndex(vertex);
 			int v2 = indexMapping.mapVertex(v1);
-			return v2Map.indexToIdInt(v2);
+			return v2 < 0 ? -1 : v2Map.indexToIdInt(v2);
 
 		}
 
@@ -159,16 +209,36 @@ class IsomorphismTesters {
 		public int mapEdge(int edge) {
 			int e1 = e1Map.idToIndex(edge);
 			int e2 = indexMapping.mapEdge(e1);
-			return e2Map.indexToIdInt(e2);
+			return e2 < 0 ? -1 : e2Map.indexToIdInt(e2);
 		}
 
 		@Override
 		public IsomorphismIMapping inverse() {
 			if (inverse == null) {
-				inverse = new IntMappingFromIndexMapping(indexMapping.inverse(), v2Map, e2Map, v1Map, e1Map);
+				inverse = new IntMappingFromIndexMapping(indexMapping.inverse(), g2, g1);
 				inverse.inverse = this;
 			}
 			return inverse;
+		}
+
+		@Override
+		public IntGraph sourceGraph() {
+			return g1;
+		}
+
+		@Override
+		public IntGraph targetGraph() {
+			return g2;
+		}
+
+		@Override
+		public String toString() {
+			return range(g1.indexGraph().vertices().size()).mapToObj(v1Idx -> {
+				int v1 = v1Map.indexToIdInt(v1Idx);
+				int v2Idx = indexMapping.mapVertex(v1Idx);
+				String v2 = v2Idx < 0 ? "null" : String.valueOf(v2Map.indexToIdInt(v2Idx));
+				return "" + v1 + ":" + v2;
+			}).collect(Collectors.joining(", ", "{", "}"));
 		}
 	}
 

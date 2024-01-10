@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.NoSuchVertexException;
 
@@ -22,19 +23,18 @@ import com.jgalgo.graph.NoSuchVertexException;
  * A mapping between two graphs that preserves the structure of the graphs.
  *
  * <p>
- * Given two graphs \(G_1 = (V_1, E_1)\) and \(G_2 = (V_2, E_2)\), an isomorphism is a bijective function \(f: V_1
- * \rightarrow V_2\) such that \((u, v) \in E_1\) if and only if \((f(u), f(v)) \in E_2\). If such a function exists,
- * then the graphs are called isomorphic. In the case of a directed graph, the function must preserve the direction of
- * the edges.
- *
- * <p>
- * Although an isomorphism mapping is a bijective function, the interface only maps vertices and edges from the first
- * graph to vertices and edges of the second graph. The inverse mapping can be obtained by calling {@link #inverse()}.
+ * Given two graphs, an isomorphism is a mapping functions that maps the first graph vertices to the second graph
+ * vertices, while preserving the structure of the graph. There are few variants, described in the different types of
+ * isomorphism, see {@link IsomorphismType}. Some types of isomorphism map only a subset of the vertices or edges, and
+ * in such case the mapping will return {@code null} for vertices or edges that are not mapped.
  *
  * @param  <V1> the type of vertices of the first graph
  * @param  <E1> the type of edges of the first graph
  * @param  <V2> the type of vertices of the second graph
  * @param  <E2> the type of edges of the second graph
+ * @see         IsomorphismTester
+ * @see         IsomorphismType
+ * @see         <a href= "https://en.wikipedia.org/wiki/Graph_isomorphism">Wikipedia</a>
  * @author      Barak Ugav
  */
 public interface IsomorphismMapping<V1, E1, V2, E2> {
@@ -43,7 +43,7 @@ public interface IsomorphismMapping<V1, E1, V2, E2> {
 	 * Map a vertex from the first graph to a vertex of the second graph.
 	 *
 	 * @param  vertex                the vertex to map
-	 * @return                       the mapped vertex
+	 * @return                       the mapped vertex, or {@code null} if {@code v1} is not mapped
 	 * @throws NoSuchVertexException if the vertex does not exist in the first graph
 	 */
 	V2 mapVertex(V1 vertex);
@@ -52,7 +52,7 @@ public interface IsomorphismMapping<V1, E1, V2, E2> {
 	 * Map an edge from the first graph to an edge of the second graph.
 	 *
 	 * @param  edge                the edge to map
-	 * @return                     the mapped edge
+	 * @return                     the mapped edge, or {@code null} if {@code e1} is not mapped
 	 * @throws NoSuchEdgeException if the edge does not exist in the first graph
 	 */
 	E2 mapEdge(E1 edge);
@@ -63,4 +63,26 @@ public interface IsomorphismMapping<V1, E1, V2, E2> {
 	 * @return the inverse mapping
 	 */
 	IsomorphismMapping<V2, E2, V1, E1> inverse();
+
+	/**
+	 * Get the source graph.
+	 *
+	 * <p>
+	 * The 'source' graph contains the vertices and edges of the <b>domain</b> of the mapping, namely these vertices and
+	 * edges are mapped to vertices and edges of the target (range) graph.
+	 *
+	 * @return the source graph
+	 */
+	Graph<V1, E1> sourceGraph();
+
+	/**
+	 * Get the target graph.
+	 *
+	 * <p>
+	 * The 'target' graph contains the vertices and edges of the <b>range</b> of the mapping, namely the vertices and
+	 * edges of another graph (the source or domain graph) are mapped to these vertices and edges.
+	 *
+	 * @return the target graph
+	 */
+	Graph<V2, E2> targetGraph();
 }

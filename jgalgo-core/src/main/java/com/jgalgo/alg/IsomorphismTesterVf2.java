@@ -19,16 +19,14 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.IntBinaryOperator;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.IterTools;
-import com.jgalgo.internal.util.Permutations;
-import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
 /**
@@ -42,31 +40,38 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 
 	@Override
-	public Iterator<IsomorphismIMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2,
+	public Iterator<IsomorphismIMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2, IsomorphismType type,
 			IntBinaryOperator vertexMatcher, IntBinaryOperator edgeMatcher) {
 		Assertions.noParallelEdges(g1, "parallel edges are not supported");
 		Assertions.noParallelEdges(g2, "parallel edges are not supported");
-		final int n = g1.vertices().size();
-		final int m = g1.edges().size();
-		if (n != g2.vertices().size() || m != g2.edges().size() || g1.isDirected() != g2.isDirected())
+		if (g1.isDirected() != g2.isDirected())
+			throw new IllegalArgumentException("directed/undirected graphs mismatch");
+		Objects.requireNonNull(type);
+
+		final int n1 = g1.vertices().size();
+		final int n2 = g2.vertices().size();
+		final int m1 = g1.edges().size();
+		final int m2 = g2.edges().size();
+
+		if (type == IsomorphismType.Full && (n1 != n2 || m1 != m2))
 			return Collections.emptyIterator();
-		if (n == 0) {
-			assert m == 0;
-			return ObjectIterators
-					.singleton(new IsomorphismTesters.IndexMapping(IntArrays.DEFAULT_EMPTY_ARRAY,
-							IntArrays.DEFAULT_EMPTY_ARRAY));
+
+		if (n1 < n2 || m1 < m2 || (n1 == n2 && m1 != m2 && type != IsomorphismType.SubGraph))
+			return Collections.emptyIterator();
+
+		if (n2 == 0) {
+			assert m2 == 0;
+			int[] vMapping = new int[n1];
+			int[] eMapping = new int[m1];
+			Arrays.fill(vMapping, -1);
+			Arrays.fill(eMapping, -1);
+			return ObjectIterators.singleton(new IsomorphismTesters.IndexMapping(g1, g2, vMapping, eMapping));
 		}
-		if (m == 0 && vertexMatcher == null) {
-			Iterator<IntList> verticesPermutations = Permutations.of(g1.vertices()).iterator();
-			return IterTools.map(verticesPermutations, permutation -> {
-				int[] core1 = permutation.toIntArray();
-				return new IsomorphismTesters.IndexMapping(core1, IntArrays.DEFAULT_EMPTY_ARRAY);
-			});
-		}
+
 		if (g1.isDirected()) {
-			return new IsomorphismIterDirected(g1, g2, vertexMatcher, edgeMatcher);
+			return new IsomorphismIterDirected(g1, g2, type, vertexMatcher, edgeMatcher);
 		} else {
-			return new IsomorphismIterUndirected(g1, g2, vertexMatcher, edgeMatcher);
+			return new IsomorphismIterUndirected(g1, g2, type, vertexMatcher, edgeMatcher);
 		}
 	}
 
@@ -74,9 +79,12 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 
 		final IndexGraph g1;
 		final IndexGraph g2;
-		final int n;
+		final int n1, n2;
 		private final IntBinaryOperator vertexMatcher;
 		private final IntBinaryOperator edgeMatcher;
+		final IsomorphismType type;
+		final boolean subGraph;
+		final boolean inducedSubGraph;
 
 		final int[] core1;
 		final int[] core2;
@@ -94,27 +102,34 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 
 		static final int None = -1;
 
-		IsomorphismIterBase(IndexGraph g1, IndexGraph g2, IntBinaryOperator vertexMatcher,
+		IsomorphismIterBase(IndexGraph g1, IndexGraph g2, IsomorphismType type, IntBinaryOperator vertexMatcher,
 				IntBinaryOperator edgeMatcher) {
 			this.g1 = g1;
 			this.g2 = g2;
-			n = g1.vertices().size();
+			n1 = g1.vertices().size();
+			n2 = g2.vertices().size();
+			this.type = type;
 			this.vertexMatcher = vertexMatcher;
 			this.edgeMatcher = edgeMatcher;
 
-			core1 = new int[n];
-			core2 = new int[n];
+			assert n1 >= n2;
+			subGraph = type == IsomorphismType.SubGraph || n1 > n2;
+			inducedSubGraph = Objects.requireNonNull(type) != IsomorphismType.SubGraph;
+
+			core1 = new int[n1];
+			core2 = new int[n2];
 			Arrays.fill(core1, None);
 			Arrays.fill(core2, None);
 
-			visit = new int[n];
-			visitData = new int[n];
+			visit = new int[/* max(n1,n2) */ n1];
+			visitData = new int[/* max(n1,n2) */ n1];
 
 			stateDepth = 1;
-			statePrevV1 = new int[n + 1];
-			statePrevV2 = new int[n + 1];
-			stateNextV1Iter = new IntIterator[n + 1];
-			stateNextV2 = new int[n + 1];
+			final int maxStateDepth = n2 + 1;
+			statePrevV1 = new int[maxStateDepth];
+			statePrevV2 = new int[maxStateDepth];
+			stateNextV1Iter = new IntIterator[maxStateDepth];
+			stateNextV2 = new int[maxStateDepth];
 		}
 
 		abstract void advance();
@@ -128,23 +143,27 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		public IsomorphismIMapping next() {
 			Assertions.hasNext(this);
 			IsomorphismIMapping mapping =
-					new IsomorphismTesters.IndexMapping(nextMapping, computeEdgeMapping(nextMapping));
+					new IsomorphismTesters.IndexMapping(g1, g2, nextMapping, computeEdgeMapping(nextMapping));
 			advance();
 			return mapping;
 		}
 
 		private int[] computeEdgeMapping(int[] vMapping) {
-			final int n = g1.vertices().size();
-			final int m = g1.edges().size();
-			int[] eMapping = new int[m];
+			int[] eMapping = new int[g1.edges().size()];
+			Arrays.fill(eMapping, -1);
 
-			for (int u1 = 0; u1 < n; u1++) {
+			Arrays.fill(visit, -1);
+			for (final int u1 : range(g1.vertices().size())) {
+				final int u2 = vMapping[u1];
+				if (u2 < 0)
+					continue;
 				for (IEdgeIter eit = g1.outEdges(u1).iterator(); eit.hasNext();) {
 					int e1 = eit.nextInt();
 					int v1 = eit.targetInt();
-					visit[vMapping[v1]] = e1;
+					int v2 = vMapping[v1];
+					if (v2 >= 0)
+						visit[v2] = e1;
 				}
-				int u2 = vMapping[u1];
 				for (IEdgeIter eit = g2.outEdges(u2).iterator(); eit.hasNext();) {
 					int e2 = eit.nextInt();
 					int v2 = eit.targetInt();
@@ -152,8 +171,9 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 					eMapping[e1] = e2;
 				}
 			}
-			nextVisitIdx = 1;
 			Arrays.fill(visit, -1);
+			nextVisitIdx = 1;
+
 			return eMapping;
 		}
 
@@ -178,19 +198,20 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		private final int[] stateT1InSize;
 		private final int[] stateT2InSize;
 
-		IsomorphismIterDirected(IndexGraph g1, IndexGraph g2, IntBinaryOperator vertexMatcher,
+		IsomorphismIterDirected(IndexGraph g1, IndexGraph g2, IsomorphismType type, IntBinaryOperator vertexMatcher,
 				IntBinaryOperator edgeMatcher) {
-			super(g1, g2, vertexMatcher, edgeMatcher);
+			super(g1, g2, type, vertexMatcher, edgeMatcher);
 
-			in1 = new int[n];
-			in2 = new int[n];
-			out1 = new int[n];
-			out2 = new int[n];
+			in1 = new int[n1];
+			in2 = new int[n2];
+			out1 = new int[n1];
+			out2 = new int[n2];
 
-			stateT1OutSize = new int[n + 1];
-			stateT2OutSize = new int[n + 1];
-			stateT1InSize = new int[n + 1];
-			stateT2InSize = new int[n + 1];
+			final int maxStateDepth = n2 + 1;
+			stateT1OutSize = new int[maxStateDepth];
+			stateT2OutSize = new int[maxStateDepth];
+			stateT1InSize = new int[maxStateDepth];
+			stateT2InSize = new int[maxStateDepth];
 			newState(None, None, 0, 0, 0, 0);
 
 			advance();
@@ -204,32 +225,38 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 			stateT1InSize[stateDepth] = t1InSize;
 			stateT2InSize[stateDepth] = t2InSize;
 
-			assert t1OutSize < n;
-			assert t2OutSize < n;
-			assert t1InSize < n;
-			assert t2InSize < n;
+			assert t1OutSize < n1;
+			assert t2OutSize < n2;
+			assert t1InSize < n1;
+			assert t2InSize < n2;
 
 			IntIterator nextV1Iter;
 			int nextV2;
-			if ((t1OutSize == 0 ^ t2OutSize == 0) || (t1InSize == 0 ^ t2InSize == 0)) {
+			/*
+			 * "In case that only one of the in-terminal sets or only one of the out-terminal sets is empty, it can be
+			 * demonstrated that the state s cannot be part of a matching, and it is not further explored." Although
+			 * this is stated in the paper, this does not seem to be correct for non-full isomorphism.
+			 */
+			if (type == IsomorphismType.Full
+					&& ((t1OutSize == 0 ^ t2OutSize == 0) || (t1InSize == 0 ^ t2InSize == 0))) {
 				nextV1Iter = IntIterators.EMPTY_ITERATOR;
 				nextV2 = None;
 
 			} else {
-				if (t1OutSize != 0) {
+				if (t1OutSize != 0 && t2OutSize != 0) {
 					/* P(s)=T^{out}_1 (s) \times \{\min T^{out}_2(s)\} */
-					nextV1Iter = IterTools.filter(range(n).iterator(), u -> core1[u] == None && out1[u] > 0);
-					nextV2 = IterTools.filter(range(n).iterator(), u -> core2[u] == None && out2[u] > 0).nextInt();
+					nextV1Iter = IterTools.filter(range(n1).iterator(), u1 -> core1[u1] < 0 && out1[u1] > 0);
+					nextV2 = IterTools.filter(range(n2).iterator(), u2 -> core2[u2] < 0 && out2[u2] > 0).nextInt();
 
-				} else if (t1InSize != 0) {
+				} else if (t1InSize != 0 && t2InSize != 0) {
 					/* P(s)=T^{in}_1 (s) \times \{\min T^{in}_2(s)\} */
-					nextV1Iter = IterTools.filter(range(n).iterator(), u -> core1[u] == None && in1[u] > 0);
-					nextV2 = IterTools.filter(range(n).iterator(), u -> core2[u] == None && in2[u] > 0).nextInt();
+					nextV1Iter = IterTools.filter(range(n1).iterator(), u1 -> core1[u1] < 0 && in1[u1] > 0);
+					nextV2 = IterTools.filter(range(n2).iterator(), u2 -> core2[u2] < 0 && in2[u2] > 0).nextInt();
 
 				} else {
 					/* P(s)=(N_1 - M_1(s)) \times \{\min (N_2 - M_2)\} */
-					nextV1Iter = IterTools.filter(range(n).iterator(), u -> core1[u] == None);
-					nextV2 = IterTools.filter(range(n).iterator(), u -> core2[u] == None).nextInt();
+					nextV1Iter = IterTools.filter(range(n1).iterator(), u1 -> core1[u1] < 0);
+					nextV2 = IterTools.filter(range(n2).iterator(), u2 -> core2[u2] < 0).nextInt();
 				}
 				assert nextV1Iter.hasNext();
 			}
@@ -240,59 +267,19 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		@Override
 		void advance() {
 			dfs: while (stateDepth > 0) {
-				// IntList mapped1 = new IntArrayList(range(n).filter(u -> core1[u] != None).iterator());
-				// IntList range1 = new IntArrayList(mapped1.intStream().map(u -> core1[u]).iterator());
-				// IntList mapped2 = new IntArrayList(range(n).filter(u -> core2[u] != None).iterator());
-				// IntList range2 = new IntArrayList(mapped2.intStream().map(u -> core2[u]).iterator());
-				// assert mapped1.size() == new IntOpenHashSet(mapped1).size();
-				// assert mapped2.size() == new IntOpenHashSet(mapped2).size();
-				// assert range1.size() == new IntOpenHashSet(range1).size();
-				// assert range2.size() == new IntOpenHashSet(range2).size();
-				// assert new IntOpenHashSet(mapped1).equals(new IntOpenHashSet(range2));
-				// assert new IntOpenHashSet(mapped2).equals(new IntOpenHashSet(range1));
-
-				// int[] t1Out = range(n)
-				// .filter(v -> core1[v] != None)
-				// .flatMap(v -> g1.outEdges(v).intStream().map(g1::edgeTarget))
-				// .filter(v -> core1[v] == None)
-				// .distinct()
-				// .toArray();
-				// int[] t1In = range(n)
-				// .filter(v -> core1[v] != None)
-				// .flatMap(v -> g1.inEdges(v).intStream().map(g1::edgeSource))
-				// .filter(v -> core1[v] == None)
-				// .distinct()
-				// .toArray();
-				// int[] t2Out = range(n)
-				// .filter(v -> core2[v] != None)
-				// .flatMap(v -> g2.outEdges(v).intStream().map(g2::edgeTarget))
-				// .filter(v -> core2[v] == None)
-				// .distinct()
-				// .toArray();
-				// int[] t2In = range(n)
-				// .filter(v -> core2[v] != None)
-				// .flatMap(v -> g2.inEdges(v).intStream().map(g2::edgeSource))
-				// .filter(v -> core2[v] == None)
-				// .distinct()
-				// .toArray();
-				// assert state.t1OutSize == t1Out.length;
-				// assert state.t1InSize == t1In.length;
-				// assert state.t2OutSize == t2Out.length;
-				// assert state.t2InSize == t2In.length;
-
 				final int v2 = stateNextV2[stateDepth];
 				for (IntIterator v1Iter = stateNextV1Iter[stateDepth]; v1Iter.hasNext();) {
 					final int v1 = v1Iter.nextInt();
 					if (!isFeasibleMatchVertices(v1, v2))
 						continue;
 
-					/* match v1 to v2 and update state */
-					if (stateDepth == n) {
+					if (stateDepth == n2) {
 						/* found a valid full matching */
 						nextMapping = core1.clone();
 						nextMapping[v1] = v2;
 						return;
 					}
+					/* match v1 to v2 and update state */
 					core1[v1] = v2;
 					core2[v2] = v1;
 					stateDepth++;
@@ -315,78 +302,101 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 				return false;
 
 			/*
-			 * check that out edges connecting v1 and other mapped vertices of g1 can be mapped to out edges connecting
-			 * v2 and other mapped vertices of g2
+			 * check that out edges connecting v2 and other mapped vertices of g2 can be mapped to out edges connecting
+			 * v1 and other mapped vertices of g1
 			 */
 			int visitIdx = nextVisitIdx++;
-			for (IEdgeIter eit = g1.outEdges(v1).iterator(); eit.hasNext();) {
-				int e1 = eit.nextInt();
-				int w1 = eit.targetInt();
-				int w2 = core1[w1];
-				if (w2 != None || v1 == w1) {
-					visit[w1] = visitIdx;
-					visitData[w1] = e1;
-				}
-			}
+			int edgeCount = 0;
 			for (IEdgeIter eit = g2.outEdges(v2).iterator(); eit.hasNext();) {
 				int e2 = eit.nextInt();
 				int w2 = eit.targetInt();
 				int w1 = core2[w2];
-				if (w1 != None || v2 == w2) {
-					if (v2 == w2)
-						w1 = v1;
-					if (visit[w1] != visitIdx)
-						return false;
-					int e1 = visitData[w1];
+				if (w1 < 0 && v2 != w2)
+					continue;
+				visit[w2] = visitIdx;
+				visitData[w2] = e2;
+				edgeCount++;
+
+			}
+			for (IEdgeIter eit = g1.outEdges(v1).iterator(); eit.hasNext();) {
+				int e1 = eit.nextInt();
+				int w1 = eit.targetInt();
+				int w2 = core1[w1];
+				if (w2 < 0 && v1 != w1)
+					continue;
+				if (v1 == w1)
+					w2 = v2;
+				if (visit[w2] == visitIdx) {
+					int e2 = visitData[w2];
 					if (!canMatchEdges(e1, e2))
 						return false;
+					edgeCount--;
+
+				} else if (inducedSubGraph) {
+					/* there is no edge (v2,w2) matching e1 */
+					return false;
 				}
 			}
+			if (edgeCount != 0)
+				/* there are some edges connecting v2 in g2 without match in g1 */
+				return false;
 
 			/*
-			 * check that in edges connecting v1 and other mapped vertices of g1 can be mapped to in edges connecting v2
-			 * and other mapped vertices of g2
+			 * check that in edges connecting v2 and other mapped vertices of g2 can be mapped to in edges connecting v1
+			 * and other mapped vertices of g1
 			 */
 			visitIdx = nextVisitIdx++;
-			for (IEdgeIter eit = g1.inEdges(v1).iterator(); eit.hasNext();) {
-				int e1 = eit.nextInt();
-				int u1 = eit.sourceInt();
-				int u2 = core1[u1];
-				if (u2 != None) {
-					visit[u1] = visitIdx;
-					visitData[u1] = e1;
-				}
-			}
 			for (IEdgeIter eit = g2.inEdges(v2).iterator(); eit.hasNext();) {
 				int e2 = eit.nextInt();
 				int u2 = eit.sourceInt();
 				int u1 = core2[u2];
-				if (u1 != None) {
-					if (visit[u1] != visitIdx)
-						return false;
-					int e1 = visitData[u1];
+				if (u1 < 0)
+					continue;
+				visit[u2] = visitIdx;
+				visitData[u2] = e2;
+				edgeCount++;
+			}
+			for (IEdgeIter eit = g1.inEdges(v1).iterator(); eit.hasNext();) {
+				int e1 = eit.nextInt();
+				int u1 = eit.sourceInt();
+				int u2 = core1[u1];
+				if (u2 < 0)
+					continue;
+				if (visit[u2] == visitIdx) {
+					int e2 = visitData[u2];
 					if (!canMatchEdges(e1, e2))
 						return false;
+					edgeCount--;
+
+				} else if (inducedSubGraph) {
+					/* there is no edge (u2,v2) matching e1 */
+					return false;
 				}
 			}
+			if (edgeCount != 0)
+				/* there are some edges connecting v2 in g2 without match in g1 */
+				return false;
 
 			return true;
 		}
 
 		private boolean isFeasibleCurrentState() {
-			if (stateT1OutSize[stateDepth] != stateT2OutSize[stateDepth])
-				return false;
-			if (stateT1InSize[stateDepth] != stateT2InSize[stateDepth])
-				return false;
+			if (subGraph) {
+				if (stateT1OutSize[stateDepth] < stateT2OutSize[stateDepth])
+					return false;
+				if (stateT1InSize[stateDepth] < stateT2InSize[stateDepth])
+					return false;
+			} else {
+				if (stateT1OutSize[stateDepth] != stateT2OutSize[stateDepth])
+					return false;
+				if (stateT1InSize[stateDepth] != stateT2InSize[stateDepth])
+					return false;
+			}
 			return true;
 		}
 
 		private void updateState(int v1, int v2) {
 			final int depth = stateDepth - 1;
-			// assert range(n).allMatch(v -> out1[v] < depth);
-			// assert range(n).allMatch(v -> in1[v] < depth);
-			// assert range(n).allMatch(v -> out2[v] < depth);
-			// assert range(n).allMatch(v -> in2[v] < depth);
 			int t1OutSize = stateT1OutSize[depth];
 			int t2OutSize = stateT2OutSize[depth];
 			int t1InSize = stateT1InSize[depth];
@@ -444,42 +454,13 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 				}
 			}
 
-			// int[] t1Out = range(n)
-			// .filter(v -> core1[v] != None)
-			// .flatMap(v -> g1.outEdges(v).intStream().map(g1::edgeTarget))
-			// .filter(v -> core1[v] == None)
-			// .distinct()
-			// .toArray();
-			// int[] t1In = range(n)
-			// .filter(v -> core1[v] != None)
-			// .flatMap(v -> g1.inEdges(v).intStream().map(g1::edgeSource))
-			// .filter(v -> core1[v] == None)
-			// .distinct()
-			// .toArray();
-			// int[] t2Out = range(n)
-			// .filter(v -> core2[v] != None)
-			// .flatMap(v -> g2.outEdges(v).intStream().map(g2::edgeTarget))
-			// .filter(v -> core2[v] == None)
-			// .distinct()
-			// .toArray();
-			// int[] t2In = range(n)
-			// .filter(v -> core2[v] != None)
-			// .flatMap(v -> g2.inEdges(v).intStream().map(g2::edgeSource))
-			// .filter(v -> core2[v] == None)
-			// .distinct()
-			// .toArray();
-			// assert t1OutSize == t1Out.length;
-			// assert t1InSize == t1In.length;
-			// assert t2OutSize == t2Out.length;
-			// assert t2InSize == t2In.length;
-
 			newState(v1, v2, t1OutSize, t2OutSize, t1InSize, t2InSize);
 		}
 
 		private void popLastState() {
 			final int prevV1 = statePrevV1[stateDepth];
 			final int prevV2 = statePrevV2[stateDepth];
-			if (prevV1 != None) {
+			if (prevV1 >= 0) {
 				final int prevDepth = stateDepth - 1;
 				for (IEdgeIter eit = g1.outEdges(prevV1).iterator(); eit.hasNext();) {
 					eit.nextInt();
@@ -516,11 +497,6 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 				core1[prevV1] = None;
 				core2[prevV2] = None;
 			}
-
-			// assert range(n).allMatch(v -> out1[v] < prevDepth);
-			// assert range(n).allMatch(v -> in1[v] < prevDepth);
-			// assert range(n).allMatch(v -> out2[v] < prevDepth);
-			// assert range(n).allMatch(v -> in2[v] < prevDepth);
 			stateDepth--;
 		}
 	}
@@ -533,15 +509,16 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		private final int[] stateT1OutSize;
 		private final int[] stateT2OutSize;
 
-		IsomorphismIterUndirected(IndexGraph g1, IndexGraph g2, IntBinaryOperator vertexMatcher,
+		IsomorphismIterUndirected(IndexGraph g1, IndexGraph g2, IsomorphismType type, IntBinaryOperator vertexMatcher,
 				IntBinaryOperator edgeMatcher) {
-			super(g1, g2, vertexMatcher, edgeMatcher);
+			super(g1, g2, type, vertexMatcher, edgeMatcher);
 
-			out1 = new int[n];
-			out2 = new int[n];
+			out1 = new int[n1];
+			out2 = new int[n2];
 
-			stateT1OutSize = new int[n + 1];
-			stateT2OutSize = new int[n + 1];
+			final int maxStateDepth = n2 + 1;
+			stateT1OutSize = new int[maxStateDepth];
+			stateT2OutSize = new int[maxStateDepth];
 			newState(None, None, 0, 0);
 
 			advance();
@@ -553,25 +530,30 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 			stateT1OutSize[stateDepth] = t1OutSize;
 			stateT2OutSize[stateDepth] = t2OutSize;
 
-			assert t1OutSize < n;
-			assert t2OutSize < n;
+			assert t1OutSize < n1;
+			assert t2OutSize < n2;
 
 			IntIterator nextV1Iter;
 			int nextV2;
-			if ((t1OutSize == 0 ^ t2OutSize == 0)) {
+			/*
+			 * "In case that only one of the in-terminal sets or only one of the out-terminal sets is empty, it can be
+			 * demonstrated that the state s cannot be part of a matching, and it is not further explored." Although
+			 * this is stated in the paper, this does not seem to be correct for non-full isomorphism.
+			 */
+			if (type == IsomorphismType.Full && (t1OutSize == 0 ^ t2OutSize == 0)) {
 				nextV1Iter = IntIterators.EMPTY_ITERATOR;
 				nextV2 = None;
 
 			} else {
-				if (t1OutSize != 0) {
+				if (t1OutSize != 0 && t2OutSize != 0) {
 					/* P(s)=T^{out}_1 (s) \times \{\min T^{out}_2(s)\} */
-					nextV1Iter = IterTools.filter(range(n).iterator(), u -> core1[u] == None && out1[u] > 0);
-					nextV2 = IterTools.filter(range(n).iterator(), u -> core2[u] == None && out2[u] > 0).nextInt();
+					nextV1Iter = IterTools.filter(range(n1).iterator(), u1 -> core1[u1] < 0 && out1[u1] > 0);
+					nextV2 = IterTools.filter(range(n2).iterator(), u2 -> core2[u2] < 0 && out2[u2] > 0).nextInt();
 
 				} else {
 					/* P(s)=(N_1 - M_1(s)) \times \{\min (N_2 - M_2)\} */
-					nextV1Iter = IterTools.filter(range(n).iterator(), u -> core1[u] == None);
-					nextV2 = IterTools.filter(range(n).iterator(), u -> core2[u] == None).nextInt();
+					nextV1Iter = IterTools.filter(range(n1).iterator(), u1 -> core1[u1] < 0);
+					nextV2 = IterTools.filter(range(n2).iterator(), u2 -> core2[u2] < 0).nextInt();
 				}
 				assert nextV1Iter.hasNext();
 			}
@@ -582,59 +564,19 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		@Override
 		void advance() {
 			dfs: while (stateDepth > 0) {
-				// IntList mapped1 = new IntArrayList(range(n).filter(u -> core1[u] != None).iterator());
-				// IntList range1 = new IntArrayList(mapped1.intStream().map(u -> core1[u]).iterator());
-				// IntList mapped2 = new IntArrayList(range(n).filter(u -> core2[u] != None).iterator());
-				// IntList range2 = new IntArrayList(mapped2.intStream().map(u -> core2[u]).iterator());
-				// assert mapped1.size() == new IntOpenHashSet(mapped1).size();
-				// assert mapped2.size() == new IntOpenHashSet(mapped2).size();
-				// assert range1.size() == new IntOpenHashSet(range1).size();
-				// assert range2.size() == new IntOpenHashSet(range2).size();
-				// assert new IntOpenHashSet(mapped1).equals(new IntOpenHashSet(range2));
-				// assert new IntOpenHashSet(mapped2).equals(new IntOpenHashSet(range1));
-
-				// int[] t1Out = range(n)
-				// .filter(v -> core1[v] != None)
-				// .flatMap(v -> g1.outEdges(v).intStream().map(g1::edgeTarget))
-				// .filter(v -> core1[v] == None)
-				// .distinct()
-				// .toArray();
-				// int[] t1In = range(n)
-				// .filter(v -> core1[v] != None)
-				// .flatMap(v -> g1.inEdges(v).intStream().map(g1::edgeSource))
-				// .filter(v -> core1[v] == None)
-				// .distinct()
-				// .toArray();
-				// int[] t2Out = range(n)
-				// .filter(v -> core2[v] != None)
-				// .flatMap(v -> g2.outEdges(v).intStream().map(g2::edgeTarget))
-				// .filter(v -> core2[v] == None)
-				// .distinct()
-				// .toArray();
-				// int[] t2In = range(n)
-				// .filter(v -> core2[v] != None)
-				// .flatMap(v -> g2.inEdges(v).intStream().map(g2::edgeSource))
-				// .filter(v -> core2[v] == None)
-				// .distinct()
-				// .toArray();
-				// assert state.t1OutSize == t1Out.length;
-				// assert state.t1InSize == t1In.length;
-				// assert state.t2OutSize == t2Out.length;
-				// assert state.t2InSize == t2In.length;
-
 				final int v2 = stateNextV2[stateDepth];
 				for (IntIterator v1Iter = stateNextV1Iter[stateDepth]; v1Iter.hasNext();) {
 					final int v1 = v1Iter.nextInt();
 					if (!isFeasibleMatchVertices(v1, v2))
 						continue;
 
-					/* match v1 to v2 and update state */
-					if (stateDepth == n) {
+					if (stateDepth == n2) {
 						/* found a valid full matching */
 						nextMapping = core1.clone();
 						nextMapping[v1] = v2;
 						return;
 					}
+					/* match v1 to v2 and update state */
 					core1[v1] = v2;
 					core2[v2] = v1;
 					stateDepth++;
@@ -657,47 +599,60 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 				return false;
 
 			/*
-			 * check that out edges connecting v1 and other mapped vertices of g1 can be mapped to out edges connecting
-			 * v2 and other mapped vertices of g2
+			 * check that out edges connecting v2 and other mapped vertices of g2 can be mapped to out edges connecting
+			 * v1 and other mapped vertices of g1
 			 */
 			int visitIdx = nextVisitIdx++;
-			for (IEdgeIter eit = g1.outEdges(v1).iterator(); eit.hasNext();) {
-				int e1 = eit.nextInt();
-				int w1 = eit.targetInt();
-				int w2 = core1[w1];
-				if (w2 != None || v1 == w1) {
-					visit[w1] = visitIdx;
-					visitData[w1] = e1;
-				}
-			}
+			int edgeCount = 0;
 			for (IEdgeIter eit = g2.outEdges(v2).iterator(); eit.hasNext();) {
 				int e2 = eit.nextInt();
 				int w2 = eit.targetInt();
 				int w1 = core2[w2];
-				if (w1 != None || v2 == w2) {
-					if (v2 == w2)
-						w1 = v1;
-					if (visit[w1] != visitIdx)
-						return false;
-					int e1 = visitData[w1];
+				if (w1 < 0 && v2 != w2)
+					continue;
+				visit[w2] = visitIdx;
+				visitData[w2] = e2;
+				edgeCount++;
+			}
+			for (IEdgeIter eit = g1.outEdges(v1).iterator(); eit.hasNext();) {
+				int e1 = eit.nextInt();
+				int w1 = eit.targetInt();
+				int w2 = core1[w1];
+				if (w2 < 0 && v1 != w1)
+					continue;
+				if (v1 == w1)
+					w2 = v2;
+				if (visit[w2] == visitIdx) {
+					int e2 = visitData[w2];
 					if (!canMatchEdges(e1, e2))
 						return false;
+					edgeCount--;
+
+				} else if (inducedSubGraph) {
+					/* there is no edge (v2,w2) matching e1 */
+					return false;
 				}
 			}
+			if (edgeCount != 0)
+				/* there are some edges connecting v2 in g2 without match in g1 */
+				return false;
 
 			return true;
 		}
 
 		private boolean isFeasibleCurrentState() {
-			if (stateT1OutSize[stateDepth] != stateT2OutSize[stateDepth])
-				return false;
+			if (subGraph) {
+				if (stateT1OutSize[stateDepth] < stateT2OutSize[stateDepth])
+					return false;
+			} else {
+				if (stateT1OutSize[stateDepth] != stateT2OutSize[stateDepth])
+					return false;
+			}
 			return true;
 		}
 
 		private void updateState(int v1, int v2) {
 			final int depth = stateDepth - 1;
-			// assert range(n).allMatch(v -> out1[v] < depth);
-			// assert range(n).allMatch(v -> out2[v] < depth);
 			int t1OutSize = stateT1OutSize[depth];
 			int t2OutSize = stateT2OutSize[depth];
 			if (out1[v1] == 0) {
@@ -727,28 +682,13 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 				}
 			}
 
-			// int[] t1Out = range(n)
-			// .filter(v -> core1[v] != None)
-			// .flatMap(v -> g1.outEdges(v).intStream().map(g1::edgeTarget))
-			// .filter(v -> core1[v] == None)
-			// .distinct()
-			// .toArray();
-			// int[] t2Out = range(n)
-			// .filter(v -> core2[v] != None)
-			// .flatMap(v -> g2.outEdges(v).intStream().map(g2::edgeTarget))
-			// .filter(v -> core2[v] == None)
-			// .distinct()
-			// .toArray();
-			// assert t1OutSize == t1Out.length;
-			// assert t2OutSize == t2Out.length;
-
 			newState(v1, v2, t1OutSize, t2OutSize);
 		}
 
 		private void popLastState() {
 			final int prevV1 = statePrevV1[stateDepth];
 			final int prevV2 = statePrevV2[stateDepth];
-			if (prevV1 != None) {
+			if (prevV1 >= 0) {
 				final int prevDepth = stateDepth - 1;
 				for (IEdgeIter eit = g1.outEdges(prevV1).iterator(); eit.hasNext();) {
 					eit.nextInt();
@@ -770,8 +710,6 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 				core2[prevV2] = None;
 			}
 
-			// assert range(n).allMatch(v -> out1[v] < prevDepth);
-			// assert range(n).allMatch(v -> out2[v] < prevDepth);
 			stateDepth--;
 		}
 

@@ -34,7 +34,7 @@ public interface IsomorphismIMapping extends IsomorphismMapping<Integer, Integer
 	 * Map a vertex from the first graph to a vertex of the second graph.
 	 *
 	 * @param  vertex                the vertex to map
-	 * @return                       the mapped vertex
+	 * @return                       the mapped vertex, or {@code -1} if {@code v1} is not mapped
 	 * @throws NoSuchVertexException if the vertex does not exist in the first graph
 	 */
 	int mapVertex(int vertex);
@@ -47,14 +47,15 @@ public interface IsomorphismIMapping extends IsomorphismMapping<Integer, Integer
 	@Deprecated
 	@Override
 	default Integer mapVertex(Integer vertex) {
-		return Integer.valueOf(mapVertex(vertex.intValue()));
+		int v2 = mapVertex(vertex.intValue());
+		return v2 < 0 ? null : Integer.valueOf(v2);
 	}
 
 	/**
 	 * Map an edge from the first graph to an edge of the second graph.
 	 *
 	 * @param  edge                the edge to map
-	 * @return                     the mapped edge
+	 * @return                     the mapped edge, or {@code -1} if {@code e1} is not mapped
 	 * @throws NoSuchEdgeException if the edge does not exist in the first graph
 	 */
 	int mapEdge(int edge);
@@ -67,9 +68,16 @@ public interface IsomorphismIMapping extends IsomorphismMapping<Integer, Integer
 	@Deprecated
 	@Override
 	default Integer mapEdge(Integer edge) {
-		return Integer.valueOf(mapEdge(edge.intValue()));
+		int e2 = mapEdge(edge.intValue());
+		return e2 < 0 ? null : Integer.valueOf(e2);
 	}
 
 	@Override
 	IsomorphismIMapping inverse();
+
+	@Override
+	IntGraph sourceGraph();
+
+	@Override
+	IntGraph targetGraph();
 }

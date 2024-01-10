@@ -20,6 +20,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
@@ -44,6 +46,10 @@ public class Permutations {
 	public static Iterable<IntList> of(IntCollection l) {
 		Objects.requireNonNull(l);
 		return () -> new PermutationsIterInt(l);
+	}
+
+	public static Stream<IntList> stream(IntCollection l) {
+		return StreamSupport.stream(Permutations.of(l).spliterator(), false);
 	}
 
 	private static class PermutationsIter<T> implements Iterator<List<T>> {

@@ -18,6 +18,8 @@ package com.jgalgo.internal.util;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -40,6 +42,10 @@ public class SubSets {
 	public static Iterable<IntList> of(IntCollection set, int k) {
 		checkSubsetsSize(set, k);
 		return () -> new SubSetsIterInt(set, k);
+	}
+
+	public static Stream<IntList> stream(IntCollection set, int k) {
+		return StreamSupport.stream(SubSets.of(set, k).spliterator(), false);
 	}
 
 	private static void checkSubsetsSize(Collection<?> set, int k) {
