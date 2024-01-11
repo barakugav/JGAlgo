@@ -348,7 +348,7 @@ public class JGraphTAdapterTest {
 			JGraphTAdapter<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 			g.setVertexSupplier(new AtomicInteger(0)::getAndIncrement);
 			assertGraph(gOrig, g);
-			for (int v = 0; v < g.vertexSet().size(); v++) {
+			for (int v : range(g.vertexSet().size())) {
 				boolean expectedAdded = !gOrig.vertices().contains(v);
 				int verticesNumBefore = g.vertexSet().size();
 				if (expectedAdded) {
@@ -460,7 +460,7 @@ public class JGraphTAdapterTest {
 				com.jgalgo.graph.Graph<Integer, Integer> gOrig = createGraph(directed, true, parallelEdges);
 				Graph<Integer, Integer> g = new JGraphTAdapter<>(gOrig);
 				assertGraph(gOrig, g);
-				for (int i = 0; i < 100; i++) {
+				for (int i : range(100)) {
 					if (i % 5 == 0) {
 						Integer e = nonExistingEdge(gOrig);
 						Pair<Integer, Integer> uv = validEndpointsToAdd(gOrig, rand);
@@ -520,7 +520,7 @@ public class JGraphTAdapterTest {
 				g.setEdgeSupplier(edgeSupplier);
 				assertEquals(edgeSupplier, g.getEdgeSupplier());
 				assertGraph(gOrig, g);
-				for (int i = 0; i < 100; i++) {
+				for (int i : range(100)) {
 					int nextEdge = edgeSupplierNext.get();
 
 					if (i % 5 == 0) {
@@ -626,7 +626,7 @@ public class JGraphTAdapterTest {
 			assertGraph(gOrig, g);
 
 			gOrig = gOrig.copy(); /* copy a snapshot of the graph */
-			for (int i = 0; i < 100; i++) {
+			for (int i : range(100)) {
 				if (i % 4 == 0) {
 					Integer eEndpoints = Graphs.randEdge(gOrig, rand);
 					Integer u = g.getEdgeSource(eEndpoints);
@@ -703,7 +703,7 @@ public class JGraphTAdapterTest {
 			assertGraph(gOrig, g);
 
 			gOrig = gOrig.copy(); /* copy a snapshot of the graph */
-			for (int i = 0; i < 100; i++) {
+			for (int i : range(100)) {
 				if (gOrig.edges().isEmpty())
 					break;
 				if (i % 3 == 0) {

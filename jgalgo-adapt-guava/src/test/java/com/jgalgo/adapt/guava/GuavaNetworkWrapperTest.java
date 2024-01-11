@@ -1019,7 +1019,7 @@ public class GuavaNetworkWrapperTest {
 
 			IntSet vertices = g.indexGraph().vertices();
 			assertEquals(range(n), vertices);
-			for (int i = -15; i < n + 15; i++)
+			for (int i : range(-15, n + 15))
 				assertEquals(0 <= i && i < n, vertices.contains(i));
 			for (int i = 0; i < 10; i++) {
 				IntList l = new IntArrayList();
@@ -1045,7 +1045,7 @@ public class GuavaNetworkWrapperTest {
 
 			IntSet edges = g.indexGraph().edges();
 			assertEquals(range(m), edges);
-			for (int i = -15; i < m + 15; i++)
+			for (int i : range(-15, m + 15))
 				assertEquals(0 <= i && i < m, edges.contains(i));
 			for (int i = 0; i < 10; i++) {
 				IntList l = new IntArrayList();
@@ -1606,7 +1606,7 @@ public class GuavaNetworkWrapperTest {
 
 			final int n = g.vertices().size();
 			Set<Integer> idsSet = new IntOpenHashSet();
-			for (int idx = -15; idx < n + 15; idx++) {
+			for (int idx : range(-15, n + 15)) {
 				if (0 <= idx && idx < n) {
 					Integer id1 = viMap.indexToId(idx);
 					Integer id2 = viMap.indexToIdIfExist(idx);
@@ -1651,7 +1651,7 @@ public class GuavaNetworkWrapperTest {
 
 			final int m = g.edges().size();
 			Set<Integer> idsSet = new IntOpenHashSet();
-			for (int idx = -15; idx < m + 15; idx++) {
+			for (int idx : range(-15, m + 15)) {
 				if (0 <= idx && idx < m) {
 					Integer id1 = eiMap.indexToId(idx);
 					Integer id2 = eiMap.indexToIdIfExist(idx);
@@ -1681,12 +1681,12 @@ public class GuavaNetworkWrapperTest {
 		Set<Integer> edgesIds = new IntOpenHashSet();
 		IntSet verticesIndices = new IntOpenHashSet();
 		IntSet edgesIndices = new IntOpenHashSet();
-		for (int vIdx = 0; vIdx < n; vIdx++) {
+		for (int vIdx : range(n)) {
 			Integer v = viMap.indexToId(vIdx);
 			boolean duplicate = !verticesIds.add(v);
 			assertFalse(duplicate);
 		}
-		for (int eIdx = 0; eIdx < m; eIdx++) {
+		for (int eIdx : range(m)) {
 			Integer e = eiMap.indexToId(eIdx);
 			boolean duplicate = !edgesIds.add(e);
 			assertFalse(duplicate);
@@ -1705,7 +1705,7 @@ public class GuavaNetworkWrapperTest {
 		assertEquals(g.edges(), edgesIds);
 		assertEquals(range(n), verticesIndices);
 		assertEquals(range(m), edgesIndices);
-		for (int vIdx = -15; vIdx < n + 15; vIdx++) {
+		for (int vIdx : range(-15, n + 15)) {
 			Integer v = viMap.indexToIdIfExist(vIdx);
 			if (vIdx < 0 || vIdx >= n) {
 				assertEquals(null, v);
@@ -1713,7 +1713,7 @@ public class GuavaNetworkWrapperTest {
 				assertEquals(vIdx, viMap.idToIndex(v));
 			}
 		}
-		for (int eIdx = -15; eIdx < m + 15; eIdx++) {
+		for (int eIdx : range(-15, m + 15)) {
 			Integer e = eiMap.indexToIdIfExist(eIdx);
 			if (eIdx < 0 || eIdx >= m) {
 				assertEquals(null, e);
