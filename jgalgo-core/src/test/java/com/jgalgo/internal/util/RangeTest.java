@@ -17,14 +17,17 @@ package com.jgalgo.internal.util;
 
 import static com.jgalgo.internal.util.Range.range;
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
@@ -33,6 +36,7 @@ import java.util.function.IntToLongFunction;
 import java.util.function.IntUnaryOperator;
 import org.junit.jupiter.api.Test;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
@@ -100,6 +104,42 @@ public class RangeTest extends TestBase {
 			assertEquals(expected, actual);
 		}
 		assertThrows(IllegalArgumentException.class, () -> range(5).iterator().skip(-1));
+	}
+
+	@Test
+	public void iteratorBidirectional() {
+		final Random rand = new Random(0x944d5803c3b97713L);
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int from = rand.nextInt(100);
+			final int to = from + 1 + rand.nextInt(100);
+			Range range = range(from, to);
+
+			int fromElement = from - 10 + rand.nextInt(to - from + 20);
+			IntBidirectionalIterator iter = range.iterator(fromElement);
+			assertEqualsBool(fromElement <= range.lastInt(), iter.hasNext());
+			assertEqualsBool(fromElement >= range.firstInt(), iter.hasPrevious());
+
+			int expectedNext = Math.max(from, Math.min(fromElement + 1, to));
+			for (int i = 0; i < 100; i++) {
+				if (rand.nextBoolean()) {
+					if (expectedNext < to) {
+						assertTrue(iter.hasNext());
+						assertEquals(expectedNext, iter.nextInt());
+						expectedNext++;
+					} else {
+						assertFalse(iter.hasNext());
+					}
+				} else {
+					if (expectedNext >= from + 1) {
+						assertTrue(iter.hasPrevious());
+						assertEquals(expectedNext - 1, iter.previousInt());
+						expectedNext--;
+					} else {
+						assertFalse(iter.hasPrevious());
+					}
+				}
+			}
+		}
 	}
 
 	@Test
@@ -382,6 +422,104 @@ public class RangeTest extends TestBase {
 				assertEqualsBool(list.intStream().allMatch(allMatchOp), range.allMatch(allMatchOp));
 			}
 		}
+	}
+
+	@Test
+	public void first() {
+		final Random rand = new Random(0xc413697d06d8aa77L);
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int to = 1 + rand.nextInt(100);
+			Range range = range(to);
+			assertEquals(0, range.firstInt());
+		}
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int from = rand.nextInt(100);
+			final int to = from + 1 + rand.nextInt(100);
+			Range range = range(from, to);
+			assertEquals(from, range.firstInt());
+		}
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int from = rand.nextInt(100);
+			final int to = from;
+			Range range = range(from, to);
+			assertThrows(NoSuchElementException.class, () -> range.firstInt());
+		}
+	}
+
+	@Test
+	public void last() {
+		final Random rand = new Random(0x25a8eed201f004d2L);
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int to = 1 + rand.nextInt(100);
+			Range range = range(to);
+			assertEquals(to - 1, range.lastInt());
+		}
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int from = rand.nextInt(100);
+			final int to = from + 1 + rand.nextInt(100);
+			Range range = range(from, to);
+			assertEquals(to - 1, range.lastInt());
+		}
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int from = rand.nextInt(100);
+			final int to = from;
+			Range range = range(from, to);
+			assertThrows(NoSuchElementException.class, () -> range.lastInt());
+		}
+	}
+
+	@Test
+	public void subSet() {
+		final Random rand = new Random(0x8c474ec55ead5335L);
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int from = rand.nextInt(100);
+			final int to = from + rand.nextInt(100);
+			Range range = range(from, to);
+
+			int fromElement0 = from - 10 + rand.nextInt(to - from + 20);
+			int toElement0 = from - 10 + rand.nextInt(to - from + 20);
+			if (fromElement0 > toElement0) {
+				int tmp = fromElement0;
+				fromElement0 = toElement0;
+				toElement0 = tmp;
+			}
+			int fromElement = fromElement0;
+			int toElement = toElement0;
+			assertEquals(range.filter(x -> fromElement <= x && x < toElement).boxed().collect(toSet()),
+					range.subSet(fromElement, toElement));
+		}
+		assertThrows(IllegalArgumentException.class, () -> range(10).subSet(8, 5));
+	}
+
+	@Test
+	public void headSet() {
+		final Random rand = new Random(0x8c474ec55ead5335L);
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int from = rand.nextInt(100);
+			final int to = from + rand.nextInt(100);
+			Range range = range(from, to);
+
+			int toElement = from - 10 + rand.nextInt(to - from + 20);
+			assertEquals(range.filter(x -> x < toElement).boxed().collect(toSet()), range.headSet(toElement));
+		}
+	}
+
+	@Test
+	public void tailSet() {
+		final Random rand = new Random(0x8c474ec55ead5335L);
+		for (int repeat = 0; repeat < 25; repeat++) {
+			final int from = rand.nextInt(100);
+			final int to = from + rand.nextInt(100);
+			Range range = range(from, to);
+
+			int fromElement = from - 10 + rand.nextInt(to - from + 20);
+			assertEquals(range.filter(x -> fromElement <= x).boxed().collect(toSet()), range.tailSet(fromElement));
+		}
+	}
+
+	@Test
+	public void comparator() {
+		assertNull(range(10).comparator());
 	}
 
 	@Test

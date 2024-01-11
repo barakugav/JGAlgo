@@ -34,6 +34,7 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.JGAlgoConfigImpl;
 import com.jgalgo.internal.ds.Heap;
 import com.jgalgo.internal.ds.ReferenceableHeap;
+import it.unimi.dsi.fastutil.BidirectionalIterator;
 import it.unimi.dsi.fastutil.doubles.DoubleComparator;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntComparator;
@@ -333,6 +334,13 @@ public class Assertions {
 	}
 
 	public static void hasPrevious(ListIterator<?> it) {
+		if (JGAlgoConfigImpl.AssertionsIterNotEmpty) {
+			if (!it.hasPrevious())
+				throw new NoSuchElementException(ERR_NO_PREVIOUS);
+		}
+	}
+
+	public static void hasPrevious(BidirectionalIterator<?> it) {
 		if (JGAlgoConfigImpl.AssertionsIterNotEmpty) {
 			if (!it.hasPrevious())
 				throw new NoSuchElementException(ERR_NO_PREVIOUS);

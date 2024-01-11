@@ -15,6 +15,7 @@
  */
 package com.jgalgo.internal.util;
 
+import java.util.NoSuchElementException;
 import java.util.Spliterator;
 import java.util.function.IntConsumer;
 import java.util.function.IntFunction;
@@ -27,7 +28,8 @@ import java.util.stream.IntStream;
 import java.util.stream.LongStream;
 import java.util.stream.Stream;
 import it.unimi.dsi.fastutil.ints.AbstractIntList;
-import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.AbstractIntSortedSet;
+import it.unimi.dsi.fastutil.ints.IntBidirectionalIterator;
 import it.unimi.dsi.fastutil.ints.IntComparator;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
@@ -35,7 +37,7 @@ import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSpliterator;
 
-public final class Range extends AbstractIntSet {
+public final class Range extends AbstractIntSortedSet {
 
 	private final int from, to;
 
@@ -65,8 +67,57 @@ public final class Range extends AbstractIntSet {
 	}
 
 	@Override
-	public IntIterator iterator() {
+	public IntBidirectionalIterator iterator() {
 		return new Iter(from, to);
+	}
+
+	@Override
+	public IntBidirectionalIterator iterator(int fromElement) {
+		int begin;
+		if (fromElement < from) {
+			begin = from;
+		} else if (fromElement >= to) {
+			begin = to;
+		} else {
+			begin = fromElement + 1;
+		}
+		return new Iter(from, to, begin);
+	}
+
+	@Override
+	public Range subSet(int fromElement, int toElement) {
+		if (fromElement > toElement)
+			throw new IllegalArgumentException("fromElement(" + fromElement + ") > toElement(" + toElement + ")");
+		return new Range(Math.max(from, fromElement), Math.min(toElement, to));
+	}
+
+	@Override
+	public Range headSet(int toElement) {
+		return new Range(from, Math.min(toElement, to));
+	}
+
+	@Override
+	public Range tailSet(int fromElement) {
+		return new Range(Math.max(from, fromElement), to);
+	}
+
+	@Override
+	public IntComparator comparator() {
+		return null;
+	}
+
+	@Override
+	public int firstInt() {
+		if (isEmpty())
+			throw new NoSuchElementException();
+		return from;
+	}
+
+	@Override
+	public int lastInt() {
+		if (isEmpty())
+			throw new NoSuchElementException();
+		return to - 1;
 	}
 
 	@Override
@@ -137,15 +188,21 @@ public final class Range extends AbstractIntSet {
 		return new SplitIter(from, to);
 	}
 
-	private static class Iter implements IntIterator {
+	private static class Iter implements IntBidirectionalIterator {
 
+		final int from, to;
 		int x;
-		private final int to;
+
+		Iter(int from, int to, int startIdx) {
+			assert from <= to;
+			assert from <= startIdx && startIdx <= to;
+			this.from = from;
+			this.to = to;
+			this.x = startIdx;
+		}
 
 		Iter(int from, int to) {
-			assert from <= to;
-			this.x = from;
-			this.to = to;
+			this(from, to, from);
 		}
 
 		@Override
@@ -157,6 +214,17 @@ public final class Range extends AbstractIntSet {
 		public int nextInt() {
 			Assertions.hasNext(this);
 			return x++;
+		}
+
+		@Override
+		public boolean hasPrevious() {
+			return from < x;
+		}
+
+		@Override
+		public int previousInt() {
+			Assertions.hasPrevious(this);
+			return --x;
 		}
 
 		@Override
@@ -321,27 +389,13 @@ public final class Range extends AbstractIntSet {
 
 	private static class ListIter extends Iter implements IntListIterator {
 
-		private final int from;
-
 		ListIter(int from, int to, int startVal) {
-			super(startVal, to);
-			this.from = from;
+			super(from, to, startVal);
 		}
 
 		@Override
 		public int nextIndex() {
 			return x - from;
-		}
-
-		@Override
-		public boolean hasPrevious() {
-			return from < x;
-		}
-
-		@Override
-		public int previousInt() {
-			Assertions.hasPrevious(this);
-			return --x;
 		}
 
 		@Override
