@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -58,14 +59,14 @@ class BINARY_SEARCH_TREE_TEST_UTILS extends TestUtils {
 					0, compare, seedGen.nextSeed());
 
 			PRIMITIVE_KEY_TYPE[] elements = new PRIMITIVE_KEY_TYPE[n / 2];
-			for (int i = 0; i < elements.length; i++)
+			for (int i : range(elements.length))
 				elements[i] = randKey(rand);
 			REFERENCEABLE_HEAP_TEST_UTILS.testHeap(tracker, n, TestMode.InsertFirst,
 					elements, compare, seedGen.nextSeed());
 
 			for (int repeat = 0; repeat < 4; repeat++) {
 				elements = new PRIMITIVE_KEY_TYPE[n / 2];
-				for (int i = 0; i < elements.length; i++)
+				for (int i : range(elements.length))
 					elements[i] = randKey(rand);
 				REFERENCEABLE_HEAP_TEST_UTILS.testHeap(tracker, n, TestMode.Normal,
 						elements, compare, seedGen.nextSeed());
@@ -236,13 +237,13 @@ class BINARY_SEARCH_TREE_TEST_UTILS extends TestUtils {
 		Random rand = new Random(seedGen.nextSeed());
 		int[] a0 = randPermutation(n, seedGen.nextSeed());
 		PRIMITIVE_KEY_TYPE[] a = new PRIMITIVE_KEY_TYPE[n];
-		for (int i = 0; i < n; i++)
+		for (int i : range(n))
 			a[i] = toKey(a0[i]);
 
 		BSTTracker tracker = new BSTTracker((BINARY_SEARCH_TREE KEY_VALUE_GENERIC) treeBuilder.build(PRIMITIVE_KEY_TYPE_REAL.class, PRIMITIVE_VALUE_TYPE_REAL.class, compare), 0,
 				compare, seedGen.nextSeed());
 
-		for (int i = 0; i < n; i++) {
+		for (int i : range(n)) {
 			PRIMITIVE_KEY_TYPE newElm = a[i];
 			debug.println("Insert(", newElm, ")");
 			HEAP_REFERENCE KEY_VALUE_GENERIC ref = tracker.tree().insert(newElm);
@@ -312,7 +313,7 @@ class BINARY_SEARCH_TREE_TEST_UTILS extends TestUtils {
 					heapTrackerIdGen.nextId(), compare, seedGen.nextSeed());
 
 			PRIMITIVE_KEY_TYPE[] elements = new PRIMITIVE_KEY_TYPE[16];
-			for (int j = 0; j < 16; j++)
+			for (int j : range(16))
 				elements[j] = randKey(rand, maxVal);
 			REFERENCEABLE_HEAP_TEST_UTILS.testHeap(tracker, 16, TestMode.InsertFirst, elements, compare, seedGen.nextSeed());
 			trees.add(tracker);
@@ -322,12 +323,12 @@ class BINARY_SEARCH_TREE_TEST_UTILS extends TestUtils {
 			if (trees.size() < 2)
 				return;
 			Set<BSTTracker> treesNext = new ObjectOpenHashSet<>();
-			List<BSTTracker> heapsSuffled = new ObjectArrayList<>(trees);
-			Collections.shuffle(heapsSuffled, new Random(seedGen.nextSeed()));
+			List<BSTTracker> heapsShuffled = new ObjectArrayList<>(trees);
+			Collections.shuffle(heapsShuffled, new Random(seedGen.nextSeed()));
 
-			for (int i = 0; i < heapsSuffled.size() / 2; i++) {
-				BSTTracker h1 = heapsSuffled.get(i * 2);
-				BSTTracker h2 = heapsSuffled.get(i * 2 + 1);
+			for (int i : range(heapsShuffled.size() / 2)) {
+				BSTTracker h1 = heapsShuffled.get(i * 2);
+				BSTTracker h2 = heapsShuffled.get(i * 2 + 1);
 				h1.tree().meld(h2.tree());
 				assertTrue(h2.tree().isEmpty());
 				h1.meld(h2);
@@ -364,7 +365,7 @@ class BINARY_SEARCH_TREE_TEST_UTILS extends TestUtils {
 			for (BSTTracker h : trees) {
 				int opsNum = 512 / trees.size();
 				PRIMITIVE_KEY_TYPE[] elements = new PRIMITIVE_KEY_TYPE[opsNum];
-				for (int i = 0; i < opsNum; i++)
+				for (int i : range(opsNum))
 					elements[i] = randKey(rand, maxVal);
 				REFERENCEABLE_HEAP_TEST_UTILS.testHeap(h, opsNum, TestMode.Normal, elements, compare, seedGen.nextSeed());
 			}

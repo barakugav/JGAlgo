@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 #if PRIMITIVE_KEY_TYPE_REAL == "Object"
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -148,7 +149,7 @@ public class BINOMIAL_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_V
 		if (pParent == null) {
 			/* Switched a root, fix roots array */
 			Node KEY_VALUE_GENERIC[] rs = roots;
-			for (int i = 0; i < rootsLen; i++) {
+			for (int i : range(rootsLen)) {
 				if (rs[i] == parent) {
 					rs[i] = child;
 					break;
@@ -197,7 +198,7 @@ public class BINOMIAL_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_V
 
 		Node KEY_VALUE_GENERIC[] rs = roots;
 		int rootIdx = -1;
-		for (int i = 0; i < rootsLen; i++) {
+		for (int i : range(rootsLen)) {
 			if (rs[i] == node) {
 				rs[i] = null;
 				rootIdx = i;
@@ -228,7 +229,7 @@ public class BINOMIAL_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_V
 		Node KEY_VALUE_GENERIC[] rs = roots;
 		int rslen = rootsLen;
 
-		for (int i = 0; i < rslen; i++) {
+		for (int i : range(rslen)) {
 			if (rs[i] != null) {
 				Trees.clear(rs[i], n -> {
 #if PRIMITIVE_KEY_TYPE_REAL == "Object"
@@ -325,7 +326,7 @@ public class BINOMIAL_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_V
 
 		Node KEY_VALUE_GENERIC carry = null;
 		if (c == null) {
-			for (int i = 0; i < rootsLen; i++) {
+			for (int i : range(rootsLen)) {
 				Node KEY_VALUE_GENERIC r1 = i < rs1len ? rs1[i] : null;
 				Node KEY_VALUE_GENERIC r2 = i < rs2len ? rs2[i] : null;
 
@@ -346,7 +347,7 @@ public class BINOMIAL_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_V
 				}
 			}
 		} else {
-			for (int i = 0; i < rootsLen; i++) {
+			for (int i : range(rootsLen)) {
 				Node KEY_VALUE_GENERIC r1 = i < rs1len ? rs1[i] : null;
 				Node KEY_VALUE_GENERIC r2 = i < rs2len ? rs2[i] : null;
 
@@ -399,11 +400,11 @@ public class BINOMIAL_HEAP KEY_VALUE_GENERIC implements REFERENCEABLE_HEAP KEY_V
 		Node KEY_VALUE_GENERIC min = null;
 
 		if (c == null) {
-			for (int i = 0; i < rsLen; i++)
+			for (int i : range(rsLen))
 				if (rs[i] != null && (min == null || COMPARE_KEY_DEFAULT_GE(min.key, rs[i].key)))
 					min = rs[i];
 		} else {
-			for (int i = 0; i < rsLen; i++)
+			for (int i : range(rsLen))
 				if (rs[i] != null && (min == null || c.compare(min.key, rs[i].key) > 0))
 					min = rs[i];
 		}

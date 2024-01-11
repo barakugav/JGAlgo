@@ -15,6 +15,7 @@
  */
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -146,7 +147,7 @@ public class REFERENCEABLE_HEAP_TEST_UTILS extends TestUtils {
 						seedGen.nextSeed());
 			} else {
 				PRIMITIVE_KEY_TYPE[] elements = new PRIMITIVE_KEY_TYPE[16];
-				for (int j = 0; j < 16; j++)
+				for (int j : range(16))
 					elements[j] = toKey(elm++);
 				testHeap(h, 16, TestMode.InsertFirst, elements, compare, seedGen.nextSeed());
 			}
@@ -165,7 +166,7 @@ public class REFERENCEABLE_HEAP_TEST_UTILS extends TestUtils {
 			List<ReferenceableHeapTracker> heapsShuffled = new ObjectArrayList<>(heaps);
 			Collections.shuffle(heapsShuffled, new Random(seedGen.nextSeed()));
 
-			for (int i = 0; i < heapsShuffled.size() / 2; i++) {
+			for (int i : range(heapsShuffled.size() / 2)) {
 				ReferenceableHeapTracker h1 = heapsShuffled.get(i * 2);
 				ReferenceableHeapTracker h2 = heapsShuffled.get(i * 2 + 1);
 
@@ -357,7 +358,7 @@ public class REFERENCEABLE_HEAP_TEST_UTILS extends TestUtils {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PRIMITIVE_KEY_TYPE[] elements = new PRIMITIVE_KEY_TYPE[n];
-		for (int i = 0; i < n; i++)
+		for (int i : range(n))
 			elements[i] = randKey(rand, elementsBound);
 		testHeap(tracker, m, mode, elements, compare, seedGen.nextSeed());
 	}

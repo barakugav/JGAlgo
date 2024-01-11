@@ -16,6 +16,7 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import FASTUTIL_PACKAGE.FASTUTIL_TYPEArrays;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -51,7 +52,7 @@ class WEIGHTS_IMPL {
 			WeightsImpl.checkSameSize(elements, orig.elements);
 			weights = Arrays.copyOf(weights, elements.size());
 			final int s = elements.size();
-			for (int i = 0; i < s; i++)
+			for (int i : range(s))
 				weights[reIndexMap.origToReIndexed(i)] = orig.weights[i];
 		}
 
