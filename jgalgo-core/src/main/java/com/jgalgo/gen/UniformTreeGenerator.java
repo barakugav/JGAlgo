@@ -274,7 +274,7 @@ public class UniformTreeGenerator<V, E> implements GraphGenerator<V, E> {
 
 		/* generate a random Prufer code of length n-2 */
 		int[] pruferCode = new int[n - 2];
-		for (int i = 0; i < n - 2; i++)
+		for (int i : range(n - 2))
 			pruferCode[i] = rand.nextInt(n);
 
 		/* 'decode' the Prufer code to a tree of size n */

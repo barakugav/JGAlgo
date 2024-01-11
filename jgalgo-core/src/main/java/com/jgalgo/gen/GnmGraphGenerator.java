@@ -15,6 +15,7 @@
  */
 package com.jgalgo.gen;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -420,7 +421,8 @@ public class GnmGraphGenerator<V, E> implements GraphGenerator<V, E> {
 				}
 			}
 
-			for (int i = 0, uIdx = 0; uIdx < n; uIdx++) {
+			int i = 0;
+			for (int uIdx : range(n)) {
 				V u = vertices.get(uIdx);
 				if (directed) {
 					for (int vIdx = 0; vIdx < uIdx; vIdx++, i++) {

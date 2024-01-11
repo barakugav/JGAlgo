@@ -15,6 +15,7 @@
  */
 package com.jgalgo.gen;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -285,17 +286,17 @@ public class CompleteGraphGenerator<V, E> implements GraphGenerator<V, E> {
 			m += n;
 
 		g.ensureEdgeCapacity(m);
-		for (int uIdx = 0; uIdx < n; uIdx++) {
+		for (int uIdx : range(n)) {
 			V u = vertices.get(uIdx);
 			if (directed) {
-				for (int vIdx = 0; vIdx < uIdx; vIdx++) {
+				for (int vIdx : range(uIdx)) {
 					V v = vertices.get(vIdx);
 					g.addEdge(u, v, edgeBuilder.build(g.edges()));
 				}
 			}
 			if (selfEdges)
 				g.addEdge(u, u, edgeBuilder.build(g.edges()));
-			for (int vIdx = uIdx + 1; vIdx < n; vIdx++) {
+			for (int vIdx : range(uIdx + 1, n)) {
 				V v = vertices.get(vIdx);
 				g.addEdge(u, v, edgeBuilder.build(g.edges()));
 			}

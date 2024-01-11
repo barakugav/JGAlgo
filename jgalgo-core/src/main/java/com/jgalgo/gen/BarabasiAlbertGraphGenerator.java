@@ -15,6 +15,7 @@
  */
 package com.jgalgo.gen;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -350,15 +351,15 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 		int edgeNum = 0;
 
 		/* start with a complete graph of size initCliqueSize */
-		for (int u = 0; u < initCliqueSize; u++) {
+		for (int u : range(initCliqueSize)) {
 			if (directed) {
-				for (int v = 0; v < u; v++) {
+				for (int v : range(u)) {
 					int e = edgeNum++;
 					endpoints[e * 2 + 0] = u;
 					endpoints[e * 2 + 1] = v;
 				}
 			}
-			for (int v = u + 1; v < initCliqueSize; v++) {
+			for (int v : range(u + 1, initCliqueSize)) {
 				int e = edgeNum++;
 				endpoints[e * 2 + 0] = u;
 				endpoints[e * 2 + 1] = v;
@@ -366,7 +367,7 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 		}
 
 		/* add n-initCliqueSize vertices, each with m edges */
-		for (int vNum = initCliqueSize; vNum < n; vNum++) {
+		for (int vNum : range(initCliqueSize, n)) {
 			final int edgeNumAtStart = edgeNum;
 			final int u = vNum;
 			for (int i = 0; i < edgesPerStep; i++) {
@@ -387,7 +388,7 @@ public class BarabasiAlbertGraphGenerator<V, E> implements GraphGenerator<V, E> 
 		}
 
 		g.ensureEdgeCapacity(edgeNum);
-		for (int eIdx = 0; eIdx < edgeNum; eIdx++) {
+		for (int eIdx : range(edgeNum)) {
 			V u = vertices.get(endpoints[eIdx * 2 + 0]);
 			V v = vertices.get(endpoints[eIdx * 2 + 1]);
 			g.addEdge(u, v, edgeBuilder.build(g.edges()));

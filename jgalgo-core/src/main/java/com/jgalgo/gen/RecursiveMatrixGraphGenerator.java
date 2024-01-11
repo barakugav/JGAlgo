@@ -15,6 +15,7 @@
  */
 package com.jgalgo.gen;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -431,8 +432,8 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 
 		g.ensureEdgeCapacity(m);
 		if (directed) {
-			for (int uIdx = 0; uIdx < n; uIdx++) {
-				for (int vIdx = 0; vIdx < n; vIdx++) {
+			for (int uIdx : range(n)) {
+				for (int vIdx : range(n)) {
 					V u = vertices.get(uIdx);
 					if (edges.get(uIdx * N + vIdx)) {
 						V v = vertices.get(vIdx);
@@ -441,9 +442,9 @@ public class RecursiveMatrixGraphGenerator<V, E> implements GraphGenerator<V, E>
 				}
 			}
 		} else {
-			for (int uIdx = 0; uIdx < n; uIdx++) {
+			for (int uIdx : range(n)) {
 				V u = vertices.get(uIdx);
-				for (int vIdx = uIdx; vIdx < n; vIdx++) {
+				for (int vIdx : range(uIdx, n)) {
 					if (edges.get(uIdx * N + vIdx)) {
 						V v = vertices.get(vIdx);
 						g.addEdge(u, v, edgeBuilder.build(g.edges()));
