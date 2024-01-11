@@ -18,6 +18,7 @@ package com.jgalgo.internal.ds;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Pointer based implementation for the Union Find data structure.
@@ -60,11 +61,26 @@ class UnionFindPtr implements UnionFind {
 
 	@Override
 	public int make() {
-		if (elements.length <= size)
-			elements = Arrays.copyOf(elements, size * 2);
+		ensureCapacity(size + 1);
 		int x = size++;
 		elements[x] = new Elm(x);
 		return x;
+	}
+
+	@Override
+	public IntSet makeMany(int count) {
+		if (count < 0)
+			throw new IllegalArgumentException("new elements count is negative: " + count);
+		ensureCapacity(size + count);
+		IntSet elms = range(size, size + count);
+		for (int x : elms)
+			elements[x] = new Elm(x);
+		return elms;
+	}
+
+	private void ensureCapacity(int capacity) {
+		if (elements.length < capacity)
+			elements = Arrays.copyOf(elements, Math.max(elements.length, capacity));
 	}
 
 	@Override

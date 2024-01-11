@@ -17,6 +17,7 @@
 package com.jgalgo.internal.ds;
 
 import com.jgalgo.alg.AlgorithmBuilderBase;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Data structure of a finite set of elements supporting union and find operations.
@@ -61,6 +62,14 @@ public interface UnionFind {
 	 * @return identifier of the new element
 	 */
 	int make();
+
+	/**
+	 * Create multiple elements, each in its singleton set.
+	 *
+	 * @param  count the number of elements to create
+	 * @return       the identifiers of the new elements
+	 */
+	IntSet makeMany(int count);
 
 	/**
 	 * Find the set of an element and get an arbitrary element from it.

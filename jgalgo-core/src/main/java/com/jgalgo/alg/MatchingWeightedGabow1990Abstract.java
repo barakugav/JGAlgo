@@ -263,8 +263,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 
 		void init(int n) {
 			uf.clear();
-			for (int i = 0; i < n; i++)
-				uf.make();
+			uf.makeMany(n);
 		}
 
 		void union(int u, int v) {

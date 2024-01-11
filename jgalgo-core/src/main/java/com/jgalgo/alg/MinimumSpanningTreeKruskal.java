@@ -86,8 +86,7 @@ class MinimumSpanningTreeKruskal implements MinimumSpanningTreeBase {
 
 		/* create union find data structure for each vertex */
 		UnionFind uf = unionFindBuilder.expectedSize(n).build();
-		for (int i = 0; i < n; i++)
-			uf.make();
+		uf.makeMany(n);
 
 		/* iterate over the edges and build the MST */
 		IntArrayList mst = new IntArrayList(n - 1);

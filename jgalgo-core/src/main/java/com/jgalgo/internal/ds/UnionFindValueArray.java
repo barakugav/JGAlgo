@@ -17,6 +17,7 @@
 package com.jgalgo.internal.ds;
 
 import java.util.Arrays;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Array implementation of the Union Find data structure with values.
@@ -56,8 +57,6 @@ class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
 
 	@Override
 	public int make(double value) {
-		if (deltas.length <= size)
-			deltas = Arrays.copyOf(deltas, size * 2);
 		int x = super.make();
 		deltas[x] = value;
 		return x;
@@ -66,6 +65,21 @@ class UnionFindValueArray extends UnionFindArray implements UnionFindValue {
 	@Override
 	public int make() {
 		return make(0);
+	}
+
+	@Override
+	public IntSet makeMany(int count) {
+		IntSet elms = super.makeMany(count);
+		for (int x : elms)
+			deltas[x] = 0;
+		return elms;
+	}
+
+	@Override
+	void ensureCapacity(int capacity) {
+		super.ensureCapacity(capacity);
+		if (deltas.length < capacity)
+			deltas = Arrays.copyOf(deltas, Math.max(deltas.length * 2, capacity));
 	}
 
 	@Override

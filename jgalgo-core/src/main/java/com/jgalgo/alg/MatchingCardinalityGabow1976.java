@@ -78,10 +78,9 @@ class MatchingCardinalityGabow1976 implements MatchingAlgoBase.Cardinality {
 		for (;;) {
 			Arrays.fill(root, -1);
 
-			for (int u : range(n)) {
-				uf.make();
+			uf.makeMany(n);
+			for (int u : range(n))
 				bases[u] = u;
-			}
 
 			int augPathSize = 0;
 

@@ -78,12 +78,11 @@ class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUt
 			}
 		};
 
-		UnionFind uf = UnionFind.builder().expectedSize(n).build();
+		UnionFind uf = UnionFind.newInstance();
+		uf.makeMany(n);
 		int[] ufRoot = new int[n];
-		for (int v : range(n)) {
-			uf.make();
+		for (int v : range(n))
 			ufRoot[v] = v;
-		}
 
 		Bitmap mark = new Bitmap(queries.size());
 
