@@ -61,17 +61,16 @@ public class KVertexConnectedComponentsWhiteMoodyTest extends TestBase {
 	private static <V, E> void testKConnectedComponents(Graph<V, E> g, int k, KVertexConnectedComponentsAlgo algo) {
 		KVertexConnectedComponentsAlgo.Result<V, E> result = algo.findKVertexConnectedComponents(g, k);
 
-		for (int c = 0; c < result.componentsNum(); c++) {
-			final int c0 = c;
+		for (int c : range(result.componentsNum())) {
 			assertEquals(result.componentVertices(c).size(), new HashSet<>(result.componentVertices(c)).size(),
-					() -> "duplicate vertices in component: " + result.componentVertices(c0));
+					() -> "duplicate vertices in component: " + result.componentVertices(c));
 		}
 
 		assertEquals(result.componentsNum(),
 				range(result.componentsNum()).mapToObj(result::componentVertices).distinct().count(),
 				() -> "duplicate components: " + result);
 
-		for (int c = 0; c < result.componentsNum(); c++) {
+		for (int c : range(result.componentsNum())) {
 			Graph<V, E> comp = result.componentSubGraph(c);
 			assertTrue(vertexConnectivity(comp) >= k);
 		}
@@ -82,7 +81,7 @@ public class KVertexConnectedComponentsWhiteMoodyTest extends TestBase {
 				if (Integer.bitCount(bitmap) < 2)
 					continue;
 				Set<V> comp = new ObjectOpenHashSet<>();
-				for (int i = 0; i < N; i++)
+				for (int i : range(N))
 					if ((bitmap & (1 << i)) != 0)
 						comp.addAll(result.componentVertices(i));
 				assertFalse(vertexConnectivity(g.subGraphCopy(comp, null)) >= k);

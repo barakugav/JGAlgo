@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Optional;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
@@ -36,7 +37,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		final int m = g.edges().size();
 
 		int start = -1, end = -1;
-		for (int u = 0; u < n; u++) {
+		for (int u : range(n)) {
 			if (degreeWithoutSelfLoops(g, u) % 2 == 0)
 				continue;
 			if (start == -1) {
@@ -55,7 +56,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 
 		Bitmap usedEdges = new Bitmap(m);
 		IEdgeIter[] iters = new IEdgeIter[n];
-		for (int u = 0; u < n; u++)
+		for (int u : range(n))
 			iters[u] = g.outEdges(u).iterator();
 
 		IntArrayList tour = new IntArrayList(g.edges().size());
@@ -108,7 +109,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 		final int m = g.edges().size();
 
 		int start = -1, end = -1;
-		for (int u = 0; u < n; u++) {
+		for (int u : range(n)) {
 			int outD = g.outEdges(u).size();
 			int inD = g.inEdges(u).size();
 			if (outD == inD)
@@ -139,7 +140,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 
 		Bitmap usedEdges = new Bitmap(m);
 		IEdgeIter[] iters = new IEdgeIter[n];
-		for (int u = 0; u < n; u++)
+		for (int u : range(n))
 			iters[u] = g.outEdges(u).iterator();
 
 		IntArrayList tour = new IntArrayList(g.edges().size());

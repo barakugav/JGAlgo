@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
@@ -99,7 +100,7 @@ public interface EdgeCover {
 		}
 
 		if (ig.isDirected()) {
-			vertexLoop: for (int v = 0; v < n; v++) {
+			vertexLoop: for (int v : range(n)) {
 				for (int e : ig.outEdges(v))
 					if (coverEdges.get(e))
 						continue vertexLoop;
@@ -109,7 +110,7 @@ public interface EdgeCover {
 				return false;
 			}
 		} else {
-			vertexLoop: for (int v = 0; v < n; v++) {
+			vertexLoop: for (int v : range(n)) {
 				for (int e : ig.outEdges(v))
 					if (coverEdges.get(e))
 						continue vertexLoop;

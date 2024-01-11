@@ -153,7 +153,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 		final int minWeightWordsize = JGAlgoUtils.log2(-minWeight);
 		for (int weightMask = minWeightWordsize; weightMask >= 0; weightMask--) {
 			if (weightMask != minWeightWordsize)
-				for (int v = 0; v < n; v++)
+				for (int v : range(n))
 					potential[v] *= 2;
 			diagnostics.scalingIteration();
 
@@ -162,12 +162,12 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 			for (;;) {
 				diagnostics.potentialIteration();
 				/* update current weight function according to latest potential */
-				for (int e = 0; e < m; e++)
+				for (int e : range(m))
 					w[e] = calcWeightWithPotential(g, e, w0, potential, weightMask);
 
 				/* populate gNeg with all 0,-1 edges */
 				gNeg.clearEdges();
-				for (int e = 0; e < m; e++) {
+				for (int e : range(m)) {
 					if (w[e] <= 0) {
 						int u = g.edgeSource(e), v = g.edgeTarget(e);
 						if (u != v)
@@ -186,7 +186,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 				G.clear();
 				IWeightsInt GWeights = G.addEdgesWeights("weights", int.class, Integer.valueOf(-1));
 				G.addVertices(range(N));
-				for (int u = 0; u < n; u++) {
+				for (int u : range(n)) {
 					int U = connectivityRes.vertexBlock(u);
 					for (IEdgeIter eit = gNeg.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
@@ -210,7 +210,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 
 				// Create a fake vertex S, connect with 0 edges to all and calc distances
 				int fakeS1 = G.addVertexInt();
-				for (int U = 0; U < N; U++)
+				for (int U : range(N))
 					GWeights.set(G.addEdge(fakeS1, U), 0);
 				ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) dagSssp
 						.computeShortestPaths(G, GWeights, Integer.valueOf(fakeS1));
@@ -219,7 +219,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 				int layerNum = 0;
 				int vertexInMaxLayer = -1;
 				Arrays.fill(layerSize, 0, N, 0);
-				for (int V = 0; V < N; V++) {
+				for (int V : range(N)) {
 					int l = -(int) ssspRes.distance(V);
 					if (l + 1 > layerNum) {
 						layerNum = l + 1;
@@ -238,7 +238,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 				if (layerSize[biggestLayer] >= Math.sqrt(N) * alpha) {
 					diagnostics.bigLayer();
 					// A layer with sqrt(|V|) was found, decrease potential of layers l,l+1,l+2,...
-					for (int v = 0; v < n; v++) {
+					for (int v : range(n)) {
 						int V = connectivityRes.vertexBlock(v), l = -(int) ssspRes.distance(V);
 						if (l >= biggestLayer)
 							potential[v]--;
@@ -262,12 +262,12 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 							connected.set(V);
 						}
 					}
-					for (int V = 0; V < N; V++)
+					for (int V : range(N))
 						if (!connected.get(V))
 							GWeights.set(G.addEdge(fakeS2, V), layerNum - 1);
 
 					// Add the remaining edges to the graph, not only 0,-1 edges
-					for (int e = 0; e < m; e++) {
+					for (int e : range(m)) {
 						int weight = w[e];
 						if (weight > 0) {
 							int U = connectivityRes.vertexBlock(g.edgeSource(e));
@@ -282,7 +282,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 						if ((weight = GWeights.get(e)) < 0)
 							GWeights.set(e, -weight);
 					ssspRes = ssspDial.computeShortestPaths(G, GWeights, fakeS2, layerNum);
-					for (int v = 0; v < n; v++)
+					for (int v : range(n))
 						potential[v] += ssspRes.distance(connectivityRes.vertexBlock(v));
 				}
 			}

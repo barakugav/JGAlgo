@@ -82,28 +82,28 @@ class VertexPartitions {
 				final int n = vertexToBlock.length;
 
 				int[] blockSize = new int[blockNum + 1];
-				for (int v = 0; v < n; v++)
+				for (int v : range(n))
 					blockSize[vertexToBlock[v]]++;
-				for (int s = 0, b = 0; b < blockNum; b++) {
+				int s = 0;
+				for (int b : range(blockNum)) {
 					int k = blockSize[b];
 					blockSize[b] = s;
 					s += k;
 				}
 				int[] sortedVertices = new int[n];
 				int[] blockOffset = blockSize;
-				for (int v = 0; v < n; v++)
+				for (int v : range(n))
 					sortedVertices[blockOffset[vertexToBlock[v]]++] = v;
 				for (int b = blockNum; b > 0; b--)
 					blockOffset[b] = blockOffset[b - 1];
 				blockOffset[0] = 0;
 
 				blockVertices = new IntSet[blockNum];
-				for (int b = 0; b < blockNum; b++) {
-					final int b0 = b;
+				for (int b : range(blockNum)) {
 					blockVertices[b] = new ImmutableIntArraySet(sortedVertices, blockOffset[b], blockOffset[b + 1]) {
 						@Override
 						public boolean contains(int v) {
-							return 0 <= v && v < n && vertexToBlock[v] == b0;
+							return 0 <= v && v < n && vertexToBlock[v] == b;
 						}
 					};
 				}
@@ -116,7 +116,7 @@ class VertexPartitions {
 			if (blockEdges == null) {
 
 				int[] blockSize = new int[blockNum + 1];
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
+				for (int e : range(g.edges().size())) {
 					int b1 = vertexToBlock[g.edgeSource(e)];
 					int b2 = vertexToBlock[g.edgeTarget(e)];
 					if (b1 == b2)
@@ -124,14 +124,14 @@ class VertexPartitions {
 				}
 
 				int innerEdgesCount = 0;
-				for (int b = 0; b < blockNum; b++) {
+				for (int b : range(blockNum)) {
 					int k = blockSize[b];
 					blockSize[b] = innerEdgesCount;
 					innerEdgesCount += k;
 				}
 				int[] sortedEdges = new int[innerEdgesCount];
 				int[] blockOffset = blockSize;
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
+				for (int e : range(g.edges().size())) {
 					int b1 = vertexToBlock[g.edgeSource(e)];
 					int b2 = vertexToBlock[g.edgeTarget(e)];
 					if (b1 == b2)
@@ -143,7 +143,7 @@ class VertexPartitions {
 
 				final int m = g.edges().size();
 				blockEdges = new IntSet[blockNum];
-				for (int b = 0; b < blockNum; b++) {
+				for (int b : range(blockNum)) {
 					final int b0 = b;
 					blockEdges[b] = new ImmutableIntArraySet(sortedEdges, blockOffset[b], blockOffset[b + 1]) {
 						@Override
@@ -169,12 +169,12 @@ class VertexPartitions {
 					IntSet[][] crossEdgesMatrix = new IntSet[blockNum][blockNum];
 
 					if (g.isDirected()) {
-						for (int e = 0; e < m; e++) {
+						for (int e : range(m)) {
 							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];
 							crossEdgesNum[b1][b2]++;
 						}
 					} else {
-						for (int e = 0; e < m; e++) {
+						for (int e : range(m)) {
 							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];
 							crossEdgesNum[b1][b2]++;
 							if (b1 != b2)
@@ -182,8 +182,8 @@ class VertexPartitions {
 						}
 					}
 					int crossNumTotal = 0;
-					for (int b1 = 0; b1 < blockNum; b1++) {
-						for (int b2 = 0; b2 < blockNum; b2++) {
+					for (int b1 : range(blockNum)) {
+						for (int b2 : range(blockNum)) {
 							int k = crossEdgesNum[b1][b2];
 							crossEdgesNum[b1][b2] = crossNumTotal;
 							crossNumTotal += k;
@@ -194,14 +194,14 @@ class VertexPartitions {
 					int[][] crossEdgesOffset = crossEdgesNum;
 					if (g.isDirected()) {
 						assert crossNumTotal == m;
-						for (int e = 0; e < m; e++) {
+						for (int e : range(m)) {
 							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];
 							sortedEdges[crossEdgesOffset[b1][b2]++] = e;
 						}
 
 					} else {
 						assert crossNumTotal >= m && crossNumTotal <= 2 * m;
-						for (int e = 0; e < m; e++) {
+						for (int e : range(m)) {
 							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];
 							sortedEdges[crossEdgesOffset[b1][b2]++] = e;
 							if (b1 != b2)
@@ -226,8 +226,8 @@ class VertexPartitions {
 					}
 					crossEdgesNum[0][0] = 0;
 
-					for (int b1 = 0; b1 < blockNum; b1++) {
-						for (int b2 = 0; b2 < blockNum; b2++) {
+					for (int b1 : range(blockNum)) {
+						for (int b2 : range(blockNum)) {
 							int begin = crossEdgesNum[b1][b2], end;
 							if (b2 < blockNum - 1) {
 								end = crossEdgesNum[b1][b2 + 1];
@@ -252,7 +252,7 @@ class VertexPartitions {
 						}
 						return JGAlgoUtils.longPack(b1, b2);
 					};
-					for (int e = 0; e < m; e++) {
+					for (int e : range(m)) {
 						int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];
 						long key = buildKey.apply(b1, b2);
 						int[] arr = map.computeIfAbsent(key, k -> new int[2]);
@@ -301,7 +301,7 @@ class VertexPartitions {
 		if (parallelEdges) {
 			if (selfEdges)
 				gb.ensureEdgeCapacity(m);
-			for (int e = 0; e < m; e++) {
+			for (int e : range(m)) {
 				int b1 = partition.vertexBlock(g.edgeSource(e));
 				int b2 = partition.vertexBlock(g.edgeTarget(e));
 				if (b1 != b2) {
@@ -314,7 +314,7 @@ class VertexPartitions {
 		} else {
 			Bitmap seen = new Bitmap(numberOfBlocks);
 			IntList seenList = new IntArrayList();
-			for (int b1 = 0; b1 < numberOfBlocks; b1++) {
+			for (int b1 : range(numberOfBlocks)) {
 				for (int u : partition.blockVertices(b1)) {
 					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();

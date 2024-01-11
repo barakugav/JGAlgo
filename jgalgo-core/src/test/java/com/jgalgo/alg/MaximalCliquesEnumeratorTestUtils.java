@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
@@ -65,7 +66,7 @@ class MaximalCliquesEnumeratorTestUtils extends TestUtils {
 			List<V> vertices = new ArrayList<>(g.vertices());
 			for (int bitmap = 1; bitmap < (1 << n); bitmap++) {
 				List<V> tempClique = new ArrayList<>();
-				for (int vIdx = 0; vIdx < n; vIdx++)
+				for (int vIdx : range(n))
 					if ((bitmap & (1 << vIdx)) != 0)
 						tempClique.add(vertices.get(vIdx));
 
@@ -82,9 +83,9 @@ class MaximalCliquesEnumeratorTestUtils extends TestUtils {
 	}
 
 	private static <V> boolean isClique(List<V> clique, Set<Pair<V, V>> edges) {
-		for (int s = clique.size(), i = 0; i < s; i++) {
+		for (int i : range(clique.size())) {
 			V u = clique.get(i);
-			for (int j = i + 1; j < s; j++) {
+			for (int j : range(i + 1, clique.size())) {
 				V v = clique.get(j);
 				if (!edges.contains(Pair.of(u, v)))
 					return false;

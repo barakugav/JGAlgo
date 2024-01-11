@@ -59,7 +59,7 @@ class KEdgeConnectedComponentsWang implements KEdgeConnectedComponentsAlgoBase, 
 		IntStack stack = new IntArrayList();
 		IVertexPartition wccs = (IVertexPartition) wccAlgo.findWeaklyConnectedComponents(g);
 		int[] vertices = new int[range(wccs.numberOfBlocks()).map(b -> wccs.blockVertices(b).size()).max().orElse(0)];
-		for (int wccNum = wccs.numberOfBlocks(), wccIdx = 0; wccIdx < wccNum; wccIdx++) {
+		for (int wccIdx : range(wccs.numberOfBlocks())) {
 			IntSet wccVertices = wccs.blockVertices(wccIdx);
 			if (wccVertices.size() <= 1)
 				continue;
@@ -161,7 +161,7 @@ class KEdgeConnectedComponentsWang implements KEdgeConnectedComponentsAlgoBase, 
 		int compNum = 0;
 
 		IntStack stack = new IntArrayList();
-		for (int root = 0; root < n; root++) {
+		for (int root : range(n)) {
 			if (comp[root] != -1)
 				continue;
 			final int compIdx = compNum++;

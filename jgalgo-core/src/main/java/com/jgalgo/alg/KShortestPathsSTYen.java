@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -116,7 +117,7 @@ class KShortestPathsSTYen implements KShortestPathsSTBase {
 						.forEach(relevantPaths::add);
 			}
 
-			for (int deviationIdx = kthPathDeviationIdx; deviationIdx < kthPathVertices.size() - 1; deviationIdx++) {
+			for (int deviationIdx : range(kthPathDeviationIdx, kthPathVertices.size() - 1)) {
 				final int spurNode = kthPathVertices.getInt(deviationIdx);
 				final int lastEdge = deviationIdx == 0 ? -1 : kthPath.getInt(deviationIdx - 1);
 				IntList rootPath = kthPath.subList(0, deviationIdx);

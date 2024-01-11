@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -54,12 +55,11 @@ public class VertexPartitionTest extends TestBase {
 				Graph<Integer, Integer> g = randGraph(n, m, directed, index, seedGen.nextSeed());
 				VertexPartition<Integer, Integer> partition = randPartition(g, k, seedGen.nextSeed());
 
-				for (int b = 0; b < k; b++) {
-					final int b0 = b;
+				for (int b : range(k)) {
 					Set<Integer> expected = g
 							.vertices()
 							.stream()
-							.filter(v -> partition.vertexBlock(v) == b0)
+							.filter(v -> partition.vertexBlock(v) == b)
 							.collect(Collectors.toSet());
 					Set<Integer> actual = partition.blockVertices(b);
 					assertEquals(expected, actual);
@@ -102,13 +102,12 @@ public class VertexPartitionTest extends TestBase {
 				Graph<Integer, Integer> blocksGraph = partition.blocksGraph(true, true);
 				Graph<Integer, Integer> blocksGraphNonSelf = partition.blocksGraph(true, false);
 
-				for (int b = 0; b < k; b++) {
-					final int b0 = b;
+				for (int b : range(k)) {
 					Set<Integer> expected = g
 							.edges()
 							.stream()
-							.filter(e -> partition.vertexBlock(g.edgeSource(e)) == b0
-									&& partition.vertexBlock(g.edgeTarget(e)) == b0)
+							.filter(e -> partition.vertexBlock(g.edgeSource(e)) == b
+									&& partition.vertexBlock(g.edgeTarget(e)) == b)
 							.collect(Collectors.toSet());
 					Set<Integer> actual = partition.blockEdges(b);
 					assertEquals(expected, actual);
@@ -154,26 +153,24 @@ public class VertexPartitionTest extends TestBase {
 				Graph<Integer, Integer> blocksGraph = partition.blocksGraph(true, true);
 				Graph<Integer, Integer> blocksGraphNonParallel = partition.blocksGraph(false, true);
 
-				for (int b1 = 0; b1 < k; b1++) {
-					for (int b2 = 0; b2 < k; b2++) {
-						final int b10 = b1;
-						final int b20 = b2;
+				for (int b1 : range(k)) {
+					for (int b2 : range(k)) {
 						Set<Integer> expected;
 						if (directed) {
 							expected = g
 									.edges()
 									.stream()
-									.filter(e -> partition.vertexBlock(g.edgeSource(e)) == b10
-											&& partition.vertexBlock(g.edgeTarget(e)) == b20)
+									.filter(e -> partition.vertexBlock(g.edgeSource(e)) == b1
+											&& partition.vertexBlock(g.edgeTarget(e)) == b2)
 									.collect(Collectors.toSet());
 						} else {
 							expected = g
 									.edges()
 									.stream()
-									.filter(e -> (partition.vertexBlock(g.edgeSource(e)) == b10
-											&& partition.vertexBlock(g.edgeTarget(e)) == b20)
-											|| (partition.vertexBlock(g.edgeSource(e)) == b20
-													&& partition.vertexBlock(g.edgeTarget(e)) == b10))
+									.filter(e -> (partition.vertexBlock(g.edgeSource(e)) == b1
+											&& partition.vertexBlock(g.edgeTarget(e)) == b2)
+											|| (partition.vertexBlock(g.edgeSource(e)) == b2
+													&& partition.vertexBlock(g.edgeTarget(e)) == b1))
 									.collect(Collectors.toSet());
 						}
 						Set<Integer> actual = partition.crossEdges(b1, b2);

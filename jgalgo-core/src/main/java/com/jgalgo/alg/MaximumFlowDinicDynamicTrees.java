@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
@@ -95,7 +96,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlows.WithResidualGraph {
 				capacitySum += gOrig.edges().size();
 				minCapacity = 1;
 			} else {
-				for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
+				for (int e : range(gOrig.edges().size())) {
 					double c = capacityOrig.weight(e);
 					capacitySum += c;
 					if (c != 0)
@@ -150,7 +151,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlows.WithResidualGraph {
 				debug.println("sink level: " + level[sink]);
 
 				dt.clear();
-				for (int u = 0; u < n; u++)
+				for (int u : range(n))
 					(vToDt[u] = dt.makeTree()).setData(Integer.valueOf(u));
 
 				IntDoubleConsumer updateFlow = (e, weight) -> {
@@ -218,7 +219,7 @@ class MaximumFlowDinicDynamicTrees extends MaximumFlows.WithResidualGraph {
 				}
 
 				/* Cleanup all the edges that stayed in the DT */
-				for (int u = 0; u < n; u++) {
+				for (int u : range(n)) {
 					for (DynamicTree.Vertex uDt = vToDt[u], pDt; (pDt = uDt.getParent()) != null; uDt = pDt)
 						cleanupStack.push(uDt);
 					while (!cleanupStack.isEmpty()) {

@@ -56,11 +56,11 @@ class BiConnectedComponentsAlgos {
 			final int biccsNum = biccs.size();
 
 			biccsVertices = new IntSet[biccsNum];
-			for (int biccIdx = 0; biccIdx < biccsNum; biccIdx++)
+			for (int biccIdx : range(biccsNum))
 				biccsVertices[biccIdx] = ImmutableIntArraySet.withNaiveContains(biccs.get(biccIdx).first());
 
 			biccsEdgesFromAlgo = new int[biccsNum][];
-			for (int biccIdx = 0; biccIdx < biccsNum; biccIdx++)
+			for (int biccIdx : range(biccsNum))
 				biccsEdgesFromAlgo[biccIdx] = biccs.get(biccIdx).second();
 		}
 
@@ -69,21 +69,22 @@ class BiConnectedComponentsAlgos {
 			final int n = g.vertices().size();
 			if (vertexBiCcs == null) {
 				int[] vertexBiCcsCount = new int[n + 1];
-				for (int biccIdx = 0; biccIdx < biccsVertices.length; biccIdx++)
+				for (int biccIdx : range(biccsVertices.length))
 					for (int v : biccsVertices[biccIdx])
 						vertexBiCcsCount[v]++;
 				int vertexBiCcsCountTotal = 0;
-				for (int v = 0; v < n; v++)
+				for (int v : range(n))
 					vertexBiCcsCountTotal += vertexBiCcsCount[v];
 
 				int[] sortedBiccs = new int[vertexBiCcsCountTotal];
 				int[] vertexOffset = vertexBiCcsCount;
-				for (int s = 0, v = 0; v < n; v++) {
+				int s = 0;
+				for (int v : range(n)) {
 					int k = vertexOffset[v];
 					vertexOffset[v] = s;
 					s += k;
 				}
-				for (int biccIdx = 0; biccIdx < biccsVertices.length; biccIdx++)
+				for (int biccIdx : range(biccsVertices.length))
 					for (int v : biccsVertices[biccIdx])
 						sortedBiccs[vertexOffset[v]++] = biccIdx;
 				for (int v = n; v > 0; v--)
@@ -91,7 +92,7 @@ class BiConnectedComponentsAlgos {
 				vertexOffset[0] = 0;
 
 				vertexBiCcs = new IntSet[n];
-				for (int v = 0; v < n; v++)
+				for (int v : range(n))
 					vertexBiCcs[v] =
 							ImmutableIntArraySet.withNaiveContains(sortedBiccs, vertexOffset[v], vertexOffset[v + 1]);
 			}
@@ -116,7 +117,7 @@ class BiConnectedComponentsAlgos {
 				biccsEdges = new IntSet[biccsNum];
 
 				if (!g.isAllowParallelEdges() && !g.isAllowSelfEdges()) {
-					for (int b = 0; b < biccsNum; b++)
+					for (int b : range(biccsNum))
 						biccsEdges[b] = ImmutableIntArraySet.withNaiveContains(biccsEdgesFromAlgo[b]);
 
 				} else {
@@ -130,7 +131,7 @@ class BiConnectedComponentsAlgos {
 
 					int[] edge2bicc = new int[m];
 					Arrays.fill(edge2bicc, -1);
-					for (int b = 0; b < biccsNum; b++) {
+					for (int b : range(biccsNum)) {
 						for (int e : biccsEdgesFromAlgo[b]) {
 							assert edge2bicc[e] == -1;
 							edge2bicc[e] = b;
@@ -144,7 +145,7 @@ class BiConnectedComponentsAlgos {
 						Arrays.fill(target2bicc, -1);
 						extraEdgesBiccs = new int[m];
 						Arrays.fill(extraEdgesBiccs, -1);
-						for (int u = 0; u < n; u++) {
+						for (int u : range(n)) {
 							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 								int e = eit.nextInt();
 								int v = eit.targetInt();
@@ -178,7 +179,7 @@ class BiConnectedComponentsAlgos {
 					/* search for self edges, which are not added to any bicc */
 					if (g.isAllowSelfEdges()) {
 						assert Graphs.selfEdges(g).intStream().allMatch(e -> edge2bicc[e] == -1);
-						for (int u = 0; u < n; u++) {
+						for (int u : range(n)) {
 							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 								eit.nextInt();
 								int v = eit.targetInt();
@@ -190,7 +191,7 @@ class BiConnectedComponentsAlgos {
 						}
 					}
 
-					for (int b = 0; b < biccsNum; b++) {
+					for (int b : range(biccsNum)) {
 						if (biccExtraEdgesCount[b] == 0)
 							continue;
 						int[] biccEdges = biccsEdgesFromAlgo[b];
@@ -209,7 +210,7 @@ class BiConnectedComponentsAlgos {
 
 					/* add self edges */
 					if (g.isAllowSelfEdges()) {
-						for (int u = 0; u < n; u++) {
+						for (int u : range(n)) {
 							for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 								int e = eit.nextInt();
 								int v = eit.targetInt();
@@ -221,7 +222,7 @@ class BiConnectedComponentsAlgos {
 						}
 					}
 
-					for (int b = 0; b < biccsNum; b++) {
+					for (int b : range(biccsNum)) {
 						biccsEdges[b] = ImmutableIntArraySet.withNaiveContains(biccsEdgesFromAlgo[b]);
 						biccsEdgesFromAlgo[b] = null;
 					}

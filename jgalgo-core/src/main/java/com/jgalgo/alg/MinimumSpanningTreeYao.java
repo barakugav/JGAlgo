@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -64,7 +65,7 @@ class MinimumSpanningTreeYao implements MinimumSpanningTreeBase {
 		int treeNum = n;
 		int[] vTree = new int[n];
 		int[] vTreeNext = new int[n];
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			vTree[v] = v;
 
 		int[] minEdges = new int[n];
@@ -77,14 +78,14 @@ class MinimumSpanningTreeYao implements MinimumSpanningTreeBase {
 			Arrays.fill(minEdgeWeights, 0, treeNum, Double.MAX_VALUE);
 
 			/* find minimum edge going out of each tree */
-			for (int u = 0; u < n; u++) {
+			for (int u : range(n)) {
 				int tree = vTree[u];
 
 				int[][] vertexBuckets = edges[u];
 				int b;
 				for (b = firstValidBucketIdxs[u]; b < vertexBuckets.length; b++) {
 					boolean foundEdge = false;
-					for (int i = 0; i < vertexBuckets[b].length; i++) {
+					for (int i : range(vertexBuckets[b].length)) {
 						int e = vertexBuckets[b][i];
 						if (tree == vTree[g.edgeSource(e)] && tree == vTree[g.edgeTarget(e)])
 							continue;
@@ -103,7 +104,7 @@ class MinimumSpanningTreeYao implements MinimumSpanningTreeBase {
 			}
 
 			/* add min edges to MST */
-			for (int tree = 0; tree < treeNum; tree++) {
+			for (int tree : range(treeNum)) {
 				if (minEdges[tree] != -1) {
 					int e = minEdges[tree];
 					int ut = vTree[g.edgeSource(e)], vt = vTree[g.edgeTarget(e)];
@@ -128,7 +129,7 @@ class MinimumSpanningTreeYao implements MinimumSpanningTreeBase {
 			final int IN_PATH = -2;
 			Arrays.fill(vTreeNext, 0, treeNum, UNVISITED);
 			int treeNumNext = 0;
-			for (int t = 0; t < treeNum; t++) {
+			for (int t : range(treeNum)) {
 				int pathLength = 0;
 				/* find all reachable trees from t */
 				for (int tPtr = t;;) {
@@ -162,7 +163,7 @@ class MinimumSpanningTreeYao implements MinimumSpanningTreeBase {
 			Arrays.fill(minEdges, 0, treeNum, -1);
 
 			/* assign new tree indices to G's vertices */
-			for (int v = 0; v < n; v++)
+			for (int v : range(n))
 				vTree[v] = vTreeNext[vTree[v]];
 		}
 
@@ -176,7 +177,7 @@ class MinimumSpanningTreeYao implements MinimumSpanningTreeBase {
 		int[][][] edges = new int[n][][];
 		int[] edgesTemp = new int[n];
 
-		for (int u = 0; u < n; u++) {
+		for (int u : range(n)) {
 			int edgesCount = 0;
 			for (int e : g.outEdges(u))
 				edgesTemp[edgesCount++] = e;
@@ -184,7 +185,7 @@ class MinimumSpanningTreeYao implements MinimumSpanningTreeBase {
 			if (edgesCount <= k) {
 				JGAlgoUtils.sort(edgesTemp, 0, edgesCount, w, parallel);
 				edges[u] = new int[edgesCount][];
-				for (int i = 0; i < edgesCount; i++)
+				for (int i : range(edgesCount))
 					edges[u][i] = new int[] { edgesTemp[i] };
 
 			} else {
@@ -193,7 +194,7 @@ class MinimumSpanningTreeYao implements MinimumSpanningTreeBase {
 				ArraysUtils.bucketPartition(edgesTemp, 0, edgesCount, w, bucketSize);
 				edges[u] = new int[bucketNum][];
 
-				for (int b = 0; b < bucketNum; b++) {
+				for (int b : range(bucketNum)) {
 					int bucketBegin = b * bucketSize;
 					int bucketEnd = Math.min(bucketBegin + bucketSize, edgesCount);
 					int[] bucket = new int[bucketEnd - bucketBegin];

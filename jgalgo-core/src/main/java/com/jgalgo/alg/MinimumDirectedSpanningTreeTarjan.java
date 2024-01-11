@@ -96,12 +96,12 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTreeBa
 			root = vOrigToRef[root];
 
 			int subGraphEdgesNum = 0;
-			for (int m = g.edges().size(), e = 0; e < m; e++)
+			for (int e : range(g.edges().size()))
 				if (vertices.contains(g.edgeSource(e)) && vertices.contains(g.edgeTarget(e)))
 					subGraphEdgesNum++;
 			int[] edgeRef = new int[subGraphEdgesNum];
 			builder.ensureEdgeCapacity(subGraphEdgesNum);
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
+			for (int e : range(g.edges().size())) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				if (u != v && vertices.contains(u) && vertices.contains(v))
 					edgeRef[builder.addEdge(vOrigToRef[u], vOrigToRef[v])] = e;
@@ -116,7 +116,7 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTreeBa
 
 			ContractedGraph contractedGraph = contract(g, edgeRef, w, artificialEdgesThreshold);
 			int[] mdstEdges = expand(g, contractedGraph, root, artificialEdgesThreshold);
-			for (int i = 0; i < mdstEdges.length; i++)
+			for (int i : range(mdstEdges.length))
 				mdstEdges[i] = edgeRef[mdstEdges[i]];
 			return new MinimumSpanningTrees.IndexResult(mdstEdges);
 		}
@@ -160,7 +160,7 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTreeBa
 		}
 
 		int mstSize = 0;
-		for (int v = 0; v < cg.n; v++)
+		for (int v : range(cg.n))
 			if (v != root && inEdge[v] < artificialEdgesThreshold)
 				mstSize++;
 		int[] mst = new int[mstSize];
@@ -186,7 +186,7 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTreeBa
 				blockToV[b] = v;
 
 		int rootBlock = connectivityRes.vertexBlock(root);
-		blockLoop: for (int b = 0; b < blockNum; b++) {
+		blockLoop: for (int b : range(blockNum)) {
 			if (b == rootBlock)
 				continue; /* avoid self edges */
 			for (IEdgeIter eit = g.outEdges(blockToV[b]).iterator(); eit.hasNext();) {
@@ -207,7 +207,7 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTreeBa
 
 		UnionFindValue uf = UnionFindValue.newInstance(n);
 		int[] ufIdxToV = new int[VMaxNum];
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			ufIdxToV[uf.make()] = v;
 
 		IWeightFunction w;
@@ -233,9 +233,9 @@ class MinimumDirectedSpanningTreeTarjan implements MinimumDirectedSpanningTreeBa
 		}
 
 		IntReferenceableHeap[] heap = new IntReferenceableHeap[VMaxNum];
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			heap[v] = (IntReferenceableHeap) heapBuilder.build(int.class, void.class, w);
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			for (int e : g.inEdges(v))
 				if (g.edgeSource(e) != g.edgeTarget(e))
 					heap[v].insert(e);

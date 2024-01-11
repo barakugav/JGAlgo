@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -84,7 +85,7 @@ class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSourceBas
 			if (modified.isEmpty()) {
 				if (round != nextOptRound) {
 					/* classical by-the-book Bellman-Ford */
-					for (int m = g.edges().size(), e = 0; e < m; e++) {
+					for (int e : range(g.edges().size())) {
 						int u = g.edgeSource(e), v = g.edgeTarget(e);
 						double d = res.distances[u] + w.weight(e);
 						if (d < res.distances[v]) {
@@ -94,7 +95,7 @@ class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSourceBas
 					}
 				} else {
 					/* identical to the classic implementation, but we record the vertices we update */
-					for (int m = g.edges().size(), e = 0; e < m; e++) {
+					for (int e : range(g.edges().size())) {
 						int u = g.edgeSource(e), v = g.edgeTarget(e);
 						double d = res.distances[u] + w.weight(e);
 						if (d < res.distances[v]) {
@@ -169,7 +170,7 @@ class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSourceBas
 		}
 
 		/* search for a negative cycle */
-		for (int v = 0; v < n; v++) {
+		for (int v : range(n)) {
 			int e = res.backtrack[v];
 			if (e == -1)
 				continue;

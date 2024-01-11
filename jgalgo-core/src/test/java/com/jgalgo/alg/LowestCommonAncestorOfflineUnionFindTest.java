@@ -46,13 +46,13 @@ public class LowestCommonAncestorOfflineUnionFindTest extends TestBase {
 		if (rand.nextBoolean())
 			/* wrap queries object with unknown implementation */
 			qs = wrapQueries(qs);
-		for (int q = 0; q < queries.length; q++)
+		for (int q : range(queries.length))
 			qs.addQuery(queries[q].u, queries[q].v);
 
 		LowestCommonAncestorOffline.Result<V, E> lcaResult = lca.findLCAs(g, root, qs);
 		assertEquals(qs.size(), lcaResult.size());
 
-		for (int q = 0; q < queries.length; q++) {
+		for (int q : range(queries.length)) {
 			V expected = queries[q].lca;
 			V actual = lcaResult.getLca(q);
 			assertEquals(expected, actual, "<- [" + queries[q].u + "," + queries[q].v + "]");
@@ -177,7 +177,7 @@ public class LowestCommonAncestorOfflineUnionFindTest extends TestBase {
 		}
 
 		assertEquals(expected.size(), queries.size());
-		for (int i = 0; i < expected.size(); i++) {
+		for (int i : range(expected.size())) {
 			Pair<V, V> p = expected.get(i);
 			assertEquals(p.first(), queries.getQuerySource(i));
 			assertEquals(p.second(), queries.getQueryTarget(i));

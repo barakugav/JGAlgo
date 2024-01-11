@@ -75,7 +75,7 @@ class MinimumMeanCycleHoward implements MinimumMeanCycleBase {
 		Arrays.fill(d, 0, n, Double.POSITIVE_INFINITY);
 		int[] policy = new int[n];
 		Arrays.fill(policy, 0, n, -1);
-		for (int c = 0; c < ccNum; c++) {
+		for (int c : range(ccNum)) {
 			for (int e : cc.blockEdges(c)) {
 				double ew = w.weight(e);
 				int u = g.edgeSource(e);
@@ -96,7 +96,7 @@ class MinimumMeanCycleHoward implements MinimumMeanCycleBase {
 		int[] visitIdx = new int[n];
 		Arrays.fill(visitIdx, 0, n, 0);
 		/* operate on each SCC separately */
-		for (int ccIdx = 0; ccIdx < ccNum; ccIdx++) {
+		for (int ccIdx : range(ccNum)) {
 			if (cc.blockVertices(ccIdx).size() < 2)
 				continue;
 			/* run in iteration as long as we find improvements */

@@ -133,7 +133,7 @@ public interface EulerianTourAlgo {
 		if (ig.isDirected()) {
 			int u = ig.edgeSource(tour0.getInt(0));
 			IntIterator it = tour0.iterator();
-			for (int i = 0; i < m; i++) {
+			for (int i = m; i-- > 0;) {
 				int e = it.nextInt();
 				if (visited.get(e))
 					return false;
@@ -151,7 +151,7 @@ public interface EulerianTourAlgo {
 				visited.clear();
 				int u = startingEndpoint ? ig.edgeSource(firstEdge) : ig.edgeTarget(firstEdge);
 				IntIterator it = tour0.iterator();
-				for (int i = 0; i < m; i++) {
+				for (int i = m; i-- > 0;) {
 					int e = it.nextInt();
 					if (visited.get(e))
 						return false;

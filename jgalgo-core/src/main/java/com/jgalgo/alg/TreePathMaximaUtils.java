@@ -304,7 +304,7 @@ class TreePathMaximaUtils {
 			return false;
 
 		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance();
-		for (int m = g.edges().size(), e = 0; e < m; e++) {
+		for (int e : range(g.edges().size())) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			if (u != v)
@@ -315,7 +315,7 @@ class TreePathMaximaUtils {
 				(TreePathMaxima.IResult) tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);
 
 		int i = 0;
-		for (int m = g.edges().size(), e = 0; e < m; e++) {
+		for (int e : range(g.edges().size())) {
 			if (g.edgeSource(e) == g.edgeTarget(e))
 				continue;
 			int mstEdge = tpmResults.getHeaviestEdgeInt(i++);

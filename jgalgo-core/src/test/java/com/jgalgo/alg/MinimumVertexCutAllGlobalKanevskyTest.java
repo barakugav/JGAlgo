@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -104,7 +105,7 @@ public class MinimumVertexCutAllGlobalKanevskyTest extends TestBase {
 		List<ObjectDoublePair<Set<V>>> cuts = new ObjectArrayList<>();
 		for (int bitmap = 0; bitmap < 1 << n; bitmap++) {
 			cut.clear();
-			for (int i = 0; i < n; i++)
+			for (int i : range(n))
 				if ((bitmap & (1 << i)) != 0)
 					cut.add(vertices.get(i));
 			if (!MinimumVertexCutGlobal.isCut(g, cut))

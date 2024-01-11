@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
@@ -140,7 +141,7 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 			Set<V> cut = new ObjectOpenHashSet<>(n);
 			for (int bitmap = 0; bitmap < 1 << (n - 2); bitmap++) {
 				cut.add(source);
-				for (int i = 0; i < n - 2; i++)
+				for (int i : range(n - 2))
 					if ((bitmap & (1 << i)) != 0)
 						cut.add(vertices.get(i));
 				double cutWeight = 0;
@@ -188,7 +189,7 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 			Set<V> cut = new ObjectOpenHashSet<>(n);
 			for (int bitmap = 0; bitmap < 1 << (n - terminalsNum); bitmap++) {
 				cut.addAll(sources);
-				for (int i = 0; i < n - terminalsNum; i++)
+				for (int i : range(n - terminalsNum))
 					if ((bitmap & (1 << i)) != 0)
 						cut.add(vertices.get(i));
 				double cutWeight = 0;

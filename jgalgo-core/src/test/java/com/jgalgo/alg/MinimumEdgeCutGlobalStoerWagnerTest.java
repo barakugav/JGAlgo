@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
@@ -92,7 +93,7 @@ class MinimumEdgeCutGlobalStoerWagnerTest extends TestBase {
 			Set<V> cut = new ObjectOpenHashSet<>(n);
 			for (int bitmap = 0; bitmap < 1 << (n - 1); bitmap++) {
 				cut.add(firstVertex);
-				for (int i = 0; i < n - 1; i++)
+				for (int i : range(n - 1))
 					if ((bitmap & (1 << i)) != 0)
 						cut.add(vertices.get(i));
 				if (cut.size() != n) {

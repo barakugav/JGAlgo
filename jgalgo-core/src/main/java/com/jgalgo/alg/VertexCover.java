@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
@@ -106,7 +107,7 @@ public interface VertexCover {
 						"vertex with index " + v + " is included more than once in the cover");
 			visited.set(v);
 		}
-		for (int e = 0; e < m; e++)
+		for (int e : range(m))
 			if (!visited.get(ig.edgeSource(e)) && !visited.get(ig.edgeTarget(e)))
 				return false;
 		return true;

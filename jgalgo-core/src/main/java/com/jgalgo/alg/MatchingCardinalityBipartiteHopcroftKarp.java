@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightsBool;
@@ -77,7 +78,7 @@ class MatchingCardinalityBipartiteHopcroftKarp implements MatchingAlgoBase.Cardi
 			/* Perform BFS to build the alternating forest */
 			bfsQueue.clear();
 			Arrays.fill(depths, Integer.MAX_VALUE);
-			for (int u = 0; u < n; u++) {
+			for (int u : range(n)) {
 				if (!partition.get(u) || matched[u] != MatchedNone)
 					continue;
 				depths[u] = 0;
@@ -118,7 +119,7 @@ class MatchingCardinalityBipartiteHopcroftKarp implements MatchingAlgoBase.Cardi
 			/*
 			 * Run DFS to find the maximal number of paths from unmatched S vertices to unmatched T vertices
 			 */
-			for (int u = 0; u < n; u++) {
+			for (int u : range(n)) {
 				if (!partition.get(u) || matched[u] != MatchedNone)
 					continue;
 
@@ -140,7 +141,7 @@ class MatchingCardinalityBipartiteHopcroftKarp implements MatchingAlgoBase.Cardi
 						int matchedEdge = matched[v];
 						if (matchedEdge == MatchedNone) {
 							/* Augmenting path found */
-							for (int i = 0; i < depth; i++) {
+							for (int i : range(depth)) {
 								int e1 = dfsPath[i];
 								matched[g.edgeSource(e1)] = matched[g.edgeTarget(e1)] = e1;
 							}

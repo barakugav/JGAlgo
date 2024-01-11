@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -94,7 +95,7 @@ class LowestCommonAncestorStaticRMQ extends LowestCommonAncestorStaticAbstract {
 
 		int[] vToDepthsIdx = new int[n];
 		Arrays.fill(vToDepthsIdx, -1);
-		for (int i = 0; i < sequenceLength; i++) {
+		for (int i : range(sequenceLength)) {
 			int v = vs[i];
 			if (vToDepthsIdx[v] == -1)
 				vToDepthsIdx[v] = i;

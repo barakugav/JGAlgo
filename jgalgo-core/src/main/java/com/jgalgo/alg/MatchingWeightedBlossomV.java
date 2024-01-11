@@ -76,7 +76,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 		b.addVertices(range(g.vertices().size() * 2));
 		/* Add two edges for each original edge */
 		final int dummyEdgesThreshold = g.edges().size() * 2;
-		for (int m = g.edges().size(), e = 0; e < m; e++) {
+		for (int e : range(g.edges().size())) {
 			int source = g.edgeSource(e);
 			int target = g.edgeTarget(e);
 			int e1 = b.addEdge(source * 2 + 0, target * 2 + 0);
@@ -88,7 +88,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 		}
 
 		/* Add dummy edges between each pair of duplicated vertices */
-		for (int n = g.vertices().size(), v = 0; v < n; v++) {
+		for (int v : range(g.vertices().size())) {
 			int v1 = v * 2 + 0;
 			int v2 = v * 2 + 1;
 			int e = b.addEdge(v1, v2);
@@ -109,7 +109,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 
 		/* Convert matching to the original graph */
 		int[] matched = new int[g.vertices().size()];
-		for (int n = g.vertices().size(), v = 0; v < n; v++) {
+		for (int v : range(g.vertices().size())) {
 			int vDup = v * 2 + 0;
 			int eDup = matchDup.getMatchedEdge(vDup);
 			assert eDup >= 0 : "vertex " + vDup + " is not matched";
@@ -156,12 +156,12 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 			if (n % 2 != 0)
 				throw new IllegalArgumentException("number of vertices is odd: perfect matching cannot exist");
 			singletonNodes = new Blossom[n];
-			for (int v = 0; v < n; v++)
+			for (int v : range(n))
 				singletonNodes[v] = new Blossom();
 			Debug.init(this);
 
 			/* Init all (singleton) blossoms to unmatched even + */
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				Blossom b = singletonNodes[v];
 				b.setEven();
 				b.setOuter(true);
@@ -170,7 +170,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 
 			/* Create all edges objects */
 			double minWeight = Double.POSITIVE_INFINITY;
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
+			for (int e : range(g.edges().size())) {
 				Blossom U = singletonNodes[g.edgeSource(e)];
 				Blossom V = singletonNodes[g.edgeTarget(e)];
 				if (U == V)
@@ -1580,7 +1580,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 
 			final int n = g.vertices().size();
 			int[] matched = new int[n];
-			for (int u = 0; u < n; u++) {
+			for (int u : range(n)) {
 				assert singletonNodes[u].isMatched();
 				matched[u] = singletonNodes[u].match.id;
 			}
@@ -2794,7 +2794,7 @@ class MatchingWeightedBlossomV implements MatchingAlgoBase.MinimumBased {
 			if (!Enable)
 				return;
 			assert Impl.blossomIds.isEmpty();
-			for (int i = 0; i < worker.singletonNodes.length; i++)
+			for (int i : range(worker.singletonNodes.length))
 				Impl.blossomIds.put(worker.singletonNodes[i], i);
 		}
 

@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -143,7 +144,7 @@ class MatchingWeightedGabow1990 extends MatchingWeightedGabow1990Abstract {
 			assert vToSMFId[u] != null;
 			assert vToSMFId[v] == null;
 			SubtreeMergeFindMin.Node smfParent = smfAddLeaf(v, vToSMFId[u]);
-			for (int i = 1; i < pathLen; i++) {
+			for (int i : range(1, pathLen)) {
 				assert vToSMFId[oddBlossomPath[i]] == null;
 				smfParent = smfAddLeaf(oddBlossomPath[i], smfParent);
 			}

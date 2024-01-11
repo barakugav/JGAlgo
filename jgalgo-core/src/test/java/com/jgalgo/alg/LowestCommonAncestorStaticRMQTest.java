@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Random;
@@ -67,7 +68,7 @@ public class LowestCommonAncestorStaticRMQTest extends TestBase {
 			}
 		}
 
-		for (int query = 0; query < queriesNum; query++) {
+		for (int query : range(queriesNum)) {
 			V u = Graphs.randVertex(g, rand);
 			V v = Graphs.randVertex(g, rand);
 

@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
@@ -41,7 +42,7 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 		Arrays.fill(cell, -1);
 
 		int[] sitesArr = sites.toIntArray();
-		for (int siteIdx = 0; siteIdx < sitesArr.length; siteIdx++) {
+		for (int siteIdx : range(sitesArr.length)) {
 			int site = sitesArr[siteIdx];
 			if (cell[site] != -1)
 				throw new IllegalArgumentException("Duplicate site: " + site);
@@ -80,7 +81,7 @@ class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {
 		}
 		boolean hasUnreachable = false;
 		int unreachableCell = sitesArr.length;
-		for (int v = 0; v < n; v++) {
+		for (int v : range(n)) {
 			if (cell[v] == -1) {
 				hasUnreachable = true;
 				cell[v] = unreachableCell;

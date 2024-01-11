@@ -50,7 +50,7 @@ class ChinesePostmanImpl implements ChinesePostmanBase {
 
 		/* Find all vertices with odd degree */
 		IntList oddVerticesList = new IntArrayList();
-		for (int n = g.vertices().size(), v = 0; v < n; v++)
+		for (int v : range(g.vertices().size()))
 			if (nonSelfEdgesDegree(g, v) % 2 != 0)
 				oddVerticesList.add(v);
 		if (oddVerticesList.isEmpty())
@@ -64,8 +64,8 @@ class ChinesePostmanImpl implements ChinesePostmanBase {
 		oddGraph0.ensureVertexCapacity(oddVertices.length);
 		oddGraph0.ensureEdgeCapacity(oddVertices.length * (oddVertices.length - 1) / 2);
 		oddGraph0.addVertices(range(oddVertices.length));
-		for (int n = oddVertices.length, v = 0; v < n; v++)
-			for (int u = v + 1; u < n; u++)
+		for (int v : range(oddVertices.length))
+			for (int u : range(v + 1, oddVertices.length))
 				oddGraph0.addEdge(v, u);
 		IndexGraph oddGraph = oddGraph0.reIndexAndBuild(true, true).graph();
 		ShortestPathAllPairs.IResult allPairsRes = (ShortestPathAllPairs.IResult) shortestPathAllPairsAlgo
@@ -91,7 +91,7 @@ class ChinesePostmanImpl implements ChinesePostmanBase {
 		}
 		/* The new graph is Eulerian */
 		IndexGraph eulerianGraph = b.build();
-		for (int n = eulerianGraph.vertices().size(), v = 0; v < n; v++)
+		for (int v : range(eulerianGraph.vertices().size()))
 			assert nonSelfEdgesDegree(eulerianGraph, v) % 2 == 0;
 
 		/* Compute an Eulerian tour in the new graph */

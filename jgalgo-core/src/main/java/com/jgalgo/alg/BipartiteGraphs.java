@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Optional;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
@@ -115,7 +116,7 @@ public class BipartiteGraphs {
 			return Optional.empty();
 
 		IWeightsBool partition = getOrCreateBoolWeights(ig, addPartitionWeight);
-		for (int n = ig.vertices().size(), v = 0; v < n; v++)
+		for (int v : range(ig.vertices().size()))
 			partition.set(v, partition0.get(v));
 
 		IVertexBiPartition indexPartition = new VertexBiPartitions.FromWeights(ig, partition);
@@ -133,7 +134,7 @@ public class BipartiteGraphs {
 		Bitmap partition = new Bitmap(n);
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 		Bitmap visited = new Bitmap(n);
-		for (int start = 0; start < n; start++) {
+		for (int start : range(n)) {
 			if (visited.get(start))
 				continue;
 			visited.set(start);

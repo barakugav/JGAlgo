@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.function.Supplier;
 import com.jgalgo.graph.IEdgeIter;
@@ -37,7 +38,7 @@ class MemoryReuse {
 			a = Arrays.copyOf(a, newLength(a, rows));
 			Arrays.fill(a, oldLen, a.length, IntArrays.EMPTY_ARRAY);
 		}
-		for (int r = 0; r < rows; r++)
+		for (int r : range(rows))
 			if (a[r].length < columns)
 				a[r] = Arrays.copyOf(a[r], newLength(a[r], columns));
 		return a;
@@ -53,7 +54,7 @@ class MemoryReuse {
 			a = Arrays.copyOf(a, newLength(a, rows));
 			Arrays.fill(a, oldLen, a.length, DoubleArrays.EMPTY_ARRAY);
 		}
-		for (int r = 0; r < rows; r++)
+		for (int r : range(rows))
 			if (a[r].length < columns)
 				a[r] = Arrays.copyOf(a[r], newLength(a[r], columns));
 		return a;

@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -42,7 +43,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 			TreePathMaxima.Queries<V, E> queries) {
 		int queriesNum = queries.size();
 		List<E> res = new ArrayList<>(queriesNum);
-		for (int q = 0; q < queriesNum; q++) {
+		for (int q : range(queriesNum)) {
 			V u = queries.getQuerySource(q), v = queries.getQueryTarget(q);
 
 			Path<V, E> path = Path.findPath(t, u, v);
@@ -69,8 +70,8 @@ public class TreePathMaximaTestUtils extends TestUtils {
 			queries = (TreePathMaxima.Queries<V, E>) TreePathMaxima.IQueries.newInstance();
 		}
 		List<V> vs = new ArrayList<>(tree.vertices());
-		for (int i = 0; i < vs.size(); i++)
-			for (int j = i + 1; j < vs.size(); j++)
+		for (int i : range(vs.size()))
+			for (int j : range(i + 1, vs.size()))
 				queries.addQuery(vs.get(i), vs.get(j));
 		return queries;
 	}
@@ -98,7 +99,7 @@ public class TreePathMaximaTestUtils extends TestUtils {
 	static <V, E> void compareActualToExpectedResults(TreePathMaxima.Queries<V, E> queries,
 			TreePathMaxima.Result<V, E> actual, List<E> expected, WeightFunction<E> w) {
 		assertEquals(expected.size(), actual.size(), "Unexpected result size");
-		for (int i = 0; i < actual.size(); i++) {
+		for (int i : range(actual.size())) {
 			V u = queries.getQuerySource(i), v = queries.getQueryTarget(i);
 			double aw = actual.getHeaviestEdge(i) != null ? w.weight(actual.getHeaviestEdge(i)) : Double.MIN_VALUE;
 			double ew = expected.get(i) != null ? w.weight(expected.get(i)) : Double.MIN_VALUE;

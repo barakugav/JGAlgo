@@ -79,7 +79,7 @@ class CyclesEnumeratorJohnson implements CyclesEnumeratorBase {
 			{
 				isBlocked = new Bitmap(n);
 				blockingSet = new IntSet[n];
-				for (int u = 0; u < n; u++)
+				for (int u : range(n))
 					blockingSet[u] = new IntOpenHashSet();
 
 				for (startV = 0; startV < n; startV++) {
@@ -156,7 +156,7 @@ class CyclesEnumeratorJohnson implements CyclesEnumeratorBase {
 			private void reset() {
 				isBlocked.clear();
 				assert unblockStack.isEmpty();
-				for (int u = 0; u < n; u++)
+				for (int u : range(n))
 					blockingSet[u].clear();
 				assert path.isEmpty();
 			}
@@ -185,7 +185,7 @@ class CyclesEnumeratorJohnson implements CyclesEnumeratorBase {
 
 				IndexGraphBuilder gSubBuilder = IndexGraphBuilder.directed();
 				gSubBuilder.addVertices(range(nSub));
-				for (int uSub = 0; uSub < nSub; uSub++) {
+				for (int uSub : range(nSub)) {
 					int uFull = uSub + subToFull;
 					for (IEdgeIter it = g.outEdges(uFull).iterator(); it.hasNext();) {
 						it.nextInt();

@@ -76,7 +76,7 @@ class DominatingSetAlgoGreedy implements DominatingSetAlgoBase, RandomizedAlgori
 			edgeToIdx = new int[g.edges().size()];
 			Arrays.fill(edgeToIdx, -1);
 			if (directed) {
-				for (int u = 0; u < n; u++) {
+				for (int u : range(n)) {
 					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						int v = eit.targetInt();
@@ -89,7 +89,7 @@ class DominatingSetAlgoGreedy implements DominatingSetAlgoBase, RandomizedAlgori
 					}
 				}
 			} else {
-				for (int u = 0; u < n; u++) {
+				for (int u : range(n)) {
 					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
 						if (u == g.edgeSource(e))
@@ -216,7 +216,7 @@ class DominatingSetAlgoGreedy implements DominatingSetAlgoBase, RandomizedAlgori
 								.findAny()
 								.isEmpty());
 			}
-			for (int u = 0; u < n; u++)
+			for (int u : range(n))
 				if (!dominated.get(u))
 					dominating.set(u);
 

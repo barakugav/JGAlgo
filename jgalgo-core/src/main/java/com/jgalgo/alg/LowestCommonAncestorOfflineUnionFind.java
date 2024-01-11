@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.function.IntFunction;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -36,7 +37,7 @@ class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUt
 
 		int[] queriesNum = new int[n];
 		int queriesNumCount = 0;
-		for (int qNum = queries.size(), q = 0; q < qNum; q++) {
+		for (int q : range(queries.size())) {
 			int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);
 			if (u != v) {
 				queriesNum[u]++;
@@ -49,9 +50,9 @@ class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUt
 		int[] perVertexQueries = new int[queriesNumCount];
 		int[] perVertexQueriesOffset = new int[n + 1];
 		perVertexQueriesOffset[0] = 0;
-		for (int v = 1; v < n; v++)
+		for (int v : range(1, n))
 			perVertexQueriesOffset[v] = perVertexQueriesOffset[v - 1] + queriesNum[v - 1];
-		for (int qNum = queries.size(), q = 0; q < qNum; q++) {
+		for (int q : range(queries.size())) {
 			int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);
 			if (u != v) {
 				perVertexQueries[perVertexQueriesOffset[u]++] = q;
@@ -79,7 +80,7 @@ class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUt
 
 		UnionFind uf = UnionFind.builder().expectedSize(n).build();
 		int[] ufRoot = new int[n];
-		for (int v = 0; v < n; v++) {
+		for (int v : range(n)) {
 			uf.make();
 			ufRoot[v] = v;
 		}

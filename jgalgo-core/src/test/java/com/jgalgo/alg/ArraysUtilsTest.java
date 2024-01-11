@@ -16,11 +16,13 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.internal.util.TestBase;
 
@@ -165,10 +167,10 @@ public class ArraysUtilsTest extends TestBase {
 
 			java.util.Arrays.sort(a);
 			int bucketNum = (n - 1) / bucketSize + 1;
-			for (int b = 0; b < bucketNum; b++) {
+			for (int b : range(bucketNum)) {
 				int bucketBegin = b * bucketSize;
 				int bucketEnd = Math.min(bucketBegin + bucketSize, n);
-				for (int i = bucketBegin; i < bucketEnd; i++) {
+				for (int i : range(bucketBegin, bucketEnd)) {
 					assertTrue(a[bucketBegin] <= a[i] && a[i] <= a[bucketEnd - 1], "Bucket element " + a[i]
 							+ " is not in range [" + a[bucketBegin] + ", " + a[bucketEnd - 1] + "]");
 				}
@@ -194,10 +196,10 @@ public class ArraysUtilsTest extends TestBase {
 
 			java.util.Arrays.sort(a);
 			int bucketNum = (n - 1) / bucketSize + 1;
-			for (int b = 0; b < bucketNum; b++) {
+			for (int b : range(bucketNum)) {
 				int bucketBegin = b * bucketSize;
 				int bucketEnd = Math.min(bucketBegin + bucketSize, n);
-				for (int i = bucketBegin; i < bucketEnd; i++) {
+				for (int i : range(bucketBegin, bucketEnd)) {
 					assertTrue(a[bucketBegin] <= a[i] && a[i] <= a[bucketEnd - 1], "Bucket element " + a[i]
 							+ " is not in range [" + a[bucketBegin] + ", " + a[bucketEnd - 1] + "]");
 				}
@@ -266,19 +268,12 @@ public class ArraysUtilsTest extends TestBase {
 	}
 
 	private static Integer[] toIntegerArr(int[] a) {
-		Integer[] A = new Integer[a.length];
-		for (int i = 0; i < a.length; i++)
-			A[i] = Integer.valueOf(a[i]);
-		return A;
+		return IntStream.of(a).boxed().toArray(Integer[]::new);
 	}
 
 	@Test
 	public void invalidIndex() {
-		final int n = 100;
-		int[] a = new int[n];
-		for (int i = 0; i < n; i++)
-			a[i] = i;
-
+		int[] a = range(100).toIntArray();
 		assertThrows(IndexOutOfBoundsException.class, () -> ArraysUtils.getKthElement(a, -1, 100, 7, null, false));
 		assertThrows(IndexOutOfBoundsException.class, () -> ArraysUtils.getKthElement(a, 0, 101, 7, null, false));
 		assertThrows(IndexOutOfBoundsException.class, () -> ArraysUtils.getKthElement(a, 57, 57, 0, null, false));

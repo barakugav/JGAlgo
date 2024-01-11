@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ForkJoinPool;
@@ -80,7 +81,7 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairsBase {
 		final int n = g.vertices().size();
 
 		boolean negWeight = false;
-		for (int m = g.edges().size(), e = 0; e < m; e++) {
+		for (int e : range(g.edges().size())) {
 			if (w.weight(e) < 0) {
 				negWeight = true;
 				break;
@@ -155,7 +156,7 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairsBase {
 		final int fakeV = refgBuilder.addVertexInt();
 		refgBuilder.addEdges(EdgeSet.allOf(g));
 		final int fakeEdgesThreshold = refgBuilder.edges().size();
-		for (int v = 0; v < n; v++) {
+		for (int v : range(n)) {
 			int e = refgBuilder.addEdge(fakeV, v);
 			assert e >= fakeEdgesThreshold;
 		}
@@ -179,7 +180,7 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairsBase {
 		}
 
 		double[] potential = new double[n];
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			potential[v] = res.distance(v);
 		return potential;
 	}

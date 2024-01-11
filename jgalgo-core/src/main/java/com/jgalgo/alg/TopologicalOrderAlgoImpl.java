@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -39,7 +40,7 @@ class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
 		// calc in degree of all vertices
 		// Find vertices with zero in degree and insert them to the queue
 		Arrays.fill(inDegree, 0);
-		for (int v = 0; v < n; v++) {
+		for (int v : range(n)) {
 			inDegree[v] = g.inEdges(v).size();
 			if (inDegree[v] == 0)
 				queue.enqueue(v);
@@ -82,7 +83,7 @@ class TopologicalOrderAlgoImpl extends TopologicalOrderAlgoAbstract {
 		public int vertexOrderIndex(int vertex) {
 			if (vertexOrderIndex == null) {
 				vertexOrderIndex = new int[orderedVertices.size()];
-				for (int i = 0; i < orderedVertices.size(); i++)
+				for (int i : range(orderedVertices.size()))
 					vertexOrderIndex[orderedVertices.getInt(i)] = i;
 			}
 			if (!(0 <= vertex && vertex < vertexOrderIndex.length))

@@ -65,7 +65,7 @@ class MinimumEdgeCutGlobalStoerWagner extends MinimumEdgeCutUtils.AbstractImplGl
 			/* Insert all (super) vertices to the heap */
 			assert heap.isEmpty();
 			assert range(cg.numberOfSuperVertices()).allMatch(U -> vRefs[U] == null);
-			for (int U = 1; U < cg.numberOfSuperVertices(); U++) {
+			for (int U : range(1, cg.numberOfSuperVertices())) {
 				double weightsSum = 0;
 				for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {
 					int e = eit.nextInt();

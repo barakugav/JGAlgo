@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Objects;
 import java.util.function.IntConsumer;
 import com.jgalgo.graph.IEdgeIter;
@@ -48,18 +49,18 @@ class CoresAlgoImpl implements CoresAlgoBase {
 		int[] degree = new int[n];
 		int maxDegree = 0;
 		if (!directed || degreeType == EdgeDirection.Out) {
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				degree[v] = g.outEdges(v).size();
 				maxDegree = Math.max(maxDegree, degree[v]);
 			}
 		} else if (degreeType == EdgeDirection.In) {
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				degree[v] = g.inEdges(v).size();
 				maxDegree = Math.max(maxDegree, degree[v]);
 			}
 		} else {
 			assert degreeType == EdgeDirection.All;
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				degree[v] = g.outEdges(v).size() + g.inEdges(v).size();
 				maxDegree = Math.max(maxDegree, degree[v]);
 			}
@@ -71,14 +72,14 @@ class CoresAlgoImpl implements CoresAlgoBase {
 		int[] bin = new int[maxDegree + 1];
 		int[] vertices = new int[n];
 		int[] pos = new int[n];
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			bin[degree[v]]++;
 		for (int start = 0, d = 0; d <= maxDegree; d++) {
 			int verticesNum = bin[d];
 			bin[d] = start;
 			start += verticesNum;
 		}
-		for (int v = 0; v < n; v++) {
+		for (int v : range(n)) {
 			pos[v] = bin[degree[v]];
 			vertices[pos[v]] = v;
 			bin[degree[v]]++;
@@ -104,7 +105,7 @@ class CoresAlgoImpl implements CoresAlgoBase {
 		};
 
 		/* iterate over the vertices in increase order of their degree */
-		for (int p = 0; p < n; p++) {
+		for (int p : range(n)) {
 			int u = vertices[p];
 			assert pos[u] == p;
 			int uDegree = degree[u];

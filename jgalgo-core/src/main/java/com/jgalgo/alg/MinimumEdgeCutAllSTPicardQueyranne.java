@@ -179,7 +179,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 		int[] resVToV = new int[n];
 		Arrays.fill(vToResV, -1);
 		Arrays.fill(resVToV, -1);
-		for (int v = 0; v < n; v++) {
+		for (int v : range(n)) {
 			if (removedVertices.get(v))
 				continue;
 			int resV = residual0.addVertexInt();
@@ -187,7 +187,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 			resVToV[resV] = v;
 		}
 		if (g.isDirected()) {
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
+			for (int e : range(g.edges().size())) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				if (u == v)
 					continue;
@@ -203,7 +203,7 @@ class MinimumEdgeCutAllSTPicardQueyranne extends MinimumEdgeCutUtils.AbstractImp
 			}
 
 		} else {
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
+			for (int e : range(g.edges().size())) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				if (u == v)
 					continue;

@@ -62,7 +62,7 @@ class ClosuresEnumeratorSchrageBaker implements ClosuresEnumeratorBase {
 					IndexGraphBuilder g0 = IndexGraphBuilder.directed();
 					g0.ensureEdgeCapacity(g.edges().size() - selfEdges);
 					g0.addVertices(g.vertices());
-					for (int m = g.edges().size(), e = 0; e < m; e++)
+					for (int e : range(g.edges().size()))
 						if (g.edgeSource(e) != g.edgeTarget(e))
 							g0.addEdge(g.edgeSource(e), g.edgeTarget(e));
 					g = g0.build();
@@ -77,7 +77,7 @@ class ClosuresEnumeratorSchrageBaker implements ClosuresEnumeratorBase {
 		sccGraph0.addVertices(range(sccNum));
 		Bitmap seenBlocks = new Bitmap(sccNum);
 		IntList seenBlockList = new IntArrayList();
-		for (int b1 = 0; b1 < sccNum; b1++) {
+		for (int b1 : range(sccNum)) {
 			for (int u : sccs.blockVertices(b1)) {
 				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
@@ -111,7 +111,7 @@ class ClosuresEnumeratorSchrageBaker implements ClosuresEnumeratorBase {
 				((TopologicalOrderAlgo.IResult) topoAlgo.computeTopologicalSorting(g)).orderedVertices().toIntArray();
 		IntArrays.reverse(topoIdxToV);
 		int[] vToTopoIndex = new int[n];
-		for (int topoIdx = 0; topoIdx < n; topoIdx++)
+		for (int topoIdx : range(n))
 			vToTopoIndex[topoIdxToV[topoIdx]] = topoIdx;
 
 		Bitmap m = new Bitmap(n);

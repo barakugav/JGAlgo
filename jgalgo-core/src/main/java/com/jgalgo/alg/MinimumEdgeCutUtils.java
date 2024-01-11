@@ -196,7 +196,7 @@ class MinimumEdgeCutUtils {
 				IVertexBiPartition bestCut = null;
 				double bestCutWeight = Double.MAX_VALUE;
 				final int source = 0;
-				for (int sink = 1; sink < n; sink++) {
+				for (int sink : range(1, n)) {
 					IVertexBiPartition cut = (IVertexBiPartition) stMinCut
 							.computeMinimumCut(g, w, Integer.valueOf(source), Integer.valueOf(sink));
 					double cutWeight = w.weightSum(cut.crossEdges());

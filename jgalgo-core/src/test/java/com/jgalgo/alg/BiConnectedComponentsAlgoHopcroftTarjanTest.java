@@ -75,7 +75,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 
 		/* Check that each edge is contained in exactly one BiCc (unless its a self loop) */
 		WeightsObj<E, IntSet> edgeToBiccs = Weights.createExternalEdgesWeights(g, IntSet.class, null);
-		for (int bccIdx = 0; bccIdx < res.getNumberOfBiCcs(); bccIdx++) {
+		for (int bccIdx : range(res.getNumberOfBiCcs())) {
 			Collection<E> biccEdges = res.getBiCcEdges(bccIdx);
 			for (E e : biccEdges) {
 				IntSet eBiccs = edgeToBiccs.get(e);
@@ -102,7 +102,7 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		final VertexPartition<V, E> gCcs = ccAlgo.findWeaklyConnectedComponents(g);
 
 		/* Check that each bicc is actually a BiConnected component */
-		for (int bccIdx = 0; bccIdx < res.getNumberOfBiCcs(); bccIdx++) {
+		for (int bccIdx : range(res.getNumberOfBiCcs())) {
 			Collection<V> vertices = res.getBiCcVertices(bccIdx);
 			assertFalse(vertices.isEmpty(), "BiConnected component can't be empty");
 			assertEquals(new ObjectOpenHashSet<>(vertices).size(), vertices.size(),
@@ -131,8 +131,8 @@ public class BiConnectedComponentsAlgoHopcroftTarjanTest extends TestBase {
 		}
 
 		/* Check that we couldn't merge two biccs into one */
-		for (int i = 0; i < res.getNumberOfBiCcs(); i++) {
-			for (int j = i + 1; j < res.getNumberOfBiCcs(); j++) {
+		for (int i : range(res.getNumberOfBiCcs())) {
+			for (int j : range(i + 1, res.getNumberOfBiCcs())) {
 				ObjectList<V> vs1 = new ObjectArrayList<>(res.getBiCcVertices(i));
 				ObjectList<V> vs2 = new ObjectArrayList<>(res.getBiCcVertices(j));
 				if (gCcs.vertexBlock(vs1.iterator().next()) != gCcs.vertexBlock(vs2.iterator().next()))

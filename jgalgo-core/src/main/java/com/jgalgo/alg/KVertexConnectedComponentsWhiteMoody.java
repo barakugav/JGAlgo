@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -73,7 +74,7 @@ class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponents
 
 		/* Compute the 0-connected components (isolated vertices) and 1-connected (weakly connected) manually */
 		IVertexPartition ccs1 = (IVertexPartition) unaryConnectedComponentsAlgo.findWeaklyConnectedComponents(g);
-		for (int bNum = ccs1.numberOfBlocks(), b = 0; b < bNum; b++) {
+		for (int b : range(ccs1.numberOfBlocks())) {
 			boolean isIsolated = ccs1.blockVertices(b).size() == 1;
 			int compConnectivity = isIsolated ? 0 : 1;
 			addComponent.accept(ccs1.blockVertices(b), compConnectivity);
@@ -82,7 +83,7 @@ class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponents
 		/* Compute the 2-connected components (bi-comps) manually */
 		BiConnectedComponentsAlgo.IResult ccs2 =
 				(BiConnectedComponentsAlgo.IResult) biConnectedComponentsAlgo.findBiConnectedComponents(g);
-		for (int bNum = ccs2.getNumberOfBiCcs(), b = 0; b < bNum; b++) {
+		for (int b : range(ccs2.getNumberOfBiCcs())) {
 			// TODO bi-comp algorithm should not return comps of size 2. should assert here
 			/* avoid considering dyads as bicomponents */
 			if (ccs2.getBiCcVertices(b).size() > 2)
@@ -134,7 +135,7 @@ class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponents
 		 */
 		// TODO use tri-connected algorithm as a base, instead of bi-connected algo. Runs in linear time
 		Stack<IntObjectPair<Iterator<IntSet>>> stack = new ObjectArrayList<>();
-		for (int bNum = ccs2.getNumberOfBiCcs(), b = 0; b < bNum; b++) {
+		for (int b : range(ccs2.getNumberOfBiCcs())) {
 			IntSet biccVertices = ccs2.getBiCcVertices(b);
 			if (biccVertices.size() <= 2)
 				continue;
@@ -239,7 +240,7 @@ class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponents
 
 		Bitmap nodes = cut.copy();
 		nodes.not();
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			if (g.outEdges(v).size() <= k)
 				nodes.clear(v);
 
@@ -248,7 +249,7 @@ class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponents
 		int[] comp = new int[n];
 		List<IntSet> comps = new ArrayList<>();
 
-		for (int r = 0; r < n; r++) {
+		for (int r : range(n)) {
 			if (visited.get(r))
 				continue;
 			int compSize = 0;
@@ -271,7 +272,7 @@ class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponents
 			int neighborCutVerticesNum = 0;
 			Bitmap neighborCutVerticesBitmap = cut.copy();
 			neighborCutVerticesBitmap.not();
-			for (int uIdx = 0; uIdx < compSize; uIdx++) {
+			for (int uIdx : range(compSize)) {
 				int u = comp[uIdx];
 				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
@@ -300,7 +301,7 @@ class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponents
 		Bitmap visitedSets = new Bitmap(setsNum);
 
 		int[] comp = new int[setsNum];
-		for (int startSet = 0; startSet < setsNum; startSet++) {
+		for (int startSet : range(setsNum)) {
 			if (visitedSets.get(startSet))
 				continue;
 			int compSize = 0;
@@ -314,7 +315,7 @@ class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponents
 				for (int v : sets.get(uSetIdx))
 					uSetBitmap.set(v);
 
-				for (int vSetIdx = 0; vSetIdx < setsNum; vSetIdx++) {
+				for (int vSetIdx : range(setsNum)) {
 					if (visitedSets.get(vSetIdx))
 						continue;
 					IntList intersection = new IntArrayList();
@@ -336,7 +337,7 @@ class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponents
 
 			IntArrayList union = new IntArrayList();
 			Bitmap unionBitmap = new Bitmap(n);
-			for (int i = 0; i < compSize; i++) {
+			for (int i : range(compSize)) {
 				for (int v : sets.get(comp[i])) {
 					if (!unionBitmap.get(v)) {
 						union.add(v);

@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
@@ -147,7 +148,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			int queriesNum = lcaQueries.length / 4;
 			int[] res = new int[queriesNum];
 
-			for (int i = 0; i < queriesNum; i++) {
+			for (int i : range(queriesNum)) {
 				int u = lcaQueries[i * 4];
 				int v = lcaQueries[i * 4 + 2];
 				int lca = lcaQueries[i * 4 + 1];
@@ -156,14 +157,14 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 				int ua = -1, va = -1;
 
 				int qusize = getBitCount.applyAsInt(q[u]);
-				for (int j = 0; j < qusize; j++) {
+				for (int j : range(qusize)) {
 					if (getIthbit.apply(q[u], j) == lcaDepth) {
 						ua = a[u][j];
 						break;
 					}
 				}
 				int qvsize = getBitCount.applyAsInt(q[v]);
-				for (int j = 0; j < qvsize; j++) {
+				for (int j : range(qvsize)) {
 					if (getIthbit.apply(q[v], j) == lcaDepth) {
 						va = a[v][j];
 						break;
@@ -199,7 +200,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 				if (depth == treeHeight - 1) {
 					int qvsize = getBitCount.applyAsInt(q[v]);
 					int[] resv = new int[qvsize];
-					for (int i = 0; i < qvsize; i++) {
+					for (int i : range(qvsize)) {
 						int b = getIthbit.apply(q[v], i);
 						int s = getNumberOfTrailingZeros.applyAsInt(successor(a[v], 1 << b) >> 1);
 						resv[i] = edgesFromRoot.getInt(s);
@@ -212,8 +213,8 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 
 		private static int successor(int a, int b) {
 			// int r = 0, bsize = Integer.bitCount(b);
-			// for (int i = 0; i < bsize; i++)
-			// for (int bit = getIthOneBit(b, i) + 1; bit < Integer.SIZE; bit++)
+			// for (int i : range(bsize))
+			// for (int bit : range(getIthOneBit(b, i) + 1, Integer.SIZE))
 			// if ((a & (1 << bit)) != 0) {
 			// r |= 1 << bit;
 			// break;
@@ -273,7 +274,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			/* Create the deepest n vertices of the full Boruvka tree, each corresponding to an original vertex */
 			depths.ensureCapacity(depths.size() + n);
 			parents.ensureCapacity(parents.size() + n);
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				int vBuilder = vTv[v] = treeBuilder.addVertexInt();
 				assert v == vBuilder;
 				depths.add(0);
@@ -291,7 +292,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			int[] edges = new int[(n - 1) * 3];
 			int[] edgesNext = new int[(n / 2 * 1) * 3];
 			int edgesNum = 0;
-			for (int m = tOrig.edges().size(), e = 0; e < m; e++) {
+			for (int e : range(tOrig.edges().size())) {
 				int u = tOrig.edgeSource(e);
 				int v = tOrig.edgeTarget(e);
 				edges[edgesNum * 3 + 0] = e;
@@ -308,7 +309,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 				/* Find the minimum edge of each (super) vertex */
 				// Arrays.fill(minEdges, 0, n * 2, -1);
 				Arrays.fill(minEdgesWeight, 0, n, Double.MAX_VALUE);
-				for (int eIdx = 0; eIdx < edgesNum; eIdx++) {
+				for (int eIdx : range(edgesNum)) {
 					int e = edges[eIdx * 3 + 0];
 					int u = edges[eIdx * 3 + 1];
 					int v = edges[eIdx * 3 + 2];
@@ -330,7 +331,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 				final int IN_PATH = -2;
 				Arrays.fill(vNext, 0, n, UNVISITED);
 				int nNext = 0;
-				for (int u = 0; u < n; u++) {
+				for (int u : range(n)) {
 					/* find all reachable vertices from u */
 					for (int w = u, pathLength = 0;;) {
 						if (vNext[w] != UNVISITED) {
@@ -352,7 +353,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 				/* Construct new layer in the output tree graph */
 				depths.ensureCapacity(depths.size() + nNext);
 				parents.ensureCapacity(parents.size() + nNext);
-				for (int V = 0; V < nNext; V++) {
+				for (int V : range(nNext)) {
 					int nextV = treeBuilder.addVertexInt();
 					vTvNext[V] = nextV;
 
@@ -367,7 +368,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 					/* Will be set in the next iteration (or not, for root) */
 					parents.add(-1);
 				}
-				for (int u = 0; u < n; u++) {
+				for (int u : range(n)) {
 					int child = vTv[u];
 					int parent = vTvNext[vNext[u]];
 					int e = treeBuilder.addEdge(child, parent);
@@ -384,7 +385,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 
 				/* Construct the contracted graph of the next iteration (we just create an edges list) */
 				int edgesNumNext = 0;
-				for (int eIdx = 0; eIdx < edgesNum; eIdx++) {
+				for (int eIdx : range(edgesNum)) {
 					int u = edges[eIdx * 3 + 1];
 					int v = edges[eIdx * 3 + 2];
 					int U = vNext[u], V = vNext[v];
@@ -413,7 +414,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			this.parents = parents.elements();
 			this.depths = depths.elements();
 			n = treeBuilder.vertices().size();
-			for (int u = 0; u < n; u++)
+			for (int u : range(n))
 				this.depths[u] = treeHeight - this.depths[u] - 1;
 
 			return Pair.of(treeBuilder.build(), edgeRef);
@@ -425,7 +426,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 
 			LowestCommonAncestorStatic.IDataStructure lcaDS =
 					(LowestCommonAncestorStatic.IDataStructure) lcaAlgo.preProcessTree(tree, Integer.valueOf(root));
-			for (int q = 0; q < queriesNum; q++) {
+			for (int q : range(queriesNum)) {
 				int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);
 				if (u == v)
 					throw new IllegalArgumentException(
@@ -446,7 +447,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			Arrays.fill(q, 0);
 
 			int queriesNum = lcaQueries.length / 2;
-			for (int query = 0; query < queriesNum; query++) {
+			for (int query : range(queriesNum)) {
 				int u = lcaQueries[query * 2];
 				int ancestor = lcaQueries[query * 2 + 1];
 				if (u == ancestor)
@@ -457,7 +458,7 @@ class TreePathMaximaHagerup extends TreePathMaximaUtils.AbstractImpl {
 			/* Start traversing the full branching tree from the leaves upwards */
 			IntPriorityQueue queue = new FIFOQueueIntNoReduce();
 			Bitmap queued = new Bitmap(n);
-			for (int u = 0; u < n; u++) {
+			for (int u : range(n)) {
 				if (depths[u] == treeHeight - 1) {
 					queue.enqueue(u);
 					queued.set(u);

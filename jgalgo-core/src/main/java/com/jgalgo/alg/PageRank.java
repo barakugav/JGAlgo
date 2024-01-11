@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.function.DoubleSupplier;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
@@ -56,14 +57,14 @@ class PageRank {
 		double[] transferredScores = new double[n];
 		Predecessors ng = new Predecessors(g, w);
 
-		for (int v = 0; v < n; v++) {
+		for (int v : range(n)) {
 			outDegree[v] = g.outEdges(v).size();
 			scores[v] = 1.0 / n;
 		}
 
 		DoubleSupplier randomFactor = () -> {
 			double rFactor = 0;
-			for (int v = 0; v < n; v++)
+			for (int v : range(n))
 				rFactor += outDegree[v] > 0 ? (1 - dampingFactor) * scores[v] : scores[v];
 			return rFactor / n;
 		};
@@ -72,12 +73,12 @@ class PageRank {
 			for (int iters = 0; iters < iterations; iters++) {
 				double rFactor = randomFactor.getAsDouble();
 
-				for (int v = 0; v < n; v++)
+				for (int v : range(n))
 					if (outDegree[v] != 0)
 						transferredScores[v] = scores[v] / outDegree[v];
 
 				double maxChange = 0;
-				for (int v = 0; v < n; v++) {
+				for (int v : range(n)) {
 					double score = 0;
 					for (Predecessors.Iter it = ng.predecessors(v); it.hasNext(); it.advance())
 						score += transferredScores[it.vertex()];
@@ -91,18 +92,18 @@ class PageRank {
 
 		} else {
 			double[] weightSum = new double[n];
-			for (int v = 0; v < n; v++)
+			for (int v : range(n))
 				weightSum[v] = w.weightSum(g.outEdges(v));
 
 			for (int iters = 0; iters < iterations; iters++) {
 				double rFactor = randomFactor.getAsDouble();
 
-				for (int v = 0; v < n; v++)
+				for (int v : range(n))
 					if (!g.outEdges(v).isEmpty())
 						transferredScores[v] = scores[v] / weightSum[v];
 
 				double maxChange = 0;
-				for (int v = 0; v < n; v++) {
+				for (int v : range(n)) {
 					double score = 0;
 					for (Predecessors.Iter it = ng.predecessors(v); it.hasNext(); it.advance())
 						score += transferredScores[it.vertex()] * it.weight();
@@ -134,14 +135,15 @@ class PageRank {
 				predecessors = new int[m];
 			} else {
 				int outDegreeSum = 0;
-				for (int u = 0; u < n; u++)
+				for (int u : range(n))
 					outDegreeSum += g.outEdges(u).size();
 				predecessors = new int[outDegreeSum];
 			}
 
 			if (WeightFunction.isCardinality(w)) {
 				weights = null;
-				for (int eIdx = 0, v = 0; v < n; v++) {
+				int eIdx = 0;
+				for (int v : range(n)) {
 					predecessorsBegin[v] = eIdx;
 					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
 						eit.nextInt();
@@ -150,7 +152,8 @@ class PageRank {
 				}
 			} else {
 				weights = new double[predecessors.length];
-				for (int eIdx = 0, v = 0; v < n; v++) {
+				int eIdx = 0;
+				for (int v : range(n)) {
 					predecessorsBegin[v] = eIdx;
 					for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();

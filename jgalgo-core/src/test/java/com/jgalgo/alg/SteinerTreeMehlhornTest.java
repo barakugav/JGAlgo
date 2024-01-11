@@ -95,7 +95,7 @@ public class SteinerTreeMehlhornTest extends TestBase {
 				List<Integer> terminalsArr = new ArrayList<>(terminals);
 				Collections.shuffle(terminalsArr, rand);
 				Integer t1 = terminalsArr.get(0);
-				for (int t2Idx = 1; t2Idx < terminalsArr.size(); t2Idx++) {
+				for (int t2Idx : range(1, terminalsArr.size())) {
 					Integer t2 = terminalsArr.get(t2Idx);
 					if (cc.vertexBlock(t1) != cc.vertexBlock(t2)) {
 						List<Integer> t1Vs = new ArrayList<>(cc.blockVertices(cc.vertexBlock(t1)));
@@ -140,7 +140,7 @@ public class SteinerTreeMehlhornTest extends TestBase {
 			treeLoop: for (int bitmap = 0; bitmap < 1 << m; bitmap++) {
 				tree.clear();
 				assert tree.isEmpty();
-				for (int i = 0; i < m; i++)
+				for (int i : range(m))
 					if ((bitmap & (1 << i)) != 0)
 						tree.add(edges.get(i));
 				Graph<V, E> treeGraph = g.subGraphCopy(null, tree);

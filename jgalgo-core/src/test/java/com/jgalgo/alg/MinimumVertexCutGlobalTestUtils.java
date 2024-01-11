@@ -128,7 +128,7 @@ class MinimumVertexCutGlobalTestUtils extends TestUtils {
 				if (bitmap == 0 || bitmap == (1 << n) - 1)
 					continue; // trivial cut
 				remainingVertices.clear();
-				for (int i = 0; i < n; i++)
+				for (int i : range(n))
 					if ((bitmap & (1 << i)) != 0)
 						remainingVertices.add(vertices.get(i));
 				if (wcc.isWeaklyConnected(g.subGraphCopy(remainingVertices, null)))

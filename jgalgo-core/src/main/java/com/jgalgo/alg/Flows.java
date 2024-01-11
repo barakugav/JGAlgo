@@ -91,16 +91,16 @@ class Flows {
 			IWeightFunction cost0 = WeightFunctions.asIntGraphWeightFunc(cost);
 			double sum = 0;
 			if (WeightFunction.isCardinality(cost0)) {
-				for (int m = g.edges().size(), e = 0; e < m; e++)
+				for (int e : range(g.edges().size()))
 					sum += getFlow(e);
 
 			} else if (WeightFunction.isInteger(cost0)) {
 				IWeightFunctionInt costInt = (IWeightFunctionInt) cost;
-				for (int m = g.edges().size(), e = 0; e < m; e++)
+				for (int e : range(g.edges().size()))
 					sum += getFlow(e) * costInt.weightInt(e);
 
 			} else {
-				for (int m = g.edges().size(), e = 0; e < m; e++)
+				for (int e : range(g.edges().size()))
 					sum += getFlow(e) * cost0.weight(e);
 			}
 			return sum;
@@ -221,7 +221,7 @@ class Flows {
 
 				assert gBuilder.edges().isEmpty();
 				gBuilder.ensureEdgeCapacity(gOrig.edges().size() * 2);
-				for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
+				for (int e : range(gOrig.edges().size())) {
 					int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
 					if (u != v)
 						addEdge(u, v, e);
@@ -255,12 +255,12 @@ class Flows {
 				int[] twin = new int[m];
 				if (reindexedGraph.edgesReIndexing().isPresent()) {
 					IndexGraphBuilder.ReIndexingMap eIdxMap = reindexedGraph.edgesReIndexing().get();
-					for (int eBuilder = 0; eBuilder < m; eBuilder++) {
+					for (int eBuilder : range(m)) {
 						edgeRef[eBuilder] = edgeRefTemp[eIdxMap.reIndexedToOrig(eBuilder)];
 						twin[eBuilder] = eIdxMap.origToReIndexed(twinTemp[eIdxMap.reIndexedToOrig(eBuilder)]);
 					}
 				} else {
-					for (int eBuilder = 0; eBuilder < m; eBuilder++) {
+					for (int eBuilder : range(m)) {
 						edgeRef[eBuilder] = edgeRefTemp[eBuilder];
 						twin[eBuilder] = twinTemp[eBuilder];
 					}

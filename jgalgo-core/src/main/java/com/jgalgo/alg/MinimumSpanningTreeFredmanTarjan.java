@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
@@ -95,7 +96,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 		int[] vListEndNext = new int[n]; // vListEnd of the next iteration
 
 		// init each vertex to be its own super vertex
-		for (int v = 0; v < n; v++) {
+		for (int v : range(n)) {
 			V[v] = vListBegin[v] = vListEnd[v] = v;
 			vListNext[v] = -1;
 		}
@@ -118,7 +119,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 			niNext = 0;
 
 			Arrays.fill(vTree, 0, ni, -1);
-			for (int r = 0; r < ni; r++) {
+			for (int r : range(ni)) {
 				if (vTree[r] != -1)
 					continue;
 
@@ -222,7 +223,7 @@ class MinimumSpanningTreeFredmanTarjan implements MinimumSpanningTreeBase {
 				break;
 
 			// update super vertex labels for all vertices
-			for (int v = 0; v < n; v++)
+			for (int v : range(n))
 				V[v] = VNext[V[v]];
 
 		}

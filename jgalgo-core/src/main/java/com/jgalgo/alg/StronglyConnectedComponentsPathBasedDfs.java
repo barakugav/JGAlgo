@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -54,7 +55,7 @@ class StronglyConnectedComponentsPathBasedDfs extends ConnectedComponentsUtils.A
 		int[] c = new int[n];
 		int cNext = 1;
 
-		for (int root = 0; root < n; root++) {
+		for (int root : range(n)) {
 			if (comp[root] != -1)
 				continue;
 			dfsPath[0] = root;
@@ -87,7 +88,7 @@ class StronglyConnectedComponentsPathBasedDfs extends ConnectedComponentsUtils.A
 						comp[v] = compNum;
 					} while (v != u);
 					if (stopAfterOneBlock) {
-						for (int w = 0; w < n; w++)
+						for (int w : range(n))
 							if (comp[w] == -1)
 								return null;
 						return new VertexPartitions.Impl(g, compNum, comp);

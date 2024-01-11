@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -60,7 +61,7 @@ class ColoringRecursiveLargestFirst implements ColoringAlgoBase {
 		int colorsNum = 0;
 		Arrays.fill(colors, -1);
 		int[] degree = new int[n];
-		for (int u = 0; u < n; u++)
+		for (int u : range(n))
 			degree[u] = g.outEdges(u).size();
 
 		Bitmap S = new Bitmap(n);
@@ -71,7 +72,7 @@ class ColoringRecursiveLargestFirst implements ColoringAlgoBase {
 			isAdjacentToS.clear();
 
 			int bestDegree = -1, firstU = -1;
-			for (int u = 0; u < n; u++) {
+			for (int u : range(n)) {
 				if (colors[u] != -1)
 					continue;
 				int d = degree[u];
@@ -100,7 +101,7 @@ class ColoringRecursiveLargestFirst implements ColoringAlgoBase {
 
 				int nextU = -1, bestNumOfNeighborsAdjacentToS = -1;
 				bestDegree = -1;
-				for (int v = 0; v < n; v++) {
+				for (int v : range(n)) {
 					if (colors[v] != -1 || S.get(v) || isAdjacentToS.get(v))
 						continue;
 					int numOfNeighborsAdjacentToS = 0;

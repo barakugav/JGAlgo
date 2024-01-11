@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
@@ -195,7 +196,7 @@ public interface SteinerTreeAlgo {
 			degree[ig.edgeSource(e)]++;
 			degree[ig.edgeTarget(e)]++;
 		}
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			if (degree[v] == 1 && !isTerminal.get(v))
 				return false; /* non-terminal leaf */
 

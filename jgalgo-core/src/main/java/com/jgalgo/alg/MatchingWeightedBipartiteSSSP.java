@@ -93,7 +93,7 @@ class MatchingWeightedBipartiteSSSP implements MatchingAlgoBase.MaximumBased {
 		final int s = g.addVertexInt(), t = g.addVertexInt();
 		IWeightsDouble w = g.addEdgesWeights("weight", double.class);
 
-		for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
+		for (int e : range(gOrig.edges().size())) {
 			int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
 			if (!partition.get(u)) {
 				assert partition.get(v);
@@ -127,10 +127,10 @@ class MatchingWeightedBipartiteSSSP implements MatchingAlgoBase.MaximumBased {
 		final double RemovedEdgeWeight = maxWeight * n;
 
 		// Negate unmatched edges
-		for (int m = g.edges().size(), e = 0; e < m; e++)
+		for (int e : range(g.edges().size()))
 			w.set(e, -w.weight(e));
 		// Connected unmatched vertices to fake vertices s,t
-		for (int u = 0; u < n; u++) {
+		for (int u : range(n)) {
 			if (partition.get(u)) {
 				w.set(g.addEdge(s, u), 0);
 			} else {
@@ -145,7 +145,7 @@ class MatchingWeightedBipartiteSSSP implements MatchingAlgoBase.MaximumBased {
 		// first potential values
 		ShortestPathSingleSource.IResult sp =
 				(ShortestPathSingleSource.IResult) ssspNegative.computeShortestPaths(g, w, Integer.valueOf(s));
-		for (int v = 0; v < n + 2; v++)
+		for (int v : range(n + 2))
 			potential[v] = sp.distance(v);
 
 		for (;;) {
@@ -182,7 +182,7 @@ class MatchingWeightedBipartiteSSSP implements MatchingAlgoBase.MaximumBased {
 			}
 
 			// Update potential based on the distances
-			for (int u = 0; u < n; u++)
+			for (int u : range(n))
 				potential[u] += sp.distance(u);
 		}
 

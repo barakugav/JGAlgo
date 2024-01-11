@@ -84,7 +84,7 @@ public class MinimumDirectedSpanningTreeTarjanTest extends TestBase {
 			WeaklyConnectedComponentsAlgo wccAlgo = WeaklyConnectedComponentsAlgo.newInstance();
 			VertexPartition<V, E> wccs = wccAlgo.findWeaklyConnectedComponents(g);
 			IntCollection mst = new IntArrayList();
-			for (int wcc = 0; wcc < wccs.numberOfBlocks(); wcc++) {
+			for (int wcc : range(wccs.numberOfBlocks())) {
 				int root = gToDg.getInt(wccs.blockVertices(wcc).iterator().next());
 				MinimumSpanningTree.IResult wccMst = (MinimumSpanningTree.IResult) algo
 						.computeMinimumDirectedSpanningTree(dg, w0, Integer.valueOf(root));

@@ -76,14 +76,14 @@ class IsomorphismTesters {
 				int[] iEdgeMapping = new int[m2];
 				Arrays.fill(iVertexMapping, -1);
 				Arrays.fill(iEdgeMapping, -1);
-				for (int v1 = 0; v1 < n1; v1++) {
+				for (int v1 : range(n1)) {
 					int v2 = vertexMapping[v1];
 					if (v2 >= 0) {
 						assert iVertexMapping[v2] < 0;
 						iVertexMapping[v2] = v1;
 					}
 				}
-				for (int e1 = 0; e1 < m1; e1++) {
+				for (int e1 : range(m1)) {
 					int e2 = edgeMapping[e1];
 					if (e2 >= 0) {
 						assert iEdgeMapping[e2] < 0;

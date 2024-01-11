@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
@@ -86,7 +87,7 @@ public class ChinesePostmanTest extends TestBase {
 				bWeights.set(newEdge, w.weightInt(e));
 			}
 
-			for (int i = 0; i < m; i++) {
+			for (int i : range(m)) {
 				if ((bitmap & (1 << i)) == 0)
 					continue;
 				E origEdge = es.get(i);

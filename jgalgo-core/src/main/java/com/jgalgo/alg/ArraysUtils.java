@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Comparator;
 import com.jgalgo.internal.util.Assertions;
@@ -163,7 +164,7 @@ class ArraysUtils {
 
 		// Find greatest element smaller than the pivot
 		int pivotIdx = -1;
-		for (int i = from; i < to; i++)
+		for (int i : range(from, to))
 			if (c.compare(pivot, a[i]) >= 0 && (pivotIdx == -1 || c.compare(a[pivotIdx], a[i]) < 0))
 				pivotIdx = i;
 		if (pivotIdx == -1)
@@ -195,7 +196,7 @@ class ArraysUtils {
 
 		// Find greatest element smaller than the pivot
 		int pivotIdx = -1;
-		for (int i = from; i < to; i++)
+		for (int i : range(from, to))
 			if (c.compare(pivot, a[i]) >= 0 && (pivotIdx == -1 || c.compare(a[pivotIdx], a[i]) < 0))
 				pivotIdx = i;
 		if (pivotIdx == -1)
@@ -207,11 +208,11 @@ class ArraysUtils {
 	private static <E> long pivotPartition0(E[] a, int from, int to, int pivotIdx, Comparator<? super E> c) {
 		E pivot = a[pivotIdx];
 		int insertIdx = from;
-		for (int i = from; i < to; i++)
+		for (int i : range(from, to))
 			if (c.compare(a[i], pivot) < 0)
 				ObjectArrays.swap(a, i, insertIdx++);
 		final int lastSmaller = insertIdx - 1;
-		for (int i = insertIdx; i < to; i++)
+		for (int i : range(insertIdx, to))
 			if (c.compare(a[i], pivot) == 0)
 				ObjectArrays.swap(a, i, insertIdx++);
 		final int firstGreater = insertIdx;
@@ -221,11 +222,11 @@ class ArraysUtils {
 	private static long pivotPartition0(int[] a, int from, int to, int pivotIdx, IntComparator c) {
 		int pivot = a[pivotIdx];
 		int insertIdx = from;
-		for (int i = from; i < to; i++)
+		for (int i : range(from, to))
 			if (c.compare(a[i], pivot) < 0)
 				IntArrays.swap(a, i, insertIdx++);
 		final int lastSmaller = insertIdx - 1;
-		for (int i = insertIdx; i < to; i++)
+		for (int i : range(insertIdx, to))
 			if (c.compare(a[i], pivot) == 0)
 				IntArrays.swap(a, i, insertIdx++);
 		final int firstGreater = insertIdx;
@@ -236,7 +237,7 @@ class ArraysUtils {
 		if (to - from <= 5)
 			return partition5(a, from, to, c);
 		int blockNum = (to - from - 1) / 5 + 1;
-		for (int i = 0; i < blockNum; i++) {
+		for (int i : range(blockNum)) {
 			int subFrom = from + i * 5;
 			int subTo = subFrom + 5;
 			if (subTo > to)
@@ -254,7 +255,7 @@ class ArraysUtils {
 		if (to - from <= 5)
 			return partition5(a, from, to, c);
 		int blockNum = (to - from - 1) / 5 + 1;
-		for (int i = 0; i < blockNum; i++) {
+		for (int i : range(blockNum)) {
 			int subFrom = from + i * 5;
 			int subTo = subFrom + 5;
 			if (subTo > to)
@@ -269,14 +270,14 @@ class ArraysUtils {
 	}
 
 	private static <E> int partition5(E[] a, int from, int to, Comparator<? super E> c) {
-		for (int i = from + 1; i < to; i++)
+		for (int i : range(from + 1, to))
 			for (int j = i; j > from && c.compare(a[j], a[j - 1]) < 0; j--)
 				ObjectArrays.swap(a, j, j - 1);
 		return from + (to - from) / 2;
 	}
 
 	private static int partition5(int[] a, int from, int to, IntComparator c) {
-		for (int i = from + 1; i < to; i++)
+		for (int i : range(from + 1, to))
 			for (int j = i; j > from && c.compare(a[j], a[j - 1]) < 0; j--)
 				IntArrays.swap(a, j, j - 1);
 		return from + (to - from) / 2;

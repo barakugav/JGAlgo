@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -90,7 +91,7 @@ public class ClosuresEnumeratorSchrageBakerTest extends TestBase {
 		Set<V> closure = new ObjectOpenHashSet<>(n);
 		subsetLoop: for (int bitmap = 1; bitmap < 1 << n; bitmap++) {
 			closure.clear();
-			for (int i = 0; i < n; i++)
+			for (int i : range(n))
 				if ((bitmap & (1 << i)) != 0)
 					closure.add(vertices.get(i));
 			for (V w : Path.reachableVertices(g, closure.iterator()))

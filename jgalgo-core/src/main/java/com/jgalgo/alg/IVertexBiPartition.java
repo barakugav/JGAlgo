@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Map;
 import java.util.function.IntPredicate;
 import com.jgalgo.graph.IndexGraph;
@@ -176,11 +177,11 @@ public interface IVertexBiPartition extends IVertexPartition, VertexBiPartition<
 			vertexToBlock = Bitmap.fromPredicate(n, vIdx -> mapping.test(viMap.indexToIdInt(vIdx)));
 		}
 		if (vertexToBlock.get(0)) {
-			for (int v = 1; v < n; v++)
+			for (int v : range(1, n))
 				if (!vertexToBlock.get(v))
 					return true;
 		} else {
-			for (int v = 1; v < n; v++)
+			for (int v : range(1, n))
 				if (vertexToBlock.get(v))
 					return true;
 		}

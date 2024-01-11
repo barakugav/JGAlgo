@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.BitSet;
@@ -94,7 +95,7 @@ class ConnectedComponentsTestUtils {
 		for (V v : g.vertices())
 			ccs.set(res.vertexBlock(v));
 		assertEquals(ccs.cardinality(), res.numberOfBlocks());
-		for (int cc = 0; cc < res.numberOfBlocks(); cc++)
+		for (int cc : range(res.numberOfBlocks()))
 			assertTrue(ccs.get(cc));
 	}
 

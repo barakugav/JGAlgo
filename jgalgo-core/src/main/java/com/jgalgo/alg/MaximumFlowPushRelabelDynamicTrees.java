@@ -109,7 +109,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 
 			active = new QueueFixSize<>(n);
 			vertexData = new Vertex[n];
-			for (int u = 0; u < n; u++)
+			for (int u : range(n))
 				vertexData[u] = newVertex(u, dt.makeTree());
 
 			// set source and sink as 'active' to prevent them from entering the active
@@ -120,7 +120,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 			children = new LinkedListFixedSize.Doubly(n);
 
 			/* Init all vertices iterators */
-			for (int u = 0; u < n; u++)
+			for (int u : range(n))
 				vertexData(u).edgeIter = g.outEdges(u).iterator();
 		}
 
@@ -139,7 +139,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 			assert queue.isEmpty();
 
 			int n = g.vertices().size();
-			for (int u = 0; u < n; u++)
+			for (int u : range(n))
 				vertexData[u].label = n;
 
 			visited.set(sink);
@@ -283,7 +283,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 			/* Cleanup all the edges that stayed in the DT */
 			int n = g.vertices().size();
 			Stack<DynamicTree.Vertex> cleanupStack = new ObjectArrayList<>();
-			for (int u = 0; u < n; u++) {
+			for (int u : range(n)) {
 				for (DynamicTree.Vertex uDt = vertexData(u).dtVertex, pDt; (pDt = uDt.getParent()) != null; uDt = pDt)
 					cleanupStack.push(uDt);
 				while (!cleanupStack.isEmpty()) {

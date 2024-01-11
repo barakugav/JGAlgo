@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.function.IntUnaryOperator;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIntIdMap;
@@ -122,7 +123,7 @@ public interface IVertexPartition extends VertexPartition<Integer, Integer> {
 		int[] vertexToBlock = new int[n];
 		if (g instanceof IndexGraph) {
 			int maxBlock = -1;
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				vertexToBlock[v] = mapping.applyAsInt(v);
 				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 			}
@@ -130,7 +131,7 @@ public interface IVertexPartition extends VertexPartition<Integer, Integer> {
 		} else {
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
 			int maxBlock = -1;
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToIdInt(v));
 				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 			}
@@ -156,13 +157,13 @@ public interface IVertexPartition extends VertexPartition<Integer, Integer> {
 		int[] vertexToBlock = new int[n];
 		int maxBlock = -1;
 		if (g instanceof IndexGraph) {
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				vertexToBlock[v] = mapping.applyAsInt(v);
 				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 			}
 		} else {
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToIdInt(v));
 				maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 			}

@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -33,7 +34,7 @@ class WeaklyConnectedComponentsAlgoImpl extends ConnectedComponentsUtils.Abstrac
 		int compNum = 0;
 
 		IntStack stack = new IntArrayList();
-		for (int root = 0; root < n; root++) {
+		for (int root : range(n)) {
 			if (comp[root] != -1)
 				continue;
 			final int compIdx = compNum++;

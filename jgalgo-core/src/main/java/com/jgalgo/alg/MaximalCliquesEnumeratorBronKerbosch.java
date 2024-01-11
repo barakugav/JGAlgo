@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Iterator;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
@@ -52,7 +53,7 @@ class MaximalCliquesEnumeratorBronKerbosch implements MaximalCliquesEnumeratorBa
 
 			{
 				edges = new Bitmap(n * n);
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
+				for (int e : range(g.edges().size())) {
 					int u = g.edgeSource(e);
 					int v = g.edgeTarget(e);
 					if (u == v)

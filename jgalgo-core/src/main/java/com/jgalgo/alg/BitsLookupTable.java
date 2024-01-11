@@ -16,6 +16,8 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
+
 /**
  * Lookup tables for bit operations.
  *
@@ -78,7 +80,7 @@ class BitsLookupTable {
 			bitCountTable = new byte[1 << wordsize];
 
 			/* init table */
-			for (int highBit = 0; highBit < wordsize; highBit++) {
+			for (int highBit : range(wordsize)) {
 				for (int prevx = 0; prevx < 1 << highBit; prevx++) {
 					int x = prevx | (1 << highBit);
 					bitCountTable[x] = (byte) (bitCountTable[prevx] + 1);
@@ -157,7 +159,7 @@ class BitsLookupTable {
 			ithBitTable = new byte[1 << halfwordsize][halfwordsize];
 
 			/* init table */
-			for (int highBit = 0; highBit < halfwordsize; highBit++) {
+			for (int highBit : range(halfwordsize)) {
 				for (int prevx = 0; prevx < 1 << highBit; prevx++) {
 					int x = prevx | (1 << highBit);
 					int xBitCount = count.bitCount(x);

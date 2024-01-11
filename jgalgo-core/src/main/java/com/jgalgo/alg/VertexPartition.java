@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Set;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
@@ -218,7 +219,7 @@ public interface VertexPartition<V, E> {
 		int[] vertexToBlock = new int[n];
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 		int maxBlock = -1;
-		for (int v = 0; v < n; v++) {
+		for (int v : range(n)) {
 			vertexToBlock[v] = mapping.applyAsInt(viMap.indexToId(v));
 			maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 		}
@@ -253,7 +254,7 @@ public interface VertexPartition<V, E> {
 		int maxBlock = -1;
 
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-		for (int v = 0; v < n; v++) {
+		for (int v : range(n)) {
 			vertexToBlock[v] = mapping.applyAsInt(viMap.indexToId(v));
 			maxBlock = Math.max(maxBlock, vertexToBlock[v]);
 		}

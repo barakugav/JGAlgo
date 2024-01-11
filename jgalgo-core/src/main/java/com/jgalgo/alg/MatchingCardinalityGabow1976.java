@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -77,7 +78,7 @@ class MatchingCardinalityGabow1976 implements MatchingAlgoBase.Cardinality {
 		for (;;) {
 			Arrays.fill(root, -1);
 
-			for (int u = 0; u < n; u++) {
+			for (int u : range(n)) {
 				uf.make();
 				bases[u] = u;
 			}
@@ -85,7 +86,7 @@ class MatchingCardinalityGabow1976 implements MatchingAlgoBase.Cardinality {
 			int augPathSize = 0;
 
 			queue.clear();
-			for (int u = 0; u < n; u++) {
+			for (int u : range(n)) {
 				if (matched[u] != EdgeNone)
 					continue;
 				root[u] = u;
@@ -130,7 +131,7 @@ class MatchingCardinalityGabow1976 implements MatchingAlgoBase.Cardinality {
 						// Find base for the new blossom
 						int base, searchIdx = ++blossomBaseSearchNotesIndex;
 						blossomBaseSearch: for (int[] ps = new int[] { uBase, vBase };;) {
-							for (int i = 0; i < ps.length; i++) {
+							for (int i : range(ps.length)) {
 								int p = ps[i];
 								if (p == -1)
 									continue;
@@ -168,7 +169,7 @@ class MatchingCardinalityGabow1976 implements MatchingAlgoBase.Cardinality {
 						}
 
 						// Union all UF elements in the new blossom
-						for (int i = 0; i < blossomVerticesSize; i++)
+						for (int i : range(blossomVerticesSize))
 							uf.union(base, blossomVertices[i]);
 						bases[uf.find(base)] = base; // make sure the UF value is the base
 
@@ -184,12 +185,12 @@ class MatchingCardinalityGabow1976 implements MatchingAlgoBase.Cardinality {
 			if (augPathSize == 0)
 				break;
 
-			for (int i = 0; i < augPathSize; i++) {
+			for (int i : range(augPathSize)) {
 				int e = augPath[i];
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				setmatch.set(i, matched[u] == EdgeNone || g.edgeTarget(matched[u]) != v);
 			}
-			for (int i = 0; i < augPathSize; i++) {
+			for (int i : range(augPathSize)) {
 				int e = augPath[i];
 				if (setmatch.get(i))
 					matched[g.edgeSource(e)] = matched[g.edgeTarget(e)] = e;

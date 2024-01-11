@@ -117,8 +117,8 @@ public class KEdgeConnectedComponentsWangTest extends TestBase {
 		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
 		IndexGraphBuilder gb = IndexGraphBuilder.undirected();
 		gb.addVertices(range(n));
-		for (int u = 0; u < n; u++) {
-			for (int v = u + 1; v < n; v++) {
+		for (int u : range(n)) {
+			for (int v : range(u + 1, n)) {
 				int connectivity = minCutAlgo
 						.computeMinimumCut(g, null, viMap.indexToId(u), viMap.indexToId(v))
 						.crossEdges()
@@ -138,7 +138,7 @@ public class KEdgeConnectedComponentsWangTest extends TestBase {
 				.newInstance()
 				.findWeaklyConnectedComponents(gb.build());
 		Object2IntMap<V> partition0 = new Object2IntOpenHashMap<>();
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			partition0.put(viMap.indexToId(v), partition.vertexBlock(v));
 		return partition0;
 	}

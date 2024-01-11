@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
@@ -97,11 +98,11 @@ class FlowCirculationPushRelabel implements FlowCirculationBase {
 
 			flow = new double[m];
 			capacity = new double[m];
-			for (int e = 0; e < m; e++)
+			for (int e : range(m))
 				capacity[e] = capacityOrig.weight(e);
 
 			excess = new double[n];
-			for (int v = 0; v < n; v++)
+			for (int v : range(n))
 				excess[v] = supply.weight(v);
 
 			double supplyEps = Arrays.stream(excess).filter(e -> e > 0).min().orElse(0) * 1e-8;
@@ -113,7 +114,7 @@ class FlowCirculationPushRelabel implements FlowCirculationBase {
 				throw new IllegalArgumentException("sum of supply is not zero");
 
 			/* init greedily */
-			for (int e = 0; e < m; e++) {
+			for (int e : range(m)) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				if (u == v)
 					continue;
@@ -131,7 +132,7 @@ class FlowCirculationPushRelabel implements FlowCirculationBase {
 
 			/* init labels */
 			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				if (excess[v] > eps) {
 					label[v] = 1;
 					activate(v);
@@ -221,7 +222,7 @@ class FlowCirculationPushRelabel implements FlowCirculationBase {
 			}
 
 			assert g.vertices().intStream().allMatch(v -> excess[v] <= eps);
-			for (int m = g.edges().size(), e = 0; e < m; e++)
+			for (int e : range(g.edges().size()))
 				flow[e] = Math.max(0, Math.min(flow[e], capacityOrig.weight(e)));
 			return new Flows.FlowImpl(g, flow);
 		}
@@ -241,18 +242,18 @@ class FlowCirculationPushRelabel implements FlowCirculationBase {
 
 			flow = new int[m];
 			capacity = new int[m];
-			for (int e = 0; e < m; e++)
+			for (int e : range(m))
 				capacity[e] = capacityOrig.weightInt(e);
 
 			excess = new int[n];
 			int excessSum = 0;
-			for (int v = 0; v < n; v++)
+			for (int v : range(n))
 				excessSum += excess[v] = supply.weightInt(v);
 			if (excessSum != 0)
 				throw new IllegalArgumentException("sum of supply is not zero");
 
 			/* init greedily */
-			for (int e = 0; e < m; e++) {
+			for (int e : range(m)) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				if (u == v)
 					continue;
@@ -270,7 +271,7 @@ class FlowCirculationPushRelabel implements FlowCirculationBase {
 
 			/* init labels */
 			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				if (excess[v] > 0) {
 					label[v] = 1;
 					activate(v);
@@ -361,7 +362,7 @@ class FlowCirculationPushRelabel implements FlowCirculationBase {
 
 			double[] flow0 = new double[flow.length];
 			assert g.vertices().intStream().allMatch(v -> excess[v] == 0);
-			for (int m = g.edges().size(), e = 0; e < m; e++)
+			for (int e : range(g.edges().size()))
 				flow0[e] = flow[e];
 			return new Flows.FlowImpl(g, flow0);
 		}

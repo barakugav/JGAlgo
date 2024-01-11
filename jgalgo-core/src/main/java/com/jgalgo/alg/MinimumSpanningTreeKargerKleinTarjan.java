@@ -129,7 +129,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTreeBase, R
 
 	static IWeightsDouble assignWeightsFromEdgeRef(IndexGraph g, IWeightFunction w, int[] edgeRef) {
 		IWeightsDouble w2 = IWeights.createExternalEdgesWeights(g, double.class);
-		for (int m = g.edges().size(), e = 0; e < m; e++)
+		for (int e : range(g.edges().size()))
 			w2.set(e, w.weight(edgeRef[e]));
 		return w2;
 	}
@@ -138,7 +138,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTreeBase, R
 		allocatedMem.allocateForRandSubGraph();
 		IntCollection edgeSet = allocatedMem.edgeList;
 		edgeSet.clear();
-		for (int m = g.edges().size(), e = 0; e < m; e++)
+		for (int e : range(g.edges().size()))
 			if (rand.nextBoolean())
 				edgeSet.add(e);
 		return subGraph(g, edgeSet, edgeRef);
@@ -155,16 +155,16 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTreeBase, R
 
 		IndexGraph[] trees = allocatedMem.trees;
 		IWeightsDouble[] treeData = new IWeightsDouble[treeCount];
-		for (int t = 0; t < treeCount; t++)
+		for (int t : range(treeCount))
 			treeData[t] = trees[t].addEdgesWeights("weight", double.class);
 
 		int[] vToVnew = allocatedMem.vToVnew;
-		for (int u = 0; u < n; u++) {
+		for (int u : range(n)) {
 			int ut = vToTree.applyAsInt(u);
 			vToVnew[u] = trees[ut].addVertexInt();
 		}
 
-		for (int m = f.edges().size(), e = 0; e < m; e++) {
+		for (int e : range(f.edges().size())) {
 			int u = f.edgeSource(e), v = f.edgeTarget(e);
 			int un = vToVnew[u], vn = vToVnew[v];
 			int treeIdx = vToTree.applyAsInt(u);
@@ -174,7 +174,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTreeBase, R
 
 		// use the tree path maxima to find the heaviest edge in the path connecting u v for each edge in g
 		TreePathMaxima.IQueries[] tpmQueries = allocatedMem.tpmQueries;
-		for (int m = g.edges().size(), e = 0; e < m; e++) {
+		for (int e : range(g.edges().size())) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			int ut = vToTree.applyAsInt(u);
 			if (ut != vToTree.applyAsInt(v))
@@ -183,7 +183,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTreeBase, R
 		}
 
 		TreePathMaxima.IResult[] tpmResults = allocatedMem.tpmResults;
-		for (int t = 0; t < treeCount; t++) {
+		for (int t : range(treeCount)) {
 			tpmResults[t] =
 					(TreePathMaxima.IResult) tpm.computeHeaviestEdgeInTreePaths(trees[t], treeData[t], tpmQueries[t]);
 			tpmQueries[t].clear();
@@ -194,14 +194,14 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTreeBase, R
 		lightEdges.clear();
 		int[] tpmIdx = allocatedMem.vToVnew;
 		Arrays.fill(tpmIdx, 0, treeCount, 0);
-		for (int m = g.edges().size(), e = 0; e < m; e++) {
+		for (int e : range(g.edges().size())) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			int ut = vToTree.applyAsInt(u);
 			if (ut != vToTree.applyAsInt(v)
 					|| gw.get(e) <= treeData[ut].weight(tpmResults[ut].getHeaviestEdgeInt(tpmIdx[ut]++)))
 				lightEdges.add(e);
 		}
-		for (int t = 0; t < treeCount; t++)
+		for (int t : range(treeCount))
 			trees[t].clear();
 		return lightEdges;
 	}
@@ -228,7 +228,7 @@ class MinimumSpanningTreeKargerKleinTarjan implements MinimumSpanningTreeBase, R
 			tpmQueries = MemoryReuse.ensureLength(tpmQueries, treeCount);
 			tpmResults = MemoryReuse.ensureLength(tpmResults, treeCount);
 
-			for (int tIdx = 0; tIdx < treeCount; tIdx++) {
+			for (int tIdx : range(treeCount)) {
 				trees[tIdx] = MemoryReuse.ensureAllocated(trees[tIdx], () -> IndexGraph.newUndirected());
 				tpmQueries[tIdx] =
 						MemoryReuse.ensureAllocated(tpmQueries[tIdx], () -> TreePathMaxima.IQueries.newInstance());

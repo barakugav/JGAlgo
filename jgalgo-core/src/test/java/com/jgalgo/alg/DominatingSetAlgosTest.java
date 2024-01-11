@@ -130,7 +130,7 @@ public class DominatingSetAlgosTest extends TestBase {
 		// Set<V> dominatingSet = new ObjectOpenHashSet<>(n);
 		// for (int bitmap = 0; bitmap < 1 << n; bitmap++) {
 		// dominatingSet.clear();
-		// for (int i = 0; i < n; i++)
+		// for (int i : range(n))
 		// if ((bitmap & (1 << i)) != 0)
 		// dominatingSet.add(vertices.get(i));
 		// if (!DominatingSetAlgo.isDominatingSet(g, dominatingSet, dominanceDirection))

@@ -100,7 +100,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycleBase {
 		final int maxCcSize = range(ccNum).map(c -> cc.blockVertices(c).size()).max().orElse(-1);
 		double[][] d = new double[maxCcSize + 1][n];
 		int[][] policy = new int[maxCcSize + 1][n];
-		for (int k = 0; k < maxCcSize + 1; k++) {
+		for (int k : range(maxCcSize + 1)) {
 			Arrays.fill(d[k], 0, n, Double.POSITIVE_INFINITY);
 			Arrays.fill(policy[k], 0, n, -1);
 		}
@@ -112,7 +112,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycleBase {
 		int bestCycleMeanWeightVertex = -1;
 		final IntList bestCycleLengths = new IntArrayList();
 		IntList bestVertexCycleLengths = new IntArrayList();
-		for (int ccIdx = 0; ccIdx < ccNum; ccIdx++) {
+		for (int ccIdx : range(ccNum)) {
 			final int ccSize = cc.blockVertices(ccIdx).size();
 			if (ccSize < 2)
 				continue;
@@ -123,7 +123,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycleBase {
 			policy[0][source] = -1;
 			firstVisit[source] = true;
 
-			for (int k = 0; k < ccSize; k++) {
+			for (int k : range(ccSize)) {
 				boolean[] visit = k % 2 == 0 ? visit1 : visit2;
 				boolean[] visitNext = k % 2 == 0 ? visit2 : visit1;
 				for (int u : cc.blockVertices(ccIdx)) {
@@ -151,7 +151,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycleBase {
 					continue;
 				double bestVertexCycleMeanWeight = Double.NEGATIVE_INFINITY;
 				bestVertexCycleLengths.clear();
-				for (int k = 0; k < ccSize; k++) {
+				for (int k : range(ccSize)) {
 					int len = ccSize - k;
 					double cycleMeanWeight = (d[ccSize][u] - d[k][u]) / len;
 					if (bestVertexCycleMeanWeight < cycleMeanWeight) {
@@ -182,7 +182,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycleBase {
 		}
 		double[] pathWeights = new double[ccSize + 1];
 		pathWeights[0] = 0;
-		for (int k = 1; k < ccSize + 1; k++)
+		for (int k : range(1, ccSize + 1))
 			pathWeights[k] = pathWeights[k - 1] + w.weight(path[k - 1]);
 
 		final double eps =
@@ -221,7 +221,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycleBase {
 				interCcDegree = new int[n];
 				f = new int[n];
 				l = new int[n];
-				for (int u = 0; u < n; u++) {
+				for (int u : range(n)) {
 					final int uCc = cc.vertexBlock(u);
 					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						eit.nextInt();

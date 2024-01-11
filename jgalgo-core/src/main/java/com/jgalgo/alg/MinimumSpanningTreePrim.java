@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
@@ -94,7 +95,7 @@ class MinimumSpanningTreePrim implements MinimumSpanningTreeBase {
 		Bitmap visited = new Bitmap(n);
 
 		IntArrayList mst = new IntArrayList(n - 1);
-		for (int r = 0; r < n; r++) {
+		for (int r : range(n)) {
 			if (visited.get(r))
 				continue;
 
@@ -150,7 +151,7 @@ class MinimumSpanningTreePrim implements MinimumSpanningTreeBase {
 		Bitmap visited = new Bitmap(n);
 
 		IntArrayList mst = new IntArrayList(n - 1);
-		for (int r = 0; r < n; r++) {
+		for (int r : range(n)) {
 			if (visited.get(r))
 				continue;
 

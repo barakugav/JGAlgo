@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import com.jgalgo.alg.ShortestPathSingleSource.IResult;
@@ -38,7 +39,7 @@ class ShortestPathAllPairsUtils {
 		Arrays.fill(vToResIdx, -1);
 		boolean allVertices = verticesSubset == null;
 		if (allVertices) {
-			for (int n = g.vertices().size(), v = 0; v < n; v++)
+			for (int v : range(g.vertices().size()))
 				vToResIdx[v] = v;
 		} else {
 			int resIdx = 0;
@@ -136,7 +137,7 @@ class ShortestPathAllPairsUtils {
 				super(g);
 				int n = g.vertices().size();
 				distances = new double[n][n];
-				for (int v = 0; v < n; v++) {
+				for (int v : range(n)) {
 					Arrays.fill(distances[v], Double.POSITIVE_INFINITY);
 					setDistance(v, v, 0);
 				}

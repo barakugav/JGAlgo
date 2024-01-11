@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
@@ -298,7 +299,7 @@ class MinimumCostFlowTestUtilsDouble extends TestUtils {
 		assert vertices.size() >= 2;
 		suppliers.add(vertices.get(0));
 		demanders.add(vertices.get(1));
-		for (int i = 2; i < vertices.size(); i++) {
+		for (int i : range(2, vertices.size())) {
 			int r = rand.nextInt(3);
 			if (r == 0) {
 				suppliers.add(vertices.get(i));

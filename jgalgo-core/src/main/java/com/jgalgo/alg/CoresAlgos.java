@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
@@ -64,15 +65,16 @@ class CoresAlgos {
 				return;
 
 			coreOffset = new int[coreNum + 1];
-			for (int v = 0; v < n; v++)
+			for (int v : range(n))
 				coreOffset[this.core[v]]++;
-			for (int s = 0, c = 0; c < coreNum; c++) {
+			int s = 0;
+			for (int c : range(coreNum)) {
 				int k = coreOffset[c];
 				coreOffset[c] = s;
 				s += k;
 			}
 			sortedVertices = new int[n];
-			for (int v = 0; v < n; v++)
+			for (int v : range(n))
 				sortedVertices[coreOffset[this.core[v]]++] = v;
 			assert coreOffset[coreNum - 1] == n;
 			for (int c = coreNum; c > 0; c--)
@@ -87,12 +89,11 @@ class CoresAlgos {
 				final int n = this.core.length;
 				final int coreNum = maxCore + 1;
 				coreVertices = new IntSet[coreNum];
-				for (int c = 0; c < coreNum; c++) {
-					final int c0 = c;
+				for (int c : range(coreNum)) {
 					coreVertices[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], n) {
 						@Override
 						public boolean contains(int v) {
-							return 0 <= v && v < n && IndexResult.this.core[v] >= c0;
+							return 0 <= v && v < n && IndexResult.this.core[v] >= c;
 						}
 					};
 				}
@@ -107,12 +108,11 @@ class CoresAlgos {
 				final int n = this.core.length;
 				final int coreNum = maxCore + 1;
 				coreShells = new IntSet[coreNum];
-				for (int c = 0; c < coreNum; c++) {
-					final int c0 = c;
+				for (int c : range(coreNum)) {
 					coreShells[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], coreOffset[c + 1]) {
 						@Override
 						public boolean contains(int v) {
-							return 0 <= v && v < n && IndexResult.this.core[v] == c0;
+							return 0 <= v && v < n && IndexResult.this.core[v] == c;
 						}
 					};
 				}
@@ -127,12 +127,11 @@ class CoresAlgos {
 				final int n = this.core.length;
 				final int coreNum = maxCore + 1;
 				coreCrusts = new IntSet[coreNum];
-				for (int c = 0; c < coreNum; c++) {
-					final int c0 = c;
+				for (int c : range(coreNum)) {
 					coreCrusts[c] = new ImmutableIntArraySet(sortedVertices, 0, coreOffset[c]) {
 						@Override
 						public boolean contains(int v) {
-							return 0 <= v && v < n && IndexResult.this.core[v] < c0;
+							return 0 <= v && v < n && IndexResult.this.core[v] < c;
 						}
 					};
 				}

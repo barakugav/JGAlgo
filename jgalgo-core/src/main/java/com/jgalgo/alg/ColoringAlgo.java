@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
 import com.jgalgo.graph.Graph;
@@ -108,7 +109,7 @@ public interface ColoringAlgo {
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
 			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction<Integer>) mapping);
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				vertexToColor[v] = mapping0.applyAsInt(v);
 				maxColor = Math.max(maxColor, vertexToColor[v]);
 			}
@@ -117,7 +118,7 @@ public interface ColoringAlgo {
 			ig = g.indexGraph();
 			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction<Integer>) mapping);
 			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				vertexToColor[v] = mapping0.applyAsInt(viMap.indexToIdInt(v));
 				maxColor = Math.max(maxColor, vertexToColor[v]);
 			}
@@ -125,7 +126,7 @@ public interface ColoringAlgo {
 		} else {
 			ig = g.indexGraph();
 			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				vertexToColor[v] = mapping.applyAsInt(viMap.indexToId(v));
 				maxColor = Math.max(maxColor, vertexToColor[v]);
 			}
@@ -141,7 +142,7 @@ public interface ColoringAlgo {
 		}
 		if (seenColors.nextClearBit(0) != colorNum)
 			return false;
-		for (int m = ig.edges().size(), e = 0; e < m; e++)
+		for (int e : range(ig.edges().size()))
 			if (vertexToColor[ig.edgeSource(e)] == vertexToColor[ig.edgeTarget(e)])
 				return false;
 		return true;

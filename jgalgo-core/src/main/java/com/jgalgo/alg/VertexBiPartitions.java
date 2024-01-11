@@ -54,15 +54,15 @@ class VertexBiPartitions {
 				final int n = g.vertices().size();
 				int[] sortedVertices = new int[n];
 				int i = 0;
-				for (int v = 0; v < n; v++)
+				for (int v : range(n))
 					if (isLeft0(v))
 						sortedVertices[i++] = v;
 				final int leftCount = i;
-				for (int v = 0; v < n; v++)
+				for (int v : range(n))
 					if (!isLeft0(v))
 						sortedVertices[i++] = v;
 				int[] vertexSortedIdx = new int[n];
-				for (int v = 0; v < n; v++)
+				for (int v : range(n))
 					vertexSortedIdx[sortedVertices[v]] = v;
 				leftVertices = new ImmutableIntArraySet(sortedVertices, 0, leftCount) {
 					@Override
@@ -89,7 +89,7 @@ class VertexBiPartitions {
 			if (leftEdges == null) {
 				final int m = g.edges().size();
 				int b1Count = 0, b2Count = 0;
-				for (int e = 0; e < m; e++) {
+				for (int e : range(m)) {
 					boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));
 					if (b1 == b2) {
 						if (b1) {
@@ -101,7 +101,7 @@ class VertexBiPartitions {
 				}
 				int[] sortedEdges = new int[b1Count + b2Count];
 				int b1Idx = 0, b2Idx = b1Count;
-				for (int e = 0; e < m; e++) {
+				for (int e : range(m)) {
 					boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));
 					if (b1 == b2) {
 						if (b1) {
@@ -140,7 +140,7 @@ class VertexBiPartitions {
 				final int m = g.edges().size();
 				if (g.isDirected()) {
 					int crossEdges01Count = 0, crossEdges10Count = 0;
-					for (int e = 0; e < m; e++) {
+					for (int e : range(m)) {
 						boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));
 						if (b1 != b2) {
 							if (b1) {
@@ -152,7 +152,7 @@ class VertexBiPartitions {
 					}
 					int[] crossEdges = new int[crossEdges01Count + crossEdges10Count];
 					int crossEdges01Idx = 0, crossEdges10Idx = crossEdges01Count;
-					for (int e = 0; e < m; e++) {
+					for (int e : range(m)) {
 						boolean b1 = isLeft0(g.edgeSource(e)), b2 = isLeft0(g.edgeTarget(e));
 						if (b1 != b2) {
 							if (b1) {
@@ -178,11 +178,12 @@ class VertexBiPartitions {
 
 				} else {
 					int crossEdgesCount = 0;
-					for (int e = 0; e < m; e++)
+					for (int e : range(m))
 						if (isLeft0(g.edgeSource(e)) != isLeft0(g.edgeTarget(e)))
 							crossEdgesCount++;
 					int[] crossEdges = new int[crossEdgesCount];
-					for (int i = 0, e = 0; e < m; e++)
+					int i = 0;
+					for (int e : range(m))
 						if (isLeft0(g.edgeSource(e)) != isLeft0(g.edgeTarget(e)))
 							crossEdges[i++] = e;
 					crossEdges01 = crossEdges10 = new ImmutableIntArraySet(crossEdges) {

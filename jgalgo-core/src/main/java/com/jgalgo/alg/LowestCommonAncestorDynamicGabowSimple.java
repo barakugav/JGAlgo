@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 
@@ -108,7 +109,7 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 
 	private int computeSize(VertexImpl vertex) {
 		int size = 1;
-		for (int i = 0; i < vertex.childrenNum; i++)
+		for (int i : range(vertex.childrenNum))
 			size += computeSize(vertex.children[i]);
 		return vertex.size = size;
 	}
@@ -133,7 +134,7 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 
 		vertex.idxUpperFatMaxChild = vertex.idxLower + 1;
 
-		for (int i = 0; i < vertex.childrenNum; i++) {
+		for (int i : range(vertex.childrenNum)) {
 			VertexImpl child = vertex.children[i];
 			child.isApex = child.size <= vertex.size / 2;
 			buildCompressedTree(child);
@@ -158,7 +159,7 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 			last = a;
 		}
 
-		for (int i = 0; i < vertex.childrenNum; i++)
+		for (int i : range(vertex.childrenNum))
 			computeAncestorTables(vertex.children[i]);
 	}
 
@@ -191,7 +192,7 @@ class LowestCommonAncestorDynamicGabowSimple implements LowestCommonAncestorDyna
 
 		VertexImpl[] a = new VertexImpl[2];
 		VertexImpl[] az = new VertexImpl[2];
-		for (int zIdx = 0; zIdx < 2; zIdx++) {
+		for (int zIdx : range(2)) {
 			VertexImpl z = zIdx == 0 ? x : y;
 			VertexImpl z0 = zIdx == 0 ? y : x;
 

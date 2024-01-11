@@ -696,7 +696,7 @@ class IsomorphismTestUtils extends TestUtils {
 		assert aList.size() >= bList.size();
 		Collections.shuffle(aList, rand);
 		Map<A, B> map = new HashMap<>();
-		for (int i = 0; i < bList.size(); i++)
+		for (int i : range(bList.size()))
 			map.put(aList.get(i), bList.get(i));
 		return map;
 	}

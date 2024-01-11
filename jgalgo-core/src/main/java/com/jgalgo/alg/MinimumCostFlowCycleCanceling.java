@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeights;
@@ -69,7 +70,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		eliminateAllNegativeCycles(gOrig, resGraph, capacity, flow, cost, eps);
 
 		double[] flow0 = new double[gOrig.edges().size()];
-		for (int m = g.edges().size(), e = 0; e < m; e++)
+		for (int e : range(g.edges().size()))
 			if (resGraph.isOriginalEdge(e))
 				flow0[resGraph.edgeRef[e]] = Math.max(0, Math.min(flow[e], capacity[e]));
 
@@ -83,7 +84,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		int[] edgeRef = resGraph.edgeRef;
 
 		if (gOrig.isDirected()) {
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
+			for (int e : range(g.edges().size())) {
 				int eRef = edgeRef[e];
 				double eFlow = flowOrig.getFlow(eRef);
 				if (resGraph.isOriginalEdge(e)) {
@@ -95,7 +96,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 				}
 			}
 		} else {
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
+			for (int e : range(g.edges().size())) {
 				int eRef = edgeRef[e];
 				double eFlow = flowOrig.getFlow(eRef);
 				capacity[e] = capacityOrig.weight(eRef);
@@ -126,7 +127,7 @@ class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSo
 		/* -cost(e) for backward (twin) original edges */
 		/* saturatedCost for 'removed' (saturated) edges */
 		IWeightsDouble cost0 = IWeights.createExternalEdgesWeights(g, double.class);
-		for (int m = g.edges().size(), e = 0; e < m; e++) {
+		for (int e : range(g.edges().size())) {
 			boolean isSaturated = capacity[e] - flow[e] < eps;
 			if (isSaturated) {
 				saturated.set(e);

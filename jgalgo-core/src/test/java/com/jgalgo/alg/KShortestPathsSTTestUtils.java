@@ -88,7 +88,7 @@ class KShortestPathsSTTestUtils extends TestBase {
 					.collect(Collectors.toList());
 
 			assertEquals(pathsExpected.size(), pathsActual.size());
-			for (int i = 0; i < pathsExpected.size(); i++)
+			for (int i : range(pathsExpected.size()))
 				assertEquals(w.weightSum(pathsExpected.get(i).edges()), w.weightSum(pathsActual.get(i).edges()));
 		}
 	}

@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.EdgeSet;
 import com.jgalgo.graph.IWeightFunction;
@@ -56,7 +57,7 @@ class MaximumFlows {
 					Arrays.fill(capacities, 1);
 				} else {
 					IWeightFunctionInt capacity = (IWeightFunctionInt) this.capacity;
-					for (int m = g.edges().size(), e = 0; e < m; e++)
+					for (int e : range(g.edges().size()))
 						capacities[e] = capacity.weightInt(e);
 				}
 			}
@@ -65,21 +66,21 @@ class MaximumFlows {
 				if (WeightFunction.isCardinality(capacity)) {
 					Arrays.fill(capacities, 1);
 				} else {
-					for (int m = g.edges().size(), e = 0; e < m; e++)
+					for (int e : range(g.edges().size()))
 						capacities[e] = capacity.weight(e);
 				}
 			}
 
 			IFlow constructResult(double[] capacity, double[] residualCapacity) {
 				double[] flow = new double[g.edges().size()];
-				for (int m = g.edges().size(), e = 0; e < m; e++)
+				for (int e : range(g.edges().size()))
 					flow[e] = capacity[e] - residualCapacity[e];
 				return new Flows.FlowImpl(g, flow);
 			}
 
 			IFlow constructResult(int[] capacity, int[] residualCapacity) {
 				double[] flow = new double[g.edges().size()];
-				for (int m = g.edges().size(), e = 0; e < m; e++)
+				for (int e : range(g.edges().size()))
 					flow[e] = capacity[e] - residualCapacity[e];
 				return new Flows.FlowImpl(g, flow);
 			}
@@ -149,7 +150,7 @@ class MaximumFlows {
 
 			IFlow flow0 = computeMaximumFlow(g, capacity, source, sink);
 			double[] flow = new double[gOrig.edges().size()];
-			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
+			for (int e : range(gOrig.edges().size()))
 				flow[e] = flow0.getFlow(e);
 			return new Flows.FlowImpl(gOrig, flow);
 		}
@@ -233,21 +234,21 @@ class MaximumFlows {
 			void initCapacities(double[] residualCapacity) {
 				if (gOrig.isDirected()) {
 					if (WeightFunction.isCardinality(capacityOrig)) {
-						for (int m = g.edges().size(), e = 0; e < m; e++)
+						for (int e : range(g.edges().size()))
 							residualCapacity[e] = isOriginalEdge(e) ? 1 : 0;
 					} else {
-						for (int m = g.edges().size(), e = 0; e < m; e++)
+						for (int e : range(g.edges().size()))
 							residualCapacity[e] = isOriginalEdge(e) ? capacityOrig.weight(edgeRef[e]) : 0;
 					}
 				} else {
 					if (WeightFunction.isCardinality(capacityOrig)) {
-						for (int m = g.edges().size(), e = 0; e < m; e++) {
+						for (int e : range(g.edges().size())) {
 							int eRef = edgeRef[e];
 							double cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? 1 : 0;
 							residualCapacity[e] = cap;
 						}
 					} else {
-						for (int m = g.edges().size(), e = 0; e < m; e++) {
+						for (int e : range(g.edges().size())) {
 							int eRef = edgeRef[e];
 							double cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink)
 									? capacityOrig.weight(eRef)
@@ -258,11 +259,11 @@ class MaximumFlows {
 				}
 				if (multiSourceMultiSink) {
 					double capacitySum = 0;
-					for (int m = gOrig.edges().size(), e = 0; e < m; e++)
+					for (int e : range(gOrig.edges().size()))
 						capacitySum += capacityOrig.weight(e);
 
 					/* init edges from super-source to sources and from sinks to super-sink */
-					for (int m = g.edges().size(), e = 0; e < m; e++)
+					for (int e : range(g.edges().size()))
 						if (edgeRef[e] == -1)
 							residualCapacity[e] =
 									source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;
@@ -273,21 +274,21 @@ class MaximumFlows {
 				IWeightFunctionInt capacity = (IWeightFunctionInt) this.capacityOrig;
 				if (gOrig.isDirected()) {
 					if (WeightFunction.isCardinality(capacityOrig)) {
-						for (int m = g.edges().size(), e = 0; e < m; e++)
+						for (int e : range(g.edges().size()))
 							residualCapacity[e] = isOriginalEdge(e) ? 1 : 0;
 					} else {
-						for (int m = g.edges().size(), e = 0; e < m; e++)
+						for (int e : range(g.edges().size()))
 							residualCapacity[e] = isOriginalEdge(e) ? capacity.weightInt(edgeRef[e]) : 0;
 					}
 				} else {
 					if (WeightFunction.isCardinality(capacityOrig)) {
-						for (int m = g.edges().size(), e = 0; e < m; e++) {
+						for (int e : range(g.edges().size())) {
 							int eRef = edgeRef[e];
 							int cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink) ? 1 : 0;
 							residualCapacity[e] = cap;
 						}
 					} else {
-						for (int m = g.edges().size(), e = 0; e < m; e++) {
+						for (int e : range(g.edges().size())) {
 							int eRef = edgeRef[e];
 							int cap = (eRef != -1 && g.edgeTarget(e) != source && g.edgeSource(e) != sink)
 									? capacity.weightInt(eRef)
@@ -298,7 +299,7 @@ class MaximumFlows {
 				}
 				if (multiSourceMultiSink) {
 					int capacitySum = 0;
-					for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
+					for (int e : range(gOrig.edges().size())) {
 						int cap = capacity.weightInt(e);
 						int capacitySumNext = capacitySum + cap;
 						if (((capacitySum ^ capacitySumNext) & (cap ^ capacitySumNext)) < 0) {
@@ -310,7 +311,7 @@ class MaximumFlows {
 					}
 
 					/* init edges from super-source to sources and from sinks to super-sink */
-					for (int m = g.edges().size(), e = 0; e < m; e++)
+					for (int e : range(g.edges().size()))
 						if (edgeRef[e] == -1)
 							residualCapacity[e] =
 									source == g.edgeSource(e) || sink == g.edgeTarget(e) ? capacitySum : 0;
@@ -319,7 +320,7 @@ class MaximumFlows {
 
 			IFlow constructResult(double[] flow) {
 				double[] flowRes = new double[gOrig.edges().size()];
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
+				for (int e : range(g.edges().size())) {
 					if (isOriginalEdge(e))
 						/* The flow of e might be negative if the original graph is undirected, which is fine */
 						flowRes[edgeRef[e]] = flow[e];
@@ -329,7 +330,7 @@ class MaximumFlows {
 
 			IFlow constructResult(int[] flow) {
 				double[] flowRes = new double[gOrig.edges().size()];
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
+				for (int e : range(g.edges().size())) {
 					if (isOriginalEdge(e))
 						/* The flow of e might be negative if the original graph is undirected, which is fine */
 						flowRes[edgeRef[e]] = flow[e];

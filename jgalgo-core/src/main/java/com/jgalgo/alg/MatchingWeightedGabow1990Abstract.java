@@ -461,7 +461,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 				this.w = e -> wLocal.weight(edgeVal.get(e).e);
 			}
 
-			for (int m = gOrig.edges().size(), e = 0; e < m; e++) {
+			for (int e : range(gOrig.edges().size())) {
 				int u = gOrig.edgeSource(e), v = gOrig.edgeTarget(e);
 				if (u == v)
 					continue;
@@ -541,11 +541,11 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 			// init dual value of all vertices as maxWeight / 2
 			final double maxWeight = range(g.edges().size()).mapToDouble(w::weight).max().orElse(Double.MIN_VALUE);
 			double delta1Threshold = maxWeight / 2;
-			for (int u = 0; u < n; u++)
+			for (int u : range(n))
 				vertexDualValBase[u] = delta1Threshold;
 
 			// init all trivial (singleton) blossoms
-			for (int u = 0; u < n; u++)
+			for (int u : range(n))
 				blossoms[u] = new Blossom(u);
 
 			mainLoop: for (;;) {
@@ -649,7 +649,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 				}
 
 				// Update dual values
-				for (int u = 0; u < n; u++)
+				for (int u : range(n))
 					vertexDualValBase[u] = dualVal(u);
 				for (Blossom b : allBlossoms()) {
 					if (!b.isSingleton())
@@ -673,7 +673,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 				searchEnd();
 			}
 
-			for (int u = 0; u < n; u++) {
+			for (int u : range(n)) {
 				if (!isMatched(u))
 					continue;
 				int e = matched[u];
@@ -1070,7 +1070,7 @@ abstract class MatchingWeightedGabow1990Abstract implements MatchingAlgoBase.Max
 			for (Blossom[] bs = new Blossom[] { b1, b2 };;) {
 				if (bs[0] == null && bs[1] == null)
 					return null;
-				for (int i = 0; i < bs.length; i++) {
+				for (int i : range(bs.length)) {
 					Blossom b = bs[i];
 					if (b == null)
 						continue;

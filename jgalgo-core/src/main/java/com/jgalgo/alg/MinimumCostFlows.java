@@ -85,7 +85,7 @@ class MinimumCostFlows {
 			/* Solve the reduction problem with only supply without edges lower bounds */
 			IFlow flow0 = computeMinCostFlow(g, capacity, cost, supply2);
 			double[] flow = new double[g.edges().size()];
-			for (int m = g.edges().size(), e = 0; e < m; e++)
+			for (int e : range(g.edges().size()))
 				flow[e] = flow0.getFlow(e) + lowerBound.weight(e);
 			return new Flows.FlowImpl(g, flow);
 		}
@@ -95,7 +95,7 @@ class MinimumCostFlows {
 				return hugeCostLong(g, (IWeightFunctionInt) cost);
 
 			double costSum = 0;
-			for (int m = g.edges().size(), e = 0; e < m; e++)
+			for (int e : range(g.edges().size()))
 				costSum += Math.abs(cost.weight(e));
 			return 1 + costSum;
 		}
@@ -110,7 +110,7 @@ class MinimumCostFlows {
 
 		private static long hugeCostLong(IndexGraph g, IWeightFunctionInt cost) {
 			long costSum = 0;
-			for (int m = g.edges().size(), e = 0; e < m; e++)
+			for (int e : range(g.edges().size()))
 				costSum += Math.abs(cost.weightInt(e));
 			return costSum + 1;
 		}
@@ -128,11 +128,11 @@ class MinimumCostFlows {
 
 			IWeightsDouble supply2 = IWeights.createExternalVerticesWeights(g, double.class);
 			if (supply != null) {
-				for (int n = g.vertices().size(), v = 0; v < n; v++)
+				for (int v : range(g.vertices().size()))
 					supply2.set(v, supply.weight(v));
 			}
 			if (lowerBound != null) {
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
+				for (int e : range(g.edges().size())) {
 					double l = lowerBound.weight(e);
 					if (l == 0)
 						continue;
@@ -148,11 +148,11 @@ class MinimumCostFlows {
 				IWeightFunctionInt lowerBound, IWeightFunctionInt supply) {
 			IWeightsInt supply2 = IWeights.createExternalVerticesWeights(g, int.class);
 			if (supply != null) {
-				for (int n = g.vertices().size(), v = 0; v < n; v++)
+				for (int v : range(g.vertices().size()))
 					supply2.set(v, supply.weightInt(v));
 			}
 			if (lowerBound != null) {
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
+				for (int e : range(g.edges().size())) {
 					int l = lowerBound.weightInt(e);
 					if (l == 0)
 						continue;
@@ -254,7 +254,7 @@ class MinimumCostFlows {
 			/* Compute a min-cost max-flow in the new graph and network */
 			IFlow flow0 = computeMinCostMaxFlow(g, capacity, cost, source, sink);
 			double[] flow = new double[gOrig.edges().size()];
-			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
+			for (int e : range(gOrig.edges().size()))
 				flow[e] = flow0.getFlow(e);
 			return new Flows.FlowImpl(gOrig, flow);
 		}
@@ -345,7 +345,7 @@ class MinimumCostFlows {
 			if (integerFlow) {
 				IWeightFunctionInt supplyInt = (IWeightFunctionInt) supply;
 				IntList capacities0 = (IntList) capacities;
-				for (int n = gOrig.vertices().size(), v = 0; v < n; v++) {
+				for (int v : range(gOrig.vertices().size())) {
 					int sup = supplyInt.weightInt(v);
 					if (sup > 0) {
 						builder.addEdge(source, v);
@@ -357,7 +357,7 @@ class MinimumCostFlows {
 				}
 			} else {
 				DoubleList capacities0 = (DoubleList) capacities;
-				for (int n = gOrig.vertices().size(), v = 0; v < n; v++) {
+				for (int v : range(gOrig.vertices().size())) {
 					double sup = supply.weight(v);
 					if (sup > 0) {
 						builder.addEdge(source, v);
@@ -436,7 +436,7 @@ class MinimumCostFlows {
 					.allMatch(e -> Math.abs(flow0.getFlow(e) - capacity.weight(e)) < eps);
 
 			double[] flow = new double[gOrig.edges().size()];
-			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
+			for (int e : range(gOrig.edges().size()))
 				flow[e] = flow0.getFlow(e) + lowerBound.weight(e);
 			return new Flows.FlowImpl(gOrig, flow);
 		}
@@ -479,7 +479,7 @@ class MinimumCostFlows {
 			if (integerFlow) {
 				IWeightFunctionInt supplyInt = (IWeightFunctionInt) supply;
 				IntList capacities0 = new IntArrayList();
-				for (int n = gOrig.vertices().size(), v = 0; v < n; v++) {
+				for (int v : range(gOrig.vertices().size())) {
 					int sup = supplyInt.weightInt(v);
 					if (sup > 0) {
 						builder.addEdge(source, v);
@@ -492,7 +492,7 @@ class MinimumCostFlows {
 				capacities = capacities0;
 			} else {
 				DoubleList capacities0 = new DoubleArrayList();
-				for (int n = gOrig.vertices().size(), v = 0; v < n; v++) {
+				for (int v : range(gOrig.vertices().size())) {
 					double sup = supply.weight(v);
 					if (sup > 0) {
 						builder.addEdge(source, v);
@@ -541,7 +541,7 @@ class MinimumCostFlows {
 			/* Compute a minimum-cost maximum-flow between the two artificial vertices */
 			IFlow flow0 = computeMinCostMaxFlow(g, capacity, cost, source, sink);
 			double[] flow = new double[gOrig.edges().size()];
-			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
+			for (int e : range(gOrig.edges().size()))
 				flow[e] = flow0.getFlow(e);
 			return new Flows.FlowImpl(gOrig, flow);
 		}
@@ -680,7 +680,7 @@ class MinimumCostFlows {
 			}
 
 			double[] flow = new double[gOrig.edges().size()];
-			for (int m = gOrig.edges().size(), e = 0; e < m; e++)
+			for (int e : range(gOrig.edges().size()))
 				flow[e] = flow0.getFlow(e);
 			return new Flows.FlowImpl(gOrig, flow);
 		}

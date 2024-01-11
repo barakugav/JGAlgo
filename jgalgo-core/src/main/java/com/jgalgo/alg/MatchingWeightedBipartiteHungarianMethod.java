@@ -133,7 +133,7 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 
 			final double maxWeight = range(g.edges().size()).mapToDouble(w::weight).max().orElse(Double.MIN_VALUE);
 			final double delta1Threshold = maxWeight;
-			for (int u = 0; u < n; u++)
+			for (int u : range(n))
 				if (partition.get(u))
 					dualValBase[u] = delta1Threshold;
 
@@ -141,7 +141,7 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 				Arrays.fill(parent, EdgeNone);
 
 				// Start growing tree from all unmatched vertices in S
-				for (int u = 0; u < n; u++) {
+				for (int u : range(n)) {
 					if (!partition.get(u) || matched[u] != EdgeNone)
 						continue;
 					vertexAddedToTree(u);
@@ -203,7 +203,7 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 				}
 
 				// Update dual values base
-				for (int u = 0; u < n; u++)
+				for (int u : range(n))
 					if (inTree.get(u))
 						dualValBase[u] = dualVal(u);
 				Arrays.fill(dualVal0, 0);

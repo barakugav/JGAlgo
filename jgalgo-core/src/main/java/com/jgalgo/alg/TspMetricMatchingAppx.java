@@ -68,14 +68,14 @@ public class TspMetricMatchingAppx extends TspMetricUtils.AbstractImpl {
 		}
 		int mGn = 0;
 		int[] mVtoV = new int[n];
-		for (int u = 0; u < n; u++)
+		for (int u : range(n))
 			if (degree[u] % 2 != 0)
 				mVtoV[mGn++] = u;
 		IndexGraphBuilder mG0 = IndexGraphBuilder.undirected();
 		mG0.addVertices(range(mGn));
 		mG0.ensureEdgeCapacity(mGn * (mGn - 1) / 2);
-		for (int v = 0; v < mGn; v++)
-			for (int u = v + 1; u < mGn; u++)
+		for (int v : range(mGn))
+			for (int u : range(v + 1, mGn))
 				mG0.addEdge(v, u);
 		IndexGraph oddGraph = mG0.reIndexAndBuild(true, true).graph();
 		IWeightFunction mGWeights = e -> {

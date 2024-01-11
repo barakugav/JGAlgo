@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
@@ -75,7 +76,7 @@ class ColoringDSatur implements ColoringAlgoBase {
 
 		LongIntReferenceableHeap heap = (LongIntReferenceableHeap) heapBuilder.build(long.class, int.class);
 		LongIntReferenceableHeap.Ref[] refs = new LongIntReferenceableHeap.Ref[n];
-		for (int u = 0; u < n; u++) {
+		for (int u : range(n)) {
 			long key = heapKey(0, g.outEdges(u).size());
 			refs[u] = heap.insert(key, u);
 			neighborColors[u] = new BitSet();

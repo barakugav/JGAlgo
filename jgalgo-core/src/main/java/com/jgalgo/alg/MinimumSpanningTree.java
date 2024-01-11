@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Set;
@@ -223,7 +224,7 @@ public interface MinimumSpanningTree {
 		int[] root = new int[n];
 		Arrays.fill(root, -1);
 		LongPriorityQueue queue = new FIFOQueueLongNoReduce();
-		for (int r = 0; r < n; r++) {
+		for (int r : range(n)) {
 			if (root[r] != -1)
 				continue;
 			root[r] = r;
@@ -244,7 +245,7 @@ public interface MinimumSpanningTree {
 				}
 			}
 		}
-		for (int e = 0; e < m; e++)
+		for (int e : range(m))
 			if (!edgesBitmap.get(e) && root[ig.edgeSource(e)] != root[ig.edgeTarget(e)])
 				return false; /* two connected components of the given forest could have been connected */
 		return true;

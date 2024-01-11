@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.WeightFunctions;
@@ -54,7 +55,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
 
 	private static ShortestPathAllPairs.IResult computeAPSPUndirected(IndexGraph g, IWeightFunction w) {
 		ShortestPathAllPairsUtils.IndexResult.AllVertices res = new ShortestPathAllPairsUtils.IndexResult.Undirected(g);
-		for (int m = g.edges().size(), e = 0; e < m; e++) {
+		for (int e : range(g.edges().size())) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			double ew = w.weight(e);
@@ -72,10 +73,10 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
 			}
 		}
 		int n = g.vertices().size();
-		for (int k = 0; k < n; k++) {
+		for (int k : range(n)) {
 			/* Calc shortest path between each pair (u,v) by using vertices 1,2,..,k */
-			for (int u = 0; u < n; u++) {
-				for (int v = u + 1; v < n; v++) {
+			for (int u : range(n)) {
+				for (int v : range(u + 1, n)) {
 					double duk = res.distance(u, k);
 					if (duk == Double.POSITIVE_INFINITY)
 						continue;
@@ -98,7 +99,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
 
 	private static ShortestPathAllPairs.IResult computeAPSPDirected(IndexGraph g, IWeightFunction w) {
 		ShortestPathAllPairsUtils.IndexResult.AllVertices res = new ShortestPathAllPairsUtils.IndexResult.Directed(g);
-		for (int m = g.edges().size(), e = 0; e < m; e++) {
+		for (int e : range(g.edges().size())) {
 			int u = g.edgeSource(e);
 			int v = g.edgeTarget(e);
 			double ew = w.weight(e);
@@ -113,10 +114,10 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
 			}
 		}
 		int n = g.vertices().size();
-		for (int k = 0; k < n; k++) {
+		for (int k : range(n)) {
 			/* Calc shortest path between each pair (u,v) by using vertices 1,2,..,k */
-			for (int u = 0; u < n; u++) {
-				for (int v = 0; v < n; v++) {
+			for (int u : range(n)) {
+				for (int v : range(n)) {
 					double duk = res.distance(u, k);
 					if (duk == Double.POSITIVE_INFINITY)
 						continue;
@@ -136,7 +137,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
 	}
 
 	private static void detectNegCycle(ShortestPathAllPairsUtils.IndexResult.AllVertices res, int n, int k) {
-		for (int u = 0; u < n; u++) {
+		for (int u : range(n)) {
 			double d1 = res.distance(u, k);
 			double d2 = res.distance(k, u);
 			if (d1 == Double.POSITIVE_INFINITY || d2 == Double.POSITIVE_INFINITY)

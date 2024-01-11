@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -94,7 +95,7 @@ class EdgeCoverTestUtils extends TestBase {
 			coverLoop: for (int bitmap = 0; bitmap < 1 << m; bitmap++) {
 				cover.clear();
 				assert cover.isEmpty();
-				for (int i = 0; i < m; i++)
+				for (int i : range(m))
 					if ((bitmap & (1 << i)) != 0)
 						cover.add(edges.get(i));
 				for (V v : g.vertices())

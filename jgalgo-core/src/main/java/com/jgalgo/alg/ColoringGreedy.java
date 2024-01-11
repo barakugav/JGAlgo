@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Random;
@@ -59,9 +60,7 @@ class ColoringGreedy implements ColoringAlgoBase, RandomizedAlgorithm {
 		int[] colors = new int[n];
 		int colorsNum = 0;
 		Arrays.fill(colors, -1);
-		int[] order = new int[n];
-		for (int u = 0; u < n; u++)
-			order[u] = u;
+		int[] order = range(n).toIntArray();
 		IntArrays.shuffle(order, rand);
 
 		BitSet usedColors = new BitSet();

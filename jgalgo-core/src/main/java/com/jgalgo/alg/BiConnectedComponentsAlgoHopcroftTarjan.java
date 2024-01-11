@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
@@ -96,7 +97,7 @@ class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAl
 		List<Pair<int[], int[]>> biccs = new ObjectArrayList<>();
 		IntList biccEdgesTemp = new IntArrayList();
 
-		for (int root = 0; root < n; root++) {
+		for (int root : range(n)) {
 			if (depths[root] != -1)
 				continue;
 			int depth = 0;

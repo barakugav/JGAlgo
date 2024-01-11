@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Bitmap;
@@ -38,12 +39,12 @@ class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {
 	public IntSet computeMinimumVertexCover(IndexGraph g, IWeightFunction w) {
 		final int n = g.vertices().size();
 		double[] sw = new double[n];
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			sw[v] = w.weight(v);
 
 		Bitmap cover = new Bitmap(n);
 
-		for (int m = g.edges().size(), e = 0; e < m; e++) {
+		for (int e : range(g.edges().size())) {
 			int u, v;
 			if (cover.get(u = g.edgeSource(e)) || cover.get(v = g.edgeTarget(e)))
 				continue;

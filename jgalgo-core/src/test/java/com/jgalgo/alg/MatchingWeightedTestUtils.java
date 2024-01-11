@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Collections;
 import java.util.List;
@@ -90,7 +91,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			assert unmatchedVerticesS.size() == unmatchedVerticesT.size();
 			Collections.shuffle(unmatchedVerticesS, rand);
 			Collections.shuffle(unmatchedVerticesT, rand);
-			for (int i = 0; i < unmatchedVerticesS.size(); i++) {
+			for (int i : range(unmatchedVerticesS.size())) {
 				Integer u = unmatchedVerticesS.get(i);
 				Integer v = unmatchedVerticesT.get(i);
 				g.addEdge(u, v, edgeSupplier.get());
@@ -177,7 +178,7 @@ public class MatchingWeightedTestUtils extends TestUtils {
 			List<Integer> unmatchedVertices = new IntArrayList(cardinalityMatch.unmatchedVertices());
 			assert unmatchedVertices.size() % 2 == 0;
 			Collections.shuffle(unmatchedVertices, rand);
-			for (int i = 0; i < unmatchedVertices.size() / 2; i++) {
+			for (int i : range(unmatchedVertices.size() / 2)) {
 				Integer u = unmatchedVertices.get(i * 2 + 0);
 				Integer v = unmatchedVertices.get(i * 2 + 1);
 				g.addEdge(u, v, edgeSupplier.get());

@@ -84,7 +84,7 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTreeBase {
 		IndexGraphBuilder contractedGBuilder = IndexGraphBuilder.undirected();
 		contractedGBuilder.addVertices(range(mstRes.treeNum));
 		int[] edgeRef = IntArrays.EMPTY_ARRAY;
-		for (int m = g.edges().size(), e = 0; e < m; e++) {
+		for (int e : range(g.edges().size())) {
 			int u = mstRes.vToTree[g.edgeSource(e)];
 			int v = mstRes.vToTree[g.edgeTarget(e)];
 			if (u == v)
@@ -104,7 +104,7 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTreeBase {
 
 		int[] vTree = new int[n];
 		int[] vTreeNext = new int[n];
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			vTree[v] = v;
 
 		int[] minEdges = new int[n];
@@ -113,7 +113,7 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTreeBase {
 
 		final int m = g.edges().size();
 		int[] edges = new int[m];
-		for (int e = 0; e < m; e++)
+		for (int e : range(m))
 			edges[e] = e;
 		int edgesNum = m;
 
@@ -125,7 +125,7 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTreeBase {
 			Arrays.fill(minEdges, 0, treeNum, -1);
 			Arrays.fill(minEdgesWeights, 0, treeNum, Double.MAX_VALUE);
 			int edgesNumNew = 0;
-			for (int eIdx = 0; eIdx < edgesNum; eIdx++) {
+			for (int eIdx : range(edgesNum)) {
 				int e = edges[eIdx];
 				int u = vTree[g.edgeSource(e)];
 				int v = vTree[g.edgeTarget(e)];
@@ -145,7 +145,7 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTreeBase {
 			edgesNum = edgesNumNew;
 
 			/* add min edges to MST */
-			for (int tree = 0; tree < treeNum; tree++) {
+			for (int tree : range(treeNum)) {
 				int e = minEdges[tree];
 				if (e == -1)
 					continue;
@@ -164,7 +164,7 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTreeBase {
 			Arrays.fill(vTreeNext, 0, treeNum, UNVISITED);
 			int treeNumNext = 0;
 
-			for (int t = 0; t < treeNum; t++) {
+			for (int t : range(treeNum)) {
 				if (vTreeNext[t] != UNVISITED)
 					continue;
 
@@ -205,7 +205,7 @@ class MinimumSpanningTreeBoruvka implements MinimumSpanningTreeBase {
 			treeNum = treeNumNext;
 
 			/* assign new tree indices to G's vertices */
-			for (int v = 0; v < n; v++)
+			for (int v : range(n))
 				vTree[v] = vTreeNext[vTree[v]];
 		}
 

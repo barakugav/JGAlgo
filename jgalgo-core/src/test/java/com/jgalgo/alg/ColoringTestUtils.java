@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -82,7 +83,7 @@ class ColoringTestUtils extends TestUtils {
 		int[] seenColorsArr = seenColors.toIntArray();
 		IntArrays.parallelQuickSort(seenColorsArr);
 		int[] seenColorsArrExpected = new int[seenColorsArr.length];
-		for (int i = 0; i < seenColorsArrExpected.length; i++)
+		for (int i : range(seenColorsArrExpected.length))
 			seenColorsArrExpected[i] = i;
 		assertArrayEquals(seenColorsArrExpected, seenColorsArr, "colors are expected to be 0,1,2,3,...");
 

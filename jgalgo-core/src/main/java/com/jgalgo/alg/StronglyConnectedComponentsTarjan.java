@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -53,7 +54,8 @@ class StronglyConnectedComponentsTarjan extends ConnectedComponentsUtils.Abstrac
 		IEdgeIter[] edges = new IEdgeIter[n];
 
 		/* start a DFS from each root */
-		for (int nextVisitIdx = 1, root = 0; root < n; root++) {
+		int nextVisitIdx = 1;
+		for (int root : range(n)) {
 			if (visitIdx[root] != 0)
 				continue;
 			int depth = 0;
@@ -91,7 +93,7 @@ class StronglyConnectedComponentsTarjan extends ConnectedComponentsUtils.Abstrac
 							break;
 					}
 					if (stopAfterOneBlock) {
-						for (int w = 0; w < n; w++)
+						for (int w : range(n))
 							if (comp[w] == -1)
 								return null;
 						return new VertexPartitions.Impl(g, compNum, comp);

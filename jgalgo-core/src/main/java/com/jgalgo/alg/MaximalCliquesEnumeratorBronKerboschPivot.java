@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Iterator;
 import java.util.List;
 import com.jgalgo.graph.IndexGraph;
@@ -55,7 +56,7 @@ class MaximalCliquesEnumeratorBronKerboschPivot implements MaximalCliquesEnumera
 
 			{
 				edges = new Bitmap(n * n);
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
+				for (int e : range(g.edges().size())) {
 					int u = g.edgeSource(e);
 					int v = g.edgeTarget(e);
 					if (u == v)

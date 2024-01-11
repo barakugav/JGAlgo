@@ -83,7 +83,7 @@ class SteinerTreeMehlhorn implements SteinerTreeAlgoBase {
 		double[] neighborsBestWeight = new double[terminalNum];
 		Arrays.fill(neighborsBestEdge, -1);
 		IntList neighbors = new IntArrayList(terminalNum);
-		for (int t = 0; t < terminalNum; t++) {
+		for (int t : range(terminalNum)) {
 			assert neighbors.isEmpty() && Arrays.stream(neighborsBestEdge).allMatch(e -> e == -1);
 			for (int u : cells.blockVertices(t)) {
 				double uDistance = cells.distance(u);
@@ -161,7 +161,8 @@ class SteinerTreeMehlhorn implements SteinerTreeAlgoBase {
 			g4EdgesOffset[g3.edgeSource(e4)]++;
 			g4EdgesOffset[g3.edgeTarget(e4)]++;
 		}
-		for (int s = 0, v = 0; v < n; v++) {
+		int s = 0;
+		for (int v : range(n)) {
 			int k = g4EdgesOffset[v];
 			g4EdgesOffset[v] = s;
 			s += k;
@@ -177,10 +178,10 @@ class SteinerTreeMehlhorn implements SteinerTreeAlgoBase {
 
 		/* 5. Construct a Steiner tree G5 from G4 by deleting edges so that no leaves are Steiner vertices */
 		int[] g5Degree = new int[n];
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			g5Degree[v] = g4EdgesOffset[v + 1] - g4EdgesOffset[v];
 		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			if (g5Degree[v] == 1 && !isTerminal.get(v))
 				queue.enqueue(v);
 		Bitmap g5Edges = new Bitmap(g4Edges.length);

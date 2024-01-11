@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
@@ -90,7 +91,7 @@ class MinimumVertexCutSTTestUtils extends TestUtils {
 				remainingVertices.clear();
 				remainingVertices.add(source);
 				remainingVertices.add(sink);
-				for (int i = 0; i < n - 2; i++)
+				for (int i : range(n - 2))
 					if ((bitmap & (1 << i)) != 0)
 						remainingVertices.add(vertices.get(i));
 				if (Path.findPath(g.subGraphCopy(remainingVertices, null), source, sink) != null)

@@ -60,7 +60,7 @@ public class TspMetricTest extends TestBase {
 
 		final int x = 0, y = 1;
 		double[][] locations = new double[n][2];
-		for (int u = 0; u < n; u++) {
+		for (int u : range(n)) {
 			locations[u][x] = nextDouble(rand, 1, 100);
 			locations[u][y] = nextDouble(rand, 1, 100);
 		}
@@ -72,8 +72,8 @@ public class TspMetricTest extends TestBase {
 		GraphBuilder<Integer, Integer> gBuilder = gFactory.newBuilder();
 		gBuilder.addVertices(range(n));
 		gBuilder.ensureEdgeCapacity(n * (n - 1) / 2);
-		for (int u = 0; u < n; u++)
-			for (int v = u + 1; v < n; v++)
+		for (int u : range(n))
+			for (int v : range(u + 1, n))
 				gBuilder.addEdge(u, v, gBuilder.edges().size());
 		Graph<Integer, Integer> g = rand.nextBoolean() ? gBuilder.build() : gBuilder.build().indexGraph();
 		WeightFunction<Integer> distances = e -> {

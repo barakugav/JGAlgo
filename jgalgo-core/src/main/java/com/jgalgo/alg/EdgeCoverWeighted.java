@@ -39,13 +39,13 @@ class EdgeCoverWeighted implements EdgeCoverBase {
 		IndexGraphBuilder gb = IndexGraphBuilder.undirected();
 		gb.addVertices(range(n * 2));
 		gb.ensureEdgeCapacity(m * 2 + n);
-		for (int e = 0; e < m; e++) {
+		for (int e : range(m)) {
 			int u = g.edgeSource(e), v = g.edgeTarget(e);
 			gb.addEdge(u * 2 + 0, v * 2 + 0);
 			gb.addEdge(u * 2 + 1, v * 2 + 1);
 		}
 		final int vvEdgeThreshold = gb.edges().size();
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			gb.addEdge(v * 2 + 0, v * 2 + 1);
 		IndexGraph g2 = gb.build();
 
@@ -56,7 +56,7 @@ class EdgeCoverWeighted implements EdgeCoverBase {
 			IWeightFunctionInt wInt = (IWeightFunctionInt) w;
 			int[] minAdjacentWeight = new int[n];
 			Arrays.fill(minAdjacentWeight, Integer.MAX_VALUE);
-			for (int e = 0; e < m; e++) {
+			for (int e : range(m)) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				int ew = wInt.weightInt(e);
 				if (minAdjacentWeight[u] > ew) {
@@ -75,7 +75,7 @@ class EdgeCoverWeighted implements EdgeCoverBase {
 		} else {
 			double[] minAdjacentWeight = new double[n];
 			Arrays.fill(minAdjacentWeight, Double.POSITIVE_INFINITY);
-			for (int e = 0; e < m; e++) {
+			for (int e : range(m)) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				double ew = w.weight(e);
 				if (minAdjacentWeight[u] > ew) {
@@ -90,16 +90,16 @@ class EdgeCoverWeighted implements EdgeCoverBase {
 			IWeightFunction w0 = w;
 			w2 = e -> e < vvEdgeThreshold ? w0.weight(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];
 		}
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			if (minAdjacentEdge[v] == -1)
 				throw new IllegalArgumentException("no edge cover exists, vertex with index " + v + " has no edges");
 
 		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(g2, w2);
 		Bitmap cover = new Bitmap(m);
-		for (int e = 0; e < m; e++)
+		for (int e : range(m))
 			if (matching.containsEdge(e * 2 + 0))
 				cover.set(e);
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			if (matching.containsEdge(vvEdgeThreshold + v))
 				cover.set(minAdjacentEdge[v]);
 		return ImmutableIntArraySet.ofBitmap(cover);

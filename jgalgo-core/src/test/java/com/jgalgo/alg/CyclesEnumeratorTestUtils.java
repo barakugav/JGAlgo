@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Iterator;
 import java.util.List;
@@ -95,7 +96,7 @@ class CyclesEnumeratorTestUtils extends TestUtils {
 		IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 		IntSupplier findMinIdx = () -> {
 			int minIdx = -1, min = Integer.MAX_VALUE;
-			for (int i = 0; i < s; i++) {
+			for (int i : range(s)) {
 				E elm = c.get(i);
 				int elmIdx = eiMap.idToIndex(elm);
 				if (minIdx == -1 || min > elmIdx) {
@@ -126,7 +127,7 @@ class CyclesEnumeratorTestUtils extends TestUtils {
 			return;
 		int s = l.size();
 		Object[] temp = l.toArray();
-		for (int i = 0; i < s; i++)
+		for (int i : range(s))
 			l.set(i, (K) temp[(i + idx) % s]);
 	}
 

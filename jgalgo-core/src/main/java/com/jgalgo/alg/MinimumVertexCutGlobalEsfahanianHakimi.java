@@ -52,7 +52,7 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 		int startVertex = -1;
 		boolean startVertexNeighborsIsOut = false;
 		if (g.isDirected()) {
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				IntList vNeighbors = neighbors.outNeighbors(v);
 				if (minCutSize > vNeighbors.size()) {
 					minCutSize = vNeighbors.size();
@@ -67,7 +67,7 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 				}
 			}
 		} else {
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				IntList vNeighbors = neighbors.outNeighbors(v);
 				if (minCutSize > vNeighbors.size()) {
 					minCutSize = vNeighbors.size();
@@ -89,7 +89,7 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 
 		IntList startVertexNeighbors = neighbors.neighbors(startVertex);
 
-		for (int v = 0; v < n; v++) {
+		for (int v : range(n)) {
 			if (v == startVertex || startVertexNeighbors.contains(v))
 				continue;
 			int[] cut = minCutStAlgo.computeMinCut(g, startVertex, v, auxiliaryGraph);
@@ -99,8 +99,9 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 			}
 		}
 
-		for (int d = startVertexNeighbors.size(), i = 0; i < d - 1; i++) { // should be up to d - 1
-			for (int j = i + 1; j < d; j++) { // should be up to d - 1
+		int d = startVertexNeighbors.size();
+		for (int i : range(d - 1)) { // should be up to d - 1
+			for (int j : range(i + 1, d)) { // should be up to d - 1
 				int u = startVertexNeighbors.getInt(i), v = startVertexNeighbors.getInt(j);
 				int[] cut = minCutStAlgo.computeMinCut(g, u, v, auxiliaryGraph);
 				if (cut != null && minCutSize > cut.length) {

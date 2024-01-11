@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.ds.UnionFind;
@@ -40,7 +41,7 @@ class ContractableGraph {
 		findToSuperV = new int[n];
 		head = new int[n];
 		tail = new int[n];
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			findToSuperV[uf.make()] = head[v] = tail[v] = v;
 		numV = n;
 	}
@@ -166,7 +167,7 @@ class ContractableGraph {
 		s.append('{');
 
 		boolean firstVertex = true;
-		for (int U = 0; U < numV; U++) {
+		for (int U : range(numV)) {
 			if (firstVertex) {
 				firstVertex = false;
 			} else {

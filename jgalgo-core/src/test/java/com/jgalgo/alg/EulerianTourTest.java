@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -294,7 +295,7 @@ public class EulerianTourTest extends TestBase {
 				V2v.set(V, v);
 		}
 
-		for (int V = 1; V < N; V++) {
+		for (int V : range(1, N)) {
 			g.addEdge(V2v.get(0), V2v.get(V), edgSupplier.get());
 			g.addEdge(V2v.get(V), V2v.get(0), edgSupplier.get());
 		}

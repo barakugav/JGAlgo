@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.alg.Flows.ResidualGraph;
 import com.jgalgo.graph.IEdgeIter;
@@ -126,7 +127,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 
 			cost = new long[m];
 			long maxCost = 1;
-			for (int e = 0; e < m; e++) {
+			for (int e : range(m)) {
 				long c = costOrig.weightInt(edgeRef[e]);
 				c = resGraph.isOriginalEdge(e) ? c : -c;
 				/* multiply all costs by \alpha n so costs will be integers when we scale them */
@@ -141,7 +142,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 
 			/* init residual capacities */
 			residualCapacity = new int[m];
-			for (int e = 0; e < m; e++) {
+			for (int e : range(m)) {
 				int eRef = edgeRef[e];
 				if (resGraph.isOriginalEdge(e)) {
 					residualCapacity[e] = capacity.weightInt(eRef) - (int) circulation.getFlow(eRef);
@@ -167,20 +168,21 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 		IFlow solve() {
 			solveWithPartialAugment();
 
-			for (int n = g.vertices().size(), u = 0; u < n; u++)
+			final int n = g.vertices().size();
+			for (int u : range(n))
 				potential[u] /= n * alpha;
 
 			long maxPotential = 0;
-			for (int n = g.vertices().size(), u = 0; u < n; u++)
+			for (int u : range(n))
 				if (maxPotential < potential[u])
 					maxPotential = potential[u];
 			if (maxPotential != 0)
-				for (int n = g.vertices().size(), u = 0; u < n; u++)
+				for (int u : range(n))
 					potential[u] -= maxPotential;
 
 			final int[] edgeRef = resGraph.edgeRef;
 			double[] flow = new double[gOrig.edges().size()];
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
+			for (int e : range(g.edges().size())) {
 				if (resGraph.isOriginalEdge(e)) {
 					int eRef = edgeRef[e];
 					int cap = capacity.weightInt(eRef);
@@ -199,7 +201,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 						continue;
 
 				/* Saturate all edges with negative cost */
-				for (int n = g.vertices().size(), u = 0; u < n; u++) {
+				for (int u : range(g.vertices().size())) {
 					long uPotential = potential[u];
 					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						int e = eit.nextInt();
@@ -219,7 +221,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 
 				/* Find all active vertices */
 				assert activeQueue.isEmpty();
-				for (int n = g.vertices().size(), u = 0; u < n; u++) {
+				for (int u : range(g.vertices().size())) {
 					if (excess[u] > 0)
 						activeQueue.enqueue(u);
 					edgeIter[u] = g.outEdges(u).iterator();
@@ -375,7 +377,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 			Arrays.fill(bucketsHeads, bucketEnd);
 			int excessSum = 0;
 			int demandVerticesListHead = bucketEnd;
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				if (excess[v] < 0) {
 					rank[v] = 0;
 					buckets.setNext(v, demandVerticesListHead);
@@ -446,7 +448,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 			}
 
 			/* relabel vertices */
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				int k = Math.min(rank[v], r);
 				if (k > 0) {
 					potential[v] -= eps * k;
@@ -553,7 +555,7 @@ class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSuppl
 			Bitmap processed = new Bitmap(n);
 			int[] backtrack = new int[n];
 
-			for (int v = 0; v < n; v++)
+			for (int v : range(n))
 				edgeIter[v] = g.outEdges(v).iterator();
 
 			assert topologicalOrder.isEmpty();

@@ -160,7 +160,7 @@ class MinimumVertexCutUtils {
 				 */
 
 				if (g.isDirected()) {
-					for (int e = 0; e < m; e++) {
+					for (int e : range(m)) {
 						int u = g.edgeSource(e), v = g.edgeTarget(e);
 						if (u == v)
 							continue;
@@ -168,7 +168,7 @@ class MinimumVertexCutUtils {
 						builder.addEdge(u * 2 + 1, v * 2 + 0);
 					}
 				} else {
-					for (int e = 0; e < m; e++) {
+					for (int e : range(m)) {
 						int u = g.edgeSource(e), v = g.edgeTarget(e);
 						if (u == v)
 							continue;
@@ -183,14 +183,14 @@ class MinimumVertexCutUtils {
 
 			} else {
 				if (g.isDirected()) {
-					for (int e = 0; e < m; e++) {
+					for (int e : range(m)) {
 						int u = g.edgeSource(e), v = g.edgeTarget(e);
 						if (u == v)
 							continue;
 						builder.addEdge(u * 2 + 1, v * 2 + 0);
 					}
 				} else {
-					for (int e = 0; e < m; e++) {
+					for (int e : range(m)) {
 						int u = g.edgeSource(e), v = g.edgeTarget(e);
 						if (u == v)
 							continue;
@@ -215,13 +215,13 @@ class MinimumVertexCutUtils {
 
 			}
 
-			for (int v = 0; v < n; v++)
+			for (int v : range(n))
 				builder.addEdge(v * 2 + 0, v * 2 + 1);
 			graph = mutable ? builder.buildMutable() : builder.build();
 		}
 
 		void edgeCutToVertexCut(int[] edgeCut) {
-			for (int i = 0; i < edgeCut.length; i++) {
+			for (int i : range(edgeCut.length)) {
 				assert edgeCut[i] >= verticesEdgesThreshold;
 				edgeCut[i] -= verticesEdgesThreshold;
 			}

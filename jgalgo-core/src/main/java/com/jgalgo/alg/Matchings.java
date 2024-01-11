@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Objects;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
@@ -54,7 +55,7 @@ class Matchings {
 		public IntSet matchedVertices() {
 			if (matchedVertices == null) {
 				int matchedCount = 0;
-				for (int v = 0; v < matched.length; v++)
+				for (int v : range(matched.length))
 					if (matched[v] != -1)
 						matchedCount++;
 				int[] matchedVertices0 = new int[matchedCount];
@@ -75,7 +76,7 @@ class Matchings {
 		public IntSet unmatchedVertices() {
 			if (unmatchedVertices == null) {
 				int unmatchedCount = 0;
-				for (int v = 0; v < matched.length; v++)
+				for (int v : range(matched.length))
 					if (matched[v] == -1)
 						unmatchedCount++;
 				int[] unmatchedVertices0 = new int[unmatchedCount];
@@ -112,7 +113,7 @@ class Matchings {
 			if (edges != null)
 				return;
 			int edgesCount = 0;
-			for (int n = g.vertices().size(), v = 0; v < n; v++) {
+			for (int v : range(g.vertices().size())) {
 				int e = matched[v];
 				if (e != -1 && v == g.edgeSource(e)) {
 					assert g.edgeSource(e) != g.edgeTarget(e);

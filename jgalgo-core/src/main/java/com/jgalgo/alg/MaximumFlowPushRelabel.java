@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import com.jgalgo.graph.IEdgeIter;
@@ -199,7 +200,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 
 			if (HeuristicIncrementalRestart && minTouchedLayer >= 2) {
 				assert minTouchedLayer != n;
-				for (int u = 0; u < n; u++) {
+				for (int u : range(n)) {
 					int l = label[u];
 					if (l < minTouchedLayer) {
 						if (u == sink)
@@ -962,7 +963,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 					final byte SOURCE = 2;
 					byte uMark = SOURCE;
 					int firstNonResidual = -1;
-					for (int i = 0; i < path.size(); i++) {
+					for (int i : range(path.size())) {
 						int e = path.getInt(i);
 						u = v;
 						double f;
@@ -1016,7 +1017,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 					final byte SOURCE = 2;
 					byte uMark = SOURCE;
 					int firstNonResidual = -1;
-					for (int i = 0; i < path.size(); i++) {
+					for (int i : range(path.size())) {
 						int e = path.getInt(i);
 						u = v;
 						double f;
@@ -1081,7 +1082,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 					final byte SOURCE = 2;
 					byte uMark = SOURCE;
 					int firstNonResidual = -1;
-					for (int i = 0; i < path.size(); i++) {
+					for (int i : range(path.size())) {
 						int e = path.getInt(i);
 						u = v;
 						int f;
@@ -1135,7 +1136,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 					final byte SOURCE = 2;
 					byte uMark = SOURCE;
 					int firstNonResidual = -1;
-					for (int i = 0; i < path.size(); i++) {
+					for (int i : range(path.size())) {
 						int e = path.getInt(i);
 						u = v;
 						int f;
@@ -1423,10 +1424,10 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 
 			if (directed) {
 				// reuse inEdgeIters array
-				for (int u = 0; u < n; u++)
+				for (int u : range(n))
 					inEdgeIters[u] = g.inEdges(u).iterator();
 
-				for (int root = 0; root < n; root++) {
+				for (int root : range(n)) {
 					if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == sink)
 						continue;
 					vState[root] = OnPath;
@@ -1488,10 +1489,10 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 
 			} else {
 				// reuse outEdgeIters array
-				for (int u = 0; u < n; u++)
+				for (int u : range(n))
 					outEdgeIters[u] = g.outEdges(u).iterator();
 
-				for (int root = 0; root < n; root++) {
+				for (int root : range(n)) {
 					if (vState[root] != Unvisited || !hasExcess(root) || root == source || root == sink)
 						continue;
 					vState[root] = OnPath;
@@ -1572,7 +1573,7 @@ class MaximumFlowPushRelabel extends MaximumFlows.WithoutResidualGraph {
 			// source.
 			if (topoBegin != -1)
 				eliminateExcessWithTopologicalOrder(topoBegin, topoEnd, topoNext);
-			// for (int u = 0; u < n; u++)
+			// for (int u : range(n))
 			// if (u != source && u != sink)
 			// assert !hasExcess(u);
 		}
