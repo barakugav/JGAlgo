@@ -88,8 +88,8 @@ public class Digraph6Test extends TestUtils {
 					edges.set(edgeIdx);
 					edgesNum++;
 				}
-				for (int u : range(0, n))
-					for (int v : range(0, n))
+				for (int u : range(n))
+					for (int v : range(n))
 						if (edges.get(u * n + v))
 							g.addEdge(u, v, g.edges().size()); /* edges ids are 0,1,2,...,m-1 */
 

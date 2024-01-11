@@ -88,7 +88,7 @@ public class Graph6Test extends TestUtils {
 					edgesNum++;
 				}
 				for (int u : range(1, n))
-					for (int v : range(0, u))
+					for (int v : range(u))
 						if (edges.get(u * (u - 1) / 2 + v))
 							g.addEdge(u, v, g.edges().size()); /* edges ids are 0,1,2,...,m-1 */
 

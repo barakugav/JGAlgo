@@ -15,6 +15,7 @@
  */
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.io.IOException;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -861,7 +862,7 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 	private static byte[] parseListByte(String val) {
 		String[] words = splitList(val);
 		byte[] list = new byte[words.length];
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			list[i] = Byte.parseByte(words[i]);
 		return list;
 	}
@@ -869,7 +870,7 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 	private static short[] parseListShort(String val) {
 		String[] words = splitList(val);
 		short[] list = new short[words.length];
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			list[i] = Short.parseShort(words[i]);
 		return list;
 	}
@@ -877,7 +878,7 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 	private static int[] parseListInt(String val) {
 		String[] words = splitList(val);
 		int[] list = new int[words.length];
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			list[i] = Integer.parseInt(words[i]);
 		return list;
 	}
@@ -885,7 +886,7 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 	private static long[] parseListLong(String val) {
 		String[] words = splitList(val);
 		long[] list = new long[words.length];
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			list[i] = Long.parseLong(words[i]);
 		return list;
 	}
@@ -893,7 +894,7 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 	private static float[] parseListFloat(String val) {
 		String[] words = splitList(val);
 		float[] list = new float[words.length];
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			list[i] = Float.parseFloat(words[i]);
 		return list;
 	}
@@ -901,7 +902,7 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 	private static double[] parseListDouble(String val) {
 		String[] words = splitList(val);
 		double[] list = new double[words.length];
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			list[i] = Double.parseDouble(words[i]);
 		return list;
 	}
@@ -909,7 +910,7 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 	private static boolean[] parseListBool(String val) {
 		String[] words = splitList(val);
 		boolean[] list = new boolean[words.length];
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			list[i] = Boolean.parseBoolean(words[i]);
 		return list;
 	}
@@ -917,7 +918,7 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 	private static char[] parseListChar(String val) {
 		String[] words = splitList(val);
 		char[] list = new char[words.length];
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			list[i] = GraphIoUtils.parseChar(words[i]);
 		return list;
 	}
@@ -925,7 +926,7 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 	private static BigDecimal[] parseListBigDecimal(String val) {
 		String[] words = splitList(val);
 		BigDecimal[] list = new BigDecimal[words.length];
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			list[i] = new BigDecimal(words[i]);
 		return list;
 	}
@@ -933,7 +934,7 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 	private static BigInteger[] parseListBigInteger(String val) {
 		String[] words = splitList(val);
 		BigInteger[] list = new BigInteger[words.length];
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			list[i] = new BigInteger(words[i]);
 		return list;
 	}
@@ -941,7 +942,7 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 	private static URI[] parseListURI(String val) {
 		String[] words = splitList(val);
 		URI[] list = new URI[words.length];
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			list[i] = parseURI(words[i]);
 		return list;
 	}
@@ -949,7 +950,7 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 	private Date[] parseListDate(String val) {
 		String[] words = splitList(val);
 		Date[] list = new Date[words.length];
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			list[i] = parseDate(words[i]);
 		return list;
 	}
@@ -959,7 +960,7 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 			throw new IllegalArgumentException("list attribute must be of the form [val1, val2,...]");
 		s = s.substring(1, s.length() - 1);
 		String[] words = s.split(",");
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			words[i] = words[i].trim();
 		return words;
 	}

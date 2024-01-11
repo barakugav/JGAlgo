@@ -124,7 +124,8 @@ public class Sparse6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer
 			inDegree[v]++;
 		}
 		int[] offset = inDegree;
-		for (int s = 0, v = 0; v < n; v++) {
+		int s = 0;
+		for (int v : range(n)) {
 			int temp = offset[v];
 			offset[v] = s;
 			s += temp;
@@ -160,7 +161,8 @@ public class Sparse6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer
 			outDegree[u]++;
 		}
 		offset = outDegree;
-		for (int s = 0, v = 0; v < n; v++) {
+		s = 0;
+		for (int v : range(n)) {
 			int temp = offset[v];
 			offset[v] = s;
 			s += temp;
@@ -211,7 +213,7 @@ public class Sparse6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Integer
 		}
 
 		if (keepEdgesIds)
-			for (int i = 0; i < edges.length; i++)
+			for (int i : range(edges.length))
 				if (edges[i] != i)
 					throw new IllegalArgumentException("edges ids must be 0,1,2,...,m-1 and ordered similar to "
 							+ "(0,0),(1,0),(1,1),(2,0),(2,1),(2,2)");

@@ -15,6 +15,8 @@
  */
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Range.range;
+
 class Gml {
 
 	private Gml() {}
@@ -40,7 +42,7 @@ class Gml {
 			throw new IllegalArgumentException("invalid key: '" + key + "'");
 		if (!isKeyCharPrefix(key.charAt(0)))
 			throw new IllegalArgumentException("invalid key: '" + key + "'");
-		for (int i = 1; i < key.length(); i++)
+		for (int i : range(1, key.length()))
 			if (!isKeyChar(key.charAt(i)))
 				throw new IllegalArgumentException("invalid key: '" + key + "'");
 	}

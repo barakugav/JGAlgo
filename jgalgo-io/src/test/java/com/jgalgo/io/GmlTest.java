@@ -1001,7 +1001,7 @@ public class GmlTest {
 	public void writeUnweighted() {
 		IntGraph g = IntGraph.newUndirected();
 		g.addVertices(range(10));
-		for (int i = 0; i < 10; i++)
+		for (int i : range(10))
 			g.addEdge(i, (i + 1) % 10, 131 + i);
 
 		StringWriter writer = new StringWriter();
@@ -1017,7 +1017,7 @@ public class GmlTest {
 	public void writeDirected() {
 		IntGraph g = IntGraph.newDirected();
 		g.addVertices(range(10));
-		for (int i = 0; i < 10; i++)
+		for (int i : range(10))
 			g.addEdge(i, (i + 1) % 10, 131 + i);
 
 		StringWriter writer = new StringWriter();
@@ -1034,7 +1034,7 @@ public class GmlTest {
 	public void writeUndirected() {
 		IntGraph g = IntGraph.newUndirected();
 		g.addVertices(range(10));
-		for (int i = 0; i < 10; i++)
+		for (int i : range(10))
 			g.addEdge(i, (i + 1) % 10, 131 + i);
 
 		StringWriter writer = new StringWriter();
@@ -1052,7 +1052,7 @@ public class GmlTest {
 	public void writeWeighted() {
 		IntGraph g = IntGraph.newUndirected();
 		g.addVertices(range(10));
-		for (int i = 0; i < 10; i++)
+		for (int i : range(10))
 			g.addEdge(i, (i + 1) % 10, i);
 
 		GmlGraphWriter<Integer, Integer> gmlWriter = new GmlGraphWriter<>();
@@ -1264,7 +1264,7 @@ public class GmlTest {
 	public void writeWeightsCustom() {
 		IntGraph g = IntGraph.newUndirected();
 		g.addVertices(range(10));
-		for (int i = 0; i < 10; i++)
+		for (int i : range(10))
 			g.addEdge(i, (i + 1) % 10, i);
 
 		GmlGraphWriter<Integer, Integer> gmlWriter = new GmlGraphWriter<>();

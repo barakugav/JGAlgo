@@ -15,6 +15,7 @@
  */
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.io.IOException;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 
@@ -168,7 +169,7 @@ class Graph6 {
 
 		void write(int x, int bitsNum) throws IOException {
 			assert x < (1 << bitsNum);
-			for (int i = 0; i < bitsNum; i++)
+			for (int i : range(bitsNum))
 				write((x & (1 << (bitsNum - 1 - i))) != 0); /* bigendian */
 		}
 

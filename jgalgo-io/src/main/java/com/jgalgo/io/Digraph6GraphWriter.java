@@ -135,7 +135,7 @@ public class Digraph6GraphWriter extends GraphIoUtils.AbstractGraphWriter<Intege
 			}
 			bytes[byteIdx] |= 1 << bitIdx;
 		}
-		for (int i = 0; i < bytes.length; i++)
+		for (int i : range(bytes.length))
 			bytes[i] += 63;
 		out.appendBytes(bytes);
 
