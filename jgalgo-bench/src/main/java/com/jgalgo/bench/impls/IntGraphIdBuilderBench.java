@@ -71,13 +71,13 @@ public class IntGraphIdBuilderBench {
 		private final int[] queries = new int[OperationsPerInvocation];
 
 		void setupCreateQueries() {
-			for (int q = 0; q < OperationsPerInvocation; q++)
+			for (int q : range(OperationsPerInvocation))
 				queries[q] = Graphs.randEdge(g, rand);
 		}
 
 		void bench(Blackhole blackhole) {
 			// assert OperationsPerInvocation % 2 == 0;
-			for (int q = 0; q < OperationsPerInvocation / 2; q++) {
+			for (int q : range(OperationsPerInvocation / 2)) {
 				blackhole.consume(g.edgeSource(queries[q * 2 + 0]));
 				blackhole.consume(g.edgeTarget(queries[q * 2 + 1]));
 			}

@@ -16,6 +16,7 @@
 
 package com.jgalgo.bench.impls;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -123,7 +124,7 @@ public class RMQStaticBench {
 			arrays = new ObjectArrayList<>();
 			for (int aIdx = 0; aIdx < arrsNum; aIdx++) {
 				int[] arr = new int[n];
-				for (int i = 1; i < n; i++)
+				for (int i : range(1, n))
 					arr[i] = arr[i - 1] + (rand.nextBoolean() ? +1 : -1);
 				arrays.add(Pair.of(Integer.valueOf(n), RMQStaticComparator.ofIntArray(arr)));
 			}
@@ -190,7 +191,7 @@ public class RMQStaticBench {
 		}
 
 		private void setupCreateQueries() {
-			for (int qIdx = 0; qIdx < OperationsPerInvocation; qIdx++) {
+			for (int qIdx : range(OperationsPerInvocation)) {
 				queries[qIdx] = queriesAll[queryIdx];
 				if (++queryIdx == queriesAll.length)
 					queryIdx = 0;
@@ -282,7 +283,7 @@ public class RMQStaticBench {
 			int[] randArray(int size, long seed) {
 				final Random rand = new Random(seed);
 				int[] arr = new int[size];
-				for (int i = 1; i < n; i++)
+				for (int i : range(1, n))
 					arr[i] = arr[i - 1] + (rand.nextBoolean() ? +1 : -1);
 				return arr;
 			}

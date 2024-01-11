@@ -16,6 +16,7 @@
 
 package com.jgalgo.bench.impls;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -285,7 +286,7 @@ public class MatchingBench {
 				IntList unmatchedVertices = new IntArrayList(cardinalityMatch.unmatchedVertices());
 				assert unmatchedVertices.size() % 2 == 0;
 				IntLists.shuffle(unmatchedVertices, new Random(seedGen.nextSeed()));
-				for (int i = 0; i < unmatchedVertices.size() / 2; i++) {
+				for (int i : range(unmatchedVertices.size() / 2)) {
 					int u = unmatchedVertices.getInt(i * 2 + 0);
 					int v = unmatchedVertices.getInt(i * 2 + 1);
 					g.addEdge(u, v);
@@ -358,7 +359,7 @@ public class MatchingBench {
 				assert unmatchedVerticesS.size() == unmatchedVerticesT.size();
 				IntLists.shuffle(unmatchedVerticesS, new Random(seedGen.nextSeed()));
 				IntLists.shuffle(unmatchedVerticesT, new Random(seedGen.nextSeed()));
-				for (int i = 0; i < unmatchedVerticesS.size(); i++) {
+				for (int i : range(unmatchedVerticesS.size())) {
 					int u = unmatchedVerticesS.getInt(i);
 					int v = unmatchedVerticesT.getInt(i);
 					g.addEdge(u, v);

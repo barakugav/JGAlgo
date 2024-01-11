@@ -16,6 +16,7 @@
 
 package com.jgalgo.bench.impls;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -78,7 +79,7 @@ public class UnionFindBench {
 			IntArrays.parallelQuickSort(edges, w);
 
 			int[] edgesWithEndpoint = new int[edges.length * 3];
-			for (int i = 0; i < edges.length; i++) {
+			for (int i : range(edges.length)) {
 				int e = edges[i];
 				int u = g.edgeSource(e);
 				int v = g.edgeTarget(e);
@@ -109,7 +110,7 @@ public class UnionFindBench {
 		/* iterate over the edges and build the MST */
 		int[] mst = new int[n - 1];
 		int mstSize = 0;
-		for (int i = 0; i < edges.length / 3; i++) {
+		for (int i : range(edges.length / 3)) {
 			int e = edges[i * 3 + 0];
 			int u = edges[i * 3 + 1];
 			int v = edges[i * 3 + 2];

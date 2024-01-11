@@ -16,6 +16,7 @@
 
 package com.jgalgo.bench.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Iterator;
 import java.util.Random;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -32,15 +33,13 @@ public class TestUtils {
 
 	static int[] randArray(int[] a, int from, int to, long seed) {
 		Random rand = new Random(seed ^ 0x64bf2cc6dd4c257eL);
-		for (int i = 0; i < a.length; i++)
+		for (int i : range(a.length))
 			a[i] = nextInt(rand, from, to);
 		return a;
 	}
 
 	static int[] randPermutation(int n, long seed) {
-		int[] a = new int[n];
-		for (int i = 0; i < n; i++)
-			a[i] = i;
+		int[] a = range(n).toIntArray();
 		IntArrays.shuffle(a, new Random(seed ^ 0xb281dc30ae96a316L));
 		return a;
 	}

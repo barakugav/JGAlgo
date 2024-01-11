@@ -15,6 +15,7 @@
  */
 package com.jgalgo.bench.impls;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -513,7 +514,7 @@ public class MinCostFlowBench {
 		assert vertices.length >= 2;
 		suppliers.add(vertices[0]);
 		demanders.add(vertices[1]);
-		for (int i = 2; i < vertices.length; i++) {
+		for (int i : range(2, vertices.length)) {
 			int r = rand.nextInt(3);
 			if (r == 0) {
 				suppliers.add(vertices[i]);

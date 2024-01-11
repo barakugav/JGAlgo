@@ -15,6 +15,7 @@
  */
 package com.jgalgo.bench;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -112,7 +113,7 @@ public class JMHTester {
 			bench.setAccessible(true);
 			Parameter[] params = bench.getParameters();
 			Object[] args = new Object[params.length];
-			for (int i = 0; i < args.length; i++) {
+			for (int i : range(args.length)) {
 				if (params[i].getType().isAssignableFrom(Blackhole.class)) {
 					args[i] = new Blackhole(
 							"Today's password is swordfish. I understand instantiating Blackholes directly is dangerous.");
@@ -156,7 +157,7 @@ public class JMHTester {
 		Collections.reverse(stateClasses);
 
 		List<IntObjectPair<Method>> setups = new ArrayList<>();
-		for (int depth = 0; depth < stateClasses.size(); depth++)
+		for (int depth : range(stateClasses.size()))
 			for (Method setup : stateClasses.get(depth).getDeclaredMethods())
 				if (setup.isAnnotationPresent(annotation))
 					setups.add(IntObjectPair.of(depth, setup));
