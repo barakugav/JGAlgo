@@ -81,22 +81,21 @@ class ShortestPathSingleSourceDag implements ShortestPathSingleSourceBase {
 	}
 
 	private ShortestPathSingleSourceDag.IResult computeSsspInt(IndexGraph g, IWeightFunctionInt w, int source) {
-		ShortestPathSingleSourceUtils.IndexResult.Int res =
-				new ShortestPathSingleSourceUtils.IndexResult.Int(g, source);
+		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);
 		res.distances[source] = 0;
 
 		TopologicalOrderAlgo.IResult topoOrder = (TopologicalOrderAlgo.IResult) topoAlg.computeTopologicalSorting(g);
 		for (IntIterator uit = topoOrder.orderedVertices().listIterator(topoOrder.vertexOrderIndex(source)); uit
 				.hasNext();) {
 			int u = uit.nextInt();
-			int uDistance = res.distances[u];
-			if (uDistance == Integer.MAX_VALUE)
+			if (res.distances[u] == Double.POSITIVE_INFINITY)
 				continue;
+			int uDistance = (int) res.distances[u];
 			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.targetInt();
 				int d = uDistance + w.weightInt(e);
-				if (d < res.distances[v]) {
+				if (d < (int) res.distances[v]) {
 					res.distances[v] = d;
 					res.backtrack[v] = e;
 				}

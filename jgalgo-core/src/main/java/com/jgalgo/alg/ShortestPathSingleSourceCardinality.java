@@ -47,8 +47,7 @@ class ShortestPathSingleSourceCardinality implements ShortestPathSingleSourceBas
 	@Override
 	public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w, int source) {
 		Assertions.onlyCardinality(w);
-		ShortestPathSingleSourceUtils.IndexResult.Int res =
-				new ShortestPathSingleSourceUtils.IndexResult.Int(g, source);
+		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);
 		for (BfsIter.Int it = BfsIter.newInstance(g, source); it.hasNext();) {
 			int v = it.nextInt();
 			res.distances[v] = it.layer();

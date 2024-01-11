@@ -50,6 +50,13 @@ class ShortestPathSingleSourceUtils {
 			Arrays.fill(backtrack, -1);
 		}
 
+		IndexResult(IndexGraph g, int source, double[] distances, int[] backtrack) {
+			this.g = g;
+			this.source = source;
+			this.distances = distances;
+			this.backtrack = backtrack;
+		}
+
 		@Override
 		public double distance(int target) {
 			return distances[target];
@@ -88,60 +95,6 @@ class ShortestPathSingleSourceUtils {
 		@Override
 		public String toString() {
 			return Arrays.toString(distances);
-		}
-
-		static class Int implements ShortestPathSingleSource.IResult {
-
-			private final IndexGraph g;
-			private final int source;
-			final int[] distances;
-			final int[] backtrack;
-
-			Int(IndexGraph g, int source) {
-				this.g = g;
-				this.source = source;
-				int n = g.vertices().size();
-				distances = new int[n];
-				backtrack = new int[n];
-				Arrays.fill(distances, Integer.MAX_VALUE);
-				Arrays.fill(backtrack, -1);
-			}
-
-			Int(IndexGraph g, int source, int[] distances, int[] backtrack) {
-				this.g = g;
-				this.source = source;
-				this.distances = distances;
-				this.backtrack = backtrack;
-			}
-
-			@Override
-			public double distance(int target) {
-				int d = distances[target];
-				return d != Integer.MAX_VALUE ? d : Double.POSITIVE_INFINITY;
-			}
-
-			@Override
-			public IPath getPath(int target) {
-				if (distances[target] == Integer.MAX_VALUE)
-					return null;
-				IntArrayList path = new IntArrayList();
-				for (int v = target;;) {
-					int e = backtrack[v];
-					if (e == -1) {
-						assert v == source;
-						break;
-					}
-					path.add(e);
-					v = g.edgeEndpoint(e, v);
-				}
-				IntArrays.reverse(path.elements(), 0, path.size());
-				return new PathImpl(g, source, target, path);
-			}
-
-			@Override
-			public String toString() {
-				return Arrays.toString(distances);
-			}
 		}
 	}
 

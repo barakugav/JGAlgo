@@ -123,16 +123,15 @@ class ShortestPathSingleSourceDijkstra implements ShortestPathSingleSourceBase {
 		IntIntReferenceableHeap heap = (IntIntReferenceableHeap) heapBuilder.build(int.class, int.class);
 		IntIntReferenceableHeap.Ref[] verticesPtrs = new IntIntReferenceableHeap.Ref[n];
 
-		ShortestPathSingleSourceUtils.IndexResult.Int res =
-				new ShortestPathSingleSourceUtils.IndexResult.Int(g, source);
+		ShortestPathSingleSourceUtils.IndexResult res = new ShortestPathSingleSourceUtils.IndexResult(g, source);
 		res.distances[source] = 0;
 
 		for (int u = source;;) {
-			final int uDistance = res.distances[u];
+			final int uDistance = (int) res.distances[u];
 			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 				int e = eit.nextInt();
 				int v = eit.targetInt();
-				if (res.distances[v] != Integer.MAX_VALUE)
+				if (res.distances[v] != Double.POSITIVE_INFINITY)
 					continue;
 				int ew = w.weightInt(e);
 				Assertions.onlyPositiveWeight(ew);

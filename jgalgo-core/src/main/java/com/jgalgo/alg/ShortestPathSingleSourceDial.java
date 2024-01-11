@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
@@ -114,7 +115,14 @@ class ShortestPathSingleSourceDial implements ShortestPathSingleSourceBase {
 			if (u == -1)
 				break;
 		}
-		return new ShortestPathSingleSourceUtils.IndexResult.Int(g, source, heap.distances, backtrack);
+
+		final int n = g.vertices().size();
+		double[] distances = new double[n];
+		for (int v : range(n)) {
+			int d = heap.distances[v];
+			distances[v] = d == Integer.MAX_VALUE ? Double.POSITIVE_INFINITY : d;
+		}
+		return new ShortestPathSingleSourceUtils.IndexResult(g, source, distances, backtrack);
 	}
 
 	private static class DialHeap {
