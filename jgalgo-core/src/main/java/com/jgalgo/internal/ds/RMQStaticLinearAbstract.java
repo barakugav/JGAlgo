@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -50,7 +51,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			this.cmpPadded = n < blockNum * blockSize ? new PaddedComparator(n, c) : c;
 			blocksRightLeftMinimum = new byte[blockNum * (blockSize - 1) * 2];
 
-			for (int b = 0; b < blockNum; b++) {
+			for (int b : range(blockNum)) {
 				c = b < blockNum - 1 ? cmpOrig : cmpPadded;
 				int base = b * blockSize;
 
@@ -83,7 +84,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			blockToInnerIdx = new int[blockNum];
 			final int innerBlockAllocSize = blockSize * (blockSize - 1) / 2;
 			Int2IntMap tables = new Int2IntOpenHashMap();
-			for (int b = 0; b < blockNum; b++) {
+			for (int b : range(blockNum)) {
 				int key = calcBlockKey(b);
 				blockToInnerIdx[b] = key;
 				tables.computeIfAbsent(key, k -> innerBlocksIdx.val++);
@@ -91,7 +92,7 @@ abstract class RMQStaticLinearAbstract implements RMQStatic {
 			final int innerBlockNum = tables.size();
 			Bitmap builtInnerBlocks = new Bitmap(innerBlockNum);
 			innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];
-			for (int b = 0; b < blockNum; b++) {
+			for (int b : range(blockNum)) {
 				int key = blockToInnerIdx[b];
 				int innerIdx = tables.get(key);
 				blockToInnerIdx[b] = innerIdx;

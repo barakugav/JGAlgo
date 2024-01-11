@@ -15,6 +15,7 @@
  */
 package com.jgalgo.internal.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -36,7 +37,7 @@ public class JGAlgoUtilsTest extends TestBase {
 		for (int iters = 100; iters-- > 0;) {
 			final int n = 1000 + rand.nextInt(2000);
 			final int[] arr = new int[n];
-			for (int i = 0; i < n; i++)
+			for (int i : range(n))
 				arr[i] = rand.nextInt(n / 5);
 			IntArrays.parallelQuickSort(arr);
 
@@ -70,7 +71,7 @@ public class JGAlgoUtilsTest extends TestBase {
 		for (int iters = 100; iters-- > 0;) {
 			final int n = 1000 + rand.nextInt(2000);
 			final int[] arr = new int[n];
-			for (int i = 0; i < n; i++)
+			for (int i : range(n))
 				arr[i] = rand.nextInt(n / 5);
 			IntArrays.parallelQuickSort(arr);
 
@@ -104,7 +105,7 @@ public class JGAlgoUtilsTest extends TestBase {
 		for (int iters = 100; iters-- > 0;) {
 			final int n = 1000 + rand.nextInt(2000);
 			final int[] arr = new int[n];
-			for (int i = 0; i < n; i++)
+			for (int i : range(n))
 				arr[i] = rand.nextInt(n / 5);
 			IntArrays.parallelQuickSort(arr);
 

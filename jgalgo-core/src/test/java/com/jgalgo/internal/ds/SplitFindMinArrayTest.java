@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 import java.util.Random;
@@ -47,7 +48,7 @@ public class SplitFindMinArrayTest extends TestBase {
 		sf.init(n);
 
 		int[] sequence = new int[n];
-		for (int x = 0; x < n; x++)
+		for (int x : range(n))
 			sequence[x] = 0;
 		int sequencesNum = 1;
 
@@ -100,7 +101,7 @@ public class SplitFindMinArrayTest extends TestBase {
 		sf.init(keys, null);
 
 		int[] sequence = new int[n];
-		for (int x = 0; x < n; x++)
+		for (int x : range(n))
 			sequence[x] = 0;
 		int sequencesNum = 1;
 

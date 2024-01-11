@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -124,7 +125,7 @@ class HeapTestUtils extends TestUtils {
 						seedGen.nextSeed());
 			} else {
 				int[] vals = new int[16];
-				for (int j = 0; j < 16; j++)
+				for (int j : range(16))
 					vals[j] = elm++;
 				testHeap(h, 16, TestMode.InsertFirst, vals, compare, seedGen.nextSeed());
 			}
@@ -133,11 +134,11 @@ class HeapTestUtils extends TestUtils {
 		while (heaps.size() > 1) {
 			/* meld half of the heaps */
 			Set<HeapTracker> heapsNext = new ObjectOpenHashSet<>();
-			List<HeapTracker> heapsSuffled = new ObjectArrayList<>(heaps);
+			List<HeapTracker> heapsShuffled = new ObjectArrayList<>(heaps);
 
-			for (int i = 0; i < heapsSuffled.size() / 2; i++) {
-				HeapTracker h1 = heapsSuffled.get(i * 2);
-				HeapTracker h2 = heapsSuffled.get(i * 2 + 1);
+			for (int i : range(heapsShuffled.size() / 2)) {
+				HeapTracker h1 = heapsShuffled.get(i * 2);
+				HeapTracker h2 = heapsShuffled.get(i * 2 + 1);
 
 				h1.heap.meld(h2.heap);
 				assertTrue(h2.heap.isEmpty());

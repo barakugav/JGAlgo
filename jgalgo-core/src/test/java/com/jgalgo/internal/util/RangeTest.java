@@ -45,12 +45,12 @@ public class RangeTest extends TestBase {
 
 	@Test
 	public void negativeTo() {
-		assertThrows(IllegalArgumentException.class, () -> range(-1));
+		assertTrue(range(-1).isEmpty());
 	}
 
 	@Test
 	public void fromGreaterThanTo() {
-		assertThrows(IllegalArgumentException.class, () -> range(1, 0));
+		assertTrue(range(1, 0).isEmpty());
 	}
 
 	@Test
@@ -124,7 +124,7 @@ public class RangeTest extends TestBase {
 		for (int repeat = 0; repeat < 25; repeat++) {
 			final int to = rand.nextInt(100);
 			Range range = range(to);
-			for (int x = -15; x < to + 15; x++)
+			for (int x : range(-15, to + 15))
 				assertEqualsBool(0 <= x && x < to, range.contains(x));
 			for (int r = 0; r < 10; r++) {
 				int x = rand.nextInt();
@@ -135,7 +135,7 @@ public class RangeTest extends TestBase {
 			final int from = rand.nextInt(100);
 			final int to = from + rand.nextInt(100);
 			Range range = range(from, to);
-			for (int x = from - 15; x < to + 15; x++)
+			for (int x : range(from - 15, to + 15))
 				assertEqualsBool(from <= x && x < to, range.contains(x));
 			for (int r = 0; r < 10; r++) {
 				int x = rand.nextInt();
@@ -226,7 +226,7 @@ public class RangeTest extends TestBase {
 				assertNotEquals(o, range);
 			}
 		}
-		assertEquals(range(0, 0), range(1, 1));
+		assertEquals(range(0), range(1, 1));
 	}
 
 	@Test
@@ -237,7 +237,7 @@ public class RangeTest extends TestBase {
 			Range range = range(to);
 
 			IntList expected = new IntArrayList();
-			for (int x = 0; x < to; x++)
+			for (int x : range(to))
 				expected.add(x);
 
 			IntList actual = new IntArrayList();
@@ -251,7 +251,7 @@ public class RangeTest extends TestBase {
 			Range range = range(to);
 
 			IntList expected = new IntArrayList();
-			for (int x = 0; x < to; x++)
+			for (int x : range(to))
 				expected.add(x);
 
 			IntList actual = new IntArrayList();
@@ -265,7 +265,7 @@ public class RangeTest extends TestBase {
 			Range range = range(to);
 
 			IntList expected = new IntArrayList();
-			for (int x = 0; x < to; x++)
+			for (int x : range(to))
 				expected.add(x);
 
 			List<IntSpliterator> splits = new ObjectArrayList<>();
@@ -314,7 +314,7 @@ public class RangeTest extends TestBase {
 			final int to = rand.nextInt(100);
 			Range range = range(to);
 			IntList list = new IntArrayList();
-			for (int x = 0; x < to; x++)
+			for (int x : range(to))
 				list.add(x);
 
 			for (int r = 0; r < 10; r++) {
@@ -348,7 +348,7 @@ public class RangeTest extends TestBase {
 			final int to = from + rand.nextInt(100);
 			Range range = range(from, to);
 			IntList list = new IntArrayList();
-			for (int x = from; x < to; x++)
+			for (int x : range(from, to))
 				list.add(x);
 
 			for (int r = 0; r < 10; r++) {
@@ -402,7 +402,7 @@ public class RangeTest extends TestBase {
 			}
 
 			/* get(index) */
-			for (int i = 0; i < range.size(); i++) {
+			for (int i : range(range.size())) {
 				int expected = from + i;
 				assertEquals(expected, range.getInt(i));
 			}
@@ -418,7 +418,7 @@ public class RangeTest extends TestBase {
 
 			/* equals() */
 			IntList expectedList = new IntArrayList();
-			for (int x = from; x < to; x++)
+			for (int x : range(from, to))
 				expectedList.add(x);
 			assertEquals(expectedList, range);
 			assertEquals(range, expectedList);

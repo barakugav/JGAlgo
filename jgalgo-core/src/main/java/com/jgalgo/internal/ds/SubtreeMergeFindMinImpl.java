@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Comparator;
 import com.jgalgo.alg.LowestCommonAncestorDynamic;
@@ -139,7 +140,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		final int t = ++timestamp;
 
 		/* All edges in sets >= r+1 are good, just union */
-		for (int setIdx = rank + 1; setIdx < maxSet; setIdx++) {
+		for (int setIdx : range(rank + 1, maxSet)) {
 			EdgeList<E> el1 = uEdges.length > setIdx ? uEdges[setIdx] : null;
 			EdgeList<E> el2 = vEdges.length > setIdx ? vEdges[setIdx] : null;
 			EdgeList<E> el = concatenateEdgeLists(el1, el2);
@@ -312,7 +313,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 	public void clear() {
 		int size = size();
 		uf.clear();
-		for (int i = 0; i < size; i++) {
+		for (int i : range(size)) {
 			nodes[i].clear();
 			nodes[i] = null;
 		}
@@ -393,7 +394,7 @@ class SubtreeMergeFindMinImpl<E> implements SubtreeMergeFindMin<E> {
 		}
 
 		void clear() {
-			for (int i = 0; i < edges.length; i++) {
+			for (int i : range(edges.length)) {
 				if (edges[i] == null)
 					continue;
 				edges[i].clear();

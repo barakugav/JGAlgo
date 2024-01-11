@@ -15,6 +15,7 @@
  */
 package com.jgalgo.internal.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -65,7 +66,7 @@ public class SubSets {
 			this.subset = new int[k];
 			this.k = k;
 
-			for (int i = 0; i < k; i++)
+			for (int i : range(k))
 				subset[i] = n - k + i;
 			nextDeviationIdx = k;
 			hasNext = k > 0;
@@ -76,7 +77,7 @@ public class SubSets {
 		}
 
 		void advance() {
-			for (int i = 0; i < k; i++) {
+			for (int i : range(k)) {
 				if (subset[i] > i) {
 					nextDeviationIdx = i + 1;
 					subset[i]--;
@@ -107,7 +108,7 @@ public class SubSets {
 		@Override
 		public List<T> next() {
 			Assertions.hasNext(this);
-			for (int i = 0; i < nextDeviationIdx; i++)
+			for (int i : range(nextDeviationIdx))
 				next[i] = set[subset[i]];
 			advance();
 			return nextList;
@@ -130,7 +131,7 @@ public class SubSets {
 		@Override
 		public IntList next() {
 			Assertions.hasNext(this);
-			for (int i = 0; i < nextDeviationIdx; i++)
+			for (int i : range(nextDeviationIdx))
 				next[i] = set[subset[i]];
 			advance();
 			return nextList;

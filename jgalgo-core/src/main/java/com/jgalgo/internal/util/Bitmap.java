@@ -15,6 +15,7 @@
  */
 package com.jgalgo.internal.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.function.IntPredicate;
@@ -88,7 +89,7 @@ public class Bitmap extends BitmapBase {
 	public static Bitmap fromPredicate(int size, IntPredicate predicate) {
 		Bitmap bitmap = new Bitmap(size);
 		Objects.requireNonNull(predicate);
-		for (int idx = 0; idx < size; idx++)
+		for (int idx : range(size))
 			if (predicate.test(idx))
 				bitmap.words[word(idx)] |= bit(idx);
 		return bitmap;
@@ -102,7 +103,7 @@ public class Bitmap extends BitmapBase {
 	 */
 	public static Bitmap of(ImmutableBitmap bitmap) {
 		Bitmap b = new Bitmap(bitmap.capacity());
-		for (int i = 0; i < b.words.length; i++)
+		for (int i : range(b.words.length))
 			b.words[i] = bitmap.words[i];
 		return b;
 	}
@@ -153,7 +154,7 @@ public class Bitmap extends BitmapBase {
 	public void setAll() {
 		if (words.length == 0)
 			return;
-		for (int i = 0; i < words.length - 1; i++)
+		for (int i : range(words.length - 1))
 			words[i] = ~0L;
 		words[words.length - 1] = lastWordMask();
 	}
@@ -203,7 +204,7 @@ public class Bitmap extends BitmapBase {
 	public void not() {
 		if (words.length == 0)
 			return;
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			words[i] = ~words[i];
 		words[words.length - 1] &= lastWordMask();
 	}
@@ -218,7 +219,7 @@ public class Bitmap extends BitmapBase {
 	 */
 	public void or(Bitmap b) {
 		checkSize(this, b);
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			words[i] |= b.words[i];
 	}
 

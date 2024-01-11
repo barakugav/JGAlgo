@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.Random;
 import java.util.function.Supplier;
@@ -41,7 +42,7 @@ class UnionFindTestUtils extends TestUtils {
 		UnionFind uf = builder.get();
 		int[] set = new int[n];
 
-		for (int i = 0; i < n; i++)
+		for (int i : range(n))
 			set[i] = uf.make();
 
 		final int OP_FIND = 0;
@@ -61,7 +62,7 @@ class UnionFindTestUtils extends TestUtils {
 					uf.union(a, b);
 					int aset = set[a];
 					int bset = set[b];
-					for (int i = 0; i < n; i++)
+					for (int i : range(n))
 						if (set[i] == bset)
 							set[i] = aset;
 					break;

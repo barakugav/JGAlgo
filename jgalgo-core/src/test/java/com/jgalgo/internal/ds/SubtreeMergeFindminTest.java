@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -77,7 +78,7 @@ public class SubtreeMergeFindminTest extends TestBase {
 		/* generate random ops without the two initial initTree and addLeaf ops */
 		Op[] notAddLeafOps = { Op.AddNonTreeEdge, Op.Merge, Op.findMinNonTreeEdge };
 		Op[] ops = new Op[n - 2 + m];
-		for (int i = 0; i < n - 2 + m; i++)
+		for (int i : range(n - 2 + m))
 			ops[i] = i < n - 2 ? Op.AddLeaf : notAddLeafOps[rand.nextInt(notAddLeafOps.length)];
 		ObjectArrays.shuffle(ops, rand);
 
@@ -162,7 +163,7 @@ public class SubtreeMergeFindminTest extends TestBase {
 				case findMinNonTreeEdge: {
 					int[] min = null;
 					Bitmap visited = new Bitmap(nodes.size());
-					for (int v = 0; v < nodes.size(); v++) {
+					for (int v : range(nodes.size())) {
 						int V = uf.find(v);
 						if (visited.get(V))
 							continue;

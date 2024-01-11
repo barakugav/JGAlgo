@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Objects;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
@@ -108,7 +109,7 @@ class RMQStaticCartesianTrees extends RMQStaticLinearAbstract {
 
 			int keyIdx = 0;
 
-			for (int i = 0; i < demoBlock.length; i++) {
+			for (int i : range(demoBlock.length)) {
 				byte x = (byte) (nodesCount > 0 ? nodes[nodesCount - 1] + blockSize : 0);
 				while ((key & (1 << keyIdx)) != 0) {
 					x = (byte) (nodes[nodesCount-- - 1] - 1);

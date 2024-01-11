@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.Comparator;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -202,7 +203,7 @@ class SplitFindMinArray<K> implements SplitFindMin<K> {
 		Block blk = new Block(from, to);
 
 		int min = -1;
-		for (int i = from; i < to; i++) {
+		for (int i : range(from, to)) {
 			blocks[i] = blk;
 			if (min == -1 || c.compare(keys[min], keys[i]) > 0)
 				min = i;

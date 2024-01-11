@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.fail;
 import java.util.Random;
 import com.jgalgo.internal.util.TestUtils;
@@ -39,7 +40,7 @@ class RMQStaticUtils extends TestUtils {
 	static void testRMQ(RMQStatic rmq, int a[], int[][] queries) {
 		RMQStatic.DataStructure rmqDS = rmq.preProcessSequence(RMQStaticComparator.ofIntArray(a), a.length);
 
-		for (int idx = 0; idx < queries.length; idx++) {
+		for (int idx : range(queries.length)) {
 			int i = queries[idx][0];
 			int j = queries[idx][1];
 			int expectedIdx = queries[idx][2];
@@ -62,7 +63,7 @@ class RMQStaticUtils extends TestUtils {
 	static void randRMQDataPlusMinusOne(int a[], long seed) {
 		Random rand = new Random(seed);
 		a[0] = 0;
-		for (int i = 1; i < a.length; i++)
+		for (int i : range(1, a.length))
 			a[i] = a[i - 1] + rand.nextInt(2) * 2 - 1;
 	}
 
@@ -105,7 +106,7 @@ class RMQStaticUtils extends TestUtils {
 			s.append("{}\n");
 		else {
 			s.append("{");
-			for (int i = 0; i < a.length - 1; i++) {
+			for (int i : range(a.length - 1)) {
 				s.append(a[i]);
 				s.append(((i + 1) % dataPerLine) == 0 ? ",\n" : ", ");
 			}
@@ -117,7 +118,7 @@ class RMQStaticUtils extends TestUtils {
 			s.append("{}\n");
 		else {
 			s.append("{");
-			for (int i = 0; i < queries.length - 1; i++) {
+			for (int i : range(queries.length - 1)) {
 				int[] q = queries[i];
 				s.append("{" + q[0] + "," + q[1] + "," + q[2] + "},");
 				s.append(((i + 1) % queriesPerLine) == 0 ? "\n" : " ");

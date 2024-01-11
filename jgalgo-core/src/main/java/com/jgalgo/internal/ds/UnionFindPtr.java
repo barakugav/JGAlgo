@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 
 /**
@@ -115,7 +116,7 @@ class UnionFindPtr implements UnionFind {
 
 	@Override
 	public void clear() {
-		for (int i = 0; i < size; i++) {
+		for (int i : range(size)) {
 			Elm e = elements[i];
 			e.parent = null;
 			elements[i] = null;

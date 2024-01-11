@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Objects;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
@@ -58,13 +59,13 @@ class RMQStaticPowerOf2Table implements RMQStatic {
 			arr = new int[JGAlgoUtils.log2ceil(n + 1) - 1][n - 1];
 			this.c = c;
 
-			for (int i = 0; i < n - 1; i++)
+			for (int i : range(n - 1))
 				arr[0][i] = c.compare(i, i + 1) < 0 ? i : i + 1;
 
-			for (int k = 1; k < arr.length; k++) {
+			for (int k : range(1, arr.length)) {
 				int pkSize = 1 << k;
 				int kSize = 1 << (k + 1);
-				for (int i = 0; i < n - kSize + 1; i++) {
+				for (int i : range(n - kSize + 1)) {
 					int idx0 = arr[k - 1][i];
 					int idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];
 					arr[k][i] = c.compare(idx0, idx1) < 0 ? idx0 : idx1;
@@ -113,10 +114,10 @@ class RMQStaticPowerOf2Table implements RMQStatic {
 			for (short i = 0; i < n - 1; i++)
 				arr[0][i] = c.compare(i, i + 1) < 0 ? i : (short) (i + 1);
 
-			for (int k = 1; k < arr.length; k++) {
+			for (int k : range(1, arr.length)) {
 				int pkSize = 1 << k;
 				int kSize = 1 << (k + 1);
-				for (int i = 0; i < n - kSize + 1; i++) {
+				for (int i : range(n - kSize + 1)) {
 					short idx0 = arr[k - 1][i];
 					short idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];
 					arr[k][i] = c.compare(idx0, idx1) < 0 ? idx0 : idx1;
@@ -165,10 +166,10 @@ class RMQStaticPowerOf2Table implements RMQStatic {
 			for (byte i = 0; i < n - 1; i++)
 				arr[0][i] = c.compare(i, i + 1) < 0 ? i : (byte) (i + 1);
 
-			for (int k = 1; k < arr.length; k++) {
+			for (int k : range(1, arr.length)) {
 				int pkSize = 1 << k;
 				int kSize = 1 << (k + 1);
-				for (int i = 0; i < n - kSize + 1; i++) {
+				for (int i : range(n - kSize + 1)) {
 					byte idx0 = arr[k - 1][i];
 					byte idx1 = arr[k - 1][Math.min(i + pkSize, n - pkSize)];
 					arr[k][i] = c.compare(idx0, idx1) < 0 ? idx0 : idx1;

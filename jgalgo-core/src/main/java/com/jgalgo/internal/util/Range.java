@@ -40,19 +40,17 @@ public final class Range extends AbstractIntSet {
 	private final int from, to;
 
 	private Range(int from, int to) {
+		if (to < from)
+			to = from;
 		this.from = from;
 		this.to = to;
 	}
 
 	public static Range range(int to) {
-		if (0 > to)
-			throw new IllegalArgumentException("negative 'to': " + to);
 		return new Range(0, to);
 	}
 
 	public static Range range(int from, int to) {
-		if (from > to)
-			throw new IllegalArgumentException("from > to: " + from + " > " + to);
 		return new Range(from, to);
 	}
 

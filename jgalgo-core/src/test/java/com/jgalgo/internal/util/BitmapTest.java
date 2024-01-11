@@ -15,6 +15,7 @@
  */
 package com.jgalgo.internal.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
@@ -63,13 +64,13 @@ public class BitmapTest extends TestBase {
 		assertThrows(IndexOutOfBoundsException.class, () -> b.get(10));
 
 		IntSet expected = new IntOpenHashSet();
-		for (int i = 0; i < 10; i++) {
+		for (int i : range(10)) {
 			boolean bit = rand.nextBoolean();
 			if (bit)
 				expected.add(i);
 			b.set(i, bit);
 		}
-		for (int i = 0; i < 10; i++)
+		for (int i : range(10))
 			assertEqualsBool(expected.contains(i), b.get(i));
 	}
 
@@ -78,32 +79,32 @@ public class BitmapTest extends TestBase {
 		for (int size : IntList.of(0, 1, 10, 63, 64, 65, 95, 96, 97, 127, 128, 129)) {
 			Bitmap b = new Bitmap(size);
 			assertEquals(size, b.capacity());
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				assertFalse(b.get(i));
 			assertTrue(b.isEmpty());
 			assertEquals(0, b.cardinality());
 			assertEquals(size, b.capacity());
 
 			b.setAll();
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				assertTrue(b.get(i));
 			assertEqualsBool(size > 0, !b.isEmpty());
 			assertEquals(size, b.cardinality());
 
 			b.clear();
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				assertFalse(b.get(i));
 			assertTrue(b.isEmpty());
 			assertEquals(0, b.cardinality());
 
 			b.setAll(true);
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				assertTrue(b.get(i));
 			assertEqualsBool(size > 0, !b.isEmpty());
 			assertEquals(size, b.cardinality());
 
 			b.setAll(false);
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				assertFalse(b.get(i));
 			assertTrue(b.isEmpty());
 			assertEquals(0, b.cardinality());
@@ -120,16 +121,16 @@ public class BitmapTest extends TestBase {
 				b.set(rand.nextInt(size));
 
 			IntSet oneBits = new IntOpenHashSet();
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				if (b.get(i))
 					oneBits.add(i);
 
 			b.not();
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				assertEqualsBool(!oneBits.contains(i), b.get(i));
 
 			b.not();
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				assertEqualsBool(oneBits.contains(i), b.get(i));
 		}
 	}
@@ -147,12 +148,12 @@ public class BitmapTest extends TestBase {
 				b2.set(rand.nextInt(size));
 
 			IntSet oneBits = new IntOpenHashSet();
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				if (b1.get(i) || b2.get(i))
 					oneBits.add(i);
 
 			b1.or(b2);
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				assertEqualsBool(oneBits.contains(i), b1.get(i));
 
 			Bitmap b3 = new Bitmap(size + 1);
@@ -182,7 +183,7 @@ public class BitmapTest extends TestBase {
 
 				b.clearAllUnsafe(oneBits);
 
-				for (int i = 0; i < size; i++)
+				for (int i : range(size))
 					assertFalse(b.get(i));
 				assertTrue(b.isEmpty());
 				assertEquals(0, b.cardinality());
@@ -222,7 +223,7 @@ public class BitmapTest extends TestBase {
 				b.set(rand.nextInt(size));
 
 			IntList expected = new IntArrayList();
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				if (b.get(i))
 					expected.add(i);
 			IntList actual = IntList.of(b.toArray());
@@ -240,7 +241,7 @@ public class BitmapTest extends TestBase {
 				b.set(rand.nextInt(size));
 
 			Bitmap b2 = b.copy();
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				assertEqualsBool(b.get(i), b2.get(i));
 			assertEquals(b.capacity(), b2.capacity());
 			assertEquals(b.cardinality(), b2.cardinality());
@@ -257,24 +258,24 @@ public class BitmapTest extends TestBase {
 				oneBits.add(rand.nextInt(size));
 
 			Bitmap b = Bitmap.fromOnes(size, oneBits.toIntArray());
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				assertEqualsBool(oneBits.contains(i), b.get(i));
 
 			b = Bitmap.fromOnes(size, oneBits);
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				assertEqualsBool(oneBits.contains(i), b.get(i));
 
 			b = Bitmap.fromOnes(size, oneBits.iterator());
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				assertEqualsBool(oneBits.contains(i), b.get(i));
 
 			b = Bitmap.fromPredicate(size, oneBits::contains);
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				assertEqualsBool(oneBits.contains(i), b.get(i));
 
 			ImmutableBitmap ib = ImmutableBitmap.of(b);
 			b = Bitmap.of(ib);
-			for (int i = 0; i < size; i++)
+			for (int i : range(size))
 				assertEqualsBool(oneBits.contains(i), b.get(i));
 
 			assertThrows(IllegalArgumentException.class, () -> new Bitmap(-1));
@@ -291,7 +292,7 @@ public class BitmapTest extends TestBase {
 				oneBits.add(rand.nextInt(size));
 			Bitmap b = Bitmap.fromOnes(size, oneBits);
 
-			for (int i = 0; i < size; i++) {
+			for (int i : range(size)) {
 				int expected;
 				for (expected = i; expected < size; expected++)
 					if (oneBits.contains(expected))
@@ -314,7 +315,7 @@ public class BitmapTest extends TestBase {
 				oneBits.add(rand.nextInt(size));
 			Bitmap b = Bitmap.fromOnes(size, oneBits);
 
-			for (int i = 0; i < size; i++) {
+			for (int i : range(size)) {
 				int expected;
 				for (expected = i; expected < size; expected++)
 					if (!oneBits.contains(expected))

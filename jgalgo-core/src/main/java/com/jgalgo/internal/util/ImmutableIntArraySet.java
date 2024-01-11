@@ -15,6 +15,7 @@
  */
 package com.jgalgo.internal.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Objects;
@@ -73,7 +74,7 @@ public abstract class ImmutableIntArraySet extends AbstractIntSet {
 		if (isEmpty())
 			return ObjectArrays.EMPTY_ARRAY;
 		Object[] a = new Object[size];
-		for (int i = from; i < to; i++)
+		for (int i : range(from, to))
 			a[i - from] = Integer.valueOf(arr[i]);
 		return a;
 	}
@@ -83,7 +84,7 @@ public abstract class ImmutableIntArraySet extends AbstractIntSet {
 	public <T> T[] toArray(T[] a) {
 		if (a.length < size)
 			a = (T[]) Array.newInstance(a.getClass().getComponentType(), size);
-		for (int i = from; i < to; i++)
+		for (int i : range(from, to))
 			a[i - from] = (T) Integer.valueOf(arr[i]);
 		return a;
 	}
@@ -155,7 +156,7 @@ public abstract class ImmutableIntArraySet extends AbstractIntSet {
 		if (elms0 instanceof WithBitmap && ((WithBitmap) elms0).bitmap.capacity() == bitmapSize)
 			return elms0;
 		Bitmap bitmap = new Bitmap(bitmapSize);
-		for (int i = elms0.from; i < elms0.to; i++)
+		for (int i : range(elms0.from, elms0.to))
 			bitmap.set(elms0.arr[i]);
 		return new WithBitmap(elms0.arr, elms0.from, elms0.to, bitmap);
 	}
@@ -186,7 +187,7 @@ public abstract class ImmutableIntArraySet extends AbstractIntSet {
 
 		@Override
 		public boolean contains(int key) {
-			for (int i = from; i < to; i++)
+			for (int i : range(from, to))
 				if (key == arr[i])
 					return true;
 			return false;

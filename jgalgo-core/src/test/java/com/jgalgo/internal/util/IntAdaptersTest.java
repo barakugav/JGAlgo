@@ -15,6 +15,7 @@
  */
 package com.jgalgo.internal.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -148,7 +149,7 @@ public class IntAdaptersTest extends TestBase {
 		assertEqualsBool(objIter.hasPrevious(), intIter.hasPrevious());
 
 		/* get(index) */
-		for (int i = 0; i < objList.size(); i++)
+		for (int i : range(objList.size()))
 			assertEquals(objList.get(i).intValue(), intList.getInt(i));
 
 		/* set(index) */

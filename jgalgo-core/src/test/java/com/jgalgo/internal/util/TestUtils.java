@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -74,10 +75,10 @@ public class TestUtils {
 		}
 
 		private void runPhases(Consumer<Phase> test, int runnableArgs) {
-			for (int pIdx = 0; pIdx < phases.size(); pIdx++) {
+			for (int pIdx : range(phases.size())) {
 				Phase phase = phases.get(pIdx);
 				assertArgsNum(phase, runnableArgs);
-				for (int repeat = 0; repeat < phase.repeat; repeat++) {
+				for (int repeat : range(phase.repeat)) {
 					try {
 						test.accept(phase);
 					} catch (Throwable ex) {
@@ -124,15 +125,13 @@ public class TestUtils {
 
 	public static int[] randArray(int[] a, int from, int to, long seed) {
 		Random rand = new Random(seed ^ 0x64bf2cc6dd4c257eL);
-		for (int i = 0; i < a.length; i++)
+		for (int i : range(a.length))
 			a[i] = nextInt(rand, from, to);
 		return a;
 	}
 
 	public static int[] randPermutation(int n, long seed) {
-		int[] a = new int[n];
-		for (int i = 0; i < n; i++)
-			a[i] = i;
+		int[] a = range(n).toIntArray();
 		IntArrays.shuffle(a, new Random(seed ^ 0xb281dc30ae96a316L));
 		return a;
 	}

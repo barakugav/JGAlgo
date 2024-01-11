@@ -15,6 +15,7 @@
  */
 package com.jgalgo.internal.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.ListIterator;
@@ -59,7 +60,7 @@ public class Assertions {
 			throw new IllegalArgumentException(
 					"Bipartiteness vertices weights is not found. See BipartiteGraphs.VertexBiPartitionWeightKey");
 		if (JGAlgoConfigImpl.AssertionsGraphsBipartitePartition) {
-			for (int m = g.edges().size(), e = 0; e < m; e++)
+			for (int e : range(g.edges().size()))
 				if (partition.get(g.edgeSource(e)) == partition.get(g.edgeTarget(e)))
 					throw new IllegalArgumentException("the graph is not bipartite");
 		}
@@ -68,7 +69,7 @@ public class Assertions {
 
 	public static void onlyBipartite(IndexGraph g, IWeightsBool partition) {
 		if (JGAlgoConfigImpl.AssertionsGraphsBipartitePartition) {
-			for (int m = g.edges().size(), e = 0; e < m; e++)
+			for (int e : range(g.edges().size()))
 				if (partition.get(g.edgeSource(e)) == partition.get(g.edgeTarget(e)))
 					throw new IllegalArgumentException("the graph is not bipartite");
 		}
@@ -90,10 +91,10 @@ public class Assertions {
 				return;
 			if (WeightFunction.isInteger(w)) {
 				IWeightFunctionInt wInt = (IWeightFunctionInt) w;
-				for (int m = g.edges().size(), e = 0; e < m; e++)
+				for (int e : range(g.edges().size()))
 					onlyPositiveWeight(wInt.weightInt(e));
 			} else {
-				for (int m = g.edges().size(), e = 0; e < m; e++)
+				for (int e : range(g.edges().size()))
 					onlyPositiveWeight(w.weight(e));
 			}
 		}
@@ -201,13 +202,13 @@ public class Assertions {
 			return;
 		if (WeightFunction.isInteger(capacity)) {
 			IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
+			for (int e : range(g.edges().size())) {
 				int cap = capacityInt.weightInt(e);
 				if (cap < 0)
 					throw new IllegalArgumentException("negative capacity of edge (idx=" + e + "): " + cap);
 			}
 		} else {
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
+			for (int e : range(g.edges().size())) {
 				double cap = capacity.weight(e);
 				if (cap < 0)
 					throw new IllegalArgumentException("negative capacity of edge (idx=" + e + "): " + cap);
@@ -221,14 +222,14 @@ public class Assertions {
 		if (WeightFunction.isCardinality(capacity)) {
 			if (WeightFunction.isInteger(lowerBound)) {
 				IWeightFunctionInt lowerBoundInt = (IWeightFunctionInt) lowerBound;
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
+				for (int e : range(g.edges().size())) {
 					int l = lowerBoundInt.weightInt(e);
 					if (!(0 <= l && l <= 1))
 						throw new IllegalArgumentException(
 								"Lower bound " + l + " of edge with index " + e + " must be in [0, " + 1 + "]");
 				}
 			} else {
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
+				for (int e : range(g.edges().size())) {
 					double l = lowerBound.weight(e);
 					if (!(0 <= l && l <= 1))
 						throw new IllegalArgumentException(
@@ -239,7 +240,7 @@ public class Assertions {
 		} else if (WeightFunction.isCardinality(lowerBound)) {
 			if (WeightFunction.isInteger(capacity)) {
 				IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
+				for (int e : range(g.edges().size())) {
 					int cap = capacityInt.weightInt(e);
 					if (!(1 <= cap))
 						throw new IllegalArgumentException(
@@ -247,7 +248,7 @@ public class Assertions {
 				}
 
 			} else {
-				for (int m = g.edges().size(), e = 0; e < m; e++) {
+				for (int e : range(g.edges().size())) {
 					double cap = capacity.weight(e);
 					if (!(1 <= cap))
 						throw new IllegalArgumentException(
@@ -259,7 +260,7 @@ public class Assertions {
 		} else if (WeightFunction.isInteger(capacity) && WeightFunction.isInteger(lowerBound)) {
 			IWeightFunctionInt capacityInt = (IWeightFunctionInt) capacity;
 			IWeightFunctionInt lowerBoundInt = (IWeightFunctionInt) lowerBound;
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
+			for (int e : range(g.edges().size())) {
 				int l = lowerBoundInt.weightInt(e);
 				int cap = capacityInt.weightInt(e);
 				if (!(0 <= l && l <= cap))
@@ -267,7 +268,7 @@ public class Assertions {
 							"Lower bound " + l + " of edge with index " + e + " must be in [0, " + cap + "]");
 			}
 		} else {
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
+			for (int e : range(g.edges().size())) {
 				double l = lowerBound.weight(e);
 				double cap = capacity.weight(e);
 				if (!(0 <= l && l <= cap))
@@ -281,14 +282,14 @@ public class Assertions {
 		if (supply instanceof IWeightFunctionInt) {
 			IWeightFunctionInt supplyInt = (IWeightFunctionInt) supply;
 			long sum = 0;
-			for (int n = g.vertices().size(), v = 0; v < n; v++)
+			for (int v : range(g.vertices().size()))
 				sum += supplyInt.weightInt(v);
 			if (sum != 0)
 				throw new IllegalArgumentException("Sum of supply must be zero");
 		} else {
 			double sum = 0;
 			double minSupply = Double.POSITIVE_INFINITY;
-			for (int n = g.vertices().size(), v = 0; v < n; v++) {
+			for (int v : range(g.vertices().size())) {
 				double d = supply.weight(v);
 				if (!Double.isFinite(d))
 					throw new IllegalArgumentException("Supply must be finite for vertex with index " + v);

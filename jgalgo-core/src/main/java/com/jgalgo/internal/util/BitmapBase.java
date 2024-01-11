@@ -15,6 +15,7 @@
  */
 package com.jgalgo.internal.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -206,7 +207,7 @@ public class BitmapBase implements IntIterable {
 	 */
 	public Bitmap copy() {
 		Bitmap ret = new Bitmap(size);
-		for (int i = 0; i < words.length; i++)
+		for (int i : range(words.length))
 			ret.words[i] = words[i];
 		return ret;
 	}

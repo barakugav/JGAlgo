@@ -15,6 +15,7 @@
  */
 package com.jgalgo.internal.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -147,7 +148,7 @@ public class ImmutableIntArraySetTest extends TestBase {
 			ImmutableIntArraySet set = ImmutableIntArraySet.withNaiveContains(arr, from, to);
 
 			IntSet expected = new IntOpenHashSet();
-			for (int j = from; j < to; j++)
+			for (int j : range(from, to))
 				expected.add(arr[j]);
 			IntSet actual = new IntOpenHashSet();
 			for (int elm : set) {
@@ -189,30 +190,30 @@ public class ImmutableIntArraySetTest extends TestBase {
 		int[] arr = elms.toIntArray();
 
 		IntSet set = ImmutableIntArraySet.ofBitmap(ImmutableIntArraySet.withNaiveContains(arr), 1000);
-		for (int x = -10; x < 1010; x++)
+		for (int x : range(-10, 1010))
 			assertEqualsBool(elms.contains(x), set.contains(x));
 
 		set = ImmutableIntArraySet.ofBitmap(set, 1000);
-		for (int x = -10; x < 1010; x++)
+		for (int x : range(-10, 1010))
 			assertEqualsBool(elms.contains(x), set.contains(x));
 
 		set = ImmutableIntArraySet.ofBitmap(set, 1001);
-		for (int x = -10; x < 1010; x++)
+		for (int x : range(-10, 1010))
 			assertEqualsBool(elms.contains(x), set.contains(x));
 
 		set = ImmutableIntArraySet.ofBitmap(IntList.of(arr), 1000);
-		for (int x = -10; x < 1010; x++)
+		for (int x : range(-10, 1010))
 			assertEqualsBool(elms.contains(x), set.contains(x));
 
 		set = ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(1000, set));
-		for (int x = -10; x < 1010; x++)
+		for (int x : range(-10, 1010))
 			assertEqualsBool(elms.contains(x), set.contains(x));
 	}
 
 	@Test
 	public void customContains() {
 		int[] arr = new int[10];
-		for (int i = 0; i < 10; i++)
+		for (int i : range(10))
 			arr[i] = i * 2;
 		IntSet set = new ImmutableIntArraySet(arr) {
 			@Override
@@ -220,14 +221,14 @@ public class ImmutableIntArraySetTest extends TestBase {
 				return 0 <= key && key < 20 && key % 2 == 0;
 			}
 		};
-		for (int x = -10; x < 30; x++)
+		for (int x : range(-10, 30))
 			assertEqualsBool(x % 2 == 0 && 0 <= x && x < 20, set.contains(x));
 	}
 
 	@Test
 	public void outOfBoundRange() {
 		int[] arr = new int[10];
-		for (int i = 0; i < 10; i++)
+		for (int i : range(10))
 			arr[i] = i * 2;
 
 		assertThrows(IndexOutOfBoundsException.class,

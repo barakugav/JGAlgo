@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Objects;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
@@ -94,7 +95,7 @@ class RMQStaticPlusMinusOne extends RMQStaticLinearAbstract {
 			byte[] demoBlock = new byte[blockSize];
 
 			demoBlock[0] = 0;
-			for (int i = 1; i < demoBlock.length; i++)
+			for (int i : range(1, demoBlock.length))
 				demoBlock[i] = (byte) (demoBlock[i - 1] + ((key & (1 << (i - 1))) != 0 ? -1 : 1));
 
 			return demoBlock;

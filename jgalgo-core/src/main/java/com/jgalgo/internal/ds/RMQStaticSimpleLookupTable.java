@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Objects;
 
 /**
@@ -142,10 +143,10 @@ class RMQStaticSimpleLookupTable implements RMQStatic {
 			arr = new int[arrSize(n)];
 			this.n = n;
 
-			for (int i = 0; i < n - 1; i++)
+			for (int i : range(n - 1))
 				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) < 0 ? i : i + 1;
-			for (int i = 0; i < n - 2; i++) {
-				for (int j = i + 2; j < n; j++) {
+			for (int i : range(n - 2)) {
+				for (int j : range(i + 2, n)) {
 					int m = arr[indexOf(n, i, j - 1)];
 					arr[indexOf(n, i, j)] = c.compare(m, j) < 0 ? m : j;
 				}
