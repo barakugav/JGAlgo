@@ -37,7 +37,7 @@ abstract class GraphCsrAbstractUnindexed extends GraphCsrBase {
 		super(directed, Variant2.ofB(builder), processEdges, Optional.empty(), true, true);
 		edgesOut = processEdges.edgesOut;
 
-		for (int m = builder.edges.size(), e = 0; e < m; e++)
+		for (int e : range(builder.edges.size()))
 			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
 
 		this.fastLookup = fastLookup;
@@ -62,12 +62,13 @@ abstract class GraphCsrAbstractUnindexed extends GraphCsrBase {
 				edgesOutArrLen = m;
 			} else {
 				edgesOutArrLen = 0;
-				for (int u = 0; u < n; u++)
+				for (int u : range(n))
 					edgesOutArrLen += g.outEdges(u).size();
 			}
 			edgesOut = new int[edgesOutArrLen];
 
-			for (int eIdx = 0, u = 0; u < n; u++) {
+			int eIdx = 0;
+			for (int u : range(n)) {
 				edgesOutBegin[u] = eIdx;
 				for (int e : g.outEdges(u))
 					edgesOut[eIdx++] = e;

@@ -115,7 +115,7 @@ public class GraphBuilderTest extends TestBase {
 
 			Set<Integer> vertices = new HashSet<>();
 			List<Integer> verticesList = new ArrayList<>();
-			for (int r = 0; r < 50; r++) {
+			for (int r : range(50)) {
 				int num = rand.nextInt(5);
 				List<Integer> vs = new ArrayList<>();
 				while (vs.size() < num) {
@@ -454,15 +454,13 @@ public class GraphBuilderTest extends TestBase {
 		Graph<Integer, Integer> g = factory.allowSelfEdges().allowParallelEdges().newGraph();
 
 		WeightsInt<Integer> vWeights = g.addVerticesWeights("weights", int.class);
-		for (int v0 = 0; v0 < n; v0++) {
-			Integer v = Integer.valueOf(v0);
+		for (Integer v : range(n)) {
 			g.addVertex(v);
 			vWeights.set(v, rand.nextInt(10000));
 		}
 
 		WeightsInt<Integer> eWeights = g.addEdgesWeights("weights", int.class);
-		for (int e0 = 0; e0 < m; e0++) {
-			Integer e = Integer.valueOf(e0);
+		for (Integer e : range(m)) {
 			g.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand), e);
 			eWeights.set(e, rand.nextInt(10000));
 		}

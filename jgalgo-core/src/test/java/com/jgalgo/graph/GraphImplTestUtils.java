@@ -92,7 +92,7 @@ class GraphImplTestUtils extends TestUtils {
 			Graph<Integer, Integer> g = graphImpl.apply(directed);
 			final int n = 100;
 			IntSet verticesSet = new IntOpenHashSet();
-			for (int i = 0; i < n; i++) {
+			for (int i : range(n)) {
 				int v = i + 1;
 				g.addVertex(Integer.valueOf(v));
 				verticesSet.add(v);
@@ -106,7 +106,7 @@ class GraphImplTestUtils extends TestUtils {
 			IndexGraph g = graphImpl.apply(directed).indexGraph();
 			IdBuilderInt vBuilder = g.vertexBuilder();
 			final int n = 87;
-			for (int i = 0; i < n; i++) {
+			for (int i : range(n)) {
 				int expected = i;
 				int actual1 = vBuilder.build(g.vertices());
 				int actual2 = g.addVertexInt();
@@ -115,7 +115,7 @@ class GraphImplTestUtils extends TestUtils {
 			}
 			assertEquals(range(n), g.vertices());
 
-			for (int i = 0; i < 20; i++) {
+			for (int i : range(20)) {
 				if (i % 2 == 0) {
 					g.addVertex(g.vertices().size());
 				} else {
@@ -558,7 +558,7 @@ class GraphImplTestUtils extends TestUtils {
 				g = g.indexGraph();
 			final int n = 100;
 			IntSet verticesSet = new IntOpenHashSet();
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				g.addVertex(Integer.valueOf(v));
 				verticesSet.add(v);
 			}
@@ -586,7 +586,7 @@ class GraphImplTestUtils extends TestUtils {
 				assertEquals(g.vertices(), IntSet.of(Arrays.copyOf(arr6, g.vertices().size())));
 				assertTrue(arr5Input == arr5);
 				assertTrue(arr6Input == arr6);
-				for (int i = g.vertices().size(); i < arr6Input.length; i++)
+				for (int i : range(g.vertices().size(), arr6Input.length))
 					assertEquals(-18, arr6[i]);
 			}
 		});
@@ -601,8 +601,8 @@ class GraphImplTestUtils extends TestUtils {
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
 			Int2ObjectMap<int[]> edges = new Int2ObjectOpenHashMap<>();
-			for (int uIdx = 0; uIdx < n; uIdx++) {
-				for (int vIdx = uIdx + 1; vIdx < n; vIdx++) {
+			for (int uIdx : range(n)) {
+				for (int vIdx : range(uIdx + 1, n)) {
 					Integer u = vs.get(uIdx), v = vs.get(vIdx);
 					Integer e = Integer.valueOf(g.edges().size() + 1);
 					g.addEdge(u, v, e);
@@ -623,7 +623,7 @@ class GraphImplTestUtils extends TestUtils {
 			IndexGraph g = graphImpl.apply(directed).indexGraph();
 			g.addVertices(range(n));
 			IdBuilderInt eBuilder = g.edgeBuilder();
-			for (int i = 0; i < n; i++) {
+			for (int i : range(n)) {
 				int u = i, v = (i + 1) % n;
 				int expected = g.edges().size();
 				int actual1 = eBuilder.build(g.edges());
@@ -658,7 +658,7 @@ class GraphImplTestUtils extends TestUtils {
 			for (int i = 0; i < n; i++)
 				g.addVertexInt();
 
-			for (int i = 0; i < 20; i++) {
+			for (int i : range(20)) {
 				int u = i, v = i + 1;
 				if (i % 2 == 0) {
 					g.addEdge(u, v, g.edges().size());
@@ -1537,8 +1537,8 @@ class GraphImplTestUtils extends TestUtils {
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
 			IntSet edges = new IntOpenHashSet();
-			for (int uIdx = 0; uIdx < n; uIdx++) {
-				for (int vIdx = uIdx + 1; vIdx < n; vIdx++) {
+			for (int uIdx : range(n)) {
+				for (int vIdx : range(uIdx + 1, n)) {
 					Integer u = vs.get(uIdx), v = vs.get(vIdx);
 					Integer e = Integer.valueOf(g.edges().size());
 					g.addEdge(u, v, e);
@@ -1568,7 +1568,7 @@ class GraphImplTestUtils extends TestUtils {
 				assertEquals(edges, IntSet.of(Arrays.copyOf(arr6, g.edges().size())));
 				assertTrue(arr5Input == arr5);
 				assertTrue(arr6Input == arr6);
-				for (int i = g.edges().size(); i < arr6Input.length; i++)
+				for (int i : range(g.edges().size(), arr6Input.length))
 					assertEquals(-18, arr6[i]);
 			}
 		});
@@ -1620,7 +1620,7 @@ class GraphImplTestUtils extends TestUtils {
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
 			Object2ObjectMap<Collection<Integer>, Integer> edges = new Object2ObjectOpenHashMap<>();
-			for (int uIdx = 0; uIdx < n; uIdx++) {
+			for (int uIdx : range(n)) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					if (uIdx == vIdx && !g.isAllowSelfEdges())
 						continue;
@@ -1682,7 +1682,7 @@ class GraphImplTestUtils extends TestUtils {
 
 			Object2ObjectMap<Integer, Set<Integer>> outEdges = new Object2ObjectOpenHashMap<>();
 			Object2ObjectMap<Integer, Set<Integer>> inEdges = new Object2ObjectOpenHashMap<>();
-			for (int uIdx = 0; uIdx < n; uIdx++) {
+			for (int uIdx : range(n)) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					int u = vs.get(uIdx), v = vs.get(vIdx);
 					if (u == v && !g.isAllowSelfEdges())
@@ -1758,7 +1758,7 @@ class GraphImplTestUtils extends TestUtils {
 			Object2ObjectMap<Collection<Integer>, Set<Integer>> edges = new Object2ObjectOpenHashMap<>();
 			final int edgeRepeat = g.isAllowParallelEdges() ? 3 : 1;
 			for (int repeat = 0; repeat < edgeRepeat; repeat++) {
-				for (int uIdx = 0; uIdx < n; uIdx++) {
+				for (int uIdx : range(n)) {
 					for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 						Integer u = vs.get(uIdx), v = vs.get(vIdx);
 						if (u.equals(v) && !g.isAllowSelfEdges())
@@ -1769,7 +1769,7 @@ class GraphImplTestUtils extends TestUtils {
 					}
 				}
 			}
-			for (int uIdx = 0; uIdx < n; uIdx++) {
+			for (int uIdx : range(n)) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					Integer u = vs.get(uIdx), v = vs.get(vIdx);
 					if (u.equals(v) && !g.isAllowSelfEdges())
@@ -1890,7 +1890,7 @@ class GraphImplTestUtils extends TestUtils {
 			List<Integer> vs = new ArrayList<>(g.vertices());
 
 			Object2ObjectMap<Integer, Collection<Integer>> edges = new Object2ObjectOpenHashMap<>();
-			for (int uIdx = 0; uIdx < n; uIdx++) {
+			for (int uIdx : range(n)) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					Integer u = vs.get(uIdx), v = vs.get(vIdx);
 					if (u.equals(v) && !g.isAllowSelfEdges())
@@ -1969,7 +1969,7 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			/* getEdges */
-			for (int uIdx = 0; uIdx < n; uIdx++) {
+			for (int uIdx : range(n)) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					Integer u = vs.get(uIdx), v = vs.get(vIdx);
 					if (u.equals(v) && !g.isAllowSelfEdges())
@@ -2168,7 +2168,7 @@ class GraphImplTestUtils extends TestUtils {
 
 			Object2IntMap<Integer> degreeOut = new Object2IntOpenHashMap<>();
 			Object2IntMap<Integer> degreeIn = new Object2IntOpenHashMap<>();
-			for (int uIdx = 0; uIdx < n; uIdx++) {
+			for (int uIdx : range(n)) {
 				for (int vIdx = directed ? 0 : uIdx; vIdx < n; vIdx++) {
 					Integer u = vs.get(uIdx), v = vs.get(vIdx);
 					if (u.equals(v) && !g.isAllowSelfEdges())
@@ -2204,7 +2204,7 @@ class GraphImplTestUtils extends TestUtils {
 				int expectedN = 0;
 				int expectedM = 0;
 
-				for (int i = 0; i < 2; i++) {
+				for (int i : range(2)) {
 					g.addVertex(Integer.valueOf(i + 1));
 					expectedN++;
 				}

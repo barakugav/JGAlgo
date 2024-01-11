@@ -16,6 +16,7 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntBigArrays;
@@ -66,14 +67,14 @@ class GraphArrayUndirected extends GraphArrayAbstract implements GraphDefaultsUn
 					copyVerticesContainer(g0.edgesContainer, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edges = newArr);
 			edgesNumContainer = copyVerticesContainer(g0.edgesNumContainer, newArr -> edgesNum = newArr);
 
-			for (int v = 0; v < n; v++)
+			for (int v : range(n))
 				edges[v] = Arrays.copyOf(edges[v], edgesNum[v]);
 		} else {
 			edgesContainer =
 					newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edges = newArr);
 			edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				IEdgeSet edgeSet = g.outEdges(v);
 				int edgeSetSize = edgesNum[v] = edgeSet.size();
 				if (edgeSetSize != 0) {
@@ -94,7 +95,7 @@ class GraphArrayUndirected extends GraphArrayAbstract implements GraphDefaultsUn
 				newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edges = newArr);
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
-		for (int m = builder.edges.size(), e = 0; e < m; e++) {
+		for (int e : range(builder.edges.size())) {
 			int source = builder.edgeSource(e);
 			int target = builder.edgeTarget(e);
 
@@ -117,7 +118,7 @@ class GraphArrayUndirected extends GraphArrayAbstract implements GraphDefaultsUn
 		assert edgesNum[removedIdx] == 0;
 
 		int[] edges = this.edges[swappedIdx];
-		for (int num = edgesNum[swappedIdx], i = 0; i < num; i++)
+		for (int i : range(edgesNum[swappedIdx]))
 			replaceEdgeEndpoint(edges[i], swappedIdx, removedIdx);
 
 		swapAndClear(this.edges, removedIdx, swappedIdx, IntArrays.EMPTY_ARRAY);
@@ -132,7 +133,7 @@ class GraphArrayUndirected extends GraphArrayAbstract implements GraphDefaultsUn
 	public int getEdge(int source, int target) {
 		checkVertex(source);
 		int[] uEdges = edges[source];
-		for (int uEdgesNum = edgesNum[source], i = 0; i < uEdgesNum; i++) {
+		for (int i : range(edgesNum[source])) {
 			if (target == edgeEndpoint(uEdges[i], source))
 				return uEdges[i];
 		}

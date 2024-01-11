@@ -16,6 +16,7 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -53,7 +54,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract implements GraphDefaults
 					copyVerticesContainer(g0.edgesOutContainer, EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
 			edgesInContainer = copyVerticesContainer(g0.edgesInContainer, EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
 
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				if (!g0.edgesOut[v].isEmpty()) {
 					/* Int2IntOpenHashMap refuse to shrink below the initial size, so we use expected=0 here */
 					edgesOut[v] = new Int2IntOpenHashMap(0);
@@ -71,7 +72,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract implements GraphDefaults
 			edgesOutContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
 			edgesInContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
 
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				for (IEdgeIter eit = g.outEdges(v).iterator(); eit.hasNext();) {
 					int e = eit.nextInt();
 					int oldVal = ensureEdgesMapMutable(edgesOut, v).put(eit.targetInt(), e);
@@ -97,7 +98,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract implements GraphDefaults
 		edgesOutContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesOut = newArr);
 		edgesInContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesIn = newArr);
 
-		for (int m = builder.edges.size(), e = 0; e < m; e++) {
+		for (int e : range(builder.edges.size())) {
 			int source = builder.edgeSource(e), target = builder.edgeTarget(e);
 			int oldVal1 = ensureEdgesMapMutable(edgesOut, source).put(target, e);
 			int oldVal2 = ensureEdgesMapMutable(edgesIn, target).put(source, e);
@@ -252,7 +253,7 @@ class GraphHashmapDirected extends GraphHashmapAbstract implements GraphDefaults
 	@Override
 	public void clearEdges() {
 		final int n = vertices().size();
-		for (int v = 0; v < n; v++) {
+		for (int v : range(n)) {
 			edgesOut[v].clear();
 			edgesIn[v].clear();
 		}

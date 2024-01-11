@@ -235,7 +235,7 @@ public class IndexIdMapsTest extends TestBase {
 
 			/* indexOf() */
 			List<Integer> idList2 = indexList.intStream().mapToObj(map::indexToId).collect(Collectors.toList());
-			for (int i = 0; i < indexList.size(); i++) {
+			for (int i : range(indexList.size())) {
 				int idx = indexList.getInt(i);
 				Integer id = map.indexToId(idx);
 				assertEquals(idList2.indexOf(id), idList.indexOf(id));
@@ -248,7 +248,7 @@ public class IndexIdMapsTest extends TestBase {
 			}
 
 			/* lastIndexOf() */
-			for (int i = 0; i < indexList.size(); i++) {
+			for (int i : range(indexList.size())) {
 				int idx = indexList.getInt(i);
 				Integer id = map.indexToId(idx);
 				assertEquals(idList2.lastIndexOf(id), idList.lastIndexOf(id));
@@ -369,14 +369,14 @@ public class IndexIdMapsTest extends TestBase {
 			IntList indexList = IndexIdMaps.idToIndexList(idList, map);
 
 			/* get(index) */
-			for (int i = 0; i < idList.size(); i++) {
+			for (int i : range(idList.size())) {
 				Integer id = idList.get(i);
 				assertEquals(map.idToIndex(id), indexList.getInt(i));
 			}
 
 			/* indexOf() */
 			List<Integer> indexList2 = idList.stream().map(map::idToIndex).collect(Collectors.toList());
-			for (int i = 0; i < idList.size(); i++) {
+			for (int i : range(idList.size())) {
 				Integer id = idList.get(i);
 				int idx = map.idToIndex(id);
 				assertEquals(indexList2.indexOf(idx), indexList.indexOf(idx));
@@ -389,7 +389,7 @@ public class IndexIdMapsTest extends TestBase {
 			}
 
 			/* lastIndexOf() */
-			for (int i = 0; i < idList.size(); i++) {
+			for (int i : range(idList.size())) {
 				Integer id = idList.get(i);
 				int idx = map.idToIndex(id);
 				assertEquals(indexList2.lastIndexOf(idx), indexList.lastIndexOf(idx));
@@ -437,7 +437,7 @@ public class IndexIdMapsTest extends TestBase {
 
 			/* listIterator() */
 			IntListIterator it = indexList.listIterator();
-			for (int i = 0; i < indexList.size(); i++) {
+			for (int i : range(indexList.size())) {
 				assertTrue(it.hasNext());
 				assertEquals(i, it.nextIndex());
 				int element = it.nextInt();

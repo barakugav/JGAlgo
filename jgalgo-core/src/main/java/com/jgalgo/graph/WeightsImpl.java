@@ -15,8 +15,8 @@
  */
 package com.jgalgo.graph;
 
-import java.util.Arrays;
 import static com.jgalgo.internal.util.Range.range;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -244,7 +244,7 @@ interface WeightsImpl {
 				} else {
 					weightsKey = Arrays.copyOf(orig.weightsKey, numberOfWeights);
 					weights = new WeightsImpl.IndexMutable[numberOfWeights];
-					for (int i = 0; i < numberOfWeights; i++)
+					for (int i : range(numberOfWeights))
 						weights[i] = WeightsImpl.IndexMutable.copyOf(orig.weights[i], elements, isEdges);
 					keyToIdx = new Object2IntOpenHashMap<>(orig.keyToIdx);
 				}

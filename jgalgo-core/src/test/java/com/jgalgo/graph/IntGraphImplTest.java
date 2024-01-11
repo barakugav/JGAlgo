@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -143,9 +144,9 @@ public class IntGraphImplTest extends TestBase {
 				assertTrue(arr7Input == arr7);
 				assertTrue(arr8Input == arr8);
 				assertNull(arr4[n]);
-				for (int i = n + 1; i < arr4.length; i++)
+				for (int i : range(n + 1, arr4.length))
 					assertEquals(-788, arr4[i]);
-				for (int i = n; i < arr8.length; i++)
+				for (int i : range(n, arr8.length))
 					assertEquals(989846, arr8[i]);
 			}
 		});

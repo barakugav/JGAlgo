@@ -16,6 +16,7 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.internal.util.Assertions;
 
 abstract class GraphLinkedPtrAbstract extends GraphBaseMutable {
@@ -34,7 +35,7 @@ abstract class GraphLinkedPtrAbstract extends GraphBaseMutable {
 		super(capabilities, g, copyVerticesWeights, copyEdgesWeights);
 		edgesContainer = newEdgesContainer(null, EmptyEdgeArr, newArr -> edges = newArr);
 
-		for (int m = g.edges().size(), e = 0; e < m; e++) {
+		for (int e : range(g.edges().size())) {
 			edges[e] = allocEdge(e);
 			setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 		}
@@ -44,7 +45,7 @@ abstract class GraphLinkedPtrAbstract extends GraphBaseMutable {
 		super(capabilities, builder);
 		edgesContainer = newEdgesContainer(null, EmptyEdgeArr, newArr -> edges = newArr);
 
-		for (int m = super.edges.size(), e = 0; e < m; e++) {
+		for (int e : range(super.edges.size())) {
 			edges[e] = allocEdge(e);
 			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
 		}

@@ -45,7 +45,7 @@ public class ReversedGraphViewTest extends TestBase {
 		Graph<Integer, Integer> g = factory.allowSelfEdges().allowParallelEdges().newGraph();
 
 		g.addVertices(range(1, n + 1));
-		for (int i = 0; i < m; i++)
+		for (int i : range(m))
 			g.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand), Integer.valueOf(i + 1));
 		return g;
 	}

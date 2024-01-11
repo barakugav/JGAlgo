@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -43,14 +44,14 @@ public class ImmutableGraphViewTest extends TestBase {
 		Graph<Integer, Integer> g = factory.allowSelfEdges().allowParallelEdges().newGraph();
 
 		WeightsInt<Integer> vWeights = g.addVerticesWeights(VerticesWeightsKey, int.class);
-		for (int i = 0; i < n; i++) {
+		for (int i : range(n)) {
 			Integer v = Integer.valueOf(i + 1);
 			g.addVertex(v);
 			vWeights.set(v, rand.nextInt(10000));
 		}
 
 		WeightsInt<Integer> eWeights = g.addEdgesWeights(EdgesWeightsKey, int.class);
-		for (int i = 0; i < m; i++) {
+		for (int i : range(m)) {
 			Integer e = Integer.valueOf(i + 1);
 			g.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand), e);
 			eWeights.set(e, rand.nextInt(10000));

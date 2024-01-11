@@ -16,6 +16,7 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntBigArrays;
@@ -77,7 +78,7 @@ class GraphArrayDirected extends GraphArrayAbstract implements GraphDefaultsDire
 					newArr -> edgesIn = newArr);
 			edgesInNumContainer = copyVerticesContainer(g0.edgesInNumContainer, newArr -> edgesInNum = newArr);
 
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				edgesOut[v] = Arrays.copyOf(edgesOut[v], edgesOutNum[v]);
 				edgesIn[v] = Arrays.copyOf(edgesIn[v], edgesInNum[v]);
 			}
@@ -89,7 +90,7 @@ class GraphArrayDirected extends GraphArrayAbstract implements GraphDefaultsDire
 					newArr -> edgesIn = newArr);
 			edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);
 
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				IEdgeSet outEdges = g.outEdges(v);
 				int outEdgesSize = edgesOutNum[v] = outEdges.size();
 				if (outEdgesSize != 0) {
@@ -121,7 +122,7 @@ class GraphArrayDirected extends GraphArrayAbstract implements GraphDefaultsDire
 				newVerticesContainer(IntArrays.EMPTY_ARRAY, IntBigArrays.EMPTY_BIG_ARRAY, newArr -> edgesIn = newArr);
 		edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);
 
-		for (int m = builder.edges.size(), e = 0; e < m; e++) {
+		for (int e : range(builder.edges.size())) {
 			addEdgeToList(edgesOut, edgesOutNum, builder.edgeSource(e), e);
 			addEdgeToList(edgesIn, edgesInNum, builder.edgeTarget(e), e);
 		}
@@ -141,9 +142,9 @@ class GraphArrayDirected extends GraphArrayAbstract implements GraphDefaultsDire
 		assert edgesOutNum[removedIdx] == 0 && edgesInNum[removedIdx] == 0;
 
 		int[] outEdges = edgesOut[swappedIdx], inEdges = edgesIn[swappedIdx];
-		for (int num = edgesOutNum[swappedIdx], i = 0; i < num; i++)
+		for (int i : range(edgesOutNum[swappedIdx]))
 			replaceEdgeSource(outEdges[i], removedIdx);
-		for (int num = edgesInNum[swappedIdx], i = 0; i < num; i++)
+		for (int i : range(edgesInNum[swappedIdx]))
 			replaceEdgeTarget(inEdges[i], removedIdx);
 
 		swapAndClear(edgesOut, removedIdx, swappedIdx, IntArrays.EMPTY_ARRAY);
@@ -160,7 +161,7 @@ class GraphArrayDirected extends GraphArrayAbstract implements GraphDefaultsDire
 	public int getEdge(int source, int target) {
 		checkVertex(source);
 		int[] uEdges = edgesOut[source];
-		for (int edgesNum = edgesOutNum[source], i = 0; i < edgesNum; i++) {
+		for (int i : range(edgesOutNum[source])) {
 			if (target == target(uEdges[i]))
 				return uEdges[i];
 		}

@@ -65,13 +65,13 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 		if (g instanceof IntGraph) {
 			IntGraph g0 = (IntGraph) g;
-			for (int e = 0; e < m; e++) {
+			for (int e : range(m)) {
 				int u = g0.edgeSource(e);
 				int v = g0.edgeTarget(e);
 				setEdgeEndpoints(e, u, v);
 			}
 		} else {
-			for (int e = 0; e < m; e++) {
+			for (int e : range(m)) {
 				Integer e0 = Integer.valueOf(e);
 				int u = g.edgeSource(e0).intValue();
 				int v = g.edgeTarget(e0).intValue();
@@ -211,7 +211,7 @@ class IndexGraphBuilderImpl implements IndexGraphBuilder {
 
 			this.edges.addAll(edges.size());
 			ensureEdgeCapacity(this.edges.size);
-			for (int eIdx = 0; eIdx < newEdgesEndpoints.length / 2; eIdx++) {
+			for (int eIdx : range(newEdgesEndpoints.length / 2)) {
 				int source = newEdgesEndpoints[eIdx * 2 + 0];
 				int target = newEdgesEndpoints[eIdx * 2 + 1];
 				setEdgeEndpoints(currentNum + eIdx, source, target);

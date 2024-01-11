@@ -58,7 +58,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 			assert edgesInBegin.length == n + 1;
 
 			IndexGraphBuilder.ReIndexingMap edgesReIndexing0 = edgesReIndexing.get();
-			for (int eIdx = 0; eIdx < m; eIdx++) {
+			for (int eIdx : range(m)) {
 				int eOrig = edgesIn[eIdx];
 				int eCsr = edgesReIndexing0.origToReIndexed(eOrig);
 				edgesIn[eIdx] = eCsr;
@@ -68,7 +68,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 				IndexGraph g = graphOrBuilder.get(IndexGraph.class);
 				assert g.isDirected();
 
-				for (int eCsr = 0; eCsr < m; eCsr++) {
+				for (int eCsr : range(m)) {
 					int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);
 					setEndpoints(eCsr, g.edgeSource(eOrig), g.edgeTarget(eOrig));
 				}
@@ -76,7 +76,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
 				assert builder.isDirected();
 
-				for (int eCsr = 0; eCsr < m; eCsr++) {
+				for (int eCsr : range(m)) {
 					int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);
 					setEndpoints(eCsr, builder.edgeSource(eOrig), builder.edgeTarget(eOrig));
 				}
@@ -164,7 +164,7 @@ class GraphCsrDirectedReindexed extends GraphCsrBase {
 			final int m = edgesNum(graphOrBuilder);
 			int[] edgesCsrToOrig = processEdges.edgesOut;
 			int[] edgesOrigToCsr = new int[m];
-			for (int eCsr = 0; eCsr < m; eCsr++)
+			for (int eCsr : range(m))
 				edgesOrigToCsr[edgesCsrToOrig[eCsr]] = eCsr;
 			edgesReIndexing = Optional.of(new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig));
 		}

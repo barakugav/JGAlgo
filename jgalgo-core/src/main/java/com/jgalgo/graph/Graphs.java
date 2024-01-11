@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.List;
@@ -3212,9 +3213,9 @@ public class Graphs {
 		if (!g.isAllowParallelEdges())
 			return false;
 		IndexGraph ig = g.indexGraph();
-		int n = ig.vertices().size();
+		final int n = ig.vertices().size();
 		int[] lastVisit = new int[n];
-		for (int u = 0; u < n; u++) {
+		for (int u : range(n)) {
 			final int visitIdx = u + 1;
 			for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();

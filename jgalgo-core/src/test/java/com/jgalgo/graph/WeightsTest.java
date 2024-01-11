@@ -531,14 +531,14 @@ public class WeightsTest extends TestBase {
 	@Test
 	public void weightDeprecated() {
 		IWeightFunction w1 = e -> e * 2;
-		for (int i = 0; i < 20; i++) {
+		for (int i : range(20)) {
 			@SuppressWarnings("deprecation")
 			double val = w1.weight(Integer.valueOf(i));
 			assertEquals(w1.weight(i), val);
 		}
 
 		IWeightFunctionInt w2 = e -> e * 2;
-		for (int i = 0; i < 20; i++) {
+		for (int i : range(20)) {
 			int expected = w2.weightInt(i);
 			@SuppressWarnings("deprecation")
 			double val1 = w2.weightInt(Integer.valueOf(i));

@@ -80,7 +80,7 @@ public class IndexGraphBuilderTest extends TestBase {
 	public void addVertexUserProvidedId() {
 		foreachBoolConfig(directed -> {
 			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
-			for (int i = 0; i < 20; i++) {
+			for (int i : range(20)) {
 				if (i % 2 == 0) {
 					b.addVertex(b.vertices().size());
 				} else {
@@ -281,7 +281,7 @@ public class IndexGraphBuilderTest extends TestBase {
 			b.ensureVertexCapacity(g.vertices().size());
 			b.addVertices(g.vertices());
 			b.ensureEdgeCapacity(g.edges().size());
-			for (int m = g.edges().size(), e = 0; e < m; e++)
+			for (int e : range(g.edges().size()))
 				b.addEdge(g.edgeSource(e), g.edgeTarget(e));
 
 			assertEquals(g.vertices(), b.vertices());
@@ -297,7 +297,7 @@ public class IndexGraphBuilderTest extends TestBase {
 			IndexGraph g = createGraph(directed);
 			IndexGraphBuilder b = IndexGraphBuilder.newInstance(directed);
 			b.addVertices(g.vertices());
-			for (int i = 0; i < 20; i++) {
+			for (int i : range(20)) {
 				int e = b.edges().size();
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				if (i % 2 == 0) {
@@ -542,7 +542,7 @@ public class IndexGraphBuilderTest extends TestBase {
 					continue;
 				g.addEdge(u, v);
 			}
-			for (int e = 0; e < m; e++) {
+			for (int e : range(m)) {
 				int u = g.edgeSource(e), v = g.edgeTarget(e);
 				b.addEdge(u, v);
 			}
@@ -655,7 +655,7 @@ public class IndexGraphBuilderTest extends TestBase {
 
 				IndexGraph gReIndexedExpected = factory.newGraph();
 				gReIndexedExpected.addVertices(g.vertices());
-				for (int m = gReIndexed.edges().size(), e = 0; e < m; e++) {
+				for (int e : range(gReIndexed.edges().size())) {
 					int eOrig = eReIndexedToOrig.applyAsInt(e);
 					int uOrig = g.edgeSource(eOrig), vOrig = g.edgeTarget(eOrig);
 					int u = vOrigToReIndexed.applyAsInt(uOrig), v = vOrigToReIndexed.applyAsInt(vOrig);

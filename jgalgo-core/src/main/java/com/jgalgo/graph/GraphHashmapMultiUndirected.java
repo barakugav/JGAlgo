@@ -16,6 +16,7 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntMaps;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
@@ -52,7 +53,7 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract implements G
 			edgesContainer = copyVerticesContainer(g0.edgesContainer, EMPTY_MAP_ARRAY, newArr -> edgesMap = newArr);
 			edgesNumContainer = copyVerticesContainer(g0.edgesNumContainer, newArr -> edgesNum = newArr);
 
-			for (int v = 0; v < n; v++) {
+			for (int v : range(n)) {
 				if (!g0.edgesMap[v].isEmpty()) {
 					/* Int2IntOpenHashMap refuse to shrink below the initial size, so we use expected=0 here */
 					edgesMap[v] = new Int2IntOpenHashMap(0);
@@ -64,7 +65,7 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract implements G
 			edgesContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesMap = newArr);
 			edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
-			for (int m = g.edges().size(), e = 0; e < m; e++) {
+			for (int e : range(g.edges().size())) {
 				int source = g.edgeSource(e), target = g.edgeTarget(e);
 				addEdgeToMaps(e, source, target);
 			}
@@ -78,7 +79,7 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract implements G
 		edgesContainer = newVerticesContainer(EmptyEdgeMap, EMPTY_MAP_ARRAY, newArr -> edgesMap = newArr);
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
-		for (int m = builder.edges.size(), e = 0; e < m; e++) {
+		for (int e : range(builder.edges.size())) {
 			int source = builder.edgeSource(e), target = builder.edgeTarget(e);
 			addEdgeToMaps(e, source, target);
 		}
@@ -249,7 +250,7 @@ class GraphHashmapMultiUndirected extends GraphHashmapMultiAbstract implements G
 	@Override
 	public void clearEdges() {
 		final int n = vertices().size();
-		for (int v = 0; v < n; v++)
+		for (int v : range(n))
 			if (edgesMap[v] != EmptyEdgeMap)
 				edgesMap[v].clear();
 		edgesNumContainer.clear();

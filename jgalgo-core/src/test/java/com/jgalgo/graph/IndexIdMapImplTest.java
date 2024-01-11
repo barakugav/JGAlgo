@@ -55,11 +55,11 @@ public class IndexIdMapImplTest extends TestBase {
 			assertEquals(map1.idToIndex(id), map2.idToIndex(id));
 			assertEquals(map1.idToIndex(id), map2.idToIndexIfExist(id));
 		}
-		for (int idx = -15; idx < 0; idx++)
+		for (int idx : range(-15, 0))
 			assertEquals(null, map2.indexToIdIfExist(idx));
-		for (int idx = n; idx < n + 15; idx++)
+		for (int idx : range(n, n + 15))
 			assertEquals(null, map2.indexToIdIfExist(idx));
-		for (int id0 = 0; id0 < 100; id0++) {
+		for (int id0 : range(100)) {
 			String id = String.valueOf(id0);
 			assertEquals(map1.idToIndexIfExist(id), map2.idToIndexIfExist(id));
 		}
@@ -147,11 +147,11 @@ public class IndexIdMapImplTest extends TestBase {
 			assertEquals(reindexing.origToReIndexed(map1.idToIndex(id)), map2.idToIndex(id));
 			assertEquals(reindexing.origToReIndexed(map1.idToIndex(id)), map2.idToIndexIfExist(id));
 		}
-		for (int idx = -15; idx < 0; idx++)
+		for (int idx : range(-15, 0))
 			assertEquals(null, map2.indexToIdIfExist(idx));
-		for (int idx = n; idx < n + 15; idx++)
+		for (int idx : range(n, n + 15))
 			assertEquals(null, map2.indexToIdIfExist(idx));
-		for (int id0 = 0; id0 < 100; id0++) {
+		for (int id0 : range(100)) {
 			String id = String.valueOf(id0);
 			int expected = map1.idToIndexIfExist(id);
 			if (expected != -1)

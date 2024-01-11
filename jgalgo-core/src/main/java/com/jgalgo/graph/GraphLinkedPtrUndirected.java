@@ -16,6 +16,8 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
+
 /**
  * An undirected graph implementation using linked lists to store edge lists.
  *
@@ -56,8 +58,7 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract implements GraphDe
 		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edges = newArr);
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
-		final int m = g.edges().size();
-		for (int e = 0; e < m; e++)
+		for (int e : range(g.edges().size()))
 			addEdgeToLists(getEdge(e));
 	}
 
@@ -68,8 +69,7 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract implements GraphDe
 		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -> edges = newArr);
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
-		final int m = builder.edges.size();
-		for (int e = 0; e < m; e++)
+		for (int e : range(builder.edges.size()))
 			addEdgeToLists(getEdge(e));
 	}
 
@@ -230,7 +230,7 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract implements GraphDe
 
 	@Override
 	public void clearEdges() {
-		for (int m = edges().size(), e = 0; e < m; e++) {
+		for (int e : range(edges().size())) {
 			Edge p = getEdge(e);
 			p.nextu = p.nextv = p.prevu = p.prevv = null;
 		}

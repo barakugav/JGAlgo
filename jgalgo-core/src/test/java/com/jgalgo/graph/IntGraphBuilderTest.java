@@ -536,7 +536,7 @@ public class IntGraphBuilderTest extends TestBase {
 			vWeights.set(v, rand.nextInt(10000));
 
 		IWeightsInt eWeights = g.addEdgesWeights("weights", int.class);
-		for (int e = 0; e < m; e++) {
+		for (int e : range(m)) {
 			g.addEdge(Graphs.randVertex(g, rand), Graphs.randVertex(g, rand), e);
 			eWeights.set(e, rand.nextInt(10000));
 		}

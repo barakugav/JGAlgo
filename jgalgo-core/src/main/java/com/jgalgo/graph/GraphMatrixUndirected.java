@@ -16,6 +16,8 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
+
 /**
  * A undirected graph implementation using a two dimensional matrix to store all edges.
  *
@@ -57,7 +59,7 @@ class GraphMatrixUndirected extends GraphMatrixAbstract implements GraphDefaults
 			edgesNumContainer = copyVerticesContainer(g0.edgesNumContainer, newArr -> edgesNum = newArr);
 		} else {
 			edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
-			for (int n = g.vertices().size(), u = 0; u < n; u++)
+			for (int u : range(g.vertices().size()))
 				edgesNum[u] = g.outEdges(u).size();
 		}
 	}
@@ -68,7 +70,7 @@ class GraphMatrixUndirected extends GraphMatrixAbstract implements GraphDefaults
 
 		edgesNumContainer = newVerticesIntContainer(0, newArr -> edgesNum = newArr);
 
-		for (int m = builder.edges.size(), e = 0; e < m; e++) {
+		for (int e : range(builder.edges.size())) {
 			int u = builder.edgeSource(e), v = builder.edgeTarget(e);
 			edgesNum[u]++;
 			if (u != v)
@@ -169,7 +171,7 @@ class GraphMatrixUndirected extends GraphMatrixAbstract implements GraphDefaults
 
 	@Override
 	public void clearEdges() {
-		for (int m = edges().size(), e = 0; e < m; e++) {
+		for (int e : range(edges().size())) {
 			int u = source(e), v = target(e);
 			edges[u].data[v] = EdgeNone;
 			edges[v].data[u] = EdgeNone;

@@ -16,6 +16,7 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 
@@ -41,12 +42,12 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 		if (g instanceof GraphMatrixAbstract) {
 			GraphMatrixAbstract g0 = (GraphMatrixAbstract) g;
 			edgesContainer = copyVerticesContainer(g0.edgesContainer, EmptyEdgesArr, newArr -> edges = newArr);
-			for (int u = 0; u < n; u++)
+			for (int u : range(n))
 				edges[u] = copyVerticesContainer(edges[u], JGAlgoUtils.consumerNoOp());
 		} else {
 
 			edgesContainer = newVerticesContainer(null, EmptyEdgesArr, newArr -> edges = newArr);
-			for (int u = 0; u < n; u++) {
+			for (int u : range(n)) {
 				DataContainer.Int vEdges = newVerticesIntContainer(EdgeNone, JGAlgoUtils.<int[]>consumerNoOp());
 				edges[u] = vEdges;
 
@@ -66,11 +67,11 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 		super(capabilities, builder);
 
 		edgesContainer = newVerticesContainer(null, EmptyEdgesArr, newArr -> edges = newArr);
-		for (int n = builder.vertices.size(), u = 0; u < n; u++)
+		for (int u : range(builder.vertices.size()))
 			edges[u] = newVerticesIntContainer(EdgeNone, JGAlgoUtils.<int[]>consumerNoOp());
 
 		if (builder.isDirected()) {
-			for (int m = builder.edges.size(), e = 0; e < m; e++) {
+			for (int e : range(builder.edges.size())) {
 				int source = builder.edgeSource(e), target = builder.edgeTarget(e);
 				DataContainer.Int uEdges = edges[source];
 				int existingEdge = uEdges.data[target];
@@ -80,7 +81,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 			}
 
 		} else {
-			for (int m = builder.edges.size(), e = 0; e < m; e++) {
+			for (int e : range(builder.edges.size())) {
 				int source = builder.edgeSource(e), target = builder.edgeTarget(e);
 				DataContainer.Int uEdges = edges[source];
 				DataContainer.Int vEdges = edges[target];
@@ -118,14 +119,13 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 		// Don't deallocate v array
 		// edges.clear(v);
 
-		final int n = vertices().size();
-		for (int u = 0; u < n; u++)
+		for (int u : range(vertices().size()))
 			clear(edges[u].data, vertex, EdgeNone);
 	}
 
 	@Override
 	void vertexSwapAndRemove(int removedIdx, int swappedIdx) {
-		for (int n = vertices().size(), u = 0; u < n; u++)
+		for (int u : range(vertices().size()))
 			swapAndClear(edges[u].data, removedIdx, swappedIdx, EdgeNone);
 		swapAndClear(edges, removedIdx, swappedIdx, null);
 		super.vertexSwapAndRemove(removedIdx, swappedIdx);
@@ -156,8 +156,7 @@ abstract class GraphMatrixAbstract extends GraphBaseMutable {
 	@Override
 	public void clear() {
 		clearEdges();
-		final int n = vertices().size();
-		for (int u = 0; u < n; u++)
+		for (int u : range(vertices().size()))
 			edges[u].clear();
 		// Don't deallocate edges containers
 		// edges.clear();

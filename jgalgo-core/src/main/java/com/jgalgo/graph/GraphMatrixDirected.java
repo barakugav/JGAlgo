@@ -16,6 +16,8 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
+
 /**
  * A directed graph implementation using a two dimensional matrix to store all edges.
  *
@@ -63,7 +65,7 @@ class GraphMatrixDirected extends GraphMatrixAbstract implements GraphDefaultsDi
 			edgesOutNumContainer = newVerticesIntContainer(0, newArr -> edgesOutNum = newArr);
 			edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);
 
-			for (int n = g.vertices().size(), u = 0; u < n; u++) {
+			for (int u : range(g.vertices().size())) {
 				edgesOutNum[u] = g.outEdges(u).size();
 				edgesInNum[u] = g.inEdges(u).size();
 			}
@@ -77,7 +79,7 @@ class GraphMatrixDirected extends GraphMatrixAbstract implements GraphDefaultsDi
 		edgesOutNumContainer = newVerticesIntContainer(0, newArr -> edgesOutNum = newArr);
 		edgesInNumContainer = newVerticesIntContainer(0, newArr -> edgesInNum = newArr);
 
-		for (int m = builder.edges.size(), e = 0; e < m; e++) {
+		for (int e : range(builder.edges.size())) {
 			edgesOutNum[builder.edgeSource(e)]++;
 			edgesInNum[builder.edgeTarget(e)]++;
 		}
@@ -154,7 +156,7 @@ class GraphMatrixDirected extends GraphMatrixAbstract implements GraphDefaultsDi
 
 	@Override
 	public void clearEdges() {
-		for (int m = edges().size(), e = 0; e < m; e++) {
+		for (int e : range(edges().size())) {
 			int u = source(e), v = target(e);
 			edges[u].data[v] = EdgeNone;
 		}

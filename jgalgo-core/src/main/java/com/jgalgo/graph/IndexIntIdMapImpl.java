@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
@@ -64,7 +65,7 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 			} else {
 				indexToId = new int[elementsSize];
 				if (reIndexing.isEmpty()) {
-					for (int idx = 0; idx < elementsSize; idx++) {
+					for (int idx : range(elementsSize)) {
 						int id = orig.indexToId(idx).intValue();
 						if (id < 0)
 							throw new IllegalArgumentException("negative id: " + id);
@@ -77,7 +78,7 @@ class IndexIntIdMapImpl implements IndexIntIdMap {
 
 				} else {
 					IndexGraphBuilder.ReIndexingMap reIndexing0 = reIndexing.get();
-					for (int idx = 0; idx < elementsSize; idx++) {
+					for (int idx : range(elementsSize)) {
 						int id = orig.indexToId(reIndexing0.reIndexedToOrig(idx)).intValue();
 						if (id < 0)
 							throw new IllegalArgumentException("negative id: " + id);

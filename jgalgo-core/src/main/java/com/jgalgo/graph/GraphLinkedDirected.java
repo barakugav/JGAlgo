@@ -16,6 +16,8 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
+
 /**
  * A directed graph implementation using linked lists to store edge lists.
  *
@@ -86,7 +88,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract implements GraphDefaultsDi
 		edgePrevInContainer = newEdgesIntContainer(-1, newArr -> edgePrevIn = newArr);
 
 		final int m = g.edges().size();
-		for (int e = 0; e < m; e++)
+		for (int e : range(m))
 			addEdgeToLists(e);
 	}
 
@@ -105,7 +107,7 @@ class GraphLinkedDirected extends GraphLinkedAbstract implements GraphDefaultsDi
 		edgePrevInContainer = newEdgesIntContainer(-1, newArr -> edgePrevIn = newArr);
 
 		final int m = builder.edges.size();
-		for (int e = 0; e < m; e++)
+		for (int e : range(m))
 			addEdgeToLists(e);
 	}
 

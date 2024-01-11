@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.internal.util.Assertions;
 
 class GraphCsrUndirected extends GraphCsrAbstractUnindexed {
@@ -38,7 +39,7 @@ class GraphCsrUndirected extends GraphCsrAbstractUnindexed {
 		}
 
 		final int begin = edgesOutBegin[source], end = edgesOutBegin[source + 1];
-		for (int i = begin; i < end; i++) {
+		for (int i : range(begin, end)) {
 			int e = edgesOut[i];
 			if (target == edgeEndpoint(e, source))
 				return e;

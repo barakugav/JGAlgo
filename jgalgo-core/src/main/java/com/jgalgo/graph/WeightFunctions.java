@@ -15,6 +15,8 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
+
 /**
  * Static methods class for {@linkplain WeightFunction weight functions}.
  *
@@ -73,12 +75,12 @@ public class WeightFunctions {
 		if (WeightFunction.isInteger(w)) {
 			IWeightFunctionInt wInt = (IWeightFunctionInt) w;
 			IWeightsInt wLocal = IWeights.createExternalEdgesWeights(g, int.class);
-			for (int m = g.edges().size(), e = 0; e < m; e++)
+			for (int e : range(g.edges().size()))
 				wLocal.set(e, wInt.weightInt(e));
 			return wLocal;
 		} else {
 			IWeightsDouble wLocal = IWeights.createExternalEdgesWeights(g, double.class);
-			for (int m = g.edges().size(), e = 0; e < m; e++)
+			for (int e : range(g.edges().size()))
 				wLocal.set(e, w.weight(e));
 			return wLocal;
 		}
@@ -113,7 +115,7 @@ public class WeightFunctions {
 		if (w instanceof WeightsImpl.Index)
 			return w;
 		IWeightsInt wLocal = IWeights.createExternalEdgesWeights(g, int.class);
-		for (int m = g.edges().size(), e = 0; e < m; e++)
+		for (int e : range(g.edges().size()))
 			wLocal.set(e, w.weightInt(e));
 		return wLocal;
 	}

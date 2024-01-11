@@ -15,6 +15,7 @@
  */
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
@@ -146,7 +147,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 		} else {
 			edgesOutBegin = new int[n + 1];
 			edgeEndpoints = new long[m];
-			for (int e = 0; e < m; e++)
+			for (int e : range(m))
 				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 
 			WeightsImpl.IndexImmutable.Builder verticesUserWeightsBuilder =
@@ -191,7 +192,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 	public final boolean isAllowSelfEdges() {
 		if (!containsSelfEdgesValid) {
 			containsSelfEdges = false;
-			for (int m = edges().size(), e = 0; e < m; e++) {
+			for (int e : range(edges().size())) {
 				if (source(e) == target(e)) {
 					containsSelfEdges = true;
 					break;
@@ -214,7 +215,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 		final int n = vertices().size();
 		Bitmap neighborsBitmap = new Bitmap(n);
 		IntList neighbors = new IntArrayList();
-		for (int u = 0; u < n; u++) {
+		for (int u : range(n)) {
 			for (IEdgeIter eit = outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.targetInt();
@@ -454,7 +455,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			final int[] edgesOutBegin = new int[n + 1];
 			// if (graphOrBuilder.contains(IndexGraph.class)) {
 			// IndexGraph g = graphOrBuilder.get(IndexGraph.class);
-			// for (int e = 0; e < m; e++) {
+			// for (int e : range(m)) {
 			// int u = g.edgeSource(e), v = g.edgeTarget(e);
 			// edgesOutBegin[u]++;
 			// if (u != v)
@@ -462,7 +463,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			// }
 			// } else {
 			// IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
-			for (int e = 0; e < m; e++) {
+			for (int e : range(m)) {
 				int u = builder.edgeSource(e), v = builder.edgeTarget(e);
 				edgesOutBegin[u]++;
 				if (u != v)
@@ -470,7 +471,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			}
 			// }
 			int outNumSum = 0;
-			for (int v = 0; v < n; v++)
+			for (int v : range(n))
 				outNumSum += edgesOutBegin[v];
 			final int[] edgesOut = new int[outNumSum];
 			if (n == 0)
@@ -482,7 +483,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			 */
 			int nextOutNum = edgesOutBegin[0];
 			edgesOutBegin[0] = 0;
-			for (int v = 1; v < n; v++) {
+			for (int v : range(1, n)) {
 				int nextOutNum0 = edgesOutBegin[v];
 				edgesOutBegin[v] = edgesOutBegin[v - 1] + nextOutNum;
 				nextOutNum = nextOutNum0;
@@ -490,7 +491,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			edgesOutBegin[n] = outNumSum;
 			// if (graphOrBuilder.contains(IndexGraph.class)) {
 			// IndexGraph g = graphOrBuilder.get(IndexGraph.class);
-			// for (int e = 0; e < m; e++) {
+			// for (int e : range(m)) {
 			// int u = g.edgeSource(e), v = g.edgeTarget(e);
 			// int uOutIdx = edgesOutBegin[u]++;
 			// edgesOut[uOutIdx] = e;
@@ -501,7 +502,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			// }
 			// } else {
 			// IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
-			for (int e = 0; e < m; e++) {
+			for (int e : range(m)) {
 				int u = builder.edgeSource(e), v = builder.edgeTarget(e);
 				int uOutIdx = edgesOutBegin[u]++;
 				edgesOut[uOutIdx] = e;
@@ -558,13 +559,13 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			/* Count how many out/in edges each vertex has */
 			if (graphOrBuilder.contains(IndexGraph.class)) {
 				IndexGraph g = graphOrBuilder.get(IndexGraph.class);
-				for (int e = 0; e < m; e++) {
+				for (int e : range(m)) {
 					edgesOutBegin[g.edgeSource(e)]++;
 					edgesInBegin[g.edgeTarget(e)]++;
 				}
 			} else {
 				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
-				for (int e = 0; e < m; e++) {
+				for (int e : range(m)) {
 					edgesOutBegin[builder.edgeSource(e)]++;
 					edgesInBegin[builder.edgeTarget(e)]++;
 				}
@@ -578,7 +579,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			 */
 			int nextOutNum = edgesOutBegin[0], nextInNum = edgesInBegin[0];
 			edgesOutBegin[0] = edgesInBegin[0] = 0;
-			for (int v = 1; v < n; v++) {
+			for (int v : range(1, n)) {
 				int nextOutNum0 = edgesOutBegin[v];
 				int nextInNum0 = edgesInBegin[v];
 				edgesOutBegin[v] = edgesOutBegin[v - 1] + nextOutNum;
@@ -590,7 +591,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			if (graphOrBuilder.contains(IndexGraph.class)) {
 				IndexGraph g = graphOrBuilder.get(IndexGraph.class);
 				/* firsts bucket sort by target */
-				for (int e = 0; e < m; e++) {
+				for (int e : range(m)) {
 					int vInIdx = edgesInBegin[g.edgeTarget(e)]++;
 					edgesIn[vInIdx] = e;
 				}
@@ -602,7 +603,7 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 			} else {
 				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);
 				/* firsts bucket sort by target */
-				for (int e = 0; e < m; e++) {
+				for (int e : range(m)) {
 					int vInIdx = edgesInBegin[builder.edgeTarget(e)]++;
 					edgesIn[vInIdx] = e;
 				}

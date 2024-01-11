@@ -26,8 +26,8 @@ import java.util.function.IntPredicate;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
-import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
+import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -92,7 +92,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 
 			final int m = edges.size();
 			edgeEndpointsContainer = newEdgesLongContainer(DefaultEndpoints, newArr -> edgeEndpoints = newArr);
-			for (int e = 0; e < m; e++)
+			for (int e : range(m))
 				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));
 		}
 
@@ -117,7 +117,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		final int m = edges.size();
 		edgeEndpointsContainer = newEdgesLongContainer(DefaultEndpoints, newArr -> edgeEndpoints = newArr);
 
-		for (int e = 0; e < m; e++)
+		for (int e : range(m))
 			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));
 
 		if (!capabilities.isAllowSelfEdges)
@@ -735,7 +735,7 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 	}
 
 	private boolean checkNoSelfEdges() {
-		for (int m = edges().size(), e = 0; e < m; e++)
+		for (int e : range(edges().size()))
 			if (source(e) == target(e))
 				throw new IllegalArgumentException("Self edges are not allowed");
 		return true;
