@@ -65,7 +65,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 			/* Insert all (super) vertices to the heap */
 <span class="pc bnc" id="L66" title="All 2 branches missed.">			assert heap.isEmpty();</span>
 <span class="pc bnc" id="L67" title="All 4 branches missed.">			assert range(cg.numberOfSuperVertices()).allMatch(U -&gt; vRefs[U] == null);</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">			for (int U = 1; U &lt; cg.numberOfSuperVertices(); U++) {</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">			for (int U : range(1, cg.numberOfSuperVertices())) {</span>
 <span class="fc" id="L69">				double weightsSum = 0;</span>
 <span class="fc bfc" id="L70" title="All 2 branches covered.">				for (ContractableGraph.EdgeIter eit = cg.outEdges(U); eit.hasNext();) {</span>
 <span class="fc" id="L71">					int e = eit.nextInt();</span>
@@ -75,7 +75,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 <span class="fc" id="L75">						weightsSum += w.weight(e);</span>
 <span class="fc" id="L76">				}</span>
 <span class="fc" id="L77">				vRefs[U] = heap.insert(-weightsSum, U);</span>
-			}
+<span class="fc" id="L78">			}</span>
 
 <span class="fc" id="L80">			double cutOfThePhaseWeight = 0;</span>
 <span class="fc" id="L81">			int S = -1, T = -1;</span>

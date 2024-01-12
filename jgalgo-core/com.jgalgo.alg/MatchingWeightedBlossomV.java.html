@@ -76,7 +76,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 <span class="fc" id="L76">		b.addVertices(range(g.vertices().size() * 2));</span>
 		/* Add two edges for each original edge */
 <span class="fc" id="L78">		final int dummyEdgesThreshold = g.edges().size() * 2;</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">		for (int e : range(g.edges().size())) {</span>
 <span class="fc" id="L80">			int source = g.edgeSource(e);</span>
 <span class="fc" id="L81">			int target = g.edgeTarget(e);</span>
 <span class="fc" id="L82">			int e1 = b.addEdge(source * 2 + 0, target * 2 + 0);</span>
@@ -85,15 +85,15 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 <span class="pc bnc" id="L85" title="All 2 branches missed.">			assert e2 == e * 2 + 1;</span>
 <span class="pc bnc" id="L86" title="All 2 branches missed.">			assert e1 &lt; dummyEdgesThreshold;</span>
 <span class="pc bnc" id="L87" title="All 2 branches missed.">			assert e2 &lt; dummyEdgesThreshold;</span>
-		}
+<span class="fc" id="L88">		}</span>
 
 		/* Add dummy edges between each pair of duplicated vertices */
-<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (int n = g.vertices().size(), v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (int v : range(g.vertices().size())) {</span>
 <span class="fc" id="L92">			int v1 = v * 2 + 0;</span>
 <span class="fc" id="L93">			int v2 = v * 2 + 1;</span>
 <span class="fc" id="L94">			int e = b.addEdge(v1, v2);</span>
 <span class="pc bnc" id="L95" title="All 2 branches missed.">			assert e &gt;= dummyEdgesThreshold;</span>
-		}
+<span class="fc" id="L96">		}</span>
 
 		/* Compute a perfect matching in the new graph */
 		IWeightFunction wDup;
@@ -109,13 +109,13 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 		/* Convert matching to the original graph */
 <span class="fc" id="L111">		int[] matched = new int[g.vertices().size()];</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">		for (int n = g.vertices().size(), v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">		for (int v : range(g.vertices().size())) {</span>
 <span class="fc" id="L113">			int vDup = v * 2 + 0;</span>
 <span class="fc" id="L114">			int eDup = matchDup.getMatchedEdge(vDup);</span>
 <span class="pc bnc" id="L115" title="All 2 branches missed.">			assert eDup &gt;= 0 : &quot;vertex &quot; + vDup + &quot; is not matched&quot;;</span>
 <span class="fc bfc" id="L116" title="All 2 branches covered.">			int e = eDup &lt; dummyEdgesThreshold ? eDup / 2 : -1;</span>
 <span class="fc" id="L117">			matched[v] = e;</span>
-		}
+<span class="fc" id="L118">		}</span>
 <span class="fc" id="L119">		return new Matchings.IndexMatching(g, matched);</span>
 	}
 
@@ -156,21 +156,21 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 <span class="pc bpc" id="L156" title="1 of 2 branches missed.">			if (n % 2 != 0)</span>
 <span class="nc" id="L157">				throw new IllegalArgumentException(&quot;number of vertices is odd: perfect matching cannot exist&quot;);</span>
 <span class="fc" id="L158">			singletonNodes = new Blossom[n];</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">			for (int v : range(n))</span>
 <span class="fc" id="L160">				singletonNodes[v] = new Blossom();</span>
 <span class="fc" id="L161">			Debug.init(this);</span>
 
 			/* Init all (singleton) blossoms to unmatched even + */
-<span class="fc bfc" id="L164" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">			for (int v : range(n)) {</span>
 <span class="fc" id="L165">				Blossom b = singletonNodes[v];</span>
 <span class="fc" id="L166">				b.setEven();</span>
 <span class="fc" id="L167">				b.setOuter(true);</span>
-			}
+<span class="fc" id="L168">			}</span>
 <span class="fc" id="L169">			treeNum = n;</span>
 
 			/* Create all edges objects */
 <span class="fc" id="L172">			double minWeight = Double.POSITIVE_INFINITY;</span>
-<span class="fc bfc" id="L173" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">			for (int e : range(g.edges().size())) {</span>
 <span class="fc" id="L174">				Blossom U = singletonNodes[g.edgeSource(e)];</span>
 <span class="fc" id="L175">				Blossom V = singletonNodes[g.edgeTarget(e)];</span>
 <span class="fc bfc" id="L176" title="All 2 branches covered.">				if (U == V)</span>
@@ -184,7 +184,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 <span class="fc" id="L184">				E.slack = w.weight(e) * 2;</span>
 <span class="fc bfc" id="L185" title="All 2 branches covered.">				if (E.slack != 0)</span>
 <span class="fc" id="L186">					minWeight = Math.min(minWeight, E.slack);</span>
-			}
+<span class="fc" id="L187">			}</span>
 <span class="fc" id="L188">			eps = minWeight * 1e-6;</span>
 
 <span class="fc" id="L190">			treeList = new Blossom() {</span>
@@ -1580,10 +1580,10 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 
 <span class="fc" id="L1581">			final int n = g.vertices().size();</span>
 <span class="fc" id="L1582">			int[] matched = new int[n];</span>
-<span class="fc bfc" id="L1583" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L1583" title="All 2 branches covered.">			for (int u : range(n)) {</span>
 <span class="pc bnc" id="L1584" title="All 2 branches missed.">				assert singletonNodes[u].isMatched();</span>
 <span class="fc" id="L1585">				matched[u] = singletonNodes[u].match.id;</span>
-			}
+<span class="fc" id="L1586">			}</span>
 <span class="fc" id="L1587">			return new Matchings.IndexMatching(g, matched);</span>
 		}
 
@@ -2794,7 +2794,7 @@ import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 			if (!Enable)
 <span class="fc" id="L2795">				return;</span>
 			assert Impl.blossomIds.isEmpty();
-			for (int i = 0; i &lt; worker.singletonNodes.length; i++)
+			for (int i : range(worker.singletonNodes.length))
 				Impl.blossomIds.put(worker.singletonNodes[i], i);
 		}
 

@@ -87,8 +87,8 @@ public class Digraph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 
 		/* Read all edges R(x) */
 <span class="fc" id="L89">		Graph6.BitsReader bitsReader = new Graph6.BitsReader(bytes, cursor);</span>
-<span class="fc bfc" id="L90" title="All 2 branches covered.">		for (int u : range(0, n)) {</span>
-<span class="fc bfc" id="L91" title="All 2 branches covered.">			for (int v : range(0, n)) {</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">		for (int u : range(n)) {</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">			for (int v : range(n)) {</span>
 <span class="fc bfc" id="L92" title="All 2 branches covered.">				if (!bitsReader.hasNext())</span>
 <span class="fc" id="L93">					throw new IllegalArgumentException(&quot;Too few bits for edges bit vector&quot;);</span>
 <span class="fc" id="L94">				boolean edgeExist = bitsReader.next();</span>

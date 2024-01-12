@@ -16,6 +16,8 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
+
 /**
  * An undirected graph implementation using linked lists to store edge lists.
  *
@@ -34,42 +36,40 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract implements GraphDe
 	private final DataContainer.Obj&lt;Edge&gt; edgesContainer;
 	private final DataContainer.Int edgesNumContainer;
 
-<span class="fc" id="L37">	private static final Edge[] EmptyEdgeArr = new Edge[0];</span>
+<span class="fc" id="L39">	private static final Edge[] EmptyEdgeArr = new Edge[0];</span>
 
-<span class="fc" id="L39">	private static final GraphBaseMutable.Capabilities CapabilitiesNoSelfEdges =</span>
-<span class="fc" id="L40">			GraphBaseMutable.Capabilities.of(false, false, true);</span>
-<span class="fc" id="L41">	private static final GraphBaseMutable.Capabilities CapabilitiesWithSelfEdges =</span>
-<span class="fc" id="L42">			GraphBaseMutable.Capabilities.of(false, true, true);</span>
+<span class="fc" id="L41">	private static final GraphBaseMutable.Capabilities CapabilitiesNoSelfEdges =</span>
+<span class="fc" id="L42">			GraphBaseMutable.Capabilities.of(false, false, true);</span>
+<span class="fc" id="L43">	private static final GraphBaseMutable.Capabilities CapabilitiesWithSelfEdges =</span>
+<span class="fc" id="L44">			GraphBaseMutable.Capabilities.of(false, true, true);</span>
 
 	private static GraphBaseMutable.Capabilities capabilities(boolean selfEdges) {
-<span class="fc bfc" id="L45" title="All 2 branches covered.">		return selfEdges ? CapabilitiesWithSelfEdges : CapabilitiesNoSelfEdges;</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		return selfEdges ? CapabilitiesWithSelfEdges : CapabilitiesNoSelfEdges;</span>
 	}
 
 	GraphLinkedPtrUndirected(boolean selfEdges, int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L49">		super(capabilities(selfEdges), expectedVerticesNum, expectedEdgesNum);</span>
-<span class="fc" id="L50">		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
-<span class="fc" id="L51">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
-<span class="fc" id="L52">	}</span>
+<span class="fc" id="L51">		super(capabilities(selfEdges), expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L52">		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
+<span class="fc" id="L53">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
+<span class="fc" id="L54">	}</span>
 
 	GraphLinkedPtrUndirected(boolean selfEdges, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L55">		super(capabilities(selfEdges), g, copyVerticesWeights, copyEdgesWeights);</span>
-<span class="fc" id="L56">		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
-<span class="fc" id="L57">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
+<span class="fc" id="L57">		super(capabilities(selfEdges), g, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L58">		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
+<span class="fc" id="L59">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
 
-<span class="fc" id="L59">		final int m = g.edges().size();</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L61">			addEdgeToLists(getEdge(e));</span>
-<span class="fc" id="L62">	}</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		for (int e : range(g.edges().size()))</span>
+<span class="fc" id="L62">			addEdgeToLists(getEdge(e));</span>
+<span class="fc" id="L63">	}</span>
 
 	GraphLinkedPtrUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
-<span class="fc" id="L65">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L66" title="All 2 branches missed.">		assert !builder.isDirected();</span>
+<span class="fc" id="L66">		super(capabilities(selfEdges), builder);</span>
+<span class="pc bnc" id="L67" title="All 2 branches missed.">		assert !builder.isDirected();</span>
 
-<span class="fc" id="L68">		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
-<span class="fc" id="L69">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
+<span class="fc" id="L69">		edgesContainer = newVerticesContainer(null, EmptyEdgeArr, newArr -&gt; edges = newArr);</span>
+<span class="fc" id="L70">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
 
-<span class="fc" id="L71">		final int m = builder.edges.size();</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int e : range(builder.edges.size()))</span>
 <span class="fc" id="L73">			addEdgeToLists(getEdge(e));</span>
 <span class="fc" id="L74">	}</span>
 
@@ -230,10 +230,10 @@ class GraphLinkedPtrUndirected extends GraphLinkedPtrAbstract implements GraphDe
 
 	@Override
 	public void clearEdges() {
-<span class="fc bfc" id="L233" title="All 2 branches covered.">		for (int m = edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L233" title="All 2 branches covered.">		for (int e : range(edges().size())) {</span>
 <span class="fc" id="L234">			Edge p = getEdge(e);</span>
 <span class="fc" id="L235">			p.nextu = p.nextv = p.prevu = p.prevv = null;</span>
-		}
+<span class="fc" id="L236">		}</span>
 <span class="fc" id="L237">		edgesContainer.clear();</span>
 <span class="fc" id="L238">		edgesNumContainer.clear();</span>
 <span class="fc" id="L239">		super.clearEdges();</span>

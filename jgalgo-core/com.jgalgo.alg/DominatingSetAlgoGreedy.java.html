@@ -76,7 +76,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L76">			edgeToIdx = new int[g.edges().size()];</span>
 <span class="fc" id="L77">			Arrays.fill(edgeToIdx, -1);</span>
 <span class="fc bfc" id="L78" title="All 2 branches covered.">			if (directed) {</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				for (int u : range(n)) {</span>
 <span class="fc bfc" id="L80" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L81">						int e = eit.nextInt();</span>
 <span class="fc" id="L82">						int v = eit.targetInt();</span>
@@ -87,9 +87,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L87">						edgeToIdx[e] = edges0.size();</span>
 <span class="fc" id="L88">						edges0.add(e);</span>
 <span class="fc" id="L89">					}</span>
-				}
+<span class="fc" id="L90">				}</span>
 			} else {
-<span class="fc bfc" id="L92" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">				for (int u : range(n)) {</span>
 <span class="fc bfc" id="L93" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L94">						int e = eit.nextInt();</span>
 <span class="fc bfc" id="L95" title="All 2 branches covered.">						if (u == g.edgeSource(e))</span>
@@ -102,7 +102,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L102">						edgeToIdx[e] = edges0.size();</span>
 <span class="fc" id="L103">						edges0.add(e);</span>
 <span class="fc" id="L104">					}</span>
-				}
+<span class="fc" id="L105">				}</span>
 			}
 <span class="fc" id="L107">			edges = edges0.elements();</span>
 <span class="fc" id="L108">			edgesNum = edges0.size();</span>
@@ -216,7 +216,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="nc" id="L216">								.findAny()</span>
 <span class="nc" id="L217">								.isEmpty());</span>
 			}
-<span class="fc bfc" id="L219" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L219" title="All 2 branches covered.">			for (int u : range(n))</span>
 <span class="fc bfc" id="L220" title="All 2 branches covered.">				if (!dominated.get(u))</span>
 <span class="fc" id="L221">					dominating.set(u);</span>
 

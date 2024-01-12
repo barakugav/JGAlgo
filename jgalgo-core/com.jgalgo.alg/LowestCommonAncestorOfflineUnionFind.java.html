@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.function.IntFunction;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -26,63 +27,62 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntStack;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-<span class="fc" id="L29">class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUtils.AbstractImpl {</span>
+<span class="fc" id="L30">class LowestCommonAncestorOfflineUnionFind extends LowestCommonAncestorOfflineUtils.AbstractImpl {</span>
 
 	@Override
 	LowestCommonAncestorOffline.IResult findLCAs(IndexGraph tree, int root,
 			LowestCommonAncestorOffline.IQueries queries) {
-<span class="fc" id="L34">		final int n = tree.vertices().size();</span>
-<span class="fc" id="L35">		int[] res = new int[queries.size()];</span>
+<span class="fc" id="L35">		final int n = tree.vertices().size();</span>
+<span class="fc" id="L36">		int[] res = new int[queries.size()];</span>
 
-<span class="fc" id="L37">		int[] queriesNum = new int[n];</span>
-<span class="fc" id="L38">		int queriesNumCount = 0;</span>
-<span class="fc bfc" id="L39" title="All 2 branches covered.">		for (int qNum = queries.size(), q = 0; q &lt; qNum; q++) {</span>
-<span class="fc" id="L40">			int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);</span>
-<span class="fc bfc" id="L41" title="All 2 branches covered.">			if (u != v) {</span>
-<span class="fc" id="L42">				queriesNum[u]++;</span>
-<span class="fc" id="L43">				queriesNum[v]++;</span>
-<span class="fc" id="L44">				queriesNumCount += 2;</span>
+<span class="fc" id="L38">		int[] queriesNum = new int[n];</span>
+<span class="fc" id="L39">		int queriesNumCount = 0;</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">		for (int q : range(queries.size())) {</span>
+<span class="fc" id="L41">			int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">			if (u != v) {</span>
+<span class="fc" id="L43">				queriesNum[u]++;</span>
+<span class="fc" id="L44">				queriesNum[v]++;</span>
+<span class="fc" id="L45">				queriesNumCount += 2;</span>
 			} else {
-<span class="fc" id="L46">				res[q] = u;</span>
+<span class="fc" id="L47">				res[q] = u;</span>
 			}
-		}
-<span class="fc" id="L49">		int[] perVertexQueries = new int[queriesNumCount];</span>
-<span class="fc" id="L50">		int[] perVertexQueriesOffset = new int[n + 1];</span>
-<span class="fc" id="L51">		perVertexQueriesOffset[0] = 0;</span>
-<span class="fc bfc" id="L52" title="All 2 branches covered.">		for (int v = 1; v &lt; n; v++)</span>
-<span class="fc" id="L53">			perVertexQueriesOffset[v] = perVertexQueriesOffset[v - 1] + queriesNum[v - 1];</span>
-<span class="fc bfc" id="L54" title="All 2 branches covered.">		for (int qNum = queries.size(), q = 0; q &lt; qNum; q++) {</span>
-<span class="fc" id="L55">			int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);</span>
-<span class="fc bfc" id="L56" title="All 2 branches covered.">			if (u != v) {</span>
-<span class="fc" id="L57">				perVertexQueries[perVertexQueriesOffset[u]++] = q;</span>
-<span class="fc" id="L58">				perVertexQueries[perVertexQueriesOffset[v]++] = q;</span>
+<span class="fc" id="L49">		}</span>
+<span class="fc" id="L50">		int[] perVertexQueries = new int[queriesNumCount];</span>
+<span class="fc" id="L51">		int[] perVertexQueriesOffset = new int[n + 1];</span>
+<span class="fc" id="L52">		perVertexQueriesOffset[0] = 0;</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		for (int v : range(1, n))</span>
+<span class="fc" id="L54">			perVertexQueriesOffset[v] = perVertexQueriesOffset[v - 1] + queriesNum[v - 1];</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		for (int q : range(queries.size())) {</span>
+<span class="fc" id="L56">			int u = queries.getQuerySourceInt(q), v = queries.getQueryTargetInt(q);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">			if (u != v) {</span>
+<span class="fc" id="L58">				perVertexQueries[perVertexQueriesOffset[u]++] = q;</span>
+<span class="fc" id="L59">				perVertexQueries[perVertexQueriesOffset[v]++] = q;</span>
 			}
-		}
-<span class="fc bfc" id="L61" title="All 2 branches covered.">		for (int v = n; v &gt; 0; v--)</span>
-<span class="fc" id="L62">			perVertexQueriesOffset[v] = perVertexQueriesOffset[v - 1];</span>
-<span class="fc" id="L63">		perVertexQueriesOffset[0] = 0;</span>
+<span class="fc" id="L61">		}</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		for (int v = n; v &gt; 0; v--)</span>
+<span class="fc" id="L63">			perVertexQueriesOffset[v] = perVertexQueriesOffset[v - 1];</span>
+<span class="fc" id="L64">		perVertexQueriesOffset[0] = 0;</span>
 
-<span class="fc" id="L65">		IntFunction&lt;IntIterator&gt; vertexQueries = v -&gt; new IntIterator() {</span>
-<span class="fc" id="L66">			int idx = perVertexQueriesOffset[v];</span>
-<span class="fc" id="L67">			int end = perVertexQueriesOffset[v + 1];</span>
+<span class="fc" id="L66">		IntFunction&lt;IntIterator&gt; vertexQueries = v -&gt; new IntIterator() {</span>
+<span class="fc" id="L67">			int idx = perVertexQueriesOffset[v];</span>
+<span class="fc" id="L68">			int end = perVertexQueriesOffset[v + 1];</span>
 
 			@Override
 			public boolean hasNext() {
-<span class="fc bfc" id="L71" title="All 2 branches covered.">				return idx &lt; end;</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">				return idx &lt; end;</span>
 			}
 
 			@Override
 			public int nextInt() {
-<span class="fc" id="L76">				return perVertexQueries[idx++];</span>
+<span class="fc" id="L77">				return perVertexQueries[idx++];</span>
 			}
 		};
 
-<span class="fc" id="L80">		UnionFind uf = UnionFind.builder().expectedSize(n).build();</span>
-<span class="fc" id="L81">		int[] ufRoot = new int[n];</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L83">			uf.make();</span>
-<span class="fc" id="L84">			ufRoot[v] = v;</span>
-		}
+<span class="fc" id="L81">		UnionFind uf = UnionFind.newInstance();</span>
+<span class="fc" id="L82">		uf.makeMany(n);</span>
+<span class="fc" id="L83">		int[] ufRoot = new int[n];</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		for (int v : range(n))</span>
+<span class="fc" id="L85">			ufRoot[v] = v;</span>
 
 <span class="fc" id="L87">		Bitmap mark = new Bitmap(queries.size());</span>
 

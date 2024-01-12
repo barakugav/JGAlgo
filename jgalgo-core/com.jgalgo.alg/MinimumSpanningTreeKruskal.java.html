@@ -86,23 +86,22 @@ class MinimumSpanningTreeKruskal implements MinimumSpanningTreeBase {
 
 		/* create union find data structure for each vertex */
 <span class="fc" id="L88">		UnionFind uf = unionFindBuilder.expectedSize(n).build();</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">		for (int i = 0; i &lt; n; i++)</span>
-<span class="fc" id="L90">			uf.make();</span>
+<span class="fc" id="L89">		uf.makeMany(n);</span>
 
 		/* iterate over the edges and build the MST */
-<span class="fc" id="L93">		IntArrayList mst = new IntArrayList(n - 1);</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">		for (int e : edges) {</span>
-<span class="fc" id="L95">			int U = uf.find(g.edgeSource(e));</span>
-<span class="fc" id="L96">			int V = uf.find(g.edgeTarget(e));</span>
+<span class="fc" id="L92">		IntArrayList mst = new IntArrayList(n - 1);</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L94">			int U = uf.find(g.edgeSource(e));</span>
+<span class="fc" id="L95">			int V = uf.find(g.edgeTarget(e));</span>
 
-<span class="fc bfc" id="L98" title="All 2 branches covered.">			if (U != V) {</span>
-<span class="fc" id="L99">				uf.union(U, V);</span>
-<span class="fc" id="L100">				mst.add(e);</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">			if (U != V) {</span>
+<span class="fc" id="L98">				uf.union(U, V);</span>
+<span class="fc" id="L99">				mst.add(e);</span>
 			}
 		}
-<span class="fc" id="L103">		uf.clear();</span>
-<span class="fc" id="L104">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
-<span class="fc" id="L105">		return new MinimumSpanningTrees.IndexResult(mstSet);</span>
+<span class="fc" id="L102">		uf.clear();</span>
+<span class="fc" id="L103">		IntSet mstSet = ImmutableIntArraySet.withNaiveContains(mst.elements(), 0, mst.size());</span>
+<span class="fc" id="L104">		return new MinimumSpanningTrees.IndexResult(mstSet);</span>
 	}
 
 }

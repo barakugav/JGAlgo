@@ -179,15 +179,15 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L179">		int[] resVToV = new int[n];</span>
 <span class="fc" id="L180">		Arrays.fill(vToResV, -1);</span>
 <span class="fc" id="L181">		Arrays.fill(resVToV, -1);</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L182" title="All 2 branches covered.">		for (int v : range(n)) {</span>
 <span class="fc bfc" id="L183" title="All 2 branches covered.">			if (removedVertices.get(v))</span>
 <span class="fc" id="L184">				continue;</span>
 <span class="fc" id="L185">			int resV = residual0.addVertexInt();</span>
 <span class="fc" id="L186">			vToResV[v] = resV;</span>
 <span class="fc" id="L187">			resVToV[resV] = v;</span>
-		}
+<span class="fc" id="L188">		}</span>
 <span class="fc bfc" id="L189" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">			for (int e : range(g.edges().size())) {</span>
 <span class="fc" id="L191">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc bfc" id="L192" title="All 2 branches covered.">				if (u == v)</span>
 <span class="fc" id="L193">					continue;</span>
@@ -200,10 +200,10 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L200">					residual0.addEdge(resU, resV);</span>
 <span class="fc bfc" id="L201" title="All 2 branches covered.">				if (ef &gt; eps)</span>
 <span class="fc" id="L202">					residual0.addEdge(resV, resU);</span>
-			}
+<span class="fc" id="L203">			}</span>
 
 		} else {
-<span class="fc bfc" id="L206" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">			for (int e : range(g.edges().size())) {</span>
 <span class="fc" id="L207">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc bfc" id="L208" title="All 2 branches covered.">				if (u == v)</span>
 <span class="fc" id="L209">					continue;</span>
@@ -216,7 +216,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L216">					residual0.addEdge(resU, resV);</span>
 <span class="pc bpc" id="L217" title="1 of 2 branches missed.">				if (f &gt; -ew + eps)</span>
 <span class="fc" id="L218">					residual0.addEdge(resV, resU);</span>
-			}
+<span class="fc" id="L219">			}</span>
 		}
 <span class="fc" id="L221">		IndexGraph residual = residual0.build();</span>
 

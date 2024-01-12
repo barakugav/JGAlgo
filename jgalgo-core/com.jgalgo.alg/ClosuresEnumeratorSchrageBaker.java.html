@@ -62,7 +62,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L62">					IndexGraphBuilder g0 = IndexGraphBuilder.directed();</span>
 <span class="fc" id="L63">					g0.ensureEdgeCapacity(g.edges().size() - selfEdges);</span>
 <span class="fc" id="L64">					g0.addVertices(g.vertices());</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">					for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">					for (int e : range(g.edges().size()))</span>
 <span class="fc bfc" id="L66" title="All 2 branches covered.">						if (g.edgeSource(e) != g.edgeTarget(e))</span>
 <span class="fc" id="L67">							g0.addEdge(g.edgeSource(e), g.edgeTarget(e));</span>
 <span class="fc" id="L68">					g = g0.build();</span>
@@ -77,7 +77,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L77">		sccGraph0.addVertices(range(sccNum));</span>
 <span class="fc" id="L78">		Bitmap seenBlocks = new Bitmap(sccNum);</span>
 <span class="fc" id="L79">		IntList seenBlockList = new IntArrayList();</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">		for (int b1 = 0; b1 &lt; sccNum; b1++) {</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		for (int b1 : range(sccNum)) {</span>
 <span class="fc bfc" id="L81" title="All 2 branches covered.">			for (int u : sccs.blockVertices(b1)) {</span>
 <span class="fc bfc" id="L82" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L83">					eit.nextInt();</span>
@@ -91,7 +91,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L91">			}</span>
 <span class="fc" id="L92">			seenBlocks.clearAllUnsafe(seenBlockList);</span>
 <span class="fc" id="L93">			seenBlockList.clear();</span>
-		}
+<span class="fc" id="L94">		}</span>
 <span class="fc" id="L95">		IndexGraph sccGraph = sccGraph0.build();</span>
 
 		/* Find all closures in the DAG condensation graph and map the sets to the original vertices */
@@ -111,7 +111,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L111">				((TopologicalOrderAlgo.IResult) topoAlgo.computeTopologicalSorting(g)).orderedVertices().toIntArray();</span>
 <span class="fc" id="L112">		IntArrays.reverse(topoIdxToV);</span>
 <span class="fc" id="L113">		int[] vToTopoIndex = new int[n];</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">		for (int topoIdx = 0; topoIdx &lt; n; topoIdx++)</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">		for (int topoIdx : range(n))</span>
 <span class="fc" id="L115">			vToTopoIndex[topoIdxToV[topoIdx]] = topoIdx;</span>
 
 <span class="fc" id="L117">		Bitmap m = new Bitmap(n);</span>

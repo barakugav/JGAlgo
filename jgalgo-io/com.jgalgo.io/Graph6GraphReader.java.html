@@ -83,7 +83,7 @@ public class Graph6GraphReader extends GraphIoUtils.AbstractIntGraphReader {
 		/* Read all edges R(x) */
 <span class="fc" id="L84">		Graph6.BitsReader bitsReader = new Graph6.BitsReader(bytes, cursor);</span>
 <span class="fc bfc" id="L85" title="All 2 branches covered.">		for (int u : range(1, Math.max(1, n))) {</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">			for (int v : range(0, u)) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">			for (int v : range(u)) {</span>
 <span class="fc bfc" id="L87" title="All 2 branches covered.">				if (!bitsReader.hasNext())</span>
 <span class="fc" id="L88">					throw new IllegalArgumentException(&quot;Too few bits for edges bit vector&quot;);</span>
 <span class="fc" id="L89">				boolean edgeExist = bitsReader.next();</span>

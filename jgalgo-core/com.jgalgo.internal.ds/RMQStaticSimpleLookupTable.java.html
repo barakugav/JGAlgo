@@ -16,6 +16,7 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Objects;
 
 /**
@@ -36,30 +37,30 @@ class RMQStaticSimpleLookupTable implements RMQStatic {
 	/**
 	 * Construct a new static RMQ algorithm object.
 	 */
-<span class="fc" id="L39">	RMQStaticSimpleLookupTable() {}</span>
+<span class="fc" id="L40">	RMQStaticSimpleLookupTable() {}</span>
 
 	@Override
 	public RMQStatic.DataStructure preProcessSequence(RMQStaticComparator c, int n) {
-<span class="pc bpc" id="L43" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
-<span class="nc" id="L44">			throw new IllegalArgumentException(&quot;Invalid length: &quot; + n);</span>
-<span class="fc" id="L45">		Objects.requireNonNull(c);</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">		if (n &lt;= 0)</span>
+<span class="nc" id="L45">			throw new IllegalArgumentException(&quot;Invalid length: &quot; + n);</span>
+<span class="fc" id="L46">		Objects.requireNonNull(c);</span>
 
-<span class="fc bfc" id="L47" title="All 2 branches covered.">		if (n &lt;= DSu08.LIMIT)</span>
-<span class="fc" id="L48">			return new DSu08(c, (byte) n);</span>
-<span class="fc bfc" id="L49" title="All 2 branches covered.">		else if (n &lt;= DSu16.LIMIT)</span>
-<span class="fc" id="L50">			return new DSu16(c, (short) n);</span>
-<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		else if (n &lt;= DSu32.LIMIT)</span>
-<span class="fc" id="L52">			return new DSu32(c, n);</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (n &lt;= DSu08.LIMIT)</span>
+<span class="fc" id="L49">			return new DSu08(c, (byte) n);</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		else if (n &lt;= DSu16.LIMIT)</span>
+<span class="fc" id="L51">			return new DSu16(c, (short) n);</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">		else if (n &lt;= DSu32.LIMIT)</span>
+<span class="fc" id="L53">			return new DSu32(c, n);</span>
 		else
-<span class="nc" id="L54">			throw new IllegalArgumentException(&quot;N too big (&quot; + n + &quot;)&quot;);</span>
+<span class="nc" id="L55">			throw new IllegalArgumentException(&quot;N too big (&quot; + n + &quot;)&quot;);</span>
 	}
 
 	private static int arrSize(int n) {
-<span class="fc" id="L58">		return n * (n - 1) / 2;</span>
+<span class="fc" id="L59">		return n * (n - 1) / 2;</span>
 	}
 
 	private static int indexOf(int n, int i, int j) {
-<span class="fc" id="L62">		return (2 * n - i - 1) * i / 2 + j - i - 1;</span>
+<span class="fc" id="L63">		return (2 * n - i - 1) * i / 2 + j - i - 1;</span>
 	}
 
 	private static class DSu08 implements RMQStatic.DataStructure {
@@ -68,31 +69,31 @@ class RMQStaticSimpleLookupTable implements RMQStatic {
 		private final byte[] arr;
 		private static final int LIMIT = 1 &lt;&lt; ((Byte.SIZE - 1) / 2);
 
-<span class="fc" id="L71">		DSu08(RMQStaticComparator c, byte n) {</span>
-<span class="fc" id="L72">			arr = new byte[arrSize(n)];</span>
-<span class="fc" id="L73">			this.n = n;</span>
+<span class="fc" id="L72">		DSu08(RMQStaticComparator c, byte n) {</span>
+<span class="fc" id="L73">			arr = new byte[arrSize(n)];</span>
+<span class="fc" id="L74">			this.n = n;</span>
 
-<span class="fc bfc" id="L75" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 1; i++)</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : (byte) (i + 1);</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 2; i++) {</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">				for (byte j = (byte) (i + 2); j &lt; n; j++) {</span>
-<span class="fc" id="L79">					byte m = arr[indexOf(n, i, j - 1)];</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 1; i++)</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : (byte) (i + 1);</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			for (byte i = 0; i &lt; n - 2; i++) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				for (byte j = (byte) (i + 2); j &lt; n; j++) {</span>
+<span class="fc" id="L80">					byte m = arr[indexOf(n, i, j - 1)];</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
 				}
 			}
-<span class="fc" id="L83">		}</span>
+<span class="fc" id="L84">		}</span>
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-<span class="fc" id="L87">			RMQStatics.checkIndices(i, j, n);</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">			if (i == j)</span>
-<span class="fc" id="L89">				return i;</span>
-<span class="fc" id="L90">			return arr[indexOf(n, i, j)];</span>
+<span class="fc" id="L88">			RMQStatics.checkIndices(i, j, n);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L90">				return i;</span>
+<span class="fc" id="L91">			return arr[indexOf(n, i, j)];</span>
 		}
 
 		@Override
 		public long sizeInBytes() {
-<span class="nc" id="L95">			return 1 + 8 + arr.length;</span>
+<span class="nc" id="L96">			return 1 + 8 + arr.length;</span>
 		}
 	}
 
@@ -103,31 +104,31 @@ class RMQStaticSimpleLookupTable implements RMQStatic {
 
 		private static final int LIMIT = 1 &lt;&lt; ((Short.SIZE - 1) / 2);
 
-<span class="fc" id="L106">		DSu16(RMQStaticComparator c, short n) {</span>
-<span class="fc" id="L107">			arr = new short[arrSize(n)];</span>
-<span class="fc" id="L108">			this.n = n;</span>
+<span class="fc" id="L107">		DSu16(RMQStaticComparator c, short n) {</span>
+<span class="fc" id="L108">			arr = new short[arrSize(n)];</span>
+<span class="fc" id="L109">			this.n = n;</span>
 
-<span class="fc bfc" id="L110" title="All 2 branches covered.">			for (short i = 0; i &lt; n - 1; i++)</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : (short) (i + 1);</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">			for (short i = 0; i &lt; n - 2; i++) {</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">				for (short j = (short) (i + 2); j &lt; n; j++) {</span>
-<span class="fc" id="L114">					short m = arr[indexOf(n, i, j - 1)];</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">			for (short i = 0; i &lt; n - 1; i++)</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : (short) (i + 1);</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			for (short i = 0; i &lt; n - 2; i++) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">				for (short j = (short) (i + 2); j &lt; n; j++) {</span>
+<span class="fc" id="L115">					short m = arr[indexOf(n, i, j - 1)];</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
 				}
 			}
-<span class="fc" id="L118">		}</span>
+<span class="fc" id="L119">		}</span>
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-<span class="fc" id="L122">			RMQStatics.checkIndices(i, j, n);</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">			if (i == j)</span>
-<span class="fc" id="L124">				return i;</span>
-<span class="fc" id="L125">			return arr[indexOf(n, i, j)];</span>
+<span class="fc" id="L123">			RMQStatics.checkIndices(i, j, n);</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L125">				return i;</span>
+<span class="fc" id="L126">			return arr[indexOf(n, i, j)];</span>
 		}
 
 		@Override
 		public long sizeInBytes() {
-<span class="nc" id="L130">			return 2 + 8 + 2 * arr.length;</span>
+<span class="nc" id="L131">			return 2 + 8 + 2 * arr.length;</span>
 		}
 	}
 
@@ -138,31 +139,31 @@ class RMQStaticSimpleLookupTable implements RMQStatic {
 
 		private static final int LIMIT = 1 &lt;&lt; ((Integer.SIZE - 1) / 2);
 
-<span class="fc" id="L141">		DSu32(RMQStaticComparator c, int n) {</span>
-<span class="fc" id="L142">			arr = new int[arrSize(n)];</span>
-<span class="fc" id="L143">			this.n = n;</span>
+<span class="fc" id="L142">		DSu32(RMQStaticComparator c, int n) {</span>
+<span class="fc" id="L143">			arr = new int[arrSize(n)];</span>
+<span class="fc" id="L144">			this.n = n;</span>
 
-<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (int i = 0; i &lt; n - 1; i++)</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : i + 1;</span>
-<span class="fc bfc" id="L147" title="All 2 branches covered.">			for (int i = 0; i &lt; n - 2; i++) {</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">				for (int j = i + 2; j &lt; n; j++) {</span>
-<span class="fc" id="L149">					int m = arr[indexOf(n, i, j - 1)];</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
-				}
-			}
-<span class="fc" id="L153">		}</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">			for (int i : range(n - 1))</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">				arr[indexOf(n, i, i + 1)] = c.compare(i, i + 1) &lt; 0 ? i : i + 1;</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">			for (int i : range(n - 2)) {</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">				for (int j : range(i + 2, n)) {</span>
+<span class="fc" id="L150">					int m = arr[indexOf(n, i, j - 1)];</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">					arr[indexOf(n, i, j)] = c.compare(m, j) &lt; 0 ? m : j;</span>
+<span class="fc" id="L152">				}</span>
+<span class="fc" id="L153">			}</span>
+<span class="fc" id="L154">		}</span>
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-<span class="fc" id="L157">			RMQStatics.checkIndices(i, j, n);</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">			if (i == j)</span>
-<span class="fc" id="L159">				return i;</span>
-<span class="fc" id="L160">			return arr[indexOf(n, i, j)];</span>
+<span class="fc" id="L158">			RMQStatics.checkIndices(i, j, n);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L160">				return i;</span>
+<span class="fc" id="L161">			return arr[indexOf(n, i, j)];</span>
 		}
 
 		@Override
 		public long sizeInBytes() {
-<span class="nc" id="L165">			return 4 + 8 + 4 * arr.length;</span>
+<span class="nc" id="L166">			return 4 + 8 + 4 * arr.length;</span>
 		}
 	}
 

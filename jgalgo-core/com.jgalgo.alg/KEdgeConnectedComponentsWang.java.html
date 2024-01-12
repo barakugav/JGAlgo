@@ -59,7 +59,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L59">		IntStack stack = new IntArrayList();</span>
 <span class="fc" id="L60">		IVertexPartition wccs = (IVertexPartition) wccAlgo.findWeaklyConnectedComponents(g);</span>
 <span class="fc" id="L61">		int[] vertices = new int[range(wccs.numberOfBlocks()).map(b -&gt; wccs.blockVertices(b).size()).max().orElse(0)];</span>
-<span class="fc bfc" id="L62" title="All 2 branches covered.">		for (int wccNum = wccs.numberOfBlocks(), wccIdx = 0; wccIdx &lt; wccNum; wccIdx++) {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		for (int wccIdx : range(wccs.numberOfBlocks())) {</span>
 <span class="fc" id="L63">			IntSet wccVertices = wccs.blockVertices(wccIdx);</span>
 <span class="fc bfc" id="L64" title="All 2 branches covered.">			if (wccVertices.size() &lt;= 1)</span>
 <span class="fc" id="L65">				continue;</span>
@@ -147,7 +147,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="pc bnc" id="L147" title="All 2 branches missed.">					assert vertices[from2] == sink;</span>
 				}
 <span class="fc" id="L149">			}</span>
-		}
+<span class="fc" id="L150">		}</span>
 <span class="fc" id="L151">		return computeKEdgeConnectedComponentsFromAuxGraph(g, auxGraph.build(), auxWeights, k);</span>
 	}
 
@@ -161,7 +161,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L161">		int compNum = 0;</span>
 
 <span class="fc" id="L163">		IntStack stack = new IntArrayList();</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">		for (int root = 0; root &lt; n; root++) {</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">		for (int root : range(n)) {</span>
 <span class="fc bfc" id="L165" title="All 2 branches covered.">			if (comp[root] != -1)</span>
 <span class="fc" id="L166">				continue;</span>
 <span class="fc" id="L167">			final int compIdx = compNum++;</span>
@@ -184,7 +184,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L184">					stack.push(v);</span>
 <span class="fc" id="L185">				}</span>
 <span class="fc" id="L186">			}</span>
-		}
+<span class="fc" id="L187">		}</span>
 <span class="fc" id="L188">		return new VertexPartitions.Impl(origGraph, compNum, comp);</span>
 	}
 

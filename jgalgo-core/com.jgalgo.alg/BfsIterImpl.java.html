@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 
 <span class="nc" id="L33">class BfsIterImpl {</span>
 
-	private abstract static class Abstract implements Bfs.IntIter {
+	private abstract static class Abstract implements BfsIter.Int {
 
 		final IndexGraph g;
 		final Bitmap visited;
@@ -160,13 +160,13 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 		}
 	}
 
-	static class IntBfsFromIndexBfs implements Bfs.IntIter {
+	static class IntBfsFromIndexBfs implements BfsIter.Int {
 
-		private final Bfs.IntIter indexIter;
+		private final BfsIter.Int indexIter;
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-<span class="fc" id="L169">		IntBfsFromIndexBfs(IntGraph g, Bfs.IntIter indexIter) {</span>
+<span class="fc" id="L169">		IntBfsFromIndexBfs(IntGraph g, BfsIter.Int indexIter) {</span>
 <span class="fc" id="L170">			this.indexIter = Objects.requireNonNull(indexIter);</span>
 <span class="fc" id="L171">			this.viMap = g.indexGraphVerticesMap();</span>
 <span class="fc" id="L172">			this.eiMap = g.indexGraphEdgesMap();</span>
@@ -194,13 +194,13 @@ import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
 		}
 	}
 
-	static class ObjBfsFromIndexBfs&lt;V, E&gt; implements Bfs.Iter&lt;V, E&gt; {
+	static class ObjBfsFromIndexBfs&lt;V, E&gt; implements BfsIter&lt;V, E&gt; {
 
-		private final Bfs.IntIter indexIter;
+		private final BfsIter.Int indexIter;
 		private final IndexIdMap&lt;V&gt; viMap;
 		private final IndexIdMap&lt;E&gt; eiMap;
 
-<span class="fc" id="L203">		ObjBfsFromIndexBfs(Graph&lt;V, E&gt; g, Bfs.IntIter indexIter) {</span>
+<span class="fc" id="L203">		ObjBfsFromIndexBfs(Graph&lt;V, E&gt; g, BfsIter.Int indexIter) {</span>
 <span class="fc" id="L204">			this.indexIter = Objects.requireNonNull(indexIter);</span>
 <span class="fc" id="L205">			this.viMap = g.indexGraphVerticesMap();</span>
 <span class="fc" id="L206">			this.eiMap = g.indexGraphEdgesMap();</span>

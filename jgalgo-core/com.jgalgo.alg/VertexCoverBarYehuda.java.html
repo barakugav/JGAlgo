@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Bitmap;
@@ -32,32 +33,32 @@ import it.unimi.dsi.fastutil.ints.IntSet;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L35">class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {</span>
+<span class="fc" id="L36">class VertexCoverBarYehuda extends VertexCoverUtils.AbstractImpl {</span>
 
 	@Override
 	public IntSet computeMinimumVertexCover(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L39">		final int n = g.vertices().size();</span>
-<span class="fc" id="L40">		double[] sw = new double[n];</span>
-<span class="fc bfc" id="L41" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L42">			sw[v] = w.weight(v);</span>
+<span class="fc" id="L40">		final int n = g.vertices().size();</span>
+<span class="fc" id="L41">		double[] sw = new double[n];</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (int v : range(n))</span>
+<span class="fc" id="L43">			sw[v] = w.weight(v);</span>
 
-<span class="fc" id="L44">		Bitmap cover = new Bitmap(n);</span>
+<span class="fc" id="L45">		Bitmap cover = new Bitmap(n);</span>
 
-<span class="fc bfc" id="L46" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		for (int e : range(g.edges().size())) {</span>
 			int u, v;
-<span class="fc bfc" id="L48" title="All 4 branches covered.">			if (cover.get(u = g.edgeSource(e)) || cover.get(v = g.edgeTarget(e)))</span>
-<span class="fc" id="L49">				continue;</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">			if (sw[u] &lt;= sw[v]) {</span>
-<span class="fc" id="L51">				sw[v] -= sw[u];</span>
+<span class="fc bfc" id="L49" title="All 4 branches covered.">			if (cover.get(u = g.edgeSource(e)) || cover.get(v = g.edgeTarget(e)))</span>
+<span class="fc" id="L50">				continue;</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">			if (sw[u] &lt;= sw[v]) {</span>
+<span class="fc" id="L52">				sw[v] -= sw[u];</span>
 				// sw[u] -= sw[u]; don't bother
-<span class="fc" id="L53">				cover.set(u);</span>
+<span class="fc" id="L54">				cover.set(u);</span>
 			} else {
-<span class="fc" id="L55">				sw[u] -= sw[v];</span>
+<span class="fc" id="L56">				sw[u] -= sw[v];</span>
 				// sw[v] -= sw[v]; don't bother
-<span class="fc" id="L57">				cover.set(v);</span>
+<span class="fc" id="L58">				cover.set(v);</span>
 			}
-		}
-<span class="fc" id="L60">		return ImmutableIntArraySet.ofBitmap(cover);</span>
+<span class="fc" id="L60">		}</span>
+<span class="fc" id="L61">		return ImmutableIntArraySet.ofBitmap(cover);</span>
 	}
 
 }

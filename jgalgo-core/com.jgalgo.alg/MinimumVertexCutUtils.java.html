@@ -160,15 +160,15 @@ class MinimumVertexCutUtils {
 				 */
 
 <span class="fc bfc" id="L162" title="All 2 branches covered.">				if (g.isDirected()) {</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">					for (int e : range(m)) {</span>
 <span class="fc" id="L164">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc bfc" id="L165" title="All 2 branches covered.">						if (u == v)</span>
 <span class="fc" id="L166">							continue;</span>
 <span class="fc" id="L167">						builder.addEdge(u * 2 + 1, v * 2 + 0);</span>
 <span class="fc" id="L168">						builder.addEdge(u * 2 + 1, v * 2 + 0);</span>
-					}
+<span class="fc" id="L169">					}</span>
 				} else {
-<span class="fc bfc" id="L171" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">					for (int e : range(m)) {</span>
 <span class="fc" id="L172">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc bfc" id="L173" title="All 2 branches covered.">						if (u == v)</span>
 <span class="fc" id="L174">							continue;</span>
@@ -176,27 +176,27 @@ class MinimumVertexCutUtils {
 <span class="fc" id="L176">						builder.addEdge(u * 2 + 1, v * 2 + 0);</span>
 <span class="fc" id="L177">						builder.addEdge(v * 2 + 1, u * 2 + 0);</span>
 <span class="fc" id="L178">						builder.addEdge(v * 2 + 1, u * 2 + 0);</span>
-					}
+<span class="fc" id="L179">					}</span>
 				}
 <span class="fc" id="L181">				verticesEdgesThreshold = builder.edges().size();</span>
 <span class="fc" id="L182">				weights = null;</span>
 
 			} else {
 <span class="fc bfc" id="L185" title="All 2 branches covered.">				if (g.isDirected()) {</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">					for (int e : range(m)) {</span>
 <span class="fc" id="L187">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc bfc" id="L188" title="All 2 branches covered.">						if (u == v)</span>
 <span class="fc" id="L189">							continue;</span>
 <span class="fc" id="L190">						builder.addEdge(u * 2 + 1, v * 2 + 0);</span>
-					}
+<span class="fc" id="L191">					}</span>
 				} else {
-<span class="fc bfc" id="L193" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">					for (int e : range(m)) {</span>
 <span class="fc" id="L194">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc bfc" id="L195" title="All 2 branches covered.">						if (u == v)</span>
 <span class="fc" id="L196">							continue;</span>
 <span class="fc" id="L197">						builder.addEdge(u * 2 + 1, v * 2 + 0);</span>
 <span class="fc" id="L198">						builder.addEdge(v * 2 + 1, u * 2 + 0);</span>
-					}
+<span class="fc" id="L199">					}</span>
 				}
 <span class="fc" id="L201">				verticesEdgesThreshold = builder.edges().size();</span>
 
@@ -215,16 +215,16 @@ class MinimumVertexCutUtils {
 
 			}
 
-<span class="fc bfc" id="L218" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">			for (int v : range(n))</span>
 <span class="fc" id="L219">				builder.addEdge(v * 2 + 0, v * 2 + 1);</span>
 <span class="fc bfc" id="L220" title="All 2 branches covered.">			graph = mutable ? builder.buildMutable() : builder.build();</span>
 <span class="fc" id="L221">		}</span>
 
 		void edgeCutToVertexCut(int[] edgeCut) {
-<span class="fc bfc" id="L224" title="All 2 branches covered.">			for (int i = 0; i &lt; edgeCut.length; i++) {</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">			for (int i : range(edgeCut.length)) {</span>
 <span class="pc bnc" id="L225" title="All 2 branches missed.">				assert edgeCut[i] &gt;= verticesEdgesThreshold;</span>
 <span class="fc" id="L226">				edgeCut[i] -= verticesEdgesThreshold;</span>
-			}
+<span class="fc" id="L227">			}</span>
 <span class="fc" id="L228">		}</span>
 	}
 

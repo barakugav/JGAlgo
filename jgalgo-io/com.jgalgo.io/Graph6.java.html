@@ -15,89 +15,90 @@
  */
 package com.jgalgo.io;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.io.IOException;
 import it.unimi.dsi.fastutil.ints.IntIntPair;
 
-<span class="fc" id="L21">class Graph6 {</span>
+<span class="fc" id="L22">class Graph6 {</span>
 
 	private Graph6() {}
 
 	static IntIntPair readNumberOfVertices(byte[] bytes, int cursor) {
-<span class="fc bfc" id="L26" title="All 2 branches covered.">		if (bytes[cursor] != 126) {</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">		if (bytes[cursor] != 126) {</span>
 			/* n is a single byte number */
-<span class="fc" id="L28">			int n = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L29">			return IntIntPair.of(n, cursor);</span>
+<span class="fc" id="L29">			int n = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L30">			return IntIntPair.of(n, cursor);</span>
 
-<span class="fc bfc" id="L31" title="All 2 branches covered.">		} else if (++cursor + 2 &gt;= bytes.length) {</span>
-<span class="fc" id="L32">			throw new IllegalArgumentException(&quot;Invalid number of vertices, expected 126 and further bytes&quot;);</span>
-<span class="fc bfc" id="L33" title="All 2 branches covered.">		} else if (bytes[cursor] != 126) {</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">		} else if (++cursor + 2 &gt;= bytes.length) {</span>
+<span class="fc" id="L33">			throw new IllegalArgumentException(&quot;Invalid number of vertices, expected 126 and further bytes&quot;);</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">		} else if (bytes[cursor] != 126) {</span>
 			/* n is a 3 byte number */
-<span class="fc" id="L35">			int b1 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L36">			int b2 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L37">			int b3 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L38">			int n = 0;</span>
-<span class="fc" id="L39">			n |= b1 &lt;&lt; 12;</span>
-<span class="fc" id="L40">			n |= b2 &lt;&lt; 6;</span>
-<span class="fc" id="L41">			n |= b3 &lt;&lt; 0;</span>
-<span class="fc" id="L42">			return IntIntPair.of(n, cursor);</span>
+<span class="fc" id="L36">			int b1 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L37">			int b2 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L38">			int b3 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L39">			int n = 0;</span>
+<span class="fc" id="L40">			n |= b1 &lt;&lt; 12;</span>
+<span class="fc" id="L41">			n |= b2 &lt;&lt; 6;</span>
+<span class="fc" id="L42">			n |= b3 &lt;&lt; 0;</span>
+<span class="fc" id="L43">			return IntIntPair.of(n, cursor);</span>
 
-<span class="fc bfc" id="L44" title="All 2 branches covered.">		} else if (++cursor + 5 &gt;= bytes.length) {</span>
-<span class="fc" id="L45">			throw new IllegalArgumentException(&quot;Invalid number of vertices, expected 126 126 and further bytes&quot;);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		} else if (++cursor + 5 &gt;= bytes.length) {</span>
+<span class="fc" id="L46">			throw new IllegalArgumentException(&quot;Invalid number of vertices, expected 126 126 and further bytes&quot;);</span>
 		} else {
 			/* n is a 6 byte number */
-<span class="fc" id="L48">			int b1 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L49">			int b2 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L50">			int b3 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L51">			int b4 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L52">			int b5 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L53">			int b6 = checkByte(bytes[cursor++]) - 63;</span>
-<span class="fc" id="L54">			long n = 0;</span>
-<span class="fc" id="L55">			n |= ((long) b1) &lt;&lt; 30;</span>
-<span class="fc" id="L56">			n |= ((long) b2) &lt;&lt; 24;</span>
-<span class="fc" id="L57">			n |= ((long) b3) &lt;&lt; 18;</span>
-<span class="fc" id="L58">			n |= ((long) b4) &lt;&lt; 12;</span>
-<span class="fc" id="L59">			n |= ((long) b5) &lt;&lt; 6;</span>
-<span class="fc" id="L60">			n |= ((long) b6) &lt;&lt; 0;</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">			if (n &gt; Integer.MAX_VALUE)</span>
-<span class="fc" id="L62">				throw new IllegalArgumentException(&quot;n is too big: &quot; + n);</span>
-<span class="fc" id="L63">			return IntIntPair.of((int) n, cursor);</span>
+<span class="fc" id="L49">			int b1 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L50">			int b2 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L51">			int b3 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L52">			int b4 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L53">			int b5 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L54">			int b6 = checkByte(bytes[cursor++]) - 63;</span>
+<span class="fc" id="L55">			long n = 0;</span>
+<span class="fc" id="L56">			n |= ((long) b1) &lt;&lt; 30;</span>
+<span class="fc" id="L57">			n |= ((long) b2) &lt;&lt; 24;</span>
+<span class="fc" id="L58">			n |= ((long) b3) &lt;&lt; 18;</span>
+<span class="fc" id="L59">			n |= ((long) b4) &lt;&lt; 12;</span>
+<span class="fc" id="L60">			n |= ((long) b5) &lt;&lt; 6;</span>
+<span class="fc" id="L61">			n |= ((long) b6) &lt;&lt; 0;</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">			if (n &gt; Integer.MAX_VALUE)</span>
+<span class="fc" id="L63">				throw new IllegalArgumentException(&quot;n is too big: &quot; + n);</span>
+<span class="fc" id="L64">			return IntIntPair.of((int) n, cursor);</span>
 		}
 	}
 
 	static void writeNumberOfVertices(Writer2 out, int n) throws IOException {
-<span class="pc bnc" id="L68" title="All 2 branches missed.">		assert n &gt;= 0;</span>
-<span class="fc bfc" id="L69" title="All 2 branches covered.">		if (n &lt;= 62) {</span>
+<span class="pc bnc" id="L69" title="All 2 branches missed.">		assert n &gt;= 0;</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">		if (n &lt;= 62) {</span>
 			/* n is a single byte number */
-<span class="fc" id="L71">			out.appendByte((byte) (n + 63));</span>
+<span class="fc" id="L72">			out.appendByte((byte) (n + 63));</span>
 
-<span class="fc bfc" id="L73" title="All 2 branches covered.">		} else if (n &lt;= 258047) {</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">		} else if (n &lt;= 258047) {</span>
 			/* n is a 3 byte number */
-<span class="fc" id="L75">			int b1 = (n &gt;&gt; 12) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L76">			int b2 = (n &gt;&gt; 6) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L77">			int b3 = (n &gt;&gt; 0) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L78">			out.appendByte((byte) 126);</span>
-<span class="fc" id="L79">			out.appendByte((byte) (b1 + 63));</span>
-<span class="fc" id="L80">			out.appendByte((byte) (b2 + 63));</span>
-<span class="fc" id="L81">			out.appendByte((byte) (b3 + 63));</span>
+<span class="fc" id="L76">			int b1 = (n &gt;&gt; 12) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L77">			int b2 = (n &gt;&gt; 6) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L78">			int b3 = (n &gt;&gt; 0) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L79">			out.appendByte((byte) 126);</span>
+<span class="fc" id="L80">			out.appendByte((byte) (b1 + 63));</span>
+<span class="fc" id="L81">			out.appendByte((byte) (b2 + 63));</span>
+<span class="fc" id="L82">			out.appendByte((byte) (b3 + 63));</span>
 
-<span class="fc" id="L83">		} else {</span>
+<span class="fc" id="L84">		} else {</span>
 			/* n is a 6 byte number */
-<span class="fc" id="L85">			int b1 = (n &gt;&gt; 30) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L86">			int b2 = (n &gt;&gt; 24) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L87">			int b3 = (n &gt;&gt; 18) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L88">			int b4 = (n &gt;&gt; 12) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L89">			int b5 = (n &gt;&gt; 6) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L90">			int b6 = (n &gt;&gt; 0) &amp; ((1 &lt;&lt; 6) - 1);</span>
-<span class="fc" id="L91">			out.appendByte((byte) 126);</span>
+<span class="fc" id="L86">			int b1 = (n &gt;&gt; 30) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L87">			int b2 = (n &gt;&gt; 24) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L88">			int b3 = (n &gt;&gt; 18) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L89">			int b4 = (n &gt;&gt; 12) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L90">			int b5 = (n &gt;&gt; 6) &amp; ((1 &lt;&lt; 6) - 1);</span>
+<span class="fc" id="L91">			int b6 = (n &gt;&gt; 0) &amp; ((1 &lt;&lt; 6) - 1);</span>
 <span class="fc" id="L92">			out.appendByte((byte) 126);</span>
-<span class="fc" id="L93">			out.appendByte((byte) (b1 + 63));</span>
-<span class="fc" id="L94">			out.appendByte((byte) (b2 + 63));</span>
-<span class="fc" id="L95">			out.appendByte((byte) (b3 + 63));</span>
-<span class="fc" id="L96">			out.appendByte((byte) (b4 + 63));</span>
-<span class="fc" id="L97">			out.appendByte((byte) (b5 + 63));</span>
-<span class="fc" id="L98">			out.appendByte((byte) (b6 + 63));</span>
+<span class="fc" id="L93">			out.appendByte((byte) 126);</span>
+<span class="fc" id="L94">			out.appendByte((byte) (b1 + 63));</span>
+<span class="fc" id="L95">			out.appendByte((byte) (b2 + 63));</span>
+<span class="fc" id="L96">			out.appendByte((byte) (b3 + 63));</span>
+<span class="fc" id="L97">			out.appendByte((byte) (b4 + 63));</span>
+<span class="fc" id="L98">			out.appendByte((byte) (b5 + 63));</span>
+<span class="fc" id="L99">			out.appendByte((byte) (b6 + 63));</span>
 		}
-<span class="fc" id="L100">	}</span>
+<span class="fc" id="L101">	}</span>
 
 	static class BitsReader {
 
@@ -106,81 +107,81 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 		private int cursor;
 		private int currentBit;
 
-<span class="fc" id="L109">		BitsReader(byte[] bytes, int cursor) {</span>
-<span class="fc" id="L110">			this.bytes = bytes;</span>
-<span class="fc" id="L111">			this.cursor = cursor;</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">			if (cursor &lt; bytes.length) {</span>
-<span class="fc" id="L113">				currentByte = (byte) (checkByte(bytes[cursor]) - 63);</span>
-<span class="fc" id="L114">				currentBit = 0;</span>
+<span class="fc" id="L110">		BitsReader(byte[] bytes, int cursor) {</span>
+<span class="fc" id="L111">			this.bytes = bytes;</span>
+<span class="fc" id="L112">			this.cursor = cursor;</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			if (cursor &lt; bytes.length) {</span>
+<span class="fc" id="L114">				currentByte = (byte) (checkByte(bytes[cursor]) - 63);</span>
+<span class="fc" id="L115">				currentBit = 0;</span>
 			} else {
-<span class="fc" id="L116">				currentBit = 6;</span>
+<span class="fc" id="L117">				currentBit = 6;</span>
 			}
-<span class="fc" id="L118">		}</span>
+<span class="fc" id="L119">		}</span>
 
 		boolean hasNext() {
-<span class="fc bfc" id="L121" title="All 2 branches covered.">			return currentBit &lt; 6;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">			return currentBit &lt; 6;</span>
 		}
 
 		boolean next() {
-<span class="fc bfc" id="L125" title="All 2 branches covered.">			boolean ret = (currentByte &amp; (1 &lt;&lt; (/* bigendian */ 5 - currentBit))) != 0;</span>
-<span class="fc" id="L126">			currentBit++;</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">			if (currentBit == 6) {</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">				if (++cursor &lt; bytes.length) {</span>
-<span class="fc" id="L129">					currentByte = (byte) (checkByte(bytes[cursor]) - 63);</span>
-<span class="fc" id="L130">					currentBit = 0;</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">			boolean ret = (currentByte &amp; (1 &lt;&lt; (/* bigendian */ 5 - currentBit))) != 0;</span>
+<span class="fc" id="L127">			currentBit++;</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">			if (currentBit == 6) {</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">				if (++cursor &lt; bytes.length) {</span>
+<span class="fc" id="L130">					currentByte = (byte) (checkByte(bytes[cursor]) - 63);</span>
+<span class="fc" id="L131">					currentBit = 0;</span>
 				}
 			}
-<span class="fc" id="L133">			return ret;</span>
+<span class="fc" id="L134">			return ret;</span>
 		}
 
 		void skipToCurrentByteEnd() {
-<span class="fc bfc" id="L137" title="All 2 branches covered.">			if (currentBit == 0)</span>
-<span class="fc" id="L138">				return;</span>
-<span class="fc bfc" id="L139" title="All 2 branches covered.">			if (++cursor &lt; bytes.length) {</span>
-<span class="fc" id="L140">				currentByte = (byte) (checkByte(bytes[cursor]) - 63);</span>
-<span class="fc" id="L141">				currentBit = 0;</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			if (currentBit == 0)</span>
+<span class="fc" id="L139">				return;</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">			if (++cursor &lt; bytes.length) {</span>
+<span class="fc" id="L141">				currentByte = (byte) (checkByte(bytes[cursor]) - 63);</span>
+<span class="fc" id="L142">				currentBit = 0;</span>
 			} else {
-<span class="fc" id="L143">				currentBit = 6;</span>
+<span class="fc" id="L144">				currentBit = 6;</span>
 			}
-<span class="fc" id="L145">		}</span>
+<span class="fc" id="L146">		}</span>
 	}
 
-<span class="fc" id="L148">	static class BitsWriter {</span>
+<span class="fc" id="L149">	static class BitsWriter {</span>
 		private final Writer2 out;
 		private byte currentByte;
 		private int currentBitNum;
 
-<span class="fc" id="L153">		BitsWriter(Writer2 out) {</span>
-<span class="fc" id="L154">			this.out = out;</span>
-<span class="fc" id="L155">		}</span>
+<span class="fc" id="L154">		BitsWriter(Writer2 out) {</span>
+<span class="fc" id="L155">			this.out = out;</span>
+<span class="fc" id="L156">		}</span>
 
 		void write(boolean b) throws IOException {
-<span class="fc bfc" id="L158" title="All 2 branches covered.">			if (b)</span>
-<span class="fc" id="L159">				currentByte |= 1 &lt;&lt; (/* bigendian */ 5 - currentBitNum);</span>
-<span class="fc" id="L160">			currentBitNum++;</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">			if (b)</span>
+<span class="fc" id="L160">				currentByte |= 1 &lt;&lt; (/* bigendian */ 5 - currentBitNum);</span>
+<span class="fc" id="L161">			currentBitNum++;</span>
 
-<span class="fc bfc" id="L162" title="All 2 branches covered.">			if (currentBitNum == 6) {</span>
-<span class="fc" id="L163">				out.appendByte((byte) (currentByte + 63));</span>
-<span class="fc" id="L164">				currentByte = 0;</span>
-<span class="fc" id="L165">				currentBitNum = 0;</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">			if (currentBitNum == 6) {</span>
+<span class="fc" id="L164">				out.appendByte((byte) (currentByte + 63));</span>
+<span class="fc" id="L165">				currentByte = 0;</span>
+<span class="fc" id="L166">				currentBitNum = 0;</span>
 			}
-<span class="fc" id="L167">		}</span>
+<span class="fc" id="L168">		}</span>
 
 		void write(int x, int bitsNum) throws IOException {
-<span class="pc bnc" id="L170" title="All 2 branches missed.">			assert x &lt; (1 &lt;&lt; bitsNum);</span>
-<span class="fc bfc" id="L171" title="All 2 branches covered.">			for (int i = 0; i &lt; bitsNum; i++)</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">				write((x &amp; (1 &lt;&lt; (bitsNum - 1 - i))) != 0); /* bigendian */</span>
-<span class="fc" id="L173">		}</span>
+<span class="pc bnc" id="L171" title="All 2 branches missed.">			assert x &lt; (1 &lt;&lt; bitsNum);</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">			for (int i : range(bitsNum))</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">				write((x &amp; (1 &lt;&lt; (bitsNum - 1 - i))) != 0); /* bigendian */</span>
+<span class="fc" id="L174">		}</span>
 
 		boolean paddingRequired() {
-<span class="fc bfc" id="L176" title="All 2 branches covered.">			return currentBitNum != 0;</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">			return currentBitNum != 0;</span>
 		}
 	}
 
 	static byte checkByte(byte b) {
-<span class="fc bfc" id="L181" title="All 4 branches covered.">		if (!(63 &lt;= b &amp;&amp; b &lt;= 126))</span>
-<span class="fc" id="L182">			throw new IllegalArgumentException(&quot;Invalid byte, not in range [63, 126]: &quot; + b);</span>
-<span class="fc" id="L183">		return b;</span>
+<span class="fc bfc" id="L182" title="All 4 branches covered.">		if (!(63 &lt;= b &amp;&amp; b &lt;= 126))</span>
+<span class="fc" id="L183">			throw new IllegalArgumentException(&quot;Invalid byte, not in range [63, 126]: &quot; + b);</span>
+<span class="fc" id="L184">		return b;</span>
 	}
 
 }

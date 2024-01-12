@@ -71,16 +71,16 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L71">		private final int[] queries = new int[OperationsPerInvocation];</span>
 
 		void setupCreateQueries() {
-<span class="fc bfc" id="L74" title="All 2 branches covered.">			for (int q = 0; q &lt; OperationsPerInvocation; q++)</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			for (int q : range(OperationsPerInvocation))</span>
 <span class="fc" id="L75">				queries[q] = Graphs.randEdge(g, rand);</span>
 <span class="fc" id="L76">		}</span>
 
 		void bench(Blackhole blackhole) {
 			// assert OperationsPerInvocation % 2 == 0;
-<span class="fc bfc" id="L80" title="All 2 branches covered.">			for (int q = 0; q &lt; OperationsPerInvocation / 2; q++) {</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">			for (int q : range(OperationsPerInvocation / 2)) {</span>
 <span class="fc" id="L81">				blackhole.consume(g.edgeSource(queries[q * 2 + 0]));</span>
 <span class="fc" id="L82">				blackhole.consume(g.edgeTarget(queries[q * 2 + 1]));</span>
-			}
+<span class="fc" id="L83">			}</span>
 <span class="fc" id="L84">		}</span>
 
 		@BenchmarkMode(Mode.AverageTime)

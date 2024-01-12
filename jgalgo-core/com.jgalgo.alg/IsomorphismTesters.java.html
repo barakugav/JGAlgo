@@ -17,96 +17,130 @@ package com.jgalgo.alg;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Collectors;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.NoSuchVertexException;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 class IsomorphismTesters {
 
 	private IsomorphismTesters() {}
 
-<span class="fc" id="L33">	static class IndexMapping implements IsomorphismIMapping {</span>
+<span class="fc" id="L37">	static class IndexMapping implements IsomorphismIMapping {</span>
 
 		private final IndexGraph g1;
 		private final IndexGraph g2;
 		private final int[] vertexMapping;
 		private final int[] edgeMapping;
 		private IndexMapping inverse;
+		private IntSet mappedVertices;
+		private IntSet mappedEdges;
 
-<span class="fc" id="L41">		IndexMapping(IndexGraph g1, IndexGraph g2, int[] vertexMapping, int[] edgeMapping) {</span>
-<span class="fc" id="L42">			this.g1 = g1;</span>
-<span class="fc" id="L43">			this.g2 = g2;</span>
-<span class="fc" id="L44">			this.vertexMapping = vertexMapping;</span>
-<span class="fc" id="L45">			this.edgeMapping = edgeMapping;</span>
-<span class="fc" id="L46">		}</span>
+<span class="fc" id="L47">		IndexMapping(IndexGraph g1, IndexGraph g2, int[] vertexMapping, int[] edgeMapping) {</span>
+<span class="fc" id="L48">			this.g1 = g1;</span>
+<span class="fc" id="L49">			this.g2 = g2;</span>
+<span class="fc" id="L50">			this.vertexMapping = vertexMapping;</span>
+<span class="fc" id="L51">			this.edgeMapping = edgeMapping;</span>
+<span class="fc" id="L52">		}</span>
 
 		@Override
 		public int mapVertex(int vertex) {
-<span class="fc bfc" id="L50" title="All 2 branches covered.">			if (!g1.vertices().contains(vertex))</span>
-<span class="fc" id="L51">				throw NoSuchVertexException.ofIndex(vertex);</span>
-<span class="fc" id="L52">			return vertexMapping[vertex];</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">			if (!g1.vertices().contains(vertex))</span>
+<span class="fc" id="L57">				throw NoSuchVertexException.ofIndex(vertex);</span>
+<span class="fc" id="L58">			return vertexMapping[vertex];</span>
 		}
 
 		@Override
 		public int mapEdge(int edge) {
-<span class="fc bfc" id="L57" title="All 2 branches covered.">			if (!g1.edges().contains(edge))</span>
-<span class="fc" id="L58">				throw NoSuchEdgeException.ofIndex(edge);</span>
-<span class="fc" id="L59">			return edgeMapping[edge];</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">			if (!g1.edges().contains(edge))</span>
+<span class="fc" id="L64">				throw NoSuchEdgeException.ofIndex(edge);</span>
+<span class="fc" id="L65">			return edgeMapping[edge];</span>
 		}
 
 		@Override
 		public IsomorphismIMapping inverse() {
-<span class="fc bfc" id="L64" title="All 2 branches covered.">			if (inverse == null) {</span>
-<span class="fc" id="L65">				final int n1 = g1.vertices().size();</span>
-<span class="fc" id="L66">				final int m1 = g1.edges().size();</span>
-<span class="fc" id="L67">				final int n2 = g2.vertices().size();</span>
-<span class="fc" id="L68">				final int m2 = g2.edges().size();</span>
-<span class="fc" id="L69">				int[] iVertexMapping = new int[n2];</span>
-<span class="fc" id="L70">				int[] iEdgeMapping = new int[m2];</span>
-<span class="fc" id="L71">				Arrays.fill(iVertexMapping, -1);</span>
-<span class="fc" id="L72">				Arrays.fill(iEdgeMapping, -1);</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">				for (int v1 = 0; v1 &lt; n1; v1++) {</span>
-<span class="fc" id="L74">					int v2 = vertexMapping[v1];</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">					if (v2 &gt;= 0) {</span>
-<span class="pc bnc" id="L76" title="All 2 branches missed.">						assert iVertexMapping[v2] &lt; 0;</span>
-<span class="fc" id="L77">						iVertexMapping[v2] = v1;</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">			if (inverse == null) {</span>
+<span class="fc" id="L71">				final int n1 = g1.vertices().size();</span>
+<span class="fc" id="L72">				final int m1 = g1.edges().size();</span>
+<span class="fc" id="L73">				final int n2 = g2.vertices().size();</span>
+<span class="fc" id="L74">				final int m2 = g2.edges().size();</span>
+<span class="fc" id="L75">				int[] iVertexMapping = new int[n2];</span>
+<span class="fc" id="L76">				int[] iEdgeMapping = new int[m2];</span>
+<span class="fc" id="L77">				Arrays.fill(iVertexMapping, -1);</span>
+<span class="fc" id="L78">				Arrays.fill(iEdgeMapping, -1);</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				for (int v1 : range(n1)) {</span>
+<span class="fc" id="L80">					int v2 = vertexMapping[v1];</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">					if (v2 &gt;= 0) {</span>
+<span class="pc bnc" id="L82" title="All 2 branches missed.">						assert iVertexMapping[v2] &lt; 0;</span>
+<span class="fc" id="L83">						iVertexMapping[v2] = v1;</span>
 					}
-				}
-<span class="fc bfc" id="L80" title="All 2 branches covered.">				for (int e1 = 0; e1 &lt; m1; e1++) {</span>
-<span class="fc" id="L81">					int e2 = edgeMapping[e1];</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">					if (e2 &gt;= 0) {</span>
-<span class="pc bnc" id="L83" title="All 2 branches missed.">						assert iEdgeMapping[e2] &lt; 0;</span>
-<span class="fc" id="L84">						iEdgeMapping[e2] = e1;</span>
+<span class="fc" id="L85">				}</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">				for (int e1 : range(m1)) {</span>
+<span class="fc" id="L87">					int e2 = edgeMapping[e1];</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">					if (e2 &gt;= 0) {</span>
+<span class="pc bnc" id="L89" title="All 2 branches missed.">						assert iEdgeMapping[e2] &lt; 0;</span>
+<span class="fc" id="L90">						iEdgeMapping[e2] = e1;</span>
 					}
-				}
-<span class="fc" id="L87">				inverse = new IndexMapping(g2, g1, iVertexMapping, iEdgeMapping);</span>
-<span class="fc" id="L88">				inverse.inverse = this;</span>
+<span class="fc" id="L92">				}</span>
+<span class="fc" id="L93">				inverse = new IndexMapping(g2, g1, iVertexMapping, iEdgeMapping);</span>
+<span class="fc" id="L94">				inverse.inverse = this;</span>
 			}
-<span class="fc" id="L90">			return inverse;</span>
+<span class="fc" id="L96">			return inverse;</span>
 		}
 
 		@Override
 		public IntGraph sourceGraph() {
-<span class="fc" id="L95">			return g1;</span>
+<span class="fc" id="L101">			return g1;</span>
 		}
 
 		@Override
 		public IntGraph targetGraph() {
-<span class="fc" id="L100">			return g2;</span>
+<span class="fc" id="L106">			return g2;</span>
+		}
+
+		@Override
+		public IntSet mappedVertices() {
+<span class="fc bfc" id="L111" title="All 2 branches covered.">			if (mappedVertices == null) {</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">				int[] mappedVerticesArr = range(g1.vertices().size()).filter(v1 -&gt; vertexMapping[v1] &gt;= 0).toArray();</span>
+<span class="fc" id="L113">				mappedVertices = new ImmutableIntArraySet(mappedVerticesArr) {</span>
+					@Override
+					public boolean contains(int v) {
+<span class="fc bfc" id="L116" title="All 6 branches covered.">						return 0 &lt;= v &amp;&amp; v &lt; vertexMapping.length &amp;&amp; vertexMapping[v] &gt;= 0;</span>
+					}
+				};
+			}
+<span class="fc" id="L120">			return mappedVertices;</span>
+		}
+
+		@Override
+		public IntSet mappedEdges() {
+<span class="fc bfc" id="L125" title="All 2 branches covered.">			if (mappedEdges == null) {</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">				int[] mappedEdgesArr = range(g1.edges().size()).filter(e1 -&gt; edgeMapping[e1] &gt;= 0).toArray();</span>
+<span class="fc" id="L127">				mappedEdges = new ImmutableIntArraySet(mappedEdgesArr) {</span>
+					@Override
+					public boolean contains(int e) {
+<span class="fc bfc" id="L130" title="All 6 branches covered.">						return 0 &lt;= e &amp;&amp; e &lt; edgeMapping.length &amp;&amp; edgeMapping[e] &gt;= 0;</span>
+					}
+				};
+			}
+<span class="fc" id="L134">			return mappedEdges;</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="fc" id="L105">			return range(g1.vertices().size()).mapToObj(v1 -&gt; {</span>
-<span class="fc" id="L106">				int v2 = vertexMapping[v1];</span>
-<span class="fc bfc" id="L107" title="All 2 branches covered.">				String v2Str = v2 &lt; 0 ? &quot;null&quot; : String.valueOf(v2);</span>
-<span class="fc" id="L108">				return &quot;&quot; + v1 + &quot;:&quot; + v2Str;</span>
-<span class="fc" id="L109">			}).collect(Collectors.joining(&quot;, &quot;, &quot;{&quot;, &quot;}&quot;));</span>
+<span class="fc" id="L139">			return range(g1.vertices().size()).mapToObj(v1 -&gt; {</span>
+<span class="fc" id="L140">				int v2 = vertexMapping[v1];</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">				String v2Str = v2 &lt; 0 ? &quot;null&quot; : String.valueOf(v2);</span>
+<span class="fc" id="L142">				return &quot;&quot; + v1 + &quot;:&quot; + v2Str;</span>
+<span class="fc" id="L143">			}).collect(Collectors.joining(&quot;, &quot;, &quot;{&quot;, &quot;}&quot;));</span>
 		}
 	}
 
@@ -121,58 +155,68 @@ class IsomorphismTesters {
 		private final IndexIdMap&lt;E2&gt; e2Map;
 		private ObjMappingFromIndexMapping&lt;V2, E2, V1, E1&gt; inverse;
 
-<span class="fc" id="L124">		ObjMappingFromIndexMapping(IsomorphismIMapping indexMapping, Graph&lt;V1, E1&gt; g1, Graph&lt;V2, E2&gt; g2) {</span>
-<span class="fc" id="L125">			this.indexMapping = indexMapping;</span>
-<span class="fc" id="L126">			this.g1 = g1;</span>
-<span class="fc" id="L127">			this.g2 = g2;</span>
-<span class="fc" id="L128">			this.v1Map = g1.indexGraphVerticesMap();</span>
-<span class="fc" id="L129">			this.e1Map = g1.indexGraphEdgesMap();</span>
-<span class="fc" id="L130">			this.v2Map = g2.indexGraphVerticesMap();</span>
-<span class="fc" id="L131">			this.e2Map = g2.indexGraphEdgesMap();</span>
-<span class="fc" id="L132">		}</span>
+<span class="fc" id="L158">		ObjMappingFromIndexMapping(IsomorphismIMapping indexMapping, Graph&lt;V1, E1&gt; g1, Graph&lt;V2, E2&gt; g2) {</span>
+<span class="fc" id="L159">			this.indexMapping = indexMapping;</span>
+<span class="fc" id="L160">			this.g1 = g1;</span>
+<span class="fc" id="L161">			this.g2 = g2;</span>
+<span class="fc" id="L162">			this.v1Map = g1.indexGraphVerticesMap();</span>
+<span class="fc" id="L163">			this.e1Map = g1.indexGraphEdgesMap();</span>
+<span class="fc" id="L164">			this.v2Map = g2.indexGraphVerticesMap();</span>
+<span class="fc" id="L165">			this.e2Map = g2.indexGraphEdgesMap();</span>
+<span class="fc" id="L166">		}</span>
 
 		@Override
 		public V2 mapVertex(V1 vertex) {
-<span class="fc" id="L136">			int v1 = v1Map.idToIndex(vertex);</span>
-<span class="fc" id="L137">			int v2 = indexMapping.mapVertex(v1);</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">			return v2 &lt; 0 ? null : v2Map.indexToId(v2);</span>
+<span class="fc" id="L170">			int v1 = v1Map.idToIndex(vertex);</span>
+<span class="fc" id="L171">			int v2 = indexMapping.mapVertex(v1);</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">			return v2 &lt; 0 ? null : v2Map.indexToId(v2);</span>
 
 		}
 
 		@Override
 		public E2 mapEdge(E1 edge) {
-<span class="fc" id="L144">			int e1 = e1Map.idToIndex(edge);</span>
-<span class="fc" id="L145">			int e2 = indexMapping.mapEdge(e1);</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">			return e2 &lt; 0 ? null : e2Map.indexToId(e2);</span>
+<span class="fc" id="L178">			int e1 = e1Map.idToIndex(edge);</span>
+<span class="fc" id="L179">			int e2 = indexMapping.mapEdge(e1);</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">			return e2 &lt; 0 ? null : e2Map.indexToId(e2);</span>
 		}
 
 		@Override
 		public IsomorphismMapping&lt;V2, E2, V1, E1&gt; inverse() {
-<span class="fc bfc" id="L151" title="All 2 branches covered.">			if (inverse == null) {</span>
-<span class="fc" id="L152">				inverse = new ObjMappingFromIndexMapping&lt;&gt;(indexMapping.inverse(), g2, g1);</span>
-<span class="fc" id="L153">				inverse.inverse = this;</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">			if (inverse == null) {</span>
+<span class="fc" id="L186">				inverse = new ObjMappingFromIndexMapping&lt;&gt;(indexMapping.inverse(), g2, g1);</span>
+<span class="fc" id="L187">				inverse.inverse = this;</span>
 			}
-<span class="fc" id="L155">			return inverse;</span>
+<span class="fc" id="L189">			return inverse;</span>
 		}
 
 		@Override
 		public Graph&lt;V1, E1&gt; sourceGraph() {
-<span class="fc" id="L160">			return g1;</span>
+<span class="fc" id="L194">			return g1;</span>
 		}
 
 		@Override
 		public Graph&lt;V2, E2&gt; targetGraph() {
-<span class="fc" id="L165">			return g2;</span>
+<span class="fc" id="L199">			return g2;</span>
+		}
+
+		@Override
+		public Set&lt;V1&gt; mappedVertices() {
+<span class="fc" id="L204">			return IndexIdMaps.indexToIdSet(indexMapping.mappedVertices(), v1Map);</span>
+		}
+
+		@Override
+		public Set&lt;E1&gt; mappedEdges() {
+<span class="fc" id="L209">			return IndexIdMaps.indexToIdSet(indexMapping.mappedEdges(), e1Map);</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="fc" id="L170">			return range(g1.indexGraph().vertices().size()).mapToObj(v1Idx -&gt; {</span>
-<span class="fc" id="L171">				V1 v1 = v1Map.indexToId(v1Idx);</span>
-<span class="fc" id="L172">				int v2Idx = indexMapping.mapVertex(v1Idx);</span>
-<span class="fc bfc" id="L173" title="All 2 branches covered.">				V2 v2 = v2Idx &lt; 0 ? null : v2Map.indexToId(v2Idx);</span>
-<span class="fc" id="L174">				return &quot;&quot; + v1 + &quot;:&quot; + v2;</span>
-<span class="fc" id="L175">			}).collect(Collectors.joining(&quot;, &quot;, &quot;{&quot;, &quot;}&quot;));</span>
+<span class="fc" id="L214">			return range(g1.indexGraph().vertices().size()).mapToObj(v1Idx -&gt; {</span>
+<span class="fc" id="L215">				V1 v1 = v1Map.indexToId(v1Idx);</span>
+<span class="fc" id="L216">				int v2Idx = indexMapping.mapVertex(v1Idx);</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">				V2 v2 = v2Idx &lt; 0 ? null : v2Map.indexToId(v2Idx);</span>
+<span class="fc" id="L218">				return &quot;&quot; + v1 + &quot;:&quot; + v2;</span>
+<span class="fc" id="L219">			}).collect(Collectors.joining(&quot;, &quot;, &quot;{&quot;, &quot;}&quot;));</span>
 		}
 	}
 
@@ -187,58 +231,68 @@ class IsomorphismTesters {
 		private final IndexIntIdMap e2Map;
 		private IntMappingFromIndexMapping inverse;
 
-<span class="fc" id="L190">		IntMappingFromIndexMapping(IsomorphismIMapping indexMapping, IntGraph g1, IntGraph g2) {</span>
-<span class="fc" id="L191">			this.indexMapping = indexMapping;</span>
-<span class="fc" id="L192">			this.g1 = g1;</span>
-<span class="fc" id="L193">			this.g2 = g2;</span>
-<span class="fc" id="L194">			this.v1Map = g1.indexGraphVerticesMap();</span>
-<span class="fc" id="L195">			this.e1Map = g1.indexGraphEdgesMap();</span>
-<span class="fc" id="L196">			this.v2Map = g2.indexGraphVerticesMap();</span>
-<span class="fc" id="L197">			this.e2Map = g2.indexGraphEdgesMap();</span>
-<span class="fc" id="L198">		}</span>
+<span class="fc" id="L234">		IntMappingFromIndexMapping(IsomorphismIMapping indexMapping, IntGraph g1, IntGraph g2) {</span>
+<span class="fc" id="L235">			this.indexMapping = indexMapping;</span>
+<span class="fc" id="L236">			this.g1 = g1;</span>
+<span class="fc" id="L237">			this.g2 = g2;</span>
+<span class="fc" id="L238">			this.v1Map = g1.indexGraphVerticesMap();</span>
+<span class="fc" id="L239">			this.e1Map = g1.indexGraphEdgesMap();</span>
+<span class="fc" id="L240">			this.v2Map = g2.indexGraphVerticesMap();</span>
+<span class="fc" id="L241">			this.e2Map = g2.indexGraphEdgesMap();</span>
+<span class="fc" id="L242">		}</span>
 
 		@Override
 		public int mapVertex(int vertex) {
-<span class="fc" id="L202">			int v1 = v1Map.idToIndex(vertex);</span>
-<span class="fc" id="L203">			int v2 = indexMapping.mapVertex(v1);</span>
-<span class="fc bfc" id="L204" title="All 2 branches covered.">			return v2 &lt; 0 ? -1 : v2Map.indexToIdInt(v2);</span>
+<span class="fc" id="L246">			int v1 = v1Map.idToIndex(vertex);</span>
+<span class="fc" id="L247">			int v2 = indexMapping.mapVertex(v1);</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">			return v2 &lt; 0 ? -1 : v2Map.indexToIdInt(v2);</span>
 
 		}
 
 		@Override
 		public int mapEdge(int edge) {
-<span class="fc" id="L210">			int e1 = e1Map.idToIndex(edge);</span>
-<span class="fc" id="L211">			int e2 = indexMapping.mapEdge(e1);</span>
-<span class="fc bfc" id="L212" title="All 2 branches covered.">			return e2 &lt; 0 ? -1 : e2Map.indexToIdInt(e2);</span>
+<span class="fc" id="L254">			int e1 = e1Map.idToIndex(edge);</span>
+<span class="fc" id="L255">			int e2 = indexMapping.mapEdge(e1);</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">			return e2 &lt; 0 ? -1 : e2Map.indexToIdInt(e2);</span>
 		}
 
 		@Override
 		public IsomorphismIMapping inverse() {
-<span class="fc bfc" id="L217" title="All 2 branches covered.">			if (inverse == null) {</span>
-<span class="fc" id="L218">				inverse = new IntMappingFromIndexMapping(indexMapping.inverse(), g2, g1);</span>
-<span class="fc" id="L219">				inverse.inverse = this;</span>
+<span class="fc bfc" id="L261" title="All 2 branches covered.">			if (inverse == null) {</span>
+<span class="fc" id="L262">				inverse = new IntMappingFromIndexMapping(indexMapping.inverse(), g2, g1);</span>
+<span class="fc" id="L263">				inverse.inverse = this;</span>
 			}
-<span class="fc" id="L221">			return inverse;</span>
+<span class="fc" id="L265">			return inverse;</span>
 		}
 
 		@Override
 		public IntGraph sourceGraph() {
-<span class="fc" id="L226">			return g1;</span>
+<span class="fc" id="L270">			return g1;</span>
 		}
 
 		@Override
 		public IntGraph targetGraph() {
-<span class="fc" id="L231">			return g2;</span>
+<span class="fc" id="L275">			return g2;</span>
+		}
+
+		@Override
+		public IntSet mappedVertices() {
+<span class="fc" id="L280">			return IndexIdMaps.indexToIdSet(indexMapping.mappedVertices(), v1Map);</span>
+		}
+
+		@Override
+		public IntSet mappedEdges() {
+<span class="fc" id="L285">			return IndexIdMaps.indexToIdSet(indexMapping.mappedEdges(), e1Map);</span>
 		}
 
 		@Override
 		public String toString() {
-<span class="fc" id="L236">			return range(g1.indexGraph().vertices().size()).mapToObj(v1Idx -&gt; {</span>
-<span class="fc" id="L237">				int v1 = v1Map.indexToIdInt(v1Idx);</span>
-<span class="fc" id="L238">				int v2Idx = indexMapping.mapVertex(v1Idx);</span>
-<span class="fc bfc" id="L239" title="All 2 branches covered.">				String v2 = v2Idx &lt; 0 ? &quot;null&quot; : String.valueOf(v2Map.indexToIdInt(v2Idx));</span>
-<span class="fc" id="L240">				return &quot;&quot; + v1 + &quot;:&quot; + v2;</span>
-<span class="fc" id="L241">			}).collect(Collectors.joining(&quot;, &quot;, &quot;{&quot;, &quot;}&quot;));</span>
+<span class="fc" id="L290">			return range(g1.indexGraph().vertices().size()).mapToObj(v1Idx -&gt; {</span>
+<span class="fc" id="L291">				int v1 = v1Map.indexToIdInt(v1Idx);</span>
+<span class="fc" id="L292">				int v2Idx = indexMapping.mapVertex(v1Idx);</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">				String v2 = v2Idx &lt; 0 ? &quot;null&quot; : String.valueOf(v2Map.indexToIdInt(v2Idx));</span>
+<span class="fc" id="L294">				return &quot;&quot; + v1 + &quot;:&quot; + v2;</span>
+<span class="fc" id="L295">			}).collect(Collectors.joining(&quot;, &quot;, &quot;{&quot;, &quot;}&quot;));</span>
 		}
 	}
 

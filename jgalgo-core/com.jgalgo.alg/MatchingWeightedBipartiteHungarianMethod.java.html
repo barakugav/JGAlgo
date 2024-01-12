@@ -133,7 +133,7 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 
 <span class="fc" id="L134">			final double maxWeight = range(g.edges().size()).mapToDouble(w::weight).max().orElse(Double.MIN_VALUE);</span>
 <span class="fc" id="L135">			final double delta1Threshold = maxWeight;</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">			for (int u : range(n))</span>
 <span class="fc bfc" id="L137" title="All 2 branches covered.">				if (partition.get(u))</span>
 <span class="fc" id="L138">					dualValBase[u] = delta1Threshold;</span>
 
@@ -141,13 +141,13 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 <span class="fc" id="L141">				Arrays.fill(parent, EdgeNone);</span>
 
 				// Start growing tree from all unmatched vertices in S
-<span class="fc bfc" id="L144" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L144" title="All 2 branches covered.">				for (int u : range(n)) {</span>
 <span class="fc bfc" id="L145" title="All 4 branches covered.">					if (!partition.get(u) || matched[u] != EdgeNone)</span>
 <span class="fc" id="L146">						continue;</span>
 <span class="fc" id="L147">					vertexAddedToTree(u);</span>
 <span class="fc bfc" id="L148" title="All 2 branches covered.">					for (int e : g.outEdges(u))</span>
 <span class="fc" id="L149">						nextTightEdgeAdd(u, e);</span>
-				}
+<span class="fc" id="L150">				}</span>
 
 				currentTree: for (;;) {
 <span class="fc bfc" id="L153" title="All 2 branches covered.">					while (nextTightEdge.isNotEmpty()) {</span>
@@ -203,7 +203,7 @@ class MatchingWeightedBipartiteHungarianMethod implements MatchingAlgoBase.Maxim
 <span class="fc" id="L203">				}</span>
 
 				// Update dual values base
-<span class="fc bfc" id="L206" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">				for (int u : range(n))</span>
 <span class="fc bfc" id="L207" title="All 2 branches covered.">					if (inTree.get(u))</span>
 <span class="fc" id="L208">						dualValBase[u] = dualVal(u);</span>
 <span class="fc" id="L209">				Arrays.fill(dualVal0, 0);</span>

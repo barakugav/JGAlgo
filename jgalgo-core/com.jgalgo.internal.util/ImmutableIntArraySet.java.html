@@ -15,6 +15,7 @@
  */
 package com.jgalgo.internal.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Objects;
@@ -24,172 +25,172 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
-<span class="fc" id="L27">public abstract class ImmutableIntArraySet extends AbstractIntSet {</span>
+<span class="fc" id="L28">public abstract class ImmutableIntArraySet extends AbstractIntSet {</span>
 
 	final int[] arr;
 	final int from, to, size;
-<span class="fc" id="L31">	private int hashCode = 0;</span>
+<span class="fc" id="L32">	private int hashCode = 0;</span>
 
 	public ImmutableIntArraySet(int[] arr) {
-<span class="fc" id="L34">		this(arr, 0, arr.length);</span>
-<span class="fc" id="L35">	}</span>
+<span class="fc" id="L35">		this(arr, 0, arr.length);</span>
+<span class="fc" id="L36">	}</span>
 
-<span class="fc" id="L37">	public ImmutableIntArraySet(int[] arr, int from, int to) {</span>
-<span class="fc bfc" id="L38" title="All 6 branches covered.">		if (!(0 &lt;= from &amp;&amp; from &lt;= to &amp;&amp; to &lt;= arr.length))</span>
-<span class="fc" id="L39">			throw new IndexOutOfBoundsException();</span>
-<span class="fc" id="L40">		this.arr = Objects.requireNonNull(arr);</span>
-<span class="fc" id="L41">		this.from = from;</span>
-<span class="fc" id="L42">		this.to = to;</span>
-<span class="fc" id="L43">		this.size = to - from;</span>
+<span class="fc" id="L38">	public ImmutableIntArraySet(int[] arr, int from, int to) {</span>
+<span class="fc bfc" id="L39" title="All 6 branches covered.">		if (!(0 &lt;= from &amp;&amp; from &lt;= to &amp;&amp; to &lt;= arr.length))</span>
+<span class="fc" id="L40">			throw new IndexOutOfBoundsException();</span>
+<span class="fc" id="L41">		this.arr = Objects.requireNonNull(arr);</span>
+<span class="fc" id="L42">		this.from = from;</span>
+<span class="fc" id="L43">		this.to = to;</span>
+<span class="fc" id="L44">		this.size = to - from;</span>
 
-<span class="pc bnc" id="L45" title="All 2 branches missed.">		assert new IntOpenHashSet(this).size() == size : &quot;Duplicate elements in array&quot;;</span>
-<span class="fc" id="L46">	}</span>
+<span class="pc bnc" id="L46" title="All 2 branches missed.">		assert new IntOpenHashSet(this).size() == size : &quot;Duplicate elements in array&quot;;</span>
+<span class="fc" id="L47">	}</span>
 
 	@Override
 	public abstract boolean contains(int key);
 
 	@Override
 	public int size() {
-<span class="fc" id="L53">		return size;</span>
+<span class="fc" id="L54">		return size;</span>
 	}
 
 	@Override
 	public int[] toIntArray() {
-<span class="fc" id="L58">		return Arrays.copyOfRange(arr, from, to);</span>
+<span class="fc" id="L59">		return Arrays.copyOfRange(arr, from, to);</span>
 	}
 
 	@Override
 	public int[] toArray(int[] a) {
-<span class="fc bfc" id="L63" title="All 2 branches covered.">		if (a.length &gt;= size) {</span>
-<span class="fc" id="L64">			System.arraycopy(arr, from, a, 0, size);</span>
-<span class="fc" id="L65">			return a;</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		if (a.length &gt;= size) {</span>
+<span class="fc" id="L65">			System.arraycopy(arr, from, a, 0, size);</span>
+<span class="fc" id="L66">			return a;</span>
 		} else {
-<span class="fc" id="L67">			return toIntArray();</span>
+<span class="fc" id="L68">			return toIntArray();</span>
 		}
 	}
 
 	@Override
 	public Object[] toArray() {
-<span class="fc bfc" id="L73" title="All 2 branches covered.">		if (isEmpty())</span>
-<span class="fc" id="L74">			return ObjectArrays.EMPTY_ARRAY;</span>
-<span class="fc" id="L75">		Object[] a = new Object[size];</span>
-<span class="fc bfc" id="L76" title="All 2 branches covered.">		for (int i = from; i &lt; to; i++)</span>
-<span class="fc" id="L77">			a[i - from] = Integer.valueOf(arr[i]);</span>
-<span class="fc" id="L78">		return a;</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">		if (isEmpty())</span>
+<span class="fc" id="L75">			return ObjectArrays.EMPTY_ARRAY;</span>
+<span class="fc" id="L76">		Object[] a = new Object[size];</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">		for (int i : range(from, to))</span>
+<span class="fc" id="L78">			a[i - from] = Integer.valueOf(arr[i]);</span>
+<span class="fc" id="L79">		return a;</span>
 	}
 
 	@SuppressWarnings(&quot;unchecked&quot;)
 	@Override
 	public &lt;T&gt; T[] toArray(T[] a) {
-<span class="fc bfc" id="L84" title="All 2 branches covered.">		if (a.length &lt; size)</span>
-<span class="fc" id="L85">			a = (T[]) Array.newInstance(a.getClass().getComponentType(), size);</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">		for (int i = from; i &lt; to; i++)</span>
-<span class="fc" id="L87">			a[i - from] = (T) Integer.valueOf(arr[i]);</span>
-<span class="fc" id="L88">		return a;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		if (a.length &lt; size)</span>
+<span class="fc" id="L86">			a = (T[]) Array.newInstance(a.getClass().getComponentType(), size);</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">		for (int i : range(from, to))</span>
+<span class="fc" id="L88">			a[i - from] = (T) Integer.valueOf(arr[i]);</span>
+<span class="fc" id="L89">		return a;</span>
 	}
 
 	@Override
 	public int hashCode() {
-<span class="fc bfc" id="L93" title="All 2 branches covered.">		if (hashCode == 0)</span>
-<span class="fc" id="L94">			hashCode = super.hashCode();</span>
-<span class="fc" id="L95">		return hashCode;</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">		if (hashCode == 0)</span>
+<span class="fc" id="L95">			hashCode = super.hashCode();</span>
+<span class="fc" id="L96">		return hashCode;</span>
 	}
 
 	@Override
 	public boolean equals(Object other) {
-<span class="fc bfc" id="L100" title="All 2 branches covered.">		if (other instanceof ImmutableIntArraySet) {</span>
-<span class="fc" id="L101">			ImmutableIntArraySet o = (ImmutableIntArraySet) other;</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">			if (hashCode() != o.hashCode())</span>
-<span class="fc" id="L103">				return false;</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">		if (other instanceof ImmutableIntArraySet) {</span>
+<span class="fc" id="L102">			ImmutableIntArraySet o = (ImmutableIntArraySet) other;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">			if (hashCode() != o.hashCode())</span>
+<span class="fc" id="L104">				return false;</span>
 		}
-<span class="fc" id="L105">		return super.equals(other);</span>
+<span class="fc" id="L106">		return super.equals(other);</span>
 	}
 
 	@Override
 	public IntIterator iterator() {
-<span class="fc" id="L110">		return new Iter();</span>
+<span class="fc" id="L111">		return new Iter();</span>
 	}
 
-<span class="fc" id="L113">	private class Iter implements IntIterator {</span>
+<span class="fc" id="L114">	private class Iter implements IntIterator {</span>
 
-<span class="fc" id="L115">		private int idx = from;</span>
+<span class="fc" id="L116">		private int idx = from;</span>
 
 		@Override
 		public boolean hasNext() {
-<span class="fc bfc" id="L119" title="All 2 branches covered.">			return idx &lt; to;</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">			return idx &lt; to;</span>
 		}
 
 		@Override
 		public int nextInt() {
-<span class="fc" id="L124">			Assertions.hasNext(this);</span>
-<span class="fc" id="L125">			return arr[idx++];</span>
+<span class="fc" id="L125">			Assertions.hasNext(this);</span>
+<span class="fc" id="L126">			return arr[idx++];</span>
 		}
 
 	}
 
 	public static ImmutableIntArraySet withNaiveContains(int[] arr) {
-<span class="fc" id="L131">		return new WithNaiveContains(arr);</span>
+<span class="fc" id="L132">		return new WithNaiveContains(arr);</span>
 	}
 
 	public static ImmutableIntArraySet withNaiveContains(int[] arr, int from, int to) {
-<span class="fc" id="L135">		return new WithNaiveContains(arr, from, to);</span>
+<span class="fc" id="L136">		return new WithNaiveContains(arr, from, to);</span>
 	}
 
 	public static ImmutableIntArraySet ofBitmap(Bitmap bitmap) {
-<span class="fc" id="L139">		int[] arr = bitmap.toArray();</span>
-<span class="fc" id="L140">		return new WithBitmap(arr, 0, arr.length, bitmap);</span>
+<span class="fc" id="L140">		int[] arr = bitmap.toArray();</span>
+<span class="fc" id="L141">		return new WithBitmap(arr, 0, arr.length, bitmap);</span>
 	}
 
 	public static ImmutableIntArraySet ofBitmap(int[] arr, int bitmapSize) {
-<span class="fc" id="L144">		Bitmap bitmap = new Bitmap(bitmapSize);</span>
-<span class="fc bfc" id="L145" title="All 2 branches covered.">		for (int i : arr)</span>
-<span class="fc" id="L146">			bitmap.set(i);</span>
-<span class="fc" id="L147">		return new WithBitmap(arr, 0, arr.length, bitmap);</span>
+<span class="fc" id="L145">		Bitmap bitmap = new Bitmap(bitmapSize);</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">		for (int i : arr)</span>
+<span class="fc" id="L147">			bitmap.set(i);</span>
+<span class="fc" id="L148">		return new WithBitmap(arr, 0, arr.length, bitmap);</span>
 	}
 
 	public static ImmutableIntArraySet ofBitmap(IntCollection elms, int bitmapSize) {
-<span class="fc bfc" id="L151" title="All 2 branches covered.">		if (!(elms instanceof ImmutableIntArraySet))</span>
-<span class="fc" id="L152">			return ofBitmap(elms.toIntArray(), bitmapSize);</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">		if (!(elms instanceof ImmutableIntArraySet))</span>
+<span class="fc" id="L153">			return ofBitmap(elms.toIntArray(), bitmapSize);</span>
 
-<span class="fc" id="L154">		ImmutableIntArraySet elms0 = (ImmutableIntArraySet) elms;</span>
-<span class="fc bfc" id="L155" title="All 4 branches covered.">		if (elms0 instanceof WithBitmap &amp;&amp; ((WithBitmap) elms0).bitmap.capacity() == bitmapSize)</span>
-<span class="fc" id="L156">			return elms0;</span>
-<span class="fc" id="L157">		Bitmap bitmap = new Bitmap(bitmapSize);</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">		for (int i = elms0.from; i &lt; elms0.to; i++)</span>
-<span class="fc" id="L159">			bitmap.set(elms0.arr[i]);</span>
-<span class="fc" id="L160">		return new WithBitmap(elms0.arr, elms0.from, elms0.to, bitmap);</span>
+<span class="fc" id="L155">		ImmutableIntArraySet elms0 = (ImmutableIntArraySet) elms;</span>
+<span class="fc bfc" id="L156" title="All 4 branches covered.">		if (elms0 instanceof WithBitmap &amp;&amp; ((WithBitmap) elms0).bitmap.capacity() == bitmapSize)</span>
+<span class="fc" id="L157">			return elms0;</span>
+<span class="fc" id="L158">		Bitmap bitmap = new Bitmap(bitmapSize);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">		for (int i : range(elms0.from, elms0.to))</span>
+<span class="fc" id="L160">			bitmap.set(elms0.arr[i]);</span>
+<span class="fc" id="L161">		return new WithBitmap(elms0.arr, elms0.from, elms0.to, bitmap);</span>
 	}
 
 	private static class WithBitmap extends ImmutableIntArraySet {
 		private final Bitmap bitmap;
 
 		WithBitmap(int[] arr, int from, int to, Bitmap bitmap) {
-<span class="fc" id="L167">			super(arr, from, to);</span>
-<span class="fc" id="L168">			this.bitmap = bitmap;</span>
-<span class="fc" id="L169">		}</span>
+<span class="fc" id="L168">			super(arr, from, to);</span>
+<span class="fc" id="L169">			this.bitmap = bitmap;</span>
+<span class="fc" id="L170">		}</span>
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc bfc" id="L173" title="All 6 branches covered.">			return 0 &lt;= key &amp;&amp; key &lt; bitmap.capacity() &amp;&amp; bitmap.get(key);</span>
+<span class="fc bfc" id="L174" title="All 6 branches covered.">			return 0 &lt;= key &amp;&amp; key &lt; bitmap.capacity() &amp;&amp; bitmap.get(key);</span>
 		}
 	}
 
 	private static class WithNaiveContains extends ImmutableIntArraySet {
 
 		WithNaiveContains(int[] arr) {
-<span class="fc" id="L180">			this(arr, 0, arr.length);</span>
-<span class="fc" id="L181">		}</span>
+<span class="fc" id="L181">			this(arr, 0, arr.length);</span>
+<span class="fc" id="L182">		}</span>
 
 		WithNaiveContains(int[] arr, int from, int to) {
-<span class="fc" id="L184">			super(arr, from, to);</span>
-<span class="fc" id="L185">		}</span>
+<span class="fc" id="L185">			super(arr, from, to);</span>
+<span class="fc" id="L186">		}</span>
 
 		@Override
 		public boolean contains(int key) {
-<span class="fc bfc" id="L189" title="All 2 branches covered.">			for (int i = from; i &lt; to; i++)</span>
-<span class="fc bfc" id="L190" title="All 2 branches covered.">				if (key == arr[i])</span>
-<span class="fc" id="L191">					return true;</span>
-<span class="fc" id="L192">			return false;</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">			for (int i : range(from, to))</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">				if (key == arr[i])</span>
+<span class="fc" id="L192">					return true;</span>
+<span class="fc" id="L193">			return false;</span>
 		}
 
 	}

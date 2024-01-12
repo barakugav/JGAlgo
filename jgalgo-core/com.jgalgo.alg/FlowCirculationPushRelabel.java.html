@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
@@ -24,14 +25,14 @@ import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.ds.LinkedListFixedSize;
 import com.jgalgo.internal.util.Assertions;
 
-<span class="fc" id="L27">class FlowCirculationPushRelabel implements FlowCirculationBase {</span>
+<span class="fc" id="L28">class FlowCirculationPushRelabel implements FlowCirculationBase {</span>
 
 	@Override
 	public IFlow computeCirculation(IndexGraph g, IWeightFunction capacity, IWeightFunction supply) {
-<span class="pc bpc" id="L31" title="1 of 4 branches missed.">		if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(supply)) {</span>
-<span class="fc" id="L32">			return new WorkerInt(g, (IWeightFunctionInt) capacity, (IWeightFunctionInt) supply).computeCirculation();</span>
+<span class="pc bpc" id="L32" title="1 of 4 branches missed.">		if (WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(supply)) {</span>
+<span class="fc" id="L33">			return new WorkerInt(g, (IWeightFunctionInt) capacity, (IWeightFunctionInt) supply).computeCirculation();</span>
 		} else {
-<span class="fc" id="L34">			return new WorkerDouble(g, capacity, supply).computeCirculation();</span>
+<span class="fc" id="L35">			return new WorkerDouble(g, capacity, supply).computeCirculation();</span>
 		}
 	}
 
@@ -45,44 +46,44 @@ import com.jgalgo.internal.util.Assertions;
 		final int[] layersHeadActive;
 		int maxLayerActive;
 
-<span class="fc" id="L48">		Worker(IndexGraph g, IWeightFunction capacityOrig, IWeightFunction supply) {</span>
-<span class="fc" id="L49">			Assertions.onlyDirected(g);</span>
-<span class="fc" id="L50">			this.g = g;</span>
-<span class="fc" id="L51">			this.capacityOrig = capacityOrig;</span>
-<span class="fc" id="L52">			final int n = g.vertices().size();</span>
+<span class="fc" id="L49">		Worker(IndexGraph g, IWeightFunction capacityOrig, IWeightFunction supply) {</span>
+<span class="fc" id="L50">			Assertions.onlyDirected(g);</span>
+<span class="fc" id="L51">			this.g = g;</span>
+<span class="fc" id="L52">			this.capacityOrig = capacityOrig;</span>
+<span class="fc" id="L53">			final int n = g.vertices().size();</span>
 
-<span class="fc" id="L54">			label = new int[n];</span>
-<span class="fc" id="L55">			layersActive = new LinkedListFixedSize.Doubly(n);</span>
-<span class="fc" id="L56">			layersHeadActive = new int[n + 1];</span>
-<span class="fc" id="L57">		}</span>
+<span class="fc" id="L55">			label = new int[n];</span>
+<span class="fc" id="L56">			layersActive = new LinkedListFixedSize.Doubly(n);</span>
+<span class="fc" id="L57">			layersHeadActive = new int[n + 1];</span>
+<span class="fc" id="L58">		}</span>
 
 		void activate(int v) {
-<span class="fc" id="L60">			int layer = label[v];</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">			if (layersHeadActive[layer] != LinkedListFixedSize.None)</span>
-<span class="fc" id="L62">				layersActive.connect(v, layersHeadActive[layer]);</span>
-<span class="fc" id="L63">			layersHeadActive[layer] = v;</span>
-<span class="fc bfc" id="L64" title="All 2 branches covered.">			if (maxLayerActive &lt; layer)</span>
-<span class="fc" id="L65">				maxLayerActive = layer;</span>
-<span class="fc" id="L66">		}</span>
+<span class="fc" id="L61">			int layer = label[v];</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">			if (layersHeadActive[layer] != LinkedListFixedSize.None)</span>
+<span class="fc" id="L63">				layersActive.connect(v, layersHeadActive[layer]);</span>
+<span class="fc" id="L64">			layersHeadActive[layer] = v;</span>
+<span class="fc bfc" id="L65" title="All 2 branches covered.">			if (maxLayerActive &lt; layer)</span>
+<span class="fc" id="L66">				maxLayerActive = layer;</span>
+<span class="fc" id="L67">		}</span>
 
 		void deactivate(int v) {
-<span class="fc" id="L69">			int layer = label[v];</span>
-<span class="pc bpc" id="L70" title="1 of 2 branches missed.">			if (layersHeadActive[layer] == v)</span>
-<span class="fc" id="L71">				layersHeadActive[layer] = layersActive.next(v);</span>
-<span class="fc" id="L72">			layersActive.disconnect(v);</span>
-<span class="fc" id="L73">		}</span>
+<span class="fc" id="L70">			int layer = label[v];</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">			if (layersHeadActive[layer] == v)</span>
+<span class="fc" id="L72">				layersHeadActive[layer] = layersActive.next(v);</span>
+<span class="fc" id="L73">			layersActive.disconnect(v);</span>
+<span class="fc" id="L74">		}</span>
 
 		int highestActive() {
-<span class="fc" id="L76">			for (;; maxLayerActive--) {</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">				if (maxLayerActive &lt; 0)</span>
-<span class="fc" id="L78">					return -1;</span>
-<span class="fc bfc" id="L79" title="All 2 branches covered.">				if (layersHeadActive[maxLayerActive] != LinkedListFixedSize.None)</span>
-<span class="fc" id="L80">					return layersHeadActive[maxLayerActive];</span>
+<span class="fc" id="L77">			for (;; maxLayerActive--) {</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">				if (maxLayerActive &lt; 0)</span>
+<span class="fc" id="L79">					return -1;</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">				if (layersHeadActive[maxLayerActive] != LinkedListFixedSize.None)</span>
+<span class="fc" id="L81">					return layersHeadActive[maxLayerActive];</span>
 			}
 		}
 	}
 
-<span class="fc" id="L85">	private static class WorkerDouble extends Worker {</span>
+<span class="fc" id="L86">	private static class WorkerDouble extends Worker {</span>
 
 		final double[] capacity;
 		final double[] flow;
@@ -90,280 +91,280 @@ import com.jgalgo.internal.util.Assertions;
 		private final double eps;
 
 		WorkerDouble(IndexGraph g, IWeightFunction capacityOrig, IWeightFunction supply) {
-<span class="fc" id="L93">			super(g, capacityOrig, supply);</span>
+<span class="fc" id="L94">			super(g, capacityOrig, supply);</span>
 
-<span class="fc" id="L95">			final int n = g.vertices().size();</span>
-<span class="fc" id="L96">			final int m = g.edges().size();</span>
+<span class="fc" id="L96">			final int n = g.vertices().size();</span>
+<span class="fc" id="L97">			final int m = g.edges().size();</span>
 
-<span class="fc" id="L98">			flow = new double[m];</span>
-<span class="fc" id="L99">			capacity = new double[m];</span>
-<span class="fc bfc" id="L100" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L101">				capacity[e] = capacityOrig.weight(e);</span>
+<span class="fc" id="L99">			flow = new double[m];</span>
+<span class="fc" id="L100">			capacity = new double[m];</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">			for (int e : range(m))</span>
+<span class="fc" id="L102">				capacity[e] = capacityOrig.weight(e);</span>
 
-<span class="fc" id="L103">			excess = new double[n];</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L105">				excess[v] = supply.weight(v);</span>
+<span class="fc" id="L104">			excess = new double[n];</span>
+<span class="fc bfc" id="L105" title="All 2 branches covered.">			for (int v : range(n))</span>
+<span class="fc" id="L106">				excess[v] = supply.weight(v);</span>
 
-<span class="fc bfc" id="L107" title="All 2 branches covered.">			double supplyEps = Arrays.stream(excess).filter(e -&gt; e &gt; 0).min().orElse(0) * 1e-8;</span>
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">			double capacityEps = Arrays.stream(capacity).filter(c -&gt; c &gt; 0).min().orElse(0) * 1e-8;</span>
-<span class="fc" id="L109">			eps = Math.min(supplyEps, capacityEps);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			double supplyEps = Arrays.stream(excess).filter(e -&gt; e &gt; 0).min().orElse(0) * 1e-8;</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">			double capacityEps = Arrays.stream(capacity).filter(c -&gt; c &gt; 0).min().orElse(0) * 1e-8;</span>
+<span class="fc" id="L110">			eps = Math.min(supplyEps, capacityEps);</span>
 
-<span class="fc" id="L111">			double excessSum = Arrays.stream(excess).sum();</span>
-<span class="pc bpc" id="L112" title="1 of 2 branches missed.">			if (Math.abs(excessSum) &gt; eps)</span>
-<span class="nc" id="L113">				throw new IllegalArgumentException(&quot;sum of supply is not zero&quot;);</span>
+<span class="fc" id="L112">			double excessSum = Arrays.stream(excess).sum();</span>
+<span class="pc bpc" id="L113" title="1 of 2 branches missed.">			if (Math.abs(excessSum) &gt; eps)</span>
+<span class="nc" id="L114">				throw new IllegalArgumentException(&quot;sum of supply is not zero&quot;);</span>
 
 			/* init greedily */
-<span class="fc bfc" id="L116" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L117">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L118" title="All 2 branches covered.">				if (u == v)</span>
-<span class="fc" id="L119">					continue;</span>
-<span class="fc bfc" id="L120" title="All 2 branches covered.">				if (-excess[v] &gt;= capacity[e]) {</span>
-<span class="fc" id="L121">					flow[e] = capacity[e];</span>
-<span class="fc" id="L122">					excess[u] -= capacity[e];</span>
-<span class="fc" id="L123">					excess[v] += capacity[e];</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">				} else if (excess[v] &lt;= 0) {</span>
-<span class="fc" id="L125">					double fc = -excess[v];</span>
-<span class="fc" id="L126">					flow[e] = fc;</span>
-<span class="fc" id="L127">					excess[u] -= fc;</span>
-<span class="fc" id="L128">					excess[v] = 0;</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">			for (int e : range(m)) {</span>
+<span class="fc" id="L118">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">				if (u == v)</span>
+<span class="fc" id="L120">					continue;</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">				if (-excess[v] &gt;= capacity[e]) {</span>
+<span class="fc" id="L122">					flow[e] = capacity[e];</span>
+<span class="fc" id="L123">					excess[u] -= capacity[e];</span>
+<span class="fc" id="L124">					excess[v] += capacity[e];</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">				} else if (excess[v] &lt;= 0) {</span>
+<span class="fc" id="L126">					double fc = -excess[v];</span>
+<span class="fc" id="L127">					flow[e] = fc;</span>
+<span class="fc" id="L128">					excess[u] -= fc;</span>
+<span class="fc" id="L129">					excess[v] = 0;</span>
 				}
-			}
+<span class="fc" id="L131">			}</span>
 
 			/* init labels */
-<span class="fc" id="L133">			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">				if (excess[v] &gt; eps) {</span>
-<span class="fc" id="L136">					label[v] = 1;</span>
-<span class="fc" id="L137">					activate(v);</span>
+<span class="fc" id="L134">			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">				if (excess[v] &gt; eps) {</span>
+<span class="fc" id="L137">					label[v] = 1;</span>
+<span class="fc" id="L138">					activate(v);</span>
 				}
-			}
-<span class="fc" id="L140">		}</span>
+<span class="fc" id="L140">			}</span>
+<span class="fc" id="L141">		}</span>
 
 		IFlow computeCirculation() {
-<span class="fc" id="L143">			final int n = g.vertices().size();</span>
-<span class="fc" id="L144">			final double lowerBound = 0;</span>
+<span class="fc" id="L144">			final int n = g.vertices().size();</span>
+<span class="fc" id="L145">			final double lowerBound = 0;</span>
 
-<span class="fc bfc" id="L146" title="All 2 branches covered.">			mainLoop: for (int act; (act = highestActive()) != -1;) {</span>
-<span class="fc" id="L147">				deactivate(act);</span>
-<span class="fc" id="L148">				double exc = excess[act];</span>
-<span class="pc bnc" id="L149" title="All 2 branches missed.">				assert exc &gt; eps;</span>
-<span class="fc" id="L150">				int actLevel = maxLayerActive;</span>
-<span class="fc" id="L151">				int minLayer = n;</span>
-<span class="fc bfc" id="L152" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(act).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L153">					int e = eit.nextInt();</span>
-<span class="fc" id="L154">					int v = eit.targetInt();</span>
-<span class="fc" id="L155">					double fc = capacity[e] - flow[e];</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">					if (fc &lt;= eps)</span>
-<span class="fc" id="L157">						continue;</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">					if (label[v] &gt;= actLevel) {</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">						if (label[v] &lt; minLayer)</span>
-<span class="fc" id="L160">							minLayer = label[v];</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">			mainLoop: for (int act; (act = highestActive()) != -1;) {</span>
+<span class="fc" id="L148">				deactivate(act);</span>
+<span class="fc" id="L149">				double exc = excess[act];</span>
+<span class="pc bnc" id="L150" title="All 2 branches missed.">				assert exc &gt; eps;</span>
+<span class="fc" id="L151">				int actLevel = maxLayerActive;</span>
+<span class="fc" id="L152">				int minLayer = n;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(act).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L154">					int e = eit.nextInt();</span>
+<span class="fc" id="L155">					int v = eit.targetInt();</span>
+<span class="fc" id="L156">					double fc = capacity[e] - flow[e];</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">					if (fc &lt;= eps)</span>
+<span class="fc" id="L158">						continue;</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">					if (label[v] &gt;= actLevel) {</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">						if (label[v] &lt; minLayer)</span>
+<span class="fc" id="L161">							minLayer = label[v];</span>
 						continue;
 					}
-<span class="fc bfc" id="L163" title="All 2 branches covered.">					if (fc &gt;= exc) {</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">					if (fc &gt;= exc) {</span>
 						/* saturated push */
-<span class="fc" id="L165">						flow[e] += exc;</span>
-<span class="fc" id="L166">						excess[act] = 0;</span>
+<span class="fc" id="L166">						flow[e] += exc;</span>
+<span class="fc" id="L167">						excess[act] = 0;</span>
 
-<span class="fc" id="L168">						excess[v] += exc;</span>
-<span class="fc bfc" id="L169" title="All 4 branches covered.">						if (excess[v] &gt; eps &amp;&amp; excess[v] &lt;= exc + eps)</span>
-<span class="fc" id="L170">							activate(v);</span>
+<span class="fc" id="L169">						excess[v] += exc;</span>
+<span class="fc bfc" id="L170" title="All 4 branches covered.">						if (excess[v] &gt; eps &amp;&amp; excess[v] &lt;= exc + eps)</span>
+<span class="fc" id="L171">							activate(v);</span>
 						continue mainLoop;
 
 					} else {
 						/* non-saturated push */
-<span class="fc" id="L175">						flow[e] = capacity[e];</span>
-<span class="fc" id="L176">						exc -= fc; // no need to update excess[act], it will be updated later</span>
-<span class="fc" id="L177">						excess[v] += fc;</span>
-<span class="fc bfc" id="L178" title="All 4 branches covered.">						if (excess[v] &gt; eps &amp;&amp; excess[v] &lt;= fc + eps)</span>
-<span class="fc" id="L179">							activate(v);</span>
+<span class="fc" id="L176">						flow[e] = capacity[e];</span>
+<span class="fc" id="L177">						exc -= fc; // no need to update excess[act], it will be updated later</span>
+<span class="fc" id="L178">						excess[v] += fc;</span>
+<span class="fc bfc" id="L179" title="All 4 branches covered.">						if (excess[v] &gt; eps &amp;&amp; excess[v] &lt;= fc + eps)</span>
+<span class="fc" id="L180">							activate(v);</span>
 					}
-<span class="fc" id="L181">				}</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(act).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L183">					int e = eit.nextInt();</span>
-<span class="fc" id="L184">					int v = eit.sourceInt();</span>
-<span class="fc" id="L185">					double fc = flow[e] - lowerBound;</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">					if (fc &lt;= eps)</span>
-<span class="fc" id="L187">						continue;</span>
-<span class="fc bfc" id="L188" title="All 2 branches covered.">					if (label[v] &gt;= actLevel) {</span>
-<span class="fc bfc" id="L189" title="All 2 branches covered.">						if (label[v] &lt; minLayer)</span>
-<span class="fc" id="L190">							minLayer = label[v];</span>
+<span class="fc" id="L182">				}</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(act).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L184">					int e = eit.nextInt();</span>
+<span class="fc" id="L185">					int v = eit.sourceInt();</span>
+<span class="fc" id="L186">					double fc = flow[e] - lowerBound;</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">					if (fc &lt;= eps)</span>
+<span class="fc" id="L188">						continue;</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">					if (label[v] &gt;= actLevel) {</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">						if (label[v] &lt; minLayer)</span>
+<span class="fc" id="L191">							minLayer = label[v];</span>
 						continue;
 					}
-<span class="fc bfc" id="L193" title="All 2 branches covered.">					if (fc &gt;= exc) {</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">					if (fc &gt;= exc) {</span>
 						/* saturated push */
-<span class="fc" id="L195">						flow[e] -= exc;</span>
-<span class="fc" id="L196">						excess[act] = 0;</span>
-<span class="fc" id="L197">						excess[v] += exc;</span>
-<span class="fc bfc" id="L198" title="All 4 branches covered.">						if (excess[v] &gt; eps &amp;&amp; excess[v] &lt;= exc + eps)</span>
-<span class="fc" id="L199">							activate(v);</span>
+<span class="fc" id="L196">						flow[e] -= exc;</span>
+<span class="fc" id="L197">						excess[act] = 0;</span>
+<span class="fc" id="L198">						excess[v] += exc;</span>
+<span class="fc bfc" id="L199" title="All 4 branches covered.">						if (excess[v] &gt; eps &amp;&amp; excess[v] &lt;= exc + eps)</span>
+<span class="fc" id="L200">							activate(v);</span>
 						continue mainLoop;
 
 					} else {
 						/* non-saturated push */
-<span class="fc" id="L204">						flow[e] = lowerBound;</span>
-<span class="fc" id="L205">						exc -= fc; // no need to update excess[act], it will be updated later</span>
-<span class="fc" id="L206">						excess[v] += fc;</span>
-<span class="fc bfc" id="L207" title="All 4 branches covered.">						if (excess[v] &gt; eps &amp;&amp; excess[v] &lt;= fc + eps)</span>
-<span class="fc" id="L208">							activate(v);</span>
+<span class="fc" id="L205">						flow[e] = lowerBound;</span>
+<span class="fc" id="L206">						exc -= fc; // no need to update excess[act], it will be updated later</span>
+<span class="fc" id="L207">						excess[v] += fc;</span>
+<span class="fc bfc" id="L208" title="All 4 branches covered.">						if (excess[v] &gt; eps &amp;&amp; excess[v] &lt;= fc + eps)</span>
+<span class="fc" id="L209">							activate(v);</span>
 					}
-<span class="fc" id="L210">				}</span>
+<span class="fc" id="L211">				}</span>
 
-<span class="fc" id="L212">				excess[act] = exc;</span>
-<span class="fc bfc" id="L213" title="All 2 branches covered.">				if (exc &lt;= eps) {</span>
+<span class="fc" id="L213">				excess[act] = exc;</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">				if (exc &lt;= eps) {</span>
 					// deactivate(act);
-<span class="pc bpc" id="L215" title="1 of 2 branches missed.">				} else if (minLayer == n) {</span>
-<span class="nc" id="L216">					throw new IllegalArgumentException(&quot;no valid circulation exists&quot;);</span>
+<span class="pc bpc" id="L216" title="1 of 2 branches missed.">				} else if (minLayer == n) {</span>
+<span class="nc" id="L217">					throw new IllegalArgumentException(&quot;no valid circulation exists&quot;);</span>
 				} else {
-<span class="fc" id="L218">					label[act] = minLayer + 1;</span>
-<span class="fc" id="L219">					activate(act);</span>
+<span class="fc" id="L219">					label[act] = minLayer + 1;</span>
+<span class="fc" id="L220">					activate(act);</span>
 				}
-<span class="fc" id="L221">			}</span>
+<span class="fc" id="L222">			}</span>
 
-<span class="pc bnc" id="L223" title="All 4 branches missed.">			assert g.vertices().intStream().allMatch(v -&gt; excess[v] &lt;= eps);</span>
-<span class="fc bfc" id="L224" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L225">				flow[e] = Math.max(0, Math.min(flow[e], capacityOrig.weight(e)));</span>
-<span class="fc" id="L226">			return new Flows.FlowImpl(g, flow);</span>
+<span class="pc bnc" id="L224" title="All 4 branches missed.">			assert g.vertices().intStream().allMatch(v -&gt; excess[v] &lt;= eps);</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">			for (int e : range(g.edges().size()))</span>
+<span class="fc" id="L226">				flow[e] = Math.max(0, Math.min(flow[e], capacityOrig.weight(e)));</span>
+<span class="fc" id="L227">			return new Flows.FlowImpl(g, flow);</span>
 		}
 	}
 
-<span class="fc" id="L230">	private static class WorkerInt extends Worker {</span>
+<span class="fc" id="L231">	private static class WorkerInt extends Worker {</span>
 
 		final int[] capacity;
 		final int[] flow;
 		final int[] excess;
 
 		WorkerInt(IndexGraph g, IWeightFunctionInt capacityOrig, IWeightFunctionInt supply) {
-<span class="fc" id="L237">			super(g, capacityOrig, supply);</span>
+<span class="fc" id="L238">			super(g, capacityOrig, supply);</span>
 
-<span class="fc" id="L239">			final int n = g.vertices().size();</span>
-<span class="fc" id="L240">			final int m = g.edges().size();</span>
+<span class="fc" id="L240">			final int n = g.vertices().size();</span>
+<span class="fc" id="L241">			final int m = g.edges().size();</span>
 
-<span class="fc" id="L242">			flow = new int[m];</span>
-<span class="fc" id="L243">			capacity = new int[m];</span>
-<span class="fc bfc" id="L244" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L245">				capacity[e] = capacityOrig.weightInt(e);</span>
+<span class="fc" id="L243">			flow = new int[m];</span>
+<span class="fc" id="L244">			capacity = new int[m];</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">			for (int e : range(m))</span>
+<span class="fc" id="L246">				capacity[e] = capacityOrig.weightInt(e);</span>
 
-<span class="fc" id="L247">			excess = new int[n];</span>
-<span class="fc" id="L248">			int excessSum = 0;</span>
-<span class="fc bfc" id="L249" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L250">				excessSum += excess[v] = supply.weightInt(v);</span>
-<span class="pc bpc" id="L251" title="1 of 2 branches missed.">			if (excessSum != 0)</span>
-<span class="nc" id="L252">				throw new IllegalArgumentException(&quot;sum of supply is not zero&quot;);</span>
+<span class="fc" id="L248">			excess = new int[n];</span>
+<span class="fc" id="L249">			int excessSum = 0;</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">			for (int v : range(n))</span>
+<span class="fc" id="L251">				excessSum += excess[v] = supply.weightInt(v);</span>
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">			if (excessSum != 0)</span>
+<span class="nc" id="L253">				throw new IllegalArgumentException(&quot;sum of supply is not zero&quot;);</span>
 
 			/* init greedily */
-<span class="fc bfc" id="L255" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L256">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L257" title="All 2 branches covered.">				if (u == v)</span>
-<span class="fc" id="L258">					continue;</span>
-<span class="fc bfc" id="L259" title="All 2 branches covered.">				if (-excess[v] &gt;= capacity[e]) {</span>
-<span class="fc" id="L260">					flow[e] = capacity[e];</span>
-<span class="fc" id="L261">					excess[u] -= capacity[e];</span>
-<span class="fc" id="L262">					excess[v] += capacity[e];</span>
-<span class="fc bfc" id="L263" title="All 2 branches covered.">				} else if (excess[v] &lt;= 0) {</span>
-<span class="fc" id="L264">					int fc = -excess[v];</span>
-<span class="fc" id="L265">					flow[e] = fc;</span>
-<span class="fc" id="L266">					excess[u] -= fc;</span>
-<span class="fc" id="L267">					excess[v] = 0;</span>
+<span class="fc bfc" id="L256" title="All 2 branches covered.">			for (int e : range(m)) {</span>
+<span class="fc" id="L257">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">				if (u == v)</span>
+<span class="fc" id="L259">					continue;</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">				if (-excess[v] &gt;= capacity[e]) {</span>
+<span class="fc" id="L261">					flow[e] = capacity[e];</span>
+<span class="fc" id="L262">					excess[u] -= capacity[e];</span>
+<span class="fc" id="L263">					excess[v] += capacity[e];</span>
+<span class="fc bfc" id="L264" title="All 2 branches covered.">				} else if (excess[v] &lt;= 0) {</span>
+<span class="fc" id="L265">					int fc = -excess[v];</span>
+<span class="fc" id="L266">					flow[e] = fc;</span>
+<span class="fc" id="L267">					excess[u] -= fc;</span>
+<span class="fc" id="L268">					excess[v] = 0;</span>
 				}
-			}
+<span class="fc" id="L270">			}</span>
 
 			/* init labels */
-<span class="fc" id="L272">			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);</span>
-<span class="fc bfc" id="L273" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc bfc" id="L274" title="All 2 branches covered.">				if (excess[v] &gt; 0) {</span>
-<span class="fc" id="L275">					label[v] = 1;</span>
-<span class="fc" id="L276">					activate(v);</span>
+<span class="fc" id="L273">			Arrays.fill(layersHeadActive, LinkedListFixedSize.None);</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc bfc" id="L275" title="All 2 branches covered.">				if (excess[v] &gt; 0) {</span>
+<span class="fc" id="L276">					label[v] = 1;</span>
+<span class="fc" id="L277">					activate(v);</span>
 				}
-			}
-<span class="fc" id="L279">		}</span>
+<span class="fc" id="L279">			}</span>
+<span class="fc" id="L280">		}</span>
 
 		IFlow computeCirculation() {
-<span class="fc" id="L282">			final int n = g.vertices().size();</span>
-<span class="fc" id="L283">			final int lowerBound = 0;</span>
+<span class="fc" id="L283">			final int n = g.vertices().size();</span>
+<span class="fc" id="L284">			final int lowerBound = 0;</span>
 
-<span class="fc bfc" id="L285" title="All 2 branches covered.">			mainLoop: for (int act; (act = highestActive()) != -1;) {</span>
-<span class="fc" id="L286">				deactivate(act);</span>
-<span class="fc" id="L287">				int exc = excess[act];</span>
-<span class="pc bnc" id="L288" title="All 2 branches missed.">				assert exc &gt; 0;</span>
-<span class="fc" id="L289">				int actLevel = maxLayerActive;</span>
-<span class="fc" id="L290">				int minLayer = n;</span>
-<span class="fc bfc" id="L291" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(act).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L292">					int e = eit.nextInt();</span>
-<span class="fc" id="L293">					int v = eit.targetInt();</span>
-<span class="fc" id="L294">					int fc = capacity[e] - flow[e];</span>
-<span class="fc bfc" id="L295" title="All 2 branches covered.">					if (fc &lt;= 0)</span>
-<span class="fc" id="L296">						continue;</span>
-<span class="fc bfc" id="L297" title="All 2 branches covered.">					if (label[v] &gt;= actLevel) {</span>
-<span class="fc bfc" id="L298" title="All 2 branches covered.">						if (label[v] &lt; minLayer)</span>
-<span class="fc" id="L299">							minLayer = label[v];</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">			mainLoop: for (int act; (act = highestActive()) != -1;) {</span>
+<span class="fc" id="L287">				deactivate(act);</span>
+<span class="fc" id="L288">				int exc = excess[act];</span>
+<span class="pc bnc" id="L289" title="All 2 branches missed.">				assert exc &gt; 0;</span>
+<span class="fc" id="L290">				int actLevel = maxLayerActive;</span>
+<span class="fc" id="L291">				int minLayer = n;</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(act).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L293">					int e = eit.nextInt();</span>
+<span class="fc" id="L294">					int v = eit.targetInt();</span>
+<span class="fc" id="L295">					int fc = capacity[e] - flow[e];</span>
+<span class="fc bfc" id="L296" title="All 2 branches covered.">					if (fc &lt;= 0)</span>
+<span class="fc" id="L297">						continue;</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">					if (label[v] &gt;= actLevel) {</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">						if (label[v] &lt; minLayer)</span>
+<span class="fc" id="L300">							minLayer = label[v];</span>
 						continue;
 					}
-<span class="fc bfc" id="L302" title="All 2 branches covered.">					if (fc &gt;= exc) {</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">					if (fc &gt;= exc) {</span>
 						/* saturated push */
-<span class="fc" id="L304">						flow[e] += exc;</span>
-<span class="fc" id="L305">						excess[act] = 0;</span>
+<span class="fc" id="L305">						flow[e] += exc;</span>
+<span class="fc" id="L306">						excess[act] = 0;</span>
 
-<span class="fc" id="L307">						excess[v] += exc;</span>
-<span class="fc bfc" id="L308" title="All 4 branches covered.">						if (excess[v] &gt; 0 &amp;&amp; excess[v] &lt;= exc)</span>
-<span class="fc" id="L309">							activate(v);</span>
+<span class="fc" id="L308">						excess[v] += exc;</span>
+<span class="fc bfc" id="L309" title="All 4 branches covered.">						if (excess[v] &gt; 0 &amp;&amp; excess[v] &lt;= exc)</span>
+<span class="fc" id="L310">							activate(v);</span>
 						continue mainLoop;
 
 					} else {
 						/* non-saturated push */
-<span class="fc" id="L314">						flow[e] = capacity[e];</span>
-<span class="fc" id="L315">						exc -= fc; // no need to update excess[act], it will be updated later</span>
-<span class="fc" id="L316">						excess[v] += fc;</span>
-<span class="fc bfc" id="L317" title="All 4 branches covered.">						if (excess[v] &gt; 0 &amp;&amp; excess[v] &lt;= fc)</span>
-<span class="fc" id="L318">							activate(v);</span>
+<span class="fc" id="L315">						flow[e] = capacity[e];</span>
+<span class="fc" id="L316">						exc -= fc; // no need to update excess[act], it will be updated later</span>
+<span class="fc" id="L317">						excess[v] += fc;</span>
+<span class="fc bfc" id="L318" title="All 4 branches covered.">						if (excess[v] &gt; 0 &amp;&amp; excess[v] &lt;= fc)</span>
+<span class="fc" id="L319">							activate(v);</span>
 					}
-<span class="fc" id="L320">				}</span>
-<span class="fc bfc" id="L321" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(act).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L322">					int e = eit.nextInt();</span>
-<span class="fc" id="L323">					int v = eit.sourceInt();</span>
-<span class="fc" id="L324">					int fc = flow[e] - lowerBound;</span>
-<span class="fc bfc" id="L325" title="All 2 branches covered.">					if (fc &lt;= 0)</span>
-<span class="fc" id="L326">						continue;</span>
-<span class="fc bfc" id="L327" title="All 2 branches covered.">					if (label[v] &gt;= actLevel) {</span>
-<span class="fc bfc" id="L328" title="All 2 branches covered.">						if (label[v] &lt; minLayer)</span>
-<span class="fc" id="L329">							minLayer = label[v];</span>
+<span class="fc" id="L321">				}</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">				for (IEdgeIter eit = g.inEdges(act).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L323">					int e = eit.nextInt();</span>
+<span class="fc" id="L324">					int v = eit.sourceInt();</span>
+<span class="fc" id="L325">					int fc = flow[e] - lowerBound;</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">					if (fc &lt;= 0)</span>
+<span class="fc" id="L327">						continue;</span>
+<span class="fc bfc" id="L328" title="All 2 branches covered.">					if (label[v] &gt;= actLevel) {</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">						if (label[v] &lt; minLayer)</span>
+<span class="fc" id="L330">							minLayer = label[v];</span>
 						continue;
 					}
-<span class="fc bfc" id="L332" title="All 2 branches covered.">					if (fc &gt;= exc) {</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">					if (fc &gt;= exc) {</span>
 						/* saturated push */
-<span class="fc" id="L334">						flow[e] -= exc;</span>
-<span class="fc" id="L335">						excess[act] = 0;</span>
-<span class="fc" id="L336">						excess[v] += exc;</span>
-<span class="fc bfc" id="L337" title="All 4 branches covered.">						if (excess[v] &gt; 0 &amp;&amp; excess[v] &lt;= exc)</span>
-<span class="fc" id="L338">							activate(v);</span>
+<span class="fc" id="L335">						flow[e] -= exc;</span>
+<span class="fc" id="L336">						excess[act] = 0;</span>
+<span class="fc" id="L337">						excess[v] += exc;</span>
+<span class="fc bfc" id="L338" title="All 4 branches covered.">						if (excess[v] &gt; 0 &amp;&amp; excess[v] &lt;= exc)</span>
+<span class="fc" id="L339">							activate(v);</span>
 						continue mainLoop;
 
 					} else {
 						/* non-saturated push */
-<span class="fc" id="L343">						flow[e] = lowerBound;</span>
-<span class="fc" id="L344">						exc -= fc; // no need to update excess[act], it will be updated later</span>
-<span class="fc" id="L345">						excess[v] += fc;</span>
-<span class="fc bfc" id="L346" title="All 4 branches covered.">						if (excess[v] &gt; 0 &amp;&amp; excess[v] &lt;= fc)</span>
-<span class="fc" id="L347">							activate(v);</span>
+<span class="fc" id="L344">						flow[e] = lowerBound;</span>
+<span class="fc" id="L345">						exc -= fc; // no need to update excess[act], it will be updated later</span>
+<span class="fc" id="L346">						excess[v] += fc;</span>
+<span class="fc bfc" id="L347" title="All 4 branches covered.">						if (excess[v] &gt; 0 &amp;&amp; excess[v] &lt;= fc)</span>
+<span class="fc" id="L348">							activate(v);</span>
 					}
-<span class="fc" id="L349">				}</span>
+<span class="fc" id="L350">				}</span>
 
-<span class="fc" id="L351">				excess[act] = exc;</span>
-<span class="pc bpc" id="L352" title="1 of 2 branches missed.">				if (exc &lt;= 0) {</span>
+<span class="fc" id="L352">				excess[act] = exc;</span>
+<span class="pc bpc" id="L353" title="1 of 2 branches missed.">				if (exc &lt;= 0) {</span>
 					// deactivate(act);
-<span class="pc bpc" id="L354" title="1 of 2 branches missed.">				} else if (minLayer == n) {</span>
-<span class="nc" id="L355">					throw new IllegalArgumentException(&quot;no valid circulation exists&quot;);</span>
+<span class="pc bpc" id="L355" title="1 of 2 branches missed.">				} else if (minLayer == n) {</span>
+<span class="nc" id="L356">					throw new IllegalArgumentException(&quot;no valid circulation exists&quot;);</span>
 				} else {
-<span class="fc" id="L357">					label[act] = minLayer + 1;</span>
-<span class="fc" id="L358">					activate(act);</span>
+<span class="fc" id="L358">					label[act] = minLayer + 1;</span>
+<span class="fc" id="L359">					activate(act);</span>
 				}
-<span class="fc" id="L360">			}</span>
+<span class="fc" id="L361">			}</span>
 
-<span class="fc" id="L362">			double[] flow0 = new double[flow.length];</span>
-<span class="pc bnc" id="L363" title="All 4 branches missed.">			assert g.vertices().intStream().allMatch(v -&gt; excess[v] == 0);</span>
-<span class="fc bfc" id="L364" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L365">				flow0[e] = flow[e];</span>
-<span class="fc" id="L366">			return new Flows.FlowImpl(g, flow0);</span>
+<span class="fc" id="L363">			double[] flow0 = new double[flow.length];</span>
+<span class="pc bnc" id="L364" title="All 4 branches missed.">			assert g.vertices().intStream().allMatch(v -&gt; excess[v] == 0);</span>
+<span class="fc bfc" id="L365" title="All 2 branches covered.">			for (int e : range(g.edges().size()))</span>
+<span class="fc" id="L366">				flow0[e] = flow[e];</span>
+<span class="fc" id="L367">			return new Flows.FlowImpl(g, flow0);</span>
 		}
 	}
 

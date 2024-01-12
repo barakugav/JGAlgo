@@ -304,24 +304,24 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="nc" id="L304">			return false;</span>
 
 <span class="fc" id="L306">		TreePathMaxima.IQueries queries = TreePathMaxima.IQueries.newInstance();</span>
-<span class="fc bfc" id="L307" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">		for (int e : range(g.edges().size())) {</span>
 <span class="fc" id="L308">			int u = g.edgeSource(e);</span>
 <span class="fc" id="L309">			int v = g.edgeTarget(e);</span>
 <span class="fc bfc" id="L310" title="All 2 branches covered.">			if (u != v)</span>
 <span class="fc" id="L311">				queries.addQuery(u, v);</span>
-		}
+<span class="fc" id="L312">		}</span>
 <span class="fc" id="L313">		IWeightFunction w0 = e -&gt; mstWeights[e];</span>
 <span class="fc" id="L314">		TreePathMaxima.IResult tpmResults =</span>
 <span class="fc" id="L315">				(TreePathMaxima.IResult) tpmAlgo.computeHeaviestEdgeInTreePaths(mst, w0, queries);</span>
 
 <span class="fc" id="L317">		int i = 0;</span>
-<span class="fc bfc" id="L318" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">		for (int e : range(g.edges().size())) {</span>
 <span class="fc bfc" id="L319" title="All 2 branches covered.">			if (g.edgeSource(e) == g.edgeTarget(e))</span>
 <span class="fc" id="L320">				continue;</span>
 <span class="fc" id="L321">			int mstEdge = tpmResults.getHeaviestEdgeInt(i++);</span>
 <span class="pc bpc" id="L322" title="1 of 4 branches missed.">			if (mstEdge == -1 || w.weight(e) &lt; mstWeights[mstEdge])</span>
 <span class="fc" id="L323">				return false;</span>
-		}
+<span class="fc" id="L324">		}</span>
 <span class="fc" id="L325">		return true;</span>
 	}
 

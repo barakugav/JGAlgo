@@ -32,7 +32,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
-<span class="fc" id="L35">class DfsIterImpl implements Dfs.IntIter {</span>
+<span class="fc" id="L35">class DfsIterImpl implements DfsIter.Int {</span>
 
 	private final IndexGraph g;
 	private final Bitmap visited;
@@ -116,13 +116,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 <span class="fc" id="L116">		return edgePathView;</span>
 	}
 
-	static class IntDfsFromIndexDfs implements Dfs.IntIter {
+	static class IntDfsFromIndexDfs implements DfsIter.Int {
 
-		private final Dfs.IntIter indexIter;
+		private final DfsIter.Int indexIter;
 		private final IndexIntIdMap viMap;
 		private final IndexIntIdMap eiMap;
 
-<span class="fc" id="L125">		IntDfsFromIndexDfs(IntGraph g, Dfs.IntIter indexIter) {</span>
+<span class="fc" id="L125">		IntDfsFromIndexDfs(IntGraph g, DfsIter.Int indexIter) {</span>
 <span class="fc" id="L126">			this.indexIter = Objects.requireNonNull(indexIter);</span>
 <span class="fc" id="L127">			this.viMap = g.indexGraphVerticesMap();</span>
 <span class="fc" id="L128">			this.eiMap = g.indexGraphEdgesMap();</span>
@@ -144,13 +144,13 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 		}
 	}
 
-	static class ObjDfsFromIndexDfs&lt;V, E&gt; implements Dfs.Iter&lt;V, E&gt; {
+	static class ObjDfsFromIndexDfs&lt;V, E&gt; implements DfsIter&lt;V, E&gt; {
 
-		private final Dfs.IntIter indexIter;
+		private final DfsIter.Int indexIter;
 		private final IndexIdMap&lt;V&gt; viMap;
 		private final IndexIdMap&lt;E&gt; eiMap;
 
-<span class="fc" id="L153">		ObjDfsFromIndexDfs(Graph&lt;V, E&gt; g, Dfs.IntIter indexIter) {</span>
+<span class="fc" id="L153">		ObjDfsFromIndexDfs(Graph&lt;V, E&gt; g, DfsIter.Int indexIter) {</span>
 <span class="fc" id="L154">			this.indexIter = Objects.requireNonNull(indexIter);</span>
 <span class="fc" id="L155">			this.viMap = g.indexGraphVerticesMap();</span>
 <span class="fc" id="L156">			this.eiMap = g.indexGraphEdgesMap();</span>

@@ -65,18 +65,18 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="fc bfc" id="L66" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
 <span class="fc" id="L67">			IntGraph g0 = (IntGraph) g;</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">			for (int e : range(m)) {</span>
 <span class="fc" id="L69">				int u = g0.edgeSource(e);</span>
 <span class="fc" id="L70">				int v = g0.edgeTarget(e);</span>
 <span class="fc" id="L71">				setEdgeEndpoints(e, u, v);</span>
-			}
+<span class="fc" id="L72">			}</span>
 <span class="fc" id="L73">		} else {</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			for (int e : range(m)) {</span>
 <span class="fc" id="L75">				Integer e0 = Integer.valueOf(e);</span>
 <span class="fc" id="L76">				int u = g.edgeSource(e0).intValue();</span>
 <span class="fc" id="L77">				int v = g.edgeTarget(e0).intValue();</span>
 <span class="fc" id="L78">				setEdgeEndpoints(e, u, v);</span>
-			}
+<span class="fc" id="L79">			}</span>
 		}
 
 <span class="fc" id="L82">		verticesUserWeights = new WeightsImpl.IndexMutable.Manager(vertices.size(), false);</span>
@@ -211,11 +211,11 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="fc" id="L212">			this.edges.addAll(edges.size());</span>
 <span class="fc" id="L213">			ensureEdgeCapacity(this.edges.size);</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">			for (int eIdx = 0; eIdx &lt; newEdgesEndpoints.length / 2; eIdx++) {</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">			for (int eIdx : range(newEdgesEndpoints.length / 2)) {</span>
 <span class="fc" id="L215">				int source = newEdgesEndpoints[eIdx * 2 + 0];</span>
 <span class="fc" id="L216">				int target = newEdgesEndpoints[eIdx * 2 + 1];</span>
 <span class="fc" id="L217">				setEdgeEndpoints(currentNum + eIdx, source, target);</span>
-			}
+<span class="fc" id="L218">			}</span>
 		}
 <span class="fc" id="L220">	}</span>
 

@@ -52,7 +52,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L52">		int startVertex = -1;</span>
 <span class="fc" id="L53">		boolean startVertexNeighborsIsOut = false;</span>
 <span class="fc bfc" id="L54" title="All 2 branches covered.">		if (g.isDirected()) {</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">			for (int v : range(n)) {</span>
 <span class="fc" id="L56">				IntList vNeighbors = neighbors.outNeighbors(v);</span>
 <span class="fc bfc" id="L57" title="All 2 branches covered.">				if (minCutSize &gt; vNeighbors.size()) {</span>
 <span class="fc" id="L58">					minCutSize = vNeighbors.size();</span>
@@ -65,16 +65,16 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L65">					startVertexNeighborsIsOut = false;</span>
 <span class="fc" id="L66">					startVertex = v;</span>
 				}
-			}
+<span class="fc" id="L68">			}</span>
 		} else {
-<span class="fc bfc" id="L70" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">			for (int v : range(n)) {</span>
 <span class="fc" id="L71">				IntList vNeighbors = neighbors.outNeighbors(v);</span>
 <span class="fc bfc" id="L72" title="All 2 branches covered.">				if (minCutSize &gt; vNeighbors.size()) {</span>
 <span class="fc" id="L73">					minCutSize = vNeighbors.size();</span>
 <span class="fc" id="L74">					startVertexNeighborsIsOut = true;</span>
 <span class="fc" id="L75">					startVertex = v;</span>
 				}
-			}
+<span class="fc" id="L77">			}</span>
 		}
 <span class="fc bfc" id="L79" title="All 2 branches covered.">		if (startVertex == -1) {</span>
 			/* the graph is a clique, we can disconnect it only by removing n-1 vertices */
@@ -89,7 +89,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="fc" id="L90">		IntList startVertexNeighbors = neighbors.neighbors(startVertex);</span>
 
-<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int v : range(n)) {</span>
 <span class="fc bfc" id="L93" title="All 4 branches covered.">			if (v == startVertex || startVertexNeighbors.contains(v))</span>
 <span class="fc" id="L94">				continue;</span>
 <span class="fc" id="L95">			int[] cut = minCutStAlgo.computeMinCut(g, startVertex, v, auxiliaryGraph);</span>
@@ -97,20 +97,21 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L97">				minCutSize = cut.length;</span>
 <span class="fc" id="L98">				minCut = cut;</span>
 			}
-		}
+<span class="fc" id="L100">		}</span>
 
-<span class="fc bfc" id="L102" title="All 2 branches covered.">		for (int d = startVertexNeighbors.size(), i = 0; i &lt; d - 1; i++) { // should be up to d - 1</span>
-<span class="fc bfc" id="L103" title="All 2 branches covered.">			for (int j = i + 1; j &lt; d; j++) { // should be up to d - 1</span>
-<span class="fc" id="L104">				int u = startVertexNeighbors.getInt(i), v = startVertexNeighbors.getInt(j);</span>
-<span class="fc" id="L105">				int[] cut = minCutStAlgo.computeMinCut(g, u, v, auxiliaryGraph);</span>
-<span class="pc bpc" id="L106" title="1 of 4 branches missed.">				if (cut != null &amp;&amp; minCutSize &gt; cut.length) {</span>
-<span class="nc" id="L107">					minCutSize = cut.length;</span>
-<span class="nc" id="L108">					minCut = cut;</span>
+<span class="fc" id="L102">		int d = startVertexNeighbors.size();</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">		for (int i : range(d - 1)) { // should be up to d - 1</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			for (int j : range(i + 1, d)) { // should be up to d - 1</span>
+<span class="fc" id="L105">				int u = startVertexNeighbors.getInt(i), v = startVertexNeighbors.getInt(j);</span>
+<span class="fc" id="L106">				int[] cut = minCutStAlgo.computeMinCut(g, u, v, auxiliaryGraph);</span>
+<span class="pc bpc" id="L107" title="1 of 4 branches missed.">				if (cut != null &amp;&amp; minCutSize &gt; cut.length) {</span>
+<span class="nc" id="L108">					minCutSize = cut.length;</span>
+<span class="nc" id="L109">					minCut = cut;</span>
 				}
-			}
-		}
+<span class="fc" id="L111">			}</span>
+<span class="fc" id="L112">		}</span>
 
-<span class="fc" id="L113">		return ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, minCut));</span>
+<span class="fc" id="L114">		return ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, minCut));</span>
 	}
 
 	private static class Neighbors {
@@ -118,62 +119,62 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 		private final Bitmap neighborsBitmap;
 		private final IntList neighborsList;
 
-<span class="fc" id="L121">		Neighbors(IndexGraph g) {</span>
-<span class="fc" id="L122">			this.g = g;</span>
-<span class="fc" id="L123">			final int n = g.vertices().size();</span>
-<span class="fc" id="L124">			neighborsBitmap = new Bitmap(n);</span>
-<span class="fc" id="L125">			neighborsList = new IntArrayList();</span>
-<span class="fc" id="L126">		}</span>
+<span class="fc" id="L122">		Neighbors(IndexGraph g) {</span>
+<span class="fc" id="L123">			this.g = g;</span>
+<span class="fc" id="L124">			final int n = g.vertices().size();</span>
+<span class="fc" id="L125">			neighborsBitmap = new Bitmap(n);</span>
+<span class="fc" id="L126">			neighborsList = new IntArrayList();</span>
+<span class="fc" id="L127">		}</span>
 
 		IntList outNeighbors(int source) {
-<span class="fc" id="L129">			neighborsList.clear();</span>
-<span class="fc" id="L130">			neighborsBitmap.set(source);</span>
-<span class="fc" id="L131">			addOutNeighbors(source);</span>
-<span class="fc" id="L132">			neighborsBitmap.clear(source);</span>
-<span class="fc" id="L133">			neighborsBitmap.clearAllUnsafe(neighborsList);</span>
-<span class="fc" id="L134">			return neighborsList;</span>
+<span class="fc" id="L130">			neighborsList.clear();</span>
+<span class="fc" id="L131">			neighborsBitmap.set(source);</span>
+<span class="fc" id="L132">			addOutNeighbors(source);</span>
+<span class="fc" id="L133">			neighborsBitmap.clear(source);</span>
+<span class="fc" id="L134">			neighborsBitmap.clearAllUnsafe(neighborsList);</span>
+<span class="fc" id="L135">			return neighborsList;</span>
 		}
 
 		IntList inNeighbors(int target) {
-<span class="fc" id="L138">			neighborsList.clear();</span>
-<span class="fc" id="L139">			neighborsBitmap.set(target);</span>
-<span class="fc" id="L140">			addInNeighbors(target);</span>
-<span class="fc" id="L141">			neighborsBitmap.clear(target);</span>
-<span class="fc" id="L142">			neighborsBitmap.clearAllUnsafe(neighborsList);</span>
-<span class="fc" id="L143">			return neighborsList;</span>
+<span class="fc" id="L139">			neighborsList.clear();</span>
+<span class="fc" id="L140">			neighborsBitmap.set(target);</span>
+<span class="fc" id="L141">			addInNeighbors(target);</span>
+<span class="fc" id="L142">			neighborsBitmap.clear(target);</span>
+<span class="fc" id="L143">			neighborsBitmap.clearAllUnsafe(neighborsList);</span>
+<span class="fc" id="L144">			return neighborsList;</span>
 		}
 
 		private void addOutNeighbors(int source) {
-<span class="fc bfc" id="L147" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L148">				eit.nextInt();</span>
-<span class="fc" id="L149">				int v = eit.targetInt();</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">				if (!neighborsBitmap.get(v)) {</span>
-<span class="fc" id="L151">					neighborsBitmap.set(v);</span>
-<span class="fc" id="L152">					neighborsList.add(v);</span>
+<span class="fc bfc" id="L148" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L149">				eit.nextInt();</span>
+<span class="fc" id="L150">				int v = eit.targetInt();</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">				if (!neighborsBitmap.get(v)) {</span>
+<span class="fc" id="L152">					neighborsBitmap.set(v);</span>
+<span class="fc" id="L153">					neighborsList.add(v);</span>
 				}
-<span class="fc" id="L154">			}</span>
-<span class="fc" id="L155">		}</span>
+<span class="fc" id="L155">			}</span>
+<span class="fc" id="L156">		}</span>
 
 		private void addInNeighbors(int target) {
-<span class="fc bfc" id="L158" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(target).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L159">				eit.nextInt();</span>
-<span class="fc" id="L160">				int u = eit.sourceInt();</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">				if (!neighborsBitmap.get(u)) {</span>
-<span class="fc" id="L162">					neighborsBitmap.set(u);</span>
-<span class="fc" id="L163">					neighborsList.add(u);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">			for (IEdgeIter eit = g.inEdges(target).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L160">				eit.nextInt();</span>
+<span class="fc" id="L161">				int u = eit.sourceInt();</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">				if (!neighborsBitmap.get(u)) {</span>
+<span class="fc" id="L163">					neighborsBitmap.set(u);</span>
+<span class="fc" id="L164">					neighborsList.add(u);</span>
 				}
-<span class="fc" id="L165">			}</span>
-<span class="fc" id="L166">		}</span>
+<span class="fc" id="L166">			}</span>
+<span class="fc" id="L167">		}</span>
 
 		IntList neighbors(int vertex) {
-<span class="fc" id="L169">			neighborsList.clear();</span>
-<span class="fc" id="L170">			neighborsBitmap.set(vertex);</span>
-<span class="fc" id="L171">			addOutNeighbors(vertex);</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">			if (g.isDirected())</span>
-<span class="fc" id="L173">				addInNeighbors(vertex);</span>
-<span class="fc" id="L174">			neighborsBitmap.clear(vertex);</span>
-<span class="fc" id="L175">			neighborsBitmap.clearAllUnsafe(neighborsList);</span>
-<span class="fc" id="L176">			return neighborsList;</span>
+<span class="fc" id="L170">			neighborsList.clear();</span>
+<span class="fc" id="L171">			neighborsBitmap.set(vertex);</span>
+<span class="fc" id="L172">			addOutNeighbors(vertex);</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">			if (g.isDirected())</span>
+<span class="fc" id="L174">				addInNeighbors(vertex);</span>
+<span class="fc" id="L175">			neighborsBitmap.clear(vertex);</span>
+<span class="fc" id="L176">			neighborsBitmap.clearAllUnsafe(neighborsList);</span>
+<span class="fc" id="L177">			return neighborsList;</span>
 		}
 	}
 

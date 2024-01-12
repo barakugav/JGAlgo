@@ -26,8 +26,8 @@ import java.util.function.IntPredicate;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.IntAdapters;
-import com.jgalgo.internal.util.Range;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
+import com.jgalgo.internal.util.Range;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -92,7 +92,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 
 <span class="fc" id="L93">			final int m = edges.size();</span>
 <span class="fc" id="L94">			edgeEndpointsContainer = newEdgesLongContainer(DefaultEndpoints, newArr -&gt; edgeEndpoints = newArr);</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">			for (int e : range(m))</span>
 <span class="fc" id="L96">				setEndpoints(e, g.edgeSource(e), g.edgeTarget(e));</span>
 		}
 
@@ -117,7 +117,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L117">		final int m = edges.size();</span>
 <span class="fc" id="L118">		edgeEndpointsContainer = newEdgesLongContainer(DefaultEndpoints, newArr -&gt; edgeEndpoints = newArr);</span>
 
-<span class="fc bfc" id="L120" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		for (int e : range(m))</span>
 <span class="fc" id="L121">			setEndpoints(e, builder.edgeSource(e), builder.edgeTarget(e));</span>
 
 <span class="fc bfc" id="L123" title="All 2 branches covered.">		if (!capabilities.isAllowSelfEdges)</span>
@@ -735,7 +735,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L735">	}</span>
 
 	private boolean checkNoSelfEdges() {
-<span class="fc bfc" id="L738" title="All 2 branches covered.">		for (int m = edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L738" title="All 2 branches covered.">		for (int e : range(edges().size()))</span>
 <span class="fc bfc" id="L739" title="All 2 branches covered.">			if (source(e) == target(e))</span>
 <span class="fc" id="L740">				throw new IllegalArgumentException(&quot;Self edges are not allowed&quot;);</span>
 <span class="fc" id="L741">		return true;</span>

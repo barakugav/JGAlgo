@@ -85,7 +85,7 @@ class MinimumCostFlows {
 			/* Solve the reduction problem with only supply without edges lower bounds */
 <span class="fc" id="L86">			IFlow flow0 = computeMinCostFlow(g, capacity, cost, supply2);</span>
 <span class="fc" id="L87">			double[] flow = new double[g.edges().size()];</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			for (int e : range(g.edges().size()))</span>
 <span class="fc" id="L89">				flow[e] = flow0.getFlow(e) + lowerBound.weight(e);</span>
 <span class="fc" id="L90">			return new Flows.FlowImpl(g, flow);</span>
 		}
@@ -95,7 +95,7 @@ class MinimumCostFlows {
 <span class="fc" id="L95">				return hugeCostLong(g, (IWeightFunctionInt) cost);</span>
 
 <span class="fc" id="L97">			double costSum = 0;</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">			for (int e : range(g.edges().size()))</span>
 <span class="fc" id="L99">				costSum += Math.abs(cost.weight(e));</span>
 <span class="fc" id="L100">			return 1 + costSum;</span>
 		}
@@ -110,7 +110,7 @@ class MinimumCostFlows {
 
 		private static long hugeCostLong(IndexGraph g, IWeightFunctionInt cost) {
 <span class="fc" id="L112">			long costSum = 0;</span>
-<span class="fc bfc" id="L113" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">			for (int e : range(g.edges().size()))</span>
 <span class="fc" id="L114">				costSum += Math.abs(cost.weightInt(e));</span>
 <span class="fc" id="L115">			return costSum + 1;</span>
 		}
@@ -128,18 +128,18 @@ class MinimumCostFlows {
 
 <span class="fc" id="L129">			IWeightsDouble supply2 = IWeights.createExternalVerticesWeights(g, double.class);</span>
 <span class="fc bfc" id="L130" title="All 2 branches covered.">			if (supply != null) {</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">				for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">				for (int v : range(g.vertices().size()))</span>
 <span class="fc" id="L132">					supply2.set(v, supply.weight(v));</span>
 			}
 <span class="pc bpc" id="L134" title="1 of 2 branches missed.">			if (lowerBound != null) {</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">				for (int e : range(g.edges().size())) {</span>
 <span class="fc" id="L136">					double l = lowerBound.weight(e);</span>
 <span class="fc bfc" id="L137" title="All 2 branches covered.">					if (l == 0)</span>
 <span class="fc" id="L138">						continue;</span>
 <span class="fc" id="L139">					int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc" id="L140">					supply2.set(u, supply2.get(u) - l);</span>
 <span class="fc" id="L141">					supply2.set(v, supply2.get(v) + l);</span>
-				}
+<span class="fc" id="L142">				}</span>
 			}
 <span class="fc" id="L144">			return supply2;</span>
 		}
@@ -148,18 +148,18 @@ class MinimumCostFlows {
 				IWeightFunctionInt lowerBound, IWeightFunctionInt supply) {
 <span class="fc" id="L149">			IWeightsInt supply2 = IWeights.createExternalVerticesWeights(g, int.class);</span>
 <span class="fc bfc" id="L150" title="All 2 branches covered.">			if (supply != null) {</span>
-<span class="fc bfc" id="L151" title="All 2 branches covered.">				for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">				for (int v : range(g.vertices().size()))</span>
 <span class="fc" id="L152">					supply2.set(v, supply.weightInt(v));</span>
 			}
 <span class="pc bpc" id="L154" title="1 of 2 branches missed.">			if (lowerBound != null) {</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">				for (int e : range(g.edges().size())) {</span>
 <span class="fc" id="L156">					int l = lowerBound.weightInt(e);</span>
 <span class="fc bfc" id="L157" title="All 2 branches covered.">					if (l == 0)</span>
 <span class="fc" id="L158">						continue;</span>
 <span class="fc" id="L159">					int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc" id="L160">					supply2.set(u, supply2.get(u) - l);</span>
 <span class="fc" id="L161">					supply2.set(v, supply2.get(v) + l);</span>
-				}
+<span class="fc" id="L162">				}</span>
 			}
 <span class="fc" id="L164">			return supply2;</span>
 		}
@@ -254,7 +254,7 @@ class MinimumCostFlows {
 			/* Compute a min-cost max-flow in the new graph and network */
 <span class="fc" id="L255">			IFlow flow0 = computeMinCostMaxFlow(g, capacity, cost, source, sink);</span>
 <span class="fc" id="L256">			double[] flow = new double[gOrig.edges().size()];</span>
-<span class="fc bfc" id="L257" title="All 2 branches covered.">			for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">			for (int e : range(gOrig.edges().size()))</span>
 <span class="fc" id="L258">				flow[e] = flow0.getFlow(e);</span>
 <span class="fc" id="L259">			return new Flows.FlowImpl(gOrig, flow);</span>
 		}
@@ -345,7 +345,7 @@ class MinimumCostFlows {
 <span class="fc bfc" id="L345" title="All 2 branches covered.">			if (integerFlow) {</span>
 <span class="fc" id="L346">				IWeightFunctionInt supplyInt = (IWeightFunctionInt) supply;</span>
 <span class="fc" id="L347">				IntList capacities0 = (IntList) capacities;</span>
-<span class="fc bfc" id="L348" title="All 2 branches covered.">				for (int n = gOrig.vertices().size(), v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">				for (int v : range(gOrig.vertices().size())) {</span>
 <span class="fc" id="L349">					int sup = supplyInt.weightInt(v);</span>
 <span class="fc bfc" id="L350" title="All 2 branches covered.">					if (sup &gt; 0) {</span>
 <span class="fc" id="L351">						builder.addEdge(source, v);</span>
@@ -354,10 +354,10 @@ class MinimumCostFlows {
 <span class="fc" id="L354">						builder.addEdge(v, sink);</span>
 <span class="fc" id="L355">						capacities0.add(-sup);</span>
 					}
-				}
+<span class="fc" id="L357">				}</span>
 <span class="fc" id="L358">			} else {</span>
 <span class="fc" id="L359">				DoubleList capacities0 = (DoubleList) capacities;</span>
-<span class="fc bfc" id="L360" title="All 2 branches covered.">				for (int n = gOrig.vertices().size(), v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">				for (int v : range(gOrig.vertices().size())) {</span>
 <span class="fc" id="L361">					double sup = supply.weight(v);</span>
 <span class="fc bfc" id="L362" title="All 2 branches covered.">					if (sup &gt; 0) {</span>
 <span class="fc" id="L363">						builder.addEdge(source, v);</span>
@@ -366,7 +366,7 @@ class MinimumCostFlows {
 <span class="fc" id="L366">						builder.addEdge(v, sink);</span>
 <span class="fc" id="L367">						capacities0.add(-sup);</span>
 					}
-				}
+<span class="fc" id="L369">				}</span>
 			}
 
 <span class="fc" id="L372">			IndexGraph g = builder.build();</span>
@@ -436,7 +436,7 @@ class MinimumCostFlows {
 <span class="nc bnc" id="L436" title="All 4 branches missed.">					.allMatch(e -&gt; Math.abs(flow0.getFlow(e) - capacity.weight(e)) &lt; eps);</span>
 
 <span class="fc" id="L438">			double[] flow = new double[gOrig.edges().size()];</span>
-<span class="fc bfc" id="L439" title="All 2 branches covered.">			for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">			for (int e : range(gOrig.edges().size()))</span>
 <span class="fc" id="L440">				flow[e] = flow0.getFlow(e) + lowerBound.weight(e);</span>
 <span class="fc" id="L441">			return new Flows.FlowImpl(gOrig, flow);</span>
 		}
@@ -479,7 +479,7 @@ class MinimumCostFlows {
 <span class="fc bfc" id="L479" title="All 2 branches covered.">			if (integerFlow) {</span>
 <span class="fc" id="L480">				IWeightFunctionInt supplyInt = (IWeightFunctionInt) supply;</span>
 <span class="fc" id="L481">				IntList capacities0 = new IntArrayList();</span>
-<span class="fc bfc" id="L482" title="All 2 branches covered.">				for (int n = gOrig.vertices().size(), v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L482" title="All 2 branches covered.">				for (int v : range(gOrig.vertices().size())) {</span>
 <span class="fc" id="L483">					int sup = supplyInt.weightInt(v);</span>
 <span class="fc bfc" id="L484" title="All 2 branches covered.">					if (sup &gt; 0) {</span>
 <span class="fc" id="L485">						builder.addEdge(source, v);</span>
@@ -488,11 +488,11 @@ class MinimumCostFlows {
 <span class="fc" id="L488">						builder.addEdge(v, sink);</span>
 <span class="fc" id="L489">						capacities0.add(-sup);</span>
 					}
-				}
+<span class="fc" id="L491">				}</span>
 <span class="fc" id="L492">				capacities = capacities0;</span>
 <span class="fc" id="L493">			} else {</span>
 <span class="fc" id="L494">				DoubleList capacities0 = new DoubleArrayList();</span>
-<span class="fc bfc" id="L495" title="All 2 branches covered.">				for (int n = gOrig.vertices().size(), v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L495" title="All 2 branches covered.">				for (int v : range(gOrig.vertices().size())) {</span>
 <span class="fc" id="L496">					double sup = supply.weight(v);</span>
 <span class="fc bfc" id="L497" title="All 2 branches covered.">					if (sup &gt; 0) {</span>
 <span class="fc" id="L498">						builder.addEdge(source, v);</span>
@@ -501,7 +501,7 @@ class MinimumCostFlows {
 <span class="fc" id="L501">						builder.addEdge(v, sink);</span>
 <span class="fc" id="L502">						capacities0.add(-sup);</span>
 					}
-				}
+<span class="fc" id="L504">				}</span>
 <span class="fc" id="L505">				capacities = capacities0;</span>
 			}
 
@@ -541,7 +541,7 @@ class MinimumCostFlows {
 			/* Compute a minimum-cost maximum-flow between the two artificial vertices */
 <span class="fc" id="L542">			IFlow flow0 = computeMinCostMaxFlow(g, capacity, cost, source, sink);</span>
 <span class="fc" id="L543">			double[] flow = new double[gOrig.edges().size()];</span>
-<span class="fc bfc" id="L544" title="All 2 branches covered.">			for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L544" title="All 2 branches covered.">			for (int e : range(gOrig.edges().size()))</span>
 <span class="fc" id="L545">				flow[e] = flow0.getFlow(e);</span>
 <span class="fc" id="L546">			return new Flows.FlowImpl(gOrig, flow);</span>
 		}
@@ -680,7 +680,7 @@ class MinimumCostFlows {
 			}
 
 <span class="fc" id="L682">			double[] flow = new double[gOrig.edges().size()];</span>
-<span class="fc bfc" id="L683" title="All 2 branches covered.">			for (int m = gOrig.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L683" title="All 2 branches covered.">			for (int e : range(gOrig.edges().size()))</span>
 <span class="fc" id="L684">				flow[e] = flow0.getFlow(e);</span>
 <span class="fc" id="L685">			return new Flows.FlowImpl(gOrig, flow);</span>
 		}

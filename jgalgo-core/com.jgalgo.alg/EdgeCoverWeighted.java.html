@@ -39,13 +39,13 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L39">		IndexGraphBuilder gb = IndexGraphBuilder.undirected();</span>
 <span class="fc" id="L40">		gb.addVertices(range(n * 2));</span>
 <span class="fc" id="L41">		gb.ensureEdgeCapacity(m * 2 + n);</span>
-<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		for (int e : range(m)) {</span>
 <span class="fc" id="L43">			int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc" id="L44">			gb.addEdge(u * 2 + 0, v * 2 + 0);</span>
 <span class="fc" id="L45">			gb.addEdge(u * 2 + 1, v * 2 + 1);</span>
-		}
+<span class="fc" id="L46">		}</span>
 <span class="fc" id="L47">		final int vvEdgeThreshold = gb.edges().size();</span>
-<span class="fc bfc" id="L48" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		for (int v : range(n))</span>
 <span class="fc" id="L49">			gb.addEdge(v * 2 + 0, v * 2 + 1);</span>
 <span class="fc" id="L50">		IndexGraph g2 = gb.build();</span>
 
@@ -56,7 +56,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L56">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
 <span class="fc" id="L57">			int[] minAdjacentWeight = new int[n];</span>
 <span class="fc" id="L58">			Arrays.fill(minAdjacentWeight, Integer.MAX_VALUE);</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">			for (int e : range(m)) {</span>
 <span class="fc" id="L60">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc" id="L61">				int ew = wInt.weightInt(e);</span>
 <span class="fc bfc" id="L62" title="All 2 branches covered.">				if (minAdjacentWeight[u] &gt; ew) {</span>
@@ -67,7 +67,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L67">					minAdjacentWeight[v] = ew;</span>
 <span class="fc" id="L68">					minAdjacentEdge[v] = e;</span>
 				}
-			}
+<span class="fc" id="L70">			}</span>
 <span class="fc" id="L71">			IWeightFunctionInt w2Int =</span>
 <span class="fc bfc" id="L72" title="All 2 branches covered.">					e -&gt; e &lt; vvEdgeThreshold ? wInt.weightInt(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];</span>
 <span class="fc" id="L73">			w2 = w2Int;</span>
@@ -75,7 +75,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L75">		} else {</span>
 <span class="fc" id="L76">			double[] minAdjacentWeight = new double[n];</span>
 <span class="fc" id="L77">			Arrays.fill(minAdjacentWeight, Double.POSITIVE_INFINITY);</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			for (int e : range(m)) {</span>
 <span class="fc" id="L79">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc" id="L80">				double ew = w.weight(e);</span>
 <span class="fc bfc" id="L81" title="All 2 branches covered.">				if (minAdjacentWeight[u] &gt; ew) {</span>
@@ -86,20 +86,20 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L86">					minAdjacentWeight[v] = ew;</span>
 <span class="fc" id="L87">					minAdjacentEdge[v] = e;</span>
 				}
-			}
+<span class="fc" id="L89">			}</span>
 <span class="fc" id="L90">			IWeightFunction w0 = w;</span>
 <span class="fc bfc" id="L91" title="All 2 branches covered.">			w2 = e -&gt; e &lt; vvEdgeThreshold ? w0.weight(e / 2) : 2 * minAdjacentWeight[e - vvEdgeThreshold];</span>
 		}
-<span class="fc bfc" id="L93" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">		for (int v : range(n))</span>
 <span class="fc bfc" id="L94" title="All 2 branches covered.">			if (minAdjacentEdge[v] == -1)</span>
 <span class="fc" id="L95">				throw new IllegalArgumentException(&quot;no edge cover exists, vertex with index &quot; + v + &quot; has no edges&quot;);</span>
 
 <span class="fc" id="L97">		IMatching matching = (IMatching) matchingAlgo.computeMinimumPerfectMatching(g2, w2);</span>
 <span class="fc" id="L98">		Bitmap cover = new Bitmap(m);</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int e : range(m))</span>
 <span class="fc bfc" id="L100" title="All 2 branches covered.">			if (matching.containsEdge(e * 2 + 0))</span>
 <span class="fc" id="L101">				cover.set(e);</span>
-<span class="fc bfc" id="L102" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">		for (int v : range(n))</span>
 <span class="fc bfc" id="L103" title="All 2 branches covered.">			if (matching.containsEdge(vvEdgeThreshold + v))</span>
 <span class="fc" id="L104">				cover.set(minAdjacentEdge[v]);</span>
 <span class="fc" id="L105">		return ImmutableIntArraySet.ofBitmap(cover);</span>

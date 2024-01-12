@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.IntPredicate;
@@ -45,7 +46,7 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 
 	@Override
 	default int numberOfBlocks() {
-<span class="fc" id="L48">		return 2;</span>
+<span class="fc" id="L49">		return 2;</span>
 	}
 
 	/**
@@ -63,12 +64,12 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 	 * @return        {@code true} if the vertex is contained in the right block, {@code false} otherwise
 	 */
 	default boolean isRight(V vertex) {
-<span class="fc bfc" id="L66" title="All 2 branches covered.">		return !isLeft(vertex);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		return !isLeft(vertex);</span>
 	}
 
 	@Override
 	default int vertexBlock(V vertex) {
-<span class="nc bnc" id="L71" title="All 2 branches missed.">		return isLeft(vertex) ? 0 : 1;</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">		return isLeft(vertex) ? 0 : 1;</span>
 	}
 
 	/**
@@ -80,7 +81,7 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 	 * @return the vertices in the left block
 	 */
 	default Set&lt;V&gt; leftVertices() {
-<span class="fc" id="L83">		return blockVertices(0);</span>
+<span class="fc" id="L84">		return blockVertices(0);</span>
 	}
 
 	/**
@@ -92,7 +93,7 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 	 * @return the vertices in the right block
 	 */
 	default Set&lt;V&gt; rightVertices() {
-<span class="fc" id="L95">		return blockVertices(1);</span>
+<span class="fc" id="L96">		return blockVertices(1);</span>
 	}
 
 	/**
@@ -105,7 +106,7 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 	 * @return the edges that are contained in the left block
 	 */
 	default Set&lt;E&gt; leftEdges() {
-<span class="fc" id="L108">		return blockEdges(0);</span>
+<span class="fc" id="L109">		return blockEdges(0);</span>
 	}
 
 	/**
@@ -118,7 +119,7 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 	 * @return the edges that are contained in the right block
 	 */
 	default Set&lt;E&gt; rightEdges() {
-<span class="fc" id="L121">		return blockEdges(1);</span>
+<span class="fc" id="L122">		return blockEdges(1);</span>
 	}
 
 	/**
@@ -134,7 +135,7 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 	 * @return the edges that cross between the left and right blocks
 	 */
 	default Set&lt;E&gt; crossEdges() {
-<span class="fc" id="L137">		return crossEdges(0, 1);</span>
+<span class="fc" id="L138">		return crossEdges(0, 1);</span>
 	}
 
 	/**
@@ -150,7 +151,7 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 	 * @return     a new vertex bi-partition
 	 */
 	static &lt;V, E&gt; VertexBiPartition&lt;V, E&gt; fromMap(Graph&lt;V, E&gt; g, Map&lt;V, Boolean&gt; map) {
-<span class="fc" id="L153">		return fromMapping(g, map::get);</span>
+<span class="fc" id="L154">		return fromMapping(g, map::get);</span>
 	}
 
 	/**
@@ -167,15 +168,15 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; VertexBiPartition&lt;V, E&gt; fromMapping(Graph&lt;V, E&gt; g, Predicate&lt;V&gt; mapping) {
-<span class="fc bfc" id="L170" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L171">			IntPredicate mapping0 = IntAdapters.asIntPredicate((Predicate&lt;Integer&gt;) mapping);</span>
-<span class="fc" id="L172">			return (VertexBiPartition&lt;V, E&gt;) IVertexBiPartition.fromMapping((IntGraph) g, mapping0);</span>
+<span class="fc bfc" id="L171" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L172">			IntPredicate mapping0 = IntAdapters.asIntPredicate((Predicate&lt;Integer&gt;) mapping);</span>
+<span class="fc" id="L173">			return (VertexBiPartition&lt;V, E&gt;) IVertexBiPartition.fromMapping((IntGraph) g, mapping0);</span>
 		} else {
-<span class="fc" id="L174">			final int n = g.vertices().size();</span>
-<span class="fc" id="L175">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L176">			Bitmap vertexToBlock = Bitmap.fromPredicate(n, vIdx -&gt; mapping.test(viMap.indexToId(vIdx)));</span>
-<span class="fc" id="L177">			IVertexBiPartition indexPartition = new VertexBiPartitions.FromBitmap(g.indexGraph(), vertexToBlock);</span>
-<span class="fc" id="L178">			return new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition&lt;&gt;(g, indexPartition);</span>
+<span class="fc" id="L175">			final int n = g.vertices().size();</span>
+<span class="fc" id="L176">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L177">			Bitmap vertexToBlock = Bitmap.fromPredicate(n, vIdx -&gt; mapping.test(viMap.indexToId(vIdx)));</span>
+<span class="fc" id="L178">			IVertexBiPartition indexPartition = new VertexBiPartitions.FromBitmap(g.indexGraph(), vertexToBlock);</span>
+<span class="fc" id="L179">			return new VertexBiPartitions.ObjBiPartitionFromIndexBiPartition&lt;&gt;(g, indexPartition);</span>
 		}
 	}
 
@@ -196,26 +197,26 @@ public interface VertexBiPartition&lt;V, E&gt; extends VertexPartition&lt;V, E&g
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; boolean isPartition(Graph&lt;V, E&gt; g, Predicate&lt;V&gt; mapping) {
-<span class="fc bfc" id="L199" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
-<span class="fc" id="L200">			IntPredicate mapping0 = IntAdapters.asIntPredicate((Predicate&lt;Integer&gt;) mapping);</span>
-<span class="fc" id="L201">			return IVertexBiPartition.isPartition((IntGraph) g, mapping0);</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">		if (g instanceof IntGraph) {</span>
+<span class="fc" id="L201">			IntPredicate mapping0 = IntAdapters.asIntPredicate((Predicate&lt;Integer&gt;) mapping);</span>
+<span class="fc" id="L202">			return IVertexBiPartition.isPartition((IntGraph) g, mapping0);</span>
 		}
-<span class="fc" id="L203">		final int n = g.vertices().size();</span>
-<span class="pc bpc" id="L204" title="1 of 2 branches missed.">		if (n &lt; 2)</span>
-<span class="nc" id="L205">			return false;</span>
+<span class="fc" id="L204">		final int n = g.vertices().size();</span>
+<span class="pc bpc" id="L205" title="1 of 2 branches missed.">		if (n &lt; 2)</span>
+<span class="nc" id="L206">			return false;</span>
 
-<span class="fc" id="L207">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L208">		Bitmap vertexToBlock = Bitmap.fromPredicate(n, vIdx -&gt; mapping.test(viMap.indexToId(vIdx)));</span>
-<span class="fc bfc" id="L209" title="All 2 branches covered.">		if (vertexToBlock.get(0)) {</span>
-<span class="fc bfc" id="L210" title="All 2 branches covered.">			for (int v = 1; v &lt; n; v++)</span>
-<span class="fc bfc" id="L211" title="All 2 branches covered.">				if (!vertexToBlock.get(v))</span>
-<span class="fc" id="L212">					return true;</span>
+<span class="fc" id="L208">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L209">		Bitmap vertexToBlock = Bitmap.fromPredicate(n, vIdx -&gt; mapping.test(viMap.indexToId(vIdx)));</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">		if (vertexToBlock.get(0)) {</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">			for (int v : range(1, n))</span>
+<span class="fc bfc" id="L212" title="All 2 branches covered.">				if (!vertexToBlock.get(v))</span>
+<span class="fc" id="L213">					return true;</span>
 		} else {
-<span class="fc bfc" id="L214" title="All 2 branches covered.">			for (int v = 1; v &lt; n; v++)</span>
-<span class="fc bfc" id="L215" title="All 2 branches covered.">				if (vertexToBlock.get(v))</span>
-<span class="fc" id="L216">					return true;</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">			for (int v : range(1, n))</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">				if (vertexToBlock.get(v))</span>
+<span class="fc" id="L217">					return true;</span>
 		}
-<span class="fc" id="L218">		return false;</span>
+<span class="fc" id="L219">		return false;</span>
 	}
 
 }

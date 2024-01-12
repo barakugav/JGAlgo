@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.function.IntUnaryOperator;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIntIdMap;
@@ -58,7 +59,7 @@ public interface IVertexPartition extends VertexPartition&lt;Integer, Integer&gt
 	@Deprecated
 	@Override
 	default int vertexBlock(Integer vertex) {
-<span class="fc" id="L61">		return vertexBlock(vertex.intValue());</span>
+<span class="fc" id="L62">		return vertexBlock(vertex.intValue());</span>
 	}
 
 	@Override
@@ -75,17 +76,17 @@ public interface IVertexPartition extends VertexPartition&lt;Integer, Integer&gt
 
 	@Override
 	default IntGraph blockSubGraph(int block) {
-<span class="nc" id="L78">		return (IntGraph) VertexPartition.super.blockSubGraph(block);</span>
+<span class="nc" id="L79">		return (IntGraph) VertexPartition.super.blockSubGraph(block);</span>
 	}
 
 	@Override
 	default IntGraph blockSubGraph(int block, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="nc" id="L83">		return (IntGraph) VertexPartition.super.blockSubGraph(block, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="nc" id="L84">		return (IntGraph) VertexPartition.super.blockSubGraph(block, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	@Override
 	default IntGraph blocksGraph() {
-<span class="nc" id="L88">		return (IntGraph) VertexPartition.super.blocksGraph();</span>
+<span class="nc" id="L89">		return (IntGraph) VertexPartition.super.blocksGraph();</span>
 	}
 
 	@Override
@@ -103,7 +104,7 @@ public interface IVertexPartition extends VertexPartition&lt;Integer, Integer&gt
 	 * @return     a new vertex partition
 	 */
 	static IVertexPartition fromMap(IntGraph g, Int2IntMap map) {
-<span class="nc" id="L106">		return fromMapping(g, map::get);</span>
+<span class="nc" id="L107">		return fromMapping(g, map::get);</span>
 	}
 
 	/**
@@ -118,24 +119,24 @@ public interface IVertexPartition extends VertexPartition&lt;Integer, Integer&gt
 	 * @return         a new vertex partition
 	 */
 	static IVertexPartition fromMapping(IntGraph g, IntUnaryOperator mapping) {
-<span class="fc" id="L121">		final int n = g.vertices().size();</span>
-<span class="fc" id="L122">		int[] vertexToBlock = new int[n];</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L124">			int maxBlock = -1;</span>
-<span class="fc bfc" id="L125" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L126">				vertexToBlock[v] = mapping.applyAsInt(v);</span>
-<span class="fc" id="L127">				maxBlock = Math.max(maxBlock, vertexToBlock[v]);</span>
-			}
-<span class="fc" id="L129">			return new VertexPartitions.Impl((IndexGraph) g, maxBlock + 1, vertexToBlock);</span>
+<span class="fc" id="L122">		final int n = g.vertices().size();</span>
+<span class="fc" id="L123">		int[] vertexToBlock = new int[n];</span>
+<span class="fc bfc" id="L124" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L125">			int maxBlock = -1;</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc" id="L127">				vertexToBlock[v] = mapping.applyAsInt(v);</span>
+<span class="fc" id="L128">				maxBlock = Math.max(maxBlock, vertexToBlock[v]);</span>
+<span class="fc" id="L129">			}</span>
+<span class="fc" id="L130">			return new VertexPartitions.Impl((IndexGraph) g, maxBlock + 1, vertexToBlock);</span>
 		} else {
-<span class="fc" id="L131">			IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L132">			int maxBlock = -1;</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L134">				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToIdInt(v));</span>
-<span class="fc" id="L135">				maxBlock = Math.max(maxBlock, vertexToBlock[v]);</span>
-			}
-<span class="fc" id="L137">			IVertexPartition indexPartition = new VertexPartitions.Impl(g.indexGraph(), maxBlock + 1, vertexToBlock);</span>
-<span class="fc" id="L138">			return new VertexPartitions.IntPartitionFromIndexPartition(g, indexPartition);</span>
+<span class="fc" id="L132">			IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L133">			int maxBlock = -1;</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc" id="L135">				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToIdInt(v));</span>
+<span class="fc" id="L136">				maxBlock = Math.max(maxBlock, vertexToBlock[v]);</span>
+<span class="fc" id="L137">			}</span>
+<span class="fc" id="L138">			IVertexPartition indexPartition = new VertexPartitions.Impl(g.indexGraph(), maxBlock + 1, vertexToBlock);</span>
+<span class="fc" id="L139">			return new VertexPartitions.IntPartitionFromIndexPartition(g, indexPartition);</span>
 		}
 	}
 
@@ -152,31 +153,31 @@ public interface IVertexPartition extends VertexPartition&lt;Integer, Integer&gt
 	 *                 otherwise
 	 */
 	static boolean isPartition(IntGraph g, IntUnaryOperator mapping) {
-<span class="fc" id="L155">		final int n = g.vertices().size();</span>
-<span class="fc" id="L156">		int[] vertexToBlock = new int[n];</span>
-<span class="fc" id="L157">		int maxBlock = -1;</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L160">				vertexToBlock[v] = mapping.applyAsInt(v);</span>
-<span class="fc" id="L161">				maxBlock = Math.max(maxBlock, vertexToBlock[v]);</span>
-			}
+<span class="fc" id="L156">		final int n = g.vertices().size();</span>
+<span class="fc" id="L157">		int[] vertexToBlock = new int[n];</span>
+<span class="fc" id="L158">		int maxBlock = -1;</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc" id="L161">				vertexToBlock[v] = mapping.applyAsInt(v);</span>
+<span class="fc" id="L162">				maxBlock = Math.max(maxBlock, vertexToBlock[v]);</span>
+<span class="fc" id="L163">			}</span>
 		} else {
-<span class="fc" id="L164">			IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L166">				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToIdInt(v));</span>
-<span class="fc" id="L167">				maxBlock = Math.max(maxBlock, vertexToBlock[v]);</span>
-			}
+<span class="fc" id="L165">			IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc" id="L167">				vertexToBlock[v] = mapping.applyAsInt(viMap.indexToIdInt(v));</span>
+<span class="fc" id="L168">				maxBlock = Math.max(maxBlock, vertexToBlock[v]);</span>
+<span class="fc" id="L169">			}</span>
 		}
-<span class="fc" id="L170">		final int blockNum = maxBlock + 1;</span>
-<span class="pc bpc" id="L171" title="1 of 2 branches missed.">		if (maxBlock &gt; n)</span>
-<span class="nc" id="L172">			return false;</span>
-<span class="fc" id="L173">		Bitmap seenBlocks = new Bitmap(blockNum);</span>
-<span class="fc bfc" id="L174" title="All 2 branches covered.">		for (int b : vertexToBlock) {</span>
-<span class="fc bfc" id="L175" title="All 2 branches covered.">			if (b &lt; 0)</span>
-<span class="fc" id="L176">				return false;</span>
-<span class="fc" id="L177">			seenBlocks.set(b);</span>
+<span class="fc" id="L171">		final int blockNum = maxBlock + 1;</span>
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">		if (maxBlock &gt; n)</span>
+<span class="nc" id="L173">			return false;</span>
+<span class="fc" id="L174">		Bitmap seenBlocks = new Bitmap(blockNum);</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">		for (int b : vertexToBlock) {</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">			if (b &lt; 0)</span>
+<span class="fc" id="L177">				return false;</span>
+<span class="fc" id="L178">			seenBlocks.set(b);</span>
 		}
-<span class="fc bfc" id="L179" title="All 2 branches covered.">		return seenBlocks.nextClearBit(0) == blockNum;</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">		return seenBlocks.nextClearBit(0) == blockNum;</span>
 	}
 
 }

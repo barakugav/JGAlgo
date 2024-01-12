@@ -135,7 +135,7 @@ public class Digraph6GraphWriter extends GraphIoUtils.AbstractGraphWriter&lt;Int
 			}
 <span class="fc" id="L136">			bytes[byteIdx] |= 1 &lt;&lt; bitIdx;</span>
 <span class="fc" id="L137">		}</span>
-<span class="fc bfc" id="L138" title="All 2 branches covered.">		for (int i = 0; i &lt; bytes.length; i++)</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">		for (int i : range(bytes.length))</span>
 <span class="fc" id="L139">			bytes[i] += 63;</span>
 <span class="fc" id="L140">		out.appendBytes(bytes);</span>
 

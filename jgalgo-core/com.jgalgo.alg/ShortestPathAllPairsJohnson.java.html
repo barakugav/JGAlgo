@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ForkJoinPool;
@@ -46,16 +47,16 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L49">class ShortestPathAllPairsJohnson implements ShortestPathAllPairsBase {</span>
+<span class="fc" id="L50">class ShortestPathAllPairsJohnson implements ShortestPathAllPairsBase {</span>
 
-<span class="fc" id="L51">	private ShortestPathSingleSource negativeSssp = ShortestPathSingleSource.builder().setNegativeWeights(true).build();</span>
-<span class="fc" id="L52">	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;</span>
+<span class="fc" id="L52">	private ShortestPathSingleSource negativeSssp = ShortestPathSingleSource.builder().setNegativeWeights(true).build();</span>
+<span class="fc" id="L53">	private boolean parallel = JGAlgoConfigImpl.ParallelByDefault;</span>
 	private static final int PARALLEL_VERTICES_THRESHOLD = 32;
 
 	/**
 	 * Create a new APSP algorithm object.
 	 */
-<span class="fc" id="L58">	ShortestPathAllPairsJohnson() {}</span>
+<span class="fc" id="L59">	ShortestPathAllPairsJohnson() {}</span>
 
 	/**
 	 * {@inheritDoc}
@@ -64,124 +65,124 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 */
 	@Override
 	public ShortestPathAllPairs.IResult computeAllShortestPaths(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L67">		return computeSubsetShortestPaths0(g, g.vertices(), w, true);</span>
+<span class="fc" id="L68">		return computeSubsetShortestPaths0(g, g.vertices(), w, true);</span>
 	}
 
 	@Override
 	public ShortestPathAllPairs.IResult computeSubsetShortestPaths(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w) {
-<span class="fc" id="L73">		return computeSubsetShortestPaths0(g, verticesSubset, w, false);</span>
+<span class="fc" id="L74">		return computeSubsetShortestPaths0(g, verticesSubset, w, false);</span>
 	}
 
 	private ShortestPathAllPairs.IResult computeSubsetShortestPaths0(IndexGraph g, IntCollection verticesSubset,
 			IWeightFunction w, boolean allVertices) {
-<span class="fc" id="L78">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
-<span class="fc" id="L79">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
-<span class="fc" id="L80">		final int n = g.vertices().size();</span>
+<span class="fc" id="L79">		w = WeightFunctions.localEdgeWeightFunction(g, w);</span>
+<span class="fc" id="L80">		w = IWeightFunction.replaceNullWeightFunc(w);</span>
+<span class="fc" id="L81">		final int n = g.vertices().size();</span>
 
-<span class="fc" id="L82">		boolean negWeight = false;</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">			if (w.weight(e) &lt; 0) {</span>
-<span class="fc" id="L85">				negWeight = true;</span>
-<span class="fc" id="L86">				break;</span>
+<span class="fc" id="L83">		boolean negWeight = false;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		for (int e : range(g.edges().size())) {</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (w.weight(e) &lt; 0) {</span>
+<span class="fc" id="L86">				negWeight = true;</span>
+<span class="fc" id="L87">				break;</span>
 			}
-		}
+<span class="fc" id="L89">		}</span>
 
-<span class="fc bfc" id="L90" title="All 2 branches covered.">		if (!negWeight) {</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		if (!negWeight) {</span>
 			/* No negative weights, no need for potential */
-<span class="fc" id="L92">			Res res = computeAPSPPositive(g, verticesSubset, w, allVertices);</span>
-<span class="fc" id="L93">			res.potential = new double[n];</span>
-<span class="fc" id="L94">			return res;</span>
+<span class="fc" id="L93">			Res res = computeAPSPPositive(g, verticesSubset, w, allVertices);</span>
+<span class="fc" id="L94">			res.potential = new double[n];</span>
+<span class="fc" id="L95">			return res;</span>
 		}
 
-<span class="fc" id="L97">		double[] potential = calcPotential(g, w);</span>
-<span class="fc" id="L98">		IWeightFunction wPotential = ShortestPathUtils.potentialWeightFunc(g, w, potential);</span>
+<span class="fc" id="L98">		double[] potential = calcPotential(g, w);</span>
+<span class="fc" id="L99">		IWeightFunction wPotential = ShortestPathUtils.potentialWeightFunc(g, w, potential);</span>
 
-<span class="fc" id="L100">		Res res = computeAPSPPositive(g, verticesSubset, wPotential, allVertices);</span>
-<span class="fc" id="L101">		res.potential = potential;</span>
-<span class="fc" id="L102">		return res;</span>
+<span class="fc" id="L101">		Res res = computeAPSPPositive(g, verticesSubset, wPotential, allVertices);</span>
+<span class="fc" id="L102">		res.potential = potential;</span>
+<span class="fc" id="L103">		return res;</span>
 	}
 
 	private Res computeAPSPPositive(IndexGraph g, IntCollection verticesSubset, IWeightFunction w,
 			boolean allVertices) {
-<span class="fc" id="L107">		final int verticesSubsetSize = verticesSubset.size();</span>
-<span class="fc" id="L108">		final ShortestPathSingleSource.IResult[] ssspResults = new ShortestPathSingleSource.IResult[verticesSubsetSize];</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">		int[] vToResIdx = ShortestPathAllPairsUtils.vToResIdx(g, allVertices ? null : verticesSubset);</span>
+<span class="fc" id="L108">		final int verticesSubsetSize = verticesSubset.size();</span>
+<span class="fc" id="L109">		final ShortestPathSingleSource.IResult[] ssspResults = new ShortestPathSingleSource.IResult[verticesSubsetSize];</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">		int[] vToResIdx = ShortestPathAllPairsUtils.vToResIdx(g, allVertices ? null : verticesSubset);</span>
 
-<span class="fc" id="L111">		ForkJoinPool pool = JGAlgoUtils.getPool();</span>
-<span class="pc bpc" id="L112" title="2 of 6 branches missed.">		if (verticesSubsetSize &lt; PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() &lt;= 1) {</span>
+<span class="fc" id="L112">		ForkJoinPool pool = JGAlgoUtils.getPool();</span>
+<span class="pc bpc" id="L113" title="2 of 6 branches missed.">		if (verticesSubsetSize &lt; PARALLEL_VERTICES_THRESHOLD || !parallel || pool.getParallelism() &lt;= 1) {</span>
 			/* sequential */
-<span class="fc" id="L114">			ShortestPathSingleSource sssp = ShortestPathSingleSource.newInstance();</span>
-<span class="fc bfc" id="L115" title="All 2 branches covered.">			for (int source : verticesSubset)</span>
-<span class="fc" id="L116">				ssspResults[vToResIdx[source]] =</span>
-<span class="fc" id="L117">						(ShortestPathSingleSource.IResult) sssp.computeShortestPaths(g, w, Integer.valueOf(source));</span>
+<span class="fc" id="L115">			ShortestPathSingleSource sssp = ShortestPathSingleSource.newInstance();</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">			for (int source : verticesSubset)</span>
+<span class="fc" id="L117">				ssspResults[vToResIdx[source]] =</span>
+<span class="fc" id="L118">						(ShortestPathSingleSource.IResult) sssp.computeShortestPaths(g, w, Integer.valueOf(source));</span>
 
-<span class="fc" id="L119">		} else {</span>
+<span class="fc" id="L120">		} else {</span>
 			/* parallel */
-<span class="fc" id="L121">			List&lt;RecursiveAction&gt; tasks = new ObjectArrayList&lt;&gt;(verticesSubsetSize);</span>
-<span class="fc" id="L122">			ThreadLocal&lt;ShortestPathSingleSource&gt; sssp =</span>
-<span class="fc" id="L123">					ThreadLocal.withInitial(() -&gt; ShortestPathSingleSource.newInstance());</span>
-<span class="fc bfc" id="L124" title="All 2 branches covered.">			for (int source : verticesSubset) {</span>
-<span class="fc" id="L125">				final int source0 = source;</span>
-<span class="fc" id="L126">				tasks</span>
-<span class="fc" id="L127">						.add(JGAlgoUtils</span>
-<span class="fc" id="L128">								.recursiveAction(</span>
-<span class="fc" id="L129">										() -&gt; ssspResults[vToResIdx[source0]] = (ShortestPathSingleSource.IResult) sssp</span>
-<span class="fc" id="L130">												.get()</span>
-<span class="fc" id="L131">												.computeShortestPaths(g, w, Integer.valueOf(source0))));</span>
-<span class="fc" id="L132">			}</span>
-<span class="fc bfc" id="L133" title="All 2 branches covered.">			for (RecursiveAction task : tasks)</span>
-<span class="fc" id="L134">				pool.execute(task);</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">			for (RecursiveAction task : tasks)</span>
-<span class="fc" id="L136">				task.join();</span>
+<span class="fc" id="L122">			List&lt;RecursiveAction&gt; tasks = new ObjectArrayList&lt;&gt;(verticesSubsetSize);</span>
+<span class="fc" id="L123">			ThreadLocal&lt;ShortestPathSingleSource&gt; sssp =</span>
+<span class="fc" id="L124">					ThreadLocal.withInitial(() -&gt; ShortestPathSingleSource.newInstance());</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">			for (int source : verticesSubset) {</span>
+<span class="fc" id="L126">				final int source0 = source;</span>
+<span class="fc" id="L127">				tasks</span>
+<span class="fc" id="L128">						.add(JGAlgoUtils</span>
+<span class="fc" id="L129">								.recursiveAction(</span>
+<span class="fc" id="L130">										() -&gt; ssspResults[vToResIdx[source0]] = (ShortestPathSingleSource.IResult) sssp</span>
+<span class="fc" id="L131">												.get()</span>
+<span class="fc" id="L132">												.computeShortestPaths(g, w, Integer.valueOf(source0))));</span>
+<span class="fc" id="L133">			}</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">			for (RecursiveAction task : tasks)</span>
+<span class="fc" id="L135">				pool.execute(task);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">			for (RecursiveAction task : tasks)</span>
+<span class="fc" id="L137">				task.join();</span>
 		}
 
-<span class="fc bfc" id="L139" title="All 2 branches covered.">		if (allVertices) {</span>
-<span class="fc" id="L140">			return new Res.AllVertices(ssspResults);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">		if (allVertices) {</span>
+<span class="fc" id="L141">			return new Res.AllVertices(ssspResults);</span>
 		} else {
-<span class="fc" id="L142">			return new Res.VerticesSubset(ssspResults, vToResIdx);</span>
+<span class="fc" id="L143">			return new Res.VerticesSubset(ssspResults, vToResIdx);</span>
 		}
 	}
 
 	private double[] calcPotential(IndexGraph g, IWeightFunction w) {
-<span class="fc" id="L147">		final int n = g.vertices().size();</span>
-<span class="fc" id="L148">		final int m = g.edges().size();</span>
+<span class="fc" id="L148">		final int n = g.vertices().size();</span>
+<span class="fc" id="L149">		final int m = g.edges().size();</span>
 
 		/* Add fake vertex */
-<span class="fc" id="L151">		IndexGraphBuilder refgBuilder = IndexGraphBuilder.newInstance(g.isDirected());</span>
-<span class="fc" id="L152">		refgBuilder.ensureVertexCapacity(n + 1);</span>
-<span class="fc" id="L153">		refgBuilder.ensureEdgeCapacity(m + n);</span>
-<span class="fc" id="L154">		refgBuilder.addVertices(g.vertices());</span>
-<span class="fc" id="L155">		final int fakeV = refgBuilder.addVertexInt();</span>
-<span class="fc" id="L156">		refgBuilder.addEdges(EdgeSet.allOf(g));</span>
-<span class="fc" id="L157">		final int fakeEdgesThreshold = refgBuilder.edges().size();</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L159">			int e = refgBuilder.addEdge(fakeV, v);</span>
-<span class="pc bnc" id="L160" title="All 2 branches missed.">			assert e &gt;= fakeEdgesThreshold;</span>
-		}
-<span class="fc" id="L162">		IndexGraph refG = refgBuilder.build();</span>
+<span class="fc" id="L152">		IndexGraphBuilder refgBuilder = IndexGraphBuilder.newInstance(g.isDirected());</span>
+<span class="fc" id="L153">		refgBuilder.ensureVertexCapacity(n + 1);</span>
+<span class="fc" id="L154">		refgBuilder.ensureEdgeCapacity(m + n);</span>
+<span class="fc" id="L155">		refgBuilder.addVertices(g.vertices());</span>
+<span class="fc" id="L156">		final int fakeV = refgBuilder.addVertexInt();</span>
+<span class="fc" id="L157">		refgBuilder.addEdges(EdgeSet.allOf(g));</span>
+<span class="fc" id="L158">		final int fakeEdgesThreshold = refgBuilder.edges().size();</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">		for (int v : range(n)) {</span>
+<span class="fc" id="L160">			int e = refgBuilder.addEdge(fakeV, v);</span>
+<span class="pc bnc" id="L161" title="All 2 branches missed.">			assert e &gt;= fakeEdgesThreshold;</span>
+<span class="fc" id="L162">		}</span>
+<span class="fc" id="L163">		IndexGraph refG = refgBuilder.build();</span>
 
 		IWeightFunction refW;
-<span class="pc bpc" id="L165" title="1 of 2 branches missed.">		if (WeightFunction.isInteger(w)) {</span>
-<span class="fc" id="L166">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">			IWeightFunctionInt refWInt = e -&gt; e &lt; fakeEdgesThreshold ? wInt.weightInt(e) : 0;</span>
-<span class="fc" id="L168">			refW = refWInt;</span>
-<span class="fc" id="L169">		} else {</span>
-<span class="nc bnc" id="L170" title="All 2 branches missed.">			refW = e -&gt; e &lt; fakeEdgesThreshold ? w.weight(e) : 0;</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">		if (WeightFunction.isInteger(w)) {</span>
+<span class="fc" id="L167">			IWeightFunctionInt wInt = (IWeightFunctionInt) w;</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">			IWeightFunctionInt refWInt = e -&gt; e &lt; fakeEdgesThreshold ? wInt.weightInt(e) : 0;</span>
+<span class="fc" id="L169">			refW = refWInt;</span>
+<span class="fc" id="L170">		} else {</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">			refW = e -&gt; e &lt; fakeEdgesThreshold ? w.weight(e) : 0;</span>
 		}
 		ShortestPathSingleSource.IResult res;
 		try {
-<span class="fc" id="L174">			res = (ShortestPathSingleSource.IResult) negativeSssp</span>
-<span class="fc" id="L175">					.computeShortestPaths(refG, refW, Integer.valueOf(fakeV));</span>
-<span class="fc" id="L176">		} catch (NegativeCycleException e) {</span>
-<span class="fc" id="L177">			IPath p = (IPath) e.cycle();</span>
-<span class="fc" id="L178">			throw new NegativeCycleException(g, new PathImpl(g, p.sourceInt(), p.targetInt(), p.edges()));</span>
-<span class="fc" id="L179">		}</span>
+<span class="fc" id="L175">			res = (ShortestPathSingleSource.IResult) negativeSssp</span>
+<span class="fc" id="L176">					.computeShortestPaths(refG, refW, Integer.valueOf(fakeV));</span>
+<span class="fc" id="L177">		} catch (NegativeCycleException e) {</span>
+<span class="fc" id="L178">			IPath p = (IPath) e.cycle();</span>
+<span class="fc" id="L179">			throw new NegativeCycleException(g, new PathImpl(g, p.sourceInt(), p.targetInt(), p.edges()));</span>
+<span class="fc" id="L180">		}</span>
 
-<span class="fc" id="L181">		double[] potential = new double[n];</span>
-<span class="fc bfc" id="L182" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L183">			potential[v] = res.distance(v);</span>
-<span class="fc" id="L184">		return potential;</span>
+<span class="fc" id="L182">		double[] potential = new double[n];</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">		for (int v : range(n))</span>
+<span class="fc" id="L184">			potential[v] = res.distance(v);</span>
+<span class="fc" id="L185">		return potential;</span>
 	}
 
 	/**
@@ -195,32 +196,32 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 	 * @param algo a SSSP implementation for graphs with negative weight function
 	 */
 	void setNegativeSsspAlgo(ShortestPathSingleSource algo) {
-<span class="nc" id="L198">		negativeSssp = Objects.requireNonNull(algo);</span>
-<span class="nc" id="L199">	}</span>
+<span class="nc" id="L199">		negativeSssp = Objects.requireNonNull(algo);</span>
+<span class="nc" id="L200">	}</span>
 
 	private abstract static class Res implements ShortestPathAllPairs.IResult {
 
 		final ShortestPathSingleSource.IResult[] ssspResults;
 		double[] potential;
 
-<span class="fc" id="L206">		Res(ShortestPathSingleSource.IResult[] ssspResults) {</span>
-<span class="fc" id="L207">			this.ssspResults = ssspResults;</span>
-<span class="fc" id="L208">		}</span>
+<span class="fc" id="L207">		Res(ShortestPathSingleSource.IResult[] ssspResults) {</span>
+<span class="fc" id="L208">			this.ssspResults = ssspResults;</span>
+<span class="fc" id="L209">		}</span>
 
 		private static class AllVertices extends Res {
 
 			AllVertices(ShortestPathSingleSource.IResult[] ssspResults) {
-<span class="fc" id="L213">				super(ssspResults);</span>
-<span class="fc" id="L214">			}</span>
+<span class="fc" id="L214">				super(ssspResults);</span>
+<span class="fc" id="L215">			}</span>
 
 			@Override
 			public double distance(int source, int target) {
-<span class="fc" id="L218">				return ssspResults[source].distance(target) + potential[target] - potential[source];</span>
+<span class="fc" id="L219">				return ssspResults[source].distance(target) + potential[target] - potential[source];</span>
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
-<span class="fc" id="L223">				return ssspResults[source].getPath(target);</span>
+<span class="fc" id="L224">				return ssspResults[source].getPath(target);</span>
 			}
 
 		}
@@ -230,18 +231,18 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 			final int[] vToResIdx;
 
 			VerticesSubset(ShortestPathSingleSource.IResult[] ssspResults, int[] vToResIdx) {
-<span class="fc" id="L233">				super(ssspResults);</span>
-<span class="fc" id="L234">				this.vToResIdx = vToResIdx;</span>
-<span class="fc" id="L235">			}</span>
+<span class="fc" id="L234">				super(ssspResults);</span>
+<span class="fc" id="L235">				this.vToResIdx = vToResIdx;</span>
+<span class="fc" id="L236">			}</span>
 
 			@Override
 			public double distance(int source, int target) {
-<span class="fc" id="L239">				return ssspResults[vToResIdx[source]].distance(target) + potential[target] - potential[source];</span>
+<span class="fc" id="L240">				return ssspResults[vToResIdx[source]].distance(target) + potential[target] - potential[source];</span>
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
-<span class="fc" id="L244">				return ssspResults[vToResIdx[source]].getPath(target);</span>
+<span class="fc" id="L245">				return ssspResults[vToResIdx[source]].getPath(target);</span>
 			}
 
 		}

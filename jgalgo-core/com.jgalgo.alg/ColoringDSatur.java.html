@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Objects;
@@ -46,12 +47,12 @@ import com.jgalgo.internal.util.Assertions;
  */
 class ColoringDSatur implements ColoringAlgoBase {
 
-<span class="fc" id="L49">	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();</span>
+<span class="fc" id="L50">	private ReferenceableHeap.Builder heapBuilder = ReferenceableHeap.builder();</span>
 
 	/**
 	 * Create a new coloring algorithm object.
 	 */
-<span class="fc" id="L54">	ColoringDSatur() {}</span>
+<span class="fc" id="L55">	ColoringDSatur() {}</span>
 
 	/**
 	 * Set the implementation of the heap used by this algorithm.
@@ -59,81 +60,81 @@ class ColoringDSatur implements ColoringAlgoBase {
 	 * @param heapBuilder a builder for heaps used by this algorithm
 	 */
 	void setHeapBuilder(ReferenceableHeap.Builder heapBuilder) {
-<span class="nc" id="L62">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
-<span class="nc" id="L63">	}</span>
+<span class="nc" id="L63">		this.heapBuilder = Objects.requireNonNull(heapBuilder);</span>
+<span class="nc" id="L64">	}</span>
 
 	@Override
 	public IVertexPartition computeColoring(IndexGraph g) {
-<span class="fc" id="L67">		Assertions.onlyUndirected(g);</span>
-<span class="fc" id="L68">		Assertions.noSelfEdges(g, &quot;no valid coloring in graphs with self edges&quot;);</span>
+<span class="fc" id="L68">		Assertions.onlyUndirected(g);</span>
+<span class="fc" id="L69">		Assertions.noSelfEdges(g, &quot;no valid coloring in graphs with self edges&quot;);</span>
 
-<span class="fc" id="L70">		final int n = g.vertices().size();</span>
-<span class="fc" id="L71">		int[] colors = new int[n];</span>
-<span class="fc" id="L72">		int colorsNum = 0;</span>
-<span class="fc" id="L73">		BitSet[] neighborColors = new BitSet[n];</span>
-<span class="fc" id="L74">		Arrays.fill(colors, -1);</span>
+<span class="fc" id="L71">		final int n = g.vertices().size();</span>
+<span class="fc" id="L72">		int[] colors = new int[n];</span>
+<span class="fc" id="L73">		int colorsNum = 0;</span>
+<span class="fc" id="L74">		BitSet[] neighborColors = new BitSet[n];</span>
+<span class="fc" id="L75">		Arrays.fill(colors, -1);</span>
 
-<span class="fc" id="L76">		LongIntReferenceableHeap heap = (LongIntReferenceableHeap) heapBuilder.build(long.class, int.class);</span>
-<span class="fc" id="L77">		LongIntReferenceableHeap.Ref[] refs = new LongIntReferenceableHeap.Ref[n];</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">		for (int u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L79">			long key = heapKey(0, g.outEdges(u).size());</span>
-<span class="fc" id="L80">			refs[u] = heap.insert(key, u);</span>
-<span class="fc" id="L81">			neighborColors[u] = new BitSet();</span>
-		}
+<span class="fc" id="L77">		LongIntReferenceableHeap heap = (LongIntReferenceableHeap) heapBuilder.build(long.class, int.class);</span>
+<span class="fc" id="L78">		LongIntReferenceableHeap.Ref[] refs = new LongIntReferenceableHeap.Ref[n];</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">		for (int u : range(n)) {</span>
+<span class="fc" id="L80">			long key = heapKey(0, g.outEdges(u).size());</span>
+<span class="fc" id="L81">			refs[u] = heap.insert(key, u);</span>
+<span class="fc" id="L82">			neighborColors[u] = new BitSet();</span>
+<span class="fc" id="L83">		}</span>
 
-<span class="fc bfc" id="L84" title="All 2 branches covered.">		while (heap.isNotEmpty()) {</span>
-<span class="fc" id="L85">			int u = heap.extractMin().value();</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">		while (heap.isNotEmpty()) {</span>
+<span class="fc" id="L86">			int u = heap.extractMin().value();</span>
 
-<span class="fc" id="L87">			int color = colors[u] = neighborColors[u].nextClearBit(0);</span>
-<span class="fc" id="L88">			colorsNum = Math.max(colorsNum, color + 1);</span>
+<span class="fc" id="L88">			int color = colors[u] = neighborColors[u].nextClearBit(0);</span>
+<span class="fc" id="L89">			colorsNum = Math.max(colorsNum, color + 1);</span>
 
-<span class="fc bfc" id="L90" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L91">				eit.nextInt();</span>
-<span class="fc" id="L92">				int v = eit.targetInt();</span>
-<span class="fc bfc" id="L93" title="All 2 branches covered.">				if (colors[v] == -1) { /* v is uncolored */</span>
-<span class="fc" id="L94">					LongIntReferenceableHeap.Ref ref = refs[v];</span>
-<span class="fc" id="L95">					long key = ref.key();</span>
-<span class="fc" id="L96">					int saturationDegree = heapKeyToSaturationDegree(key);</span>
-<span class="fc" id="L97">					int uncoloredDegree = heapKeyToUncoloredDegree(key);</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L92">				eit.nextInt();</span>
+<span class="fc" id="L93">				int v = eit.targetInt();</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">				if (colors[v] == -1) { /* v is uncolored */</span>
+<span class="fc" id="L95">					LongIntReferenceableHeap.Ref ref = refs[v];</span>
+<span class="fc" id="L96">					long key = ref.key();</span>
+<span class="fc" id="L97">					int saturationDegree = heapKeyToSaturationDegree(key);</span>
+<span class="fc" id="L98">					int uncoloredDegree = heapKeyToUncoloredDegree(key);</span>
 
 					/* we colored u, v has one less uncolored neighbor */
-<span class="fc" id="L100">					uncoloredDegree--;</span>
+<span class="fc" id="L101">					uncoloredDegree--;</span>
 
-<span class="fc bfc" id="L102" title="All 2 branches covered.">					if (!neighborColors[v].get(color)) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">					if (!neighborColors[v].get(color)) {</span>
 						/* v has one more unique color in its neighborhood */
-<span class="fc" id="L104">						neighborColors[v].set(color);</span>
-<span class="fc" id="L105">						saturationDegree++;</span>
+<span class="fc" id="L105">						neighborColors[v].set(color);</span>
+<span class="fc" id="L106">						saturationDegree++;</span>
 
-<span class="fc" id="L107">						key = heapKey(saturationDegree, uncoloredDegree);</span>
-<span class="fc" id="L108">						heap.decreaseKey(ref, key);</span>
+<span class="fc" id="L108">						key = heapKey(saturationDegree, uncoloredDegree);</span>
+<span class="fc" id="L109">						heap.decreaseKey(ref, key);</span>
 					} else {
 
 						/*
 						 * we would prefer to use decreaseKey, but we only decrease the uncolored degree, which is
 						 * increaseKey with respect to the heap ordering. pay \(O(\log n)\) instead of \(O(1)\)
 						 */
-<span class="fc" id="L115">						key = heapKey(saturationDegree, uncoloredDegree);</span>
-<span class="fc" id="L116">						heap.increaseKey(ref, key);</span>
+<span class="fc" id="L116">						key = heapKey(saturationDegree, uncoloredDegree);</span>
+<span class="fc" id="L117">						heap.increaseKey(ref, key);</span>
 					}
 
 				}
-<span class="fc" id="L120">			}</span>
-<span class="fc" id="L121">		}</span>
-<span class="fc" id="L122">		return new VertexPartitions.Impl(g, colorsNum, colors);</span>
+<span class="fc" id="L121">			}</span>
+<span class="fc" id="L122">		}</span>
+<span class="fc" id="L123">		return new VertexPartitions.Impl(g, colorsNum, colors);</span>
 	}
 
 	private static long heapKey(int saturationDegree, int uncoloredDegree) {
 		/* We want to compose both the saturationDegree and uncoloredDegree in a single long key */
 		/* negate saturationDegree, more neighbor colors should be extracted from the heap first */
-<span class="fc" id="L128">		return -(((long) saturationDegree &lt;&lt; 32) + uncoloredDegree);</span>
+<span class="fc" id="L129">		return -(((long) saturationDegree &lt;&lt; 32) + uncoloredDegree);</span>
 	}
 
 	private static int heapKeyToSaturationDegree(long key) {
-<span class="fc" id="L132">		return (int) (-key &gt;&gt; 32);</span>
+<span class="fc" id="L133">		return (int) (-key &gt;&gt; 32);</span>
 	}
 
 	private static int heapKeyToUncoloredDegree(long key) {
-<span class="fc" id="L136">		return (int) ((-key) &amp; ((1L &lt;&lt; 32) - 1));</span>
+<span class="fc" id="L137">		return (int) ((-key) &amp; ((1L &lt;&lt; 32) - 1));</span>
 	}
 
 }

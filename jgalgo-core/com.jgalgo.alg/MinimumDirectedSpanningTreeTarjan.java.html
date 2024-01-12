@@ -96,16 +96,16 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L96">			root = vOrigToRef[root];</span>
 
 <span class="fc" id="L98">			int subGraphEdgesNum = 0;</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">			for (int e : range(g.edges().size()))</span>
 <span class="pc bpc" id="L100" title="1 of 4 branches missed.">				if (vertices.contains(g.edgeSource(e)) &amp;&amp; vertices.contains(g.edgeTarget(e)))</span>
 <span class="fc" id="L101">					subGraphEdgesNum++;</span>
 <span class="fc" id="L102">			int[] edgeRef = new int[subGraphEdgesNum];</span>
 <span class="fc" id="L103">			builder.ensureEdgeCapacity(subGraphEdgesNum);</span>
-<span class="fc bfc" id="L104" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">			for (int e : range(g.edges().size())) {</span>
 <span class="fc" id="L105">				int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="pc bpc" id="L106" title="1 of 6 branches missed.">				if (u != v &amp;&amp; vertices.contains(u) &amp;&amp; vertices.contains(v))</span>
 <span class="fc" id="L107">					edgeRef[builder.addEdge(vOrigToRef[u], vOrigToRef[v])] = e;</span>
-			}
+<span class="fc" id="L108">			}</span>
 
 <span class="fc" id="L110">			g = builder.buildMutable();</span>
 
@@ -116,7 +116,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 <span class="fc" id="L117">			ContractedGraph contractedGraph = contract(g, edgeRef, w, artificialEdgesThreshold);</span>
 <span class="fc" id="L118">			int[] mdstEdges = expand(g, contractedGraph, root, artificialEdgesThreshold);</span>
-<span class="fc bfc" id="L119" title="All 2 branches covered.">			for (int i = 0; i &lt; mdstEdges.length; i++)</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">			for (int i : range(mdstEdges.length))</span>
 <span class="fc" id="L120">				mdstEdges[i] = edgeRef[mdstEdges[i]];</span>
 <span class="fc" id="L121">			return new MinimumSpanningTrees.IndexResult(mdstEdges);</span>
 		}
@@ -160,7 +160,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L160">		}</span>
 
 <span class="fc" id="L162">		int mstSize = 0;</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">		for (int v = 0; v &lt; cg.n; v++)</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">		for (int v : range(cg.n))</span>
 <span class="pc bpc" id="L164" title="1 of 4 branches missed.">			if (v != root &amp;&amp; inEdge[v] &lt; artificialEdgesThreshold)</span>
 <span class="fc" id="L165">				mstSize++;</span>
 <span class="fc" id="L166">		int[] mst = new int[mstSize];</span>
@@ -186,7 +186,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 <span class="fc" id="L186">				blockToV[b] = v;</span>
 
 <span class="fc" id="L188">		int rootBlock = connectivityRes.vertexBlock(root);</span>
-<span class="fc bfc" id="L189" title="All 2 branches covered.">		blockLoop: for (int b = 0; b &lt; blockNum; b++) {</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">		blockLoop: for (int b : range(blockNum)) {</span>
 <span class="fc bfc" id="L190" title="All 2 branches covered.">			if (b == rootBlock)</span>
 <span class="fc" id="L191">				continue; /* avoid self edges */</span>
 <span class="fc bfc" id="L192" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(blockToV[b]).iterator(); eit.hasNext();) {</span>
@@ -196,7 +196,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 			}
 <span class="fc" id="L197">			int e = g.addEdge(blockToV[b], root);</span>
 <span class="pc bnc" id="L198" title="All 2 branches missed.">			assert e &gt;= artificialEdgesThreshold;</span>
-		}
+<span class="fc" id="L199">		}</span>
 <span class="fc" id="L200">	}</span>
 
 	private ContractedGraph contract(IndexGraph g, int[] edgeRef, IWeightFunction wOrig, int artificialEdgesThreshold) {
@@ -207,7 +207,7 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 
 <span class="fc" id="L208">		UnionFindValue uf = UnionFindValue.newInstance(n);</span>
 <span class="fc" id="L209">		int[] ufIdxToV = new int[VMaxNum];</span>
-<span class="fc bfc" id="L210" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L210" title="All 2 branches covered.">		for (int v : range(n))</span>
 <span class="fc" id="L211">			ufIdxToV[uf.make()] = v;</span>
 
 		IWeightFunction w;
@@ -233,9 +233,9 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 		}
 
 <span class="fc" id="L235">		IntReferenceableHeap[] heap = new IntReferenceableHeap[VMaxNum];</span>
-<span class="fc bfc" id="L236" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">		for (int v : range(n))</span>
 <span class="fc" id="L237">			heap[v] = (IntReferenceableHeap) heapBuilder.build(int.class, void.class, w);</span>
-<span class="fc bfc" id="L238" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">		for (int v : range(n))</span>
 <span class="fc bfc" id="L239" title="All 2 branches covered.">			for (int e : g.inEdges(v))</span>
 <span class="fc bfc" id="L240" title="All 2 branches covered.">				if (g.edgeSource(e) != g.edgeTarget(e))</span>
 <span class="fc" id="L241">					heap[v].insert(e);</span>

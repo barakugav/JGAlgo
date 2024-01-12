@@ -274,7 +274,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 		/* generate a random Prufer code of length n-2 */
 <span class="fc" id="L276">		int[] pruferCode = new int[n - 2];</span>
-<span class="fc bfc" id="L277" title="All 2 branches covered.">		for (int i = 0; i &lt; n - 2; i++)</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">		for (int i : range(n - 2))</span>
 <span class="fc" id="L278">			pruferCode[i] = rand.nextInt(n);</span>
 
 		/* 'decode' the Prufer code to a tree of size n */

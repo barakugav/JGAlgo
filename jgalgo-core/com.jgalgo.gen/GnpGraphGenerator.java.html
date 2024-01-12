@@ -15,6 +15,7 @@
  */
 package com.jgalgo.gen;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
@@ -72,10 +73,10 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	private final GraphFactory&lt;V, E&gt; factory;
 	private Variant2&lt;List&lt;V&gt;, IntObjectPair&lt;IdBuilder&lt;V&gt;&gt;&gt; vertices;
 	private IdBuilder&lt;E&gt; edgeBuilder;
-<span class="fc" id="L75">	private boolean directed = false;</span>
-<span class="fc" id="L76">	private boolean selfEdges = false;</span>
-<span class="fc" id="L77">	private double p = 0.1;</span>
-<span class="fc" id="L78">	private final Random rand = new Random();</span>
+<span class="fc" id="L76">	private boolean directed = false;</span>
+<span class="fc" id="L77">	private boolean selfEdges = false;</span>
+<span class="fc" id="L78">	private double p = 0.1;</span>
+<span class="fc" id="L79">	private final Random rand = new Random();</span>
 
 	/**
 	 * Create a new \(G(n,p)\) graph generator that will use the default graph factory.
@@ -90,8 +91,8 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * mandatory. It can be set using {@link #edges(IdBuilder)}.
 	 */
 	public GnpGraphGenerator() {
-<span class="fc" id="L93">		this(GraphFactory.undirected());</span>
-<span class="fc" id="L94">	}</span>
+<span class="fc" id="L94">		this(GraphFactory.undirected());</span>
+<span class="fc" id="L95">	}</span>
 
 	/**
 	 * Create a new \(G(n,p)\) graph generator that will use the given graph factory.
@@ -112,9 +113,9 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 *
 	 * @param factory the graph factory that will be used to create the generated graph(s)
 	 */
-<span class="fc" id="L115">	public GnpGraphGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
-<span class="fc" id="L116">		this.factory = Objects.requireNonNull(factory);</span>
-<span class="fc" id="L117">	}</span>
+<span class="fc" id="L116">	public GnpGraphGenerator(GraphFactory&lt;V, E&gt; factory) {</span>
+<span class="fc" id="L117">		this.factory = Objects.requireNonNull(factory);</span>
+<span class="fc" id="L118">	}</span>
 
 	/**
 	 * Get the graph factory that will be used to create the generated graph(s).
@@ -134,7 +135,7 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * @return the graph factory that will be used to create the generated graph(s)
 	 */
 	public GraphFactory&lt;V, E&gt; graphFactory() {
-<span class="fc" id="L137">		return factory;</span>
+<span class="fc" id="L138">		return factory;</span>
 	}
 
 	/**
@@ -150,13 +151,13 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public GnpGraphGenerator&lt;V, E&gt; vertices(Collection&lt;? extends V&gt; vertices) {
-<span class="fc bfc" id="L153" title="All 2 branches covered.">		if (factory instanceof IntGraphFactory) {</span>
-<span class="fc" id="L154">			vertices = (List&lt;V&gt;) new IntArrayList((Collection&lt;Integer&gt;) vertices);</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">		if (factory instanceof IntGraphFactory) {</span>
+<span class="fc" id="L155">			vertices = (List&lt;V&gt;) new IntArrayList((Collection&lt;Integer&gt;) vertices);</span>
 		} else {
-<span class="fc" id="L156">			vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
+<span class="fc" id="L157">			vertices = new ObjectArrayList&lt;&gt;(vertices);</span>
 		}
-<span class="fc" id="L158">		this.vertices = Variant2.ofA((List&lt;V&gt;) vertices);</span>
-<span class="fc" id="L159">		return this;</span>
+<span class="fc" id="L159">		this.vertices = Variant2.ofA((List&lt;V&gt;) vertices);</span>
+<span class="fc" id="L160">		return this;</span>
 	}
 
 	/**
@@ -178,8 +179,8 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * @throws IllegalArgumentException if {@code verticesNum} is negative
 	 */
 	public GnpGraphGenerator&lt;V, E&gt; vertices(int verticesNum) {
-<span class="fc" id="L181">		vertices(verticesNum, null);</span>
-<span class="fc" id="L182">		return this;</span>
+<span class="fc" id="L182">		vertices(verticesNum, null);</span>
+<span class="fc" id="L183">		return this;</span>
 	}
 
 	/**
@@ -199,10 +200,10 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * @throws IllegalArgumentException if {@code verticesNum} is negative
 	 */
 	public GnpGraphGenerator&lt;V, E&gt; vertices(int verticesNum, IdBuilder&lt;V&gt; vertexBuilder) {
-<span class="fc bfc" id="L202" title="All 2 branches covered.">		if (verticesNum &lt; 0)</span>
-<span class="fc" id="L203">			throw new IllegalArgumentException(&quot;number of vertices must be non-negative&quot;);</span>
-<span class="fc" id="L204">		this.vertices = Variant2.ofB(IntObjectPair.of(verticesNum, vertexBuilder));</span>
-<span class="fc" id="L205">		return this;</span>
+<span class="fc bfc" id="L203" title="All 2 branches covered.">		if (verticesNum &lt; 0)</span>
+<span class="fc" id="L204">			throw new IllegalArgumentException(&quot;number of vertices must be non-negative&quot;);</span>
+<span class="fc" id="L205">		this.vertices = Variant2.ofB(IntObjectPair.of(verticesNum, vertexBuilder));</span>
+<span class="fc" id="L206">		return this;</span>
 	}
 
 	/**
@@ -220,8 +221,8 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * @return             this generator
 	 */
 	public GnpGraphGenerator&lt;V, E&gt; edges(IdBuilder&lt;E&gt; edgeBuilder) {
-<span class="fc" id="L223">		this.edgeBuilder = edgeBuilder;</span>
-<span class="fc" id="L224">		return this;</span>
+<span class="fc" id="L224">		this.edgeBuilder = edgeBuilder;</span>
+<span class="fc" id="L225">		return this;</span>
 	}
 
 	/**
@@ -234,8 +235,8 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * @return          this generator
 	 */
 	public GnpGraphGenerator&lt;V, E&gt; directed(boolean directed) {
-<span class="fc" id="L237">		this.directed = directed;</span>
-<span class="fc" id="L238">		return this;</span>
+<span class="fc" id="L238">		this.directed = directed;</span>
+<span class="fc" id="L239">		return this;</span>
 	}
 
 	/**
@@ -249,8 +250,8 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * @return           this generator
 	 */
 	public GnpGraphGenerator&lt;V, E&gt; selfEdges(boolean selfEdges) {
-<span class="fc" id="L252">		this.selfEdges = selfEdges;</span>
-<span class="fc" id="L253">		return this;</span>
+<span class="fc" id="L253">		this.selfEdges = selfEdges;</span>
+<span class="fc" id="L254">		return this;</span>
 	}
 
 	/**
@@ -269,10 +270,10 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * @throws IllegalArgumentException if the probability is not in the range \([0,1]\)
 	 */
 	public GnpGraphGenerator&lt;V, E&gt; edgeProbability(double p) {
-<span class="fc bfc" id="L272" title="All 4 branches covered.">		if (!(0 &lt;= p &amp;&amp; p &lt;= 1))</span>
-<span class="fc" id="L273">			throw new IllegalArgumentException(&quot;edge probability must be in [0,1]&quot;);</span>
-<span class="fc" id="L274">		this.p = p;</span>
-<span class="fc" id="L275">		return this;</span>
+<span class="fc bfc" id="L273" title="All 4 branches covered.">		if (!(0 &lt;= p &amp;&amp; p &lt;= 1))</span>
+<span class="fc" id="L274">			throw new IllegalArgumentException(&quot;edge probability must be in [0,1]&quot;);</span>
+<span class="fc" id="L275">		this.p = p;</span>
+<span class="fc" id="L276">		return this;</span>
 	}
 
 	/**
@@ -285,71 +286,71 @@ public class GnpGraphGenerator&lt;V, E&gt; implements GraphGenerator&lt;V, E&gt;
 	 * @return      this generator
 	 */
 	public GnpGraphGenerator&lt;V, E&gt; seed(long seed) {
-<span class="fc" id="L288">		rand.setSeed(seed);</span>
-<span class="fc" id="L289">		return this;</span>
+<span class="fc" id="L289">		rand.setSeed(seed);</span>
+<span class="fc" id="L290">		return this;</span>
 	}
 
 	@Override
 	public GraphBuilder&lt;V, E&gt; generateIntoBuilder() {
-<span class="fc bfc" id="L294" title="All 2 branches covered.">		if (vertices == null)</span>
-<span class="fc" id="L295">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
-<span class="fc" id="L296">		final int n = vertices.map(List::size, IntObjectPair::firstInt).intValue();</span>
+<span class="fc bfc" id="L295" title="All 2 branches covered.">		if (vertices == null)</span>
+<span class="fc" id="L296">			throw new IllegalStateException(&quot;Vertices not set&quot;);</span>
+<span class="fc" id="L297">		final int n = vertices.map(List::size, IntObjectPair::firstInt).intValue();</span>
 
-<span class="fc" id="L298">		factory.setDirected(directed);</span>
-<span class="fc bfc" id="L299" title="All 2 branches covered.">		if (selfEdges)</span>
-<span class="fc" id="L300">			factory.allowSelfEdges();</span>
-<span class="fc" id="L301">		GraphBuilder&lt;V, E&gt; g = factory.newBuilder();</span>
-<span class="fc bfc" id="L302" title="All 2 branches covered.">		IdBuilder&lt;E&gt; edgeBuilder = this.edgeBuilder != null ? this.edgeBuilder : g.edgeBuilder();</span>
-<span class="fc bfc" id="L303" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
-<span class="fc" id="L304">			throw new IllegalStateException(&quot;Edge builder not provided and graph factory does not have one&quot;);</span>
+<span class="fc" id="L299">		factory.setDirected(directed);</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">		if (selfEdges)</span>
+<span class="fc" id="L301">			factory.allowSelfEdges();</span>
+<span class="fc" id="L302">		GraphBuilder&lt;V, E&gt; g = factory.newBuilder();</span>
+<span class="fc bfc" id="L303" title="All 2 branches covered.">		IdBuilder&lt;E&gt; edgeBuilder = this.edgeBuilder != null ? this.edgeBuilder : g.edgeBuilder();</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">		if (edgeBuilder == null)</span>
+<span class="fc" id="L305">			throw new IllegalStateException(&quot;Edge builder not provided and graph factory does not have one&quot;);</span>
 
 		final List&lt;V&gt; vertices;
-<span class="fc bfc" id="L307" title="All 2 branches covered.">		if (this.vertices.contains(List.class)) {</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">		if (this.vertices.contains(List.class)) {</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L309">			List&lt;V&gt; vertices0 = this.vertices.get(List.class);</span>
-<span class="fc" id="L310">			g.addVertices(vertices = vertices0);</span>
-<span class="fc" id="L311">		} else {</span>
+<span class="fc" id="L310">			List&lt;V&gt; vertices0 = this.vertices.get(List.class);</span>
+<span class="fc" id="L311">			g.addVertices(vertices = vertices0);</span>
+<span class="fc" id="L312">		} else {</span>
 			@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L313">			IntObjectPair&lt;IdBuilder&lt;V&gt;&gt; p = this.vertices.get(IntObjectPair.class);</span>
-<span class="fc" id="L314">			int verticesNum = p.firstInt();</span>
-<span class="fc bfc" id="L315" title="All 2 branches covered.">			IdBuilder&lt;V&gt; vertexBuilder = p.second() != null ? p.second() : g.vertexBuilder();</span>
-<span class="fc bfc" id="L316" title="All 2 branches covered.">			if (vertexBuilder == null)</span>
-<span class="fc" id="L317">				throw new IllegalStateException(&quot;Vertex builder not provided and graph factory does not have one&quot;);</span>
-<span class="fc bfc" id="L318" title="All 2 branches covered.">			if (g instanceof IntGraphBuilder) {</span>
+<span class="fc" id="L314">			IntObjectPair&lt;IdBuilder&lt;V&gt;&gt; p = this.vertices.get(IntObjectPair.class);</span>
+<span class="fc" id="L315">			int verticesNum = p.firstInt();</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">			IdBuilder&lt;V&gt; vertexBuilder = p.second() != null ? p.second() : g.vertexBuilder();</span>
+<span class="fc bfc" id="L317" title="All 2 branches covered.">			if (vertexBuilder == null)</span>
+<span class="fc" id="L318">				throw new IllegalStateException(&quot;Vertex builder not provided and graph factory does not have one&quot;);</span>
+<span class="fc bfc" id="L319" title="All 2 branches covered.">			if (g instanceof IntGraphBuilder) {</span>
 				@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L320">				List&lt;V&gt; vertices0 = (List&lt;V&gt;) new IntArrayList(verticesNum);</span>
-<span class="fc" id="L321">				vertices = vertices0;</span>
-<span class="fc" id="L322">			} else {</span>
-<span class="fc" id="L323">				vertices = new ObjectArrayList&lt;&gt;(verticesNum);</span>
+<span class="fc" id="L321">				List&lt;V&gt; vertices0 = (List&lt;V&gt;) new IntArrayList(verticesNum);</span>
+<span class="fc" id="L322">				vertices = vertices0;</span>
+<span class="fc" id="L323">			} else {</span>
+<span class="fc" id="L324">				vertices = new ObjectArrayList&lt;&gt;(verticesNum);</span>
 			}
-<span class="fc" id="L325">			g.ensureVertexCapacity(verticesNum);</span>
-<span class="fc bfc" id="L326" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++) {</span>
-<span class="fc" id="L327">				V vertex = vertexBuilder.build(g.vertices());</span>
-<span class="fc" id="L328">				g.addVertex(vertex);</span>
-<span class="fc" id="L329">				vertices.add(vertex);</span>
+<span class="fc" id="L326">			g.ensureVertexCapacity(verticesNum);</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">			for (int i = 0; i &lt; verticesNum; i++) {</span>
+<span class="fc" id="L328">				V vertex = vertexBuilder.build(g.vertices());</span>
+<span class="fc" id="L329">				g.addVertex(vertex);</span>
+<span class="fc" id="L330">				vertices.add(vertex);</span>
 			}
 		}
 
-<span class="fc bfc" id="L333" title="All 2 branches covered.">		if (p &gt; 0) {</span>
-<span class="fc bfc" id="L334" title="All 2 branches covered.">			for (int uIdx = 0; uIdx &lt; n; uIdx++) {</span>
-<span class="fc" id="L335">				V u = vertices.get(uIdx);</span>
-<span class="fc bfc" id="L336" title="All 2 branches covered.">				if (directed) {</span>
-<span class="fc bfc" id="L337" title="All 2 branches covered.">					for (int vIdx = 0; vIdx &lt; uIdx; vIdx++) {</span>
-<span class="fc" id="L338">						V v = vertices.get(vIdx);</span>
-<span class="fc bfc" id="L339" title="All 2 branches covered.">						if (rand.nextDouble() &lt;= p)</span>
-<span class="fc" id="L340">							g.addEdge(u, v, edgeBuilder.build(g.edges()));</span>
-					}
+<span class="fc bfc" id="L334" title="All 2 branches covered.">		if (p &gt; 0) {</span>
+<span class="fc bfc" id="L335" title="All 2 branches covered.">			for (int uIdx : range(n)) {</span>
+<span class="fc" id="L336">				V u = vertices.get(uIdx);</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">				if (directed) {</span>
+<span class="fc bfc" id="L338" title="All 2 branches covered.">					for (int vIdx : range(uIdx)) {</span>
+<span class="fc" id="L339">						V v = vertices.get(vIdx);</span>
+<span class="fc bfc" id="L340" title="All 2 branches covered.">						if (rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L341">							g.addEdge(u, v, edgeBuilder.build(g.edges()));</span>
+<span class="fc" id="L342">					}</span>
 				}
-<span class="pc bpc" id="L343" title="1 of 4 branches missed.">				if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
-<span class="fc" id="L344">					g.addEdge(u, u, edgeBuilder.build(g.edges()));</span>
-<span class="fc bfc" id="L345" title="All 2 branches covered.">				for (int vIdx = uIdx + 1; vIdx &lt; n; vIdx++) {</span>
-<span class="fc" id="L346">					V v = vertices.get(vIdx);</span>
-<span class="fc bfc" id="L347" title="All 2 branches covered.">					if (rand.nextDouble() &lt;= p)</span>
-<span class="fc" id="L348">						g.addEdge(u, v, edgeBuilder.build(g.edges()));</span>
-				}
-			}
+<span class="pc bpc" id="L344" title="1 of 4 branches missed.">				if (selfEdges &amp;&amp; rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L345">					g.addEdge(u, u, edgeBuilder.build(g.edges()));</span>
+<span class="fc bfc" id="L346" title="All 2 branches covered.">				for (int vIdx : range(uIdx + 1, n)) {</span>
+<span class="fc" id="L347">					V v = vertices.get(vIdx);</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">					if (rand.nextDouble() &lt;= p)</span>
+<span class="fc" id="L349">						g.addEdge(u, v, edgeBuilder.build(g.edges()));</span>
+<span class="fc" id="L350">				}</span>
+<span class="fc" id="L351">			}</span>
 		}
-<span class="fc" id="L352">		return g;</span>
+<span class="fc" id="L353">		return g;</span>
 	}
 
 }

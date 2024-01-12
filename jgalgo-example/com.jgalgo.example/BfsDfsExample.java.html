@@ -16,8 +16,8 @@
 package com.jgalgo.example;
 
 import java.util.List;
-import com.jgalgo.alg.Bfs;
-import com.jgalgo.alg.Dfs;
+import com.jgalgo.alg.BfsIter;
+import com.jgalgo.alg.DfsIter;
 import com.jgalgo.graph.Graph;
 
 /**
@@ -38,7 +38,7 @@ public class BfsDfsExample {
 <span class="fc" id="L38">		String source = g.vertices().iterator().next();</span>
 
 		/* Iterate over the graph vertices in a breadth-first search (BFS) order */
-<span class="fc bfc" id="L41" title="All 2 branches covered.">		for (Bfs.Iter&lt;String, Integer&gt; iter = Bfs.newInstance(g, source); iter.hasNext();) {</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">		for (BfsIter&lt;String, Integer&gt; iter = BfsIter.newInstance(g, source); iter.hasNext();) {</span>
 			/* v is a vertex the iterator didn't visit before */
 <span class="fc" id="L43">			String v = iter.next();</span>
 			/* e is the edge used to reach v */
@@ -59,7 +59,7 @@ public class BfsDfsExample {
 <span class="fc" id="L59">		String source = g.vertices().iterator().next();</span>
 
 		/* Iterate over the graph vertices in a depth-first search (DFS) order */
-<span class="fc bfc" id="L62" title="All 2 branches covered.">		for (Dfs.Iter&lt;String, Integer&gt; iter = Dfs.newInstance(g, source); iter.hasNext();) {</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		for (DfsIter&lt;String, Integer&gt; iter = DfsIter.newInstance(g, source); iter.hasNext();) {</span>
 			/* v is a vertex the iterator didn't visit before */
 <span class="fc" id="L64">			String v = iter.next();</span>
 			/* edgePath is a list of edges, forming a path from the source to v */

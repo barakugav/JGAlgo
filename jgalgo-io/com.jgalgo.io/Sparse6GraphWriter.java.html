@@ -124,144 +124,146 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L124">			inDegree[v]++;</span>
 		}
 <span class="fc" id="L126">		int[] offset = inDegree;</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">		for (int s = 0, v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L128">			int temp = offset[v];</span>
-<span class="fc" id="L129">			offset[v] = s;</span>
-<span class="fc" id="L130">			s += temp;</span>
-		}
-<span class="fc bfc" id="L132" title="All 2 branches covered.">		for (int e : edges) {</span>
-<span class="fc" id="L133">			Integer eObj = Integer.valueOf(e);</span>
-<span class="fc" id="L134">			int u = graph.edgeSource(eObj).intValue();</span>
-<span class="fc" id="L135">			int v = graph.edgeTarget(eObj).intValue();</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">			if (u &lt; v) {</span>
-<span class="fc" id="L137">				int temp = u;</span>
-<span class="fc" id="L138">				u = v;</span>
-<span class="fc" id="L139">				v = temp;</span>
+<span class="fc" id="L127">		int s = 0;</span>
+<span class="fc bfc" id="L128" title="All 2 branches covered.">		for (int v : range(n)) {</span>
+<span class="fc" id="L129">			int temp = offset[v];</span>
+<span class="fc" id="L130">			offset[v] = s;</span>
+<span class="fc" id="L131">			s += temp;</span>
+<span class="fc" id="L132">		}</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L134">			Integer eObj = Integer.valueOf(e);</span>
+<span class="fc" id="L135">			int u = graph.edgeSource(eObj).intValue();</span>
+<span class="fc" id="L136">			int v = graph.edgeTarget(eObj).intValue();</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			if (u &lt; v) {</span>
+<span class="fc" id="L138">				int temp = u;</span>
+<span class="fc" id="L139">				u = v;</span>
+<span class="fc" id="L140">				v = temp;</span>
 			}
-<span class="fc" id="L141">			edgesSorted[offset[v]++] = e;</span>
+<span class="fc" id="L142">			edgesSorted[offset[v]++] = e;</span>
 		}
 		{
-<span class="fc" id="L144">			int[] temp = edges;</span>
-<span class="fc" id="L145">			edges = edgesSorted;</span>
-<span class="fc" id="L146">			edgesSorted = temp;</span>
+<span class="fc" id="L145">			int[] temp = edges;</span>
+<span class="fc" id="L146">			edges = edgesSorted;</span>
+<span class="fc" id="L147">			edgesSorted = temp;</span>
 		}
 		/* bucket sort by source vertex */
-<span class="fc" id="L149">		int[] outDegree = inDegree;</span>
-<span class="fc" id="L150">		Arrays.fill(outDegree, 0);</span>
-<span class="fc bfc" id="L151" title="All 2 branches covered.">		for (int e : edges) {</span>
-<span class="fc" id="L152">			Integer eObj = Integer.valueOf(e);</span>
-<span class="fc" id="L153">			int u = graph.edgeSource(eObj).intValue();</span>
-<span class="fc" id="L154">			int v = graph.edgeTarget(eObj).intValue();</span>
-<span class="fc bfc" id="L155" title="All 2 branches covered.">			if (u &lt; v) {</span>
-<span class="fc" id="L156">				int temp = u;</span>
-<span class="fc" id="L157">				u = v;</span>
-<span class="fc" id="L158">				v = temp;</span>
+<span class="fc" id="L150">		int[] outDegree = inDegree;</span>
+<span class="fc" id="L151">		Arrays.fill(outDegree, 0);</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L153">			Integer eObj = Integer.valueOf(e);</span>
+<span class="fc" id="L154">			int u = graph.edgeSource(eObj).intValue();</span>
+<span class="fc" id="L155">			int v = graph.edgeTarget(eObj).intValue();</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">			if (u &lt; v) {</span>
+<span class="fc" id="L157">				int temp = u;</span>
+<span class="fc" id="L158">				u = v;</span>
+<span class="fc" id="L159">				v = temp;</span>
 			}
-<span class="fc" id="L160">			outDegree[u]++;</span>
+<span class="fc" id="L161">			outDegree[u]++;</span>
 		}
-<span class="fc" id="L162">		offset = outDegree;</span>
-<span class="fc bfc" id="L163" title="All 2 branches covered.">		for (int s = 0, v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L164">			int temp = offset[v];</span>
-<span class="fc" id="L165">			offset[v] = s;</span>
-<span class="fc" id="L166">			s += temp;</span>
-		}
-<span class="fc bfc" id="L168" title="All 2 branches covered.">		for (int e : edges) {</span>
-<span class="fc" id="L169">			Integer eObj = Integer.valueOf(e);</span>
-<span class="fc" id="L170">			int u = graph.edgeSource(eObj).intValue();</span>
-<span class="fc" id="L171">			int v = graph.edgeTarget(eObj).intValue();</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">			if (u &lt; v) {</span>
-<span class="fc" id="L173">				int temp = u;</span>
-<span class="fc" id="L174">				u = v;</span>
-<span class="fc" id="L175">				v = temp;</span>
+<span class="fc" id="L163">		offset = outDegree;</span>
+<span class="fc" id="L164">		s = 0;</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">		for (int v : range(n)) {</span>
+<span class="fc" id="L166">			int temp = offset[v];</span>
+<span class="fc" id="L167">			offset[v] = s;</span>
+<span class="fc" id="L168">			s += temp;</span>
+<span class="fc" id="L169">		}</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L171">			Integer eObj = Integer.valueOf(e);</span>
+<span class="fc" id="L172">			int u = graph.edgeSource(eObj).intValue();</span>
+<span class="fc" id="L173">			int v = graph.edgeTarget(eObj).intValue();</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">			if (u &lt; v) {</span>
+<span class="fc" id="L175">				int temp = u;</span>
+<span class="fc" id="L176">				u = v;</span>
+<span class="fc" id="L177">				v = temp;</span>
 			}
-<span class="fc" id="L177">			edgesSorted[offset[u]++] = e;</span>
+<span class="fc" id="L179">			edgesSorted[offset[u]++] = e;</span>
 		}
 		{
 			// int[] temp = edges;
-<span class="fc" id="L181">			edges = edgesSorted;</span>
+<span class="fc" id="L183">			edges = edgesSorted;</span>
 			// edgesSorted = temp;
 		}
 		/* assert sorted */
-<span class="fc bfc" id="L185" title="All 2 branches covered.">		if (m &gt; 0) {</span>
-<span class="fc" id="L186">			final int[] edges0 = edges;</span>
-<span class="pc bnc" id="L187" title="All 2 branches missed.">			assert range(m - 1).allMatch(i -&gt; {</span>
-<span class="nc" id="L188">				int e1 = edges0[i], e2 = edges0[i + 1];</span>
-<span class="nc" id="L189">				Integer e1Obj = Integer.valueOf(e1);</span>
-<span class="nc" id="L190">				Integer e2Obj = Integer.valueOf(e2);</span>
-<span class="nc" id="L191">				int u1 = graph.edgeSource(e1Obj).intValue();</span>
-<span class="nc" id="L192">				int v1 = graph.edgeTarget(e1Obj).intValue();</span>
-<span class="nc" id="L193">				int u2 = graph.edgeSource(e2Obj).intValue();</span>
-<span class="nc" id="L194">				int v2 = graph.edgeTarget(e2Obj).intValue();</span>
-<span class="nc bnc" id="L195" title="All 2 branches missed.">				if (u1 &lt; v1) {</span>
-<span class="nc" id="L196">					int temp = u1;</span>
-<span class="nc" id="L197">					u1 = v1;</span>
-<span class="nc" id="L198">					v1 = temp;</span>
+<span class="fc bfc" id="L187" title="All 2 branches covered.">		if (m &gt; 0) {</span>
+<span class="fc" id="L188">			final int[] edges0 = edges;</span>
+<span class="pc bnc" id="L189" title="All 2 branches missed.">			assert range(m - 1).allMatch(i -&gt; {</span>
+<span class="nc" id="L190">				int e1 = edges0[i], e2 = edges0[i + 1];</span>
+<span class="nc" id="L191">				Integer e1Obj = Integer.valueOf(e1);</span>
+<span class="nc" id="L192">				Integer e2Obj = Integer.valueOf(e2);</span>
+<span class="nc" id="L193">				int u1 = graph.edgeSource(e1Obj).intValue();</span>
+<span class="nc" id="L194">				int v1 = graph.edgeTarget(e1Obj).intValue();</span>
+<span class="nc" id="L195">				int u2 = graph.edgeSource(e2Obj).intValue();</span>
+<span class="nc" id="L196">				int v2 = graph.edgeTarget(e2Obj).intValue();</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">				if (u1 &lt; v1) {</span>
+<span class="nc" id="L198">					int temp = u1;</span>
+<span class="nc" id="L199">					u1 = v1;</span>
+<span class="nc" id="L200">					v1 = temp;</span>
 				}
-<span class="nc bnc" id="L200" title="All 2 branches missed.">				if (u2 &lt; v2) {</span>
-<span class="nc" id="L201">					int temp = u2;</span>
-<span class="nc" id="L202">					u2 = v2;</span>
-<span class="nc" id="L203">					v2 = temp;</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">				if (u2 &lt; v2) {</span>
+<span class="nc" id="L203">					int temp = u2;</span>
+<span class="nc" id="L204">					u2 = v2;</span>
+<span class="nc" id="L205">					v2 = temp;</span>
 				}
-<span class="nc bnc" id="L205" title="All 2 branches missed.">				if (u1 != u2)</span>
-<span class="nc bnc" id="L206" title="All 2 branches missed.">					return u1 &lt; u2;</span>
-<span class="nc bnc" id="L207" title="All 2 branches missed.">				if (v1 != v2)</span>
-<span class="nc bnc" id="L208" title="All 2 branches missed.">					return v1 &lt; v2;</span>
-<span class="nc bnc" id="L209" title="All 4 branches missed.">				return !keepEdgesIds || e1 &lt; e2;</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">				if (u1 != u2)</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">					return u1 &lt; u2;</span>
+<span class="nc bnc" id="L209" title="All 2 branches missed.">				if (v1 != v2)</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">					return v1 &lt; v2;</span>
+<span class="nc bnc" id="L211" title="All 4 branches missed.">				return !keepEdgesIds || e1 &lt; e2;</span>
 			});
 		}
 
-<span class="fc bfc" id="L213" title="All 2 branches covered.">		if (keepEdgesIds)</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">			for (int i = 0; i &lt; edges.length; i++)</span>
-<span class="fc bfc" id="L215" title="All 2 branches covered.">				if (edges[i] != i)</span>
-<span class="fc" id="L216">					throw new IllegalArgumentException(&quot;edges ids must be 0,1,2,...,m-1 and ordered similar to &quot;</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">		if (keepEdgesIds)</span>
+<span class="fc bfc" id="L216" title="All 2 branches covered.">			for (int i : range(edges.length))</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">				if (edges[i] != i)</span>
+<span class="fc" id="L218">					throw new IllegalArgumentException(&quot;edges ids must be 0,1,2,...,m-1 and ordered similar to &quot;</span>
 							+ &quot;(0,0),(1,0),(1,1),(2,0),(2,1),(2,2)&quot;);
 
 		/* write all edges */
-<span class="fc" id="L220">		Graph6.BitsWriter bitsWriter = new Graph6.BitsWriter(out);</span>
-<span class="fc bfc" id="L221" title="All 2 branches covered.">		final int k = n == 0 ? 0 : JGAlgoUtils.log2ceil(n);</span>
-<span class="fc" id="L222">		int currentVertex = 0;</span>
-<span class="fc bfc" id="L223" title="All 2 branches covered.">		for (int e : edges) {</span>
-<span class="fc" id="L224">			int u = graph.edgeSource(Integer.valueOf(e)).intValue();</span>
-<span class="fc" id="L225">			int v = graph.edgeTarget(Integer.valueOf(e)).intValue();</span>
-<span class="fc bfc" id="L226" title="All 2 branches covered.">			if (u &lt; v) {</span>
-<span class="fc" id="L227">				int temp = u;</span>
-<span class="fc" id="L228">				u = v;</span>
-<span class="fc" id="L229">				v = temp;</span>
+<span class="fc" id="L222">		Graph6.BitsWriter bitsWriter = new Graph6.BitsWriter(out);</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">		final int k = n == 0 ? 0 : JGAlgoUtils.log2ceil(n);</span>
+<span class="fc" id="L224">		int currentVertex = 0;</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">		for (int e : edges) {</span>
+<span class="fc" id="L226">			int u = graph.edgeSource(Integer.valueOf(e)).intValue();</span>
+<span class="fc" id="L227">			int v = graph.edgeTarget(Integer.valueOf(e)).intValue();</span>
+<span class="fc bfc" id="L228" title="All 2 branches covered.">			if (u &lt; v) {</span>
+<span class="fc" id="L229">				int temp = u;</span>
+<span class="fc" id="L230">				u = v;</span>
+<span class="fc" id="L231">				v = temp;</span>
 			}
 
-<span class="fc bfc" id="L232" title="All 2 branches covered.">			if (u == currentVertex) {</span>
-<span class="fc" id="L233">				bitsWriter.write(false);</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">			if (u == currentVertex) {</span>
+<span class="fc" id="L235">				bitsWriter.write(false);</span>
 
-<span class="fc bfc" id="L235" title="All 2 branches covered.">			} else if (u == currentVertex + 1) {</span>
-<span class="fc" id="L236">				bitsWriter.write(true);</span>
-<span class="fc" id="L237">				currentVertex = u;</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">			} else if (u == currentVertex + 1) {</span>
+<span class="fc" id="L238">				bitsWriter.write(true);</span>
+<span class="fc" id="L239">				currentVertex = u;</span>
 
 			} else {
-<span class="pc bnc" id="L240" title="All 2 branches missed.">				assert u &gt; currentVertex + 1;</span>
-<span class="fc" id="L241">				bitsWriter.write(false);</span>
-<span class="fc" id="L242">				bitsWriter.write(u, k);</span>
-<span class="fc" id="L243">				currentVertex = u;</span>
-<span class="fc" id="L244">				bitsWriter.write(false);</span>
+<span class="pc bnc" id="L242" title="All 2 branches missed.">				assert u &gt; currentVertex + 1;</span>
+<span class="fc" id="L243">				bitsWriter.write(false);</span>
+<span class="fc" id="L244">				bitsWriter.write(u, k);</span>
+<span class="fc" id="L245">				currentVertex = u;</span>
+<span class="fc" id="L246">				bitsWriter.write(false);</span>
 			}
 
-<span class="fc" id="L247">			bitsWriter.write(v, k);</span>
+<span class="fc" id="L249">			bitsWriter.write(v, k);</span>
 		}
 
 		/* add padding to a multiple of 6 */
-<span class="fc bfc" id="L251" title="All 2 branches covered.">		if (bitsWriter.paddingRequired()) {</span>
-<span class="fc" id="L252">			boolean zeroPrefix = true;</span>
-<span class="pc bpc" id="L253" title="1 of 4 branches missed.">			zeroPrefix = zeroPrefix &amp;&amp; IntList.of(2, 4, 8, 16).contains(n);</span>
-<span class="pc bpc" id="L254" title="1 of 4 branches missed.">			zeroPrefix = zeroPrefix &amp;&amp; !graph.outEdges(Integer.valueOf(n - 2)).isEmpty();</span>
-<span class="fc bfc" id="L255" title="All 4 branches covered.">			zeroPrefix = zeroPrefix &amp;&amp; graph.outEdges(Integer.valueOf(n - 1)).isEmpty();</span>
-<span class="fc bfc" id="L256" title="All 2 branches covered.">			if (zeroPrefix)</span>
-<span class="fc" id="L257">				bitsWriter.write(false);</span>
-<span class="fc bfc" id="L258" title="All 2 branches covered.">			while (bitsWriter.paddingRequired())</span>
-<span class="fc" id="L259">				bitsWriter.write(true);</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">		if (bitsWriter.paddingRequired()) {</span>
+<span class="fc" id="L254">			boolean zeroPrefix = true;</span>
+<span class="pc bpc" id="L255" title="1 of 4 branches missed.">			zeroPrefix = zeroPrefix &amp;&amp; IntList.of(2, 4, 8, 16).contains(n);</span>
+<span class="pc bpc" id="L256" title="1 of 4 branches missed.">			zeroPrefix = zeroPrefix &amp;&amp; !graph.outEdges(Integer.valueOf(n - 2)).isEmpty();</span>
+<span class="fc bfc" id="L257" title="All 4 branches covered.">			zeroPrefix = zeroPrefix &amp;&amp; graph.outEdges(Integer.valueOf(n - 1)).isEmpty();</span>
+<span class="fc bfc" id="L258" title="All 2 branches covered.">			if (zeroPrefix)</span>
+<span class="fc" id="L259">				bitsWriter.write(false);</span>
+<span class="fc bfc" id="L260" title="All 2 branches covered.">			while (bitsWriter.paddingRequired())</span>
+<span class="fc" id="L261">				bitsWriter.write(true);</span>
 		}
 
 		/* terminate graph object with a new line */
-<span class="fc" id="L263">		out.appendNewline();</span>
-<span class="fc" id="L264">	}</span>
+<span class="fc" id="L265">		out.appendNewline();</span>
+<span class="fc" id="L266">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

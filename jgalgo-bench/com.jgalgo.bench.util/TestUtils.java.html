@@ -16,62 +16,61 @@
 
 package com.jgalgo.bench.util;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Iterator;
 import java.util.Random;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 
-<span class="nc" id="L23">public class TestUtils {</span>
+<span class="nc" id="L24">public class TestUtils {</span>
 
 	public static int[] randArray(int n, long seed) {
-<span class="fc" id="L26">		return randArray(n, 0, Integer.MAX_VALUE, seed);</span>
+<span class="fc" id="L27">		return randArray(n, 0, Integer.MAX_VALUE, seed);</span>
 	}
 
 	public static int[] randArray(int n, int from, int to, long seed) {
-<span class="fc" id="L30">		return randArray(new int[n], from, to, seed);</span>
+<span class="fc" id="L31">		return randArray(new int[n], from, to, seed);</span>
 	}
 
 	static int[] randArray(int[] a, int from, int to, long seed) {
-<span class="fc" id="L34">		Random rand = new Random(seed ^ 0x64bf2cc6dd4c257eL);</span>
-<span class="fc bfc" id="L35" title="All 2 branches covered.">		for (int i = 0; i &lt; a.length; i++)</span>
-<span class="fc" id="L36">			a[i] = nextInt(rand, from, to);</span>
-<span class="fc" id="L37">		return a;</span>
+<span class="fc" id="L35">		Random rand = new Random(seed ^ 0x64bf2cc6dd4c257eL);</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">		for (int i : range(a.length))</span>
+<span class="fc" id="L37">			a[i] = nextInt(rand, from, to);</span>
+<span class="fc" id="L38">		return a;</span>
 	}
 
 	static int[] randPermutation(int n, long seed) {
-<span class="nc" id="L41">		int[] a = new int[n];</span>
-<span class="nc bnc" id="L42" title="All 2 branches missed.">		for (int i = 0; i &lt; n; i++)</span>
-<span class="nc" id="L43">			a[i] = i;</span>
-<span class="nc" id="L44">		IntArrays.shuffle(a, new Random(seed ^ 0xb281dc30ae96a316L));</span>
-<span class="nc" id="L45">		return a;</span>
+<span class="nc" id="L42">		int[] a = range(n).toIntArray();</span>
+<span class="nc" id="L43">		IntArrays.shuffle(a, new Random(seed ^ 0xb281dc30ae96a316L));</span>
+<span class="nc" id="L44">		return a;</span>
 	}
 
 	static &lt;E&gt; Iterable&lt;E&gt; iterable(Iterator&lt;E&gt; it) {
-<span class="nc" id="L49">		return new Iterable&lt;&gt;() {</span>
+<span class="nc" id="L48">		return new Iterable&lt;&gt;() {</span>
 
 			@Override
 			public Iterator&lt;E&gt; iterator() {
-<span class="nc" id="L53">				return it;</span>
+<span class="nc" id="L52">				return it;</span>
 			}
 		};
 	}
 
 	static double nextDouble(Random rand, double from, double to) {
-<span class="nc" id="L59">		return from + (to - from) * rand.nextDouble();</span>
+<span class="nc" id="L58">		return from + (to - from) * rand.nextDouble();</span>
 	}
 
 	static int nextInt(Random rand, int from, int to) {
-<span class="fc" id="L63">		return from + rand.nextInt(to - from);</span>
+<span class="fc" id="L62">		return from + rand.nextInt(to - from);</span>
 	}
 
 	public static class SeedGenerator {
 		private final Random rand;
 
-<span class="fc" id="L69">		public SeedGenerator(long seed) {</span>
-<span class="fc" id="L70">			rand = new Random(seed ^ 0x9db7d6d04ce666aeL);</span>
-<span class="fc" id="L71">		}</span>
+<span class="fc" id="L68">		public SeedGenerator(long seed) {</span>
+<span class="fc" id="L69">			rand = new Random(seed ^ 0x9db7d6d04ce666aeL);</span>
+<span class="fc" id="L70">		}</span>
 
 		public long nextSeed() {
-<span class="fc" id="L74">			return rand.nextLong() ^ 0x1df73569991aee99L;</span>
+<span class="fc" id="L73">			return rand.nextLong() ^ 0x1df73569991aee99L;</span>
 		}
 	}
 

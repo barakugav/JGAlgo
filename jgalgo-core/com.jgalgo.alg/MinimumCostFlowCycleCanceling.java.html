@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeights;
@@ -41,139 +42,139 @@ import com.jgalgo.internal.util.Bitmap;
  *
  * @author Barak Ugav
  */
-<span class="fc" id="L44">class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSourceSink {</span>
+<span class="fc" id="L45">class MinimumCostFlowCycleCanceling extends MinimumCostFlows.AbstractImplBasedSourceSink {</span>
 
-<span class="fc" id="L46">	private final MaximumFlow maxFlowAlg = MaximumFlow.newInstance();</span>
-<span class="fc" id="L47">	private final MinimumMeanCycle minMeanCycleAlg = MinimumMeanCycle.newInstance();</span>
+<span class="fc" id="L47">	private final MaximumFlow maxFlowAlg = MaximumFlow.newInstance();</span>
+<span class="fc" id="L48">	private final MinimumMeanCycle minMeanCycleAlg = MinimumMeanCycle.newInstance();</span>
 
 	@Override
 	public IFlow computeMinCostMaxFlow(IndexGraph gOrig, IWeightFunction capacityOrig, IWeightFunction cost, int source,
 			int sink) {
-<span class="fc" id="L52">		Assertions.onlyDirected(gOrig);</span>
-<span class="fc" id="L53">		Assertions.flowSourceSinkNotTheSame(source, sink);</span>
+<span class="fc" id="L53">		Assertions.onlyDirected(gOrig);</span>
+<span class="fc" id="L54">		Assertions.flowSourceSinkNotTheSame(source, sink);</span>
 
 		/* Compute maximum flow */
-<span class="fc" id="L56">		IFlow flowOrig = (IFlow) maxFlowAlg</span>
-<span class="fc" id="L57">				.computeMaximumFlow(gOrig, capacityOrig, Integer.valueOf(source), Integer.valueOf(sink));</span>
+<span class="fc" id="L57">		IFlow flowOrig = (IFlow) maxFlowAlg</span>
+<span class="fc" id="L58">				.computeMaximumFlow(gOrig, capacityOrig, Integer.valueOf(source), Integer.valueOf(sink));</span>
 
 		/* Construct the residual graph from the maximum flow */
-<span class="fc" id="L60">		Flows.ResidualGraph.Builder builder = new Flows.ResidualGraph.Builder(gOrig);</span>
-<span class="fc" id="L61">		builder.addAllOriginalEdges();</span>
-<span class="fc" id="L62">		Flows.ResidualGraph resGraph = builder.build();</span>
-<span class="fc" id="L63">		IndexGraph g = resGraph.g;</span>
-<span class="fc" id="L64">		double[] capacity = new double[g.edges().size()];</span>
-<span class="fc" id="L65">		double[] flow = new double[g.edges().size()];</span>
+<span class="fc" id="L61">		Flows.ResidualGraph.Builder builder = new Flows.ResidualGraph.Builder(gOrig);</span>
+<span class="fc" id="L62">		builder.addAllOriginalEdges();</span>
+<span class="fc" id="L63">		Flows.ResidualGraph resGraph = builder.build();</span>
+<span class="fc" id="L64">		IndexGraph g = resGraph.g;</span>
+<span class="fc" id="L65">		double[] capacity = new double[g.edges().size()];</span>
+<span class="fc" id="L66">		double[] flow = new double[g.edges().size()];</span>
 
 		/* eliminate negative cycles in the residual network repeatedly */
-<span class="fc" id="L68">		final double eps = initResidualCapacitiesAndFlows(gOrig, capacityOrig, flowOrig, resGraph, capacity, flow);</span>
-<span class="fc" id="L69">		eliminateAllNegativeCycles(gOrig, resGraph, capacity, flow, cost, eps);</span>
+<span class="fc" id="L69">		final double eps = initResidualCapacitiesAndFlows(gOrig, capacityOrig, flowOrig, resGraph, capacity, flow);</span>
+<span class="fc" id="L70">		eliminateAllNegativeCycles(gOrig, resGraph, capacity, flow, cost, eps);</span>
 
-<span class="fc" id="L71">		double[] flow0 = new double[gOrig.edges().size()];</span>
-<span class="fc bfc" id="L72" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="fc bfc" id="L73" title="All 2 branches covered.">			if (resGraph.isOriginalEdge(e))</span>
-<span class="fc" id="L74">				flow0[resGraph.edgeRef[e]] = Math.max(0, Math.min(flow[e], capacity[e]));</span>
+<span class="fc" id="L72">		double[] flow0 = new double[gOrig.edges().size()];</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		for (int e : range(g.edges().size()))</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			if (resGraph.isOriginalEdge(e))</span>
+<span class="fc" id="L75">				flow0[resGraph.edgeRef[e]] = Math.max(0, Math.min(flow[e], capacity[e]));</span>
 
-<span class="fc" id="L76">		MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, capacityOrig, cost, flow0);</span>
-<span class="fc" id="L77">		return new Flows.FlowImpl(gOrig, flow0);</span>
+<span class="fc" id="L77">		MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, capacityOrig, cost, flow0);</span>
+<span class="fc" id="L78">		return new Flows.FlowImpl(gOrig, flow0);</span>
 	}
 
 	private static double initResidualCapacitiesAndFlows(IndexGraph gOrig, IWeightFunction capacityOrig, IFlow flowOrig,
 			Flows.ResidualGraph resGraph, double[] capacity, double[] flow) {
-<span class="fc" id="L82">		IndexGraph g = resGraph.g;</span>
-<span class="fc" id="L83">		int[] edgeRef = resGraph.edgeRef;</span>
+<span class="fc" id="L83">		IndexGraph g = resGraph.g;</span>
+<span class="fc" id="L84">		int[] edgeRef = resGraph.edgeRef;</span>
 
-<span class="pc bpc" id="L85" title="1 of 2 branches missed.">		if (gOrig.isDirected()) {</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L87">				int eRef = edgeRef[e];</span>
-<span class="fc" id="L88">				double eFlow = flowOrig.getFlow(eRef);</span>
-<span class="fc bfc" id="L89" title="All 2 branches covered.">				if (resGraph.isOriginalEdge(e)) {</span>
-<span class="fc" id="L90">					capacity[e] = capacityOrig.weight(eRef);</span>
-<span class="fc" id="L91">					flow[e] = eFlow;</span>
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">		if (gOrig.isDirected()) {</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">			for (int e : range(g.edges().size())) {</span>
+<span class="fc" id="L88">				int eRef = edgeRef[e];</span>
+<span class="fc" id="L89">				double eFlow = flowOrig.getFlow(eRef);</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">				if (resGraph.isOriginalEdge(e)) {</span>
+<span class="fc" id="L91">					capacity[e] = capacityOrig.weight(eRef);</span>
+<span class="fc" id="L92">					flow[e] = eFlow;</span>
 				} else {
-<span class="fc" id="L93">					capacity[e] = 0;</span>
-<span class="fc" id="L94">					flow[e] = -eFlow;</span>
+<span class="fc" id="L94">					capacity[e] = 0;</span>
+<span class="fc" id="L95">					flow[e] = -eFlow;</span>
 				}
-			}
+<span class="fc" id="L97">			}</span>
 		} else {
-<span class="nc bnc" id="L98" title="All 2 branches missed.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="nc" id="L99">				int eRef = edgeRef[e];</span>
-<span class="nc" id="L100">				double eFlow = flowOrig.getFlow(eRef);</span>
-<span class="nc" id="L101">				capacity[e] = capacityOrig.weight(eRef);</span>
-<span class="nc bnc" id="L102" title="All 2 branches missed.">				flow[e] = resGraph.isOriginalEdge(e) ? eFlow : -eFlow;</span>
-			}
+<span class="nc bnc" id="L99" title="All 2 branches missed.">			for (int e : range(g.edges().size())) {</span>
+<span class="nc" id="L100">				int eRef = edgeRef[e];</span>
+<span class="nc" id="L101">				double eFlow = flowOrig.getFlow(eRef);</span>
+<span class="nc" id="L102">				capacity[e] = capacityOrig.weight(eRef);</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">				flow[e] = resGraph.isOriginalEdge(e) ? eFlow : -eFlow;</span>
+<span class="nc" id="L104">			}</span>
 		}
-<span class="fc bfc" id="L105" title="All 2 branches covered.">		double eps = Arrays.stream(capacity).filter(c -&gt; c &gt; 0).min().orElse(0) * 1e-8;</span>
-<span class="pc bnc" id="L106" title="All 4 branches missed.">		assert g.edges().intStream().allMatch(e -&gt; flow[e] &lt;= capacity[e] + eps);</span>
-<span class="fc" id="L107">		return eps;</span>
+<span class="fc bfc" id="L106" title="All 2 branches covered.">		double eps = Arrays.stream(capacity).filter(c -&gt; c &gt; 0).min().orElse(0) * 1e-8;</span>
+<span class="pc bnc" id="L107" title="All 4 branches missed.">		assert g.edges().intStream().allMatch(e -&gt; flow[e] &lt;= capacity[e] + eps);</span>
+<span class="fc" id="L108">		return eps;</span>
 	}
 
 	private void eliminateAllNegativeCycles(IndexGraph gOrig, Flows.ResidualGraph resGraph, double[] capacity,
 			double[] flow, IWeightFunction cost, double eps) {
-<span class="fc" id="L112">		IndexGraph g = resGraph.g;</span>
-<span class="fc" id="L113">		int[] edgeRef = resGraph.edgeRef;</span>
-<span class="fc" id="L114">		int[] twin = resGraph.twin;</span>
+<span class="fc" id="L113">		IndexGraph g = resGraph.g;</span>
+<span class="fc" id="L114">		int[] edgeRef = resGraph.edgeRef;</span>
+<span class="fc" id="L115">		int[] twin = resGraph.twin;</span>
 
 		/*
 		 * Removing edges from the (residual) graph is expensive. We simply assign a high cost to edges we considered
 		 * 'removed', namely saturated edges.
 		 */
 
-<span class="fc" id="L121">		Bitmap saturated = new Bitmap(g.edges().size());</span>
-<span class="fc" id="L122">		final double saturatedCost = hugeCost(gOrig, cost);</span>
+<span class="fc" id="L122">		Bitmap saturated = new Bitmap(g.edges().size());</span>
+<span class="fc" id="L123">		final double saturatedCost = hugeCost(gOrig, cost);</span>
 
 		/* Init costs for edges */
 		/* cost(e) for original edges */
 		/* -cost(e) for backward (twin) original edges */
 		/* saturatedCost for 'removed' (saturated) edges */
-<span class="fc" id="L128">		IWeightsDouble cost0 = IWeights.createExternalEdgesWeights(g, double.class);</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">		for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc bfc" id="L130" title="All 2 branches covered.">			boolean isSaturated = capacity[e] - flow[e] &lt; eps;</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">			if (isSaturated) {</span>
-<span class="fc" id="L132">				saturated.set(e);</span>
-<span class="fc" id="L133">				cost0.set(e, saturatedCost);</span>
+<span class="fc" id="L129">		IWeightsDouble cost0 = IWeights.createExternalEdgesWeights(g, double.class);</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">		for (int e : range(g.edges().size())) {</span>
+<span class="fc bfc" id="L131" title="All 2 branches covered.">			boolean isSaturated = capacity[e] - flow[e] &lt; eps;</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">			if (isSaturated) {</span>
+<span class="fc" id="L133">				saturated.set(e);</span>
+<span class="fc" id="L134">				cost0.set(e, saturatedCost);</span>
 			} else {
-<span class="fc" id="L135">				double eCost = cost.weight(edgeRef[e]);</span>
-<span class="fc bfc" id="L136" title="All 2 branches covered.">				cost0.set(e, resGraph.isOriginalEdge(e) ? eCost : -eCost);</span>
+<span class="fc" id="L136">				double eCost = cost.weight(edgeRef[e]);</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">				cost0.set(e, resGraph.isOriginalEdge(e) ? eCost : -eCost);</span>
 			}
-		}
+<span class="fc" id="L139">		}</span>
 
 		/* Repeatedly find the cycle with the minimum mean cost and push flow through it */
 		for (;;) {
-<span class="fc" id="L142">			IPath minCycle = (IPath) minMeanCycleAlg.computeMinimumMeanCycle(g, cost0);</span>
-<span class="pc bpc" id="L143" title="1 of 4 branches missed.">			if (minCycle == null || cost0.weightSum(minCycle.edges()) &gt;= -eps)</span>
-<span class="fc" id="L144">				break; /* no cycle or cycle that will increase the total cost */</span>
+<span class="fc" id="L143">			IPath minCycle = (IPath) minMeanCycleAlg.computeMinimumMeanCycle(g, cost0);</span>
+<span class="pc bpc" id="L144" title="1 of 4 branches missed.">			if (minCycle == null || cost0.weightSum(minCycle.edges()) &gt;= -eps)</span>
+<span class="fc" id="L145">				break; /* no cycle or cycle that will increase the total cost */</span>
 
 			/* find the maximum amount of flow we can push through the cycle */
-<span class="fc" id="L147">			double f = minCycle</span>
-<span class="fc" id="L148">					.edges()</span>
-<span class="fc" id="L149">					.intStream()</span>
-<span class="fc" id="L150">					.mapToDouble(e -&gt; capacity[e] - flow[e])</span>
-<span class="fc" id="L151">					.min()</span>
-<span class="fc" id="L152">					.orElse(Double.POSITIVE_INFINITY);</span>
-<span class="pc bnc" id="L153" title="All 2 branches missed.">			assert f &gt; 0;</span>
+<span class="fc" id="L148">			double f = minCycle</span>
+<span class="fc" id="L149">					.edges()</span>
+<span class="fc" id="L150">					.intStream()</span>
+<span class="fc" id="L151">					.mapToDouble(e -&gt; capacity[e] - flow[e])</span>
+<span class="fc" id="L152">					.min()</span>
+<span class="fc" id="L153">					.orElse(Double.POSITIVE_INFINITY);</span>
+<span class="pc bnc" id="L154" title="All 2 branches missed.">			assert f &gt; 0;</span>
 
 			/* Push flow along the cycle, lowering the overall cost */
-<span class="fc bfc" id="L156" title="All 2 branches covered.">			for (int e : minCycle.edges()) {</span>
-<span class="fc" id="L157">				int eTwin = twin[e];</span>
-<span class="fc" id="L158">				flow[e] += f;</span>
-<span class="fc" id="L159">				flow[eTwin] -= f;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">			for (int e : minCycle.edges()) {</span>
+<span class="fc" id="L158">				int eTwin = twin[e];</span>
+<span class="fc" id="L159">				flow[e] += f;</span>
+<span class="fc" id="L160">				flow[eTwin] -= f;</span>
 
 				/* Add/remove edges to the non saturated residual net */
 				/* We use high cost edge instead of actually removing an edge */
-<span class="pc bnc" id="L163" title="All 2 branches missed.">				assert !saturated.get(e);</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">				boolean isSaturated = capacity[e] - flow[e] &lt; eps;</span>
-<span class="fc bfc" id="L165" title="All 2 branches covered.">				if (isSaturated) {</span>
-<span class="fc" id="L166">					saturated.set(e);</span>
-<span class="fc" id="L167">					cost0.set(e, saturatedCost);</span>
+<span class="pc bnc" id="L164" title="All 2 branches missed.">				assert !saturated.get(e);</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">				boolean isSaturated = capacity[e] - flow[e] &lt; eps;</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">				if (isSaturated) {</span>
+<span class="fc" id="L167">					saturated.set(e);</span>
+<span class="fc" id="L168">					cost0.set(e, saturatedCost);</span>
 				}
-<span class="fc bfc" id="L169" title="All 2 branches covered.">				if (saturated.get(eTwin)) {</span>
-<span class="fc" id="L170">					saturated.clear(eTwin);</span>
-<span class="fc" id="L171">					double eTwinCost = cost.weight(edgeRef[eTwin]);</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">					cost0.set(eTwin, resGraph.isOriginalEdge(eTwin) ? eTwinCost : -eTwinCost);</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">				if (saturated.get(eTwin)) {</span>
+<span class="fc" id="L171">					saturated.clear(eTwin);</span>
+<span class="fc" id="L172">					double eTwinCost = cost.weight(edgeRef[eTwin]);</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">					cost0.set(eTwin, resGraph.isOriginalEdge(eTwin) ? eTwinCost : -eTwinCost);</span>
 				}
-<span class="fc" id="L174">			}</span>
-<span class="fc" id="L175">		}</span>
-<span class="fc" id="L176">	}</span>
+<span class="fc" id="L175">			}</span>
+<span class="fc" id="L176">		}</span>
+<span class="fc" id="L177">	}</span>
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

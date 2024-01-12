@@ -153,7 +153,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 <span class="fc" id="L153">		final int minWeightWordsize = JGAlgoUtils.log2(-minWeight);</span>
 <span class="fc bfc" id="L154" title="All 2 branches covered.">		for (int weightMask = minWeightWordsize; weightMask &gt;= 0; weightMask--) {</span>
 <span class="fc bfc" id="L155" title="All 2 branches covered.">			if (weightMask != minWeightWordsize)</span>
-<span class="fc bfc" id="L156" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L156" title="All 2 branches covered.">				for (int v : range(n))</span>
 <span class="fc" id="L157">					potential[v] *= 2;</span>
 <span class="fc" id="L158">			diagnostics.scalingIteration();</span>
 
@@ -162,18 +162,18 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 			for (;;) {
 <span class="fc" id="L163">				diagnostics.potentialIteration();</span>
 				/* update current weight function according to latest potential */
-<span class="fc bfc" id="L165" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">				for (int e : range(m))</span>
 <span class="fc" id="L166">					w[e] = calcWeightWithPotential(g, e, w0, potential, weightMask);</span>
 
 				/* populate gNeg with all 0,-1 edges */
 <span class="fc" id="L169">				gNeg.clearEdges();</span>
-<span class="fc bfc" id="L170" title="All 2 branches covered.">				for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L170" title="All 2 branches covered.">				for (int e : range(m)) {</span>
 <span class="fc bfc" id="L171" title="All 2 branches covered.">					if (w[e] &lt;= 0) {</span>
 <span class="fc" id="L172">						int u = g.edgeSource(e), v = g.edgeTarget(e);</span>
 <span class="fc bfc" id="L173" title="All 2 branches covered.">						if (u != v)</span>
 <span class="fc" id="L174">							gNegEdgeRefs[gNeg.addEdge(u, v)] = e;</span>
 					}
-				}
+<span class="fc" id="L176">				}</span>
 
 				/* Find all strong connected components in the graph */
 <span class="fc" id="L179">				IVertexPartition connectivityRes = (IVertexPartition) ccAlg.findStronglyConnectedComponents(gNeg);</span>
@@ -186,7 +186,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 <span class="fc" id="L186">				G.clear();</span>
 <span class="fc" id="L187">				IWeightsInt GWeights = G.addEdgesWeights(&quot;weights&quot;, int.class, Integer.valueOf(-1));</span>
 <span class="fc" id="L188">				G.addVertices(range(N));</span>
-<span class="fc bfc" id="L189" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">				for (int u : range(n)) {</span>
 <span class="fc" id="L190">					int U = connectivityRes.vertexBlock(u);</span>
 <span class="fc bfc" id="L191" title="All 2 branches covered.">					for (IEdgeIter eit = gNeg.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L192">						int e = eit.nextInt();</span>
@@ -206,11 +206,11 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 <span class="fc" id="L206">							throw new NegativeCycleException(g, new PathImpl(g, v, v, negCycle));</span>
 						}
 <span class="fc" id="L208">					}</span>
-				}
+<span class="fc" id="L209">				}</span>
 
 				// Create a fake vertex S, connect with 0 edges to all and calc distances
 <span class="fc" id="L212">				int fakeS1 = G.addVertexInt();</span>
-<span class="fc bfc" id="L213" title="All 2 branches covered.">				for (int U = 0; U &lt; N; U++)</span>
+<span class="fc bfc" id="L213" title="All 2 branches covered.">				for (int U : range(N))</span>
 <span class="fc" id="L214">					GWeights.set(G.addEdge(fakeS1, U), 0);</span>
 <span class="fc" id="L215">				ShortestPathSingleSource.IResult ssspRes = (ShortestPathSingleSource.IResult) dagSssp</span>
 <span class="fc" id="L216">						.computeShortestPaths(G, GWeights, Integer.valueOf(fakeS1));</span>
@@ -219,14 +219,14 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 <span class="fc" id="L219">				int layerNum = 0;</span>
 <span class="fc" id="L220">				int vertexInMaxLayer = -1;</span>
 <span class="fc" id="L221">				Arrays.fill(layerSize, 0, N, 0);</span>
-<span class="fc bfc" id="L222" title="All 2 branches covered.">				for (int V = 0; V &lt; N; V++) {</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">				for (int V : range(N)) {</span>
 <span class="fc" id="L223">					int l = -(int) ssspRes.distance(V);</span>
 <span class="fc bfc" id="L224" title="All 2 branches covered.">					if (l + 1 &gt; layerNum) {</span>
 <span class="fc" id="L225">						layerNum = l + 1;</span>
 <span class="fc" id="L226">						vertexInMaxLayer = V;</span>
 					}
 <span class="fc" id="L228">					layerSize[l]++;</span>
-				}
+<span class="fc" id="L229">				}</span>
 <span class="fc bfc" id="L230" title="All 2 branches covered.">				if (layerNum == 1)</span>
 <span class="fc" id="L231">					break; // no negative vertices, done</span>
 
@@ -238,11 +238,11 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 <span class="fc bfc" id="L238" title="All 2 branches covered.">				if (layerSize[biggestLayer] &gt;= Math.sqrt(N) * alpha) {</span>
 <span class="fc" id="L239">					diagnostics.bigLayer();</span>
 					// A layer with sqrt(|V|) was found, decrease potential of layers l,l+1,l+2,...
-<span class="fc bfc" id="L241" title="All 2 branches covered.">					for (int v = 0; v &lt; n; v++) {</span>
+<span class="fc bfc" id="L241" title="All 2 branches covered.">					for (int v : range(n)) {</span>
 <span class="fc" id="L242">						int V = connectivityRes.vertexBlock(v), l = -(int) ssspRes.distance(V);</span>
 <span class="fc bfc" id="L243" title="All 2 branches covered.">						if (l &gt;= biggestLayer)</span>
 <span class="fc" id="L244">							potential[v]--;</span>
-					}
+<span class="fc" id="L245">					}</span>
 				} else {
 <span class="fc" id="L247">					diagnostics.longPath();</span>
 					/*
@@ -262,12 +262,12 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 <span class="fc" id="L262">							connected.set(V);</span>
 						}
 <span class="fc" id="L264">					}</span>
-<span class="fc bfc" id="L265" title="All 2 branches covered.">					for (int V = 0; V &lt; N; V++)</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">					for (int V : range(N))</span>
 <span class="fc bfc" id="L266" title="All 2 branches covered.">						if (!connected.get(V))</span>
 <span class="fc" id="L267">							GWeights.set(G.addEdge(fakeS2, V), layerNum - 1);</span>
 
 					// Add the remaining edges to the graph, not only 0,-1 edges
-<span class="fc bfc" id="L270" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L270" title="All 2 branches covered.">					for (int e : range(m)) {</span>
 <span class="fc" id="L271">						int weight = w[e];</span>
 <span class="fc bfc" id="L272" title="All 2 branches covered.">						if (weight &gt; 0) {</span>
 <span class="fc" id="L273">							int U = connectivityRes.vertexBlock(g.edgeSource(e));</span>
@@ -275,14 +275,14 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 <span class="fc bfc" id="L275" title="All 2 branches covered.">							if (U != V)</span>
 <span class="fc" id="L276">								GWeights.set(G.addEdge(U, V), weight);</span>
 						}
-					}
+<span class="fc" id="L278">					}</span>
 
 					// Calc distance with abs weight function to update potential function
 <span class="fc bfc" id="L281" title="All 2 branches covered.">					for (int weight, mG = G.edges().size(), e = 0; e &lt; mG; e++)</span>
 <span class="fc bfc" id="L282" title="All 2 branches covered.">						if ((weight = GWeights.get(e)) &lt; 0)</span>
 <span class="fc" id="L283">							GWeights.set(e, -weight);</span>
 <span class="fc" id="L284">					ssspRes = ssspDial.computeShortestPaths(G, GWeights, fakeS2, layerNum);</span>
-<span class="fc bfc" id="L285" title="All 2 branches covered.">					for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">					for (int v : range(n))</span>
 <span class="fc" id="L286">						potential[v] += ssspRes.distance(connectivityRes.vertexBlock(v));</span>
 				}
 <span class="fc" id="L288">			}</span>

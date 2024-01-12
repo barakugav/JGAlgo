@@ -196,7 +196,7 @@ class MinimumEdgeCutUtils {
 <span class="fc" id="L196">				IVertexBiPartition bestCut = null;</span>
 <span class="fc" id="L197">				double bestCutWeight = Double.MAX_VALUE;</span>
 <span class="fc" id="L198">				final int source = 0;</span>
-<span class="fc bfc" id="L199" title="All 2 branches covered.">				for (int sink = 1; sink &lt; n; sink++) {</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">				for (int sink : range(1, n)) {</span>
 <span class="fc" id="L200">					IVertexBiPartition cut = (IVertexBiPartition) stMinCut</span>
 <span class="fc" id="L201">							.computeMinimumCut(g, w, Integer.valueOf(source), Integer.valueOf(sink));</span>
 <span class="fc" id="L202">					double cutWeight = w.weightSum(cut.crossEdges());</span>
@@ -204,7 +204,7 @@ class MinimumEdgeCutUtils {
 <span class="fc" id="L204">						bestCutWeight = cutWeight;</span>
 <span class="fc" id="L205">						bestCut = cut;</span>
 					}
-				}
+<span class="fc" id="L207">				}</span>
 <span class="pc bnc" id="L208" title="All 2 branches missed.">				assert bestCut != null;</span>
 <span class="fc" id="L209">				return bestCut;</span>
 			}

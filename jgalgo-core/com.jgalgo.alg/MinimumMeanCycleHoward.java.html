@@ -75,7 +75,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L75">		Arrays.fill(d, 0, n, Double.POSITIVE_INFINITY);</span>
 <span class="fc" id="L76">		int[] policy = new int[n];</span>
 <span class="fc" id="L77">		Arrays.fill(policy, 0, n, -1);</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">		for (int c = 0; c &lt; ccNum; c++) {</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">		for (int c : range(ccNum)) {</span>
 <span class="fc bfc" id="L79" title="All 2 branches covered.">			for (int e : cc.blockEdges(c)) {</span>
 <span class="fc" id="L80">				double ew = w.weight(e);</span>
 <span class="fc" id="L81">				int u = g.edgeSource(e);</span>
@@ -84,7 +84,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L84">					policy[u] = e;</span>
 				}
 <span class="fc" id="L86">			}</span>
-		}
+<span class="fc" id="L87">		}</span>
 
 <span class="fc bfc" id="L89" title="All 2 branches covered.">		final double eps = range(g.edges().size()).mapToDouble(w::weight).filter(c -&gt; c &gt; 0).min().orElse(0) * 1e-8;</span>
 
@@ -96,7 +96,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc" id="L96">		int[] visitIdx = new int[n];</span>
 <span class="fc" id="L97">		Arrays.fill(visitIdx, 0, n, 0);</span>
 		/* operate on each SCC separately */
-<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int ccIdx = 0; ccIdx &lt; ccNum; ccIdx++) {</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int ccIdx : range(ccNum)) {</span>
 <span class="fc bfc" id="L100" title="All 2 branches covered.">			if (cc.blockVertices(ccIdx).size() &lt; 2)</span>
 <span class="fc" id="L101">				continue;</span>
 			/* run in iteration as long as we find improvements */
@@ -191,7 +191,7 @@ import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 <span class="fc bfc" id="L191" title="All 2 branches covered.">				if (!improved)</span>
 <span class="fc" id="L192">					break sccLoop;</span>
 <span class="fc" id="L193">			}</span>
-		}
+<span class="fc" id="L194">		}</span>
 
 		/* handle self edges separately, as the algorithm skip SCC of size one */
 <span class="fc bfc" id="L197" title="All 2 branches covered.">		if (g.isAllowSelfEdges()) {</span>

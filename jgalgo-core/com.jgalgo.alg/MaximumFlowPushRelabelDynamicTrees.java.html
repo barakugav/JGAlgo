@@ -109,7 +109,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 
 <span class="fc" id="L110">			active = new QueueFixSize&lt;&gt;(n);</span>
 <span class="fc" id="L111">			vertexData = new Vertex[n];</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			for (int u : range(n))</span>
 <span class="fc" id="L113">				vertexData[u] = newVertex(u, dt.makeTree());</span>
 
 			// set source and sink as 'active' to prevent them from entering the active
@@ -120,7 +120,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 <span class="fc" id="L120">			children = new LinkedListFixedSize.Doubly(n);</span>
 
 			/* Init all vertices iterators */
-<span class="fc bfc" id="L123" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">			for (int u : range(n))</span>
 <span class="fc" id="L124">				vertexData(u).edgeIter = g.outEdges(u).iterator();</span>
 <span class="fc" id="L125">		}</span>
 
@@ -139,7 +139,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 <span class="pc bnc" id="L139" title="All 2 branches missed.">			assert queue.isEmpty();</span>
 
 <span class="fc" id="L141">			int n = g.vertices().size();</span>
-<span class="fc bfc" id="L142" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">			for (int u : range(n))</span>
 <span class="fc" id="L143">				vertexData[u].label = n;</span>
 
 <span class="fc" id="L145">			visited.set(sink);</span>
@@ -283,7 +283,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 			/* Cleanup all the edges that stayed in the DT */
 <span class="fc" id="L284">			int n = g.vertices().size();</span>
 <span class="fc" id="L285">			Stack&lt;DynamicTree.Vertex&gt; cleanupStack = new ObjectArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L286" title="All 2 branches covered.">			for (int u = 0; u &lt; n; u++) {</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">			for (int u : range(n)) {</span>
 <span class="fc bfc" id="L287" title="All 2 branches covered.">				for (DynamicTree.Vertex uDt = vertexData(u).dtVertex, pDt; (pDt = uDt.getParent()) != null; uDt = pDt)</span>
 <span class="fc" id="L288">					cleanupStack.push(uDt);</span>
 <span class="fc bfc" id="L289" title="All 2 branches covered.">				while (!cleanupStack.isEmpty()) {</span>
@@ -294,7 +294,7 @@ class MaximumFlowPushRelabelDynamicTrees extends MaximumFlows.WithResidualGraph 
 <span class="fc" id="L294">					updateFlow(e, m.weight());</span>
 <span class="fc" id="L295">					dt.cut(m.source());</span>
 <span class="fc" id="L296">				}</span>
-			}
+<span class="fc" id="L297">			}</span>
 <span class="fc" id="L298">		}</span>
 
 		abstract IFlow constructResult();

@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IWeightFunction;
@@ -23,72 +24,72 @@ import com.jgalgo.internal.ds.DoubleIntReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
-<span class="fc" id="L26">class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {</span>
+<span class="fc" id="L27">class VoronoiAlgoDijkstra extends VoronoiAlgos.AbstractImpl {</span>
 
 	@Override
 	VoronoiAlgo.IResult computeVoronoiCells(IndexGraph g, IntCollection sites, IWeightFunction w) {
-<span class="pc bpc" id="L30" title="1 of 2 branches missed.">		if (sites.isEmpty())</span>
-<span class="nc" id="L31">			throw new IllegalArgumentException(&quot;no sites provided&quot;);</span>
-<span class="fc" id="L32">		final int n = g.vertices().size();</span>
-<span class="fc" id="L33">		DoubleIntReferenceableHeap heap = DoubleIntReferenceableHeap.newInstance();</span>
-<span class="fc" id="L34">		DoubleIntReferenceableHeap.Ref[] heapVPtrs = new DoubleIntReferenceableHeap.Ref[n];</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">		if (sites.isEmpty())</span>
+<span class="nc" id="L32">			throw new IllegalArgumentException(&quot;no sites provided&quot;);</span>
+<span class="fc" id="L33">		final int n = g.vertices().size();</span>
+<span class="fc" id="L34">		DoubleIntReferenceableHeap heap = DoubleIntReferenceableHeap.newInstance();</span>
+<span class="fc" id="L35">		DoubleIntReferenceableHeap.Ref[] heapVPtrs = new DoubleIntReferenceableHeap.Ref[n];</span>
 
-<span class="fc" id="L36">		double[] distance = new double[n];</span>
-<span class="fc" id="L37">		Arrays.fill(distance, Double.POSITIVE_INFINITY);</span>
-<span class="fc" id="L38">		int[] backtrack = new int[n];</span>
-<span class="fc" id="L39">		Arrays.fill(backtrack, -1);</span>
-<span class="fc" id="L40">		int[] cell = new int[n];</span>
-<span class="fc" id="L41">		Arrays.fill(cell, -1);</span>
+<span class="fc" id="L37">		double[] distance = new double[n];</span>
+<span class="fc" id="L38">		Arrays.fill(distance, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L39">		int[] backtrack = new int[n];</span>
+<span class="fc" id="L40">		Arrays.fill(backtrack, -1);</span>
+<span class="fc" id="L41">		int[] cell = new int[n];</span>
+<span class="fc" id="L42">		Arrays.fill(cell, -1);</span>
 
-<span class="fc" id="L43">		int[] sitesArr = sites.toIntArray();</span>
-<span class="fc bfc" id="L44" title="All 2 branches covered.">		for (int siteIdx = 0; siteIdx &lt; sitesArr.length; siteIdx++) {</span>
-<span class="fc" id="L45">			int site = sitesArr[siteIdx];</span>
-<span class="pc bpc" id="L46" title="1 of 2 branches missed.">			if (cell[site] != -1)</span>
-<span class="nc" id="L47">				throw new IllegalArgumentException(&quot;Duplicate site: &quot; + site);</span>
-<span class="fc" id="L48">			cell[site] = siteIdx;</span>
-<span class="fc" id="L49">			distance[site] = 0;</span>
-<span class="fc" id="L50">			heapVPtrs[site] = heap.insert(0.0, site);</span>
-		}
+<span class="fc" id="L44">		int[] sitesArr = sites.toIntArray();</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">		for (int siteIdx : range(sitesArr.length)) {</span>
+<span class="fc" id="L46">			int site = sitesArr[siteIdx];</span>
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">			if (cell[site] != -1)</span>
+<span class="nc" id="L48">				throw new IllegalArgumentException(&quot;Duplicate site: &quot; + site);</span>
+<span class="fc" id="L49">			cell[site] = siteIdx;</span>
+<span class="fc" id="L50">			distance[site] = 0;</span>
+<span class="fc" id="L51">			heapVPtrs[site] = heap.insert(0.0, site);</span>
+<span class="fc" id="L52">		}</span>
 
-<span class="fc bfc" id="L53" title="All 2 branches covered.">		while (heap.isNotEmpty()) {</span>
-<span class="fc" id="L54">			DoubleIntReferenceableHeap.Ref min = heap.extractMin();</span>
-<span class="fc" id="L55">			int u = min.value();</span>
-<span class="fc" id="L56">			double uDistance = distance[u] = min.key();</span>
-<span class="fc" id="L57">			int uCell = cell[u];</span>
-<span class="fc" id="L58">			heapVPtrs[u] = null;</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">		while (heap.isNotEmpty()) {</span>
+<span class="fc" id="L55">			DoubleIntReferenceableHeap.Ref min = heap.extractMin();</span>
+<span class="fc" id="L56">			int u = min.value();</span>
+<span class="fc" id="L57">			double uDistance = distance[u] = min.key();</span>
+<span class="fc" id="L58">			int uCell = cell[u];</span>
+<span class="fc" id="L59">			heapVPtrs[u] = null;</span>
 
-<span class="fc bfc" id="L60" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L61">				int e = eit.nextInt();</span>
-<span class="fc" id="L62">				int v = eit.targetInt();</span>
-<span class="fc bfc" id="L63" title="All 2 branches covered.">				if (distance[v] != Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L64">					continue;</span>
-<span class="fc" id="L65">				double ew = w.weight(e);</span>
-<span class="fc" id="L66">				Assertions.onlyPositiveWeight(ew);</span>
-<span class="fc" id="L67">				double vDistance = uDistance + ew;</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">			for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L62">				int e = eit.nextInt();</span>
+<span class="fc" id="L63">				int v = eit.targetInt();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">				if (distance[v] != Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L65">					continue;</span>
+<span class="fc" id="L66">				double ew = w.weight(e);</span>
+<span class="fc" id="L67">				Assertions.onlyPositiveWeight(ew);</span>
+<span class="fc" id="L68">				double vDistance = uDistance + ew;</span>
 
-<span class="fc" id="L69">				DoubleIntReferenceableHeap.Ref vPtr = heapVPtrs[v];</span>
-<span class="fc bfc" id="L70" title="All 2 branches covered.">				if (vPtr == null) {</span>
-<span class="fc" id="L71">					heapVPtrs[v] = heap.insert(vDistance, v);</span>
-<span class="fc" id="L72">					backtrack[v] = e;</span>
-<span class="fc" id="L73">					cell[v] = uCell;</span>
-<span class="fc bfc" id="L74" title="All 2 branches covered.">				} else if (vDistance &lt; vPtr.key()) {</span>
-<span class="fc" id="L75">					heap.decreaseKey(vPtr, vDistance);</span>
-<span class="fc" id="L76">					backtrack[v] = e;</span>
-<span class="fc" id="L77">					cell[v] = uCell;</span>
+<span class="fc" id="L70">				DoubleIntReferenceableHeap.Ref vPtr = heapVPtrs[v];</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">				if (vPtr == null) {</span>
+<span class="fc" id="L72">					heapVPtrs[v] = heap.insert(vDistance, v);</span>
+<span class="fc" id="L73">					backtrack[v] = e;</span>
+<span class="fc" id="L74">					cell[v] = uCell;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">				} else if (vDistance &lt; vPtr.key()) {</span>
+<span class="fc" id="L76">					heap.decreaseKey(vPtr, vDistance);</span>
+<span class="fc" id="L77">					backtrack[v] = e;</span>
+<span class="fc" id="L78">					cell[v] = uCell;</span>
 				}
-<span class="fc" id="L79">			}</span>
-<span class="fc" id="L80">		}</span>
-<span class="fc" id="L81">		boolean hasUnreachable = false;</span>
-<span class="fc" id="L82">		int unreachableCell = sitesArr.length;</span>
-<span class="fc bfc" id="L83" title="All 2 branches covered.">		for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc bfc" id="L84" title="All 2 branches covered.">			if (cell[v] == -1) {</span>
-<span class="fc" id="L85">				hasUnreachable = true;</span>
-<span class="fc" id="L86">				cell[v] = unreachableCell;</span>
+<span class="fc" id="L80">			}</span>
+<span class="fc" id="L81">		}</span>
+<span class="fc" id="L82">		boolean hasUnreachable = false;</span>
+<span class="fc" id="L83">		int unreachableCell = sitesArr.length;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		for (int v : range(n)) {</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			if (cell[v] == -1) {</span>
+<span class="fc" id="L86">				hasUnreachable = true;</span>
+<span class="fc" id="L87">				cell[v] = unreachableCell;</span>
 			}
-		}
-<span class="fc bfc" id="L89" title="All 2 branches covered.">		int blockNum = sitesArr.length + (hasUnreachable ? 1 : 0);</span>
+<span class="fc" id="L89">		}</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">		int blockNum = sitesArr.length + (hasUnreachable ? 1 : 0);</span>
 
-<span class="fc" id="L91">		return new VoronoiAlgos.ResultImpl(g, blockNum, cell, distance, backtrack, sitesArr);</span>
+<span class="fc" id="L92">		return new VoronoiAlgos.ResultImpl(g, blockNum, cell, distance, backtrack, sitesArr);</span>
 	}
 
 }

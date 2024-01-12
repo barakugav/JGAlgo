@@ -17,6 +17,7 @@
 package com.jgalgo.internal.ds;
 
 import com.jgalgo.alg.AlgorithmBuilderBase;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Data structure of a finite set of elements supporting union and find operations.
@@ -63,6 +64,14 @@ public interface UnionFind {
 	int make();
 
 	/**
+	 * Create multiple elements, each in its singleton set.
+	 *
+	 * @param  count the number of elements to create
+	 * @return       the identifiers of the new elements
+	 */
+	IntSet makeMany(int count);
+
+	/**
 	 * Find the set of an element and get an arbitrary element from it.
 	 *
 	 * &lt;p&gt;
@@ -107,7 +116,7 @@ public interface UnionFind {
 	 * @return a default implementation of {@link UnionFind}
 	 */
 	static UnionFind newInstance() {
-<span class="fc" id="L110">		return builder().build();</span>
+<span class="fc" id="L119">		return builder().build();</span>
 	}
 
 	/**
@@ -119,43 +128,43 @@ public interface UnionFind {
 	 * @return a new builder that can build {@link UnionFind} objects
 	 */
 	static UnionFind.Builder builder() {
-<span class="fc" id="L122">		return new UnionFind.Builder() {</span>
+<span class="fc" id="L131">		return new UnionFind.Builder() {</span>
 			int expectedSize;
 			String impl;
 
 			@Override
 			public UnionFind build() {
-<span class="pc bpc" id="L128" title="1 of 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L129" title="All 3 branches missed.">					switch (impl) {</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L138" title="All 3 branches missed.">					switch (impl) {</span>
 						case &quot;array&quot;:
-<span class="nc" id="L131">							return new UnionFindArray(expectedSize);</span>
+<span class="nc" id="L140">							return new UnionFindArray(expectedSize);</span>
 						case &quot;ptr&quot;:
-<span class="nc" id="L133">							return new UnionFindPtr(expectedSize);</span>
+<span class="nc" id="L142">							return new UnionFindPtr(expectedSize);</span>
 						default:
-<span class="nc" id="L135">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L144">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="fc" id="L138">				return new UnionFindArray(expectedSize);</span>
+<span class="fc" id="L147">				return new UnionFindArray(expectedSize);</span>
 			}
 
 			@Override
 			public UnionFind.Builder expectedSize(int expectedSize) {
-<span class="pc bpc" id="L143" title="1 of 2 branches missed.">				if (expectedSize &lt; 0)</span>
-<span class="nc" id="L144">					throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
-<span class="fc" id="L145">				this.expectedSize = expectedSize;</span>
-<span class="fc" id="L146">				return this;</span>
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">				if (expectedSize &lt; 0)</span>
+<span class="nc" id="L153">					throw new IllegalArgumentException(&quot;negative expected size: &quot; + expectedSize);</span>
+<span class="fc" id="L154">				this.expectedSize = expectedSize;</span>
+<span class="fc" id="L155">				return this;</span>
 			}
 
 			@Override
 			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L151" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L153">						impl = (String) value;</span>
-<span class="nc" id="L154">						break;</span>
+<span class="nc" id="L162">						impl = (String) value;</span>
+<span class="nc" id="L163">						break;</span>
 					default:
-<span class="nc" id="L156">						UnionFind.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L165">						UnionFind.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L158">			}</span>
+<span class="nc" id="L167">			}</span>
 		};
 	}
 

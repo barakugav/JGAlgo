@@ -16,11 +16,12 @@
 
 package com.jgalgo.internal.ds;
 
+import static com.jgalgo.internal.util.Range.range;
 import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 
-<span class="fc" id="L23">abstract class RMQStaticLinearAbstract implements RMQStatic {</span>
+<span class="fc" id="L24">abstract class RMQStaticLinearAbstract implements RMQStatic {</span>
 
 	/*
 	 * This implementation divides the elements sequence into blocks, for each block calculate the minimum in the block
@@ -35,86 +36,86 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 	 * \(O(n)\) pre processing time, \(O(n)\) space, \(O(1)\) query.
 	 */
 
-<span class="fc" id="L38">	private final RMQStatic outerRMQ = new RMQStaticPowerOf2Table();</span>
+<span class="fc" id="L39">	private final RMQStatic outerRMQ = new RMQStaticPowerOf2Table();</span>
 
 	abstract class PreProcessor extends DsBase {
 
 		final RMQStaticComparator cmpPadded;
 		final int blockNum;
 
-<span class="fc" id="L45">		PreProcessor(RMQStaticComparator c, int n) {</span>
-<span class="fc" id="L46">			this.n = n;</span>
-<span class="fc" id="L47">			blockSize = getBlockSize(n);</span>
-<span class="fc" id="L48">			blockNum = (int) Math.ceil((double) n / blockSize);</span>
-<span class="fc" id="L49">			this.cmpOrig = c;</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">			this.cmpPadded = n &lt; blockNum * blockSize ? new PaddedComparator(n, c) : c;</span>
-<span class="fc" id="L51">			blocksRightLeftMinimum = new byte[blockNum * (blockSize - 1) * 2];</span>
+<span class="fc" id="L46">		PreProcessor(RMQStaticComparator c, int n) {</span>
+<span class="fc" id="L47">			this.n = n;</span>
+<span class="fc" id="L48">			blockSize = getBlockSize(n);</span>
+<span class="fc" id="L49">			blockNum = (int) Math.ceil((double) n / blockSize);</span>
+<span class="fc" id="L50">			this.cmpOrig = c;</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">			this.cmpPadded = n &lt; blockNum * blockSize ? new PaddedComparator(n, c) : c;</span>
+<span class="fc" id="L52">			blocksRightLeftMinimum = new byte[blockNum * (blockSize - 1) * 2];</span>
 
-<span class="fc bfc" id="L53" title="All 2 branches covered.">			for (int b = 0; b &lt; blockNum; b++) {</span>
-<span class="fc bfc" id="L54" title="All 2 branches covered.">				c = b &lt; blockNum - 1 ? cmpOrig : cmpPadded;</span>
-<span class="fc" id="L55">				int base = b * blockSize;</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">			for (int b : range(blockNum)) {</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">				c = b &lt; blockNum - 1 ? cmpOrig : cmpPadded;</span>
+<span class="fc" id="L56">				int base = b * blockSize;</span>
 
-<span class="fc" id="L57">				byte min = 0;</span>
-<span class="fc bfc" id="L58" title="All 2 branches covered.">				for (byte i = 0; i &lt; blockSize - 1; i++) {</span>
-<span class="fc bfc" id="L59" title="All 2 branches covered.">					if (c.compare(base + i + 1, base + min) &lt; 0)</span>
-<span class="fc" id="L60">						min = (byte) (i + 1);</span>
-<span class="fc" id="L61">					blockLeftMinimum(b, i, min);</span>
+<span class="fc" id="L58">				byte min = 0;</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">				for (byte i = 0; i &lt; blockSize - 1; i++) {</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">					if (c.compare(base + i + 1, base + min) &lt; 0)</span>
+<span class="fc" id="L61">						min = (byte) (i + 1);</span>
+<span class="fc" id="L62">					blockLeftMinimum(b, i, min);</span>
 				}
 
-<span class="fc" id="L64">				min = (byte) (blockSize - 1);</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">				for (byte i = (byte) (blockSize - 2); i &gt;= 0; i--) {</span>
-<span class="fc bfc" id="L66" title="All 2 branches covered.">					if (c.compare(base + i, base + min) &lt; 0)</span>
-<span class="fc" id="L67">						min = i;</span>
-<span class="fc" id="L68">					blockRightMinimum(b, i, min);</span>
+<span class="fc" id="L65">				min = (byte) (blockSize - 1);</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">				for (byte i = (byte) (blockSize - 2); i &gt;= 0; i--) {</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">					if (c.compare(base + i, base + min) &lt; 0)</span>
+<span class="fc" id="L68">						min = i;</span>
+<span class="fc" id="L69">					blockRightMinimum(b, i, min);</span>
 				}
-			}
+<span class="fc" id="L71">			}</span>
 
-<span class="fc" id="L72">			xlogxTableDS = outerRMQ</span>
-<span class="fc" id="L73">					.preProcessSequence(</span>
-<span class="fc" id="L74">							(i, j) -&gt; cmpOrig.compare(i * blockSize + blockMinimum(i), j * blockSize + blockMinimum(j)),</span>
+<span class="fc" id="L73">			xlogxTableDS = outerRMQ</span>
+<span class="fc" id="L74">					.preProcessSequence(</span>
+<span class="fc" id="L75">							(i, j) -&gt; cmpOrig.compare(i * blockSize + blockMinimum(i), j * blockSize + blockMinimum(j)),</span>
 							blockNum);
 
-<span class="fc" id="L77">		}</span>
+<span class="fc" id="L78">		}</span>
 
 		void preProcessInnerBlocks() {
-<span class="fc" id="L80">			var innerBlocksIdx = new Object() {</span>
-<span class="fc" id="L81">				int val = 0;</span>
+<span class="fc" id="L81">			var innerBlocksIdx = new Object() {</span>
+<span class="fc" id="L82">				int val = 0;</span>
 			};
-<span class="fc" id="L83">			blockToInnerIdx = new int[blockNum];</span>
-<span class="fc" id="L84">			final int innerBlockAllocSize = blockSize * (blockSize - 1) / 2;</span>
-<span class="fc" id="L85">			Int2IntMap tables = new Int2IntOpenHashMap();</span>
-<span class="fc bfc" id="L86" title="All 2 branches covered.">			for (int b = 0; b &lt; blockNum; b++) {</span>
-<span class="fc" id="L87">				int key = calcBlockKey(b);</span>
-<span class="fc" id="L88">				blockToInnerIdx[b] = key;</span>
-<span class="fc" id="L89">				tables.computeIfAbsent(key, k -&gt; innerBlocksIdx.val++);</span>
-			}
-<span class="fc" id="L91">			final int innerBlockNum = tables.size();</span>
-<span class="fc" id="L92">			Bitmap builtInnerBlocks = new Bitmap(innerBlockNum);</span>
-<span class="fc" id="L93">			innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">			for (int b = 0; b &lt; blockNum; b++) {</span>
-<span class="fc" id="L95">				int key = blockToInnerIdx[b];</span>
-<span class="fc" id="L96">				int innerIdx = tables.get(key);</span>
-<span class="fc" id="L97">				blockToInnerIdx[b] = innerIdx;</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">				if (!builtInnerBlocks.get(innerIdx)) {</span>
-<span class="fc" id="L99">					byte[] demoBlock = calcDemoBlock(key);</span>
-<span class="fc" id="L100">					buildInnerBlock(innerIdx, demoBlock);</span>
-<span class="fc" id="L101">					builtInnerBlocks.set(innerIdx);</span>
+<span class="fc" id="L84">			blockToInnerIdx = new int[blockNum];</span>
+<span class="fc" id="L85">			final int innerBlockAllocSize = blockSize * (blockSize - 1) / 2;</span>
+<span class="fc" id="L86">			Int2IntMap tables = new Int2IntOpenHashMap();</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">			for (int b : range(blockNum)) {</span>
+<span class="fc" id="L88">				int key = calcBlockKey(b);</span>
+<span class="fc" id="L89">				blockToInnerIdx[b] = key;</span>
+<span class="fc" id="L90">				tables.computeIfAbsent(key, k -&gt; innerBlocksIdx.val++);</span>
+<span class="fc" id="L91">			}</span>
+<span class="fc" id="L92">			final int innerBlockNum = tables.size();</span>
+<span class="fc" id="L93">			Bitmap builtInnerBlocks = new Bitmap(innerBlockNum);</span>
+<span class="fc" id="L94">			innerBlocks = new byte[innerBlockNum * innerBlockAllocSize];</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">			for (int b : range(blockNum)) {</span>
+<span class="fc" id="L96">				int key = blockToInnerIdx[b];</span>
+<span class="fc" id="L97">				int innerIdx = tables.get(key);</span>
+<span class="fc" id="L98">				blockToInnerIdx[b] = innerIdx;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">				if (!builtInnerBlocks.get(innerIdx)) {</span>
+<span class="fc" id="L100">					byte[] demoBlock = calcDemoBlock(key);</span>
+<span class="fc" id="L101">					buildInnerBlock(innerIdx, demoBlock);</span>
+<span class="fc" id="L102">					builtInnerBlocks.set(innerIdx);</span>
 				}
-			}
-<span class="fc" id="L104">			tables.clear();</span>
-<span class="fc" id="L105">		}</span>
+<span class="fc" id="L104">			}</span>
+<span class="fc" id="L105">			tables.clear();</span>
+<span class="fc" id="L106">		}</span>
 
 		private void buildInnerBlock(int innerBlock, byte[] demoBlock) {
-<span class="fc" id="L108">			byte[] arr = innerBlocks;</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">			for (byte i = 0; i &lt; blockSize - 1; i++)</span>
-<span class="fc bfc" id="L110" title="All 2 branches covered.">				arr[innerBlockIndex(innerBlock, i, i + 1)] = demoBlock[i] &lt; demoBlock[i + 1] ? i : (byte) (i + 1);</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">			for (byte i = 0; i &lt; blockSize - 2; i++) {</span>
-<span class="fc bfc" id="L112" title="All 2 branches covered.">				for (byte j = (byte) (i + 2); j &lt; blockSize; j++) {</span>
-<span class="fc" id="L113">					byte m = arr[innerBlockIndex(innerBlock, i, j - 1)];</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">					arr[innerBlockIndex(innerBlock, i, j)] = demoBlock[m] &lt; demoBlock[j] ? m : j;</span>
+<span class="fc" id="L109">			byte[] arr = innerBlocks;</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">			for (byte i = 0; i &lt; blockSize - 1; i++)</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">				arr[innerBlockIndex(innerBlock, i, i + 1)] = demoBlock[i] &lt; demoBlock[i + 1] ? i : (byte) (i + 1);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			for (byte i = 0; i &lt; blockSize - 2; i++) {</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">				for (byte j = (byte) (i + 2); j &lt; blockSize; j++) {</span>
+<span class="fc" id="L114">					byte m = arr[innerBlockIndex(innerBlock, i, j - 1)];</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">					arr[innerBlockIndex(innerBlock, i, j)] = demoBlock[m] &lt; demoBlock[j] ? m : j;</span>
 				}
 			}
-<span class="fc" id="L117">		}</span>
+<span class="fc" id="L118">		}</span>
 
 		abstract byte getBlockSize(int n);
 
@@ -125,71 +126,71 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 		abstract byte[] calcDemoBlock(int key);
 
 		RMQStatic.DataStructure build() {
-<span class="fc" id="L128">			return new DataStructure(this);</span>
+<span class="fc" id="L129">			return new DataStructure(this);</span>
 		}
 
 	}
 
 	private static class DataStructure extends DsBase implements RMQStatic.DataStructure {
 
-<span class="fc" id="L135">		DataStructure(RMQStaticLinearAbstract.PreProcessor ds) {</span>
-<span class="fc" id="L136">			n = ds.n;</span>
-<span class="fc" id="L137">			blockSize = ds.blockSize;</span>
-<span class="fc" id="L138">			blocksRightLeftMinimum = ds.blocksRightLeftMinimum;</span>
-<span class="fc" id="L139">			xlogxTableDS = ds.xlogxTableDS;</span>
-<span class="fc" id="L140">			blockToInnerIdx = ds.blockToInnerIdx;</span>
-<span class="fc" id="L141">			innerBlocks = ds.innerBlocks;</span>
-<span class="fc" id="L142">			cmpOrig = ds.cmpOrig;</span>
-<span class="fc" id="L143">		}</span>
+<span class="fc" id="L136">		DataStructure(RMQStaticLinearAbstract.PreProcessor ds) {</span>
+<span class="fc" id="L137">			n = ds.n;</span>
+<span class="fc" id="L138">			blockSize = ds.blockSize;</span>
+<span class="fc" id="L139">			blocksRightLeftMinimum = ds.blocksRightLeftMinimum;</span>
+<span class="fc" id="L140">			xlogxTableDS = ds.xlogxTableDS;</span>
+<span class="fc" id="L141">			blockToInnerIdx = ds.blockToInnerIdx;</span>
+<span class="fc" id="L142">			innerBlocks = ds.innerBlocks;</span>
+<span class="fc" id="L143">			cmpOrig = ds.cmpOrig;</span>
+<span class="fc" id="L144">		}</span>
 
 		@Override
 		public int findMinimumInRange(int i, int j) {
-<span class="fc" id="L147">			RMQStatics.checkIndices(i, j, n);</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">			if (i == j)</span>
-<span class="fc" id="L149">				return i;</span>
+<span class="fc" id="L148">			RMQStatics.checkIndices(i, j, n);</span>
+<span class="fc bfc" id="L149" title="All 2 branches covered.">			if (i == j)</span>
+<span class="fc" id="L150">				return i;</span>
 
-<span class="fc" id="L151">			int blk0 = i / blockSize;</span>
-<span class="fc" id="L152">			int blk1 = j / blockSize;</span>
-<span class="fc" id="L153">			int innerI = i % blockSize;</span>
-<span class="fc" id="L154">			int innerJ = j % blockSize;</span>
+<span class="fc" id="L152">			int blk0 = i / blockSize;</span>
+<span class="fc" id="L153">			int blk1 = j / blockSize;</span>
+<span class="fc" id="L154">			int innerI = i % blockSize;</span>
+<span class="fc" id="L155">			int innerJ = j % blockSize;</span>
 
-<span class="fc bfc" id="L156" title="All 2 branches covered.">			if (blk0 != blk1) {</span>
-<span class="fc bfc" id="L157" title="All 2 branches covered.">				int blk0min = blk0 * blockSize + (innerI == blockSize - 1 ? innerI : blockRightMinimum(blk0, innerI));</span>
-<span class="fc bfc" id="L158" title="All 2 branches covered.">				int blk1min = blk1 * blockSize + (innerJ == 0 ? innerJ : blockLeftMinimum(blk1, innerJ - 1));</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">				int min = cmpOrig.compare(blk0min, blk1min) &lt; 0 ? blk0min : blk1min;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">			if (blk0 != blk1) {</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">				int blk0min = blk0 * blockSize + (innerI == blockSize - 1 ? innerI : blockRightMinimum(blk0, innerI));</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">				int blk1min = blk1 * blockSize + (innerJ == 0 ? innerJ : blockLeftMinimum(blk1, innerJ - 1));</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">				int min = cmpOrig.compare(blk0min, blk1min) &lt; 0 ? blk0min : blk1min;</span>
 
-<span class="fc bfc" id="L161" title="All 2 branches covered.">				if (blk0 + 1 != blk1) {</span>
-<span class="fc" id="L162">					int middleBlk = xlogxTableDS.findMinimumInRange(blk0 + 1, blk1 - 1);</span>
-<span class="fc" id="L163">					int middleMin = middleBlk * blockSize + blockMinimum(middleBlk);</span>
-<span class="fc bfc" id="L164" title="All 2 branches covered.">					min = cmpOrig.compare(min, middleMin) &lt; 0 ? min : middleMin;</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">				if (blk0 + 1 != blk1) {</span>
+<span class="fc" id="L163">					int middleBlk = xlogxTableDS.findMinimumInRange(blk0 + 1, blk1 - 1);</span>
+<span class="fc" id="L164">					int middleMin = middleBlk * blockSize + blockMinimum(middleBlk);</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">					min = cmpOrig.compare(min, middleMin) &lt; 0 ? min : middleMin;</span>
 				}
 
-<span class="fc" id="L167">				return min;</span>
+<span class="fc" id="L168">				return min;</span>
 			} else {
-<span class="fc" id="L169">				return calcRMQInnerBlock(blk0, innerI, innerJ);</span>
+<span class="fc" id="L170">				return calcRMQInnerBlock(blk0, innerI, innerJ);</span>
 			}
 
 		}
 
 		int calcRMQInnerBlock(int block, int i, int j) {
-<span class="fc" id="L175">			int r = block * blockSize;</span>
-<span class="pc bpc" id="L176" title="1 of 2 branches missed.">			if (i == j)</span>
-<span class="nc" id="L177">				return r + i;</span>
-<span class="fc" id="L178">			int innerBlock = blockToInnerIdx[block];</span>
-<span class="fc" id="L179">			return r + innerBlocks[innerBlockIndex(innerBlock, i, j)];</span>
+<span class="fc" id="L176">			int r = block * blockSize;</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">			if (i == j)</span>
+<span class="nc" id="L178">				return r + i;</span>
+<span class="fc" id="L179">			int innerBlock = blockToInnerIdx[block];</span>
+<span class="fc" id="L180">			return r + innerBlocks[innerBlockIndex(innerBlock, i, j)];</span>
 		}
 
 		@Override
 		public long sizeInBytes() {
-<span class="nc" id="L184">			long s = 0;</span>
-<span class="nc" id="L185">			s += 4; // n</span>
-<span class="nc" id="L186">			s += 4; // blockSize</span>
-<span class="nc" id="L187">			s += 8 + blocksRightLeftMinimum.length;</span>
-<span class="nc" id="L188">			s += 8 + xlogxTableDS.sizeInBytes();</span>
-<span class="nc" id="L189">			s += 8 + 4 * blockToInnerIdx.length;</span>
-<span class="nc" id="L190">			s += 8 + innerBlocks.length;</span>
-<span class="nc" id="L191">			s += 8; // cmp</span>
-<span class="nc" id="L192">			return s;</span>
+<span class="nc" id="L185">			long s = 0;</span>
+<span class="nc" id="L186">			s += 4; // n</span>
+<span class="nc" id="L187">			s += 4; // blockSize</span>
+<span class="nc" id="L188">			s += 8 + blocksRightLeftMinimum.length;</span>
+<span class="nc" id="L189">			s += 8 + xlogxTableDS.sizeInBytes();</span>
+<span class="nc" id="L190">			s += 8 + 4 * blockToInnerIdx.length;</span>
+<span class="nc" id="L191">			s += 8 + innerBlocks.length;</span>
+<span class="nc" id="L192">			s += 8; // cmp</span>
+<span class="nc" id="L193">			return s;</span>
 		}
 
 	}
@@ -205,32 +206,32 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 		RMQStaticComparator cmpOrig;
 
 		int blockMinimum(int block) {
-<span class="fc" id="L208">			return blockRightMinimum(block, 0);</span>
+<span class="fc" id="L209">			return blockRightMinimum(block, 0);</span>
 		}
 
 		int blockRightMinimum(int block, int i) {
-<span class="fc" id="L212">			return blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 0];</span>
+<span class="fc" id="L213">			return blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 0];</span>
 		}
 
 		int blockLeftMinimum(int block, int i) {
-<span class="fc" id="L216">			return blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 1];</span>
+<span class="fc" id="L217">			return blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 1];</span>
 		}
 
 		void blockRightMinimum(int block, int i, byte val) {
-<span class="fc" id="L220">			blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 0] = val;</span>
-<span class="fc" id="L221">		}</span>
+<span class="fc" id="L221">			blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 0] = val;</span>
+<span class="fc" id="L222">		}</span>
 
 		void blockLeftMinimum(int block, int i, byte val) {
-<span class="fc" id="L224">			blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 1] = val;</span>
-<span class="fc" id="L225">		}</span>
+<span class="fc" id="L225">			blocksRightLeftMinimum[(block * (blockSize - 1) + i) * 2 + 1] = val;</span>
+<span class="fc" id="L226">		}</span>
 
 		int innerBlockIndex(int innerBlock, int i, int j) {
-<span class="fc" id="L228">			int innerIdx = (2 * blockSize - i - 1) * i / 2 + j - i - 1;</span>
-<span class="fc" id="L229">			return innerBlock * innerBlockAllocSize() + innerIdx;</span>
+<span class="fc" id="L229">			int innerIdx = (2 * blockSize - i - 1) * i / 2 + j - i - 1;</span>
+<span class="fc" id="L230">			return innerBlock * innerBlockAllocSize() + innerIdx;</span>
 		}
 
 		int innerBlockAllocSize() {
-<span class="fc" id="L233">			return blockSize * (blockSize - 1) / 2;</span>
+<span class="fc" id="L234">			return blockSize * (blockSize - 1) / 2;</span>
 		}
 
 	}
@@ -240,16 +241,16 @@ import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 		final int n;
 		final RMQStaticComparator c;
 
-<span class="fc" id="L243">		PaddedComparator(int n, RMQStaticComparator c) {</span>
-<span class="fc" id="L244">			this.n = n;</span>
-<span class="fc" id="L245">			this.c = c;</span>
-<span class="fc" id="L246">		}</span>
+<span class="fc" id="L244">		PaddedComparator(int n, RMQStaticComparator c) {</span>
+<span class="fc" id="L245">			this.n = n;</span>
+<span class="fc" id="L246">			this.c = c;</span>
+<span class="fc" id="L247">		}</span>
 
 		@Override
 		public int compare(int i, int j) {
-<span class="fc bfc" id="L250" title="All 4 branches covered.">			if (i &lt; n &amp;&amp; j &lt; n)</span>
-<span class="fc" id="L251">				return c.compare(i, j);</span>
-<span class="fc bfc" id="L252" title="All 2 branches covered.">			return i &gt;= n ? 1 : -1;</span>
+<span class="fc bfc" id="L251" title="All 4 branches covered.">			if (i &lt; n &amp;&amp; j &lt; n)</span>
+<span class="fc" id="L252">				return c.compare(i, j);</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">			return i &gt;= n ? 1 : -1;</span>
 		}
 
 	}

@@ -82,31 +82,31 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 <span class="fc" id="L82">				final int n = vertexToBlock.length;</span>
 
 <span class="fc" id="L84">				int[] blockSize = new int[blockNum + 1];</span>
-<span class="fc bfc" id="L85" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">				for (int v : range(n))</span>
 <span class="fc" id="L86">					blockSize[vertexToBlock[v]]++;</span>
-<span class="fc bfc" id="L87" title="All 2 branches covered.">				for (int s = 0, b = 0; b &lt; blockNum; b++) {</span>
-<span class="fc" id="L88">					int k = blockSize[b];</span>
-<span class="fc" id="L89">					blockSize[b] = s;</span>
-<span class="fc" id="L90">					s += k;</span>
-				}
-<span class="fc" id="L92">				int[] sortedVertices = new int[n];</span>
-<span class="fc" id="L93">				int[] blockOffset = blockSize;</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">				for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L95">					sortedVertices[blockOffset[vertexToBlock[v]]++] = v;</span>
-<span class="fc bfc" id="L96" title="All 2 branches covered.">				for (int b = blockNum; b &gt; 0; b--)</span>
-<span class="fc" id="L97">					blockOffset[b] = blockOffset[b - 1];</span>
-<span class="fc" id="L98">				blockOffset[0] = 0;</span>
+<span class="fc" id="L87">				int s = 0;</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">				for (int b : range(blockNum)) {</span>
+<span class="fc" id="L89">					int k = blockSize[b];</span>
+<span class="fc" id="L90">					blockSize[b] = s;</span>
+<span class="fc" id="L91">					s += k;</span>
+<span class="fc" id="L92">				}</span>
+<span class="fc" id="L93">				int[] sortedVertices = new int[n];</span>
+<span class="fc" id="L94">				int[] blockOffset = blockSize;</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">				for (int v : range(n))</span>
+<span class="fc" id="L96">					sortedVertices[blockOffset[vertexToBlock[v]]++] = v;</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">				for (int b = blockNum; b &gt; 0; b--)</span>
+<span class="fc" id="L98">					blockOffset[b] = blockOffset[b - 1];</span>
+<span class="fc" id="L99">				blockOffset[0] = 0;</span>
 
-<span class="fc" id="L100">				blockVertices = new IntSet[blockNum];</span>
-<span class="fc bfc" id="L101" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
-<span class="fc" id="L102">					final int b0 = b;</span>
+<span class="fc" id="L101">				blockVertices = new IntSet[blockNum];</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">				for (int b : range(blockNum)) {</span>
 <span class="fc" id="L103">					blockVertices[b] = new ImmutableIntArraySet(sortedVertices, blockOffset[b], blockOffset[b + 1]) {</span>
 						@Override
 						public boolean contains(int v) {
-<span class="fc bfc" id="L106" title="All 6 branches covered.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; vertexToBlock[v] == b0;</span>
+<span class="fc bfc" id="L106" title="All 6 branches covered.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; vertexToBlock[v] == b;</span>
 						}
 					};
-				}
+<span class="fc" id="L109">				}</span>
 			}
 <span class="fc" id="L111">			return blockVertices[block];</span>
 		}
@@ -116,34 +116,34 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 <span class="fc bfc" id="L116" title="All 2 branches covered.">			if (blockEdges == null) {</span>
 
 <span class="fc" id="L118">				int[] blockSize = new int[blockNum + 1];</span>
-<span class="fc bfc" id="L119" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">				for (int e : range(g.edges().size())) {</span>
 <span class="fc" id="L120">					int b1 = vertexToBlock[g.edgeSource(e)];</span>
 <span class="fc" id="L121">					int b2 = vertexToBlock[g.edgeTarget(e)];</span>
 <span class="fc bfc" id="L122" title="All 2 branches covered.">					if (b1 == b2)</span>
 <span class="fc" id="L123">						blockSize[b1]++;</span>
-				}
+<span class="fc" id="L124">				}</span>
 
 <span class="fc" id="L126">				int innerEdgesCount = 0;</span>
-<span class="fc bfc" id="L127" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">				for (int b : range(blockNum)) {</span>
 <span class="fc" id="L128">					int k = blockSize[b];</span>
 <span class="fc" id="L129">					blockSize[b] = innerEdgesCount;</span>
 <span class="fc" id="L130">					innerEdgesCount += k;</span>
-				}
+<span class="fc" id="L131">				}</span>
 <span class="fc" id="L132">				int[] sortedEdges = new int[innerEdgesCount];</span>
 <span class="fc" id="L133">				int[] blockOffset = blockSize;</span>
-<span class="fc bfc" id="L134" title="All 2 branches covered.">				for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">				for (int e : range(g.edges().size())) {</span>
 <span class="fc" id="L135">					int b1 = vertexToBlock[g.edgeSource(e)];</span>
 <span class="fc" id="L136">					int b2 = vertexToBlock[g.edgeTarget(e)];</span>
 <span class="fc bfc" id="L137" title="All 2 branches covered.">					if (b1 == b2)</span>
 <span class="fc" id="L138">						sortedEdges[blockOffset[b1]++] = e;</span>
-				}
+<span class="fc" id="L139">				}</span>
 <span class="fc bfc" id="L140" title="All 2 branches covered.">				for (int b = blockNum; b &gt; 0; b--)</span>
 <span class="fc" id="L141">					blockOffset[b] = blockOffset[b - 1];</span>
 <span class="fc" id="L142">				blockOffset[0] = 0;</span>
 
 <span class="fc" id="L144">				final int m = g.edges().size();</span>
 <span class="fc" id="L145">				blockEdges = new IntSet[blockNum];</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">				for (int b = 0; b &lt; blockNum; b++) {</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">				for (int b : range(blockNum)) {</span>
 <span class="fc" id="L147">					final int b0 = b;</span>
 <span class="fc" id="L148">					blockEdges[b] = new ImmutableIntArraySet(sortedEdges, blockOffset[b], blockOffset[b + 1]) {</span>
 						@Override
@@ -152,7 +152,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 <span class="fc bfc" id="L152" title="All 2 branches covered.">									&amp;&amp; vertexToBlock[g.edgeTarget(e)] == b0;</span>
 						}
 					};
-				}
+<span class="fc" id="L155">				}</span>
 			}
 <span class="fc" id="L157">			return blockEdges[block];</span>
 		}
@@ -169,44 +169,44 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 <span class="fc" id="L169">					IntSet[][] crossEdgesMatrix = new IntSet[blockNum][blockNum];</span>
 
 <span class="fc bfc" id="L171" title="All 2 branches covered.">					if (g.isDirected()) {</span>
-<span class="fc bfc" id="L172" title="All 2 branches covered.">						for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">						for (int e : range(m)) {</span>
 <span class="fc" id="L173">							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
 <span class="fc" id="L174">							crossEdgesNum[b1][b2]++;</span>
-						}
+<span class="fc" id="L175">						}</span>
 					} else {
-<span class="fc bfc" id="L177" title="All 2 branches covered.">						for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">						for (int e : range(m)) {</span>
 <span class="fc" id="L178">							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
 <span class="fc" id="L179">							crossEdgesNum[b1][b2]++;</span>
 <span class="fc bfc" id="L180" title="All 2 branches covered.">							if (b1 != b2)</span>
 <span class="fc" id="L181">								crossEdgesNum[b2][b1]++;</span>
-						}
+<span class="fc" id="L182">						}</span>
 					}
 <span class="fc" id="L184">					int crossNumTotal = 0;</span>
-<span class="fc bfc" id="L185" title="All 2 branches covered.">					for (int b1 = 0; b1 &lt; blockNum; b1++) {</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">						for (int b2 = 0; b2 &lt; blockNum; b2++) {</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">					for (int b1 : range(blockNum)) {</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">						for (int b2 : range(blockNum)) {</span>
 <span class="fc" id="L187">							int k = crossEdgesNum[b1][b2];</span>
 <span class="fc" id="L188">							crossEdgesNum[b1][b2] = crossNumTotal;</span>
 <span class="fc" id="L189">							crossNumTotal += k;</span>
-						}
-					}
+<span class="fc" id="L190">						}</span>
+<span class="fc" id="L191">					}</span>
 
 <span class="fc" id="L193">					int[] sortedEdges = new int[crossNumTotal];</span>
 <span class="fc" id="L194">					int[][] crossEdgesOffset = crossEdgesNum;</span>
 <span class="fc bfc" id="L195" title="All 2 branches covered.">					if (g.isDirected()) {</span>
 <span class="pc bnc" id="L196" title="All 2 branches missed.">						assert crossNumTotal == m;</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">						for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L197" title="All 2 branches covered.">						for (int e : range(m)) {</span>
 <span class="fc" id="L198">							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
 <span class="fc" id="L199">							sortedEdges[crossEdgesOffset[b1][b2]++] = e;</span>
-						}
+<span class="fc" id="L200">						}</span>
 
 					} else {
 <span class="pc bnc" id="L203" title="All 4 branches missed.">						assert crossNumTotal &gt;= m &amp;&amp; crossNumTotal &lt;= 2 * m;</span>
-<span class="fc bfc" id="L204" title="All 2 branches covered.">						for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">						for (int e : range(m)) {</span>
 <span class="fc" id="L205">							int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
 <span class="fc" id="L206">							sortedEdges[crossEdgesOffset[b1][b2]++] = e;</span>
 <span class="fc bfc" id="L207" title="All 2 branches covered.">							if (b1 != b2)</span>
 <span class="fc" id="L208">								sortedEdges[crossEdgesOffset[b2][b1]++] = e;</span>
-						}
+<span class="fc" id="L209">						}</span>
 					}
 
 <span class="fc bfc" id="L212" title="All 2 branches covered.">					for (int b1 = blockNum - 1; b1 &gt;= 0; b1--) {</span>
@@ -226,8 +226,8 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 					}
 <span class="fc" id="L227">					crossEdgesNum[0][0] = 0;</span>
 
-<span class="fc bfc" id="L229" title="All 2 branches covered.">					for (int b1 = 0; b1 &lt; blockNum; b1++) {</span>
-<span class="fc bfc" id="L230" title="All 2 branches covered.">						for (int b2 = 0; b2 &lt; blockNum; b2++) {</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">					for (int b1 : range(blockNum)) {</span>
+<span class="fc bfc" id="L230" title="All 2 branches covered.">						for (int b2 : range(blockNum)) {</span>
 <span class="fc" id="L231">							int begin = crossEdgesNum[b1][b2], end;</span>
 <span class="fc bfc" id="L232" title="All 2 branches covered.">							if (b2 &lt; blockNum - 1) {</span>
 <span class="fc" id="L233">								end = crossEdgesNum[b1][b2 + 1];</span>
@@ -237,8 +237,8 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 <span class="fc" id="L237">								end = crossNumTotal;</span>
 							}
 <span class="fc" id="L239">							crossEdgesMatrix[b1][b2] = ImmutableIntArraySet.withNaiveContains(sortedEdges, begin, end);</span>
-						}
-					}
+<span class="fc" id="L240">						}</span>
+<span class="fc" id="L241">					}</span>
 <span class="fc" id="L242">					crossEdges = (b1, b2) -&gt; crossEdgesMatrix[b1][b2];</span>
 
 <span class="fc" id="L244">				} else {</span>
@@ -252,7 +252,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 						}
 <span class="fc" id="L253">						return JGAlgoUtils.longPack(b1, b2);</span>
 					};
-<span class="fc bfc" id="L255" title="All 2 branches covered.">					for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">					for (int e : range(m)) {</span>
 <span class="fc" id="L256">						int b1 = vertexToBlock[g.edgeSource(e)], b2 = vertexToBlock[g.edgeTarget(e)];</span>
 <span class="fc" id="L257">						long key = buildKey.apply(b1, b2);</span>
 <span class="fc" id="L258">						int[] arr = map.computeIfAbsent(key, k -&gt; new int[2]);</span>
@@ -263,7 +263,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 						}
 <span class="fc" id="L264">						arr[arrSize] = e;</span>
 <span class="fc" id="L265">						arr[0] = arrSize;</span>
-					}
+<span class="fc" id="L266">					}</span>
 <span class="fc bfc" id="L267" title="All 2 branches covered.">					for (var entry : Long2ObjectMaps.fastIterable(map)) {</span>
 <span class="fc" id="L268">						int[] a = entry.getValue();</span>
 <span class="fc" id="L269">						int size = a[0];</span>
@@ -301,7 +301,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 <span class="fc bfc" id="L301" title="All 2 branches covered.">		if (parallelEdges) {</span>
 <span class="fc bfc" id="L302" title="All 2 branches covered.">			if (selfEdges)</span>
 <span class="fc" id="L303">				gb.ensureEdgeCapacity(m);</span>
-<span class="fc bfc" id="L304" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">			for (int e : range(m)) {</span>
 <span class="fc" id="L305">				int b1 = partition.vertexBlock(g.edgeSource(e));</span>
 <span class="fc" id="L306">				int b2 = partition.vertexBlock(g.edgeTarget(e));</span>
 <span class="fc bfc" id="L307" title="All 2 branches covered.">				if (b1 != b2) {</span>
@@ -310,11 +310,11 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 					// self edge
 <span class="fc" id="L311">					gb.addEdge(b1, b1, e);</span>
 				}
-			}
+<span class="fc" id="L313">			}</span>
 		} else {
 <span class="fc" id="L315">			Bitmap seen = new Bitmap(numberOfBlocks);</span>
 <span class="fc" id="L316">			IntList seenList = new IntArrayList();</span>
-<span class="fc bfc" id="L317" title="All 2 branches covered.">			for (int b1 = 0; b1 &lt; numberOfBlocks; b1++) {</span>
+<span class="fc bfc" id="L317" title="All 2 branches covered.">			for (int b1 : range(numberOfBlocks)) {</span>
 <span class="fc bfc" id="L318" title="All 2 branches covered.">				for (int u : partition.blockVertices(b1)) {</span>
 <span class="fc bfc" id="L319" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L320">						int e = eit.nextInt();</span>
@@ -330,7 +330,7 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 <span class="fc" id="L330">				}</span>
 <span class="fc" id="L331">				seen.clearAllUnsafe(seenList);</span>
 <span class="fc" id="L332">				seenList.clear();</span>
-			}
+<span class="fc" id="L333">			}</span>
 		}
 <span class="fc" id="L335">		return gb.build();</span>
 	}

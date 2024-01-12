@@ -16,6 +16,8 @@
 
 package com.jgalgo.graph;
 
+import static com.jgalgo.internal.util.Range.range;
+
 /**
  * An undirected graph implementation using linked lists to store edge lists.
  *
@@ -45,57 +47,55 @@ class GraphLinkedUndirected extends GraphLinkedAbstract implements GraphDefaults
 	private final DataContainer.Int nextvContainer;
 	private final DataContainer.Int prevvContainer;
 
-<span class="fc" id="L48">	private static final GraphBaseMutable.Capabilities CapabilitiesNoSelfEdges =</span>
-<span class="fc" id="L49">			GraphBaseMutable.Capabilities.of(false, false, true);</span>
-<span class="fc" id="L50">	private static final GraphBaseMutable.Capabilities CapabilitiesWithSelfEdges =</span>
-<span class="fc" id="L51">			GraphBaseMutable.Capabilities.of(false, true, true);</span>
+<span class="fc" id="L50">	private static final GraphBaseMutable.Capabilities CapabilitiesNoSelfEdges =</span>
+<span class="fc" id="L51">			GraphBaseMutable.Capabilities.of(false, false, true);</span>
+<span class="fc" id="L52">	private static final GraphBaseMutable.Capabilities CapabilitiesWithSelfEdges =</span>
+<span class="fc" id="L53">			GraphBaseMutable.Capabilities.of(false, true, true);</span>
 
 	private static GraphBaseMutable.Capabilities capabilities(boolean selfEdges) {
-<span class="fc bfc" id="L54" title="All 2 branches covered.">		return selfEdges ? CapabilitiesWithSelfEdges : CapabilitiesNoSelfEdges;</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		return selfEdges ? CapabilitiesWithSelfEdges : CapabilitiesNoSelfEdges;</span>
 	}
 
 	GraphLinkedUndirected(boolean selfEdges, int expectedVerticesNum, int expectedEdgesNum) {
-<span class="fc" id="L58">		super(capabilities(selfEdges), expectedVerticesNum, expectedEdgesNum);</span>
+<span class="fc" id="L60">		super(capabilities(selfEdges), expectedVerticesNum, expectedEdgesNum);</span>
 
-<span class="fc" id="L60">		edgesHeadContainer = newVerticesIntContainer(-1, newArr -&gt; edgesHead = newArr);</span>
-<span class="fc" id="L61">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
+<span class="fc" id="L62">		edgesHeadContainer = newVerticesIntContainer(-1, newArr -&gt; edgesHead = newArr);</span>
+<span class="fc" id="L63">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
 
-<span class="fc" id="L63">		nextuContainer = newEdgesIntContainer(-1, newArr -&gt; nextu = newArr);</span>
-<span class="fc" id="L64">		prevuContainer = newEdgesIntContainer(-1, newArr -&gt; prevu = newArr);</span>
-<span class="fc" id="L65">		nextvContainer = newEdgesIntContainer(-1, newArr -&gt; nextv = newArr);</span>
-<span class="fc" id="L66">		prevvContainer = newEdgesIntContainer(-1, newArr -&gt; prevv = newArr);</span>
-<span class="fc" id="L67">	}</span>
+<span class="fc" id="L65">		nextuContainer = newEdgesIntContainer(-1, newArr -&gt; nextu = newArr);</span>
+<span class="fc" id="L66">		prevuContainer = newEdgesIntContainer(-1, newArr -&gt; prevu = newArr);</span>
+<span class="fc" id="L67">		nextvContainer = newEdgesIntContainer(-1, newArr -&gt; nextv = newArr);</span>
+<span class="fc" id="L68">		prevvContainer = newEdgesIntContainer(-1, newArr -&gt; prevv = newArr);</span>
+<span class="fc" id="L69">	}</span>
 
 	GraphLinkedUndirected(boolean selfEdges, IndexGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L70">		super(capabilities(selfEdges), g, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L72">		super(capabilities(selfEdges), g, copyVerticesWeights, copyEdgesWeights);</span>
 
-<span class="fc" id="L72">		edgesHeadContainer = newVerticesIntContainer(-1, newArr -&gt; edgesHead = newArr);</span>
-<span class="fc" id="L73">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
+<span class="fc" id="L74">		edgesHeadContainer = newVerticesIntContainer(-1, newArr -&gt; edgesHead = newArr);</span>
+<span class="fc" id="L75">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
 
-<span class="fc" id="L75">		nextuContainer = newEdgesIntContainer(-1, newArr -&gt; nextu = newArr);</span>
-<span class="fc" id="L76">		prevuContainer = newEdgesIntContainer(-1, newArr -&gt; prevu = newArr);</span>
-<span class="fc" id="L77">		nextvContainer = newEdgesIntContainer(-1, newArr -&gt; nextv = newArr);</span>
-<span class="fc" id="L78">		prevvContainer = newEdgesIntContainer(-1, newArr -&gt; prevv = newArr);</span>
+<span class="fc" id="L77">		nextuContainer = newEdgesIntContainer(-1, newArr -&gt; nextu = newArr);</span>
+<span class="fc" id="L78">		prevuContainer = newEdgesIntContainer(-1, newArr -&gt; prevu = newArr);</span>
+<span class="fc" id="L79">		nextvContainer = newEdgesIntContainer(-1, newArr -&gt; nextv = newArr);</span>
+<span class="fc" id="L80">		prevvContainer = newEdgesIntContainer(-1, newArr -&gt; prevv = newArr);</span>
 
-<span class="fc" id="L80">		final int m = g.edges().size();</span>
-<span class="fc bfc" id="L81" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
-<span class="fc" id="L82">			addEdgeToLists(e);</span>
-<span class="fc" id="L83">	}</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		for (int e : range(g.edges().size()))</span>
+<span class="fc" id="L83">			addEdgeToLists(e);</span>
+<span class="fc" id="L84">	}</span>
 
 	GraphLinkedUndirected(boolean selfEdges, IndexGraphBuilderImpl builder) {
-<span class="fc" id="L86">		super(capabilities(selfEdges), builder);</span>
-<span class="pc bnc" id="L87" title="All 2 branches missed.">		assert !builder.isDirected();</span>
+<span class="fc" id="L87">		super(capabilities(selfEdges), builder);</span>
+<span class="pc bnc" id="L88" title="All 2 branches missed.">		assert !builder.isDirected();</span>
 
-<span class="fc" id="L89">		edgesHeadContainer = newVerticesIntContainer(-1, newArr -&gt; edgesHead = newArr);</span>
-<span class="fc" id="L90">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
+<span class="fc" id="L90">		edgesHeadContainer = newVerticesIntContainer(-1, newArr -&gt; edgesHead = newArr);</span>
+<span class="fc" id="L91">		edgesNumContainer = newVerticesIntContainer(0, newArr -&gt; edgesNum = newArr);</span>
 
-<span class="fc" id="L92">		nextuContainer = newEdgesIntContainer(-1, newArr -&gt; nextu = newArr);</span>
-<span class="fc" id="L93">		prevuContainer = newEdgesIntContainer(-1, newArr -&gt; prevu = newArr);</span>
-<span class="fc" id="L94">		nextvContainer = newEdgesIntContainer(-1, newArr -&gt; nextv = newArr);</span>
-<span class="fc" id="L95">		prevvContainer = newEdgesIntContainer(-1, newArr -&gt; prevv = newArr);</span>
+<span class="fc" id="L93">		nextuContainer = newEdgesIntContainer(-1, newArr -&gt; nextu = newArr);</span>
+<span class="fc" id="L94">		prevuContainer = newEdgesIntContainer(-1, newArr -&gt; prevu = newArr);</span>
+<span class="fc" id="L95">		nextvContainer = newEdgesIntContainer(-1, newArr -&gt; nextv = newArr);</span>
+<span class="fc" id="L96">		prevvContainer = newEdgesIntContainer(-1, newArr -&gt; prevv = newArr);</span>
 
-<span class="fc" id="L97">		final int m = builder.edges.size();</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">		for (int e = 0; e &lt; m; e++)</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">		for (int e : range(builder.edges.size()))</span>
 <span class="fc" id="L99">			addEdgeToLists(e);</span>
 <span class="fc" id="L100">	}</span>
 

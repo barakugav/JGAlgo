@@ -58,28 +58,28 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 <span class="pc bnc" id="L58" title="All 2 branches missed.">			assert edgesInBegin.length == n + 1;</span>
 
 <span class="fc" id="L60">			IndexGraphBuilder.ReIndexingMap edgesReIndexing0 = edgesReIndexing.get();</span>
-<span class="fc bfc" id="L61" title="All 2 branches covered.">			for (int eIdx = 0; eIdx &lt; m; eIdx++) {</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">			for (int eIdx : range(m)) {</span>
 <span class="fc" id="L62">				int eOrig = edgesIn[eIdx];</span>
 <span class="fc" id="L63">				int eCsr = edgesReIndexing0.origToReIndexed(eOrig);</span>
 <span class="fc" id="L64">				edgesIn[eIdx] = eCsr;</span>
-			}
+<span class="fc" id="L65">			}</span>
 
 <span class="fc bfc" id="L67" title="All 2 branches covered.">			if (graphOrBuilder.contains(IndexGraph.class)) {</span>
 <span class="fc" id="L68">				IndexGraph g = graphOrBuilder.get(IndexGraph.class);</span>
 <span class="pc bnc" id="L69" title="All 2 branches missed.">				assert g.isDirected();</span>
 
-<span class="fc bfc" id="L71" title="All 2 branches covered.">				for (int eCsr = 0; eCsr &lt; m; eCsr++) {</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">				for (int eCsr : range(m)) {</span>
 <span class="fc" id="L72">					int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);</span>
 <span class="fc" id="L73">					setEndpoints(eCsr, g.edgeSource(eOrig), g.edgeTarget(eOrig));</span>
-				}
+<span class="fc" id="L74">				}</span>
 <span class="fc" id="L75">			} else {</span>
 <span class="fc" id="L76">				IndexGraphBuilderImpl builder = graphOrBuilder.get(IndexGraphBuilderImpl.class);</span>
 <span class="pc bnc" id="L77" title="All 2 branches missed.">				assert builder.isDirected();</span>
 
-<span class="fc bfc" id="L79" title="All 2 branches covered.">				for (int eCsr = 0; eCsr &lt; m; eCsr++) {</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">				for (int eCsr : range(m)) {</span>
 <span class="fc" id="L80">					int eOrig = edgesReIndexing0.reIndexedToOrig(eCsr);</span>
 <span class="fc" id="L81">					setEndpoints(eCsr, builder.edgeSource(eOrig), builder.edgeTarget(eOrig));</span>
-				}
+<span class="fc" id="L82">				}</span>
 			}
 		}
 
@@ -164,7 +164,7 @@ import it.unimi.dsi.fastutil.ints.IntIntPair;
 <span class="fc" id="L164">			final int m = edgesNum(graphOrBuilder);</span>
 <span class="fc" id="L165">			int[] edgesCsrToOrig = processEdges.edgesOut;</span>
 <span class="fc" id="L166">			int[] edgesOrigToCsr = new int[m];</span>
-<span class="fc bfc" id="L167" title="All 2 branches covered.">			for (int eCsr = 0; eCsr &lt; m; eCsr++)</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">			for (int eCsr : range(m))</span>
 <span class="fc" id="L168">				edgesOrigToCsr[edgesCsrToOrig[eCsr]] = eCsr;</span>
 <span class="fc" id="L169">			edgesReIndexing = Optional.of(new IndexGraphBuilderImpl.ReIndexingMapImpl(edgesOrigToCsr, edgesCsrToOrig));</span>
 		}

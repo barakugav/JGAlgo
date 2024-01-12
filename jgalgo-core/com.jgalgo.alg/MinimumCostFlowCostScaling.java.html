@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import com.jgalgo.alg.Flows.ResidualGraph;
 import com.jgalgo.graph.IEdgeIter;
@@ -43,22 +44,22 @@ import it.unimi.dsi.fastutil.ints.IntStack;
  * @see    MaximumFlowPushRelabelPartialAugment
  * @author Barak Ugav
  */
-<span class="fc" id="L46">class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSupply {</span>
+<span class="fc" id="L47">class MinimumCostFlowCostScaling extends MinimumCostFlows.AbstractImplBasedSupply {</span>
 
 	private static final int alpha = 16;
 
 	@Override
 	public IFlow computeMinCostFlow(IndexGraph g, IWeightFunction capacity, IWeightFunction cost,
 			IWeightFunction supply) {
-<span class="fc bfc" id="L53" title="All 4 branches covered.">		if (!(WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(supply)))</span>
-<span class="fc" id="L54">			throw new IllegalArgumentException(&quot;only integer capacities and flows are supported&quot;);</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">		if (!WeightFunction.isInteger(cost))</span>
-<span class="fc" id="L56">			throw new IllegalArgumentException(&quot;only integer costs are supported&quot;);</span>
-<span class="fc" id="L57">		return new Worker(g, (IWeightFunctionInt) capacity, (IWeightFunctionInt) cost, (IWeightFunctionInt) supply)</span>
-<span class="fc" id="L58">				.solve();</span>
+<span class="fc bfc" id="L54" title="All 4 branches covered.">		if (!(WeightFunction.isInteger(capacity) &amp;&amp; WeightFunction.isInteger(supply)))</span>
+<span class="fc" id="L55">			throw new IllegalArgumentException(&quot;only integer capacities and flows are supported&quot;);</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">		if (!WeightFunction.isInteger(cost))</span>
+<span class="fc" id="L57">			throw new IllegalArgumentException(&quot;only integer costs are supported&quot;);</span>
+<span class="fc" id="L58">		return new Worker(g, (IWeightFunctionInt) capacity, (IWeightFunctionInt) cost, (IWeightFunctionInt) supply)</span>
+<span class="fc" id="L59">				.solve();</span>
 	}
 
-<span class="fc" id="L61">	private static class Worker {</span>
+<span class="fc" id="L62">	private static class Worker {</span>
 
 		/* g is a residual graph, duplicating each edge in the original graph */
 		private final IndexGraph g;
@@ -103,151 +104,152 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 		/* Potential refinement doesn't seems to be worth it in the early rounds, skip them */
 		private static final int POTENTIAL_REFINEMENT_ITERATION_SKIP = 2;
 
-<span class="fc" id="L106">		Worker(IndexGraph gOrig, IWeightFunctionInt capacity, IWeightFunctionInt costOrig, IWeightFunctionInt supply) {</span>
-<span class="fc" id="L107">			Assertions.onlyDirected(gOrig);</span>
-<span class="fc" id="L108">			Assertions.flowCheckSupply(gOrig, supply);</span>
-<span class="fc" id="L109">			this.gOrig = gOrig;</span>
-<span class="fc" id="L110">			this.capacity = capacity;</span>
-<span class="fc" id="L111">			this.costOrig = costOrig;</span>
+<span class="fc" id="L107">		Worker(IndexGraph gOrig, IWeightFunctionInt capacity, IWeightFunctionInt costOrig, IWeightFunctionInt supply) {</span>
+<span class="fc" id="L108">			Assertions.onlyDirected(gOrig);</span>
+<span class="fc" id="L109">			Assertions.flowCheckSupply(gOrig, supply);</span>
+<span class="fc" id="L110">			this.gOrig = gOrig;</span>
+<span class="fc" id="L111">			this.capacity = capacity;</span>
+<span class="fc" id="L112">			this.costOrig = costOrig;</span>
 
 			/* Build the residual graph by duplicating each edge in the original graph */
-<span class="fc" id="L114">			ResidualGraph.Builder b = new ResidualGraph.Builder(gOrig);</span>
-<span class="fc" id="L115">			b.addAllOriginalEdges();</span>
-<span class="fc" id="L116">			resGraph = b.build();</span>
-<span class="fc" id="L117">			g = resGraph.g;</span>
-<span class="fc" id="L118">			final int[] edgeRef = resGraph.edgeRef;</span>
-<span class="fc" id="L119">			twin = resGraph.twin;</span>
-<span class="fc" id="L120">			final int n = g.vertices().size();</span>
-<span class="fc" id="L121">			final int m = g.edges().size();</span>
+<span class="fc" id="L115">			ResidualGraph.Builder b = new ResidualGraph.Builder(gOrig);</span>
+<span class="fc" id="L116">			b.addAllOriginalEdges();</span>
+<span class="fc" id="L117">			resGraph = b.build();</span>
+<span class="fc" id="L118">			g = resGraph.g;</span>
+<span class="fc" id="L119">			final int[] edgeRef = resGraph.edgeRef;</span>
+<span class="fc" id="L120">			twin = resGraph.twin;</span>
+<span class="fc" id="L121">			final int n = g.vertices().size();</span>
+<span class="fc" id="L122">			final int m = g.edges().size();</span>
 
-<span class="fc" id="L123">			potential = new long[n];</span>
-<span class="fc" id="L124">			excess = new int[n];</span>
+<span class="fc" id="L124">			potential = new long[n];</span>
+<span class="fc" id="L125">			excess = new int[n];</span>
 			/* we don't init excess to the 'supply' function because the circulation will zero it */
 
-<span class="fc" id="L127">			cost = new long[m];</span>
-<span class="fc" id="L128">			long maxCost = 1;</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L130">				long c = costOrig.weightInt(edgeRef[e]);</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">				c = resGraph.isOriginalEdge(e) ? c : -c;</span>
+<span class="fc" id="L128">			cost = new long[m];</span>
+<span class="fc" id="L129">			long maxCost = 1;</span>
+<span class="fc bfc" id="L130" title="All 2 branches covered.">			for (int e : range(m)) {</span>
+<span class="fc" id="L131">				long c = costOrig.weightInt(edgeRef[e]);</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">				c = resGraph.isOriginalEdge(e) ? c : -c;</span>
 				/* multiply all costs by \alpha n so costs will be integers when we scale them */
-<span class="fc" id="L133">				cost[e] = c * n * alpha;</span>
-<span class="fc" id="L134">				maxCost = Math.max(maxCost, cost[e]);</span>
-			}
-<span class="fc" id="L136">			eps = maxCost / alpha;</span>
+<span class="fc" id="L134">				cost[e] = c * n * alpha;</span>
+<span class="fc" id="L135">				maxCost = Math.max(maxCost, cost[e]);</span>
+<span class="fc" id="L136">			}</span>
+<span class="fc" id="L137">			eps = maxCost / alpha;</span>
 
 			/* Find a valid circulation that satisfy the supply, without considering costs */
-<span class="fc" id="L139">			FlowCirculation circulationAlgo = new FlowCirculationPushRelabel();</span>
-<span class="fc" id="L140">			IFlow circulation = (IFlow) circulationAlgo.computeCirculation(gOrig, capacity, supply);</span>
+<span class="fc" id="L140">			FlowCirculation circulationAlgo = new FlowCirculationPushRelabel();</span>
+<span class="fc" id="L141">			IFlow circulation = (IFlow) circulationAlgo.computeCirculation(gOrig, capacity, supply);</span>
 
 			/* init residual capacities */
-<span class="fc" id="L143">			residualCapacity = new int[m];</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">			for (int e = 0; e &lt; m; e++) {</span>
-<span class="fc" id="L145">				int eRef = edgeRef[e];</span>
-<span class="fc bfc" id="L146" title="All 2 branches covered.">				if (resGraph.isOriginalEdge(e)) {</span>
-<span class="fc" id="L147">					residualCapacity[e] = capacity.weightInt(eRef) - (int) circulation.getFlow(eRef);</span>
+<span class="fc" id="L144">			residualCapacity = new int[m];</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (int e : range(m)) {</span>
+<span class="fc" id="L146">				int eRef = edgeRef[e];</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">				if (resGraph.isOriginalEdge(e)) {</span>
+<span class="fc" id="L148">					residualCapacity[e] = capacity.weightInt(eRef) - (int) circulation.getFlow(eRef);</span>
 				} else {
-<span class="fc" id="L149">					residualCapacity[e] = (int) circulation.getFlow(eRef);</span>
+<span class="fc" id="L150">					residualCapacity[e] = (int) circulation.getFlow(eRef);</span>
 				}
-			}
+<span class="fc" id="L152">			}</span>
 
-<span class="fc" id="L153">			activeQueue = new FIFOQueueIntNoReduce(n);</span>
-<span class="fc" id="L154">			path = new IntArrayList(MAX_AUGMENT_PATH_LENGTH);</span>
-<span class="fc" id="L155">			onPath = new Bitmap(n);</span>
-<span class="fc" id="L156">			edgeIter = new IEdgeIter[n];</span>
+<span class="fc" id="L154">			activeQueue = new FIFOQueueIntNoReduce(n);</span>
+<span class="fc" id="L155">			path = new IntArrayList(MAX_AUGMENT_PATH_LENGTH);</span>
+<span class="fc" id="L156">			onPath = new Bitmap(n);</span>
+<span class="fc" id="L157">			edgeIter = new IEdgeIter[n];</span>
 
-<span class="fc" id="L158">			globalUpdateThreshold = n;</span>
+<span class="fc" id="L159">			globalUpdateThreshold = n;</span>
 
-<span class="fc" id="L160">			topologicalOrder = new IntArrayList(n);</span>
-<span class="fc" id="L161">			rank = new int[n];</span>
-<span class="fc" id="L162">			rankUpperBound = alpha * n;</span>
-<span class="fc" id="L163">			buckets = new LinkedListFixedSize.Doubly(n + 2);</span>
-<span class="fc" id="L164">			bucketsHeads = new int[rankUpperBound];</span>
-<span class="fc" id="L165">		}</span>
+<span class="fc" id="L161">			topologicalOrder = new IntArrayList(n);</span>
+<span class="fc" id="L162">			rank = new int[n];</span>
+<span class="fc" id="L163">			rankUpperBound = alpha * n;</span>
+<span class="fc" id="L164">			buckets = new LinkedListFixedSize.Doubly(n + 2);</span>
+<span class="fc" id="L165">			bucketsHeads = new int[rankUpperBound];</span>
+<span class="fc" id="L166">		}</span>
 
 		IFlow solve() {
-<span class="fc" id="L168">			solveWithPartialAugment();</span>
+<span class="fc" id="L169">			solveWithPartialAugment();</span>
 
-<span class="fc bfc" id="L170" title="All 2 branches covered.">			for (int n = g.vertices().size(), u = 0; u &lt; n; u++)</span>
-<span class="fc" id="L171">				potential[u] /= n * alpha;</span>
+<span class="fc" id="L171">			final int n = g.vertices().size();</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">			for (int u : range(n))</span>
+<span class="fc" id="L173">				potential[u] /= n * alpha;</span>
 
-<span class="fc" id="L173">			long maxPotential = 0;</span>
-<span class="fc bfc" id="L174" title="All 2 branches covered.">			for (int n = g.vertices().size(), u = 0; u &lt; n; u++)</span>
-<span class="pc bpc" id="L175" title="1 of 2 branches missed.">				if (maxPotential &lt; potential[u])</span>
-<span class="nc" id="L176">					maxPotential = potential[u];</span>
-<span class="pc bpc" id="L177" title="1 of 2 branches missed.">			if (maxPotential != 0)</span>
-<span class="nc bnc" id="L178" title="All 2 branches missed.">				for (int n = g.vertices().size(), u = 0; u &lt; n; u++)</span>
-<span class="nc" id="L179">					potential[u] -= maxPotential;</span>
+<span class="fc" id="L175">			long maxPotential = 0;</span>
+<span class="fc bfc" id="L176" title="All 2 branches covered.">			for (int u : range(n))</span>
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">				if (maxPotential &lt; potential[u])</span>
+<span class="nc" id="L178">					maxPotential = potential[u];</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">			if (maxPotential != 0)</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">				for (int u : range(n))</span>
+<span class="nc" id="L181">					potential[u] -= maxPotential;</span>
 
-<span class="fc" id="L181">			final int[] edgeRef = resGraph.edgeRef;</span>
-<span class="fc" id="L182">			double[] flow = new double[gOrig.edges().size()];</span>
-<span class="fc bfc" id="L183" title="All 2 branches covered.">			for (int m = g.edges().size(), e = 0; e &lt; m; e++) {</span>
-<span class="fc bfc" id="L184" title="All 2 branches covered.">				if (resGraph.isOriginalEdge(e)) {</span>
-<span class="fc" id="L185">					int eRef = edgeRef[e];</span>
-<span class="fc" id="L186">					int cap = capacity.weightInt(eRef);</span>
-<span class="fc" id="L187">					flow[eRef] = cap - residualCapacity[e];</span>
+<span class="fc" id="L183">			final int[] edgeRef = resGraph.edgeRef;</span>
+<span class="fc" id="L184">			double[] flow = new double[gOrig.edges().size()];</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">			for (int e : range(g.edges().size())) {</span>
+<span class="fc bfc" id="L186" title="All 2 branches covered.">				if (resGraph.isOriginalEdge(e)) {</span>
+<span class="fc" id="L187">					int eRef = edgeRef[e];</span>
+<span class="fc" id="L188">					int cap = capacity.weightInt(eRef);</span>
+<span class="fc" id="L189">					flow[eRef] = cap - residualCapacity[e];</span>
 				}
-			}
+<span class="fc" id="L191">			}</span>
 
-<span class="fc" id="L191">			MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, capacity, costOrig, flow);</span>
-<span class="fc" id="L192">			return new Flows.FlowImpl(gOrig, flow);</span>
+<span class="fc" id="L193">			MinimumCostFlows.saturateNegativeCostSelfEdges(gOrig, capacity, costOrig, flow);</span>
+<span class="fc" id="L194">			return new Flows.FlowImpl(gOrig, flow);</span>
 		}
 
 		private void solveWithPartialAugment() {
-<span class="fc bfc" id="L196" title="All 6 branches covered.">			for (int epsIter = 0; eps &gt;= 1; eps = ((eps &lt; alpha &amp;&amp; eps &gt; 1) ? 1 : eps / alpha), epsIter++) {</span>
-<span class="fc bfc" id="L197" title="All 2 branches covered.">				if (epsIter &gt;= POTENTIAL_REFINEMENT_ITERATION_SKIP)</span>
-<span class="fc bfc" id="L198" title="All 2 branches covered.">					if (potentialRefinement())</span>
-<span class="fc" id="L199">						continue;</span>
+<span class="fc bfc" id="L198" title="All 6 branches covered.">			for (int epsIter = 0; eps &gt;= 1; eps = ((eps &lt; alpha &amp;&amp; eps &gt; 1) ? 1 : eps / alpha), epsIter++) {</span>
+<span class="fc bfc" id="L199" title="All 2 branches covered.">				if (epsIter &gt;= POTENTIAL_REFINEMENT_ITERATION_SKIP)</span>
+<span class="fc bfc" id="L200" title="All 2 branches covered.">					if (potentialRefinement())</span>
+<span class="fc" id="L201">						continue;</span>
 
 				/* Saturate all edges with negative cost */
-<span class="fc bfc" id="L202" title="All 2 branches covered.">				for (int n = g.vertices().size(), u = 0; u &lt; n; u++) {</span>
-<span class="fc" id="L203">					long uPotential = potential[u];</span>
-<span class="fc bfc" id="L204" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L205">						int e = eit.nextInt();</span>
-<span class="fc" id="L206">						int delta = residualCapacity[e];</span>
-<span class="fc bfc" id="L207" title="All 2 branches covered.">						if (delta &gt; 0) {</span>
-<span class="fc" id="L208">							int v = eit.targetInt();</span>
-<span class="fc bfc" id="L209" title="All 2 branches covered.">							if (cost[e] + uPotential - potential[v] &lt; 0) {</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">				for (int u : range(g.vertices().size())) {</span>
+<span class="fc" id="L205">					long uPotential = potential[u];</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L207">						int e = eit.nextInt();</span>
+<span class="fc" id="L208">						int delta = residualCapacity[e];</span>
+<span class="fc bfc" id="L209" title="All 2 branches covered.">						if (delta &gt; 0) {</span>
+<span class="fc" id="L210">							int v = eit.targetInt();</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">							if (cost[e] + uPotential - potential[v] &lt; 0) {</span>
 								/* we found a negative cost edge, saturate it */
-<span class="fc" id="L211">								excess[u] -= delta;</span>
-<span class="fc" id="L212">								excess[v] += delta;</span>
-<span class="fc" id="L213">								residualCapacity[e] = 0;</span>
-<span class="fc" id="L214">								residualCapacity[twin[e]] += delta;</span>
+<span class="fc" id="L213">								excess[u] -= delta;</span>
+<span class="fc" id="L214">								excess[v] += delta;</span>
+<span class="fc" id="L215">								residualCapacity[e] = 0;</span>
+<span class="fc" id="L216">								residualCapacity[twin[e]] += delta;</span>
 							}
 						}
-<span class="fc" id="L217">					}</span>
-				}
+<span class="fc" id="L219">					}</span>
+<span class="fc" id="L220">				}</span>
 
 				/* Find all active vertices */
-<span class="pc bnc" id="L221" title="All 2 branches missed.">				assert activeQueue.isEmpty();</span>
-<span class="fc bfc" id="L222" title="All 2 branches covered.">				for (int n = g.vertices().size(), u = 0; u &lt; n; u++) {</span>
-<span class="fc bfc" id="L223" title="All 2 branches covered.">					if (excess[u] &gt; 0)</span>
-<span class="fc" id="L224">						activeQueue.enqueue(u);</span>
-<span class="fc" id="L225">					edgeIter[u] = g.outEdges(u).iterator();</span>
-				}
+<span class="pc bnc" id="L223" title="All 2 branches missed.">				assert activeQueue.isEmpty();</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">				for (int u : range(g.vertices().size())) {</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">					if (excess[u] &gt; 0)</span>
+<span class="fc" id="L226">						activeQueue.enqueue(u);</span>
+<span class="fc" id="L227">					edgeIter[u] = g.outEdges(u).iterator();</span>
+<span class="fc" id="L228">				}</span>
 
 				activeVerticesLoop: for (;;) {
 					/* Find next active vertex in FIFO queue */
 					final int searchSource;
 					for (;;) {
-<span class="fc bfc" id="L232" title="All 2 branches covered.">						if (activeQueue.isEmpty())</span>
-<span class="fc" id="L233">							break activeVerticesLoop;</span>
-<span class="fc" id="L234">						int v = activeQueue.dequeueInt();</span>
-<span class="fc bfc" id="L235" title="All 2 branches covered.">						if (excess[v] &gt; 0) {</span>
-<span class="fc" id="L236">							searchSource = v;</span>
-<span class="fc" id="L237">							break;</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">						if (activeQueue.isEmpty())</span>
+<span class="fc" id="L235">							break activeVerticesLoop;</span>
+<span class="fc" id="L236">						int v = activeQueue.dequeueInt();</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">						if (excess[v] &gt; 0) {</span>
+<span class="fc" id="L238">							searchSource = v;</span>
+<span class="fc" id="L239">							break;</span>
 						}
-<span class="fc" id="L239">					}</span>
+<span class="fc" id="L241">					}</span>
 
 					/* Discharge the vertex, namely push its excess to other vertices */
-<span class="fc" id="L242">					dischargePartialAugment(searchSource);</span>
-<span class="fc bfc" id="L243" title="All 2 branches covered.">					if (excess[searchSource] &gt; 0)</span>
-<span class="fc" id="L244">						activeQueue.enqueue(searchSource);</span>
+<span class="fc" id="L244">					dischargePartialAugment(searchSource);</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">					if (excess[searchSource] &gt; 0)</span>
+<span class="fc" id="L246">						activeQueue.enqueue(searchSource);</span>
 
-<span class="fc bfc" id="L246" title="All 2 branches covered.">					if (relabelsSinceLastGlobalUpdate &gt;= globalUpdateThreshold)</span>
-<span class="fc" id="L247">						globalUpdate();</span>
-<span class="fc" id="L248">				}</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">					if (relabelsSinceLastGlobalUpdate &gt;= globalUpdateThreshold)</span>
+<span class="fc" id="L249">						globalUpdate();</span>
+<span class="fc" id="L250">				}</span>
 			}
-<span class="fc" id="L250">		}</span>
+<span class="fc" id="L252">		}</span>
 
 		private void dischargePartialAugment(int searchSource) {
 
@@ -258,378 +260,378 @@ import it.unimi.dsi.fastutil.ints.IntStack;
 			 * (change it potential) and back up the DFS.
 			 */
 
-<span class="pc bnc" id="L261" title="All 2 branches missed.">			assert path.isEmpty();</span>
-<span class="pc bnc" id="L262" title="All 2 branches missed.">			assert onPath.isEmpty();</span>
-<span class="fc" id="L263">			onPath.set(searchSource);</span>
-<span class="fc" id="L264">			dfs: for (int u = searchSource;;) {</span>
+<span class="pc bnc" id="L263" title="All 2 branches missed.">			assert path.isEmpty();</span>
+<span class="pc bnc" id="L264" title="All 2 branches missed.">			assert onPath.isEmpty();</span>
+<span class="fc" id="L265">			onPath.set(searchSource);</span>
+<span class="fc" id="L266">			dfs: for (int u = searchSource;;) {</span>
 
 				/* Find an admissible edge from u */
-<span class="fc" id="L267">				long uPotential = potential[u];</span>
-<span class="fc" id="L268">				long minReducedCost = Long.MAX_VALUE;</span>
-<span class="pc bnc" id="L269" title="All 2 branches missed.">				assert edgeIter[u].hasNext();</span>
-<span class="fc" id="L270">				final int firstEdge = edgeIter[u].peekNextInt();</span>
-<span class="fc" id="L271">				for (IEdgeIter eit = edgeIter[u]; /* eit.hasNext() */;) {</span>
-<span class="pc bnc" id="L272" title="All 2 branches missed.">					assert eit.hasNext();</span>
-<span class="fc" id="L273">					int e = eit.peekNextInt();</span>
-<span class="fc bfc" id="L274" title="All 2 branches covered.">					if (isResidual(e)) {</span>
-<span class="fc" id="L275">						int v = g.edgeTarget(e);</span>
-<span class="fc" id="L276">						long reducedCost = cost[e] + uPotential - potential[v];</span>
-<span class="fc bfc" id="L277" title="All 2 branches covered.">						if (reducedCost &lt; 0) {</span>
+<span class="fc" id="L269">				long uPotential = potential[u];</span>
+<span class="fc" id="L270">				long minReducedCost = Long.MAX_VALUE;</span>
+<span class="pc bnc" id="L271" title="All 2 branches missed.">				assert edgeIter[u].hasNext();</span>
+<span class="fc" id="L272">				final int firstEdge = edgeIter[u].peekNextInt();</span>
+<span class="fc" id="L273">				for (IEdgeIter eit = edgeIter[u]; /* eit.hasNext() */;) {</span>
+<span class="pc bnc" id="L274" title="All 2 branches missed.">					assert eit.hasNext();</span>
+<span class="fc" id="L275">					int e = eit.peekNextInt();</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">					if (isResidual(e)) {</span>
+<span class="fc" id="L277">						int v = g.edgeTarget(e);</span>
+<span class="fc" id="L278">						long reducedCost = cost[e] + uPotential - potential[v];</span>
+<span class="fc bfc" id="L279" title="All 2 branches covered.">						if (reducedCost &lt; 0) {</span>
 							/* Extend the DFS search by the found edge */
-<span class="fc" id="L279">							path.add(e);</span>
+<span class="fc" id="L281">							path.add(e);</span>
 
-<span class="fc bfc" id="L281" title="All 6 branches covered.">							if (path.size() == MAX_AUGMENT_PATH_LENGTH || excess[v] &lt; 0 || onPath.get(v)) {</span>
+<span class="fc bfc" id="L283" title="All 6 branches covered.">							if (path.size() == MAX_AUGMENT_PATH_LENGTH || excess[v] &lt; 0 || onPath.get(v)) {</span>
 								/* augmentation path (maybe cycle) was found */
-<span class="fc" id="L283">								pushOnPath(searchSource);</span>
-<span class="fc" id="L284">								return;</span>
+<span class="fc" id="L285">								pushOnPath(searchSource);</span>
+<span class="fc" id="L286">								return;</span>
 							}
 
 							/* continue down in the DFS */
-<span class="fc" id="L288">							u = v;</span>
-<span class="fc" id="L289">							onPath.set(v);</span>
-<span class="fc" id="L290">							continue dfs;</span>
+<span class="fc" id="L290">							u = v;</span>
+<span class="fc" id="L291">							onPath.set(v);</span>
+<span class="fc" id="L292">							continue dfs;</span>
 
 						} else {
 							/* Cache the minimum change in the potential required for the edge to become admissible */
-<span class="fc" id="L294">							minReducedCost = Math.min(minReducedCost, reducedCost);</span>
+<span class="fc" id="L296">							minReducedCost = Math.min(minReducedCost, reducedCost);</span>
 						}
 					}
 
 					/* Advance to the next edge */
-<span class="fc" id="L299">					eit.nextInt();</span>
-<span class="fc bfc" id="L300" title="All 2 branches covered.">					if (!eit.hasNext()) {</span>
+<span class="fc" id="L301">					eit.nextInt();</span>
+<span class="fc bfc" id="L302" title="All 2 branches covered.">					if (!eit.hasNext()) {</span>
 						/* we finish iterating over all edges of the vertex, relabel it */
 
 						/* Find the minimum change in the potential required for an admissible edge to appear */
-<span class="fc bfc" id="L304" title="All 2 branches covered.">						if (u != searchSource) {</span>
-<span class="pc bnc" id="L305" title="All 2 branches missed.">							assert !path.isEmpty();</span>
-<span class="fc" id="L306">							int lastEdge = path.getInt(path.size() - 1);</span>
-<span class="fc" id="L307">							int lastTwin = twin[lastEdge];</span>
-<span class="fc" id="L308">							long reducedCost = cost[lastTwin] + uPotential - potential[g.edgeTarget(lastTwin)];</span>
-<span class="fc" id="L309">							minReducedCost = Math.min(minReducedCost, reducedCost);</span>
+<span class="fc bfc" id="L306" title="All 2 branches covered.">						if (u != searchSource) {</span>
+<span class="pc bnc" id="L307" title="All 2 branches missed.">							assert !path.isEmpty();</span>
+<span class="fc" id="L308">							int lastEdge = path.getInt(path.size() - 1);</span>
+<span class="fc" id="L309">							int lastTwin = twin[lastEdge];</span>
+<span class="fc" id="L310">							long reducedCost = cost[lastTwin] + uPotential - potential[g.edgeTarget(lastTwin)];</span>
+<span class="fc" id="L311">							minReducedCost = Math.min(minReducedCost, reducedCost);</span>
 						}
-<span class="fc" id="L311">						for (IEdgeIter eit2 = g.outEdges(u).iterator();;) {</span>
-<span class="pc bnc" id="L312" title="All 2 branches missed.">							assert eit2.hasNext();</span>
-<span class="fc" id="L313">							int e2 = eit2.nextInt();</span>
-<span class="fc bfc" id="L314" title="All 2 branches covered.">							if (e2 == firstEdge)</span>
-<span class="fc" id="L315">								break;</span>
-<span class="fc bfc" id="L316" title="All 2 branches covered.">							if (isResidual(e2)) {</span>
-<span class="fc" id="L317">								long reducedCost = cost[e2] + uPotential - potential[g.edgeTarget(e2)];</span>
-<span class="fc" id="L318">								minReducedCost = Math.min(minReducedCost, reducedCost);</span>
+<span class="fc" id="L313">						for (IEdgeIter eit2 = g.outEdges(u).iterator();;) {</span>
+<span class="pc bnc" id="L314" title="All 2 branches missed.">							assert eit2.hasNext();</span>
+<span class="fc" id="L315">							int e2 = eit2.nextInt();</span>
+<span class="fc bfc" id="L316" title="All 2 branches covered.">							if (e2 == firstEdge)</span>
+<span class="fc" id="L317">								break;</span>
+<span class="fc bfc" id="L318" title="All 2 branches covered.">							if (isResidual(e2)) {</span>
+<span class="fc" id="L319">								long reducedCost = cost[e2] + uPotential - potential[g.edgeTarget(e2)];</span>
+<span class="fc" id="L320">								minReducedCost = Math.min(minReducedCost, reducedCost);</span>
 							}
 
-<span class="fc" id="L321">						}</span>
-<span class="pc bnc" id="L322" title="All 2 branches missed.">						assert minReducedCost != Long.MAX_VALUE;</span>
+<span class="fc" id="L323">						}</span>
+<span class="pc bnc" id="L324" title="All 2 branches missed.">						assert minReducedCost != Long.MAX_VALUE;</span>
 
 						/* 'relabel', change potential */
-<span class="fc" id="L325">						potential[u] -= minReducedCost + eps;</span>
-<span class="fc" id="L326">						relabelsSinceLastGlobalUpdate++;</span>
+<span class="fc" id="L327">						potential[u] -= minReducedCost + eps;</span>
+<span class="fc" id="L328">						relabelsSinceLastGlobalUpdate++;</span>
 						/* Reset u iterator */
-<span class="fc" id="L328">						edgeIter[u] = g.outEdges(u).iterator();</span>
-<span class="pc bnc" id="L329" title="All 2 branches missed.">						assert edgeIter[u].hasNext();</span>
+<span class="fc" id="L330">						edgeIter[u] = g.outEdges(u).iterator();</span>
+<span class="pc bnc" id="L331" title="All 2 branches missed.">						assert edgeIter[u].hasNext();</span>
 
-<span class="fc bfc" id="L331" title="All 2 branches covered.">						if (u != searchSource) {</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">						if (u != searchSource) {</span>
 							/* step up once in the DFS path */
-<span class="pc bnc" id="L333" title="All 2 branches missed.">							assert !path.isEmpty();</span>
-<span class="fc" id="L334">							int lastEdge = path.popInt();</span>
-<span class="pc bnc" id="L335" title="All 2 branches missed.">							assert u == g.edgeTarget(lastEdge);</span>
-<span class="pc bnc" id="L336" title="All 2 branches missed.">							assert onPath.get(u);</span>
-<span class="fc" id="L337">							onPath.clear(u);</span>
-<span class="fc" id="L338">							u = g.edgeSource(lastEdge);</span>
-<span class="fc" id="L339">						}</span>
+<span class="pc bnc" id="L335" title="All 2 branches missed.">							assert !path.isEmpty();</span>
+<span class="fc" id="L336">							int lastEdge = path.popInt();</span>
+<span class="pc bnc" id="L337" title="All 2 branches missed.">							assert u == g.edgeTarget(lastEdge);</span>
+<span class="pc bnc" id="L338" title="All 2 branches missed.">							assert onPath.get(u);</span>
+<span class="fc" id="L339">							onPath.clear(u);</span>
+<span class="fc" id="L340">							u = g.edgeSource(lastEdge);</span>
+<span class="fc" id="L341">						}</span>
 						continue dfs;
 					}
-<span class="fc" id="L342">				}</span>
+<span class="fc" id="L344">				}</span>
 			}
 		}
 
 		private void pushOnPath(int searchSource) {
-<span class="pc bnc" id="L347" title="All 2 branches missed.">			assert !path.isEmpty();</span>
-<span class="pc bnc" id="L348" title="All 2 branches missed.">			assert searchSource == g.edgeSource(path.getInt(0));</span>
-<span class="fc" id="L349">			int u, v = searchSource;</span>
-<span class="fc bfc" id="L350" title="All 2 branches covered.">			for (int e : path) {</span>
-<span class="fc" id="L351">				u = v;</span>
-<span class="fc" id="L352">				v = g.edgeTarget(e);</span>
-<span class="fc" id="L353">				onPath.clear(v);</span>
-<span class="fc" id="L354">				int delta = Math.min(residualCapacity[e], excess[u]);</span>
+<span class="pc bnc" id="L349" title="All 2 branches missed.">			assert !path.isEmpty();</span>
+<span class="pc bnc" id="L350" title="All 2 branches missed.">			assert searchSource == g.edgeSource(path.getInt(0));</span>
+<span class="fc" id="L351">			int u, v = searchSource;</span>
+<span class="fc bfc" id="L352" title="All 2 branches covered.">			for (int e : path) {</span>
+<span class="fc" id="L353">				u = v;</span>
+<span class="fc" id="L354">				v = g.edgeTarget(e);</span>
+<span class="fc" id="L355">				onPath.clear(v);</span>
+<span class="fc" id="L356">				int delta = Math.min(residualCapacity[e], excess[u]);</span>
 
-<span class="fc" id="L356">				int t = twin[e];</span>
-<span class="fc" id="L357">				residualCapacity[e] -= delta;</span>
-<span class="fc" id="L358">				residualCapacity[t] += delta;</span>
-<span class="fc" id="L359">				excess[u] -= delta;</span>
-<span class="fc" id="L360">				excess[v] += delta;</span>
-<span class="fc bfc" id="L361" title="All 4 branches covered.">				if (excess[v] &gt; 0 &amp;&amp; excess[v] &lt;= delta)</span>
-<span class="fc" id="L362">					activeQueue.enqueue(v);</span>
-<span class="fc" id="L363">			}</span>
-<span class="fc" id="L364">			onPath.clear(searchSource);</span>
-<span class="pc bnc" id="L365" title="All 2 branches missed.">			assert onPath.isEmpty();</span>
-<span class="fc" id="L366">			path.clear();</span>
+<span class="fc" id="L358">				int t = twin[e];</span>
+<span class="fc" id="L359">				residualCapacity[e] -= delta;</span>
+<span class="fc" id="L360">				residualCapacity[t] += delta;</span>
+<span class="fc" id="L361">				excess[u] -= delta;</span>
+<span class="fc" id="L362">				excess[v] += delta;</span>
+<span class="fc bfc" id="L363" title="All 4 branches covered.">				if (excess[v] &gt; 0 &amp;&amp; excess[v] &lt;= delta)</span>
+<span class="fc" id="L364">					activeQueue.enqueue(v);</span>
+<span class="fc" id="L365">			}</span>
+<span class="fc" id="L366">			onPath.clear(searchSource);</span>
+<span class="pc bnc" id="L367" title="All 2 branches missed.">			assert onPath.isEmpty();</span>
+<span class="fc" id="L368">			path.clear();</span>
 			// TODO optimization, backup dfs until all edges in path are admissible
-<span class="fc" id="L368">		}</span>
+<span class="fc" id="L370">		}</span>
 
 		private void globalUpdate() {
-<span class="fc" id="L371">			final int n = g.vertices().size();</span>
-<span class="fc" id="L372">			final int bucketEnd = n + 1;</span>
+<span class="fc" id="L373">			final int n = g.vertices().size();</span>
+<span class="fc" id="L374">			final int bucketEnd = n + 1;</span>
 
 			/* Set all ranks of vertices with demand to zero, and other vertices to rankUpperBound */
-<span class="fc" id="L375">			Arrays.fill(bucketsHeads, bucketEnd);</span>
-<span class="fc" id="L376">			int excessSum = 0;</span>
-<span class="fc" id="L377">			int demandVerticesListHead = bucketEnd;</span>
-<span class="fc bfc" id="L378" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc bfc" id="L379" title="All 2 branches covered.">				if (excess[v] &lt; 0) {</span>
-<span class="fc" id="L380">					rank[v] = 0;</span>
-<span class="fc" id="L381">					buckets.setNext(v, demandVerticesListHead);</span>
-<span class="fc" id="L382">					buckets.setPrev(demandVerticesListHead, v);</span>
-<span class="fc" id="L383">					demandVerticesListHead = v;</span>
+<span class="fc" id="L377">			Arrays.fill(bucketsHeads, bucketEnd);</span>
+<span class="fc" id="L378">			int excessSum = 0;</span>
+<span class="fc" id="L379">			int demandVerticesListHead = bucketEnd;</span>
+<span class="fc bfc" id="L380" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc bfc" id="L381" title="All 2 branches covered.">				if (excess[v] &lt; 0) {</span>
+<span class="fc" id="L382">					rank[v] = 0;</span>
+<span class="fc" id="L383">					buckets.setNext(v, demandVerticesListHead);</span>
+<span class="fc" id="L384">					buckets.setPrev(demandVerticesListHead, v);</span>
+<span class="fc" id="L385">					demandVerticesListHead = v;</span>
 				} else {
-<span class="fc" id="L385">					excessSum += excess[v];</span>
-<span class="fc" id="L386">					rank[v] = rankUpperBound;</span>
+<span class="fc" id="L387">					excessSum += excess[v];</span>
+<span class="fc" id="L388">					rank[v] = rankUpperBound;</span>
 				}
-			}
-<span class="fc bfc" id="L389" title="All 2 branches covered.">			if (excessSum == 0)</span>
-<span class="fc" id="L390">				return;</span>
-<span class="fc" id="L391">			bucketsHeads[0] = demandVerticesListHead;</span>
+<span class="fc" id="L390">			}</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">			if (excessSum == 0)</span>
+<span class="fc" id="L392">				return;</span>
+<span class="fc" id="L393">			bucketsHeads[0] = demandVerticesListHead;</span>
 
 			int r;
-<span class="pc bpc" id="L394" title="1 of 2 branches missed.">			for (r = 0; r &lt; rankUpperBound; r++) {</span>
-<span class="fc bfc" id="L395" title="All 2 branches covered.">				while (bucketsHeads[r] != bucketEnd) {</span>
-<span class="fc" id="L396">					int u = bucketsHeads[r];</span>
-<span class="fc" id="L397">					bucketsHeads[r] = buckets.next(u);</span>
+<span class="pc bpc" id="L396" title="1 of 2 branches missed.">			for (r = 0; r &lt; rankUpperBound; r++) {</span>
+<span class="fc bfc" id="L397" title="All 2 branches covered.">				while (bucketsHeads[r] != bucketEnd) {</span>
+<span class="fc" id="L398">					int u = bucketsHeads[r];</span>
+<span class="fc" id="L399">					bucketsHeads[r] = buckets.next(u);</span>
 
-<span class="fc" id="L399">					long uPotential = potential[u];</span>
-<span class="fc" id="L400">					for (IEdgeIter it = edgeIter[u];;) {</span>
-<span class="fc bfc" id="L401" title="All 2 branches covered.">						if (!it.hasNext()) {</span>
-<span class="fc" id="L402">							edgeIter[u] = g.outEdges(u).iterator();</span>
-<span class="fc" id="L403">							break;</span>
+<span class="fc" id="L401">					long uPotential = potential[u];</span>
+<span class="fc" id="L402">					for (IEdgeIter it = edgeIter[u];;) {</span>
+<span class="fc bfc" id="L403" title="All 2 branches covered.">						if (!it.hasNext()) {</span>
+<span class="fc" id="L404">							edgeIter[u] = g.outEdges(u).iterator();</span>
+<span class="fc" id="L405">							break;</span>
 						}
 						/* e is an in-edge of u */
-<span class="fc" id="L406">						int e = twin[it.nextInt()];</span>
-<span class="fc bfc" id="L407" title="All 2 branches covered.">						if (!isResidual(e))</span>
-<span class="fc" id="L408">							continue;</span>
-<span class="fc" id="L409">						int v = g.edgeSource(e);</span>
-<span class="fc" id="L410">						int vRankOld = rank[v];</span>
-<span class="fc bfc" id="L411" title="All 2 branches covered.">						if (r &gt;= vRankOld)</span>
-<span class="fc" id="L412">							continue;</span>
+<span class="fc" id="L408">						int e = twin[it.nextInt()];</span>
+<span class="fc bfc" id="L409" title="All 2 branches covered.">						if (!isResidual(e))</span>
+<span class="fc" id="L410">							continue;</span>
+<span class="fc" id="L411">						int v = g.edgeSource(e);</span>
+<span class="fc" id="L412">						int vRankOld = rank[v];</span>
+<span class="fc bfc" id="L413" title="All 2 branches covered.">						if (r &gt;= vRankOld)</span>
+<span class="fc" id="L414">							continue;</span>
 
-<span class="fc" id="L414">						long nrc = (cost[e] + potential[v] - uPotential) / eps;</span>
-<span class="fc" id="L415">						int vRankNew = vRankOld;</span>
-<span class="fc bfc" id="L416" title="All 2 branches covered.">						if (nrc &lt; rankUpperBound)</span>
-<span class="fc" id="L417">							vRankNew = r + 1 + (int) nrc;</span>
+<span class="fc" id="L416">						long nrc = (cost[e] + potential[v] - uPotential) / eps;</span>
+<span class="fc" id="L417">						int vRankNew = vRankOld;</span>
+<span class="fc bfc" id="L418" title="All 2 branches covered.">						if (nrc &lt; rankUpperBound)</span>
+<span class="fc" id="L419">							vRankNew = r + 1 + (int) nrc;</span>
 
 						/* Change the rank of v */
-<span class="fc bfc" id="L420" title="All 2 branches covered.">						if (vRankNew &lt; vRankOld) {</span>
-<span class="fc" id="L421">							rank[v] = vRankNew;</span>
-<span class="fc" id="L422">							edgeIter[v] = g.outEdges(v).iterator();</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">						if (vRankNew &lt; vRankOld) {</span>
+<span class="fc" id="L423">							rank[v] = vRankNew;</span>
+<span class="fc" id="L424">							edgeIter[v] = g.outEdges(v).iterator();</span>
 
-<span class="fc bfc" id="L424" title="All 2 branches covered.">							if (vRankOld &lt; rankUpperBound) {</span>
-<span class="fc bfc" id="L425" title="All 2 branches covered.">								if (bucketsHeads[vRankOld] == v) {</span>
-<span class="fc" id="L426">									bucketsHeads[vRankOld] = buckets.next(v);</span>
+<span class="fc bfc" id="L426" title="All 2 branches covered.">							if (vRankOld &lt; rankUpperBound) {</span>
+<span class="fc bfc" id="L427" title="All 2 branches covered.">								if (bucketsHeads[vRankOld] == v) {</span>
+<span class="fc" id="L428">									bucketsHeads[vRankOld] = buckets.next(v);</span>
 								} else {
-<span class="fc" id="L428">									buckets.disconnect(v);</span>
+<span class="fc" id="L430">									buckets.disconnect(v);</span>
 								}
 							}
 
-<span class="fc" id="L432">							buckets.connect(v, bucketsHeads[vRankNew]);</span>
-<span class="fc" id="L433">							bucketsHeads[vRankNew] = v;</span>
+<span class="fc" id="L434">							buckets.connect(v, bucketsHeads[vRankNew]);</span>
+<span class="fc" id="L435">							bucketsHeads[vRankNew] = v;</span>
 						}
-<span class="fc" id="L435">					}</span>
+<span class="fc" id="L437">					}</span>
 
-<span class="fc bfc" id="L437" title="All 2 branches covered.">					if (excess[u] &gt; 0) {</span>
-<span class="fc" id="L438">						excessSum -= excess[u];</span>
-<span class="fc bfc" id="L439" title="All 2 branches covered.">						if (excessSum &lt;= 0)</span>
+<span class="fc bfc" id="L439" title="All 2 branches covered.">					if (excess[u] &gt; 0) {</span>
+<span class="fc" id="L440">						excessSum -= excess[u];</span>
+<span class="fc bfc" id="L441" title="All 2 branches covered.">						if (excessSum &lt;= 0)</span>
 							/* no active vertices, we are done */
-<span class="fc" id="L441">							break;</span>
+<span class="fc" id="L443">							break;</span>
 					}
-<span class="fc" id="L443">				}</span>
-<span class="fc bfc" id="L444" title="All 2 branches covered.">				if (excessSum &lt;= 0)</span>
-<span class="fc" id="L445">					break;</span>
+<span class="fc" id="L445">				}</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">				if (excessSum &lt;= 0)</span>
+<span class="fc" id="L447">					break;</span>
 			}
 
 			/* relabel vertices */
-<span class="fc bfc" id="L449" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L450">				int k = Math.min(rank[v], r);</span>
-<span class="fc bfc" id="L451" title="All 2 branches covered.">				if (k &gt; 0) {</span>
-<span class="fc" id="L452">					potential[v] -= eps * k;</span>
-<span class="fc" id="L453">					edgeIter[v] = g.outEdges(v).iterator();</span>
+<span class="fc bfc" id="L451" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc" id="L452">				int k = Math.min(rank[v], r);</span>
+<span class="fc bfc" id="L453" title="All 2 branches covered.">				if (k &gt; 0) {</span>
+<span class="fc" id="L454">					potential[v] -= eps * k;</span>
+<span class="fc" id="L455">					edgeIter[v] = g.outEdges(v).iterator();</span>
 				}
-			}
+<span class="fc" id="L457">			}</span>
 
-<span class="fc" id="L457">			relabelsSinceLastGlobalUpdate = 0;</span>
-<span class="fc" id="L458">		}</span>
+<span class="fc" id="L459">			relabelsSinceLastGlobalUpdate = 0;</span>
+<span class="fc" id="L460">		}</span>
 
 		private boolean potentialRefinement() {
 			for (;;) {
-<span class="fc" id="L462">				boolean topologicalOrderFound = computeTopologicalOrder();</span>
-<span class="fc bfc" id="L463" title="All 2 branches covered.">				if (!topologicalOrderFound)</span>
-<span class="fc" id="L464">					return false;</span>
+<span class="fc" id="L464">				boolean topologicalOrderFound = computeTopologicalOrder();</span>
+<span class="fc bfc" id="L465" title="All 2 branches covered.">				if (!topologicalOrderFound)</span>
+<span class="fc" id="L466">					return false;</span>
 
-<span class="fc" id="L466">				Arrays.fill(rank, 0);</span>
-<span class="fc" id="L467">				final int bucketEnd = g.vertices().size();</span>
-<span class="fc" id="L468">				Arrays.fill(bucketsHeads, bucketEnd);</span>
+<span class="fc" id="L468">				Arrays.fill(rank, 0);</span>
+<span class="fc" id="L469">				final int bucketEnd = g.vertices().size();</span>
+<span class="fc" id="L470">				Arrays.fill(bucketsHeads, bucketEnd);</span>
 
-<span class="fc" id="L470">				int maxRank = 0;</span>
-<span class="fc bfc" id="L471" title="All 2 branches covered.">				while (!topologicalOrder.isEmpty()) {</span>
-<span class="fc" id="L472">					int u = topologicalOrder.popInt();</span>
+<span class="fc" id="L472">				int maxRank = 0;</span>
+<span class="fc bfc" id="L473" title="All 2 branches covered.">				while (!topologicalOrder.isEmpty()) {</span>
+<span class="fc" id="L474">					int u = topologicalOrder.popInt();</span>
 
-<span class="fc" id="L474">					int uRank = rank[u];</span>
-<span class="fc" id="L475">					long uPotential = potential[u];</span>
-<span class="fc bfc" id="L476" title="All 2 branches covered.">					for (int e : g.outEdges(u)) {</span>
-<span class="fc bfc" id="L477" title="All 2 branches covered.">						if (!isResidual(e))</span>
-<span class="fc" id="L478">							continue;</span>
-<span class="fc" id="L479">						int v = g.edgeTarget(e);</span>
-<span class="fc" id="L480">						long reducedCost = cost[e] + uPotential - potential[v];</span>
-<span class="fc bfc" id="L481" title="All 2 branches covered.">						if (reducedCost &gt;= 0)</span>
-<span class="fc" id="L482">							continue;</span>
-<span class="fc" id="L483">						long k = (long) ((-reducedCost - 0.5) / eps);</span>
-<span class="pc bpc" id="L484" title="1 of 2 branches missed.">						if (k &lt; rankUpperBound) {</span>
-<span class="fc" id="L485">							int vRankNew = uRank + (int) k;</span>
-<span class="fc" id="L486">							rank[v] = Math.max(rank[v], vRankNew);</span>
+<span class="fc" id="L476">					int uRank = rank[u];</span>
+<span class="fc" id="L477">					long uPotential = potential[u];</span>
+<span class="fc bfc" id="L478" title="All 2 branches covered.">					for (int e : g.outEdges(u)) {</span>
+<span class="fc bfc" id="L479" title="All 2 branches covered.">						if (!isResidual(e))</span>
+<span class="fc" id="L480">							continue;</span>
+<span class="fc" id="L481">						int v = g.edgeTarget(e);</span>
+<span class="fc" id="L482">						long reducedCost = cost[e] + uPotential - potential[v];</span>
+<span class="fc bfc" id="L483" title="All 2 branches covered.">						if (reducedCost &gt;= 0)</span>
+<span class="fc" id="L484">							continue;</span>
+<span class="fc" id="L485">						long k = (long) ((-reducedCost - 0.5) / eps);</span>
+<span class="pc bpc" id="L486" title="1 of 2 branches missed.">						if (k &lt; rankUpperBound) {</span>
+<span class="fc" id="L487">							int vRankNew = uRank + (int) k;</span>
+<span class="fc" id="L488">							rank[v] = Math.max(rank[v], vRankNew);</span>
 						}
-<span class="fc" id="L488">					}</span>
+<span class="fc" id="L490">					}</span>
 
-<span class="fc bfc" id="L490" title="All 2 branches covered.">					if (uRank &gt; 0) {</span>
-<span class="fc" id="L491">						maxRank = Math.max(maxRank, uRank);</span>
-<span class="fc" id="L492">						buckets.connect(u, bucketsHeads[uRank]);</span>
-<span class="fc" id="L493">						bucketsHeads[uRank] = u;</span>
+<span class="fc bfc" id="L492" title="All 2 branches covered.">					if (uRank &gt; 0) {</span>
+<span class="fc" id="L493">						maxRank = Math.max(maxRank, uRank);</span>
+<span class="fc" id="L494">						buckets.connect(u, bucketsHeads[uRank]);</span>
+<span class="fc" id="L495">						bucketsHeads[uRank] = u;</span>
 					}
-<span class="fc" id="L495">				}</span>
+<span class="fc" id="L497">				}</span>
 
-<span class="fc bfc" id="L497" title="All 2 branches covered.">				if (maxRank == 0)</span>
+<span class="fc bfc" id="L499" title="All 2 branches covered.">				if (maxRank == 0)</span>
 					/* current flow is epsilon-optimal, we are done */
-<span class="fc" id="L499">					return true;</span>
+<span class="fc" id="L501">					return true;</span>
 
-<span class="fc bfc" id="L501" title="All 2 branches covered.">				for (int r = maxRank; r &gt; 0; r--) {</span>
-<span class="fc bfc" id="L502" title="All 2 branches covered.">					while (bucketsHeads[r] != bucketEnd) {</span>
-<span class="fc" id="L503">						int u = bucketsHeads[r];</span>
-<span class="fc" id="L504">						bucketsHeads[r] = buckets.next(u);</span>
+<span class="fc bfc" id="L503" title="All 2 branches covered.">				for (int r = maxRank; r &gt; 0; r--) {</span>
+<span class="fc bfc" id="L504" title="All 2 branches covered.">					while (bucketsHeads[r] != bucketEnd) {</span>
+<span class="fc" id="L505">						int u = bucketsHeads[r];</span>
+<span class="fc" id="L506">						bucketsHeads[r] = buckets.next(u);</span>
 
-<span class="fc" id="L506">						long uPotential = potential[u];</span>
-<span class="fc bfc" id="L507" title="All 2 branches covered.">						for (int e : g.outEdges(u)) {</span>
-<span class="fc bfc" id="L508" title="All 2 branches covered.">							if (!isResidual(e))</span>
-<span class="fc" id="L509">								continue;</span>
-<span class="fc" id="L510">							int v = g.edgeTarget(e);</span>
-<span class="fc" id="L511">							int vRankOld = rank[v];</span>
-<span class="fc bfc" id="L512" title="All 2 branches covered.">							if (vRankOld &gt;= r)</span>
-<span class="fc" id="L513">								continue;</span>
+<span class="fc" id="L508">						long uPotential = potential[u];</span>
+<span class="fc bfc" id="L509" title="All 2 branches covered.">						for (int e : g.outEdges(u)) {</span>
+<span class="fc bfc" id="L510" title="All 2 branches covered.">							if (!isResidual(e))</span>
+<span class="fc" id="L511">								continue;</span>
+<span class="fc" id="L512">							int v = g.edgeTarget(e);</span>
+<span class="fc" id="L513">							int vRankOld = rank[v];</span>
+<span class="fc bfc" id="L514" title="All 2 branches covered.">							if (vRankOld &gt;= r)</span>
+<span class="fc" id="L515">								continue;</span>
 
-<span class="fc" id="L515">							long reducedCost = cost[e] + uPotential - potential[v];</span>
+<span class="fc" id="L517">							long reducedCost = cost[e] + uPotential - potential[v];</span>
 							int vRankNew;
-<span class="fc bfc" id="L517" title="All 2 branches covered.">							if (reducedCost &lt; 0) {</span>
-<span class="fc" id="L518">								vRankNew = r;</span>
+<span class="fc bfc" id="L519" title="All 2 branches covered.">							if (reducedCost &lt; 0) {</span>
+<span class="fc" id="L520">								vRankNew = r;</span>
 							} else {
-<span class="fc" id="L520">								long k = reducedCost / eps;</span>
-<span class="fc" id="L521">								vRankNew = 0;</span>
-<span class="fc bfc" id="L522" title="All 2 branches covered.">								if (k &lt; rankUpperBound)</span>
-<span class="fc" id="L523">									vRankNew = r - 1 - (int) k;</span>
+<span class="fc" id="L522">								long k = reducedCost / eps;</span>
+<span class="fc" id="L523">								vRankNew = 0;</span>
+<span class="fc bfc" id="L524" title="All 2 branches covered.">								if (k &lt; rankUpperBound)</span>
+<span class="fc" id="L525">									vRankNew = r - 1 - (int) k;</span>
 							}
 
-<span class="fc bfc" id="L526" title="All 2 branches covered.">							if (vRankNew &gt; vRankOld) {</span>
-<span class="fc" id="L527">								rank[v] = vRankNew;</span>
+<span class="fc bfc" id="L528" title="All 2 branches covered.">							if (vRankNew &gt; vRankOld) {</span>
+<span class="fc" id="L529">								rank[v] = vRankNew;</span>
 
-<span class="fc bfc" id="L529" title="All 2 branches covered.">								if (vRankOld &gt; 0) {</span>
-<span class="fc bfc" id="L530" title="All 2 branches covered.">									if (bucketsHeads[vRankOld] == v) {</span>
-<span class="fc" id="L531">										bucketsHeads[vRankOld] = buckets.next(v);</span>
+<span class="fc bfc" id="L531" title="All 2 branches covered.">								if (vRankOld &gt; 0) {</span>
+<span class="fc bfc" id="L532" title="All 2 branches covered.">									if (bucketsHeads[vRankOld] == v) {</span>
+<span class="fc" id="L533">										bucketsHeads[vRankOld] = buckets.next(v);</span>
 									} else {
-<span class="fc" id="L533">										buckets.disconnect(v);</span>
+<span class="fc" id="L535">										buckets.disconnect(v);</span>
 									}
 								}
 
-<span class="fc" id="L537">								buckets.connect(v, bucketsHeads[vRankNew]);</span>
-<span class="fc" id="L538">								bucketsHeads[vRankNew] = v;</span>
+<span class="fc" id="L539">								buckets.connect(v, bucketsHeads[vRankNew]);</span>
+<span class="fc" id="L540">								bucketsHeads[vRankNew] = v;</span>
 							}
-<span class="fc" id="L540">						}</span>
+<span class="fc" id="L542">						}</span>
 
 						/* update potential of u */
-<span class="fc" id="L543">						potential[u] -= r * eps;</span>
-<span class="fc" id="L544">					}</span>
+<span class="fc" id="L545">						potential[u] -= r * eps;</span>
+<span class="fc" id="L546">					}</span>
 				}
-<span class="fc" id="L546">			}</span>
+<span class="fc" id="L548">			}</span>
 		}
 
 		/* returns true if a full topological order was computed in the admissible network */
 		private boolean computeTopologicalOrder() {
-<span class="fc" id="L551">			final int n = g.vertices().size();</span>
-<span class="fc" id="L552">			Bitmap visited = new Bitmap(n);</span>
-<span class="fc" id="L553">			Bitmap processed = new Bitmap(n);</span>
-<span class="fc" id="L554">			int[] backtrack = new int[n];</span>
+<span class="fc" id="L553">			final int n = g.vertices().size();</span>
+<span class="fc" id="L554">			Bitmap visited = new Bitmap(n);</span>
+<span class="fc" id="L555">			Bitmap processed = new Bitmap(n);</span>
+<span class="fc" id="L556">			int[] backtrack = new int[n];</span>
 
-<span class="fc bfc" id="L556" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++)</span>
-<span class="fc" id="L557">				edgeIter[v] = g.outEdges(v).iterator();</span>
+<span class="fc bfc" id="L558" title="All 2 branches covered.">			for (int v : range(n))</span>
+<span class="fc" id="L559">				edgeIter[v] = g.outEdges(v).iterator();</span>
 
-<span class="pc bnc" id="L559" title="All 2 branches missed.">			assert topologicalOrder.isEmpty();</span>
-<span class="fc bfc" id="L560" title="All 2 branches covered.">			for (int root = 0; root &lt; n; ++root) {</span>
-<span class="fc bfc" id="L561" title="All 2 branches covered.">				if (visited.get(root))</span>
-<span class="fc" id="L562">					continue;</span>
+<span class="pc bnc" id="L561" title="All 2 branches missed.">			assert topologicalOrder.isEmpty();</span>
+<span class="fc bfc" id="L562" title="All 2 branches covered.">			for (int root = 0; root &lt; n; ++root) {</span>
+<span class="fc bfc" id="L563" title="All 2 branches covered.">				if (visited.get(root))</span>
+<span class="fc" id="L564">					continue;</span>
 
 				/* Perform a DFS from the current root, trying to find cycles */
-<span class="fc" id="L565">				backtrack[root] = -1;</span>
-<span class="fc" id="L566">				dfs: for (int u = root;;) {</span>
-<span class="fc" id="L567">					visited.set(u);</span>
-<span class="fc" id="L568">					long uPotential = potential[u];</span>
-<span class="fc" id="L569">					for (IEdgeIter it = edgeIter[u];; it.nextInt()) {</span>
-<span class="fc bfc" id="L570" title="All 2 branches covered.">						if (!it.hasNext()) {</span>
+<span class="fc" id="L567">				backtrack[root] = -1;</span>
+<span class="fc" id="L568">				dfs: for (int u = root;;) {</span>
+<span class="fc" id="L569">					visited.set(u);</span>
+<span class="fc" id="L570">					long uPotential = potential[u];</span>
+<span class="fc" id="L571">					for (IEdgeIter it = edgeIter[u];; it.nextInt()) {</span>
+<span class="fc bfc" id="L572" title="All 2 branches covered.">						if (!it.hasNext()) {</span>
 							/* No admissible edge from u, go up once in the DFS path */
-<span class="pc bnc" id="L572" title="All 2 branches missed.">							assert !processed.get(u);</span>
-<span class="fc" id="L573">							processed.set(u);</span>
-<span class="fc" id="L574">							topologicalOrder.push(u);</span>
-<span class="fc" id="L575">							u = backtrack[u];</span>
-<span class="fc bfc" id="L576" title="All 2 branches covered.">							if (u &lt; 0)</span>
+<span class="pc bnc" id="L574" title="All 2 branches missed.">							assert !processed.get(u);</span>
+<span class="fc" id="L575">							processed.set(u);</span>
+<span class="fc" id="L576">							topologicalOrder.push(u);</span>
+<span class="fc" id="L577">							u = backtrack[u];</span>
+<span class="fc bfc" id="L578" title="All 2 branches covered.">							if (u &lt; 0)</span>
 								/* No more paths from current root */
-<span class="fc" id="L578">								break dfs;</span>
+<span class="fc" id="L580">								break dfs;</span>
 
 							/* advance edge iterator to next child */
-<span class="pc bnc" id="L581" title="All 2 branches missed.">							assert edgeIter[u].hasNext();</span>
-<span class="fc" id="L582">							edgeIter[u].nextInt();</span>
-<span class="fc" id="L583">							continue dfs;</span>
+<span class="pc bnc" id="L583" title="All 2 branches missed.">							assert edgeIter[u].hasNext();</span>
+<span class="fc" id="L584">							edgeIter[u].nextInt();</span>
+<span class="fc" id="L585">							continue dfs;</span>
 						}
 
 						/* Use only admissible edges */
-<span class="fc" id="L587">						int e = it.peekNextInt();</span>
-<span class="fc bfc" id="L588" title="All 2 branches covered.">						if (!isResidual(e))</span>
-<span class="fc" id="L589">							continue;</span>
-<span class="fc" id="L590">						int v = g.edgeTarget(e);</span>
-<span class="fc bfc" id="L591" title="All 2 branches covered.">						if (cost[e] + uPotential - potential[v] &gt;= 0)</span>
-<span class="fc" id="L592">							continue;</span>
+<span class="fc" id="L589">						int e = it.peekNextInt();</span>
+<span class="fc bfc" id="L590" title="All 2 branches covered.">						if (!isResidual(e))</span>
+<span class="fc" id="L591">							continue;</span>
+<span class="fc" id="L592">						int v = g.edgeTarget(e);</span>
+<span class="fc bfc" id="L593" title="All 2 branches covered.">						if (cost[e] + uPotential - potential[v] &gt;= 0)</span>
+<span class="fc" id="L594">							continue;</span>
 
-<span class="fc bfc" id="L594" title="All 2 branches covered.">						if (!visited.get(v)) {</span>
+<span class="fc bfc" id="L596" title="All 2 branches covered.">						if (!visited.get(v)) {</span>
 							/* Continue down the DFS in v */
-<span class="fc" id="L596">							visited.set(v);</span>
-<span class="fc" id="L597">							backtrack[v] = u;</span>
-<span class="fc" id="L598">							u = v;</span>
-<span class="fc" id="L599">							continue dfs;</span>
+<span class="fc" id="L598">							visited.set(v);</span>
+<span class="fc" id="L599">							backtrack[v] = u;</span>
+<span class="fc" id="L600">							u = v;</span>
+<span class="fc" id="L601">							continue dfs;</span>
 
 						}
-<span class="fc bfc" id="L602" title="All 2 branches covered.">						if (!processed.get(v)) {</span>
+<span class="fc bfc" id="L604" title="All 2 branches covered.">						if (!processed.get(v)) {</span>
 							/* a cycle was found, no valid topological order exists */
 
 							/* Find the minimum residual capacity along the cycle */
-<span class="fc" id="L606">							int delta = residualCapacity[e];</span>
-<span class="fc bfc" id="L607" title="All 2 branches covered.">							for (int w = u; w != v;) {</span>
-<span class="fc" id="L608">								w = backtrack[w];</span>
-<span class="fc" id="L609">								delta = Math.min(delta, residualCapacity[edgeIter[w].peekNextInt()]);</span>
+<span class="fc" id="L608">							int delta = residualCapacity[e];</span>
+<span class="fc bfc" id="L609" title="All 2 branches covered.">							for (int w = u; w != v;) {</span>
+<span class="fc" id="L610">								w = backtrack[w];</span>
+<span class="fc" id="L611">								delta = Math.min(delta, residualCapacity[edgeIter[w].peekNextInt()]);</span>
 							}
 
 							/* Augment along the cycle */
-<span class="fc" id="L613">							residualCapacity[e] -= delta;</span>
-<span class="fc" id="L614">							residualCapacity[twin[e]] += delta;</span>
-<span class="fc bfc" id="L615" title="All 2 branches covered.">							for (int w = u; w != v;) {</span>
-<span class="fc" id="L616">								w = backtrack[w];</span>
-<span class="fc" id="L617">								int ca = edgeIter[w].peekNextInt();</span>
-<span class="fc" id="L618">								residualCapacity[ca] -= delta;</span>
-<span class="fc" id="L619">								residualCapacity[twin[ca]] += delta;</span>
-<span class="fc" id="L620">							}</span>
+<span class="fc" id="L615">							residualCapacity[e] -= delta;</span>
+<span class="fc" id="L616">							residualCapacity[twin[e]] += delta;</span>
+<span class="fc bfc" id="L617" title="All 2 branches covered.">							for (int w = u; w != v;) {</span>
+<span class="fc" id="L618">								w = backtrack[w];</span>
+<span class="fc" id="L619">								int ca = edgeIter[w].peekNextInt();</span>
+<span class="fc" id="L620">								residualCapacity[ca] -= delta;</span>
+<span class="fc" id="L621">								residualCapacity[twin[ca]] += delta;</span>
+<span class="fc" id="L622">							}</span>
 
-<span class="fc" id="L622">							((IntList) topologicalOrder).clear();</span>
-<span class="fc" id="L623">							return false;</span>
+<span class="fc" id="L624">							((IntList) topologicalOrder).clear();</span>
+<span class="fc" id="L625">							return false;</span>
 						}
 					}
 				}
 			}
-<span class="fc" id="L628">			return true;</span>
+<span class="fc" id="L630">			return true;</span>
 		}
 
 		private boolean isResidual(int e) {
-<span class="fc bfc" id="L632" title="All 2 branches covered.">			return residualCapacity[e] &gt; 0;</span>
+<span class="fc bfc" id="L634" title="All 2 branches covered.">			return residualCapacity[e] &gt; 0;</span>
 		}
 
 	}

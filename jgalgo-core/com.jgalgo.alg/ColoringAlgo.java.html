@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.function.IntUnaryOperator;
 import java.util.function.ToIntFunction;
 import com.jgalgo.graph.Graph;
@@ -101,50 +102,50 @@ public interface ColoringAlgo {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; boolean isColoring(Graph&lt;V, E&gt; g, ToIntFunction&lt;V&gt; mapping) {
-<span class="fc" id="L104">		final int n = g.vertices().size();</span>
+<span class="fc" id="L105">		final int n = g.vertices().size();</span>
 		IndexGraph ig;
-<span class="fc" id="L106">		int[] vertexToColor = new int[n];</span>
-<span class="fc" id="L107">		int maxColor = -1;</span>
-<span class="pc bpc" id="L108" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
-<span class="nc" id="L109">			ig = (IndexGraph) g;</span>
-<span class="nc" id="L110">			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction&lt;Integer&gt;) mapping);</span>
-<span class="nc bnc" id="L111" title="All 2 branches missed.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="nc" id="L112">				vertexToColor[v] = mapping0.applyAsInt(v);</span>
-<span class="nc" id="L113">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
-			}
+<span class="fc" id="L107">		int[] vertexToColor = new int[n];</span>
+<span class="fc" id="L108">		int maxColor = -1;</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">		if (g instanceof IndexGraph) {</span>
+<span class="nc" id="L110">			ig = (IndexGraph) g;</span>
+<span class="nc" id="L111">			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction&lt;Integer&gt;) mapping);</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">			for (int v : range(n)) {</span>
+<span class="nc" id="L113">				vertexToColor[v] = mapping0.applyAsInt(v);</span>
+<span class="nc" id="L114">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
+<span class="nc" id="L115">			}</span>
 
-<span class="pc bfc" id="L116" title="All 2 branches covered.">		} else if (g instanceof IntGraph) {</span>
-<span class="fc" id="L117">			ig = g.indexGraph();</span>
-<span class="fc" id="L118">			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction&lt;Integer&gt;) mapping);</span>
-<span class="fc" id="L119">			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
-<span class="fc bfc" id="L120" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L121">				vertexToColor[v] = mapping0.applyAsInt(viMap.indexToIdInt(v));</span>
-<span class="fc" id="L122">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
-			}
+<span class="pc bfc" id="L117" title="All 2 branches covered.">		} else if (g instanceof IntGraph) {</span>
+<span class="fc" id="L118">			ig = g.indexGraph();</span>
+<span class="fc" id="L119">			IntUnaryOperator mapping0 = IntAdapters.asIntUnaryOperator((ToIntFunction&lt;Integer&gt;) mapping);</span>
+<span class="fc" id="L120">			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc" id="L122">				vertexToColor[v] = mapping0.applyAsInt(viMap.indexToIdInt(v));</span>
+<span class="fc" id="L123">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
+<span class="fc" id="L124">			}</span>
 
-<span class="fc" id="L125">		} else {</span>
-<span class="fc" id="L126">			ig = g.indexGraph();</span>
-<span class="fc" id="L127">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc bfc" id="L128" title="All 2 branches covered.">			for (int v = 0; v &lt; n; v++) {</span>
-<span class="fc" id="L129">				vertexToColor[v] = mapping.applyAsInt(viMap.indexToId(v));</span>
-<span class="fc" id="L130">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
-			}
+<span class="fc" id="L126">		} else {</span>
+<span class="fc" id="L127">			ig = g.indexGraph();</span>
+<span class="fc" id="L128">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">			for (int v : range(n)) {</span>
+<span class="fc" id="L130">				vertexToColor[v] = mapping.applyAsInt(viMap.indexToId(v));</span>
+<span class="fc" id="L131">				maxColor = Math.max(maxColor, vertexToColor[v]);</span>
+<span class="fc" id="L132">			}</span>
 		}
-<span class="fc" id="L133">		final int colorNum = maxColor + 1;</span>
-<span class="pc bpc" id="L134" title="1 of 2 branches missed.">		if (maxColor &gt; n)</span>
-<span class="nc" id="L135">			return false;</span>
-<span class="fc" id="L136">		Bitmap seenColors = new Bitmap(colorNum);</span>
-<span class="fc bfc" id="L137" title="All 2 branches covered.">		for (int b : vertexToColor) {</span>
-<span class="pc bpc" id="L138" title="1 of 2 branches missed.">			if (b &lt; 0)</span>
-<span class="nc" id="L139">				return false;</span>
-<span class="fc" id="L140">			seenColors.set(b);</span>
+<span class="fc" id="L134">		final int colorNum = maxColor + 1;</span>
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">		if (maxColor &gt; n)</span>
+<span class="nc" id="L136">			return false;</span>
+<span class="fc" id="L137">		Bitmap seenColors = new Bitmap(colorNum);</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">		for (int b : vertexToColor) {</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">			if (b &lt; 0)</span>
+<span class="nc" id="L140">				return false;</span>
+<span class="fc" id="L141">			seenColors.set(b);</span>
 		}
-<span class="pc bpc" id="L142" title="1 of 2 branches missed.">		if (seenColors.nextClearBit(0) != colorNum)</span>
-<span class="nc" id="L143">			return false;</span>
-<span class="fc bfc" id="L144" title="All 2 branches covered.">		for (int m = ig.edges().size(), e = 0; e &lt; m; e++)</span>
-<span class="pc bpc" id="L145" title="1 of 2 branches missed.">			if (vertexToColor[ig.edgeSource(e)] == vertexToColor[ig.edgeTarget(e)])</span>
-<span class="nc" id="L146">				return false;</span>
-<span class="fc" id="L147">		return true;</span>
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">		if (seenColors.nextClearBit(0) != colorNum)</span>
+<span class="nc" id="L144">			return false;</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">		for (int e : range(ig.edges().size()))</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">			if (vertexToColor[ig.edgeSource(e)] == vertexToColor[ig.edgeTarget(e)])</span>
+<span class="nc" id="L147">				return false;</span>
+<span class="fc" id="L148">		return true;</span>
 	}
 
 	/**
@@ -157,7 +158,7 @@ public interface ColoringAlgo {
 	 * @return a default implementation of {@link ColoringAlgo}
 	 */
 	static ColoringAlgo newInstance() {
-<span class="nc" id="L160">		return builder().build();</span>
+<span class="nc" id="L161">		return builder().build();</span>
 	}
 
 	/**
@@ -169,36 +170,36 @@ public interface ColoringAlgo {
 	 * @return a new builder that can build {@link ColoringAlgo} objects
 	 */
 	static ColoringAlgo.Builder builder() {
-<span class="nc" id="L172">		return new ColoringAlgo.Builder() {</span>
+<span class="nc" id="L173">		return new ColoringAlgo.Builder() {</span>
 			String impl;
 
 			@Override
 			public ColoringAlgo build() {
-<span class="nc bnc" id="L177" title="All 2 branches missed.">				if (impl != null) {</span>
-<span class="nc bnc" id="L178" title="All 4 branches missed.">					switch (impl) {</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">				if (impl != null) {</span>
+<span class="nc bnc" id="L179" title="All 4 branches missed.">					switch (impl) {</span>
 						case &quot;greedy&quot;:
-<span class="nc" id="L180">							return new ColoringGreedy();</span>
+<span class="nc" id="L181">							return new ColoringGreedy();</span>
 						case &quot;dsatur&quot;:
-<span class="nc" id="L182">							return new ColoringDSatur();</span>
+<span class="nc" id="L183">							return new ColoringDSatur();</span>
 						case &quot;rlf&quot;:
-<span class="nc" id="L184">							return new ColoringRecursiveLargestFirst();</span>
+<span class="nc" id="L185">							return new ColoringRecursiveLargestFirst();</span>
 						default:
-<span class="nc" id="L186">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L187">							throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 					}
 				}
-<span class="nc" id="L189">				return new ColoringDSatur();</span>
+<span class="nc" id="L190">				return new ColoringDSatur();</span>
 			}
 
 			@Override
 			public void setOption(String key, Object value) {
-<span class="nc bnc" id="L194" title="All 2 branches missed.">				switch (key) {</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">				switch (key) {</span>
 					case &quot;impl&quot;:
-<span class="nc" id="L196">						impl = (String) value;</span>
-<span class="nc" id="L197">						break;</span>
+<span class="nc" id="L197">						impl = (String) value;</span>
+<span class="nc" id="L198">						break;</span>
 					default:
-<span class="nc" id="L199">						ColoringAlgo.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L200">						ColoringAlgo.Builder.super.setOption(key, value);</span>
 				}
-<span class="nc" id="L201">			}</span>
+<span class="nc" id="L202">			}</span>
 		};
 	}
 

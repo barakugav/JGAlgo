@@ -79,7 +79,7 @@ class CyclesEnumeratorJohnson implements CyclesEnumeratorBase {
 			{
 <span class="fc" id="L80">				isBlocked = new Bitmap(n);</span>
 <span class="fc" id="L81">				blockingSet = new IntSet[n];</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">				for (int u : range(n))</span>
 <span class="fc" id="L83">					blockingSet[u] = new IntOpenHashSet();</span>
 
 <span class="fc bfc" id="L85" title="All 2 branches covered.">				for (startV = 0; startV &lt; n; startV++) {</span>
@@ -156,7 +156,7 @@ class CyclesEnumeratorJohnson implements CyclesEnumeratorBase {
 			private void reset() {
 <span class="fc" id="L157">				isBlocked.clear();</span>
 <span class="pc bnc" id="L158" title="All 2 branches missed.">				assert unblockStack.isEmpty();</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">				for (int u = 0; u &lt; n; u++)</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">				for (int u : range(n))</span>
 <span class="fc" id="L160">					blockingSet[u].clear();</span>
 <span class="pc bnc" id="L161" title="All 2 branches missed.">				assert path.isEmpty();</span>
 <span class="fc" id="L162">			}</span>
@@ -185,7 +185,7 @@ class CyclesEnumeratorJohnson implements CyclesEnumeratorBase {
 
 <span class="fc" id="L186">				IndexGraphBuilder gSubBuilder = IndexGraphBuilder.directed();</span>
 <span class="fc" id="L187">				gSubBuilder.addVertices(range(nSub));</span>
-<span class="fc bfc" id="L188" title="All 2 branches covered.">				for (int uSub = 0; uSub &lt; nSub; uSub++) {</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">				for (int uSub : range(nSub)) {</span>
 <span class="fc" id="L189">					int uFull = uSub + subToFull;</span>
 <span class="fc bfc" id="L190" title="All 2 branches covered.">					for (IEdgeIter it = g.outEdges(uFull).iterator(); it.hasNext();) {</span>
 <span class="fc" id="L191">						it.nextInt();</span>
@@ -193,7 +193,7 @@ class CyclesEnumeratorJohnson implements CyclesEnumeratorBase {
 <span class="fc bfc" id="L193" title="All 2 branches covered.">						if (vSub &gt;= 0)</span>
 <span class="fc" id="L194">							gSubBuilder.addEdge(uSub, vSub);</span>
 <span class="fc" id="L195">					}</span>
-				}
+<span class="fc" id="L196">				}</span>
 <span class="fc" id="L197">				IndexGraph gSub = gSubBuilder.reIndexAndBuild(false, true).graph();</span>
 
 <span class="fc" id="L199">				IVertexPartition connectivityResult = (IVertexPartition) ccAlg.findStronglyConnectedComponents(gSub);</span>

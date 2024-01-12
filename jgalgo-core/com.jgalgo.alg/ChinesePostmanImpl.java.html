@@ -50,7 +50,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 		/* Find all vertices with odd degree */
 <span class="fc" id="L52">		IntList oddVerticesList = new IntArrayList();</span>
-<span class="fc bfc" id="L53" title="All 2 branches covered.">		for (int n = g.vertices().size(), v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		for (int v : range(g.vertices().size()))</span>
 <span class="fc bfc" id="L54" title="All 2 branches covered.">			if (nonSelfEdgesDegree(g, v) % 2 != 0)</span>
 <span class="fc" id="L55">				oddVerticesList.add(v);</span>
 <span class="pc bpc" id="L56" title="1 of 2 branches missed.">		if (oddVerticesList.isEmpty())</span>
@@ -64,8 +64,8 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L64">		oddGraph0.ensureVertexCapacity(oddVertices.length);</span>
 <span class="fc" id="L65">		oddGraph0.ensureEdgeCapacity(oddVertices.length * (oddVertices.length - 1) / 2);</span>
 <span class="fc" id="L66">		oddGraph0.addVertices(range(oddVertices.length));</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">		for (int n = oddVertices.length, v = 0; v &lt; n; v++)</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">			for (int u = v + 1; u &lt; n; u++)</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		for (int v : range(oddVertices.length))</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">			for (int u : range(v + 1, oddVertices.length))</span>
 <span class="fc" id="L69">				oddGraph0.addEdge(v, u);</span>
 <span class="fc" id="L70">		IndexGraph oddGraph = oddGraph0.reIndexAndBuild(true, true).graph();</span>
 <span class="fc" id="L71">		ShortestPathAllPairs.IResult allPairsRes = (ShortestPathAllPairs.IResult) shortestPathAllPairsAlgo</span>
@@ -91,7 +91,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 <span class="fc" id="L91">		}</span>
 		/* The new graph is Eulerian */
 <span class="fc" id="L93">		IndexGraph eulerianGraph = b.build();</span>
-<span class="fc bfc" id="L94" title="All 2 branches covered.">		for (int n = eulerianGraph.vertices().size(), v = 0; v &lt; n; v++)</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">		for (int v : range(eulerianGraph.vertices().size()))</span>
 <span class="pc bnc" id="L95" title="All 2 branches missed.">			assert nonSelfEdgesDegree(eulerianGraph, v) % 2 == 0;</span>
 
 		/* Compute an Eulerian tour in the new graph */
