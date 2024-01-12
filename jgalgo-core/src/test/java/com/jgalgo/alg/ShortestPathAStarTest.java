@@ -23,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.TestBase;
@@ -199,11 +200,15 @@ public class ShortestPathAStarTest extends TestBase {
 
 					@Override
 					public double distance(V target) {
+						if (!g.vertices().contains(target))
+							throw NoSuchVertexException.ofVertex(target);
 						return distances.getDouble(target);
 					}
 
 					@Override
 					public Path<V, E> getPath(V target) {
+						if (!g.vertices().contains(target))
+							throw NoSuchVertexException.ofVertex(target);
 						return paths.get(target);
 					}
 				};

@@ -29,6 +29,7 @@ import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.JGAlgoConfigImpl;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -216,11 +217,13 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairsBase {
 
 			@Override
 			public double distance(int source, int target) {
+				Assertions.checkVertex(source, ssspResults.length);
 				return ssspResults[source].distance(target) + potential[target] - potential[source];
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
+				Assertions.checkVertex(source, ssspResults.length);
 				return ssspResults[source].getPath(target);
 			}
 
@@ -237,12 +240,24 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairsBase {
 
 			@Override
 			public double distance(int source, int target) {
-				return ssspResults[vToResIdx[source]].distance(target) + potential[target] - potential[source];
+				int sourceIdx = resultIdx(source);
+				resultIdx(target); /* checks that target is in the subset */
+				return ssspResults[sourceIdx].distance(target) + potential[target] - potential[source];
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
-				return ssspResults[vToResIdx[source]].getPath(target);
+				int sourceIdx = resultIdx(source);
+				resultIdx(target); /* checks that target is in the subset */
+				return ssspResults[sourceIdx].getPath(target);
+			}
+
+			private int resultIdx(int vertex) {
+				Assertions.checkVertex(vertex, vToResIdx.length);
+				int idx = vToResIdx[vertex];
+				if (idx < 0)
+					throw new IllegalArgumentException("no results for vertex " + vertex);
+				return idx;
 			}
 
 		}

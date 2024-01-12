@@ -25,6 +25,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.BigArrays;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -112,6 +113,8 @@ class ShortestPathAllPairsUtils {
 
 			@Override
 			public double distance(int source, int target) {
+				Assertions.checkVertex(source, n);
+				Assertions.checkVertex(target, n);
 				return source != target ? distances[index(source, target)] : 0;
 			}
 
@@ -150,6 +153,9 @@ class ShortestPathAllPairsUtils {
 
 			@Override
 			public double distance(int source, int target) {
+				final int n = distances.length;
+				Assertions.checkVertex(source, n);
+				Assertions.checkVertex(target, n);
 				return distances[source][target];
 			}
 
@@ -187,11 +193,13 @@ class ShortestPathAllPairsUtils {
 
 			@Override
 			public double distance(int source, int target) {
+				Assertions.checkVertex(source, ssspResults.length);
 				return ssspResults[source].distance(target);
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
+				Assertions.checkVertex(source, ssspResults.length);
 				return ssspResults[source].getPath(target);
 			}
 
@@ -201,21 +209,32 @@ class ShortestPathAllPairsUtils {
 
 			final int[] vToResIdx;
 
-			VerticesSubset(IResult[] ssspResults, int[] vToResIdx) {
+			VerticesSubset(ShortestPathSingleSource.IResult[] ssspResults, int[] vToResIdx) {
 				super(ssspResults);
 				this.vToResIdx = vToResIdx;
 			}
 
 			@Override
 			public double distance(int source, int target) {
-				return ssspResults[vToResIdx[source]].distance(target);
+				int sourceIdx = resultIdx(source);
+				resultIdx(target); /* checks that target is in the subset */
+				return ssspResults[sourceIdx].distance(target);
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
-				return ssspResults[vToResIdx[source]].getPath(target);
+				int sourceIdx = resultIdx(source);
+				resultIdx(target); /* checks that target is in the subset */
+				return ssspResults[sourceIdx].getPath(target);
 			}
 
+			private int resultIdx(int vertex) {
+				Assertions.checkVertex(vertex, vToResIdx.length);
+				int idx = vToResIdx[vertex];
+				if (idx < 0)
+					throw new IllegalArgumentException("no results for vertex " + vertex);
+				return idx;
+			}
 		}
 
 	}

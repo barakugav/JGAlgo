@@ -16,6 +16,7 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap;
@@ -35,12 +36,20 @@ class ShortestPathSTTestUtils {
 
 					@Override
 					public double distance(V target) {
+						if (!g.vertices().contains(target))
+							throw NoSuchVertexException.ofVertex(target);
+						if (!paths.containsKey(target))
+							throw new IllegalArgumentException("Target vertex " + target + " is not in the graph");
 						Path<V, E> path = getPath(target);
 						return path == null ? Double.POSITIVE_INFINITY : WeightFunction.weightSum(w, path.edges());
 					}
 
 					@Override
 					public Path<V, E> getPath(V target) {
+						if (!g.vertices().contains(target))
+							throw NoSuchVertexException.ofVertex(target);
+						if (!paths.containsKey(target))
+							throw new IllegalArgumentException("Target vertex " + target + " is not in the graph");
 						return paths.get(target);
 					}
 				};

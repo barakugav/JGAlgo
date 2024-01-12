@@ -25,6 +25,7 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.ds.ReferenceableHeap;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -51,6 +52,9 @@ class ShortestPathSingleSourceUtils {
 		}
 
 		IndexResult(IndexGraph g, int source, double[] distances, int[] backtrack) {
+			int n = g.vertices().size();
+			if (distances.length != n || backtrack.length != n)
+				throw new IllegalArgumentException("distances and backtrack arrays must be of size " + n);
 			this.g = g;
 			this.source = source;
 			this.distances = distances;
@@ -59,12 +63,13 @@ class ShortestPathSingleSourceUtils {
 
 		@Override
 		public double distance(int target) {
+			Assertions.checkVertex(target, distances.length);
 			return distances[target];
 		}
 
 		@Override
 		public IPath getPath(int target) {
-			if (distances[target] == Double.POSITIVE_INFINITY)
+			if (distance(target) == Double.POSITIVE_INFINITY)
 				return null;
 			IntArrayList path = new IntArrayList();
 			if (g.isDirected()) {

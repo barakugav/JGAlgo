@@ -29,6 +29,8 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IdBuilderInt;
+import com.jgalgo.graph.IndexGraph;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.TestBase;
@@ -128,9 +130,9 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		});
 	}
 
-	static <V, E> void testAlgo(Graph<V, E> g, WeightFunction<E> w, V source, ShortestPathSingleSource algo,
-			ShortestPathSingleSource validationAlgo) {
-		ShortestPathSingleSource.Result<V, E> result;
+	static void testAlgo(Graph<Integer, Integer> g, WeightFunction<Integer> w, Integer source,
+			ShortestPathSingleSource algo, ShortestPathSingleSource validationAlgo) {
+		ShortestPathSingleSource.Result<Integer, Integer> result;
 		try {
 			result = algo.computeShortestPaths(g, w, source);
 		} catch (NegativeCycleException e) {
@@ -140,9 +142,9 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		validateResult(g, w, source, result, validationAlgo);
 	}
 
-	static <V, E> void validateResult(Graph<V, E> g, WeightFunction<E> w, V source, NegativeCycleException negCycleExc,
-			ShortestPathSingleSource validationAlgo) {
-		Path<V, E> cycle = negCycleExc.cycle(g);
+	static void validateResult(Graph<Integer, Integer> g, WeightFunction<Integer> w, Integer source,
+			NegativeCycleException negCycleExc, ShortestPathSingleSource validationAlgo) {
+		Path<Integer, Integer> cycle = negCycleExc.cycle(g);
 		double cycleWeight = w.weightSum(cycle.edges());
 		assertTrue(cycleWeight != Double.NaN, () -> "Invalid cycle: " + cycle);
 		assertTrue(cycleWeight < 0, () -> "Cycle is not negative: " + cycle);
@@ -156,9 +158,10 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 					() -> "validation algorithm didn't find negative cycle: " + cycle);
 	}
 
-	static <V, E> void validateResult(Graph<V, E> g, WeightFunction<E> w, V source,
-			ShortestPathSingleSource.Result<V, E> result, ShortestPathSingleSource validationAlgo) {
-		ShortestPathSingleSource.Result<V, E> expectedRes;
+	static void validateResult(Graph<Integer, Integer> g, WeightFunction<Integer> w, Integer source,
+			ShortestPathSingleSource.Result<Integer, Integer> result, ShortestPathSingleSource validationAlgo) {
+		final Random rand = new Random(0x1d8e6137801437c8L);
+		ShortestPathSingleSource.Result<Integer, Integer> expectedRes;
 		try {
 			expectedRes = validationAlgo.computeShortestPaths(g, w, source);
 		} catch (NegativeCycleException e) {
@@ -169,11 +172,11 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 			return;
 		}
 
-		for (V v : g.vertices()) {
+		for (Integer v : g.vertices()) {
 			double expectedDistance = expectedRes.distance(v);
 			double actualDistance = result.distance(v);
 			assertEquals(expectedDistance, actualDistance, "Distance to vertex " + v + " is wrong");
-			Path<V, E> path = result.getPath(v);
+			Path<Integer, Integer> path = result.getPath(v);
 			if (path != null) {
 				double pathWeight = WeightFunction.weightSum(w, path.edges());
 				assertEquals(pathWeight, actualDistance, () -> "Path to vertex " + v + " doesn't match distance ("
@@ -183,6 +186,18 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 						"Distance to vertex " + v + " is not infinity but path is null");
 			}
 		}
+		assertThrows(NoSuchVertexException.class, () -> result.distance(GraphsTestUtils.nonExistingVertex(g, rand)));
+		assertThrows(NoSuchVertexException.class, () -> result.getPath(GraphsTestUtils.nonExistingVertex(g, rand)));
+	}
+
+	@Test
+	public void resultObjectWithInvalidDistanceOrBacktrackArrays() {
+		IndexGraph g = IndexGraph.newDirected();
+		g.addVertexInt();
+		assertThrows(IllegalArgumentException.class,
+				() -> new ShortestPathSingleSourceUtils.IndexResult(g, 0, new double[2], new int[1]));
+		assertThrows(IllegalArgumentException.class,
+				() -> new ShortestPathSingleSourceUtils.IndexResult(g, 0, new double[1], new int[2]));
 	}
 
 	@Test

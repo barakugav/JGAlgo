@@ -20,6 +20,7 @@ import java.util.Collection;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
@@ -102,19 +103,28 @@ public interface ShortestPathAllPairs {
 		/**
 		 * Get the distance of the shortest path between two vertices.
 		 *
-		 * @param  source the source vertex
-		 * @param  target the target vertex
-		 * @return        the sum of weights of edges in the shortest path from the source to target, or
-		 *                {@code Double.POSITIVE_INFINITY} if no such path exists
+		 * @param  source                   the source vertex
+		 * @param  target                   the target vertex
+		 * @return                          the sum of weights of edges in the shortest path from the source to target,
+		 *                                  or {@code Double.POSITIVE_INFINITY} if no such path exists
+		 * @throws NoSuchVertexException    if {@code source} or {@code target} are not vertices in the graph
+		 * @throws IllegalArgumentException if the shortest paths were computed on pairs of vertices from a subset of
+		 *                                      the vertices of the graph (rather than all pairs), and {@code source} or
+		 *                                      {@code target} are not in the subset
 		 */
 		public double distance(V source, V target);
 
 		/**
 		 * Get the shortest path between vertices.
 		 *
-		 * @param  source the source vertex
-		 * @param  target the target vertex
-		 * @return        the shortest path from the source to target, or {@code null} if no such path exists
+		 * @param  source                   the source vertex
+		 * @param  target                   the target vertex
+		 * @return                          the shortest path from the source to target, or {@code null} if no such path
+		 *                                  exists
+		 * @throws NoSuchVertexException    if {@code source} or {@code target} are not vertices in the graph
+		 * @throws IllegalArgumentException if the shortest paths were computed on pairs of vertices from a subset of
+		 *                                      the vertices of the graph (rather than all pairs), and {@code source} or
+		 *                                      {@code target} are not in the subset
 		 */
 		public Path<V, E> getPath(V source, V target);
 	}
@@ -129,10 +139,14 @@ public interface ShortestPathAllPairs {
 		/**
 		 * Get the distance of the shortest path between two vertices.
 		 *
-		 * @param  source the source vertex
-		 * @param  target the target vertex
-		 * @return        the sum of weights of edges in the shortest path from the source to target, or
-		 *                {@code Double.POSITIVE_INFINITY} if no such path exists
+		 * @param  source                   the source vertex
+		 * @param  target                   the target vertex
+		 * @return                          the sum of weights of edges in the shortest path from the source to target,
+		 *                                  or {@code Double.POSITIVE_INFINITY} if no such path exists
+		 * @throws NoSuchVertexException    if {@code source} or {@code target} are not vertices in the graph
+		 * @throws IllegalArgumentException if the shortest paths were computed on pairs of vertices from a subset of
+		 *                                      the vertices of the graph (rather than all pairs), and {@code source} or
+		 *                                      {@code target} are not in the subset
 		 */
 		public double distance(int source, int target);
 
@@ -150,9 +164,14 @@ public interface ShortestPathAllPairs {
 		/**
 		 * Get the shortest path between vertices.
 		 *
-		 * @param  source the source vertex
-		 * @param  target the target vertex
-		 * @return        the shortest path from the source to target, or {@code null} if no such path exists
+		 * @param  source                   the source vertex
+		 * @param  target                   the target vertex
+		 * @return                          the shortest path from the source to target, or {@code null} if no such path
+		 *                                  exists
+		 * @throws NoSuchVertexException    if {@code source} or {@code target} are not vertices in the graph
+		 * @throws IllegalArgumentException if the shortest paths were computed on pairs of vertices from a subset of
+		 *                                      the vertices of the graph (rather than all pairs), and {@code source} or
+		 *                                      {@code target} are not in the subset
 		 */
 		public IPath getPath(int source, int target);
 

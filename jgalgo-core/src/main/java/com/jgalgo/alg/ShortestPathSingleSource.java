@@ -19,6 +19,7 @@ package com.jgalgo.alg;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 
 /**
@@ -124,17 +125,20 @@ public interface ShortestPathSingleSource {
 		/**
 		 * Get the distance to a target vertex.
 		 *
-		 * @param  target a target vertex in the graph
-		 * @return        the sum of the shortest path edges from the source to the target, or
-		 *                {@code Double.POSITIVE_INFINITY} if no such path found.
+		 * @param  target                a target vertex in the graph
+		 * @return                       the sum of the shortest path edges from the source to the target, or
+		 *                               {@code Double.POSITIVE_INFINITY} if no such path found
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
 		 */
 		public double distance(V target);
 
 		/**
 		 * Get shortest path to a target vertex.
 		 *
-		 * @param  target a target vertex in the graph
-		 * @return        the shortest path from the source to the target or {@code null} if no such path found.
+		 * @param  target                a target vertex in the graph
+		 * @return                       the shortest path from the source to the target or {@code null} if no such path
+		 *                               found.
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
 		 */
 		public Path<V, E> getPath(V target);
 	}
@@ -149,9 +153,10 @@ public interface ShortestPathSingleSource {
 		/**
 		 * Get the distance to a target vertex.
 		 *
-		 * @param  target a target vertex in the graph
-		 * @return        the sum of the shortest path edges from the source to the target, or
-		 *                {@code Double.POSITIVE_INFINITY} if no such path found.
+		 * @param  target                a target vertex in the graph
+		 * @return                       the sum of the shortest path edges from the source to the target, or
+		 *                               {@code Double.POSITIVE_INFINITY} if no such path found.
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
 		 */
 		public double distance(int target);
 
@@ -169,8 +174,10 @@ public interface ShortestPathSingleSource {
 		/**
 		 * Get shortest path to a target vertex.
 		 *
-		 * @param  target a target vertex in the graph
-		 * @return        the shortest path from the source to the target or {@code null} if no such path found.
+		 * @param  target                a target vertex in the graph
+		 * @return                       the shortest path from the source to the target or {@code null} if no such path
+		 *                               found
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
 		 */
 		public IPath getPath(int target);
 

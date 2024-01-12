@@ -19,9 +19,13 @@ package com.jgalgo.alg;
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Collection;
+import java.util.List;
+import java.util.Optional;
+import java.util.OptionalDouble;
 import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -30,9 +34,11 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IdBuilderInt;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class ShortestPathAllPairsTestUtils extends TestBase {
@@ -97,23 +103,26 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 		return subset;
 	}
 
-	static <V, E> void testAPSP(Graph<V, E> g, Collection<V> verticesSubset, boolean allVertices, WeightFunction<E> w,
-			ShortestPathAllPairs algo, ShortestPathSingleSource validationAlgo) {
-		ShortestPathAllPairs.Result<V, E> result;
+	static void testAPSP(Graph<Integer, Integer> g, Collection<Integer> verticesSubset, boolean allVertices,
+			WeightFunction<Integer> w, ShortestPathAllPairs algo, ShortestPathSingleSource validationAlgo) {
+		final Random rand = new Random(0xd5106f1aa2b4b738L);
+
+		ShortestPathAllPairs.Result<Integer, Integer> result0;
 		NegativeCycleException actualNegCycle = null;
 		try {
 			if (allVertices) {
-				result = algo.computeAllShortestPaths(g, w);
+				result0 = algo.computeAllShortestPaths(g, w);
 			} else {
-				result = algo.computeSubsetShortestPaths(g, verticesSubset, w);
+				result0 = algo.computeSubsetShortestPaths(g, verticesSubset, w);
 			}
 		} catch (NegativeCycleException e) {
 			actualNegCycle = e;
-			result = null;
+			result0 = null;
 		}
+		final ShortestPathAllPairs.Result<Integer, Integer> result = result0;
 
-		for (V source : verticesSubset) {
-			ShortestPathSingleSource.Result<V, E> expectedRes;
+		for (Integer source : verticesSubset) {
+			ShortestPathSingleSource.Result<Integer, Integer> expectedRes;
 			NegativeCycleException expectedNegCycle = null;
 			try {
 				expectedRes = validationAlgo.computeShortestPaths(g, w, source);
@@ -125,7 +134,7 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 				assertNotNull(actualNegCycle, "failed to found negative cycle");
 
 			if (actualNegCycle != null) {
-				Path<V, E> cycle = actualNegCycle.cycle(g);
+				Path<Integer, Integer> cycle = actualNegCycle.cycle(g);
 				double cycleWeight = w.weightSum(cycle.edges());
 				assertTrue(cycleWeight != Double.NaN, "Invalid cycle: " + cycle);
 				assertTrue(cycleWeight < 0, "Cycle is not negative: " + cycle);
@@ -134,11 +143,11 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 				return;
 			}
 
-			for (V target : verticesSubset) {
+			for (Integer target : verticesSubset) {
 				double expectedDistance = expectedRes.distance(target);
 				double actualDistance = result.distance(source, target);
 				assertEquals(expectedDistance, actualDistance, "Distance to vertex " + target + " is wrong");
-				Path<V, E> path = result.getPath(source, target);
+				Path<Integer, Integer> path = result.getPath(source, target);
 				if (path != null) {
 					double pathWeight = WeightFunction.weightSum(w, path.edges());
 					assertEquals(pathWeight, actualDistance, "Path to vertex " + target + " doesn't match distance ("
@@ -146,6 +155,50 @@ class ShortestPathAllPairsTestUtils extends TestBase {
 				} else {
 					assertEquals(Double.POSITIVE_INFINITY, actualDistance,
 							"Distance to vertex " + target + " is not infinity but path is null");
+				}
+			}
+		}
+
+		Integer existingVertex = verticesSubset.iterator().next();
+		Integer nonExistingVertex = GraphsTestUtils.nonExistingVertex(g, rand);
+		assertThrows(NoSuchVertexException.class, () -> result.distance(existingVertex, nonExistingVertex));
+		assertThrows(NoSuchVertexException.class, () -> result.distance(nonExistingVertex, existingVertex));
+		assertThrows(NoSuchVertexException.class, () -> result.getPath(existingVertex, nonExistingVertex));
+		assertThrows(NoSuchVertexException.class, () -> result.getPath(nonExistingVertex, existingVertex));
+
+		if (!allVertices && !g.vertices().equals(verticesSubset)) {
+			Integer vNotInSubSet = g.vertices().stream().filter(v -> !verticesSubset.contains(v)).findAny().get();
+			for (var p : List.of(Pair.of(vNotInSubSet, existingVertex), Pair.of(existingVertex, vNotInSubSet))) {
+				Integer source = p.first(), target = p.second();
+
+				OptionalDouble distance;
+				try {
+					distance = OptionalDouble.of(result.distance(source, target));
+				} catch (IllegalArgumentException e) {
+					distance = OptionalDouble.empty(); /* ok, one of the vertices is not in the subset */
+				}
+				if (distance.isPresent()) {
+					double distance0 = distance.getAsDouble();
+					double expected = validationAlgo.computeShortestPaths(g, w, source).distance(target);
+					assertEquals(expected, distance0);
+				}
+
+				Optional<Path<Integer, Integer>> path;
+				try {
+					path = Optional.ofNullable(result.getPath(source, target));
+				} catch (IllegalArgumentException e) {
+					path = null; /* ok, one of the vertices is not in the subset */
+				}
+				if (path != null) {
+					Path<Integer, Integer> path0 = path.orElse(null);
+					Path<Integer, Integer> expected = validationAlgo.computeShortestPaths(g, w, source).getPath(target);
+					if (expected == null) {
+						assertNull(path0);
+					} else {
+						assertNotNull(path0);
+						assertEquals(WeightFunction.weightSum(w, expected.edges()),
+								WeightFunction.weightSum(w, path0.edges()));
+					}
 				}
 			}
 		}
