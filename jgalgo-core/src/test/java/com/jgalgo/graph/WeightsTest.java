@@ -326,11 +326,7 @@ public class WeightsTest extends TestBase {
 				}
 			}
 
-			int nonExistingEdge0;
-			do {
-				nonExistingEdge0 = rand.nextInt();
-			} while (g.edges().contains(nonExistingEdge0));
-			final int nonExistingEdge = nonExistingEdge0;
+			int nonExistingEdge = GraphsTestUtils.nonExistingInt(g.edges(), rand);
 			assertThrows(NoSuchEdgeException.class, () -> weights.getAsObj(-1));
 			assertThrows(NoSuchEdgeException.class, () -> weights.getAsObj(nonExistingEdge));
 			assertThrows(NoSuchEdgeException.class, () -> weights.setAsObj(-1, weightFactory.get()));

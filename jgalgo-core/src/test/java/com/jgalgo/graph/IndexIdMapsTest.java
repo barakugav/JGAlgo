@@ -240,12 +240,8 @@ public class IndexIdMapsTest extends TestBase {
 				Integer id = map.indexToId(idx);
 				assertEquals(idList2.indexOf(id), idList.indexOf(id));
 			}
-			for (int i = 0; i < 10; i++) {
-				Integer nonExistingId = Integer.valueOf(rand.nextInt());
-				if (allIds.contains(nonExistingId))
-					continue;
-				assertEquals(-1, idList.indexOf(nonExistingId));
-			}
+			for (int i = 0; i < 10; i++)
+				assertEquals(-1, idList.indexOf(nonExistingInt(allIds, rand)));
 
 			/* lastIndexOf() */
 			for (int i : range(indexList.size())) {
@@ -253,12 +249,8 @@ public class IndexIdMapsTest extends TestBase {
 				Integer id = map.indexToId(idx);
 				assertEquals(idList2.lastIndexOf(id), idList.lastIndexOf(id));
 			}
-			for (int i = 0; i < 10; i++) {
-				Integer nonExistingId = Integer.valueOf(rand.nextInt());
-				if (allIds.contains(nonExistingId))
-					continue;
-				assertEquals(-1, idList.lastIndexOf(nonExistingId));
-			}
+			for (int i = 0; i < 10; i++)
+				assertEquals(-1, idList.lastIndexOf(nonExistingInt(allIds, rand)));
 
 			/* remove(index) */
 			int sizeBeforeRemove = indexList.size();
@@ -299,12 +291,8 @@ public class IndexIdMapsTest extends TestBase {
 			/* contains() */
 			for (Integer id : allIds)
 				assertEqualsBool(indexCollection.contains(map.idToIndex(id)), idCollection.contains(id));
-			for (int i = 0; i < 10; i++) {
-				Integer nonExistingId = Integer.valueOf(rand.nextInt());
-				if (allIds.contains(nonExistingId))
-					continue;
-				assertFalse(idCollection.contains(nonExistingId));
-			}
+			for (int i = 0; i < 10; i++)
+				assertFalse(idCollection.contains(nonExistingInt(allIds, rand)));
 
 			/* iterator() */
 			Set<Integer> iteratedIds = new HashSet<>();
@@ -381,12 +369,8 @@ public class IndexIdMapsTest extends TestBase {
 				int idx = map.idToIndex(id);
 				assertEquals(indexList2.indexOf(idx), indexList.indexOf(idx));
 			}
-			for (int i = 0; i < 10; i++) {
-				int nonExistingIdx = rand.nextInt();
-				if (allIndices.contains(nonExistingIdx))
-					continue;
-				assertEquals(-1, indexList.indexOf(nonExistingIdx));
-			}
+			for (int i = 0; i < 10; i++)
+				assertEquals(-1, indexList.indexOf(nonExistingInt(allIndices, rand)));
 
 			/* lastIndexOf() */
 			for (int i : range(idList.size())) {
@@ -394,12 +378,8 @@ public class IndexIdMapsTest extends TestBase {
 				int idx = map.idToIndex(id);
 				assertEquals(indexList2.lastIndexOf(idx), indexList.lastIndexOf(idx));
 			}
-			for (int i = 0; i < 10; i++) {
-				int nonExistingIdx = rand.nextInt();
-				if (allIndices.contains(nonExistingIdx))
-					continue;
-				assertEquals(-1, indexList.lastIndexOf(nonExistingIdx));
-			}
+			for (int i = 0; i < 10; i++)
+				assertEquals(-1, indexList.lastIndexOf(nonExistingInt(allIndices, rand)));
 
 			/* remove(element) */
 			int sizeBeforeRemove = idList.size();
@@ -411,12 +391,8 @@ public class IndexIdMapsTest extends TestBase {
 			assertEquals(sizeBeforeRemove - 1, idList.size());
 			assertEquals(sizeBeforeRemove - 1, indexList.size());
 			assertEquals(idList.stream().map(map::idToIndex).collect(Collectors.toList()), new ArrayList<>(indexList));
-			for (int i = 0; i < 10; i++) {
-				int nonExistingIdx = rand.nextInt();
-				if (allIndices.contains(nonExistingIdx))
-					continue;
-				assertFalse(indexList.rem(nonExistingIdx));
-			}
+			for (int i = 0; i < 10; i++)
+				assertFalse(indexList.rem(nonExistingInt(allIndices, rand)));
 			for (int i = 0; i < 10; i++) {
 				int nonExistingIdx = allIndices.toIntArray()[rand.nextInt(allIndices.size())];
 				if (indexList.contains(nonExistingIdx))
@@ -485,12 +461,8 @@ public class IndexIdMapsTest extends TestBase {
 			/* contains() */
 			for (int idx : allIndices)
 				assertEqualsBool(idCollection.contains(map.indexToId(idx)), indexCollection.contains(idx));
-			for (int i = 0; i < 10; i++) {
-				int nonExistingIdx = rand.nextInt();
-				if (allIndices.contains(nonExistingIdx))
-					continue;
-				assertFalse(indexCollection.contains(nonExistingIdx));
-			}
+			for (int i = 0; i < 10; i++)
+				assertFalse(indexCollection.contains(nonExistingInt(allIndices, rand)));
 
 			/* iterator() */
 			IntSet iteratedIndices = new IntOpenHashSet();

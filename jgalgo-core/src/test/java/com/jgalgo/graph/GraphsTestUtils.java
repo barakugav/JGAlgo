@@ -314,4 +314,20 @@ public class GraphsTestUtils extends TestUtils {
 			w.set(e, (int) w.get(e));
 		return w;
 	}
+
+	public static Integer nonExistingVertex(Graph<Integer, ?> g, Random rand) {
+		return nonExistingInt(g.vertices(), rand);
+	}
+
+	public static Integer nonExistingVertexNonNegative(Graph<Integer, ?> g, Random rand) {
+		return nonExistingIntNonNegative(g.vertices(), rand);
+	}
+
+	public static Integer nonExistingEdge(Graph<Integer, Integer> g, Random rand) {
+		return nonExistingInt(g.edges(), rand);
+	}
+
+	public static Integer nonExistingEdgeNonNegative(Graph<Integer, Integer> g, Random rand) {
+		return nonExistingIntNonNegative(g.edges(), rand);
+	}
 }

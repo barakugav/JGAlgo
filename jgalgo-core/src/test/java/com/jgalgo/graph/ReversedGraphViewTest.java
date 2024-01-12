@@ -77,21 +77,16 @@ public class ReversedGraphViewTest extends TestBase {
 
 	@Test
 	public void testAddRemoveVertex() {
+		final Random rand = new Random(0xda1132baabc04450L);
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
 			Graph<Integer, Integer> gRev0 = gOrig0.reverseView();
 			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 			Graph<Integer, Integer> gRev = index ? gRev0.indexGraph() : gRev0;
 
-			Integer nonExistingVertex, newVertex;
+			Integer newVertex;
 			if (gRev instanceof IndexGraph) {
-				for (int v = 0;; v++) {
-					if (!gRev0.vertices().contains(Integer.valueOf(v))) {
-						nonExistingVertex = Integer.valueOf(v);
-						break;
-					}
-				}
-				newVertex = nonExistingVertex;
+				newVertex = GraphsTestUtils.nonExistingVertexNonNegative(gRev0, rand);
 
 				/* index graphs should not support adding vertices with user defined identifiers */
 				int newVertex0 = newVertex.intValue();
@@ -100,32 +95,20 @@ public class ReversedGraphViewTest extends TestBase {
 
 				/* can't add new vertex directly to IndexGraph, only via wrapper Int/Obj Graph */
 				IndexIdMap<Integer> viMap = gRev0.indexGraphVerticesMap();
-
 				gRev0.addVertex(newVertex);
-				newVertex = viMap.indexToId(newVertex.intValue());
+				newVertex = Integer.valueOf(viMap.idToIndex(newVertex));
 
 			} else if (gRev instanceof IntGraph) {
 				newVertex = Integer.valueOf(((IntGraph) gRev).addVertexInt());
 			} else {
-				for (int v = 0;; v++) {
-					if (!gRev.vertices().contains(Integer.valueOf(v))) {
-						nonExistingVertex = Integer.valueOf(v);
-						break;
-					}
-				}
-				newVertex = nonExistingVertex;
+				newVertex = GraphsTestUtils.nonExistingVertexNonNegative(gRev, rand);
 				gRev.addVertex(newVertex);
 			}
 			assertTrue(gOrig.vertices().contains(newVertex));
 			assertTrue(gRev.vertices().contains(newVertex));
 			assertEquals(gOrig.vertices(), gRev.vertices());
 
-			for (int v = 0;; v++) {
-				if (!gRev.vertices().contains(Integer.valueOf(v))) {
-					nonExistingVertex = Integer.valueOf(v);
-					break;
-				}
-			}
+			Integer nonExistingVertex = GraphsTestUtils.nonExistingVertexNonNegative(gRev, rand);
 			if (!(gRev instanceof IndexGraph)) {
 				gRev.addVertex(nonExistingVertex);
 				assertTrue(gOrig.vertices().contains(nonExistingVertex));
@@ -145,24 +128,15 @@ public class ReversedGraphViewTest extends TestBase {
 
 	@Test
 	public void addVertices() {
+		final Random rand = new Random(0xdaa7a8e62069d2b1L);
 		foreachBoolConfig((intGraph, directed) -> {
 			Graph<Integer, Integer> gOrig = createGraph(directed, intGraph);
 			Graph<Integer, Integer> gRev = gOrig.reverseView();
 
-			Integer nonExistingVertex1;
-			for (int v = 0;; v++) {
-				if (!gRev.vertices().contains(Integer.valueOf(v))) {
-					nonExistingVertex1 = Integer.valueOf(v);
-					break;
-				}
-			}
-			Integer nonExistingVertex2;
-			for (int v = nonExistingVertex1.intValue() + 1;; v++) {
-				if (!gRev.vertices().contains(Integer.valueOf(v))) {
-					nonExistingVertex2 = Integer.valueOf(v);
-					break;
-				}
-			}
+			Integer nonExistingVertex1 = GraphsTestUtils.nonExistingVertexNonNegative(gRev, rand);
+			Integer nonExistingVertex2 = GraphsTestUtils.nonExistingVertexNonNegative(gRev, rand);
+			assert !nonExistingVertex1.equals(nonExistingVertex2) : "what are the chances? 2^-31.";
+
 			List<Integer> newVertices = List.of(nonExistingVertex1, nonExistingVertex2);
 			gRev.addVertices(newVertices);
 			assertTrue(gOrig.vertices().containsAll(newVertices));
@@ -191,19 +165,14 @@ public class ReversedGraphViewTest extends TestBase {
 
 	@Test
 	public void renameVertex() {
+		final Random rand = new Random(0xd67c0c828d5b5d91L);
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
 			Graph<Integer, Integer> gRev0 = gOrig0.reverseView();
 			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 			Graph<Integer, Integer> gRev = index ? gRev0.indexGraph() : gRev0;
 
-			Integer nonExistingVertex;
-			for (int v = 0;; v++) {
-				if (!gRev.vertices().contains(Integer.valueOf(v))) {
-					nonExistingVertex = Integer.valueOf(v);
-					break;
-				}
-			}
+			Integer nonExistingVertex = GraphsTestUtils.nonExistingVertexNonNegative(gRev, rand);
 			Integer vertex = gOrig.vertices().iterator().next();
 
 			if (index) {
@@ -226,6 +195,7 @@ public class ReversedGraphViewTest extends TestBase {
 
 	@Test
 	public void testAddRemoveEdge() {
+		final Random rand = new Random(0x1dc9e6ab1fbd5897L);
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
 			Graph<Integer, Integer> gRev0 = gOrig0.reverseView();
@@ -236,15 +206,9 @@ public class ReversedGraphViewTest extends TestBase {
 			Integer u = vit.next();
 			Integer v = vit.next();
 
-			Integer nonExistingEdge, newEdge;
+			Integer newEdge;
 			if (gRev instanceof IndexGraph) {
-				for (int e = 0;; e++) {
-					if (!gRev0.edges().contains(Integer.valueOf(e))) {
-						nonExistingEdge = Integer.valueOf(e);
-						break;
-					}
-				}
-				newEdge = nonExistingEdge;
+				newEdge = GraphsTestUtils.nonExistingEdgeNonNegative(gRev0, rand);
 
 				/* index graphs should not support adding edges with user defined identifiers */
 				int newEdge0 = newEdge.intValue();
@@ -256,30 +220,19 @@ public class ReversedGraphViewTest extends TestBase {
 				IndexIdMap<Integer> viMap = gRev0.indexGraphVerticesMap();
 				IndexIdMap<Integer> eiMap = gRev0.indexGraphEdgesMap();
 				gRev0.addEdge(viMap.indexToId(u.intValue()), viMap.indexToId(v.intValue()), newEdge);
-				newEdge = eiMap.indexToId(newEdge.intValue());
+				newEdge = Integer.valueOf(eiMap.idToIndex(newEdge));
 
 			} else if (gRev instanceof IntGraph) {
 				newEdge = Integer.valueOf(((IntGraph) gRev).addEdge(u.intValue(), v.intValue()));
 			} else {
-				for (int e = 0;; e++) {
-					if (!gRev.edges().contains(Integer.valueOf(e))) {
-						nonExistingEdge = Integer.valueOf(e);
-						break;
-					}
-				}
-				newEdge = nonExistingEdge;
+				newEdge = GraphsTestUtils.nonExistingEdgeNonNegative(gRev, rand);
 				gRev.addEdge(u, v, newEdge);
 			}
 			assertTrue(gOrig.edges().contains(newEdge));
 			assertTrue(gRev.edges().contains(newEdge));
 			assertEquals(gOrig.edges(), gRev.edges());
 
-			for (int e = 0;; e++) {
-				if (!gRev.edges().contains(Integer.valueOf(e))) {
-					nonExistingEdge = Integer.valueOf(e);
-					break;
-				}
-			}
+			Integer nonExistingEdge = GraphsTestUtils.nonExistingEdgeNonNegative(gRev, rand);
 			if (!(gRev instanceof IndexGraph)) {
 				gRev.addEdge(u, v, nonExistingEdge);
 				assertTrue(gOrig.edges().contains(nonExistingEdge));
@@ -299,6 +252,7 @@ public class ReversedGraphViewTest extends TestBase {
 
 	@Test
 	public void addEdges() {
+		final Random rand = new Random(0x4bcafff33afc70f7L);
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
 			Graph<Integer, Integer> gRev0 = gOrig0.reverseView();
@@ -309,22 +263,15 @@ public class ReversedGraphViewTest extends TestBase {
 			Integer u = vit.next();
 			Integer v = vit.next();
 
-			Integer nonExistingEdge, newEdge;
+			Integer newEdge;
 			if (gRev instanceof IndexGraph) {
-				for (int e = 0;; e++) {
-					if (!gRev0.edges().contains(Integer.valueOf(e))) {
-						nonExistingEdge = Integer.valueOf(e);
-						break;
-					}
-				}
-				newEdge = nonExistingEdge;
+				newEdge = GraphsTestUtils.nonExistingEdgeNonNegative(gRev0, rand);
 
 				/* index graphs should not support adding edges with user defined identifiers */
-				int newEdge0 = newEdge.intValue();
-				if (newEdge0 != gRev.edges().size()) {
+				if (newEdge.intValue() != gRev.edges().size()) {
 					IntGraph gTemp = IntGraph.newDirected();
 					gTemp.addVertices(IntList.of(u.intValue(), v.intValue()));
-					gTemp.addEdge(u.intValue(), v.intValue(), newEdge0);
+					gTemp.addEdge(u.intValue(), v.intValue(), newEdge.intValue());
 					IEdgeSet edgesToAdd = IEdgeSet.allOf(gTemp);
 					assertThrows(IllegalArgumentException.class, () -> ((IndexGraph) gRev).addEdges(edgesToAdd));
 				}
@@ -337,20 +284,14 @@ public class ReversedGraphViewTest extends TestBase {
 				gTemp.addEdge(viMap.indexToId(u.intValue()), viMap.indexToId(v.intValue()), newEdge);
 				EdgeSet<Integer, Integer> edgesToAdd = EdgeSet.allOf(gTemp);
 				gRev0.addEdges(edgesToAdd);
-				newEdge = eiMap.indexToId(newEdge.intValue());
+				newEdge = Integer.valueOf(eiMap.idToIndex(newEdge));
 
 			} else {
-				for (int e = 0;; e++) {
-					if (!gRev.edges().contains(Integer.valueOf(e))) {
-						nonExistingEdge = Integer.valueOf(e);
-						break;
-					}
-				}
-				newEdge = nonExistingEdge;
+				newEdge = GraphsTestUtils.nonExistingEdgeNonNegative(gRev, rand);
 
 				IntGraph gTemp = IntGraph.newDirected();
 				gTemp.addVertices(IntList.of(u.intValue(), v.intValue()));
-				gTemp.addEdge(u.intValue(), v.intValue(), nonExistingEdge.intValue());
+				gTemp.addEdge(u.intValue(), v.intValue(), newEdge.intValue());
 				IEdgeSet edgesToAdd = IEdgeSet.allOf(gTemp);
 				gRev.addEdges(edgesToAdd);
 			}
@@ -410,20 +351,15 @@ public class ReversedGraphViewTest extends TestBase {
 
 	@Test
 	public void renameEdge() {
+		final Random rand = new Random(0x79d009d0c26da823L);
 		foreachBoolConfig((intGraph, directed, index) -> {
 			Graph<Integer, Integer> gOrig0 = createGraph(directed, intGraph);
 			Graph<Integer, Integer> gRev0 = gOrig0.reverseView();
 			Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 			Graph<Integer, Integer> gRev = index ? gRev0.indexGraph() : gRev0;
 
-			Integer nonExistingEdge;
-			for (int e = 0;; e++) {
-				if (!gRev.edges().contains(Integer.valueOf(e))) {
-					nonExistingEdge = Integer.valueOf(e);
-					break;
-				}
-			}
 			Integer edge = gOrig.edges().iterator().next();
+			Integer nonExistingEdge = GraphsTestUtils.nonExistingEdgeNonNegative(gRev, rand);
 
 			if (index) {
 				/* rename is not supported in index graphs */

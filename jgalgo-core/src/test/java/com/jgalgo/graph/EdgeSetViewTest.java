@@ -177,14 +177,13 @@ public class EdgeSetViewTest extends TestBase {
 
 	@Test
 	public void removeAll() {
+		final Random rand = new Random(0x4aa73cfc3b425b61L);
 		foreachBoolConfig((directed, intGraph) -> {
 			Graph<Integer, Integer> g = createGraph(directed, intGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
-			int nonExistingEdge;
-			for (nonExistingEdge = 0; edges.contains(nonExistingEdge); nonExistingEdge++);
-			assertFalse(view.removeAll(IntList.of(nonExistingEdge)));
-			assertFalse(view.removeAll(List.of(Integer.valueOf(nonExistingEdge))));
+			assertFalse(view.removeAll(IntList.of(GraphsTestUtils.nonExistingEdge(g, rand))));
+			assertFalse(view.removeAll(List.of(Integer.valueOf(GraphsTestUtils.nonExistingEdge(g, rand)))));
 
 			IntSet toRemove = new IntOpenHashSet();
 			int sizeBeforeRemove = view.size();
@@ -224,13 +223,12 @@ public class EdgeSetViewTest extends TestBase {
 
 	@Test
 	public void remove() {
+		final Random rand = new Random(0x934d0131c5b92f84L);
 		foreachBoolConfig((directed, intGraph) -> {
 			Graph<Integer, Integer> g = createGraph(directed, intGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
-			int nonExistingEdge;
-			for (nonExistingEdge = 0; edges.contains(nonExistingEdge); nonExistingEdge++);
-			assertFalse(view.remove(nonExistingEdge));
+			assertFalse(view.remove(GraphsTestUtils.nonExistingEdge(g, rand)));
 
 			int edge = edges.iterator().nextInt();
 			assertTrue(view.remove(edge));
@@ -241,12 +239,12 @@ public class EdgeSetViewTest extends TestBase {
 
 	@Test
 	public void add() {
+		final Random rand = new Random(0xf001908d3b6c1871L);
 		foreachBoolConfig((directed, intGraph) -> {
 			Graph<Integer, Integer> g = createGraph(directed, intGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
-			int nonExistingEdge;
-			for (nonExistingEdge = 0; edges.contains(nonExistingEdge); nonExistingEdge++);
+			int nonExistingEdge = GraphsTestUtils.nonExistingEdgeNonNegative(g, rand);
 			assertTrue(view.add(nonExistingEdge));
 			assertFalse(view.add(nonExistingEdge));
 			assertEquals(edges, view);

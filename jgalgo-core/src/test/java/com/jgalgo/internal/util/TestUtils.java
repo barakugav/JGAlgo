@@ -19,6 +19,7 @@ package com.jgalgo.internal.util;
 import static com.jgalgo.internal.util.Range.range;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
@@ -26,6 +27,7 @@ import java.util.function.Consumer;
 import org.junit.jupiter.api.Assertions;
 import com.jgalgo.graph.Graph;
 import it.unimi.dsi.fastutil.ints.IntArrays;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntList;
 
 public class TestUtils {
@@ -172,6 +174,32 @@ public class TestUtils {
 
 	public static int randElement(IntList list, Random rand) {
 		return list.getInt(rand.nextInt(list.size()));
+	}
+
+	public static int nonExistingInt(IntCollection elements, Random rand) {
+		return nonExistingInt(elements, rand, false).intValue();
+	}
+
+	public static Integer nonExistingInt(Collection<Integer> elements, Random rand) {
+		return nonExistingInt(elements, rand, false);
+	}
+
+	public static int nonExistingIntNonNegative(IntCollection elements, Random rand) {
+		return nonExistingInt(elements, rand, true).intValue();
+	}
+
+	public static Integer nonExistingIntNonNegative(Collection<Integer> elements, Random rand) {
+		return nonExistingInt(elements, rand, true);
+	}
+
+	private static Integer nonExistingInt(Collection<Integer> elements, Random rand, boolean positive) {
+		for (;;) {
+			Integer e = Integer.valueOf(rand.nextInt());
+			if (positive && e.intValue() < 0)
+				continue;
+			if (!elements.contains(e))
+				return e;
+		}
 	}
 
 	public static Graph<Integer, Integer> maybeIndexGraph(Graph<Integer, Integer> g, Random rand) {

@@ -626,13 +626,8 @@ public class GraphsTest extends TestBase {
 
 			for (Integer e : g.edges())
 				assertEqualsBool(expected.contains(e), selfEdges.contains(e));
-			for (int i = 0; i < 20; i++) {
-				Integer nonExistingEdge;
-				do {
-					nonExistingEdge = Integer.valueOf(rand.nextInt());
-				} while (g.edges().contains(nonExistingEdge));
-				assertFalse(selfEdges.contains(nonExistingEdge));
-			}
+			for (int i = 0; i < 20; i++)
+				assertFalse(selfEdges.contains(GraphsTestUtils.nonExistingEdge(g, rand)));
 
 			Set<Integer> iteratedEdges = new IntOpenHashSet();
 			for (Integer e : selfEdges) {

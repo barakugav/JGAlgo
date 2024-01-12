@@ -146,21 +146,16 @@ public class ImmutableGraphCopyTest extends TestBase {
 
 	@Test
 	public void addRemoveVertex() {
+		final Random rand = new Random(0xaf48a73a63a773daL);
 		foreachBoolConfig((intGraph, index, fastLookup) -> {
 			foreachBoolConfig((directed, parallelEdges) -> {
 				Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed, parallelEdges);
 				Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph<Integer, Integer> gImmutable = immutableCopy(gOrig, fastLookup);
 
-				Integer nonExistingVertex;
-				for (int v0 = 0;; v0++) {
-					Integer v = Integer.valueOf(v0);
-					if (!gImmutable.vertices().contains(v)) {
-						nonExistingVertex = v;
-						break;
-					}
-				}
-
+				Integer nonExistingVertex =
+						gImmutable instanceof IndexGraph ? Integer.valueOf(gImmutable.vertices().size())
+								: GraphsTestUtils.nonExistingVertexNonNegative(gImmutable, rand);
 				assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertex());
 				assertThrows(UnsupportedOperationException.class, () -> gImmutable.addVertex(nonExistingVertex));
 
@@ -186,50 +181,38 @@ public class ImmutableGraphCopyTest extends TestBase {
 
 	@Test
 	public void addVertices() {
+		final Random rand = new Random(0x3d801f2f5536a92fL);
 		foreachBoolConfig((intGraph, index, fastLookup) -> {
 			foreachBoolConfig((directed, parallelEdges) -> {
 				Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed, parallelEdges);
 				Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph<Integer, Integer> gImmutable = immutableCopy(gOrig, fastLookup);
 
-				Integer nonExistingVertex;
-				for (int v0 = 0;; v0++) {
-					Integer v = Integer.valueOf(v0);
-					if (!gImmutable.vertices().contains(v)) {
-						nonExistingVertex = v;
-						break;
-					}
-				}
-
-				assertThrows(UnsupportedOperationException.class,
-						() -> gImmutable.addVertices(List.of(nonExistingVertex)));
+				assertThrows(UnsupportedOperationException.class, () -> gImmutable
+						.addVertices(List.of(GraphsTestUtils.nonExistingVertexNonNegative(gImmutable, rand))));
 			});
 		});
 	}
 
 	@Test
 	public void renameVertex() {
+		final Random rand = new Random(0x579e499ecda79793L);
 		foreachBoolConfig((intGraph, index, fastLookup) -> {
 			foreachBoolConfig((directed, parallelEdges) -> {
 				Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed, parallelEdges);
 				Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph<Integer, Integer> gImmutable = immutableCopy(gOrig, fastLookup);
 
-				Integer nonExistingVertex;
-				for (int v = 0;; v++) {
-					if (!gImmutable.vertices().contains(Integer.valueOf(v))) {
-						nonExistingVertex = Integer.valueOf(v);
-						break;
-					}
-				}
-				assertThrows(UnsupportedOperationException.class,
-						() -> gImmutable.renameVertex(gImmutable.vertices().iterator().next(), nonExistingVertex));
+				Integer v = gImmutable.vertices().iterator().next();
+				Integer vNew = GraphsTestUtils.nonExistingVertexNonNegative(gImmutable, rand);
+				assertThrows(UnsupportedOperationException.class, () -> gImmutable.renameVertex(v, vNew));
 			});
 		});
 	}
 
 	@Test
 	public void addRemoveEdge() {
+		final Random rand = new Random(0x721556d31186bb4eL);
 		foreachBoolConfig((intGraph, index, fastLookup) -> {
 			foreachBoolConfig((directed, parallelEdges) -> {
 				Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed, parallelEdges);
@@ -240,15 +223,8 @@ public class ImmutableGraphCopyTest extends TestBase {
 				Integer u = vit.next();
 				Integer v = vit.next();
 
-				Integer nonExistingEdge;
-				for (int e0 = 0;; e0++) {
-					Integer e = Integer.valueOf(e0);
-					if (!gImmutable.edges().contains(e)) {
-						nonExistingEdge = e;
-						break;
-					}
-				}
-
+				Integer nonExistingEdge = gImmutable instanceof IndexGraph ? Integer.valueOf(gImmutable.edges().size())
+						: GraphsTestUtils.nonExistingEdgeNonNegative(gImmutable, rand);
 				assertThrows(UnsupportedOperationException.class, () -> gImmutable.addEdge(u, v));
 				assertThrows(UnsupportedOperationException.class, () -> gImmutable.addEdge(u, v, nonExistingEdge));
 
@@ -260,6 +236,7 @@ public class ImmutableGraphCopyTest extends TestBase {
 
 	@Test
 	public void addEdges() {
+		final Random rand = new Random(0x21f6dfd8efe0a416L);
 		foreachBoolConfig((intGraph, index, fastLookup) -> {
 			foreachBoolConfig((directed, parallelEdges) -> {
 				Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed, parallelEdges);
@@ -269,14 +246,7 @@ public class ImmutableGraphCopyTest extends TestBase {
 				Iterator<Integer> vit = gImmutable.vertices().iterator();
 				Integer u = vit.next();
 				Integer v = vit.next();
-				Integer nonExistingEdge;
-				for (int e0 = 0;; e0++) {
-					Integer e = Integer.valueOf(e0);
-					if (!gImmutable.edges().contains(e)) {
-						nonExistingEdge = e;
-						break;
-					}
-				}
+				Integer nonExistingEdge = GraphsTestUtils.nonExistingEdgeNonNegative(gImmutable, rand);
 				IntGraph g1 = IntGraph.newDirected();
 				g1.addVertices(List.of(u, v));
 				g1.addEdge(u.intValue(), v.intValue(), nonExistingEdge.intValue());
@@ -292,19 +262,14 @@ public class ImmutableGraphCopyTest extends TestBase {
 
 	@Test
 	public void renameEdge() {
+		final Random rand = new Random(0x9f8be40df7323a78L);
 		foreachBoolConfig((intGraph, index, fastLookup) -> {
 			foreachBoolConfig((directed, parallelEdges) -> {
 				Graph<Integer, Integer> gOrig0 = createGraph(intGraph, directed, parallelEdges);
 				Graph<Integer, Integer> gOrig = index ? gOrig0.indexGraph() : gOrig0;
 				Graph<Integer, Integer> gImmutable = immutableCopy(gOrig, fastLookup);
 
-				Integer nonExistingEdge;
-				for (int e = 0;; e++) {
-					if (!gImmutable.edges().contains(Integer.valueOf(e))) {
-						nonExistingEdge = Integer.valueOf(e);
-						break;
-					}
-				}
+				Integer nonExistingEdge = GraphsTestUtils.nonExistingEdgeNonNegative(gImmutable, rand);
 				assertThrows(UnsupportedOperationException.class,
 						() -> gImmutable.renameEdge(gImmutable.edges().iterator().next(), nonExistingEdge));
 			});
@@ -379,7 +344,7 @@ public class ImmutableGraphCopyTest extends TestBase {
 				}
 
 				for (int i = 0; i < 10; i++) {
-					Integer nonExistingVertex = nonExistingVertex(gImmutable, rand);
+					Integer nonExistingVertex = GraphsTestUtils.nonExistingVertex(gImmutable, rand);
 					assertThrows(NoSuchVertexException.class, () -> gImmutable.outEdges(nonExistingVertex));
 					assertThrows(NoSuchVertexException.class, () -> gImmutable.inEdges(nonExistingVertex));
 				}
@@ -410,7 +375,7 @@ public class ImmutableGraphCopyTest extends TestBase {
 							assertNotEquals(null, e);
 							assertTrue(edges.contains(e));
 						}
-						assertFalse(edges.contains(nonExistingEdge(gOrig, rand)));
+						assertFalse(edges.contains(GraphsTestUtils.nonExistingEdge(gOrig, rand)));
 						for (int i = 0; i < 20; i++) {
 							Integer e = Graphs.randEdge(gOrig, rand);
 							Integer u1 = gOrig.edgeSource(e), v1 = gOrig.edgeTarget(e);
@@ -438,28 +403,12 @@ public class ImmutableGraphCopyTest extends TestBase {
 					}
 				}
 
-				assertThrows(NoSuchVertexException.class,
-						() -> gImmutable.getEdges(nonExistingVertex(gOrig, rand), Graphs.randVertex(gOrig, rand)));
-				assertThrows(NoSuchVertexException.class,
-						() -> gImmutable.getEdges(Graphs.randVertex(gOrig, rand), nonExistingVertex(gOrig, rand)));
+				assertThrows(NoSuchVertexException.class, () -> gImmutable
+						.getEdges(GraphsTestUtils.nonExistingVertex(gOrig, rand), Graphs.randVertex(gOrig, rand)));
+				assertThrows(NoSuchVertexException.class, () -> gImmutable
+						.getEdges(Graphs.randVertex(gOrig, rand), GraphsTestUtils.nonExistingVertex(gOrig, rand)));
 			});
 		});
-	}
-
-	private static Integer nonExistingVertex(Graph<Integer, ?> g, Random rand) {
-		for (;;) {
-			Integer v = Integer.valueOf(rand.nextInt());
-			if (!g.vertices().contains(v))
-				return v;
-		}
-	}
-
-	private static Integer nonExistingEdge(Graph<Integer, Integer> g, Random rand) {
-		for (;;) {
-			Integer e = Integer.valueOf(rand.nextInt());
-			if (e.intValue() >= 0 && !g.edges().contains(e))
-				return e;
-		}
 	}
 
 	@Test

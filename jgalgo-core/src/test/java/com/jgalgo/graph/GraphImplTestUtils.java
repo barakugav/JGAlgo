@@ -511,7 +511,7 @@ class GraphImplTestUtils extends TestUtils {
 						assertEquals(vertices, g.vertices());
 						assertEquals(expectedGraph, g);
 					} else {
-						vs.add(nonExistingVertex(g, rand)); /* non existing element */
+						vs.add(GraphsTestUtils.nonExistingVertex(g, rand)); /* non existing element */
 						List<Integer> vs0 = new ArrayList<>(vs);
 						Collections.shuffle(vs0, rand);
 						assertThrows(NoSuchVertexException.class, () -> g.removeVertices(vs0));
@@ -1031,7 +1031,7 @@ class GraphImplTestUtils extends TestUtils {
 						g.addEdges(addedEdges);
 						addEdgesToExpected(expectedEdges, addedEdges);
 					} else {
-						Integer nonExistingVertex = nonExistingVertex(g, rand);
+						Integer nonExistingVertex = GraphsTestUtils.nonExistingVertex(g, rand);
 						if (rand.nextBoolean()) {
 							addedEndpoints.set(0, Pair.of(nonExistingVertex, addedEndpoints.get(0).second()));
 						} else {
@@ -1284,7 +1284,7 @@ class GraphImplTestUtils extends TestUtils {
 						g.addEdgesReassignIds(addedEdges);
 						addEdgesToExpected.accept(expectedEdges, addedEdges);
 					} else {
-						Integer nonExistingVertex = nonExistingVertex(g, rand);
+						Integer nonExistingVertex = GraphsTestUtils.nonExistingVertex(g, rand);
 						if (rand.nextBoolean()) {
 							addedEndpoints.set(0, Pair.of(nonExistingVertex, addedEndpoints.get(0).second()));
 						} else {
@@ -1487,7 +1487,7 @@ class GraphImplTestUtils extends TestUtils {
 						assertEquals(edges, g.edges());
 						assertEquals(expectedGraph, g);
 					} else {
-						es.add(nonExistingEdge(g, rand)); /* non existing element */
+						es.add(GraphsTestUtils.nonExistingEdge(g, rand)); /* non existing element */
 						List<Integer> es0 = new ArrayList<>(es);
 						Collections.shuffle(es0, rand);
 						assertThrows(NoSuchEdgeException.class, () -> g.removeEdges(es0));
@@ -1663,7 +1663,7 @@ class GraphImplTestUtils extends TestUtils {
 				assertEqualsBool(expectedContains, g.containsEdge(u, v));
 			}
 			for (int i = 0; i < 10; i++) {
-				Integer nonExistingVertex = nonExistingVertex(g, rand);
+				Integer nonExistingVertex = GraphsTestUtils.nonExistingVertex(g, rand);
 				assertThrows(NoSuchVertexException.class,
 						() -> g.getEdge(nonExistingVertex, Graphs.randVertex(g, rand)));
 				assertThrows(NoSuchVertexException.class,
@@ -1738,7 +1738,7 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			for (int i = 0; i < 10; i++) {
-				Integer nonExistingVertex = nonExistingVertex(g, rand);
+				Integer nonExistingVertex = GraphsTestUtils.nonExistingVertex(g, rand);
 				assertThrows(NoSuchVertexException.class, () -> g.outEdges(nonExistingVertex));
 				assertThrows(NoSuchVertexException.class, () -> g.inEdges(nonExistingVertex));
 			}
@@ -1800,11 +1800,7 @@ class GraphImplTestUtils extends TestUtils {
 						.equals(key.apply(g.edgeSource(nonParallelEdge), g.edgeTarget(nonParallelEdge))));
 				assertFalse(edges0.contains(nonParallelEdge));
 
-				Integer nonExistingEdge;
-				do {
-					nonExistingEdge = Integer.valueOf(rand.nextInt());
-				} while (g.edges().contains(nonExistingEdge));
-				assertFalse(edges0.contains(nonExistingEdge));
+				assertFalse(edges0.contains(GraphsTestUtils.nonExistingEdge(g, rand)));
 			}
 
 			/* remove() */
@@ -1827,11 +1823,7 @@ class GraphImplTestUtils extends TestUtils {
 						.equals(key.apply(g.edgeSource(nonParallelEdge), g.edgeTarget(nonParallelEdge))));
 				assertFalse(edges0.remove(nonParallelEdge));
 
-				Integer nonExistingEdge;
-				do {
-					nonExistingEdge = Integer.valueOf(rand.nextInt());
-				} while (g.edges().contains(nonExistingEdge));
-				assertFalse(edges0.remove(nonExistingEdge));
+				assertFalse(edges0.remove(GraphsTestUtils.nonExistingEdge(g, rand)));
 			}
 
 			/* iterator().remove() */
@@ -1876,9 +1868,9 @@ class GraphImplTestUtils extends TestUtils {
 			}
 
 			assertThrows(NoSuchVertexException.class,
-					() -> g.getEdges(nonExistingVertex(g, rand), Graphs.randVertex(g, rand)));
+					() -> g.getEdges(GraphsTestUtils.nonExistingVertex(g, rand), Graphs.randVertex(g, rand)));
 			assertThrows(NoSuchVertexException.class,
-					() -> g.getEdges(Graphs.randVertex(g, rand), nonExistingVertex(g, rand)));
+					() -> g.getEdges(Graphs.randVertex(g, rand), GraphsTestUtils.nonExistingVertex(g, rand)));
 		});
 	}
 
@@ -2822,10 +2814,7 @@ class GraphImplTestUtils extends TestUtils {
 		if (!parallelEdges) {
 			Integer e = Graphs.randEdge(g1, rand);
 			if (!g1.containsEdge(g1.edgeTarget(e), g1.edgeSource(e))) {
-				Integer nonExistingEdge;
-				do {
-					nonExistingEdge = Integer.valueOf(rand.nextInt());
-				} while (g1.edges().contains(nonExistingEdge) || nonExistingEdge.intValue() < 0);
+				Integer nonExistingEdge = GraphsTestUtils.nonExistingEdgeNonNegative(g1, rand);
 				g1.addEdge(g1.edgeTarget(e), g1.edgeSource(e), nonExistingEdge);
 			}
 
@@ -2923,10 +2912,7 @@ class GraphImplTestUtils extends TestUtils {
 					break;
 				}
 
-				Integer nonExistingEdge;
-				do {
-					nonExistingEdge = Integer.valueOf(rand.nextInt());
-				} while (g1.edges().contains(nonExistingEdge) || nonExistingEdge.intValue() < 0);
+				Integer nonExistingEdge = GraphsTestUtils.nonExistingEdgeNonNegative(g1, rand);
 				g1.addEdge(newSource, newTarget, nonExistingEdge);
 
 				Integer newSource0 = newSource, newTarget0 = newTarget;
@@ -3488,11 +3474,7 @@ class GraphImplTestUtils extends TestUtils {
 							g.getEdges(Integer.valueOf(source.id), Integer.valueOf(target.id));
 					assertTrue(edgeSet.contains(e));
 
-					Integer nonExistingEdge;
-					do {
-						nonExistingEdge = Integer.valueOf(rand.nextInt());
-					} while (edgeSet.contains(nonExistingEdge));
-					assertFalse(edgeSet.remove(nonExistingEdge));
+					assertFalse(edgeSet.remove(GraphsTestUtils.nonExistingInt(edgeSet, rand)));
 
 					if (Set.of(e).equals(edgeSet) && rand.nextBoolean()) {
 						edgeSet.clear();
@@ -3720,22 +3702,6 @@ class GraphImplTestUtils extends TestUtils {
 
 	static Object labeledObj(String label) {
 		return new LabeledObj(label);
-	}
-
-	private static Integer nonExistingVertex(Graph<Integer, ?> g, Random rand) {
-		for (;;) {
-			Integer v = Integer.valueOf(rand.nextInt());
-			if (!g.vertices().contains(v))
-				return v;
-		}
-	}
-
-	private static Integer nonExistingEdge(Graph<Integer, Integer> g, Random rand) {
-		for (;;) {
-			Integer e = Integer.valueOf(rand.nextInt());
-			if (!g.edges().contains(e))
-				return e;
-		}
 	}
 
 }

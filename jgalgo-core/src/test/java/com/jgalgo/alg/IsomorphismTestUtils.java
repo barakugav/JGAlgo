@@ -523,20 +523,8 @@ class IsomorphismTestUtils extends TestUtils {
 			assertTrue(modified);
 		}
 		assertEquals(g2.vertices().size(), mappedG2Vertices.size());
-		assertThrows(NoSuchVertexException.class, () -> {
-			Integer nonExistingVertex;
-			do {
-				nonExistingVertex = Integer.valueOf(rand.nextInt());
-			} while (g1.vertices().contains(nonExistingVertex));
-			m1.mapVertex(nonExistingVertex);
-		});
-		assertThrows(NoSuchVertexException.class, () -> {
-			Integer nonExistingVertex;
-			do {
-				nonExistingVertex = Integer.valueOf(rand.nextInt());
-			} while (g2.vertices().contains(nonExistingVertex));
-			m2.mapVertex(nonExistingVertex);
-		});
+		assertThrows(NoSuchVertexException.class, () -> m1.mapVertex(GraphsTestUtils.nonExistingVertex(g1, rand)));
+		assertThrows(NoSuchVertexException.class, () -> m2.mapVertex(GraphsTestUtils.nonExistingVertex(g2, rand)));
 		if (g1.vertices().size() < g2.vertices().size()) {
 			Integer unmappedG2Vertex =
 					g2.vertices().stream().filter(v2 -> !mappedG2Vertices.contains(v2.intValue())).findFirst().get();
@@ -559,20 +547,8 @@ class IsomorphismTestUtils extends TestUtils {
 			assertTrue(modified);
 		}
 		assertEquals(g2.edges().size(), mappedG2Edges.size());
-		assertThrows(NoSuchEdgeException.class, () -> {
-			Integer nonExistingEdge;
-			do {
-				nonExistingEdge = Integer.valueOf(rand.nextInt());
-			} while (g1.edges().contains(nonExistingEdge));
-			m1.mapEdge(nonExistingEdge);
-		});
-		assertThrows(NoSuchEdgeException.class, () -> {
-			Integer nonExistingEdge;
-			do {
-				nonExistingEdge = Integer.valueOf(rand.nextInt());
-			} while (g2.edges().contains(nonExistingEdge));
-			m2.mapEdge(nonExistingEdge);
-		});
+		assertThrows(NoSuchEdgeException.class, () -> m1.mapEdge(GraphsTestUtils.nonExistingEdge(g1, rand)));
+		assertThrows(NoSuchEdgeException.class, () -> m2.mapEdge(GraphsTestUtils.nonExistingEdge(g2, rand)));
 		if (g1.edges().size() < g2.edges().size()) {
 			Integer unmappedG2Edge =
 					g2.edges().stream().filter(e2 -> !mappedG2Edges.contains(e2.intValue())).findFirst().get();

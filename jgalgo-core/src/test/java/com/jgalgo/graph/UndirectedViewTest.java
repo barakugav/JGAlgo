@@ -85,21 +85,16 @@ public class UndirectedViewTest extends TestBase {
 
 	@Test
 	public void testAddRemoveVertex() {
+		final Random rand = new Random(0x151cb4a8c0092b5bL);
 		foreachBoolConfig((intGraph, index) -> {
 			Graph<Integer, Integer> g0 = createGraph(intGraph);
 			Graph<Integer, Integer> undirectedG0 = g0.undirectedView();
 			Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 			Graph<Integer, Integer> undirectedG = index ? undirectedG0.indexGraph() : undirectedG0;
 
-			Integer nonExistingVertex, newVertex;
+			Integer newVertex;
 			if (undirectedG instanceof IndexGraph) {
-				for (int v = 0;; v++) {
-					if (!undirectedG0.vertices().contains(Integer.valueOf(v))) {
-						nonExistingVertex = Integer.valueOf(v);
-						break;
-					}
-				}
-				newVertex = nonExistingVertex;
+				newVertex = GraphsTestUtils.nonExistingVertexNonNegative(undirectedG0, rand);
 
 				/* index graphs should not support adding vertices with user defined identifiers */
 				int newVertex0 = newVertex.intValue();
@@ -110,30 +105,19 @@ public class UndirectedViewTest extends TestBase {
 				IndexIdMap<Integer> viMap = undirectedG0.indexGraphVerticesMap();
 
 				undirectedG0.addVertex(newVertex);
-				newVertex = viMap.indexToId(newVertex.intValue());
+				newVertex = Integer.valueOf(viMap.idToIndex(newVertex));
 
 			} else if (undirectedG instanceof IntGraph) {
 				newVertex = Integer.valueOf(((IntGraph) undirectedG).addVertexInt());
 			} else {
-				for (int v = 0;; v++) {
-					if (!undirectedG.vertices().contains(Integer.valueOf(v))) {
-						nonExistingVertex = Integer.valueOf(v);
-						break;
-					}
-				}
-				newVertex = nonExistingVertex;
+				newVertex = GraphsTestUtils.nonExistingVertexNonNegative(undirectedG, rand);
 				undirectedG.addVertex(newVertex);
 			}
 			assertTrue(g.vertices().contains(newVertex));
 			assertTrue(undirectedG.vertices().contains(newVertex));
 			assertEquals(g.vertices(), undirectedG.vertices());
 
-			for (int v = 0;; v++) {
-				if (!undirectedG.vertices().contains(Integer.valueOf(v))) {
-					nonExistingVertex = Integer.valueOf(v);
-					break;
-				}
-			}
+			Integer nonExistingVertex = GraphsTestUtils.nonExistingVertexNonNegative(undirectedG0, rand);
 			if (!(undirectedG instanceof IndexGraph)) {
 				undirectedG.addVertex(nonExistingVertex);
 				assertTrue(g.vertices().contains(nonExistingVertex));
@@ -153,24 +137,15 @@ public class UndirectedViewTest extends TestBase {
 
 	@Test
 	public void addVertices() {
+		final Random rand = new Random(0x94a8847b653dde07L);
 		foreachBoolConfig(intGraph -> {
 			Graph<Integer, Integer> gOrig = createGraph(intGraph);
 			Graph<Integer, Integer> undirectedG = gOrig.undirectedView();
 
-			Integer nonExistingVertex1;
-			for (int v = 0;; v++) {
-				if (!undirectedG.vertices().contains(Integer.valueOf(v))) {
-					nonExistingVertex1 = Integer.valueOf(v);
-					break;
-				}
-			}
-			Integer nonExistingVertex2;
-			for (int v = nonExistingVertex1.intValue() + 1;; v++) {
-				if (!undirectedG.vertices().contains(Integer.valueOf(v))) {
-					nonExistingVertex2 = Integer.valueOf(v);
-					break;
-				}
-			}
+			Integer nonExistingVertex1 = GraphsTestUtils.nonExistingVertexNonNegative(undirectedG, rand);
+			Integer nonExistingVertex2 = GraphsTestUtils.nonExistingVertexNonNegative(undirectedG, rand);
+			assert !nonExistingVertex1.equals(nonExistingVertex2);
+
 			List<Integer> newVertices = List.of(nonExistingVertex1, nonExistingVertex2);
 			undirectedG.addVertices(newVertices);
 			assertTrue(gOrig.vertices().containsAll(newVertices));
@@ -199,20 +174,15 @@ public class UndirectedViewTest extends TestBase {
 
 	@Test
 	public void renameVertex() {
+		final Random rand = new Random(0x131a77e301a04258L);
 		foreachBoolConfig((intGraph, index) -> {
 			Graph<Integer, Integer> g0 = createGraph(intGraph);
 			Graph<Integer, Integer> undirectedG0 = g0.undirectedView();
 			Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 			Graph<Integer, Integer> undirectedG = index ? undirectedG0.indexGraph() : undirectedG0;
 
-			Integer nonExistingVertex;
-			for (int v = 0;; v++) {
-				if (!undirectedG.vertices().contains(Integer.valueOf(v))) {
-					nonExistingVertex = Integer.valueOf(v);
-					break;
-				}
-			}
 			Integer vertex = g.vertices().iterator().next();
+			Integer nonExistingVertex = GraphsTestUtils.nonExistingVertexNonNegative(undirectedG, rand);
 
 			if (index) {
 				/* rename is not supported in index graphs */
@@ -235,6 +205,7 @@ public class UndirectedViewTest extends TestBase {
 
 	@Test
 	public void testAddRemoveEdge() {
+		final Random rand = new Random(0xd3534a50a7d6c94L);
 		foreachBoolConfig((intGraph, index) -> {
 			Graph<Integer, Integer> g0 = createGraph(intGraph);
 			Graph<Integer, Integer> undirectedG0 = g0.undirectedView();
@@ -245,15 +216,9 @@ public class UndirectedViewTest extends TestBase {
 			Integer u = vit.next();
 			Integer v = vit.next();
 
-			Integer nonExistingEdge, newEdge;
+			Integer newEdge;
 			if (undirectedG instanceof IndexGraph) {
-				for (int e = 0;; e++) {
-					if (!undirectedG0.edges().contains(Integer.valueOf(e))) {
-						nonExistingEdge = Integer.valueOf(e);
-						break;
-					}
-				}
-				newEdge = nonExistingEdge;
+				newEdge = GraphsTestUtils.nonExistingEdgeNonNegative(undirectedG0, rand);
 
 				/* index graphs should not support adding edges with user defined identifiers */
 				int newEdge0 = newEdge.intValue();
@@ -265,30 +230,19 @@ public class UndirectedViewTest extends TestBase {
 				IndexIdMap<Integer> viMap = undirectedG0.indexGraphVerticesMap();
 				IndexIdMap<Integer> eiMap = undirectedG0.indexGraphEdgesMap();
 				undirectedG0.addEdge(viMap.indexToId(u.intValue()), viMap.indexToId(v.intValue()), newEdge);
-				newEdge = eiMap.indexToId(newEdge.intValue());
+				newEdge = Integer.valueOf(eiMap.idToIndex(newEdge));
 
 			} else if (undirectedG instanceof IntGraph) {
 				newEdge = Integer.valueOf(((IntGraph) undirectedG).addEdge(u.intValue(), v.intValue()));
 			} else {
-				for (int e = 0;; e++) {
-					if (!undirectedG.edges().contains(Integer.valueOf(e))) {
-						nonExistingEdge = Integer.valueOf(e);
-						break;
-					}
-				}
-				newEdge = nonExistingEdge;
+				newEdge = GraphsTestUtils.nonExistingEdgeNonNegative(undirectedG, rand);
 				undirectedG.addEdge(u, v, newEdge);
 			}
 			assertTrue(g.edges().contains(newEdge));
 			assertTrue(undirectedG.edges().contains(newEdge));
 			assertEquals(g.edges(), undirectedG.edges());
 
-			for (int e = 0;; e++) {
-				if (!undirectedG.edges().contains(Integer.valueOf(e))) {
-					nonExistingEdge = Integer.valueOf(e);
-					break;
-				}
-			}
+			Integer nonExistingEdge = GraphsTestUtils.nonExistingEdgeNonNegative(undirectedG, rand);
 			if (!(undirectedG instanceof IndexGraph)) {
 				undirectedG.addEdge(u, v, nonExistingEdge);
 				assertTrue(g.edges().contains(nonExistingEdge));
@@ -308,6 +262,7 @@ public class UndirectedViewTest extends TestBase {
 
 	@Test
 	public void addEdges() {
+		final Random rand = new Random(0xf6410f5e2e8c472dL);
 		foreachBoolConfig((intGraph, index) -> {
 			Graph<Integer, Integer> g0 = createGraph(intGraph);
 			Graph<Integer, Integer> undirectedG0 = g0.undirectedView();
@@ -318,15 +273,9 @@ public class UndirectedViewTest extends TestBase {
 			Integer u = vit.next();
 			Integer v = vit.next();
 
-			Integer nonExistingEdge, newEdge;
+			Integer newEdge;
 			if (undirectedG instanceof IndexGraph) {
-				for (int e = 0;; e++) {
-					if (!undirectedG0.edges().contains(Integer.valueOf(e))) {
-						nonExistingEdge = Integer.valueOf(e);
-						break;
-					}
-				}
-				newEdge = nonExistingEdge;
+				newEdge = GraphsTestUtils.nonExistingEdgeNonNegative(undirectedG0, rand);
 
 				/* index graphs should not support adding edges with user defined identifiers */
 				int newEdge0 = newEdge.intValue();
@@ -346,20 +295,14 @@ public class UndirectedViewTest extends TestBase {
 				gTemp.addEdge(viMap.indexToId(u.intValue()), viMap.indexToId(v.intValue()), newEdge);
 				EdgeSet<Integer, Integer> edgesToAdd = EdgeSet.allOf(gTemp);
 				undirectedG0.addEdges(edgesToAdd);
-				newEdge = eiMap.indexToId(newEdge.intValue());
+				newEdge = Integer.valueOf(eiMap.idToIndex(newEdge));
 
 			} else {
-				for (int e = 0;; e++) {
-					if (!undirectedG.edges().contains(Integer.valueOf(e))) {
-						nonExistingEdge = Integer.valueOf(e);
-						break;
-					}
-				}
-				newEdge = nonExistingEdge;
+				newEdge = GraphsTestUtils.nonExistingEdgeNonNegative(undirectedG, rand);
 
 				IntGraph gTemp = IntGraph.newDirected();
 				gTemp.addVertices(IntList.of(u.intValue(), v.intValue()));
-				gTemp.addEdge(u.intValue(), v.intValue(), nonExistingEdge.intValue());
+				gTemp.addEdge(u.intValue(), v.intValue(), newEdge.intValue());
 				IEdgeSet edgesToAdd = IEdgeSet.allOf(gTemp);
 				undirectedG.addEdges(edgesToAdd);
 			}
@@ -412,20 +355,15 @@ public class UndirectedViewTest extends TestBase {
 
 	@Test
 	public void renameEdge() {
+		final Random rand = new Random(0x416dbed48feaefc6L);
 		foreachBoolConfig((intGraph, index) -> {
 			Graph<Integer, Integer> g0 = createGraph(intGraph);
 			Graph<Integer, Integer> undirectedG0 = g0.undirectedView();
 			Graph<Integer, Integer> g = index ? g0.indexGraph() : g0;
 			Graph<Integer, Integer> undirectedG = index ? undirectedG0.indexGraph() : undirectedG0;
 
-			Integer nonExistingEdge;
-			for (int e = 0;; e++) {
-				if (!undirectedG.edges().contains(Integer.valueOf(e))) {
-					nonExistingEdge = Integer.valueOf(e);
-					break;
-				}
-			}
 			Integer edge = g.edges().iterator().next();
+			Integer nonExistingEdge = GraphsTestUtils.nonExistingEdgeNonNegative(undirectedG, rand);
 
 			if (index) {
 				/* rename is not supported in index graphs */

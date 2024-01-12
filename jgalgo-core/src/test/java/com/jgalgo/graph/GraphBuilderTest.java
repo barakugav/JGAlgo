@@ -420,10 +420,7 @@ public class GraphBuilderTest extends TestBase {
 						gActual.getEdgesWeights(key).defaultWeightAsObj());
 
 			if (buildMut) {
-				Integer nonExistingVertex;
-				do {
-					nonExistingVertex = Integer.valueOf(rand.nextInt(g.vertices().size() * 2));
-				} while (g.vertices().contains(nonExistingVertex));
+				Integer nonExistingVertex = GraphsTestUtils.nonExistingVertexNonNegative(g, rand);
 				gActual.addVertex(nonExistingVertex);
 				assertTrue(gActual.vertices().contains(nonExistingVertex));
 

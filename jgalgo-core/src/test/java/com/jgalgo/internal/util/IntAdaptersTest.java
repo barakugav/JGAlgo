@@ -164,22 +164,14 @@ public class IntAdaptersTest extends TestBase {
 		/* indexOf() */
 		for (Integer x : objList)
 			assertEquals(objList.indexOf(x), intList.indexOf(x.intValue()));
-		for (int i = 0; i < 10; i++) {
-			int nonExistingElm = rand.nextInt();
-			if (objList.contains(Integer.valueOf(nonExistingElm)))
-				continue;
-			assertEquals(-1, intList.indexOf(nonExistingElm));
-		}
+		for (int i = 0; i < 10; i++)
+			assertEquals(-1, intList.indexOf(nonExistingInt(objList, rand).intValue()));
 
 		/* lastIndexOf() */
 		for (Integer x : objList)
 			assertEquals(objList.lastIndexOf(x), intList.lastIndexOf(x.intValue()));
-		for (int i = 0; i < 10; i++) {
-			int nonExistingElm = rand.nextInt();
-			if (objList.contains(Integer.valueOf(nonExistingElm)))
-				continue;
-			assertEquals(-1, intList.lastIndexOf(nonExistingElm));
-		}
+		for (int i = 0; i < 10; i++)
+			assertEquals(-1, intList.lastIndexOf(nonExistingInt(objList, rand).intValue()));
 
 		/* remove(index) */
 		IntList expected = new IntArrayList(objList);
