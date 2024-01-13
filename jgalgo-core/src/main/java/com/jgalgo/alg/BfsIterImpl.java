@@ -52,6 +52,7 @@ class BfsIterImpl {
 			firstVInLayer = -1;
 			do {
 				int source = sources.nextInt();
+				Assertions.checkVertex(source, n);
 				visited.set(source);
 				queue.enqueue(JGAlgoUtils.longPack(source, -1));
 				if (firstVInLayer == -1)
