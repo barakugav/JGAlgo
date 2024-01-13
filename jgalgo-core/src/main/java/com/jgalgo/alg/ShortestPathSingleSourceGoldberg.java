@@ -26,7 +26,6 @@ import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
-import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
@@ -111,9 +110,9 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 		IWeightFunctionInt pw = ShortestPathUtils.potentialWeightFunc(g, w, potential);
 
 		/* run positive SSSP */
-		ShortestPathSingleSource.IResult res = (ShortestPathSingleSource.IResult) positiveSsspAlgo
+		ShortestPathSingleSource.IResult dijkstraRes = (ShortestPathSingleSource.IResult) positiveSsspAlgo
 				.computeShortestPaths(g, pw, Integer.valueOf(source));
-		return new Result(source, potential, res);
+		return createResults(potential, dijkstraRes);
 	}
 
 	private int[] calcPotential(IndexGraph g, IWeightFunctionInt w0, int minWeight) {
@@ -309,49 +308,30 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 		return weight + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];
 	}
 
-	private static class Result implements ShortestPathSingleSource.IResult {
+	private static ShortestPathSingleSource.IResult createResults(int[] potential,
+			ShortestPathSingleSource.IResult dijkstraRes) {
+		final IndexGraph g = (IndexGraph) dijkstraRes.graph();
+		final int n = g.vertices().size();
+		final int source = dijkstraRes.sourceInt();
+		int sourcePotential = potential[source];
+		double[] distances;
+		int[] backtrack;
+		if (dijkstraRes instanceof ShortestPathSingleSourceUtils.IndexResult) {
+			ShortestPathSingleSourceUtils.IndexResult res = (ShortestPathSingleSourceUtils.IndexResult) dijkstraRes;
+			distances = res.distances;
+			backtrack = res.backtrack;
+			for (int v : range(n))
+				distances[v] += potential[v] - sourcePotential;
 
-		private final int source;
-		private final int sourcePotential;
-		private final int[] potential;
-		private final ShortestPathSingleSource.IResult dijkstraRes;
-
-		Result(int source, int[] potential, ShortestPathSingleSource.IResult dijkstraRes) {
-			this.source = source;
-			this.sourcePotential = potential != null ? potential[source] : 0;
-			this.potential = potential;
-			this.dijkstraRes = dijkstraRes;
+		} else {
+			distances = new double[n];
+			backtrack = new int[n];
+			for (int v : range(n)) {
+				distances[v] = dijkstraRes.distance(v) + potential[v] - sourcePotential;
+				backtrack[v] = dijkstraRes.backtrackEdge(v);
+			}
 		}
-
-		@Override
-		public double distance(int target) {
-			return dijkstraRes.distance(target) - sourcePotential + potential[target];
-		}
-
-		@Override
-		public IPath getPath(int target) {
-			return dijkstraRes.getPath(target);
-		}
-
-		@Override
-		public String toString() {
-			return dijkstraRes.toString();
-		}
-
-		@Override
-		public int backtrackEdge(int target) {
-			return dijkstraRes.backtrackEdge(target);
-		}
-
-		@Override
-		public int sourceInt() {
-			return source;
-		}
-
-		@Override
-		public IntGraph graph() {
-			return dijkstraRes.graph();
-		}
+		return new ShortestPathSingleSourceUtils.IndexResult(g, source, distances, backtrack);
 	}
 
 	@Override
