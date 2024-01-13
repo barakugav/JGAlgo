@@ -15,7 +15,9 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
@@ -24,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -84,8 +87,10 @@ public class CoresAlgoTest extends TestBase {
 		});
 	}
 
-	private static <V, E> void testCoresAlgo(Graph<V, E> g, CoresAlgo algo, EdgeDirection degreeType) {
-		CoresAlgo.Result<V, E> res;
+	private static void testCoresAlgo(Graph<Integer, Integer> g, CoresAlgo algo, EdgeDirection degreeType) {
+		final Random rand = new Random(0x315e00fd43b5fda8L);
+
+		CoresAlgo.Result<Integer, Integer> res;
 		if (degreeType == EdgeDirection.All) {
 			res = algo.computeCores(g);
 		} else {
@@ -93,39 +98,39 @@ public class CoresAlgoTest extends TestBase {
 		}
 
 		final boolean directed = g.isDirected();
-		Object2IntMap<V> vertex2core = new Object2IntOpenHashMap<>();
+		Object2IntMap<Integer> vertex2core = new Object2IntOpenHashMap<>();
 		int maxCoreExpected = 0;
 		coreComputation: for (int k = 0;; k++) {
-			Set<V> vs = new ObjectOpenHashSet<>(g.vertices());
+			Set<Integer> vs = new ObjectOpenHashSet<>(g.vertices());
 			for (;;) {
 				if (vs.isEmpty()) {
 					maxCoreExpected = k - 1;
 					break coreComputation;
 				}
 				boolean improve = false;
-				for (Iterator<V> vit = vs.iterator(); vit.hasNext();) {
-					V u = vit.next();
+				for (Iterator<Integer> vit = vs.iterator(); vit.hasNext();) {
+					Integer u = vit.next();
 					int degree = 0;
 					if (!directed || degreeType == EdgeDirection.Out) {
-						for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						for (EdgeIter<Integer, Integer> eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							eit.next();
 							if (vs.contains(eit.target()))
 								degree++;
 						}
 					} else if (degreeType == EdgeDirection.In) {
-						for (EdgeIter<V, E> eit = g.inEdges(u).iterator(); eit.hasNext();) {
+						for (EdgeIter<Integer, Integer> eit = g.inEdges(u).iterator(); eit.hasNext();) {
 							eit.next();
 							if (vs.contains(eit.source()))
 								degree++;
 						}
 					} else {
 						assert degreeType == EdgeDirection.All;
-						for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						for (EdgeIter<Integer, Integer> eit = g.outEdges(u).iterator(); eit.hasNext();) {
 							eit.next();
 							if (vs.contains(eit.target()))
 								degree++;
 						}
-						for (EdgeIter<V, E> eit = g.inEdges(u).iterator(); eit.hasNext();) {
+						for (EdgeIter<Integer, Integer> eit = g.inEdges(u).iterator(); eit.hasNext();) {
 							eit.next();
 							if (vs.contains(eit.source()))
 								degree++;
@@ -139,31 +144,30 @@ public class CoresAlgoTest extends TestBase {
 				if (!improve)
 					break;
 			}
-			for (V v : vs)
+			for (Integer v : vs)
 				vertex2core.put(v, k);
 		}
 
 		assertEquals(maxCoreExpected, res.maxCore());
-		for (V v : g.vertices())
+		for (Integer v : g.vertices())
 			assertEquals(vertex2core.getInt(v), res.vertexCoreNum(v));
-		for (int k0 = 0; k0 <= maxCoreExpected; k0++) {
-			final int k = k0;
+		for (int k : range(maxCoreExpected + 1)) {
 			assertEquals(res.coreVertices(k).size(), res.coreVertices(k).stream().distinct().count());
 			assertEquals(res.coreShell(k).size(), res.coreShell(k).stream().distinct().count());
 			assertEquals(res.coreCrust(k).size(), res.coreCrust(k).stream().distinct().count());
-			Set<V> expectedCore = vertex2core
+			Set<Integer> expectedCore = vertex2core
 					.object2IntEntrySet()
 					.stream()
 					.filter(e -> e.getIntValue() >= k)
 					.map(e -> e.getKey())
 					.collect(Collectors.toSet());
-			Set<V> expectedShell = vertex2core
+			Set<Integer> expectedShell = vertex2core
 					.object2IntEntrySet()
 					.stream()
 					.filter(e -> e.getIntValue() == k)
 					.map(e -> e.getKey())
 					.collect(Collectors.toSet());
-			Set<V> expectedCrust = vertex2core
+			Set<Integer> expectedCrust = vertex2core
 					.object2IntEntrySet()
 					.stream()
 					.filter(e -> e.getIntValue() < k)
@@ -172,12 +176,22 @@ public class CoresAlgoTest extends TestBase {
 			assertEquals(expectedCore, res.coreVertices(k));
 			assertEquals(expectedShell, res.coreShell(k));
 			assertEquals(expectedCrust, res.coreCrust(k));
-			for (V v : g.vertices()) {
+			for (Integer v : g.vertices()) {
 				assertEqualsBool(expectedCore.contains(v), res.coreVertices(k).contains(v));
 				assertEqualsBool(expectedShell.contains(v), res.coreShell(k).contains(v));
 				assertEqualsBool(expectedCrust.contains(v), res.coreCrust(k).contains(v));
 			}
 		}
+
+		for (int repeat = 0; repeat < 25; repeat++)
+			assertThrows(NoSuchVertexException.class,
+					() -> res.vertexCoreNum(GraphsTestUtils.nonExistingVertex(g, rand)));
+		assertThrows(IndexOutOfBoundsException.class, () -> res.coreVertices(-1));
+		assertThrows(IndexOutOfBoundsException.class, () -> res.coreVertices(res.maxCore() + 1));
+		assertThrows(IndexOutOfBoundsException.class, () -> res.coreShell(-1));
+		assertThrows(IndexOutOfBoundsException.class, () -> res.coreShell(res.maxCore() + 1));
+		assertThrows(IndexOutOfBoundsException.class, () -> res.coreCrust(-1));
+		assertThrows(IndexOutOfBoundsException.class, () -> res.coreCrust(res.maxCore() + 1));
 	}
 
 }

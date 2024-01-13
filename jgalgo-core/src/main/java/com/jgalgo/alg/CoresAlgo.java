@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchVertexException;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -92,8 +93,9 @@ public interface CoresAlgo {
 		 * <p>
 		 * The core number of a vertex is the highest order of a core that contains this vertex.
 		 *
-		 * @param  v a vertex in the graph
-		 * @return   the core number of the vertex
+		 * @param  v                     a vertex in the graph
+		 * @return                       the core number of the vertex
+		 * @throws NoSuchVertexException if {@code v} is not a valid vertex identifier in the graph
 		 */
 		int vertexCoreNum(V v);
 
@@ -110,8 +112,9 @@ public interface CoresAlgo {
 		 * <p>
 		 * A vertex is in the core if its core number is at least the given core number.
 		 *
-		 * @param  k the core number (order)
-		 * @return   the vertices of the core
+		 * @param  k                         the core number (order)
+		 * @return                           the vertices of the core
+		 * @throws IndexOutOfBoundsException if {@code k} is not in range {@code [0, maxCore()]}
 		 */
 		Set<V> coreVertices(int k);
 
@@ -122,8 +125,9 @@ public interface CoresAlgo {
 		 * A vertex is in the shell of the core if its core number is exactly the given core number. Namely it is in the
 		 * k core but not in the (k+1) core.
 		 *
-		 * @param  core the core number (order)
-		 * @return      the vertices in the shell of the core
+		 * @param  core                      the core number (order)
+		 * @return                           the vertices in the shell of the core
+		 * @throws IndexOutOfBoundsException if {@code k} is not in range {@code [0, maxCore()]}
 		 */
 		Set<V> coreShell(int core);
 
@@ -134,8 +138,9 @@ public interface CoresAlgo {
 		 * A vertex is in the crust of the core if its core number is less than the given core. The crust is the
 		 * complement of the core vertices set.
 		 *
-		 * @param  core the core number (order)
-		 * @return      the vertices in the crust of the core
+		 * @param  core                      the core number (order)
+		 * @return                           the vertices in the crust of the core
+		 * @throws IndexOutOfBoundsException if {@code k} is not in range {@code [0, maxCore()]}
 		 */
 		Set<V> coreCrust(int core);
 	}
@@ -153,8 +158,9 @@ public interface CoresAlgo {
 		 * <p>
 		 * The core number of a vertex is the highest order of a core that contains this vertex.
 		 *
-		 * @param  v a vertex in the graph
-		 * @return   the core number of the vertex
+		 * @param  v                     a vertex in the graph
+		 * @return                       the core number of the vertex
+		 * @throws NoSuchVertexException if {@code v} is not a valid vertex identifier in the graph
 		 */
 		int vertexCoreNum(int v);
 

@@ -24,6 +24,7 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -48,6 +49,7 @@ class CoresAlgos {
 
 		@Override
 		public int vertexCoreNum(int v) {
+			Assertions.checkVertex(v, core.length);
 			return core[v];
 		}
 
