@@ -24,6 +24,7 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.NoSuchVertexException;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -110,11 +111,12 @@ public interface DfsIter<V, E> extends Iterator<V> {
 	/**
 	 * Create a DFS iterator.
 	 *
-	 * @param  <V>    the vertices type
-	 * @param  <E>    the edges type
-	 * @param  g      a graph
-	 * @param  source a vertex in the graph from which the search will start from
-	 * @return        a DFS iterator that iterate over the vertices of the graph
+	 * @param  <V>                   the vertices type
+	 * @param  <E>                   the edges type
+	 * @param  g                     a graph
+	 * @param  source                a vertex in the graph from which the search will start from
+	 * @return                       a DFS iterator that iterate over the vertices of the graph
+	 * @throws NoSuchVertexException if the source vertex is not in the graph
 	 */
 	@SuppressWarnings("unchecked")
 	static <V, E> DfsIter<V, E> newInstance(Graph<V, E> g, V source) {
@@ -131,9 +133,10 @@ public interface DfsIter<V, E> extends Iterator<V> {
 	/**
 	 * Create a DFS iterator for an int graph.
 	 *
-	 * @param  g      a graph
-	 * @param  source a vertex in the graph from which the search will start from
-	 * @return        a DFS iterator that iterate over the vertices of the graph
+	 * @param  g                     a graph
+	 * @param  source                a vertex in the graph from which the search will start from
+	 * @return                       a DFS iterator that iterate over the vertices of the graph
+	 * @throws NoSuchVertexException if the source vertex is not in the graph
 	 */
 	static DfsIter.Int newInstance(IntGraph g, int source) {
 		if (g instanceof IndexGraph)
@@ -162,12 +165,13 @@ public interface DfsIter<V, E> extends Iterator<V> {
 	 * <p>
 	 * If an {@link IntGraph} is passed as an argument, {@link IntGraph} is returned.
 	 *
-	 * @param  <V>    the vertices type
-	 * @param  <E>    the edges type
-	 * @param  g      a graph
-	 * @param  source a vertex in the graph from which the search will start from
-	 * @return        a tree graph that contains all the vertices and edges traversed by a depth first search rooted at
-	 *                the source vertex
+	 * @param  <V>                   the vertices type
+	 * @param  <E>                   the edges type
+	 * @param  g                     a graph
+	 * @param  source                a vertex in the graph from which the search will start from
+	 * @return                       a tree graph that contains all the vertices and edges traversed by a depth first
+	 *                               search rooted at the source vertex
+	 * @throws NoSuchVertexException if the source vertex is not in the graph
 	 */
 	public static <V, E> Graph<V, E> dfsTree(Graph<V, E> g, V source) {
 		return dfsTree(g, source, g.isDirected());
@@ -185,15 +189,16 @@ public interface DfsIter<V, E> extends Iterator<V> {
 	 * <p>
 	 * If an {@link IntGraph} is passed as an argument, {@link IntGraph} is returned.
 	 *
-	 * @param  <V>      the vertices type
-	 * @param  <E>      the edges type
-	 * @param  g        a graph
-	 * @param  source   a vertex in the graph from which the search will start from
-	 * @param  directed if {@code true} the returned tree will be directed. If the original graph was undirected and a
-	 *                      directed tree is created, the edges in the tree will be directed from the source towards the
-	 *                      other vertices
-	 * @return          a tree graph that contains all the vertices and edges traversed by a depth first search rooted
-	 *                  at the source vertex
+	 * @param  <V>                   the vertices type
+	 * @param  <E>                   the edges type
+	 * @param  g                     a graph
+	 * @param  source                a vertex in the graph from which the search will start from
+	 * @param  directed              if {@code true} the returned tree will be directed. If the original graph was
+	 *                                   undirected and a directed tree is created, the edges in the tree will be
+	 *                                   directed from the source towards the other vertices
+	 * @return                       a tree graph that contains all the vertices and edges traversed by a depth first
+	 *                               search rooted at the source vertex
+	 * @throws NoSuchVertexException if the source vertex is not in the graph
 	 */
 	public static <V, E> Graph<V, E> dfsTree(Graph<V, E> g, V source, boolean directed) {
 		if (g instanceof IndexGraph) {

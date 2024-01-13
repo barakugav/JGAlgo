@@ -18,6 +18,7 @@ package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
 import java.util.Random;
@@ -26,56 +27,63 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class DfsIterTest extends TestBase {
 
 	@Test
-	public void testDfsConnected() {
+	public void connectedRandGraph() {
 		final long seed = 0x77678e2ce068199cL;
 		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final Random rand = new Random(seedGen.nextSeed());
+
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 32).repeat(256);
 		tester.addPhase().withArgs(32, 64).repeat(128);
 		tester.addPhase().withArgs(2048, 8192).repeat(4);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = GraphsTestUtils.randConnectedGraph(n, m, false, seedGen.nextSeed());
-			testDfsConnected(g, seedGen.nextSeed());
+			g = maybeIndexGraph(g, rand);
+			connectedRandGraph(g, seedGen.nextSeed());
 		});
 	}
 
-	private static <V, E> void testDfsConnected(Graph<V, E> g, long seed) {
+	private static void connectedRandGraph(Graph<Integer, Integer> g, long seed) {
 		Random rand = new Random(seed);
-		V source = Graphs.randVertex(g, rand);
+		Integer source = Graphs.randVertex(g, rand);
 
-		Set<V> visited = new ObjectOpenHashSet<>();
-		for (DfsIter<V, E> it = DfsIter.newInstance(g, source); it.hasNext();) {
-			V v = it.next();
-			List<E> pathFromSource = it.edgePath();
-			E e = v.equals(source) ? null : pathFromSource.get(pathFromSource.size() - 1);
+		Set<Integer> visited = new ObjectOpenHashSet<>();
+		for (DfsIter<Integer, Integer> it = DfsIter.newInstance(g, source); it.hasNext();) {
+			Integer v = it.next();
+			List<Integer> pathFromSource = it.edgePath();
+			Integer e = v.equals(source) ? null : pathFromSource.get(pathFromSource.size() - 1);
 			assertFalse(visited.contains(v), "already visited vertex " + v);
 			if (!v.equals(source))
 				assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)).equals(v), "v is not an endpoint of inEdge");
 			visited.add(v);
 		}
 
-		for (V v : g.vertices())
+		for (Integer v : g.vertices())
 			assertTrue(visited.contains(v));
 
 		/* run DFS again without calling .hasNext() */
-		Set<V> visited2 = new ObjectOpenHashSet<>();
-		DfsIter<V, E> it = DfsIter.newInstance(g, source);
+		Set<Integer> visited2 = new ObjectOpenHashSet<>();
+		DfsIter<Integer, Integer> it = DfsIter.newInstance(g, source);
 		for (int s = visited.size(); s-- > 0;) {
-			V v = it.next();
-			List<E> pathFromSource = it.edgePath();
-			E e = v.equals(source) ? null : pathFromSource.get(pathFromSource.size() - 1);
+			Integer v = it.next();
+			List<Integer> pathFromSource = it.edgePath();
+			Integer e = v.equals(source) ? null : pathFromSource.get(pathFromSource.size() - 1);
 			assertFalse(visited2.contains(v), "already visited vertex " + v);
 			if (!v.equals(source))
 				assertTrue(g.edgeEndpoint(e, g.edgeEndpoint(e, v)).equals(v), "v is not an endpoint of inEdge");
 			visited2.add(v);
 		}
 		assert !it.hasNext();
+
+		assertThrows(NoSuchVertexException.class,
+				() -> DfsIter.newInstance(g, GraphsTestUtils.nonExistingVertex(g, rand)));
 	}
 
 	@Test
@@ -106,6 +114,9 @@ public class DfsIterTest extends TestBase {
 				assertEquals(Path.reachableVertices(g, source), tree.vertices());
 				assertEqualsBool(directed, tree.isDirected());
 			});
+
+			assertThrows(NoSuchVertexException.class,
+					() -> DfsIter.dfsTree(g, GraphsTestUtils.nonExistingVertex(g, rand)));
 		});
 	}
 

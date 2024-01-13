@@ -50,7 +50,9 @@ class DfsIterImpl implements DfsIter.Int {
 	 * @param source a vertex in the graph from which the search will start from
 	 */
 	public DfsIterImpl(IndexGraph g, int source) {
-		int n = g.vertices().size();
+		final int n = g.vertices().size();
+		Assertions.checkVertex(source, n);
+
 		this.g = g;
 		visited = new Bitmap(n);
 		edgeIters = new ObjectArrayList<>();
