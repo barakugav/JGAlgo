@@ -36,11 +36,10 @@ import com.jgalgo.graph.IdBuilderInt;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctionInt;
+import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class SteinerTreeMehlhornTest extends TestBase {
 
@@ -133,25 +132,14 @@ public class SteinerTreeMehlhornTest extends TestBase {
 
 		final int m = g.edges().size();
 		if (m <= 16) { /* check all trees */
-			Set<E> bestTree = null;
-			List<E> edges = new ObjectArrayList<>(g.edges());
-			Set<E> tree = new ObjectOpenHashSet<>(m);
-			ToDoubleFunction<Set<E>> treeWeight = t -> WeightFunction.weightSum(w, t);
-			treeLoop: for (int bitmap = 0; bitmap < 1 << m; bitmap++) {
-				tree.clear();
-				assert tree.isEmpty();
-				for (int i : range(m))
-					if ((bitmap & (1 << i)) != 0)
-						tree.add(edges.get(i));
-				Graph<V, E> treeGraph = g.subGraphCopy(null, tree);
-				if (!Trees.isTree(treeGraph))
-					continue treeLoop; /* not a tree */
-				if (!treeGraph.vertices().containsAll(terminals))
-					continue treeLoop; /* doesn't cover all terminals */
-				if (bestTree == null || treeWeight.applyAsDouble(bestTree) > treeWeight.applyAsDouble(tree))
-					bestTree = new ObjectOpenHashSet<>(tree);
-			}
-
+			ToDoubleFunction<Collection<E>> treeWeight = t -> WeightFunction.weightSum(w, t);
+			List<E> bestTree = SubSets
+					.stream(g.edges())
+					.filter(edges -> Trees.isTree(g.subGraphCopy(null, edges)))
+					/* copy edges, SubSets stream returns view of the same set */
+					.map(edges -> new ArrayList<>(edges))
+					.min((t1, t2) -> Double.compare(treeWeight.applyAsDouble(t1), treeWeight.applyAsDouble(t2)))
+					.get();
 			assertNotNull(bestTree);
 			assertTrue(treeWeight.applyAsDouble(bestTree) / appxFactor <= WeightFunction
 					.weightSum(w, steinerEdges.edges()));

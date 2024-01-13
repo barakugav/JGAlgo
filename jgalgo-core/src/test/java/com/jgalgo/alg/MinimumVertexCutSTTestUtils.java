@@ -15,18 +15,20 @@
  */
 package com.jgalgo.alg;
 
-import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.ToDoubleFunction;
+import java.util.stream.Stream;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -86,21 +88,27 @@ class MinimumVertexCutSTTestUtils extends TestUtils {
 			vertices.remove(source);
 			vertices.remove(sink);
 
-			Set<V> remainingVertices = new ObjectOpenHashSet<>(n);
-			for (int bitmap = 0; bitmap < 1 << (n - 2); bitmap++) {
-				remainingVertices.clear();
-				remainingVertices.add(source);
-				remainingVertices.add(sink);
-				for (int i : range(n - 2))
-					if ((bitmap & (1 << i)) != 0)
-						remainingVertices.add(vertices.get(i));
-				if (Path.findPath(g.subGraphCopy(remainingVertices, null), source, sink) != null)
-					continue; // not a cut
-				double cutWeight =
-						g.vertices().stream().filter(v -> !remainingVertices.contains(v)).mapToDouble(w::weight).sum();
-				final double eps = 1e-4;
-				assertTrue(minCutWeight <= cutWeight + eps, "failed to find minimum cut: " + remainingVertices);
-			}
+			Stream<Set<V>> allCuts = SubSets.stream(vertices).map(vs0 -> {
+				Set<V> vs = new ObjectOpenHashSet<>(vs0);
+				vs.add(source);
+				vs.add(sink);
+				return vs;
+			}).filter(vs -> Path.findPath(g.subGraphCopy(vs, null), source, sink) == null);
+
+			final WeightFunction<V> w0 = w;
+			ToDoubleFunction<Set<V>> cutWeight = remainingVertices -> g
+					.vertices()
+					.stream()
+					.filter(v -> !remainingVertices.contains(v))
+					.mapToDouble(w0::weight)
+					.sum();
+			Set<V> bestCut = allCuts
+					.min((vs1, vs2) -> Double.compare(cutWeight.applyAsDouble(vs1), cutWeight.applyAsDouble(vs2)))
+					.get();
+
+			double bestCutWeight = cutWeight.applyAsDouble(bestCut);
+			final double eps = 1e-4;
+			assertTrue(minCutWeight <= bestCutWeight + eps);
 
 			// } else {
 			// MinimumEdgeCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()

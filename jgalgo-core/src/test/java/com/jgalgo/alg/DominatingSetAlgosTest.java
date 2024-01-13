@@ -121,25 +121,6 @@ public class DominatingSetAlgosTest extends TestBase {
 		}
 		assertEquals(g.vertices(), dominated);
 		assertTrue(DominatingSetAlgo.isDominatingSet(g, minDominatingSet, dominanceDirection));
-
-		// final int n = g.vertices().size();
-		// if (n <= 16) {
-		// /* check all dominating set */
-		// List<V> vertices = new ArrayList<>(g.vertices());
-		//
-		// Set<V> dominatingSet = new ObjectOpenHashSet<>(n);
-		// for (int bitmap = 0; bitmap < 1 << n; bitmap++) {
-		// dominatingSet.clear();
-		// for (int i : range(n))
-		// if ((bitmap & (1 << i)) != 0)
-		// dominatingSet.add(vertices.get(i));
-		// if (!DominatingSetAlgo.isDominatingSet(g, dominatingSet, dominanceDirection))
-		// continue; /* not a dominating set */
-		// double setWeight = WeightFunction.weightSum(w, dominatingSet);
-		// final double eps = 1e-4;
-		// assertTrue(minSetWeight <= setWeight + eps, "failed to find dominating set: " + dominatingSet);
-		// }
-		// }
 	}
 
 }

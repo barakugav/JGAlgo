@@ -16,19 +16,19 @@
 package com.jgalgo.alg;
 
 import static com.jgalgo.internal.util.Range.range;
+import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class KVertexConnectedComponentsWhiteMoodyTest extends TestBase {
 
@@ -77,15 +77,15 @@ public class KVertexConnectedComponentsWhiteMoodyTest extends TestBase {
 
 		int N = result.componentsNum();
 		if (N <= 10 && g.vertices().size() <= 64) {
-			for (int bitmap = 0; bitmap < 1 << N; bitmap++) {
-				if (Integer.bitCount(bitmap) < 2)
-					continue;
-				Set<V> comp = new ObjectOpenHashSet<>();
-				for (int i : range(N))
-					if ((bitmap & (1 << i)) != 0)
-						comp.addAll(result.componentVertices(i));
-				assertFalse(vertexConnectivity(g.subGraphCopy(comp, null)) >= k);
-			}
+			SubSets
+					.stream(range(N))
+					.filter(comps -> comps.size() >= 2)
+					.map(comps -> comps
+							.intStream()
+							.boxed()
+							.flatMap(c -> result.componentVertices(c).stream())
+							.collect(toSet()))
+					.forEach(comp -> assertFalse(vertexConnectivity(g.subGraphCopy(comp, null)) >= k));
 		}
 	}
 

@@ -15,12 +15,11 @@
  */
 package com.jgalgo.alg;
 
-import static com.jgalgo.internal.util.Range.range;
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -29,9 +28,9 @@ import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class ClosuresEnumeratorSchrageBakerTest extends TestBase {
@@ -84,22 +83,12 @@ public class ClosuresEnumeratorSchrageBakerTest extends TestBase {
 	}
 
 	private static <V, E> List<Set<V>> findAllClosures(Graph<V, E> g) {
-		final int n = g.vertices().size();
-		List<V> vertices = new ObjectArrayList<>(g.vertices());
-
-		List<Set<V>> closures = new ArrayList<>();
-		Set<V> closure = new ObjectOpenHashSet<>(n);
-		subsetLoop: for (int bitmap = 1; bitmap < 1 << n; bitmap++) {
-			closure.clear();
-			for (int i : range(n))
-				if ((bitmap & (1 << i)) != 0)
-					closure.add(vertices.get(i));
-			for (V w : Path.reachableVertices(g, closure.iterator()))
-				if (!closure.contains(w))
-					continue subsetLoop;
-			closures.add(new ObjectOpenHashSet<>(closure));
-		}
-		return closures;
+		return SubSets
+				.stream(g.vertices())
+				.filter(c -> !c.isEmpty())
+				.map(ObjectOpenHashSet::new)
+				.filter(c -> Path.reachableVertices(g, c.iterator()).stream().allMatch(c::contains))
+				.collect(toList());
 	}
 
 	@Test

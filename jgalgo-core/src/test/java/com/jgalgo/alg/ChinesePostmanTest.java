@@ -15,12 +15,9 @@
  */
 package com.jgalgo.alg;
 
-import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
@@ -28,6 +25,7 @@ import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -75,38 +73,37 @@ public class ChinesePostmanTest extends TestBase {
 		if (m >= 32)
 			return;
 
-		double bestWeight = Double.POSITIVE_INFINITY;
-		List<E> es = new ArrayList<>(g.edges());
-		for (int bitmap = 0; bitmap < 1 << m; bitmap++) {
+		Stream<Graph<V, Integer>> graphs = SubSets.stream(g.edges()).map(duplicateEdges -> {
 			GraphBuilder<V, Integer> b = GraphBuilder.undirected();
 			b.addVertices(g.vertices());
 			WeightsInt<Integer> bWeights = b.addEdgesWeights("weights", int.class);
-			for (E e : es) {
+			for (E e : g.edges()) {
 				Integer newEdge = Integer.valueOf(b.edges().size());
 				b.addEdge(g.edgeSource(e), g.edgeTarget(e), newEdge);
 				bWeights.set(newEdge, w.weightInt(e));
 			}
 
-			for (int i : range(m)) {
-				if ((bitmap & (1 << i)) == 0)
-					continue;
-				E origEdge = es.get(i);
+			for (E origEdge : duplicateEdges) {
 				V u = g.edgeSource(origEdge);
 				V v = g.edgeTarget(origEdge);
 				Integer duplicatedEdge = Integer.valueOf(b.edges().size());
 				b.addEdge(v, u, duplicatedEdge);
-				bWeights.set(duplicatedEdge, bWeights.weightInt(Integer.valueOf(i)));
+				bWeights.set(duplicatedEdge, w.weightInt(origEdge));
 			}
-			Graph<V, Integer> eulerianGraph = b.build();
-			if (eulerianGraph.vertices().stream().anyMatch(v -> nonSelfEdgesDegree(eulerianGraph, v) % 2 != 0))
-				continue;
-
-			Path<V, Integer> eulerianTour = EulerianTourAlgo.newInstance().computeEulerianTour(eulerianGraph);
-			double eulerianTourWeight = bWeights.weightSum(eulerianTour.edges());
-			if (bestWeight > eulerianTourWeight)
-				bestWeight = eulerianTourWeight;
-			assertTrue(eulerianTourWeight >= chinesePostmanTourWeight - 1e-6);
-		}
+			return b.build();
+		});
+		double bestWeight = graphs
+				.filter(eulerianGraph -> eulerianGraph
+						.vertices()
+						.stream()
+						.allMatch(v -> nonSelfEdgesDegree(eulerianGraph, v) % 2 == 0))
+				.mapToDouble(eulerianGraph -> {
+					Path<V, Integer> eulerianTour = EulerianTourAlgo.newInstance().computeEulerianTour(eulerianGraph);
+					WeightsInt<Integer> bWeights = eulerianGraph.getEdgesWeights("weights");
+					return bWeights.weightSum(eulerianTour.edges());
+				})
+				.min()
+				.orElse(Double.POSITIVE_INFINITY);
 
 		assertEquals(bestWeight, chinesePostmanTourWeight, 1e-6);
 	}

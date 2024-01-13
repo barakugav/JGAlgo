@@ -15,7 +15,7 @@
  */
 package com.jgalgo.alg;
 
-import static com.jgalgo.internal.util.Range.range;
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import java.util.ArrayList;
@@ -30,9 +30,9 @@ import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.Pair;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -121,26 +121,21 @@ public class MinimumVertexCutAllSTEdgeCutTest extends TestBase {
 		if (w == null)
 			w = WeightFunction.cardinalityWeightFunction();
 
-		final int n = g.vertices().size();
 		List<V> vertices = new ArrayList<>(g.vertices());
 		vertices.remove(source);
 		vertices.remove(sink);
 
-		Set<V> remainingVertices = new ObjectOpenHashSet<>(n);
-		List<ObjectDoublePair<Set<V>>> cuts = new ObjectArrayList<>();
-		for (int bitmap = 0; bitmap < 1 << (n - 2); bitmap++) {
-			remainingVertices.clear();
-			remainingVertices.add(source);
-			remainingVertices.add(sink);
-			for (int i : range(n - 2))
-				if ((bitmap & (1 << i)) != 0)
-					remainingVertices.add(vertices.get(i));
-			if (Path.findPath(g.subGraphCopy(remainingVertices, null), source, sink) != null)
-				continue; // not a cut
+		final WeightFunction<V> w0 = w;
+		List<ObjectDoublePair<Set<V>>> cuts = SubSets.stream(vertices).map(vs0 -> {
+			Set<V> vs = new ObjectOpenHashSet<>(vs0);
+			vs.add(source);
+			vs.add(sink);
+			return vs;
+		}).filter(vs -> Path.findPath(g.subGraphCopy(vs, null), source, sink) == null).map(remainingVertices -> {
 			Set<V> cut = g.vertices().stream().filter(v -> !remainingVertices.contains(v)).collect(Collectors.toSet());
-			double cutWeight = WeightFunction.weightSum(w, cut);
-			cuts.add(ObjectDoublePair.of(cut, cutWeight));
-		}
+			return ObjectDoublePair.of(cut, WeightFunction.weightSum(w0, cut));
+		}).collect(toList());
+
 		if (cuts.isEmpty())
 			return List.of();
 		cuts.sort((p1, p2) -> Double.compare(p1.secondDouble(), p2.secondDouble()));

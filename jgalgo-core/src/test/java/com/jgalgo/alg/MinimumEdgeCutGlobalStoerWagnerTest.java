@@ -16,13 +16,13 @@
 
 package com.jgalgo.alg;
 
-import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.ToDoubleFunction;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
@@ -30,6 +30,7 @@ import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -90,26 +91,27 @@ class MinimumEdgeCutGlobalStoerWagnerTest extends TestBase {
 			if (w == null)
 				w = WeightFunction.cardinalityWeightFunction();
 
-			Set<V> cut = new ObjectOpenHashSet<>(n);
-			for (int bitmap = 0; bitmap < 1 << (n - 1); bitmap++) {
-				cut.add(firstVertex);
-				for (int i : range(n - 1))
-					if ((bitmap & (1 << i)) != 0)
-						cut.add(vertices.get(i));
-				if (cut.size() != n) {
-					double cutWeight = 0;
-					for (V u : cut) {
-						for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
-							E e = eit.next();
-							V v = eit.target();
-							if (!cut.contains(v))
-								cutWeight += w.weight(e);
-						}
+			final WeightFunction<E> w0 = w;
+			ToDoubleFunction<Set<V>> cutWeight = cut -> {
+				double weight = 0;
+				for (V u : cut) {
+					for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
+						E e = eit.next();
+						V v = eit.target();
+						if (!cut.contains(v))
+							weight += w0.weight(e);
 					}
-					assertTrue(minCutWeight <= cutWeight, "failed to find minimum cut: " + cut);
 				}
-				cut.clear();
-			}
+				return weight;
+			};
+			Set<V> bestCut = SubSets.stream(vertices).filter(vs -> vs.size() < n - 1).map(vs -> {
+				Set<V> cut = new ObjectOpenHashSet<>(vs);
+				cut.add(firstVertex);
+				return cut;
+			}).min((cut1, cut2) -> Double.compare(cutWeight.applyAsDouble(cut1), cutWeight.applyAsDouble(cut2))).get();
+
+			double bestCutWeight = cutWeight.applyAsDouble(bestCut);
+			assertTrue(minCutWeight <= bestCutWeight, "failed to find minimum cut: " + bestCut);
 
 		} else {
 			MinimumEdgeCutGlobal validationAlgo =

@@ -16,7 +16,6 @@
 
 package com.jgalgo.alg;
 
-import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
@@ -24,12 +23,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.ToDoubleFunction;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -138,25 +139,27 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 			vertices.remove(source);
 			vertices.remove(sink);
 
-			Set<V> cut = new ObjectOpenHashSet<>(n);
-			for (int bitmap = 0; bitmap < 1 << (n - 2); bitmap++) {
-				cut.add(source);
-				for (int i : range(n - 2))
-					if ((bitmap & (1 << i)) != 0)
-						cut.add(vertices.get(i));
-				double cutWeight = 0;
+			ToDoubleFunction<Set<V>> cutWeight = cut -> {
+				double weight = 0;
 				for (V u : cut) {
 					for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						E e = eit.next();
 						V v = eit.target();
 						if (!cut.contains(v))
-							cutWeight += w.weight(e);
+							weight += w.weight(e);
 					}
 				}
-				final double eps = 1e-4;
-				assertTrue(minCutWeight <= cutWeight + eps, "failed to find minimum cut: " + cut);
-				cut.clear();
-			}
+				return weight;
+			};
+			Set<V> bestCut = SubSets.stream(vertices).map(vs -> {
+				Set<V> cut = new ObjectOpenHashSet<>(vs);
+				cut.add(source);
+				return cut;
+			}).min((c1, c2) -> Double.compare(cutWeight.applyAsDouble(c1), cutWeight.applyAsDouble(c2))).get();
+
+			double bestCutWeight = cutWeight.applyAsDouble(bestCut);
+			final double eps = 1e-4;
+			assertTrue(minCutWeight <= bestCutWeight + eps, "failed to find minimum cut: " + bestCut);
 
 		} else {
 			MinimumEdgeCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()
@@ -186,25 +189,27 @@ class MinimumEdgeCutSTTestUtils extends TestUtils {
 			vertices.removeAll(sources);
 			vertices.removeAll(sinks);
 
-			Set<V> cut = new ObjectOpenHashSet<>(n);
-			for (int bitmap = 0; bitmap < 1 << (n - terminalsNum); bitmap++) {
-				cut.addAll(sources);
-				for (int i : range(n - terminalsNum))
-					if ((bitmap & (1 << i)) != 0)
-						cut.add(vertices.get(i));
-				double cutWeight = 0;
+			ToDoubleFunction<Set<V>> cutWeight = cut -> {
+				double weight = 0;
 				for (V u : cut) {
 					for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
 						E e = eit.next();
 						V v = eit.target();
 						if (!cut.contains(v))
-							cutWeight += w.weight(e);
+							weight += w.weight(e);
 					}
 				}
-				final double eps = 1e-4;
-				assertTrue(minCutWeight <= cutWeight + eps, "failed to find minimum cut: " + cut);
-				cut.clear();
-			}
+				return weight;
+			};
+			Set<V> bestCut = SubSets.stream(vertices).map(vs -> {
+				Set<V> cut = new ObjectOpenHashSet<>(vs);
+				cut.addAll(sources);
+				return cut;
+			}).min((c1, c2) -> Double.compare(cutWeight.applyAsDouble(c1), cutWeight.applyAsDouble(c2))).get();
+
+			double bestCutWeight = cutWeight.applyAsDouble(bestCut);
+			final double eps = 1e-4;
+			assertTrue(minCutWeight <= bestCutWeight + eps, "failed to find minimum cut: " + bestCut);
 
 		} else {
 			MinimumEdgeCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()

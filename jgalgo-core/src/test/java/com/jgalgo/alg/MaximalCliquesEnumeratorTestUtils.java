@@ -16,6 +16,7 @@
 package com.jgalgo.alg;
 
 import static com.jgalgo.internal.util.Range.range;
+import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestUtils;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
@@ -62,22 +64,13 @@ class MaximalCliquesEnumeratorTestUtils extends TestUtils {
 
 		if (n <= 24) {
 			/* test all possible sub sets of vertices */
-			Set<Set<V>> cliquesExpected = new HashSet<>();
-			List<V> vertices = new ArrayList<>(g.vertices());
-			for (int bitmap = 1; bitmap < (1 << n); bitmap++) {
-				List<V> tempClique = new ArrayList<>();
-				for (int vIdx : range(n))
-					if ((bitmap & (1 << vIdx)) != 0)
-						tempClique.add(vertices.get(vIdx));
+			Set<Set<V>> cliquesExpected = SubSets
+					.stream(g.vertices())
+					.filter(clique -> isClique(clique, edges) && isMaximalClique(g, clique, edges))
+					.map(ObjectOpenHashSet::new)
+					.collect(toSet());
 
-				if (isClique(tempClique, edges) && isMaximalClique(g, tempClique, edges))
-					cliquesExpected.add(new ObjectOpenHashSet<>(tempClique));
-			}
-
-			Set<Set<V>> cliquesActual = new HashSet<>();
-			for (Collection<V> clique : cliques)
-				cliquesActual.add(new ObjectOpenHashSet<>(clique));
-
+			Set<Set<V>> cliquesActual = cliques.stream().map(ObjectOpenHashSet::new).collect(toSet());
 			assertEquals(cliquesExpected, cliquesActual);
 		}
 	}

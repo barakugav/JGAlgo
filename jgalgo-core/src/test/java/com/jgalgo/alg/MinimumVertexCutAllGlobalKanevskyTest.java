@@ -15,9 +15,8 @@
  */
 package com.jgalgo.alg;
 
-import static com.jgalgo.internal.util.Range.range;
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
@@ -29,8 +28,8 @@ import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestBase;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
@@ -98,21 +97,14 @@ public class MinimumVertexCutAllGlobalKanevskyTest extends TestBase {
 		if (w == null)
 			w = WeightFunction.cardinalityWeightFunction();
 
-		final int n = g.vertices().size();
-		List<V> vertices = new ArrayList<>(g.vertices());
+		final WeightFunction<V> w0 = w;
+		List<ObjectDoublePair<Set<V>>> cuts = SubSets
+				.stream(g.vertices())
+				.filter(cut -> MinimumVertexCutGlobal.isCut(g, cut))
+				.<Set<V>>map(ObjectOpenHashSet::new)
+				.map(cut -> ObjectDoublePair.of(cut, WeightFunction.weightSum(w0, cut)))
+				.collect(toList());
 
-		Set<V> cut = new ObjectOpenHashSet<>(n);
-		List<ObjectDoublePair<Set<V>>> cuts = new ObjectArrayList<>();
-		for (int bitmap = 0; bitmap < 1 << n; bitmap++) {
-			cut.clear();
-			for (int i : range(n))
-				if ((bitmap & (1 << i)) != 0)
-					cut.add(vertices.get(i));
-			if (!MinimumVertexCutGlobal.isCut(g, cut))
-				continue;
-			double cutWeight = WeightFunction.weightSum(w, cut);
-			cuts.add(ObjectDoublePair.of(new ObjectOpenHashSet<>(cut), cutWeight));
-		}
 		if (cuts.isEmpty())
 			return List.of();
 		cuts.sort((p1, p2) -> Double.compare(p1.secondDouble(), p2.secondDouble()));

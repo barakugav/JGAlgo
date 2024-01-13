@@ -18,10 +18,10 @@ package com.jgalgo.alg;
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.ToDoubleFunction;
+import java.util.stream.Stream;
 import com.jgalgo.gen.CompleteGraphGenerator;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
@@ -31,7 +31,9 @@ import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightsDouble;
 import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestUtils;
+import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class MinimumVertexCutGlobalTestUtils extends TestUtils {
@@ -119,25 +121,29 @@ class MinimumVertexCutGlobalTestUtils extends TestUtils {
 		WeaklyConnectedComponentsAlgo wcc = WeaklyConnectedComponentsAlgo.newInstance();
 
 		final int n = g.vertices().size();
-		if (n <= 16) {
-			/* check all cuts */
-			List<V> vertices = new ArrayList<>(g.vertices());
+		if (n <= 16) { /* check all cuts */
+			Stream<Set<V>> allCuts = SubSets
+					.stream(g.vertices())
+					// trivial cut
+					.filter(remainingVertices -> !IntList.of(0, n).contains(remainingVertices.size()))
+					// not a cut
+					.filter(remainingVertices -> !wcc.isWeaklyConnected(g.subGraphCopy(remainingVertices, null)))
+					.map(ObjectOpenHashSet::new);
 
-			Set<V> remainingVertices = new ObjectOpenHashSet<>(n);
-			for (int bitmap = 0; bitmap < 1 << n; bitmap++) {
-				if (bitmap == 0 || bitmap == (1 << n) - 1)
-					continue; // trivial cut
-				remainingVertices.clear();
-				for (int i : range(n))
-					if ((bitmap & (1 << i)) != 0)
-						remainingVertices.add(vertices.get(i));
-				if (wcc.isWeaklyConnected(g.subGraphCopy(remainingVertices, null)))
-					continue; // not a cut
-				double cutWeight =
-						g.vertices().stream().filter(v -> !remainingVertices.contains(v)).mapToDouble(w::weight).sum();
-				final double eps = 1e-4;
-				assertTrue(minCutWeight <= cutWeight + eps, "failed to find minimum cut: " + remainingVertices);
-			}
+			final WeightFunction<V> w0 = w;
+			ToDoubleFunction<Set<V>> cutWeight = remainingVertices -> g
+					.vertices()
+					.stream()
+					.filter(v -> !remainingVertices.contains(v))
+					.mapToDouble(w0::weight)
+					.sum();
+			Set<V> bestCut = allCuts
+					.min((c1, c2) -> Double.compare(cutWeight.applyAsDouble(c1), cutWeight.applyAsDouble(c2)))
+					.get();
+
+			double bestCutWeight = cutWeight.applyAsDouble(bestCut);
+			final double eps = 1e-4;
+			assertTrue(minCutWeight <= bestCutWeight + eps);
 
 			// } else {
 			// MinimumEdgeCutST validationAlgo = alg instanceof MaximumFlowPushRelabel ? new MaximumFlowEdmondsKarp()

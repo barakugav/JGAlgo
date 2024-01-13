@@ -15,15 +15,15 @@
  */
 package com.jgalgo.alg;
 
-import static com.jgalgo.internal.util.Range.range;
+import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.ToDoubleFunction;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
@@ -31,6 +31,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightsInt;
+import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectDoublePair;
@@ -90,32 +91,30 @@ public class MinimumEdgeCutAllSTPicardQueyranneTest extends TestBase {
 	}
 
 	private static <V, E> List<Set<V>> findAllMinimumStCuts(Graph<V, E> g, WeightFunction<E> w, V source, V sink) {
-		final int n = g.vertices().size();
 		List<V> vertices = new ArrayList<>(g.vertices());
 		vertices.remove(source);
 		vertices.remove(sink);
 
-		List<ObjectDoublePair<Set<V>>> cuts = new ArrayList<>();
-		Set<V> cut = new ObjectOpenHashSet<>(n);
-		for (int bitmap = 0; bitmap < 1 << (n - 2); bitmap++) {
-			cut.add(source);
-			for (int i : range(n - 2))
-				if ((bitmap & (1 << i)) != 0)
-					cut.add(vertices.get(i));
-			double cutWeight = 0;
+		ToDoubleFunction<Set<V>> cutWeight = cut -> {
+			double weight = 0;
 			for (V u : cut) {
 				for (EdgeIter<V, E> eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					E e = eit.next();
 					V v = eit.target();
 					if (!cut.contains(v))
-						cutWeight += w.weight(e);
+						weight += w.weight(e);
 				}
 			}
-			cuts.add(ObjectDoublePair.of(new HashSet<>(cut), cutWeight));
-			cut.clear();
-		}
-		if (cuts.isEmpty())
-			return Collections.emptyList();
+			return weight;
+		};
+		List<ObjectDoublePair<Set<V>>> cuts = SubSets.stream(vertices).map(vs -> {
+			Set<V> cut = new ObjectOpenHashSet<>(vs);
+			cut.add(source);
+			return ObjectDoublePair.of(cut, cutWeight.applyAsDouble(cut));
+		}).collect(toList());
+		Set<V> naiveSet = Set.of(source);
+		cuts.add(ObjectDoublePair.of(naiveSet, cutWeight.applyAsDouble(naiveSet)));
+
 		cuts.sort((p1, p2) -> Double.compare(p1.secondDouble(), p2.secondDouble()));
 		double minCutWeight = cuts.get(0).rightDouble();
 		final double eps = 1e-4;

@@ -15,14 +15,11 @@
  */
 package com.jgalgo.alg;
 
-import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.ToDoubleFunction;
@@ -34,6 +31,7 @@ import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunctionInt;
 import com.jgalgo.graph.WeightsInt;
 import com.jgalgo.internal.util.RandomIntUnique;
+import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
@@ -78,25 +76,17 @@ public class VertexCoverBarYehudaTest extends TestBase {
 		assertTrue(VertexCover.isCover(g, vc));
 
 		final int n = g.vertices().size();
-		if (n < 16) {
-
-			/* check all covers */
-			Set<V> bestCover = null;
-			List<V> vertices = new ArrayList<>(g.vertices());
-			Set<V> cover = new ObjectOpenHashSet<>(n);
+		if (n < 16) { /* check all covers */
 			ToDoubleFunction<Set<V>> coverWeight = c -> w.weightSum(c);
-			coverLoop: for (int bitmap = 0; bitmap < 1 << n; bitmap++) {
-				cover.clear();
-				assert cover.isEmpty();
-				for (int i : range(n))
-					if ((bitmap & (1 << i)) != 0)
-						cover.add(vertices.get(i));
-				for (E e : g.edges())
-					if (!cover.contains(g.edgeSource(e)) && !cover.contains(g.edgeTarget(e)))
-						continue coverLoop; /* don't cover all edges */
-				if (bestCover == null || coverWeight.applyAsDouble(bestCover) > coverWeight.applyAsDouble(cover))
-					bestCover = new ObjectOpenHashSet<>(cover);
-			}
+			Set<V> bestCover = SubSets
+					.stream(g.vertices())
+					.map(ObjectOpenHashSet::new)
+					.filter(cover -> g
+							.edges()
+							.stream()
+							.allMatch(e -> cover.contains(g.edgeSource(e)) || cover.contains(g.edgeTarget(e))))
+					.min((c1, c2) -> Double.compare(coverWeight.applyAsDouble(c1), coverWeight.applyAsDouble(c2)))
+					.get();
 
 			assertNotNull(bestCover);
 			assertTrue(w.weightSum(vc) / appxFactor <= coverWeight.applyAsDouble(bestCover));

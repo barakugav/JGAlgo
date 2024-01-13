@@ -15,16 +15,13 @@
  */
 package com.jgalgo.alg;
 
-import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.function.ToDoubleFunction;
+import java.util.function.BiPredicate;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.Graphs;
@@ -32,10 +29,10 @@ import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.NoSuchEdgeException;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.SubSets;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class EdgeCoverTestUtils extends TestBase {
@@ -85,29 +82,21 @@ class EdgeCoverTestUtils extends TestBase {
 		assertTrue(EdgeCover.isCover(g, ec));
 
 		final int m = g.edges().size();
-		if (m <= 16) {
-
-			/* check all covers */
-			Set<E> bestCover = null;
-			List<E> edges = new ObjectArrayList<>(g.edges());
-			Set<E> cover = new ObjectOpenHashSet<>(m);
-			ToDoubleFunction<Set<E>> coverWeight = c -> WeightFunction.weightSum(w, c);
-			coverLoop: for (int bitmap = 0; bitmap < 1 << m; bitmap++) {
-				cover.clear();
-				assert cover.isEmpty();
-				for (int i : range(m))
-					if ((bitmap & (1 << i)) != 0)
-						cover.add(edges.get(i));
-				for (V v : g.vertices())
-					if (!g.outEdges(v).stream().anyMatch(cover::contains)
-							&& (!g.isDirected() || !g.inEdges(v).stream().anyMatch(cover::contains)))
-						continue coverLoop; /* don't cover all vertices */
-				if (bestCover == null || coverWeight.applyAsDouble(bestCover) > coverWeight.applyAsDouble(cover))
-					bestCover = new ObjectOpenHashSet<>(cover);
+		if (m <= 16) { /* check all covers */
+			BiPredicate<Set<E>, V> isCovered;
+			if (g.isDirected()) {
+				isCovered = (cover, v) -> g.outEdges(v).stream().anyMatch(cover::contains)
+						|| g.inEdges(v).stream().anyMatch(cover::contains);
+			} else {
+				isCovered = (cover, v) -> g.outEdges(v).stream().anyMatch(cover::contains);
 			}
-
-			assertNotNull(bestCover);
-			assertEquals(coverWeight.applyAsDouble(bestCover), WeightFunction.weightSum(w, ec));
+			Set<E> bestCover = SubSets
+					.stream(g.edges())
+					.map(ObjectOpenHashSet::new)
+					.filter(cover -> g.vertices().stream().allMatch(v -> isCovered.test(cover, v)))
+					.min((c1, c2) -> Double.compare(WeightFunction.weightSum(w, c1), WeightFunction.weightSum(w, c2)))
+					.get();
+			assertEquals(WeightFunction.weightSum(w, bestCover), WeightFunction.weightSum(w, ec));
 		}
 	}
 
