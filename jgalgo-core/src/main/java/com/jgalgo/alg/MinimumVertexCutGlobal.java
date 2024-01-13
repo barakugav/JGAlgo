@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Collection;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
@@ -23,10 +24,12 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -108,19 +111,20 @@ public interface MinimumVertexCutGlobal {
 	 * @throws IllegalArgumentException if {@code cut} contains duplicate vertices
 	 */
 	@SuppressWarnings("unchecked")
-	static <V, E> boolean isCut(Graph<V, E> g, Set<V> cut) {
+	static <V, E> boolean isCut(Graph<V, E> g, Collection<V> cut) {
 		IndexGraph ig;
-		IntSet iCut;
+		IntCollection iCut;
 		if (g instanceof IndexGraph) {
 			ig = (IndexGraph) g;
-			iCut = IntAdapters.asIntSet((Set<Integer>) cut);
+			iCut = IntAdapters.asIntCollection((Collection<Integer>) cut);
 		} else {
 			ig = g.indexGraph();
-			iCut = IndexIdMaps.idToIndexSet(cut, g.indexGraphVerticesMap());
+			iCut = IndexIdMaps.idToIndexCollection(cut, g.indexGraphVerticesMap());
 		}
 		final int n = g.vertices().size();
 		Bitmap cut0 = new Bitmap(n);
 		for (int v : iCut) {
+			Assertions.checkVertex(v, n);
 			if (cut0.get(v))
 				throw new IllegalArgumentException("duplicate vertex with index " + v);
 			cut0.set(v);
