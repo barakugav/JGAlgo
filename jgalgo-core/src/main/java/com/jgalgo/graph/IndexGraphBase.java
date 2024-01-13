@@ -28,8 +28,8 @@ abstract class IndexGraphBase extends AbstractGraph<Integer, Integer> implements
 	private final boolean isDirected;
 	final GraphElementSet vertices;
 	final GraphElementSet edges;
-	private final IndexIntIdMap verticesIdMap;
-	private final IndexIntIdMap edgesIdMap;
+	private IndexIntIdMap verticesIdMap;
+	private IndexIntIdMap edgesIdMap;
 	long[] edgeEndpoints;
 
 	static final int EndpointNone = -1;
@@ -39,8 +39,6 @@ abstract class IndexGraphBase extends AbstractGraph<Integer, Integer> implements
 		this.isDirected = isDirected;
 		this.vertices = GraphElementSet.Mutable.ofVertices(n);
 		this.edges = GraphElementSet.Mutable.ofEdges(m);
-		verticesIdMap = IndexIntIdMap.identityVerticesMap(vertices);
-		edgesIdMap = IndexIntIdMap.identityEdgesMap(edges);
 	}
 
 	IndexGraphBase(Variant2<IndexGraph, IndexGraphBuilderImpl> graphOrBuilder, boolean mutable) {
@@ -56,14 +54,12 @@ abstract class IndexGraphBase extends AbstractGraph<Integer, Integer> implements
 				this.verticesIdMap = g.verticesIdMap;
 			} else {
 				this.vertices = GraphElementSet.Immutable.ofVertices(n);
-				this.verticesIdMap = IndexIntIdMap.identityVerticesMap(vertices);
 			}
 			if (g.edges instanceof GraphElementSet.Immutable) {
 				this.edges = g.edges;
 				this.edgesIdMap = g.edgesIdMap;
 			} else {
 				this.edges = GraphElementSet.Immutable.ofEdges(m);
-				this.edgesIdMap = IndexIntIdMap.identityEdgesMap(edges);
 			}
 
 		} else {
@@ -74,8 +70,6 @@ abstract class IndexGraphBase extends AbstractGraph<Integer, Integer> implements
 				this.vertices = GraphElementSet.Immutable.ofVertices(n);
 				this.edges = GraphElementSet.Immutable.ofEdges(m);
 			}
-			verticesIdMap = IndexIntIdMap.identityVerticesMap(vertices);
-			edgesIdMap = IndexIntIdMap.identityEdgesMap(edges);
 		}
 	}
 
@@ -379,12 +373,16 @@ abstract class IndexGraphBase extends AbstractGraph<Integer, Integer> implements
 	@Deprecated
 	@Override
 	public IndexIntIdMap indexGraphVerticesMap() {
+		if (verticesIdMap == null)
+			verticesIdMap = IndexIntIdMap.identityVerticesMap(vertices);
 		return verticesIdMap;
 	}
 
 	@Deprecated
 	@Override
 	public IndexIntIdMap indexGraphEdgesMap() {
+		if (edgesIdMap == null)
+			edgesIdMap = IndexIntIdMap.identityEdgesMap(edges);
 		return edgesIdMap;
 	}
 

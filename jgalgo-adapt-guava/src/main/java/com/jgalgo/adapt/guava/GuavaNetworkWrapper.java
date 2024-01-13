@@ -771,8 +771,8 @@ public class GuavaNetworkWrapper<V, E> extends AbstractGraph<V, E> {
 		private final com.google.common.graph.Network<V, E> network;
 		private final IndexIdMap<V> viMap;
 		private final IndexIdMap<E> eiMap;
-		private final IndexIntIdMap verticesIdentityIndexMap;
-		private final IndexIntIdMap edgesIdentityIndexMap;
+		private IndexIntIdMap verticesIdentityIndexMap;
+		private IndexIntIdMap edgesIdentityIndexMap;
 		private final IntSet vertices;
 		private final IntSet edges;
 
@@ -782,8 +782,6 @@ public class GuavaNetworkWrapper<V, E> extends AbstractGraph<V, E> {
 			this.eiMap = eiMap;
 			vertices = new IndicesSet(network.nodes()); // TODO network.nodes() might not be a view
 			edges = new IndicesSet(network.edges()); // TODO network.nodes() might not be a view
-			this.verticesIdentityIndexMap = IndexIntIdMap.identityVerticesMap(vertices);
-			this.edgesIdentityIndexMap = IndexIntIdMap.identityEdgesMap(edges);
 		}
 
 		private static class IndicesSet extends AbstractIntSet {
@@ -1067,12 +1065,16 @@ public class GuavaNetworkWrapper<V, E> extends AbstractGraph<V, E> {
 		@Deprecated
 		@Override
 		public IndexIntIdMap indexGraphVerticesMap() {
+			if (verticesIdentityIndexMap == null)
+				verticesIdentityIndexMap = IndexIntIdMap.identityVerticesMap(vertices);
 			return verticesIdentityIndexMap;
 		}
 
 		@Deprecated
 		@Override
 		public IndexIntIdMap indexGraphEdgesMap() {
+			if (edgesIdentityIndexMap == null)
+				edgesIdentityIndexMap = IndexIntIdMap.identityEdgesMap(edges);
 			return edgesIdentityIndexMap;
 		}
 

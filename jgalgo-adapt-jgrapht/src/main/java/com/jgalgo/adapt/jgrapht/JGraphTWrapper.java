@@ -671,8 +671,8 @@ public class JGraphTWrapper<V, E> extends com.jgalgo.graph.AbstractGraph<V, E> {
 		private final org.jgrapht.Graph<V, E> graph;
 		private final IndexIdMap<V> viMap;
 		private final IndexIdMap<E> eiMap;
-		private final IndexIntIdMap verticesIdentityIndexMap;
-		private final IndexIntIdMap edgesIdentityIndexMap;
+		private IndexIntIdMap verticesIdentityIndexMap;
+		private IndexIntIdMap edgesIdentityIndexMap;
 		private final IntSet vertices;
 		private final IntSet edges;
 		private final String edgeWeightKey;
@@ -685,8 +685,6 @@ public class JGraphTWrapper<V, E> extends com.jgalgo.graph.AbstractGraph<V, E> {
 			this.eiMap = eiMap;
 			vertices = new IndicesSet(graph.vertexSet());
 			edges = new IndicesSet(graph.edgeSet());
-			this.verticesIdentityIndexMap = IndexIntIdMap.identityVerticesMap(vertices);
-			this.edgesIdentityIndexMap = IndexIntIdMap.identityEdgesMap(edges);
 			this.edgeWeightKey = edgeWeightKey;
 			if (idWeights == null) {
 				weights = null;
@@ -1000,12 +998,16 @@ public class JGraphTWrapper<V, E> extends com.jgalgo.graph.AbstractGraph<V, E> {
 		@Deprecated
 		@Override
 		public IndexIntIdMap indexGraphVerticesMap() {
+			if (verticesIdentityIndexMap == null)
+				verticesIdentityIndexMap = IndexIntIdMap.identityVerticesMap(vertices);
 			return verticesIdentityIndexMap;
 		}
 
 		@Deprecated
 		@Override
 		public IndexIntIdMap indexGraphEdgesMap() {
+			if (edgesIdentityIndexMap == null)
+				edgesIdentityIndexMap = IndexIntIdMap.identityEdgesMap(edges);
 			return edgesIdentityIndexMap;
 		}
 
