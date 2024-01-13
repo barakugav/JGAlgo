@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -924,35 +925,19 @@ public class GexfGraphReader<V, E> extends GraphIoUtils.AbstractGraphReader<V, E
 	}
 
 	private static BigDecimal[] parseListBigDecimal(String val) {
-		String[] words = splitList(val);
-		BigDecimal[] list = new BigDecimal[words.length];
-		for (int i : range(words.length))
-			list[i] = new BigDecimal(words[i]);
-		return list;
+		return Arrays.stream(splitList(val)).map(BigDecimal::new).toArray(BigDecimal[]::new);
 	}
 
 	private static BigInteger[] parseListBigInteger(String val) {
-		String[] words = splitList(val);
-		BigInteger[] list = new BigInteger[words.length];
-		for (int i : range(words.length))
-			list[i] = new BigInteger(words[i]);
-		return list;
+		return Arrays.stream(splitList(val)).map(BigInteger::new).toArray(BigInteger[]::new);
 	}
 
 	private static URI[] parseListURI(String val) {
-		String[] words = splitList(val);
-		URI[] list = new URI[words.length];
-		for (int i : range(words.length))
-			list[i] = parseURI(words[i]);
-		return list;
+		return Arrays.stream(splitList(val)).map(GexfGraphReader::parseURI).toArray(URI[]::new);
 	}
 
 	private Date[] parseListDate(String val) {
-		String[] words = splitList(val);
-		Date[] list = new Date[words.length];
-		for (int i : range(words.length))
-			list[i] = parseDate(words[i]);
-		return list;
+		return Arrays.stream(splitList(val)).map(this::parseDate).toArray(Date[]::new);
 	}
 
 	private static String[] splitList(String s) {
