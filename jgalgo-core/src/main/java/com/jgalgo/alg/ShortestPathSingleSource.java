@@ -17,8 +17,10 @@
 package com.jgalgo.alg;
 
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 
@@ -141,6 +143,83 @@ public interface ShortestPathSingleSource {
 		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
 		 */
 		public Path<V, E> getPath(V target);
+
+		/**
+		 * Get the last edge on the shortest path from the source to the given target.
+		 *
+		 * <p>
+		 * The backtrack edge is an in-edge of the given target vertex. The set of all backtrack edges of all vertices
+		 * define the shortest path tree of the source, and each shortest path can be constructed from them.
+		 *
+		 * @param  target a target vertex in the graph
+		 * @return        the backtrack edge, the last edge on the shortest path from the source to th given target, or
+		 *                {@code null} if there is no path to the target or the target is the source
+		 */
+		public E backtrackEdge(V target);
+
+		/**
+		 * Get the shortest path tree.
+		 *
+		 * <p>
+		 * The shortest path tree is constructed from the vertices and edges used by any shortest path. It contains only
+		 * the vertices reachable from the source, and for each vertex other than the source the graph will contains the
+		 * edge that was used to reach it (see {@link #backtrackEdge(Object)}). If there are \(k\) reachable vertices,
+		 * the graph will contain \(k-1\) edges.
+		 *
+		 * <p>
+		 * The returned graph will be directed if the original graph is directed. In such case, the tree is directed
+		 * from the source to the other vertices. To control the directionality of the returned graph, use
+		 * {@link #shortestPathTree(boolean)}.
+		 *
+		 * @return undirected shortest path tree
+		 */
+		default Graph<V, E> shortestPathTree() {
+			return shortestPathTree(graph().isDirected());
+		}
+
+		/**
+		 * Get the shortest path tree, optionally directed or undirected.
+		 *
+		 * <p>
+		 * The shortest path tree is constructed from the vertices and edges used by any shortest path. It contains only
+		 * the vertices reachable from the source, and for each vertex other than the source the graph will contains the
+		 * edge that was used to reach it (see {@link #backtrackEdge(Object)}). If there are \(k\) reachable vertices,
+		 * the graph will contain \(k-1\) edges.
+		 *
+		 * @param  directed if {@code true} the returned tree will be directed. If the original graph was undirected and
+		 *                      a directed tree is created, the edges in the tree will be directed from the source
+		 *                      towards the other vertices
+		 * @return          un/directed shortest path tree
+		 */
+		default Graph<V, E> shortestPathTree(boolean directed) {
+			Graph<V, E> g = graph();
+			GraphBuilder<V, E> b = GraphBuilder.newInstance(directed);
+			final V source = source();
+			b.addVertex(source);
+			for (V v : g.vertices())
+				if (backtrackEdge(v) != null)
+					b.addVertex(v);
+			for (V v : g.vertices()) {
+				E e = backtrackEdge(v);
+				if (e != null)
+					b.addEdge(g.edgeEndpoint(e, v), v, e);
+			}
+			return b.build();
+		}
+
+		/**
+		 * Get the source vertex from which all shortest paths were computed from.
+		 *
+		 * @return the source vertex
+		 */
+		public V source();
+
+		/**
+		 * Get the graph on which the shortest paths were computed on.
+		 *
+		 * @return the graph on which the shortest paths were computed on.
+		 */
+		public Graph<V, E> graph();
 	}
 
 	/**
@@ -191,6 +270,74 @@ public interface ShortestPathSingleSource {
 		default IPath getPath(Integer target) {
 			return getPath(target.intValue());
 		}
+
+		/**
+		 * Get the last edge on the shortest path from the source to the given target.
+		 *
+		 * <p>
+		 * The backtrack edge is an in-edge of the given target vertex. The set of all backtrack edges of all vertices
+		 * define the shortest path tree of the source, and each shortest path can be constructed from them.
+		 *
+		 * @param  target a target vertex in the graph
+		 * @return        the backtrack edge, the last edge on the shortest path from the source to th given target, or
+		 *                {@code -1} if there is no path to the target or the target is the source
+		 */
+		public int backtrackEdge(int target);
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #backtrackEdge(int)} instead to avoid un/boxing.
+		 */
+		@Deprecated
+		@Override
+		default Integer backtrackEdge(Integer target) {
+			int e = backtrackEdge(target.intValue());
+			return e < 0 ? null : Integer.valueOf(e);
+		}
+
+		@Override
+		default IntGraph shortestPathTree() {
+			return (IntGraph) Result.super.shortestPathTree();
+		}
+
+		@Override
+		default IntGraph shortestPathTree(boolean directed) {
+			IntGraph g = graph();
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
+			final int source = sourceInt();
+			b.addVertex(source);
+			for (int v : g.vertices())
+				if (backtrackEdge(v) >= 0)
+					b.addVertex(v);
+			for (int v : g.vertices()) {
+				int e = backtrackEdge(v);
+				if (e >= 0)
+					b.addEdge(g.edgeEndpoint(e, v), v, e);
+			}
+			return b.build();
+		}
+
+		/**
+		 * Get the source vertex from which all shortest paths were computed from.
+		 *
+		 * @return the source vertex
+		 */
+		public int sourceInt();
+
+		/**
+		 * {@inheritDoc}
+		 *
+		 * @deprecated Please use {@link #sourceInt()} instead to avoid un/boxing.
+		 */
+		@Deprecated
+		@Override
+		default Integer source() {
+			return Integer.valueOf(sourceInt());
+		}
+
+		@Override
+		public IntGraph graph();
 	}
 
 	/**

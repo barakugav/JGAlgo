@@ -26,6 +26,7 @@ import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IWeightsInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphFactory;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.graph.WeightFunctions;
 import com.jgalgo.internal.util.Assertions;
@@ -310,11 +311,13 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 
 	private static class Result implements ShortestPathSingleSource.IResult {
 
+		private final int source;
 		private final int sourcePotential;
 		private final int[] potential;
 		private final ShortestPathSingleSource.IResult dijkstraRes;
 
 		Result(int source, int[] potential, ShortestPathSingleSource.IResult dijkstraRes) {
+			this.source = source;
 			this.sourcePotential = potential != null ? potential[source] : 0;
 			this.potential = potential;
 			this.dijkstraRes = dijkstraRes;
@@ -335,6 +338,20 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 			return dijkstraRes.toString();
 		}
 
+		@Override
+		public int backtrackEdge(int target) {
+			return dijkstraRes.backtrackEdge(target);
+		}
+
+		@Override
+		public int sourceInt() {
+			return source;
+		}
+
+		@Override
+		public IntGraph graph() {
+			return dijkstraRes.graph();
+		}
 	}
 
 	@Override

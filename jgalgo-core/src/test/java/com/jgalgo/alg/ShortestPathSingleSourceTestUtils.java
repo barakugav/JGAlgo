@@ -19,9 +19,11 @@ package com.jgalgo.alg;
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
+import java.util.List;
 import java.util.Random;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.gen.CompleteGraphGenerator;
@@ -77,6 +79,7 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(4, 6).repeat(128);
 		tester.addPhase().withArgs(16, 32).repeat(128);
 		tester.addPhase().withArgs(64, 256).repeat(64);
 		tester.addPhase().withArgs(512, 4096).repeat(8);
@@ -172,22 +175,75 @@ public class ShortestPathSingleSourceTestUtils extends TestBase {
 			return;
 		}
 
-		for (Integer v : g.vertices()) {
-			double expectedDistance = expectedRes.distance(v);
-			double actualDistance = result.distance(v);
-			assertEquals(expectedDistance, actualDistance, "Distance to vertex " + v + " is wrong");
-			Path<Integer, Integer> path = result.getPath(v);
+		assertEquals(source, result.source());
+		assertTrue(g == result.graph());
+
+		for (Integer target : g.vertices()) {
+			double expectedDistance = expectedRes.distance(target);
+			double actualDistance = result.distance(target);
+			assertEquals(expectedDistance, actualDistance, "Distance to vertex " + target + " is wrong");
+			Path<Integer, Integer> path = result.getPath(target);
 			if (path != null) {
 				double pathWeight = WeightFunction.weightSum(w, path.edges());
-				assertEquals(pathWeight, actualDistance, () -> "Path to vertex " + v + " doesn't match distance ("
+				assertEquals(pathWeight, actualDistance, () -> "Path to vertex " + target + " doesn't match distance ("
 						+ actualDistance + " != " + pathWeight + "): " + path);
+				if (path.edges().isEmpty()) {
+					assertNull(result.backtrackEdge(target));
+				} else {
+					Integer lastEdge = path.edges().get(path.edges().size() - 1);
+					assertEquals(lastEdge, result.backtrackEdge(target));
+				}
 			} else {
+				assertNull(result.backtrackEdge(target));
 				assertEquals(Double.POSITIVE_INFINITY, actualDistance,
-						"Distance to vertex " + v + " is not infinity but path is null");
+						"Distance to vertex " + target + " is not infinity but path is null");
 			}
 		}
 		assertThrows(NoSuchVertexException.class, () -> result.distance(GraphsTestUtils.nonExistingVertex(g, rand)));
 		assertThrows(NoSuchVertexException.class, () -> result.getPath(GraphsTestUtils.nonExistingVertex(g, rand)));
+		assertThrows(NoSuchVertexException.class,
+				() -> result.backtrackEdge(GraphsTestUtils.nonExistingVertex(g, rand)));
+
+		{
+			Graph<Integer, Integer> tree = result.shortestPathTree();
+			assertTrue(Trees.isTree(tree, source));
+			assertEquals(Path.reachableVertices(g, source), tree.vertices());
+			assertEqualsBool(g.isDirected(), tree.isDirected());
+			for (int repeat = 0; repeat < 10; repeat++) {
+				Integer target = Graphs.randVertex(g, rand);
+				Path<Integer, Integer> path = result.getPath(target);
+				Path<Integer, Integer> treePath =
+						tree.vertices().contains(target) ? Path.findPath(tree, source, target) : null;
+				List<Integer> pathEdges = path == null ? null : path.edges();
+				List<Integer> treePathEdges = treePath == null ? null : treePath.edges();
+				if (pathEdges == null) {
+					assertNull(treePathEdges);
+				} else {
+					assertNotNull(treePathEdges);
+					assertEquals(WeightFunction.weightSum(w, pathEdges), WeightFunction.weightSum(w, treePathEdges));
+				}
+			}
+		}
+		foreachBoolConfig(directed -> {
+			Graph<Integer, Integer> tree = result.shortestPathTree(directed);
+			assertTrue(Trees.isTree(tree, source));
+			assertEquals(Path.reachableVertices(g, source), tree.vertices());
+			assertEqualsBool(directed, tree.isDirected());
+			for (int repeat = 0; repeat < 10; repeat++) {
+				Integer target = Graphs.randVertex(g, rand);
+				Path<Integer, Integer> path = result.getPath(target);
+				Path<Integer, Integer> treePath =
+						tree.vertices().contains(target) ? Path.findPath(tree, source, target) : null;
+				List<Integer> pathEdges = path == null ? null : path.edges();
+				List<Integer> treePathEdges = treePath == null ? null : treePath.edges();
+				if (pathEdges == null) {
+					assertNull(treePathEdges);
+				} else {
+					assertNotNull(treePathEdges);
+					assertEquals(WeightFunction.weightSum(w, pathEdges), WeightFunction.weightSum(w, treePathEdges));
+				}
+			}
+		});
 	}
 
 	@Test

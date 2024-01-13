@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import java.util.List;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
@@ -51,6 +52,27 @@ class ShortestPathSTTestUtils {
 						if (!paths.containsKey(target))
 							throw new IllegalArgumentException("Target vertex " + target + " is not in the graph");
 						return paths.get(target);
+					}
+
+					@Override
+					public E backtrackEdge(V target) {
+						Path<V, E> path = getPath(target);
+						if (path != null) {
+							List<E> edges = path.edges();
+							if (!edges.isEmpty())
+								return edges.get(edges.size() - 1);
+						}
+						return null;
+					}
+
+					@Override
+					public V source() {
+						return source;
+					}
+
+					@Override
+					public Graph<V, E> graph() {
+						return g;
 					}
 				};
 			}

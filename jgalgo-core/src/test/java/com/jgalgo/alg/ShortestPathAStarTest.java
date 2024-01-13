@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import java.util.List;
 import java.util.Random;
 import java.util.function.IntToDoubleFunction;
 import java.util.function.ToDoubleFunction;
@@ -210,6 +211,27 @@ public class ShortestPathAStarTest extends TestBase {
 						if (!g.vertices().contains(target))
 							throw NoSuchVertexException.ofVertex(target);
 						return paths.get(target);
+					}
+
+					@Override
+					public E backtrackEdge(V target) {
+						Path<V, E> path = getPath(target);
+						if (path != null) {
+							List<E> edges = path.edges();
+							if (!edges.isEmpty())
+								return edges.get(edges.size() - 1);
+						}
+						return null;
+					}
+
+					@Override
+					public V source() {
+						return source;
+					}
+
+					@Override
+					public Graph<V, E> graph() {
+						return g;
 					}
 				};
 			}

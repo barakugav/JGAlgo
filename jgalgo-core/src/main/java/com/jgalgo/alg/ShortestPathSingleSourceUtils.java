@@ -15,15 +15,18 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -40,6 +43,9 @@ class ShortestPathSingleSourceUtils {
 		private final int source;
 		final double[] distances;
 		final int[] backtrack;
+
+		private IntGraph shortestPathTreeUndirected;
+		private IntGraph shortestPathTreeDirected;
 
 		IndexResult(IndexGraph g, int source) {
 			this.g = g;
@@ -98,8 +104,33 @@ class ShortestPathSingleSourceUtils {
 		}
 
 		@Override
-		public String toString() {
-			return Arrays.toString(distances);
+		public int backtrackEdge(int target) {
+			Assertions.checkVertex(target, backtrack.length);
+			return backtrack[target];
+		}
+
+		@Override
+		public IntGraph shortestPathTree(boolean directed) {
+			if (directed) {
+				if (shortestPathTreeDirected == null)
+					shortestPathTreeDirected = ShortestPathSingleSource.IResult.super.shortestPathTree(true);
+				return shortestPathTreeDirected;
+
+			} else {
+				if (shortestPathTreeUndirected == null)
+					shortestPathTreeUndirected = ShortestPathSingleSource.IResult.super.shortestPathTree(false);
+				return shortestPathTreeUndirected;
+			}
+		}
+
+		@Override
+		public int sourceInt() {
+			return source;
+		}
+
+		@Override
+		public IndexGraph graph() {
+			return g;
 		}
 	}
 
@@ -108,11 +139,15 @@ class ShortestPathSingleSourceUtils {
 		private final ShortestPathSingleSource.IResult indexRes;
 		private final Graph<V, E> g;
 		private final IndexIdMap<V> viMap;
+		private final IndexIdMap<E> eiMap;
+		private Graph<V, E> shortestPathTreeUndirected;
+		private Graph<V, E> shortestPathTreeDirected;
 
 		ObjResultFromIndexResult(Graph<V, E> g, ShortestPathSingleSource.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
 			this.g = Objects.requireNonNull(g);
 			this.viMap = g.indexGraphVerticesMap();
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
@@ -124,6 +159,57 @@ class ShortestPathSingleSourceUtils {
 		public Path<V, E> getPath(V target) {
 			return PathImpl.objPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));
 		}
+
+		@Override
+		public E backtrackEdge(V target) {
+			int tIdx = viMap.idToIndex(target);
+			int eIdx = indexRes.backtrackEdge(tIdx);
+			return eIdx < 0 ? null : eiMap.indexToId(eIdx);
+		}
+
+		@Override
+		public Graph<V, E> shortestPathTree(boolean directed) {
+			if (directed) {
+				if (shortestPathTreeDirected == null)
+					shortestPathTreeDirected = createShortestPathTree(true);
+				return shortestPathTreeDirected;
+
+			} else {
+				if (shortestPathTreeUndirected == null)
+					shortestPathTreeUndirected = createShortestPathTree(false);
+				return shortestPathTreeUndirected;
+			}
+		}
+
+		private Graph<V, E> createShortestPathTree(boolean directed) {
+			IndexGraph ig = g.indexGraph();
+			GraphBuilder<V, E> b = GraphBuilder.newInstance(directed);
+			b.addVertex(source());
+			for (int vIdx : range(ig.vertices().size()))
+				if (indexRes.backtrackEdge(vIdx) >= 0)
+					b.addVertex(viMap.indexToId(vIdx));
+			for (int vIdx : range(ig.vertices().size())) {
+				int eIdx = indexRes.backtrackEdge(vIdx);
+				if (eIdx < 0)
+					continue;
+				int uIdx = ig.edgeEndpoint(eIdx, vIdx);
+				V u = viMap.indexToId(uIdx);
+				V v = viMap.indexToId(vIdx);
+				E e = eiMap.indexToId(eIdx);
+				b.addEdge(u, v, e);
+			}
+			return b.build();
+		}
+
+		@Override
+		public V source() {
+			return viMap.indexToId(indexRes.sourceInt());
+		}
+
+		@Override
+		public Graph<V, E> graph() {
+			return g;
+		}
 	}
 
 	static class IntResultFromIndexResult implements ShortestPathSingleSource.IResult {
@@ -131,11 +217,15 @@ class ShortestPathSingleSourceUtils {
 		private final ShortestPathSingleSource.IResult indexRes;
 		private final IntGraph g;
 		private final IndexIntIdMap viMap;
+		private final IndexIntIdMap eiMap;
+		private IntGraph shortestPathTreeUndirected;
+		private IntGraph shortestPathTreeDirected;
 
 		IntResultFromIndexResult(IntGraph g, ShortestPathSingleSource.IResult indexRes) {
 			this.indexRes = Objects.requireNonNull(indexRes);
 			this.g = Objects.requireNonNull(g);
 			this.viMap = g.indexGraphVerticesMap();
+			this.eiMap = g.indexGraphEdgesMap();
 		}
 
 		@Override
@@ -146,6 +236,57 @@ class ShortestPathSingleSourceUtils {
 		@Override
 		public IPath getPath(int target) {
 			return PathImpl.intPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));
+		}
+
+		@Override
+		public int backtrackEdge(int target) {
+			int tIdx = viMap.idToIndex(target);
+			int eIdx = indexRes.backtrackEdge(tIdx);
+			return eIdx < 0 ? -1 : eiMap.indexToIdInt(eIdx);
+		}
+
+		@Override
+		public IntGraph shortestPathTree(boolean directed) {
+			if (directed) {
+				if (shortestPathTreeDirected == null)
+					shortestPathTreeDirected = createShortestPathTree(true);
+				return shortestPathTreeDirected;
+
+			} else {
+				if (shortestPathTreeUndirected == null)
+					shortestPathTreeUndirected = createShortestPathTree(false);
+				return shortestPathTreeUndirected;
+			}
+		}
+
+		private IntGraph createShortestPathTree(boolean directed) {
+			IndexGraph ig = g.indexGraph();
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
+			b.addVertex(sourceInt());
+			for (int vIdx : range(ig.vertices().size()))
+				if (indexRes.backtrackEdge(vIdx) >= 0)
+					b.addVertex(viMap.indexToIdInt(vIdx));
+			for (int vIdx : range(ig.vertices().size())) {
+				int eIdx = indexRes.backtrackEdge(vIdx);
+				if (eIdx < 0)
+					continue;
+				int uIdx = ig.edgeEndpoint(eIdx, vIdx);
+				int u = viMap.indexToIdInt(uIdx);
+				int v = viMap.indexToIdInt(vIdx);
+				int e = eiMap.indexToIdInt(eIdx);
+				b.addEdge(u, v, e);
+			}
+			return b.build();
+		}
+
+		@Override
+		public int sourceInt() {
+			return viMap.indexToIdInt(indexRes.sourceInt());
+		}
+
+		@Override
+		public IntGraph graph() {
+			return g;
 		}
 	}
 
