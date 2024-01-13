@@ -29,12 +29,7 @@ public abstract class AbstractGraph<V, E> implements Graph<V, E> {
 
 	@Override
 	public boolean equals(Object other) {
-		if (other == this)
-			return true;
-		if (!(other instanceof Graph))
-			return false;
-		Graph<?, ?> o = (Graph<?, ?>) other;
-		return Graphs.isEquals(this, o);
+		return other instanceof Graph && Graphs.isEquals(this, (Graph<?, ?>) other);
 	}
 
 	@Override
