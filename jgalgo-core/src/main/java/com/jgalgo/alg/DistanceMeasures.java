@@ -22,6 +22,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 
 /**
@@ -88,8 +89,9 @@ public interface DistanceMeasures<V, E> {
 	 * If there is a vertex \(u \in V\) that is not reachable from \(v\), the eccentricity of \(v\) is
 	 * {@link Double#POSITIVE_INFINITY}.
 	 *
-	 * @param  v a vertex
-	 * @return   the eccentricity of the vertex
+	 * @param  v                     a vertex
+	 * @return                       the eccentricity of the vertex
+	 * @throws NoSuchVertexException if {@code v} is not a valid vertex identifier in the graph
 	 */
 	double eccentricity(V v);
 

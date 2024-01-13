@@ -16,11 +16,13 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import java.util.Random;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 import com.jgalgo.internal.util.TestBase;
 import it.unimi.dsi.fastutil.objects.Object2DoubleMap;
@@ -75,18 +77,19 @@ public class DistanceMeasuresTest extends TestBase {
 		});
 	}
 
-	private static <V, E> void testMeasures(Graph<V, E> g, WeightFunction<E> w) {
-		DistanceMeasures<V, E> measures = DistanceMeasures.of(g, w);
+	private static void testMeasures(Graph<Integer, Integer> g, WeightFunction<Integer> w) {
+		final Random rand = new Random(0x851dbddbf1b5625fL);
+		DistanceMeasures<Integer, Integer> measures = DistanceMeasures.of(g, w);
 
 		ShortestPathSingleSource sssp = ShortestPathSingleSource.newInstance();
-		Object2DoubleMap<V> expectedEccentricity = new Object2DoubleOpenHashMap<>();
-		for (V v : g.vertices()) {
-			ShortestPathSingleSource.Result<V, E> sp = sssp.computeShortestPaths(g, w, v);
+		Object2DoubleMap<Integer> expectedEccentricity = new Object2DoubleOpenHashMap<>();
+		for (Integer v : g.vertices()) {
+			ShortestPathSingleSource.Result<Integer, Integer> sp = sssp.computeShortestPaths(g, w, v);
 			expectedEccentricity
 					.put(v, g.vertices().stream().mapToDouble(sp::distance).max().orElse(Double.POSITIVE_INFINITY));
 		}
 
-		for (V v : g.vertices())
+		for (Integer v : g.vertices())
 			assertEquals(expectedEccentricity.getDouble(v), measures.eccentricity(v), 1e-9);
 		assertEquals(expectedEccentricity.values().doubleStream().min().orElse(Double.POSITIVE_INFINITY),
 				measures.radius(), 1e-9);
@@ -112,6 +115,10 @@ public class DistanceMeasuresTest extends TestBase {
 				.stream()
 				.filter(v -> measures.eccentricity(v) >= measures.diameter() - 1e-9)
 				.collect(Collectors.toSet()), measures.periphery());
+
+		for (int repeat = 0; repeat < 25; repeat++)
+			assertThrows(NoSuchVertexException.class,
+					() -> measures.eccentricity(GraphsTestUtils.nonExistingVertex(g, rand)));
 	}
 
 }
