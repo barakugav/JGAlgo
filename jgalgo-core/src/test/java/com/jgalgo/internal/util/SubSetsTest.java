@@ -19,9 +19,7 @@ import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -32,9 +30,42 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 public class SubSetsTest extends TestBase {
 
 	@Test
+	public void subsets0() {
+		foreachBoolConfig(intSet -> {
+			Set<IntList> subsets = collectSubsetsAndAssertUnique(SubSets.of(rangeSet(0, intSet)));
+			Set<IntList> expected = new ObjectOpenHashSet<>();
+			assertEquals(expected, subsets);
+		});
+	}
+
+	@Test
+	public void subsets4() {
+		foreachBoolConfig(intSet -> {
+			Set<IntList> subsets = collectSubsetsAndAssertUnique(SubSets.of(rangeSet(4, intSet)));
+			Set<IntList> expected = new ObjectOpenHashSet<>();
+			expected.add(IntList.of(0));
+			expected.add(IntList.of(1));
+			expected.add(IntList.of(2));
+			expected.add(IntList.of(3));
+			expected.add(IntList.of(0, 1));
+			expected.add(IntList.of(0, 2));
+			expected.add(IntList.of(0, 3));
+			expected.add(IntList.of(1, 2));
+			expected.add(IntList.of(1, 3));
+			expected.add(IntList.of(2, 3));
+			expected.add(IntList.of(0, 1, 2));
+			expected.add(IntList.of(0, 1, 3));
+			expected.add(IntList.of(0, 2, 3));
+			expected.add(IntList.of(1, 2, 3));
+			expected.add(IntList.of(0, 1, 2, 3));
+			assertEquals(expected, subsets);
+		});
+	}
+
+	@Test
 	public void subsets4_1() {
 		foreachBoolConfig(intSet -> {
-			Set<IntList> subsets = collectSubsetsAndAssertUnique(rangeSet(4, intSet), 1);
+			Set<IntList> subsets = collectSubsetsAndAssertUnique(SubSets.of(rangeSet(4, intSet), 1));
 			Set<IntList> expected = new ObjectOpenHashSet<>();
 			expected.add(IntList.of(0));
 			expected.add(IntList.of(1));
@@ -47,7 +78,7 @@ public class SubSetsTest extends TestBase {
 	@Test
 	public void subsets4_2() {
 		foreachBoolConfig(intSet -> {
-			Set<IntList> subsets = collectSubsetsAndAssertUnique(rangeSet(4, intSet), 2);
+			Set<IntList> subsets = collectSubsetsAndAssertUnique(SubSets.of(rangeSet(4, intSet), 2));
 			Set<IntList> expected = new ObjectOpenHashSet<>();
 			expected.add(IntList.of(0, 1));
 			expected.add(IntList.of(0, 2));
@@ -62,7 +93,7 @@ public class SubSetsTest extends TestBase {
 	@Test
 	public void subsets4_3() {
 		foreachBoolConfig(intSet -> {
-			Set<IntList> subsets = collectSubsetsAndAssertUnique(rangeSet(4, intSet), 3);
+			Set<IntList> subsets = collectSubsetsAndAssertUnique(SubSets.of(rangeSet(4, intSet), 3));
 			Set<IntList> expected = new ObjectOpenHashSet<>();
 			expected.add(IntList.of(0, 1, 2));
 			expected.add(IntList.of(0, 1, 3));
@@ -73,9 +104,49 @@ public class SubSetsTest extends TestBase {
 	}
 
 	@Test
+	public void subsets5() {
+		foreachBoolConfig(intSet -> {
+			Set<IntList> subsets = collectSubsetsAndAssertUnique(SubSets.of(rangeSet(5, intSet)));
+			Set<IntList> expected = new ObjectOpenHashSet<>();
+			expected.add(IntList.of(0));
+			expected.add(IntList.of(1));
+			expected.add(IntList.of(2));
+			expected.add(IntList.of(3));
+			expected.add(IntList.of(4));
+			expected.add(IntList.of(0, 1));
+			expected.add(IntList.of(0, 2));
+			expected.add(IntList.of(0, 3));
+			expected.add(IntList.of(0, 4));
+			expected.add(IntList.of(1, 2));
+			expected.add(IntList.of(1, 3));
+			expected.add(IntList.of(1, 4));
+			expected.add(IntList.of(2, 3));
+			expected.add(IntList.of(2, 4));
+			expected.add(IntList.of(3, 4));
+			expected.add(IntList.of(0, 1, 2));
+			expected.add(IntList.of(0, 1, 3));
+			expected.add(IntList.of(0, 1, 4));
+			expected.add(IntList.of(0, 2, 3));
+			expected.add(IntList.of(0, 2, 4));
+			expected.add(IntList.of(0, 3, 4));
+			expected.add(IntList.of(1, 2, 3));
+			expected.add(IntList.of(1, 2, 4));
+			expected.add(IntList.of(1, 3, 4));
+			expected.add(IntList.of(2, 3, 4));
+			expected.add(IntList.of(0, 1, 2, 3));
+			expected.add(IntList.of(0, 1, 2, 4));
+			expected.add(IntList.of(0, 1, 3, 4));
+			expected.add(IntList.of(0, 2, 3, 4));
+			expected.add(IntList.of(1, 2, 3, 4));
+			expected.add(IntList.of(0, 1, 2, 3, 4));
+			assertEquals(expected, subsets);
+		});
+	}
+
+	@Test
 	public void subsets5_2() {
 		foreachBoolConfig(intSet -> {
-			Set<IntList> subsets = collectSubsetsAndAssertUnique(rangeSet(5, intSet), 2);
+			Set<IntList> subsets = collectSubsetsAndAssertUnique(SubSets.of(rangeSet(5, intSet), 2));
 			Set<IntList> expected = new ObjectOpenHashSet<>();
 			expected.add(IntList.of(0, 1));
 			expected.add(IntList.of(0, 2));
@@ -94,7 +165,7 @@ public class SubSetsTest extends TestBase {
 	@Test
 	public void subsets5_3() {
 		foreachBoolConfig(intSet -> {
-			Set<IntList> subsets = collectSubsetsAndAssertUnique(rangeSet(5, intSet), 3);
+			Set<IntList> subsets = collectSubsetsAndAssertUnique(SubSets.of(rangeSet(5, intSet), 3));
 			Set<IntList> expected = new ObjectOpenHashSet<>();
 			expected.add(IntList.of(0, 1, 2));
 			expected.add(IntList.of(0, 1, 3));
@@ -113,7 +184,7 @@ public class SubSetsTest extends TestBase {
 	@Test
 	public void subsets5_4() {
 		foreachBoolConfig(intSet -> {
-			Set<IntList> subsets = collectSubsetsAndAssertUnique(rangeSet(5, intSet), 4);
+			Set<IntList> subsets = collectSubsetsAndAssertUnique(SubSets.of(rangeSet(5, intSet), 4));
 			Set<IntList> expected = new ObjectOpenHashSet<>();
 			expected.add(IntList.of(0, 1, 2, 3));
 			expected.add(IntList.of(0, 1, 2, 4));
@@ -127,7 +198,7 @@ public class SubSetsTest extends TestBase {
 	@Test
 	public void subsets5_5() {
 		foreachBoolConfig(intSet -> {
-			Set<IntList> subsets = collectSubsetsAndAssertUnique(rangeSet(5, intSet), 5);
+			Set<IntList> subsets = collectSubsetsAndAssertUnique(SubSets.of(rangeSet(5, intSet), 5));
 			Set<IntList> expected = new ObjectOpenHashSet<>();
 			expected.add(IntList.of(0, 1, 2, 3, 4));
 			assertEquals(expected, subsets);
@@ -137,7 +208,7 @@ public class SubSetsTest extends TestBase {
 	@Test
 	public void subsets5_0() {
 		foreachBoolConfig(intSet -> {
-			Set<IntList> subsets = collectSubsetsAndAssertUnique(rangeSet(5, intSet), 0);
+			Set<IntList> subsets = collectSubsetsAndAssertUnique(SubSets.of(rangeSet(5, intSet), 0));
 			Set<IntList> expected = new ObjectOpenHashSet<>();
 			assertEquals(expected, subsets);
 		});
@@ -149,9 +220,9 @@ public class SubSetsTest extends TestBase {
 		assertThrows(IllegalArgumentException.class, () -> SubSets.of(rangeSet(5, true), 8));
 	}
 
-	private static Set<IntList> collectSubsetsAndAssertUnique(Collection<Integer> set, int k) {
+	private static Set<IntList> collectSubsetsAndAssertUnique(Iterable<List<Integer>> subsetsIterable) {
 		Set<IntList> subsets = new ObjectOpenHashSet<>();
-		for (List<Integer> subset : SubSets.of(set, k)) {
+		for (List<Integer> subset : subsetsIterable) {
 			boolean modified = subsets.add(new IntArrayList(subset));
 			assertTrue(modified);
 		}

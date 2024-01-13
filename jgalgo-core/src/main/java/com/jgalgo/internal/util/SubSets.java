@@ -17,6 +17,7 @@ package com.jgalgo.internal.util;
 
 import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -31,18 +32,75 @@ public class SubSets {
 	private SubSets() {}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public static <T> Iterable<List<T>> of(Collection<? extends T> set) {
+		if (set instanceof IntCollection) {
+			return (Iterable) SubSets.of((IntCollection) set);
+		} else {
+			return () -> new Iterator<>() {
+
+				int k = 1;
+				final int maxK = set.size();
+				Iterator<List<T>> iter = maxK == 0 ? Collections.emptyIterator() : new SubSetsKIter(set, k);
+
+				@Override
+				public boolean hasNext() {
+					return iter.hasNext();
+				}
+
+				@Override
+				public List<T> next() {
+					List<T> ret = iter.next();
+					if (!iter.hasNext() && k < maxK)
+						iter = new SubSetsKIter(set, ++k);
+					return ret;
+				}
+			};
+		}
+	}
+
+	public static Iterable<IntList> of(IntCollection set) {
+		return () -> new Iterator<>() {
+
+			int k = 1;
+			final int maxK = set.size();
+			Iterator<IntList> iter = maxK == 0 ? Collections.emptyIterator() : new SubSetsKIterInt(set, k);
+
+			@Override
+			public boolean hasNext() {
+				return iter.hasNext();
+			}
+
+			@Override
+			public IntList next() {
+				IntList ret = iter.next();
+				if (!iter.hasNext() && k < maxK)
+					iter = new SubSetsKIterInt(set, ++k);
+				return ret;
+			}
+		};
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public static <T> Iterable<List<T>> of(Collection<? extends T> set, int k) {
 		if (set instanceof IntCollection) {
 			return (Iterable) SubSets.of((IntCollection) set, k);
 		} else {
 			checkSubsetsSize(set, k);
-			return () -> new SubSetsIter<>(set, k);
+			return () -> new SubSetsKIter<>(set, k);
 		}
 	}
 
 	public static Iterable<IntList> of(IntCollection set, int k) {
 		checkSubsetsSize(set, k);
-		return () -> new SubSetsIterInt(set, k);
+		return () -> new SubSetsKIterInt(set, k);
+	}
+
+	public static <T> Stream<List<T>> stream(Collection<T> set) {
+		return StreamSupport.stream(SubSets.of(set).spliterator(), false);
+	}
+
+	public static Stream<IntList> stream(IntCollection set) {
+		return StreamSupport.stream(SubSets.of(set).spliterator(), false);
 	}
 
 	public static Stream<IntList> stream(IntCollection set, int k) {
@@ -54,7 +112,7 @@ public class SubSets {
 			throw new IllegalArgumentException("k must be in [0, set.size()]");
 	}
 
-	private static class SubSetsIterBase {
+	private static class SubSetsKIterBase {
 
 		final int[] subset;
 		final int k;
@@ -62,7 +120,7 @@ public class SubSets {
 		int nextDeviationIdx;
 		boolean hasNext;
 
-		SubSetsIterBase(int n, int k) {
+		SubSetsKIterBase(int n, int k) {
 			this.subset = new int[k];
 			this.k = k;
 
@@ -91,14 +149,14 @@ public class SubSets {
 		}
 	}
 
-	private static class SubSetsIter<T> extends SubSetsIterBase implements Iterator<List<T>> {
+	private static class SubSetsKIter<T> extends SubSetsKIterBase implements Iterator<List<T>> {
 
 		private final T[] set;
 		private final T[] next;
 		private final List<T> nextList;
 
 		@SuppressWarnings("unchecked")
-		SubSetsIter(Collection<? extends T> set, int k) {
+		SubSetsKIter(Collection<? extends T> set, int k) {
 			super(set.size(), k);
 			this.set = (T[]) set.toArray();
 			next = (T[]) new Object[k];
@@ -115,13 +173,13 @@ public class SubSets {
 		}
 	}
 
-	private static class SubSetsIterInt extends SubSetsIterBase implements Iterator<IntList> {
+	private static class SubSetsKIterInt extends SubSetsKIterBase implements Iterator<IntList> {
 
 		private final int[] set;
 		private final int[] next;
 		private final IntList nextList;
 
-		SubSetsIterInt(IntCollection set, int k) {
+		SubSetsKIterInt(IntCollection set, int k) {
 			super(set.size(), k);
 			this.set = set.toIntArray();
 			next = new int[k];
