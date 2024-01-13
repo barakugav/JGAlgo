@@ -17,10 +17,12 @@ package com.jgalgo.alg;
 
 import java.util.Iterator;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -214,6 +216,117 @@ public interface BfsIter<V, E> extends Iterator<V> {
 		IndexIntIdMap viMap = g.indexGraphVerticesMap();
 		BfsIter.Int indexBfs = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
 		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBfs);
+	}
+
+	/**
+	 * Create a tree from all the vertices and edges traversed by a bread first search.
+	 *
+	 * <p>
+	 * The created graph will contain only the vertices reachable from the source vertex. For each such vertex other
+	 * than the source vertex, the graph will contain the edge that led to it during the search. If there are \(k\)
+	 * reachable vertices, the graph will contain \(k-1\) edges.
+	 *
+	 * <p>
+	 * The returned graph will be directed if the original graph is directed. In such case, the tree is directed from
+	 * the source to the other vertices. To control the directionality of the returned graph, use
+	 * {@link #bfsTree(Graph, Object, boolean)}.
+	 *
+	 * <p>
+	 * If an {@link IntGraph} is passed as an argument, {@link IntGraph} is returned.
+	 *
+	 * @param  <V>    the vertices type
+	 * @param  <E>    the edges type
+	 * @param  g      a graph
+	 * @param  source a vertex in the graph from which the search will start from
+	 * @return        a tree graph that contains all the vertices and edges traversed by a bread first search rooted at
+	 *                the source vertex
+	 */
+	public static <V, E> Graph<V, E> bfsTree(Graph<V, E> g, V source) {
+		return bfsTree(g, source, g.isDirected());
+	}
+
+	/**
+	 * Create a tree from all the vertices and edges traversed by a bread first search, optionally directed or
+	 * undirected.
+	 *
+	 * <p>
+	 * The created graph will contain only the vertices reachable from the source vertex. For each such vertex other
+	 * than the source vertex, the graph will contain the edge that led to it during the search. If there are \(k\)
+	 * reachable vertices, the graph will contain \(k-1\) edges.
+	 *
+	 * <p>
+	 * If an {@link IntGraph} is passed as an argument, {@link IntGraph} is returned.
+	 *
+	 * @param  <V>      the vertices type
+	 * @param  <E>      the edges type
+	 * @param  g        a graph
+	 * @param  source   a vertex in the graph from which the search will start from
+	 * @param  directed if {@code true} the returned tree will be directed. If the original graph was undirected and a
+	 *                      directed tree is created, the edges in the tree will be directed from the source towards the
+	 *                      other vertices
+	 * @return          a tree graph that contains all the vertices and edges traversed by a bread first search rooted
+	 *                  at the source vertex
+	 */
+	public static <V, E> Graph<V, E> bfsTree(Graph<V, E> g, V source, boolean directed) {
+		if (g instanceof IndexGraph) {
+			IndexGraph ig = (IndexGraph) g;
+			int src = ((Integer) source).intValue();
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
+			for (BfsIter.Int iter = newInstance(ig, src); iter.hasNext();) {
+				int v = iter.nextInt();
+				b.addVertex(v);
+				if (v == src)
+					continue;
+				int e = iter.lastEdgeInt();
+				assert e >= 0;
+				b.addEdge(ig.edgeEndpoint(e, v), v, e);
+			}
+			@SuppressWarnings("unchecked")
+			Graph<V, E> tree = (Graph<V, E>) b.build();
+			return tree;
+
+		} else if (g instanceof IntGraph) {
+			IndexGraph ig = g.indexGraph();
+			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();
+			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();
+			int srcIdx = viMap.idToIndex(((Integer) source).intValue());
+			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);
+			for (BfsIter.Int iter = newInstance(ig, srcIdx); iter.hasNext();) {
+				int vIdx = iter.nextInt();
+				int v = viMap.indexToIdInt(vIdx);
+				b.addVertex(v);
+				if (vIdx == srcIdx)
+					continue;
+				int eIdx = iter.lastEdgeInt();
+				int uIdx = ig.edgeEndpoint(eIdx, vIdx);
+				int e = eiMap.indexToIdInt(eIdx);
+				int u = viMap.indexToIdInt(uIdx);
+				b.addEdge(u, v, e);
+			}
+			@SuppressWarnings("unchecked")
+			Graph<V, E> tree = (Graph<V, E>) b.build();
+			return tree;
+
+		} else {
+			IndexGraph ig = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+			int srcIdx = viMap.idToIndex(source);
+			GraphBuilder<V, E> b = GraphBuilder.newInstance(directed);
+			for (BfsIter.Int iter = newInstance(ig, srcIdx); iter.hasNext();) {
+				int vIdx = iter.nextInt();
+				V v = viMap.indexToId(vIdx);
+				b.addVertex(v);
+				if (vIdx == srcIdx)
+					continue;
+				int eIdx = iter.lastEdgeInt();
+				int uIdx = ig.edgeEndpoint(eIdx, vIdx);
+				E e = eiMap.indexToId(eIdx);
+				V u = viMap.indexToId(uIdx);
+				b.addEdge(u, v, e);
+			}
+			return b.build();
+		}
 	}
 
 }

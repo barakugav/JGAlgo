@@ -16,6 +16,7 @@
 
 package com.jgalgo.alg;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.Random;
@@ -74,6 +75,37 @@ public class BfsIterTest extends TestBase {
 			visited2.add(v);
 		}
 		assert !it.hasNext();
+	}
+
+	@Test
+	public void bfsTree() {
+		final long seed = 0x4bb5612c04285bd0L;
+		final SeedGenerator seedGen = new SeedGenerator(seed);
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 18).repeat(32);
+		tester.addPhase().withArgs(16, 32).repeat(32);
+		tester.addPhase().withArgs(32, 64).repeat(16);
+		tester.addPhase().withArgs(2048, 8192).repeat(1);
+		tester.run((n, m) -> {
+			Random rand = new Random(seedGen.nextSeed());
+			Graph<Integer, Integer> g0 = GraphsTestUtils.randGraph(n, m, rand.nextBoolean(), rand.nextLong());
+			Graph<Integer, Integer> g = maybeIndexGraph(g0, rand);
+			Integer source = Graphs.randVertex(g, rand);
+
+			{
+				Graph<Integer, Integer> tree = BfsIter.bfsTree(g, source);
+				assertTrue(Trees.isTree(tree, source));
+				assertEquals(Path.reachableVertices(g, source), tree.vertices());
+				assertEqualsBool(g.isDirected(), tree.isDirected());
+			}
+
+			foreachBoolConfig(directed -> {
+				Graph<Integer, Integer> tree = BfsIter.bfsTree(g, source, directed);
+				assertTrue(Trees.isTree(tree, source));
+				assertEquals(Path.reachableVertices(g, source), tree.vertices());
+				assertEqualsBool(directed, tree.isDirected());
+			});
+		});
 	}
 
 }
