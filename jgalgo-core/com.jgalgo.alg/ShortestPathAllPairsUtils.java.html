@@ -25,6 +25,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Assertions;
 import it.unimi.dsi.fastutil.BigArrays;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntCollection;
@@ -35,18 +36,18 @@ class ShortestPathAllPairsUtils {
 	private ShortestPathAllPairsUtils() {}
 
 	static int[] vToResIdx(IndexGraph g, IntCollection verticesSubset) {
-<span class="fc" id="L38">		int[] vToResIdx = new int[g.vertices().size()];</span>
-<span class="fc" id="L39">		Arrays.fill(vToResIdx, -1);</span>
-<span class="fc bfc" id="L40" title="All 2 branches covered.">		boolean allVertices = verticesSubset == null;</span>
-<span class="fc bfc" id="L41" title="All 2 branches covered.">		if (allVertices) {</span>
-<span class="fc bfc" id="L42" title="All 2 branches covered.">			for (int v : range(g.vertices().size()))</span>
-<span class="fc" id="L43">				vToResIdx[v] = v;</span>
+<span class="fc" id="L39">		int[] vToResIdx = new int[g.vertices().size()];</span>
+<span class="fc" id="L40">		Arrays.fill(vToResIdx, -1);</span>
+<span class="fc bfc" id="L41" title="All 2 branches covered.">		boolean allVertices = verticesSubset == null;</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">		if (allVertices) {</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">			for (int v : range(g.vertices().size()))</span>
+<span class="fc" id="L44">				vToResIdx[v] = v;</span>
 		} else {
-<span class="fc" id="L45">			int resIdx = 0;</span>
-<span class="fc bfc" id="L46" title="All 2 branches covered.">			for (int v : verticesSubset)</span>
-<span class="fc" id="L47">				vToResIdx[v] = resIdx++;</span>
+<span class="fc" id="L46">			int resIdx = 0;</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">			for (int v : verticesSubset)</span>
+<span class="fc" id="L48">				vToResIdx[v] = resIdx++;</span>
 		}
-<span class="fc" id="L49">		return vToResIdx;</span>
+<span class="fc" id="L50">		return vToResIdx;</span>
 	}
 
 	abstract static class IndexResult implements ShortestPathAllPairs.IResult {
@@ -64,108 +65,113 @@ class ShortestPathAllPairsUtils {
 			final IndexGraph g;
 			private final int[][] edges;
 
-<span class="fc" id="L67">			AllVertices(IndexGraph g) {</span>
-<span class="fc" id="L68">				this.g = g;</span>
-<span class="fc" id="L69">				int n = g.vertices().size();</span>
-<span class="fc" id="L70">				edges = new int[n][n];</span>
-<span class="fc" id="L71">				BigArrays.fill(edges, -1);</span>
-<span class="fc" id="L72">			}</span>
+<span class="fc" id="L68">			AllVertices(IndexGraph g) {</span>
+<span class="fc" id="L69">				this.g = g;</span>
+<span class="fc" id="L70">				int n = g.vertices().size();</span>
+<span class="fc" id="L71">				edges = new int[n][n];</span>
+<span class="fc" id="L72">				BigArrays.fill(edges, -1);</span>
+<span class="fc" id="L73">			}</span>
 
 			@Override
 			int getEdgeTo(int source, int target) {
-<span class="fc" id="L76">				return edges[source][target];</span>
+<span class="fc" id="L77">				return edges[source][target];</span>
 			}
 
 			@Override
 			void setEdgeTo(int source, int target, int edge) {
-<span class="fc" id="L81">				edges[source][target] = edge;</span>
-<span class="fc" id="L82">			}</span>
+<span class="fc" id="L82">				edges[source][target] = edge;</span>
+<span class="fc" id="L83">			}</span>
 		}
 
-<span class="fc" id="L85">		static class Undirected extends AllVertices {</span>
+<span class="fc" id="L86">		static class Undirected extends AllVertices {</span>
 
 			private final int n;
 			private final double[] distances;
 
 			Undirected(IndexGraph g) {
-<span class="fc" id="L91">				super(g);</span>
-<span class="fc" id="L92">				n = g.vertices().size();</span>
-<span class="fc" id="L93">				distances = new double[n * (n - 1) / 2];</span>
-<span class="fc" id="L94">				Arrays.fill(distances, Double.POSITIVE_INFINITY);</span>
-<span class="fc" id="L95">			}</span>
+<span class="fc" id="L92">				super(g);</span>
+<span class="fc" id="L93">				n = g.vertices().size();</span>
+<span class="fc" id="L94">				distances = new double[n * (n - 1) / 2];</span>
+<span class="fc" id="L95">				Arrays.fill(distances, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L96">			}</span>
 
 			private int index(int u, int v) {
-<span class="pc bnc" id="L98" title="All 2 branches missed.">				assert u != v;</span>
-<span class="fc bfc" id="L99" title="All 2 branches covered.">				if (u &gt; v) {</span>
-<span class="fc" id="L100">					int temp = u;</span>
-<span class="fc" id="L101">					u = v;</span>
-<span class="fc" id="L102">					v = temp;</span>
+<span class="pc bnc" id="L99" title="All 2 branches missed.">				assert u != v;</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">				if (u &gt; v) {</span>
+<span class="fc" id="L101">					int temp = u;</span>
+<span class="fc" id="L102">					u = v;</span>
+<span class="fc" id="L103">					v = temp;</span>
 				}
 				/* index mapping assume always u &lt; v (strictly!) */
-<span class="fc" id="L105">				return (2 * n - u - 1) * u / 2 + v - u - 1;</span>
+<span class="fc" id="L106">				return (2 * n - u - 1) * u / 2 + v - u - 1;</span>
 			}
 
 			@Override
 			void setDistance(int source, int target, double distance) {
-<span class="fc" id="L110">				distances[index(source, target)] = distance;</span>
-<span class="fc" id="L111">			}</span>
+<span class="fc" id="L111">				distances[index(source, target)] = distance;</span>
+<span class="fc" id="L112">			}</span>
 
 			@Override
 			public double distance(int source, int target) {
-<span class="fc bfc" id="L115" title="All 2 branches covered.">				return source != target ? distances[index(source, target)] : 0;</span>
+<span class="fc" id="L116">				Assertions.checkVertex(source, n);</span>
+<span class="fc" id="L117">				Assertions.checkVertex(target, n);</span>
+<span class="fc bfc" id="L118" title="All 2 branches covered.">				return source != target ? distances[index(source, target)] : 0;</span>
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
-<span class="fc bfc" id="L120" title="All 2 branches covered.">				if (distance(source, target) == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L121">					return null;</span>
-<span class="fc" id="L122">				IntList path = new IntArrayList();</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">				for (int v = source; v != target;) {</span>
-<span class="fc" id="L124">					int e = getEdgeTo(v, target);</span>
-<span class="pc bnc" id="L125" title="All 2 branches missed.">					assert e != -1;</span>
-<span class="fc" id="L126">					path.add(e);</span>
-<span class="fc" id="L127">					v = g.edgeEndpoint(e, v);</span>
-<span class="fc" id="L128">				}</span>
-<span class="fc" id="L129">				return new PathImpl(g, source, target, path);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">				if (distance(source, target) == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L124">					return null;</span>
+<span class="fc" id="L125">				IntList path = new IntArrayList();</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">				for (int v = source; v != target;) {</span>
+<span class="fc" id="L127">					int e = getEdgeTo(v, target);</span>
+<span class="pc bnc" id="L128" title="All 2 branches missed.">					assert e != -1;</span>
+<span class="fc" id="L129">					path.add(e);</span>
+<span class="fc" id="L130">					v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L131">				}</span>
+<span class="fc" id="L132">				return new PathImpl(g, source, target, path);</span>
 			}
 		}
 
-<span class="fc" id="L133">		static class Directed extends AllVertices {</span>
+<span class="fc" id="L136">		static class Directed extends AllVertices {</span>
 			private final double[][] distances;
 
 			Directed(IndexGraph g) {
-<span class="fc" id="L137">				super(g);</span>
-<span class="fc" id="L138">				int n = g.vertices().size();</span>
-<span class="fc" id="L139">				distances = new double[n][n];</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">				for (int v : range(n)) {</span>
-<span class="fc" id="L141">					Arrays.fill(distances[v], Double.POSITIVE_INFINITY);</span>
-<span class="fc" id="L142">					setDistance(v, v, 0);</span>
-<span class="fc" id="L143">				}</span>
-<span class="fc" id="L144">			}</span>
+<span class="fc" id="L140">				super(g);</span>
+<span class="fc" id="L141">				int n = g.vertices().size();</span>
+<span class="fc" id="L142">				distances = new double[n][n];</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">				for (int v : range(n)) {</span>
+<span class="fc" id="L144">					Arrays.fill(distances[v], Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L145">					setDistance(v, v, 0);</span>
+<span class="fc" id="L146">				}</span>
+<span class="fc" id="L147">			}</span>
 
 			@Override
 			void setDistance(int source, int target, double distance) {
-<span class="fc" id="L148">				distances[source][target] = distance;</span>
-<span class="fc" id="L149">			}</span>
+<span class="fc" id="L151">				distances[source][target] = distance;</span>
+<span class="fc" id="L152">			}</span>
 
 			@Override
 			public double distance(int source, int target) {
-<span class="fc" id="L153">				return distances[source][target];</span>
+<span class="fc" id="L156">				final int n = distances.length;</span>
+<span class="fc" id="L157">				Assertions.checkVertex(source, n);</span>
+<span class="fc" id="L158">				Assertions.checkVertex(target, n);</span>
+<span class="fc" id="L159">				return distances[source][target];</span>
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
-<span class="fc bfc" id="L158" title="All 2 branches covered.">				if (distance(source, target) == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L159">					return null;</span>
-<span class="fc" id="L160">				IntList path = new IntArrayList();</span>
-<span class="fc bfc" id="L161" title="All 2 branches covered.">				for (int v = source; v != target;) {</span>
-<span class="fc" id="L162">					int e = getEdgeTo(v, target);</span>
-<span class="pc bnc" id="L163" title="All 2 branches missed.">					assert e != -1;</span>
-<span class="pc bnc" id="L164" title="All 2 branches missed.">					assert v == g.edgeSource(e);</span>
-<span class="fc" id="L165">					path.add(e);</span>
-<span class="fc" id="L166">					v = g.edgeTarget(e);</span>
-<span class="fc" id="L167">				}</span>
-<span class="fc" id="L168">				return new PathImpl(g, source, target, path);</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">				if (distance(source, target) == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L165">					return null;</span>
+<span class="fc" id="L166">				IntList path = new IntArrayList();</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">				for (int v = source; v != target;) {</span>
+<span class="fc" id="L168">					int e = getEdgeTo(v, target);</span>
+<span class="pc bnc" id="L169" title="All 2 branches missed.">					assert e != -1;</span>
+<span class="pc bnc" id="L170" title="All 2 branches missed.">					assert v == g.edgeSource(e);</span>
+<span class="fc" id="L171">					path.add(e);</span>
+<span class="fc" id="L172">					v = g.edgeTarget(e);</span>
+<span class="fc" id="L173">				}</span>
+<span class="fc" id="L174">				return new PathImpl(g, source, target, path);</span>
 			}
 		}
 
@@ -175,24 +181,26 @@ class ShortestPathAllPairsUtils {
 
 		final ShortestPathSingleSource.IResult[] ssspResults;
 
-<span class="fc" id="L178">		IndexResultFromSSSP(ShortestPathSingleSource.IResult[] ssspResults) {</span>
-<span class="fc" id="L179">			this.ssspResults = ssspResults;</span>
-<span class="fc" id="L180">		}</span>
+<span class="fc" id="L184">		IndexResultFromSSSP(ShortestPathSingleSource.IResult[] ssspResults) {</span>
+<span class="fc" id="L185">			this.ssspResults = ssspResults;</span>
+<span class="fc" id="L186">		}</span>
 
 		static class AllVertices extends IndexResultFromSSSP {
 
 			AllVertices(IResult[] ssspResults) {
-<span class="fc" id="L185">				super(ssspResults);</span>
-<span class="fc" id="L186">			}</span>
+<span class="fc" id="L191">				super(ssspResults);</span>
+<span class="fc" id="L192">			}</span>
 
 			@Override
 			public double distance(int source, int target) {
-<span class="fc" id="L190">				return ssspResults[source].distance(target);</span>
+<span class="fc" id="L196">				Assertions.checkVertex(source, ssspResults.length);</span>
+<span class="fc" id="L197">				return ssspResults[source].distance(target);</span>
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
-<span class="fc" id="L195">				return ssspResults[source].getPath(target);</span>
+<span class="fc" id="L202">				Assertions.checkVertex(source, ssspResults.length);</span>
+<span class="fc" id="L203">				return ssspResults[source].getPath(target);</span>
 			}
 
 		}
@@ -201,21 +209,32 @@ class ShortestPathAllPairsUtils {
 
 			final int[] vToResIdx;
 
-			VerticesSubset(IResult[] ssspResults, int[] vToResIdx) {
-<span class="fc" id="L205">				super(ssspResults);</span>
-<span class="fc" id="L206">				this.vToResIdx = vToResIdx;</span>
-<span class="fc" id="L207">			}</span>
+			VerticesSubset(ShortestPathSingleSource.IResult[] ssspResults, int[] vToResIdx) {
+<span class="fc" id="L213">				super(ssspResults);</span>
+<span class="fc" id="L214">				this.vToResIdx = vToResIdx;</span>
+<span class="fc" id="L215">			}</span>
 
 			@Override
 			public double distance(int source, int target) {
-<span class="fc" id="L211">				return ssspResults[vToResIdx[source]].distance(target);</span>
+<span class="fc" id="L219">				int sourceIdx = resultIdx(source);</span>
+<span class="fc" id="L220">				resultIdx(target); /* checks that target is in the subset */</span>
+<span class="fc" id="L221">				return ssspResults[sourceIdx].distance(target);</span>
 			}
 
 			@Override
 			public IPath getPath(int source, int target) {
-<span class="fc" id="L216">				return ssspResults[vToResIdx[source]].getPath(target);</span>
+<span class="fc" id="L226">				int sourceIdx = resultIdx(source);</span>
+<span class="fc" id="L227">				resultIdx(target); /* checks that target is in the subset */</span>
+<span class="fc" id="L228">				return ssspResults[sourceIdx].getPath(target);</span>
 			}
 
+			private int resultIdx(int vertex) {
+<span class="fc" id="L232">				Assertions.checkVertex(vertex, vToResIdx.length);</span>
+<span class="fc" id="L233">				int idx = vToResIdx[vertex];</span>
+<span class="fc bfc" id="L234" title="All 2 branches covered.">				if (idx &lt; 0)</span>
+<span class="fc" id="L235">					throw new IllegalArgumentException(&quot;no results for vertex &quot; + vertex);</span>
+<span class="fc" id="L236">				return idx;</span>
+			}
 		}
 
 	}
@@ -226,21 +245,21 @@ class ShortestPathAllPairsUtils {
 		private final Graph&lt;V, E&gt; g;
 		private final IndexIdMap&lt;V&gt; viMap;
 
-<span class="fc" id="L229">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, ShortestPathAllPairs.IResult indexRes) {</span>
-<span class="fc" id="L230">			this.indexRes = Objects.requireNonNull(indexRes);</span>
-<span class="fc" id="L231">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L232">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L233">		}</span>
+<span class="fc" id="L248">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, ShortestPathAllPairs.IResult indexRes) {</span>
+<span class="fc" id="L249">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L250">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L251">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L252">		}</span>
 
 		@Override
 		public double distance(V source, V target) {
-<span class="fc" id="L237">			return indexRes.distance(viMap.idToIndex(source), viMap.idToIndex(target));</span>
+<span class="fc" id="L256">			return indexRes.distance(viMap.idToIndex(source), viMap.idToIndex(target));</span>
 		}
 
 		@Override
 		public Path&lt;V, E&gt; getPath(V source, V target) {
-<span class="fc" id="L242">			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));</span>
-<span class="fc" id="L243">			return PathImpl.objPathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L261">			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));</span>
+<span class="fc" id="L262">			return PathImpl.objPathFromIndexPath(g, indexPath);</span>
 		}
 	}
 
@@ -250,21 +269,21 @@ class ShortestPathAllPairsUtils {
 		private final IntGraph g;
 		private final IndexIntIdMap viMap;
 
-<span class="fc" id="L253">		IntResultFromIndexResult(IntGraph g, ShortestPathAllPairs.IResult indexRes) {</span>
-<span class="fc" id="L254">			this.indexRes = Objects.requireNonNull(indexRes);</span>
-<span class="fc" id="L255">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L256">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L257">		}</span>
+<span class="fc" id="L272">		IntResultFromIndexResult(IntGraph g, ShortestPathAllPairs.IResult indexRes) {</span>
+<span class="fc" id="L273">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L274">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L275">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L276">		}</span>
 
 		@Override
 		public double distance(int source, int target) {
-<span class="fc" id="L261">			return indexRes.distance(viMap.idToIndex(source), viMap.idToIndex(target));</span>
+<span class="fc" id="L280">			return indexRes.distance(viMap.idToIndex(source), viMap.idToIndex(target));</span>
 		}
 
 		@Override
 		public IPath getPath(int source, int target) {
-<span class="fc" id="L266">			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));</span>
-<span class="fc" id="L267">			return PathImpl.intPathFromIndexPath(g, indexPath);</span>
+<span class="fc" id="L285">			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));</span>
+<span class="fc" id="L286">			return PathImpl.intPathFromIndexPath(g, indexPath);</span>
 		}
 	}
 

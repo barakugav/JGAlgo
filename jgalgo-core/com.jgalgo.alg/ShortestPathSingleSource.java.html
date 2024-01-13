@@ -19,6 +19,7 @@ package com.jgalgo.alg;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 
 /**
@@ -124,17 +125,20 @@ public interface ShortestPathSingleSource {
 		/**
 		 * Get the distance to a target vertex.
 		 *
-		 * @param  target a target vertex in the graph
-		 * @return        the sum of the shortest path edges from the source to the target, or
-		 *                {@code Double.POSITIVE_INFINITY} if no such path found.
+		 * @param  target                a target vertex in the graph
+		 * @return                       the sum of the shortest path edges from the source to the target, or
+		 *                               {@code Double.POSITIVE_INFINITY} if no such path found
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
 		 */
 		public double distance(V target);
 
 		/**
 		 * Get shortest path to a target vertex.
 		 *
-		 * @param  target a target vertex in the graph
-		 * @return        the shortest path from the source to the target or {@code null} if no such path found.
+		 * @param  target                a target vertex in the graph
+		 * @return                       the shortest path from the source to the target or {@code null} if no such path
+		 *                               found.
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
 		 */
 		public Path&lt;V, E&gt; getPath(V target);
 	}
@@ -149,9 +153,10 @@ public interface ShortestPathSingleSource {
 		/**
 		 * Get the distance to a target vertex.
 		 *
-		 * @param  target a target vertex in the graph
-		 * @return        the sum of the shortest path edges from the source to the target, or
-		 *                {@code Double.POSITIVE_INFINITY} if no such path found.
+		 * @param  target                a target vertex in the graph
+		 * @return                       the sum of the shortest path edges from the source to the target, or
+		 *                               {@code Double.POSITIVE_INFINITY} if no such path found.
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
 		 */
 		public double distance(int target);
 
@@ -163,14 +168,16 @@ public interface ShortestPathSingleSource {
 		@Deprecated
 		@Override
 		default double distance(Integer target) {
-<span class="fc" id="L166">			return distance(target.intValue());</span>
+<span class="fc" id="L171">			return distance(target.intValue());</span>
 		}
 
 		/**
 		 * Get shortest path to a target vertex.
 		 *
-		 * @param  target a target vertex in the graph
-		 * @return        the shortest path from the source to the target or {@code null} if no such path found.
+		 * @param  target                a target vertex in the graph
+		 * @return                       the shortest path from the source to the target or {@code null} if no such path
+		 *                               found
+		 * @throws NoSuchVertexException if {@code target} is not a vertex in the graph
 		 */
 		public IPath getPath(int target);
 
@@ -182,7 +189,7 @@ public interface ShortestPathSingleSource {
 		@Deprecated
 		@Override
 		default IPath getPath(Integer target) {
-<span class="fc" id="L185">			return getPath(target.intValue());</span>
+<span class="fc" id="L192">			return getPath(target.intValue());</span>
 		}
 	}
 
@@ -196,7 +203,7 @@ public interface ShortestPathSingleSource {
 	 * @return a default implementation of {@link ShortestPathSingleSource}
 	 */
 	static ShortestPathSingleSource newInstance() {
-<span class="fc" id="L199">		return builder().build();</span>
+<span class="fc" id="L206">		return builder().build();</span>
 	}
 
 	/**
@@ -208,7 +215,7 @@ public interface ShortestPathSingleSource {
 	 * @return a new builder that can build {@link ShortestPathSingleSource} objects
 	 */
 	static ShortestPathSingleSource.Builder builder() {
-<span class="fc" id="L211">		return new ShortestPathSingleSourceUtils.BuilderImpl();</span>
+<span class="fc" id="L218">		return new ShortestPathSingleSourceUtils.BuilderImpl();</span>
 	}
 
 	/**
