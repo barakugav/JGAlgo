@@ -23,12 +23,11 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexGraphBuilder;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.BitmapSet;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.IterTools;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntIterator;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -75,22 +74,18 @@ class ClosuresEnumeratorSchrageBaker implements ClosuresEnumeratorBase {
 		/* Build the condensation graph */
 		IndexGraphBuilder sccGraph0 = IndexGraphBuilder.directed();
 		sccGraph0.addVertices(range(sccNum));
-		Bitmap seenBlocks = new Bitmap(sccNum);
-		IntList seenBlockList = new IntArrayList();
+		BitmapSet seenBlocks = new BitmapSet(sccNum);
 		for (int b1 : range(sccNum)) {
 			for (int u : sccs.blockVertices(b1)) {
 				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
 					int b2 = sccs.vertexBlock(eit.targetInt());
-					if (b1 == b2 || seenBlocks.get(b2))
+					if (b1 == b2 || !seenBlocks.set(b2))
 						continue;
-					seenBlocks.set(b2);
-					seenBlockList.add(b2);
 					sccGraph0.addEdge(b1, b2);
 				}
 			}
-			seenBlocks.clearAllUnsafe(seenBlockList);
-			seenBlockList.clear();
+			seenBlocks.clear();
 		}
 		IndexGraph sccGraph = sccGraph0.build();
 

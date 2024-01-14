@@ -181,7 +181,7 @@ public class BitmapTest extends TestBase {
 				}
 				assertEquals(oneBits.size(), b.cardinality());
 
-				b.clearAllUnsafe(oneBits);
+				JGAlgoUtils.clearAllUnsafe(b, oneBits);
 
 				for (int i : range(size))
 					assertFalse(b.get(i));

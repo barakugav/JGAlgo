@@ -29,11 +29,12 @@ import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.BitmapSet;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.IterTools;
+import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.Stack;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntObjectPair;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
@@ -93,8 +94,7 @@ class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponents
 		final int n = g.vertices().size();
 		var isCliqueState = new Object() {
 			final Bitmap cBitmap = new Bitmap(n);
-			final IntList neighbors = new IntArrayList();
-			final Bitmap neighborsBitmap = new Bitmap(n);
+			final BitmapSet neighbors = new BitmapSet(n);
 		};
 		Predicate<IntSet> isClique = c -> {
 			if (c.size() <= 1)
@@ -104,26 +104,22 @@ class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponents
 				cBitmap.set(v);
 			boolean result = true;
 			verticesLoop: for (int u : c) {
-				IntList neighbors = isCliqueState.neighbors;
-				Bitmap neighborsBitmap = isCliqueState.neighborsBitmap;
+				BitmapSet neighbors = isCliqueState.neighbors;
 				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
 					eit.nextInt();
 					int v = eit.targetInt();
-					if (cBitmap.get(v) && !neighborsBitmap.get(v)) {
-						neighbors.add(v);
-						neighborsBitmap.set(v);
-					}
+					if (cBitmap.get(v))
+						neighbors.set(v);
 				}
 				for (int v : c) {
-					if (u != v && !neighborsBitmap.get(v)) {
+					if (u != v && !neighbors.get(v)) {
 						result = false;
 						break verticesLoop;
 					}
 				}
-				neighborsBitmap.clearAllUnsafe(neighbors);
 				neighbors.clear();
 			}
-			cBitmap.clearAllUnsafe(c);
+			JGAlgoUtils.clearAllUnsafe(cBitmap, c);
 			return result;
 		};
 
@@ -318,19 +314,15 @@ class KVertexConnectedComponentsWhiteMoody implements KVertexConnectedComponents
 				for (int vSetIdx : range(setsNum)) {
 					if (visitedSets.get(vSetIdx))
 						continue;
-					IntList intersection = new IntArrayList();
-					Bitmap intersectionBitmap = new Bitmap(n);
+					BitmapSet intersection = new BitmapSet(n);
 					for (int v : sets.get(vSetIdx)) {
-						if (uSetBitmap.get(v)) {
+						if (uSetBitmap.get(v))
 							intersection.add(v);
-							intersectionBitmap.set(v);
-						}
 					}
 					if (intersection.size() >= k) {
 						visitedSets.set(vSetIdx);
 						comp[compSize++] = vSetIdx;
 					}
-					intersectionBitmap.clearAllUnsafe(intersection);
 					intersection.clear();
 				}
 			}

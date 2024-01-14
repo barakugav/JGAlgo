@@ -28,6 +28,7 @@ import com.jgalgo.internal.ds.DoubleObjBinarySearchTree;
 import com.jgalgo.internal.ds.DoubleObjReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.BitmapSet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntArrays;
@@ -70,10 +71,8 @@ class KShortestPathsSTYen implements KShortestPathsSTBase {
 		final DoubleObjBinarySearchTree<ObjectIntPair<IntList>> heap = DoubleObjBinarySearchTree.newInstance();
 		int heapSize = 0;
 
-		Bitmap verticesMask = new Bitmap(n);
-		Bitmap edgesMask = new Bitmap(m);
-		IntList maskedVertices = new IntArrayList(k <= n ? k : 16);
-		IntList maskedEdges = new IntArrayList(k <= m ? k : 16);
+		BitmapSet verticesMask = new BitmapSet(n);
+		BitmapSet edgesMask = new BitmapSet(m);
 		ShortestPathSubroutine spFunc = new ShortestPathSubroutine(g, w, target, verticesMask, edgesMask);
 
 		/* compute the shortest path from source to target */
@@ -103,9 +102,8 @@ class KShortestPathsSTYen implements KShortestPathsSTBase {
 
 				/* remove vertices that are part of the root path to enforce simple paths */
 				for (int v : kthPathVertices.subList(0, kthPathDeviationIdx - 1)) {
-					assert !verticesMask.get(v);
-					verticesMask.set(v);
-					maskedVertices.add(v);
+					boolean modified = verticesMask.set(v);
+					assert modified;
 				}
 
 				/* remove edges that are part of the previous shortest paths */
@@ -130,13 +128,8 @@ class KShortestPathsSTYen implements KShortestPathsSTBase {
 						return true;
 					int lastEdge0 = finalDeviationIdx == 0 ? -1 : path.getInt(finalDeviationIdx - 1);
 					boolean commonSubPath = lastEdge0 == lastEdge;
-					if (commonSubPath) {
-						int e = path.getInt(finalDeviationIdx);
-						if (!edgesMask.get(e)) {
-							edgesMask.set(e);
-							maskedEdges.add(e);
-						}
-					}
+					if (commonSubPath)
+						edgesMask.set(path.getInt(finalDeviationIdx));
 					return !commonSubPath;
 				});
 
@@ -144,9 +137,8 @@ class KShortestPathsSTYen implements KShortestPathsSTBase {
 				/* up to deviationIdx-1 already masked, mask prev vertex only */
 				if (deviationIdx > 0) {
 					int v = kthPathVertices.getInt(deviationIdx - 1);
-					assert !verticesMask.get(v);
-					verticesMask.set(v);
-					maskedVertices.add(v);
+					boolean modified = verticesMask.set(v);
+					assert modified;
 				}
 
 				shortestPath = spFunc.computeShortestPath(spurNode);
@@ -165,11 +157,9 @@ class KShortestPathsSTYen implements KShortestPathsSTBase {
 						heap.extractMax();
 				}
 
-				edgesMask.clearAllUnsafe(maskedEdges);
-				maskedEdges.clear();
+				edgesMask.clear();
 			}
-			verticesMask.clearAllUnsafe(maskedVertices);
-			maskedVertices.clear();
+			verticesMask.clear();
 			relevantPaths.clear();
 		}
 
@@ -183,8 +173,8 @@ class KShortestPathsSTYen implements KShortestPathsSTBase {
 		private final IndexGraph g;
 		private final IWeightFunction w;
 		private final int target;
-		private final Bitmap verticesMask;
-		private final Bitmap edgesMask;
+		private final BitmapSet verticesMask;
+		private final BitmapSet edgesMask;
 
 		private final DoubleIntReferenceableHeap heapS;
 		private final DoubleIntReferenceableHeap heapT;
@@ -209,7 +199,8 @@ class KShortestPathsSTYen implements KShortestPathsSTBase {
 		private final IntList toClearS = new IntArrayList();
 		private final IntList toClearT = new IntArrayList();
 
-		ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target, Bitmap verticesMask, Bitmap edgesMask) {
+		ShortestPathSubroutine(IndexGraph g, IWeightFunction w, int target, BitmapSet verticesMask,
+				BitmapSet edgesMask) {
 			this.g = g;
 			this.w = w;
 			this.target = target;
@@ -240,8 +231,8 @@ class KShortestPathsSTYen implements KShortestPathsSTBase {
 			heapT.clear();
 			JGAlgoUtils.clearAllUnsafe(heapPtrsS, toClearS);
 			JGAlgoUtils.clearAllUnsafe(heapPtrsT, toClearT);
-			visitedS.clearAllUnsafe(toClearS);
-			visitedT.clearAllUnsafe(toClearT);
+			JGAlgoUtils.clearAllUnsafe(visitedS, toClearS);
+			JGAlgoUtils.clearAllUnsafe(visitedT, toClearT);
 			toClearS.clear();
 			toClearT.clear();
 			return res;

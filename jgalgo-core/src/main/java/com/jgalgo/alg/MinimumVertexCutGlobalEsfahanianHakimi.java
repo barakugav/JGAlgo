@@ -22,9 +22,8 @@ import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.BitmapSet;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
@@ -53,7 +52,7 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 		boolean startVertexNeighborsIsOut = false;
 		if (g.isDirected()) {
 			for (int v : range(n)) {
-				IntList vNeighbors = neighbors.outNeighbors(v);
+				IntSet vNeighbors = neighbors.outNeighbors(v);
 				if (minCutSize > vNeighbors.size()) {
 					minCutSize = vNeighbors.size();
 					startVertexNeighborsIsOut = true;
@@ -68,7 +67,7 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 			}
 		} else {
 			for (int v : range(n)) {
-				IntList vNeighbors = neighbors.outNeighbors(v);
+				IntSet vNeighbors = neighbors.outNeighbors(v);
 				if (minCutSize > vNeighbors.size()) {
 					minCutSize = vNeighbors.size();
 					startVertexNeighborsIsOut = true;
@@ -87,7 +86,7 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 
 		final AuxiliaryGraph auxiliaryGraph = new AuxiliaryGraph(g, null);
 
-		IntList startVertexNeighbors = neighbors.neighbors(startVertex);
+		IntSet startVertexNeighbors = neighbors.neighbors(startVertex);
 
 		for (int v : range(n)) {
 			if (v == startVertex || startVertexNeighbors.contains(v))
@@ -100,9 +99,10 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 		}
 
 		int d = startVertexNeighbors.size();
+		int[] startVertexNeighborsArray = startVertexNeighbors.toIntArray();
 		for (int i : range(d - 1)) { // should be up to d - 1
 			for (int j : range(i + 1, d)) { // should be up to d - 1
-				int u = startVertexNeighbors.getInt(i), v = startVertexNeighbors.getInt(j);
+				int u = startVertexNeighborsArray[i], v = startVertexNeighborsArray[j];
 				int[] cut = minCutStAlgo.computeMinCut(g, u, v, auxiliaryGraph);
 				if (cut != null && minCutSize > cut.length) {
 					minCutSize = cut.length;
@@ -116,42 +116,40 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 
 	private static class Neighbors {
 		private final IndexGraph g;
-		private final Bitmap neighborsBitmap;
-		private final IntList neighborsList;
+		private final BitmapSet neighbors;
 
 		Neighbors(IndexGraph g) {
 			this.g = g;
 			final int n = g.vertices().size();
-			neighborsBitmap = new Bitmap(n);
-			neighborsList = new IntArrayList();
+			neighbors = new BitmapSet(n);
 		}
 
-		IntList outNeighbors(int source) {
-			neighborsList.clear();
-			neighborsBitmap.set(source);
+		IntSet outNeighbors(int source) {
+			neighbors.clear();
 			addOutNeighbors(source);
-			neighborsBitmap.clear(source);
-			neighborsBitmap.clearAllUnsafe(neighborsList);
-			return neighborsList;
+			return neighbors;
 		}
 
-		IntList inNeighbors(int target) {
-			neighborsList.clear();
-			neighborsBitmap.set(target);
+		IntSet inNeighbors(int target) {
+			neighbors.clear();
 			addInNeighbors(target);
-			neighborsBitmap.clear(target);
-			neighborsBitmap.clearAllUnsafe(neighborsList);
-			return neighborsList;
+			return neighbors;
+		}
+
+		IntSet neighbors(int vertex) {
+			neighbors.clear();
+			addOutNeighbors(vertex);
+			if (g.isDirected())
+				addInNeighbors(vertex);
+			return neighbors;
 		}
 
 		private void addOutNeighbors(int source) {
 			for (IEdgeIter eit = g.outEdges(source).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.targetInt();
-				if (!neighborsBitmap.get(v)) {
-					neighborsBitmap.set(v);
-					neighborsList.add(v);
-				}
+				if (v != source)
+					neighbors.set(v);
 			}
 		}
 
@@ -159,22 +157,9 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 			for (IEdgeIter eit = g.inEdges(target).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int u = eit.sourceInt();
-				if (!neighborsBitmap.get(u)) {
-					neighborsBitmap.set(u);
-					neighborsList.add(u);
-				}
+				if (u != target)
+					neighbors.set(u);
 			}
-		}
-
-		IntList neighbors(int vertex) {
-			neighborsList.clear();
-			neighborsBitmap.set(vertex);
-			addOutNeighbors(vertex);
-			if (g.isDirected())
-				addInNeighbors(vertex);
-			neighborsBitmap.clear(vertex);
-			neighborsBitmap.clearAllUnsafe(neighborsList);
-			return neighborsList;
 		}
 	}
 

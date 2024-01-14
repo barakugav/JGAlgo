@@ -29,13 +29,11 @@ import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
-import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.BitmapSet;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2LongFunc;
 import com.jgalgo.internal.util.JGAlgoUtils.BiInt2ObjFunc;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.ints.IntSets;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
@@ -312,8 +310,7 @@ class VertexPartitions {
 				}
 			}
 		} else {
-			Bitmap seen = new Bitmap(numberOfBlocks);
-			IntList seenList = new IntArrayList();
+			BitmapSet seen = new BitmapSet(numberOfBlocks);
 			for (int b1 : range(numberOfBlocks)) {
 				for (int u : partition.blockVertices(b1)) {
 					for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {
@@ -321,15 +318,12 @@ class VertexPartitions {
 						int b2 = partition.vertexBlock(eit.targetInt());
 						if ((!selfEdges && b1 == b2) || (!directed && b1 > b2))
 							continue;
-						if (seen.get(b2))
+						if (!seen.set(b2))
 							continue;
-						seen.set(b2);
-						seenList.add(b2);
 						gb.addEdge(b1, b2, e);
 					}
 				}
-				seen.clearAllUnsafe(seenList);
-				seenList.clear();
+				seen.clear();
 			}
 		}
 		return gb.build();

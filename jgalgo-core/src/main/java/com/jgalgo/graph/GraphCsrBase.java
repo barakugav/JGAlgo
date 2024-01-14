@@ -24,12 +24,10 @@ import java.util.Set;
 import java.util.function.Function;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import com.jgalgo.internal.util.Assertions;
-import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.BitmapSet;
 import com.jgalgo.internal.util.JGAlgoUtils.Variant2;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
-import it.unimi.dsi.fastutil.ints.IntArrayList;
-import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
@@ -213,18 +211,14 @@ abstract class GraphCsrBase extends IndexGraphBase implements ImmutableGraph {
 
 	boolean containsParallelEdgesImpl() {
 		final int n = vertices().size();
-		Bitmap neighborsBitmap = new Bitmap(n);
-		IntList neighbors = new IntArrayList();
+		BitmapSet neighbors = new BitmapSet(n);
 		for (int u : range(n)) {
 			for (IEdgeIter eit = outEdges(u).iterator(); eit.hasNext();) {
 				eit.nextInt();
 				int v = eit.targetInt();
-				if (neighborsBitmap.get(v))
+				if (!neighbors.add(v))
 					return true;
-				neighborsBitmap.set(v);
-				neighbors.add(v);
 			}
-			neighborsBitmap.clearAllUnsafe(neighbors);
 			neighbors.clear();
 		}
 		return false;

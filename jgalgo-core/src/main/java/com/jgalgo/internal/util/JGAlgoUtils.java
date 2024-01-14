@@ -324,6 +324,18 @@ public class JGAlgoUtils {
 		}
 	}
 
+	public static void clearAllUnsafe(Bitmap bitmap, IntCollection setBits) {
+		/* TODO: need to benchmark when its better to clear each bit independently */
+		boolean perBitClear = setBits.size() < bitmap.size / Bitmap.WordSize;
+		if (perBitClear) {
+			for (int idx : setBits)
+				bitmap.clear(idx);
+			assert bitmap.isEmpty();
+		} else {
+			bitmap.clear();
+		}
+	}
+
 	public static <T> Iterator<T> queueIter(Collection<T> elements) {
 		PriorityQueue<T> queue = new ObjectArrayFIFOQueue<>(elements.size());
 		for (T elm : elements)
