@@ -16,10 +16,14 @@
 
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
 import java.util.Random;
 import java.util.Set;
 import org.junit.jupiter.api.Test;
@@ -28,6 +32,7 @@ import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
 import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 public class BfsIterTest extends TestBase {
@@ -85,8 +90,7 @@ public class BfsIterTest extends TestBase {
 
 	@Test
 	public void bfsTree() {
-		final long seed = 0x4bb5612c04285bd0L;
-		final SeedGenerator seedGen = new SeedGenerator(seed);
+		final SeedGenerator seedGen = new SeedGenerator(0x4bb5612c04285bd0L);
 		PhasedTester tester = new PhasedTester();
 		tester.addPhase().withArgs(16, 18).repeat(32);
 		tester.addPhase().withArgs(16, 32).repeat(32);
@@ -114,6 +118,60 @@ public class BfsIterTest extends TestBase {
 
 			assertThrows(NoSuchVertexException.class,
 					() -> BfsIter.bfsTree(g, GraphsTestUtils.nonExistingVertex(g, rand)));
+		});
+	}
+
+	@Test
+	public void layers() {
+		final SeedGenerator seedGen = new SeedGenerator(0x8b8122b137c134c6L);
+		PhasedTester tester = new PhasedTester();
+		tester.addPhase().withArgs(16, 18).repeat(32);
+		tester.addPhase().withArgs(16, 32).repeat(32);
+		tester.addPhase().withArgs(32, 64).repeat(16);
+		tester.addPhase().withArgs(2048, 8192).repeat(1);
+		tester.run((n, m) -> {
+			Random rand = new Random(seedGen.nextSeed());
+			Graph<Integer, Integer> g0 = GraphsTestUtils.randGraph(n, m, rand.nextBoolean(), rand.nextLong());
+			Graph<Integer, Integer> g = maybeIndexGraph(g0, rand);
+			Integer source = Graphs.randVertex(g, rand);
+
+			List<Set<Integer>> layers = BfsIter.bfsLayers(g, source);
+
+			for (Set<Integer> layer : layers)
+				assertFalse(layer.isEmpty());
+
+			Int2IntOpenHashMap expectedVToLayer = new Int2IntOpenHashMap();
+			expectedVToLayer.defaultReturnValue(-1);
+			for (BfsIter<Integer, Integer> it = BfsIter.newInstance(g, source); it.hasNext();)
+				expectedVToLayer.put(it.next().intValue(), it.layer());
+			int maxLayer = expectedVToLayer.values().intStream().max().getAsInt();
+			List<Set<Integer>> expectedLayers = range(maxLayer + 1)
+					.mapToObj(l -> expectedVToLayer
+							.int2IntEntrySet()
+							.stream()
+							.filter(e -> e.getIntValue() == l)
+							.map(e -> Integer.valueOf(e.getIntKey()))
+							.collect(toSet()))
+					.collect(toList());
+
+			assertEquals(expectedLayers, layers);
+
+			for (int repeat = 0; repeat < 20; repeat++) {
+				Integer v = Graphs.randVertex(g, rand);
+				int expectedLayer = expectedVToLayer.get(v.intValue());
+				if (expectedLayer >= 0) {
+					assertTrue(layers.get(expectedLayer).contains(v));
+				} else {
+					assertFalse(layers.get(rand.nextInt(layers.size())).contains(v));
+				}
+			}
+			for (int repeat = 0; repeat < 20; repeat++) {
+				Integer v = GraphsTestUtils.nonExistingVertex(g, rand);
+				assertFalse(layers.get(rand.nextInt(layers.size())).contains(v));
+			}
+
+			assertThrows(NoSuchVertexException.class,
+					() -> BfsIter.bfsLayers(g, GraphsTestUtils.nonExistingVertex(g, rand)));
 		});
 	}
 

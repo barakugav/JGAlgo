@@ -15,16 +15,21 @@
  */
 package com.jgalgo.alg;
 
+import static java.util.stream.Collectors.toList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
+import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.graph.NoSuchVertexException;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntSet;
 
 /**
  * Bread first search (BFS) iterator.
@@ -333,6 +338,39 @@ public interface BfsIter<V, E> extends Iterator<V> {
 				b.addEdge(u, v, e);
 			}
 			return b.build();
+		}
+	}
+
+	/**
+	 * Compute all the layers of the vertices in a graph.
+	 *
+	 * <p>
+	 * A 'layer' is a set of vertices which have the same cardinality distance from the source vertex. The union of all
+	 * the layers are all the reachable vertices from the source. The source vertex is in layer 0, and it is the only
+	 * vertex in that layer. The vertices in layer \(i\) are the vertices that are reachable from the source using
+	 * exactly \(i\) edges. The layers are a partition of the reachable vertices.
+	 *
+	 * @param  <V>                   the vertices type
+	 * @param  <E>                   the edges type
+	 * @param  g                     a graph
+	 * @param  source                a vertex in the graph from which the search will start from
+	 * @return                       a list of sets of vertices, where each set is a layer. If {@code g} is an
+	 *                               {@link IntGraph} the returned list will contain {@link IntSet} instances
+	 * @throws NoSuchVertexException if the source vertex is not in the graph
+	 */
+	public static <V, E> List<Set<V>> bfsLayers(Graph<V, E> g, V source) {
+		if (g instanceof IndexGraph) {
+			int src = ((Integer) source).intValue();
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			List<Set<V>> layers = (List) BfsIterImpl.bfsLayers((IndexGraph) g, src);
+			return layers;
+
+		} else {
+			IndexGraph ig = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			int src = viMap.idToIndex(source);
+			List<IntSet> indexLayers = BfsIterImpl.bfsLayers(ig, src);
+			return indexLayers.stream().map(s -> IndexIdMaps.indexToIdSet(s, viMap)).collect(toList());
 		}
 	}
 

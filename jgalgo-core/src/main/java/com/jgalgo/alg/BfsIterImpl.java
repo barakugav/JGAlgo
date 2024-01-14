@@ -15,6 +15,8 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
@@ -25,10 +27,13 @@ import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueLongNoReduce;
+import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.JGAlgoUtils;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntIterators;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.longs.LongPriorityQueue;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 
 class BfsIterImpl {
 
@@ -227,6 +232,45 @@ class BfsIterImpl {
 		public int layer() {
 			return indexIter.layer();
 		}
+	}
+
+	static List<IntSet> bfsLayers(IndexGraph g, int source) {
+		final int n = g.vertices().size();
+		Assertions.checkVertex(source, n);
+
+		int[] layer = new int[n];
+		int layerSize = 0;
+		int[] vToLayer = new int[n];
+		Arrays.fill(vToLayer, -1);
+
+		List<IntSet> layers = new ObjectArrayList<>();
+		int currentLayerBegin = 0;
+		int nextLayer = 0;
+
+		var helperFuncs = new Object() {
+			void addLayer(int l, int begin, int end) {
+				layers
+						.add(ImmutableIntArraySet
+								.newInstance(layer, begin, end,
+										v -> 0 <= v && v < vToLayer.length && vToLayer[v] == l));
+			}
+		};
+		for (BfsIter.Int iter = BfsIter.newInstance(g, source); iter.hasNext();) {
+			int v = iter.nextInt();
+			int l = iter.layer();
+			if (l == nextLayer) {
+				if (l > 0) {
+					helperFuncs.addLayer(l - 1, currentLayerBegin, layerSize);
+					currentLayerBegin = layerSize;
+				}
+				nextLayer++;
+			}
+			vToLayer[v] = l;
+			layer[layerSize++] = v;
+		}
+		helperFuncs.addLayer(nextLayer - 1, currentLayerBegin, layerSize);
+
+		return layers;
 	}
 
 }

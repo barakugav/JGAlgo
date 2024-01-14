@@ -36,8 +36,7 @@ public final class ImmutableIntArraySet extends AbstractIntSet {
 	private int hashCode = 0;
 
 	private ImmutableIntArraySet(int[] arr, int from, int to, IntPredicate containsFunc) {
-		if (!(0 <= from && from <= to && to <= arr.length))
-			throw new IndexOutOfBoundsException();
+		Assertions.checkArrayFromTo(from, to, arr.length);
 		this.arr = Objects.requireNonNull(arr);
 		this.from = from;
 		this.to = to;
