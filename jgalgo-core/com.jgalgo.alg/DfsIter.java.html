@@ -18,10 +18,13 @@ package com.jgalgo.alg;
 import java.util.Iterator;
 import java.util.List;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.NoSuchVertexException;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 
@@ -98,7 +101,7 @@ public interface DfsIter&lt;V, E&gt; extends Iterator&lt;V&gt; {
 		@Deprecated
 		@Override
 		default Integer next() {
-<span class="fc" id="L101">			return Integer.valueOf(nextInt());</span>
+<span class="fc" id="L104">			return Integer.valueOf(nextInt());</span>
 		}
 
 		@Override
@@ -108,40 +111,157 @@ public interface DfsIter&lt;V, E&gt; extends Iterator&lt;V&gt; {
 	/**
 	 * Create a DFS iterator.
 	 *
-	 * @param  &lt;V&gt;    the vertices type
-	 * @param  &lt;E&gt;    the edges type
-	 * @param  g      a graph
-	 * @param  source a vertex in the graph from which the search will start from
-	 * @return        a DFS iterator that iterate over the vertices of the graph
+	 * @param  &lt;V&gt;                   the vertices type
+	 * @param  &lt;E&gt;                   the edges type
+	 * @param  g                     a graph
+	 * @param  source                a vertex in the graph from which the search will start from
+	 * @return                       a DFS iterator that iterate over the vertices of the graph
+	 * @throws NoSuchVertexException if the source vertex is not in the graph
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; DfsIter&lt;V, E&gt; newInstance(Graph&lt;V, E&gt; g, V source) {
-<span class="fc bfc" id="L119" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
-<span class="fc" id="L120">			return (DfsIter&lt;V, E&gt;) newInstance((IntGraph) g, ((Integer) source).intValue());</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
+<span class="fc" id="L124">			return (DfsIter&lt;V, E&gt;) newInstance((IntGraph) g, ((Integer) source).intValue());</span>
 
-<span class="fc" id="L122">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L123">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L124">		int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L125">		DfsIter.Int indexIter = new DfsIterImpl(iGraph, iSource);</span>
-<span class="fc" id="L126">		return new DfsIterImpl.ObjDfsFromIndexDfs&lt;&gt;(g, indexIter);</span>
+<span class="fc" id="L126">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L127">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L128">		int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L129">		DfsIter.Int indexIter = new DfsIterImpl(iGraph, iSource);</span>
+<span class="fc" id="L130">		return new DfsIterImpl.ObjDfsFromIndexDfs&lt;&gt;(g, indexIter);</span>
 	}
 
 	/**
 	 * Create a DFS iterator for an int graph.
 	 *
-	 * @param  g      a graph
-	 * @param  source a vertex in the graph from which the search will start from
-	 * @return        a DFS iterator that iterate over the vertices of the graph
+	 * @param  g                     a graph
+	 * @param  source                a vertex in the graph from which the search will start from
+	 * @return                       a DFS iterator that iterate over the vertices of the graph
+	 * @throws NoSuchVertexException if the source vertex is not in the graph
 	 */
 	static DfsIter.Int newInstance(IntGraph g, int source) {
-<span class="fc bfc" id="L137" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
-<span class="fc" id="L138">			return new DfsIterImpl((IndexGraph) g, source);</span>
+<span class="fc bfc" id="L142" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L143">			return new DfsIterImpl((IndexGraph) g, source);</span>
 
-<span class="fc" id="L140">		IndexGraph iGraph = g.indexGraph();</span>
-<span class="fc" id="L141">		IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L142">		int iSource = viMap.idToIndex(source);</span>
-<span class="fc" id="L143">		DfsIter.Int indexIter = new DfsIterImpl(iGraph, iSource);</span>
-<span class="fc" id="L144">		return new DfsIterImpl.IntDfsFromIndexDfs(g, indexIter);</span>
+<span class="fc" id="L145">		IndexGraph iGraph = g.indexGraph();</span>
+<span class="fc" id="L146">		IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L147">		int iSource = viMap.idToIndex(source);</span>
+<span class="fc" id="L148">		DfsIter.Int indexIter = new DfsIterImpl(iGraph, iSource);</span>
+<span class="fc" id="L149">		return new DfsIterImpl.IntDfsFromIndexDfs(g, indexIter);</span>
+	}
+
+	/**
+	 * Create a tree from all the vertices and edges traversed by a depth first search.
+	 *
+	 * &lt;p&gt;
+	 * The created graph will contain only the vertices reachable from the source vertex. For each such vertex other
+	 * than the source vertex, the graph will contain the edge that led to it during the search. If there are \(k\)
+	 * reachable vertices, the graph will contain \(k-1\) edges.
+	 *
+	 * &lt;p&gt;
+	 * The returned graph will be directed if the original graph is directed. In such case, the tree is directed from
+	 * the source to the other vertices. To control the directionality of the returned graph, use
+	 * {@link #dfsTree(Graph, Object, boolean)}.
+	 *
+	 * &lt;p&gt;
+	 * If an {@link IntGraph} is passed as an argument, {@link IntGraph} is returned.
+	 *
+	 * @param  &lt;V&gt;                   the vertices type
+	 * @param  &lt;E&gt;                   the edges type
+	 * @param  g                     a graph
+	 * @param  source                a vertex in the graph from which the search will start from
+	 * @return                       a tree graph that contains all the vertices and edges traversed by a depth first
+	 *                               search rooted at the source vertex
+	 * @throws NoSuchVertexException if the source vertex is not in the graph
+	 */
+	public static &lt;V, E&gt; Graph&lt;V, E&gt; dfsTree(Graph&lt;V, E&gt; g, V source) {
+<span class="fc" id="L177">		return dfsTree(g, source, g.isDirected());</span>
+	}
+
+	/**
+	 * Create a tree from all the vertices and edges traversed by a depth first search, optionally directed or
+	 * undirected.
+	 *
+	 * &lt;p&gt;
+	 * The created graph will contain only the vertices reachable from the source vertex. For each such vertex other
+	 * than the source vertex, the graph will contain the edge that led to it during the search. If there are \(k\)
+	 * reachable vertices, the graph will contain \(k-1\) edges.
+	 *
+	 * &lt;p&gt;
+	 * If an {@link IntGraph} is passed as an argument, {@link IntGraph} is returned.
+	 *
+	 * @param  &lt;V&gt;                   the vertices type
+	 * @param  &lt;E&gt;                   the edges type
+	 * @param  g                     a graph
+	 * @param  source                a vertex in the graph from which the search will start from
+	 * @param  directed              if {@code true} the returned tree will be directed. If the original graph was
+	 *                                   undirected and a directed tree is created, the edges in the tree will be
+	 *                                   directed from the source towards the other vertices
+	 * @return                       a tree graph that contains all the vertices and edges traversed by a depth first
+	 *                               search rooted at the source vertex
+	 * @throws NoSuchVertexException if the source vertex is not in the graph
+	 */
+	public static &lt;V, E&gt; Graph&lt;V, E&gt; dfsTree(Graph&lt;V, E&gt; g, V source, boolean directed) {
+<span class="fc bfc" id="L204" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L205">			IndexGraph ig = (IndexGraph) g;</span>
+<span class="fc" id="L206">			int src = ((Integer) source).intValue();</span>
+<span class="fc" id="L207">			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">			for (DfsIter.Int iter = newInstance(ig, src); iter.hasNext();) {</span>
+<span class="fc" id="L209">				int v = iter.nextInt();</span>
+<span class="fc" id="L210">				b.addVertex(v);</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">				if (v == src)</span>
+<span class="fc" id="L212">					continue;</span>
+<span class="fc" id="L213">				IntList path = iter.edgePath();</span>
+<span class="fc" id="L214">				int e = path.getInt(path.size() - 1);</span>
+<span class="fc" id="L215">				b.addEdge(ig.edgeEndpoint(e, v), v, e);</span>
+<span class="fc" id="L216">			}</span>
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L218">			Graph&lt;V, E&gt; tree = (Graph&lt;V, E&gt;) b.build();</span>
+<span class="fc" id="L219">			return tree;</span>
+
+<span class="fc bfc" id="L221" title="All 2 branches covered.">		} else if (g instanceof IntGraph) {</span>
+<span class="fc" id="L222">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L223">			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
+<span class="fc" id="L224">			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();</span>
+<span class="fc" id="L225">			int srcIdx = viMap.idToIndex(((Integer) source).intValue());</span>
+<span class="fc" id="L226">			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);</span>
+<span class="fc bfc" id="L227" title="All 2 branches covered.">			for (DfsIter.Int iter = newInstance(ig, srcIdx); iter.hasNext();) {</span>
+<span class="fc" id="L228">				int vIdx = iter.nextInt();</span>
+<span class="fc" id="L229">				int v = viMap.indexToIdInt(vIdx);</span>
+<span class="fc" id="L230">				b.addVertex(v);</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">				if (vIdx == srcIdx)</span>
+<span class="fc" id="L232">					continue;</span>
+<span class="fc" id="L233">				IntList path = iter.edgePath();</span>
+<span class="fc" id="L234">				int eIdx = path.getInt(path.size() - 1);</span>
+<span class="fc" id="L235">				int uIdx = ig.edgeEndpoint(eIdx, vIdx);</span>
+<span class="fc" id="L236">				int e = eiMap.indexToIdInt(eIdx);</span>
+<span class="fc" id="L237">				int u = viMap.indexToIdInt(uIdx);</span>
+<span class="fc" id="L238">				b.addEdge(u, v, e);</span>
+<span class="fc" id="L239">			}</span>
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L241">			Graph&lt;V, E&gt; tree = (Graph&lt;V, E&gt;) b.build();</span>
+<span class="fc" id="L242">			return tree;</span>
+
+		} else {
+<span class="fc" id="L245">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L246">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L247">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L248">			int srcIdx = viMap.idToIndex(source);</span>
+<span class="fc" id="L249">			GraphBuilder&lt;V, E&gt; b = GraphBuilder.newInstance(directed);</span>
+<span class="fc bfc" id="L250" title="All 2 branches covered.">			for (DfsIter.Int iter = newInstance(ig, srcIdx); iter.hasNext();) {</span>
+<span class="fc" id="L251">				int vIdx = iter.nextInt();</span>
+<span class="fc" id="L252">				V v = viMap.indexToId(vIdx);</span>
+<span class="fc" id="L253">				b.addVertex(v);</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">				if (vIdx == srcIdx)</span>
+<span class="fc" id="L255">					continue;</span>
+<span class="fc" id="L256">				IntList path = iter.edgePath();</span>
+<span class="fc" id="L257">				int eIdx = path.getInt(path.size() - 1);</span>
+<span class="fc" id="L258">				int uIdx = ig.edgeEndpoint(eIdx, vIdx);</span>
+<span class="fc" id="L259">				E e = eiMap.indexToId(eIdx);</span>
+<span class="fc" id="L260">				V u = viMap.indexToId(uIdx);</span>
+<span class="fc" id="L261">				b.addEdge(u, v, e);</span>
+<span class="fc" id="L262">			}</span>
+<span class="fc" id="L263">			return b.build();</span>
+		}
 	}
 
 }

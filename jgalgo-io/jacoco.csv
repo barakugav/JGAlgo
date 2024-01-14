@@ -9,7 +9,7 @@ JGAlgo - IO,com.jgalgo.io,GexfGraphWriter.new Supplier() {...},0,34,0,2,0,5,0,3,
 JGAlgo - IO,com.jgalgo.io,Gml,18,89,8,30,3,9,8,16,0,5
 JGAlgo - IO,com.jgalgo.io,GraphFormats,0,4,0,0,0,1,0,1,0,1
 JGAlgo - IO,com.jgalgo.io,LedaGraphReader,0,596,0,87,0,149,0,65,0,17
-JGAlgo - IO,com.jgalgo.io,GexfGraphReader,4,2185,1,262,1,480,1,207,0,65
+JGAlgo - IO,com.jgalgo.io,GexfGraphReader,4,2109,1,254,1,464,1,207,0,69
 JGAlgo - IO,com.jgalgo.io,GraphFormat,27,0,0,0,7,0,2,0,2,0
 JGAlgo - IO,com.jgalgo.io,Graph6,6,362,2,18,0,63,1,13,0,4
 JGAlgo - IO,com.jgalgo.io,GraphIoUtils.AbstractGraphReader,6,7,0,0,2,2,0,2,0,2

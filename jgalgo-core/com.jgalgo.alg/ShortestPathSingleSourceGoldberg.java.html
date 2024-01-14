@@ -110,9 +110,9 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 <span class="fc" id="L110">		IWeightFunctionInt pw = ShortestPathUtils.potentialWeightFunc(g, w, potential);</span>
 
 		/* run positive SSSP */
-<span class="fc" id="L113">		ShortestPathSingleSource.IResult res = (ShortestPathSingleSource.IResult) positiveSsspAlgo</span>
+<span class="fc" id="L113">		ShortestPathSingleSource.IResult dijkstraRes = (ShortestPathSingleSource.IResult) positiveSsspAlgo</span>
 <span class="fc" id="L114">				.computeShortestPaths(g, pw, Integer.valueOf(source));</span>
-<span class="fc" id="L115">		return new Result(source, potential, res);</span>
+<span class="fc" id="L115">		return createResults(potential, dijkstraRes);</span>
 	}
 
 	private int[] calcPotential(IndexGraph g, IWeightFunctionInt w0, int minWeight) {
@@ -308,38 +308,35 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 <span class="fc" id="L308">		return weight + potential[g.edgeSource(e)] - potential[g.edgeTarget(e)];</span>
 	}
 
-	private static class Result implements ShortestPathSingleSource.IResult {
+	private static ShortestPathSingleSource.IResult createResults(int[] potential,
+			ShortestPathSingleSource.IResult dijkstraRes) {
+<span class="fc" id="L313">		final IndexGraph g = (IndexGraph) dijkstraRes.graph();</span>
+<span class="fc" id="L314">		final int n = g.vertices().size();</span>
+<span class="fc" id="L315">		final int source = dijkstraRes.sourceInt();</span>
+<span class="fc" id="L316">		int sourcePotential = potential[source];</span>
+		double[] distances;
+		int[] backtrack;
+<span class="pc bpc" id="L319" title="1 of 2 branches missed.">		if (dijkstraRes instanceof ShortestPathSingleSourceUtils.IndexResult) {</span>
+<span class="fc" id="L320">			ShortestPathSingleSourceUtils.IndexResult res = (ShortestPathSingleSourceUtils.IndexResult) dijkstraRes;</span>
+<span class="fc" id="L321">			distances = res.distances;</span>
+<span class="fc" id="L322">			backtrack = res.backtrack;</span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">			for (int v : range(n))</span>
+<span class="fc" id="L324">				distances[v] += potential[v] - sourcePotential;</span>
 
-		private final int sourcePotential;
-		private final int[] potential;
-		private final ShortestPathSingleSource.IResult dijkstraRes;
-
-<span class="fc" id="L317">		Result(int source, int[] potential, ShortestPathSingleSource.IResult dijkstraRes) {</span>
-<span class="pc bpc" id="L318" title="1 of 2 branches missed.">			this.sourcePotential = potential != null ? potential[source] : 0;</span>
-<span class="fc" id="L319">			this.potential = potential;</span>
-<span class="fc" id="L320">			this.dijkstraRes = dijkstraRes;</span>
-<span class="fc" id="L321">		}</span>
-
-		@Override
-		public double distance(int target) {
-<span class="fc" id="L325">			return dijkstraRes.distance(target) - sourcePotential + potential[target];</span>
+<span class="fc" id="L326">		} else {</span>
+<span class="nc" id="L327">			distances = new double[n];</span>
+<span class="nc" id="L328">			backtrack = new int[n];</span>
+<span class="nc bnc" id="L329" title="All 2 branches missed.">			for (int v : range(n)) {</span>
+<span class="nc" id="L330">				distances[v] = dijkstraRes.distance(v) + potential[v] - sourcePotential;</span>
+<span class="nc" id="L331">				backtrack[v] = dijkstraRes.backtrackEdge(v);</span>
+<span class="nc" id="L332">			}</span>
 		}
-
-		@Override
-		public IPath getPath(int target) {
-<span class="fc" id="L330">			return dijkstraRes.getPath(target);</span>
-		}
-
-		@Override
-		public String toString() {
-<span class="nc" id="L335">			return dijkstraRes.toString();</span>
-		}
-
+<span class="fc" id="L334">		return new ShortestPathSingleSourceUtils.IndexResult(g, source, distances, backtrack);</span>
 	}
 
 	@Override
 	public Object getDiagnostic(String key) {
-<span class="nc" id="L342">		return Long.valueOf(diagnostics.get(key));</span>
+<span class="nc" id="L339">		return Long.valueOf(diagnostics.get(key));</span>
 	}
 
 	private static class Diagnostics {
@@ -355,42 +352,42 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 		void runBegin() {
 			if (Enable)
 				runCount++;
-<span class="fc" id="L358">		}</span>
+<span class="fc" id="L355">		}</span>
 
 		void scalingIteration() {
 			if (Enable)
 				scalingIterations++;
-<span class="fc" id="L363">		}</span>
+<span class="fc" id="L360">		}</span>
 
 		void potentialIteration() {
 			if (Enable)
 				potentialIterations++;
-<span class="fc" id="L368">		}</span>
+<span class="fc" id="L365">		}</span>
 
 		void bigLayer() {
 			if (Enable)
 				bigLayer++;
-<span class="fc" id="L373">		}</span>
+<span class="fc" id="L370">		}</span>
 
 		void longPath() {
 			if (Enable)
 				longPath++;
-<span class="fc" id="L378">		}</span>
+<span class="fc" id="L375">		}</span>
 
 		long get(String key) {
-<span class="nc bnc" id="L381" title="All 6 branches missed.">			switch (key) {</span>
+<span class="nc bnc" id="L378" title="All 6 branches missed.">			switch (key) {</span>
 				case &quot;runCount&quot;:
-<span class="nc" id="L383">					return runCount;</span>
+<span class="nc" id="L380">					return runCount;</span>
 				case &quot;scalingIterations&quot;:
-<span class="nc" id="L385">					return scalingIterations;</span>
+<span class="nc" id="L382">					return scalingIterations;</span>
 				case &quot;potentialIterations&quot;:
-<span class="nc" id="L387">					return potentialIterations;</span>
+<span class="nc" id="L384">					return potentialIterations;</span>
 				case &quot;bigLayer&quot;:
-<span class="nc" id="L389">					return bigLayer;</span>
+<span class="nc" id="L386">					return bigLayer;</span>
 				case &quot;longPath&quot;:
-<span class="nc" id="L391">					return longPath;</span>
+<span class="nc" id="L388">					return longPath;</span>
 				default:
-<span class="nc" id="L393">					throw new IllegalArgumentException(&quot;unknown diagnostic key: &quot; + key);</span>
+<span class="nc" id="L390">					throw new IllegalArgumentException(&quot;unknown diagnostic key: &quot; + key);</span>
 			}
 		}
 

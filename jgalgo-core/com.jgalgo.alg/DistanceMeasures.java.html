@@ -22,6 +22,7 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.NoSuchVertexException;
 import com.jgalgo.graph.WeightFunction;
 
 /**
@@ -88,8 +89,9 @@ public interface DistanceMeasures&lt;V, E&gt; {
 	 * If there is a vertex \(u \in V\) that is not reachable from \(v\), the eccentricity of \(v\) is
 	 * {@link Double#POSITIVE_INFINITY}.
 	 *
-	 * @param  v a vertex
-	 * @return   the eccentricity of the vertex
+	 * @param  v                     a vertex
+	 * @return                       the eccentricity of the vertex
+	 * @throws NoSuchVertexException if {@code v} is not a valid vertex identifier in the graph
 	 */
 	double eccentricity(V v);
 
@@ -137,18 +139,18 @@ public interface DistanceMeasures&lt;V, E&gt; {
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	static &lt;V, E&gt; DistanceMeasures&lt;V, E&gt; of(Graph&lt;V, E&gt; g, WeightFunction&lt;E&gt; w) {
-<span class="fc" id="L140">		ShortestPathAllPairs apspAlgo = ShortestPathAllPairs.newInstance();</span>
-<span class="fc bfc" id="L141" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L142">			ShortestPathAllPairs.IResult sp = (ShortestPathAllPairs.IResult) apspAlgo.computeAllShortestPaths(g, w);</span>
-<span class="fc" id="L143">			return (DistanceMeasures&lt;V, E&gt;) new DistanceMeasuresImpl.IndexImpl((IndexGraph) g, sp);</span>
+<span class="fc" id="L142">		ShortestPathAllPairs apspAlgo = ShortestPathAllPairs.newInstance();</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L144">			ShortestPathAllPairs.IResult sp = (ShortestPathAllPairs.IResult) apspAlgo.computeAllShortestPaths(g, w);</span>
+<span class="fc" id="L145">			return (DistanceMeasures&lt;V, E&gt;) new DistanceMeasuresImpl.IndexImpl((IndexGraph) g, sp);</span>
 
 		} else {
-<span class="fc" id="L146">			IndexGraph ig = g.indexGraph();</span>
-<span class="fc" id="L147">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
-<span class="fc" id="L148">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
-<span class="fc" id="L149">			ShortestPathAllPairs.IResult sp = (ShortestPathAllPairs.IResult) apspAlgo.computeAllShortestPaths(ig, iw);</span>
-<span class="fc" id="L150">			IDistanceMeasures indexMeasures = new DistanceMeasuresImpl.IndexImpl(ig, sp);</span>
-<span class="fc" id="L151">			return DistanceMeasuresImpl.measuresFromIndexMeasures(g, indexMeasures);</span>
+<span class="fc" id="L148">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L149">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L150">			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);</span>
+<span class="fc" id="L151">			ShortestPathAllPairs.IResult sp = (ShortestPathAllPairs.IResult) apspAlgo.computeAllShortestPaths(ig, iw);</span>
+<span class="fc" id="L152">			IDistanceMeasures indexMeasures = new DistanceMeasuresImpl.IndexImpl(ig, sp);</span>
+<span class="fc" id="L153">			return DistanceMeasuresImpl.measuresFromIndexMeasures(g, indexMeasures);</span>
 		}
 	}
 

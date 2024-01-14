@@ -24,6 +24,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -119,7 +120,7 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 	private Function&lt;String, V&gt; vertexParser;
 	private Function&lt;String, E&gt; edgeParser;
 	private IdBuilder&lt;E&gt; edgeBuilder;
-<span class="fc" id="L122">	private final SimpleDateFormat dateFormat = new SimpleDateFormat(Gexf.DateFormat);</span>
+<span class="fc" id="L123">	private final SimpleDateFormat dateFormat = new SimpleDateFormat(Gexf.DateFormat);</span>
 
 	/**
 	 * Create a new reader.
@@ -130,7 +131,7 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 	 * while setting the edge parser is only required if edges identifiers are specified. Similarly, setting the edge
 	 * builder is only required if edges identifiers are not specified.
 	 */
-<span class="fc" id="L133">	public GexfGraphReader() {}</span>
+<span class="fc" id="L134">	public GexfGraphReader() {}</span>
 
 	/**
 	 * Create a new reader with default parsers and builders for the given vertex and edge types.
@@ -156,11 +157,11 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 	 * @see                             #setEdgeParserDefault(Class)
 	 * @see                             #setEdgeBuilderDefault(Class)
 	 */
-<span class="fc" id="L159">	public GexfGraphReader(Class&lt;V&gt; vertexType, Class&lt;E&gt; edgeType) {</span>
-<span class="fc" id="L160">		setVertexParserDefault(this.vertexType = vertexType);</span>
-<span class="fc" id="L161">		setEdgeParserDefault(this.edgeType = edgeType);</span>
-<span class="fc" id="L162">		setEdgeBuilderDefault(this.edgeType);</span>
-<span class="fc" id="L163">	}</span>
+<span class="fc" id="L160">	public GexfGraphReader(Class&lt;V&gt; vertexType, Class&lt;E&gt; edgeType) {</span>
+<span class="fc" id="L161">		setVertexParserDefault(this.vertexType = vertexType);</span>
+<span class="fc" id="L162">		setEdgeParserDefault(this.edgeType = edgeType);</span>
+<span class="fc" id="L163">		setEdgeBuilderDefault(this.edgeType);</span>
+<span class="fc" id="L164">	}</span>
 
 	/**
 	 * Set the parser for the vertices identifiers.
@@ -173,8 +174,8 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 	 * @param vertexParser a parser for the vertices identifiers
 	 */
 	public void setVertexParser(Function&lt;String, V&gt; vertexParser) {
-<span class="fc" id="L176">		this.vertexParser = Objects.requireNonNull(vertexParser);</span>
-<span class="fc" id="L177">	}</span>
+<span class="fc" id="L177">		this.vertexParser = Objects.requireNonNull(vertexParser);</span>
+<span class="fc" id="L178">	}</span>
 
 	/**
 	 * Set the parser for the vertices identifiers, using a default parser for the given vertex type.
@@ -192,9 +193,9 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 	 *                                      {@code double} and {@code String}.
 	 */
 	public void setVertexParserDefault(Class&lt;V&gt; vertexType) {
-<span class="fc" id="L195">		this.vertexParser = GraphIoUtils.defaultParser(vertexType);</span>
-<span class="fc" id="L196">		this.vertexType = vertexType;</span>
-<span class="fc" id="L197">	}</span>
+<span class="fc" id="L196">		this.vertexParser = GraphIoUtils.defaultParser(vertexType);</span>
+<span class="fc" id="L197">		this.vertexType = vertexType;</span>
+<span class="fc" id="L198">	}</span>
 
 	/**
 	 * Set the parser for the edges identifiers.
@@ -208,8 +209,8 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 	 * @param edgeParser a parser for the edges identifiers
 	 */
 	public void setEdgeParser(Function&lt;String, E&gt; edgeParser) {
-<span class="fc" id="L211">		this.edgeParser = Objects.requireNonNull(edgeParser);</span>
-<span class="fc" id="L212">	}</span>
+<span class="fc" id="L212">		this.edgeParser = Objects.requireNonNull(edgeParser);</span>
+<span class="fc" id="L213">	}</span>
 
 	/**
 	 * Set the parser for the edges identifiers, using a default parser for the given edge type.
@@ -228,9 +229,9 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 	 *                                      {@code double} and {@code String}.
 	 */
 	public void setEdgeParserDefault(Class&lt;E&gt; edgeType) {
-<span class="fc" id="L231">		this.edgeParser = GraphIoUtils.defaultParser(edgeType);</span>
-<span class="fc" id="L232">		this.edgeType = edgeType;</span>
-<span class="fc" id="L233">	}</span>
+<span class="fc" id="L232">		this.edgeParser = GraphIoUtils.defaultParser(edgeType);</span>
+<span class="fc" id="L233">		this.edgeType = edgeType;</span>
+<span class="fc" id="L234">	}</span>
 
 	/**
 	 * Set the builder for the edges identifiers.
@@ -247,8 +248,8 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 	 * @param edgeBuilder a builder for the edges identifiers
 	 */
 	public void setEdgeBuilder(IdBuilder&lt;E&gt; edgeBuilder) {
-<span class="fc" id="L250">		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);</span>
-<span class="fc" id="L251">	}</span>
+<span class="fc" id="L251">		this.edgeBuilder = Objects.requireNonNull(edgeBuilder);</span>
+<span class="fc" id="L252">	}</span>
 
 	/**
 	 * Set the builder for the edges identifiers, using a default builder for the given edge type.
@@ -266,210 +267,210 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 	 *                                      {@link IdBuilder#defaultBuilder(Class)} for supported types
 	 */
 	public void setEdgeBuilderDefault(Class&lt;E&gt; edgeType) {
-<span class="fc" id="L269">		edgeBuilder = IdBuilder.defaultBuilder(edgeType);</span>
-<span class="fc" id="L270">		this.edgeType = edgeType;</span>
-<span class="fc" id="L271">	}</span>
+<span class="fc" id="L270">		edgeBuilder = IdBuilder.defaultBuilder(edgeType);</span>
+<span class="fc" id="L271">		this.edgeType = edgeType;</span>
+<span class="fc" id="L272">	}</span>
 
 	@Override
 	GraphBuilder&lt;V, E&gt; readIntoBuilderImpl(Reader reader) throws IOException {
-<span class="fc bfc" id="L275" title="All 2 branches covered.">		if (vertexParser == null)</span>
-<span class="fc" id="L276">			throw new IllegalStateException(&quot;Vertex parser was not set&quot;);</span>
+<span class="fc bfc" id="L276" title="All 2 branches covered.">		if (vertexParser == null)</span>
+<span class="fc" id="L277">			throw new IllegalStateException(&quot;Vertex parser was not set&quot;);</span>
 		try {
 			Document document =
-<span class="fc" id="L279">					DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(reader));</span>
-<span class="fc" id="L280">			Element doc = document.getDocumentElement();</span>
-<span class="fc" id="L281">			doc.normalize();</span>
-<span class="fc bfc" id="L282" title="All 2 branches covered.">			if (!doc.getTagName().equals(&quot;gexf&quot;))</span>
-<span class="fc" id="L283">				throw new IllegalArgumentException(&quot;root element is not 'gexf'&quot;);</span>
-<span class="fc" id="L284">			Element graph = XmlUtils.requiredChild(doc, &quot;graph&quot;);</span>
+<span class="fc" id="L280">					DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(reader));</span>
+<span class="fc" id="L281">			Element doc = document.getDocumentElement();</span>
+<span class="fc" id="L282">			doc.normalize();</span>
+<span class="fc bfc" id="L283" title="All 2 branches covered.">			if (!doc.getTagName().equals(&quot;gexf&quot;))</span>
+<span class="fc" id="L284">				throw new IllegalArgumentException(&quot;root element is not 'gexf'&quot;);</span>
+<span class="fc" id="L285">			Element graph = XmlUtils.requiredChild(doc, &quot;graph&quot;);</span>
 
-<span class="fc" id="L286">			boolean directed = graph.getAttribute(&quot;defaultedgetype&quot;).equals(&quot;directed&quot;);</span>
+<span class="fc" id="L287">			boolean directed = graph.getAttribute(&quot;defaultedgetype&quot;).equals(&quot;directed&quot;);</span>
 			GraphFactory&lt;V, E&gt; factory;
-<span class="fc bfc" id="L288" title="All 4 branches covered.">			if (vertexType == int.class &amp;&amp; edgeType == int.class) {</span>
+<span class="fc bfc" id="L289" title="All 4 branches covered.">			if (vertexType == int.class &amp;&amp; edgeType == int.class) {</span>
 				@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L290">				GraphFactory&lt;V, E&gt; factory0 = (GraphFactory&lt;V, E&gt;) IntGraphFactory.newInstance(directed);</span>
-<span class="fc" id="L291">				factory = factory0;</span>
-<span class="fc" id="L292">			} else {</span>
-<span class="fc" id="L293">				factory = GraphFactory.newInstance(directed);</span>
+<span class="fc" id="L291">				GraphFactory&lt;V, E&gt; factory0 = (GraphFactory&lt;V, E&gt;) IntGraphFactory.newInstance(directed);</span>
+<span class="fc" id="L292">				factory = factory0;</span>
+<span class="fc" id="L293">			} else {</span>
+<span class="fc" id="L294">				factory = GraphFactory.newInstance(directed);</span>
 			}
-<span class="fc" id="L295">			GraphBuilder&lt;V, E&gt; g = factory.allowSelfEdges().allowParallelEdges().newBuilder();</span>
+<span class="fc" id="L296">			GraphBuilder&lt;V, E&gt; g = factory.allowSelfEdges().allowParallelEdges().newBuilder();</span>
 
-<span class="fc bfc" id="L297" title="All 2 branches covered.">			if (XmlUtils.optionalAttribute(graph, &quot;mode&quot;).orElse(&quot;static&quot;).equals(&quot;dynamic&quot;))</span>
-<span class="fc" id="L298">				throw new IllegalArgumentException(&quot;dynamic graphs are not supported&quot;);</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">			if (XmlUtils.optionalAttribute(graph, &quot;mode&quot;).orElse(&quot;static&quot;).equals(&quot;dynamic&quot;))</span>
+<span class="fc" id="L299">				throw new IllegalArgumentException(&quot;dynamic graphs are not supported&quot;);</span>
 
-<span class="fc" id="L300">			Map&lt;String, BiConsumer&lt;V, String&gt;&gt; vWeights = new HashMap&lt;&gt;();</span>
-<span class="fc" id="L301">			Map&lt;String, BiConsumer&lt;E, String&gt;&gt; eWeights = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L301">			Map&lt;String, BiConsumer&lt;V, String&gt;&gt; vWeights = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L302">			Map&lt;String, BiConsumer&lt;E, String&gt;&gt; eWeights = new HashMap&lt;&gt;();</span>
 
-<span class="fc bfc" id="L303" title="All 2 branches covered.">			for (Element attributesElm : XmlUtils.children(graph, &quot;attributes&quot;)) {</span>
-<span class="fc" id="L304">				String clazz = XmlUtils.requiredAttribute(attributesElm, &quot;class&quot;);</span>
+<span class="fc bfc" id="L304" title="All 2 branches covered.">			for (Element attributesElm : XmlUtils.children(graph, &quot;attributes&quot;)) {</span>
+<span class="fc" id="L305">				String clazz = XmlUtils.requiredAttribute(attributesElm, &quot;class&quot;);</span>
 				boolean isVertices;
-<span class="fc bfc" id="L306" title="All 2 branches covered.">				if (clazz.equals(&quot;node&quot;)) {</span>
-<span class="fc" id="L307">					isVertices = true;</span>
-<span class="fc bfc" id="L308" title="All 2 branches covered.">				} else if (clazz.equals(&quot;edge&quot;)) {</span>
-<span class="fc" id="L309">					isVertices = false;</span>
+<span class="fc bfc" id="L307" title="All 2 branches covered.">				if (clazz.equals(&quot;node&quot;)) {</span>
+<span class="fc" id="L308">					isVertices = true;</span>
+<span class="fc bfc" id="L309" title="All 2 branches covered.">				} else if (clazz.equals(&quot;edge&quot;)) {</span>
+<span class="fc" id="L310">					isVertices = false;</span>
 				} else {
-<span class="fc" id="L311">					throw new IllegalArgumentException(&quot;unknown attributes class: &quot; + clazz);</span>
+<span class="fc" id="L312">					throw new IllegalArgumentException(&quot;unknown attributes class: &quot; + clazz);</span>
 				}
 
-<span class="fc bfc" id="L314" title="All 2 branches covered.">				for (Element attributeElm : XmlUtils.children(attributesElm, &quot;attribute&quot;)) {</span>
-<span class="fc" id="L315">					String weightsId = XmlUtils.requiredAttribute(attributeElm, &quot;id&quot;);</span>
-<span class="fc" id="L316">					String weightsName = XmlUtils.requiredAttribute(attributeElm, &quot;title&quot;);</span>
-<span class="fc" id="L317">					String typeStr = XmlUtils.requiredAttribute(attributeElm, &quot;type&quot;);</span>
-<span class="fc" id="L318">					String defValStr =</span>
-<span class="fc" id="L319">							XmlUtils.optionalChild(attributeElm, &quot;default&quot;).map(Element::getTextContent).orElse(null);</span>
-<span class="fc" id="L320">					String optionsStr =</span>
-<span class="fc" id="L321">							XmlUtils.optionalChild(attributeElm, &quot;options&quot;).map(Element::getTextContent).orElse(null);</span>
+<span class="fc bfc" id="L315" title="All 2 branches covered.">				for (Element attributeElm : XmlUtils.children(attributesElm, &quot;attribute&quot;)) {</span>
+<span class="fc" id="L316">					String weightsId = XmlUtils.requiredAttribute(attributeElm, &quot;id&quot;);</span>
+<span class="fc" id="L317">					String weightsName = XmlUtils.requiredAttribute(attributeElm, &quot;title&quot;);</span>
+<span class="fc" id="L318">					String typeStr = XmlUtils.requiredAttribute(attributeElm, &quot;type&quot;);</span>
+<span class="fc" id="L319">					String defValStr =</span>
+<span class="fc" id="L320">							XmlUtils.optionalChild(attributeElm, &quot;default&quot;).map(Element::getTextContent).orElse(null);</span>
+<span class="fc" id="L321">					String optionsStr =</span>
+<span class="fc" id="L322">							XmlUtils.optionalChild(attributeElm, &quot;options&quot;).map(Element::getTextContent).orElse(null);</span>
 
 					Class&lt;?&gt; type;
 					Object defVal;
 					Function&lt;Weights&lt;Object, Object&gt;, BiConsumer&lt;Object, String&gt;&gt; setterFactory;
-<span class="fc bfc" id="L326" title="All 10 branches covered.">					switch (typeStr) {</span>
+<span class="fc bfc" id="L327" title="All 10 branches covered.">					switch (typeStr) {</span>
 						case &quot;byte&quot;: {
-<span class="fc" id="L328">							type = byte.class;</span>
-<span class="fc bfc" id="L329" title="All 2 branches covered.">							ByteSet options = optionsStr == null ? null : ByteSet.of(parseListByte(optionsStr));</span>
-<span class="fc bfc" id="L330" title="All 2 branches covered.">							ByteUnaryOperator checkOptions = options == null ? ByteUnaryOperator.identity() : b -&gt; {</span>
-<span class="fc bfc" id="L331" title="All 2 branches covered.">								if (!options.contains(b))</span>
-<span class="fc" id="L332">									throw new IllegalArgumentException(</span>
+<span class="fc" id="L329">							type = byte.class;</span>
+<span class="fc bfc" id="L330" title="All 2 branches covered.">							ByteSet options = optionsStr == null ? null : ByteSet.of(parseListByte(optionsStr));</span>
+<span class="fc bfc" id="L331" title="All 2 branches covered.">							ByteUnaryOperator checkOptions = options == null ? ByteUnaryOperator.identity() : b -&gt; {</span>
+<span class="fc bfc" id="L332" title="All 2 branches covered.">								if (!options.contains(b))</span>
+<span class="fc" id="L333">									throw new IllegalArgumentException(</span>
 											&quot;invalid value: &quot; + b + &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L334">								return b;</span>
+<span class="fc" id="L335">								return b;</span>
 							};
-<span class="fc bfc" id="L336" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
-<span class="fc" id="L337">									: Byte.valueOf(checkOptions.apply(Byte.parseByte(defValStr)));</span>
-<span class="fc" id="L338">							setterFactory = weights -&gt; {</span>
+<span class="fc bfc" id="L337" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
+<span class="fc" id="L338">									: Byte.valueOf(checkOptions.apply(Byte.parseByte(defValStr)));</span>
+<span class="fc" id="L339">							setterFactory = weights -&gt; {</span>
 								@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L340">								WeightsByte&lt;Object&gt; weights2 = (WeightsByte) weights;</span>
-<span class="fc" id="L341">								return (o, val) -&gt; weights2.set(o, checkOptions.apply(Byte.parseByte(val)));</span>
+<span class="fc" id="L341">								WeightsByte&lt;Object&gt; weights2 = (WeightsByte) weights;</span>
+<span class="fc" id="L342">								return (o, val) -&gt; weights2.set(o, checkOptions.apply(Byte.parseByte(val)));</span>
 							};
-<span class="fc" id="L343">							break;</span>
+<span class="fc" id="L344">							break;</span>
 						}
 						case &quot;short&quot;: {
-<span class="fc" id="L346">							type = short.class;</span>
-<span class="fc bfc" id="L347" title="All 2 branches covered.">							ShortSet options = optionsStr == null ? null : ShortSet.of(parseListShort(optionsStr));</span>
-<span class="fc bfc" id="L348" title="All 2 branches covered.">							ShortUnaryOperator checkOptions = options == null ? ShortUnaryOperator.identity() : s -&gt; {</span>
-<span class="fc bfc" id="L349" title="All 2 branches covered.">								if (!options.contains(s))</span>
-<span class="fc" id="L350">									throw new IllegalArgumentException(</span>
+<span class="fc" id="L347">							type = short.class;</span>
+<span class="fc bfc" id="L348" title="All 2 branches covered.">							ShortSet options = optionsStr == null ? null : ShortSet.of(parseListShort(optionsStr));</span>
+<span class="fc bfc" id="L349" title="All 2 branches covered.">							ShortUnaryOperator checkOptions = options == null ? ShortUnaryOperator.identity() : s -&gt; {</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">								if (!options.contains(s))</span>
+<span class="fc" id="L351">									throw new IllegalArgumentException(</span>
 											&quot;invalid value: &quot; + s + &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L352">								return s;</span>
+<span class="fc" id="L353">								return s;</span>
 							};
-<span class="fc bfc" id="L354" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
-<span class="fc" id="L355">									: Short.valueOf(checkOptions.apply(Short.parseShort(defValStr)));</span>
-<span class="fc" id="L356">							setterFactory = weights -&gt; {</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
+<span class="fc" id="L356">									: Short.valueOf(checkOptions.apply(Short.parseShort(defValStr)));</span>
+<span class="fc" id="L357">							setterFactory = weights -&gt; {</span>
 								@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L358">								WeightsShort&lt;Object&gt; weights2 = (WeightsShort) weights;</span>
-<span class="fc" id="L359">								return (o, val) -&gt; weights2.set(o, checkOptions.apply(Short.parseShort(val)));</span>
+<span class="fc" id="L359">								WeightsShort&lt;Object&gt; weights2 = (WeightsShort) weights;</span>
+<span class="fc" id="L360">								return (o, val) -&gt; weights2.set(o, checkOptions.apply(Short.parseShort(val)));</span>
 							};
-<span class="fc" id="L361">							break;</span>
+<span class="fc" id="L362">							break;</span>
 						}
 						case &quot;integer&quot;: {
-<span class="fc" id="L364">							type = int.class;</span>
-<span class="fc bfc" id="L365" title="All 2 branches covered.">							IntSet options = optionsStr == null ? null : IntSet.of(parseListInt(optionsStr));</span>
-<span class="fc bfc" id="L366" title="All 2 branches covered.">							IntUnaryOperator checkOptions = options == null ? IntUnaryOperator.identity() : i -&gt; {</span>
-<span class="fc bfc" id="L367" title="All 2 branches covered.">								if (!options.contains(i))</span>
-<span class="fc" id="L368">									throw new IllegalArgumentException(</span>
+<span class="fc" id="L365">							type = int.class;</span>
+<span class="fc bfc" id="L366" title="All 2 branches covered.">							IntSet options = optionsStr == null ? null : IntSet.of(parseListInt(optionsStr));</span>
+<span class="fc bfc" id="L367" title="All 2 branches covered.">							IntUnaryOperator checkOptions = options == null ? IntUnaryOperator.identity() : i -&gt; {</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">								if (!options.contains(i))</span>
+<span class="fc" id="L369">									throw new IllegalArgumentException(</span>
 											&quot;invalid value: &quot; + i + &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L370">								return i;</span>
+<span class="fc" id="L371">								return i;</span>
 							};
-<span class="fc bfc" id="L372" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
-<span class="fc" id="L373">									: Integer.valueOf(checkOptions.apply(Integer.parseInt(defValStr)));</span>
-<span class="fc" id="L374">							setterFactory = weights -&gt; {</span>
+<span class="fc bfc" id="L373" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
+<span class="fc" id="L374">									: Integer.valueOf(checkOptions.apply(Integer.parseInt(defValStr)));</span>
+<span class="fc" id="L375">							setterFactory = weights -&gt; {</span>
 								@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L376">								WeightsInt&lt;Object&gt; weights2 = (WeightsInt) weights;</span>
-<span class="fc" id="L377">								return (o, val) -&gt; weights2.set(o, checkOptions.apply(Integer.parseInt(val)));</span>
+<span class="fc" id="L377">								WeightsInt&lt;Object&gt; weights2 = (WeightsInt) weights;</span>
+<span class="fc" id="L378">								return (o, val) -&gt; weights2.set(o, checkOptions.apply(Integer.parseInt(val)));</span>
 							};
-<span class="fc" id="L379">							break;</span>
+<span class="fc" id="L380">							break;</span>
 						}
 						case &quot;long&quot;: {
-<span class="fc" id="L382">							type = long.class;</span>
-<span class="fc bfc" id="L383" title="All 2 branches covered.">							LongSet options = optionsStr == null ? null : LongSet.of(parseListLong(optionsStr));</span>
-<span class="fc bfc" id="L384" title="All 2 branches covered.">							LongUnaryOperator checkOptions = options == null ? LongUnaryOperator.identity() : l -&gt; {</span>
-<span class="fc bfc" id="L385" title="All 2 branches covered.">								if (!options.contains(l))</span>
-<span class="fc" id="L386">									throw new IllegalArgumentException(</span>
+<span class="fc" id="L383">							type = long.class;</span>
+<span class="fc bfc" id="L384" title="All 2 branches covered.">							LongSet options = optionsStr == null ? null : LongSet.of(parseListLong(optionsStr));</span>
+<span class="fc bfc" id="L385" title="All 2 branches covered.">							LongUnaryOperator checkOptions = options == null ? LongUnaryOperator.identity() : l -&gt; {</span>
+<span class="fc bfc" id="L386" title="All 2 branches covered.">								if (!options.contains(l))</span>
+<span class="fc" id="L387">									throw new IllegalArgumentException(</span>
 											&quot;invalid value: &quot; + l + &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L388">								return l;</span>
+<span class="fc" id="L389">								return l;</span>
 							};
-<span class="fc bfc" id="L390" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
-<span class="fc" id="L391">									: Long.valueOf(checkOptions.apply(Long.parseLong(defValStr)));</span>
-<span class="fc" id="L392">							setterFactory = weights -&gt; {</span>
+<span class="fc bfc" id="L391" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
+<span class="fc" id="L392">									: Long.valueOf(checkOptions.apply(Long.parseLong(defValStr)));</span>
+<span class="fc" id="L393">							setterFactory = weights -&gt; {</span>
 								@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L394">								WeightsLong&lt;Object&gt; weights2 = (WeightsLong) weights;</span>
-<span class="fc" id="L395">								return (o, val) -&gt; weights2.set(o, checkOptions.apply(Long.parseLong(val)));</span>
+<span class="fc" id="L395">								WeightsLong&lt;Object&gt; weights2 = (WeightsLong) weights;</span>
+<span class="fc" id="L396">								return (o, val) -&gt; weights2.set(o, checkOptions.apply(Long.parseLong(val)));</span>
 							};
-<span class="fc" id="L397">							break;</span>
+<span class="fc" id="L398">							break;</span>
 						}
 						case &quot;float&quot;: {
-<span class="fc" id="L400">							type = float.class;</span>
-<span class="fc bfc" id="L401" title="All 2 branches covered.">							FloatSet options = optionsStr == null ? null : FloatSet.of(parseListFloat(optionsStr));</span>
-<span class="fc bfc" id="L402" title="All 2 branches covered.">							FloatUnaryOperator checkOptions = options == null ? FloatUnaryOperator.identity() : f -&gt; {</span>
-<span class="fc bfc" id="L403" title="All 2 branches covered.">								if (!options.contains(f))</span>
-<span class="fc" id="L404">									throw new IllegalArgumentException(</span>
+<span class="fc" id="L401">							type = float.class;</span>
+<span class="fc bfc" id="L402" title="All 2 branches covered.">							FloatSet options = optionsStr == null ? null : FloatSet.of(parseListFloat(optionsStr));</span>
+<span class="fc bfc" id="L403" title="All 2 branches covered.">							FloatUnaryOperator checkOptions = options == null ? FloatUnaryOperator.identity() : f -&gt; {</span>
+<span class="fc bfc" id="L404" title="All 2 branches covered.">								if (!options.contains(f))</span>
+<span class="fc" id="L405">									throw new IllegalArgumentException(</span>
 											&quot;invalid value: &quot; + f + &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L406">								return f;</span>
+<span class="fc" id="L407">								return f;</span>
 							};
-<span class="fc bfc" id="L408" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
-<span class="fc" id="L409">									: Float.valueOf(checkOptions.apply(Float.parseFloat(defValStr)));</span>
-<span class="fc" id="L410">							setterFactory = weights -&gt; {</span>
+<span class="fc bfc" id="L409" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
+<span class="fc" id="L410">									: Float.valueOf(checkOptions.apply(Float.parseFloat(defValStr)));</span>
+<span class="fc" id="L411">							setterFactory = weights -&gt; {</span>
 								@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L412">								WeightsFloat&lt;Object&gt; weights2 = (WeightsFloat) weights;</span>
-<span class="fc" id="L413">								return (o, val) -&gt; weights2.set(o, checkOptions.apply(Float.parseFloat(val)));</span>
+<span class="fc" id="L413">								WeightsFloat&lt;Object&gt; weights2 = (WeightsFloat) weights;</span>
+<span class="fc" id="L414">								return (o, val) -&gt; weights2.set(o, checkOptions.apply(Float.parseFloat(val)));</span>
 							};
-<span class="fc" id="L415">							break;</span>
+<span class="fc" id="L416">							break;</span>
 						}
 						case &quot;double&quot;: {
-<span class="fc" id="L418">							type = double.class;</span>
-<span class="fc bfc" id="L419" title="All 2 branches covered.">							DoubleSet options = optionsStr == null ? null : DoubleSet.of(parseListDouble(optionsStr));</span>
-<span class="fc bfc" id="L420" title="All 2 branches covered.">							DoubleUnaryOperator checkOptions = options == null ? DoubleUnaryOperator.identity() : d -&gt; {</span>
-<span class="fc bfc" id="L421" title="All 2 branches covered.">								if (!options.contains(d))</span>
-<span class="fc" id="L422">									throw new IllegalArgumentException(</span>
+<span class="fc" id="L419">							type = double.class;</span>
+<span class="fc bfc" id="L420" title="All 2 branches covered.">							DoubleSet options = optionsStr == null ? null : DoubleSet.of(parseListDouble(optionsStr));</span>
+<span class="fc bfc" id="L421" title="All 2 branches covered.">							DoubleUnaryOperator checkOptions = options == null ? DoubleUnaryOperator.identity() : d -&gt; {</span>
+<span class="fc bfc" id="L422" title="All 2 branches covered.">								if (!options.contains(d))</span>
+<span class="fc" id="L423">									throw new IllegalArgumentException(</span>
 											&quot;invalid value: &quot; + d + &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L424">								return d;</span>
+<span class="fc" id="L425">								return d;</span>
 							};
-<span class="fc bfc" id="L426" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
-<span class="fc" id="L427">									: Double.valueOf(checkOptions.apply(Double.parseDouble(defValStr)));</span>
-<span class="fc" id="L428">							setterFactory = weights -&gt; {</span>
+<span class="fc bfc" id="L427" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
+<span class="fc" id="L428">									: Double.valueOf(checkOptions.apply(Double.parseDouble(defValStr)));</span>
+<span class="fc" id="L429">							setterFactory = weights -&gt; {</span>
 								@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L430">								WeightsDouble&lt;Object&gt; weights2 = (WeightsDouble) weights;</span>
-<span class="fc" id="L431">								return (o, val) -&gt; weights2.set(o, checkOptions.apply(Double.parseDouble(val)));</span>
+<span class="fc" id="L431">								WeightsDouble&lt;Object&gt; weights2 = (WeightsDouble) weights;</span>
+<span class="fc" id="L432">								return (o, val) -&gt; weights2.set(o, checkOptions.apply(Double.parseDouble(val)));</span>
 							};
-<span class="fc" id="L433">							break;</span>
+<span class="fc" id="L434">							break;</span>
 						}
 						case &quot;boolean&quot;: {
-<span class="fc" id="L436">							type = boolean.class;</span>
-<span class="fc bfc" id="L437" title="All 2 branches covered.">							BooleanSet options = optionsStr == null ? null : BooleanSet.of(parseListBool(optionsStr));</span>
+<span class="fc" id="L437">							type = boolean.class;</span>
+<span class="fc bfc" id="L438" title="All 2 branches covered.">							BooleanSet options = optionsStr == null ? null : BooleanSet.of(parseListBool(optionsStr));</span>
 							BooleanUnaryOperator checkOptions =
-<span class="fc bfc" id="L439" title="All 2 branches covered.">									options == null ? BooleanUnaryOperator.identity() : b -&gt; {</span>
-<span class="fc bfc" id="L440" title="All 2 branches covered.">										if (!options.contains(b))</span>
-<span class="fc" id="L441">											throw new IllegalArgumentException(</span>
+<span class="fc bfc" id="L440" title="All 2 branches covered.">									options == null ? BooleanUnaryOperator.identity() : b -&gt; {</span>
+<span class="fc bfc" id="L441" title="All 2 branches covered.">										if (!options.contains(b))</span>
+<span class="fc" id="L442">											throw new IllegalArgumentException(</span>
 													&quot;invalid value: &quot; + b + &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L443">										return b;</span>
+<span class="fc" id="L444">										return b;</span>
 									};
-<span class="fc bfc" id="L445" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
-<span class="fc" id="L446">									: Boolean.valueOf(checkOptions.apply(Boolean.parseBoolean(defValStr)));</span>
-<span class="fc" id="L447">							setterFactory = weights -&gt; {</span>
+<span class="fc bfc" id="L446" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
+<span class="fc" id="L447">									: Boolean.valueOf(checkOptions.apply(Boolean.parseBoolean(defValStr)));</span>
+<span class="fc" id="L448">							setterFactory = weights -&gt; {</span>
 								@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L449">								WeightsBool&lt;Object&gt; weights2 = (WeightsBool) weights;</span>
-<span class="fc" id="L450">								return (o, val) -&gt; weights2.set(o, checkOptions.apply(Boolean.parseBoolean(val)));</span>
+<span class="fc" id="L450">								WeightsBool&lt;Object&gt; weights2 = (WeightsBool) weights;</span>
+<span class="fc" id="L451">								return (o, val) -&gt; weights2.set(o, checkOptions.apply(Boolean.parseBoolean(val)));</span>
 							};
-<span class="fc" id="L452">							break;</span>
+<span class="fc" id="L453">							break;</span>
 						}
 						case &quot;char&quot;: {
-<span class="fc" id="L455">							type = char.class;</span>
-<span class="fc bfc" id="L456" title="All 2 branches covered.">							CharSet options = optionsStr == null ? null : CharSet.of(parseListChar(optionsStr));</span>
-<span class="fc bfc" id="L457" title="All 2 branches covered.">							CharUnaryOperator checkOptions = options == null ? CharUnaryOperator.identity() : c -&gt; {</span>
-<span class="fc bfc" id="L458" title="All 2 branches covered.">								if (!options.contains(c))</span>
-<span class="fc" id="L459">									throw new IllegalArgumentException(</span>
+<span class="fc" id="L456">							type = char.class;</span>
+<span class="fc bfc" id="L457" title="All 2 branches covered.">							CharSet options = optionsStr == null ? null : CharSet.of(parseListChar(optionsStr));</span>
+<span class="fc bfc" id="L458" title="All 2 branches covered.">							CharUnaryOperator checkOptions = options == null ? CharUnaryOperator.identity() : c -&gt; {</span>
+<span class="fc bfc" id="L459" title="All 2 branches covered.">								if (!options.contains(c))</span>
+<span class="fc" id="L460">									throw new IllegalArgumentException(</span>
 											&quot;invalid value: &quot; + c + &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L461">								return c;</span>
+<span class="fc" id="L462">								return c;</span>
 							};
-<span class="fc bfc" id="L463" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
-<span class="fc" id="L464">									: Character.valueOf(checkOptions.apply(GraphIoUtils.parseChar(defValStr)));</span>
-<span class="fc" id="L465">							setterFactory = weights -&gt; {</span>
-<span class="fc" id="L466">								return (o, val) -&gt; {</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">							defVal = defValStr == null ? null</span>
+<span class="fc" id="L465">									: Character.valueOf(checkOptions.apply(GraphIoUtils.parseChar(defValStr)));</span>
+<span class="fc" id="L466">							setterFactory = weights -&gt; {</span>
+<span class="fc" id="L467">								return (o, val) -&gt; {</span>
 									@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L468">									WeightsChar&lt;Object&gt; weights2 = (WeightsChar) weights;</span>
-<span class="fc" id="L469">									weights2.set(o, checkOptions.apply(GraphIoUtils.parseChar(val)));</span>
-<span class="fc" id="L470">								};</span>
+<span class="fc" id="L469">									WeightsChar&lt;Object&gt; weights2 = (WeightsChar) weights;</span>
+<span class="fc" id="L470">									weights2.set(o, checkOptions.apply(GraphIoUtils.parseChar(val)));</span>
+<span class="fc" id="L471">								};</span>
 							};
-<span class="fc" id="L472">							break;</span>
+<span class="fc" id="L473">							break;</span>
 						}
 
 						/* common for all Object weights */
@@ -490,479 +491,463 @@ public class GexfGraphReader&lt;V, E&gt; extends GraphIoUtils.AbstractGraphReade
 						case &quot;listbigdecimal&quot;:
 						case &quot;listbiginteger&quot;: {
 							Function&lt;String, Object&gt; parser;
-<span class="fc" id="L493">							Set&lt;Object&gt; objOptions = null;</span>
+<span class="fc" id="L494">							Set&lt;Object&gt; objOptions = null;</span>
 
-<span class="pc bpc" id="L495" title="1 of 17 branches missed.">							switch (typeStr) {</span>
+<span class="pc bpc" id="L496" title="1 of 17 branches missed.">							switch (typeStr) {</span>
 								case &quot;string&quot;:
-<span class="fc" id="L497">									type = String.class;</span>
+<span class="fc" id="L498">									type = String.class;</span>
 									objOptions =
-<span class="fc bfc" id="L499" title="All 2 branches covered.">											optionsStr == null ? null : new ObjectOpenHashSet&lt;&gt;(splitList(optionsStr));</span>
-<span class="fc" id="L500">									parser = s -&gt; s;</span>
-<span class="fc" id="L501">									break;</span>
+<span class="fc bfc" id="L500" title="All 2 branches covered.">											optionsStr == null ? null : new ObjectOpenHashSet&lt;&gt;(splitList(optionsStr));</span>
+<span class="fc" id="L501">									parser = s -&gt; s;</span>
+<span class="fc" id="L502">									break;</span>
 								case &quot;date&quot;:
-<span class="fc" id="L503">									type = Date.class;</span>
-<span class="fc bfc" id="L504" title="All 2 branches covered.">									objOptions = optionsStr == null ? null</span>
-<span class="fc" id="L505">											: new ObjectOpenHashSet&lt;&gt;(parseListDate(optionsStr));</span>
-<span class="fc" id="L506">									parser = this::parseDate;</span>
-<span class="fc" id="L507">									break;</span>
+<span class="fc" id="L504">									type = Date.class;</span>
+<span class="fc bfc" id="L505" title="All 2 branches covered.">									objOptions = optionsStr == null ? null</span>
+<span class="fc" id="L506">											: new ObjectOpenHashSet&lt;&gt;(parseListDate(optionsStr));</span>
+<span class="fc" id="L507">									parser = this::parseDate;</span>
+<span class="fc" id="L508">									break;</span>
 								case &quot;anyURI&quot;:
-<span class="fc" id="L509">									type = URI.class;</span>
-<span class="fc bfc" id="L510" title="All 2 branches covered.">									objOptions = optionsStr == null ? null</span>
-<span class="fc" id="L511">											: new ObjectOpenHashSet&lt;&gt;(parseListURI(optionsStr));</span>
-<span class="fc" id="L512">									parser = GexfGraphReader::parseURI;</span>
-<span class="fc" id="L513">									break;</span>
+<span class="fc" id="L510">									type = URI.class;</span>
+<span class="fc bfc" id="L511" title="All 2 branches covered.">									objOptions = optionsStr == null ? null</span>
+<span class="fc" id="L512">											: new ObjectOpenHashSet&lt;&gt;(parseListURI(optionsStr));</span>
+<span class="fc" id="L513">									parser = GexfGraphReader::parseURI;</span>
+<span class="fc" id="L514">									break;</span>
 								case &quot;bigdecimal&quot;:
-<span class="fc" id="L515">									type = BigDecimal.class;</span>
-<span class="fc bfc" id="L516" title="All 2 branches covered.">									objOptions = optionsStr == null ? null</span>
-<span class="fc" id="L517">											: new ObjectOpenHashSet&lt;&gt;(parseListBigDecimal(optionsStr));</span>
-<span class="fc" id="L518">									parser = BigDecimal::new;</span>
-<span class="fc" id="L519">									break;</span>
+<span class="fc" id="L516">									type = BigDecimal.class;</span>
+<span class="fc bfc" id="L517" title="All 2 branches covered.">									objOptions = optionsStr == null ? null</span>
+<span class="fc" id="L518">											: new ObjectOpenHashSet&lt;&gt;(parseListBigDecimal(optionsStr));</span>
+<span class="fc" id="L519">									parser = BigDecimal::new;</span>
+<span class="fc" id="L520">									break;</span>
 								case &quot;biginteger&quot;:
-<span class="fc" id="L521">									type = BigInteger.class;</span>
-<span class="fc bfc" id="L522" title="All 2 branches covered.">									objOptions = optionsStr == null ? null</span>
-<span class="fc" id="L523">											: new ObjectOpenHashSet&lt;&gt;(parseListBigInteger(optionsStr));</span>
-<span class="fc" id="L524">									parser = BigInteger::new;</span>
-<span class="fc" id="L525">									break;</span>
+<span class="fc" id="L522">									type = BigInteger.class;</span>
+<span class="fc bfc" id="L523" title="All 2 branches covered.">									objOptions = optionsStr == null ? null</span>
+<span class="fc" id="L524">											: new ObjectOpenHashSet&lt;&gt;(parseListBigInteger(optionsStr));</span>
+<span class="fc" id="L525">									parser = BigInteger::new;</span>
+<span class="fc" id="L526">									break;</span>
 								case &quot;listbyte&quot;:
-<span class="fc" id="L527">									type = byte[].class;</span>
-<span class="fc bfc" id="L528" title="All 2 branches covered.">									if (optionsStr == null) {</span>
-<span class="fc" id="L529">										parser = GexfGraphReader::parseListByte;</span>
+<span class="fc" id="L528">									type = byte[].class;</span>
+<span class="fc bfc" id="L529" title="All 2 branches covered.">									if (optionsStr == null) {</span>
+<span class="fc" id="L530">										parser = GexfGraphReader::parseListByte;</span>
 									} else {
-<span class="fc" id="L531">										ByteSet options = ByteSet.of(parseListByte(optionsStr));</span>
-<span class="fc" id="L532">										parser = val -&gt; {</span>
-<span class="fc" id="L533">											byte[] list = GexfGraphReader.parseListByte(val);</span>
-<span class="fc bfc" id="L534" title="All 2 branches covered.">											for (byte i : list)</span>
-<span class="fc bfc" id="L535" title="All 2 branches covered.">												if (!options.contains(i))</span>
-<span class="fc" id="L536">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
+<span class="fc" id="L532">										ByteSet options = ByteSet.of(parseListByte(optionsStr));</span>
+<span class="fc" id="L533">										parser = val -&gt; {</span>
+<span class="fc" id="L534">											byte[] list = GexfGraphReader.parseListByte(val);</span>
+<span class="fc bfc" id="L535" title="All 2 branches covered.">											for (byte i : list)</span>
+<span class="fc bfc" id="L536" title="All 2 branches covered.">												if (!options.contains(i))</span>
+<span class="fc" id="L537">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
 															+ &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L538">											return list;</span>
+<span class="fc" id="L539">											return list;</span>
 										};
 									}
-<span class="fc" id="L541">									break;</span>
+<span class="fc" id="L542">									break;</span>
 								case &quot;listshort&quot;:
-<span class="fc" id="L543">									type = short[].class;</span>
-<span class="fc bfc" id="L544" title="All 2 branches covered.">									if (optionsStr == null) {</span>
-<span class="fc" id="L545">										parser = GexfGraphReader::parseListShort;</span>
+<span class="fc" id="L544">									type = short[].class;</span>
+<span class="fc bfc" id="L545" title="All 2 branches covered.">									if (optionsStr == null) {</span>
+<span class="fc" id="L546">										parser = GexfGraphReader::parseListShort;</span>
 									} else {
-<span class="fc" id="L547">										ShortSet options = ShortSet.of(parseListShort(optionsStr));</span>
-<span class="fc" id="L548">										parser = val -&gt; {</span>
-<span class="fc" id="L549">											short[] list = GexfGraphReader.parseListShort(val);</span>
-<span class="fc bfc" id="L550" title="All 2 branches covered.">											for (short i : list)</span>
-<span class="fc bfc" id="L551" title="All 2 branches covered.">												if (!options.contains(i))</span>
-<span class="fc" id="L552">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
+<span class="fc" id="L548">										ShortSet options = ShortSet.of(parseListShort(optionsStr));</span>
+<span class="fc" id="L549">										parser = val -&gt; {</span>
+<span class="fc" id="L550">											short[] list = GexfGraphReader.parseListShort(val);</span>
+<span class="fc bfc" id="L551" title="All 2 branches covered.">											for (short i : list)</span>
+<span class="fc bfc" id="L552" title="All 2 branches covered.">												if (!options.contains(i))</span>
+<span class="fc" id="L553">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
 															+ &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L554">											return list;</span>
+<span class="fc" id="L555">											return list;</span>
 										};
 									}
-<span class="fc" id="L557">									break;</span>
+<span class="fc" id="L558">									break;</span>
 								case &quot;listinteger&quot;:
-<span class="fc" id="L559">									type = int[].class;</span>
-<span class="fc bfc" id="L560" title="All 2 branches covered.">									if (optionsStr == null) {</span>
-<span class="fc" id="L561">										parser = GexfGraphReader::parseListInt;</span>
+<span class="fc" id="L560">									type = int[].class;</span>
+<span class="fc bfc" id="L561" title="All 2 branches covered.">									if (optionsStr == null) {</span>
+<span class="fc" id="L562">										parser = GexfGraphReader::parseListInt;</span>
 									} else {
-<span class="fc" id="L563">										IntSet options = IntSet.of(parseListInt(optionsStr));</span>
-<span class="fc" id="L564">										parser = val -&gt; {</span>
-<span class="fc" id="L565">											int[] list = GexfGraphReader.parseListInt(val);</span>
-<span class="fc bfc" id="L566" title="All 2 branches covered.">											for (int i : list)</span>
-<span class="fc bfc" id="L567" title="All 2 branches covered.">												if (!options.contains(i))</span>
-<span class="fc" id="L568">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
+<span class="fc" id="L564">										IntSet options = IntSet.of(parseListInt(optionsStr));</span>
+<span class="fc" id="L565">										parser = val -&gt; {</span>
+<span class="fc" id="L566">											int[] list = GexfGraphReader.parseListInt(val);</span>
+<span class="fc bfc" id="L567" title="All 2 branches covered.">											for (int i : list)</span>
+<span class="fc bfc" id="L568" title="All 2 branches covered.">												if (!options.contains(i))</span>
+<span class="fc" id="L569">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
 															+ &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L570">											return list;</span>
+<span class="fc" id="L571">											return list;</span>
 										};
 									}
-<span class="fc" id="L573">									break;</span>
+<span class="fc" id="L574">									break;</span>
 								case &quot;listlong&quot;:
-<span class="fc" id="L575">									type = long[].class;</span>
-<span class="fc bfc" id="L576" title="All 2 branches covered.">									if (optionsStr == null) {</span>
-<span class="fc" id="L577">										parser = GexfGraphReader::parseListLong;</span>
+<span class="fc" id="L576">									type = long[].class;</span>
+<span class="fc bfc" id="L577" title="All 2 branches covered.">									if (optionsStr == null) {</span>
+<span class="fc" id="L578">										parser = GexfGraphReader::parseListLong;</span>
 									} else {
-<span class="fc" id="L579">										LongSet options = LongSet.of(parseListLong(optionsStr));</span>
-<span class="fc" id="L580">										parser = val -&gt; {</span>
-<span class="fc" id="L581">											long[] list = GexfGraphReader.parseListLong(val);</span>
-<span class="fc bfc" id="L582" title="All 2 branches covered.">											for (long i : list)</span>
-<span class="fc bfc" id="L583" title="All 2 branches covered.">												if (!options.contains(i))</span>
-<span class="fc" id="L584">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
+<span class="fc" id="L580">										LongSet options = LongSet.of(parseListLong(optionsStr));</span>
+<span class="fc" id="L581">										parser = val -&gt; {</span>
+<span class="fc" id="L582">											long[] list = GexfGraphReader.parseListLong(val);</span>
+<span class="fc bfc" id="L583" title="All 2 branches covered.">											for (long i : list)</span>
+<span class="fc bfc" id="L584" title="All 2 branches covered.">												if (!options.contains(i))</span>
+<span class="fc" id="L585">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
 															+ &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L586">											return list;</span>
+<span class="fc" id="L587">											return list;</span>
 										};
 									}
-<span class="fc" id="L589">									break;</span>
+<span class="fc" id="L590">									break;</span>
 								case &quot;listfloat&quot;:
-<span class="fc" id="L591">									type = float[].class;</span>
-<span class="fc bfc" id="L592" title="All 2 branches covered.">									if (optionsStr == null) {</span>
-<span class="fc" id="L593">										parser = GexfGraphReader::parseListFloat;</span>
+<span class="fc" id="L592">									type = float[].class;</span>
+<span class="fc bfc" id="L593" title="All 2 branches covered.">									if (optionsStr == null) {</span>
+<span class="fc" id="L594">										parser = GexfGraphReader::parseListFloat;</span>
 									} else {
-<span class="fc" id="L595">										FloatSet options = FloatSet.of(parseListFloat(optionsStr));</span>
-<span class="fc" id="L596">										parser = val -&gt; {</span>
-<span class="fc" id="L597">											float[] list = GexfGraphReader.parseListFloat(val);</span>
-<span class="fc bfc" id="L598" title="All 2 branches covered.">											for (float i : list)</span>
-<span class="fc bfc" id="L599" title="All 2 branches covered.">												if (!options.contains(i))</span>
-<span class="fc" id="L600">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
+<span class="fc" id="L596">										FloatSet options = FloatSet.of(parseListFloat(optionsStr));</span>
+<span class="fc" id="L597">										parser = val -&gt; {</span>
+<span class="fc" id="L598">											float[] list = GexfGraphReader.parseListFloat(val);</span>
+<span class="fc bfc" id="L599" title="All 2 branches covered.">											for (float i : list)</span>
+<span class="fc bfc" id="L600" title="All 2 branches covered.">												if (!options.contains(i))</span>
+<span class="fc" id="L601">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
 															+ &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L602">											return list;</span>
+<span class="fc" id="L603">											return list;</span>
 										};
 									}
-<span class="fc" id="L605">									break;</span>
+<span class="fc" id="L606">									break;</span>
 								case &quot;listdouble&quot;:
-<span class="fc" id="L607">									type = double[].class;</span>
-<span class="fc bfc" id="L608" title="All 2 branches covered.">									if (optionsStr == null) {</span>
-<span class="fc" id="L609">										parser = GexfGraphReader::parseListDouble;</span>
+<span class="fc" id="L608">									type = double[].class;</span>
+<span class="fc bfc" id="L609" title="All 2 branches covered.">									if (optionsStr == null) {</span>
+<span class="fc" id="L610">										parser = GexfGraphReader::parseListDouble;</span>
 									} else {
-<span class="fc" id="L611">										DoubleSet options = DoubleSet.of(parseListDouble(optionsStr));</span>
-<span class="fc" id="L612">										parser = val -&gt; {</span>
-<span class="fc" id="L613">											double[] list = GexfGraphReader.parseListDouble(val);</span>
-<span class="fc bfc" id="L614" title="All 2 branches covered.">											for (double i : list)</span>
-<span class="fc bfc" id="L615" title="All 2 branches covered.">												if (!options.contains(i))</span>
-<span class="fc" id="L616">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
+<span class="fc" id="L612">										DoubleSet options = DoubleSet.of(parseListDouble(optionsStr));</span>
+<span class="fc" id="L613">										parser = val -&gt; {</span>
+<span class="fc" id="L614">											double[] list = GexfGraphReader.parseListDouble(val);</span>
+<span class="fc bfc" id="L615" title="All 2 branches covered.">											for (double i : list)</span>
+<span class="fc bfc" id="L616" title="All 2 branches covered.">												if (!options.contains(i))</span>
+<span class="fc" id="L617">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
 															+ &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L618">											return list;</span>
+<span class="fc" id="L619">											return list;</span>
 										};
 									}
-<span class="fc" id="L621">									break;</span>
+<span class="fc" id="L622">									break;</span>
 								case &quot;listboolean&quot;:
-<span class="fc" id="L623">									type = boolean[].class;</span>
-<span class="fc bfc" id="L624" title="All 2 branches covered.">									if (optionsStr == null) {</span>
-<span class="fc" id="L625">										parser = GexfGraphReader::parseListBool;</span>
+<span class="fc" id="L624">									type = boolean[].class;</span>
+<span class="fc bfc" id="L625" title="All 2 branches covered.">									if (optionsStr == null) {</span>
+<span class="fc" id="L626">										parser = GexfGraphReader::parseListBool;</span>
 									} else {
-<span class="fc" id="L627">										BooleanSet options = BooleanSet.of(parseListBool(optionsStr));</span>
-<span class="fc" id="L628">										parser = val -&gt; {</span>
-<span class="fc" id="L629">											boolean[] list = GexfGraphReader.parseListBool(val);</span>
-<span class="fc bfc" id="L630" title="All 2 branches covered.">											for (boolean i : list)</span>
-<span class="fc bfc" id="L631" title="All 2 branches covered.">												if (!options.contains(i))</span>
-<span class="fc" id="L632">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
+<span class="fc" id="L628">										BooleanSet options = BooleanSet.of(parseListBool(optionsStr));</span>
+<span class="fc" id="L629">										parser = val -&gt; {</span>
+<span class="fc" id="L630">											boolean[] list = GexfGraphReader.parseListBool(val);</span>
+<span class="fc bfc" id="L631" title="All 2 branches covered.">											for (boolean i : list)</span>
+<span class="fc bfc" id="L632" title="All 2 branches covered.">												if (!options.contains(i))</span>
+<span class="fc" id="L633">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
 															+ &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L634">											return list;</span>
+<span class="fc" id="L635">											return list;</span>
 										};
 									}
-<span class="fc" id="L637">									break;</span>
+<span class="fc" id="L638">									break;</span>
 								case &quot;listchar&quot;:
-<span class="fc" id="L639">									type = char[].class;</span>
-<span class="fc bfc" id="L640" title="All 2 branches covered.">									if (optionsStr == null) {</span>
-<span class="fc" id="L641">										parser = GexfGraphReader::parseListChar;</span>
+<span class="fc" id="L640">									type = char[].class;</span>
+<span class="fc bfc" id="L641" title="All 2 branches covered.">									if (optionsStr == null) {</span>
+<span class="fc" id="L642">										parser = GexfGraphReader::parseListChar;</span>
 									} else {
-<span class="fc" id="L643">										CharSet options = CharSet.of(parseListChar(optionsStr));</span>
-<span class="fc" id="L644">										parser = val -&gt; {</span>
-<span class="fc" id="L645">											char[] list = GexfGraphReader.parseListChar(val);</span>
-<span class="fc bfc" id="L646" title="All 2 branches covered.">											for (char i : list)</span>
-<span class="fc bfc" id="L647" title="All 2 branches covered.">												if (!options.contains(i))</span>
-<span class="fc" id="L648">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
+<span class="fc" id="L644">										CharSet options = CharSet.of(parseListChar(optionsStr));</span>
+<span class="fc" id="L645">										parser = val -&gt; {</span>
+<span class="fc" id="L646">											char[] list = GexfGraphReader.parseListChar(val);</span>
+<span class="fc bfc" id="L647" title="All 2 branches covered.">											for (char i : list)</span>
+<span class="fc bfc" id="L648" title="All 2 branches covered.">												if (!options.contains(i))</span>
+<span class="fc" id="L649">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
 															+ &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L650">											return list;</span>
+<span class="fc" id="L651">											return list;</span>
 										};
 									}
-<span class="fc" id="L653">									break;</span>
+<span class="fc" id="L654">									break;</span>
 								case &quot;liststring&quot;:
-<span class="fc" id="L655">									type = String[].class;</span>
-<span class="fc bfc" id="L656" title="All 2 branches covered.">									if (optionsStr == null) {</span>
-<span class="fc" id="L657">										parser = GexfGraphReader::splitList;</span>
+<span class="fc" id="L656">									type = String[].class;</span>
+<span class="fc bfc" id="L657" title="All 2 branches covered.">									if (optionsStr == null) {</span>
+<span class="fc" id="L658">										parser = GexfGraphReader::splitList;</span>
 									} else {
-<span class="fc" id="L659">										Set&lt;String&gt; options = new ObjectOpenHashSet&lt;&gt;(splitList(optionsStr));</span>
-<span class="fc" id="L660">										parser = val -&gt; {</span>
-<span class="fc" id="L661">											String[] list = splitList(val);</span>
-<span class="fc bfc" id="L662" title="All 2 branches covered.">											for (String i : list)</span>
-<span class="fc bfc" id="L663" title="All 2 branches covered.">												if (!options.contains(i))</span>
-<span class="fc" id="L664">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
+<span class="fc" id="L660">										Set&lt;String&gt; options = new ObjectOpenHashSet&lt;&gt;(splitList(optionsStr));</span>
+<span class="fc" id="L661">										parser = val -&gt; {</span>
+<span class="fc" id="L662">											String[] list = splitList(val);</span>
+<span class="fc bfc" id="L663" title="All 2 branches covered.">											for (String i : list)</span>
+<span class="fc bfc" id="L664" title="All 2 branches covered.">												if (!options.contains(i))</span>
+<span class="fc" id="L665">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
 															+ &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L666">											return list;</span>
+<span class="fc" id="L667">											return list;</span>
 										};
 									}
-<span class="fc" id="L669">									break;</span>
+<span class="fc" id="L670">									break;</span>
 								case &quot;listbigdecimal&quot;:
-<span class="fc" id="L671">									type = BigDecimal[].class;</span>
-<span class="fc bfc" id="L672" title="All 2 branches covered.">									if (optionsStr == null) {</span>
-<span class="fc" id="L673">										parser = GexfGraphReader::parseListBigDecimal;</span>
+<span class="fc" id="L672">									type = BigDecimal[].class;</span>
+<span class="fc bfc" id="L673" title="All 2 branches covered.">									if (optionsStr == null) {</span>
+<span class="fc" id="L674">										parser = GexfGraphReader::parseListBigDecimal;</span>
 									} else {
-<span class="fc" id="L675">										Set&lt;BigDecimal&gt; options =</span>
-<span class="fc" id="L676">												new ObjectOpenHashSet&lt;&gt;(parseListBigDecimal(optionsStr));</span>
-<span class="fc" id="L677">										parser = val -&gt; {</span>
-<span class="fc" id="L678">											BigDecimal[] list = parseListBigDecimal(val);</span>
-<span class="fc bfc" id="L679" title="All 2 branches covered.">											for (BigDecimal i : list)</span>
-<span class="fc bfc" id="L680" title="All 2 branches covered.">												if (!options.contains(i))</span>
-<span class="fc" id="L681">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
+<span class="fc" id="L676">										Set&lt;BigDecimal&gt; options =</span>
+<span class="fc" id="L677">												new ObjectOpenHashSet&lt;&gt;(parseListBigDecimal(optionsStr));</span>
+<span class="fc" id="L678">										parser = val -&gt; {</span>
+<span class="fc" id="L679">											BigDecimal[] list = parseListBigDecimal(val);</span>
+<span class="fc bfc" id="L680" title="All 2 branches covered.">											for (BigDecimal i : list)</span>
+<span class="fc bfc" id="L681" title="All 2 branches covered.">												if (!options.contains(i))</span>
+<span class="fc" id="L682">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
 															+ &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L683">											return list;</span>
+<span class="fc" id="L684">											return list;</span>
 										};
 									}
-<span class="fc" id="L686">									break;</span>
+<span class="fc" id="L687">									break;</span>
 								case &quot;listbiginteger&quot;:
-<span class="fc" id="L688">									type = BigInteger[].class;</span>
-<span class="fc bfc" id="L689" title="All 2 branches covered.">									if (optionsStr == null) {</span>
-<span class="fc" id="L690">										parser = GexfGraphReader::parseListBigInteger;</span>
+<span class="fc" id="L689">									type = BigInteger[].class;</span>
+<span class="fc bfc" id="L690" title="All 2 branches covered.">									if (optionsStr == null) {</span>
+<span class="fc" id="L691">										parser = GexfGraphReader::parseListBigInteger;</span>
 									} else {
-<span class="fc" id="L692">										Set&lt;BigInteger&gt; options =</span>
-<span class="fc" id="L693">												new ObjectOpenHashSet&lt;&gt;(parseListBigInteger(optionsStr));</span>
-<span class="fc" id="L694">										parser = val -&gt; {</span>
-<span class="fc" id="L695">											BigInteger[] list = parseListBigInteger(val);</span>
-<span class="fc bfc" id="L696" title="All 2 branches covered.">											for (BigInteger i : list)</span>
-<span class="fc bfc" id="L697" title="All 2 branches covered.">												if (!options.contains(i))</span>
-<span class="fc" id="L698">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
+<span class="fc" id="L693">										Set&lt;BigInteger&gt; options =</span>
+<span class="fc" id="L694">												new ObjectOpenHashSet&lt;&gt;(parseListBigInteger(optionsStr));</span>
+<span class="fc" id="L695">										parser = val -&gt; {</span>
+<span class="fc" id="L696">											BigInteger[] list = parseListBigInteger(val);</span>
+<span class="fc bfc" id="L697" title="All 2 branches covered.">											for (BigInteger i : list)</span>
+<span class="fc bfc" id="L698" title="All 2 branches covered.">												if (!options.contains(i))</span>
+<span class="fc" id="L699">													throw new IllegalArgumentException(&quot;invalid value: &quot; + i</span>
 															+ &quot; (not in options: &quot; + options + &quot;)&quot;);
-<span class="fc" id="L700">											return list;</span>
+<span class="fc" id="L701">											return list;</span>
 										};
 									}
-<span class="fc" id="L703">									break;</span>
+<span class="fc" id="L704">									break;</span>
 								default:
 									/* can't each here, already matched the first switch to one of the object types */
-<span class="nc" id="L706">									throw new AssertionError();</span>
+<span class="nc" id="L707">									throw new AssertionError();</span>
 							}
 
-<span class="fc bfc" id="L709" title="All 2 branches covered.">							if (objOptions != null) {</span>
-<span class="fc" id="L710">								Function&lt;String, Object&gt; parser0 = parser;</span>
-<span class="fc" id="L711">								Set&lt;Object&gt; objOptions0 = objOptions;</span>
-<span class="fc" id="L712">								parser = val -&gt; {</span>
-<span class="fc" id="L713">									Object weight = parser0.apply(val);</span>
-<span class="fc bfc" id="L714" title="All 2 branches covered.">									if (!objOptions0.contains(weight))</span>
-<span class="fc" id="L715">										throw new IllegalArgumentException(</span>
+<span class="fc bfc" id="L710" title="All 2 branches covered.">							if (objOptions != null) {</span>
+<span class="fc" id="L711">								Function&lt;String, Object&gt; parser0 = parser;</span>
+<span class="fc" id="L712">								Set&lt;Object&gt; objOptions0 = objOptions;</span>
+<span class="fc" id="L713">								parser = val -&gt; {</span>
+<span class="fc" id="L714">									Object weight = parser0.apply(val);</span>
+<span class="fc bfc" id="L715" title="All 2 branches covered.">									if (!objOptions0.contains(weight))</span>
+<span class="fc" id="L716">										throw new IllegalArgumentException(</span>
 												&quot;invalid value: &quot; + weight + &quot; (not in options: &quot; + objOptions0 + &quot;)&quot;);
-<span class="fc" id="L717">									return weight;</span>
+<span class="fc" id="L718">									return weight;</span>
 								};
 							}
-<span class="fc bfc" id="L720" title="All 2 branches covered.">							defVal = defValStr == null ? null : parser.apply(defValStr);</span>
-<span class="fc" id="L721">							Function&lt;String, Object&gt; parser0 = parser;</span>
-<span class="fc" id="L722">							setterFactory = weights -&gt; {</span>
+<span class="fc bfc" id="L721" title="All 2 branches covered.">							defVal = defValStr == null ? null : parser.apply(defValStr);</span>
+<span class="fc" id="L722">							Function&lt;String, Object&gt; parser0 = parser;</span>
+<span class="fc" id="L723">							setterFactory = weights -&gt; {</span>
 								@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
-<span class="fc" id="L724">								WeightsObj&lt;Object, Object&gt; weights2 = (WeightsObj) weights;</span>
-<span class="fc" id="L725">								return (o, val) -&gt; weights2.set(o, parser0.apply(val));</span>
+<span class="fc" id="L725">								WeightsObj&lt;Object, Object&gt; weights2 = (WeightsObj) weights;</span>
+<span class="fc" id="L726">								return (o, val) -&gt; weights2.set(o, parser0.apply(val));</span>
 							};
-<span class="fc" id="L727">							break;</span>
+<span class="fc" id="L728">							break;</span>
 						}
 						default:
-<span class="fc" id="L730">							throw new IllegalArgumentException(&quot;unknown attribute type: &quot; + typeStr);</span>
+<span class="fc" id="L731">							throw new IllegalArgumentException(&quot;unknown attribute type: &quot; + typeStr);</span>
 					}
-<span class="fc bfc" id="L732" title="All 2 branches covered.">					if (isVertices) {</span>
+<span class="fc bfc" id="L733" title="All 2 branches covered.">					if (isVertices) {</span>
 						@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L734">						Class&lt;Object&gt; attrType0 = (Class&lt;Object&gt;) type;</span>
-<span class="fc" id="L735">						Weights&lt;V, Object&gt; weights = g.addVerticesWeights(weightsName, attrType0, defVal);</span>
+<span class="fc" id="L735">						Class&lt;Object&gt; attrType0 = (Class&lt;Object&gt;) type;</span>
+<span class="fc" id="L736">						Weights&lt;V, Object&gt; weights = g.addVerticesWeights(weightsName, attrType0, defVal);</span>
 						@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L737">						BiConsumer&lt;V, String&gt; setter =</span>
-<span class="fc" id="L738">								(BiConsumer&lt;V, String&gt;) setterFactory.apply((Weights&lt;Object, Object&gt;) weights);</span>
-<span class="fc" id="L739">						Object oldVal = vWeights.put(weightsId, setter);</span>
-<span class="fc bfc" id="L740" title="All 2 branches covered.">						if (oldVal != null)</span>
-<span class="fc" id="L741">							throw new IllegalArgumentException(&quot;duplicate node attribute id: &quot; + weightsId);</span>
-<span class="fc" id="L742">					} else {</span>
+<span class="fc" id="L738">						BiConsumer&lt;V, String&gt; setter =</span>
+<span class="fc" id="L739">								(BiConsumer&lt;V, String&gt;) setterFactory.apply((Weights&lt;Object, Object&gt;) weights);</span>
+<span class="fc" id="L740">						Object oldVal = vWeights.put(weightsId, setter);</span>
+<span class="fc bfc" id="L741" title="All 2 branches covered.">						if (oldVal != null)</span>
+<span class="fc" id="L742">							throw new IllegalArgumentException(&quot;duplicate node attribute id: &quot; + weightsId);</span>
+<span class="fc" id="L743">					} else {</span>
 						@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L744">						Class&lt;Object&gt; type0 = (Class&lt;Object&gt;) type;</span>
-<span class="fc" id="L745">						Weights&lt;E, Object&gt; weights = g.addEdgesWeights(weightsName, type0, defVal);</span>
+<span class="fc" id="L745">						Class&lt;Object&gt; type0 = (Class&lt;Object&gt;) type;</span>
+<span class="fc" id="L746">						Weights&lt;E, Object&gt; weights = g.addEdgesWeights(weightsName, type0, defVal);</span>
 						@SuppressWarnings(&quot;unchecked&quot;)
-<span class="fc" id="L747">						BiConsumer&lt;E, String&gt; setter =</span>
-<span class="fc" id="L748">								(BiConsumer&lt;E, String&gt;) setterFactory.apply((Weights&lt;Object, Object&gt;) weights);</span>
-<span class="fc" id="L749">						Object oldVal = eWeights.put(weightsId, setter);</span>
-<span class="fc bfc" id="L750" title="All 2 branches covered.">						if (oldVal != null)</span>
-<span class="fc" id="L751">							throw new IllegalArgumentException(&quot;duplicate edge attribute id: &quot; + weightsId);</span>
+<span class="fc" id="L748">						BiConsumer&lt;E, String&gt; setter =</span>
+<span class="fc" id="L749">								(BiConsumer&lt;E, String&gt;) setterFactory.apply((Weights&lt;Object, Object&gt;) weights);</span>
+<span class="fc" id="L750">						Object oldVal = eWeights.put(weightsId, setter);</span>
+<span class="fc bfc" id="L751" title="All 2 branches covered.">						if (oldVal != null)</span>
+<span class="fc" id="L752">							throw new IllegalArgumentException(&quot;duplicate edge attribute id: &quot; + weightsId);</span>
 					}
-<span class="fc" id="L753">				}</span>
-<span class="fc" id="L754">			}</span>
+<span class="fc" id="L754">				}</span>
+<span class="fc" id="L755">			}</span>
 
-<span class="fc" id="L756">			WeightsObj&lt;V, String&gt; vLabels = null;</span>
-<span class="fc" id="L757">			WeightsObj&lt;E, String&gt; eLabels = null;</span>
-<span class="fc" id="L758">			WeightsDouble&lt;E&gt; eWeight = null;</span>
+<span class="fc" id="L757">			WeightsObj&lt;V, String&gt; vLabels = null;</span>
+<span class="fc" id="L758">			WeightsObj&lt;E, String&gt; eLabels = null;</span>
+<span class="fc" id="L759">			WeightsDouble&lt;E&gt; eWeight = null;</span>
 
-<span class="fc" id="L760">			Iterable&lt;Element&gt; nodes = XmlUtils</span>
-<span class="fc" id="L761">					.optionalChild(graph, &quot;nodes&quot;)</span>
-<span class="fc" id="L762">					.map(nodesElm -&gt; XmlUtils.children(nodesElm, &quot;node&quot;))</span>
-<span class="fc" id="L763">					.orElse(Collections.emptyList());</span>
-<span class="fc bfc" id="L764" title="All 2 branches covered.">			for (Element vElm : nodes) {</span>
-<span class="fc" id="L765">				V v = vertexParser.apply(XmlUtils.requiredAttribute(vElm, &quot;id&quot;));</span>
-<span class="fc" id="L766">				g.addVertex(v);</span>
+<span class="fc" id="L761">			Iterable&lt;Element&gt; nodes = XmlUtils</span>
+<span class="fc" id="L762">					.optionalChild(graph, &quot;nodes&quot;)</span>
+<span class="fc" id="L763">					.map(nodesElm -&gt; XmlUtils.children(nodesElm, &quot;node&quot;))</span>
+<span class="fc" id="L764">					.orElse(Collections.emptyList());</span>
+<span class="fc bfc" id="L765" title="All 2 branches covered.">			for (Element vElm : nodes) {</span>
+<span class="fc" id="L766">				V v = vertexParser.apply(XmlUtils.requiredAttribute(vElm, &quot;id&quot;));</span>
+<span class="fc" id="L767">				g.addVertex(v);</span>
 
-<span class="fc" id="L768">				Optional&lt;String&gt; label = XmlUtils.optionalAttribute(vElm, &quot;label&quot;);</span>
-<span class="fc bfc" id="L769" title="All 2 branches covered.">				if (label.isPresent()) {</span>
-<span class="fc bfc" id="L770" title="All 2 branches covered.">					if (vLabels == null)</span>
-<span class="fc" id="L771">						vLabels = g.addVerticesWeights(&quot;label&quot;, String.class);</span>
-<span class="fc" id="L772">					vLabels.set(v, label.get());</span>
+<span class="fc" id="L769">				Optional&lt;String&gt; label = XmlUtils.optionalAttribute(vElm, &quot;label&quot;);</span>
+<span class="fc bfc" id="L770" title="All 2 branches covered.">				if (label.isPresent()) {</span>
+<span class="fc bfc" id="L771" title="All 2 branches covered.">					if (vLabels == null)</span>
+<span class="fc" id="L772">						vLabels = g.addVerticesWeights(&quot;label&quot;, String.class);</span>
+<span class="fc" id="L773">					vLabels.set(v, label.get());</span>
 				}
 
-<span class="fc" id="L775">				Optional&lt;Element&gt; attvaluesElm0 = XmlUtils.optionalChild(vElm, &quot;attvalues&quot;);</span>
-<span class="fc bfc" id="L776" title="All 2 branches covered.">				if (attvaluesElm0.isPresent()) {</span>
-<span class="fc" id="L777">					Element attvaluesElm = attvaluesElm0.get();</span>
-<span class="fc bfc" id="L778" title="All 2 branches covered.">					for (Element attvalueElm : XmlUtils.children(attvaluesElm, &quot;attvalue&quot;)) {</span>
-<span class="fc" id="L779">						String weightsId = XmlUtils.requiredAttribute(attvalueElm, &quot;for&quot;);</span>
-<span class="fc" id="L780">						String value = XmlUtils.requiredAttribute(attvalueElm, &quot;value&quot;);</span>
-<span class="fc" id="L781">						BiConsumer&lt;V, String&gt; setter = vWeights.get(weightsId);</span>
-<span class="fc bfc" id="L782" title="All 2 branches covered.">						if (setter == null)</span>
-<span class="fc" id="L783">							throw new IllegalArgumentException(&quot;unknown attribute id: &quot; + weightsId);</span>
-<span class="fc" id="L784">						setter.accept(v, value);</span>
-<span class="fc" id="L785">					}</span>
+<span class="fc" id="L776">				Optional&lt;Element&gt; attvaluesElm0 = XmlUtils.optionalChild(vElm, &quot;attvalues&quot;);</span>
+<span class="fc bfc" id="L777" title="All 2 branches covered.">				if (attvaluesElm0.isPresent()) {</span>
+<span class="fc" id="L778">					Element attvaluesElm = attvaluesElm0.get();</span>
+<span class="fc bfc" id="L779" title="All 2 branches covered.">					for (Element attvalueElm : XmlUtils.children(attvaluesElm, &quot;attvalue&quot;)) {</span>
+<span class="fc" id="L780">						String weightsId = XmlUtils.requiredAttribute(attvalueElm, &quot;for&quot;);</span>
+<span class="fc" id="L781">						String value = XmlUtils.requiredAttribute(attvalueElm, &quot;value&quot;);</span>
+<span class="fc" id="L782">						BiConsumer&lt;V, String&gt; setter = vWeights.get(weightsId);</span>
+<span class="fc bfc" id="L783" title="All 2 branches covered.">						if (setter == null)</span>
+<span class="fc" id="L784">							throw new IllegalArgumentException(&quot;unknown attribute id: &quot; + weightsId);</span>
+<span class="fc" id="L785">						setter.accept(v, value);</span>
+<span class="fc" id="L786">					}</span>
 				}
-<span class="fc" id="L787">			}</span>
+<span class="fc" id="L788">			}</span>
 
-<span class="fc" id="L789">			Iterable&lt;Element&gt; edges = XmlUtils</span>
-<span class="fc" id="L790">					.optionalChild(graph, &quot;edges&quot;)</span>
-<span class="fc" id="L791">					.map(edgesElm -&gt; XmlUtils.children(edgesElm, &quot;edge&quot;))</span>
-<span class="fc" id="L792">					.orElse(Collections.emptyList());</span>
-<span class="fc bfc" id="L793" title="All 2 branches covered.">			for (Element eElm : edges) {</span>
+<span class="fc" id="L790">			Iterable&lt;Element&gt; edges = XmlUtils</span>
+<span class="fc" id="L791">					.optionalChild(graph, &quot;edges&quot;)</span>
+<span class="fc" id="L792">					.map(edgesElm -&gt; XmlUtils.children(edgesElm, &quot;edge&quot;))</span>
+<span class="fc" id="L793">					.orElse(Collections.emptyList());</span>
+<span class="fc bfc" id="L794" title="All 2 branches covered.">			for (Element eElm : edges) {</span>
 				E e;
-<span class="fc" id="L795">				Optional&lt;String&gt; id = XmlUtils.optionalAttribute(eElm, &quot;id&quot;);</span>
-<span class="fc bfc" id="L796" title="All 2 branches covered.">				if (id.isPresent()) {</span>
-<span class="fc bfc" id="L797" title="All 2 branches covered.">					if (edgeParser == null)</span>
-<span class="fc" id="L798">						throw new IllegalStateException(&quot;Edge parser was not set&quot;);</span>
-<span class="fc" id="L799">					e = edgeParser.apply(id.get());</span>
+<span class="fc" id="L796">				Optional&lt;String&gt; id = XmlUtils.optionalAttribute(eElm, &quot;id&quot;);</span>
+<span class="fc bfc" id="L797" title="All 2 branches covered.">				if (id.isPresent()) {</span>
+<span class="fc bfc" id="L798" title="All 2 branches covered.">					if (edgeParser == null)</span>
+<span class="fc" id="L799">						throw new IllegalStateException(&quot;Edge parser was not set&quot;);</span>
+<span class="fc" id="L800">					e = edgeParser.apply(id.get());</span>
 				} else {
-<span class="fc bfc" id="L801" title="All 2 branches covered.">					if (edgeBuilder == null)</span>
-<span class="fc" id="L802">						throw new IllegalStateException(&quot;Edge builder was not set&quot;);</span>
-<span class="fc" id="L803">					e = edgeBuilder.build(g.edges());</span>
+<span class="fc bfc" id="L802" title="All 2 branches covered.">					if (edgeBuilder == null)</span>
+<span class="fc" id="L803">						throw new IllegalStateException(&quot;Edge builder was not set&quot;);</span>
+<span class="fc" id="L804">					e = edgeBuilder.build(g.edges());</span>
 				}
-<span class="fc" id="L805">				V u = vertexParser.apply(XmlUtils.requiredAttribute(eElm, &quot;source&quot;));</span>
-<span class="fc" id="L806">				V v = vertexParser.apply(XmlUtils.requiredAttribute(eElm, &quot;target&quot;));</span>
-<span class="fc" id="L807">				g.addEdge(u, v, e);</span>
+<span class="fc" id="L806">				V u = vertexParser.apply(XmlUtils.requiredAttribute(eElm, &quot;source&quot;));</span>
+<span class="fc" id="L807">				V v = vertexParser.apply(XmlUtils.requiredAttribute(eElm, &quot;target&quot;));</span>
+<span class="fc" id="L808">				g.addEdge(u, v, e);</span>
 
-<span class="fc bfc" id="L809" title="All 2 branches covered.">				if (eElm.hasAttribute(&quot;type&quot;))</span>
-<span class="fc" id="L810">					throw new IllegalArgumentException(&quot;directed attribute per-edge is not supported&quot;);</span>
+<span class="fc bfc" id="L810" title="All 2 branches covered.">				if (eElm.hasAttribute(&quot;type&quot;))</span>
+<span class="fc" id="L811">					throw new IllegalArgumentException(&quot;directed attribute per-edge is not supported&quot;);</span>
 
-<span class="fc" id="L812">				Optional&lt;String&gt; label = XmlUtils.optionalAttribute(eElm, &quot;label&quot;);</span>
-<span class="fc bfc" id="L813" title="All 2 branches covered.">				if (label.isPresent()) {</span>
-<span class="fc bfc" id="L814" title="All 2 branches covered.">					if (eLabels == null)</span>
-<span class="fc" id="L815">						eLabels = g.addEdgesWeights(&quot;label&quot;, String.class);</span>
-<span class="fc" id="L816">					eLabels.set(e, label.get());</span>
-				}
-
-<span class="fc" id="L819">				Optional&lt;String&gt; weight = XmlUtils.optionalAttribute(eElm, &quot;weight&quot;);</span>
-<span class="fc bfc" id="L820" title="All 2 branches covered.">				if (weight.isPresent()) {</span>
-<span class="fc bfc" id="L821" title="All 2 branches covered.">					if (eWeight == null)</span>
-<span class="fc" id="L822">						eWeight = g.addEdgesWeights(&quot;weight&quot;, double.class, Double.valueOf(1.0));</span>
-<span class="fc" id="L823">					eWeight.set(e, Double.parseDouble(weight.get()));</span>
+<span class="fc" id="L813">				Optional&lt;String&gt; label = XmlUtils.optionalAttribute(eElm, &quot;label&quot;);</span>
+<span class="fc bfc" id="L814" title="All 2 branches covered.">				if (label.isPresent()) {</span>
+<span class="fc bfc" id="L815" title="All 2 branches covered.">					if (eLabels == null)</span>
+<span class="fc" id="L816">						eLabels = g.addEdgesWeights(&quot;label&quot;, String.class);</span>
+<span class="fc" id="L817">					eLabels.set(e, label.get());</span>
 				}
 
-<span class="fc" id="L826">				Optional&lt;Element&gt; attvaluesElm0 = XmlUtils.optionalChild(eElm, &quot;attvalues&quot;);</span>
-<span class="fc bfc" id="L827" title="All 2 branches covered.">				if (attvaluesElm0.isPresent()) {</span>
-<span class="fc" id="L828">					Element attvaluesElm = attvaluesElm0.get();</span>
-<span class="fc bfc" id="L829" title="All 2 branches covered.">					for (Element attvalueElm : XmlUtils.children(attvaluesElm, &quot;attvalue&quot;)) {</span>
-<span class="fc" id="L830">						String weightsId = XmlUtils.requiredAttribute(attvalueElm, &quot;for&quot;);</span>
-<span class="fc" id="L831">						String value = XmlUtils.requiredAttribute(attvalueElm, &quot;value&quot;);</span>
-<span class="fc" id="L832">						BiConsumer&lt;E, String&gt; setter = eWeights.get(weightsId);</span>
-<span class="fc bfc" id="L833" title="All 2 branches covered.">						if (setter == null)</span>
-<span class="fc" id="L834">							throw new IllegalArgumentException(&quot;unknown attribute id: &quot; + weightsId);</span>
-<span class="fc" id="L835">						setter.accept(e, value);</span>
-<span class="fc" id="L836">					}</span>
+<span class="fc" id="L820">				Optional&lt;String&gt; weight = XmlUtils.optionalAttribute(eElm, &quot;weight&quot;);</span>
+<span class="fc bfc" id="L821" title="All 2 branches covered.">				if (weight.isPresent()) {</span>
+<span class="fc bfc" id="L822" title="All 2 branches covered.">					if (eWeight == null)</span>
+<span class="fc" id="L823">						eWeight = g.addEdgesWeights(&quot;weight&quot;, double.class, Double.valueOf(1.0));</span>
+<span class="fc" id="L824">					eWeight.set(e, Double.parseDouble(weight.get()));</span>
 				}
-<span class="fc" id="L838">			}</span>
 
-<span class="fc" id="L840">			return g;</span>
-<span class="fc" id="L841">		} catch (SAXException | ParserConfigurationException e) {</span>
-<span class="fc" id="L842">			throw new IllegalArgumentException(e);</span>
+<span class="fc" id="L827">				Optional&lt;Element&gt; attvaluesElm0 = XmlUtils.optionalChild(eElm, &quot;attvalues&quot;);</span>
+<span class="fc bfc" id="L828" title="All 2 branches covered.">				if (attvaluesElm0.isPresent()) {</span>
+<span class="fc" id="L829">					Element attvaluesElm = attvaluesElm0.get();</span>
+<span class="fc bfc" id="L830" title="All 2 branches covered.">					for (Element attvalueElm : XmlUtils.children(attvaluesElm, &quot;attvalue&quot;)) {</span>
+<span class="fc" id="L831">						String weightsId = XmlUtils.requiredAttribute(attvalueElm, &quot;for&quot;);</span>
+<span class="fc" id="L832">						String value = XmlUtils.requiredAttribute(attvalueElm, &quot;value&quot;);</span>
+<span class="fc" id="L833">						BiConsumer&lt;E, String&gt; setter = eWeights.get(weightsId);</span>
+<span class="fc bfc" id="L834" title="All 2 branches covered.">						if (setter == null)</span>
+<span class="fc" id="L835">							throw new IllegalArgumentException(&quot;unknown attribute id: &quot; + weightsId);</span>
+<span class="fc" id="L836">						setter.accept(e, value);</span>
+<span class="fc" id="L837">					}</span>
+				}
+<span class="fc" id="L839">			}</span>
+
+<span class="fc" id="L841">			return g;</span>
+<span class="fc" id="L842">		} catch (SAXException | ParserConfigurationException e) {</span>
+<span class="fc" id="L843">			throw new IllegalArgumentException(e);</span>
 		}
 	}
 
 	private Date parseDate(String s) {
 		try {
-<span class="fc" id="L848">			return dateFormat.parse(s);</span>
-<span class="fc" id="L849">		} catch (ParseException e) {</span>
-<span class="fc" id="L850">			throw new IllegalArgumentException(e);</span>
+<span class="fc" id="L849">			return dateFormat.parse(s);</span>
+<span class="fc" id="L850">		} catch (ParseException e) {</span>
+<span class="fc" id="L851">			throw new IllegalArgumentException(e);</span>
 		}
 	}
 
 	private static URI parseURI(String s) {
 		try {
-<span class="fc" id="L856">			return new URI(s);</span>
-<span class="fc" id="L857">		} catch (URISyntaxException e) {</span>
-<span class="fc" id="L858">			throw new IllegalArgumentException(e);</span>
+<span class="fc" id="L857">			return new URI(s);</span>
+<span class="fc" id="L858">		} catch (URISyntaxException e) {</span>
+<span class="fc" id="L859">			throw new IllegalArgumentException(e);</span>
 		}
 	}
 
 	private static byte[] parseListByte(String val) {
-<span class="fc" id="L863">		String[] words = splitList(val);</span>
-<span class="fc" id="L864">		byte[] list = new byte[words.length];</span>
-<span class="fc bfc" id="L865" title="All 2 branches covered.">		for (int i : range(words.length))</span>
-<span class="fc" id="L866">			list[i] = Byte.parseByte(words[i]);</span>
-<span class="fc" id="L867">		return list;</span>
+<span class="fc" id="L864">		String[] words = splitList(val);</span>
+<span class="fc" id="L865">		byte[] list = new byte[words.length];</span>
+<span class="fc bfc" id="L866" title="All 2 branches covered.">		for (int i : range(words.length))</span>
+<span class="fc" id="L867">			list[i] = Byte.parseByte(words[i]);</span>
+<span class="fc" id="L868">		return list;</span>
 	}
 
 	private static short[] parseListShort(String val) {
-<span class="fc" id="L871">		String[] words = splitList(val);</span>
-<span class="fc" id="L872">		short[] list = new short[words.length];</span>
-<span class="fc bfc" id="L873" title="All 2 branches covered.">		for (int i : range(words.length))</span>
-<span class="fc" id="L874">			list[i] = Short.parseShort(words[i]);</span>
-<span class="fc" id="L875">		return list;</span>
+<span class="fc" id="L872">		String[] words = splitList(val);</span>
+<span class="fc" id="L873">		short[] list = new short[words.length];</span>
+<span class="fc bfc" id="L874" title="All 2 branches covered.">		for (int i : range(words.length))</span>
+<span class="fc" id="L875">			list[i] = Short.parseShort(words[i]);</span>
+<span class="fc" id="L876">		return list;</span>
 	}
 
 	private static int[] parseListInt(String val) {
-<span class="fc" id="L879">		String[] words = splitList(val);</span>
-<span class="fc" id="L880">		int[] list = new int[words.length];</span>
-<span class="fc bfc" id="L881" title="All 2 branches covered.">		for (int i : range(words.length))</span>
-<span class="fc" id="L882">			list[i] = Integer.parseInt(words[i]);</span>
-<span class="fc" id="L883">		return list;</span>
+<span class="fc" id="L880">		String[] words = splitList(val);</span>
+<span class="fc" id="L881">		int[] list = new int[words.length];</span>
+<span class="fc bfc" id="L882" title="All 2 branches covered.">		for (int i : range(words.length))</span>
+<span class="fc" id="L883">			list[i] = Integer.parseInt(words[i]);</span>
+<span class="fc" id="L884">		return list;</span>
 	}
 
 	private static long[] parseListLong(String val) {
-<span class="fc" id="L887">		String[] words = splitList(val);</span>
-<span class="fc" id="L888">		long[] list = new long[words.length];</span>
-<span class="fc bfc" id="L889" title="All 2 branches covered.">		for (int i : range(words.length))</span>
-<span class="fc" id="L890">			list[i] = Long.parseLong(words[i]);</span>
-<span class="fc" id="L891">		return list;</span>
+<span class="fc" id="L888">		String[] words = splitList(val);</span>
+<span class="fc" id="L889">		long[] list = new long[words.length];</span>
+<span class="fc bfc" id="L890" title="All 2 branches covered.">		for (int i : range(words.length))</span>
+<span class="fc" id="L891">			list[i] = Long.parseLong(words[i]);</span>
+<span class="fc" id="L892">		return list;</span>
 	}
 
 	private static float[] parseListFloat(String val) {
-<span class="fc" id="L895">		String[] words = splitList(val);</span>
-<span class="fc" id="L896">		float[] list = new float[words.length];</span>
-<span class="fc bfc" id="L897" title="All 2 branches covered.">		for (int i : range(words.length))</span>
-<span class="fc" id="L898">			list[i] = Float.parseFloat(words[i]);</span>
-<span class="fc" id="L899">		return list;</span>
+<span class="fc" id="L896">		String[] words = splitList(val);</span>
+<span class="fc" id="L897">		float[] list = new float[words.length];</span>
+<span class="fc bfc" id="L898" title="All 2 branches covered.">		for (int i : range(words.length))</span>
+<span class="fc" id="L899">			list[i] = Float.parseFloat(words[i]);</span>
+<span class="fc" id="L900">		return list;</span>
 	}
 
 	private static double[] parseListDouble(String val) {
-<span class="fc" id="L903">		String[] words = splitList(val);</span>
-<span class="fc" id="L904">		double[] list = new double[words.length];</span>
-<span class="fc bfc" id="L905" title="All 2 branches covered.">		for (int i : range(words.length))</span>
-<span class="fc" id="L906">			list[i] = Double.parseDouble(words[i]);</span>
-<span class="fc" id="L907">		return list;</span>
+<span class="fc" id="L904">		String[] words = splitList(val);</span>
+<span class="fc" id="L905">		double[] list = new double[words.length];</span>
+<span class="fc bfc" id="L906" title="All 2 branches covered.">		for (int i : range(words.length))</span>
+<span class="fc" id="L907">			list[i] = Double.parseDouble(words[i]);</span>
+<span class="fc" id="L908">		return list;</span>
 	}
 
 	private static boolean[] parseListBool(String val) {
-<span class="fc" id="L911">		String[] words = splitList(val);</span>
-<span class="fc" id="L912">		boolean[] list = new boolean[words.length];</span>
-<span class="fc bfc" id="L913" title="All 2 branches covered.">		for (int i : range(words.length))</span>
-<span class="fc" id="L914">			list[i] = Boolean.parseBoolean(words[i]);</span>
-<span class="fc" id="L915">		return list;</span>
+<span class="fc" id="L912">		String[] words = splitList(val);</span>
+<span class="fc" id="L913">		boolean[] list = new boolean[words.length];</span>
+<span class="fc bfc" id="L914" title="All 2 branches covered.">		for (int i : range(words.length))</span>
+<span class="fc" id="L915">			list[i] = Boolean.parseBoolean(words[i]);</span>
+<span class="fc" id="L916">		return list;</span>
 	}
 
 	private static char[] parseListChar(String val) {
-<span class="fc" id="L919">		String[] words = splitList(val);</span>
-<span class="fc" id="L920">		char[] list = new char[words.length];</span>
-<span class="fc bfc" id="L921" title="All 2 branches covered.">		for (int i : range(words.length))</span>
-<span class="fc" id="L922">			list[i] = GraphIoUtils.parseChar(words[i]);</span>
-<span class="fc" id="L923">		return list;</span>
+<span class="fc" id="L920">		String[] words = splitList(val);</span>
+<span class="fc" id="L921">		char[] list = new char[words.length];</span>
+<span class="fc bfc" id="L922" title="All 2 branches covered.">		for (int i : range(words.length))</span>
+<span class="fc" id="L923">			list[i] = GraphIoUtils.parseChar(words[i]);</span>
+<span class="fc" id="L924">		return list;</span>
 	}
 
 	private static BigDecimal[] parseListBigDecimal(String val) {
-<span class="fc" id="L927">		String[] words = splitList(val);</span>
-<span class="fc" id="L928">		BigDecimal[] list = new BigDecimal[words.length];</span>
-<span class="fc bfc" id="L929" title="All 2 branches covered.">		for (int i : range(words.length))</span>
-<span class="fc" id="L930">			list[i] = new BigDecimal(words[i]);</span>
-<span class="fc" id="L931">		return list;</span>
+<span class="fc" id="L928">		return Arrays.stream(splitList(val)).map(BigDecimal::new).toArray(BigDecimal[]::new);</span>
 	}
 
 	private static BigInteger[] parseListBigInteger(String val) {
-<span class="fc" id="L935">		String[] words = splitList(val);</span>
-<span class="fc" id="L936">		BigInteger[] list = new BigInteger[words.length];</span>
-<span class="fc bfc" id="L937" title="All 2 branches covered.">		for (int i : range(words.length))</span>
-<span class="fc" id="L938">			list[i] = new BigInteger(words[i]);</span>
-<span class="fc" id="L939">		return list;</span>
+<span class="fc" id="L932">		return Arrays.stream(splitList(val)).map(BigInteger::new).toArray(BigInteger[]::new);</span>
 	}
 
 	private static URI[] parseListURI(String val) {
-<span class="fc" id="L943">		String[] words = splitList(val);</span>
-<span class="fc" id="L944">		URI[] list = new URI[words.length];</span>
-<span class="fc bfc" id="L945" title="All 2 branches covered.">		for (int i : range(words.length))</span>
-<span class="fc" id="L946">			list[i] = parseURI(words[i]);</span>
-<span class="fc" id="L947">		return list;</span>
+<span class="fc" id="L936">		return Arrays.stream(splitList(val)).map(GexfGraphReader::parseURI).toArray(URI[]::new);</span>
 	}
 
 	private Date[] parseListDate(String val) {
-<span class="fc" id="L951">		String[] words = splitList(val);</span>
-<span class="fc" id="L952">		Date[] list = new Date[words.length];</span>
-<span class="fc bfc" id="L953" title="All 2 branches covered.">		for (int i : range(words.length))</span>
-<span class="fc" id="L954">			list[i] = parseDate(words[i]);</span>
-<span class="fc" id="L955">		return list;</span>
+<span class="fc" id="L940">		return Arrays.stream(splitList(val)).map(this::parseDate).toArray(Date[]::new);</span>
 	}
 
 	private static String[] splitList(String s) {
-<span class="fc bfc" id="L959" title="All 4 branches covered.">		if (!s.startsWith(&quot;[&quot;) || !s.endsWith(&quot;]&quot;))</span>
-<span class="fc" id="L960">			throw new IllegalArgumentException(&quot;list attribute must be of the form [val1, val2,...]&quot;);</span>
-<span class="fc" id="L961">		s = s.substring(1, s.length() - 1);</span>
-<span class="fc" id="L962">		String[] words = s.split(&quot;,&quot;);</span>
-<span class="fc bfc" id="L963" title="All 2 branches covered.">		for (int i : range(words.length))</span>
-<span class="fc" id="L964">			words[i] = words[i].trim();</span>
-<span class="fc" id="L965">		return words;</span>
+<span class="fc bfc" id="L944" title="All 4 branches covered.">		if (!s.startsWith(&quot;[&quot;) || !s.endsWith(&quot;]&quot;))</span>
+<span class="fc" id="L945">			throw new IllegalArgumentException(&quot;list attribute must be of the form [val1, val2,...]&quot;);</span>
+<span class="fc" id="L946">		s = s.substring(1, s.length() - 1);</span>
+<span class="fc" id="L947">		String[] words = s.split(&quot;,&quot;);</span>
+<span class="fc bfc" id="L948" title="All 2 branches covered.">		for (int i : range(words.length))</span>
+<span class="fc" id="L949">			words[i] = words[i].trim();</span>
+<span class="fc" id="L950">		return words;</span>
 	}
 
 }

@@ -15,6 +15,7 @@
  */
 package com.jgalgo.alg;
 
+import java.util.Collection;
 import java.util.Set;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IEdgeIter;
@@ -23,10 +24,12 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.WeightFunction;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import com.jgalgo.internal.util.IntAdapters;
+import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -88,7 +91,7 @@ public interface MinimumVertexCutGlobal {
 	 * @return a default implementation of {@link MinimumVertexCutGlobal}
 	 */
 	static MinimumVertexCutGlobal newInstance() {
-<span class="fc" id="L91">		return new MinimumVertexCutGlobalEsfahanianHakimi();</span>
+<span class="fc" id="L94">		return new MinimumVertexCutGlobalEsfahanianHakimi();</span>
 	}
 
 	/**
@@ -108,55 +111,56 @@ public interface MinimumVertexCutGlobal {
 	 * @throws IllegalArgumentException if {@code cut} contains duplicate vertices
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
-	static &lt;V, E&gt; boolean isCut(Graph&lt;V, E&gt; g, Set&lt;V&gt; cut) {
+	static &lt;V, E&gt; boolean isCut(Graph&lt;V, E&gt; g, Collection&lt;V&gt; cut) {
 		IndexGraph ig;
-		IntSet iCut;
-<span class="fc bfc" id="L114" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
-<span class="fc" id="L115">			ig = (IndexGraph) g;</span>
-<span class="fc" id="L116">			iCut = IntAdapters.asIntSet((Set&lt;Integer&gt;) cut);</span>
+		IntCollection iCut;
+<span class="fc bfc" id="L117" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L118">			ig = (IndexGraph) g;</span>
+<span class="fc" id="L119">			iCut = IntAdapters.asIntCollection((Collection&lt;Integer&gt;) cut);</span>
 		} else {
-<span class="fc" id="L118">			ig = g.indexGraph();</span>
-<span class="fc" id="L119">			iCut = IndexIdMaps.idToIndexSet(cut, g.indexGraphVerticesMap());</span>
+<span class="fc" id="L121">			ig = g.indexGraph();</span>
+<span class="fc" id="L122">			iCut = IndexIdMaps.idToIndexCollection(cut, g.indexGraphVerticesMap());</span>
 		}
-<span class="fc" id="L121">		final int n = g.vertices().size();</span>
-<span class="fc" id="L122">		Bitmap cut0 = new Bitmap(n);</span>
-<span class="fc bfc" id="L123" title="All 2 branches covered.">		for (int v : iCut) {</span>
-<span class="pc bpc" id="L124" title="1 of 2 branches missed.">			if (cut0.get(v))</span>
-<span class="nc" id="L125">				throw new IllegalArgumentException(&quot;duplicate vertex with index &quot; + v);</span>
-<span class="fc" id="L126">			cut0.set(v);</span>
-<span class="fc" id="L127">		}</span>
-<span class="fc" id="L128">		final int cutSize = cut0.cardinality();</span>
-<span class="fc bfc" id="L129" title="All 2 branches covered.">		if (cutSize == n)</span>
-<span class="fc" id="L130">			return false;</span>
-<span class="fc bfc" id="L131" title="All 2 branches covered.">		if (cutSize == n - 1)</span>
-<span class="fc" id="L132">			return true;</span>
+<span class="fc" id="L124">		final int n = g.vertices().size();</span>
+<span class="fc" id="L125">		Bitmap cut0 = new Bitmap(n);</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">		for (int v : iCut) {</span>
+<span class="fc" id="L127">			Assertions.checkVertex(v, n);</span>
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">			if (cut0.get(v))</span>
+<span class="nc" id="L129">				throw new IllegalArgumentException(&quot;duplicate vertex with index &quot; + v);</span>
+<span class="fc" id="L130">			cut0.set(v);</span>
+<span class="fc" id="L131">		}</span>
+<span class="fc" id="L132">		final int cutSize = cut0.cardinality();</span>
+<span class="fc bfc" id="L133" title="All 2 branches covered.">		if (cutSize == n)</span>
+<span class="fc" id="L134">			return false;</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">		if (cutSize == n - 1)</span>
+<span class="fc" id="L136">			return true;</span>
 
-<span class="pc bpc" id="L134" title="1 of 2 branches missed.">		if (g.isDirected()) {</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">		if (g.isDirected()) {</span>
 			/* graph is directed, use SCC algorithm */
-<span class="nc" id="L136">			Bitmap remainingVertices = cut0.copy();</span>
-<span class="nc" id="L137">			remainingVertices.not();</span>
-<span class="nc" id="L138">			IntGraph subGraph = ig.subGraphCopy(ImmutableIntArraySet.ofBitmap(remainingVertices), null);</span>
-<span class="nc bnc" id="L139" title="All 2 branches missed.">			return !StronglyConnectedComponentsAlgo.newInstance().isStronglyConnected(subGraph);</span>
+<span class="nc" id="L140">			Bitmap remainingVertices = cut0.copy();</span>
+<span class="nc" id="L141">			remainingVertices.not();</span>
+<span class="nc" id="L142">			IntGraph subGraph = ig.subGraphCopy(ImmutableIntArraySet.ofBitmap(remainingVertices), null);</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">			return !StronglyConnectedComponentsAlgo.newInstance().isStronglyConnected(subGraph);</span>
 
 		} else {
 			/* graph is undirected use a simple BFS */
-<span class="fc" id="L143">			IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
-<span class="fc" id="L144">			Bitmap visited = new Bitmap(n);</span>
-<span class="fc" id="L145">			int start = cut0.nextClearBit(0);</span>
-<span class="fc" id="L146">			visited.set(start);</span>
-<span class="fc" id="L147">			queue.enqueue(start);</span>
-<span class="fc bfc" id="L148" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
-<span class="fc" id="L149">				int u = queue.dequeueInt();</span>
-<span class="fc bfc" id="L150" title="All 2 branches covered.">				for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
-<span class="fc" id="L151">					eit.nextInt();</span>
-<span class="fc" id="L152">					int v = eit.targetInt();</span>
-<span class="fc bfc" id="L153" title="All 4 branches covered.">					if (visited.get(v) || cut0.get(v))</span>
-<span class="fc" id="L154">						continue;</span>
-<span class="fc" id="L155">					visited.set(v);</span>
-<span class="fc" id="L156">					queue.enqueue(v);</span>
-<span class="fc" id="L157">				}</span>
-<span class="fc" id="L158">			}</span>
-<span class="fc bfc" id="L159" title="All 2 branches covered.">			return visited.cardinality() &lt; n - cutSize;</span>
+<span class="fc" id="L147">			IntPriorityQueue queue = new FIFOQueueIntNoReduce();</span>
+<span class="fc" id="L148">			Bitmap visited = new Bitmap(n);</span>
+<span class="fc" id="L149">			int start = cut0.nextClearBit(0);</span>
+<span class="fc" id="L150">			visited.set(start);</span>
+<span class="fc" id="L151">			queue.enqueue(start);</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">			while (!queue.isEmpty()) {</span>
+<span class="fc" id="L153">				int u = queue.dequeueInt();</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">				for (IEdgeIter eit = ig.outEdges(u).iterator(); eit.hasNext();) {</span>
+<span class="fc" id="L155">					eit.nextInt();</span>
+<span class="fc" id="L156">					int v = eit.targetInt();</span>
+<span class="fc bfc" id="L157" title="All 4 branches covered.">					if (visited.get(v) || cut0.get(v))</span>
+<span class="fc" id="L158">						continue;</span>
+<span class="fc" id="L159">					visited.set(v);</span>
+<span class="fc" id="L160">					queue.enqueue(v);</span>
+<span class="fc" id="L161">				}</span>
+<span class="fc" id="L162">			}</span>
+<span class="fc bfc" id="L163" title="All 2 branches covered.">			return visited.cardinality() &lt; n - cutSize;</span>
 		}
 	}
 

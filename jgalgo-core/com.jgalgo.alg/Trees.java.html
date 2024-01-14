@@ -57,7 +57,7 @@ public class Trees {
 	 */
 	public static &lt;V, E&gt; boolean isTree(Graph&lt;V, E&gt; g) {
 <span class="fc" id="L59">		Assertions.onlyUndirected(g);</span>
-<span class="fc bfc" id="L60" title="All 2 branches covered.">		return g.vertices().isEmpty() ? true : isTree(g, g.vertices().iterator().next());</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">		return g.vertices().isEmpty() ? true : isTree(g, g.vertices().iterator().next());</span>
 	}
 
 	/**
@@ -165,7 +165,7 @@ public class Trees {
 <span class="fc bfc" id="L165" title="All 2 branches covered.">				for (IEdgeIter eit = g.outEdges(u).iterator(); eit.hasNext();) {</span>
 <span class="fc" id="L166">					eit.nextInt();</span>
 <span class="fc" id="L167">					int v = eit.targetInt();</span>
-<span class="pc bpc" id="L168" title="1 of 4 branches missed.">					if (!directed &amp;&amp; v == parent[u])</span>
+<span class="fc bfc" id="L168" title="All 4 branches covered.">					if (!directed &amp;&amp; v == parent[u])</span>
 <span class="fc" id="L169">						continue;</span>
 <span class="fc bfc" id="L170" title="All 2 branches covered.">					if (visited.get(v))</span>
 <span class="fc" id="L171">						return false;</span>

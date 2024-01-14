@@ -17,10 +17,13 @@ package com.jgalgo.alg;
 
 import java.util.Iterator;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
+import com.jgalgo.graph.NoSuchVertexException;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
 /**
@@ -51,7 +54,7 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
  * @param  &lt;E&gt; the edges type
  * @author     Barak Ugav
  */
-public interface BfsIter&lt;V, E&gt; extends Iterator&lt;V&gt; {
+<span class="pc bpc" id="L57" title="1 of 2 branches missed.">public interface BfsIter&lt;V, E&gt; extends Iterator&lt;V&gt; {</span>
 
 	/**
 	 * Check whether there is more vertices to iterate over.
@@ -110,7 +113,7 @@ public interface BfsIter&lt;V, E&gt; extends Iterator&lt;V&gt; {
 		@Deprecated
 		@Override
 		default Integer next() {
-<span class="fc" id="L113">			return IntIterator.super.next();</span>
+<span class="fc" id="L116">			return IntIterator.super.next();</span>
 		}
 
 		/**
@@ -131,8 +134,8 @@ public interface BfsIter&lt;V, E&gt; extends Iterator&lt;V&gt; {
 		@Deprecated
 		@Override
 		default Integer lastEdge() {
-<span class="fc" id="L134">			int e = lastEdgeInt();</span>
-<span class="fc bfc" id="L135" title="All 2 branches covered.">			return e == -1 ? null : Integer.valueOf(e);</span>
+<span class="fc" id="L137">			int e = lastEdgeInt();</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">			return e == -1 ? null : Integer.valueOf(e);</span>
 		}
 	}
 
@@ -142,34 +145,36 @@ public interface BfsIter&lt;V, E&gt; extends Iterator&lt;V&gt; {
 	 * &lt;p&gt;
 	 * If an {@link IntGraph} is passed as an argument {@link BfsIter.Int} is returned.
 	 *
-	 * @param  &lt;V&gt;    the vertices type
-	 * @param  &lt;E&gt;    the edges type
-	 * @param  g      a graph
-	 * @param  source a vertex in the graph from which the search will start from
-	 * @return        a BFS iterator that iterate over the vertices of the graph
+	 * @param  &lt;V&gt;                   the vertices type
+	 * @param  &lt;E&gt;                   the edges type
+	 * @param  g                     a graph
+	 * @param  source                a vertex in the graph from which the search will start from
+	 * @return                       a BFS iterator that iterate over the vertices of the graph
+	 * @throws NoSuchVertexException if the source vertex is not in the graph
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;V, E&gt; BfsIter&lt;V, E&gt; newInstance(Graph&lt;V, E&gt; g, V source) {
-<span class="fc bfc" id="L153" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
-<span class="fc" id="L154">			return (BfsIter&lt;V, E&gt;) newInstance((IntGraph) g, ((Integer) source).intValue());</span>
-<span class="fc" id="L155">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L156">		BfsIter.Int indexBfs = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));</span>
-<span class="fc" id="L157">		return new BfsIterImpl.ObjBfsFromIndexBfs&lt;&gt;(g, indexBfs);</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">		if (g instanceof IntGraph)</span>
+<span class="fc" id="L158">			return (BfsIter&lt;V, E&gt;) newInstance((IntGraph) g, ((Integer) source).intValue());</span>
+<span class="fc" id="L159">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L160">		BfsIter.Int indexBfs = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));</span>
+<span class="fc" id="L161">		return new BfsIterImpl.ObjBfsFromIndexBfs&lt;&gt;(g, indexBfs);</span>
 	}
 
 	/**
 	 * Create a BFS iterator in an int graph.
 	 *
-	 * @param  g      a graph
-	 * @param  source a vertex in the graph from which the search will start from
-	 * @return        a BFS iterator that iterate over the vertices of the graph
+	 * @param  g                     a graph
+	 * @param  source                a vertex in the graph from which the search will start from
+	 * @return                       a BFS iterator that iterate over the vertices of the graph
+	 * @throws NoSuchVertexException if the source vertex is not in the graph
 	 */
 	public static BfsIter.Int newInstance(IntGraph g, int source) {
-<span class="fc bfc" id="L168" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
-<span class="fc" id="L169">			return new BfsIterImpl.Forward((IndexGraph) g, source);</span>
-<span class="fc" id="L170">		IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L171">		BfsIter.Int indexBfs = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));</span>
-<span class="fc" id="L172">		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBfs);</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L174">			return new BfsIterImpl.Forward((IndexGraph) g, source);</span>
+<span class="fc" id="L175">		IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L176">		BfsIter.Int indexBfs = new BfsIterImpl.Forward(g.indexGraph(), viMap.idToIndex(source));</span>
+<span class="fc" id="L177">		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBfs);</span>
 	}
 
 	/**
@@ -182,19 +187,20 @@ public interface BfsIter&lt;V, E&gt; extends Iterator&lt;V&gt; {
 	 * &lt;p&gt;
 	 * If an {@link IntGraph} is passed as an argument {@link BfsIter.Int} is returned.
 	 *
-	 * @param  &lt;V&gt;    the vertices type
-	 * @param  &lt;E&gt;    the edges type
-	 * @param  g      a graph
-	 * @param  source a vertex in the graph from which the search will start from
-	 * @return        a BFS iterator that iterate over the vertices of the graph using the in-edges
+	 * @param  &lt;V&gt;                   the vertices type
+	 * @param  &lt;E&gt;                   the edges type
+	 * @param  g                     a graph
+	 * @param  source                a vertex in the graph from which the search will start from
+	 * @return                       a BFS iterator that iterate over the vertices of the graph using the in-edges
+	 * @throws NoSuchVertexException if the source vertex is not in the graph
 	 */
 	@SuppressWarnings(&quot;unchecked&quot;)
 	public static &lt;V, E&gt; BfsIter&lt;V, E&gt; newInstanceBackward(Graph&lt;V, E&gt; g, V source) {
-<span class="nc bnc" id="L193" title="All 2 branches missed.">		if (g instanceof IntGraph)</span>
-<span class="nc" id="L194">			return (BfsIter&lt;V, E&gt;) newInstanceBackward((IntGraph) g, ((Integer) source).intValue());</span>
-<span class="nc" id="L195">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L196">		BfsIter.Int indexBfs = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));</span>
-<span class="nc" id="L197">		return new BfsIterImpl.ObjBfsFromIndexBfs&lt;&gt;(g, indexBfs);</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">		if (g instanceof IntGraph)</span>
+<span class="nc" id="L200">			return (BfsIter&lt;V, E&gt;) newInstanceBackward((IntGraph) g, ((Integer) source).intValue());</span>
+<span class="nc" id="L201">		IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L202">		BfsIter.Int indexBfs = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));</span>
+<span class="nc" id="L203">		return new BfsIterImpl.ObjBfsFromIndexBfs&lt;&gt;(g, indexBfs);</span>
 	}
 
 	/**
@@ -204,16 +210,130 @@ public interface BfsIter&lt;V, E&gt; extends Iterator&lt;V&gt; {
 	 * The regular BFS uses the out-edges of each vertex to explore its neighbors, while the &lt;i&gt;backward&lt;/i&gt; BFS uses
 	 * the in-edges to do so.
 	 *
-	 * @param  g      a graph
-	 * @param  source a vertex in the graph from which the search will start from
-	 * @return        a BFS iterator that iterate over the vertices of the graph using the in-edges
+	 * @param  g                     a graph
+	 * @param  source                a vertex in the graph from which the search will start from
+	 * @return                       a BFS iterator that iterate over the vertices of the graph using the in-edges
+	 * @throws NoSuchVertexException if the source vertex is not in the graph
 	 */
 	public static BfsIter.Int newInstanceBackward(IntGraph g, int source) {
-<span class="pc bpc" id="L212" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
-<span class="fc" id="L213">			return new BfsIterImpl.Backward((IndexGraph) g, source);</span>
-<span class="nc" id="L214">		IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
-<span class="nc" id="L215">		BfsIter.Int indexBfs = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));</span>
-<span class="nc" id="L216">		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBfs);</span>
+<span class="pc bpc" id="L219" title="1 of 2 branches missed.">		if (g instanceof IndexGraph)</span>
+<span class="fc" id="L220">			return new BfsIterImpl.Backward((IndexGraph) g, source);</span>
+<span class="nc" id="L221">		IndexIntIdMap viMap = g.indexGraphVerticesMap();</span>
+<span class="nc" id="L222">		BfsIter.Int indexBfs = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));</span>
+<span class="nc" id="L223">		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBfs);</span>
+	}
+
+	/**
+	 * Create a tree from all the vertices and edges traversed by a bread first search.
+	 *
+	 * &lt;p&gt;
+	 * The created graph will contain only the vertices reachable from the source vertex. For each such vertex other
+	 * than the source vertex, the graph will contain the edge that led to it during the search. If there are \(k\)
+	 * reachable vertices, the graph will contain \(k-1\) edges.
+	 *
+	 * &lt;p&gt;
+	 * The returned graph will be directed if the original graph is directed. In such case, the tree is directed from
+	 * the source to the other vertices. To control the directionality of the returned graph, use
+	 * {@link #bfsTree(Graph, Object, boolean)}.
+	 *
+	 * &lt;p&gt;
+	 * If an {@link IntGraph} is passed as an argument, {@link IntGraph} is returned.
+	 *
+	 * @param  &lt;V&gt;                   the vertices type
+	 * @param  &lt;E&gt;                   the edges type
+	 * @param  g                     a graph
+	 * @param  source                a vertex in the graph from which the search will start from
+	 * @return                       a tree graph that contains all the vertices and edges traversed by a bread first
+	 *                               search rooted at the source vertex
+	 * @throws NoSuchVertexException if the source vertex is not in the graph
+	 */
+	public static &lt;V, E&gt; Graph&lt;V, E&gt; bfsTree(Graph&lt;V, E&gt; g, V source) {
+<span class="fc" id="L251">		return bfsTree(g, source, g.isDirected());</span>
+	}
+
+	/**
+	 * Create a tree from all the vertices and edges traversed by a bread first search, optionally directed or
+	 * undirected.
+	 *
+	 * &lt;p&gt;
+	 * The created graph will contain only the vertices reachable from the source vertex. For each such vertex other
+	 * than the source vertex, the graph will contain the edge that led to it during the search. If there are \(k\)
+	 * reachable vertices, the graph will contain \(k-1\) edges.
+	 *
+	 * &lt;p&gt;
+	 * If an {@link IntGraph} is passed as an argument, {@link IntGraph} is returned.
+	 *
+	 * @param  &lt;V&gt;                   the vertices type
+	 * @param  &lt;E&gt;                   the edges type
+	 * @param  g                     a graph
+	 * @param  source                a vertex in the graph from which the search will start from
+	 * @param  directed              if {@code true} the returned tree will be directed. If the original graph was
+	 *                                   undirected and a directed tree is created, the edges in the tree will be
+	 *                                   directed from the source towards the other vertices
+	 * @return                       a tree graph that contains all the vertices and edges traversed by a bread first
+	 *                               search rooted at the source vertex
+	 * @throws NoSuchVertexException if the source vertex is not in the graph
+	 */
+	public static &lt;V, E&gt; Graph&lt;V, E&gt; bfsTree(Graph&lt;V, E&gt; g, V source, boolean directed) {
+<span class="fc bfc" id="L278" title="All 2 branches covered.">		if (g instanceof IndexGraph) {</span>
+<span class="fc" id="L279">			IndexGraph ig = (IndexGraph) g;</span>
+<span class="fc" id="L280">			int src = ((Integer) source).intValue();</span>
+<span class="fc" id="L281">			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">			for (BfsIter.Int iter = newInstance(ig, src); iter.hasNext();) {</span>
+<span class="fc" id="L283">				int v = iter.nextInt();</span>
+<span class="fc" id="L284">				b.addVertex(v);</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">				if (v == src)</span>
+<span class="fc" id="L286">					continue;</span>
+<span class="fc" id="L287">				int e = iter.lastEdgeInt();</span>
+<span class="pc bpc" id="L288" title="3 of 4 branches missed.">				assert e &gt;= 0;</span>
+<span class="fc" id="L289">				b.addEdge(ig.edgeEndpoint(e, v), v, e);</span>
+<span class="fc" id="L290">			}</span>
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L292">			Graph&lt;V, E&gt; tree = (Graph&lt;V, E&gt;) b.build();</span>
+<span class="fc" id="L293">			return tree;</span>
+
+<span class="fc bfc" id="L295" title="All 2 branches covered.">		} else if (g instanceof IntGraph) {</span>
+<span class="fc" id="L296">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L297">			IndexIntIdMap viMap = ((IntGraph) g).indexGraphVerticesMap();</span>
+<span class="fc" id="L298">			IndexIntIdMap eiMap = ((IntGraph) g).indexGraphEdgesMap();</span>
+<span class="fc" id="L299">			int srcIdx = viMap.idToIndex(((Integer) source).intValue());</span>
+<span class="fc" id="L300">			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);</span>
+<span class="fc bfc" id="L301" title="All 2 branches covered.">			for (BfsIter.Int iter = newInstance(ig, srcIdx); iter.hasNext();) {</span>
+<span class="fc" id="L302">				int vIdx = iter.nextInt();</span>
+<span class="fc" id="L303">				int v = viMap.indexToIdInt(vIdx);</span>
+<span class="fc" id="L304">				b.addVertex(v);</span>
+<span class="fc bfc" id="L305" title="All 2 branches covered.">				if (vIdx == srcIdx)</span>
+<span class="fc" id="L306">					continue;</span>
+<span class="fc" id="L307">				int eIdx = iter.lastEdgeInt();</span>
+<span class="fc" id="L308">				int uIdx = ig.edgeEndpoint(eIdx, vIdx);</span>
+<span class="fc" id="L309">				int e = eiMap.indexToIdInt(eIdx);</span>
+<span class="fc" id="L310">				int u = viMap.indexToIdInt(uIdx);</span>
+<span class="fc" id="L311">				b.addEdge(u, v, e);</span>
+<span class="fc" id="L312">			}</span>
+			@SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L314">			Graph&lt;V, E&gt; tree = (Graph&lt;V, E&gt;) b.build();</span>
+<span class="fc" id="L315">			return tree;</span>
+
+		} else {
+<span class="fc" id="L318">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L319">			IndexIdMap&lt;V&gt; viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L320">			IndexIdMap&lt;E&gt; eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L321">			int srcIdx = viMap.idToIndex(source);</span>
+<span class="fc" id="L322">			GraphBuilder&lt;V, E&gt; b = GraphBuilder.newInstance(directed);</span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">			for (BfsIter.Int iter = newInstance(ig, srcIdx); iter.hasNext();) {</span>
+<span class="fc" id="L324">				int vIdx = iter.nextInt();</span>
+<span class="fc" id="L325">				V v = viMap.indexToId(vIdx);</span>
+<span class="fc" id="L326">				b.addVertex(v);</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">				if (vIdx == srcIdx)</span>
+<span class="fc" id="L328">					continue;</span>
+<span class="fc" id="L329">				int eIdx = iter.lastEdgeInt();</span>
+<span class="fc" id="L330">				int uIdx = ig.edgeEndpoint(eIdx, vIdx);</span>
+<span class="fc" id="L331">				E e = eiMap.indexToId(eIdx);</span>
+<span class="fc" id="L332">				V u = viMap.indexToId(uIdx);</span>
+<span class="fc" id="L333">				b.addEdge(u, v, e);</span>
+<span class="fc" id="L334">			}</span>
+<span class="fc" id="L335">			return b.build();</span>
+		}
 	}
 
 }

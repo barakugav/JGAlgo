@@ -24,6 +24,7 @@ import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIdMaps;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.ImmutableIntArraySet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
@@ -31,7 +32,7 @@ class CoresAlgos {
 
 	private CoresAlgos() {}
 
-<span class="fc" id="L34">	static class IndexResult implements CoresAlgo.IResult {</span>
+<span class="fc" id="L35">	static class IndexResult implements CoresAlgo.IResult {</span>
 
 		private final int[] core;
 		private final int maxCore;
@@ -41,102 +42,103 @@ class CoresAlgos {
 		private IntSet[] coreShells;
 		private IntSet[] coreCrusts;
 
-<span class="fc" id="L44">		public IndexResult(int[] core) {</span>
-<span class="fc" id="L45">			this.core = Objects.requireNonNull(core);</span>
-<span class="fc" id="L46">			this.maxCore = Arrays.stream(core).max().orElse(-1);</span>
-<span class="fc" id="L47">		}</span>
+<span class="fc" id="L45">		public IndexResult(int[] core) {</span>
+<span class="fc" id="L46">			this.core = Objects.requireNonNull(core);</span>
+<span class="fc" id="L47">			this.maxCore = Arrays.stream(core).max().orElse(-1);</span>
+<span class="fc" id="L48">		}</span>
 
 		@Override
 		public int vertexCoreNum(int v) {
-<span class="fc" id="L51">			return core[v];</span>
+<span class="fc" id="L52">			Assertions.checkVertex(v, core.length);</span>
+<span class="fc" id="L53">			return core[v];</span>
 		}
 
 		@Override
 		public int maxCore() {
-<span class="fc" id="L56">			return maxCore;</span>
+<span class="fc" id="L58">			return maxCore;</span>
 		}
 
 		private void computeSortedVertices() {
-<span class="fc bfc" id="L60" title="All 2 branches covered.">			if (sortedVertices != null)</span>
-<span class="fc" id="L61">				return;</span>
-<span class="fc" id="L62">			final int n = this.core.length;</span>
-<span class="fc" id="L63">			final int coreNum = maxCore + 1;</span>
-<span class="pc bpc" id="L64" title="1 of 2 branches missed.">			if (coreNum == 0)</span>
-<span class="nc" id="L65">				return;</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">			if (sortedVertices != null)</span>
+<span class="fc" id="L63">				return;</span>
+<span class="fc" id="L64">			final int n = this.core.length;</span>
+<span class="fc" id="L65">			final int coreNum = maxCore + 1;</span>
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">			if (coreNum == 0)</span>
+<span class="nc" id="L67">				return;</span>
 
-<span class="fc" id="L67">			coreOffset = new int[coreNum + 1];</span>
-<span class="fc bfc" id="L68" title="All 2 branches covered.">			for (int v : range(n))</span>
-<span class="fc" id="L69">				coreOffset[this.core[v]]++;</span>
-<span class="fc" id="L70">			int s = 0;</span>
-<span class="fc bfc" id="L71" title="All 2 branches covered.">			for (int c : range(coreNum)) {</span>
-<span class="fc" id="L72">				int k = coreOffset[c];</span>
-<span class="fc" id="L73">				coreOffset[c] = s;</span>
-<span class="fc" id="L74">				s += k;</span>
-<span class="fc" id="L75">			}</span>
-<span class="fc" id="L76">			sortedVertices = new int[n];</span>
-<span class="fc bfc" id="L77" title="All 2 branches covered.">			for (int v : range(n))</span>
-<span class="fc" id="L78">				sortedVertices[coreOffset[this.core[v]]++] = v;</span>
-<span class="pc bnc" id="L79" title="All 2 branches missed.">			assert coreOffset[coreNum - 1] == n;</span>
-<span class="fc bfc" id="L80" title="All 2 branches covered.">			for (int c = coreNum; c &gt; 0; c--)</span>
-<span class="fc" id="L81">				coreOffset[c] = coreOffset[c - 1];</span>
-<span class="fc" id="L82">			coreOffset[0] = 0;</span>
-<span class="fc" id="L83">		}</span>
+<span class="fc" id="L69">			coreOffset = new int[coreNum + 1];</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">			for (int v : range(n))</span>
+<span class="fc" id="L71">				coreOffset[this.core[v]]++;</span>
+<span class="fc" id="L72">			int s = 0;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">			for (int c : range(coreNum)) {</span>
+<span class="fc" id="L74">				int k = coreOffset[c];</span>
+<span class="fc" id="L75">				coreOffset[c] = s;</span>
+<span class="fc" id="L76">				s += k;</span>
+<span class="fc" id="L77">			}</span>
+<span class="fc" id="L78">			sortedVertices = new int[n];</span>
+<span class="fc bfc" id="L79" title="All 2 branches covered.">			for (int v : range(n))</span>
+<span class="fc" id="L80">				sortedVertices[coreOffset[this.core[v]]++] = v;</span>
+<span class="pc bnc" id="L81" title="All 2 branches missed.">			assert coreOffset[coreNum - 1] == n;</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">			for (int c = coreNum; c &gt; 0; c--)</span>
+<span class="fc" id="L83">				coreOffset[c] = coreOffset[c - 1];</span>
+<span class="fc" id="L84">			coreOffset[0] = 0;</span>
+<span class="fc" id="L85">		}</span>
 
 		@Override
 		public IntSet coreVertices(int core) {
-<span class="fc bfc" id="L87" title="All 2 branches covered.">			if (coreVertices == null) {</span>
-<span class="fc" id="L88">				computeSortedVertices();</span>
-<span class="fc" id="L89">				final int n = this.core.length;</span>
-<span class="fc" id="L90">				final int coreNum = maxCore + 1;</span>
-<span class="fc" id="L91">				coreVertices = new IntSet[coreNum];</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">				for (int c : range(coreNum)) {</span>
-<span class="fc" id="L93">					coreVertices[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], n) {</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">			if (coreVertices == null) {</span>
+<span class="fc" id="L90">				computeSortedVertices();</span>
+<span class="fc" id="L91">				final int n = this.core.length;</span>
+<span class="fc" id="L92">				final int coreNum = maxCore + 1;</span>
+<span class="fc" id="L93">				coreVertices = new IntSet[coreNum];</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">				for (int c : range(coreNum)) {</span>
+<span class="fc" id="L95">					coreVertices[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], n) {</span>
 						@Override
 						public boolean contains(int v) {
-<span class="pc bpc" id="L96" title="2 of 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; IndexResult.this.core[v] &gt;= c;</span>
+<span class="pc bpc" id="L98" title="2 of 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; IndexResult.this.core[v] &gt;= c;</span>
 						}
 					};
-<span class="fc" id="L99">				}</span>
+<span class="fc" id="L101">				}</span>
 			}
-<span class="fc" id="L101">			return coreVertices[core];</span>
+<span class="fc" id="L103">			return coreVertices[core];</span>
 		}
 
 		@Override
 		public IntSet coreShell(int core) {
-<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (coreShells == null) {</span>
-<span class="fc" id="L107">				computeSortedVertices();</span>
-<span class="fc" id="L108">				final int n = this.core.length;</span>
-<span class="fc" id="L109">				final int coreNum = maxCore + 1;</span>
-<span class="fc" id="L110">				coreShells = new IntSet[coreNum];</span>
-<span class="fc bfc" id="L111" title="All 2 branches covered.">				for (int c : range(coreNum)) {</span>
-<span class="fc" id="L112">					coreShells[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], coreOffset[c + 1]) {</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (coreShells == null) {</span>
+<span class="fc" id="L109">				computeSortedVertices();</span>
+<span class="fc" id="L110">				final int n = this.core.length;</span>
+<span class="fc" id="L111">				final int coreNum = maxCore + 1;</span>
+<span class="fc" id="L112">				coreShells = new IntSet[coreNum];</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">				for (int c : range(coreNum)) {</span>
+<span class="fc" id="L114">					coreShells[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], coreOffset[c + 1]) {</span>
 						@Override
 						public boolean contains(int v) {
-<span class="pc bpc" id="L115" title="2 of 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; IndexResult.this.core[v] == c;</span>
+<span class="pc bpc" id="L117" title="2 of 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; IndexResult.this.core[v] == c;</span>
 						}
 					};
-<span class="fc" id="L118">				}</span>
+<span class="fc" id="L120">				}</span>
 			}
-<span class="fc" id="L120">			return coreShells[core];</span>
+<span class="fc" id="L122">			return coreShells[core];</span>
 		}
 
 		@Override
 		public IntSet coreCrust(int core) {
-<span class="fc bfc" id="L125" title="All 2 branches covered.">			if (coreCrusts == null) {</span>
-<span class="fc" id="L126">				computeSortedVertices();</span>
-<span class="fc" id="L127">				final int n = this.core.length;</span>
-<span class="fc" id="L128">				final int coreNum = maxCore + 1;</span>
-<span class="fc" id="L129">				coreCrusts = new IntSet[coreNum];</span>
-<span class="fc bfc" id="L130" title="All 2 branches covered.">				for (int c : range(coreNum)) {</span>
-<span class="fc" id="L131">					coreCrusts[c] = new ImmutableIntArraySet(sortedVertices, 0, coreOffset[c]) {</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">			if (coreCrusts == null) {</span>
+<span class="fc" id="L128">				computeSortedVertices();</span>
+<span class="fc" id="L129">				final int n = this.core.length;</span>
+<span class="fc" id="L130">				final int coreNum = maxCore + 1;</span>
+<span class="fc" id="L131">				coreCrusts = new IntSet[coreNum];</span>
+<span class="fc bfc" id="L132" title="All 2 branches covered.">				for (int c : range(coreNum)) {</span>
+<span class="fc" id="L133">					coreCrusts[c] = new ImmutableIntArraySet(sortedVertices, 0, coreOffset[c]) {</span>
 						@Override
 						public boolean contains(int v) {
-<span class="pc bpc" id="L134" title="2 of 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; IndexResult.this.core[v] &lt; c;</span>
+<span class="pc bpc" id="L136" title="2 of 6 branches missed.">							return 0 &lt;= v &amp;&amp; v &lt; n &amp;&amp; IndexResult.this.core[v] &lt; c;</span>
 						}
 					};
-<span class="fc" id="L137">				}</span>
+<span class="fc" id="L139">				}</span>
 			}
-<span class="fc" id="L139">			return coreCrusts[core];</span>
+<span class="fc" id="L141">			return coreCrusts[core];</span>
 		}
 	}
 
@@ -145,34 +147,34 @@ class CoresAlgos {
 		private final CoresAlgo.IResult iResult;
 		private final IndexIntIdMap viMap;
 
-<span class="fc" id="L148">		public IntResultFromIndexResult(IntGraph g, CoresAlgo.IResult iResult) {</span>
-<span class="fc" id="L149">			this.iResult = Objects.requireNonNull(iResult);</span>
-<span class="fc" id="L150">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L151">		}</span>
+<span class="fc" id="L150">		public IntResultFromIndexResult(IntGraph g, CoresAlgo.IResult iResult) {</span>
+<span class="fc" id="L151">			this.iResult = Objects.requireNonNull(iResult);</span>
+<span class="fc" id="L152">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L153">		}</span>
 
 		@Override
 		public int vertexCoreNum(int v) {
-<span class="fc" id="L155">			return iResult.vertexCoreNum(viMap.idToIndex(v));</span>
+<span class="fc" id="L157">			return iResult.vertexCoreNum(viMap.idToIndex(v));</span>
 		}
 
 		@Override
 		public int maxCore() {
-<span class="fc" id="L160">			return iResult.maxCore();</span>
+<span class="fc" id="L162">			return iResult.maxCore();</span>
 		}
 
 		@Override
 		public IntSet coreVertices(int core) {
-<span class="fc" id="L165">			return IndexIdMaps.indexToIdSet(iResult.coreVertices(core), viMap);</span>
+<span class="fc" id="L167">			return IndexIdMaps.indexToIdSet(iResult.coreVertices(core), viMap);</span>
 		}
 
 		@Override
 		public IntSet coreShell(int core) {
-<span class="fc" id="L170">			return IndexIdMaps.indexToIdSet(iResult.coreShell(core), viMap);</span>
+<span class="fc" id="L172">			return IndexIdMaps.indexToIdSet(iResult.coreShell(core), viMap);</span>
 		}
 
 		@Override
 		public IntSet coreCrust(int core) {
-<span class="fc" id="L175">			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);</span>
+<span class="fc" id="L177">			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);</span>
 		}
 	}
 
@@ -181,34 +183,34 @@ class CoresAlgos {
 		private final CoresAlgo.IResult iResult;
 		private final IndexIdMap&lt;V&gt; viMap;
 
-<span class="fc" id="L184">		public ObjResultFromIndexResult(Graph&lt;V, E&gt; g, CoresAlgo.IResult iResult) {</span>
-<span class="fc" id="L185">			this.iResult = Objects.requireNonNull(iResult);</span>
-<span class="fc" id="L186">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L187">		}</span>
+<span class="fc" id="L186">		public ObjResultFromIndexResult(Graph&lt;V, E&gt; g, CoresAlgo.IResult iResult) {</span>
+<span class="fc" id="L187">			this.iResult = Objects.requireNonNull(iResult);</span>
+<span class="fc" id="L188">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L189">		}</span>
 
 		@Override
 		public int vertexCoreNum(V v) {
-<span class="fc" id="L191">			return iResult.vertexCoreNum(viMap.idToIndex(v));</span>
+<span class="fc" id="L193">			return iResult.vertexCoreNum(viMap.idToIndex(v));</span>
 		}
 
 		@Override
 		public int maxCore() {
-<span class="fc" id="L196">			return iResult.maxCore();</span>
+<span class="fc" id="L198">			return iResult.maxCore();</span>
 		}
 
 		@Override
 		public Set&lt;V&gt; coreVertices(int core) {
-<span class="fc" id="L201">			return IndexIdMaps.indexToIdSet(iResult.coreVertices(core), viMap);</span>
+<span class="fc" id="L203">			return IndexIdMaps.indexToIdSet(iResult.coreVertices(core), viMap);</span>
 		}
 
 		@Override
 		public Set&lt;V&gt; coreShell(int core) {
-<span class="fc" id="L206">			return IndexIdMaps.indexToIdSet(iResult.coreShell(core), viMap);</span>
+<span class="fc" id="L208">			return IndexIdMaps.indexToIdSet(iResult.coreShell(core), viMap);</span>
 		}
 
 		@Override
 		public Set&lt;V&gt; coreCrust(int core) {
-<span class="fc" id="L211">			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);</span>
+<span class="fc" id="L213">			return IndexIdMaps.indexToIdSet(iResult.coreCrust(core), viMap);</span>
 		}
 	}
 

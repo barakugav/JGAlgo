@@ -29,22 +29,17 @@ package com.jgalgo.graph;
 
 	@Override
 	public boolean equals(Object other) {
-<span class="fc bfc" id="L32" title="All 2 branches covered.">		if (other == this)</span>
-<span class="fc" id="L33">			return true;</span>
-<span class="fc bfc" id="L34" title="All 2 branches covered.">		if (!(other instanceof Graph))</span>
-<span class="fc" id="L35">			return false;</span>
-<span class="fc" id="L36">		Graph&lt;?, ?&gt; o = (Graph&lt;?, ?&gt;) other;</span>
-<span class="fc" id="L37">		return Graphs.isEquals(this, o);</span>
+<span class="fc bfc" id="L32" title="All 4 branches covered.">		return other instanceof Graph &amp;&amp; Graphs.isEquals(this, (Graph&lt;?, ?&gt;) other);</span>
 	}
 
 	@Override
 	public int hashCode() {
-<span class="fc" id="L42">		return Graphs.hashCode(this);</span>
+<span class="fc" id="L37">		return Graphs.hashCode(this);</span>
 	}
 
 	@Override
 	public String toString() {
-<span class="fc" id="L47">		return Graphs.toString(this);</span>
+<span class="fc" id="L42">		return Graphs.toString(this);</span>
 	}
 
 }

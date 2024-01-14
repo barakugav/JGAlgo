@@ -15,15 +15,18 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Objects;
 import com.jgalgo.graph.Graph;
+import com.jgalgo.graph.GraphBuilder;
 import com.jgalgo.graph.IWeightFunction;
 import com.jgalgo.graph.IWeightFunctionInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IndexIdMap;
 import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
+import com.jgalgo.graph.IntGraphBuilder;
 import com.jgalgo.internal.ds.ReferenceableHeap;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.JGAlgoUtils;
@@ -34,72 +37,100 @@ class ShortestPathSingleSourceUtils {
 
 	private ShortestPathSingleSourceUtils() {}
 
-<span class="fc" id="L37">	static class IndexResult implements ShortestPathSingleSource.IResult {</span>
+<span class="fc" id="L40">	static class IndexResult implements ShortestPathSingleSource.IResult {</span>
 
 		private final IndexGraph g;
 		private final int source;
 		final double[] distances;
 		final int[] backtrack;
 
-<span class="fc" id="L44">		IndexResult(IndexGraph g, int source) {</span>
-<span class="fc" id="L45">			this.g = g;</span>
-<span class="fc" id="L46">			this.source = source;</span>
-<span class="fc" id="L47">			int n = g.vertices().size();</span>
-<span class="fc" id="L48">			distances = new double[n];</span>
-<span class="fc" id="L49">			backtrack = new int[n];</span>
-<span class="fc" id="L50">			Arrays.fill(distances, Double.POSITIVE_INFINITY);</span>
-<span class="fc" id="L51">			Arrays.fill(backtrack, -1);</span>
-<span class="fc" id="L52">		}</span>
+		private IntGraph shortestPathTreeUndirected;
+		private IntGraph shortestPathTreeDirected;
 
-<span class="fc" id="L54">		IndexResult(IndexGraph g, int source, double[] distances, int[] backtrack) {</span>
-<span class="fc" id="L55">			int n = g.vertices().size();</span>
-<span class="pc bpc" id="L56" title="2 of 4 branches missed.">			if (distances.length != n || backtrack.length != n)</span>
-<span class="nc" id="L57">				throw new IllegalArgumentException(&quot;distances and backtrack arrays must be of size &quot; + n);</span>
-<span class="fc" id="L58">			this.g = g;</span>
-<span class="fc" id="L59">			this.source = source;</span>
-<span class="fc" id="L60">			this.distances = distances;</span>
-<span class="fc" id="L61">			this.backtrack = backtrack;</span>
-<span class="fc" id="L62">		}</span>
+<span class="fc" id="L50">		IndexResult(IndexGraph g, int source) {</span>
+<span class="fc" id="L51">			this.g = g;</span>
+<span class="fc" id="L52">			this.source = source;</span>
+<span class="fc" id="L53">			int n = g.vertices().size();</span>
+<span class="fc" id="L54">			distances = new double[n];</span>
+<span class="fc" id="L55">			backtrack = new int[n];</span>
+<span class="fc" id="L56">			Arrays.fill(distances, Double.POSITIVE_INFINITY);</span>
+<span class="fc" id="L57">			Arrays.fill(backtrack, -1);</span>
+<span class="fc" id="L58">		}</span>
+
+<span class="fc" id="L60">		IndexResult(IndexGraph g, int source, double[] distances, int[] backtrack) {</span>
+<span class="fc" id="L61">			int n = g.vertices().size();</span>
+<span class="pc bpc" id="L62" title="2 of 4 branches missed.">			if (distances.length != n || backtrack.length != n)</span>
+<span class="nc" id="L63">				throw new IllegalArgumentException(&quot;distances and backtrack arrays must be of size &quot; + n);</span>
+<span class="fc" id="L64">			this.g = g;</span>
+<span class="fc" id="L65">			this.source = source;</span>
+<span class="fc" id="L66">			this.distances = distances;</span>
+<span class="fc" id="L67">			this.backtrack = backtrack;</span>
+<span class="fc" id="L68">		}</span>
 
 		@Override
 		public double distance(int target) {
-<span class="fc" id="L66">			Assertions.checkVertex(target, distances.length);</span>
-<span class="fc" id="L67">			return distances[target];</span>
+<span class="fc" id="L72">			Assertions.checkVertex(target, distances.length);</span>
+<span class="fc" id="L73">			return distances[target];</span>
 		}
 
 		@Override
 		public IPath getPath(int target) {
-<span class="fc bfc" id="L72" title="All 2 branches covered.">			if (distance(target) == Double.POSITIVE_INFINITY)</span>
-<span class="fc" id="L73">				return null;</span>
-<span class="fc" id="L74">			IntArrayList path = new IntArrayList();</span>
-<span class="fc bfc" id="L75" title="All 2 branches covered.">			if (g.isDirected()) {</span>
-<span class="fc" id="L76">				for (int v = target;;) {</span>
-<span class="fc" id="L77">					int e = backtrack[v];</span>
-<span class="fc bfc" id="L78" title="All 2 branches covered.">					if (e == -1) {</span>
-<span class="pc bnc" id="L79" title="All 2 branches missed.">						assert v == source;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">			if (distance(target) == Double.POSITIVE_INFINITY)</span>
+<span class="fc" id="L79">				return null;</span>
+<span class="fc" id="L80">			IntArrayList path = new IntArrayList();</span>
+<span class="fc bfc" id="L81" title="All 2 branches covered.">			if (g.isDirected()) {</span>
+<span class="fc" id="L82">				for (int v = target;;) {</span>
+<span class="fc" id="L83">					int e = backtrack[v];</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">					if (e == -1) {</span>
+<span class="pc bnc" id="L85" title="All 2 branches missed.">						assert v == source;</span>
 						break;
 					}
-<span class="fc" id="L82">					path.add(e);</span>
-<span class="fc" id="L83">					v = g.edgeSource(e);</span>
-<span class="fc" id="L84">				}</span>
+<span class="fc" id="L88">					path.add(e);</span>
+<span class="fc" id="L89">					v = g.edgeSource(e);</span>
+<span class="fc" id="L90">				}</span>
 			} else {
-<span class="fc" id="L86">				for (int v = target;;) {</span>
-<span class="fc" id="L87">					int e = backtrack[v];</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">					if (e == -1) {</span>
-<span class="pc bnc" id="L89" title="All 2 branches missed.">						assert v == source;</span>
+<span class="fc" id="L92">				for (int v = target;;) {</span>
+<span class="fc" id="L93">					int e = backtrack[v];</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">					if (e == -1) {</span>
+<span class="pc bnc" id="L95" title="All 2 branches missed.">						assert v == source;</span>
 						break;
 					}
-<span class="fc" id="L92">					path.add(e);</span>
-<span class="fc" id="L93">					v = g.edgeEndpoint(e, v);</span>
-<span class="fc" id="L94">				}</span>
+<span class="fc" id="L98">					path.add(e);</span>
+<span class="fc" id="L99">					v = g.edgeEndpoint(e, v);</span>
+<span class="fc" id="L100">				}</span>
 			}
-<span class="fc" id="L96">			IntArrays.reverse(path.elements(), 0, path.size());</span>
-<span class="fc" id="L97">			return new PathImpl(g, source, target, path);</span>
+<span class="fc" id="L102">			IntArrays.reverse(path.elements(), 0, path.size());</span>
+<span class="fc" id="L103">			return new PathImpl(g, source, target, path);</span>
 		}
 
 		@Override
-		public String toString() {
-<span class="nc" id="L102">			return Arrays.toString(distances);</span>
+		public int backtrackEdge(int target) {
+<span class="fc" id="L108">			Assertions.checkVertex(target, backtrack.length);</span>
+<span class="fc" id="L109">			return backtrack[target];</span>
+		}
+
+		@Override
+		public IntGraph shortestPathTree(boolean directed) {
+<span class="fc bfc" id="L114" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">				if (shortestPathTreeDirected == null)</span>
+<span class="fc" id="L116">					shortestPathTreeDirected = ShortestPathSingleSource.IResult.super.shortestPathTree(true);</span>
+<span class="fc" id="L117">				return shortestPathTreeDirected;</span>
+
+			} else {
+<span class="fc bfc" id="L120" title="All 2 branches covered.">				if (shortestPathTreeUndirected == null)</span>
+<span class="fc" id="L121">					shortestPathTreeUndirected = ShortestPathSingleSource.IResult.super.shortestPathTree(false);</span>
+<span class="fc" id="L122">				return shortestPathTreeUndirected;</span>
+			}
+		}
+
+		@Override
+		public int sourceInt() {
+<span class="fc" id="L128">			return source;</span>
+		}
+
+		@Override
+		public IndexGraph graph() {
+<span class="fc" id="L133">			return g;</span>
 		}
 	}
 
@@ -108,21 +139,76 @@ class ShortestPathSingleSourceUtils {
 		private final ShortestPathSingleSource.IResult indexRes;
 		private final Graph&lt;V, E&gt; g;
 		private final IndexIdMap&lt;V&gt; viMap;
+		private final IndexIdMap&lt;E&gt; eiMap;
+		private Graph&lt;V, E&gt; shortestPathTreeUndirected;
+		private Graph&lt;V, E&gt; shortestPathTreeDirected;
 
-<span class="fc" id="L112">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, ShortestPathSingleSource.IResult indexRes) {</span>
-<span class="fc" id="L113">			this.indexRes = Objects.requireNonNull(indexRes);</span>
-<span class="fc" id="L114">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L115">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L116">		}</span>
+<span class="fc" id="L146">		ObjResultFromIndexResult(Graph&lt;V, E&gt; g, ShortestPathSingleSource.IResult indexRes) {</span>
+<span class="fc" id="L147">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L148">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L149">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L150">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L151">		}</span>
 
 		@Override
 		public double distance(V target) {
-<span class="fc" id="L120">			return indexRes.distance(viMap.idToIndex(target));</span>
+<span class="fc" id="L155">			return indexRes.distance(viMap.idToIndex(target));</span>
 		}
 
 		@Override
 		public Path&lt;V, E&gt; getPath(V target) {
-<span class="fc" id="L125">			return PathImpl.objPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));</span>
+<span class="fc" id="L160">			return PathImpl.objPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));</span>
+		}
+
+		@Override
+		public E backtrackEdge(V target) {
+<span class="fc" id="L165">			int tIdx = viMap.idToIndex(target);</span>
+<span class="fc" id="L166">			int eIdx = indexRes.backtrackEdge(tIdx);</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">			return eIdx &lt; 0 ? null : eiMap.indexToId(eIdx);</span>
+		}
+
+		@Override
+		public Graph&lt;V, E&gt; shortestPathTree(boolean directed) {
+<span class="fc bfc" id="L172" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">				if (shortestPathTreeDirected == null)</span>
+<span class="fc" id="L174">					shortestPathTreeDirected = createShortestPathTree(true);</span>
+<span class="fc" id="L175">				return shortestPathTreeDirected;</span>
+
+			} else {
+<span class="fc bfc" id="L178" title="All 2 branches covered.">				if (shortestPathTreeUndirected == null)</span>
+<span class="fc" id="L179">					shortestPathTreeUndirected = createShortestPathTree(false);</span>
+<span class="fc" id="L180">				return shortestPathTreeUndirected;</span>
+			}
+		}
+
+		private Graph&lt;V, E&gt; createShortestPathTree(boolean directed) {
+<span class="fc" id="L185">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L186">			GraphBuilder&lt;V, E&gt; b = GraphBuilder.newInstance(directed);</span>
+<span class="fc" id="L187">			b.addVertex(source());</span>
+<span class="fc bfc" id="L188" title="All 2 branches covered.">			for (int vIdx : range(ig.vertices().size()))</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">				if (indexRes.backtrackEdge(vIdx) &gt;= 0)</span>
+<span class="fc" id="L190">					b.addVertex(viMap.indexToId(vIdx));</span>
+<span class="fc bfc" id="L191" title="All 2 branches covered.">			for (int vIdx : range(ig.vertices().size())) {</span>
+<span class="fc" id="L192">				int eIdx = indexRes.backtrackEdge(vIdx);</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">				if (eIdx &lt; 0)</span>
+<span class="fc" id="L194">					continue;</span>
+<span class="fc" id="L195">				int uIdx = ig.edgeEndpoint(eIdx, vIdx);</span>
+<span class="fc" id="L196">				V u = viMap.indexToId(uIdx);</span>
+<span class="fc" id="L197">				V v = viMap.indexToId(vIdx);</span>
+<span class="fc" id="L198">				E e = eiMap.indexToId(eIdx);</span>
+<span class="fc" id="L199">				b.addEdge(u, v, e);</span>
+<span class="fc" id="L200">			}</span>
+<span class="fc" id="L201">			return b.build();</span>
+		}
+
+		@Override
+		public V source() {
+<span class="fc" id="L206">			return viMap.indexToId(indexRes.sourceInt());</span>
+		}
+
+		@Override
+		public Graph&lt;V, E&gt; graph() {
+<span class="fc" id="L211">			return g;</span>
 		}
 	}
 
@@ -131,29 +217,84 @@ class ShortestPathSingleSourceUtils {
 		private final ShortestPathSingleSource.IResult indexRes;
 		private final IntGraph g;
 		private final IndexIntIdMap viMap;
+		private final IndexIntIdMap eiMap;
+		private IntGraph shortestPathTreeUndirected;
+		private IntGraph shortestPathTreeDirected;
 
-<span class="fc" id="L135">		IntResultFromIndexResult(IntGraph g, ShortestPathSingleSource.IResult indexRes) {</span>
-<span class="fc" id="L136">			this.indexRes = Objects.requireNonNull(indexRes);</span>
-<span class="fc" id="L137">			this.g = Objects.requireNonNull(g);</span>
-<span class="fc" id="L138">			this.viMap = g.indexGraphVerticesMap();</span>
-<span class="fc" id="L139">		}</span>
+<span class="fc" id="L224">		IntResultFromIndexResult(IntGraph g, ShortestPathSingleSource.IResult indexRes) {</span>
+<span class="fc" id="L225">			this.indexRes = Objects.requireNonNull(indexRes);</span>
+<span class="fc" id="L226">			this.g = Objects.requireNonNull(g);</span>
+<span class="fc" id="L227">			this.viMap = g.indexGraphVerticesMap();</span>
+<span class="fc" id="L228">			this.eiMap = g.indexGraphEdgesMap();</span>
+<span class="fc" id="L229">		}</span>
 
 		@Override
 		public double distance(int target) {
-<span class="fc" id="L143">			return indexRes.distance(viMap.idToIndex(target));</span>
+<span class="fc" id="L233">			return indexRes.distance(viMap.idToIndex(target));</span>
 		}
 
 		@Override
 		public IPath getPath(int target) {
-<span class="fc" id="L148">			return PathImpl.intPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));</span>
+<span class="fc" id="L238">			return PathImpl.intPathFromIndexPath(g, indexRes.getPath(viMap.idToIndex(target)));</span>
+		}
+
+		@Override
+		public int backtrackEdge(int target) {
+<span class="fc" id="L243">			int tIdx = viMap.idToIndex(target);</span>
+<span class="fc" id="L244">			int eIdx = indexRes.backtrackEdge(tIdx);</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">			return eIdx &lt; 0 ? -1 : eiMap.indexToIdInt(eIdx);</span>
+		}
+
+		@Override
+		public IntGraph shortestPathTree(boolean directed) {
+<span class="fc bfc" id="L250" title="All 2 branches covered.">			if (directed) {</span>
+<span class="fc bfc" id="L251" title="All 2 branches covered.">				if (shortestPathTreeDirected == null)</span>
+<span class="fc" id="L252">					shortestPathTreeDirected = createShortestPathTree(true);</span>
+<span class="fc" id="L253">				return shortestPathTreeDirected;</span>
+
+			} else {
+<span class="fc bfc" id="L256" title="All 2 branches covered.">				if (shortestPathTreeUndirected == null)</span>
+<span class="fc" id="L257">					shortestPathTreeUndirected = createShortestPathTree(false);</span>
+<span class="fc" id="L258">				return shortestPathTreeUndirected;</span>
+			}
+		}
+
+		private IntGraph createShortestPathTree(boolean directed) {
+<span class="fc" id="L263">			IndexGraph ig = g.indexGraph();</span>
+<span class="fc" id="L264">			IntGraphBuilder b = IntGraphBuilder.newInstance(directed);</span>
+<span class="fc" id="L265">			b.addVertex(sourceInt());</span>
+<span class="fc bfc" id="L266" title="All 2 branches covered.">			for (int vIdx : range(ig.vertices().size()))</span>
+<span class="fc bfc" id="L267" title="All 2 branches covered.">				if (indexRes.backtrackEdge(vIdx) &gt;= 0)</span>
+<span class="fc" id="L268">					b.addVertex(viMap.indexToIdInt(vIdx));</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">			for (int vIdx : range(ig.vertices().size())) {</span>
+<span class="fc" id="L270">				int eIdx = indexRes.backtrackEdge(vIdx);</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">				if (eIdx &lt; 0)</span>
+<span class="fc" id="L272">					continue;</span>
+<span class="fc" id="L273">				int uIdx = ig.edgeEndpoint(eIdx, vIdx);</span>
+<span class="fc" id="L274">				int u = viMap.indexToIdInt(uIdx);</span>
+<span class="fc" id="L275">				int v = viMap.indexToIdInt(vIdx);</span>
+<span class="fc" id="L276">				int e = eiMap.indexToIdInt(eIdx);</span>
+<span class="fc" id="L277">				b.addEdge(u, v, e);</span>
+<span class="fc" id="L278">			}</span>
+<span class="fc" id="L279">			return b.build();</span>
+		}
+
+		@Override
+		public int sourceInt() {
+<span class="fc" id="L284">			return viMap.indexToIdInt(indexRes.sourceInt());</span>
+		}
+
+		@Override
+		public IntGraph graph() {
+<span class="fc" id="L289">			return g;</span>
 		}
 	}
 
-<span class="fc" id="L152">	static class BuilderImpl implements ShortestPathSingleSource.Builder {</span>
+<span class="fc" id="L293">	static class BuilderImpl implements ShortestPathSingleSource.Builder {</span>
 
 		private boolean intWeights;
 		private boolean negativeWeights;
-<span class="fc" id="L156">		private double maxDistance = Double.POSITIVE_INFINITY;</span>
+<span class="fc" id="L297">		private double maxDistance = Double.POSITIVE_INFINITY;</span>
 		private boolean dagGraphs;
 		private boolean cardinalityWeight;
 
@@ -162,107 +303,107 @@ class ShortestPathSingleSourceUtils {
 
 		@Override
 		public ShortestPathSingleSource build() {
-<span class="pc bpc" id="L165" title="1 of 2 branches missed.">			if (impl != null) {</span>
-<span class="nc bnc" id="L166" title="All 7 branches missed.">				switch (impl) {</span>
+<span class="pc bpc" id="L306" title="1 of 2 branches missed.">			if (impl != null) {</span>
+<span class="nc bnc" id="L307" title="All 7 branches missed.">				switch (impl) {</span>
 					case &quot;cardinality&quot;:
-<span class="nc" id="L168">						return new ShortestPathSingleSourceCardinality();</span>
+<span class="nc" id="L309">						return new ShortestPathSingleSourceCardinality();</span>
 					case &quot;dag&quot;:
-<span class="nc" id="L170">						return new ShortestPathSingleSourceDag();</span>
+<span class="nc" id="L311">						return new ShortestPathSingleSourceDag();</span>
 					case &quot;dijkstra&quot;:
-<span class="nc" id="L172">						return new ShortestPathSingleSourceDijkstra();</span>
+<span class="nc" id="L313">						return new ShortestPathSingleSourceDijkstra();</span>
 					case &quot;dial&quot;:
-<span class="nc" id="L174">						return new ShortestPathSingleSourceDial();</span>
+<span class="nc" id="L315">						return new ShortestPathSingleSourceDial();</span>
 					case &quot;bellman-ford&quot;:
-<span class="nc" id="L176">						return new ShortestPathSingleSourceBellmanFord();</span>
+<span class="nc" id="L317">						return new ShortestPathSingleSourceBellmanFord();</span>
 					case &quot;goldberg&quot;:
-<span class="nc" id="L178">						return new ShortestPathSingleSourceGoldberg();</span>
+<span class="nc" id="L319">						return new ShortestPathSingleSourceGoldberg();</span>
 					default:
-<span class="nc" id="L180">						throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
+<span class="nc" id="L321">						throw new IllegalArgumentException(&quot;unknown 'impl' value: &quot; + impl);</span>
 				}
 			}
 
-<span class="fc bfc" id="L184" title="All 2 branches covered.">			if (cardinalityWeight)</span>
-<span class="fc" id="L185">				return new ShortestPathSingleSourceCardinality();</span>
-<span class="fc bfc" id="L186" title="All 2 branches covered.">			if (dagGraphs)</span>
-<span class="fc" id="L187">				return new ShortestPathSingleSourceDag();</span>
-<span class="fc bfc" id="L188" title="All 2 branches covered.">			if (negativeWeights) {</span>
-<span class="pc bpc" id="L189" title="1 of 2 branches missed.">				if (intWeights) {</span>
-<span class="nc" id="L190">					return new ShortestPathSingleSourceGoldberg();</span>
+<span class="fc bfc" id="L325" title="All 2 branches covered.">			if (cardinalityWeight)</span>
+<span class="fc" id="L326">				return new ShortestPathSingleSourceCardinality();</span>
+<span class="fc bfc" id="L327" title="All 2 branches covered.">			if (dagGraphs)</span>
+<span class="fc" id="L328">				return new ShortestPathSingleSourceDag();</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">			if (negativeWeights) {</span>
+<span class="pc bpc" id="L330" title="1 of 2 branches missed.">				if (intWeights) {</span>
+<span class="nc" id="L331">					return new ShortestPathSingleSourceGoldberg();</span>
 				} else {
-<span class="fc" id="L192">					return new ShortestPathSingleSourceBellmanFord();</span>
+<span class="fc" id="L333">					return new ShortestPathSingleSourceBellmanFord();</span>
 				}
 			} else {
-<span class="fc" id="L195">				final ShortestPathSingleSourceDijkstra ssspDijkstra = new ShortestPathSingleSourceDijkstra();</span>
-<span class="pc bpc" id="L196" title="1 of 2 branches missed.">				if (heapBuilder != null)</span>
-<span class="nc" id="L197">					ssspDijkstra.setHeapBuilder(heapBuilder);</span>
+<span class="fc" id="L336">				final ShortestPathSingleSourceDijkstra ssspDijkstra = new ShortestPathSingleSourceDijkstra();</span>
+<span class="pc bpc" id="L337" title="1 of 2 branches missed.">				if (heapBuilder != null)</span>
+<span class="nc" id="L338">					ssspDijkstra.setHeapBuilder(heapBuilder);</span>
 
-<span class="pc bpc" id="L199" title="3 of 4 branches missed.">				if (intWeights &amp;&amp; maxDistance &lt; Integer.MAX_VALUE) {</span>
-<span class="nc" id="L200">					return new ShortestPathSingleSourceBase() {</span>
-<span class="nc" id="L201">						private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();</span>
-<span class="nc" id="L202">						private final int maxDistance = (int) BuilderImpl.this.maxDistance;</span>
+<span class="pc bpc" id="L340" title="3 of 4 branches missed.">				if (intWeights &amp;&amp; maxDistance &lt; Integer.MAX_VALUE) {</span>
+<span class="nc" id="L341">					return new ShortestPathSingleSourceBase() {</span>
+<span class="nc" id="L342">						private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();</span>
+<span class="nc" id="L343">						private final int maxDistance = (int) BuilderImpl.this.maxDistance;</span>
 
 						@Override
 						public ShortestPathSingleSource.IResult computeShortestPaths(IndexGraph g, IWeightFunction w,
 								int source) {
-<span class="nc" id="L207">							final int n = g.vertices().size(), m = g.edges().size();</span>
-<span class="nc" id="L208">							int dialWork = n + m + maxDistance;</span>
-<span class="nc" id="L209">							int dijkstraWork = m + n * JGAlgoUtils.log2ceil(n);</span>
-<span class="nc bnc" id="L210" title="All 2 branches missed.">							if (dialWork &lt; dijkstraWork) {</span>
-<span class="nc" id="L211">								return ssspDial.computeShortestPaths(g, (IWeightFunctionInt) w, source, maxDistance);</span>
+<span class="nc" id="L348">							final int n = g.vertices().size(), m = g.edges().size();</span>
+<span class="nc" id="L349">							int dialWork = n + m + maxDistance;</span>
+<span class="nc" id="L350">							int dijkstraWork = m + n * JGAlgoUtils.log2ceil(n);</span>
+<span class="nc bnc" id="L351" title="All 2 branches missed.">							if (dialWork &lt; dijkstraWork) {</span>
+<span class="nc" id="L352">								return ssspDial.computeShortestPaths(g, (IWeightFunctionInt) w, source, maxDistance);</span>
 							} else {
-<span class="nc" id="L213">								return ssspDijkstra.computeShortestPaths(g, w, source);</span>
+<span class="nc" id="L354">								return ssspDijkstra.computeShortestPaths(g, w, source);</span>
 							}
 						}
 
 					};
 				}
-<span class="fc" id="L219">				return ssspDijkstra;</span>
+<span class="fc" id="L360">				return ssspDijkstra;</span>
 			}
 		}
 
 		@Override
 		public ShortestPathSingleSource.Builder setIntWeights(boolean enable) {
-<span class="nc" id="L225">			intWeights = enable;</span>
-<span class="nc" id="L226">			return this;</span>
+<span class="nc" id="L366">			intWeights = enable;</span>
+<span class="nc" id="L367">			return this;</span>
 		}
 
 		@Override
 		public ShortestPathSingleSource.Builder setNegativeWeights(boolean enable) {
-<span class="fc" id="L231">			negativeWeights = enable;</span>
-<span class="fc" id="L232">			return this;</span>
+<span class="fc" id="L372">			negativeWeights = enable;</span>
+<span class="fc" id="L373">			return this;</span>
 		}
 
 		@Override
 		public ShortestPathSingleSource.Builder setMaxDistance(double maxDistance) {
-<span class="nc" id="L237">			this.maxDistance = maxDistance;</span>
-<span class="nc" id="L238">			return this;</span>
+<span class="nc" id="L378">			this.maxDistance = maxDistance;</span>
+<span class="nc" id="L379">			return this;</span>
 		}
 
 		@Override
 		public ShortestPathSingleSource.Builder setDag(boolean dagGraphs) {
-<span class="fc" id="L243">			this.dagGraphs = dagGraphs;</span>
-<span class="fc" id="L244">			return this;</span>
+<span class="fc" id="L384">			this.dagGraphs = dagGraphs;</span>
+<span class="fc" id="L385">			return this;</span>
 		}
 
 		@Override
 		public ShortestPathSingleSource.Builder setCardinality(boolean cardinalityWeight) {
-<span class="fc" id="L249">			this.cardinalityWeight = cardinalityWeight;</span>
-<span class="fc" id="L250">			return this;</span>
+<span class="fc" id="L390">			this.cardinalityWeight = cardinalityWeight;</span>
+<span class="fc" id="L391">			return this;</span>
 		}
 
 		@Override
 		public void setOption(String key, Object value) {
-<span class="nc bnc" id="L255" title="All 3 branches missed.">			switch (key) {</span>
+<span class="nc bnc" id="L396" title="All 3 branches missed.">			switch (key) {</span>
 				case &quot;impl&quot;:
-<span class="nc" id="L257">					impl = (String) value;</span>
-<span class="nc" id="L258">					break;</span>
+<span class="nc" id="L398">					impl = (String) value;</span>
+<span class="nc" id="L399">					break;</span>
 				case &quot;heap-builder&quot;:
-<span class="nc" id="L260">					heapBuilder = (ReferenceableHeap.Builder) value;</span>
-<span class="nc" id="L261">					break;</span>
+<span class="nc" id="L401">					heapBuilder = (ReferenceableHeap.Builder) value;</span>
+<span class="nc" id="L402">					break;</span>
 				default:
-<span class="nc" id="L263">					ShortestPathSingleSource.Builder.super.setOption(key, value);</span>
+<span class="nc" id="L404">					ShortestPathSingleSource.Builder.super.setOption(key, value);</span>
 			}
-<span class="nc" id="L265">		}</span>
+<span class="nc" id="L406">		}</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>
