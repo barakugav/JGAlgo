@@ -68,7 +68,7 @@ class ClosuresEnumeratorSchrageBaker implements ClosuresEnumeratorBase {
 				}
 			}
 			/* Graph is DAG, no need to operate over the condensation graph */
-			return IterTools.map(closuresIterDag(g), iter -> ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, iter)));
+			return IterTools.map(closuresIterDag(g), iter -> ImmutableIntArraySet.withBitmap(Bitmap.fromOnes(n, iter)));
 		}
 
 		/* Build the condensation graph */
@@ -95,7 +95,7 @@ class ClosuresEnumeratorSchrageBaker implements ClosuresEnumeratorBase {
 			for (int blk : IterTools.foreach(blkIter))
 				for (int v : sccs.blockVertices(blk))
 					closure.set(v);
-			return ImmutableIntArraySet.ofBitmap(closure);
+			return ImmutableIntArraySet.withBitmap(closure);
 		});
 	}
 

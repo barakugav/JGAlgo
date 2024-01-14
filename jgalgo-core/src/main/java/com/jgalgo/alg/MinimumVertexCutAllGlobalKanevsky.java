@@ -70,7 +70,7 @@ class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutUtils.AbstractIm
 		ArraysUtils
 				.getKthElement(vertices, 0, n, n - k,
 						(v1, v2) -> Integer.compare(g0.outEdges(v1).size(), g0.outEdges(v2).size()), true);
-		IntSet kVertices = ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, IntIterators.wrap(vertices, n - k, k)));
+		IntSet kVertices = ImmutableIntArraySet.withBitmap(Bitmap.fromOnes(n, IntIterators.wrap(vertices, n - k, k)));
 
 		/*
 		 * Unfortunately, we must check for duplicates cuts during the iteration. This require us to maintain a set of
@@ -123,7 +123,7 @@ class MinimumVertexCutAllGlobalKanevsky extends MinimumVertexCutUtils.AbstractIm
 		/* The queue iterator stores the cuts and use less and less memory as the elements are consumed */
 		Iterator<IntSet> cutsIter = JGAlgoUtils.queueIter(cuts);
 		cuts.clear();
-		return IterTools.map(cutsIter, cut -> ImmutableIntArraySet.ofBitmap(cut, n));
+		return IterTools.map(cutsIter, cut -> ImmutableIntArraySet.withBitmap(cut, n));
 	}
 
 }

@@ -48,7 +48,7 @@ public class ImmutableIntArraySetTest extends TestBase {
 				from = to;
 				to = tmp;
 			}
-			ImmutableIntArraySet set = ImmutableIntArraySet.withNaiveContains(arr, from, to);
+			IntSet set = ImmutableIntArraySet.withNaiveContains(arr, from, to);
 			assertEquals(to - from, set.size());
 			assertEqualsBool(to - from == 0, set.isEmpty());
 		}
@@ -75,7 +75,7 @@ public class ImmutableIntArraySetTest extends TestBase {
 				from = to;
 				to = tmp;
 			}
-			ImmutableIntArraySet set = ImmutableIntArraySet.withNaiveContains(arr, from, to);
+			IntSet set = ImmutableIntArraySet.withNaiveContains(arr, from, to);
 
 			assertArrayEquals(Arrays.copyOfRange(arr, from, to), set.toIntArray());
 			assertArrayEquals(Arrays.copyOfRange(arr, from, to), set.toArray(IntArrays.DEFAULT_EMPTY_ARRAY));
@@ -113,7 +113,7 @@ public class ImmutableIntArraySetTest extends TestBase {
 				from = to;
 				to = tmp;
 			}
-			ImmutableIntArraySet set = ImmutableIntArraySet.withNaiveContains(arr, from, to);
+			IntSet set = ImmutableIntArraySet.withNaiveContains(arr, from, to);
 
 			assertEquals(IntSet.of(set.toIntArray()).hashCode(), set.hashCode());
 			assertEquals(IntSet.of(set.toIntArray()), set);
@@ -145,7 +145,7 @@ public class ImmutableIntArraySetTest extends TestBase {
 				from = to;
 				to = tmp;
 			}
-			ImmutableIntArraySet set = ImmutableIntArraySet.withNaiveContains(arr, from, to);
+			IntSet set = ImmutableIntArraySet.withNaiveContains(arr, from, to);
 
 			IntSet expected = new IntOpenHashSet();
 			for (int j : range(from, to))
@@ -189,23 +189,23 @@ public class ImmutableIntArraySetTest extends TestBase {
 			elms.add(rand.nextInt(1000));
 		int[] arr = elms.toIntArray();
 
-		IntSet set = ImmutableIntArraySet.ofBitmap(ImmutableIntArraySet.withNaiveContains(arr), 1000);
+		IntSet set = ImmutableIntArraySet.withBitmap(ImmutableIntArraySet.withNaiveContains(arr), 1000);
 		for (int x : range(-10, 1010))
 			assertEqualsBool(elms.contains(x), set.contains(x));
 
-		set = ImmutableIntArraySet.ofBitmap(set, 1000);
+		set = ImmutableIntArraySet.withBitmap(set, 1000);
 		for (int x : range(-10, 1010))
 			assertEqualsBool(elms.contains(x), set.contains(x));
 
-		set = ImmutableIntArraySet.ofBitmap(set, 1001);
+		set = ImmutableIntArraySet.withBitmap(set, 1001);
 		for (int x : range(-10, 1010))
 			assertEqualsBool(elms.contains(x), set.contains(x));
 
-		set = ImmutableIntArraySet.ofBitmap(IntList.of(arr), 1000);
+		set = ImmutableIntArraySet.withBitmap(IntList.of(arr), 1000);
 		for (int x : range(-10, 1010))
 			assertEqualsBool(elms.contains(x), set.contains(x));
 
-		set = ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(1000, set));
+		set = ImmutableIntArraySet.withBitmap(Bitmap.fromOnes(1000, set));
 		for (int x : range(-10, 1010))
 			assertEqualsBool(elms.contains(x), set.contains(x));
 	}
@@ -215,12 +215,7 @@ public class ImmutableIntArraySetTest extends TestBase {
 		int[] arr = new int[10];
 		for (int i : range(10))
 			arr[i] = i * 2;
-		IntSet set = new ImmutableIntArraySet(arr) {
-			@Override
-			public boolean contains(int key) {
-				return 0 <= key && key < 20 && key % 2 == 0;
-			}
-		};
+		IntSet set = ImmutableIntArraySet.newInstance(arr, key -> 0 <= key && key < 20 && key % 2 == 0);
 		for (int x : range(-10, 30))
 			assertEqualsBool(x % 2 == 0 && 0 <= x && x < 20, set.contains(x));
 	}

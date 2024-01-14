@@ -60,7 +60,7 @@ class EdgeCoverCardinality implements EdgeCoverBase {
 			}
 		}
 
-		return ImmutableIntArraySet.ofBitmap(cover);
+		return ImmutableIntArraySet.withBitmap(cover);
 	}
 
 }

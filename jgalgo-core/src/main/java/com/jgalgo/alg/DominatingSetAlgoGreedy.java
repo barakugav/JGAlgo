@@ -220,7 +220,7 @@ class DominatingSetAlgoGreedy implements DominatingSetAlgoBase, RandomizedAlgori
 				if (!dominated.get(u))
 					dominating.set(u);
 
-			return ImmutableIntArraySet.ofBitmap(dominating);
+			return ImmutableIntArraySet.withBitmap(dominating);
 		}
 
 		private void removeOutEdges(int source) {

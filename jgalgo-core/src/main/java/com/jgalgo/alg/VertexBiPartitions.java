@@ -64,18 +64,12 @@ class VertexBiPartitions {
 				int[] vertexSortedIdx = new int[n];
 				for (int v : range(n))
 					vertexSortedIdx[sortedVertices[v]] = v;
-				leftVertices = new ImmutableIntArraySet(sortedVertices, 0, leftCount) {
-					@Override
-					public boolean contains(int v) {
-						return 0 <= v && v < n && vertexSortedIdx[v] < leftCount;
-					}
-				};
-				rightVertices = new ImmutableIntArraySet(sortedVertices, leftCount, n) {
-					@Override
-					public boolean contains(int v) {
-						return 0 <= v && v < n && leftCount <= vertexSortedIdx[v];
-					}
-				};
+				leftVertices = ImmutableIntArraySet
+						.newInstance(sortedVertices, 0, leftCount,
+								v -> 0 <= v && v < n && vertexSortedIdx[v] < leftCount);
+				rightVertices = ImmutableIntArraySet
+						.newInstance(sortedVertices, leftCount, n,
+								v -> 0 <= v && v < n && leftCount <= vertexSortedIdx[v]);
 			}
 			if (block == 0)
 				return leftVertices;
@@ -112,18 +106,9 @@ class VertexBiPartitions {
 					}
 				}
 				final int b1Idx0 = b1Idx, b2Idx0 = b2Idx;
-				leftEdges = new ImmutableIntArraySet(sortedEdges, 0, b1Idx) {
-					@Override
-					public boolean contains(int e) {
-						return 0 <= e && e < b1Idx0;
-					}
-				};
-				rightEdges = new ImmutableIntArraySet(sortedEdges, b1Idx, b2Idx) {
-					@Override
-					public boolean contains(int e) {
-						return b1Idx0 <= e && e < b2Idx0;
-					}
-				};
+				leftEdges = ImmutableIntArraySet.newInstance(sortedEdges, 0, b1Idx, e -> 0 <= e && e < b1Idx0);
+				rightEdges =
+						ImmutableIntArraySet.newInstance(sortedEdges, b1Idx, b2Idx, e -> b1Idx0 <= e && e < b2Idx0);
 			}
 			if (block == 0)
 				return leftEdges;
@@ -163,18 +148,11 @@ class VertexBiPartitions {
 						}
 					}
 					final int crossEdges01Idx0 = crossEdges01Idx, crossEdges10Idx0 = crossEdges10Idx;
-					crossEdges01 = new ImmutableIntArraySet(crossEdges, 0, crossEdges01Idx) {
-						@Override
-						public boolean contains(int e) {
-							return 0 <= e && e < crossEdges01Idx0;
-						}
-					};
-					crossEdges10 = new ImmutableIntArraySet(crossEdges, crossEdges01Idx, crossEdges10Idx) {
-						@Override
-						public boolean contains(int e) {
-							return crossEdges01Idx0 <= e && e < crossEdges10Idx0;
-						}
-					};
+					crossEdges01 = ImmutableIntArraySet
+							.newInstance(crossEdges, 0, crossEdges01Idx, e -> 0 <= e && e < crossEdges01Idx0);
+					crossEdges10 = ImmutableIntArraySet
+							.newInstance(crossEdges, crossEdges01Idx, crossEdges10Idx,
+									e -> crossEdges01Idx0 <= e && e < crossEdges10Idx0);
 
 				} else {
 					int crossEdgesCount = 0;
@@ -186,12 +164,9 @@ class VertexBiPartitions {
 					for (int e : range(m))
 						if (isLeft0(g.edgeSource(e)) != isLeft0(g.edgeTarget(e)))
 							crossEdges[i++] = e;
-					crossEdges01 = crossEdges10 = new ImmutableIntArraySet(crossEdges) {
-						@Override
-						public boolean contains(int e) {
-							return 0 <= e && e < m && isLeft0(g.edgeSource(e)) != isLeft0(g.edgeTarget(e));
-						}
-					};
+					crossEdges01 = crossEdges10 = ImmutableIntArraySet
+							.newInstance(crossEdges,
+									e -> 0 <= e && e < m && isLeft0(g.edgeSource(e)) != isLeft0(g.edgeTarget(e)));
 				}
 			}
 			if (block1 == 0 && block2 == 1)

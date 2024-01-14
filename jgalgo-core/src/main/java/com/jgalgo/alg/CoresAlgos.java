@@ -91,14 +91,10 @@ class CoresAlgos {
 				final int n = this.core.length;
 				final int coreNum = maxCore + 1;
 				coreVertices = new IntSet[coreNum];
-				for (int c : range(coreNum)) {
-					coreVertices[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], n) {
-						@Override
-						public boolean contains(int v) {
-							return 0 <= v && v < n && IndexResult.this.core[v] >= c;
-						}
-					};
-				}
+				for (int c : range(coreNum))
+					coreVertices[c] = ImmutableIntArraySet
+							.newInstance(sortedVertices, coreOffset[c], n,
+									v -> 0 <= v && v < n && IndexResult.this.core[v] >= c);
 			}
 			return coreVertices[core];
 		}
@@ -110,14 +106,10 @@ class CoresAlgos {
 				final int n = this.core.length;
 				final int coreNum = maxCore + 1;
 				coreShells = new IntSet[coreNum];
-				for (int c : range(coreNum)) {
-					coreShells[c] = new ImmutableIntArraySet(sortedVertices, coreOffset[c], coreOffset[c + 1]) {
-						@Override
-						public boolean contains(int v) {
-							return 0 <= v && v < n && IndexResult.this.core[v] == c;
-						}
-					};
-				}
+				for (int c : range(coreNum))
+					coreShells[c] = ImmutableIntArraySet
+							.newInstance(sortedVertices, coreOffset[c], coreOffset[c + 1],
+									v -> 0 <= v && v < n && IndexResult.this.core[v] == c);
 			}
 			return coreShells[core];
 		}
@@ -129,14 +121,10 @@ class CoresAlgos {
 				final int n = this.core.length;
 				final int coreNum = maxCore + 1;
 				coreCrusts = new IntSet[coreNum];
-				for (int c : range(coreNum)) {
-					coreCrusts[c] = new ImmutableIntArraySet(sortedVertices, 0, coreOffset[c]) {
-						@Override
-						public boolean contains(int v) {
-							return 0 <= v && v < n && IndexResult.this.core[v] < c;
-						}
-					};
-				}
+				for (int c : range(coreNum))
+					coreCrusts[c] = ImmutableIntArraySet
+							.newInstance(sortedVertices, 0, coreOffset[c],
+									v -> 0 <= v && v < n && IndexResult.this.core[v] < c);
 			}
 			return coreCrusts[core];
 		}

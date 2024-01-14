@@ -179,8 +179,12 @@ public final class Range extends AbstractIntSortedSet {
 		return intStream().filter(predicate);
 	}
 
-	public boolean allMatch(IntPredicate allMatch) {
-		return intStream().allMatch(allMatch);
+	public boolean allMatch(IntPredicate predicate) {
+		return intStream().allMatch(predicate);
+	}
+
+	public boolean anyMatch(IntPredicate predicate) {
+		return intStream().anyMatch(predicate);
 	}
 
 	@Override

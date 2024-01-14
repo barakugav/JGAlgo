@@ -255,7 +255,7 @@ class BiConnectedComponentsAlgos {
 		public IntSet getCutVertices() {
 			if (cutVertices == null) {
 				computeCutVerticesBitmap();
-				cutVertices = ImmutableIntArraySet.ofBitmap(cutVerticesBitmap);
+				cutVertices = ImmutableIntArraySet.withBitmap(cutVerticesBitmap);
 			}
 			return cutVertices;
 		}

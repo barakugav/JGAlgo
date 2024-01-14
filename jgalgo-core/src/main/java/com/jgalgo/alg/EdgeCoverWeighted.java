@@ -102,7 +102,7 @@ class EdgeCoverWeighted implements EdgeCoverBase {
 		for (int v : range(n))
 			if (matching.containsEdge(vvEdgeThreshold + v))
 				cover.set(minAdjacentEdge[v]);
-		return ImmutableIntArraySet.ofBitmap(cover);
+		return ImmutableIntArraySet.withBitmap(cover);
 	}
 
 }

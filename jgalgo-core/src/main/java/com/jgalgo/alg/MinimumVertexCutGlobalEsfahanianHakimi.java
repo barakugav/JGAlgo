@@ -111,7 +111,7 @@ class MinimumVertexCutGlobalEsfahanianHakimi extends MinimumVertexCutUtils.Abstr
 			}
 		}
 
-		return ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, minCut));
+		return ImmutableIntArraySet.withBitmap(Bitmap.fromOnes(n, minCut));
 	}
 
 	private static class Neighbors {

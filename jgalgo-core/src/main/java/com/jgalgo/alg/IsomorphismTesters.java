@@ -110,12 +110,9 @@ class IsomorphismTesters {
 		public IntSet mappedVertices() {
 			if (mappedVertices == null) {
 				int[] mappedVerticesArr = range(g1.vertices().size()).filter(v1 -> vertexMapping[v1] >= 0).toArray();
-				mappedVertices = new ImmutableIntArraySet(mappedVerticesArr) {
-					@Override
-					public boolean contains(int v) {
-						return 0 <= v && v < vertexMapping.length && vertexMapping[v] >= 0;
-					}
-				};
+				mappedVertices = ImmutableIntArraySet
+						.newInstance(mappedVerticesArr,
+								v -> 0 <= v && v < vertexMapping.length && vertexMapping[v] >= 0);
 			}
 			return mappedVertices;
 		}
@@ -124,12 +121,8 @@ class IsomorphismTesters {
 		public IntSet mappedEdges() {
 			if (mappedEdges == null) {
 				int[] mappedEdgesArr = range(g1.edges().size()).filter(e1 -> edgeMapping[e1] >= 0).toArray();
-				mappedEdges = new ImmutableIntArraySet(mappedEdgesArr) {
-					@Override
-					public boolean contains(int e) {
-						return 0 <= e && e < edgeMapping.length && edgeMapping[e] >= 0;
-					}
-				};
+				mappedEdges = ImmutableIntArraySet
+						.newInstance(mappedEdgesArr, e -> 0 <= e && e < edgeMapping.length && edgeMapping[e] >= 0);
 			}
 			return mappedEdges;
 		}

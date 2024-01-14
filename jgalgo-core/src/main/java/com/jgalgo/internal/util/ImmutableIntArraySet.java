@@ -19,35 +19,85 @@ import static com.jgalgo.internal.util.Range.range;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.function.IntPredicate;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntIterators;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntSet;
 import it.unimi.dsi.fastutil.objects.ObjectArrays;
 
-public abstract class ImmutableIntArraySet extends AbstractIntSet {
+public final class ImmutableIntArraySet extends AbstractIntSet {
 
 	final int[] arr;
 	final int from, to, size;
+	private final IntPredicate containsFunc;
 	private int hashCode = 0;
 
-	public ImmutableIntArraySet(int[] arr) {
-		this(arr, 0, arr.length);
-	}
-
-	public ImmutableIntArraySet(int[] arr, int from, int to) {
+	private ImmutableIntArraySet(int[] arr, int from, int to, IntPredicate containsFunc) {
 		if (!(0 <= from && from <= to && to <= arr.length))
 			throw new IndexOutOfBoundsException();
 		this.arr = Objects.requireNonNull(arr);
 		this.from = from;
 		this.to = to;
 		this.size = to - from;
+		this.containsFunc = containsFunc;
 
 		assert new IntOpenHashSet(this).size() == size : "Duplicate elements in array";
 	}
 
+	public static IntSet newInstance(int[] arr, IntPredicate containsFunc) {
+		return newInstance(arr, 0, arr.length, containsFunc);
+	}
+
+	public static IntSet newInstance(int[] arr, int from, int to, IntPredicate containsFunc) {
+		return new ImmutableIntArraySet(arr, from, to, Objects.requireNonNull(containsFunc));
+	}
+
+	public static IntSet withNaiveContains(int[] arr) {
+		return withNaiveContains(arr, 0, arr.length);
+	}
+
+	public static IntSet withNaiveContains(int[] arr, int from, int to) {
+		return new ImmutableIntArraySet(arr, from, to, null);
+	}
+
+	public static IntSet withBitmap(Bitmap bitmap) {
+		return withBitmap(bitmap.toArray(), bitmap);
+	}
+
+	public static IntSet withBitmap(int[] arr, int bitmapSize) {
+		Bitmap bitmap = new Bitmap(bitmapSize);
+		for (int i : arr)
+			bitmap.set(i);
+		return withBitmap(arr, bitmap);
+	}
+
+	public static IntSet withBitmap(IntCollection elms, int bitmapSize) {
+		if (!(elms instanceof ImmutableIntArraySet))
+			return withBitmap(elms.toIntArray(), bitmapSize);
+
+		ImmutableIntArraySet elms0 = (ImmutableIntArraySet) elms;
+		Bitmap bitmap = new Bitmap(bitmapSize);
+		for (int x : elms)
+			bitmap.set(x);
+		return withBitmap(elms0.arr, elms0.from, elms0.to, bitmap);
+	}
+
+	private static IntSet withBitmap(int[] arr, Bitmap bitmap) {
+		return withBitmap(arr, 0, arr.length, bitmap);
+	}
+
+	private static IntSet withBitmap(int[] arr, int from, int to, Bitmap bitmap) {
+		Objects.requireNonNull(bitmap);
+		return newInstance(arr, from, to, key -> 0 <= key && key < bitmap.capacity() && bitmap.get(key));
+	}
+
 	@Override
-	public abstract boolean contains(int key);
+	public boolean contains(int key) {
+		return containsFunc != null ? containsFunc.test(key) : range(from, to).anyMatch(i -> key == arr[i]);
+	}
 
 	@Override
 	public int size() {
@@ -98,101 +148,14 @@ public abstract class ImmutableIntArraySet extends AbstractIntSet {
 
 	@Override
 	public boolean equals(Object other) {
-		if (other instanceof ImmutableIntArraySet) {
-			ImmutableIntArraySet o = (ImmutableIntArraySet) other;
-			if (hashCode() != o.hashCode())
-				return false;
-		}
+		if (other instanceof ImmutableIntArraySet && hashCode() != other.hashCode())
+			return false;
 		return super.equals(other);
 	}
 
 	@Override
 	public IntIterator iterator() {
-		return new Iter();
-	}
-
-	private class Iter implements IntIterator {
-
-		private int idx = from;
-
-		@Override
-		public boolean hasNext() {
-			return idx < to;
-		}
-
-		@Override
-		public int nextInt() {
-			Assertions.hasNext(this);
-			return arr[idx++];
-		}
-
-	}
-
-	public static ImmutableIntArraySet withNaiveContains(int[] arr) {
-		return new WithNaiveContains(arr);
-	}
-
-	public static ImmutableIntArraySet withNaiveContains(int[] arr, int from, int to) {
-		return new WithNaiveContains(arr, from, to);
-	}
-
-	public static ImmutableIntArraySet ofBitmap(Bitmap bitmap) {
-		int[] arr = bitmap.toArray();
-		return new WithBitmap(arr, 0, arr.length, bitmap);
-	}
-
-	public static ImmutableIntArraySet ofBitmap(int[] arr, int bitmapSize) {
-		Bitmap bitmap = new Bitmap(bitmapSize);
-		for (int i : arr)
-			bitmap.set(i);
-		return new WithBitmap(arr, 0, arr.length, bitmap);
-	}
-
-	public static ImmutableIntArraySet ofBitmap(IntCollection elms, int bitmapSize) {
-		if (!(elms instanceof ImmutableIntArraySet))
-			return ofBitmap(elms.toIntArray(), bitmapSize);
-
-		ImmutableIntArraySet elms0 = (ImmutableIntArraySet) elms;
-		if (elms0 instanceof WithBitmap && ((WithBitmap) elms0).bitmap.capacity() == bitmapSize)
-			return elms0;
-		Bitmap bitmap = new Bitmap(bitmapSize);
-		for (int i : range(elms0.from, elms0.to))
-			bitmap.set(elms0.arr[i]);
-		return new WithBitmap(elms0.arr, elms0.from, elms0.to, bitmap);
-	}
-
-	private static class WithBitmap extends ImmutableIntArraySet {
-		private final Bitmap bitmap;
-
-		WithBitmap(int[] arr, int from, int to, Bitmap bitmap) {
-			super(arr, from, to);
-			this.bitmap = bitmap;
-		}
-
-		@Override
-		public boolean contains(int key) {
-			return 0 <= key && key < bitmap.capacity() && bitmap.get(key);
-		}
-	}
-
-	private static class WithNaiveContains extends ImmutableIntArraySet {
-
-		WithNaiveContains(int[] arr) {
-			this(arr, 0, arr.length);
-		}
-
-		WithNaiveContains(int[] arr, int from, int to) {
-			super(arr, from, to);
-		}
-
-		@Override
-		public boolean contains(int key) {
-			for (int i : range(from, to))
-				if (key == arr[i])
-					return true;
-			return false;
-		}
-
+		return IntIterators.wrap(arr, from, to - from);
 	}
 
 }

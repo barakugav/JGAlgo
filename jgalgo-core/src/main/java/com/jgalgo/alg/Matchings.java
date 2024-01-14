@@ -62,12 +62,8 @@ class Matchings {
 				for (int i = 0, v = 0; v < matched.length; v++)
 					if (matched[v] != -1)
 						matchedVertices0[i++] = v;
-				matchedVertices = new ImmutableIntArraySet(matchedVertices0) {
-					@Override
-					public boolean contains(int v) {
-						return 0 <= v && v < matched.length && matched[v] != -1;
-					}
-				};
+				matchedVertices = ImmutableIntArraySet
+						.newInstance(matchedVertices0, v -> 0 <= v && v < matched.length && matched[v] >= 0);
 			}
 			return matchedVertices;
 		}
@@ -83,12 +79,8 @@ class Matchings {
 				for (int i = 0, v = 0; v < matched.length; v++)
 					if (matched[v] == -1)
 						unmatchedVertices0[i++] = v;
-				unmatchedVertices = new ImmutableIntArraySet(unmatchedVertices0) {
-					@Override
-					public boolean contains(int v) {
-						return 0 <= v && v < matched.length && matched[v] == -1;
-					}
-				};
+				unmatchedVertices = ImmutableIntArraySet
+						.newInstance(unmatchedVertices0, v -> 0 <= v && v < matched.length && matched[v] < 0);
 			}
 			return unmatchedVertices;
 		}
@@ -128,13 +120,8 @@ class Matchings {
 					edges0[i++] = e;
 				}
 			}
-			edges = new ImmutableIntArraySet(edges0) {
-
-				@Override
-				public boolean contains(int e) {
-					return 0 <= e && e < g.edges().size() && matched[g.edgeSource(e)] == e;
-				}
-			};
+			edges = ImmutableIntArraySet
+					.newInstance(edges0, e -> 0 <= e && e < g.edges().size() && matched[g.edgeSource(e)] == e);
 		}
 
 		@Override

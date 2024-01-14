@@ -234,7 +234,7 @@ public interface IPath extends Path<Integer, Integer> {
 			}
 		}
 
-		IntSet indexRes = ImmutableIntArraySet.ofBitmap(visited);
+		IntSet indexRes = ImmutableIntArraySet.withBitmap(visited);
 		if (!(g instanceof IndexGraph))
 			indexRes = IndexIdMaps.indexToIdSet(indexRes, g.indexGraphVerticesMap());
 		return indexRes;

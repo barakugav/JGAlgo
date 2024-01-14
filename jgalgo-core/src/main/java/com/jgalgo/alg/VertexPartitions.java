@@ -97,14 +97,10 @@ class VertexPartitions {
 				blockOffset[0] = 0;
 
 				blockVertices = new IntSet[blockNum];
-				for (int b : range(blockNum)) {
-					blockVertices[b] = new ImmutableIntArraySet(sortedVertices, blockOffset[b], blockOffset[b + 1]) {
-						@Override
-						public boolean contains(int v) {
-							return 0 <= v && v < n && vertexToBlock[v] == b;
-						}
-					};
-				}
+				for (int b : range(blockNum))
+					blockVertices[b] = ImmutableIntArraySet
+							.newInstance(sortedVertices, blockOffset[b], blockOffset[b + 1],
+									v -> 0 <= v && v < n && vertexToBlock[v] == b);
 			}
 			return blockVertices[block];
 		}
@@ -141,16 +137,10 @@ class VertexPartitions {
 
 				final int m = g.edges().size();
 				blockEdges = new IntSet[blockNum];
-				for (int b : range(blockNum)) {
-					final int b0 = b;
-					blockEdges[b] = new ImmutableIntArraySet(sortedEdges, blockOffset[b], blockOffset[b + 1]) {
-						@Override
-						public boolean contains(int e) {
-							return 0 <= e && e < m && vertexToBlock[g.edgeSource(e)] == b0
-									&& vertexToBlock[g.edgeTarget(e)] == b0;
-						}
-					};
-				}
+				for (int b : range(blockNum))
+					blockEdges[b] = ImmutableIntArraySet
+							.newInstance(sortedEdges, blockOffset[b], blockOffset[b + 1], e -> 0 <= e && e < m
+									&& vertexToBlock[g.edgeSource(e)] == b && vertexToBlock[g.edgeTarget(e)] == b);
 			}
 			return blockEdges[block];
 		}

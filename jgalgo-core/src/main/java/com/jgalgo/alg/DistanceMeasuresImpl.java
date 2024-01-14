@@ -88,7 +88,7 @@ class DistanceMeasuresImpl {
 				double eps = Double.isFinite(radius) ? radius * 1e-8 : 0;
 				final int n = g.vertices().size();
 				int[] centerArr = range(n).filter(v -> eccentricity[v] <= radius + eps).toArray();
-				center = ImmutableIntArraySet.ofBitmap(centerArr, n);
+				center = ImmutableIntArraySet.withBitmap(centerArr, n);
 			}
 			return center;
 		}
@@ -100,7 +100,7 @@ class DistanceMeasuresImpl {
 				double eps = Double.isFinite(diameter) ? diameter * 1e-8 : 0;
 				final int n = g.vertices().size();
 				int[] peripheryArr = range(n).filter(v -> eccentricity[v] >= diameter - eps).toArray();
-				periphery = ImmutableIntArraySet.ofBitmap(peripheryArr, n);
+				periphery = ImmutableIntArraySet.withBitmap(peripheryArr, n);
 			}
 			return periphery;
 		}

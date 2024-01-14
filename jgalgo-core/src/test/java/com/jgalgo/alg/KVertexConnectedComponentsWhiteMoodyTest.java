@@ -83,7 +83,7 @@ public class KVertexConnectedComponentsWhiteMoodyTest extends TestBase {
 					.map(comps -> comps
 							.intStream()
 							.boxed()
-							.flatMap(c -> result.componentVertices(c).stream())
+							.flatMap(c -> result.componentVertices(c.intValue()).stream())
 							.collect(toSet()))
 					.forEach(comp -> assertFalse(vertexConnectivity(g.subGraphCopy(comp, null)) >= k));
 		}
