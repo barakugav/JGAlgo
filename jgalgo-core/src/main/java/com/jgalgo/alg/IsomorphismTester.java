@@ -25,13 +25,13 @@ import com.jgalgo.graph.IntGraph;
  * Tester that check whether two graphs are isomorphic.
  *
  * <p>
- * Given two graphs, an isomorphism is a mapping functions that maps the first graph vertices to the second graph
- * vertices, while preserving the structure of the graph. There are few variants, described in the different types of
- * isomorphism, see {@link IsomorphismType}. A full isomorphism maps all vertices and edges, while subgraph isomorphism
- * maps all vertices and edges of a single graph to a subset of the vertices and edges of the other graph. All the
- * methods of this interface accept two graphs and check if there is an isomorphism between them. In case the check
- * isomorphism is one of the sub graph types, the first graph {@code g1} is the bigger graph, and the second graph
- * {@code g2} is the smaller graph, namely the methods search for a sub graph of {@code g1} that is isomorphic to
+ * Given two graphs, an isomorphism is a mapping function that maps the first graph vertices to the second graph
+ * vertices, while preserving the structure of the graph. There are few variants of the problem, such as 'full' or 'sub
+ * graph' isomorphism, see {@link IsomorphismType}. A full isomorphism maps all vertices and edges, while subgraph
+ * isomorphism maps all vertices and edges of a single graph to a subset of the vertices and edges of the other graph.
+ * All the methods of this interface accept two graphs and check if there is an isomorphism between them. In case the
+ * checked isomorphism is one of the sub graph types, the first graph {@code g1} is the smaller graph, and the second
+ * graph {@code g2} is the bigger graph, namely the methods search for a mapping from {@code g1} to a sub graph of
  * {@code g2}. Further details are given in the documentation of each method.
  *
  * <p>
@@ -90,12 +90,13 @@ public interface IsomorphismTester {
 	 *
 	 * <p>
 	 * Given two graphs, an isomorphism is a mapping functions that maps the first graph vertices to the second graph
-	 * vertices, while preserving the structure of the graph. There are few variants, described in the different types
-	 * of isomorphism, see {@link IsomorphismType}. The type of isomorphism is given as a parameter to this method. If
-	 * the type is not {@linkplain IsomorphismType#Full full}, namely it is one of the sub graph types, then the first
-	 * graph {@code g1} is the bigger graph, and the second graph {@code g2} is the smaller graph, and the method search
-	 * for a sub graph of {@code g1} that is isomorphic to {@code g2}. In such case the returned mapping may not map all
-	 * vertices and edges of the first graph to the second graph, see {@link IsomorphismMapping}.
+	 * vertices, while preserving the structure of the graph. There are few variants of the problem, such as 'full' or
+	 * 'sub graph' isomorphism, see {@link IsomorphismType}. The type of isomorphism is given as a parameter to this
+	 * method. If the type is not {@linkplain IsomorphismType#Full full}, namely it is one of the sub graph types, then
+	 * the first graph {@code g1} is the smaller graph, and the second graph {@code g2} is the bigger graph, and the
+	 * method search for a mapping from {@code g1} to a sub graph of {@code g2}. In such case the
+	 * {@linkplain IsomorphismMapping#inverse() inverse} of the returned mapping may not map all vertices and edges of
+	 * {@code g2}, see {@link IsomorphismMapping}.
 	 *
 	 * <p>
 	 * Note that the type of vertices and edges of the two graphs may be different. Only the structure of the graphs is
@@ -109,8 +110,12 @@ public interface IsomorphismTester {
 	 * @param  <E1>                     the type of edges of the first graph
 	 * @param  <V2>                     the type of vertices of the second graph
 	 * @param  <E2>                     the type of edges of the second graph
-	 * @param  g1                       the first graph
-	 * @param  g2                       the second graph
+	 * @param  g1                       the first graph. If sub graph isomorphism is searched, {@code g1} is the smaller
+	 *                                      graph, namely the method search for a mapping from {@code g1} to a sub graph
+	 *                                      of {@code g2}
+	 * @param  g2                       the second graph. If sub graph isomorphism is searched, {@code g2} is the bigger
+	 *                                      graph, namely the method search for a mapping from {@code g1} to a sub graph
+	 *                                      of {@code g2}
 	 * @param  type                     the type of isomorphism
 	 * @return                          an isomorphism mapping between the two graphs if one exists of the given type,
 	 *                                  {@code Optional.empty()} otherwise. The returned mapping maps vertices and edges
@@ -163,12 +168,13 @@ public interface IsomorphismTester {
 	 *
 	 * <p>
 	 * Given two graphs, an isomorphism is a mapping functions that maps the first graph vertices to the second graph
-	 * vertices, while preserving the structure of the graph. There are few variants, described in the different types
-	 * of isomorphism, see {@link IsomorphismType}. The type of isomorphism is given as a parameter to this method. If
-	 * the type is not {@linkplain IsomorphismType#Full full}, namely it is one of the sub graph types, then the first
-	 * graph {@code g1} is the bigger graph, and the second graph {@code g2} is the smaller graph, and the method search
-	 * for a sub graph of {@code g1} that is isomorphic to {@code g2}. In such case the returned mappings may not map
-	 * all vertices and edges of the first graph to the second graph, see {@link IsomorphismMapping}.
+	 * vertices, while preserving the structure of the graph. There are few variants of the problem, such as 'full' or
+	 * 'sub graph' isomorphism, see {@link IsomorphismType}. The type of isomorphism is given as a parameter to this
+	 * method. If the type is not {@linkplain IsomorphismType#Full full}, namely it is one of the sub graph types, then
+	 * the first graph {@code g1} is the smaller graph, and the second graph {@code g2} is the bigger graph, and the
+	 * method search for a mapping from {@code g1} to a sub graph of {@code g2}. In such case the
+	 * {@linkplain IsomorphismMapping#inverse() inverse} of the returned mappings may not map all vertices and edges of
+	 * {@code g2}, see {@link IsomorphismMapping}.
 	 *
 	 * <p>
 	 * Note that the type of vertices and edges of the two graphs may be different. Only the structure of the graphs is
@@ -182,8 +188,12 @@ public interface IsomorphismTester {
 	 * @param  <E1>                     the type of edges of the first graph
 	 * @param  <V2>                     the type of vertices of the second graph
 	 * @param  <E2>                     the type of edges of the second graph
-	 * @param  g1                       the first graph
-	 * @param  g2                       the second graph
+	 * @param  g1                       the first graph. If sub graph isomorphism is searched, {@code g1} is the smaller
+	 *                                      graph, namely the method search for a mapping from {@code g1} to a sub graph
+	 *                                      of {@code g2}
+	 * @param  g2                       the second graph. If sub graph isomorphism is searched, {@code g2} is the bigger
+	 *                                      graph, namely the method search for a mapping from {@code g1} to a sub graph
+	 *                                      of {@code g2}
 	 * @param  type                     the type of isomorphism
 	 * @return                          an iterator over all isomorphism mappings between the two graphs. The returned
 	 *                                  mappings maps vertices and edges from the first graph to vertices and edges of
@@ -202,12 +212,13 @@ public interface IsomorphismTester {
 	 *
 	 * <p>
 	 * Given two graphs, an isomorphism is a mapping functions that maps the first graph vertices to the second graph
-	 * vertices, while preserving the structure of the graph. There are few variants, described in the different types
-	 * of isomorphism, see {@link IsomorphismType}. The type of isomorphism is given as a parameter to this method. If
-	 * the type is not {@linkplain IsomorphismType#Full full}, namely it is one of the sub graph types, then the first
-	 * graph {@code g1} is the bigger graph, and the second graph {@code g2} is the smaller graph, and the method search
-	 * for a sub graph of {@code g1} that is isomorphic to {@code g2}. In such case the returned mappings may not map
-	 * all vertices and edges of the first graph to the second graph, see {@link IsomorphismMapping}.
+	 * vertices, while preserving the structure of the graph. There are few variants of the problem, such as 'full' or
+	 * 'sub graph' isomorphism, see {@link IsomorphismType}. The type of isomorphism is given as a parameter to this
+	 * method. If the type is not {@linkplain IsomorphismType#Full full}, namely it is one of the sub graph types, then
+	 * the first graph {@code g1} is the smaller graph, and the second graph {@code g2} is the bigger graph, and the
+	 * method search for a mapping from {@code g1} to a sub graph of {@code g2}. In such case the
+	 * {@linkplain IsomorphismMapping#inverse() inverse} of the returned mappings may not map all vertices and edges of
+	 * {@code g2}, see {@link IsomorphismMapping}.
 	 *
 	 * <p>
 	 * In addition to the structure of the graphs, this method also takes two predicates that filter pairs of vertices
@@ -229,8 +240,12 @@ public interface IsomorphismTester {
 	 * @param  <E1>                     the type of edges of the first graph
 	 * @param  <V2>                     the type of vertices of the second graph
 	 * @param  <E2>                     the type of edges of the second graph
-	 * @param  g1                       the first graph
-	 * @param  g2                       the second graph
+	 * @param  g1                       the first graph. If sub graph isomorphism is searched, {@code g1} is the smaller
+	 *                                      graph, namely the method search for a mapping from {@code g1} to a sub graph
+	 *                                      of {@code g2}
+	 * @param  g2                       the second graph. If sub graph isomorphism is searched, {@code g2} is the bigger
+	 *                                      graph, namely the method search for a mapping from {@code g1} to a sub graph
+	 *                                      of {@code g2}
 	 * @param  type                     the type of isomorphism
 	 * @param  vertexMatcher            a predicate that filters pairs of vertices, one from each graph, that are not
 	 *                                      allowed to be mapped to each other. For a given pair \(v_1,v_2\) where \(v_1

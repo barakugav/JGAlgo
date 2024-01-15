@@ -122,54 +122,57 @@ class IsomorphismTestUtils extends TestUtils {
 			IsomorphismMapping<Integer, Integer, Integer, Integer> mapping = mappingOptional.get();
 			checkMapping(mapping, type, null, null, rand);
 
-			assertEquals(mapping.sourceGraph().vertices().stream().map(v1 -> {
-				Integer v2 = mapping.mapVertex(v1);
-				return "" + v1 + ":" + v2;
-			}).collect(Collectors.joining(", ", "{", "}")), mapping.toString());
+			for (IsomorphismMapping<Integer, Integer, Integer, Integer> mapping0 : List
+					.of(mapping, mapping.inverse())) {
+				if (mapping0 instanceof IsomorphismTesters.IndexMapping)
+					((IsomorphismTesters.IndexMapping) mapping0).inverse = null;
+				assertEquals(mapping0
+						.sourceGraph()
+						.vertices()
+						.stream()
+						.filter(vertex -> mapping0.mapVertex(vertex) != null)
+						.collect(toSet()), mapping0.mappedVertices());
+				assertEquals(mapping0
+						.sourceGraph()
+						.edges()
+						.stream()
+						.filter(edge -> mapping0.mapEdge(edge) != null)
+						.collect(toSet()), mapping0.mappedEdges());
+				for (int i = 0; i < 5; i++) {
+					Integer v = Graphs.randVertex(mapping0.sourceGraph(), rand);
+					assertEqualsBool(mapping0.mapVertex(v) != null, mapping0.mappedVertices().contains(v));
+				}
+				for (int i = 0; i < 5; i++) {
+					Integer e = Graphs.randEdge(mapping0.sourceGraph(), rand);
+					assertEqualsBool(mapping0.mapEdge(e) != null, mapping0.mappedEdges().contains(e));
+				}
+				for (int i = 0; i < 5; i++)
+					assertFalse(mapping0
+							.mappedVertices()
+							.contains(GraphsTestUtils.nonExistingVertex(mapping0.sourceGraph(), rand)));
+				for (int i = 0; i < 5; i++)
+					assertFalse(mapping0
+							.mappedEdges()
+							.contains(GraphsTestUtils.nonExistingEdge(mapping0.sourceGraph(), rand)));
 
-			assertEquals(mapping
-					.sourceGraph()
-					.vertices()
-					.stream()
-					.filter(vertex -> mapping.mapVertex(vertex) != null)
-					.collect(toSet()), mapping.mappedVertices());
-			assertEquals(mapping
-					.sourceGraph()
-					.edges()
-					.stream()
-					.filter(edge -> mapping.mapEdge(edge) != null)
-					.collect(toSet()), mapping.mappedEdges());
-			for (int i = 0; i < 5; i++) {
-				Integer v = Graphs.randVertex(mapping.sourceGraph(), rand);
-				assertEqualsBool(mapping.mapVertex(v) != null, mapping.mappedVertices().contains(v));
-			}
-			for (int i = 0; i < 5; i++) {
-				Integer e = Graphs.randEdge(mapping.sourceGraph(), rand);
-				assertEqualsBool(mapping.mapEdge(e) != null, mapping.mappedEdges().contains(e));
-			}
-			for (int i = 0; i < 5; i++) {
-				int v = rand.nextInt();
-				if (!mapping.sourceGraph().vertices().contains(v))
-					assertFalse(mapping.mappedVertices().contains(v));
-			}
-			for (int i = 0; i < 5; i++) {
-				int e = rand.nextInt();
-				if (!mapping.sourceGraph().edges().contains(e))
-					assertFalse(mapping.mappedEdges().contains(e));
-			}
+				assertEquals(mapping0
+						.targetGraph()
+						.vertices()
+						.stream()
+						.filter(vertex -> mapping0.inverse().mapVertex(vertex) != null)
+						.collect(toSet()), mapping0.inverse().mappedVertices());
+				assertEquals(mapping0
+						.targetGraph()
+						.edges()
+						.stream()
+						.filter(edge -> mapping0.inverse().mapEdge(edge) != null)
+						.collect(toSet()), mapping0.inverse().mappedEdges());
 
-			assertEquals(mapping
-					.targetGraph()
-					.vertices()
-					.stream()
-					.filter(vertex -> mapping.inverse().mapVertex(vertex) != null)
-					.collect(toSet()), mapping.inverse().mappedVertices());
-			assertEquals(mapping
-					.targetGraph()
-					.edges()
-					.stream()
-					.filter(edge -> mapping.inverse().mapEdge(edge) != null)
-					.collect(toSet()), mapping.inverse().mappedEdges());
+				assertEquals(mapping0.sourceGraph().vertices().stream().map(v1 -> {
+					Integer v2 = mapping0.mapVertex(v1);
+					return "" + v1 + ":" + v2;
+				}).collect(Collectors.joining(", ", "{", "}")), mapping0.toString());
+			}
 		}
 
 		/* isomorphicMappingsIter() */
@@ -191,45 +194,42 @@ class IsomorphismTestUtils extends TestUtils {
 			if (Math.max(n1, n2) <= 8) {
 				Integer[] vs1 = g1.vertices().toArray(new Integer[0]);
 				Integer[] vs2 = g2.vertices().toArray(new Integer[0]);
-				Stream<IntList> mappedG1VerticesStream;
+				Stream<IntList> mappedG2VerticesStream;
 				if (type == IsomorphismType.Full) {
 					assert n1 == n2;
-					mappedG1VerticesStream = Stream.of(range(n1).asList());
+					mappedG2VerticesStream = Stream.of(range(n2).asList());
 				} else {
-					assert n1 >= n2;
-					mappedG1VerticesStream = SubSets.stream(range(n1), n2);
+					assert n1 <= n2;
+					mappedG2VerticesStream = SubSets.stream(range(n2), n1);
 				}
-				Set<Int2IntMap> expectedMappings = mappedG1VerticesStream.flatMap(Permutations::stream).map(m -> {
-					assert m.size() == n2;
-					Int2IntMap mapping = new Int2IntOpenHashMap(n2);
-					for (int i = 0; i < n2; i++) {
-						int v1 = vs1[m.getInt(i)].intValue();
-						int v2 = vs2[i].intValue();
+				Set<Int2IntMap> expectedMappings = mappedG2VerticesStream.flatMap(Permutations::stream).map(m -> {
+					assert m.size() == n1;
+					Int2IntMap mapping = new Int2IntOpenHashMap(n1);
+					for (int i = 0; i < n1; i++) {
+						int v1 = vs1[i].intValue();
+						int v2 = vs2[m.getInt(i)].intValue();
 						mapping.put(v1, v2);
 					}
-					assert mapping.size() == n2;
+					assert mapping.size() == n1;
 					return mapping;
 
 				}).filter(mapping -> {
-					Int2IntMap inv = new Int2IntOpenHashMap(n2);
-					for (Int2IntMap.Entry e : mapping.int2IntEntrySet())
-						inv.put(e.getIntValue(), e.getIntKey());
-					assert inv.size() == n2;
-					boolean g2EdgesMatch = g2.edges().stream().allMatch(e2 -> {
-						Integer u2 = g2.edgeSource(e2), v2 = g2.edgeTarget(e2);
-						Integer u1 = inv.get(u2.intValue()), v1 = inv.get(v2.intValue());
-						return g1.containsEdge(u1, v1);
+					boolean g1EdgesMatch = g1.edges().stream().allMatch(e1 -> {
+						Integer u1 = g1.edgeSource(e1), v1 = g1.edgeTarget(e1);
+						Integer u2 = mapping.get(u1.intValue()), v2 = mapping.get(v1.intValue());
+						return g2.containsEdge(u2, v2);
 					});
-					if (!g2EdgesMatch)
+					if (!g1EdgesMatch)
 						return false;
 					if (type != IsomorphismType.SubGraph) {
-						int edgeNumInInducedG1 = (int) g1
+						IntSet mappedG2Vertices = new IntOpenHashSet(mapping.values());
+						int edgeNumInInducedG2 = (int) g2
 								.edges()
 								.stream()
-								.filter(e1 -> mapping.containsKey(g1.edgeSource(e1).intValue())
-										&& mapping.containsKey(g1.edgeTarget(e1).intValue()))
+								.filter(e2 -> mappedG2Vertices.contains(g2.edgeSource(e2).intValue())
+										&& mappedG2Vertices.contains(g2.edgeTarget(e2).intValue()))
 								.count();
-						if (edgeNumInInducedG1 != g2.edges().size())
+						if (edgeNumInInducedG2 != g1.edges().size())
 							return false;
 					}
 					return true;
@@ -247,16 +247,14 @@ class IsomorphismTestUtils extends TestUtils {
 			Int2IntMap forcedMappingFull = validMappings.get(0);
 			Int2IntMap forcedMapping = new Int2IntOpenHashMap();
 			forcedMapping.defaultReturnValue(-1);
-			for (int forcedNum = rand.nextInt(1 + g2.vertices().size() / 4); forcedMapping.size() < forcedNum;) {
+			for (int forcedNum = rand.nextInt(1 + g1.vertices().size() / 4); forcedMapping.size() < forcedNum;) {
 				int v1 = Graphs.randVertex(g1, rand);
-				if (!forcedMappingFull.containsKey(v1))
-					continue;
 				int v2 = forcedMappingFull.get(v1);
-				forcedMapping.putIfAbsent(v2, v1);
+				forcedMapping.putIfAbsent(v1, v2);
 			}
 			BiPredicate<Integer, Integer> vertexMatcher = (v1, v2) -> {
-				int v1Forced = forcedMapping.get(v2.intValue());
-				return v1Forced < 0 || v1Forced == v1;
+				int v2Forced = forcedMapping.get(v1.intValue());
+				return v2Forced < 0 || v2Forced == v2;
 			};
 
 			Iterator<IsomorphismMapping<Integer, Integer, Integer, Integer>> it =
@@ -320,11 +318,8 @@ class IsomorphismTestUtils extends TestUtils {
 
 			Int2IntMap mapping = new Int2IntOpenHashMap(g1.vertices().size());
 			mapping.defaultReturnValue(-1);
-			for (Integer v1 : g1.vertices()) {
-				Integer v2 = m1.mapVertex(v1);
-				if (v2 != null)
-					mapping.put(v1.intValue(), v2.intValue());
-			}
+			for (Integer v1 : g1.vertices())
+				mapping.put(v1.intValue(), m1.mapVertex(v1).intValue());
 			boolean added = mappings.add(mapping);
 			assertTrue(added);
 		}
@@ -436,14 +431,14 @@ class IsomorphismTestUtils extends TestUtils {
 		foreachBoolConfig(directed -> {
 			for (IsomorphismType type : IsomorphismType.values()) {
 				IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+				g1.addVertexInt();
 				IntGraph g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
-				g2.addVertexInt();
 				assertFalse(algo.isomorphicMapping(g1, g2, type).isPresent());
 			}
 			{
 				IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
-				g1.addVertexInt();
 				IntGraph g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+				g2.addVertexInt();
 				assertFalse(algo.isomorphicMapping(g1, g2).isPresent());
 			}
 		});
@@ -455,40 +450,40 @@ class IsomorphismTestUtils extends TestUtils {
 				IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 				g1.addVertex(0);
 				g1.addVertex(1);
+				g1.addEdge(0, 1, 0);
 				IntGraph g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 				g2.addVertex(0);
 				g2.addVertex(1);
-				g2.addEdge(0, 1, 0);
 				assertFalse(algo.isomorphicMapping(g1, g2, type).isPresent());
 			}
 			{
 				IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 				g1.addVertex(0);
 				g1.addVertex(1);
-				g1.addEdge(0, 1, 0);
 				IntGraph g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 				g2.addVertex(0);
 				g2.addVertex(1);
+				g2.addEdge(0, 1, 0);
 				assertFalse(algo.isomorphicMapping(g1, g2).isPresent());
 			}
 			{
 				IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 				g1.addVertex(0);
 				g1.addVertex(1);
-				g1.addEdge(0, 1, 0);
 				IntGraph g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 				g2.addVertex(0);
 				g2.addVertex(1);
+				g2.addEdge(0, 1, 0);
 				assertFalse(algo.isomorphicMapping(g1, g2, IsomorphismType.InducedSubGraph).isPresent());
 			}
 			{
 				IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 				g1.addVertex(0);
 				g1.addVertex(1);
-				g1.addEdge(0, 1, 0);
 				IntGraph g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 				g2.addVertex(0);
 				g2.addVertex(1);
+				g2.addEdge(0, 1, 0);
 				assertTrue(algo.isomorphicMapping(g1, g2, IsomorphismType.SubGraph).isPresent());
 			}
 		});
@@ -508,21 +503,20 @@ class IsomorphismTestUtils extends TestUtils {
 
 		Graph<Integer, Integer> g1 = m1.sourceGraph();
 		Graph<Integer, Integer> g2 = m1.targetGraph();
-		assertTrue(g1.vertices().size() >= g2.vertices().size());
-		assertTrue(g1.edges().size() >= g2.edges().size());
+		assertTrue(g1.vertices().size() <= g2.vertices().size());
+		assertTrue(g1.edges().size() <= g2.edges().size());
 
 		/* assert the vertex mapping is an injective function */
 		IntSet mappedG2Vertices = new IntOpenHashSet(g1.vertices().size());
 		for (Integer v1 : g1.vertices()) {
 			Integer v2 = m1.mapVertex(v1);
-			if (v2 == null)
-				continue;
+			assertNotNull(v2);
 			assertTrue(g2.vertices().contains(v2));
 			assertEquals(v1, m2.mapVertex(v2));
 			boolean modified = mappedG2Vertices.add(v2.intValue());
 			assertTrue(modified);
 		}
-		assertEquals(g2.vertices().size(), mappedG2Vertices.size());
+		assertEquals(g1.vertices().size(), mappedG2Vertices.size());
 		assertThrows(NoSuchVertexException.class, () -> m1.mapVertex(GraphsTestUtils.nonExistingVertex(g1, rand)));
 		assertThrows(NoSuchVertexException.class, () -> m2.mapVertex(GraphsTestUtils.nonExistingVertex(g2, rand)));
 		if (g1.vertices().size() < g2.vertices().size()) {
@@ -539,14 +533,13 @@ class IsomorphismTestUtils extends TestUtils {
 		IntSet mappedG2Edges = new IntOpenHashSet(g1.edges().size());
 		for (Integer e1 : g1.edges()) {
 			Integer e2 = m1.mapEdge(e1);
-			if (e2 == null)
-				continue;
+			assertNotNull(e2);
 			assertTrue(g2.edges().contains(e2));
 			assertEquals(e1, m2.mapEdge(e2));
 			boolean modified = mappedG2Edges.add(e2.intValue());
 			assertTrue(modified);
 		}
-		assertEquals(g2.edges().size(), mappedG2Edges.size());
+		assertEquals(g1.edges().size(), mappedG2Edges.size());
 		assertThrows(NoSuchEdgeException.class, () -> m1.mapEdge(GraphsTestUtils.nonExistingEdge(g1, rand)));
 		assertThrows(NoSuchEdgeException.class, () -> m2.mapEdge(GraphsTestUtils.nonExistingEdge(g2, rand)));
 		if (g1.edges().size() < g2.edges().size()) {
@@ -564,8 +557,6 @@ class IsomorphismTestUtils extends TestUtils {
 			Integer u1 = g1.edgeSource(e1), v1 = g1.edgeTarget(e1);
 			Integer u2 = m1.mapVertex(u1), v2 = m1.mapVertex(v1);
 			Integer e2 = m1.mapEdge(e1);
-			if (e2 == null)
-				continue;
 			Integer u2Expected = g2.edgeSource(e2);
 			Integer v2Expected = g2.edgeTarget(e2);
 			if (g1.isDirected()) {
@@ -619,60 +610,61 @@ class IsomorphismTestUtils extends TestUtils {
 			boolean directed, IsomorphismType type, long seed) {
 		Random rand = new Random(seed);
 
-		Graph<Integer, Integer> g1 = GraphsTestUtils.randGraph(n, m, directed, true, false, rand.nextLong());
+		Graph<Integer, Integer> g2 = GraphsTestUtils.randGraph(n, m, directed, true, false, rand.nextLong());
 
 		GraphFactory<Integer, Integer> factory;
-		if (g1 instanceof IntGraph) {
+		if (g2 instanceof IntGraph) {
 			factory = IntGraphFactory.newInstance(directed);
 		} else {
 			factory = GraphFactory.newInstance(directed);
 		}
-		Graph<Integer, Integer> g2 = factory.allowSelfEdges().newGraph();
+		Graph<Integer, Integer> g1 = factory.allowSelfEdges().newGraph();
 
-		/* add n vertices to g2 */
-		final int n2 = n - (type != IsomorphismType.Full ? 1 + rand.nextInt(1 + Math.min(4, n / 8)) : 0);
-		while (g2.vertices().size() < n2) {
+		final int n1 = n - (type != IsomorphismType.Full ? rand.nextInt(1 + Math.min(4, n / 8)) : 0);
+		while (g1.vertices().size() < n1) {
 			int v = rand.nextInt(n * 2);
-			if (!g2.vertices().contains(v))
-				g2.addVertex(v);
+			if (!g1.vertices().contains(v))
+				g1.addVertex(v);
 		}
 
 		Map<Integer, Integer> vMapping = randMapping(g1.vertices(), g2.vertices(), rand.nextLong());
+		Map<Integer, Integer> vMappingInv = new HashMap<>();
+		for (Map.Entry<Integer, Integer> e : vMapping.entrySet())
+			vMappingInv.put(e.getValue(), e.getKey());
 
-		/* add all edges to g2 */
-		List<Integer> g1Edges = new ArrayList<>(g1.edges());
-		Collections.shuffle(g1Edges, rand);
-		for (Integer e1 : g1Edges) {
-			Integer u1 = g1.edgeSource(e1), v1 = g1.edgeTarget(e1);
-			Integer u2 = vMapping.get(u1), v2 = vMapping.get(v1);
-			if (u2 == null || v2 == null)
+		List<Integer> g2Edges = new ArrayList<>(g2.edges());
+		Collections.shuffle(g2Edges, rand);
+		for (Integer e2 : g2Edges) {
+			Integer u2 = g2.edgeSource(e2), v2 = g2.edgeTarget(e2);
+			Integer u1 = vMappingInv.get(u2), v1 = vMappingInv.get(v2);
+			if (u1 == null || v1 == null)
 				continue;
-			Integer e2;
+			Integer e1;
 			do {
-				e2 = rand.nextInt(m * 2);
-			} while (g2.edges().contains(e2));
-			g2.addEdge(u2, v2, e2);
+				e1 = rand.nextInt(m * 2);
+			} while (g1.edges().contains(e1));
+			g1.addEdge(u1, v1, e1);
 		}
 
 		if (type == IsomorphismType.SubGraph) {
-			int edgesToRemove = Math.min(4, g2.edges().size() / 8);
+			int edgesToRemove = Math.min(4, g1.edges().size() / 8);
 			while (edgesToRemove-- > 0)
-				g2.removeEdge(Graphs.randEdge(g2, rand));
+				g1.removeEdge(Graphs.randEdge(g1, rand));
 		}
 
 		return Pair.of(g1, g2);
 	}
 
-	/* assume |A|>=|B|, return a random mapping from A that cover all B */
-	/* A may contain unmapped elements */
+	/* assume |A|<=|B|, return a random mapping from A to (part of) B */
+	/* B may contain unmapped elements */
 	private static <A, B> Map<A, B> randMapping(Set<A> a, Set<B> b, long seed) {
 		Random rand = new Random(seed);
 		List<A> aList = new ArrayList<>(a);
 		List<B> bList = new ArrayList<>(b);
-		assert aList.size() >= bList.size();
-		Collections.shuffle(aList, rand);
+		assert aList.size() <= bList.size();
+		Collections.shuffle(bList, rand);
 		Map<A, B> map = new HashMap<>();
-		for (int i : range(bList.size()))
+		for (int i : range(aList.size()))
 			map.put(aList.get(i), bList.get(i));
 		return map;
 	}
