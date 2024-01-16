@@ -53,7 +53,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
  *
  * @author Barak Ugav
  */
-class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, AlgorithmWithDiagnostics {
+class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase {
 
 	private ShortestPathSingleSource positiveSsspAlgo = ShortestPathSingleSource.newInstance();
 	private final ShortestPathSingleSourceDial ssspDial = new ShortestPathSingleSourceDial();
@@ -334,8 +334,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase, 
 		return new ShortestPathSingleSourceUtils.IndexResult(g, source, distances, backtrack);
 	}
 
-	@Override
-	public Object getDiagnostic(String key) {
+	Object getDiagnostic(String key) {
 		return Long.valueOf(diagnostics.get(key));
 	}
 
