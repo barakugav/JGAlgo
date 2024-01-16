@@ -29,19 +29,19 @@ interface IsomorphismTesterBase extends IsomorphismTester {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@Override
 	default <V1, E1, V2, E2> Iterator<IsomorphismMapping<V1, E1, V2, E2>> isomorphicMappingsIter(Graph<V1, E1> g1,
-			Graph<V2, E2> g2, IsomorphismType type, BiPredicate<? super V1, ? super V2> vertexMatcher,
+			Graph<V2, E2> g2, boolean induced, BiPredicate<? super V1, ? super V2> vertexMatcher,
 			BiPredicate<? super E1, ? super E2> edgeMatcher) {
 		if (g1 instanceof IndexGraph && g2 instanceof IndexGraph) {
 			IntBinaryOperator vMatcher = asIntBiMatcher((BiPredicate<? super Integer, ? super Integer>) vertexMatcher);
 			IntBinaryOperator eMatcher = asIntBiMatcher((BiPredicate<? super Integer, ? super Integer>) edgeMatcher);
-			return (Iterator) isomorphicMappingsIter((IndexGraph) g1, (IndexGraph) g2, type, vMatcher, eMatcher);
+			return (Iterator) isomorphicMappingsIter((IndexGraph) g1, (IndexGraph) g2, induced, vMatcher, eMatcher);
 
 		} else {
 			IndexGraph ig1 = g1.indexGraph(), ig2 = g2.indexGraph();
 			IntBinaryOperator vMatcher =
 					mapMatcher(vertexMatcher, g1.indexGraphVerticesMap(), g2.indexGraphVerticesMap());
 			IntBinaryOperator eMatcher = mapMatcher(edgeMatcher, g1.indexGraphEdgesMap(), g2.indexGraphEdgesMap());
-			Iterator<IsomorphismIMapping> iMappingsIter = isomorphicMappingsIter(ig1, ig2, type, vMatcher, eMatcher);
+			Iterator<IsomorphismIMapping> iMappingsIter = isomorphicMappingsIter(ig1, ig2, induced, vMatcher, eMatcher);
 			return IterTools.map(iMappingsIter, m -> mappingFromIndexMapping(g1, g2, m));
 		}
 	}
@@ -50,7 +50,7 @@ interface IsomorphismTesterBase extends IsomorphismTester {
 	 * There is no int-specific interface for BiPredicate, we use IntBinaryOperator which return 0 for false, and any
 	 * other value for true
 	 */
-	Iterator<IsomorphismIMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2, IsomorphismType type,
+	Iterator<IsomorphismIMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2, boolean induced,
 			IntBinaryOperator vertexMatcher, IntBinaryOperator edgeMatcher);
 
 	@SuppressWarnings("unchecked")

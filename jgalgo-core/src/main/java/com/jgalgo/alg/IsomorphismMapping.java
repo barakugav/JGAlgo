@@ -26,7 +26,7 @@ import com.jgalgo.graph.NoSuchVertexException;
  * <p>
  * Given two graphs, an isomorphism is a mapping functions that maps the first graph vertices to the second graph
  * vertices, while preserving the structure of the graph. There are few variants, described in the different types of
- * isomorphism, see {@link IsomorphismType}. Some types of isomorphism map only a subset of the vertices or edges, and
+ * isomorphism, see {@link IsomorphismTester}. Some types of isomorphism map only a subset of the vertices or edges, and
  * in such case the mapping will return {@code null} for vertices or edges that are not mapped.
  *
  * @param  <V1> the type of vertices of the first graph
@@ -34,7 +34,6 @@ import com.jgalgo.graph.NoSuchVertexException;
  * @param  <V2> the type of vertices of the second graph
  * @param  <E2> the type of edges of the second graph
  * @see         IsomorphismTester
- * @see         IsomorphismType
  * @see         <a href= "https://en.wikipedia.org/wiki/Graph_isomorphism">Wikipedia</a>
  * @author      Barak Ugav
  */
@@ -92,9 +91,9 @@ public interface IsomorphismMapping<V1, E1, V2, E2> {
 	 * graph}.
 	 *
 	 * <p>
-	 * The mapping may not map all the vertices of the source graph, in cases the isomorphism is either
-	 * {@link IsomorphismType#InducedSubGraph} or {@link IsomorphismType#SubGraph}. This method can be used to get the
-	 * set of vertices for which there is a corresponding vertex in the target graph.
+	 * The mapping may not map all the vertices of the source graph, in case the first graph is smaller than the second
+	 * graph, and a (maybe induced) sub graph isomorphism was searched. This method can be used to get the set of
+	 * vertices for which there is a corresponding vertex in the target graph.
 	 *
 	 * <p>
 	 * Together with {@link #mappedEdges()}, this method can be used to construct the subgraph mapped to the target
@@ -114,8 +113,9 @@ public interface IsomorphismMapping<V1, E1, V2, E2> {
 	 * Get the set of the edges that are mapped out of all the edges of the {@linkplain #sourceGraph() source graph}.
 	 *
 	 * <p>
-	 * The mapping may not map all the edges of the source graph, in cases the isomorphism is either
-	 * {@link IsomorphismType#InducedSubGraph} or {@link IsomorphismType#SubGraph}.
+	 * The mapping may not map all the edges of the source graph, in case the first graph is smaller than the second
+	 * graph, and a (maybe induced) sub graph isomorphism was searched. This method can be used to get the set of edges
+	 * for which there is a corresponding edge in the target graph.
 	 *
 	 * <p>
 	 * Together with {@link #mappedVertices()}, this method can be used to construct the subgraph mapped to the target

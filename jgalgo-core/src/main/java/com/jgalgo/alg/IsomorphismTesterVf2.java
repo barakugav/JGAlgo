@@ -19,7 +19,6 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Objects;
 import java.util.function.IntBinaryOperator;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -43,23 +42,19 @@ import it.unimi.dsi.fastutil.objects.ObjectIterators;
 class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 
 	@Override
-	public Iterator<IsomorphismIMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2, IsomorphismType type,
+	public Iterator<IsomorphismIMapping> isomorphicMappingsIter(IndexGraph g1, IndexGraph g2, boolean induced,
 			IntBinaryOperator vertexMatcher, IntBinaryOperator edgeMatcher) {
 		Assertions.noParallelEdges(g1, "parallel edges are not supported");
 		Assertions.noParallelEdges(g2, "parallel edges are not supported");
 		if (g1.isDirected() != g2.isDirected())
 			throw new IllegalArgumentException("directed/undirected graphs mismatch");
-		Objects.requireNonNull(type);
 
 		final int n1 = g1.vertices().size();
 		final int n2 = g2.vertices().size();
 		final int m1 = g1.edges().size();
 		final int m2 = g2.edges().size();
 
-		if (type == IsomorphismType.Full && (n1 != n2 || m1 != m2))
-			return Collections.emptyIterator();
-
-		if (n1 > n2 || m1 > m2 || (n1 == n2 && m1 != m2 && type != IsomorphismType.SubGraph))
+		if (n1 > n2 || m1 > m2 || (n1 == n2 && m1 != m2 && induced))
 			return Collections.emptyIterator();
 
 		if (n1 == 0) {
@@ -70,9 +65,9 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		}
 
 		if (g1.isDirected()) {
-			return new IsomorphismIterDirected(g1, g2, type, vertexMatcher, edgeMatcher);
+			return new IsomorphismIterDirected(g1, g2, induced, vertexMatcher, edgeMatcher);
 		} else {
-			return new IsomorphismIterUndirected(g1, g2, type, vertexMatcher, edgeMatcher);
+			return new IsomorphismIterUndirected(g1, g2, induced, vertexMatcher, edgeMatcher);
 		}
 	}
 
@@ -83,7 +78,6 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		final int n1, n2;
 		private final IntBinaryOperator vertexMatcher;
 		private final IntBinaryOperator edgeMatcher;
-		final IsomorphismType type;
 		final boolean subGraph;
 		final boolean inducedSubGraph;
 
@@ -103,19 +97,18 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 
 		static final int None = -1;
 
-		IsomorphismIterBase(IndexGraph g1, IndexGraph g2, IsomorphismType type, IntBinaryOperator vertexMatcher,
+		IsomorphismIterBase(IndexGraph g1, IndexGraph g2, boolean induced, IntBinaryOperator vertexMatcher,
 				IntBinaryOperator edgeMatcher) {
 			this.g1 = g1;
 			this.g2 = g2;
 			n1 = g1.vertices().size();
 			n2 = g2.vertices().size();
-			this.type = type;
 			this.vertexMatcher = vertexMatcher;
 			this.edgeMatcher = edgeMatcher;
 
 			assert n1 <= n2;
-			subGraph = type == IsomorphismType.SubGraph || n1 < n2;
-			inducedSubGraph = Objects.requireNonNull(type) != IsomorphismType.SubGraph;
+			subGraph = !induced || n1 < n2;
+			inducedSubGraph = induced;
 
 			core1 = new int[n1];
 			core2 = new int[n2];
@@ -168,7 +161,7 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 					int v2 = eit.targetInt();
 					if (visit[v2] == visitIdx) {
 						int e1 = visitData[v2];
-						eMapping[e1] = e2;						
+						eMapping[e1] = e2;
 					}
 				}
 			}
@@ -199,9 +192,9 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		private final int[] stateT1InSize;
 		private final int[] stateT2InSize;
 
-		IsomorphismIterDirected(IndexGraph g1, IndexGraph g2, IsomorphismType type, IntBinaryOperator vertexMatcher,
+		IsomorphismIterDirected(IndexGraph g1, IndexGraph g2, boolean induced, IntBinaryOperator vertexMatcher,
 				IntBinaryOperator edgeMatcher) {
-			super(g1, g2, type, vertexMatcher, edgeMatcher);
+			super(g1, g2, induced, vertexMatcher, edgeMatcher);
 
 			in1 = new int[n1];
 			in2 = new int[n2];
@@ -238,8 +231,7 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 			 * demonstrated that the state s cannot be part of a matching, and it is not further explored." Although
 			 * this is stated in the paper, this does not seem to be correct for non-full isomorphism.
 			 */
-			if (type == IsomorphismType.Full
-					&& ((t1OutSize == 0 ^ t2OutSize == 0) || (t1InSize == 0 ^ t2InSize == 0))) {
+			if (!subGraph && ((t1OutSize == 0 ^ t2OutSize == 0) || (t1InSize == 0 ^ t2InSize == 0))) {
 				nextV1 = None;
 				nextV2Iter = IntIterators.EMPTY_ITERATOR;
 
@@ -512,9 +504,9 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 		private final int[] stateT1OutSize;
 		private final int[] stateT2OutSize;
 
-		IsomorphismIterUndirected(IndexGraph g1, IndexGraph g2, IsomorphismType type, IntBinaryOperator vertexMatcher,
+		IsomorphismIterUndirected(IndexGraph g1, IndexGraph g2, boolean induced, IntBinaryOperator vertexMatcher,
 				IntBinaryOperator edgeMatcher) {
-			super(g1, g2, type, vertexMatcher, edgeMatcher);
+			super(g1, g2, induced, vertexMatcher, edgeMatcher);
 
 			out1 = new int[n1];
 			out2 = new int[n2];
@@ -542,7 +534,7 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 			 * demonstrated that the state s cannot be part of a matching, and it is not further explored." Although
 			 * this is stated in the paper, this does not seem to be correct for non-full isomorphism.
 			 */
-			if (type == IsomorphismType.Full && (t1OutSize == 0 ^ t2OutSize == 0)) {
+			if (!subGraph && (t1OutSize == 0 ^ t2OutSize == 0)) {
 				nextV1 = None;
 				nextV2Iter = IntIterators.EMPTY_ITERATOR;
 

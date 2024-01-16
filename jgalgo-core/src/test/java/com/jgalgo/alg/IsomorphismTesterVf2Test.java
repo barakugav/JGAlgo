@@ -23,32 +23,32 @@ public class IsomorphismTesterVf2Test extends TestBase {
 
 	@Test
 	public void directedFullIsomorphism() {
-		IsomorphismTestUtils.graphsIsomorphism(new IsomorphismTesterVf2(), IsomorphismType.Full, true);
+		IsomorphismTestUtils.graphsIsomorphism(new IsomorphismTesterVf2(), false, true, true);
 	}
 
 	@Test
 	public void undirectedFullIsomorphism() {
-		IsomorphismTestUtils.graphsIsomorphism(new IsomorphismTesterVf2(), IsomorphismType.Full, false);
+		IsomorphismTestUtils.graphsIsomorphism(new IsomorphismTesterVf2(), false, true, false);
 	}
 
 	@Test
 	public void directedInducedSubGraphIsomorphism() {
-		IsomorphismTestUtils.graphsIsomorphism(new IsomorphismTesterVf2(), IsomorphismType.InducedSubGraph, true);
+		IsomorphismTestUtils.graphsIsomorphism(new IsomorphismTesterVf2(), true, true, true);
 	}
 
 	@Test
 	public void undirectedInducedSubGraphIsomorphism() {
-		IsomorphismTestUtils.graphsIsomorphism(new IsomorphismTesterVf2(), IsomorphismType.InducedSubGraph, false);
+		IsomorphismTestUtils.graphsIsomorphism(new IsomorphismTesterVf2(), true, true, false);
 	}
 
 	@Test
 	public void directedSubGraphIsomorphism() {
-		IsomorphismTestUtils.graphsIsomorphism(new IsomorphismTesterVf2(), IsomorphismType.SubGraph, true);
+		IsomorphismTestUtils.graphsIsomorphism(new IsomorphismTesterVf2(), true, false, true);
 	}
 
 	@Test
 	public void undirectedSubGraphIsomorphism() {
-		IsomorphismTestUtils.graphsIsomorphism(new IsomorphismTesterVf2(), IsomorphismType.SubGraph, false);
+		IsomorphismTestUtils.graphsIsomorphism(new IsomorphismTesterVf2(), true, false, false);
 	}
 
 	@Test

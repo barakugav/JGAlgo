@@ -39,6 +39,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.graph.NoSuchEdgeException;
@@ -59,73 +60,68 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 
 class IsomorphismTestUtils extends TestUtils {
 
-	static void graphsIsomorphism(IsomorphismTester algo, IsomorphismType type, boolean directed) {
+	static void graphsIsomorphism(IsomorphismTester algo, boolean subGraph, boolean induced, boolean directed) {
 		final Random rand = new Random(0xe382dc68ec73aa85L);
 		PhasedTester tester = new PhasedTester();
-		switch (type) {
-			case Full:
-				tester.addPhase().withArgs(4, 8).repeat(128);
-				tester.addPhase().withArgs(8, 10).repeat(12);
-				tester.addPhase().withArgs(16, 32).repeat(128);
-				tester.addPhase().withArgs(16, 18).repeat(128);
-				tester.addPhase().withArgs(19, 39).repeat(64);
-				tester.addPhase().withArgs(23, 52).repeat(32);
-				tester.addPhase().withArgs(23, 26).repeat(32);
-				tester.addPhase().withArgs(64, 256).repeat(20);
-				tester.addPhase().withArgs(80, 400).repeat(1);
-				break;
-			case InducedSubGraph:
-				tester.addPhase().withArgs(4, 8).repeat(128);
-				tester.addPhase().withArgs(8, 10).repeat(12);
-				tester.addPhase().withArgs(16, 32).repeat(128);
-				tester.addPhase().withArgs(16, 18).repeat(128);
-				tester.addPhase().withArgs(19, 39).repeat(64);
-				tester.addPhase().withArgs(23, 52).repeat(32);
-				tester.addPhase().withArgs(23, 26).repeat(32);
-				break;
-			case SubGraph:
-				tester.addPhase().withArgs(4, 8).repeat(128);
-				tester.addPhase().withArgs(8, 10).repeat(8);
-				tester.addPhase().withArgs(16, 32).repeat(32);
-				tester.addPhase().withArgs(16, 20).repeat(8);
-				tester.addPhase().withArgs(19, 39).repeat(4);
-				if (directed) {
-					tester.addPhase().withArgs(23, 52).repeat(8);
-					tester.addPhase().withArgs(23, 32).repeat(2);
-				}
-				break;
+		assert subGraph || induced;
+		if (!subGraph) {
+			tester.addPhase().withArgs(4, 8).repeat(128);
+			tester.addPhase().withArgs(8, 10).repeat(12);
+			tester.addPhase().withArgs(16, 32).repeat(128);
+			tester.addPhase().withArgs(16, 18).repeat(128);
+			tester.addPhase().withArgs(19, 39).repeat(64);
+			tester.addPhase().withArgs(23, 52).repeat(32);
+			tester.addPhase().withArgs(23, 26).repeat(32);
+			tester.addPhase().withArgs(64, 256).repeat(20);
+			tester.addPhase().withArgs(80, 400).repeat(1);
+		} else if (induced) {
+			tester.addPhase().withArgs(4, 8).repeat(128);
+			tester.addPhase().withArgs(8, 10).repeat(12);
+			tester.addPhase().withArgs(16, 32).repeat(128);
+			tester.addPhase().withArgs(16, 18).repeat(128);
+			tester.addPhase().withArgs(19, 39).repeat(64);
+			tester.addPhase().withArgs(23, 52).repeat(32);
+			tester.addPhase().withArgs(23, 26).repeat(32);
+		} else {
+			tester.addPhase().withArgs(4, 8).repeat(128);
+			tester.addPhase().withArgs(8, 10).repeat(8);
+			tester.addPhase().withArgs(16, 32).repeat(32);
+			tester.addPhase().withArgs(16, 20).repeat(8);
+			tester.addPhase().withArgs(19, 39).repeat(4);
+			if (directed) {
+				tester.addPhase().withArgs(23, 52).repeat(8);
+				tester.addPhase().withArgs(23, 32).repeat(2);
+			}
 		}
 		tester.run((n, m) -> {
 			Pair<Graph<Integer, Integer>, Graph<Integer, Integer>> graphs =
-					randIsomorphicGraphs(n, m, directed, type, rand.nextLong());
+					randIsomorphicGraphs(n, m, directed, subGraph, induced, rand.nextLong());
 			Graph<Integer, Integer> g1 = graphs.left(), g2 = graphs.second();
 			g1 = maybeIndexGraph(g1, rand);
 			g2 = maybeIndexGraph(g2, rand);
-			graphsIsomorphism(g1, g2, algo, type, rand.nextLong());
+			graphsIsomorphism(g1, g2, algo, subGraph, induced, rand.nextLong());
 		});
 	}
 
 	@SuppressWarnings("boxing")
 	private static void graphsIsomorphism(Graph<Integer, Integer> g1, Graph<Integer, Integer> g2,
-			IsomorphismTester algo, IsomorphismType type, long seed) {
+			IsomorphismTester algo, boolean subGraph, boolean induced, long seed) {
 		final Random rand = new Random(seed);
 
 		/* isomorphicMapping() */
 		Optional<IsomorphismMapping<Integer, Integer, Integer, Integer>> mappingOptional;
-		if (type == IsomorphismType.Full && rand.nextBoolean()) {
+		if (induced && rand.nextBoolean()) {
 			mappingOptional = algo.isomorphicMapping(g1, g2);
 		} else {
-			mappingOptional = algo.isomorphicMapping(g1, g2, type);
+			mappingOptional = algo.isomorphicMapping(g1, g2, induced);
 		}
 		assertTrue(mappingOptional.isPresent());
 		{
 			IsomorphismMapping<Integer, Integer, Integer, Integer> mapping = mappingOptional.get();
-			checkMapping(mapping, type, null, null, rand);
+			checkMapping(mapping, induced, null, null, rand);
 
 			for (IsomorphismMapping<Integer, Integer, Integer, Integer> mapping0 : List
 					.of(mapping, mapping.inverse())) {
-				if (mapping0 instanceof IsomorphismTesters.IndexMapping)
-					((IsomorphismTesters.IndexMapping) mapping0).inverse = null;
 				assertEquals(mapping0
 						.sourceGraph()
 						.vertices()
@@ -172,6 +168,20 @@ class IsomorphismTestUtils extends TestUtils {
 					Integer v2 = mapping0.mapVertex(v1);
 					return "" + v1 + ":" + v2;
 				}).collect(Collectors.joining(", ", "{", "}")), mapping0.toString());
+
+				if (mapping0.sourceGraph() instanceof IndexGraph && mapping0.targetGraph() instanceof IndexGraph) {
+					/* test inverse() for non-complete mapping function */
+					IndexGraph g = (IndexGraph) mapping0.sourceGraph();
+					int[] vMap = range(g.vertices().size()).map(((IsomorphismIMapping) mapping0)::mapVertex).toArray();
+					int[] eMap = range(g.edges().size()).map(((IsomorphismIMapping) mapping0)::mapEdge).toArray();
+					IsomorphismMapping<Integer, Integer, Integer, Integer> mapping2 =
+							new IsomorphismTesters.IndexMapping(g, (IndexGraph) mapping0.targetGraph(), vMap, eMap);
+					IsomorphismMapping<Integer, Integer, Integer, Integer> mappingInv2 = mapping2.inverse();
+					for (Integer v2 : mapping0.targetGraph().vertices())
+						assertEquals(mapping0.inverse().mapVertex(v2), mappingInv2.mapVertex(v2));
+					for (Integer e2 : mapping0.targetGraph().edges())
+						assertEquals(mapping0.inverse().mapEdge(e2), mappingInv2.mapEdge(e2));
+				}
 			}
 		}
 
@@ -180,14 +190,14 @@ class IsomorphismTestUtils extends TestUtils {
 		foreachBoolConfig(withFilters -> {
 			Iterator<IsomorphismMapping<Integer, Integer, Integer, Integer>> it;
 			if (withFilters) {
-				it = algo.isomorphicMappingsIter(g1, g2, type, (v1, v2) -> true, (e1, e2) -> true);
-			} else if (type == IsomorphismType.Full) {
+				it = algo.isomorphicMappingsIter(g1, g2, induced, (v1, v2) -> true, (e1, e2) -> true);
+			} else if (induced) {
 				it = algo.isomorphicMappingsIter(g1, g2);
 			} else {
-				it = algo.isomorphicMappingsIter(g1, g2, type);
+				it = algo.isomorphicMappingsIter(g1, g2, induced);
 			}
 			assertTrue(it.hasNext());
-			Set<Int2IntMap> mappings = collectMappingsAndCheckUnique(g1, g2, type, it, rand);
+			Set<Int2IntMap> mappings = collectMappingsAndCheckUnique(g1, g2, induced, it, rand);
 
 			final int n1 = g1.vertices().size();
 			final int n2 = g2.vertices().size();
@@ -195,7 +205,7 @@ class IsomorphismTestUtils extends TestUtils {
 				Integer[] vs1 = g1.vertices().toArray(new Integer[0]);
 				Integer[] vs2 = g2.vertices().toArray(new Integer[0]);
 				Stream<IntList> mappedG2VerticesStream;
-				if (type == IsomorphismType.Full) {
+				if (!subGraph) {
 					assert n1 == n2;
 					mappedG2VerticesStream = Stream.of(range(n2).asList());
 				} else {
@@ -221,7 +231,7 @@ class IsomorphismTestUtils extends TestUtils {
 					});
 					if (!g1EdgesMatch)
 						return false;
-					if (type != IsomorphismType.SubGraph) {
+					if (induced) {
 						IntSet mappedG2Vertices = new IntOpenHashSet(mapping.values());
 						int edgeNumInInducedG2 = (int) g2
 								.edges()
@@ -258,10 +268,10 @@ class IsomorphismTestUtils extends TestUtils {
 			};
 
 			Iterator<IsomorphismMapping<Integer, Integer, Integer, Integer>> it =
-					algo.isomorphicMappingsIter(g1, g2, type, vertexMatcher, null);
+					algo.isomorphicMappingsIter(g1, g2, induced, vertexMatcher, null);
 			assertTrue(it.hasNext());
 
-			Set<Int2IntMap> mappings = collectMappingsAndCheckUnique(g1, g2, type, it, rand);
+			Set<Int2IntMap> mappings = collectMappingsAndCheckUnique(g1, g2, induced, it, rand);
 			assertTrue(mappings.contains(forcedMappingFull));
 		}
 
@@ -301,20 +311,20 @@ class IsomorphismTestUtils extends TestUtils {
 			};
 
 			Iterator<IsomorphismMapping<Integer, Integer, Integer, Integer>> it =
-					algo.isomorphicMappingsIter(g1, g2, type, null, edgeMatcher);
+					algo.isomorphicMappingsIter(g1, g2, induced, null, edgeMatcher);
 			assertTrue(it.hasNext());
 
-			Set<Int2IntMap> mappings = collectMappingsAndCheckUnique(g1, g2, type, it, rand);
+			Set<Int2IntMap> mappings = collectMappingsAndCheckUnique(g1, g2, induced, it, rand);
 			assertTrue(mappings.contains(forcedMappingFull));
 		}
 	}
 
 	private static Set<Int2IntMap> collectMappingsAndCheckUnique(Graph<Integer, Integer> g1, Graph<Integer, Integer> g2,
-			IsomorphismType type, Iterator<IsomorphismMapping<Integer, Integer, Integer, Integer>> it, Random rand) {
+			boolean induced, Iterator<IsomorphismMapping<Integer, Integer, Integer, Integer>> it, Random rand) {
 		Set<Int2IntMap> mappings = new ObjectOpenHashSet<>();
 		while (it.hasNext()) {
 			IsomorphismMapping<Integer, Integer, Integer, Integer> m1 = it.next();
-			checkMapping(m1, type, null, null, rand);
+			checkMapping(m1, induced, null, null, rand);
 
 			Int2IntMap mapping = new Int2IntOpenHashMap(g1.vertices().size());
 			mapping.defaultReturnValue(-1);
@@ -337,7 +347,7 @@ class IsomorphismTestUtils extends TestUtils {
 					new ObjectArrayList<>(algo.isomorphicMappingsIter(g1, g2));
 			assertEquals(1, mappings.size());
 			IsomorphismMapping<Integer, Integer, Integer, Integer> mapping = mappings.get(0);
-			checkMapping(mapping, IsomorphismType.Full, null, null, rand);
+			checkMapping(mapping, true, null, null, rand);
 		});
 	}
 
@@ -355,12 +365,11 @@ class IsomorphismTestUtils extends TestUtils {
 				if (!withFilters) {
 					mappings = algo.isomorphicMappingsIter(g1, g2);
 				} else {
-					mappings = algo
-							.isomorphicMappingsIter(g1, g2, IsomorphismType.Full, (v1, v2) -> true, (e1, e2) -> true);
+					mappings = algo.isomorphicMappingsIter(g1, g2, true, (v1, v2) -> true, (e1, e2) -> true);
 				}
 				while (mappings.hasNext()) {
 					IsomorphismMapping<Integer, Integer, Integer, Integer> m1 = mappings.next();
-					checkMapping(m1, IsomorphismType.Full, null, null, rand);
+					checkMapping(m1, true, null, null, rand);
 
 					/* assert the returned mappings are unique */
 					Int2IntMap mapping = new Int2IntOpenHashMap(g1.vertices().size());
@@ -390,7 +399,7 @@ class IsomorphismTestUtils extends TestUtils {
 			tester.addPhase().withArgs(23, 52).repeat(32);
 			tester.run((n, m) -> {
 				Pair<Graph<Integer, Integer>, Graph<Integer, Integer>> graphs =
-						randIsomorphicGraphs(n, m, directed, IsomorphismType.Full, rand.nextLong());
+						randIsomorphicGraphs(n, m, directed, false, true, rand.nextLong());
 				Graph<Integer, Integer> g1 = graphs.left(), g2 = graphs.second();
 
 				Integer e = Graphs.randEdge(g2, rand);
@@ -428,34 +437,26 @@ class IsomorphismTestUtils extends TestUtils {
 	}
 
 	static void differentVerticesNum(IsomorphismTester algo) {
-		foreachBoolConfig(directed -> {
-			for (IsomorphismType type : IsomorphismType.values()) {
-				IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
-				g1.addVertexInt();
-				IntGraph g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
-				assertFalse(algo.isomorphicMapping(g1, g2, type).isPresent());
-			}
-			{
-				IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
-				IntGraph g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
-				g2.addVertexInt();
-				assertFalse(algo.isomorphicMapping(g1, g2).isPresent());
-			}
+		foreachBoolConfig((directed, induced) -> {
+			IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+			g1.addVertexInt();
+			IntGraph g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+			assertFalse(algo.isomorphicMapping(g1, g2, induced).isPresent());
 		});
 	}
 
 	static void differentEdgesNum(IsomorphismTester algo) {
+		foreachBoolConfig((directed, induced) -> {
+			IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+			g1.addVertex(0);
+			g1.addVertex(1);
+			g1.addEdge(0, 1, 0);
+			IntGraph g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
+			g2.addVertex(0);
+			g2.addVertex(1);
+			assertFalse(algo.isomorphicMapping(g1, g2, induced).isPresent());
+		});
 		foreachBoolConfig(directed -> {
-			for (IsomorphismType type : IsomorphismType.values()) {
-				IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
-				g1.addVertex(0);
-				g1.addVertex(1);
-				g1.addEdge(0, 1, 0);
-				IntGraph g2 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
-				g2.addVertex(0);
-				g2.addVertex(1);
-				assertFalse(algo.isomorphicMapping(g1, g2, type).isPresent());
-			}
 			{
 				IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
 				g1.addVertex(0);
@@ -474,7 +475,7 @@ class IsomorphismTestUtils extends TestUtils {
 				g2.addVertex(0);
 				g2.addVertex(1);
 				g2.addEdge(0, 1, 0);
-				assertFalse(algo.isomorphicMapping(g1, g2, IsomorphismType.InducedSubGraph).isPresent());
+				assertFalse(algo.isomorphicMapping(g1, g2, true).isPresent());
 			}
 			{
 				IntGraph g1 = directed ? IntGraph.newDirected() : IntGraph.newUndirected();
@@ -484,7 +485,7 @@ class IsomorphismTestUtils extends TestUtils {
 				g2.addVertex(0);
 				g2.addVertex(1);
 				g2.addEdge(0, 1, 0);
-				assertTrue(algo.isomorphicMapping(g1, g2, IsomorphismType.SubGraph).isPresent());
+				assertTrue(algo.isomorphicMapping(g1, g2, false).isPresent());
 			}
 		});
 	}
@@ -496,7 +497,7 @@ class IsomorphismTestUtils extends TestUtils {
 		assertThrows(IllegalArgumentException.class, () -> algo.isomorphicMapping(g2, g1).isPresent());
 	}
 
-	private static void checkMapping(IsomorphismMapping<Integer, Integer, Integer, Integer> m1, IsomorphismType type,
+	private static void checkMapping(IsomorphismMapping<Integer, Integer, Integer, Integer> m1, boolean induced,
 			BiPredicate<Integer, Integer> vertexMatcher, BiPredicate<Integer, Integer> edgeMatcher, Random rand) {
 		IsomorphismMapping<Integer, Integer, Integer, Integer> m2 = m1.inverse();
 		assertTrue(m1.inverse() == m2, "inverse matching was not cached");
@@ -567,7 +568,7 @@ class IsomorphismTestUtils extends TestUtils {
 						|| (u2Expected.equals(v2) && v2Expected.equals(u2)));
 			}
 		}
-		if (type != IsomorphismType.SubGraph) {
+		if (induced) {
 			g2
 					.edges()
 					.stream()
@@ -607,7 +608,7 @@ class IsomorphismTestUtils extends TestUtils {
 
 	@SuppressWarnings("boxing")
 	private static Pair<Graph<Integer, Integer>, Graph<Integer, Integer>> randIsomorphicGraphs(int n, int m,
-			boolean directed, IsomorphismType type, long seed) {
+			boolean directed, boolean subGraph, boolean induced, long seed) {
 		Random rand = new Random(seed);
 
 		Graph<Integer, Integer> g2 = GraphsTestUtils.randGraph(n, m, directed, true, false, rand.nextLong());
@@ -620,7 +621,7 @@ class IsomorphismTestUtils extends TestUtils {
 		}
 		Graph<Integer, Integer> g1 = factory.allowSelfEdges().newGraph();
 
-		final int n1 = n - (type != IsomorphismType.Full ? rand.nextInt(1 + Math.min(4, n / 8)) : 0);
+		final int n1 = n - (subGraph ? rand.nextInt(1 + Math.min(4, n / 8)) : 0);
 		while (g1.vertices().size() < n1) {
 			int v = rand.nextInt(n * 2);
 			if (!g1.vertices().contains(v))
@@ -646,7 +647,7 @@ class IsomorphismTestUtils extends TestUtils {
 			g1.addEdge(u1, v1, e1);
 		}
 
-		if (type == IsomorphismType.SubGraph) {
+		if (subGraph && !induced) {
 			int edgesToRemove = Math.min(4, g1.edges().size() / 8);
 			while (edgesToRemove-- > 0)
 				g1.removeEdge(Graphs.randEdge(g1, rand));
