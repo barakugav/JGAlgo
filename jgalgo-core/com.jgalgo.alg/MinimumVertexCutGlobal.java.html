@@ -139,7 +139,7 @@ public interface MinimumVertexCutGlobal {
 			/* graph is directed, use SCC algorithm */
 <span class="nc" id="L140">			Bitmap remainingVertices = cut0.copy();</span>
 <span class="nc" id="L141">			remainingVertices.not();</span>
-<span class="nc" id="L142">			IntGraph subGraph = ig.subGraphCopy(ImmutableIntArraySet.ofBitmap(remainingVertices), null);</span>
+<span class="nc" id="L142">			IntGraph subGraph = ig.subGraphCopy(ImmutableIntArraySet.withBitmap(remainingVertices), null);</span>
 <span class="nc bnc" id="L143" title="All 2 branches missed.">			return !StronglyConnectedComponentsAlgo.newInstance().isStronglyConnected(subGraph);</span>
 
 		} else {

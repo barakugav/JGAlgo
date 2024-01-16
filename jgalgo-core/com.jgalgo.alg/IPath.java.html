@@ -234,7 +234,7 @@ public interface IPath extends Path&lt;Integer, Integer&gt; {
 <span class="fc" id="L234">			}</span>
 <span class="fc" id="L235">		}</span>
 
-<span class="fc" id="L237">		IntSet indexRes = ImmutableIntArraySet.ofBitmap(visited);</span>
+<span class="fc" id="L237">		IntSet indexRes = ImmutableIntArraySet.withBitmap(visited);</span>
 <span class="fc bfc" id="L238" title="All 2 branches covered.">		if (!(g instanceof IndexGraph))</span>
 <span class="fc" id="L239">			indexRes = IndexIdMaps.indexToIdSet(indexRes, g.indexGraphVerticesMap());</span>
 <span class="fc" id="L240">		return indexRes;</span>

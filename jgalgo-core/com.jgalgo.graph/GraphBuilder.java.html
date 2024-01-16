@@ -262,13 +262,14 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @param  &lt;T&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
 	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
-	 * @param  key                      key of the weights
+	 * @param  key                      key of the weights, {@code null} is not allowed
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
+	 * @throws NullPointerException     if {@code key} is {@code null}
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 */
 	default &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type) {
-<span class="fc" id="L271">		return addVerticesWeights(key, type, null);</span>
+<span class="fc" id="L272">		return addVerticesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -280,10 +281,11 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @param  &lt;T&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
 	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
-	 * @param  key                      key of the weights
+	 * @param  key                      key of the weights, {@code null} is not allowed
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
+	 * @throws NullPointerException     if {@code key} is {@code null}
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 */
 	&lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type, T defVal);
@@ -321,13 +323,14 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @param  &lt;T&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
 	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
-	 * @param  key                      key of the weights
+	 * @param  key                      key of the weights, {@code null} is not allowed
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
+	 * @throws NullPointerException     if {@code key} is {@code null}
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
 	 */
 	default &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type) {
-<span class="fc" id="L330">		return addEdgesWeights(key, type, null);</span>
+<span class="fc" id="L333">		return addEdgesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -339,10 +342,11 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @param  &lt;T&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
 	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
-	 * @param  key                      key of the weights
+	 * @param  key                      key of the weights, {@code null} is not allowed
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
+	 * @throws NullPointerException     if {@code key} is {@code null}
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
 	 */
 	&lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type, T defVal);
@@ -437,7 +441,7 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @return     a new empty builder for undirected graphs
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; undirected() {
-<span class="fc" id="L440">		return GraphFactory.&lt;V, E&gt;undirected().newBuilder();</span>
+<span class="fc" id="L444">		return GraphFactory.&lt;V, E&gt;undirected().newBuilder();</span>
 	}
 
 	/**
@@ -456,7 +460,7 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @return     a new empty builder for directed graphs
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; directed() {
-<span class="fc" id="L459">		return GraphFactory.&lt;V, E&gt;directed().newBuilder();</span>
+<span class="fc" id="L463">		return GraphFactory.&lt;V, E&gt;directed().newBuilder();</span>
 	}
 
 	/**
@@ -477,7 +481,7 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 * @return          a new empty builder for un/directed graphs
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newInstance(boolean directed) {
-<span class="fc" id="L480">		return GraphFactory.&lt;V, E&gt;newInstance(directed).newBuilder();</span>
+<span class="fc" id="L484">		return GraphFactory.&lt;V, E&gt;newInstance(directed).newBuilder();</span>
 	}
 
 	/**
@@ -497,7 +501,7 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 *             vertices/edges weights.
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newCopyOf(Graph&lt;V, E&gt; g) {
-<span class="fc" id="L500">		return newCopyOf(g, false, false);</span>
+<span class="fc" id="L504">		return newCopyOf(g, false, false);</span>
 	}
 
 	/**
@@ -521,9 +525,9 @@ public interface GraphBuilder&lt;V, E&gt; {
 	 *                             original graph vertices/edges weights.
 	 */
 	static &lt;V, E&gt; GraphBuilder&lt;V, E&gt; newCopyOf(Graph&lt;V, E&gt; g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L524">		return GraphFactory</span>
-<span class="fc" id="L525">				.&lt;V, E&gt;newInstance(g.isDirected())</span>
-<span class="fc" id="L526">				.newBuilderCopyOf(g, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L528">		return GraphFactory</span>
+<span class="fc" id="L529">				.&lt;V, E&gt;newInstance(g.isDirected())</span>
+<span class="fc" id="L530">				.newBuilderCopyOf(g, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 }

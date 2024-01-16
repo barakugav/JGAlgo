@@ -102,7 +102,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L102" title="All 2 branches covered.">		for (int v : range(n))</span>
 <span class="fc bfc" id="L103" title="All 2 branches covered.">			if (matching.containsEdge(vvEdgeThreshold + v))</span>
 <span class="fc" id="L104">				cover.set(minAdjacentEdge[v]);</span>
-<span class="fc" id="L105">		return ImmutableIntArraySet.ofBitmap(cover);</span>
+<span class="fc" id="L105">		return ImmutableIntArraySet.withBitmap(cover);</span>
 	}
 
 }

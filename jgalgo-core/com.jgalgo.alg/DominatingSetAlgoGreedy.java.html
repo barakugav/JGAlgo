@@ -220,7 +220,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L220" title="All 2 branches covered.">				if (!dominated.get(u))</span>
 <span class="fc" id="L221">					dominating.set(u);</span>
 
-<span class="fc" id="L223">			return ImmutableIntArraySet.ofBitmap(dominating);</span>
+<span class="fc" id="L223">			return ImmutableIntArraySet.withBitmap(dominating);</span>
 		}
 
 		private void removeOutEdges(int source) {

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BitmapSet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">JGAlgo - Core</a> &gt; <a href="index.source.html" class="el_package">com.jgalgo.internal.util</a> &gt; <span class="el_source">BitmapSet.java</span></div><h1>BitmapSet.java</h1><pre class="source lang-java linenums">/*-
+ * Copyright 2023 Barak Ugav
+ *
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package com.jgalgo.internal.util;
+
+import java.util.Arrays;
+import it.unimi.dsi.fastutil.ints.AbstractIntSet;
+import it.unimi.dsi.fastutil.ints.IntIterator;
+import it.unimi.dsi.fastutil.ints.IntIterators;
+
+public class BitmapSet extends AbstractIntSet {
+
+	private final int capacity;
+	private final long[] words;
+
+	private int size;
+	private final int[] ones;
+
+	private static final int WordSize = Long.SIZE;
+
+<span class="fc" id="L33">	public BitmapSet(int capacity) {</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">		if (capacity &lt; 0)</span>
+<span class="fc" id="L35">			throw new IllegalArgumentException(&quot;Negative capacity: &quot; + capacity);</span>
+<span class="fc" id="L36">		this.capacity = capacity;</span>
+<span class="fc" id="L37">		words = new long[wordsNum(capacity)];</span>
+<span class="fc" id="L38">		ones = new int[capacity];</span>
+<span class="fc" id="L39">	}</span>
+
+	private static int wordsNum(int size) {
+<span class="fc" id="L42">		return (size + WordSize - 1) / WordSize;</span>
+	}
+
+	private void checkIdx(int idx) {
+<span class="fc" id="L46">		checkIdx(idx, capacity);</span>
+<span class="fc" id="L47">	}</span>
+
+	private static void checkIdx(int idx, int size) {
+<span class="fc bfc" id="L50" title="All 4 branches covered.">		if (idx &lt; 0 || idx &gt;= size)</span>
+<span class="fc" id="L51">			throw new IndexOutOfBoundsException(&quot;Index: &quot; + idx + &quot;, Size: &quot; + size);</span>
+<span class="fc" id="L52">	}</span>
+
+	private static int word(int idx) {
+<span class="fc" id="L55">		return idx / WordSize;</span>
+	}
+
+	private static long bit(int idx) {
+<span class="fc" id="L59">		return 1L &lt;&lt; (idx % WordSize);</span>
+	}
+
+	/**
+	 * Check whether the bit at the specified index is set ({@code true}).
+	 *
+	 * @param  idx                       the index of the bit
+	 * @return                           {@code true} if the bit is set, {@code false} otherwise
+	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
+	 */
+	public boolean get(int idx) {
+<span class="fc" id="L70">		checkIdx(idx);</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">		return (words[word(idx)] &amp; bit(idx)) != 0;</span>
+	}
+
+	/**
+	 * Set the bit at the specified index to {@code true}.
+	 *
+	 * @param  idx                       the index of the bit
+	 * @return                           {@code true} if the bit was modified
+	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
+	 */
+	public boolean set(int idx) {
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		if (get(idx))</span>
+<span class="fc" id="L83">			return false;</span>
+<span class="fc" id="L84">		words[word(idx)] |= bit(idx);</span>
+<span class="fc" id="L85">		ones[size++] = idx;</span>
+<span class="fc" id="L86">		return true;</span>
+	}
+
+	/**
+	 * Set all bits to {@code false}.
+	 */
+	@Override
+	public void clear() {
+<span class="fc bfc" id="L94" title="All 2 branches covered.">		boolean perBitClear = size &lt;= capacity / WordSize;</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		if (perBitClear) {</span>
+<span class="fc bfc" id="L96" title="All 2 branches covered.">			for (int idx : ones)</span>
+<span class="fc" id="L97">				words[word(idx)] &amp;= ~bit(idx);</span>
+		} else {
+<span class="fc" id="L99">			Arrays.fill(words, 0L);</span>
+		}
+<span class="fc" id="L101">		size = 0;</span>
+<span class="fc" id="L102">	}</span>
+
+	@Override
+	public int size() {
+<span class="fc" id="L106">		return size;</span>
+	}
+
+	public int capacity() {
+<span class="fc" id="L110">		return capacity;</span>
+	}
+
+	@Override
+	public boolean add(int key) {
+<span class="fc" id="L115">		return set(key);</span>
+	}
+
+	@Override
+	public boolean contains(int key) {
+<span class="fc bfc" id="L120" title="All 6 branches covered.">		return 0 &lt;= key &amp;&amp; key &lt; capacity &amp;&amp; get(key);</span>
+	}
+
+	@Override
+	public IntIterator iterator() {
+<span class="fc" id="L125">		return IntIterators.wrap(ones, 0, size);</span>
+	}
+
+	@Override
+	public boolean remove(int key) {
+<span class="fc" id="L130">		throw new UnsupportedOperationException();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

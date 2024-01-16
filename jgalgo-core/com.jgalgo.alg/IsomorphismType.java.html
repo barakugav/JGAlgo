@@ -48,10 +48,10 @@ package com.jgalgo.alg;
 	 * Given two graphs \(G_1 = (V_1, E_1)\) and \(G_2 = (V_2, E_2)\), an induced subgraph isomorphism is an
 	 * &lt;b&gt;injective&lt;/b&gt; function \(m: V_1 \rightarrow V_2\) such that \((u, v) \in E_1\) &lt;b&gt;if and only if&lt;/b&gt; \((m(u),
 	 * m(v)) \in E_2\). In the case of a directed graph, the function must preserve the direction of the edges. The
-	 * first graph \(G_1\) is the bigger graph, and the second graph \(G_2\) is the smaller graph, namely there is an
-	 * induced sub graph of {@code g1} that is isomorphic to {@code g2}. Note that induced subgraph isomorphism can only
-	 * exists between graphs \(G_1\) and \(G_2\) if \(|V_1| \geq |V_2|\) and \(|E_1| \geq |E_2|\). There may be vertices
-	 * of \(G_1\) that are not mapped to any vertex of \(G_2\). Full isomorphism between two graphs can be seen as a
+	 * first graph \(G_1\) is the smaller graph, and the second graph \(G_2\) is the bigger graph, namely there is an
+	 * induced sub graph of {@code g2} that is isomorphic to {@code g1}. Note that induced subgraph isomorphism can only
+	 * exists between graphs \(G_1\) and \(G_2\) if \(|V_1| \leq |V_2|\) and \(|E_1| \leq |E_2|\). There may be vertices
+	 * of \(G_2\) that are not mapped to any vertex of \(G_1\). Full isomorphism between two graphs can be seen as a
 	 * special case of induced subgraph isomorphism where the the number of vertices and edges is the same.
 	 */
 <span class="fc" id="L57">	InducedSubGraph,</span>
@@ -61,13 +61,13 @@ package com.jgalgo.alg;
 	 *
 	 * &lt;p&gt;
 	 * Given two graphs \(G_1 = (V_1, E_1)\) and \(G_2 = (V_2, E_2)\), a subgraph isomorphism is an &lt;b&gt;injective&lt;/b&gt;
-	 * function \(m: V_1 \rightarrow V_2\) such that \((u, v) \in E_1\) &lt;b&gt;if&lt;/b&gt; \((m(u), m(v)) \in E_2\). In the case
-	 * of a directed graph, the function must preserve the direction of the edges. The first graph \(G_1\) is the bigger
-	 * graph, and the second graph \(G_2\) is the smaller graph, namely there is a sub graph of {@code g1} that is
-	 * isomorphic to {@code g2}. Note that subgraph isomorphism can only exists between graphs \(G_1\) and \(G_2\) if
-	 * \(|V_1| \geq |V_2|\) and \(|E_1| \geq |E_2|\). There may be vertices of \(G_1\) that are not mapped to any vertex
-	 * of \(G_2\), and edges of \(G_1\) that are not mapped to any edge of \(G_2\) (even if they are connecting mapped
-	 * vertices of \(G_1\)).
+	 * function \(m: V_1 \rightarrow V_2\) such that if \((u, v) \in E_1\) &lt;b&gt;than&lt;/b&gt; \((m(u), m(v)) \in E_2\). In the
+	 * case of a directed graph, the function must preserve the direction of the edges. The first graph \(G_1\) is the
+	 * smaller graph, and the second graph \(G_2\) is the bigger graph, namely there is a sub graph of {@code g2} that
+	 * is isomorphic to {@code g1}. Note that subgraph isomorphism can only exists between graphs \(G_1\) and \(G_2\) if
+	 * \(|V_1| \leq |V_2|\) and \(|E_1| \leq |E_2|\). There may be vertices of \(G_2\) that are not mapped to any vertex
+	 * of \(G_1\), and edges of \(G_2\) that are not mapped to any edge of \(G_1\) (even if they are connecting mapped
+	 * vertices of \(G_2\)).
 	 */
 <span class="fc" id="L72">	SubGraph,</span>
 

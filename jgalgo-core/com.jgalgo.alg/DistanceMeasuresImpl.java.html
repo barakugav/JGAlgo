@@ -88,7 +88,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L88" title="All 2 branches covered.">				double eps = Double.isFinite(radius) ? radius * 1e-8 : 0;</span>
 <span class="fc" id="L89">				final int n = g.vertices().size();</span>
 <span class="fc bfc" id="L90" title="All 2 branches covered.">				int[] centerArr = range(n).filter(v -&gt; eccentricity[v] &lt;= radius + eps).toArray();</span>
-<span class="fc" id="L91">				center = ImmutableIntArraySet.ofBitmap(centerArr, n);</span>
+<span class="fc" id="L91">				center = ImmutableIntArraySet.withBitmap(centerArr, n);</span>
 			}
 <span class="fc" id="L93">			return center;</span>
 		}
@@ -100,7 +100,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc bfc" id="L100" title="All 2 branches covered.">				double eps = Double.isFinite(diameter) ? diameter * 1e-8 : 0;</span>
 <span class="fc" id="L101">				final int n = g.vertices().size();</span>
 <span class="fc bfc" id="L102" title="All 2 branches covered.">				int[] peripheryArr = range(n).filter(v -&gt; eccentricity[v] &gt;= diameter - eps).toArray();</span>
-<span class="fc" id="L103">				periphery = ImmutableIntArraySet.ofBitmap(peripheryArr, n);</span>
+<span class="fc" id="L103">				periphery = ImmutableIntArraySet.withBitmap(peripheryArr, n);</span>
 			}
 <span class="fc" id="L105">			return periphery;</span>
 		}

@@ -15,7 +15,7 @@
  */
 package com.jgalgo.alg;
 
-import java.util.ArrayList;
+import static java.util.stream.Collectors.toList;
 import java.util.List;
 import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.IWeightFunction;
@@ -46,10 +46,7 @@ interface KShortestPathsSTBase extends KShortestPathsST {
 <span class="fc" id="L46">			int iTarget = viMap.idToIndex(target);</span>
 <span class="fc" id="L47">			List&lt;IPath&gt; indexResult = NegativeCycleException</span>
 <span class="fc" id="L48">					.runAndConvertException(g, () -&gt; computeKShortestPaths(iGraph, iw, iSource, iTarget, k));</span>
-<span class="fc" id="L49">			List&lt;Path&lt;V, E&gt;&gt; result = new ArrayList&lt;&gt;(indexResult.size());</span>
-<span class="fc bfc" id="L50" title="All 2 branches covered.">			for (IPath p : indexResult)</span>
-<span class="fc" id="L51">				result.add(PathImpl.pathFromIndexPath(g, p));</span>
-<span class="fc" id="L52">			return result;</span>
+<span class="fc" id="L49">			return indexResult.stream().map(p -&gt; PathImpl.pathFromIndexPath(g, p)).collect(toList());</span>
 		}
 	}
 

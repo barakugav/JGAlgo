@@ -79,7 +79,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 <span class="fc" id="L79">		Iterator&lt;IntSet&gt; cutsIter = JGAlgoUtils.queueIter(cuts);</span>
 <span class="fc" id="L80">		cuts.clear();</span>
 <span class="fc" id="L81">		final int n = g.vertices().size();</span>
-<span class="fc" id="L82">		return IterTools.map(cutsIter, cut -&gt; ImmutableIntArraySet.ofBitmap(cut, n));</span>
+<span class="fc" id="L82">		return IterTools.map(cutsIter, cut -&gt; ImmutableIntArraySet.withBitmap(cut, n));</span>
 	}
 
 }

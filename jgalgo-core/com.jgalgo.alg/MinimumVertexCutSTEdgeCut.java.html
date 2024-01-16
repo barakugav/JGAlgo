@@ -50,7 +50,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 <span class="fc" id="L50">			return null;</span>
 
 <span class="fc" id="L52">		final int n = g.vertices().size();</span>
-<span class="fc" id="L53">		return ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, vertexCut));</span>
+<span class="fc" id="L53">		return ImmutableIntArraySet.withBitmap(Bitmap.fromOnes(n, vertexCut));</span>
 	}
 
 	int[] computeMinCut(IndexGraph g, int source, int sink, AuxiliaryGraph auxiliaryGraph) {

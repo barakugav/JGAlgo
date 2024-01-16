@@ -681,13 +681,14 @@ public interface Graph&lt;V, E&gt; {
 	 * @param  &lt;T&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
 	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
-	 * @param  key                      key of the weights
+	 * @param  key                      key of the weights, {@code null} is not allowed
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
+	 * @throws NullPointerException     if {@code key} is {@code null}
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 */
 	default &lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type) {
-<span class="fc" id="L690">		return addVerticesWeights(key, type, null);</span>
+<span class="fc" id="L691">		return addVerticesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -719,10 +720,11 @@ public interface Graph&lt;V, E&gt; {
 	 * @param  &lt;T&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
 	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
-	 * @param  key                      key of the weights
+	 * @param  key                      key of the weights, {@code null} is not allowed
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
+	 * @throws NullPointerException     if {@code key} is {@code null}
 	 * @throws IllegalArgumentException if a vertices weights container with the same key already exists in the graph
 	 */
 	&lt;T, WeightsT extends Weights&lt;V, T&gt;&gt; WeightsT addVerticesWeights(String key, Class&lt;? super T&gt; type, T defVal);
@@ -793,13 +795,14 @@ public interface Graph&lt;V, E&gt; {
 	 * @param  &lt;T&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
 	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
-	 * @param  key                      key of the weights
+	 * @param  key                      key of the weights, {@code null} is not allowed
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @return                          a new weights container
+	 * @throws NullPointerException     if {@code key} is {@code null}
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
 	 */
 	default &lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type) {
-<span class="fc" id="L802">		return addEdgesWeights(key, type, null);</span>
+<span class="fc" id="L805">		return addEdgesWeights(key, type, null);</span>
 	}
 
 	/**
@@ -834,10 +837,11 @@ public interface Graph&lt;V, E&gt; {
 	 * @param  &lt;T&gt;                      The weight data type
 	 * @param  &lt;WeightsT&gt;               the weights container, used to avoid casts of containers of primitive types such
 	 *                                      as {@link WeightsInt}, {@link WeightsDouble} ect.
-	 * @param  key                      key of the weights
+	 * @param  key                      key of the weights, {@code null} is not allowed
 	 * @param  type                     the type of the weights, used for primitive types weights
 	 * @param  defVal                   default value use for the weights container
 	 * @return                          a new weights container
+	 * @throws NullPointerException     if {@code key} is {@code null}
 	 * @throws IllegalArgumentException if a edges weights container with the same key already exists in the graph
 	 */
 	&lt;T, WeightsT extends Weights&lt;E, T&gt;&gt; WeightsT addEdgesWeights(String key, Class&lt;? super T&gt; type, T defVal);
@@ -961,7 +965,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an identical copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph&lt;V, E&gt; copy() {
-<span class="fc" id="L964">		return copy(false, false);</span>
+<span class="fc" id="L968">		return copy(false, false);</span>
 	}
 
 	/**
@@ -984,7 +988,7 @@ public interface Graph&lt;V, E&gt; {
 	 *                             this graph weights
 	 */
 	default Graph&lt;V, E&gt; copy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L987">		return Graphs.copy(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L991">		return Graphs.copy(this, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	/**
@@ -1008,7 +1012,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an immutable copy of this graph, with the same vertices and edges, without this graph weights
 	 */
 	default Graph&lt;V, E&gt; immutableCopy() {
-<span class="fc" id="L1011">		return immutableCopy(false, false);</span>
+<span class="fc" id="L1015">		return immutableCopy(false, false);</span>
 	}
 
 	/**
@@ -1036,7 +1040,7 @@ public interface Graph&lt;V, E&gt; {
 	 *                             graph weights
 	 */
 	default Graph&lt;V, E&gt; immutableCopy(boolean copyVerticesWeights, boolean copyEdgesWeights) {
-<span class="fc" id="L1039">		return Graphs.immutableCopy(this, copyVerticesWeights, copyEdgesWeights);</span>
+<span class="fc" id="L1043">		return Graphs.immutableCopy(this, copyVerticesWeights, copyEdgesWeights);</span>
 	}
 
 	/**
@@ -1050,7 +1054,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an immutable view of this graph
 	 */
 	default Graph&lt;V, E&gt; immutableView() {
-<span class="fc" id="L1053">		return Graphs.immutableView(this);</span>
+<span class="fc" id="L1057">		return Graphs.immutableView(this);</span>
 	}
 
 	/**
@@ -1067,7 +1071,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return a reversed view of this graph
 	 */
 	default Graph&lt;V, E&gt; reverseView() {
-<span class="fc" id="L1070">		return Graphs.reverseView(this);</span>
+<span class="fc" id="L1074">		return Graphs.reverseView(this);</span>
 	}
 
 	/**
@@ -1091,7 +1095,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return an undirected view of this graph
 	 */
 	default Graph&lt;V, E&gt; undirectedView() {
-<span class="fc" id="L1094">		return Graphs.undirectedView(this);</span>
+<span class="fc" id="L1098">		return Graphs.undirectedView(this);</span>
 	}
 
 	/**
@@ -1123,7 +1127,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @throws NullPointerException if both {@code vertices} and {@code edges} are {@code null}
 	 */
 	default Graph&lt;V, E&gt; subGraphCopy(Collection&lt;V&gt; vertices, Collection&lt;E&gt; edges) {
-<span class="fc" id="L1126">		return Graphs.subGraph(this, vertices, edges);</span>
+<span class="fc" id="L1130">		return Graphs.subGraph(this, vertices, edges);</span>
 	}
 
 	/**
@@ -1138,7 +1142,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return     a new undirected empty graph
 	 */
 	static &lt;V, E&gt; Graph&lt;V, E&gt; newUndirected() {
-<span class="fc" id="L1141">		return GraphFactory.&lt;V, E&gt;undirected().newGraph();</span>
+<span class="fc" id="L1145">		return GraphFactory.&lt;V, E&gt;undirected().newGraph();</span>
 	}
 
 	/**
@@ -1153,7 +1157,7 @@ public interface Graph&lt;V, E&gt; {
 	 * @return     a new directed empty graph
 	 */
 	static &lt;V, E&gt; Graph&lt;V, E&gt; newDirected() {
-<span class="fc" id="L1156">		return GraphFactory.&lt;V, E&gt;directed().newGraph();</span>
+<span class="fc" id="L1160">		return GraphFactory.&lt;V, E&gt;directed().newGraph();</span>
 	}
 
 }

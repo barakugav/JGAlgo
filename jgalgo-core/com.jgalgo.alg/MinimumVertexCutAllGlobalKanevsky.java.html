@@ -70,7 +70,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 <span class="fc" id="L70">		ArraysUtils</span>
 <span class="fc" id="L71">				.getKthElement(vertices, 0, n, n - k,</span>
 <span class="fc" id="L72">						(v1, v2) -&gt; Integer.compare(g0.outEdges(v1).size(), g0.outEdges(v2).size()), true);</span>
-<span class="fc" id="L73">		IntSet kVertices = ImmutableIntArraySet.ofBitmap(Bitmap.fromOnes(n, IntIterators.wrap(vertices, n - k, k)));</span>
+<span class="fc" id="L73">		IntSet kVertices = ImmutableIntArraySet.withBitmap(Bitmap.fromOnes(n, IntIterators.wrap(vertices, n - k, k)));</span>
 
 		/*
 		 * Unfortunately, we must check for duplicates cuts during the iteration. This require us to maintain a set of
@@ -123,7 +123,7 @@ import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
 		/* The queue iterator stores the cuts and use less and less memory as the elements are consumed */
 <span class="fc" id="L124">		Iterator&lt;IntSet&gt; cutsIter = JGAlgoUtils.queueIter(cuts);</span>
 <span class="fc" id="L125">		cuts.clear();</span>
-<span class="fc" id="L126">		return IterTools.map(cutsIter, cut -&gt; ImmutableIntArraySet.ofBitmap(cut, n));</span>
+<span class="fc" id="L126">		return IterTools.map(cutsIter, cut -&gt; ImmutableIntArraySet.withBitmap(cut, n));</span>
 	}
 
 }
