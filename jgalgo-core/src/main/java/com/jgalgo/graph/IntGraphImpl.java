@@ -20,15 +20,13 @@ import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-class IntGraphImpl extends AbstractGraph<Integer, Integer> implements IntGraph {
+class IntGraphImpl extends AbstractGraphImpl<Integer, Integer> implements IntGraph {
 
-	final IndexGraph indexGraph;
 	final IndexIntIdMapImpl viMap;
 	final IndexIntIdMapImpl eiMap;
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.IntMapped<?>> verticesWeights = new IdentityHashMap<>();
@@ -37,7 +35,7 @@ class IntGraphImpl extends AbstractGraph<Integer, Integer> implements IntGraph {
 	private final IdBuilderInt edgeBuilder;
 
 	IntGraphImpl(IntGraphFactoryImpl factory) {
-		indexGraph = factory.indexFactory.newGraph();
+		super(factory.indexFactory.newGraph());
 		viMap = IndexIntIdMapImpl.newEmpty(indexGraph.vertices(), false, factory.indexFactory.expectedVerticesNum);
 		eiMap = IndexIntIdMapImpl.newEmpty(indexGraph.edges(), true, factory.indexFactory.expectedEdgesNum);
 		viMap.initListeners(indexGraph);
@@ -49,7 +47,7 @@ class IntGraphImpl extends AbstractGraph<Integer, Integer> implements IntGraph {
 	IntGraphImpl(IntGraphFactoryImpl factory, IndexGraph indexGraph, IndexIdMap<Integer> viMap,
 			IndexIdMap<Integer> eiMap, Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing,
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing) {
-		this.indexGraph = indexGraph;
+		super(indexGraph);
 		boolean immutable = this.indexGraph instanceof ImmutableGraph;
 		this.viMap = IndexIntIdMapImpl.newCopyOf(viMap, vReIndexing, this.indexGraph.vertices(), false, immutable);
 		this.eiMap = IndexIntIdMapImpl.newCopyOf(eiMap, eReIndexing, this.indexGraph.edges(), true, immutable);
@@ -59,11 +57,6 @@ class IntGraphImpl extends AbstractGraph<Integer, Integer> implements IntGraph {
 		}
 		vertexBuilder = factory.vertexFactory != null ? factory.vertexFactory.get() : null;
 		edgeBuilder = factory.edgeFactory != null ? factory.edgeFactory.get() : null;
-	}
-
-	@Override
-	public IndexGraph indexGraph() {
-		return indexGraph;
 	}
 
 	@Override
@@ -381,16 +374,6 @@ class IntGraphImpl extends AbstractGraph<Integer, Integer> implements IntGraph {
 	}
 
 	@Override
-	public Set<String> getVerticesWeightsKeys() {
-		return indexGraph.getVerticesWeightsKeys();
-	}
-
-	@Override
-	public void removeVerticesWeights(String key) {
-		indexGraph.removeVerticesWeights(key);
-	}
-
-	@Override
 	@SuppressWarnings("unchecked")
 	public <T, WeightsT extends Weights<Integer, T>> WeightsT getEdgesWeights(String key) {
 		WeightsImpl.Index<T> indexWeights = indexGraph.getEdgesWeights(key);
@@ -398,45 +381,6 @@ class IntGraphImpl extends AbstractGraph<Integer, Integer> implements IntGraph {
 			return null;
 		return (WeightsT) edgesWeights
 				.computeIfAbsent(indexWeights, iw -> WeightsImpl.IntMapped.newInstance(iw, indexGraphEdgesMap()));
-	}
-
-	@Override
-	public <T, WeightsT extends Weights<Integer, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
-			T defVal) {
-		indexGraph.addVerticesWeights(key, type, defVal);
-		return getVerticesWeights(key);
-	}
-
-	@Override
-	public <T, WeightsT extends Weights<Integer, T>> WeightsT addEdgesWeights(String key, Class<? super T> type,
-			T defVal) {
-		indexGraph.addEdgesWeights(key, type, defVal);
-		return getEdgesWeights(key);
-	}
-
-	@Override
-	public Set<String> getEdgesWeightsKeys() {
-		return indexGraph.getEdgesWeightsKeys();
-	}
-
-	@Override
-	public void removeEdgesWeights(String key) {
-		indexGraph.removeEdgesWeights(key);
-	}
-
-	@Override
-	public boolean isDirected() {
-		return indexGraph.isDirected();
-	}
-
-	@Override
-	public boolean isAllowSelfEdges() {
-		return indexGraph.isAllowSelfEdges();
-	}
-
-	@Override
-	public boolean isAllowParallelEdges() {
-		return indexGraph.isAllowParallelEdges();
 	}
 
 }

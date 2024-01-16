@@ -19,16 +19,14 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import com.jgalgo.graph.Graphs.ImmutableGraph;
 import it.unimi.dsi.fastutil.ints.AbstractIntSet;
 import it.unimi.dsi.fastutil.ints.IntCollection;
 
-class GraphImpl<V, E> extends AbstractGraph<V, E> {
+class GraphImpl<V, E> extends AbstractGraphImpl<V, E> {
 
-	final IndexGraph indexGraph;
 	final IndexIdMapImpl<V> viMap;
 	final IndexIdMapImpl<E> eiMap;
 	private final Map<WeightsImpl.Index<?>, WeightsImpl.ObjMapped<V, ?>> verticesWeights = new IdentityHashMap<>();
@@ -37,7 +35,7 @@ class GraphImpl<V, E> extends AbstractGraph<V, E> {
 	private final IdBuilder<E> edgeBuilder;
 
 	GraphImpl(GraphFactoryImpl<V, E> factory) {
-		indexGraph = factory.indexFactory.newGraph();
+		super(factory.indexFactory.newGraph());
 		viMap = IndexIdMapImpl.newEmpty(indexGraph.vertices(), false, factory.indexFactory.expectedVerticesNum);
 		eiMap = IndexIdMapImpl.newEmpty(indexGraph.edges(), true, factory.indexFactory.expectedEdgesNum);
 		viMap.initListeners(indexGraph);
@@ -49,7 +47,7 @@ class GraphImpl<V, E> extends AbstractGraph<V, E> {
 	GraphImpl(GraphFactoryImpl<V, E> factory, IndexGraph indexGraph, IndexIdMap<V> viMap, IndexIdMap<E> eiMap,
 			Optional<IndexGraphBuilder.ReIndexingMap> vReIndexing,
 			Optional<IndexGraphBuilder.ReIndexingMap> eReIndexing) {
-		this.indexGraph = Objects.requireNonNull(indexGraph);
+		super(indexGraph);
 		boolean immutable = this.indexGraph instanceof ImmutableGraph;
 		this.viMap = IndexIdMapImpl.newCopyOf(viMap, vReIndexing, this.indexGraph.vertices(), false, immutable);
 		this.eiMap = IndexIdMapImpl.newCopyOf(eiMap, eReIndexing, this.indexGraph.edges(), true, immutable);
@@ -59,11 +57,6 @@ class GraphImpl<V, E> extends AbstractGraph<V, E> {
 		}
 		vertexBuilder = factory.vertexFactory != null ? factory.vertexFactory.get() : null;
 		edgeBuilder = factory.edgeFactory != null ? factory.edgeFactory.get() : null;
-	}
-
-	@Override
-	public IndexGraph indexGraph() {
-		return indexGraph;
 	}
 
 	@Override
@@ -370,16 +363,6 @@ class GraphImpl<V, E> extends AbstractGraph<V, E> {
 	}
 
 	@Override
-	public Set<String> getVerticesWeightsKeys() {
-		return indexGraph.getVerticesWeightsKeys();
-	}
-
-	@Override
-	public void removeVerticesWeights(String key) {
-		indexGraph.removeVerticesWeights(key);
-	}
-
-	@Override
 	@SuppressWarnings("unchecked")
 	public <T, WeightsT extends Weights<E, T>> WeightsT getEdgesWeights(String key) {
 		WeightsImpl.Index<T> indexWeights = indexGraph.getEdgesWeights(key);
@@ -387,44 +370,6 @@ class GraphImpl<V, E> extends AbstractGraph<V, E> {
 			return null;
 		return (WeightsT) edgesWeights
 				.computeIfAbsent(indexWeights, iw -> WeightsImpl.ObjMapped.newInstance(iw, indexGraphEdgesMap()));
-	}
-
-	@Override
-	public <T, WeightsT extends Weights<V, T>> WeightsT addVerticesWeights(String key, Class<? super T> type,
-			T defVal) {
-		indexGraph.addVerticesWeights(key, type, defVal);
-		return getVerticesWeights(key);
-	}
-
-	@Override
-	public <T, WeightsT extends Weights<E, T>> WeightsT addEdgesWeights(String key, Class<? super T> type, T defVal) {
-		indexGraph.addEdgesWeights(key, type, defVal);
-		return getEdgesWeights(key);
-	}
-
-	@Override
-	public Set<String> getEdgesWeightsKeys() {
-		return indexGraph.getEdgesWeightsKeys();
-	}
-
-	@Override
-	public void removeEdgesWeights(String key) {
-		indexGraph.removeEdgesWeights(key);
-	}
-
-	@Override
-	public boolean isDirected() {
-		return indexGraph.isDirected();
-	}
-
-	@Override
-	public boolean isAllowSelfEdges() {
-		return indexGraph.isAllowSelfEdges();
-	}
-
-	@Override
-	public boolean isAllowParallelEdges() {
-		return indexGraph.isAllowParallelEdges();
 	}
 
 }
