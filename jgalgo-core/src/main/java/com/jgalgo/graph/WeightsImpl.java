@@ -405,8 +405,9 @@ interface WeightsImpl {
 			}
 
 			void copyAndAddWeights(String key, IWeights<?> weights) {
-				Object oldWeights =
-						this.weights.put(key, WeightsImpl.IndexImmutable.copyOf(weights, elements, isEdges));
+				Objects.requireNonNull(key);
+				WeightsImpl.IndexImmutable<?> weights0 = WeightsImpl.IndexImmutable.copyOf(weights, elements, isEdges);
+				Object oldWeights = this.weights.put(key, weights0);
 				if (oldWeights != null)
 					throw new IllegalArgumentException("duplicate key: " + key);
 			}

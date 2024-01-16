@@ -638,6 +638,20 @@ public class WeightsTest extends TestBase {
 		assertTrue(IWeightFunction.replaceNullWeightFunc(w4) == w4);
 	}
 
+	@Test
+	public void nullKey() {
+		foreachBoolConfig(intGraph -> {
+			Graph<Integer, Integer> g = intGraph ? IntGraph.newDirected() : Graph.newDirected();
+			assertThrows(NullPointerException.class, () -> g.addVerticesWeights(null, int.class));
+			assertThrows(NullPointerException.class, () -> g.addEdgesWeights(null, int.class));
+		});
+		foreachBoolConfig(intBuilder -> {
+			GraphBuilder<Integer, Integer> b = intBuilder ? IntGraphBuilder.directed() : GraphBuilder.directed();
+			assertThrows(NullPointerException.class, () -> b.addVerticesWeights(null, int.class));
+			assertThrows(NullPointerException.class, () -> b.addEdgesWeights(null, int.class));
+		});
+	}
+
 	@SuppressWarnings("unchecked")
 	private static <K, T> Weights<K, T> unknownImplementationWrap(Weights<K, T> w) {
 		if (w instanceof IWeightsObj) {
