@@ -99,6 +99,10 @@ public class SubSets {
 		return StreamSupport.stream(SubSets.of(set).spliterator(), false);
 	}
 
+	public static <T> Stream<List<T>> stream(Collection<T> set, int k) {
+		return StreamSupport.stream(SubSets.of(set, k).spliterator(), false);
+	}
+
 	public static Stream<IntList> stream(IntCollection set) {
 		return StreamSupport.stream(SubSets.of(set).spliterator(), false);
 	}
