@@ -98,6 +98,9 @@ public interface IPath extends Path<Integer, Integer> {
 	@Override
 	IntList vertices();
 
+	@Override
+	IntGraph graph();
+
 	/**
 	 * Create a new path from an edge list, a source and a target vertices.
 	 *
@@ -113,7 +116,7 @@ public interface IPath extends Path<Integer, Integer> {
 	 */
 	static IPath valueOf(IntGraph g, int source, int target, IntList edges) {
 		if (g instanceof IndexGraph) {
-			return new PathImpl((IndexGraph) g, source, target, edges);
+			return new PathImpl.IndexPath((IndexGraph) g, source, target, edges);
 		} else {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
@@ -122,7 +125,7 @@ public interface IPath extends Path<Integer, Integer> {
 			int iTarget = viMap.idToIndex(target);
 			IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
 
-			IPath indexPath = new PathImpl(iGraph, iSource, iTarget, iEdges);
+			IPath indexPath = new PathImpl.IndexPath(iGraph, iSource, iTarget, iEdges);
 			return PathImpl.intPathFromIndexPath(g, indexPath);
 		}
 	}

@@ -37,208 +37,235 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-class PathImpl implements IPath {
+class PathImpl {
 
-	private final IndexGraph g;
-	private final int source;
-	private final int target;
-	private final IntList edges;
-	private IntList vertices;
-	private boolean isSimple, isSimpleValid;
+	private abstract static class AbstractPath<V, E> implements Path<V, E> {
 
-	/**
-	 * Construct a new path in a graph from an edge list, a source and a target vertices.
-	 *
-	 * @param g      a graph
-	 * @param source a source vertex
-	 * @param target a target vertex
-	 * @param edges  a list of edges that form a path from the {@code source} to the {@code target} vertices in the
-	 *                   graph.
-	 */
-	PathImpl(IndexGraph g, int source, int target, IntList edges) {
-		assert IPath.isPath(g, source, target, edges);
-		this.g = g;
-		this.source = source;
-		this.target = target;
-		this.edges = edges instanceof IntLists.UnmodifiableList || edges instanceof IntImmutableList ? edges
-				: IntLists.unmodifiable(edges);
+		@Override
+		public String toString() {
+			return edges().toString();
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == this)
+				return true;
+			if (!(obj instanceof Path))
+				return false;
+			Path<?, ?> other = (Path<?, ?>) obj;
+			return graph() == other.graph() && source().equals(other.source()) && target().equals(other.target())
+					&& edges().equals(other.edges());
+		}
+
+		@Override
+		public int hashCode() {
+			return System.identityHashCode(graph()) ^ source().hashCode() ^ target().hashCode() ^ edges().hashCode();
+		}
 	}
 
-	@Override
-	public int sourceInt() {
-		return source;
-	}
+	static class IndexPath extends AbstractPath<Integer, Integer> implements IPath {
 
-	@Override
-	public int targetInt() {
-		return target;
-	}
+		private final IndexGraph g;
+		private final int source;
+		private final int target;
+		private final IntList edges;
+		private IntList vertices;
+		private boolean isSimple, isSimpleValid;
 
-	@Override
-	public IEdgeIter edgeIter() {
-		return g.isDirected() ? new IterDirected(g, edges) : new IterUndirected(g, edges, source);
-	}
+		/**
+		 * Construct a new path in a graph from an edge list, a source and a target vertices.
+		 *
+		 * @param g      a graph
+		 * @param source a source vertex
+		 * @param target a target vertex
+		 * @param edges  a list of edges that form a path from the {@code source} to the {@code target} vertices in the
+		 *                   graph.
+		 */
+		IndexPath(IndexGraph g, int source, int target, IntList edges) {
+			assert IPath.isPath(g, source, target, edges);
+			this.g = g;
+			this.source = source;
+			this.target = target;
+			this.edges = edges instanceof IntLists.UnmodifiableList || edges instanceof IntImmutableList ? edges
+					: IntLists.unmodifiable(edges);
+		}
 
-	@Override
-	public IntList edges() {
-		return edges;
-	}
+		@Override
+		public int sourceInt() {
+			return source;
+		}
 
-	@Override
-	public IntList vertices() {
-		if (vertices == null) {
-			if (edges.isEmpty()) {
-				assert isCycle();
-				vertices = IntList.of(source);
-			} else {
-				int[] res = new int[edges().size() + (isCycle() ? 0 : 1)];
-				int resIdx = 0;
-				for (IEdgeIter it = edgeIter();;) {
-					it.nextInt();
-					res[resIdx++] = it.sourceInt();
-					if (!it.hasNext()) {
-						if (!isCycle()) {
-							assert it.targetInt() == targetInt();
-							res[resIdx++] = targetInt();
+		@Override
+		public int targetInt() {
+			return target;
+		}
+
+		@Override
+		public IEdgeIter edgeIter() {
+			return g.isDirected() ? new IterDirected(g, edges) : new IterUndirected(g, edges, source);
+		}
+
+		@Override
+		public IntList edges() {
+			return edges;
+		}
+
+		@Override
+		public IntList vertices() {
+			if (vertices == null) {
+				if (edges.isEmpty()) {
+					assert isCycle();
+					vertices = IntList.of(source);
+				} else {
+					int[] res = new int[edges().size() + (isCycle() ? 0 : 1)];
+					int resIdx = 0;
+					for (IEdgeIter it = edgeIter();;) {
+						it.nextInt();
+						res[resIdx++] = it.sourceInt();
+						if (!it.hasNext()) {
+							if (!isCycle()) {
+								assert it.targetInt() == targetInt();
+								res[resIdx++] = targetInt();
+							}
+							break;
 						}
-						break;
 					}
+					vertices = IntImmutableList.of(res);
 				}
-				vertices = IntImmutableList.of(res);
 			}
+			return vertices;
 		}
-		return vertices;
-	}
 
-	@Override
-	public boolean isSimple() {
-		if (!isSimpleValid) {
-			final int n = g.vertices().size();
-			IntList vs;
-			if (source == target) {
-				isSimple = edges().isEmpty(); /* a cycle or isolated vertex */
+		@Override
+		public IndexGraph graph() {
+			return g;
+		}
 
-			} else if ((vs = vertices()).size() > n) {
-				isSimple = false; /* path with length greater than the vertices num */
+		@Override
+		public boolean isSimple() {
+			if (!isSimpleValid) {
+				final int n = g.vertices().size();
+				IntList vs;
+				if (source == target) {
+					isSimple = edges().isEmpty(); /* a cycle or isolated vertex */
 
-			} else if (vs.size() * 4 > n / 8) {
-				Bitmap visited = new Bitmap(n);
-				isSimple = true;
-				for (int v : vs) {
-					if (visited.get(v)) {
-						isSimple = false;
-						break;
+				} else if ((vs = vertices()).size() > n) {
+					isSimple = false; /* path with length greater than the vertices num */
+
+				} else if (vs.size() * 4 > n / 8) {
+					Bitmap visited = new Bitmap(n);
+					isSimple = true;
+					for (int v : vs) {
+						if (visited.get(v)) {
+							isSimple = false;
+							break;
+						}
+						visited.set(v);
 					}
-					visited.set(v);
-				}
 
-			} else {
-				IntSet visited = new IntOpenHashSet();
-				isSimple = true;
-				for (int v : vs) {
-					if (!visited.add(v)) {
-						isSimple = false;
-						break;
+				} else {
+					IntSet visited = new IntOpenHashSet();
+					isSimple = true;
+					for (int v : vs) {
+						if (!visited.add(v)) {
+							isSimple = false;
+							break;
+						}
 					}
-				}
 
+				}
+				isSimpleValid = true;
 			}
-			isSimpleValid = true;
-		}
-		return isSimple;
-	}
-
-	private static class IterUndirected implements IEdgeIter {
-
-		private final IndexGraph g;
-		private final IntListIterator it;
-		private int e = -1, v = -1;
-
-		IterUndirected(IndexGraph g, IntList path, int source) {
-			Assertions.onlyUndirected(g);
-			this.g = g;
-			v = source;
-			it = path.iterator();
+			return isSimple;
 		}
 
-		@Override
-		public boolean hasNext() {
-			return it.hasNext();
+		private static class IterUndirected implements IEdgeIter {
+
+			private final IndexGraph g;
+			private final IntListIterator it;
+			private int e = -1, v = -1;
+
+			IterUndirected(IndexGraph g, IntList path, int source) {
+				Assertions.onlyUndirected(g);
+				this.g = g;
+				v = source;
+				it = path.iterator();
+			}
+
+			@Override
+			public boolean hasNext() {
+				return it.hasNext();
+			}
+
+			@Override
+			public int nextInt() {
+				e = it.nextInt();
+				v = g.edgeEndpoint(e, v);
+				return e;
+			}
+
+			@Override
+			public int peekNextInt() {
+				int peek = it.nextInt();
+				it.previousInt(); /* go back */
+				return peek;
+			}
+
+			@Override
+			public int sourceInt() {
+				return g.edgeEndpoint(e, v);
+			}
+
+			@Override
+			public int targetInt() {
+				return v;
+			}
+
 		}
 
-		@Override
-		public int nextInt() {
-			e = it.nextInt();
-			v = g.edgeEndpoint(e, v);
-			return e;
+		private static class IterDirected implements IEdgeIter {
+
+			private final IndexGraph g;
+			private final IntListIterator it;
+			private int e = -1;
+
+			IterDirected(IndexGraph g, IntList path) {
+				Assertions.onlyDirected(g);
+				this.g = g;
+				it = path.iterator();
+			}
+
+			@Override
+			public boolean hasNext() {
+				return it.hasNext();
+			}
+
+			@Override
+			public int nextInt() {
+				int eNext = it.nextInt();
+				if (e != -1)
+					assert g.edgeTarget(e) == g.edgeSource(eNext);
+				return e = eNext;
+			}
+
+			@Override
+			public int peekNextInt() {
+				int peek = it.nextInt();
+				it.previousInt(); /* go back */
+				return peek;
+			}
+
+			@Override
+			public int sourceInt() {
+				return g.edgeSource(e);
+			}
+
+			@Override
+			public int targetInt() {
+				return g.edgeTarget(e);
+			}
+
 		}
-
-		@Override
-		public int peekNextInt() {
-			int peek = it.nextInt();
-			it.previousInt(); /* go back */
-			return peek;
-		}
-
-		@Override
-		public int sourceInt() {
-			return g.edgeEndpoint(e, v);
-		}
-
-		@Override
-		public int targetInt() {
-			return v;
-		}
-
-	}
-
-	private static class IterDirected implements IEdgeIter {
-
-		private final IndexGraph g;
-		private final IntListIterator it;
-		private int e = -1;
-
-		IterDirected(IndexGraph g, IntList path) {
-			Assertions.onlyDirected(g);
-			this.g = g;
-			it = path.iterator();
-		}
-
-		@Override
-		public boolean hasNext() {
-			return it.hasNext();
-		}
-
-		@Override
-		public int nextInt() {
-			int eNext = it.nextInt();
-			if (e != -1)
-				assert g.edgeTarget(e) == g.edgeSource(eNext);
-			return e = eNext;
-		}
-
-		@Override
-		public int peekNextInt() {
-			int peek = it.nextInt();
-			it.previousInt(); /* go back */
-			return peek;
-		}
-
-		@Override
-		public int sourceInt() {
-			return g.edgeSource(e);
-		}
-
-		@Override
-		public int targetInt() {
-			return g.edgeTarget(e);
-		}
-
-	}
-
-	@Override
-	public String toString() {
-		return edges().toString();
 	}
 
 	static IPath intPathFromIndexPath(IntGraph g, IPath indexPath) {
@@ -321,7 +348,7 @@ class PathImpl implements IPath {
 		}
 	}
 
-	private static class ObjPathFromIndexPath<V, E> implements Path<V, E> {
+	private static class ObjPathFromIndexPath<V, E> extends AbstractPath<V, E> {
 
 		private final IPath indexPath;
 		private final Graph<V, E> g;
@@ -361,17 +388,17 @@ class PathImpl implements IPath {
 		}
 
 		@Override
-		public boolean isSimple() {
-			return indexPath.isSimple();
+		public Graph<V, E> graph() {
+			return g;
 		}
 
 		@Override
-		public String toString() {
-			return edges().toString();
+		public boolean isSimple() {
+			return indexPath.isSimple();
 		}
 	}
 
-	private static class IntPathFromIndexPath implements IPath {
+	private static class IntPathFromIndexPath extends AbstractPath<Integer, Integer> implements IPath {
 
 		private final IPath indexPath;
 		private final IntGraph g;
@@ -411,13 +438,13 @@ class PathImpl implements IPath {
 		}
 
 		@Override
-		public boolean isSimple() {
-			return indexPath.isSimple();
+		public IntGraph graph() {
+			return g;
 		}
 
 		@Override
-		public String toString() {
-			return edges().toString();
+		public boolean isSimple() {
+			return indexPath.isSimple();
 		}
 	}
 

@@ -133,11 +133,19 @@ public interface Path<V, E> {
 	 * The path is defined as a list of edges \(e_1,e_2,\ldots\), where each target vertex of an edge \(e_i\) is the
 	 * source vertex of the next edge \(e_{i+1}\). The list of <b>vertices</b> of this path is the vertices visited by
 	 * this path, ordered by their visit order. If this path form a cycle, the vertices list size is the same as the
-	 * edge list, otherwise it is greater by one.
+	 * edge list (it does not include the source vertex, which is also the target vertex, twice), otherwise it is
+	 * greater by one.
 	 *
 	 * @return the vertices visited by this path, by the path order
 	 */
 	List<V> vertices();
+
+	/**
+	 * Get the graph this path is defined on.
+	 *
+	 * @return the graph this path is defined on.
+	 */
+	Graph<V, E> graph();
 
 	/**
 	 * Create a new path from an edge list, a source and a target vertices.
@@ -173,7 +181,7 @@ public interface Path<V, E> {
 			int iTarget = viMap.idToIndex(target);
 			IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
 
-			IPath indexPath = new PathImpl(iGraph, iSource, iTarget, iEdges);
+			IPath indexPath = new PathImpl.IndexPath(iGraph, iSource, iTarget, iEdges);
 			return PathImpl.objPathFromIndexPath(g, indexPath);
 		}
 	}

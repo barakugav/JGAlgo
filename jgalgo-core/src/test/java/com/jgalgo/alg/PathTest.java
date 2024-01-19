@@ -19,9 +19,12 @@ package com.jgalgo.alg;
 import static com.jgalgo.internal.util.Range.range;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,6 +34,7 @@ import com.jgalgo.graph.Graph;
 import com.jgalgo.graph.GraphFactory;
 import com.jgalgo.graph.Graphs;
 import com.jgalgo.graph.GraphsTestUtils;
+import com.jgalgo.graph.IdBuilderInt;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
@@ -95,10 +99,9 @@ public class PathTest extends TestBase {
 				if (!g.edges().contains(e))
 					g.addEdge(u, v, e);
 			}
-			if (indexGraph)
-				g = g.indexGraph();
+			g = indexGraph ? g.indexGraph() : g;
 
-			for (int i = 0; i < 100; i++) {
+			for (int repeat = 0; repeat < 100; repeat++) {
 				IntList edges = new IntArrayList();
 				IntList vertices = new IntArrayList();
 				int source = Graphs.randVertex(g, rand);
@@ -136,8 +139,140 @@ public class PathTest extends TestBase {
 					assertEquals(expectedV, v);
 					assertEquals(peek, e);
 				}
+			}
+		});
+	}
 
-				assertEquals(edges.toString(), path.toString());
+	@Test
+	public void isCycle() {
+		final Random rand = new Random(0x8317473360e54374L);
+		foreachBoolConfig((intGraph, indexGraph, directed) -> {
+			Graph<Integer, Integer> g0 =
+					GraphsTestUtils.randGraph(20, 60, directed, true, true, intGraph, rand.nextLong());
+			Graph<Integer, Integer> g = indexGraph ? g0.indexGraph() : g0;
+
+			for (int repeat = 0; repeat < 100; repeat++) {
+				Path<Integer, Integer> path = randPath(g, rand);
+				Integer source = path.source(), target = path.target();
+				assertEqualsBool(source.equals(target), path.isCycle());
+			}
+		});
+	}
+
+	@Test
+	public void graph() {
+		{
+			IndexGraph g = IndexGraph.newUndirected();
+			int v1 = g.addVertexInt();
+			int v2 = g.addVertexInt();
+			int e1 = g.addEdge(v1, v2);
+			assertTrue(IPath.valueOf(g, v1, v2, IntList.of(e1)).graph() == g);
+		}
+		{
+			IntGraph g = IntGraph.newUndirected();
+			int v1 = g.addVertexInt();
+			int v2 = g.addVertexInt();
+			int e1 = g.addEdge(v1, v2);
+			assertTrue(IPath.valueOf(g, v1, v2, IntList.of(e1)).graph() == g);
+		}
+		{
+			Graph<Integer, Integer> g = GraphFactory
+					.<Integer, Integer>undirected()
+					.setVertexFactory(IdBuilderInt.defaultFactory())
+					.setEdgeFactory(IdBuilderInt.defaultFactory())
+					.newGraph();
+			Integer v1 = g.addVertex();
+			Integer v2 = g.addVertex();
+			Integer e1 = g.addEdge(v1, v2);
+			assertTrue(Path.valueOf(g, v1, v2, List.of(e1)).graph() == g);
+		}
+	}
+
+	private static Path<Integer, Integer> randPath(Graph<Integer, Integer> g, Random rand) {
+		List<Integer> edges = new IntArrayList();
+		Integer source = Graphs.randVertex(g, rand);
+		Integer target = source;
+		final int len = rand.nextInt(10);
+		for (Integer u = source; edges.size() < len;) {
+			List<Integer> uEdges = new IntArrayList(g.outEdges(u));
+			if (uEdges.isEmpty())
+				break;
+			Integer e = uEdges.get(rand.nextInt(uEdges.size()));
+			u = g.edgeEndpoint(e, u);
+			edges.add(e);
+			target = u;
+		}
+		return Path.valueOf(g, source, target, edges);
+	}
+
+	@Test
+	public void toStringTest() {
+		final Random rand = new Random(0x9f4f3293219117e0L);
+		foreachBoolConfig((intGraph, indexGraph, directed) -> {
+			Graph<Integer, Integer> g =
+					GraphsTestUtils.randGraph(20, 60, directed, true, true, intGraph, rand.nextLong());
+			g = indexGraph ? g.indexGraph() : g;
+
+			for (int repeat = 0; repeat < 100; repeat++) {
+				Path<Integer, Integer> path = randPath(g, rand);
+				assertEquals(path.edges().toString(), path.toString());
+			}
+		});
+	}
+
+	@Test
+	public void equalsAndHashCode() {
+		final Random rand = new Random(0x3c01797d32763bcL);
+		foreachBoolConfig((intGraph, indexGraph, directed) -> {
+			Graph<Integer, Integer> g0 =
+					GraphsTestUtils.randGraph(20, 60, directed, true, true, intGraph, rand.nextLong());
+			Graph<Integer, Integer> g = indexGraph ? g0.indexGraph() : g0;
+
+			for (int repeat = 0; repeat < 100; repeat++) {
+				Path<Integer, Integer> path = randPath(g, rand);
+				Integer source = path.source(), target = path.target();
+
+				/* equal itself */
+				assertEquals(path, path);
+				assertEquals(path.hashCode(), path.hashCode());
+				/* wrong type */
+				assertFalse(path.equals("wrong type"));
+
+				/* equal paths */
+				Path<Integer, Integer> path2 = Path.valueOf(g, source, target, path.edges());
+				assertEquals(path, path2);
+				assertEquals(path2, path);
+				assertEquals(path.hashCode(), path2.hashCode());
+
+				/* different graph */
+				Path<Integer, Integer> path3 = Path.valueOf(g.copy(), source, target, path.edges());
+				assertNotEquals(path, path3);
+
+				/* different source */
+				Optional<Integer> differentSourceEdge =
+						g.inEdges(target).stream().filter(e -> !source.equals(g.edgeEndpoint(e, target))).findAny();
+				if (differentSourceEdge.isPresent()) {
+					Integer differentSource = g.edgeEndpoint(differentSourceEdge.get(), target);
+					assertNotEquals(path, Path.valueOf(g, differentSource, target, List.of(differentSourceEdge.get())));
+				}
+
+				/* different target */
+				Optional<Integer> differentTargetEdge =
+						g.outEdges(source).stream().filter(e -> !target.equals(g.edgeEndpoint(e, source))).findAny();
+				if (differentTargetEdge.isPresent()) {
+					Integer differentTarget = g.edgeEndpoint(differentTargetEdge.get(), source);
+					assertNotEquals(path, Path.valueOf(g, source, differentTarget, List.of(differentTargetEdge.get())));
+				}
+
+				/* different edges */
+				if (path.edges().isEmpty())
+					continue;
+				Graph<Integer, Integer> g2 =
+						IntGraphFactory.newInstance(g.isDirected()).allowSelfEdges().allowParallelEdges().newCopyOf(g);
+				g2.removeEdge(path.edges().get(rand.nextInt(path.edges().size())));
+				Path<Integer, Integer> path4 = Path.findPath(g2, source, target);
+				if (path4 != null)
+					assertNotEquals(path, Path.valueOf(g, source, target, path4.edges()));
 			}
 		});
 	}
