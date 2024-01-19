@@ -91,7 +91,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 			/* Graph is not connected */
 			return Optional.empty();
 
-		return Optional.of(new PathImpl(g, start, end, tour));
+		return Optional.of(IPath.valueOf(g, start, end, tour));
 	}
 
 	private static int degreeWithoutSelfLoops(IndexGraph g, int u) {
@@ -177,7 +177,7 @@ class EulerianTourImpl implements EulerianTourAlgo {
 			return Optional.empty();
 
 		IntArrays.reverse(tour.elements(), 0, tour.size());
-		return Optional.of(new PathImpl(g, start, end, tour));
+		return Optional.of(IPath.valueOf(g, start, end, tour));
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })

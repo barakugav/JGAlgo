@@ -16,13 +16,13 @@
 package com.jgalgo.alg;
 
 import java.util.Iterator;
-import java.util.List;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
+import it.unimi.dsi.fastutil.objects.ObjectIterators;
 
 /**
  * Sedgewick's simple paths enumerator implementation.
@@ -40,7 +40,7 @@ class SimplePathsEnumeratorSedgewick implements SimplePathsEnumeratorBase {
 	@Override
 	public Iterator<IPath> simplePathsIter(IndexGraph g, int source, int target) {
 		if (source == target)
-			return List.<IPath>of(new PathImpl(g, source, target, IntList.of())).iterator();
+			return ObjectIterators.singleton(IPath.valueOf(g, source, target, IntList.of()));
 		return new Iterator<>() {
 
 			final int n = g.vertices().size();
@@ -88,7 +88,7 @@ class SimplePathsEnumeratorSedgewick implements SimplePathsEnumeratorBase {
 			@Override
 			public IPath next() {
 				Assertions.hasNext(this);
-				IPath ret = new PathImpl(g, source, target, new IntArrayList(path));
+				IPath ret = IPath.valueOf(g, source, target, new IntArrayList(path));
 
 				/* remove last edge to target */
 				int lastEdge = path.popInt();

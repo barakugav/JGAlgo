@@ -47,8 +47,8 @@ class CyclesEnumeratorTestUtils extends TestUtils {
 
 		Iterator<Path<Integer, Integer>> actual = cyclesFinder.allCycles(g).iterator();
 
-		IPath c1 = new PathImpl(g, v0, v0, IntList.of(e0, e1, e3));
-		IPath c2 = new PathImpl(g, v1, v1, IntList.of(e1, e2));
+		IPath c1 = IPath.valueOf(g, v0, v0, IntList.of(e0, e1, e3));
+		IPath c2 = IPath.valueOf(g, v1, v1, IntList.of(e1, e2));
 		List<Path<Integer, Integer>> expected = List.of(c1, c2);
 
 		assertEquals(transformCyclesToCanonical(g, expected.iterator()), transformCyclesToCanonical(g, actual));

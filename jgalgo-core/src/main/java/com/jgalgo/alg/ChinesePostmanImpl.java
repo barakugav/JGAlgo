@@ -110,7 +110,7 @@ class ChinesePostmanImpl implements ChinesePostmanBase {
 		}
 
 		int pathSource = eulerianTour.sourceInt();
-		return new PathImpl(g, pathSource, pathSource, path);
+		return IPath.valueOf(g, pathSource, pathSource, path);
 	}
 
 }

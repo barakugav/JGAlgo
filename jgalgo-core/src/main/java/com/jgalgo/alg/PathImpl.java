@@ -262,7 +262,7 @@ class PathImpl implements IPath {
 
 	static IPath findPath(IndexGraph g, final int source, final int target) {
 		if (source == target)
-			return new PathImpl(g, source, target, IntLists.emptyList());
+			return IPath.valueOf(g, source, target, IntLists.emptyList());
 		int n = g.vertices().size();
 		int[] backtrack = new int[n];
 		Arrays.fill(backtrack, -1);
@@ -284,7 +284,7 @@ class PathImpl implements IPath {
 			p = g.edgeEndpoint(e, p);
 		}
 
-		return new PathImpl(g, source, target, path);
+		return IPath.valueOf(g, source, target, path);
 	}
 
 	static boolean isPath(IndexGraph g, int source, int target, IntIterator edges) {

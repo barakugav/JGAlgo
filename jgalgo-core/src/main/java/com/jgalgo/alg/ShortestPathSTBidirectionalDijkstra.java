@@ -36,7 +36,7 @@ class ShortestPathSTBidirectionalDijkstra implements ShortestPathSTBase {
 		if (!g.vertices().contains(target))
 			throw NoSuchVertexException.ofIndex(target);
 		if (source == target)
-			return new PathImpl(g, source, target, IntLists.emptyList());
+			return IPath.valueOf(g, source, target, IntLists.emptyList());
 		w = IWeightFunction.replaceNullWeightFunc(w);
 
 		DoubleIntReferenceableHeap heapS = DoubleIntReferenceableHeap.newInstance();
@@ -149,7 +149,7 @@ class ShortestPathSTBidirectionalDijkstra implements ShortestPathSTBase {
 			for (int u = middle, e; u != target; u = g.edgeEndpoint(e, u))
 				path.add(e = infoT.get(u).backtrack);
 		}
-		return new PathImpl(g, source, target, path);
+		return IPath.valueOf(g, source, target, path);
 	}
 
 	static class Info {

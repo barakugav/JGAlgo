@@ -66,7 +66,7 @@ class TspMetricUtils {
 
 		assert firstVertex == lastVertex;
 		assert IPath.isPath(g, firstVertex, lastVertex, cycle);
-		IPath cycle0 = new PathImpl(g, firstVertex, lastVertex, cycle);
+		IPath cycle0 = IPath.valueOf(g, firstVertex, lastVertex, cycle);
 		assert g.vertices().equals(new IntOpenHashSet(cycle0.vertices()));
 		return cycle0;
 	}

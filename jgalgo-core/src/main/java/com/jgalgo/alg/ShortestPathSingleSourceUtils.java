@@ -100,7 +100,7 @@ class ShortestPathSingleSourceUtils {
 				}
 			}
 			IntArrays.reverse(path.elements(), 0, path.size());
-			return new PathImpl(g, source, target, path);
+			return IPath.valueOf(g, source, target, path);
 		}
 
 		@Override

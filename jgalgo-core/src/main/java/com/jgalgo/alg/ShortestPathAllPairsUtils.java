@@ -129,7 +129,7 @@ class ShortestPathAllPairsUtils {
 					path.add(e);
 					v = g.edgeEndpoint(e, v);
 				}
-				return new PathImpl(g, source, target, path);
+				return IPath.valueOf(g, source, target, path);
 			}
 		}
 
@@ -171,7 +171,7 @@ class ShortestPathAllPairsUtils {
 					path.add(e);
 					v = g.edgeTarget(e);
 				}
-				return new PathImpl(g, source, target, path);
+				return IPath.valueOf(g, source, target, path);
 			}
 		}
 

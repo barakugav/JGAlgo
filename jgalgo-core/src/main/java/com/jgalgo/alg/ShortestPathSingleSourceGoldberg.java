@@ -124,7 +124,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase {
 
 		for (int e : Graphs.selfEdges(g))
 			if (w0.weightInt(e) < 0)
-				throw new NegativeCycleException(g, new PathImpl(g, g.edgeSource(e), g.edgeTarget(e), IntList.of(e)));
+				throw new NegativeCycleException(g, IPath.valueOf(g, g.edgeSource(e), g.edgeTarget(e), IntList.of(e)));
 
 		Bitmap connected = new Bitmap(n);
 		int[] layerSize = new int[n + 1];
@@ -203,7 +203,7 @@ class ShortestPathSingleSourceGoldberg implements ShortestPathSingleSourceBase {
 							for (int e2 : negCycle0.edges())
 								negCycle.add(gNegEdgeRefs[e2]);
 							negCycle.add(gNegEdgeRefs[e]);
-							throw new NegativeCycleException(g, new PathImpl(g, v, v, negCycle));
+							throw new NegativeCycleException(g, IPath.valueOf(g, v, v, negCycle));
 						}
 					}
 				}

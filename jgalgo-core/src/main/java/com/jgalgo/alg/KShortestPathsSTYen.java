@@ -64,7 +64,7 @@ class KShortestPathsSTYen implements KShortestPathsSTBase {
 		w = IWeightFunction.replaceNullWeightFunc(w);
 		Assertions.onlyPositiveEdgesWeights(g, w);
 		if (source == target)
-			return ObjectList.of(new PathImpl(g, source, target, IntList.of()));
+			return ObjectList.of(IPath.valueOf(g, source, target, IntList.of()));
 
 		final int n = g.vertices().size();
 		final int m = g.edges().size();
@@ -93,7 +93,7 @@ class KShortestPathsSTYen implements KShortestPathsSTBase {
 			if (paths.size() == k)
 				break;
 
-			IntList kthPathVertices = new PathImpl(g, source, target, kthPath).vertices();
+			IntList kthPathVertices = IPath.valueOf(g, source, target, kthPath).vertices();
 			assert kthPathVertices.getInt(kthPathVertices.size() - 1) == target;
 			assert relevantPaths.isEmpty();
 			if (kthPathDeviationIdx < 1) {
@@ -163,7 +163,7 @@ class KShortestPathsSTYen implements KShortestPathsSTBase {
 			relevantPaths.clear();
 		}
 
-		List<IPath> res = paths.stream().map(p -> new PathImpl(g, source, target, p)).collect(Collectors.toList());
+		List<IPath> res = paths.stream().map(p -> IPath.valueOf(g, source, target, p)).collect(Collectors.toList());
 		assert res.stream().allMatch(IPath::isSimple);
 		return res;
 	}

@@ -177,7 +177,7 @@ class ShortestPathAllPairsJohnson implements ShortestPathAllPairsBase {
 					.computeShortestPaths(refG, refW, Integer.valueOf(fakeV));
 		} catch (NegativeCycleException e) {
 			IPath p = (IPath) e.cycle();
-			throw new NegativeCycleException(g, new PathImpl(g, p.sourceInt(), p.targetInt(), p.edges()));
+			throw new NegativeCycleException(g, IPath.valueOf(g, p.sourceInt(), p.targetInt(), p.edges()));
 		}
 
 		double[] potential = new double[n];

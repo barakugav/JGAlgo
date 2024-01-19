@@ -205,7 +205,7 @@ class MinimumMeanCycleHoward implements MinimumMeanCycleBase {
 			}
 			if (bestSelfEdge != -1 && bestSelfEdgeWeight < overallBestCycleMeanWeight) {
 				int cycleVertex = g.edgeSource(bestSelfEdge);
-				return new PathImpl(g, cycleVertex, cycleVertex, IntList.of(bestSelfEdge));
+				return IPath.valueOf(g, cycleVertex, cycleVertex, IntList.of(bestSelfEdge));
 			}
 		}
 
@@ -218,7 +218,7 @@ class MinimumMeanCycleHoward implements MinimumMeanCycleBase {
 			cycle.add(e);
 			v = g.edgeTarget(e);
 			if (v == cycleVertex)
-				return new PathImpl(g, cycleVertex, cycleVertex, cycle);
+				return IPath.valueOf(g, cycleVertex, cycleVertex, cycle);
 
 			if (cycle.size() > n) {
 				/*

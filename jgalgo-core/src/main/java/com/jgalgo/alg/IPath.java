@@ -111,19 +111,20 @@ public interface IPath extends Path<Integer, Integer> {
 	 * @param  edges  a list of edges that form a path from the {@code source} to the {@code target} vertices in the
 	 * @return        a new path
 	 */
-	static IPath newInstance(IntGraph g, int source, int target, IntList edges) {
-		if (g instanceof IndexGraph)
+	static IPath valueOf(IntGraph g, int source, int target, IntList edges) {
+		if (g instanceof IndexGraph) {
 			return new PathImpl((IndexGraph) g, source, target, edges);
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			IndexIntIdMap eiMap = g.indexGraphEdgesMap();
+			int iSource = viMap.idToIndex(source);
+			int iTarget = viMap.idToIndex(target);
+			IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
 
-		IndexGraph iGraph = g.indexGraph();
-		IndexIntIdMap viMap = g.indexGraphVerticesMap();
-		IndexIntIdMap eiMap = g.indexGraphEdgesMap();
-		int iSource = viMap.idToIndex(source);
-		int iTarget = viMap.idToIndex(target);
-		IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
-
-		IPath indexPath = new PathImpl(iGraph, iSource, iTarget, iEdges);
-		return PathImpl.intPathFromIndexPath(g, indexPath);
+			IPath indexPath = new PathImpl(iGraph, iSource, iTarget, iEdges);
+			return PathImpl.intPathFromIndexPath(g, indexPath);
+		}
 	}
 
 	/**

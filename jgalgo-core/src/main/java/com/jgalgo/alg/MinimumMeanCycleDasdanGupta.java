@@ -80,7 +80,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycleBase {
 						cycle != null ? w.weightSum(cycle.edges()) / cycle.edges().size() : Double.POSITIVE_INFINITY;
 				if (bestSelfEdgeWeight < bestCycleWeight) {
 					int selfEdgeVertex = g.edgeSource(bestSelfEdge);
-					cycle = new PathImpl(g, selfEdgeVertex, selfEdgeVertex, IntList.of(bestSelfEdge));
+					cycle = IPath.valueOf(g, selfEdgeVertex, selfEdgeVertex, IntList.of(bestSelfEdge));
 				}
 			}
 		}
@@ -196,7 +196,7 @@ class MinimumMeanCycleDasdanGupta implements MinimumMeanCycleBase {
 				if (Math.abs((pathWeights[k + len] - pathWeights[k]) - bestCycleMeanWeight * len) < eps) {
 					IntList cycleList = new IntArrayList(path, k, len);
 					int cycleVertex = g.edgeSource(cycleList.getInt(0));
-					return new PathImpl(g, cycleVertex, cycleVertex, cycleList);
+					return IPath.valueOf(g, cycleVertex, cycleVertex, cycleList);
 				}
 			}
 		}

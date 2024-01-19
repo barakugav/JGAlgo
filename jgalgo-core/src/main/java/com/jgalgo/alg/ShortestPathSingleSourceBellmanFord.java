@@ -196,7 +196,7 @@ class ShortestPathSingleSourceBellmanFord implements ShortestPathSingleSourceBas
 						break;
 				}
 				IntArrays.reverse(negCycle.elements(), 0, negCycle.size());
-				throw new NegativeCycleException(g, new PathImpl(g, u, u, negCycle));
+				throw new NegativeCycleException(g, IPath.valueOf(g, u, u, negCycle));
 			}
 		}
 

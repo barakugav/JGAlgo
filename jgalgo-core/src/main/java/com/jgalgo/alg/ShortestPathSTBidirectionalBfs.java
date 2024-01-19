@@ -38,7 +38,7 @@ class ShortestPathSTBidirectionalBfs implements ShortestPathSTBase {
 		if (!g.vertices().contains(target))
 			throw NoSuchVertexException.ofIndex(target);
 		if (source == target)
-			return new PathImpl(g, source, target, IntLists.emptyList());
+			return IPath.valueOf(g, source, target, IntLists.emptyList());
 		Assertions.onlyCardinality(w);
 
 		final long InfoNone = info(-2, -1);
@@ -121,7 +121,7 @@ class ShortestPathSTBidirectionalBfs implements ShortestPathSTBase {
 			for (int u = middle, e; u != target; u = g.edgeEndpoint(e, u))
 				path.add(e = backtrack(infoT.get(u)));
 		}
-		return new PathImpl(g, source, target, path);
+		return IPath.valueOf(g, source, target, path);
 	}
 
 	static long info(int backtrack, int distance) {

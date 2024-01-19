@@ -55,11 +55,10 @@ public class PathTest extends TestBase {
 		int e4 = g.addEdge(v4, v1);
 		int e5 = g.addEdge(v2, v4);
 
-		assertEquals(IPath.newInstance(g, v1, v1, IntList.of(e1, e2, e3, e4)).vertices(), IntList.of(v1, v2, v3, v4));
-		assertEquals(IPath.newInstance(g, v1, v2, IntList.of(e1, e5, e3, e2)).vertices(),
-				IntList.of(v1, v2, v4, v3, v2));
-		assertEquals(IPath.newInstance(g, v1, v2, IntList.of(e1, e5, e5)).vertices(), IntList.of(v1, v2, v4, v2));
-		assertEquals(IPath.newInstance(g, v1, v3, IntList.of(e1, e5, e3)).vertices(), IntList.of(v1, v2, v4, v3));
+		assertEquals(IPath.valueOf(g, v1, v1, IntList.of(e1, e2, e3, e4)).vertices(), IntList.of(v1, v2, v3, v4));
+		assertEquals(IPath.valueOf(g, v1, v2, IntList.of(e1, e5, e3, e2)).vertices(), IntList.of(v1, v2, v4, v3, v2));
+		assertEquals(IPath.valueOf(g, v1, v2, IntList.of(e1, e5, e5)).vertices(), IntList.of(v1, v2, v4, v2));
+		assertEquals(IPath.valueOf(g, v1, v3, IntList.of(e1, e5, e3)).vertices(), IntList.of(v1, v2, v4, v3));
 	}
 
 	@Test
@@ -71,9 +70,9 @@ public class PathTest extends TestBase {
 		IntList l1 = new IntImmutableList(new int[] { e1 });
 		IntList l2 = IntLists.unmodifiable(l1);
 		IntList l3 = new IntArrayList(l1);
-		assertTrue(IPath.newInstance(g, v1, v2, l1).edges() == l1);
-		assertTrue(IPath.newInstance(g, v1, v2, l2).edges() == l2);
-		assertTrue(IPath.newInstance(g, v1, v2, l3).edges() != l3);
+		assertTrue(IPath.valueOf(g, v1, v2, l1).edges() == l1);
+		assertTrue(IPath.valueOf(g, v1, v2, l2).edges() == l2);
+		assertTrue(IPath.valueOf(g, v1, v2, l3).edges() != l3);
 	}
 
 	@SuppressWarnings("boxing")
@@ -117,7 +116,7 @@ public class PathTest extends TestBase {
 				IntList verticesFull = new IntArrayList(vertices);
 				if (source == target && vertices.size() > 1)
 					vertices.removeInt(vertices.size() - 1);
-				Path<Integer, Integer> path = Path.newInstance(g, source, target, edges);
+				Path<Integer, Integer> path = Path.valueOf(g, source, target, edges);
 
 				assertEquals(edges, path.edges());
 				assertEquals(vertices, path.vertices());
@@ -259,10 +258,10 @@ public class PathTest extends TestBase {
 			int e4 = g.addEdge(v4, v1);
 			int e5 = g.addEdge(v2, v4);
 
-			assertFalse(IPath.newInstance(g, v1, v1, IntList.of(e1, e2, e3, e4)).isSimple());
-			assertFalse(IPath.newInstance(g, v1, v2, IntList.of(e1, e5, e3, e2)).isSimple());
-			assertFalse(IPath.newInstance(g, v1, v2, IntList.of(e1, e5, e5)).isSimple());
-			IPath path = IPath.newInstance(g, v1, v3, IntList.of(e1, e5, e3));
+			assertFalse(IPath.valueOf(g, v1, v1, IntList.of(e1, e2, e3, e4)).isSimple());
+			assertFalse(IPath.valueOf(g, v1, v2, IntList.of(e1, e5, e3, e2)).isSimple());
+			assertFalse(IPath.valueOf(g, v1, v2, IntList.of(e1, e5, e5)).isSimple());
+			IPath path = IPath.valueOf(g, v1, v3, IntList.of(e1, e5, e3));
 			assertTrue(path.isSimple());
 			assertTrue(path.isSimple()); /* value should be cached */
 		});

@@ -61,9 +61,9 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
 			double ew = w.weight(e);
 			if (ew < 0) {
 				if (u == v) {
-					throw new NegativeCycleException(g, new PathImpl(g, u, u, IntList.of(e)));
+					throw new NegativeCycleException(g, IPath.valueOf(g, u, u, IntList.of(e)));
 				} else {
-					throw new NegativeCycleException(g, new PathImpl(g, u, u, IntList.of(e, e)));
+					throw new NegativeCycleException(g, IPath.valueOf(g, u, u, IntList.of(e, e)));
 				}
 			}
 			if (ew < res.distance(u, v)) {
@@ -105,7 +105,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
 			double ew = w.weight(e);
 			if (u == v) {
 				if (ew < 0)
-					throw new NegativeCycleException(g, new PathImpl(g, u, u, IntList.of(e)));
+					throw new NegativeCycleException(g, IPath.valueOf(g, u, u, IntList.of(e)));
 				continue;
 			}
 			if (ew < res.distance(u, v)) {
@@ -146,7 +146,7 @@ class ShortestPathAllPairsFloydWarshall implements ShortestPathAllPairsBase {
 				IntList negCycle = new IntArrayList();
 				negCycle.addAll(res.getPath(u, k).edges());
 				negCycle.addAll(res.getPath(k, u).edges());
-				throw new NegativeCycleException(res.g, new PathImpl(res.g, u, u, negCycle));
+				throw new NegativeCycleException(res.g, IPath.valueOf(res.g, u, u, negCycle));
 			}
 		}
 	}

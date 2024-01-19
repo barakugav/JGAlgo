@@ -158,23 +158,24 @@ public interface Path<V, E> {
 	 * @return        a new path
 	 */
 	@SuppressWarnings("unchecked")
-	static <V, E> Path<V, E> newInstance(Graph<V, E> g, V source, V target, List<E> edges) {
+	static <V, E> Path<V, E> valueOf(Graph<V, E> g, V source, V target, List<E> edges) {
 		if (g instanceof IntGraph) {
 			int iSource = ((Integer) source).intValue();
 			int iTarget = ((Integer) target).intValue();
 			IntList iEdges = IntAdapters.asIntList((List<Integer>) edges);
-			return (Path<V, E>) IPath.newInstance((IntGraph) g, iSource, iTarget, iEdges);
+			return (Path<V, E>) IPath.valueOf((IntGraph) g, iSource, iTarget, iEdges);
+
+		} else {
+			IndexGraph iGraph = g.indexGraph();
+			IndexIdMap<V> viMap = g.indexGraphVerticesMap();
+			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
+			int iSource = viMap.idToIndex(source);
+			int iTarget = viMap.idToIndex(target);
+			IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
+
+			IPath indexPath = new PathImpl(iGraph, iSource, iTarget, iEdges);
+			return PathImpl.objPathFromIndexPath(g, indexPath);
 		}
-
-		IndexGraph iGraph = g.indexGraph();
-		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-		IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
-		int iSource = viMap.idToIndex(source);
-		int iTarget = viMap.idToIndex(target);
-		IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
-
-		IPath indexPath = new PathImpl(iGraph, iSource, iTarget, iEdges);
-		return PathImpl.objPathFromIndexPath(g, indexPath);
 	}
 
 	/**

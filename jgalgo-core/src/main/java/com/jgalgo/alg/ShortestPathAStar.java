@@ -126,7 +126,7 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 
 	IPath computeShortestPath(IndexGraph g, IWeightFunction w, int source, int target, IntToDoubleFunction vHeuristic) {
 		if (source == target)
-			return new PathImpl(g, source, target, IntLists.emptyList());
+			return IPath.valueOf(g, source, target, IntLists.emptyList());
 		DoubleIntReferenceableHeap heap = (DoubleIntReferenceableHeap) heapBuilder.build(double.class, int.class);
 
 		Int2ObjectMap<Info> info = new Int2ObjectOpenHashMap<>();
@@ -194,7 +194,7 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 			}
 		}
 		IntArrays.reverse(path.elements(), 0, path.size());
-		return new PathImpl(g, source, target, path);
+		return IPath.valueOf(g, source, target, path);
 	}
 
 	static class Info {

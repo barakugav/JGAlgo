@@ -87,7 +87,7 @@ class CyclesEnumeratorTarjan implements CyclesEnumeratorBase {
 								continue;
 							if (v == startV) {
 								path.push(e);
-								nextCycle = new PathImpl(g, startV, startV, new IntArrayList(path));
+								nextCycle = IPath.valueOf(g, startV, startV, new IntArrayList(path));
 								path.popInt();
 								cycleFoundDepth = path.size();
 								return;
