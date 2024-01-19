@@ -66,27 +66,19 @@ class BiConnectedComponentsAlgoHopcroftTarjan implements BiConnectedComponentsAl
 			Bitmap visited = biccVerticesFromBiccEdgesState.visited;
 			assert visited.isEmpty();
 			int biccVerticesCount = 0;
-			for (int e : biccsEdges) {
-				for (int w : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
-					if (!visited.get(w)) {
-						visited.set(w);
+			for (int e : biccsEdges)
+				for (int w : new int[] { g.edgeSource(e), g.edgeTarget(e) })
+					if (visited.set(w))
 						biccVerticesCount++;
-					}
-				}
-			}
 			for (int e : biccsEdges)
 				for (int w : new int[] { g.edgeSource(e), g.edgeTarget(e) })
 					visited.clear(w);
 			int[] biccVertices = new int[biccVerticesCount];
 			biccVerticesCount = 0;
-			for (int e : biccsEdges) {
-				for (int w : new int[] { g.edgeSource(e), g.edgeTarget(e) }) {
-					if (!visited.get(w)) {
-						visited.set(w);
+			for (int e : biccsEdges)
+				for (int w : new int[] { g.edgeSource(e), g.edgeTarget(e) })
+					if (visited.set(w))
 						biccVertices[biccVerticesCount++] = w;
-					}
-				}
-			}
 			assert biccVertices.length == biccVerticesCount;
 			for (int w : biccVertices)
 				visited.clear(w);

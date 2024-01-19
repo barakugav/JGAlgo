@@ -112,13 +112,14 @@ public class Bitmap extends BitmapBase {
 	 *
 	 * @param  idx                       the index of the bit
 	 * @param  val                       the value to set
+	 * @return                           {@code true} if the bitmap was modified
 	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
 	 */
-	public void set(int idx, boolean val) {
+	public boolean set(int idx, boolean val) {
 		if (val) {
-			set(idx);
+			return set(idx);
 		} else {
-			clear(idx);
+			return clear(idx);
 		}
 	}
 
@@ -126,11 +127,14 @@ public class Bitmap extends BitmapBase {
 	 * Set the bit at the specified index to {@code true}.
 	 *
 	 * @param  idx                       the index of the bit
+	 * @return                           {@code true} if the bitmap was modified
 	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
 	 */
-	public void set(int idx) {
-		checkIdx(idx);
+	public boolean set(int idx) {
+		if (get(idx)) /* bounds check */
+			return false;
 		words[word(idx)] |= bit(idx);
+		return true;
 	}
 
 	/**
@@ -161,11 +165,14 @@ public class Bitmap extends BitmapBase {
 	 * Set the bit at the specified index to {@code false}.
 	 *
 	 * @param  idx                       the index of the bit
+	 * @return                           {@code true} if the bitmap was modified
 	 * @throws IndexOutOfBoundsException if the specified index is no in range [0, size)
 	 */
-	public void clear(int idx) {
-		checkIdx(idx);
+	public boolean clear(int idx) {
+		if (!get(idx)) /* bounds check */
+			return false;
 		words[word(idx)] &= ~bit(idx);
+		return true;
 	}
 
 	/**

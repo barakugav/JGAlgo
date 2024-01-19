@@ -37,10 +37,12 @@ public class BitmapTest extends TestBase {
 		Random rand = new Random(seed);
 
 		Bitmap b = new Bitmap(10);
-		b.set(1);
-		b.set(3);
-		b.set(4);
-		b.set(7);
+		assertTrue(b.set(1));
+		assertTrue(b.set(3));
+		assertFalse(b.set(3));
+		assertTrue(b.set(4));
+		assertFalse(b.set(4));
+		assertTrue(b.set(7));
 		assertFalse(b.get(0));
 		assertTrue(b.get(1));
 		assertFalse(b.get(2));
@@ -55,8 +57,10 @@ public class BitmapTest extends TestBase {
 		b.set(9);
 		assertTrue(b.get(0));
 		assertTrue(b.get(9));
-		b.clear(0);
-		b.clear(9);
+		assertTrue(b.clear(0));
+		assertFalse(b.clear(0));
+		assertTrue(b.clear(9));
+		assertFalse(b.clear(9));
 		assertFalse(b.get(0));
 		assertFalse(b.get(9));
 
