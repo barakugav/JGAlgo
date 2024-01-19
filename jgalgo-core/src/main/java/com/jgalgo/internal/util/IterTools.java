@@ -17,10 +17,14 @@ package com.jgalgo.internal.util;
 
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.Spliterators;
 import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.function.IntPredicate;
 import java.util.function.IntUnaryOperator;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import it.unimi.dsi.fastutil.ints.IntIterable;
 import it.unimi.dsi.fastutil.ints.IntIterator;
 
@@ -242,6 +246,18 @@ public class IterTools {
 				return ret;
 			}
 		};
+	}
+
+	public static <T> Stream<T> stream(Iterator<T> it) {
+		return StreamSupport.stream(Spliterators.spliteratorUnknownSize(it, 0), false);
+	}
+
+	public static IntStream stream(IntIterator it) {
+		return StreamSupport.intStream(Spliterators.spliteratorUnknownSize(it, 0), false);
+	}
+
+	public static IntStream stream(IntIterable it) {
+		return stream(it.iterator());
 	}
 
 }

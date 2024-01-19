@@ -86,6 +86,14 @@ public class BitmapSet extends AbstractIntSet {
 		return true;
 	}
 
+	public int pop() {
+		if (size == 0)
+			throw new IllegalStateException("Empty set");
+		int idx = ones[--size];
+		words[word(idx)] &= ~bit(idx);
+		return idx;
+	}
+
 	/**
 	 * Set all bits to {@code false}.
 	 */

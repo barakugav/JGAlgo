@@ -112,20 +112,19 @@ class Paths {
 		}
 
 		private static boolean reverseEquals(List<?> es1, List<?> es2) {
+			assert es1.size() == es2.size();
 			if (es1 instanceof IntList && es2 instanceof IntList) {
 				IntIterator it1 = ((IntList) es1).iterator();
 				IntListIterator it2 = ((IntList) es2).listIterator(es2.size());
-				while (it1.hasNext()) {
+				for (int i = es1.size(); i-- > 0;)
 					if (it1.nextInt() != it2.previousInt())
 						return false;
-				}
 			} else {
 				Iterator<?> it1 = es1.iterator();
 				ListIterator<?> it2 = es2.listIterator(es2.size());
-				while (it1.hasNext()) {
+				for (int i = es1.size(); i-- > 0;)
 					if (!it1.next().equals(it2.previous()))
 						return false;
-				}
 			}
 			return true;
 		}
