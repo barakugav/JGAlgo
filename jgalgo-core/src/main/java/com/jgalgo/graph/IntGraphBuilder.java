@@ -327,7 +327,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * @return   a builder initialized with the given graph vertices and edges, without the original graph
 	 *           vertices/edges weights.
 	 */
-	static IntGraphBuilder newCopyOf(IntGraph g) {
+	static IntGraphBuilder newCopyOf(Graph<Integer, Integer> g) {
 		return newCopyOf(g, false, false);
 	}
 
@@ -349,7 +349,7 @@ public interface IntGraphBuilder extends GraphBuilder<Integer, Integer> {
 	 * @return                     a builder initialized with the given graph vertices and edges, with/without the
 	 *                             original graph vertices/edges weights.
 	 */
-	static IntGraphBuilder newCopyOf(IntGraph g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
+	static IntGraphBuilder newCopyOf(Graph<Integer, Integer> g, boolean copyVerticesWeights, boolean copyEdgesWeights) {
 		return IntGraphFactory.newInstance(g.isDirected()).newBuilderCopyOf(g, copyVerticesWeights, copyEdgesWeights);
 	}
 
