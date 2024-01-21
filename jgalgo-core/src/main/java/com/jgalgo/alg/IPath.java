@@ -105,6 +105,10 @@ public interface IPath extends Path<Integer, Integer> {
 	 * Create a new path from an edge list, a source and a target vertices.
 	 *
 	 * <p>
+	 * The edges list passed to this function is used for the whole lifetime of the returned path. The list should not
+	 * be modified after passed to this method, as it is not cloned.
+	 *
+	 * <p>
 	 * Note that this function does not check whether the given edge list is a valid path in the given graph. To check
 	 * for validity, use {@link #isPath(IntGraph, int, int, IntList)}.
 	 *

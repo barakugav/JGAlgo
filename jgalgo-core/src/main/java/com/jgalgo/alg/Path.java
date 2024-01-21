@@ -148,7 +148,30 @@ public interface Path<V, E> {
 	Graph<V, E> graph();
 
 	/**
+	 * Check whether this path equals another object.
+	 *
+	 * <p>
+	 * If the given object is not a path, this function returns {@code false}. For two paths to be equal, they must be
+	 * defined in the same graph, which is compared using the naive {@code ==} operator, and they must represent the
+	 * same path in the graph. If one path is a cycle and the other is not, they are not equal. If both are not cycles,
+	 * they must have the same source and target vertices, and the same edges in the same order. If both are cycles,
+	 * they must have the same edges in the same order, but an offset between the lists of edges is allowed. For
+	 * example, the two paths \(e_1,e_2,e_3\) and \(e_2,e_3,e_1\) are equal (if they form a cycle!). Note that the
+	 * sources and targets vertices are not equal in the example. For undirected graphs, all the above rules holds with
+	 * the option to reverse one of the list of edges.
+	 *
+	 * @param  o the object to compare to
+	 * @return   {@code true} if this path equals the given object, else {@code false}
+	 */
+	@Override
+	boolean equals(Object o);
+
+	/**
 	 * Create a new path from an edge list, a source and a target vertices.
+	 *
+	 * <p>
+	 * The edges list passed to this function is used for the whole lifetime of the returned path. The list should not
+	 * be modified after passed to this method, as it is not cloned.
 	 *
 	 * <p>
 	 * Note that this function does not check whether the given edge list is a valid path in the given graph. To check

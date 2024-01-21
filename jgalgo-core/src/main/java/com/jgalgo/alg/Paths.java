@@ -15,8 +15,11 @@
  */
 package com.jgalgo.alg;
 
+import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Objects;
 import com.jgalgo.graph.EdgeIter;
 import com.jgalgo.graph.Graph;
@@ -54,14 +57,93 @@ class Paths {
 				return true;
 			if (!(obj instanceof Path))
 				return false;
-			Path<?, ?> other = (Path<?, ?>) obj;
-			return graph() == other.graph() && source().equals(other.source()) && target().equals(other.target())
-					&& edges().equals(other.edges());
+			Path<?, ?> o = (Path<?, ?>) obj;
+			Graph<?, ?> g = graph();
+			if (g != o.graph())
+				return false;
+			final boolean isCycle = isCycle();
+			if (isCycle != o.isCycle())
+				return false;
+			final List<?> es1 = edges(), es2 = o.edges();
+			final int size = es1.size();
+			if (size != es2.size())
+				return false;
+			final Object s1 = source(), s2 = o.source(), t1 = target(), t2 = o.target();
+			if (size == 0) {
+				assert s1.equals(t1) && s2.equals(t2);
+				return s1.equals(s2);
+			}
+			if (g.isDirected()) {
+				if (isCycle) {
+					for (int offset : range(size)) {
+						boolean eq = es1.subList(0, size - offset).equals(es2.subList(offset, size))
+								&& es1.subList(size - offset, size).equals(es2.subList(0, offset));
+						if (eq)
+							return true;
+					}
+					return false;
+
+				} else {
+					return s1.equals(s2) && t1.equals(t2) && es1.equals(es2);
+				}
+			} else {
+				if (isCycle) {
+					for (int offset : range(size)) {
+						boolean eq1 = es1.subList(0, size - offset).equals(es2.subList(offset, size))
+								&& es1.subList(size - offset, size).equals(es2.subList(0, offset));
+						if (eq1)
+							return true;
+						boolean eq2 = reverseEquals(es1.subList(0, offset + 1), es2.subList(0, offset + 1))
+								&& (offset == size - 1
+										|| reverseEquals(es1.subList(offset + 1, size), es2.subList(offset + 1, size)));
+						if (eq2)
+							return true;
+					}
+					return false;
+
+				} else if (s1.equals(s2) && t1.equals(t2)) {
+					return es1.equals(es2);
+				} else if (t1.equals(s2) && s1.equals(t2)) {
+					return reverseEquals(es1, es2);
+				} else {
+					return false;
+				}
+			}
+		}
+
+		private static boolean reverseEquals(List<?> es1, List<?> es2) {
+			if (es1 instanceof IntList && es2 instanceof IntList) {
+				IntIterator it1 = ((IntList) es1).iterator();
+				IntListIterator it2 = ((IntList) es2).listIterator(es2.size());
+				while (it1.hasNext()) {
+					if (it1.nextInt() != it2.previousInt())
+						return false;
+				}
+			} else {
+				Iterator<?> it1 = es1.iterator();
+				ListIterator<?> it2 = es2.listIterator(es2.size());
+				while (it1.hasNext()) {
+					if (!it1.next().equals(it2.previous()))
+						return false;
+				}
+			}
+			return true;
 		}
 
 		@Override
 		public int hashCode() {
-			return System.identityHashCode(graph()) ^ source().hashCode() ^ target().hashCode() ^ edges().hashCode();
+			int hash = System.identityHashCode(graph());
+			if (!isCycle())
+				hash ^= source().hashCode() ^ target().hashCode();
+			List<?> es = edges();
+			if (es instanceof IntList) {
+				for (int e : (IntList) es)
+					hash ^= e;
+			} else {
+				for (Object e : es)
+					hash ^= e.hashCode();
+			}
+			return hash;
 		}
 	}
 

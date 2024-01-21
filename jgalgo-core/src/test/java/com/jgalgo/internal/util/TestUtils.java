@@ -194,9 +194,14 @@ public class TestUtils {
 
 	private static Integer nonExistingInt(Collection<Integer> elements, Random rand, boolean positive) {
 		for (;;) {
-			Integer e = Integer.valueOf(rand.nextInt());
-			if (positive && e.intValue() < 0)
-				continue;
+			int x;
+			if (positive) {
+				x = rand.nextInt(1 + 2 * elements.size());
+			} else {
+				int r = 4 + 4 * elements.size();
+				x = rand.nextInt(r) - r / 2;
+			}
+			Integer e = Integer.valueOf(x);
 			if (!elements.contains(e))
 				return e;
 		}

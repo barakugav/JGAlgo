@@ -24,9 +24,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import com.jgalgo.graph.EdgeIter;
@@ -39,7 +41,9 @@ import com.jgalgo.graph.IndexGraph;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.graph.IntGraphFactory;
 import com.jgalgo.internal.util.TestBase;
+import it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
+import it.unimi.dsi.fastutil.ints.IntArrays;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntLists;
@@ -220,29 +224,112 @@ public class PathTest extends TestBase {
 		});
 	}
 
+	@SuppressWarnings("boxing")
 	@Test
 	public void equalsAndHashCode() {
 		final Random rand = new Random(0x3c01797d32763bcL);
 		foreachBoolConfig((intGraph, indexGraph, directed) -> {
 			Graph<Integer, Integer> g0 =
 					GraphsTestUtils.randGraph(20, 60, directed, true, true, intGraph, rand.nextLong());
-			Graph<Integer, Integer> g = indexGraph ? g0.indexGraph() : g0;
+			g0 = indexGraph ? g0.indexGraph() : g0;
+
+			Graph<Integer, Integer> g = g0.copy();
+			Map<Integer, Integer> twinEdge = new Int2IntOpenHashMap();
+			for (Integer e1 : g.edges()) {
+				Integer e2;
+				if (g instanceof IndexGraph) {
+					e2 = Integer.valueOf(g.edges().size());
+				} else {
+					e2 = GraphsTestUtils.nonExistingEdgeNonNegative(g, rand);
+				}
+				g.addEdge(g.edgeSource(e1), g.edgeTarget(e1), e2);
+				twinEdge.put(e1, e2);
+				twinEdge.put(e2, e1);
+			}
 
 			for (int repeat = 0; repeat < 100; repeat++) {
 				Path<Integer, Integer> path = randPath(g, rand);
 				Integer source = path.source(), target = path.target();
+				final boolean cycle = source.equals(target);
+
+				BiConsumer<Path<Integer, Integer>, Path<Integer, Integer>> checkEqual = (p1, p2) -> {
+					assertEquals(p1, p2);
+					assertEquals(p2, p1);
+					assertEquals(p1.hashCode(), p2.hashCode());
+				};
 
 				/* equal itself */
 				assertEquals(path, path);
 				assertEquals(path.hashCode(), path.hashCode());
 				/* wrong type */
+				assertFalse(path.equals(null));
 				assertFalse(path.equals("wrong type"));
 
-				/* equal paths */
-				Path<Integer, Integer> path2 = Path.valueOf(g, source, target, path.edges());
-				assertEquals(path, path2);
-				assertEquals(path2, path);
-				assertEquals(path.hashCode(), path2.hashCode());
+				/* Path with exactly same source, target and edges */
+				checkEqual.accept(path, Path.valueOf(g, source, target, path.edges()));
+				/* Path with same source and target, different edges */
+				if (!path.edges().isEmpty()) {
+					List<Integer> edges = new IntArrayList(path.edges());
+					int idx = rand.nextInt(edges.size());
+					edges.set(idx, twinEdge.get(edges.get(idx)));
+					assertNotEquals(path, Path.valueOf(g, source, target, edges));
+				}
+				/* equal to reverse in undirected graph */
+				if (!g.isDirected()) {
+					IntArrayList edges = new IntArrayList(path.edges());
+					IntArrays.reverse(edges.elements(), 0, edges.size());
+					checkEqual.accept(path, Path.valueOf(g, target, source, edges));
+				}
+				/* reverse edges in undirected graphs, different edges */
+				if (!g.isDirected() && !path.edges().isEmpty()) {
+					IntArrayList edges = new IntArrayList(path.edges());
+					IntArrays.reverse(edges.elements(), 0, edges.size());
+					int idx = rand.nextInt(edges.size());
+					edges.set(idx, twinEdge.get(edges.getInt(idx)).intValue());
+					assertNotEquals(path, Path.valueOf(g, target, source, edges));
+				}
+				/* two cycle paths, one is a shifted version of the other */
+				if (cycle && !path.edges().isEmpty()) {
+					IntArrayList edges = new IntArrayList();
+					int offset = rand.nextInt(path.edges().size());
+					edges.addAll(path.edges().subList(offset, path.edges().size()));
+					edges.addAll(path.edges().subList(0, offset));
+					Integer newSource = path.vertices().get(offset);
+					checkEqual.accept(path, Path.valueOf(g, newSource, newSource, edges));
+				}
+				/* two cycle paths, one is a shifted version of the other, one different edge */
+				if (cycle && !path.edges().isEmpty()) {
+					IntArrayList edges = new IntArrayList();
+					int offset = rand.nextInt(path.edges().size());
+					edges.addAll(path.edges().subList(offset, path.edges().size()));
+					edges.addAll(path.edges().subList(0, offset));
+					int idx = rand.nextInt(edges.size());
+					edges.set(idx, twinEdge.get(edges.getInt(idx)).intValue());
+					Integer newSource = path.vertices().get(offset);
+					assertNotEquals(path, Path.valueOf(g, newSource, newSource, edges));
+				}
+				/* two cycle paths, one is a shifted reversed version of the other */
+				if (cycle && !g.isDirected() && !path.edges().isEmpty()) {
+					IntArrayList edges = new IntArrayList();
+					int offset = rand.nextInt(path.edges().size());
+					edges.addAll(path.edges().subList(offset, path.edges().size()));
+					edges.addAll(path.edges().subList(0, offset));
+					IntArrays.reverse(edges.elements(), 0, edges.size());
+					Integer newSource = path.vertices().get(offset);
+					checkEqual.accept(path, Path.valueOf(g, newSource, newSource, edges));
+				}
+				/* two cycle paths, one is a shifted reversed version of the other, one different edge */
+				if (cycle && !g.isDirected() && !path.edges().isEmpty()) {
+					IntArrayList edges = new IntArrayList();
+					int offset = rand.nextInt(path.edges().size());
+					edges.addAll(path.edges().subList(offset, path.edges().size()));
+					edges.addAll(path.edges().subList(0, offset));
+					IntArrays.reverse(edges.elements(), 0, edges.size());
+					int idx = rand.nextInt(edges.size());
+					edges.set(idx, twinEdge.get(edges.getInt(idx)).intValue());
+					Integer newSource = path.vertices().get(offset);
+					assertNotEquals(path, Path.valueOf(g, newSource, newSource, edges));
+				}
 
 				/* different graph */
 				Path<Integer, Integer> path3 = Path.valueOf(g.copy(), source, target, path.edges());
@@ -254,6 +341,9 @@ public class PathTest extends TestBase {
 				if (differentSourceEdge.isPresent()) {
 					Integer differentSource = g.edgeEndpoint(differentSourceEdge.get(), target);
 					assertNotEquals(path, Path.valueOf(g, differentSource, target, List.of(differentSourceEdge.get())));
+					if (!g.isDirected())
+						assertNotEquals(path,
+								Path.valueOf(g, target, differentSource, List.of(differentSourceEdge.get())));
 				}
 
 				/* different target */
@@ -262,17 +352,10 @@ public class PathTest extends TestBase {
 				if (differentTargetEdge.isPresent()) {
 					Integer differentTarget = g.edgeEndpoint(differentTargetEdge.get(), source);
 					assertNotEquals(path, Path.valueOf(g, source, differentTarget, List.of(differentTargetEdge.get())));
+					if (!g.isDirected())
+						assertNotEquals(path,
+								Path.valueOf(g, differentTarget, source, List.of(differentTargetEdge.get())));
 				}
-
-				/* different edges */
-				if (path.edges().isEmpty())
-					continue;
-				Graph<Integer, Integer> g2 =
-						IntGraphFactory.newInstance(g.isDirected()).allowSelfEdges().allowParallelEdges().newCopyOf(g);
-				g2.removeEdge(path.edges().get(rand.nextInt(path.edges().size())));
-				Path<Integer, Integer> path4 = Path.findPath(g2, source, target);
-				if (path4 != null)
-					assertNotEquals(path, Path.valueOf(g, source, target, path4.edges()));
 			}
 		});
 	}
