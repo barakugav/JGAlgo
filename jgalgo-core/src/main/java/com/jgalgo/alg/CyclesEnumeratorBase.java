@@ -31,7 +31,7 @@ interface CyclesEnumeratorBase extends CyclesEnumerator {
 		} else {
 			IndexGraph iGraph = g.indexGraph();
 			Iterator<IPath> indexResult = cyclesIter(iGraph);
-			return IterTools.map(indexResult, iPath -> PathImpl.pathFromIndexPath(g, iPath));
+			return IterTools.map(indexResult, iPath -> Paths.pathFromIndexPath(g, iPath));
 		}
 	}
 

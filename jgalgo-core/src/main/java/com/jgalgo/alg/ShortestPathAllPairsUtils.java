@@ -259,7 +259,7 @@ class ShortestPathAllPairsUtils {
 		@Override
 		public Path<V, E> getPath(V source, V target) {
 			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));
-			return PathImpl.objPathFromIndexPath(g, indexPath);
+			return Paths.objPathFromIndexPath(g, indexPath);
 		}
 	}
 
@@ -283,7 +283,7 @@ class ShortestPathAllPairsUtils {
 		@Override
 		public IPath getPath(int source, int target) {
 			IPath indexPath = indexRes.getPath(viMap.idToIndex(source), viMap.idToIndex(target));
-			return PathImpl.intPathFromIndexPath(g, indexPath);
+			return Paths.intPathFromIndexPath(g, indexPath);
 		}
 	}
 

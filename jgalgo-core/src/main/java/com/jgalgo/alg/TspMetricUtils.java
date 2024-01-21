@@ -85,7 +85,7 @@ class TspMetricUtils {
 				IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 				IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 				IPath indexPath = computeShortestTour(iGraph, iw);
-				return PathImpl.pathFromIndexPath(g, indexPath);
+				return Paths.pathFromIndexPath(g, indexPath);
 			}
 		}
 

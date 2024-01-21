@@ -37,7 +37,7 @@ interface MinimumMeanCycleBase extends MinimumMeanCycle {
 			IndexIdMap<E> eiMap = g.indexGraphEdgesMap();
 			IWeightFunction iw = IndexIdMaps.idToIndexWeightFunc(w, eiMap);
 			IPath indexPath = computeMinimumMeanCycle(iGraph, iw);
-			return PathImpl.pathFromIndexPath(g, indexPath);
+			return Paths.pathFromIndexPath(g, indexPath);
 		}
 	}
 

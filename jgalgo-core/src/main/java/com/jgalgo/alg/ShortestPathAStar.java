@@ -97,7 +97,7 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 			IPath indexPath = NegativeCycleException
 					.runAndConvertException(g,
 							() -> computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic));
-			return PathImpl.pathFromIndexPath(g, indexPath);
+			return Paths.pathFromIndexPath(g, indexPath);
 		}
 	}
 
@@ -119,7 +119,7 @@ class ShortestPathAStar implements ShortestPathHeuristicST {
 			IPath indexPath = NegativeCycleException
 					.runAndConvertException(g,
 							() -> computeShortestPath(iGraph, iw, iSource, iTarget, indexVHeuristic));
-			return PathImpl.intPathFromIndexPath(g, indexPath);
+			return Paths.intPathFromIndexPath(g, indexPath);
 		}
 
 	}

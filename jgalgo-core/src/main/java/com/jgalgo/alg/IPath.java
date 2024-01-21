@@ -116,7 +116,8 @@ public interface IPath extends Path<Integer, Integer> {
 	 */
 	static IPath valueOf(IntGraph g, int source, int target, IntList edges) {
 		if (g instanceof IndexGraph) {
-			return new PathImpl.IndexPath((IndexGraph) g, source, target, edges);
+			return new Paths.IndexPath((IndexGraph) g, source, target, edges);
+
 		} else {
 			IndexGraph iGraph = g.indexGraph();
 			IndexIntIdMap viMap = g.indexGraphVerticesMap();
@@ -125,8 +126,8 @@ public interface IPath extends Path<Integer, Integer> {
 			int iTarget = viMap.idToIndex(target);
 			IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
 
-			IPath indexPath = new PathImpl.IndexPath(iGraph, iSource, iTarget, iEdges);
-			return PathImpl.intPathFromIndexPath(g, indexPath);
+			IPath indexPath = new Paths.IndexPath(iGraph, iSource, iTarget, iEdges);
+			return Paths.intPathFromIndexPath(g, indexPath);
 		}
 	}
 
@@ -160,7 +161,7 @@ public interface IPath extends Path<Integer, Integer> {
 			target = viMap.idToIndex(target);
 			eit = IndexIdMaps.idToIndexIterator(edges.iterator(), eiMap);
 		}
-		return PathImpl.isPath(ig, source, target, eit);
+		return Paths.isPath(ig, source, target, eit);
 	}
 
 	/**
@@ -175,16 +176,19 @@ public interface IPath extends Path<Integer, Integer> {
 	 * @return        a path from \(u\) to \(v\), or {@code null} if no such path was found
 	 */
 	static IPath findPath(IntGraph g, int source, int target) {
-		if (g instanceof IndexGraph)
-			return PathImpl.findPath((IndexGraph) g, source, target);
+		if (g instanceof IndexGraph) {
+			return Paths.findPath((IndexGraph) g, source, target);
 
-		IndexGraph iGraph = g.indexGraph();
-		IndexIntIdMap viMap = g.indexGraphVerticesMap();
-		int iSource = viMap.idToIndex(source);
-		int iTarget = viMap.idToIndex(target);
+		} else {
 
-		IPath indexPath = PathImpl.findPath(iGraph, iSource, iTarget);
-		return PathImpl.intPathFromIndexPath(g, indexPath);
+			IndexGraph iGraph = g.indexGraph();
+			IndexIntIdMap viMap = g.indexGraphVerticesMap();
+			int iSource = viMap.idToIndex(source);
+			int iTarget = viMap.idToIndex(target);
+
+			IPath indexPath = Paths.findPath(iGraph, iSource, iTarget);
+			return Paths.intPathFromIndexPath(g, indexPath);
+		}
 	}
 
 	/**

@@ -181,8 +181,8 @@ public interface Path<V, E> {
 			int iTarget = viMap.idToIndex(target);
 			IntList iEdges = IntImmutableList.of(IndexIdMaps.idToIndexCollection(edges, eiMap).toIntArray());
 
-			IPath indexPath = new PathImpl.IndexPath(iGraph, iSource, iTarget, iEdges);
-			return PathImpl.objPathFromIndexPath(g, indexPath);
+			IPath indexPath = new Paths.IndexPath(iGraph, iSource, iTarget, iEdges);
+			return Paths.objPathFromIndexPath(g, indexPath);
 		}
 	}
 
@@ -223,7 +223,7 @@ public interface Path<V, E> {
 			eit = IndexIdMaps.idToIndexIterator(edges.iterator(), eiMap);
 		}
 
-		return PathImpl.isPath(ig, source0, target0, eit);
+		return Paths.isPath(ig, source0, target0, eit);
 	}
 
 	/**
@@ -253,8 +253,8 @@ public interface Path<V, E> {
 		int iSource = viMap.idToIndex(source);
 		int iTarget = viMap.idToIndex(target);
 
-		IPath indexPath = PathImpl.findPath(iGraph, iSource, iTarget);
-		return PathImpl.objPathFromIndexPath(g, indexPath);
+		IPath indexPath = Paths.findPath(iGraph, iSource, iTarget);
+		return Paths.objPathFromIndexPath(g, indexPath);
 	}
 
 	/**

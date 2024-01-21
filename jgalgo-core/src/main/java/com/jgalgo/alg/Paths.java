@@ -37,7 +37,9 @@ import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
-class PathImpl {
+class Paths {
+
+	private Paths() {}
 
 	private abstract static class AbstractPath<V, E> implements Path<V, E> {
 

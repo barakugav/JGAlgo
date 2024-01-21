@@ -43,7 +43,7 @@ interface ShortestPathSTBase extends ShortestPathST {
 
 			IPath indexPath = NegativeCycleException
 					.runAndConvertException(g, () -> computeShortestPath(iGraph, iw, iSource, iTarget));
-			return PathImpl.pathFromIndexPath(g, indexPath);
+			return Paths.pathFromIndexPath(g, indexPath);
 		}
 	}
 

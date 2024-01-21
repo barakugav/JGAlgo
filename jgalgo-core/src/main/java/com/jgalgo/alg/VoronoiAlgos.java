@@ -139,7 +139,7 @@ class VoronoiAlgos {
 		@Override
 		public Path<V, E> getPath(V target) {
 			IPath indexPath = indexRes().getPath(viMap.idToIndex(target));
-			return PathImpl.objPathFromIndexPath(graph(), indexPath);
+			return Paths.objPathFromIndexPath(graph(), indexPath);
 		}
 
 		@Override
@@ -174,7 +174,7 @@ class VoronoiAlgos {
 		@Override
 		public IPath getPath(int target) {
 			IPath indexPath = indexRes().getPath(viMap.idToIndex(target));
-			return PathImpl.intPathFromIndexPath(graph(), indexPath);
+			return Paths.intPathFromIndexPath(graph(), indexPath);
 		}
 
 		@Override
