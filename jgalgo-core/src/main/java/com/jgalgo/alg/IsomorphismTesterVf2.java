@@ -19,6 +19,7 @@ import static com.jgalgo.internal.util.Range.range;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.IntBinaryOperator;
 import com.jgalgo.graph.IEdgeIter;
 import com.jgalgo.graph.IndexGraph;
@@ -130,15 +131,18 @@ class IsomorphismTesterVf2 implements IsomorphismTesterBase {
 
 		@Override
 		public boolean hasNext() {
+			if (nextMapping == null)
+				advance();
 			return nextMapping != null;
 		}
 
 		@Override
 		public IsomorphismIMapping next() {
-			Assertions.hasNext(this);
+			if (!hasNext())
+				throw new NoSuchElementException();
 			IsomorphismIMapping mapping =
 					new IsomorphismTesters.IndexMapping(g1, g2, nextMapping, computeEdgeMapping(nextMapping));
-			advance();
+			nextMapping = null;
 			return mapping;
 		}
 

@@ -16,7 +16,11 @@
 package com.jgalgo.alg;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
+import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.TestBase;
 
 public class IsomorphismTesterVf2Test extends TestBase {
@@ -85,6 +89,24 @@ public class IsomorphismTesterVf2Test extends TestBase {
 	public void defaultImpl() {
 		IsomorphismTester defAlgo = IsomorphismTester.newInstance();
 		assertEquals(defAlgo.getClass(), IsomorphismTesterVf2.class);
+	}
+
+	@Test
+	public void iterThrowsException() {
+		IntGraph g1 = IntGraph.newDirected();
+		g1.addVertex(0);
+		g1.addVertex(1);
+		g1.addEdge(0, 1);
+		IntGraph g2 = IntGraph.newDirected();
+		g2.addVertex(0);
+		g2.addVertex(1);
+		g2.addEdge(0, 1);
+		IsomorphismTester algo = new IsomorphismTesterVf2();
+		Iterator<IsomorphismMapping<Integer, Integer, Integer, Integer>> it = algo.isomorphicMappingsIter(g1, g2);
+		while (it.hasNext())
+			it.next();
+		assertThrows(NoSuchElementException.class, () -> it.next());
+		assertThrows(NoSuchElementException.class, () -> it.next());
 	}
 
 }
