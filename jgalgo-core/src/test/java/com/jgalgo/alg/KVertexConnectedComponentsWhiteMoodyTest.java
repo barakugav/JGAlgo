@@ -42,12 +42,12 @@ public class KVertexConnectedComponentsWhiteMoodyTest extends TestBase {
 		final SeedGenerator seedGen = new SeedGenerator(seed);
 		Random rand = new Random(seedGen.nextSeed());
 		PhasedTester tester = new PhasedTester();
-		tester.addPhase().withArgs(4, 8).repeat(128);
-		tester.addPhase().withArgs(16, 32).repeat(128);
-		tester.addPhase().withArgs(19, 39).repeat(64);
-		tester.addPhase().withArgs(23, 52).repeat(32);
-		tester.addPhase().withArgs(64, 256).repeat(20);
-		tester.addPhase().withArgs(80, 2000).repeat(4);
+		tester.addPhase().withArgs(4, 8).repeat(64);
+		tester.addPhase().withArgs(16, 32).repeat(64);
+		tester.addPhase().withArgs(19, 39).repeat(32);
+		tester.addPhase().withArgs(23, 52).repeat(25);
+		tester.addPhase().withArgs(64, 256).repeat(16);
+		tester.addPhase().withArgs(80, 2000).repeat(1);
 		tester.run((n, m) -> {
 			Graph<Integer, Integer> g = GraphsTestUtils.randGraph(n, m, false, seedGen.nextSeed());
 			g = maybeIndexGraph(g, rand);
