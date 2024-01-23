@@ -31,6 +31,7 @@ import com.jgalgo.graph.IndexIntIdMap;
 import com.jgalgo.graph.IntGraph;
 import com.jgalgo.internal.util.Assertions;
 import com.jgalgo.internal.util.Bitmap;
+import com.jgalgo.internal.util.FIFOQueueIntNoReduce;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntImmutableList;
 import it.unimi.dsi.fastutil.ints.IntIterator;
@@ -38,6 +39,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntLists;
 import it.unimi.dsi.fastutil.ints.IntOpenHashSet;
+import it.unimi.dsi.fastutil.ints.IntPriorityQueue;
 import it.unimi.dsi.fastutil.ints.IntSet;
 
 class Paths {
@@ -377,24 +379,39 @@ class Paths {
 		int[] backtrack = new int[n];
 		Arrays.fill(backtrack, -1);
 
-		IntArrayList path = new IntArrayList();
-		for (BfsIter.Int it = BfsIter.newInstanceBackward(g, target); it.hasNext();) {
-			int p = it.nextInt();
-			backtrack[p] = it.lastEdgeInt();
-			if (p == source)
-				break;
+		IntPriorityQueue queue = new FIFOQueueIntNoReduce();
+		backtrack[target] = Integer.MAX_VALUE; /* mark as visited */
+		queue.enqueue(target);
+		while (!queue.isEmpty()) {
+			final int v = queue.dequeueInt();
+			for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
+				int e = eit.nextInt();
+				int u = eit.sourceInt();
+				if (backtrack[u] >= 0)
+					continue;
+				backtrack[u] = e;
+				if (u == source) {
+					IntArrayList path = new IntArrayList();
+					if (g.isDirected()) {
+						for (int p = source; p != target;) {
+							e = backtrack[p];
+							path.add(e);
+							p = g.edgeTarget(e);
+						}
+					} else {
+						for (int p = source; p != target;) {
+							e = backtrack[p];
+							path.add(e);
+							p = g.edgeEndpoint(e, p);
+						}
+					}
+					return IPath.valueOf(g, source, target, path);
+				}
+				queue.enqueue(u);
+			}
 		}
+		return null;
 
-		if (backtrack[source] == -1)
-			return null;
-
-		for (int p = source; p != target;) {
-			int e = backtrack[p];
-			path.add(e);
-			p = g.edgeEndpoint(e, p);
-		}
-
-		return IPath.valueOf(g, source, target, path);
 	}
 
 	static boolean isPath(IndexGraph g, int source, int target, IntIterator edges) {

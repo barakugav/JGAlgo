@@ -113,7 +113,7 @@ The Coloring family of algorithms is concerned with finding the minimum number o
 
 ### Graph Traversal
 Traversal algorithms are used to explore the vertices and edges of a graph in a systematic way.
--   **Breadth-First Search (BFS)**: Performs a breadth-first search traversal of the graph starting from a specified source vertex. It visits all vertices reachable from the source vertex level by level. Backward BFS iterator is also supported, namely a BFS that use the reverse edges of a directed graph.
+-   **Breadth-First Search (BFS)**: Performs a breadth-first search traversal of the graph starting from a specified source vertex. It visits all vertices reachable from the source vertex level by level.
 [[javadoc]](https://barakugav.github.io/JGAlgo/0.3.0/com/jgalgo/alg/Bfs.html)
 -   **Depth-First Search (DFS)**: Executes a depth-first search traversal of the graph starting from a specified source vertex. It explores as far as possible along each branch before backtracking.
 [[javadoc]](https://barakugav.github.io/JGAlgo/0.3.0/com/jgalgo/alg/Dfs.html)

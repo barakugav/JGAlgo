@@ -183,52 +183,6 @@ public interface BfsIter<V, E> extends Iterator<V> {
 	}
 
 	/**
-	 * Create a backward BFS iterator.
-	 *
-	 * <p>
-	 * The regular BFS uses the out-edges of each vertex to explore its neighbors, while the <i>backward</i> BFS uses
-	 * the in-edges to do so.
-	 *
-	 * <p>
-	 * If an {@link IntGraph} is passed as an argument {@link BfsIter.Int} is returned.
-	 *
-	 * @param  <V>                   the vertices type
-	 * @param  <E>                   the edges type
-	 * @param  g                     a graph
-	 * @param  source                a vertex in the graph from which the search will start from
-	 * @return                       a BFS iterator that iterate over the vertices of the graph using the in-edges
-	 * @throws NoSuchVertexException if the source vertex is not in the graph
-	 */
-	@SuppressWarnings("unchecked")
-	public static <V, E> BfsIter<V, E> newInstanceBackward(Graph<V, E> g, V source) {
-		if (g instanceof IntGraph)
-			return (BfsIter<V, E>) newInstanceBackward((IntGraph) g, ((Integer) source).intValue());
-		IndexIdMap<V> viMap = g.indexGraphVerticesMap();
-		BfsIter.Int indexBfs = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.ObjBfsFromIndexBfs<>(g, indexBfs);
-	}
-
-	/**
-	 * Create a backward BFS iterator in an int graph.
-	 *
-	 * <p>
-	 * The regular BFS uses the out-edges of each vertex to explore its neighbors, while the <i>backward</i> BFS uses
-	 * the in-edges to do so.
-	 *
-	 * @param  g                     a graph
-	 * @param  source                a vertex in the graph from which the search will start from
-	 * @return                       a BFS iterator that iterate over the vertices of the graph using the in-edges
-	 * @throws NoSuchVertexException if the source vertex is not in the graph
-	 */
-	public static BfsIter.Int newInstanceBackward(IntGraph g, int source) {
-		if (g instanceof IndexGraph)
-			return new BfsIterImpl.Backward((IndexGraph) g, source);
-		IndexIntIdMap viMap = g.indexGraphVerticesMap();
-		BfsIter.Int indexBfs = new BfsIterImpl.Backward(g.indexGraph(), viMap.idToIndex(source));
-		return new BfsIterImpl.IntBfsFromIndexBfs(g, indexBfs);
-	}
-
-	/**
 	 * Create a tree from all the vertices and edges traversed by a bread first search.
 	 *
 	 * <p>

@@ -130,42 +130,6 @@ class BfsIterImpl {
 		}
 	}
 
-	static class Backward extends BfsIterImpl.Abstract {
-
-		Backward(IndexGraph g, int source) {
-			this(g, IntIterators.singleton(source));
-		}
-
-		private Backward(IndexGraph g, IntIterator sources) {
-			super(g, sources);
-		}
-
-		@Override
-		public int nextInt() {
-			Assertions.hasNext(this);
-			long l = queue.dequeueLong();
-			final int v = JGAlgoUtils.long2low(l);
-			inEdge = JGAlgoUtils.long2high(l);
-			if (v == firstVInLayer) {
-				layer++;
-				firstVInLayer = -1;
-			}
-
-			for (IEdgeIter eit = g.inEdges(v).iterator(); eit.hasNext();) {
-				int e = eit.nextInt();
-				int u = eit.sourceInt();
-				if (visited.get(u))
-					continue;
-				visited.set(u);
-				queue.enqueue(JGAlgoUtils.longPack(u, e));
-				if (firstVInLayer == -1)
-					firstVInLayer = u;
-			}
-
-			return v;
-		}
-	}
-
 	static class IntBfsFromIndexBfs implements BfsIter.Int {
 
 		private final BfsIter.Int indexIter;
