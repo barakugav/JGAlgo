@@ -17,7 +17,6 @@ package com.jgalgo.graph;
 
 import java.util.AbstractCollection;
 import java.util.AbstractList;
-import java.util.AbstractSet;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -33,6 +32,8 @@ import it.unimi.dsi.fastutil.ints.IntIterator;
 import it.unimi.dsi.fastutil.ints.IntList;
 import it.unimi.dsi.fastutil.ints.IntListIterator;
 import it.unimi.dsi.fastutil.ints.IntSet;
+import it.unimi.dsi.fastutil.objects.AbstractObjectSet;
+import it.unimi.dsi.fastutil.objects.ObjectIterator;
 
 /**
  * Static methods class for {@linkplain IndexIntIdMap index-id maps}.
@@ -108,7 +109,7 @@ public class IndexIdMaps {
 		}
 	}
 
-	private static class IndexToIdIterator<K> implements java.util.Iterator<K> {
+	private static class IndexToIdIterator<K> implements ObjectIterator<K> {
 
 		private final IntIterator indexIt;
 		private final IndexIdMap<K> map;
@@ -409,48 +410,18 @@ public class IndexIdMaps {
 		}
 	}
 
-	private static class IndexToIdEdgeSet<V, E> extends AbstractSet<E> implements EdgeSet<V, E> {
+	private static class IndexToIdEdgeSet<V, E> extends IndexToIdSet<E> implements EdgeSet<V, E> {
 
-		private final IEdgeSet indexSet;
 		private final Graph<V, E> g;
-		private final IndexIdMap<E> eiMap;
 
 		IndexToIdEdgeSet(IEdgeSet indexSet, Graph<V, E> g) {
-			this.indexSet = Objects.requireNonNull(indexSet);
+			super(indexSet, g.indexGraphEdgesMap());
 			this.g = g;
-			this.eiMap = g.indexGraphEdgesMap();
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public boolean remove(Object edge) {
-			return indexSet.remove(eiMap.idToIndexIfExist((E) edge));
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public boolean contains(Object edge) {
-			return indexSet.contains(eiMap.idToIndexIfExist((E) edge));
 		}
 
 		@Override
-		public int size() {
-			return indexSet.size();
-		}
-
-		@Override
-		public boolean isEmpty() {
-			return indexSet.isEmpty();
-		}
-
-		@Override
-		public void clear() {
-			indexSet.clear();
-		}
-
-		@Override
-		public EdgeIter<V, E> iterator() {
-			return indexToIdEdgeIter(g, indexSet.iterator());
+		public IndexToIdEdgeIter<V, E> iterator() {
+			return new IndexToIdEdgeIter<>(g, ((IEdgeSet) idxSet).iterator());
 		}
 	}
 
@@ -690,7 +661,7 @@ public class IndexIdMaps {
 		return new IndexToIntIdSet(indexSet, map);
 	}
 
-	private static class IndexToIdSet<K> extends AbstractSet<K> {
+	private static class IndexToIdSet<K> extends AbstractObjectSet<K> {
 
 		final IntSet idxSet;
 		final IndexIdMap<K> map;
@@ -716,7 +687,7 @@ public class IndexIdMaps {
 		}
 
 		@Override
-		public Iterator<K> iterator() {
+		public ObjectIterator<K> iterator() {
 			return new IndexToIdIterator<>(idxSet.iterator(), map);
 		}
 
