@@ -2,7 +2,7 @@ import os
 import sys
 import shutil
 import subprocess
-import functools
+import xml.etree.ElementTree
 import json
 import argparse
 import logging
@@ -45,33 +45,50 @@ def format_source_files(filenames):
     if ECLIPSE_PATH is None:
         logging.warning("Failed to find eclipse.")
         return
-    ECLIPSE_FORMATTER_CONFIG_FILE = os.path.abspath(
-        os.path.join(TOP_DIR, "..", "ect", "eclipse-java-style.xml")
-    )
 
-    # eclipse has a command line limit
-    def chunker(seq, size):
-        return (seq[pos : pos + size] for pos in range(0, len(seq), size))
+    # The formatter config file is an xml file used by vscode. Eclipse uses a different format. We read the xml and write a new config file for eclipse.
+    ECT_DIR = os.path.abspath(os.path.join(TOP_DIR, "..", "ect"))
+    ECLIPSE_FORMATTER_CONFIG_FILE = os.path.join(ECT_DIR, "eclipse-java-style.xml")
 
-    for filenames_chunk in chunker(filenames, 50):
-        subprocess.check_call(
-            [
-                ECLIPSE_PATH,
-                "-data",
-                TOP_DIR,
-                "-nosplash",
-                "-application",
-                "org.eclipse.jdt.core.JavaCodeFormatter",
-                "-verbose",
-                "-config",
-                os.path.join(
-                    ECLIPSE_FORMATTER_CONFIG_FILE, "org.eclipse.jdt.core.prefs"
-                ),
-                *filenames_chunk,
-            ],
-            cwd=TOP_DIR,
-            shell=True,
-        )
+    profiles_root = xml.etree.ElementTree.parse(ECLIPSE_FORMATTER_CONFIG_FILE).getroot()
+    if profiles_root.tag != "profiles":
+        raise Exception("unexpected root tag: " + profiles_root.tag)
+    profiles = [child for child in profiles_root if child.tag == "profile"]
+    if len(profiles) != 1:
+        raise Exception("unexpected number of profiles: " + len(profiles))
+    settings = [setting for setting in profiles[0] if setting.tag == "setting"]
+    settings = [(setting.attrib["id"], setting.attrib["value"]) for setting in settings]
+
+    formatter_config_file = os.path.join(ECT_DIR, ".eclipse-java-style")
+    try:
+        with open(formatter_config_file, "w") as f:
+            for id, val in settings:
+                f.write(id + "=" + val + "\n")
+
+        # eclipse has a command line limit
+        def chunker(seq, size):
+            return (seq[pos : pos + size] for pos in range(0, len(seq), size))
+
+        for filenames_chunk in chunker(filenames, 50):
+            subprocess.check_call(
+                [
+                    ECLIPSE_PATH,
+                    "-data",
+                    TOP_DIR,
+                    "-nosplash",
+                    "-application",
+                    "org.eclipse.jdt.core.JavaCodeFormatter",
+                    "-verbose",
+                    "-config",
+                    formatter_config_file,
+                    *filenames_chunk,
+                ],
+                cwd=TOP_DIR,
+                shell=True,
+            )
+    finally:
+        if os.path.exists(formatter_config_file):
+            os.remove(formatter_config_file)
 
 
 def generate_sourcefile(input_filename, output_filename, constants, functions):
