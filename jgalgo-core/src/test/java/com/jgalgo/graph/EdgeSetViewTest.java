@@ -39,23 +39,17 @@ public class EdgeSetViewTest extends TestBase {
 	@Test
 	public void idsSet() {
 		foreachBoolConfig(directed -> {
-			IntGraph g = createIntGraph(directed);
+			IndexGraph g = (IndexGraph) createGraph(directed, true, true);
 			IntSet edges = new IntOpenHashSet(g.edges().intStream().filter(e -> e % 3 == 2).toArray());
 			IEdgeSetView view = new IEdgeSetView(edges, g);
-			assertEquals(edges, view.idsSet());
-		});
-		foreachBoolConfig(directed -> {
-			Graph<Integer, Integer> g = createGraph(directed, false);
-			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
-			EdgeSetView<Integer, Integer> view = new EdgeSetView<>(edges, g);
 			assertEquals(edges, view.idsSet());
 		});
 	}
 
 	@Test
 	public void size() {
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
+		foreachBoolConfig((directed, intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
 			assertEquals(edges.size(), view.size());
@@ -72,8 +66,8 @@ public class EdgeSetViewTest extends TestBase {
 
 	@Test
 	public void isEmpty() {
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
+		foreachBoolConfig((directed, intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
 			if (!edges.isEmpty())
@@ -86,8 +80,8 @@ public class EdgeSetViewTest extends TestBase {
 
 	@Test
 	public void toArray() {
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
+		foreachBoolConfig((directed, intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
 			assertArrayEquals(edges.toArray(), view.toArray());
@@ -101,8 +95,8 @@ public class EdgeSetViewTest extends TestBase {
 
 	@Test
 	public void contains() {
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
+		foreachBoolConfig((directed, intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
 			for (int e : edges)
@@ -114,8 +108,8 @@ public class EdgeSetViewTest extends TestBase {
 
 	@Test
 	public void containsAll() {
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
+		foreachBoolConfig((directed, intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
 			if (view instanceof IEdgeSet)
@@ -131,30 +125,9 @@ public class EdgeSetViewTest extends TestBase {
 	}
 
 	@Test
-	public void addAll() {
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
-			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
-			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
-			assertFalse(view.addAll(edges));
-			assertFalse(view.addAll(new HashSet<>(edges)));
-
-			IntSet edges2 = new IntOpenHashSet(edges);
-			if (view instanceof IEdgeSet) {
-				for (int x = 0; !edges2.add(x); x++);
-				assertTrue(((IEdgeSet) view).addAll(edges2));
-				assertEquals(edges2, edges);
-			}
-			for (int x = 0; !edges2.add(x); x++);
-			assertTrue(view.addAll(new HashSet<>(edges2)));
-			assertEquals(edges2, edges);
-		});
-	}
-
-	@Test
 	public void retainAll() {
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
+		foreachBoolConfig((directed, intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
 			assertFalse(view.retainAll(edges));
@@ -178,8 +151,8 @@ public class EdgeSetViewTest extends TestBase {
 	@Test
 	public void removeAll() {
 		final Random rand = new Random(0x4aa73cfc3b425b61L);
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
+		foreachBoolConfig((directed, intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
 			assertFalse(view.removeAll(IntList.of(GraphsTestUtils.nonExistingEdge(g, rand))));
@@ -211,8 +184,8 @@ public class EdgeSetViewTest extends TestBase {
 
 	@Test
 	public void clear() {
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
+		foreachBoolConfig((directed, intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
 			view.clear();
@@ -224,8 +197,8 @@ public class EdgeSetViewTest extends TestBase {
 	@Test
 	public void remove() {
 		final Random rand = new Random(0x934d0131c5b92f84L);
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
+		foreachBoolConfig((directed, intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
 			assertFalse(view.remove(GraphsTestUtils.nonExistingEdge(g, rand)));
@@ -238,23 +211,9 @@ public class EdgeSetViewTest extends TestBase {
 	}
 
 	@Test
-	public void add() {
-		final Random rand = new Random(0xf001908d3b6c1871L);
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
-			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
-			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
-			int nonExistingEdge = GraphsTestUtils.nonExistingEdgeNonNegative(g, rand);
-			assertTrue(view.add(nonExistingEdge));
-			assertFalse(view.add(nonExistingEdge));
-			assertEquals(edges, view);
-		});
-	}
-
-	@Test
 	public void equals() {
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
+		foreachBoolConfig((directed, intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
 			assertEquals(edges, view);
@@ -269,8 +228,8 @@ public class EdgeSetViewTest extends TestBase {
 
 	@Test
 	public void hashCodeTest() {
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
+		foreachBoolConfig((directed, intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
 			assertEquals(edges.hashCode(), view.hashCode());
@@ -279,8 +238,8 @@ public class EdgeSetViewTest extends TestBase {
 
 	@Test
 	public void toStringTest() {
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
+		foreachBoolConfig((directed, intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
 			assertEquals(edges.toString(), view.toString());
@@ -293,8 +252,8 @@ public class EdgeSetViewTest extends TestBase {
 
 	@Test
 	public void iterator() {
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
+		foreachBoolConfig((directed, intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
 
@@ -329,8 +288,8 @@ public class EdgeSetViewTest extends TestBase {
 			}
 			assertFalse(iter.hasNext());
 		});
-		foreachBoolConfig((directed, intGraph) -> {
-			Graph<Integer, Integer> g = createGraph(directed, intGraph);
+		foreachBoolConfig((directed, intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
 			IntSet edges = new IntOpenHashSet(g.edges().stream().filter(e -> e % 3 == 2).collect(toSet()));
 			EdgeSet<Integer, Integer> view = EdgeSet.of(edges, g);
 
@@ -351,11 +310,19 @@ public class EdgeSetViewTest extends TestBase {
 		});
 	}
 
-	private static IntGraph createIntGraph(boolean directed) {
-		return (IntGraph) createGraph(directed, true);
+	@Test
+	public void allOfAndOf() {
+		foreachBoolConfig((directed, intGraph, indexGraph) -> {
+			Graph<Integer, Integer> g = createGraph(directed, intGraph, indexGraph);
+			assertEquals(g.edges(), EdgeSet.allOf(g));
+			if (g instanceof IntGraph) {
+				assertEquals(g.edges(), IEdgeSet.allOf((IntGraph) g));
+				assertEquals(g.edges(), IEdgeSet.of((IntSet) g.edges(), (IntGraph) g));
+			}
+		});
 	}
 
-	private static Graph<Integer, Integer> createGraph(boolean directed, boolean intGraph) {
+	private static Graph<Integer, Integer> createGraph(boolean directed, boolean intGraph, boolean indexGraph) {
 		final Random rand = new Random(0x3de603ab33e9d63fL);
 		Graph<Integer, Integer> g = intGraph ? IntGraph.newDirected() : Graph.newDirected();
 		g.addVertices(range(20));
@@ -371,7 +338,7 @@ public class EdgeSetViewTest extends TestBase {
 				continue;
 			g.addEdge(u, v, e);
 		}
-		return g;
+		return indexGraph ? g.indexGraph() : g;
 	}
 
 }

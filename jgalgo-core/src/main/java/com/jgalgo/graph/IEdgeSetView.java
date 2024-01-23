@@ -25,9 +25,9 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 final class IEdgeSetView extends AbstractIntSet implements IEdgeSet {
 
 	private final IntSet edges;
-	private final IntGraph g;
+	private final IndexGraph g;
 
-	IEdgeSetView(IntSet edges, IntGraph g) {
+	IEdgeSetView(IntSet edges, IndexGraph g) {
 		this.edges = Objects.requireNonNull(edges);
 		this.g = Objects.requireNonNull(g);
 	}
@@ -77,16 +77,6 @@ final class IEdgeSetView extends AbstractIntSet implements IEdgeSet {
 	}
 
 	@Override
-	public boolean addAll(IntCollection c) {
-		return edges.addAll(c);
-	}
-
-	@Override
-	public boolean addAll(Collection<? extends Integer> c) {
-		return edges.addAll(c);
-	}
-
-	@Override
 	public boolean retainAll(Collection<?> c) {
 		return edges.retainAll(c);
 	}
@@ -114,11 +104,6 @@ final class IEdgeSetView extends AbstractIntSet implements IEdgeSet {
 	@Override
 	public boolean remove(int k) {
 		return edges.remove(k);
-	}
-
-	@Override
-	public boolean add(int key) {
-		return edges.add(key);
 	}
 
 	@Override
@@ -165,14 +150,14 @@ final class IEdgeSetView extends AbstractIntSet implements IEdgeSet {
 
 			@Override
 			public int sourceInt() {
-				if (lastEdge == -1)
+				if (lastEdge < 0)
 					throw new IllegalStateException();
 				return g.edgeSource(lastEdge);
 			}
 
 			@Override
 			public int targetInt() {
-				if (lastEdge == -1)
+				if (lastEdge < 0)
 					throw new IllegalStateException();
 				return g.edgeTarget(lastEdge);
 			}

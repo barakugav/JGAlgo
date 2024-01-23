@@ -335,8 +335,6 @@ abstract class GraphBaseMutable extends IndexGraphBase {
 		final Set<Integer> edgesIds;
 		if (edges instanceof IEdgeSetView) {
 			edgesIds = ((IEdgeSetView) edges).idsSet();
-		} else if (edges instanceof EdgeSetView) {
-			edgesIds = ((EdgeSetView<Integer, Integer>) edges0).idsSet();
 		} else {
 			edgesIds = edges0;
 		}

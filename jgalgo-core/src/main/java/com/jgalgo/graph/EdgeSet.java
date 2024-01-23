@@ -96,10 +96,14 @@ public interface EdgeSet<V, E> extends Set<E> {
 	 */
 	@SuppressWarnings("unchecked")
 	static <V, E> EdgeSet<V, E> of(Set<E> edges, Graph<V, E> g) {
-		if (g instanceof IntGraph) {
-			return (EdgeSet<V, E>) IEdgeSet.of(IntAdapters.asIntSet((Set<Integer>) edges), (IntGraph) g);
+		if (g instanceof IndexGraph) {
+			IntSet edges0 = IntAdapters.asIntSet((Set<Integer>) edges);
+			return (EdgeSet<V, E>) new IEdgeSetView(edges0, (IndexGraph) g);
 		} else {
-			return new EdgeSetView<>(edges, g);
+			IndexGraph ig = g.indexGraph();
+			IntSet iEdges = IndexIdMaps.idToIndexSet(edges, g.indexGraphEdgesMap());
+			IEdgeSet iEdgeSet = new IEdgeSetView(iEdges, ig);
+			return IndexIdMaps.indexToIdEdgeSet(iEdgeSet, g);
 		}
 	}
 
@@ -143,7 +147,14 @@ public interface EdgeSet<V, E> extends Set<E> {
 	 * @return     an {@link EdgeSet} of all the edges in the graph
 	 */
 	static <V, E> EdgeSet<V, E> allOf(Graph<V, E> g) {
-		return of(g.edges(), g);
+		if (g instanceof IndexGraph) {
+			return EdgeSet.of(g.edges(), g);
+		} else {
+			IndexGraph ig = g.indexGraph();
+			IntSet iEdges = ig.edges();
+			IEdgeSet iEdgeSet = new IEdgeSetView(iEdges, ig);
+			return IndexIdMaps.indexToIdEdgeSet(iEdgeSet, g);
+		}
 	}
 
 }
