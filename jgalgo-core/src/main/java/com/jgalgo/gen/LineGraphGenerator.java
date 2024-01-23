@@ -43,8 +43,8 @@ import com.jgalgo.graph.WeightsObj;
  *
  * <p>
  * The generate graph will not contains self edges, and no parallel edges. Specifically, if the original graph contains
- * two parallel edges, meaning their share two endpoints rather than one, the generated graph will contain only one edge
- * between their corresponding vertices.
+ * two parallel edges, meaning they share two endpoints rather than one, the generated line graph will contain only one
+ * edge between their corresponding vertices.
  *
  * <p>
  * In the following example, the line graph of the original graph is generated. The vertices type of the original graph
@@ -170,10 +170,10 @@ public class LineGraphGenerator<V, E> implements GraphGenerator<V, E> {
 	 * <p>
 	 * Each edge in the line graph connect two vertices if the two corresponding edges share a common endpoint. This
 	 * method cause each such common endpoint to be saved as weight of an edge in the generated line graph(s). By
-	 * default, no such weights are added to the generated graph(s). If two edges share more than one endpoints
-	 * (parallel edges), an arbitrary one will be stored as weight. The weights will be stored in the generate graph(s)
-	 * as edges {@linkplain WeightsObj object weights} by default, or as {@linkplain WeightsInt int weights} if the
-	 * input graph was an {@link IntGraph}, see the following example:
+	 * default, no such weights are added to the generated graph(s). If two edges share more than one endpoint (parallel
+	 * edges), an arbitrary one will be stored as weight. The weights will be stored in the generate graph(s) as edges
+	 * {@linkplain WeightsObj object weights} by default, or as {@linkplain WeightsInt int weights} if the input graph
+	 * was an {@link IntGraph}. See the following example:
 	 *
 	 * <pre> {@code
 	 * Graph<URI, String> origGraph = ...;

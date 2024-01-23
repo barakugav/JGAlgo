@@ -202,4 +202,10 @@
     <Method name="graph" />
     <Bug pattern="EI_EXPOSE_REP2" />
   </Match>
+  <Match>
+    <!-- Provided graph is input, not internal state of the generator -->
+    <Class name="com.jgalgo.gen.ComplementGraphGenerator" />
+    <Method name="graph" />
+    <Bug pattern="EI_EXPOSE_REP2" />
+  </Match>
 </FindBugsFilter>
